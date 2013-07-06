@@ -31,9 +31,6 @@ public class ItemPart extends Item {
 	@Override
 	public void getSubItems(int id, CreativeTabs tab, List list) {
 		for (EnumPart part : EnumPart.VALID_PARTS) {
-			if (Arrays.asList(EnumPart.ILLUMAR_PARTS).contains(part)) {
-				continue;
-			}
 			list.add(part.getItemStack());
 		}
 	}
