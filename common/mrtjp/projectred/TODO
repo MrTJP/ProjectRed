@@ -1,0 +1,41 @@
+TODO list:
+
+BEING WORKED ON-------------
+- NEI Integration
+
+HIGH------------------------
+- more efficient packet data for Alloy Smelter. 
+--- Don't send full NBT except for first time aka init variable. 
+--- Don't update watcher list, update everyone nearby. 
+
+--- Split up update packets into updateHeat() and updateProgress()
+
+MEDIUM----------------------
+- Better way to detect rotation in TileMachineBase. 
+- Microblock break particles
+
+
+LOW--------------------------
+- Sickle. 
+- Deployer. 
+- Nameable bags.
+- Rename MicroblockSystem into MicroblockLibrary, and give easy access to microblocks from specifying block.
+
+VERY LOW---------------------
+- Different shaped lamps.
+- Plants that will get you every dye color. 
+- Textures for wiring. 
+
+UNDECIDED--------------------
+- Advanced Crafting Table of some sort. 
+- World Gen. 
+--- Fancy blocks (Marble, Basalt)
+--- Gems
+--- Copper, Tin, Silver
+--- Rubber Trees
+
+NOT EVEN CONSIDERING--------------
+- Volcanoes
+- Tubing
+- Frames
+- 
