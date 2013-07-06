@@ -31,7 +31,7 @@ public class BlockMachines extends BlockContainer {
 
 	public BlockMachines(int id) {
 		super(id, new Material(Material.iron.materialMapColor));
-		setCreativeTab(ProjectRedTabs.tabWires);
+		setCreativeTab(ProjectRedTabs.tabMachines);
 		setHardness(0.75f);
 	}
 

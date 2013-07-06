@@ -431,7 +431,7 @@ public class CraftingRecipeManager {
 		GameRegistry.addRecipe(EnumPart.SILICONCHIP.getItemStack(), 
 				"s",
 				"p",
-				's', EnumPart.SILICON.getItemStack(),
+				's', EnumPart.INFUSEDSILICON.getItemStack(),
 				'p', EnumPart.PLATE.getItemStack()
 		);
 		

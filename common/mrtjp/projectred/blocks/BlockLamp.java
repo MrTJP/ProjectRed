@@ -71,9 +71,6 @@ public class BlockLamp extends Block {
 		for (int i = 0; i < 32; i++) {
 			list.add(new ItemStack(id, 1, i));
 		}
-		for (EnumPart p : EnumPart.ILLUMAR_PARTS) {
-			list.add(p.getItemStack());
-		}
 	}	
 
 	@Override
