@@ -37,7 +37,7 @@ public class BlockMachines extends BlockContainer {
 
 	@Override
 	public TileEntity createNewTileEntity(World world) {
-		return new TileEntity();
+		return null;
 	}
 
 	@Override

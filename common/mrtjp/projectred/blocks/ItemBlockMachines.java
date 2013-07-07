@@ -37,6 +37,11 @@ public class ItemBlockMachines extends ItemBlock {
 
 	@Override
 	public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int metadata) {
+		return super.placeBlockAt(stack, player, world, x, y, z, side, hitX, hitY, hitZ, metadata);
+		// let the actual block do this, we will worry about this once
+		// we have more than 16 machines in EnumMachine.
+
+		/*
 		int meta = stack.getItemDamage();
 		if (meta < 0 || meta > EnumMachine.VALID_MACHINES.length - 1) {
 			return false;
@@ -46,13 +51,15 @@ public class ItemBlockMachines extends ItemBlock {
 		}
 		if (world.getBlockId(x, y, z) == itemID) {
 			try {
-				//world.setBlockTileEntity(x, y, z, MachineType.get(meta).clazz.newInstance());
+				// world.setBlockTileEntity(x, y, z,
+				// EnumMachine.get(meta).clazz.newInstance());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			return true;
 		}
 		return false;
+		*/
 	}
 
 }

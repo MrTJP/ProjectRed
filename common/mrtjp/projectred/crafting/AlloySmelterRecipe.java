@@ -1,16 +1,22 @@
 package mrtjp.projectred.crafting;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import scala.Array;
+
+import mrtjp.projectred.utils.BasicUtils;
 import net.minecraft.item.ItemStack;
 
 public class AlloySmelterRecipe {
 
-	public final ItemStack[] _matrix;
-
-	public final ItemStack _result;
-
+	private final ItemStack[] _matrix;
+	private final ItemStack _result;
 	public final ICraftingHandler _handler;
+	private final int _burnTime;
 
-	public final int _burnTime;
+	private static final ArrayList<AlloySmelterRecipe> alloyRecipes = new ArrayList<AlloySmelterRecipe>();
 
 	public abstract class ICraftingHandler {
 		/**
@@ -49,4 +55,47 @@ public class AlloySmelterRecipe {
 		this(matrix, result, null, burnTime);
 	}
 
+	public ItemStack getResult() {
+		return _result.copy();
+	}
+
+	public ItemStack[] getMatrix() {
+		return _matrix.clone();
+	}
+
+	public int getBurnTime() {
+		return _burnTime;
+	}
+
+	/**
+	 * Pass in array of 9 itemstacks, and this checks if it matches the current
+	 * recipe.
+	 * 
+	 * @param inv
+	 * @return
+	 */
+	public boolean calculateMatch(ItemStack[] inv) {
+		if (inv.length != 9) {
+			return false;
+		}
+		for (ItemStack ingredient : _matrix) {
+			int missing = ingredient.stackSize;
+			for (ItemStack itemInGrid : inv) {
+				if (BasicUtils.areStacksTheSame(ingredient, itemInGrid)) {
+					missing = missing - itemInGrid.stackSize;
+				}
+				if (missing <= 0) {
+					break;
+				}
+			}
+			if (missing > 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public AlloySmelterRecipe copy() {
+		return new AlloySmelterRecipe(_matrix, _result, _handler, _burnTime);
+	}
 }

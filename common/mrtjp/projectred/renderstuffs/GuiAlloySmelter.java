@@ -1,5 +1,6 @@
 package mrtjp.projectred.renderstuffs;
 
+import mrtjp.projectred.crafting.AlloySmelterRecipe;
 import mrtjp.projectred.tiles.TileAlloySmelter;
 import mrtjp.projectred.utils.BasicGuiUtils;
 import mrtjp.projectred.utils.BasicGuiUtils.GuiItemRenderOptions;
@@ -46,8 +47,12 @@ public class GuiAlloySmelter extends BaseGuiContainer {
 		drawTexturedModalRect(j + 131, k + 19 + (level * 14 / 1600), 176, level * 14 / 1600, 14, 14 - (level * 14 / 1600));
 
 		// Draw progress indicator
-		if (tile.internalRecipe != null) {
-			int progress = 100 * tile.progress / tile.internalRecipe._burnTime;
+		if (tile.hasWork) {
+			AlloySmelterRecipe r = tile.getSuggestedRecipe();
+			if (r == null) {
+				return;
+			}
+			int progress = 100 * tile.progress / r.getBurnTime();
 			if (progress >= 50) {
 				drawTexturedModalRect(j + 107, k + 38, 176, 14, 10, 24);
 				drawTexturedModalRect(j + 117, k + 38, 186, 14, ((progress - 50) * 26 / 100), 24);
@@ -58,7 +63,7 @@ public class GuiAlloySmelter extends BaseGuiContainer {
 				drawTexturedModalRect(j + 114, k + 38, 183, 14, 3, (progress * 17 / 50));
 			}
 			
-			ItemStack resultstack = tile.internalRecipe._result.copy();
+			ItemStack resultstack = r.getResult().copy();
 			if (resultstack != null) {
 				BasicGuiUtils.renderItemOnGui(new GuiItemRenderOptions(resultstack).setPos(guiLeft + 141, guiTop + 47).setPulsate(.15f, .55f));
 			}
