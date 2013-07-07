@@ -5,7 +5,6 @@ BEING WORKED ON-------------
 - NEI Integration
 
 HIGH------------------------
-- Fix for Jacketed red alloy wire not emitting signal.
 - more efficient packet data for Alloy Smelter. 
 --- Don't send full NBT except for first time aka init variable. 
 --- Don't update watcher list, update everyone nearby. 
