@@ -1,0 +1,209 @@
+<?xml version="1.0" ?>
+
+<project name="Project: Red" basedir="../" default="">
+
+
+	<!-- Versioning -->
+	<property file="buildspecs.properties" prefix="buildspecs" />
+	<property name="mc.version" value="1.5.2" />
+	<property name="mod.version" value="3.0.0" />
+	<property name="mod.build" value="buildspecs.build_number" />
+	<property name="mod.version.full" value="${mod.version}.${mod.build}" />
+	<property name="version.mcp" value="751" />
+	<property name="version.forge" value="7.8.1.738" />
+	<property name="version.chickencore" value="0.8.7" />
+	<property name="version.nei" value="1.5.2.27" />
+
+
+	<!-- Directories -->
+	<property name="src.dir" value="ProjectRed" />
+	<property name="build.dir" value="build" />
+	<property name="download.dir" value="download" />
+	<property name="mcp.dir" value="${build.dir}/mcp" />
+	<property name="forge.dir" value="${mcp.dir}/forge" />
+	<property name="mc.src.dir" value="${mcp.dir}/src/minecraft" />
+	<property name="jar.dir" value="${build.dir}/dist" />
+	<property name="chickencore.dir" value="${build.dir}/unpack/chickencore" />
+	<property name="nei.dir" value="${build.dir}/unpack/nei" />
+
+
+	<!-- Servers -->
+	<property name="download.root" value="http://dl.dropboxusercontent.com/u/46144650" />
+	<property name="download.mcp" value="mcp-${version.mcp}.zip" />
+	<property name="download.forge" value="forge-${version.forge}.zip" />
+	<property name="download.chickencore" value="chickencore-${version.chickencore}.zip" />
+	<property name="download.nei" value="nei-${version.nei}.zip" />
+
+
+
+
+	<target name="cleanoldworkspace">
+		<delete dir="${mc.src.dir}\mrtjp" />
+		<delete dir="${mcp.dir}\reobf\minecraft" />
+	</target>
+
+	<target name="increment_build_number">
+		<propertyfile file="buildspecs.properties">
+			<entry key="build_number" type="int" operation="+" default="1" />
+		</propertyfile>
+	</target>
+
+
+	<target name="fullfilesetup">
+		<!-- Download files -->
+		<mkdir dir="${download.dir}" />
+		<get src="${download.root}/${download.mcp}" dest="${download.dir}" usetimestamp="True" />
+		<get src="${download.root}/${download.forge}" dest="${download.dir}" usetimestamp="True" />
+		<get src="${download.root}/${download.chickencore}" dest="${download.dir}" usetimestamp="True" />
+		<get src="${download.root}/${download.nei}" dest="${download.dir}" usetimestamp="True" />
+
+		<echo message="Download finished" />
+
+
+		<!-- Unzip files -->
+		<!-- mcp -->
+		<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="${download.mcp}" />
+			</fileset>
+		</unzip>
+		<!-- forge -->
+		<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="${download.forge}" />
+			</fileset>
+		</unzip>
+		<!-- chickencore -->
+		<unzip dest="${chickencore.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="${download.chickencore}" />
+			</fileset>
+		</unzip>
+		<!-- nei -->
+		<unzip dest="${nei.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="${download.nei}" />
+			</fileset>
+		</unzip>
+		<echo message="All Files Unpacked" />
+
+		<!-- Grant permissions -->
+		<chmod file="${mcp.dir}/updatemd5.sh" perm="+x" />
+		<chmod file="${mcp.dir}/updatemcp.sh" perm="+x" />
+		<chmod file="${mcp.dir}/recompile.sh" perm="+x" />
+		<chmod file="${mcp.dir}/reobfuscate_srg.sh" perm="+x" />
+		<chmod file="${forge.dir}/install.sh" perm="+x" />
+		<chmod file="${mcp.dir}/runtime/bin/astyle-osx" perm="+x" />
+		<chmod file="${mcp.dir}/runtime/bin/jad-osx" perm="+x" />
+		<echo message="Permissions set" />
+
+		<!-- Install forge -->
+		<exec dir="${forge.dir}" executable="cmd" osfamily="windows" failonerror="true">
+			<arg line="/c install.cmd" />
+		</exec>
+		<exec dir="${forge.dir}" executable="sh" osfamily="unix" failonerror="true">
+			<arg value="install.sh" />
+		</exec>
+		<echo message="Initial Forge Setup complete" />
+
+		<!-- Setup Chickenbones mods -->
+		<mkdir dir="${forge.dir}/accesstransformers" />
+		<mkdir dir="${mcp.dir}/jars/coremods" />
+		<delete dir="${mcp.dir}\src" />
+		<copy file="${chickencore.dir}/codechickencore_at.cfg" todir="${forge.dir}/accesstransformers">
+		</copy>
+		<copy file="${chickencore.dir}/CodeChickenCore_dummy.jar" todir="${mcp.dir}/jars/coremods">
+		</copy>
+		<copy file="${nei.dir}/nei_at.cfg" todir="${forge.dir}/accesstransformers">
+		</copy>
+		<copy file="${nei.dir}/NotEnoughItems_dummy.jar" todir="${mcp.dir}/jars/coremods">
+		</copy>
+		<exec dir="${forge.dir}" executable="cmd" osfamily="windows" failonerror="true">
+			<arg line="/c install.cmd" />
+		</exec>
+		<exec dir="${forge.dir}" executable="sh" osfamily="unix" failonerror="true">
+			<arg value="install.sh" />
+		</exec>
+		<echo message="Chickenbones Forge Setup Complete" />
+
+		<!-- Copy files that will be hashed with MD5 -->
+		<copy todir="${mc.src.dir}">
+			<fileset dir="${chickencore.dir}" />
+		</copy>
+		<copy todir="${mc.src.dir}">
+			<fileset dir="${nei.dir}" />
+		</copy>
+		<copy todir="${mc.src.dir}">
+			<fileset dir="${src.dir}/dummy" />
+		</copy>
+		<echo message="All apis and sources copied" />
+
+		<!-- Refresh MD5 -->
+		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
+			<arg line="/c updatemd5.bat -f --client" />
+		</exec>
+		<exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
+			<arg line="updatemd5.sh -f --client" />
+		</exec>
+		<echo message="Regenerated MD5s" />
+
+	</target>
+
+	<target name="copymodsrc">
+		<!-- Delete PR source in build space -->
+		<delete dir="${mc.src.dir}/mrtjp" />
+
+		<!-- Copy PR source -->
+		<copy todir="${mc.src.dir}">
+			<fileset dir="${src.dir}/common" />
+		</copy>
+	</target>
+
+	<target name="injectdata">
+		<!-- Replace Tokens-->
+		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@VERSION@" value="${build.release.mod.version}" />
+		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@BUILD_NUMBER@" value="${build.build_number}" />
+	</target>
+
+	<target name="recompile">
+		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
+			<arg line="/c recompile.bat" />
+		</exec>
+		<exec dir="${mcp.dir}" executable="bash" osfamily="unix">
+			<arg line="recompile.sh" />
+		</exec>
+	</target>
+
+	<target name="reobfuscate">
+		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
+			<arg line="/c reobfuscate_srg.bat" />
+		</exec>
+		<exec dir="${mcp.dir}" executable="bash" osfamily="unix">
+			<arg line="reobfuscate_srg.sh" />
+		</exec>
+	</target>
+
+	<target name="packjar">
+		<!-- Build the jar -->
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/ProjectRed-${mc.version}-${mod.version.full}.jar">
+			<fileset dir="${mcp.dir}\reobf\minecraft" />
+			<fileset dir="${src.dir}\resources" />
+		</jar>
+	</target>
+
+	<target name="initialsetup">
+		<antcall target="fullfilesetup" />
+	</target>
+
+	<target name="quickbuild">
+		<antcall target="cleanoldworkspace" />
+		<antcall target="copymodsrc" />
+		<antcall target="injectdata" />
+		<antcall target="recompile" />
+		<antcall target="reobfuscate" />
+		<antcall target="packjar" />
+		<antcall target="cleanoldworkspace" />
+	</target>
+</project>
+

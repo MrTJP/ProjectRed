@@ -17,8 +17,8 @@ public abstract class GateRendering {
 	public static final int ON = 0xFF0000;
 	public static final int DISABLED = 0xC0C0C0;
 
-	public Icon torchTexOn = Block.torchRedstoneActive.getBlockTextureFromSide(0);
-	public Icon torchTexOff = Block.torchRedstoneIdle.getBlockTextureFromSide(0);
+	public Icon torchTexOn;
+	public Icon torchTexOff;
 
 	public String[] segmentTex = new String[] { "base" };
 	public int[] segmentCol = new int[] { 0xFF0000 };
@@ -45,8 +45,11 @@ public abstract class GateRendering {
 
 	public void loadTextures(IconRegister register) {
 		segmentIcons = new Icon[segmentTex.length];
-		for (int k = 0; k < segmentTex.length; k++)
+		for (int k = 0; k < segmentTex.length; k++) {
 			segmentIcons[k] = register.registerIcon(ICON_PREFIX + segmentTex[k]);
+		}
+		torchTexOn = Block.torchRedstoneActive.getBlockTextureFromSide(0);
+		torchTexOff = Block.torchRedstoneIdle.getBlockTextureFromSide(0);
 	}
 
 	public static final String ICON_PREFIX = "projectred:";
@@ -867,157 +870,169 @@ public abstract class GateRendering {
 			segmentCol[3] = OFF;
 		}
 	}
-	
+
 	public static class BundledLatch extends GateRendering implements Stateless {
 		{
-			segmentCol = new int[] {0xFFFFFF, 0};
-			segmentTex = new String[] {"blatch-base", "blatch-enable"};
+			segmentCol = new int[] { 0xFFFFFF, 0 };
+			segmentTex = new String[] { "blatch-base", "blatch-enable" };
 		}
-		
+
 		@Override
 		public void set(int renderState) {
 			segmentCol[1] = (renderState & 1) != 0 ? ON : OFF;
 		}
-		
+
 		@Override
 		public void setItemRender() {
 			segmentCol[1] = OFF;
 		}
-		
+
 		@Override
 		public void customRender(RotatedTessellator rt, RenderBlocks render) {
 			ForgeDirection up = ForgeDirection.VALID_DIRECTIONS[rt.side ^ 1];
-			
+
 			// draw a bundled cable, offset away from the base of the gate
 			double offset = 0; // was 0.125
 			double dx = up.offsetX * offset, dy = up.offsetY * offset, dz = up.offsetZ * offset;
-			rt.x += dx; rt.y += dy; rt.z += dz;
+			rt.x += dx;
+			rt.y += dy;
+			rt.z += dz;
 			WireRenderer.renderWireSide(rt, render, EnumWire.BUNDLED, true, true, false, false, false, false, false, false, null, null, null, null, true, false);
-			rt.x -= dx; rt.y -= dy; rt.z -= dz;
-			
-			renderRaisedSquare(rt, render, segmentIcons[0], 4, 4, 12, 12, 3 + (int)(offset * 16 + 0.5));
+			rt.x -= dx;
+			rt.y -= dy;
+			rt.z -= dz;
+
+			renderRaisedSquare(rt, render, segmentIcons[0], 4, 4, 12, 12, 3 + (int) (offset * 16 + 0.5));
 		}
 	}
-	
+
 	public static class BundledMultiplexer extends GateRendering implements Stateless {
 		{
-			segmentCol = new int[] {0xFFFFFF, 0};
-			segmentTex = new String[] {"bmulti-left", "bmulti-select"};
+			segmentCol = new int[] { 0xFFFFFF, 0 };
+			segmentTex = new String[] { "bmulti-left", "bmulti-select" };
 		}
-		
+
 		private Icon iconLeft, iconRight;
-		
+
 		@Override
 		public void loadTextures(IconRegister register) {
 			super.loadTextures(register);
 			iconLeft = segmentIcons[0];
 			iconRight = register.registerIcon(ICON_PREFIX + "bmulti-right");
 		}
-		
+
 		@Override
 		public void set(int renderState) {
 			segmentCol[1] = (renderState & 1) != 0 ? ON : OFF;
 			segmentIcons[0] = (renderState & 1) != 0 ? iconRight : iconLeft;
 		}
-		
+
 		@Override
 		public void setItemRender() {
 			segmentCol[1] = OFF;
 			segmentIcons[0] = iconLeft;
 		}
-		
+
 		@Override
 		public void customRender(RotatedTessellator rt, RenderBlocks render) {
 			ForgeDirection up = ForgeDirection.VALID_DIRECTIONS[rt.side ^ 1];
-			
+
 			// draw a bundled cable, offset away from the base of the gate
 			double offset = 0; // was 0.125
 			double dx = up.offsetX * offset, dy = up.offsetY * offset, dz = up.offsetZ * offset;
-			rt.x += dx; rt.y += dy; rt.z += dz;
+			rt.x += dx;
+			rt.y += dy;
+			rt.z += dz;
 			WireRenderer.renderWireSide(rt, render, EnumWire.BUNDLED, true, false, true, true, false, false, false, false, null, null, null, null, true, false);
-			rt.x -= dx; rt.y -= dy; rt.z -= dz;
-			
-			renderRaisedSquare(rt, render, segmentIcons[0], 4, 4, 12, 12, 3 + (int)(offset * 16 + 0.5));
+			rt.x -= dx;
+			rt.y -= dy;
+			rt.z -= dz;
+
+			renderRaisedSquare(rt, render, segmentIcons[0], 4, 4, 12, 12, 3 + (int) (offset * 16 + 0.5));
 		}
 	}
-	
+
 	public static class BundledRelay extends GateRendering implements Stateless {
 		{
-			segmentCol = new int[] {0xFFFFFF, 0};
-			segmentTex = new String[] {"brelay-off", "brelay-enable"};
+			segmentCol = new int[] { 0xFFFFFF, 0 };
+			segmentTex = new String[] { "brelay-off", "brelay-enable" };
 		}
-		
+
 		private Icon icon_on, icon_off;
-		
+
 		@Override
 		public void loadTextures(IconRegister register) {
 			super.loadTextures(register);
 			icon_on = register.registerIcon(ICON_PREFIX + "brelay-on");
 			icon_off = segmentIcons[0];
 		}
-		
+
 		@Override
 		public void set(int renderState) {
 			segmentCol[1] = (renderState & 1) != 0 ? ON : OFF;
 			segmentIcons[0] = (renderState & 1) != 0 ? icon_on : icon_off;
 		}
-		
+
 		@Override
 		public void setItemRender() {
 			segmentCol[1] = OFF;
 			segmentIcons[0] = icon_off;
 		}
-		
+
 		@Override
 		public void customRender(RotatedTessellator rt, RenderBlocks render) {
 			ForgeDirection up = ForgeDirection.VALID_DIRECTIONS[rt.side ^ 1];
-			
+
 			// draw a bundled cable, offset away from the base of the gate
 			double offset = 0; // was 0.125
 			double dx = up.offsetX * offset, dy = up.offsetY * offset, dz = up.offsetZ * offset;
-			rt.x += dx; rt.y += dy; rt.z += dz;
+			rt.x += dx;
+			rt.y += dy;
+			rt.z += dz;
 			WireRenderer.renderWireSide(rt, render, EnumWire.BUNDLED, true, true, false, false, false, false, false, false, null, null, null, null, true, false);
-			rt.x -= dx; rt.y -= dy; rt.z -= dz;
-			
-			renderRaisedSquare(rt, render, segmentIcons[0], 4, 4, 12, 12, 3 + (int)(offset * 16 + 0.5));
+			rt.x -= dx;
+			rt.y -= dy;
+			rt.z -= dz;
+
+			renderRaisedSquare(rt, render, segmentIcons[0], 4, 4, 12, 12, 3 + (int) (offset * 16 + 0.5));
 		}
 	}
 
 	protected void renderRaisedSquare(RotatedTessellator rt, RenderBlocks render, Icon tex, int left, int top, int right, int bottom, int thickness) {
-		double minX = left/16., maxX = right/16., minZ = top/16., maxZ = bottom/16.;
-		double minY = 1.0/8.0, maxY = minY + thickness/16.0;
-		
+		double minX = left / 16., maxX = right / 16., minZ = top / 16., maxZ = bottom / 16.;
+		double minY = 1.0 / 8.0, maxY = minY + thickness / 16.0;
+
 		double minU = tex.getInterpolatedU(left), maxU = tex.getInterpolatedU(right);
 		double minV = tex.getInterpolatedV(top), maxV = tex.getInterpolatedV(bottom);
-		
+
 		rt.addVertexWithUV(minX, maxY, maxZ, minU, maxV);
 		rt.addVertexWithUV(maxX, maxY, maxZ, maxU, maxV);
 		rt.addVertexWithUV(maxX, maxY, minZ, maxU, minV);
 		rt.addVertexWithUV(minX, maxY, minZ, minU, minV);
-		
+
 		// half an actual texel
 		double uOffset = 0.5 / tex.getSheetWidth();
 		double vOffset = 0.5 / tex.getSheetHeight();
-		
+
 		rt.addVertexWithUV(maxX, maxY, minZ, maxU, minV + vOffset);
 		rt.addVertexWithUV(maxX, minY, minZ, maxU, minV + vOffset);
 		rt.addVertexWithUV(minX, minY, minZ, minU, minV + vOffset);
 		rt.addVertexWithUV(minX, maxY, minZ, minU, minV + vOffset);
-		
+
 		rt.addVertexWithUV(minX, maxY, maxZ, minU, maxV - vOffset);
 		rt.addVertexWithUV(minX, minY, maxZ, minU, maxV - vOffset);
 		rt.addVertexWithUV(maxX, minY, maxZ, maxU, maxV - vOffset);
 		rt.addVertexWithUV(maxX, maxY, maxZ, maxU, maxV - vOffset);
-		
+
 		rt.addVertexWithUV(minX, maxY, minZ, minU + uOffset, minV);
 		rt.addVertexWithUV(minX, minY, minZ, minU + uOffset, minV);
 		rt.addVertexWithUV(minX, minY, maxZ, minU + uOffset, maxV);
 		rt.addVertexWithUV(minX, maxY, maxZ, minU + uOffset, maxV);
-		
+
 		rt.addVertexWithUV(maxX, maxY, maxZ, maxU - uOffset, maxV);
 		rt.addVertexWithUV(maxX, minY, maxZ, maxU - uOffset, maxV);
 		rt.addVertexWithUV(maxX, minY, minZ, maxU - uOffset, minV);
 		rt.addVertexWithUV(maxX, maxY, minZ, maxU - uOffset, minV);
-		
+
 	}
 }
