@@ -1,11 +1,12 @@
 TODO list:
 
 BEING WORKED ON-------------
-- Minecraft forum entry
 - Simple ANT Build script for GitHub
+- Minecraft forum entry
 - NEI Integration
 
 HIGH------------------------
+- Fix for Jacketed red alloy wire not emitting signal.
 - more efficient packet data for Alloy Smelter. 
 --- Don't send full NBT except for first time aka init variable. 
 --- Don't update watcher list, update everyone nearby. 
@@ -40,4 +41,5 @@ NOT EVEN CONSIDERING--------------
 - Volcanoes
 - Tubing
 - Frames
-- 
+- Proprietary form of electricity. Aka Bluticity. 
+

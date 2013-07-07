@@ -13,7 +13,8 @@ public class Configurator {
 	/** Constants **/
 	public static final String modId = "ProjectRed";
 	public static final String modNetworkChannel = "ProjRed";
-	public static final String version = "0.2 Beta";
+	public static final String version = "@VERSION@";
+	public static final String buildnumber = "@BUILD@";
 	public static final String modName = "Project: Red";
 
 

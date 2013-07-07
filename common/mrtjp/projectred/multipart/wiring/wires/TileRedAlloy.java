@@ -456,11 +456,11 @@ public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedston
 			// if(!isWirePresent(dir) && !connectsInDirection(dir))
 			// return false;
 
-			if ((getSideMask() & ~(1 << (dir ^ 1))) == 0) // There must be a
-															// wire on any side
-															// except the
-															// opposite side
+			// There must be a wire on any side except the opposite side, or a
+			// freestanding wire
+			if ((getSideMask() & ~(1 << (dir ^ 1))) == 0 && !hasJacketedWire()) {
 				return false;
+			}
 
 			if (!wiresProvidePower.getBoolean(Block.redstoneWire))
 				return false;

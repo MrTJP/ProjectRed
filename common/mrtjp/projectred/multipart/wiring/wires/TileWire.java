@@ -247,29 +247,35 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 
 	@Override
 	public Packet132TileEntityData getDescriptionPacket() {
-		if (wireType == null)
-			return null;
-
-		// System.out.println(xCoord+" "+yCoord+" "+zCoord+" sdp");
-
-		if (connectMaskCache == -1 || connectCornerCache == -1)
-			computeConnections();
-
+		if (wireType == null) {
+			return new Packet132TileEntityData(xCoord, yCoord, zCoord, 0, new NBTTagCompound());
+		}
 		NBTTagCompound tag = new NBTTagCompound();
 
-		tag.setByte("t", (byte) wireType.ordinal());
-		tag.setByte("m", wireMask);
-		tag.setByteArray("c", getCoverSystem().writeDescriptionBytes());
-		tag.setInteger("C", connectMaskCache);
-		tag.setInteger("C2", connectCornerCache);
-		if (haveJacketed)
-			tag.setByte("j", jacketConnectMaskCache);
+		if (wireType == null) {
+			tag.setBoolean("invalid", true);
 
+		} else {
+			if (connectMaskCache == -1 || connectCornerCache == -1) {
+				computeConnections();
+			}
+			tag.setByte("t", (byte) wireType.ordinal());
+			tag.setByte("m", wireMask);
+			tag.setByteArray("c", getCoverSystem().writeDescriptionBytes());
+			tag.setInteger("C", connectMaskCache);
+			tag.setInteger("C2", connectCornerCache);
+			if (haveJacketed) {
+				tag.setByte("j", jacketConnectMaskCache);
+			}
+		}
 		return new Packet132TileEntityData(xCoord, yCoord, zCoord, 0, tag);
 	}
 
 	@Override
 	public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
+		if (pkt.customParam1.getBoolean("invalid"))
+			return;
+
 		wireType = EnumWire.VALUES[pkt.customParam1.getByte("t")];
 		wireMask = pkt.customParam1.getByte("m");
 
