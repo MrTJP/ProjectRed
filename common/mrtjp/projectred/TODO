@@ -1,6 +1,7 @@
 TODO list:
 
 BEING WORKED ON-------------
+- Reduce number of times an alloy smelter checks all the recipes.  Its very excessive.
 - Minecraft forum entry
 - NEI Integration
 
@@ -8,7 +9,6 @@ HIGH------------------------
 - more efficient packet data for Alloy Smelter. 
 --- Don't send full NBT except for first time aka init variable. 
 --- Don't update watcher list, update everyone nearby. 
-
 --- Split up update packets into updateHeat() and updateProgress()
 
 MEDIUM----------------------

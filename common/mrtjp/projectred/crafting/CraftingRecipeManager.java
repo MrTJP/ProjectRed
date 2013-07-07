@@ -1,6 +1,7 @@
 package mrtjp.projectred.crafting;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import mrtjp.projectred.ProjectRed;
@@ -28,8 +29,12 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CraftingRecipeManager {
 
-	public static List<AlloySmelterRecipe> alloyRecipes = new ArrayList<AlloySmelterRecipe>();
+	private static final ArrayList<AlloySmelterRecipe> alloyRecipes = new ArrayList<AlloySmelterRecipe>();
 
+	public static List<AlloySmelterRecipe> getAlloyRecipes() {
+		return Collections.unmodifiableList(alloyRecipes);
+	}
+	
 	public static void initRecipes() {
 		initGateRecipes();
 		initMicroblockRecipes();

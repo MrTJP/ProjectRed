@@ -8,6 +8,7 @@ import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.AlloySmelterRecipe;
 import mrtjp.projectred.crafting.CraftingRecipeManager;
 import mrtjp.projectred.interfaces.IGuiOpenControler;
+import mrtjp.projectred.interfaces.ISimpleInventoryListener;
 import mrtjp.projectred.network.GuiIDs;
 import mrtjp.projectred.network.PacketHandler;
 import mrtjp.projectred.network.packets.AlloySmelterInitPacket;
@@ -49,12 +50,11 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	// Between 0 and 6400
 	public int heat = 0;
 
-	// The recipe that is internally contained.
-	public AlloySmelterRecipe internalRecipe = null;
-
 	// If this is true, the next time the tile ticks, all near by will be
 	// notified.
 	public boolean queueWatcherUpdate = false;
+
+	public boolean queueWorkUpdate = false;
 
 	public TileAlloySmelter() {
 	}
@@ -62,23 +62,6 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	@Override
 	public void onBlockBreak() {
 		_inv.dropContents(worldObj, xCoord, yCoord, zCoord);
-		if (internalRecipe != null) {
-			for (ItemStack s : internalRecipe._matrix) {
-				double var5 = 0.7D;
-				double var7 = (double) worldObj.rand.nextFloat() * var5 + (1.0D - var5) * 0.5D;
-				double var9 = (double) worldObj.rand.nextFloat() * var5 + (1.0D - var5) * 0.5D;
-				double var11 = (double) worldObj.rand.nextFloat() * var5 + (1.0D - var5) * 0.5D;
-				EntityItem entItem = new EntityItem(worldObj, (double) xCoord + var7, (double) yCoord + var9, (double) zCoord + var11, s);
-				entItem.delayBeforeCanPickup = 10;
-				if (heat > 0) {
-					entItem.setFire(heat / 20);
-					entItem.delayBeforeCanPickup = 30;
-					entItem.hurtResistantTime = 20;
-				}
-				worldObj.spawnEntityInWorld(entItem);
-
-			}
-		}
 	}
 
 	public Container getContainer(EntityPlayer player) {
@@ -121,22 +104,20 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
-		_inv.writeToNBT(nbt, "inv");
+		_inv.writeToNBT(nbt);
 		nbt.setInteger("heat", heat);
 		nbt.setInteger("progress", progress);
 		nbt.setBoolean("work", hasWork);
-		nbt.setInteger("recipeIndex", CraftingRecipeManager.alloyRecipes.indexOf(internalRecipe));
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
-		_inv.readFromNBT(nbt, "inv");
+		_inv.readFromNBT(nbt);
 		heat = nbt.getInteger("heat");
 		progress = nbt.getInteger("progress");
 		hasWork = nbt.getBoolean("work");
 		int index = nbt.getInteger("recipeIndex");
-		internalRecipe = index > -1 ? CraftingRecipeManager.alloyRecipes.get(index) : null;
 		updateNextTick = true;
 	}
 
@@ -148,7 +129,6 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 		packet.posZ = zCoord;
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		nbt.setName("alloysmelter");
 		packet.tiledata = nbt;
 		return packet.getPacket();
 	}
@@ -241,21 +221,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	@Override
 	public void updateEntity() {
 		hasWork = hasWork();
-		if (hasWork && internalRecipe == null) {
-			AlloySmelterRecipe r = getSuggestedRecipe();
-			if (r != null) {
-				internalRecipe = r;
-				progress = 0;
-				startSmelting(r);
-				queueWatcherUpdate = true;
-			} else {
-				hasWork = false;
-			}
-		} else if (!hasWork) {
-			internalRecipe = null;
-			progress = 0;
-			queueWatcherUpdate = true;
-		}
+
 		if (hasWork && heat <= 0) {
 			eatFuel();
 			if (heat > 0) {
@@ -270,29 +236,38 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 			}
 			if (heat > 0) {
 				heat--;
-			} if (heat <= 0) {
+			}
+			if (heat <= 0) {
 				updateNextTick = true;
 			}
 			queueWatcherUpdate = true;
 		}
-		if (hasWork && internalRecipe != null && progress >= internalRecipe._burnTime) {
-			ItemStack result = internalRecipe._result.copy();
-			internalRecipe._handler.onItemCrafted(result);
-			if (_inv.getStackInSlot(10) == null) {
-				_inv.setInventorySlotContents(10, result);
-			} else {
-				_inv.getStackInSlot(10).stackSize += result.stackSize;
+		if (hasWork) {
+			AlloySmelterRecipe r = getSuggestedRecipe();
+			if (r != null && progress >= r.getBurnTime()) {
+				ItemStack result = r.getResult();
+				r._handler.onItemCrafted(result);
+				if (_inv.getStackInSlot(10) == null) {
+					_inv.setInventorySlotContents(10, result);
+				} else {
+					_inv.getStackInSlot(10).stackSize += result.stackSize;
+				}
+				eatAllResourcesForRecipe(r);
+				progress = 0;
+				hasWork = false;
+				queueWatcherUpdate = true;
+				updateNextTick = true;
 			}
-			internalRecipe = null;
-			progress = 0;
-			hasWork = false;
-			queueWatcherUpdate = true;
-			updateNextTick = true;
 		}
 		if (queueWatcherUpdate) {
+			
+			queueWatcherUpdate = false;
 			updateWatchers();
 		}
 		if (updateNextTick) {
+			// All nearby players need to be updated if the status of work
+			// changes, or if heat runs out or starts up, in order to change
+			// texture.
 			updateNextTick = false;
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
@@ -342,15 +317,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	}
 
 	public boolean hasWork() {
-		if (hasWork) {
-			return true;
-		}
-		AlloySmelterRecipe r = getSuggestedRecipe();
-		boolean shouldWork = (r != null && (_inv.getStackInSlot(10) == null || (BasicUtils.areStacksTheSame(_inv.getStackInSlot(10), r._result) && _inv.getStackInSlot(10).stackSize + r._result.stackSize < _inv.getInventoryStackLimit())));
-		if (shouldWork) {
-			updateNextTick = true;
-		}
-		return shouldWork;
+		return getSuggestedRecipe() != null;
 	}
 
 	private void eatFuel() {
@@ -383,53 +350,32 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 		}
 	}
 
-	private void startSmelting(AlloySmelterRecipe r) {
-		for (ItemStack s : r._matrix) {
+	private void eatAllResourcesForRecipe(AlloySmelterRecipe r) {
+		for (ItemStack s : r.getMatrix()) {
 			eatResource(s);
 		}
 	}
 
-	private AlloySmelterRecipe getSuggestedRecipe() {
-		AlloySmelterRecipe suggested = null;
-		for (AlloySmelterRecipe r : CraftingRecipeManager.alloyRecipes) {
-			boolean allAvailable = false;
-			for (ItemStack stack : r._matrix) {
-				if (stack == null) {
-					continue;
-				}
-				if (areResourcesAvailable(stack)) {
-					allAvailable = true;
-				} else {
-					allAvailable = false;
-					break;
-				}
-			}
-			if (allAvailable) {
+	public AlloySmelterRecipe getSuggestedRecipe() {
+		for (AlloySmelterRecipe r : CraftingRecipeManager.getAlloyRecipes()) {
+			if (r.calculateMatch(getCraftingMatrix())) {
 				return r;
 			}
 		}
 		return null;
 	}
 
-	private boolean areResourcesAvailable(ItemStack stack) {
-		if (stack == null) {
-			return false;
-		}
-		int missing = stack.stackSize;
+	private ItemStack[] getCraftingMatrix() {
+		ItemStack[] matrix = new ItemStack[9];
 		for (int i = 0; i < 9; i++) {
-			ItemStack stackinslot = _inv.getStackInSlot(i);
-			if (stackinslot == null) {
-				continue;
-			}
-			if (BasicUtils.areStacksTheSame(stackinslot, stack)) {
-				missing -= stackinslot.stackSize;
+			ItemStack inslot = _inv.getStackInSlot(i);
+			if (inslot != null) {
+				matrix[i] = inslot.copy();
+			} else {
+				matrix[i] = null;
 			}
 		}
-		if (missing > 0) {
-			return false;
-		} else {
-			return true;
-		}
+		return matrix;
 	}
 
 	private int getItemBurnTime(ItemStack stack) {
