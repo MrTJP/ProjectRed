@@ -35,7 +35,6 @@ public class Configurator {
 
 	/** Settings **/
 	public static Property networkUpdateRange;
-	public static Property enableNEIMicroblock;
 	public static Property debugMode;
 
 	
@@ -64,9 +63,6 @@ public class Configurator {
 		
 		networkUpdateRange = localConfig.get("general", "Network Update Range", 50.0D);
 		networkUpdateRange.comment = "This is the distance in which players will be notified.  Lower if you experience lag.";
-		
-		enableNEIMicroblock = localConfig.get("general", "Enable NEI Microblocks", false);
-		enableNEIMicroblock.comment = "This allows for showing microblocks in NEI.";
 		
 		debugMode = localConfig.get("general", "Enable Debugging", false);
 		debugMode.comment = "Enable advanced debugging, should ALWAYS be false.";

@@ -64,7 +64,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
  * @author MrTJP
  * 
  */
-@Mod(modid = Configurator.modId, name = Configurator.modName, version = Configurator.version + "." + Configurator.buildnumber, dependencies = "")
+@Mod(modid = Configurator.modId, name = Configurator.modName, version = Configurator.version + "." + Configurator.buildnumber, dependencies="")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false, channels = { Configurator.modNetworkChannel }, packetHandler = PacketHandler.class)
 public class ProjectRed {
 
@@ -184,12 +184,7 @@ public class ProjectRed {
 				LanguageRegistry.addName(b.getItemStack(), b.fullname);
 			}
 		}
-		
-		
-		
-		
-		
-		
+			
 		
 		
 

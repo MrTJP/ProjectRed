@@ -157,9 +157,10 @@ public class ItemMicroblock extends ItemBlock {
 	}
 
 	public boolean placeInBlock(World world, int x, int y, int z, EnumPosition pos, ItemStack itemstack, boolean doBlockUpdate, int sideClicked) {
-		if (DEBUG)
+		if (DEBUG) {
 			System.out.println((world.isRemote ? "client" : "server") + " placeInBlock " + x + "," + y + "," + z + " " + pos);
 			System.out.println("ID of microblock is " + getPartTypeID(itemstack));
+		}
 		if (world.isRemote) {
 			MicroblockPlacementPacket packet = PacketHandler.getPacket(MicroblockPlacementPacket.class);
 			packet.position = pos.ordinal();

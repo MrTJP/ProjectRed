@@ -4,10 +4,10 @@
 
 
 	<!-- Versioning -->
-	<property file="buildspecs.properties" prefix="buildspecs" />
+	<property file="${src.dir}/buildspecs.properties" prefix="buildspecs" />
 	<property name="mc.version" value="1.5.2" />
 	<property name="mod.version" value="3.0.0" />
-	<property name="mod.build" value="buildspecs.build_number" />
+	<property name="mod.build" value="${src.dir}/buildspecs.build_number" />
 	<property name="mod.version.full" value="${mod.version}.${mod.build}" />
 	<property name="version.mcp" value="751" />
 	<property name="version.forge" value="7.8.1.738" />
@@ -43,7 +43,7 @@
 	</target>
 
 	<target name="increment_build_number">
-		<propertyfile file="buildspecs.properties">
+		<propertyfile file="${src.dir}/buildspecs">
 			<entry key="build_number" type="int" operation="+" default="1" />
 		</propertyfile>
 	</target>
@@ -198,6 +198,7 @@
 
 	<target name="quickbuild">
 		<antcall target="cleanoldworkspace" />
+		<antcall target="increment_build_number" />
 		<antcall target="copymodsrc" />
 		<antcall target="injectdata" />
 		<antcall target="recompile" />

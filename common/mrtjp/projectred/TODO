@@ -1,29 +1,30 @@
 TODO list:
 
 BEING WORKED ON-------------
-- Reduce number of times an alloy smelter checks all the recipes.  Its very excessive.
-- Minecraft forum entry
+- Minecraft forum entry !!!! UPNEXT
+- Rename MicroblockSystem into MicroblockLibrary, and give easy access to microblocks from specifying block.
 - NEI Integration
+--- Microblock recipes (requires a microblock library)
+--- Backpack recoloring stuffs
+
 
 HIGH------------------------
-- more efficient packet data for Alloy Smelter. 
---- Don't send full NBT except for first time aka init variable. 
---- Don't update watcher list, update everyone nearby. 
---- Split up update packets into updateHeat() and updateProgress()
+- Better way to detect rotation in TileMachineBase. 
 
 MEDIUM----------------------
-- Better way to detect rotation in TileMachineBase. 
+- Barrels
 - Microblock break particles
 
 
 LOW--------------------------
+- Make insulated wire update lamps.
 - Sickle. 
 - Deployer. 
-- Nameable bags.
-- Rename MicroblockSystem into MicroblockLibrary, and give easy access to microblocks from specifying block.
+- Simple service locator
 
 VERY LOW---------------------
 - Different shaped lamps.
+- Nameable bags.
 - Plants that will get you every dye color. 
 - Textures for wiring. 
 
