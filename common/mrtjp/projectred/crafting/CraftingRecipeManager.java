@@ -28,12 +28,6 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CraftingRecipeManager {
-
-	private static final ArrayList<AlloySmelterRecipe> alloyRecipes = new ArrayList<AlloySmelterRecipe>();
-
-	public static List<AlloySmelterRecipe> getAlloyRecipes() {
-		return Collections.unmodifiableList(alloyRecipes);
-	}
 	
 	public static void initRecipes() {
 		initGateRecipes();
@@ -418,7 +412,7 @@ public class CraftingRecipeManager {
 		GameRegistry.addRecipe(EnumPart.CATHODE.getItemStack(), 
 				"t",
 				"p",
-				't', Block.redstoneLampIdle,
+				't', Block.torchRedstoneActive,
 				'p', EnumPart.PLATE.getItemStack()
 		);
 		
@@ -460,7 +454,7 @@ public class CraftingRecipeManager {
 
 		
 		/** Silicon Boule **/
-		alloyRecipes.add(new AlloySmelterRecipe(new ItemStack[] {
+		AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
 				new ItemStack(Block.sand, 8),
 				new ItemStack(Item.coal, 8),
 		}, EnumPart.SILICONBOULE.getItemStack(), 500));
@@ -474,13 +468,13 @@ public class CraftingRecipeManager {
 		);
 		
 		/** Infused Silicon **/
-		alloyRecipes.add(new AlloySmelterRecipe(new ItemStack[] {
+		AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
 				EnumPart.SILICON.getItemStack(),
 				new ItemStack(Item.redstone, 4),
 		}, EnumPart.INFUSEDSILICON.getItemStack(), 150));
 		
 		/** Energized Silicon **/
-		alloyRecipes.add(new AlloySmelterRecipe(new ItemStack[] {
+		AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
 				EnumPart.SILICON.getItemStack(),
 				new ItemStack(Item.lightStoneDust, 4),
 		}, EnumPart.ENERGIZEDSILICON.getItemStack(), 160));
@@ -518,7 +512,7 @@ public class CraftingRecipeManager {
 		);
 		
 		/** Red Alloy Ingot **/
-		alloyRecipes.add(new AlloySmelterRecipe(new ItemStack[] {
+		AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
 				new ItemStack(Item.ingotIron),
 				new ItemStack(Item.redstone, 4),
 		}, EnumPart.REDINGOT.getItemStack(), 125));
@@ -629,14 +623,14 @@ public class CraftingRecipeManager {
 	}
 	private static void initOtherAlloySmelterRecipes() {
 		/** Red Alloy Ingot reset recipes **/
-		alloyRecipes.add(new AlloySmelterRecipe(new ItemStack[] {
+		AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
 				EnumWire.RED_ALLOY.getItemStack(4),
 		}, EnumPart.REDINGOT.getItemStack(), 50));
-		alloyRecipes.add(new AlloySmelterRecipe(new ItemStack[] {
+		AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
 				EnumWire.BUNDLED.getItemStack(8),
 		}, EnumPart.REDINGOT.getItemStack(5), 90));
 		for (EnumWire w : EnumWire.INSULATED_WIRE) {
-			alloyRecipes.add(new AlloySmelterRecipe(new ItemStack[] {
+			AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
 					w.getItemStack(4)
 			}, EnumPart.REDINGOT.getItemStack(), 80));
 		}

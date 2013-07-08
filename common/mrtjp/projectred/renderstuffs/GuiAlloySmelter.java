@@ -1,6 +1,7 @@
 package mrtjp.projectred.renderstuffs;
 
 import mrtjp.projectred.crafting.AlloySmelterRecipe;
+import mrtjp.projectred.crafting.CraftingRecipeManager;
 import mrtjp.projectred.tiles.TileAlloySmelter;
 import mrtjp.projectred.utils.BasicGuiUtils;
 import mrtjp.projectred.utils.BasicGuiUtils.GuiItemRenderOptions;

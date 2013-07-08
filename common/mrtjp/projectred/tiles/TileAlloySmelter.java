@@ -19,7 +19,6 @@ import mrtjp.projectred.utils.gui.GhostContainer;
 import mrtjp.projectred.utils.gui.RestrictedSlot.ISlotCheck;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
@@ -50,12 +49,12 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	// Between 0 and 6400
 	public int heat = 0;
 
-	// If this is true, the next time the tile ticks, all near by will be
-	// notified.
+	// Next tick, all near by will be notified.
 	public boolean queueWatcherUpdate = false;
-
+	// Next tick, work will be rechecked.
 	public boolean queueWorkUpdate = false;
-
+	// Cahce, used to avoid checking all recipes every tick.
+	public int burnTimeForRecipe = 0;
 	public TileAlloySmelter() {
 	}
 
@@ -220,8 +219,10 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 
 	@Override
 	public void updateEntity() {
-		hasWork = hasWork();
-
+		if (queueWorkUpdate) {
+			queueWorkUpdate = false;
+			hasWork = hasWork();
+		}
 		if (hasWork && heat <= 0) {
 			eatFuel();
 			if (heat > 0) {
@@ -243,33 +244,39 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 			queueWatcherUpdate = true;
 		}
 		if (hasWork) {
-			AlloySmelterRecipe r = getSuggestedRecipe();
-			if (r != null && progress >= r.getBurnTime()) {
-				ItemStack result = r.getResult();
-				r._handler.onItemCrafted(result);
-				if (_inv.getStackInSlot(10) == null) {
-					_inv.setInventorySlotContents(10, result);
-				} else {
-					_inv.getStackInSlot(10).stackSize += result.stackSize;
+			if (progress >= burnTimeForRecipe) {
+				AlloySmelterRecipe r = getSuggestedRecipe();
+				if (r != null) {
+					eatAllResourcesForRecipe(r);
+					ItemStack result = r.getResult();
+					r._handler.onItemCrafted(result);
+					if (_inv.getStackInSlot(10) == null) {
+						_inv.setInventorySlotContents(10, result);
+					} else {
+						ItemStack inslot = _inv.getStackInSlot(10);
+						inslot.stackSize += result.stackSize;
+						_inv.setInventorySlotContents(10, inslot);
+					}
+					progress = 0;
+					burnTimeForRecipe = 0;
+					queueWatcherUpdate = true;
+					queueWorkUpdate = true;
+					updateNextTick = true;
 				}
-				eatAllResourcesForRecipe(r);
-				progress = 0;
-				hasWork = false;
-				queueWatcherUpdate = true;
-				updateNextTick = true;
 			}
 		}
 		if (queueWatcherUpdate) {
-			
+
 			queueWatcherUpdate = false;
 			updateWatchers();
 		}
 		if (updateNextTick) {
 			// All nearby players need to be updated if the status of work
-			// changes, or if heat runs out or starts up, in order to change
+			// changes, or if heat runs out / starts up, in order to change
 			// texture.
 			updateNextTick = false;
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			worldObj.updateAllLightTypes(xCoord, yCoord, zCoord);
 		}
 	}
 
@@ -317,7 +324,16 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	}
 
 	public boolean hasWork() {
-		return getSuggestedRecipe() != null;
+		AlloySmelterRecipe r =  getSuggestedRecipe();
+		boolean shouldWork = (r != null && (_inv.getStackInSlot(10) == null || (BasicUtils.areStacksTheSame(_inv.getStackInSlot(10), r.getResult()) && _inv.getStackInSlot(10).stackSize + r.getResult().stackSize <= _inv.getInventoryStackLimit())));		
+		if (shouldWork) {
+			burnTimeForRecipe = r.getBurnTime();
+			updateNextTick = true;
+			return true;
+		}
+		progress = 0;
+		burnTimeForRecipe = 0;
+		return false;
 	}
 
 	private void eatFuel() {
@@ -357,7 +373,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	}
 
 	public AlloySmelterRecipe getSuggestedRecipe() {
-		for (AlloySmelterRecipe r : CraftingRecipeManager.getAlloyRecipes()) {
+		for (AlloySmelterRecipe r : AlloySmelterRecipe.getAlloyRecipes()) {
 			if (r.calculateMatch(getCraftingMatrix())) {
 				return r;
 			}
@@ -411,5 +427,10 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 				return 2400;
 			return GameRegistry.getFuelValue(stack);
 		}
+	}
+
+	@Override
+	public void onInventoryChanged() {
+		queueWorkUpdate = true;
 	}
 }

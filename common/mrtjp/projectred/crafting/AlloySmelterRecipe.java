@@ -18,6 +18,14 @@ public class AlloySmelterRecipe {
 
 	private static final ArrayList<AlloySmelterRecipe> alloyRecipes = new ArrayList<AlloySmelterRecipe>();
 
+	public static List<AlloySmelterRecipe> getAlloyRecipes() {
+		return Collections.unmodifiableList(alloyRecipes);
+	}
+	
+	public static void add(AlloySmelterRecipe r) {
+		alloyRecipes.add(r);
+	}
+
 	public abstract class ICraftingHandler {
 		/**
 		 * This is called with the result after an item has been crafted.
