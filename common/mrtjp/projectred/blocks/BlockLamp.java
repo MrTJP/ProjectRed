@@ -170,6 +170,11 @@ public class BlockLamp extends Block {
 	public boolean hasTileEntity(int meta) {
 		return true;
 	}
+	
+	@Override
+	public boolean canRenderInPass(int pass) {
+		return pass == 0 || pass == 1;
+	}
 
 	public enum EnumLamp {
 		WHITE("White Lamp", "lampwhite"),

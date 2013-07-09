@@ -27,26 +27,26 @@ public class LampModel {
 		model.renderPart(part);
 	}
 
-	public void renderLampShade(double x, double y, double z, int tint, float randomScale) {
+	public void renderLampShade(double x, double y, double z, int tint) {
 		// Render lamp shade
 		GL11.glPushMatrix();
+		// Edit GL state
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glDepthMask(false);
 
 		GL11.glColor4f(Color.get(tint).r, Color.get(tint).g, Color.get(tint).b, 0.7f);
 		GL11.glTranslated(x, y, z + 1);
-		float scaleFactor = 1f - randomScale * 0.0099f;
-		GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
 		model.renderPart("shade");
 		GL11.glPopMatrix();
 
-		// Undo GL changes
+		// Undo GL state changes
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glEnable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-
+		GL11.glDepthMask(true);
 	}
 }

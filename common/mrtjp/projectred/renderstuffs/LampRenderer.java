@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
@@ -24,7 +25,7 @@ public class LampRenderer extends TileEntitySpecialRenderer {
 		if (tileentity instanceof TileLamp) {
 			TileLamp lamp = (TileLamp) tileentity;
 			if (lamp.getLightValue() == 15) {
-				model.renderLampShade(x, y, z, lamp.getColor(), lamp.random);
+				model.renderLampShade(x, y, z, lamp.getColor());
 			}
 		}
 	}
