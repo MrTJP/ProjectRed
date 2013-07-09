@@ -1,35 +1,36 @@
 TODO list:
 
 BEING WORKED ON-------------
-- Minecraft forum entry !!!! UPNEXT
-- Rename MicroblockSystem into MicroblockLibrary, and give easy access to microblocks from specifying block.
 - NEI Integration
+--- Rename MicroblockSystem into MicroblockLibrary, and give easy access to microblocks from specifying block.
 --- Microblock recipes (requires a microblock library)
+--- Clean up microblock registration.
 --- Backpack recoloring stuffs
 
 
 HIGH------------------------
-- Better way to detect rotation in TileMachineBase. 
+- Different shaped lamps.
 
 MEDIUM----------------------
 - Barrels
 - Microblock break particles
+- Sickle. 
 
 
 LOW--------------------------
+- Better way to detect rotation in TileMachineBase. 
 - Make insulated wire update lamps.
-- Sickle. 
+- Buildcraft powered alloy smelter
 - Deployer. 
 - Simple service locator
 
 VERY LOW---------------------
-- Different shaped lamps.
+- Advanced Crafting Table of some sort. 
 - Nameable bags.
-- Plants that will get you every dye color. 
 - Textures for wiring. 
 
 UNDECIDED--------------------
-- Advanced Crafting Table of some sort. 
+- Plants that will get you every dye color. 
 - World Gen. 
 --- Fancy blocks (Marble, Basalt)
 --- Gems
