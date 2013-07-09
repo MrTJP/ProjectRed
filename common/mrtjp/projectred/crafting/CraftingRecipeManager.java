@@ -60,12 +60,12 @@ public class CraftingRecipeManager {
 		/** Insulated Wires **/
 		for (int i = 0; i < EnumWire.INSULATED_WIRE.length; i++) {
 			EnumWire w = EnumWire.INSULATED_WIRE[i];
-			GameRegistry.addRecipe(w.getItemStack(3), 
+			GameRegistry.addRecipe(w.getItemStack(12), 
 					"WrW",
 					"WrW",
 					"WrW",
 					'W', new ItemStack(Block.cloth, 1, Color.get(i).woolId()),
-					'r', EnumWire.RED_ALLOY.getItemStack()
+					'r', EnumPart.REDINGOT.getItemStack()
 			);
 		}
 		

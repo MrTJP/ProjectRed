@@ -26,12 +26,28 @@ public class MicroblockSystem implements IMicroblockSystem {
 
 	public static MicroblockSystem instance;
 
+	// List of all part ids, used in for loop to add to NEI mostly.
 	public static ArrayList<Integer> neiPartIDs = new ArrayList<Integer>();
+
+	/**
+	 * Map of BlockID to list of subblocks.
+	 * SubBlock list index:
+	 * 0 = 
+	 * 1 = 
+	 * 2 = 
+	 * 3 = 
+	 * 4 = 
+	 * 5 = 
+	 * 6 = 
+	 * 7 = 
+	 * 8 = 
+	 * 9 = 
+	 */
+	public static HashMap<Integer, ArrayList<Integer>>blockIDParts = new HashMap<Integer, ArrayList<Integer>>();
 	public static int neiMaxDamage = 0;
-	
 	public void initializeParts() {
 		registerManualParts(1, Block.stone);
-		// registerManualParts(2, Block.grass);
+		registerManualParts(2, Block.grass);
 		registerManualParts(3, Block.dirt);
 		registerManualParts(4, Block.cobblestone);
 		registerManualParts(5, Block.planks, 0);
@@ -120,26 +136,6 @@ public class MicroblockSystem implements IMicroblockSystem {
 		registerManualParts(88, Block.blockNetherQuartz, 2);
 		registerManualParts(89, Block.dropper);
 		registerManualParts(90, Block.stoneDoubleSlab, 0, Block.stoneSingleSlab, 0);
-		// registerManualParts(91, Block.stoneDoubleSlab, 1,
-		// Block.stoneSingleSlab, 1);
-		// registerManualParts(92, Block.stoneDoubleSlab, 3,
-		// Block.stoneSingleSlab, 3);
-		// registerManualParts(93, Block.stoneDoubleSlab, 4,
-		// Block.stoneSingleSlab, 4);
-		// registerManualParts(94, Block.stoneDoubleSlab, 5,
-		// Block.stoneSingleSlab, 5);
-		// registerManualParts(95, Block.stoneDoubleSlab, 6,
-		// Block.stoneSingleSlab, 6);
-		// registerManualParts(96, Block.stoneDoubleSlab, 7,
-		// Block.stoneSingleSlab, 7);
-		// registerManualParts(97, Block.woodDoubleSlab, 0,
-		// Block.woodSingleSlab, 0);
-		// registerManualParts(98, Block.woodDoubleSlab, 1,
-		// Block.woodSingleSlab, 1);
-		// registerManualParts(99, Block.woodDoubleSlab, 2,
-		// Block.woodSingleSlab, 2);
-		// registerManualParts(100, Block.woodDoubleSlab, 3,
-		// Block.woodSingleSlab, 3);
 	}
 
 	private void registerManualParts(int n, Block block, int blockMeta) {
@@ -198,8 +194,9 @@ public class MicroblockSystem implements IMicroblockSystem {
 
 		String name = getItemDisplayName(craftingBlock.blockID, craftingMeta);
 		if (name == null) {
-			if (ignoreNameCheck)
+			if (ignoreNameCheck) {
 				name = "Unknown";
+			}
 			else
 				return;
 		}
@@ -238,12 +235,16 @@ public class MicroblockSystem implements IMicroblockSystem {
 		RecipeVerticalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + 27), ItemMicroblock.getStackWithPartID(partIDBase + 25, 2));
 		RecipeVerticalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + 25), ItemMicroblock.getStackWithPartID(partIDBase + 24, 2));
 
+		
+		// Actually register the parts, and add them to the hashmap of id to list of parts.
+		ArrayList<Integer> subblocks = new ArrayList<Integer>();
+
 		for (int k = 0; k < blockparts.length; k++)
 			if (blockparts[k] != null) {
 				String unlocalizedName = "projectred.microblocks." + (partIDBase + k);
 				String localizedName = blockparts[k].prefix + name + blockparts[k].suffix;
 				LanguageRegistry.instance().addStringLocalization(unlocalizedName + ".name", localizedName);
-
+				
 				PartType<Part> type = new DefaultPartType(partIDBase + k, blockparts[k].clazz, blockparts[k].size, unlocalizedName, block, meta);
 				registerPartType(type);
 			}
@@ -252,8 +253,9 @@ public class MicroblockSystem implements IMicroblockSystem {
 	@Override
 	public void registerPartType(PartType<?> type) {
 		int id = type.getID();
-		if (parts.containsKey(id))
+		if (parts.containsKey(id)) {
 			throw new RuntimeException("part id: " + id + " already in use when adding " + id + " with type " + parts.get(id));
+		}
 		parts.put(id, type);
 		neiPartIDs.add(id);
 	}
@@ -265,10 +267,12 @@ public class MicroblockSystem implements IMicroblockSystem {
 
 	@Override
 	public void addCuttableBlock(Block block, int meta) {
-		if (block.blockID < 1 || block.blockID > 4095)
+		if (block.blockID < 1 || block.blockID > 4095) {
 			throw new IllegalArgumentException("BlockID must be between 1 and 4095 inclusive");
-		if (meta < 0 || meta > 1023)
+		}
+		if (meta < 0 || meta > 1023) {
 			throw new IllegalArgumentException("meta must be between 0 and 1023 inclusive");
+		}
 		registerParts(((block.blockID & 4095) << 20) | ((meta & 1023) << 10), block, meta, block, meta, true);
 	}
 
