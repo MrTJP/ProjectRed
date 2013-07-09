@@ -17,24 +17,13 @@ public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 	public boolean updateNextTick;
 	public boolean updateStateNextTick;
 	
-	// Used to render each shade a slightly different size.
-	public final float random;
-
 	public TileLamp(boolean isInverted) {
 		inverted = isInverted;
-		random = getScale();
 	}
 
 	public TileLamp() {
-		random = getScale();
 	}
-	
-	public float getScale() {
-		Random ran = new Random();
-		float t =  ran.nextFloat();
-		return t;
-	}
-		
+			
 	/**
 	 * Returns the LampType ordinal of the correct color. This will only equal
 	 * the actual meta if the lamp is NOT inverted. Use getTrueMeta() to get the
