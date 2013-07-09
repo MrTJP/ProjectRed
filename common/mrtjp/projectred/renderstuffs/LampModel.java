@@ -37,7 +37,7 @@ public class LampModel {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDepthMask(false);
 
-		GL11.glColor4f(Color.get(tint).r, Color.get(tint).g, Color.get(tint).b, 0.7f);
+		GL11.glColor4f(Color.get(tint).r, Color.get(tint).g, Color.get(tint).b, 0.6f);
 		GL11.glTranslated(x, y, z + 1);
 		model.renderPart("shade");
 		GL11.glPopMatrix();

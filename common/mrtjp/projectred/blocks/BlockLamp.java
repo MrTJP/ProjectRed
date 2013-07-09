@@ -71,7 +71,7 @@ public class BlockLamp extends Block {
 		for (int i = 0; i < 32; i++) {
 			list.add(new ItemStack(id, 1, i));
 		}
-	}	
+	}
 
 	@Override
 	public int getLightValue(IBlockAccess world, int x, int y, int z) {
@@ -170,7 +170,13 @@ public class BlockLamp extends Block {
 	public boolean hasTileEntity(int meta) {
 		return true;
 	}
-	
+
+	@SideOnly(Side.CLIENT)
+	@Override
+	public int getRenderBlockPass() {
+		return 0;
+	}
+
 	@Override
 	public boolean canRenderInPass(int pass) {
 		return pass == 0 || pass == 1;
@@ -193,7 +199,7 @@ public class BlockLamp extends Block {
 		GREEN("Green Lamp", "lampgreen"),
 		RED("Red Lamp", "lampred"),
 		BLACK("Black Lamp", "lampblack"),
-		
+
 		INVALID("ERROR INVALID LAMP", "INVALID");
 
 		public final String fullName;
@@ -213,14 +219,15 @@ public class BlockLamp extends Block {
 			}
 			return VALID_TYPES[i];
 		}
-		
+
 		public ItemStack getItemStack() {
 			return new ItemStack(ProjectRed.blockLamp.blockID, 1, meta);
 		}
-		
+
 		public ItemStack getInvertedItemStack() {
 			return new ItemStack(ProjectRed.blockLamp.blockID, 1, meta + 16);
 		}
+
 		public static void initOreDictDefinitions() {
 			for (EnumLamp l : EnumLamp.VALID_TYPES) {
 				OreDictionary.registerOre(oreDictDefinition, l.getItemStack());
