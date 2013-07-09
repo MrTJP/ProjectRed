@@ -1,0 +1,11 @@
+Change Log:
+
+
+v3.0.0.25
+- Accidentally included actual buildcraft source instead of just an api. Whoops. Fixed.
+
+v3.0.0.24
+- quick recipe fix.
+
+v3.0.0.23
+- Initial release.

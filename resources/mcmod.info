@@ -1,11 +1,11 @@
 {
-  "modinfoversion": 2,
+  "modinfoversion": 3,
   "modlist": [{
     "modid": “Projred”,
     "name": “Project: Red”,
     "description": “Project: Red aims to provide players with a suitable substitute for Red Power 2, as well as introduce new and original ideas.”,
-    "version": "%VERSION%",
-    "mcversion": "%MCVERSION%",
+    "version": “@VERSION@.@BUILD@“,
+    "mcversion": “1.5.2”,
     "url": "",
     "updateUrl": "",
     "authors": [ “MrTJP” ],
@@ -16,10 +16,6 @@
     ],
     "dependencies": [
         "Forge",
-        "BuildCraft|Core",
-        "BuildCraft|Transport",
-        "BuildCraft|Builders",
-        "BuildCraft|Silicon",
     ],
     "dependants": [],
     "useDependencyInformation": "true"
