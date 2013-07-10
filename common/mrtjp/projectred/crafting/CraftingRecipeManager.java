@@ -6,6 +6,7 @@ import java.util.List;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.blocks.BlockLamp.EnumLamp;
+import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
 import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
 import mrtjp.projectred.crafting.microblocks.RecipeCombineSeveral;
 import mrtjp.projectred.crafting.microblocks.RecipeCombineTwo;
@@ -567,6 +568,30 @@ public class CraftingRecipeManager {
 				'C', Block.blockClay,
 				'B', Block.brick
 		);
+		
+		/** Lanterns **/
+		for (EnumLantern l : EnumLantern.VALID_TYPES) {
+			GameRegistry.addRecipe(l.getItemStack(), 
+					"PNP",
+					"GIG",
+					"PRP",
+					'P', EnumPart.PLATE.getItemStack(),
+					'N', Item.goldNugget,
+					'G', Block.thinGlass,
+					'I', EnumPart.ILLUMAR_PARTS[l.meta].getItemStack(),
+					'R', Item.redstone	
+			);
+			GameRegistry.addRecipe(l.getInvertedItemStack(), 
+					"PNP",
+					"GIG",
+					"PRP",
+					'P', EnumPart.PLATE.getItemStack(),
+					'N', Item.goldNugget,
+					'G', Block.thinGlass,
+					'I', EnumPart.ILLUMAR_PARTS[l.meta].getItemStack(),
+					'R', Block.torchRedstoneActive
+			);
+		}
 	}	
 	private static void initToolRecipes() {
 		/** Saw **/

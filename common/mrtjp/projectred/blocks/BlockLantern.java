@@ -31,12 +31,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockLantern extends Block {
 
-	public static Icon[] onIcons = new Icon[16];
-	public static Icon[] offIcons = new Icon[16];
+	public static Icon[] iconsForBreakEffect = new Icon[16];
 
 	public BlockLantern(int id) {
 		super(id, new Material(Material.circuits.materialMapColor));
-		setHardness(0.5F);
+		setHardness(0.4F);
 		setCreativeTab(ProjectRedTabs.tabLighting);
 		setBlockBounds(.34f, .25f, .34f, .66f, .75f, .66f);
 	}
@@ -81,11 +80,6 @@ public class BlockLantern extends Block {
 	}
 
 	@Override
-	public boolean canCreatureSpawn(EnumCreatureType type, World world, int x, int y, int z) {
-		return false;
-	}
-
-	@Override
 	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
 		return true;
 	}
@@ -99,9 +93,7 @@ public class BlockLantern extends Block {
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IconRegister reg) {
 		for (int i = 0; i < 16; i++) {
-			onIcons[i] = reg.registerIcon("projectred:" + "lanterton/" + EnumLantern.get(i).unlocalName + "on");
-			offIcons[i] = reg.registerIcon("projectred:" + "lanternoff/" + EnumLantern.get(i).unlocalName + "off");
-
+			iconsForBreakEffect[i] = reg.registerIcon("projectred:" + "lanternoff/" + EnumLantern.get(i).unlocalName + "off");
 		}
 	}
 
@@ -127,33 +119,15 @@ public class BlockLantern extends Block {
 		return new ArrayList<ItemStack>(); // Handled on removeBlockByPlayer
 	}
 
-	@Override
-	public Icon getBlockTexture(IBlockAccess world, int x, int y, int z, int side) {
-		TileLantern tile = (TileLantern) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileLantern.class);
-		if (tile != null) {
-			int tilemeta = tile.lanternmeta;
-			if (tilemeta > 15) {
-				tilemeta -= 16;
-			}
-			if (tile.getLightValue() == 15) {
-				return onIcons[tilemeta];
-			} else {
-				return offIcons[tilemeta];
-			}
-		}
-		return super.getBlockTexture(world, x, y, z, side);
-	}
-
 	/**
 	 * From the specified side and block metadata retrieves the blocks texture.
 	 * Args: side, metadata
 	 */
 	public Icon getIcon(int side, int meta) {
-		if (meta > 15) {
-			return onIcons[meta - 16];
-		} else {
-			return offIcons[meta];
+		if (meta < iconsForBreakEffect.length) {
+			return iconsForBreakEffect[meta];
 		}
+		return null;
 	}
 
 	@Override

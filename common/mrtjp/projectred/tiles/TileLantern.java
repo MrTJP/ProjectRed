@@ -21,6 +21,7 @@ public class TileLantern extends TileEntity {
 	public boolean updateStateNextTick = true;
 	public int lanternmeta;
 	public int rotation = 1;
+	public boolean initialized = false;
 
 	public TileLantern() {
 	}
@@ -57,6 +58,9 @@ public class TileLantern extends TileEntity {
 	 * See if the lamp is still attached to something.
 	 */
 	public void checkSupport() {
+		if (BasicUtils.isClient(worldObj) || !initialized) {
+			return;
+		}
 		Coords localCoord = new Coords(this);
 		localCoord.orientation = ForgeDirection.getOrientation(this.rotation);
 		localCoord.moveForwards(1);
@@ -66,12 +70,6 @@ public class TileLantern extends TileEntity {
 			BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, getDroppedBlock());
 			worldObj.removeBlockTileEntity(xCoord, yCoord, zCoord);
 		}
-	}
-	
-	public void onBlockPlaced(EntityLiving player, ItemStack stack) {
-		lanternmeta = stack.getItemDamage();
-		inverted = lanternmeta > 15;
-		
 	}
 
 	/**
@@ -111,6 +109,10 @@ public class TileLantern extends TileEntity {
 			updateNextTick = false;
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			worldObj.updateAllLightTypes(xCoord, yCoord, zCoord);
+		}
+		
+		if (!initialized) {
+			initialized = true;
 		}
 	}
 

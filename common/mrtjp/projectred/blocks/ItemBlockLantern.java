@@ -78,11 +78,10 @@ public class ItemBlockLantern extends ItemBlock {
 	 * Gets an icon index based on an item's damage value
 	 */
 	public Icon getIconFromDamage(int meta) {
-		if (meta > 15) {
-			return BlockLantern.onIcons[meta - 16];
-		} else {
-			return BlockLantern.offIcons[meta];
+		if (meta < BlockLantern.iconsForBreakEffect.length) {
+			return BlockLantern.iconsForBreakEffect[meta];
 		}
+		return null;
 	}
 
 }

@@ -25,15 +25,12 @@ public class PacketHandler implements IPacketHandler {
 	public static List<ModernPacket> packetlist;
 	public static Map<Class<? extends ModernPacket>, ModernPacket> packetmap;
 
-	@SuppressWarnings("unchecked")
 	public static <T extends ModernPacket> T getPacket(Class<T> clazz) {
 		return (T) packetmap.get(clazz).template();
 	}
 
-	@SuppressWarnings("unchecked")
 	public PacketHandler() {
 		try {
-
 			final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath.from(this.getClass().getClassLoader()).getTopLevelClassesRecursive("mrtjp.projectred.network.packets"));
 			Collections.sort(classes, new Comparator<ClassInfo>() {
 				@Override
@@ -53,8 +50,6 @@ public class PacketHandler implements IPacketHandler {
 				final ModernPacket instance = (ModernPacket) cls.getConstructors()[0].newInstance(currentid);
 				packetlist.add(instance);
 				packetmap.put((Class<? extends ModernPacket>) cls, instance);
-
-				System.out.println("Packet: " + c.getSimpleName() + " loaded");
 				currentid++;
 			}
 
