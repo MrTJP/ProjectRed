@@ -11,8 +11,10 @@ import mrtjp.projectred.multipart.wiring.gates.GateStaticRenderer;
 import mrtjp.projectred.multipart.wiring.gates.TileGate;
 import mrtjp.projectred.multipart.wiring.wires.WireRenderer;
 import mrtjp.projectred.renderstuffs.LampRenderer;
+import mrtjp.projectred.renderstuffs.LanternRenderer;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.tiles.TileLamp;
+import mrtjp.projectred.tiles.TileLantern;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -25,10 +27,16 @@ public class ClientProxy extends CommonProxy implements IProxy {
 	@Override
 	public void initRenderings() {
 
-		// Lights
-		RenderIDs.renderIdLighting = RenderingRegistry.getNextAvailableRenderId();
+		// Lamps
+		RenderIDs.renderIdLamp = RenderingRegistry.getNextAvailableRenderId();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileLamp.class, LampRenderer.instance);
 
+		// Lanterns
+		RenderIDs.renderIDLantern = RenderingRegistry.getNextAvailableRenderId();
+		ClientRegistry.bindTileEntitySpecialRenderer(TileLantern.class, LanternRenderer.instance);
+		RenderingRegistry.registerBlockHandler(LanternRenderer.instance);
+
+		
 		// Redwire
 		RenderIDs.renderIdRedwire = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(WireRenderer.instance);

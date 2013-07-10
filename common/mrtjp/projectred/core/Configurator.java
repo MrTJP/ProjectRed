@@ -24,6 +24,7 @@ public class Configurator {
 	public static Property block_gateID;
 	public static Property block_lampID;
 	public static Property block_machinesID;
+	public static Property block_lanternID;
 
 	/** Item IDs**/
 	public static Property item_sawID;
@@ -53,6 +54,7 @@ public class Configurator {
 		block_gateID = localConfig.getBlock("block_gateID", 3147);
 		block_lampID = localConfig.getBlock("block_lightingID", 3128);
 		block_machinesID = localConfig.getBlock("block_machinesID", 3129);
+		block_lanternID = localConfig.getBlock("block_lanternID", 3130);
 
 		item_sawID = localConfig.getItem("item_sawID", 12023);
 		item_screwdriverID = localConfig.getItem("item_screwdriverID", 12024);
