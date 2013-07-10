@@ -1,22 +1,18 @@
 package mrtjp.projectred.renderstuffs;
 
+import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
+import mrtjp.projectred.core.ProjectRedTickHandler;
+import mrtjp.projectred.tiles.TileLantern;
+import mrtjp.projectred.utils.Color;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.common.ForgeDirection;
+
 import org.lwjgl.opengl.GL11;
 
-import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
-import mrtjp.projectred.tiles.TileLantern;
-import mrtjp.projectred.utils.BasicRenderUtils;
-import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.Color;
-import mrtjp.projectred.utils.Coords;
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.client.MinecraftForgeClient;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
-
-public class LanternRenderer extends TileEntitySpecialRenderer {
+public class LanternRenderer extends TileEntitySpecialRenderer implements IItemRenderer {
 	public static LanternRenderer instance = new LanternRenderer();
 	private LanternModel model = new LanternModel();
 
@@ -26,91 +22,59 @@ public class LanternRenderer extends TileEntitySpecialRenderer {
 			TileLantern tile = (TileLantern) te;
 			int color = tile.lanternmeta > 15 ? tile.lanternmeta - 16 : tile.lanternmeta;
 			boolean isOn = tile.getLightValue() == 15;
-			int rotation;
-			if (BasicRenderUtils.currentRenderPass == 0) {
-				// Bind the texture
-				bindTextureForColorAndState(color, isOn);
-				// Render the base that will always be rendered.
-				renderLampAndCovers(x, y, z);
-				// Render the stands that are orientation sensitive.
-				renderStand(x, y, z, 0);
-				
-			} else if (BasicRenderUtils.currentRenderPass == 0) {
-				// Render halo
-				if (isOn) {
-					renderLampShade(x, y, z, color);
-				}
+			int rotation = tile.rotation;
+
+			// Bind the texture
+			model.bindTextureForColorAndState(color, isOn);
+
+			// Render the base that will always be rendered.
+			model.renderLampAndCovers(x, y, z);
+
+			// Render the stands that are orientation sensitive.
+			if (rotation == 0 || rotation == 1) {
+				model.renderCenterStand(x, y, z, rotation);
+			} else {
+				model.renderSideStand(x, y, z, rotation);
+			}
+
+			// Render halo
+			if (isOn) {
+				model.renderLampShade(x, y, z, color);
 			}
 		}
 	}
 
-	public void bindTextureForColorAndState(int color, boolean on) {
-		String base = "/mods/projectred/textures/blocks/";
-		String folder = on ? "lanternon/" : "lanternoff/";
-		String file = EnumLantern.get(color).unlocalName + (on ? "on" : "off");
-		String loc = base + folder + file + ".png";
-		bindTextureByName(loc);
+	@Override
+	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+		return true;
 	}
 
-	public void renderLampAndCovers(double x, double y, double z) {
-		// Render lantern bulb, and top and bottom covers.
-		GL11.glPushMatrix();
-
-		// Edit GL state
-		// This will be rendered on basic state...
-
-		GL11.glTranslated(x, y, z + 1);
-		model.renderPart("lamp");
-		model.renderPart("covertop");
-		model.renderPart("coverbottom");
-
-		GL11.glPopMatrix();
-
-		// Undo GL state changes
-		// Nothing to undo.
+	@Override
+	public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
+		return true;
 	}
 
-	public void renderStand(double x, double y, double z, int rotation) {
-
-		// Render lantern holder at the top.
-		GL11.glPushMatrix();
-
-		// Edit GL state
-		// This will be rendered on basic state...
+	@Override
+	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+		int color = item.getItemDamage() > 15 ? item.getItemDamage() - 16 : item.getItemDamage();
+		boolean isOn = item.getItemDamage() > 15;
+		model.bindTextureForColorAndState(color, isOn);
 		
-		GL11.glTranslated(x, y, z + 1);
-		model.renderPart("goldringtop");
-		model.renderPart("standside");
-
-		GL11.glPopMatrix();
-
-		// Undo GL state changes
-		// Nothing to undo.
-
+		switch (type) {
+		case ENTITY:
+			model.renderInventory(0f, 0f, 0f, 1f);
+			return;
+		case EQUIPPED:
+			model.renderInventory(1f, 0f, 0f, 1f);
+			return;
+		case EQUIPPED_FIRST_PERSON:
+			model.renderInventory(1f, 0f, 0f, 1f);
+			return;
+		case INVENTORY:
+			model.renderInventory(3f, .6f, 1f, 2f);
+			return;
+		default: return;
+		}
+		
 	}
-
-	public void renderLampShade(double x, double y, double z, int tint) {
-		// Render lamp shade
-		GL11.glPushMatrix();
-
-		// Edit GL state
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glDepthMask(false);
-
-		GL11.glColor4f(Color.get(tint).r, Color.get(tint).g, Color.get(tint).b, 0.6f);
-		GL11.glTranslated(x, y, z + 1);
-		model.renderPart("lampshade");
-		GL11.glPopMatrix();
-
-		// Undo GL state changes
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE);
-		GL11.glEnable(GL11.GL_LIGHTING);
-		GL11.glDepthMask(true);
-	}
-
 }

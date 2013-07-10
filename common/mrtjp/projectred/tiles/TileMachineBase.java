@@ -21,27 +21,16 @@ public abstract class TileMachineBase extends TileEntity {
 	
 	public abstract boolean onBlockActivated(EntityPlayer player);
 
-	public void onBlockPlaced(EntityLiving entity, ItemStack item) {
-		
-		//int dir = MathHelper.floor_double((double)(entity.rotationYaw * 4f / 360f) + 0.5) & 3;
-		//setRotation(dir);
-		double x = xCoord - entity.posX;
-		double z = zCoord - entity.posZ;
-		double w = Math.atan2(x, z);
-		double halfPI = Math.PI / 2;
-		double halfhalfPI = halfPI / 2;
-		w -= halfhalfPI;
-		if (w < 0) {
-			w += 2 * Math.PI;
-		}
-		if (0 < w && w <= halfPI) {
-			setRotation(5); // East
-		} else if (halfPI < w && w <= 2 * halfPI) {
-			setRotation(2); // North
-		} else if (2 * halfPI < w && w <= 3 * halfPI) {
-			setRotation(4); // West
-		} else if (3 * halfPI < w && w <= 4 * halfPI) {
-			setRotation(3); // South
+	public void onBlockPlaced(EntityLiving player, ItemStack item) {
+		int entityrotation = MathHelper.floor_double((double) ((player.rotationYaw * 4F) / 360F) + 2.5D) & 3;
+		if (entityrotation == 0) {
+			rotation = 2;
+		} else if (entityrotation == 2) {
+			rotation = 3;
+		} else if (entityrotation == 3) {
+			rotation = 4;
+		} else if (entityrotation == 1) {
+			rotation = 5;
 		}
 	}
 

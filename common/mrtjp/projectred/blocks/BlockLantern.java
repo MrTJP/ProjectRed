@@ -7,6 +7,7 @@ import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.ProjectRedTabs;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.tiles.TileLantern;
+import mrtjp.projectred.tiles.TileMachineBase;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.Coords;
@@ -14,10 +15,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
@@ -33,11 +36,11 @@ public class BlockLantern extends Block {
 
 	public BlockLantern(int id) {
 		super(id, new Material(Material.circuits.materialMapColor));
-		setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 		setHardness(0.5F);
 		setCreativeTab(ProjectRedTabs.tabLighting);
+		setBlockBounds(.34f, .25f, .34f, .66f, .75f, .66f);
 	}
-	
+
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, int id) {
 		TileLantern tile = (TileLantern) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileLantern.class);
@@ -45,6 +48,7 @@ public class BlockLantern extends Block {
 			tile.onNeighborBlockChange();
 		}
 	}
+
 	@Override
 	public boolean renderAsNormalBlock() {
 		return false;
@@ -89,14 +93,6 @@ public class BlockLantern extends Block {
 	@Override
 	public boolean canProvidePower() {
 		return true;
-	}
-
-	@Override
-	public void onBlockAdded(World world, int x, int y, int z) {
-		TileLantern tile = (TileLantern) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileLantern.class);
-		if (tile != null) {
-			tile.onBlockAdded();
-		}
 	}
 
 	@Override
@@ -167,18 +163,6 @@ public class BlockLantern extends Block {
 
 	@Override
 	public boolean hasTileEntity(int meta) {
-		return true;
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public int getRenderBlockPass() {
-		return 1;
-	}
-
-	@Override
-	public boolean canRenderInPass(int pass) {
-		BasicRenderUtils.currentRenderPass = pass;
 		return true;
 	}
 
