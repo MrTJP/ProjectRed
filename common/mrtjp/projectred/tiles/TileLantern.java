@@ -2,32 +2,39 @@ package mrtjp.projectred.tiles;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.network.PacketHandler;
-import mrtjp.projectred.network.packets.LampUpdatePacket;
 import mrtjp.projectred.network.packets.LanternUpdatePacket;
+import mrtjp.projectred.utils.BasicUtils;
+import mrtjp.projectred.utils.BasicWireUtils;
+import mrtjp.projectred.utils.Coords;
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 
 public class TileLantern extends TileEntity {
 	public boolean inverted;
 	public boolean powered;
-	public boolean updateNextTick;
-	public boolean updateStateNextTick;
+	public boolean updateNextTick = true;
+	public boolean updateStateNextTick = true;
 	public int lanternmeta;
+	public int rotation = 1;
 
-	public TileLantern(){
+	public TileLantern() {
 	}
-	
-	public TileLantern(int meta, boolean inv) {
+
+	public TileLantern(int meta, boolean inv, int rot) {
 		lanternmeta = meta;
 		inverted = inv;
+		rotation = rot;
 	}
-	
+
 	public ItemStack getDroppedBlock() {
 		return new ItemStack(ProjectRed.blockLantern.blockID, 1, lanternmeta);
 	}
-	
+
 	public int getLightValue() {
 		if (powered != inverted) {
 			return 15;
@@ -41,15 +48,32 @@ public class TileLantern extends TileEntity {
 	 * signal. The state should be checked.
 	 */
 	public void onNeighborBlockChange() {
+		checkSupport();
 		updateNextTick = true;
 		updateStateNextTick = true;
 	}
 
-	public void onBlockAdded() {
-		updateNextTick = true;
-		updateStateNextTick = true;
+	/**
+	 * See if the lamp is still attached to something.
+	 */
+	public void checkSupport() {
+		Coords localCoord = new Coords(this);
+		localCoord.orientation = ForgeDirection.getOrientation(this.rotation);
+		localCoord.moveForwards(1);
+		Block supporter = Block.blocksList[worldObj.getBlockId(localCoord.x, localCoord.y, localCoord.z)];
+		if (!BasicWireUtils.canPlaceWireOnSide(worldObj, localCoord.x, localCoord.y, localCoord.z, localCoord.orientation.getOpposite(), false)) {
+			worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+			BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, getDroppedBlock());
+			worldObj.removeBlockTileEntity(xCoord, yCoord, zCoord);
+		}
 	}
 	
+	public void onBlockPlaced(EntityLiving player, ItemStack stack) {
+		lanternmeta = stack.getItemDamage();
+		inverted = lanternmeta > 15;
+		
+	}
+
 	/**
 	 * This is called to update on or off state. Usually called when neighboring
 	 * block changes, and this rechecks redstone inputs. It sets the powered
@@ -98,6 +122,7 @@ public class TileLantern extends TileEntity {
 		super.writeToNBT(nbt);
 		nbt.setBoolean("inverted", inverted);
 		nbt.setInteger("meta", lanternmeta);
+		nbt.setInteger("rot", rotation);
 	}
 
 	/**
@@ -108,10 +133,11 @@ public class TileLantern extends TileEntity {
 		super.readFromNBT(nbt);
 		inverted = nbt.getBoolean("inverted");
 		lanternmeta = nbt.getInteger("meta");
+		rotation = nbt.getInteger("rot");
 		updateStateNextTick = true;
 		updateNextTick = true;
 	}
-	
+
 	/**
 	 * Pushes the state to the client.
 	 */

@@ -146,14 +146,15 @@ public class BasicWireUtils {
 	}
 
 	public static boolean canPlaceWireOnSide(World w, int x, int y, int z, ForgeDirection side, boolean _default) {
-		if (!w.blockExists(x, y, z))
+		if (!w.blockExists(x, y, z)) {
 			return _default;
+		}
 
 		Block b = Block.blocksList[w.getBlockId(x, y, z)];
 		if (b == null)
 			return false;
 		// Manual list of allowed blocks that wire can sit on.
-		if (b == Block.glowStone || b == Block.pistonBase || b == Block.pistonStickyBase || b == Block.pistonMoving)
+		if (b == Block.glowStone || b == Block.pistonBase || b == Block.pistonStickyBase || b == Block.pistonMoving || b == Block.glass)
 			return true;
 		return b.isBlockSolidOnSide(w, x, y, z, side);
 	}

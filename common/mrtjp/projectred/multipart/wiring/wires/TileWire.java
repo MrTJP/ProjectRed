@@ -13,11 +13,12 @@ import mrtjp.projectred.multipart.microblocks.IMicroblockCoverSystem;
 import mrtjp.projectred.multipart.microblocks.Part;
 import mrtjp.projectred.multipart.microblocks.PartType;
 import mrtjp.projectred.multipart.wiring.InvalidTile;
+import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
+import mrtjp.projectred.utils.Coords;
 import mrtjp.projectred.utils.Dir;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -299,8 +300,9 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 	}
 
 	void onNeighbourBlockChange() {
-		if (worldObj.isRemote)
+		if (worldObj.isRemote) {
 			return;
+		}
 
 		for (int k = 0; k < 6; k++) {
 			if ((wireMask & (1 << k)) == 0)
@@ -547,14 +549,11 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 
 	/** Destroys the wire block when the last wire is removed. */
 	public void removeAndDropWireOnSide(int side) {
-		if (!removeWireOnSide(side))
+		if (!removeWireOnSide(side)) {
 			return;
-
-		ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[side];
-
-		EntityItem ei = new EntityItem(worldObj, xCoord + 0.5 + 0.3 * fd.offsetX, yCoord + 0.5 + 0.3 * fd.offsetY, zCoord + 0.5 + 0.3 * fd.offsetZ, new ItemStack(ProjectRed.blockWire, 1, wireType.ordinal()));
-		ei.delayBeforeCanPickup = 10;
-		worldObj.spawnEntityInWorld(ei);
+		}
+		ItemStack dropped = new ItemStack(ProjectRed.blockWire, 1, wireType.ordinal());
+		BasicUtils.ejectItem(worldObj, dropped, false, null, side, new Coords(this));
 	}
 
 	/** Destroys the wire block when the last wire is removed. */

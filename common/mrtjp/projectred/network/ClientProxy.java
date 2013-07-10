@@ -34,7 +34,7 @@ public class ClientProxy extends CommonProxy implements IProxy {
 		// Lanterns
 		RenderIDs.renderIDLantern = RenderingRegistry.getNextAvailableRenderId();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileLantern.class, LanternRenderer.instance);
-		//TODO add special item renderer here.
+		MinecraftForgeClient.registerItemRenderer(ProjectRed.blockLantern.blockID, LanternRenderer.instance);
 		
 		// Redwire
 		RenderIDs.renderIdRedwire = RenderingRegistry.getNextAvailableRenderId();

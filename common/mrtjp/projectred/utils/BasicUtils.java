@@ -120,7 +120,7 @@ public class BasicUtils {
 		}
 	}
 
-	void ejectItem(World worldObj, ItemStack is, boolean violent, EntityPlayer player, int to_side, Coords coord) {
+	public static void ejectItem(World worldObj, ItemStack is, boolean violent, EntityPlayer player, int to_side, Coords coord) {
 		if (worldObj.isRemote) {
 			return;
 		}
