@@ -7,6 +7,7 @@ import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.ProjectRedTabs;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.tiles.TileLantern;
+import mrtjp.projectred.utils.BasicRenderUtils;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.Coords;
 import net.minecraft.block.Block;
@@ -51,16 +52,11 @@ public class BlockLantern extends Block {
 
 	@Override
 	public int getRenderType() {
-		return RenderIDs.renderIDLantern;
+		return -1;
 	}
 
 	@Override
 	public boolean isOpaqueCube() {
-		return false;
-	}
-
-	@Override
-	public boolean isBlockNormalCube(World world, int x, int y, int z) {
 		return false;
 	}
 
@@ -182,7 +178,8 @@ public class BlockLantern extends Block {
 
 	@Override
 	public boolean canRenderInPass(int pass) {
-		return pass == 0 || pass == 1;
+		BasicRenderUtils.currentRenderPass = pass;
+		return true;
 	}
 
 	public enum EnumLantern {

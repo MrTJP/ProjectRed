@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
 import mrtjp.projectred.tiles.TileLantern;
+import mrtjp.projectred.utils.BasicRenderUtils;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.Color;
 import mrtjp.projectred.utils.Coords;
@@ -12,31 +13,12 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class LanternRenderer extends TileEntitySpecialRenderer implements ISimpleBlockRenderingHandler {
+public class LanternRenderer extends TileEntitySpecialRenderer {
 	public static LanternRenderer instance = new LanternRenderer();
 	private LanternModel model = new LanternModel();
-
-	@Override
-	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer) {
-
-	}
-
-	@Override
-	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
-		return true;
-	}
-
-	@Override
-	public boolean shouldRender3DInInventory() {
-		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return RenderIDs.renderIDLantern;
-	}
 
 	@Override
 	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float f) {
@@ -45,18 +27,19 @@ public class LanternRenderer extends TileEntitySpecialRenderer implements ISimpl
 			int color = tile.lanternmeta > 15 ? tile.lanternmeta - 16 : tile.lanternmeta;
 			boolean isOn = tile.getLightValue() == 15;
 			int rotation;
-			// Bind the texture
-			bindTextureForColorAndState(color, isOn);
-
-			// Render the base that will always be rendered.
-			renderLampAndCovers(x, y, z);
-
-			// Render the stands that are orientation sensitive.
-			renderStand(x, y, z, 0);
-			
-			// Render halo
-			if (isOn) {
-				renderLampShade(x, y, z, color);
+			if (BasicRenderUtils.currentRenderPass == 0) {
+				// Bind the texture
+				bindTextureForColorAndState(color, isOn);
+				// Render the base that will always be rendered.
+				renderLampAndCovers(x, y, z);
+				// Render the stands that are orientation sensitive.
+				renderStand(x, y, z, 0);
+				
+			} else if (BasicRenderUtils.currentRenderPass == 0) {
+				// Render halo
+				if (isOn) {
+					renderLampShade(x, y, z, color);
+				}
 			}
 		}
 	}
@@ -88,15 +71,16 @@ public class LanternRenderer extends TileEntitySpecialRenderer implements ISimpl
 	}
 
 	public void renderStand(double x, double y, double z, int rotation) {
+
 		// Render lantern holder at the top.
 		GL11.glPushMatrix();
 
 		// Edit GL state
 		// This will be rendered on basic state...
-
+		
 		GL11.glTranslated(x, y, z + 1);
-		model.renderPart("goldring");
-		model.renderPart("sidestand");
+		model.renderPart("goldringtop");
+		model.renderPart("standside");
 
 		GL11.glPopMatrix();
 
@@ -104,7 +88,7 @@ public class LanternRenderer extends TileEntitySpecialRenderer implements ISimpl
 		// Nothing to undo.
 
 	}
-	
+
 	public void renderLampShade(double x, double y, double z, int tint) {
 		// Render lamp shade
 		GL11.glPushMatrix();

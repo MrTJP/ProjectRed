@@ -171,17 +171,6 @@ public class BlockLamp extends Block {
 		return true;
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public int getRenderBlockPass() {
-		return 0;
-	}
-
-	@Override
-	public boolean canRenderInPass(int pass) {
-		return pass == 0 || pass == 1;
-	}
-
 	public enum EnumLamp {
 		WHITE("White Lamp", "lampwhite"),
 		ORANGE("Orange Lamp", "lamporange"),
