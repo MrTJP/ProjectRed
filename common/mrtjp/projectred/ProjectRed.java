@@ -2,9 +2,12 @@ package mrtjp.projectred;
 
 import mrtjp.projectred.blocks.BlockLamp;
 import mrtjp.projectred.blocks.BlockLamp.EnumLamp;
+import mrtjp.projectred.blocks.BlockLantern;
+import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
 import mrtjp.projectred.blocks.BlockMachines;
 import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
 import mrtjp.projectred.blocks.ItemBlockLamp;
+import mrtjp.projectred.blocks.ItemBlockLantern;
 import mrtjp.projectred.blocks.ItemBlockMachines;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.crafting.CraftingRecipeManager;
@@ -37,6 +40,7 @@ import mrtjp.projectred.multipart.wiring.wires.WireDamageValues;
 import mrtjp.projectred.network.GuiHandler;
 import mrtjp.projectred.network.PacketHandler;
 import mrtjp.projectred.tiles.TileLamp;
+import mrtjp.projectred.tiles.TileLantern;
 import mrtjp.projectred.utils.BasicUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemStack;
@@ -56,7 +60,9 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
  * "Project: Red" serves to provide a somewhat decent replacement to Eloraam's
  * RedPower 2. Most of the code behind the multipart blocks are derived from
  * Immibis's mods. His link is provided below.
- * http://www.minecraftforum.net/topic/1001131-152-immibiss-mods-smp-tubestuff-5502-core-5513-da-5500-infinitubes-5502-liquid-xp-5511-microblocks-5501/
+ * http://www.minecraftforum.net/topic
+ * /1001131-152-immibiss-mods-smp-tubestuff-5502
+ * -core-5513-da-5500-infinitubes-5502-liquid-xp-5511-microblocks-5501/
  * Hopefully in the near future, I will be able to rewrite everything into my
  * own code. But for now, most of the core functionality remains the same from
  * his mod.
@@ -64,7 +70,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
  * @author MrTJP
  * 
  */
-@Mod(modid = Configurator.modId, name = Configurator.modName, version = Configurator.version + "." + Configurator.buildnumber, dependencies="")
+@Mod(modid = Configurator.modId, name = Configurator.modName, version = Configurator.version + "." + Configurator.buildnumber, dependencies = "")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false, channels = { Configurator.modNetworkChannel }, packetHandler = PacketHandler.class)
 public class ProjectRed {
 
@@ -74,6 +80,7 @@ public class ProjectRed {
 	public static BlockWire blockWire;
 	public static BlockLamp blockLamp;
 	public static BlockMachines blockMachines;
+	public static BlockLantern blockLantern;
 
 	/** Items **/
 	public static ItemScrewdriver itemScrewdriver;
@@ -93,17 +100,30 @@ public class ProjectRed {
 
 	@Mod.Init
 	public void init(FMLInitializationEvent event) {
-		// Lights
+		// Lampt
 		if (Configurator.block_lampID.getInt() > 0) {
 			blockLamp = new BlockLamp(Configurator.block_lampID.getInt());
-			GameRegistry.registerBlock(blockLamp, ItemBlockLamp.class, "projred.lighting");
-			GameRegistry.registerTileEntity(TileLamp.class, "tile.projectred.lighting");
+			GameRegistry.registerBlock(blockLamp, ItemBlockLamp.class, "projred.lighting.lamp");
+			GameRegistry.registerTileEntity(TileLamp.class, "tile.projectred.lighting.lamp");
 			for (int i = 0; i < 32; i++) {
 				String desc = i > 15 ? "Inverted " : "";
 				int color = i > 15 ? i - 16 : i;
 				LanguageRegistry.addName(new ItemStack(blockLamp, 1, i), desc + EnumLamp.get(color).fullName);
 			}
 		}
+
+		// Lanterns
+		if (Configurator.block_lanternID.getInt() > 0) {
+			blockLantern = new BlockLantern(Configurator.block_lanternID.getInt());
+			GameRegistry.registerBlock(blockLantern, ItemBlockLantern.class, "projred.lighting.lantern");
+			GameRegistry.registerTileEntity(TileLantern.class, "tile.projectred.lighting.lantern");
+			for (int i = 0; i < 32; i++) {
+				String desc = i > 15 ? "Inverted " : "";
+				int color = i > 15 ? i - 16 : i;
+				LanguageRegistry.addName(new ItemStack(blockLantern, 1, i), desc + EnumLantern.get(color).fullName);
+			}
+		}
+
 		// Machines
 		if (Configurator.block_machinesID.getInt() > 0) {
 			blockMachines = new BlockMachines(Configurator.block_machinesID.getInt());
@@ -158,25 +178,25 @@ public class ProjectRed {
 			itemSaw = new ItemSaw(Configurator.item_sawID.getInt());
 			LanguageRegistry.addName(itemSaw, "Saw");
 		}
-		
+
 		// Screwdriver
 		if (Configurator.item_screwdriverID.getInt() > 0) {
 			itemScrewdriver = new ItemScrewdriver(Configurator.item_screwdriverID.getInt());
 			LanguageRegistry.addName(itemScrewdriver, "Screwdriver");
 		}
-		
+
 		// Draw Plate
 		if (Configurator.item_drawplateID.getInt() > 0) {
 			itemDrawPlate = new ItemDrawPlate(Configurator.item_drawplateID.getInt());
 			LanguageRegistry.addName(itemDrawPlate, "Draw Plate");
 		}
-		
+
 		// Wool Gin
 		if (Configurator.item_woolginID.getInt() > 0) {
 			itemWoolGin = new ItemWoolGin(Configurator.item_woolginID.getInt());
 			LanguageRegistry.addName(itemWoolGin, "Wool Gin");
 		}
-				
+
 		// Backpacks
 		if (Configurator.item_backpackID.getInt() > 0) {
 			itemBackpack = new ItemBackpack(Configurator.item_backpackID.getInt());
@@ -184,9 +204,6 @@ public class ProjectRed {
 				LanguageRegistry.addName(b.getItemStack(), b.fullname);
 			}
 		}
-			
-		
-		
 
 		MinecraftForge.EVENT_BUS.register(instance);
 		MinecraftForge.EVENT_BUS.register(BasicUtils.proxy);
