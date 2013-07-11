@@ -1,7 +1,7 @@
 package mrtjp.projectred.tiles;
 
 import java.util.Random;
-
+import cpw.mods.fml.common.network.PacketDispatcher;
 import mrtjp.projectred.interfaces.wiring.IRedstoneUpdatable;
 import mrtjp.projectred.network.PacketHandler;
 import mrtjp.projectred.network.packets.LampUpdatePacket;
@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 
@@ -76,8 +77,10 @@ public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 	}
 
 	public void onBlockAdded() {
+		powered = isBeingPowered();
+		//System.err.println("onBlockAdded" + ":" + this + ":" + worldObj.isRemote + ":" + powered);
 		updateNextTick = true;
-		updateStateNextTick = true;
+		PacketDispatcher.sendPacketToServer(getDescriptionPacket());
 	}
 
 	/**
@@ -85,25 +88,19 @@ public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 	 * block changes, and this rechecks redstone inputs. It sets the powered
 	 * flag to its correct state.
 	 */
-	public void updateState() {	
-		boolean isBeingPowered = false;
-		
+	public void updateState() {
 		// we can't rely on isBlockIndirectlyGettingPowered server side (??), so use the powered state in the packet
 		if(worldObj.isRemote)
-			isBeingPowered = powered;
-		else
-			isBeingPowered = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
+			return;
 		
-		if (isBeingPowered) {
-			if (powered) {
+		if (isBeingPowered()) {
+			if(powered)
 				return;
-			}
 			powered = true;
 			updateNextTick = true;
 		} else {
-			if (!powered) {
+			if(!powered)
 				return;
-			}
 			powered = false;
 			updateNextTick = true;
 		}
@@ -157,7 +154,14 @@ public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 		packet.posZ = zCoord;
 		packet.isInverted = inverted;
 		packet.powered = powered;
+		
+		//System.err.println("getDescriptionPacket" + ":" + this + ":" + worldObj.isRemote + ":" + powered);
+		
 		return packet.getPacket();
+	}
+	
+	private boolean isBeingPowered() {
+		return worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
 	}
 
 	/**
