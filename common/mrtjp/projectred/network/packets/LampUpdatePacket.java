@@ -32,7 +32,6 @@ public class LampUpdatePacket extends CoordinatesPacket {
 			tile.updateStateNextTick = true;
 			tile.updateNextTick = true;
 			tile.powered = powered;
-			System.err.println("LampUpdatePacket");
 		}
 	}
 
