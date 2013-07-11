@@ -231,7 +231,9 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 			}
 		}
 		if (heat > 0) {
-			spawnParticles();
+			if (BasicUtils.isClient(worldObj)) {
+				spawnParticles();
+			}
 			if (hasWork) {
 				progress++;
 			}
