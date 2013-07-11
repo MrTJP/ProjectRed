@@ -85,8 +85,15 @@ public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 	 * block changes, and this rechecks redstone inputs. It sets the powered
 	 * flag to its correct state.
 	 */
-	public void updateState() {
-		boolean isBeingPowered = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
+	public void updateState() {	
+		boolean isBeingPowered = false;
+		
+		// we can't rely on isBlockIndirectlyGettingPowered server side (??), so use the powered state in the packet
+		if(worldObj.isRemote)
+			isBeingPowered = powered;
+		else
+			isBeingPowered = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
+		
 		if (isBeingPowered) {
 			if (powered) {
 				return;
@@ -149,6 +156,7 @@ public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 		packet.posY = yCoord;
 		packet.posZ = zCoord;
 		packet.isInverted = inverted;
+		packet.powered = powered;
 		return packet.getPacket();
 	}
 
