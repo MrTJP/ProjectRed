@@ -3,7 +3,6 @@ package mrtjp.projectred.tiles;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.network.PacketHandler;
-import mrtjp.projectred.network.packets.LanternUpdatePacket;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
@@ -11,7 +10,9 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -95,8 +96,6 @@ public class TileLantern extends TileEntity {
 			powered = false;
 			updateNextTick = true;
 		}
-		
-		PacketDispatcher.sendPacketToServer(getDescriptionPacket());
 	}
 	
 	private boolean isBeingPowered() {
@@ -156,13 +155,14 @@ public class TileLantern extends TileEntity {
 	 */
 	@Override
 	public Packet getDescriptionPacket() {
-		LanternUpdatePacket packet = PacketHandler.getPacket(LanternUpdatePacket.class);
-		packet.posX = xCoord;
-		packet.posY = yCoord;
-		packet.posZ = zCoord;
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		packet.lanternData = nbt;
-		return packet.getPacket();
+		return new Packet132TileEntityData(xCoord, yCoord, zCoord, 1, nbt);
+	}
+	
+	@Override
+	public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt)
+	{
+		readFromNBT(pkt.customParam1);
 	}
 }
