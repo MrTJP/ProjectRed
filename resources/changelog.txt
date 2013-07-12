@@ -1,5 +1,8 @@
 Change Log:
 
+b3.0.0.28
+- Fixed noSuchField error on alloy furnace
+
 v3.0.0.27
 - Added lanterns, both inverted and non inverted.
 
@@ -14,3 +17,4 @@ v3.0.0.24
 
 v3.0.0.23
 - Initial release.
+
