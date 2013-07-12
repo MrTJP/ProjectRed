@@ -45,13 +45,6 @@ public class TileLantern extends TileEntity {
 		}
 	}
 	
-	public void onBlockAdded() {
-		powered = isBeingPowered();
-		//System.err.println("onBlockAdded" + ":" + this + ":" + worldObj.isRemote + ":" + powered);
-		updateNextTick = true;
-		PacketDispatcher.sendPacketToServer(getDescriptionPacket());
-	}
-	
 	/**
 	 * When a neighbor changes, there is a possibility that it was the redstone
 	 * signal. The state should be checked.
@@ -102,6 +95,8 @@ public class TileLantern extends TileEntity {
 			powered = false;
 			updateNextTick = true;
 		}
+		
+		PacketDispatcher.sendPacketToServer(getDescriptionPacket());
 	}
 	
 	private boolean isBeingPowered() {
