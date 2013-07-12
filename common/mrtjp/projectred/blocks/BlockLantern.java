@@ -54,14 +54,6 @@ public class BlockLantern extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(World world, int x, int y, int z) {
-		TileLantern tile = (TileLantern) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileLantern.class);
-		if (tile != null) {
-			tile.onBlockAdded();
-		}
-	}
-	
-	@Override
 	public int getRenderType() {
 		return -1;
 	}
