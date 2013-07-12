@@ -77,11 +77,6 @@ public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 		updateStateNextTick = true;
 	}
 
-	public void onBlockAdded() {
-		//updateNextTick = true;
-		//updateStateNextTick = true;
-	}
-
 	/**
 	 * This is called to update on or off state. Usually called when neighboring
 	 * block changes, and this rechecks redstone inputs. It sets the powered
