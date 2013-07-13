@@ -41,8 +41,9 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 		int side = te.getSide();
 		int front = te.getFront();
 		EnumGate type = te.getType();
-		if (type == null)
+		if (type == null) {
 			return true;
+		}
 
 		GateRendering rendering = type.getRendering();
 
@@ -110,14 +111,12 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 			float tx = rendering.torchX[k] / 16f;
 			float ty = rendering.torchY[k] / 16f;
 			boolean on = rendering.torchState[k];
-
 			renderTorchAtAngle(render, on ? rendering.torchTexOn : rendering.torchTexOff, tx, ty, 3 / 16f);
 		}
 
 		for (int k = 0; k < rendering.pointerX.length; k++) {
 			float tx = rendering.pointerX[k] / 16f;
 			float ty = rendering.pointerY[k] / 16f;
-
 			renderTorchAtAngle(render, rendering.torchTexOn, tx, ty, 0f);
 		}
 		rendering.customRender(rotatedTessellator, render);
@@ -236,18 +235,6 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 		var12.addVertexWithUV(x - var44, var46, z + var44, var20, var26);
 		var12.addVertexWithUV(x + var44, var46, z + var44, var24, var26);
 		var12.addVertexWithUV(x + var44, var46, z - var44, var24, var22);
-
-		/*
-		 * double var28 = texture.getInterpolatedU(7); double var30 =
-		 * texture.getInterpolatedV(13); double var32 =
-		 * texture.getInterpolatedU(9); double var34 =
-		 * texture.getInterpolatedV(15); var12.addVertexWithUV(x + var44,
-		 * renderBottomY, z - var44, var32, var30); var12.addVertexWithUV(x +
-		 * var44, renderBottomY, z + var44, var32, var34);
-		 * var12.addVertexWithUV(x - var44, renderBottomY, z + var44, var28,
-		 * var34); var12.addVertexWithUV(x - var44, renderBottomY, z - var44,
-		 * var28, var30);
-		 */
 
 		var12.addVertexWithUV(x - var44, 1 - Y_INSET, z - 0.5, (double) var16, (double) var18);
 		var12.addVertexWithUV(x - var44, 0, z - 0.5, (double) var16, (double) var19);

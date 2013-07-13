@@ -16,6 +16,7 @@ import mrtjp.projectred.multipart.TileCoverableBase;
 import mrtjp.projectred.multipart.microblocks.EnumPosition;
 import mrtjp.projectred.multipart.microblocks.Part;
 import mrtjp.projectred.multipart.microblocks.PartType;
+import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Dir;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -89,8 +90,9 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 	}
 
 	public TileGate(EnumGate type, int side, int front) {
-		if (type == null)
+		if (type == null) {
 			throw new IllegalArgumentException("type cannot be null");
+		}
 		this.type = type;
 		this.side = (byte) side;
 		this.front = (byte) front;
@@ -257,8 +259,7 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-
-		if (!worldObj.isRemote) {
+		if (BasicUtils.isServer(worldObj)) {
 			if (isNotStateless)
 				updateLogic(true, false);
 			else if (isFirstTick) {

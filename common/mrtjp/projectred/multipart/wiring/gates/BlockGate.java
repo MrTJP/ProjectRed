@@ -133,8 +133,9 @@ public class BlockGate extends BlockMultipartBase {
 
 	private int getSide(IBlockAccess w, int x, int y, int z) {
 		TileEntity te = w.getBlockTileEntity(x, y, z);
-		if (!(te instanceof TileGate))
+		if (!(te instanceof TileGate)) {
 			return Dir.NY;
+		}
 		return ((TileGate) te).getSide();
 	}
 

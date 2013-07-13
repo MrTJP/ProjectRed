@@ -68,7 +68,6 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 		if (wireType == null) {
 			// block will get deleted on the first tick after being re-loaded.
 			new InvalidTile().writeToNBT(tag);
-
 			return;
 		}
 
@@ -78,10 +77,12 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 		tag.setByte("mask", wireMask);
 		tag.setInteger("cmc", connectMaskCache);
 		tag.setInteger("ccc", connectCornerCache);
-		if (canUpdate())
+		if (canUpdate()) {
 			tag.setBoolean("notifyQueued", notifyNeighboursNextTick);
-		if (haveJacketed)
+		}
+		if (haveJacketed) {
 			tag.setByte("jcmc", jacketConnectMaskCache);
+		}
 	}
 
 	@Override
@@ -96,8 +97,9 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 		}
 		wireMask = tag.getByte("mask");
 
-		if (haveJacketed = tag.hasKey("jcmc"))
+		if (haveJacketed = tag.hasKey("jcmc")) {
 			jacketConnectMaskCache = tag.getByte("jcmc");
+		}
 
 		if (tag.hasKey("cmc")) {
 			connectMaskCache = tag.getInteger("cmc");
@@ -106,8 +108,9 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 			connectMaskCache = -1;
 			connectCornerCache = -1;
 		}
-		if (canUpdate())
+		if (canUpdate()) {
 			notifyNeighboursNextTick = tag.getBoolean("notifyQueued");
+		}
 	}
 
 	@Override
@@ -115,16 +118,10 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 
 	@Override
 	public void updateEntity() {
-		/*
-		 * if(!worldObj.isRemote && wireType == null) {
-		 * worldObj.setBlock(xCoord, yCoord, zCoord, 0); return; }
-		 */
-
 		if (notifyNeighboursNextTick) {
 			notifyNeighboursNextTick = false;
 			notifyNeighbours();
 		}
-
 		super.updateEntity();
 	}
 
@@ -589,8 +586,9 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 
 	/** Destroys the wire block when the last wire is removed. */
 	public boolean removeJacketedWire() {
-		if (!haveJacketed)
+		if (!haveJacketed) {
 			return false;
+		}
 
 		haveJacketed = false;
 		if (wireMask == 0) {
@@ -747,49 +745,6 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 	public int getVisualWireColour() {
 		return 0xFFFFFF;
 	}
-
-	/*
-	 * Returns an array of all connected wires. If the "array" parameter is not
-	 * null, it will be filled and then returned instead of creating a new
-	 * array. If the "array" parameter is not null, it must reference an array
-	 * long enough to hold all created wires. If the array is longer than the
-	 * number of connected wires, the extra spaces will be filled with null. The
-	 * maximum possible number of connected wires is no higher than 18.
-	 */
-	// Not currently used
-	/*
-	 * public WireTile[] getConnectedWires(WireTile[] array) {
-	 * if(connectMaskCache == -1) computeConnections();
-	 * 
-	 * if(array == null) array = new
-	 * WireTile[Integer.bitCount(connectMaskCache)];
-	 * 
-	 * int arraypos = 0;
-	 * 
-	 * boolean[] seenDirections = new boolean[6];
-	 * 
-	 * for(int side = 0; side < 6; side++) { if((wireMask & (1 << side)) == 0)
-	 * continue;
-	 * 
-	 * for(int dir = 0; dir < 6; dir++) { if(!connectsInDirection(side, dir))
-	 * continue;
-	 * 
-	 * ForgeDirection f1 = ForgeDirection.VALID_DIRECTIONS[dir]; int x = xCoord
-	 * + f1.offsetX, y = yCoord + f1.offsetY, z = zCoord + f1.offsetZ;
-	 * 
-	 * if(connectsInDirectionAroundCorner(side, dir)) { ForgeDirection f2 =
-	 * ForgeDirection.VALID_DIRECTIONS[side]; x += f2.offsetX; y += f2.offsetY;
-	 * z += f2.offsetZ;
-	 * 
-	 * } else { // Only count each non-corner direction once, even if several
-	 * wire sides connect to it. if(seenDirections[dir]) continue;
-	 * seenDirections[dir] = true; }
-	 * 
-	 * TileEntity te = worldObj.getBlockTileEntity(x, y, z); if(te instanceof
-	 * WireTile) array[arraypos++] = (WireTile)te; } }
-	 * 
-	 * return null; }
-	 */
 
 	@Override
 	public EnumPosition getPartPosition(int part) {

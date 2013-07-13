@@ -26,8 +26,9 @@ public class GateDynamicRenderer extends TileEntitySpecialRenderer {
 		
 		//System.out.println(te.getType()+", "+gr.pointerX.length+" pointers");
 		
-		if(gr.pointerX.length == 0)
+		if(gr.pointerX.length == 0) {
 			return;
+		}
 		
 		Minecraft.getMinecraft().renderEngine.bindTexture("/terrain.png");
 		
