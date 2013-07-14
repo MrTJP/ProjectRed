@@ -1,11 +1,14 @@
 package mrtjp.projectred.multipart.wiring.gates;
 
+import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Dir;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
 
 public class ItemBlockGate extends ItemBlock {
 
@@ -17,6 +20,11 @@ public class ItemBlockGate extends ItemBlock {
 	@Override
 	public String getUnlocalizedName(ItemStack is) {
 		return "projectred.gate." + is.getItemDamage();
+	}
+
+	@Override
+	public boolean canPlaceItemBlockOnSide(World world, int x, int y, int z, int side, EntityPlayer par6EntityPlayer, ItemStack par7ItemStack) {
+		return BasicWireUtils.canPlaceWireOnSide(world, x, y, z, ForgeDirection.getOrientation(side), false);
 	}
 
 	@Override

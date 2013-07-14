@@ -6,6 +6,8 @@ import java.util.Random;
 import mrtjp.projectred.crafting.ProjectRedTabs;
 import mrtjp.projectred.multipart.BlockMultipartBase;
 import mrtjp.projectred.renderstuffs.RenderIDs;
+import mrtjp.projectred.utils.BasicUtils;
+import mrtjp.projectred.utils.Coords;
 import mrtjp.projectred.utils.Dir;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -106,9 +108,14 @@ public class BlockGate extends BlockMultipartBase {
 	@Override
 	public void onNeighborBlockChange(World w, int x, int y, int z, int id) {
 		super.onNeighborBlockChange(w, x, y, z, id);
-
-		if ((id == 0 || Block.blocksList[id].canProvidePower()) && !w.isRemote) {
-			((TileGate) w.getBlockTileEntity(x, y, z)).updateLogic(false, false);
+		if (BasicUtils.isServer(w)) {
+			TileGate tile = (TileGate) BasicUtils.getTileEntity(w, new Coords(x, y, z), TileGate.class);
+			if (tile != null) {
+				tile.onNeighborChanged();
+				if ((id == 0 || Block.blocksList[id].canProvidePower())) {
+					tile.updateLogic(false, false);
+				}
+			}
 		}
 	}
 
