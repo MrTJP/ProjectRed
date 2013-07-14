@@ -1,5 +1,6 @@
 package mrtjp.projectred.renderstuffs.gates;
 
+import java.util.Collections;
 import java.util.Map;
 
 import mrtjp.projectred.utils.codechicken.core.render.CCModel;
@@ -8,27 +9,43 @@ import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
 import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
 import mrtjp.projectred.utils.codechicken.core.vec.Translation;
 
+/**
+ * Gates are rendered using these parts. The GateDynamicRenderer renders each of
+ * these parts in the blockspace that the gate is on. Parts are defined in
+ * GateRenderings.
+ * 
+ * @author MrTJP
+ * 
+ */
 public class GatePartModel {
-
 	private Map<String, CCModel> models;
 	private String objPath;
 	private String texPath;
 
+	public GatePartModel(String objName, String texName) {
+		this(null, objName, texName);
+	}
+
 	/**
 	 * The name of the object in folder /mods/projectred/textures/obj/. Name of
-	 * png in folder /mods/projectred/textures/blocks/gates/.
+	 * png in folder /mods/projectred/textures/blocks/gates/. If a model map is
+	 * passed in, it will not be parsed.
 	 * 
 	 * You would pass in example.obj and example2.png;
 	 * 
 	 * @param objName
 	 * @param texName
 	 */
-	public GatePartModel(String objName, String texName) {
+	public GatePartModel(Map<String, CCModel> objModel, String objName, String texName) {
 		String baseObj = "/mods/projectred/textures/obj/gateparts/";
 		String baseTex = "/mods/projectred/textures/blocks/gates/";
-		objPath =  baseObj + objName;
+		objPath = baseObj + objName;
 		texPath = baseTex + texName;
-		models = CCModel.parseObjModels(objPath, new InvertX());
+		if (objModel == null) {
+			models = CCModel.parseObjModels(objPath, new InvertX());
+		} else {
+			models = objModel;
+		}
 	}
 
 	/**

@@ -3,6 +3,7 @@ package mrtjp.projectred.blocks;
 import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
 import mrtjp.projectred.tiles.TileLantern;
 import mrtjp.projectred.utils.BasicUtils;
+import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,13 +49,7 @@ public class ItemBlockLantern extends ItemBlock {
 
 	@Override
 	public boolean canPlaceItemBlockOnSide(World world, int x, int y, int z, int side, EntityPlayer par6EntityPlayer, ItemStack par7ItemStack) {
-        Block supporter = Block.blocksList[world.getBlockId(x, y, z)];
-       if (supporter != null && supporter.isBlockSolidOnSide(world, x, y, z, ForgeDirection.getOrientation(side))) {
-    	   return true;
-       } else if (supporter.isNormalCube(supporter.blockID) || supporter.blockID == Block.glass.blockID) {
-    	   return true;
-       }
-       return false;
+		return BasicWireUtils.canPlaceWireOnSide(world, x, y, z, ForgeDirection.getOrientation(side), false);
 	}
 
 	@Override

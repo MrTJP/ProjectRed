@@ -33,24 +33,24 @@ public class GateDynamicRenderer extends TileEntitySpecialRenderer implements II
 		EnumGate type = te.getType();
 		GateRendering rendering = (type == null ? defaultRendering : type.getRendering());
 		rendering.set(te.getRenderState());
-		rendering._modelBase.renderPart("base", (float)x, (float)y, (float)z, te.getSide(), te.getFront(), .5f, 0, .5f);
+		rendering._modelBase.renderPart("base", (float) x, (float) y, (float) z, te.getSide(), te.getFront(), .5f, 0, .5f);
 
 		for (int i = 0; i < rendering.torchState.length; i++) {
-			float xOffset = rendering.torchX[i] / 16f;
-			// float yOffset = rendering.torchY[i] / 16f;
-			float yOffset = 0;
-			float zOffset = rendering.torchZ[i] / 16f;
+			float xOffset = (16f - rendering.torchX[i]) / 16f;
+			float yOffset = rendering.torchY[i] / 16f;
+			float zOffset = (16f - rendering.torchZ[i]) / 16f;
 			boolean on = rendering.torchState[i];
-			renderTorchOnGate((float)x, (float)y, (float)z, te.getSide(), te.getFront(), xOffset, yOffset, zOffset, on, rendering);
+			renderTorchOnGate((float) x, (float) y, (float) z, te.getSide(), te.getFront(), xOffset, yOffset, zOffset, on, rendering);
 		}
-		
+
 		for (int k = 0; k < rendering.pointerX.length; k++) {
 			float xOffset = rendering.pointerX[k] / 16f;
 			float zOffset = rendering.pointerZ[k] / 16f;
 			renderPointer(xOffset, 0, zOffset, 0);
 		}
 
-		if (true) return;
+		if (true)
+			return;
 		GateRendering gr = te.getType().getRendering();
 
 		// System.out.println(te.getType()+", "+gr.pointerX.length+" pointers");
@@ -77,7 +77,8 @@ public class GateDynamicRenderer extends TileEntitySpecialRenderer implements II
 	}
 
 	private void renderPointer(float x, float z, double angle, float pixel) {
-		if (true) return;
+		if (true)
+			return;
 		rt.base = Tessellator.instance;
 		rt.x = 0;
 		rt.y = 0;
@@ -86,7 +87,7 @@ public class GateDynamicRenderer extends TileEntitySpecialRenderer implements II
 		rt.side = 0;
 		rt.flipped = false;
 		rt.base.startDrawingQuads();
-		
+
 		// x' = x * cos(angle) + z * sin(angle)
 		// z' = z * cos(angle) - x * sin(angle)
 
@@ -178,7 +179,8 @@ public class GateDynamicRenderer extends TileEntitySpecialRenderer implements II
 		case INVENTORY:
 			renderInventoryBlock(item.getItemDamage(), 0f, 0f, 0f, 1f);
 			return;
-		default: return;
+		default:
+			return;
 		}
 
 	}
@@ -192,14 +194,13 @@ public class GateDynamicRenderer extends TileEntitySpecialRenderer implements II
 		rendering._modelBase.renderPart("base", x, y, z, 0, 3, .5f, 0, .5f);
 
 		for (int i = 0; i < rendering.torchState.length; i++) {
-			float xOffset = rendering.torchX[i] / 16f;
-			// float yOffset = rendering.torchY[i] / 16f;
-			float yOffset = 0;
-			float zOffset = rendering.torchZ[i] / 16f;
+			float xOffset = (16f - rendering.torchX[i]) / 16f;
+			float yOffset = rendering.torchY[i] / 16f;
+			float zOffset = (16f - rendering.torchZ[i]) / 16f;
 			boolean on = rendering.torchState[i];
-			renderTorchOnGate(x, y, z, 0, 3, xOffset, yOffset, zOffset, on, rendering);
+			renderTorchOnGate((float) x, (float) y, (float) z, 0, 2, xOffset, yOffset, zOffset, on, rendering);
 		}
-		
+
 		for (int k = 0; k < rendering.pointerX.length; k++) {
 			float xOffset = rendering.pointerX[k] / 16f;
 			float zOffset = rendering.pointerZ[k] / 16f;
@@ -208,27 +209,45 @@ public class GateDynamicRenderer extends TileEntitySpecialRenderer implements II
 		GL11.glPopMatrix();
 	}
 
+	/**
+	 * Render the torch on a gate. x,y,z are the gate coords. side and facing
+	 * are for rotation and attached side. xOffset, yOffset, and zOffset are
+	 * where on the actual gate they are. Note that 0.3f are subtracted from
+	 * xOffset and added to zOffset to account for torch thickness.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param side
+	 * @param facing
+	 * @param xOffset
+	 * @param yOffset
+	 * @param zOffset
+	 * @param on
+	 * @param rendering
+	 */
 	public void renderTorchOnGate(float x, float y, float z, int side, int facing, float xOffset, float yOffset, float zOffset, boolean on, GateRendering rendering) {
 		if (!on) {
 			GL11.glPushMatrix();
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glColor4f(1, 1, 1, 1);
-			rendering._torchOff.renderPart("torch", x, y, z, side, facing, xOffset, yOffset, zOffset);
+			rendering._torchOff.renderPart("torch", x, y, z, side, facing, xOffset + .03f, yOffset, zOffset - .03f);
 			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glPopMatrix();
 			return;
 		} else {
 			GL11.glPushMatrix();
 			GL11.glDisable(GL11.GL_LIGHTING);
-			rendering._torchOn.renderPart("torch", x, y, z, side, facing, xOffset, yOffset, zOffset);
+			rendering._torchOn.renderPart("torch", x, y, z, side, facing, xOffset + .03f, yOffset, zOffset - .03f);
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glColor4f(Color.RED.r, Color.RED.g, Color.RED.b, .5f);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 			GL11.glDepthMask(false);
-			rendering._torchOn.renderPart("glow", x, y, z, side, facing, xOffset, yOffset, zOffset);
+			rendering._torchOn.renderPart("glow", x, y, z, side, facing, xOffset + .03f, yOffset, zOffset - .03f);
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glColor4f(1, 1, 1, 1);
 			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glDepthMask(true);
 			GL11.glPopMatrix();
