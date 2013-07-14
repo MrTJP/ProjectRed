@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.network.IProxy;
 import net.minecraft.block.Block;

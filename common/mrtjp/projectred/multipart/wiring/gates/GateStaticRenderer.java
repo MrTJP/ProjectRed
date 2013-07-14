@@ -12,6 +12,8 @@ import static org.lwjgl.opengl.GL11.glEnable;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.multipart.wiring.RotatedTessellator;
 import mrtjp.projectred.renderstuffs.RenderIDs;
+import mrtjp.projectred.renderstuffs.gates.GatePartModel;
+import mrtjp.projectred.utils.Color;
 import mrtjp.projectred.utils.Dir;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -30,9 +32,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 
 	private GateRendering defaultRendering = new GateRendering.Default();
-
 	private RotatedTessellator rotatedTessellator = new RotatedTessellator();
-
 	public static final GateStaticRenderer instance = new GateStaticRenderer();
 
 	@Override
@@ -44,17 +44,51 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 		if (type == null) {
 			return true;
 		}
-
+		// We need a new instance of the Tessellator to draw.
 		GateRendering rendering = type.getRendering();
-
 		rendering.set(te.getRenderState());
+		//rendering._modelBase.renderPart("base", x, y, z, te.getSide(), te.getFront(), 0, 0, 0);
+		
+		//renderGateSurface(block, side, front, rendering.segmentIcons[0]);
+		if (true) return true;
+		for (int k = 0; k < rendering.segmentTex.length; k++) {
+			Tessellator.instance.setColorOpaque_I(rendering.segmentCol[k]);
+		}
+
+		rotatedTessellator.base = Tessellator.instance;
+		rotatedTessellator.front = front;
+		rotatedTessellator.side = side;
+		rotatedTessellator.x = x;
+		rotatedTessellator.y = y;
+		rotatedTessellator.z = z;
+		rotatedTessellator.flipped = te.isFlipped();
+		Tessellator.instance.setBrightness(world.getLightBrightnessForSkyBlocks(x, y, z, 0));
 		Minecraft.getMinecraft().renderEngine.bindTexture("/terrain.png");
+		
+		Tessellator.instance.setBrightness(world.getLightBrightnessForSkyBlocks(x, y, z, 0));
+		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
+		rotatedTessellator.base = Tessellator.instance;
+		for (int k = 0; k < rendering.torchState.length; k++) {
+			float tx = rendering.torchX[k] / 16f;
+			float ty = rendering.torchZ[k] / 16f;
+			boolean on = rendering.torchState[k];
+			renderTorchAtAngle(render, on ? rendering.torchTexOn : rendering.torchTexOff, tx, ty, 3 / 16f);
+		}
+
+		for (int k = 0; k < rendering.pointerX.length; k++) {
+			float tx = rendering.pointerX[k] / 16f;
+			float ty = rendering.pointerZ[k] / 16f;
+			renderTorchAtAngle(render, rendering.torchTexOn, tx, ty, 0f);
+		}
+		rendering.customRender(rotatedTessellator, render);
+
+		if (true)
+			return true;
 
 		if (side < 0 || side > 5 || front < 0 || front > 5) {
 			// invalid orientation, make it obvious
 			side = front = 0;
 		}
-
 		switch (side) {
 		case Dir.NX:
 			render.setRenderBounds(0, 0, 0, BlockGate.THICKNESS, 1, 1);
@@ -75,15 +109,6 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 			render.setRenderBounds(0, 0, 1 - BlockGate.THICKNESS, 1, 1, 1);
 			break;
 		}
-
-		rotatedTessellator.base = Tessellator.instance;
-		rotatedTessellator.front = front;
-		rotatedTessellator.side = side;
-		rotatedTessellator.x = x;
-		rotatedTessellator.y = y;
-		rotatedTessellator.z = z;
-		rotatedTessellator.flipped = te.isFlipped();
-
 		if ((side & 6) == (front & 6)) {
 			// invalid orientation, make it obvious
 			render.setRenderBounds(0, 0, 0, 1, 1, 1);
@@ -95,42 +120,31 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 		BlockGate.textureOverride = null;
 		BlockGate.colourOverride = -1;
 		render.renderStandardBlock(block, x, y, z);
-
-		Tessellator.instance.setBrightness(world.getLightBrightnessForSkyBlocks(x, y, z, 0));
-
-		for (int k = 0; k < rendering.segmentTex.length; k++) {
-			Tessellator.instance.setColorOpaque_I(rendering.segmentCol[k]);
-			renderGateSurface(block, side, front, rendering.segmentIcons[k]);
-		}
-
-		Tessellator.instance.setBrightness(world.getLightBrightnessForSkyBlocks(x, y, z, 0));
-		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
-
-		rotatedTessellator.base = Tessellator.instance;
-		for (int k = 0; k < rendering.torchState.length; k++) {
-			float tx = rendering.torchX[k] / 16f;
-			float ty = rendering.torchY[k] / 16f;
-			boolean on = rendering.torchState[k];
-			renderTorchAtAngle(render, on ? rendering.torchTexOn : rendering.torchTexOff, tx, ty, 3 / 16f);
-		}
-
-		for (int k = 0; k < rendering.pointerX.length; k++) {
-			float tx = rendering.pointerX[k] / 16f;
-			float ty = rendering.pointerY[k] / 16f;
-			renderTorchAtAngle(render, rendering.torchTexOn, tx, ty, 0f);
-		}
-		rendering.customRender(rotatedTessellator, render);
 		return true;
 	}
 
 	@Override
 	public void renderInventoryBlock(Block block, int meta, int model, RenderBlocks render) {
+
 		EnumGate type = EnumGate.VALUES[meta];
 		GateRendering rendering = (type == null ? defaultRendering : type.getRendering());
-
-		render.setRenderBounds(0, 0, 0, 1, BlockGate.THICKNESS, 1);
-
 		rendering.setItemRender();
+		rendering._modelBase.renderPart("base", 0, -.5f, 0, 0, 3, 0, 0, 0);
+		
+		for (int i = 0; i < rendering.torchState.length; i++) {
+			float xOffset = rendering.torchX[i] / 16f;
+			//float yOffset = rendering.torchY[i] / 16f;
+			float yOffset = 0;
+			float zOffset = rendering.torchZ[i] / 16f;
+			boolean on = rendering.torchState[i];
+			renderTorchOnGate(0, 0, 0, 0, 3, xOffset - .5f, yOffset -.5f, zOffset - .5f, on, rendering);
+		}
+		
+		
+
+		
+		if (true) return;
+		render.setRenderBounds(0, 0, 0, 1, BlockGate.THICKNESS, 1);
 
 		Minecraft.getMinecraft().renderEngine.bindTexture("/terrain.png");
 
@@ -172,6 +186,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 		t.setBrightness(0x00F000F0);
 		t.setColorRGBA(255, 255, 255, 255);
 
+		// Render the block surface.
 		for (int k = 0; k < rendering.segmentIcons.length; k++) {
 			t.setColorOpaque_I(rendering.segmentCol[k]);
 			renderGateSurface(ProjectRed.blockGate, rotatedTessellator.side, rotatedTessellator.front, rendering.segmentIcons[k]);
@@ -191,17 +206,10 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 		Tessellator.instance.setBrightness(0x00F000F0);
 		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
 
-		for (int k = 0; k < rendering.torchState.length; k++) {
-			float tx = rendering.torchX[k] / 16f;
-			float ty = rendering.torchY[k] / 16f;
-			boolean on = rendering.torchState[k];
-
-			renderTorchAtAngle(render, on ? rendering.torchTexOn : rendering.torchTexOff, tx, ty, 3 / 16f);
-		}
 
 		for (int k = 0; k < rendering.pointerX.length; k++) {
 			float tx = rendering.pointerX[k] / 16f;
-			float ty = rendering.pointerY[k] / 16f;
+			float ty = rendering.pointerZ[k] / 16f;
 
 			renderTorchAtAngle(render, rendering.torchTexOn, tx, ty, 0f);
 		}
@@ -213,6 +221,28 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 		glDisable(GL_BLEND);
 	}
 
+	public void renderTorchOnGate(int x, int y, int z, int side, int facing, float xOffset, float yOffset, float zOffset, boolean on, GateRendering rendering) {
+		if (on) {
+			rendering._torchOn.renderPart("torch", x, y, z, side, facing, xOffset, yOffset, zOffset);
+			GL11.glPushMatrix();
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glColor4f(Color.RED.r, Color.RED.g, Color.RED.b, .5f);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDepthMask(false);
+			rendering._torchOn.renderPart("glow", x, y, z, side, facing, xOffset, yOffset, zOffset);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glDepthMask(true);
+			GL11.glPopMatrix();
+		} else {
+			rendering._torchOff.renderPart("torch", x, y, z, side, facing, xOffset, yOffset, zOffset);
+		}
+	}
+	
+	
 	public void renderTorchAtAngle(RenderBlocks render, Icon texture, double x, double z, float Y_INSET) {
 		RotatedTessellator var12 = rotatedTessellator;
 
@@ -258,6 +288,8 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 	}
 
 	private void renderGateSurface(Block block, int side, int front, Icon tex) {
+		
+		if (true) return;
 		final double u1 = tex.getMinU();
 		final double v1 = tex.getMinV();
 		final double u2 = tex.getMaxU();

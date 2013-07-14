@@ -454,6 +454,7 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 	
 	// called when non-shift-clicked by a screwdriver
 	public void rotate() {
+		//TODO: this is rotating North>west>east>south.  Change to cirle.
 		do
 			front = (byte)((front + 1) % 6);
 		while((front & 6) == (side & 6));

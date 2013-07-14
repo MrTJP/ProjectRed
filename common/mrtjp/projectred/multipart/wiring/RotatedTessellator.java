@@ -1,8 +1,8 @@
 package mrtjp.projectred.multipart.wiring;
 
 import mrtjp.projectred.utils.Dir;
+import mrtjp.projectred.utils.codechicken.core.render.CCModel.ISpecialTessellator;
 import net.minecraft.client.renderer.Tessellator;
-import codechicken.core.render.CCModel.ISpecialTessellator;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

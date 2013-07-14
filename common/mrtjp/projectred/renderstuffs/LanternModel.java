@@ -3,29 +3,24 @@ package mrtjp.projectred.renderstuffs;
 import java.util.Map;
 
 import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
-import mrtjp.projectred.core.ProjectRedTickHandler;
-import mrtjp.projectred.multipart.wiring.RotatedTessellator;
-import mrtjp.projectred.tiles.TileLantern;
 import mrtjp.projectred.utils.Color;
+import mrtjp.projectred.utils.codechicken.core.render.CCModel;
+import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
+import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
+import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
+import mrtjp.projectred.utils.codechicken.core.vec.Translation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderEngine;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraftforge.client.model.AdvancedModelLoader;
-import net.minecraftforge.client.model.IModelCustom;
 
 import org.lwjgl.opengl.GL11;
 
-import codechicken.core.render.CCModel;
-import codechicken.core.render.CCRenderState;
-import codechicken.core.vec.SwapYZ;
-import codechicken.core.vec.Translation;
 
 public class LanternModel {
 
 	private Map<String, CCModel> models;
 
 	public LanternModel() {
-		models = CCModel.parseObjModels("/mods/projectred/textures/obj/lantern.obj", new SwapYZ());
+		models = CCModel.parseObjModels("/mods/projectred/textures/obj/lantern.obj", new InvertX());
 		for (CCModel c : models.values()) {
 			c.computeNormals();
 			c.apply(new Translation(.5, 0, .5));
@@ -48,35 +43,25 @@ public class LanternModel {
 		}
 	}
 
-	public void renderLampBulb(double x, double y, double z, int rotation, boolean isOn, TileLantern tile) {
+	public void renderLampBulb(double x, double y, double z, int rotation, boolean isOn) {
 		GL11.glPushMatrix();
-		GL11.glDisable(GL11.GL_LIGHTING);
-		RotatedTessellator rt = new RotatedTessellator();
-		rt.base = Tessellator.instance;
-		rt.flipped = false;
-		rt.front = rotation;
-		rt.side = 0;
-		rt.x = x;
-		rt.y = y;
-		rt.z = z;
 		CCRenderState.reset();
 		CCRenderState.useNormals(true);
 		CCRenderState.startDrawing(4);
-		models.get("covertop").renderWithSpecial(rt);
-		models.get("coverbottom").renderWithSpecial(rt);
-		models.get("lamp").renderWithSpecial(rt);
+		models.get("covertop").copy().apply(new Translation(x, y, z)).render();
+		models.get("coverbottom").copy().apply(new Translation(x, y, z)).render();
+		models.get("lamp").copy().apply(new Translation(x, y, z)).render();
 		if (rotation == 0) {
-			models.get("standbottom").renderWithSpecial(rt);
-			models.get("goldringbottom").renderWithSpecial(rt);
+			models.get("standbottom").copy().apply(new Translation(x, y, z)).render();
+			models.get("goldringbottom").copy().apply(new Translation(x, y, z)).render();
 		} else if (rotation == 1) {
-			models.get("standtop").renderWithSpecial(rt);
-			models.get("goldringtop").renderWithSpecial(rt);
+			models.get("standtop").copy().apply(new Translation(x, y, z)).render();
+			models.get("goldringtop").copy().apply(new Translation(x, y, z)).render();
 		} else {
-			models.get("standside").renderWithSpecial(rt);
-			models.get("goldringtop").renderWithSpecial(rt);
+			models.get("standside").copy().apply(Rotation.getForSideFacing(0, rotation)).apply(new Translation(x, y, z)).render();
+			models.get("goldringtop").copy().apply(Rotation.getForSideFacing(0, rotation)).apply(new Translation(x, y, z)).render();
 		}
 		CCRenderState.draw();
-		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glPopMatrix();
 	}
 
@@ -85,7 +70,6 @@ public class LanternModel {
 		GL11.glTranslated(x, y, z);
 		GL11.glScalef(scale, scale, scale);
 		GL11.glRotatef(-90, 0f, 1f, 0f);
-		GL11.glDisable(GL11.GL_LIGHTING);
 		CCRenderState.reset();
 		CCRenderState.useNormals(true);
 		CCRenderState.startDrawing(4);
@@ -94,7 +78,6 @@ public class LanternModel {
 		models.get("lamp").render();
 		models.get("goldringtop").render();
 		CCRenderState.draw();
-		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glPopMatrix();
 	}
 

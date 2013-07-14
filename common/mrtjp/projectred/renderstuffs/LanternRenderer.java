@@ -4,6 +4,7 @@ import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
 import mrtjp.projectred.core.ProjectRedTickHandler;
 import mrtjp.projectred.tiles.TileLantern;
 import mrtjp.projectred.utils.Color;
+import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
@@ -13,7 +14,6 @@ import net.minecraftforge.common.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import codechicken.core.render.CCRenderState;
 import codechicken.translocator.TileTranslocatorRenderer;
 
 public class LanternRenderer extends TileEntitySpecialRenderer implements IItemRenderer {
@@ -32,7 +32,7 @@ public class LanternRenderer extends TileEntitySpecialRenderer implements IItemR
 			model.bindTextureForColorAndState(color, isOn);
 			
 			// Render the core
-			model.renderLampBulb(x, y, z, rotation, isOn, tile);
+			model.renderLampBulb(x, y, z, rotation, isOn);
 			
 			// Render halo
 			if (isOn) {

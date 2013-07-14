@@ -43,7 +43,8 @@ public class ClientProxy extends CommonProxy implements IProxy {
 		// Gates
 		RenderIDs.renderIdGate = RenderingRegistry.getNextAvailableRenderId();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileGate.class, GateDynamicRenderer.instance);
-		RenderingRegistry.registerBlockHandler(GateStaticRenderer.instance);
+		//RenderingRegistry.registerBlockHandler(GateStaticRenderer.instance);
+		MinecraftForgeClient.registerItemRenderer(ProjectRed.blockGate.blockID, GateDynamicRenderer.instance);
 
 		// Microblocks
 		RenderIDs.renderIdMicroblock = RenderingRegistry.getNextAvailableRenderId();

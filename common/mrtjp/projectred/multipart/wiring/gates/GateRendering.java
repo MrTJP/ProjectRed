@@ -3,6 +3,7 @@ package mrtjp.projectred.multipart.wiring.gates;
 import mrtjp.projectred.multipart.wiring.RotatedTessellator;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire;
 import mrtjp.projectred.multipart.wiring.wires.WireRenderer;
+import mrtjp.projectred.renderstuffs.gates.GatePartModel;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -24,13 +25,24 @@ public abstract class GateRendering {
 	public int[] segmentCol = new int[] { 0xFF0000 };
 
 	// Torch positions are relative to the texture, in pixels
+	// X, and Z are the ones that change the torch position.
+	// Y changes the amount its pushed into the gate, dont make less than 0;
 	public float[] torchX = new float[] {};
 	public float[] torchY = new float[] {};
+	public float[] torchZ = new float[] {};
 	public boolean[] torchState = new boolean[] {};
 
 	// Ditto for pointer positions
 	public float[] pointerX = new float[] {};
 	public float[] pointerY = new float[] {};
+	public float[] pointerZ = new float[] {};
+	
+	// Part models
+	public static GatePartModel _modelBase = new GatePartModel("base.obj", "base.png");
+	public static GatePartModel _torchOff = new GatePartModel("torch.obj", "redtorchoff.png");
+	public static GatePartModel _torchOn = new GatePartModel("torch.obj", "redtorchon.png");
+	public static GatePartModel _greenTorchOff = new GatePartModel("torch.obj", "greentorchoff.png");
+	public static GatePartModel _greenTorchOn = new GatePartModel("torch.obj", "greentorchon.png");
 
 	public void set(int renderState) {
 	}
@@ -70,7 +82,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "and-base", "and-ovl-out", "and-ovl-back", "and-ovl-right", "and-ovl-left" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0, 0 };
 			torchX = new float[] { 8.5f, 4.5f, 8.5f, 12.5f };
-			torchY = new float[] { 2.5f, 6.5f, 6.5f, 6.5f };
+			torchZ = new float[] { 2.5f, 6.5f, 6.5f, 6.5f };
 			torchState = new boolean[] { false, true, true, true };
 		}
 
@@ -111,7 +123,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "or-base", "or-ovl-out", "or-ovl-back", "or-ovl-right", "or-ovl-left", "or-ovl-middle" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0, 0, 0xFF0000 };
 			torchX = new float[] { 7.5f, 7.5f };
-			torchY = new float[] { 5.5f, 9.5f };
+			torchZ = new float[] { 5.5f, 9.5f };
 			torchState = new boolean[] { false, true };
 		}
 
@@ -143,7 +155,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "not-base", "not-ovl-out", "not-ovl-back", "not-ovl-right", "not-ovl-left" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0, 0 };
 			torchX = new float[] { 7.5f };
-			torchY = new float[] { 7.5f };
+			torchZ = new float[] { 7.5f };
 			torchState = new boolean[] { false };
 		}
 
@@ -169,7 +181,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "rs-base", "rs-left", "rs-right" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0 };
 			torchX = new float[] { 6.5f, 9.5f };
-			torchY = new float[] { 3.5f, 12.5f };
+			torchZ = new float[] { 3.5f, 12.5f };
 			torchState = new boolean[] { false, false };
 		}
 
@@ -195,7 +207,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "toggle-base", "toggle-left", "toggle-right" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0 };
 			torchX = new float[] { 4.5f, 4.5f };
-			torchY = new float[] { 3.5f, 12.5f };
+			torchZ = new float[] { 3.5f, 12.5f };
 			torchState = new boolean[] { true, false };
 		}
 
@@ -378,7 +390,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "nor-base", "nor-out", "nor-back", "nor-right", "nor-left" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0, 0 };
 			torchX = new float[] { 7.5f };
-			torchY = new float[] { 7.5f };
+			torchZ = new float[] { 7.5f };
 			torchState = new boolean[] { false };
 		}
 
@@ -404,7 +416,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "nand-base", "nand-out", "nand-back", "nand-right", "nand-left" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0, 0 };
 			torchX = new float[] { 4.5f, 8.5f, 12.5f };
-			torchY = new float[] { 6.5f, 6.5f, 6.5f };
+			torchZ = new float[] { 6.5f, 6.5f, 6.5f };
 			torchState = new boolean[] { true, true, true };
 		}
 
@@ -439,7 +451,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "xor-base", "xor-left", "xor-right", "xor-middle", "xor-out" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0, 0 };
 			torchX = new float[] { 4.5f, 11.5f, 8.5f };
-			torchY = new float[] { 9.5f, 9.5f, 13.5f };
+			torchZ = new float[] { 9.5f, 9.5f, 13.5f };
 			torchState = new boolean[] { false, false, false };
 		}
 
@@ -474,7 +486,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "xnor-base", "xnor-left", "xnor-right", "xnor-middle", "xnor-left-out", "xnor-right-out" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0, 0, 0 };
 			torchX = new float[] { 8.0f, 4.5f, 11.5f, 8.5f };
-			torchY = new float[] { 3.0f, 9.5f, 9.5f, 13.5f };
+			torchZ = new float[] { 3.0f, 9.5f, 9.5f, 13.5f };
 			torchState = new boolean[] { false, false, false, false };
 		}
 
@@ -513,7 +525,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "buffer-base", "buffer-left", "buffer-right", "buffer-back", "buffer-out" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0, 0 };
 			torchX = new float[] { 7.5f, 7.5f };
-			torchY = new float[] { 2.5f, 9.5f };
+			torchZ = new float[] { 2.5f, 9.5f };
 			torchState = new boolean[] { false, false };
 		}
 
@@ -543,7 +555,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "multiplexer-base", "multiplexer-2", "multiplexer-3", "multiplexer-right", "multiplexer-5", "multiplexer-left-out", "multiplexer-right-out" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0, 0, 0, 0 };
 			torchX = new float[] { 8f, 4.5f, 11.5f, 4.5f };
-			torchY = new float[] { 2f, 7.5f, 7.5f, 12.5f };
+			torchZ = new float[] { 2f, 7.5f, 7.5f, 12.5f };
 			torchState = new boolean[] { false, false, false, false };
 		}
 
@@ -585,7 +597,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "repeater-base", "repeater-strip" };
 			segmentCol = new int[] { 0xFFFFFF, 0 };
 			torchX = new float[] { 8f, 8f };
-			torchY = new float[] { 3f, 6f };
+			torchZ = new float[] { 3f, 6f };
 			torchState = new boolean[] { false, false };
 		}
 
@@ -593,7 +605,7 @@ public abstract class GateRendering {
 		public void set(int renderState) {
 			boolean out = (renderState & 32768) != 0;
 
-			torchY[1] = (renderState & 7) + 6;
+			torchZ[1] = (renderState & 7) + 6;
 
 			torchState[0] = torchState[1] = out;
 
@@ -602,7 +614,7 @@ public abstract class GateRendering {
 
 		@Override
 		public void setItemRender() {
-			torchY[1] = 6f;
+			torchZ[1] = 6f;
 
 			torchState[0] = torchState[1] = false;
 
@@ -615,10 +627,10 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "timer-base", "timer-left", "timer-back", "timer-right" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0 };
 			torchX = new float[] { 8f };
-			torchY = new float[] { 2f };
+			torchZ = new float[] { 2f };
 			torchState = new boolean[] { false };
 			pointerX = new float[] { 8f };
-			pointerY = new float[] { 8f };
+			pointerZ = new float[] { 8f };
 		}
 
 		@Override
@@ -643,10 +655,10 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "counter-base", "counter-front", "counter-back" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0 };
 			torchX = new float[] { 3f, 13f };
-			torchY = new float[] { 8f, 8f };
+			torchZ = new float[] { 8f, 8f };
 			torchState = new boolean[] { false, false };
 			pointerX = new float[] { 8f };
-			pointerY = new float[] { 11f };
+			pointerZ = new float[] { 11f };
 		}
 
 		@Override
@@ -671,10 +683,10 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "sequencer-base" };
 			segmentCol = new int[] { 0xFFFFFF };
 			torchX = new float[] { 8f, 2f, 14f, 8f };
-			torchY = new float[] { 2f, 8f, 8f, 14f };
+			torchZ = new float[] { 2f, 8f, 8f, 14f };
 			torchState = new boolean[] { false, false, false, false };
 			pointerX = new float[] { 8f };
-			pointerY = new float[] { 8f };
+			pointerZ = new float[] { 8f };
 		}
 
 		@Override
@@ -699,7 +711,7 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "former-base", "former-in", "former-3", "former-4", "former-5" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0, 0 };
 			torchX = new float[] { 8f, 4.5f, 11.5f };
-			torchY = new float[] { 2f, 8f, 8f };
+			torchZ = new float[] { 2f, 8f, 8f };
 			torchState = new boolean[] { false, false, false };
 		}
 
@@ -732,7 +744,7 @@ public abstract class GateRendering {
 	public static class Randomizer extends GateRendering {
 		{
 			torchX = new float[] { 8f, 3f, 13f };
-			torchY = new float[] { 3f, 8f, 8f };
+			torchZ = new float[] { 3f, 8f, 8f };
 			torchState = new boolean[] { false, false, false };
 			segmentTex = new String[] { "randomizer-base", "randomizer-in" };
 			segmentCol = new int[] { 0xFFFFFF, 0 };
@@ -768,10 +780,10 @@ public abstract class GateRendering {
 			segmentTex = new String[] { "statecell-base", "statecell-2", "statecell-3", "statecell-4", "statecell-5", "statecell-6", "statecell-7" };
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0, 0, 0, 0 };
 			torchX = new float[] { 13f };
-			torchY = new float[] { 7f };
+			torchZ = new float[] { 7f };
 			torchState = new boolean[] { false };
 			pointerX = new float[] { 8f };
-			pointerY = new float[] { 12f };
+			pointerZ = new float[] { 12f };
 		}
 
 		@Override
@@ -802,7 +814,7 @@ public abstract class GateRendering {
 			segmentCol = new int[] { 0xFFFFFF, 0, 0, 0, 0, 0, 0 };
 			segmentTex = new String[] { "sync-base", "sync-left", "sync-right", "sync-back", "sync-middle", "sync-left-middle", "sync-right-middle" };
 			torchX = new float[] { 8f };
-			torchY = new float[] { 3f };
+			torchZ = new float[] { 3f };
 			torchState = new boolean[] { false };
 		}
 
