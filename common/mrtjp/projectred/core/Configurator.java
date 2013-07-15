@@ -56,12 +56,12 @@ public class Configurator {
 		block_machinesID = localConfig.getBlock("block_machinesID", 3129);
 		block_lanternID = localConfig.getBlock("block_lanternID", 3130);
 
-		item_sawID = localConfig.getItem("item_sawID", 12023);
-		item_screwdriverID = localConfig.getItem("item_screwdriverID", 12024);
-		item_componentsID = localConfig.getItem("item_componentsID", 12025);
-		item_drawplateID = localConfig.getItem("item_drawplateID", 12026);
-		item_woolginID = localConfig.getItem("item_woolgin", 12027);
-		item_backpackID = localConfig.getItem("item_liquidSolidifierID", 12028);
+		item_sawID = localConfig.getItem("item_sawID", 11023);
+		item_screwdriverID = localConfig.getItem("item_screwdriverID", 11024);
+		item_componentsID = localConfig.getItem("item_componentsID", 11025);
+		item_drawplateID = localConfig.getItem("item_drawplateID", 11026);
+		item_woolginID = localConfig.getItem("item_woolgin", 11027);
+		item_backpackID = localConfig.getItem("item_backpack", 11028);
 		
 		networkUpdateRange = localConfig.get("general", "Network Update Range", 50.0D);
 		networkUpdateRange.comment = "This is the distance in which players will be notified.  Lower if you experience lag.";
