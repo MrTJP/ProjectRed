@@ -651,4 +651,12 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 		}
 	}
 
+	/**
+	 * We need the entire block to render if we are looking near it, because
+	 * there are things outside of the default BBox like torches and pointers.
+	 */
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return AxisAlignedBB.getAABBPool().getAABB(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);	
+	}
 }

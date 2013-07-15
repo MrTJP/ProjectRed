@@ -86,4 +86,49 @@ public class GatePartModel {
 			CCRenderState.draw();
 		}
 	}
+
+	/**
+	 * Same as renderPart, but you can specify y-axis rotation.
+	 * 
+	 * @param part
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param side
+	 * @param facing
+	 * @param xOffset
+	 * @param yOffset
+	 * @param zOffset
+	 * @param degRotation
+	 */
+	public void renderPartWithRotation(String part, float x, float y, float z, int side, int facing, float xOffset, float yOffset, float zOffset, float degRotation) {
+
+	}
+
+	/**
+	 * Same as renderPart, but you can specity tessellation color.
+	 * 
+	 * @param part
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param side
+	 * @param facing
+	 * @param xOffset
+	 * @param yOffset
+	 * @param zOffset
+	 * @param color
+	 */
+	public void renderPartWithColor(String part, float x, float y, float z, int side, int facing, float xOffset, float yOffset, float zOffset, int color) {
+		CCModel cc = getCCModels().get(part);
+		if (cc != null) {
+			CCRenderState.reset();
+			CCRenderState.changeTexture(getTexture());
+			CCRenderState.useNormals(true);
+			CCRenderState.setColourOpaque(color);
+			CCRenderState.startDrawing(4);
+			cc.copy().apply(new Translation(xOffset, yOffset, zOffset)).apply(Rotation.getForSideFacing(side, facing)).apply(new Translation(x, y, z)).render();
+			CCRenderState.draw();
+		}
+	}
 }

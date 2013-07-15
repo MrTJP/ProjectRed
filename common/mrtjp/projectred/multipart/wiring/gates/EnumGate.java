@@ -7,43 +7,43 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public enum EnumGate {
-	AND("AND gate", GateLogic.AND.class, GateRendering.AND.class),
-	OR("OR gate", GateLogic.OR.class, GateRendering.OR.class),
-	NOT("NOT gate", GateLogic.NOT.class, GateRendering.NOT.class),
-	RSLATCH("RS-Latch", GateLogic.RSLatch.class, GateRendering.RSLatch.class),
-	TOGGLE("T-FlipFlop", GateLogic.ToggleLatch.class, GateRendering.ToggleLatch.class),
-	NOR("NOR gate", GateLogic.NOR.class, GateRendering.NOR.class),
-	NAND("NAND gate", GateLogic.NAND.class, GateRendering.NAND.class),
-	XOR("XOR gate", GateLogic.XOR.class, GateRendering.XOR.class),
-	XNOR("XNOR gate", GateLogic.XNOR.class, GateRendering.XNOR.class),
-	Buffer("Buffer gate", GateLogic.Buffer.class, GateRendering.Buffer.class),
-	Multiplexer("Multiplexer", GateLogic.Multiplexer.class, GateRendering.Multiplexer.class),
-	Repeater("Repeater", GateLogic.Repeater.class, GateRendering.Repeater.class),
-	Timer("Timer", GateLogic.Timer.class, GateRendering.Timer.class),
-	Counter("Counter", GateLogic.Counter.class, GateRendering.Counter.class),
-	Sequencer("Sequencer", GateLogic.Sequencer.class, GateRendering.Sequencer.class),
-	PulseFormer("Pulse Former", GateLogic.PulseFormer.class, GateRendering.PulseFormer.class),
-	Randomizer("Randomizer", GateLogic.Randomizer.class, GateRendering.Randomizer.class),
-	StateCell("State Cell", GateLogic.StateCell.class, GateRendering.StateCell.class),
-	Synchronizer("Synchronizer", GateLogic.Synchronizer.class, GateRendering.Synchronizer.class),
-	DLatch("D-Latch", GateLogic.DLatch.class, GateRendering.DLatch.class),
-	DFlop("D-FlipFlop", GateLogic.DFlop.class, GateRendering.DFlop.class),
-	BundledLatch("Bundled Latch", GateLogic.BundledLatch.class, GateRendering.BundledLatch.class),
-	BundledRelay("Bundled Relay", GateLogic.BundledRelay.class, GateRendering.BundledRelay.class),
-	BundledMultiplexer("Bundled Multiplexer", GateLogic.BundledMultiplexer.class, GateRendering.BundledMultiplexer.class),
+	AND("AND gate", GateLogic.AND.class, GateRenderBridge.AND.class),
+	OR("OR gate", GateLogic.OR.class, GateRenderBridge.OR.class),
+	NOT("NOT gate", GateLogic.NOT.class, GateRenderBridge.NOT.class),
+	RSLATCH("RS-Latch", GateLogic.RSLatch.class, GateRenderBridge.RSLatch.class),
+	TOGGLE("T-FlipFlop", GateLogic.ToggleLatch.class, GateRenderBridge.ToggleLatch.class),
+	NOR("NOR gate", GateLogic.NOR.class, GateRenderBridge.NOR.class),
+	NAND("NAND gate", GateLogic.NAND.class, GateRenderBridge.NAND.class),
+	XOR("XOR gate", GateLogic.XOR.class, GateRenderBridge.XOR.class),
+	XNOR("XNOR gate", GateLogic.XNOR.class, GateRenderBridge.XNOR.class),
+	Buffer("Buffer gate", GateLogic.Buffer.class, GateRenderBridge.Buffer.class),
+	Multiplexer("Multiplexer", GateLogic.Multiplexer.class, GateRenderBridge.Multiplexer.class),
+	Repeater("Repeater", GateLogic.Repeater.class, GateRenderBridge.Repeater.class),
+	Timer("Timer", GateLogic.Timer.class, GateRenderBridge.Timer.class),
+	Counter("Counter", GateLogic.Counter.class, GateRenderBridge.Counter.class),
+	Sequencer("Sequencer", GateLogic.Sequencer.class, GateRenderBridge.Sequencer.class),
+	PulseFormer("Pulse Former", GateLogic.PulseFormer.class, GateRenderBridge.PulseFormer.class),
+	Randomizer("Randomizer", GateLogic.Randomizer.class, GateRenderBridge.Randomizer.class),
+	StateCell("State Cell", GateLogic.StateCell.class, GateRenderBridge.StateCell.class),
+	Synchronizer("Synchronizer", GateLogic.Synchronizer.class, GateRenderBridge.Synchronizer.class),
+	DLatch("D-Latch", GateLogic.DLatch.class, GateRenderBridge.DLatch.class),
+	DFlop("D-FlipFlop", GateLogic.DFlop.class, GateRenderBridge.DFlop.class),
+	BundledLatch("Bundled Latch", GateLogic.BundledLatch.class, GateRenderBridge.BundledLatch.class),
+	BundledRelay("Bundled Relay", GateLogic.BundledRelay.class, GateRenderBridge.BundledRelay.class),
+	BundledMultiplexer("Bundled Multiplexer", GateLogic.BundledMultiplexer.class, GateRenderBridge.BundledMultiplexer.class),
 	
 	;
 	
 	private Class<? extends GateLogic> logicClass;
-	private Class<? extends GateRendering> renderClass;
+	private Class<? extends GateRenderBridge> renderClass;
 	private GateLogic logicInst;
-	private GateRendering renderInst;
+	private GateRenderBridge renderInst;
 	public final String name;
 	public int meta = this.ordinal();
 	public static final String oreDictDefinition = "projredGate";
 
 	
-	private EnumGate(String name, Class<? extends GateLogic> logicClass, Class<? extends GateRendering> renderClass) {
+	private EnumGate(String name, Class<? extends GateLogic> logicClass, Class<? extends GateRenderBridge> renderClass) {
 		this.name = name;
 		
 		this.logicClass = logicClass;
@@ -64,7 +64,7 @@ public enum EnumGate {
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public GateRendering getRendering() {
+	public GateRenderBridge getRendering() {
 		if(renderInst != null)
 			return renderInst;
 		try {

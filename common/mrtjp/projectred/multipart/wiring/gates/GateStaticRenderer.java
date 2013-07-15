@@ -32,7 +32,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 
-	private GateRendering defaultRendering = new GateRendering.Default();
+	private GateRenderBridge defaultRendering = new GateRenderBridge.Default();
 	private RotatedTessellator rotatedTessellator = new RotatedTessellator();
 	public static final GateStaticRenderer instance = new GateStaticRenderer();
 
@@ -46,14 +46,14 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 			return true;
 		}
 		// We need a new instance of the Tessellator to draw.
-		GateRendering rendering = type.getRendering();
+		GateRenderBridge rendering = type.getRendering();
 		rendering.set(te.getRenderState());
 		//rendering._modelBase.renderPart("base", x, y, z, te.getSide(), te.getFront(), 0, 0, 0);
 		
 		//renderGateSurface(block, side, front, rendering.segmentIcons[0]);
 		if (true) return true;
 		for (int k = 0; k < rendering.segmentTex.length; k++) {
-			Tessellator.instance.setColorOpaque_I(rendering.segmentCol[k]);
+			Tessellator.instance.setColorOpaque_I(rendering.wireColor[k]);
 		}
 
 		rotatedTessellator.base = Tessellator.instance;
@@ -128,7 +128,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 	public void renderInventoryBlock(Block block, int meta, int model, RenderBlocks render) {
 
 		EnumGate type = EnumGate.VALUES[meta];
-		GateRendering rendering = (type == null ? defaultRendering : type.getRendering());
+		GateRenderBridge rendering = (type == null ? defaultRendering : type.getRendering());
 		rendering.setItemRender();
 		rendering._modelBase.renderPart("base", 0, -.5f, 0, 0, 3, 0, 0, 0);
 		
@@ -189,7 +189,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 
 		// Render the block surface.
 		for (int k = 0; k < rendering.segmentIcons.length; k++) {
-			t.setColorOpaque_I(rendering.segmentCol[k]);
+			t.setColorOpaque_I(rendering.wireColor[k]);
 			renderGateSurface(ProjectRed.blockGate, rotatedTessellator.side, rotatedTessellator.front, rendering.segmentIcons[k]);
 		}
 
@@ -222,7 +222,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler {
 		glDisable(GL_BLEND);
 	}
 
-	public void renderTorchOnGate(int x, int y, int z, int side, int facing, float xOffset, float yOffset, float zOffset, boolean on, GateRendering rendering) {
+	public void renderTorchOnGate(int x, int y, int z, int side, int facing, float xOffset, float yOffset, float zOffset, boolean on, GateRenderBridge rendering) {
 		if (on) {
 			rendering._torchOn.renderPart("torch", x, y, z, side, facing, xOffset, yOffset, zOffset);
 			GL11.glPushMatrix();
