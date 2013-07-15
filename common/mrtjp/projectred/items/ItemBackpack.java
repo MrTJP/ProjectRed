@@ -71,19 +71,19 @@ public class ItemBackpack extends Item {
 
 	@Override
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int par7, float par8, float par9, float par10) {
-		openGui(player, x, y, z);
+		openGui(player);
 		return super.onItemUse(stack, player, world, x, y, z, par7, par8, par9, par10);
 	}
 
 	@Override
 	public ItemStack onItemRightClick(final ItemStack stack, final World w, final EntityPlayer player) {
-		openGui(player, player.serverPosX, player.serverPosY, player.serverPosZ);
+		openGui(player);
 		return super.onItemRightClick(stack, w, player);
 	}
 
-	public void openGui(EntityPlayer player, int x, int y, int z) {
+	public void openGui(EntityPlayer player) {
 		if (!player.isSneaking()) {
-			player.openGui(ProjectRed.instance, GuiIDs.ID_Bag, player.worldObj, x, y, z);
+			player.openGui(ProjectRed.instance, GuiIDs.ID_Bag, player.worldObj, 0, 0, 0);
 		}
 	}
 
