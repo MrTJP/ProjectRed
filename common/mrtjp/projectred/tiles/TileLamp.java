@@ -1,21 +1,23 @@
 package mrtjp.projectred.tiles;
 
 import java.util.Random;
-
+import cpw.mods.fml.common.network.PacketDispatcher;
 import mrtjp.projectred.interfaces.wiring.IRedstoneUpdatable;
 import mrtjp.projectred.network.PacketHandler;
-import mrtjp.projectred.network.packets.LampUpdatePacket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 
 	public boolean inverted;
 	public boolean powered;
-	public boolean updateNextTick;
-	public boolean updateStateNextTick;
+	public boolean updateNextTick = true;
+	public boolean updateStateNextTick = true;
 	
 	public TileLamp(boolean isInverted) {
 		inverted = isInverted;
@@ -75,31 +77,27 @@ public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 		updateStateNextTick = true;
 	}
 
-	public void onBlockAdded() {
-		updateNextTick = true;
-		updateStateNextTick = true;
-	}
-
 	/**
 	 * This is called to update on or off state. Usually called when neighboring
 	 * block changes, and this rechecks redstone inputs. It sets the powered
 	 * flag to its correct state.
 	 */
 	public void updateState() {
-		boolean isBeingPowered = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
-		if (isBeingPowered) {
-			if (powered) {
+		// we can't rely on isBlockIndirectlyGettingPowered server side (??), so use the powered state in the packet
+		if(worldObj.isRemote)
+			return;
+		
+		if (isBeingPowered()) {
+			if(powered)
 				return;
-			}
 			powered = true;
 			updateNextTick = true;
 		} else {
-			if (!powered) {
+			if(!powered)
 				return;
-			}
 			powered = false;
 			updateNextTick = true;
-		}
+		}		
 	}
 
 	/**
@@ -127,6 +125,7 @@ public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 		nbt.setBoolean("inverted", inverted);
+		nbt.setBoolean("powered", powered);
 	}
 
 	/**
@@ -136,7 +135,9 @@ public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 		inverted = nbt.getBoolean("inverted");
+		powered = nbt.getBoolean("powered");
 		updateStateNextTick = true;
+		updateNextTick = true;
 	}
 
 	/**
@@ -144,12 +145,19 @@ public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 	 */
 	@Override
 	public Packet getDescriptionPacket() {
-		LampUpdatePacket packet = PacketHandler.getPacket(LampUpdatePacket.class);
-		packet.posX = xCoord;
-		packet.posY = yCoord;
-		packet.posZ = zCoord;
-		packet.isInverted = inverted;
-		return packet.getPacket();
+		NBTTagCompound nbt = new NBTTagCompound();
+		writeToNBT(nbt);
+		return new Packet132TileEntityData(xCoord, yCoord, zCoord, 1, nbt);
+	}
+	
+	@Override
+	public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt)
+	{
+		readFromNBT(pkt.customParam1);
+	}
+	
+	private boolean isBeingPowered() {
+		return worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
 	}
 
 	/**
