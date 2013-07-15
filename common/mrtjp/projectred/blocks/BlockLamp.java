@@ -98,14 +98,6 @@ public class BlockLamp extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(World world, int x, int y, int z) {
-		TileLamp tile = (TileLamp) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileLamp.class);
-		if (tile != null) {
-			tile.onBlockAdded();
-		}
-	}
-
-	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IconRegister reg) {
 		for (int i = 0; i < 16; i++) {

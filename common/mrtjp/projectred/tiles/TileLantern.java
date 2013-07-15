@@ -1,8 +1,8 @@
 package mrtjp.projectred.tiles;
 
+import cpw.mods.fml.common.network.PacketDispatcher;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.network.PacketHandler;
-import mrtjp.projectred.network.packets.LanternUpdatePacket;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
@@ -10,7 +10,9 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.ForgeDirection;
@@ -44,7 +46,7 @@ public class TileLantern extends TileEntity {
 			return 0;
 		}
 	}
-
+	
 	/**
 	 * When a neighbor changes, there is a possibility that it was the redstone
 	 * signal. The state should be checked.
@@ -79,8 +81,10 @@ public class TileLantern extends TileEntity {
 	 * flag to its correct state.
 	 */
 	public void updateState() {
-		boolean isBeingPowered = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
-		if (isBeingPowered) {
+		if(worldObj.isRemote)
+			return;
+		
+		if (isBeingPowered()) {
 			if (powered) {
 				return;
 			}
@@ -93,6 +97,10 @@ public class TileLantern extends TileEntity {
 			powered = false;
 			updateNextTick = true;
 		}
+	}
+	
+	private boolean isBeingPowered() {
+		return worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
 	}
 
 	/**
@@ -126,6 +134,7 @@ public class TileLantern extends TileEntity {
 		nbt.setBoolean("inverted", inverted);
 		nbt.setInteger("meta", lanternmeta);
 		nbt.setInteger("rot", rotation);
+		nbt.setBoolean("powered", powered);
 	}
 
 	/**
@@ -137,6 +146,7 @@ public class TileLantern extends TileEntity {
 		inverted = nbt.getBoolean("inverted");
 		lanternmeta = nbt.getInteger("meta");
 		rotation = nbt.getInteger("rot");
+		powered = nbt.getBoolean("powered");
 		updateStateNextTick = true;
 		updateNextTick = true;
 	}
@@ -146,14 +156,15 @@ public class TileLantern extends TileEntity {
 	 */
 	@Override
 	public Packet getDescriptionPacket() {
-		LanternUpdatePacket packet = PacketHandler.getPacket(LanternUpdatePacket.class);
-		packet.posX = xCoord;
-		packet.posY = yCoord;
-		packet.posZ = zCoord;
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		packet.lanternData = nbt;
-		return packet.getPacket();
+		return new Packet132TileEntityData(xCoord, yCoord, zCoord, 1, nbt);
+	}
+	
+	@Override
+	public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt)
+	{
+		readFromNBT(pkt.customParam1);
 	}
 
 	/**

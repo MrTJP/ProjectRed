@@ -1,4 +1,12 @@
 Change Log:
+v3.0.0.29
+- Fixed backpack crash on server.
+- Maybe fixed StackOverflow error for some people. Delete your configs!
+- Fixed backpack ID name in config appearing as "Liquid Solidifier".
+- Fixed gates not directly effecting lamps when touching.
+
+v3.0.0.28
+- Fixed noSuchField error on alloy furnace
 
 v3.0.0.27
 - Added lanterns, both inverted and non inverted.
@@ -14,3 +22,4 @@ v3.0.0.24
 
 v3.0.0.23
 - Initial release.
+
