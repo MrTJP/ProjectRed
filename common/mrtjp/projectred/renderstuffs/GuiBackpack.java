@@ -25,6 +25,7 @@ public class GuiBackpack extends BaseGuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
+		this.fontRenderer.drawString("Backpack", 8, 6, 4210752);
 	}
 
 	@Override
