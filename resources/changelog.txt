@@ -1,4 +1,7 @@
 Change Log:
+v3.0.0.30
+- New bundled cabling texture. Thanks, xchainblade!
+
 v3.0.0.29
 - Fixed backpack crash on server.
 - Maybe fixed StackOverflow error for some people. Delete your configs!
