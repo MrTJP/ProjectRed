@@ -275,14 +275,30 @@ public class BasicUtils {
 	public static double getPlayerReach(EntityPlayer player) {
 		return Minecraft.getMinecraft().playerController.getBlockReachDistance();
 	}
-	
+
 	public static boolean areStacksTheSame(ItemStack is1, ItemStack is2) {
 		if (is1 == null || is2 == null) {
 			return false;
 		}
 		return is1.itemID == is2.itemID && is1.getItemDamage() == is2.getItemDamage();
 	}
-	
+
+	public static boolean areStacksNBTIdentical(ItemStack is1, ItemStack is2) {
+		if (!areStacksTheSame(is1, is2)) {
+			return false;
+		}
+		boolean s1HasNBT = is1.getTagCompound() != null;
+		boolean s2HasNBT = is2.getTagCompound() != null;
+		if ((s1HasNBT && s2HasNBT)) {
+			if (is1.getTagCompound().equals(is2.getTagCompound())) {
+				return true;
+			}
+		} else if (!s1HasNBT && !s2HasNBT) {
+			return true;
+		}
+		return false;
+	}
+
 	public static void writeItemStackToData(ItemStack[] stack, DataOutputStream data) throws IOException {
 		for (int i = 0; i < stack.length; i++) {
 			// Itemstack
@@ -305,7 +321,7 @@ public class BasicUtils {
 			}
 		}
 	}
-	
+
 	public static void readItemStackFromData(ItemStack[] stack, DataInputStream data) throws IOException {
 		for (int i = 0; i < stack.length; i++) {
 			// Itemstack
@@ -330,14 +346,13 @@ public class BasicUtils {
 			}
 		}
 	}
-	
+
 	public static void writeNBTToData(NBTBase nbt, DataOutputStream data) throws IOException {
 		NBTBase.writeNamedTag(nbt, data);
 	}
-	
+
 	public static NBTBase readNBTFromData(DataInputStream data) throws IOException {
 		return NBTBase.readNamedTag(data);
 	}
-
 
 }

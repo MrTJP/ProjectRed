@@ -1,6 +1,7 @@
 package mrtjp.projectred.network;
 
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.core.Messenger;
 import mrtjp.projectred.core.ProjectRedTickHandler;
 import mrtjp.projectred.multipart.MultipartHighlightHandler;
 import mrtjp.projectred.multipart.microblocks.MicroblockItemRenderer;
@@ -56,6 +57,7 @@ public class ClientProxy extends CommonProxy implements IProxy {
 	public void registerEventsAndHandlers() {
 		MinecraftForge.EVENT_BUS.register(new MicroblockPlacementHighlightHandler());
 		MinecraftForge.EVENT_BUS.register(new MultipartHighlightHandler());
+		MinecraftForge.EVENT_BUS.register(new Messenger());
 		TickRegistry.registerTickHandler(ProjectRedTickHandler.instance, Side.CLIENT);
 	}
 

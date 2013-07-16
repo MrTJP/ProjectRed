@@ -3,8 +3,10 @@ package mrtjp.projectred.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -13,6 +15,7 @@ public class Coords {
 	public int y;
 	public int z;
 	public ForgeDirection orientation;
+	public World w;
 
 	public Coords(int x, int y, int z) {
 		this.x = x;
@@ -39,7 +42,6 @@ public class Coords {
 		this.x = nbttagcompound.getInteger("i");
 		this.y = nbttagcompound.getInteger("j");
 		this.z = nbttagcompound.getInteger("k");
-
 		this.orientation = ForgeDirection.UNKNOWN;
 	}
 
@@ -47,7 +49,12 @@ public class Coords {
 		this.x = tile.xCoord;
 		this.y = tile.yCoord;
 		this.z = tile.zCoord;
+		this.w = tile.worldObj;
 		this.orientation = ForgeDirection.UNKNOWN;
+	}
+
+	public void setWorld(World w) {
+		this.w = w;
 	}
 
 	public Coords copy() {
@@ -168,6 +175,14 @@ public class Coords {
 		}
 		return a;
 	}
+	
+	public TileEntity getTileEntity() {
+		if (w == null) {
+			return null;
+		}
+		return this.getTileEntity(w, TileEntity.class);
+	}
+	
 
 	public TileEntity getTileEntity(World world, Class clazz) {
 		return BasicUtils.getTileEntity(world, this, clazz);
@@ -185,7 +200,36 @@ public class Coords {
 		if (targetClass.isAssignableFrom(te.getClass())) {
 			return te;
 		}
-
 		return null;
+	}
+
+	public Block getBlock() {
+		return Block.blocksList[getId()];
+	}
+
+	public int getId() {
+		return this.w.getBlockId(this.x, this.y, this.z);
+	}
+
+	public int getMeta() {
+		return this.w.getBlockMetadata(this.x, this.y, this.z);
+	}
+
+	public AxisAlignedBB getCollisionBoundingBoxFromPool() {
+		Block b = this.getBlock();
+		if (b == null || w == null) {
+			return null;
+		}
+		return b.getCollisionBoundingBoxFromPool(w, x, y, z);
+	}
+
+	public int distanceManhatten(Coords o) {
+		if (o == null) {
+			return 0;
+		}
+		int dx = this.x - o.x;
+		int dy = this.y - o.y;
+		int dz = this.z - o.z;
+		return Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
 	}
 }
