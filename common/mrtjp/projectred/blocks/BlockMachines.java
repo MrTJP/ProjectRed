@@ -218,7 +218,7 @@ public class BlockMachines extends BlockContainer {
 	}
 
 	public enum EnumMachine {
-		ALLOYSMELTER("Alloy Smelter", "machinealloy", TileAlloySmelter.class, "smeltertop", "smeltertop", "smelterside", "smelterfront", "smelterside", "smelterside", "smeltertop", "smeltertop", "smelterside", "smelterfronton", "smelterside", "smelterside"),
+		ALLOYSMELTER("Alloying Furnace", "machinealloy", TileAlloySmelter.class, "smeltertop", "smeltertop", "smelterside", "smelterfront", "smelterside", "smelterside", "smeltertop", "smeltertop", "smelterside", "smelterfronton", "smelterside", "smelterside"),
 		BARREL("Barrel", "machinebarrel", null, "", "", "", "", "", "", "", "", "", "", "", ""),
 
 		INVALIDMACHINE("INVALID", "ERROR!!!", null, "", "", "", "", "", "", "", "", "", "", "", "");
