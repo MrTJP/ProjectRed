@@ -368,8 +368,26 @@ public class CraftingRecipeManager {
 				'S', EnumPart.SILICONCHIP.getItemStack(),
 				'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
 		);
+		
+		/** Light Sensor **/
+		GameRegistry.addRecipe(EnumGate.LightSensor.getItemStack(),
+				"PPP",
+				"LLL",
+				"PWP",
+				'P', EnumPart.PLATE.getItemStack(),
+				'L', new ItemStack(Item.dyePowder, 1, Color.BLUE.dyeId()),
+				'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+		);
 
-
+		/** Rain Sensor **/
+		GameRegistry.addRecipe(EnumGate.RainSensor.getItemStack(),
+				"PPP",
+				"SSS",
+				"PWP",
+				'P', EnumPart.PLATE.getItemStack(),
+				'S', Item.slimeBall,
+				'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+		);
 
 	}
 	private static void initPartsRecipes() {
@@ -429,16 +447,16 @@ public class CraftingRecipeManager {
 
 		/** Silicon Chip **/
 		GameRegistry.addRecipe(EnumPart.SILICONCHIP.getItemStack(), 
-				"s",
-				"p",
+				" s ",
+				"ppp",
 				's', EnumPart.INFUSEDSILICON.getItemStack(),
 				'p', EnumPart.PLATE.getItemStack()
 		);
 		
 		/** Energized Silicon Chip **/
 		GameRegistry.addRecipe(EnumPart.ENERGIZEDSILICONCHIP.getItemStack(), 
-				"e",
-				"p",
+				" e ",
+				"ppp",
 				'e', EnumPart.ENERGIZEDSILICON.getItemStack(),
 				'p', EnumPart.PLATE.getItemStack()
 		);

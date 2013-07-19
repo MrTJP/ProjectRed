@@ -14,6 +14,7 @@ public class CommonProxy implements IProxy {
 
 	@Override
 	public void registerEventsAndHandlers() {
+		//TickRegistry.registerTickHandler(ProjectRedTickHandler.instance, Side.SERVER);
 	}
 
 	@Override
@@ -21,10 +22,6 @@ public class CommonProxy implements IProxy {
 		EnumLamp.initOreDictDefinitions();
 		EnumWire.initOreDictDefinitions();
 		EnumGate.initOreDictDefinitions();
-		
 		EnumPart.initOreDictDefinitions();
 	}
-	
-	
-
 }

@@ -5,7 +5,10 @@ import java.util.Random;
 
 import mrtjp.projectred.crafting.ProjectRedTabs;
 import mrtjp.projectred.multipart.BlockMultipartBase;
+import mrtjp.projectred.network.ClientProxy;
 import mrtjp.projectred.renderstuffs.RenderIDs;
+import mrtjp.projectred.utils.BasicUtils;
+import mrtjp.projectred.utils.Coords;
 import mrtjp.projectred.utils.Dir;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -77,6 +80,17 @@ public class BlockGate extends BlockMultipartBase {
 		return renderTypeOverride >= 0 ? renderTypeOverride : RenderIDs.renderIdGate;
 	}
 
+	@Override
+	public int getRenderBlockPass() {
+		return 1;
+	}
+
+	@Override
+	public boolean canRenderInPass(int pass) {
+		ClientProxy.renderPass = pass;
+		return true;
+	}
+
 	// END RENDERING
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -106,9 +120,14 @@ public class BlockGate extends BlockMultipartBase {
 	@Override
 	public void onNeighborBlockChange(World w, int x, int y, int z, int id) {
 		super.onNeighborBlockChange(w, x, y, z, id);
-
-		if ((id == 0 || Block.blocksList[id].canProvidePower()) && !w.isRemote) {
-			((TileGate) w.getBlockTileEntity(x, y, z)).updateLogic(false, false);
+		if (BasicUtils.isServer(w)) {
+			TileGate tile = (TileGate) BasicUtils.getTileEntity(w, new Coords(x, y, z), TileGate.class);
+			if (tile != null) {
+				tile.onNeighborChanged();
+				if ((id == 0 || Block.blocksList[id].canProvidePower())) {
+					tile.updateLogic(false, false);
+				}
+			}
 		}
 	}
 
@@ -125,16 +144,15 @@ public class BlockGate extends BlockMultipartBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IconRegister reg) {
-		for (EnumGate type : EnumGate.VALUES) {
-			type.getRendering().loadTextures(reg);
-		}
+		GateRenderBridge.registerAllIcons(reg);
 		blockIcon = reg.registerIcon("projectred:base");
 	}
 
 	private int getSide(IBlockAccess w, int x, int y, int z) {
 		TileEntity te = w.getBlockTileEntity(x, y, z);
-		if (!(te instanceof TileGate))
+		if (!(te instanceof TileGate)) {
 			return Dir.NY;
+		}
 		return ((TileGate) te).getSide();
 	}
 
@@ -193,7 +211,23 @@ public class BlockGate extends BlockMultipartBase {
 
 	@Override
 	public int getLightValue(IBlockAccess world, int x, int y, int z) {
-		return 7;
+		TileGate te = (TileGate) BasicUtils.getTileEntity(world, new Coords(x,y,z), TileGate.class);
+		if (te != null) {
+			EnumGate type = te.getType();
+			if (type != null) {
+				GateRenderBridge render = type.getRendering();
+				if (render != null && render.torchState.length > 0) {
+					int on = 0;
+					for (int i = 0; i < render.torchState.length; i++) {
+						if (render.torchState[i]) {
+							on++;
+						}
+					}
+					return on > 0 ? on + 4 : 0;
+				}
+			}
+		}
+		return 0;
 	}
 
 }

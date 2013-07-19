@@ -25,6 +25,8 @@ import cpw.mods.fml.relauncher.Side;
 
 public class ClientProxy extends CommonProxy implements IProxy {
 
+	public static int renderPass;
+	
 	@Override
 	public void initRenderings() {
 
@@ -45,6 +47,7 @@ public class ClientProxy extends CommonProxy implements IProxy {
 		RenderIDs.renderIdGate = RenderingRegistry.getNextAvailableRenderId();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileGate.class, GateDynamicRenderer.instance);
 		RenderingRegistry.registerBlockHandler(GateStaticRenderer.instance);
+		MinecraftForgeClient.registerItemRenderer(ProjectRed.blockGate.blockID, GateStaticRenderer.instance);
 
 		// Microblocks
 		RenderIDs.renderIdMicroblock = RenderingRegistry.getNextAvailableRenderId();

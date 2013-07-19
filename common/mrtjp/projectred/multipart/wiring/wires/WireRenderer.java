@@ -1,6 +1,6 @@
 package mrtjp.projectred.multipart.wiring.wires;
 
-import mrtjp.projectred.multipart.wiring.RotatedTessellator;
+import mrtjp.projectred.multipart.wiring.RotatedRenderer;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
@@ -20,7 +20,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class WireRenderer implements ISimpleBlockRenderingHandler {
 
-	private RotatedTessellator rt = new RotatedTessellator();
+	private RotatedRenderer rt = new RotatedRenderer();
 
 	public final static WireRenderer instance = new WireRenderer();
 
@@ -121,9 +121,9 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 
 		rt.base = Tessellator.instance;
 		rt.flipped = false;
-		rt.x = -0.5;
+		rt.x = -0.5f;
 		rt.y = 0;
-		rt.z = -0.5;
+		rt.z = -0.5f;
 		rt.front = 2; // anything not parallel to side
 		rt.side = Dir.NY;
 		rt.base.startDrawingQuads();
@@ -131,7 +131,7 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 		rt.base.setColorOpaque_I(type.itemColour);
 		baseColour = type.itemColour;
 		if (WireDamageValues.isJacketed(damageValue)) {
-			rt.y = -0.5;
+			rt.y = -0.5f;
 			renderWireJacketed(render, type, 0, false, false, true, true, false, false);
 		} else
 			renderWireSide(rt, render, type, true, true, true, true, false, false, false, false, null, null, null, null, true, false);
@@ -390,7 +390,7 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 
 	public static boolean OLD_CORNER_SIDES = false;
 
-	public static void renderWireSide(RotatedTessellator rt, RenderBlocks render, EnumWire type, boolean nz, boolean pz, boolean nx, boolean px, boolean nzCorner, boolean pzCorner, boolean nxCorner, boolean pxCorner, EnumWire nzCornerType, EnumWire pzCornerType, EnumWire nxCornerType, EnumWire pxCornerType, boolean forceEndCaps, boolean haveJacketed) {
+	public static void renderWireSide(RotatedRenderer rt, RenderBlocks render, EnumWire type, boolean nz, boolean pz, boolean nx, boolean px, boolean nzCorner, boolean pzCorner, boolean nxCorner, boolean pxCorner, EnumWire nzCornerType, EnumWire pzCornerType, EnumWire nxCornerType, EnumWire pxCornerType, boolean forceEndCaps, boolean haveJacketed) {
 		double thick = type.thickness;
 		double w = type.width / 2;
 		double W = type.width * 16 / 2;

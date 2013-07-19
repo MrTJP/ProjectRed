@@ -1,6 +1,13 @@
 Change Log:
-v3.0.0.30
-- New bundled cabling texture. Thanks, xchainblade!
+v3.0.1.30
+- New bundled cabling/wiring texture, by xchainblade.
+- Massive re-write for Gate renderings.
+- Another shot at the server StackOverflow crash.
+- Many bugs fixed.
+- Light sensor gate.
+- Rain sensor gate.
+- Fixed silicon chip recipes.
+
 
 v3.0.0.29
 - Fixed backpack crash on server.

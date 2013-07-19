@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.network.IProxy;
 import net.minecraft.block.Block;
@@ -355,4 +354,23 @@ public class BasicUtils {
 		return NBTBase.readNamedTag(data);
 	}
 
+	/**
+	 * Returns the light level (0 - 15) at the given coordinates.
+	 */
+	public static int getAbsoluteBrightness(World world, int x, int y, int z) {
+		if (world == null) {
+			return 0;
+		}
+		return world.getBlockLightValue_do(x, y, z, false);
+	}
+	
+	/**
+	 * Returns true if block can see the sky.
+	 */
+	public static boolean canBlockSeeSky(World world, int x, int y, int z) {
+		if (world == null) {
+			return false;
+		}
+		return world.canBlockSeeTheSky(x, y + 1, z);
+	}
 }
