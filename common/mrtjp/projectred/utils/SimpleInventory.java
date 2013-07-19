@@ -10,7 +10,6 @@ package mrtjp.projectred.utils;
 
 import java.util.LinkedList;
 
-import mrtjp.projectred.interfaces.ISaveState;
 import mrtjp.projectred.interfaces.ISimpleInventoryListener;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;

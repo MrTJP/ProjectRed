@@ -1,8 +1,5 @@
 package mrtjp.projectred.multipart.microblocks;
 
-
-
-
 import java.util.List;
 
 import net.minecraft.client.renderer.RenderBlocks;
@@ -25,18 +22,18 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class TileMicroblockContainer extends TileEntity implements IMicroblockSupporterTile {
 	public MicroblockCoverSystem cover;
-	
+
 	public TileMicroblockContainer() {
 		cover = new MicroblockCoverSystem(this);
 	}
-	
+
 	@Override
 	public final Packet getDescriptionPacket() {
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setByteArray("C", cover.writeDescriptionBytes());
 		return new Packet132TileEntityData(xCoord, yCoord, zCoord, 0, tag);
 	}
-	
+
 	@Override
 	public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
 		cover.readDescriptionBytes(pkt.customParam1.getByteArray("C"), 0);
@@ -46,13 +43,13 @@ public class TileMicroblockContainer extends TileEntity implements IMicroblockSu
 	public IMicroblockCoverSystem getCoverSystem() {
 		return cover;
 	}
-	
+
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
 		cover.writeToNBT(tag);
 	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
@@ -63,20 +60,20 @@ public class TileMicroblockContainer extends TileEntity implements IMicroblockSu
 	public boolean isPlacementBlockedByTile(PartType<?> type, EnumPosition pos) {
 		return false;
 	}
-	
+
 	@Override
 	public boolean isPositionOccupiedByTile(EnumPosition pos) {
 		return false;
 	}
-	
+
 	@Override
 	public void updateEntity() {
-		if(!worldObj.isRemote && getClass() == TileMicroblockContainer.class && cover.parts.size() == 0) {
+		if (!worldObj.isRemote && getClass() == TileMicroblockContainer.class && cover.parts.size() == 0) {
 			worldObj.setBlock(xCoord, yCoord, zCoord, 0, 0, 2);
 			return;
 		}
 	}
-	
+
 	@Override
 	public boolean canUpdate() {
 		return true;
@@ -114,13 +111,13 @@ public class TileMicroblockContainer extends TileEntity implements IMicroblockSu
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void render(RenderBlocks render) {
-		
+
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderPart(RenderBlocks render, int part) {
-		
+
 	}
 
 	@Override

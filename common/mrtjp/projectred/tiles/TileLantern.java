@@ -14,6 +14,7 @@ import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.ForgeDirection;
 
 public class TileLantern extends TileEntity {
@@ -118,7 +119,7 @@ public class TileLantern extends TileEntity {
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			worldObj.updateAllLightTypes(xCoord, yCoord, zCoord);
 		}
-		
+
 		if (!initialized) {
 			initialized = true;
 		}
@@ -165,4 +166,12 @@ public class TileLantern extends TileEntity {
 	{
 		readFromNBT(pkt.customParam1);
 	}
+
+	/**
+	 * We need the entire model to render, because the stand is not in the BBox.
+	 */
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return AxisAlignedBB.getAABBPool().getAABB(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);	}
+
 }

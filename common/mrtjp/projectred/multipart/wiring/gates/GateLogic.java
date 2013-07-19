@@ -9,8 +9,12 @@ import java.util.Random;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.network.GuiIDs;
+import mrtjp.projectred.utils.BasicUtils;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
 public abstract class GateLogic {
@@ -40,6 +44,9 @@ public abstract class GateLogic {
 		return true;
 	}
 
+	/**
+	 * Used to check if side specified should connect to a bundled cable.
+	 */
 	public static interface WithBundledConnections {
 		public boolean isBundledConnection(int side);
 	}
@@ -55,24 +62,36 @@ public abstract class GateLogic {
 
 	/**
 	 * Marker interface for gates which can be horizontally flipped by
-	 * shift-clicking with a screwdriver.
+	 * shift-clicking with a screwdriver. Disabled, as gates can no longer
+	 * render flipped without substantial effort.
 	 */
 	public static interface Flippable {
 	}
 
+	/**
+	 * Used to do something if gate has a rightclick action such as a gui.
+	 */
 	public static interface WithRightClickAction {
 		public void onRightClick(EntityPlayer ply, TileGate tile);
 	}
 
-	/*
-	 * public static interface WithLongRenderState { public long
-	 * getLongRenderState(byte[] inputs, byte[] outputs, int gateSettings); }
+	/**
+	 * Used to ask logic about pointer conditions.
 	 */
-
 	public static interface WithPointer {
 		public int getPointerPosition(); // degrees
 
 		public float getPointerSpeed(); // degrees per tick
+	}
+
+	/**
+	 * Used for gates with logic that needs to be aware of the world, such as
+	 * Light Sensors.
+	 */
+	public static interface WorldStateBound {
+		public void setWorldInfo(World world, int x, int y, int z);
+
+		public boolean needsWorldInfo();
 	}
 
 	public static class AND extends GateLogic implements Stateless {
@@ -89,7 +108,7 @@ public abstract class GateLogic {
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (outputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 4 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 8 : 0) | (gateSettings << 4);
+			return (outputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 4 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 8 : 0) | (inputs[FRONT] != 0 || outputs[FRONT] != 0 ? 128 : 0) | (gateSettings << 4);
 		}
 
 		@Override
@@ -135,7 +154,7 @@ public abstract class GateLogic {
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (inputs[FRONT] != 0 || outputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 4 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 8 : 0) | (outputs[FRONT] != 0 ? 16 : 0) | (gateSettings << 5);
+			return (inputs[FRONT] != 0 || outputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 4 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 8 : 0) | (outputs[FRONT] != 0 || outputs[LEFT] != 0 || outputs[RIGHT] != 0 ? 16 : 0) | (gateSettings << 5);
 		}
 
 		@Override
@@ -273,7 +292,7 @@ public abstract class GateLogic {
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (inputs[LEFT] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (outputs[FRONT] != 0 ? 4 : 0);
+			return (inputs[LEFT] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (outputs[FRONT] != 0 ? 4 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 8 : 0);
 		}
 
 		@Override
@@ -290,7 +309,7 @@ public abstract class GateLogic {
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (outputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 4 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 8 : 0);
+			return (outputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 4 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 8 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 16 : 0);
 		}
 	}
 
@@ -302,15 +321,12 @@ public abstract class GateLogic {
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (inputs[BACK] != 0 ? 1 : 0) | (inputs[LEFT] != 0 ? 2 : 0) | (inputs[RIGHT] != 0 ? 4 : 0) | (outputs[FRONT] != 0 ? 8 : 0);
+			return (inputs[BACK] != 0 ? 1 : 0) | (inputs[LEFT] != 0 ? 2 : 0) | (inputs[RIGHT] != 0 ? 4 : 0) | (outputs[FRONT] != 0 ? 8 : 0) | (inputs[FRONT] != 0 || outputs[FRONT] != 0 ? 16 : 0);
 		}
 	}
 
 	public static class Repeater extends GateLogic {
-		private static int[] DELAYS = { 1, 2, 4, 8, 16, 32, 64, 128 // in
-																	// redstone
-																	// ticks
-		};
+		private static int[] DELAYS = { 1, 2, 4, 8, 16, 32, 64, 128 };
 
 		/*
 		 * When the input turns on, the output turns on after N ticks.
@@ -331,8 +347,8 @@ public abstract class GateLogic {
 			}
 
 			if ((inputs[BACK] != 0) != state && timer == 0) {
-				timer = DELAYS[gateSettings] * 2 - 2; // 2 game ticks per
-														// redstone tick
+				// Account for 2 game ticks = 1 RS tick
+				timer = DELAYS[gateSettings] * 2 - 2;
 
 				if (timer == 0) {
 					state = !state;
@@ -365,7 +381,7 @@ public abstract class GateLogic {
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return gateSettings | (outputs[FRONT] != 0 ? 32768 : 0);
+			return gateSettings | (outputs[FRONT] != 0 ? 32768 : 0) | (inputs[BACK] != 0 ? 64 : 0);
 		}
 
 		@Override
@@ -410,7 +426,7 @@ public abstract class GateLogic {
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (outputs[FRONT] != 0 ? 1 : 0) | (outputs[LEFT] != 0 || inputs[LEFT] != 0 ? 2 : 0) | (outputs[RIGHT] != 0 || inputs[RIGHT] != 0 ? 8 : 0) | (inputs[BACK] != 0 ? 4 : 0) | (stopped ? 16 : 0);
+			return (outputs[FRONT] != 0 ? 1 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 32 : 0) | (outputs[LEFT] != 0 || inputs[LEFT] != 0 ? 2 : 0) | (outputs[RIGHT] != 0 || inputs[RIGHT] != 0 ? 8 : 0) | (inputs[BACK] != 0 ? 4 : 0) | (stopped ? 16 : 0);
 		}
 
 		@Override
@@ -483,7 +499,7 @@ public abstract class GateLogic {
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (inputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (outputs[LEFT] != 0 ? 4 : 0) | (outputs[RIGHT] != 0 ? 8 : 0)
+			return (inputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (outputs[LEFT] != 0 ? 4 : 0) | (outputs[RIGHT] != 0 ? 8 : 0) | (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 16 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 32 : 0)
 			// render state is truncated to 16 bits, but this
 			// causes the rendering to update when the pointer moves
 			| (getPointerPosition() << 20);
@@ -630,7 +646,7 @@ public abstract class GateLogic {
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (inputs[BACK] != 0 ? 1 : 0) | (outputs[FRONT] != 0 ? 2 : 0) | (ticksLeft > 0 ? 4 : 0);
+			return (inputs[BACK] != 0 ? 1 : 0) | (outputs[FRONT] != 0 ? 2 : 0) | (ticksLeft > 0 ? 4 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 8 : 0);
 		}
 
 		@Override
@@ -668,7 +684,7 @@ public abstract class GateLogic {
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (inputs[BACK] != 0 ? 1 : 0) | (outputs[LEFT] != 0 ? 2 : 0) | (outputs[RIGHT] != 0 ? 4 : 0) | (outputs[FRONT] != 0 ? 8 : 0);
+			return (inputs[BACK] != 0 ? 1 : 0) | (outputs[LEFT] != 0 ? 2 : 0) | (outputs[RIGHT] != 0 ? 4 : 0) | (outputs[FRONT] != 0 ? 8 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 16 : 0) | (outputs[LEFT] != 0 || inputs[LEFT] != 0 ? 32 : 0) | (outputs[RIGHT] != 0 || inputs[RIGHT] != 0 ? 64 : 0);
 		}
 
 		@Override
@@ -730,7 +746,7 @@ public abstract class GateLogic {
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 ? 4 : 0) | (pulseTicks > 0 ? 8 : 0) | (timing ? 16 : 0) | (paused ? 32 : 0);
+			return (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 ? 4 : 0) | (outputs[RIGHT] != 0 ? 8 : 0) | (timing ? 16 : 0) | (paused ? 32 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 64 : 0);
 		}
 
 		@Override
@@ -797,7 +813,7 @@ public abstract class GateLogic {
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (inputs[LEFT] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (inputs[BACK] != 0 ? 4 : 0) | (outputs[FRONT] != 0 ? 8 : 0) | (leftLatch ? 16 : 0) | (rightLatch ? 32 : 0);
+			return (inputs[LEFT] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (inputs[BACK] != 0 ? 4 : 0) | (outputs[FRONT] != 0 ? 8 : 0) | (leftLatch ? 16 : 0) | (rightLatch ? 32 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 64 : 0);
 		}
 
 		@Override
@@ -823,13 +839,14 @@ public abstract class GateLogic {
 	public static class DLatch extends GateLogic implements Stateless, Flippable {
 		@Override
 		public void update(short[] inputs, short[] outputs, int gateSettings) {
-			if (inputs[RIGHT] != 0)
+			if (inputs[RIGHT] != 0) {
 				outputs[FRONT] = outputs[LEFT] = (short) (inputs[BACK] != 0 ? 255 : 0);
+			}
 		}
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (inputs[BACK] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (outputs[FRONT] != 0 ? 4 : 0);
+			return (inputs[BACK] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 4 : 0) | (outputs[LEFT] != 0 || inputs[LEFT] != 0 ? 8 : 0);
 		}
 	}
 
@@ -848,23 +865,24 @@ public abstract class GateLogic {
 
 		@Override
 		public void update(short[] inputs, short[] outputs, int gateSettings) {
-			if (inputs[RIGHT] != 0 && !clockWasOn)
+			if (inputs[RIGHT] != 0 && !clockWasOn) {
 				outputs[FRONT] = outputs[LEFT] = (short) (inputs[BACK] != 0 ? 255 : 0);
+			}
 			clockWasOn = inputs[RIGHT] != 0;
 		}
 
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-			return (inputs[BACK] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (outputs[FRONT] != 0 ? 4 : 0);
+			return (inputs[BACK] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 4 : 0) | (outputs[LEFT] != 0 || inputs[LEFT] != 0 ? 8 : 0);
 		}
 	}
 
 	public static class BundledLatch extends GateLogic implements Stateless, Flippable, WithBundledConnections {
 		@Override
 		public void update(short[] inputs, short[] outputs, int gateSettings) {
-			if (inputs[RIGHT] != 0)
+			if (inputs[RIGHT] != 0) {
 				outputs[FRONT] = inputs[BACK];
-			// System.out.println(inputs[BACK]+" "+outputs[FRONT]);
+			}
 		}
 
 		@Override
@@ -923,5 +941,85 @@ public abstract class GateLogic {
 			return side == FRONT || side == LEFT || side == RIGHT;
 		}
 
+	}
+
+	public static class LightSensor extends GateLogic implements WorldStateBound {
+		World w;
+		int x;
+		int y;
+		int z;
+		int threshold;
+
+		@Override
+		public void update(short[] inputs, short[] outputs, int gateSettings) {
+			threshold = gateSettings;
+			// Dont do this calculation every tick.
+			if (w != null && w.getTotalWorldTime() % 8 == 0) {
+				int brightness = BasicUtils.getAbsoluteBrightness(w, x, y, z);
+				if (threshold < 5) {
+					outputs[BACK] = (short) (brightness >= (threshold * 3 + 3) ? 255 : 0);
+				} else {
+					outputs[BACK] = (short) (brightness * 17 > 255 ? 255 : brightness * 17);
+				}
+			}
+		}
+
+		@Override
+		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
+			return (inputs[BACK] != 0 || outputs[BACK] != 0 ? 1 : 0) | (gateSettings == 0 ? 2 : 0) | (gateSettings == 1 ? 4 : 0) | (gateSettings == 2 ? 8 : 0) | (gateSettings == 3 ? 16 : 0) | (gateSettings == 4 ? 32 : 0) | (gateSettings == 5 ? 64 : 0);
+		}
+
+		@Override
+		public void setWorldInfo(World world, int x, int y, int z) {
+			w = world;
+			this.x = x;
+			this.y = y;
+			this.z = z;
+		}
+
+		@Override
+		public boolean needsWorldInfo() {
+			return w == null;
+		}
+
+		@Override
+		public int configure(int gateSettings) {
+			gateSettings++;
+			return (gateSettings > 5 ? 0 : gateSettings);
+		}
+
+	}
+
+	public static class RainSensor extends GateLogic implements WorldStateBound {
+		World w;
+		int x;
+		int y;
+		int z;
+
+		@Override
+		public void update(short[] inputs, short[] outputs, int gateSettings) {
+			// Dont do this calculation every tick.
+			if (w != null && w.getTotalWorldTime() % 8 == 0) {
+				outputs[BACK] = (short) (w.isRaining() && BasicUtils.canBlockSeeSky(w, x, y, z) ? 255 : 0);
+			}
+		}
+
+		@Override
+		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
+			return (inputs[BACK] != 0 || outputs[BACK] != 0 ? 1 : 0);
+		}
+
+		@Override
+		public void setWorldInfo(World world, int x, int y, int z) {
+			w = world;
+			this.x = x;
+			this.y = y;
+			this.z = z;
+		}
+
+		@Override
+		public boolean needsWorldInfo() {
+			return w == null;
+		}
 	}
 }

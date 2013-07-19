@@ -16,8 +16,12 @@ import mrtjp.projectred.multipart.TileCoverableBase;
 import mrtjp.projectred.multipart.microblocks.EnumPosition;
 import mrtjp.projectred.multipart.microblocks.Part;
 import mrtjp.projectred.multipart.microblocks.PartType;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.WorldStateBound;
+import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
+import mrtjp.projectred.utils.Coords;
 import mrtjp.projectred.utils.Dir;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -34,10 +38,20 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, IConnectable, IBundledUpdatable, IBundledEmitter {
-	private EnumGate type; // should never be null
-	private GateLogic logic; // null on the client
-	private byte side; // side of the block the gate is on
-	private byte front; // direction the "front" of the gate is facing
+	private EnumGate type;
+
+	/** Server-side logic for gate **/
+	private GateLogic logic;
+
+	/**
+	 * The inside face for the containing block that its sitting on. (0 for
+	 * sitting on top of a block.)
+	 **/
+	private byte side;
+
+	/** The ForgeDirection that the front of the gate is facing. **/
+	private byte front;
+
 	private boolean isNotStateless;
 	private int gateSettings;
 	private GateLogic.WithPointer pointer;
@@ -50,7 +64,7 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 	@Override
 	public Packet getDescriptionPacket() {
 		if (type == null) {
-			return null; // should not happen
+			return null;
 		}
 
 		Packet132TileEntityData p = new Packet132TileEntityData(xCoord, yCoord, zCoord, 0, new NBTTagCompound());
@@ -89,8 +103,9 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 	}
 
 	public TileGate(EnumGate type, int side, int front) {
-		if (type == null)
+		if (type == null) {
 			throw new IllegalArgumentException("type cannot be null");
+		}
 		this.type = type;
 		this.side = (byte) side;
 		this.front = (byte) front;
@@ -101,111 +116,103 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 	}
 
 	private long toBitfield8(short[] a) {
-		if(a.length > 8)
+		if (a.length > 8)
 			throw new IllegalArgumentException("array too long");
 		long rv = 0;
-		for(int k = 0; k < a.length; k++) {
-			if(a[k] < 0 || a[k] > 255)
-				throw new IllegalArgumentException("element out of range (index "+k+", value "+a[k]+")");
+		for (int k = 0; k < a.length; k++) {
+			if (a[k] < 0 || a[k] > 255) {
+				throw new IllegalArgumentException("element out of range (index " + k + ", value " + a[k] + ")");
+			}
 			rv = (rv << 8) | a[k];
 		}
 		return rv;
 	}
-	
+
 	private long toBitfield16(short[] a) {
-		if(a.length > 4)
+		if (a.length > 4) {
 			throw new IllegalArgumentException("array too long");
+		}
 		long rv = 0;
-		for(int k = 0; k < a.length; k++)
+		for (int k = 0; k < a.length; k++)
 			rv = (rv << 16) | a[k];
 		return rv;
 	}
-	
+
 	private void fromBitfield8(long bf, short[] a) {
-		if(a.length > 8)
+		if (a.length > 8) {
 			throw new IllegalArgumentException("array too long");
-		for(int k = a.length - 1; k >= 0; k--) {
-			a[k] = (short)(bf & 255);
+		}
+		for (int k = a.length - 1; k >= 0; k--) {
+			a[k] = (short) (bf & 255);
 			bf >>= 8;
 		}
 	}
-	
+
 	private void fromBitfield16(long bf, short[] a) {
-		if(a.length > 4)
+		if (a.length > 4) {
 			throw new IllegalArgumentException("array too long");
-		for(int k = a.length - 1; k >= 0; k--) {
-			a[k] = (short)bf;
+		}
+		for (int k = a.length - 1; k >= 0; k--) {
+			a[k] = (short) bf;
 			bf >>= 16;
 		}
 	}
-	
+
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
-		
-		tag.setByte("type", type == null ? -1 : (byte)type.ordinal());
+
+		tag.setByte("type", type == null ? -1 : (byte) type.ordinal());
 		tag.setByte("side", side);
 		tag.setByte("front", front);
-		
+
 		tag.setBoolean("version2", true);
-		
+
 		tag.setLong("outputs", toBitfield16(outputs));
 		tag.setLong("inputs", toBitfield16(inputs));
 		tag.setLong("prevOutputs", toBitfield16(prevOutputs));
-		
-		tag.setShort("renderState", (short)renderState);
-		tag.setShort("prevRenderState", (short)prevRenderState);
+
+		tag.setShort("renderState", (short) renderState);
+		tag.setShort("prevRenderState", (short) prevRenderState);
 		tag.setBoolean("updatePending", updatePending);
-		tag.setShort("gateSettings", (short)gateSettings);
+		tag.setShort("gateSettings", (short) gateSettings);
 		tag.setBoolean("flipped", flipped);
-		if(logic != null && isNotStateless) {
+		if (logic != null && isNotStateless) {
 			NBTTagCompound tag2 = new NBTTagCompound();
 			logic.write(tag2);
 			tag.setTag("logic", tag2);
 		}
-		/*if(hasBundledConnections) {
-			for(int k = 0; k < 4; k++) {
-				if(bundledOutputs[k] != null)
-					tag.setByteArray("bundO"+k, bundledOutputs[k]);
-				if(bundledInputs[k] != null)
-					tag.setByteArray("bundI"+k, bundledInputs[k]);
-				if(prevBundledOutputs[k] != null)
-					tag.setByteArray("bundPO"+k, prevBundledOutputs[k]);
-				if(prevBundledInputs[k] != null)
-					tag.setByteArray("bundPI"+k, prevBundledInputs[k]);
-			}
-		}*/
 	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		try {
 			type = EnumGate.VALUES[tag.getByte("type")];
-		} catch(Exception e) {
+		} catch (Exception e) {
 			type = EnumGate.AND; // shouldn't happen
 		}
 		side = tag.getByte("side");
 		front = tag.getByte("front");
 		flipped = tag.getBoolean("flipped");
-		
+
 		renderState = tag.getShort("renderState") & 0xFFFF;
 		prevRenderState = tag.getShort("prevRenderState") & 0xFFFF;
-		
+
 		updatePending = tag.getBoolean("updatePending");
 		gateSettings = tag.getShort("gateSettings") & 0xFFFF;
-		
-		if(tag.getTag("inputs") instanceof NBTTagLong) {
-			if(tag.getBoolean("version2")) {
+
+		if (tag.getTag("inputs") instanceof NBTTagLong) {
+			if (tag.getBoolean("version2")) {
 				fromBitfield16(tag.getLong("inputs"), inputs);
 				fromBitfield16(tag.getLong("outputs"), outputs);
 				fromBitfield16(tag.getLong("prevOutputs"), prevOutputs);
-				
-				for(int k = 0; k < 4; k++) {
+
+				for (int k = 0; k < 4; k++) {
 					absOutputs[relToAbsDirection(k)] = outputs[k];
 					prevAbsOutputs[relToAbsDirection(k)] = prevOutputs[k];
 				}
-				
+
 			} else {
 				fromBitfield8(tag.getLong("inputs"), inputs);
 				fromBitfield8(tag.getLong("outputs"), outputs);
@@ -214,42 +221,23 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 				fromBitfield8(tag.getLong("prevOutputs"), prevOutputs);
 			}
 		}
-		
+
 		createLogic();
-		
-		if(logic != null && tag.hasKey("logic"))
+
+		if (logic != null && tag.hasKey("logic")) {
 			logic.read(tag.getCompoundTag("logic"));
-		
-		/*if(hasBundledConnections) {
-			for(int k = 0; k < 4; k++) {
-				if(tag.hasKey("bundO"+k))
-					bundledOutputs[k] = tag.getByteArray("bundO"+k);
-				if(tag.hasKey("bundI"+k))
-					bundledInputs[k] = tag.getByteArray("bundI"+k);
-				if(tag.hasKey("bundPO"+k))
-					prevBundledOutputs[k] = tag.getByteArray("bundPO"+k);
-				if(tag.hasKey("bundPI"+k))
-					prevBundledInputs[k] = tag.getByteArray("bundPI"+k);
-			}
-		}*/
+		}
 	}
-	
+
 	private void createLogic() {
 		logic = type.createLogic();
 		isNotStateless = !(logic instanceof GateLogic.Stateless);
-		if(logic instanceof GateLogic.WithPointer)
-			pointer = (GateLogic.WithPointer)logic;
-		else
+		if (logic instanceof GateLogic.WithPointer) {
+			pointer = (GateLogic.WithPointer) logic;
+		} else {
 			pointer = null;
+		}
 		hasBundledConnections = logic instanceof GateLogic.WithBundledConnections;
-		/*if(hasBundledConnections) {
-			bundledInputs = new byte[4][];
-			bundledOutputs = new byte[4][];
-			prevBundledInputs = new byte[4][];
-			prevBundledOutputs = new byte[4][];
-			
-			
-		}*/
 	}
 
 	private boolean isFirstTick = true;
@@ -257,11 +245,15 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-
-		if (!worldObj.isRemote) {
-			if (isNotStateless)
+		if (BasicUtils.isServer(worldObj)) {
+			if (isNotStateless) {
 				updateLogic(true, false);
-			else if (isFirstTick) {
+				if (logic instanceof WorldStateBound) {
+					if (((WorldStateBound)logic).needsWorldInfo()) {
+						((WorldStateBound)logic).setWorldInfo(worldObj, xCoord, yCoord, zCoord);
+					}
+				}
+			} else if (isFirstTick) {
 				updateLogic(false, false);
 				isFirstTick = false;
 			}
@@ -300,109 +292,108 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 	private static int[] FLIPMAP_UNFLIPPED = new int[] { 0, 1, 2, 3 };
 
 	private int relToAbsDirection(int rel) {
-		if(flipped)
+		if (flipped) {
 			rel = FLIPMAP_FLIPPED[rel];
+		}
 		return BasicWireUtils.dirMap[side][front][rel];
 	}
-	
+
 	private int absToRelDirection(int abs) {
-		if((abs & 6) == (side & 6))
+		if ((abs & 6) == (side & 6))
 			return -1;
-		
+
 		int rel = BasicWireUtils.invDirMap[side][front][abs];
-		if(flipped)
+		if (flipped)
 			rel = FLIPMAP_FLIPPED[rel];
 		return rel;
 	}
+
 	public void updateLogic(boolean fromTick, boolean forceUpdate) {
-		if(type == null)
+		if (type == null)
 			return;
-		
+
 		int[] flipMap = flipped ? FLIPMAP_FLIPPED : FLIPMAP_UNFLIPPED;
-		
-		for(int k = 0; k < 4; k++)
+
+		for (int k = 0; k < 4; k++) {
 			inputs[flipMap[k]] = getInputValue(k);
-		
-		//if(xCoord == -776)
-		//	System.out.println(xCoord+","+yCoord+","+zCoord+" -- "+side+"/"+front+" -- "+Arrays.toString(inputs));
-		
+		}
 		// update render state with new inputs but not new outputs
 		updateRenderState();
-		
-		if(forceUpdate || fromTick == isNotStateless) {
+
+		if (forceUpdate || fromTick == isNotStateless) {
 			logic.update(inputs, outputs, gateSettings);
 
-			for(int k = 0; k < 4; k++)
+			for (int k = 0; k < 4; k++) {
 				absOutputs[BasicWireUtils.dirMap[side][front][k]] = outputs[flipMap[k]];
-			absOutputs[side] = absOutputs[side^1] = 0;
-			
-			if(forceUpdate || !Arrays.equals(outputs, prevOutputs)) {
-				
-				//if(xCoord == -776)
-				//	System.out.println(xCoord+","+yCoord+","+zCoord+" -- "+side+"/"+front+" -- "+Arrays.toString(inputs)+" -> "+Arrays.toString(outputs)+" -> "+Arrays.toString(absOutputs));
-				
-				if(!updatePending) {
+			}
+			absOutputs[side] = absOutputs[side ^ 1] = 0;
+
+			if (forceUpdate || !Arrays.equals(outputs, prevOutputs)) {
+				if (!updatePending) {
 					worldObj.scheduleBlockUpdate(xCoord, yCoord, zCoord, ProjectRed.blockGate.blockID, 2);
 					updatePending = true;
 				}
 			}
 		}
-		
-		//System.out.println("in: "+Arrays.toString(inputs)+", out: "+Arrays.toString(outputs)+", out2: "+Arrays.toString(absOutputs));
-		//System.out.println("dm: "+Arrays.toString(dirMap[side][front])+", idm: "+Arrays.toString(invDirMap[side][front]));
 	}
-	
+
 	private short getInputValue(int rel) {
 		int abs = relToAbsDirection(rel);
-		if(hasBundledConnections && ((GateLogic.WithBundledConnections)logic).isBundledConnection(rel))
+		if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).isBundledConnection(rel)) {
 			return getBundledInputBitmask(abs);
-		else
+		} else {
 			return getInputStrength(abs);
+		}
 	}
-	
+
 	private short getBundledInputBitmask(int abs) {
 		ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[abs];
 		int x = xCoord + fd.offsetX, y = yCoord + fd.offsetY, z = zCoord + fd.offsetZ;
 		TileEntity te = worldObj.getBlockTileEntity(x, y, z);
-		
-		if(te instanceof IBundledEmitter) {
-			byte[] values = ((IBundledEmitter)te).getBundledCableStrength(side, abs^1);
-			if(values == null)
+
+		if (te instanceof IBundledEmitter) {
+			byte[] values = ((IBundledEmitter) te).getBundledCableStrength(side, abs ^ 1);
+			if (values == null)
 				return 0;
-			
+
 			short rv = 0;
-			for(int k = 15; k >= 0; k--) {
+			for (int k = 15; k >= 0; k--) {
 				rv <<= 1;
-				if(values[k] != 0)
+				if (values[k] != 0)
 					rv |= 1;
 			}
-			
+
 			return rv;
 		}
-		
 		return 0;
 	}
-	
+
 	private short getInputStrength(int abs) {
-		switch(abs) {
-		case Dir.NX: return BasicWireUtils.getPowerStrength(worldObj, xCoord-1, yCoord, zCoord, abs^1, side);
-		case Dir.PX: return BasicWireUtils.getPowerStrength(worldObj, xCoord+1, yCoord, zCoord, abs^1, side);
-		case Dir.NY: return BasicWireUtils.getPowerStrength(worldObj, xCoord, yCoord-1, zCoord, abs^1, side);
-		case Dir.PY: return BasicWireUtils.getPowerStrength(worldObj, xCoord, yCoord+1, zCoord, abs^1, side);
-		case Dir.NZ: return BasicWireUtils.getPowerStrength(worldObj, xCoord, yCoord, zCoord-1, abs^1, side);
-		case Dir.PZ: return BasicWireUtils.getPowerStrength(worldObj, xCoord, yCoord, zCoord+1, abs^1, side);
+		switch (abs) {
+		case Dir.NX:
+			return BasicWireUtils.getPowerStrength(worldObj, xCoord - 1, yCoord, zCoord, abs ^ 1, side);
+		case Dir.PX:
+			return BasicWireUtils.getPowerStrength(worldObj, xCoord + 1, yCoord, zCoord, abs ^ 1, side);
+		case Dir.NY:
+			return BasicWireUtils.getPowerStrength(worldObj, xCoord, yCoord - 1, zCoord, abs ^ 1, side);
+		case Dir.PY:
+			return BasicWireUtils.getPowerStrength(worldObj, xCoord, yCoord + 1, zCoord, abs ^ 1, side);
+		case Dir.NZ:
+			return BasicWireUtils.getPowerStrength(worldObj, xCoord, yCoord, zCoord - 1, abs ^ 1, side);
+		case Dir.PZ:
+			return BasicWireUtils.getPowerStrength(worldObj, xCoord, yCoord, zCoord + 1, abs ^ 1, side);
 		}
-		throw new IllegalArgumentException("Invalid direction "+abs);
+		throw new IllegalArgumentException("Invalid direction " + abs);
 	}
 
 	public int getVanillaOutputStrength(int dir) {
 		int rel = absToRelDirection(dir);
-		if(rel < 0)
+		if (rel < 0)
 			return 0;
-		
-		if(hasBundledConnections && ((GateLogic.WithBundledConnections)logic).isBundledConnection(rel))
+
+		if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).isBundledConnection(rel))
 			return 0;
-		
+
 		return prevAbsOutputs[dir] / 17;
 	}
 
@@ -412,63 +403,74 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 
 	public void scheduledTick() {
 		updatePending = false;
-		//System.out.println(xCoord+","+yCoord+","+zCoord+" Scheduled tick. Outputs: "+Arrays.toString(prevOutputs)+" -> "+Arrays.toString(outputs));
-		//System.out.println(xCoord+","+yCoord+","+zCoord+" Scheduled tick. Outputs 2: "+Arrays.toString(prevAbsOutputs)+" -> "+Arrays.toString(absOutputs));
 		System.arraycopy(absOutputs, 0, prevAbsOutputs, 0, 6);
 		System.arraycopy(outputs, 0, prevOutputs, 0, 4);
 		updateRenderState();
 		worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, ProjectRed.blockGate.blockID);
 		worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord - 1, zCoord, ProjectRed.blockGate.blockID);
 		worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord + 1, zCoord, ProjectRed.blockGate.blockID);
-        worldObj.notifyBlocksOfNeighborChange(xCoord - 1, yCoord, zCoord, ProjectRed.blockGate.blockID);
-        worldObj.notifyBlocksOfNeighborChange(xCoord + 1, yCoord, zCoord, ProjectRed.blockGate.blockID);
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord - 1, ProjectRed.blockGate.blockID);
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord + 1, ProjectRed.blockGate.blockID);
-        
-        if(hasBundledConnections) {
-	        for(int rel = 0; rel < 4; rel++) {
-	        	if(!((GateLogic.WithBundledConnections)logic).isBundledConnection(rel))
-	        		continue;
-	        	
-	        	int abs = relToAbsDirection(rel);
-	        	ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[abs];
-	        	int x = xCoord + fd.offsetX, y = yCoord + fd.offsetY, z = zCoord + fd.offsetZ;
-	        	
-	        	TileEntity te = worldObj.getBlockTileEntity(x, y, z);
-	        	if(te != null && te instanceof IBundledUpdatable)
-	        		((IBundledUpdatable)te).onBundledInputChanged();
-	        }
-        }
+		worldObj.notifyBlocksOfNeighborChange(xCoord - 1, yCoord, zCoord, ProjectRed.blockGate.blockID);
+		worldObj.notifyBlocksOfNeighborChange(xCoord + 1, yCoord, zCoord, ProjectRed.blockGate.blockID);
+		worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord - 1, ProjectRed.blockGate.blockID);
+		worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord + 1, ProjectRed.blockGate.blockID);
+
+		if (hasBundledConnections) {
+			for (int rel = 0; rel < 4; rel++) {
+				if (!((GateLogic.WithBundledConnections) logic).isBundledConnection(rel)) {
+					continue;
+				}
+
+				int abs = relToAbsDirection(rel);
+				ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[abs];
+				int x = xCoord + fd.offsetX, y = yCoord + fd.offsetY, z = zCoord + fd.offsetZ;
+
+				TileEntity te = worldObj.getBlockTileEntity(x, y, z);
+				if (te != null && te instanceof IBundledUpdatable)
+					((IBundledUpdatable) te).onBundledInputChanged();
+			}
+		}
 	}
-	
+
 	// called when shift-clicked by a screwdriver
 	public void configure() {
-		if(logic instanceof GateLogic.Flippable) {
-			flipped = !flipped;
+		if (logic instanceof GateLogic.Flippable) {
+			// flipped = !flipped; Disabled, until i find a practical way to
+			// render flipped.
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		} else
+		} else {
 			gateSettings = logic.configure(gateSettings);
+		}
 		updateLogic(false, true);
 	}
-	
+
+	// Used to rotate to correct side based on where it is now.
+	public byte[][] rotationMap = { { -1, -1, 5, 4, 2, 3 }, // Side 0
+			{ -1, -1, 4, 5, 3, 2 }, // Side 1
+			{ 4, 5, -1, -1, 1, 0 }, // Side 2
+			{ 5, 4, -1, -1, 0, 1 }, // Side 3
+			{ 3, 2, 0, 1, -1, -1 }, // Side 4
+			{ 2, 3, 1, 0, -1, -1 } // Side 5
+	};
+
 	// called when non-shift-clicked by a screwdriver
 	public void rotate() {
-		do
-			front = (byte)((front + 1) % 6);
-		while((front & 6) == (side & 6));
-		
+		if (rotationMap[side][front] == -1) {
+			return;
+		}
+		front = rotationMap[side][front];
 		updateLogic(false, true);
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 
 	public boolean onBlockActivated(EntityPlayer ply) {
-		if(ply.getHeldItem() != null && ply.getHeldItem().getItem() == ProjectRed.itemScrewdriver)
+		if (ply.getHeldItem() != null && ply.getHeldItem().getItem() == ProjectRed.itemScrewdriver)
 			return false;
-		
-		if(worldObj.isRemote)
+
+		if (worldObj.isRemote) {
 			return type != null && GateLogic.WithRightClickAction.class.isAssignableFrom(type.getLogicClass());
-		if(logic instanceof GateLogic.WithRightClickAction) {
-			((GateLogic.WithRightClickAction)logic).onRightClick(ply, this);
+		}
+		if (logic instanceof GateLogic.WithRightClickAction) {
+			((GateLogic.WithRightClickAction) logic).onRightClick(ply, this);
 			return true;
 		}
 		return false;
@@ -491,20 +493,17 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 	public boolean isPositionOccupiedByTile(EnumPosition pos) {
 		return pos == EnumPosition.getFacePosition(side);
 	}
-	
-	
-	
 
 	@Override
 	public EnumPosition getPartPosition(int subHit) {
-		if(subHit == 0)
+		if (subHit == 0)
 			return EnumPosition.getFacePosition(side);
 		return null;
 	}
 
 	@Override
 	public AxisAlignedBB getPartAABBFromPool(int subHit) {
-		if(subHit == 0)
+		if (subHit == 0)
 			return Part.getBoundingBoxFromPool(EnumPosition.getFacePosition(side), BlockGate.THICKNESS);
 		return null;
 	}
@@ -543,13 +542,12 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 
 	@Override
 	public List<ItemStack> removePartByPlayer(EntityPlayer ply, int part) {
-		if(cover != null)
+		if (cover != null)
 			cover.convertToContainerBlock();
 		else
 			worldObj.setBlock(xCoord, yCoord, zCoord, 0, 0, 3);
 		return Collections.singletonList(new ItemStack(ProjectRed.blockGate, 1, getType().ordinal()));
 	}
-
 
 	@Override
 	public void onRedstoneInputChanged() {
@@ -558,21 +556,21 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 
 	@Override
 	public boolean connects(IWire wire, int blockFace, int fromDirection) {
-		if(blockFace != side)
+		if (blockFace != side)
 			return false;
-		
-		if(logic == null)
+
+		if (logic == null)
 			return false;
-		
+
 		int rel = absToRelDirection(fromDirection);
-		if(rel < 0)
+		if (rel < 0)
 			return false;
-		
-		boolean bundled = (hasBundledConnections && ((GateLogic.WithBundledConnections)logic).isBundledConnection(rel));
-		
-		if(!(bundled ? wire instanceof IBundledWire : wire instanceof IRedstoneWire))
+
+		boolean bundled = (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).isBundledConnection(rel));
+
+		if (!(bundled ? wire instanceof IBundledWire : wire instanceof IRedstoneWire))
 			return false;
-		
+
 		return logic.connectsToDirection(rel);
 	}
 
@@ -582,37 +580,80 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 	}
 
 	private byte[] returnedBundledCableStrength;
-	
+
 	@Override
 	public byte[] getBundledCableStrength(int blockFace, int toDirection) {
-		if(!hasBundledConnections)
+		if (!hasBundledConnections)
 			return null;
-		
-		if(blockFace != side)
+
+		if (blockFace != side)
 			return null;
-		
+
 		int rel = absToRelDirection(toDirection);
-		if(rel < 0)
+		if (rel < 0)
 			return null;
-		
-		if(!((GateLogic.WithBundledConnections)logic).isBundledConnection(rel))
+
+		if (!((GateLogic.WithBundledConnections) logic).isBundledConnection(rel))
 			return null;
-		
-		if(returnedBundledCableStrength == null)
+
+		if (returnedBundledCableStrength == null)
 			returnedBundledCableStrength = new byte[16];
-		
+
 		short bitmask = prevOutputs[rel];
-		for(int k = 0; k < 16; k++) {
-			returnedBundledCableStrength[k] = ((bitmask & 1) != 0) ? (byte)255 : 0;
+		for (int k = 0; k < 16; k++) {
+			returnedBundledCableStrength[k] = ((bitmask & 1) != 0) ? (byte) 255 : 0;
 			bitmask >>= 1;
 		}
-		
+
 		return returnedBundledCableStrength;
 	}
 
 	@Override
 	public void onBundledInputChanged() {
-		if(hasBundledConnections)
+		if (hasBundledConnections)
 			onRedstoneInputChanged();
+	}
+
+	public void onNeighborChanged() {
+		checkSupport();
+	}
+
+	/**
+	 * See if the gate is still attached to something.
+	 */
+	public void checkSupport() {
+		if (BasicUtils.isClient(worldObj)) {
+			return;
+		}
+		Coords localCoord = new Coords(this);
+		localCoord.orientation = ForgeDirection.getOrientation(this.getSide());
+		localCoord.moveForwards(1);
+		Block supporter = Block.blocksList[worldObj.getBlockId(localCoord.x, localCoord.y, localCoord.z)];
+		if (!BasicWireUtils.canPlaceWireOnSide(worldObj, localCoord.x, localCoord.y, localCoord.z, localCoord.orientation.getOpposite(), false)) {
+			int id = worldObj.getBlockId(xCoord, yCoord, zCoord);
+			Block gate = Block.blocksList[id];
+			if (gate != null) {
+				ItemStack dropped = new ItemStack(ProjectRed.blockGate, 1, type.ordinal());
+				BasicUtils.ejectItem(worldObj, dropped, false, null, getSide(), new Coords(this));
+				removeGate();
+			}
+		}
+	}
+
+	public void removeGate() {
+		if (cover != null) {
+			cover.convertToContainerBlock();
+		} else {
+			worldObj.setBlock(xCoord, yCoord, zCoord, 0, 0, 3);
+		}
+	}
+
+	/**
+	 * We need the entire block to render if we are looking near it, because
+	 * there are things outside of the default BBox like torches and pointers.
+	 */
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return AxisAlignedBB.getAABBPool().getAABB(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
 	}
 }
