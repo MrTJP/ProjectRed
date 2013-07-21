@@ -145,7 +145,7 @@ public class BlockGate extends BlockMultipartBase {
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IconRegister reg) {
 		GateRenderBridge.registerAllIcons(reg);
-		blockIcon = reg.registerIcon("projectred:base");
+		blockIcon = reg.registerIcon("projectred:/gates/base");
 	}
 
 	private int getSide(IBlockAccess w, int x, int y, int z) {
@@ -211,20 +211,17 @@ public class BlockGate extends BlockMultipartBase {
 
 	@Override
 	public int getLightValue(IBlockAccess world, int x, int y, int z) {
-		TileGate te = (TileGate) BasicUtils.getTileEntity(world, new Coords(x,y,z), TileGate.class);
+		TileGate te = (TileGate) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileGate.class);
 		if (te != null) {
 			EnumGate type = te.getType();
 			if (type != null) {
 				GateRenderBridge render = type.getRendering();
-				if (render != null && render.torchState.length > 0) {
-					int on = 0;
-					for (int i = 0; i < render.torchState.length; i++) {
-						if (render.torchState[i]) {
-							on++;
-						}
-					}
-					return on > 0 ? on + 4 : 0;
+				int on = 0;
+				if (render != null) {
+					on += render.torchState.length;
+					on += render.pointerX.length;
 				}
+				return on > 0 ? on + 4 : 0;
 			}
 		}
 		return 0;

@@ -1,10 +1,14 @@
 package mrtjp.projectred.multipart.wiring.wires;
 
+import codechicken.core.render.CCRenderState;
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
 import mrtjp.projectred.renderstuffs.RenderIDs;
+import mrtjp.projectred.renderstuffs.WireRenderAssistant;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Dir;
+import mrtjp.projectred.utils.codechicken.core.render.CCModel;
+import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -23,6 +27,7 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 	private RotatedRenderer rt = new RotatedRenderer();
 
 	public final static WireRenderer instance = new WireRenderer();
+	private WireRenderAssistant wra = new WireRenderAssistant();
 
 	private final static boolean FAT_JACKETED_WIRE = false;
 
@@ -34,7 +39,37 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 	private int baseColour;
 
 	public void renderWorld(RenderBlocks render, EnumWire type, TileWire wt, int sideMask, boolean renderJacketed) {
+		wra.x = wt.xCoord;
+		wra.y = wt.yCoord;
+		wra.z = wt.zCoord;
+		wra.renderBlocks = render;
+		CCRenderState.reset();
+		CCRenderState.setBrightness(wt.worldObj, wt.xCoord, wt.yCoord, wt.zCoord);
+		CCRenderState.setColourOpaque(wt.getVisualWireColour());
+		if (type == EnumWire.RED_ALLOY) {
+			wra.wireIcon = EnumWire.RED_ALLOY.wireSprite;
+			wra.wireMap = EnumWire.RED_ALLOY.wireMap;
+			for (int i = 0; i < 6; i++) {
+				if ((sideMask & (1 << i)) == 0) continue;
+				wra.side = i;
+				wra.setWireRenderState(wt);
+				wra.pushRender();
+			}
+			return;
+		}
+		if (type == EnumWire.INSULATED_0) {
+			wra.wireIcon = EnumWire.INSULATED_0.wireSprite;
+			wra.wireMap = EnumWire.INSULATED_0.wireMap;
+			for (int i = 0; i < 6; i++) {
+				if ((sideMask & (1 << i)) == 0) continue;
+				wra.side = i;
+				wra.setWireRenderState(wt);
+				wra.pushRender();
+			}
+			return;
+		}
 
+		
 		int x = wt.xCoord, y = wt.yCoord, z = wt.zCoord;
 
 		rt.base = Tessellator.instance;
@@ -100,7 +135,6 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks render) {
 		TileWire wt = (TileWire) world.getBlockTileEntity(x, y, z);
 		EnumWire type = wt.getType();
-		// System.out.println("render wire with type "+type+", sidemask "+wt.getSideMask());
 		if (type == null)
 			return false;
 
@@ -806,7 +840,6 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 		}
 
 	}
-
 
 	@Override
 	public boolean shouldRender3DInInventory() {
