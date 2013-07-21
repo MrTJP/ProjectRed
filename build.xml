@@ -11,6 +11,8 @@
 	<property name="jar.dir" value="${build.dir}/dist" />
 	<property name="chickencore.dir" value="${build.dir}/unpack/chickencore" />
 	<property name="nei.dir" value="${build.dir}/unpack/nei" />
+	<property name="teapi.dir" value="${build.dir}/unpack/teapi" />
+	<property name="ccapi.dir" value="${build.dir}/unpack/ccapi" />
 
 	<!-- Versioning -->
 	<property file="${src.dir}/buildspecs.properties" prefix="buildspecs" />
@@ -22,6 +24,8 @@
 	<property name="version.forge" value="7.8.1.738" />
 	<property name="version.chickencore" value="0.8.7" />
 	<property name="version.nei" value="1.5.2.27" />
+	<property name="version.teapi" value="2.4.6.0" />
+	<property name="version.ccapi" value="1.53" />
 
 	<!-- Servers -->
 	<property name="download.root" value="http://dl.dropboxusercontent.com/u/46144650" />
@@ -29,8 +33,8 @@
 	<property name="download.forge" value="forge-${version.forge}.zip" />
 	<property name="download.chickencore" value="chickencore-${version.chickencore}.zip" />
 	<property name="download.nei" value="nei-${version.nei}.zip" />
-
-
+	<property name="download.teapi" value="teapi-${version.teapi}.zip" />
+	<property name="download.ccapi" value="ccapi-${version.ccapi}.zip" />
 
 
 	<target name="cleanoldworkspace">
@@ -52,6 +56,8 @@
 		<get src="${download.root}/${download.forge}" dest="${download.dir}" usetimestamp="True" />
 		<get src="${download.root}/${download.chickencore}" dest="${download.dir}" usetimestamp="True" />
 		<get src="${download.root}/${download.nei}" dest="${download.dir}" usetimestamp="True" />
+		<get src="${download.root}/${download.teapi}" dest="${download.dir}" usetimestamp="True" />
+		<get src="${download.root}/${download.ccapi}" dest="${download.dir}" usetimestamp="True" />
 
 		<echo message="Download finished" />
 
@@ -81,6 +87,19 @@
 				<include name="${download.nei}" />
 			</fileset>
 		</unzip>
+		<!-- Computer Craft api -->
+		<unzip dest="${ccapi.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="${download.ccapi}" />
+			</fileset>
+		</unzip>
+		<!-- Thermal Expansion api -->
+		<unzip dest="${teapi.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="${download.teapi}" />
+			</fileset>
+		</unzip>
+
 		<echo message="All Files Unpacked" />
 
 		<!-- Grant permissions -->
@@ -132,6 +151,13 @@
 		<copy todir="${mc.src.dir}">
 			<fileset dir="${src.dir}/dummy" />
 		</copy>
+		<copy todir="${mc.src.dir}">
+			<fileset dir="${ccapi.dir}" />
+		</copy>
+		<copy todir="${mc.src.dir}">
+			<fileset dir="${teapi.dir}" />
+		</copy>
+
 		<echo message="All apis and sources copied" />
 
 		<!-- Refresh MD5 -->

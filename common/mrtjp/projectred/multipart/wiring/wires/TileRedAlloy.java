@@ -481,7 +481,7 @@ public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedston
 	@Override
 	protected boolean debug(EntityPlayer ply) {
 		ply.sendChatToPlayer((worldObj.isRemote ? "Client" : "Server") + " signal strength: " + strength + ", nwb: " + strengthFromNonWireBlocks);
-
+		
 		super.debug(ply);
 		return true;
 	}

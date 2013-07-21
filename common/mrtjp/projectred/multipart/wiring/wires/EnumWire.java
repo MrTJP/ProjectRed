@@ -1,7 +1,11 @@
 package mrtjp.projectred.multipart.wiring.wires;
 
+import java.util.Map;
+
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.utils.BasicRenderUtils;
+import mrtjp.projectred.utils.codechicken.core.render.CCModel;
+import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
@@ -69,6 +73,9 @@ public enum EnumWire {
 			texture_end_px, texture_end_nz, texture_end_pz, texture_jacketed,
 			texture_jacketed_end, texture_jacketed_cross;
 
+	public Icon wireSprite;
+	public Map<String, CCModel> wireMap; 
+	
 	private EnumWire(String name, String texName, String texSuffix, int thicknessPixels, int widthPixels, Class<? extends TileWire> teclass, int itemColour) {
 		this.name = name;
 		this.textureName = "projectred:" + texName;
@@ -83,6 +90,17 @@ public enum EnumWire {
 
 	@SideOnly(Side.CLIENT)
 	public void loadTextures(IconRegister reg, String base, String suffix) {
+		if (this == EnumWire.RED_ALLOY) {
+			wireSprite = reg.registerIcon("projectred:/wires/redalloy");
+			wireMap = CCModel.parseObjModels("/mods/projectred/textures/obj/wiring/alloywire.obj", 7, new InvertX());
+		}
+		
+		if (this == EnumWire.INSULATED_0) {
+			wireSprite = reg.registerIcon("projectred:/wires/template_insulated");
+			wireMap = CCModel.parseObjModels("/mods/projectred/textures/obj/wiring/insulatedwire.obj", 7, new InvertX());
+		}
+		
+		
 		if (!base.endsWith(">")) {
 			Icon i = reg.registerIcon(base);
 			texture_cross = i;

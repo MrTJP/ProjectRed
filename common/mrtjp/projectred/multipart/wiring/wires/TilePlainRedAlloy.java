@@ -6,7 +6,7 @@ public class TilePlainRedAlloy extends TileRedAlloy implements IBareRedstoneWire
 
 	@Override
 	public int getVisualWireColour() {
-		return (getRedstoneSignalStrength() / 2 + 127) << 16;
+		return (getRedstoneSignalStrength() / 2 + 75) << 16;
 	}
 
 	{

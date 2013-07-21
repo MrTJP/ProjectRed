@@ -132,8 +132,9 @@ public class BlockWire extends BlockMultipartBase {
 
 		EnumWire wireType;
 
-		if (te instanceof TileWire)
+		if (te instanceof TileWire) {
 			wireType = ((TileWire) te).getType();
+		}
 		else
 			return true; // suppress particles
 

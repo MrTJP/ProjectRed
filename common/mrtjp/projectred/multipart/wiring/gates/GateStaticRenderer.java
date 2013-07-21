@@ -45,8 +45,9 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 		rotatedRenderer.front = front;
 		rotatedRenderer.renderBlocks = render;
 
-		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
 		CCRenderState.reset();
+		CCRenderState.setColour(0);
+		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
 		rotatedRenderer.renderPartModel(rendering._modelBase, "base", .5f, 0, .5f, -1, -1, false);
 		for (int i = 0; i < rendering.wireColor.length; i++) {
 			float[] xPositions = rendering.wirePosX[i];
@@ -88,6 +89,9 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 		rotatedRenderer.side = 0;
 		rotatedRenderer.renderBlocks = render;
 
+		CCRenderState.reset();
+		CCRenderState.useNormals(true);
+		
 		CCRenderState.startDrawing(7);
 		rotatedRenderer.renderPartModel(rendering._modelBase, "base", .5f, 0, .5f, -1, -1, false);
 		for (int i = 0; i < rendering.wireColor.length; i++) {
