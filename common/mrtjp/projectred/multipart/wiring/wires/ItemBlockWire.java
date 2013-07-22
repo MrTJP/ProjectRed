@@ -5,6 +5,7 @@ import mrtjp.projectred.multipart.microblocks.EnumPosition;
 import mrtjp.projectred.multipart.microblocks.IMicroblockCoverSystem;
 import mrtjp.projectred.multipart.microblocks.IMicroblockSupporterTile;
 import mrtjp.projectred.multipart.microblocks.Part;
+import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Dir;
 import net.minecraft.block.Block;

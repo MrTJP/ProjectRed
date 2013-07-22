@@ -13,52 +13,58 @@ import net.minecraft.util.Icon;
 
 public class WireRenderAssistant {
 
-	public int x;
-	public int y;
-	public int z;
+	public double x;
+	public double y;
+	public double z;
 	public int side;
-	
+	public int facing = -1;
+
+	public float xOffset = 0;
+	public float yOffset = 0;
+	public float zOffset = 0;
+
 	public RenderBlocks renderBlocks;
-	
+
 	public Map<String, CCModel> wireMap;
 	public Icon wireIcon;
 
-	boolean isCenterCrossed;
-	boolean isCenterNS;
-	boolean isCenterWE;
+	public boolean isCenterCrossed;
+	public boolean isCenterNS;
+	public boolean isCenterWE;
 
-	boolean connectsCornerN;
-	boolean connectsCornerS;
-	boolean connectsCornerW;
-	boolean connectsCornerE;
+	public boolean connectsCornerN;
+	public boolean connectsCornerS;
+	public boolean connectsCornerW;
+	public boolean connectsCornerE;
 
-	boolean connectsInsideN;
-	boolean connectsInsideS;
-	boolean connectsInsideW;
-	boolean connectsInsideE;
+	public boolean connectsInsideN;
+	public boolean connectsInsideS;
+	public boolean connectsInsideW;
+	public boolean connectsInsideE;
 
-	boolean connectsN;
-	boolean connectsS;
-	boolean connectsW;
-	boolean connectsE;
-	
-	boolean connectsInsideConnectorN;
-	boolean connectsInsideConnectorS;
-	boolean connectsInsideConnectorW;
-	boolean connectsInsideConnectorE;
+	public boolean connectsN;
+	public boolean connectsS;
+	public boolean connectsW;
+	public boolean connectsE;
+
+	public boolean connectsInsideConnectorN;
+	public boolean connectsInsideConnectorS;
+	public boolean connectsInsideConnectorW;
+	public boolean connectsInsideConnectorE;
 
 	public WireRenderAssistant() {
 	}
 
 	// Used to check relative direction for the side the wire is on.
 	public int[][] sideMap = { 
-			{ -1, -1, 2, 3, 5, 4}, 
-			{ -1, -1, 3, 2, 4, 5}, 
-			{ -1, -1, 1, 0, 5, 4}, 
-			{ -1, -1, 0, 1, 4, 5}, 
-			{ -1, -1, 2, 3, 0, 1}, 
-			{ -1, -1, 3, 2, 1, 0 }, };
-	
+			{ -1, -1, 2, 3, 5, 4 }, 
+			{ -1, -1, 3, 2, 4, 5 }, 
+			{ -1, -1, 1, 0, 5, 4 }, 
+			{ -1, -1, 0, 1, 4, 5 }, 
+			{ -1, -1, 2, 3, 0, 1 }, 
+			{ -1, -1, 3, 2, 1, 0 }, 
+			};
+
 	public int[] frontMap_NS = { 2, 3, 1, 0, 2, 3 };
 	public int[] frontMap_WE = { 5, 4, -1, -1, 0, 1 };
 
@@ -93,11 +99,11 @@ public class WireRenderAssistant {
 		connectsInsideConnectorE = (isCenterCrossed && connectsE) || (isCenterWE);
 
 	}
-	
+
 	public void pushRender() {
 		// Center
 		if (isCenterCrossed) {
-			if (side == 4){
+			if (side == 4) {
 				renderModelNS(wireMap.get("center_X"));
 			} else {
 				renderModelWE(wireMap.get("center_X"));
@@ -107,8 +113,8 @@ public class WireRenderAssistant {
 		} else if (isCenterWE) {
 			renderModelWE(wireMap.get("center_PN"));
 		}
-		
-		//Inner connectors
+
+		// Inner connectors
 		if (connectsInsideConnectorN) {
 			renderModelNS(wireMap.get("insideconnector_N"));
 		}
@@ -121,8 +127,8 @@ public class WireRenderAssistant {
 		if (connectsInsideConnectorE) {
 			renderModelWE(wireMap.get("insideconnector_P"));
 		}
-		
-		//Inout or InIn
+
+		// Inout or InIn
 		if (connectsN) {
 			if (connectsInsideN) {
 				renderModelNS(wireMap.get("inin_N"));
@@ -151,8 +157,8 @@ public class WireRenderAssistant {
 				renderModelWE(wireMap.get("inout_P"));
 			}
 		}
-		
-		// Outer connectors
+
+		// Outer corner connectors
 		if (connectsCornerN) {
 			renderModelNS(wireMap.get("outsideconnector_N"));
 		}
@@ -166,22 +172,29 @@ public class WireRenderAssistant {
 			renderModelWE(wireMap.get("outsideconnector_P"));
 		}
 	}
-	
 
-	public void renderJacketedWire(Icon wireIcon, Map<String, CCModel> wireMap) {
+	public void renderJacketedWire(TileWire t) {
 
 	}
 
 	private void renderModelNS(CCModel cc) {
+		if (cc == null) {
+			System.out.println("Wire model is currupt or missing.");
+			return;
+		}
 		TransformationList t = new TransformationList();
-		t.with(new Translation(.5, 0, .5)).with(Rotation.getForSideFacing(side, frontMap_NS[side])).with(new Translation(x, y, z));
-		cc.render(0, cc.verts.length, t, new IconTransformation(renderBlocks.overrideBlockTexture != null ? renderBlocks.overrideBlockTexture : wireIcon), null);
+		t.with(new Translation(.5 + xOffset, 0 + yOffset, .5 + zOffset)).with(Rotation.getForSideFacing(side, (facing > -1 ? facing : frontMap_NS[side]))).with(new Translation(x, y, z));
+		cc.render(0, cc.verts.length, t, new IconTransformation(renderBlocks != null && renderBlocks.overrideBlockTexture != null ? renderBlocks.overrideBlockTexture : wireIcon), null);
 	}
-	
+
 	private void renderModelWE(CCModel cc) {
+		if (cc == null) {
+			System.out.println("Wire model is currupt or missing.");
+			return;
+		}
 		TransformationList t = new TransformationList();
-		t.with(new Translation(.5, 0, .5)).with(Rotation.getForSideFacing(side, frontMap_WE[side])).with(new Translation(x, y, z));
-		cc.render(0, cc.verts.length, t, new IconTransformation(renderBlocks.overrideBlockTexture != null ? renderBlocks.overrideBlockTexture : wireIcon), null);
+		t.with(new Translation(.5 + xOffset, 0 + yOffset, .5 + zOffset)).with(Rotation.getForSideFacing(side, (facing > -1 ? facing : frontMap_WE[side]))).with(new Translation(x, y, z));
+		cc.render(0, cc.verts.length, t, new IconTransformation(renderBlocks != null && renderBlocks.overrideBlockTexture != null ? renderBlocks.overrideBlockTexture : wireIcon), null);
 	}
 
 }

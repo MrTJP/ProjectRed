@@ -6,6 +6,7 @@ import mrtjp.projectred.crafting.ProjectRedTabs;
 import mrtjp.projectred.multipart.BlockMultipartBase;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
 import mrtjp.projectred.multipart.wiring.InvalidTile;
+import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialLogic;

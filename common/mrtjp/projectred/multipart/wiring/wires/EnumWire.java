@@ -100,6 +100,10 @@ public enum EnumWire {
 			wireMap = CCModel.parseObjModels("/mods/projectred/textures/obj/wiring/insulatedwire.obj", 7, new InvertX());
 		}
 		
+		if (this == EnumWire.BUNDLED) {
+			wireSprite = reg.registerIcon("projectred:/wires/template_bundled");
+			wireMap = CCModel.parseObjModels("/mods/projectred/textures/obj/wiring/bundledcable.obj", 7, new InvertX());
+		}
 		
 		if (!base.endsWith(">")) {
 			Icon i = reg.registerIcon(base);
@@ -189,6 +193,24 @@ public enum EnumWire {
 		}
 		for (EnumWire w: EnumWire.INSULATED_WIRE) {
 			OreDictionary.registerOre(oreDictDefinitionInsulated, w.getItemStack());
+		}
+	}
+	
+	public static class WireDamageValues {
+		// things controlling interpretation of item damage values
+		public static final int DMG_FLAG_JACKETED = 16384;
+		public static final int DMG_MASK_ORDINAL = 255;
+
+		public static boolean isJacketed(int damageValue) {
+			return (damageValue & DMG_FLAG_JACKETED) != 0;
+		}
+
+		public static EnumWire getType(int damageValue) {
+			int ordinal = damageValue & DMG_MASK_ORDINAL;
+			if (ordinal < 0 || ordinal >= EnumWire.VALUES.length) {
+				return null;
+			}
+			return EnumWire.VALUES[ordinal];
 		}
 	}
 }

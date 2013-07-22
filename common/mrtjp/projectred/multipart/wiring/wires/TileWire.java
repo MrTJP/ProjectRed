@@ -13,6 +13,7 @@ import mrtjp.projectred.multipart.microblocks.IMicroblockCoverSystem;
 import mrtjp.projectred.multipart.microblocks.Part;
 import mrtjp.projectred.multipart.microblocks.PartType;
 import mrtjp.projectred.multipart.wiring.InvalidTile;
+import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
@@ -26,6 +27,7 @@ import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
@@ -38,7 +40,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 	private EnumWire wireType;
 
 	// true if there is a jacketed wire in this block
-	private boolean haveJacketed;
+	private boolean containsJacketed;
 
 	// bitmask where bit (side) is set if the jacketed wire in this block
 	// connects to that side
@@ -80,7 +82,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 		if (canUpdate()) {
 			tag.setBoolean("notifyQueued", notifyNeighboursNextTick);
 		}
-		if (haveJacketed) {
+		if (containsJacketed) {
 			tag.setByte("jcmc", jacketConnectMaskCache);
 		}
 	}
@@ -97,7 +99,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 		}
 		wireMask = tag.getByte("mask");
 
-		if (haveJacketed = tag.hasKey("jcmc")) {
+		if (containsJacketed = tag.hasKey("jcmc")) {
 			jacketConnectMaskCache = tag.getByte("jcmc");
 		}
 
@@ -195,11 +197,11 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 
 	public boolean canPlaceWireOnSide(EnumWire type, int side) {
 		int newMask = wireMask | (1 << side);
-		return type == wireType && (wireMask & (1 << side)) == 0 && (haveJacketed || (newMask != 0x03 && newMask != 0x0C && newMask != 0x30));
+		return type == wireType && (wireMask & (1 << side)) == 0 && (containsJacketed || (newMask != 0x03 && newMask != 0x0C && newMask != 0x30));
 	}
 
 	public boolean canAddJacketedWire(EnumWire type) {
-		return type == this.getType() && !haveJacketed;
+		return type == this.getType() && !containsJacketed;
 	}
 
 	void rawAddWire(EnumWire type, int side) {
@@ -228,7 +230,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 		if (getType() != null && type != getType())
 			throw new IllegalArgumentException("wrong type (passed " + type + ", expected " + getType() + ")");
 		wireType = type;
-		haveJacketed = true;
+		containsJacketed = true;
 	}
 
 	public boolean addJacketedWire(EnumWire type) {
@@ -262,7 +264,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 			tag.setByteArray("c", getCoverSystem().writeDescriptionBytes());
 			tag.setInteger("C", connectMaskCache);
 			tag.setInteger("C2", connectCornerCache);
-			if (haveJacketed) {
+			if (containsJacketed) {
 				tag.setByte("j", jacketConnectMaskCache);
 			}
 		}
@@ -282,7 +284,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 		connectMaskCache = pkt.customParam1.getInteger("C");
 		connectCornerCache = pkt.customParam1.getInteger("C2");
 
-		if (haveJacketed = pkt.customParam1.hasKey("j"))
+		if (containsJacketed = pkt.customParam1.hasKey("j"))
 			jacketConnectMaskCache = pkt.customParam1.getByte("j");
 
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -379,7 +381,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 	}
 
 	private boolean jacketConnectsInDirectionUncached(int direction) {
-		if (!haveJacketed)
+		if (!containsJacketed)
 			return false;
 		if (!getCoverSystem().isSideOpen(direction))
 			return false;
@@ -489,7 +491,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 		connectCornerCache = 0;
 		jacketConnectMaskCache = 0;
 		for (int side = 0; side < 6; side++) {
-			if (haveJacketed) {
+			if (containsJacketed) {
 				if (jacketConnectsInDirectionUncached(side))
 					jacketConnectMaskCache |= (1 << side);
 			}
@@ -530,7 +532,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 	}
 
 	public boolean connectsInDirectionByJacketedWire(int direction) {
-		return haveJacketed && (jacketConnectMaskCache & (1 << direction)) != 0;
+		return containsJacketed && (jacketConnectMaskCache & (1 << direction)) != 0;
 	}
 
 	public boolean connectsInDirection(int direction) {
@@ -559,7 +561,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 			return false;
 
 		wireMask &= ~(1 << side);
-		if (wireMask == 0 && !haveJacketed) {
+		if (wireMask == 0 && !containsJacketed) {
 			if (cover != null)
 				cover.convertToContainerBlock();
 			else
@@ -567,11 +569,11 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 			notifyExtendedNeighbours();
 
 		} else {
-			if (wireMask == 0x03 && !haveJacketed)
+			if (wireMask == 0x03 && !containsJacketed)
 				removeAndDropWireOnSide(1);
-			else if (wireMask == 0x0C && !haveJacketed)
+			else if (wireMask == 0x0C && !containsJacketed)
 				removeAndDropWireOnSide(3);
-			else if (wireMask == 0x30 && !haveJacketed)
+			else if (wireMask == 0x30 && !containsJacketed)
 				removeAndDropWireOnSide(5);
 			else {
 				computeConnections();
@@ -586,11 +588,11 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 
 	/** Destroys the wire block when the last wire is removed. */
 	public boolean removeJacketedWire() {
-		if (!haveJacketed) {
+		if (!containsJacketed) {
 			return false;
 		}
 
-		haveJacketed = false;
+		containsJacketed = false;
 		if (wireMask == 0) {
 			if (cover != null)
 				cover.convertToContainerBlock();
@@ -706,7 +708,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 			return false;
 		IMicroblockCoverSystem imcs = getCoverSystem();
 		if (blockFace == -1)
-			return haveJacketed && (imcs == null || imcs.isSideOpen(fromDirection));
+			return containsJacketed && (imcs == null || imcs.isSideOpen(fromDirection));
 		else if (blockFace >= 0 && blockFace <= 5)
 			return (wireMask & (1 << blockFace)) != 0 && (imcs == null || imcs.isEdgeOpen(blockFace, fromDirection));
 		else
@@ -756,7 +758,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 	@Override
 	public AxisAlignedBB getPartAABBFromPool(int part) {
 		if (part == 6)
-			return haveJacketed ? Part.getBoundingBoxFromPool(EnumPosition.Centre, 0.5) : null;
+			return containsJacketed ? Part.getBoundingBoxFromPool(EnumPosition.Centre, 0.5) : null;
 
 		if ((wireMask & (1 << part)) == 0)
 			return null;
@@ -775,7 +777,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 
 	@Override
 	public ItemStack pickPart(MovingObjectPosition rayTrace, int part) {
-		if (part == 6 && haveJacketed)
+		if (part == 6 && containsJacketed)
 			return new ItemStack(ProjectRed.blockWire, 1, getType().ordinal() | WireDamageValues.DMG_FLAG_JACKETED);
 		return new ItemStack(ProjectRed.blockWire, 1, getType().ordinal());
 	}
@@ -784,13 +786,17 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 	public boolean isSolidOnSide(ForgeDirection side) {
 		return false;
 	}
+	
+	public Icon getSpecialIconForRender() {
+		return null;
+	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void render(RenderBlocks render) {
 		if (getType() == null)
 			return;
-		WireRenderer.instance.renderWorld(render, getType(), this, getSideMask(), haveJacketed);
+		WireRenderer.instance.renderWorld(render, getType(), this, getSideMask(), containsJacketed);
 	}
 
 	@Override
@@ -811,7 +817,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 		EnumWire type = getType();
 
 		if (part == 6) {
-			if (!haveJacketed)
+			if (!containsJacketed)
 				return null;
 
 			if (!removeJacketedWire())
@@ -864,16 +870,16 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 	}
 
 	public boolean hasJacketedWire() {
-		return haveJacketed;
+		return containsJacketed;
 	}
 
 	public int getJacketedWireConnectionMask() {
-		return haveJacketed ? jacketConnectMaskCache : 0;
+		return containsJacketed ? jacketConnectMaskCache : 0;
 	}
 
 	@Override
 	public void getCollidingBoundingBoxes(AxisAlignedBB mask, List<AxisAlignedBB> list) {
-		if (haveJacketed) {
+		if (containsJacketed) {
 			AxisAlignedBB bb = getPartAABBFromPool(6);
 			if (bb != null) {
 				bb = bb.offset(xCoord, yCoord, zCoord);

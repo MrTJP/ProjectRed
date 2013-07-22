@@ -1,14 +1,12 @@
 package mrtjp.projectred.multipart.wiring.wires;
 
-import codechicken.core.render.CCRenderState;
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
+import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.renderstuffs.WireRenderAssistant;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Dir;
-import mrtjp.projectred.utils.codechicken.core.render.CCModel;
-import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -17,6 +15,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.ForgeDirection;
+import codechicken.core.render.CCRenderState;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -39,6 +38,7 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 	private int baseColour;
 
 	public void renderWorld(RenderBlocks render, EnumWire type, TileWire wt, int sideMask, boolean renderJacketed) {
+		// wra = new WireRenderAssistant();
 		wra.x = wt.xCoord;
 		wra.y = wt.yCoord;
 		wra.z = wt.zCoord;
@@ -50,7 +50,8 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 			wra.wireIcon = EnumWire.RED_ALLOY.wireSprite;
 			wra.wireMap = EnumWire.RED_ALLOY.wireMap;
 			for (int i = 0; i < 6; i++) {
-				if ((sideMask & (1 << i)) == 0) continue;
+				if ((sideMask & (1 << i)) == 0)
+					continue;
 				wra.side = i;
 				wra.setWireRenderState(wt);
 				wra.pushRender();
@@ -61,7 +62,20 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 			wra.wireIcon = EnumWire.INSULATED_0.wireSprite;
 			wra.wireMap = EnumWire.INSULATED_0.wireMap;
 			for (int i = 0; i < 6; i++) {
-				if ((sideMask & (1 << i)) == 0) continue;
+				if ((sideMask & (1 << i)) == 0)
+					continue;
+				wra.side = i;
+				wra.setWireRenderState(wt);
+				wra.pushRender();
+			}
+			return;
+		}
+		if (type == EnumWire.BUNDLED) {
+			wra.wireIcon = EnumWire.BUNDLED.wireSprite;
+			wra.wireMap = EnumWire.BUNDLED.wireMap;
+			for (int i = 0; i < 6; i++) {
+				if ((sideMask & (1 << i)) == 0)
+					continue;
 				wra.side = i;
 				wra.setWireRenderState(wt);
 				wra.pushRender();
@@ -69,7 +83,6 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 			return;
 		}
 
-		
 		int x = wt.xCoord, y = wt.yCoord, z = wt.zCoord;
 
 		rt.base = Tessellator.instance;
