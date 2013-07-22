@@ -61,12 +61,12 @@ public class WireRenderAssistant {
 			{ -1, -1, 3, 2, 4, 5 }, 
 			{ -1, -1, 1, 0, 5, 4 }, 
 			{ -1, -1, 0, 1, 4, 5 }, 
-			{ -1, -1, 2, 3, 0, 1 }, 
-			{ -1, -1, 3, 2, 1, 0 }, 
+			{ -1, -1, 0, 1, 2, 3 }, 
+			{ -1, -1, 1, 0, 3, 2 }, 
 			};
 
-	public int[] frontMap_NS = { 2, 3, 1, 0, 2, 3 };
-	public int[] frontMap_WE = { 5, 4, -1, -1, 0, 1 };
+	public int[] frontMap_NS = { 2, 3, 1, 0, 0, 1 };
+	public int[] frontMap_WE = { 5, 4, 5, 4, 2, 3 };	
 
 	public void setWireRenderState(TileWire t) {
 		byte sideMask = t.getSideMask();
@@ -83,9 +83,9 @@ public class WireRenderAssistant {
 
 		// Outside corners
 		connectsCornerN = (side != 0 && side != 1) && t.connectsInDirectionAroundCorner(side, sideMap[side][2]);
-		connectsCornerS = (side != 0 && side != 1 && side != 4 && side != 5) && t.connectsInDirectionAroundCorner(side, sideMap[side][3]);
+		connectsCornerS = (side != 0 && side != 1) && t.connectsInDirectionAroundCorner(side, sideMap[side][3]);
 		connectsCornerW = (side != 0 && side != 1) && t.connectsInDirectionAroundCorner(side, sideMap[side][4]);
-		connectsCornerE = (side != 0 && side != 1 && side != 2 && side != 3) && t.connectsInDirectionAroundCorner(side, sideMap[side][5]);
+		connectsCornerE = (side != 0 && side != 1 && side != 2 && side != 3 && side != 4 && side != 5) && t.connectsInDirectionAroundCorner(side, sideMap[side][5]);
 
 		// InIn edges
 		connectsInsideN = ((sideMask & (1 << sideMap[side][2])) != 0);
@@ -103,10 +103,10 @@ public class WireRenderAssistant {
 	public void pushRender() {
 		// Center
 		if (isCenterCrossed) {
-			if (side == 4) {
-				renderModelNS(wireMap.get("center_X"));
-			} else {
+			if (side == 1 || side == 3 || side == 4) {
 				renderModelWE(wireMap.get("center_X"));
+			} else {
+				renderModelNS(wireMap.get("center_X"));
 			}
 		} else if (isCenterNS) {
 			renderModelNS(wireMap.get("center_PN"));

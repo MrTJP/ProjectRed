@@ -962,7 +962,6 @@ public abstract class GateRenderBridge {
 			wra.side = rt.side;
 			wra.wireIcon = EnumWire.BUNDLED.wireSprite;
 			wra.wireMap = EnumWire.BUNDLED.wireMap;
-			wra.facing = rt.front;
 			wra.renderBlocks = rt.renderBlocks;
 			wra.connectsN = true;
 			wra.connectsInsideConnectorN = true;
