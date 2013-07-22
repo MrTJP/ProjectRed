@@ -38,7 +38,7 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 	private int baseColour;
 
 	public void renderWorld(RenderBlocks render, EnumWire type, TileWire wt, int sideMask, boolean renderJacketed) {
-		// wra = new WireRenderAssistant();
+		wra = new WireRenderAssistant();
 		wra.x = wt.xCoord;
 		wra.y = wt.yCoord;
 		wra.z = wt.zCoord;
