@@ -2,13 +2,9 @@ package mrtjp.projectred.multipart.wiring.gates;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire;
-import mrtjp.projectred.multipart.wiring.wires.WireRenderer;
+import mrtjp.projectred.renderstuffs.WireRenderAssistant;
 import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.util.Icon;
-import net.minecraftforge.common.ForgeDirection;
 
 /**
  * GateRenderBridge provides a bridge between a gate's bit-masked render-state
@@ -959,6 +955,19 @@ public abstract class GateRenderBridge {
 				return;
 			}
 			rt.renderPartModel(_latchCableCover, (wireColor[0] == ON ? "on" : "off"), (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
+			WireRenderAssistant wra = new WireRenderAssistant();
+			wra.x = rt.x;
+			wra.y = rt.y;
+			wra.z = rt.z;
+			wra.side = rt.side;
+			wra.wireIcon = EnumWire.BUNDLED.wireSprite;
+			wra.wireMap = EnumWire.BUNDLED.wireMap;
+			wra.facing = rt.front;
+			wra.renderBlocks = rt.renderBlocks;
+			wra.connectsN = true;
+			wra.connectsInsideConnectorN = true;
+			wra.isCenterCrossed = true;
+			wra.pushRender();
 		}
 	}
 
