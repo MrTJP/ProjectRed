@@ -71,7 +71,7 @@ public class CraftingRecipeManager {
 		}
 		
 		/** Bundled Cables **/
-		GameRegistry.addRecipe(new ShapedOreRecipe(EnumWire.BUNDLED.getItemStack(), 
+		GameRegistry.addRecipe(new ShapedOreRecipe(EnumWire.BUNDLED_N.getItemStack(), 
 				"SWS",
 				"WWW",
 				"SWS",
@@ -414,7 +414,7 @@ public class CraftingRecipeManager {
 		GameRegistry.addRecipe(EnumPart.BUNDLEDPLATE.getItemStack(), 
 				"r",
 				"p",
-				'r', EnumWire.BUNDLED.getItemStack(),
+				'r', EnumWire.BUNDLED_N.getItemStack(),
 				'p', EnumPart.PLATE.getItemStack()
 		);
 		
@@ -670,7 +670,7 @@ public class CraftingRecipeManager {
 				EnumWire.RED_ALLOY.getItemStack(4),
 		}, EnumPart.REDINGOT.getItemStack(), 50));
 		AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
-				EnumWire.BUNDLED.getItemStack(8),
+				EnumWire.BUNDLED_N.getItemStack(8),
 		}, EnumPart.REDINGOT.getItemStack(5), 90));
 		for (EnumWire w : EnumWire.INSULATED_WIRE) {
 			AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
