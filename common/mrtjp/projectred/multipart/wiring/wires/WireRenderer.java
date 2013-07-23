@@ -1,5 +1,7 @@
 package mrtjp.projectred.multipart.wiring.wires;
 
+import org.lwjgl.opengl.GL11;
+
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.renderstuffs.RenderIDs;
@@ -27,15 +29,6 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 
 	public final static WireRenderer instance = new WireRenderer();
 	private WireRenderAssistant wra = new WireRenderAssistant();
-
-	private final static boolean FAT_JACKETED_WIRE = false;
-
-	private final static float SHADE_PY = 1.0f;
-	private final static float SHADE_Z = 0.8f;
-	private final static float SHADE_X = 0.6f;
-	private final static float SHADE_NY = 0.5f;
-
-	private int baseColour;
 
 	public void renderWorld(RenderBlocks render, EnumWire type, TileWire wt, int sideMask, boolean renderJacketed) {
 		wra = new WireRenderAssistant();
@@ -78,14 +71,39 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 		if (type == null) {
 			return;
 		}
+		wra = new WireRenderAssistant();
+		wra.x = wra.y = wra.z = 0;
+		wra.yOffset = .25f;
+		wra.renderBlocks = render;
+		wra.side = 0;
+		wra.wireIcon = type.wireSprites[0];
+		wra.wireMap = type.wireMap;
+		CCRenderState.reset();
+		CCRenderState.useNormals(true);
+		CCRenderState.setColourOpaque(type.itemColour);
 
+		if (!WireDamageValues.isJacketed(damageValue)) {
+			GL11.glPushMatrix();
+			GL11.glColor4f(1, 1, 1, 1);
+			CCRenderState.startDrawing(7);
+			wra.connectsN = true;
+			wra.connectsS = true;
+			wra.connectsW = true;
+			wra.connectsE = true;
+			wra.connectsInsideConnectorN = true;
+			wra.connectsInsideConnectorS = true;
+			wra.connectsInsideConnectorW = true;
+			wra.connectsInsideConnectorE = true;
+			wra.isCenterCrossed = true;
+			wra.pushRender();
+			CCRenderState.draw();
+			GL11.glPopMatrix();
+		}
 	}
 
 	private void renderWireJacketed(RenderBlocks render, EnumWire type, int sideMask, boolean nx, boolean px, boolean ny, boolean py, boolean nz, boolean pz) {
 
 	}
-
-	public static boolean OLD_CORNER_SIDES = false;
 
 	public static void renderWireSide(RotatedRenderer rt, RenderBlocks render, EnumWire type, boolean nz, boolean pz, boolean nx, boolean px, boolean nzCorner, boolean pzCorner, boolean nxCorner, boolean pxCorner, EnumWire nzCornerType, EnumWire pzCornerType, EnumWire nxCornerType, EnumWire pxCornerType, boolean forceEndCaps, boolean haveJacketed) {
 

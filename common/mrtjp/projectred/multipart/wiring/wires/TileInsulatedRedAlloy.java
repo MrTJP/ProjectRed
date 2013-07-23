@@ -15,7 +15,7 @@ public class TileInsulatedRedAlloy extends TileRedAlloy implements IBundledUpdat
 	
 	@Override
 	protected boolean canConnectToWire(TileWire wire) {
-		if (wire.getType() == EnumWire.RED_ALLOY || wire.getType() == EnumWire.BUNDLED_N) {
+		if (wire.getType() == EnumWire.RED_ALLOY || wire instanceof TileBundled) {
 			return true;
 		}
 		return wire.getType() == getType();
