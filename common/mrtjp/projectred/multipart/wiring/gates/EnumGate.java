@@ -69,7 +69,6 @@ public enum EnumGate {
 		}
 	}
 	
-	@SideOnly(Side.CLIENT)
 	public GateRenderBridge getRendering() {
 		if(renderInst != null)
 			return renderInst;
