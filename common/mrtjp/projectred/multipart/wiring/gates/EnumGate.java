@@ -1,15 +1,8 @@
 package mrtjp.projectred.multipart.wiring.gates;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import mrtjp.projectred.ProjectRed;
-import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
 import net.minecraftforge.oredict.OreDictionary;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public enum EnumGate {
 	AND("AND gate", GateLogic.AND.class, GateRenderBridge.AND.class),
@@ -69,8 +62,7 @@ public enum EnumGate {
 		}
 	}
 	
-	@SideOnly(Side.CLIENT)
-	public GateRenderBridge getRendering() {
+	public GateRenderBridge getRenderBridge() {
 		if(renderInst != null)
 			return renderInst;
 		try {

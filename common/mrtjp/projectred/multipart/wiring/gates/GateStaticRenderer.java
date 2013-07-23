@@ -36,7 +36,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 		BlockGate.textureOverride = null;
 		BlockGate.colourOverride = -1;
 
-		GateRenderBridge rendering = type.getRendering();
+		GateRenderBridge rendering = type.getRenderBridge();
 		rendering.set(te.getRenderState());
 		rotatedRenderer.x = x;
 		rotatedRenderer.y = y;
@@ -80,7 +80,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 	@Override
 	public void renderInventoryBlock(Block block, int meta, int model, RenderBlocks render) {
 		EnumGate type = EnumGate.VALUES[meta];
-		GateRenderBridge rendering = (type == null ? defaultRendering : type.getRendering());
+		GateRenderBridge rendering = (type == null ? defaultRendering : type.getRenderBridge());
 		rendering.setItemRender();
 		rotatedRenderer.x = 0;
 		rotatedRenderer.y = 0;
