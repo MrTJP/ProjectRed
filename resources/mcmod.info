@@ -17,7 +17,7 @@
     "screenshots": [],
     "requiredMods": [],
     "dependencies": [
-        "Forge",
+        "Forge"
     ],
     "dependants": [],
     "useDependencyInformation": "true"
