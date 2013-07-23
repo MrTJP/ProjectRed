@@ -32,7 +32,7 @@ public class TileBundled extends TileWire implements IRedstoneUpdatable, IBundle
 
 	@Override
 	protected boolean canConnectToWire(TileWire wire) {
-		return super.canConnectToWire(wire) || wire instanceof TileInsulatedRedAlloy || getType() == EnumWire.BUNDLED_N || getType() == wire.getType();
+		return super.canConnectToWire(wire) || wire instanceof TileInsulatedRedAlloy || getType() == wire.getType() || wire.getType() == EnumWire.BUNDLED_N || (getType() == EnumWire.BUNDLED_N && wire instanceof TileBundled);
 	}
 
 	@Override

@@ -1,4 +1,13 @@
 Change Log:
+v3.0.2.31
+- New render system for wiring.
+- New wiring textures.
+- Neutral bundled cabling, plus all 16 colors added.
+- Alloy wires render in world much darker when not conducting power.
+- Alloy wires render full strength in inventory.
+- The under side of all wires now render always, for when putting them on glass.
+
+
 v3.0.1.30
 - New bundled cabling/wiring texture, by xchainblade.
 - Massive re-write for Gate renderings.

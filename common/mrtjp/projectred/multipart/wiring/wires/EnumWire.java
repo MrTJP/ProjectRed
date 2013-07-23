@@ -20,24 +20,42 @@ import cpw.mods.fml.relauncher.SideOnly;
 // Metadata mapping is in CLASS_TO_META and META_TO_CLASS.
 
 public enum EnumWire {
-	RED_ALLOY("Red alloy wire", TilePlainRedAlloy.class, 2, 2, 0x800000, "alloywire.obj", "redalloy"),
-	INSULATED_0("White insulated wire", TileInsulatedRedAlloy.class, 3, 4,  "insulatedwire.obj", "insulated/whiteoff", "insulated/whiteon"),
-	INSULATED_1("Orange insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/orangeoff", "insulated/orangeon"),
-	INSULATED_2("Magenta insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/magentaoff", "insulated/magentaon"),
-	INSULATED_3("Light blue insulated wire",TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/lightblueoff", "insulated/lightblueon"),
-	INSULATED_4("Yellow insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/yellowoff", "insulated/yellowon"),
-	INSULATED_5("Lime insulated wire",TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/limeoff", "insulated/limeon"),
-	INSULATED_6("Pink insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/pinkoff", "insulated/pinkon"),
-	INSULATED_7("Grey insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/greyoff", "insulated/greyon"),
-	INSULATED_8("Light grey insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/lightgreyoff", "insulated/lightgreyon"),
-	INSULATED_9("Cyan insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/cyanoff", "insulated/cyanon"),
-	INSULATED_A("Purple insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/purpleoff", "insulated/purpleon"),
-	INSULATED_B("Blue insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/blueoff", "insulated/blueon"),
-	INSULATED_C("Brown insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/brownoff", "insulated/brownon"),
-	INSULATED_D("Green insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/greenoff", "insulated/greenon"),
-	INSULATED_E("Red insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/redoff", "insulated/redon"),
-	INSULATED_F("Black insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/blackoff", "insulated/blackon"),
-	BUNDLED_N("Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/neutral");
+	RED_ALLOY("Red alloy wire", TilePlainRedAlloy.class, 2, 2, (255/2+75)<<16, "alloywire.obj", "redalloy"),
+	INSULATED_0("White insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/whiteoff", "insulated/whiteon"),
+	INSULATED_1("Orange insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/orangeoff", "insulated/orangeon"),
+	INSULATED_2("Magenta insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/magentaoff", "insulated/magentaon"),
+	INSULATED_3("Light blue insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/lightblueoff", "insulated/lightblueon"),
+	INSULATED_4("Yellow insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/yellowoff", "insulated/yellowon"),
+	INSULATED_5("Lime insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/limeoff", "insulated/limeon"),
+	INSULATED_6("Pink insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/pinkoff", "insulated/pinkon"),
+	INSULATED_7("Grey insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/greyoff", "insulated/greyon"),
+	INSULATED_8("Light grey insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/lightgreyoff", "insulated/lightgreyon"),
+	INSULATED_9("Cyan insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/cyanoff", "insulated/cyanon"),
+	INSULATED_10("Purple insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/purpleoff", "insulated/purpleon"),
+	INSULATED_11("Blue insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/blueoff", "insulated/blueon"),
+	INSULATED_12("Brown insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/brownoff", "insulated/brownon"),
+	INSULATED_13("Green insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/greenoff", "insulated/greenon"),
+	INSULATED_14("Red insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/redoff", "insulated/redon"),
+	INSULATED_15("Black insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "insulated/blackoff", "insulated/blackon"),
+	
+	BUNDLED_N("Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/neutral"),
+	BUNDLED_0("White Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/white"),
+	BUNDLED_1("Orange Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_2("Magenta Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_3("Light Blue Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_4("Yellow Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_5("Lime Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_6("Pink Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_7("Grey Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_8("Light Grey Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_9("Cyan Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_10("Purple Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_11("Blue Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_12("Brown Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_13("Green Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_14("Red Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	BUNDLED_15("Black Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/orange"),
+	;
 
 	public static final int PLAIN_RED_ALLOY_META = 0;
 	public static final int INSULATED_RED_ALLOY_META = 1;
@@ -47,8 +65,9 @@ public enum EnumWire {
 
 	public static ImmutableBiMap<Integer, Class<? extends TileWire>> META_TO_CLASS = CLASS_TO_META.inverse();
 
-	public static EnumWire[] INSULATED_WIRE = { INSULATED_0, INSULATED_1, INSULATED_2, INSULATED_3, INSULATED_4, INSULATED_5, INSULATED_6, INSULATED_7, INSULATED_8, INSULATED_9, INSULATED_A, INSULATED_B, INSULATED_C, INSULATED_D, INSULATED_E, INSULATED_F, };
-	public static EnumWire[] VALID_WIRE = { RED_ALLOY, INSULATED_0, INSULATED_1, INSULATED_2, INSULATED_3, INSULATED_4, INSULATED_5, INSULATED_6, INSULATED_7, INSULATED_8, INSULATED_9, INSULATED_A, INSULATED_B, INSULATED_C, INSULATED_D, INSULATED_E, INSULATED_F, BUNDLED_N };
+	public static EnumWire[] VALID_WIRE = values(); //{ RED_ALLOY, INSULATED_0, INSULATED_1, INSULATED_2, INSULATED_3, INSULATED_4, INSULATED_5, INSULATED_6, INSULATED_7, INSULATED_8, INSULATED_9, INSULATED_10, INSULATED_11, INSULATED_12, INSULATED_13, INSULATED_14, INSULATED_15, BUNDLED_N, BUNDLED_0, BUNDLED_1 };
+	public static EnumWire[] INSULATED_WIRE = { INSULATED_0, INSULATED_1, INSULATED_2, INSULATED_3, INSULATED_4, INSULATED_5, INSULATED_6, INSULATED_7, INSULATED_8, INSULATED_9, INSULATED_10, INSULATED_11, INSULATED_12, INSULATED_13, INSULATED_14, INSULATED_15, };
+	public static EnumWire[] BUNDLED_WIRE = { BUNDLED_N, BUNDLED_0, BUNDLED_1, BUNDLED_2, BUNDLED_3, BUNDLED_4, BUNDLED_5, BUNDLED_6, BUNDLED_7, BUNDLED_8, BUNDLED_9, BUNDLED_10, BUNDLED_11, BUNDLED_12, BUNDLED_13, BUNDLED_14, BUNDLED_15 };
 
 	public final String name;
 	public final Class<? extends TileWire> teclass;
@@ -117,6 +136,14 @@ public enum EnumWire {
 		return new ItemStack(ProjectRed.blockWire, i, meta | WireDamageValues.DMG_FLAG_JACKETED);
 	}
 
+	public static boolean isBundledCable(ItemStack stack) {
+		for (EnumWire w : EnumWire.BUNDLED_WIRE) {
+			if (stack.itemID == ProjectRed.blockWire.blockID && stack.getItemDamage() == w.meta) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public static boolean isInsulatedWire(ItemStack stack) {
 		for (EnumWire w : EnumWire.INSULATED_WIRE) {
 			if (stack.itemID == ProjectRed.blockWire.blockID && stack.getItemDamage() == w.meta) {
