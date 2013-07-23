@@ -955,18 +955,6 @@ public abstract class GateRenderBridge {
 				return;
 			}
 			rt.renderPartModel(_latchCableCover, (wireColor[0] == ON ? "on" : "off"), (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
-			WireRenderAssistant wra = new WireRenderAssistant();
-			wra.x = rt.x;
-			wra.y = rt.y;
-			wra.z = rt.z;
-			wra.side = rt.side;
-			wra.wireIcon = EnumWire.BUNDLED.wireSprite;
-			wra.wireMap = EnumWire.BUNDLED.wireMap;
-			wra.renderBlocks = rt.renderBlocks;
-			wra.connectsN = true;
-			wra.connectsInsideConnectorN = true;
-			wra.isCenterCrossed = true;
-			wra.pushRender();
 		}
 	}
 

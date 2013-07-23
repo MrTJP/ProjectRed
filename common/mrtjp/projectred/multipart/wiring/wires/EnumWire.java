@@ -3,7 +3,6 @@ package mrtjp.projectred.multipart.wiring.wires;
 import java.util.Map;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.utils.BasicRenderUtils;
 import mrtjp.projectred.utils.codechicken.core.render.CCModel;
 import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -21,24 +20,24 @@ import cpw.mods.fml.relauncher.SideOnly;
 // Metadata mapping is in CLASS_TO_META and META_TO_CLASS.
 
 public enum EnumWire {
-	RED_ALLOY("Red alloy wire", "wire-red-alloy", "", 2, 2, TilePlainRedAlloy.class, 0x800000),
-	INSULATED_0("White insulated wire", "wire-insulated>", "0", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_1("Orange insulated wire", "wire-insulated>", "1", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_2("Magenta insulated wire", "wire-insulated>", "2", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_3("Light blue insulated wire", "wire-insulated>", "3", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_4("Yellow insulated wire", "wire-insulated>", "4", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_5("Lime insulated wire", "wire-insulated>", "5", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_6("Pink insulated wire", "wire-insulated>", "6", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_7("Grey insulated wire", "wire-insulated>", "7", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_8("Light grey insulated wire", "wire-insulated>", "8", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_9("Cyan insulated wire", "wire-insulated>", "9", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_A("Purple insulated wire", "wire-insulated>", "10", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_B("Blue insulated wire", "wire-insulated>", "11", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_C("Brown insulated wire", "wire-insulated>", "12", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_D("Green insulated wire", "wire-insulated>", "13", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_E("Red insulated wire", "wire-insulated>", "14", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	INSULATED_F("Black insulated wire", "wire-insulated>", "15", 3, 4, TileInsulatedRedAlloy.class, 0xFFFFFF),
-	BUNDLED("Bundled cable", "wire-bundled>", "", 4, 6, TileBundled.class, 0xFFFFFF);
+	RED_ALLOY("Red alloy wire", TilePlainRedAlloy.class, 2, 2, 0x800000, "alloywire.obj", "redalloy"),
+	INSULATED_0("White insulated wire", TileInsulatedRedAlloy.class, 3, 4,  "insulatedwire.obj", "insulated/whiteoff", "insulated/whiteon"),
+	INSULATED_1("Orange insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/orangeoff", "insulated/orangeon"),
+	INSULATED_2("Magenta insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/magentaoff", "insulated/magentaon"),
+	INSULATED_3("Light blue insulated wire",TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/lightblueoff", "insulated/lightblueon"),
+	INSULATED_4("Yellow insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/yellowoff", "insulated/yellowon"),
+	INSULATED_5("Lime insulated wire",TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/limeoff", "insulated/limeon"),
+	INSULATED_6("Pink insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/pinkoff", "insulated/pinkon"),
+	INSULATED_7("Grey insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/greyoff", "insulated/greyon"),
+	INSULATED_8("Light grey insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/lightgreyoff", "insulated/lightgreyon"),
+	INSULATED_9("Cyan insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/cyanoff", "insulated/cyanon"),
+	INSULATED_A("Purple insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/purpleoff", "insulated/purpleon"),
+	INSULATED_B("Blue insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/blueoff", "insulated/blueon"),
+	INSULATED_C("Brown insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/brownoff", "insulated/brownon"),
+	INSULATED_D("Green insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/greenoff", "insulated/greenon"),
+	INSULATED_E("Red insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/redoff", "insulated/redon"),
+	INSULATED_F("Black insulated wire", TileInsulatedRedAlloy.class, 3,4,  "insulatedwire.obj", "insulated/blackoff", "insulated/blackon"),
+	BUNDLED_N("Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "bundled/neutral");
 
 	public static final int PLAIN_RED_ALLOY_META = 0;
 	public static final int INSULATED_RED_ALLOY_META = 1;
@@ -49,111 +48,54 @@ public enum EnumWire {
 	public static ImmutableBiMap<Integer, Class<? extends TileWire>> META_TO_CLASS = CLASS_TO_META.inverse();
 
 	public static EnumWire[] INSULATED_WIRE = { INSULATED_0, INSULATED_1, INSULATED_2, INSULATED_3, INSULATED_4, INSULATED_5, INSULATED_6, INSULATED_7, INSULATED_8, INSULATED_9, INSULATED_A, INSULATED_B, INSULATED_C, INSULATED_D, INSULATED_E, INSULATED_F, };
-	public static EnumWire[] VALID_WIRE = { RED_ALLOY, INSULATED_0, INSULATED_1, INSULATED_2, INSULATED_3, INSULATED_4, INSULATED_5, INSULATED_6, INSULATED_7, INSULATED_8, INSULATED_9, INSULATED_A, INSULATED_B, INSULATED_C, INSULATED_D, INSULATED_E, INSULATED_F, BUNDLED };
+	public static EnumWire[] VALID_WIRE = { RED_ALLOY, INSULATED_0, INSULATED_1, INSULATED_2, INSULATED_3, INSULATED_4, INSULATED_5, INSULATED_6, INSULATED_7, INSULATED_8, INSULATED_9, INSULATED_A, INSULATED_B, INSULATED_C, INSULATED_D, INSULATED_E, INSULATED_F, BUNDLED_N };
 
 	public final String name;
-	public final String textureName, texNameSuffix;
-	public final double thickness, width;
 	public final Class<? extends TileWire> teclass;
 	public final int itemColour;
-	public int meta = this.ordinal();	
+	public final double thickness, width;
+
 	public static final String oreDictDefinition = "projredWire";
 	public static final String oreDictDefinitionInsulated = "projredInsulatedWire";
 	public static final String oreDictDefinitionJacketed = "projredJacketedWire";
+	public int meta = this.ordinal();
 
 	public boolean hasJacketedForm() {
 		return true;
 	}
 
-	@SideOnly(Side.CLIENT)
-	public Icon texture_cross, texture_straight_x, texture_straight_z,
-			texture_none, texture_tee_nz, texture_tee_pz, texture_tee_nx,
-			texture_tee_px, texture_corner_nn, texture_corner_np,
-			texture_corner_pn, texture_corner_pp, texture_end_nx,
-			texture_end_px, texture_end_nz, texture_end_pz, texture_jacketed,
-			texture_jacketed_end, texture_jacketed_cross;
+	public Icon[] wireSprites;
+	public String[] wireSpritePaths;
 
-	public Icon wireSprite;
-	public Map<String, CCModel> wireMap; 
-	
-	private EnumWire(String name, String texName, String texSuffix, int thicknessPixels, int widthPixels, Class<? extends TileWire> teclass, int itemColour) {
+	public String wireModelPath;
+	public Map<String, CCModel> wireMap;
+
+	private EnumWire(String name, Class<? extends TileWire> tileClazz, int thicknessPixels, int widthPixels, int itemColour, String objPath, String... textures) {
 		this.name = name;
-		this.textureName = "projectred:" + texName;
-		this.texNameSuffix = texSuffix;
+		this.teclass = tileClazz;
 		this.thickness = thicknessPixels / 16.0;
 		this.width = widthPixels / 16.0;
-		this.teclass = teclass;
 		this.itemColour = itemColour;
+		wireModelPath = objPath;
+		wireSpritePaths = textures;
+		wireSprites = new Icon[textures.length];
+	}
+
+	private EnumWire(String name, Class<? extends TileWire> tileClazz, int thicknessPixels, int widthPixels, String objPath, String... textures) {
+		this(name, tileClazz, thicknessPixels, widthPixels, 0xFFFFFF, objPath, textures);
 	}
 
 	public static final EnumWire[] VALUES = values();
 
 	@SideOnly(Side.CLIENT)
-	public void loadTextures(IconRegister reg, String base, String suffix) {
-		if (this == EnumWire.RED_ALLOY) {
-			wireSprite = reg.registerIcon("projectred:/wires/redalloy");
-			wireMap = CCModel.parseObjModels("/mods/projectred/textures/obj/wiring/alloywire.obj", 7, new InvertX());
-		}
-		
-		if (this == EnumWire.INSULATED_0) {
-			wireSprite = reg.registerIcon("projectred:/wires/template_insulated");
-			wireMap = CCModel.parseObjModels("/mods/projectred/textures/obj/wiring/insulatedwire.obj", 7, new InvertX());
-		}
-		
-		if (this == EnumWire.BUNDLED) {
-			wireSprite = reg.registerIcon("projectred:/wires/template_bundled");
-			wireMap = CCModel.parseObjModels("/mods/projectred/textures/obj/wiring/bundledcable.obj", 7, new InvertX());
-		}
-		
-		if (!base.endsWith(">")) {
-			Icon i = reg.registerIcon(base);
-			texture_cross = i;
-			texture_straight_x = i;
-			texture_straight_z = i;
-			texture_tee_nz = i;
-			texture_tee_pz = i;
-			texture_tee_nx = i;
-			texture_tee_px = i;
-			texture_corner_nn = i;
-			texture_corner_np = i;
-			texture_corner_pn = i;
-			texture_corner_pp = i;
-			texture_none = i;
-			texture_end_px = i;
-			texture_end_nx = i;
-			texture_end_pz = i;
-			texture_end_nz = i;
-
-		} else {
-			texture_cross = BasicRenderUtils.loadIcon(reg, base + "cross" + suffix);
-			texture_straight_x = BasicRenderUtils.loadIcon(reg, base + "straight-x" + suffix);
-			texture_straight_z = BasicRenderUtils.loadIcon(reg, base + "straight-z" + suffix);
-			texture_tee_nz = BasicRenderUtils.loadIcon(reg, base + "tee-nz" + suffix);
-			texture_tee_pz = BasicRenderUtils.loadIcon(reg, base + "tee-pz" + suffix);
-			texture_tee_nx = BasicRenderUtils.loadIcon(reg, base + "tee-nx" + suffix);
-			texture_tee_px = BasicRenderUtils.loadIcon(reg, base + "tee-px" + suffix);
-			texture_corner_nn = BasicRenderUtils.loadIcon(reg, base + "corner-nn" + suffix);
-			texture_corner_np = BasicRenderUtils.loadIcon(reg, base + "corner-np" + suffix);
-			texture_corner_pn = BasicRenderUtils.loadIcon(reg, base + "corner-pn" + suffix);
-			texture_corner_pp = BasicRenderUtils.loadIcon(reg, base + "corner-pp" + suffix);
-			texture_none = BasicRenderUtils.loadIcon(reg, base + "none" + suffix);
-			texture_end_px = BasicRenderUtils.loadIcon(reg, base + "end-px" + suffix);
-			texture_end_nx = BasicRenderUtils.loadIcon(reg, base + "end-nx" + suffix);
-			texture_end_pz = BasicRenderUtils.loadIcon(reg, base + "end-pz" + suffix);
-			texture_end_nz = BasicRenderUtils.loadIcon(reg, base + "end-nz" + suffix);
-		}
-
-		if (hasJacketedForm()) {
-			String jacketedBase;
-			if (base.endsWith(">")) {
-				jacketedBase = base + "jacketed";
-			} else {
-				jacketedBase = base + "-j";
+	public void loadTextures(IconRegister reg) {
+		if (wireSpritePaths.length > 0) {
+			wireSprites = new Icon[wireSpritePaths.length];
+			for (int i = 0; i < wireSpritePaths.length; i++) {
+				wireSprites[i] = reg.registerIcon("projectred:/wires/" + wireSpritePaths[i]);
 			}
-			texture_jacketed = BasicRenderUtils.loadIcon(reg, jacketedBase + suffix);
-			texture_jacketed_end = BasicRenderUtils.loadIcon(reg, jacketedBase + "-end" + suffix);
-			texture_jacketed_cross = BasicRenderUtils.loadIcon(reg, jacketedBase + "-cross" + suffix);
 		}
+		wireMap = CCModel.parseObjModels("/mods/projectred/textures/obj/wiring/" + wireModelPath, 7, new InvertX());
 	}
 
 	public ItemStack getItemStack() {
@@ -183,7 +125,7 @@ public enum EnumWire {
 		}
 		return false;
 	}
-	
+
 	public static void initOreDictDefinitions() {
 		for (EnumWire w : EnumWire.VALID_WIRE) {
 			OreDictionary.registerOre(oreDictDefinition, w.getItemStack());
@@ -191,11 +133,11 @@ public enum EnumWire {
 				OreDictionary.registerOre(oreDictDefinitionJacketed, w.getJacketedItemStack());
 			}
 		}
-		for (EnumWire w: EnumWire.INSULATED_WIRE) {
+		for (EnumWire w : EnumWire.INSULATED_WIRE) {
 			OreDictionary.registerOre(oreDictDefinitionInsulated, w.getItemStack());
 		}
 	}
-	
+
 	public static class WireDamageValues {
 		// things controlling interpretation of item damage values
 		public static final int DMG_FLAG_JACKETED = 16384;

@@ -8,6 +8,8 @@ import mrtjp.projectred.multipart.wiring.CommandDebug;
 import mrtjp.projectred.multipart.wiring.InvalidTile;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.renderstuffs.RenderIDs;
+import mrtjp.projectred.utils.codechicken.core.render.EntityDigIconFX;
+import mrtjp.projectred.utils.codechicken.core.vec.Cuboid6;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialLogic;
 import net.minecraft.client.Minecraft;
@@ -18,6 +20,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -36,7 +39,7 @@ public class BlockWire extends BlockMultipartBase {
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IconRegister reg) {
 		for (EnumWire wireType : EnumWire.VALUES) {
-			wireType.loadTextures(reg, wireType.textureName, wireType.texNameSuffix);
+			wireType.loadTextures(reg);
 		}
 	}
 
@@ -130,44 +133,13 @@ public class BlockWire extends BlockMultipartBase {
 	@SideOnly(Side.CLIENT)
 	public boolean addBlockDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer) {
 		TileEntity te = world.getBlockTileEntity(x, y, z);
-
 		EnumWire wireType;
-
 		if (te instanceof TileWire) {
 			wireType = ((TileWire) te).getType();
+		} else {
+			return true;
 		}
-		else
-			return true; // suppress particles
-
-		byte b0 = 4;
-
-		int col = wireType.itemColour;
-		final float red = ((col >> 16) & 0xFF) / 255.0f;
-		final float green = ((col >> 8) & 0xFF) / 255.0f;
-		final float blue = (col & 0xFF) / 255.0f;
-
-		for (int j1 = 0; j1 < b0; ++j1) {
-			for (int k1 = 0; k1 < b0; ++k1) {
-				for (int l1 = 0; l1 < b0; ++l1) {
-					double d0 = (double) x + ((double) j1 + 0.5D) / (double) b0;
-					double d1 = (double) y + ((double) k1 + 0.5D) / (double) b0;
-					double d2 = (double) z + ((double) l1 + 0.5D) / (double) b0;
-					int i2 = world.rand.nextInt(6);
-
-					EntityDiggingFX particle = new EntityDiggingFX(world, d0, d1, d2, d0 - (double) x - 0.5D, d1 - (double) y - 0.5D, d2 - (double) z - 0.5D, this, i2, meta, Minecraft.getMinecraft().renderEngine) {
-						{
-							particleRed = red;
-							particleGreen = green;
-							particleBlue = blue;
-						}
-					};
-					particle.setParticleIcon(Minecraft.getMinecraft().renderEngine, wireType.texture_cross);
-					effectRenderer.addEffect(particle);
-				}
-			}
-		}
-
-		return true; // suppress default effect
+		EntityDigIconFX.addBlockDestroyEffects(world, new Cuboid6(x, y, z, x+1, y+1, z+1), new Icon[] { wireType.wireSprites[0] }, effectRenderer);
+		return true;
 	}
-
 }
