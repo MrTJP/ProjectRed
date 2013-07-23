@@ -215,7 +215,7 @@ public class BlockGate extends BlockMultipartBase {
 		if (te != null) {
 			EnumGate type = te.getType();
 			if (type != null) {
-				GateRenderBridge render = type.getRendering();
+				GateRenderBridge render = type.getRenderBridge();
 				int on = 0;
 				if (render != null) {
 					on += render.torchState.length;

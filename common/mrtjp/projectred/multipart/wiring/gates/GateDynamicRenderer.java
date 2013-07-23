@@ -30,7 +30,7 @@ public class GateDynamicRenderer extends TileEntitySpecialRenderer {
 		rotatedTess.z = z;
 		rotatedTess.side = te.getSide();
 		rotatedTess.front = te.getFront();
-		GateRenderBridge rendering = (type == null ? defaultRendering : type.getRendering());
+		GateRenderBridge rendering = (type == null ? defaultRendering : type.getRenderBridge());
 		rendering.set(te.getRenderState());
 
 		CCRenderState.reset();
