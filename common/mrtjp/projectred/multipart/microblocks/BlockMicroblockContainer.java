@@ -10,8 +10,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockMicroblockContainer extends BlockMultipartBase {
-	public BlockMicroblockContainer(int id, Material mat) {
-		super(id, mat);
+	public BlockMicroblockContainer(int id) {
+		super(id, Material.rock);
 		setUnlocalizedName("projred.microblock");
 	}
 

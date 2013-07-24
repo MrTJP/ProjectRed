@@ -41,6 +41,9 @@ public class RotatedPartModel {
 		objPath = baseObj + objName;
 		if (objModel == null) {
 			models = CCModel.parseObjModels(objPath, 7, new InvertX());
+			for (CCModel m : models.values()) {
+				m.shrinkUVs(0.0005);
+			}
 		} else {
 			models = objModel;
 		}
