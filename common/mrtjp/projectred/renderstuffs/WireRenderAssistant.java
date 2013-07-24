@@ -25,7 +25,9 @@ public class WireRenderAssistant {
 
 	public RenderBlocks renderBlocks;
 
-	public Map<String, CCModel> wireMap;
+	/** Start Wire Rendering **/
+	
+	public Map<String, CCModel> model;
 	public Icon wireIcon;
 
 	public boolean isCenterCrossed;
@@ -51,9 +53,6 @@ public class WireRenderAssistant {
 	public boolean connectsInsideConnectorS;
 	public boolean connectsInsideConnectorW;
 	public boolean connectsInsideConnectorE;
-
-	public WireRenderAssistant() {
-	}
 
 	// Used to check relative direction for the side the wire is on.
 	public int[][] sideMap = { 
@@ -97,84 +96,79 @@ public class WireRenderAssistant {
 		connectsInsideConnectorS = (isCenterCrossed && connectsS) || (isCenterNS);
 		connectsInsideConnectorW = (isCenterCrossed && connectsW) || (isCenterWE);
 		connectsInsideConnectorE = (isCenterCrossed && connectsE) || (isCenterWE);
-
 	}
 
 	public void pushRender() {
 		// Center
 		if (isCenterCrossed) {
 			if (side == 1 || side == 3 || side == 4) {
-				renderModelWE(wireMap.get("center_X"));
+				renderModelWE(model.get("center_X"));
 			} else {
-				renderModelNS(wireMap.get("center_X"));
+				renderModelNS(model.get("center_X"));
 			}
 		} else if (isCenterNS) {
-			renderModelNS(wireMap.get("center_PN"));
+			renderModelNS(model.get("center_PN"));
 		} else if (isCenterWE) {
-			renderModelWE(wireMap.get("center_PN"));
+			renderModelWE(model.get("center_PN"));
 		}
 
 		// Inner connectors
 		if (connectsInsideConnectorN) {
-			renderModelNS(wireMap.get("insideconnector_N"));
+			renderModelNS(model.get("insideconnector_N"));
 		}
 		if (connectsInsideConnectorS) {
-			renderModelNS(wireMap.get("insideconnector_P"));
+			renderModelNS(model.get("insideconnector_P"));
 		}
 		if (connectsInsideConnectorW) {
-			renderModelWE(wireMap.get("insideconnector_N"));
+			renderModelWE(model.get("insideconnector_N"));
 		}
 		if (connectsInsideConnectorE) {
-			renderModelWE(wireMap.get("insideconnector_P"));
+			renderModelWE(model.get("insideconnector_P"));
 		}
 
 		// Inout or InIn
 		if (connectsN) {
 			if (connectsInsideN) {
-				renderModelNS(wireMap.get("inin_N"));
+				renderModelNS(model.get("inin_N"));
 			} else {
-				renderModelNS(wireMap.get("inout_N"));
+				renderModelNS(model.get("inout_N"));
 			}
 		}
 		if (connectsS) {
 			if (connectsInsideS) {
-				renderModelNS(wireMap.get("inin_P"));
+				renderModelNS(model.get("inin_P"));
 			} else {
-				renderModelNS(wireMap.get("inout_P"));
+				renderModelNS(model.get("inout_P"));
 			}
 		}
 		if (connectsW) {
 			if (connectsInsideW) {
-				renderModelWE(wireMap.get("inin_N"));
+				renderModelWE(model.get("inin_N"));
 			} else {
-				renderModelWE(wireMap.get("inout_N"));
+				renderModelWE(model.get("inout_N"));
 			}
 		}
 		if (connectsE) {
 			if (connectsInsideE) {
-				renderModelWE(wireMap.get("inin_P"));
+				renderModelWE(model.get("inin_P"));
 			} else {
-				renderModelWE(wireMap.get("inout_P"));
+				renderModelWE(model.get("inout_P"));
 			}
 		}
 
 		// Outer corner connectors
 		if (connectsCornerN) {
-			renderModelNS(wireMap.get("outsideconnector_N"));
+			renderModelNS(model.get("outsideconnector_N"));
 		}
 		if (connectsCornerS) {
-			renderModelNS(wireMap.get("outsideconnector_P"));
+			renderModelNS(model.get("outsideconnector_P"));
 		}
 		if (connectsCornerW) {
-			renderModelWE(wireMap.get("outsideconnector_N"));
+			renderModelWE(model.get("outsideconnector_N"));
 		}
 		if (connectsCornerE) {
-			renderModelWE(wireMap.get("outsideconnector_P"));
+			renderModelWE(model.get("outsideconnector_P"));
 		}
-	}
-
-	public void renderJacketedWire(TileWire t) {
-
 	}
 
 	private void renderModelNS(CCModel cc) {
@@ -196,5 +190,97 @@ public class WireRenderAssistant {
 		t.with(new Translation(.5 + xOffset, 0 + yOffset, .5 + zOffset)).with(Rotation.getForSideFacing(side, (facing > -1 ? facing : frontMap_WE[side]))).with(new Translation(x, y, z));
 		cc.render(0, cc.verts.length, t, new IconTransformation(renderBlocks != null && renderBlocks.overrideBlockTexture != null ? renderBlocks.overrideBlockTexture : wireIcon), null);
 	}
-
+	/** End Wire Rendering **/
+	
+	
+	/** Start Jacketed Rendering **/
+	public boolean jacketU;
+	public boolean jacketD;
+	public boolean jacketN;
+	public boolean jacketS;
+	public boolean jacketW;
+	public boolean jacketE;
+	
+	public void setJacketRender(TileWire t) {
+		// Swapped connection logic, because model is rendering flipped, Blender mistake probably.
+		jacketD = t.wireConnectsInDirection(-1, 0);
+		jacketU = t.wireConnectsInDirection(-1, 1);
+		jacketN = t.wireConnectsInDirection(-1, 3);
+		jacketS = t.wireConnectsInDirection(-1, 2);
+		jacketW = t.wireConnectsInDirection(-1, 5);
+		jacketE = t.wireConnectsInDirection(-1, 4);
+	}
+	
+	public void setInventoryJacketRender() {
+		jacketU = jacketD = jacketN = jacketS = jacketW = jacketE = true;
+	}
+	
+	public void pushJacketFrameRender() {
+		// Center
+		renderJacketModel(model.get("frame_center"));
+		// Up
+		if (jacketU) {
+			renderJacketModel(model.get("frame_U"));
+		}
+		// Down
+		if (jacketD) {
+			renderJacketModel(model.get("frame_D"));
+		}
+		// North
+		if (jacketN) {
+			renderJacketModel(model.get("frame_N"));
+		}
+		// South
+		if (jacketS) {
+			renderJacketModel(model.get("frame_S"));
+		}
+		// West
+		if (jacketW) {
+			renderJacketModel(model.get("frame_W"));
+		}
+		// East
+		if (jacketE) {
+			renderJacketModel(model.get("frame_E"));
+		}
+	}
+	
+	public void pushJacketWireRender() {
+		// Center
+		renderJacketModel(model.get("wire_center"));
+		// Up
+		if (jacketU) {
+			renderJacketModel(model.get("wire_U"));
+		}
+		// Down
+		if (jacketD) {
+			renderJacketModel(model.get("wire_D"));
+		}
+		// North
+		if (jacketN) {
+			renderJacketModel(model.get("wire_N"));
+		}
+		// South
+		if (jacketS) {
+			renderJacketModel(model.get("wire_S"));
+		}
+		// West
+		if (jacketW) {
+			renderJacketModel(model.get("wire_W"));
+		}
+		// East
+		if (jacketE) {
+			renderJacketModel(model.get("wire_E"));
+		}
+	}
+	
+	public void renderJacketModel(CCModel cc) {
+		if (cc == null) {
+			System.out.println("Wire model is currupt or missing.");
+			return;
+		}
+		TransformationList t = new TransformationList();
+		t.with(new Translation(.5 + xOffset, 0 + yOffset, .5 + zOffset)).with(new Translation(x, y, z));
+		cc.render(0, cc.verts.length, t, new IconTransformation(renderBlocks != null && renderBlocks.overrideBlockTexture != null ? renderBlocks.overrideBlockTexture : wireIcon), null);
+	}
+	/** End Jacketed Rendering **/
 }

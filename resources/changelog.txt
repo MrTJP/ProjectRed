@@ -1,12 +1,14 @@
 Change Log:
 v3.0.2.31
-- New render system for wiring.
-- New wiring textures.
+- New models and textures for wiring.
 - Neutral bundled cabling, plus all 16 colors added.
 - Alloy wires render in world much darker when not conducting power.
 - Alloy wires render full strength in inventory.
 - The under side of all wires now render always, for when putting them on glass.
-
+- Fixed noSuchField server crash.
+- Fixed NASTY visual bug where the edges on things would be see-through (Chickenbones is a genius)
+- Fixed bug with water washing away wires.
+- Added new models for Jacketed cables.
 
 v3.0.1.30
 - New bundled cabling/wiring texture, by xchainblade.

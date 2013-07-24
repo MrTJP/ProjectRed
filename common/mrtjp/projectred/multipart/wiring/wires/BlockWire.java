@@ -8,13 +8,10 @@ import mrtjp.projectred.multipart.wiring.CommandDebug;
 import mrtjp.projectred.multipart.wiring.InvalidTile;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.renderstuffs.RenderIDs;
+import mrtjp.projectred.utils.BasicWireMaterial;
 import mrtjp.projectred.utils.codechicken.core.render.EntityDigIconFX;
 import mrtjp.projectred.utils.codechicken.core.vec.Cuboid6;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialLogic;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.client.particle.EntityDiggingFX;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,7 +27,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class BlockWire extends BlockMultipartBase {
 
 	public BlockWire(int id) {
-		super(id, new MaterialLogic(Material.circuits.materialMapColor));
+		super(id, new BasicWireMaterial());
 		setCreativeTab(ProjectRedTabs.tabWires);
 		setUnlocalizedName("projred.redwire");
 	}

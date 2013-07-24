@@ -168,7 +168,7 @@ public class ProjectRed {
 		}
 		// Microblock
 		if (Configurator.block_microID.getInt() > 0) {
-			blockMicrocontainer = new BlockMicroblockContainer(Configurator.block_microID.getInt(), Material.rock);
+			blockMicrocontainer = new BlockMicroblockContainer(Configurator.block_microID.getInt());
 			GameRegistry.registerBlock(blockMicrocontainer, ItemMicroblock.class, "projred.microblock");
 			GameRegistry.registerTileEntity(TileMicroblockContainer.class, "tile.projred.microblock");
 		}

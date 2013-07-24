@@ -37,9 +37,17 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 		wra.z = wt.zCoord;
 		wra.renderBlocks = render;
 		wra.wireIcon = (wt.getSpecialIconForRender() == null ? type.wireSprites[0] : wt.getSpecialIconForRender());
-		wra.wireMap = type.wireMap;
 		CCRenderState.reset();
 		CCRenderState.setBrightness(wt.worldObj, wt.xCoord, wt.yCoord, wt.zCoord);
+		
+		if (wt.hasJacketedWire()) {
+			wra.model = type.jacketMap;
+			wra.setJacketRender(wt);
+			wra.pushJacketFrameRender();
+			CCRenderState.setColourOpaque(wt.getVisualWireColour());
+			wra.pushJacketWireRender();
+		}
+		wra.model = type.wireMap;
 		CCRenderState.setColourOpaque(wt.getVisualWireColour());
 		for (int i = 0; i < 6; i++) {
 			if ((sideMask & (1 << i)) == 0)
@@ -48,6 +56,8 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 			wra.setWireRenderState(wt);
 			wra.pushRender();
 		}
+		
+		
 		return;
 	}
 
@@ -73,18 +83,18 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 		}
 		wra = new WireRenderAssistant();
 		wra.x = wra.y = wra.z = 0;
-		wra.yOffset = .25f;
 		wra.renderBlocks = render;
 		wra.side = 0;
 		wra.wireIcon = type.wireSprites[0];
-		wra.wireMap = type.wireMap;
 		CCRenderState.reset();
 		CCRenderState.useNormals(true);
-		CCRenderState.setColourOpaque(type.itemColour);
 
 		if (!WireDamageValues.isJacketed(damageValue)) {
+			wra.model = type.wireMap;
 			GL11.glPushMatrix();
 			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glEnable(GL11.GL_LIGHTING);
+			CCRenderState.setColourOpaque(type.itemColour);
 			CCRenderState.startDrawing(7);
 			wra.connectsN = true;
 			wra.connectsS = true;
@@ -98,6 +108,14 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 			wra.pushRender();
 			CCRenderState.draw();
 			GL11.glPopMatrix();
+		} else if (WireDamageValues.isJacketed(damageValue)){
+			wra.model = type.jacketMap;
+			wra.setInventoryJacketRender();
+			CCRenderState.startDrawing(7);
+			wra.pushJacketFrameRender();
+			CCRenderState.setColourOpaque(type.itemColour);
+			wra.pushJacketWireRender();
+			CCRenderState.draw();
 		}
 	}
 

@@ -8,11 +8,10 @@ import mrtjp.projectred.multipart.BlockMultipartBase;
 import mrtjp.projectred.network.ClientProxy;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.utils.BasicUtils;
+import mrtjp.projectred.utils.BasicWireMaterial;
 import mrtjp.projectred.utils.Coords;
 import mrtjp.projectred.utils.Dir;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialLogic;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,7 +29,7 @@ public class BlockGate extends BlockMultipartBase {
 	public static final float THICKNESS = 1 / 8.0f;
 
 	public BlockGate(int id) {
-		super(id, new MaterialLogic(Material.circuits.materialMapColor));
+		super(id, new BasicWireMaterial());
 		setCreativeTab(ProjectRedTabs.tabWires);
 		setUnlocalizedName("projred.gate");
 	}
