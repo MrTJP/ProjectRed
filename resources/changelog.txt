@@ -15,6 +15,7 @@ v3.0.2.31
 - Added redstone particle effects on gate torches.
 - Microblocks now scan all candidate blocks and adds them if they are compatible. Notice: if the block IDs are changed for these blocks, the microblocks will also get wonky. Warning: this may mess up microblocks that are currently in use.
 - Strips can be placed between wires by sneaking.
+- Fixed jacketed indirect placement bug.
 
 v3.0.1.30
 - New bundled cabling/wiring texture, by xchainblade.

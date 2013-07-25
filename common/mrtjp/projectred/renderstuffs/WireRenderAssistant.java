@@ -266,6 +266,10 @@ public class WireRenderAssistant {
 			renderJacketModel(model.get("frame_center_WE"));
 		}
 
+		if (!renderFrameEdges) {
+			return;
+		}
+		
 		// Up
 		if (jacketU) {
 			renderJacketModel(model.get("frame_U"));
