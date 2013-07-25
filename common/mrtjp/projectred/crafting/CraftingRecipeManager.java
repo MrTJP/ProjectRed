@@ -569,6 +569,12 @@ public class CraftingRecipeManager {
 				's', Item.silk,
 				'w', Item.stick
 		);
+		/** Brass **/
+		AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
+				new ItemStack(Item.ingotIron),
+				new ItemStack(partcopperingot, 3),
+		}, EnumPart.BRASS.getItemStack(), 125));
+		
 	}
 	private static void initMachineRecipes() {
 		
