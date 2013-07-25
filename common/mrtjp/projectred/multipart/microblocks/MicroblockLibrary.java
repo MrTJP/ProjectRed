@@ -135,6 +135,7 @@ public class MicroblockLibrary implements IMicroblockLibrary {
 	public void initializeBlockScan() {
 		ArrayList<Integer> IDBlacklist = new ArrayList<Integer>();
 		ArrayList<Integer> IDWhitelist = new ArrayList<Integer>();
+		ArrayList<ItemStack> sublist = new ArrayList<ItemStack>();
 		
 		// TODO: add config option to manually add these
 		IDBlacklist.add(Block.bedrock.blockID);
@@ -144,33 +145,29 @@ public class MicroblockLibrary implements IMicroblockLibrary {
 		IDBlacklist.add(Block.lockedChest.blockID);
 		IDWhitelist.add(Block.glass.blockID);
 		
-		for (Field f : Block.class.getDeclaredFields()) {
-			if (Modifier.isStatic(f.getModifiers()) && Block.class.isAssignableFrom(f.getType())) {
-				Block b;
-				try {
-					b = (Block) f.get(null);
-				} catch (Exception e) {
-					continue;
-				}
-				if (IDBlacklist.contains(b.blockID)) {
-					continue;
-				}
-				if ((!b.isOpaqueCube() || b.hasTileEntity(0) || !b.renderAsNormalBlock()) && !IDWhitelist.contains(b.blockID)) {
-					continue;
-				}
+		for (Block b : Block.blocksList) {
+			if (b == null || b.blockID == 0) {
+				continue;
+			}
+			if (IDBlacklist.contains(b.blockID)) {
+				continue;
+			}
+			if ((!b.isOpaqueCube() || b.hasTileEntity(0) || !b.renderAsNormalBlock()) && !IDWhitelist.contains(b.blockID)) {
+				continue;
+			}
 
-				ItemStack candidate = new ItemStack(b, 1);
-				if (candidate.getHasSubtypes()) {
-					Set<String> names = Sets.newHashSet();
-					for (int meta = 0; meta < 16; meta++) {
-						ItemStack is = new ItemStack(b, 1, meta);
-						if (!Strings.isNullOrEmpty(is.getItemName()) && names.add(is.getItemName())) {
-							this.addCuttableBlock(b, meta);
-						}
+			ItemStack candidate = new ItemStack(b, 1);
+			if (candidate.getHasSubtypes()) {
+				Set<String> names = Sets.newHashSet();
+				sublist.clear();
+				b.getSubBlocks(b.blockID, null, sublist);
+				for (ItemStack subItem : sublist) {
+					if (!Strings.isNullOrEmpty(subItem.getItemName()) && names.add(subItem.getItemName())) {
+						this.addCuttableBlock(b, subItem.getItemDamage());
 					}
-				} else {
-					this.addCuttableBlock(b, 0);
 				}
+			} else {
+				this.addCuttableBlock(b, 0);
 			}
 		}
 	}
