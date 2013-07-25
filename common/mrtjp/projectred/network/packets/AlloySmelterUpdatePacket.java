@@ -7,9 +7,7 @@ import java.io.IOException;
 import mrtjp.projectred.network.abstractpackets.CoordinatesPacket;
 import mrtjp.projectred.network.abstractpackets.ModernPacket;
 import mrtjp.projectred.tiles.TileAlloySmelter;
-import mrtjp.projectred.utils.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 
 public class AlloySmelterUpdatePacket extends CoordinatesPacket {
 		

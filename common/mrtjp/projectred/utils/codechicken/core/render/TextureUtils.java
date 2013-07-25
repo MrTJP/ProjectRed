@@ -9,13 +9,8 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.util.Dimension;
-
-import codechicken.core.colour.Colour;
-import codechicken.core.colour.ColourARGB;
-
+import mrtjp.projectred.utils.codechicken.core.colour.Colour;
+import mrtjp.projectred.utils.codechicken.core.colour.ColourARGB;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderEngine;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -26,6 +21,11 @@ import net.minecraft.util.Icon;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeSubscribe;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.util.Dimension;
+
 
 public class TextureUtils
 {    

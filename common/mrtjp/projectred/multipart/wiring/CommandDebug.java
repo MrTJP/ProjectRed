@@ -26,7 +26,7 @@ public class CommandDebug extends CommandBase {
 
 	@Override
 	public String getCommandName() {
-		return "rldebug";
+		return "prdebug";
 	}
 	
 	@Override
@@ -63,7 +63,6 @@ public class CommandDebug extends CommandBase {
 	
 	@Override
 	public boolean canCommandSenderUseCommand(ICommandSender par1iCommandSender) {
-		// TODO Auto-generated method stub
 		return super.canCommandSenderUseCommand(par1iCommandSender);
 	}
 }

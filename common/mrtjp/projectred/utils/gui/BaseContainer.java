@@ -1,7 +1,6 @@
 package mrtjp.projectred.utils.gui;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import mrtjp.projectred.interfaces.ISyncedContainer;
@@ -11,11 +10,8 @@ import mrtjp.projectred.utils.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
-import cpw.mods.fml.common.network.Player;
 
 public class BaseContainer extends Container implements ISyncedContainer {
 

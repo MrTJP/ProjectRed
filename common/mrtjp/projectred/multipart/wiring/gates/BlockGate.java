@@ -15,8 +15,6 @@ import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
 import mrtjp.projectred.utils.codechicken.core.vec.Translation;
 import mrtjp.projectred.utils.codechicken.core.vec.Vector3;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityReddustFX;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -95,6 +93,7 @@ public class BlockGate extends BlockMultipartBase {
 		return true;
 	}
 
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void randomDisplayTick(World world, int x, int y, int z, Random ran) {
 		if (BasicUtils.isServer(world)) {
@@ -115,10 +114,10 @@ public class BlockGate extends BlockMultipartBase {
 				vec.apply(new Translation(xOffset, yOffset, zOffset));
 				vec.apply(Rotation.getForSideFacing(gate.getSide(), gate.getFront()));
 				vec.apply(new Translation(x, y, z));
-	            double d0 = (double)((float)vec.x) + (double)(ran.nextFloat() - .5F) * 0.02D;
-	            double d1 = (double)((float)vec.y) + (double)(ran.nextFloat() - .5F) * 0.5D;
-	            double d2 = (double)((float)vec.z) + (double)(ran.nextFloat() - .5F) * 0.02D;
-	            Minecraft.getMinecraft().effectRenderer.addEffect(new EntityReddustFX(world, d0, d1, d2, .8f, 0, 0, 0));
+				double d0 = (double) ((float) vec.x) + (double) (ran.nextFloat() - .5F) * 0.02D;
+				double d1 = (double) ((float) vec.y) + (double) (ran.nextFloat() - .3F) * 0.3D;
+				double d2 = (double) ((float) vec.z) + (double) (ran.nextFloat() - .5F) * 0.02D;
+				world.spawnParticle("reddust", d0, d1, d2, 0.0D, 0.0D, 0.0D);
 			}
 			for (int i = 0; i < bridge.pointerX.length; i++) {
 				float xOffset = ((16f - bridge.pointerX[i]) / 16f);
@@ -128,10 +127,10 @@ public class BlockGate extends BlockMultipartBase {
 				vec.apply(new Translation(xOffset, yOffset, zOffset));
 				vec.apply(Rotation.getForSideFacing(gate.getSide(), gate.getFront()));
 				vec.apply(new Translation(x, y, z));
-	            double d0 = (double)((float)vec.x) + (double)(ran.nextFloat() - .5F) * 0.02D;
-	            double d1 = (double)((float)vec.y) + (double)(ran.nextFloat() - .5F) * 0.5D;
-	            double d2 = (double)((float)vec.z) + (double)(ran.nextFloat() - .5F) * 0.02D;
-	            Minecraft.getMinecraft().effectRenderer.addEffect(new EntityReddustFX(world, d0, d1, d2, .8f, 0, 0, 0));
+				double d0 = (double) ((float) vec.x) + (double) (ran.nextFloat() - .5F) * 0.02D;
+				double d1 = (double) ((float) vec.y) + (double) (ran.nextFloat() - .3F) * 0.3D;
+				double d2 = (double) ((float) vec.z) + (double) (ran.nextFloat() - .5F) * 0.02D;
+				world.spawnParticle("reddust", d0, d1, d2, 0.0D, 0.0D, 0.0D);
 			}
 		}
 	};

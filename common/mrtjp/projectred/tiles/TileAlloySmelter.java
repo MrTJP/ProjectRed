@@ -6,9 +6,7 @@ import java.util.Random;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.AlloySmelterRecipe;
-import mrtjp.projectred.crafting.CraftingRecipeManager;
 import mrtjp.projectred.interfaces.IGuiOpenControler;
-import mrtjp.projectred.interfaces.ISimpleInventoryListener;
 import mrtjp.projectred.network.GuiIDs;
 import mrtjp.projectred.network.PacketHandler;
 import mrtjp.projectred.network.packets.AlloySmelterInitPacket;

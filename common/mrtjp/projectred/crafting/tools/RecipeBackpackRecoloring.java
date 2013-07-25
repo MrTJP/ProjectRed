@@ -1,7 +1,6 @@
 package mrtjp.projectred.crafting.tools;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

@@ -3,8 +3,8 @@ package mrtjp.projectred.multipart;
 import java.util.List;
 
 import mrtjp.projectred.multipart.microblocks.IMicroblockCoverSystem;
-import mrtjp.projectred.multipart.microblocks.IMicroblockSupporterTile2;
 import mrtjp.projectred.multipart.microblocks.IMicroblockLibrary;
+import mrtjp.projectred.multipart.microblocks.IMicroblockSupporterTile2;
 import mrtjp.projectred.multipart.microblocks.MicroblockLibrary;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;

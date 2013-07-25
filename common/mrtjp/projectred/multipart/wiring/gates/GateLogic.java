@@ -10,11 +10,8 @@ import java.util.Random;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.network.GuiIDs;
 import mrtjp.projectred.utils.BasicUtils;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
 public abstract class GateLogic {

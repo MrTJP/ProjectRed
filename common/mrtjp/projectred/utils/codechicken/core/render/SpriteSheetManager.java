@@ -2,16 +2,17 @@ package mrtjp.projectred.utils.codechicken.core.render;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.lwjgl.util.Dimension;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 import mrtjp.projectred.utils.codechicken.core.render.TextureUtils.IIconRegister;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.client.renderer.texture.Texture;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.Icon;
+
+import org.lwjgl.util.Dimension;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class SpriteSheetManager
 {

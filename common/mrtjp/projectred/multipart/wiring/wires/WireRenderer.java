@@ -1,23 +1,15 @@
 package mrtjp.projectred.multipart.wiring.wires;
 
-import org.lwjgl.opengl.GL11;
-
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.renderstuffs.WireRenderAssistant;
 import mrtjp.projectred.utils.BasicRenderUtils;
-import mrtjp.projectred.utils.BasicWireUtils;
-import mrtjp.projectred.utils.Dir;
+import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.ForgeDirection;
-import codechicken.core.render.CCRenderState;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

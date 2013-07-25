@@ -1,4 +1,11 @@
 Change Log:
+v3.0.2.32
+- Fixed EntityFX crash.
+- Fixed BlockList crash.
+- Fixed broken wire texture registration on Windows.
+- (Finally) Fixed derpy pointer/gate rendering.
+- Fixed dependency on CodeChickenCore.
+
 v3.0.2.31
 - New models and textures for wiring.
 - Neutral bundled cabling, plus all 16 colors added.

@@ -5,7 +5,6 @@ import java.util.List;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.ProjectRedTabs;
-import mrtjp.projectred.items.ItemPart.EnumPart;
 import mrtjp.projectred.tiles.TileLamp;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.Coords;
@@ -13,7 +12,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

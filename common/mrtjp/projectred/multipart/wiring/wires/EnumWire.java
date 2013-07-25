@@ -117,7 +117,7 @@ public enum EnumWire {
 		if (wireSpritePaths.length > 0) {
 			wireSprites = new Icon[wireSpritePaths.length];
 			for (int i = 0; i < wireSpritePaths.length; i++) {
-				wireSprites[i] = reg.registerIcon("projectred:/wires/" + wireSpritePaths[i]);
+				wireSprites[i] = reg.registerIcon("projectred:wires/" + wireSpritePaths[i]);
 			}
 		}
 		wireMap = CCModel.parseObjModels("/mods/projectred/textures/obj/wiring/" + wireModelPath, 7, new InvertX());

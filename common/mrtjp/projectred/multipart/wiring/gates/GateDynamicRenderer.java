@@ -1,10 +1,8 @@
 package mrtjp.projectred.multipart.wiring.gates;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
-import mrtjp.projectred.network.ClientProxy;
 import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
 import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import cpw.mods.fml.relauncher.Side;
@@ -32,8 +30,9 @@ public class GateDynamicRenderer extends TileEntitySpecialRenderer {
 		rotatedTess.front = te.getFront();
 		GateRenderBridge rendering = (type == null ? defaultRendering : type.getRenderBridge());
 		rendering.set(te.getRenderState());
-
+		
 		CCRenderState.reset();
+		CCRenderState.changeTexture("/terrain.png");
 		CCRenderState.useNormals(true);
 		CCRenderState.pullLightmap();
 		CCRenderState.startDrawing(7);

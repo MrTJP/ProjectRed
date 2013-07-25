@@ -11,7 +11,6 @@ import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.utils.BasicWireMaterial;
 import mrtjp.projectred.utils.codechicken.core.render.EntityDigIconFX;
 import mrtjp.projectred.utils.codechicken.core.vec.Cuboid6;
-import net.minecraft.block.Block;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;

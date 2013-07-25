@@ -8,7 +8,6 @@ import mrtjp.projectred.tiles.TileAlloySmelter;
 import mrtjp.projectred.tiles.TileMachineBase;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.Coords;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
