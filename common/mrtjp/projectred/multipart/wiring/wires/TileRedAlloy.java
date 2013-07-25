@@ -324,7 +324,7 @@ public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedston
 		Block b = Block.blocksList[worldObj.getBlockId(x, y, z)];
 		if (b == null)
 			return false;
-		if (b.canProvidePower() && b.canConnectRedstone(worldObj, x, y, z, canConnectRedstoneDirectionMap[direction])) {
+		if (b.canProvidePower()) {
 			return true;
 		}
 		if (direction >= 0 && direction < 6 && canConnectRedstoneDirectionMap[direction] != -2 && b.canConnectRedstone(worldObj, x, y, z, canConnectRedstoneDirectionMap[direction])) {
