@@ -552,7 +552,7 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 			return;
 		}
 		ItemStack dropped = new ItemStack(ProjectRed.blockWire, 1, wireType.ordinal());
-		BasicUtils.ejectItem(worldObj, dropped, false, null, side, new Coords(this));
+		BasicUtils.dropItemFromLocation(worldObj, dropped, false, null, side, 10, new Coords(this));
 	}
 
 	/** Destroys the wire block when the last wire is removed. */

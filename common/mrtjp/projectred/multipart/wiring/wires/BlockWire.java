@@ -11,6 +11,7 @@ import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.utils.BasicWireMaterial;
 import mrtjp.projectred.utils.codechicken.core.render.EntityDigIconFX;
 import mrtjp.projectred.utils.codechicken.core.vec.Cuboid6;
+import net.minecraft.block.Block;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -50,7 +51,6 @@ public class BlockWire extends BlockMultipartBase {
 		for (EnumWire type : EnumWire.VALUES) {
 			par3List.add(new ItemStack(this, 1, type.ordinal()));
 		}
-
 		for (EnumWire type : EnumWire.VALUES) {
 			if (type.hasJacketedForm()) {
 				par3List.add(new ItemStack(this, 1, type.ordinal() | WireDamageValues.DMG_FLAG_JACKETED));
@@ -61,11 +61,9 @@ public class BlockWire extends BlockMultipartBase {
 	@Override
 	public TileEntity createTileEntity(World world, int meta) {
 		Class<? extends TileWire> clazz = EnumWire.META_TO_CLASS.get(meta);
-
 		if (clazz == null) {
 			return new InvalidTile();
 		}
-
 		try {
 			return clazz.getConstructor().newInstance();
 		} catch (Exception e) {
@@ -86,26 +84,20 @@ public class BlockWire extends BlockMultipartBase {
 	@Override
 	public int isProvidingStrongPower(IBlockAccess w, int x, int y, int z, int opposite_dir) {
 		int meta = w.getBlockMetadata(x, y, z);
-
 		if (meta == EnumWire.PLAIN_RED_ALLOY_META) {
 			TileRedAlloy tile = ((TileRedAlloy) w.getBlockTileEntity(x, y, z));
-
 			return tile.canProvideStrongPowerInDirection(opposite_dir ^ 1) ? tile.getVanillaRedstoneStrength() : 0;
 		}
-
 		return 0;
 	}
 
 	@Override
 	public int isProvidingWeakPower(IBlockAccess w, int x, int y, int z, int opposite_dir) {
 		int meta = w.getBlockMetadata(x, y, z);
-
 		if (meta == EnumWire.PLAIN_RED_ALLOY_META || meta == EnumWire.INSULATED_RED_ALLOY_META) {
 			TileRedAlloy tile = ((TileRedAlloy) w.getBlockTileEntity(x, y, z));
-
 			return tile.canProvideWeakPowerInDirection(opposite_dir ^ 1) ? tile.getVanillaRedstoneStrength() : 0;
 		}
-
 		return 0;
 	}
 
@@ -116,8 +108,9 @@ public class BlockWire extends BlockMultipartBase {
 
 	@Override
 	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
-		if (CommandDebug.WIRE_READING)
+		if (CommandDebug.WIRE_READING) {
 			return ((TileWire) par1World.getBlockTileEntity(par2, par3, par4)).debug(par5EntityPlayer);
+		}
 		return super.onBlockActivated(par1World, par2, par3, par4, par5EntityPlayer, par6, par7, par8, par9);
 	}
 

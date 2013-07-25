@@ -3,7 +3,7 @@ package mrtjp.projectred.multipart.microblocks;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 
-public interface IMicroblockSystem {
+public interface IMicroblockLibrary {
 
 	/**
 	 * Creates a microblock ICoverSystem.

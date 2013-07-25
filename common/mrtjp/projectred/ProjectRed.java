@@ -21,8 +21,8 @@ import mrtjp.projectred.items.ItemScrewdriver;
 import mrtjp.projectred.items.ItemWoolGin;
 import mrtjp.projectred.multipart.BlockMultipartBase;
 import mrtjp.projectred.multipart.microblocks.BlockMicroblockContainer;
-import mrtjp.projectred.multipart.microblocks.ItemMicroblock;
-import mrtjp.projectred.multipart.microblocks.MicroblockSystem;
+import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
+import mrtjp.projectred.multipart.microblocks.MicroblockLibrary;
 import mrtjp.projectred.multipart.microblocks.TileMicroblockContainer;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
 import mrtjp.projectred.multipart.wiring.InvalidTile;
@@ -169,7 +169,7 @@ public class ProjectRed {
 		// Microblock
 		if (Configurator.block_microID.getInt() > 0) {
 			blockMicrocontainer = new BlockMicroblockContainer(Configurator.block_microID.getInt());
-			GameRegistry.registerBlock(blockMicrocontainer, ItemMicroblock.class, "projred.microblock");
+			GameRegistry.registerBlock(blockMicrocontainer, ItemBlockMicroblock.class, "projred.microblock");
 			GameRegistry.registerTileEntity(TileMicroblockContainer.class, "tile.projred.microblock");
 		}
 
@@ -217,8 +217,9 @@ public class ProjectRed {
 
 	@Mod.PostInit
 	public void postInit(FMLPostInitializationEvent event) {
-		MicroblockSystem.instance = new MicroblockSystem();
-		MicroblockSystem.instance.initializeParts();
+		MicroblockLibrary.instance = new MicroblockLibrary();
+		//MicroblockLibrary.instance.initializeParts();
+		MicroblockLibrary.instance.initializeBlockScan();
 	}
 
 	@Mod.ServerStarting

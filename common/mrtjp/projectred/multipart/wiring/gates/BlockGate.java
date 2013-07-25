@@ -11,7 +11,12 @@ import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireMaterial;
 import mrtjp.projectred.utils.Coords;
 import mrtjp.projectred.utils.Dir;
+import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
+import mrtjp.projectred.utils.codechicken.core.vec.Translation;
+import mrtjp.projectred.utils.codechicken.core.vec.Vector3;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityReddustFX;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -89,6 +94,47 @@ public class BlockGate extends BlockMultipartBase {
 		ClientProxy.renderPass = pass;
 		return true;
 	}
+
+	@Override
+	public void randomDisplayTick(World world, int x, int y, int z, Random ran) {
+		if (BasicUtils.isServer(world)) {
+			return;
+		}
+		TileGate gate = (TileGate) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileGate.class);
+		if (gate != null) {
+			GateRenderBridge bridge = gate.getType().getRenderBridge();
+			bridge.set(gate.getRenderState());
+			for (int i = 0; i < bridge.torchState.length; i++) {
+				if (!bridge.torchState[i]) {
+					continue;
+				}
+				float xOffset = ((16f - bridge.torchX[i]) / 16f);
+				float yOffset = (bridge.torchY[i] + 6) / 16f;
+				float zOffset = ((16f - bridge.torchZ[i]) / 16f);
+				Vector3 vec = new Vector3();
+				vec.apply(new Translation(xOffset, yOffset, zOffset));
+				vec.apply(Rotation.getForSideFacing(gate.getSide(), gate.getFront()));
+				vec.apply(new Translation(x, y, z));
+	            double d0 = (double)((float)vec.x) + (double)(ran.nextFloat() - .5F) * 0.02D;
+	            double d1 = (double)((float)vec.y) + (double)(ran.nextFloat() - .5F) * 0.5D;
+	            double d2 = (double)((float)vec.z) + (double)(ran.nextFloat() - .5F) * 0.02D;
+	            Minecraft.getMinecraft().effectRenderer.addEffect(new EntityReddustFX(world, d0, d1, d2, .8f, 0, 0, 0));
+			}
+			for (int i = 0; i < bridge.pointerX.length; i++) {
+				float xOffset = ((16f - bridge.pointerX[i]) / 16f);
+				float yOffset = (bridge.pointerY[i] + 6) / 16f;
+				float zOffset = ((16f - bridge.pointerZ[i]) / 16f);
+				Vector3 vec = new Vector3();
+				vec.apply(new Translation(xOffset, yOffset, zOffset));
+				vec.apply(Rotation.getForSideFacing(gate.getSide(), gate.getFront()));
+				vec.apply(new Translation(x, y, z));
+	            double d0 = (double)((float)vec.x) + (double)(ran.nextFloat() - .5F) * 0.02D;
+	            double d1 = (double)((float)vec.y) + (double)(ran.nextFloat() - .5F) * 0.5D;
+	            double d2 = (double)((float)vec.z) + (double)(ran.nextFloat() - .5F) * 0.02D;
+	            Minecraft.getMinecraft().effectRenderer.addEffect(new EntityReddustFX(world, d0, d1, d2, .8f, 0, 0, 0));
+			}
+		}
+	};
 
 	// END RENDERING
 

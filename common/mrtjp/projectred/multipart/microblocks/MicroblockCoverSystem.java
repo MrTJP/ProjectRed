@@ -192,7 +192,7 @@ public class MicroblockCoverSystem implements IMicroblockCoverSystem {
 		for (int k = 0; k < ncovers; k++) {
 			EnumPosition pos = EnumPosition.values()[data.readByte()];
 			int type = data.readInt();
-			parts.add(MicroblockSystem.parts.get(type).createPart(pos, data));
+			parts.add(MicroblockLibrary.parts.get(type).createPart(pos, data));
 		}
 
 		te.worldObj.markBlockForUpdate(te.xCoord, te.yCoord, te.zCoord);

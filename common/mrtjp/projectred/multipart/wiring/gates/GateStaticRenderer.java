@@ -21,7 +21,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 	private GateRenderBridge defaultRendering = new GateRenderBridge.Default();
 	private RotatedRenderer rotatedRenderer = new RotatedRenderer();
 	public static final GateStaticRenderer instance = new GateStaticRenderer();
-	
+
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int model, RenderBlocks render) {
 		TileGate te = (TileGate) world.getBlockTileEntity(x, y, z);
@@ -48,6 +48,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 		CCRenderState.reset();
 		CCRenderState.setColour(0);
 		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
+		CCRenderState.setBrightness(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
 		rotatedRenderer.renderPartModel(rendering._modelBase, "base", .5f, 0, .5f, -1, -1, false);
 		for (int i = 0; i < rendering.wireColor.length; i++) {
 			float[] xPositions = rendering.wirePosX[i];
@@ -63,15 +64,13 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 			float zOffset = rendering.pointerZ[i];
 			GateDynamicRenderer.renderTorchOnGate(rotatedRenderer, rendering.pointerX[i], 0, rendering.pointerZ[i], true, rendering._torchOn, rendering._torchOff);
 		}
-		if (ClientProxy.renderPass == 1) {
-			for (int i = 0; i < rendering.torchState.length; i++) {
-				if (rendering.torchState[i]) {
-					GateDynamicRenderer.renderGlowOnTorch(rotatedRenderer, rendering.torchX[i], rendering.torchY[i], rendering.torchZ[i], rendering._torchOn);
-				}
+		for (int i = 0; i < rendering.torchState.length; i++) {
+			if (rendering.torchState[i]) {
+				GateDynamicRenderer.renderGlowOnTorch(rotatedRenderer, rendering.torchX[i], rendering.torchY[i], rendering.torchZ[i], rendering._torchOn);
 			}
-			for (int i = 0; i < rendering.pointerX.length; i++) {
-				GateDynamicRenderer.renderGlowOnTorch(rotatedRenderer, rendering.pointerX[i], 0, rendering.pointerZ[i], rendering._torchOn);
-			}
+		}
+		for (int i = 0; i < rendering.pointerX.length; i++) {
+			GateDynamicRenderer.renderGlowOnTorch(rotatedRenderer, rendering.pointerX[i], 0, rendering.pointerZ[i], rendering._torchOn);
 		}
 		rendering.renderSpecials(rotatedRenderer, false);
 		return true;
@@ -91,7 +90,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 
 		CCRenderState.reset();
 		CCRenderState.useNormals(true);
-		
+
 		CCRenderState.startDrawing(7);
 		rotatedRenderer.renderPartModel(rendering._modelBase, "base", .5f, 0, .5f, -1, -1, false);
 		for (int i = 0; i < rendering.wireColor.length; i++) {
@@ -109,7 +108,14 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 			GateDynamicRenderer.renderPointerOnGateWithRotation(rotatedRenderer, rendering.pointerX[i], 0, rendering.pointerZ[i], rendering._pointer, 0);
 			GateDynamicRenderer.renderTorchOnGate(rotatedRenderer, rendering.pointerX[i], 0, rendering.pointerZ[i], true, rendering._torchOn, rendering._torchOff);
 		}
-		
+		for (int i = 0; i < rendering.torchState.length; i++) {
+			if (rendering.torchState[i]) {
+				GateDynamicRenderer.renderGlowOnTorch(rotatedRenderer, rendering.torchX[i], rendering.torchY[i], rendering.torchZ[i], rendering._torchOn);
+			}
+		}
+		for (int i = 0; i < rendering.pointerX.length; i++) {
+			GateDynamicRenderer.renderGlowOnTorch(rotatedRenderer, rendering.pointerX[i], 0, rendering.pointerZ[i], rendering._torchOn);
+		}
 		rendering.renderSpecials(rotatedRenderer, false);
 		BlockGate.renderTypeOverride = -1;
 		CCRenderState.draw();

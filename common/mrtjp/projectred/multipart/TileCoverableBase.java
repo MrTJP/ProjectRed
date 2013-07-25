@@ -4,8 +4,8 @@ import java.util.List;
 
 import mrtjp.projectred.multipart.microblocks.IMicroblockCoverSystem;
 import mrtjp.projectred.multipart.microblocks.IMicroblockSupporterTile2;
-import mrtjp.projectred.multipart.microblocks.IMicroblockSystem;
-import mrtjp.projectred.multipart.microblocks.MicroblockSystem;
+import mrtjp.projectred.multipart.microblocks.IMicroblockLibrary;
+import mrtjp.projectred.multipart.microblocks.MicroblockLibrary;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
@@ -25,7 +25,7 @@ public abstract class TileCoverableBase extends TileEntity implements IMicrobloc
 	protected IMicroblockCoverSystem cover;
 
 	public TileCoverableBase() {
-		IMicroblockSystem ims = MicroblockSystem.instance.getMicroblockSystem();
+		IMicroblockLibrary ims = MicroblockLibrary.instance.getMicroblockSystem();
 		if (ims != null)
 			cover = ims.createMicroblockCoverSystem(this);
 	}

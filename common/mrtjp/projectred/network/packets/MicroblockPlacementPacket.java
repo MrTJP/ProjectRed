@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import mrtjp.projectred.multipart.microblocks.EnumPosition;
-import mrtjp.projectred.multipart.microblocks.ItemMicroblock;
+import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
 import mrtjp.projectred.network.abstractpackets.CoordinatesPacket;
 import mrtjp.projectred.network.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,10 +34,10 @@ public class MicroblockPlacementPacket extends CoordinatesPacket {
 			}
 			EnumPosition pos = EnumPosition.values()[position];
 			ItemStack h = player.getCurrentEquippedItem();
-			if(h == null || !(Item.itemsList[h.itemID] instanceof ItemMicroblock)) {
+			if(h == null || !(Item.itemsList[h.itemID] instanceof ItemBlockMicroblock)) {
 				return;
 			}
-			ItemMicroblock i = (ItemMicroblock)Item.itemsList[h.itemID];
+			ItemBlockMicroblock i = (ItemBlockMicroblock)Item.itemsList[h.itemID];
 
 			if(i.placeInBlock(player.worldObj, getPosX(), getPosY(), getPosZ(), pos, h, true, side) && !player.capabilities.isCreativeMode) {
 				h.stackSize--;

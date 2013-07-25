@@ -3,7 +3,7 @@ package mrtjp.projectred.crafting.microblocks;
 import java.util.HashMap;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.multipart.microblocks.ItemMicroblock;
+import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -37,8 +37,8 @@ public class RecipeHollowCover implements IRecipe {
 			} else if (is.itemID != ProjectRed.blockMicrocontainer.blockID) {
 				return null;
 			} else if (inputPartID == -1) {
-				inputPartID = ItemMicroblock.getPartTypeID(is);
-			} else if (inputPartID != ItemMicroblock.getPartTypeID(is)) {
+				inputPartID = ItemBlockMicroblock.getPartTypeID(is);
+			} else if (inputPartID != ItemBlockMicroblock.getPartTypeID(is)) {
 				return null;
 			}
 		}
@@ -46,7 +46,7 @@ public class RecipeHollowCover implements IRecipe {
 		if (o == null) {
 			return null;
 		}
-		ItemStack rv = ItemMicroblock.getStackWithPartID(o.intValue());
+		ItemStack rv = ItemBlockMicroblock.getStackWithPartID(o.intValue());
 		rv.stackSize = 8;
 		return rv;
 	}

@@ -1,7 +1,7 @@
 package mrtjp.projectred.crafting.tools;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.multipart.microblocks.ItemMicroblock;
+import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -26,14 +26,14 @@ public class RecipeDrawPlate implements IRecipe {
 				if (stack == null) {
 					return null;
 				}
-				if (ItemMicroblock.getPartTypeID(stack) != 3145) {
+				if (ItemBlockMicroblock.getPartTypeID(stack) != 3145) {
 					return null;
 				}
 			} else if (i == 4) {
 				if (stack == null) {
 					return null;
 				}
-				if (ItemMicroblock.getPartTypeID(stack) != 3649) {
+				if (ItemBlockMicroblock.getPartTypeID(stack) != 3649) {
 					return null;
 				}
 			}
