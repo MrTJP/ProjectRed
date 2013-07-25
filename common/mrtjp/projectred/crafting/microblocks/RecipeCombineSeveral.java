@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.multipart.microblocks.ItemMicroblock;
-import mrtjp.projectred.multipart.microblocks.MicroblockSystem;
+import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
+import mrtjp.projectred.multipart.microblocks.MicroblockLibrary;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -39,13 +39,13 @@ public class RecipeCombineSeveral implements IRecipe {
 			if (is.itemID != ProjectRed.blockMicrocontainer.blockID)
 				return null;
 
-			int thisType = ItemMicroblock.getPartTypeID(is) & ~7;
+			int thisType = ItemBlockMicroblock.getPartTypeID(is) & ~7;
 			if (type == -1)
 				type = thisType;
 			else if (type != thisType)
 				return null;
 
-			total += (ItemMicroblock.getPartTypeID(is) & 7) + 1;
+			total += (ItemBlockMicroblock.getPartTypeID(is) & 7) + 1;
 		}
 
 		if (total == 0 || total == 1 || total > 8 || !fullMap.containsKey(type))
@@ -54,7 +54,7 @@ public class RecipeCombineSeveral implements IRecipe {
 		if (total == 8)
 			return ItemStack.copyItemStack(fullMap.get(type));
 		else
-			return MicroblockSystem.instance.partTypeIDToItemStack(type | (total - 1), 1);
+			return MicroblockLibrary.instance.partTypeIDToItemStack(type | (total - 1), 1);
 	}
 
 	@Override

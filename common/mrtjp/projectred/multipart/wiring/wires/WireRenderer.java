@@ -37,9 +37,10 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 		wra.z = wt.zCoord;
 		wra.renderBlocks = render;
 		wra.wireIcon = (wt.getSpecialIconForRender() == null ? type.wireSprites[0] : wt.getSpecialIconForRender());
+		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
 		CCRenderState.reset();
 		CCRenderState.setBrightness(wt.worldObj, wt.xCoord, wt.yCoord, wt.zCoord);
-		
+
 		if (wt.hasJacketedWire()) {
 			wra.model = type.jacketMap;
 			wra.setJacketRender(wt);
@@ -91,11 +92,10 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 
 		if (!WireDamageValues.isJacketed(damageValue)) {
 			wra.model = type.wireMap;
-			GL11.glPushMatrix();
-			GL11.glColor4f(1, 1, 1, 1);
-			GL11.glEnable(GL11.GL_LIGHTING);
-			CCRenderState.setColourOpaque(type.itemColour);
 			CCRenderState.startDrawing(7);
+			BasicRenderUtils.setFullColor();
+			BasicRenderUtils.setFullBrightness();
+			CCRenderState.setColourOpaque(type.itemColour);
 			wra.connectsN = true;
 			wra.connectsS = true;
 			wra.connectsW = true;
@@ -107,24 +107,17 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 			wra.isCenterCrossed = true;
 			wra.pushRender();
 			CCRenderState.draw();
-			GL11.glPopMatrix();
 		} else if (WireDamageValues.isJacketed(damageValue)){
 			wra.model = type.jacketMap;
 			wra.setInventoryJacketRender();
 			CCRenderState.startDrawing(7);
+			BasicRenderUtils.setFullColor();
+			BasicRenderUtils.setFullBrightness();
 			wra.pushJacketFrameRender();
 			CCRenderState.setColourOpaque(type.itemColour);
 			wra.pushJacketWireRender();
 			CCRenderState.draw();
 		}
-	}
-
-	private void renderWireJacketed(RenderBlocks render, EnumWire type, int sideMask, boolean nx, boolean px, boolean ny, boolean py, boolean nz, boolean pz) {
-
-	}
-
-	public static void renderWireSide(RotatedRenderer rt, RenderBlocks render, EnumWire type, boolean nz, boolean pz, boolean nx, boolean px, boolean nzCorner, boolean pzCorner, boolean nxCorner, boolean pxCorner, EnumWire nzCornerType, EnumWire pzCornerType, EnumWire nxCornerType, EnumWire pxCornerType, boolean forceEndCaps, boolean haveJacketed) {
-
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.event.ForgeSubscribe;
 
 import org.lwjgl.opengl.GL11;
@@ -55,7 +56,7 @@ public class MicroblockPlacementHighlightHandler {
 		}
 
 		if (holding != null && holding.itemID == ProjectRed.blockMicrocontainer.blockID) {
-			PartType<?> type = MicroblockSystem.parts.get(ItemMicroblock.getPartTypeID(holding));
+			PartType<?> type = MicroblockLibrary.parts.get(ItemBlockMicroblock.getPartTypeID(holding));
 			if (type != null) {
 				World world = ply.worldObj;
 				boolean ok = false;
@@ -226,7 +227,7 @@ public class MicroblockPlacementHighlightHandler {
 		return result;
 	}
 
-	static EnumPosition getStripPlacement(EntityPlayer ply, MovingObjectPosition pos, EnumPosition placingOn) {
+	static EnumPosition getStripPlacement(EntityPlayer player, MovingObjectPosition pos, EnumPosition placingOn) {
 		Vec3 hv = pos.hitVec.addVector(-pos.blockX, -pos.blockY, -pos.blockZ);
 		double x = hv.xCoord - 0.5;
 		double y = hv.yCoord - 0.5;
@@ -235,17 +236,11 @@ public class MicroblockPlacementHighlightHandler {
 		EnumPosition result = EnumPosition.EdgePXPY;
 		int sideHit = pos.sideHit;
 		if (placingOn != null) {
-			/*
-			 * switch(sideHit) { case Side.NX: if(placingOn.x.touchesNegative())
-			 * sideHit ^= 1; break; case Side.PX:
-			 * if(placingOn.x.touchesPositive()) sideHit ^= 1; break; case
-			 * Side.NY: if(placingOn.y.touchesNegative()) sideHit ^= 1; break;
-			 * case Side.PY: if(placingOn.y.touchesPositive()) sideHit ^= 1;
-			 * break; case Side.NZ: if(placingOn.z.touchesNegative()) sideHit ^=
-			 * 1; break; case Side.PZ: if(placingOn.z.touchesPositive()) sideHit
-			 * ^= 1; break; }
-			 */
 			sideHit ^= 1;
+		}
+		if (player.isSneaking()) {
+			// If player is sneaking, place allow placement after the hit vector.
+			sideHit = ForgeDirection.getOrientation(sideHit).getOpposite().ordinal();
 		}
 		switch (sideHit) {
 		case Dir.PX:

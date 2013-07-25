@@ -49,19 +49,19 @@ public class Configurator {
 		Configuration localConfig = new Configuration(file);
 		localConfig.load();
 		
-		block_microID = localConfig.getBlock("block_microID", 3145);
-		block_wireID = localConfig.getBlock("block_wireID", 3146);
-		block_gateID = localConfig.getBlock("block_gateID", 3147);
-		block_lampID = localConfig.getBlock("block_lightingID", 3128);
-		block_machinesID = localConfig.getBlock("block_machinesID", 3129);
-		block_lanternID = localConfig.getBlock("block_lanternID", 3130);
+		block_microID = localConfig.getBlock("block_microID", 2145);
+		block_wireID = localConfig.getBlock("block_wireID", 2146);
+		block_gateID = localConfig.getBlock("block_gateID", 2147);
+		block_lampID = localConfig.getBlock("block_lightingID", 2128);
+		block_machinesID = localConfig.getBlock("block_machinesID", 2129);
+		block_lanternID = localConfig.getBlock("block_lanternID", 2130);
 
-		item_sawID = localConfig.getItem("item_sawID", 11023);
-		item_screwdriverID = localConfig.getItem("item_screwdriverID", 11024);
-		item_componentsID = localConfig.getItem("item_componentsID", 11025);
-		item_drawplateID = localConfig.getItem("item_drawplateID", 11026);
-		item_woolginID = localConfig.getItem("item_woolgin", 11027);
-		item_backpackID = localConfig.getItem("item_backpack", 11028);
+		item_sawID = localConfig.getItem("item_sawID", 9023);
+		item_screwdriverID = localConfig.getItem("item_screwdriverID", 9024);
+		item_componentsID = localConfig.getItem("item_componentsID", 9025);
+		item_drawplateID = localConfig.getItem("item_drawplateID", 9026);
+		item_woolginID = localConfig.getItem("item_woolgin", 9027);
+		item_backpackID = localConfig.getItem("item_backpack", 9028);
 		
 		networkUpdateRange = localConfig.get("general", "Network Update Range", 50.0D);
 		networkUpdateRange.comment = "This is the distance in which players will be notified.  Lower if you experience lag.";

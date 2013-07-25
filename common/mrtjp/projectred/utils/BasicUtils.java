@@ -119,7 +119,7 @@ public class BasicUtils {
 		}
 	}
 
-	public static void ejectItem(World worldObj, ItemStack is, boolean violent, EntityPlayer player, int to_side, Coords coord) {
+	public static void dropItemFromLocation(World worldObj, ItemStack is, boolean violent, EntityPlayer player, int to_side, int tickDelay, Coords coord) {
 		if (worldObj.isRemote) {
 			return;
 		}
@@ -164,6 +164,7 @@ public class BasicUtils {
 		ent.motionX = (vel.xCoord * mult);
 		ent.motionY = (vel.yCoord * mult);
 		ent.motionZ = (vel.zCoord * mult);
+		ent.delayBeforeCanPickup = tickDelay;
 		worldObj.spawnEntityInWorld(ent);
 	}
 

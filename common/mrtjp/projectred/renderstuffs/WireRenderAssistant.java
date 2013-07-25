@@ -3,7 +3,9 @@ package mrtjp.projectred.renderstuffs;
 import java.util.Map;
 
 import mrtjp.projectred.multipart.wiring.wires.TileWire;
+import mrtjp.projectred.utils.codechicken.core.lighting.LightModel;
 import mrtjp.projectred.utils.codechicken.core.render.CCModel;
+import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
 import mrtjp.projectred.utils.codechicken.core.render.IconTransformation;
 import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
 import mrtjp.projectred.utils.codechicken.core.vec.TransformationList;
@@ -194,6 +196,13 @@ public class WireRenderAssistant {
 	
 	
 	/** Start Jacketed Rendering **/
+	public boolean isJacketCenterCrossed;
+	public boolean isJacketCenterNS;
+	public boolean isJacketCenterWE;
+	public boolean isJacketCenterUD;
+	
+	public boolean renderFrameEdges;
+	
 	public boolean jacketU;
 	public boolean jacketD;
 	public boolean jacketN;
@@ -209,15 +218,54 @@ public class WireRenderAssistant {
 		jacketS = t.wireConnectsInDirection(-1, 2);
 		jacketW = t.wireConnectsInDirection(-1, 5);
 		jacketE = t.wireConnectsInDirection(-1, 4);
+		
+		renderFrameEdges = true;
+		
+		// Utils
+		int connections = 0;
+		if (jacketD) {
+			connections++;
+		}
+		if (jacketU) {
+			connections++;
+		}
+		if (jacketN) {
+			connections++;
+		}
+		if (jacketS) {
+			connections++;
+		}
+		if (jacketW) {
+			connections++;
+		}
+		if (jacketE) {
+			connections++;
+		}
+		// Center
+		isJacketCenterCrossed = (jacketD && (jacketN || jacketS || jacketW || jacketE)) ||(jacketU && (jacketN || jacketS || jacketW || jacketE)) ||(jacketN && (jacketU || jacketD || jacketW || jacketE)) ||(jacketS && (jacketU || jacketD || jacketW || jacketE)) ||(jacketW && (jacketN || jacketS || jacketU || jacketD)) ||(jacketE && (jacketN || jacketS || jacketU || jacketD)) || (connections < 2);
+		isJacketCenterUD = !isJacketCenterCrossed && (jacketU && jacketD);
+		isJacketCenterNS = !isJacketCenterCrossed && (jacketN && jacketS);
+		isJacketCenterWE = !isJacketCenterCrossed && (jacketW && jacketE);
 	}
 	
 	public void setInventoryJacketRender() {
 		jacketU = jacketD = jacketN = jacketS = jacketW = jacketE = true;
+		isJacketCenterCrossed = true;
+		renderFrameEdges = false;
 	}
 	
 	public void pushJacketFrameRender() {
 		// Center
-		renderJacketModel(model.get("frame_center"));
+		if (isJacketCenterCrossed) {
+			renderJacketModel(model.get("frame_center"));
+		} else if (isJacketCenterUD) {
+			renderJacketModel(model.get("frame_center_UD"));
+		} else if (isJacketCenterNS) {
+			renderJacketModel(model.get("frame_center_NS"));
+		} else if (isJacketCenterWE) {
+			renderJacketModel(model.get("frame_center_WE"));
+		}
+
 		// Up
 		if (jacketU) {
 			renderJacketModel(model.get("frame_U"));
@@ -246,7 +294,16 @@ public class WireRenderAssistant {
 	
 	public void pushJacketWireRender() {
 		// Center
-		renderJacketModel(model.get("wire_center"));
+		if (isJacketCenterCrossed) {
+			renderJacketModel(model.get("wire_center"));
+		} else if (isJacketCenterUD) {
+			renderJacketModel(model.get("wire_center_UD"));
+		} else if (isJacketCenterNS) {
+			renderJacketModel(model.get("wire_center_NS"));
+		} else if (isJacketCenterWE) {
+			renderJacketModel(model.get("wire_center_WE"));
+		}
+
 		// Up
 		if (jacketU) {
 			renderJacketModel(model.get("wire_U"));

@@ -49,8 +49,8 @@ public class MicroblockItemRenderer implements IItemRenderer {
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-		int typen = ItemMicroblock.getPartTypeID(item);
-		PartType<?> pt = MicroblockSystem.parts.get(typen);
+		int typen = ItemBlockMicroblock.getPartTypeID(item);
+		PartType<?> pt = MicroblockLibrary.parts.get(typen);
 		// System.out.println(type+", "+typen+", "+pt);
 		if (pt == null)
 			return;

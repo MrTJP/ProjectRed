@@ -20,13 +20,12 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemMicroblock extends ItemBlock {
+public class ItemBlockMicroblock extends ItemBlock {
 
 	private BlockMultipartBase block;
 	private static final boolean DEBUG = Configurator.debugMode.getBoolean(false);
 
-
-	public ItemMicroblock(int id) {
+	public ItemBlockMicroblock(int id) {
 		super(id);
 		block = (BlockMultipartBase) Block.blocksList[itemID];
 	}
@@ -47,8 +46,9 @@ public class ItemMicroblock extends ItemBlock {
 	public static Placement getPlacement(ItemStack itemstack, EntityPlayer player, World world, int x, int y, int z, int dir) {
 		MovingObjectPosition ray = player.rayTrace(BasicUtils.getPlayerReach(player), 0);
 		if (ray == null) {
-			if (DEBUG)
+			if (DEBUG) {
 				System.out.println("null raytrace");
+			}
 			return null;
 		}
 
@@ -66,9 +66,9 @@ public class ItemMicroblock extends ItemBlock {
 		}
 
 		int oldblock = world.getBlockId(x, y, z);
-		if (oldblock == Block.snow.blockID)
+		if (oldblock == Block.snow.blockID) {
 			dir = 0;
-		else if (oldblock != Block.vine.blockID) {
+		} else if (oldblock != Block.vine.blockID) {
 			int dx = 0, dy = 0, dz = 0;
 			switch (dir) {
 			case Dir.NX:
@@ -109,7 +109,7 @@ public class ItemMicroblock extends ItemBlock {
 			return null;
 		}
 
-		PartType<?> type = MicroblockSystem.parts.get(getPartTypeID(itemstack));
+		PartType<?> type = MicroblockLibrary.parts.get(getPartTypeID(itemstack));
 		if (type == null) {
 			// invalid item
 			itemstack.stackSize = 0;
@@ -119,6 +119,7 @@ public class ItemMicroblock extends ItemBlock {
 		}
 		EnumPosition pos;
 		EnumPartClass clazz = type.getPartClass();
+
 		if (clazz == EnumPartClass.Panel || clazz == EnumPartClass.HollowPanel) {
 			pos = MicroblockPlacementHighlightHandler.getPanelPlacement(player, ray, rayPos);
 		} else if (clazz == EnumPartClass.Corner) {
@@ -126,11 +127,11 @@ public class ItemMicroblock extends ItemBlock {
 		} else if (clazz == EnumPartClass.Strip) {
 			pos = MicroblockPlacementHighlightHandler.getStripPlacement(player, ray, rayPos);
 		} else {
-			if (DEBUG)
+			if (DEBUG) {
 				System.out.println("invalid class");
+			}
 			return null;
 		}
-
 		return new Placement(x, y, z, pos);
 	}
 
@@ -173,7 +174,7 @@ public class ItemMicroblock extends ItemBlock {
 		}
 
 		int d = getPartTypeID(itemstack);
-		if (!MicroblockSystem.parts.containsKey(d)) {
+		if (!MicroblockLibrary.parts.containsKey(d)) {
 			if (DEBUG)
 				System.out.println("wrong part ID, got " + d);
 			return false;
@@ -200,7 +201,7 @@ public class ItemMicroblock extends ItemBlock {
 			addedTE = true;
 		}
 
-		PartType<?> type = MicroblockSystem.parts.get(d);
+		PartType<?> type = MicroblockLibrary.parts.get(d);
 		assert type != null : "No part type with ID " + d;
 
 		IMicroblockCoverSystem cover = ((IMicroblockSupporterTile) newTE).getCoverSystem();
@@ -230,7 +231,7 @@ public class ItemMicroblock extends ItemBlock {
 
 	@Override
 	public String getUnlocalizedName(ItemStack is) {
-		PartType<?> pt = MicroblockSystem.instance.getPartTypeByID(getPartTypeID(is));
+		PartType<?> pt = MicroblockLibrary.instance.getPartTypeByID(getPartTypeID(is));
 		return pt == null ? null : pt.getUnlocalizedName(is);
 	}
 

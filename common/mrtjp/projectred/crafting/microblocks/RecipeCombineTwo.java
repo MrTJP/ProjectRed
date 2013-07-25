@@ -3,7 +3,7 @@ package mrtjp.projectred.crafting.microblocks;
 import java.util.HashMap;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.multipart.microblocks.ItemMicroblock;
+import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -46,17 +46,17 @@ public class RecipeCombineTwo implements IRecipe {
 			return null;
 		}
 
-		if (ItemMicroblock.getPartTypeID(first) != ItemMicroblock.getPartTypeID(second)) {
+		if (ItemBlockMicroblock.getPartTypeID(first) != ItemBlockMicroblock.getPartTypeID(second)) {
 			return null;
 		}
 
-		Integer newPartID = partIDMap.get(ItemMicroblock.getPartTypeID(first));
+		Integer newPartID = partIDMap.get(ItemBlockMicroblock.getPartTypeID(first));
 
 		if (newPartID == null) {
 			return null;
 		}
 
-		return ItemMicroblock.getStackWithPartID(newPartID);
+		return ItemBlockMicroblock.getStackWithPartID(newPartID);
 
 	}
 

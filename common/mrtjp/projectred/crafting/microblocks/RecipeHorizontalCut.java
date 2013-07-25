@@ -3,7 +3,7 @@ package mrtjp.projectred.crafting.microblocks;
 import java.util.HashMap;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.multipart.microblocks.ItemMicroblock;
+import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
 import mrtjp.projectred.utils.BlockMetaPair;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
@@ -53,7 +53,7 @@ public class RecipeHorizontalCut implements IRecipe {
 		ItemStack block = i.getStackInRowAndColumn(xo + (flip ? 0 : 1), yo);
 		if (block == null)
 			return null;
-		int inputMeta = block.itemID == ProjectRed.blockMicrocontainer.blockID ? ItemMicroblock.getPartTypeID(block) : block.getItemDamage();
+		int inputMeta = block.itemID == ProjectRed.blockMicrocontainer.blockID ? ItemBlockMicroblock.getPartTypeID(block) : block.getItemDamage();
 		return ItemStack.copyItemStack(partIDMap.get(new BlockMetaPair(block.itemID, inputMeta)));
 	}
 

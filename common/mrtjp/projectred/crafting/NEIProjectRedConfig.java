@@ -10,8 +10,8 @@ import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemPart.EnumPart;
-import mrtjp.projectred.multipart.microblocks.ItemMicroblock;
-import mrtjp.projectred.multipart.microblocks.MicroblockSystem;
+import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
+import mrtjp.projectred.multipart.microblocks.MicroblockLibrary;
 import mrtjp.projectred.multipart.wiring.gates.EnumGate;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire;
 import net.minecraft.item.ItemStack;
@@ -25,8 +25,8 @@ public class NEIProjectRedConfig implements IConfigureNEI {
 		try {
 			// Microblock section
 			API.setMaxDamageException(ProjectRed.blockMicrocontainer.blockID, 1);
-			for (int i : MicroblockSystem.neiPartIDs) {
-				API.addNBTItem(ItemMicroblock.getStackWithPartID(i));
+			for (int i : MicroblockLibrary.neiPartIDs) {
+				API.addNBTItem(ItemBlockMicroblock.getStackWithPartID(i));
 			}
 			addSetRange("ProjectRed.Microblocks", new MultiItemRange().add(ProjectRed.blockMicrocontainer.blockID));
 

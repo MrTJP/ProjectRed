@@ -41,6 +41,9 @@ public class BasicRenderUtils {
 		Tessellator.instance.setBrightness(0x00F000F0);
 	}
 
+	public static void setFullColor() {
+		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
+	}
 	
 	static EntityItem entityItem;
 	static RenderItem uniformRenderItem = new RenderItem() {

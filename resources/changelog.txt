@@ -6,9 +6,15 @@ v3.0.2.31
 - Alloy wires render full strength in inventory.
 - The under side of all wires now render always, for when putting them on glass.
 - Fixed noSuchField server crash.
-- Fixed NASTY visual bug where the edges on things would be see-through (Chickenbones is a genius)
+- Fixed NASTY visual bug where the edges on things would be see-through (Chickenbones is a genius).
 - Fixed bug with water washing away wires.
 - Added new models for Jacketed cables.
+- Tweaked placement sounds.
+- New gate torch models.
+- Fixed gate lighting bug where the base would render darker than it should.
+- Added redstone particle effects on gate torches.
+- Microblocks now scan all candidate blocks and adds them if they are compatible. Notice: if the block IDs are changed for these blocks, the microblocks will also get wonky. Warning: this may mess up microblocks that are currently in use.
+- Strips can be placed between wires by sneaking.
 
 v3.0.1.30
 - New bundled cabling/wiring texture, by xchainblade.

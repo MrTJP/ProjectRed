@@ -3,7 +3,7 @@ package mrtjp.projectred.crafting.microblocks;
 import java.util.HashMap;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.multipart.microblocks.ItemMicroblock;
+import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -36,10 +36,10 @@ public class RecipeUnHollowCover implements IRecipe {
 		if (slot == -1)
 			return null;
 		ItemStack is = inventorycrafting.getStackInSlot(slot);
-		Integer o = partIDMap.get(ItemMicroblock.getPartTypeID(is));
+		Integer o = partIDMap.get(ItemBlockMicroblock.getPartTypeID(is));
 		if (o == null)
 			return null;
-		return ItemMicroblock.getStackWithPartID(o);
+		return ItemBlockMicroblock.getStackWithPartID(o);
 	}
 
 	@Override

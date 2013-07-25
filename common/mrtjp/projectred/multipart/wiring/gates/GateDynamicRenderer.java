@@ -70,8 +70,8 @@ public class GateDynamicRenderer extends TileEntitySpecialRenderer {
 	 * Render a centered torch glow on a gate using the RotatedRenderer.
 	 */
 	public static void renderGlowOnTorch(RotatedRenderer rt, float xOffset, float yOffset, float zOffset, RotatedPartModel torch) {
-		Tessellator.instance.setColorRGBA(255, 0, 0, 125);
-		rt.renderPartModelWithAlpha(torch, "glow", ((16f - xOffset) / 16f) + .03f, (yOffset) / 16f, ((16f - zOffset) / 16f) + .03f, -1, -1);
+		rt.renderPartModel(torch, "glow1", ((16f - xOffset) / 16f) + .03f, (yOffset) / 16f, ((16f - zOffset) / 16f) + .03f, -1, -1, false);
+		rt.renderPartModel(torch, "glow2", ((16f - xOffset) / 16f) + .03f, (yOffset) / 16f, ((16f - zOffset) / 16f) + .03f, -1, -1, false);
 	}
 
 	/**

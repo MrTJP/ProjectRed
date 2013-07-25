@@ -65,7 +65,7 @@ public class Part {
 
 	public static Part readFromNBT(NBTBase tag) {
 		NBTTagCompound c = (NBTTagCompound)tag;
-		PartType<?> type = MicroblockSystem.getMicroblockSystem().getPartTypeByID(c.getInteger("type"));
+		PartType<?> type = MicroblockLibrary.getMicroblockSystem().getPartTypeByID(c.getInteger("type"));
 		if(type == null)
 			return null;
 		EnumPosition pos = EnumPosition.values()[c.getByte("pos")];

@@ -634,7 +634,7 @@ public class TileGate extends TileCoverableBase implements IRedstoneUpdatable, I
 			Block gate = Block.blocksList[id];
 			if (gate != null) {
 				ItemStack dropped = new ItemStack(ProjectRed.blockGate, 1, type.ordinal());
-				BasicUtils.ejectItem(worldObj, dropped, false, null, getSide(), new Coords(this));
+				BasicUtils.dropItemFromLocation(worldObj, dropped, false, null, getSide(), 10, new Coords(this));
 				removeGate();
 			}
 		}

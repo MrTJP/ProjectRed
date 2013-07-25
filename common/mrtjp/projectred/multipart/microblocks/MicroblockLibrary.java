@@ -1,7 +1,11 @@
 package mrtjp.projectred.multipart.microblocks;
 
+import java.awt.List;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.microblocks.RecipeCombineSeveral;
@@ -17,34 +21,24 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StringTranslate;
 import net.minecraft.world.World;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-public class MicroblockSystem implements IMicroblockSystem {
+public class MicroblockLibrary implements IMicroblockLibrary {
 
-	//Map of all microblock parts.
+	// Map of all microblock parts.
 	public final static HashMap<Integer, PartType<?>> parts = new HashMap<Integer, PartType<?>>();
 
-	public static MicroblockSystem instance;
+	public static MicroblockLibrary instance;
 
 	// List of all part ids, used in for loop to add to NEI mostly.
 	public static ArrayList<Integer> neiPartIDs = new ArrayList<Integer>();
 
-	/**
-	 * Map of BlockID to list of subblocks.
-	 * SubBlock list index:
-	 * 0 = 
-	 * 1 = 
-	 * 2 = 
-	 * 3 = 
-	 * 4 = 
-	 * 5 = 
-	 * 6 = 
-	 * 7 = 
-	 * 8 = 
-	 * 9 = 
-	 */
-	public static HashMap<Integer, ArrayList<Integer>>blockIDParts = new HashMap<Integer, ArrayList<Integer>>();
 	public static int neiMaxDamage = 0;
+
 	public void initializeParts() {
 		registerManualParts(1, Block.stone);
 		registerManualParts(2, Block.grass);
@@ -138,6 +132,49 @@ public class MicroblockSystem implements IMicroblockSystem {
 		registerManualParts(90, Block.stoneDoubleSlab, 0, Block.stoneSingleSlab, 0);
 	}
 
+	public void initializeBlockScan() {
+		ArrayList<Integer> IDBlacklist = new ArrayList<Integer>();
+		ArrayList<Integer> IDWhitelist = new ArrayList<Integer>();
+		
+		// TODO: add config option to manually add these
+		IDBlacklist.add(Block.bedrock.blockID);
+		IDBlacklist.add(Block.grass.blockID);
+		IDBlacklist.add(Block.leaves.blockID);
+		IDBlacklist.add(Block.sponge.blockID);
+		IDBlacklist.add(Block.lockedChest.blockID);
+		IDWhitelist.add(Block.glass.blockID);
+		
+		for (Field f : Block.class.getDeclaredFields()) {
+			if (Modifier.isStatic(f.getModifiers()) && Block.class.isAssignableFrom(f.getType())) {
+				Block b;
+				try {
+					b = (Block) f.get(null);
+				} catch (Exception e) {
+					continue;
+				}
+				if (IDBlacklist.contains(b.blockID)) {
+					continue;
+				}
+				if ((!b.isOpaqueCube() || b.hasTileEntity(0) || !b.renderAsNormalBlock()) && !IDWhitelist.contains(b.blockID)) {
+					continue;
+				}
+
+				ItemStack candidate = new ItemStack(b, 1);
+				if (candidate.getHasSubtypes()) {
+					Set<String> names = Sets.newHashSet();
+					for (int meta = 0; meta < 16; meta++) {
+						ItemStack is = new ItemStack(b, 1, meta);
+						if (!Strings.isNullOrEmpty(is.getItemName()) && names.add(is.getItemName())) {
+							this.addCuttableBlock(b, meta);
+						}
+					}
+				} else {
+					this.addCuttableBlock(b, 0);
+				}
+			}
+		}
+	}
+
 	private void registerManualParts(int n, Block block, int blockMeta) {
 		registerManualParts(n, block, blockMeta, block, blockMeta);
 	}
@@ -196,8 +233,7 @@ public class MicroblockSystem implements IMicroblockSystem {
 		if (name == null) {
 			if (ignoreNameCheck) {
 				name = "Unknown";
-			}
-			else
+			} else
 				return;
 		}
 
@@ -208,10 +244,10 @@ public class MicroblockSystem implements IMicroblockSystem {
 			RecipeUnHollowCover.addMap(partIDBase + k + 24, partIDBase + k);
 
 			// cutting panels into strips
-			RecipeHorizontalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + k), ItemMicroblock.getStackWithPartID(partIDBase + k + 8, 2));
+			RecipeHorizontalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + k), ItemBlockMicroblock.getStackWithPartID(partIDBase + k + 8, 2));
 
 			// cutting strips into corners
-			RecipeHorizontalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + k + 8), ItemMicroblock.getStackWithPartID(partIDBase + k + 16, 2));
+			RecipeHorizontalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + k + 8), ItemBlockMicroblock.getStackWithPartID(partIDBase + k + 16, 2));
 
 			// combining corners into strips
 			RecipeCombineTwo.addMap(partIDBase + k + 16, partIDBase + k + 8);
@@ -227,16 +263,16 @@ public class MicroblockSystem implements IMicroblockSystem {
 		RecipeCombineSeveral.addMap(partIDBase + 24, new ItemStack(craftingBlock, 1, craftingMeta));
 
 		// cutting full blocks/slabs/panels
-		RecipeVerticalCut.addMap(new BlockMetaPair(craftingBlock.blockID, craftingMeta), ItemMicroblock.getStackWithPartID(partIDBase + 3, 2));
-		RecipeVerticalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + 3), ItemMicroblock.getStackWithPartID(partIDBase + 1, 2));
-		RecipeVerticalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + 1), ItemMicroblock.getStackWithPartID(partIDBase + 0, 2));
+		RecipeVerticalCut.addMap(new BlockMetaPair(craftingBlock.blockID, craftingMeta), ItemBlockMicroblock.getStackWithPartID(partIDBase + 3, 2));
+		RecipeVerticalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + 3), ItemBlockMicroblock.getStackWithPartID(partIDBase + 1, 2));
+		RecipeVerticalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + 1), ItemBlockMicroblock.getStackWithPartID(partIDBase + 0, 2));
 
 		// cutting hollow slabs/panels
-		RecipeVerticalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + 27), ItemMicroblock.getStackWithPartID(partIDBase + 25, 2));
-		RecipeVerticalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + 25), ItemMicroblock.getStackWithPartID(partIDBase + 24, 2));
+		RecipeVerticalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + 27), ItemBlockMicroblock.getStackWithPartID(partIDBase + 25, 2));
+		RecipeVerticalCut.addMap(new BlockMetaPair(ProjectRed.blockMicrocontainer.blockID, partIDBase + 25), ItemBlockMicroblock.getStackWithPartID(partIDBase + 24, 2));
 
-		
-		// Actually register the parts, and add them to the hashmap of id to list of parts.
+		// Actually register the parts, and add them to the hashmap of id to
+		// list of parts.
 		ArrayList<Integer> subblocks = new ArrayList<Integer>();
 
 		for (int k = 0; k < blockparts.length; k++)
@@ -244,7 +280,7 @@ public class MicroblockSystem implements IMicroblockSystem {
 				String unlocalizedName = "projectred.microblocks." + (partIDBase + k);
 				String localizedName = blockparts[k].prefix + name + blockparts[k].suffix;
 				LanguageRegistry.instance().addStringLocalization(unlocalizedName + ".name", localizedName);
-				
+
 				PartType<Part> type = new DefaultPartType(partIDBase + k, blockparts[k].clazz, blockparts[k].size, unlocalizedName, block, meta);
 				registerPartType(type);
 			}
@@ -285,17 +321,17 @@ public class MicroblockSystem implements IMicroblockSystem {
 	public ItemStack partTypeIDToItemStack(int id, int stackSize) throws IllegalArgumentException {
 		if (!parts.containsKey(id))
 			throw new IllegalArgumentException("No part with ID " + id + " (hex: " + Integer.toHexString(id) + ")");
-		return ItemMicroblock.getStackWithPartID(id, stackSize);
+		return ItemBlockMicroblock.getStackWithPartID(id, stackSize);
 	}
 
 	@Override
 	public int itemStackToPartID(ItemStack stack) throws NullPointerException, IllegalArgumentException {
 		if (stack.itemID != ProjectRed.blockMicrocontainer.blockID)
 			throw new IllegalArgumentException("Not a stack of microblocks");
-		return ItemMicroblock.getPartTypeID(stack);
+		return ItemBlockMicroblock.getPartTypeID(stack);
 	}
 
-	public static synchronized IMicroblockSystem getMicroblockSystem() {
+	public static synchronized IMicroblockLibrary getMicroblockSystem() {
 		return instance;
 	}
 
