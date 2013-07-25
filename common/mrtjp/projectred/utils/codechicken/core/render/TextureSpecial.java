@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.utils.codechicken.core.render.SpriteSheetManager.SpriteSheet;
 import mrtjp.projectred.utils.codechicken.core.render.TextureUtils.IIconRegister;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -17,6 +15,8 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureStitched;
 import net.minecraft.client.texturepacks.ITexturePack;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class TextureSpecial extends TextureStitched implements IIconRegister

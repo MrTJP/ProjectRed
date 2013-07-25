@@ -42,7 +42,6 @@ import mrtjp.projectred.network.PacketHandler;
 import mrtjp.projectred.tiles.TileLamp;
 import mrtjp.projectred.tiles.TileLantern;
 import mrtjp.projectred.utils.BasicUtils;
-import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;

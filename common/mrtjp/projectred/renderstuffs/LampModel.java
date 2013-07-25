@@ -1,15 +1,10 @@
 package mrtjp.projectred.renderstuffs;
 
-import org.lwjgl.opengl.GL11;
-
-import mrtjp.projectred.blocks.BlockLamp;
-import mrtjp.projectred.blocks.BlockLamp.EnumLamp;
-import mrtjp.projectred.tiles.TileLamp;
 import mrtjp.projectred.utils.Color;
-import net.minecraft.util.Icon;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
-import cpw.mods.fml.client.FMLClientHandler;
+
+import org.lwjgl.opengl.GL11;
 
 public class LampModel {
 

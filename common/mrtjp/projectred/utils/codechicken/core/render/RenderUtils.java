@@ -2,28 +2,27 @@ package mrtjp.projectred.utils.codechicken.core.render;
 
 import static net.minecraftforge.client.IItemRenderer.ItemRenderType.ENTITY;
 import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D;
-
-import org.lwjgl.opengl.GL11;
-
 import mrtjp.projectred.utils.codechicken.core.vec.Cuboid6;
 import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
 import mrtjp.projectred.utils.codechicken.core.vec.Transformation;
 import mrtjp.projectred.utils.codechicken.core.vec.Vector3;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.Icon;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Icon;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.liquids.LiquidStack;
+
+import org.lwjgl.opengl.GL11;
 
 public class RenderUtils
 {

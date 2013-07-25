@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import scala.Array;
-
 import mrtjp.projectred.utils.BasicUtils;
 import net.minecraft.item.ItemStack;
 

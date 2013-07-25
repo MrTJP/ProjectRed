@@ -1,22 +1,19 @@
 package mrtjp.projectred.core;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import mrtjp.projectred.utils.Coords;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.ForgeSubscribe;
+
 import org.lwjgl.opengl.GL11;
 
 public class Messenger {

@@ -1,16 +1,12 @@
 package mrtjp.projectred.tiles;
 
-import java.util.Random;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import mrtjp.projectred.interfaces.wiring.IRedstoneUpdatable;
-import mrtjp.projectred.network.PacketHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
 public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 

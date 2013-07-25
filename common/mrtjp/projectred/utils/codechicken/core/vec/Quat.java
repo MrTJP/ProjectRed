@@ -3,7 +3,9 @@ package mrtjp.projectred.utils.codechicken.core.vec;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import codechicken.core.alg.MathHelper;
+
+import mrtjp.projectred.utils.codechicken.core.alg.MathHelper;
+
 
 public class Quat
 {

@@ -6,7 +6,7 @@ import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
 import mrtjp.projectred.utils.codechicken.core.vec.Scale;
 import mrtjp.projectred.utils.codechicken.core.vec.Vector3;
 
-import static codechicken.core.alg.MathHelper.phi;
+import static mrtjp.projectred.utils.codechicken.core.alg.MathHelper.phi;
 
 public class CCModelLibrary
 {

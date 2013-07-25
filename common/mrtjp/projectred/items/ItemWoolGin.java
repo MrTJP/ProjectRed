@@ -2,7 +2,6 @@ package mrtjp.projectred.items;
 
 import mrtjp.projectred.crafting.ProjectRedTabs;
 import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 
 public class ItemWoolGin extends ItemCraftingDamage {
 

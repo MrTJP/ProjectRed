@@ -1,13 +1,13 @@
 package mrtjp.projectred.utils.codechicken.core.lighting;
 
+import mrtjp.projectred.utils.codechicken.core.colour.Colour;
+import mrtjp.projectred.utils.codechicken.core.colour.ColourRGBA;
+import mrtjp.projectred.utils.codechicken.core.render.CCModel;
+import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
+import mrtjp.projectred.utils.codechicken.core.render.IVertexModifier;
+import mrtjp.projectred.utils.codechicken.core.render.UV;
+import mrtjp.projectred.utils.codechicken.core.vec.Vector3;
 import net.minecraft.client.renderer.Tessellator;
-import codechicken.core.colour.Colour;
-import codechicken.core.colour.ColourRGBA;
-import codechicken.core.render.CCModel;
-import codechicken.core.render.CCRenderState;
-import codechicken.core.render.IVertexModifier;
-import codechicken.core.render.UV;
-import codechicken.core.vec.Vector3;
 
 /**
  * Faster precomputed version of LightModel that only works for axis planar sides

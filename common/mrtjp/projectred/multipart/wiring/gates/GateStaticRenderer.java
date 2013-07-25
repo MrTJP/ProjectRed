@@ -1,14 +1,12 @@
 package mrtjp.projectred.multipart.wiring.gates;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
-import mrtjp.projectred.network.ClientProxy;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.IItemRenderer;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
@@ -46,6 +44,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 		rotatedRenderer.renderBlocks = render;
 
 		CCRenderState.reset();
+		CCRenderState.changeTexture("/terrain.png");
 		CCRenderState.setColour(0);
 		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
 		CCRenderState.setBrightness(te.worldObj, te.xCoord, te.yCoord, te.zCoord);

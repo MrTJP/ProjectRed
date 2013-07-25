@@ -4,11 +4,10 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
+import mrtjp.projectred.utils.codechicken.core.alg.MathHelper;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
-
-import codechicken.core.alg.MathHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

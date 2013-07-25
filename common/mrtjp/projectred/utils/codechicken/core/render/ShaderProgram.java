@@ -1,6 +1,20 @@
 package mrtjp.projectred.utils.codechicken.core.render;
 
-import static org.lwjgl.opengl.ARBShaderObjects.*;
+import static org.lwjgl.opengl.ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB;
+import static org.lwjgl.opengl.ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB;
+import static org.lwjgl.opengl.ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB;
+import static org.lwjgl.opengl.ARBShaderObjects.GL_OBJECT_VALIDATE_STATUS_ARB;
+import static org.lwjgl.opengl.ARBShaderObjects.glAttachObjectARB;
+import static org.lwjgl.opengl.ARBShaderObjects.glCompileShaderARB;
+import static org.lwjgl.opengl.ARBShaderObjects.glCreateProgramObjectARB;
+import static org.lwjgl.opengl.ARBShaderObjects.glCreateShaderObjectARB;
+import static org.lwjgl.opengl.ARBShaderObjects.glDeleteObjectARB;
+import static org.lwjgl.opengl.ARBShaderObjects.glGetInfoLogARB;
+import static org.lwjgl.opengl.ARBShaderObjects.glGetObjectParameteriARB;
+import static org.lwjgl.opengl.ARBShaderObjects.glLinkProgramARB;
+import static org.lwjgl.opengl.ARBShaderObjects.glShaderSourceARB;
+import static org.lwjgl.opengl.ARBShaderObjects.glUseProgramObjectARB;
+import static org.lwjgl.opengl.ARBShaderObjects.glValidateProgramARB;
 
 import java.io.BufferedReader;
 import java.io.IOException;

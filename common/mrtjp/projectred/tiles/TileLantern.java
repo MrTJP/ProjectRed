@@ -1,13 +1,10 @@
 package mrtjp.projectred.tiles;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.network.PacketHandler;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
 import net.minecraft.block.Block;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;

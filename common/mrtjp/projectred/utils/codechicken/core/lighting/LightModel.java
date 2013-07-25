@@ -4,7 +4,6 @@ import mrtjp.projectred.utils.codechicken.core.render.CCModel;
 import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
 import mrtjp.projectred.utils.codechicken.core.render.IVertexModifier;
 import mrtjp.projectred.utils.codechicken.core.render.UV;
-import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
 import mrtjp.projectred.utils.codechicken.core.vec.Vector3;
 import net.minecraft.client.renderer.Tessellator;
 
@@ -85,12 +84,5 @@ public class LightModel implements IVertexModifier {
 	@Override
 	public boolean needsNormals() {
 		return true;
-	}
-
-	public PlanarLightModel reducePlanar() {
-		int[] colours = new int[6];
-		for (int i = 0; i < 6; i++)
-			colours[i] = apply(-1, Rotation.axes[i]);
-		return new PlanarLightModel(colours);
 	}
 }

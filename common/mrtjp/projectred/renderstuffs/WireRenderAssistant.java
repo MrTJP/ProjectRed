@@ -3,9 +3,7 @@ package mrtjp.projectred.renderstuffs;
 import java.util.Map;
 
 import mrtjp.projectred.multipart.wiring.wires.TileWire;
-import mrtjp.projectred.utils.codechicken.core.lighting.LightModel;
 import mrtjp.projectred.utils.codechicken.core.render.CCModel;
-import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
 import mrtjp.projectred.utils.codechicken.core.render.IconTransformation;
 import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
 import mrtjp.projectred.utils.codechicken.core.vec.TransformationList;

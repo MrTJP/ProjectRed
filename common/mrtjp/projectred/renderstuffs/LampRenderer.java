@@ -1,20 +1,8 @@
 package mrtjp.projectred.renderstuffs;
 
-import mrtjp.projectred.blocks.BlockLamp;
 import mrtjp.projectred.tiles.TileLamp;
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.MinecraftForgeClient;
-
-import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class LampRenderer extends TileEntitySpecialRenderer {
 	public static final LampRenderer instance = new LampRenderer();

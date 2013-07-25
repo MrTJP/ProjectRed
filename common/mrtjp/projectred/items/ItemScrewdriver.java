@@ -3,12 +3,10 @@ package mrtjp.projectred.items;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.ProjectRedTabs;
 import mrtjp.projectred.multipart.wiring.gates.TileGate;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class ItemScrewdriver extends Item {
 	public ItemScrewdriver(int id) {

@@ -1,8 +1,6 @@
 package mrtjp.projectred.multipart.wiring.gates;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
-import mrtjp.projectred.multipart.wiring.wires.EnumWire;
-import mrtjp.projectred.renderstuffs.WireRenderAssistant;
 import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
 import net.minecraft.client.renderer.texture.IconRegister;
 

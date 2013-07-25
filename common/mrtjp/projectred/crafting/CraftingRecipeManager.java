@@ -1,9 +1,5 @@
 package mrtjp.projectred.crafting;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.blocks.BlockLamp.EnumLamp;
 import mrtjp.projectred.blocks.BlockLantern.EnumLantern;

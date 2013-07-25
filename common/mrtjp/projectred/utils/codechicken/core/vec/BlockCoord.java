@@ -1,7 +1,7 @@
 package mrtjp.projectred.utils.codechicken.core.vec;
 
+import mrtjp.projectred.utils.codechicken.core.alg.MathHelper;
 import net.minecraft.tileentity.TileEntity;
-import codechicken.core.alg.MathHelper;
 
 public class BlockCoord implements Comparable<BlockCoord>
 {

@@ -1,10 +1,7 @@
 package mrtjp.projectred.blocks;
 
-import mrtjp.projectred.blocks.BlockLamp.EnumLamp;
 import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
 import mrtjp.projectred.crafting.ProjectRedTabs;
-import mrtjp.projectred.tiles.TileLamp;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;

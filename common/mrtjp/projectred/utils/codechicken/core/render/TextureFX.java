@@ -1,9 +1,9 @@
 package mrtjp.projectred.utils.codechicken.core.render;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.utils.codechicken.core.render.SpriteSheetManager.SpriteSheet;
 import net.minecraft.client.Minecraft;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class TextureFX

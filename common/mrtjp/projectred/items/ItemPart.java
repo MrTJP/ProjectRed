@@ -1,6 +1,5 @@
 package mrtjp.projectred.items;
 
-import java.util.Arrays;
 import java.util.List;
 
 import mrtjp.projectred.ProjectRed;
