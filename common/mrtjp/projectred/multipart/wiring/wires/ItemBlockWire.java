@@ -8,6 +8,7 @@ import mrtjp.projectred.multipart.microblocks.Part;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
+import mrtjp.projectred.utils.Coords;
 import mrtjp.projectred.utils.Dir;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -41,7 +42,7 @@ public class ItemBlockWire extends ItemBlock {
 
 	@Override
 	public boolean onItemUse(ItemStack stack, EntityPlayer ply, World w, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
-		int var11 = w.getBlockId(x, y, z);
+		int blockId = w.getBlockId(x, y, z);
 		EnumWire type = WireDamageValues.getType(stack.getItemDamage());
 		if (type == null)
 			return false;
@@ -61,9 +62,9 @@ public class ItemBlockWire extends ItemBlock {
 
 			Block microblockContainerBlock = ProjectRed.blockMicrocontainer;
 
-			if (var11 == Block.snow.blockID)
+			if (blockId == Block.snow.blockID)
 				side = 1;
-			else if (!mergeIntoWireTile && var11 != Block.vine.blockID && var11 != Block.tallGrass.blockID && var11 != Block.deadBush.blockID && (Block.blocksList[var11] == null || !Block.blocksList[var11].isBlockReplaceable(w, x, y, z))) {
+			else if (!mergeIntoWireTile && blockId != Block.vine.blockID && blockId != Block.tallGrass.blockID && blockId != Block.deadBush.blockID && (Block.blocksList[blockId] == null || !Block.blocksList[blockId].isBlockReplaceable(w, x, y, z))) {
 				switch (side) {
 				case Dir.NX:
 					x--;
@@ -170,7 +171,7 @@ public class ItemBlockWire extends ItemBlock {
 				}
 			}
 
-			if (!mergeIntoWireTile && var11 != Block.snow.blockID && var11 != Block.vine.blockID && var11 != Block.tallGrass.blockID && var11 != Block.deadBush.blockID && (Block.blocksList[var11] == null || !Block.blocksList[var11].isBlockReplaceable(w, x, y, z))) {
+			if (!mergeIntoWireTile && blockId != Block.snow.blockID && blockId != Block.vine.blockID && blockId != Block.tallGrass.blockID && blockId != Block.deadBush.blockID && (Block.blocksList[blockId] == null || !Block.blocksList[blockId].isBlockReplaceable(w, x, y, z))) {
 				switch (side) {
 				case Dir.NX:
 					x--;
@@ -191,6 +192,12 @@ public class ItemBlockWire extends ItemBlock {
 					z++;
 					break;
 				}
+			}
+
+			int newBlockID = w.getBlockId(x, y, z);
+			TileWire newTile = (TileWire) BasicUtils.getTileEntity(w, new Coords(x, y, z), TileWire.class);
+			if (blockId == ProjectRed.blockWire.blockID && newTile != null && newTile.canAddJacketedWire(type)) {
+				mergeIntoWireTile = true;
 			}
 
 			mergeIntoMicroblockTile = microblockContainerBlock != null && w.getBlockId(x, y, z) == microblockContainerBlock.blockID;
@@ -242,7 +249,6 @@ public class ItemBlockWire extends ItemBlock {
 				w.setBlockTileEntity(x, y, z, tile);
 				w.markBlockForUpdate(x, y, z);
 
-				Block var12 = Block.blocksList[itemID];
 				w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() + 1.0F) / 2.0F, Block.soundGlassFootstep.getPitch() * 0.8F);
 				--stack.stackSize;
 
@@ -271,7 +277,7 @@ public class ItemBlockWire extends ItemBlock {
 
 	@Override
 	public boolean canPlaceItemBlockOnSide(World w, int x, int y, int z, int side, EntityPlayer ply, ItemStack stack) {
-		int var11 = w.getBlockId(x, y, z);
+		int blockID = w.getBlockId(x, y, z);
 
 		EnumWire type = WireDamageValues.getType(stack.getItemDamage());
 		if (type == null)
@@ -287,9 +293,9 @@ public class ItemBlockWire extends ItemBlock {
 
 			Block microblockContainerBlock = ProjectRed.blockMicrocontainer;
 
-			if (var11 == Block.snow.blockID)
+			if (blockID == Block.snow.blockID)
 				side = 1;
-			else if (!mergeIntoWireTile && !mergeIntoMicroblockTile && var11 != Block.vine.blockID && var11 != Block.tallGrass.blockID && var11 != Block.deadBush.blockID && (Block.blocksList[var11] == null || !Block.blocksList[var11].isBlockReplaceable(w, x, y, z))) {
+			else if (!mergeIntoWireTile && !mergeIntoMicroblockTile && blockID != Block.vine.blockID && blockID != Block.tallGrass.blockID && blockID != Block.deadBush.blockID && (Block.blocksList[blockID] == null || !Block.blocksList[blockID].isBlockReplaceable(w, x, y, z))) {
 				switch (side) {
 				case Dir.NX:
 					x--;
@@ -318,12 +324,13 @@ public class ItemBlockWire extends ItemBlock {
 
 		} else {
 			// jacketed wire
-			if (var11 == ProjectRed.blockWire.blockID && ((TileWire) w.getBlockTileEntity(x, y, z)).canAddJacketedWire(type))
+			if (blockID == ProjectRed.blockWire.blockID && ((TileWire) w.getBlockTileEntity(x, y, z)).canAddJacketedWire(type)) {
 				return true;
+			}
 
 			Block microblockContainerBlock = ProjectRed.blockMicrocontainer;
 
-			if (var11 != Block.snow.blockID && var11 != Block.vine.blockID && var11 != Block.tallGrass.blockID && var11 != Block.deadBush.blockID && (Block.blocksList[var11] == null || !Block.blocksList[var11].isBlockReplaceable(w, x, y, z))) {
+			if (blockID != Block.snow.blockID && blockID != Block.vine.blockID && blockID != Block.tallGrass.blockID && blockID != Block.deadBush.blockID && (Block.blocksList[blockID] == null || !Block.blocksList[blockID].isBlockReplaceable(w, x, y, z))) {
 				switch (side) {
 				case Dir.NX:
 					x--;
@@ -344,6 +351,13 @@ public class ItemBlockWire extends ItemBlock {
 					z++;
 					break;
 				}
+			}
+
+			// Recheck if this block is a wire.
+			int newBlockID = w.getBlockId(x, y, z);
+			TileWire newTile = (TileWire) BasicUtils.getTileEntity(w, new Coords(x, y, z), TileWire.class);
+			if (blockID == ProjectRed.blockWire.blockID && newTile != null && newTile.canAddJacketedWire(type)) {
+				return true;
 			}
 
 			boolean mergeIntoMicroblockTile = microblockContainerBlock != null && w.getBlockId(x, y, z) == microblockContainerBlock.blockID;
