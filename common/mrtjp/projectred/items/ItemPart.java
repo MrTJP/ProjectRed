@@ -65,6 +65,8 @@ public class ItemPart extends Item {
 	}
 
 	public enum EnumPart {
+
+		//Gate Materials
 		PLATE("Circuit Plate", "partplate"),
 		CONDUCTIVEPLATE("Conductive Plate", "partconductiveplate"),
 		WIREDPLATE("Wired Plate", "partwiredplate"),
@@ -76,6 +78,7 @@ public class ItemPart extends Item {
 		ENERGIZEDSILICONCHIP("Energized Silicon Chip", "partenergizedsiliconchip"),
 		PLATFORMEDPLATE("Platformed Plate", "partplatformedplate"),
 
+		//Basic Materials
 		REDINGOT("Red Alloy Ingot", "partredingot"),
 		SILICONBOULE("Silicon Boule", "partboule"),
 		SILICON("Silicon", "partsilicon"),
@@ -86,6 +89,7 @@ public class ItemPart extends Item {
 		IRONCOIL("Iron Coil", "partironcoil"),
 		GOLDCOIL("Golden Coil", "partgoldcoil"),
 
+		//Illumar
 		WHITEILLUMAR("White Illumar", "partwhitedust"),
 		ORANGEILLUMAR("Orange Illumar", "partorangedust"),
 		MAGENTAILLUMAR("Magenta Illumar", "partmagentadust"),
@@ -103,13 +107,18 @@ public class ItemPart extends Item {
 		REDILLUMAR("Red Illumar", "partreddust"),
 		BLACKILLUMAR("Black Illumar", "partblackdust"),
 
+		//Tools
 		WOVENCLOTH("Woven Cloth", "partcloth"),
+		
+		//Raw Materials
+		COPPERINGOT("Copper Ingot", "partcopperingot"),
+		BRASS("Brass", "partbrass"),
 
 		INVALID("ERROR INVALID PART", "partINVALID"), ;
 
 		public String fullName;
 		public String unlocalName;
-		public static final EnumPart[] VALID_PARTS = { PLATE, CONDUCTIVEPLATE, WIREDPLATE, BUNDLEDPLATE, ANODE, CATHODE, POINTER, SILICONCHIP, ENERGIZEDSILICONCHIP, PLATFORMEDPLATE, REDINGOT, SILICONBOULE, SILICON, INFUSEDSILICON, ENERGIZEDSILICON, MOTOR, COPPERCOIL, IRONCOIL, GOLDCOIL, WHITEILLUMAR, ORANGEILLUMAR, MAGENTAILLUMAR, LIGHTBLUEILLUMAR, YELLOWILLUMAR, LIMEILLUMAR, PINKILLUMAR, GREYILLUMAR, LIGHTGREYILLUMAR, CYANILLUMAR, PURPLEILLUMAR, BLUEILLUMAR, BROWNILLUMAR, GREENILLUMAR, REDILLUMAR, BLACKILLUMAR, WOVENCLOTH };
+		public static final EnumPart[] VALID_PARTS = { PLATE, CONDUCTIVEPLATE, WIREDPLATE, BUNDLEDPLATE, ANODE, CATHODE, POINTER, SILICONCHIP, ENERGIZEDSILICONCHIP, PLATFORMEDPLATE, REDINGOT, SILICONBOULE, SILICON, INFUSEDSILICON, ENERGIZEDSILICON, MOTOR, COPPERCOIL, IRONCOIL, GOLDCOIL, WHITEILLUMAR, ORANGEILLUMAR, MAGENTAILLUMAR, LIGHTBLUEILLUMAR, YELLOWILLUMAR, LIMEILLUMAR, PINKILLUMAR, GREYILLUMAR, LIGHTGREYILLUMAR, CYANILLUMAR, PURPLEILLUMAR, BLUEILLUMAR, BROWNILLUMAR, GREENILLUMAR, REDILLUMAR, BLACKILLUMAR, WOVENCLOTH, COPPERINGOT, BRASS  };
 		public static final EnumPart[] ILLUMAR_PARTS = { WHITEILLUMAR, ORANGEILLUMAR, MAGENTAILLUMAR, LIGHTBLUEILLUMAR, YELLOWILLUMAR, LIMEILLUMAR, PINKILLUMAR, GREYILLUMAR, LIGHTGREYILLUMAR, CYANILLUMAR, PURPLEILLUMAR, BLUEILLUMAR, BROWNILLUMAR, GREENILLUMAR, REDILLUMAR, BLACKILLUMAR };
 		public int meta = this.ordinal();
 		public static final String oreDictDefinition = "projredPart";
