@@ -100,7 +100,7 @@ public class ProjectRed {
 
 	@Mod.Init
 	public void init(FMLInitializationEvent event) {
-		// Lampt
+		// Lamps
 		if (Configurator.block_lampID.getInt() > 0) {
 			blockLamp = new BlockLamp(Configurator.block_lampID.getInt());
 			GameRegistry.registerBlock(blockLamp, ItemBlockLamp.class, "projred.lighting.lamp");
