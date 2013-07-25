@@ -102,7 +102,7 @@ public class ItemBlockWire extends ItemBlock {
 
 				if (wt.addWire(type, side ^ 1)) {
 					Block var12 = Block.blocksList[itemID];
-					w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() + 1.0F) / 2.0F, Block.soundGlassFootstep.getPitch() * 0.8F);
+					w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .8F);
 					--stack.stackSize;
 				}
 
@@ -132,7 +132,7 @@ public class ItemBlockWire extends ItemBlock {
 				w.markBlockForUpdate(x, y, z);
 
 				Block var12 = Block.blocksList[itemID];
-				w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() + 1.0F) / 2.0F, Block.soundGlassFootstep.getPitch() * 0.8F);
+				w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .8F);
 				--stack.stackSize;
 
 				tile.notifyExtendedNeighbours();
@@ -147,7 +147,7 @@ public class ItemBlockWire extends ItemBlock {
 				int var13 = this.getMetadata(stack.getItemDamage());
 
 				if (placeBlockAt(stack, ply, w, x, y, z, side, hitX, hitY, hitZ, var13)) {
-					w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() + 1.0F) / 2.0F, Block.soundGlassFootstep.getPitch() * 0.8F);
+					w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .8F);
 					--stack.stackSize;
 				}
 
@@ -220,7 +220,7 @@ public class ItemBlockWire extends ItemBlock {
 
 				if (wt.addJacketedWire(type)) {
 					Block var12 = Block.blocksList[itemID];
-					w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() + 1.0F) / 2.0F, Block.soundGlassFootstep.getPitch() * 0.8F);
+					w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .8F);
 					--stack.stackSize;
 				}
 
@@ -249,7 +249,7 @@ public class ItemBlockWire extends ItemBlock {
 				w.setBlockTileEntity(x, y, z, tile);
 				w.markBlockForUpdate(x, y, z);
 
-				w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() + 1.0F) / 2.0F, Block.soundGlassFootstep.getPitch() * 0.8F);
+				w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .8F);
 				--stack.stackSize;
 
 				tile.notifyExtendedNeighbours();
@@ -264,7 +264,7 @@ public class ItemBlockWire extends ItemBlock {
 				int var13 = this.getMetadata(stack.getItemDamage());
 
 				if (placeBlockAt(stack, ply, w, x, y, z, side, hitX, hitY, hitZ, var13)) {
-					w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() + 1.0F) / 2.0F, Block.soundGlassFootstep.getPitch() * 0.8F);
+					w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .8F);
 					--stack.stackSize;
 				}
 

@@ -86,6 +86,8 @@ public enum EnumWire {
 	public static final String oreDictDefinition = "projredWire";
 	public static final String oreDictDefinitionInsulated = "projredInsulatedWire";
 	public static final String oreDictDefinitionJacketed = "projredJacketedWire";
+	public static final String oreDictDefinitionBundled= "projredBundledCable";
+	
 	public int meta = this.ordinal();
 	
 	private EnumWire(String name, Class<? extends TileWire> tileClazz, int thicknessPixels, int widthPixels, int itemColour, String objPathWire, String objPathJacket, String... textures) {
@@ -173,6 +175,9 @@ public enum EnumWire {
 		}
 		for (EnumWire w : EnumWire.INSULATED_WIRE) {
 			OreDictionary.registerOre(oreDictDefinitionInsulated, w.getItemStack());
+		}
+		for (EnumWire w : EnumWire.BUNDLED_WIRE) {
+			OreDictionary.registerOre(oreDictDefinitionBundled, w.getItemStack());
 		}
 	}
 
