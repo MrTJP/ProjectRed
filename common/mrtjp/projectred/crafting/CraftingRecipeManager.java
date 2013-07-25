@@ -78,15 +78,29 @@ public class CraftingRecipeManager {
 				'S', Item.silk,
 				'W', EnumWire.oreDictDefinitionInsulated
 		));
+		int bundledColor = 0;
+		for (EnumWire w : EnumWire.BUNDLED_WIRE) {
+			if (w == EnumWire.BUNDLED_N) {
+				continue;
+			}
+			GameRegistry.addRecipe(new ShapelessOreRecipe(w.getItemStack(3),
+					Color.get(bundledColor).getOreDict(),
+					EnumWire.oreDictDefinitionBundled, 
+					EnumWire.oreDictDefinitionBundled, 
+					EnumWire.oreDictDefinitionBundled, 
+					Color.get(bundledColor).getOreDict()
+			));
+			bundledColor++;
+		}
 		
 		/** Jacketed Wiring **/
 		for (EnumWire w : EnumWire.VALID_WIRE) {
 			if (w.hasJacketedForm()) {
 				// Regular to jacketed
 				GameRegistry.addRecipe(w.getJacketedItemStack(3), 
-						" i ",
 						"sis",
-						" i ",
+						"sis",
+						"sis",
 						'i', w.getItemStack(),
 						's', Item.stick
 				);
