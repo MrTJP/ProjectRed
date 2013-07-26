@@ -2,7 +2,7 @@ Change Log:
 v3.0.2.34
 - Ported to Minecraft 1.6.2.
 - Fixed bug with alloy smelter crafts things without fuel upon world load.
-
+- Fixed gate connection logic
 
 v3.0.2.33
 - Fixed texture path on gate.
