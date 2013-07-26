@@ -1,6 +1,6 @@
 package mrtjp.projectred.tiles;
 
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,7 +21,7 @@ public abstract class TileMachineBase extends TileEntity {
 	
 	public abstract boolean onBlockActivated(EntityPlayer player);
 
-	public void onBlockPlaced(EntityLiving player, ItemStack item) {
+	public void onBlockPlaced(EntityLivingBase player, ItemStack item) {
 		int entityrotation = MathHelper.floor_double((double) ((player.rotationYaw * 4F) / 360F) + 2.5D) & 3;
 		if (entityrotation == 0) {
 			rotation = 2;

@@ -2,7 +2,10 @@ package mrtjp.projectred.multipart.wiring.gates;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
 import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
+import mrtjp.projectred.utils.BasicRenderUtils;
 import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import cpw.mods.fml.relauncher.Side;
@@ -32,7 +35,7 @@ public class GateDynamicRenderer extends TileEntitySpecialRenderer {
 		rendering.set(te.getRenderState());
 		
 		CCRenderState.reset();
-		CCRenderState.changeTexture("/terrain.png");
+		BasicRenderUtils.bindTerrainResource();
 		CCRenderState.useNormals(true);
 		CCRenderState.pullLightmap();
 		CCRenderState.startDrawing(7);

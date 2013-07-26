@@ -4,6 +4,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatMessageComponent;
 
 public class CommandDebug extends CommandBase {
 	/**
@@ -58,7 +59,7 @@ public class CommandDebug extends CommandBase {
 		else
 			throw new WrongUsageException(getCommandUsage(icommandsender));
 		
-		MinecraftServer.getServer().getConfigurationManager().sendChatMsg("RedLogic debug feature '" + thing + "' is now " + astring[1]);
+		MinecraftServer.getServer().getConfigurationManager().sendChatMsg(ChatMessageComponent.func_111077_e("ProjectRed debug feature '" + thing + "' is now " + astring[1]));
 	}
 	
 	@Override

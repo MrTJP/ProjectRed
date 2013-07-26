@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -133,8 +134,7 @@ public class DefaultPartType implements PartType<Part> {
 		GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 
 		overrideIcon = null;
-		Minecraft.getMinecraft().renderEngine.bindTexture("/terrain.png");
-
+		Minecraft.getMinecraft().renderEngine.func_110577_a(TextureMap.field_110575_b);
 		Tessellator t = Tessellator.instance;
 		t.startDrawingQuads();
 		renderQuads(t, pos);
@@ -719,8 +719,7 @@ public class DefaultPartType implements PartType<Part> {
 			pos = EnumPosition.Centre;
 		}
 
-		Minecraft.getMinecraft().renderEngine.bindTexture("/terrain.png");
-		overrideIcon = null;
+		Minecraft.getMinecraft().renderEngine.func_110577_a(TextureMap.field_110575_b);		overrideIcon = null;
 
 		Tessellator t = Tessellator.instance;
 		t.startDrawingQuads();

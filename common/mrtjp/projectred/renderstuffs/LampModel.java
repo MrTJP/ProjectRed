@@ -11,7 +11,7 @@ public class LampModel {
 	private IModelCustom model;
 
 	public LampModel() {
-		model = AdvancedModelLoader.loadModel("/mods/projectred/textures/obj/lamp.obj");
+		model = AdvancedModelLoader.loadModel("/assets/projectred/textures/obj/lamp.obj");
 	}
 
 	public void render() {
