@@ -2,14 +2,17 @@
   "modinfoversion": 3,
   "modlist": [{
     "modid": "ProjectRed",
-    "name": "Project: §4Red",
-    "description": "Project: §4Red §raims to provide players with a suitable substitute for Red Power 2, as well as introduce new and original ideas.",
-    "version": "@VERSION@.@BUILD@",
-    "mcversion": "1.5.2",
-    "url": "",
+    "name": "Project: Red",
+    "description": "Project: Red aims to provide players with a suitable substitute for Red Power 2, as well as introduce new and original ideas.
+        Built against Forge @FORGE_VERSION@".
+        @TEST_MSG@
+    ",
+    "version": "@VERSION@.@BUILD_NUMBER@",
+    "mcversion": "1.6.2",
+    "url": "http://www.minecraftforum.net/topic/1885652-152-project-red-an-rp2-replacement-v32033-7252013/",
     "updateUrl": "",
-    "authors": [ "§1MrTJP"],
-    "credits": "Immibis, for most of the code §e:)§r,
+    "authors": [ "MrTJP"],
+    "credits": "Immibis, for most of the code,
                ChickenBones, for coding assistence,
                Everyone who made me some textures,
                Everyone who helped me with Commits on GitHub",

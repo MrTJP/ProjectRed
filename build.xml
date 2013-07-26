@@ -5,8 +5,8 @@
 	<property name="src.dir" value="ProjectRed" />
 	<property name="build.dir" value="build" />
 	<property name="download.dir" value="download" />
-	<property name="mcp.dir" value="${forge.dir}/mcp" />
 	<property name="forge.dir" value="${build.dir}/forge" />
+	<property name="mcp.dir" value="${forge.dir}/mcp" />
 	<property name="mc.src.dir" value="${mcp.dir}/src/minecraft" />
 	<property name="jar.dir" value="${build.dir}/dist" />
 	<property name="chickencore.dir" value="${build.dir}/unpack/chickencore" />
@@ -16,8 +16,8 @@
 
 	<!-- Versioning -->
 	<property file="${src.dir}/buildspecs.properties" prefix="buildspecs" />
-	<property name="mc.version" value="1.5.2" />
-	<property name="mod.version" value="3.2.0" />
+	<property name="mc.version" value="1.6.2" />
+	<property name="mod.version" value="3.2.1" />
 	<property name="mod.build" value="${buildspecs.build_number}" />
 	<property name="mod.version.full" value="${mod.version}.${mod.build}" />
 	<property name="version.mcp" value="805" />
@@ -64,15 +64,15 @@
 
 		<!-- Unzip files -->
 		<!-- mcp -->
-        
-        <!--
+
+		<!--
 		<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
 				<include name="${download.mcp}" />
 			</fileset>
 		</unzip>
         -->
-         
+
 		<!-- forge -->
 		<unzip dest="${forge.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
@@ -150,13 +150,33 @@
 		<copy todir="${mc.src.dir}">
 			<fileset dir="${src.dir}/common" />
 		</copy>
+		<copy todir="${mcp.dir}\reobf\resources">
+			<fileset dir="${src.dir}/resources" />
+		</copy>
 	</target>
 
 	<target name="injectdata">
 		<!-- Replace Tokens-->
-		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@VERSION@" value="${build.release.mod.version}" />
-		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@BUILD_NUMBER@" value="${build.build_number}" />
+		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@VERSION@" value="${mod.version}" />
+		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@BUILD_NUMBER@" value="${mod.build}" />
+
+		<replace dir="${mcp.dir}\reobf\resources" token="@VERSION@" value="${mod.version}" />
+		<replace dir="${mcp.dir}\reobf\resources" token="@BUILD_NUMBER@" value="${mod.build}" />
+		<replace dir="${mcp.dir}\reobf\resources" token="@FORGE_VERSION@" value="${version.forge}" />
+		<replace dir="${mcp.dir}\reobf\resources" token="@TEST_MSG@" value="..." />
 	</target>
+
+	<target name="injecttestdata">
+		<!-- Replace Tokens-->
+		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@VERSION@" value="${mod.version}" />
+		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@BUILD_NUMBER@" value="${mod.build}.NIGHTLY" />
+
+		<replace dir="${mcp.dir}\reobf\resources" token="@VERSION@" value="${mod.version}" />
+		<replace dir="${mcp.dir}\reobf\resources" token="@BUILD_NUMBER@" value="${mod.build}.NIGHTLY" />
+		<replace dir="${mcp.dir}\reobf\resources" token="@FORGE_VERSION@" value="${version.forge}" />
+		<replace dir="${mcp.dir}\reobf\resources" token="@TEST_MSG@" value="WARNING: This is an unstable test build" />
+	</target>
+
 
 	<target name="recompile">
 		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
@@ -181,9 +201,19 @@
 		<mkdir dir="${jar.dir}" />
 		<jar destfile="${jar.dir}/ProjectRed-${mc.version}-${mod.version.full}.jar">
 			<fileset dir="${mcp.dir}\reobf\minecraft" />
-			<fileset dir="${src.dir}\resources" />
+			<fileset dir="${mcp.dir}\reobf\resources" />
 		</jar>
 	</target>
+
+	<target name="packtestjar">
+		<!-- Build the test jar -->
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/ProjectRed-${mc.version}-${mod.version.full}.NIGHTLY.jar">
+			<fileset dir="${mcp.dir}\reobf\minecraft" />
+			<fileset dir="${mcp.dir}\reobf\resources" />
+		</jar>
+	</target>
+
 
 	<target name="initialsetup">
 		<antcall target="fullfilesetup" />
@@ -203,10 +233,10 @@
 	<target name="testbuild">
 		<antcall target="cleanoldworkspace" />
 		<antcall target="copymodsrc" />
-		<antcall target="injectdata" />
+		<antcall target="injecttestdata" />
 		<antcall target="recompile" />
 		<antcall target="reobfuscate" />
-		<antcall target="packjar" />
+		<antcall target="packtestjar" />
 		<antcall target="cleanoldworkspace" />
 	</target>
 
