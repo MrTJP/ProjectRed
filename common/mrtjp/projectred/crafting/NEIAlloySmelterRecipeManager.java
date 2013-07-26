@@ -57,7 +57,7 @@ public class NEIAlloySmelterRecipeManager extends ShapedRecipeHandler {
 
 	@Override
 	public String getGuiTexture() {
-		return "/mods/projectred/textures/gui/alloysmelter.png";
+		return "projectred:textures/gui/alloysmelter.png";
 	}
 
 	@Override
