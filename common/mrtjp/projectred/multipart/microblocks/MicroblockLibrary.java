@@ -158,7 +158,7 @@ public class MicroblockLibrary implements IMicroblockLibrary {
 				for (int meta = 0; meta < 16; meta++) {
 					ItemStack is = new ItemStack(b, 1, meta);
 					try {
-						String itemName = is.getItemName();
+						String itemName = this.getItemDisplayName(b.blockID, meta);
 						if (!Strings.isNullOrEmpty(itemName) && names.add(itemName)) {
 							this.addCuttableBlock(b, meta);
 						}
