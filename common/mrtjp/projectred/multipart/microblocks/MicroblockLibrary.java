@@ -1,7 +1,5 @@
 package mrtjp.projectred.multipart.microblocks;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -143,33 +141,33 @@ public class MicroblockLibrary implements IMicroblockLibrary {
 		IDBlacklist.add(Block.lockedChest.blockID);
 		IDWhitelist.add(Block.glass.blockID);
 		
-		for (Field f : Block.class.getDeclaredFields()) {
-			if (Modifier.isStatic(f.getModifiers()) && Block.class.isAssignableFrom(f.getType())) {
-				Block b;
-				try {
-					b = (Block) f.get(null);
-				} catch (Exception e) {
-					continue;
-				}
-				if (IDBlacklist.contains(b.blockID)) {
-					continue;
-				}
-				if ((!b.isOpaqueCube() || b.hasTileEntity(0) || !b.renderAsNormalBlock()) && !IDWhitelist.contains(b.blockID)) {
-					continue;
-				}
+		for (Block b : Block.blocksList) {
+			if (b == null || b.blockID == 0) {
+				continue;
+			}
+			if (IDBlacklist.contains(b.blockID)) {
+				continue;
+			}
+			if ((!b.isOpaqueCube() || b.hasTileEntity(0) || !b.renderAsNormalBlock()) && !IDWhitelist.contains(b.blockID)) {
+				continue;
+			}
 
-				ItemStack candidate = new ItemStack(b, 1);
-				if (candidate.getHasSubtypes()) {
-					Set<String> names = Sets.newHashSet();
-					for (int meta = 0; meta < 16; meta++) {
-						ItemStack is = new ItemStack(b, 1, meta);
-						if (!Strings.isNullOrEmpty(is.getItemName()) && names.add(is.getItemName())) {
+			ItemStack candidate = new ItemStack(b, 1);
+			if (candidate.getHasSubtypes()) {
+				Set<String> names = Sets.newHashSet();
+				for (int meta = 0; meta < 16; meta++) {
+					ItemStack is = new ItemStack(b, 1, meta);
+					try {
+						String itemName = this.getItemDisplayName(b.blockID, meta);
+						if (!Strings.isNullOrEmpty(itemName) && names.add(itemName)) {
 							this.addCuttableBlock(b, meta);
 						}
+					} catch (Exception e) {
 					}
-				} else {
-					this.addCuttableBlock(b, 0);
+					
 				}
+			} else {
+				this.addCuttableBlock(b, 0);
 			}
 		}
 	}
