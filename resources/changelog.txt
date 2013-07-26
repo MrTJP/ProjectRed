@@ -1,4 +1,7 @@
 Change Log:
+v3.0.2.33
+- Fixed texture path on gate.
+
 v3.0.2.32
 - Fixed EntityFX crash.
 - Fixed BlockList crash.
