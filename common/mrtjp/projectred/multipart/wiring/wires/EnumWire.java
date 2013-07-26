@@ -120,8 +120,8 @@ public enum EnumWire {
 				wireSprites[i] = reg.registerIcon("projectred:wires/" + wireSpritePaths[i]);
 			}
 		}
-		wireMap = CCModel.parseObjModels("/mods/projectred/textures/obj/wiring/" + wireModelPath, 7, new InvertX());
-		jacketMap = CCModel.parseObjModels("/mods/projectred/textures/obj/wiring/" + jacketModelPath, 7, new InvertX());
+		wireMap = CCModel.parseObjModels("/assets/projectred/textures/obj/wiring/" + wireModelPath, 7, new InvertX());
+		jacketMap = CCModel.parseObjModels("/assets/projectred/textures/obj/wiring/" + jacketModelPath, 7, new InvertX());
 		for (CCModel m : wireMap.values()) {
 			m.shrinkUVs(0.0005);
 		}

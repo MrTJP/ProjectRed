@@ -505,7 +505,7 @@ public class CraftingRecipeManager {
 		/** Energized Silicon **/
 		AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
 				EnumPart.SILICON.getItemStack(),
-				new ItemStack(Item.lightStoneDust, 4),
+				new ItemStack(Item.glowstone, 4),
 		}, EnumPart.ENERGIZEDSILICON.getItemStack(), 160));
 		
 		/** Motor **/
@@ -550,8 +550,8 @@ public class CraftingRecipeManager {
 		for (int i = 0; i < EnumPart.ILLUMAR_PARTS.length; i++) {
 			EnumPart p = EnumPart.ILLUMAR_PARTS[i];
 			GameRegistry.addRecipe(new ShapelessOreRecipe(p.getItemStack(), 
-					new ItemStack(Item.lightStoneDust),
-					new ItemStack(Item.lightStoneDust),
+					new ItemStack(Item.glowstone),
+					new ItemStack(Item.glowstone),
 					Color.get(i).getOreDict(),
 					Color.get(i).getOreDict()
 			));

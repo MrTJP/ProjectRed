@@ -5,8 +5,8 @@
 	<property name="src.dir" value="ProjectRed" />
 	<property name="build.dir" value="build" />
 	<property name="download.dir" value="download" />
-	<property name="mcp.dir" value="${build.dir}/mcp" />
-	<property name="forge.dir" value="${mcp.dir}/forge" />
+	<property name="mcp.dir" value="${forge.dir}/mcp" />
+	<property name="forge.dir" value="${build.dir}/forge" />
 	<property name="mc.src.dir" value="${mcp.dir}/src/minecraft" />
 	<property name="jar.dir" value="${build.dir}/dist" />
 	<property name="chickencore.dir" value="${build.dir}/unpack/chickencore" />
@@ -20,10 +20,10 @@
 	<property name="mod.version" value="3.2.0" />
 	<property name="mod.build" value="${buildspecs.build_number}" />
 	<property name="mod.version.full" value="${mod.version}.${mod.build}" />
-	<property name="version.mcp" value="751" />
-	<property name="version.forge" value="7.8.1.738" />
-	<property name="version.chickencore" value="0.8.7" />
-	<property name="version.nei" value="1.5.2.27" />
+	<property name="version.mcp" value="805" />
+	<property name="version.forge" value="9.10.0.804" />
+	<property name="version.chickencore" value="0.9.0.0" />
+	<property name="version.nei" value="1.6.0.3" />
 	<property name="version.teapi" value="2.4.6.0" />
 	<property name="version.ccapi" value="1.53" />
 
@@ -64,13 +64,17 @@
 
 		<!-- Unzip files -->
 		<!-- mcp -->
+        
+        <!--
 		<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
 				<include name="${download.mcp}" />
 			</fileset>
 		</unzip>
+        -->
+         
 		<!-- forge -->
-		<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
+		<unzip dest="${forge.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
 				<include name="${download.forge}" />
 			</fileset>
@@ -121,43 +125,10 @@
 		</exec>
 		<echo message="Initial Forge Setup complete" />
 
-		<!-- Setup Chickenbones mods -->
-		<mkdir dir="${forge.dir}/accesstransformers" />
-		<mkdir dir="${mcp.dir}/jars/coremods" />
-		<delete dir="${mcp.dir}\src" />
-		<copy file="${chickencore.dir}/codechickencore_at.cfg" todir="${forge.dir}/accesstransformers">
-		</copy>
-		<copy file="${chickencore.dir}/CodeChickenCore_dummy.jar" todir="${mcp.dir}/jars/coremods">
-		</copy>
-		<copy file="${nei.dir}/nei_at.cfg" todir="${forge.dir}/accesstransformers">
-		</copy>
-		<copy file="${nei.dir}/NotEnoughItems_dummy.jar" todir="${mcp.dir}/jars/coremods">
-		</copy>
-		<exec dir="${forge.dir}" executable="cmd" osfamily="windows" failonerror="true">
-			<arg line="/c install.cmd" />
-		</exec>
-		<exec dir="${forge.dir}" executable="sh" osfamily="unix" failonerror="true">
-			<arg value="install.sh" />
-		</exec>
-		<echo message="Chickenbones Forge Setup Complete" />
-
 		<!-- Copy files that will be hashed with MD5 -->
-		<copy todir="${mc.src.dir}">
-			<fileset dir="${chickencore.dir}" />
-		</copy>
-		<copy todir="${mc.src.dir}">
-			<fileset dir="${nei.dir}" />
-		</copy>
 		<copy todir="${mc.src.dir}">
 			<fileset dir="${src.dir}/dummy" />
 		</copy>
-		<copy todir="${mc.src.dir}">
-			<fileset dir="${ccapi.dir}" />
-		</copy>
-		<copy todir="${mc.src.dir}">
-			<fileset dir="${teapi.dir}" />
-		</copy>
-
 		<echo message="All apis and sources copied" />
 
 		<!-- Refresh MD5 -->

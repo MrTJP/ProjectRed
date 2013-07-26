@@ -1,8 +1,11 @@
 package mrtjp.projectred.items;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.ProjectRedTabs;
 import mrtjp.projectred.multipart.wiring.gates.TileGate;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -39,4 +42,11 @@ public class ItemScrewdriver extends Item {
 
 		return false;
 	}
+	
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IconRegister reg)
+    {
+        this.itemIcon = reg.registerIcon("projectred:screwdriver");
+    }
+
 }
