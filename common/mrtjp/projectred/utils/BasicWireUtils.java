@@ -24,30 +24,29 @@ public class BasicWireUtils {
 	public static final int LEFT = 2;
 	public static final int RIGHT = 3;
 
-	public static final int[][][] dirMap = new int[6][6][4]; // [side][front][rel
-																// direction] ->
-																// abs direction
-	public static final int[][][] invDirMap = new int[6][6][6]; // [side][front][abs
-																// direction] ->
-																// rel direction
+	/** [side][front][relative direction] to absolute direction **/
+	public static final int[][][] dirMap = new int[6][6][4];
+	
+	/** [side][front][absolute direction] to relative direction **/
+	public static final int[][][] invDirMap = new int[6][6][6];
+	
 	static {
-		for (int side = 0; side < 6; side++)
+		for (int side = 0; side < 6; side++) {
 			for (int front = 0; front < 6; front++) {
-				if ((front & 6) == (side & 6))
+				if ((front & 6) == (side & 6)) {
 					continue;
+				}
 
 				dirMap[side][front][FRONT] = front;
 				dirMap[side][front][BACK] = front ^ 1;
-				// dirMap[side][front][LEFT] =
-				// ForgeDirection.ROTATION_MATRIX[side][front];
-				// dirMap[side][front][RIGHT] =
-				// ForgeDirection.ROTATION_MATRIX[side][front^1];
 				dirMap[side][front][LEFT] = rotationMap[side][front];
 				dirMap[side][front][RIGHT] = rotationMap[side][front ^ 1];
 
-				for (int dir = 0; dir < 4; dir++)
+				for (int dir = 0; dir < 4; dir++) {
 					invDirMap[side][front][dirMap[side][front][dir]] = dir;
+				}
 			}
+		}
 	}
 
 	/**

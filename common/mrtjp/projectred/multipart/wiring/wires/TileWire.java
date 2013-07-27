@@ -208,8 +208,6 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 		if (type != wireType && wireType != null)
 			throw new IllegalArgumentException("wrong type (passed " + type + ", expected " + wireType + ")");
 		wireType = type;
-		// System.out.println((worldObj.isRemote ? "client" : "server") +
-		// " rawAddWire "+side+" type="+wireType);
 		wireMask |= (byte) (1 << side);
 	}
 
@@ -851,19 +849,9 @@ public abstract class TileWire extends TileCoverableBase implements IConnectable
 		worldObj.playAuxSFX(2004, xCoord, yCoord, zCoord, 0);
 	}
 
-	/*
-	 * protected void debugEffect_ender() { worldObj.playAuxSFX(2003, xCoord,
-	 * yCoord, zCoord, 0); }
-	 */
-
 	protected void debugEffect_potion() {
 		worldObj.playAuxSFX(2002, xCoord, yCoord, zCoord, 0);
 	}
-
-	/*
-	 * protected void debugEffect_blockbreak() { worldObj.playAuxSFX(2001,
-	 * xCoord, yCoord, zCoord, 0); }
-	 */
 
 	protected void debugEffect_smoke() {
 		worldObj.playAuxSFX(2000, xCoord, yCoord, zCoord, 0);

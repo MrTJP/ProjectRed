@@ -36,7 +36,7 @@ public class BasicGuiUtils {
 	}
 
 	// TODO opera color
-	public static int ConvertEnumToColor(Color color) {
+	public static int ConvertEnumToColor(PRColors color) {
 		switch (color) {
 		case BLACK:
 			return 0xFF000000;

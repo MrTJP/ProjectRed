@@ -26,7 +26,9 @@ public class GhostContainer extends Container {
 		_playerInventory = player.inventory;
 		_inv = inv;
 		_controler = controler;
-		_controler.onGuiOpenedBy(player);
+		if (_controler != null) {
+			_controler.onGuiOpenedBy(player);
+		}
 	}
 
 	@Override

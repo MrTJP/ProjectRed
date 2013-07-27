@@ -9,7 +9,9 @@ import mrtjp.projectred.multipart.wiring.gates.GuiTimer;
 import mrtjp.projectred.multipart.wiring.gates.TileGate;
 import mrtjp.projectred.renderstuffs.GuiAlloySmelter;
 import mrtjp.projectred.renderstuffs.GuiBackpack;
+import mrtjp.projectred.renderstuffs.GuiTurbineRotary;
 import mrtjp.projectred.tiles.TileAlloySmelter;
+import mrtjp.projectred.tiles.TileTurbineRotary;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.Coords;
 import net.minecraft.entity.player.EntityPlayer;
@@ -45,6 +47,12 @@ public class GuiHandler implements IGuiHandler {
 				return ItemBackpack.getContainer(player);
 			}
 		}
+		if (ID == GuiIDs.ID_TurbineRotary) {
+			TileTurbineRotary tile = (TileTurbineRotary) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileTurbineRotary.class);
+			if (tile != null) {
+				return tile.getContainer(player);
+			}
+		}
 		return null;
 	}
 
@@ -72,6 +80,12 @@ public class GuiHandler implements IGuiHandler {
 			ItemStack held = player.getHeldItem();
 			if (held.itemID == ProjectRed.itemBackpack.itemID) {
 				return new GuiBackpack(player, ItemBackpack.getBackpackInventory(player), held);
+			}
+		}
+		if (ID == GuiIDs.ID_TurbineRotary) {
+			TileTurbineRotary tile = (TileTurbineRotary) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileTurbineRotary.class);
+			if (tile != null) {
+				return new GuiTurbineRotary(player, tile);
 			}
 		}
 		
