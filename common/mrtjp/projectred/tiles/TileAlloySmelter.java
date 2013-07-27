@@ -104,7 +104,6 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 		_inv.writeToNBT(nbt);
 		nbt.setInteger("heat", heat);
 		nbt.setInteger("progress", progress);
-		nbt.setBoolean("work", hasWork);
 	}
 
 	@Override
@@ -113,7 +112,6 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 		_inv.readFromNBT(nbt);
 		heat = nbt.getInteger("heat");
 		progress = nbt.getInteger("progress");
-		hasWork = nbt.getBoolean("work");
 		int index = nbt.getInteger("recipeIndex");
 		updateNextTick = true;
 	}
@@ -187,7 +185,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	}
 
 	@Override
-	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		return true;
 	}
 

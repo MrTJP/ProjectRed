@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -67,7 +67,7 @@ public class Messenger {
 			return;
 		}
 		long deathTime = System.currentTimeMillis() - 6000L;
-		EntityLiving camera = Minecraft.getMinecraft().renderViewEntity;
+		EntityLivingBase camera = Minecraft.getMinecraft().renderViewEntity;
 		double cx = camera.lastTickPosX + (camera.posX - camera.lastTickPosX) * event.partialTicks;
 		double cy = camera.lastTickPosY + (camera.posY - camera.lastTickPosY) * event.partialTicks;
 		double cz = camera.lastTickPosZ + (camera.posZ - camera.lastTickPosZ) * event.partialTicks;

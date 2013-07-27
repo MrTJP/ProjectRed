@@ -201,7 +201,7 @@ public class MicroblockLibrary implements IMicroblockLibrary {
 
 	private static String getItemDisplayName(int itemID, int meta) {
 		String nameKey = Item.itemsList[itemID].getUnlocalizedName(new ItemStack(itemID, 1, meta)) + ".name";
-		String name = StringTranslate.getInstance().translateKey(nameKey);
+		String name = new ItemStack(itemID, 1, meta).getDisplayName();//StringTranslate.getInstance().translateKey(nameKey);
 
 		if (name.equals(nameKey) || name.equals("")) {
 			name = LanguageRegistry.instance().getStringLocalization(nameKey);

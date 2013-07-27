@@ -62,7 +62,7 @@ public class BasicUtils {
 		if (world instanceof WorldClient) {
 			return ((WorldClient) world).provider.dimensionId;
 		}
-		return world.getWorldInfo().getDimension();
+		return world.provider.dimensionId;
 	}
 
 	public static void sendPacketToServer(Packet packet) {

@@ -189,7 +189,7 @@ public class BlockGate extends BlockMultipartBase {
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IconRegister reg) {
 		GateRenderBridge.registerAllIcons(reg);
-		blockIcon = reg.registerIcon("projectred:/gates/base");
+		blockIcon = reg.registerIcon("projectred:gates/base");
 	}
 
 	private int getSide(IBlockAccess w, int x, int y, int z) {

@@ -10,7 +10,8 @@ import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
 import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
 import mrtjp.projectred.utils.codechicken.core.vec.Translation;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderEngine;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -20,7 +21,7 @@ public class LanternModel {
 	private Map<String, CCModel> models;
 
 	public LanternModel() {
-		models = CCModel.parseObjModels("/mods/projectred/textures/obj/lantern.obj", new InvertX());
+		models = CCModel.parseObjModels("/assets/projectred/textures/obj/lantern.obj", new InvertX());
 		for (CCModel c : models.values()) {
 			c.computeNormals();
 			c.apply(new Translation(.5, 0, .5));
@@ -29,17 +30,17 @@ public class LanternModel {
 	}
 
 	public void bindTextureForColorAndState(int color, boolean on) {
-		String base = "/mods/projectred/textures/blocks/";
+		String base = "textures/blocks/";
 		String folder = on ? "lanternon/" : "lanternoff/";
 		String file = EnumLantern.get(color).unlocalName + (on ? "on" : "off");
 		String loc = base + folder + file + ".png";
-		CCRenderState.changeTexture(loc);
+		bindTextureByName(loc);
 	}
 
 	protected void bindTextureByName(String par1Str) {
-		RenderEngine renderengine = Minecraft.getMinecraft().renderEngine;
+		TextureManager renderengine = Minecraft.getMinecraft().renderEngine;
 		if (renderengine != null) {
-			renderengine.bindTexture(par1Str);
+			renderengine.func_110577_a(new ResourceLocation("projectred", par1Str));
 		}
 	}
 
