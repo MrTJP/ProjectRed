@@ -4,7 +4,7 @@
     "modid": "ProjectRed",
     "name": "Project: Red",
     "description": "Project: Red aims to provide players with a suitable substitute for Red Power 2, as well as introduce new and original ideas.
-        Built against Forge @FORGE_VERSION@".
+        Built against Forge @FORGE_VERSION@.
         @TEST_MSG@
     ",
     "version": "@VERSION@.@BUILD_NUMBER@",

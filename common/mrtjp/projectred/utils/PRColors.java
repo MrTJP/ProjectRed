@@ -1,6 +1,6 @@
 package mrtjp.projectred.utils;
 
-public enum Color {
+public enum PRColors {
 	WHITE("White", 1.0F, 1.0F, 1.0F),
 	ORANGE("Orange", 0.95F, 0.7F, 0.2F),
 	MAGENTA("Magenta", 0.9F, 0.5F, 0.85F),
@@ -20,10 +20,10 @@ public enum Color {
 	
 	;
 
-	public static final Color[] VALID_COLORS = { WHITE, ORANGE, MAGENTA, LIGHT_BLUE, YELLOW, LIME, PINK, GREY, LIGHT_GREY, CYAN, PURPLE, BLUE, BROWN, GREEN, RED, BLACK };
+	public static final PRColors[] VALID_COLORS = { WHITE, ORANGE, MAGENTA, LIGHT_BLUE, YELLOW, LIME, PINK, GREY, LIGHT_GREY, CYAN, PURPLE, BLUE, BROWN, GREEN, RED, BLACK };
 	private static final String[] dyeDictionary = { "dyeBlack", "dyeRed", "dyeGreen", "dyeBrown", "dyeBlue", "dyePurple", "dyeCyan", "dyeLightGray", "dyeGray", "dyePink", "dyeLime", "dyeYellow", "dyeLightBlue", "dyeMagenta", "dyeOrange", "dyeWhite" };
 
-	private Color(String name, float r, float g, float b) {
+	private PRColors(String name, float r, float g, float b) {
 		this.r = r;
 		this.g = g;
 		this.b = b;
@@ -45,7 +45,7 @@ public enum Color {
 	public final String name;
 	public final float r, g, b;
 
-	public static Color get(int i) {
+	public static PRColors get(int i) {
 		if (i > VALID_COLORS.length - 1) {
 			return WHITE;
 		}
