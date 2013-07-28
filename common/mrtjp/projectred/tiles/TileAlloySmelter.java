@@ -60,7 +60,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 
 	@Override
 	public void onBlockBreak() {
-		BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, new ItemStack(ProjectRed.blockMachines.blockID, 1, EnumMachine.ALLOYSMELTER.meta));
+		//BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, new ItemStack(ProjectRed.blockMachines.blockID, 1, EnumMachine.ALLOYSMELTER.meta));
 		_inv.dropContents(worldObj, xCoord, yCoord, zCoord);
 	}
 

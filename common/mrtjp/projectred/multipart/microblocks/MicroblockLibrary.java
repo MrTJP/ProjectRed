@@ -162,7 +162,7 @@ public class MicroblockLibrary implements IMicroblockLibrary {
 						if (!Strings.isNullOrEmpty(itemName) && names.add(itemName)) {
 							this.addCuttableBlock(b, meta);
 						}
-					} catch (Exception e) {
+					} catch (Throwable t) {
 					}
 					
 				}
@@ -204,7 +204,12 @@ public class MicroblockLibrary implements IMicroblockLibrary {
 		String name = new ItemStack(itemID, 1, meta).getDisplayName();//StringTranslate.getInstance().translateKey(nameKey);
 
 		if (name.equals(nameKey) || name.equals("")) {
-			name = LanguageRegistry.instance().getStringLocalization(nameKey);
+			try {
+				name = LanguageRegistry.instance().getStringLocalization(nameKey);
+			}
+			catch (Throwable t) {
+				name = null;
+			}
 			if (name == null || name.equals(nameKey) || name.equals("")) {
 				name = LanguageRegistry.instance().getStringLocalization(nameKey, "en_US");
 				if (name == null || name.equals(nameKey) || name.equals("")) {
