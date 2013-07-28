@@ -1,15 +1,14 @@
 package mrtjp.projectred.network;
 
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.core.IProjectRedModule;
 import mrtjp.projectred.core.Messenger;
 import mrtjp.projectred.core.ProjectRedTickHandler;
+import mrtjp.projectred.integration.ModuleIntegration;
 import mrtjp.projectred.multipart.MultipartHighlightHandler;
 import mrtjp.projectred.multipart.microblocks.MicroblockItemRenderer;
 import mrtjp.projectred.multipart.microblocks.MicroblockPlacementHighlightHandler;
 import mrtjp.projectred.multipart.microblocks.MultiblockRenderer;
-import mrtjp.projectred.multipart.wiring.gates.GateDynamicRenderer;
-import mrtjp.projectred.multipart.wiring.gates.GateStaticRenderer;
-import mrtjp.projectred.multipart.wiring.gates.TileGate;
 import mrtjp.projectred.multipart.wiring.wires.WireRenderer;
 import mrtjp.projectred.renderstuffs.LampRenderer;
 import mrtjp.projectred.renderstuffs.LanternRenderer;
@@ -28,6 +27,24 @@ public class ClientProxy extends CommonProxy implements IProxy {
 	public static int renderPass;
 	
 	@Override
+	public void init() {
+		IProjectRedModule m = new ModuleIntegration();
+		m.getClientProxy().init();
+	}
+
+	@Override
+	public void preinit() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void postinit() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public void initRenderings() {
 
 		// Lamps
@@ -44,11 +61,12 @@ public class ClientProxy extends CommonProxy implements IProxy {
 		RenderingRegistry.registerBlockHandler(WireRenderer.instance);
 
 		// Gates
+		/**
 		RenderIDs.renderIdGate = RenderingRegistry.getNextAvailableRenderId();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileGate.class, GateDynamicRenderer.instance);
 		RenderingRegistry.registerBlockHandler(GateStaticRenderer.instance);
 		MinecraftForgeClient.registerItemRenderer(ProjectRed.blockGate.blockID, GateStaticRenderer.instance);
-
+        **/
 		// Microblocks
 		RenderIDs.renderIdMicroblock = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(MultiblockRenderer.instance);

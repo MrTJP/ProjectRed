@@ -1,4 +1,5 @@
 package mrtjp.projectred.multipart.wiring.gates;
+import mrtjp.projectred.integration.TileGate;
 import mrtjp.projectred.utils.gui.BaseContainer;
 import net.minecraft.entity.player.EntityPlayer;
 

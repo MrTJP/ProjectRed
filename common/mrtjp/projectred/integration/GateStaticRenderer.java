@@ -1,6 +1,9 @@
-package mrtjp.projectred.multipart.wiring.gates;
+package mrtjp.projectred.integration;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
+import mrtjp.projectred.multipart.wiring.gates.BlockGate;
+import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge;
+import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge.Default;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
@@ -17,25 +20,19 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRenderer {
+public class GateStaticRenderer implements IItemRenderer {
 
 	private GateRenderBridge defaultRendering = new GateRenderBridge.Default();
 	private RotatedRenderer rotatedRenderer = new RotatedRenderer();
 	public static final GateStaticRenderer instance = new GateStaticRenderer();
 
-	@Override
-	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int model, RenderBlocks render) {
-		TileGate te = (TileGate) world.getBlockTileEntity(x, y, z);
+	public boolean renderWorldBlock(TileGate te, int x, int y, int z) {
 		int side = te.getSide();
 		int front = te.getFront();
-		EnumGate type = te.getType();
+		EnumGate type = te.getGateType();
 		if (type == null) {
 			return true;
 		}
-
-		BlockGate.renderSide = -(side ^ 1) - 1;
-		BlockGate.textureOverride = null;
-		BlockGate.colourOverride = -1;
 
 		GateRenderBridge rendering = type.getRenderBridge();
 		rendering.set(te.getRenderState());
@@ -44,13 +41,12 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 		rotatedRenderer.z = z;
 		rotatedRenderer.side = side;
 		rotatedRenderer.front = front;
-		rotatedRenderer.renderBlocks = render;
 
-		CCRenderState.reset();
 		BasicRenderUtils.bindTerrainResource();
+		CCRenderState.reset();
 		CCRenderState.setColour(0);
 		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
-		CCRenderState.setBrightness(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
+		CCRenderState.setBrightness(te.world(), te.x(), te.y(), te.z());
 		rotatedRenderer.renderPartModel(rendering._modelBase, "base", .5f, 0, .5f, -1, -1, false);
 		for (int i = 0; i < rendering.wireColor.length; i++) {
 			float[] xPositions = rendering.wirePosX[i];
@@ -78,8 +74,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 		return true;
 	}
 
-	@Override
-	public void renderInventoryBlock(Block block, int meta, int model, RenderBlocks render) {
+	public void renderInventoryBlock(int meta, int model, RenderBlocks render) {
 		EnumGate type = EnumGate.VALUES[meta];
 		GateRenderBridge rendering = (type == null ? defaultRendering : type.getRenderBridge());
 		rendering.setItemRender();
@@ -119,18 +114,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 			GateDynamicRenderer.renderGlowOnTorch(rotatedRenderer, rendering.pointerX[i], 0, rendering.pointerZ[i], rendering._torchOn);
 		}
 		rendering.renderSpecials(rotatedRenderer, false);
-		BlockGate.renderTypeOverride = -1;
 		CCRenderState.draw();
-	}
-
-	@Override
-	public boolean shouldRender3DInInventory() {
-		return true;
-	}
-
-	@Override
-	public int getRenderId() {
-		return RenderIDs.renderIdGate;
 	}
 
 	@Override
@@ -145,7 +129,7 @@ public class GateStaticRenderer implements ISimpleBlockRenderingHandler, IItemRe
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-		this.renderInventoryBlock(null, item.getItemDamage(), 0, null);
+		this.renderInventoryBlock(item.getItemDamage(), 0, null);
 	}
 
 }

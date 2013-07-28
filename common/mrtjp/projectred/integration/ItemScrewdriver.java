@@ -1,10 +1,9 @@
-package mrtjp.projectred.items;
+package mrtjp.projectred.integration;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.ProjectRedTabs;
-import mrtjp.projectred.multipart.wiring.gates.TileGate;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -23,30 +22,17 @@ public class ItemScrewdriver extends Item {
 
 	@Override
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float par8, float par9, float par10) {
-		if (w.getBlockId(x, y, z) == ProjectRed.blockGate.blockID) {
-			if (w.isRemote) {
-				return true;
-			}
-			TileGate te = (TileGate) w.getBlockTileEntity(x, y, z);
-			if (player.isSneaking()) {
-				te.configure();
-			} else {
-				te.rotate();
-			}
-			ItemStack held = player.getHeldItem();
-			if (held.itemID == ProjectRed.itemScrewdriver.itemID) {
-				held.damageItem(1, player);
-			}
-			return true;
+		ItemStack held = player.getHeldItem();
+		if (held.itemID == ProjectRed.itemScrewdriver.itemID) {
+			held.damageItem(1, player);
 		}
+		return true;
 
-		return false;
 	}
-	
-    @SideOnly(Side.CLIENT)
-    public void registerIcons(IconRegister reg)
-    {
-        this.itemIcon = reg.registerIcon("projectred:screwdriver");
-    }
+
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IconRegister reg) {
+		this.itemIcon = reg.registerIcon("projectred:screwdriver");
+	}
 
 }
