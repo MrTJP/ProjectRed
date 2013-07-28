@@ -1,12 +1,11 @@
 package mrtjp.projectred.integration;
 
+import static mrtjp.projectred.ProjectRed.itemPartGate;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.network.IProxy;
-import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.MultiPartRegistry;
+import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;
-
-import static mrtjp.projectred.ProjectRed.*;
 
 public class IntegrationProxy implements IProxy, IPartFactory {
 

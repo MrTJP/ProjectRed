@@ -2,14 +2,9 @@ package mrtjp.projectred.integration;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
 import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge;
-import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge.Default;
 import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
 import mrtjp.projectred.utils.BasicRenderUtils;
-import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
+import codechicken.lib.render.CCRenderState;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

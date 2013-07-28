@@ -1,12 +1,8 @@
 package mrtjp.projectred.renderstuffs;
 
-import mrtjp.projectred.crafting.AlloySmelterRecipe;
 import mrtjp.projectred.tiles.TileTurbineRotary;
-import mrtjp.projectred.utils.BasicGuiUtils;
-import mrtjp.projectred.utils.BasicGuiUtils.GuiItemRenderOptions;
 import mrtjp.projectred.utils.gui.BaseGuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;

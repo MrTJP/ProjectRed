@@ -557,7 +557,10 @@ public abstract class GateLogic {
 			ticksLeft--;
 			if (ticksLeft <= 0) {
 				ticksLeft = intervalTicks;
-				state = (state + 1) & 3;
+				state++;
+				if (state > 3) {
+					state = 0;
+				}
 			}
 
 			outputs[FRONT] = state == 0 ? (short) 255 : 0;
@@ -617,12 +620,6 @@ public abstract class GateLogic {
 			else
 				ticksLeft = 0;
 		}
-
-		@Override
-		public boolean connectsToDirection(int side) {
-			return side == FRONT || side == BACK;
-		}
-
 	}
 
 	public static class PulseFormer extends GateLogic {

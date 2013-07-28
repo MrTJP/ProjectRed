@@ -1,21 +1,13 @@
 package mrtjp.projectred.integration;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
-import mrtjp.projectred.multipart.wiring.gates.BlockGate;
 import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge;
-import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge.Default;
-import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.utils.BasicRenderUtils;
-import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.IItemRenderer;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import codechicken.lib.render.CCRenderState;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

@@ -15,7 +15,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.ForgeDirection;
 
 public class TileTurbineRotary extends TileMachineBase {

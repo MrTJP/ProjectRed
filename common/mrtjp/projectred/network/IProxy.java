@@ -1,6 +1,5 @@
 package mrtjp.projectred.network;
 
-import mrtjp.projectred.core.IProjectRedModule;
 
 
 public abstract interface IProxy {

@@ -1,7 +1,5 @@
 package mrtjp.projectred.integration;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.ProjectRedTabs;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -9,6 +7,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemScrewdriver extends Item {
 	public ItemScrewdriver(int id) {
@@ -28,6 +28,11 @@ public class ItemScrewdriver extends Item {
 		}
 		return true;
 
+	}
+
+	@Override
+	public boolean shouldPassSneakingClickToBlock(World w, int x, int y, int z) {
+		return true;
 	}
 
 	@SideOnly(Side.CLIENT)

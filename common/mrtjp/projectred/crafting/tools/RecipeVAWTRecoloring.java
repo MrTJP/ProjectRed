@@ -1,6 +1,5 @@
 package mrtjp.projectred.crafting.tools;
 
-import cpw.mods.fml.common.registry.LanguageRegistry;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.items.ItemVAWT;
 import net.minecraft.inventory.InventoryCrafting;
