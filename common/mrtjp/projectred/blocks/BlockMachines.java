@@ -135,6 +135,12 @@ public class BlockMachines extends BlockContainer {
 		return 0;
 	}
 
+	@Override
+	public int damageDropped(int par1)
+    {
+        return par1;
+    }
+
 	public enum EnumMachine {
 		ALLOYSMELTER("Alloy Smelter", "machinealloy", TileAlloySmelter.class, new IIconIndexer() {
 			@Override
