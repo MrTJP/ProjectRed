@@ -1,6 +1,5 @@
 package mrtjp.projectred.integration;
 
-import static codechicken.lib.vec.Rotation.sideOrientation;
 import static codechicken.lib.vec.Rotation.sideRotations;
 import static codechicken.lib.vec.Vector3.center;
 
@@ -11,7 +10,6 @@ import mrtjp.projectred.interfaces.wiring.IBundledEmitter;
 import mrtjp.projectred.interfaces.wiring.IBundledUpdatable;
 import mrtjp.projectred.interfaces.wiring.IBundledWire;
 import mrtjp.projectred.interfaces.wiring.IConnectable;
-import mrtjp.projectred.interfaces.wiring.IRedstoneUpdatable;
 import mrtjp.projectred.interfaces.wiring.IRedstoneWire;
 import mrtjp.projectred.interfaces.wiring.IWire;
 import mrtjp.projectred.multipart.wiring.gates.GateLogic;
@@ -20,7 +18,6 @@ import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
 import mrtjp.projectred.utils.Dir;
-import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -35,12 +32,11 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
-import codechicken.microblock.JMicroShrinkRender;
 import codechicken.multipart.IFaceRedstonePart;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
-import codechicken.multipart.JPartialOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TFacePart;
@@ -285,7 +281,7 @@ public class TileGate extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		if (type == null) {
 			return;
 		}
-		
+
 		inputs = computeInputs();
 		// update render state with new inputs but not new outputs
 		updateRenderState();
@@ -554,8 +550,12 @@ public class TileGate extends JCuboidPart implements TFacePart, IFaceRedstonePar
 
 	// called when non-shift-clicked by a screwdriver
 	public void rotate() {
-		int relativeRotationIndex = Rotation.rotationTo(side, front) + 1;
-		front = (byte) (relativeRotationIndex > 3 ? 0 : relativeRotationIndex);
+		int relativeRotationIndex = Rotation.rotationTo(side, front);
+		relativeRotationIndex++;
+		if (relativeRotationIndex > 3) {
+			relativeRotationIndex = 0;
+		}
+		front = (byte) (Rotation.rotateSide(side, relativeRotationIndex));
 		if (BasicUtils.isServer(world())) {
 			updateLogic(false, true);
 			updateChange();
@@ -572,8 +572,10 @@ public class TileGate extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		if (held != null && held.getItem() == ProjectRed.itemScrewdriver) {
 			if (player.isSneaking()) {
 				this.configure();
+				return true;
 			} else {
 				this.rotate();
+				return true;
 			}
 		}
 
@@ -671,9 +673,15 @@ public class TileGate extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	}
 
 	@Override
-	public int strongPowerLevel(int side) {
-		// TODO switch
-		return getVanillaOutputStrength(side);
+	public int strongPowerLevel(int sideOut) {
+		try {
+			int ourRot = Rotation.rotationTo(side, front);
+			int askedRot = Rotation.rotationTo(side, sideOut);
+			int rotIndex = (Math.max(ourRot, askedRot) - Math.min(ourRot, askedRot));
+			return outputs[rotIndex];
+		} catch (Throwable t) {
+			return 0;
+		}
 	}
 
 	@Override
@@ -682,8 +690,19 @@ public class TileGate extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	}
 
 	@Override
-	public boolean canConnectRedstone(int side) {
-		return logic == null ? false : logic.connectsToDirection(side);
+	public boolean canConnectRedstone(int sideConnect) {
+		if (type == null) {
+			return false;
+		}
+		try {
+			GateLogic l = type.getLogicClass().newInstance();
+			int ourRot = Rotation.rotationTo(side, front);
+			int askedRot = Rotation.rotationTo(side, sideConnect);
+			int rotIndex = (Math.max(ourRot, askedRot) - Math.min(ourRot, askedRot));
+			return l.connectsToDirection(rotIndex);
+		} catch (Throwable t) {
+			return false;
+		}
 	}
 
 	@Override

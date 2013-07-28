@@ -69,8 +69,8 @@ public class ItemBlockGate extends ItemBlock {
 		}
 
 		if (world.getBlockId(x, y, z) == itemID) {
-			world.setBlockTileEntity(x, y, z, new TileGate(EnumGate.values()[meta], side ^ 1, front));
-			world.notifyBlocksOfNeighborChange(x, y, z, itemID);
+			//world.setBlockTileEntity(x, y, z, new TileGate(EnumGate.values()[meta], side ^ 1, front));
+			//world.notifyBlocksOfNeighborChange(x, y, z, itemID);
 		}
 		return true;
 	}

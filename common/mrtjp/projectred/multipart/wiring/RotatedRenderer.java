@@ -2,11 +2,11 @@ package mrtjp.projectred.multipart.wiring;
 
 import mrtjp.projectred.network.ClientProxy;
 import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
-import mrtjp.projectred.utils.codechicken.core.render.IUVTransformation;
-import mrtjp.projectred.utils.codechicken.core.render.IconTransformation;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.Icon;
+import codechicken.lib.render.IUVTransformation;
+import codechicken.lib.render.IconTransformation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

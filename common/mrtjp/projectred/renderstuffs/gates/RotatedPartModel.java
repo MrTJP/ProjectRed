@@ -2,14 +2,16 @@ package mrtjp.projectred.renderstuffs.gates;
 
 import java.util.Map;
 
-import mrtjp.projectred.utils.codechicken.core.render.CCModel;
-import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
-import mrtjp.projectred.utils.codechicken.core.render.IUVTransformation;
 import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
-import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
-import mrtjp.projectred.utils.codechicken.core.vec.TransformationList;
-import mrtjp.projectred.utils.codechicken.core.vec.Translation;
 import net.minecraft.util.Icon;
+import net.minecraft.util.ResourceLocation;
+import codechicken.lib.render.CCModel;
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.IUVTransformation;
+import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.TransformationList;
+import codechicken.lib.vec.Translation;
+import codechicken.lib.vec.Vector3;
 
 /**
  * RotatedTessellator can easily render these models at x, y, z with side and
@@ -37,10 +39,10 @@ public class RotatedPartModel {
 	 * @param Icon
 	 */
 	public RotatedPartModel(Map<String, CCModel> objModel, String objName, Icon icon) {
-		String baseObj = "/assets/projectred/textures/obj/";
+		String baseObj = "/textures/obj/";
 		objPath = baseObj + objName;
 		if (objModel == null) {
-			models = CCModel.parseObjModels(objPath, 7, new InvertX());
+			models = CCModel.parseObjModels(new ResourceLocation("projectred", objPath), 7, new InvertX());
 			for (CCModel m : models.values()) {
 				m.shrinkUVs(0.0005);
 			}
@@ -88,7 +90,7 @@ public class RotatedPartModel {
 			if (degRotation > -1) {
 				tl.with(new Rotation(Math.toRadians(degRotation), 0, 1, 0).inverse());
 			}
-			tl.with(new Translation(xOffset, yOffset, zOffset)).with(Rotation.getForSideFacing(side, facing)).with(new Translation(x, y, z));
+			tl.with(new Translation(xOffset, yOffset, zOffset)).with(Rotation.sideOrientation(side, Rotation.rotationTo(side, facing)).at(Vector3.center)).with(new Translation(x, y, z));
 			if (color > -1) {
 				CCRenderState.setColourOpaque(color);
 			}

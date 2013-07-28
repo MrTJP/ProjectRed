@@ -3,13 +3,14 @@ package mrtjp.projectred.renderstuffs;
 import java.util.Map;
 
 import mrtjp.projectred.multipart.wiring.wires.TileWire;
-import mrtjp.projectred.utils.codechicken.core.render.CCModel;
-import mrtjp.projectred.utils.codechicken.core.render.IconTransformation;
-import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
-import mrtjp.projectred.utils.codechicken.core.vec.TransformationList;
-import mrtjp.projectred.utils.codechicken.core.vec.Translation;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.util.Icon;
+import codechicken.lib.render.CCModel;
+import codechicken.lib.render.IconTransformation;
+import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.TransformationList;
+import codechicken.lib.vec.Translation;
+import codechicken.lib.vec.Vector3;
 
 public class WireRenderAssistant {
 
@@ -177,7 +178,7 @@ public class WireRenderAssistant {
 			return;
 		}
 		TransformationList t = new TransformationList();
-		t.with(new Translation(.5 + xOffset, 0 + yOffset, .5 + zOffset)).with(Rotation.getForSideFacing(side, (facing > -1 ? facing : frontMap_NS[side]))).with(new Translation(x, y, z));
+		t.with(new Translation(.5 + xOffset, 0 + yOffset, .5 + zOffset)).with(Rotation.sideOrientation(side, Rotation.rotationTo(side, facing > -1 ? facing : frontMap_NS[side])).at(Vector3.center)).with(new Translation(x, y, z));
 		cc.render(0, cc.verts.length, t, new IconTransformation(renderBlocks != null && renderBlocks.overrideBlockTexture != null ? renderBlocks.overrideBlockTexture : wireIcon), null);
 	}
 
@@ -187,7 +188,7 @@ public class WireRenderAssistant {
 			return;
 		}
 		TransformationList t = new TransformationList();
-		t.with(new Translation(.5 + xOffset, 0 + yOffset, .5 + zOffset)).with(Rotation.getForSideFacing(side, (facing > -1 ? facing : frontMap_WE[side]))).with(new Translation(x, y, z));
+		t.with(new Translation(.5 + xOffset, 0 + yOffset, .5 + zOffset)).with(Rotation.sideOrientation(side, Rotation.rotationTo(side, facing > -1 ? facing : frontMap_WE[side])).at(Vector3.center)).with(new Translation(x, y, z));
 		cc.render(0, cc.verts.length, t, new IconTransformation(renderBlocks != null && renderBlocks.overrideBlockTexture != null ? renderBlocks.overrideBlockTexture : wireIcon), null);
 	}
 	/** End Wire Rendering **/

@@ -318,7 +318,7 @@ public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedston
 
 	// normal direction -> canConnectRedstone direction parameter
 	// (-2 indicates this direction cannot be passed)
-	private static int[] canConnectRedstoneDirectionMap = { -1, -2, 0, 2, 1, 3 };
+	private static int[] canConnectRedstoneDirectionMap = {-2, -1, 0, 2, 3, 1};
 
 	@Override
 	protected boolean connects(int x, int y, int z, int wireSide, int direction) {

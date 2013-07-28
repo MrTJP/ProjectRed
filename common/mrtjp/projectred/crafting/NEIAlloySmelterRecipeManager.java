@@ -8,7 +8,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.PositionedStack;
-import codechicken.nei.forge.GuiContainerManager;
 import codechicken.nei.recipe.ShapedRecipeHandler;
 
 public class NEIAlloySmelterRecipeManager extends ShapedRecipeHandler {

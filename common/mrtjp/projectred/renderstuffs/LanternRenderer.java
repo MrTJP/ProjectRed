@@ -1,11 +1,11 @@
 package mrtjp.projectred.renderstuffs;
 
 import mrtjp.projectred.tiles.TileLantern;
-import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.IItemRenderer;
+import codechicken.lib.render.CCRenderState;
 
 public class LanternRenderer extends TileEntitySpecialRenderer implements IItemRenderer {
 	public static LanternRenderer instance = new LanternRenderer();
