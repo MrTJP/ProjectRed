@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Random;
 
 import mrtjp.projectred.crafting.ProjectRedTabs;
+import mrtjp.projectred.integration.EnumGate;
+import mrtjp.projectred.integration.TileGate;
 import mrtjp.projectred.multipart.BlockMultipartBase;
 import mrtjp.projectred.network.ClientProxy;
 import mrtjp.projectred.renderstuffs.RenderIDs;

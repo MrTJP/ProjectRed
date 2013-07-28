@@ -1,12 +1,12 @@
 package mrtjp.projectred.network;
 
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.integration.TileGate;
 import mrtjp.projectred.items.ItemBackpack;
 import mrtjp.projectred.multipart.wiring.gates.ContainerCounter;
 import mrtjp.projectred.multipart.wiring.gates.ContainerTimer;
 import mrtjp.projectred.multipart.wiring.gates.GuiCounter;
 import mrtjp.projectred.multipart.wiring.gates.GuiTimer;
-import mrtjp.projectred.multipart.wiring.gates.TileGate;
 import mrtjp.projectred.renderstuffs.GuiAlloySmelter;
 import mrtjp.projectred.renderstuffs.GuiBackpack;
 import mrtjp.projectred.renderstuffs.GuiTurbineRotary;

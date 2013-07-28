@@ -1,6 +1,8 @@
-package mrtjp.projectred.multipart.wiring.gates;
+package mrtjp.projectred.integration;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
+import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge;
+import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge.Default;
 import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
@@ -12,19 +14,18 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GateDynamicRenderer extends TileEntitySpecialRenderer {
+public class GateDynamicRenderer {
 
 	public final static GateDynamicRenderer instance = new GateDynamicRenderer();
 	RotatedRenderer rotatedTess = new RotatedRenderer();
 	private GateRenderBridge defaultRendering = new GateRenderBridge.Default();
 
-	@Override
-	public void renderTileEntityAt(TileEntity var1, double x, double y, double z, float partialTick) {
+	public void renderGateWithTESR(TileGate var1, double x, double y, double z) {
 		TileGate te = (TileGate) var1;
 		if (te.getType() == null) {
 			return;
 		}
-		EnumGate type = te.getType();
+		EnumGate type = te.getGateType();
 
 		rotatedTess.x = x;
 		rotatedTess.y = y;

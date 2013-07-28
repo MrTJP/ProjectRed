@@ -11,13 +11,16 @@ import mrtjp.projectred.blocks.ItemBlockLantern;
 import mrtjp.projectred.blocks.ItemBlockMachines;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.crafting.CraftingRecipeManager;
+import mrtjp.projectred.integration.EnumGate;
+import mrtjp.projectred.integration.ItemPartGate;
+import mrtjp.projectred.integration.ItemScrewdriver;
+import mrtjp.projectred.integration.TileGate;
 import mrtjp.projectred.items.ItemBackpack;
 import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemDrawPlate;
 import mrtjp.projectred.items.ItemPart;
 import mrtjp.projectred.items.ItemPart.EnumPart;
 import mrtjp.projectred.items.ItemSaw;
-import mrtjp.projectred.items.ItemScrewdriver;
 import mrtjp.projectred.items.ItemVAWT;
 import mrtjp.projectred.items.ItemWoolGin;
 import mrtjp.projectred.multipart.BlockMultipartBase;
@@ -28,9 +31,7 @@ import mrtjp.projectred.multipart.microblocks.TileMicroblockContainer;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
 import mrtjp.projectred.multipart.wiring.InvalidTile;
 import mrtjp.projectred.multipart.wiring.gates.BlockGate;
-import mrtjp.projectred.multipart.wiring.gates.EnumGate;
 import mrtjp.projectred.multipart.wiring.gates.ItemBlockGate;
-import mrtjp.projectred.multipart.wiring.gates.TileGate;
 import mrtjp.projectred.multipart.wiring.wires.BlockWire;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
@@ -90,6 +91,10 @@ public class ProjectRed {
 	public static ItemWoolGin itemWoolGin;
 	public static ItemBackpack itemBackpack;
 	public static ItemVAWT itemVAWT;
+	
+	/** Multipart items **/
+	public static ItemPartGate itemPartGate;
+	
 
 	@Instance("ProjectRed")
 	public static ProjectRed instance;
@@ -97,10 +102,12 @@ public class ProjectRed {
 	@Mod.PreInit
 	public void preInit(FMLPreInitializationEvent event) {
 		Configurator.initConfig(event);
+		BasicUtils.proxy.preinit();
 	}
 
 	@Mod.Init
 	public void init(FMLInitializationEvent event) {
+		BasicUtils.proxy.init();
 		// Lamps
 		if (Configurator.block_lampID.getInt() > 0) {
 			blockLamp = new BlockLamp(Configurator.block_lampID.getInt());
@@ -144,14 +151,9 @@ public class ProjectRed {
 		}
 
 		// Gate block
-		if (Configurator.block_gateID.getInt() > 0) {
-			blockGate = new BlockGate(Configurator.block_gateID.getInt());
-			GameRegistry.registerBlock(blockGate, ItemBlockGate.class, "projred.gate");
-			GameRegistry.registerTileEntity(TileGate.class, "tile.projred.gate");
-			for (EnumGate g : EnumGate.VALUES) {
-				LanguageRegistry.addName(new ItemStack(blockGate, 1, g.ordinal()), g.name);
-			}
-		}
+		// MOVED
+		
+		
 		// Wire block
 		if (Configurator.block_wireID.getInt() > 0) {
 			blockWire = new BlockWire(Configurator.block_wireID.getInt());
@@ -224,6 +226,7 @@ public class ProjectRed {
 
 	@Mod.PostInit
 	public void postInit(FMLPostInitializationEvent event) {
+		BasicUtils.proxy.postinit();
 		MicroblockLibrary.instance = new MicroblockLibrary();
 		// MicroblockLibrary.instance.initializeParts();
 		MicroblockLibrary.instance.initializeBlockScan();

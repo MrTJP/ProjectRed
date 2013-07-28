@@ -1,6 +1,35 @@
-package mrtjp.projectred.multipart.wiring.gates;
+package mrtjp.projectred.integration;
 
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic;
+import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.Buffer;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.BundledMultiplexer;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.BundledRelay;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.Counter;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.DFlop;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.DLatch;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.LightSensor;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.NAND;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.NOR;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.NOT;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.OR;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.PulseFormer;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.RainSensor;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.Sequencer;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.StateCell;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.Stateless;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.Timer;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.ToggleLatch;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.XNOR;
+import mrtjp.projectred.multipart.wiring.gates.GateLogic.XOR;
+import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge.AND;
+import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge.BundledLatch;
+import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge.Multiplexer;
+import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge.RSLatch;
+import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge.Randomizer;
+import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge.Repeater;
+import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge.Synchronizer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -86,7 +115,7 @@ public enum EnumGate {
 	}
 	
 	public ItemStack getItemStack() {
-		return new ItemStack(ProjectRed.blockGate, 1, meta);
+		return new ItemStack(ProjectRed.itemPartGate, 1, meta);
 	}
 	
 	public static void initOreDictDefinitions() {

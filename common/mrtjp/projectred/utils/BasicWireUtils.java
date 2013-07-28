@@ -20,9 +20,9 @@ public class BasicWireUtils {
 	private static int[][] rotationMap = { { 9, 9, 4, 5, 3, 2 }, { 9, 9, 5, 4, 2, 3 }, { 5, 4, 9, 9, 0, 1 }, { 4, 5, 9, 9, 1, 0 }, { 2, 3, 1, 0, 9, 9 }, { 3, 2, 0, 1, 9, 9 }, };
 
 	public static final int FRONT = 0;
-	public static final int BACK = 1;
-	public static final int LEFT = 2;
-	public static final int RIGHT = 3;
+	public static final int RIGHT = 1;
+	public static final int BACK = 2;
+	public static final int LEFT = 3;
 
 	/** [side][front][relative direction] to absolute direction **/
 	public static final int[][][] dirMap = new int[6][6][4];

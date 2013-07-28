@@ -1,5 +1,7 @@
 package mrtjp.projectred.multipart.wiring.gates;
 
+import mrtjp.projectred.integration.EnumGate;
+import mrtjp.projectred.integration.TileGate;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Dir;
 import net.minecraft.entity.player.EntityPlayer;

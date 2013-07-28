@@ -8,6 +8,7 @@ import static mrtjp.projectred.utils.BasicWireUtils.RIGHT;
 import java.util.Random;
 
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.integration.TileGate;
 import mrtjp.projectred.network.GuiIDs;
 import mrtjp.projectred.utils.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,7 +22,7 @@ public abstract class GateLogic {
 	// For redstone connections, inputs and outputs are signal strength 0-255.
 	// For bundled connections, inputs and outputs are a bitmask, with bit 0 =
 	// white.
-	public abstract void update(short[] inputs, short[] outputs, int gateSettings);
+	public abstract void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings);
 
 	public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
 		return 0;
@@ -49,10 +50,11 @@ public abstract class GateLogic {
 	}
 
 	/**
-	 * Marker interface for gate-logic classes which do not store any state and
-	 * can thus be shared between multiple gates. This does not mean the gate
-	 * has no state - for example RS latches are Stateless, but they store their
-	 * only state in the input and output arrays.
+	 * Gates that are considered stateless will not update every tick. Instead,
+	 * they will ONLY update when a neighbor changes. Examples are OR gate and
+	 * Timer. The OR gate only needs to update when its inputs changed to
+	 * reflect on the outputs. However, a Timer needs to update every tick to
+	 * spin the pointer, and if the time is up, pulse the output.
 	 */
 	public static interface Stateless {
 	}
@@ -96,7 +98,7 @@ public abstract class GateLogic {
 		// gateSettings 2: back input ignored
 		// gateSettings 4: right input ignored
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			boolean left = inputs[LEFT] != 0 || (gateSettings & 1) != 0;
 			boolean back = inputs[BACK] != 0 || (gateSettings & 2) != 0;
 			boolean right = inputs[RIGHT] != 0 || (gateSettings & 4) != 0;
@@ -119,7 +121,7 @@ public abstract class GateLogic {
 		// gateSettings 2: back input ignored
 		// gateSettings 4: right input ignored
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			boolean left = inputs[LEFT] != 0 && (gateSettings & 1) == 0;
 			boolean back = inputs[BACK] != 0 && (gateSettings & 2) == 0;
 			boolean right = inputs[RIGHT] != 0 && (gateSettings & 4) == 0;
@@ -139,7 +141,7 @@ public abstract class GateLogic {
 
 	public static class NOT extends GateLogic implements Stateless {
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			outputs[FRONT] = outputs[LEFT] = outputs[RIGHT] = (short) (inputs[BACK] != 0 ? 0 : 255);
 			if ((gateSettings & 1) != 0)
 				outputs[LEFT] = 0;
@@ -162,7 +164,7 @@ public abstract class GateLogic {
 
 	public static class RSLatch extends GateLogic implements Stateless, Flippable {
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[LEFT] != 0 && inputs[RIGHT] != 0)
 				outputs[LEFT] = outputs[RIGHT] = 0;
 			else if (inputs[LEFT] != 0) {
@@ -188,7 +190,7 @@ public abstract class GateLogic {
 		private boolean state;
 
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[LEFT] != 0 && !wasLeft)
 				state = !state;
 			if (inputs[RIGHT] != 0 && !wasRight)
@@ -226,7 +228,7 @@ public abstract class GateLogic {
 
 	public static class NOR extends GateLogic implements Stateless {
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			boolean left = inputs[LEFT] != 0 && (gateSettings & 1) == 0;
 			boolean back = inputs[BACK] != 0 && (gateSettings & 2) == 0;
 			boolean right = inputs[RIGHT] != 0 && (gateSettings & 4) == 0;
@@ -246,7 +248,7 @@ public abstract class GateLogic {
 
 	public static class NAND extends GateLogic implements Stateless {
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			boolean left = inputs[LEFT] != 0 || (gateSettings & 1) != 0;
 			boolean back = inputs[BACK] != 0 || (gateSettings & 2) != 0;
 			boolean right = inputs[RIGHT] != 0 || (gateSettings & 4) != 0;
@@ -266,7 +268,7 @@ public abstract class GateLogic {
 
 	public static class XOR extends GateLogic implements Stateless {
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			outputs[FRONT] = (inputs[LEFT] != 0) ^ (inputs[RIGHT] != 0) ? (short) 255 : 0;
 		}
 
@@ -283,7 +285,7 @@ public abstract class GateLogic {
 
 	public static class XNOR extends GateLogic implements Stateless {
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			outputs[FRONT] = !((inputs[LEFT] != 0) ^ (inputs[RIGHT] != 0)) ? (short) 255 : 0;
 		}
 
@@ -300,7 +302,7 @@ public abstract class GateLogic {
 
 	public static class Buffer extends GateLogic implements Stateless {
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			outputs[FRONT] = outputs[LEFT] = outputs[RIGHT] = inputs[BACK];
 		}
 
@@ -312,7 +314,7 @@ public abstract class GateLogic {
 
 	public static class Multiplexer extends GateLogic implements Stateless, Flippable {
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			outputs[FRONT] = inputs[BACK] != 0 ? inputs[LEFT] : inputs[RIGHT];
 		}
 
@@ -337,7 +339,7 @@ public abstract class GateLogic {
 		private int timer;
 
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[BACK] != 0 && state) {
 				timer = 0;
 				return;
@@ -399,7 +401,7 @@ public abstract class GateLogic {
 		public boolean state, stopped;
 
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			stopped = inputs[BACK] != 0;
 			if (inputs[BACK] != 0) {
 				state = true;
@@ -418,7 +420,7 @@ public abstract class GateLogic {
 
 		@Override
 		public void onRightClick(EntityPlayer ply, TileGate tile) {
-			ply.openGui(ProjectRed.instance, GuiIDs.ID_Timer, tile.worldObj, tile.xCoord, tile.yCoord, tile.zCoord);
+			ply.openGui(ProjectRed.instance, GuiIDs.ID_Timer, tile.world(), tile.x(), tile.y(), tile.z());
 		}
 
 		@Override
@@ -491,7 +493,7 @@ public abstract class GateLogic {
 
 		@Override
 		public void onRightClick(EntityPlayer ply, TileGate tile) {
-			ply.openGui(ProjectRed.instance, GuiIDs.ID_Counter, tile.worldObj, tile.xCoord, tile.yCoord, tile.zCoord);
+			ply.openGui(ProjectRed.instance, GuiIDs.ID_Counter, tile.world(), tile.x(), tile.y(), tile.z());
 		}
 
 		@Override
@@ -503,7 +505,7 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 
 			if (inputs[FRONT] != 0 && !wasFront)
 				value = Math.max(0, value - decr);
@@ -551,7 +553,7 @@ public abstract class GateLogic {
 		public int state;
 
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			ticksLeft--;
 			if (ticksLeft <= 0) {
 				ticksLeft = intervalTicks;
@@ -566,7 +568,7 @@ public abstract class GateLogic {
 
 		@Override
 		public void onRightClick(EntityPlayer ply, TileGate tile) {
-			ply.openGui(ProjectRed.instance, GuiIDs.ID_Timer, tile.worldObj, tile.xCoord, tile.yCoord, tile.zCoord);
+			ply.openGui(ProjectRed.instance, GuiIDs.ID_Timer, tile.world(), tile.x(), tile.y(), tile.z());
 		}
 
 		@Override
@@ -628,7 +630,7 @@ public abstract class GateLogic {
 		private int ticksLeft;
 
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[BACK] != 0 && !prevInput) {
 				outputs[FRONT] = (short) 255;
 				ticksLeft = 3;
@@ -664,7 +666,7 @@ public abstract class GateLogic {
 		private Random random = new Random();
 
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[BACK] != 0 && ticksLeft == 0) {
 				ticksLeft = 20;
 				outputs[FRONT] = random.nextBoolean() ? (short) 255 : 0;
@@ -718,11 +720,11 @@ public abstract class GateLogic {
 
 		@Override
 		public void onRightClick(EntityPlayer ply, TileGate tile) {
-			ply.openGui(ProjectRed.instance, GuiIDs.ID_Timer, tile.worldObj, tile.xCoord, tile.yCoord, tile.zCoord);
+			ply.openGui(ProjectRed.instance, GuiIDs.ID_Timer, tile.world(), tile.x(), tile.y(), tile.z());
 		}
 
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[LEFT] != 0 && !timing) {
 				timing = true;
 				ticksLeft = intervalTicks;
@@ -786,7 +788,7 @@ public abstract class GateLogic {
 		private int pulseTicks;
 
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[LEFT] == 0 && wasLeft)
 				leftLatch = true;
 			if (inputs[RIGHT] == 0 && wasRight)
@@ -835,7 +837,7 @@ public abstract class GateLogic {
 
 	public static class DLatch extends GateLogic implements Stateless, Flippable {
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[RIGHT] != 0) {
 				outputs[FRONT] = outputs[LEFT] = (short) (inputs[BACK] != 0 ? 255 : 0);
 			}
@@ -861,7 +863,7 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[RIGHT] != 0 && !clockWasOn) {
 				outputs[FRONT] = outputs[LEFT] = (short) (inputs[BACK] != 0 ? 255 : 0);
 			}
@@ -876,7 +878,7 @@ public abstract class GateLogic {
 
 	public static class BundledLatch extends GateLogic implements Stateless, Flippable, WithBundledConnections {
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[RIGHT] != 0) {
 				outputs[FRONT] = inputs[BACK];
 			}
@@ -901,7 +903,7 @@ public abstract class GateLogic {
 
 	public static class BundledRelay extends GateLogic implements Stateless, Flippable, WithBundledConnections {
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			outputs[FRONT] = (inputs[RIGHT] != 0) ? inputs[BACK] : 0;
 		}
 
@@ -924,7 +926,7 @@ public abstract class GateLogic {
 
 	public static class BundledMultiplexer extends GateLogic implements Stateless, Flippable, WithBundledConnections {
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			outputs[FRONT] = (inputs[BACK] != 0) ? inputs[RIGHT] : inputs[LEFT];
 		}
 
@@ -948,7 +950,7 @@ public abstract class GateLogic {
 		int threshold;
 
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			threshold = gateSettings;
 			// Dont do this calculation every tick.
 			if (w != null && w.getTotalWorldTime() % 8 == 0) {
@@ -984,7 +986,7 @@ public abstract class GateLogic {
 			gateSettings++;
 			return (gateSettings > 5 ? 0 : gateSettings);
 		}
-		
+
 		public boolean connectsToDirection(int side) {
 			return side == BACK;
 		}
@@ -997,7 +999,7 @@ public abstract class GateLogic {
 		int z;
 
 		@Override
-		public void update(short[] inputs, short[] outputs, int gateSettings) {
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			// Dont do this calculation every tick.
 			if (w != null && w.getTotalWorldTime() % 8 == 0) {
 				outputs[BACK] = (short) (w.isRaining() && BasicUtils.canBlockSeeSky(w, x, y, z) ? 255 : 0);
@@ -1021,7 +1023,7 @@ public abstract class GateLogic {
 		public boolean needsWorldInfo() {
 			return w == null;
 		}
-		
+
 		public boolean connectsToDirection(int side) {
 			return side == BACK;
 		}
