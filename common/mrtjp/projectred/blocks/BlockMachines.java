@@ -1,11 +1,13 @@
 package mrtjp.projectred.blocks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.ProjectRedTabs;
 import mrtjp.projectred.tiles.TileAlloySmelter;
 import mrtjp.projectred.tiles.TileMachineBase;
+import mrtjp.projectred.tiles.TileTurbineRotary;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.Coords;
 import net.minecraft.block.BlockContainer;
@@ -23,10 +25,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockMachines extends BlockContainer {
-
-	public Icon[][] machineIcons = new Icon[EnumMachine.VALID_MACHINES.length][6];
-
-	public Icon[][] specialIcons = new Icon[EnumMachine.VALID_MACHINES.length][6];
 
 	public BlockMachines(int id) {
 		super(id, new Material(Material.iron.materialMapColor));
@@ -85,8 +83,13 @@ public class BlockMachines extends BlockContainer {
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {
 		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileMachineBase.class);
 		if (tile != null) {
-			tile.onBlockPlaced(entity, itemstack);
+			tile.onBlockPlacedBy(entity, itemstack);
 		}
+	}
+	
+	@Override
+	public final ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int metadata, int fortune) {
+		return new ArrayList<ItemStack>();
 	}
 
 	@Override
@@ -99,9 +102,9 @@ public class BlockMachines extends BlockContainer {
 	@Override
 	public void registerIcons(IconRegister reg) {
 		for (EnumMachine m : EnumMachine.VALID_MACHINES) {
-			for (int i = 0; i < 6; i++) {
-				machineIcons[m.meta][i] = reg.registerIcon("projectred:machines/" + m.iconPath[i]);
-				specialIcons[m.meta][i] = reg.registerIcon("projectred:machines/" + m.specialIconPath[i]);
+			m.icons = new Icon[m.iconPath.length];
+			for (int i = 0; i < m.iconPath.length; i++) {
+				m.icons[i] = reg.registerIcon("projectred:machines/" + m.iconPath[i]);
 			}
 		}
 	}
@@ -111,8 +114,7 @@ public class BlockMachines extends BlockContainer {
 	public Icon getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
 		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(access, new Coords(x, y, z), TileMachineBase.class);
 		if (tile != null) {
-
-			return getRotatedTexture(side, access.getBlockMetadata(x, y, z), tile.rotation, tile);
+			return tile.getType().icons[tile.getIconForSide(side)];
 		}
 		return null;
 	}
@@ -120,92 +122,9 @@ public class BlockMachines extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public Icon getIcon(int side, int meta) {
-		return getRotatedTexture(side, meta, 2, null);
+		return EnumMachine.get(meta).icons[EnumMachine.get(meta).textProvider.getIconIndex(side)];
 	}
 
-	/**
-	 * Side is ForgeDirection ordinal. In inventory, you want to render the
-	 * south side of the block as front. The tile will be asked to apply special
-	 * texture, if it returns false, then default will go. The tile param CAN be
-	 * null;
-	 * 
-	 * @param meta
-	 * @param side
-	 * @param rotation
-	 * @param tile
-	 * @return
-	 */
-	public Icon getRotatedTexture(int side, int meta, int rotation, TileMachineBase tile) {
-		if (meta > EnumMachine.VALID_MACHINES.length - 1 || side > 6 || rotation > 6) {
-			return null;
-		}
-		boolean useSpecial = false;
-		if (tile != null) {
-			useSpecial = tile.shouldUseSpecialTextureForSide(side);
-		}
-		if (side == 0) {
-			return useSpecial ? specialIcons[meta][0] : machineIcons[meta][0]; // down
-																				// is
-																				// rotation
-																				// independent
-		}
-		if (side == 1) {
-			return useSpecial ? specialIcons[meta][1] : machineIcons[meta][1]; // up
-																				// is
-																				// rotation
-																				// independent
-		}
-		// We will first see what side minecraft is asking for, then
-		// we will provide the right texture based on the orientation
-		// of the block.
-		switch (side) {
-		case 2: // icons when we want north side
-			switch (rotation) {
-			case 2: // north side when rotated north
-				return useSpecial ? specialIcons[meta][2] : machineIcons[meta][2];
-			case 3: // south side when rotated north
-				return useSpecial ? specialIcons[meta][3] : machineIcons[meta][3];
-			case 4: // west side when rotated north
-				return useSpecial ? specialIcons[meta][4] : machineIcons[meta][4];
-			case 5: // east side when rotated north
-				return useSpecial ? specialIcons[meta][5] : machineIcons[meta][5];
-			}
-		case 3: // icons when we want south side
-			switch (rotation) {
-			case 2: // north side when rotated south
-				return useSpecial ? specialIcons[meta][3] : machineIcons[meta][3];
-			case 3: // south side when rotated south
-				return useSpecial ? specialIcons[meta][2] : machineIcons[meta][2];
-			case 4: // west side when rotated south
-				return useSpecial ? specialIcons[meta][5] : machineIcons[meta][5];
-			case 5: // east side when rotated south
-				return useSpecial ? specialIcons[meta][4] : machineIcons[meta][4];
-			}
-		case 4: // icons when we want west side
-			switch (rotation) {
-			case 2: // north side when rotated west
-				return useSpecial ? specialIcons[meta][5] : machineIcons[meta][5];
-			case 3: // south side when rotated west
-				return useSpecial ? specialIcons[meta][4] : machineIcons[meta][4];
-			case 4: // west side when rotated west
-				return useSpecial ? specialIcons[meta][2] : machineIcons[meta][2];
-			case 5: // east side when rotated west
-				return useSpecial ? specialIcons[meta][3] : machineIcons[meta][3];
-			}
-		case 5: // icons when we want east side
-			switch (rotation) {
-			case 2: // north side when rotated east
-				return useSpecial ? specialIcons[meta][4] : machineIcons[meta][4];
-			case 3: // south side when rotated east
-				return useSpecial ? specialIcons[meta][5] : machineIcons[meta][5];
-			case 4: // west side when rotated east
-				return useSpecial ? specialIcons[meta][3] : machineIcons[meta][3];
-			case 5: // east side when rotated east
-				return useSpecial ? specialIcons[meta][2] : machineIcons[meta][2];
-			}
-		}
-		return null;
-	}
 
 	@Override
 	public int getLightValue(IBlockAccess world, int x, int y, int z) {
@@ -217,13 +136,25 @@ public class BlockMachines extends BlockContainer {
 	}
 
 	public enum EnumMachine {
-		ALLOYSMELTER("Alloy Smelter", "machinealloy", TileAlloySmelter.class, "smeltertop", "smeltertop", "smelterside", "smelterfront", "smelterside", "smelterside", "smeltertop", "smeltertop", "smelterside", "smelterfronton", "smelterside", "smelterside"),
-		BARREL("Barrel", "machinebarrel", null, "", "", "", "", "", "", "", "", "", "", "", ""),
-
-		INVALIDMACHINE("INVALID", "ERROR!!!", null, "", "", "", "", "", "", "", "", "", "", "", "");
+		ALLOYSMELTER("Alloy Smelter", "machinealloy", TileAlloySmelter.class, new IIconIndexer() {
+			@Override
+			public int getIconIndex(int side) {
+				return side == 0 || side == 1 ? 0 : side == 3 ? 2 : 1;
+			}
+		}, "smeltertop", "smelterside", "smelterfront", "smelterfronton"),
+		
+		TURBINEROTARY("Wind Turbine Rotary", "machinewindgenerator", TileTurbineRotary.class, new IIconIndexer() {
+			@Override
+			public int getIconIndex(int side) {
+				return side == 0 ? 2 : side == 1 ? 0 : 1;
+			}
+		},"generatortop", "generatorside", "generatorbottom", "generatorsideon"),
+		
+		BARREL("Barrel", "machinebarrel", null, null),
+		INVALIDMACHINE("INVALID", "ERROR!!!", null, null),
 		;
 
-		public static final EnumMachine[] VALID_MACHINES = { ALLOYSMELTER };
+		public static final EnumMachine[] VALID_MACHINES = { ALLOYSMELTER, TURBINEROTARY };
 
 		public String fullname;
 		public String unlocalname;
@@ -231,28 +162,16 @@ public class BlockMachines extends BlockContainer {
 		public int meta = this.ordinal();
 
 		public String[] iconPath = new String[6];
-		public String[] specialIconPath = new String[6];
+		public Icon[] icons;
+		
+		public IIconIndexer textProvider;
 
-		private EnumMachine(String name, String unlocal, Class<? extends TileMachineBase> tile, String... sides) {
+		private EnumMachine(String name, String unlocal, Class<? extends TileMachineBase> tile, IIconIndexer p, String... sides) {
 			fullname = name;
 			unlocalname = unlocal;
 			clazz = tile;
-
-			// Icon paths are the name of the icon only. The folder is always
-			// ...textures/blocks/machines/
-			iconPath[0] = sides[0];
-			iconPath[1] = sides[1];
-			iconPath[2] = sides[2];
-			iconPath[3] = sides[3]; // This is the front texture
-			iconPath[4] = sides[4];
-			iconPath[5] = sides[5];
-
-			specialIconPath[0] = sides[6];
-			specialIconPath[1] = sides[7];
-			specialIconPath[2] = sides[8];
-			specialIconPath[3] = sides[9]; // This is the front texture
-			specialIconPath[4] = sides[10];
-			specialIconPath[5] = sides[11];
+			iconPath = sides;
+			textProvider = p;
 		}
 
 		public static EnumMachine get(int ordinal) {
@@ -267,6 +186,10 @@ public class BlockMachines extends BlockContainer {
 		public ItemStack getItemStack(int i) {
 			return new ItemStack(ProjectRed.blockMachines, i, meta);
 		}
+		public interface IIconIndexer {
+			public int getIconIndex(int side);
+		}
 	}
+	
 
 }

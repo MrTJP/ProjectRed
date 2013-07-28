@@ -3,7 +3,7 @@ package mrtjp.projectred.renderstuffs;
 import java.util.Map;
 
 import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
-import mrtjp.projectred.utils.Color;
+import mrtjp.projectred.utils.PRColors;
 import mrtjp.projectred.utils.codechicken.core.render.CCModel;
 import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
 import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
@@ -93,7 +93,7 @@ public class LanternModel {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDepthMask(false);
 
-		GL11.glColor4f(Color.get(tint).r, Color.get(tint).g, Color.get(tint).b, 0.6f);
+		GL11.glColor4f(PRColors.get(tint).r, PRColors.get(tint).g, PRColors.get(tint).b, 0.6f);
 		GL11.glTranslated(x, y, z);
 		CCRenderState.reset();
 		CCRenderState.useNormals(true);

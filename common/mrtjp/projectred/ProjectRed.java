@@ -18,6 +18,7 @@ import mrtjp.projectred.items.ItemPart;
 import mrtjp.projectred.items.ItemPart.EnumPart;
 import mrtjp.projectred.items.ItemSaw;
 import mrtjp.projectred.items.ItemScrewdriver;
+import mrtjp.projectred.items.ItemVAWT;
 import mrtjp.projectred.items.ItemWoolGin;
 import mrtjp.projectred.multipart.BlockMultipartBase;
 import mrtjp.projectred.multipart.microblocks.BlockMicroblockContainer;
@@ -88,6 +89,7 @@ public class ProjectRed {
 	public static ItemDrawPlate itemDrawPlate;
 	public static ItemWoolGin itemWoolGin;
 	public static ItemBackpack itemBackpack;
+	public static ItemVAWT itemVAWT;
 
 	@Instance("ProjectRed")
 	public static ProjectRed instance;
@@ -204,6 +206,12 @@ public class ProjectRed {
 			}
 		}
 
+		// VAWT
+		if (Configurator.item_vawtID.getInt() > 0) {
+			itemVAWT = new ItemVAWT(Configurator.item_vawtID.getInt());
+			LanguageRegistry.addName(new ItemStack(itemVAWT, 1, 0), "Vertical-Axis Wind Turbine");
+		}
+
 		MinecraftForge.EVENT_BUS.register(instance);
 		MinecraftForge.EVENT_BUS.register(BasicUtils.proxy);
 
@@ -217,7 +225,7 @@ public class ProjectRed {
 	@Mod.PostInit
 	public void postInit(FMLPostInitializationEvent event) {
 		MicroblockLibrary.instance = new MicroblockLibrary();
-		//MicroblockLibrary.instance.initializeParts();
+		// MicroblockLibrary.instance.initializeParts();
 		MicroblockLibrary.instance.initializeBlockScan();
 	}
 

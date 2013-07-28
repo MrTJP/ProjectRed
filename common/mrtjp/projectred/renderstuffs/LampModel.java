@@ -1,6 +1,6 @@
 package mrtjp.projectred.renderstuffs;
 
-import mrtjp.projectred.utils.Color;
+import mrtjp.projectred.utils.PRColors;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 
@@ -32,7 +32,7 @@ public class LampModel {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDepthMask(false);
 
-		GL11.glColor4f(Color.get(tint).r, Color.get(tint).g, Color.get(tint).b, 0.6f);
+		GL11.glColor4f(PRColors.get(tint).r, PRColors.get(tint).g, PRColors.get(tint).b, 0.6f);
 		GL11.glTranslated(x, y, z + 1);
 		model.renderPart("shade");
 		GL11.glPopMatrix();

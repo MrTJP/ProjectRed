@@ -103,12 +103,11 @@ public class ItemPart extends Item {
 		BLACKILLUMAR("Black Illumar", "partblackdust"),
 
 		WOVENCLOTH("Woven Cloth", "partcloth"),
-
-		INVALID("ERROR INVALID PART", "partINVALID"), ;
-
+		SAIL("Sail", "partsail"),
+		;
 		public String fullName;
 		public String unlocalName;
-		public static final EnumPart[] VALID_PARTS = { PLATE, CONDUCTIVEPLATE, WIREDPLATE, BUNDLEDPLATE, ANODE, CATHODE, POINTER, SILICONCHIP, ENERGIZEDSILICONCHIP, PLATFORMEDPLATE, REDINGOT, SILICONBOULE, SILICON, INFUSEDSILICON, ENERGIZEDSILICON, MOTOR, COPPERCOIL, IRONCOIL, GOLDCOIL, WHITEILLUMAR, ORANGEILLUMAR, MAGENTAILLUMAR, LIGHTBLUEILLUMAR, YELLOWILLUMAR, LIMEILLUMAR, PINKILLUMAR, GREYILLUMAR, LIGHTGREYILLUMAR, CYANILLUMAR, PURPLEILLUMAR, BLUEILLUMAR, BROWNILLUMAR, GREENILLUMAR, REDILLUMAR, BLACKILLUMAR, WOVENCLOTH };
+		public static final EnumPart[] VALID_PARTS = values();
 		public static final EnumPart[] ILLUMAR_PARTS = { WHITEILLUMAR, ORANGEILLUMAR, MAGENTAILLUMAR, LIGHTBLUEILLUMAR, YELLOWILLUMAR, LIMEILLUMAR, PINKILLUMAR, GREYILLUMAR, LIGHTGREYILLUMAR, CYANILLUMAR, PURPLEILLUMAR, BLUEILLUMAR, BROWNILLUMAR, GREENILLUMAR, REDILLUMAR, BLACKILLUMAR };
 		public int meta = this.ordinal();
 		public static final String oreDictDefinition = "projredPart";
@@ -121,7 +120,7 @@ public class ItemPart extends Item {
 
 		public static EnumPart get(int ordinal) {
 			if (ordinal > VALID_PARTS.length - 1) {
-				return INVALID;
+				return null;
 			}
 			return VALID_PARTS[ordinal];
 		}
@@ -142,6 +141,5 @@ public class ItemPart extends Item {
 				OreDictionary.registerOre(oreDictDefinition_illumar, p.getItemStack());
 			}
 		}
-
 	}
 }
