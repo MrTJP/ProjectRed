@@ -28,7 +28,7 @@ public class IntegrationProxy implements IProxy, IPartFactory {
 	@Override
 	public TMultiPart createPart(String name, boolean client) {
 		if (name == "projred-gate") {
-			return new TileGate(EnumGate.AND);
+			return new GatePart(EnumGate.AND);
 		}
 		return null;
 	}

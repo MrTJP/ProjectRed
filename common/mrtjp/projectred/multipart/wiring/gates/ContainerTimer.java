@@ -1,6 +1,7 @@
 package mrtjp.projectred.multipart.wiring.gates;
 
-import mrtjp.projectred.integration.TileGate;
+import mrtjp.projectred.integration.GateLogicTimed;
+import mrtjp.projectred.integration.GatePart;
 import mrtjp.projectred.utils.gui.BaseContainer;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -10,7 +11,7 @@ public class ContainerTimer extends BaseContainer {
 
 	private GateLogicTimed timer;
 
-	public ContainerTimer(EntityPlayer player, TileGate tile) {
+	public ContainerTimer(EntityPlayer player, GatePart tile) {
 		super(player, tile);
 		timer = (GateLogicTimed) tile.getLogic();
 	}

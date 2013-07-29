@@ -1,7 +1,7 @@
 package mrtjp.projectred.network;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.integration.TileGate;
+import mrtjp.projectred.integration.GatePart;
 import mrtjp.projectred.items.ItemBackpack;
 import mrtjp.projectred.multipart.wiring.gates.ContainerCounter;
 import mrtjp.projectred.multipart.wiring.gates.ContainerTimer;
@@ -24,13 +24,13 @@ public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
 		if (ID == GuiIDs.ID_Timer) {
-			TileGate tile = (TileGate) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileGate.class);
+			GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
 			if (tile != null) {
 				return new ContainerTimer(player, tile);
 			}
 		}
 		if (ID == GuiIDs.ID_Counter) {
-			TileGate tile = (TileGate) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileGate.class);
+			GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
 			if (tile != null) {
 				return new ContainerCounter(player, tile);
 			}
@@ -59,13 +59,13 @@ public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
 		if (ID == GuiIDs.ID_Timer) {
-			TileGate tile = (TileGate) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileGate.class);
+			GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
 			if (tile != null) {
 				return new GuiTimer(new ContainerTimer(player, tile));
 			}
 		}
 		if (ID == GuiIDs.ID_Counter) {
-			TileGate tile = (TileGate) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileGate.class);
+			GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
 			if (tile != null) {
 				return new GuiCounter(new ContainerCounter(player, tile));
 			}

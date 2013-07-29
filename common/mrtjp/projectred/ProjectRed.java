@@ -28,7 +28,6 @@ import mrtjp.projectred.multipart.microblocks.MicroblockLibrary;
 import mrtjp.projectred.multipart.microblocks.TileMicroblockContainer;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
 import mrtjp.projectred.multipart.wiring.InvalidTile;
-import mrtjp.projectred.multipart.wiring.gates.BlockGate;
 import mrtjp.projectred.multipart.wiring.wires.BlockWire;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
@@ -74,7 +73,6 @@ public class ProjectRed {
 
 	/** Blocks **/
 	public static BlockMultipartBase blockMicrocontainer;
-	public static BlockGate blockGate;
 	public static BlockWire blockWire;
 	public static BlockLamp blockLamp;
 	public static BlockMachines blockMachines;

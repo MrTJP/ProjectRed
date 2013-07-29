@@ -1,4 +1,4 @@
-package mrtjp.projectred.multipart.wiring.gates;
+package mrtjp.projectred.integration;
 
 import static mrtjp.projectred.utils.BasicWireUtils.BACK;
 import static mrtjp.projectred.utils.BasicWireUtils.FRONT;
@@ -8,7 +8,6 @@ import static mrtjp.projectred.utils.BasicWireUtils.RIGHT;
 import java.util.Random;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.integration.TileGate;
 import mrtjp.projectred.network.GuiIDs;
 import mrtjp.projectred.utils.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
@@ -71,7 +70,7 @@ public abstract class GateLogic {
 	 * Used to do something if gate has a rightclick action such as a gui.
 	 */
 	public static interface WithRightClickAction {
-		public void onRightClick(EntityPlayer ply, TileGate tile);
+		public void onRightClick(EntityPlayer ply, GatePart tile);
 	}
 
 	/**
@@ -221,7 +220,7 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void onRightClick(EntityPlayer ply, TileGate tile) {
+		public void onRightClick(EntityPlayer ply, GatePart tile) {
 			state = !state;
 		}
 	}
@@ -419,7 +418,7 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void onRightClick(EntityPlayer ply, TileGate tile) {
+		public void onRightClick(EntityPlayer ply, GatePart tile) {
 			ply.openGui(ProjectRed.instance, GuiIDs.ID_Timer, tile.world(), tile.x(), tile.y(), tile.z());
 		}
 
@@ -492,7 +491,7 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void onRightClick(EntityPlayer ply, TileGate tile) {
+		public void onRightClick(EntityPlayer ply, GatePart tile) {
 			ply.openGui(ProjectRed.instance, GuiIDs.ID_Counter, tile.world(), tile.x(), tile.y(), tile.z());
 		}
 
@@ -562,7 +561,6 @@ public abstract class GateLogic {
 					state = 0;
 				}
 			}
-
 			outputs[FRONT] = state == 0 ? (short) 255 : 0;
 			outputs[RIGHT] = state == 1 ? (short) 255 : 0;
 			outputs[BACK] = state == 2 ? (short) 255 : 0;
@@ -570,7 +568,7 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void onRightClick(EntityPlayer ply, TileGate tile) {
+		public void onRightClick(EntityPlayer ply, GatePart tile) {
 			ply.openGui(ProjectRed.instance, GuiIDs.ID_Timer, tile.world(), tile.x(), tile.y(), tile.z());
 		}
 
@@ -716,7 +714,7 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void onRightClick(EntityPlayer ply, TileGate tile) {
+		public void onRightClick(EntityPlayer ply, GatePart tile) {
 			ply.openGui(ProjectRed.instance, GuiIDs.ID_Timer, tile.world(), tile.x(), tile.y(), tile.z());
 		}
 

@@ -1,7 +1,6 @@
 package mrtjp.projectred.integration;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
-import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge;
 import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import codechicken.lib.render.CCRenderState;
@@ -15,8 +14,8 @@ public class GateDynamicRenderer {
 	RotatedRenderer rotatedTess = new RotatedRenderer();
 	private GateRenderBridge defaultRendering = new GateRenderBridge.Default();
 
-	public void renderGateWithTESR(TileGate var1, double x, double y, double z) {
-		TileGate te = (TileGate) var1;
+	public void renderGateWithTESR(GatePart var1, double x, double y, double z) {
+		GatePart te = (GatePart) var1;
 		if (te.getType() == null) {
 			return;
 		}

@@ -1,7 +1,6 @@
 package mrtjp.projectred.integration;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
-import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
@@ -18,7 +17,7 @@ public class GateStaticRenderer implements IItemRenderer {
 	private RotatedRenderer rotatedRenderer = new RotatedRenderer();
 	public static final GateStaticRenderer instance = new GateStaticRenderer();
 
-	public boolean renderWorldBlock(TileGate te, int x, int y, int z) {
+	public boolean renderWorldBlock(GatePart te, int x, int y, int z) {
 		int side = te.getSide();
 		int front = te.getFront();
 		EnumGate type = te.getGateType();
