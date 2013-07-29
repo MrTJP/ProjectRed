@@ -1,8 +1,6 @@
 package mrtjp.projectred.integration;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.multipart.wiring.gates.GateLogic;
-import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 

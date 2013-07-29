@@ -2,7 +2,7 @@ package mrtjp.projectred.integration;
 
 import java.util.List;
 
-import mrtjp.projectred.multipart.wiring.gates.GateRenderBridge;
+import mrtjp.projectred.crafting.ProjectRedTabs;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +21,7 @@ public class ItemPartGate extends JItemMultiPart {
 	public ItemPartGate(int id) {
 		super(id);
 		setHasSubtypes(true);
+		setCreativeTab(ProjectRedTabs.tabWires);
 		setUnlocalizedName("projred.itempartgate");
 	}
 
@@ -30,7 +31,7 @@ public class ItemPartGate extends JItemMultiPart {
 		if (!world.isBlockSolidOnSide(onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side))) {
 			return null;
 		}
-		TileGate gate = new TileGate(EnumGate.get(item.getItemDamage()));
+		GatePart gate = new GatePart(EnumGate.get(item.getItemDamage()));
 		gate.setupPlacement(player, side);
 		return gate;
 	}

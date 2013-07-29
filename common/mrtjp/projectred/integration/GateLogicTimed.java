@@ -1,4 +1,4 @@
-package mrtjp.projectred.multipart.wiring.gates;
+package mrtjp.projectred.integration;
 
 /**
  * Implemented by GateLogics which can be used with the timer GUI.

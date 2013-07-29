@@ -1,4 +1,4 @@
-package mrtjp.projectred.multipart.wiring.gates;
+package mrtjp.projectred.integration;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
 import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
@@ -638,9 +638,9 @@ public abstract class GateRenderBridge {
 	public static class Sequencer extends GateRenderBridge implements Stateless {
 		{
 			wireColor = new int[] {};
-			torchX = new float[] { 8.5f, 2f, 15f, 8.5f };
+			torchX = new float[] { 8.5f, 3f, 14f, 8.5f };
 			torchY = new float[] { 0f, 0f, 0f, 0f };
-			torchZ = new float[] { 2f, 8.5f, 8.5f, 15f };
+			torchZ = new float[] { 3f, 8.5f, 8.5f, 14f };
 			torchState = new boolean[] { false, false, false, false };
 			pointerX = new float[] { 8f };
 			pointerY = new float[] { 0f };

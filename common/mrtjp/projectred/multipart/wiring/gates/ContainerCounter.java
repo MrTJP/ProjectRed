@@ -1,5 +1,6 @@
 package mrtjp.projectred.multipart.wiring.gates;
-import mrtjp.projectred.integration.TileGate;
+import mrtjp.projectred.integration.GateLogic;
+import mrtjp.projectred.integration.GatePart;
 import mrtjp.projectred.utils.gui.BaseContainer;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -9,7 +10,7 @@ public class ContainerCounter extends BaseContainer {
 	
 	private GateLogic.Counter counter;
 	
-	public ContainerCounter(EntityPlayer player, TileGate tile) {
+	public ContainerCounter(EntityPlayer player, GatePart tile) {
 		super(player, tile);
 		
 		counter = ((GateLogic.Counter)tile.getLogic());
