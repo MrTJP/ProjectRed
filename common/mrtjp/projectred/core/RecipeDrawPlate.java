@@ -1,4 +1,4 @@
-package mrtjp.projectred.crafting.tools;
+package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;

@@ -7,18 +7,15 @@ import static mrtjp.projectred.utils.BasicWireUtils.RIGHT;
 
 import java.util.Random;
 
-import codechicken.core.IGuiPacketSender;
-import codechicken.lib.packet.PacketCustom;
-
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.network.GuiIDs;
-import mrtjp.projectred.utils.BasicGuiUtils;
 import mrtjp.projectred.utils.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import codechicken.lib.packet.PacketCustom;
 
 public abstract class GateLogic {
 
@@ -65,10 +62,21 @@ public abstract class GateLogic {
 	}
 
 	/**
-	 * Used to do something if gate has a rightclick action such as a gui.
+	 * Used to do something if gate has a rightclick action.
 	 */
 	public static interface WithRightClickAction {
 		public void onRightClick(EntityPlayer player, GatePart tile);
+	}
+
+	/**
+	 * Used for gates with Guis.
+	 */
+	public static interface WithGui extends WithRightClickAction {
+		public void openGui(EntityPlayer player, GatePart tile);
+
+		public void handleButtonPressed(String action, GatePart tile);
+		
+		public void updateWatchers(GatePart tile);
 	}
 
 	/**
@@ -77,6 +85,7 @@ public abstract class GateLogic {
 	 */
 	public interface GateLogicTimed {
 		public int getInterval();
+
 		public void setInterval(int i);
 	}
 
@@ -86,6 +95,7 @@ public abstract class GateLogic {
 	 */
 	public static interface WithPointer {
 		public int getPointerPosition();
+
 		public float getPointerSpeed();
 	}
 
@@ -97,12 +107,6 @@ public abstract class GateLogic {
 		public void setWorldInfo(World world, int x, int y, int z);
 
 		public boolean needsWorldInfo();
-	}
-	
-	public static class defaultLogic extends GateLogic {
-		@Override
-		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-		}
 	}
 
 	public static class AND extends GateLogic implements Stateless {
@@ -406,7 +410,7 @@ public abstract class GateLogic {
 		}
 	}
 
-	public static class Timer extends GateLogic implements WithRightClickAction, WithPointer, GateLogicTimed {
+	public static class Timer extends GateLogic implements WithGui, WithPointer, GateLogicTimed {
 
 		public int intervalTicks = 20;
 		public int ticksLeft;
@@ -431,13 +435,43 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void onRightClick(EntityPlayer player, final GatePart tile) {
-			BasicGuiUtils.openSMPContainer((EntityPlayerMP) player, new ContainerTimer(player, tile), new IGuiPacketSender() {
-				@Override
-				public void sendPacket(EntityPlayerMP player, int windowId) {
-					new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerOpen).writeInt(windowId).writeCoord(tile.x(), tile.y(), tile.z()).writeByte(tile.getFace()).sendToPlayer(player);
+		public void onRightClick(EntityPlayer player, GatePart tile) {
+			openGui(player, tile);
+		}
+
+		@Override
+		public void openGui(EntityPlayer player, GatePart tile) {
+			PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerOpen);
+			packet.writeCoord(tile.x(), tile.y(), tile.z());
+			packet.writeByte(tile.getFace());
+			packet.writeInt(intervalTicks);
+			packet.sendToPlayer(player);
+		}
+
+		@Override
+		public void handleButtonPressed(String action, GatePart tile) {
+			if (action.startsWith("-") || action.startsWith("+")) {
+				int time = getInterval();
+				time += Integer.parseInt(action.replace("+", ""));
+				if (time < 4) {
+					time = 4;
 				}
-			});
+				if (time > 65535) {
+					time = 65535;
+				}
+				setInterval(time);
+				updateWatchers(tile);
+			}
+		}
+		
+		@Override
+		public void updateWatchers(GatePart tile) {
+			Chunk c = tile.world().getChunkFromBlockCoords(tile.x(), tile.z());
+			PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerBroadcastChange);
+			packet.writeCoord(tile.x(), tile.y(), tile.z());
+			packet.writeByte(tile.getFace());
+			packet.writeInt(intervalTicks);
+			packet.sendToChunk(tile.world(), c.xPosition, c.zPosition);
 		}
 
 		@Override
@@ -488,18 +522,18 @@ public abstract class GateLogic {
 			else
 				ticksLeft = 0;
 		}
-
 	}
 
-	public static class Counter extends GateLogic implements WithRightClickAction, WithPointer {
+	public static class Counter extends GateLogic implements WithGui, WithPointer {
 
 		int value = 0, max = 10, incr = 1, decr = 1;
 		private boolean wasFront, wasBack;
 
 		@Override
 		public int getPointerPosition() {
-			if (max == 0)
+			if (max == 0) {
 				return 0;
+			}
 			return (value * 120) / max - 60;
 		}
 
@@ -509,8 +543,50 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void onRightClick(EntityPlayer ply, GatePart tile) {
-			ply.openGui(ProjectRed.instance, GuiIDs.ID_Counter, tile.world(), tile.x(), tile.y(), tile.z());
+		public void onRightClick(EntityPlayer player, GatePart tile) {
+			openGui(player, tile);
+		}
+
+		@Override
+		public void openGui(EntityPlayer player, GatePart tile) {
+			PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiCounterOpen);
+			packet.writeCoord(tile.x(), tile.y(), tile.z());
+			packet.writeByte(tile.getFace());
+			packet.writeShort(value);
+			packet.writeShort(max);
+			packet.writeShort(incr);
+			packet.writeShort(decr);
+			packet.sendToPlayer(player);
+		}
+
+		@Override
+		public void handleButtonPressed(String action, GatePart tile) {
+			int ID = Integer.parseInt(action.substring(0, 1));
+			int delta = Integer.parseInt(action.substring(1).replace("+", ""));
+			switch (ID) {
+			case 0: // Max
+				max = Math.min(32767, Math.max(1, max + delta));
+				break;
+			case 1: // Increment
+				incr = Math.min(max, Math.max(1, incr + delta));
+				break;
+			case 2: // Decrement
+				decr = Math.min(max, Math.max(1, decr + delta));
+			}
+			updateWatchers(tile);
+		}
+		
+		@Override
+		public void updateWatchers(GatePart tile) {
+			PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiCounterBroadcastChange);
+			packet.writeCoord(tile.x(), tile.y(), tile.z());
+			packet.writeByte(tile.getFace());
+			packet.writeShort(value);
+			packet.writeShort(max);
+			packet.writeShort(incr);
+			packet.writeShort(decr);
+			Chunk c = tile.world().getChunkFromBlockCoords(tile.x(), tile.z());
+			packet.sendToChunk(tile.world(), c.xPosition, c.zPosition);
 		}
 
 		@Override
@@ -540,7 +616,6 @@ public abstract class GateLogic {
 		@Override
 		public void read(NBTTagCompound tag) {
 			super.read(tag);
-
 			value = tag.getInteger("cur");
 			max = tag.getInteger("max");
 			incr = tag.getInteger("+");
@@ -552,7 +627,6 @@ public abstract class GateLogic {
 		@Override
 		public void write(NBTTagCompound tag) {
 			super.write(tag);
-
 			tag.setInteger("cur", value);
 			tag.setInteger("max", max);
 			tag.setInteger("+", incr);
@@ -560,7 +634,6 @@ public abstract class GateLogic {
 			tag.setBoolean("front", wasFront);
 			tag.setBoolean("back", wasBack);
 		}
-
 	}
 
 	public static class Sequencer extends GateLogic implements WithRightClickAction, WithPointer, GateLogicTimed {

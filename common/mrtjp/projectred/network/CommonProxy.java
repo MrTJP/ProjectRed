@@ -76,6 +76,5 @@ public class CommonProxy implements IProxy {
 	public void initOreDictionaryDefinitions() {
 		EnumLamp.initOreDictDefinitions();
 		EnumWire.initOreDictDefinitions();
-		EnumPart.initOreDictDefinitions();
 	}
 }
