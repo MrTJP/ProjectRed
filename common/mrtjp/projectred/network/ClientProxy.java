@@ -68,7 +68,6 @@ public class ClientProxy extends CommonProxy {
 		RenderIDs.renderIdRedwire = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(WireRenderer.instance);
 
-		// Gates
 		// Microblocks
 		RenderIDs.renderIdMicroblock = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(MultiblockRenderer.instance);
@@ -80,8 +79,6 @@ public class ClientProxy extends CommonProxy {
 	public void registerEventsAndHandlers() {
 		MinecraftForge.EVENT_BUS.register(new MicroblockPlacementHighlightHandler());
 		MinecraftForge.EVENT_BUS.register(new MultipartHighlightHandler());
-		MinecraftForge.EVENT_BUS.register(new Messenger());
-		TickRegistry.registerTickHandler(ProjectRedTickHandler.instance, Side.CLIENT);
 	}
 
 }

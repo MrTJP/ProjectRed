@@ -34,6 +34,7 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
+import codechicken.multipart.BlockMultipart;
 import codechicken.multipart.IFaceRedstonePart;
 import codechicken.multipart.IRandomDisplayTick;
 import codechicken.multipart.JCuboidPart;
@@ -54,10 +55,10 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	/**
 	 * The inside face for the containing block that its sitting on. (0 for
 	 * sitting on top of a block.)
-	 **/
+	 */
 	private byte side;
 
-	/** The ForgeDirection that the front of the gate is facing. **/
+	/** The absolute ForgeDirection that the front of the gate is facing. **/
 	private byte front;
 
 	private boolean requiresTickUpdate;
@@ -141,7 +142,6 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		if (type == null) {
 			return;
 		}
-		// TODO change this to raw in/out
 		NBTTagCompound p = new NBTTagCompound();
 		p.setByte("t", (byte) type.ordinal());
 		p.setByte("s", side);
@@ -152,11 +152,13 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 			p.setFloat("P", pointer.getPointerSpeed());
 		}
 		packet.writeNBTTagCompound(p);
+		if (!isFirstTick && getLogic() instanceof GateLogic.WithGui) {
+			((GateLogic.WithGui) getLogic()).updateWatchers(this);
+		}
 	}
 
 	@Override
 	public void readDesc(MCDataInput packet) {
-		// TODO change this to raw in/out
 		NBTTagCompound nbt = packet.readNBTTagCompound();
 		type = EnumGate.VALUES[nbt.getByte("t")];
 		side = nbt.getByte("s");
@@ -268,12 +270,11 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 				}
 			} else if (isFirstTick) {
 				updateLogic(false, false);
-				isFirstTick = false;
 			}
-	
 		} else {
 			pointerPos += pointerSpeed;
 		}
+		isFirstTick = false;
 	}
 
 	@Override

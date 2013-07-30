@@ -21,6 +21,9 @@ public class GuiHandler implements IGuiHandler {
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
 		for (IProjectRedModule m : ProjectRed.initializedModules) {
 			IGuiHandler g = m.getGuiHandler();
+			if (g == null) {
+				continue;
+			}
 			Object servGui = g.getServerGuiElement(ID, player, world, x, y, z);
 			if (servGui != null) {
 				return servGui;
@@ -64,6 +67,9 @@ public class GuiHandler implements IGuiHandler {
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
 		for (IProjectRedModule m : ProjectRed.initializedModules) {
 			IGuiHandler g = m.getGuiHandler();
+			if (g == null) {
+				continue;
+			}
 			Object cGui = g.getClientGuiElement(ID, player, world, x, y, z);
 			if (cGui != null) {
 				return cGui;

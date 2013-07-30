@@ -13,6 +13,7 @@ import mrtjp.projectred.blocks.ItemBlockLantern;
 import mrtjp.projectred.blocks.ItemBlockMachines;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProjectRedModule;
+import mrtjp.projectred.core.ModuleCore;
 import mrtjp.projectred.crafting.CraftingRecipeManager;
 import mrtjp.projectred.integration.ItemPartGate;
 import mrtjp.projectred.integration.ItemScrewdriver;
@@ -21,7 +22,6 @@ import mrtjp.projectred.items.ItemBackpack;
 import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemDrawPlate;
 import mrtjp.projectred.items.ItemPart;
-import mrtjp.projectred.items.ItemPart.EnumPart;
 import mrtjp.projectred.items.ItemSaw;
 import mrtjp.projectred.items.ItemVAWT;
 import mrtjp.projectred.items.ItemWoolGin;
@@ -103,14 +103,23 @@ public class ProjectRed {
 	public static ArrayList<IProjectRedModule> initializedModules = new ArrayList<IProjectRedModule>();
 
 	public static boolean registerModule(IProjectRedModule m) {
+		if (m == null) {
+			if (Configurator.module_Core.getBoolean(true)) {
+				registerModule(new ModuleCore());
+			}
+			if (Configurator.module_Integration.getBoolean(true)) {
+				registerModule(new ModuleIntegration());
+			}
+			return false;
+		}
 		return registeredModules.add(m);
 	}
 	
 	
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		registerModule(new ModuleIntegration());
 		Configurator.initConfig(event);
+		registerModule(null);
 		BasicUtils.proxy.preinit();
 	}
 
@@ -149,14 +158,6 @@ public class ProjectRed {
 				LanguageRegistry.addName(new ItemStack(blockMachines, 1, m.meta), m.fullname);
 			}
 		}
-
-		// Component parts
-		if (Configurator.item_componentsID.getInt() > 0) {
-			itemComponent = new ItemPart(Configurator.item_componentsID.getInt());
-			for (EnumPart part : EnumPart.VALID_PARTS) {
-				LanguageRegistry.addName(new ItemStack(itemComponent, 1, part.meta), part.fullName);
-			}
-		}
 		
 		// Wire block
 		if (Configurator.block_wireID.getInt() > 0) {
@@ -184,12 +185,6 @@ public class ProjectRed {
 		if (Configurator.item_sawID.getInt() > 0) {
 			itemSaw = new ItemSaw(Configurator.item_sawID.getInt());
 			LanguageRegistry.addName(itemSaw, "Saw");
-		}
-
-		// Draw Plate
-		if (Configurator.item_drawplateID.getInt() > 0) {
-			itemDrawPlate = new ItemDrawPlate(Configurator.item_drawplateID.getInt());
-			LanguageRegistry.addName(itemDrawPlate, "Draw Plate");
 		}
 
 		// Wool Gin

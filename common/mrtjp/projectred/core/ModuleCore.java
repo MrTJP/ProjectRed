@@ -1,21 +1,20 @@
-package mrtjp.projectred.integration;
+package mrtjp.projectred.core;
 
-import cpw.mods.fml.common.network.IGuiHandler;
-import mrtjp.projectred.core.IProjectRedModule;
 import mrtjp.projectred.network.IProxy;
+import cpw.mods.fml.common.network.IGuiHandler;
 
-public class ModuleIntegration implements IProjectRedModule {
+public class ModuleCore implements IProjectRedModule {
 
 	@Override
 	public IProxy getCommonProxy() {
-		return new IntegrationProxy();
+		return new CoreProxy();
 	}
 
 	@Override
 	public IProxy getClientProxy() {
-		return new IntegrationClientProxy();
+		return new CoreClientProxy();
 	}
-	
+
 	@Override
 	public IGuiHandler getGuiHandler() {
 		return null;
@@ -23,7 +22,7 @@ public class ModuleIntegration implements IProjectRedModule {
 
 	@Override
 	public String getModuleID() {
-		return "Integration";
+		return "Core";
 	}
 
 	@Override

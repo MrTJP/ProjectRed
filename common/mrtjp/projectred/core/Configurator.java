@@ -21,7 +21,12 @@ public class Configurator {
 	public static final String integrationPacketChannel = "PR:Int";
 	public static final String transmissionPacketChannel = "PR:Trans";
 
-
+	/** Modules **/
+	public static Property module_Core;
+	public static Property module_Integration;
+	public static Property module_Transmission;
+	public static Property module_Illumination;
+	
 	/** Multipart IDs **/
 	public static Property part_gate;
 
@@ -42,8 +47,6 @@ public class Configurator {
 	public static Property item_backpackID;
 	public static Property item_vawtID;
 
-	
-	
 	/** Settings **/
 	public static Property networkUpdateRange;
 	public static Property debugMode;
@@ -59,6 +62,11 @@ public class Configurator {
 		Configuration localConfig = new Configuration(file);
 		localConfig.load();
 		
+		module_Core = localConfig.get("Modules", "Core", true);
+		module_Integration = localConfig.get("Modules", "Integration", true);
+		module_Transmission = localConfig.get("Modules", "Transmission", true);
+		module_Illumination = localConfig.get("Modules", "Illumination", true);
+
 		part_gate = localConfig.get("MultiPart Item IDs", "Gate Part ID", 9030);
 		
 		block_microID = localConfig.getBlock("block_microID", 2145);
