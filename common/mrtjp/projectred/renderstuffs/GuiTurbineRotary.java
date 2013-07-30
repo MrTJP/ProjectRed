@@ -1,13 +1,13 @@
 package mrtjp.projectred.renderstuffs;
 
+import mrtjp.projectred.integration.GuiMultipart;
 import mrtjp.projectred.tiles.TileTurbineRotary;
-import mrtjp.projectred.utils.gui.BaseGuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiTurbineRotary extends BaseGuiContainer {
+public class GuiTurbineRotary extends GuiMultipart {
 
 	TileTurbineRotary tile;
 

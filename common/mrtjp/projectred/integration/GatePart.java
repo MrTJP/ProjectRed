@@ -219,26 +219,6 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		}
 	}
 
-	@Override
-	public void update() {
-		if (BasicUtils.isServer(world())) {
-			if (requiresTickUpdate) {
-				updateLogic(true, false);
-				if (logic instanceof WorldStateBound) {
-					if (((WorldStateBound) logic).needsWorldInfo()) {
-						((WorldStateBound) logic).setWorldInfo(world(), x(), y(), z());
-					}
-				}
-			} else if (isFirstTick) {
-				updateLogic(false, false);
-				isFirstTick = false;
-			}
-
-		} else {
-			pointerPos += pointerSpeed;
-		}
-	}
-
 	public short[] computeInputs() {
 		short[] newInputs = new short[4];
 		for (int i = 0; i < 4; i++) {
@@ -276,10 +256,24 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		}
 	}
 
-	public void updateChange() {
-		tile().markDirty();
-		tile().notifyPartChange();
-		sendDescUpdate();
+	@Override
+	public void update() {
+		if (BasicUtils.isServer(world())) {
+			if (requiresTickUpdate) {
+				updateLogic(true, false);
+				if (logic instanceof WorldStateBound) {
+					if (((WorldStateBound) logic).needsWorldInfo()) {
+						((WorldStateBound) logic).setWorldInfo(world(), x(), y(), z());
+					}
+				}
+			} else if (isFirstTick) {
+				updateLogic(false, false);
+				isFirstTick = false;
+			}
+	
+		} else {
+			pointerPos += pointerSpeed;
+		}
 	}
 
 	@Override
@@ -288,12 +282,10 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		updateLogic(false, false);
 	}
 
-	@Override
-	public void onPartChanged() {
-		checkSupport();
-		if (BasicUtils.isClient(world()))
-			return;
-		updateLogic(false, false);
+	public void updateChange() {
+		tile().markDirty();
+		tile().notifyPartChange();
+		sendDescUpdate();
 	}
 
 	/**
@@ -416,33 +408,6 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		}
 	}
 
-	@Override
-	public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
-		return hit.sideHit == 1 ? 1.75f : 1.5f;
-	}
-
-	@Override
-	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
-		if (held != null && held.getItem() == ProjectRed.itemScrewdriver) {
-			if (player.isSneaking()) {
-				this.configure();
-				return true;
-			} else {
-				this.rotate();
-				return true;
-			}
-		}
-
-		if (world().isRemote) {
-			return type != null && GateLogic.WithRightClickAction.class.isAssignableFrom(type.getLogicClass());
-		}
-		if (logic instanceof GateLogic.WithRightClickAction) {
-			((GateLogic.WithRightClickAction) logic).onRightClick(player, this);
-			return true;
-		}
-		return false;
-	}
-
 	private byte[] returnedBundledCableStrength;
 
 	// @Override
@@ -478,6 +443,13 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 			updateLogic(false, false);
 	}
 
+	
+	/** START TILEMULTIPART INTERACTIONS **/
+	@Override
+	public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
+		return hit.sideHit == 1 ? 1.75f : 1.5f;
+	}
+
 	public ItemStack getItem() {
 		return new ItemStack(ProjectRed.itemPartGate, 1, type.ordinal());
 	}
@@ -486,16 +458,21 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	public Iterable<ItemStack> getDrops() {
 		return Arrays.asList(getItem());
 	}
+	
+	@Override
+	public ItemStack pickItem(MovingObjectPosition hit) {
+		return getItem();
+	}
 
 	@Override
 	public Cuboid6 getBounds() {
 		Cuboid6 base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D, 1 / 8D, 8 / 8D);
-		return base.copy().transform(sideRotations[side].at(center));
+		return base.transform(sideRotations[side].at(center));
 	}
 
 	@Override
 	public String getType() {
-		return "projred-gate";
+		return getGateType().name;
 	}
 
 	@Override
@@ -509,16 +486,50 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	}
 
 	@Override
+	public void onPartChanged() {
+		checkSupport();
+		if (BasicUtils.isClient(world()))
+			return;
+		updateLogic(false, false);
+	}
+
+	@Override
+	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
+		if (held != null && held.getItem() == ProjectRed.itemScrewdriver) {
+			if (player.isSneaking()) {
+				this.configure();
+				return true;
+			} else {
+				this.rotate();
+				return true;
+			}
+		}
+	
+		if (world().isRemote) {
+			return type != null && GateLogic.WithRightClickAction.class.isAssignableFrom(type.getLogicClass());
+		}
+		if (logic instanceof GateLogic.WithRightClickAction) {
+			((GateLogic.WithRightClickAction) logic).onRightClick(player, this);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
 	public int redstoneConductionMap() {
 		return 0;
 	}
 
 	@Override
 	public int strongPowerLevel(int sideOut) {
+		try {
 		int rel = Rotator.absoluteToRelative(side, front, sideOut);
 		if (rel > -1) {
 			return outputs[rel];
 		} else {
+			return 0;
+		}
+		} catch (Throwable t) {
 			return 0;
 		}
 	}
@@ -566,13 +577,15 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	}
 
 	/**
-	 * Tests to see if the parts have colliding boxes, they cannot be placed.
+	 * Part interaction bounding box.
 	 */
 	@Override
 	public boolean occlusionTest(TMultiPart npart) {
 		return NormalOcclusionTest.apply(this, npart);
 	}
-
+	/** END TILEMULTIPART INTERACTIONS **/
+	
+	
 	/** START RENDERSTUFF **/
 	@Override
 	public int getLightValue() {
@@ -603,7 +616,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 
 	@Override
 	public void addDestroyEffects(EffectRenderer e) {
-		EntityDigIconFX.addBlockDestroyEffects(world(), getBounds(), new Icon[] { GateRenderBridge._modelBase.getIcon() }, e);
+		EntityDigIconFX.addBlockDestroyEffects(world(), getBounds().add(Vector3.fromTileEntity(tile())), new Icon[] { GateRenderBridge._modelBase.getIcon() }, e);
 	}
 
 	@Override
@@ -622,7 +635,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 			vec.apply(Rotation.sideOrientation(getSide(), Rotation.rotationTo(getSide(), getFront())).at(Vector3.center));
 			vec.apply(new Translation(x(), y(), z()));
 			double d0 = (double) ((float) vec.x) + (double) (ran.nextFloat() - .5F) * 0.02D;
-			double d1 = (double) ((float) vec.y) + (double) (ran.nextFloat() - .3F) * 0.3D;
+			double d1 = (double) ((float) vec.y) + (double) (ran.nextFloat() - .3F) * 0.2D;
 			double d2 = (double) ((float) vec.z) + (double) (ran.nextFloat() - .5F) * 0.02D;
 			world().spawnParticle("reddust", d0, d1, d2, 0.0D, 0.0D, 0.0D);
 		}
@@ -635,7 +648,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 			vec.apply(Rotation.sideOrientation(getSide(), Rotation.rotationTo(getSide(), getFront())).at(Vector3.center));
 			vec.apply(new Translation(x(), y(), z()));
 			double d0 = (double) ((float) vec.x) + (double) (ran.nextFloat() - .5F) * 0.02D;
-			double d1 = (double) ((float) vec.y) + (double) (ran.nextFloat() - .3F) * 0.3D;
+			double d1 = (double) ((float) vec.y) + (double) (ran.nextFloat() - .3F) * 0.2D;
 			double d2 = (double) ((float) vec.z) + (double) (ran.nextFloat() - .5F) * 0.02D;
 			world().spawnParticle("reddust", d0, d1, d2, 0.0D, 0.0D, 0.0D);
 		}

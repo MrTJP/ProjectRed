@@ -13,14 +13,12 @@ import net.minecraft.inventory.ICrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-public class BaseContainer extends Container implements ISyncedContainer {
+public class BaseContainer extends Container {
 
 	protected EntityPlayer player;
-	protected TileEntity inv;
 
-	public BaseContainer(EntityPlayer player, TileEntity inv) {
+	public BaseContainer(EntityPlayer player) {
 		this.player = player;
-		this.inv = inv;
 	}
 
 	@Override
@@ -46,22 +44,6 @@ public class BaseContainer extends Container implements ISyncedContainer {
 		for (Object o : crafters) {
 			((ICrafting) o).sendProgressBarUpdate(this, index, value);
 		}
-	}
-
-	/** Sends a button-press packet. */
-	public void sendButtonPressed(int id) {
-		ContainersButtonPressedPacket packet = (PacketHandler.getPacket(ContainersButtonPressedPacket.class));
-		packet.setButtonID(id);
-		BasicUtils.sendPacketToServer(packet.getPacket());
-	}
-	
-	/**
-	 * Called when a button-press packet is received. It's like an action packet
-	 * that carries a single int, for convenience (you don't have to make a
-	 * packet class to wrap just one int)
-	 */
-	public void onButtonPressed(int id) {
-		
 	}
 
 	private Map<Short, Short> prevBarValues = new HashMap<Short, Short>();

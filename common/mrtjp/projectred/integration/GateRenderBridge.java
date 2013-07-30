@@ -563,6 +563,7 @@ public abstract class GateRenderBridge {
 		public void setItemRender() {
 			torchZ[1] = 6f;
 			torchState[0] = torchState[1] = false;
+			wireColor[0] = ON;
 			wireColor[1] = OFF;
 		}
 	}

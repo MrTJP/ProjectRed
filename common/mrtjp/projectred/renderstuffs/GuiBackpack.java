@@ -1,8 +1,8 @@
 package mrtjp.projectred.renderstuffs;
 
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.integration.GuiMultipart;
 import mrtjp.projectred.items.ItemBackpack;
-import mrtjp.projectred.utils.gui.BaseGuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -10,7 +10,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiBackpack extends BaseGuiContainer {
+public class GuiBackpack extends GuiMultipart {
 	ItemStack _bag;
 	EntityPlayer _player;
 

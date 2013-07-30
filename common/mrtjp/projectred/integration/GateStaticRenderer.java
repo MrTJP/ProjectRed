@@ -1,5 +1,7 @@
 package mrtjp.projectred.integration;
 
+import org.lwjgl.opengl.GL11;
+
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -65,20 +67,20 @@ public class GateStaticRenderer implements IItemRenderer {
 		return true;
 	}
 
-	public void renderInventoryBlock(int meta, int model, RenderBlocks render) {
+	public void renderGateInInventory(int meta, float x, float y, float z, float scale) {
 		EnumGate type = EnumGate.VALUES[meta];
 		GateRenderBridge rendering = (type == null ? defaultRendering : type.getRenderBridge());
 		rendering.setItemRender();
-		rotatedRenderer.x = 0;
-		rotatedRenderer.y = 0;
-		rotatedRenderer.z = 0;
+		rotatedRenderer.x = x;
+		rotatedRenderer.y = y;
+		rotatedRenderer.z = z;
 		rotatedRenderer.front = 2;
 		rotatedRenderer.side = 0;
-		rotatedRenderer.renderBlocks = render;
 
+		GL11.glPushMatrix();
+		GL11.glScalef(scale, scale, scale);
 		CCRenderState.reset();
 		CCRenderState.useNormals(true);
-
 		CCRenderState.startDrawing(7);
 		rotatedRenderer.renderPartModel(rendering._modelBase, "base", .5f, 0, .5f, -1, -1, false);
 		for (int i = 0; i < rendering.wireColor.length; i++) {
@@ -87,11 +89,9 @@ public class GateStaticRenderer implements IItemRenderer {
 			int color = rendering.wireColor[i];
 			GateDynamicRenderer.renderWireOnGate(rotatedRenderer, xPositions, zPositions, rendering._wire, color);
 		}
-
 		for (int i = 0; i < rendering.torchState.length; i++) {
 			GateDynamicRenderer.renderTorchOnGate(rotatedRenderer, rendering.torchX[i], rendering.torchY[i], rendering.torchZ[i], rendering.torchState[i], rendering._torchOn, rendering._torchOff);
 		}
-
 		for (int i = 0; i < rendering.pointerX.length; i++) {
 			GateDynamicRenderer.renderPointerOnGateWithRotation(rotatedRenderer, rendering.pointerX[i], 0, rendering.pointerZ[i], rendering._pointer, 0);
 			GateDynamicRenderer.renderTorchOnGate(rotatedRenderer, rendering.pointerX[i], 0, rendering.pointerZ[i], true, rendering._torchOn, rendering._torchOff);
@@ -106,6 +106,7 @@ public class GateStaticRenderer implements IItemRenderer {
 		}
 		rendering.renderSpecials(rotatedRenderer, false);
 		CCRenderState.draw();
+		GL11.glPopMatrix();
 	}
 
 	@Override
@@ -120,7 +121,23 @@ public class GateStaticRenderer implements IItemRenderer {
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-		this.renderInventoryBlock(item.getItemDamage(), 0, null);
+		int damage = item.getItemDamage();
+		switch (type) {
+		case ENTITY:
+			renderGateInInventory(damage, -.5f, 0f, -.5f, .6f);
+			return;
+		case EQUIPPED:
+			renderGateInInventory(damage, 0f, .15f, 0f, 1f);
+			return;
+		case EQUIPPED_FIRST_PERSON:
+			renderGateInInventory(damage, 1f, .15f, 0f, 1f);
+			return;
+		case INVENTORY:
+			renderGateInInventory(damage, 0f, .15f, 0f, 1f);
+			return;
+		default: return;
+		}
+
 	}
 
 }

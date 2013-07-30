@@ -16,7 +16,14 @@ public class Configurator {
 	public static final String version = "@VERSION@";
 	public static final String buildnumber = "@BUILD@";
 	public static final String modName = "Project: Red";
+	
+	public static final String corePacketChannel = "PR:Core";
+	public static final String integrationPacketChannel = "PR:Int";
+	public static final String transmissionPacketChannel = "PR:Trans";
 
+
+	/** Multipart IDs **/
+	public static Property part_gate;
 
 	/** Block IDs **/
 	public static Property block_microID;
@@ -35,8 +42,6 @@ public class Configurator {
 	public static Property item_backpackID;
 	public static Property item_vawtID;
 
-	/** Multipart IDs **/
-	public static Property mp_gateID;
 	
 	
 	/** Settings **/
@@ -54,6 +59,8 @@ public class Configurator {
 		Configuration localConfig = new Configuration(file);
 		localConfig.load();
 		
+		part_gate = localConfig.get("MultiPart Item IDs", "Gate Part ID", 9030);
+		
 		block_microID = localConfig.getBlock("block_microID", 2145);
 		block_wireID = localConfig.getBlock("block_wireID", 2146);
 		block_gateID = localConfig.getBlock("block_gateID", 2147);
@@ -69,7 +76,6 @@ public class Configurator {
 		item_backpackID = localConfig.getItem("item_backpackID", 9028);
 		item_vawtID = localConfig.getItem("item_turbineID", 9029);
 		
-		mp_gateID = localConfig.get("MultiPart Item IDs", "mp_gateID", 9030);
 		
 		networkUpdateRange = localConfig.get("general", "Network Update Range", 50.0D);
 		networkUpdateRange.comment = "This is the distance in which players will be notified.  Lower if you experience lag.";

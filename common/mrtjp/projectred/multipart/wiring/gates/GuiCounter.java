@@ -1,14 +1,14 @@
 package mrtjp.projectred.multipart.wiring.gates;
 
+import mrtjp.projectred.integration.GuiMultipart;
 import mrtjp.projectred.utils.BasicGuiUtils;
 import mrtjp.projectred.utils.gui.BaseContainer;
-import mrtjp.projectred.utils.gui.BaseGuiContainer;
 import net.minecraft.client.gui.GuiButton;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiCounter extends BaseGuiContainer {
+public class GuiCounter extends GuiMultipart {
 
 	public GuiCounter(ContainerCounter par1Container) {
 		super(par1Container, 256, 145);

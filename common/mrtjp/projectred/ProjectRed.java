@@ -1,5 +1,7 @@
 package mrtjp.projectred;
 
+import java.util.ArrayList;
+
 import mrtjp.projectred.blocks.BlockLamp;
 import mrtjp.projectred.blocks.BlockLamp.EnumLamp;
 import mrtjp.projectred.blocks.BlockLantern;
@@ -10,9 +12,11 @@ import mrtjp.projectred.blocks.ItemBlockLamp;
 import mrtjp.projectred.blocks.ItemBlockLantern;
 import mrtjp.projectred.blocks.ItemBlockMachines;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.IProjectRedModule;
 import mrtjp.projectred.crafting.CraftingRecipeManager;
 import mrtjp.projectred.integration.ItemPartGate;
 import mrtjp.projectred.integration.ItemScrewdriver;
+import mrtjp.projectred.integration.ModuleIntegration;
 import mrtjp.projectred.items.ItemBackpack;
 import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemDrawPlate;
@@ -55,14 +59,14 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 
 /**
  * "Project: Red" serves to provide a somewhat decent replacement to Eloraam's
- * RedPower 2. Most of the code behind the multipart blocks are derived from
- * Immibis's mods. His link is provided below.
- * http://www.minecraftforum.net/topic
- * /1001131-152-immibiss-mods-smp-tubestuff-5502
- * -core-5513-da-5500-infinitubes-5502-liquid-xp-5511-microblocks-5501/
- * Hopefully in the near future, I will be able to rewrite everything into my
- * own code. But for now, most of the core functionality remains the same from
+ * RedPower 2. Some of the code is derived from Immibis's mods. His link is
+ * provided below.
+ * 
+ * Hopefully in the near future, I will be able to finish the rewrite.
+ * But for now, some of the core functionality remains the same from
  * his mod.
+ * 
+ * http://www.minecraftforum.net/topic/1001131-152-immibiss-mods-smp-tubestuff-5502-core-5513-da-5500-infinitubes-5502-liquid-xp-5511-microblocks-5501/
  * 
  * @author MrTJP
  * 
@@ -71,6 +75,9 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 @NetworkMod(clientSideRequired = true, serverSideRequired = false, channels = { Configurator.modNetworkChannel }, packetHandler = PacketHandler.class)
 public class ProjectRed {
 
+	/** Multipart items **/
+	public static ItemPartGate itemPartGate;
+	
 	/** Blocks **/
 	public static BlockMultipartBase blockMicrocontainer;
 	public static BlockWire blockWire;
@@ -86,23 +93,29 @@ public class ProjectRed {
 	public static ItemWoolGin itemWoolGin;
 	public static ItemBackpack itemBackpack;
 	public static ItemVAWT itemVAWT;
-	
-	/** Multipart items **/
-	public static ItemPartGate itemPartGate;
-	
+
 
 	@Instance("ProjectRed")
 	public static ProjectRed instance;
 
-	@Mod.PreInit
+	
+	public static ArrayList<IProjectRedModule> registeredModules = new ArrayList<IProjectRedModule>();
+	public static ArrayList<IProjectRedModule> initializedModules = new ArrayList<IProjectRedModule>();
+
+	public static boolean registerModule(IProjectRedModule m) {
+		return registeredModules.add(m);
+	}
+	
+	
+	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+		registerModule(new ModuleIntegration());
 		Configurator.initConfig(event);
 		BasicUtils.proxy.preinit();
 	}
 
-	@Mod.Init
+	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
-		BasicUtils.proxy.init();
 		// Lamps
 		if (Configurator.block_lampID.getInt() > 0) {
 			blockLamp = new BlockLamp(Configurator.block_lampID.getInt());
@@ -144,10 +157,6 @@ public class ProjectRed {
 				LanguageRegistry.addName(new ItemStack(itemComponent, 1, part.meta), part.fullName);
 			}
 		}
-
-		// Gate block
-		// MOVED
-		
 		
 		// Wire block
 		if (Configurator.block_wireID.getInt() > 0) {
@@ -175,12 +184,6 @@ public class ProjectRed {
 		if (Configurator.item_sawID.getInt() > 0) {
 			itemSaw = new ItemSaw(Configurator.item_sawID.getInt());
 			LanguageRegistry.addName(itemSaw, "Saw");
-		}
-
-		// Screwdriver
-		if (Configurator.item_screwdriverID.getInt() > 0) {
-			itemScrewdriver = new ItemScrewdriver(Configurator.item_screwdriverID.getInt());
-			LanguageRegistry.addName(itemScrewdriver, "Screwdriver");
 		}
 
 		// Draw Plate
@@ -212,6 +215,8 @@ public class ProjectRed {
 		MinecraftForge.EVENT_BUS.register(instance);
 		MinecraftForge.EVENT_BUS.register(BasicUtils.proxy);
 
+		BasicUtils.proxy.init();
+
 		BasicUtils.proxy.initRenderings();
 		BasicUtils.proxy.registerEventsAndHandlers();
 		NetworkRegistry.instance().registerGuiHandler(this, new GuiHandler());
@@ -219,15 +224,14 @@ public class ProjectRed {
 		BasicUtils.proxy.initOreDictionaryDefinitions();
 	}
 
-	@Mod.PostInit
+	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		BasicUtils.proxy.postinit();
 		MicroblockLibrary.instance = new MicroblockLibrary();
-		// MicroblockLibrary.instance.initializeParts();
 		MicroblockLibrary.instance.initializeBlockScan();
 	}
 
-	@Mod.ServerStarting
+	@Mod.EventHandler
 	public void onServerStarting(FMLServerStartingEvent event) {
 		event.registerServerCommand(new CommandDebug());
 	}
