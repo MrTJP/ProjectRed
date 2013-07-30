@@ -1,5 +1,7 @@
 package mrtjp.projectred.network;
 
+import static mrtjp.projectred.ProjectRed.initializedModules;
+import static mrtjp.projectred.ProjectRed.registeredModules;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.IProjectRedModule;
 import mrtjp.projectred.core.Messenger;
@@ -22,26 +24,32 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-public class ClientProxy extends CommonProxy implements IProxy {
+public class ClientProxy extends CommonProxy {
 
 	public static int renderPass;
-	
-	@Override
-	public void init() {
-		IProjectRedModule m = new ModuleIntegration();
-		m.getClientProxy().init();
-	}
 
 	@Override
 	public void preinit() {
-		// TODO Auto-generated method stub
-		
+		super.preinit();
+		for (IProjectRedModule m : initializedModules) {
+			m.getClientProxy().preinit();
+		}
 	}
-
+	
+	@Override
+	public void init() {
+		super.init();
+		for (IProjectRedModule m : initializedModules) {
+			m.getClientProxy().init();
+		}
+	}
+	
 	@Override
 	public void postinit() {
-		// TODO Auto-generated method stub
-		
+		super.postinit();
+		for (IProjectRedModule m : initializedModules) {
+			m.getCommonProxy().postinit();
+		}
 	}
 
 	@Override
@@ -55,18 +63,12 @@ public class ClientProxy extends CommonProxy implements IProxy {
 		RenderIDs.renderIDLantern = RenderingRegistry.getNextAvailableRenderId();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileLantern.class, LanternRenderer.instance);
 		MinecraftForgeClient.registerItemRenderer(ProjectRed.blockLantern.blockID, LanternRenderer.instance);
-		
+
 		// Redwire
 		RenderIDs.renderIdRedwire = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(WireRenderer.instance);
 
 		// Gates
-		/**
-		RenderIDs.renderIdGate = RenderingRegistry.getNextAvailableRenderId();
-		ClientRegistry.bindTileEntitySpecialRenderer(TileGate.class, GateDynamicRenderer.instance);
-		RenderingRegistry.registerBlockHandler(GateStaticRenderer.instance);
-		MinecraftForgeClient.registerItemRenderer(ProjectRed.blockGate.blockID, GateStaticRenderer.instance);
-        **/
 		// Microblocks
 		RenderIDs.renderIdMicroblock = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(MultiblockRenderer.instance);

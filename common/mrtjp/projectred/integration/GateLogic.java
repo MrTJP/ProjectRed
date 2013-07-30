@@ -7,10 +7,16 @@ import static mrtjp.projectred.utils.BasicWireUtils.RIGHT;
 
 import java.util.Random;
 
+import codechicken.core.IGuiPacketSender;
+import codechicken.lib.packet.PacketCustom;
+
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.network.GuiIDs;
+import mrtjp.projectred.utils.BasicGuiUtils;
 import mrtjp.projectred.utils.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -59,27 +65,28 @@ public abstract class GateLogic {
 	}
 
 	/**
-	 * Marker interface for gates which can be horizontally flipped by
-	 * shift-clicking with a screwdriver. Disabled, as gates can no longer
-	 * render flipped without substantial effort.
-	 */
-	public static interface Flippable {
-	}
-
-	/**
 	 * Used to do something if gate has a rightclick action such as a gui.
 	 */
 	public static interface WithRightClickAction {
-		public void onRightClick(EntityPlayer ply, GatePart tile);
+		public void onRightClick(EntityPlayer player, GatePart tile);
 	}
 
 	/**
-	 * Used to ask logic about pointer conditions.
+	 * Implemented by GateLogics which can be used with the timer GUI. Allows
+	 * access to the timer interval (which is measured in ticks)
+	 */
+	public interface GateLogicTimed {
+		public int getInterval();
+		public void setInterval(int i);
+	}
+
+	/**
+	 * Provides getter methods to a pointer's degree rotation and degrees per
+	 * tick.
 	 */
 	public static interface WithPointer {
-		public int getPointerPosition(); // degrees
-
-		public float getPointerSpeed(); // degrees per tick
+		public int getPointerPosition();
+		public float getPointerSpeed();
 	}
 
 	/**
@@ -90,6 +97,12 @@ public abstract class GateLogic {
 		public void setWorldInfo(World world, int x, int y, int z);
 
 		public boolean needsWorldInfo();
+	}
+	
+	public static class defaultLogic extends GateLogic {
+		@Override
+		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
+		}
 	}
 
 	public static class AND extends GateLogic implements Stateless {
@@ -161,7 +174,7 @@ public abstract class GateLogic {
 		}
 	}
 
-	public static class RSLatch extends GateLogic implements Stateless, Flippable {
+	public static class RSLatch extends GateLogic implements Stateless {
 		@Override
 		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[LEFT] != 0 && inputs[RIGHT] != 0)
@@ -184,7 +197,7 @@ public abstract class GateLogic {
 		}
 	}
 
-	public static class ToggleLatch extends GateLogic implements Flippable, WithRightClickAction {
+	public static class ToggleLatch extends GateLogic implements WithRightClickAction {
 		private boolean wasLeft, wasRight;
 		private boolean state;
 
@@ -311,7 +324,7 @@ public abstract class GateLogic {
 		}
 	}
 
-	public static class Multiplexer extends GateLogic implements Stateless, Flippable {
+	public static class Multiplexer extends GateLogic implements Stateless {
 		@Override
 		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			outputs[FRONT] = inputs[BACK] != 0 ? inputs[LEFT] : inputs[RIGHT];
@@ -418,8 +431,13 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void onRightClick(EntityPlayer ply, GatePart tile) {
-			ply.openGui(ProjectRed.instance, GuiIDs.ID_Timer, tile.world(), tile.x(), tile.y(), tile.z());
+		public void onRightClick(EntityPlayer player, final GatePart tile) {
+			BasicGuiUtils.openSMPContainer((EntityPlayerMP) player, new ContainerTimer(player, tile), new IGuiPacketSender() {
+				@Override
+				public void sendPacket(EntityPlayerMP player, int windowId) {
+					new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerOpen).writeInt(windowId).writeCoord(tile.x(), tile.y(), tile.z()).writeByte(tile.getFace()).sendToPlayer(player);
+				}
+			});
 		}
 
 		@Override
@@ -473,7 +491,7 @@ public abstract class GateLogic {
 
 	}
 
-	public static class Counter extends GateLogic implements WithRightClickAction, WithPointer, Flippable {
+	public static class Counter extends GateLogic implements WithRightClickAction, WithPointer {
 
 		int value = 0, max = 10, incr = 1, decr = 1;
 		private boolean wasFront, wasBack;
@@ -545,7 +563,7 @@ public abstract class GateLogic {
 
 	}
 
-	public static class Sequencer extends GateLogic implements WithRightClickAction, WithPointer, GateLogicTimed, Flippable {
+	public static class Sequencer extends GateLogic implements WithRightClickAction, WithPointer, GateLogicTimed {
 
 		public int intervalTicks = 20;
 		public int ticksLeft;
@@ -694,7 +712,7 @@ public abstract class GateLogic {
 		}
 	}
 
-	public static class StateCell extends GateLogic implements WithRightClickAction, WithPointer, GateLogicTimed, Flippable {
+	public static class StateCell extends GateLogic implements WithRightClickAction, WithPointer, GateLogicTimed {
 
 		private int intervalTicks = 20, ticksLeft, pulseTicks;
 		private boolean timing, paused;
@@ -830,7 +848,7 @@ public abstract class GateLogic {
 		}
 	}
 
-	public static class DLatch extends GateLogic implements Stateless, Flippable {
+	public static class DLatch extends GateLogic implements Stateless {
 		@Override
 		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[RIGHT] != 0) {
@@ -844,7 +862,7 @@ public abstract class GateLogic {
 		}
 	}
 
-	public static class DFlop extends GateLogic implements Flippable {
+	public static class DFlop extends GateLogic {
 		private boolean clockWasOn;
 
 		@Override
@@ -871,7 +889,7 @@ public abstract class GateLogic {
 		}
 	}
 
-	public static class BundledLatch extends GateLogic implements Stateless, Flippable, WithBundledConnections {
+	public static class BundledLatch extends GateLogic implements Stateless, WithBundledConnections {
 		@Override
 		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			if (inputs[RIGHT] != 0) {
@@ -896,7 +914,7 @@ public abstract class GateLogic {
 
 	}
 
-	public static class BundledRelay extends GateLogic implements Stateless, Flippable, WithBundledConnections {
+	public static class BundledRelay extends GateLogic implements Stateless, WithBundledConnections {
 		@Override
 		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			outputs[FRONT] = (inputs[RIGHT] != 0) ? inputs[BACK] : 0;
@@ -919,7 +937,7 @@ public abstract class GateLogic {
 
 	}
 
-	public static class BundledMultiplexer extends GateLogic implements Stateless, Flippable, WithBundledConnections {
+	public static class BundledMultiplexer extends GateLogic implements Stateless, WithBundledConnections {
 		@Override
 		public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 			outputs[FRONT] = (inputs[BACK] != 0) ? inputs[RIGHT] : inputs[LEFT];

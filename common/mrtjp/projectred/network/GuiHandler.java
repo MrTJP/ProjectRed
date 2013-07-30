@@ -1,12 +1,8 @@
 package mrtjp.projectred.network;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.integration.GatePart;
+import mrtjp.projectred.core.IProjectRedModule;
 import mrtjp.projectred.items.ItemBackpack;
-import mrtjp.projectred.multipart.wiring.gates.ContainerCounter;
-import mrtjp.projectred.multipart.wiring.gates.ContainerTimer;
-import mrtjp.projectred.multipart.wiring.gates.GuiCounter;
-import mrtjp.projectred.multipart.wiring.gates.GuiTimer;
 import mrtjp.projectred.renderstuffs.GuiAlloySmelter;
 import mrtjp.projectred.renderstuffs.GuiBackpack;
 import mrtjp.projectred.renderstuffs.GuiTurbineRotary;
@@ -23,17 +19,25 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		if (ID == GuiIDs.ID_Timer) {
-			GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
-			if (tile != null) {
-				return new ContainerTimer(player, tile);
+		for (IProjectRedModule m : ProjectRed.initializedModules) {
+			IGuiHandler g = m.getGuiHandler();
+			Object servGui = g.getServerGuiElement(ID, player, world, x, y, z);
+			if (servGui != null) {
+				return servGui;
 			}
 		}
+		
+		if (ID == GuiIDs.ID_Timer) {
+			//GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
+			//if (tile != null) {
+			//	return new ContainerTimer(player, tile);
+			//}
+		}
 		if (ID == GuiIDs.ID_Counter) {
-			GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
-			if (tile != null) {
-				return new ContainerCounter(player, tile);
-			}
+			//GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
+			//if (tile != null) {
+			//	return new ContainerCounter(player, tile);
+			//}
 		}
 		if (ID == GuiIDs.ID_Alloy) {
 			TileAlloySmelter tile = (TileAlloySmelter) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileAlloySmelter.class);
@@ -58,17 +62,25 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		if (ID == GuiIDs.ID_Timer) {
-			GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
-			if (tile != null) {
-				return new GuiTimer(new ContainerTimer(player, tile));
+		for (IProjectRedModule m : ProjectRed.initializedModules) {
+			IGuiHandler g = m.getGuiHandler();
+			Object cGui = g.getClientGuiElement(ID, player, world, x, y, z);
+			if (cGui != null) {
+				return cGui;
 			}
 		}
+
+		if (ID == GuiIDs.ID_Timer) {
+			//GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
+			//if (tile != null) {
+			//	return new GuiTimer(new ContainerTimer(player, tile));
+			//}
+		}
 		if (ID == GuiIDs.ID_Counter) {
-			GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
-			if (tile != null) {
-				return new GuiCounter(new ContainerCounter(player, tile));
-			}
+			//GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
+			//if (tile != null) {
+			//	return new GuiCounter(new ContainerCounter(player, tile));
+			//}
 		}
 		if (ID == GuiIDs.ID_Alloy) {
 			TileAlloySmelter tile = (TileAlloySmelter) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileAlloySmelter.class);

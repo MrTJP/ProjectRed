@@ -11,8 +11,7 @@ public class ContainerCounter extends BaseContainer {
 	private GateLogic.Counter counter;
 	
 	public ContainerCounter(EntityPlayer player, GatePart tile) {
-		super(player, tile);
-		
+		super(player);
 		counter = ((GateLogic.Counter)tile.getLogic());
 	}
 	

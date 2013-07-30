@@ -1,17 +1,17 @@
 package mrtjp.projectred.renderstuffs;
 
 import mrtjp.projectred.crafting.AlloySmelterRecipe;
+import mrtjp.projectred.integration.GuiMultipart;
 import mrtjp.projectred.tiles.TileAlloySmelter;
 import mrtjp.projectred.utils.BasicGuiUtils;
 import mrtjp.projectred.utils.BasicGuiUtils.GuiItemRenderOptions;
-import mrtjp.projectred.utils.gui.BaseGuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiAlloySmelter extends BaseGuiContainer {
+public class GuiAlloySmelter extends GuiMultipart {
 
 	TileAlloySmelter tile;
 

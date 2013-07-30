@@ -3,6 +3,7 @@ package mrtjp.projectred.integration;
 import java.util.List;
 
 import mrtjp.projectred.crafting.ProjectRedTabs;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,6 +24,15 @@ public class ItemPartGate extends JItemMultiPart {
 		setHasSubtypes(true);
 		setCreativeTab(ProjectRedTabs.tabWires);
 		setUnlocalizedName("projred.itempartgate");
+	}
+
+	@Override
+	public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float f, float f2, float f3) {
+		if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3)) {
+			w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .8F);
+			return true;
+		}
+		return false;
 	}
 
 	@Override

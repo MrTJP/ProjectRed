@@ -35,6 +35,7 @@ public enum EnumGate {
 	
 	private Class<? extends GateLogic> logicClass;
 	private Class<? extends GateRenderBridge> renderClass;
+	
 	private GateLogic logicInst;
 	private GateRenderBridge renderInst;
 	public final String name;
@@ -84,6 +85,16 @@ public enum EnumGate {
 		}
 		return VALUES[ordinal];
 	}
+	
+	public static EnumGate getByName(String name) {
+		for (EnumGate g : VALUES) {
+			if (g.name == name) {
+				return g;
+			}
+		}
+		return null;
+	}
+
 	
 	public ItemStack getItemStack() {
 		return new ItemStack(ProjectRed.itemPartGate, 1, meta);
