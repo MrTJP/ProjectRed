@@ -3,16 +3,19 @@ package mrtjp.projectred.renderstuffs;
 import java.util.Map;
 
 import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
-import mrtjp.projectred.utils.Color;
-import mrtjp.projectred.utils.codechicken.core.render.CCModel;
-import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
+import mrtjp.projectred.utils.PRColors;
 import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
-import mrtjp.projectred.utils.codechicken.core.vec.Rotation;
-import mrtjp.projectred.utils.codechicken.core.vec.Translation;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderEngine;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
+
+import codechicken.lib.render.CCModel;
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Translation;
+import codechicken.lib.vec.Vector3;
 
 
 public class LanternModel {
@@ -20,7 +23,7 @@ public class LanternModel {
 	private Map<String, CCModel> models;
 
 	public LanternModel() {
-		models = CCModel.parseObjModels("/mods/projectred/textures/obj/lantern.obj", new InvertX());
+		models = CCModel.parseObjModels(new ResourceLocation("projectred", "/textures/obj/lantern.obj"), new InvertX());
 		for (CCModel c : models.values()) {
 			c.computeNormals();
 			c.apply(new Translation(.5, 0, .5));
@@ -29,17 +32,17 @@ public class LanternModel {
 	}
 
 	public void bindTextureForColorAndState(int color, boolean on) {
-		String base = "/mods/projectred/textures/blocks/";
+		String base = "textures/blocks/";
 		String folder = on ? "lanternon/" : "lanternoff/";
 		String file = EnumLantern.get(color).unlocalName + (on ? "on" : "off");
 		String loc = base + folder + file + ".png";
-		CCRenderState.changeTexture(loc);
+		bindTextureByName(loc);
 	}
 
 	protected void bindTextureByName(String par1Str) {
-		RenderEngine renderengine = Minecraft.getMinecraft().renderEngine;
+		TextureManager renderengine = Minecraft.getMinecraft().renderEngine;
 		if (renderengine != null) {
-			renderengine.bindTexture(par1Str);
+			renderengine.func_110577_a(new ResourceLocation("projectred", par1Str));
 		}
 	}
 
@@ -58,8 +61,8 @@ public class LanternModel {
 			models.get("standtop").copy().apply(new Translation(x, y, z)).render();
 			models.get("goldringtop").copy().apply(new Translation(x, y, z)).render();
 		} else {
-			models.get("standside").copy().apply(Rotation.getForSideFacing(0, rotation)).apply(new Translation(x, y, z)).render();
-			models.get("goldringtop").copy().apply(Rotation.getForSideFacing(0, rotation)).apply(new Translation(x, y, z)).render();
+			models.get("standside").copy().apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, rotation)).at(Vector3.center)).apply(new Translation(x, y, z)).render();
+			models.get("goldringtop").copy().apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, rotation)).at(Vector3.center)).apply(new Translation(x, y, z)).render();
 		}
 		CCRenderState.draw();
 		GL11.glPopMatrix();
@@ -92,7 +95,7 @@ public class LanternModel {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDepthMask(false);
 
-		GL11.glColor4f(Color.get(tint).r, Color.get(tint).g, Color.get(tint).b, 0.6f);
+		GL11.glColor4f(PRColors.get(tint).r, PRColors.get(tint).g, PRColors.get(tint).b, 0.6f);
 		GL11.glTranslated(x, y, z);
 		CCRenderState.reset();
 		CCRenderState.useNormals(true);

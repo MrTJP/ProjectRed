@@ -2,6 +2,7 @@ package mrtjp.projectred.utils.gui;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -28,7 +29,7 @@ public class BaseGuiContainer extends GuiContainer {
 		this.xCenterOffset = 0;
 		this.yCenterOffset = 0;
 	}
-	
+
 	public BaseGuiContainer(Container container, int xSize, int ySize) {
 		super(container);
 		this.container = container;
@@ -38,8 +39,8 @@ public class BaseGuiContainer extends GuiContainer {
 		this.xCenterOffset = 0;
 		this.yCenterOffset = 0;
 	}
-	
-	public BaseGuiContainer(int xSize, int ySize, int xCenterOffset, int yCenterOffset){
+
+	public BaseGuiContainer(int xSize, int ySize, int xCenterOffset, int yCenterOffset) {
 		this(new GhostContainer(null, null), xSize, ySize);
 	}
 
@@ -55,18 +56,18 @@ public class BaseGuiContainer extends GuiContainer {
 		this.xCenter = (right + guiLeft) / 2;
 		this.yCenter = (bottom + guiTop) / 2;
 	}
-	
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		mc.renderEngine.bindTexture(texPath);
+		mc.renderEngine.func_110577_a(new ResourceLocation(texPath));
 		GL11.glColor3f(1, 1, 1);
 		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 	}
-	
+
 	protected void drawString(String s, int x, int y, int colour) {
 		fontRenderer.drawStringWithShadow(s, x + guiLeft, y + guiTop, colour);
 	}
-	
+
 	protected void drawStringWithoutShadow(String s, int x, int y, int colour) {
 		fontRenderer.drawString(s, x + guiLeft, y + guiTop, colour);
 	}

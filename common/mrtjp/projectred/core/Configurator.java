@@ -16,7 +16,19 @@ public class Configurator {
 	public static final String version = "@VERSION@";
 	public static final String buildnumber = "@BUILD@";
 	public static final String modName = "Project: Red";
+	
+	public static final String corePacketChannel = "PR:Core";
+	public static final String integrationPacketChannel = "PR:Int";
+	public static final String transmissionPacketChannel = "PR:Trans";
 
+	/** Modules **/
+	public static Property module_Core;
+	public static Property module_Integration;
+	public static Property module_Transmission;
+	public static Property module_Illumination;
+	
+	/** Multipart IDs **/
+	public static Property part_gate;
 
 	/** Block IDs **/
 	public static Property block_microID;
@@ -33,6 +45,7 @@ public class Configurator {
 	public static Property item_drawplateID;
 	public static Property item_woolginID;
 	public static Property item_backpackID;
+	public static Property item_vawtID;
 
 	/** Settings **/
 	public static Property networkUpdateRange;
@@ -49,6 +62,13 @@ public class Configurator {
 		Configuration localConfig = new Configuration(file);
 		localConfig.load();
 		
+		module_Core = localConfig.get("Modules", "Core", true);
+		module_Integration = localConfig.get("Modules", "Integration", true);
+		module_Transmission = localConfig.get("Modules", "Transmission", true);
+		module_Illumination = localConfig.get("Modules", "Illumination", true);
+
+		part_gate = localConfig.get("MultiPart Item IDs", "Gate Part ID", 9030);
+		
 		block_microID = localConfig.getBlock("block_microID", 2145);
 		block_wireID = localConfig.getBlock("block_wireID", 2146);
 		block_gateID = localConfig.getBlock("block_gateID", 2147);
@@ -60,8 +80,10 @@ public class Configurator {
 		item_screwdriverID = localConfig.getItem("item_screwdriverID", 9024);
 		item_componentsID = localConfig.getItem("item_componentsID", 9025);
 		item_drawplateID = localConfig.getItem("item_drawplateID", 9026);
-		item_woolginID = localConfig.getItem("item_woolgin", 9027);
-		item_backpackID = localConfig.getItem("item_backpack", 9028);
+		item_woolginID = localConfig.getItem("item_woolginID", 9027);
+		item_backpackID = localConfig.getItem("item_backpackID", 9028);
+		item_vawtID = localConfig.getItem("item_turbineID", 9029);
+		
 		
 		networkUpdateRange = localConfig.get("general", "Network Update Range", 50.0D);
 		networkUpdateRange.comment = "This is the distance in which players will be notified.  Lower if you experience lag.";

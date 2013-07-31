@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -317,7 +318,7 @@ public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedston
 
 	// normal direction -> canConnectRedstone direction parameter
 	// (-2 indicates this direction cannot be passed)
-	private static int[] canConnectRedstoneDirectionMap = { -1, -2, 0, 2, 1, 3 };
+	private static int[] canConnectRedstoneDirectionMap = {-2, -1, 0, 2, 3, 1};
 
 	@Override
 	protected boolean connects(int x, int y, int z, int wireSide, int direction) {
@@ -480,7 +481,7 @@ public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedston
 
 	@Override
 	protected boolean debug(EntityPlayer ply) {
-		ply.sendChatToPlayer((worldObj.isRemote ? "Client" : "Server") + " signal strength: " + strength + ", nwb: " + strengthFromNonWireBlocks);
+		ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((worldObj.isRemote ? "Client" : "Server") + " signal strength: " + strength + ", nwb: " + strengthFromNonWireBlocks));
 		
 		super.debug(ply);
 		return true;
@@ -488,8 +489,7 @@ public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedston
 
 	@Override
 	protected boolean canConnectToWire(TileWire wire) {
-		return wire instanceof TileRedAlloy; // overridden by
-												// InsulatedRedAlloyTile
+		return wire instanceof TileRedAlloy;
 	}
 
 	@Override

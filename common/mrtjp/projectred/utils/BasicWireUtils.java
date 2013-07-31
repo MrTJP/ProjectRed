@@ -14,41 +14,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
 public class BasicWireUtils {
-	private static final int plainRedAlloyMeta = EnumWire.CLASS_TO_META.get(TilePlainRedAlloy.class);
-
-	/** Magic array of numbers */
-	private static int[][] rotationMap = { { 9, 9, 4, 5, 3, 2 }, { 9, 9, 5, 4, 2, 3 }, { 5, 4, 9, 9, 0, 1 }, { 4, 5, 9, 9, 1, 0 }, { 2, 3, 1, 0, 9, 9 }, { 3, 2, 0, 1, 9, 9 }, };
-
+	
 	public static final int FRONT = 0;
 	public static final int BACK = 1;
 	public static final int LEFT = 2;
 	public static final int RIGHT = 3;
-
-	public static final int[][][] dirMap = new int[6][6][4]; // [side][front][rel
-																// direction] ->
-																// abs direction
-	public static final int[][][] invDirMap = new int[6][6][6]; // [side][front][abs
-																// direction] ->
-																// rel direction
-	static {
-		for (int side = 0; side < 6; side++)
-			for (int front = 0; front < 6; front++) {
-				if ((front & 6) == (side & 6))
-					continue;
-
-				dirMap[side][front][FRONT] = front;
-				dirMap[side][front][BACK] = front ^ 1;
-				// dirMap[side][front][LEFT] =
-				// ForgeDirection.ROTATION_MATRIX[side][front];
-				// dirMap[side][front][RIGHT] =
-				// ForgeDirection.ROTATION_MATRIX[side][front^1];
-				dirMap[side][front][LEFT] = rotationMap[side][front];
-				dirMap[side][front][RIGHT] = rotationMap[side][front ^ 1];
-
-				for (int dir = 0; dir < 4; dir++)
-					invDirMap[side][front][dirMap[side][front][dir]] = dir;
-			}
-	}
 
 	/**
 	 * Returns true if a given edge of a block is an open space, so that wires

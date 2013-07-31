@@ -8,7 +8,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import codechicken.nei.NEIClientUtils;
 import codechicken.nei.PositionedStack;
-import codechicken.nei.forge.GuiContainerManager;
 import codechicken.nei.recipe.ShapedRecipeHandler;
 
 public class NEIAlloySmelterRecipeManager extends ShapedRecipeHandler {
@@ -57,7 +56,7 @@ public class NEIAlloySmelterRecipeManager extends ShapedRecipeHandler {
 
 	@Override
 	public String getGuiTexture() {
-		return "/mods/projectred/textures/gui/alloysmelter.png";
+		return "projectred:textures/gui/alloysmelter.png";
 	}
 
 	@Override
@@ -89,15 +88,15 @@ public class NEIAlloySmelterRecipeManager extends ShapedRecipeHandler {
 	}
 
 	@Override
-	public void drawExtras(GuiContainerManager gui, int recipe) {
+	public void drawExtras(int recipe) {
 		AlloySmelterRecipe r = AlloySmelterRecipe.getAlloyRecipes().get(recipe);
 		if (r == null) {
 			return;
 		}
-		drawProgressBar(gui, 126, 7, 176, 0, 14, 14, 80, 3);
-		drawProgressBar(gui, 102, 28, 176, 15, 13, 30, r.getBurnTime(), 1);
-		drawProgressBar(gui, 102, 28, 176, 15, 25, 30, r.getBurnTime(), 0);
-		gui.window.fontRenderer.drawString("" + r.getBurnTime(), 103, 53, 0x404040);
+		drawProgressBar(126, 7, 176, 0, 14, 14, 80, 3);
+		drawProgressBar(102, 28, 176, 15, 13, 30, r.getBurnTime(), 1);
+		drawProgressBar(102, 28, 176, 15, 25, 30, r.getBurnTime(), 0);
+		//gui.window.fontRenderer.drawString("" + r.getBurnTime(), 103, 53, 0x404040);
 	}
 
 	@Override

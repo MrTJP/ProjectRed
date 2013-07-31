@@ -7,4 +7,5 @@ public class GuiIDs {
 	
 	public static int ID_Alloy = 2;
 	public static int ID_Bag = 3;
+	public static int ID_TurbineRotary = 4;
 }

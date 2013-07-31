@@ -25,7 +25,6 @@ public class GuiCheckBox extends GuiButton {
         {
             boolean var5 = par2 >= this.xPosition && par3 >= this.yPosition && par2 < this.xPosition + this.width && par3 < this.yPosition + this.height;
             int var6 = this.getHoverState(var5);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, minecraft.renderEngine.getTexture("/logisticspipes/gui/checkbox-" + (state?"on":"out") + "" + (var6 == 2?"-mouse":"") + ".png"));
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             Tessellator var9 = Tessellator.instance;
             var9.startDrawingQuads();
