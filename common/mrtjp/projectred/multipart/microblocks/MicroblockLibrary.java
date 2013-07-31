@@ -16,7 +16,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StringTranslate;
 import net.minecraft.world.World;
 
 import com.google.common.base.Strings;
@@ -201,7 +200,7 @@ public class MicroblockLibrary implements IMicroblockLibrary {
 
 	private static String getItemDisplayName(int itemID, int meta) {
 		String nameKey = Item.itemsList[itemID].getUnlocalizedName(new ItemStack(itemID, 1, meta)) + ".name";
-		String name = StringTranslate.getInstance().translateKey(nameKey);
+		String name = new ItemStack(itemID, 1, meta).getDisplayName();//StringTranslate.getInstance().translateKey(nameKey);
 
 		if (name.equals(nameKey) || name.equals("")) {
 			name = LanguageRegistry.instance().getStringLocalization(nameKey);

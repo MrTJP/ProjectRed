@@ -9,15 +9,21 @@ import mrtjp.projectred.core.ProjectRedTickHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+
+import codechicken.core.IGuiPacketSender;
 
 import cpw.mods.fml.client.FMLClientHandler;
 
@@ -34,26 +40,10 @@ public class BasicGuiUtils {
 		return input;
 	}
 
-	// TODO opera color
-	public static int ConvertEnumToColor(Color color) {
-		switch (color) {
-		case BLACK:
-			return 0xFF000000;
-		case WHITE:
-			return 0xFFFFFFFF;
-		case GREY:
-			return 0xFF8b8b8b;
-		case LIGHT_GREY:
-			return 0xFFC6C6C6;
-		case RED:
-			return 0xFFFF0000;
-		default:
-			return 0;
-		}
-	}
-
 	/**
 	 * Draws the specified string with a shadow.
+	 * 
+	 * @author RS485
 	 * 
 	 * @throws SecurityException
 	 * @throws NoSuchMethodException
@@ -102,117 +92,6 @@ public class BasicGuiUtils {
 	}
 
 	private static float zLevel;
-
-	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop) {
-		displayItemToolTip(tooltip, gui, pzLevel, guiLeft, guiTop, false, false);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop, boolean forceminecraft, boolean forceAdd) {
-		zLevel = pzLevel;
-		if (tooltip != null) {
-			try {
-				// Use minecraft vanilla code
-				Minecraft mc = FMLClientHandler.instance().getClient();
-				ItemStack var22 = (ItemStack) tooltip[2];
-				List<String> var24 = var22.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
-
-				if ((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean) tooltip[3]))) {
-					var24.add(1, "\u00a77" + ((ItemStack) tooltip[2]).stackSize);
-				}
-
-				int var11 = ((Integer) tooltip[0]).intValue() - (forceAdd ? 0 : guiLeft) + 12;
-				int var12 = ((Integer) tooltip[1]).intValue() - (forceAdd ? 0 : guiTop) - 12;
-				drawToolTip(var11, var12, var24, var22.getRarity().rarityColor, forceminecraft);
-			} catch (Exception e1) {
-			}
-		}
-	}
-
-	public static void drawToolTip(int posX, int posY, List<String> msg, int color, boolean forceminecraft) {
-		try {
-			if (forceminecraft) {
-				throw new Exception();
-			}
-
-			// Look for NEI
-			Class<?> LayoutManager = Class.forName("codechicken.nei.LayoutManager");
-			Field GuiManagerField = LayoutManager.getDeclaredField("gui");
-			GuiManagerField.setAccessible(true);
-			Object GuiManagerObject = GuiManagerField.get(null);
-			Class<?> GuiManager = Class.forName("codechicken.nei.GuiManager");
-			Method drawMultilineTip = GuiManager.getDeclaredMethod("drawMultilineTip", new Class[] { int.class, int.class, List.class, int.class });
-
-			drawMultilineTip.invoke(GuiManagerObject, new Object[] { posX, posY, msg, color });
-		} catch (Exception e) {
-			try {
-				// Use minecraft vanilla code
-				List<String> var24 = msg;
-
-				if (var24.size() > 0) {
-					int var10 = 0;
-					int var11;
-					int var12;
-
-					for (var11 = 0; var11 < var24.size(); ++var11) {
-						var12 = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(var24.get(var11));
-
-						if (var12 > var10) {
-							var10 = var12;
-						}
-					}
-
-					var11 = posX + 12;
-					var12 = posY - 12;
-					int var14 = 8;
-
-					if (var24.size() > 1) {
-						var14 += 2 + (var24.size() - 1) * 10;
-					}
-
-					GL11.glDisable(2896 /* GL_LIGHTING */);
-					GL11.glDisable(2929 /* GL_DEPTH_TEST */);
-					zLevel = 300.0F;
-					int var15 = -267386864;
-					drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15);
-					drawGradientRect(var11 - 3, var12 + var14 + 3, var11 + var10 + 3, var12 + var14 + 4, var15, var15);
-					drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 + var14 + 3, var15, var15);
-					drawGradientRect(var11 - 4, var12 - 3, var11 - 3, var12 + var14 + 3, var15, var15);
-					drawGradientRect(var11 + var10 + 3, var12 - 3, var11 + var10 + 4, var12 + var14 + 3, var15, var15);
-					int var16 = 1347420415;
-					int var17 = (var16 & 16711422) >> 1 | var16 & -16777216;
-					drawGradientRect(var11 - 3, var12 - 3 + 1, var11 - 3 + 1, var12 + var14 + 3 - 1, var16, var17);
-					drawGradientRect(var11 + var10 + 2, var12 - 3 + 1, var11 + var10 + 3, var12 + var14 + 3 - 1, var16, var17);
-					drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 - 3 + 1, var16, var16);
-					drawGradientRect(var11 - 3, var12 + var14 + 2, var11 + var10 + 3, var12 + var14 + 3, var17, var17);
-
-					for (int var18 = 0; var18 < var24.size(); ++var18) {
-						String var19 = var24.get(var18);
-
-						if (var18 == 0) {
-							var19 = "\u00a7" + Integer.toHexString(color) + var19;
-						} else {
-							var19 = "\u00a77" + var19;
-						}
-
-						FMLClientHandler.instance().getClient().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
-
-						if (var18 == 0) {
-							var12 += 2;
-						}
-
-						var12 += 10;
-					}
-
-					zLevel = 0.0F;
-
-					GL11.glEnable(2929 /* GL_DEPTH_TEST */);
-					GL11.glEnable(2896 /* GL_LIGHTING */);
-				}
-			} catch (Exception e1) {
-			}
-		}
-	}
 
 	private static void drawGradientRect(int par1, int par2, int par3, int par4, int par5, int par6) {
 		float var7 = (par5 >> 24 & 255) / 255.0F;
@@ -288,7 +167,7 @@ public class BasicGuiUtils {
 
 	public static void drawSlotBackground(Minecraft mc, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/mods/projectred/textures/gui/slot.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("projectred", "textures/gui/slot.png"));
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
@@ -301,7 +180,7 @@ public class BasicGuiUtils {
 
 	public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/mods/projectred/textures/gui/slot-big.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("/projectred", "textures/gui/slot-big.png"));
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
@@ -314,7 +193,7 @@ public class BasicGuiUtils {
 
 	public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/mods/projectred/textures/gui/slot-small.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("projectred", "textures/gui/slot-small.png"));
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
@@ -327,7 +206,7 @@ public class BasicGuiUtils {
 
 	public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, Icon icon) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/gui/items.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("/gui/items.png"));
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
@@ -346,7 +225,7 @@ public class BasicGuiUtils {
 		if (flag) {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
-		mc.renderEngine.bindTexture("/mods/projectred/textures/gui/GuiBackground.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("projectred", "textures/gui/GuiBackground.png"));
 
 		if (displayTop) {
 			// Top Side
@@ -493,7 +372,7 @@ public class BasicGuiUtils {
 		RenderItem renderItem = new RenderItem();
 		RenderBlocks renderBlocks = new RenderBlocks();
 		renderItem.renderWithColor = ren.opacity == 1f;
-	
+
 		// Render the itemstack
 		if (ren._stack != null) {
 			if (ren.pulsate) {
@@ -518,7 +397,7 @@ public class BasicGuiUtils {
 			}
 		}
 		GL11.glEnable(GL11.GL_LIGHTING);
-	
+
 		// Number Drawing
 		if (ren.renderCount) {
 			String s;
@@ -533,7 +412,7 @@ public class BasicGuiUtils {
 			} else {
 				s = ren._stack.stackSize / 1000000 + "M";
 			}
-	
+
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glTranslated(0.0D, 0.0D, 100.0D);
 			try {
@@ -547,7 +426,7 @@ public class BasicGuiUtils {
 			}
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}
-	
+
 		// Pop render matrix
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glPopMatrix();
@@ -611,4 +490,34 @@ public class BasicGuiUtils {
 			return this;
 		}
 	}
+
+	/**
+	 * Called on the server to open a container.
+	 * 
+	 * @author Chickenbones
+	 * @param player
+	 * @param container
+	 * @param packetSender
+	 */
+	public static void openSMPContainer(EntityPlayerMP player, Container container, IGuiPacketSender packetSender) {
+		player.incrementWindowID();
+		player.closeContainer();
+		packetSender.sendPacket(player, player.currentWindowId);
+		player.openContainer = container;
+		player.openContainer.windowId = player.currentWindowId;
+		player.openContainer.addCraftingToCrafters(player);
+	}
+
+	/**
+	 * Called on client through packet after a container is opened on the server.
+	 * @param windowId
+	 * @param gui
+	 */
+	public static void openSMPGui(int windowId, GuiScreen gui) {
+		Minecraft.getMinecraft().displayGuiScreen(gui);
+		if (windowId != 0) {
+			Minecraft.getMinecraft().thePlayer.openContainer.windowId = windowId;
+		}
+	}
+
 }

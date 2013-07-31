@@ -5,11 +5,11 @@ import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.renderstuffs.WireRenderAssistant;
 import mrtjp.projectred.utils.BasicRenderUtils;
-import mrtjp.projectred.utils.codechicken.core.render.CCRenderState;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.IBlockAccess;
+import codechicken.lib.render.CCRenderState;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -30,6 +30,7 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 		wra.renderBlocks = render;
 		wra.wireIcon = (wt.getSpecialIconForRender() == null ? type.wireSprites[0] : wt.getSpecialIconForRender());
 		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
+		BasicRenderUtils.bindTerrainResource();
 		CCRenderState.reset();
 		CCRenderState.setBrightness(wt.worldObj, wt.xCoord, wt.yCoord, wt.zCoord);
 
@@ -79,6 +80,7 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 		wra.renderBlocks = render;
 		wra.side = 0;
 		wra.wireIcon = type.wireSprites[0];
+		BasicRenderUtils.bindTerrainResource();
 		CCRenderState.reset();
 		CCRenderState.useNormals(true);
 

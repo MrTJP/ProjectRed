@@ -9,8 +9,6 @@ import mrtjp.projectred.multipart.wiring.InvalidTile;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.utils.BasicWireMaterial;
-import mrtjp.projectred.utils.codechicken.core.render.EntityDigIconFX;
-import mrtjp.projectred.utils.codechicken.core.vec.Cuboid6;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -21,6 +19,8 @@ import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import codechicken.lib.render.EntityDigIconFX;
+import codechicken.lib.vec.Cuboid6;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
