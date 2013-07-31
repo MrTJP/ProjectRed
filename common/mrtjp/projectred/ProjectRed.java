@@ -31,18 +31,13 @@ import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
 import mrtjp.projectred.multipart.microblocks.MicroblockLibrary;
 import mrtjp.projectred.multipart.microblocks.TileMicroblockContainer;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
-import mrtjp.projectred.multipart.wiring.InvalidTile;
 import mrtjp.projectred.multipart.wiring.wires.BlockWire;
-import mrtjp.projectred.multipart.wiring.wires.EnumWire;
-import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
-import mrtjp.projectred.multipart.wiring.wires.ItemBlockWire;
-import mrtjp.projectred.multipart.wiring.wires.TileBundled;
-import mrtjp.projectred.multipart.wiring.wires.TileInsulatedRedAlloy;
-import mrtjp.projectred.multipart.wiring.wires.TilePlainRedAlloy;
 import mrtjp.projectred.network.GuiHandler;
 import mrtjp.projectred.network.PacketHandler;
 import mrtjp.projectred.tiles.TileLamp;
 import mrtjp.projectred.tiles.TileLantern;
+import mrtjp.projectred.transmission.ItemPartWire;
+import mrtjp.projectred.transmission.ModuleTransmission;
 import mrtjp.projectred.utils.BasicUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -77,6 +72,7 @@ public class ProjectRed {
 
 	/** Multipart items **/
 	public static ItemPartGate itemPartGate;
+	public static ItemPartWire itemPartWire;
 	
 	/** Blocks **/
 	public static BlockMultipartBase blockMicrocontainer;
@@ -109,6 +105,9 @@ public class ProjectRed {
 			}
 			if (Configurator.module_Integration.getBoolean(true)) {
 				registerModule(new ModuleIntegration());
+			}
+			if (Configurator.module_Transmission.getBoolean(true)) {
+				registerModule(new ModuleTransmission());
 			}
 			return false;
 		}
@@ -160,6 +159,7 @@ public class ProjectRed {
 		}
 		
 		// Wire block
+		/**
 		if (Configurator.block_wireID.getInt() > 0) {
 			blockWire = new BlockWire(Configurator.block_wireID.getInt());
 			GameRegistry.registerBlock(blockWire, ItemBlockWire.class, "projred.redwire");
@@ -174,6 +174,8 @@ public class ProjectRed {
 				}
 			}
 		}
+		*/
+		
 		// Microblock
 		if (Configurator.block_microID.getInt() > 0) {
 			blockMicrocontainer = new BlockMicroblockContainer(Configurator.block_microID.getInt());

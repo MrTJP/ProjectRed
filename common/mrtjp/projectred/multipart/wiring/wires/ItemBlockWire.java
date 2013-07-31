@@ -6,6 +6,7 @@ import mrtjp.projectred.multipart.microblocks.IMicroblockCoverSystem;
 import mrtjp.projectred.multipart.microblocks.IMicroblockSupporterTile;
 import mrtjp.projectred.multipart.microblocks.Part;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
+import mrtjp.projectred.transmission.TileWire;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;

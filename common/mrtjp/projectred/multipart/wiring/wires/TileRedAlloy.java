@@ -7,6 +7,7 @@ import mrtjp.projectred.interfaces.wiring.IRedstoneEmitter;
 import mrtjp.projectred.interfaces.wiring.IRedstoneUpdatable;
 import mrtjp.projectred.interfaces.wiring.IRedstoneWire;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
+import mrtjp.projectred.transmission.TileWire;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Dir;
 import net.minecraft.block.Block;

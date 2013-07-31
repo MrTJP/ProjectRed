@@ -3,6 +3,7 @@ package mrtjp.projectred.multipart.wiring.wires;
 import mrtjp.projectred.interfaces.wiring.IBundledEmitter;
 import mrtjp.projectred.interfaces.wiring.IBundledUpdatable;
 import mrtjp.projectred.interfaces.wiring.IInsulatedRedstoneWire;
+import mrtjp.projectred.transmission.TileWire;
 import mrtjp.projectred.utils.BasicWireUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
@@ -15,10 +16,10 @@ public class TileInsulatedRedAlloy extends TileRedAlloy implements IBundledUpdat
 	
 	@Override
 	protected boolean canConnectToWire(TileWire wire) {
-		if (wire.getType() == EnumWire.RED_ALLOY || wire instanceof TileBundled) {
+		if (wire.getWireType() == EnumWire.RED_ALLOY || wire instanceof TileBundled) {
 			return true;
 		}
-		return wire.getType() == getType();
+		return wire.getWireType() == getWireType();
 	}
 
 	@Override
@@ -59,18 +60,18 @@ public class TileInsulatedRedAlloy extends TileRedAlloy implements IBundledUpdat
 
 	@Override
 	public int getInsulatedWireColour() {
-		if (getType() == null) {
+		if (getWireType() == null) {
 			return 0;
 		}
-		return getType().ordinal() - EnumWire.INSULATED_0.ordinal();
+		return getWireType().ordinal() - EnumWire.INSULATED_0.ordinal();
 	}
 	
 	@Override
 	public Icon getSpecialIconForRender() {
 		if (getRedstoneSignalStrength() > 0) {
-			return this.getType().wireSprites[1];
+			return this.getWireType().wireSprites[1];
 		} else {
-			return this.getType().wireSprites[0];
+			return this.getWireType().wireSprites[0];
 		}
 	}
 }

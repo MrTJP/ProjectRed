@@ -8,6 +8,7 @@ import mrtjp.projectred.multipart.wiring.CommandDebug;
 import mrtjp.projectred.multipart.wiring.InvalidTile;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.renderstuffs.RenderIDs;
+import mrtjp.projectred.transmission.TileWire;
 import mrtjp.projectred.utils.BasicWireMaterial;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -124,7 +125,7 @@ public class BlockWire extends BlockMultipartBase {
 		TileEntity te = world.getBlockTileEntity(x, y, z);
 		EnumWire wireType;
 		if (te instanceof TileWire) {
-			wireType = ((TileWire) te).getType();
+			wireType = ((TileWire) te).getWireType();
 		} else {
 			return true;
 		}
