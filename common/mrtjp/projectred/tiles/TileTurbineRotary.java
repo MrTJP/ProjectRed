@@ -72,7 +72,7 @@ public class TileTurbineRotary extends TileMachineBase {
 
 	@Override
 	public void onBlockBreak() {
-		BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, new ItemStack(ProjectRed.blockMachines.blockID, 1, EnumMachine.TURBINEROTARY.meta));
+		//BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, new ItemStack(ProjectRed.blockMachines.blockID, 1, EnumMachine.TURBINEROTARY.meta));
 		_inv.dropContents(worldObj, xCoord, yCoord, zCoord);
 	}
 
