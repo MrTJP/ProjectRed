@@ -568,11 +568,11 @@ public class CraftingRecipeManager {
 		);
 		
 		/** Sail **/
-		GameRegistry.addRecipe(EnumPart.WOVENCLOTH.getItemStack(), 
+		GameRegistry.addRecipe(EnumPart.SAIL.getItemStack(), 
 				"ss",
 				"ss",
 				"ss",
-				's', EnumPart.SAIL.getItemStack()
+				's', EnumPart.WOVENCLOTH.getItemStack()
 		);
 	}
 	private static void initMachineRecipes() {
