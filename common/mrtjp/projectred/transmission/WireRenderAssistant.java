@@ -1,8 +1,7 @@
-package mrtjp.projectred.renderstuffs;
+package mrtjp.projectred.transmission;
 
 import java.util.Map;
 
-import mrtjp.projectred.multipart.wiring.wires.TileWire;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.util.Icon;
 import codechicken.lib.render.CCModel;

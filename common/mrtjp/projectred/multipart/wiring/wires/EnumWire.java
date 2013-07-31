@@ -3,6 +3,7 @@ package mrtjp.projectred.multipart.wiring.wires;
 import java.util.Map;
 
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.transmission.TileWire;
 import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
@@ -66,19 +67,7 @@ public enum EnumWire {
 
 	public static ImmutableBiMap<Integer, Class<? extends TileWire>> META_TO_CLASS = CLASS_TO_META.inverse();
 
-	public static EnumWire[] VALID_WIRE = values(); // { RED_ALLOY, INSULATED_0,
-													// INSULATED_1, INSULATED_2,
-													// INSULATED_3, INSULATED_4,
-													// INSULATED_5, INSULATED_6,
-													// INSULATED_7, INSULATED_8,
-													// INSULATED_9,
-													// INSULATED_10,
-													// INSULATED_11,
-													// INSULATED_12,
-													// INSULATED_13,
-													// INSULATED_14,
-													// INSULATED_15, BUNDLED_N,
-													// BUNDLED_0, BUNDLED_1 };
+	public static EnumWire[] VALID_WIRE = values();
 	public static EnumWire[] INSULATED_WIRE = { INSULATED_0, INSULATED_1, INSULATED_2, INSULATED_3, INSULATED_4, INSULATED_5, INSULATED_6, INSULATED_7, INSULATED_8, INSULATED_9, INSULATED_10, INSULATED_11, INSULATED_12, INSULATED_13, INSULATED_14, INSULATED_15, };
 	public static EnumWire[] BUNDLED_WIRE = { BUNDLED_N, BUNDLED_0, BUNDLED_1, BUNDLED_2, BUNDLED_3, BUNDLED_4, BUNDLED_5, BUNDLED_6, BUNDLED_7, BUNDLED_8, BUNDLED_9, BUNDLED_10, BUNDLED_11, BUNDLED_12, BUNDLED_13, BUNDLED_14, BUNDLED_15 };
 

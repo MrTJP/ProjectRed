@@ -7,6 +7,7 @@ import mrtjp.projectred.interfaces.wiring.IBundledUpdatable;
 import mrtjp.projectred.interfaces.wiring.IBundledWire;
 import mrtjp.projectred.interfaces.wiring.IRedstoneUpdatable;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
+import mrtjp.projectred.transmission.TileWire;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -20,20 +21,18 @@ public class TileBundled extends TileWire implements IRedstoneUpdatable, IBundle
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
-
 		tag.setByteArray("strength", strength);
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-
 		strength = tag.getByteArray("strength");
 	}
 
 	@Override
 	protected boolean canConnectToWire(TileWire wire) {
-		return super.canConnectToWire(wire) || wire instanceof TileInsulatedRedAlloy || getType() == wire.getType() || wire.getType() == EnumWire.BUNDLED_N || (getType() == EnumWire.BUNDLED_N && wire instanceof TileBundled);
+		return super.canConnectToWire(wire) || wire instanceof TileInsulatedRedAlloy || getWireType() == wire.getWireType() || wire.getWireType() == EnumWire.BUNDLED_N || (getWireType() == EnumWire.BUNDLED_N && wire instanceof TileBundled);
 	}
 
 	@Override

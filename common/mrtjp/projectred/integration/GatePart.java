@@ -301,12 +301,8 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		localCoord.moveForwards(1);
 		Block supporter = Block.blocksList[world().getBlockId(localCoord.x, localCoord.y, localCoord.z)];
 		if (!BasicWireUtils.canPlaceWireOnSide(world(), localCoord.x, localCoord.y, localCoord.z, localCoord.orientation.getOpposite(), false)) {
-			int id = world().getBlockId(x(), y(), z());
-			Block gate = Block.blocksList[id];
-			if (gate != null) {
-				BasicUtils.dropItemFromLocation(world(), getItem(), false, null, getSide(), 10, new Coords(x(), y(), z()));
-				tile().remPart(this);
-			}
+			BasicUtils.dropItemFromLocation(world(), getItem(), false, null, getSide(), 10, new Coords(x(), y(), z()));
+			tile().remPart(this);
 		}
 	}
 
@@ -444,7 +440,6 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 			updateLogic(false, false);
 	}
 
-	
 	/** START TILEMULTIPART INTERACTIONS **/
 	@Override
 	public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
@@ -459,7 +454,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	public Iterable<ItemStack> getDrops() {
 		return Arrays.asList(getItem());
 	}
-	
+
 	@Override
 	public ItemStack pickItem(MovingObjectPosition hit) {
 		return getItem();
@@ -505,7 +500,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 				return true;
 			}
 		}
-	
+
 		if (world().isRemote) {
 			return type != null && GateLogic.WithRightClickAction.class.isAssignableFrom(type.getLogicClass());
 		}
@@ -524,12 +519,12 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	@Override
 	public int strongPowerLevel(int sideOut) {
 		try {
-		int rel = Rotator.absoluteToRelative(side, front, sideOut);
-		if (rel > -1) {
-			return outputs[rel];
-		} else {
-			return 0;
-		}
+			int rel = Rotator.absoluteToRelative(side, front, sideOut);
+			if (rel > -1) {
+				return outputs[rel];
+			} else {
+				return 0;
+			}
 		} catch (Throwable t) {
 			return 0;
 		}
@@ -584,9 +579,9 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	public boolean occlusionTest(TMultiPart npart) {
 		return NormalOcclusionTest.apply(this, npart);
 	}
+
 	/** END TILEMULTIPART INTERACTIONS **/
-	
-	
+
 	/** START RENDERSTUFF **/
 	@Override
 	public int getLightValue() {
