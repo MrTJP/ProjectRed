@@ -46,9 +46,10 @@ public class IntegrationCPH implements IClientPacketHandler {
 			GuiScreen g = Minecraft.getMinecraft().currentScreen;
 			if (g instanceof GuiTimer) {
 				GuiTimer tg = (GuiTimer) g;
-				tg.coords = b;
-				tg.face = face;
-				tg.timerInterval = interval;
+				if (tg.coords.equals(b)) {
+					tg.face = face;
+					tg.timerInterval = interval;
+				}
 			}
 		}
 	}
@@ -73,12 +74,13 @@ public class IntegrationCPH implements IClientPacketHandler {
 			GuiScreen g = Minecraft.getMinecraft().currentScreen;
 			if (g instanceof GuiCounter) {
 				GuiCounter cg = (GuiCounter) g;
-				cg.coords = b;
-				cg.face = face;
-				cg.value = value;
-				cg.max = max;
-				cg.incr = incr;
-				cg.decr = decr;
+				if (cg.coords.equals(b)) {
+					cg.face = face;
+					cg.value = value;
+					cg.max = max;
+					cg.incr = incr;
+					cg.decr = decr;
+				}
 			}
 		}
 	}
