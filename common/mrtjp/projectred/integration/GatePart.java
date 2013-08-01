@@ -12,7 +12,7 @@ import mrtjp.projectred.interfaces.wiring.IBundledEmitter;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
-import mrtjp.projectred.utils.Dir;
+import mrtjp.projectred.utils.Directions;
 import mrtjp.projectred.utils.Rotator;
 import net.minecraft.block.Block;
 import net.minecraft.client.particle.EffectRenderer;
@@ -93,26 +93,26 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		double absy = Math.abs(look.yCoord);
 		double absz = Math.abs(look.zCoord);
 		switch (side) {
-		case Dir.PX:
-		case Dir.NX:
+		case Directions.PX:
+		case Directions.NX:
 			if (absy > absz)
-				front = (byte) (look.yCoord > 0 ? Dir.PY : Dir.NY);
+				front = (byte) (look.yCoord > 0 ? Directions.PY : Directions.NY);
 			else
-				front = (byte) (look.zCoord > 0 ? Dir.PZ : Dir.NZ);
+				front = (byte) (look.zCoord > 0 ? Directions.PZ : Directions.NZ);
 			break;
-		case Dir.PY:
-		case Dir.NY:
+		case Directions.PY:
+		case Directions.NY:
 			if (absx > absz)
-				front = (byte) (look.xCoord > 0 ? Dir.PX : Dir.NX);
+				front = (byte) (look.xCoord > 0 ? Directions.PX : Directions.NX);
 			else
-				front = (byte) (look.zCoord > 0 ? Dir.PZ : Dir.NZ);
+				front = (byte) (look.zCoord > 0 ? Directions.PZ : Directions.NZ);
 			break;
-		case Dir.PZ:
-		case Dir.NZ:
+		case Directions.PZ:
+		case Directions.NZ:
 			if (absy > absx)
-				front = (byte) (look.yCoord > 0 ? Dir.PY : Dir.NY);
+				front = (byte) (look.yCoord > 0 ? Directions.PY : Directions.NY);
 			else
-				front = (byte) (look.xCoord > 0 ? Dir.PX : Dir.NX);
+				front = (byte) (look.xCoord > 0 ? Directions.PX : Directions.NX);
 			break;
 		}
 	}

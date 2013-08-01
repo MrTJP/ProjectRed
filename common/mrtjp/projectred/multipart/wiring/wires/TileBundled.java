@@ -7,14 +7,14 @@ import mrtjp.projectred.interfaces.wiring.IBundledUpdatable;
 import mrtjp.projectred.interfaces.wiring.IBundledWire;
 import mrtjp.projectred.interfaces.wiring.IRedstoneUpdatable;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
-import mrtjp.projectred.transmission.TileWire;
+import mrtjp.projectred.transmission.WirePart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraftforge.common.ForgeDirection;
 
-public class TileBundled extends TileWire implements IRedstoneUpdatable, IBundledEmitter, IBundledUpdatable, IBundledWire {
+public class TileBundled extends WirePart implements IRedstoneUpdatable, IBundledEmitter, IBundledUpdatable, IBundledWire {
 
 	private byte[] strength = new byte[16];
 
@@ -31,7 +31,7 @@ public class TileBundled extends TileWire implements IRedstoneUpdatable, IBundle
 	}
 
 	@Override
-	protected boolean canConnectToWire(TileWire wire) {
+	protected boolean canConnectToWire(WirePart wire) {
 		return super.canConnectToWire(wire) || wire instanceof TileInsulatedRedAlloy || getWireType() == wire.getWireType() || wire.getWireType() == EnumWire.BUNDLED_N || (getWireType() == EnumWire.BUNDLED_N && wire instanceof TileBundled);
 	}
 

@@ -5,13 +5,14 @@ import java.lang.reflect.Field;
 import mrtjp.projectred.interfaces.wiring.IRedstoneEmitter;
 import mrtjp.projectred.multipart.microblocks.IMicroblockCoverSystem;
 import mrtjp.projectred.multipart.microblocks.IMicroblockSupporterTile;
-import mrtjp.projectred.multipart.wiring.wires.EnumWire;
 import mrtjp.projectred.multipart.wiring.wires.TilePlainRedAlloy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import codechicken.multipart.PartMap;
+import codechicken.multipart.TileMultipart;
 
 public class BasicWireUtils {
 	
@@ -20,30 +21,12 @@ public class BasicWireUtils {
 	public static final int LEFT = 2;
 	public static final int RIGHT = 3;
 
-	/**
-	 * Returns true if a given edge of a block is an open space, so that wires
-	 * placed on both sides of the edge will connect. If side and dir are
-	 * swapped, the result is the same.
-	 * 
-	 * @param w
-	 *            The world containing the edge.
-	 * @param x
-	 *            The X coordinate of the block containing the edge.
-	 * @param y
-	 *            The Y coordinate of the block containing the edge.
-	 * @param z
-	 *            The Z coordinate of the block containing the edge.
-	 * @param side
-	 *            One of the faces the edge is on.
-	 * @param dir
-	 *            The other face the edge is on.
-	 * @return True if this edge is an open space.
-	 */
 	public static boolean canConnectThroughEdge(World w, int x, int y, int z, int side, int dir) {
-		TileEntity te = w.getBlockTileEntity(x, y, z);
-		if (te instanceof IMicroblockSupporterTile) {
-			IMicroblockCoverSystem ci = ((IMicroblockSupporterTile) te).getCoverSystem();
-			return ci.isEdgeOpen(side, dir);
+		TileMultipart t = (TileMultipart) BasicUtils.getTileEntity(w, new Coords(x,y,z), TileMultipart.class);
+		if (t != null) {
+			if (t.partMap(PartMap.edgeBetween(side, dir)) == null) {
+				return true;
+			}
 		}
 		return !w.isBlockSolidOnSide(x, y, z, ForgeDirection.VALID_DIRECTIONS[side]) && !w.isBlockSolidOnSide(x, y, z, ForgeDirection.VALID_DIRECTIONS[dir]);
 	}

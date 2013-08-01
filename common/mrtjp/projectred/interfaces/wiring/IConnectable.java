@@ -1,5 +1,7 @@
 package mrtjp.projectred.interfaces.wiring;
 
+import mrtjp.projectred.transmission.WirePart;
+
 /**
  * Interface implemented by tile entities which can connect to wires in specific
  * ways.
@@ -24,7 +26,7 @@ public interface IConnectable {
 	 *            The direction the wire block is in, relative to this block.
 	 * @return True to allow the wire connection.
 	 */
-	public boolean connects(IWire wire, int blockFace, int fromDirection);
+	public boolean connects(WirePart wire, int blockFace, int fromDirection);
 
 	/**
 	 * Called to check whether a wire connects to this block from around a
@@ -58,5 +60,11 @@ public interface IConnectable {
 	 *            The side the edge is on within that face.
 	 * @return True to allow the wire connection.
 	 */
-	public boolean connectsAroundCorner(IWire wire, int blockFace, int fromDirection);
+	public boolean connectsAroundCorner(WirePart wire, int blockFace, int fromDirection);
+
+	/**
+	 * @param wire
+	 * @return True if the wire can connect to this internally.
+	 */
+	public boolean connectsToWireType(WirePart wire);
 }

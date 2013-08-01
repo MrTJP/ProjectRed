@@ -8,7 +8,7 @@ import mrtjp.projectred.multipart.wiring.CommandDebug;
 import mrtjp.projectred.multipart.wiring.InvalidTile;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.renderstuffs.RenderIDs;
-import mrtjp.projectred.transmission.TileWire;
+import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.utils.BasicWireMaterial;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -60,7 +60,7 @@ public class BlockWire extends BlockMultipartBase {
 
 	@Override
 	public TileEntity createTileEntity(World world, int meta) {
-		Class<? extends TileWire> clazz = EnumWire.META_TO_CLASS.get(meta);
+		Class<? extends WirePart> clazz = EnumWire.META_TO_CLASS.get(meta);
 		if (clazz == null) {
 			return new InvalidTile();
 		}
@@ -78,7 +78,7 @@ public class BlockWire extends BlockMultipartBase {
 
 	@Override
 	public void onNeighborBlockChange(World par1World, int par2, int par3, int par4, int par5) {
-		((TileWire) par1World.getBlockTileEntity(par2, par3, par4)).onNeighbourBlockChange();
+		((WirePart) par1World.getBlockTileEntity(par2, par3, par4)).onNeighbourBlockChange();
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public class BlockWire extends BlockMultipartBase {
 	@Override
 	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
 		if (CommandDebug.WIRE_READING) {
-			return ((TileWire) par1World.getBlockTileEntity(par2, par3, par4)).debug(par5EntityPlayer);
+			return ((WirePart) par1World.getBlockTileEntity(par2, par3, par4)).debug(par5EntityPlayer);
 		}
 		return super.onBlockActivated(par1World, par2, par3, par4, par5EntityPlayer, par6, par7, par8, par9);
 	}
@@ -124,8 +124,8 @@ public class BlockWire extends BlockMultipartBase {
 	public boolean addBlockDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer) {
 		TileEntity te = world.getBlockTileEntity(x, y, z);
 		EnumWire wireType;
-		if (te instanceof TileWire) {
-			wireType = ((TileWire) te).getWireType();
+		if (te instanceof WirePart) {
+			wireType = ((WirePart) te).getWireType();
 		} else {
 			return true;
 		}

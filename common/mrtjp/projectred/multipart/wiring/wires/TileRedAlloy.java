@@ -7,9 +7,9 @@ import mrtjp.projectred.interfaces.wiring.IRedstoneEmitter;
 import mrtjp.projectred.interfaces.wiring.IRedstoneUpdatable;
 import mrtjp.projectred.interfaces.wiring.IRedstoneWire;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
-import mrtjp.projectred.transmission.TileWire;
+import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.utils.BasicWireUtils;
-import mrtjp.projectred.utils.Dir;
+import mrtjp.projectred.utils.Directions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,7 +21,7 @@ import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
-public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedstoneWire {
+public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedstoneWire {
 	private short MAX_STRENGTH = 255;
 
 	private short strength;
@@ -158,7 +158,7 @@ public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedston
 					}
 
 					if (worldObj.getBlockId(x, y, z) == ProjectRed.blockWire.blockID) {
-						TileWire t = (TileWire) worldObj.getBlockTileEntity(x, y, z);
+						WirePart t = (WirePart) worldObj.getBlockTileEntity(x, y, z);
 						if (t instanceof TileRedAlloy) {
 							((TileRedAlloy) t).updateSignal(this);
 						}
@@ -399,52 +399,52 @@ public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedston
 			any |= causedBlockUpdate;
 		}
 
-		if (canProvideWeakPowerInDirection(Dir.NX)) {
+		if (canProvideWeakPowerInDirection(Directions.NX)) {
 			any = true;
 			worldObj.notifyBlockOfNeighborChange(xCoord + 1, yCoord, zCoord, ProjectRed.blockWire.blockID);
 		}
-		if (canProvideWeakPowerInDirection(Dir.PX)) {
+		if (canProvideWeakPowerInDirection(Directions.PX)) {
 			any = true;
 			worldObj.notifyBlockOfNeighborChange(xCoord - 1, yCoord, zCoord, ProjectRed.blockWire.blockID);
 		}
-		if (canProvideWeakPowerInDirection(Dir.NY)) {
+		if (canProvideWeakPowerInDirection(Directions.NY)) {
 			any = true;
 			worldObj.notifyBlockOfNeighborChange(xCoord, yCoord - 1, zCoord, ProjectRed.blockWire.blockID);
 		}
-		if (canProvideWeakPowerInDirection(Dir.PY)) {
+		if (canProvideWeakPowerInDirection(Directions.PY)) {
 			any = true;
 			worldObj.notifyBlockOfNeighborChange(xCoord, yCoord + 1, zCoord, ProjectRed.blockWire.blockID);
 		}
-		if (canProvideWeakPowerInDirection(Dir.NZ)) {
+		if (canProvideWeakPowerInDirection(Directions.NZ)) {
 			any = true;
 			worldObj.notifyBlockOfNeighborChange(xCoord, yCoord, zCoord - 1, ProjectRed.blockWire.blockID);
 		}
-		if (canProvideWeakPowerInDirection(Dir.PZ)) {
+		if (canProvideWeakPowerInDirection(Directions.PZ)) {
 			any = true;
 			worldObj.notifyBlockOfNeighborChange(xCoord, yCoord, zCoord + 1, ProjectRed.blockWire.blockID);
 		}
 
-		if (canProvideStrongPowerInDirection(Dir.NX)) {
+		if (canProvideStrongPowerInDirection(Directions.NX)) {
 			any = true;
 			worldObj.notifyBlocksOfNeighborChange(xCoord + 1, yCoord, zCoord, ProjectRed.blockWire.blockID);
 		}
-		if (canProvideStrongPowerInDirection(Dir.PX)) {
+		if (canProvideStrongPowerInDirection(Directions.PX)) {
 			any = true;
 			worldObj.notifyBlocksOfNeighborChange(xCoord - 1, yCoord, zCoord, ProjectRed.blockWire.blockID);
 		}
-		if (canProvideStrongPowerInDirection(Dir.NY)) {
+		if (canProvideStrongPowerInDirection(Directions.NY)) {
 			any = true;
 			worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord - 1, zCoord, ProjectRed.blockWire.blockID);
 		}
-		if (canProvideStrongPowerInDirection(Dir.PY)) {
+		if (canProvideStrongPowerInDirection(Directions.PY)) {
 			any = true;
 			worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord + 1, zCoord, ProjectRed.blockWire.blockID);
 		}
-		if (canProvideStrongPowerInDirection(Dir.NZ)) {
+		if (canProvideStrongPowerInDirection(Directions.NZ)) {
 			any = true;
 			worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord - 1, ProjectRed.blockWire.blockID);
 		}
-		if (canProvideStrongPowerInDirection(Dir.PZ)) {
+		if (canProvideStrongPowerInDirection(Directions.PZ)) {
 			any = true;
 			worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord + 1, ProjectRed.blockWire.blockID);
 		}
@@ -489,7 +489,7 @@ public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedston
 	}
 
 	@Override
-	protected boolean canConnectToWire(TileWire wire) {
+	protected boolean canConnectToWire(WirePart wire) {
 		return wire instanceof TileRedAlloy;
 	}
 

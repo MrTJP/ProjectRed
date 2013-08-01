@@ -10,7 +10,7 @@ import java.util.List;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.multipart.BlockMultipartBase;
-import mrtjp.projectred.utils.Dir;
+import mrtjp.projectred.utils.Directions;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
@@ -308,17 +308,17 @@ public class MicroblockCoverSystem implements IMicroblockCoverSystem {
 	@Override
 	public boolean isSolidOnSide(ForgeDirection side) {
 		switch (side.ordinal()) {
-		case Dir.NX:
+		case Directions.NX:
 			return isPositionOccupied(EnumPosition.FaceNX, true, true);
-		case Dir.PX:
+		case Directions.PX:
 			return isPositionOccupied(EnumPosition.FacePX, true, true);
-		case Dir.NY:
+		case Directions.NY:
 			return isPositionOccupied(EnumPosition.FaceNY, true, true);
-		case Dir.PY:
+		case Directions.PY:
 			return isPositionOccupied(EnumPosition.FacePY, true, true);
-		case Dir.NZ:
+		case Directions.NZ:
 			return isPositionOccupied(EnumPosition.FaceNZ, true, true);
-		case Dir.PZ:
+		case Directions.PZ:
 			return isPositionOccupied(EnumPosition.FacePZ, true, true);
 		}
 		return false;
@@ -334,22 +334,22 @@ public class MicroblockCoverSystem implements IMicroblockCoverSystem {
 
 			switch (p2.pos) {
 			case FaceNX:
-				dontRenderSides[Dir.NX] = true;
+				dontRenderSides[Directions.NX] = true;
 				break;
 			case FaceNY:
-				dontRenderSides[Dir.NY] = true;
+				dontRenderSides[Directions.NY] = true;
 				break;
 			case FaceNZ:
-				dontRenderSides[Dir.NZ] = true;
+				dontRenderSides[Directions.NZ] = true;
 				break;
 			case FacePX:
-				dontRenderSides[Dir.PX] = true;
+				dontRenderSides[Directions.PX] = true;
 				break;
 			case FacePY:
-				dontRenderSides[Dir.PY] = true;
+				dontRenderSides[Directions.PY] = true;
 				break;
 			case FacePZ:
-				dontRenderSides[Dir.PZ] = true;
+				dontRenderSides[Directions.PZ] = true;
 				break;
 			default:
 				break;
@@ -357,22 +357,22 @@ public class MicroblockCoverSystem implements IMicroblockCoverSystem {
 		}
 		switch (p.pos) {
 		case FaceNX:
-			dontRenderSides[Dir.NX] = false;
+			dontRenderSides[Directions.NX] = false;
 			break;
 		case FaceNY:
-			dontRenderSides[Dir.NY] = false;
+			dontRenderSides[Directions.NY] = false;
 			break;
 		case FaceNZ:
-			dontRenderSides[Dir.NZ] = false;
+			dontRenderSides[Directions.NZ] = false;
 			break;
 		case FacePX:
-			dontRenderSides[Dir.PX] = false;
+			dontRenderSides[Directions.PX] = false;
 			break;
 		case FacePY:
-			dontRenderSides[Dir.PY] = false;
+			dontRenderSides[Directions.PY] = false;
 			break;
 		case FacePZ:
-			dontRenderSides[Dir.PZ] = false;
+			dontRenderSides[Directions.PZ] = false;
 			break;
 		default:
 			break;

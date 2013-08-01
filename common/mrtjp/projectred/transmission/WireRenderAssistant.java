@@ -67,13 +67,12 @@ public class WireRenderAssistant {
 	public int[] frontMap_NS = { 2, 3, 1, 0, 0, 1 };
 	public int[] frontMap_WE = { 5, 4, 5, 4, 2, 3 };	
 
-	public void setWireRenderState(TileWire t) {
-		byte sideMask = t.getSideMask();
+	public void setWireRenderState(WirePart t) {
 		// Connections
-		connectsN = t.connectsInDirection(side, sideMap[side][2]);
-		connectsS = t.connectsInDirection(side, sideMap[side][3]);
-		connectsW = t.connectsInDirection(side, sideMap[side][4]);
-		connectsE = t.connectsInDirection(side, sideMap[side][5]);
+		connectsN = t.connects(t, side, sideMap[side][2]);
+		connectsS = t.connects(t, side, sideMap[side][3]);
+		connectsW = t.connects(t, side, sideMap[side][4]);
+		connectsE = t.connects(t, side, sideMap[side][5]);
 
 		// Center textures
 		isCenterCrossed = (connectsN && connectsW || connectsN && connectsE || connectsS && connectsW || connectsS && connectsE);
@@ -81,16 +80,16 @@ public class WireRenderAssistant {
 		isCenterWE = (!isCenterCrossed && (connectsW || connectsE));
 
 		// Outside corners
-		connectsCornerN = (side != 0 && side != 1) && t.connectsInDirectionAroundCorner(side, sideMap[side][2]);
-		connectsCornerS = (side != 0 && side != 1) && t.connectsInDirectionAroundCorner(side, sideMap[side][3]);
-		connectsCornerW = (side != 0 && side != 1) && t.connectsInDirectionAroundCorner(side, sideMap[side][4]);
-		connectsCornerE = (side != 0 && side != 1 && side != 2 && side != 3 && side != 4 && side != 5) && t.connectsInDirectionAroundCorner(side, sideMap[side][5]);
+		connectsCornerN = (side != 0 && side != 1) && t.connectsAroundCorner(t, side, sideMap[side][2]);
+		connectsCornerS = (side != 0 && side != 1) && t.connectsAroundCorner(t, side, sideMap[side][3]);
+		connectsCornerW = (side != 0 && side != 1) && t.connectsAroundCorner(t, side, sideMap[side][4]);
+		connectsCornerE = (side != 0 && side != 1 && side != 2 && side != 3 && side != 4 && side != 5) && t.connectsAroundCorner(t, side, sideMap[side][5]);
 
 		// InIn edges
-		connectsInsideN = ((sideMask & (1 << sideMap[side][2])) != 0);
-		connectsInsideS = ((sideMask & (1 << sideMap[side][3])) != 0);
-		connectsInsideW = ((sideMask & (1 << sideMap[side][4])) != 0);
-		connectsInsideE = ((sideMask & (1 << sideMap[side][5])) != 0);
+		connectsInsideN = t.connectsInternally(t, sideMap[side][2]);
+		connectsInsideS = t.connectsInternally(t, sideMap[side][3]);
+		connectsInsideW = t.connectsInternally(t, sideMap[side][4]);
+		connectsInsideE = t.connectsInternally(t, sideMap[side][5]);
 
 		connectsInsideConnectorN = (isCenterCrossed && connectsN) || (isCenterNS);
 		connectsInsideConnectorS = (isCenterCrossed && connectsS) || (isCenterNS);
@@ -208,7 +207,7 @@ public class WireRenderAssistant {
 	public boolean jacketW;
 	public boolean jacketE;
 	
-	public void setJacketRender(TileWire t) {
+	public void setJacketRender(WirePart t) {
 		// Swapped connection logic, because model is rendering flipped, Blender mistake probably.
 		jacketD = t.wireConnectsInDirection(-1, 0);
 		jacketU = t.wireConnectsInDirection(-1, 1);

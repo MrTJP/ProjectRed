@@ -2,7 +2,7 @@ package mrtjp.projectred.multipart.microblocks;
 
 import java.io.DataInput;
 
-import mrtjp.projectred.utils.Dir;
+import mrtjp.projectred.utils.Directions;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -163,7 +163,7 @@ public class DefaultPartType implements PartType<Part> {
 
 	@SideOnly(Side.CLIENT)
 	private void renderHollowPanelYZ(Tessellator t, AxisAlignedBB aabb) {
-		setTex(modelBlock.getIcon(Dir.NX, modelMeta));
+		setTex(modelBlock.getIcon(Directions.NX, modelMeta));
 		t.setNormal(-1, 0, 0);
 
 		vertYZ(t, aabb.minX, 0 + HOLLOW_EDGE_SIZE, HOLLOW_EDGE_SIZE);
@@ -186,7 +186,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertYZ(t, aabb.minX, 1 - HOLLOW_EDGE_SIZE, 1 - HOLLOW_EDGE_SIZE);
 		vertYZ(t, aabb.minX, 1, 1);
 
-		setTex(modelBlock.getIcon(Dir.PX, modelMeta));
+		setTex(modelBlock.getIcon(Directions.PX, modelMeta));
 		t.setNormal(1, 0, 0);
 
 		vertYZ(t, aabb.maxX, 0, 0);
@@ -209,7 +209,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertYZ(t, aabb.maxX, 1 - HOLLOW_EDGE_SIZE, HOLLOW_EDGE_SIZE);
 		vertYZ(t, aabb.maxX, 1, 0);
 
-		setTex(modelBlock.getIcon(Dir.NY, modelMeta));
+		setTex(modelBlock.getIcon(Directions.NY, modelMeta));
 		t.setNormal(0, -1, 0);
 		vertXZ(t, aabb.minX, 0, 0);
 		vertXZ(t, aabb.maxX, 0, 0);
@@ -221,7 +221,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertXZ(t, aabb.maxX, HOLLOW_EDGE_SIZE, HOLLOW_EDGE_SIZE);
 		vertXZ(t, aabb.minX, HOLLOW_EDGE_SIZE, HOLLOW_EDGE_SIZE);
 
-		setTex(modelBlock.getIcon(Dir.PY, modelMeta));
+		setTex(modelBlock.getIcon(Directions.PY, modelMeta));
 		t.setNormal(0, 1, 0);
 		vertXZ(t, aabb.minX, 1, 1);
 		vertXZ(t, aabb.maxX, 1, 1);
@@ -233,7 +233,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertXZ(t, aabb.maxX, 1 - HOLLOW_EDGE_SIZE, 1 - HOLLOW_EDGE_SIZE);
 		vertXZ(t, aabb.minX, 1 - HOLLOW_EDGE_SIZE, 1 - HOLLOW_EDGE_SIZE);
 
-		setTex(modelBlock.getIcon(Dir.NZ, modelMeta));
+		setTex(modelBlock.getIcon(Directions.NZ, modelMeta));
 		t.setNormal(0, 0, -1);
 		vertXY(t, aabb.minX, 0, 0);
 		vertXY(t, aabb.minX, 1, 0);
@@ -245,7 +245,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertXY(t, aabb.maxX, HOLLOW_EDGE_SIZE, HOLLOW_EDGE_SIZE);
 		vertXY(t, aabb.maxX, 1 - HOLLOW_EDGE_SIZE, HOLLOW_EDGE_SIZE);
 
-		setTex(modelBlock.getIcon(Dir.PZ, modelMeta));
+		setTex(modelBlock.getIcon(Directions.PZ, modelMeta));
 		t.setNormal(0, 0, 1);
 		vertXY(t, aabb.minX, 1, 1);
 		vertXY(t, aabb.minX, 0, 1);
@@ -260,7 +260,7 @@ public class DefaultPartType implements PartType<Part> {
 
 	@SideOnly(Side.CLIENT)
 	private void renderHollowPanelXZ(Tessellator t, AxisAlignedBB aabb) {
-		setTex(Dir.NY);
+		setTex(Directions.NY);
 		t.setNormal(0, -1, 0);
 		vertXZ(t, HOLLOW_EDGE_SIZE, aabb.minY, HOLLOW_EDGE_SIZE);
 		vertXZ(t, HOLLOW_EDGE_SIZE, aabb.minY, 1 - HOLLOW_EDGE_SIZE);
@@ -282,7 +282,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertXZ(t, 1, aabb.minY, 1);
 		vertXZ(t, 0, aabb.minY, 1);
 
-		setTex(Dir.PY);
+		setTex(Directions.PY);
 		t.setNormal(0, 1, 0);
 		vertXZ(t, 0, aabb.maxY, 0);
 		vertXZ(t, 0, aabb.maxY, 1);
@@ -304,7 +304,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertXZ(t, 1 - HOLLOW_EDGE_SIZE, aabb.maxY, 1 - HOLLOW_EDGE_SIZE);
 		vertXZ(t, HOLLOW_EDGE_SIZE, aabb.maxY, 1 - HOLLOW_EDGE_SIZE);
 
-		setTex(Dir.NX);
+		setTex(Directions.NX);
 		t.setNormal(-1, 0, 0);
 		vertYZ(t, 0, aabb.minY, 0);
 		vertYZ(t, 0, aabb.minY, 1);
@@ -316,7 +316,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertYZ(t, HOLLOW_EDGE_SIZE, aabb.maxY, HOLLOW_EDGE_SIZE);
 		vertYZ(t, HOLLOW_EDGE_SIZE, aabb.maxY, 1 - HOLLOW_EDGE_SIZE);
 
-		setTex(Dir.PX);
+		setTex(Directions.PX);
 		t.setNormal(1, 0, 0);
 		vertYZ(t, 1, aabb.minY, 1);
 		vertYZ(t, 1, aabb.minY, 0);
@@ -328,7 +328,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertYZ(t, 1 - HOLLOW_EDGE_SIZE, aabb.minY, HOLLOW_EDGE_SIZE);
 		vertYZ(t, 1 - HOLLOW_EDGE_SIZE, aabb.minY, 1 - HOLLOW_EDGE_SIZE);
 
-		setTex(Dir.NZ);
+		setTex(Directions.NZ);
 		t.setNormal(0, 0, -1);
 		vertXY(t, 0, aabb.minY, 0);
 		vertXY(t, 0, aabb.maxY, 0);
@@ -340,7 +340,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertXY(t, HOLLOW_EDGE_SIZE, aabb.maxY, HOLLOW_EDGE_SIZE);
 		vertXY(t, HOLLOW_EDGE_SIZE, aabb.minY, HOLLOW_EDGE_SIZE);
 
-		setTex(Dir.PZ);
+		setTex(Directions.PZ);
 		t.setNormal(0, 0, 1);
 		vertXY(t, 1, aabb.minY, 1);
 		vertXY(t, 1, aabb.maxY, 1);
@@ -355,7 +355,7 @@ public class DefaultPartType implements PartType<Part> {
 
 	@SideOnly(Side.CLIENT)
 	private void renderHollowPanelXY(Tessellator t, AxisAlignedBB aabb) {
-		setTex(Dir.NZ);
+		setTex(Directions.NZ);
 		t.setNormal(0, 0, -1);
 		vertXY(t, 0, 0, aabb.minZ);
 		vertXY(t, 0, 1, aabb.minZ);
@@ -377,7 +377,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertXY(t, 1 - HOLLOW_EDGE_SIZE, 1 - HOLLOW_EDGE_SIZE, aabb.minZ);
 		vertXY(t, HOLLOW_EDGE_SIZE, 1 - HOLLOW_EDGE_SIZE, aabb.minZ);
 
-		setTex(Dir.PZ);
+		setTex(Directions.PZ);
 		t.setNormal(0, 0, 1);
 		vertXY(t, HOLLOW_EDGE_SIZE, HOLLOW_EDGE_SIZE, aabb.maxZ);
 		vertXY(t, HOLLOW_EDGE_SIZE, 1 - HOLLOW_EDGE_SIZE, aabb.maxZ);
@@ -399,7 +399,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertXY(t, 1, 1, aabb.maxZ);
 		vertXY(t, 0, 1, aabb.maxZ);
 
-		setTex(Dir.NX);
+		setTex(Directions.NX);
 		t.setNormal(-1, 0, 0);
 		vertYZ(t, 0, 1, aabb.minZ);
 		vertYZ(t, 0, 0, aabb.minZ);
@@ -411,7 +411,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertYZ(t, HOLLOW_EDGE_SIZE, 1 - HOLLOW_EDGE_SIZE, aabb.maxZ);
 		vertYZ(t, HOLLOW_EDGE_SIZE, HOLLOW_EDGE_SIZE, aabb.maxZ);
 
-		setTex(Dir.PX);
+		setTex(Directions.PX);
 		t.setNormal(1, 0, 0);
 		vertYZ(t, 1, 0, aabb.minZ);
 		vertYZ(t, 1, 1, aabb.minZ);
@@ -423,7 +423,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertYZ(t, 1 - HOLLOW_EDGE_SIZE, 1 - HOLLOW_EDGE_SIZE, aabb.minZ);
 		vertYZ(t, 1 - HOLLOW_EDGE_SIZE, HOLLOW_EDGE_SIZE, aabb.minZ);
 
-		setTex(Dir.NY);
+		setTex(Directions.NY);
 		t.setNormal(0, -1, 0);
 		vertXZ(t, 1, 0, aabb.minZ);
 		vertXZ(t, 1, 0, aabb.maxZ);
@@ -435,7 +435,7 @@ public class DefaultPartType implements PartType<Part> {
 		vertXZ(t, 1 - HOLLOW_EDGE_SIZE, HOLLOW_EDGE_SIZE, aabb.maxZ);
 		vertXZ(t, 1 - HOLLOW_EDGE_SIZE, HOLLOW_EDGE_SIZE, aabb.minZ);
 
-		setTex(Dir.PY);
+		setTex(Directions.PY);
 		t.setNormal(0, 1, 0);
 		vertXZ(t, 0, 1, aabb.minZ);
 		vertXZ(t, 0, 1, aabb.maxZ);
@@ -598,8 +598,8 @@ public class DefaultPartType implements PartType<Part> {
 		final double DRFMIN = 0.005;
 		final double DRFMAX = 0.995;
 
-		if (tzmin > DRFMIN || !dontRenderFaces[Dir.NZ]) {
-			setTex(Dir.NZ);
+		if (tzmin > DRFMIN || !dontRenderFaces[Directions.NZ]) {
+			setTex(Directions.NZ);
 			t.setNormal(0, 0, -1);
 			colNN = colPN = colNP = colPP = rgb(colourR * 0.8, colourG * 0.8, colourB * 0.8);
 			getBrightnessZFace(rb, bx, by, bz, rbb.minZ);
@@ -613,8 +613,8 @@ public class DefaultPartType implements PartType<Part> {
 			t.addVertexWithUV(aabb.maxX, aabb.minY, aabb.minZ, uMax + txmax * (uMin - uMax), vMax + tymin * (vMin - vMax));
 		}
 
-		if (tymin > DRFMIN || !dontRenderFaces[Dir.NY]) {
-			setTex(Dir.NY);
+		if (tymin > DRFMIN || !dontRenderFaces[Directions.NY]) {
+			setTex(Directions.NY);
 			colNN = colPN = colNP = colPP = rgb(colourR * 0.5, colourG * 0.5, colourB * 0.5);
 			t.setNormal(0, -1, 0);
 			getBrightnessYFace(rb, bx, by, bz, rbb.minY);
@@ -628,8 +628,8 @@ public class DefaultPartType implements PartType<Part> {
 			t.addVertexWithUV(aabb.minX, aabb.minY, aabb.minZ, uMin + txmin * (uMax - uMin), vMin + tzmin * (vMax - vMin));
 		}
 
-		if (txmin > DRFMIN || !dontRenderFaces[Dir.NX]) {
-			setTex(Dir.NX);
+		if (txmin > DRFMIN || !dontRenderFaces[Directions.NX]) {
+			setTex(Directions.NX);
 			t.setNormal(-1, 0, 0);
 			colNN = colPN = colNP = colPP = rgb(colourR * 0.6, colourG * 0.6, colourB * 0.6);
 			getBrightnessXFace(rb, bx, by, bz, rbb.minX);
@@ -643,8 +643,8 @@ public class DefaultPartType implements PartType<Part> {
 			t.addVertexWithUV(aabb.minX, aabb.maxY, aabb.minZ, uMin + tzmin * (uMax - uMin), vMax + tymax * (vMin - vMax));
 		}
 
-		if (tzmax < DRFMAX || !dontRenderFaces[Dir.PZ]) {
-			setTex(Dir.PZ);
+		if (tzmax < DRFMAX || !dontRenderFaces[Directions.PZ]) {
+			setTex(Directions.PZ);
 			t.setNormal(0, 0, 1);
 			colNN = colPN = colNP = colPP = rgb(colourR * 0.8, colourG * 0.8, colourB * 0.8);
 			getBrightnessZFace(rb, bx, by, bz, rbb.maxZ);
@@ -658,8 +658,8 @@ public class DefaultPartType implements PartType<Part> {
 			t.addVertexWithUV(aabb.minX, aabb.minY, aabb.maxZ, uMin + txmin * (uMax - uMin), vMax + tymin * (vMin - vMax));
 		}
 
-		if (tymax < DRFMAX || !dontRenderFaces[Dir.PY]) {
-			setTex(Dir.PY);
+		if (tymax < DRFMAX || !dontRenderFaces[Directions.PY]) {
+			setTex(Directions.PY);
 			t.setNormal(0, 1, 0);
 			colNN = colPN = colNP = colPP = rgb(colourR * 1.0, colourG * 1.0, colourB * 1.0);
 			getBrightnessYFace(rb, bx, by, bz, rbb.maxY);
@@ -673,8 +673,8 @@ public class DefaultPartType implements PartType<Part> {
 			t.addVertexWithUV(aabb.maxX, aabb.maxY, aabb.minZ, uMin + txmax * (uMax - uMin), vMin + tzmin * (vMax - vMin));
 		}
 
-		if (txmax < DRFMAX || !dontRenderFaces[Dir.PX]) {
-			setTex(Dir.PX);
+		if (txmax < DRFMAX || !dontRenderFaces[Directions.PX]) {
+			setTex(Directions.PX);
 			t.setNormal(1, 0, 0);
 			colNN = colPN = colNP = colPP = rgb(colourR * 0.6, colourG * 0.6, colourB * 0.6);
 			getBrightnessXFace(rb, bx, by, bz, rbb.maxX);

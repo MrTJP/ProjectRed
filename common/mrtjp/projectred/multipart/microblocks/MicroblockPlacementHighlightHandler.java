@@ -1,7 +1,7 @@
 package mrtjp.projectred.multipart.microblocks;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.utils.Dir;
+import mrtjp.projectred.utils.Directions;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -65,27 +65,27 @@ public class MicroblockPlacementHighlightHandler {
 				int z = pos.blockZ;
 				int dx = 0, dy = 0, dz = 0;
 				switch (pos.sideHit) {
-				case Dir.NX:
+				case Directions.NX:
 					if (hitPos == null || hitPos.x.touchesNegative())
 						dx = -1;
 					break;
-				case Dir.PX:
+				case Directions.PX:
 					if (hitPos == null || hitPos.x.touchesPositive())
 						dx = 1;
 					break;
-				case Dir.NY:
+				case Directions.NY:
 					if (hitPos == null || hitPos.y.touchesNegative())
 						dy = -1;
 					break;
-				case Dir.PY:
+				case Directions.PY:
 					if (hitPos == null || hitPos.y.touchesPositive())
 						dy = 1;
 					break;
-				case Dir.NZ:
+				case Directions.NZ:
 					if (hitPos == null || hitPos.z.touchesNegative())
 						dz = -1;
 					break;
-				case Dir.PZ:
+				case Directions.PZ:
 					if (hitPos == null || hitPos.z.touchesPositive())
 						dz = 1;
 					break;
@@ -108,22 +108,22 @@ public class MicroblockPlacementHighlightHandler {
 
 					if (hitPos != null) {
 						switch (pos.sideHit) {
-						case Dir.NX:
+						case Directions.NX:
 							inset = hitBB.minX;
 							break;
-						case Dir.PX:
+						case Directions.PX:
 							inset = 1 - hitBB.maxX;
 							break;
-						case Dir.NY:
+						case Directions.NY:
 							inset = hitBB.minY;
 							break;
-						case Dir.PY:
+						case Directions.PY:
 							inset = 1 - hitBB.maxY;
 							break;
-						case Dir.NZ:
+						case Directions.NZ:
 							inset = hitBB.minZ;
 							break;
-						case Dir.PZ:
+						case Directions.PZ:
 							inset = 1 - hitBB.maxZ;
 							break;
 						}
@@ -166,28 +166,28 @@ public class MicroblockPlacementHighlightHandler {
 		final double BORDER = 0.5 - SELECTOR_OUTER_SIZE;
 		EnumPosition result = null;
 		switch (pos.sideHit) {
-		case Dir.NX:
-		case Dir.PX:
+		case Directions.NX:
+		case Directions.PX:
 			if (y >= -BORDER && y <= BORDER && z >= -BORDER && z <= BORDER)
-				result = (pos.sideHit == Dir.NX ? EnumPosition.FacePX : EnumPosition.FaceNX);
+				result = (pos.sideHit == Directions.NX ? EnumPosition.FacePX : EnumPosition.FaceNX);
 			else if (Math.abs(y) < Math.abs(z))
 				result = (z < 0 ? EnumPosition.FaceNZ : EnumPosition.FacePZ);
 			else
 				result = (y < 0 ? EnumPosition.FaceNY : EnumPosition.FacePY);
 			break;
-		case Dir.NY:
-		case Dir.PY:
+		case Directions.NY:
+		case Directions.PY:
 			if (x >= -BORDER && x <= BORDER && z >= -BORDER && z <= BORDER)
-				result = (pos.sideHit == Dir.NY ? EnumPosition.FacePY : EnumPosition.FaceNY);
+				result = (pos.sideHit == Directions.NY ? EnumPosition.FacePY : EnumPosition.FaceNY);
 			else if (Math.abs(z) < Math.abs(x))
 				result = (x < 0 ? EnumPosition.FaceNX : EnumPosition.FacePX);
 			else
 				result = (z < 0 ? EnumPosition.FaceNZ : EnumPosition.FacePZ);
 			break;
-		case Dir.NZ:
-		case Dir.PZ:
+		case Directions.NZ:
+		case Directions.PZ:
 			if (x >= -BORDER && x <= BORDER && y >= -BORDER && y <= BORDER)
-				result = (pos.sideHit == Dir.NZ ? EnumPosition.FacePZ : EnumPosition.FaceNZ);
+				result = (pos.sideHit == Directions.NZ ? EnumPosition.FacePZ : EnumPosition.FaceNZ);
 			else if (Math.abs(x) < Math.abs(y))
 				result = (y < 0 ? EnumPosition.FaceNY : EnumPosition.FacePY);
 			else
@@ -197,27 +197,27 @@ public class MicroblockPlacementHighlightHandler {
 		if (placingOn != null) {
 			switch (result) {
 			case FaceNX:
-				if (pos.sideHit == Dir.PX && (placingOn.x == EnumAxisPosition.Negative || placingOn.x == EnumAxisPosition.Centre))
+				if (pos.sideHit == Directions.PX && (placingOn.x == EnumAxisPosition.Negative || placingOn.x == EnumAxisPosition.Centre))
 					result = EnumPosition.FacePX;
 				break;
 			case FaceNY:
-				if (pos.sideHit == Dir.PY && (placingOn.y == EnumAxisPosition.Negative || placingOn.y == EnumAxisPosition.Centre))
+				if (pos.sideHit == Directions.PY && (placingOn.y == EnumAxisPosition.Negative || placingOn.y == EnumAxisPosition.Centre))
 					result = EnumPosition.FacePY;
 				break;
 			case FaceNZ:
-				if (pos.sideHit == Dir.PZ && (placingOn.z == EnumAxisPosition.Negative || placingOn.z == EnumAxisPosition.Centre))
+				if (pos.sideHit == Directions.PZ && (placingOn.z == EnumAxisPosition.Negative || placingOn.z == EnumAxisPosition.Centre))
 					result = EnumPosition.FacePZ;
 				break;
 			case FacePX:
-				if (pos.sideHit == Dir.NX && (placingOn.x == EnumAxisPosition.Positive || placingOn.x == EnumAxisPosition.Centre))
+				if (pos.sideHit == Directions.NX && (placingOn.x == EnumAxisPosition.Positive || placingOn.x == EnumAxisPosition.Centre))
 					result = EnumPosition.FaceNX;
 				break;
 			case FacePY:
-				if (pos.sideHit == Dir.NY && (placingOn.y == EnumAxisPosition.Positive || placingOn.y == EnumAxisPosition.Centre))
+				if (pos.sideHit == Directions.NY && (placingOn.y == EnumAxisPosition.Positive || placingOn.y == EnumAxisPosition.Centre))
 					result = EnumPosition.FaceNY;
 				break;
 			case FacePZ:
-				if (pos.sideHit == Dir.NZ && (placingOn.z == EnumAxisPosition.Positive || placingOn.z == EnumAxisPosition.Centre))
+				if (pos.sideHit == Directions.NZ && (placingOn.z == EnumAxisPosition.Positive || placingOn.z == EnumAxisPosition.Centre))
 					result = EnumPosition.FaceNZ;
 				break;
 			default:
@@ -243,7 +243,7 @@ public class MicroblockPlacementHighlightHandler {
 			sideHit = ForgeDirection.getOrientation(sideHit).getOpposite().ordinal();
 		}
 		switch (sideHit) {
-		case Dir.PX:
+		case Directions.PX:
 			if (y >= -BORDER && y <= BORDER && z >= -BORDER && z <= BORDER)
 				result = EnumPosition.PostX;
 			else if (Math.abs(y) < Math.abs(z))
@@ -251,7 +251,7 @@ public class MicroblockPlacementHighlightHandler {
 			else
 				result = (y < 0 ? EnumPosition.EdgeNXNY : EnumPosition.EdgeNXPY);
 			break;
-		case Dir.NX:
+		case Directions.NX:
 			if (y >= -BORDER && y <= BORDER && z >= -BORDER && z <= BORDER)
 				result = EnumPosition.PostX;
 			else if (Math.abs(y) < Math.abs(z))
@@ -259,7 +259,7 @@ public class MicroblockPlacementHighlightHandler {
 			else
 				result = (y < 0 ? EnumPosition.EdgePXNY : EnumPosition.EdgePXPY);
 			break;
-		case Dir.PY:
+		case Directions.PY:
 			if (x >= -BORDER && x <= BORDER && z >= -BORDER && z <= BORDER)
 				result = EnumPosition.PostY;
 			else if (Math.abs(x) < Math.abs(z))
@@ -267,7 +267,7 @@ public class MicroblockPlacementHighlightHandler {
 			else
 				result = (x < 0 ? EnumPosition.EdgeNXNY : EnumPosition.EdgePXNY);
 			break;
-		case Dir.NY:
+		case Directions.NY:
 			if (x >= -BORDER && x <= BORDER && z >= -BORDER && z <= BORDER)
 				result = EnumPosition.PostY;
 			else if (Math.abs(x) < Math.abs(z))
@@ -275,7 +275,7 @@ public class MicroblockPlacementHighlightHandler {
 			else
 				result = (x < 0 ? EnumPosition.EdgeNXPY : EnumPosition.EdgePXPY);
 			break;
-		case Dir.PZ:
+		case Directions.PZ:
 			if (x >= -BORDER && x <= BORDER && y >= -BORDER && y <= BORDER)
 				result = EnumPosition.PostZ;
 			else if (Math.abs(x) < Math.abs(y))
@@ -283,7 +283,7 @@ public class MicroblockPlacementHighlightHandler {
 			else
 				result = (x < 0 ? EnumPosition.EdgeNXNZ : EnumPosition.EdgePXNZ);
 			break;
-		case Dir.NZ:
+		case Directions.NZ:
 			if (x >= -BORDER && x <= BORDER && y >= -BORDER && y <= BORDER)
 				result = EnumPosition.PostZ;
 			else if (Math.abs(x) < Math.abs(y))
@@ -302,22 +302,22 @@ public class MicroblockPlacementHighlightHandler {
 		double z = hv.zCoord - 0.5;
 		EnumPosition result = EnumPosition.CornerPXPYPZ;
 		switch (pos.sideHit) {
-		case Dir.NX:
+		case Directions.NX:
 			result = EnumPosition.getCornerPosition((placingOn == null || placingOn.x != EnumAxisPosition.Positive ? 1 : -1), (y < 0 ? -1 : 1), (z < 0 ? -1 : 1));
 			break;
-		case Dir.PX:
+		case Directions.PX:
 			result = EnumPosition.getCornerPosition((placingOn == null || placingOn.x != EnumAxisPosition.Negative ? -1 : 1), (y < 0 ? -1 : 1), (z < 0 ? -1 : 1));
 			break;
-		case Dir.NY:
+		case Directions.NY:
 			result = EnumPosition.getCornerPosition((x < 0 ? -1 : 1), (placingOn == null || placingOn.y != EnumAxisPosition.Positive ? 1 : -1), (z < 0 ? -1 : 1));
 			break;
-		case Dir.PY:
+		case Directions.PY:
 			result = EnumPosition.getCornerPosition((x < 0 ? -1 : 1), (placingOn == null || placingOn.y != EnumAxisPosition.Negative ? -1 : 1), (z < 0 ? -1 : 1));
 			break;
-		case Dir.NZ:
+		case Directions.NZ:
 			result = EnumPosition.getCornerPosition((x < 0 ? -1 : 1), (y < 0 ? -1 : 1), (placingOn == null || placingOn.z != EnumAxisPosition.Positive ? 1 : -1));
 			break;
-		case Dir.PZ:
+		case Directions.PZ:
 			result = EnumPosition.getCornerPosition((x < 0 ? -1 : 1), (y < 0 ? -1 : 1), (placingOn == null || placingOn.z != EnumAxisPosition.Negative ? -1 : 1));
 			break;
 		}
@@ -329,9 +329,9 @@ public class MicroblockPlacementHighlightHandler {
 		GL11.glLineWidth(4);
 		t.startDrawing(GL11.GL_LINES);
 		switch (pos.sideHit) {
-		case Dir.NX:
-		case Dir.PX:
-			double x = (pos.sideHit == Dir.NX ? inset : 1 - inset);
+		case Directions.NX:
+		case Directions.PX:
+			double x = (pos.sideHit == Directions.NX ? inset : 1 - inset);
 			t.addVertex(x, 0, 0);
 			t.addVertex(x, 0, 1);
 			t.addVertex(x, 0, 1);
@@ -359,9 +359,9 @@ public class MicroblockPlacementHighlightHandler {
 			t.addVertex(x, 0, 1);
 			t.addVertex(x, outer_size, 1 - outer_size);
 			break;
-		case Dir.NY:
-		case Dir.PY:
-			double y = (pos.sideHit == Dir.NY ? inset : 1 - inset);
+		case Directions.NY:
+		case Directions.PY:
+			double y = (pos.sideHit == Directions.NY ? inset : 1 - inset);
 			t.addVertex(0, y, 0);
 			t.addVertex(0, y, 1);
 			t.addVertex(0, y, 1);
@@ -389,9 +389,9 @@ public class MicroblockPlacementHighlightHandler {
 			t.addVertex(0, y, 1);
 			t.addVertex(outer_size, y, 1 - outer_size);
 			break;
-		case Dir.NZ:
-		case Dir.PZ:
-			double z = (pos.sideHit == Dir.NZ ? inset : 1 - inset);
+		case Directions.NZ:
+		case Directions.PZ:
+			double z = (pos.sideHit == Directions.NZ ? inset : 1 - inset);
 			t.addVertex(0, 0, z);
 			t.addVertex(0, 1, z);
 			t.addVertex(0, 1, z);
@@ -428,9 +428,9 @@ public class MicroblockPlacementHighlightHandler {
 		GL11.glLineWidth(4);
 		t.startDrawing(GL11.GL_LINES);
 		switch (pos.sideHit) {
-		case Dir.NX:
-		case Dir.PX:
-			double x = (pos.sideHit == Dir.NX ? inset : 1 - inset);
+		case Directions.NX:
+		case Directions.PX:
+			double x = (pos.sideHit == Directions.NX ? inset : 1 - inset);
 			t.addVertex(x, 0, 0);
 			t.addVertex(x, 0, 1);
 			t.addVertex(x, 0, 1);
@@ -444,9 +444,9 @@ public class MicroblockPlacementHighlightHandler {
 			t.addVertex(x, 0, 0.5);
 			t.addVertex(x, 1, 0.5);
 			break;
-		case Dir.NY:
-		case Dir.PY:
-			double y = (pos.sideHit == Dir.NY ? inset : 1 - inset);
+		case Directions.NY:
+		case Directions.PY:
+			double y = (pos.sideHit == Directions.NY ? inset : 1 - inset);
 			t.addVertex(0, y, 0);
 			t.addVertex(0, y, 1);
 			t.addVertex(0, y, 1);
@@ -460,9 +460,9 @@ public class MicroblockPlacementHighlightHandler {
 			t.addVertex(0, y, 0.5);
 			t.addVertex(1, y, 0.5);
 			break;
-		case Dir.NZ:
-		case Dir.PZ:
-			double z = (pos.sideHit == Dir.NZ ? inset : 1 - inset);
+		case Directions.NZ:
+		case Directions.PZ:
+			double z = (pos.sideHit == Directions.NZ ? inset : 1 - inset);
 			t.addVertex(0, 0, z);
 			t.addVertex(0, 1, z);
 			t.addVertex(0, 1, z);
