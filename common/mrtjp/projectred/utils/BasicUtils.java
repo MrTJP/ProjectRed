@@ -213,9 +213,9 @@ public class BasicUtils {
 		}
 	}
 
-	public static TileEntity getTileEntity(IBlockAccess access, Coords coords, Class clazz) {
+	public static <T extends TileEntity> T getTileEntity(IBlockAccess access, Coords coords, Class<T> clazz) {
 		TileEntity te = access.getBlockTileEntity(coords.x, coords.y, coords.z);
-		return !clazz.isInstance(te) ? null : te;
+		return !clazz.isInstance(te) ? null : (T)te;
 	}
 
 	public static MovingObjectPosition retraceBlock(World world, EntityPlayer player, int x, int y, int z) {

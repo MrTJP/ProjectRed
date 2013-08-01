@@ -8,7 +8,7 @@ import mrtjp.projectred.multipart.BlockMultipartBase;
 import mrtjp.projectred.network.PacketHandler;
 import mrtjp.projectred.network.packets.MicroblockPlacementPacket;
 import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.Dir;
+import mrtjp.projectred.utils.Directions;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
@@ -71,27 +71,27 @@ public class ItemBlockMicroblock extends ItemBlock {
 		} else if (oldblock != Block.vine.blockID) {
 			int dx = 0, dy = 0, dz = 0;
 			switch (dir) {
-			case Dir.NX:
+			case Directions.NX:
 				if (rayPos == null || rayPos.x.touchesNegative())
 					dx = -1;
 				break;
-			case Dir.PX:
+			case Directions.PX:
 				if (rayPos == null || rayPos.x.touchesPositive())
 					dx = 1;
 				break;
-			case Dir.NY:
+			case Directions.NY:
 				if (rayPos == null || rayPos.y.touchesNegative())
 					dy = -1;
 				break;
-			case Dir.PY:
+			case Directions.PY:
 				if (rayPos == null || rayPos.y.touchesPositive())
 					dy = 1;
 				break;
-			case Dir.NZ:
+			case Directions.NZ:
 				if (rayPos == null || rayPos.z.touchesNegative())
 					dz = -1;
 				break;
-			case Dir.PZ:
+			case Directions.PZ:
 				if (rayPos == null || rayPos.z.touchesPositive())
 					dz = 1;
 				break;

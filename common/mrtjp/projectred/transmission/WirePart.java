@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.multipart.microblocks.Part;
+import mrtjp.projectred.interfaces.wiring.IConnectable;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
-import mrtjp.projectred.utils.Rotator;
+import mrtjp.projectred.utils.Directions;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -26,11 +26,11 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
-import codechicken.multipart.PartMap;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 
-public class TileWire extends JCuboidPart implements TFacePart, JNormalOcclusion {
+public abstract class WirePart extends JCuboidPart implements IConnectable, TFacePart, JNormalOcclusion {
 
 	private EnumWire wireType;
 
@@ -91,14 +91,14 @@ public class TileWire extends JCuboidPart implements TFacePart, JNormalOcclusion
 	public void writeDesc(MCDataOutput packet) {
 		NBTTagCompound tag = new NBTTagCompound();
 		computeConnections();
-		tag.setByte("t", (byte) wireType.ordinal());
+		save(tag);
 		packet.writeNBTTagCompound(tag);
 	}
 
 	@Override
 	public void readDesc(MCDataInput packet) {
 		NBTTagCompound tag = packet.readNBTTagCompound();
-		wireType = EnumWire.VALUES[tag.getByte("t")];
+		load(tag);
 		updateChange();
 	}
 	
@@ -135,21 +135,116 @@ public class TileWire extends JCuboidPart implements TFacePart, JNormalOcclusion
 	}
 	
 	private void computeConnections() {
-		// TODO ask other methods, and build the connection arrays.
+		boolean[] oldExt = sideExternalConnections;
+		boolean[] oldInt = sideInternalConnections;
+		boolean[] oldCor = sideCorneredConnections;
+		sideExternalConnections = new boolean[6];
+		sideInternalConnections = new boolean[6];
+		sideCorneredConnections = new boolean[6];
+		for (int i = 0; i < 6; i++) {
+			sideExternalConnections[i] = computeConnectTo(i);
+			sideInternalConnections[i] = computeConnectInternallyTo(i);
+			sideCorneredConnections[i] = computeConnectCornerTo(i);
+		}
+		if (!oldExt.equals(sideExternalConnections) || !oldInt.equals(sideInternalConnections) || !oldCor.equals(sideCorneredConnections)) {
+			updateChange();
+		}
 	}
 	
-	public boolean canConnectTo(int absDir) {
+	public boolean computeConnectTo(int absDir) {
+		if((side & 6) == (absDir & 6)) {
+			return false;
+		}
+		BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir);		int x = x(), y = y(), z = z();
+		switch(absDir) {
+		case Directions.NX: x--; break;
+		case Directions.PX: x++; break;
+		case Directions.NY: y--; break;
+		case Directions.PY: y++; break;
+		case Directions.NZ: z--; break;
+		case Directions.PZ: z++; break;
+		default: return false;
+		}
+		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(tile()), TileMultipart.class);
+		if (t != null) {
+			TMultiPart tp = t.partMap(side);
+			if (tp instanceof IConnectable) {
+				return ((IConnectable) tp).connects(this, side, absDir);
+			}
+		}
 		return false;
 	}
 	
-	public boolean canConnectCornerTo(int absDir) {
+	public boolean computeConnectCornerTo(int absDir) {
+		if((side & 6) == (absDir & 6)) {
+			return false;
+		}
+		BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir);
+		int x = x(), y = y(), z = z();
+		switch(absDir) {
+		case Directions.NX: x--; break;
+		case Directions.PX: x++; break;
+		case Directions.NY: y--; break;
+		case Directions.PY: y++; break;
+		case Directions.NZ: z--; break;
+		case Directions.PZ: z++; break;
+		default: return false;
+		}
+		
+		if(!BasicWireUtils.canConnectThroughEdge(world(), x, y, z, side, absDir^1)) {
+			return false;
+		}
+		
+		switch(side) {
+		case Directions.NX: x--; break;
+		case Directions.PX: x++; break;
+		case Directions.NY: y--; break;
+		case Directions.PY: y++; break;
+		case Directions.NZ: z--; break;
+		case Directions.PZ: z++; break;
+		default: return false;
+		}
+		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(tile()), TileMultipart.class);
+		if (t != null) {
+			TMultiPart tp = t.partMap(side);
+			if (tp instanceof IConnectable) {
+				return ((IConnectable) tp).connectsAroundCorner(this, absDir ^ 1, side ^ 1);
+			}
+		}
 		return false;
 	}
 	
-	public boolean canConnectInternallyTo(int absDir) {
+	public boolean computeConnectInternallyTo(int absDir) {
+		if((side & 6) == (absDir & 6)) {
+			return false;
+		}
+		if (!BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir)) {
+			return false;
+		}
+		TMultiPart t = tile().partMap(absDir);
+		if (t instanceof IConnectable) {
+			return ((IConnectable)t).connectsToWireType(this);
+		}
 		return false;
 	}
 
+	@Override
+	public boolean connects(WirePart wire, int blockFace, int fromDirection) {
+		return connectsToWireType(wire) && sideExternalConnections[fromDirection];
+	}
+
+	@Override
+	public boolean connectsAroundCorner(WirePart wire, int blockFace, int fromDirection) {
+		return connectsToWireType(wire) && sideCorneredConnections[fromDirection];
+	}
+	
+	public boolean connectsInternally(WirePart wire, int absDir) {
+		return connectsToWireType(wire) && sideInternalConnections[absDir];
+	}
+
+	@Override
+	public abstract boolean connectsToWireType(WirePart wire);
+	
 	/**
 	 * Notifies neighbours one or two blocks away, in the same pattern as most
 	 * redstone updates.
@@ -170,7 +265,7 @@ public class TileWire extends JCuboidPart implements TFacePart, JNormalOcclusion
 	 * insulated wire only connects to the same colour). Must be symmetric
 	 * (a.canConnectToWire(b) == b.canConnectToWire(a))
 	 */
-	protected boolean canConnectToWire(TileWire wire) {
+	protected boolean canConnectToWire(WirePart wire) {
 		return wire.getWireType() == this.wireType;
 	}
 

@@ -3,7 +3,7 @@ package mrtjp.projectred.multipart.wiring.wires;
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.renderstuffs.RenderIDs;
-import mrtjp.projectred.transmission.TileWire;
+import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.transmission.WireRenderAssistant;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import net.minecraft.block.Block;
@@ -23,7 +23,7 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 	public final static WireRenderer instance = new WireRenderer();
 	private WireRenderAssistant wra = new WireRenderAssistant();
 
-	public void renderWorld(RenderBlocks render, EnumWire type, TileWire wt, int sideMask, boolean renderJacketed) {
+	public void renderWorld(RenderBlocks render, EnumWire type, WirePart wt, int sideMask, boolean renderJacketed) {
 		wra = new WireRenderAssistant();
 		wra.x = wt.xCoord;
 		wra.y = wt.yCoord;
@@ -58,7 +58,7 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks render) {
-		TileWire wt = (TileWire) world.getBlockTileEntity(x, y, z);
+		WirePart wt = (WirePart) world.getBlockTileEntity(x, y, z);
 		EnumWire type = wt.getWireType();
 		if (type == null)
 			return false;

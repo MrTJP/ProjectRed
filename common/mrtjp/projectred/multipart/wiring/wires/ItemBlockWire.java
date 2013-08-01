@@ -6,11 +6,11 @@ import mrtjp.projectred.multipart.microblocks.IMicroblockCoverSystem;
 import mrtjp.projectred.multipart.microblocks.IMicroblockSupporterTile;
 import mrtjp.projectred.multipart.microblocks.Part;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
-import mrtjp.projectred.transmission.TileWire;
+import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
-import mrtjp.projectred.utils.Dir;
+import mrtjp.projectred.utils.Directions;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
@@ -67,27 +67,27 @@ public class ItemBlockWire extends ItemBlock {
 				side = 1;
 			else if (!mergeIntoWireTile && blockId != Block.vine.blockID && blockId != Block.tallGrass.blockID && blockId != Block.deadBush.blockID && (Block.blocksList[blockId] == null || !Block.blocksList[blockId].isBlockReplaceable(w, x, y, z))) {
 				switch (side) {
-				case Dir.NX:
+				case Directions.NX:
 					x--;
 					break;
-				case Dir.PX:
+				case Directions.PX:
 					x++;
 					break;
-				case Dir.NY:
+				case Directions.NY:
 					y--;
 					break;
-				case Dir.PY:
+				case Directions.PY:
 					y++;
 					break;
-				case Dir.NZ:
+				case Directions.NZ:
 					z--;
 					break;
-				case Dir.PZ:
+				case Directions.PZ:
 					z++;
 					break;
 				}
 
-				mergeIntoWireTile = w.getBlockId(x, y, z) == ProjectRed.blockWire.blockID && ((TileWire) w.getBlockTileEntity(x, y, z)).canPlaceWireOnSide(type, side ^ 1);
+				mergeIntoWireTile = w.getBlockId(x, y, z) == ProjectRed.blockWire.blockID && ((WirePart) w.getBlockTileEntity(x, y, z)).canPlaceWireOnSide(type, side ^ 1);
 				mergeIntoMicroblockTile = microblockContainerBlock != null && w.getBlockId(x, y, z) == microblockContainerBlock.blockID && !((IMicroblockSupporterTile) w.getBlockTileEntity(x, y, z)).getCoverSystem().isPositionOccupied(EnumPosition.getFacePosition(side ^ 1));
 			}
 
@@ -99,7 +99,7 @@ public class ItemBlockWire extends ItemBlock {
 				if (w.isRemote)
 					return true;
 
-				TileWire wt = (TileWire) w.getBlockTileEntity(x, y, z);
+				WirePart wt = (WirePart) w.getBlockTileEntity(x, y, z);
 
 				if (wt.addWire(type, side ^ 1)) {
 					Block var12 = Block.blocksList[itemID];
@@ -115,7 +115,7 @@ public class ItemBlockWire extends ItemBlock {
 
 				IMicroblockSupporterTile oldTile = (IMicroblockSupporterTile) w.getBlockTileEntity(x, y, z);
 
-				TileWire tile;
+				WirePart tile;
 
 				try {
 					tile = type.teclass.getConstructor().newInstance();
@@ -166,7 +166,7 @@ public class ItemBlockWire extends ItemBlock {
 			Block microblockContainerBlock = ProjectRed.blockMicrocontainer;
 
 			if (w.getBlockId(x, y, z) == ProjectRed.blockWire.blockID) {
-				TileWire wt = (TileWire) w.getBlockTileEntity(x, y, z);
+				WirePart wt = (WirePart) w.getBlockTileEntity(x, y, z);
 				if (wt.canAddJacketedWire(type)) {
 					mergeIntoWireTile = true;
 				}
@@ -174,29 +174,29 @@ public class ItemBlockWire extends ItemBlock {
 
 			if (!mergeIntoWireTile && blockId != Block.snow.blockID && blockId != Block.vine.blockID && blockId != Block.tallGrass.blockID && blockId != Block.deadBush.blockID && (Block.blocksList[blockId] == null || !Block.blocksList[blockId].isBlockReplaceable(w, x, y, z))) {
 				switch (side) {
-				case Dir.NX:
+				case Directions.NX:
 					x--;
 					break;
-				case Dir.PX:
+				case Directions.PX:
 					x++;
 					break;
-				case Dir.NY:
+				case Directions.NY:
 					y--;
 					break;
-				case Dir.PY:
+				case Directions.PY:
 					y++;
 					break;
-				case Dir.NZ:
+				case Directions.NZ:
 					z--;
 					break;
-				case Dir.PZ:
+				case Directions.PZ:
 					z++;
 					break;
 				}
 			}
 
 			int newBlockID = w.getBlockId(x, y, z);
-			TileWire newTile = (TileWire) BasicUtils.getTileEntity(w, new Coords(x, y, z), TileWire.class);
+			WirePart newTile = (WirePart) BasicUtils.getTileEntity(w, new Coords(x, y, z), WirePart.class);
 			if (blockId == ProjectRed.blockWire.blockID && newTile != null && newTile.canAddJacketedWire(type)) {
 				mergeIntoWireTile = true;
 			}
@@ -217,7 +217,7 @@ public class ItemBlockWire extends ItemBlock {
 				if (w.isRemote)
 					return true;
 
-				TileWire wt = (TileWire) w.getBlockTileEntity(x, y, z);
+				WirePart wt = (WirePart) w.getBlockTileEntity(x, y, z);
 
 				if (wt.addJacketedWire(type)) {
 					Block var12 = Block.blocksList[itemID];
@@ -233,7 +233,7 @@ public class ItemBlockWire extends ItemBlock {
 
 				IMicroblockSupporterTile oldTile = (IMicroblockSupporterTile) w.getBlockTileEntity(x, y, z);
 
-				TileWire tile;
+				WirePart tile;
 
 				try {
 					tile = type.teclass.getConstructor().newInstance();
@@ -298,34 +298,34 @@ public class ItemBlockWire extends ItemBlock {
 				side = 1;
 			else if (!mergeIntoWireTile && !mergeIntoMicroblockTile && blockID != Block.vine.blockID && blockID != Block.tallGrass.blockID && blockID != Block.deadBush.blockID && (Block.blocksList[blockID] == null || !Block.blocksList[blockID].isBlockReplaceable(w, x, y, z))) {
 				switch (side) {
-				case Dir.NX:
+				case Directions.NX:
 					x--;
 					break;
-				case Dir.PX:
+				case Directions.PX:
 					x++;
 					break;
-				case Dir.NY:
+				case Directions.NY:
 					y--;
 					break;
-				case Dir.PY:
+				case Directions.PY:
 					y++;
 					break;
-				case Dir.NZ:
+				case Directions.NZ:
 					z--;
 					break;
-				case Dir.PZ:
+				case Directions.PZ:
 					z++;
 					break;
 				}
 			}
 			mergeIntoMicroblockTile = microblockContainerBlock != null && w.getBlockId(x, y, z) == microblockContainerBlock.blockID && !((IMicroblockSupporterTile) w.getBlockTileEntity(x, y, z)).getCoverSystem().isPositionOccupied(EnumPosition.getFacePosition(side ^ 1));
-			mergeIntoWireTile = w.getBlockId(x, y, z) == ProjectRed.blockWire.blockID && ((TileWire) w.getBlockTileEntity(x, y, z)).canPlaceWireOnSide(type, side ^ 1);
+			mergeIntoWireTile = w.getBlockId(x, y, z) == ProjectRed.blockWire.blockID && ((WirePart) w.getBlockTileEntity(x, y, z)).canPlaceWireOnSide(type, side ^ 1);
 
 			return mergeIntoMicroblockTile || mergeIntoWireTile || w.canPlaceEntityOnSide(this.itemID, x, y, z, false, side, ply, stack);
 
 		} else {
 			// jacketed wire
-			if (blockID == ProjectRed.blockWire.blockID && ((TileWire) w.getBlockTileEntity(x, y, z)).canAddJacketedWire(type)) {
+			if (blockID == ProjectRed.blockWire.blockID && ((WirePart) w.getBlockTileEntity(x, y, z)).canAddJacketedWire(type)) {
 				return true;
 			}
 
@@ -333,22 +333,22 @@ public class ItemBlockWire extends ItemBlock {
 
 			if (blockID != Block.snow.blockID && blockID != Block.vine.blockID && blockID != Block.tallGrass.blockID && blockID != Block.deadBush.blockID && (Block.blocksList[blockID] == null || !Block.blocksList[blockID].isBlockReplaceable(w, x, y, z))) {
 				switch (side) {
-				case Dir.NX:
+				case Directions.NX:
 					x--;
 					break;
-				case Dir.PX:
+				case Directions.PX:
 					x++;
 					break;
-				case Dir.NY:
+				case Directions.NY:
 					y--;
 					break;
-				case Dir.PY:
+				case Directions.PY:
 					y++;
 					break;
-				case Dir.NZ:
+				case Directions.NZ:
 					z--;
 					break;
-				case Dir.PZ:
+				case Directions.PZ:
 					z++;
 					break;
 				}
@@ -356,7 +356,7 @@ public class ItemBlockWire extends ItemBlock {
 
 			// Recheck if this block is a wire.
 			int newBlockID = w.getBlockId(x, y, z);
-			TileWire newTile = (TileWire) BasicUtils.getTileEntity(w, new Coords(x, y, z), TileWire.class);
+			WirePart newTile = (WirePart) BasicUtils.getTileEntity(w, new Coords(x, y, z), WirePart.class);
 			if (blockID == ProjectRed.blockWire.blockID && newTile != null && newTile.canAddJacketedWire(type)) {
 				return true;
 			}
@@ -385,7 +385,7 @@ public class ItemBlockWire extends ItemBlock {
 		if (world.getBlockId(x, y, z) == itemID) {
 			Block.blocksList[itemID].onBlockPlacedBy(world, x, y, z, player, stack);
 
-			TileWire tile;
+			WirePart tile;
 
 			try {
 				tile = type.teclass.getConstructor().newInstance();

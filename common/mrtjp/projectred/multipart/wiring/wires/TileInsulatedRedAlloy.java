@@ -3,7 +3,7 @@ package mrtjp.projectred.multipart.wiring.wires;
 import mrtjp.projectred.interfaces.wiring.IBundledEmitter;
 import mrtjp.projectred.interfaces.wiring.IBundledUpdatable;
 import mrtjp.projectred.interfaces.wiring.IInsulatedRedstoneWire;
-import mrtjp.projectred.transmission.TileWire;
+import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.utils.BasicWireUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
@@ -15,7 +15,7 @@ public class TileInsulatedRedAlloy extends TileRedAlloy implements IBundledUpdat
 	}
 	
 	@Override
-	protected boolean canConnectToWire(TileWire wire) {
+	protected boolean canConnectToWire(WirePart wire) {
 		if (wire.getWireType() == EnumWire.RED_ALLOY || wire instanceof TileBundled) {
 			return true;
 		}

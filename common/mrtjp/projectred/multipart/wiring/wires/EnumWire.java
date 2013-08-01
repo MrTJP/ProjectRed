@@ -3,7 +3,7 @@ package mrtjp.projectred.multipart.wiring.wires;
 import java.util.Map;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.transmission.TileWire;
+import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
@@ -63,16 +63,16 @@ public enum EnumWire {
 	public static final int INSULATED_RED_ALLOY_META = 1;
 	public static final int BUNDLED_META = 2;
 
-	public static ImmutableBiMap<Class<? extends TileWire>, Integer> CLASS_TO_META = ImmutableBiMap.<Class<? extends TileWire>, Integer> builder().put(TilePlainRedAlloy.class, PLAIN_RED_ALLOY_META).put(TileInsulatedRedAlloy.class, INSULATED_RED_ALLOY_META).put(TileBundled.class, BUNDLED_META).build();
+	public static ImmutableBiMap<Class<? extends WirePart>, Integer> CLASS_TO_META = ImmutableBiMap.<Class<? extends WirePart>, Integer> builder().put(TilePlainRedAlloy.class, PLAIN_RED_ALLOY_META).put(TileInsulatedRedAlloy.class, INSULATED_RED_ALLOY_META).put(TileBundled.class, BUNDLED_META).build();
 
-	public static ImmutableBiMap<Integer, Class<? extends TileWire>> META_TO_CLASS = CLASS_TO_META.inverse();
+	public static ImmutableBiMap<Integer, Class<? extends WirePart>> META_TO_CLASS = CLASS_TO_META.inverse();
 
 	public static EnumWire[] VALID_WIRE = values();
 	public static EnumWire[] INSULATED_WIRE = { INSULATED_0, INSULATED_1, INSULATED_2, INSULATED_3, INSULATED_4, INSULATED_5, INSULATED_6, INSULATED_7, INSULATED_8, INSULATED_9, INSULATED_10, INSULATED_11, INSULATED_12, INSULATED_13, INSULATED_14, INSULATED_15, };
 	public static EnumWire[] BUNDLED_WIRE = { BUNDLED_N, BUNDLED_0, BUNDLED_1, BUNDLED_2, BUNDLED_3, BUNDLED_4, BUNDLED_5, BUNDLED_6, BUNDLED_7, BUNDLED_8, BUNDLED_9, BUNDLED_10, BUNDLED_11, BUNDLED_12, BUNDLED_13, BUNDLED_14, BUNDLED_15 };
 
 	public final String name;
-	public final Class<? extends TileWire> teclass;
+	public final Class<? extends WirePart> teclass;
 	public final int itemColour;
 	public final double thickness, width;
 
@@ -91,7 +91,7 @@ public enum EnumWire {
 
 	public int meta = this.ordinal();
 
-	private EnumWire(String name, Class<? extends TileWire> tileClazz, int thicknessPixels, int widthPixels, int itemColour, String objPathWire, String objPathJacket, String... textures) {
+	private EnumWire(String name, Class<? extends WirePart> tileClazz, int thicknessPixels, int widthPixels, int itemColour, String objPathWire, String objPathJacket, String... textures) {
 		this.name = name;
 		this.teclass = tileClazz;
 		this.thickness = thicknessPixels / 16.0;
@@ -103,7 +103,7 @@ public enum EnumWire {
 		wireSprites = new Icon[textures.length];
 	}
 
-	private EnumWire(String name, Class<? extends TileWire> tileClazz, int thicknessPixels, int widthPixels, String objPath, String objPathJacket, String... textures) {
+	private EnumWire(String name, Class<? extends WirePart> tileClazz, int thicknessPixels, int widthPixels, String objPath, String objPathJacket, String... textures) {
 		this(name, tileClazz, thicknessPixels, widthPixels, 0xFFFFFF, objPath, objPathJacket, textures);
 	}
 

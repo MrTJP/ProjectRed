@@ -7,7 +7,7 @@ import static mrtjp.projectred.multipart.microblocks.EnumPositionClass.Corner;
 import static mrtjp.projectred.multipart.microblocks.EnumPositionClass.Edge;
 import static mrtjp.projectred.multipart.microblocks.EnumPositionClass.Face;
 import static mrtjp.projectred.multipart.microblocks.EnumPositionClass.Post;
-import mrtjp.projectred.utils.Dir;
+import mrtjp.projectred.utils.Directions;
 
 public enum EnumPosition {
 	// DO NOT CHANGE ORDER - Ordinals are saved in NBT
@@ -83,17 +83,17 @@ public enum EnumPosition {
 
 	private static boolean edgeTouches(EnumPosition edge, int face) {
 		switch (face) {
-		case Dir.NX:
+		case Directions.NX:
 			return edge.x == EnumAxisPosition.Negative;
-		case Dir.PX:
+		case Directions.PX:
 			return edge.x == EnumAxisPosition.Positive;
-		case Dir.NY:
+		case Directions.NY:
 			return edge.y == EnumAxisPosition.Negative;
-		case Dir.PY:
+		case Directions.PY:
 			return edge.y == EnumAxisPosition.Positive;
-		case Dir.NZ:
+		case Directions.NZ:
 			return edge.z == EnumAxisPosition.Negative;
-		case Dir.PZ:
+		case Directions.PZ:
 			return edge.z == EnumAxisPosition.Positive;
 		}
 		throw new IllegalArgumentException("Invalid face " + face);
@@ -125,17 +125,17 @@ public enum EnumPosition {
 
 	public static EnumPosition getFacePosition(int side) {
 		switch (side) {
-		case Dir.NX:
+		case Directions.NX:
 			return FaceNX;
-		case Dir.PX:
+		case Directions.PX:
 			return FacePX;
-		case Dir.NY:
+		case Directions.NY:
 			return FaceNY;
-		case Dir.PY:
+		case Directions.PY:
 			return FacePY;
-		case Dir.NZ:
+		case Directions.NZ:
 			return FaceNZ;
-		case Dir.PZ:
+		case Directions.PZ:
 			return FacePZ;
 		default:
 			throw new IllegalArgumentException("Invalid direction: " + side);
