@@ -64,10 +64,6 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileLantern.class, LanternRenderer.instance);
 		MinecraftForgeClient.registerItemRenderer(ProjectRed.blockLantern.blockID, LanternRenderer.instance);
 
-		// Redwire
-		RenderIDs.renderIdRedwire = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(WireRenderer.instance);
-
 		// Microblocks
 		RenderIDs.renderIdMicroblock = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(MultiblockRenderer.instance);

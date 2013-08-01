@@ -3,6 +3,8 @@ package mrtjp.projectred.multipart.wiring.wires;
 import mrtjp.projectred.interfaces.wiring.IBundledEmitter;
 import mrtjp.projectred.interfaces.wiring.IBundledUpdatable;
 import mrtjp.projectred.interfaces.wiring.IInsulatedRedstoneWire;
+import mrtjp.projectred.transmission.EnumWire;
+import mrtjp.projectred.transmission.TileRedAlloy;
 import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.utils.BasicWireUtils;
 import net.minecraft.tileentity.TileEntity;

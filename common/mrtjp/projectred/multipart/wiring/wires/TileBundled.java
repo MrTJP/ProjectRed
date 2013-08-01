@@ -7,6 +7,7 @@ import mrtjp.projectred.interfaces.wiring.IBundledUpdatable;
 import mrtjp.projectred.interfaces.wiring.IBundledWire;
 import mrtjp.projectred.interfaces.wiring.IRedstoneUpdatable;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
+import mrtjp.projectred.transmission.EnumWire;
 import mrtjp.projectred.transmission.WirePart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;

@@ -3,6 +3,9 @@ package mrtjp.projectred.transmission;
 import java.util.List;
 
 import mrtjp.projectred.crafting.ProjectRedTabs;
+import mrtjp.projectred.integration.EnumGate;
+import mrtjp.projectred.integration.GateRenderBridge;
+import mrtjp.projectred.utils.BasicWireUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -38,12 +41,12 @@ public class ItemPartWire extends JItemMultiPart {
 	@Override
 	public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
 		BlockCoord onPos = pos.copy().offset(side ^ 1);
-		if (!world.isBlockSolidOnSide(onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side))) {
+		if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) {
 			return null;
 		}
-		GatePart gate = new GatePart(EnumGate.get(item.getItemDamage()));
-		gate.setupPlacement(player, side);
-		return gate;
+		WirePart p = new TilePlainRedAlloy();
+		p.setWireType(EnumWire.RED_ALLOY);
+		return p;
 	}
 
 	@Override

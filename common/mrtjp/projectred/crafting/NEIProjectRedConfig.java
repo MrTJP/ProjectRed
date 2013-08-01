@@ -13,7 +13,7 @@ import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemPart.EnumPart;
 import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
 import mrtjp.projectred.multipart.microblocks.MicroblockLibrary;
-import mrtjp.projectred.multipart.wiring.wires.EnumWire;
+import mrtjp.projectred.transmission.EnumWire;
 import net.minecraft.item.ItemStack;
 import codechicken.nei.MultiItemRange;
 import codechicken.nei.api.API;

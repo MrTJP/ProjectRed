@@ -1,9 +1,10 @@
-package mrtjp.projectred.multipart.wiring.wires;
+package mrtjp.projectred.transmission;
 
 import java.util.Map;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.transmission.WirePart;
+import mrtjp.projectred.multipart.wiring.wires.TileBundled;
+import mrtjp.projectred.multipart.wiring.wires.TileInsulatedRedAlloy;
 import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
@@ -132,27 +133,27 @@ public enum EnumWire {
 	}
 
 	public ItemStack getItemStack() {
-		return new ItemStack(ProjectRed.blockWire, 1, meta);
+		return new ItemStack(ProjectRed.itemPartWire, 1, meta);
 	}
 
 	public ItemStack getItemStack(int i) {
-		return new ItemStack(ProjectRed.blockWire, i, meta);
+		return new ItemStack(ProjectRed.itemPartWire, i, meta);
 	}
 
 	public ItemStack getJacketedItemStack() {
-		return new ItemStack(ProjectRed.blockWire, 1, meta | WireDamageValues.DMG_FLAG_JACKETED);
+		return new ItemStack(ProjectRed.itemPartWire, 1, meta | WireDamageValues.DMG_FLAG_JACKETED);
 	}
 
 	public ItemStack getJacketedItemStack(int i) {
 		if (!this.hasJacketedForm()) {
 			return null;
 		}
-		return new ItemStack(ProjectRed.blockWire, i, meta | WireDamageValues.DMG_FLAG_JACKETED);
+		return new ItemStack(ProjectRed.itemPartWire, i, meta | WireDamageValues.DMG_FLAG_JACKETED);
 	}
 
 	public static boolean isBundledCable(ItemStack stack) {
 		for (EnumWire w : EnumWire.BUNDLED_WIRE) {
-			if (stack.itemID == ProjectRed.blockWire.blockID && stack.getItemDamage() == w.meta) {
+			if (stack.itemID == ProjectRed.itemPartWire.itemID && stack.getItemDamage() == w.meta) {
 				return true;
 			}
 		}
@@ -161,7 +162,7 @@ public enum EnumWire {
 
 	public static boolean isInsulatedWire(ItemStack stack) {
 		for (EnumWire w : EnumWire.INSULATED_WIRE) {
-			if (stack.itemID == ProjectRed.blockWire.blockID && stack.getItemDamage() == w.meta) {
+			if (stack.itemID == ProjectRed.itemPartWire.itemID && stack.getItemDamage() == w.meta) {
 				return true;
 			}
 		}

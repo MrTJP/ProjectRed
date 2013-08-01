@@ -69,10 +69,10 @@ public class WireRenderAssistant {
 
 	public void setWireRenderState(WirePart t) {
 		// Connections
-		connectsN = t.connects(t, side, sideMap[side][2]);
-		connectsS = t.connects(t, side, sideMap[side][3]);
-		connectsW = t.connects(t, side, sideMap[side][4]);
-		connectsE = t.connects(t, side, sideMap[side][5]);
+		connectsN = t.maskConnects(sideMap[side][2]);
+		connectsS = t.maskConnects(sideMap[side][3]);
+		connectsW = t.maskConnects(sideMap[side][4]);
+		connectsE = t.maskConnects(sideMap[side][5]);
 
 		// Center textures
 		isCenterCrossed = (connectsN && connectsW || connectsN && connectsE || connectsS && connectsW || connectsS && connectsE);
@@ -80,16 +80,16 @@ public class WireRenderAssistant {
 		isCenterWE = (!isCenterCrossed && (connectsW || connectsE));
 
 		// Outside corners
-		connectsCornerN = (side != 0 && side != 1) && t.connectsAroundCorner(t, side, sideMap[side][2]);
-		connectsCornerS = (side != 0 && side != 1) && t.connectsAroundCorner(t, side, sideMap[side][3]);
-		connectsCornerW = (side != 0 && side != 1) && t.connectsAroundCorner(t, side, sideMap[side][4]);
-		connectsCornerE = (side != 0 && side != 1 && side != 2 && side != 3 && side != 4 && side != 5) && t.connectsAroundCorner(t, side, sideMap[side][5]);
+		connectsCornerN = (side != 0 && side != 1) && t.maskConnectsAroundCorner(sideMap[side][2]);
+		connectsCornerS = (side != 0 && side != 1) && t.maskConnectsAroundCorner(sideMap[side][3]);
+		connectsCornerW = (side != 0 && side != 1) && t.maskConnectsAroundCorner(sideMap[side][4]);
+		connectsCornerE = (side != 0 && side != 1 && side != 2 && side != 3 && side != 4 && side != 5) && t.maskConnectsAroundCorner(sideMap[side][5]);
 
 		// InIn edges
-		connectsInsideN = t.connectsInternally(t, sideMap[side][2]);
-		connectsInsideS = t.connectsInternally(t, sideMap[side][3]);
-		connectsInsideW = t.connectsInternally(t, sideMap[side][4]);
-		connectsInsideE = t.connectsInternally(t, sideMap[side][5]);
+		connectsInsideN = t.maskConnectsInternally(sideMap[side][2]);
+		connectsInsideS = t.maskConnectsInternally(sideMap[side][3]);
+		connectsInsideW = t.maskConnectsInternally(sideMap[side][4]);
+		connectsInsideE = t.maskConnectsInternally(sideMap[side][5]);
 
 		connectsInsideConnectorN = (isCenterCrossed && connectsN) || (isCenterNS);
 		connectsInsideConnectorS = (isCenterCrossed && connectsS) || (isCenterNS);
