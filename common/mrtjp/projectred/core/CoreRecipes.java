@@ -3,7 +3,7 @@ package mrtjp.projectred.core;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.AlloySmelterRecipe;
 import mrtjp.projectred.items.ItemPart.EnumPart;
-import mrtjp.projectred.multipart.wiring.wires.EnumWire;
+import mrtjp.projectred.transmission.EnumWire;
 import mrtjp.projectred.utils.PRColors;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -14,7 +14,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CoreRecipes {
 	public static void initCoreRecipes() {
-		initPartRecipes();
+		//initPartRecipes();
 		initToolRecipes();
 	}
 

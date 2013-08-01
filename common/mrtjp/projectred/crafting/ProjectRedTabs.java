@@ -21,7 +21,7 @@ public class ProjectRedTabs {
 	public static CreativeTabs tabWires = new CreativeTabs("Project Red: Wiring") {
 		@Override
 		public ItemStack getIconItemStack() {
-			return new ItemStack(ProjectRed.blockWire);
+			return new ItemStack(ProjectRed.itemPartWire);
 		}
 	};
 	

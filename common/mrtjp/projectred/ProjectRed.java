@@ -76,7 +76,6 @@ public class ProjectRed {
 	
 	/** Blocks **/
 	public static BlockMultipartBase blockMicrocontainer;
-	public static BlockWire blockWire;
 	public static BlockLamp blockLamp;
 	public static BlockMachines blockMachines;
 	public static BlockLantern blockLantern;

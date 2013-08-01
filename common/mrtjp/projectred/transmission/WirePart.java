@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.interfaces.wiring.IConnectable;
-import mrtjp.projectred.multipart.wiring.wires.EnumWire;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
@@ -17,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
@@ -37,11 +37,16 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	/** START NEW LOGIC **/
 	private boolean notifyNeighboursNextTick = false;
 	public int side;
+	private boolean isFirstTick = true;
 	// Cached connection status of all sides, stored as absolute
 	// ForgeDirections.
 	private boolean[] sideExternalConnections = new boolean[6];
 	private boolean[] sideInternalConnections = new boolean[6];
 	private boolean[] sideCorneredConnections = new boolean[6];
+
+	public void setWireType(EnumWire type) {
+		wireType = type;
+	}
 
 	@Override
 	public void save(NBTTagCompound tag) {
@@ -84,28 +89,33 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			notifyNeighboursNextTick = false;
 			updateChange();
 		}
+		if (isFirstTick) {
+			isFirstTick = false;
+			computeConnections();
+		}
 		super.update();
 	}
 
 	@Override
 	public void writeDesc(MCDataOutput packet) {
+		super.writeDesc(packet);
 		NBTTagCompound tag = new NBTTagCompound();
-		computeConnections();
+		//computeConnections();
 		save(tag);
 		packet.writeNBTTagCompound(tag);
 	}
 
 	@Override
 	public void readDesc(MCDataInput packet) {
+		super.readDesc(packet);
 		NBTTagCompound tag = packet.readNBTTagCompound();
 		load(tag);
-		updateChange();
 	}
-	
+
 	public void updateChange() {
 		tile().markDirty();
 		tile().notifyPartChange();
-		notifyExtendedNeighbours();
+		//notifyExtendedNeighbours();
 		sendDescUpdate();
 	}
 
@@ -115,6 +125,10 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public void onPartChanged() {
+	}
+
+	@Override
+	public void onNeighborChanged() {
 		if (BasicUtils.isClient(world())) {
 			return;
 		}
@@ -129,12 +143,10 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		computeConnections();
 	}
 
-	@Override
-	public void onNeighborChanged() {
-		onPartChanged();
-	}
-	
 	private void computeConnections() {
+		if (isFirstTick) {
+			return;
+		}
 		boolean[] oldExt = sideExternalConnections;
 		boolean[] oldInt = sideInternalConnections;
 		boolean[] oldCor = sideCorneredConnections;
@@ -150,20 +162,34 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			updateChange();
 		}
 	}
-	
+
 	public boolean computeConnectTo(int absDir) {
-		if((side & 6) == (absDir & 6)) {
+		if ((side & 6) == (absDir & 6)) {
 			return false;
 		}
-		BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir);		int x = x(), y = y(), z = z();
-		switch(absDir) {
-		case Directions.NX: x--; break;
-		case Directions.PX: x++; break;
-		case Directions.NY: y--; break;
-		case Directions.PY: y++; break;
-		case Directions.NZ: z--; break;
-		case Directions.PZ: z++; break;
-		default: return false;
+		BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir);
+		int x = x(), y = y(), z = z();
+		switch (absDir) {
+		case Directions.NX:
+			x--;
+			break;
+		case Directions.PX:
+			x++;
+			break;
+		case Directions.NY:
+			y--;
+			break;
+		case Directions.PY:
+			y++;
+			break;
+		case Directions.NZ:
+			z--;
+			break;
+		case Directions.PZ:
+			z++;
+			break;
+		default:
+			return false;
 		}
 		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(tile()), TileMultipart.class);
 		if (t != null) {
@@ -174,35 +200,61 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		}
 		return false;
 	}
-	
+
 	public boolean computeConnectCornerTo(int absDir) {
-		if((side & 6) == (absDir & 6)) {
+		if ((side & 6) == (absDir & 6)) {
 			return false;
 		}
 		BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir);
 		int x = x(), y = y(), z = z();
-		switch(absDir) {
-		case Directions.NX: x--; break;
-		case Directions.PX: x++; break;
-		case Directions.NY: y--; break;
-		case Directions.PY: y++; break;
-		case Directions.NZ: z--; break;
-		case Directions.PZ: z++; break;
-		default: return false;
-		}
-		
-		if(!BasicWireUtils.canConnectThroughEdge(world(), x, y, z, side, absDir^1)) {
+		switch (absDir) {
+		case Directions.NX:
+			x--;
+			break;
+		case Directions.PX:
+			x++;
+			break;
+		case Directions.NY:
+			y--;
+			break;
+		case Directions.PY:
+			y++;
+			break;
+		case Directions.NZ:
+			z--;
+			break;
+		case Directions.PZ:
+			z++;
+			break;
+		default:
 			return false;
 		}
-		
-		switch(side) {
-		case Directions.NX: x--; break;
-		case Directions.PX: x++; break;
-		case Directions.NY: y--; break;
-		case Directions.PY: y++; break;
-		case Directions.NZ: z--; break;
-		case Directions.PZ: z++; break;
-		default: return false;
+
+		if (!BasicWireUtils.canConnectThroughEdge(world(), x, y, z, side, absDir ^ 1)) {
+			return false;
+		}
+
+		switch (side) {
+		case Directions.NX:
+			x--;
+			break;
+		case Directions.PX:
+			x++;
+			break;
+		case Directions.NY:
+			y--;
+			break;
+		case Directions.PY:
+			y++;
+			break;
+		case Directions.NZ:
+			z--;
+			break;
+		case Directions.PZ:
+			z++;
+			break;
+		default:
+			return false;
 		}
 		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(tile()), TileMultipart.class);
 		if (t != null) {
@@ -213,9 +265,9 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		}
 		return false;
 	}
-	
+
 	public boolean computeConnectInternallyTo(int absDir) {
-		if((side & 6) == (absDir & 6)) {
+		if ((side & 6) == (absDir & 6)) {
 			return false;
 		}
 		if (!BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir)) {
@@ -223,50 +275,60 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		}
 		TMultiPart t = tile().partMap(absDir);
 		if (t instanceof IConnectable) {
-			return ((IConnectable)t).connectsToWireType(this);
+			return ((IConnectable) t).connectsToWireType(this) && connectsToWireType((WirePart) t);
 		}
 		return false;
 	}
 
+	/** START IConnectable **/
+	// IConnectables are called when building connection arrays.
+	// Basically used to check for anything blocking the direction.
 	@Override
 	public boolean connects(WirePart wire, int blockFace, int fromDirection) {
-		return connectsToWireType(wire) && sideExternalConnections[fromDirection];
+		if (!connectsToWireType(wire) || wire.connectsToWireType(this)) {
+			return false;
+		}
+		// Edge open checks here
+		return true;
 	}
 
 	@Override
 	public boolean connectsAroundCorner(WirePart wire, int blockFace, int fromDirection) {
-		return connectsToWireType(wire) && sideCorneredConnections[fromDirection];
-	}
-	
-	public boolean connectsInternally(WirePart wire, int absDir) {
-		return connectsToWireType(wire) && sideInternalConnections[absDir];
+		return connects(wire, blockFace, fromDirection);
 	}
 
 	@Override
-	public abstract boolean connectsToWireType(WirePart wire);
-	
+	public boolean connectsToWireType(WirePart wire) {
+		return wire.getWireType() == this.wireType;
+	}
+
+	/** END IConnectable **/
+
+	// mask checks are called usually by renders, etc.
+	public boolean maskConnects(int absDir) {
+		return sideExternalConnections[absDir];
+	}
+
+	public boolean maskConnectsInternally(int absDir) {
+		return sideInternalConnections[absDir];
+	}
+
+	public boolean maskConnectsAroundCorner(int absDir) {
+		return sideCorneredConnections[absDir];
+	}
+
 	/**
 	 * Notifies neighbours one or two blocks away, in the same pattern as most
 	 * redstone updates.
 	 */
-	// TODO wrong, use TMultipart block id
 	public void notifyExtendedNeighbours() {
-		world().notifyBlocksOfNeighborChange(x(), y(), z(), ProjectRed.blockWire.blockID);
-		world().notifyBlocksOfNeighborChange(x() + 1, y(), z(), ProjectRed.blockWire.blockID);
-		world().notifyBlocksOfNeighborChange(x() - 1, y(), z(), ProjectRed.blockWire.blockID);
-		world().notifyBlocksOfNeighborChange(x(), y() + 1, z(), ProjectRed.blockWire.blockID);
-		world().notifyBlocksOfNeighborChange(x(), y() - 1, z(), ProjectRed.blockWire.blockID);
-		world().notifyBlocksOfNeighborChange(x(), y(), z() + 1, ProjectRed.blockWire.blockID);
-		world().notifyBlocksOfNeighborChange(x(), y(), z() - 1, ProjectRed.blockWire.blockID);
-	}
-
-	/**
-	 * Override this to change the constraints on wire connections (for example,
-	 * insulated wire only connects to the same colour). Must be symmetric
-	 * (a.canConnectToWire(b) == b.canConnectToWire(a))
-	 */
-	protected boolean canConnectToWire(WirePart wire) {
-		return wire.getWireType() == this.wireType;
+		world().notifyBlocksOfNeighborChange(x(), y(), z(), tile().getBlockType().blockID);
+		world().notifyBlocksOfNeighborChange(x() + 1, y(), z(), tile().getBlockType().blockID);
+		world().notifyBlocksOfNeighborChange(x() - 1, y(), z(), tile().getBlockType().blockID);
+		world().notifyBlocksOfNeighborChange(x(), y() + 1, z(), tile().getBlockType().blockID);
+		world().notifyBlocksOfNeighborChange(x(), y() - 1, z(), tile().getBlockType().blockID);
+		world().notifyBlocksOfNeighborChange(x(), y(), z() + 1, tile().getBlockType().blockID);
+		world().notifyBlocksOfNeighborChange(x(), y(), z() - 1, tile().getBlockType().blockID);
 	}
 
 	public int getVisualWireColour() {
@@ -293,7 +355,6 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		world().playAuxSFX(2000, x(), y(), z(), 0);
 	}
 
-	
 	/** START TILEMULTIPART INTERACTIONS **/
 	@Override
 	public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
@@ -318,18 +379,18 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	public int getSlotMask() {
 		return 1 << side;
 	}
-	
+
 	@Override
 	public Cuboid6 getBounds() {
 		Cuboid6 base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D, wireType.thickness, 8 / 8D);
 		return base.transform(sideRotations[side].at(center));
 	}
-	
+
 	@Override
 	public Iterable<IndexedCuboid6> getSubParts() {
 		return Arrays.asList(new IndexedCuboid6(0, getBounds()));
 	}
-	
+
 	@Override
 	public boolean occlusionTest(TMultiPart npart) {
 		return NormalOcclusionTest.apply(this, npart);
@@ -352,6 +413,10 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public String getType() {
+		return wireType.name;
+	}
+
+	public Icon getSpecialIconForRender() {
 		return null;
 	}
 }

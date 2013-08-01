@@ -1,4 +1,4 @@
-package mrtjp.projectred.multipart.wiring.wires;
+package mrtjp.projectred.transmission;
 
 import mrtjp.projectred.interfaces.wiring.IBareRedstoneWire;
 

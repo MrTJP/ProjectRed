@@ -1,10 +1,11 @@
 package mrtjp.projectred.multipart.wiring.wires;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
-import mrtjp.projectred.multipart.wiring.wires.EnumWire.WireDamageValues;
 import mrtjp.projectred.renderstuffs.RenderIDs;
+import mrtjp.projectred.transmission.EnumWire;
 import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.transmission.WireRenderAssistant;
+import mrtjp.projectred.transmission.EnumWire.WireDamageValues;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;

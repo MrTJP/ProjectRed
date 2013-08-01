@@ -16,7 +16,7 @@ import mrtjp.projectred.crafting.tools.RecipeVAWTRecoloring;
 import mrtjp.projectred.integration.EnumGate;
 import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemPart.EnumPart;
-import mrtjp.projectred.multipart.wiring.wires.EnumWire;
+import mrtjp.projectred.transmission.EnumWire;
 import mrtjp.projectred.utils.PRColors;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
