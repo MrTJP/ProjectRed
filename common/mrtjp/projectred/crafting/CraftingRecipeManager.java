@@ -24,6 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
+import mrtjp.projectred.items.ItemSickle;
 
 public class CraftingRecipeManager {
 	
@@ -211,6 +212,17 @@ public class CraftingRecipeManager {
 				't', Item.stick
 		);
 		GameRegistry.addRecipe(new RecipeVAWTRecoloring());
+		
+		/** Sickle **/
+                for (ItemSickle sickle : ProjectRed.sickles) {
+                    GameRegistry.addRecipe(new ItemStack(sickle),
+				" i ",
+				"  i",
+				"si ",
+				'i', sickle.type.material,
+				's', Item.stick
+                    );  
+                }
 	}
 	private static void initOtherRecipes() {
 		/** Wool Gin to string recipe **/

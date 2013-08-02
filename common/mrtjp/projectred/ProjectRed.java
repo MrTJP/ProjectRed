@@ -51,6 +51,9 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import java.util.Collections;
+import java.util.List;
+import mrtjp.projectred.items.ItemSickle;
 
 /**
  * "Project: Red" serves to provide a somewhat decent replacement to Eloraam's
@@ -88,6 +91,7 @@ public class ProjectRed {
 	public static ItemWoolGin itemWoolGin;
 	public static ItemBackpack itemBackpack;
 	public static ItemVAWT itemVAWT;
+        public static List<ItemSickle> sickles;
 
 
 	@Instance("ProjectRed")
@@ -206,6 +210,17 @@ public class ProjectRed {
 		if (Configurator.item_vawtID.getInt() > 0) {
 			itemVAWT = new ItemVAWT(Configurator.item_vawtID.getInt());
 			LanguageRegistry.addName(new ItemStack(itemVAWT, 1, 0), "Vertical-Axis Wind Turbine");
+		}
+                
+                // Sickle
+                if (Configurator.item_sickleID.getInt() > 0) {
+                    List<ItemSickle> temp = new ArrayList<>();
+                    for (ItemSickle.EnumSickle each : ItemSickle.EnumSickle.values()) {
+                        ItemSickle sickle = new ItemSickle(Configurator.item_sickleID.getInt() + each.id, each);
+                        temp.add(sickle);
+			LanguageRegistry.addName(new ItemStack(sickle, 1, 0), each.fullName);
+                    }
+                    sickles = Collections.unmodifiableList(temp);
 		}
 
 		MinecraftForge.EVENT_BUS.register(instance);
