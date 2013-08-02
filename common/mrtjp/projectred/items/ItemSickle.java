@@ -2,6 +2,10 @@ package mrtjp.projectred.items;
 
 import mrtjp.projectred.crafting.ProjectRedTabs;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockMelon;
+import net.minecraft.block.BlockPumpkin;
+import net.minecraft.block.BlockSapling;
+import net.minecraft.block.BlockStem;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -20,54 +24,88 @@ import net.minecraftforge.common.IShearable;
  */
 public class ItemSickle extends Item {
 
-    public static final int radiusElse = 1;
-    public static final int radiusLeaves = 2;
+    public static final int radiusElse = 2;
+    public static final int radiusLeaves = 1;
 
-    public ItemSickle(int id) {
+    public enum EnumSickle {
+
+        WOOD(64, "sickleWood", "Wood Sickle", Block.planks),
+        STONE(128, "sickleStone", "Stone Sickle", Block.stone),
+        IRON(384, "sickleIron", "Iron Sickle", Item.ingotIron),
+        GOLD(768, "SickleGold", "Gold Sickle", Item.ingotGold),
+        DIAMOND(1536, "sickleDiamond", " Diamond Sickle", Item.diamond);
+        //
+        public final int id = this.ordinal() - 1;
+        public final String fullName, ulocalName;
+        public final int maxDamage;
+        public final Object material;
+
+        private EnumSickle(int maxDamage, String ulocalname, String name, Object material) {
+            this.fullName = name;
+            this.ulocalName = ulocalname;
+            this.maxDamage = maxDamage;
+            this.material = material;
+        }
+    }
+    public EnumSickle type;
+
+    public ItemSickle(int id, EnumSickle type) {
         super(id);
-        setMaxDamage(64);
+        setMaxDamage(type.maxDamage);
         setMaxStackSize(1);
         setCreativeTab(ProjectRedTabs.tabTools);
-        setUnlocalizedName("projectred.items.sickle");
+        setUnlocalizedName("projectred.items.".concat(type.ulocalName));
+        this.type = type;
     }
 
     @Override
     public boolean onBlockDestroyed(ItemStack stack, World world, int blockId, int blockX, int blockY, int blockZ, EntityLivingBase entity) {
         boolean work = false;
 
-        if (!(entity instanceof EntityPlayer)) {
+        if (!(entity instanceof EntityPlayer))
             return false;
-        }
+
         EntityPlayer player = (EntityPlayer) entity;
 
         Block source = Block.blocksList[blockId];
         if (!world.isRemote && canHit(blockId)) {
-            int radius = radiusElse;
-            if (source.isLeaves(world, blockX, blockY, blockZ)) {
-                radius = radiusLeaves;
-            }
-            for (int x = -radius; x <= radius; x++) {
-                for (int y = -radius; y <= radius; y++) {
-                    for (int z = -radius; z <= radius; z++) {
-                        int id = world.getBlockId(blockX + x, blockY + y, blockZ + z);
+
+            if (source.isLeaves(world, blockX, blockY, blockZ))
+                for (int x = -radiusLeaves; x <= radiusLeaves; x++)
+                    for (int y = -radiusLeaves; y <= radiusLeaves; y++)
+                        for (int z = -radiusLeaves; z <= radiusLeaves; z++) {
+                            int id = world.getBlockId(blockX + x, blockY + y, blockZ + z);
+                            if (canHit(id)) {
+                                Block kind = Block.blocksList[id];
+                                if (kind.isLeaves(world, blockX + x, blockY + y, blockZ + z)) {
+                                    int meta = world.getBlockMetadata(blockX + x, blockY + y, blockZ + z);
+                                    if (kind.canHarvestBlock(player, meta)) {
+                                        // We set to AIR to prevent all the cut sounds from playing (instead of destroying the block)
+                                        kind.harvestBlock(world, player, blockX + x, blockY + y, blockZ + z, meta);
+                                        world.setBlock(blockX + x, blockY + y, blockZ + z, 0);
+                                    }
+                                    work = true;
+                                }
+                            }
+                        }
+            else
+                for (int x = -radiusElse; x <= radiusElse; x++)
+                    for (int z = -radiusElse; z <= radiusElse; z++) {
+                        int id = world.getBlockId(blockX + x, blockY, blockZ + z);
                         if (canHit(id)) {
-                            Block type = Block.blocksList[id];
-                            int meta = world.getBlockMetadata(blockX + x, blockY + y, blockZ + z);
-                            if (type.canHarvestBlock(player, meta)) {
+                            Block kind = Block.blocksList[id];
+                            int meta = world.getBlockMetadata(blockX + x, blockY, blockZ + z);
+                            if (kind.canHarvestBlock(player, meta)) {
                                 // We set to AIR to prevent all the cut sounds from playing (instead of destroying the block)
-                                type.harvestBlock(world, player, blockX + x, blockY + y, blockZ + z, meta);
-                                world.setBlock(blockX + x, blockY + y, blockZ + z, 0);
+                                kind.harvestBlock(world, player, blockX + x, blockY, blockZ + z, meta);
+                                world.setBlock(blockX + x, blockY, blockZ + z, 0);
                             }
                             work = true;
                         }
                     }
 
-                }
-            }
-
-            if (work) {
+            if (work)
                 stack.damageItem(1, entity);
-            }
         }
         return work;
     }
@@ -78,19 +116,20 @@ public class ItemSickle extends Item {
     }
 
     private boolean canHit(int id) {
-        return Block.blocksList[id] instanceof IShearable || Block.blocksList[id] instanceof IPlantable;
+        Block b = Block.blocksList[id];
+        return (!(b instanceof BlockSapling) && !(b instanceof BlockStem)) && (b instanceof IShearable || b instanceof IPlantable || b instanceof BlockPumpkin || b instanceof BlockMelon);
     }
 
     @Override
     public float getStrVsBlock(ItemStack par1ItemStack, Block par2Block) {
         if (canHarvestBlock(par2Block)) {
-            return 15f;
+            return 3f;
         }
         return super.getStrVsBlock(par1ItemStack, par2Block);
     }
 
     @Override
     public void registerIcons(IconRegister par1IconRegister) {
-        this.itemIcon = par1IconRegister.registerIcon("projectred:sickle");
+        this.itemIcon = par1IconRegister.registerIcon("projectred:".concat(type.ulocalName));
     }
 }

@@ -86,7 +86,8 @@ public class Configurator {
 		item_woolginID = localConfig.getItem("item_woolginID", 9027);
 		item_backpackID = localConfig.getItem("item_backpackID", 9028);
 		item_vawtID = localConfig.getItem("item_turbineID", 9029);
-		item_sickleID = localConfig.getItem("item_turbineID", 9030);
+		item_sickleID = localConfig.getItem("item_sickleID", 9032); // 9033 9034 9035 9036
+                item_sickleID.comment = "This will take 5 ID's  following the one inputed to make one sickle of each material (wood, stone, iron, gold and diamond) i.e. if you input 9032, it will occupy up to the ID 9036";
 		
 		
 		networkUpdateRange = localConfig.get("general", "Network Update Range", 50.0D);
