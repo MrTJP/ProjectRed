@@ -284,10 +284,8 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 	@Override
 	public void readDesc(MCDataInput packet) {
 		super.readDesc(packet);
-		if (syncSignalStrength) {
-			strength = packet.readShort();
-			strengthFromNonWireBlocks = packet.readShort();
-		}
+		strength = packet.readShort();
+		strengthFromNonWireBlocks = packet.readShort();
 		// This packet means the server sent one then calculated changes. We
 		// must also do that on the client.
 		if (isFirstTick) {
@@ -299,10 +297,8 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 	@Override
 	public void writeDesc(MCDataOutput packet) {
 		super.writeDesc(packet);
-		if (syncSignalStrength) {
-			packet.writeShort(strength);
-			packet.writeShort(strengthFromNonWireBlocks);
-		}
+		packet.writeShort(strength);
+		packet.writeShort(strengthFromNonWireBlocks);
 	}
 
 	@Override
