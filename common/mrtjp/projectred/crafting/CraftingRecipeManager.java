@@ -683,6 +683,15 @@ public class CraftingRecipeManager {
 				't', Item.stick
 		);
 		GameRegistry.addRecipe(new RecipeVAWTRecoloring());
+                
+                /** Sickle **/
+                GameRegistry.addRecipe(new ItemStack(ProjectRed.itemSickle),
+                                " i ",
+                                "  i",
+                                "si ",
+                                'i', Item.ingotIron,
+                                's', Item.stick
+                );
 	}
 	private static void initOtherRecipes() {
 		/** Wool Gin to string recipe **/
