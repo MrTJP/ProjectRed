@@ -102,15 +102,16 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	@Override
 	public void update() {
 		if (BasicUtils.isClient(world())) {
+			isFirstTick = false;
 			return;
-		}
-		if (notifyNeighboursNextTick) {
-			notifyNeighboursNextTick = false;
-			updateChange();
 		}
 		if (isFirstTick) {
 			isFirstTick = false;
 			computeConnections();
+		}
+		if (notifyNeighboursNextTick) {
+			notifyNeighboursNextTick = false;
+			updateChange();
 		}
 		if (hasNewConnections) {
 			hasNewConnections = false;
@@ -152,8 +153,8 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	public void updateChange() {
 		tile().markDirty();
+		tile().markRender();
 		if (BasicUtils.isServer(world())) {
-			System.out.println("packetsent");
 			sendDescUpdate();
 		}
 	}
@@ -172,6 +173,11 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	@Override 
 	public void onRemoved() {
 		super.onRemoved();
+		notifyExtendedNeighbors();
+	}
+	@Override
+	public void onAdded() {
+		super.onAdded();
 		notifyExtendedNeighbors();
 	}
 	
@@ -213,7 +219,6 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			}
 		}
 		if (!BasicUtils.areArraysEqual(oldExt, sideExternalConnections) || !BasicUtils.areArraysEqual(oldInt, sideInternalConnections) || !BasicUtils.areArraysEqual(oldCor, sideCorneredConnections)) {
-			System.out.println("hasnewConnects");
 			hasNewConnections = true;
 		}
 	}

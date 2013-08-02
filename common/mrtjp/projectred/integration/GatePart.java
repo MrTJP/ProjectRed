@@ -75,7 +75,8 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	private int prevRenderState;
 	private boolean updatePending;
 	private boolean isFirstTick = true;
-
+	private static boolean nextUpdateIsFromSelf = false;
+	
 	public GatePart(EnumGate type) {
 		if (type == null) {
 			throw new IllegalArgumentException("type cannot be null");
@@ -279,6 +280,9 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 
 	@Override
 	public void onNeighborChanged() {
+		if (nextUpdateIsFromSelf) {
+			return;
+		}
 		checkSupport();
 		updateLogic(false, false);
 	}
@@ -286,8 +290,26 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	public void updateChange() {
 		tile().markDirty();
 		tile().notifyPartChange();
+		nextUpdateIsFromSelf = true;
+		notifyExtendedNeighbors();
+		nextUpdateIsFromSelf = false;
 		sendDescUpdate();
 	}
+	
+	/**
+	 * Notifies neighbours one or two blocks away, in the same pattern as most
+	 * redstone updates.
+	 */
+	public void notifyExtendedNeighbors() {
+		world().notifyBlocksOfNeighborChange(x(), y(), z(), tile().getBlockType().blockID);
+		world().notifyBlocksOfNeighborChange(x() + 1, y(), z(), tile().getBlockType().blockID);
+		world().notifyBlocksOfNeighborChange(x() - 1, y(), z(), tile().getBlockType().blockID);
+		world().notifyBlocksOfNeighborChange(x(), y() + 1, z(), tile().getBlockType().blockID);
+		world().notifyBlocksOfNeighborChange(x(), y() - 1, z(), tile().getBlockType().blockID);
+		world().notifyBlocksOfNeighborChange(x(), y(), z() + 1, tile().getBlockType().blockID);
+		world().notifyBlocksOfNeighborChange(x(), y(), z() - 1, tile().getBlockType().blockID);
+	}
+
 
 	/**
 	 * See if the gate is still attached to something.
