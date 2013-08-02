@@ -3,7 +3,7 @@ package mrtjp.projectred.utils;
 import java.lang.reflect.Field;
 
 import mrtjp.projectred.interfaces.wiring.IRedstoneEmitter;
-import mrtjp.projectred.transmission.TilePlainRedAlloy;
+import mrtjp.projectred.transmission.RedAlloyWirePart;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.world.World;
@@ -56,7 +56,7 @@ public class BasicWireUtils {
 		TileMultipart te = BasicUtils.getTileEntity(w, new Coords(x, y, z), TileMultipart.class);
 		if (te != null) {
 			TMultiPart part = te.partMap(onSide);
-			if (!countRedAlloyWire && part instanceof TilePlainRedAlloy) {
+			if (!countRedAlloyWire && part instanceof RedAlloyWirePart) {
 				return 0;
 			}
 			if (part != null) {

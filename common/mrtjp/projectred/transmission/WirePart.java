@@ -72,10 +72,10 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		super.load(tag);
 		int type = tag.getByte("type");
 		side = tag.getByte("side");
-		if (type < 0 || type >= EnumWire.VALUES.length) {
+		if (type < 0 || type >= EnumWire.VALID_WIRE.length) {
 			wireType = EnumWire.RED_ALLOY;
 		} else {
-			wireType = EnumWire.VALUES[type];
+			wireType = EnumWire.VALID_WIRE[type];
 		}
 		for (int i = 0; i < 6; i++) {
 			sideExternalConnections[i] = tag.getBoolean("ext" + i);
@@ -90,6 +90,9 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public void update() {
+		if (BasicUtils.isClient(world())) {
+			return;
+		}
 		if (notifyNeighboursNextTick) {
 			notifyNeighboursNextTick = false;
 			updateChange();
@@ -107,17 +110,33 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public void writeDesc(MCDataOutput packet) {
-		super.writeDesc(packet);
-		NBTTagCompound tag = new NBTTagCompound();
-		save(tag);
-		packet.writeNBTTagCompound(tag);
+		packet.writeByte(wireType.ordinal());
+		packet.writeByte(side);
+		for (int i = 0; i < 6; i++) {
+			packet.writeBoolean(sideExternalConnections[i]);
+		}
+		for (int i = 0; i < 6; i++) {
+			packet.writeBoolean(sideInternalConnections[i]);
+		}
+		for (int i = 0; i < 6; i++) {
+			packet.writeBoolean(sideCorneredConnections[i]);
+		}
 	}
 
 	@Override
 	public void readDesc(MCDataInput packet) {
-		super.readDesc(packet);
-		NBTTagCompound tag = packet.readNBTTagCompound();
-		load(tag);
+		wireType = EnumWire.values()[packet.readByte()];
+		side = packet.readByte();
+		for (int i = 0; i < 6; i++) {
+			sideExternalConnections[i] = packet.readBoolean();
+		}
+		for (int i = 0; i < 6; i++) {
+			sideInternalConnections[i] = packet.readBoolean();
+		}
+		for (int i = 0; i < 6; i++) {
+			sideCorneredConnections[i] = packet.readBoolean();
+		}
+		
 	}
 
 	public void updateChange() {
@@ -167,7 +186,13 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		for (int i = 0; i < 6; i++) {
 			sideExternalConnections[i] = computeConnectTo(i);
 			sideInternalConnections[i] = computeConnectInternallyTo(i);
+			if (sideInternalConnections[i]) {
+				sideExternalConnections[i] = true;
+			}
 			sideCorneredConnections[i] = computeConnectCornerTo(i);
+			if (sideCorneredConnections[i]) {
+				sideExternalConnections[i] = true;
+			}
 		}
 		if (!oldExt.equals(sideExternalConnections) || !oldInt.equals(sideInternalConnections) || !oldCor.equals(sideCorneredConnections)) {
 			hasNewConnections = true;
@@ -213,7 +238,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		
 		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
 		if (t != null) {
-			TMultiPart tp = t.partMap(side);
+			TMultiPart tp = t.partMap(absDir ^ 1);
 			if (tp instanceof IConnectable) {
 				return ((IConnectable) tp).connectsAroundCorner(this, absDir ^ 1, side ^ 1);
 			}
@@ -315,7 +340,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	/** START TILEMULTIPART INTERACTIONS **/
 	@Override
 	public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
-		return 2;
+		return 4;
 	}
 
 	public ItemStack getItem() {
@@ -339,13 +364,16 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public Cuboid6 getBounds() {
-		Cuboid6 base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D, wireType.thickness, 8 / 8D);
-		return base.transform(sideRotations[side].at(center));
+		//Cuboid6 base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D, wireType.thickness, 8 / 8D);
+		//return base.transform(sideRotations[side].at(center));
+		return new Cuboid6(0, 0, 0, 0, 0, 0);
 	}
 
 	@Override
 	public Iterable<IndexedCuboid6> getSubParts() {
-		return Arrays.asList(new IndexedCuboid6(0, getBounds()));
+		Cuboid6 base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D, wireType.thickness, 8 / 8D);
+		base.transform(sideRotations[side].at(center));
+		return Arrays.asList(new IndexedCuboid6(0, base));
 	}
 
 	@Override
@@ -355,7 +383,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public Iterable<Cuboid6> getOcclusionBoxes() {
-		// return Arrays.asList(getBounds());
+		//return Arrays.asList(getBounds());
 		return new ArrayList();
 	}
 
@@ -380,10 +408,6 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
-		for (int i = 0; i < 6; i++) {
-			int x = i+1;
-			System.out.println("SideConnections " + x + " : " + sideExternalConnections[i]);
-		}
 		return false;
 	}
 }

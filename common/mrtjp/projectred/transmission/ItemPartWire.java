@@ -44,7 +44,7 @@ public class ItemPartWire extends JItemMultiPart {
 		if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) {
 			return null;
 		}
-		WirePart p = new TilePlainRedAlloy();
+		WirePart p = new RedAlloyWirePart();
 		p.setWireType(EnumWire.RED_ALLOY);
 		p.side = side ^ 1;
 		return p;
@@ -64,7 +64,7 @@ public class ItemPartWire extends JItemMultiPart {
 
 	@Override
 	public void registerIcons(IconRegister reg) {
-		for (EnumWire wireType : EnumWire.VALUES) {
+		for (EnumWire wireType : EnumWire.VALID_WIRE) {
 			wireType.loadTextures(reg);
 		}
 	}

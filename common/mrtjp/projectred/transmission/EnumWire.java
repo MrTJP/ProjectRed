@@ -23,7 +23,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 // Metadata mapping is in CLASS_TO_META and META_TO_CLASS.
 
 public enum EnumWire {
-	RED_ALLOY("Red alloy wire", TilePlainRedAlloy.class, 2, 2, (255 / 2 + 75) << 16, "alloywire.obj", "jacketedalloy.obj", "redalloy"),
+	RED_ALLOY("Red alloy wire", RedAlloyWirePart.class, 2, 2, (255 / 2 + 75) << 16, "alloywire.obj", "jacketedalloy.obj", "redalloy"),
 
 	INSULATED_0("White insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/whiteoff", "insulated/whiteon"),
 	INSULATED_1("Orange insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/orangeoff", "insulated/orangeon"),
@@ -64,7 +64,7 @@ public enum EnumWire {
 	public static final int INSULATED_RED_ALLOY_META = 1;
 	public static final int BUNDLED_META = 2;
 
-	public static ImmutableBiMap<Class<? extends WirePart>, Integer> CLASS_TO_META = ImmutableBiMap.<Class<? extends WirePart>, Integer> builder().put(TilePlainRedAlloy.class, PLAIN_RED_ALLOY_META).put(TileInsulatedRedAlloy.class, INSULATED_RED_ALLOY_META).put(TileBundled.class, BUNDLED_META).build();
+	public static ImmutableBiMap<Class<? extends WirePart>, Integer> CLASS_TO_META = ImmutableBiMap.<Class<? extends WirePart>, Integer> builder().put(RedAlloyWirePart.class, PLAIN_RED_ALLOY_META).put(TileInsulatedRedAlloy.class, INSULATED_RED_ALLOY_META).put(TileBundled.class, BUNDLED_META).build();
 
 	public static ImmutableBiMap<Integer, Class<? extends WirePart>> META_TO_CLASS = CLASS_TO_META.inverse();
 
@@ -111,8 +111,6 @@ public enum EnumWire {
 	public boolean hasJacketedForm() {
 		return true;
 	}
-
-	public static final EnumWire[] VALUES = values();
 
 	@SideOnly(Side.CLIENT)
 	public void loadTextures(IconRegister reg) {
@@ -195,10 +193,10 @@ public enum EnumWire {
 
 		public static EnumWire getType(int damageValue) {
 			int ordinal = damageValue & DMG_MASK_ORDINAL;
-			if (ordinal < 0 || ordinal >= EnumWire.VALUES.length) {
+			if (ordinal < 0 || ordinal >= EnumWire.VALID_WIRE.length) {
 				return null;
 			}
-			return EnumWire.VALUES[ordinal];
+			return EnumWire.VALID_WIRE[ordinal];
 		}
 	}
 }
