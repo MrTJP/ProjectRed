@@ -31,8 +31,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstoneWire, IFaceRedstonePart {
 	private short MAX_STRENGTH = 255;
 
-	private short strength;
-	private short strengthFromNonWireBlocks; // this is synced to the client,
+	private short strength = 0;
+	private short strengthFromNonWireBlocks = 0; // this is synced to the client,
 												// not used by the server
 
 	protected boolean syncSignalStrength;
@@ -239,7 +239,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 				blockUpdateCausedByAlloyWire = false;
 			}
 
-			System.out.println((world().isRemote ? "client " : wasFirstServerChange ? "was first " : "Not first ") + "change at: " + x() + "," + y() + "," + z() + ", new strength: " + strength + ", sfnwb: " + oldStrengthFromNonWireBlocks + " -> " + strengthFromNonWireBlocks);
+			//System.out.println((world().isRemote ? "client " : wasFirstServerChange ? "was first " : "Not first ") + "change at: " + x() + "," + y() + "," + z() + ", new strength: " + strength + ", sfnwb: " + oldStrengthFromNonWireBlocks + " -> " + strengthFromNonWireBlocks);
 
 			if (syncSignalStrength && (BasicUtils.isClient(world()) || wasFirstServerChange || strengthFromNonWireBlocks != oldStrengthFromNonWireBlocks)) {
 				if (!world().isRemote && CommandDebug.WIRE_LAG_PARTICLES)
@@ -248,7 +248,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 			}
 
 		} else if (syncSignalStrength && BasicUtils.isServer(world()) && oldStrengthFromNonWireBlocks != strengthFromNonWireBlocks) {
-			System.out.println("SFNWB change at: " + x() + "," + y() + "," + z() + ", new strength: " + strength + ", sfnwb: " + oldStrengthFromNonWireBlocks + " -> " + strengthFromNonWireBlocks);
+			//System.out.println("SFNWB change at: " + x() + "," + y() + "," + z() + ", new strength: " + strength + ", sfnwb: " + oldStrengthFromNonWireBlocks + " -> " + strengthFromNonWireBlocks);
 			updateChange();
 			if (CommandDebug.WIRE_LAG_PARTICLES)
 				debugEffect_bonemeal();
@@ -266,6 +266,19 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 		super.onNeighborChanged();
 		updateSignal(null);
 	}
+	@Override
+	public void writeDesc(MCDataOutput packet) {
+		super.writeDesc(packet);
+		packet.writeShort(strength);
+		packet.writeShort(strengthFromNonWireBlocks);
+	}
+
+	@Override
+	public void readDesc(MCDataInput packet) {
+		super.readDesc(packet);
+		strength = packet.readShort();
+		strengthFromNonWireBlocks = packet.readShort();
+	}
 
 	@Override
 	public void load(NBTTagCompound tag) {
@@ -279,26 +292,6 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 		super.save(tag);
 		tag.setShort("strength", strength);
 		tag.setShort("strengthNWB", strengthFromNonWireBlocks);
-	}
-
-	@Override
-	public void readDesc(MCDataInput packet) {
-		super.readDesc(packet);
-		strength = packet.readShort();
-		strengthFromNonWireBlocks = packet.readShort();
-		// This packet means the server sent one then calculated changes. We
-		// must also do that on the client.
-		if (isFirstTick) {
-			return;
-		}
-		updateConnectedWireSignal();
-	}
-
-	@Override
-	public void writeDesc(MCDataOutput packet) {
-		super.writeDesc(packet);
-		packet.writeShort(strength);
-		packet.writeShort(strengthFromNonWireBlocks);
 	}
 
 	@Override
