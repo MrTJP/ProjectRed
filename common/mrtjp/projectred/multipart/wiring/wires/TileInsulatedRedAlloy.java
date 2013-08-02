@@ -4,14 +4,14 @@ import mrtjp.projectred.interfaces.wiring.IBundledEmitter;
 import mrtjp.projectred.interfaces.wiring.IBundledUpdatable;
 import mrtjp.projectred.interfaces.wiring.IInsulatedRedstoneWire;
 import mrtjp.projectred.transmission.EnumWire;
-import mrtjp.projectred.transmission.TileRedAlloy;
+import mrtjp.projectred.transmission.RedwirePart;
 import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.utils.BasicWireUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
-public class TileInsulatedRedAlloy extends TileRedAlloy implements IBundledUpdatable, IInsulatedRedstoneWire {
+public class TileInsulatedRedAlloy extends RedwirePart implements IBundledUpdatable, IInsulatedRedstoneWire {
 	{
 		syncSignalStrength = true;
 	}

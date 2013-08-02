@@ -46,6 +46,7 @@ public class ItemPartWire extends JItemMultiPart {
 		}
 		WirePart p = new TilePlainRedAlloy();
 		p.setWireType(EnumWire.RED_ALLOY);
+		p.side = side ^ 1;
 		return p;
 	}
 
@@ -63,8 +64,9 @@ public class ItemPartWire extends JItemMultiPart {
 
 	@Override
 	public void registerIcons(IconRegister reg) {
-		GateRenderBridge.registerAllIcons(reg);
-
+		for (EnumWire wireType : EnumWire.VALUES) {
+			wireType.loadTextures(reg);
+		}
 	}
 
 	@Override
