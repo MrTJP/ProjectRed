@@ -31,6 +31,15 @@ import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 
+/**
+ * This is the base class for all wire types. It can be used for any sub type,
+ * as it contains the base calculations necessary to create a working wire. This
+ * calculates all possible connections to sides, around corners, and inside
+ * corners, while checking for microblock obstructions.
+ * 
+ * @author MrTJP
+ * 
+ */
 public abstract class WirePart extends JCuboidPart implements IConnectable, TFacePart, JNormalOcclusion {
 
 	private EnumWire wireType;
@@ -136,13 +145,12 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		for (int i = 0; i < 6; i++) {
 			sideCorneredConnections[i] = packet.readBoolean();
 		}
-		
+
 	}
 
 	public void updateChange() {
 		tile().markDirty();
 		tile().notifyPartChange();
-		// notifyExtendedNeighbours();
 		if (BasicUtils.isServer(world())) {
 			sendDescUpdate();
 		}
@@ -162,15 +170,19 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		if (BasicUtils.isClient(world())) {
 			return;
 		}
-		Coords localCoord = new Coords(x(), y(), z());
-		localCoord.orientation = ForgeDirection.getOrientation(side);
-		localCoord.moveForwards(1);
-		Block supporter = Block.blocksList[world().getBlockId(localCoord.x, localCoord.y, localCoord.z)];
-		if (!BasicWireUtils.canPlaceWireOnSide(world(), localCoord.x, localCoord.y, localCoord.z, localCoord.orientation.getOpposite(), false)) {
+		int x = x() + ForgeDirection.getOrientation(side).offsetX;
+		int y = y() + ForgeDirection.getOrientation(side).offsetY;
+		int z = z() + ForgeDirection.getOrientation(side).offsetZ;
+		
+		boolean removed = false;
+		if (!BasicWireUtils.canPlaceWireOnSide(world(), x, y, z, ForgeDirection.getOrientation(side ^ 1), false)) {
 			BasicUtils.dropItemFromLocation(world(), getItem(), false, null, side, 10, new Coords(x(), y(), z()));
+			removed = true;
 			tile().remPart(this);
 		}
-		computeConnections();
+		if (!removed) {
+			computeConnections();
+		}
 	}
 
 	private void computeConnections() {
@@ -203,39 +215,48 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		if ((side & 6) == (absDir & 6)) {
 			return false;
 		}
-		//BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir);
+		// BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side,
+		// absDir);
 		int x = x(), y = y(), z = z();
 		x += ForgeDirection.VALID_DIRECTIONS[absDir].offsetX;
 		y += ForgeDirection.VALID_DIRECTIONS[absDir].offsetY;
 		z += ForgeDirection.VALID_DIRECTIONS[absDir].offsetZ;
 		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+		boolean isMultiTile = false;
 		if (t != null) {
+			isMultiTile = true;
 			TMultiPart tp = t.partMap(side);
 			if (tp instanceof IConnectable) {
 				return ((IConnectable) tp).connects(this, side, absDir);
 			}
-		} else {
+		}
+		if (!isMultiTile) {
+			return getExternalConnectionOveride(absDir);
 		}
 		return false;
 	}
+
+	public abstract boolean getExternalConnectionOveride(int absDir);
 
 	public boolean computeConnectCornerTo(int absDir) {
 		if ((side & 6) == (absDir & 6)) {
 			return false;
 		}
-		//BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir);
+		// BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side,
+		// absDir);
 		int x = x(), y = y(), z = z();
 		x += ForgeDirection.VALID_DIRECTIONS[absDir].offsetX;
 		y += ForgeDirection.VALID_DIRECTIONS[absDir].offsetY;
 		z += ForgeDirection.VALID_DIRECTIONS[absDir].offsetZ;
 
-		//if (!BasicWireUtils.canConnectThroughEdge(world(), x, y, z, side, absDir ^ 1)) {
-		//	return false;
-		//}
+		// if (!BasicWireUtils.canConnectThroughEdge(world(), x, y, z, side,
+		// absDir ^ 1)) {
+		// return false;
+		// }
 		x += ForgeDirection.VALID_DIRECTIONS[side].offsetX;
 		y += ForgeDirection.VALID_DIRECTIONS[side].offsetY;
 		z += ForgeDirection.VALID_DIRECTIONS[side].offsetZ;
-		
+
 		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
 		if (t != null) {
 			TMultiPart tp = t.partMap(absDir ^ 1);
@@ -279,8 +300,6 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public boolean connectsToWireType(WirePart wire) {
-		System.out.println("thier type: " + wire.wireType.name);
-		System.out.println("our type: " + wireType.name);
 		return wire.getWireType() == this.wireType;
 	}
 
@@ -364,8 +383,9 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public Cuboid6 getBounds() {
-		//Cuboid6 base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D, wireType.thickness, 8 / 8D);
-		//return base.transform(sideRotations[side].at(center));
+		// Cuboid6 base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D,
+		// wireType.thickness, 8 / 8D);
+		// return base.transform(sideRotations[side].at(center));
 		return new Cuboid6(0, 0, 0, 0, 0, 0);
 	}
 
@@ -383,7 +403,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public Iterable<Cuboid6> getOcclusionBoxes() {
-		//return Arrays.asList(getBounds());
+		// return Arrays.asList(getBounds());
 		return new ArrayList();
 	}
 

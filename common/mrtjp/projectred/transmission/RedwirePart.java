@@ -10,6 +10,7 @@ import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
 import mrtjp.projectred.utils.Directions;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,6 +24,7 @@ import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.IFaceRedstonePart;
+import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.relauncher.Side;
@@ -32,8 +34,9 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 	private short MAX_STRENGTH = 255;
 
 	private short strength = 0;
-	private short strengthFromNonWireBlocks = 0; // this is synced to the client,
-												// not used by the server
+	private short strengthFromNonWireBlocks = 0; // this is synced to the
+													// client,
+													// not used by the server
 
 	protected boolean syncSignalStrength;
 	protected boolean connectToBlockBelow;
@@ -50,10 +53,10 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 	 * This should return the max signal given off to the side.
 	 */
 	private int updateStrengthFromBlock(int x, int y, int z, int odir, int testside, int newStrength) {
-		int thisStrength = this.getInputPowerStrength(world(), x, y, z, odir, testside, true);
+		int thisStrength = BasicWireUtils.getPowerStrength(world(), x, y, z, odir, testside, true);;
 		newStrength = Math.max(newStrength, Math.min(thisStrength - 1, MAX_STRENGTH));
 		if (BasicUtils.isServer(world())) {
-			thisStrength = this.getInputPowerStrength(world(), x, y, z, odir, testside, false);
+			thisStrength = BasicWireUtils.getPowerStrength(world(), x, y, z, odir, testside, false);
 			strengthFromNonWireBlocks = (short) Math.max(strengthFromNonWireBlocks, Math.min(thisStrength - 1, MAX_STRENGTH));
 		}
 		return newStrength;
@@ -69,9 +72,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 			strengthFromNonWireBlocks = 0;
 		}
 		int newStrength = 0;
-
 		// TODO ask jacketed wires here. FD offset to side.
-
 		if (connectToBlockBelow) {
 			ForgeDirection wdir = ForgeDirection.VALID_DIRECTIONS[side];
 			int x = x() + wdir.offsetX;
@@ -94,14 +95,14 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 				z += fdir.offsetZ;
 				int outputdir = dir;
 				int testside = side;
-				newStrength = updateStrengthFromBlock(x, y, z, outputdir, testside, newStrength);
+				newStrength = updateStrengthFromBlock(x, y, z, outputdir ^ 1, testside, newStrength);
 				continue;
 			}
 			if (maskConnectsInternally(dir)) {
 				int x = x(), y = y(), z = z();
 				TMultiPart t = tile().partMap(dir);
 				if (t instanceof RedwirePart) {
-					newStrength = updateStrengthFromBlock(x, y, z, dir, side ^ 1, newStrength);
+					newStrength = updateStrengthFromBlock(x, y, z, side, dir, newStrength);
 				}
 				continue;
 			}
@@ -127,16 +128,11 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 		return newStrength;
 	}
 
-	protected int getInputPowerStrength(World world, int x, int y, int z, int dir, int side, boolean countWires) {
-		return BasicWireUtils.getPowerStrength(world(), x, y, z, dir, side, countWires);
-	}
-
 	private void updateConnectedWireSignal() {
-		if (CommandDebug.WIRE_DEBUG_PARTICLES)
+		if (CommandDebug.WIRE_DEBUG_PARTICLES) {
 			debugEffect_bonemeal();
-
+		}
 		// TODO update connected jacketed from here
-
 		for (int dir = 0; dir < 6; dir++) {
 			ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[dir];
 			int x = x() + fd.offsetX, y = y() + fd.offsetY, z = z() + fd.offsetZ;
@@ -233,13 +229,17 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 		// System.out.println(x()+","+y()+","+z()+" red alloy update; "+startStrength+" -> "+newStrength);
 
 		if (strength != startStrength) {
-			if (!world().isRemote) {
+			if (BasicUtils.isServer(world())) {
 				blockUpdateCausedByAlloyWire = true;
 				notifyExtendedPowerableNeighbours();
 				blockUpdateCausedByAlloyWire = false;
 			}
 
-			//System.out.println((world().isRemote ? "client " : wasFirstServerChange ? "was first " : "Not first ") + "change at: " + x() + "," + y() + "," + z() + ", new strength: " + strength + ", sfnwb: " + oldStrengthFromNonWireBlocks + " -> " + strengthFromNonWireBlocks);
+			// System.out.println((world().isRemote ? "client " :
+			// wasFirstServerChange ? "was first " : "Not first ") +
+			// "change at: " + x() + "," + y() + "," + z() + ", new strength: "
+			// + strength + ", sfnwb: " + oldStrengthFromNonWireBlocks + " -> "
+			// + strengthFromNonWireBlocks);
 
 			if (syncSignalStrength && (BasicUtils.isClient(world()) || wasFirstServerChange || strengthFromNonWireBlocks != oldStrengthFromNonWireBlocks)) {
 				if (!world().isRemote && CommandDebug.WIRE_LAG_PARTICLES)
@@ -248,7 +248,10 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 			}
 
 		} else if (syncSignalStrength && BasicUtils.isServer(world()) && oldStrengthFromNonWireBlocks != strengthFromNonWireBlocks) {
-			//System.out.println("SFNWB change at: " + x() + "," + y() + "," + z() + ", new strength: " + strength + ", sfnwb: " + oldStrengthFromNonWireBlocks + " -> " + strengthFromNonWireBlocks);
+			// System.out.println("SFNWB change at: " + x() + "," + y() + "," +
+			// z() + ", new strength: " + strength + ", sfnwb: " +
+			// oldStrengthFromNonWireBlocks + " -> " +
+			// strengthFromNonWireBlocks);
 			updateChange();
 			if (CommandDebug.WIRE_LAG_PARTICLES)
 				debugEffect_bonemeal();
@@ -266,6 +269,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 		super.onNeighborChanged();
 		updateSignal(null);
 	}
+
 	@Override
 	public void writeDesc(MCDataOutput packet) {
 		super.writeDesc(packet);
@@ -295,20 +299,23 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 	}
 
 	@Override
-	public boolean connects(WirePart wire, int blockFace, int fromDirection) {
-		if (super.connects(wire, blockFace, fromDirection)) {
-			return true;
-		}
+	public boolean getExternalConnectionOveride(int absDir) {
 		int x = x(), y = y(), z = z();
-		x += ForgeDirection.getOrientation(fromDirection).offsetX;
-		y += ForgeDirection.getOrientation(fromDirection).offsetY;
-		z += ForgeDirection.getOrientation(fromDirection).offsetZ;
-
+		x += ForgeDirection.getOrientation(absDir).offsetX;
+		y += ForgeDirection.getOrientation(absDir).offsetY;
+		z += ForgeDirection.getOrientation(absDir).offsetZ;
 		Block b = Block.blocksList[world().getBlockId(x, y, z)];
-		if (b == null)
+		if (b == null || b.isAirBlock(world(), x, y, z)) {
 			return false;
+		}
 		if (b.canProvidePower()) {
 			return true;
+		}
+		if (absDir >= 0 && absDir < 6) {
+			int mappedSide = RedstoneInteractions.vanillaSideMap()[absDir];
+			if (mappedSide > -2) {
+				return b.canConnectRedstone(world(), x, y, z, RedstoneInteractions.vanillaSideMap()[absDir]);
+			}
 		}
 		return false;
 	}
@@ -328,7 +335,12 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 	public boolean canProvideStrongPowerInDirection(int dir) {
 		return connectToBlockBelow && side == dir;
 	}
-
+	
+	@Override
+	public void onPartChanged() {
+		super.onPartChanged();
+		onNeighborChanged();
+	}
 	private void notifyExtendedPowerableNeighbours() {
 		boolean any = false;
 
@@ -362,6 +374,25 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 			any |= causedBlockUpdate;
 		}
 
+		for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+			int x = x() + d.offsetX;
+			int y = y() + d.offsetY;
+			int z = z() + d.offsetZ;
+			if (canProvideWeakPowerInDirection(d.ordinal())) {
+				any = true;
+				world().notifyBlockOfNeighborChange(x, y, z, tile().getBlockType().blockID);
+			}
+		}
+		for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+			int x = x() - d.offsetX;
+			int y = y() - d.offsetY;
+			int z = z() - d.offsetZ;
+			if (canProvideWeakPowerInDirection(d.ordinal())) {
+				any = true;
+				world().notifyBlockOfNeighborChange(x, y, z, tile().getBlockType().blockID);
+			}
+		}
+		/**
 		if (canProvideWeakPowerInDirection(Directions.NX)) {
 			any = true;
 			world().notifyBlockOfNeighborChange(x() + 1, y(), z(), tile().getBlockType().blockID);
@@ -411,16 +442,13 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 			any = true;
 			world().notifyBlocksOfNeighborChange(x(), y(), z() + 1, tile().getBlockType().blockID);
 		}
-
+	**/
 		if (any && CommandDebug.WIRE_LAG_PARTICLES)
 			debugEffect_fireburst();
 	}
 
 	public boolean canProvideWeakPowerInDirection(int dir) {
-		if (!maskConnects(dir)) {
-			return false;
-		}
-		return true;
+		return maskConnects(dir);
 	}
 
 	@Override
@@ -445,6 +473,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 
 	@Override
 	public void onRedstoneInputChanged() {
+		System.out.println("useless interface method used");
 		updateSignal(null);
 	}
 
@@ -488,6 +517,25 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 			wra.setWireRenderState(this);
 			wra.pushRender();
 		}
+	}
+
+	@Override
+	public void drawBreaking(RenderBlocks r) {
+		WireRenderAssistant wra = new WireRenderAssistant();
+		wra.x = x();
+		wra.y = y();
+		wra.z = z();
+		wra.renderBlocks = r;
+		wra.model = getWireType().wireMap;
+		wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
+		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
+		BasicRenderUtils.bindTerrainResource();
+		CCRenderState.reset();
+		CCRenderState.setBrightness(world(), x(), y(), z());
+		CCRenderState.setColourOpaque(getVisualWireColour());
+		wra.side = side;
+		wra.setWireRenderState(this);
+		wra.pushRender();
 	}
 
 }
