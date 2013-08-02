@@ -60,9 +60,9 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 	}
 
 	/**
-	 * Asks all surrounding neighbor Wires/blocks (including indirect) for signal strength, 0 - 255. It uses
-	 * the connection arrays to see what side it should check. It returns the
-	 * max strength it found.
+	 * Asks all surrounding neighbor Wires/blocks (including indirect) for
+	 * signal strength, 0 - 255. It uses the connection arrays to see what side
+	 * it should check. It returns the max strength it found.
 	 */
 	private int checkNeighborsForMaxStrength() {
 		if (BasicUtils.isServer(world())) {
@@ -169,7 +169,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 	}
 
 	protected void updateSignal(RedwirePart source) {
-		if (world().isRemote && !syncSignalStrength)
+		if (BasicUtils.isClient(world()) && !syncSignalStrength)
 			return; // doesn't make sense for unsynced wire types
 		if (isUpdatingStrength) {
 			recursiveUpdatePending = true;
@@ -246,6 +246,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 			// it to update in the first place.
 			return;
 		}
+
 		super.onNeighborChanged();
 		updateSignal(null);
 	}
@@ -262,6 +263,9 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 		super.readDesc(packet);
 		strength = packet.readShort();
 		strengthFromNonWireBlocks = packet.readShort();
+		if (!isFirstTick) {
+			updateConnectedWireSignal();
+		}
 	}
 
 	@Override
@@ -315,12 +319,12 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 	public boolean canProvideStrongPowerInDirection(int dir) {
 		return BasicWireUtils.wiresProvidePower() && connectToBlockBelow && side == dir;
 	}
-	
+
 	@Override
 	public void onPartChanged() {
 		super.onPartChanged();
 	}
-	
+
 	private void notifyExtendedPowerableNeighbours() {
 		boolean any = false;
 
@@ -372,8 +376,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 				world().notifyBlockOfNeighborChange(x, y, z, tile().getBlockType().blockID);
 			}
 		}
-		
-		System.out.println(any);
+
 		if (any && CommandDebug.WIRE_LAG_PARTICLES)
 			debugEffect_fireburst();
 	}
