@@ -10,6 +10,7 @@ import mrtjp.projectred.multipart.wiring.CommandDebug;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraftforge.common.ForgeDirection;
 
 public class TileBundled extends TileWire implements IRedstoneUpdatable, IBundledEmitter, IBundledUpdatable, IBundledWire {
@@ -220,7 +221,7 @@ public class TileBundled extends TileWire implements IRedstoneUpdatable, IBundle
 			int[] i = new int[16];
 			for (int k = 0; k < 16; k++)
 				i[k] = strength[k] & 0xFF;
-			ply.sendChatToPlayer("Bundled cable strength: " + Arrays.toString(i));
+			ply.sendChatToPlayer(ChatMessageComponent.func_111077_e("Bundled cable strength: " + Arrays.toString(i)));
 		}
 		return true;
 	}

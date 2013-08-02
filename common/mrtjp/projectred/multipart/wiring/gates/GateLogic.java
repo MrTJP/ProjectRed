@@ -984,7 +984,10 @@ public abstract class GateLogic {
 			gateSettings++;
 			return (gateSettings > 5 ? 0 : gateSettings);
 		}
-
+		
+		public boolean connectsToDirection(int side) {
+			return side == BACK;
+		}
 	}
 
 	public static class RainSensor extends GateLogic implements WorldStateBound {
@@ -1017,6 +1020,10 @@ public abstract class GateLogic {
 		@Override
 		public boolean needsWorldInfo() {
 			return w == null;
+		}
+		
+		public boolean connectsToDirection(int side) {
+			return side == BACK;
 		}
 	}
 }

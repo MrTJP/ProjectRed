@@ -30,6 +30,7 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 		wra.renderBlocks = render;
 		wra.wireIcon = (wt.getSpecialIconForRender() == null ? type.wireSprites[0] : wt.getSpecialIconForRender());
 		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
+		BasicRenderUtils.bindTerrainResource();
 		CCRenderState.reset();
 		CCRenderState.setBrightness(wt.worldObj, wt.xCoord, wt.yCoord, wt.zCoord);
 
@@ -79,6 +80,7 @@ public class WireRenderer implements ISimpleBlockRenderingHandler {
 		wra.renderBlocks = render;
 		wra.side = 0;
 		wra.wireIcon = type.wireSprites[0];
+		BasicRenderUtils.bindTerrainResource();
 		CCRenderState.reset();
 		CCRenderState.useNormals(true);
 

@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -480,7 +481,7 @@ public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedston
 
 	@Override
 	protected boolean debug(EntityPlayer ply) {
-		ply.sendChatToPlayer((worldObj.isRemote ? "Client" : "Server") + " signal strength: " + strength + ", nwb: " + strengthFromNonWireBlocks);
+		ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((worldObj.isRemote ? "Client" : "Server") + " signal strength: " + strength + ", nwb: " + strengthFromNonWireBlocks));
 		
 		super.debug(ply);
 		return true;
@@ -488,8 +489,7 @@ public class TileRedAlloy extends TileWire implements IRedstoneEmitter, IRedston
 
 	@Override
 	protected boolean canConnectToWire(TileWire wire) {
-		return wire instanceof TileRedAlloy; // overridden by
-												// InsulatedRedAlloyTile
+		return wire instanceof TileRedAlloy;
 	}
 
 	@Override

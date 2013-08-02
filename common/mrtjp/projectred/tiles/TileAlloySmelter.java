@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
 import mrtjp.projectred.crafting.AlloySmelterRecipe;
 import mrtjp.projectred.interfaces.IGuiOpenControler;
 import mrtjp.projectred.network.GuiIDs;
@@ -28,6 +29,7 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.util.Icon;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -58,6 +60,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 
 	@Override
 	public void onBlockBreak() {
+		//BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, new ItemStack(ProjectRed.blockMachines.blockID, 1, EnumMachine.ALLOYSMELTER.meta));
 		_inv.dropContents(worldObj, xCoord, yCoord, zCoord);
 	}
 
@@ -104,7 +107,6 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 		_inv.writeToNBT(nbt);
 		nbt.setInteger("heat", heat);
 		nbt.setInteger("progress", progress);
-		nbt.setBoolean("work", hasWork);
 	}
 
 	@Override
@@ -113,7 +115,6 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 		_inv.readFromNBT(nbt);
 		heat = nbt.getInteger("heat");
 		progress = nbt.getInteger("progress");
-		hasWork = nbt.getBoolean("work");
 		int index = nbt.getInteger("recipeIndex");
 		updateNextTick = true;
 	}
@@ -187,7 +188,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	}
 
 	@Override
-	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		return true;
 	}
 
@@ -200,15 +201,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	public void onGuiClosedBy(EntityPlayer player) {
 		_watchers.remove(player);
 	}
-
-	@Override
-	public boolean shouldUseSpecialTextureForSide(int side) {
-		if (heat > 0 && ForgeDirection.getOrientation(side) == ForgeDirection.getOrientation(rotation).getOpposite()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+	
 
 	@Override
 	public int getLightLevel() {
@@ -432,5 +425,25 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	@Override
 	public void onInventoryChanged() {
 		queueWorkUpdate = true;
+	}
+
+	@Override
+	public int getIconForSide(int side) {
+		if (side == 0 || side == 1) {
+			return 0;
+		}
+		if (ForgeDirection.OPPOSITES[this.rotation] == side) {
+			if (this.heat > 0) {
+				return 3;
+			} else {
+				return 2;
+			}
+		}
+		return 1;
+	}
+
+	@Override
+	public EnumMachine getType() {
+		return EnumMachine.ALLOYSMELTER;
 	}
 }

@@ -6,6 +6,7 @@ import mrtjp.projectred.utils.gui.BaseGuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -31,7 +32,7 @@ public class GuiBackpack extends BaseGuiContainer {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/mods/projectred/textures/gui/bpgui.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("projectred", "textures/gui/bpgui.png"));
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

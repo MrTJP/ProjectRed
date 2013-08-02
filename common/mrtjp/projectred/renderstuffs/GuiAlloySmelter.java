@@ -7,6 +7,7 @@ import mrtjp.projectred.utils.BasicGuiUtils.GuiItemRenderOptions;
 import mrtjp.projectred.utils.gui.BaseGuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -22,21 +23,18 @@ public class GuiAlloySmelter extends BaseGuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		// fontRenderer.drawString("Heat: " + tile.heat, this.guiLeft - 120,
-		// guiTop + 35, 0x404040);
-		// fontRenderer.drawString("Progress: " + tile.progress, this.guiLeft -
-		// 40, guiTop + 35, 0x404040);
+		super.drawGuiContainerForegroundLayer(par1, par2);
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/mods/projectred/textures/gui/alloysmelter.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("projectred", "textures/gui/alloysmelter.png"));
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 
-		mc.renderEngine.bindTexture("/mods/projectred/textures/gui/alloysmelter.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("projectred", "textures/gui/alloysmelter.png"));
 		GL11.glDisable(2929 /* GL_DEPTH_TEST */);
 		drawRect(guiLeft + 141, guiTop + 47, guiLeft + 157, guiTop + 63, 0xc08b8b8b);
 		GL11.glEnable(2929 /* GL_DEPTH_TEST */);

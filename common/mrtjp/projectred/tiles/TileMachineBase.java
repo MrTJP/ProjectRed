@@ -1,6 +1,7 @@
 package mrtjp.projectred.tiles;
 
-import net.minecraft.entity.EntityLiving;
+import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,14 +16,18 @@ public abstract class TileMachineBase extends TileEntity {
 	
 	public TileMachineBase() {}
 
+	// Should drop the actual block, plus anything else like inv contents, etc.
 	public abstract void onBlockBreak();
 
 	public abstract void onBlockClicked(EntityPlayer player);
 	
 	public abstract boolean onBlockActivated(EntityPlayer player);
 
-	public void onBlockPlaced(EntityLiving player, ItemStack item) {
+	public abstract EnumMachine getType();
+	
+	public void onBlockPlacedBy(EntityLivingBase player, ItemStack item) {
 		int entityrotation = MathHelper.floor_double((double) ((player.rotationYaw * 4F) / 360F) + 2.5D) & 3;
+		
 		if (entityrotation == 0) {
 			rotation = 2;
 		} else if (entityrotation == 2) {
@@ -56,9 +61,7 @@ public abstract class TileMachineBase extends TileEntity {
 	@Override
 	public abstract void updateEntity();
 	
-	public boolean shouldUseSpecialTextureForSide(int side) {
-		return false;
-	}
+	public abstract int getIconForSide(int side);
 	
 	public int getLightLevel() {
 		return 0;

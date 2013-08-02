@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IBlockAccess;
 
 public class CCRenderState
@@ -92,7 +93,7 @@ public class CCRenderState
     
     public static void changeTexture(String texture)
     {
-        Minecraft.getMinecraft().renderEngine.bindTexture(texture);
+        Minecraft.getMinecraft().renderEngine.func_110577_a(new ResourceLocation(texture));
         if(Tessellator.instance.isDrawing)
             apply();
     }

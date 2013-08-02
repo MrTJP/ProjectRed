@@ -12,11 +12,12 @@ import mrtjp.projectred.crafting.microblocks.RecipeUnHollowCover;
 import mrtjp.projectred.crafting.microblocks.RecipeVerticalCut;
 import mrtjp.projectred.crafting.tools.RecipeBackpackRecoloring;
 import mrtjp.projectred.crafting.tools.RecipeDrawPlate;
+import mrtjp.projectred.crafting.tools.RecipeVAWTRecoloring;
 import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemPart.EnumPart;
 import mrtjp.projectred.multipart.wiring.gates.EnumGate;
 import mrtjp.projectred.multipart.wiring.wires.EnumWire;
-import mrtjp.projectred.utils.Color;
+import mrtjp.projectred.utils.PRColors;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -61,7 +62,7 @@ public class CraftingRecipeManager {
 					"WrW",
 					"WrW",
 					"WrW",
-					'W', new ItemStack(Block.cloth, 1, Color.get(i).woolId()),
+					'W', new ItemStack(Block.cloth, 1, PRColors.get(i).woolId()),
 					'r', EnumPart.REDINGOT.getItemStack()
 			);
 		}
@@ -80,11 +81,11 @@ public class CraftingRecipeManager {
 				continue;
 			}
 			GameRegistry.addRecipe(new ShapelessOreRecipe(w.getItemStack(3),
-					Color.get(bundledColor).getOreDict(),
+					PRColors.get(bundledColor).getOreDict(),
 					EnumWire.oreDictDefinitionBundled, 
 					EnumWire.oreDictDefinitionBundled, 
 					EnumWire.oreDictDefinitionBundled, 
-					Color.get(bundledColor).getOreDict()
+					PRColors.get(bundledColor).getOreDict()
 			));
 			bundledColor++;
 		}
@@ -385,7 +386,7 @@ public class CraftingRecipeManager {
 				"LLL",
 				"PWP",
 				'P', EnumPart.PLATE.getItemStack(),
-				'L', new ItemStack(Item.dyePowder, 1, Color.BLUE.dyeId()),
+				'L', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId()),
 				'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
 		);
 
@@ -505,7 +506,7 @@ public class CraftingRecipeManager {
 		/** Energized Silicon **/
 		AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
 				EnumPart.SILICON.getItemStack(),
-				new ItemStack(Item.lightStoneDust, 4),
+				new ItemStack(Item.glowstone, 4),
 		}, EnumPart.ENERGIZEDSILICON.getItemStack(), 160));
 		
 		/** Motor **/
@@ -550,10 +551,10 @@ public class CraftingRecipeManager {
 		for (int i = 0; i < EnumPart.ILLUMAR_PARTS.length; i++) {
 			EnumPart p = EnumPart.ILLUMAR_PARTS[i];
 			GameRegistry.addRecipe(new ShapelessOreRecipe(p.getItemStack(), 
-					new ItemStack(Item.lightStoneDust),
-					new ItemStack(Item.lightStoneDust),
-					Color.get(i).getOreDict(),
-					Color.get(i).getOreDict()
+					new ItemStack(Item.glowstone),
+					new ItemStack(Item.glowstone),
+					PRColors.get(i).getOreDict(),
+					PRColors.get(i).getOreDict()
 			));
 		}
 		
@@ -564,6 +565,14 @@ public class CraftingRecipeManager {
 				"sss",
 				's', Item.silk,
 				'w', Item.stick
+		);
+		
+		/** Sail **/
+		GameRegistry.addRecipe(EnumPart.SAIL.getItemStack(), 
+				"ss",
+				"ss",
+				"ss",
+				's', EnumPart.WOVENCLOTH.getItemStack()
 		);
 	}
 	private static void initMachineRecipes() {
@@ -638,7 +647,7 @@ public class CraftingRecipeManager {
 				" ib",
 				" bi",
 				'i', Item.ingotIron,
-				'b', new ItemStack(Item.dyePowder, 1, Color.BLUE.dyeId())
+				'b', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId())
 		);
 		
 		/** Draw Plate **/
@@ -660,11 +669,29 @@ public class CraftingRecipeManager {
 					"cdc",
 					"ccc",
 					'c', EnumPart.WOVENCLOTH.getItemStack(),
-					'd', Color.get(i).getOreDict()
+					'd', PRColors.get(i).getOreDict()
 			));
 		}
 		GameRegistry.addRecipe(new RecipeBackpackRecoloring());
 		
+		/** VAWT **/
+		GameRegistry.addRecipe(new ItemStack(ProjectRed.itemVAWT, 1), 
+				"sss",
+				"ttt",
+				"sss",
+				's', EnumPart.SAIL.getItemStack(),
+				't', Item.stick
+		);
+		GameRegistry.addRecipe(new RecipeVAWTRecoloring());
+                
+                /** Sickle **/
+                GameRegistry.addRecipe(new ItemStack(ProjectRed.itemSickle),
+                                " i ",
+                                "  i",
+                                "si ",
+                                'i', Item.ingotIron,
+                                's', Item.stick
+                );
 	}
 	private static void initOtherRecipes() {
 		/** Wool Gin to string recipe **/

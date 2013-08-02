@@ -3,11 +3,13 @@ package mrtjp.projectred.utils;
 import static net.minecraftforge.client.IItemRenderer.ItemRenderType.ENTITY;
 import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -40,6 +42,10 @@ public class BasicRenderUtils {
 
 	public static void setFullColor() {
 		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
+	}
+	
+	public static void bindTerrainResource() {
+		Minecraft.getMinecraft().renderEngine.func_110577_a(TextureMap.field_110575_b);
 	}
 	
 	static EntityItem entityItem;

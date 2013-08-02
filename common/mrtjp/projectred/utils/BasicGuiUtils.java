@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
 
 import org.lwjgl.input.Keyboard;
@@ -35,7 +36,7 @@ public class BasicGuiUtils {
 	}
 
 	// TODO opera color
-	public static int ConvertEnumToColor(Color color) {
+	public static int ConvertEnumToColor(PRColors color) {
 		switch (color) {
 		case BLACK:
 			return 0xFF000000;
@@ -288,7 +289,7 @@ public class BasicGuiUtils {
 
 	public static void drawSlotBackground(Minecraft mc, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/mods/projectred/textures/gui/slot.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("projectred", "textures/gui/slot.png"));
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
@@ -301,7 +302,7 @@ public class BasicGuiUtils {
 
 	public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/mods/projectred/textures/gui/slot-big.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("/projectred", "textures/gui/slot-big.png"));
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
@@ -314,7 +315,7 @@ public class BasicGuiUtils {
 
 	public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/mods/projectred/textures/gui/slot-small.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("projectred", "textures/gui/slot-small.png"));
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
@@ -327,7 +328,7 @@ public class BasicGuiUtils {
 
 	public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, Icon icon) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/gui/items.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("/gui/items.png"));
 
 		Tessellator var9 = Tessellator.instance;
 		var9.startDrawingQuads();
@@ -346,7 +347,7 @@ public class BasicGuiUtils {
 		if (flag) {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
-		mc.renderEngine.bindTexture("/mods/projectred/textures/gui/GuiBackground.png");
+		mc.renderEngine.func_110577_a(new ResourceLocation("projectred", "textures/gui/GuiBackground.png"));
 
 		if (displayTop) {
 			// Top Side
