@@ -180,36 +180,16 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		}
 		//BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir);
 		int x = x(), y = y(), z = z();
-		switch (absDir) {
-		case Directions.NX:
-			x--;
-			break;
-		case Directions.PX:
-			x++;
-			break;
-		case Directions.NY:
-			y--;
-			break;
-		case Directions.PY:
-			y++;
-			break;
-		case Directions.NZ:
-			z--;
-			break;
-		case Directions.PZ:
-			z++;
-			break;
-		default:
-			return false;
-		}
-		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(tile()), TileMultipart.class);
+		x += ForgeDirection.VALID_DIRECTIONS[absDir].offsetX;
+		y += ForgeDirection.VALID_DIRECTIONS[absDir].offsetY;
+		z += ForgeDirection.VALID_DIRECTIONS[absDir].offsetZ;
+		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
 		if (t != null) {
 			TMultiPart tp = t.partMap(side);
 			if (tp instanceof IConnectable) {
 				return ((IConnectable) tp).connects(this, side, absDir);
 			}
 		} else {
-			System.out.println("tilenull@ " + absDir);
 		}
 		return false;
 	}
@@ -218,58 +198,20 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		if ((side & 6) == (absDir & 6)) {
 			return false;
 		}
-		BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir);
+		//BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir);
 		int x = x(), y = y(), z = z();
-		switch (absDir) {
-		case Directions.NX:
-			x--;
-			break;
-		case Directions.PX:
-			x++;
-			break;
-		case Directions.NY:
-			y--;
-			break;
-		case Directions.PY:
-			y++;
-			break;
-		case Directions.NZ:
-			z--;
-			break;
-		case Directions.PZ:
-			z++;
-			break;
-		default:
-			return false;
-		}
+		x += ForgeDirection.VALID_DIRECTIONS[absDir].offsetX;
+		y += ForgeDirection.VALID_DIRECTIONS[absDir].offsetY;
+		z += ForgeDirection.VALID_DIRECTIONS[absDir].offsetZ;
 
-		if (!BasicWireUtils.canConnectThroughEdge(world(), x, y, z, side, absDir ^ 1)) {
-			return false;
-		}
-
-		switch (side) {
-		case Directions.NX:
-			x--;
-			break;
-		case Directions.PX:
-			x++;
-			break;
-		case Directions.NY:
-			y--;
-			break;
-		case Directions.PY:
-			y++;
-			break;
-		case Directions.NZ:
-			z--;
-			break;
-		case Directions.PZ:
-			z++;
-			break;
-		default:
-			return false;
-		}
-		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(tile()), TileMultipart.class);
+		//if (!BasicWireUtils.canConnectThroughEdge(world(), x, y, z, side, absDir ^ 1)) {
+		//	return false;
+		//}
+		x += ForgeDirection.VALID_DIRECTIONS[side].offsetX;
+		y += ForgeDirection.VALID_DIRECTIONS[side].offsetY;
+		z += ForgeDirection.VALID_DIRECTIONS[side].offsetZ;
+		
+		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
 		if (t != null) {
 			TMultiPart tp = t.partMap(side);
 			if (tp instanceof IConnectable) {
