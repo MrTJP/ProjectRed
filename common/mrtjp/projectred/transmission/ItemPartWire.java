@@ -44,17 +44,20 @@ public class ItemPartWire extends JItemMultiPart {
 		if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) {
 			return null;
 		}
-		WirePart p = new RedAlloyWirePart();
-		p.setWireType(EnumWire.RED_ALLOY);
-		p.side = side ^ 1;
-		return p;
+		EnumWire w = EnumWire.VALID_WIRE[item.getItemDamage()];
+		try {
+			return (TMultiPart) w.teclass.getConstructors()[0].newInstance(w, false, side ^ 1);
+		} catch (Throwable e) {
+			return null;
+		}
 	}
+
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(int id, CreativeTabs tab, List list) {
-		for (EnumGate g : EnumGate.VALUES) {
-			list.add(g.getItemStack());
+		for (EnumWire w : EnumWire.VALID_WIRE) {
+			list.add(w.getItemStack());
 		}
 	}
 

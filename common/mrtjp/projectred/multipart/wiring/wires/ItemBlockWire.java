@@ -137,7 +137,7 @@ public class ItemBlockWire extends ItemBlock {
 				w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .8F);
 				--stack.stackSize;
 
-				tile.notifyExtendedNeighbours();
+				tile.notifyExtendedNeighbors();
 
 				return true;
 
@@ -254,7 +254,7 @@ public class ItemBlockWire extends ItemBlock {
 				w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .8F);
 				--stack.stackSize;
 
-				tile.notifyExtendedNeighbours();
+				tile.notifyExtendedNeighbors();
 
 				return true;
 
@@ -400,7 +400,7 @@ public class ItemBlockWire extends ItemBlock {
 				tile.rawAddWire(type, side ^ 1);
 
 			world.setBlockTileEntity(x, y, z, tile);
-			tile.notifyExtendedNeighbours();
+			tile.notifyExtendedNeighbors();
 		}
 
 		return true;

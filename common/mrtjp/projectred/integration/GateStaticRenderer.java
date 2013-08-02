@@ -130,7 +130,7 @@ public class GateStaticRenderer implements IItemRenderer {
 			renderGateInInventory(damage, 0f, .15f, 0f, 1f);
 			return;
 		case EQUIPPED_FIRST_PERSON:
-			renderGateInInventory(damage, 1f, .15f, 0f, 1f);
+			renderGateInInventory(damage, 1f, -.2f, -.4f, 2f);
 			return;
 		case INVENTORY:
 			renderGateInInventory(damage, 0f, .15f, 0f, 1f);

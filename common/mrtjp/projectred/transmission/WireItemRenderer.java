@@ -1,16 +1,11 @@
 package mrtjp.projectred.transmission;
 
+import mrtjp.projectred.utils.BasicRenderUtils;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.IItemRenderer;
+
 import org.lwjgl.opengl.GL11;
 
-import mrtjp.projectred.multipart.wiring.RotatedRenderer;
-import mrtjp.projectred.transmission.EnumWire.WireDamageValues;
-import mrtjp.projectred.utils.BasicRenderUtils;
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.client.IItemRenderer;
 import codechicken.lib.render.CCRenderState;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -40,7 +35,6 @@ public class WireItemRenderer implements IItemRenderer {
 		GL11.glScalef(scale, scale, scale);
 		CCRenderState.startDrawing(7);
 		BasicRenderUtils.setFullColor();
-		BasicRenderUtils.setFullBrightness();
 		CCRenderState.setColourOpaque(type.itemColour);
 		wra.connectsN = true;
 		wra.connectsS = true;
@@ -86,7 +80,7 @@ public class WireItemRenderer implements IItemRenderer {
 			renderWireInventory(damage, 0f, .15f, 0f, 1f);
 			return;
 		case EQUIPPED_FIRST_PERSON:
-			renderWireInventory(damage, 1f, .15f, 0f, 1f);
+			renderWireInventory(damage, 1f, -.2f, -.4f, 2f);
 			return;
 		case INVENTORY:
 			renderWireInventory(damage, 0f, .15f, 0f, 1f);

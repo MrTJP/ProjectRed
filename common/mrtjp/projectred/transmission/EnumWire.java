@@ -120,7 +120,7 @@ public enum EnumWire {
 				wireSprites[i] = reg.registerIcon("projectred:wires/" + wireSpritePaths[i]);
 			}
 		}
-		wireMap = CCModel.parseObjModels(new ResourceLocation("projectred","/textures/obj/wiring/" + wireModelPath), 7, new InvertX());
+		wireMap = CCModel.parseObjModels(new ResourceLocation("projectred", "/textures/obj/wiring/" + wireModelPath), 7, new InvertX());
 		jacketMap = CCModel.parseObjModels(new ResourceLocation("projectred", "/textures/obj/wiring/" + jacketModelPath), 7, new InvertX());
 		for (CCModel m : wireMap.values()) {
 			m.shrinkUVs(0.0005);
@@ -131,7 +131,7 @@ public enum EnumWire {
 	}
 
 	public ItemStack getItemStack() {
-		return new ItemStack(ProjectRed.itemPartWire, 1, meta);
+		return getItemStack(1);
 	}
 
 	public ItemStack getItemStack(int i) {
@@ -139,14 +139,15 @@ public enum EnumWire {
 	}
 
 	public ItemStack getJacketedItemStack() {
-		return new ItemStack(ProjectRed.itemPartWire, 1, meta | WireDamageValues.DMG_FLAG_JACKETED);
+		return getJacketedItemStack(1);
 	}
 
 	public ItemStack getJacketedItemStack(int i) {
+		// TODO change this
 		if (!this.hasJacketedForm()) {
 			return null;
 		}
-		return new ItemStack(ProjectRed.itemPartWire, i, meta | WireDamageValues.DMG_FLAG_JACKETED);
+		return new ItemStack(ProjectRed.itemPartWire, i, meta);
 	}
 
 	public static boolean isBundledCable(ItemStack stack) {
@@ -167,6 +168,15 @@ public enum EnumWire {
 		return false;
 	}
 
+	public static EnumWire getTypeByName(String name) {
+		for (EnumWire w : VALID_WIRE) {
+			if (name == w.name) {
+				return w;
+			}
+		}
+		return null;
+	}
+
 	public static void initOreDictDefinitions() {
 		for (EnumWire w : EnumWire.VALID_WIRE) {
 			OreDictionary.registerOre(oreDictDefinition, w.getItemStack());
@@ -179,24 +189,6 @@ public enum EnumWire {
 		}
 		for (EnumWire w : EnumWire.BUNDLED_WIRE) {
 			OreDictionary.registerOre(oreDictDefinitionBundled, w.getItemStack());
-		}
-	}
-
-	public static class WireDamageValues {
-		// things controlling interpretation of item damage values
-		public static final int DMG_FLAG_JACKETED = 16384;
-		public static final int DMG_MASK_ORDINAL = 255;
-
-		public static boolean isJacketed(int damageValue) {
-			return (damageValue & DMG_FLAG_JACKETED) != 0;
-		}
-
-		public static EnumWire getType(int damageValue) {
-			int ordinal = damageValue & DMG_MASK_ORDINAL;
-			if (ordinal < 0 || ordinal >= EnumWire.VALID_WIRE.length) {
-				return null;
-			}
-			return EnumWire.VALID_WIRE[ordinal];
 		}
 	}
 }

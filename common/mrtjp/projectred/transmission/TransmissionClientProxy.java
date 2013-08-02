@@ -13,6 +13,5 @@ public class TransmissionClientProxy extends TransmissionProxy {
 			LanguageRegistry.addName(w.getItemStack(), w.name);
 		}
 		MinecraftForgeClient.registerItemRenderer(ProjectRed.itemPartWire.itemID, WireItemRenderer.instance);
-
 	}
 }

@@ -16,7 +16,12 @@ public class TransmissionProxy implements IProxy, IPartFactory {
 
 	@Override
 	public void init() {
-		MultiPartRegistry.registerParts(this, new String[] {EnumWire.RED_ALLOY.name});
+		String[] wires = new String[EnumWire.VALID_WIRE.length];
+		for (EnumWire w : EnumWire.VALID_WIRE) {
+			wires[w.meta] = w.name;
+		}
+		MultiPartRegistry.registerParts(this, wires);
+		
 		itemPartWire = new ItemPartWire(Configurator.part_wire.getInt());
 	}
 
@@ -45,9 +50,13 @@ public class TransmissionProxy implements IProxy, IPartFactory {
 
 	@Override
 	public TMultiPart createPart(String id, boolean arg1) {
-		WirePart p = new RedAlloyWirePart();
-		p.setWireType(EnumWire.RED_ALLOY);
-		return p;
+		boolean isJacketed = false;
+		EnumWire w = EnumWire.getTypeByName(id);
+		try {
+			return (TMultiPart) w.teclass.getConstructors()[0].newInstance(w, isJacketed, 0);
+		} catch (Throwable e) {
+			return null;
+		}
 	}
 
 }
