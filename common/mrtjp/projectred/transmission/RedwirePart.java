@@ -1,6 +1,5 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.interfaces.wiring.IRedstoneEmitter;
 import mrtjp.projectred.interfaces.wiring.IRedstoneUpdatable;
 import mrtjp.projectred.interfaces.wiring.IRedstoneWire;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
@@ -31,29 +30,27 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstoneWire, IFaceRedstonePart {
+
 	private short MAX_STRENGTH = 255;
 
 	private short strength = 0;
-	private short strengthFromNonWireBlocks = 0; // this is synced to the
-													// client,
-													// not used by the server
-
+	private short strengthFromNonWireBlocks = 0;
 	protected boolean syncSignalStrength;
 	protected boolean connectToBlockBelow;
 
 	private boolean isUpdatingStrength, recursiveUpdatePending;
 	private static boolean blockUpdateCausedByAlloyWire = false;
-
 	private static boolean dontEmitPower = false;
 
-	public RedwirePart() {
+	public RedwirePart(EnumWire type, boolean isJacketedWire, int onside) {
+		super(type, isJacketedWire, onside);
 	}
 
 	/**
 	 * This should return the max signal given off to the side.
 	 */
 	private int updateStrengthFromBlock(int x, int y, int z, int odir, int testside, int newStrength) {
-		int thisStrength = BasicWireUtils.getPowerStrength(world(), x, y, z, odir, testside, true);;
+		int thisStrength = BasicWireUtils.getPowerStrength(world(), x, y, z, odir, testside, true);
 		newStrength = Math.max(newStrength, Math.min(thisStrength - 1, MAX_STRENGTH));
 		if (BasicUtils.isServer(world())) {
 			thisStrength = BasicWireUtils.getPowerStrength(world(), x, y, z, odir, testside, false);
@@ -63,11 +60,11 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 	}
 
 	/**
-	 * Asks all surrounding neighbor Wires for signal strength, 0 - 255. It uses
+	 * Asks all surrounding neighbor Wires/blocks (including indirect) for signal strength, 0 - 255. It uses
 	 * the connection arrays to see what side it should check. It returns the
 	 * max strength it found.
 	 */
-	private int getStrengthFromSurroundingBlocks() {
+	private int checkNeighborsForMaxStrength() {
 		if (BasicUtils.isServer(world())) {
 			strengthFromNonWireBlocks = 0;
 		}
@@ -87,17 +84,6 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 			}
 		}
 		for (int dir = 0; dir < 6; dir++) {
-			if (maskConnects(dir)) {
-				int x = x(), y = y(), z = z();
-				ForgeDirection fdir = ForgeDirection.VALID_DIRECTIONS[dir];
-				x += fdir.offsetX;
-				y += fdir.offsetY;
-				z += fdir.offsetZ;
-				int outputdir = dir;
-				int testside = side;
-				newStrength = updateStrengthFromBlock(x, y, z, outputdir ^ 1, testside, newStrength);
-				continue;
-			}
 			if (maskConnectsInternally(dir)) {
 				int x = x(), y = y(), z = z();
 				TMultiPart t = tile().partMap(dir);
@@ -118,6 +104,17 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 				z += fdir.offsetZ;
 				int outputdir = side ^ 1;
 				int testside = dir ^ 1;
+				newStrength = updateStrengthFromBlock(x, y, z, outputdir, testside, newStrength);
+				continue;
+			}
+			if (maskConnects(dir)) {
+				int x = x(), y = y(), z = z();
+				ForgeDirection fdir = ForgeDirection.VALID_DIRECTIONS[dir];
+				x += fdir.offsetX;
+				y += fdir.offsetY;
+				z += fdir.offsetZ;
+				int outputdir = dir ^ 1;
+				int testside = side;
 				newStrength = updateStrengthFromBlock(x, y, z, outputdir, testside, newStrength);
 				continue;
 			}
@@ -200,10 +197,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 
 			int prevStrength = strength;
 			strength = 0;
-			newStrength = getStrengthFromSurroundingBlocks();
-
-			// if(prevStrength != newStrength)
-			// System.out.println(x()+","+y()+","+z()+" red alloy update pass; "+prevStrength+" -> "+newStrength);
+			newStrength = checkNeighborsForMaxStrength();
 
 			if (newStrength < prevStrength) {
 				// this is a huge optimization - it results in a "pulse" of 0
@@ -213,7 +207,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 				// the pulse and propagate backwards, turning the wires back on
 				// with the correct strength in 2 updates.
 				updateConnectedWireSignal();
-				newStrength = getStrengthFromSurroundingBlocks();
+				newStrength = checkNeighborsForMaxStrength();
 			}
 
 			strength = (short) newStrength;
@@ -225,22 +219,12 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 
 		isUpdatingStrength = false;
 
-		// if(startStrength != newStrength)
-		// System.out.println(x()+","+y()+","+z()+" red alloy update; "+startStrength+" -> "+newStrength);
-
 		if (strength != startStrength) {
 			if (BasicUtils.isServer(world())) {
 				blockUpdateCausedByAlloyWire = true;
 				notifyExtendedPowerableNeighbours();
 				blockUpdateCausedByAlloyWire = false;
 			}
-
-			// System.out.println((world().isRemote ? "client " :
-			// wasFirstServerChange ? "was first " : "Not first ") +
-			// "change at: " + x() + "," + y() + "," + z() + ", new strength: "
-			// + strength + ", sfnwb: " + oldStrengthFromNonWireBlocks + " -> "
-			// + strengthFromNonWireBlocks);
-
 			if (syncSignalStrength && (BasicUtils.isClient(world()) || wasFirstServerChange || strengthFromNonWireBlocks != oldStrengthFromNonWireBlocks)) {
 				if (!world().isRemote && CommandDebug.WIRE_LAG_PARTICLES)
 					debugEffect_bonemeal();
@@ -248,10 +232,6 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 			}
 
 		} else if (syncSignalStrength && BasicUtils.isServer(world()) && oldStrengthFromNonWireBlocks != strengthFromNonWireBlocks) {
-			// System.out.println("SFNWB change at: " + x() + "," + y() + "," +
-			// z() + ", new strength: " + strength + ", sfnwb: " +
-			// oldStrengthFromNonWireBlocks + " -> " +
-			// strengthFromNonWireBlocks);
 			updateChange();
 			if (CommandDebug.WIRE_LAG_PARTICLES)
 				debugEffect_bonemeal();
@@ -333,14 +313,14 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 	}
 
 	public boolean canProvideStrongPowerInDirection(int dir) {
-		return connectToBlockBelow && side == dir;
+		return BasicWireUtils.wiresProvidePower() && connectToBlockBelow && side == dir;
 	}
 	
 	@Override
 	public void onPartChanged() {
 		super.onPartChanged();
-		onNeighborChanged();
 	}
+	
 	private void notifyExtendedPowerableNeighbours() {
 		boolean any = false;
 
@@ -392,63 +372,14 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 				world().notifyBlockOfNeighborChange(x, y, z, tile().getBlockType().blockID);
 			}
 		}
-		/**
-		if (canProvideWeakPowerInDirection(Directions.NX)) {
-			any = true;
-			world().notifyBlockOfNeighborChange(x() + 1, y(), z(), tile().getBlockType().blockID);
-		}
-		if (canProvideWeakPowerInDirection(Directions.PX)) {
-			any = true;
-			world().notifyBlockOfNeighborChange(x() - 1, y(), z(), tile().getBlockType().blockID);
-		}
-		if (canProvideWeakPowerInDirection(Directions.NY)) {
-			any = true;
-			world().notifyBlockOfNeighborChange(x(), y() - 1, z(), tile().getBlockType().blockID);
-		}
-		if (canProvideWeakPowerInDirection(Directions.PY)) {
-			any = true;
-			world().notifyBlockOfNeighborChange(x(), y() + 1, z(), tile().getBlockType().blockID);
-		}
-		if (canProvideWeakPowerInDirection(Directions.NZ)) {
-			any = true;
-			world().notifyBlockOfNeighborChange(x(), y(), z() - 1, tile().getBlockType().blockID);
-		}
-		if (canProvideWeakPowerInDirection(Directions.PZ)) {
-			any = true;
-			world().notifyBlockOfNeighborChange(x(), y(), z() + 1, tile().getBlockType().blockID);
-		}
-
-		if (canProvideStrongPowerInDirection(Directions.NX)) {
-			any = true;
-			world().notifyBlocksOfNeighborChange(x() + 1, y(), z(), tile().getBlockType().blockID);
-		}
-		if (canProvideStrongPowerInDirection(Directions.PX)) {
-			any = true;
-			world().notifyBlocksOfNeighborChange(x() - 1, y(), z(), tile().getBlockType().blockID);
-		}
-		if (canProvideStrongPowerInDirection(Directions.NY)) {
-			any = true;
-			world().notifyBlocksOfNeighborChange(x(), y() - 1, z(), tile().getBlockType().blockID);
-		}
-		if (canProvideStrongPowerInDirection(Directions.PY)) {
-			any = true;
-			world().notifyBlocksOfNeighborChange(x(), y() + 1, z(), tile().getBlockType().blockID);
-		}
-		if (canProvideStrongPowerInDirection(Directions.NZ)) {
-			any = true;
-			world().notifyBlocksOfNeighborChange(x(), y(), z() - 1, tile().getBlockType().blockID);
-		}
-		if (canProvideStrongPowerInDirection(Directions.PZ)) {
-			any = true;
-			world().notifyBlocksOfNeighborChange(x(), y(), z() + 1, tile().getBlockType().blockID);
-		}
-	**/
+		
+		System.out.println(any);
 		if (any && CommandDebug.WIRE_LAG_PARTICLES)
 			debugEffect_fireburst();
 	}
 
 	public boolean canProvideWeakPowerInDirection(int dir) {
-		return maskConnects(dir);
+		return BasicWireUtils.wiresProvidePower() && maskConnects(dir);
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package mrtjp.projectred.interfaces.wiring;
+package mrtjp.projectred.transmission;
 
 /**
  * Implemented by tile entities that emit a full-strength red alloy signal.

@@ -1,6 +1,6 @@
-package mrtjp.projectred.interfaces.wiring;
+package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.transmission.WirePart;
+import mrtjp.projectred.interfaces.wiring.IWire;
 
 /**
  * Interface implemented by tile entities which can connect to wires in specific

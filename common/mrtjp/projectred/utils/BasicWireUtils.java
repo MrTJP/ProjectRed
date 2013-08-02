@@ -2,7 +2,7 @@ package mrtjp.projectred.utils;
 
 import java.lang.reflect.Field;
 
-import mrtjp.projectred.interfaces.wiring.IRedstoneEmitter;
+import mrtjp.projectred.transmission.IRedstoneEmitter;
 import mrtjp.projectred.transmission.RedAlloyWirePart;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
@@ -67,11 +67,18 @@ public class BasicWireUtils {
 		// respond to weak power, or strong power, or strong power applied
 		// through a block
 		int pl = b.isProvidingStrongPower(w, x, y, z, toDirection ^ 1);
-		if (pl > 0)
+		if (pl > 0) {
 			return (short) (pl * 17);
+		}
 
 		if (w.isBlockNormalCube(x, y, z)) {
-			pl = w.getBlockPowerInput(x, y, z);
+			try {
+				wiresProvidePower.set(Block.redstoneWire, false);
+				pl = w.getBlockPowerInput(x, y, z);
+				wiresProvidePower.set(Block.redstoneWire, true);
+			} catch (Throwable t) {
+			}
+			;
 			if (pl > 0) {
 				return (short) (pl * 17);
 			}
@@ -82,6 +89,27 @@ public class BasicWireUtils {
 		}
 
 		return 0;
+	}
+
+	/**
+	 * Used to prevent 2 disabled wires on opposite sides of a block from
+	 * keeping eachother on through a strong block signal.
+	 */
+	private static Field wiresProvidePower = BlockRedstoneWire.class.getDeclaredFields()[0];
+	static {
+		try {
+			wiresProvidePower.setAccessible(true);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static boolean wiresProvidePower() {
+		try {
+			return wiresProvidePower.getBoolean(Block.redstoneWire);
+		} catch (Throwable t) {
+			return false;
+		}
 	}
 
 	public static boolean canPlaceWireOnSide(World w, int x, int y, int z, ForgeDirection side, boolean _default) {

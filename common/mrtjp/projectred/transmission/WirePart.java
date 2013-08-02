@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.integration.GateLogic;
-import mrtjp.projectred.interfaces.wiring.IConnectable;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
@@ -43,6 +42,7 @@ import codechicken.multipart.TileMultipart;
 public abstract class WirePart extends JCuboidPart implements IConnectable, TFacePart, JNormalOcclusion {
 
 	private EnumWire wireType;
+	private boolean isJacketed = false;
 
 	/** START NEW LOGIC **/
 	private boolean notifyNeighboursNextTick = false;
@@ -56,8 +56,10 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	private boolean[] sideInternalConnections = new boolean[6];
 	private boolean[] sideCorneredConnections = new boolean[6];
 
-	public void setWireType(EnumWire type) {
+	public WirePart(EnumWire type, boolean isJacketedWire, int onside) {
 		wireType = type;
+		isJacketed = isJacketedWire;
+		side = onside;
 	}
 
 	@Override
@@ -150,8 +152,8 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	public void updateChange() {
 		tile().markDirty();
-		tile().notifyPartChange();
 		if (BasicUtils.isServer(world())) {
+			System.out.println("packetsent");
 			sendDescUpdate();
 		}
 	}
@@ -162,9 +164,17 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public void onPartChanged() {
+		notifyExtendedNeighbors();
 		computeConnections();
+		updateChange();
 	}
-
+	
+	@Override 
+	public void onRemoved() {
+		super.onRemoved();
+		notifyExtendedNeighbors();
+	}
+	
 	@Override
 	public void onNeighborChanged() {
 		if (BasicUtils.isClient(world())) {
@@ -173,25 +183,21 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		int x = x() + ForgeDirection.getOrientation(side).offsetX;
 		int y = y() + ForgeDirection.getOrientation(side).offsetY;
 		int z = z() + ForgeDirection.getOrientation(side).offsetZ;
-		
-		boolean removed = false;
+
 		if (!BasicWireUtils.canPlaceWireOnSide(world(), x, y, z, ForgeDirection.getOrientation(side ^ 1), false)) {
 			BasicUtils.dropItemFromLocation(world(), getItem(), false, null, side, 10, new Coords(x(), y(), z()));
-			removed = true;
 			tile().remPart(this);
 		}
-		if (!removed) {
-			computeConnections();
-		}
+		computeConnections();
 	}
 
 	private void computeConnections() {
 		if (isFirstTick) {
 			return;
 		}
-		boolean[] oldExt = sideExternalConnections;
-		boolean[] oldInt = sideInternalConnections;
-		boolean[] oldCor = sideCorneredConnections;
+		boolean[] oldExt = sideExternalConnections.clone();
+		boolean[] oldInt = sideInternalConnections.clone();
+		boolean[] oldCor = sideCorneredConnections.clone();
 		sideExternalConnections = new boolean[6];
 		sideInternalConnections = new boolean[6];
 		sideCorneredConnections = new boolean[6];
@@ -206,7 +212,8 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 				sideExternalConnections[i] = true;
 			}
 		}
-		if (!oldExt.equals(sideExternalConnections) || !oldInt.equals(sideInternalConnections) || !oldCor.equals(sideCorneredConnections)) {
+		if (!BasicUtils.areArraysEqual(oldExt, sideExternalConnections) || !BasicUtils.areArraysEqual(oldInt, sideInternalConnections) || !BasicUtils.areArraysEqual(oldCor, sideCorneredConnections)) {
+			System.out.println("hasnewConnects");
 			hasNewConnections = true;
 		}
 	}
@@ -322,7 +329,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	 * Notifies neighbours one or two blocks away, in the same pattern as most
 	 * redstone updates.
 	 */
-	public void notifyExtendedNeighbours() {
+	public void notifyExtendedNeighbors() {
 		world().notifyBlocksOfNeighborChange(x(), y(), z(), tile().getBlockType().blockID);
 		world().notifyBlocksOfNeighborChange(x() + 1, y(), z(), tile().getBlockType().blockID);
 		world().notifyBlocksOfNeighborChange(x() - 1, y(), z(), tile().getBlockType().blockID);
