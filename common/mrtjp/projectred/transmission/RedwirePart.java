@@ -28,7 +28,7 @@ import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedstoneWire, IFaceRedstonePart {
+public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstoneWire, IFaceRedstonePart {
 	private short MAX_STRENGTH = 255;
 
 	private short strength;
@@ -43,7 +43,7 @@ public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedston
 
 	private static boolean dontEmitPower = false;
 
-	public TileRedAlloy() {
+	public RedwirePart() {
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedston
 			if (maskConnectsInternally(dir)) {
 				int x = x(), y = y(), z = z();
 				TMultiPart t = tile().partMap(dir);
-				if (t instanceof TileRedAlloy) {
+				if (t instanceof RedwirePart) {
 					newStrength = updateStrengthFromBlock(x, y, z, dir, side ^ 1, newStrength);
 				}
 				continue;
@@ -143,9 +143,11 @@ public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedston
 			if (maskConnects(dir)) {
 				if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
 					TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
-					TMultiPart t = tile.partMap(side);
-					if (t instanceof TileRedAlloy) {
-						((TileRedAlloy) t).updateSignal(this);
+					if (tile != null) {
+						TMultiPart t = tile.partMap(side);
+						if (t instanceof RedwirePart) {
+							((RedwirePart) t).updateSignal(this);
+						}
 					}
 				}
 			}
@@ -156,22 +158,24 @@ public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedston
 				z += fd.offsetZ;
 				if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
 					TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
-					TMultiPart t = tile.partMap(dir ^ 1);
-					if (t instanceof TileRedAlloy) {
-						((TileRedAlloy) t).updateSignal(this);
+					if (tile != null) {
+						TMultiPart t = tile.partMap(dir ^ 1);
+						if (t instanceof RedwirePart) {
+							((RedwirePart) t).updateSignal(this);
+						}
 					}
 				}
 			}
 			if (maskConnectsInternally(dir)) {
 				TMultiPart t = tile().partMap(dir);
-				if (t instanceof TileRedAlloy) {
-					((TileRedAlloy) t).updateSignal(this);
+				if (t instanceof RedwirePart) {
+					((RedwirePart) t).updateSignal(this);
 				}
 			}
 		}
 	}
 
-	protected void updateSignal(TileRedAlloy source) {
+	protected void updateSignal(RedwirePart source) {
 		if (world().isRemote && !syncSignalStrength)
 			return; // doesn't make sense for unsynced wire types
 		if (isUpdatingStrength) {
@@ -235,22 +239,17 @@ public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedston
 				blockUpdateCausedByAlloyWire = false;
 			}
 
-			// System.out.println((world().isRemote ? "client " :
-			// wasFirstServerChange ? "was first " : "Not first ") +
-			// "change at: " +
-			// x()+","+y()+","+z()+", new strength: "+strength+", sfnwb: "+oldStrengthFromNonWireBlocks+" -> "+strengthFromNonWireBlocks);
+			System.out.println((world().isRemote ? "client " : wasFirstServerChange ? "was first " : "Not first ") + "change at: " + x() + "," + y() + "," + z() + ", new strength: " + strength + ", sfnwb: " + oldStrengthFromNonWireBlocks + " -> " + strengthFromNonWireBlocks);
 
-			if (syncSignalStrength && (world().isRemote || wasFirstServerChange || strengthFromNonWireBlocks != oldStrengthFromNonWireBlocks)) {
+			if (syncSignalStrength && (BasicUtils.isClient(world()) || wasFirstServerChange || strengthFromNonWireBlocks != oldStrengthFromNonWireBlocks)) {
 				if (!world().isRemote && CommandDebug.WIRE_LAG_PARTICLES)
 					debugEffect_bonemeal();
-				world().markBlockForUpdate(x(), y(), z());
+				updateChange();
 			}
 
-		} else if (syncSignalStrength && !world().isRemote && oldStrengthFromNonWireBlocks != strengthFromNonWireBlocks) {
-			// System.out.println("SFNWB change at: " +
-			// x()+","+y()+","+z()+", new strength: "+strength+", sfnwb: "+oldStrengthFromNonWireBlocks+" -> "+strengthFromNonWireBlocks);
-
-			world().markBlockForUpdate(x(), y(), z());
+		} else if (syncSignalStrength && BasicUtils.isServer(world()) && oldStrengthFromNonWireBlocks != strengthFromNonWireBlocks) {
+			System.out.println("SFNWB change at: " + x() + "," + y() + "," + z() + ", new strength: " + strength + ", sfnwb: " + oldStrengthFromNonWireBlocks + " -> " + strengthFromNonWireBlocks);
+			updateChange();
 			if (CommandDebug.WIRE_LAG_PARTICLES)
 				debugEffect_bonemeal();
 		}
@@ -265,18 +264,6 @@ public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedston
 			return;
 		}
 		super.onNeighborChanged();
-		updateSignal(null);
-	}
-	
-	@Override 
-	public void onPartChanged() {
-		if (blockUpdateCausedByAlloyWire) {
-			// When we update a RedAlloyWire, it starts updating its neighbors,
-			// including us. Dont update again, because we are the one that told
-			// it to update in the first place.
-			return;
-		}
-		super.onPartChanged();
 		updateSignal(null);
 	}
 
@@ -303,6 +290,9 @@ public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedston
 		}
 		// This packet means the server sent one then calculated changes. We
 		// must also do that on the client.
+		if (isFirstTick) {
+			return;
+		}
 		updateConnectedWireSignal();
 	}
 
@@ -329,9 +319,6 @@ public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedston
 		if (b == null)
 			return false;
 		if (b.canProvidePower()) {
-			return true;
-		}
-		if (b.canConnectRedstone(world(), x, y, z, fromDirection ^ 1)) {
 			return true;
 		}
 		return false;
@@ -449,8 +436,9 @@ public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedston
 
 	@Override
 	public boolean connectsToWireType(WirePart wire) {
-		return wire instanceof TileRedAlloy;
+		return wire instanceof RedwirePart;
 	}
+
 	/**
 	 * Returns the vanilla redstone strength from 0 to 15.
 	 */
@@ -490,7 +478,7 @@ public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedston
 	public int getFace() {
 		return side;
 	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
@@ -500,11 +488,13 @@ public class TileRedAlloy extends WirePart implements IRedstoneEmitter, IRedston
 			wra.y = y();
 			wra.z = z();
 			wra.renderBlocks = null;
+			wra.model = getWireType().wireMap;
 			wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
 			Tessellator.instance.setColorRGBA(255, 255, 255, 255);
 			BasicRenderUtils.bindTerrainResource();
 			CCRenderState.reset();
 			CCRenderState.setBrightness(world(), x(), y(), z());
+			CCRenderState.setColourOpaque(getVisualWireColour());
 			wra.side = side;
 			wra.setWireRenderState(this);
 			wra.pushRender();

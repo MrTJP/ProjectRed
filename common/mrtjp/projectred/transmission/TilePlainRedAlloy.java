@@ -2,8 +2,8 @@ package mrtjp.projectred.transmission;
 
 import mrtjp.projectred.interfaces.wiring.IBareRedstoneWire;
 
-public class TilePlainRedAlloy extends TileRedAlloy implements IBareRedstoneWire {
-
+public class TilePlainRedAlloy extends RedwirePart implements IBareRedstoneWire {
+	
 	@Override
 	public int getVisualWireColour() {
 		return ((getRedstoneSignalStrength()/2) + 60) << 16;

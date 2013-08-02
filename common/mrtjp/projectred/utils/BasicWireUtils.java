@@ -59,7 +59,9 @@ public class BasicWireUtils {
 			if (!countRedAlloyWire && part instanceof TilePlainRedAlloy) {
 				return 0;
 			}
-			return ((IRedstoneEmitter) part).getEmittedSignalStrength(onSide, toDirection);
+			if (part != null) {
+				return ((IRedstoneEmitter) part).getEmittedSignalStrength(onSide, toDirection);
+			}
 		}
 
 		// respond to weak power, or strong power, or strong power applied

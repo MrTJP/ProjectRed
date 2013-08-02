@@ -8,7 +8,7 @@ import mrtjp.projectred.multipart.wiring.CommandDebug;
 import mrtjp.projectred.multipart.wiring.InvalidTile;
 import mrtjp.projectred.renderstuffs.RenderIDs;
 import mrtjp.projectred.transmission.EnumWire;
-import mrtjp.projectred.transmission.TileRedAlloy;
+import mrtjp.projectred.transmission.RedwirePart;
 import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.transmission.EnumWire.WireDamageValues;
 import mrtjp.projectred.utils.BasicWireMaterial;
@@ -87,7 +87,7 @@ public class BlockWire extends BlockMultipartBase {
 	public int isProvidingStrongPower(IBlockAccess w, int x, int y, int z, int opposite_dir) {
 		int meta = w.getBlockMetadata(x, y, z);
 		if (meta == EnumWire.PLAIN_RED_ALLOY_META) {
-			TileRedAlloy tile = ((TileRedAlloy) w.getBlockTileEntity(x, y, z));
+			RedwirePart tile = ((RedwirePart) w.getBlockTileEntity(x, y, z));
 			return tile.canProvideStrongPowerInDirection(opposite_dir ^ 1) ? tile.getVanillaRedstoneStrength() : 0;
 		}
 		return 0;
@@ -97,7 +97,7 @@ public class BlockWire extends BlockMultipartBase {
 	public int isProvidingWeakPower(IBlockAccess w, int x, int y, int z, int opposite_dir) {
 		int meta = w.getBlockMetadata(x, y, z);
 		if (meta == EnumWire.PLAIN_RED_ALLOY_META || meta == EnumWire.INSULATED_RED_ALLOY_META) {
-			TileRedAlloy tile = ((TileRedAlloy) w.getBlockTileEntity(x, y, z));
+			RedwirePart tile = ((RedwirePart) w.getBlockTileEntity(x, y, z));
 			return tile.canProvideWeakPowerInDirection(opposite_dir ^ 1) ? tile.getVanillaRedstoneStrength() : 0;
 		}
 		return 0;

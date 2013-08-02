@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.integration.GateLogic;
 import mrtjp.projectred.interfaces.wiring.IConnectable;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
@@ -37,7 +38,9 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	/** START NEW LOGIC **/
 	private boolean notifyNeighboursNextTick = false;
 	public int side;
-	private boolean isFirstTick = true;
+	public boolean isFirstTick = true;
+	public boolean hasNewConnections = false;
+
 	// Cached connection status of all sides, stored as absolute
 	// ForgeDirections.
 	private boolean[] sideExternalConnections = new boolean[6];
@@ -52,6 +55,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	public void save(NBTTagCompound tag) {
 		super.save(tag);
 		tag.setByte("type", (byte) wireType.ordinal());
+		tag.setByte("side", (byte) side);
 		for (int i = 0; i < 6; i++) {
 			tag.setBoolean("ext" + i, sideExternalConnections[i]);
 		}
@@ -67,6 +71,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	public void load(NBTTagCompound tag) {
 		super.load(tag);
 		int type = tag.getByte("type");
+		side = tag.getByte("side");
 		if (type < 0 || type >= EnumWire.VALUES.length) {
 			wireType = EnumWire.RED_ALLOY;
 		} else {
@@ -93,6 +98,10 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			isFirstTick = false;
 			computeConnections();
 		}
+		if (hasNewConnections) {
+			hasNewConnections = false;
+			updateChange();
+		}
 		super.update();
 	}
 
@@ -100,7 +109,6 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	public void writeDesc(MCDataOutput packet) {
 		super.writeDesc(packet);
 		NBTTagCompound tag = new NBTTagCompound();
-		//computeConnections();
 		save(tag);
 		packet.writeNBTTagCompound(tag);
 	}
@@ -115,8 +123,10 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	public void updateChange() {
 		tile().markDirty();
 		tile().notifyPartChange();
-		//notifyExtendedNeighbours();
-		sendDescUpdate();
+		// notifyExtendedNeighbours();
+		if (BasicUtils.isServer(world())) {
+			sendDescUpdate();
+		}
 	}
 
 	public final EnumWire getWireType() {
@@ -125,6 +135,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public void onPartChanged() {
+		computeConnections();
 	}
 
 	@Override
@@ -159,7 +170,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			sideCorneredConnections[i] = computeConnectCornerTo(i);
 		}
 		if (!oldExt.equals(sideExternalConnections) || !oldInt.equals(sideInternalConnections) || !oldCor.equals(sideCorneredConnections)) {
-			updateChange();
+			hasNewConnections = true;
 		}
 	}
 
@@ -167,7 +178,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		if ((side & 6) == (absDir & 6)) {
 			return false;
 		}
-		BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir);
+		//BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side, absDir);
 		int x = x(), y = y(), z = z();
 		switch (absDir) {
 		case Directions.NX:
@@ -197,6 +208,8 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			if (tp instanceof IConnectable) {
 				return ((IConnectable) tp).connects(this, side, absDir);
 			}
+		} else {
+			System.out.println("tilenull@ " + absDir);
 		}
 		return false;
 	}
@@ -285,7 +298,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	// Basically used to check for anything blocking the direction.
 	@Override
 	public boolean connects(WirePart wire, int blockFace, int fromDirection) {
-		if (!connectsToWireType(wire) || wire.connectsToWireType(this)) {
+		if (!connectsToWireType(wire) || !wire.connectsToWireType(this)) {
 			return false;
 		}
 		// Edge open checks here
@@ -299,6 +312,8 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public boolean connectsToWireType(WirePart wire) {
+		System.out.println("thier type: " + wire.wireType.name);
+		System.out.println("our type: " + wireType.name);
 		return wire.getWireType() == this.wireType;
 	}
 
@@ -398,6 +413,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public Iterable<Cuboid6> getOcclusionBoxes() {
+		// return Arrays.asList(getBounds());
 		return new ArrayList();
 	}
 
@@ -418,5 +434,14 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	public Icon getSpecialIconForRender() {
 		return null;
+	}
+
+	@Override
+	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
+		for (int i = 0; i < 6; i++) {
+			int x = i+1;
+			System.out.println("SideConnections " + x + " : " + sideExternalConnections[i]);
+		}
+		return false;
 	}
 }
