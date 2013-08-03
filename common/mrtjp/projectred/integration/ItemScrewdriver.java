@@ -17,7 +17,7 @@ public class ItemScrewdriver extends Item {
 		setMaxStackSize(1);
 		setMaxDamage(64);
 		setNoRepair();
-		setCreativeTab(ProjectRedTabs.tabTools);
+		setCreativeTab(ProjectRedTabs.tabCore);
 	}
 
 	@Override

@@ -11,22 +11,19 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
-public class TileInsulatedRedAlloy extends RedwirePart implements IBundledUpdatable, IInsulatedRedstoneWire {
-	{
+public class TileInsulatedRedAlloy extends RedwirePart implements IBundledUpdatable {
+	
+	public TileInsulatedRedAlloy(EnumWire type, boolean isJacketedWire, int onside) {
+		super(type, isJacketedWire, onside);
 		syncSignalStrength = true;
 	}
-	
+
 	@Override
-	protected boolean canConnectToWire(WirePart wire) {
+	public boolean connectsToWireType(WirePart wire) {
 		if (wire.getWireType() == EnumWire.RED_ALLOY || wire instanceof TileBundled) {
 			return true;
 		}
 		return wire.getWireType() == getWireType();
-	}
-
-	@Override
-	public boolean canProvideWeakPowerInDirection(int dir) {
-		return connectsInDirection(dir) && super.canProvideWeakPowerInDirection(dir);
 	}
 
 	@Override
@@ -35,14 +32,13 @@ public class TileInsulatedRedAlloy extends RedwirePart implements IBundledUpdata
 	}
 
 	@Override
-	protected int getInputPowerStrength(World worldObj, int x, int y, int z, int dir, int side, boolean countWires) {
-		int rv = BasicWireUtils.getPowerStrength(worldObj, x, y, z, dir, side, countWires);
+	public int getInputPowerStrength(int x, int y, int z, int dir, int side, boolean countWires) {
+		int rv = BasicWireUtils.getPowerStrength(world(), x, y, z, dir, side, countWires);
 
 		if (rv > 0) {
 			return rv;
 		}
-
-		TileEntity te = worldObj.getBlockTileEntity(x, y, z);
+		TileEntity te = world().getBlockTileEntity(x, y, z);
 		if (te instanceof IBundledEmitter) {
 			int colour = getInsulatedWireColour();
 			byte[] bcStrengthArray = ((IBundledEmitter) te).getBundledCableStrength(side, dir);
@@ -51,7 +47,6 @@ public class TileInsulatedRedAlloy extends RedwirePart implements IBundledUpdata
 				rv = Math.max(rv, bcStrength);
 			}
 		}
-
 		return rv;
 	}
 
@@ -60,14 +55,13 @@ public class TileInsulatedRedAlloy extends RedwirePart implements IBundledUpdata
 		updateSignal(null);
 	}
 
-	@Override
 	public int getInsulatedWireColour() {
 		if (getWireType() == null) {
 			return 0;
 		}
 		return getWireType().ordinal() - EnumWire.INSULATED_0.ordinal();
 	}
-	
+
 	@Override
 	public Icon getSpecialIconForRender() {
 		if (getRedstoneSignalStrength() > 0) {

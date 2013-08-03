@@ -4,16 +4,8 @@ import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.blocks.BlockLamp.EnumLamp;
 import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
 import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
-import mrtjp.projectred.core.RecipeDrawPlate;
-import mrtjp.projectred.crafting.microblocks.RecipeCombineSeveral;
-import mrtjp.projectred.crafting.microblocks.RecipeCombineTwo;
-import mrtjp.projectred.crafting.microblocks.RecipeHollowCover;
-import mrtjp.projectred.crafting.microblocks.RecipeHorizontalCut;
-import mrtjp.projectred.crafting.microblocks.RecipeUnHollowCover;
-import mrtjp.projectred.crafting.microblocks.RecipeVerticalCut;
 import mrtjp.projectred.crafting.tools.RecipeBackpackRecoloring;
 import mrtjp.projectred.crafting.tools.RecipeVAWTRecoloring;
-import mrtjp.projectred.integration.EnumGate;
 import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemPart.EnumPart;
 import mrtjp.projectred.transmission.EnumWire;
@@ -28,7 +20,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
 public class CraftingRecipeManager {
 	
 	public static void initRecipes() {
-		initMicroblockRecipes();
 		initWireRecipes();
 		initPartsRecipes();
 		initMachineRecipes();
@@ -37,14 +28,6 @@ public class CraftingRecipeManager {
 		initOtherAlloySmelterRecipes();
 	}
 	
-	private static void initMicroblockRecipes() {
-		GameRegistry.addRecipe(new RecipeHollowCover());
-		GameRegistry.addRecipe(new RecipeUnHollowCover());
-		GameRegistry.addRecipe(new RecipeVerticalCut());
-		GameRegistry.addRecipe(new RecipeHorizontalCut());
-		GameRegistry.addRecipe(new RecipeCombineTwo());
-		GameRegistry.addRecipe(new RecipeCombineSeveral());
-	}
 	private static void initWireRecipes() {	
 		/** Red Alloy Wires **/
 		GameRegistry.addRecipe(EnumWire.RED_ALLOY.getItemStack(12), 
@@ -171,15 +154,6 @@ public class CraftingRecipeManager {
 		}
 	}	
 	private static void initToolRecipes() {
-		/** Saw **/
-		GameRegistry.addRecipe(new ItemStack(ProjectRed.itemSaw), 
-				"sss",
-				"ii ",
-				"dd ",
-				's', Item.stick,
-				'i', Item.ingotIron,
-				'd', Item.diamond
-		);
 		
 		/** Wool Gin **/
 		GameRegistry.addRecipe(new ItemStack(ProjectRed.itemWoolGin), 

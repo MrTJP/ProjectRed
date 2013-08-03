@@ -12,7 +12,7 @@ public class ItemBlockMachines extends ItemBlock {
 	public ItemBlockMachines(int par1) {
 		super(par1);
 		setHasSubtypes(true);
-		setCreativeTab(ProjectRedTabs.tabMachines);
+		setCreativeTab(ProjectRedTabs.tabExpansion);
 	}
 
 	/**

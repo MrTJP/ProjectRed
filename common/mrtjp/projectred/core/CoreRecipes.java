@@ -1,5 +1,6 @@
 package mrtjp.projectred.core;
 
+import codechicken.microblock.handler.MicroblockProxy;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.AlloySmelterRecipe;
 import mrtjp.projectred.items.ItemPart.EnumPart;
@@ -115,7 +116,7 @@ public class CoreRecipes {
 		GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8), 
 				"s",
 				"b",
-				's', new ItemStack(ProjectRed.itemSaw, 1, Short.MAX_VALUE), 
+				's', new ItemStack(MicroblockProxy.sawDiamond(), 1, Short.MAX_VALUE), 
 				'b', EnumPart.SILICONBOULE.getItemStack()
 		);
 		

@@ -20,7 +20,7 @@ public class ItemVAWT extends Item {
 		setMaxDamage(1280);
 		setNoRepair();
 		setUnlocalizedName("projectred.items.turbine.VAWT");
-		setCreativeTab(ProjectRedTabs.tabMachines);
+		setCreativeTab(ProjectRedTabs.tabExpansion);
 	}
 
 	@Override
