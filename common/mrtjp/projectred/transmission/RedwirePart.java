@@ -38,7 +38,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 	private static boolean dontEmitPower = false;
 
 	private boolean sceduleConnectedThingsUpdate = false;
-	
+
 	public RedwirePart(EnumWire type, boolean isJacketedWire, int onside) {
 		super(type, isJacketedWire, onside);
 	}
@@ -88,7 +88,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 	public void onAdded() {
 		super.onAdded();
 	}
-	
+
 	@Override
 	public void onNeighborChanged() {
 		if (blockUpdateCausedByAlloyWire) {
@@ -97,7 +97,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 			// it to update in the first place.
 			return;
 		}
-	
+
 		super.onNeighborChanged();
 		updateSignal(null);
 	}
@@ -114,7 +114,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 		}
 		return newStrength;
 	}
-	
+
 	public int getInputPowerStrength(int x, int y, int z, int outDir, int testside, boolean countWires) {
 		return BasicWireUtils.getPowerStrength(world(), x, y, z, outDir, testside, countWires);
 	}
@@ -147,9 +147,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 			if (maskConnectsInternally(dir)) {
 				int x = x(), y = y(), z = z();
 				TMultiPart t = tile().partMap(dir);
-				if (t instanceof RedwirePart) {
-					newStrength = updateStrengthFromBlock(x, y, z, side, dir, newStrength);
-				}
+				newStrength = updateStrengthFromBlock(x, y, z, side, dir, newStrength);
 				continue;
 			}
 			if (maskConnectsAroundCorner(dir)) {
@@ -201,9 +199,9 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 						if (t instanceof RedwirePart) {
 							((RedwirePart) t).updateSignal(this);
 						} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
-							((BundledCablePart)t).onBundledInputChanged();
+							((BundledCablePart) t).onBundledInputChanged();
 						}
-						
+
 					}
 				}
 			}
@@ -219,7 +217,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 						if (t instanceof RedwirePart) {
 							((RedwirePart) t).updateSignal(this);
 						} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
-							((BundledCablePart)t).onBundledInputChanged();
+							((BundledCablePart) t).onBundledInputChanged();
 						}
 					}
 				}
@@ -229,7 +227,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 				if (t instanceof RedwirePart) {
 					((RedwirePart) t).updateSignal(this);
 				} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
-					((BundledCablePart)t).onBundledInputChanged();
+					((BundledCablePart) t).onBundledInputChanged();
 				}
 			}
 		}
@@ -457,7 +455,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 		wra.setWireRenderState(this);
 		wra.pushRender();
 	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
