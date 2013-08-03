@@ -1,26 +1,59 @@
 package mrtjp.projectred.core;
 
-import codechicken.microblock.handler.MicroblockProxy;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.AlloySmelterRecipe;
+import mrtjp.projectred.crafting.tools.RecipeBackpackRecoloring;
+import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemPart.EnumPart;
-import mrtjp.projectred.transmission.EnumWire;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import codechicken.microblock.handler.MicroblockProxy;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CoreRecipes {
 	public static void initCoreRecipes() {
-		//initPartRecipes();
+		initPartRecipes();
 		initToolRecipes();
+		initOtherRecipes();
+	}
+
+	private static void initOtherRecipes() {
+		/** Wool Gin to string recipe **/
+		GameRegistry.addRecipe(new ItemStack(Item.silk, 4), 
+				"gw",
+				'g', new ItemStack(ProjectRed.itemWoolGin, 1, Short.MAX_VALUE),
+				'w', Block.cloth
+		);
 	}
 
 	private static void initToolRecipes() {
 		/** Draw Plate **/
-		GameRegistry.addRecipe(new RecipeDrawPlate());		
+		GameRegistry.addRecipe(new RecipeDrawPlate());	
+		
+		/** Wool Gin **/
+		GameRegistry.addRecipe(new ItemStack(ProjectRed.itemWoolGin), 
+				"sis",
+				"sss",
+				" s ",
+				's', Item.stick,
+				'i', EnumPart.IRONCOIL.getItemStack()
+		);
+		
+		/** Backpacks **/
+		for (int i = 0; i < EnumBackpack.VALID_BP.length; i++) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(EnumBackpack.get(i).getItemStack(), 
+					"ccc",
+					"cdc",
+					"ccc",
+					'c', EnumPart.WOVENCLOTH.getItemStack(),
+					'd', PRColors.get(i).getOreDict()
+			));
+		}
+		GameRegistry.addRecipe(new RecipeBackpackRecoloring());
+
 	}
 
 	private static void initPartRecipes() {
@@ -34,23 +67,7 @@ public class CoreRecipes {
 				'r', Item.redstone,
 				'p', EnumPart.PLATE.getItemStack()
 		);
-		
-		/** Wired Plate **/
-		GameRegistry.addRecipe(EnumPart.WIREDPLATE.getItemStack(), 
-				"r",
-				"p",
-				'r', EnumWire.RED_ALLOY.getItemStack(),
-				'p', EnumPart.PLATE.getItemStack()
-		);
-
-		/** Bundled Plate **/
-		GameRegistry.addRecipe(EnumPart.BUNDLEDPLATE.getItemStack(), 
-				"r",
-				"p",
-				'r', EnumWire.BUNDLED_N.getItemStack(),
-				'p', EnumPart.PLATE.getItemStack()
-		);
-		
+				
 		/** Anode **/
 		GameRegistry.addRecipe(EnumPart.ANODE.getItemStack(3), 
 				" r ",
@@ -190,11 +207,11 @@ public class CoreRecipes {
 		);
 		
 		/** Sail **/
-		GameRegistry.addRecipe(EnumPart.WOVENCLOTH.getItemStack(), 
+		GameRegistry.addRecipe(EnumPart.SAIL.getItemStack(), 
 				"ss",
 				"ss",
 				"ss",
-				's', EnumPart.SAIL.getItemStack()
+				's', EnumPart.WOVENCLOTH.getItemStack()
 		);	
 	}
 

@@ -2,11 +2,7 @@ package mrtjp.projectred.core;
 
 import static mrtjp.projectred.ProjectRed.initializedModules;
 import static mrtjp.projectred.ProjectRed.registeredModules;
-import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.blocks.BlockLamp.EnumLamp;
-import mrtjp.projectred.integration.EnumGate;
-import mrtjp.projectred.integration.ModuleIntegration;
-import mrtjp.projectred.items.ItemPart.EnumPart;
 import mrtjp.projectred.transmission.EnumWire;
 
 public class CommonProxy implements IProxy {

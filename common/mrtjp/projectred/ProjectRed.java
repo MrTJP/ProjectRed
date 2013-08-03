@@ -23,7 +23,6 @@ import mrtjp.projectred.integration.ItemPartGate;
 import mrtjp.projectred.integration.ItemScrewdriver;
 import mrtjp.projectred.integration.ModuleIntegration;
 import mrtjp.projectred.items.ItemBackpack;
-import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemDrawPlate;
 import mrtjp.projectred.items.ItemPart;
 import mrtjp.projectred.items.ItemVAWT;
@@ -143,20 +142,6 @@ public class ProjectRed {
 			}
 		}
 		
-		// Wool Gin
-		if (Configurator.item_woolginID.getInt() > 0) {
-			itemWoolGin = new ItemWoolGin(Configurator.item_woolginID.getInt());
-			LanguageRegistry.addName(itemWoolGin, "Wool Gin");
-		}
-
-		// Backpacks
-		if (Configurator.item_backpackID.getInt() > 0) {
-			itemBackpack = new ItemBackpack(Configurator.item_backpackID.getInt());
-			for (EnumBackpack b : EnumBackpack.VALID_BP) {
-				LanguageRegistry.addName(b.getItemStack(), b.fullname);
-			}
-		}
-
 		// VAWT
 		if (Configurator.item_vawtID.getInt() > 0) {
 			itemVAWT = new ItemVAWT(Configurator.item_vawtID.getInt());

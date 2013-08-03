@@ -1,6 +1,9 @@
 package mrtjp.projectred.integration;
 
-import static mrtjp.projectred.transmission.BasicWireUtils.*;
+import static mrtjp.projectred.transmission.BasicWireUtils.BACK;
+import static mrtjp.projectred.transmission.BasicWireUtils.FRONT;
+import static mrtjp.projectred.transmission.BasicWireUtils.LEFT;
+import static mrtjp.projectred.transmission.BasicWireUtils.RIGHT;
 
 /**
  * Provides simple means of obtaining a relative to absolute directions and vice

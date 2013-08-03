@@ -1,15 +1,11 @@
 package mrtjp.projectred.integration;
 
 import mrtjp.projectred.core.BasicGuiUtils;
-import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.Coords;
-import net.minecraft.client.Minecraft;
 import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
-import codechicken.multipart.TileMultipart;
 
 public class GuiCounter extends GuiScreenWidget {
 

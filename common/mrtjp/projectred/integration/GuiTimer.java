@@ -2,7 +2,6 @@ package mrtjp.projectred.integration;
 
 import mrtjp.projectred.core.BasicGuiUtils;
 import mrtjp.projectred.core.Configurator;
-import net.minecraft.inventory.Container;
 import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.packet.PacketCustom;
