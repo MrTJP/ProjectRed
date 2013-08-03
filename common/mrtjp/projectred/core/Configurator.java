@@ -30,6 +30,7 @@ public class Configurator {
 	/** Multipart IDs **/
 	public static Property part_gate;
 	public static Property part_wire;
+	public static Property part_jwire;
 
 	/** Block IDs **/
 	public static Property block_lampID;
@@ -66,6 +67,7 @@ public class Configurator {
 
 		part_gate = localConfig.get("MultiPart Item IDs", "Gate Part ID", 9030);
 		part_wire = localConfig.get("MultiPart Item IDs", "Wire Part ID", 9031);
+		part_jwire = localConfig.get("MultiPart Item IDs", "Jacketed Wire Part ID", 9032);
 		
 		block_lampID = localConfig.getBlock("block_lightingID", 2128);
 		block_machinesID = localConfig.getBlock("block_machinesID", 2129);

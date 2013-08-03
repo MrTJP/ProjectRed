@@ -141,29 +141,10 @@ public enum EnumWire {
 	}
 
 	public ItemStack getJacketedItemStack(int i) {
-		// TODO change this
 		if (!this.hasJacketedForm()) {
 			return null;
 		}
-		return new ItemStack(ProjectRed.itemPartWire, i, meta);
-	}
-
-	public static boolean isBundledCable(ItemStack stack) {
-		for (EnumWire w : EnumWire.BUNDLED_WIRE) {
-			if (stack.itemID == ProjectRed.itemPartWire.itemID && stack.getItemDamage() == w.meta) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static boolean isInsulatedWire(ItemStack stack) {
-		for (EnumWire w : EnumWire.INSULATED_WIRE) {
-			if (stack.itemID == ProjectRed.itemPartWire.itemID && stack.getItemDamage() == w.meta) {
-				return true;
-			}
-		}
-		return false;
+		return new ItemStack(ProjectRed.itemPartJacketedWire, i, meta);
 	}
 
 	public static EnumWire getTypeByName(String name) {
