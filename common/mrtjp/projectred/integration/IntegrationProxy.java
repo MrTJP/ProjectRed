@@ -2,20 +2,12 @@ package mrtjp.projectred.integration;
 
 import static mrtjp.projectred.ProjectRed.itemPartGate;
 import static mrtjp.projectred.ProjectRed.itemScrewdriver;
-
-import org.apache.commons.lang3.ArrayUtils;
-
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.NetServerHandler;
-
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.packet.PacketCustom.IServerPacketHandler;
 import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class IntegrationProxy implements IProxy, IPartFactory {
 

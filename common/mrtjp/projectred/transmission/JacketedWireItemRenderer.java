@@ -1,10 +1,11 @@
 package mrtjp.projectred.transmission;
 
-import org.lwjgl.opengl.GL11;
-
 import mrtjp.projectred.core.BasicRenderUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
+
+import org.lwjgl.opengl.GL11;
+
 import codechicken.lib.render.CCRenderState;
 
 public class JacketedWireItemRenderer implements IItemRenderer {

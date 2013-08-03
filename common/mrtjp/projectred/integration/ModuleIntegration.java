@@ -1,8 +1,8 @@
 package mrtjp.projectred.integration;
 
-import cpw.mods.fml.common.network.IGuiHandler;
 import mrtjp.projectred.core.IProjectRedModule;
 import mrtjp.projectred.core.IProxy;
+import cpw.mods.fml.common.network.IGuiHandler;
 
 public class ModuleIntegration implements IProjectRedModule {
 

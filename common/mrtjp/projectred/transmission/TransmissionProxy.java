@@ -29,6 +29,8 @@ public class TransmissionProxy implements IProxy, IPartFactory {
 		
 		itemPartWire = new ItemPartWire(Configurator.part_wire.getInt());
 		itemPartJacketedWire = new ItemPartJacketedWire(Configurator.part_jwire.getInt());
+		
+		TransmissionRecipes.initTransmissionRecipes();
 	}
 
 	@Override
