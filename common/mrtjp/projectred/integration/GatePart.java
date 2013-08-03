@@ -8,11 +8,15 @@ import java.util.Random;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.integration.GateLogic.WorldStateBound;
+import mrtjp.projectred.transmission.BundledCablePart;
 import mrtjp.projectred.transmission.IBundledEmitter;
+import mrtjp.projectred.transmission.IBundledUpdatable;
+import mrtjp.projectred.transmission.IConnectable;
+import mrtjp.projectred.transmission.RedwirePart;
+import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
-import mrtjp.projectred.utils.Directions;
 import mrtjp.projectred.utils.Rotator;
 import net.minecraft.block.Block;
 import net.minecraft.client.particle.EffectRenderer;
@@ -20,10 +24,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagLong;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
@@ -34,7 +36,6 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
-import codechicken.multipart.BlockMultipart;
 import codechicken.multipart.IFaceRedstonePart;
 import codechicken.multipart.IRandomDisplayTick;
 import codechicken.multipart.JCuboidPart;
@@ -43,10 +44,11 @@ import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePart, JNormalOcclusion, IRandomDisplayTick {
+public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter, IBundledUpdatable, IConnectable, IFaceRedstonePart, JNormalOcclusion, IRandomDisplayTick {
 	private EnumGate type;
 
 	/** Server-side logic for gate **/
@@ -73,10 +75,9 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	private short[] outputs = new short[4];
 	private int renderState;
 	private int prevRenderState;
-	private boolean updatePending;
 	private boolean isFirstTick = true;
 	private static boolean nextUpdateIsFromSelf = false;
-	
+
 	public GatePart(EnumGate type) {
 		if (type == null) {
 			throw new IllegalArgumentException("type cannot be null");
@@ -88,34 +89,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 
 	public void setupPlacement(EntityPlayer p, int side) {
 		this.side = (byte) (side ^ 1);
-		front = (byte) ((side + 2) % 6);
-		Vec3 look = p.getLook(1.0f);
-		double absx = Math.abs(look.xCoord);
-		double absy = Math.abs(look.yCoord);
-		double absz = Math.abs(look.zCoord);
-		switch (side) {
-		case Directions.PX:
-		case Directions.NX:
-			if (absy > absz)
-				front = (byte) (look.yCoord > 0 ? Directions.PY : Directions.NY);
-			else
-				front = (byte) (look.zCoord > 0 ? Directions.PZ : Directions.NZ);
-			break;
-		case Directions.PY:
-		case Directions.NY:
-			if (absx > absz)
-				front = (byte) (look.xCoord > 0 ? Directions.PX : Directions.NX);
-			else
-				front = (byte) (look.zCoord > 0 ? Directions.PZ : Directions.NZ);
-			break;
-		case Directions.PZ:
-		case Directions.NZ:
-			if (absy > absx)
-				front = (byte) (look.yCoord > 0 ? Directions.PY : Directions.NY);
-			else
-				front = (byte) (look.xCoord > 0 ? Directions.PX : Directions.NX);
-			break;
-		}
+		front = (byte) (Rotation.rotateSide(side ^ 1, Rotation.getSidedRotation(p, side)) ^ 1);
 	}
 
 	public int getSide() {
@@ -184,7 +158,6 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 
 		tag.setShort("renderState", (short) renderState);
 		tag.setShort("prevRenderState", (short) prevRenderState);
-		tag.setBoolean("updatePending", updatePending);
 		tag.setShort("gateSettings", (short) gateSettings);
 		if (logic != null && requiresTickUpdate) {
 			NBTTagCompound tag2 = new NBTTagCompound();
@@ -207,7 +180,6 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		renderState = tag.getShort("renderState") & 0xFFFF;
 		prevRenderState = tag.getShort("prevRenderState") & 0xFFFF;
 
-		updatePending = tag.getBoolean("updatePending");
 		gateSettings = tag.getShort("gateSettings") & 0xFFFF;
 
 		if (tag.getTag("inputs") instanceof NBTTagLong) {
@@ -225,7 +197,11 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	public short[] computeInputs() {
 		short[] newInputs = new short[4];
 		for (int i = 0; i < 4; i++) {
-			newInputs[i] = (short) RedstoneInteractions.getPowerTo(this, Rotator.relativeToAbsolute(side, front, i));
+			if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).isBundledConnection(i)) {
+				newInputs[i] = getBundledInputBitmask(Rotator.relativeToAbsolute(side, front, i));
+			} else {
+				newInputs[i] = (short) RedstoneInteractions.getPowerTo(this, Rotator.relativeToAbsolute(side, front, i));
+			}
 		}
 		return newInputs;
 	}
@@ -243,10 +219,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 			short[] oldOutputs = outputs.clone();
 			logic.computeOutFromIn(inputs, outputs, gateSettings);
 			if (forceUpdate || !Arrays.equals(outputs, oldOutputs)) {
-				if (!updatePending) {
-					updateChange();
-					updatePending = true;
-				}
+				updateChange();
 			}
 		}
 	}
@@ -295,7 +268,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		nextUpdateIsFromSelf = false;
 		sendDescUpdate();
 	}
-	
+
 	/**
 	 * Notifies neighbours one or two blocks away, in the same pattern as most
 	 * redstone updates.
@@ -309,7 +282,6 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		world().notifyBlocksOfNeighborChange(x(), y(), z() + 1, tile().getBlockType().blockID);
 		world().notifyBlocksOfNeighborChange(x(), y(), z() - 1, tile().getBlockType().blockID);
 	}
-
 
 	/**
 	 * See if the gate is still attached to something.
@@ -384,22 +356,27 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 
 	private short getBundledInputBitmask(int abs) {
 		ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[abs];
-		int x = x() + fd.offsetX, y = y() + fd.offsetY, z = z() + fd.offsetZ;
-		TileEntity te = world().getBlockTileEntity(x, y, z);
-
-		if (te instanceof IBundledEmitter) {
-			byte[] values = ((IBundledEmitter) te).getBundledCableStrength(side, abs ^ 1);
-			if (values == null)
-				return 0;
-
-			short rv = 0;
-			for (int k = 15; k >= 0; k--) {
-				rv <<= 1;
-				if (values[k] != 0)
-					rv |= 1;
+		int x = x() + fd.offsetX;
+		int y = y() + fd.offsetY;
+		int z = z() + fd.offsetZ;
+		TileMultipart tmp = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+		if (tmp != null) {
+			TMultiPart te = tmp.partMap(side);
+			if (te instanceof IBundledEmitter) {
+				byte[] values = ((IBundledEmitter) te).getBundledCableStrength(side, abs ^ 1);
+				if (values == null) {
+					return 0;
+				}
+				short rv = 0;
+				// Turn array into bit mask
+				for (int k = 15; k >= 0; k--) {
+					rv <<= 1;
+					if (values[k] != 0) {
+						rv |= 1;
+					}
+				}
+				return rv;
 			}
-
-			return rv;
 		}
 		return 0;
 	}
@@ -429,7 +406,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 
 	private byte[] returnedBundledCableStrength;
 
-	// @Override
+	@Override
 	public byte[] getBundledCableStrength(int blockFace, int toDirection) {
 		if (!hasBundledConnections)
 			return null;
@@ -456,10 +433,11 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 		return returnedBundledCableStrength;
 	}
 
-	// @Override
+	@Override
 	public void onBundledInputChanged() {
-		if (hasBundledConnections)
+		if (hasBundledConnections) {
 			updateLogic(false, false);
+		}
 	}
 
 	/** START TILEMULTIPART INTERACTIONS **/
@@ -486,6 +464,11 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 	public Cuboid6 getBounds() {
 		Cuboid6 base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D, 1 / 8D, 8 / 8D);
 		return base.transform(sideRotations[side].at(center));
+	}
+
+	@Override
+	public Iterable<Cuboid6> getCollisionBoxes() {
+		return Arrays.asList();
 	}
 
 	@Override
@@ -671,5 +654,26 @@ public class GatePart extends JCuboidPart implements TFacePart, IFaceRedstonePar
 			world().spawnParticle("reddust", d0, d1, d2, 0.0D, 0.0D, 0.0D);
 		}
 	}
+
 	/** END RENDERSTUFF **/
+
+	@Override
+	public boolean connects(WirePart wire, int blockFace, int fromDirection) {
+		if (wire instanceof BundledCablePart) {
+			if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).isBundledConnection(Rotator.absoluteToRelative(side, front, fromDirection^1))) {
+				return true;
+			}
+		}
+		return wire instanceof RedwirePart && canConnectRedstone(fromDirection ^ 1);
+	}
+
+	@Override
+	public boolean connectsAroundCorner(WirePart wire, int blockFace, int fromDirection) {
+		return false;
+	}
+
+	@Override
+	public boolean connectsToWireType(WirePart wire) {
+		return wire instanceof RedwirePart || wire instanceof BundledCablePart;
+	}
 }

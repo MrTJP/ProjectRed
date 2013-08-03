@@ -7,6 +7,7 @@ import net.minecraft.util.Icon;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.TransformationList;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
@@ -18,6 +19,7 @@ public class WireRenderAssistant {
 	public double z;
 	public int side;
 	public int facing = -1;
+	public double scaleFactor = 1;
 
 	public float xOffset = 0;
 	public float yOffset = 0;
@@ -26,7 +28,7 @@ public class WireRenderAssistant {
 	public RenderBlocks renderBlocks;
 
 	/** Start Wire Rendering **/
-	
+
 	public Map<String, CCModel> model;
 	public Icon wireIcon;
 
@@ -55,17 +57,10 @@ public class WireRenderAssistant {
 	public boolean connectsInsideConnectorE;
 
 	// Used to check relative direction for the side the wire is on.
-	public int[][] sideMap = { 
-			{ -1, -1, 2, 3, 5, 4 }, 
-			{ -1, -1, 3, 2, 4, 5 }, 
-			{ -1, -1, 1, 0, 5, 4 }, 
-			{ -1, -1, 0, 1, 4, 5 }, 
-			{ -1, -1, 0, 1, 2, 3 }, 
-			{ -1, -1, 1, 0, 3, 2 }, 
-			};
+	public int[][] sideMap = { { -1, -1, 2, 3, 5, 4 }, { -1, -1, 3, 2, 4, 5 }, { -1, -1, 1, 0, 5, 4 }, { -1, -1, 0, 1, 4, 5 }, { -1, -1, 0, 1, 2, 3 }, { -1, -1, 1, 0, 3, 2 }, };
 
 	public int[] frontMap_NS = { 2, 3, 1, 0, 0, 1 };
-	public int[] frontMap_WE = { 5, 4, 5, 4, 2, 3 };	
+	public int[] frontMap_WE = { 5, 4, 5, 4, 2, 3 };
 
 	public void setWireRenderState(WirePart t) {
 		// Connections
@@ -176,6 +171,7 @@ public class WireRenderAssistant {
 			return;
 		}
 		TransformationList t = new TransformationList();
+		t.with(new Scale(scaleFactor));
 		t.with(new Translation(.5 + xOffset, 0 + yOffset, .5 + zOffset)).with(Rotation.sideOrientation(side, Rotation.rotationTo(side, facing > -1 ? facing : frontMap_NS[side])).at(Vector3.center)).with(new Translation(x, y, z));
 		cc.render(0, cc.verts.length, t, new IconTransformation(renderBlocks != null && renderBlocks.overrideBlockTexture != null ? renderBlocks.overrideBlockTexture : wireIcon), null);
 	}
@@ -186,38 +182,45 @@ public class WireRenderAssistant {
 			return;
 		}
 		TransformationList t = new TransformationList();
+		t.with(new Scale(scaleFactor));
 		t.with(new Translation(.5 + xOffset, 0 + yOffset, .5 + zOffset)).with(Rotation.sideOrientation(side, Rotation.rotationTo(side, facing > -1 ? facing : frontMap_WE[side])).at(Vector3.center)).with(new Translation(x, y, z));
 		cc.render(0, cc.verts.length, t, new IconTransformation(renderBlocks != null && renderBlocks.overrideBlockTexture != null ? renderBlocks.overrideBlockTexture : wireIcon), null);
 	}
+
 	/** End Wire Rendering **/
-	
-	
+
 	/** Start Jacketed Rendering **/
+	public boolean isJacketFrameCenterCrossed;
+	public boolean isJacketFrameCenterNS;
+	public boolean isJacketFrameCenterWE;
+	public boolean isJacketFrameCenterUD;
+
 	public boolean isJacketCenterCrossed;
 	public boolean isJacketCenterNS;
 	public boolean isJacketCenterWE;
 	public boolean isJacketCenterUD;
-	
+
 	public boolean renderFrameEdges;
-	
+
 	public boolean jacketU;
 	public boolean jacketD;
 	public boolean jacketN;
 	public boolean jacketS;
 	public boolean jacketW;
 	public boolean jacketE;
-	
+
 	public void setJacketRender(WirePart t) {
-		// Swapped connection logic, because model is rendering flipped, Blender mistake probably.
-		jacketD = t.wireConnectsInDirection(-1, 0);
-		jacketU = t.wireConnectsInDirection(-1, 1);
-		jacketN = t.wireConnectsInDirection(-1, 3);
-		jacketS = t.wireConnectsInDirection(-1, 2);
-		jacketW = t.wireConnectsInDirection(-1, 5);
-		jacketE = t.wireConnectsInDirection(-1, 4);
-		
+		// Swapped connection logic, because model is rendering flipped, Blender
+		// mistake probably.
+		jacketD = t.maskConnectsJacketed(0);
+		jacketU = t.maskConnectsJacketed(1);
+		jacketN = t.maskConnectsJacketed(3);
+		jacketS = t.maskConnectsJacketed(2);
+		jacketW = t.maskConnectsJacketed(5);
+		jacketE = t.maskConnectsJacketed(4);
+
 		renderFrameEdges = true;
-		
+
 		// Utils
 		int connections = 0;
 		if (jacketD) {
@@ -239,34 +242,39 @@ public class WireRenderAssistant {
 			connections++;
 		}
 		// Center
-		isJacketCenterCrossed = (jacketD && (jacketN || jacketS || jacketW || jacketE)) ||(jacketU && (jacketN || jacketS || jacketW || jacketE)) ||(jacketN && (jacketU || jacketD || jacketW || jacketE)) ||(jacketS && (jacketU || jacketD || jacketW || jacketE)) ||(jacketW && (jacketN || jacketS || jacketU || jacketD)) ||(jacketE && (jacketN || jacketS || jacketU || jacketD)) || (connections < 2);
-		isJacketCenterUD = !isJacketCenterCrossed && (jacketU && jacketD);
-		isJacketCenterNS = !isJacketCenterCrossed && (jacketN && jacketS);
-		isJacketCenterWE = !isJacketCenterCrossed && (jacketW && jacketE);
+		isJacketFrameCenterCrossed = (jacketD && (jacketN || jacketS || jacketW || jacketE)) || (jacketU && (jacketN || jacketS || jacketW || jacketE)) || (jacketN && (jacketU || jacketD || jacketW || jacketE)) || (jacketS && (jacketU || jacketD || jacketW || jacketE)) || (jacketW && (jacketN || jacketS || jacketU || jacketD)) || (jacketE && (jacketN || jacketS || jacketU || jacketD)) || (connections < 2);
+		isJacketFrameCenterUD = !isJacketFrameCenterCrossed && (jacketU && jacketD);
+		isJacketFrameCenterNS = !isJacketFrameCenterCrossed && (jacketN && jacketS);
+		isJacketFrameCenterWE = !isJacketFrameCenterCrossed && (jacketW && jacketE);
+
+		isJacketCenterCrossed = (jacketD && (jacketN || jacketS || jacketW || jacketE)) || (jacketU && (jacketN || jacketS || jacketW || jacketE)) || (jacketN && (jacketU || jacketD || jacketW || jacketE)) || (jacketS && (jacketU || jacketD || jacketW || jacketE)) || (jacketW && (jacketN || jacketS || jacketU || jacketD)) || (jacketE && (jacketN || jacketS || jacketU || jacketD)) || connections == 0;
+		isJacketCenterUD = !isJacketCenterCrossed && (jacketU || jacketD);
+		isJacketCenterNS = !isJacketCenterCrossed && (jacketN || jacketS);
+		isJacketCenterWE = !isJacketCenterCrossed && (jacketW || jacketE);
 	}
-	
+
 	public void setInventoryJacketRender() {
 		jacketU = jacketD = jacketN = jacketS = jacketW = jacketE = true;
-		isJacketCenterCrossed = true;
+		isJacketFrameCenterCrossed = true;
 		renderFrameEdges = false;
 	}
-	
+
 	public void pushJacketFrameRender() {
 		// Center
-		if (isJacketCenterCrossed) {
+		if (isJacketFrameCenterCrossed) {
 			renderJacketModel(model.get("frame_center"));
-		} else if (isJacketCenterUD) {
+		} else if (isJacketFrameCenterUD) {
 			renderJacketModel(model.get("frame_center_UD"));
-		} else if (isJacketCenterNS) {
+		} else if (isJacketFrameCenterNS) {
 			renderJacketModel(model.get("frame_center_NS"));
-		} else if (isJacketCenterWE) {
+		} else if (isJacketFrameCenterWE) {
 			renderJacketModel(model.get("frame_center_WE"));
 		}
 
 		if (!renderFrameEdges) {
 			return;
 		}
-		
+
 		// Up
 		if (jacketU) {
 			renderJacketModel(model.get("frame_U"));
@@ -292,7 +300,7 @@ public class WireRenderAssistant {
 			renderJacketModel(model.get("frame_E"));
 		}
 	}
-	
+
 	public void pushJacketWireRender() {
 		// Center
 		if (isJacketCenterCrossed) {
@@ -330,13 +338,14 @@ public class WireRenderAssistant {
 			renderJacketModel(model.get("wire_E"));
 		}
 	}
-	
+
 	public void renderJacketModel(CCModel cc) {
 		if (cc == null) {
 			System.out.println("Wire model is currupt or missing.");
 			return;
 		}
 		TransformationList t = new TransformationList();
+		t.with(new Scale(scaleFactor));
 		t.with(new Translation(.5 + xOffset, 0 + yOffset, .5 + zOffset)).with(new Translation(x, y, z));
 		cc.render(0, cc.verts.length, t, new IconTransformation(renderBlocks != null && renderBlocks.overrideBlockTexture != null ? renderBlocks.overrideBlockTexture : wireIcon), null);
 	}

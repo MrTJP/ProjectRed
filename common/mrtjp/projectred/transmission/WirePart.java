@@ -37,11 +37,11 @@ import codechicken.multipart.TileMultipart;
  * @author MrTJP
  * 
  */
-public abstract class WirePart extends JCuboidPart implements IConnectable, TFacePart, JNormalOcclusion, JPartialOcclusion {
+public abstract class WirePart extends JCuboidPart implements IConnectable, TFacePart, JNormalOcclusion {
 
 	private EnumWire wireType;
-	private boolean isJacketed = false;
-	private boolean notifyNeighborsNextTick = false;
+	protected boolean isJacketed = false;
+	protected boolean notifyNeighborsNextTick = false;
 	public int side;
 	public boolean isFirstTick = true;
 	public boolean hasNewConnections = false;
@@ -54,7 +54,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	// True if this regular wire connects to a jacketed wire in this block. If
 	// is jacketed, connection mask is stored in sideExternalConnections.
-	private boolean localJacketedConnection = false;
+	protected boolean localJacketedConnection = false;
 
 	public WirePart(EnumWire type, boolean isJacketedWire, int onside) {
 		wireType = type;
@@ -67,14 +67,15 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		super.save(tag);
 		tag.setByte("type", (byte) wireType.ordinal());
 		tag.setByte("side", (byte) side);
+		tag.setBoolean("isjack", isJacketed);
 		for (int i = 0; i < 6; i++) {
-			tag.setBoolean("ext" + i, sideExternalConnections[i] ? true : false);
+			tag.setBoolean("ext" + i, sideExternalConnections[i]);
 		}
 		for (int i = 0; i < 6; i++) {
-			tag.setBoolean("int" + i, sideInternalConnections[i] ? true : false);
+			tag.setBoolean("int" + i, sideInternalConnections[i]);
 		}
 		for (int i = 0; i < 6; i++) {
-			tag.setBoolean("cor" + i, sideCorneredConnections[i] ? true : false);
+			tag.setBoolean("cor" + i, sideCorneredConnections[i]);
 		}
 		tag.setBoolean("jack", localJacketedConnection);
 	}
@@ -84,6 +85,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		super.load(tag);
 		int type = tag.getByte("type");
 		side = tag.getByte("side");
+		isJacketed = tag.getBoolean("isjack");
 		if (type < 0 || type >= EnumWire.VALID_WIRE.length) {
 			wireType = EnumWire.RED_ALLOY;
 		} else {
@@ -127,19 +129,18 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	public void writeDesc(MCDataOutput packet) {
 		packet.writeByte(wireType.ordinal());
 		packet.writeByte(side);
-		packet.writeBoolean(isJacketed);
+		packet.writeBoolean(isJacketed ? true : false);
 		for (int i = 0; i < 6; i++) {
-			packet.writeBoolean(sideExternalConnections[i]);
+			packet.writeBoolean(sideExternalConnections[i] ? true : false);
 		}
-		if (!isJacketed) {
-			for (int i = 0; i < 6; i++) {
-				packet.writeBoolean(sideInternalConnections[i]);
-			}
-			for (int i = 0; i < 6; i++) {
-				packet.writeBoolean(sideCorneredConnections[i]);
-			}
-			packet.writeBoolean(localJacketedConnection);
+		for (int i = 0; i < 6; i++) {
+			packet.writeBoolean(sideInternalConnections[i] ? true : false);
 		}
+		for (int i = 0; i < 6; i++) {
+			packet.writeBoolean(sideCorneredConnections[i] ? true : false);
+		}
+		packet.writeBoolean(localJacketedConnection ? true : false);
+
 	}
 
 	@Override
@@ -150,15 +151,14 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		for (int i = 0; i < 6; i++) {
 			sideExternalConnections[i] = packet.readBoolean();
 		}
-		if (!isJacketed) {
-			for (int i = 0; i < 6; i++) {
-				sideInternalConnections[i] = packet.readBoolean();
-			}
-			for (int i = 0; i < 6; i++) {
-				sideCorneredConnections[i] = packet.readBoolean();
-			}
-			localJacketedConnection = packet.readBoolean();
+		for (int i = 0; i < 6; i++) {
+			sideInternalConnections[i] = packet.readBoolean();
 		}
+		for (int i = 0; i < 6; i++) {
+			sideCorneredConnections[i] = packet.readBoolean();
+		}
+		localJacketedConnection = packet.readBoolean();
+
 		notifyNeighborsNextTick = true;
 	}
 
@@ -200,13 +200,14 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		if (BasicUtils.isClient(world())) {
 			return;
 		}
-		int x = x() + ForgeDirection.getOrientation(side).offsetX;
-		int y = y() + ForgeDirection.getOrientation(side).offsetY;
-		int z = z() + ForgeDirection.getOrientation(side).offsetZ;
-
-		if (!BasicWireUtils.canPlaceWireOnSide(world(), x, y, z, ForgeDirection.getOrientation(side ^ 1), false)) {
-			BasicUtils.dropItemFromLocation(world(), getItem(), false, null, side, 10, new Coords(x(), y(), z()));
-			tile().remPart(this);
+		if (!isJacketed) {
+			int x = x() + ForgeDirection.getOrientation(side).offsetX;
+			int y = y() + ForgeDirection.getOrientation(side).offsetY;
+			int z = z() + ForgeDirection.getOrientation(side).offsetZ;
+			if (!BasicWireUtils.canPlaceWireOnSide(world(), x, y, z, ForgeDirection.getOrientation(side ^ 1), false)) {
+				BasicUtils.dropItemFromLocation(world(), getItem(), false, null, side, 10, new Coords(x(), y(), z()));
+				tile().remPart(this);
+			}
 		}
 		computeConnections();
 	}
@@ -309,12 +310,12 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		if ((side & 6) == (absDir & 6)) {
 			return false;
 		}
-		
-		// TODO Edge check here
-		
+
+		// TODO Inside Edge check here
+
 		TMultiPart t = tile().partMap(absDir);
 		if (t instanceof IConnectable) {
-			return ((IConnectable) t).connectsToWireType(this) && connectsToWireType((WirePart) t);
+			return ((IConnectable) t).connectsToWireType(this);
 		}
 		return false;
 	}
@@ -322,11 +323,11 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	public boolean computeConnectToLocalJacketed() {
 		TMultiPart t = tile().partMap(PartMap.CENTER.i);
 		if (t instanceof IConnectable) {
-			return (((IConnectable) t).connects(this, -1, side ^ 1));
+			return (((IConnectable) t).connects(this, -1, side));
 		}
 		return false;
 	}
-	
+
 	public boolean computeJacketedConnectTo(int absDir) {
 		TMultiPart t = tile().partMap(absDir);
 		if (t instanceof IConnectable) {
@@ -340,13 +341,13 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			if (tile != null) {
 				TMultiPart p = tile.partMap(PartMap.CENTER.i);
 				if (p instanceof IConnectable) {
-					return ((IConnectable)p).connects(this, -1, absDir ^ 1); 
+					return ((IConnectable) p).connects(this, -1, absDir ^ 1);
 				}
 			}
 		}
 		return false;
 	}
-	
+
 	/** START IConnectable **/
 	// IConnectables are called when building connection arrays.
 	// Basically used to check for anything blocking the direction.
@@ -386,6 +387,10 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	public boolean maskConnectsAroundCorner(int absDir) {
 		return sideCorneredConnections[absDir];
+	}
+
+	public boolean maskConnectsJacketed(int absDir) {
+		return isJacketed && sideExternalConnections[absDir];
 	}
 
 	/**
@@ -437,6 +442,9 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	}
 
 	public ItemStack getItem() {
+		if (isJacketed) {
+			return new ItemStack(ProjectRed.itemPartJacketedWire, 1, wireType.ordinal());
+		}
 		return new ItemStack(ProjectRed.itemPartWire, 1, wireType.ordinal());
 	}
 
@@ -452,28 +460,42 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public int getSlotMask() {
-		return 1 << side;
+		return (1 << (!isJacketed ? side : PartMap.CENTER.i));
 	}
 
 	@Override
 	public Cuboid6 getBounds() {
+		if (isJacketed) {
+			return getJacketBounds();
+		}
 		Cuboid6 base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D, wireType.thickness, 8 / 8D);
 		return base.transform(sideRotations[side].at(center));
 	}
-	
+
 	public Cuboid6 getJacketBounds() {
 		return new Cuboid6(4 / 16D, 4 / 16D, 4 / 16D, 12 / 16D, 12 / 16D, 12 / 16D);
 	}
 
 	@Override
 	public Iterable<Cuboid6> getCollisionBoxes() {
-		return Arrays.asList();
+		if (isJacketed) {
+			Cuboid6 base;
+			base = getJacketBounds();
+			return Arrays.asList(base);
+		} else {
+			return Arrays.asList();
+		}
 	}
 
 	@Override
 	public Iterable<IndexedCuboid6> getSubParts() {
-		Cuboid6 base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D, wireType.thickness, 8 / 8D);
-		base.transform(sideRotations[side].at(center));
+		Cuboid6 base;
+		if (isJacketed) {
+			base = getJacketBounds();
+		} else {
+			base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D, wireType.thickness, 8 / 8D);
+			base.transform(sideRotations[side].at(center));
+		}
 		return Arrays.asList(new IndexedCuboid6(0, base));
 	}
 
@@ -483,21 +505,14 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	}
 
 	@Override
-	public Iterable<Cuboid6> getPartialOcclusionBoxes() {
-		Cuboid6 base = new Cuboid6(4 / 16D, 0 / 16D, 4 / 16D, 13 / 16D, 4 / 16D, 13 / 16D);
-		base.transform(sideRotations[side].at(center));
-		return Arrays.asList(base);
-	}
-
-	@Override
-	public boolean allowCompleteOcclusion() {
-		return false;
-	}
-
-	@Override
 	public Iterable<Cuboid6> getOcclusionBoxes() {
-		Cuboid6 base = new Cuboid6(4 / 16D, 0 / 16D, 4 / 16D, 13 / 16D, 4 / 16D, 13 / 16D);
-		base.transform(sideRotations[side].at(center));
+		Cuboid6 base;
+		if (isJacketed) {
+			base = getJacketBounds();
+		} else {
+			base = new Cuboid6(4 / 16D, 0 / 16D, 4 / 16D, 12 / 16D, 4 / 16D, 12 / 16D);
+			base.transform(sideRotations[side].at(center));
+		}
 		return Arrays.asList(base);
 	}
 

@@ -2,15 +2,16 @@ package mrtjp.projectred.transmission;
 
 import java.util.List;
 
+import mrtjp.projectred.core.Messenger;
 import mrtjp.projectred.crafting.ProjectRedTabs;
-import mrtjp.projectred.integration.EnumGate;
-import mrtjp.projectred.integration.GateRenderBridge;
 import mrtjp.projectred.utils.BasicWireUtils;
+import mrtjp.projectred.utils.Coords;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
@@ -34,6 +35,14 @@ public class ItemPartJacketedWire extends JItemMultiPart {
 		if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3)) {
 			w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .9F);
 			return true;
+		} else { // Try second time shifted over.
+			f += ForgeDirection.VALID_DIRECTIONS[side].offsetX;
+			f2 += ForgeDirection.VALID_DIRECTIONS[side].offsetY;
+			f3 += ForgeDirection.VALID_DIRECTIONS[side].offsetZ;
+			if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3)) {
+				w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .9F);
+				return true;
+			}
 		}
 		return false;
 	}

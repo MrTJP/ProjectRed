@@ -1,7 +1,13 @@
 package mrtjp.projectred.integration;
 
 import mrtjp.projectred.multipart.wiring.RotatedRenderer;
+import static mrtjp.projectred.utils.BasicWireUtils.*;
 import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
+import mrtjp.projectred.transmission.EnumWire;
+import mrtjp.projectred.transmission.WirePart;
+import mrtjp.projectred.transmission.WireRenderAssistant;
+import mrtjp.projectred.utils.BasicRenderUtils;
+import mrtjp.projectred.utils.Rotator;
 import net.minecraft.client.renderer.texture.IconRegister;
 
 /**
@@ -119,6 +125,38 @@ public abstract class GateRenderBridge {
 	 * GateLogic.Stateless. Currently not used.
 	 */
 	public static interface Stateless {
+	}
+
+	/**
+	 * Dummy WirePart class, used to pass to WireRenderAssistant. 
+	 */
+	public static class WireRenderDummy extends WirePart {
+
+		public WireRenderDummy() {
+			super(EnumWire.RED_ALLOY, false, 0);
+		}
+		public boolean[] connects = new boolean[6];
+		public boolean[] connectsCor = new boolean[6];
+		public boolean[] connectsInt = new boolean[6];		
+		@Override
+		public boolean getExternalConnectionOveride(int absDir) {
+			return false;
+		}
+
+		@Override
+		public boolean maskConnects(int absDir) {
+			return connects[absDir];
+		}
+
+		@Override
+		public boolean maskConnectsAroundCorner(int absDir) {
+			return connectsCor[absDir];
+		}
+
+		@Override
+		public boolean maskConnectsInternally(int absDir) {
+			return connectsInt[absDir];
+		}
 	}
 
 	public static class AND extends GateRenderBridge implements Stateless {
@@ -954,6 +992,20 @@ public abstract class GateRenderBridge {
 				return;
 			}
 			rt.renderPartModel(_latchCableCover, (wireColor[0] == ON ? "on" : "off"), (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
+			WireRenderDummy dummy = new WireRenderDummy();
+			dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, FRONT)] = true;
+			dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, BACK)] = true;
+			WireRenderAssistant wra = new WireRenderAssistant();
+			wra.side = rt.side;
+			wra.x = rt.x;
+			wra.y = rt.y;
+			wra.z = rt.z;
+			wra.scaleFactor = 1.0003;
+			wra.setWireRenderState(dummy);
+			wra.wireIcon = EnumWire.BUNDLED_N.wireSprites[0];
+			wra.model = EnumWire.BUNDLED_N.wireMap;
+			BasicRenderUtils.setFullColor();
+			wra.pushRender();
 		}
 	}
 
@@ -981,6 +1033,20 @@ public abstract class GateRenderBridge {
 				return;
 			}
 			rt.renderPartModel(_relayCableCover, (wireColor[0] == ON ? "on" : "off"), (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
+			WireRenderDummy dummy = new WireRenderDummy();
+			dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, FRONT)] = true;
+			dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, BACK)] = true;
+			WireRenderAssistant wra = new WireRenderAssistant();
+			wra.x = rt.x;
+			wra.y = rt.y;
+			wra.z = rt.z;
+			wra.side = rt.side;
+			wra.scaleFactor = 1.0003;
+			wra.setWireRenderState(dummy);
+			wra.wireIcon = EnumWire.BUNDLED_N.wireSprites[0];
+			wra.model = EnumWire.BUNDLED_N.wireMap;
+			BasicRenderUtils.setFullColor();
+			wra.pushRender();
 		}
 
 	}
@@ -1009,6 +1075,22 @@ public abstract class GateRenderBridge {
 				return;
 			}
 			rt.renderPartModel(_multCableCover, (wireColor[0] == ON ? "on" : "off"), (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
+			WireRenderDummy dummy = new WireRenderDummy();
+			dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, FRONT)] = true;
+			dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, LEFT)] = true;
+			dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, RIGHT)] = true;
+			WireRenderAssistant wra = new WireRenderAssistant();
+			wra.x = rt.x;
+			wra.y = rt.y;
+			wra.z = rt.z;
+			wra.side = rt.side;
+			wra.scaleFactor = 1.0003;
+			wra.setWireRenderState(dummy);
+			wra.wireIcon = EnumWire.BUNDLED_N.wireSprites[0];
+			wra.model = EnumWire.BUNDLED_N.wireMap;
+			BasicRenderUtils.setFullColor();
+			wra.pushRender();
+
 		}
 	}
 
@@ -1048,7 +1130,7 @@ public abstract class GateRenderBridge {
 			rt.renderPartModel(_solar, "cover" + solarThreshold, (16f - 8.5f) / 16 + .03f, 0, (16f - 6.5f) / 16 + .03f, -1, -1, false);
 		}
 	}
-	
+
 	public static class RainSensor extends GateRenderBridge {
 		{
 			// Wires are {backout}
