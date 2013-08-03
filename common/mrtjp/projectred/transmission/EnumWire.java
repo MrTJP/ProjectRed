@@ -3,8 +3,6 @@ package mrtjp.projectred.transmission;
 import java.util.Map;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.multipart.wiring.wires.TileBundled;
-import mrtjp.projectred.multipart.wiring.wires.TileInsulatedRedAlloy;
 import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
@@ -25,46 +23,46 @@ import cpw.mods.fml.relauncher.SideOnly;
 public enum EnumWire {
 	RED_ALLOY("Red alloy wire", RedAlloyWirePart.class, 2, 2, (255 / 2 + 75) << 16, "alloywire.obj", "jacketedalloy.obj", "redalloy"),
 
-	INSULATED_0("White insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/whiteoff", "insulated/whiteon"),
-	INSULATED_1("Orange insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/orangeoff", "insulated/orangeon"),
-	INSULATED_2("Magenta insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/magentaoff", "insulated/magentaon"),
-	INSULATED_3("Light blue insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/lightblueoff", "insulated/lightblueon"),
-	INSULATED_4("Yellow insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/yellowoff", "insulated/yellowon"),
-	INSULATED_5("Lime insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/limeoff", "insulated/limeon"),
-	INSULATED_6("Pink insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/pinkoff", "insulated/pinkon"),
-	INSULATED_7("Grey insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/greyoff", "insulated/greyon"),
-	INSULATED_8("Light grey insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/lightgreyoff", "insulated/lightgreyon"),
-	INSULATED_9("Cyan insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/cyanoff", "insulated/cyanon"),
-	INSULATED_10("Purple insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/purpleoff", "insulated/purpleon"),
-	INSULATED_11("Blue insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/blueoff", "insulated/blueon"),
-	INSULATED_12("Brown insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/brownoff", "insulated/brownon"),
-	INSULATED_13("Green insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/greenoff", "insulated/greenon"),
-	INSULATED_14("Red insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/redoff", "insulated/redon"),
-	INSULATED_15("Black insulated wire", TileInsulatedRedAlloy.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/blackoff", "insulated/blackon"),
+	INSULATED_0("White insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/whiteoff", "insulated/whiteon"),
+	INSULATED_1("Orange insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/orangeoff", "insulated/orangeon"),
+	INSULATED_2("Magenta insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/magentaoff", "insulated/magentaon"),
+	INSULATED_3("Light blue insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/lightblueoff", "insulated/lightblueon"),
+	INSULATED_4("Yellow insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/yellowoff", "insulated/yellowon"),
+	INSULATED_5("Lime insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/limeoff", "insulated/limeon"),
+	INSULATED_6("Pink insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/pinkoff", "insulated/pinkon"),
+	INSULATED_7("Grey insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/greyoff", "insulated/greyon"),
+	INSULATED_8("Light grey insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/lightgreyoff", "insulated/lightgreyon"),
+	INSULATED_9("Cyan insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/cyanoff", "insulated/cyanon"),
+	INSULATED_10("Purple insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/purpleoff", "insulated/purpleon"),
+	INSULATED_11("Blue insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/blueoff", "insulated/blueon"),
+	INSULATED_12("Brown insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/brownoff", "insulated/brownon"),
+	INSULATED_13("Green insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/greenoff", "insulated/greenon"),
+	INSULATED_14("Red insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/redoff", "insulated/redon"),
+	INSULATED_15("Black insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/blackoff", "insulated/blackon"),
 
-	BUNDLED_N("Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/neutral"),
-	BUNDLED_0("White Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/white"),
-	BUNDLED_1("Orange Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/orange"),
-	BUNDLED_2("Magenta Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/magenta"),
-	BUNDLED_3("Light Blue Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/lightblue"),
-	BUNDLED_4("Yellow Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/yellow"),
-	BUNDLED_5("Lime Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/lime"),
-	BUNDLED_6("Pink Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/pink"),
-	BUNDLED_7("Grey Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/grey"),
-	BUNDLED_8("Light Grey Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/lightgrey"),
-	BUNDLED_9("Cyan Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/cyan"),
-	BUNDLED_10("Purple Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/purple"),
-	BUNDLED_11("Blue Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/blue"),
-	BUNDLED_12("Brown Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/brown"),
-	BUNDLED_13("Green Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/green"),
-	BUNDLED_14("Red Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/red"),
-	BUNDLED_15("Black Bundled cable", TileBundled.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/black"), ;
+	BUNDLED_N("Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/neutral"),
+	BUNDLED_0("White Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/white"),
+	BUNDLED_1("Orange Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/orange"),
+	BUNDLED_2("Magenta Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/magenta"),
+	BUNDLED_3("Light Blue Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/lightblue"),
+	BUNDLED_4("Yellow Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/yellow"),
+	BUNDLED_5("Lime Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/lime"),
+	BUNDLED_6("Pink Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/pink"),
+	BUNDLED_7("Grey Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/grey"),
+	BUNDLED_8("Light Grey Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/lightgrey"),
+	BUNDLED_9("Cyan Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/cyan"),
+	BUNDLED_10("Purple Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/purple"),
+	BUNDLED_11("Blue Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/blue"),
+	BUNDLED_12("Brown Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/brown"),
+	BUNDLED_13("Green Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/green"),
+	BUNDLED_14("Red Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/red"),
+	BUNDLED_15("Black Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/black"), ;
 
 	public static final int PLAIN_RED_ALLOY_META = 0;
 	public static final int INSULATED_RED_ALLOY_META = 1;
 	public static final int BUNDLED_META = 2;
 
-	public static ImmutableBiMap<Class<? extends WirePart>, Integer> CLASS_TO_META = ImmutableBiMap.<Class<? extends WirePart>, Integer> builder().put(RedAlloyWirePart.class, PLAIN_RED_ALLOY_META).put(TileInsulatedRedAlloy.class, INSULATED_RED_ALLOY_META).put(TileBundled.class, BUNDLED_META).build();
+	public static ImmutableBiMap<Class<? extends WirePart>, Integer> CLASS_TO_META = ImmutableBiMap.<Class<? extends WirePart>, Integer> builder().put(RedAlloyWirePart.class, PLAIN_RED_ALLOY_META).put(InsulatedRedAlloyPart.class, INSULATED_RED_ALLOY_META).put(BundledCablePart.class, BUNDLED_META).build();
 
 	public static ImmutableBiMap<Integer, Class<? extends WirePart>> META_TO_CLASS = CLASS_TO_META.inverse();
 

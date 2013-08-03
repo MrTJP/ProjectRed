@@ -1,6 +1,5 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.interfaces.wiring.IBareRedstoneWire;
 
 public class RedAlloyWirePart extends RedwirePart {
 	

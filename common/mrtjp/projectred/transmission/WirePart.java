@@ -45,7 +45,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	private boolean isJacketed = false;
 
 	/** START NEW LOGIC **/
-	private boolean notifyNeighboursNextTick = false;
+	private boolean notifyNeighborsNextTick = false;
 	public int side;
 	public boolean isFirstTick = true;
 	public boolean hasNewConnections = false;
@@ -68,13 +68,13 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		tag.setByte("type", (byte) wireType.ordinal());
 		tag.setByte("side", (byte) side);
 		for (int i = 0; i < 6; i++) {
-			tag.setBoolean("ext" + i, sideExternalConnections[i]);
+			tag.setBoolean("ext" + i, sideExternalConnections[i] ? true : false);
 		}
 		for (int i = 0; i < 6; i++) {
-			tag.setBoolean("int" + i, sideInternalConnections[i]);
+			tag.setBoolean("int" + i, sideInternalConnections[i] ? true : false);
 		}
 		for (int i = 0; i < 6; i++) {
-			tag.setBoolean("cor" + i, sideCorneredConnections[i]);
+			tag.setBoolean("cor" + i, sideCorneredConnections[i] ? true : false);
 		}
 	}
 
@@ -110,8 +110,8 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			computeConnections();
 			updateChange();
 		}
-		if (notifyNeighboursNextTick) {
-			notifyNeighboursNextTick = false;
+		if (notifyNeighborsNextTick) {
+			notifyNeighborsNextTick = false;
 			updateChange();
 		}
 		if (hasNewConnections) {
@@ -149,7 +149,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		for (int i = 0; i < 6; i++) {
 			sideCorneredConnections[i] = packet.readBoolean();
 		}
-
+		notifyNeighborsNextTick = true;
 	}
 
 	public void updateChange() {
@@ -179,7 +179,9 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	@Override
 	public void onAdded() {
 		super.onAdded();
+		update();
 		notifyExtendedNeighbors();
+		updateChange();
 	}
 	
 	@Override

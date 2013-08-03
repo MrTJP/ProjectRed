@@ -1,4 +1,4 @@
-package mrtjp.projectred.interfaces.wiring;
+package mrtjp.projectred.transmission;
 
 /**
  * Implemented by tile entities that need to be notified when a connected bundled cable changes state.

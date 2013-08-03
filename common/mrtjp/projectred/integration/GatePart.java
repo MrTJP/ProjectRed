@@ -8,7 +8,7 @@ import java.util.Random;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.integration.GateLogic.WorldStateBound;
-import mrtjp.projectred.interfaces.wiring.IBundledEmitter;
+import mrtjp.projectred.transmission.IBundledEmitter;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
