@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.crafting.ProjectRedTabs;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Coords;
+import mrtjp.projectred.core.ProjectRedTabs;
 import mrtjp.projectred.tiles.TileLantern;
-import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.Coords;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;

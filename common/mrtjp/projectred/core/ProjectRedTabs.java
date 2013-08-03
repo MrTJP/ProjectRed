@@ -1,4 +1,4 @@
-package mrtjp.projectred.crafting;
+package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.blocks.BlockLantern.EnumLantern;

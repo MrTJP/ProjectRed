@@ -3,7 +3,7 @@ package mrtjp.projectred.transmission;
 import java.util.Map;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
+import mrtjp.projectred.core.InvertX;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;

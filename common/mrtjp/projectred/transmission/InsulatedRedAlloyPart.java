@@ -1,8 +1,7 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.BasicWireUtils;
-import mrtjp.projectred.utils.Coords;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Coords;
 import net.minecraft.util.Icon;
 import codechicken.multipart.PartMap;
 import codechicken.multipart.TMultiPart;

@@ -1,9 +1,9 @@
 package mrtjp.projectred.tiles;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.BasicWireUtils;
-import mrtjp.projectred.utils.Coords;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Coords;
+import mrtjp.projectred.transmission.BasicWireUtils;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

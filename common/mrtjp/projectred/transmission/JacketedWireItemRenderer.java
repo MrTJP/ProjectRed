@@ -2,7 +2,7 @@ package mrtjp.projectred.transmission;
 
 import org.lwjgl.opengl.GL11;
 
-import mrtjp.projectred.utils.BasicRenderUtils;
+import mrtjp.projectred.core.BasicRenderUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import codechicken.lib.render.CCRenderState;

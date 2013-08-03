@@ -5,7 +5,6 @@ import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.crafting.AlloySmelterRecipe;
 import mrtjp.projectred.items.ItemPart.EnumPart;
 import mrtjp.projectred.transmission.EnumWire;
-import mrtjp.projectred.utils.PRColors;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

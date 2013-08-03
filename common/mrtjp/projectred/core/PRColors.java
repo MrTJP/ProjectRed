@@ -1,4 +1,4 @@
-package mrtjp.projectred.utils;
+package mrtjp.projectred.core;
 
 public enum PRColors {
 	WHITE("White", 1.0F, 1.0F, 1.0F),

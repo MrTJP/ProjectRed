@@ -2,10 +2,10 @@ package mrtjp.projectred.transmission;
 
 import java.util.Arrays;
 
-import mrtjp.projectred.multipart.wiring.CommandDebug;
-import mrtjp.projectred.utils.BasicRenderUtils;
-import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.Coords;
+import mrtjp.projectred.core.BasicRenderUtils;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.CommandDebug;
+import mrtjp.projectred.core.Coords;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;

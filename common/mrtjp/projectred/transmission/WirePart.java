@@ -6,9 +6,8 @@ import static codechicken.lib.vec.Vector3.center;
 import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.BasicWireUtils;
-import mrtjp.projectred.utils.Coords;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Coords;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

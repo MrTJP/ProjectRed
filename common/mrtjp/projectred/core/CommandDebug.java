@@ -1,4 +1,4 @@
-package mrtjp.projectred.multipart.wiring;
+package mrtjp.projectred.core;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -32,7 +32,7 @@ public class CommandDebug extends CommandBase {
 	
 	@Override
 	public String getCommandUsage(ICommandSender par1iCommandSender) {
-		return "/"+getCommandName()+" {wire-lag-particles|wire-debug-particles|wire-reading} {on|off}";
+		return "/"+getCommandName()+" {lagpart|debugpart|reading} {on|off}";
 	}
 
 	@Override
@@ -50,11 +50,11 @@ public class CommandDebug extends CommandBase {
 		else
 			throw new WrongUsageException(getCommandUsage(icommandsender));
 		
-		if(thing.equals("wire-lag-particles"))
+		if(thing.equals("lagpart"))
 			WIRE_LAG_PARTICLES = on;
-		else if(thing.equals("wire-debug-particles"))
+		else if(thing.equals("debugpart"))
 			WIRE_DEBUG_PARTICLES = on;
-		else if(thing.equals("wire-reading"))
+		else if(thing.equals("reading"))
 			WIRE_READING = on;
 		else
 			throw new WrongUsageException(getCommandUsage(icommandsender));

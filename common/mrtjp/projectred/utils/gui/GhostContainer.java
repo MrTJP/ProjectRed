@@ -1,7 +1,6 @@
 package mrtjp.projectred.utils.gui;
 
-import mrtjp.projectred.interfaces.IGuiOpenControler;
-import mrtjp.projectred.utils.BasicUtils;
+import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.utils.gui.RestrictedSlot.ISlotCheck;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -14,21 +13,10 @@ public class GhostContainer extends Container {
 
 	protected IInventory _playerInventory;
 	protected IInventory _inv;
-	protected IGuiOpenControler _controler;
 
 	public GhostContainer(IInventory playerInventory, IInventory inv) {
 		_playerInventory = playerInventory;
 		_inv = inv;
-		_controler = null;
-	}
-
-	public GhostContainer(EntityPlayer player, IInventory inv, IGuiOpenControler controler) {
-		_playerInventory = player.inventory;
-		_inv = inv;
-		_controler = controler;
-		if (_controler != null) {
-			_controler.onGuiOpenedBy(player);
-		}
 	}
 
 	@Override
@@ -304,9 +292,6 @@ public class GhostContainer extends Container {
 
 	@Override
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
-		if (_controler != null) {
-			_controler.onGuiClosedBy(par1EntityPlayer);
-		}
 		super.onContainerClosed(par1EntityPlayer);
 	}
 

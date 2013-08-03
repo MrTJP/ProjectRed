@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.crafting.ProjectRedTabs;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Coords;
+import mrtjp.projectred.core.ProjectRedTabs;
 import mrtjp.projectred.tiles.TileAlloySmelter;
 import mrtjp.projectred.tiles.TileMachineBase;
 import mrtjp.projectred.tiles.TileTurbineRotary;
-import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.Coords;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;

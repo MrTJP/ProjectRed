@@ -2,8 +2,7 @@ package mrtjp.projectred.integration;
 
 import org.lwjgl.opengl.GL11;
 
-import mrtjp.projectred.multipart.wiring.RotatedRenderer;
-import mrtjp.projectred.utils.BasicRenderUtils;
+import mrtjp.projectred.core.BasicRenderUtils;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;

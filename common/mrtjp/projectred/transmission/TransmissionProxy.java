@@ -3,7 +3,7 @@ package mrtjp.projectred.transmission;
 import static mrtjp.projectred.ProjectRed.itemPartJacketedWire;
 import static mrtjp.projectred.ProjectRed.itemPartWire;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.network.IProxy;
+import mrtjp.projectred.core.IProxy;
 import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;

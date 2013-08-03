@@ -1,4 +1,4 @@
-package mrtjp.projectred.crafting;
+package mrtjp.projectred.core;
 
 import static codechicken.nei.api.API.addSetRange;
 
@@ -7,7 +7,6 @@ import java.util.Arrays;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.blocks.BlockLamp.EnumLamp;
 import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
-import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.integration.EnumGate;
 import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemPart.EnumPart;
@@ -27,14 +26,14 @@ public class NEIProjectRedConfig implements IConfigureNEI {
 			for (EnumWire w : EnumWire.VALID_WIRE) {
 				wiring.add(w.getItemStack());
 			}
-			addSetRange("ProjectRed.Wiring", wiring);
+			addSetRange("ProjectRed.Transmission", wiring);
 
 			// Gates
 			MultiItemRange gates = new MultiItemRange();
 			for (EnumGate g : EnumGate.VALUES) {
 				gates.add(g.getItemStack());
 			}
-			addSetRange("ProjectRed.Gates", gates);
+			addSetRange("ProjectRed.Integration", gates);
 
 			// Lighting
 			MultiItemRange lighting = new MultiItemRange();
@@ -48,33 +47,29 @@ public class NEIProjectRedConfig implements IConfigureNEI {
 			for (EnumPart p : EnumPart.ILLUMAR_PARTS) {
 				lighting.add(p.getItemStack());
 			}
-			addSetRange("ProjectRed.Lighting", lighting);
+			addSetRange("ProjectRed.Illumination", lighting);
 
 			// Machines
 			MultiItemRange machines = new MultiItemRange();
 			for (EnumMachine m : EnumMachine.VALID_MACHINES) {
 				machines.add(m.getItemStack());
 			}
-			addSetRange("ProjectRed.Machines", machines);
+			addSetRange("ProjectRed.Expansion", machines);
 
-			// Parts
-			MultiItemRange parts = new MultiItemRange();
+			// Core
+			MultiItemRange core = new MultiItemRange();
 			for (EnumPart p : EnumPart.VALID_PARTS) {
 				if (!(Arrays.asList(EnumPart.ILLUMAR_PARTS).contains(p))) {
-					parts.add(p.getItemStack());
+					core.add(p.getItemStack());
+				}
+				core.add(new ItemStack(ProjectRed.itemScrewdriver));
+				core.add(new ItemStack(ProjectRed.itemDrawPlate));
+				core.add(new ItemStack(ProjectRed.itemWoolGin));
+				for (EnumBackpack b : EnumBackpack.VALID_BP) {
+					core.add(b.getItemStack());
 				}
 			}
-			addSetRange("ProjectRed.Parts", parts);
-
-			// Tools
-			MultiItemRange tools = new MultiItemRange();
-			tools.add(new ItemStack(ProjectRed.itemScrewdriver));
-			tools.add(new ItemStack(ProjectRed.itemDrawPlate));
-			tools.add(new ItemStack(ProjectRed.itemWoolGin));
-			for (EnumBackpack b : EnumBackpack.VALID_BP) {
-				tools.add(b.getItemStack());
-			}
-			addSetRange("ProjectRed.Tools", tools);
+			addSetRange("ProjectRed.Core", core);
 
 			API.registerRecipeHandler(new NEIAlloySmelterRecipeManager());
 			API.registerUsageHandler(new NEIAlloySmelterRecipeManager());

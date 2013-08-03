@@ -1,8 +1,7 @@
-package mrtjp.projectred.network;
+package mrtjp.projectred.core;
 
 import static mrtjp.projectred.ProjectRed.initializedModules;
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.core.IProjectRedModule;
 import mrtjp.projectred.renderstuffs.LampRenderer;
 import mrtjp.projectred.renderstuffs.LanternRenderer;
 import mrtjp.projectred.renderstuffs.RenderIDs;

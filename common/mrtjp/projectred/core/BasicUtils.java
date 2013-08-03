@@ -1,4 +1,4 @@
-package mrtjp.projectred.utils;
+package mrtjp.projectred.core;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.network.IProxy;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -36,7 +34,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class BasicUtils {
 
-	@SidedProxy(clientSide = "mrtjp.projectred.network.ClientProxy", serverSide = "mrtjp.projectred.network.CommonProxy")
+	@SidedProxy(clientSide = "mrtjp.projectred.core.ClientProxy", serverSide = "mrtjp.projectred.core.CommonProxy")
 	public static IProxy proxy;
 
 	public static Random rand = new Random();

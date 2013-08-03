@@ -1,9 +1,9 @@
-package mrtjp.projectred.utils;
+package mrtjp.projectred.transmission;
 
 import java.lang.reflect.Field;
 
-import mrtjp.projectred.transmission.IRedstoneEmitter;
-import mrtjp.projectred.transmission.RedAlloyWirePart;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Coords;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.world.World;

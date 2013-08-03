@@ -3,9 +3,9 @@ package mrtjp.projectred.items;
 import java.util.List;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.crafting.ProjectRedTabs;
-import mrtjp.projectred.network.GuiIDs;
-import mrtjp.projectred.utils.SimpleInventory;
+import mrtjp.projectred.core.GuiIDs;
+import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.core.SimpleInventory;
 import mrtjp.projectred.utils.gui.GhostContainer;
 import mrtjp.projectred.utils.gui.RestrictedSlot.ISlotCheck;
 import net.minecraft.client.renderer.texture.IconRegister;

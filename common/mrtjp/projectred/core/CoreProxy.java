@@ -6,7 +6,6 @@ import net.minecraftforge.common.MinecraftForge;
 import mrtjp.projectred.items.ItemDrawPlate;
 import mrtjp.projectred.items.ItemPart;
 import mrtjp.projectred.items.ItemPart.EnumPart;
-import mrtjp.projectred.network.IProxy;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
