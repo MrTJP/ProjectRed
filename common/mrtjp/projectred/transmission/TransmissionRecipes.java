@@ -1,7 +1,7 @@
 package mrtjp.projectred.transmission;
 
 import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.items.ItemPart.EnumPart;
+import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

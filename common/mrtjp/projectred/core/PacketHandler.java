@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mrtjp.projectred.network.abstractpackets.ModernPacket;
+import mrtjp.projectred.expansion.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;

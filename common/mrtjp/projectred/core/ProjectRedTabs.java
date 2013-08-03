@@ -1,8 +1,8 @@
 package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
-import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
+import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
+import mrtjp.projectred.illumination.BlockLantern.EnumLantern;
 import mrtjp.projectred.integration.EnumGate;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
