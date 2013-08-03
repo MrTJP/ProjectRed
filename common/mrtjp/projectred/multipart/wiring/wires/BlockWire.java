@@ -31,7 +31,7 @@ public class BlockWire extends BlockMultipartBase {
 
 	public BlockWire(int id) {
 		super(id, new BasicWireMaterial());
-		setCreativeTab(ProjectRedTabs.tabWires);
+		setCreativeTab(ProjectRedTabs.tabTransmission);
 		setUnlocalizedName("projred.redwire");
 	}
 

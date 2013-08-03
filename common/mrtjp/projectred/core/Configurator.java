@@ -32,15 +32,11 @@ public class Configurator {
 	public static Property part_wire;
 
 	/** Block IDs **/
-	public static Property block_microID;
-	public static Property block_wireID;
-	public static Property block_gateID;
 	public static Property block_lampID;
 	public static Property block_machinesID;
 	public static Property block_lanternID;
 
 	/** Item IDs**/
-	public static Property item_sawID;
 	public static Property item_screwdriverID;
 	public static Property item_componentsID;
 	public static Property item_drawplateID;
@@ -71,14 +67,10 @@ public class Configurator {
 		part_gate = localConfig.get("MultiPart Item IDs", "Gate Part ID", 9030);
 		part_wire = localConfig.get("MultiPart Item IDs", "Wire Part ID", 9031);
 		
-		block_microID = localConfig.getBlock("block_microID", 2145);
-		block_wireID = localConfig.getBlock("block_wireID", 2146);
-		block_gateID = localConfig.getBlock("block_gateID", 2147);
 		block_lampID = localConfig.getBlock("block_lightingID", 2128);
 		block_machinesID = localConfig.getBlock("block_machinesID", 2129);
 		block_lanternID = localConfig.getBlock("block_lanternID", 2130);
 
-		item_sawID = localConfig.getItem("item_sawID", 9023);
 		item_screwdriverID = localConfig.getItem("item_screwdriverID", 9024);
 		item_componentsID = localConfig.getItem("item_componentsID", 9025);
 		item_drawplateID = localConfig.getItem("item_drawplateID", 9026);

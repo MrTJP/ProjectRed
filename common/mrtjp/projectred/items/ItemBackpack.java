@@ -30,7 +30,7 @@ public class ItemBackpack extends Item {
 		hasSubtypes = true;
 		maxStackSize = 1;
 		setUnlocalizedName("projectred.items.backpack");
-		setCreativeTab(ProjectRedTabs.tabTools);
+		setCreativeTab(ProjectRedTabs.tabCore);
 	}
 
 	public static IInventory getBackpackInventory(EntityPlayer player) {

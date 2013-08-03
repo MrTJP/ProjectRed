@@ -22,7 +22,7 @@ public class ItemPartGate extends JItemMultiPart {
 	public ItemPartGate(int id) {
 		super(id);
 		setHasSubtypes(true);
-		setCreativeTab(ProjectRedTabs.tabWires);
+		setCreativeTab(ProjectRedTabs.tabIntegration);
 		setUnlocalizedName("projred.itempartgate");
 	}
 

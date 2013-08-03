@@ -11,7 +11,7 @@ public class ItemSaw extends ItemCraftingDamage {
 		super(i);
 		setUnlocalizedName("projectred.items.saw");
 		setMaxDamage(1152);
-		setCreativeTab(ProjectRedTabs.tabTools);
+		setCreativeTab(ProjectRedTabs.tabCore);
 	}
 
 	@Override

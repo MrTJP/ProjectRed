@@ -22,16 +22,9 @@ import mrtjp.projectred.items.ItemBackpack;
 import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemDrawPlate;
 import mrtjp.projectred.items.ItemPart;
-import mrtjp.projectred.items.ItemSaw;
 import mrtjp.projectred.items.ItemVAWT;
 import mrtjp.projectred.items.ItemWoolGin;
-import mrtjp.projectred.multipart.BlockMultipartBase;
-import mrtjp.projectred.multipart.microblocks.BlockMicroblockContainer;
-import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
-import mrtjp.projectred.multipart.microblocks.MicroblockLibrary;
-import mrtjp.projectred.multipart.microblocks.TileMicroblockContainer;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
-import mrtjp.projectred.multipart.wiring.wires.BlockWire;
 import mrtjp.projectred.network.GuiHandler;
 import mrtjp.projectred.network.PacketHandler;
 import mrtjp.projectred.tiles.TileLamp;
@@ -75,14 +68,12 @@ public class ProjectRed {
 	public static ItemPartWire itemPartWire;
 	
 	/** Blocks **/
-	public static BlockMultipartBase blockMicrocontainer;
 	public static BlockLamp blockLamp;
 	public static BlockMachines blockMachines;
 	public static BlockLantern blockLantern;
 
 	/** Items **/
 	public static ItemScrewdriver itemScrewdriver;
-	public static ItemSaw itemSaw;
 	public static ItemPart itemComponent;
 	public static ItemDrawPlate itemDrawPlate;
 	public static ItemWoolGin itemWoolGin;
@@ -175,19 +166,6 @@ public class ProjectRed {
 		}
 		*/
 		
-		// Microblock
-		if (Configurator.block_microID.getInt() > 0) {
-			blockMicrocontainer = new BlockMicroblockContainer(Configurator.block_microID.getInt());
-			GameRegistry.registerBlock(blockMicrocontainer, ItemBlockMicroblock.class, "projred.microblock");
-			GameRegistry.registerTileEntity(TileMicroblockContainer.class, "tile.projred.microblock");
-		}
-
-		// Saw
-		if (Configurator.item_sawID.getInt() > 0) {
-			itemSaw = new ItemSaw(Configurator.item_sawID.getInt());
-			LanguageRegistry.addName(itemSaw, "Saw");
-		}
-
 		// Wool Gin
 		if (Configurator.item_woolginID.getInt() > 0) {
 			itemWoolGin = new ItemWoolGin(Configurator.item_woolginID.getInt());
@@ -223,8 +201,6 @@ public class ProjectRed {
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		BasicUtils.proxy.postinit();
-		MicroblockLibrary.instance = new MicroblockLibrary();
-		MicroblockLibrary.instance.initializeBlockScan();
 	}
 
 	@Mod.EventHandler

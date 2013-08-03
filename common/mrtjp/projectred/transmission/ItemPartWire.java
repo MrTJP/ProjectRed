@@ -25,7 +25,7 @@ public class ItemPartWire extends JItemMultiPart {
 	public ItemPartWire(int id) {
 		super(id);
 		setHasSubtypes(true);
-		setCreativeTab(ProjectRedTabs.tabWires);
+		setCreativeTab(ProjectRedTabs.tabTransmission);
 		setUnlocalizedName("projred.itempartwire");
 	}
 

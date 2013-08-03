@@ -29,7 +29,7 @@ import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstoneWire, IFaceRedstonePart {
+public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceRedstonePart {
 
 	private short MAX_STRENGTH = 255;
 
@@ -46,17 +46,79 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 		super(type, isJacketedWire, onside);
 	}
 
+	@Override
+	public void save(NBTTagCompound tag) {
+		super.save(tag);
+		tag.setShort("strength", strength);
+		tag.setShort("strengthNWB", strengthFromNonWireBlocks);
+	}
+
+	@Override
+	public void load(NBTTagCompound tag) {
+		super.load(tag);
+		strength = tag.getShort("strength");
+		strengthFromNonWireBlocks = tag.getShort("strengthNWB");
+	}
+
+	@Override
+	public void writeDesc(MCDataOutput packet) {
+		super.writeDesc(packet);
+		packet.writeShort(strength);
+		packet.writeShort(strengthFromNonWireBlocks);
+	}
+
+	@Override
+	public void readDesc(MCDataInput packet) {
+		super.readDesc(packet);
+		strength = packet.readShort();
+		strengthFromNonWireBlocks = packet.readShort();
+		if (!isFirstTick) {
+			updateConnectedWireSignal();
+		}
+	}
+
+	@Override
+	public void update() {
+		if (isFirstTick) {
+			isFirstTick = false;
+			if (BasicUtils.isServer(world())) {
+				computeConnections();
+				updateChange();
+			}
+			updateConnectedWireSignal();
+			notifyExtendedPowerableNeighbours();
+		}
+		super.update();
+	}
+
+	@Override
+	public void onNeighborChanged() {
+		if (blockUpdateCausedByAlloyWire) {
+			// When we update a RedAlloyWire, it starts updating its neighbors,
+			// including us. Dont update again, because we are the one that told
+			// it to update in the first place.
+			return;
+		}
+	
+		super.onNeighborChanged();
+		updateSignal(null);
+	}
+
 	/**
 	 * This should return the max signal given off to the side.
 	 */
 	private int updateStrengthFromBlock(int x, int y, int z, int odir, int testside, int newStrength) {
-		int thisStrength = BasicWireUtils.getPowerStrength(world(), x, y, z, odir, testside, true);
+		int thisStrength = getInputPowerStrength(x, y, z, odir, testside, true);
 		newStrength = Math.max(newStrength, Math.min(thisStrength - 1, MAX_STRENGTH));
 		if (BasicUtils.isServer(world())) {
-			thisStrength = BasicWireUtils.getPowerStrength(world(), x, y, z, odir, testside, false);
+			thisStrength = getInputPowerStrength(x, y, z, odir, testside, false);
 			strengthFromNonWireBlocks = (short) Math.max(strengthFromNonWireBlocks, Math.min(thisStrength - 1, MAX_STRENGTH));
 		}
 		return newStrength;
+	}
+	
+	public int getInputPowerStrength(int x, int y, int z, int outDir, int testside, boolean countWires) {
+		return BasicWireUtils.getPowerStrength(world(), x, y, z, outDir, testside, countWires);
 	}
 
 	/**
@@ -239,50 +301,6 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 	}
 
 	@Override
-	public void onNeighborChanged() {
-		if (blockUpdateCausedByAlloyWire) {
-			// When we update a RedAlloyWire, it starts updating its neighbors,
-			// including us. Dont update again, because we are the one that told
-			// it to update in the first place.
-			return;
-		}
-
-		super.onNeighborChanged();
-		updateSignal(null);
-	}
-
-	@Override
-	public void writeDesc(MCDataOutput packet) {
-		super.writeDesc(packet);
-		packet.writeShort(strength);
-		packet.writeShort(strengthFromNonWireBlocks);
-	}
-
-	@Override
-	public void readDesc(MCDataInput packet) {
-		super.readDesc(packet);
-		strength = packet.readShort();
-		strengthFromNonWireBlocks = packet.readShort();
-		if (!isFirstTick) {
-			updateConnectedWireSignal();
-		}
-	}
-
-	@Override
-	public void load(NBTTagCompound tag) {
-		super.load(tag);
-		strength = tag.getShort("strength");
-		strengthFromNonWireBlocks = tag.getShort("strengthNWB");
-	}
-
-	@Override
-	public void save(NBTTagCompound tag) {
-		super.save(tag);
-		tag.setShort("strength", strength);
-		tag.setShort("strengthNWB", strengthFromNonWireBlocks);
-	}
-
-	@Override
 	public boolean getExternalConnectionOveride(int absDir) {
 		int x = x(), y = y(), z = z();
 		x += ForgeDirection.getOrientation(absDir).offsetX;
@@ -403,12 +421,6 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IRedstone
 
 		super.debug(ply);
 		return true;
-	}
-
-	@Override
-	public void onRedstoneInputChanged() {
-		System.out.println("useless interface method used");
-		updateSignal(null);
 	}
 
 	@Override

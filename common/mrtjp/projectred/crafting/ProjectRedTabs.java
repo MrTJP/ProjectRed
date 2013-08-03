@@ -1,9 +1,10 @@
 package mrtjp.projectred.crafting;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.blocks.BlockLamp.EnumLamp;
+import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
 import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
-import mrtjp.projectred.items.ItemPart.EnumPart;
+import mrtjp.projectred.integration.EnumGate;
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.registry.LanguageRegistry;
@@ -11,49 +12,54 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 public class ProjectRedTabs {
 
 	static {
-		LanguageRegistry.instance().addStringLocalization("itemGroup.Project Red: Wiring", "en_US", "Project Red: Wiring");
-		LanguageRegistry.instance().addStringLocalization("itemGroup.Project Red: Tools", "en_US", "Project Red: Tools");
-		LanguageRegistry.instance().addStringLocalization("itemGroup.Project Red: Lighting", "en_US", "Project Red: Lighting");
-		LanguageRegistry.instance().addStringLocalization("itemGroup.Project Red: Misc", "en_US", "Project Red: Misc");
-		LanguageRegistry.instance().addStringLocalization("itemGroup.Project Red: Machines", "en_US", "Project Red: Machines");
+		LanguageRegistry.instance().addStringLocalization("itemGroup.core", "en_US", "Project Red: Core");
+		LanguageRegistry.instance().addStringLocalization("itemGroup.trans", "en_US", "Project Red: Transmission");
+		LanguageRegistry.instance().addStringLocalization("itemGroup.int", "en_US", "Project Red: Integration");
+		LanguageRegistry.instance().addStringLocalization("itemGroup.ill", "en_US", "Project Red: Illumination");
+		LanguageRegistry.instance().addStringLocalization("itemGroup.expansion", "en_US", "Project Red: Expansion");
+		LanguageRegistry.instance().addStringLocalization("itemGroup.exploration", "en_US", "Project Red: Exploration");
 	}
 
-	public static CreativeTabs tabWires = new CreativeTabs("Project Red: Wiring") {
+	public static CreativeTabs tabCore = new CreativeTabs("core") {
+		@Override
+		public ItemStack getIconItemStack() {
+			return new ItemStack(ProjectRed.itemScrewdriver);
+		}
+	};
+	
+	public static CreativeTabs tabTransmission = new CreativeTabs("trans") {
 		@Override
 		public ItemStack getIconItemStack() {
 			return new ItemStack(ProjectRed.itemPartWire);
 		}
 	};
-	
-	public static CreativeTabs tabTools = new CreativeTabs("Project Red: Tools") {
+		
+	public static CreativeTabs tabIntegration = new CreativeTabs("int") {
 		@Override
 		public ItemStack getIconItemStack() {
-			return new ItemStack(ProjectRed.itemSaw);
+			return EnumGate.Timer.getItemStack();
 		}
 	};
 	
-	public static CreativeTabs tabLighting = new CreativeTabs("Project Red: Lighting") {
+	public static CreativeTabs tabLighting = new CreativeTabs("ill") {
 		@Override
 		public ItemStack getIconItemStack() {
-			return EnumLamp.RED.getInvertedItemStack();
+			return EnumLantern.RED.getInvertedItemStack();
 		}
 	};
 	
-	public static CreativeTabs tabParts = new CreativeTabs("Project Red: Misc") {
-		@Override
-		public ItemStack getIconItemStack() {
-			return EnumPart.REDINGOT.getItemStack();
-		}
-	};
-	
-	public static CreativeTabs tabMachines = new CreativeTabs("Project Red: Machines") {
+	public static CreativeTabs tabExpansion = new CreativeTabs("expansion") {
 		@Override
 		public ItemStack getIconItemStack() {
 			return EnumMachine.ALLOYSMELTER.getItemStack();
 		}
 	};
-
-
-
+	
+	public static CreativeTabs tabExploration = new CreativeTabs("exploration") {
+		@Override
+		public ItemStack getIconItemStack() {
+			return new ItemStack(Block.grass);
+		}
+	};
 
 }

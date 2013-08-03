@@ -11,8 +11,6 @@ import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.integration.EnumGate;
 import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.items.ItemPart.EnumPart;
-import mrtjp.projectred.multipart.microblocks.ItemBlockMicroblock;
-import mrtjp.projectred.multipart.microblocks.MicroblockLibrary;
 import mrtjp.projectred.transmission.EnumWire;
 import net.minecraft.item.ItemStack;
 import codechicken.nei.MultiItemRange;
@@ -23,12 +21,6 @@ public class NEIProjectRedConfig implements IConfigureNEI {
 	@Override
 	public void loadConfig() {
 		try {
-			// Microblock section
-			API.setMaxDamageException(ProjectRed.blockMicrocontainer.blockID, 1);
-			for (int i : MicroblockLibrary.neiPartIDs) {
-				API.addNBTItem(ItemBlockMicroblock.getStackWithPartID(i));
-			}
-			addSetRange("ProjectRed.Microblocks", new MultiItemRange().add(ProjectRed.blockMicrocontainer.blockID));
 
 			// Wiring
 			MultiItemRange wiring = new MultiItemRange();
@@ -76,7 +68,6 @@ public class NEIProjectRedConfig implements IConfigureNEI {
 
 			// Tools
 			MultiItemRange tools = new MultiItemRange();
-			tools.add(new ItemStack(ProjectRed.itemSaw));
 			tools.add(new ItemStack(ProjectRed.itemScrewdriver));
 			tools.add(new ItemStack(ProjectRed.itemDrawPlate));
 			tools.add(new ItemStack(ProjectRed.itemWoolGin));

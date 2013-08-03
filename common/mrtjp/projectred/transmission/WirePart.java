@@ -108,6 +108,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		if (isFirstTick) {
 			isFirstTick = false;
 			computeConnections();
+			updateChange();
 		}
 		if (notifyNeighboursNextTick) {
 			notifyNeighboursNextTick = false;
@@ -197,7 +198,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		computeConnections();
 	}
 
-	private void computeConnections() {
+	protected void computeConnections() {
 		if (isFirstTick) {
 			return;
 		}
@@ -415,8 +416,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public Iterable<Cuboid6> getOcclusionBoxes() {
-		// return Arrays.asList(getBounds());
-		return new ArrayList();
+		return Arrays.asList(getBounds());
 	}
 
 	@Override

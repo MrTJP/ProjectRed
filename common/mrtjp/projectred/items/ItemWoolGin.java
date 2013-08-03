@@ -9,7 +9,7 @@ public class ItemWoolGin extends ItemCraftingDamage {
 		super(par1);
 		setUnlocalizedName("projectred.items.woolgin");
 		setMaxDamage(128);
-		setCreativeTab(ProjectRedTabs.tabTools);
+		setCreativeTab(ProjectRedTabs.tabCore);
 	}
 
 	@Override
