@@ -29,6 +29,7 @@ import mrtjp.projectred.network.GuiHandler;
 import mrtjp.projectred.network.PacketHandler;
 import mrtjp.projectred.tiles.TileLamp;
 import mrtjp.projectred.tiles.TileLantern;
+import mrtjp.projectred.transmission.ItemPartJacketedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
 import mrtjp.projectred.transmission.ModuleTransmission;
 import mrtjp.projectred.utils.BasicUtils;
@@ -66,6 +67,7 @@ public class ProjectRed {
 	/** Multipart items **/
 	public static ItemPartGate itemPartGate;
 	public static ItemPartWire itemPartWire;
+	public static ItemPartJacketedWire itemPartJacketedWire;
 	
 	/** Blocks **/
 	public static BlockLamp blockLamp;

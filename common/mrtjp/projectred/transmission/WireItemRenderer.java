@@ -16,48 +16,6 @@ public class WireItemRenderer implements IItemRenderer {
 	public final static WireItemRenderer instance = new WireItemRenderer();
 	private WireRenderAssistant wra = new WireRenderAssistant();
 
-	public void renderWireInventory(int meta, float x, float y, float z, float scale) {
-		EnumWire type = EnumWire.VALID_WIRE[meta];
-		if (type == null) {
-			return;
-		}
-		wra = new WireRenderAssistant();
-		wra.x = x;
-		wra.y = y;
-		wra.z = z;
-		wra.side = 0;
-		wra.wireIcon = type.wireSprites[0];
-		wra.model = type.wireMap;
-		BasicRenderUtils.bindTerrainResource();
-		CCRenderState.reset();
-		CCRenderState.useNormals(true);
-		GL11.glPushMatrix();
-		GL11.glScalef(scale, scale, scale);
-		CCRenderState.startDrawing(7);
-		BasicRenderUtils.setFullColor();
-		CCRenderState.setColourOpaque(type.itemColour);
-		wra.connectsN = true;
-		wra.connectsS = true;
-		wra.connectsW = true;
-		wra.connectsE = true;
-		wra.connectsInsideConnectorN = true;
-		wra.connectsInsideConnectorS = true;
-		wra.connectsInsideConnectorW = true;
-		wra.connectsInsideConnectorE = true;
-		wra.isCenterCrossed = true;
-		wra.pushRender();
-		CCRenderState.draw();
-		GL11.glPopMatrix();
-
-		/**
-		 * if (WireDamageValues.isJacketed(damageValue)){ wra.model =
-		 * type.jacketMap; wra.setInventoryJacketRender();
-		 * CCRenderState.startDrawing(7); BasicRenderUtils.setFullColor();
-		 * BasicRenderUtils.setFullBrightness(); wra.pushJacketFrameRender();
-		 * CCRenderState.setColourOpaque(type.itemColour);
-		 * wra.pushJacketWireRender(); CCRenderState.draw(); }
-		 */
-	}
 
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
@@ -90,4 +48,37 @@ public class WireItemRenderer implements IItemRenderer {
 		}
 	}
 
+	public void renderWireInventory(int meta, float x, float y, float z, float scale) {
+		EnumWire type = EnumWire.VALID_WIRE[meta];
+		if (type == null) {
+			return;
+		}
+		wra = new WireRenderAssistant();
+		wra.x = x;
+		wra.y = y;
+		wra.z = z;
+		wra.side = 0;
+		wra.wireIcon = type.wireSprites[0];
+		wra.model = type.wireMap;
+		BasicRenderUtils.bindTerrainResource();
+		CCRenderState.reset();
+		CCRenderState.useNormals(true);
+		GL11.glPushMatrix();
+		GL11.glScalef(scale, scale, scale);
+		CCRenderState.startDrawing(7);
+		BasicRenderUtils.setFullColor();
+		CCRenderState.setColourOpaque(type.itemColour);
+		wra.connectsN = true;
+		wra.connectsS = true;
+		wra.connectsW = true;
+		wra.connectsE = true;
+		wra.connectsInsideConnectorN = true;
+		wra.connectsInsideConnectorS = true;
+		wra.connectsInsideConnectorW = true;
+		wra.connectsInsideConnectorE = true;
+		wra.isCenterCrossed = true;
+		wra.pushRender();
+		CCRenderState.draw();
+		GL11.glPopMatrix();
+	}
 }
