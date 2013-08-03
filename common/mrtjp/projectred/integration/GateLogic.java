@@ -237,8 +237,9 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void onRightClick(EntityPlayer ply, GatePart tile) {
+		public void onRightClick(EntityPlayer player, GatePart tile) {
 			state = !state;
+            player.worldObj.playSoundEffect(player.posX + 0.5D, player.posY + 0.5D, player.posZ + 0.5D, "random.click", 0.3F, state ? 0.6F : 0.5F);
 		}
 	}
 

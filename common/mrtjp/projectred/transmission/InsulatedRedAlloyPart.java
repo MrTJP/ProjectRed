@@ -4,6 +4,7 @@ import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
 import net.minecraft.util.Icon;
+import codechicken.multipart.PartMap;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 
@@ -37,6 +38,9 @@ public class InsulatedRedAlloyPart extends RedwirePart implements IBundledUpdata
 		
 		TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
 		if (tile != null) {
+			if (side == -1) {
+				side = PartMap.CENTER.i;
+			}
 			TMultiPart te = tile.partMap(side);
 			if (te instanceof IBundledEmitter) {
 				int colour = getInsulatedWireColour();

@@ -1,5 +1,6 @@
 package mrtjp.projectred.transmission;
 
+import mrtjp.projectred.core.Messenger;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import mrtjp.projectred.utils.BasicUtils;
@@ -18,6 +19,7 @@ import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.IFaceRedstonePart;
+import codechicken.multipart.PartMap;
 import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
@@ -38,6 +40,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 	private static boolean dontEmitPower = false;
 
 	private boolean sceduleConnectedThingsUpdate = false;
+
 
 	public RedwirePart(EnumWire type, boolean isJacketedWire, int onside) {
 		super(type, isJacketedWire, onside);
@@ -85,10 +88,6 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 		}
 	}
 
-	public void onAdded() {
-		super.onAdded();
-	}
-
 	@Override
 	public void onNeighborChanged() {
 		if (blockUpdateCausedByAlloyWire) {
@@ -124,57 +123,82 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 	 * signal strength, 0 - 255. It uses the connection arrays to see what side
 	 * it should check. It returns the max strength it found.
 	 */
-	private int checkNeighborsForMaxStrength() {
+	private int updateInputStrength() {
 		if (BasicUtils.isServer(world())) {
 			strengthFromNonWireBlocks = 0;
 		}
 		int newStrength = 0;
-		// TODO ask jacketed wires here. FD offset to side.
-		if (connectToBlockBelow) {
-			ForgeDirection wdir = ForgeDirection.VALID_DIRECTIONS[side];
-			int x = x() + wdir.offsetX;
-			int y = y() + wdir.offsetY;
-			int z = z() + wdir.offsetZ;
 
-			int thisStrength = BasicWireUtils.getPowerStrength(world(), x, y, z, side ^ 1, -1, false);
-			newStrength = Math.max(newStrength, Math.min(thisStrength - 1, MAX_STRENGTH));
+		if (isJacketed) {  // Only update from the 6 sides, from either connected wires or other JWires on nearby blocks.
+			for (int i = 0; i < 6; i++) {
+				if (maskConnectsJacketed(i)) {
+					if (tile().partMap(i) != null) {
+						newStrength = updateStrengthFromBlock(x(), y(), z(), i ^ 1, i, newStrength);
+					} else {
+						ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[i];
+						int x = x() + fd.offsetX;
+						int y = y() + fd.offsetY;
+						int z = z() + fd.offsetZ;
+						newStrength = updateStrengthFromBlock(x, y, z, i ^ 1, -1, newStrength);
+					}
+				}
+			}
+		} else {
+			if (localJacketedConnection) {
+				int x = x(), y = y(), z = z();
+				newStrength = updateStrengthFromBlock(x, y, z, side, -1, newStrength);
+			} else { // Update local Jacketed if there is one, even if we dont connect.
+				TMultiPart t = tile().partMap(PartMap.CENTER.i);
+				if (t instanceof WirePart) {
+					((WirePart)t).updateChange();
+				}
+			}
+			if (connectToBlockBelow) {
+				ForgeDirection wdir = ForgeDirection.VALID_DIRECTIONS[side];
+				int x = x() + wdir.offsetX;
+				int y = y() + wdir.offsetY;
+				int z = z() + wdir.offsetZ;
 
-			if (BasicUtils.isServer(world())) {
-				strengthFromNonWireBlocks = (short) Math.max(strengthFromNonWireBlocks, Math.min(thisStrength - 1, MAX_STRENGTH));
+				int thisStrength = BasicWireUtils.getPowerStrength(world(), x, y, z, side ^ 1, -1, false);
+				newStrength = Math.max(newStrength, Math.min(thisStrength - 1, MAX_STRENGTH));
+
+				if (BasicUtils.isServer(world())) {
+					strengthFromNonWireBlocks = (short) Math.max(strengthFromNonWireBlocks, Math.min(thisStrength - 1, MAX_STRENGTH));
+				}
 			}
-		}
-		for (int dir = 0; dir < 6; dir++) {
-			if (maskConnectsInternally(dir)) {
-				int x = x(), y = y(), z = z();
-				TMultiPart t = tile().partMap(dir);
-				newStrength = updateStrengthFromBlock(x, y, z, side, dir, newStrength);
-				continue;
-			}
-			if (maskConnectsAroundCorner(dir)) {
-				int x = x(), y = y(), z = z();
-				ForgeDirection fdir = ForgeDirection.VALID_DIRECTIONS[dir];
-				x += fdir.offsetX;
-				y += fdir.offsetY;
-				z += fdir.offsetZ;
-				fdir = ForgeDirection.VALID_DIRECTIONS[side];
-				x += fdir.offsetX;
-				y += fdir.offsetY;
-				z += fdir.offsetZ;
-				int outputdir = side ^ 1;
-				int testside = dir ^ 1;
-				newStrength = updateStrengthFromBlock(x, y, z, outputdir, testside, newStrength);
-				continue;
-			}
-			if (maskConnects(dir)) {
-				int x = x(), y = y(), z = z();
-				ForgeDirection fdir = ForgeDirection.VALID_DIRECTIONS[dir];
-				x += fdir.offsetX;
-				y += fdir.offsetY;
-				z += fdir.offsetZ;
-				int outputdir = dir ^ 1;
-				int testside = side;
-				newStrength = updateStrengthFromBlock(x, y, z, outputdir, testside, newStrength);
-				continue;
+			for (int dir = 0; dir < 6; dir++) {
+				if (maskConnectsInternally(dir)) {
+					int x = x(), y = y(), z = z();
+					TMultiPart t = tile().partMap(dir);
+					newStrength = updateStrengthFromBlock(x, y, z, side, dir, newStrength);
+					continue;
+				}
+				if (maskConnectsAroundCorner(dir)) {
+					int x = x(), y = y(), z = z();
+					ForgeDirection fdir = ForgeDirection.VALID_DIRECTIONS[dir];
+					x += fdir.offsetX;
+					y += fdir.offsetY;
+					z += fdir.offsetZ;
+					fdir = ForgeDirection.VALID_DIRECTIONS[side];
+					x += fdir.offsetX;
+					y += fdir.offsetY;
+					z += fdir.offsetZ;
+					int outputdir = side ^ 1;
+					int testside = dir ^ 1;
+					newStrength = updateStrengthFromBlock(x, y, z, outputdir, testside, newStrength);
+					continue;
+				}
+				if (maskConnects(dir)) {
+					int x = x(), y = y(), z = z();
+					ForgeDirection fdir = ForgeDirection.VALID_DIRECTIONS[dir];
+					x += fdir.offsetX;
+					y += fdir.offsetY;
+					z += fdir.offsetZ;
+					int outputdir = dir ^ 1;
+					int testside = side;
+					newStrength = updateStrengthFromBlock(x, y, z, outputdir, testside, newStrength);
+					continue;
+				}
 			}
 		}
 		if (BasicUtils.isClient(world())) {
@@ -187,47 +211,80 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 		if (CommandDebug.WIRE_DEBUG_PARTICLES) {
 			debugEffect_bonemeal();
 		}
-		// TODO update connected jacketed from here
-		for (int dir = 0; dir < 6; dir++) {
-			ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[dir];
-			int x = x() + fd.offsetX, y = y() + fd.offsetY, z = z() + fd.offsetZ;
-			if (maskConnects(dir)) {
-				if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
-					TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
-					if (tile != null) {
-						TMultiPart t = tile.partMap(side);
-						if (t instanceof RedwirePart) {
-							((RedwirePart) t).updateSignal(this);
-						} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
-							((BundledCablePart) t).onBundledInputChanged();
+		if (isJacketed) {
+			for (int i = 0; i < 6; i++) {
+				if (maskConnectsJacketed(i)) {
+					TMultiPart t = null;
+					if (tile().partMap(i) != null) {
+						t = tile().partMap(i);
+					} else {
+						ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[i];
+						int x = x() + fd.offsetX;
+						int y = y() + fd.offsetY;
+						int z = z() + fd.offsetZ;
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+						if (tile != null) {
+							t = tile.partMap(PartMap.CENTER.i);
 						}
+					}
+					if (t instanceof RedwirePart) {
+						((RedwirePart) t).updateSignal(this);
+					} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
+						((BundledCablePart) t).onBundledInputChanged();
+					}
+				}
+			}
 
-					}
-				}
-			}
-			if (maskConnectsAroundCorner(dir)) {
-				fd = ForgeDirection.VALID_DIRECTIONS[side];
-				x += fd.offsetX;
-				y += fd.offsetY;
-				z += fd.offsetZ;
-				if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
-					TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
-					if (tile != null) {
-						TMultiPart t = tile.partMap(dir ^ 1);
-						if (t instanceof RedwirePart) {
-							((RedwirePart) t).updateSignal(this);
-						} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
-							((BundledCablePart) t).onBundledInputChanged();
-						}
-					}
-				}
-			}
-			if (maskConnectsInternally(dir)) {
-				TMultiPart t = tile().partMap(dir);
+		} else {
+			if (localJacketedConnection) {
+				TMultiPart t = tile().partMap(PartMap.CENTER.i);
 				if (t instanceof RedwirePart) {
 					((RedwirePart) t).updateSignal(this);
 				} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
 					((BundledCablePart) t).onBundledInputChanged();
+				}
+			}
+			for (int dir = 0; dir < 6; dir++) {
+				ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[dir];
+				int x = x() + fd.offsetX, y = y() + fd.offsetY, z = z() + fd.offsetZ;
+				if (maskConnects(dir)) {
+					if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+						if (tile != null) {
+							TMultiPart t = tile.partMap(side);
+							if (t instanceof RedwirePart) {
+								((RedwirePart) t).updateSignal(this);
+							} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
+								((BundledCablePart) t).onBundledInputChanged();
+							}
+
+						}
+					}
+				}
+				if (maskConnectsAroundCorner(dir)) {
+					fd = ForgeDirection.VALID_DIRECTIONS[side];
+					x += fd.offsetX;
+					y += fd.offsetY;
+					z += fd.offsetZ;
+					if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+						if (tile != null) {
+							TMultiPart t = tile.partMap(dir ^ 1);
+							if (t instanceof RedwirePart) {
+								((RedwirePart) t).updateSignal(this);
+							} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
+								((BundledCablePart) t).onBundledInputChanged();
+							}
+						}
+					}
+				}
+				if (maskConnectsInternally(dir)) {
+					TMultiPart t = tile().partMap(dir);
+					if (t instanceof RedwirePart) {
+						((RedwirePart) t).updateSignal(this);
+					} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
+						((BundledCablePart) t).onBundledInputChanged();
+					}
 				}
 			}
 		}
@@ -262,7 +319,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 
 			int prevStrength = strength;
 			strength = 0;
-			newStrength = checkNeighborsForMaxStrength();
+			newStrength = updateInputStrength();
 
 			if (newStrength < prevStrength) {
 				// this is a huge optimization - it results in a "pulse" of 0
@@ -272,7 +329,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 				// the pulse and propagate backwards, turning the wires back on
 				// with the correct strength in 2 updates.
 				updateConnectedThings();
-				newStrength = checkNeighborsForMaxStrength();
+				newStrength = updateInputStrength();
 			}
 
 			strength = (short) newStrength;
@@ -333,12 +390,18 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 	}
 
 	@Override
-	public short getEmittedSignalStrength(int side, int dir) { // IRedstoneEmittingTile
+	public short getEmittedSignalStrength(int onSide, int dir) { // IRedstoneEmittingTile
+		if (onSide == -1) {
+			return maskConnectsJacketed(dir) ? getRedstoneSignalStrength() : 0;
+		}
+		if (dir == (side ^ 1) && localJacketedConnection) {
+			return getRedstoneSignalStrength();
+		}
 		return maskConnects(dir) ? getRedstoneSignalStrength() : 0;
 	}
 
 	public boolean canProvideStrongPowerInDirection(int dir) {
-		return BasicWireUtils.wiresProvidePower() && connectToBlockBelow && side == dir;
+		return BasicWireUtils.wiresProvidePower() && connectToBlockBelow && side == (dir);
 	}
 
 	public void notifyExtendedPowerableNeighbours() {
@@ -446,7 +509,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 		wra.renderBlocks = r;
 		wra.model = getWireType().wireMap;
 		wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
-		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
+		BasicRenderUtils.setFullColor();
 		BasicRenderUtils.bindTerrainResource();
 		CCRenderState.reset();
 		CCRenderState.setBrightness(world(), x(), y(), z());
@@ -454,19 +517,48 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 		wra.side = side;
 		wra.setWireRenderState(this);
 		wra.pushRender();
+		BasicRenderUtils.setFullColor();
+	}
+
+	public void renderJacketStatic(RenderBlocks r) {
+		WireRenderAssistant wra = new WireRenderAssistant();
+		wra.x = x();
+		wra.y = y();
+		wra.z = z();
+		wra.renderBlocks = r;
+		wra.model = getWireType().jacketMap;
+		wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
+		wra.side = side;
+		wra.setJacketRender(this);
+		BasicRenderUtils.setFullColor();
+		BasicRenderUtils.bindTerrainResource();
+		CCRenderState.reset();
+		CCRenderState.setBrightness(world(), x(), y(), z());
+		wra.pushJacketFrameRender();
+		CCRenderState.setColourOpaque(getVisualWireColour());
+		wra.pushJacketWireRender();
+		BasicRenderUtils.setFullColor();
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
 		if (pass == 0) {
-			renderStatic(null);
+			if (isJacketed) {
+				renderJacketStatic(null);
+			} else {
+				renderStatic(null);
+			}
 		}
 	}
 
 	@Override
 	public void drawBreaking(RenderBlocks r) {
-		renderStatic(r);
+		if (isJacketed) {
+			renderJacketStatic(r);
+		} else {
+			renderStatic(r);
+		}
 	}
 
 }

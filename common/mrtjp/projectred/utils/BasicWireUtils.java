@@ -54,6 +54,15 @@ public class BasicWireUtils {
 		if (b == null)
 			return 0;
 		TileMultipart te = BasicUtils.getTileEntity(w, new Coords(x, y, z), TileMultipart.class);
+		if (te != null && onSide == -1) {
+			TMultiPart part = te.partMap(PartMap.CENTER.i);
+			if (!countRedAlloyWire && part instanceof RedAlloyWirePart) {
+				return 0;
+			}
+			if (part != null && part instanceof IRedstoneEmitter) {
+				return ((IRedstoneEmitter) part).getEmittedSignalStrength(onSide, toDirection);
+			}
+		}
 		if (te != null && onSide > -1) {
 			TMultiPart part = te.partMap(onSide);
 			if (!countRedAlloyWire && part instanceof RedAlloyWirePart) {

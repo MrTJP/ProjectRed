@@ -14,18 +14,18 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
+import codechicken.lib.data.MCDataInput;
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Vector3;
+import codechicken.multipart.PartMap;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BundledCablePart extends WirePart implements IBundledEmitter, IBundledUpdatable {
-	
-	private boolean sceduleConnectedThingsUpdate = false;
-	
+
 	public BundledCablePart(EnumWire type, boolean isJacketedWire, int onside) {
 		super(type, isJacketedWire, onside);
 	}
@@ -54,15 +54,6 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 		return super.connectsToWireType(wire) || wire instanceof InsulatedRedAlloyPart || getWireType() == wire.getWireType() || wire.getWireType() == EnumWire.BUNDLED_N || (getWireType() == EnumWire.BUNDLED_N && wire instanceof BundledCablePart);
 	}
 
-	@Override
-	public void update() {
-		super.update();
-		if (sceduleConnectedThingsUpdate) {
-			sceduleConnectedThingsUpdate = false;
-			updateConnectedThings();
-		}
-	}
-
 	private byte[] oldStrength = new byte[16];
 
 	private boolean isUpdating;
@@ -70,6 +61,9 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 
 	private void updateStrengthFromBlock(int x, int y, int z, int side, int dir) {
 		TileMultipart tmp = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+		if (side == -1) {
+			side = PartMap.CENTER.i;
+		}
 		TMultiPart te = tmp.partMap(side);
 		if (te instanceof InsulatedRedAlloyPart) {
 			InsulatedRedAlloyPart o = (InsulatedRedAlloyPart) te;
@@ -95,32 +89,51 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 		strength = temp.clone();
 		Arrays.fill(strength, (byte) 0);
 
-		for (int dir = 0; dir < 6; dir++) {
-			if (maskConnectsInternally(dir)) {
-				int x = x(), y = y(), z = z();
-				updateStrengthFromBlock(x, y, z, dir, side);
-				continue;
+		if (isJacketed) {
+			for (int i = 0; i < 6; i++) {
+				if (maskConnectsJacketed(i)) {
+					if (tile().partMap(i) != null) {
+						updateStrengthFromBlock(x(), y(), z(), i, i ^ 1);
+					} else {
+						ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[i];
+						int x = x() + fd.offsetX;
+						int y = y() + fd.offsetY;
+						int z = z() + fd.offsetZ;
+						updateStrengthFromBlock(x, y, z, -1, i ^ 1);
+					}
+				}
 			}
-			ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[dir];
-			int x = x() + fd.offsetX;
-			int y = y() + fd.offsetY;
-			int z = z() + fd.offsetZ;
+		} else {
+			if (localJacketedConnection) {
+				updateStrengthFromBlock(x(), y(), z(), -1, side);
+			}
+			for (int dir = 0; dir < 6; dir++) {
+				if (maskConnectsInternally(dir)) {
+					int x = x(), y = y(), z = z();
+					updateStrengthFromBlock(x, y, z, dir, side);
+					continue;
+				}
+				ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[dir];
+				int x = x() + fd.offsetX;
+				int y = y() + fd.offsetY;
+				int z = z() + fd.offsetZ;
 
-			if (maskConnectsAroundCorner(dir)) {
-				fd = ForgeDirection.VALID_DIRECTIONS[side];
-				x += fd.offsetX;
-				y += fd.offsetY;
-				z += fd.offsetZ;
-				int oside = dir ^ 1;
-				int odir = side ^ 1;
-				updateStrengthFromBlock(x, y, z, oside, odir);
-				continue;
-			}
-			if (maskConnects(dir)) {
-				int oside = side;
-				int odir = dir ^ 1;
-				updateStrengthFromBlock(x, y, z, oside, odir);
-				continue;
+				if (maskConnectsAroundCorner(dir)) {
+					fd = ForgeDirection.VALID_DIRECTIONS[side];
+					x += fd.offsetX;
+					y += fd.offsetY;
+					z += fd.offsetZ;
+					int oside = dir ^ 1;
+					int odir = side ^ 1;
+					updateStrengthFromBlock(x, y, z, oside, odir);
+					continue;
+				}
+				if (maskConnects(dir)) {
+					int oside = side;
+					int odir = dir ^ 1;
+					updateStrengthFromBlock(x, y, z, oside, odir);
+					continue;
+				}
 			}
 		}
 
@@ -171,42 +184,76 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 	private void updateConnectedThings() {
 		if (CommandDebug.WIRE_DEBUG_PARTICLES)
 			debugEffect_bonemeal();
-		// TODO add jacketed wire updating here, and return;
-		for (int dir = 0; dir < 6; dir++) {
-			ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[dir];
-			int x = x() + fd.offsetX;
-			int y = y() + fd.offsetY;
-			int z = z() + fd.offsetZ;
-			if (maskConnects(dir)) {
-				if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
-					TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
-					if (tile != null) {
-						TMultiPart t = tile.partMap(side);
-						if (t instanceof IBundledUpdatable) {
-							((IBundledUpdatable)t).onBundledInputChanged();
+		if (isJacketed) {
+			for (int i = 0; i < 6; i++) {
+				if (maskConnectsJacketed(i)) {
+					TMultiPart t = null;
+					if (tile().partMap(i) != null) {
+						t = tile().partMap(i);
+					} else {
+						ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[i];
+						int x = x() + fd.offsetX;
+						int y = y() + fd.offsetY;
+						int z = z() + fd.offsetZ;
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+						if (tile != null) {
+							t = tile.partMap(PartMap.CENTER.i);
 						}
+					}
+					if (t instanceof IBundledUpdatable) {
+						((IBundledUpdatable) t).onBundledInputChanged();
 					}
 				}
 			}
-			if (maskConnectsAroundCorner(dir)) {
-				fd = ForgeDirection.VALID_DIRECTIONS[side];
-				x += fd.offsetX;
-				y += fd.offsetY;
-				z += fd.offsetZ;
-				if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
-					TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
-					if (tile != null) {
-						TMultiPart t = tile.partMap(dir ^ 1);
-						if (t instanceof IBundledUpdatable) {
-							((IBundledUpdatable) t).onBundledInputChanged();
-						}
-					}
-				}
-			}
-			if (maskConnectsInternally(dir)) {
-				TMultiPart t = tile().partMap(dir);
+
+		} else {
+			if (localJacketedConnection) {
+				TMultiPart t = tile().partMap(PartMap.CENTER.i);
 				if (t instanceof IBundledUpdatable) {
 					((IBundledUpdatable) t).onBundledInputChanged();
+				}
+			} else {
+				TMultiPart t = tile().partMap(PartMap.CENTER.i);
+				if (t instanceof WirePart) {
+					((WirePart)t).updateChange();
+				}
+			}
+			for (int dir = 0; dir < 6; dir++) {
+				ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[dir];
+				int x = x() + fd.offsetX;
+				int y = y() + fd.offsetY;
+				int z = z() + fd.offsetZ;
+				if (maskConnects(dir)) {
+					if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+						if (tile != null) {
+							TMultiPart t = tile.partMap(side);
+							if (t instanceof IBundledUpdatable) {
+								((IBundledUpdatable) t).onBundledInputChanged();
+							}
+						}
+					}
+				}
+				if (maskConnectsAroundCorner(dir)) {
+					fd = ForgeDirection.VALID_DIRECTIONS[side];
+					x += fd.offsetX;
+					y += fd.offsetY;
+					z += fd.offsetZ;
+					if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+						if (tile != null) {
+							TMultiPart t = tile.partMap(dir ^ 1);
+							if (t instanceof IBundledUpdatable) {
+								((IBundledUpdatable) t).onBundledInputChanged();
+							}
+						}
+					}
+				}
+				if (maskConnectsInternally(dir)) {
+					TMultiPart t = tile().partMap(dir);
+					if (t instanceof IBundledUpdatable) {
+						((IBundledUpdatable) t).onBundledInputChanged();
+					}
 				}
 			}
 		}
@@ -225,23 +272,13 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 		updateStrength();
 		updateChange();
 	}
-	
+
 	@Override
 	public void onPartChanged() {
 		super.onPartChanged();
 		updateStrength();
 		updateConnectedThings();
 		updateChange();
-	}
-	
-	@Override
-	public void onAdded() {
-		super.onAdded();
-	}
-	
-	@Override
-	public void updateChange() {
-		super.updateChange();
 	}
 
 	@Override
@@ -268,7 +305,7 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 		wra.renderBlocks = r;
 		wra.model = getWireType().wireMap;
 		wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
-		Tessellator.instance.setColorRGBA(255, 255, 255, 255);
+		BasicRenderUtils.setFullColor();
 		BasicRenderUtils.bindTerrainResource();
 		CCRenderState.reset();
 		CCRenderState.setBrightness(world(), x(), y(), z());
@@ -276,19 +313,48 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 		wra.side = side;
 		wra.setWireRenderState(this);
 		wra.pushRender();
+		BasicRenderUtils.setFullColor();
+	}
+
+	public void renderJacketStatic(RenderBlocks r) {
+		WireRenderAssistant wra = new WireRenderAssistant();
+		wra.x = x();
+		wra.y = y();
+		wra.z = z();
+		wra.renderBlocks = r;
+		wra.model = getWireType().jacketMap;
+		wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
+		wra.side = side;
+		wra.setJacketRender(this);
+		BasicRenderUtils.setFullColor();
+		BasicRenderUtils.bindTerrainResource();
+		CCRenderState.reset();
+		CCRenderState.setBrightness(world(), x(), y(), z());
+		wra.pushJacketFrameRender();
+		CCRenderState.setColourOpaque(getVisualWireColour());
+		wra.pushJacketWireRender();
+		BasicRenderUtils.setFullColor();
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
 		if (pass == 0) {
-			renderStatic(null);
+			if (isJacketed) {
+				renderJacketStatic(null);
+			} else {
+				renderStatic(null);
+			}
 		}
 	}
 
 	@Override
 	public void drawBreaking(RenderBlocks r) {
-		renderStatic(r);
+		if (isJacketed) {
+			renderJacketStatic(r);
+		} else {
+			renderStatic(r);
+		}
 	}
 
 	@Override
