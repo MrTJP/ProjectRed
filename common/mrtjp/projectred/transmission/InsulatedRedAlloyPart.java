@@ -1,26 +1,22 @@
-package mrtjp.projectred.multipart.wiring.wires;
+package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.interfaces.wiring.IBundledEmitter;
-import mrtjp.projectred.interfaces.wiring.IBundledUpdatable;
-import mrtjp.projectred.interfaces.wiring.IInsulatedRedstoneWire;
-import mrtjp.projectred.transmission.EnumWire;
-import mrtjp.projectred.transmission.RedwirePart;
-import mrtjp.projectred.transmission.WirePart;
+import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
-import net.minecraft.tileentity.TileEntity;
+import mrtjp.projectred.utils.Coords;
 import net.minecraft.util.Icon;
-import net.minecraft.world.World;
+import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 
-public class TileInsulatedRedAlloy extends RedwirePart implements IBundledUpdatable {
-	
-	public TileInsulatedRedAlloy(EnumWire type, boolean isJacketedWire, int onside) {
+public class InsulatedRedAlloyPart extends RedwirePart implements IBundledUpdatable {
+
+	public InsulatedRedAlloyPart(EnumWire type, boolean isJacketedWire, int onside) {
 		super(type, isJacketedWire, onside);
 		syncSignalStrength = true;
 	}
 
 	@Override
 	public boolean connectsToWireType(WirePart wire) {
-		if (wire.getWireType() == EnumWire.RED_ALLOY || wire instanceof TileBundled) {
+		if (wire.getWireType() == EnumWire.RED_ALLOY || wire instanceof BundledCablePart) {
 			return true;
 		}
 		return wire.getWireType() == getWireType();
@@ -38,13 +34,17 @@ public class TileInsulatedRedAlloy extends RedwirePart implements IBundledUpdata
 		if (rv > 0) {
 			return rv;
 		}
-		TileEntity te = world().getBlockTileEntity(x, y, z);
-		if (te instanceof IBundledEmitter) {
-			int colour = getInsulatedWireColour();
-			byte[] bcStrengthArray = ((IBundledEmitter) te).getBundledCableStrength(side, dir);
-			if (bcStrengthArray != null) {
-				int bcStrength = bcStrengthArray[colour] & 0xFF;
-				rv = Math.max(rv, bcStrength);
+		
+		TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+		if (tile != null) {
+			TMultiPart te = tile.partMap(side);
+			if (te instanceof IBundledEmitter) {
+				int colour = getInsulatedWireColour();
+				byte[] bcStrengthArray = ((IBundledEmitter)te).getBundledCableStrength(side, dir);
+				if (bcStrengthArray != null) {
+					int bcStrength = bcStrengthArray[colour] & 0xFF;
+					rv = Math.max(rv, bcStrength);
+				}
 			}
 		}
 		return rv;
@@ -53,6 +53,7 @@ public class TileInsulatedRedAlloy extends RedwirePart implements IBundledUpdata
 	@Override
 	public void onBundledInputChanged() {
 		updateSignal(null);
+		updateChange();
 	}
 
 	public int getInsulatedWireColour() {

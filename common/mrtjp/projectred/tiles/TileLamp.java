@@ -1,6 +1,5 @@
 package mrtjp.projectred.tiles;
 
-import mrtjp.projectred.interfaces.wiring.IRedstoneUpdatable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
@@ -8,7 +7,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
 
-public class TileLamp extends TileEntity implements IRedstoneUpdatable {
+public class TileLamp extends TileEntity {
 
 	public boolean inverted;
 	public boolean powered;
@@ -154,17 +153,5 @@ public class TileLamp extends TileEntity implements IRedstoneUpdatable {
 	
 	private boolean isBeingPowered() {
 		return worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
-	}
-
-	/**
-	 * Helper class for insulated wires to interact with this tile.
-	 */
-	@Override
-	public void onRedstoneInputChanged() {
-		// TODO when the state is checked, we have to do special checks
-		// to make sure any tiles around are wires and are giving signals.
-		// this is to let insulated update the lamp, since it would come
-		// in handy in tight spots.
-		onNeighborBlockChange();
 	}
 }

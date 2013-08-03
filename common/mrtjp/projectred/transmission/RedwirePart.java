@@ -1,21 +1,16 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.interfaces.wiring.IRedstoneUpdatable;
-import mrtjp.projectred.interfaces.wiring.IRedstoneWire;
 import mrtjp.projectred.multipart.wiring.CommandDebug;
 import mrtjp.projectred.utils.BasicRenderUtils;
 import mrtjp.projectred.utils.BasicUtils;
 import mrtjp.projectred.utils.BasicWireUtils;
 import mrtjp.projectred.utils.Coords;
-import mrtjp.projectred.utils.Directions;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
-import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
@@ -42,6 +37,8 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 	private static boolean blockUpdateCausedByAlloyWire = false;
 	private static boolean dontEmitPower = false;
 
+	private boolean sceduleConnectedThingsUpdate = false;
+	
 	public RedwirePart(EnumWire type, boolean isJacketedWire, int onside) {
 		super(type, isJacketedWire, onside);
 	}
@@ -63,8 +60,8 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 	@Override
 	public void writeDesc(MCDataOutput packet) {
 		super.writeDesc(packet);
-		packet.writeShort(strength);
-		packet.writeShort(strengthFromNonWireBlocks);
+		packet.writeShort(strength > 0 ? strength : 0);
+		packet.writeShort(strengthFromNonWireBlocks > 0 ? strengthFromNonWireBlocks : 0);
 	}
 
 	@Override
@@ -73,24 +70,25 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 		strength = packet.readShort();
 		strengthFromNonWireBlocks = packet.readShort();
 		if (!isFirstTick) {
-			updateConnectedWireSignal();
+			updateConnectedThings();
+		} else {
+			sceduleConnectedThingsUpdate = true;
 		}
 	}
 
 	@Override
 	public void update() {
-		if (isFirstTick) {
-			isFirstTick = false;
-			if (BasicUtils.isServer(world())) {
-				computeConnections();
-				updateChange();
-			}
-			updateConnectedWireSignal();
-			notifyExtendedPowerableNeighbours();
-		}
 		super.update();
+		if (sceduleConnectedThingsUpdate) {
+			sceduleConnectedThingsUpdate = false;
+			updateConnectedThings();
+		}
 	}
 
+	public void onAdded() {
+		super.onAdded();
+	}
+	
 	@Override
 	public void onNeighborChanged() {
 		if (blockUpdateCausedByAlloyWire) {
@@ -187,7 +185,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 		return newStrength;
 	}
 
-	private void updateConnectedWireSignal() {
+	private void updateConnectedThings() {
 		if (CommandDebug.WIRE_DEBUG_PARTICLES) {
 			debugEffect_bonemeal();
 		}
@@ -202,7 +200,10 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 						TMultiPart t = tile.partMap(side);
 						if (t instanceof RedwirePart) {
 							((RedwirePart) t).updateSignal(this);
+						} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
+							((BundledCablePart)t).onBundledInputChanged();
 						}
+						
 					}
 				}
 			}
@@ -217,6 +218,8 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 						TMultiPart t = tile.partMap(dir ^ 1);
 						if (t instanceof RedwirePart) {
 							((RedwirePart) t).updateSignal(this);
+						} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
+							((BundledCablePart)t).onBundledInputChanged();
 						}
 					}
 				}
@@ -225,6 +228,8 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 				TMultiPart t = tile().partMap(dir);
 				if (t instanceof RedwirePart) {
 					((RedwirePart) t).updateSignal(this);
+				} else if (t instanceof BundledCablePart && this instanceof InsulatedRedAlloyPart) {
+					((BundledCablePart)t).onBundledInputChanged();
 				}
 			}
 		}
@@ -268,14 +273,14 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 				// down the wire, that one will block
 				// the pulse and propagate backwards, turning the wires back on
 				// with the correct strength in 2 updates.
-				updateConnectedWireSignal();
+				updateConnectedThings();
 				newStrength = checkNeighborsForMaxStrength();
 			}
 
 			strength = (short) newStrength;
 
 			if (strength != prevStrength)
-				updateConnectedWireSignal();
+				updateConnectedThings();
 
 		} while (recursiveUpdatePending);
 
@@ -338,12 +343,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 		return BasicWireUtils.wiresProvidePower() && connectToBlockBelow && side == dir;
 	}
 
-	@Override
-	public void onPartChanged() {
-		super.onPartChanged();
-	}
-
-	private void notifyExtendedPowerableNeighbours() {
+	public void notifyExtendedPowerableNeighbours() {
 		boolean any = false;
 
 		for (int k = 0; k < 6; k++) {
@@ -366,10 +366,8 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 
 			if (!causedBlockUpdate) {
 				Block block = Block.blocksList[world().getBlockId(x, y, z)];
-				if (block != null && block.hasTileEntity(world().getBlockMetadata(x, y, z))) {
-					TileEntity te = world().getBlockTileEntity(x, y, z);
-					if (te instanceof IRedstoneUpdatable)
-						((IRedstoneUpdatable) te).onRedstoneInputChanged();
+				if (block != null) {
+					world().markBlockForUpdate(x, y, z);
 				}
 			}
 
@@ -418,7 +416,6 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 	@Override
 	protected boolean debug(EntityPlayer ply) {
 		ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((world().isRemote ? "Client" : "Server") + " signal strength: " + strength + ", nwb: " + strengthFromNonWireBlocks));
-
 		super.debug(ply);
 		return true;
 	}
@@ -443,30 +440,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 		return side;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
-		if (pass == 0) {
-			WireRenderAssistant wra = new WireRenderAssistant();
-			wra.x = x();
-			wra.y = y();
-			wra.z = z();
-			wra.renderBlocks = null;
-			wra.model = getWireType().wireMap;
-			wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
-			Tessellator.instance.setColorRGBA(255, 255, 255, 255);
-			BasicRenderUtils.bindTerrainResource();
-			CCRenderState.reset();
-			CCRenderState.setBrightness(world(), x(), y(), z());
-			CCRenderState.setColourOpaque(getVisualWireColour());
-			wra.side = side;
-			wra.setWireRenderState(this);
-			wra.pushRender();
-		}
-	}
-
-	@Override
-	public void drawBreaking(RenderBlocks r) {
+	public void renderStatic(RenderBlocks r) {
 		WireRenderAssistant wra = new WireRenderAssistant();
 		wra.x = x();
 		wra.y = y();
@@ -482,6 +456,19 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 		wra.side = side;
 		wra.setWireRenderState(this);
 		wra.pushRender();
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
+		if (pass == 0) {
+			renderStatic(null);
+		}
+	}
+
+	@Override
+	public void drawBreaking(RenderBlocks r) {
+		renderStatic(r);
 	}
 
 }

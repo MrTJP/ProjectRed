@@ -1,4 +1,4 @@
-package mrtjp.projectred.interfaces.wiring;
+package mrtjp.projectred.transmission;
 
 /**
  * Implemented by entities that can emit bundled cable signals.
