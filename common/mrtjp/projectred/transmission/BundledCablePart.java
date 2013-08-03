@@ -183,7 +183,7 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 					if (tile != null) {
 						TMultiPart t = tile.partMap(side);
 						if (t instanceof IBundledUpdatable) {
-							((IBundledUpdatable) t).onBundledInputChanged();
+							((IBundledUpdatable)t).onBundledInputChanged();
 						}
 					}
 				}
@@ -293,7 +293,7 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 
 	@Override
 	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
-		if (CommandDebug.WIRE_READING || true) {
+		if (CommandDebug.WIRE_READING) {
 			return debug(player);
 		}
 		return false;
