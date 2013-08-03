@@ -2,7 +2,7 @@ package mrtjp.projectred.integration;
 
 import java.util.List;
 
-import mrtjp.projectred.crafting.ProjectRedTabs;
+import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;

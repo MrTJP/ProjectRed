@@ -1,8 +1,8 @@
-package mrtjp.projectred.renderstuffs.gates;
+package mrtjp.projectred.integration;
 
 import java.util.Map;
 
-import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
+import mrtjp.projectred.core.InvertX;
 import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
 import codechicken.lib.render.CCModel;

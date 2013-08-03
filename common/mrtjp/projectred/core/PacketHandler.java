@@ -1,4 +1,4 @@
-package mrtjp.projectred.network;
+package mrtjp.projectred.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;

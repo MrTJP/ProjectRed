@@ -1,9 +1,9 @@
 package mrtjp.projectred.integration;
 
+import mrtjp.projectred.core.BasicGuiUtils;
+import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.utils.BasicGuiUtils;
-import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.Coords;
+import mrtjp.projectred.core.Coords;
 import net.minecraft.client.Minecraft;
 import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiScreenWidget;

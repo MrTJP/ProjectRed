@@ -1,16 +1,16 @@
 package mrtjp.projectred.integration;
 
-import static mrtjp.projectred.utils.BasicWireUtils.BACK;
-import static mrtjp.projectred.utils.BasicWireUtils.FRONT;
-import static mrtjp.projectred.utils.BasicWireUtils.LEFT;
-import static mrtjp.projectred.utils.BasicWireUtils.RIGHT;
+import static mrtjp.projectred.transmission.BasicWireUtils.BACK;
+import static mrtjp.projectred.transmission.BasicWireUtils.FRONT;
+import static mrtjp.projectred.transmission.BasicWireUtils.LEFT;
+import static mrtjp.projectred.transmission.BasicWireUtils.RIGHT;
 
 import java.util.Random;
 
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.network.GuiIDs;
-import mrtjp.projectred.utils.BasicUtils;
+import mrtjp.projectred.core.GuiIDs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;

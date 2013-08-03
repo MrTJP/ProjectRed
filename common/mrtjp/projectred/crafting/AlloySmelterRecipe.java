@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import mrtjp.projectred.utils.BasicUtils;
+import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.item.ItemStack;
 
 public class AlloySmelterRecipe {

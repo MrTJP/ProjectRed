@@ -2,10 +2,9 @@ package mrtjp.projectred.transmission;
 
 import java.util.List;
 
+import mrtjp.projectred.core.Coords;
 import mrtjp.projectred.core.Messenger;
-import mrtjp.projectred.crafting.ProjectRedTabs;
-import mrtjp.projectred.utils.BasicWireUtils;
-import mrtjp.projectred.utils.Coords;
+import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;

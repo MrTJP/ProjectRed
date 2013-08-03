@@ -1,4 +1,4 @@
-package mrtjp.projectred.utils;
+package mrtjp.projectred.core;
 
 import static net.minecraftforge.client.IItemRenderer.ItemRenderType.ENTITY;
 import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D;

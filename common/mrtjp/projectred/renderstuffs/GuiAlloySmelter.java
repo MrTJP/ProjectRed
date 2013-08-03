@@ -1,9 +1,9 @@
 package mrtjp.projectred.renderstuffs;
 
+import mrtjp.projectred.core.BasicGuiUtils;
+import mrtjp.projectred.core.BasicGuiUtils.GuiItemRenderOptions;
 import mrtjp.projectred.crafting.AlloySmelterRecipe;
 import mrtjp.projectred.tiles.TileAlloySmelter;
-import mrtjp.projectred.utils.BasicGuiUtils;
-import mrtjp.projectred.utils.BasicGuiUtils.GuiItemRenderOptions;
 import mrtjp.projectred.utils.gui.BaseGuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

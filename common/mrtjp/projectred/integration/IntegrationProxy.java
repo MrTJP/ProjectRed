@@ -9,7 +9,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetServerHandler;
 
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.network.IProxy;
+import mrtjp.projectred.core.IProxy;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustom.IServerPacketHandler;
 import codechicken.multipart.MultiPartRegistry;

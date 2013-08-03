@@ -2,11 +2,11 @@ package mrtjp.projectred.tiles;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
-import mrtjp.projectred.network.GuiIDs;
-import mrtjp.projectred.network.PacketHandler;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.GuiIDs;
+import mrtjp.projectred.core.PacketHandler;
+import mrtjp.projectred.core.SimpleInventory;
 import mrtjp.projectred.network.packets.RotaryNBTPacket;
-import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.SimpleInventory;
 import mrtjp.projectred.utils.gui.GhostContainer;
 import mrtjp.projectred.utils.gui.RestrictedSlot.ISlotCheck;
 import net.minecraft.entity.EntityLivingBase;
@@ -29,7 +29,7 @@ public class TileTurbineRotary extends TileMachineBase {
 	}
 
 	public Container getContainer(EntityPlayer player) {
-		GhostContainer ghost = new GhostContainer(player, _inv, null);
+		GhostContainer ghost = new GhostContainer(player.inventory, _inv);
 		// Turbine slot
 		ghost.addRestrictedSlot(0, _inv, 141, 47, new ISlotCheck() {
 			@Override

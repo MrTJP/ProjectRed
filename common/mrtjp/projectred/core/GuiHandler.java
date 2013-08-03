@@ -1,15 +1,12 @@
-package mrtjp.projectred.network;
+package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.core.IProjectRedModule;
 import mrtjp.projectred.items.ItemBackpack;
 import mrtjp.projectred.renderstuffs.GuiAlloySmelter;
 import mrtjp.projectred.renderstuffs.GuiBackpack;
 import mrtjp.projectred.renderstuffs.GuiTurbineRotary;
 import mrtjp.projectred.tiles.TileAlloySmelter;
 import mrtjp.projectred.tiles.TileTurbineRotary;
-import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.Coords;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;

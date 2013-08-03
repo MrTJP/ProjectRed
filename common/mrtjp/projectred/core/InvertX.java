@@ -1,4 +1,4 @@
-package mrtjp.projectred.utils.codechicken.core.vec;
+package mrtjp.projectred.core;
 
 import codechicken.lib.vec.Matrix4;
 import codechicken.lib.vec.Transformation;

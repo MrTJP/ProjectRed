@@ -3,7 +3,7 @@ package mrtjp.projectred.items;
 import java.util.List;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.crafting.ProjectRedTabs;
+import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;

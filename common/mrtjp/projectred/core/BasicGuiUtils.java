@@ -1,11 +1,10 @@
-package mrtjp.projectred.utils;
+package mrtjp.projectred.core;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import mrtjp.projectred.core.ProjectRedTickHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;

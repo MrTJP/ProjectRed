@@ -3,8 +3,8 @@ package mrtjp.projectred.renderstuffs;
 import java.util.Map;
 
 import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
-import mrtjp.projectred.utils.PRColors;
-import mrtjp.projectred.utils.codechicken.core.vec.InvertX;
+import mrtjp.projectred.core.InvertX;
+import mrtjp.projectred.core.PRColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;

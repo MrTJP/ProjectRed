@@ -1,8 +1,6 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.multipart.wiring.RotatedRenderer;
-import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
-import mrtjp.projectred.utils.BasicRenderUtils;
+import mrtjp.projectred.core.BasicRenderUtils;
 import codechicken.lib.render.CCRenderState;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

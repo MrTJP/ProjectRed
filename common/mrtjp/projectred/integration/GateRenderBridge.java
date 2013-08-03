@@ -1,13 +1,10 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.multipart.wiring.RotatedRenderer;
-import static mrtjp.projectred.utils.BasicWireUtils.*;
-import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
+import static mrtjp.projectred.transmission.BasicWireUtils.*;
+import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.transmission.EnumWire;
 import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.transmission.WireRenderAssistant;
-import mrtjp.projectred.utils.BasicRenderUtils;
-import mrtjp.projectred.utils.Rotator;
 import net.minecraft.client.renderer.texture.IconRegister;
 
 /**

@@ -1,4 +1,4 @@
-package mrtjp.projectred.utils;
+package mrtjp.projectred.core;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialLogic;

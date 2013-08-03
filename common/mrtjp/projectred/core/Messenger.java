@@ -2,7 +2,6 @@ package mrtjp.projectred.core;
 
 import java.util.ArrayList;
 
-import mrtjp.projectred.utils.Coords;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;

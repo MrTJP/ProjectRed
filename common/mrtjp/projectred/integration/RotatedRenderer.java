@@ -1,7 +1,6 @@
-package mrtjp.projectred.multipart.wiring;
+package mrtjp.projectred.integration;
 
-import mrtjp.projectred.network.ClientProxy;
-import mrtjp.projectred.renderstuffs.gates.RotatedPartModel;
+import mrtjp.projectred.core.ClientProxy;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.Icon;

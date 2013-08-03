@@ -11,9 +11,13 @@ import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
 import mrtjp.projectred.blocks.ItemBlockLamp;
 import mrtjp.projectred.blocks.ItemBlockLantern;
 import mrtjp.projectred.blocks.ItemBlockMachines;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.CommandDebug;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.GuiHandler;
 import mrtjp.projectred.core.IProjectRedModule;
 import mrtjp.projectred.core.ModuleCore;
+import mrtjp.projectred.core.PacketHandler;
 import mrtjp.projectred.crafting.CraftingRecipeManager;
 import mrtjp.projectred.integration.ItemPartGate;
 import mrtjp.projectred.integration.ItemScrewdriver;
@@ -24,15 +28,11 @@ import mrtjp.projectred.items.ItemDrawPlate;
 import mrtjp.projectred.items.ItemPart;
 import mrtjp.projectred.items.ItemVAWT;
 import mrtjp.projectred.items.ItemWoolGin;
-import mrtjp.projectred.multipart.wiring.CommandDebug;
-import mrtjp.projectred.network.GuiHandler;
-import mrtjp.projectred.network.PacketHandler;
 import mrtjp.projectred.tiles.TileLamp;
 import mrtjp.projectred.tiles.TileLantern;
 import mrtjp.projectred.transmission.ItemPartJacketedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
 import mrtjp.projectred.transmission.ModuleTransmission;
-import mrtjp.projectred.utils.BasicUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
@@ -47,15 +47,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 /**
- * "Project: Red" serves to provide a somewhat decent replacement to Eloraam's
- * RedPower 2. Some of the code is derived from Immibis's mods. His link is
- * provided below.
- * 
- * Hopefully in the near future, I will be able to finish the rewrite.
- * But for now, some of the core functionality remains the same from
- * his mod.
- * 
- * http://www.minecraftforum.net/topic/1001131-152-immibiss-mods-smp-tubestuff-5502-core-5513-da-5500-infinitubes-5502-liquid-xp-5511-microblocks-5501/
+ * "Project: Red" serves to provide a complete alternative for Eloraam's
+ * RedPower 2 utilizing ForgeMultipart API created by Chickenbones.
  * 
  * @author MrTJP
  * 
@@ -149,24 +142,6 @@ public class ProjectRed {
 				LanguageRegistry.addName(new ItemStack(blockMachines, 1, m.meta), m.fullname);
 			}
 		}
-		
-		// Wire block
-		/**
-		if (Configurator.block_wireID.getInt() > 0) {
-			blockWire = new BlockWire(Configurator.block_wireID.getInt());
-			GameRegistry.registerBlock(blockWire, ItemBlockWire.class, "projred.redwire");
-			GameRegistry.registerTileEntity(TilePlainRedAlloy.class, "tile.projred.redwire.alloy");
-			GameRegistry.registerTileEntity(TileInsulatedRedAlloy.class, "tile.projred.redwire.insulated");
-			GameRegistry.registerTileEntity(TileBundled.class, "tile.projred.redwire.bundled");
-			GameRegistry.registerTileEntity(InvalidTile.class, "tile.projectred.invalideErrorTile");
-			for (EnumWire w : EnumWire.VALUES) {
-				LanguageRegistry.addName(new ItemStack(blockWire, 1, w.ordinal()), w.name);
-				if (w.hasJacketedForm()) {
-					LanguageRegistry.addName(new ItemStack(blockWire, 1, w.ordinal() | WireDamageValues.DMG_FLAG_JACKETED), "Jacketed " + w.name);
-				}
-			}
-		}
-		*/
 		
 		// Wool Gin
 		if (Configurator.item_woolginID.getInt() > 0) {

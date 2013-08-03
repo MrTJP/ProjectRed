@@ -2,7 +2,7 @@ package mrtjp.projectred.blocks;
 
 import mrtjp.projectred.blocks.BlockLantern.EnumLantern;
 import mrtjp.projectred.tiles.TileLantern;
-import mrtjp.projectred.utils.BasicWireUtils;
+import mrtjp.projectred.transmission.BasicWireUtils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;

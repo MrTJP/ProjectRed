@@ -6,11 +6,8 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package mrtjp.projectred.utils;
+package mrtjp.projectred.core;
 
-import java.util.LinkedList;
-
-import mrtjp.projectred.interfaces.ISimpleInventoryListener;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -24,19 +21,10 @@ public class SimpleInventory implements IInventory {
 	private ItemStack[] _contents;
 	private final int _stackLimit;
 
-	private final LinkedList<ISimpleInventoryListener> _listener = new LinkedList<ISimpleInventoryListener>();
-
 	public SimpleInventory(int size, String name, int stackLimit) {
-		this(size, name, stackLimit, null);
-	}
-
-	public SimpleInventory(int size, String name, int stackLimit, ISimpleInventoryListener listener) {
 		_contents = new ItemStack[size];
 		_name = name;
 		_stackLimit = stackLimit;
-		if (listener != null) {
-			addListener(listener);
-		}
 	}
 
 	@Override
@@ -79,9 +67,6 @@ public class SimpleInventory implements IInventory {
 
 	@Override
 	public void onInventoryChanged() {
-		for (ISimpleInventoryListener handler : _listener) {
-			handler.InventoryChanged(this);
-		}
 	}
 
 	@Override
@@ -147,18 +132,6 @@ public class SimpleInventory implements IInventory {
 				}
 			}
 			onInventoryChanged();
-		}
-	}
-
-	public void addListener(ISimpleInventoryListener listner) {
-		if (!_listener.contains(listner)) {
-			_listener.add(listner);
-		}
-	}
-
-	public void removeListener(ISimpleInventoryListener listner) {
-		if (_listener.contains(listner)) {
-			_listener.remove(listner);
 		}
 	}
 

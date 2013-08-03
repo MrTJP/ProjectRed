@@ -1,4 +1,4 @@
-package mrtjp.projectred.network;
+package mrtjp.projectred.core;
 
 public class GuiIDs {
 

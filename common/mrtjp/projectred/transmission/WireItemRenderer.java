@@ -1,6 +1,6 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.utils.BasicRenderUtils;
+import mrtjp.projectred.core.BasicRenderUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 

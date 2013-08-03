@@ -1,7 +1,7 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.Coords;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Coords;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetServerHandler;
 import net.minecraft.world.WorldServer;

@@ -1,6 +1,6 @@
 package mrtjp.projectred.renderstuffs;
 
-import mrtjp.projectred.utils.PRColors;
+import mrtjp.projectred.core.PRColors;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 

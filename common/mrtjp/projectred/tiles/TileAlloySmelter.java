@@ -6,14 +6,13 @@ import java.util.Random;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.GuiIDs;
+import mrtjp.projectred.core.PacketHandler;
+import mrtjp.projectred.core.SimpleInventory;
 import mrtjp.projectred.crafting.AlloySmelterRecipe;
-import mrtjp.projectred.interfaces.IGuiOpenControler;
-import mrtjp.projectred.network.GuiIDs;
-import mrtjp.projectred.network.PacketHandler;
 import mrtjp.projectred.network.packets.AlloySmelterInitPacket;
 import mrtjp.projectred.network.packets.AlloySmelterUpdatePacket;
-import mrtjp.projectred.utils.BasicUtils;
-import mrtjp.projectred.utils.SimpleInventory;
 import mrtjp.projectred.utils.gui.GhostContainer;
 import mrtjp.projectred.utils.gui.RestrictedSlot.ISlotCheck;
 import net.minecraft.block.Block;
@@ -34,7 +33,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileAlloySmelter extends TileMachineBase implements IInventory, IGuiOpenControler {
+public class TileAlloySmelter extends TileMachineBase implements IInventory {
 
 	private SimpleInventory _inv = new SimpleInventory(11, "alloy", 64);
 	private List<EntityPlayer> _watchers = new ArrayList<EntityPlayer>();
@@ -64,7 +63,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	}
 
 	public Container getContainer(EntityPlayer player) {
-		GhostContainer ghost = new GhostContainer(player, this, this);
+		GhostContainer ghost = new GhostContainer(player.inventory, this);
 		// Crafting matrix
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -189,18 +188,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory, IGu
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		return true;
-	}
-
-	@Override
-	public void onGuiOpenedBy(EntityPlayer player) {
-		_watchers.add(player);
-	}
-
-	@Override
-	public void onGuiClosedBy(EntityPlayer player) {
-		_watchers.remove(player);
-	}
-	
+	}	
 
 	@Override
 	public int getLightLevel() {

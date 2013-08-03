@@ -1,6 +1,5 @@
 package mrtjp.projectred.core;
 
-import mrtjp.projectred.network.IProxy;
 import cpw.mods.fml.common.network.IGuiHandler;
 
 public interface IProjectRedModule {

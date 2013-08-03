@@ -2,8 +2,8 @@ package mrtjp.projectred.items;
 
 import java.util.List;
 
-import mrtjp.projectred.crafting.ProjectRedTabs;
-import mrtjp.projectred.utils.PRColors;
+import mrtjp.projectred.core.PRColors;
+import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
