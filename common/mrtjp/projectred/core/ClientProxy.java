@@ -2,11 +2,10 @@ package mrtjp.projectred.core;
 
 import static mrtjp.projectred.ProjectRed.initializedModules;
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.renderstuffs.LampRenderer;
-import mrtjp.projectred.renderstuffs.LanternRenderer;
-import mrtjp.projectred.renderstuffs.RenderIDs;
-import mrtjp.projectred.tiles.TileLamp;
-import mrtjp.projectred.tiles.TileLantern;
+import mrtjp.projectred.illumination.LampRenderer;
+import mrtjp.projectred.illumination.LanternRenderer;
+import mrtjp.projectred.illumination.TileLamp;
+import mrtjp.projectred.illumination.TileLantern;
 import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;

@@ -5,11 +5,11 @@ import static codechicken.nei.api.API.addSetRange;
 import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.blocks.BlockLamp.EnumLamp;
-import mrtjp.projectred.blocks.BlockMachines.EnumMachine;
+import mrtjp.projectred.core.ItemBackpack.EnumBackpack;
+import mrtjp.projectred.core.ItemPart.EnumPart;
+import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
+import mrtjp.projectred.illumination.BlockLamp.EnumLamp;
 import mrtjp.projectred.integration.EnumGate;
-import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
-import mrtjp.projectred.items.ItemPart.EnumPart;
 import mrtjp.projectred.transmission.EnumWire;
 import net.minecraft.item.ItemStack;
 import codechicken.nei.MultiItemRange;

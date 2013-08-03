@@ -1,10 +1,9 @@
 package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.crafting.AlloySmelterRecipe;
-import mrtjp.projectred.crafting.tools.RecipeBackpackRecoloring;
-import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
-import mrtjp.projectred.items.ItemPart.EnumPart;
+import mrtjp.projectred.core.ItemBackpack.EnumBackpack;
+import mrtjp.projectred.core.ItemPart.EnumPart;
+import mrtjp.projectred.expansion.AlloySmelterRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

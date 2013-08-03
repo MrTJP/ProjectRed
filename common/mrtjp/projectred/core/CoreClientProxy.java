@@ -3,8 +3,8 @@ package mrtjp.projectred.core;
 import static mrtjp.projectred.ProjectRed.itemComponent;
 import static mrtjp.projectred.ProjectRed.itemDrawPlate;
 import static mrtjp.projectred.ProjectRed.itemWoolGin;
-import mrtjp.projectred.items.ItemBackpack.EnumBackpack;
-import mrtjp.projectred.items.ItemPart.EnumPart;
+import mrtjp.projectred.core.ItemBackpack.EnumBackpack;
+import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
