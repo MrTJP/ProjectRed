@@ -16,8 +16,7 @@ import mrtjp.projectred.expansion.BlockMachines;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import mrtjp.projectred.expansion.ItemBlockMachines;
 import mrtjp.projectred.expansion.ItemVAWT;
-import mrtjp.projectred.illumination.BlockLamp;
-import mrtjp.projectred.illumination.BlockLantern;
+import mrtjp.projectred.illumination.ItemPartLamp;
 import mrtjp.projectred.illumination.ItemPartLantern;
 import mrtjp.projectred.illumination.ModuleIllumination;
 import mrtjp.projectred.integration.ItemPartGate;
@@ -56,11 +55,11 @@ public class ProjectRed {
 	public static ItemPartJacketedWire itemPartJacketedWire;
 	public static ItemPartLantern itemPartLantern;
 	public static ItemPartLantern itemPartInvLantern;
+	public static ItemPartLamp itemPartLamp;
+	public static ItemPartLamp itemPartInvLamp;
 	
 	/** Blocks **/
-	public static BlockLamp blockLamp;
 	public static BlockMachines blockMachines;
-	public static BlockLantern blockLantern;
 
 	/** Items **/
 	public static ItemScrewdriver itemScrewdriver;

@@ -18,14 +18,13 @@ import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemPartLantern extends JItemMultiPart {
-
+public class ItemPartLamp extends JItemMultiPart {
 	public boolean inverted;
 	
-	public ItemPartLantern(int id, boolean isInverted) {
+	public ItemPartLamp(int id, boolean isInverted) {
 		super(id);
 		inverted = isInverted;
-		this.setUnlocalizedName("projred.illumination.lantern");
+		this.setUnlocalizedName("projred.illumination.lamp");
 		this.setCreativeTab(ProjectRedTabs.tabLighting);
 	}
 
@@ -40,11 +39,7 @@ public class ItemPartLantern extends JItemMultiPart {
 
 	@Override
 	public TMultiPart newPart(ItemStack is, EntityPlayer player, World w, BlockCoord pos, int side, Vector3 arg5) {
-		BlockCoord onPos = pos.copy().offset(side ^ 1);
-		if (!BasicWireUtils.canPlaceWireOnSide(w, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) {
-			return null;
-		}
-		return new LanternPart(EnumLantern.get(is.getItemDamage()), inverted, side ^ 1);
+		return new LampPart(EnumLamp.get(is.getItemDamage()), inverted);
 	}
 
 	@Override
@@ -61,7 +56,7 @@ public class ItemPartLantern extends JItemMultiPart {
 
 	@Override
 	public void registerIcons(IconRegister reg) {
-		for (EnumLantern l : EnumLantern.values()) {
+		for (EnumLamp l : EnumLamp.values()) {
 			l.registerIcon(reg);
 		}
 	}
@@ -71,5 +66,6 @@ public class ItemPartLantern extends JItemMultiPart {
 	public int getSpriteNumber() {
 		return 0;
 	}
+
 
 }

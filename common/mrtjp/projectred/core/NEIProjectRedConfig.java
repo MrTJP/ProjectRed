@@ -8,7 +8,8 @@ import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
-import mrtjp.projectred.illumination.BlockLamp.EnumLamp;
+import mrtjp.projectred.illumination.EnumLamp;
+import mrtjp.projectred.illumination.EnumLantern;
 import mrtjp.projectred.integration.EnumGate;
 import mrtjp.projectred.transmission.EnumWire;
 import net.minecraft.item.ItemStack;
@@ -37,11 +38,12 @@ public class NEIProjectRedConfig implements IConfigureNEI {
 
 			// Lighting
 			MultiItemRange lighting = new MultiItemRange();
-			lighting.add(ProjectRed.blockLamp, 0, EnumLamp.VALID_TYPES.length - 1);
 			for (EnumLamp l : EnumLamp.VALID_TYPES) {
 				lighting.add(l.getItemStack());
+				lighting.add(l.getInvertedItemStack());
 			}
-			for (EnumLamp l : EnumLamp.VALID_TYPES) {
+			for (EnumLantern l : EnumLantern.VALID_TYPES) {
+				lighting.add(l.getItemStack());
 				lighting.add(l.getInvertedItemStack());
 			}
 			for (EnumPart p : EnumPart.ILLUMAR_PARTS) {
