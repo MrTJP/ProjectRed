@@ -4,7 +4,7 @@ v4.0.0.35
 - Bundled gates render properly.
 - CodeChickenCore, CodeChickenLib, and ForgeMultipart are now required.
 - Optimization.
-- Configurable modules for each area of the mod.
+- Configurable modules for each category.
 
 
 v3.2.1.34

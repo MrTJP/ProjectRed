@@ -1,14 +1,6 @@
 package mrtjp.projectred.core;
 
 import static mrtjp.projectred.ProjectRed.initializedModules;
-import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.illumination.LampRenderer;
-import mrtjp.projectred.illumination.LanternRenderer;
-import mrtjp.projectred.illumination.TileLamp;
-import mrtjp.projectred.illumination.TileLantern;
-import net.minecraftforge.client.MinecraftForgeClient;
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends CommonProxy {
 
@@ -37,23 +29,4 @@ public class ClientProxy extends CommonProxy {
 			m.getCommonProxy().postinit();
 		}
 	}
-
-	@Override
-	public void initRenderings() {
-
-		// Lamps
-		RenderIDs.renderIdLamp = RenderingRegistry.getNextAvailableRenderId();
-		ClientRegistry.bindTileEntitySpecialRenderer(TileLamp.class, LampRenderer.instance);
-
-		// Lanterns
-		RenderIDs.renderIDLantern = RenderingRegistry.getNextAvailableRenderId();
-		ClientRegistry.bindTileEntitySpecialRenderer(TileLantern.class, LanternRenderer.instance);
-		MinecraftForgeClient.registerItemRenderer(ProjectRed.blockLantern.blockID, LanternRenderer.instance);
-
-	}
-
-	@Override
-	public void registerEventsAndHandlers() {
-	}
-
 }

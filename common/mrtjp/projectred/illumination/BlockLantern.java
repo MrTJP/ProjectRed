@@ -133,7 +133,7 @@ public class BlockLantern extends Block {
 		return true;
 	}
 
-	public enum EnumLantern {
+	public enum EnumdLantern {
 		WHITE("White Lantern", "lanternwhite"),
 		ORANGE("Orange Lantern", "lanternorange"),
 		MAGENTA("Magenta Lantern", "lanternmagenta"),
@@ -155,16 +155,16 @@ public class BlockLantern extends Block {
 
 		public final String fullName;
 		public final String unlocalName;
-		public static final EnumLantern[] VALID_TYPES = { WHITE, ORANGE, MAGENTA, LIGHTBLUE, YELLOW, LIME, PINK, GREY, LIGHTGREY, CYAN, PURPLE, BLUE, BROWN, GREEN, RED, BLACK };
+		public static final EnumdLantern[] VALID_TYPES = { WHITE, ORANGE, MAGENTA, LIGHTBLUE, YELLOW, LIME, PINK, GREY, LIGHTGREY, CYAN, PURPLE, BLUE, BROWN, GREEN, RED, BLACK };
 		public int meta = this.ordinal();
 		public static final String oreDictDefinition = "projredLantern";
 
-		private EnumLantern(String name, String unlocal) {
+		private EnumdLantern(String name, String unlocal) {
 			fullName = name;
 			unlocalName = unlocal;
 		}
 
-		public static EnumLantern get(int i) {
+		public static EnumdLantern get(int i) {
 			if (i > VALID_TYPES.length - 1) {
 				return INVALID;
 			}

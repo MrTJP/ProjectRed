@@ -44,16 +44,4 @@ public class IntegrationProxy implements IProxy, IPartFactory {
 		}
 		return null;
 	}
-
-	@Override
-	public void initRenderings() {
-	}
-
-	@Override
-	public void registerEventsAndHandlers() {
-	}
-
-	@Override
-	public void initOreDictionaryDefinitions() {
-	}
 }

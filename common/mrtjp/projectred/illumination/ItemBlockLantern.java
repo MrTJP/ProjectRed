@@ -1,6 +1,5 @@
 package mrtjp.projectred.illumination;
 
-import mrtjp.projectred.illumination.BlockLantern.EnumLantern;
 import mrtjp.projectred.transmission.BasicWireUtils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
