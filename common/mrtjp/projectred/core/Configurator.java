@@ -20,6 +20,7 @@ public class Configurator {
 	public static final String corePacketChannel = "PR:Core";
 	public static final String integrationPacketChannel = "PR:Int";
 	public static final String transmissionPacketChannel = "PR:Trans";
+	public static final String expansionPacketChannel = "PR:Expan";
 
 	/** Modules **/
 	public static Property module_Core;
@@ -33,6 +34,8 @@ public class Configurator {
 	public static Property part_jwire;
 	public static Property part_lantern;
 	public static Property part_invlantern;
+	public static Property part_lamp;
+	public static Property part_invlamp;
 
 	/** Block IDs **/
 	public static Property block_lampID;
@@ -72,6 +75,8 @@ public class Configurator {
 		part_jwire = localConfig.get("MultiPart Item IDs", "Jacketed Wire Part ID", 9032);
 		part_lantern = localConfig.get("MultiPart Item IDs", "Lantern Part ID", 9033);
 		part_invlantern = localConfig.get("MultiPart Item IDs", "Inverted Lantern Part ID", 9034);
+		part_lamp = localConfig.get("MultiPart Item IDs", "Lamp Part ID", 9035);
+		part_invlamp = localConfig.get("MultiPart Item IDs", "Inverted Lamp Part ID", 9036);
 		
 		block_lampID = localConfig.getBlock("block_lightingID", 2128);
 		block_machinesID = localConfig.getBlock("block_machinesID", 2129);

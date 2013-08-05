@@ -3,8 +3,6 @@ package mrtjp.projectred.expansion;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
-import mrtjp.projectred.illumination.BlockLamp.EnumLamp;
-import mrtjp.projectred.illumination.BlockLantern.EnumLantern;
 import mrtjp.projectred.transmission.EnumWire;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -23,25 +21,6 @@ public class ExpansionRecipes {
 	
 	private static void initMachineRecipes() {
 		
-		/** Lamps **/
-		for (EnumLamp l : EnumLamp.VALID_TYPES) {
-			GameRegistry.addRecipe(l.getItemStack(),  // Regular
-					"gIg",
-					"gIg",
-					"gtg",
-					'g', Block.thinGlass,
-					'I', EnumPart.ILLUMAR_PARTS[l.meta].getItemStack(),
-					't', Item.redstone
-			);
-			GameRegistry.addRecipe(l.getInvertedItemStack(), // Inverted
-					"gIg",
-					"gIg",
-					"gtg",
-					'g', Block.thinGlass,
-					'I', EnumPart.ILLUMAR_PARTS[l.meta].getItemStack(),
-					't', Block.torchRedstoneActive
-			);
-		}
 		
 		/** Alloy Smelter **/
 		GameRegistry.addRecipe(EnumMachine.ALLOYSMELTER.getItemStack(), 
@@ -52,29 +31,6 @@ public class ExpansionRecipes {
 				'B', Block.brick
 		);
 		
-		/** Lanterns **/
-		for (EnumLantern l : EnumLantern.VALID_TYPES) {
-			GameRegistry.addRecipe(l.getItemStack(), 
-					"PNP",
-					"GIG",
-					"PRP",
-					'P', EnumPart.PLATE.getItemStack(),
-					'N', Item.goldNugget,
-					'G', Block.thinGlass,
-					'I', EnumPart.ILLUMAR_PARTS[l.meta].getItemStack(),
-					'R', Item.redstone	
-			);
-			GameRegistry.addRecipe(l.getInvertedItemStack(), 
-					"PNP",
-					"GIG",
-					"PRP",
-					'P', EnumPart.PLATE.getItemStack(),
-					'N', Item.goldNugget,
-					'G', Block.thinGlass,
-					'I', EnumPart.ILLUMAR_PARTS[l.meta].getItemStack(),
-					'R', Block.torchRedstoneActive
-			);
-		}
 	}	
 	private static void initToolRecipes() {		
 		/** VAWT **/

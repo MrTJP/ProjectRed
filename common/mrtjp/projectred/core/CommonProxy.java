@@ -2,8 +2,6 @@ package mrtjp.projectred.core;
 
 import static mrtjp.projectred.ProjectRed.initializedModules;
 import static mrtjp.projectred.ProjectRed.registeredModules;
-import mrtjp.projectred.illumination.BlockLamp.EnumLamp;
-import mrtjp.projectred.transmission.EnumWire;
 
 public class CommonProxy implements IProxy {
 	
@@ -57,6 +55,5 @@ public class CommonProxy implements IProxy {
 
 	
 	public void initOreDictionaryDefinitions() {
-		EnumLamp.initOreDictDefinitions();
 	}
 }

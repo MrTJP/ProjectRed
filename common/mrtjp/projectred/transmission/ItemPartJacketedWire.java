@@ -23,7 +23,7 @@ public class ItemPartJacketedWire extends JItemMultiPart {
 		super(id);
 		setHasSubtypes(true);
 		setCreativeTab(ProjectRedTabs.tabTransmission);
-		setUnlocalizedName("projred.itempartwire");
+		setUnlocalizedName("projred.transmission.jacwire");
 	}
 
 	@Override
