@@ -12,20 +12,14 @@ import mrtjp.projectred.core.ItemDrawPlate;
 import mrtjp.projectred.core.ItemPart;
 import mrtjp.projectred.core.ItemWoolGin;
 import mrtjp.projectred.core.ModuleCore;
-import mrtjp.projectred.core.PacketHandler;
 import mrtjp.projectred.expansion.BlockMachines;
-import mrtjp.projectred.expansion.ExpansionRecipes;
+import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import mrtjp.projectred.expansion.ItemBlockMachines;
 import mrtjp.projectred.expansion.ItemVAWT;
-import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import mrtjp.projectred.illumination.BlockLamp;
 import mrtjp.projectred.illumination.BlockLantern;
-import mrtjp.projectred.illumination.ItemBlockLamp;
-import mrtjp.projectred.illumination.ItemBlockLantern;
-import mrtjp.projectred.illumination.TileLamp;
-import mrtjp.projectred.illumination.TileLantern;
-import mrtjp.projectred.illumination.BlockLamp.EnumLamp;
-import mrtjp.projectred.illumination.BlockLantern.EnumLantern;
+import mrtjp.projectred.illumination.ItemPartLantern;
+import mrtjp.projectred.illumination.ModuleIllumination;
 import mrtjp.projectred.integration.ItemPartGate;
 import mrtjp.projectred.integration.ItemScrewdriver;
 import mrtjp.projectred.integration.ModuleIntegration;
@@ -53,13 +47,15 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
  * 
  */
 @Mod(modid = Configurator.modId, name = Configurator.modName, version = Configurator.version + "." + Configurator.buildnumber, dependencies = "")
-@NetworkMod(clientSideRequired = true, serverSideRequired = false, channels = { Configurator.modNetworkChannel }, packetHandler = PacketHandler.class)
+@NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class ProjectRed {
 
 	/** Multipart items **/
 	public static ItemPartGate itemPartGate;
 	public static ItemPartWire itemPartWire;
 	public static ItemPartJacketedWire itemPartJacketedWire;
+	public static ItemPartLantern itemPartLantern;
+	public static ItemPartLantern itemPartInvLantern;
 	
 	/** Blocks **/
 	public static BlockLamp blockLamp;
@@ -93,6 +89,9 @@ public class ProjectRed {
 			if (Configurator.module_Transmission.getBoolean(true)) {
 				registerModule(new ModuleTransmission());
 			}
+			if (Configurator.module_Illumination.getBoolean(true)) {
+				registerModule(new ModuleIllumination());
+			}
 			return false;
 		}
 		return registeredModules.add(m);
@@ -108,7 +107,8 @@ public class ProjectRed {
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
-		// Lamps
+	
+		/**	// Lamps
 		if (Configurator.block_lampID.getInt() > 0) {
 			blockLamp = new BlockLamp(Configurator.block_lampID.getInt());
 			GameRegistry.registerBlock(blockLamp, ItemBlockLamp.class, "projred.lighting.lamp");
@@ -131,7 +131,7 @@ public class ProjectRed {
 				LanguageRegistry.addName(new ItemStack(blockLantern, 1, i), desc + EnumLantern.get(color).fullName);
 			}
 		}
-
+**/
 		// Machines
 		if (Configurator.block_machinesID.getInt() > 0) {
 			blockMachines = new BlockMachines(Configurator.block_machinesID.getInt());
@@ -150,14 +150,8 @@ public class ProjectRed {
 
 		MinecraftForge.EVENT_BUS.register(instance);
 		MinecraftForge.EVENT_BUS.register(BasicUtils.proxy);
-
 		BasicUtils.proxy.init();
-
-		BasicUtils.proxy.initRenderings();
-		BasicUtils.proxy.registerEventsAndHandlers();
 		NetworkRegistry.instance().registerGuiHandler(this, new GuiHandler());
-		ExpansionRecipes.initRecipes();
-		BasicUtils.proxy.initOreDictionaryDefinitions();
 	}
 
 	@Mod.EventHandler

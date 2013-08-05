@@ -56,20 +56,7 @@ public class CommonProxy implements IProxy {
 	}		
 
 	
-	
-	@Override
-	public void initRenderings() {
-		//Client only initialization.
-	}
-
-	@Override
-	public void registerEventsAndHandlers() {
-		//TickRegistry.registerTickHandler(ProjectRedTickHandler.instance, Side.SERVER);
-	}
-
-	@Override
 	public void initOreDictionaryDefinitions() {
 		EnumLamp.initOreDictDefinitions();
-		EnumWire.initOreDictDefinitions();
 	}
 }

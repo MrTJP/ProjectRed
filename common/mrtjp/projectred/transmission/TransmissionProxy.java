@@ -31,28 +31,11 @@ public class TransmissionProxy implements IProxy, IPartFactory {
 		itemPartJacketedWire = new ItemPartJacketedWire(Configurator.part_jwire.getInt());
 		
 		TransmissionRecipes.initTransmissionRecipes();
+		EnumWire.initOreDictDefinitions();
 	}
 
 	@Override
 	public void postinit() {
-
-	}
-
-	@Override
-	public void initRenderings() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void registerEventsAndHandlers() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void initOreDictionaryDefinitions() {
-		// TODO Auto-generated method stub
 
 	}
 

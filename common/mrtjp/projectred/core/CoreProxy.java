@@ -32,17 +32,4 @@ public class CoreProxy implements IProxy {
 	@Override
 	public void postinit() {
 	}
-
-	@Override
-	public void initRenderings() {
-	}
-
-	@Override
-	public void registerEventsAndHandlers() {
-	}
-
-	@Override
-	public void initOreDictionaryDefinitions() {
-	}
-
 }

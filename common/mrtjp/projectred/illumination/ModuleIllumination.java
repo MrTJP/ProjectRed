@@ -1,20 +1,20 @@
-package mrtjp.projectred.transmission;
+package mrtjp.projectred.illumination;
 
 import mrtjp.projectred.core.IProjectRedModule;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.core.ModuleCore;
 import cpw.mods.fml.common.network.IGuiHandler;
 
-public class ModuleTransmission implements IProjectRedModule {
+public class ModuleIllumination implements IProjectRedModule {
 
 	@Override
 	public IProxy getCommonProxy() {
-		return new TransmissionProxy();
+		return new IlluminationProxy();
 	}
 
 	@Override
 	public IProxy getClientProxy() {
-		return new TransmissionClientProxy();
+		return new IlluminationClientProxy();
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class ModuleTransmission implements IProjectRedModule {
 
 	@Override
 	public String getModuleID() {
-		return "Transmission";
+		return "Illumination";
 	}
 
 	@Override
