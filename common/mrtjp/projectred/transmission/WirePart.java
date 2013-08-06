@@ -40,10 +40,9 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	private EnumWire wireType;
 	protected boolean isJacketed = false;
-	protected boolean notifyNeighborsNextTick = false;
+	protected boolean updateNextTick = false;
 	public int side;
 	public boolean isFirstTick = true;
-	public boolean hasNewConnections = false;
 
 	// Cached connection status of all sides, stored as absolute
 	// ForgeDirections.
@@ -113,12 +112,8 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			computeConnections();
 			updateChange();
 		}
-		if (notifyNeighborsNextTick) {
-			notifyNeighborsNextTick = false;
-			updateChange();
-		}
-		if (hasNewConnections) {
-			hasNewConnections = false;
+		if (updateNextTick) {
+			updateNextTick = false;
 			updateChange();
 		}
 		super.update();
@@ -158,7 +153,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		}
 		localJacketedConnection = packet.readBoolean();
 
-		notifyNeighborsNextTick = true;
+		updateNextTick = true;
 	}
 
 	public void updateChange() {
@@ -177,7 +172,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	public void onPartChanged() {
 		notifyExtendedNeighbors();
 		computeConnections();
-		updateChange();
+		updateNextTick = true;
 	}
 
 	@Override
@@ -191,7 +186,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		super.onAdded();
 		update();
 		notifyExtendedNeighbors();
-		updateChange();
+		updateNextTick = true;
 	}
 
 	@Override
@@ -236,7 +231,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			}
 			localJacketedConnection = computeConnectToLocalJacketed();
 			if (oldJack != localJacketedConnection || !Arrays.equals(oldExt, sideExternalConnections) || !Arrays.equals(oldInt, sideInternalConnections) || !Arrays.equals(oldCor, sideCorneredConnections)) {
-				hasNewConnections = true;
+				updateNextTick = true;
 			}
 		} else { // Calculate only jacketed connections
 			boolean[] oldExt = sideExternalConnections.clone();
@@ -244,7 +239,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 				sideExternalConnections[i] = computeJacketedConnectTo(i);
 			}
 			if (!Arrays.equals(oldExt, sideExternalConnections)) {
-				hasNewConnections = true;
+				updateNextTick = true;
 			}
 		}
 	}
@@ -253,8 +248,8 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		if ((side & 6) == (absDir & 6)) {
 			return false;
 		}
-		
-		//TODO add edge open check here
+
+		// TODO add edge open check here
 
 		int x = x(), y = y(), z = z();
 		x += ForgeDirection.VALID_DIRECTIONS[absDir].offsetX;
@@ -311,10 +306,12 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			return false;
 		}
 
-		if (!((TRedstoneTile)tile()).redstoneConductionE(PartMap.edgeBetween(side, absDir))){
-			return false;
+		if (tile() instanceof TRedstoneTile) {
+			if (!((TRedstoneTile) tile()).redstoneConductionE(PartMap.edgeBetween(side, absDir))) {
+				return false;
+			}
 		}
-		
+
 		TMultiPart t = tile().partMap(absDir);
 		if (t instanceof IConnectable) {
 			return ((IConnectable) t).connectsToWireType(this);

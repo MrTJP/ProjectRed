@@ -62,6 +62,9 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 		if (side == -1) {
 			side = PartMap.CENTER.i;
 		}
+		if (tmp == null) {
+			return;
+		}
 		TMultiPart te = tmp.partMap(side);
 		if (te instanceof InsulatedRedAlloyPart) {
 			InsulatedRedAlloyPart o = (InsulatedRedAlloyPart) te;
@@ -213,7 +216,7 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 			} else {
 				TMultiPart t = tile().partMap(PartMap.CENTER.i);
 				if (t instanceof WirePart) {
-					((WirePart)t).updateChange();
+					//((WirePart)t).updateChange();
 				}
 			}
 			for (int dir = 0; dir < 6; dir++) {
@@ -260,7 +263,7 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 	@Override
 	public void onBundledInputChanged() {
 		updateStrength();
-		updateChange();
+		updateNextTick = true;;
 	}
 
 	@Override
@@ -268,7 +271,7 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 		super.onNeighborChanged();
 		updateConnectedThings();
 		updateStrength();
-		updateChange();
+		updateNextTick = true;
 	}
 
 	@Override
@@ -276,7 +279,7 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 		super.onPartChanged();
 		updateStrength();
 		updateConnectedThings();
-		updateChange();
+		updateNextTick = true;
 	}
 
 	@Override

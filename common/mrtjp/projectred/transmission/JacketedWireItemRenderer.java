@@ -57,7 +57,6 @@ public class JacketedWireItemRenderer implements IItemRenderer {
 		wra.setInventoryJacketRender();
 		CCRenderState.startDrawing(7);
 		BasicRenderUtils.setFullColor();
-		BasicRenderUtils.setFullBrightness();
 		wra.pushJacketFrameRender();
 		CCRenderState.setColourOpaque(type.itemColour);
 		wra.pushJacketWireRender();
