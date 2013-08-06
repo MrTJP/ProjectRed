@@ -69,6 +69,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 		super.readDesc(packet);
 		strength = packet.readShort();
 		strengthFromNonWireBlocks = packet.readShort();
+		
 		if (!isFirstTick) {
 			updateConnectedThings();
 		} else {
@@ -144,7 +145,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 			} else { // Update local Jacketed if there is one, even if we dont connect.
 				TMultiPart t = tile().partMap(PartMap.CENTER.i);
 				if (t instanceof WirePart) {
-					((WirePart)t).updateChange();
+					//((WirePart)t).updateChange();
 				}
 			}
 			if (connectToBlockBelow) {
@@ -332,11 +333,11 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 				if (!world().isRemote && CommandDebug.WIRE_LAG_PARTICLES) {
 					debugEffect_bonemeal();
 				}
-				updateChange();
+				updateNextTick = true;
 			}
 
 		} else if (syncSignalStrength && BasicUtils.isServer(world()) && oldStrengthFromNonWireBlocks != strengthFromNonWireBlocks) {
-			updateChange();
+			updateNextTick = true;
 			if (CommandDebug.WIRE_LAG_PARTICLES)
 				debugEffect_bonemeal();
 		}

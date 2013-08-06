@@ -56,7 +56,7 @@ public class InsulatedRedAlloyPart extends RedwirePart implements IBundledUpdata
 	@Override
 	public void onBundledInputChanged() {
 		updateSignal(null);
-		updateChange();
+		updateNextTick = true;
 	}
 
 	public int getInsulatedWireColour() {
