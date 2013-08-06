@@ -149,7 +149,7 @@ public enum EnumWire {
 
 	public static EnumWire getTypeByName(String name) {
 		for (EnumWire w : VALID_WIRE) {
-			if (name == w.name) {
+			if (w.name.matches(name)) {
 				return w;
 			}
 		}

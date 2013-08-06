@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Coords;
 import mrtjp.projectred.transmission.BasicWireUtils;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,6 +14,7 @@ import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.lighting.LazyLightMatrix;
+import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.IRedstonePart;
@@ -120,7 +120,7 @@ public class LanternPart extends JCuboidPart implements TSlottedPart, JNormalOcc
 		int y = y() + ForgeDirection.getOrientation(rotation).offsetY;
 		int z = z() + ForgeDirection.getOrientation(rotation).offsetZ;
 		if (!BasicWireUtils.canPlaceWireOnSide(world(), x, y, z, ForgeDirection.getOrientation(rotation ^ 1), false)) {
-			BasicUtils.dropItemFromLocation(world(), getItem(), false, null, rotation, 10, new Coords(x(), y(), z()));
+			BasicUtils.dropItemFromLocation(world(), getItem(), false, null, rotation, 10, new BlockCoord(x(), y(), z()));
 			tile().remPart(this);
 		}
 	}

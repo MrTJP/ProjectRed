@@ -3,18 +3,16 @@ package mrtjp.projectred.expansion;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.GhostContainer;
-import mrtjp.projectred.core.GuiIDs;
-import mrtjp.projectred.core.PacketHandler;
+import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
 import mrtjp.projectred.core.SimpleInventory;
-import mrtjp.projectred.core.RestrictedSlot.ISlotCheck;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
-import mrtjp.projectred.expansion.packets.RotaryNBTPacket;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraftforge.common.ForgeDirection;
 
 public class TileTurbineRotary extends TileMachineBase {
@@ -82,7 +80,7 @@ public class TileTurbineRotary extends TileMachineBase {
 	@Override
 	public boolean onBlockActivated(EntityPlayer player) {
 		if (!player.isSneaking()) {
-			player.openGui(ProjectRed.instance, GuiIDs.ID_TurbineRotary, player.worldObj, xCoord, yCoord, zCoord);
+			player.openGui(ProjectRed.instance, ExpansionGuiHandler.rotaryID, player.worldObj, xCoord, yCoord, zCoord);
 			return true;
 		}
 		return false;
@@ -95,14 +93,9 @@ public class TileTurbineRotary extends TileMachineBase {
 
 	@Override
 	public Packet getDescriptionPacket() {
-		RotaryNBTPacket packet = PacketHandler.getPacket(RotaryNBTPacket.class);
-		packet.posX = xCoord;
-		packet.posY = yCoord;
-		packet.posZ = zCoord;
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		packet.tiledata = nbt;
-		return packet.getPacket();
+		return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 3, nbt);
 	}
 
 	@Override

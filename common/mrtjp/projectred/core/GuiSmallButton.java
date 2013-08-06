@@ -7,13 +7,13 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class SmallGuiButton extends GuiButton {
+public class GuiSmallButton extends GuiButton {
 
-	public SmallGuiButton(int buttonId, int x, int y, int width, int height, String label) {
+	public GuiSmallButton(int buttonId, int x, int y, int width, int height, String label) {
 		super(buttonId, x, y, width, height, label);
 	}
 
-	public SmallGuiButton(int i, int j, int k, String s) {
+	public GuiSmallButton(int i, int j, int k, String s) {
 		super(i, j, k, s);
 	}
 	

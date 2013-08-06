@@ -3,14 +3,14 @@ package mrtjp.projectred.core;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 
-public class FinalRestrictedSlot extends RestrictedSlot {
+public class GuiFinalRestrictedSlot extends GuiRestrictedSlot {
 	int limit;
-	public FinalRestrictedSlot(IInventory iinventory, int i, int j, int k, int ItemID, int stackLimit) {
+	public GuiFinalRestrictedSlot(IInventory iinventory, int i, int j, int k, int ItemID, int stackLimit) {
 		super(iinventory, i, j, k, ItemID);
 		this.limit = stackLimit;
 	}
 	
-    public FinalRestrictedSlot(IInventory iinventory, int i, int j, int k, ISlotCheck slotCheck, int stackLimit) {
+    public GuiFinalRestrictedSlot(IInventory iinventory, int i, int j, int k, ISlotCheck slotCheck, int stackLimit) {
     	super(iinventory, i, j, k, slotCheck);
 		this.limit = stackLimit;
 	}

@@ -2,6 +2,7 @@ package mrtjp.projectred.transmission;
 
 import java.util.List;
 
+import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -14,6 +15,7 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.JItemMultiPart;
 import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -27,21 +29,16 @@ public class ItemPartJacketedWire extends JItemMultiPart {
 	}
 
 	@Override
-	public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float f, float f2, float f3) {
-		if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3)) {
+	public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+		if (super.onItemUse(stack, player, w, x, y, z, side, hitX, hitY, hitZ)) {
 			w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .9F);
 			return true;
 		}
-		//TODO fix placement
 		return false;
 	}
 
 	@Override
 	public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
-		BlockCoord onPos = pos.copy().offset(side ^ 1);
-		if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) {
-			return null;
-		}
 		EnumWire w = EnumWire.VALID_WIRE[item.getItemDamage()];
 		try {
 			return (TMultiPart) w.teclass.getConstructors()[0].newInstance(w, true, side ^ 1);
@@ -49,7 +46,6 @@ public class ItemPartJacketedWire extends JItemMultiPart {
 			return null;
 		}
 	}
-
 
 	@Override
 	@SideOnly(Side.CLIENT)
@@ -64,9 +60,7 @@ public class ItemPartJacketedWire extends JItemMultiPart {
 	}
 
 	@Override
-	public void registerIcons(IconRegister reg) {
-
-	}
+	public void registerIcons(IconRegister reg) {}
 
 	@Override
 	@SideOnly(Side.CLIENT)

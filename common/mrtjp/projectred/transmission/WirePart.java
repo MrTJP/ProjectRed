@@ -7,7 +7,6 @@ import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Coords;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,6 +16,7 @@ import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.raytracer.IndexedCuboid6;
+import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
@@ -25,6 +25,7 @@ import codechicken.multipart.PartMap;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
+import codechicken.multipart.scalatraits.TRedstoneTile;
 
 /**
  * This is the base class for all wire types. It can be used for any sub type,
@@ -203,7 +204,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			int y = y() + ForgeDirection.getOrientation(side).offsetY;
 			int z = z() + ForgeDirection.getOrientation(side).offsetZ;
 			if (!BasicWireUtils.canPlaceWireOnSide(world(), x, y, z, ForgeDirection.getOrientation(side ^ 1), false)) {
-				BasicUtils.dropItemFromLocation(world(), getItem(), false, null, side, 10, new Coords(x(), y(), z()));
+				BasicUtils.dropItemFromLocation(world(), getItem(), false, null, side, 10, new BlockCoord(x(), y(), z()));
 				tile().remPart(this);
 			}
 		}
@@ -252,13 +253,14 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		if ((side & 6) == (absDir & 6)) {
 			return false;
 		}
-		// BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side,
-		// absDir);
+		
+		//TODO add edge open check here
+
 		int x = x(), y = y(), z = z();
 		x += ForgeDirection.VALID_DIRECTIONS[absDir].offsetX;
 		y += ForgeDirection.VALID_DIRECTIONS[absDir].offsetY;
 		z += ForgeDirection.VALID_DIRECTIONS[absDir].offsetZ;
-		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+		TileMultipart t = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 		boolean isMultiTile = false;
 		if (t != null) {
 			isMultiTile = true;
@@ -294,7 +296,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		y += ForgeDirection.VALID_DIRECTIONS[side].offsetY;
 		z += ForgeDirection.VALID_DIRECTIONS[side].offsetZ;
 
-		TileMultipart t = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+		TileMultipart t = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 		if (t != null) {
 			TMultiPart tp = t.partMap(absDir ^ 1);
 			if (tp instanceof IConnectable) {
@@ -309,8 +311,10 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			return false;
 		}
 
-		// TODO Inside Edge check here
-
+		if (!((TRedstoneTile)tile()).redstoneConductionE(PartMap.edgeBetween(side, absDir))){
+			return false;
+		}
+		
 		TMultiPart t = tile().partMap(absDir);
 		if (t instanceof IConnectable) {
 			return ((IConnectable) t).connectsToWireType(this);
@@ -335,7 +339,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			int x = x() + ForgeDirection.VALID_DIRECTIONS[absDir].offsetX;
 			int y = y() + ForgeDirection.VALID_DIRECTIONS[absDir].offsetY;
 			int z = z() + ForgeDirection.VALID_DIRECTIONS[absDir].offsetZ;
-			TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+			TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 			if (tile != null) {
 				TMultiPart p = tile.partMap(PartMap.CENTER.i);
 				if (p instanceof IConnectable) {

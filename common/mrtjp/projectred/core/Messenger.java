@@ -13,15 +13,17 @@ import net.minecraftforge.event.ForgeSubscribe;
 
 import org.lwjgl.opengl.GL11;
 
+import codechicken.core.ClientUtils;
+import codechicken.lib.vec.BlockCoord;
+
 public class Messenger {
 	static ArrayList<Message> messages = new ArrayList<Message>();
 
 	/**
-	 * 
 	 * @param location
 	 * @param mail
 	 */
-	public static void addMessage(Coords location, String mail) {
+	public static void addMessage(BlockCoord location, String mail) {
 		boolean long_lasting = mail.startsWith("\t");
 		if (long_lasting) {
 			mail = mail.substring(1);
@@ -31,7 +33,7 @@ public class Messenger {
 			return;
 		}
 
-		if ((messages.size() > 10)) {
+		if ((messages.size() > 64)) {
 			messages.remove(0);
 		}
 		for (Message m : messages) {
@@ -39,7 +41,7 @@ public class Messenger {
 				m.set(location, mail, long_lasting);
 				return;
 			}
-			if ((m.location.distanceManhatten(location) == 1)) {
+			if ((BasicUtils.distanceManhatten(m.location, location) == 1)) {
 				m.receivedOn = 0L;
 			}
 		}
@@ -56,34 +58,36 @@ public class Messenger {
 			return;
 		}
 		long deathTime = System.currentTimeMillis() - 6000L;
-		EntityLivingBase camera = Minecraft.getMinecraft().renderViewEntity;
-		double cx = camera.lastTickPosX + (camera.posX - camera.lastTickPosX) * event.partialTicks;
-		double cy = camera.lastTickPosY + (camera.posY - camera.lastTickPosY) * event.partialTicks;
-		double cz = camera.lastTickPosZ + (camera.posZ - camera.lastTickPosZ) * event.partialTicks;
+		EntityLivingBase view = Minecraft.getMinecraft().renderViewEntity;
+		double cx = view.lastTickPosX + (view.posX - view.lastTickPosX) * event.partialTicks;
+		double cy = view.lastTickPosY + (view.posY - view.lastTickPosY) * event.partialTicks;
+		double cz = view.lastTickPosZ + (view.posZ - view.lastTickPosZ) * event.partialTicks;
 		GL11.glPushMatrix();
 		GL11.glTranslated(-cx, -cy, -cz);
 		GL11.glPushAttrib(GL11.GL_BLEND);
-		
+
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDepthMask(false);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		
+
 		ArrayList<Message> removeQueue = new ArrayList<Message>();
-		for (Message m : messages) {
-			if ((m.receivedOn < deathTime) || (m.location.w != w)) {
+		ArrayList<Message> readQueue = new ArrayList<Message>();
+		readQueue.addAll(messages);
+		for (Message m : readQueue) {
+			if ((m.receivedOn < deathTime)) {
 				removeQueue.add(m);
 			} else {
 				readMessage(m);
 			}
 		}
 		messages.removeAll(removeQueue);
-		
+
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		
+
 		GL11.glPopMatrix();
 		GL11.glPopAttrib();
 	}
@@ -94,7 +98,7 @@ public class Messenger {
 		String[] lines = m.msg.split("\n");
 		FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
 		for (String line : lines) {
-			height += fr.FONT_HEIGHT + 2;
+			height += fr.FONT_HEIGHT + 4;
 			width = Math.max(width, fr.getStringWidth(line));
 		}
 		width += 2;
@@ -103,18 +107,20 @@ public class Messenger {
 		scaling *= 0.6666667F;
 		GL11.glPushMatrix();
 
-		float y = m.location.y + .5f;
+		//float y = (float) (m.location.y + 1 + 0.1 + Math.sin(((m.location.x / m.location.y) * 64) * 1.7 + ProjectRedTickHandler.degreeRotation / 8) * 0.01);
+		float y = (float) (m.location.y + 1 + 0.04*(Math.sin(((m.location.x ^ m.location.z)) + ClientUtils.getRenderTime() / 4)));
+
 		GL11.glTranslatef(m.location.x + 0.5F, y, m.location.z + 0.5F);
 		GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(-RenderManager.instance.playerViewY, 0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(RenderManager.instance.playerViewX, 1.0F, 0.0F, 0.0F);
+		GL11.glRotatef((float) (-RenderManager.instance.playerViewY + (8*Math.sin(((m.location.x ^ m.location.z)) + ClientUtils.getRenderTime() / 6))), 0.0F, 1.0F, 0.0F);
+		GL11.glRotatef((float)(RenderManager.instance.playerViewX), 1.0F, 0.0F, 0.0F);
 		GL11.glScalef(-scaling, -scaling, scaling);
 		GL11.glTranslatef(0.0F, -10 * lines.length, 0.0F);
 
 		Tessellator tess = Tessellator.instance;
 		int var16 = (lines.length - 1) * 10;
 
-		GL11.glDisable(3553);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		tess.startDrawingQuads();
 		int var17 = width / 2;
 		tess.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
@@ -123,7 +129,7 @@ public class Messenger {
 		tess.addVertex(var17 + 1, 8 + var16, 0.0D);
 		tess.addVertex(var17 + 1, -1.0D, 0.0D);
 		tess.draw();
-		GL11.glEnable(3553);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		int i = 0;
 		for (String line : lines) {
 			fr.drawString(line, -fr.getStringWidth(line) / 2, 10 * i, -1);
@@ -133,11 +139,11 @@ public class Messenger {
 	}
 
 	static class Message {
-		Coords location;
+		BlockCoord location;
 		String msg;
 		long receivedOn;
 
-		Message set(Coords locus, String msg, boolean longLife) {
+		Message set(BlockCoord locus, String msg, boolean longLife) {
 			this.receivedOn = System.currentTimeMillis();
 			if (longLife) {
 				this.receivedOn += 5000L;

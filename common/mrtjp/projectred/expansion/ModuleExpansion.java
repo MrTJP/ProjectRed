@@ -1,25 +1,25 @@
 package mrtjp.projectred.expansion;
 
-import cpw.mods.fml.common.network.IGuiHandler;
 import mrtjp.projectred.core.IProjectRedModule;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.core.ModuleCore;
+import cpw.mods.fml.common.network.IGuiHandler;
 
 public class ModuleExpansion implements IProjectRedModule {
 
 	@Override
 	public IProxy getCommonProxy() {
-		return null;
+		return new ExpansionProxy();
 	}
 
 	@Override
 	public IProxy getClientProxy() {
-		return null;
+		return new ExpansionClientProxy();
 	}
 
 	@Override
 	public IGuiHandler getGuiHandler() {
-		return null;
+		return new ExpansionGuiHandler();
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package mrtjp.projectred.integration;
 
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Coords;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetServerHandler;
 import net.minecraft.world.WorldServer;
@@ -21,7 +20,7 @@ public class IntegrationSPH implements IServerPacketHandler {
 			BlockCoord b = packet.readCoord();
 			int face = packet.readByte();
 			String action = packet.readString();
-			TileMultipart t = (TileMultipart) BasicUtils.getTileEntity(world, new Coords(b.x, b.y, b.z), TileMultipart.class);
+			TileMultipart t = (TileMultipart) BasicUtils.getTileEntity(world, b, TileMultipart.class);
 			GatePart g = (GatePart) t.partMap(face);
 			((GateLogic.WithGui) g.getLogic()).handleButtonPressed(action, g);
 		}

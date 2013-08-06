@@ -5,7 +5,6 @@ import java.util.List;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Coords;
 import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -18,6 +17,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import codechicken.lib.vec.BlockCoord;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -51,7 +51,7 @@ public class BlockMachines extends BlockContainer {
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, int par5, int par6) {
-		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileMachineBase.class);
+		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileMachineBase.class);
 		if (tile != null) {
 			tile.onBlockBreak();
 		}
@@ -61,7 +61,7 @@ public class BlockMachines extends BlockContainer {
 
 	@Override
 	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
-		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileMachineBase.class);
+		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileMachineBase.class);
 		if (tile != null) {
 			tile.onBlockClicked(player);
 		}
@@ -69,7 +69,7 @@ public class BlockMachines extends BlockContainer {
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) {
-		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileMachineBase.class);
+		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileMachineBase.class);
 		if (tile != null) {
 			return tile.onBlockActivated(player);
 		}
@@ -78,7 +78,7 @@ public class BlockMachines extends BlockContainer {
 
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {
-		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileMachineBase.class);
+		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileMachineBase.class);
 		if (tile != null) {
 			tile.onBlockPlacedBy(entity, itemstack);
 		}
@@ -109,7 +109,7 @@ public class BlockMachines extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public Icon getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
-		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(access, new Coords(x, y, z), TileMachineBase.class);
+		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(access, new BlockCoord(x, y, z), TileMachineBase.class);
 		if (tile != null) {
 			return tile.getType().icons[tile.getIconForSide(side)];
 		}
@@ -125,7 +125,7 @@ public class BlockMachines extends BlockContainer {
 
 	@Override
 	public int getLightValue(IBlockAccess world, int x, int y, int z) {
-		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileMachineBase.class);
+		TileMachineBase tile = (TileMachineBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileMachineBase.class);
 		if (tile != null) {
 			return tile.getLightLevel();
 		}

@@ -6,14 +6,12 @@ import java.util.Random;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.GhostContainer;
 import mrtjp.projectred.core.GuiIDs;
-import mrtjp.projectred.core.PacketHandler;
+import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
 import mrtjp.projectred.core.SimpleInventory;
-import mrtjp.projectred.core.RestrictedSlot.ISlotCheck;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
-import mrtjp.projectred.expansion.packets.AlloySmelterInitPacket;
-import mrtjp.projectred.expansion.packets.AlloySmelterUpdatePacket;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,7 +25,10 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.Packet132TileEntityData;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeDirection;
+import codechicken.lib.packet.PacketCustom;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -35,7 +36,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileAlloySmelter extends TileMachineBase implements IInventory {
 
 	private SimpleInventory _inv = new SimpleInventory(11, "alloy", 64);
-	private List<EntityPlayer> _watchers = new ArrayList<EntityPlayer>();
 
 	// True when working on something
 	public boolean hasWork = false;
@@ -92,7 +92,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory {
 	@Override
 	public boolean onBlockActivated(EntityPlayer player) {
 		if (!player.isSneaking()) {
-			player.openGui(ProjectRed.instance, GuiIDs.ID_Alloy, player.worldObj, xCoord, yCoord, zCoord);
+			player.openGui(ProjectRed.instance, ExpansionGuiHandler.alloyID, player.worldObj, xCoord, yCoord, zCoord);
 			return true;
 		}
 		return false;
@@ -118,14 +118,9 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory {
 
 	@Override
 	public Packet getDescriptionPacket() {
-		AlloySmelterInitPacket packet = PacketHandler.getPacket(AlloySmelterInitPacket.class);
-		packet.posX = xCoord;
-		packet.posY = yCoord;
-		packet.posZ = zCoord;
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		packet.tiledata = nbt;
-		return packet.getPacket();
+		return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 3, nbt);
 	}
 
 	@Override
@@ -293,13 +288,15 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory {
 	}
 
 	public void updateWatchers() {
-		AlloySmelterUpdatePacket packet = PacketHandler.getPacket(AlloySmelterUpdatePacket.class);
-		packet.posX = xCoord;
-		packet.posY = yCoord;
-		packet.posZ = zCoord;
-		packet.heat = this.heat;
-		packet.progress = this.progress;
-		BasicUtils.sendPacketToPlayerList(packet.getPacket(), _watchers);
+		if (BasicUtils.isClient(worldObj)) {
+			return;
+		}
+		PacketCustom packet = new PacketCustom(Configurator.expansionPacketChannel, ExpansionNetworkConstants.alloySmelterWatcherUpdate);
+		packet.writeCoord(xCoord, yCoord, zCoord);
+		packet.writeShort(heat);
+		packet.writeShort(progress);
+		Chunk c = worldObj.getChunkFromBlockCoords(xCoord, zCoord);
+		packet.sendToChunk(worldObj, c.xPosition, c.zPosition);
 	}
 
 	public boolean hasWork() {

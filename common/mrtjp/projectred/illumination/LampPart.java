@@ -4,14 +4,11 @@ import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Coords;
-import mrtjp.projectred.transmission.BasicWireUtils;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.lighting.LazyLightMatrix;
@@ -22,12 +19,12 @@ import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.PartMap;
+import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TSlottedPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class LampPart extends JCuboidPart implements TSlottedPart, JNormalOcclusion, IRedstonePart {
+public class LampPart extends JCuboidPart implements TFacePart, JNormalOcclusion, IRedstonePart {
 
 	EnumLamp type;
 	private boolean isInverted;
@@ -148,7 +145,7 @@ public class LampPart extends JCuboidPart implements TSlottedPart, JNormalOcclus
 	}
 
 	public ItemStack getItem() {
-		return new ItemStack(isInverted ? ProjectRed.itemPartInvLantern : ProjectRed.itemPartLantern, 1, type.meta);
+		return new ItemStack(isInverted ? ProjectRed.itemPartInvLamp : ProjectRed.itemPartLamp, 1, type.meta);
 	}
 
 	@Override
@@ -173,7 +170,7 @@ public class LampPart extends JCuboidPart implements TSlottedPart, JNormalOcclus
 
 	@Override
 	public int getSlotMask() {
-		return 1 << PartMap.CENTER.i;
+		return 1 << PartMap.CENTER.i | 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5;
 	}
 
 	@Override
@@ -194,6 +191,16 @@ public class LampPart extends JCuboidPart implements TSlottedPart, JNormalOcclus
 	@Override
 	public int weakPowerLevel(int arg0) {
 		return 0;
+	}
+
+	@Override
+	public int redstoneConductionMap() {
+		return 0;
+	}
+
+	@Override
+	public boolean solid(int arg0) {
+		return true;
 	}
 
 }

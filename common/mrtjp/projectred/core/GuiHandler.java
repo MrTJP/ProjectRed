@@ -24,35 +24,11 @@ public class GuiHandler implements IGuiHandler {
 				return servGui;
 			}
 		}
-		
-		if (ID == GuiIDs.ID_Timer) {
-			//GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
-			//if (tile != null) {
-			//	return new ContainerTimer(player, tile);
-			//}
-		}
-		if (ID == GuiIDs.ID_Counter) {
-			//GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
-			//if (tile != null) {
-			//	return new ContainerCounter(player, tile);
-			//}
-		}
-		if (ID == GuiIDs.ID_Alloy) {
-			TileAlloySmelter tile = (TileAlloySmelter) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileAlloySmelter.class);
-			if (tile != null) {
-				return tile.getContainer(player);
-			}
-		}
+
 		if (ID == GuiIDs.ID_Bag) {
 			ItemStack held = player.getHeldItem();
 			if (held.itemID == ProjectRed.itemBackpack.itemID) {
 				return ItemBackpack.getContainer(player);
-			}
-		}
-		if (ID == GuiIDs.ID_TurbineRotary) {
-			TileTurbineRotary tile = (TileTurbineRotary) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileTurbineRotary.class);
-			if (tile != null) {
-				return tile.getContainer(player);
 			}
 		}
 		return null;
@@ -71,37 +47,12 @@ public class GuiHandler implements IGuiHandler {
 			}
 		}
 
-		if (ID == GuiIDs.ID_Timer) {
-			//GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
-			//if (tile != null) {
-			//	return new GuiTimer(new ContainerTimer(player, tile));
-			//}
-		}
-		if (ID == GuiIDs.ID_Counter) {
-			//GatePart tile = (GatePart) BasicUtils.getTileEntity(world, new Coords(x, y, z), GatePart.class);
-			//if (tile != null) {
-			//	return new GuiCounter(new ContainerCounter(player, tile));
-			//}
-		}
-		if (ID == GuiIDs.ID_Alloy) {
-			TileAlloySmelter tile = (TileAlloySmelter) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileAlloySmelter.class);
-			if (tile != null) {
-				return new GuiAlloySmelter(player, tile);
-			}
-		}
 		if (ID == GuiIDs.ID_Bag) {
 			ItemStack held = player.getHeldItem();
 			if (held.itemID == ProjectRed.itemBackpack.itemID) {
 				return new GuiBackpack(player, ItemBackpack.getBackpackInventory(player), held);
 			}
 		}
-		if (ID == GuiIDs.ID_TurbineRotary) {
-			TileTurbineRotary tile = (TileTurbineRotary) BasicUtils.getTileEntity(world, new Coords(x, y, z), TileTurbineRotary.class);
-			if (tile != null) {
-				return new GuiTurbineRotary(player, tile);
-			}
-		}
-		
 		return null;
 	}
 }

@@ -1,6 +1,6 @@
 package mrtjp.projectred.core;
 
-public interface IRenderSlot {
+public interface GuiIRenderSlot {
 	public void mouseClicked(int button);
 
 	public boolean drawSlotBackground();

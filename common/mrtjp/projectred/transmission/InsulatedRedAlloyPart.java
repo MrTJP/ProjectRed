@@ -1,8 +1,8 @@
 package mrtjp.projectred.transmission;
 
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Coords;
 import net.minecraft.util.Icon;
+import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.PartMap;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
@@ -35,7 +35,7 @@ public class InsulatedRedAlloyPart extends RedwirePart implements IBundledUpdata
 			return rv;
 		}
 		
-		TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+		TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 		if (tile != null) {
 			if (side == -1) {
 				side = PartMap.CENTER.i;

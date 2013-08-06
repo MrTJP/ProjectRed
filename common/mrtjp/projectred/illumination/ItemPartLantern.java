@@ -25,6 +25,7 @@ public class ItemPartLantern extends JItemMultiPart {
 	public ItemPartLantern(int id, boolean isInverted) {
 		super(id);
 		inverted = isInverted;
+		this.setHasSubtypes(true);
 		this.setUnlocalizedName("projred.illumination.lantern");
 		this.setCreativeTab(ProjectRedTabs.tabLighting);
 	}

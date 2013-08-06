@@ -5,7 +5,6 @@ import java.util.Arrays;
 import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CommandDebug;
-import mrtjp.projectred.core.Coords;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -15,6 +14,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.render.CCRenderState;
+import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.PartMap;
 import codechicken.multipart.TMultiPart;
@@ -58,7 +58,7 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 	private boolean recursiveUpdatePending = true;
 
 	private void updateStrengthFromBlock(int x, int y, int z, int side, int dir) {
-		TileMultipart tmp = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+		TileMultipart tmp = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 		if (side == -1) {
 			side = PartMap.CENTER.i;
 		}
@@ -193,7 +193,7 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 						int x = x() + fd.offsetX;
 						int y = y() + fd.offsetY;
 						int z = z() + fd.offsetZ;
-						TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 						if (tile != null) {
 							t = tile.partMap(PartMap.CENTER.i);
 						}
@@ -223,7 +223,7 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 				int z = z() + fd.offsetZ;
 				if (maskConnects(dir)) {
 					if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
-						TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 						if (tile != null) {
 							TMultiPart t = tile.partMap(side);
 							if (t instanceof IBundledUpdatable) {
@@ -238,7 +238,7 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 					y += fd.offsetY;
 					z += fd.offsetZ;
 					if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
-						TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 						if (tile != null) {
 							TMultiPart t = tile.partMap(dir ^ 1);
 							if (t instanceof IBundledUpdatable) {

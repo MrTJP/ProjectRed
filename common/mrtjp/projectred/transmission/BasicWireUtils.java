@@ -3,11 +3,11 @@ package mrtjp.projectred.transmission;
 import java.lang.reflect.Field;
 
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Coords;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.PartMap;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
@@ -19,15 +19,6 @@ public class BasicWireUtils {
 	public static final int LEFT = 2;
 	public static final int RIGHT = 3;
 
-	public static boolean canConnectThroughEdge(World w, int x, int y, int z, int side, int dir) {
-		TileMultipart t = (TileMultipart) BasicUtils.getTileEntity(w, new Coords(x, y, z), TileMultipart.class);
-		if (t != null) {
-			if (t.partMap(PartMap.edgeBetween(side, dir)) == null) {
-				return true;
-			}
-		}
-		return !w.isBlockSolidOnSide(x, y, z, ForgeDirection.VALID_DIRECTIONS[side]) && !w.isBlockSolidOnSide(x, y, z, ForgeDirection.VALID_DIRECTIONS[dir]);
-	}
 
 	/**
 	 * Return the red-alloy power strength (0 to 255) the specified block is
@@ -53,7 +44,7 @@ public class BasicWireUtils {
 			return (short) ((meta - 1) * 17);
 		if (b == null)
 			return 0;
-		TileMultipart te = BasicUtils.getTileEntity(w, new Coords(x, y, z), TileMultipart.class);
+		TileMultipart te = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMultipart.class);
 		if (te != null && onSide == -1) {
 			TMultiPart part = te.partMap(PartMap.CENTER.i);
 			if (!countRedAlloyWire && part instanceof RedAlloyWirePart) {

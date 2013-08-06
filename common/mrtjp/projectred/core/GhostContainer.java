@@ -1,6 +1,6 @@
 package mrtjp.projectred.core;
 
-import mrtjp.projectred.core.RestrictedSlot.ISlotCheck;
+import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -47,7 +47,7 @@ public class GhostContainer extends Container {
 		// hotbar
 		for (int i1 = 0; i1 < 9; i1++) {
 			if (i1 == staticSlot) {
-				addSlotToContainer(new UnmodifiableSlot(_playerInventory, i1, xOffset + i1 * 18, yOffset + 58));
+				addSlotToContainer(new GuiUnmodifiableSlot(_playerInventory, i1, xOffset + i1 * 18, yOffset + 58));
 			} else {
 				addSlotToContainer(new Slot(_playerInventory, i1, xOffset + i1 * 18, yOffset + 58));
 			}
@@ -65,14 +65,14 @@ public class GhostContainer extends Container {
 	 * A ghost slot will not take items.
 	 */
 	public void addGhostSlot(int slotId, int xCoord, int yCoord) {
-		addSlotToContainer(new GhostSlot(_inv, slotId, xCoord, yCoord));
+		addSlotToContainer(new GuiGhostSlot(_inv, slotId, xCoord, yCoord));
 	}
 
 	/**
 	 * Slot that will only accept the given ID.
 	 */
 	public void addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, int ItemID) {
-		addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, ItemID));
+		addSlotToContainer(new GuiRestrictedSlot(inventory, slotId, xCoord, yCoord, ItemID));
 	}
 
 	/**
@@ -80,28 +80,28 @@ public class GhostContainer extends Container {
 	 * removal of the stack.
 	 */
 	public void addFinalRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, int ItemID, int stackLimit) {
-		addSlotToContainer(new FinalRestrictedSlot(inventory, slotId, xCoord, yCoord, ItemID, stackLimit));
+		addSlotToContainer(new GuiFinalRestrictedSlot(inventory, slotId, xCoord, yCoord, ItemID, stackLimit));
 	}
 
 	/**
 	 * Slot that will only accept if slotCheck allows it.
 	 */
 	public void addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotCheck slotCheck) {
-		addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck));
+		addSlotToContainer(new GuiRestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck));
 	}
 
 	/**
 	 * Slot that will only accept if slotCheck allows it and wont allow removal.
 	 */
 	public void addFinalRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotCheck slotCheck, int stackLimit) {
-		addSlotToContainer(new FinalRestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck, stackLimit));
+		addSlotToContainer(new GuiFinalRestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck, stackLimit));
 	}
 
 	/**
 	 * Slot that will not allow removal.
 	 */
 	public void addUnmodifiableSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
-		addSlotToContainer(new UnmodifiableSlot(inventory, slotId, xCoord, yCoord));
+		addSlotToContainer(new GuiUnmodifiableSlot(inventory, slotId, xCoord, yCoord));
 	}
 
 	/**
@@ -217,18 +217,18 @@ public class GhostContainer extends Container {
 		InventoryPlayer inventoryplayer = entityplayer.inventory;
 		ItemStack currentlyEquippedStack = inventoryplayer.getItemStack();
 		Slot slot = (Slot) inventorySlots.get(slotId);
-		if (slot == null || (!(slot instanceof GhostSlot) && !(slot instanceof UnmodifiableSlot))) {
+		if (slot == null || (!(slot instanceof GuiGhostSlot) && !(slot instanceof GuiUnmodifiableSlot))) {
 			ItemStack stack1 = super.slotClick(slotId, mouseButton, isShift, entityplayer);
 			return stack1;
 		}
 
 		// Dont let modify an unmodifiable slot
-		if (slot instanceof UnmodifiableSlot) {
+		if (slot instanceof GuiUnmodifiableSlot) {
 			return currentlyEquippedStack;
 		}
 
 		// Use ghost items if its a ghost slot.
-		if (slot instanceof GhostSlot) {
+		if (slot instanceof GuiGhostSlot) {
 			ItemStack currentItem = currentlyEquippedStack;
 			ItemStack slotItem = slot.getStack();
 			if (BasicUtils.areStacksTheSame(currentItem, slotItem)) {

@@ -27,6 +27,7 @@ public class Configurator {
 	public static Property module_Integration;
 	public static Property module_Transmission;
 	public static Property module_Illumination;
+	public static Property module_Expansion;
 	
 	/** Multipart IDs **/
 	public static Property part_gate;
@@ -38,9 +39,7 @@ public class Configurator {
 	public static Property part_invlamp;
 
 	/** Block IDs **/
-	public static Property block_lampID;
 	public static Property block_machinesID;
-	public static Property block_lanternID;
 
 	/** Item IDs**/
 	public static Property item_screwdriverID;
@@ -69,6 +68,7 @@ public class Configurator {
 		module_Integration = localConfig.get("Modules", "Integration", true);
 		module_Transmission = localConfig.get("Modules", "Transmission", true);
 		module_Illumination = localConfig.get("Modules", "Illumination", true);
+		module_Expansion = localConfig.get("Modules", "Expansion", true);
 
 		part_gate = localConfig.get("MultiPart Item IDs", "Gate Part ID", 9030);
 		part_wire = localConfig.get("MultiPart Item IDs", "Wire Part ID", 9031);
@@ -78,9 +78,7 @@ public class Configurator {
 		part_lamp = localConfig.get("MultiPart Item IDs", "Lamp Part ID", 9035);
 		part_invlamp = localConfig.get("MultiPart Item IDs", "Inverted Lamp Part ID", 9036);
 		
-		block_lampID = localConfig.getBlock("block_lightingID", 2128);
 		block_machinesID = localConfig.getBlock("block_machinesID", 2129);
-		block_lanternID = localConfig.getBlock("block_lanternID", 2130);
 
 		item_screwdriverID = localConfig.getItem("item_screwdriverID", 9024);
 		item_componentsID = localConfig.getItem("item_componentsID", 9025);
