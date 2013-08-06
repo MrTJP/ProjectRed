@@ -4,18 +4,18 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class RestrictedSlot extends Slot {
+public class GuiRestrictedSlot extends Slot {
 
 	private final int ItemID;
 	private final ISlotCheck slotCheck;
 	
-	public RestrictedSlot(IInventory iinventory, int i, int j, int k, int ItemID) {
+	public GuiRestrictedSlot(IInventory iinventory, int i, int j, int k, int ItemID) {
 		super(iinventory, i, j, k);
 		this.ItemID = ItemID;
 		slotCheck = null;
 	}
 	
-    public RestrictedSlot(IInventory iinventory, int i, int j, int k, ISlotCheck slotCheck) {
+    public GuiRestrictedSlot(IInventory iinventory, int i, int j, int k, ISlotCheck slotCheck) {
     	super(iinventory, i, j, k);
     	this.ItemID = -1;
 		this.slotCheck = slotCheck;

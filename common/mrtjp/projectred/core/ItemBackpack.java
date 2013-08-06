@@ -3,7 +3,7 @@ package mrtjp.projectred.core;
 import java.util.List;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.core.RestrictedSlot.ISlotCheck;
+import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;

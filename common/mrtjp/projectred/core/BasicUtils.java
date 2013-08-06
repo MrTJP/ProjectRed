@@ -3,8 +3,6 @@ package mrtjp.projectred.core;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -12,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTBase;
@@ -20,17 +17,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagShort;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeDirection;
+import codechicken.lib.vec.BlockCoord;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
 
 public class BasicUtils {
 
@@ -63,41 +57,7 @@ public class BasicUtils {
 		return world.provider.dimensionId;
 	}
 
-	public static void sendPacketToServer(Packet packet) {
-		PacketDispatcher.sendPacketToServer(packet);
-	}
-
-	public static void sendPacketToPlayer(Packet packet, Player player) {
-		PacketDispatcher.sendPacketToPlayer(packet, player);
-	}
-
-	public static void sendPacketToPlayerList(Packet packet, List<EntityPlayer> players) {
-		for (EntityPlayer player : players) {
-			PacketDispatcher.sendPacketToPlayer(packet, (Player) player);
-		}
-	}
-
-	public static void sendPacketToNearbyPlayers(Packet packet, int x, int y, int z, int dimID) {
-		PacketDispatcher.sendPacketToAllAround(x, y, z, Configurator.networkUpdateRange.getDouble(50), dimID, packet);
-	}
-
-	public static void sendPacketToAllPlayers(Packet packet) {
-		PacketDispatcher.sendPacketToAllPlayers(packet);
-	}
-
-	public static List<EntityPlayer> getPlayerArround(World worldObj, int xCoord, int yCoord, int zCoord, int distance) {
-		List<EntityPlayer> list = new ArrayList<EntityPlayer>();
-		if (worldObj != null) {
-			for (Object playerObject : worldObj.playerEntities) {
-				EntityPlayer player = (EntityPlayer) playerObject;
-				if (Math.hypot(player.posX - xCoord, Math.hypot(player.posY - yCoord, player.posZ - zCoord)) < distance) {
-					list.add(player);
-				}
-			}
-		}
-		return list;
-	}
-
+	
 	public static boolean isHoldingWrench(EntityPlayer entityplayer) {
 		// return (entityplayer.getCurrentEquippedItem() != null) &&
 		// (entityplayer.getCurrentEquippedItem().getItem() instanceof
@@ -117,7 +77,7 @@ public class BasicUtils {
 		}
 	}
 
-	public static void dropItemFromLocation(World worldObj, ItemStack is, boolean violent, EntityPlayer player, int to_side, int tickDelay, Coords coord) {
+	public static void dropItemFromLocation(World worldObj, ItemStack is, boolean violent, EntityPlayer player, int to_side, int tickDelay, BlockCoord coord) {
 		if (worldObj.isRemote) {
 			return;
 		}
@@ -195,39 +155,12 @@ public class BasicUtils {
 		}
 	}
 
-	/**
-	 * Notify all blocks around of neighbor change. If flag is true, also notify
-	 * the actual block given.
-	 * 
-	 * @param world
-	 * @param coord
-	 * @param id
-	 * @param flag
-	 */
-	public static void updateAllNeighbors(World world, Coords coord, int id, boolean flag) {
-		world.notifyBlocksOfNeighborChange(coord.x, coord.y, coord.z, id);
-		if (flag) {
-			world.notifyBlockOfNeighborChange(coord.x, coord.y, coord.z, id);
-		}
-	}
 
-	public static <T extends TileEntity> T getTileEntity(IBlockAccess access, Coords coords, Class<T> clazz) {
+	public static <T extends TileEntity> T getTileEntity(IBlockAccess access, BlockCoord coords, Class<T> clazz) {
 		TileEntity te = access.getBlockTileEntity(coords.x, coords.y, coords.z);
 		return !clazz.isInstance(te) ? null : (T)te;
 	}
 
-	public static MovingObjectPosition retraceBlock(World world, EntityPlayer player, int x, int y, int z) {
-		Vec3 headVec = Vec3.createVectorHelper(player.posX, (player.posY + 1.62) - player.yOffset, player.posZ);
-		Vec3 lookVec = player.getLook(1.0F);
-		double reach = world.isRemote ? Minecraft.getMinecraft().playerController.getBlockReachDistance() : ((EntityPlayerMP) player).theItemInWorldManager.getBlockReachDistance();
-		Vec3 endVec = headVec.addVector(lookVec.xCoord * reach, lookVec.yCoord * reach, lookVec.zCoord * reach);
-		return Block.blocksList[world.getBlockId(x, y, z)].collisionRayTrace(world, x, y, z, headVec, endVec);
-	}
-
-	public static void placeNoise(World world, int x, int y, int z, int id) {
-		Block var5 = Block.blocksList[id];
-		world.playSoundEffect((double) ((float) x + 0.5F), (double) ((float) y + 0.5F), (double) ((float) z + 0.5F), "step.stone", (var5.stepSound.getVolume() + 1.0F) / 2.0F, var5.stepSound.getPitch() * 0.8F);
-	}
 
 	/**
 	 * Add itemstack to an NBTTagList and return it. Maxvalue is usually 64.
@@ -373,15 +306,14 @@ public class BasicUtils {
 		return world.canBlockSeeTheSky(x, y + 1, z);
 	}
 	
-	public static boolean areArraysEqual(boolean[] array1, boolean[] array2) {
-		if (array1.length != array2.length) {
-			return false;
+	public static int distanceManhatten(BlockCoord start, BlockCoord end) {
+		if (start == null || end == null) {
+			return 0;
 		}
-		for (int i = 0; i < array1.length; i++) {
-			if (array1[i] != array2[i]) {
-				return false;
-			}
-		}
-		return true;
+		int dx = start.x - end.x;
+		int dy = start.y - end.y;
+		int dz = start.z - end.z;
+		return Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
 	}
+
 }

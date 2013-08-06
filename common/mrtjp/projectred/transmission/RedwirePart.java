@@ -3,7 +3,6 @@ package mrtjp.projectred.transmission;
 import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CommandDebug;
-import mrtjp.projectred.core.Coords;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,6 +13,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.render.CCRenderState;
+import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.IFaceRedstonePart;
 import codechicken.multipart.PartMap;
@@ -88,9 +88,6 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 	@Override
 	public void onNeighborChanged() {
 		if (blockUpdateCausedByAlloyWire) {
-			// When we update a RedAlloyWire, it starts updating its neighbors,
-			// including us. Dont update again, because we are the one that told
-			// it to update in the first place.
 			return;
 		}
 
@@ -219,7 +216,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 						int x = x() + fd.offsetX;
 						int y = y() + fd.offsetY;
 						int z = z() + fd.offsetZ;
-						TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 						if (tile != null) {
 							t = tile.partMap(PartMap.CENTER.i);
 						}
@@ -246,7 +243,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 				int x = x() + fd.offsetX, y = y() + fd.offsetY, z = z() + fd.offsetZ;
 				if (maskConnects(dir)) {
 					if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
-						TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 						if (tile != null) {
 							TMultiPart t = tile.partMap(side);
 							if (t instanceof RedwirePart) {
@@ -264,7 +261,7 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 					y += fd.offsetY;
 					z += fd.offsetZ;
 					if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
-						TileMultipart tile = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 						if (tile != null) {
 							TMultiPart t = tile.partMap(dir ^ 1);
 							if (t instanceof RedwirePart) {
@@ -288,20 +285,15 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 	}
 
 	protected void updateSignal(RedwirePart source) {
-		if (BasicUtils.isClient(world()) && !syncSignalStrength)
-			return; // doesn't make sense for unsynced wire types
+		if (BasicUtils.isClient(world()) && !syncSignalStrength) {
+			return;
+		}
 		if (isUpdatingStrength) {
 			recursiveUpdatePending = true;
 			return;
 		}
 
-		// True if this is the first red alloy tile to update, which received an
-		// update from something else,
-		// and is now causing a whole bunch of red alloy tiles to change.
-		// Only this change will be sent to the client, which will then mirror
-		// the processing the server does,
-		// to save bandwidth.
-		// Note: if syncSignalStrength is false nothing is sent to the client.
+		// Only tell client if its the first update, then it will update other wires itself.
 		boolean wasFirstServerChange = !world().isRemote && source == null;
 
 		int oldStrengthFromNonWireBlocks = strengthFromNonWireBlocks;
@@ -313,27 +305,19 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 
 		do {
 			recursiveUpdatePending = false;
-
 			int prevStrength = strength;
 			strength = 0;
 			newStrength = updateInputStrength();
-
+			
 			if (newStrength < prevStrength) {
-				// this is a huge optimization - it results in a "pulse" of 0
-				// strength being sent down the wire
-				// when turning off. if there is another source of power further
-				// down the wire, that one will block
-				// the pulse and propagate backwards, turning the wires back on
-				// with the correct strength in 2 updates.
 				updateConnectedThings();
 				newStrength = updateInputStrength();
 			}
-
+			
 			strength = (short) newStrength;
-
-			if (strength != prevStrength)
+			if (strength != prevStrength) {
 				updateConnectedThings();
-
+			}
 		} while (recursiveUpdatePending);
 
 		isUpdatingStrength = false;
@@ -345,8 +329,9 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 				blockUpdateCausedByAlloyWire = false;
 			}
 			if (syncSignalStrength && (BasicUtils.isClient(world()) || wasFirstServerChange || strengthFromNonWireBlocks != oldStrengthFromNonWireBlocks)) {
-				if (!world().isRemote && CommandDebug.WIRE_LAG_PARTICLES)
+				if (!world().isRemote && CommandDebug.WIRE_LAG_PARTICLES) {
 					debugEffect_bonemeal();
+				}
 				updateChange();
 			}
 
@@ -451,6 +436,9 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 			}
 		}
 
+		if (true) {
+			this.notifyExtendedNeighbors();
+		}
 		if (any && CommandDebug.WIRE_LAG_PARTICLES)
 			debugEffect_fireburst();
 	}

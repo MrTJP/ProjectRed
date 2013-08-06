@@ -5,7 +5,6 @@ import java.util.Map;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Coords;
 import mrtjp.projectred.core.InvertX;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.illumination.LastEventBasedHaloRenderer.HaloObject;
@@ -23,6 +22,7 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
+import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.TransformationList;
 import codechicken.lib.vec.Translation;
@@ -117,7 +117,7 @@ public class LanternRenderer implements IItemRenderer {
 		HaloObject r = new HaloObject((int) x, (int) y, (int) z) {
 			@Override
 			public boolean render(RenderWorldLastEvent event) {
-				TileMultipart t = BasicUtils.getTileEntity(event.context.theWorld, new Coords(posX, posY, posZ), TileMultipart.class);
+				TileMultipart t = BasicUtils.getTileEntity(event.context.theWorld, new BlockCoord(posX, posY, posZ), TileMultipart.class);
 				if (t != null) {
 					TMultiPart p = t.partMap(PartMap.CENTER.i);
 					if (!(p instanceof LanternPart)) {

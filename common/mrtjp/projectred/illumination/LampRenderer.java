@@ -5,7 +5,6 @@ import java.util.Map;
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Coords;
 import mrtjp.projectred.core.InvertX;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.illumination.LastEventBasedHaloRenderer.HaloObject;
@@ -24,10 +23,9 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
-import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.TransformationList;
 import codechicken.lib.vec.Translation;
-import codechicken.lib.vec.Vector3;
 import codechicken.multipart.PartMap;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
@@ -97,7 +95,7 @@ public class LampRenderer implements IItemRenderer {
 		HaloObject r = new HaloObject((int) x, (int) y, (int) z) {
 			@Override
 			public boolean render(RenderWorldLastEvent event) {
-				TileMultipart t = BasicUtils.getTileEntity(event.context.theWorld, new Coords(posX, posY, posZ), TileMultipart.class);
+				TileMultipart t = BasicUtils.getTileEntity(event.context.theWorld, new BlockCoord(posX, posY, posZ), TileMultipart.class);
 				if (t != null) {
 					TMultiPart p = t.partMap(PartMap.CENTER.i);
 					if (!(p instanceof LampPart)) {
@@ -132,11 +130,15 @@ public class LampRenderer implements IItemRenderer {
 		GL11.glPushMatrix();
 		GL11.glTranslated(x, y, z);
 		GL11.glScalef(scale, scale, scale);
+		BasicRenderUtils.bindTerrainResource();
+		GL11.glDisable(GL11.GL_LIGHTING);
 		CCRenderState.reset();
 		CCRenderState.useNormals(true);
 		CCRenderState.startDrawing(7);
+		BasicRenderUtils.setFullColor();
 		renderPart(models.get("lamp"), x, y, z);
 		CCRenderState.draw();
+		GL11.glEnable(GL11.GL_LIGHTING);
 
 		GL11.glPopMatrix();
 	}

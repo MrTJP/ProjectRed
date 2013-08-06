@@ -8,7 +8,6 @@ import java.util.Random;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Coords;
 import mrtjp.projectred.integration.GateLogic.WorldStateBound;
 import mrtjp.projectred.transmission.BasicWireUtils;
 import mrtjp.projectred.transmission.BundledCablePart;
@@ -31,6 +30,7 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.render.EntityDigIconFX;
+import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
@@ -75,6 +75,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 	private int renderState;
 	private int prevRenderState;
 	private boolean isFirstTick = true;
+	private boolean updateNextTick = false;
 	private static boolean nextUpdateIsFromSelf = false;
 
 	public GatePart(EnumGate type) {
@@ -142,6 +143,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 			pointerPos = nbt.getShort("p");
 			pointerSpeed = nbt.getFloat("P");
 		}
+		updateNextTick = true;
 	}
 
 	@Override
@@ -211,14 +213,13 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 		}
 
 		inputs = computeInputs();
-		// update render state with new inputs but not new outputs
-		updateRenderState();
 
+		updateRenderState();
 		if (forceUpdate || fromTick == requiresTickUpdate) {
 			short[] oldOutputs = outputs.clone();
 			logic.computeOutFromIn(inputs, outputs, gateSettings);
 			if (forceUpdate || !Arrays.equals(outputs, oldOutputs)) {
-				updateChange();
+				updateNextTick = true;
 			}
 		}
 	}
@@ -227,12 +228,16 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 		renderState = logic.getRenderState(inputs, outputs, gateSettings);
 		if (prevRenderState != renderState) {
 			prevRenderState = renderState;
-			updateChange();
+			updateNextTick = true;
 		}
 	}
 
 	@Override
 	public void update() {
+		if (updateNextTick) {
+			updateNextTick = false;
+			updateChange();
+		}
 		if (BasicUtils.isServer(world())) {
 			if (requiresTickUpdate) {
 				updateLogic(true, false);
@@ -262,10 +267,13 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 	public void updateChange() {
 		tile().markDirty();
 		tile().notifyPartChange();
+		tile().markRender();
 		nextUpdateIsFromSelf = true;
 		notifyExtendedNeighbors();
 		nextUpdateIsFromSelf = false;
-		sendDescUpdate();
+		if (BasicUtils.isServer(world())) {
+			sendDescUpdate();
+		}
 	}
 
 	/**
@@ -289,12 +297,11 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 		if (BasicUtils.isClient(world())) {
 			return;
 		}
-		Coords localCoord = new Coords(x(), y(), z());
-		localCoord.orientation = ForgeDirection.getOrientation(this.getSide());
-		localCoord.moveForwards(1);
+		BlockCoord localCoord = new BlockCoord(x(), y(), z());
+		localCoord.offset(side);
 		Block supporter = Block.blocksList[world().getBlockId(localCoord.x, localCoord.y, localCoord.z)];
-		if (!BasicWireUtils.canPlaceWireOnSide(world(), localCoord.x, localCoord.y, localCoord.z, localCoord.orientation.getOpposite(), false)) {
-			BasicUtils.dropItemFromLocation(world(), getItem(), false, null, getSide(), 10, new Coords(x(), y(), z()));
+		if (!BasicWireUtils.canPlaceWireOnSide(world(), localCoord.x, localCoord.y, localCoord.z, ForgeDirection.VALID_DIRECTIONS[side^1], false)) {
+			BasicUtils.dropItemFromLocation(world(), getItem(), false, null, getSide(), 10, new BlockCoord(x(), y(), z()));
 			tile().remPart(this);
 		}
 	}
@@ -358,7 +365,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 		int x = x() + fd.offsetX;
 		int y = y() + fd.offsetY;
 		int z = z() + fd.offsetZ;
-		TileMultipart tmp = BasicUtils.getTileEntity(world(), new Coords(x, y, z), TileMultipart.class);
+		TileMultipart tmp = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 		if (tmp != null) {
 			TMultiPart te = tmp.partMap(side);
 			if (te instanceof IBundledEmitter) {
@@ -385,7 +392,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 		if (BasicUtils.isServer(world())) {
 			gateSettings = logic.configure(gateSettings);
 			updateLogic(false, true);
-			updateChange();
+			updateNextTick = true;
 		}
 	}
 
@@ -399,7 +406,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 		front = (byte) (Rotation.rotateSide(side, relativeRotationIndex));
 		if (BasicUtils.isServer(world())) {
 			updateLogic(false, true);
-			updateChange();
+			updateNextTick = true;
 		}
 	}
 

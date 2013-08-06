@@ -16,6 +16,7 @@ import mrtjp.projectred.expansion.BlockMachines;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import mrtjp.projectred.expansion.ItemBlockMachines;
 import mrtjp.projectred.expansion.ItemVAWT;
+import mrtjp.projectred.expansion.ModuleExpansion;
 import mrtjp.projectred.illumination.ItemPartLamp;
 import mrtjp.projectred.illumination.ItemPartLantern;
 import mrtjp.projectred.illumination.ModuleIllumination;
@@ -91,6 +92,9 @@ public class ProjectRed {
 			if (Configurator.module_Illumination.getBoolean(true)) {
 				registerModule(new ModuleIllumination());
 			}
+			if (Configurator.module_Expansion.getBoolean(true)) {
+				registerModule(new ModuleExpansion());
+			}
 			return false;
 		}
 		return registeredModules.add(m);
@@ -106,47 +110,6 @@ public class ProjectRed {
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
-	
-		/**	// Lamps
-		if (Configurator.block_lampID.getInt() > 0) {
-			blockLamp = new BlockLamp(Configurator.block_lampID.getInt());
-			GameRegistry.registerBlock(blockLamp, ItemBlockLamp.class, "projred.lighting.lamp");
-			GameRegistry.registerTileEntity(TileLamp.class, "tile.projectred.lighting.lamp");
-			for (int i = 0; i < 32; i++) {
-				String desc = i > 15 ? "Inverted " : "";
-				int color = i > 15 ? i - 16 : i;
-				LanguageRegistry.addName(new ItemStack(blockLamp, 1, i), desc + EnumLamp.get(color).fullName);
-			}
-		}
-
-		// Lanterns
-		if (Configurator.block_lanternID.getInt() > 0) {
-			blockLantern = new BlockLantern(Configurator.block_lanternID.getInt());
-			GameRegistry.registerBlock(blockLantern, ItemBlockLantern.class, "projred.lighting.lantern");
-			GameRegistry.registerTileEntity(TileLantern.class, "tile.projectred.lighting.lantern");
-			for (int i = 0; i < 32; i++) {
-				String desc = i > 15 ? "Inverted " : "";
-				int color = i > 15 ? i - 16 : i;
-				LanguageRegistry.addName(new ItemStack(blockLantern, 1, i), desc + EnumLantern.get(color).fullName);
-			}
-		}
-**/
-		// Machines
-		if (Configurator.block_machinesID.getInt() > 0) {
-			blockMachines = new BlockMachines(Configurator.block_machinesID.getInt());
-			GameRegistry.registerBlock(blockMachines, ItemBlockMachines.class, "projectred.machines");
-			for (EnumMachine m : EnumMachine.VALID_MACHINES) {
-				GameRegistry.registerTileEntity(m.clazz, "tile.projectred.machines." + m.unlocalname);
-				LanguageRegistry.addName(new ItemStack(blockMachines, 1, m.meta), m.fullname);
-			}
-		}
-		
-		// VAWT
-		if (Configurator.item_vawtID.getInt() > 0) {
-			itemVAWT = new ItemVAWT(Configurator.item_vawtID.getInt());
-			LanguageRegistry.addName(new ItemStack(itemVAWT, 1, 0), "Vertical-Axis Wind Turbine");
-		}
-
 		MinecraftForge.EVENT_BUS.register(instance);
 		MinecraftForge.EVENT_BUS.register(BasicUtils.proxy);
 		BasicUtils.proxy.init();

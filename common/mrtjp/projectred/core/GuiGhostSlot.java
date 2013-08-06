@@ -4,8 +4,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 
-public class GhostSlot extends Slot{
-	public GhostSlot(IInventory iinventory, int i, int j, int k) {
+public class GuiGhostSlot extends Slot{
+	public GuiGhostSlot(IInventory iinventory, int i, int j, int k) {
 		super(iinventory, i, j, k);
 	}
 

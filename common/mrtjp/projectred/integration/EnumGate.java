@@ -88,7 +88,7 @@ public enum EnumGate {
 	
 	public static EnumGate getByName(String name) {
 		for (EnumGate g : VALUES) {
-			if (g.name == name) {
+			if (g.name.matches(name)) {
 				return g;
 			}
 		}

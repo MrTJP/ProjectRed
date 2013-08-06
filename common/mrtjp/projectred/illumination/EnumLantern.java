@@ -39,7 +39,7 @@ public enum EnumLantern {
 	}
 
 	public static EnumLantern get(int i) {
-		if (i > VALID_TYPES.length - 1) {
+		if (i < 0 || i > VALID_TYPES.length - 1) {
 			return null;
 		}
 		return VALID_TYPES[i];

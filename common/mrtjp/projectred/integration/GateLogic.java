@@ -637,7 +637,7 @@ public abstract class GateLogic {
 		}
 	}
 
-	public static class Sequencer extends GateLogic implements WithRightClickAction, WithPointer, GateLogicTimed {
+	public static class Sequencer extends GateLogic implements WithGui, WithPointer, GateLogicTimed {
 
 		public int intervalTicks = 20;
 		public int ticksLeft;
@@ -660,10 +660,44 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void onRightClick(EntityPlayer ply, GatePart tile) {
-			ply.openGui(ProjectRed.instance, GuiIDs.ID_Timer, tile.world(), tile.x(), tile.y(), tile.z());
+		public void onRightClick(EntityPlayer player, GatePart tile) {
+			openGui(player, tile);
 		}
 
+		@Override
+		public void openGui(EntityPlayer player, GatePart tile) {
+			PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerOpen);
+			packet.writeCoord(tile.x(), tile.y(), tile.z());
+			packet.writeByte(tile.getFace());
+			packet.writeInt(intervalTicks);
+			packet.sendToPlayer(player);
+		}
+
+		@Override
+		public void handleButtonPressed(String action, GatePart tile) {
+			if (action.startsWith("-") || action.startsWith("+")) {
+				int time = getInterval();
+				time += Integer.parseInt(action.replace("+", ""));
+				if (time < 4) {
+					time = 4;
+				}
+				if (time > 65535) {
+					time = 65535;
+				}
+				setInterval(time);
+				updateWatchers(tile);
+			}
+		}
+		
+		@Override
+		public void updateWatchers(GatePart tile) {
+			Chunk c = tile.world().getChunkFromBlockCoords(tile.x(), tile.z());
+			PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerBroadcastChange);
+			packet.writeCoord(tile.x(), tile.y(), tile.z());
+			packet.writeByte(tile.getFace());
+			packet.writeInt(intervalTicks);
+			packet.sendToChunk(tile.world(), c.xPosition, c.zPosition);
+		}
 		@Override
 		public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
 			return state;
@@ -786,7 +820,7 @@ public abstract class GateLogic {
 		}
 	}
 
-	public static class StateCell extends GateLogic implements WithRightClickAction, WithPointer, GateLogicTimed {
+	public static class StateCell extends GateLogic implements WithGui, WithPointer, GateLogicTimed {
 
 		private int intervalTicks = 20, ticksLeft, pulseTicks;
 		private boolean timing, paused;
@@ -806,8 +840,43 @@ public abstract class GateLogic {
 		}
 
 		@Override
-		public void onRightClick(EntityPlayer ply, GatePart tile) {
-			ply.openGui(ProjectRed.instance, GuiIDs.ID_Timer, tile.world(), tile.x(), tile.y(), tile.z());
+		public void onRightClick(EntityPlayer player, GatePart tile) {
+			openGui(player, tile);
+		}
+
+		@Override
+		public void openGui(EntityPlayer player, GatePart tile) {
+			PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerOpen);
+			packet.writeCoord(tile.x(), tile.y(), tile.z());
+			packet.writeByte(tile.getFace());
+			packet.writeInt(intervalTicks);
+			packet.sendToPlayer(player);
+		}
+
+		@Override
+		public void handleButtonPressed(String action, GatePart tile) {
+			if (action.startsWith("-") || action.startsWith("+")) {
+				int time = getInterval();
+				time += Integer.parseInt(action.replace("+", ""));
+				if (time < 4) {
+					time = 4;
+				}
+				if (time > 65535) {
+					time = 65535;
+				}
+				setInterval(time);
+				updateWatchers(tile);
+			}
+		}
+		
+		@Override
+		public void updateWatchers(GatePart tile) {
+			Chunk c = tile.world().getChunkFromBlockCoords(tile.x(), tile.z());
+			PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerBroadcastChange);
+			packet.writeCoord(tile.x(), tile.y(), tile.z());
+			packet.writeByte(tile.getFace());
+			packet.writeInt(intervalTicks);
+			packet.sendToChunk(tile.world(), c.xPosition, c.zPosition);
 		}
 
 		@Override
