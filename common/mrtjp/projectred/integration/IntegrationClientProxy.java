@@ -8,16 +8,16 @@ import codechicken.lib.packet.PacketCustom;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class IntegrationClientProxy extends IntegrationProxy {
-	@Override
-	public void init() {
-		MinecraftForgeClient.registerItemRenderer(ProjectRed.itemPartGate.itemID, GateStaticRenderer.instance);
+    @Override
+    public void init() {
+        MinecraftForgeClient.registerItemRenderer(ProjectRed.itemPartGate.itemID, GateStaticRenderer.instance);
 
-		for (EnumGate g : EnumGate.VALUES) {
-			LanguageRegistry.addName(g.getItemStack(), g.name);
-		}
-		LanguageRegistry.addName(itemScrewdriver, "Screwdriver");
-		
-		PacketCustom.assignHandler(Configurator.integrationPacketChannel, 0, 32, new IntegrationCPH());
-	}
+        for (EnumGate g : EnumGate.VALUES) {
+            LanguageRegistry.addName(g.getItemStack(), g.name);
+        }
+        LanguageRegistry.addName(itemScrewdriver, "Screwdriver");
+        
+        PacketCustom.assignHandler(Configurator.integrationPacketChannel, 0, 32, new IntegrationCPH());
+    }
 
 }

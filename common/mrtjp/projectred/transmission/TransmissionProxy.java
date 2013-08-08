@@ -17,52 +17,52 @@ import codechicken.multipart.TMultiPart;
 
 public class TransmissionProxy implements IProxy, IPartFactory {
 
-	@Override
-	public void preinit() {
+    @Override
+    public void preinit() {
 
-	}
+    }
 
-	@Override
-	public void init() {
-		String[] wires = new String[EnumWire.VALID_WIRE.length];
-		String[] jwires = new String[EnumWire.VALID_WIRE.length];
+    @Override
+    public void init() {
+        String[] wires = new String[EnumWire.VALID_WIRE.length];
+        String[] jwires = new String[EnumWire.VALID_WIRE.length];
 
-		for (EnumWire w : EnumWire.VALID_WIRE) {
-			wires[w.meta] = w.name;
-			jwires[w.meta] = "j." + w.name;
-		}
-		MultiPartRegistry.registerParts(this, wires);
-		MultiPartRegistry.registerParts(this, jwires);
+        for (EnumWire w : EnumWire.VALID_WIRE) {
+            wires[w.meta] = w.name;
+            jwires[w.meta] = "j." + w.name;
+        }
+        MultiPartRegistry.registerParts(this, wires);
+        MultiPartRegistry.registerParts(this, jwires);
 
-		itemPartWire = new ItemPartWire(Configurator.part_wire.getInt());
-		itemPartJacketedWire = new ItemPartJacketedWire(Configurator.part_jwire.getInt());
+        itemPartWire = new ItemPartWire(Configurator.part_wire.getInt());
+        itemPartJacketedWire = new ItemPartJacketedWire(Configurator.part_jwire.getInt());
 
-		TransmissionRecipes.initTransmissionRecipes();
-		EnumWire.initOreDictDefinitions();
-	}
+        TransmissionRecipes.initTransmissionRecipes();
+        EnumWire.initOreDictDefinitions();
+    }
 
-	@Override
-	public void postinit() {
+    @Override
+    public void postinit() {
 
-	}
+    }
 
-	@Override
-	public TMultiPart createPart(String id, boolean arg1) {
-		boolean isJacketed = false;
-		if (id.startsWith("j.")) {
-			isJacketed = true;
-			id = id.substring(2);
-		}
-		EnumWire w = EnumWire.getTypeByName(id);
-		try {
-			if (!isJacketed) {
-				return (TMultiPart) w.wireClass.getConstructors()[0].newInstance(w, false, 0);
-			} else {
-				return (TMultiPart) w.jacketedClass.getConstructors()[0].newInstance(w, true, 0);
-			}
-		} catch (Throwable e) {
-			return null;
-		}
-	}
+    @Override
+    public TMultiPart createPart(String id, boolean arg1) {
+        boolean isJacketed = false;
+        if (id.startsWith("j.")) {
+            isJacketed = true;
+            id = id.substring(2);
+        }
+        EnumWire w = EnumWire.getTypeByName(id);
+        try {
+            if (!isJacketed) {
+                return (TMultiPart) w.wireClass.getConstructors()[0].newInstance(w, false, 0);
+            } else {
+                return (TMultiPart) w.jacketedClass.getConstructors()[0].newInstance(w, true, 0);
+            }
+        } catch (Throwable e) {
+            return null;
+        }
+    }
 
 }
