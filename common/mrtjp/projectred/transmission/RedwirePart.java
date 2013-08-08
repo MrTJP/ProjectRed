@@ -23,7 +23,7 @@ import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceRedstonePart {
+public abstract class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceRedstonePart {
 
 	private short MAX_STRENGTH = 255;
 
@@ -330,12 +330,12 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 				blockUpdateCausedByAlloyWire = false;
 			}
 			if (syncSignalStrength && (BasicUtils.isClient(world()) || wasFirstServerChange || strengthFromNonWireBlocks != oldStrengthFromNonWireBlocks)) {
-				if (!world().isRemote && CommandDebug.WIRE_LAG_PARTICLES) {
+				if (BasicUtils.isServer(world()) && CommandDebug.WIRE_LAG_PARTICLES) {
 					debugEffect_bonemeal();
 				}
 				updateNextTick = true;
+				tile().markRender();
 			}
-
 		} else if (syncSignalStrength && BasicUtils.isServer(world()) && oldStrengthFromNonWireBlocks != strengthFromNonWireBlocks) {
 			updateNextTick = true;
 			if (CommandDebug.WIRE_LAG_PARTICLES)
@@ -463,7 +463,6 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 	@Override
 	protected boolean debug(EntityPlayer ply) {
 		ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((world().isRemote ? "Client" : "Server") + " signal strength: " + strength + ", nwb: " + strengthFromNonWireBlocks));
-		super.debug(ply);
 		return true;
 	}
 
@@ -486,65 +485,4 @@ public class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceReds
 	public int getFace() {
 		return side;
 	}
-
-	public void renderStatic(RenderBlocks r) {
-		WireRenderAssistant wra = new WireRenderAssistant();
-		wra.x = x();
-		wra.y = y();
-		wra.z = z();
-		wra.renderBlocks = r;
-		wra.model = getWireType().wireMap;
-		wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
-		BasicRenderUtils.setFullColor();
-		BasicRenderUtils.bindTerrainResource();
-		CCRenderState.reset();
-		CCRenderState.setBrightness(world(), x(), y(), z());
-		CCRenderState.setColourOpaque(getVisualWireColour());
-		wra.side = side;
-		wra.setWireRenderState(this);
-		wra.pushRender();
-		BasicRenderUtils.setFullColor();
-	}
-
-	public void renderJacketStatic(RenderBlocks r) {
-		WireRenderAssistant wra = new WireRenderAssistant();
-		wra.x = x();
-		wra.y = y();
-		wra.z = z();
-		wra.renderBlocks = r;
-		wra.model = getWireType().jacketMap;
-		wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
-		wra.side = side;
-		wra.setJacketRender(this);
-		BasicRenderUtils.setFullColor();
-		BasicRenderUtils.bindTerrainResource();
-		CCRenderState.reset();
-		CCRenderState.setBrightness(world(), x(), y(), z());
-		wra.pushJacketFrameRender();
-		CCRenderState.setColourOpaque(getVisualWireColour());
-		wra.pushJacketWireRender();
-		BasicRenderUtils.setFullColor();
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
-		if (pass == 0) {
-			if (isJacketed) {
-				renderJacketStatic(null);
-			} else {
-				renderStatic(null);
-			}
-		}
-	}
-
-	@Override
-	public void drawBreaking(RenderBlocks r) {
-		if (isJacketed) {
-			renderJacketStatic(r);
-		} else {
-			renderStatic(r);
-		}
-	}
-
 }

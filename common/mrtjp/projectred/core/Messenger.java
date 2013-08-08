@@ -36,7 +36,10 @@ public class Messenger {
 		if ((messages.size() > 64)) {
 			messages.remove(0);
 		}
-		for (Message m : messages) {
+		
+		ArrayList<Message> readQueue = new ArrayList<Message>();
+		readQueue.addAll(messages);
+		for (Message m : readQueue) {
 			if (m.location.equals(location)) {
 				m.set(location, mail, long_lasting);
 				return;
@@ -75,6 +78,7 @@ public class Messenger {
 		ArrayList<Message> removeQueue = new ArrayList<Message>();
 		ArrayList<Message> readQueue = new ArrayList<Message>();
 		readQueue.addAll(messages);
+		
 		for (Message m : readQueue) {
 			if ((m.receivedOn < deathTime)) {
 				removeQueue.add(m);

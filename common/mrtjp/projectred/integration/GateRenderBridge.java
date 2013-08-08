@@ -9,6 +9,7 @@ import mrtjp.projectred.transmission.EnumWire;
 import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.transmission.WireRenderAssistant;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 
 /**
  * GateRenderBridge provides a bridge between a gate's bit-masked render-state
@@ -156,6 +157,11 @@ public abstract class GateRenderBridge {
 		@Override
 		public boolean maskConnectsInternally(int absDir) {
 			return connectsInt[absDir];
+		}
+
+		@Override
+		protected boolean debug(EntityPlayer ply) {
+			return false;
 		}
 	}
 

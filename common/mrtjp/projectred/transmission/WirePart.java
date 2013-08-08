@@ -6,7 +6,10 @@ import static codechicken.lib.vec.Vector3.center;
 import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.CommandDebug;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,9 +18,12 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.raytracer.IndexedCuboid6;
+import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Vector3;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
@@ -26,6 +32,8 @@ import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import codechicken.multipart.scalatraits.TRedstoneTile;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * This is the base class for all wire types. It can be used for any sub type,
@@ -39,7 +47,6 @@ import codechicken.multipart.scalatraits.TRedstoneTile;
 public abstract class WirePart extends JCuboidPart implements IConnectable, TFacePart, JNormalOcclusion {
 
 	private EnumWire wireType;
-	protected boolean isJacketed = false;
 	protected boolean updateNextTick = false;
 	public int side;
 	public boolean isFirstTick = true;
@@ -50,9 +57,12 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	private boolean[] sideInternalConnections = new boolean[6];
 	private boolean[] sideCorneredConnections = new boolean[6];
 
-	// True if this regular wire connects to a jacketed wire in this block. If
-	// is jacketed, connection mask is stored in sideExternalConnections.
+	// True if this regular wire connects to a jacketed wire in this block.
 	protected boolean localJacketedConnection = false;
+
+	// If this is jacketed, connection mask is stored in
+	// sideExternalConnections.
+	protected boolean isJacketed = false;
 
 	public WirePart(EnumWire type, boolean isJacketedWire, int onside) {
 		wireType = type;
@@ -157,8 +167,8 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 	}
 
 	public void updateChange() {
-		tile().markDirty();
 		tile().markRender();
+		tile().markDirty();
 		if (BasicUtils.isServer(world())) {
 			sendDescUpdate();
 		}
@@ -256,15 +266,12 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		y += ForgeDirection.VALID_DIRECTIONS[absDir].offsetY;
 		z += ForgeDirection.VALID_DIRECTIONS[absDir].offsetZ;
 		TileMultipart t = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
-		boolean isMultiTile = false;
 		if (t != null) {
-			isMultiTile = true;
 			TMultiPart tp = t.partMap(side);
 			if (tp instanceof IConnectable) {
 				return ((IConnectable) tp).connects(this, side, absDir);
 			}
-		}
-		if (!isMultiTile) {
+		} else {
 			return getExternalConnectionOveride(absDir);
 		}
 		return false;
@@ -276,17 +283,16 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		if ((side & 6) == (absDir & 6)) {
 			return false;
 		}
-		// BasicWireUtils.canConnectThroughEdge(world(), x(), y(), z(), side,
-		// absDir);
+		
+		// TODO check edge here
+		
 		int x = x(), y = y(), z = z();
 		x += ForgeDirection.VALID_DIRECTIONS[absDir].offsetX;
 		y += ForgeDirection.VALID_DIRECTIONS[absDir].offsetY;
 		z += ForgeDirection.VALID_DIRECTIONS[absDir].offsetZ;
 
-		// if (!BasicWireUtils.canConnectThroughEdge(world(), x, y, z, side,
-		// absDir ^ 1)) {
-		// return false;
-		// }
+		// TODO check the other edge here.
+		
 		x += ForgeDirection.VALID_DIRECTIONS[side].offsetX;
 		y += ForgeDirection.VALID_DIRECTIONS[side].offsetY;
 		z += ForgeDirection.VALID_DIRECTIONS[side].offsetZ;
@@ -342,6 +348,8 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 				if (p instanceof IConnectable) {
 					return ((IConnectable) p).connects(this, -1, absDir ^ 1);
 				}
+			} else {
+				return getExternalConnectionOveride(absDir);
 			}
 		}
 		return false;
@@ -414,9 +422,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		return null;
 	}
 
-	protected boolean debug(EntityPlayer ply) {
-		return false;
-	}
+	protected abstract  boolean debug(EntityPlayer ply);
 
 	protected void debugEffect_bonemeal() {
 		world().playAuxSFX(2005, x(), y(), z(), 0);
@@ -532,6 +538,69 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
+		if (CommandDebug.WIRE_READING) {
+			return debug(player);
+		}
 		return false;
+	}
+
+	public void renderStatic(RenderBlocks r) {
+		WireRenderAssistant wra = new WireRenderAssistant();
+		wra.x = x();
+		wra.y = y();
+		wra.z = z();
+		wra.renderBlocks = r;
+		wra.model = getWireType().wireMap;
+		wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
+		BasicRenderUtils.setFullColor();
+		BasicRenderUtils.bindTerrainResource();
+		CCRenderState.reset();
+		CCRenderState.setBrightness(world(), x(), y(), z());
+		CCRenderState.setColourOpaque(getVisualWireColour());
+		wra.side = side;
+		wra.setWireRenderState(this);
+		wra.pushRender();
+		BasicRenderUtils.setFullColor();
+	}
+
+	public void renderJacketStatic(RenderBlocks r) {
+		WireRenderAssistant wra = new WireRenderAssistant();
+		wra.x = x();
+		wra.y = y();
+		wra.z = z();
+		wra.renderBlocks = r;
+		wra.model = getWireType().jacketMap;
+		wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
+		wra.side = side;
+		wra.setJacketRender(this);
+		BasicRenderUtils.setFullColor();
+		BasicRenderUtils.bindTerrainResource();
+		CCRenderState.reset();
+		CCRenderState.setBrightness(world(), x(), y(), z());
+		wra.pushJacketFrameRender();
+		CCRenderState.setColourOpaque(getVisualWireColour());
+		wra.pushJacketWireRender();
+		BasicRenderUtils.setFullColor();
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
+		if (pass == 0) {
+			if (isJacketed) {
+				renderJacketStatic(null);
+			} else {
+				renderStatic(null);
+			}
+		}
+	}
+
+	@Override
+	public void drawBreaking(RenderBlocks r) {
+		if (isJacketed) {
+			renderJacketStatic(r);
+		} else {
+			renderStatic(r);
+		}
 	}
 }

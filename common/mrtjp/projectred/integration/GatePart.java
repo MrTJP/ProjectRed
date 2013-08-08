@@ -414,21 +414,26 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 
 	@Override
 	public byte[] getBundledCableStrength(int blockFace, int toDirection) {
-		if (!hasBundledConnections)
+		if (!hasBundledConnections) {
 			return null;
+		}
 
-		if (blockFace != side)
+		if (blockFace != side) {
 			return null;
+		}
 
 		int rel = Rotator.absoluteToRelative(side, front, toDirection);
-		if (rel < 0)
+		if (rel < 0) {
 			return null;
+		}
 
-		if (!((GateLogic.WithBundledConnections) logic).isBundledConnection(rel))
+		if (!((GateLogic.WithBundledConnections) logic).isBundledConnection(rel)) {
 			return null;
+		}
 
-		if (returnedBundledCableStrength == null)
+		if (returnedBundledCableStrength == null) {
 			returnedBundledCableStrength = new byte[16];
+		}
 
 		short bitmask = outputs[rel];
 		for (int k = 0; k < 16; k++) {
