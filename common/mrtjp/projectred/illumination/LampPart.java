@@ -26,181 +26,181 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class LampPart extends JCuboidPart implements TFacePart, JNormalOcclusion, IRedstonePart {
 
-	EnumLamp type;
-	private boolean isInverted;
-	public boolean powered;
-	public boolean updateNextTick = true;
-	public boolean updateStateNextTick = true;
+    EnumLamp type;
+    private boolean isInverted;
+    public boolean powered;
+    public boolean updateNextTick = true;
+    public boolean updateStateNextTick = true;
 
-	public LampPart(EnumLamp type, boolean isInverted) {
-		this.type = type;
-		this.isInverted = isInverted;
-	}
+    public LampPart(EnumLamp type, boolean isInverted) {
+        this.type = type;
+        this.isInverted = isInverted;
+    }
 
-	@Override
-	public void writeDesc(MCDataOutput out) {
-		out.writeByte(type.meta);
-		out.writeBoolean(isInverted);
-		out.writeBoolean(powered);
-	}
+    @Override
+    public void writeDesc(MCDataOutput out) {
+        out.writeByte(type.meta);
+        out.writeBoolean(isInverted);
+        out.writeBoolean(powered);
+    }
 
-	@Override
-	public void readDesc(MCDataInput in) {
-		type = EnumLamp.get(in.readByte());
-		isInverted = in.readBoolean();
-		powered = in.readBoolean();
-		updateStateNextTick = true;
-		updateNextTick = true;
-	}
+    @Override
+    public void readDesc(MCDataInput in) {
+        type = EnumLamp.get(in.readByte());
+        isInverted = in.readBoolean();
+        powered = in.readBoolean();
+        updateStateNextTick = true;
+        updateNextTick = true;
+    }
 
-	@Override
-	public void save(NBTTagCompound nbt) {
-		nbt.setBoolean("inverted", isInverted);
-		nbt.setInteger("meta", type.ordinal());
-		nbt.setBoolean("powered", powered);
-	}
+    @Override
+    public void save(NBTTagCompound nbt) {
+        nbt.setBoolean("inverted", isInverted);
+        nbt.setInteger("meta", type.ordinal());
+        nbt.setBoolean("powered", powered);
+    }
 
-	@Override
-	public void load(NBTTagCompound nbt) {
-		isInverted = nbt.getBoolean("inverted");
-		type = EnumLamp.get(nbt.getInteger("meta"));
-		powered = nbt.getBoolean("powered");
-		updateStateNextTick = true;
-		updateNextTick = true;
-	}
+    @Override
+    public void load(NBTTagCompound nbt) {
+        isInverted = nbt.getBoolean("inverted");
+        type = EnumLamp.get(nbt.getInteger("meta"));
+        powered = nbt.getBoolean("powered");
+        updateStateNextTick = true;
+        updateNextTick = true;
+    }
 
-	@Override
-	public void onNeighborChanged() {
-		updateStateNextTick = true;
-	}
+    @Override
+    public void onNeighborChanged() {
+        updateStateNextTick = true;
+    }
 
-	private boolean isBeingPowered() {
-		return world().isBlockIndirectlyGettingPowered(x(), y(), z());
-	}
+    private boolean isBeingPowered() {
+        return world().isBlockIndirectlyGettingPowered(x(), y(), z());
+    }
 
-	public void updateState() {
-		if (BasicUtils.isClient(world())) {
-			return;
-		}
-		if (isBeingPowered()) {
-			if (powered) {
-				return;
-			}
-			powered = true;
-			updateNextTick = true;
-		} else {
-			if (!powered) {
-				return;
-			}
-			powered = false;
-			updateNextTick = true;
-		}
-	}
+    public void updateState() {
+        if (BasicUtils.isClient(world())) {
+            return;
+        }
+        if (isBeingPowered()) {
+            if (powered) {
+                return;
+            }
+            powered = true;
+            updateNextTick = true;
+        } else {
+            if (!powered) {
+                return;
+            }
+            powered = false;
+            updateNextTick = true;
+        }
+    }
 
-	@Override
-	public String getType() {
-		return (isInverted ? "inv." : "") + "Lamp";
-	}
+    @Override
+    public String getType() {
+        return (isInverted ? "inv." : "") + "Lamp";
+    }
 
-	@Override
-	public void update() {
-		if (updateStateNextTick) {
-			updateStateNextTick = false;
-			updateState();
-		}
-		if (updateNextTick) {
-			updateNextTick = false;
-			world().markBlockForUpdate(x(), y(), z());
-			world().updateAllLightTypes(x(), y(), z());
-			if (BasicUtils.isServer(world())) {
-				sendDescUpdate();
-			}
-		}
-	}
+    @Override
+    public void update() {
+        if (updateStateNextTick) {
+            updateStateNextTick = false;
+            updateState();
+        }
+        if (updateNextTick) {
+            updateNextTick = false;
+            world().markBlockForUpdate(x(), y(), z());
+            world().updateAllLightTypes(x(), y(), z());
+            if (BasicUtils.isServer(world())) {
+                sendDescUpdate();
+            }
+        }
+    }
 
-	@Override
-	public int getLightValue() {
-		if (powered != isInverted) {
-			return 15;
-		} else {
-			return 0;
-		}
-	}
+    @Override
+    public int getLightValue() {
+        if (powered != isInverted) {
+            return 15;
+        } else {
+            return 0;
+        }
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
-		LampRenderer.instance.renderLamp(this, null);
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
+        LampRenderer.instance.renderLamp(this, null);
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void drawBreaking(RenderBlocks r) {
-		LampRenderer.instance.renderLamp(this, r);
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void drawBreaking(RenderBlocks r) {
+        LampRenderer.instance.renderLamp(this, r);
+    }
 
-	@Override
-	public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
-		return 2;
-	}
+    @Override
+    public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
+        return 2;
+    }
 
-	public ItemStack getItem() {
-		return new ItemStack(isInverted ? ProjectRed.itemPartInvLamp : ProjectRed.itemPartLamp, 1, type.meta);
-	}
+    public ItemStack getItem() {
+        return new ItemStack(isInverted ? ProjectRed.itemPartInvLamp : ProjectRed.itemPartLamp, 1, type.meta);
+    }
 
-	@Override
-	public Iterable<ItemStack> getDrops() {
-		return Arrays.asList(getItem());
-	}
+    @Override
+    public Iterable<ItemStack> getDrops() {
+        return Arrays.asList(getItem());
+    }
 
-	@Override
-	public ItemStack pickItem(MovingObjectPosition hit) {
-		return getItem();
-	}
+    @Override
+    public ItemStack pickItem(MovingObjectPosition hit) {
+        return getItem();
+    }
 
-	@Override
-	public Cuboid6 getBounds() {
-		return new Cuboid6(0, 0, 0, 1, 1, 1);
-	}
+    @Override
+    public Cuboid6 getBounds() {
+        return new Cuboid6(0, 0, 0, 1, 1, 1);
+    }
 
-	@Override
-	public boolean occlusionTest(TMultiPart npart) {
-		return NormalOcclusionTest.apply(this, npart);
-	}
+    @Override
+    public boolean occlusionTest(TMultiPart npart) {
+        return NormalOcclusionTest.apply(this, npart);
+    }
 
-	@Override
-	public int getSlotMask() {
-		return 1 << PartMap.CENTER.i | 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5;
-	}
+    @Override
+    public int getSlotMask() {
+        return 1 << PartMap.CENTER.i | 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5;
+    }
 
-	@Override
-	public Iterable<Cuboid6> getOcclusionBoxes() {
-		return Arrays.asList(getBounds());
-	}
+    @Override
+    public Iterable<Cuboid6> getOcclusionBoxes() {
+        return Arrays.asList(getBounds());
+    }
 
-	@Override
-	public boolean canConnectRedstone(int arg0) {
-		return true;
-	}
+    @Override
+    public boolean canConnectRedstone(int arg0) {
+        return true;
+    }
 
-	@Override
-	public int strongPowerLevel(int arg0) {
-		return 0;
-	}
+    @Override
+    public int strongPowerLevel(int arg0) {
+        return 0;
+    }
 
-	@Override
-	public int weakPowerLevel(int arg0) {
-		return 0;
-	}
+    @Override
+    public int weakPowerLevel(int arg0) {
+        return 0;
+    }
 
-	@Override
-	public int redstoneConductionMap() {
-		return 0;
-	}
+    @Override
+    public int redstoneConductionMap() {
+        return 0;
+    }
 
-	@Override
-	public boolean solid(int arg0) {
-		return true;
-	}
+    @Override
+    public boolean solid(int arg0) {
+        return true;
+    }
 
 }

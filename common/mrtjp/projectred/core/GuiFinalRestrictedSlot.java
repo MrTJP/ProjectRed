@@ -4,16 +4,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 
 public class GuiFinalRestrictedSlot extends GuiRestrictedSlot {
-	int limit;
-	public GuiFinalRestrictedSlot(IInventory iinventory, int i, int j, int k, int ItemID, int stackLimit) {
-		super(iinventory, i, j, k, ItemID);
-		this.limit = stackLimit;
-	}
-	
+    int limit;
+    public GuiFinalRestrictedSlot(IInventory iinventory, int i, int j, int k, int ItemID, int stackLimit) {
+        super(iinventory, i, j, k, ItemID);
+        this.limit = stackLimit;
+    }
+    
     public GuiFinalRestrictedSlot(IInventory iinventory, int i, int j, int k, ISlotCheck slotCheck, int stackLimit) {
-    	super(iinventory, i, j, k, slotCheck);
-		this.limit = stackLimit;
-	}
+        super(iinventory, i, j, k, slotCheck);
+        this.limit = stackLimit;
+    }
     
     /**
      * Return whether this slot's stack can be taken from this slot.
@@ -29,6 +29,6 @@ public class GuiFinalRestrictedSlot extends GuiRestrictedSlot {
      */
     @Override
     public int getSlotStackLimit() {
-    	return limit;
+        return limit;
     }
 }

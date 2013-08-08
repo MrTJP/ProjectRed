@@ -5,12 +5,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 
 public class GuiGhostSlot extends Slot{
-	public GuiGhostSlot(IInventory iinventory, int i, int j, int k) {
-		super(iinventory, i, j, k);
-	}
+    public GuiGhostSlot(IInventory iinventory, int i, int j, int k) {
+        super(iinventory, i, j, k);
+    }
 
-	@Override
-	public boolean canTakeStack(EntityPlayer par1EntityPlayer) {
-		return false;
-	}
+    @Override
+    public boolean canTakeStack(EntityPlayer par1EntityPlayer) {
+        return false;
+    }
 }

@@ -12,13 +12,13 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class ExpansionClientProxy extends ExpansionProxy {
 
-	@Override
-	public void init() {
-		PacketCustom.assignHandler(Configurator.expansionPacketChannel, 0, 32, new ExpansionCPH());
-		
-		for (EnumMachine m : EnumMachine.VALID_MACHINES) {
-			LanguageRegistry.addName(new ItemStack(blockMachines, 1, m.meta), m.fullname);
-		}
-		LanguageRegistry.addName(new ItemStack(itemVAWT, 1, 0), "Vertical-Axis Wind Turbine");
-	}
+    @Override
+    public void init() {
+        PacketCustom.assignHandler(Configurator.expansionPacketChannel, 0, 32, new ExpansionCPH());
+        
+        for (EnumMachine m : EnumMachine.VALID_MACHINES) {
+            LanguageRegistry.addName(new ItemStack(blockMachines, 1, m.meta), m.fullname);
+        }
+        LanguageRegistry.addName(new ItemStack(itemVAWT, 1, 0), "Vertical-Axis Wind Turbine");
+    }
 }
