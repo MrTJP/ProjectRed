@@ -54,8 +54,6 @@ public enum EnumWire {
 	BUNDLED_13("Green Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/green"),
 	BUNDLED_14("Red Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/red"),
 	BUNDLED_15("Black Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/black"), 
-	
-	MJX_N("MJX power cable", MJXPart.class, MJXJacketedPart.class, 3, 4, 0xFFFFFF, "insulatedwire.obj", "jacketedinsulated.obj", "mjx/neutral")
 	;
 
 	public static final int PLAIN_RED_ALLOY_META = 0;

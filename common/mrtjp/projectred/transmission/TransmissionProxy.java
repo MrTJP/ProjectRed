@@ -34,8 +34,6 @@ public class TransmissionProxy implements IProxy, IPartFactory {
 		MultiPartRegistry.registerParts(this, wires);
 		MultiPartRegistry.registerParts(this, jwires);
 
-		MultipartGenerator.registerPassThroughInterface("buildcraft.api.power.IPowerReceptor");
-
 		itemPartWire = new ItemPartWire(Configurator.part_wire.getInt());
 		itemPartJacketedWire = new ItemPartJacketedWire(Configurator.part_jwire.getInt());
 
