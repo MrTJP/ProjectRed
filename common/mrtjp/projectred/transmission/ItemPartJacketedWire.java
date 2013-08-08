@@ -21,51 +21,51 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemPartJacketedWire extends JItemMultiPart {
 
-	public ItemPartJacketedWire(int id) {
-		super(id);
-		setHasSubtypes(true);
-		setCreativeTab(ProjectRedTabs.tabTransmission);
-		setUnlocalizedName("projred.transmission.jacwire");
-	}
+    public ItemPartJacketedWire(int id) {
+        super(id);
+        setHasSubtypes(true);
+        setCreativeTab(ProjectRedTabs.tabTransmission);
+        setUnlocalizedName("projred.transmission.jacwire");
+    }
 
-	@Override
-	public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
-		if (super.onItemUse(stack, player, w, x, y, z, side, hitX, hitY, hitZ)) {
-			w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .9F);
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+        if (super.onItemUse(stack, player, w, x, y, z, side, hitX, hitY, hitZ)) {
+            w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .9F);
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
-		EnumWire w = EnumWire.VALID_WIRE[item.getItemDamage()];
-		try {
-			return (TMultiPart) w.jacketedClass.getConstructors()[0].newInstance(w, true, side ^ 1);
-		} catch (Throwable e) {
-			return null;
-		}
-	}
+    @Override
+    public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
+        EnumWire w = EnumWire.VALID_WIRE[item.getItemDamage()];
+        try {
+            return (TMultiPart) w.jacketedClass.getConstructors()[0].newInstance(w, true, side ^ 1);
+        } catch (Throwable e) {
+            return null;
+        }
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void getSubItems(int id, CreativeTabs tab, List list) {
-		for (EnumWire w : EnumWire.VALID_WIRE) {
-			list.add(w.getJacketedItemStack());
-		}
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void getSubItems(int id, CreativeTabs tab, List list) {
+        for (EnumWire w : EnumWire.VALID_WIRE) {
+            list.add(w.getJacketedItemStack());
+        }
+    }
 
-	public String getUnlocalizedName(ItemStack stack) {
-		return super.getUnlocalizedName() + ".jac|" + stack.getItemDamage();
-	}
+    public String getUnlocalizedName(ItemStack stack) {
+        return super.getUnlocalizedName() + ".jac|" + stack.getItemDamage();
+    }
 
-	@Override
-	public void registerIcons(IconRegister reg) {}
+    @Override
+    public void registerIcons(IconRegister reg) {}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public int getSpriteNumber() {
-		return 0;
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public int getSpriteNumber() {
+        return 0;
+    }
 
 }

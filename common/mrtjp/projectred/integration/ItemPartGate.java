@@ -19,55 +19,55 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemPartGate extends JItemMultiPart {
 
-	public ItemPartGate(int id) {
-		super(id);
-		setHasSubtypes(true);
-		setCreativeTab(ProjectRedTabs.tabIntegration);
-		setUnlocalizedName("projred.integration.gate");
-	}
+    public ItemPartGate(int id) {
+        super(id);
+        setHasSubtypes(true);
+        setCreativeTab(ProjectRedTabs.tabIntegration);
+        setUnlocalizedName("projred.integration.gate");
+    }
 
-	@Override
-	public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float f, float f2, float f3) {
-		if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3)) {
-			w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .8F);
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float f, float f2, float f3) {
+        if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3)) {
+            w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .8F);
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
-		BlockCoord onPos = pos.copy().offset(side ^ 1);
-		if (!world.isBlockSolidOnSide(onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side))) {
-			return null;
-		}
-		GatePart gate = new GatePart(EnumGate.get(item.getItemDamage()));
-		gate.setupPlacement(player, side);
-		return gate;
-	}
+    @Override
+    public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
+        BlockCoord onPos = pos.copy().offset(side ^ 1);
+        if (!world.isBlockSolidOnSide(onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side))) {
+            return null;
+        }
+        GatePart gate = new GatePart(EnumGate.get(item.getItemDamage()));
+        gate.setupPlacement(player, side);
+        return gate;
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void getSubItems(int id, CreativeTabs tab, List list) {
-		for (EnumGate g : EnumGate.VALUES) {
-			list.add(g.getItemStack());
-		}
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void getSubItems(int id, CreativeTabs tab, List list) {
+        for (EnumGate g : EnumGate.VALUES) {
+            list.add(g.getItemStack());
+        }
+    }
 
-	public String getUnlocalizedName(ItemStack stack) {
-		return super.getUnlocalizedName() + "|" + stack.getItemDamage();
-	}
+    public String getUnlocalizedName(ItemStack stack) {
+        return super.getUnlocalizedName() + "|" + stack.getItemDamage();
+    }
 
-	@Override
-	public void registerIcons(IconRegister reg) {
-		GateRenderBridge.registerAllIcons(reg);
+    @Override
+    public void registerIcons(IconRegister reg) {
+        GateRenderBridge.registerAllIcons(reg);
 
-	}
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public int getSpriteNumber() {
-		return 0;
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public int getSpriteNumber() {
+        return 0;
+    }
 
 }

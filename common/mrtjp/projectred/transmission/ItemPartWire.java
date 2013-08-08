@@ -19,60 +19,60 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemPartWire extends JItemMultiPart {
 
-	public ItemPartWire(int id) {
-		super(id);
-		setHasSubtypes(true);
-		setCreativeTab(ProjectRedTabs.tabTransmission);
-		setUnlocalizedName("projred.transmission.wire");
-	}
+    public ItemPartWire(int id) {
+        super(id);
+        setHasSubtypes(true);
+        setCreativeTab(ProjectRedTabs.tabTransmission);
+        setUnlocalizedName("projred.transmission.wire");
+    }
 
-	@Override
-	public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float f, float f2, float f3) {
-		if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3)) {
-			w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .9F);
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float f, float f2, float f3) {
+        if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3)) {
+            w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .9F);
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
-		BlockCoord onPos = pos.copy().offset(side ^ 1);
-		if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) {
-			return null;
-		}
-		EnumWire w = EnumWire.VALID_WIRE[item.getItemDamage()];
-		try {
-			return (TMultiPart) w.wireClass.getConstructors()[0].newInstance(w, false, side ^ 1);
-		} catch (Throwable e) {
-			return null;
-		}
-	}
+    @Override
+    public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
+        BlockCoord onPos = pos.copy().offset(side ^ 1);
+        if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) {
+            return null;
+        }
+        EnumWire w = EnumWire.VALID_WIRE[item.getItemDamage()];
+        try {
+            return (TMultiPart) w.wireClass.getConstructors()[0].newInstance(w, false, side ^ 1);
+        } catch (Throwable e) {
+            return null;
+        }
+    }
 
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void getSubItems(int id, CreativeTabs tab, List list) {
-		for (EnumWire w : EnumWire.VALID_WIRE) {
-			list.add(w.getItemStack());
-		}
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void getSubItems(int id, CreativeTabs tab, List list) {
+        for (EnumWire w : EnumWire.VALID_WIRE) {
+            list.add(w.getItemStack());
+        }
+    }
 
-	public String getUnlocalizedName(ItemStack stack) {
-		return super.getUnlocalizedName() + "|" + stack.getItemDamage();
-	}
+    public String getUnlocalizedName(ItemStack stack) {
+        return super.getUnlocalizedName() + "|" + stack.getItemDamage();
+    }
 
-	@Override
-	public void registerIcons(IconRegister reg) {
-		for (EnumWire wireType : EnumWire.VALID_WIRE) {
-			wireType.loadTextures(reg);
-		}
-	}
+    @Override
+    public void registerIcons(IconRegister reg) {
+        for (EnumWire wireType : EnumWire.VALID_WIRE) {
+            wireType.loadTextures(reg);
+        }
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public int getSpriteNumber() {
-		return 0;
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public int getSpriteNumber() {
+        return 0;
+    }
 
 }

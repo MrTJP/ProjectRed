@@ -18,7 +18,6 @@ import codechicken.multipart.TileMultipart;
 import codechicken.multipart.scalatraits.TRedstoneTile;
 
 public abstract class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceRedstonePart {
-
 	private short MAX_STRENGTH = 255;
 
 	private short strength = 0;

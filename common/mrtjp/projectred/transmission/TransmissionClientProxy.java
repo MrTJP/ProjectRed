@@ -7,13 +7,13 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class TransmissionClientProxy extends TransmissionProxy {
 
-	@Override
-	public void init() {
-		for (EnumWire w : EnumWire.VALID_WIRE) {
-			LanguageRegistry.addName(w.getItemStack(), w.name);
-			LanguageRegistry.addName(w.getJacketedItemStack(), "Jacketed " + w.name);
-		}
-		MinecraftForgeClient.registerItemRenderer(itemPartWire.itemID, WireItemRenderer.instance);
-		MinecraftForgeClient.registerItemRenderer(itemPartJacketedWire.itemID, JacketedWireItemRenderer.instance);
-	}
+    @Override
+    public void init() {
+        for (EnumWire w : EnumWire.VALID_WIRE) {
+            LanguageRegistry.addName(w.getItemStack(), w.name);
+            LanguageRegistry.addName(w.getJacketedItemStack(), "Jacketed " + w.name);
+        }
+        MinecraftForgeClient.registerItemRenderer(itemPartWire.itemID, WireItemRenderer.instance);
+        MinecraftForgeClient.registerItemRenderer(itemPartJacketedWire.itemID, JacketedWireItemRenderer.instance);
+    }
 }

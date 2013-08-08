@@ -9,17 +9,17 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiSmallButton extends GuiButton {
 
-	public GuiSmallButton(int buttonId, int x, int y, int width, int height, String label) {
-		super(buttonId, x, y, width, height, label);
-	}
+    public GuiSmallButton(int buttonId, int x, int y, int width, int height, String label) {
+        super(buttonId, x, y, width, height, label);
+    }
 
-	public GuiSmallButton(int i, int j, int k, String s) {
-		super(i, j, k, s);
-	}
-	
-	
-	@Override
-	public void drawButton(Minecraft minecraft, int i, int j)
+    public GuiSmallButton(int i, int j, int k, String s) {
+        super(i, j, k, s);
+    }
+    
+    
+    @Override
+    public void drawButton(Minecraft minecraft, int i, int j)
     {
         if(!drawButton)
         {
@@ -32,11 +32,11 @@ public class GuiSmallButton extends GuiButton {
         boolean flag = i >= xPosition && j >= yPosition && i < xPosition + width && j < yPosition + height;
         int k = getHoverState(flag);
         
-        drawTexturedModalRect(xPosition  			, yPosition				, 0			    , 46 + k * 20, width / 2 ,height / 2);
-        drawTexturedModalRect(xPosition + width / 2	, yPosition				, 200 - width / 2, 46 + k * 20, width / 2, height / 2);
+        drawTexturedModalRect(xPosition              , yPosition                , 0                , 46 + k * 20, width / 2 ,height / 2);
+        drawTexturedModalRect(xPosition + width / 2    , yPosition                , 200 - width / 2, 46 + k * 20, width / 2, height / 2);
         
-        drawTexturedModalRect(xPosition  			, yPosition + height / 2, 0			    , 46 + 25 - height  +  k * 20, width / 2 ,height / 2);
-        drawTexturedModalRect(xPosition + width / 2	, yPosition + height / 2, 200 - width / 2, 46 + 25 - height +  k * 20, width / 2, height / 2);
+        drawTexturedModalRect(xPosition              , yPosition + height / 2, 0                , 46 + 25 - height  +  k * 20, width / 2 ,height / 2);
+        drawTexturedModalRect(xPosition + width / 2    , yPosition + height / 2, 200 - width / 2, 46 + 25 - height +  k * 20, width / 2, height / 2);
 
         mouseDragged(minecraft, i, j);
         if(!enabled)

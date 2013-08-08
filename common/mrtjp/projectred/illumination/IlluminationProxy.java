@@ -9,43 +9,43 @@ import codechicken.multipart.TMultiPart;
 
 public class IlluminationProxy implements IProxy, IPartFactory {
 
-	@Override
-	public void preinit() {
+    @Override
+    public void preinit() {
 
-	}
+    }
 
-	@Override
-	public void init() {
-		MultiPartRegistry.registerParts(this, new String[] { "Lantern", "inv.Lantern", "Lamp", "inv.Lamp" });
+    @Override
+    public void init() {
+        MultiPartRegistry.registerParts(this, new String[] { "Lantern", "inv.Lantern", "Lamp", "inv.Lamp" });
 
-		itemPartLantern = new ItemPartLantern(Configurator.part_lantern.getInt(), false);
-		itemPartInvLantern = new ItemPartLantern(Configurator.part_invlantern.getInt(), true);
+        itemPartLantern = new ItemPartLantern(Configurator.part_lantern.getInt(), false);
+        itemPartInvLantern = new ItemPartLantern(Configurator.part_invlantern.getInt(), true);
 
-		itemPartLamp = new ItemPartLamp(Configurator.part_lamp.getInt(), false);
-		itemPartInvLamp = new ItemPartLamp(Configurator.part_invlamp.getInt(), true);
+        itemPartLamp = new ItemPartLamp(Configurator.part_lamp.getInt(), false);
+        itemPartInvLamp = new ItemPartLamp(Configurator.part_invlamp.getInt(), true);
 
-		IlluminationRecipes.initIlluminationRecipes();
-		EnumLamp.initOreDictDefinitions();
-		EnumLantern.initOreDictDefinitions();
-	}
+        IlluminationRecipes.initIlluminationRecipes();
+        EnumLamp.initOreDictDefinitions();
+        EnumLantern.initOreDictDefinitions();
+    }
 
-	@Override
-	public void postinit() {
+    @Override
+    public void postinit() {
 
-	}
+    }
 
-	@Override
-	public TMultiPart createPart(String name, boolean arg1) {
-		boolean inverted = false;
-		if (name.startsWith("inv.")) {
-			name = name.substring(4);
-			inverted = true;
-		}
-		if (name.matches("Lantern")) {
-			return new LanternPart(EnumLantern.WHITE, inverted, 0);
-		} else if (name.matches("Lamp")) {
-			return new LampPart(EnumLamp.WHITE, inverted);
-		}
-		return null;
-	}
+    @Override
+    public TMultiPart createPart(String name, boolean arg1) {
+        boolean inverted = false;
+        if (name.startsWith("inv.")) {
+            name = name.substring(4);
+            inverted = true;
+        }
+        if (name.matches("Lantern")) {
+            return new LanternPart(EnumLantern.WHITE, inverted, 0);
+        } else if (name.matches("Lamp")) {
+            return new LampPart(EnumLamp.WHITE, inverted);
+        }
+        return null;
+    }
 }
