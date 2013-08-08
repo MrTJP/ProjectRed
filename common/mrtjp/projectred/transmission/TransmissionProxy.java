@@ -4,8 +4,15 @@ import static mrtjp.projectred.ProjectRed.itemPartJacketedWire;
 import static mrtjp.projectred.ProjectRed.itemPartWire;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
+import scala.collection.generic.ImmutableSetFactory;
+import scala.collection.immutable.HashSet;
+import scala.collection.immutable.Set;
+import scala.collection.immutable.Set.Set1;
+import scala.collection.mutable.StringBuilder;
+import scala.reflect.internal.util.Collections;
 import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
+import codechicken.multipart.MultipartGenerator;
 import codechicken.multipart.TMultiPart;
 
 public class TransmissionProxy implements IProxy, IPartFactory {
@@ -19,17 +26,19 @@ public class TransmissionProxy implements IProxy, IPartFactory {
 	public void init() {
 		String[] wires = new String[EnumWire.VALID_WIRE.length];
 		String[] jwires = new String[EnumWire.VALID_WIRE.length];
-		
+
 		for (EnumWire w : EnumWire.VALID_WIRE) {
 			wires[w.meta] = w.name;
 			jwires[w.meta] = "j." + w.name;
 		}
 		MultiPartRegistry.registerParts(this, wires);
 		MultiPartRegistry.registerParts(this, jwires);
-		
+
+		MultipartGenerator.registerPassThroughInterface("buildcraft.api.power.IPowerReceptor");
+
 		itemPartWire = new ItemPartWire(Configurator.part_wire.getInt());
 		itemPartJacketedWire = new ItemPartJacketedWire(Configurator.part_jwire.getInt());
-		
+
 		TransmissionRecipes.initTransmissionRecipes();
 		EnumWire.initOreDictDefinitions();
 	}
@@ -48,7 +57,11 @@ public class TransmissionProxy implements IProxy, IPartFactory {
 		}
 		EnumWire w = EnumWire.getTypeByName(id);
 		try {
-			return (TMultiPart) w.teclass.getConstructors()[0].newInstance(w, isJacketed, 0);
+			if (!isJacketed) {
+				return (TMultiPart) w.wireClass.getConstructors()[0].newInstance(w, false, 0);
+			} else {
+				return (TMultiPart) w.jacketedClass.getConstructors()[0].newInstance(w, true, 0);
+			}
 		} catch (Throwable e) {
 			return null;
 		}

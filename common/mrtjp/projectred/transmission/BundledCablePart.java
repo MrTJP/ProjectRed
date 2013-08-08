@@ -213,11 +213,6 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 				if (t instanceof IBundledUpdatable) {
 					((IBundledUpdatable) t).onBundledInputChanged();
 				}
-			} else {
-				TMultiPart t = tile().partMap(PartMap.CENTER.i);
-				if (t instanceof WirePart) {
-					//((WirePart)t).updateChange();
-				}
 			}
 			for (int dir = 0; dir < 6; dir++) {
 				ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[dir];

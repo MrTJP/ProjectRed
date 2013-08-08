@@ -41,7 +41,7 @@ public class ItemPartJacketedWire extends JItemMultiPart {
 	public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
 		EnumWire w = EnumWire.VALID_WIRE[item.getItemDamage()];
 		try {
-			return (TMultiPart) w.teclass.getConstructors()[0].newInstance(w, true, side ^ 1);
+			return (TMultiPart) w.jacketedClass.getConstructors()[0].newInstance(w, true, side ^ 1);
 		} catch (Throwable e) {
 			return null;
 		}
