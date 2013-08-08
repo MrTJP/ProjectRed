@@ -271,10 +271,9 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 			if (tp instanceof IConnectable) {
 				return ((IConnectable) tp).connects(this, side, absDir);
 			}
-		} else {
-			return getExternalConnectionOveride(absDir);
 		}
-		return false;
+		return getExternalConnectionOveride(absDir);
+		// return false;
 	}
 
 	public abstract boolean getExternalConnectionOveride(int absDir);
@@ -283,16 +282,16 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		if ((side & 6) == (absDir & 6)) {
 			return false;
 		}
-		
+
 		// TODO check edge here
-		
+
 		int x = x(), y = y(), z = z();
 		x += ForgeDirection.VALID_DIRECTIONS[absDir].offsetX;
 		y += ForgeDirection.VALID_DIRECTIONS[absDir].offsetY;
 		z += ForgeDirection.VALID_DIRECTIONS[absDir].offsetZ;
 
 		// TODO check the other edge here.
-		
+
 		x += ForgeDirection.VALID_DIRECTIONS[side].offsetX;
 		y += ForgeDirection.VALID_DIRECTIONS[side].offsetY;
 		z += ForgeDirection.VALID_DIRECTIONS[side].offsetZ;
@@ -348,11 +347,10 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 				if (p instanceof IConnectable) {
 					return ((IConnectable) p).connects(this, -1, absDir ^ 1);
 				}
-			} else {
-				return getExternalConnectionOveride(absDir);
 			}
+			return getExternalConnectionOveride(absDir);
 		}
-		return false;
+		//return false;
 	}
 
 	/** START IConnectable **/
@@ -422,7 +420,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 		return null;
 	}
 
-	protected abstract  boolean debug(EntityPlayer ply);
+	protected abstract boolean debug(EntityPlayer ply);
 
 	protected void debugEffect_bonemeal() {
 		world().playAuxSFX(2005, x(), y(), z(), 0);
@@ -523,7 +521,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
 	@Override
 	public int redstoneConductionMap() {
-		return 0;
+		return 1 << PartMap.CENTER.i | 1 << 0 | 1 << 1 | 1 << 2 | 1 << 3 | 1 << 4 | 1 << 5;
 	}
 
 	@Override
