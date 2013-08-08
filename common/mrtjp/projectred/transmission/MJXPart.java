@@ -21,9 +21,6 @@ public class MJXPart extends WirePart {
 	public float MAX_MJ = 100;
 	public float saturation = 0;
 	public float latency = 10f;
-	
-	private boolean propegateNextTick = false;
-	private boolean isPropegating;
 
 	public MJXPart(EnumWire type, boolean isJacketedWire, int onside) {
 		super(type, isJacketedWire, onside);
@@ -56,8 +53,6 @@ public class MJXPart extends WirePart {
 		super.update();
 		if (BasicUtils.isServer(world()))
 			Messenger.addMessage(new BlockCoord(tile()), "" + saturation);
-		if (saturation > latency) {
-		}
 		propegateToNeighbors();
 	}
 
@@ -71,7 +66,7 @@ public class MJXPart extends WirePart {
 		return changed;
 	}
 
-	public float subractPower(float power) {
+	public float subtract(float power) {
 		float previousPower = saturation;
 		saturation -= power;
 		if (saturation < 0) {
@@ -82,7 +77,7 @@ public class MJXPart extends WirePart {
 	}
 
 	public float getPull() {
-		return (MAX_MJ - saturation) + .01f;
+		return (MAX_MJ - saturation);
 	}
 
 	public void propegateToNeighbors() {
@@ -102,16 +97,26 @@ public class MJXPart extends WirePart {
 							t = tile.partMap(PartMap.CENTER.i);
 						}
 					}
-					if (t instanceof MJXPart && ((MJXPart) t).getPull() > getPull()) {
-						float change = ((MJXPart) t).addPower(subractPower(Math.min(latency, saturation)));
+					if (t instanceof MJXPart) {
+						if (((MJXPart) t).getPull() > getPull()) {
+							float change = ((MJXPart) t).addPower(subtract(Math.min(latency, saturation)));
+							return;
+						} else if (((MJXPart) t).getPull() < getPull()) {
+							float change = addPower(((MJXPart) t).subtract(Math.min(((MJXPart) t).latency, ((MJXPart) t).saturation)));
+							return;
+						}
 					}
 				}
 			}
 		} else {
 			if (localJacketedConnection) {
 				TMultiPart t = tile().partMap(PartMap.CENTER.i);
-				if (t instanceof MJXPart && ((MJXPart) t).getPull() > getPull()) {
-					((MJXPart) t).addPower(subractPower(Math.min(latency, saturation)));
+				if (t instanceof MJXPart) {
+					if (((MJXPart) t).getPull() > getPull()) {
+						float change = ((MJXPart) t).addPower(subtract(Math.min(latency, saturation)));
+					} else if (((MJXPart) t).getPull() < getPull()) {
+						float change = addPower(((MJXPart) t).subtract(Math.min(((MJXPart) t).latency, ((MJXPart) t).saturation)));
+					}
 				}
 			}
 			for (int dir = 0; dir < 6; dir++) {
@@ -119,17 +124,6 @@ public class MJXPart extends WirePart {
 				int x = x() + fd.offsetX;
 				int y = y() + fd.offsetY;
 				int z = z() + fd.offsetZ;
-				if (maskConnects(dir)) {
-					if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
-						TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
-						if (tile != null) {
-							TMultiPart t = tile.partMap(side);
-							if (t instanceof MJXPart && ((MJXPart) t).getPull() > getPull()) {
-								((MJXPart) t).addPower(subractPower(Math.min(latency, saturation)));
-							}
-						}
-					}
-				}
 				if (maskConnectsAroundCorner(dir)) {
 					fd = ForgeDirection.VALID_DIRECTIONS[side];
 					x += fd.offsetX;
@@ -139,17 +133,41 @@ public class MJXPart extends WirePart {
 						TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 						if (tile != null) {
 							TMultiPart t = tile.partMap(dir ^ 1);
-							if (t instanceof MJXPart && ((MJXPart) t).getPull() > getPull()) {
-								((MJXPart) t).addPower(subractPower(Math.min(latency, saturation)));
+							if (t instanceof MJXPart) {
+								if (((MJXPart) t).getPull() > getPull()) {
+									float change = ((MJXPart) t).addPower(subtract(Math.min(latency, saturation)));
+								} else if (((MJXPart) t).getPull() < getPull()) {
+									float change = addPower(((MJXPart) t).subtract(Math.min(((MJXPart) t).latency*2, ((MJXPart) t).saturation)));
+								}
+							}
+						}
+						continue;
+					}
+				} else if (maskConnectsInternally(dir)) {
+					TMultiPart t = tile().partMap(dir);
+					if (t instanceof MJXPart) {
+						if (((MJXPart) t).getPull() > getPull()) {
+							float change = ((MJXPart) t).addPower(subtract(Math.min(latency, saturation)));
+						} else if (((MJXPart) t).getPull() < getPull()) {
+							float change = addPower(((MJXPart) t).subtract(Math.min(((MJXPart) t).latency, ((MJXPart) t).saturation)));
+						}
+						continue;
+					}
+				} else if (maskConnects(dir)) {
+					if (world().getBlockId(x, y, z) == tile().getBlockType().blockID) {
+						TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
+						if (tile != null) {
+							TMultiPart t = tile.partMap(side);
+							if (t instanceof MJXPart) {
+								if (((MJXPart) t).getPull() > getPull()) {
+									float change = ((MJXPart) t).addPower(subtract(Math.min(latency, saturation)));
+								} else if (((MJXPart) t).getPull() < getPull()) {
+									float change = addPower(((MJXPart) t).subtract(Math.min(((MJXPart) t).latency, ((MJXPart) t).saturation)));
+								}
 							}
 						}
 					}
-				}
-				if (maskConnectsInternally(dir)) {
-					TMultiPart t = tile().partMap(dir);
-					if (t instanceof MJXPart && ((MJXPart) t).getPull() > getPull()) {
-						((MJXPart) t).addPower(subractPower(Math.min(latency, saturation)));
-					}
+					continue;
 				}
 			}
 		}
@@ -159,12 +177,13 @@ public class MJXPart extends WirePart {
 	protected boolean debug(EntityPlayer ply) {
 		if (ply.getHeldItem() != null && ply.getHeldItem().getItem() == ProjectRed.itemScrewdriver) {
 			if (ply.isSneaking()) {
-				subractPower(100);
+				subtract(100);
 			} else {
 				addPower(100);
 			}
 		}
-		ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((world().isRemote ? "Client" : "Server") + " saturation: " + saturation));
+		// ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((world().isRemote
+		// ? "Client" : "Server") + " saturation: " + saturation));
 		return true;
 	}
 }

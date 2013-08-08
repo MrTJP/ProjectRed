@@ -315,5 +315,23 @@ public class BasicUtils {
 		int dz = start.z - end.z;
 		return Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
 	}
+	
+	public static float getTotalFromArray(float[] array) {
+		float amount = 0;
+		for (float f : array) {
+			amount += f;
+		}
+		return amount;
+	}
+	
+	public static int getAmountPositive(float[] array) {
+		int amount = 0;
+		for (float f : array) {
+			if (f > 0) {
+				amount++;
+			}
+		}
+		return amount;
+	}
 
 }
