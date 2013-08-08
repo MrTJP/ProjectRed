@@ -10,26 +10,26 @@ import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 
 public class ExpansionProxy implements IProxy {
 
-	@Override
-	public void preinit() {
+    @Override
+    public void preinit() {
 
-	}
+    }
 
-	@Override
-	public void init() {
-		blockMachines = new BlockMachines(Configurator.block_machinesID.getInt());
-		GameRegistry.registerBlock(blockMachines, ItemBlockMachines.class, "projectred.machines");
-		for (EnumMachine m : EnumMachine.VALID_MACHINES) {
-			GameRegistry.registerTileEntity(m.clazz, "tile.projectred.machines." + m.unlocalname);
-		}
+    @Override
+    public void init() {
+        blockMachines = new BlockMachines(Configurator.block_machinesID.getInt());
+        GameRegistry.registerBlock(blockMachines, ItemBlockMachines.class, "projectred.machines");
+        for (EnumMachine m : EnumMachine.VALID_MACHINES) {
+            GameRegistry.registerTileEntity(m.clazz, "tile.projectred.machines." + m.unlocalname);
+        }
 
-		itemVAWT = new ItemVAWT(Configurator.item_vawtID.getInt());
+        itemVAWT = new ItemVAWT(Configurator.item_vawtID.getInt());
 
-	}
+    }
 
-	@Override
-	public void postinit() {
-		
-	}
+    @Override
+    public void postinit() {
+        
+    }
 
 }

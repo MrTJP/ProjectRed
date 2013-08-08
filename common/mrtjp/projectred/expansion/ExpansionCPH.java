@@ -11,23 +11,23 @@ import codechicken.lib.vec.BlockCoord;
 
 public class ExpansionCPH implements IClientPacketHandler {
 
-	@Override
-	public void handlePacket(PacketCustom packet, NetClientHandler nethandler, Minecraft mc) {
-		EntityPlayer player = mc.thePlayer;
-		World world = mc.theWorld;
+    @Override
+    public void handlePacket(PacketCustom packet, NetClientHandler nethandler, Minecraft mc) {
+        EntityPlayer player = mc.thePlayer;
+        World world = mc.theWorld;
 
-		switch (packet.getType()) {
-		case ExpansionNetworkConstants.alloySmelterWatcherUpdate:
-			TileAlloySmelter t = BasicUtils.getTileEntity(world, packet.readCoord(), TileAlloySmelter.class);
-			if (t != null) {
-				t.heat = packet.readShort();
-				t.progress = packet.readShort();
-			}
-			return;
-			
-		default: break;
-		}
+        switch (packet.getType()) {
+        case ExpansionNetworkConstants.alloySmelterWatcherUpdate:
+            TileAlloySmelter t = BasicUtils.getTileEntity(world, packet.readCoord(), TileAlloySmelter.class);
+            if (t != null) {
+                t.heat = packet.readShort();
+                t.progress = packet.readShort();
+            }
+            return;
+            
+        default: break;
+        }
 
-	}
+    }
 
 }
