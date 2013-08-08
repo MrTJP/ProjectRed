@@ -279,6 +279,12 @@ public class BundledCablePart extends WirePart implements IBundledEmitter, IBund
 
 	@Override
 	public byte[] getBundledCableStrength(int blockFace, int direction) {
+		if (blockFace == -1) {
+			return maskConnectsJacketed(direction) ? strength : null;
+		}
+		if (direction == (side ^ 1) && localJacketedConnection) {				
+			return strength;
+		}
 		return maskConnects(direction) ? strength : null;
 	}
 

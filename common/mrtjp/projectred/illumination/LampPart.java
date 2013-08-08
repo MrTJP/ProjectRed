@@ -19,6 +19,7 @@ import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.PartMap;
+import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
@@ -170,7 +171,7 @@ public class LampPart extends JCuboidPart implements TFacePart, JNormalOcclusion
 
 	@Override
 	public int getSlotMask() {
-		return 1 << PartMap.CENTER.i | 1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4 | 1<<5;
+		return 1 << PartMap.CENTER.i | 1 << 0 | 1 << 1 | 1 << 2 | 1 << 3 | 1 << 4 | 1 << 5;
 	}
 
 	@Override
@@ -195,7 +196,7 @@ public class LampPart extends JCuboidPart implements TFacePart, JNormalOcclusion
 
 	@Override
 	public int redstoneConductionMap() {
-		return 0;
+		return 1 << PartMap.CENTER.i | 1 << 0 | 1 << 1 | 1 << 2 | 1 << 3 | 1 << 4 | 1 << 5;
 	}
 
 	@Override

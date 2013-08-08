@@ -1,27 +1,21 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CommandDebug;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.lighting.LazyLightMatrix;
-import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Vector3;
 import codechicken.multipart.IFaceRedstonePart;
 import codechicken.multipart.PartMap;
 import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import codechicken.multipart.scalatraits.TRedstoneTile;
 
 public abstract class RedwirePart extends WirePart implements IRedstoneEmitter, IFaceRedstonePart {
 
@@ -350,6 +344,11 @@ public abstract class RedwirePart extends WirePart implements IRedstoneEmitter, 
 		y += ForgeDirection.getOrientation(absDir).offsetY;
 		z += ForgeDirection.getOrientation(absDir).offsetZ;
 		Block b = Block.blocksList[world().getBlockId(x, y, z)];
+		TileMultipart t = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
+		if (t instanceof TRedstoneTile) {
+			// TODO check if can connect to the correct side instead of entire tile.
+			// We dont want connections simply because a different part on the tile has connections.
+		}
 		if (b == null || b.isAirBlock(world(), x, y, z)) {
 			return false;
 		}
@@ -363,6 +362,11 @@ public abstract class RedwirePart extends WirePart implements IRedstoneEmitter, 
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean connectsToWireType(WirePart wire) {
+		return wire instanceof RedwirePart;
 	}
 
 	/**
@@ -448,11 +452,6 @@ public abstract class RedwirePart extends WirePart implements IRedstoneEmitter, 
 		return BasicWireUtils.wiresProvidePower() && maskConnects(dir);
 	}
 
-	@Override
-	public boolean connectsToWireType(WirePart wire) {
-		return wire instanceof RedwirePart;
-	}
-
 	/**
 	 * Returns the vanilla redstone strength from 0 to 15.
 	 */
@@ -478,7 +477,7 @@ public abstract class RedwirePart extends WirePart implements IRedstoneEmitter, 
 
 	@Override
 	public int weakPowerLevel(int absDir) {
-		return canProvideWeakPowerInDirection(absDir) ? getVanillaRedstoneStrength() : 0;
+		return canProvideWeakPowerInDirection(absDir) || canProvideStrongPowerInDirection(absDir) ? getVanillaRedstoneStrength() : 0;
 	}
 
 	@Override
