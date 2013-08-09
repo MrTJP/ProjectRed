@@ -41,12 +41,7 @@ public class ItemPartWire extends JItemMultiPart {
         if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) {
             return null;
         }
-        EnumWire w = EnumWire.VALID_WIRE[item.getItemDamage()];
-        try {
-            return (TMultiPart) w.wireClass.getConstructors()[0].newInstance(w, false, side ^ 1);
-        } catch (Throwable e) {
-            return null;
-        }
+        return EnumWire.VALID_WIRE[item.getItemDamage()].createWire(side ^ 1);
     }
 
 

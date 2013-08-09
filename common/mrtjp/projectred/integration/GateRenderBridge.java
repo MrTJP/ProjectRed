@@ -5,6 +5,7 @@ import static mrtjp.projectred.transmission.BasicWireUtils.FRONT;
 import static mrtjp.projectred.transmission.BasicWireUtils.LEFT;
 import static mrtjp.projectred.transmission.BasicWireUtils.RIGHT;
 import mrtjp.projectred.core.BasicRenderUtils;
+import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.transmission.EnumWire;
 import mrtjp.projectred.transmission.WirePart;
 import mrtjp.projectred.transmission.WireRenderAssistant;
@@ -70,6 +71,9 @@ public abstract class GateRenderBridge {
     public static RotatedPartModel _multCableCover;
     public static RotatedPartModel _solar;
     public static RotatedPartModel _rainSensor;
+    public static RotatedPartModel _lightPanel;
+    public static RotatedPartModel[] _panelLights = new RotatedPartModel[16];
+    public static RotatedPartModel _serialBus;
 
     public static void registerAllIcons(IconRegister reg) {
         String baseTex = "projectred:gates/";
@@ -89,6 +93,11 @@ public abstract class GateRenderBridge {
         _multCableCover = new RotatedPartModel(_latchCableCover.getCCModels(), "gateparts/cablecover.obj", reg.registerIcon(baseTex + "cablemulti"));
         _solar = new RotatedPartModel("gateparts/solar.obj", reg.registerIcon(baseTex + "solar"));
         _rainSensor = new RotatedPartModel("gateparts/rainsensor.obj", reg.registerIcon(baseTex + "rainsensor"));
+        _lightPanel = new RotatedPartModel("gateparts/lightpanel.obj", reg.registerIcon(baseTex + "lightpanel"));
+        for (int i = 0; i < 16; i++) {
+            _panelLights[i] = new RotatedPartModel(_lightPanel.getCCModels(), "gateparts/lightpanel.obj", reg.registerIcon(baseTex + "lightpanel/lightpanel" + i));
+        }
+        _serialBus = new RotatedPartModel("gateparts/serialbus.obj", reg.registerIcon(baseTex + "serialbus"));
     }
 
     /**
@@ -129,16 +138,18 @@ public abstract class GateRenderBridge {
     }
 
     /**
-     * Dummy WirePart class, used to pass to WireRenderAssistant. 
+     * Dummy WirePart class, used to pass to WireRenderAssistant.
      */
     public static class WireRenderDummy extends WirePart {
 
         public WireRenderDummy() {
             super(EnumWire.RED_ALLOY, false, 0);
         }
+
         public boolean[] connects = new boolean[6];
         public boolean[] connectsCor = new boolean[6];
-        public boolean[] connectsInt = new boolean[6];        
+        public boolean[] connectsInt = new boolean[6];
+
         @Override
         public boolean getExternalConnectionOveride(int absDir) {
             return false;
@@ -1162,6 +1173,71 @@ public abstract class GateRenderBridge {
             }
             rt.renderPartModel(_rainSensor, "base", (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
             rt.renderPartModel(_rainSensor, "sensor", (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
+        }
+    }
+
+    public static class CCIOExpander extends GateRenderBridge implements Stateless {
+
+        int[] outputs = new int[16];
+        boolean isAttached;
+
+        @Override
+        public void set(int renderState) {
+            outputs = new int[16];
+            for (int k = 0; k < 16; k++) {
+                outputs[k] = ((renderState & 1) != 0) ? (byte) 255 : 0;
+                renderState >>= 1;
+            }
+            for (int i = 0; i < 16; i++) {
+                if (outputs[i] != 0) {
+                    isAttached = true;
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void setItemRender() {
+            outputs = new int[16];
+            outputs[3] = 255;
+            outputs[7] = 255;
+            outputs[9] = 255;
+            outputs[12] = 255;
+            outputs[13] = 255;
+            isAttached = false;
+        }
+
+        @Override
+        public void renderSpecials(RotatedRenderer rt, boolean isTESR) {
+            if (isTESR) {
+                return;
+            }
+            rt.renderPartModel(_serialBus, "base", (16f - 8.5f) / 16 + .03f, 0, (16f - 8.4f) / 16 + .03f, -1, -1, false);
+            rt.renderPartModel(_wire, "border", (16f - 14f) / 16 + .03f, 0, (16f - 5.5f) / 16 + .03f, -1, -1, false);
+            if (isAttached) {
+                rt.renderPartModel(_wire, "wire", (16f - 14f) / 16 + .03f, 0, (16f - 5.5f) / 16 + .03f, -1, PRColors.GREEN.hex, false);
+            } else {
+                rt.renderPartModel(_wire, "wire", (16f - 14f) / 16 + .03f, 0, (16f - 5.5f) / 16 + .03f, -1, PRColors.RED.hex, false);
+            }
+            rt.renderPartModel(_lightPanel, "base", (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
+            for (int i = 0; i < 16; i++) {
+                if (outputs[i] != 0) {
+                    rt.renderPartModel(_panelLights[i], "base", (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
+                }
+            }
+            WireRenderDummy dummy = new WireRenderDummy();
+            dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, BACK)] = true;
+            WireRenderAssistant wra = new WireRenderAssistant();
+            wra.x = rt.x;
+            wra.y = rt.y;
+            wra.z = rt.z;
+            wra.side = rt.side;
+            wra.scaleFactor = 1.0003;
+            wra.setWireRenderState(dummy);
+            wra.wireIcon = EnumWire.BUNDLED_N.wireSprites[0];
+            wra.model = EnumWire.BUNDLED_N.wireMap;
+            BasicRenderUtils.setFullColor();
+            wra.pushRender();
         }
     }
 }

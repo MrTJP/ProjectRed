@@ -31,7 +31,7 @@ public class NEIProjectRedConfig implements IConfigureNEI {
 
             // Gates
             MultiItemRange gates = new MultiItemRange();
-            for (EnumGate g : EnumGate.VALUES) {
+            for (EnumGate g : EnumGate.VALID_GATES) {
                 gates.add(g.getItemStack());
             }
             addSetRange("ProjectRed.Integration", gates);

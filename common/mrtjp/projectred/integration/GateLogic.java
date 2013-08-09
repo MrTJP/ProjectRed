@@ -7,15 +7,16 @@ import static mrtjp.projectred.transmission.BasicWireUtils.RIGHT;
 
 import java.util.Random;
 
-import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.GuiIDs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import codechicken.lib.packet.PacketCustom;
+import dan200.computer.api.IComputerAccess;
+import dan200.computer.api.ILuaContext;
+import dan200.computer.api.IPeripheral;
 
 public abstract class GateLogic {
 
@@ -40,7 +41,7 @@ public abstract class GateLogic {
     public void read(NBTTagCompound tag) {
     }
 
-    public boolean connectsToDirection(int side) {
+    public boolean connectsToWire(int side) {
         return true;
     }
 
@@ -48,7 +49,7 @@ public abstract class GateLogic {
      * Used to check if side specified should connect to a bundled cable.
      */
     public static interface WithBundledConnections {
-        public boolean isBundledConnection(int side);
+        public boolean connectsToBundled(int side);
     }
 
     /**
@@ -75,7 +76,7 @@ public abstract class GateLogic {
         public void openGui(EntityPlayer player, GatePart tile);
 
         public void handleButtonPressed(String action, GatePart tile);
-        
+
         public void updateWatchers(GatePart tile);
     }
 
@@ -295,8 +296,8 @@ public abstract class GateLogic {
         }
 
         @Override
-        public boolean connectsToDirection(int side) {
-            return super.connectsToDirection(side) && side != BACK;
+        public boolean connectsToWire(int side) {
+            return super.connectsToWire(side) && side != BACK;
         }
     }
 
@@ -312,8 +313,8 @@ public abstract class GateLogic {
         }
 
         @Override
-        public boolean connectsToDirection(int side) {
-            return super.connectsToDirection(side) && side != BACK;
+        public boolean connectsToWire(int side) {
+            return super.connectsToWire(side) && side != BACK;
         }
     }
 
@@ -406,7 +407,7 @@ public abstract class GateLogic {
         }
 
         @Override
-        public boolean connectsToDirection(int side) {
+        public boolean connectsToWire(int side) {
             return side == FRONT || side == BACK;
         }
     }
@@ -464,7 +465,7 @@ public abstract class GateLogic {
                 updateWatchers(tile);
             }
         }
-        
+
         @Override
         public void updateWatchers(GatePart tile) {
             Chunk c = tile.world().getChunkFromBlockCoords(tile.x(), tile.z());
@@ -576,7 +577,7 @@ public abstract class GateLogic {
             }
             updateWatchers(tile);
         }
-        
+
         @Override
         public void updateWatchers(GatePart tile) {
             PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiCounterBroadcastChange);
@@ -688,7 +689,7 @@ public abstract class GateLogic {
                 updateWatchers(tile);
             }
         }
-        
+
         @Override
         public void updateWatchers(GatePart tile) {
             Chunk c = tile.world().getChunkFromBlockCoords(tile.x(), tile.z());
@@ -698,6 +699,7 @@ public abstract class GateLogic {
             packet.writeInt(intervalTicks);
             packet.sendToChunk(tile.world(), c.xPosition, c.zPosition);
         }
+
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
             return state;
@@ -868,7 +870,7 @@ public abstract class GateLogic {
                 updateWatchers(tile);
             }
         }
-        
+
         @Override
         public void updateWatchers(GatePart tile) {
             Chunk c = tile.world().getChunkFromBlockCoords(tile.x(), tile.z());
@@ -1046,12 +1048,12 @@ public abstract class GateLogic {
         }
 
         @Override
-        public boolean connectsToDirection(int side) {
-            return side == RIGHT || side == FRONT || side == BACK;
+        public boolean connectsToWire(int side) {
+            return side == RIGHT;
         }
 
         @Override
-        public boolean isBundledConnection(int side) {
+        public boolean connectsToBundled(int side) {
             return side == FRONT || side == BACK;
         }
 
@@ -1069,12 +1071,12 @@ public abstract class GateLogic {
         }
 
         @Override
-        public boolean connectsToDirection(int side) {
-            return side == RIGHT || side == FRONT || side == BACK;
+        public boolean connectsToWire(int side) {
+            return side == RIGHT;
         }
 
         @Override
-        public boolean isBundledConnection(int side) {
+        public boolean connectsToBundled(int side) {
             return side == FRONT || side == BACK;
         }
 
@@ -1092,10 +1094,14 @@ public abstract class GateLogic {
         }
 
         @Override
-        public boolean isBundledConnection(int side) {
-            return side == FRONT || side == LEFT || side == RIGHT;
+        public boolean connectsToWire(int side) {
+            return side == BACK;
         }
 
+        @Override
+        public boolean connectsToBundled(int side) {
+            return side == FRONT || side == LEFT || side == RIGHT;
+        }
     }
 
     public static class LightSensor extends GateLogic implements WorldStateBound {
@@ -1143,7 +1149,7 @@ public abstract class GateLogic {
             return (gateSettings > 5 ? 0 : gateSettings);
         }
 
-        public boolean connectsToDirection(int side) {
+        public boolean connectsToWire(int side) {
             return side == BACK;
         }
     }
@@ -1180,8 +1186,122 @@ public abstract class GateLogic {
             return w == null;
         }
 
-        public boolean connectsToDirection(int side) {
+        public boolean connectsToWire(int side) {
             return side == BACK;
+        }
+    }
+
+    public static class CCIOExpander extends GateLogic implements Stateless, WithBundledConnections, IPeripheral {
+
+        private boolean isConnected = false;
+        private byte[] cachedInputs = new byte[16];
+        private byte[] cachedOutputs = new byte[16];
+
+        @Override
+        public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
+            cachedInputs = new byte[16];
+            short inputMask = inputs[BACK];
+            for (int k = 0; k < 16; k++) {
+                cachedInputs[k] = ((inputMask & 1) != 0) ? (byte) 255 : 0;
+                inputMask >>= 1;
+            }
+
+            short outputMask = 0;
+            for (int k = 15; k >= 0; k--) {
+                outputMask <<= 1;
+                if (cachedOutputs[k] != 0) {
+                    outputMask |= 1;
+                }
+            }
+            outputs[BACK] = outputMask;
+        }
+
+        @Override
+        public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
+            int outputMask = 0;
+            for (int k = 15; k >= 0; k--) {
+                outputMask <<= 1;
+                if (cachedOutputs[k] != 0) {
+                    outputMask |= 1;
+                }
+            }
+            if (isConnected) {
+                
+            }
+            return outputMask;
+        }
+
+        @Override
+        public boolean connectsToBundled(int side) {
+            return side == BACK;
+        }
+
+        @Override
+        public String getType() {
+            // Handled by gate
+            return null;
+        }
+
+        @Override
+        public String[] getMethodNames() {
+            return new String[] { "help", "setOutput", "testInput", "allOff", "allOn" };
+        }
+
+        @Override
+        public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws Exception {
+            switch (method) {
+            case 0:
+                return new Object[] { "Available Commands:", "setOutput(int color 0-15, boolean state)", "testInput(int color 0-15)", "allOff()", "allOn()" };
+            case 1:
+                if (arguments.length != 2 || !(arguments[0] instanceof Double) || !(arguments[1] instanceof Boolean)) {
+                    throw new Exception("invalid arguments");
+                }
+                double color = (Double) arguments[0];
+                boolean on = (Boolean) arguments[1];
+                if (color > 15 || color < 0) {
+                    throw new Exception("invalid color");
+                }
+                cachedOutputs[(int) color] = (byte) (on ? 255 : 0);
+                return null;
+            case 2:
+                if (arguments.length != 1 || !(arguments[0] instanceof Double)) {
+                    throw new Exception("invalid arguments");
+                }
+                double testcolor = (Double) arguments[0];
+                if (testcolor > 15 || testcolor < 0) {
+                    throw new Exception("invalid color");
+                }
+                return new Object[] { cachedInputs[(int) testcolor] != 0 ? true : false };
+            case 3:
+                for (int i = 0; i < 16; i++) {
+                    cachedOutputs[i] = 0;
+                }
+                return null;
+            case 4:
+                for (int i = 0; i < 16; i++) {
+                    cachedOutputs[i] = (byte) 255;
+                }
+                return null;
+            default:
+                throw new Exception("invalid call");
+            }
+        }
+
+        @Override
+        public boolean canAttachToSide(int rel) {
+            return rel == FRONT;
+        }
+
+        @Override
+        public void attach(IComputerAccess computer) {
+            cachedOutputs = new byte[16];
+            isConnected = true;
+        }
+
+        @Override
+        public void detach(IComputerAccess computer) {
+            cachedOutputs = new byte[16];
+            isConnected = false;
         }
     }
 }

@@ -1,10 +1,13 @@
 package mrtjp.projectred.illumination;
 
+import static mrtjp.projectred.ProjectRed.itemPartInvLamp;
+import static mrtjp.projectred.ProjectRed.itemPartInvLantern;
+import static mrtjp.projectred.ProjectRed.itemPartLamp;
+import static mrtjp.projectred.ProjectRed.itemPartLantern;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-import static mrtjp.projectred.ProjectRed.*;
-import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.MultiPartRegistry;
+import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;
 
 public class IlluminationProxy implements IProxy, IPartFactory {

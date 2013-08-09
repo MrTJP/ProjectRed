@@ -24,9 +24,6 @@ public class CoreProxy implements IProxy {
 
         EnumPart.initOreDictDefinitions();
         CoreRecipes.initCoreRecipes();
-
-        MinecraftForge.EVENT_BUS.register(new Messenger());
-        TickRegistry.registerTickHandler(ProjectRedTickHandler.instance, Side.CLIENT);
     }
 
     @Override

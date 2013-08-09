@@ -6,6 +6,7 @@ import static mrtjp.projectred.ProjectRed.itemWoolGin;
 import mrtjp.projectred.core.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class CoreClientProxy extends CoreProxy {
@@ -22,5 +23,7 @@ public class CoreClientProxy extends CoreProxy {
         for (EnumBackpack b : EnumBackpack.VALID_BP) {
             LanguageRegistry.addName(b.getItemStack(), b.fullname);
         }
+        
+        MinecraftForge.EVENT_BUS.register(new Messenger());
     }
 }
