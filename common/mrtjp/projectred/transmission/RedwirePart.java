@@ -11,6 +11,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.IFaceRedstonePart;
+import codechicken.multipart.IRedstonePart;
 import codechicken.multipart.PartMap;
 import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
@@ -345,8 +346,11 @@ public abstract class RedwirePart extends WirePart implements IRedstoneEmitter, 
 		Block b = Block.blocksList[world().getBlockId(x, y, z)];
 		TileMultipart t = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
 		if (t instanceof TRedstoneTile) {
-			// TODO check if can connect to the correct side instead of entire tile.
-			// We dont want connections simply because a different part on the tile has connections.
+		    TMultiPart p = t.partMap(side);
+		    if (p instanceof IRedstonePart) {
+		        return ((IRedstonePart)p).canConnectRedstone(absDir ^ 1);
+		    }
+		    return false;
 		}
 		if (b == null || b.isAirBlock(world(), x, y, z)) {
 			return false;

@@ -1,12 +1,11 @@
 package mrtjp.projectred.expansion;
 
-import net.minecraft.item.ItemStack;
-import static mrtjp.projectred.ProjectRed.*;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
+import static mrtjp.projectred.ProjectRed.blockMachines;
+import static mrtjp.projectred.ProjectRed.itemVAWT;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ExpansionProxy implements IProxy {
 

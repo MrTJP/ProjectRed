@@ -1,12 +1,14 @@
 Change Log:
-v4.0.0.35
+v4.0.0pre.35
 - Migrated to ForgeMultipart.
 - Bundled gates render properly.
 - CodeChickenCore, CodeChickenLib, and ForgeMultipart are now required.
 - Optimization.
 - Configurable modules for each category.
+- Added ComputerCraft I/O Expander peripheral for bundled cable interactions. Wrap peripheral and use help() for details.
 
 
+----END OF v3----
 v3.2.1.34
 - Ported to Minecraft 1.6.2.
 - Fixed bug with alloy smelter crafts things without fuel upon world load.

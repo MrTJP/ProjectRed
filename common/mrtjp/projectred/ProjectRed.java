@@ -13,8 +13,6 @@ import mrtjp.projectred.core.ItemPart;
 import mrtjp.projectred.core.ItemWoolGin;
 import mrtjp.projectred.core.ModuleCore;
 import mrtjp.projectred.expansion.BlockMachines;
-import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
-import mrtjp.projectred.expansion.ItemBlockMachines;
 import mrtjp.projectred.expansion.ItemVAWT;
 import mrtjp.projectred.expansion.ModuleExpansion;
 import mrtjp.projectred.illumination.ItemPartLamp;
@@ -26,7 +24,6 @@ import mrtjp.projectred.integration.ModuleIntegration;
 import mrtjp.projectred.transmission.ItemPartJacketedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
 import mrtjp.projectred.transmission.ModuleTransmission;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
@@ -36,8 +33,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 /**
  * "Project: Red" serves to provide a complete alternative for Eloraam's
@@ -46,7 +41,14 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
  * @author MrTJP
  * 
  */
-@Mod(modid = Configurator.modId, name = Configurator.modName, version = Configurator.version + "." + Configurator.buildnumber, dependencies = "")
+@Mod(modid = Configurator.modId, name = Configurator.modName, version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.2]", 
+dependencies = 
+        "required-after:Forge@[@FORGE_VERSION@,);" +
+        "required-after:ForgeMultipart;" +
+        "required-after:CodeChickenCore;" +
+        "after:CCTurtle;" +
+        "after:ComputerCraft;"
+)
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class ProjectRed {
 

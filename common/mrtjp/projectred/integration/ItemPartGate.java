@@ -41,7 +41,7 @@ public class ItemPartGate extends JItemMultiPart {
         if (!world.isBlockSolidOnSide(onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side))) {
             return null;
         }
-        GatePart gate = new GatePart(EnumGate.get(item.getItemDamage()));
+        GatePart gate = EnumGate.get(item.getItemDamage()).createPart();
         gate.setupPlacement(player, side);
         return gate;
     }
@@ -49,7 +49,7 @@ public class ItemPartGate extends JItemMultiPart {
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(int id, CreativeTabs tab, List list) {
-        for (EnumGate g : EnumGate.VALUES) {
+        for (EnumGate g : EnumGate.VALID_GATES) {
             list.add(g.getItemStack());
         }
     }

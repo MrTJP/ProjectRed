@@ -1,10 +1,6 @@
 package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.expansion.GuiAlloySmelter;
-import mrtjp.projectred.expansion.GuiTurbineRotary;
-import mrtjp.projectred.expansion.TileAlloySmelter;
-import mrtjp.projectred.expansion.TileTurbineRotary;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;

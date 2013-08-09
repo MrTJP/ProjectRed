@@ -53,8 +53,7 @@ public enum EnumWire {
     BUNDLED_12("Brown Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/brown"),
     BUNDLED_13("Green Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/green"),
     BUNDLED_14("Red Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/red"),
-    BUNDLED_15("Black Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/black"), 
-    ;
+    BUNDLED_15("Black Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/black"), ;
 
     public static final int PLAIN_RED_ALLOY_META = 0;
     public static final int INSULATED_RED_ALLOY_META = 1;
@@ -67,7 +66,7 @@ public enum EnumWire {
     public final String name;
     public final Class<? extends WirePart> wireClass;
     public final Class<? extends WirePart> jacketedClass;
-    
+
     public final int itemColour;
     public final double thickness, width;
 
@@ -78,13 +77,12 @@ public enum EnumWire {
     public final String jacketModelPath;
     public Map<String, CCModel> wireMap;
     public Map<String, CCModel> jacketMap;
+    public int meta = this.ordinal();
 
     public static final String oreDictDefinition = "projredWire";
     public static final String oreDictDefinitionInsulated = "projredInsulatedWire";
     public static final String oreDictDefinitionJacketed = "projredJacketedWire";
     public static final String oreDictDefinitionBundled = "projredBundledCable";
-
-    public int meta = this.ordinal();
 
     private EnumWire(String name, Class<? extends WirePart> wireClazz, Class<? extends WirePart> jacketedClazz, int thicknessPixels, int widthPixels, int itemColour, String objPathWire, String objPathJacket, String... textures) {
         this.name = name;
@@ -98,12 +96,29 @@ public enum EnumWire {
         wireSpritePaths = textures;
         wireSprites = new Icon[textures.length];
     }
+
     private EnumWire(String name, Class<? extends WirePart> wireClazz, int thicknessPixels, int widthPixels, int itemColour, String objPathWire, String objPathJacket, String... textures) {
         this(name, wireClazz, wireClazz, thicknessPixels, widthPixels, itemColour, objPathWire, objPathJacket, textures);
     }
 
     private EnumWire(String name, Class<? extends WirePart> wireClazz, int thicknessPixels, int widthPixels, String objPath, String objPathJacket, String... textures) {
         this(name, wireClazz, thicknessPixels, widthPixels, 0xFFFFFF, objPath, objPathJacket, textures);
+    }
+
+    public WirePart createWire(int side) {
+        try {
+            return (WirePart) wireClass.getConstructors()[0].newInstance(this, false, side);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public WirePart createJacketedWire(int side) {
+        try {
+            return (WirePart) wireClass.getConstructors()[0].newInstance(this, true, side);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean hasJacketedForm() {

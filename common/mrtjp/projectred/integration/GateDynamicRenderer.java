@@ -24,7 +24,7 @@ public class GateDynamicRenderer {
         rotatedTess.z = z;
         rotatedTess.side = te.getSide();
         rotatedTess.front = te.getFront();
-        GateRenderBridge rendering = (type == null ? defaultRendering : type.getRenderBridge());
+        GateRenderBridge rendering = (type == null ? defaultRendering : type.createRenderBridge());
         rendering.set(te.getRenderState());
         
         CCRenderState.reset();

@@ -7,6 +7,7 @@ import mrtjp.projectred.core.IProxy;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
+import codechicken.multipart.MultipartGenerator;
 import codechicken.multipart.TMultiPart;
 
 public class IntegrationProxy implements IProxy, IPartFactory {
@@ -17,8 +18,8 @@ public class IntegrationProxy implements IProxy, IPartFactory {
     
     @Override
     public void init() {
-        String[] gates = new String[EnumGate.VALUES.length];
-        for (EnumGate g : EnumGate.VALUES) {
+        String[] gates = new String[EnumGate.VALID_GATES.length];
+        for (EnumGate g : EnumGate.VALID_GATES) {
             gates[g.ordinal()] = g.name;
         }
         MultiPartRegistry.registerParts(this, gates);
@@ -26,6 +27,7 @@ public class IntegrationProxy implements IProxy, IPartFactory {
         itemPartGate = new ItemPartGate(Configurator.part_gate.getInt());
         itemScrewdriver = new ItemScrewdriver(Configurator.item_screwdriverID.getInt());
         
+        MultipartGenerator.registerPassThroughInterface("dan200.computer.api.IPeripheral");
         IntegrationRecipes.initIntegrationRecipes();
         EnumGate.initOreDictDefinitions();
         

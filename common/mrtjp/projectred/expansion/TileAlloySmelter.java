@@ -1,14 +1,11 @@
 package mrtjp.projectred.expansion;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.GhostContainer;
-import mrtjp.projectred.core.GuiIDs;
 import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
 import mrtjp.projectred.core.SimpleInventory;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;

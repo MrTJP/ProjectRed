@@ -26,7 +26,7 @@ public class GateStaticRenderer implements IItemRenderer {
             return true;
         }
 
-        GateRenderBridge rendering = type.getRenderBridge();
+        GateRenderBridge rendering = type.createRenderBridge();
         rendering.set(te.getRenderState());
         rotatedRenderer.x = x;
         rotatedRenderer.y = y;
@@ -67,8 +67,8 @@ public class GateStaticRenderer implements IItemRenderer {
     }
 
     public void renderGateInInventory(int meta, float x, float y, float z, float scale) {
-        EnumGate type = EnumGate.VALUES[meta];
-        GateRenderBridge rendering = (type == null ? defaultRendering : type.getRenderBridge());
+        EnumGate type = EnumGate.VALID_GATES[meta];
+        GateRenderBridge rendering = (type == null ? defaultRendering : type.createRenderBridge());
         rendering.setItemRender();
         rotatedRenderer.x = x;
         rotatedRenderer.y = y;

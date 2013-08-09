@@ -135,7 +135,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     @Override
     public void readDesc(MCDataInput packet) {
         NBTTagCompound nbt = packet.readNBTTagCompound();
-        type = EnumGate.VALUES[nbt.getByte("t")];
+        type = EnumGate.VALID_GATES[nbt.getByte("t")];
         side = nbt.getByte("s");
         front = nbt.getByte("f");
         prevRenderState = nbt.getShort("r") & 0xFFFFF;
@@ -171,7 +171,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     public void load(NBTTagCompound tag) {
         super.load(tag);
         try {
-            type = EnumGate.VALUES[tag.getByte("type")];
+            type = EnumGate.VALID_GATES[tag.getByte("type")];
         } catch (Exception e) {
             type = EnumGate.AND; // shouldn't happen
         }
@@ -198,7 +198,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     public short[] computeInputs() {
         short[] newInputs = new short[4];
         for (int i = 0; i < 4; i++) {
-            if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).isBundledConnection(i)) {
+            if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).connectsToBundled(i)) {
                 newInputs[i] = getBundledInputBitmask(Rotator.relativeToAbsolute(side, front, i));
             } else {
                 newInputs[i] = (short) RedstoneInteractions.getPowerTo(this, Rotator.relativeToAbsolute(side, front, i));
@@ -300,7 +300,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
         BlockCoord localCoord = new BlockCoord(x(), y(), z());
         localCoord.offset(side);
         Block supporter = Block.blocksList[world().getBlockId(localCoord.x, localCoord.y, localCoord.z)];
-        if (!BasicWireUtils.canPlaceWireOnSide(world(), localCoord.x, localCoord.y, localCoord.z, ForgeDirection.VALID_DIRECTIONS[side^1], false)) {
+        if (!BasicWireUtils.canPlaceWireOnSide(world(), localCoord.x, localCoord.y, localCoord.z, ForgeDirection.VALID_DIRECTIONS[side ^ 1], false)) {
             BasicUtils.dropItemFromLocation(world(), getItem(), false, null, getSide(), 10, new BlockCoord(x(), y(), z()));
             tile().remPart(this);
         }
@@ -360,6 +360,29 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
         hasBundledConnections = logic instanceof GateLogic.WithBundledConnections;
     }
 
+    // called when shift-clicked by a screwdriver
+    public void configure() {
+        if (BasicUtils.isServer(world())) {
+            gateSettings = logic.configure(gateSettings);
+            updateLogic(false, true);
+            updateNextTick = true;
+        }
+    }
+
+    // called when non-shift-clicked by a screwdriver
+    public void rotate() {
+        int relativeRotationIndex = Rotation.rotationTo(side, front);
+        relativeRotationIndex++;
+        if (relativeRotationIndex > 3) {
+            relativeRotationIndex = 0;
+        }
+        front = (byte) (Rotation.rotateSide(side, relativeRotationIndex));
+        if (BasicUtils.isServer(world())) {
+            updateLogic(false, true);
+            updateNextTick = true;
+        }
+    }
+
     private short getBundledInputBitmask(int abs) {
         ForgeDirection fd = ForgeDirection.VALID_DIRECTIONS[abs];
         int x = x() + fd.offsetX;
@@ -387,31 +410,6 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
         return 0;
     }
 
-    // called when shift-clicked by a screwdriver
-    public void configure() {
-        if (BasicUtils.isServer(world())) {
-            gateSettings = logic.configure(gateSettings);
-            updateLogic(false, true);
-            updateNextTick = true;
-        }
-    }
-
-    // called when non-shift-clicked by a screwdriver
-    public void rotate() {
-        int relativeRotationIndex = Rotation.rotationTo(side, front);
-        relativeRotationIndex++;
-        if (relativeRotationIndex > 3) {
-            relativeRotationIndex = 0;
-        }
-        front = (byte) (Rotation.rotateSide(side, relativeRotationIndex));
-        if (BasicUtils.isServer(world())) {
-            updateLogic(false, true);
-            updateNextTick = true;
-        }
-    }
-
-    private byte[] returnedBundledCableStrength;
-
     @Override
     public byte[] getBundledCableStrength(int blockFace, int toDirection) {
         if (!hasBundledConnections) {
@@ -427,21 +425,19 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
             return null;
         }
 
-        if (!((GateLogic.WithBundledConnections) logic).isBundledConnection(rel)) {
+        if (!((GateLogic.WithBundledConnections) logic).connectsToBundled(rel)) {
             return null;
         }
 
-        if (returnedBundledCableStrength == null) {
-            returnedBundledCableStrength = new byte[16];
-        }
+        byte[] bundledOut = new byte[16];
 
         short bitmask = outputs[rel];
         for (int k = 0; k < 16; k++) {
-            returnedBundledCableStrength[k] = ((bitmask & 1) != 0) ? (byte) 255 : 0;
+            bundledOut[k] = ((bitmask & 1) != 0) ? (byte) 255 : 0;
             bitmask >>= 1;
         }
 
-        return returnedBundledCableStrength;
+        return bundledOut;
     }
 
     @Override
@@ -557,14 +553,10 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
             return false;
         }
         if (getLogic() != null) {
-            return getLogic().connectsToDirection(Rotator.absoluteToRelative(side, front, abs));
+            return getLogic().connectsToWire(Rotator.absoluteToRelative(side, front, abs));
         }
-        try {
-            GateLogic l = type.getLogicClass().newInstance();
-            return l.connectsToDirection(Rotator.absoluteToRelative(side, front, abs));
-        } catch (Throwable t) {
-            return false;
-        }
+        GateLogic l = type.createLogic();
+        return l.connectsToWire(Rotator.absoluteToRelative(side, front, abs));
     }
 
     @Override
@@ -602,7 +594,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     @Override
     public int getLightValue() {
         if (type != null) {
-            GateRenderBridge render = type.getRenderBridge();
+            GateRenderBridge render = type.createRenderBridge();
             int on = 0;
             if (render != null) {
                 on += render.torchState.length;
@@ -633,7 +625,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 
     @Override
     public void randomDisplayTick(Random ran) {
-        GateRenderBridge bridge = type.getRenderBridge();
+        GateRenderBridge bridge = type.createRenderBridge();
         bridge.set(getRenderState());
         for (int i = 0; i < bridge.torchState.length; i++) {
             if (!bridge.torchState[i]) {
@@ -671,7 +663,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     @Override
     public boolean connects(WirePart wire, int blockFace, int fromDirection) {
         if (wire instanceof BundledCablePart) {
-            if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).isBundledConnection(Rotator.absoluteToRelative(side, front, fromDirection^1))) {
+            if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).connectsToBundled(Rotator.absoluteToRelative(side, front, fromDirection ^ 1))) {
                 return true;
             }
         }
@@ -685,6 +677,6 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 
     @Override
     public boolean connectsToWireType(WirePart wire) {
-        return wire instanceof RedwirePart || wire instanceof BundledCablePart;
+        return wire instanceof RedwirePart || (hasBundledConnections && wire instanceof BundledCablePart);
     }
 }

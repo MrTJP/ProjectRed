@@ -19,7 +19,6 @@ import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.PartMap;
-import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;

@@ -3,22 +3,16 @@ package mrtjp.projectred.illumination;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
-import mrtjp.projectred.core.BasicRenderUtils;
-import mrtjp.projectred.core.PRColors;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.ForgeSubscribe;
 
-import org.bouncycastle.util.Arrays;
 import org.lwjgl.opengl.GL11;
 
 import codechicken.lib.render.CCRenderState;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
