@@ -9,6 +9,7 @@ in this mod is from Immibis's RedLogic.
 
 
 Setting up the dev environment:
+
 1) Set up your folder structure like this:
 ***
       projred
@@ -20,12 +21,41 @@ Setting up the dev environment:
       	\etc.
 ***
 2) CD to ProjectRed folder.
+
 3) Run this command:
 ***
 `ant fullfilesetup`
 ***
-4) After its done, everything should be set up. 
-5) Open eclipse and link the following sources:
+4) After its done, download the following files to the MCP lib directory, then link the libraries in eclipse (Rightclick on ‘Minecraft’ project, select ‘buildpath’, and under ‘libraries’ click ‘add external jar’.
+***
+     projred
+     \-build
+       \-forge
+         \-mcp
+           \-lib
+             \CodeChickenCore-dev x.x.x.x.jar
+             \NotEnoughItems-dev x.x.x.x.jar
+             \scala-compiler.jar
+             \CodeChickenLib-dev-1.6.2-x.x.x.x.jar
+             \ForgeMultipart-dev-1.6.2-x.x.x.x.jar
+***
+
+5) Also copy all those files to the mods directory in mcp:
+***
+     projred
+     \-build
+       \-forge
+         \-mcp
+           \-jars
+             \-mods
+               \CodeChickenCore-dev x.x.x.x.jar
+               \NotEnoughItems-dev x.x.x.x.jar
+               \scala-compiler.jar
+               \CodeChickenLib-dev-1.6.2-x.x.x.x.jar
+               \ForgeMultipart-dev-1.6.2-x.x.x.x.jar
+***
+
+6) Open eclipse and link the following sources:
 ***
      projred
      \-ProjectRed
@@ -33,16 +63,17 @@ Setting up the dev environment:
        \resources
        \dummy
 ***
-6) To create a test release, run:
+
+7) To create a test release, run:
 ***
  `ant testbuild`
 ***
+
 This will use your dev environment to reobfuscate, then restore the state back to development.
 
-7) The finished jar will be in:
+8) The finished jar will be in:
 ***
      projred
-     \-ProjectRed
-       \build
-         \dist
+     \-build
+       \dist
 ***
