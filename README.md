@@ -26,7 +26,7 @@ Setting up the dev environment:
 ***
 `ant fullfilesetup`
 ***
-4) After its done, download the following files to the MCP lib directory, then link the libraries in eclipse (Rightclick on ‘Minecraft’ project, select ‘buildpath’, and under ‘libraries’ click ‘add external jar’.
+4) After its done, download the following files to the MCP lib directory, then link the libraries in eclipse (Rightclick on `Minecraft` project, select `buildpath`, and under `libraries` tab click `add external jar`.
 ***
      projred
      \-build
