@@ -1,5 +1,4 @@
 package mrtjp.projectred.core;
-
 import static codechicken.nei.api.API.addSetRange;
 
 import java.util.Arrays;
