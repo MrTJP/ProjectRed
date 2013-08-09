@@ -39,6 +39,7 @@
 
 	<target name="cleanoldworkspace">
 		<delete dir="${mc.src.dir}\mrtjp" />
+		<delete dir="${mc.src.dir}\dan200" />
 		<delete dir="${mcp.dir}\reobf\minecraft" />
 	</target>
 
