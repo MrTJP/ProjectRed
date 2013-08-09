@@ -43,7 +43,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
  */
 @Mod(modid = Configurator.modId, name = Configurator.modName, version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.2]", 
 dependencies = 
-        "required-after:Forge@[@FORGE_VERSION@,);" +
+        "required-after:Forge@FORGE_VERSION@;" +
         "required-after:ForgeMultipart;" +
         "required-after:CodeChickenCore;" +
         "after:CCTurtle;" +

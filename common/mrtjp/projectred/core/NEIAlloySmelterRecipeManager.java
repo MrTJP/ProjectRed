@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 
 import mrtjp.projectred.expansion.AlloySmelterRecipe;
 import mrtjp.projectred.expansion.GuiAlloySmelter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
@@ -97,7 +98,7 @@ public class NEIAlloySmelterRecipeManager extends ShapedRecipeHandler {
         drawProgressBar(126, 7, 176, 0, 14, 14, 80, 3);
         drawProgressBar(102, 28, 176, 15, 13, 30, r.getBurnTime(), 1);
         drawProgressBar(102, 28, 176, 15, 25, 30, r.getBurnTime(), 0);
-        //gui.window.fontRenderer.drawString("" + r.getBurnTime(), 103, 53, 0x404040);
+        Minecraft.getMinecraft().fontRenderer.drawString("" + r.getBurnTime(), 103, 53, 0x404040);
     }
 
     @Override
