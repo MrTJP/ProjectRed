@@ -19,6 +19,7 @@ import net.minecraftforge.client.ForgeHooksClient;
 
 import org.lwjgl.opengl.GL11;
 
+import codechicken.core.ClientUtils;
 import codechicken.core.IGuiPacketSender;
 
 public class BasicGuiUtils {
@@ -372,7 +373,7 @@ public class BasicGuiUtils {
             if (ren.pulsate) {
                 renderItem.renderWithColor = false;
                 GL11.glEnable(GL11.GL_BLEND);
-                float op = ((float) Math.sin(ProjectRedTickHandler.instance.radianRotation) + 1f);
+                float op = ((float) Math.sin(ClientUtils.getRenderTime() * .25f));
                 op = Math.min(op, ren.maxPulse);
                 op = Math.max(op, ren.minPulse);
                 GL11.glColor4f(1f, 1f, 1f, op);

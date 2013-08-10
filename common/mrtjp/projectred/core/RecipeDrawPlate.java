@@ -18,8 +18,7 @@ public class RecipeDrawPlate implements IRecipe {
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             // TODO FIX THIS
         }
-        
-        return getRecipeOutput();
+        return null;
     }
 
     @Override
