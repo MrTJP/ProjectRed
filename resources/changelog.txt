@@ -1,4 +1,7 @@
 Change Log:
+v4.0.0pre.36
+- Fixed server/client startup crash.
+
 v4.0.0pre.35
 - Migrated to ForgeMultipart.
 - Bundled gates render properly.

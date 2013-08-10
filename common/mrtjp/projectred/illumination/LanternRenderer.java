@@ -40,9 +40,8 @@ public class LanternRenderer implements IItemRenderer {
     public static LanternRenderer instance = new LanternRenderer();
 
     public LanternRenderer() {
-        models = CCModel.parseObjModels(new ResourceLocation("projectred", "/textures/obj/lantern.obj"), 7, new InvertX());
+        models = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/lantern.obj"), 7, new InvertX());
         for (CCModel c : models.values()) {
-            c.computeNormals();
             c.apply(new Translation(.5, 0, .5));
             c.shrinkUVs(0.0005);
         }
