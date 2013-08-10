@@ -39,7 +39,7 @@ public class RotatedPartModel {
      * @param Icon
      */
     public RotatedPartModel(Map<String, CCModel> objModel, String objName, Icon icon) {
-        String baseObj = "/textures/obj/";
+        String baseObj = "textures/obj/";
         objPath = baseObj + objName;
         if (objModel == null) {
             models = CCModel.parseObjModels(new ResourceLocation("projectred", objPath), 7, new InvertX());

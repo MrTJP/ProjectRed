@@ -39,7 +39,7 @@ public class LampRenderer implements IItemRenderer {
     public static LampRenderer instance = new LampRenderer();
 
     public LampRenderer() {
-        models = CCModel.parseObjModels(new ResourceLocation("projectred", "/textures/obj/lamp.obj"), 7, new InvertX());
+        models = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/lamp.obj"), 7, new InvertX());
         for (CCModel c : models.values()) {
             c.shrinkUVs(0.0005);
         }

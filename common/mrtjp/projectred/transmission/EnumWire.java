@@ -13,10 +13,6 @@ import codechicken.lib.render.CCModel;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-// Damage value for wire items is the ordinal of one of these, but metadata in the world
-// is different, and depends on the TE class (for client sync purposes).
-// Metadata mapping is in CLASS_TO_META and META_TO_CLASS.
-
 public enum EnumWire {
     RED_ALLOY("Red alloy wire", RedAlloyWirePart.class, 2, 2, (255 / 2 + 75) << 16, "alloywire.obj", "jacketedalloy.obj", "redalloy"),
 
@@ -133,8 +129,8 @@ public enum EnumWire {
                 wireSprites[i] = reg.registerIcon("projectred:wires/" + wireSpritePaths[i]);
             }
         }
-        wireMap = CCModel.parseObjModels(new ResourceLocation("projectred", "/textures/obj/wiring/" + wireModelPath), 7, new InvertX());
-        jacketMap = CCModel.parseObjModels(new ResourceLocation("projectred", "/textures/obj/wiring/" + jacketModelPath), 7, new InvertX());
+        wireMap = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/wiring/" + wireModelPath), 7, new InvertX());
+        jacketMap = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/wiring/" + jacketModelPath), 7, new InvertX());
         for (CCModel m : wireMap.values()) {
             m.shrinkUVs(0.0005);
         }
