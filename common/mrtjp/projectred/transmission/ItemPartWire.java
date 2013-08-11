@@ -13,6 +13,7 @@ import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.JItemMultiPart;
+import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -41,12 +42,11 @@ public class ItemPartWire extends JItemMultiPart {
         if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) {
             return null;
         }
-        EnumWire w = EnumWire.VALID_WIRE[item.getItemDamage()];
-        try {
-            return (TMultiPart) w.wireClass.getConstructors()[0].newInstance(w, false, side ^ 1);
-        } catch (Throwable e) {
-            return null;
-        }
+        EnumWire type = EnumWire.VALID_WIRE[item.getItemDamage()];
+        WirePart w = (WirePart) MultiPartRegistry.createPart(type.wireType, false);
+        if(w != null)
+            w.side = (byte) (side^1);
+        return w;
     }
 
 

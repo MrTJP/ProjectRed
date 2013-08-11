@@ -7,6 +7,9 @@ import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.IconTransformation;
+import codechicken.lib.render.TextureUtils;
+import codechicken.lib.vec.Scale;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -14,9 +17,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class WireItemRenderer implements IItemRenderer {
 
     public final static WireItemRenderer instance = new WireItemRenderer();
-    private WireRenderAssistant wra = new WireRenderAssistant();
-
-
+    
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
         return true;
@@ -50,35 +51,16 @@ public class WireItemRenderer implements IItemRenderer {
 
     public void renderWireInventory(int meta, float x, float y, float z, float scale) {
         EnumWire type = EnumWire.VALID_WIRE[meta];
-        if (type == null) {
+        if (type == null)
             return;
-        }
-        wra = new WireRenderAssistant();
-        wra.x = x;
-        wra.y = y;
-        wra.z = z;
-        wra.side = 0;
-        wra.wireIcon = type.wireSprites[0];
-        wra.model = type.wireMap;
-        BasicRenderUtils.bindTerrainResource();
+        
+        TextureUtils.bindAtlas(0);
         CCRenderState.reset();
         CCRenderState.useNormals(true);
-        GL11.glPushMatrix();
-        GL11.glScalef(scale, scale, scale);
-        CCRenderState.startDrawing(7);
-        BasicRenderUtils.setFullColor();
+        CCRenderState.pullLightmap();
         CCRenderState.setColourOpaque(type.itemColour);
-        wra.connectsN = true;
-        wra.connectsS = true;
-        wra.connectsW = true;
-        wra.connectsE = true;
-        wra.connectsInsideConnectorN = true;
-        wra.connectsInsideConnectorS = true;
-        wra.connectsInsideConnectorW = true;
-        wra.connectsInsideConnectorE = true;
-        wra.isCenterCrossed = true;
-        wra.pushRender();
+        CCRenderState.startDrawing(7);
+        RenderWire.renderInv(type.thickness, new Scale(scale), type.wireSprites[0]);
         CCRenderState.draw();
-        GL11.glPopMatrix();
     }
 }

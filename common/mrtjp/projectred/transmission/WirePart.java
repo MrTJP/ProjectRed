@@ -1,12 +1,7 @@
 package mrtjp.projectred.transmission;
 
-import static codechicken.lib.vec.Rotation.sideRotations;
-import static codechicken.lib.vec.Vector3.center;
-
 import java.util.Arrays;
 
-import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CommandDebug;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -23,8 +18,9 @@ import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
-import codechicken.multipart.JCuboidPart;
+import codechicken.multipart.IRedstonePart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.PartMap;
@@ -44,385 +40,384 @@ import cpw.mods.fml.relauncher.SideOnly;
  * @author MrTJP
  * 
  */
-public abstract class WirePart extends JCuboidPart implements IConnectable, TFacePart, JNormalOcclusion {
+public abstract class WirePart extends TMultiPart implements IConnectable, TFacePart, JNormalOcclusion {
 
-    private EnumWire wireType;
-    protected boolean updateNextTick = false;
-    public int side;
-    public boolean isFirstTick = true;
-
-    // Cached connection status of all sides, stored as absolute
-    // ForgeDirections.
-    private boolean[] sideExternalConnections = new boolean[6];
-    private boolean[] sideInternalConnections = new boolean[6];
-    private boolean[] sideCorneredConnections = new boolean[6];
-
-    // True if this regular wire connects to a jacketed wire in this block.
-    protected boolean localJacketedConnection = false;
-
-    // If this is jacketed, connection mask is stored in
-    // sideExternalConnections.
-    protected boolean isJacketed = false;
-
-    public WirePart(EnumWire type, boolean isJacketedWire, int onside) {
-        wireType = type;
-        isJacketed = isJacketedWire;
-        side = onside;
+    public static Cuboid6[][] selectionBounds = new Cuboid6[3][6];
+    public static Cuboid6[][] occlusionBounds = new Cuboid6[3][6];
+    
+    static {
+        for(int t = 0; t < 3; t++) {
+            Cuboid6 selection = new Cuboid6(0, 0, 0, 1, (t+1)/8D, 1)
+                .expand(-0.005);//subtract the box a little because we'd like things like posts to get first hit
+            Cuboid6 occlusion = new Cuboid6(2/8D, 0, 2/8D, 6/8D, (t+1)/8D, 6/8D);
+            for(int s = 0; s < 6; s++) {
+                selectionBounds[t][s] = selection.copy().apply(Rotation.sideRotations[s].at(Vector3.center));
+                occlusionBounds[t][s] = occlusion.copy().apply(Rotation.sideRotations[s].at(Vector3.center));
+            }
+        }
+    }
+    
+    public byte side;
+    /**
+     * Currently split into 4 nybbles (from lowest)
+     * 0 = Corner connections (this wire should connect around a corner to something external)
+     * 1 = Straight connections (this wire should connect to something external)
+     * 2 = Internal connections (this wire should connect to something internal)
+     * 3 = Internal open connections (this wire is not blocked by a cover/edge part and *could* connect through side)
+     * bit 16 = connection to the centerpart
+     * 5 = Render corner connections. Like corner connections but set to low if the other wire part is smaller than this (they render to us not us to them)
+     */
+    public int connMap;
+    
+    public WirePart(int side) {
+        this.side = (byte) side;
     }
 
     @Override
     public void save(NBTTagCompound tag) {
         super.save(tag);
-        tag.setByte("type", (byte) wireType.ordinal());
-        tag.setByte("side", (byte) side);
-        tag.setBoolean("isjack", isJacketed);
-        for (int i = 0; i < 6; i++) {
-            tag.setBoolean("ext" + i, sideExternalConnections[i]);
-        }
-        for (int i = 0; i < 6; i++) {
-            tag.setBoolean("int" + i, sideInternalConnections[i]);
-        }
-        for (int i = 0; i < 6; i++) {
-            tag.setBoolean("cor" + i, sideCorneredConnections[i]);
-        }
-        tag.setBoolean("jack", localJacketedConnection);
+        tag.setByte("side", side);
+        tag.setInteger("connMap", connMap);
     }
 
     @Override
     public void load(NBTTagCompound tag) {
         super.load(tag);
-        int type = tag.getByte("type");
         side = tag.getByte("side");
-        isJacketed = tag.getBoolean("isjack");
-        if (type < 0 || type >= EnumWire.VALID_WIRE.length) {
-            wireType = EnumWire.RED_ALLOY;
-        } else {
-            wireType = EnumWire.VALID_WIRE[type];
-        }
-        for (int i = 0; i < 6; i++) {
-            sideExternalConnections[i] = tag.getBoolean("ext" + i);
-        }
-        for (int i = 0; i < 6; i++) {
-            sideInternalConnections[i] = tag.getBoolean("int" + i);
-        }
-        for (int i = 0; i < 6; i++) {
-            sideCorneredConnections[i] = tag.getBoolean("cor" + i);
-        }
-        localJacketedConnection = tag.getBoolean("jack");
-    }
-
-    @Override
-    public void update() {
-        if (BasicUtils.isClient(world())) {
-            isFirstTick = false;
-            return;
-        }
-        if (isFirstTick) {
-            isFirstTick = false;
-            computeConnections();
-            updateChange();
-        }
-        if (updateNextTick) {
-            updateNextTick = false;
-            updateChange();
-        }
-        super.update();
+        connMap = tag.getInteger("connMap");
     }
 
     @Override
     public void writeDesc(MCDataOutput packet) {
-        packet.writeByte(wireType.ordinal());
         packet.writeByte(side);
-        packet.writeBoolean(isJacketed ? true : false);
-        for (int i = 0; i < 6; i++) {
-            packet.writeBoolean(sideExternalConnections[i] ? true : false);
-        }
-        for (int i = 0; i < 6; i++) {
-            packet.writeBoolean(sideInternalConnections[i] ? true : false);
-        }
-        for (int i = 0; i < 6; i++) {
-            packet.writeBoolean(sideCorneredConnections[i] ? true : false);
-        }
-        packet.writeBoolean(localJacketedConnection ? true : false);
-
+        packet.writeInt(connMap);
     }
 
     @Override
     public void readDesc(MCDataInput packet) {
-        wireType = EnumWire.values()[packet.readByte()];
         side = packet.readByte();
-        isJacketed = packet.readBoolean();
-        for (int i = 0; i < 6; i++) {
-            sideExternalConnections[i] = packet.readBoolean();
-        }
-        for (int i = 0; i < 6; i++) {
-            sideInternalConnections[i] = packet.readBoolean();
-        }
-        for (int i = 0; i < 6; i++) {
-            sideCorneredConnections[i] = packet.readBoolean();
-        }
-        localJacketedConnection = packet.readBoolean();
-
-        updateNextTick = true;
+        connMap = packet.readInt();
     }
 
     public void updateChange() {
         tile().markRender();
         tile().markDirty();
-        if (BasicUtils.isServer(world())) {
-            sendDescUpdate();
-        }
-    }
-
-    public final EnumWire getWireType() {
-        return wireType;
     }
 
     @Override
     public void onPartChanged() {
-        notifyExtendedNeighbors();
-        computeConnections();
-        updateNextTick = true;
-    }
-
-    @Override
-    public void onRemoved() {
-        super.onRemoved();
-        notifyExtendedNeighbors();
-    }
-
-    @Override
-    public void onAdded() {
-        super.onAdded();
-        update();
-        notifyExtendedNeighbors();
-        updateNextTick = true;
+        if(!world().isRemote) {
+            boolean changed = updateInternalConnections();
+            if(updateOpenConnections())
+                changed|=updateExternalConnections();
+            if(changed) {
+                sendConnUpdate();
+                updatePowerState(true);
+            }
+        }
     }
 
     @Override
     public void onNeighborChanged() {
-        if (BasicUtils.isClient(world())) {
-            return;
-        }
-        if (!isJacketed) {
-            int x = x() + ForgeDirection.getOrientation(side).offsetX;
-            int y = y() + ForgeDirection.getOrientation(side).offsetY;
-            int z = z() + ForgeDirection.getOrientation(side).offsetZ;
-            if (!BasicWireUtils.canPlaceWireOnSide(world(), x, y, z, ForgeDirection.getOrientation(side ^ 1), false)) {
-                BasicUtils.dropItemFromLocation(world(), getItem(), false, null, side, 10, new BlockCoord(x(), y(), z()));
-                tile().remPart(this);
-            }
-        }
-        computeConnections();
-    }
-
-    protected void computeConnections() {
-        if (isFirstTick) {
-            return;
-        }
-        if (!isJacketed) { // Calculate all sides
-            boolean[] oldExt = sideExternalConnections.clone();
-            boolean[] oldInt = sideInternalConnections.clone();
-            boolean[] oldCor = sideCorneredConnections.clone();
-            boolean oldJack = localJacketedConnection;
-            sideExternalConnections = new boolean[6];
-            sideInternalConnections = new boolean[6];
-            sideCorneredConnections = new boolean[6];
-            for (int i = 0; i < 6; i++) {
-                sideExternalConnections[i] = computeConnectTo(i);
-                sideInternalConnections[i] = computeConnectInternallyTo(i);
-                if (sideInternalConnections[i]) {
-                    sideExternalConnections[i] = true;
-                }
-                sideCorneredConnections[i] = computeConnectCornerTo(i);
-                if (sideCorneredConnections[i]) {
-                    sideExternalConnections[i] = true;
-                }
-            }
-            localJacketedConnection = computeConnectToLocalJacketed();
-            if (oldJack != localJacketedConnection || !Arrays.equals(oldExt, sideExternalConnections) || !Arrays.equals(oldInt, sideInternalConnections) || !Arrays.equals(oldCor, sideCorneredConnections)) {
-                updateNextTick = true;
-            }
-        } else { // Calculate only jacketed connections
-            boolean[] oldExt = sideExternalConnections.clone();
-            for (int i = 0; i < 6; i++) {
-                sideExternalConnections[i] = computeJacketedConnectTo(i);
-            }
-            if (!Arrays.equals(oldExt, sideExternalConnections)) {
-                updateNextTick = true;
+        if (!world().isRemote) {
+            if(dropIfCantStay())
+                return;
+            
+            if(updateExternalConnections()) {
+                sendConnUpdate();
+                updatePowerState(true);
             }
         }
     }
-
-    public boolean computeConnectTo(int absDir) {
-        if ((side & 6) == (absDir & 6)) {
-            return false;
+    
+    public void sendConnUpdate() {
+        tile().getWriteStream(this).writeByte(0).writeInt(connMap);
+    }
+    
+    public void read(MCDataInput packet) {
+        read(packet, packet.readUByte());
+    }
+    
+    public void read(MCDataInput packet, int switch_key) {
+        if(switch_key == 0) {
+            connMap = packet.readInt();
+            tile().markRender();
         }
-
-        // TODO add edge open check here
-
-        int x = x(), y = y(), z = z();
-        x += ForgeDirection.VALID_DIRECTIONS[absDir].offsetX;
-        y += ForgeDirection.VALID_DIRECTIONS[absDir].offsetY;
-        z += ForgeDirection.VALID_DIRECTIONS[absDir].offsetZ;
-        TileMultipart t = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
-        if (t != null) {
-            TMultiPart tp = t.partMap(side);
-            if (tp instanceof IConnectable) {
-                return ((IConnectable) tp).connects(this, side, absDir);
-            }
-        } else {
-            return getExternalConnectionOveride(absDir);
+    }
+    
+    @Override
+    public void onChunkLoad()//do nothing on chunk load, we shouldn't have changed between saves
+    {
+    }
+    
+    @Override
+    public void onWorldJoin()//when we're moved by a frame or something
+    {
+        onNeighborChanged();
+    }
+    
+    public boolean canStay()
+    {
+        BlockCoord pos = new BlockCoord(getTile()).offset(side);
+        return BasicWireUtils.canPlaceWireOnSide(world(), pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side ^ 1), false);
+    }
+    
+    public boolean dropIfCantStay()
+    {
+        if(!canStay())
+        {
+            drop();
+            return true;
         }
         return false;
+    }
+
+    public void drop()
+    {
+        TileMultipart.dropItem(getItem(), world(), Vector3.fromTileEntityCenter(getTile()));
+        tile().remPart(this);
+    }
+    
+    /**
+     * Recalculates connections to blocks outside this sapce
+     * @return true if a new connection was added or one was removed
+     */
+    protected boolean updateExternalConnections() {
+        int newConn = 0;
+        for(int r = 0; r < 4; r++)
+        {
+            if(!maskOpen(r))
+                continue;
+            
+            if(connectStraight(r))
+                newConn|=0x10<<r;
+            else {
+                int cnrMode = connectCorner(r);
+                if(cnrMode != 0) {
+                    newConn|=1<<r;
+                    if(cnrMode == 2)
+                        newConn|=0x100000<<r;//render flag
+                }
+            }
+        }
+        
+        if(newConn != (connMap & 0xF000FF))
+        {
+            int diff = connMap^newConn;
+            connMap = (connMap&~0xF000FF)|newConn;
+            
+            //notify corner disconnections
+            for(int r = 0; r < 4; r++)
+                if((diff & 1<<r) != 0)
+                    notifyCornerChange(r);
+            
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Recalculates connections to other parts within this space
+     * @return true if a new connection was added or one was removed
+     */
+    protected boolean updateInternalConnections() {
+        int newConn = 0;
+        for(int r = 0; r < 4; r++)
+            if(connectInternal(r))
+                newConn|=0x100<<r;
+        
+        if(connectCenter())
+            newConn|=0x10000;
+        
+        if(newConn != (connMap & 0x10F00))
+        {
+            connMap = (connMap&~0x10F00)|newConn;
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Recalculates connections that can be made to other parts outside of this space
+     * @return true if external connections should be recalculated
+     */
+    protected boolean updateOpenConnections() {
+        int newConn = 0;
+        for(int r = 0; r < 4; r++)
+            if(connectionOpen(r))
+                newConn|=0x1000<<r;
+        
+        if(newConn != (connMap & 0xF000))
+        {
+            connMap = (connMap&~0xF000)|newConn;
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Tells this wire to recalculate it's power state from it's adjoining connections and propogate it's changes to other connected wires
+     * @param force If set to true, this wire should tell others to re-evaluate themselves regardless of whether it's own power state changed.
+     */
+    protected abstract void updatePowerState(boolean force);
+
+    public boolean connectionOpen(int r) {
+        int absDir = Rotation.rotateSide(side, r);
+        return (((TRedstoneTile)tile()).openConnections(absDir) & 1<<Rotation.rotationTo(absDir&6, side)) != 0;
+    }
+
+    public boolean connectStraight(int r) {
+        int absDir = Rotation.rotateSide(side, r);
+        
+        BlockCoord pos = new BlockCoord(getTile());
+        pos.offset(absDir);
+        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        if (t != null) {
+            TMultiPart tp = t.partMap(side);
+            if (tp instanceof IConnectable)
+                return ((IConnectable) tp).connect(this, (r+2)%4);
+        }
+        
+        return getExternalConnectionOveride(absDir);
     }
 
     public abstract boolean getExternalConnectionOveride(int absDir);
 
-    public boolean computeConnectCornerTo(int absDir) {
-        if ((side & 6) == (absDir & 6)) {
-            return false;
-        }
-        
-        // TODO check edge here
-        
-        int x = x(), y = y(), z = z();
-        x += ForgeDirection.VALID_DIRECTIONS[absDir].offsetX;
-        y += ForgeDirection.VALID_DIRECTIONS[absDir].offsetY;
-        z += ForgeDirection.VALID_DIRECTIONS[absDir].offsetZ;
-
-        // TODO check the other edge here.
-        
-        x += ForgeDirection.VALID_DIRECTIONS[side].offsetX;
-        y += ForgeDirection.VALID_DIRECTIONS[side].offsetY;
-        z += ForgeDirection.VALID_DIRECTIONS[side].offsetZ;
-
-        TileMultipart t = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
-        if (t != null) {
-            TMultiPart tp = t.partMap(absDir ^ 1);
-            if (tp instanceof IConnectable) {
-                return ((IConnectable) tp).connectsAroundCorner(this, absDir ^ 1, side ^ 1);
-            }
-        }
-        return false;
-    }
-
-    public boolean computeConnectInternallyTo(int absDir) {
-        if ((side & 6) == (absDir & 6)) {
-            return false;
-        }
-
-        if (tile() instanceof TRedstoneTile) {
-            if (!((TRedstoneTile) tile()).redstoneConductionE(PartMap.edgeBetween(side, absDir))) {
-                return false;
-            }
-        }
-
-        TMultiPart t = tile().partMap(absDir);
-        if (t instanceof IConnectable) {
-            return ((IConnectable) t).connectsToWireType(this);
-        }
-        return false;
-    }
-
-    public boolean computeConnectToLocalJacketed() {
-        TMultiPart t = tile().partMap(PartMap.CENTER.i);
-        if (t instanceof IConnectable) {
-            return (((IConnectable) t).connects(this, -1, side));
-        }
-        return false;
-    }
-
-    public boolean computeJacketedConnectTo(int absDir) {
-        TMultiPart t = tile().partMap(absDir);
-        if (t instanceof IConnectable) {
-            return (((IConnectable) t).connects(this, -1, absDir ^ 1));
-        } else {
-            // TODO Face open check to absDir here
-            int x = x() + ForgeDirection.VALID_DIRECTIONS[absDir].offsetX;
-            int y = y() + ForgeDirection.VALID_DIRECTIONS[absDir].offsetY;
-            int z = z() + ForgeDirection.VALID_DIRECTIONS[absDir].offsetZ;
-            TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
-            if (tile != null) {
-                TMultiPart p = tile.partMap(PartMap.CENTER.i);
-                if (p instanceof IConnectable) {
-                    return ((IConnectable) p).connects(this, -1, absDir ^ 1);
-                }
-            } else {
-                return getExternalConnectionOveride(absDir);
-            }
-        }
-        return false;
-    }
-
-    /** START IConnectable **/
-    // IConnectables are called when building connection arrays.
-    // Basically used to check for anything blocking the direction.
-    @Override
-    public boolean connects(WirePart wire, int blockFace, int fromDirection) {
-        if (!connectsToWireType(wire) || !wire.connectsToWireType(this)) {
-            return false;
-        }
-        if (blockFace > -1) {
-            // TODO Edge open checks here
-        } else {
-            // TODO Jacketed face checks here
-        }
-        return true;
-    }
-
-    @Override
-    public boolean connectsAroundCorner(WirePart wire, int blockFace, int fromDirection) {
-        return connects(wire, blockFace, fromDirection);
-    }
-
-    @Override
-    public boolean connectsToWireType(WirePart wire) {
-        return wire.getWireType() == this.wireType;
-    }
-
-    /** END IConnectable **/
-
-    // mask checks are called usually by renders, etc.
-    public boolean maskConnects(int absDir) {
-        return sideExternalConnections[absDir];
-    }
-
-    public boolean maskConnectsInternally(int absDir) {
-        return sideInternalConnections[absDir];
-    }
-
-    public boolean maskConnectsAroundCorner(int absDir) {
-        return sideCorneredConnections[absDir];
-    }
-
-    public boolean maskConnectsJacketed(int absDir) {
-        return isJacketed && sideExternalConnections[absDir];
-    }
-
     /**
-     * Notifies neighbours one or two blocks away, in the same pattern as most
-     * redstone updates.
+     * Return a corner connection state.
+     * 0 = No connection
+     * 1 = Physical connection
+     * 2 = Render connection
      */
-    public void notifyExtendedNeighbors() {
-        world().notifyBlocksOfNeighborChange(x(), y(), z(), tile().getBlockType().blockID);
-        world().notifyBlocksOfNeighborChange(x() + 1, y(), z(), tile().getBlockType().blockID);
-        world().notifyBlocksOfNeighborChange(x() - 1, y(), z(), tile().getBlockType().blockID);
-        world().notifyBlocksOfNeighborChange(x(), y() + 1, z(), tile().getBlockType().blockID);
-        world().notifyBlocksOfNeighborChange(x(), y() - 1, z(), tile().getBlockType().blockID);
-        world().notifyBlocksOfNeighborChange(x(), y(), z() + 1, tile().getBlockType().blockID);
-        world().notifyBlocksOfNeighborChange(x(), y(), z() - 1, tile().getBlockType().blockID);
+    public int connectCorner(int r) {
+        int absDir = Rotation.rotateSide(side, r);
+        
+        BlockCoord pos = new BlockCoord(getTile());
+        pos.offset(absDir);
+        
+        if(!canConnectThroughCorner(pos, absDir^1, side))
+            return 0;
+        
+        pos.offset(side);
+        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        if (t != null) {
+            TMultiPart tp = t.partMap(absDir^1);
+            if (tp instanceof IConnectable) {
+                boolean b = ((IConnectable) tp).connectCorner(this, Rotation.rotationTo(absDir^1, side^1));
+                if(b) {
+                    if(tp instanceof WirePart && ((WirePart)tp).getThickness() < getThickness())//let them connect to us
+                        return 1;
+                    
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    }
+    
+    public boolean canConnectThroughCorner(BlockCoord pos, int side1, int side2) {
+        if(world().isAirBlock(pos.x, pos.y, pos.z))
+            return true;
+        
+        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        if(t != null)
+            return t.partMap(side1) == null && t.partMap(side2) == null && t.partMap(PartMap.edgeBetween(side1, side2)) == null;
+        
+        return false;
+    }
+    
+    public boolean connectInternal(int r) {
+        int absDir = Rotation.rotateSide(side, r);
+        
+        if(tile().partMap(PartMap.edgeBetween(absDir, side)) != null)
+            return false;
+        
+        TMultiPart tp = tile().partMap(absDir);
+        if (tp instanceof IConnectable)
+            return ((IConnectable) tp).connectInternal(this, Rotation.rotationTo(absDir, side));
+        if (tp instanceof IRedstonePart)
+            return ((IRedstonePart) tp).canConnectRedstone(side);
+        return false;
     }
 
-    public int getVisualWireColour() {
-        return 0xFFFFFF;
+    public boolean connectCenter() {
+        TMultiPart t = tile().partMap(6);
+        if (t instanceof IConnectable)
+            return ((IConnectable) t).connect(this, -1);
+        
+        return false;
+    }
+    
+    @Override
+    public boolean connect(WirePart wire, int r)
+    {
+        if(canConnectToType(wire, r) && maskOpen(r))
+        {
+            int oldConn = connMap;
+            connMap|=0x10<<r;
+            if(oldConn != connMap)
+                sendConnUpdate();
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean connectCorner(WirePart wire, int r)
+    {
+        if(canConnectToType(wire, r) && maskOpen(r))
+        {
+            int oldConn = connMap;
+            connMap|=0x1<<r;
+            if(wire.getThickness() >= getThickness())//render connection
+                connMap|=0x100000<<r;
+                
+            if(oldConn != connMap)
+                sendConnUpdate();
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean connectInternal(WirePart wire, int r)
+    {
+        if(canConnectToType(wire, r))
+        {
+            int oldConn = connMap;
+            connMap|=0x100<<r;
+            if(oldConn != connMap)
+                sendConnUpdate();
+            return true;
+        }
+        return false;
+    }
+    
+    public void notifyCornerChange(int r) {
+        int absDir = Rotation.rotateSide(side, r);
+        
+        BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side);
+        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, getTile().getBlockType().blockID);
     }
 
-    public Icon getSpecialIconForRender() {
-        return null;
+    public void notifyStraightChange(int r) {
+        int absDir = Rotation.rotateSide(side, r);
+        
+        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
+        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, getTile().getBlockType().blockID);
     }
 
-    protected abstract  boolean debug(EntityPlayer ply);
+    public abstract boolean canConnectToType(WirePart wire, int r);
+    
+    public boolean maskConnects(int r) {
+        return (connMap & 0x111 << r) != 0;
+    }
+    
+    public boolean maskOpen(int r) {
+        return (connMap & 0x1000 << r) != 0;
+    }
+    
+    protected abstract boolean debug(EntityPlayer ply);
 
     protected void debugEffect_bonemeal() {
         world().playAuxSFX(2005, x(), y(), z(), 0);
@@ -447,10 +442,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
     }
 
     public ItemStack getItem() {
-        if (isJacketed) {
-            return new ItemStack(ProjectRed.itemPartJacketedWire, 1, wireType.ordinal());
-        }
-        return new ItemStack(ProjectRed.itemPartWire, 1, wireType.ordinal());
+        return EnumWire.RED_ALLOY.getItemStack();
     }
 
     @Override
@@ -465,43 +457,12 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
     @Override
     public int getSlotMask() {
-        return (1 << (!isJacketed ? side : PartMap.CENTER.i));
-    }
-
-    @Override
-    public Cuboid6 getBounds() {
-        if (isJacketed) {
-            return getJacketBounds();
-        }
-        Cuboid6 base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D, wireType.thickness, 8 / 8D);
-        return base.transform(sideRotations[side].at(center));
-    }
-
-    public Cuboid6 getJacketBounds() {
-        return new Cuboid6(4 / 16D, 4 / 16D, 4 / 16D, 12 / 16D, 12 / 16D, 12 / 16D);
-    }
-
-    @Override
-    public Iterable<Cuboid6> getCollisionBoxes() {
-        if (isJacketed) {
-            Cuboid6 base;
-            base = getJacketBounds();
-            return Arrays.asList(base);
-        } else {
-            return Arrays.asList();
-        }
+        return 1<<side;
     }
 
     @Override
     public Iterable<IndexedCuboid6> getSubParts() {
-        Cuboid6 base;
-        if (isJacketed) {
-            base = getJacketBounds();
-        } else {
-            base = new Cuboid6(0 / 8D, 0, 0 / 8D, 8 / 8D, wireType.thickness, 8 / 8D);
-            base.transform(sideRotations[side].at(center));
-        }
-        return Arrays.asList(new IndexedCuboid6(0, base));
+        return Arrays.asList(new IndexedCuboid6(0, selectionBounds[getThickness()][side]));
     }
 
     @Override
@@ -511,14 +472,7 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
 
     @Override
     public Iterable<Cuboid6> getOcclusionBoxes() {
-        Cuboid6 base;
-        if (isJacketed) {
-            base = getJacketBounds();
-        } else {
-            base = new Cuboid6(4 / 16D, 0 / 16D, 4 / 16D, 12 / 16D, 4 / 16D, 12 / 16D);
-            base.transform(sideRotations[side].at(center));
-        }
-        return Arrays.asList(base);
+        return Arrays.asList(occlusionBounds[getThickness()][side]);
     }
 
     @Override
@@ -532,11 +486,6 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
     }
 
     @Override
-    public String getType() {
-        return wireType.name;
-    }
-
-    @Override
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
         if (CommandDebug.WIRE_READING) {
             return debug(player);
@@ -545,62 +494,56 @@ public abstract class WirePart extends JCuboidPart implements IConnectable, TFac
     }
 
     public void renderStatic(RenderBlocks r) {
-        WireRenderAssistant wra = new WireRenderAssistant();
-        wra.x = x();
-        wra.y = y();
-        wra.z = z();
-        wra.renderBlocks = r;
-        wra.model = getWireType().wireMap;
-        wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
-        BasicRenderUtils.setFullColor();
-        BasicRenderUtils.bindTerrainResource();
         CCRenderState.reset();
         CCRenderState.setBrightness(world(), x(), y(), z());
-        CCRenderState.setColourOpaque(getVisualWireColour());
-        wra.side = side;
-        wra.setWireRenderState(this);
-        wra.pushRender();
-        BasicRenderUtils.setFullColor();
+        CCRenderState.setColour(getColour());
+        RenderWire.render(this);
+        CCRenderState.setColour(-1);
     }
-
-    public void renderJacketStatic(RenderBlocks r) {
-        WireRenderAssistant wra = new WireRenderAssistant();
-        wra.x = x();
-        wra.y = y();
-        wra.z = z();
-        wra.renderBlocks = r;
-        wra.model = getWireType().jacketMap;
-        wra.wireIcon = (getSpecialIconForRender() == null ? getWireType().wireSprites[0] : getSpecialIconForRender());
-        wra.side = side;
-        wra.setJacketRender(this);
-        BasicRenderUtils.setFullColor();
-        BasicRenderUtils.bindTerrainResource();
-        CCRenderState.reset();
-        CCRenderState.setBrightness(world(), x(), y(), z());
-        wra.pushJacketFrameRender();
-        CCRenderState.setColourOpaque(getVisualWireColour());
-        wra.pushJacketWireRender();
-        BasicRenderUtils.setFullColor();
+    
+    public int getThickness() {
+        return 0;
     }
-
+    
+    @SideOnly(Side.CLIENT)
+    public Icon getIcon() {
+        return EnumWire.RED_ALLOY.wireSprites[0];
+    }
+    
+    public int getColour() {
+        return -1;
+    }
+    
     @Override
     @SideOnly(Side.CLIENT)
     public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
-        if (pass == 0) {
-            if (isJacketed) {
-                renderJacketStatic(null);
-            } else {
-                renderStatic(null);
-            }
-        }
+        if (pass == 0)
+            renderStatic(null);
     }
 
     @Override
     public void drawBreaking(RenderBlocks r) {
-        if (isJacketed) {
-            renderJacketStatic(r);
-        } else {
-            renderStatic(r);
+        renderStatic(r);
+    }
+    
+    public EnumWire getWireType() {
+        return null;
+    }
+    
+    @Override
+    public void onRemoved() {
+        super.onRemoved();
+        
+        if(!world().isRemote) {
+            for(int r = 0; r < 4; r++)
+                if(maskConnects(r)) {
+                    if((connMap & 1<<r) != 0)
+                        notifyCornerChange(r);
+                    else if((connMap & 0x10<<r) != 0)
+                        notifyStraightChange(r);
+                }
         }
     }
+    
+    
 }

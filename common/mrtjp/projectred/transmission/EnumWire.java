@@ -18,8 +18,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 // Metadata mapping is in CLASS_TO_META and META_TO_CLASS.
 
 public enum EnumWire {
-    RED_ALLOY("Red alloy wire", RedAlloyWirePart.class, 2, 2, (255 / 2 + 75) << 16, "alloywire.obj", "jacketedalloy.obj", "redalloy"),
-
+    RED_ALLOY("Red alloy wire", "pr_redwire", 0, 0xC80000, "redalloy");/*,
+    
     INSULATED_0("White insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/whiteoff", "insulated/whiteon"),
     INSULATED_1("Orange insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/orangeoff", "insulated/orangeon"),
     INSULATED_2("Magenta insulated wire", InsulatedRedAlloyPart.class, 3, 4, "insulatedwire.obj", "jacketedinsulated.obj", "insulated/magentaoff", "insulated/magentaon"),
@@ -54,29 +54,27 @@ public enum EnumWire {
     BUNDLED_13("Green Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/green"),
     BUNDLED_14("Red Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/red"),
     BUNDLED_15("Black Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/black"), 
-    ;
+    ;*/
 
     public static final int PLAIN_RED_ALLOY_META = 0;
     public static final int INSULATED_RED_ALLOY_META = 1;
     public static final int BUNDLED_META = 2;
 
     public static EnumWire[] VALID_WIRE = values();
-    public static EnumWire[] INSULATED_WIRE = { INSULATED_0, INSULATED_1, INSULATED_2, INSULATED_3, INSULATED_4, INSULATED_5, INSULATED_6, INSULATED_7, INSULATED_8, INSULATED_9, INSULATED_10, INSULATED_11, INSULATED_12, INSULATED_13, INSULATED_14, INSULATED_15, };
-    public static EnumWire[] BUNDLED_WIRE = { BUNDLED_N, BUNDLED_0, BUNDLED_1, BUNDLED_2, BUNDLED_3, BUNDLED_4, BUNDLED_5, BUNDLED_6, BUNDLED_7, BUNDLED_8, BUNDLED_9, BUNDLED_10, BUNDLED_11, BUNDLED_12, BUNDLED_13, BUNDLED_14, BUNDLED_15 };
+    //public static EnumWire[] INSULATED_WIRE = { INSULATED_0, INSULATED_1, INSULATED_2, INSULATED_3, INSULATED_4, INSULATED_5, INSULATED_6, INSULATED_7, INSULATED_8, INSULATED_9, INSULATED_10, INSULATED_11, INSULATED_12, INSULATED_13, INSULATED_14, INSULATED_15, };
+    //public static EnumWire[] BUNDLED_WIRE = { BUNDLED_N, BUNDLED_0, BUNDLED_1, BUNDLED_2, BUNDLED_3, BUNDLED_4, BUNDLED_5, BUNDLED_6, BUNDLED_7, BUNDLED_8, BUNDLED_9, BUNDLED_10, BUNDLED_11, BUNDLED_12, BUNDLED_13, BUNDLED_14, BUNDLED_15 };
 
     public final String name;
-    public final Class<? extends WirePart> wireClass;
+    public final String wireType;
     public final Class<? extends WirePart> jacketedClass;
     
+    public final int thickness;
     public final int itemColour;
-    public final double thickness, width;
-
+    
     // Rendering info
     public Icon[] wireSprites;
     public final String[] wireSpritePaths;
-    public final String wireModelPath;
     public final String jacketModelPath;
-    public Map<String, CCModel> wireMap;
     public Map<String, CCModel> jacketMap;
 
     public static final String oreDictDefinition = "projredWire";
@@ -86,28 +84,24 @@ public enum EnumWire {
 
     public int meta = this.ordinal();
 
-    private EnumWire(String name, Class<? extends WirePart> wireClazz, Class<? extends WirePart> jacketedClazz, int thicknessPixels, int widthPixels, int itemColour, String objPathWire, String objPathJacket, String... textures) {
+    private EnumWire(String name, String wireType, Class<? extends WirePart> jacketedClazz, 
+            int thickness, int itemColour, String objPathJacket, String... textures) {
         this.name = name;
-        this.wireClass = wireClazz;
+        this.wireType = wireType;
         this.jacketedClass = jacketedClazz;
-        this.thickness = thicknessPixels / 16.0;
-        this.width = widthPixels / 16.0;
+        this.thickness = thickness;
         this.itemColour = itemColour;
-        wireModelPath = objPathWire;
         jacketModelPath = objPathJacket;
         wireSpritePaths = textures;
         wireSprites = new Icon[textures.length];
     }
-    private EnumWire(String name, Class<? extends WirePart> wireClazz, int thicknessPixels, int widthPixels, int itemColour, String objPathWire, String objPathJacket, String... textures) {
-        this(name, wireClazz, wireClazz, thicknessPixels, widthPixels, itemColour, objPathWire, objPathJacket, textures);
-    }
-
-    private EnumWire(String name, Class<? extends WirePart> wireClazz, int thicknessPixels, int widthPixels, String objPath, String objPathJacket, String... textures) {
-        this(name, wireClazz, thicknessPixels, widthPixels, 0xFFFFFF, objPath, objPathJacket, textures);
+    
+    private EnumWire(String name, String wireType, int thickness, int itemColour, String... textures) {
+        this(name, wireType, null, thickness, itemColour, null, textures);
     }
 
     public boolean hasJacketedForm() {
-        return true;
+        return jacketedClass != null;
     }
 
     @SideOnly(Side.CLIENT)
@@ -118,13 +112,10 @@ public enum EnumWire {
                 wireSprites[i] = reg.registerIcon("projectred:wires/" + wireSpritePaths[i]);
             }
         }
-        wireMap = CCModel.parseObjModels(new ResourceLocation("projectred", "/textures/obj/wiring/" + wireModelPath), 7, new InvertX());
-        jacketMap = CCModel.parseObjModels(new ResourceLocation("projectred", "/textures/obj/wiring/" + jacketModelPath), 7, new InvertX());
-        for (CCModel m : wireMap.values()) {
-            m.shrinkUVs(0.0005);
-        }
-        for (CCModel m : jacketMap.values()) {
-            m.shrinkUVs(0.0005);
+        if(hasJacketedForm()) {
+            jacketMap = CCModel.parseObjModels(new ResourceLocation("projectred", "/textures/obj/wiring/" + jacketModelPath), 7, new InvertX());
+            for (CCModel m : jacketMap.values())
+                m.shrinkUVs(0.0005);
         }
     }
 
@@ -147,15 +138,6 @@ public enum EnumWire {
         return new ItemStack(ProjectRed.itemPartJacketedWire, i, meta);
     }
 
-    public static EnumWire getTypeByName(String name) {
-        for (EnumWire w : VALID_WIRE) {
-            if (w.name.matches(name)) {
-                return w;
-            }
-        }
-        return null;
-    }
-
     public static void initOreDictDefinitions() {
         for (EnumWire w : EnumWire.VALID_WIRE) {
             OreDictionary.registerOre(oreDictDefinition, w.getItemStack());
@@ -163,11 +145,11 @@ public enum EnumWire {
                 OreDictionary.registerOre(oreDictDefinitionJacketed, w.getJacketedItemStack());
             }
         }
-        for (EnumWire w : EnumWire.INSULATED_WIRE) {
+        /*for (EnumWire w : EnumWire.INSULATED_WIRE) {
             OreDictionary.registerOre(oreDictDefinitionInsulated, w.getItemStack());
         }
         for (EnumWire w : EnumWire.BUNDLED_WIRE) {
             OreDictionary.registerOre(oreDictDefinitionBundled, w.getItemStack());
-        }
+        }*/
     }
 }
