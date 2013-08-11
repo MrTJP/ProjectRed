@@ -11,9 +11,10 @@ public class TransmissionClientProxy extends TransmissionProxy {
     public void init() {
         for (EnumWire w : EnumWire.VALID_WIRE) {
             LanguageRegistry.addName(w.getItemStack(), w.name);
-            LanguageRegistry.addName(w.getJacketedItemStack(), "Jacketed " + w.name);
+            if(w.hasJacketedForm())
+                LanguageRegistry.addName(w.getJacketedItemStack(), "Jacketed " + w.name);
         }
         MinecraftForgeClient.registerItemRenderer(itemPartWire.itemID, WireItemRenderer.instance);
-        MinecraftForgeClient.registerItemRenderer(itemPartJacketedWire.itemID, JacketedWireItemRenderer.instance);
+        //MinecraftForgeClient.registerItemRenderer(itemPartJacketedWire.itemID, JacketedWireItemRenderer.instance);
     }
 }

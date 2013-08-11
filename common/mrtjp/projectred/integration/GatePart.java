@@ -10,7 +10,7 @@ import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.integration.GateLogic.WorldStateBound;
 import mrtjp.projectred.transmission.BasicWireUtils;
-import mrtjp.projectred.transmission.BundledCablePart;
+//import mrtjp.projectred.transmission.BundledCablePart;
 import mrtjp.projectred.transmission.IBundledEmitter;
 import mrtjp.projectred.transmission.IBundledUpdatable;
 import mrtjp.projectred.transmission.IConnectable;
@@ -669,22 +669,22 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     /** END RENDERSTUFF **/
 
     @Override
-    public boolean connects(WirePart wire, int blockFace, int fromDirection) {
-        if (wire instanceof BundledCablePart) {
+    public boolean connect(WirePart wire, int side) {
+        /*if (wire instanceof BundledCablePart) {
             if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).isBundledConnection(Rotator.absoluteToRelative(side, front, fromDirection^1))) {
                 return true;
             }
-        }
-        return wire instanceof RedwirePart && canConnectRedstone(fromDirection ^ 1);
+        }*/
+        return wire instanceof RedwirePart && getLogic().connectsToDirection(side);
     }
-
+    
     @Override
-    public boolean connectsAroundCorner(WirePart wire, int blockFace, int fromDirection) {
-        return false;
+    public boolean connectCorner(WirePart wire, int side) {
+        return connect(wire, side);
     }
-
+    
     @Override
-    public boolean connectsToWireType(WirePart wire) {
-        return wire instanceof RedwirePart || wire instanceof BundledCablePart;
+    public boolean connectInternal(WirePart wire, int side) {
+        return connect(wire, side);
     }
 }
