@@ -18,30 +18,7 @@ public class BasicWireUtils {
     public static final int BACK = 1;
     public static final int LEFT = 2;
     public static final int RIGHT = 3;
-
-
-
-    /**
-     * Used to prevent 2 disabled wires on opposite sides of a block from
-     * keeping eachother on through a strong block signal.
-     */
-    private static Field wiresProvidePower = BlockRedstoneWire.class.getDeclaredFields()[0];
-    static {
-        try {
-            wiresProvidePower.setAccessible(true);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static boolean wiresProvidePower() {
-        try {
-            return wiresProvidePower.getBoolean(Block.redstoneWire);
-        } catch (Throwable t) {
-            return false;
-        }
-    }
-
+    
     public static boolean canPlaceWireOnSide(World w, int x, int y, int z, ForgeDirection side, boolean _default) {
         if (!w.blockExists(x, y, z)) {
             return _default;

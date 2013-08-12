@@ -266,7 +266,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 
     public void updateChange() {
         tile().markDirty();
-        tile().notifyPartChange();
+        tile().notifyPartChange(this);
         tile().markRender();
         nextUpdateIsFromSelf = true;
         notifyExtendedNeighbors();
@@ -498,7 +498,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     }
 
     @Override
-    public void onPartChanged() {
+    public void onPartChanged(TMultiPart part) {
         checkSupport();
         if (BasicUtils.isClient(world()))
             return;

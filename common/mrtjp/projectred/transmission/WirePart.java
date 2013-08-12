@@ -40,7 +40,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * @author MrTJP
  * 
  */
-public abstract class WirePart extends TMultiPart implements IConnectable, TFacePart, JNormalOcclusion {
+public abstract class WirePart extends TMultiPart implements IConnectable, TFacePart, JNormalOcclusion, IWirePart {
 
     public static Cuboid6[][] selectionBounds = new Cuboid6[3][6];
     public static Cuboid6[][] occlusionBounds = new Cuboid6[3][6];
@@ -105,14 +105,17 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     }
 
     @Override
-    public void onPartChanged() {
-        if(!world().isRemote) {
+    public void onPartChanged(TMultiPart part) {
+        if(!world().isRemote && part != this) {
             boolean changed = updateInternalConnections();
             if(updateOpenConnections())
                 changed|=updateExternalConnections();
             if(changed) {
                 sendConnUpdate();
-                updatePowerState(true);
+                updateAndPropogate(null, true);
+            }
+            else {
+                updateAndPropogate(null, false);
             }
         }
     }
@@ -125,7 +128,10 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             
             if(updateExternalConnections()) {
                 sendConnUpdate();
-                updatePowerState(true);
+                updateAndPropogate(null, true);
+            }
+            else {
+                updateAndPropogate(null, false);
             }
         }
     }
@@ -142,6 +148,18 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         if(switch_key == 0) {
             connMap = packet.readInt();
             tile().markRender();
+        }
+    }
+    
+    @Override
+    public void onAdded() {
+        if(!world().isRemote) {
+            updateOpenConnections();
+            boolean changed = updateInternalConnections() || updateExternalConnections();
+            if(changed) {
+                sendConnUpdate();
+                updateAndPropogate(null, false);
+            }
         }
     }
     
@@ -255,12 +273,6 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         return false;
     }
     
-    /**
-     * Tells this wire to recalculate it's power state from it's adjoining connections and propogate it's changes to other connected wires
-     * @param force If set to true, this wire should tell others to re-evaluate themselves regardless of whether it's own power state changed.
-     */
-    protected abstract void updatePowerState(boolean force);
-
     public boolean connectionOpen(int r) {
         int absDir = Rotation.rotateSide(side, r);
         return (((TRedstoneTile)tile()).openConnections(absDir) & 1<<Rotation.rotationTo(absDir&6, side)) != 0;
@@ -477,7 +489,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
 
     @Override
     public int redstoneConductionMap() {
-        return 0;
+        return 0xF;
     }
 
     @Override
