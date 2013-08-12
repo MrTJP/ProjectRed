@@ -4,7 +4,9 @@ import net.minecraft.util.Icon;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCModel;
+import codechicken.lib.render.ColourMultiplier;
 import codechicken.lib.render.IUVTransformation;
+import codechicken.lib.render.IVertexModifier;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.UV;
 import codechicken.lib.render.UVScale;
@@ -13,6 +15,7 @@ import codechicken.lib.render.Vertex5;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
+import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 
 public class RenderWire {
@@ -348,7 +351,11 @@ public class RenderWire {
     }
     
     public static void render(WirePart w) {
-        getOrGenerateModel(modelKey(w)).render(w.x(), w.y(), w.z(), new IconTransformation(w.getIcon()));
+        IVertexModifier m = w.getColour() == -1 ? null : 
+            new ColourMultiplier(w.getColour());
+        getOrGenerateModel(modelKey(w)).render(
+                new Translation(w.x(), w.y(), w.z()), 
+                new IconTransformation(w.getIcon()), m);
     }
     
     public static void renderInv(int thickness, Transformation t, Icon icon) {

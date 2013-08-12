@@ -508,7 +508,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     public void renderStatic(RenderBlocks r) {
         CCRenderState.reset();
         CCRenderState.setBrightness(world(), x(), y(), z());
-        CCRenderState.setColour(getColour());
+        CCRenderState.useModelColours(true);
         RenderWire.render(this);
         CCRenderState.setColour(-1);
     }
