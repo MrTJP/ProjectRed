@@ -17,7 +17,7 @@ public interface IBundledEmitter {
      * For face parts, side is a rotation. For center parts, it is a forge direction.
      * 
      * The return value will be used immediately, so the returned array may be
-     * overwritten by the next call to getBundledCableStrength.
+     * overwritten by the next call to getBundledSignal.
      */
-    public byte[] getBundledCableStrength(int side);
+    public byte[] getBundledSignal(int side);
 }

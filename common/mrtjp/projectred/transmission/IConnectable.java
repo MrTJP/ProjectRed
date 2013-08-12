@@ -13,7 +13,7 @@ public interface IConnectable {
      * @param r The clockwise rotation about the attached face to 
      * @return True to allow the wire connection.
      */
-    public boolean connect(WirePart wire, int r);
+    public boolean connectStraight(WirePart wire, int r);
 
     /**
      * Connect for internals

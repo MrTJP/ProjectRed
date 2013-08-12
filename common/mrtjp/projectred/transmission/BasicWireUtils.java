@@ -1,16 +1,8 @@
 package mrtjp.projectred.transmission;
 
-import java.lang.reflect.Field;
-
-import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.multipart.PartMap;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
 
 public class BasicWireUtils {
 

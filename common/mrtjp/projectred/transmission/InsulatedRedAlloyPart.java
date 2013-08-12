@@ -17,6 +17,22 @@ public class InsulatedRedAlloyPart extends RedwirePart {
     }
     
     @Override
+    public String getType() {
+        return "pr_insulated";
+    }
+
+    @Override
+    public EnumWire getWireType() {
+        return EnumWire.INSULATED_WIRE[colour];
+    }
+
+    @Override
+    public void onPlaced(int side, int meta) {
+        super.onPlaced(side, meta);
+        colour = (byte)(meta-EnumWire.INSULATED_0.ordinal());
+    }
+
+    @Override
     public void save(NBTTagCompound tag) {
         super.save(tag);
         tag.setByte("colour", colour);
@@ -41,27 +57,14 @@ public class InsulatedRedAlloyPart extends RedwirePart {
     }
     
     @Override
-    public void onPlaced(int side, int meta) {
-        super.onPlaced(side, meta);
-        colour = (byte)(meta-EnumWire.INSULATED_0.ordinal());
+    public int getPartSignal(TMultiPart part, int r)
+    {
+        if(part instanceof BundledCablePart)
+            return (((BundledCablePart) part).signal[colour]&0xFF)-1;
+        
+        return super.getPartSignal(part, r);
     }
-    
-    @Override
-    public EnumWire getWireType() {
-        return EnumWire.INSULATED_WIRE[colour];
-    }
-    
-    @Override
-    public String getType() {
-        return "pr_insulated";
-    }
-    
-    @Override
-    @SideOnly(Side.CLIENT)
-    public Icon getIcon() {
-        return getWireType().wireSprites[strength != 0 ? 1 : 0];
-    }
-    
+
     @Override
     public boolean canConnectToType(WirePart wire, int r) {
         if(wire instanceof InsulatedRedAlloyPart)
@@ -80,11 +83,8 @@ public class InsulatedRedAlloyPart extends RedwirePart {
     }
     
     @Override
-    public int getPartStrength(TMultiPart part, int r)
-    {
-        if(part instanceof BundledCablePart)
-            return (((BundledCablePart) part).signal[colour]&0xFF)-1;
-        
-        return super.getPartStrength(part, r);
+    @SideOnly(Side.CLIENT)
+    public Icon getIcon() {
+        return getWireType().wireSprites[signal != 0 ? 1 : 0];
     }
 }

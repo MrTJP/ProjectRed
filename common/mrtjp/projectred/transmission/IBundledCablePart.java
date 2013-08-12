@@ -1,5 +1,5 @@
 package mrtjp.projectred.transmission;
 
 public interface IBundledCablePart {
-    public byte[] getSignal();
+    public byte[] getBundledSignal();
 }
