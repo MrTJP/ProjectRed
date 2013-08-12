@@ -47,6 +47,9 @@ public class RenderWire {
     
     private static class WireModelGenerator {
         
+        public static int[] reorientSide = new int[]{
+            0, 3, 3, 0, 0, 3};
+        
         int side;
         int tw;
         int th;
@@ -163,8 +166,12 @@ public class RenderWire {
                     new Vertex5(0.5+w, 0, 0.5+w, 16, 16-tw),
                     new Vertex5(0.5+w, h, 0.5+w, 16-th, 16-tw),
                     new Vertex5(0.5-w, h, 0.5+w, 16-th, 16+tw)};
-
-            reflectSide(verts, r);
+            
+            if(Rotation.rotateSide(side, r)%2 == 0) {//red is on the negative side
+                UVT uvt = new UVT(Rotation.quarterRotations[2].at(new Vector3(8, 0, 16)));
+                for(Vertex5 vert : verts)
+                    vert.apply(uvt);
+            }
             return verts;
         }
 
@@ -203,10 +210,10 @@ public class RenderWire {
             verts[3].uv.set(8+tw, 24+tw);
             
             //retexture top
-            verts[4].uv.set(8+tw, 8);
-            verts[5].uv.set(8-tw, 8);
-            verts[6].uv.set(8-tw, 16-tw);
-            verts[7].uv.set(8+tw, 16-tw);
+            verts[4].uv.set(8-tw, 8);
+            verts[5].uv.set(8+tw, 8);
+            verts[6].uv.set(8+tw, 16-tw);
+            verts[7].uv.set(8-tw, 16-tw);
             
             reflectSide(verts, r);
             
@@ -263,16 +270,25 @@ public class RenderWire {
                     new Vertex5(0.5+w, h, 0.5+w, 8+tw, 16+tw),
                     new Vertex5(0.5+w, h, 0.5-w, 8+tw, 16-tw),
                     new Vertex5(0.5-w, h, 0.5-w, 8-tw, 16-tw)};
+
+            if(tex == 0 || tex == 1)
+                tex = (tex+reorientSide[side])%2;
             
-            IUVTransformation uvt = null;
-            if(tex == 1)//straight e/w (rotate texture counterclockwise 90)
-                uvt = new UVT(Rotation.quarterRotations[3].at(new Vector3(8, 0, 16)));
-            else if(tex == 2)//circle (translate across to u = 24)
-                uvt = new UVTranslation(16, 0);
+            int r = reorientSide[side];
+            if(tex == 1)
+                r += 3;
             
-            if(uvt != null)
+            if(r != 0) {
+                IUVTransformation uvt = new UVT(Rotation.quarterRotations[r%4].at(new Vector3(8, 0, 16)));
                 for(Vertex5 vert : verts)
                     vert.apply(uvt);
+            }
+            
+            if(tex == 2) {//circle (translate across to u = 24)
+                UVTranslation uvt = new UVTranslation(16, 0);
+                for(Vertex5 vert : verts)
+                    vert.apply(uvt);
+            }
             
             if(inv)
                 verts = withBottom(verts, 0, 4);
@@ -282,7 +298,7 @@ public class RenderWire {
         
         private static UVT sideReflect = new UVT(new Scale(-1, 1, 1).at(new Vector3(8, 0, 0)));
         private void reflectSide(Vertex5[] verts, int r) {
-            if(r >= 2)//invert the texture about the y center
+            if((r+reorientSide[side])%4 >= 2)//invert the texture about the y center
                 for(Vertex5 vert : verts)
                     vert.apply(sideReflect);
         }
@@ -296,7 +312,7 @@ public class RenderWire {
             Vertex5[] i_verts = new Vertex5[verts.length+count];
 
             //add the bottom face, just a copy of the top, rotated about the z axis
-            Transformation r = new Rotation(MathHelper.pi, 0, 0, 1).at(new Vector3(0.5, w/2, 0));
+            Transformation r = new Rotation(MathHelper.pi, 0, 0, 1).at(new Vector3(0.5, h/2, 0));
             for(int i = 0; i < count; i++)
                 i_verts[i] = verts[i+start].copy().apply(r);
             System.arraycopy(verts, 0, i_verts, count, verts.length);
@@ -354,7 +370,7 @@ public class RenderWire {
 
     public static CCModel getOrGenerateModel(int key) {
         CCModel m = wireModels[key];
-        if(m == null)
+        //if(m == null)
             wireModels[key] = m = gen_inst.generateModel(key, false);
         return m;
     }

@@ -4,12 +4,6 @@ import static mrtjp.projectred.ProjectRed.itemPartJacketedWire;
 import static mrtjp.projectred.ProjectRed.itemPartWire;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-import scala.collection.generic.ImmutableSetFactory;
-import scala.collection.immutable.HashSet;
-import scala.collection.immutable.Set;
-import scala.collection.immutable.Set.Set1;
-import scala.collection.mutable.StringBuilder;
-import scala.reflect.internal.util.Collections;
 import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.MultipartGenerator;
@@ -51,7 +45,7 @@ public class TransmissionProxy implements IProxy, IPartFactory {
         else if(id.equals("pr_insulated"))
             return new InsulatedRedAlloyPart(0);
         else if(id.equals("pr_bundled"))
-            return null;
+            return new BundledCablePart(0);
         
         return null;
     }

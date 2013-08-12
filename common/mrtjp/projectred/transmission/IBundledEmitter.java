@@ -14,12 +14,10 @@ public interface IBundledEmitter {
      * 
      * Array indices are the same as the corresponding wool damage values.
      * 
-     * blockFace and toDirection are the same as the values passed to
-     * IRedstoneEmitter and IConnectable. blockFace can be -1 for freestanding
-     * wire connections.
+     * For face parts, side is a rotation. For center parts, it is a forge direction.
      * 
      * The return value will be used immediately, so the returned array may be
      * overwritten by the next call to getBundledCableStrength.
      */
-    public byte[] getBundledCableStrength(int blockFace, int toDirection);
+    public byte[] getBundledCableStrength(int side);
 }

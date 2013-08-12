@@ -2,6 +2,7 @@ package mrtjp.projectred.transmission;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.multipart.TMultiPart;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
@@ -76,5 +77,14 @@ public class InsulatedRedAlloyPart extends RedwirePart {
             return 0;
         
         return super.weakPowerLevel(side);
+    }
+    
+    @Override
+    public int getPartStrength(TMultiPart part, int r)
+    {
+        if(part instanceof BundledCablePart)
+            return (((BundledCablePart) part).signal[colour]&0xFF)-1;
+        
+        return super.getPartStrength(part, r);
     }
 }
