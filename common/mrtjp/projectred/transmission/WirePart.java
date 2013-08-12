@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CommandDebug;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -645,5 +644,8 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         }
     }
     
-    
+    @Override
+    public boolean doesTick() {
+        return false;
+    }
 }
