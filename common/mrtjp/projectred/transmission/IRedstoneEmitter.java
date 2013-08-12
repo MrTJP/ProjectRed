@@ -9,5 +9,5 @@ public interface IRedstoneEmitter {
      * 
      * @return Signal strength from 0 to 255.
      */
-    public short getEmittedSignalStrength(int side);
+    public int getEmittedSignalStrength(int side);
 }
