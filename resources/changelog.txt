@@ -1,4 +1,18 @@
 Change Log:
+v4.0.0pre.38
+- Added ruby, sapphire, and peridot gems + ores.
+- Added marble, basalt, marble brick, basalt brick, basalt cobble.
+- Added marble cave generation.
+- Added config option to allow moss spread.
+- Added volcano generation.
+- Added full set of tools for each gem.
+
+
+
+v4.0.0pre.37
+- Fixed CC Peripheral not being recognized after world reload.
+
+
 v4.0.0pre.36
 - Fixed server/client startup crash.
 

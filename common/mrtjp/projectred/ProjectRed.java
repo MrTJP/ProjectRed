@@ -10,11 +10,19 @@ import mrtjp.projectred.core.IProjectRedModule;
 import mrtjp.projectred.core.ItemBackpack;
 import mrtjp.projectred.core.ItemDrawPlate;
 import mrtjp.projectred.core.ItemPart;
-import mrtjp.projectred.core.ItemWoolGin;
 import mrtjp.projectred.core.ModuleCore;
 import mrtjp.projectred.expansion.BlockMachines;
 import mrtjp.projectred.expansion.ItemVAWT;
 import mrtjp.projectred.expansion.ModuleExpansion;
+import mrtjp.projectred.exploration.BlockOre;
+import mrtjp.projectred.exploration.BlockSpecialStone;
+import mrtjp.projectred.exploration.ItemGemAxe;
+import mrtjp.projectred.exploration.ItemGemHoe;
+import mrtjp.projectred.exploration.ItemGemPickaxe;
+import mrtjp.projectred.exploration.ItemGemShovel;
+import mrtjp.projectred.exploration.ItemGemSword;
+import mrtjp.projectred.exploration.ItemWoolGin;
+import mrtjp.projectred.exploration.ModuleExploration;
 import mrtjp.projectred.illumination.ItemPartLamp;
 import mrtjp.projectred.illumination.ItemPartLantern;
 import mrtjp.projectred.illumination.ModuleIllumination;
@@ -24,6 +32,7 @@ import mrtjp.projectred.integration.ModuleIntegration;
 import mrtjp.projectred.transmission.ItemPartJacketedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
 import mrtjp.projectred.transmission.ModuleTransmission;
+import net.minecraft.item.EnumToolMaterial;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
@@ -63,6 +72,8 @@ public class ProjectRed {
     
     /** Blocks **/
     public static BlockMachines blockMachines;
+    public static BlockOre blockOres;
+    public static BlockSpecialStone blockStones;
 
     /** Items **/
     public static ItemScrewdriver itemScrewdriver;
@@ -71,6 +82,32 @@ public class ProjectRed {
     public static ItemWoolGin itemWoolGin;
     public static ItemBackpack itemBackpack;
     public static ItemVAWT itemVAWT;
+    
+    public static EnumToolMaterial toolMaterialRuby;
+    public static EnumToolMaterial toolMaterialSapphire;
+    public static EnumToolMaterial toolMaterialPeridot;
+    
+    public static ItemGemAxe itemRubyAxe;
+    public static ItemGemAxe itemSapphireAxe;
+    public static ItemGemAxe itemPeridotAxe;
+    
+    public static ItemGemHoe itemRubyHoe;
+    public static ItemGemHoe itemSapphireHoe;
+    public static ItemGemHoe itemPeridotHoe;
+    
+    public static ItemGemPickaxe itemRubyPickaxe;
+    public static ItemGemPickaxe itemSapphirePickaxe;
+    public static ItemGemPickaxe itemPeridotPickaxe;
+    
+    public static ItemGemShovel itemRubyShovel;
+    public static ItemGemShovel itemSapphireShovel;
+    public static ItemGemShovel itemPeridotShovel;
+    
+    public static ItemGemSword itemRubySword;
+    public static ItemGemSword itemSapphireSword;
+    public static ItemGemSword itemPeridotSword;
+    
+    
 
 
     @Instance("ProjectRed")
@@ -96,6 +133,9 @@ public class ProjectRed {
             }
             if (Configurator.module_Expansion.getBoolean(true)) {
                 registerModule(new ModuleExpansion());
+            }
+            if (Configurator.module_Exploration.getBoolean(true)) {
+                registerModule(new ModuleExploration());
             }
             return false;
         }

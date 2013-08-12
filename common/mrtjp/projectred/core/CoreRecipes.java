@@ -16,31 +16,12 @@ public class CoreRecipes {
     public static void initCoreRecipes() {
         initPartRecipes();
         initToolRecipes();
-        initOtherRecipes();
-    }
-
-    private static void initOtherRecipes() {
-        /** Wool Gin to string recipe **/
-        GameRegistry.addRecipe(new ItemStack(Item.silk, 4), 
-                "gw",
-                'g', new ItemStack(ProjectRed.itemWoolGin, 1, Short.MAX_VALUE),
-                'w', Block.cloth
-        );
     }
 
     private static void initToolRecipes() {
         /** Draw Plate **/
         GameRegistry.addRecipe(new RecipeDrawPlate());    
-        
-        /** Wool Gin **/
-        GameRegistry.addRecipe(new ItemStack(ProjectRed.itemWoolGin), 
-                "sis",
-                "sss",
-                " s ",
-                's', Item.stick,
-                'i', EnumPart.IRONCOIL.getItemStack()
-        );
-        
+                
         /** Backpacks **/
         for (int i = 0; i < EnumBackpack.VALID_BP.length; i++) {
             GameRegistry.addRecipe(new ShapedOreRecipe(EnumBackpack.get(i).getItemStack(), 
@@ -52,7 +33,6 @@ public class CoreRecipes {
             ));
         }
         GameRegistry.addRecipe(new RecipeBackpackRecoloring());
-
     }
 
     private static void initPartRecipes() {

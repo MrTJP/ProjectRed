@@ -9,12 +9,12 @@ public class ModuleExploration implements IProjectRedModule {
 
     @Override
     public IProxy getCommonProxy() {
-        return null;
+        return new ExplorationProxy();
     }
 
     @Override
     public IProxy getClientProxy() {
-        return null;
+        return new ExplorationClientProxy();
     }
 
     @Override

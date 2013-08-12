@@ -9,14 +9,14 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 public class Configurator {
     protected static File _configFolder;
     protected static File _configFile;
-    
+
     /** Constants **/
     public static final String modId = "ProjectRed";
     public static final String modNetworkChannel = "ProjRed";
     public static final String version = "@VERSION@";
     public static final String buildnumber = "@BUILD@";
     public static final String modName = "Project: Red";
-    
+
     public static final String corePacketChannel = "PR:Core";
     public static final String integrationPacketChannel = "PR:Int";
     public static final String transmissionPacketChannel = "PR:Trans";
@@ -28,7 +28,8 @@ public class Configurator {
     public static Property module_Transmission;
     public static Property module_Illumination;
     public static Property module_Expansion;
-    
+    public static Property module_Exploration;
+
     /** Multipart IDs **/
     public static Property part_gate;
     public static Property part_wire;
@@ -40,8 +41,10 @@ public class Configurator {
 
     /** Block IDs **/
     public static Property block_machinesID;
+    public static Property block_oresID;
+    public static Property block_stonesID;
 
-    /** Item IDs**/
+    /** Item IDs **/
     public static Property item_screwdriverID;
     public static Property item_componentsID;
     public static Property item_drawplateID;
@@ -49,26 +52,50 @@ public class Configurator {
     public static Property item_backpackID;
     public static Property item_vawtID;
 
+    public static Property item_rubyAxe;
+    public static Property item_sapphireAxe;
+    public static Property item_peridotAxe;
+    public static Property item_rubyHoe;
+    public static Property item_sapphireHoe;
+    public static Property item_peridotHoe;
+    public static Property item_rubyPickaxe;
+    public static Property item_sapphirePickaxe;
+    public static Property item_peridotPickaxe;
+    public static Property item_rubyShovel;
+    public static Property item_sapphireShovel;
+    public static Property item_peridotShovel;
+    public static Property item_rubySword;
+    public static Property item_sapphireSword;
+    public static Property item_peridotSword;
+
+    /** Generation **/
+    public static Property gen_MarbleCave;
+    public static Property gen_Volcano;
+    public static Property gen_Ruby;
+    public static Property gen_Sapphire;
+    public static Property gen_Peridot;
+    public static Property gen_SpreadingMoss;
+
     /** Settings **/
     public static Property networkUpdateRange;
     public static Property debugMode;
 
-    
     public static void initConfig(FMLPreInitializationEvent event) {
         _configFolder = event.getModConfigurationDirectory();
         _configFile = new File(_configFolder.getAbsolutePath() + "/ProjectRed.cfg");
         loadPropertiesFromFile(_configFile);
     }
-    
+
     public static void loadPropertiesFromFile(File file) {
         Configuration localConfig = new Configuration(file);
         localConfig.load();
-        
+
         module_Core = localConfig.get("Modules", "Core", true);
         module_Integration = localConfig.get("Modules", "Integration", true);
         module_Transmission = localConfig.get("Modules", "Transmission", true);
         module_Illumination = localConfig.get("Modules", "Illumination", true);
         module_Expansion = localConfig.get("Modules", "Expansion", true);
+        module_Exploration = localConfig.get("Modules", "Exploration", true);
 
         part_gate = localConfig.get("MultiPart Item IDs", "Gate Part ID", 9030);
         part_wire = localConfig.get("MultiPart Item IDs", "Wire Part ID", 9031);
@@ -77,8 +104,10 @@ public class Configurator {
         part_invlantern = localConfig.get("MultiPart Item IDs", "Inverted Lantern Part ID", 9034);
         part_lamp = localConfig.get("MultiPart Item IDs", "Lamp Part ID", 9035);
         part_invlamp = localConfig.get("MultiPart Item IDs", "Inverted Lamp Part ID", 9036);
-        
+
         block_machinesID = localConfig.getBlock("block_machinesID", 2129);
+        block_oresID = localConfig.getBlock("block_oresID", 2130);
+        block_stonesID = localConfig.getBlock("block_stonesID", 2131);
 
         item_screwdriverID = localConfig.getItem("item_screwdriverID", 9024);
         item_componentsID = localConfig.getItem("item_componentsID", 9025);
@@ -86,14 +115,35 @@ public class Configurator {
         item_woolginID = localConfig.getItem("item_woolginID", 9027);
         item_backpackID = localConfig.getItem("item_backpackID", 9028);
         item_vawtID = localConfig.getItem("item_turbineID", 9029);
-        
-        
+
+        item_rubyAxe = localConfig.getItem("rubyaxe", 9097);
+        item_sapphireAxe = localConfig.getItem("sapphireaxe", 9098);
+        item_peridotAxe = localConfig.getItem("peridotaxe", 9099);
+        item_rubyHoe = localConfig.getItem("rubyhoe", 9100);
+        item_sapphireHoe = localConfig.getItem("sapphirehoe", 9101);
+        item_peridotHoe = localConfig.getItem("peridothoe", 9102);
+        item_rubyPickaxe = localConfig.getItem("rubypickaxe", 9103);
+        item_sapphirePickaxe = localConfig.getItem("sapphirepickaxe", 9104);
+        item_peridotPickaxe = localConfig.getItem("peridotpickaxe", 9105);
+        item_rubyShovel = localConfig.getItem("rubyshovel", 9106);
+        item_sapphireShovel = localConfig.getItem("sapphireshovel", 9107);
+        item_peridotShovel = localConfig.getItem("peridotshovel", 9108);
+        item_rubySword = localConfig.getItem("rubysword", 9109);
+        item_sapphireSword = localConfig.getItem("sapphiresword", 9110);
+        item_peridotSword = localConfig.getItem("peridotsword", 9112);
+
+        gen_Ruby = localConfig.get("World Generation", "Ruby Ore", true);
+        gen_Sapphire = localConfig.get("World Generation", "Sapphire Ore", true);
+        gen_Peridot = localConfig.get("World Generation", "Peridot Ore", true);
+        gen_MarbleCave = localConfig.get("World Generation", "Marble Caves", true);
+        gen_Volcano = localConfig.get("World Generation", "Valcanos", true);
+        gen_SpreadingMoss = localConfig.get("World Generation", "Spreading Moss", true);
+
         networkUpdateRange = localConfig.get("general", "Network Update Range", 50.0D);
         networkUpdateRange.comment = "This is the distance in which players will be notified.  Lower if you experience lag.";
-        
         debugMode = localConfig.get("general", "Enable Debugging", false);
         debugMode.comment = "Enable advanced debugging, should ALWAYS be false.";
-        
+
         localConfig.save();
     }
 }

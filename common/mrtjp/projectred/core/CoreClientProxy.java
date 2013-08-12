@@ -16,9 +16,8 @@ public class CoreClientProxy extends CoreProxy {
         for (EnumPart part : EnumPart.VALID_PARTS) {
             LanguageRegistry.addName(new ItemStack(itemComponent, 1, part.meta), part.fullName);
         }
-        LanguageRegistry.addName(itemDrawPlate, "Draw Plate");
         
-        LanguageRegistry.addName(itemWoolGin, "Wool Gin");
+        LanguageRegistry.addName(itemDrawPlate, "Draw Plate");
         
         for (EnumBackpack b : EnumBackpack.VALID_BP) {
             LanguageRegistry.addName(b.getItemStack(), b.fullname);
