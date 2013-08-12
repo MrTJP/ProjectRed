@@ -1,0 +1,122 @@
+package mrtjp.projectred.exploration;
+
+import java.util.Random;
+
+import codechicken.lib.vec.BlockCoord;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockStoneBrick;
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.util.Icon;
+import net.minecraft.world.World;
+
+public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
+
+    public static final String[] STONE_BRICK_TYPES = new String[] { "default", "mossy", "cracked", "chiseled" };
+    public static final String[] field_94407_b = new String[] { null, "mossy", "cracked", "carved" };
+    @SideOnly(Side.CLIENT)
+    private Icon[] field_94408_c = new Icon[field_94407_b.length];;
+
+    public BlockPhotosyntheticStoneBrick(int par1) {
+        super(par1);
+        setHardness(1.5F);
+        setResistance(10.0F);
+        setStepSound(soundStoneFootstep);
+        setUnlocalizedName("stonebricksmooth");
+        func_111022_d("stonebrick");
+        setTickRandomly(true);
+    }
+
+    @Override
+    public void updateTick(World w, int x, int y, int z, Random ran) {
+        switch (w.getBlockMetadata(x, y, z)) {
+        case 0:
+            crackFromHeat(w, x, y, z, ran);
+            return;
+        case 1:
+            spreadMossToNearby(w, x, y, z, ran);
+            return;
+        }
+    }
+
+    public void crackFromHeat(World w, int x, int y, int z, Random ran) {
+        BlockCoord bc = new BlockCoord(x, y, z);
+        if (isBlockWet(w, bc) && isBlockHot(w, bc)) {
+            if (ran.nextInt(3) == 0) {
+                w.setBlock(x, y, z, Block.stoneBrick.blockID, 2, 3);
+            }
+        }
+    }
+
+    public void spreadMossToNearby(World w, int x, int y, int z, Random ran) {
+        if (!w.isAirBlock(x, y + 1, z) || w.canBlockSeeTheSky(x, y + 1, z)) {
+            return;
+        }
+        for (int i = 0; i < 6; i++) {
+            BlockCoord bc = new BlockCoord(x, y, z).offset(i);
+            int id = w.getBlockId(bc.x, bc.y, bc.z);
+            int meta = w.getBlockMetadata(bc.x, bc.y, bc.z);
+            if (!w.isAirBlock(bc.x, bc.y + 1, bc.z) || w.canBlockSeeTheSky(bc.x, bc.y + 1, bc.z)) {
+                continue;
+            }
+            if (id == Block.cobblestone.blockID) {
+                if (isBlockWet(w, bc)) {
+                    if (ran.nextInt(3) == 0) {
+                        w.setBlock(bc.x, bc.y, bc.z, Block.cobblestoneMossy.blockID, 0, 3);
+                    }
+                }
+            } else if (id == Block.stoneBrick.blockID && meta == 2) {
+                if (isBlockWet(w, bc)) {
+                    if (ran.nextInt(3) == 0) {
+                        w.setBlock(bc.x, bc.y, bc.z, Block.stoneBrick.blockID, 1, 3);
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean isBlockWet(World w, BlockCoord b) {
+        for (int i = 0; i < 6; i++) {
+            BlockCoord bc = b.copy().offset(i);
+            int id = w.getBlockId(bc.x, bc.y, bc.z);
+            if (id == Block.waterMoving.blockID || id == Block.waterStill.blockID) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isBlockHot(World w, BlockCoord b) {
+        for (int i = 0; i < 6; i++) {
+            BlockCoord bc = b.copy().offset(i);
+            int id = w.getBlockId(bc.x, bc.y, bc.z);
+            if (id == Block.lavaMoving.blockID || id == Block.lavaStill.blockID) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void registerIcons(IconRegister reg) {
+        super.registerIcons(reg);
+        for (int i = 0; i < this.field_94408_c.length; ++i) {
+            String s = this.func_111023_E();
+            if (field_94407_b[i] != null) {
+                s = s + "_" + field_94407_b[i];
+            }
+            this.field_94408_c[i] = reg.registerIcon(s);
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public Icon getIcon(int par1, int par2) {
+        if (par2 < 0 || par2 >= field_94407_b.length) {
+            par2 = 0;
+        }
+        return this.field_94408_c[par2];
+    }
+
+}

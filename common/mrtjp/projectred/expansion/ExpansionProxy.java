@@ -17,7 +17,7 @@ public class ExpansionProxy implements IProxy {
     @Override
     public void init() {
         blockMachines = new BlockMachines(Configurator.block_machinesID.getInt());
-        GameRegistry.registerBlock(blockMachines, ItemBlockMachines.class, "projectred.machines");
+        GameRegistry.registerBlock(blockMachines, ItemBlockMachines.class, "projectred.expansion.machines");
         for (EnumMachine m : EnumMachine.VALID_MACHINES) {
             GameRegistry.registerTileEntity(m.clazz, "tile.projectred.machines." + m.unlocalname);
         }

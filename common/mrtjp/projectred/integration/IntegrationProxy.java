@@ -42,7 +42,7 @@ public class IntegrationProxy implements IProxy, IPartFactory {
     public TMultiPart createPart(String name, boolean client) {
         EnumGate g = EnumGate.getByName(name);
         if (g != null) {
-            return new GatePart(g);
+            return g.createPart();
         }
         return null;
     }
