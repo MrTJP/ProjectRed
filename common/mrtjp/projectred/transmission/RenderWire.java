@@ -1,5 +1,6 @@
 package mrtjp.projectred.transmission;
 
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.util.Icon;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.math.MathHelper;
@@ -375,12 +376,12 @@ public class RenderWire {
         return m;
     }
     
-    public static void render(WirePart w) {
+    public static void render(WirePart w, RenderBlocks r) {
         IVertexModifier m = w.getColour() == -1 ? null : 
             new ColourMultiplier(w.getColour());
         getOrGenerateModel(modelKey(w)).render(
                 new Translation(w.x(), w.y(), w.z()), 
-                new IconTransformation(w.getIcon()), m);
+                new IconTransformation(r != null ? r.overrideBlockTexture != null ? r.overrideBlockTexture : w.getIcon() : w.getIcon()), m);
     }
     
     public static void renderInv(int thickness, Transformation t, Icon icon) {

@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CommandDebug;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -639,9 +640,19 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             CCRenderState.reset();
             CCRenderState.setBrightness(world(), x(), y(), z());
             CCRenderState.useModelColours(true);
-            RenderWire.render(this);
+            RenderWire.render(this, null);
             CCRenderState.setColour(-1);
         }
+    }
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void drawBreaking(RenderBlocks r) {
+        CCRenderState.reset();
+        CCRenderState.setBrightness(world(), x(), y(), z());
+        CCRenderState.useModelColours(true);
+        RenderWire.render(this, r);
+        CCRenderState.setColour(-1);
     }
     
     @Override
