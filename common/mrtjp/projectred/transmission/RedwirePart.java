@@ -77,7 +77,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     
     public int rsLevel() {
         if(redwiresProvidePower)
-            return (signal&0xFF)>>4;
+            return ((signal&0xFF)+16)/17;
         
         return 0;
     }
@@ -105,8 +105,10 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
 
     @Override
     public boolean connectInternalOverride(int r, TMultiPart p) {
-        if (p instanceof IRedstonePart)
-            return ((IRedstonePart) p).canConnectRedstone(side);
+        if (p instanceof IRedstonePart) {
+            IRedstonePart rsPart = (IRedstonePart)p;
+            return rsPart.canConnectRedstone(side) && rsPart.canConnectRedstone(Rotation.rotateSide(side, r)^1);
+        }
         
         return false;
     }
@@ -184,7 +186,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     
         int blockID = world().getBlockId(pos.x, pos.y, pos.z);
         if(blockID == Block.redstoneWire.blockID)
-            return world().getBlockMetadata(pos.x, pos.y, pos.z);
+            return world().getBlockMetadata(pos.x, pos.y, pos.z)-1;
         
         return RedstoneInteractions.getPowerTo(this, absDir)*17;
     }
