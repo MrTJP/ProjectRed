@@ -6,6 +6,8 @@ v4.0.0pre.38
 - Added config option to allow moss spread.
 - Added volcano generation.
 - Added full set of tools for each gem.
+- Initialized recipes for Expansion.
+
 
 
 
