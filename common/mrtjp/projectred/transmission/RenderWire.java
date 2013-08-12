@@ -370,7 +370,7 @@ public class RenderWire {
 
     public static CCModel getOrGenerateModel(int key) {
         CCModel m = wireModels[key];
-        //if(m == null)
+        if(m == null)
             wireModels[key] = m = gen_inst.generateModel(key, false);
         return m;
     }
