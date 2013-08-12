@@ -16,11 +16,11 @@ import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import codechicken.multipart.scalatraits.TRedstoneTile;
 
-public abstract class RedwirePart extends WirePart implements IRedwirePart, IRedstoneEmitter, IFaceRedstonePart {
+public abstract class RedwirePart extends WirePart implements IRedwirePart, IRedwireEmitter, IFaceRedstonePart {
 
     public static boolean redwiresProvidePower = true;
     
-    public byte strength;
+    public byte signal;
     
     public RedwirePart(int side) {
         super(side);
@@ -29,40 +29,35 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     @Override
     public void save(NBTTagCompound tag) {
         super.save(tag);
-        tag.setByte("strength", strength);
+        tag.setByte("signal", signal);
     }
     
     @Override
     public void load(NBTTagCompound tag) {
         super.load(tag);
-        strength = tag.getByte("strength");
+        signal = tag.getByte("signal");
     }
     
     @Override
     public void writeDesc(MCDataOutput packet) {
         super.writeDesc(packet);
-        packet.writeByte(strength);
+        packet.writeByte(signal);
     }
     
     @Override
     public void readDesc(MCDataInput packet) {
         super.readDesc(packet);
-        strength = packet.readByte();
+        signal = packet.readByte();
     }
     
     @Override
     public void read(MCDataInput packet, int switch_key) {
         if(switch_key == 10) {
-            strength = packet.readByte();
+            signal = packet.readByte();
             tile().markRender();
         }
         else
             super.read(packet, switch_key);
-    }
-    
-    @Override
-    public int getFace() {
-        return side;
     }
     
     @Override
@@ -82,33 +77,32 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     
     public int rsLevel() {
         if(redwiresProvidePower)
-            return (strength&0xFF)>>4;
+            return (signal&0xFF)>>4;
         
         return 0;
     }
     
+    @Override
+    public int getFace() {
+        return side;
+    }
+
     public boolean connectionOpen(int r) {
         int absDir = Rotation.rotateSide(side, r);
         return (((TRedstoneTile)tile()).openConnections(absDir) & 1<<Rotation.rotationTo(absDir&6, side)) != 0;
     }
     
     @Override
-    protected boolean debug(EntityPlayer ply) {
-        ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((world().isRemote ? "Client" : "Server") + " signal strength: " + strength));
-        return true;
-    }
-    
-    @Override
     public boolean canConnectToType(WirePart wire, int r) {
         return wire instanceof RedwirePart;
     }
-    
+
     @Override
     public boolean connectStraightOverride(int absDir) {
         return (RedstoneInteractions.otherConnectionMask(world(), x(), y(), z(), absDir, false) & 
                 RedstoneInteractions.connectionMask(this, absDir)) != 0;
     }
-    
+
     @Override
     public boolean connectInternalOverride(int r, TMultiPart p) {
         if (p instanceof IRedstonePart)
@@ -116,24 +110,24 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
         
         return false;
     }
-    
-    public void sendStrengthUpdate() {
-        tile().getWriteStream(this).writeByte(10).writeByte(strength);
-    }
-    
-    public void updateAndPropogate(TMultiPart prev, boolean force) {
 
-        int newStrength = calculateStrength();
-        boolean changed = newStrength != (strength & 0xFF);
-        strength = (byte)newStrength;
+    public void updateAndPropogate(TMultiPart prev, boolean force) {
+    
+        int newSignal = calculateSignal();
+        boolean changed = newSignal != (signal & 0xFF);
+        signal = (byte)newSignal;
         if(changed)
-            sendStrengthUpdate();
+            sendSignalUpdate();
         
         if(changed || force)
             propogate(prev);
     }
 
-    public int calculateStrength() {
+    public void sendSignalUpdate() {
+        tile().getWriteStream(this).writeByte(10).writeByte(signal);
+    }
+    
+    public int calculateSignal() {
         WirePropogator.setWiresProvidePower(false);
         redwiresProvidePower = false;
         
@@ -142,21 +136,21 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
             if(maskConnects(r)) {
                 int i;
                 if((connMap & 1<<r) != 0)
-                    i = calculateCornerStrength(r);
+                    i = calculateCornerSignal(r);
                 else if((connMap & 0x10<<r) != 0)
-                    i = calculateStraightStrength(r);
+                    i = calculateStraightSignal(r);
                 else
-                    i = calculateInternalStrength(r);
+                    i = calculateInternalSignal(r);
                 
                 if(i > s)
                     s = i;
             }
 
-        int i = calculateUndersideStrength();
+        int i = calculateUndersideSignal();
         if(i > s)
             s = i;
         
-        i = calculateCenterStrength();
+        i = calculateCenterSignal();
         if(i > s)
             s = i;
         
@@ -166,19 +160,40 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
         return s;
     }
 
-    public int calculateUndersideStrength() {
+    public int calculateCornerSignal(int r) {
+        int absDir = Rotation.rotateSide(side, r);
+        
+        BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side);
+        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        if (t != null)
+            return getPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side^1));
+        
         return 0;
     }
 
-    public int calculateCenterStrength() {
-        return getPartStrength(tile().partMap(6), -1);
+    public int calculateStraightSignal(int r) {
+        int absDir = Rotation.rotateSide(side, r);
+        
+        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
+        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        if (t != null) {
+            int i = getPartSignal(t.partMap(side), (r+2)%4);
+            if(i > 0)
+                return i;
+        }
+    
+        int blockID = world().getBlockId(pos.x, pos.y, pos.z);
+        if(blockID == Block.redstoneWire.blockID)
+            return world().getBlockMetadata(pos.x, pos.y, pos.z);
+        
+        return RedstoneInteractions.getPowerTo(this, absDir)*17;
     }
 
-    public int calculateInternalStrength(int r) {
+    public int calculateInternalSignal(int r) {
         int absDir = Rotation.rotateSide(side, r);
         
         TMultiPart tp = tile().partMap(absDir);
-        int i = getPartStrength(tp, Rotation.rotationTo(absDir, side));
+        int i = getPartSignal(tp, Rotation.rotationTo(absDir, side));
         if(i > 0)
             return i;
         
@@ -190,51 +205,36 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
         return 0;
     }
 
-    public int calculateStraightStrength(int r) {
-        int absDir = Rotation.rotateSide(side, r);
-        
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
-        if (t != null) {
-            int i = getPartStrength(t.partMap(side), (r+2)%4);
-            if(i > 0)
-                return i;
-        }
-
-        int blockID = world().getBlockId(pos.x, pos.y, pos.z);
-        if(blockID == Block.redstoneWire.blockID)
-            return world().getBlockMetadata(pos.x, pos.y, pos.z);
-        
-        return RedstoneInteractions.getPowerTo(this, absDir)*17;
+    public int calculateCenterSignal() {
+        return getPartSignal(tile().partMap(6), side);
     }
-    
-    public int calculateCornerStrength(int r) {
-        int absDir = Rotation.rotateSide(side, r);
-        
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side);
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
-        if (t != null)
-            return getPartStrength(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side^1));
-        
+
+    public int calculateUndersideSignal() {
         return 0;
     }
 
-    public int getPartStrength(TMultiPart part, int r) {
+    public int getPartSignal(TMultiPart part, int r) {
         if(part instanceof IRedwirePart)
-            return ((IRedwirePart) part).getStrength() - 1;
-        else if(part instanceof IRedstoneEmitter)
-            return ((IRedstoneEmitter) part).getEmittedSignalStrength(r);
+            return ((IRedwirePart) part).getRedwireSignal() - 1;
+        else if(part instanceof IRedwireEmitter)
+            return ((IRedwireEmitter) part).getRedwireSignal(r);
         
         return 0;
     }
 
     @Override
-    public int getStrength() {
-        return strength & 0xFF;
+    public int getRedwireSignal() {
+        return signal & 0xFF;
     }
     
     @Override
-    public int getEmittedSignalStrength(int side) {
-        return getStrength();
+    public int getRedwireSignal(int side) {
+        return getRedwireSignal();
+    }
+
+    @Override
+    protected boolean debug(EntityPlayer ply) {
+        ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((world().isRemote ? "Client" : "Server") + " signal strength: " + signal));
+        return true;
     }
 }

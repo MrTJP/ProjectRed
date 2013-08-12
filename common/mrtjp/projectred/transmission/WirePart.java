@@ -20,14 +20,12 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
-import codechicken.multipart.IRedstonePart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.PartMap;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
-import codechicken.multipart.scalatraits.TRedstoneTile;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -73,6 +71,10 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         this.side = (byte) side;
     }
 
+    public void onPlaced(int side, int meta) {
+        this.side = (byte) (side^1);
+    }
+
     @Override
     public void save(NBTTagCompound tag) {
         super.save(tag);
@@ -99,8 +101,15 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         connMap = packet.readInt();
     }
 
-    public void onPlaced(int side, int meta) {
-        this.side = (byte) (side^1);
+    public void read(MCDataInput packet) {
+        read(packet, packet.readUByte());
+    }
+
+    public void read(MCDataInput packet, int switch_key) {
+        if(switch_key == 0) {
+            connMap = packet.readInt();
+            tile().markRender();
+        }
     }
 
     @Override
@@ -135,21 +144,6 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         }
     }
     
-    public void sendConnUpdate() {
-        tile().getWriteStream(this).writeByte(0).writeInt(connMap);
-    }
-    
-    public void read(MCDataInput packet) {
-        read(packet, packet.readUByte());
-    }
-    
-    public void read(MCDataInput packet, int switch_key) {
-        if(switch_key == 0) {
-            connMap = packet.readInt();
-            tile().markRender();
-        }
-    }
-    
     @Override
     public void onAdded() {
         if(!world().isRemote) {
@@ -162,16 +156,35 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             }
         }
     }
-    
+
+    @Override
+    public void onRemoved() {
+        super.onRemoved();
+        
+        if(!world().isRemote) {
+            for(int r = 0; r < 4; r++)
+                if(maskConnects(r)) {
+                    if((connMap & 1<<r) != 0)
+                        notifyCornerChange(r);
+                    else if((connMap & 0x10<<r) != 0)
+                        notifyStraightChange(r);
+                }
+        }
+    }
+
     @Override
     public void onChunkLoad()//do nothing on chunk load, we shouldn't have changed between saves
     {
     }
-    
+
     @Override
     public void onWorldJoin()//when we're moved by a frame or something
     {
         onNeighborChanged();
+    }
+
+    public void sendConnUpdate() {
+        tile().getWriteStream(this).writeByte(0).writeInt(connMap);
     }
     
     public boolean canStay()
@@ -285,25 +298,6 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         return true;
     }
 
-    public boolean connectStraight(int r) {
-        int absDir = Rotation.rotateSide(side, r);
-        
-        BlockCoord pos = new BlockCoord(getTile());
-        pos.offset(absDir);
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
-        if (t != null) {
-            TMultiPart tp = t.partMap(side);
-            if (tp instanceof IConnectable)
-                return ((IConnectable) tp).connect(this, (r+2)%4);
-        }
-        
-        return connectStraightOverride(absDir);
-    }
-
-    public boolean connectStraightOverride(int absDir) {
-        return false;
-    }
-
     /**
      * Return a corner connection state.
      * 0 = No connection
@@ -335,7 +329,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         }
         return 0;
     }
-    
+
     public boolean canConnectThroughCorner(BlockCoord pos, int side1, int side2) {
         if(world().isAirBlock(pos.x, pos.y, pos.z))
             return true;
@@ -346,7 +340,26 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         
         return false;
     }
-    
+
+    public boolean connectStraight(int r) {
+        int absDir = Rotation.rotateSide(side, r);
+        
+        BlockCoord pos = new BlockCoord(getTile());
+        pos.offset(absDir);
+        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        if (t != null) {
+            TMultiPart tp = t.partMap(side);
+            if (tp instanceof IConnectable)
+                return ((IConnectable) tp).connectStraight(this, (r+2)%4);
+        }
+        
+        return connectStraightOverride(absDir);
+    }
+
+    public boolean connectStraightOverride(int absDir) {
+        return false;
+    }
+
     public boolean connectInternal(int r) {
         int absDir = Rotation.rotateSide(side, r);
         
@@ -367,25 +380,18 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     public boolean connectCenter() {
         TMultiPart t = tile().partMap(6);
         if (t instanceof IConnectable)
-            return ((IConnectable) t).connect(this, -1);
+            return ((IConnectable) t).connectStraight(this, -1);
         
         return false;
     }
     
-    @Override
-    public boolean connect(WirePart wire, int r)
-    {
-        if(canConnectToType(wire, r) && maskOpen(r))
-        {
-            int oldConn = connMap;
-            connMap|=0x10<<r;
-            if(oldConn != connMap)
-                sendConnUpdate();
-            return true;
-        }
-        return false;
+    public boolean renderThisCorner(WirePart wire) {
+        if(wire.getThickness() == getThickness())
+            return side < wire.side;
+        
+        return wire.getThickness() > getThickness();
     }
-    
+
     @Override
     public boolean connectCorner(WirePart wire, int r)
     {
@@ -402,12 +408,19 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         }
         return false;
     }
-    
-    public boolean renderThisCorner(WirePart wire) {
-        if(wire.getThickness() == getThickness())
-            return side < wire.side;
-        
-        return wire.getThickness() > getThickness();
+
+    @Override
+    public boolean connectStraight(WirePart wire, int r)
+    {
+        if(canConnectToType(wire, r) && maskOpen(r))
+        {
+            int oldConn = connMap;
+            connMap|=0x10<<r;
+            if(oldConn != connMap)
+                sendConnUpdate();
+            return true;
+        }
+        return false;
     }
     
     @Override
@@ -424,6 +437,8 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         return false;
     }
     
+    public abstract boolean canConnectToType(WirePart wire, int r);
+
     public void notifyCornerChange(int r) {
         int absDir = Rotation.rotateSide(side, r);
         
@@ -438,8 +453,6 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, getTile().getBlockType().blockID);
     }
 
-    public abstract boolean canConnectToType(WirePart wire, int r);
-    
     public boolean maskConnects(int r) {
         return (connMap & 0x111 << r) != 0;
     }
@@ -545,6 +558,14 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         world().playAuxSFX(2000, x(), y(), z(), 0);
     }
 
+    public EnumWire getWireType() {
+        return null;
+    }
+
+    public int getThickness() {
+        return getWireType().thickness;
+    }
+
     /** START TILEMULTIPART INTERACTIONS **/
     @Override
     public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
@@ -603,18 +624,6 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         return false;
     }
 
-    public void renderStatic(RenderBlocks r) {
-        CCRenderState.reset();
-        CCRenderState.setBrightness(world(), x(), y(), z());
-        CCRenderState.useModelColours(true);
-        RenderWire.render(this);
-        CCRenderState.setColour(-1);
-    }
-    
-    public int getThickness() {
-        return getWireType().thickness;
-    }
-    
     @SideOnly(Side.CLIENT)
     public Icon getIcon() {
         return getWireType().wireSprites[0];
@@ -627,31 +636,12 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     @Override
     @SideOnly(Side.CLIENT)
     public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
-        if (pass == 0)
-            renderStatic(null);
-    }
-
-    @Override
-    public void drawBreaking(RenderBlocks r) {
-        renderStatic(r);
-    }
-    
-    public EnumWire getWireType() {
-        return null;
-    }
-    
-    @Override
-    public void onRemoved() {
-        super.onRemoved();
-        
-        if(!world().isRemote) {
-            for(int r = 0; r < 4; r++)
-                if(maskConnects(r)) {
-                    if((connMap & 1<<r) != 0)
-                        notifyCornerChange(r);
-                    else if((connMap & 0x10<<r) != 0)
-                        notifyStraightChange(r);
-                }
+        if (pass == 0) {
+            CCRenderState.reset();
+            CCRenderState.setBrightness(world(), x(), y(), z());
+            CCRenderState.useModelColours(true);
+            RenderWire.render(this);
+            CCRenderState.setColour(-1);
         }
     }
     

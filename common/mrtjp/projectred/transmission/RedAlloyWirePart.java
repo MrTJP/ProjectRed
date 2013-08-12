@@ -8,42 +8,42 @@ public class RedAlloyWirePart extends RedwirePart {
     }
 
     @Override
-    public int getColour() {
-        return ((strength&0xFF)/2 + 60) << 24 | 0xFF;
+    public String getType() {
+        return "pr_redwire";
     }
-    
+
     @Override
     public EnumWire getWireType() {
         return EnumWire.RED_ALLOY;
     }
     
     @Override
-    public String getType() {
-        return "pr_redwire";
+    public int getColour() {
+        return ((signal&0xFF)/2 + 60) << 24 | 0xFF;
     }
-    
-    @Override
-    public int calculateUndersideStrength() {
-        BlockCoord pos = new BlockCoord(getTile()).offset(side);
-        return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, side^1)*17;
-    }
-    
-    @Override
-    public void propogateOther() {
-        for(int s = 0; s < 6; s++)
-            WirePropogator.neighborChanges.add(new BlockCoord(getTile()).offset(side).offset(s));
-    }
-    
-    @Override
-    public int redstoneConductionMap() {
-        return 0x1F;
-    }
-    
+
     @Override
     public int strongPowerLevel(int side) {
         if(side == this.side)
             return rsLevel();
         
         return 0;
+    }
+
+    @Override
+    public int redstoneConductionMap() {
+        return 0x1F;
+    }
+
+    @Override
+    public void propogateOther() {
+        for(int s = 0; s < 6; s++)
+            WirePropogator.neighborChanges.add(new BlockCoord(getTile()).offset(side).offset(s));
+    }
+
+    @Override
+    public int calculateUndersideSignal() {
+        BlockCoord pos = new BlockCoord(getTile()).offset(side);
+        return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, side^1)*17;
     }
 }

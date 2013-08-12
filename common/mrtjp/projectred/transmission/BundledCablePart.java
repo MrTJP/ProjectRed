@@ -21,8 +21,16 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
 {
     public static byte[] tmpSignal = new byte[16];
     
+    public static boolean signalsEqual(byte[] signal1, byte[] signal2) {
+        for(int i = 0; i < 16; i++)
+            if(signal1[i] != signal2[i])
+                return false;
+        
+        return true;
+    }
+
     /**
-     * Currently not available on client
+     * Not available on client
      */
     public byte[] signal = new byte[16];
     public byte colour;
@@ -31,6 +39,22 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
         super(side);
     }
     
+    @Override
+    public String getType() {
+        return "pr_bundled";
+    }
+
+    @Override
+    public EnumWire getWireType() {
+        return EnumWire.BUNDLED_WIRE[colour+1];
+    }
+
+    @Override
+    public void onPlaced(int side, int meta) {
+        super.onPlaced(side, meta);
+        colour = (byte)(meta-EnumWire.BUNDLED_0.ordinal());
+    }
+
     @Override
     public void save(NBTTagCompound tag) {
         super.save(tag);
@@ -58,22 +82,6 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
     }
     
     @Override
-    public void onPlaced(int side, int meta) {
-        super.onPlaced(side, meta);
-        colour = (byte)(meta-EnumWire.BUNDLED_0.ordinal());
-    }
-    
-    @Override
-    public EnumWire getWireType() {
-        return EnumWire.BUNDLED_WIRE[colour+1];
-    }
-    
-    @Override
-    public String getType() {
-        return "pr_bundled";
-    }
-    
-    @Override
     public boolean canConnectToType(WirePart wire, int r) {
         if(wire instanceof BundledCablePart) {
             int ocolour = ((BundledCablePart) wire).colour;
@@ -95,14 +103,6 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
             propogate(prev);
     }
 
-    public static boolean signalsEqual(byte[] signal1, byte[] signal2) {
-        for(int i = 0; i < 16; i++)
-            if(signal1[i] != signal2[i])
-                return false;
-        
-        return true;
-    }
-    
     public void setSignal(byte[] newSignal) {
         System.arraycopy(newSignal, 0, signal, 0, 16);
     }
@@ -124,15 +124,14 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
         
         return tmpSignal;
     }
-    
-    public void calculateCenterSignal() {
-        calculatePartSignal(tile().partMap(6), -1);
-    }
 
-    public void calculateInternalSignal(int r) {
+    public void calculateCornerSignal(int r) {
         int absDir = Rotation.rotateSide(side, r);
         
-        calculatePartSignal(tile().partMap(absDir), (r+2)%4);
+        BlockCoord pos = new BlockCoord(getTile()) .offset(absDir).offset(side);
+        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        if (t != null)
+            calculatePartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side^1));
     }
 
     public void calculateStraightSignal(int r) {
@@ -144,29 +143,30 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
             calculatePartSignal(t.partMap(side), (r+2)%4);
     }
 
-    public void calculateCornerSignal(int r) {
+    public void calculateInternalSignal(int r) {
         int absDir = Rotation.rotateSide(side, r);
         
-        BlockCoord pos = new BlockCoord(getTile()) .offset(absDir).offset(side);
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
-        if (t != null)
-            calculatePartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side^1));
+        calculatePartSignal(tile().partMap(absDir), (r+2)%4);
     }
-    
+
+    public void calculateCenterSignal() {
+        calculatePartSignal(tile().partMap(6), side);
+    }
+
     public void calculatePartSignal(TMultiPart part, int r) {
         if(part instanceof IBundledCablePart) {
-            byte[] osignal = ((IBundledCablePart) part).getSignal();
+            byte[] osignal = ((IBundledCablePart) part).getBundledSignal();
             for(int i = 0; i < 16; i++)
                 if((osignal[i]&0xFF)-1 > (tmpSignal[i]&0xFF))
                     tmpSignal[i] = (byte) (osignal[i]-1);
         } else if(part instanceof InsulatedRedAlloyPart) {
             InsulatedRedAlloyPart insPart = (InsulatedRedAlloyPart)part;
-            int s = insPart.getStrength()-1;
+            int s = insPart.getRedwireSignal()-1;
             if(s > (tmpSignal[insPart.colour]&0xFF))
                 tmpSignal[insPart.colour] = (byte)s;
         }
         else if(part instanceof IBundledEmitter) {
-            byte[] osignal = ((IBundledEmitter) part).getBundledCableStrength(r);
+            byte[] osignal = ((IBundledEmitter) part).getBundledSignal(r);
             if(osignal != null) {
                 for(int i = 0; i < 16; i++)
                     if((osignal[i]&0xFF) > (tmpSignal[i]&0xFF))
@@ -175,6 +175,16 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
         }
     }
     
+    @Override
+    public byte[] getBundledSignal() {
+        return signal;
+    }
+
+    @Override
+    public byte[] getBundledSignal(int side) {
+        return getBundledSignal();
+    }
+
     @Override
     protected boolean debug(EntityPlayer ply) {
         StringBuffer sb = new StringBuffer();
@@ -187,15 +197,5 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
         
         ply.sendChatToPlayer(ChatMessageComponent.func_111077_e(sb.toString()));
         return true;
-    }
-    
-    @Override
-    public byte[] getSignal() {
-        return signal;
-    }
-    
-    @Override
-    public byte[] getBundledCableStrength(int side) {
-        return getSignal();
     }
 }
