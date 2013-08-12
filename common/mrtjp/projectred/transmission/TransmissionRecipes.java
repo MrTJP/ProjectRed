@@ -26,7 +26,7 @@ public class TransmissionRecipes {
         );
         
         /** Insulated Wires **/
-        /*for (int i = 0; i < EnumWire.INSULATED_WIRE.length; i++) {
+        for (int i = 0; i < EnumWire.INSULATED_WIRE.length; i++) {
             EnumWire w = EnumWire.INSULATED_WIRE[i];
             GameRegistry.addRecipe(w.getItemStack(12), 
                     "WrW",
@@ -35,7 +35,7 @@ public class TransmissionRecipes {
                     'W', new ItemStack(Block.cloth, 1, PRColors.get(i).woolId()),
                     'r', EnumPart.REDINGOT.getItemStack()
             );
-        }*/
+        }
         
         /** Bundled Cables **/
         /*GameRegistry.addRecipe(new ShapedOreRecipe(EnumWire.BUNDLED_N.getItemStack(), 

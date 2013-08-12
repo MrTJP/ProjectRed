@@ -38,4 +38,12 @@ public class RedAlloyWirePart extends RedwirePart {
     public int redstoneConductionMap() {
         return 0x1F;
     }
+    
+    @Override
+    public int strongPowerLevel(int side) {
+        if(side == this.side)
+            return rsLevel();
+        
+        return 0;
+    }
 }

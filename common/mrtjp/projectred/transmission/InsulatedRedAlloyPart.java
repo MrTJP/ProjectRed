@@ -1,77 +1,80 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.core.BasicUtils;
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.multipart.PartMap;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class InsulatedRedAlloyPart extends RedwirePart implements IBundledUpdatable {
+public class InsulatedRedAlloyPart extends RedwirePart {
 
-    public InsulatedRedAlloyPart(EnumWire type, boolean isJacketedWire, int onside) {
-        super(type, isJacketedWire, onside);
-        syncSignalStrength = true;
+    public byte colour;
+    
+    public InsulatedRedAlloyPart(int side) {
+        super(side);
     }
-
+    
     @Override
-    public boolean connectsToWireType(WirePart wire) {
-        if (wire.getWireType() == EnumWire.RED_ALLOY || wire instanceof BundledCablePart) {
-            return true;
-        }
-        return wire.getWireType() == getWireType();
+    public void save(NBTTagCompound tag) {
+        super.save(tag);
+        tag.setByte("colour", colour);
     }
-
+    
     @Override
-    public boolean canProvideStrongPowerInDirection(int dir) {
-        return false;
+    public void load(NBTTagCompound tag) {
+        super.load(tag);
+        colour = tag.getByte("colour");
     }
-
+    
     @Override
-    public int getInputPowerStrength(int x, int y, int z, int dir, int side, boolean countWires) {
-        int rv = BasicWireUtils.getPowerStrength(world(), x, y, z, dir, side, countWires);
-
-        if (rv > 0) {
-            return rv;
-        }
+    public void writeDesc(MCDataOutput packet) {
+        super.writeDesc(packet);
+        packet.writeByte(colour);
+    }
+    
+    @Override
+    public void readDesc(MCDataInput packet) {
+        super.readDesc(packet);
+        colour = packet.readByte();
+    }
+    
+    @Override
+    public void onPlaced(int side, int meta) {
+        super.onPlaced(side, meta);
+        colour = (byte)(meta-EnumWire.INSULATED_0.ordinal());
+    }
+    
+    @Override
+    public EnumWire getWireType() {
+        return EnumWire.INSULATED_WIRE[colour];
+    }
+    
+    @Override
+    public String getType() {
+        return "pr_insulated";
+    }
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public Icon getIcon() {
+        return getWireType().wireSprites[strength != 0 ? 1 : 0];
+    }
+    
+    @Override
+    public boolean canConnectToType(WirePart wire, int r) {
+        if(wire instanceof InsulatedRedAlloyPart)
+            return ((InsulatedRedAlloyPart) wire).colour == colour;
         
-        TileMultipart tile = BasicUtils.getTileEntity(world(), new BlockCoord(x, y, z), TileMultipart.class);
-        if (tile != null) {
-            if (side == -1) {
-                side = PartMap.CENTER.i;
-            }
-            TMultiPart te = tile.partMap(side);
-            if (te instanceof IBundledEmitter) {
-                int colour = getInsulatedWireColour();
-                byte[] bcStrengthArray = ((IBundledEmitter)te).getBundledCableStrength(side, dir);
-                if (bcStrengthArray != null) {
-                    int bcStrength = bcStrengthArray[colour] & 0xFF;
-                    rv = Math.max(rv, bcStrength);
-                }
-            }
-        }
-        return rv;
+        return true;
     }
-
+    
     @Override
-    public void onBundledInputChanged() {
-        updateSignal(null);
-        updateNextTick = true;
-    }
-
-    public int getInsulatedWireColour() {
-        if (getWireType() == null) {
+    public int weakPowerLevel(int side)
+    {
+        if(this.side == side || this.side == (side^1))
             return 0;
-        }
-        return getWireType().ordinal() - EnumWire.INSULATED_0.ordinal();
-    }
-
-    @Override
-    public Icon getSpecialIconForRender() {
-        if (getRedstoneSignalStrength() > 0) {
-            return this.getWireType().wireSprites[1];
-        } else {
-            return this.getWireType().wireSprites[0];
-        }
+        
+        return super.weakPowerLevel(side);
     }
 }
