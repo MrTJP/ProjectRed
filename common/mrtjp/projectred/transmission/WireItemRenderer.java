@@ -1,13 +1,9 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.core.BasicRenderUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 
-import org.lwjgl.opengl.GL11;
-
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Scale;
 import cpw.mods.fml.relauncher.Side;

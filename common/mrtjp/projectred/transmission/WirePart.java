@@ -47,9 +47,9 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     
     static {
         for(int t = 0; t < 3; t++) {
-            Cuboid6 selection = new Cuboid6(0, 0, 0, 1, (t+1)/8D, 1)
+            Cuboid6 selection = new Cuboid6(0, 0, 0, 1, (t+2)/16D, 1)
                 .expand(-0.005);//subtract the box a little because we'd like things like posts to get first hit
-            Cuboid6 occlusion = new Cuboid6(2/8D, 0, 2/8D, 6/8D, (t+1)/8D, 6/8D);
+            Cuboid6 occlusion = new Cuboid6(2/8D, 0, 2/8D, 6/8D, (t+2)/16D, 6/8D);
             for(int s = 0; s < 6; s++) {
                 selectionBounds[t][s] = selection.copy().apply(Rotation.sideRotations[s].at(Vector3.center));
                 occlusionBounds[t][s] = occlusion.copy().apply(Rotation.sideRotations[s].at(Vector3.center));
@@ -154,7 +154,8 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     public void onAdded() {
         if(!world().isRemote) {
             updateOpenConnections();
-            boolean changed = updateInternalConnections() || updateExternalConnections();
+            boolean changed = updateInternalConnections();
+            changed|=updateExternalConnections();//don't use || because it's fail fast
             if(changed) {
                 sendConnUpdate();
                 updateAndPropogate(null, false);
@@ -274,7 +275,14 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     
     public boolean connectionOpen(int r) {
         int absDir = Rotation.rotateSide(side, r);
-        return (((TRedstoneTile)tile()).openConnections(absDir) & 1<<Rotation.rotationTo(absDir&6, side)) != 0;
+        TMultiPart facePart = tile().partMap(absDir);
+        if(facePart != null && (!(facePart instanceof WirePart) || !canConnectToType((WirePart)facePart, r)))
+            return false;
+        
+        if(tile().partMap(PartMap.edgeBetween(side, absDir)) != null)
+            return false;
+        
+        return true;
     }
 
     public boolean connectStraight(int r) {
@@ -289,10 +297,12 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
                 return ((IConnectable) tp).connect(this, (r+2)%4);
         }
         
-        return getExternalConnectionOveride(absDir);
+        return connectStraightOverride(absDir);
     }
 
-    public abstract boolean getExternalConnectionOveride(int absDir);
+    public boolean connectStraightOverride(int absDir) {
+        return false;
+    }
 
     /**
      * Return a corner connection state.
@@ -346,8 +356,11 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         TMultiPart tp = tile().partMap(absDir);
         if (tp instanceof IConnectable)
             return ((IConnectable) tp).connectInternal(this, Rotation.rotationTo(absDir, side));
-        if (tp instanceof IRedstonePart)
-            return ((IRedstonePart) tp).canConnectRedstone(side);
+        
+        return connectInternalOverride(r, tp);
+    }
+    
+    public boolean connectInternalOverride(int r, TMultiPart p) {
         return false;
     }
 
@@ -433,6 +446,85 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     
     public boolean maskOpen(int r) {
         return (connMap & 0x1000 << r) != 0;
+    }
+    
+    public void propogate(TMultiPart prev) {
+        WirePropogator.beginPropogating();
+        
+        WirePropogator.partChanges.add(this);
+        
+        for(int r = 0; r < 4; r++)
+            if((connMap & 1<<r) != 0)
+                propogateCorner(r, prev);
+            else if((connMap & 0x10<<r) != 0)
+                propogateStraight(r, prev);
+            else if((connMap & 0x100<<r) != 0)
+                propogateInternal(r, prev);
+        
+        if((connMap & 0x10000) != 0)
+            propogateCenter(prev);
+        
+        propogateOther();
+        
+        WirePropogator.endPropogating(world());
+    }
+
+    public void propogateCorner(int r, TMultiPart prev) {
+        int absDir = Rotation.rotateSide(side, r);
+        BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side);
+
+        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        if (t != null) {
+            TMultiPart tp = t.partMap(absDir^1);
+            if(tp == prev)
+                return;
+            if(propogateTo(tp))
+                return;
+        }
+        
+        WirePropogator.neighborChanges.add(pos);
+    }
+    
+    public void propogateStraight(int r, TMultiPart prev) {
+        int absDir = Rotation.rotateSide(side, r);
+        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
+
+        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        if (t != null) {
+            TMultiPart tp = t.partMap(side);
+            if(tp == prev)
+                return;
+            propogateTo(tp);
+        }
+        
+        //no need for neighbour change, onPartChanged will do it for us
+    }
+    
+    public void propogateInternal(int r, TMultiPart prev) {
+        int absDir = Rotation.rotateSide(side, r);
+        TMultiPart tp = tile().partMap(absDir);
+        if(tp == prev)
+            return;
+        propogateTo(tp);
+    }
+    
+    public void propogateCenter(TMultiPart prev) {
+        TMultiPart tp = tile().partMap(6);
+        if(tp == prev)
+            return;
+        propogateTo(tp);
+    }
+
+    public void propogateOther() {
+    }
+    
+    public boolean propogateTo(TMultiPart part) {
+        if(part instanceof IWirePart) {
+            ((IWirePart) part).updateAndPropogate(this, false);
+            return true;
+        }
+        
+        return false;
     }
     
     protected abstract boolean debug(EntityPlayer ply);

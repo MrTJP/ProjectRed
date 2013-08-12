@@ -35,34 +35,29 @@ public enum EnumWire {
     INSULATED_12("Brown insulated wire", "pr_insulated", 1, 0xFFFFFF, "insulated/brownoff", "insulated/brownon"),
     INSULATED_13("Green insulated wire", "pr_insulated", 1, 0xFFFFFF, "insulated/greenoff", "insulated/greenon"),
     INSULATED_14("Red insulated wire", "pr_insulated", 1, 0xFFFFFF, "insulated/redoff", "insulated/redon"),
-    INSULATED_15("Black insulated wire", "pr_insulated", 1, 0xFFFFFF, "insulated/blackoff", "insulated/blackon");/*,
+    INSULATED_15("Black insulated wire", "pr_insulated", 1, 0xFFFFFF, "insulated/blackoff", "insulated/blackon"),
 
-    BUNDLED_N("Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/neutral"),
-    BUNDLED_0("White Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/white"),
-    BUNDLED_1("Orange Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/orange"),
-    BUNDLED_2("Magenta Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/magenta"),
-    BUNDLED_3("Light Blue Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/lightblue"),
-    BUNDLED_4("Yellow Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/yellow"),
-    BUNDLED_5("Lime Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/lime"),
-    BUNDLED_6("Pink Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/pink"),
-    BUNDLED_7("Grey Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/grey"),
-    BUNDLED_8("Light Grey Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/lightgrey"),
-    BUNDLED_9("Cyan Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/cyan"),
-    BUNDLED_10("Purple Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/purple"),
-    BUNDLED_11("Blue Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/blue"),
-    BUNDLED_12("Brown Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/brown"),
-    BUNDLED_13("Green Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/green"),
-    BUNDLED_14("Red Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/red"),
-    BUNDLED_15("Black Bundled cable", BundledCablePart.class, 4, 6, "bundledcable.obj", "jacketedbundled.obj", "bundled/black"), 
-    ;*/
-
-    public static final int PLAIN_RED_ALLOY_META = 0;
-    public static final int INSULATED_RED_ALLOY_META = 1;
-    public static final int BUNDLED_META = 2;
+    BUNDLED_N("Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/neutral"),
+    BUNDLED_0("White Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/white"),
+    BUNDLED_1("Orange Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/orange"),
+    BUNDLED_2("Magenta Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/magenta"),
+    BUNDLED_3("Light Blue Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/lightblue"),
+    BUNDLED_4("Yellow Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/yellow"),
+    BUNDLED_5("Lime Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/lime"),
+    BUNDLED_6("Pink Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/pink"),
+    BUNDLED_7("Grey Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/grey"),
+    BUNDLED_8("Light Grey Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/lightgrey"),
+    BUNDLED_9("Cyan Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/cyan"),
+    BUNDLED_10("Purple Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/purple"),
+    BUNDLED_11("Blue Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/blue"),
+    BUNDLED_12("Brown Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/brown"),
+    BUNDLED_13("Green Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/green"),
+    BUNDLED_14("Red Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/red"),
+    BUNDLED_15("Black Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/black");
 
     public static EnumWire[] VALID_WIRE = values();
     public static EnumWire[] INSULATED_WIRE = { INSULATED_0, INSULATED_1, INSULATED_2, INSULATED_3, INSULATED_4, INSULATED_5, INSULATED_6, INSULATED_7, INSULATED_8, INSULATED_9, INSULATED_10, INSULATED_11, INSULATED_12, INSULATED_13, INSULATED_14, INSULATED_15, };
-    //public static EnumWire[] BUNDLED_WIRE = { BUNDLED_N, BUNDLED_0, BUNDLED_1, BUNDLED_2, BUNDLED_3, BUNDLED_4, BUNDLED_5, BUNDLED_6, BUNDLED_7, BUNDLED_8, BUNDLED_9, BUNDLED_10, BUNDLED_11, BUNDLED_12, BUNDLED_13, BUNDLED_14, BUNDLED_15 };
+    public static EnumWire[] BUNDLED_WIRE = { BUNDLED_N, BUNDLED_0, BUNDLED_1, BUNDLED_2, BUNDLED_3, BUNDLED_4, BUNDLED_5, BUNDLED_6, BUNDLED_7, BUNDLED_8, BUNDLED_9, BUNDLED_10, BUNDLED_11, BUNDLED_12, BUNDLED_13, BUNDLED_14, BUNDLED_15 };
 
     public final String name;
     public final String wireType;
@@ -108,9 +103,8 @@ public enum EnumWire {
     public void loadTextures(IconRegister reg) {
         if (wireSpritePaths.length > 0) {
             wireSprites = new Icon[wireSpritePaths.length];
-            for (int i = 0; i < wireSpritePaths.length; i++) {
+            for (int i = 0; i < wireSpritePaths.length; i++)
                 wireSprites[i] = reg.registerIcon("projectred:wires/" + wireSpritePaths[i]);
-            }
         }
         if(hasJacketedForm()) {
             jacketMap = CCModel.parseObjModels(new ResourceLocation("projectred", "/textures/obj/wiring/" + jacketModelPath), 7, new InvertX());
@@ -132,24 +126,21 @@ public enum EnumWire {
     }
 
     public ItemStack getJacketedItemStack(int i) {
-        if (!this.hasJacketedForm()) {
+        if (!this.hasJacketedForm())
             return null;
-        }
+        
         return new ItemStack(ProjectRed.itemPartJacketedWire, i, meta);
     }
 
     public static void initOreDictDefinitions() {
         for (EnumWire w : EnumWire.VALID_WIRE) {
             OreDictionary.registerOre(oreDictDefinition, w.getItemStack());
-            if (w.hasJacketedForm()) {
+            if (w.hasJacketedForm())
                 OreDictionary.registerOre(oreDictDefinitionJacketed, w.getJacketedItemStack());
-            }
         }
-        for (EnumWire w : EnumWire.INSULATED_WIRE) {
+        for (EnumWire w : EnumWire.INSULATED_WIRE)
             OreDictionary.registerOre(oreDictDefinitionInsulated, w.getItemStack());
-        }
-        /*for (EnumWire w : EnumWire.BUNDLED_WIRE) {
+        for (EnumWire w : EnumWire.BUNDLED_WIRE)
             OreDictionary.registerOre(oreDictDefinitionBundled, w.getItemStack());
-        }*/
     }
 }

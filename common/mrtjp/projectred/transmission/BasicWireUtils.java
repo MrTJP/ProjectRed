@@ -28,7 +28,7 @@ public class BasicWireUtils {
         if (b == null)
             return false;
         // Manual list of allowed blocks that wire can sit on.
-        if (b == Block.glowStone || b == Block.pistonBase || b == Block.pistonStickyBase || b == Block.pistonMoving || b == Block.glass)
+        if (b == Block.glowStone || b == Block.pistonBase || b == Block.pistonStickyBase || b == Block.pistonMoving)
             return true;
         return b.isBlockSolidOnSide(w, x, y, z, side);
     }

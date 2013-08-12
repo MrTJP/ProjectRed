@@ -38,7 +38,7 @@ public class TransmissionRecipes {
         }
         
         /** Bundled Cables **/
-        /*GameRegistry.addRecipe(new ShapedOreRecipe(EnumWire.BUNDLED_N.getItemStack(), 
+        GameRegistry.addRecipe(new ShapedOreRecipe(EnumWire.BUNDLED_N.getItemStack(), 
                 "SWS",
                 "WWW",
                 "SWS",
@@ -58,10 +58,10 @@ public class TransmissionRecipes {
                     PRColors.get(bundledColor).getOreDict()
             ));
             bundledColor++;
-        }*/
+        }
         
         /** Jacketed Wiring **/
-        /*for (EnumWire w : EnumWire.VALID_WIRE) {
+        for (EnumWire w : EnumWire.VALID_WIRE) {
             if (w.hasJacketedForm()) {
                 // Regular to jacketed
                 GameRegistry.addRecipe(w.getJacketedItemStack(3), 
@@ -79,7 +79,7 @@ public class TransmissionRecipes {
                         'i', w.getJacketedItemStack()
                 );
             }
-        }*/
+        }
         
     }
     private static void initPartRecipes() {
@@ -92,11 +92,11 @@ public class TransmissionRecipes {
         );
 
         /** Bundled Plate **/
-        /*GameRegistry.addRecipe(EnumPart.BUNDLEDPLATE.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.BUNDLEDPLATE.getItemStack(), 
                 "r",
                 "p",
                 'r', EnumWire.BUNDLED_N.getItemStack(),
                 'p', EnumPart.PLATE.getItemStack()
-        );*/
+        );
     }
 }

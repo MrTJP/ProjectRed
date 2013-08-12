@@ -10,9 +10,8 @@ import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.integration.GateLogic.WorldStateBound;
 import mrtjp.projectred.transmission.BasicWireUtils;
-//import mrtjp.projectred.transmission.BundledCablePart;
+import mrtjp.projectred.transmission.BundledCablePart;
 import mrtjp.projectred.transmission.IBundledEmitter;
-import mrtjp.projectred.transmission.IBundledUpdatable;
 import mrtjp.projectred.transmission.IConnectable;
 import mrtjp.projectred.transmission.RedwirePart;
 import mrtjp.projectred.transmission.WirePart;
@@ -47,7 +46,7 @@ import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter, IBundledUpdatable, IConnectable, IFaceRedstonePart, JNormalOcclusion, IRandomDisplayTick {
+public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter, IConnectable, IFaceRedstonePart, JNormalOcclusion, IRandomDisplayTick {
     private EnumGate type;
 
     /** Server-side logic for gate **/
@@ -369,7 +368,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
         if (tmp != null) {
             TMultiPart te = tmp.partMap(side);
             if (te instanceof IBundledEmitter) {
-                byte[] values = ((IBundledEmitter) te).getBundledCableStrength(side, abs ^ 1);
+                byte[] values = ((IBundledEmitter) te).getBundledCableStrength(-50);//TODO
                 if (values == null) {
                     return 0;
                 }
@@ -413,8 +412,8 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     private byte[] returnedBundledCableStrength;
 
     @Override
-    public byte[] getBundledCableStrength(int blockFace, int toDirection) {
-        if (!hasBundledConnections) {
+    public byte[] getBundledCableStrength(int side) {//TODO
+        /*if (!hasBundledConnections) {
             return null;
         }
 
@@ -441,14 +440,8 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
             bitmask >>= 1;
         }
 
-        return returnedBundledCableStrength;
-    }
-
-    @Override
-    public void onBundledInputChanged() {
-        if (hasBundledConnections) {
-            updateLogic(false, false);
-        }
+        return returnedBundledCableStrength;*/
+        return null;
     }
 
     /** START TILEMULTIPART INTERACTIONS **/
