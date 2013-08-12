@@ -17,8 +17,6 @@ public class ExpansionRecipes {
         initOtherAlloySmelterRecipes();
     }
     
-
-    
     private static void initMachineRecipes() {
         
         
@@ -51,12 +49,12 @@ public class ExpansionRecipes {
         }, EnumPart.REDINGOT.getItemStack(), 50));
         /*AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
                 EnumWire.BUNDLED_N.getItemStack(8),
-        }, EnumPart.REDINGOT.getItemStack(5), 90));
+        }, EnumPart.REDINGOT.getItemStack(5), 90));*/
         for (EnumWire w : EnumWire.INSULATED_WIRE) {
             AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
                     w.getItemStack(4)
             }, EnumPart.REDINGOT.getItemStack(), 80));
-        }*/
+        }
     }
 
 

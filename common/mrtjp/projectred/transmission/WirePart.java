@@ -99,9 +99,8 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         connMap = packet.readInt();
     }
 
-    public void updateChange() {
-        tile().markRender();
-        tile().markDirty();
+    public void onPlaced(int side, int meta) {
+        this.side = (byte) (side^1);
     }
 
     @Override
@@ -317,7 +316,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             if (tp instanceof IConnectable) {
                 boolean b = ((IConnectable) tp).connectCorner(this, Rotation.rotationTo(absDir^1, side^1));
                 if(b) {
-                    if(tp instanceof WirePart && ((WirePart)tp).getThickness() < getThickness())//let them connect to us
+                    if(tp instanceof WirePart && !renderThisCorner((WirePart)tp))//let them connect to us
                         return 1;
                     
                     return 2;
@@ -381,7 +380,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         {
             int oldConn = connMap;
             connMap|=0x1<<r;
-            if(wire.getThickness() >= getThickness())//render connection
+            if(renderThisCorner(wire))//render connection
                 connMap|=0x100000<<r;
                 
             if(oldConn != connMap)
@@ -389,6 +388,13 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             return true;
         }
         return false;
+    }
+    
+    public boolean renderThisCorner(WirePart wire) {
+        if(wire.getThickness() == getThickness())
+            return side < wire.side;
+        
+        return wire.getThickness() > getThickness();
     }
     
     @Override
@@ -454,7 +460,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     }
 
     public ItemStack getItem() {
-        return EnumWire.RED_ALLOY.getItemStack();
+        return getWireType().getItemStack();
     }
 
     @Override
@@ -514,12 +520,12 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     }
     
     public int getThickness() {
-        return 0;
+        return getWireType().thickness;
     }
     
     @SideOnly(Side.CLIENT)
     public Icon getIcon() {
-        return EnumWire.RED_ALLOY.wireSprites[0];
+        return getWireType().wireSprites[0];
     }
     
     public int getColour() {

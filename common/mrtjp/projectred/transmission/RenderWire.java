@@ -103,7 +103,7 @@ public class RenderWire {
                 generateSide(r);
             
             model.apply(new UVScale(1/32D));
-            model.shrinkUVs(0.005);
+            model.shrinkUVs(0.0005);
             model.apply(Rotation.sideOrientation(side, 0).at(Vector3.center));
             model.computeNormals();
             model.computeLighting(LightModel.standardLightModel);
@@ -248,9 +248,13 @@ public class RenderWire {
         private void generateCenter() {
             int tex;//0 = straight n/s, 1 = straight e/w, 2 = circle
             if(connCount == 0)
-                tex = 0;
+                tex = 1;
             else if(connCount == 1)
                 tex = (connMask & 5) != 0 ? 0 : 1;//if there is one connection, and it is north/south then north/south, otherwise east/west
+            else if(connMask == 5)
+                tex = 0;
+            else if(connMask == 10)
+                tex = 1;
             else
                 tex = 2;
             
@@ -261,8 +265,8 @@ public class RenderWire {
                     new Vertex5(0.5-w, h, 0.5-w, 8-tw, 16-tw)};
             
             IUVTransformation uvt = null;
-            if(tex == 1)//straight e/w (rotate texture clockwise 90)
-                uvt = new UVT(Rotation.quarterRotations[1].at(new Vector3(8, 0, 16)));
+            if(tex == 1)//straight e/w (rotate texture counterclockwise 90)
+                uvt = new UVT(Rotation.quarterRotations[3].at(new Vector3(8, 0, 16)));
             else if(tex == 2)//circle (translate across to u = 24)
                 uvt = new UVTranslation(16, 0);
             
@@ -331,11 +335,16 @@ public class RenderWire {
      * @param connMap The connection mask of the wire
      */
     public static int modelKey(int side, int thickness, int connMap) {
-        int key = connMap&0xF0;//take the straight connections
-        key|=(connMap>>20)&0xF;//take the corner render connections and put them in the lowest 4 bits
+        int key = connMap&0xFF;//take the straight and corner connections
+        
+        int renderCorner = (connMap>>20)&0xF;
+        key|=(renderCorner^(key&0xF))<<4;//any corner connections that aren't rendered convert to straight
+        key&= ~0xF | renderCorner;//set corners to renderCorners
+        
         int internal = (connMap&0xF00)>>8;//internal connections
         key|=internal<<4|internal;//if internal is set, set both straight and corner to 1
-        key|=side<<8;//add side
+        
+        key|=(side+thickness*6)<<8;//add side and thickness
         return key;
     }
     

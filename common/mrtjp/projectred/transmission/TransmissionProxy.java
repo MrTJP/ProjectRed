@@ -49,7 +49,7 @@ public class TransmissionProxy implements IProxy, IPartFactory {
         if(id.equals("pr_redwire"))
             return new RedAlloyWirePart(0);
         else if(id.equals("pr_insulated"))
-            return null;
+            return new InsulatedRedAlloyPart(0);
         else if(id.equals("pr_bundled"))
             return null;
         

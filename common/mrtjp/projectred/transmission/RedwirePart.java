@@ -69,9 +69,6 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     
     @Override
     public int strongPowerLevel(int side) {
-        if(side == this.side)
-            return rsLevel();
-        
         return 0;
     }
     
