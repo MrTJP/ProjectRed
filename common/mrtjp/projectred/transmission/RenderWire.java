@@ -4,6 +4,7 @@ import net.minecraft.util.Icon;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCModel;
+import codechicken.lib.render.ColourModifier;
 import codechicken.lib.render.ColourMultiplier;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IVertexModifier;
@@ -382,7 +383,7 @@ public class RenderWire {
     }
     
     public static void render(WirePart w) {
-        IVertexModifier m = w.getColour() == -1 ? null : 
+        IVertexModifier m = w.getColour() == -1 ? ColourModifier.instance : 
             new ColourMultiplier(w.getColour());
         getOrGenerateModel(modelKey(w)).render(
                 new Translation(w.x(), w.y(), w.z()), 
