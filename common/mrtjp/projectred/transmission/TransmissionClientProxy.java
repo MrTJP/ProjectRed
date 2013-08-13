@@ -2,10 +2,14 @@ package mrtjp.projectred.transmission;
 
 import static mrtjp.projectred.ProjectRed.itemPartJacketedWire;
 import static mrtjp.projectred.ProjectRed.itemPartWire;
+import mrtjp.projectred.core.IProxy;
 import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-public class TransmissionClientProxy extends TransmissionProxy {
+public class TransmissionClientProxy implements IProxy {
+
+    @Override
+    public void preinit() {}
 
     @Override
     public void init() {
@@ -16,4 +20,7 @@ public class TransmissionClientProxy extends TransmissionProxy {
         MinecraftForgeClient.registerItemRenderer(itemPartWire.itemID, WireItemRenderer.instance);
         MinecraftForgeClient.registerItemRenderer(itemPartJacketedWire.itemID, JacketedWireItemRenderer.instance);
     }
+
+    @Override
+    public void postinit() {}
 }

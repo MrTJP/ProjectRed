@@ -12,7 +12,8 @@ public class TransmissionProxy implements IProxy, IPartFactory {
 
     @Override
     public void preinit() {
-
+        itemPartWire = new ItemPartWire(Configurator.part_wire.getInt());
+        itemPartJacketedWire = new ItemPartJacketedWire(Configurator.part_jwire.getInt());
     }
 
     @Override
@@ -26,9 +27,6 @@ public class TransmissionProxy implements IProxy, IPartFactory {
         }
         MultiPartRegistry.registerParts(this, wires);
         MultiPartRegistry.registerParts(this, jwires);
-
-        itemPartWire = new ItemPartWire(Configurator.part_wire.getInt());
-        itemPartJacketedWire = new ItemPartJacketedWire(Configurator.part_jwire.getInt());
 
         TransmissionRecipes.initTransmissionRecipes();
         EnumWire.initOreDictDefinitions();

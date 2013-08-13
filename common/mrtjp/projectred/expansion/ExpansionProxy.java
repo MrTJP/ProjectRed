@@ -11,11 +11,6 @@ public class ExpansionProxy implements IProxy {
 
     @Override
     public void preinit() {
-
-    }
-
-    @Override
-    public void init() {
         blockMachines = new BlockMachines(Configurator.block_machinesID.getInt());
         GameRegistry.registerBlock(blockMachines, ItemBlockMachines.class, "projectred.expansion.machines");
         for (EnumMachine m : EnumMachine.VALID_MACHINES) {
@@ -23,6 +18,10 @@ public class ExpansionProxy implements IProxy {
         }
 
         itemVAWT = new ItemVAWT(Configurator.item_vawtID.getInt());
+    }
+
+    @Override
+    public void init() {
         ExpansionRecipes.initRecipes();
     }
 

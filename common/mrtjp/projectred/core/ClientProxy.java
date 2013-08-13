@@ -26,7 +26,7 @@ public class ClientProxy extends CommonProxy {
     public void postinit() {
         super.postinit();
         for (IProjectRedModule m : initializedModules) {
-            m.getCommonProxy().postinit();
+            m.getClientProxy().postinit();
         }
     }
 }

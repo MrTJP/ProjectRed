@@ -64,10 +64,6 @@ public class ExplorationProxy implements IProxy {
 
     @Override
     public void preinit() {
-    }
-
-    @Override
-    public void init() {
         GameRegistry.registerWorldGenerator(GenerationManager.instance);
 
         itemWoolGin = new ItemWoolGin(Configurator.item_woolginID.getInt());
@@ -80,16 +76,6 @@ public class ExplorationProxy implements IProxy {
 
         blockStones = new BlockSpecialStone(Configurator.block_stonesID.getInt());
         GameRegistry.registerBlock(blockStones, ItemBlockSpecialStone.class, "projectred.exploration.stone");
-
-        if (Configurator.gen_SpreadingMoss.getBoolean(true)) {
-            int mc = Block.cobblestoneMossy.blockID;
-            Block.blocksList[mc] = null;
-            new BlockPhotosyntheticCobblestone(mc);
-
-            int sb = Block.stoneBrick.blockID;
-            Block.blocksList[sb] = null;
-            new BlockPhotosyntheticStoneBrick(sb);
-        }
 
         toolMaterialRuby = EnumHelper.addToolMaterial("RUBY", 2, 500, 8.0F, 4, 12);
         toolMaterialSapphire = EnumHelper.addToolMaterial("SAPPHIRE", 2, 500, 8.0F, 3, 16);
@@ -147,6 +133,19 @@ public class ExplorationProxy implements IProxy {
         itemSapphireSickle = new ItemGemSickle(Configurator.item_sapphireSickle.getInt(), EnumSpecialTool.SAPPHIRESICKLE);
         itemPeridotSickle = new ItemGemSickle(Configurator.item_peridotSickle.getInt(), EnumSpecialTool.PERIDOTSICKLE);
         itemDiamondSickle = new ItemGemSickle(Configurator.item_diamondSickle.getInt(), EnumSpecialTool.DIAMONDSICKLE);
+    }
+
+    @Override
+    public void init() {
+        if (Configurator.gen_SpreadingMoss.getBoolean(true)) {
+            int mc = Block.cobblestoneMossy.blockID;
+            Block.blocksList[mc] = null;
+            new BlockPhotosyntheticCobblestone(mc);
+
+            int sb = Block.stoneBrick.blockID;
+            Block.blocksList[sb] = null;
+            new BlockPhotosyntheticStoneBrick(sb);
+        }
 
         ExplorationRecipes.initRecipes();
     }

@@ -3,12 +3,13 @@ package mrtjp.projectred.exploration;
 import static mrtjp.projectred.ProjectRed.*;
 import static mrtjp.projectred.ProjectRed.itemWoolGin;
 import net.minecraftforge.client.MinecraftForgeClient;
+import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
 import mrtjp.projectred.exploration.ItemGemSaw.GemSawItemRenderer;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-public class ExplorationClientProxy extends ExplorationProxy {
+public class ExplorationClientProxy implements IProxy {
 
     @Override
     public void preinit(){}
