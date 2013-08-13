@@ -317,7 +317,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             return 0;
         
         pos.offset(side);
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(absDir^1);
             if (tp instanceof IConnectable) {
@@ -337,7 +337,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         if(world().isAirBlock(pos.x, pos.y, pos.z))
             return true;
         
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if(t != null)
             return t.partMap(side1) == null && t.partMap(side2) == null && t.partMap(PartMap.edgeBetween(side1, side2)) == null;
         
@@ -349,7 +349,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         
         BlockCoord pos = new BlockCoord(getTile());
         pos.offset(absDir);
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(side);
             if (tp instanceof IConnectable)
@@ -486,7 +486,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         int absDir = Rotation.rotateSide(side, r);
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side);
 
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(absDir^1);
             if(tp == prev)
@@ -502,7 +502,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         int absDir = Rotation.rotateSide(side, r);
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
 
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(side);
             if(tp == prev)

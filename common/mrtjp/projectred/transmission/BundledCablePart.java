@@ -179,7 +179,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
         int absDir = Rotation.rotateSide(side, r);
         
         BlockCoord pos = new BlockCoord(getTile()) .offset(absDir).offset(side);
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
             calculatePartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side^1));
     }
@@ -188,7 +188,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
         int absDir = Rotation.rotateSide(side, r);
         
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
             calculatePartSignal(t.partMap(side), (r+2)%4);
     }
