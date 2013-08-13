@@ -90,6 +90,10 @@ public class BlockSpecialStone extends Block {
         }
 
         public ItemStack getItemStack() {
+            return getItemStack(1);
+        }
+        
+        public ItemStack getItemStack(int i) {
             return new ItemStack(ProjectRed.blockStones, 1, meta);
         }
     }

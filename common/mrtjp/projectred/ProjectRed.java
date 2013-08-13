@@ -19,7 +19,9 @@ import mrtjp.projectred.exploration.BlockSpecialStone;
 import mrtjp.projectred.exploration.ItemGemAxe;
 import mrtjp.projectred.exploration.ItemGemHoe;
 import mrtjp.projectred.exploration.ItemGemPickaxe;
+import mrtjp.projectred.exploration.ItemGemSaw;
 import mrtjp.projectred.exploration.ItemGemShovel;
+import mrtjp.projectred.exploration.ItemGemSickle;
 import mrtjp.projectred.exploration.ItemGemSword;
 import mrtjp.projectred.exploration.ItemWoolGin;
 import mrtjp.projectred.exploration.ModuleExploration;
@@ -107,6 +109,23 @@ public class ProjectRed {
     public static ItemGemSword itemSapphireSword;
     public static ItemGemSword itemPeridotSword;
     
+    public static ItemGemSaw itemWoodSaw;
+    public static ItemGemSaw itemStoneSaw;
+    public static ItemGemSaw itemIronSaw;
+    public static ItemGemSaw itemGoldSaw;
+    public static ItemGemSaw itemRubySaw;
+    public static ItemGemSaw itemSapphireSaw;
+    public static ItemGemSaw itemPeridotSaw;
+    public static ItemGemSaw itemDiamondSaw;
+    
+    public static ItemGemSickle itemWoodSickle;
+    public static ItemGemSickle itemStoneSickle;
+    public static ItemGemSickle itemIronSickle;
+    public static ItemGemSickle itemGoldSickle;
+    public static ItemGemSickle itemRubySickle;
+    public static ItemGemSickle itemSapphireSickle;
+    public static ItemGemSickle itemPeridotSickle;
+    public static ItemGemSickle itemDiamondSickle;
     
 
 

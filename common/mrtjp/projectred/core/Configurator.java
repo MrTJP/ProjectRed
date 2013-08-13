@@ -67,6 +67,22 @@ public class Configurator {
     public static Property item_rubySword;
     public static Property item_sapphireSword;
     public static Property item_peridotSword;
+    public static Property item_woodSaw;
+    public static Property item_stoneSaw;
+    public static Property item_ironSaw;
+    public static Property item_goldSaw;
+    public static Property item_rubySaw;
+    public static Property item_sapphireSaw;
+    public static Property item_peridotSaw;
+    public static Property item_diamondSaw;
+    public static Property item_woodSickle;
+    public static Property item_stoneSickle;
+    public static Property item_ironSickle;
+    public static Property item_goldSickle;
+    public static Property item_rubySickle;
+    public static Property item_sapphireSickle;
+    public static Property item_peridotSickle;
+    public static Property item_diamondSickle;
 
     /** Generation **/
     public static Property gen_MarbleCave;
@@ -131,6 +147,22 @@ public class Configurator {
         item_rubySword = localConfig.getItem("rubysword", 9109);
         item_sapphireSword = localConfig.getItem("sapphiresword", 9110);
         item_peridotSword = localConfig.getItem("peridotsword", 9112);
+        item_woodSaw = localConfig.getItem("woodsaw", 9113);
+        item_stoneSaw = localConfig.getItem("stonesaw", 9114);
+        item_ironSaw = localConfig.getItem("ironsaw", 9115);
+        item_goldSaw = localConfig.getItem("goldsaw", 9116);
+        item_rubySaw = localConfig.getItem("rubysaw", 9117);
+        item_sapphireSaw = localConfig.getItem("sapphiresaw", 9118);
+        item_peridotSaw = localConfig.getItem("peridotsaw", 9119);
+        item_diamondSaw = localConfig.getItem("diamondsaw", 9120);
+        item_woodSickle = localConfig.getItem("woodsickle", 9121);
+        item_stoneSickle = localConfig.getItem("stonesickle", 9122);
+        item_ironSickle = localConfig.getItem("ironsickle", 9123);
+        item_goldSickle = localConfig.getItem("goldsickle", 9124);
+        item_rubySickle = localConfig.getItem("rubysickle", 9125);
+        item_sapphireSickle = localConfig.getItem("sapphiresickle", 9126);
+        item_peridotSickle = localConfig.getItem("peridotsickle", 9127);
+        item_diamondSickle = localConfig.getItem("diamondsickle", 9128);
 
         gen_Ruby = localConfig.get("World Generation", "Ruby Ore", true);
         gen_Sapphire = localConfig.get("World Generation", "Sapphire Ore", true);

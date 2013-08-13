@@ -7,6 +7,8 @@ v4.0.0pre.38
 - Added volcano generation.
 - Added full set of tools for each gem.
 - Initialized recipes for Expansion.
+- Added full set of saws, overrides default FMP microblock saws.
+- Added full set of sickles.
 
 
 
