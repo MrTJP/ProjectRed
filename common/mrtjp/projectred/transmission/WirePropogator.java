@@ -1,14 +1,23 @@
 package mrtjp.projectred.transmission;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Stack;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
+import mrtjp.projectred.core.CommandDebug;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 import codechicken.multipart.handler.MultipartProxy;
 
 public class WirePropogator {
@@ -39,32 +48,152 @@ public class WirePropogator {
         } catch (Throwable t) {
         }
     }
+    
+    private static class PropogationRun {
+        public class Propogation {
+            public IWirePart part;
+            public TMultiPart prev;
+            public int mode;
+            
+            public Propogation(IWirePart part, TMultiPart prev, int mode) {
+                this.part = part;
+                this.prev = prev;
+                this.mode = mode;
+            }
 
-    public static HashSet<TMultiPart> partChanges = new HashSet<TMultiPart>();
-    public static HashSet<BlockCoord> neighborChanges = new HashSet<BlockCoord>();
-    public static int propogatingChanges = 0;
-    
-    public static void beginPropogating() {
-        propogatingChanges++;
-    }
-    
-    public static void endPropogating(World world) {
-        if(propogatingChanges == 1) {
-            while(!partChanges.isEmpty() || !neighborChanges.isEmpty()) {
-                ArrayList<TMultiPart> _partChanges = new ArrayList<TMultiPart>(partChanges);
-                ArrayList<BlockCoord> _neighborChanges = new ArrayList<BlockCoord>(neighborChanges);
-                partChanges.clear();
-                neighborChanges.clear();
-                
-                for(TMultiPart part : _partChanges)
-                    part.tile().notifyPartChange(part);
-                int blockID = ((Block)MultipartProxy.block()).blockID;
-                for(BlockCoord b : _neighborChanges)
-                    world.notifyBlockOfNeighborChange(b.x, b.y, b.z, blockID);
+            public void propogate() {
+                part.updateAndPropogate(prev, mode);
             }
         }
-        propogatingChanges--;
+        
+        private World world;
+        private PropogationRun parent;
+        
+        private TMultiPart lastCaller;
+        private int count;
+        private int recalcs;
+        
+        private Multimap<TileMultipart, TMultiPart> partChanges = HashMultimap.create();
+        private HashSet<BlockCoord> neighborChanges = new HashSet<BlockCoord>();
+        private LinkedList<Propogation> propogationList = new LinkedList<Propogation>();
+        
+        public void clear() {
+            partChanges.clear();
+            neighborChanges.clear();
+            count = 0;
+            recalcs = 0;
+            lastCaller = null;
+            
+            reusableRuns.add(this);
+        }
+        
+        public void finish() {
+            currentRun = null;
+            
+            if(partChanges.isEmpty() && neighborChanges.isEmpty()) {
+                finishing = parent;
+                clear();
+                return;
+            }
+            
+            finishing = this;
+
+            if(CommandDebug.WIRE_READING)
+                System.out.println(""+count+" propogations, "+partChanges.size()+" part changes, "+neighborChanges.size()+" block updates");
+            
+            for(Entry<TileMultipart, Collection<TMultiPart>> entry : partChanges.asMap().entrySet()) {
+                Collection<TMultiPart> parts = entry.getValue();
+                for(TMultiPart part : entry.getKey().jPartList())
+                    if(parts.contains(part)) {
+                        ((IWirePart)part).onSignalUpdate();
+                    }
+                    else {
+                        for(TMultiPart cpart : parts)
+                            part.onPartChanged(cpart);
+                    }
+            }
+            
+            int blockID = ((Block)MultipartProxy.block()).blockID;
+            for(BlockCoord b : neighborChanges)
+                world.notifyBlockOfNeighborChange(b.x, b.y, b.z, blockID);
+            
+            finishing = parent;
+            
+            if(CommandDebug.WIRE_READING)
+                System.out.println(""+recalcs+" recalculations");
+            
+            clear();
+        }
+        
+        public void start(PropogationRun parent, World world) {
+            this.world = world;
+            this.parent = parent;
+            
+            currentRun = this;
+            
+            runLoop();
+        }
+        
+        private void runLoop()
+        {
+            while(!propogationList.isEmpty()) {
+                List<Propogation> list = propogationList;
+                propogationList = new LinkedList<Propogation>();
+                
+                for(Propogation p : list)
+                    p.propogate();
+            }
+            finish();
+        }
+        
+        public void add(IWirePart part, TMultiPart prev, int mode) {
+            if(prev != lastCaller) {
+                lastCaller = prev;
+                count++;
+            }
+            propogationList.add(new Propogation(part, prev, mode));
+        }
     }
     
+    private static Stack<PropogationRun> reusableRuns = new Stack<PropogationRun>();
+    private static PropogationRun currentRun = null;
+    private static PropogationRun finishing = null;
     
+    private static PropogationRun getRun() {
+        if(reusableRuns.isEmpty())
+            return new PropogationRun();
+        
+        return reusableRuns.pop();
+    }
+    
+    public static void addNeighborChange(BlockCoord pos) {
+        currentRun.neighborChanges.add(pos);
+    }
+    
+    public static void addPartChange(TMultiPart part) {
+        currentRun.partChanges.put(part.tile(), part);
+    }
+    
+    public static void logCalculation() {
+        if(finishing != null)
+            finishing.recalcs++;
+    }
+    
+    public static void propogateTo(IWirePart part, TMultiPart prev, int mode) {
+        PropogationRun p = currentRun;
+        if(p == null)
+            p = getRun();
+        p.add(part, prev, mode);
+        if(currentRun != p) {
+            if(currentRun != null)
+                throw new RuntimeException("Report this to ProjectRed developers");
+            
+            p.start(finishing, part.world());
+        }
+    }
+
+    public static void propogateTo(IWirePart part, int mode)
+    {
+        propogateTo(part, null, mode);
+    }
 }

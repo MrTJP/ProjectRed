@@ -5,6 +5,7 @@ import net.minecraft.util.Icon;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCModel;
+import codechicken.lib.render.ColourModifier;
 import codechicken.lib.render.ColourMultiplier;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IVertexModifier;
@@ -217,6 +218,12 @@ public class RenderWire {
             verts[7].uv.set(8-tw, 16-tw);
             
             reflectSide(verts, r);
+
+            if((r+reorientSide[side])%4 >= 2) {//just like reflect side, but flips on x axis
+                UVT flip = new UVT(new Scale(1, 1, -1).at(new Vector3(0, 0, 16)));
+                for(int i = 8; i < 16; i++)
+                    verts[i].apply(flip);
+            }
             
             //offset side textures
             for(int i = 8; i < 16; i++)
@@ -376,12 +383,9 @@ public class RenderWire {
         return m;
     }
     
-    public static void render(WirePart w, RenderBlocks r) {
-        IVertexModifier m = w.getColour() == -1 ? null : 
-            new ColourMultiplier(w.getColour());
-        getOrGenerateModel(modelKey(w)).render(
-                new Translation(w.x(), w.y(), w.z()), 
-                new IconTransformation(r != null ? r.overrideBlockTexture != null ? r.overrideBlockTexture : w.getIcon() : w.getIcon()), m);
+    public static void render(WirePart w) {
+        IVertexModifier m = w.getColour() == -1 ? ColourModifier.instance : new ColourMultiplier(w.getColour());
+        getOrGenerateModel(modelKey(w)).render(new Translation(w.x(), w.y(), w.z()), new IconTransformation(w.getIcon()), m);
     }
     
     public static void renderInv(int thickness, Transformation t, Icon icon) {

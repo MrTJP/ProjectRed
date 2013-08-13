@@ -113,19 +113,33 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
         return false;
     }
 
-    public void updateAndPropogate(TMultiPart prev, boolean force) {
-    
-        int newSignal = calculateSignal();
-        boolean changed = newSignal != (signal & 0xFF);
-        signal = (byte)newSignal;
-        if(changed)
-            sendSignalUpdate();
+    @Override
+    public void updateAndPropogate(TMultiPart prev, int mode) {
+        if(mode == DROPPING && signal == 0)
+            return;
         
-        if(changed || force)
-            propogate(prev);
+        int newSignal = calculateSignal();
+        if(newSignal < getRedwireSignal()) {
+            signal = 0;
+            propogate(prev, DROPPING);
+        }
+        else if(newSignal > getRedwireSignal()) {
+            signal = (byte)newSignal;
+            if(mode == DROPPING)
+                propogate(null, RISING);
+            else
+                propogate(prev, RISING);
+        }
+        else {
+            if(mode == DROPPING)
+                propogateTo(prev, RISING);
+            else if(mode == FORCE)
+                propogate(prev, FORCED);
+        }
     }
 
-    public void sendSignalUpdate() {
+    public void onSignalUpdate() {
+        super.onSignalUpdate();
         tile().getWriteStream(this).writeByte(10).writeByte(signal);
     }
     
@@ -166,7 +180,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
         int absDir = Rotation.rotateSide(side, r);
         
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side);
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
             return getPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side^1));
         
@@ -177,7 +191,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
         int absDir = Rotation.rotateSide(side, r);
         
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             int i = getPartSignal(t.partMap(side), (r+2)%4);
             if(i > 0)
@@ -236,7 +250,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
 
     @Override
     protected boolean debug(EntityPlayer ply) {
-        ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((world().isRemote ? "Client" : "Server") + " signal strength: " + signal));
+        ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((world().isRemote ? "Client" : "Server") + " signal strength: " + getRedwireSignal()));
         return true;
     }
 }

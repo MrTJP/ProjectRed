@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.common.SidedProxy;
 
 public class BasicUtils {
@@ -159,6 +160,14 @@ public class BasicUtils {
     public static <T extends TileEntity> T getTileEntity(IBlockAccess access, BlockCoord coords, Class<T> clazz) {
         TileEntity te = access.getBlockTileEntity(coords.x, coords.y, coords.z);
         return !clazz.isInstance(te) ? null : (T)te;
+    }
+    
+    /**
+     * Faster than class.isInstance
+     */
+    public static TileMultipart getMultipartTile(IBlockAccess access, BlockCoord pos) {
+        TileEntity te = access.getBlockTileEntity(pos.x, pos.y, pos.z);
+        return te instanceof TileMultipart ? (TileMultipart)te : null;
     }
 
 
