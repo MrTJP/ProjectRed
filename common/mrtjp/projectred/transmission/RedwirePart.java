@@ -180,7 +180,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
         int absDir = Rotation.rotateSide(side, r);
         
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side);
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
             return getPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side^1));
         
@@ -191,7 +191,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
         int absDir = Rotation.rotateSide(side, r);
         
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
-        TileMultipart t = BasicUtils.getTileEntity(world(), pos, TileMultipart.class);
+        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             int i = getPartSignal(t.partMap(side), (r+2)%4);
             if(i > 0)
