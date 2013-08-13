@@ -1,11 +1,15 @@
 package mrtjp.projectred.illumination;
 
 import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.core.IProxy;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-public class IlluminationClientProxy extends IlluminationProxy {
+public class IlluminationClientProxy implements IProxy {
+
+    @Override
+    public void preinit(){}
 
     @Override
     public void init() {
@@ -24,4 +28,7 @@ public class IlluminationClientProxy extends IlluminationProxy {
         
         MinecraftForge.EVENT_BUS.register(LastEventBasedHaloRenderer.instance);
     }
+
+    @Override
+    public void postinit() {}
 }

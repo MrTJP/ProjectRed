@@ -3,12 +3,16 @@ package mrtjp.projectred.expansion;
 import static mrtjp.projectred.ProjectRed.blockMachines;
 import static mrtjp.projectred.ProjectRed.itemVAWT;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import net.minecraft.item.ItemStack;
 import codechicken.lib.packet.PacketCustom;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-public class ExpansionClientProxy extends ExpansionProxy {
+public class ExpansionClientProxy implements IProxy {
+
+    @Override
+    public void preinit(){}
 
     @Override
     public void init() {
@@ -19,4 +23,7 @@ public class ExpansionClientProxy extends ExpansionProxy {
         }
         LanguageRegistry.addName(new ItemStack(itemVAWT, 1, 0), "Vertical-Axis Wind Turbine");
     }
+
+    @Override
+    public void postinit() {}
 }

@@ -14,18 +14,16 @@ public class IlluminationProxy implements IProxy, IPartFactory {
 
     @Override
     public void preinit() {
-
-    }
-
-    @Override
-    public void init() {
-        MultiPartRegistry.registerParts(this, new String[] { "Lantern", "inv.Lantern", "Lamp", "inv.Lamp" });
-
         itemPartLantern = new ItemPartLantern(Configurator.part_lantern.getInt(), false);
         itemPartInvLantern = new ItemPartLantern(Configurator.part_invlantern.getInt(), true);
 
         itemPartLamp = new ItemPartLamp(Configurator.part_lamp.getInt(), false);
         itemPartInvLamp = new ItemPartLamp(Configurator.part_invlamp.getInt(), true);
+    }
+
+    @Override
+    public void init() {
+        MultiPartRegistry.registerParts(this, new String[] { "Lantern", "inv.Lantern", "Lamp", "inv.Lamp" });
 
         IlluminationRecipes.initIlluminationRecipes();
         EnumLamp.initOreDictDefinitions();

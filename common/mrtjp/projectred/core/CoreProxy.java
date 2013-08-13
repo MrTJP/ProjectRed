@@ -14,14 +14,13 @@ public class CoreProxy implements IProxy {
 
     @Override
     public void preinit() {
+        itemComponent = new ItemPart(Configurator.item_componentsID.getInt());
+        itemDrawPlate = new ItemDrawPlate(Configurator.item_drawplateID.getInt());
+        itemBackpack = new ItemBackpack(Configurator.item_backpackID.getInt());
     }
 
     @Override
     public void init() {
-        itemComponent = new ItemPart(Configurator.item_componentsID.getInt());
-        itemDrawPlate = new ItemDrawPlate(Configurator.item_drawplateID.getInt());
-        itemBackpack = new ItemBackpack(Configurator.item_backpackID.getInt());
-
         EnumPart.initOreDictDefinitions();
         CoreRecipes.initCoreRecipes();
     }

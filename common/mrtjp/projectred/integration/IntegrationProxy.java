@@ -14,6 +14,8 @@ public class IntegrationProxy implements IProxy, IPartFactory {
 
     @Override
     public void preinit() {
+        itemPartGate = new ItemPartGate(Configurator.part_gate.getInt());
+        itemScrewdriver = new ItemScrewdriver(Configurator.item_screwdriverID.getInt());
     }
     
     @Override
@@ -24,9 +26,6 @@ public class IntegrationProxy implements IProxy, IPartFactory {
         }
         MultiPartRegistry.registerParts(this, gates);
 
-        itemPartGate = new ItemPartGate(Configurator.part_gate.getInt());
-        itemScrewdriver = new ItemScrewdriver(Configurator.item_screwdriverID.getInt());
-        
         MultipartGenerator.registerPassThroughInterface("dan200.computer.api.IPeripheral");
         IntegrationRecipes.initIntegrationRecipes();
         EnumGate.initOreDictDefinitions();

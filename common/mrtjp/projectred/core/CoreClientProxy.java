@@ -9,7 +9,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-public class CoreClientProxy extends CoreProxy {
+public class CoreClientProxy implements IProxy {
+
+    @Override
+    public void preinit(){}
 
     @Override
     public void init() {
@@ -25,4 +28,7 @@ public class CoreClientProxy extends CoreProxy {
         
         MinecraftForge.EVENT_BUS.register(new Messenger());
     }
+
+    @Override
+    public void postinit() {}
 }
