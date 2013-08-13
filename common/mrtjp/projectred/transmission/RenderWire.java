@@ -1,6 +1,7 @@
 package mrtjp.projectred.transmission;
 
-import net.minecraft.client.renderer.RenderBlocks;
+import java.util.LinkedList;
+
 import net.minecraft.util.Icon;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.math.MathHelper;
@@ -10,10 +11,12 @@ import codechicken.lib.render.ColourMultiplier;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IVertexModifier;
 import codechicken.lib.render.IconTransformation;
+import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.UV;
 import codechicken.lib.render.UVScale;
 import codechicken.lib.render.UVTranslation;
 import codechicken.lib.render.Vertex5;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
@@ -64,7 +67,7 @@ public class RenderWire {
         int i = 0;
         boolean inv;
         
-        public int countConnections() {
+        public static int countConnections(int connMask) {
             int n = 0;
             for(int r = 0; r < 4; r++)
                 if((connMask & 1<<r) != 0)
@@ -99,7 +102,7 @@ public class RenderWire {
             h = th/16D;
             mask = key&0xFF;
             connMask = (mask&0xF0)>>4|mask&0xF;
-            connCount = countConnections();
+            connCount = countConnections(connMask);
             model = CCModel.quadModel(numFaces()*4);
             i=0;
             
@@ -394,5 +397,50 @@ public class RenderWire {
             invModels[thickness] = m = gen_inst.generateInvModel(thickness);
         
         m.render(t, new IconTransformation(icon));
+    }
+    
+    public static void renderBreakingOverlay(Icon icon, WirePart wire) {
+        int key = modelKey(wire);
+        int side = (key>>8)%6;
+        double w = ((key>>8)/6+1)/16D;
+        double h = w + 1/16D;
+        int mask = key&0xFF;
+        int connMask = (mask&0xF0)>>4|mask&0xF;
+        int connCount = WireModelGenerator.countConnections(connMask);
+        
+        LinkedList<Cuboid6> boxes = new LinkedList<Cuboid6>();
+        boxes.add(new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, h, 0.5+w)
+            .apply(Rotation.sideRotations[side].at(Vector3.center)));//center
+        for(int r = 0; r < 4; r++) {
+            int length;
+            if(connCount == 0) {
+                if(r%2 == 1)
+                    length = 4;
+                else
+                    length = 0;
+            }
+            else if(connCount == 1) {
+                if(connMask == 1<<((r+2)%4))//this side is opposite the one with a connection
+                    length = 4;
+                else if(connMask == 1<<r)
+                    length = 8;
+                else
+                    length = 0;
+            }
+            else
+            {
+                length = (connMask & 1<<r) != 0 ? 8 : 0;
+            }
+            
+            if(length > 0) {
+                double l = length/16D;
+                boxes.add(new Cuboid6(0.5-w, 0, 0.5+w, 0.5+w, h, 0.5+l)
+                        .apply(Rotation.sideOrientation(side, r).at(Vector3.center)));
+            }
+        }
+        
+        for(Cuboid6 box : boxes) {
+            RenderUtils.renderBlock(box, 0, new Translation(wire.x(), wire.y(), wire.z()), new IconTransformation(icon), null);
+        }
     }
 }

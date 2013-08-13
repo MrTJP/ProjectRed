@@ -653,6 +653,13 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     }
     
     @Override
+    @SideOnly(Side.CLIENT)
+    public void drawBreaking(RenderBlocks renderBlocks) {
+        CCRenderState.reset();
+        RenderWire.renderBreakingOverlay(renderBlocks.overrideBlockTexture, this);
+    }
+    
+    @Override
     public boolean doesTick() {
         return false;
     }
