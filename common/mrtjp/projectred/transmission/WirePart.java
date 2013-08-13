@@ -114,15 +114,17 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     @Override
     public void onPartChanged(TMultiPart part) {
         if(!world().isRemote && part != this) {
+            WirePropogator.logCalculation();
+            
             boolean changed = updateInternalConnections();
             if(updateOpenConnections())
                 changed|=updateExternalConnections();
             if(changed) {
                 sendConnUpdate();
-                updateAndPropogate(null, true);
+                WirePropogator.propogateTo(this, FORCE);
             }
             else {
-                updateAndPropogate(null, false);
+                WirePropogator.propogateTo(this, RISING);
             }
         }
     }
@@ -133,12 +135,14 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             if(dropIfCantStay())
                 return;
             
+            WirePropogator.logCalculation();
+            
             if(updateExternalConnections()) {
                 sendConnUpdate();
-                updateAndPropogate(null, true);
+                WirePropogator.propogateTo(this, FORCE);
             }
             else {
-                updateAndPropogate(null, false);
+                WirePropogator.propogateTo(this, RISING);
             }
         }
     }
@@ -151,7 +155,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             changed|=updateExternalConnections();//don't use || because it's fail fast
             if(changed) {
                 sendConnUpdate();
-                updateAndPropogate(null, false);
+                WirePropogator.propogateTo(this, RISING);
             }
         }
     }
@@ -460,28 +464,25 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         return (connMap & 0x1000 << r) != 0;
     }
     
-    public void propogate(TMultiPart prev) {
-        WirePropogator.beginPropogating();
-        
-        WirePropogator.partChanges.add(this);
+    public void propogate(TMultiPart prev, int mode) {
+        if(mode != FORCED)
+            WirePropogator.addPartChange(this);
         
         for(int r = 0; r < 4; r++)
             if((connMap & 1<<r) != 0)
-                propogateCorner(r, prev);
+                propogateCorner(r, prev, mode);
             else if((connMap & 0x10<<r) != 0)
-                propogateStraight(r, prev);
+                propogateStraight(r, prev, mode);
             else if((connMap & 0x100<<r) != 0)
-                propogateInternal(r, prev);
+                propogateInternal(r, prev, mode);
         
         if((connMap & 0x10000) != 0)
-            propogateCenter(prev);
+            propogateCenter(prev, mode);
         
-        propogateOther();
-        
-        WirePropogator.endPropogating(world());
+        propogateOther(mode);
     }
 
-    public void propogateCorner(int r, TMultiPart prev) {
+    public void propogateCorner(int r, TMultiPart prev, int mode) {
         int absDir = Rotation.rotateSide(side, r);
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side);
 
@@ -490,14 +491,14 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             TMultiPart tp = t.partMap(absDir^1);
             if(tp == prev)
                 return;
-            if(propogateTo(tp))
+            if(propogateTo(tp, mode))
                 return;
         }
         
-        WirePropogator.neighborChanges.add(pos);
+        WirePropogator.addNeighborChange(pos);
     }
     
-    public void propogateStraight(int r, TMultiPart prev) {
+    public void propogateStraight(int r, TMultiPart prev, int mode) {
         int absDir = Rotation.rotateSide(side, r);
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
 
@@ -506,37 +507,43 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             TMultiPart tp = t.partMap(side);
             if(tp == prev)
                 return;
-            propogateTo(tp);
+            if(propogateTo(tp, mode))
+                return;
         }
-        
-        //no need for neighbour change, onPartChanged will do it for us
+
+        WirePropogator.addNeighborChange(pos);
     }
     
-    public void propogateInternal(int r, TMultiPart prev) {
+    public void propogateInternal(int r, TMultiPart prev, int mode) {
         int absDir = Rotation.rotateSide(side, r);
         TMultiPart tp = tile().partMap(absDir);
         if(tp == prev)
             return;
-        propogateTo(tp);
+        propogateTo(tp, mode);
     }
     
-    public void propogateCenter(TMultiPart prev) {
+    public void propogateCenter(TMultiPart prev, int mode) {
         TMultiPart tp = tile().partMap(6);
         if(tp == prev)
             return;
-        propogateTo(tp);
+        propogateTo(tp, mode);
     }
 
-    public void propogateOther() {
+    public void propogateOther(int mode) {
     }
     
-    public boolean propogateTo(TMultiPart part) {
+    public boolean propogateTo(TMultiPart part, int mode) {
         if(part instanceof IWirePart) {
-            ((IWirePart) part).updateAndPropogate(this, false);
+            WirePropogator.propogateTo((IWirePart) part, this, mode);
             return true;
         }
         
         return false;
+    }
+    
+    @Override
+    public void onSignalUpdate() {
+        tile().markDirty();
     }
     
     protected abstract boolean debug(EntityPlayer ply);
