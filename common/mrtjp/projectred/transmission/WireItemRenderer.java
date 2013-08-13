@@ -2,10 +2,11 @@ package mrtjp.projectred.transmission;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
-
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Scale;
+import codechicken.lib.vec.TransformationList;
+import codechicken.lib.vec.Translation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -29,7 +30,7 @@ public class WireItemRenderer implements IItemRenderer {
         int damage = item.getItemDamage();
         switch (type) {
         case ENTITY:
-            renderWireInventory(damage, -.5f, 0f, -.5f, .6f);
+            renderWireInventory(damage, -.3f, 0f, -.3f, .6f);
             return;
         case EQUIPPED:
             renderWireInventory(damage, 0f, .15f, 0f, 1f);
@@ -38,7 +39,7 @@ public class WireItemRenderer implements IItemRenderer {
             renderWireInventory(damage, 1f, -.2f, -.4f, 2f);
             return;
         case INVENTORY:
-            renderWireInventory(damage, 0f, .15f, 0f, 1f);
+            renderWireInventory(damage, 0f, .20f, 0f, 1f);
             return;
         default:
             return;
@@ -49,14 +50,15 @@ public class WireItemRenderer implements IItemRenderer {
         EnumWire type = EnumWire.VALID_WIRE[meta];
         if (type == null)
             return;
-        
         TextureUtils.bindAtlas(0);
         CCRenderState.reset();
         CCRenderState.useNormals(true);
         CCRenderState.pullLightmap();
         CCRenderState.setColourOpaque(type.itemColour);
         CCRenderState.startDrawing(7);
-        RenderWire.renderInv(type.thickness, new Scale(scale), type.wireSprites[0]);
+        TransformationList t = new TransformationList();
+        t.with(new Scale(scale)).with(new Translation(x, y, z));
+        RenderWire.renderInv(type.thickness, t, type.wireSprites[0]);
         CCRenderState.draw();
     }
 }
