@@ -28,6 +28,29 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
         
         return true;
     }
+    
+    public static boolean isSignalZero(byte[] signal) {
+        if(signal == null)
+            return true;
+        
+        for(int i = 0; i < 16; i++)
+            if(signal[i] != 0)
+                return false;
+        
+        return true;
+    }
+    
+    public static boolean dropSignalsLessThan(byte[] signal1, byte[] signal2) {
+        boolean dropped = false;
+        
+        for(int i = 0; i < 16; i++)
+            if((signal2[i]&0xFF) < (signal1[i]&0xFF)) {
+                signal1[i] = 0;
+                dropped = true;
+            }
+        
+        return dropped;
+    }
 
     /**
      * Not available on client
@@ -94,17 +117,44 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
         return false;
     }
     
-    public void updateAndPropogate(TMultiPart prev, boolean force) {
-        byte[] newSignal = calculateSignal();
-        boolean changed = !signalsEqual(signal, newSignal);
-        setSignal(newSignal);
+    @Override
+    public void updateAndPropogate(TMultiPart prev, int mode) {
+        if(mode == DROPPING && isSignalZero(signal))
+            return;
         
-        if(changed || force)
-            propogate(prev);
+        byte[] newSignal = calculateSignal();
+        if(dropSignalsLessThan(signal, newSignal)) {
+            propogate(prev, DROPPING);
+        }
+        else if(!signalsEqual(signal, newSignal)) {
+            setSignal(newSignal);
+            if(mode == DROPPING)
+                propogate(null, RISING);
+            else
+                propogate(prev, RISING);
+        }
+        else {
+            if(mode == DROPPING)
+                propogateTo(prev, RISING);
+            else if(mode == FORCE)
+                propogate(prev, FORCED);
+        }
     }
-
+    
+    @Override
+    public boolean propogateTo(TMultiPart part, int mode) {
+        if(mode == DROPPING && part instanceof InsulatedRedAlloyPart)
+            if(signal[((InsulatedRedAlloyPart)part).colour] != 0)//no point propogating to an ins wire if we didn't drop their colour
+                return true;
+        
+        return super.propogateTo(part, mode);
+    }
+    
     public void setSignal(byte[] newSignal) {
-        System.arraycopy(newSignal, 0, signal, 0, 16);
+        if(newSignal == null)
+            Arrays.fill(signal, (byte)0);
+        else
+            System.arraycopy(newSignal, 0, signal, 0, 16);
     }
     
     public byte[] calculateSignal() {

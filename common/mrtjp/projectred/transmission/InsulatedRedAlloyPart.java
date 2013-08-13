@@ -2,6 +2,7 @@ package mrtjp.projectred.transmission;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
@@ -76,7 +77,8 @@ public class InsulatedRedAlloyPart extends RedwirePart {
     @Override
     public int weakPowerLevel(int side)
     {
-        if(this.side == side || this.side == (side^1))
+        if(this.side == side || this.side == (side^1) ||
+                !maskConnects(Rotation.rotationTo(this.side, side)))
             return 0;
         
         return super.weakPowerLevel(side);
