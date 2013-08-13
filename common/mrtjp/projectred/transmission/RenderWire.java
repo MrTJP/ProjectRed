@@ -216,6 +216,12 @@ public class RenderWire {
             verts[7].uv.set(8-tw, 16-tw);
             
             reflectSide(verts, r);
+
+            if((r+reorientSide[side])%4 >= 2) {//just like reflect side, but flips on x axis
+                UVT flip = new UVT(new Scale(1, 1, -1).at(new Vector3(0, 0, 16)));
+                for(int i = 8; i < 16; i++)
+                    verts[i].apply(flip);
+            }
             
             //offset side textures
             for(int i = 8; i < 16; i++)
