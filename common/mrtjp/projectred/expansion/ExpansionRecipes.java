@@ -21,7 +21,6 @@ public class ExpansionRecipes {
     
     private static void initMachineRecipes() {
         
-        
         /** Alloy Smelter **/
         GameRegistry.addRecipe(EnumMachine.ALLOYSMELTER.getItemStack(), 
                 "CBC",

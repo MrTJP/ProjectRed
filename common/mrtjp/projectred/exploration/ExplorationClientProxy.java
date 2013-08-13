@@ -2,8 +2,10 @@ package mrtjp.projectred.exploration;
 
 import static mrtjp.projectred.ProjectRed.*;
 import static mrtjp.projectred.ProjectRed.itemWoolGin;
+import net.minecraftforge.client.MinecraftForgeClient;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
+import mrtjp.projectred.exploration.ItemGemSaw.GemSawItemRenderer;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class ExplorationClientProxy extends ExplorationProxy {
@@ -38,6 +40,31 @@ public class ExplorationClientProxy extends ExplorationProxy {
         LanguageRegistry.addName(itemRubySword, itemRubySword.tool.name);
         LanguageRegistry.addName(itemSapphireSword, itemSapphireSword.tool.name);
         LanguageRegistry.addName(itemPeridotSword, itemPeridotSword.tool.name);
+        LanguageRegistry.addName(itemWoodSaw, itemWoodSaw.tool.name);
+        LanguageRegistry.addName(itemStoneSaw, itemStoneSaw.tool.name);
+        LanguageRegistry.addName(itemIronSaw, itemIronSaw.tool.name);
+        LanguageRegistry.addName(itemGoldSaw, itemGoldSaw.tool.name);
+        LanguageRegistry.addName(itemRubySaw, itemRubySaw.tool.name);
+        LanguageRegistry.addName(itemSapphireSaw, itemSapphireSaw.tool.name);
+        LanguageRegistry.addName(itemPeridotSaw, itemPeridotSaw.tool.name);
+        LanguageRegistry.addName(itemDiamondSaw, itemDiamondSaw.tool.name);
+        LanguageRegistry.addName(itemWoodSickle, itemWoodSickle.tool.name);
+        LanguageRegistry.addName(itemStoneSickle, itemStoneSickle.tool.name);
+        LanguageRegistry.addName(itemIronSickle, itemIronSickle.tool.name);
+        LanguageRegistry.addName(itemGoldSickle, itemGoldSickle.tool.name);
+        LanguageRegistry.addName(itemRubySickle, itemRubySickle.tool.name);
+        LanguageRegistry.addName(itemSapphireSickle, itemSapphireSickle.tool.name);
+        LanguageRegistry.addName(itemPeridotSickle, itemPeridotSickle.tool.name);
+        LanguageRegistry.addName(itemDiamondSickle, itemDiamondSickle.tool.name);
+        
+        MinecraftForgeClient.registerItemRenderer(itemWoodSaw.itemID, GemSawItemRenderer.instance);
+        MinecraftForgeClient.registerItemRenderer(itemStoneSaw.itemID, GemSawItemRenderer.instance);
+        MinecraftForgeClient.registerItemRenderer(itemIronSaw.itemID, GemSawItemRenderer.instance);
+        MinecraftForgeClient.registerItemRenderer(itemGoldSaw.itemID, GemSawItemRenderer.instance);
+        MinecraftForgeClient.registerItemRenderer(itemRubySaw.itemID, GemSawItemRenderer.instance);
+        MinecraftForgeClient.registerItemRenderer(itemSapphireSaw.itemID, GemSawItemRenderer.instance);
+        MinecraftForgeClient.registerItemRenderer(itemPeridotSaw.itemID, GemSawItemRenderer.instance);
+        MinecraftForgeClient.registerItemRenderer(itemDiamondSaw.itemID, GemSawItemRenderer.instance);
     }
     
     @Override

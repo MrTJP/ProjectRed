@@ -111,7 +111,7 @@ public class CoreRecipes {
         GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8), 
                 "s",
                 "b",
-                's', new ItemStack(MicroblockProxy.sawDiamond(), 1, Short.MAX_VALUE), 
+                's', new ItemStack(ProjectRed.itemDiamondSaw, 1, Short.MAX_VALUE), 
                 'b', EnumPart.SILICONBOULE.getItemStack()
         );
         

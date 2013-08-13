@@ -8,7 +8,6 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlower;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 public class GeneratorVolcano extends GeneratorOre {
@@ -21,26 +20,27 @@ public class GeneratorVolcano extends GeneratorOre {
     }
 
     @Override
-    public boolean generate(World world, Random random, int i, int j, int k) {
-        if (world.getBlockId(i, j, k) != Block.lavaStill.blockID) {
+    public boolean generate(World world, Random random, int x, int y, int z) {
+        if (world.getBlockId(x, y, z) != Block.lavaStill.blockID) {
             return false;
         }
-        int grassHeight = world.getHeightValue(i, k);
+        int grassHeight = world.getHeightValue(x, z);
         int lavaid = Block.lavaMoving.blockID;
 
         // Make a tube of volcano from the underground lake to grass level.
-        while (canReplaceId(world.getBlockId(i, grassHeight - 1, k))) {
+        while (canReplaceId(world.getBlockId(x, grassHeight - 1, z))) {
             grassHeight--;
         }
-        for (int n = j; n < grassHeight; n++) {
-            world.setBlock(i, n, k, lavaid);
-            world.setBlock(i - 1, n, k, this.id, meta, 3);
-            world.setBlock(i + 1, n, k, this.id, meta, 3);
-            world.setBlock(i, n, k - 1, this.id, meta, 3);
-            world.setBlock(i, n, k + 1, this.id, meta, 3);
+        for (int i = y; i < grassHeight; i++) {
+            world.setBlock(x, i, z, lavaid);
+            world.setBlock(x - 1, i, z, this.id, meta, 3);
+            world.setBlock(x + 1, i, z, this.id, meta, 3);
+            world.setBlock(x, i, z - 1, this.id, meta, 3);
+            world.setBlock(x, i, z + 1, this.id, meta, 3);
         }
 
-        // Start at the bottom layer above the grass. Each time we go up, make the layer smaller.
+        // Start at the bottom layer above the grass. Each time we go up, make
+        // the layer smaller.
         int head = 3;
         int spread = random.nextInt(1);
         int currentYIndex = grassHeight;
@@ -48,9 +48,9 @@ public class GeneratorVolcano extends GeneratorOre {
         while (this.veinSize > 0) {
             boolean breakOut = false;
             while (this.queuedList.size() == 0) {
-                world.setBlock(i, currentYIndex, k, lavaid);
+                world.setBlock(x, currentYIndex, z, lavaid);
                 this.queuedTestList.clear();
-                queueNeighboringBlocks(i, currentYIndex, k, head, random);
+                queueNeighboringBlocks(x, currentYIndex, z, head, random);
                 currentYIndex++;
                 if (currentYIndex > 125) {
                     breakOut = true;
@@ -71,8 +71,8 @@ public class GeneratorVolcano extends GeneratorOre {
                     currentLevel--;
                 }
                 if (currentLevel <= coord[1].intValue()) {
-                    int bid = world.getBlockId(coord[0].intValue(), currentLevel, coord[2].intValue());
-                    if (canReplaceId(bid)) {
+                    int nextBlock = world.getBlockId(coord[0].intValue(), currentLevel, coord[2].intValue());
+                    if (canReplaceId(nextBlock)) {
                         destroyTree(world, coord[0].intValue(), currentLevel, coord[2].intValue());
                         world.setBlock(coord[0].intValue(), currentLevel, coord[2].intValue(), this.id, this.meta, 3);
 
@@ -86,13 +86,13 @@ public class GeneratorVolcano extends GeneratorOre {
             }
         }
 
-        world.setBlock(i, currentYIndex, k, lavaid);
+        world.setBlock(x, currentYIndex, z, lavaid);
 
-        while ((currentYIndex > grassHeight) && (world.getBlockId(i, currentYIndex, k) == lavaid)) {
-            world.markBlockForUpdate(i, currentYIndex, k);
-            world.notifyBlocksOfNeighborChange(i, currentYIndex, k, lavaid);
+        while ((currentYIndex > grassHeight) && (world.getBlockId(x, currentYIndex, z) == lavaid)) {
+            world.markBlockForUpdate(x, currentYIndex, z);
+            world.notifyBlocksOfNeighborChange(x, currentYIndex, z, lavaid);
             world.scheduledUpdatesAreImmediate = true;
-            Block.blocksList[lavaid].updateTick(world, i, currentYIndex, k, random);
+            Block.blocksList[lavaid].updateTick(world, x, currentYIndex, z, random);
             world.scheduledUpdatesAreImmediate = false;
             currentYIndex--;
         }
@@ -100,50 +100,49 @@ public class GeneratorVolcano extends GeneratorOre {
         return true;
     }
 
-    private void queueBlock(int i, int j, int k, int p) {
-        if (p <= 0) {
+    private void queueBlock(int x, int y, int z, int sides) {
+        if (sides <= 0) {
             return;
         }
-        List sb = Arrays.asList(new Integer[] { i, k });
+        List sb = Arrays.asList(new Integer[] { x, z });
         Integer o = (Integer) this.queuedTestList.get(sb);
 
-        if ((o != null) && (p <= o.intValue())) {
+        if ((o != null) && (sides <= o.intValue())) {
             return;
         }
-        this.queuedList.addLast(Arrays.asList(new Integer[] { i, j, k }));
-        this.queuedTestList.put(sb, p);
+        this.queuedList.addLast(Arrays.asList(new Integer[] { x, y, z }));
+        this.queuedTestList.put(sb, sides);
     }
 
-    private void queueNeighboringBlocks(int i, int j, int k, int p, Random random) {
-        //int rp = random.nextInt(32);
-        queueBlock(i - 1, j, k, random.nextInt(2) > 0 ? p - 1 : p);
-        queueBlock(i + 1, j, k, random.nextInt(2) > 0 ? p - 1 : p);
-        queueBlock(i, j, k - 1, random.nextInt(2) > 0 ? p - 1 : p);
-        queueBlock(i, j, k + 1, random.nextInt(2) > 0 ? p - 1 : p);
+    private void queueNeighboringBlocks(int x, int y, int z, int sides, Random random) {
+        // int rp = random.nextInt(32);
+        queueBlock(x - 1, y, z, random.nextInt(2) > 0 ? sides - 1 : sides);
+        queueBlock(x + 1, y, z, random.nextInt(2) > 0 ? sides - 1 : sides);
+        queueBlock(x, y, z - 1, random.nextInt(2) > 0 ? sides - 1 : sides);
+        queueBlock(x, y, z + 1, random.nextInt(2) > 0 ? sides - 1 : sides);
     }
 
-    public void destroyTree(World world, int i, int j, int k) {
-        int bid = world.getBlockId(i, j, k);
+    public void destroyTree(World world, int x, int y, int z) {
+        int bid = world.getBlockId(x, y, z);
         if (bid == Block.snow.blockID) {
-            world.setBlock(i, j, k, 0);
+            world.setBlock(x, y, z, 0);
             return;
         }
         if ((bid != Block.wood.blockID) && (bid != Block.leaves.blockID) && (bid != Block.vine.blockID)) {
             return;
         }
-        world.setBlock(i, j, k, 0);
-
-        destroyTree(world, i, j + 1, k);
+        world.setBlock(x, y, z, 0);
+        destroyTree(world, x, y + 1, z);
     }
 
-    private boolean canReplaceId(int bid) {
-        if (bid == 0) {
+    private boolean canReplaceId(int id) {
+        if (id == 0) {
             return true;
         }
-        if ((bid == Block.waterMoving.blockID) || (bid == Block.waterStill.blockID) || (bid == Block.wood.blockID) || (bid == Block.leaves.blockID) || (bid == Block.vine.blockID) || (bid == Block.snow.blockID) || (bid == Block.ice.blockID)) {
+        if ((id == Block.waterMoving.blockID) || (id == Block.waterStill.blockID) || (id == Block.wood.blockID) || (id == Block.leaves.blockID) || (id == Block.vine.blockID) || (id == Block.snow.blockID) || (id == Block.ice.blockID)) {
             return true;
         }
-        if ((Block.blocksList[bid] instanceof BlockFlower)) {
+        if ((Block.blocksList[id] instanceof BlockFlower)) {
             return true;
         }
         return false;

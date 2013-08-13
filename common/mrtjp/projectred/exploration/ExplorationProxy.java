@@ -2,31 +2,62 @@ package mrtjp.projectred.exploration;
 
 import static mrtjp.projectred.ProjectRed.blockOres;
 import static mrtjp.projectred.ProjectRed.blockStones;
+import static mrtjp.projectred.ProjectRed.itemDiamondSaw;
+import static mrtjp.projectred.ProjectRed.itemDiamondSickle;
+import static mrtjp.projectred.ProjectRed.itemGoldSaw;
+import static mrtjp.projectred.ProjectRed.itemGoldSickle;
+import static mrtjp.projectred.ProjectRed.itemIronSaw;
+import static mrtjp.projectred.ProjectRed.itemIronSickle;
 import static mrtjp.projectred.ProjectRed.itemPeridotAxe;
 import static mrtjp.projectred.ProjectRed.itemPeridotHoe;
 import static mrtjp.projectred.ProjectRed.itemPeridotPickaxe;
+import static mrtjp.projectred.ProjectRed.itemPeridotSaw;
 import static mrtjp.projectred.ProjectRed.itemPeridotShovel;
+import static mrtjp.projectred.ProjectRed.itemPeridotSickle;
 import static mrtjp.projectred.ProjectRed.itemPeridotSword;
 import static mrtjp.projectred.ProjectRed.itemRubyAxe;
 import static mrtjp.projectred.ProjectRed.itemRubyHoe;
 import static mrtjp.projectred.ProjectRed.itemRubyPickaxe;
+import static mrtjp.projectred.ProjectRed.itemRubySaw;
 import static mrtjp.projectred.ProjectRed.itemRubyShovel;
+import static mrtjp.projectred.ProjectRed.itemRubySickle;
 import static mrtjp.projectred.ProjectRed.itemRubySword;
 import static mrtjp.projectred.ProjectRed.itemSapphireAxe;
 import static mrtjp.projectred.ProjectRed.itemSapphireHoe;
 import static mrtjp.projectred.ProjectRed.itemSapphirePickaxe;
+import static mrtjp.projectred.ProjectRed.itemSapphireSaw;
 import static mrtjp.projectred.ProjectRed.itemSapphireShovel;
+import static mrtjp.projectred.ProjectRed.itemSapphireSickle;
 import static mrtjp.projectred.ProjectRed.itemSapphireSword;
+import static mrtjp.projectred.ProjectRed.itemStoneSaw;
+import static mrtjp.projectred.ProjectRed.itemStoneSickle;
+import static mrtjp.projectred.ProjectRed.itemWoodSaw;
+import static mrtjp.projectred.ProjectRed.itemWoodSickle;
 import static mrtjp.projectred.ProjectRed.itemWoolGin;
 import static mrtjp.projectred.ProjectRed.toolMaterialPeridot;
 import static mrtjp.projectred.ProjectRed.toolMaterialRuby;
 import static mrtjp.projectred.ProjectRed.toolMaterialSapphire;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.Icon;
 import net.minecraftforge.common.EnumHelper;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+import scala.collection.Seq;
+import scala.collection.mutable.LinkedList;
+import codechicken.microblock.BlockMicroMaterial;
+import codechicken.microblock.ItemSaw;
+import codechicken.microblock.MicroMaterialRegistry;
+import codechicken.microblock.MicroMaterialRegistry.IMicroMaterial;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ExplorationProxy implements IProxy {
@@ -98,12 +129,41 @@ public class ExplorationProxy implements IProxy {
         MinecraftForge.setToolClass(itemRubySword, "sword", 2);
         MinecraftForge.setToolClass(itemSapphireSword, "sword", 2);
         MinecraftForge.setToolClass(itemPeridotSword, "sword", 2);
-        
+
+        itemWoodSaw = new ItemGemSaw(Configurator.item_woodSaw.getInt(), EnumSpecialTool.WOODSAW);
+        itemStoneSaw = new ItemGemSaw(Configurator.item_stoneSaw.getInt(), EnumSpecialTool.STONESAW);
+        itemIronSaw = new ItemGemSaw(Configurator.item_ironSaw.getInt(), EnumSpecialTool.IRONSAW);
+        itemGoldSaw = new ItemGemSaw(Configurator.item_goldSaw.getInt(), EnumSpecialTool.GOLDSAW);
+        itemRubySaw = new ItemGemSaw(Configurator.item_rubySaw.getInt(), EnumSpecialTool.RUBYSAW);
+        itemSapphireSaw = new ItemGemSaw(Configurator.item_sapphireSaw.getInt(), EnumSpecialTool.SAPPHIRESAW);
+        itemPeridotSaw = new ItemGemSaw(Configurator.item_peridotSaw.getInt(), EnumSpecialTool.PERIDOTSAW);
+        itemDiamondSaw = new ItemGemSaw(Configurator.item_diamondSaw.getInt(), EnumSpecialTool.DIAMONDSAW);
+
+        itemWoodSickle = new ItemGemSickle(Configurator.item_woodSickle.getInt(), EnumSpecialTool.WOODSICKLE);
+        itemStoneSickle = new ItemGemSickle(Configurator.item_stoneSickle.getInt(), EnumSpecialTool.STONESICKLE);
+        itemIronSickle = new ItemGemSickle(Configurator.item_ironSickle.getInt(), EnumSpecialTool.IRONSICKLE);
+        itemGoldSickle = new ItemGemSickle(Configurator.item_goldSickle.getInt(), EnumSpecialTool.GOLDSICKLE);
+        itemRubySickle = new ItemGemSickle(Configurator.item_rubySickle.getInt(), EnumSpecialTool.RUBYSICKLE);
+        itemSapphireSickle = new ItemGemSickle(Configurator.item_sapphireSickle.getInt(), EnumSpecialTool.SAPPHIRESICKLE);
+        itemPeridotSickle = new ItemGemSickle(Configurator.item_peridotSickle.getInt(), EnumSpecialTool.PERIDOTSICKLE);
+        itemDiamondSickle = new ItemGemSickle(Configurator.item_diamondSickle.getInt(), EnumSpecialTool.DIAMONDSICKLE);
+
         ExplorationRecipes.initRecipes();
     }
 
     @Override
     public void postinit() {
+        // Remove default saw recipes
+        ArrayList recipes = (ArrayList) CraftingManager.getInstance().getRecipeList();
+        for (int i = 0; i < recipes.size(); i++) {
+            IRecipe r = (IRecipe) recipes.get(i);
+            if (r instanceof ShapedOreRecipe) {
+                ItemStack result = ((ShapedOreRecipe) r).getRecipeOutput();
+                if (result.getItem() instanceof ItemSaw) {
+                    recipes.remove(i);
+                }
+            }
+        }
     }
 
 }

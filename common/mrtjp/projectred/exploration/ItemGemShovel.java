@@ -1,5 +1,6 @@
 package mrtjp.projectred.exploration;
 
+import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
@@ -12,6 +13,7 @@ public class ItemGemShovel extends ItemSpade {
         super(par1, tool.material);
         this.tool = tool;
         this.setUnlocalizedName(tool.unlocal);
+        this.setCreativeTab(ProjectRedTabs.tabExploration);
     }
 
     @Override
