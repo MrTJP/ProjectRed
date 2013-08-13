@@ -1,6 +1,7 @@
 package mrtjp.projectred.transmission;
 
 import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Rotation;
 
 public class RedAlloyWirePart extends RedwirePart {
     public RedAlloyWirePart(int side) {
@@ -36,9 +37,16 @@ public class RedAlloyWirePart extends RedwirePart {
     }
 
     @Override
-    public void propogateOther() {
+    public void propogateOther(int mode) {
+        WirePropogator.addNeighborChange(new BlockCoord(getTile()).offset(side));
+        WirePropogator.addNeighborChange(new BlockCoord(getTile()).offset(side^1));
+        for(int r = 0; r < 4; r++)
+            if(!maskConnects(r))
+                WirePropogator.addNeighborChange(new BlockCoord(getTile()).offset(Rotation.rotateSide(side, r)));
+        
         for(int s = 0; s < 6; s++)
-            WirePropogator.neighborChanges.add(new BlockCoord(getTile()).offset(side).offset(s));
+            if(s != (side^1))
+                WirePropogator.addNeighborChange(new BlockCoord(getTile()).offset(side).offset(s));
     }
 
     @Override
