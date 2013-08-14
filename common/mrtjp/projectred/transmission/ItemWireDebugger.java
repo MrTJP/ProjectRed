@@ -2,7 +2,7 @@ package mrtjp.projectred.transmission;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;

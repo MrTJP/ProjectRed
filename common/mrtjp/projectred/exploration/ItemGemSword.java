@@ -1,6 +1,6 @@
 package mrtjp.projectred.exploration;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.ProjectRedTabs;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.client.renderer.texture.IconRegister;

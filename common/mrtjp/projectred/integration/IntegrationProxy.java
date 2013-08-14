@@ -1,7 +1,7 @@
 package mrtjp.projectred.integration;
 
-import static mrtjp.projectred.ProjectRed.itemPartGate;
-import static mrtjp.projectred.ProjectRed.itemScrewdriver;
+import static mrtjp.projectred.ProjectRedCore.itemScrewdriver;
+import static mrtjp.projectred.ProjectRedIntegration.itemPartGate;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import codechicken.lib.packet.PacketCustom;
@@ -11,6 +11,14 @@ import codechicken.multipart.MultipartGenerator;
 import codechicken.multipart.TMultiPart;
 
 public class IntegrationProxy implements IProxy, IPartFactory {
+
+    public static final int guiGateButtonPressed = 1;
+    
+    public static final int guiTimerOpen = 2;
+    public static final int guiTimerBroadcastChange = 3;
+    
+    public static final int guiCounterOpen = 4;
+    public static final int guiCounterBroadcastChange = 5;
 
     @Override
     public void preinit() {

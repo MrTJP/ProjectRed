@@ -1,6 +1,7 @@
 package mrtjp.projectred.core;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedTransmission;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import mrtjp.projectred.illumination.EnumLantern;
 import mrtjp.projectred.integration.EnumGate;
@@ -23,14 +24,14 @@ public class ProjectRedTabs {
     public static CreativeTabs tabCore = new CreativeTabs("core") {
         @Override
         public ItemStack getIconItemStack() {
-            return new ItemStack(ProjectRed.itemScrewdriver);
+            return new ItemStack(ProjectRedCore.itemScrewdriver);
         }
     };
     
     public static CreativeTabs tabTransmission = new CreativeTabs("trans") {
         @Override
         public ItemStack getIconItemStack() {
-            return new ItemStack(ProjectRed.itemPartWire);
+            return new ItemStack(ProjectRedTransmission.itemPartWire);
         }
     };
         

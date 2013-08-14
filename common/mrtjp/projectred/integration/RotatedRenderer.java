@@ -1,6 +1,5 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.core.ClientProxy;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.Icon;
@@ -21,9 +20,6 @@ public class RotatedRenderer {
         IUVTransformation uv = null;
         Icon override = renderBlocks == null ? null : renderBlocks.overrideBlockTexture;
         
-        if (forceOriginalIcon && ClientProxy.renderPass == 1 && override != null) {
-            return;
-        }
         if (override != null && !forceOriginalIcon) {
             uv = new IconTransformation(override);
         } else {

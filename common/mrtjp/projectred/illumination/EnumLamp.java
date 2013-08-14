@@ -1,6 +1,6 @@
 package mrtjp.projectred.illumination;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedIllumination;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
@@ -55,11 +55,11 @@ public enum EnumLamp {
     }
 
     public ItemStack getItemStack() {
-        return new ItemStack(ProjectRed.itemPartLamp, 1, meta);
+        return new ItemStack(ProjectRedIllumination.itemPartLamp, 1, meta);
     }
 
     public ItemStack getInvertedItemStack() {
-        return new ItemStack(ProjectRed.itemPartInvLamp, 1, meta);
+        return new ItemStack(ProjectRedIllumination.itemPartInvLamp, 1, meta);
     }
 
     public static void initOreDictDefinitions() {

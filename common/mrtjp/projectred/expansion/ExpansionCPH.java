@@ -16,7 +16,7 @@ public class ExpansionCPH implements IClientPacketHandler {
         World world = mc.theWorld;
 
         switch (packet.getType()) {
-        case ExpansionNetworkConstants.alloySmelterWatcherUpdate:
+        case ExpansionProxy.alloySmelterWatcherUpdate:
             TileAlloySmelter t = BasicUtils.getTileEntity(world, packet.readCoord(), TileAlloySmelter.class);
             if (t != null) {
                 t.heat = packet.readShort();

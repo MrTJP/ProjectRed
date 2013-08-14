@@ -443,7 +443,7 @@ public abstract class GateLogic {
 
         @Override
         public void openGui(EntityPlayer player, GatePart tile) {
-            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerOpen);
+            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationProxy.guiTimerOpen);
             packet.writeCoord(tile.x(), tile.y(), tile.z());
             packet.writeByte(tile.getFace());
             packet.writeInt(intervalTicks);
@@ -469,7 +469,7 @@ public abstract class GateLogic {
         @Override
         public void updateWatchers(GatePart tile) {
             Chunk c = tile.world().getChunkFromBlockCoords(tile.x(), tile.z());
-            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerBroadcastChange);
+            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationProxy.guiTimerBroadcastChange);
             packet.writeCoord(tile.x(), tile.y(), tile.z());
             packet.writeByte(tile.getFace());
             packet.writeInt(intervalTicks);
@@ -551,7 +551,7 @@ public abstract class GateLogic {
 
         @Override
         public void openGui(EntityPlayer player, GatePart tile) {
-            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiCounterOpen);
+            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationProxy.guiCounterOpen);
             packet.writeCoord(tile.x(), tile.y(), tile.z());
             packet.writeByte(tile.getFace());
             packet.writeShort(value);
@@ -580,7 +580,7 @@ public abstract class GateLogic {
 
         @Override
         public void updateWatchers(GatePart tile) {
-            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiCounterBroadcastChange);
+            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationProxy.guiCounterBroadcastChange);
             packet.writeCoord(tile.x(), tile.y(), tile.z());
             packet.writeByte(tile.getFace());
             packet.writeShort(value);
@@ -667,7 +667,7 @@ public abstract class GateLogic {
 
         @Override
         public void openGui(EntityPlayer player, GatePart tile) {
-            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerOpen);
+            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationProxy.guiTimerOpen);
             packet.writeCoord(tile.x(), tile.y(), tile.z());
             packet.writeByte(tile.getFace());
             packet.writeInt(intervalTicks);
@@ -693,7 +693,7 @@ public abstract class GateLogic {
         @Override
         public void updateWatchers(GatePart tile) {
             Chunk c = tile.world().getChunkFromBlockCoords(tile.x(), tile.z());
-            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerBroadcastChange);
+            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationProxy.guiTimerBroadcastChange);
             packet.writeCoord(tile.x(), tile.y(), tile.z());
             packet.writeByte(tile.getFace());
             packet.writeInt(intervalTicks);
@@ -848,7 +848,7 @@ public abstract class GateLogic {
 
         @Override
         public void openGui(EntityPlayer player, GatePart tile) {
-            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerOpen);
+            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationProxy.guiTimerOpen);
             packet.writeCoord(tile.x(), tile.y(), tile.z());
             packet.writeByte(tile.getFace());
             packet.writeInt(intervalTicks);
@@ -874,7 +874,7 @@ public abstract class GateLogic {
         @Override
         public void updateWatchers(GatePart tile) {
             Chunk c = tile.world().getChunkFromBlockCoords(tile.x(), tile.z());
-            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiTimerBroadcastChange);
+            PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationProxy.guiTimerBroadcastChange);
             packet.writeCoord(tile.x(), tile.y(), tile.z());
             packet.writeByte(tile.getFace());
             packet.writeInt(intervalTicks);

@@ -1,53 +1,51 @@
 package mrtjp.projectred.exploration;
 
-import static mrtjp.projectred.ProjectRed.itemDiamondSaw;
-import static mrtjp.projectred.ProjectRed.itemDiamondSickle;
-import static mrtjp.projectred.ProjectRed.itemGoldSaw;
-import static mrtjp.projectred.ProjectRed.itemGoldSickle;
-import static mrtjp.projectred.ProjectRed.itemIronSaw;
-import static mrtjp.projectred.ProjectRed.itemIronSickle;
-import static mrtjp.projectred.ProjectRed.itemPeridotAxe;
-import static mrtjp.projectred.ProjectRed.itemPeridotHoe;
-import static mrtjp.projectred.ProjectRed.itemPeridotPickaxe;
-import static mrtjp.projectred.ProjectRed.itemPeridotSaw;
-import static mrtjp.projectred.ProjectRed.itemPeridotShovel;
-import static mrtjp.projectred.ProjectRed.itemPeridotSickle;
-import static mrtjp.projectred.ProjectRed.itemPeridotSword;
-import static mrtjp.projectred.ProjectRed.itemRubyAxe;
-import static mrtjp.projectred.ProjectRed.itemRubyHoe;
-import static mrtjp.projectred.ProjectRed.itemRubyPickaxe;
-import static mrtjp.projectred.ProjectRed.itemRubySaw;
-import static mrtjp.projectred.ProjectRed.itemRubyShovel;
-import static mrtjp.projectred.ProjectRed.itemRubySickle;
-import static mrtjp.projectred.ProjectRed.itemRubySword;
-import static mrtjp.projectred.ProjectRed.itemSapphireAxe;
-import static mrtjp.projectred.ProjectRed.itemSapphireHoe;
-import static mrtjp.projectred.ProjectRed.itemSapphirePickaxe;
-import static mrtjp.projectred.ProjectRed.itemSapphireSaw;
-import static mrtjp.projectred.ProjectRed.itemSapphireShovel;
-import static mrtjp.projectred.ProjectRed.itemSapphireSickle;
-import static mrtjp.projectred.ProjectRed.itemSapphireSword;
-import static mrtjp.projectred.ProjectRed.itemStoneSaw;
-import static mrtjp.projectred.ProjectRed.itemStoneSickle;
-import static mrtjp.projectred.ProjectRed.itemWoodSaw;
-import static mrtjp.projectred.ProjectRed.itemWoodSickle;
-import static mrtjp.projectred.ProjectRed.itemWoolGin;
-import mrtjp.projectred.core.IProxy;
+import static mrtjp.projectred.ProjectRedExploration.itemDiamondSaw;
+import static mrtjp.projectred.ProjectRedExploration.itemDiamondSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemGoldSaw;
+import static mrtjp.projectred.ProjectRedExploration.itemGoldSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemIronSaw;
+import static mrtjp.projectred.ProjectRedExploration.itemIronSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotAxe;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotHoe;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotPickaxe;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotSaw;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotShovel;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotSword;
+import static mrtjp.projectred.ProjectRedExploration.itemRubyAxe;
+import static mrtjp.projectred.ProjectRedExploration.itemRubyHoe;
+import static mrtjp.projectred.ProjectRedExploration.itemRubyPickaxe;
+import static mrtjp.projectred.ProjectRedExploration.itemRubySaw;
+import static mrtjp.projectred.ProjectRedExploration.itemRubyShovel;
+import static mrtjp.projectred.ProjectRedExploration.itemRubySickle;
+import static mrtjp.projectred.ProjectRedExploration.itemRubySword;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphireAxe;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphireHoe;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphirePickaxe;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphireSaw;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphireShovel;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphireSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphireSword;
+import static mrtjp.projectred.ProjectRedExploration.itemStoneSaw;
+import static mrtjp.projectred.ProjectRedExploration.itemStoneSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemWoodSaw;
+import static mrtjp.projectred.ProjectRedExploration.itemWoodSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemWoolGin;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
+import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.exploration.ItemGemSaw.GemSawItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-public class ExplorationClientProxy implements IProxy {
+public class ExplorationClientProxy extends ExplorationProxy {
 
     @Override
-    public void preinit(){}
-    
-    @Override
     public void init() {
+        super.init();
         LanguageRegistry.addName(itemWoolGin, "Wool Gin");
-        
+
         for (EnumOre o : EnumOre.VALID_ORES) {
             LanguageRegistry.addName(o.getItemStack(1), o.name);
         }
@@ -55,7 +53,11 @@ public class ExplorationClientProxy implements IProxy {
         for (EnumSpecialStone s : EnumSpecialStone.VALID_STONE) {
             LanguageRegistry.addName(s.getItemStack(), s.name);
         }
-        
+
+        for (EnumBackpack b : EnumBackpack.VALID_BP) {
+            LanguageRegistry.addName(b.getItemStack(), b.fullname);
+        }
+
         LanguageRegistry.addName(itemRubyAxe, itemRubyAxe.tool.name);
         LanguageRegistry.addName(itemSapphireAxe, itemSapphireAxe.tool.name);
         LanguageRegistry.addName(itemPeridotAxe, itemPeridotAxe.tool.name);
@@ -87,7 +89,7 @@ public class ExplorationClientProxy implements IProxy {
         LanguageRegistry.addName(itemSapphireSickle, itemSapphireSickle.tool.name);
         LanguageRegistry.addName(itemPeridotSickle, itemPeridotSickle.tool.name);
         LanguageRegistry.addName(itemDiamondSickle, itemDiamondSickle.tool.name);
-        
+
         MinecraftForgeClient.registerItemRenderer(itemWoodSaw.itemID, GemSawItemRenderer.instance);
         MinecraftForgeClient.registerItemRenderer(itemStoneSaw.itemID, GemSawItemRenderer.instance);
         MinecraftForgeClient.registerItemRenderer(itemIronSaw.itemID, GemSawItemRenderer.instance);
@@ -97,7 +99,4 @@ public class ExplorationClientProxy implements IProxy {
         MinecraftForgeClient.registerItemRenderer(itemPeridotSaw.itemID, GemSawItemRenderer.instance);
         MinecraftForgeClient.registerItemRenderer(itemDiamondSaw.itemID, GemSawItemRenderer.instance);
     }
-    
-    @Override
-    public void postinit() {}
 }

@@ -1,9 +1,9 @@
 package mrtjp.projectred.illumination;
 
-import static mrtjp.projectred.ProjectRed.itemPartInvLamp;
-import static mrtjp.projectred.ProjectRed.itemPartInvLantern;
-import static mrtjp.projectred.ProjectRed.itemPartLamp;
-import static mrtjp.projectred.ProjectRed.itemPartLantern;
+import static mrtjp.projectred.ProjectRedIllumination.itemPartInvLamp;
+import static mrtjp.projectred.ProjectRedIllumination.itemPartInvLantern;
+import static mrtjp.projectred.ProjectRedIllumination.itemPartLamp;
+import static mrtjp.projectred.ProjectRedIllumination.itemPartLantern;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import codechicken.multipart.MultiPartRegistry;

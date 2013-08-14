@@ -1,13 +1,15 @@
 package mrtjp.projectred.expansion;
 
-import static mrtjp.projectred.ProjectRed.blockMachines;
-import static mrtjp.projectred.ProjectRed.itemVAWT;
+import static mrtjp.projectred.ProjectRedCore.blockMachines;
+import static mrtjp.projectred.ProjectRedCore.itemVAWT;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ExpansionProxy implements IProxy {
+
+    public static final int alloySmelterWatcherUpdate = 1;
 
     @Override
     public void preinit() {

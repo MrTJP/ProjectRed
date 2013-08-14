@@ -2,11 +2,10 @@ package mrtjp.projectred.exploration;
 
 import java.util.Random;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
-import net.minecraft.block.Block;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -30,7 +29,7 @@ public class GenerationManager implements IWorldGenerator {
                 int x = chunkX * 16 + rand.nextInt(16);
                 int y = rand.nextInt(48);
                 int z = chunkZ * 16 + rand.nextInt(16);
-                new GeneratorOre(ProjectRed.blockOres.blockID, EnumOre.ORERUBY.meta, 5).generate(world, rand, x, y, z);
+                new GeneratorOre(ProjectRedExploration.blockOres.blockID, EnumOre.ORERUBY.meta, 5).generate(world, rand, x, y, z);
             }
         }
 
@@ -40,7 +39,7 @@ public class GenerationManager implements IWorldGenerator {
                 int x = chunkX * 16 + rand.nextInt(16);
                 int y = rand.nextInt(48);
                 int z = chunkZ * 16 + rand.nextInt(16);
-                new GeneratorOre(ProjectRed.blockOres.blockID, EnumOre.ORESAPPHIRE.meta, 5).generate(world, rand, x, y, z);
+                new GeneratorOre(ProjectRedExploration.blockOres.blockID, EnumOre.ORESAPPHIRE.meta, 5).generate(world, rand, x, y, z);
             }
         }
 
@@ -50,7 +49,7 @@ public class GenerationManager implements IWorldGenerator {
                 int x = chunkX * 16 + rand.nextInt(16);
                 int y = rand.nextInt(48);
                 int z = chunkZ * 16 + rand.nextInt(16);
-                new GeneratorOre(ProjectRed.blockOres.blockID, EnumOre.OREPERIDOT.meta, 5).generate(world, rand, x, y, z);
+                new GeneratorOre(ProjectRedExploration.blockOres.blockID, EnumOre.OREPERIDOT.meta, 5).generate(world, rand, x, y, z);
             }
         }
 
@@ -60,7 +59,7 @@ public class GenerationManager implements IWorldGenerator {
                 int x = chunkX * 16 + rand.nextInt(16);
                 int y = 32 + rand.nextInt(32);
                 int z = chunkZ * 16 + rand.nextInt(16);
-                new GeneratorMetamorphicCave(ProjectRed.blockStones.blockID, EnumSpecialStone.MARBLE.meta, rand.nextInt(4096)).generate(world, rand, x, y, z);
+                new GeneratorMetamorphicCave(ProjectRedExploration.blockStones.blockID, EnumSpecialStone.MARBLE.meta, rand.nextInt(4096)).generate(world, rand, x, y, z);
             }
         }
 
@@ -69,7 +68,7 @@ public class GenerationManager implements IWorldGenerator {
             int x = chunkX * 16 + rand.nextInt(16);
             int y = rand.nextInt(32);
             int z = chunkZ * 16 + rand.nextInt(16);
-            new GeneratorVolcano(ProjectRed.blockStones.blockID, EnumSpecialStone.BASALT.meta, MathHelper.getRandomIntegerInRange(rand, 32000, 64000)).generate(world, rand, x, y, z);
+            new GeneratorVolcano(ProjectRedExploration.blockStones.blockID, EnumSpecialStone.BASALT.meta, MathHelper.getRandomIntegerInRange(rand, 32000, 64000)).generate(world, rand, x, y, z);
         }
     }
 

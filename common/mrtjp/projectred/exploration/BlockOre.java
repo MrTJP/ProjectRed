@@ -2,7 +2,7 @@ package mrtjp.projectred.exploration;
 
 import java.util.ArrayList;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.block.Block;
@@ -103,7 +103,7 @@ public class BlockOre extends Block {
         }
         
         public ItemStack getItemStack(int i) {
-            return new ItemStack(ProjectRed.blockOres, i, meta);
+            return new ItemStack(ProjectRedExploration.blockOres, i, meta);
         }
         
         public ItemStack getDropStack(int i) {

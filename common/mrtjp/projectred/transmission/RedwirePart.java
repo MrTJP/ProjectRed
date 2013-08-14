@@ -2,7 +2,7 @@ package mrtjp.projectred.transmission;
 
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.CoreCPH;
+import mrtjp.projectred.core.CoreProxy;
 import mrtjp.projectred.core.Messenger;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -263,7 +263,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
         if (BasicUtils.isClient(world())) {
             Messenger.addMessage(x() + 0, y() + .5f, z() + 0,  "[c] = " + getRedwireSignal());
         } else {
-            PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreCPH.messengerQueue);
+            PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreProxy.messengerQueue);
             packet.writeFloat(x() + 0.0f);
             packet.writeFloat(y() + 0.5f);
             packet.writeFloat(z() + 0.0f);

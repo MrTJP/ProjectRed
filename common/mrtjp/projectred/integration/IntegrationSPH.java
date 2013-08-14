@@ -16,7 +16,7 @@ public class IntegrationSPH implements IServerPacketHandler {
         WorldServer world = (WorldServer) player.worldObj;
 
         switch (packet.getType()) {
-        case IntegrationNetworkConstants.guiGateButtonPressed:
+        case IntegrationProxy.guiGateButtonPressed:
             BlockCoord b = packet.readCoord();
             int face = packet.readByte();
             String action = packet.readString();

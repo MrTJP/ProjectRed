@@ -1,6 +1,6 @@
 package mrtjp.projectred.core;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedExploration;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,7 +19,7 @@ public class RecipeBackpackRecoloring implements IRecipe {
         if (checkIfOnlyContainsBagAndDye(inv)) {
             ItemStack bag = getBagFromInv(inv);
             ItemStack dye = getDyeFromInv(inv);
-            ItemStack newBag = new ItemStack(ProjectRed.itemBackpack.itemID, 1, 15 - dye.getItemDamage());
+            ItemStack newBag = new ItemStack(ProjectRedExploration.itemBackpack.itemID, 1, 15 - dye.getItemDamage());
             newBag.setTagCompound(bag.getTagCompound());
             return newBag;
         }
@@ -39,7 +39,7 @@ public class RecipeBackpackRecoloring implements IRecipe {
     private ItemStack getBagFromInv(InventoryCrafting inv) {
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
-            if (stack != null && stack.itemID == ProjectRed.itemBackpack.itemID) {
+            if (stack != null && stack.itemID == ProjectRedExploration.itemBackpack.itemID) {
                 return stack;
             }
         }
@@ -55,7 +55,7 @@ public class RecipeBackpackRecoloring implements IRecipe {
             ItemStack slotStack = inv.getStackInSlot(i);
             if (slotStack == null) {
                 numberNull++;
-            } else if (slotStack.itemID == ProjectRed.itemBackpack.itemID) {
+            } else if (slotStack.itemID == ProjectRedExploration.itemBackpack.itemID) {
                 numberBags++;
             } else if (slotStack.itemID == Item.dyePowder.itemID) {
                 numberDyes++;
@@ -72,7 +72,7 @@ public class RecipeBackpackRecoloring implements IRecipe {
 
     @Override
     public ItemStack getRecipeOutput() {
-        return new ItemStack(ProjectRed.itemBackpack, 1, Short.MAX_VALUE);
+        return new ItemStack(ProjectRedExploration.itemBackpack, 1, Short.MAX_VALUE);
     }
 
 }

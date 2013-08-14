@@ -1,15 +1,15 @@
 package mrtjp.projectred.core;
 
-import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.core.ItemBackpack.EnumBackpack;
+import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.expansion.AlloySmelterRecipe;
+import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import codechicken.microblock.handler.MicroblockProxy;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CoreRecipes {
@@ -21,18 +21,6 @@ public class CoreRecipes {
     private static void initToolRecipes() {
         /** Draw Plate **/
         GameRegistry.addRecipe(new RecipeDrawPlate());    
-                
-        /** Backpacks **/
-        for (int i = 0; i < EnumBackpack.VALID_BP.length; i++) {
-            GameRegistry.addRecipe(new ShapedOreRecipe(EnumBackpack.get(i).getItemStack(), 
-                    "ccc",
-                    "cdc",
-                    "ccc",
-                    'c', EnumPart.WOVENCLOTH.getItemStack(),
-                    'd', PRColors.get(i).getOreDict()
-            ));
-        }
-        GameRegistry.addRecipe(new RecipeBackpackRecoloring());
     }
 
     private static void initPartRecipes() {
@@ -111,7 +99,7 @@ public class CoreRecipes {
         GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8), 
                 "s",
                 "b",
-                's', new ItemStack(ProjectRed.itemDiamondSaw, 1, Short.MAX_VALUE), 
+                's', new ItemStack(ProjectRedExploration.itemDiamondSaw, 1, Short.MAX_VALUE), 
                 'b', EnumPart.SILICONBOULE.getItemStack()
         );
         
@@ -142,21 +130,21 @@ public class CoreRecipes {
         GameRegistry.addRecipe(new ShapedOreRecipe(EnumPart.COPPERCOIL.getItemStack(), 
                 "cd",
                 'c', "ingotCopper",
-                'd', new ItemStack(ProjectRed.itemDrawPlate, 1, Short.MAX_VALUE)
+                'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, Short.MAX_VALUE)
         ));
         
         /** Iron Coil **/
         GameRegistry.addRecipe(EnumPart.IRONCOIL.getItemStack(), 
                 "cd",
                 'c', new ItemStack(Item.ingotIron),
-                'd', new ItemStack(ProjectRed.itemDrawPlate, 1, Short.MAX_VALUE)
+                'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, Short.MAX_VALUE)
         );
         
         /** Gold Coil **/
         GameRegistry.addRecipe(EnumPart.GOLDCOIL.getItemStack(), 
                 "cd",
                 'c', new ItemStack(Item.ingotGold),
-                'd', new ItemStack(ProjectRed.itemDrawPlate, 1, Short.MAX_VALUE)
+                'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, Short.MAX_VALUE)
         );
         
         /** Red Alloy Ingot **/

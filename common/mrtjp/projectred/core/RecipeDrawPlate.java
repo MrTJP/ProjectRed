@@ -1,6 +1,6 @@
 package mrtjp.projectred.core;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedCore;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -28,7 +28,7 @@ public class RecipeDrawPlate implements IRecipe {
 
     @Override
     public ItemStack getRecipeOutput() {
-        return new ItemStack(ProjectRed.itemDrawPlate, 1);
+        return new ItemStack(ProjectRedCore.itemDrawPlate, 1);
     }
 
 }

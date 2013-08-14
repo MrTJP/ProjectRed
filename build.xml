@@ -109,8 +109,8 @@
 		<echo message="All Files Unpacked" />
 
 		<!-- Grant permissions -->
-        <chmod file="${forge.dir}/install.sh" perm="+x" />
-        <echo message="Permissions set" />
+		<chmod file="${forge.dir}/install.sh" perm="+x" />
+		<echo message="Permissions set" />
 
 		<!-- Install forge -->
 		<exec dir="${forge.dir}" executable="cmd" osfamily="windows" failonerror="true">
@@ -121,13 +121,13 @@
 		</exec>
 		<echo message="Initial Forge Setup complete" />
 
-        <!-- MCP OSX perms -->
-        <chmod file="${mcp.dir}/updatemd5.sh" perm="+x"/>
-		<chmod file="${mcp.dir}/updatemcp.sh" perm="+x"/>
-		<chmod file="${mcp.dir}/recompile.sh" perm="+x"/>
-		<chmod file="${mcp.dir}/reobfuscate_srg.sh" perm="+x"/>
-		<chmod file="${mcp.dir}/runtime/bin/astyle-osx" perm="+x"/>
-		<chmod file="${mcp.dir}/runtime/bin/jad-osx" perm="+x"/>
+		<!-- MCP OSX perms -->
+		<chmod file="${mcp.dir}/updatemd5.sh" perm="+x" />
+		<chmod file="${mcp.dir}/updatemcp.sh" perm="+x" />
+		<chmod file="${mcp.dir}/recompile.sh" perm="+x" />
+		<chmod file="${mcp.dir}/reobfuscate_srg.sh" perm="+x" />
+		<chmod file="${mcp.dir}/runtime/bin/astyle-osx" perm="+x" />
+		<chmod file="${mcp.dir}/runtime/bin/jad-osx" perm="+x" />
 
 		<!-- Copy files that will be hashed with MD5 -->
 		<copy todir="${mc.src.dir}">
@@ -163,9 +163,11 @@
 		<!-- Replace Tokens-->
 		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@VERSION@" value="${mod.version}" />
 		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@BUILD_NUMBER@" value="${mod.build}" />
+		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@MC_VERSION@" value="${mc.version}" />
 
 		<replace dir="${mcp.dir}\reobf\resources" token="@VERSION@" value="${mod.version}" />
 		<replace dir="${mcp.dir}\reobf\resources" token="@BUILD_NUMBER@" value="${mod.build}" />
+		<replace dir="${mcp.dir}\reobf\resources" token="@MC_VERSION@" value="${mc.version}" />
 		<replace dir="${mcp.dir}\reobf\resources" token="@FORGE_VERSION@" value="${version.forge}" />
 		<replace dir="${mcp.dir}\reobf\resources" token="@TEST_MSG@" value="..." />
 	</target>
@@ -174,9 +176,11 @@
 		<!-- Replace Tokens-->
 		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@VERSION@" value="${mod.version}" />
 		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@BUILD_NUMBER@" value="${mod.build}.NIGHTLY" />
+		<replace dir="${mc.src.dir}/mrtjp/projectred" token="@MC_VERSION@" value="${mc.version}" />
 
 		<replace dir="${mcp.dir}\reobf\resources" token="@VERSION@" value="${mod.version}" />
 		<replace dir="${mcp.dir}\reobf\resources" token="@BUILD_NUMBER@" value="${mod.build}.NIGHTLY" />
+		<replace dir="${mcp.dir}\reobf\resources" token="@MC_VERSION@" value="${mc.version}" />
 		<replace dir="${mcp.dir}\reobf\resources" token="@FORGE_VERSION@" value="${version.forge}" />
 		<replace dir="${mcp.dir}\reobf\resources" token="@TEST_MSG@" value="WARNING: This is an unstable test build" />
 	</target>

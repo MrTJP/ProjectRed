@@ -2,7 +2,8 @@ package mrtjp.projectred.illumination;
 
 import java.util.Arrays;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.transmission.BasicWireUtils;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -178,7 +179,7 @@ public class LanternPart extends JCuboidPart implements TSlottedPart, JNormalOcc
     }
 
     public ItemStack getItem() {
-        return new ItemStack(isInverted ? ProjectRed.itemPartInvLantern : ProjectRed.itemPartLantern, 1, type.meta);
+        return new ItemStack(isInverted ? ProjectRedIllumination.itemPartInvLantern : ProjectRedIllumination.itemPartLantern, 1, type.meta);
     }
 
     @Override
