@@ -214,22 +214,10 @@ public class RenderWire {
             verts[2].uv.set(8-tw, 24+tw);
             verts[3].uv.set(8+tw, 24+tw);
             
-            //retexture top
-            verts[4].uv.set(8-tw, 8);
-            verts[5].uv.set(8+tw, 8);
-            verts[6].uv.set(8+tw, 16-tw);
-            verts[7].uv.set(8-tw, 16-tw);
-            
             reflectSide(verts, r);
 
-            if((r+reorientSide[side])%4 >= 2) {//just like reflect side, but flips on x axis
-                UVT flip = new UVT(new Scale(1, 1, -1).at(new Vector3(0, 0, 16)));
-                for(int i = 8; i < 16; i++)
-                    verts[i].apply(flip);
-            }
-            
             //offset side textures
-            for(int i = 8; i < 16; i++)
+            for(int i = 4; i < 16; i++)
                 verts[i].apply(new UVTranslation(16, 0));
             
             return verts;
@@ -307,7 +295,7 @@ public class RenderWire {
             i = addVerts(model, verts, i);
         }
         
-        private static UVT sideReflect = new UVT(new Scale(-1, 1, 1).at(new Vector3(8, 0, 0)));
+        private static UVT sideReflect = new UVT(Rotation.quarterRotations[2].at(new Vector3(8, 0, 16)));
         private void reflectSide(Vertex5[] verts, int r) {
             if((r+reorientSide[side])%4 >= 2)//invert the texture about the y center
                 for(Vertex5 vert : verts)
