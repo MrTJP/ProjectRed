@@ -23,12 +23,8 @@ public class Messenger {
      * @param location
      * @param mail
      */
-    public static void addMessage(BlockCoord location, String mail) {
-        boolean long_lasting = mail.startsWith("\t");
-        if (long_lasting) {
-            mail = mail.substring(1);
-        }
-
+    public static void addMessage(float x, float y, float z, String mail) {
+        BlockCoord location = new BlockCoord((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
         if (mail.length() == 0) {
             return;
         }
@@ -36,19 +32,16 @@ public class Messenger {
         if ((messages.size() > 64)) {
             messages.remove(0);
         }
-        
+
         ArrayList<Message> readQueue = new ArrayList<Message>();
         readQueue.addAll(messages);
+        float yOffset = 0;
         for (Message m : readQueue) {
             if (m.location.equals(location)) {
-                m.set(location, mail, long_lasting);
-                return;
-            }
-            if ((BasicUtils.distanceManhatten(m.location, location) == 1)) {
-                m.receivedOn = 0L;
+                yOffset += .25f;
             }
         }
-        messages.add(new Message().set(location, mail, long_lasting));
+        messages.add(new Message().set(location, x, y, z, mail).addY(yOffset));
     }
 
     @ForgeSubscribe
@@ -60,7 +53,7 @@ public class Messenger {
         if (messages.size() == 0) {
             return;
         }
-        long deathTime = System.currentTimeMillis() - 6000L;
+        long deathTime = System.currentTimeMillis() - 3000L;
         EntityLivingBase view = Minecraft.getMinecraft().renderViewEntity;
         double cx = view.lastTickPosX + (view.posX - view.lastTickPosX) * event.partialTicks;
         double cy = view.lastTickPosY + (view.posY - view.lastTickPosY) * event.partialTicks;
@@ -78,7 +71,7 @@ public class Messenger {
         ArrayList<Message> removeQueue = new ArrayList<Message>();
         ArrayList<Message> readQueue = new ArrayList<Message>();
         readQueue.addAll(messages);
-        
+
         for (Message m : readQueue) {
             if ((m.receivedOn < deathTime)) {
                 removeQueue.add(m);
@@ -111,13 +104,12 @@ public class Messenger {
         scaling *= 0.6666667F;
         GL11.glPushMatrix();
 
-        //float y = (float) (m.location.y + 1 + 0.1 + Math.sin(((m.location.x / m.location.y) * 64) * 1.7 + ProjectRedTickHandler.degreeRotation / 8) * 0.01);
-        float y = (float) (m.location.y + 1 + 0.04*(Math.sin(((m.location.x ^ m.location.z)) + ClientUtils.getRenderTime() / 4)));
+        float y = (float) (m.y + 0.04 * (Math.sin((((int)m.x ^ (int)m.z)) + ClientUtils.getRenderTime() / 4)) + m.yOffset);
 
-        GL11.glTranslatef(m.location.x + 0.5F, y, m.location.z + 0.5F);
+        GL11.glTranslatef(m.x + 0.5F, y, m.z + 0.5F);
         GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-        GL11.glRotatef((float) (-RenderManager.instance.playerViewY + (8*Math.sin(((m.location.x ^ m.location.z)) + ClientUtils.getRenderTime() / 6))), 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef((float)(RenderManager.instance.playerViewX), 1.0F, 0.0F, 0.0F);
+        GL11.glRotatef((float) (-RenderManager.instance.playerViewY + (8 * Math.sin((((int)m.x ^ (int)m.z)) + ClientUtils.getRenderTime() / 6))), 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef((float) (RenderManager.instance.playerViewX), 1.0F, 0.0F, 0.0F);
         GL11.glScalef(-scaling, -scaling, scaling);
         GL11.glTranslatef(0.0F, -10 * lines.length, 0.0F);
 
@@ -144,16 +136,25 @@ public class Messenger {
 
     static class Message {
         BlockCoord location;
+        float x;
+        float y;
+        float z;
         String msg;
         long receivedOn;
+        float yOffset = 0;
 
-        Message set(BlockCoord locus, String msg, boolean longLife) {
+        Message set(BlockCoord location, float x, float y, float z, String msg) {
             this.receivedOn = System.currentTimeMillis();
-            if (longLife) {
-                this.receivedOn += 5000L;
-            }
-            this.location = locus;
             this.msg = msg;
+            this.location = location;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            return this;
+        }
+
+        Message addY(float y) {
+            yOffset += y;
             return this;
         }
     }

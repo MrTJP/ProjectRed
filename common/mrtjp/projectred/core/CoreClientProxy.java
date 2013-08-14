@@ -3,6 +3,7 @@ package mrtjp.projectred.core;
 import static mrtjp.projectred.ProjectRed.itemComponent;
 import static mrtjp.projectred.ProjectRed.itemDrawPlate;
 import static mrtjp.projectred.ProjectRed.itemWoolGin;
+import codechicken.lib.packet.PacketCustom;
 import mrtjp.projectred.core.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.item.ItemStack;
@@ -22,5 +23,7 @@ public class CoreClientProxy extends CoreProxy {
         for (EnumBackpack b : EnumBackpack.VALID_BP) {
             LanguageRegistry.addName(b.getItemStack(), b.fullname);
         }
+        
+        PacketCustom.assignHandler(Configurator.corePacketChannel, 1, 32, new CoreCPH());
     }
 }
