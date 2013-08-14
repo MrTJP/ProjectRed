@@ -23,12 +23,11 @@ public class ExpansionProxy implements IProxy {
         }
 
         itemVAWT = new ItemVAWT(Configurator.item_vawtID.getInt());
-        ExpansionRecipes.initRecipes();
     }
 
     @Override
     public void postinit() {
-        
+        ExpansionRecipes.initRecipes();
     }
 
 }
