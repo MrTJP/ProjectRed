@@ -11,7 +11,7 @@ import codechicken.lib.render.CCRenderState;
 public class JacketedWireItemRenderer implements IItemRenderer {
 
     public static JacketedWireItemRenderer instance = new JacketedWireItemRenderer();
-    WireRenderAssistant wra = new WireRenderAssistant();
+    //WireRenderAssistant wra = new WireRenderAssistant();
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
@@ -46,6 +46,7 @@ public class JacketedWireItemRenderer implements IItemRenderer {
 
     public void renderWireInventory(int damage, float x, float y, float z, float scale) {
         EnumWire type = EnumWire.VALID_WIRE[damage];
+        /*
         wra.x = x;
         wra.y = y;
         wra.z = z;
@@ -62,6 +63,7 @@ public class JacketedWireItemRenderer implements IItemRenderer {
         wra.pushJacketWireRender();
         CCRenderState.draw();
         GL11.glPopMatrix();
+        */
     }
 
 }

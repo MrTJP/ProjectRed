@@ -1225,6 +1225,7 @@ public abstract class GateRenderBridge {
                     rt.renderPartModel(_panelLights[i], "base", (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
                 }
             }
+            /*
             WireRenderDummy dummy = new WireRenderDummy();
             dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, BACK)] = true;
             WireRenderAssistant wra = new WireRenderAssistant();
@@ -1238,6 +1239,7 @@ public abstract class GateRenderBridge {
             wra.model = EnumWire.BUNDLED_N.wireMap;
             BasicRenderUtils.setFullColor();
             wra.pushRender();
+            */
         }
     }
 }

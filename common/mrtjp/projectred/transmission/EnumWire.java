@@ -74,8 +74,6 @@ public enum EnumWire {
     public static final String oreDictDefinitionJacketed = "projredJacketedWire";
     public static final String oreDictDefinitionBundled = "projredBundledCable";
 
-    public int meta = this.ordinal();
-
     private EnumWire(String name, String wireType, Class<? extends WirePart> jacketedClazz, 
         int thickness, int itemColour, String objPathJacket, String... textures) {
         this.name = name;
@@ -89,22 +87,6 @@ public enum EnumWire {
     }
     private EnumWire(String name, String wireType, int thickness, int itemColour, String... textures) {
         this(name, wireType, null, thickness, itemColour, null, textures);
-    }
-
-    public WirePart createWire(int side) {
-        try {
-            return (WirePart) wireClass.getConstructors()[0].newInstance(this, false, side);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    public WirePart createJacketedWire(int side) {
-        try {
-            return (WirePart) wireClass.getConstructors()[0].newInstance(this, true, side);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public boolean hasJacketedForm() {
