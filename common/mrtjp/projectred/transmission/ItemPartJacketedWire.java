@@ -36,7 +36,8 @@ public class ItemPartJacketedWire extends JItemMultiPart {
 
     @Override
     public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
-        return EnumWire.VALID_WIRE[item.getItemDamage()].createJacketedWire(side ^ 1);
+        //return EnumWire.VALID_WIRE[item.getItemDamage()].createJacketedWire(side ^ 1);
+        return null;
     }
 
     @Override
