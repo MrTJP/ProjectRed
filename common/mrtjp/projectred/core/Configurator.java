@@ -51,6 +51,8 @@ public class Configurator {
     public static Property item_woolginID;
     public static Property item_backpackID;
     public static Property item_vawtID;
+    public static Property item_wireDebuggerID;
+    
 
     public static Property item_rubyAxe;
     public static Property item_sapphireAxe;
@@ -163,6 +165,7 @@ public class Configurator {
         item_sapphireSickle = localConfig.getItem("sapphiresickle", 9126);
         item_peridotSickle = localConfig.getItem("peridotsickle", 9127);
         item_diamondSickle = localConfig.getItem("diamondsickle", 9128);
+        item_wireDebuggerID = localConfig.getItem("item_wireDebuggerID", 9037);
 
         gen_Ruby = localConfig.get("World Generation", "Ruby Ore", true);
         gen_Sapphire = localConfig.get("World Generation", "Sapphire Ore", true);
@@ -170,6 +173,7 @@ public class Configurator {
         gen_MarbleCave = localConfig.get("World Generation", "Marble Caves", true);
         gen_Volcano = localConfig.get("World Generation", "Valcanos", true);
         gen_SpreadingMoss = localConfig.get("World Generation", "Spreading Moss", true);
+
 
         networkUpdateRange = localConfig.get("general", "Network Update Range", 50.0D);
         networkUpdateRange.comment = "This is the distance in which players will be notified.  Lower if you experience lag.";

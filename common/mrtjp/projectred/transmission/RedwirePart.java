@@ -1,12 +1,16 @@
 package mrtjp.projectred.transmission;
 
 import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.CoreCPH;
+import mrtjp.projectred.core.Messenger;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatMessageComponent;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.IFaceRedstonePart;
@@ -251,6 +255,21 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     @Override
     protected boolean debug(EntityPlayer ply) {
         ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((world().isRemote ? "Client" : "Server") + " signal strength: " + getRedwireSignal()));
+        return true;
+    }
+    
+    @Override
+    protected boolean test(EntityPlayer player) {
+        if (BasicUtils.isClient(world())) {
+            Messenger.addMessage(x() + 0, y() + .5f, z() + 0,  "[c] = " + getRedwireSignal());
+        } else {
+            PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreCPH.messengerQueue);
+            packet.writeFloat(x() + 0.0f);
+            packet.writeFloat(y() + 0.5f);
+            packet.writeFloat(z() + 0.0f);
+            packet.writeString("[s] = " + getRedwireSignal());
+            packet.sendToPlayer(player);
+        }
         return true;
     }
 }
