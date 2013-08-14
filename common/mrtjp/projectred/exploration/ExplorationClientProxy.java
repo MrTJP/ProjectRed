@@ -1,14 +1,45 @@
 package mrtjp.projectred.exploration;
 
-import static mrtjp.projectred.ProjectRed.*;
+import static mrtjp.projectred.ProjectRed.itemDiamondSaw;
+import static mrtjp.projectred.ProjectRed.itemDiamondSickle;
+import static mrtjp.projectred.ProjectRed.itemGoldSaw;
+import static mrtjp.projectred.ProjectRed.itemGoldSickle;
+import static mrtjp.projectred.ProjectRed.itemIronSaw;
+import static mrtjp.projectred.ProjectRed.itemIronSickle;
+import static mrtjp.projectred.ProjectRed.itemPeridotAxe;
+import static mrtjp.projectred.ProjectRed.itemPeridotHoe;
+import static mrtjp.projectred.ProjectRed.itemPeridotPickaxe;
+import static mrtjp.projectred.ProjectRed.itemPeridotSaw;
+import static mrtjp.projectred.ProjectRed.itemPeridotShovel;
+import static mrtjp.projectred.ProjectRed.itemPeridotSickle;
+import static mrtjp.projectred.ProjectRed.itemPeridotSword;
+import static mrtjp.projectred.ProjectRed.itemRubyAxe;
+import static mrtjp.projectred.ProjectRed.itemRubyHoe;
+import static mrtjp.projectred.ProjectRed.itemRubyPickaxe;
+import static mrtjp.projectred.ProjectRed.itemRubySaw;
+import static mrtjp.projectred.ProjectRed.itemRubyShovel;
+import static mrtjp.projectred.ProjectRed.itemRubySickle;
+import static mrtjp.projectred.ProjectRed.itemRubySword;
+import static mrtjp.projectred.ProjectRed.itemSapphireAxe;
+import static mrtjp.projectred.ProjectRed.itemSapphireHoe;
+import static mrtjp.projectred.ProjectRed.itemSapphirePickaxe;
+import static mrtjp.projectred.ProjectRed.itemSapphireSaw;
+import static mrtjp.projectred.ProjectRed.itemSapphireShovel;
+import static mrtjp.projectred.ProjectRed.itemSapphireSickle;
+import static mrtjp.projectred.ProjectRed.itemSapphireSword;
+import static mrtjp.projectred.ProjectRed.itemStoneSaw;
+import static mrtjp.projectred.ProjectRed.itemStoneSickle;
+import static mrtjp.projectred.ProjectRed.itemWoodSaw;
+import static mrtjp.projectred.ProjectRed.itemWoodSickle;
 import static mrtjp.projectred.ProjectRed.itemWoolGin;
-import net.minecraftforge.client.MinecraftForgeClient;
+import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
 import mrtjp.projectred.exploration.ItemGemSaw.GemSawItemRenderer;
+import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-public class ExplorationClientProxy extends ExplorationProxy {
+public class ExplorationClientProxy implements IProxy {
 
     @Override
     public void preinit(){}

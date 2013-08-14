@@ -27,14 +27,13 @@ public class IlluminationProxy implements IProxy, IPartFactory {
         itemPartLamp = new ItemPartLamp(Configurator.part_lamp.getInt(), false);
         itemPartInvLamp = new ItemPartLamp(Configurator.part_invlamp.getInt(), true);
 
-        IlluminationRecipes.initIlluminationRecipes();
         EnumLamp.initOreDictDefinitions();
         EnumLantern.initOreDictDefinitions();
     }
 
     @Override
     public void postinit() {
-
+        IlluminationRecipes.initIlluminationRecipes();
     }
 
     @Override

@@ -148,11 +148,12 @@ public class ExplorationProxy implements IProxy {
         itemPeridotSickle = new ItemGemSickle(Configurator.item_peridotSickle.getInt(), EnumSpecialTool.PERIDOTSICKLE);
         itemDiamondSickle = new ItemGemSickle(Configurator.item_diamondSickle.getInt(), EnumSpecialTool.DIAMONDSICKLE);
 
-        ExplorationRecipes.initRecipes();
     }
 
     @Override
     public void postinit() {
+        ExplorationRecipes.initRecipes();
+        
         // Remove default saw recipes
         ArrayList recipes = (ArrayList) CraftingManager.getInstance().getRecipeList();
         for (int i = 0; i < recipes.size(); i++) {

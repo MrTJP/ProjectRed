@@ -23,10 +23,10 @@ public class CoreProxy implements IProxy {
         itemBackpack = new ItemBackpack(Configurator.item_backpackID.getInt());
 
         EnumPart.initOreDictDefinitions();
-        CoreRecipes.initCoreRecipes();
     }
 
     @Override
     public void postinit() {
+        CoreRecipes.initCoreRecipes();
     }
 }
