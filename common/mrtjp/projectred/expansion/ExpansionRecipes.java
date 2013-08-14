@@ -17,8 +17,6 @@ public class ExpansionRecipes {
         initOtherAlloySmelterRecipes();
     }
     
-
-    
     private static void initMachineRecipes() {
         
         /** Alloy Smelter **/

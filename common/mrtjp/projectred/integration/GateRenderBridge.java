@@ -8,7 +8,7 @@ import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.transmission.EnumWire;
 import mrtjp.projectred.transmission.WirePart;
-import mrtjp.projectred.transmission.WireRenderAssistant;
+//import mrtjp.projectred.transmission.WireRenderAssistant;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -140,7 +140,7 @@ public abstract class GateRenderBridge {
     /**
      * Dummy WirePart class, used to pass to WireRenderAssistant.
      */
-    public static class WireRenderDummy extends WirePart {
+    /*public static class WireRenderDummy extends WirePart {
 
         public WireRenderDummy() {
             super(EnumWire.RED_ALLOY, false, 0);
@@ -174,7 +174,7 @@ public abstract class GateRenderBridge {
         protected boolean debug(EntityPlayer ply) {
             return false;
         }
-    }
+    }*/
 
     public static class AND extends GateRenderBridge implements Stateless {
         {
@@ -1009,7 +1009,7 @@ public abstract class GateRenderBridge {
                 return;
             }
             rt.renderPartModel(_latchCableCover, (wireColor[0] == ON ? "on" : "off"), (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
-            WireRenderDummy dummy = new WireRenderDummy();
+            /*WireRenderDummy dummy = new WireRenderDummy();
             dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, FRONT)] = true;
             dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, BACK)] = true;
             WireRenderAssistant wra = new WireRenderAssistant();
@@ -1022,7 +1022,7 @@ public abstract class GateRenderBridge {
             wra.wireIcon = EnumWire.BUNDLED_N.wireSprites[0];
             wra.model = EnumWire.BUNDLED_N.wireMap;
             BasicRenderUtils.setFullColor();
-            wra.pushRender();
+            wra.pushRender();*/
         }
     }
 
@@ -1050,7 +1050,7 @@ public abstract class GateRenderBridge {
                 return;
             }
             rt.renderPartModel(_relayCableCover, (wireColor[0] == ON ? "on" : "off"), (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
-            WireRenderDummy dummy = new WireRenderDummy();
+            /*WireRenderDummy dummy = new WireRenderDummy();
             dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, FRONT)] = true;
             dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, BACK)] = true;
             WireRenderAssistant wra = new WireRenderAssistant();
@@ -1063,7 +1063,7 @@ public abstract class GateRenderBridge {
             wra.wireIcon = EnumWire.BUNDLED_N.wireSprites[0];
             wra.model = EnumWire.BUNDLED_N.wireMap;
             BasicRenderUtils.setFullColor();
-            wra.pushRender();
+            wra.pushRender();*/
         }
 
     }
@@ -1092,7 +1092,7 @@ public abstract class GateRenderBridge {
                 return;
             }
             rt.renderPartModel(_multCableCover, (wireColor[0] == ON ? "on" : "off"), (16f - 8.5f) / 16 + .03f, 0, (16f - 8.5f) / 16 + .03f, -1, -1, false);
-            WireRenderDummy dummy = new WireRenderDummy();
+            /*WireRenderDummy dummy = new WireRenderDummy();
             dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, FRONT)] = true;
             dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, LEFT)] = true;
             dummy.connects[Rotator.relativeToAbsolute(rt.side, rt.front, RIGHT)] = true;
@@ -1106,7 +1106,7 @@ public abstract class GateRenderBridge {
             wra.wireIcon = EnumWire.BUNDLED_N.wireSprites[0];
             wra.model = EnumWire.BUNDLED_N.wireMap;
             BasicRenderUtils.setFullColor();
-            wra.pushRender();
+            wra.pushRender();*/
 
         }
     }
