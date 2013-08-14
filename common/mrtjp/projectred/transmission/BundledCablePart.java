@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.CoreCPH;
 import mrtjp.projectred.core.CoreProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -103,11 +104,11 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
     }
 
     @Override
-    public boolean canConnectToType(WirePart wire, int r) {
+    public boolean canConnectToType(IWirePart wire) {
         if (wire instanceof BundledCablePart) {
             int ocolour = ((BundledCablePart) wire).colour;
             return ocolour == -1 || colour == -1 || ocolour == colour;
-        } else if (wire instanceof InsulatedRedAlloyPart) {
+        } else if (wire instanceof IInsulatedRedwirePart || wire instanceof IBundledCablePart) {
             return true;
         }
 
@@ -138,14 +139,8 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
 
     @Override
     public boolean propogateTo(TMultiPart part, int mode) {
-        if (mode == DROPPING && part instanceof InsulatedRedAlloyPart)
-            if (signal[((InsulatedRedAlloyPart) part).colour] != 0)// no point
-                                                                   // propogating
-                                                                   // to an ins
-                                                                   // wire if we
-                                                                   // didn't
-                                                                   // drop their
-                                                                   // colour
+        if (mode == DROPPING && part instanceof IInsulatedRedwirePart)
+            if (signal[((IInsulatedRedwirePart) part).getInsulatedColour()] != 0)// no point propogating to an ins wire if we didn't drop their colour
                 return true;
 
         return super.propogateTo(part, mode);
@@ -210,11 +205,11 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
             for (int i = 0; i < 16; i++)
                 if ((osignal[i] & 0xFF) - 1 > (tmpSignal[i] & 0xFF))
                     tmpSignal[i] = (byte) (osignal[i] - 1);
-        } else if (part instanceof InsulatedRedAlloyPart) {
-            InsulatedRedAlloyPart insPart = (InsulatedRedAlloyPart) part;
+        } else if (part instanceof IInsulatedRedwirePart) {
+            IInsulatedRedwirePart insPart = (IInsulatedRedwirePart) part;
             int s = insPart.getRedwireSignal() - 1;
-            if (s > (tmpSignal[insPart.colour] & 0xFF))
-                tmpSignal[insPart.colour] = (byte) s;
+            if (s > (tmpSignal[insPart.getInsulatedColour()] & 0xFF))
+                tmpSignal[insPart.getInsulatedColour()] = (byte) s;
         } else if (part instanceof IBundledEmitter) {
             byte[] osignal = ((IBundledEmitter) part).getBundledSignal(r);
             if (osignal != null) {

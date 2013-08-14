@@ -9,7 +9,7 @@ import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class InsulatedRedAlloyPart extends RedwirePart {
+public class InsulatedRedAlloyPart extends RedwirePart implements IInsulatedRedwirePart {
 
     public byte colour;
     
@@ -60,16 +60,16 @@ public class InsulatedRedAlloyPart extends RedwirePart {
     @Override
     public int getPartSignal(TMultiPart part, int r)
     {
-        if(part instanceof BundledCablePart)
-            return (((BundledCablePart) part).signal[colour]&0xFF)-1;
+        if(part instanceof IBundledCablePart)
+            return (((IBundledCablePart) part).getBundledSignal()[colour]&0xFF)-1;
         
         return super.getPartSignal(part, r);
     }
 
     @Override
-    public boolean canConnectToType(WirePart wire, int r) {
-        if(wire instanceof InsulatedRedAlloyPart)
-            return ((InsulatedRedAlloyPart) wire).colour == colour;
+    public boolean canConnectToType(IWirePart wire) {
+        if(wire instanceof IInsulatedRedwirePart)
+            return ((IInsulatedRedwirePart) wire).getInsulatedColour() == colour;
         
         return true;
     }
@@ -88,5 +88,10 @@ public class InsulatedRedAlloyPart extends RedwirePart {
     @SideOnly(Side.CLIENT)
     public Icon getIcon() {
         return getWireType().wireSprites[signal != 0 ? 1 : 0];
+    }
+    
+    @Override
+    public int getInsulatedColour() {
+        return colour;
     }
 }

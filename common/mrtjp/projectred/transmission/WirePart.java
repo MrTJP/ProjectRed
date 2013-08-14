@@ -115,7 +115,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
 
     @Override
     public void onPartChanged(TMultiPart part) {
-        if(!world().isRemote && part != this) {
+        if(!world().isRemote) {
             WirePropogator.logCalculation();
             
             boolean changed = updateInternalConnections();
@@ -294,7 +294,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     public boolean connectionOpen(int r) {
         int absDir = Rotation.rotateSide(side, r);
         TMultiPart facePart = tile().partMap(absDir);
-        if(facePart != null && (!(facePart instanceof WirePart) || !canConnectToType((WirePart)facePart, r)))
+        if(facePart != null && (!(facePart instanceof WirePart) || !canConnectToType((WirePart)facePart)))
             return false;
         
         if(tile().partMap(PartMap.edgeBetween(side, absDir)) != null)
@@ -349,8 +349,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     public boolean connectStraight(int r) {
         int absDir = Rotation.rotateSide(side, r);
         
-        BlockCoord pos = new BlockCoord(getTile());
-        pos.offset(absDir);
+        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(side);
@@ -375,17 +374,17 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         if (tp instanceof IConnectable)
             return ((IConnectable) tp).connectInternal(this, Rotation.rotationTo(absDir, side));
         
-        return connectInternalOverride(r, tp);
+        return connectInternalOverride(tp, r);
     }
     
-    public boolean connectInternalOverride(int r, TMultiPart p) {
+    public boolean connectInternalOverride(TMultiPart p, int r) {
         return false;
     }
 
     public boolean connectCenter() {
         TMultiPart t = tile().partMap(6);
         if (t instanceof IConnectable)
-            return ((IConnectable) t).connectStraight(this, -1);
+            return ((IConnectable) t).connectInternal(this, side);
         
         return false;
     }
@@ -400,7 +399,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     @Override
     public boolean connectCorner(WirePart wire, int r)
     {
-        if(canConnectToType(wire, r) && maskOpen(r))
+        if(canConnectToType(wire) && maskOpen(r))
         {
             int oldConn = connMap;
             connMap|=0x1<<r;
@@ -415,9 +414,9 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     }
 
     @Override
-    public boolean connectStraight(WirePart wire, int r)
+    public boolean connectStraight(IWirePart wire, int r)
     {
-        if(canConnectToType(wire, r) && maskOpen(r))
+        if(canConnectToType(wire) && maskOpen(r))
         {
             int oldConn = connMap;
             connMap|=0x10<<r;
@@ -429,9 +428,9 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     }
     
     @Override
-    public boolean connectInternal(WirePart wire, int r)
+    public boolean connectInternal(IWirePart wire, int r)
     {
-        if(canConnectToType(wire, r))
+        if(canConnectToType(wire))
         {
             int oldConn = connMap;
             connMap|=0x100<<r;
@@ -442,7 +441,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         return false;
     }
     
-    public abstract boolean canConnectToType(WirePart wire, int r);
+    public abstract boolean canConnectToType(IWirePart wire);
 
     public void notifyCornerChange(int r) {
         int absDir = Rotation.rotateSide(side, r);
