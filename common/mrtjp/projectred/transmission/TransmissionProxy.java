@@ -47,7 +47,6 @@ public class TransmissionProxy implements IProxy, IPartFactory {
             return new InsulatedRedAlloyPart(0);
         else if(id.equals("pr_bundled"))
             return new BundledCablePart(0);
-        
         return null;
     }
 
