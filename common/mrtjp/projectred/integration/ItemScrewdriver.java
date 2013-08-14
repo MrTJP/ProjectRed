@@ -1,6 +1,6 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,7 +23,7 @@ public class ItemScrewdriver extends Item {
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float par8, float par9, float par10) {
         ItemStack held = player.getHeldItem();
-        if (held.itemID == ProjectRed.itemScrewdriver.itemID) {
+        if (held.itemID == ProjectRedCore.itemScrewdriver.itemID) {
             held.damageItem(1, player);
         }
         return true;

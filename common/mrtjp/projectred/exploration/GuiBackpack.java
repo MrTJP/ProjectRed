@@ -1,6 +1,7 @@
-package mrtjp.projectred.core;
+package mrtjp.projectred.exploration;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedExploration;
+import mrtjp.projectred.core.BaseGuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -16,7 +17,7 @@ public class GuiBackpack extends BaseGuiContainer {
         super(176, 168, 0, 0);
         _bag = bag;
         _player = player;
-        if (_bag.itemID == ProjectRed.itemBackpack.itemID) {
+        if (_bag.itemID == ProjectRedExploration.itemBackpack.itemID) {
             inventorySlots = ItemBackpack.getContainer(player);
         }
     }

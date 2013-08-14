@@ -17,16 +17,16 @@ public class IntegrationCPH implements IClientPacketHandler {
         World world = mc.theWorld;
 
         switch (packet.getType()) {
-        case IntegrationNetworkConstants.guiTimerOpen:
+        case IntegrationProxy.guiTimerOpen:
             guiTimerUpdate(packet, player, true);
             break;
-        case IntegrationNetworkConstants.guiTimerBroadcastChange:
+        case IntegrationProxy.guiTimerBroadcastChange:
             guiTimerUpdate(packet, player, false);
             break;
-        case IntegrationNetworkConstants.guiCounterOpen:
+        case IntegrationProxy.guiCounterOpen:
             guiCounterUpdate(packet, player, true);
             break;
-        case IntegrationNetworkConstants.guiCounterBroadcastChange:
+        case IntegrationProxy.guiCounterBroadcastChange:
             guiCounterUpdate(packet, player, false);
             break;
         }

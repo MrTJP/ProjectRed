@@ -4,8 +4,7 @@ import java.util.Arrays;
 
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.CoreCPH;
-import mrtjp.projectred.core.Messenger;
+import mrtjp.projectred.core.CoreProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatMessageComponent;
@@ -263,7 +262,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
             if (s == "") {
                 s = "off";
             }
-            PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreCPH.messengerQueue);
+            PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreProxy.messengerQueue);
             packet.writeFloat(x() + 0.0f);
             packet.writeFloat(y() + 0.5f);
             packet.writeFloat(z() + 0.0f);

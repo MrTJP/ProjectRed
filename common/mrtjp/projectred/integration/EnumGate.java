@@ -1,6 +1,6 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedIntegration;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -101,7 +101,7 @@ public enum EnumGate {
     }
 
     public ItemStack getItemStack() {
-        return new ItemStack(ProjectRed.itemPartGate, 1, meta);
+        return new ItemStack(ProjectRedIntegration.itemPartGate, 1, meta);
     }
 
     public static void initOreDictDefinitions() {

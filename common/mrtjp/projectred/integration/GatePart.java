@@ -6,11 +6,11 @@ import static codechicken.lib.vec.Vector3.center;
 import java.util.Arrays;
 import java.util.Random;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.integration.GateLogic.WorldStateBound;
 import mrtjp.projectred.transmission.BasicWireUtils;
-import mrtjp.projectred.transmission.BundledCablePart;
 import mrtjp.projectred.transmission.IBundledEmitter;
 import mrtjp.projectred.transmission.IConnectable;
 import mrtjp.projectred.transmission.RedwirePart;
@@ -447,7 +447,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     }
 
     public ItemStack getItem() {
-        return new ItemStack(ProjectRed.itemPartGate, 1, type.ordinal());
+        return new ItemStack(ProjectRedIntegration.itemPartGate, 1, type.ordinal());
     }
 
     @Override
@@ -496,7 +496,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 
     @Override
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
-        if (held != null && held.getItem() == ProjectRed.itemScrewdriver) {
+        if (held != null && held.getItem() == ProjectRedCore.itemScrewdriver) {
             if (player.isSneaking()) {
                 this.configure();
                 return true;

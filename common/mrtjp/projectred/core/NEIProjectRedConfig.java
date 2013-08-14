@@ -3,10 +3,11 @@ import static codechicken.nei.api.API.addSetRange;
 
 import java.util.Arrays;
 
-import mrtjp.projectred.ProjectRed;
-import mrtjp.projectred.core.ItemBackpack.EnumBackpack;
+import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
+import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.illumination.EnumLamp;
 import mrtjp.projectred.illumination.EnumLantern;
 import mrtjp.projectred.integration.EnumGate;
@@ -63,9 +64,9 @@ public class NEIProjectRedConfig implements IConfigureNEI {
                 if (!(Arrays.asList(EnumPart.ILLUMAR_PARTS).contains(p))) {
                     core.add(p.getItemStack());
                 }
-                core.add(new ItemStack(ProjectRed.itemScrewdriver));
-                core.add(new ItemStack(ProjectRed.itemDrawPlate));
-                core.add(new ItemStack(ProjectRed.itemWoolGin));
+                core.add(new ItemStack(ProjectRedCore.itemScrewdriver));
+                core.add(new ItemStack(ProjectRedCore.itemDrawPlate));
+                core.add(new ItemStack(ProjectRedExploration.itemWoolGin));
                 for (EnumBackpack b : EnumBackpack.VALID_BP) {
                     core.add(b.getItemStack());
                 }

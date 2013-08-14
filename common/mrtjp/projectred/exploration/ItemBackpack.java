@@ -1,8 +1,12 @@
-package mrtjp.projectred.core;
+package mrtjp.projectred.exploration;
 
 import java.util.List;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedExploration;
+import mrtjp.projectred.core.GhostContainer;
+import mrtjp.projectred.core.GuiRestrictedSlot;
+import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.core.SimpleInventory;
 import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -32,7 +36,7 @@ public class ItemBackpack extends Item {
     public static IInventory getBackpackInventory(EntityPlayer player) {
         SimpleInventory inv = null;
         ItemStack held = player.getHeldItem();
-        if (held != null && held.itemID == ProjectRed.itemBackpack.itemID) {
+        if (held != null && held.itemID == ProjectRedExploration.itemBackpack.itemID) {
             inv = new BagInventory(player, held);
             inv.readFromNBT(held.getTagCompound(), "conents");
         }
@@ -42,7 +46,7 @@ public class ItemBackpack extends Item {
     public static Container getContainer(EntityPlayer player) {
         IInventory backpackInv = getBackpackInventory(player);
         if (backpackInv == null) {
-            backpackInv = new BagInventory(player, new ItemStack(ProjectRed.itemBackpack));
+            backpackInv = new BagInventory(player, new ItemStack(ProjectRedExploration.itemBackpack));
         }
         GhostContainer ghost = new GhostContainer(player.inventory, backpackInv);
         for (int i = 0; i < 3; i++) {
@@ -55,7 +59,7 @@ public class ItemBackpack extends Item {
                         if (stack == null) {
                             return true;
                         }
-                        return !(stack.itemID == ProjectRed.itemBackpack.itemID);
+                        return !(stack.itemID == ProjectRedExploration.itemBackpack.itemID);
                     }
                     
                 });
@@ -79,7 +83,7 @@ public class ItemBackpack extends Item {
 
     public void openGui(EntityPlayer player) {
         if (!player.isSneaking()) {
-            player.openGui(ProjectRed.instance, GuiIDs.ID_Bag, player.worldObj, 0, 0, 0);
+            player.openGui(ProjectRedExploration.instance, ExplorationGuiHandler.ID_Bag, player.worldObj, 0, 0, 0);
         }
     }
 
@@ -158,7 +162,7 @@ public class ItemBackpack extends Item {
         
         private void refreshNBT() {
             ItemStack currentBag = _player.getHeldItem();
-            if (currentBag != null && currentBag.itemID == ProjectRed.itemBackpack.itemID) {
+            if (currentBag != null && currentBag.itemID == ProjectRedExploration.itemBackpack.itemID) {
                 currentBag.setTagCompound(_bagOriginal.getTagCompound());
             }
         }
@@ -204,7 +208,7 @@ public class ItemBackpack extends Item {
         }
 
         public ItemStack getItemStack(int i) {
-            return new ItemStack(ProjectRed.itemBackpack, i, meta);
+            return new ItemStack(ProjectRedExploration.itemBackpack, i, meta);
         }
 
     }

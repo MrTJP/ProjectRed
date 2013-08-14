@@ -2,9 +2,8 @@ package mrtjp.projectred.exploration;
 
 import java.util.List;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
-import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -29,7 +28,7 @@ public class ItemBlockOre extends ItemBlock {
     }
 
     public String getUnlocalizedName(ItemStack itemstack) {
-        return ProjectRed.blockOres.getUnlocalizedName() + "." + EnumOre.VALID_ORES[itemstack.getItemDamage()].unlocal;
+        return ProjectRedExploration.blockOres.getUnlocalizedName() + "." + EnumOre.VALID_ORES[itemstack.getItemDamage()].unlocal;
     }
 
 }

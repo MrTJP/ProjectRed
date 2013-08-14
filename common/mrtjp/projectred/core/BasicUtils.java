@@ -28,10 +28,7 @@ import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.common.SidedProxy;
 
 public class BasicUtils {
-
-    @SidedProxy(clientSide = "mrtjp.projectred.core.ClientProxy", serverSide = "mrtjp.projectred.core.CommonProxy")
-    public static IProxy proxy;
-
+    
     public static Random rand = new Random();
 
     public static boolean isServer(World world) {

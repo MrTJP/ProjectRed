@@ -2,7 +2,7 @@ package mrtjp.projectred.exploration;
 
 import java.util.List;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
@@ -28,7 +28,7 @@ public class ItemBlockSpecialStone extends ItemBlock{
     }
 
     public String getUnlocalizedName(ItemStack itemstack) {
-        return ProjectRed.blockStones.getUnlocalizedName() + "." + EnumSpecialStone.VALID_STONE[itemstack.getItemDamage()].unlocal;
+        return ProjectRedExploration.blockStones.getUnlocalizedName() + "." + EnumSpecialStone.VALID_STONE[itemstack.getItemDamage()].unlocal;
     }
 
 }

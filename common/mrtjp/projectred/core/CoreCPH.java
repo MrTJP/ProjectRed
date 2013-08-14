@@ -10,15 +10,13 @@ import codechicken.lib.vec.BlockCoord;
 
 public class CoreCPH implements IClientPacketHandler {
 
-    public static final int messengerQueue = 2;
-
     @Override
     public void handlePacket(PacketCustom packetCustom, NetClientHandler nethandler, Minecraft mc) {
         EntityPlayer player = mc.thePlayer;
         World world = mc.theWorld;
 
         switch (packetCustom.getType()) {
-        case messengerQueue:
+        case CoreProxy.messengerQueue:
             Messenger.addMessage(packetCustom.readFloat(), packetCustom.readFloat(), packetCustom.readFloat(), packetCustom.readString());
         }
     }

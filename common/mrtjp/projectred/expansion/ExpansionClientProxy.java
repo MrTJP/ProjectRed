@@ -1,22 +1,18 @@
 package mrtjp.projectred.expansion;
 
-import static mrtjp.projectred.ProjectRed.blockMachines;
-import static mrtjp.projectred.ProjectRed.itemVAWT;
+import static mrtjp.projectred.ProjectRedCore.blockMachines;
+import static mrtjp.projectred.ProjectRedCore.itemVAWT;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import net.minecraft.item.ItemStack;
 import codechicken.lib.packet.PacketCustom;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-public class ExpansionClientProxy implements IProxy {
-
-    @Override
-    public void preinit() {
-    }
+public class ExpansionClientProxy extends ExpansionProxy {
     
     @Override
     public void init() {
+        super.init();
         PacketCustom.assignHandler(Configurator.expansionPacketChannel, 0, 32, new ExpansionCPH());
         
         for (EnumMachine m : EnumMachine.VALID_MACHINES) {
@@ -27,6 +23,7 @@ public class ExpansionClientProxy implements IProxy {
 
     @Override
     public void postinit() {
+        super.postinit();
         ExpansionRecipes.initRecipes();
     }
 }

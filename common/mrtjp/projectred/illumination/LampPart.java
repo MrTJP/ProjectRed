@@ -2,7 +2,8 @@ package mrtjp.projectred.illumination;
 
 import java.util.Arrays;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
@@ -145,7 +146,7 @@ public class LampPart extends JCuboidPart implements TFacePart, JNormalOcclusion
 	}
 
 	public ItemStack getItem() {
-		return new ItemStack(isInverted ? ProjectRed.itemPartInvLamp : ProjectRed.itemPartLamp, 1, type.meta);
+		return new ItemStack(isInverted ? ProjectRedIllumination.itemPartInvLamp : ProjectRedIllumination.itemPartLamp, 1, type.meta);
 	}
 
 	@Override

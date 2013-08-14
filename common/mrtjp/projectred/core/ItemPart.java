@@ -2,7 +2,7 @@ package mrtjp.projectred.core;
 
 import java.util.List;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedCore;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -129,11 +129,11 @@ public class ItemPart extends Item {
         }
 
         public ItemStack getItemStack() {
-            return new ItemStack(ProjectRed.itemComponent, 1, meta);
+            return new ItemStack(ProjectRedCore.itemComponent, 1, meta);
         }
 
         public ItemStack getItemStack(int i) {
-            return new ItemStack(ProjectRed.itemComponent, i, meta);
+            return new ItemStack(ProjectRedCore.itemComponent, i, meta);
         }
 
         public static void initOreDictDefinitions() {

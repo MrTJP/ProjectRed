@@ -2,7 +2,7 @@ package mrtjp.projectred.exploration;
 
 import java.util.Map;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemCraftingDamage;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.ProjectRedTabs;
@@ -109,13 +109,13 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw {
             if (m == EnumToolMaterial.GOLD) {
                 return PRColors.YELLOW.hex;
             }
-            if (m == ProjectRed.toolMaterialRuby) {
+            if (m == ProjectRedExploration.toolMaterialRuby) {
                 return PRColors.RED.hex;
             }
-            if (m == ProjectRed.toolMaterialSapphire) {
+            if (m == ProjectRedExploration.toolMaterialSapphire) {
                 return PRColors.BLUE.hex;
             }
-            if (m == ProjectRed.toolMaterialPeridot) {
+            if (m == ProjectRedExploration.toolMaterialPeridot) {
                 return PRColors.GREEN.hex;
             }
             if (m == EnumToolMaterial.EMERALD) {

@@ -67,7 +67,7 @@ public class GuiCounter extends GuiScreenWidget {
     }
 
     public void actionPerformed(String ident, Object... params) {
-        PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationNetworkConstants.guiGateButtonPressed);
+        PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationProxy.guiGateButtonPressed);
         packet.writeCoord(coords);
         packet.writeByte(face);
         packet.writeString(ident);

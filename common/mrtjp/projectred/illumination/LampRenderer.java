@@ -2,7 +2,7 @@ package mrtjp.projectred.illumination;
 
 import java.util.Map;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.InvertX;
@@ -156,7 +156,7 @@ public class LampRenderer implements IItemRenderer {
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-        lampIcon = item.getItem() == ProjectRed.itemPartInvLamp ? EnumLamp.get(item.getItemDamage()).onIcon : EnumLamp.get(item.getItemDamage()).offIcon;
+        lampIcon = item.getItem() == ProjectRedIllumination.itemPartInvLamp ? EnumLamp.get(item.getItemDamage()).onIcon : EnumLamp.get(item.getItemDamage()).offIcon;
         switch (type) {
         case ENTITY:
             renderInventory(0f, 0f, 0f, .5f);

@@ -3,7 +3,7 @@ package mrtjp.projectred.expansion;
 import java.util.ArrayList;
 import java.util.List;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.block.BlockContainer;
@@ -181,7 +181,7 @@ public class BlockMachines extends BlockContainer {
             return getItemStack(1);
         }
         public ItemStack getItemStack(int i) {
-            return new ItemStack(ProjectRed.blockMachines, i, meta);
+            return new ItemStack(ProjectRedCore.blockMachines, i, meta);
         }
         public interface IIconIndexer {
             public int getIconIndex(int side);

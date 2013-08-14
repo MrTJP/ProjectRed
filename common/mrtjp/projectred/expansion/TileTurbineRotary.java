@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.GhostContainer;
 import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
@@ -33,7 +33,7 @@ public class TileTurbineRotary extends TileMachineBase {
             @Override
             public boolean isSlotAllowed(ItemStack stack) {
                 if (rotation == 0) {
-                    return stack != null && stack.getItem().itemID == ProjectRed.itemVAWT.itemID;
+                    return stack != null && stack.getItem().itemID == ProjectRedCore.itemVAWT.itemID;
                 } else {
                     return false;
                 }
@@ -69,7 +69,7 @@ public class TileTurbineRotary extends TileMachineBase {
 
     @Override
     public void onBlockBreak() {
-        BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, new ItemStack(ProjectRed.blockMachines.blockID, 1, EnumMachine.TURBINEROTARY.meta));
+        BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, new ItemStack(ProjectRedCore.blockMachines.blockID, 1, EnumMachine.TURBINEROTARY.meta));
         _inv.dropContents(worldObj, xCoord, yCoord, zCoord);
     }
 
@@ -80,7 +80,7 @@ public class TileTurbineRotary extends TileMachineBase {
     @Override
     public boolean onBlockActivated(EntityPlayer player) {
         if (!player.isSneaking()) {
-            player.openGui(ProjectRed.instance, ExpansionGuiHandler.rotaryID, player.worldObj, xCoord, yCoord, zCoord);
+            player.openGui(ProjectRedCore.instance, ExpansionGuiHandler.rotaryID, player.worldObj, xCoord, yCoord, zCoord);
             return true;
         }
         return false;
