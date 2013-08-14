@@ -14,6 +14,20 @@ public class TransmissionRecipes {
     public static void initTransmissionRecipes() {
         initWireRecipes();
         initPartRecipes();
+        initToolRecipes();
+    }
+
+    private static void initToolRecipes() {
+        /** Wire debugger **/
+        GameRegistry.addRecipe(EnumWire.RED_ALLOY.getItemStack(12), 
+                "a a ",
+                "blr",
+                "blr",
+                'a', EnumPart.REDINGOT.getItemStack(),
+                'b', new ItemStack(Item.dyePowder, 1, PRColors.BLACK.dyeId()),
+                'l', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId()),
+                'r', new ItemStack(Item.dyePowder, 1, PRColors.RED.dyeId())
+        );
     }
 
     private static void initWireRecipes() {    
