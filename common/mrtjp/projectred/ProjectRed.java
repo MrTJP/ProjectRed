@@ -33,6 +33,7 @@ import mrtjp.projectred.integration.ItemScrewdriver;
 import mrtjp.projectred.integration.ModuleIntegration;
 import mrtjp.projectred.transmission.ItemPartJacketedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
+import mrtjp.projectred.transmission.ItemWireDebugger;
 import mrtjp.projectred.transmission.ModuleTransmission;
 import net.minecraft.item.EnumToolMaterial;
 import net.minecraftforge.common.MinecraftForge;
@@ -126,7 +127,7 @@ public class ProjectRed {
     public static ItemGemSickle itemSapphireSickle;
     public static ItemGemSickle itemPeridotSickle;
     public static ItemGemSickle itemDiamondSickle;
-    
+    public static ItemWireDebugger itemWireDebugger;
 
 
     @Instance("ProjectRed")

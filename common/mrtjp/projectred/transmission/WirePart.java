@@ -2,6 +2,7 @@ package mrtjp.projectred.transmission;
 
 import java.util.Arrays;
 
+import mrtjp.projectred.ProjectRed;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CommandDebug;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -547,8 +548,9 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         tile().markDirty();
     }
     
-    protected abstract boolean debug(EntityPlayer ply);
-
+    protected abstract boolean debug(EntityPlayer player);
+    protected abstract boolean test(EntityPlayer player);
+    
     protected void debugEffect_bonemeal() {
         world().playAuxSFX(2005, x(), y(), z(), 0);
     }
@@ -627,6 +629,13 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
         if (CommandDebug.WIRE_READING) {
             return debug(player);
+        }
+        if (held != null && held.itemID == ProjectRed.itemWireDebugger.itemID) {
+            if (held.itemID == ProjectRed.itemWireDebugger.itemID) {
+                held.damageItem(1, player);
+            }
+            player.swingItem();
+            return test(player);
         }
         return false;
     }
