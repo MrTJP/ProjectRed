@@ -13,6 +13,7 @@ import mrtjp.projectred.integration.GateLogic.WorldStateBound;
 import mrtjp.projectred.transmission.BasicWireUtils;
 import mrtjp.projectred.transmission.IBundledEmitter;
 import mrtjp.projectred.transmission.IConnectable;
+import mrtjp.projectred.transmission.IWirePart;
 import mrtjp.projectred.transmission.RedwirePart;
 import mrtjp.projectred.transmission.WirePart;
 import net.minecraft.block.Block;
@@ -654,7 +655,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     /** END RENDERSTUFF **/
 
     @Override
-    public boolean connectStraight(WirePart wire, int side) {
+    public boolean connectStraight(IWirePart wire, int side) {
         /*if (wire instanceof BundledCablePart) {
             if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).isBundledConnection(Rotator.absoluteToRelative(side, front, fromDirection^1))) {
                 return true;
@@ -669,7 +670,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     }
     
     @Override
-    public boolean connectInternal(WirePart wire, int side) {
+    public boolean connectInternal(IWirePart wire, int side) {
         return connectStraight(wire, side);
     }
 }

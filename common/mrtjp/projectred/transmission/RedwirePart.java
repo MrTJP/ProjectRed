@@ -97,7 +97,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     }
     
     @Override
-    public boolean canConnectToType(WirePart wire, int r) {
+    public boolean canConnectToType(IWirePart wire) {
         return wire instanceof RedwirePart;
     }
 
@@ -108,7 +108,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     }
 
     @Override
-    public boolean connectInternalOverride(int r, TMultiPart p) {
+    public boolean connectInternalOverride(TMultiPart p, int r) {
         if (p instanceof IRedstonePart) {
             IRedstonePart rsPart = (IRedstonePart)p;
             return rsPart.canConnectRedstone(side) && rsPart.canConnectRedstone(Rotation.rotateSide(side, r)^1);
