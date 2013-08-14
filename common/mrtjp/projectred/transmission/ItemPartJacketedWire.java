@@ -42,9 +42,9 @@ public class ItemPartJacketedWire extends JItemMultiPart {
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(int id, CreativeTabs tab, List list) {
-        for (EnumWire w : EnumWire.VALID_WIRE) {
-            list.add(w.getJacketedItemStack());
-        }
+        for (EnumWire w : EnumWire.VALID_WIRE)
+            if(w.hasJacketedForm())
+                list.add(w.getJacketedItemStack());
     }
 
     public String getUnlocalizedName(ItemStack stack) {

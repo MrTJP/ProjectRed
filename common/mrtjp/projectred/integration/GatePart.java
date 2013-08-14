@@ -12,7 +12,6 @@ import mrtjp.projectred.integration.GateLogic.WorldStateBound;
 import mrtjp.projectred.transmission.BasicWireUtils;
 import mrtjp.projectred.transmission.BundledCablePart;
 import mrtjp.projectred.transmission.IBundledEmitter;
-import mrtjp.projectred.transmission.IBundledUpdatable;
 import mrtjp.projectred.transmission.IConnectable;
 import mrtjp.projectred.transmission.RedwirePart;
 import mrtjp.projectred.transmission.WirePart;
@@ -47,7 +46,7 @@ import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter, IBundledUpdatable, IConnectable, IFaceRedstonePart, JNormalOcclusion, IRandomDisplayTick {
+public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter, IConnectable, IFaceRedstonePart, JNormalOcclusion, IRandomDisplayTick {
     private EnumGate type;
 
     /** Server-side logic for gate **/
@@ -266,7 +265,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 
     public void updateChange() {
         tile().markDirty();
-        tile().notifyPartChange();
+        tile().notifyPartChange(this);
         tile().markRender();
         nextUpdateIsFromSelf = true;
         notifyExtendedNeighbors();
@@ -392,7 +391,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
         if (tmp != null) {
             TMultiPart te = tmp.partMap(side);
             if (te instanceof IBundledEmitter) {
-                byte[] values = ((IBundledEmitter) te).getBundledCableStrength(side, abs ^ 1);
+                byte[] values = ((IBundledEmitter) te).getBundledSignal(-50);//TODO
                 if (values == null) {
                     return 0;
                 }
@@ -411,8 +410,8 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     }
 
     @Override
-    public byte[] getBundledCableStrength(int blockFace, int toDirection) {
-        if (!hasBundledConnections) {
+    public byte[] getBundledSignal(int side) {//TODO
+        /*if (!hasBundledConnections) {
             return null;
         }
 
@@ -437,14 +436,8 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
             bitmask >>= 1;
         }
 
-        return bundledOut;
-    }
-
-    @Override
-    public void onBundledInputChanged() {
-        if (hasBundledConnections) {
-            updateLogic(false, false);
-        }
+        return returnedBundledCableStrength;*/
+        return null;
     }
 
     /** START TILEMULTIPART INTERACTIONS **/
@@ -494,7 +487,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     }
 
     @Override
-    public void onPartChanged() {
+    public void onPartChanged(TMultiPart part) {
         checkSupport();
         if (BasicUtils.isClient(world()))
             return;
@@ -661,22 +654,22 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     /** END RENDERSTUFF **/
 
     @Override
-    public boolean connects(WirePart wire, int blockFace, int fromDirection) {
-        if (wire instanceof BundledCablePart) {
-            if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).connectsToBundled(Rotator.absoluteToRelative(side, front, fromDirection ^ 1))) {
+    public boolean connectStraight(WirePart wire, int side) {
+        /*if (wire instanceof BundledCablePart) {
+            if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).isBundledConnection(Rotator.absoluteToRelative(side, front, fromDirection^1))) {
                 return true;
             }
-        }
-        return wire instanceof RedwirePart && canConnectRedstone(fromDirection ^ 1);
+        }*/
+        return wire instanceof RedwirePart && getLogic().connectsToWire(side);
     }
-
+    
     @Override
-    public boolean connectsAroundCorner(WirePart wire, int blockFace, int fromDirection) {
-        return false;
+    public boolean connectCorner(WirePart wire, int side) {
+        return connectStraight(wire, side);
     }
-
+    
     @Override
-    public boolean connectsToWireType(WirePart wire) {
-        return wire instanceof RedwirePart || (hasBundledConnections && wire instanceof BundledCablePart);
+    public boolean connectInternal(WirePart wire, int side) {
+        return connectStraight(wire, side);
     }
 }
