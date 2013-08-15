@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.JItemMultiPart;
+import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -36,8 +37,11 @@ public class ItemPartJacketedWire extends JItemMultiPart {
 
     @Override
     public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
-        //return EnumWire.VALID_WIRE[item.getItemDamage()].createJacketedWire(side ^ 1);
-        return null;
+        EnumWire type = EnumWire.VALID_WIRE[item.getItemDamage()];
+        ScaffoldWirePart w = (ScaffoldWirePart) MultiPartRegistry.createPart(type.scaffoldType, false);
+        if(w != null)
+            w.onPlaced(item.getItemDamage());
+        return w;
     }
 
     @Override

@@ -26,6 +26,9 @@ public class WirePropogator {
      * keeping eachother on through a strong block signal.
      */
     private static Field wiresProvidePower = BlockRedstoneWire.class.getDeclaredFields()[0];
+    public static boolean redwiresProvidePower = true;
+    private static ThreadLocal<Boolean> redwiresConnectable = new ThreadLocal<Boolean>();
+    
     static {
         try {
             wiresProvidePower.setAccessible(true);
@@ -47,6 +50,15 @@ public class WirePropogator {
             wiresProvidePower.setBoolean(Block.redstoneWire, b);
         } catch (Throwable t) {
         }
+    }
+    
+    public static boolean redwiresConnectable() {
+        Boolean b = redwiresConnectable.get();
+        return b == null ? true : b;
+    }
+    
+    public static void setRedwiresConnectable(boolean b) {
+        redwiresConnectable.set(b);
     }
     
     private static class PropogationRun {

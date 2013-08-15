@@ -109,13 +109,9 @@ public class RenderWire {
             for(int r = 0; r < 4; r++)
                 generateSide(r);
             
-            model.apply(new UVScale(1/32D));
-            model.shrinkUVs(0.0005);
             model.apply(Rotation.sideOrientation(side, 0).at(Vector3.center));
-            model.computeNormals();
-            model.computeLighting(LightModel.standardLightModel);
             
-            return model;
+            return finishModel(model);
         }
         
         private void generateSide(int r) {
@@ -296,7 +292,7 @@ public class RenderWire {
         
         private static UVT sideReflect = new UVT(Rotation.quarterRotations[2].at(new Vector3(8, 0, 16)));
         private void reflectSide(Vertex5[] verts, int r) {
-            if((r+reorientSide[side])%4 >= 2)//invert the texture about the y center
+            if((r+reorientSide[side])%4 >= 2)//rotate the texture about the y center
                 for(Vertex5 vert : verts)
                     vert.apply(sideReflect);
         }
@@ -333,6 +329,15 @@ public class RenderWire {
             m.verts[k+i] = verts[i];
         
         return k+verts.length;
+    }
+    
+    public static CCModel finishModel(CCModel m) {
+        m.apply(new UVScale(1/32D));
+        m.shrinkUVs(0.0005);
+        m.computeNormals();
+        m.computeLighting(LightModel.standardLightModel);
+        
+        return m;
     }
     
     /**
