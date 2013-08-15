@@ -358,8 +358,11 @@ public class RenderScaffoldWire
             
             Vertex5[] verts = faceVerts(d-0.002);
             Transformation t = Rotation.sideRotations[s].at(Vector3.center);
-            for(Vertex5 vert : verts)
+            IUVTransformation uvt = new UVTranslation(12, 12);
+            for(Vertex5 vert : verts) {
                 vert.apply(t);
+                vert.apply(uvt);
+            }
             
             i = addVerts(model, verts, i);
         }

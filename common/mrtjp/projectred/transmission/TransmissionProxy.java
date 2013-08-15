@@ -20,7 +20,7 @@ public class TransmissionProxy implements IProxy, IPartFactory {
     public void init() {
         MultiPartRegistry.registerParts(this, new String[]{
                 "pr_redwire", "pr_insulated", "pr_bundled",
-                "pr_sredwire"});
+                "pr_sredwire", "pr_sinsulated", "pr_sbundled"});
 
         itemPartWire = new ItemPartWire(Configurator.part_wire.getInt());
         itemPartJacketedWire = new ItemPartJacketedWire(Configurator.part_jwire.getInt());
@@ -45,6 +45,8 @@ public class TransmissionProxy implements IProxy, IPartFactory {
             return new BundledCablePart(0);
         else if(id.equals("pr_sredwire"))
             return new ScaffoldRedAlloyWirePart();
+        else if(id.equals("pr_sinsulated"))
+            return new ScaffoldInsulatedRedAlloyPart();
         return null;
     }
 
