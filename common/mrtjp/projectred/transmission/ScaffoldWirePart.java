@@ -20,6 +20,9 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
 import codechicken.microblock.IHollowConnect;
+import codechicken.microblock.MicroMaterialRegistry;
+import codechicken.microblock.ItemMicroPart;
+import codechicken.microblock.handler.MicroblockProxy;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.TMultiPart;
@@ -30,6 +33,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class ScaffoldWirePart extends TMultiPart implements IConnectable, TSlottedPart, JNormalOcclusion, IWirePart, IHollowConnect {
     public static Cuboid6[] boundingBoxes = new Cuboid6[7];
+    private static int expandBounds = -1;
     
     static {
         double w = 2/8D;
@@ -50,7 +54,7 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
     /**
      * A microblock material that has been applied to this jacketed cable
      */
-    public int material = -1;
+    public int material = 0;
     
     public void onPlaced(int meta) {
     }
@@ -59,22 +63,26 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
     public void save(NBTTagCompound tag) {
         super.save(tag);
         tag.setInteger("connMap", connMap);
+        tag.setString("mat", MicroMaterialRegistry.materialName(material));
     }
 
     @Override
     public void load(NBTTagCompound tag) {
         super.load(tag);
         connMap = tag.getInteger("connMap");
+        material = MicroMaterialRegistry.materialID(tag.getString("mat"));
     }
 
     @Override
     public void writeDesc(MCDataOutput packet) {
         packet.writeByte(clientConnMap());
+        MicroMaterialRegistry.writePartID(packet, material);
     }
 
     @Override
     public void readDesc(MCDataInput packet) {
         connMap = packet.readUByte();
+        material = MicroMaterialRegistry.readPartID(packet);
     }
 
     @Override
@@ -85,6 +93,10 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
     public void read(MCDataInput packet, int switch_key) {
         if(switch_key == 0) {
             connMap = packet.readUByte();
+            tile().markRender();
+        }
+        else if(switch_key == 1) {
+            material = MicroMaterialRegistry.readPartID(packet);
             tile().markRender();
         }
     }
@@ -164,6 +176,10 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
     public void sendConnUpdate() {
         tile().getWriteStream(this).writeByte(0).writeByte(clientConnMap());
     }
+
+    public void sendMatUpdate() {
+        MicroMaterialRegistry.writePartID(tile().getWriteStream(this).writeByte(1), material);
+    }
     
 
     /**
@@ -225,10 +241,17 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
     
     public boolean connectionOpen(int s) {
         TMultiPart facePart = tile().partMap(s);
-        if(facePart != null && (!(facePart instanceof WirePart) || !canConnectToType((WirePart)facePart)))
+        if(facePart == null)
+            return true;
+        
+        if(facePart instanceof WirePart && canConnectToType((WirePart)facePart))
             return false;
         
-        return true;
+        expandBounds = s;
+        boolean fits = tile().canReplacePart(this, this);
+        expandBounds = -1;
+
+        return fits;
     }
 
     public boolean connectStraight(int s) {
@@ -370,7 +393,11 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
 
     @Override
     public Iterable<ItemStack> getDrops() {
-        return Arrays.asList(getItem());
+        LinkedList<ItemStack> items = new LinkedList<ItemStack>();
+        items.add(getItem());
+        if(material != 0)
+            items.add(ItemMicroPart.create(1, material));
+        return items;
     }
 
     @Override
@@ -399,6 +426,9 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
 
     @Override
     public Iterable<Cuboid6> getOcclusionBoxes() {
+        if(expandBounds >= 0)
+            return Arrays.asList(boundingBoxes[expandBounds]);
+        
         return Arrays.asList(boundingBoxes[6]);
     }
     
@@ -448,5 +478,22 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
     @Override
     public int getHollowSize() {
         return 8;
+    }
+    
+    @Override
+    public boolean activate(EntityPlayer player, MovingObjectPosition part, ItemStack item) {
+        ItemStack held = player.getHeldItem();
+        if(held.getItem() == MicroblockProxy.itemMicro() && held.getItemDamage() == 1) {
+            if(!world().isRemote) {
+                material = ItemMicroPart.getMaterialID(held);
+                sendMatUpdate();
+                
+                if(!player.capabilities.isCreativeMode)
+                    held.stackSize--;
+            }
+            return true;
+        }
+            
+        return false;
     }
 }

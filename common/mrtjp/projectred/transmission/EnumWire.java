@@ -1,6 +1,6 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.ProjectRed;
+import mrtjp.projectred.ProjectRedTransmission;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
@@ -99,7 +99,7 @@ public enum EnumWire {
     }
 
     public ItemStack getItemStack(int i) {
-        return new ItemStack(ProjectRed.itemPartWire, i, meta);
+        return new ItemStack(ProjectRedTransmission.itemPartWire, i, meta);
     }
 
     public ItemStack getJacketedItemStack() {
@@ -110,7 +110,7 @@ public enum EnumWire {
         if (!this.hasJacketedForm())
             return null;
         
-        return new ItemStack(ProjectRed.itemPartJacketedWire, i, meta);
+        return new ItemStack(ProjectRedTransmission.itemPartJacketedWire, i, meta);
     }
 
     public static void initOreDictDefinitions() {
