@@ -257,10 +257,10 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
                 s = "off";
             }
             PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreProxy.messengerQueue);
-            packet.writeFloat(x() + 0.0f);
-            packet.writeFloat(y() + 0.5f);
-            packet.writeFloat(z() + 0.0f);
-            packet.writeString(s);
+            packet.writeDouble(x() + 0.0D);
+            packet.writeDouble(y() + 0.5D);
+            packet.writeDouble(z() + 0.0D);
+            packet.writeString("\\f" + s);
             packet.sendToPlayer(player);
         }
         return true;

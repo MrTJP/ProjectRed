@@ -1,9 +1,15 @@
 package mrtjp.projectred.transmission;
 
 import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.CoreProxy;
+import mrtjp.projectred.core.Messenger;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MovingObjectPosition;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.IMaskedRedstonePart;
 import codechicken.multipart.IRedstonePart;
@@ -197,4 +203,20 @@ public abstract class ScaffoldRedwirePart extends ScaffoldWirePart implements IR
     public int getRedwireSignal(int side) {
         return getRedwireSignal();
     }
+    
+    @Override
+    protected boolean test(EntityPlayer player, MovingObjectPosition hit) {
+        if (BasicUtils.isClient(world())) {
+            Messenger.addMessage(x() + 0, y() + .5f, z() + 0,  "\\f\\c[c] = " + getRedwireSignal());
+        } else {
+            PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreProxy.messengerQueue);
+            packet.writeDouble(x() + 0.0D);
+            packet.writeDouble(y() + 0.5D);
+            packet.writeDouble(z() + 0.0D);
+            packet.writeString("\\c[s] = " + getRedwireSignal());
+            packet.sendToPlayer(player);
+        }
+        return true;
+    }
+
 }
