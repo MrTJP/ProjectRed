@@ -17,7 +17,7 @@ public class CoreCPH implements IClientPacketHandler {
 
         switch (packetCustom.getType()) {
         case CoreProxy.messengerQueue:
-            Messenger.addMessage(packetCustom.readFloat(), packetCustom.readFloat(), packetCustom.readFloat(), packetCustom.readString());
+            Messenger.addMessage(packetCustom.readDouble(), packetCustom.readDouble(), packetCustom.readDouble(), packetCustom.readString());
         }
     }
 

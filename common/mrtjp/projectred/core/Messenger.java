@@ -19,14 +19,21 @@ import codechicken.lib.vec.BlockCoord;
 public class Messenger {
     static ArrayList<Message> messages = new ArrayList<Message>();
 
-    /**
-     * @param location
-     * @param mail
-     */
-    public static void addMessage(float x, float y, float z, String mail) {
+    public static void addMessage(double x, double y, double z, String mail) {
         BlockCoord location = new BlockCoord((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
+        boolean combine = false;
+        boolean override = false;
+
         if (mail.length() == 0) {
             return;
+        }
+        if (mail.contains("\\f")) {
+            override = true;
+            mail = mail.replace("\\f", "");
+        }
+        if (mail.contains("\\c")) {
+            combine = true;
+            mail = mail.replace("\\c", "");
         }
 
         if ((messages.size() > 64)) {
@@ -34,13 +41,22 @@ public class Messenger {
         }
 
         ArrayList<Message> readQueue = new ArrayList<Message>();
+        ArrayList<Message> removeQueue = new ArrayList<Message>();
         readQueue.addAll(messages);
         float yOffset = 0;
         for (Message m : readQueue) {
             if (m.location.equals(location)) {
-                yOffset += .25f;
+                if (override) {
+                    removeQueue.add(m);
+                    break;
+                } else if (combine) {
+                    m.msg = m.msg + "\n" + mail;
+                    m.receivedOn = System.currentTimeMillis();
+                    return;
+                }
             }
         }
+        messages.removeAll(removeQueue);
         messages.add(new Message().set(location, x, y, z, mail).addY(yOffset));
     }
 
@@ -104,11 +120,11 @@ public class Messenger {
         scaling *= 0.6666667F;
         GL11.glPushMatrix();
 
-        float y = (float) (m.y + 0.04 * (Math.sin((((int)m.x ^ (int)m.z)) + ClientUtils.getRenderTime() / 4)) + m.yOffset);
+        float y = (float) (m.y + 0.04 * (Math.sin((((int) m.x ^ (int) m.z)) + ClientUtils.getRenderTime() / 4)) + m.yOffset);
 
-        GL11.glTranslatef(m.x + 0.5F, y, m.z + 0.5F);
+        GL11.glTranslated(m.x + 0.5F, y, m.z + 0.5F);
         GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-        GL11.glRotatef((float) (-RenderManager.instance.playerViewY + (8 * Math.sin((((int)m.x ^ (int)m.z)) + ClientUtils.getRenderTime() / 6))), 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef((float) (-RenderManager.instance.playerViewY + (8 * Math.sin((((int) m.x ^ (int) m.z)) + ClientUtils.getRenderTime() / 6))), 0.0F, 1.0F, 0.0F);
         GL11.glRotatef((float) (RenderManager.instance.playerViewX), 1.0F, 0.0F, 0.0F);
         GL11.glScalef(-scaling, -scaling, scaling);
         GL11.glTranslatef(0.0F, -10 * lines.length, 0.0F);
@@ -136,14 +152,14 @@ public class Messenger {
 
     static class Message {
         BlockCoord location;
-        float x;
-        float y;
-        float z;
+        double x;
+        double y;
+        double z;
         String msg;
         long receivedOn;
         float yOffset = 0;
 
-        Message set(BlockCoord location, float x, float y, float z, String msg) {
+        Message set(BlockCoord location, double x, double y, double z, String msg) {
             this.receivedOn = System.currentTimeMillis();
             this.msg = msg;
             this.location = location;

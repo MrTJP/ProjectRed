@@ -3,6 +3,7 @@ package mrtjp.projectred.transmission;
 import java.util.Arrays;
 import java.util.LinkedList;
 
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
@@ -480,20 +481,42 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
         return 8;
     }
     
+    public void dropMaterial(EntityPlayer player) {
+        if (material > 0) {
+            ItemStack drop = ItemMicroPart.create(1, material);
+            BasicUtils.dropItemFromLocation(world(), drop, false, player, -1, 0, new BlockCoord(tile()));
+        }
+    }
+    
+    protected abstract boolean test(EntityPlayer player, MovingObjectPosition hit);
+
     @Override
-    public boolean activate(EntityPlayer player, MovingObjectPosition part, ItemStack item) {
+    public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) {
         ItemStack held = player.getHeldItem();
-        if(held.getItem() == MicroblockProxy.itemMicro() && held.getItemDamage() == 1) {
-            if(!world().isRemote) {
+        if (held == null) {
+            if (player.isSneaking() && material > 0 && !world().isRemote) {
+                dropMaterial(player);
+                material = 0;
+                sendMatUpdate();
+            }
+            return false;
+        }
+        if (held.getItem() == MicroblockProxy.itemMicro() && held.getItemDamage() == 1 && ItemMicroPart.getMaterialID(held) != material) {
+            if (!world().isRemote) {
+                dropMaterial(player);
                 material = ItemMicroPart.getMaterialID(held);
                 sendMatUpdate();
-                
-                if(!player.capabilities.isCreativeMode)
+
+                if (!player.capabilities.isCreativeMode)
                     held.stackSize--;
             }
             return true;
         }
-            
+        if (held.itemID == ProjectRedCore.itemWireDebugger.itemID) {
+            held.damageItem(1, player);
+            player.swingItem();
+            return test(player, hit);
+        }
         return false;
     }
 }
