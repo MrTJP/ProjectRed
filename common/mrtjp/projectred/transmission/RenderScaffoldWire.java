@@ -3,7 +3,6 @@ package mrtjp.projectred.transmission;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import codechicken.lib.lighting.LazyLightMatrix;
-import codechicken.lib.lighting.LightModel;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
@@ -13,7 +12,6 @@ import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IVertexModifier;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.RenderUtils;
-import codechicken.lib.render.UVScale;
 import codechicken.lib.render.UVTranslation;
 import codechicken.lib.render.Vertex5;
 import codechicken.lib.vec.Cuboid6;
@@ -306,11 +304,17 @@ public class RenderScaffoldWire
             
             Cuboid6 box;
             if(mask == 1)
-                box = new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, 0.5-w, 0.5+w);
+                box = boundingBoxes[0].copy();
             else if(mask == 2)
-                box = new Cuboid6(0.5-w, 0.5+w, 0.5-w, 0.5+w, 1, 0.5+w);
-            else //mask == 3
-                box = new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, 1, 0.5+w);
+                box = boundingBoxes[1].copy();
+            else {//mask == 3
+                box = boundingBoxes[0].copy();
+                box.max.y = 1;
+            }
+            box.apply(Rotation.sideRotations[a*2].at(Vector3.center));
+            
+            if(first)
+                box.enclose(boundingBoxes[6]);
             
             int fMask = 0;
             if(first || mask == 3)
@@ -344,15 +348,15 @@ public class RenderScaffoldWire
         private void generateJacketedSide(int s) {
             double d;
             if((connMap & 1<<s) != 0)
-                d = 0.5;
+                d = 0;
             else if(connCount == 0)
-                d = w;
+                d = 0.25;
             else if(connCount == 1 && (connMap & 1<<(s^1)) != 0)
-                d = w;
+                d = 0.25;
             else
                 return;
             
-            Vertex5[] verts = faceVerts(d);
+            Vertex5[] verts = faceVerts(d-0.002);
             Transformation t = Rotation.sideRotations[s].at(Vector3.center);
             for(Vertex5 vert : verts)
                 vert.apply(t);
@@ -398,7 +402,7 @@ public class RenderScaffoldWire
         IUVTransformation uvt = new IconTransformation(w.getIcon());
         IVertexModifier m = w.getColour() == -1 ? ColourModifier.instance : new ColourMultiplier(w.getColour());
         
-        if(w.material == -1) {
+        if(w.material == 0) {
             Transformation t = new Translation(w.x(), w.y(), w.z());
             getOrGenerateWireModel(key).render(t, uvt, m);
             renderScaffold(key, t, uvt);

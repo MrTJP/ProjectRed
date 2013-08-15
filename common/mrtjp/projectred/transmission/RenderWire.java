@@ -220,12 +220,13 @@ public class RenderWire {
         
         private Vertex5[] generateExtension(int tl) {
             double l = tl/16D;
+            double d = 0.002;
             
             return new Vertex5[]{//cap
-                    new Vertex5(0.5-w, 0, 0.5+l, 8-tw, 24+2*th),
-                    new Vertex5(0.5+w, 0, 0.5+l, 8+tw, 24+2*th),
-                    new Vertex5(0.5+w, h, 0.5+l, 8+tw, 24+th),
-                    new Vertex5(0.5-w, h, 0.5+l, 8-tw, 24+th),
+                    new Vertex5(0.5-w, 0, 0.5+l-d, 8-tw, 24+2*th),
+                    new Vertex5(0.5+w, 0, 0.5+l-d, 8+tw, 24+2*th),
+                    new Vertex5(0.5+w, h, 0.5+l-d, 8+tw, 24+th),
+                    new Vertex5(0.5-w, h, 0.5+l-d, 8-tw, 24+th),
 
                     //top
                     new Vertex5(0.5-w, h, 0.5+l, 8-tw, 16+tl),

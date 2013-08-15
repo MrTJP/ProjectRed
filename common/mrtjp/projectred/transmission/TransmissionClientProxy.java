@@ -1,10 +1,8 @@
 package mrtjp.projectred.transmission;
 
-import static mrtjp.projectred.ProjectRed.*;
-import mrtjp.projectred.core.IProxy;
+import static mrtjp.projectred.ProjectRedTransmission.*;
 import static mrtjp.projectred.ProjectRedTransmission.itemPartWire;
 import mrtjp.projectred.ProjectRedCore;
-import mrtjp.projectred.ProjectRed;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.common.registry.LanguageRegistry;
