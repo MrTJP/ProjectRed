@@ -22,8 +22,6 @@ import codechicken.multipart.scalatraits.TRedstoneTile;
 
 public abstract class RedwirePart extends WirePart implements IRedwirePart, IRedwireEmitter, IFaceRedstonePart {
 
-    public static boolean redwiresProvidePower = true;
-    
     public byte signal;
     
     public RedwirePart(int side) {
@@ -76,11 +74,11 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     
     @Override
     public boolean canConnectRedstone(int side) {
-        return true;
+        return WirePropogator.redwiresConnectable();
     }
     
     public int rsLevel() {
-        if(redwiresProvidePower)
+        if(WirePropogator.redwiresProvidePower)
             return ((signal&0xFF)+16)/17;
         
         return 0;
@@ -98,7 +96,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     
     @Override
     public boolean canConnectToType(IWirePart wire) {
-        return wire instanceof RedwirePart;
+        return wire instanceof IRedwirePart;
     }
 
     @Override
@@ -111,7 +109,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     public boolean connectInternalOverride(TMultiPart p, int r) {
         if (p instanceof IRedstonePart) {
             IRedstonePart rsPart = (IRedstonePart)p;
-            return rsPart.canConnectRedstone(side) && rsPart.canConnectRedstone(Rotation.rotateSide(side, r)^1);
+            return rsPart.canConnectRedstone(side);
         }
         
         return false;
@@ -149,7 +147,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     
     public int calculateSignal() {
         WirePropogator.setWiresProvidePower(false);
-        redwiresProvidePower = false;
+        WirePropogator.redwiresProvidePower = false;
         
         int s = 0;
         for(int r = 0; r < 4; r++)
@@ -175,7 +173,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
             s = i;
         
         WirePropogator.setWiresProvidePower(true);
-        redwiresProvidePower = true;
+        WirePropogator.redwiresProvidePower = true;
         
         return s;
     }

@@ -1,18 +1,17 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.core.BasicRenderUtils;
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.TextureUtils;
+import codechicken.lib.vec.Scale;
+import codechicken.lib.vec.TransformationList;
+import codechicken.lib.vec.Translation;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
-
-import org.lwjgl.opengl.GL11;
-
-import codechicken.lib.render.CCRenderState;
 
 public class JacketedWireItemRenderer implements IItemRenderer {
 
     public static JacketedWireItemRenderer instance = new JacketedWireItemRenderer();
-    //WireRenderAssistant wra = new WireRenderAssistant();
-
+    
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
         return true;
@@ -44,26 +43,20 @@ public class JacketedWireItemRenderer implements IItemRenderer {
         }
     }
 
-    public void renderWireInventory(int damage, float x, float y, float z, float scale) {
-        EnumWire type = EnumWire.VALID_WIRE[damage];
-        /*
-        wra.x = x;
-        wra.y = y;
-        wra.z = z;
-        wra.side = 0;
-        wra.model = type.jacketMap;
-        wra.wireIcon = type.wireSprites[0];
-        GL11.glPushMatrix();
-        GL11.glScalef(scale, scale, scale);
-        wra.setInventoryJacketRender();
-        CCRenderState.startDrawing(7);
-        BasicRenderUtils.setFullColor();
-        wra.pushJacketFrameRender();
+    public void renderWireInventory(int meta, float x, float y, float z, float scale) {
+        EnumWire type = EnumWire.VALID_WIRE[meta];
+        if (type == null)
+            return;
+        TextureUtils.bindAtlas(0);
+        CCRenderState.reset();
+        CCRenderState.useNormals(true);
+        CCRenderState.pullLightmap();
         CCRenderState.setColourOpaque(type.itemColour);
-        wra.pushJacketWireRender();
+        CCRenderState.startDrawing(7);
+        TransformationList t = new TransformationList();
+        t.with(new Scale(scale)).with(new Translation(x, y, z));
+        RenderScaffoldWire.renderInv(type.thickness, t, type.wireSprites[0]);
         CCRenderState.draw();
-        GL11.glPopMatrix();
-        */
     }
 
 }

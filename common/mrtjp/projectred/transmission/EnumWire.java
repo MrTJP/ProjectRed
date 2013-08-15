@@ -1,21 +1,16 @@
 package mrtjp.projectred.transmission;
 
-import java.util.Map;
-
-import mrtjp.projectred.ProjectRedTransmission;
-import mrtjp.projectred.core.InvertX;
+import mrtjp.projectred.ProjectRed;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.OreDictionary;
-import codechicken.lib.render.CCModel;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public enum EnumWire {
 
-    RED_ALLOY("Red alloy wire", "pr_redwire", 0, 0xC80000, "redalloy"),
+    RED_ALLOY("Red alloy wire", "pr_redwire", "pr_sredwire", 0, 0xC80000, "redalloy"),
     
     INSULATED_0("White insulated wire", "pr_insulated", 1, 0xFFFFFF, "insulated/whiteoff", "insulated/whiteon"),
     INSULATED_1("Orange insulated wire", "pr_insulated", 1, 0xFFFFFF, "insulated/orangeoff", "insulated/orangeon"),
@@ -58,15 +53,13 @@ public enum EnumWire {
 
     public final String name;
     public final String wireType;
-    public final Class<? extends WirePart> jacketedClass;
+    public final String scaffoldType;
     public final int thickness;
     public final int itemColour;
     
     // Rendering info
     public Icon[] wireSprites;
     public final String[] wireSpritePaths;
-    public final String jacketModelPath;
-    public Map<String, CCModel> jacketMap;
     public int meta = this.ordinal();
 
     public static final String oreDictDefinition = "projredWire";
@@ -74,23 +67,22 @@ public enum EnumWire {
     public static final String oreDictDefinitionJacketed = "projredJacketedWire";
     public static final String oreDictDefinitionBundled = "projredBundledCable";
 
-    private EnumWire(String name, String wireType, Class<? extends WirePart> jacketedClazz, 
-        int thickness, int itemColour, String objPathJacket, String... textures) {
+    private EnumWire(String name, String wireType, String scaffoldType, 
+        int thickness, int itemColour, String... textures) {
         this.name = name;
         this.wireType = wireType;
-        this.jacketedClass = jacketedClazz;
+        this.scaffoldType = scaffoldType;
         this.thickness = thickness;
         this.itemColour = itemColour;
-        jacketModelPath = objPathJacket;
         wireSpritePaths = textures;
         wireSprites = new Icon[textures.length];
     }
     private EnumWire(String name, String wireType, int thickness, int itemColour, String... textures) {
-        this(name, wireType, null, thickness, itemColour, null, textures);
+        this(name, wireType, null, thickness, itemColour, textures);
     }
 
     public boolean hasJacketedForm() {
-        return jacketedClass != null;
+        return scaffoldType != null;
     }
 
     @SideOnly(Side.CLIENT)
@@ -100,11 +92,6 @@ public enum EnumWire {
             for (int i = 0; i < wireSpritePaths.length; i++)
                 wireSprites[i] = reg.registerIcon("projectred:wires/" + wireSpritePaths[i]);
         }
-        if(hasJacketedForm()) {
-            jacketMap = CCModel.parseObjModels(new ResourceLocation("projectred", "/textures/obj/wiring/" + jacketModelPath), 7, new InvertX());
-            for (CCModel m : jacketMap.values())
-                m.shrinkUVs(0.0005);
-        }
     }
 
     public ItemStack getItemStack() {
@@ -112,7 +99,7 @@ public enum EnumWire {
     }
 
     public ItemStack getItemStack(int i) {
-        return new ItemStack(ProjectRedTransmission.itemPartWire, i, meta);
+        return new ItemStack(ProjectRed.itemPartWire, i, meta);
     }
 
     public ItemStack getJacketedItemStack() {
@@ -123,7 +110,7 @@ public enum EnumWire {
         if (!this.hasJacketedForm())
             return null;
         
-        return new ItemStack(ProjectRedTransmission.itemPartJacketedWire, i, meta);
+        return new ItemStack(ProjectRed.itemPartJacketedWire, i, meta);
     }
 
     public static void initOreDictDefinitions() {

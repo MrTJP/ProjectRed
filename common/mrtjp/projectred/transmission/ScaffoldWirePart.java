@@ -1,6 +1,7 @@
 package mrtjp.projectred.transmission;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -35,7 +36,7 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
         boundingBoxes[6] = new Cuboid6(0.5-w, 0.5-w, 0.5-w, 0.5+w, 0.5+w, 0.5+w);
         for(int s = 0; s < 6; s++)
             boundingBoxes[s] = new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, 0.5-w, 0.5+w)
-                .apply(Rotation.sideRotations[s]);
+                .apply(Rotation.sideRotations[s].at(Vector3.center));
     }
     
     /**
@@ -46,9 +47,11 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
      * On the client, only the lowest 6 bits contain actual connections.
      */
     public int connMap;
+    /**
+     * A microblock material that has been applied to this jacketed cable
+     */
+    public int material = -1;
     
-
-
     public void onPlaced(int meta) {
     }
     
@@ -72,6 +75,11 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
     @Override
     public void readDesc(MCDataInput packet) {
         connMap = packet.readUByte();
+    }
+
+    @Override
+    public void read(MCDataInput packet) {
+        read(packet, packet.readUByte());
     }
 
     public void read(MCDataInput packet, int switch_key) {
@@ -244,6 +252,10 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
         if (tp instanceof IConnectable)
             return ((IConnectable) tp).connectInternal(this, -1);
         
+        return connectInternalOverride(tp, s);
+    }
+    
+    public boolean connectInternalOverride(TMultiPart p, int s) {
         return false;
     }
     
@@ -368,12 +380,16 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
 
     @Override
     public int getSlotMask() {
-        return 6;
+        return 0x40;
     }
 
     @Override
     public Iterable<IndexedCuboid6> getSubParts() {
-        return Arrays.asList(new IndexedCuboid6(0, selectionBounds[getThickness()][side]));
+        Iterable<Cuboid6> boxList = getCollisionBoxes();
+        LinkedList<IndexedCuboid6> partList = new LinkedList<IndexedCuboid6>();
+        for(Cuboid6 c : boxList)
+            partList.add(new IndexedCuboid6(0, c));
+        return partList;
     }
 
     @Override
@@ -383,7 +399,17 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
 
     @Override
     public Iterable<Cuboid6> getOcclusionBoxes() {
-        return Arrays.asList(occlusionBounds[getThickness()][side]);
+        return Arrays.asList(boundingBoxes[6]);
+    }
+    
+    @Override
+    public Iterable<Cuboid6> getCollisionBoxes() {
+        LinkedList<Cuboid6> list = new LinkedList<Cuboid6>();
+        list.add(boundingBoxes[6]);
+        for(int s = 0; s < 6; s++)
+            if(maskConnects(s))
+                list.add(boundingBoxes[s]);
+        return list;
     }
 
     @SideOnly(Side.CLIENT)
@@ -402,7 +428,7 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
             CCRenderState.reset();
             CCRenderState.setBrightness(world(), x(), y(), z());
             CCRenderState.useModelColours(true);
-            RenderScaffoldedWire.render(this);
+            RenderScaffoldWire.render(this, olm);
             CCRenderState.setColour(-1);
         }
     }
@@ -411,7 +437,7 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
     @SideOnly(Side.CLIENT)
     public void drawBreaking(RenderBlocks renderBlocks) {
         CCRenderState.reset();
-        RenderScaffoldedWire.renderBreakingOverlay(renderBlocks.overrideBlockTexture, this);
+        RenderScaffoldWire.renderBreakingOverlay(renderBlocks.overrideBlockTexture, this);
     }
     
     @Override
