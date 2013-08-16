@@ -67,9 +67,13 @@ public class TransmissionRecipes {
             GameRegistry.addRecipe(new ShapelessOreRecipe(w.getItemStack(3),
                     PRColors.get(bundledColor).getOreDict(),
                     EnumWire.oreDictDefinitionBundled, 
+                    PRColors.get(bundledColor).getOreDict(),
                     EnumWire.oreDictDefinitionBundled, 
-                    EnumWire.oreDictDefinitionBundled, 
-                    PRColors.get(bundledColor).getOreDict()
+                    PRColors.get(bundledColor).getOreDict(),
+                    EnumWire.oreDictDefinitionBundled,
+                    Item.silk,
+                    Item.silk,
+                    Item.silk
             ));
             bundledColor++;
         }

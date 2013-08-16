@@ -1,5 +1,6 @@
 package mrtjp.projectred.core;
 
+import codechicken.microblock.ItemMicroPart;
 import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
@@ -20,7 +21,14 @@ public class CoreRecipes {
 
     private static void initToolRecipes() {
         /** Draw Plate **/
-        GameRegistry.addRecipe(new RecipeDrawPlate());    
+        GameRegistry.addRecipe(new ShapedOreNBTRecipe(
+                new ItemStack(ProjectRedCore.itemDrawPlate, 1),
+                " i ",
+                "idi",
+                " i ",
+                'i', ItemMicroPart.create(770, Block.blockIron.getUnlocalizedName()),
+                'd', ItemMicroPart.create(2, Block.blockDiamond.getUnlocalizedName())
+        ).setCheckNBT());    
     }
 
     private static void initPartRecipes() {
