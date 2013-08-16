@@ -1,6 +1,6 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
 import net.minecraft.block.Block;
@@ -17,7 +17,7 @@ public class IntegrationRecipes {
     
     private static void initMiscRecipes() {
         /** Screw Driver **/
-        GameRegistry.addRecipe(new ItemStack(ProjectRedCore.itemScrewdriver),
+        GameRegistry.addRecipe(new ItemStack(ProjectRedIntegration.itemScrewdriver),
                 "i  ",
                 " ib",
                 " bi",

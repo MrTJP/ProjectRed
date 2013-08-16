@@ -6,7 +6,7 @@ import static codechicken.lib.vec.Vector3.center;
 import java.util.Arrays;
 import java.util.Random;
 
-import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.integration.GateLogic.WorldStateBound;
@@ -497,7 +497,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
 
     @Override
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
-        if (held != null && held.getItem() == ProjectRedCore.itemScrewdriver) {
+        if (held != null && held.getItem() == ProjectRedIntegration.itemScrewdriver) {
             if (player.isSneaking()) {
                 this.configure();
                 return true;

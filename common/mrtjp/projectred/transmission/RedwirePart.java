@@ -261,13 +261,13 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     @Override
     protected boolean test(EntityPlayer player) {
         if (BasicUtils.isClient(world())) {
-            Messenger.addMessage(x() + 0, y() + .5f, z() + 0,  "\\f\\c[c] = " + getRedwireSignal());
+            Messenger.addMessage(x() + 0, y() + .5f, z() + 0,  "/#f/#c[c] = " + getRedwireSignal());
         } else {
             PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreProxy.messengerQueue);
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);
-            packet.writeString("\\c[s] = " + getRedwireSignal());
+            packet.writeString("/#c[s] = " + getRedwireSignal());
             packet.sendToPlayer(player);
         }
         return true;

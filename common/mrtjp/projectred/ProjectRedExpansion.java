@@ -2,7 +2,9 @@ package mrtjp.projectred;
 
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
+import mrtjp.projectred.expansion.BlockMachines;
 import mrtjp.projectred.expansion.ExpansionGuiHandler;
+import mrtjp.projectred.expansion.ItemVAWT;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
@@ -17,6 +19,13 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class ProjectRedExpansion {
     
+    
+    /** Blocks **/
+    public static BlockMachines blockMachines;
+
+    /** Items **/
+    public static ItemVAWT itemVAWT;
+
     @Instance("ProjRed|Expansion")
     public static ProjectRedExpansion instance;
 

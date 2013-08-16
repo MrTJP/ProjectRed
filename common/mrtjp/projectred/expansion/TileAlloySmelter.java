@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion;
 
 import java.util.Random;
 
-import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedExpansion;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.GhostContainer;
@@ -54,7 +54,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory {
 
     @Override
     public void onBlockBreak() {
-        BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, new ItemStack(ProjectRedCore.blockMachines.blockID, 1, EnumMachine.ALLOYSMELTER.meta));
+        BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, new ItemStack(ProjectRedExpansion.blockMachines.blockID, 1, EnumMachine.ALLOYSMELTER.meta));
         _inv.dropContents(worldObj, xCoord, yCoord, zCoord);
     }
 
@@ -89,7 +89,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory {
     @Override
     public boolean onBlockActivated(EntityPlayer player) {
         if (!player.isSneaking()) {
-            player.openGui(ProjectRedCore.instance, ExpansionGuiHandler.alloyID, player.worldObj, xCoord, yCoord, zCoord);
+            player.openGui(ProjectRedExpansion.instance, ExpansionGuiHandler.alloyID, player.worldObj, xCoord, yCoord, zCoord);
             return true;
         }
         return false;

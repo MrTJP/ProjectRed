@@ -1,7 +1,7 @@
 package mrtjp.projectred.integration;
 
-import static mrtjp.projectred.ProjectRedCore.itemScrewdriver;
 import static mrtjp.projectred.ProjectRedIntegration.itemPartGate;
+import static mrtjp.projectred.ProjectRedIntegration.itemScrewdriver;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import codechicken.lib.packet.PacketCustom;

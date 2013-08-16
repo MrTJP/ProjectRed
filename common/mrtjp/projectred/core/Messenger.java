@@ -19,6 +19,18 @@ import codechicken.lib.vec.BlockCoord;
 public class Messenger {
     static ArrayList<Message> messages = new ArrayList<Message>();
 
+    /**
+     * Adds a string to the location. To apply an option, add a "/#" +
+     * an option char anywhere in the string.
+     * 
+     * f - Override a message already at that location. 
+     * c - Combine message if one already exists there.
+     * 
+     * @param x
+     * @param y
+     * @param z
+     * @param mail
+     */
     public static void addMessage(double x, double y, double z, String mail) {
         BlockCoord location = new BlockCoord((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
         boolean combine = false;
@@ -27,13 +39,13 @@ public class Messenger {
         if (mail.length() == 0) {
             return;
         }
-        if (mail.contains("\\f")) {
+        if (mail.contains("/#f")) {
             override = true;
-            mail = mail.replace("\\f", "");
+            mail = mail.replace("/#f", "");
         }
-        if (mail.contains("\\c")) {
+        if (mail.contains("/#c")) {
             combine = true;
-            mail = mail.replace("\\c", "");
+            mail = mail.replace("/#c", "");
         }
 
         if ((messages.size() > 64)) {

@@ -1,8 +1,8 @@
 package mrtjp.projectred.transmission;
 
-import static mrtjp.projectred.ProjectRedCore.itemWireDebugger;
 import static mrtjp.projectred.ProjectRedTransmission.itemPartJacketedWire;
 import static mrtjp.projectred.ProjectRedTransmission.itemPartWire;
+import static mrtjp.projectred.ProjectRedTransmission.itemWireDebugger;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import codechicken.multipart.MultiPartRegistry;

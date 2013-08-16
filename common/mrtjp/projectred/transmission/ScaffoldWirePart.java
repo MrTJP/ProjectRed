@@ -3,7 +3,7 @@ package mrtjp.projectred.transmission;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedTransmission;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,8 +21,8 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
 import codechicken.microblock.IHollowConnect;
-import codechicken.microblock.MicroMaterialRegistry;
 import codechicken.microblock.ItemMicroPart;
+import codechicken.microblock.MicroMaterialRegistry;
 import codechicken.microblock.handler.MicroblockProxy;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
@@ -385,6 +385,9 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
     /** START TILEMULTIPART INTERACTIONS **/
     @Override
     public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
+        if (material > 0) {
+            return Math.min(4, MicroMaterialRegistry.getMaterial(material).getStrength(player));
+        }
         return 4;
     }
 
@@ -503,16 +506,19 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
         }
         if (held.getItem() == MicroblockProxy.itemMicro() && held.getItemDamage() == 1 && ItemMicroPart.getMaterialID(held) != material) {
             if (!world().isRemote) {
+                int newMaterial = ItemMicroPart.getMaterialID(held);
+                if (MicroMaterialRegistry.getMaterial(newMaterial).isTransparent()) {
+                    return false;
+                }
                 dropMaterial(player);
-                material = ItemMicroPart.getMaterialID(held);
+                material = newMaterial;
                 sendMatUpdate();
-
                 if (!player.capabilities.isCreativeMode)
                     held.stackSize--;
             }
             return true;
         }
-        if (held.itemID == ProjectRedCore.itemWireDebugger.itemID) {
+        if (held.itemID == ProjectRedTransmission.itemWireDebugger.itemID) {
             held.damageItem(1, player);
             player.swingItem();
             return test(player, hit);

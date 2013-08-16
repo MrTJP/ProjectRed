@@ -3,6 +3,7 @@ package mrtjp.projectred;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.integration.ItemPartGate;
+import mrtjp.projectred.integration.ItemScrewdriver;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
@@ -18,6 +19,9 @@ public class ProjectRedIntegration {
         
     /** Multipart items **/
     public static ItemPartGate itemPartGate;
+
+    /** Items **/
+    public static ItemScrewdriver itemScrewdriver;
 
     @Instance("ProjRed|Integration")
     public static ProjectRedIntegration instance;

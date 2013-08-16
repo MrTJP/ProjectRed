@@ -1,5 +1,6 @@
 package mrtjp.projectred.transmission;
 
+import mrtjp.projectred.ProjectRedTransmission;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
 import net.minecraft.block.Block;
@@ -19,14 +20,16 @@ public class TransmissionRecipes {
 
     private static void initToolRecipes() {
         /** Wire debugger **/
-        GameRegistry.addRecipe(EnumWire.RED_ALLOY.getItemStack(12), 
-                "a a ",
-                "blr",
-                "blr",
+        GameRegistry.addRecipe(new ItemStack(ProjectRedTransmission.itemWireDebugger), 
+                "a a",
+                "ber",
+                "bgr",
                 'a', EnumPart.REDINGOT.getItemStack(),
                 'b', new ItemStack(Item.dyePowder, 1, PRColors.BLACK.dyeId()),
+                'e', Item.emerald,
                 'l', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId()),
-                'r', new ItemStack(Item.dyePowder, 1, PRColors.RED.dyeId())
+                'r', new ItemStack(Item.dyePowder, 1, PRColors.RED.dyeId()),
+                'g', Item.glowstone
         );
     }
 
