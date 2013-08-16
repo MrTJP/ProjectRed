@@ -1,12 +1,6 @@
 ProjectRed
 ==========
 
-A RP2 replacement
-
-
-Big thanks to immibis, who allows people to freely use his code.  About 80% of the wiring code
-in this mod is from Immibis's RedLogic.
-
 
 Setting up the dev environment:
 
@@ -77,3 +71,6 @@ This will use your dev environment to reobfuscate, then restore the state back t
      \-build
        \dist
 ***
+
+9) The finished jar file will not be fully compatible with everything unless you use an
+external utility such as BON to fix the file names (Temporary problem with obfuscation)

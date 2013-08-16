@@ -1,10 +1,8 @@
 package mrtjp.projectred.exploration;
 
-import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedExploration;
-import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.core.RecipeBackpackRecoloring;
 import mrtjp.projectred.core.ItemPart.EnumPart;
+import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
 import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import net.minecraft.block.Block;
@@ -18,6 +16,7 @@ public class ExplorationRecipes {
     public static void initRecipes() {
         initOtherRecipes();
         initGemToolRecipes();
+        initToolRecipes();
     }
     
     private static void initGemToolRecipes() {
@@ -162,7 +161,7 @@ public class ExplorationRecipes {
                     'd', PRColors.get(i).getOreDict()
             ));
         }
-        GameRegistry.addRecipe(new RecipeBackpackRecoloring());
+        GameRegistry.addRecipe(new BackpackRecolouringRecipe());
 
     }
     

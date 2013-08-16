@@ -36,7 +36,7 @@ public class JacketedWireItemRenderer implements IItemRenderer {
             renderWireInventory(damage, 1f, -.6f, -.4f, 2f);
             return;
         case INVENTORY:
-            renderWireInventory(damage, 0f, -.2f, 0f, 1f);
+            renderWireInventory(damage, 0f, -.1f, 0f, 1f);
             return;
         default:
             return;
