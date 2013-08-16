@@ -150,9 +150,9 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
         WirePropogator.redwiresProvidePower = false;
         
         int s = 0;
+        int i;
         for(int r = 0; r < 4; r++)
             if(maskConnects(r)) {
-                int i;
                 if((connMap & 1<<r) != 0)
                     i = calculateCornerSignal(r);
                 else if((connMap & 0x10<<r) != 0)
@@ -163,14 +163,16 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
                 if(i > s)
                     s = i;
             }
-
-        int i = calculateUndersideSignal();
+        
+        i = calculateUndersideSignal();
         if(i > s)
             s = i;
         
-        i = calculateCenterSignal();
-        if(i > s)
-            s = i;
+        if((connMap & 0x10000) != 0) {
+            i = calculateCenterSignal();
+            if(i > s)
+                s = i;
+        }
         
         WirePropogator.setWiresProvidePower(true);
         WirePropogator.redwiresProvidePower = true;

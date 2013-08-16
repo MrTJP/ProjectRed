@@ -16,39 +16,9 @@ import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 
+import static mrtjp.projectred.transmission.BundledCableCommons.*;
+
 public class BundledCablePart extends WirePart implements IBundledCablePart, IBundledEmitter {
-    public static byte[] tmpSignal = new byte[16];
-
-    public static boolean signalsEqual(byte[] signal1, byte[] signal2) {
-        for (int i = 0; i < 16; i++)
-            if (signal1[i] != signal2[i])
-                return false;
-
-        return true;
-    }
-
-    public static boolean isSignalZero(byte[] signal) {
-        if (signal == null)
-            return true;
-
-        for (int i = 0; i < 16; i++)
-            if (signal[i] != 0)
-                return false;
-
-        return true;
-    }
-
-    public static boolean dropSignalsLessThan(byte[] signal1, byte[] signal2) {
-        boolean dropped = false;
-
-        for (int i = 0; i < 16; i++)
-            if ((signal2[i] & 0xFF) < (signal1[i] & 0xFF)) {
-                signal1[i] = 0;
-                dropped = true;
-            }
-
-        return dropped;
-    }
 
     /**
      * Not available on client
@@ -116,31 +86,13 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
 
     @Override
     public void updateAndPropogate(TMultiPart prev, int mode) {
-        if (mode == DROPPING && isSignalZero(signal))
-            return;
-
-        byte[] newSignal = calculateSignal();
-        if (dropSignalsLessThan(signal, newSignal)) {
-            propogate(prev, DROPPING);
-        } else if (!signalsEqual(signal, newSignal)) {
-            setSignal(newSignal);
-            if (mode == DROPPING)
-                propogate(null, RISING);
-            else
-                propogate(prev, RISING);
-        } else {
-            if (mode == DROPPING)
-                propogateTo(prev, RISING);
-            else if (mode == FORCE)
-                propogate(prev, FORCED);
-        }
+        BundledCableCommons.updateAndPropogate(this, prev, mode);
     }
 
     @Override
     public boolean propogateTo(TMultiPart part, int mode) {
-        if (mode == DROPPING && part instanceof IInsulatedRedwirePart)
-            if (signal[((IInsulatedRedwirePart) part).getInsulatedColour()] != 0)// no point propogating to an ins wire if we didn't drop their colour
-                return true;
+        if(!BundledCableCommons.shouldPropogate(this, part, mode))
+            return true;
 
         return super.propogateTo(part, mode);
     }
@@ -196,27 +148,6 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
 
     public void calculateCenterSignal() {
         calculatePartSignal(tile().partMap(6), side);
-    }
-
-    public void calculatePartSignal(TMultiPart part, int r) {
-        if (part instanceof IBundledCablePart) {
-            byte[] osignal = ((IBundledCablePart) part).getBundledSignal();
-            for (int i = 0; i < 16; i++)
-                if ((osignal[i] & 0xFF) - 1 > (tmpSignal[i] & 0xFF))
-                    tmpSignal[i] = (byte) (osignal[i] - 1);
-        } else if (part instanceof IInsulatedRedwirePart) {
-            IInsulatedRedwirePart insPart = (IInsulatedRedwirePart) part;
-            int s = insPart.getRedwireSignal() - 1;
-            if (s > (tmpSignal[insPart.getInsulatedColour()] & 0xFF))
-                tmpSignal[insPart.getInsulatedColour()] = (byte) s;
-        } else if (part instanceof IBundledEmitter) {
-            byte[] osignal = ((IBundledEmitter) part).getBundledSignal(r);
-            if (osignal != null) {
-                for (int i = 0; i < 16; i++)
-                    if ((osignal[i] & 0xFF) > (tmpSignal[i] & 0xFF))
-                        tmpSignal[i] = osignal[i];
-            }
-        }
     }
 
     @Override

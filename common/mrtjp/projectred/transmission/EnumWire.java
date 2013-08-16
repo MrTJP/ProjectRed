@@ -29,7 +29,7 @@ public enum EnumWire {
     INSULATED_14("Red insulated wire", "pr_insulated", "pr_sinsulated", 1, 0xFFFFFF, "insulated/redoff", "insulated/redon"),
     INSULATED_15("Black insulated wire", "pr_insulated", "pr_sinsulated", 1, 0xFFFFFF, "insulated/blackoff", "insulated/blackon"),
 
-    BUNDLED_N("Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/neutral"),
+    BUNDLED_N("Bundled cable", "pr_bundled", "pr_sbundled", 2, 0xFFFFFF, "bundled/neutral"),
     BUNDLED_0("White Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/white"),
     BUNDLED_1("Orange Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/orange"),
     BUNDLED_2("Magenta Bundled cable", "pr_bundled", 2, 0xFFFFFF, "bundled/magenta"),

@@ -177,7 +177,7 @@ public class RenderScaffoldWire
             connCount = countConnections(connMap);
             int thickness = key>>6;
             tw = thickness+1;
-            w = tw/16D;
+            w = tw/16D+0.004;
             i = 0;
         }
         
@@ -236,6 +236,10 @@ public class RenderScaffoldWire
             }
             
             reflectSide(verts, s);
+            
+            UVTranslation t = new UVTranslation(12, 12);
+            for(int i = 0; i < 4; i++)
+                verts[i].apply(t);
             
             return verts;
         }
