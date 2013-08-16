@@ -14,9 +14,9 @@ public class ItemWireDebugger extends Item {
     public ItemWireDebugger(int par1) {
         super(par1);
         setMaxStackSize(1);
-        setMaxDamage(64);
+        setMaxDamage(256);
         setNoRepair();
-        setUnlocalizedName("projectred.transmission.wiredebug");
+        setUnlocalizedName("projectred.transmission.wiredebugger");
         setCreativeTab(ProjectRedTabs.tabTransmission);
     }
 

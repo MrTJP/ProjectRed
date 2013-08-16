@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion;
 
-import static mrtjp.projectred.ProjectRedCore.blockMachines;
-import static mrtjp.projectred.ProjectRedCore.itemVAWT;
+import static mrtjp.projectred.ProjectRedExpansion.blockMachines;
+import static mrtjp.projectred.ProjectRedExpansion.itemVAWT;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import net.minecraft.item.ItemStack;

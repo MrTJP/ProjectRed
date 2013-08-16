@@ -54,17 +54,9 @@ dependencies =
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class ProjectRedCore {
     
-    /** Blocks **/
-    public static BlockMachines blockMachines;
-
     /** Items **/
-    public static ItemScrewdriver itemScrewdriver;
     public static ItemPart itemComponent;
     public static ItemDrawPlate itemDrawPlate;
-    public static ItemVAWT itemVAWT;
-    
-    public static ItemWireDebugger itemWireDebugger;
-
 
     @Instance("ProjRed|Core")
     public static ProjectRedCore instance;

@@ -2,7 +2,7 @@ package mrtjp.projectred.transmission;
 
 import java.util.Arrays;
 
-import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedTransmission;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CommandDebug;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -629,8 +629,8 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         if (CommandDebug.WIRE_READING) {
             return debug(player);
         }
-        if (held != null && held.itemID == ProjectRedCore.itemWireDebugger.itemID) {
-            if (held.itemID == ProjectRedCore.itemWireDebugger.itemID) {
+        if (held != null && held.itemID == ProjectRedTransmission.itemWireDebugger.itemID) {
+            if (held.itemID == ProjectRedTransmission.itemWireDebugger.itemID) {
                 held.damageItem(1, player);
             }
             player.swingItem();

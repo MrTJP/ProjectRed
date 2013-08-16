@@ -1,6 +1,7 @@
 package mrtjp.projectred.expansion;
 
 import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedExpansion;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,7 +18,7 @@ public class RecipeVAWTRecoloring implements IRecipe {
 
     @Override
     public ItemStack getCraftingResult(InventoryCrafting inv) {
-        if (inv.getStackInSlot(4) == null || inv.getStackInSlot(4).itemID != ProjectRedCore.itemVAWT.itemID) {
+        if (inv.getStackInSlot(4) == null || inv.getStackInSlot(4).itemID != ProjectRedExpansion.itemVAWT.itemID) {
             return null;
         }
         if (inv.getStackInSlot(3) != null ||  inv.getStackInSlot(5) != null) {
@@ -51,7 +52,7 @@ public class RecipeVAWTRecoloring implements IRecipe {
 
     @Override
     public ItemStack getRecipeOutput() {
-        return new ItemStack(ProjectRedCore.itemVAWT, 1, 0);
+        return new ItemStack(ProjectRedExpansion.itemVAWT, 1, 0);
     }
 
 }

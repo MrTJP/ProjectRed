@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion;
 
-import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.ProjectRedExpansion;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import mrtjp.projectred.transmission.EnumWire;
@@ -31,7 +31,7 @@ public class ExpansionRecipes {
     }    
     private static void initToolRecipes() {        
         /** VAWT **/
-        GameRegistry.addRecipe(new ItemStack(ProjectRedCore.itemVAWT, 1), 
+        GameRegistry.addRecipe(new ItemStack(ProjectRedExpansion.itemVAWT, 1), 
                 "sss",
                 "ttt",
                 "sss",

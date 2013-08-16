@@ -1,6 +1,6 @@
 package mrtjp.projectred.integration;
 
-import static mrtjp.projectred.ProjectRedCore.itemScrewdriver;
+import static mrtjp.projectred.ProjectRedIntegration.itemScrewdriver;
 import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.Configurator;
 import net.minecraftforge.client.MinecraftForgeClient;

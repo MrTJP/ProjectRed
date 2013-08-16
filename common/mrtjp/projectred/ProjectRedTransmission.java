@@ -5,6 +5,7 @@ import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.integration.ItemPartGate;
 import mrtjp.projectred.transmission.ItemPartJacketedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
+import mrtjp.projectred.transmission.ItemWireDebugger;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
@@ -22,6 +23,9 @@ public class ProjectRedTransmission {
     public static ItemPartWire itemPartWire;
     public static ItemPartJacketedWire itemPartJacketedWire;    
     
+    /** Items **/
+    public static ItemWireDebugger itemWireDebugger;
+
     @Instance("ProjRed|Transmission")
     public static ProjectRedTransmission instance;
 

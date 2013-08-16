@@ -191,7 +191,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);
-            packet.writeString("\\f" + s);
+            packet.writeString("/#f" + s);
             packet.sendToPlayer(player);
         }
         return true;
