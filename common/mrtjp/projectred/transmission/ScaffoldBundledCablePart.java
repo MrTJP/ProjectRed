@@ -3,7 +3,12 @@ package mrtjp.projectred.transmission;
 import java.util.Arrays;
 
 import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.CoreProxy;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MovingObjectPosition;
+import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
@@ -100,5 +105,28 @@ public class ScaffoldBundledCablePart extends ScaffoldWirePart implements IBundl
     @Override
     public byte[] getBundledSignal(int side) {
         return getBundledSignal();
+    }
+
+    @Override
+    protected boolean test(EntityPlayer player, MovingObjectPosition hit) {
+        if (BasicUtils.isServer(world())) {
+            String s = "";
+            for (int i = 0; i < 16; i++) {
+                int x = getBundledSignal()[i];
+                if (x != 0) {
+                    s = s + "[" + i + "]";
+                }
+            }
+            if (s == "") {
+                s = "off";
+            }
+            PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreProxy.messengerQueue);
+            packet.writeDouble(x() + 0.0D);
+            packet.writeDouble(y() + 0.5D);
+            packet.writeDouble(z() + 0.0D);
+            packet.writeString("/#f" + s);
+            packet.sendToPlayer(player);
+        }
+        return true;
     }
 }
