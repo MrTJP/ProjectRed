@@ -42,4 +42,7 @@ public interface IWirePart
      * @return
      */
     public World world();
+    
+    public void propogate(TMultiPart prev, int mode);
+    public boolean propogateTo(TMultiPart part, int mode);
 }
