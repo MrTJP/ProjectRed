@@ -1,5 +1,6 @@
 Change Log:
-v4.0.0pre.38
+
+v4.0.0pre.37
 - Added ruby, sapphire, and peridot gems + ores.
 - Added marble, basalt, marble brick, basalt brick, basalt cobble.
 - Added marble cave generation.
@@ -9,12 +10,17 @@ v4.0.0pre.38
 - Initialized recipes for Expansion.
 - Added full set of saws, overrides default FMP microblock saws.
 - Added full set of sickles.
+- New render system for all wires.
+- Massive optimizations.
+- New wire propagation algorithm.
+- Added wire debugging tool.
+- Added ability to cover framed cables with any cover microblock.
+- Retouched texture colors.
+- All modules moved to their own mod.
+- Fixed recipes.
+- Updated license.
 
 
-
-
-v4.0.0pre.37
-- Fixed CC Peripheral not being recognized after world reload.
 
 
 v4.0.0pre.36

@@ -17,6 +17,7 @@ public class ExplorationRecipes {
         initOtherRecipes();
         initGemToolRecipes();
         initToolRecipes();
+        initWorldRecipes();
     }
     
     private static void initGemToolRecipes() {
@@ -127,7 +128,7 @@ public class ExplorationRecipes {
                 "  m",
                 "sm ",
                 's', Item.stick, 
-                'b', m
+                'm', m
                 ));
     }
     
