@@ -15,7 +15,7 @@ public class TransmissionClientProxy extends TransmissionProxy {
         for (EnumWire w : EnumWire.VALID_WIRE) {
             LanguageRegistry.addName(w.getItemStack(), w.name);
             if (w.hasJacketedForm())
-                LanguageRegistry.addName(w.getJacketedItemStack(), "Jacketed " + w.name);
+                LanguageRegistry.addName(w.getJacketedItemStack(), "Framed " + w.name);
         }
         LanguageRegistry.addName(new ItemStack(itemWireDebugger, 1, 0), "Wire debugger");
         MinecraftForgeClient.registerItemRenderer(itemPartWire.itemID, WireItemRenderer.instance);

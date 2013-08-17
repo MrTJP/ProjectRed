@@ -11,7 +11,7 @@ public class ItemGemPickaxe extends ItemPickaxe {
     public ItemGemPickaxe(int par1, EnumSpecialTool tool) {
         super(par1, tool.material);
         this.tool = tool;
-        this.setUnlocalizedName(tool.unlocal);
+        this.setUnlocalizedName("projectred.exploration." + tool.unlocal);
         this.setCreativeTab(ProjectRedTabs.tabExploration);
 
     }

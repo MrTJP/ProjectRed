@@ -252,8 +252,10 @@ public class RenderScaffoldWire
 
         private Vertex5[] generateStub(int s) {
             Vertex5[] verts = faceVerts(0.5-w);
-            reflectSide(verts, s);
-            
+            if (s == 2) {
+                reflectSide(verts, s);
+            }
+
             UVTranslation t = new UVTranslation(12, 12);
             for(Vertex5 vert : verts)
                 vert.apply(t);

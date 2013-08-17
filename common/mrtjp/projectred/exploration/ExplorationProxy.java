@@ -41,9 +41,11 @@ import static mrtjp.projectred.ProjectRedExploration.toolMaterialSapphire;
 
 import java.util.ArrayList;
 
+import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
+import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -51,13 +53,17 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.EnumHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import codechicken.microblock.BlockMicroMaterial;
 import codechicken.microblock.ItemSaw;
+import codechicken.microblock.MicroMaterialRegistry;
+import codechicken.microblock.handler.MicroblockProxy;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ExplorationProxy implements IProxy {
 
     @Override
     public void preinit() {
+
     }
 
     @Override
@@ -143,23 +149,31 @@ public class ExplorationProxy implements IProxy {
         itemPeridotSickle = new ItemGemSickle(Configurator.item_peridotSickle.getInt(), EnumSpecialTool.PERIDOTSICKLE);
         itemDiamondSickle = new ItemGemSickle(Configurator.item_diamondSickle.getInt(), EnumSpecialTool.DIAMONDSICKLE);
 
+        for (EnumSpecialStone s : EnumSpecialStone.VALID_STONE) {
+            MicroMaterialRegistry.registerMaterial(new BlockMicroMaterial(ProjectRedExploration.blockStones, s.meta), ProjectRedExploration.blockStones.getUnlocalizedName() + (s.meta > 0 ? "_" + s.meta : ""));
+        }
     }
 
     @Override
     public void postinit() {
         ExplorationRecipes.initRecipes();
-        
+
         // Remove default saw recipes
         ArrayList recipes = (ArrayList) CraftingManager.getInstance().getRecipeList();
+        ArrayList removeQueue = new ArrayList();
         for (int i = 0; i < recipes.size(); i++) {
             IRecipe r = (IRecipe) recipes.get(i);
             if (r instanceof ShapedOreRecipe) {
                 ItemStack result = ((ShapedOreRecipe) r).getRecipeOutput();
-                if (result.getItem() instanceof ItemSaw) {
-                    recipes.remove(i);
+                if (result == null) {
+                    continue;
+                }
+                if (result.getItem() == MicroblockProxy.sawStone() || result.getItem() == MicroblockProxy.sawIron() || result.getItem() == MicroblockProxy.sawDiamond()) {
+                    removeQueue.add(r);
                 }
             }
         }
+        recipes.removeAll(removeQueue);
     }
 
 }

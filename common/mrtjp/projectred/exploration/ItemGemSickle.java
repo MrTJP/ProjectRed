@@ -22,7 +22,7 @@ public class ItemGemSickle extends ItemTool {
     public ItemGemSickle(int par1, EnumSpecialTool tool) {
         super(par1, 3, tool.material, new Block[0]);
         this.tool = tool;
-        this.setUnlocalizedName(tool.unlocal);
+        this.setUnlocalizedName("projectred.exploration." + tool.unlocal);
         this.setCreativeTab(ProjectRedTabs.tabExploration);
     }
 

@@ -23,6 +23,7 @@ import codechicken.lib.vec.Vector3;
 import codechicken.microblock.IHollowConnect;
 import codechicken.microblock.ItemMicroPart;
 import codechicken.microblock.MicroMaterialRegistry;
+import codechicken.microblock.MicroMaterialRegistry.IMicroMaterial;
 import codechicken.microblock.handler.MicroblockProxy;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
@@ -506,12 +507,14 @@ public abstract class ScaffoldWirePart extends TMultiPart implements IConnectabl
         }
         if (held.getItem() == MicroblockProxy.itemMicro() && held.getItemDamage() == 1 && ItemMicroPart.getMaterialID(held) != material) {
             if (!world().isRemote) {
-                int newMaterial = ItemMicroPart.getMaterialID(held);
-                if (MicroMaterialRegistry.getMaterial(newMaterial).isTransparent()) {
+                int newMaterialID = ItemMicroPart.getMaterialID(held);
+                IMicroMaterial newMaterial = MicroMaterialRegistry.getMaterial(newMaterialID);
+                if (newMaterial.isTransparent()) {
                     return false;
                 }
                 dropMaterial(player);
-                material = newMaterial;
+                material = newMaterialID;
+                world().playSoundEffect(x() + 0.5D, y() + 0.5D, z() + 0.5D, newMaterial.getSound().getPlaceSound(), (newMaterial.getSound().getVolume() + 1.0F) / 2.0F, newMaterial.getSound().getPitch() * 0.8F);
                 sendMatUpdate();
                 if (!player.capabilities.isCreativeMode)
                     held.stackSize--;

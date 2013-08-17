@@ -32,7 +32,7 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw {
     protected ItemGemSaw(int par1, EnumSpecialTool tool) {
         super(par1);
         this.tool = tool;
-        this.setUnlocalizedName(tool.unlocal);
+        this.setUnlocalizedName("projectred.exploration." + tool.unlocal);
         this.setMaxDamage(tool.material.getMaxUses());
         this.setCreativeTab(ProjectRedTabs.tabExploration);
     }
