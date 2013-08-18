@@ -81,23 +81,23 @@ public class TransmissionRecipes {
             bundledColor++;
         }
         
-        /** Jacketed Wiring **/
+        /** Framed Wiring **/
         for (EnumWire w : EnumWire.VALID_WIRE) {
-            if (w.hasJacketedForm()) {
-                // Regular to jacketed
-                GameRegistry.addRecipe(w.getJacketedItemStack(3), 
+            if (w.hasFramedForm()) {
+                // Regular to framed
+                GameRegistry.addRecipe(w.getFramedItemStack(3), 
                         "sis",
                         "sis",
                         "sis",
                         'i', w.getItemStack(),
                         's', Item.stick
                 );
-                // Jacketed to regular
+                // framed to regular
                 GameRegistry.addRecipe(w.getItemStack(3), 
                         "i",
                         "i",
                         "i",
-                        'i', w.getJacketedItemStack()
+                        'i', w.getFramedItemStack()
                 );
             }
         }

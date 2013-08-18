@@ -53,7 +53,7 @@ public enum EnumWire {
 
     public final String name;
     public final String wireType;
-    public final String scaffoldType;
+    public final String framedType;
     public final int thickness;
     public final int itemColour;
     
@@ -64,14 +64,14 @@ public enum EnumWire {
 
     public static final String oreDictDefinition = "projredWire";
     public static final String oreDictDefinitionInsulated = "projredInsulatedWire";
-    public static final String oreDictDefinitionJacketed = "projredJacketedWire";
+    public static final String oreDictDefinitionFramed = "projredFramedWire";
     public static final String oreDictDefinitionBundled = "projredBundledCable";
 
-    private EnumWire(String name, String wireType, String scaffoldType, 
+    private EnumWire(String name, String wireType, String framedType, 
         int thickness, int itemColour, String... textures) {
         this.name = name;
         this.wireType = wireType;
-        this.scaffoldType = scaffoldType;
+        this.framedType = framedType;
         this.thickness = thickness;
         this.itemColour = itemColour;
         wireSpritePaths = textures;
@@ -81,8 +81,8 @@ public enum EnumWire {
         this(name, wireType, null, thickness, itemColour, textures);
     }
 
-    public boolean hasJacketedForm() {
-        return scaffoldType != null;
+    public boolean hasFramedForm() {
+        return framedType != null;
     }
 
     @SideOnly(Side.CLIENT)
@@ -102,22 +102,22 @@ public enum EnumWire {
         return new ItemStack(ProjectRedTransmission.itemPartWire, i, meta);
     }
 
-    public ItemStack getJacketedItemStack() {
-        return getJacketedItemStack(1);
+    public ItemStack getFramedItemStack() {
+        return getFramedItemStack(1);
     }
 
-    public ItemStack getJacketedItemStack(int i) {
-        if (!this.hasJacketedForm())
+    public ItemStack getFramedItemStack(int i) {
+        if (!this.hasFramedForm())
             return null;
         
-        return new ItemStack(ProjectRedTransmission.itemPartJacketedWire, i, meta);
+        return new ItemStack(ProjectRedTransmission.itemPartFramedWire, i, meta);
     }
 
     public static void initOreDictDefinitions() {
         for (EnumWire w : EnumWire.VALID_WIRE) {
             OreDictionary.registerOre(oreDictDefinition, w.getItemStack());
-            if (w.hasJacketedForm())
-                OreDictionary.registerOre(oreDictDefinitionJacketed, w.getJacketedItemStack());
+            if (w.hasFramedForm())
+                OreDictionary.registerOre(oreDictDefinitionFramed, w.getFramedItemStack());
         }
         for (EnumWire w : EnumWire.INSULATED_WIRE)
             OreDictionary.registerOre(oreDictDefinitionInsulated, w.getItemStack());
