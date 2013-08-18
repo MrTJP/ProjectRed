@@ -22,7 +22,7 @@ import mrtjp.projectred.illumination.ItemPartLamp;
 import mrtjp.projectred.illumination.ItemPartLantern;
 import mrtjp.projectred.integration.ItemPartGate;
 import mrtjp.projectred.integration.ItemScrewdriver;
-import mrtjp.projectred.transmission.ItemPartJacketedWire;
+import mrtjp.projectred.transmission.ItemPartFramedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
 import mrtjp.projectred.transmission.ItemWireDebugger;
 import net.minecraft.item.EnumToolMaterial;

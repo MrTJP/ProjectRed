@@ -3,7 +3,7 @@ package mrtjp.projectred;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.integration.ItemPartGate;
-import mrtjp.projectred.transmission.ItemPartJacketedWire;
+import mrtjp.projectred.transmission.ItemPartFramedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
 import mrtjp.projectred.transmission.ItemWireDebugger;
 import net.minecraftforge.common.MinecraftForge;
@@ -21,7 +21,7 @@ public class ProjectRedTransmission {
 
     /** Multipart items **/
     public static ItemPartWire itemPartWire;
-    public static ItemPartJacketedWire itemPartJacketedWire;    
+    public static ItemPartFramedWire itemPartFramedWire;    
     
     /** Items **/
     public static ItemWireDebugger itemWireDebugger;

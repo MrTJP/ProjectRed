@@ -1,6 +1,6 @@
 package mrtjp.projectred.transmission;
 
-import static mrtjp.projectred.ProjectRedTransmission.itemPartJacketedWire;
+import static mrtjp.projectred.ProjectRedTransmission.itemPartFramedWire;
 import static mrtjp.projectred.ProjectRedTransmission.itemPartWire;
 import static mrtjp.projectred.ProjectRedTransmission.itemWireDebugger;
 import net.minecraft.item.ItemStack;
@@ -14,11 +14,11 @@ public class TransmissionClientProxy extends TransmissionProxy {
         super.init();
         for (EnumWire w : EnumWire.VALID_WIRE) {
             LanguageRegistry.addName(w.getItemStack(), w.name);
-            if (w.hasJacketedForm())
-                LanguageRegistry.addName(w.getJacketedItemStack(), "Framed " + w.name);
+            if (w.hasFramedForm())
+                LanguageRegistry.addName(w.getFramedItemStack(), "Framed " + w.name);
         }
         LanguageRegistry.addName(new ItemStack(itemWireDebugger, 1, 0), "Wire debugger");
         MinecraftForgeClient.registerItemRenderer(itemPartWire.itemID, WireItemRenderer.instance);
-        MinecraftForgeClient.registerItemRenderer(itemPartJacketedWire.itemID, JacketedWireItemRenderer.instance);
+        MinecraftForgeClient.registerItemRenderer(itemPartFramedWire.itemID, FramedWireItemRenderer.instance);
     }
 }

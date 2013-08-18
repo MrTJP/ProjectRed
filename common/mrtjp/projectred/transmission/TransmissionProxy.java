@@ -1,6 +1,6 @@
 package mrtjp.projectred.transmission;
 
-import static mrtjp.projectred.ProjectRedTransmission.itemPartJacketedWire;
+import static mrtjp.projectred.ProjectRedTransmission.itemPartFramedWire;
 import static mrtjp.projectred.ProjectRedTransmission.itemPartWire;
 import static mrtjp.projectred.ProjectRedTransmission.itemWireDebugger;
 import mrtjp.projectred.core.Configurator;
@@ -23,7 +23,7 @@ public class TransmissionProxy implements IProxy, IPartFactory {
                 "pr_sredwire", "pr_sinsulated", "pr_sbundled"});
 
         itemPartWire = new ItemPartWire(Configurator.part_wire.getInt());
-        itemPartJacketedWire = new ItemPartJacketedWire(Configurator.part_jwire.getInt());
+        itemPartFramedWire = new ItemPartFramedWire(Configurator.part_jwire.getInt());
 
         itemWireDebugger = new ItemWireDebugger(Configurator.item_wireDebuggerID.getInt());
         
@@ -44,11 +44,11 @@ public class TransmissionProxy implements IProxy, IPartFactory {
         else if(id.equals("pr_bundled"))
             return new BundledCablePart(0);
         else if(id.equals("pr_sredwire"))
-            return new ScaffoldRedAlloyWirePart();
+            return new FramedRedAlloyWirePart();
         else if(id.equals("pr_sinsulated"))
-            return new ScaffoldInsulatedRedAlloyPart();
+            return new FramedInsulatedRedAlloyPart();
         else if(id.equals("pr_sbundled"))
-            return new ScaffoldBundledCablePart();
+            return new FramedBundledCablePart();
         return null;
     }
 
