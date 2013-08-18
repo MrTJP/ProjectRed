@@ -14,8 +14,10 @@ import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.UVTranslation;
 import codechicken.lib.render.Vertex5;
+import codechicken.lib.vec.AxisCycle;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
@@ -206,7 +208,7 @@ public class RenderScaffoldWire
                 verts = generateSideFromType(s);
             }
             
-            Transformation t = Rotation.sideRotations[s].at(Vector3.center);
+            Transformation t = AxisCycle.cycles[s/2].at(Vector3.center);
             for(Vertex5 vert : verts)
                 vert.apply(t);
             
@@ -220,22 +222,31 @@ public class RenderScaffoldWire
             return generateFlat(s);
         }
 
+        private IUVTransformation uvReflect = new UVT(new Scale(-1, 1, 1).at(new Vector3(8, 0, 16)));
         private Vertex5[] generateStraight(int s) {
             Vertex5[] verts = new Vertex5[20];
-            System.arraycopy(faceVerts(0), 0, verts, 0, 4);
+            System.arraycopy(faceVerts(s, 0), 0, verts, 0, 4);
 
-            verts[4] = new Vertex5(0.5-w, 0, 0.5+w, 8-tw, 24);
-            verts[5] = new Vertex5(0.5+w, 0, 0.5+w, 8+tw, 24);
-            verts[6] = new Vertex5(0.5+w, 0.5-w, 0.5+w, 8+tw, 16+tw);
-            verts[7] = new Vertex5(0.5-w, 0.5-w, 0.5+w, 8-tw, 16+tw);
-            
+            if(s%2 == 0) {
+                verts[4] = new Vertex5(0.5-w, 0, 0.5+w, 8-tw, 24);
+                verts[5] = new Vertex5(0.5+w, 0, 0.5+w, 8+tw, 24);
+                verts[6] = new Vertex5(0.5+w, 0.5-w, 0.5+w, 8+tw, 16+tw);
+                verts[7] = new Vertex5(0.5-w, 0.5-w, 0.5+w, 8-tw, 16+tw);
+            }
+            else {
+                verts[4] = new Vertex5(0.5-w, 0.5+w, 0.5+w, 8-tw, 16-tw);
+                verts[5] = new Vertex5(0.5+w, 0.5+w, 0.5+w, 8+tw, 16-tw);
+                verts[6] = new Vertex5(0.5+w, 1, 0.5+w, 8+tw, 8);
+                verts[7] = new Vertex5(0.5-w, 1, 0.5+w, 8-tw, 8);
+            }
             for(int r = 1; r < 4; r++) {
                 Transformation t = Rotation.quarterRotations[r].at(Vector3.center);
-                for(int i = 0; i < 4; i++)
+                for(int i = 0; i < 4; i++) {
                     verts[i+r*4+4] = verts[i+4].copy().apply(t);
+                    if(r >= 2)
+                        verts[i+r*4+4].apply(uvReflect);
+                }
             }
-            
-            reflectSide(verts, s);
             
             UVTranslation t = new UVTranslation(12, 12);
             for(int i = 0; i < 4; i++)
@@ -245,17 +256,40 @@ public class RenderScaffoldWire
         }
 
         private Vertex5[] generateFlat(int s) {
-            Vertex5[] verts = faceVerts(0.5-w);
-            //TODO: rotation stuffs
+            Vertex5[] verts = faceVerts(s, 0.5-w);
+            
+            int fConnMask = 0;
+            for(int i = 0; i < 4; i++) {
+                int absSide = ((s&6)+i+2)%6;
+                if((connMap & 1<<absSide) != 0)
+                    fConnMask |= 1<<i;
+            }
+            
+            int rot;
+            if((fConnMask & 0xC) == 0)
+                rot = 0;
+            else if((fConnMask & 3) == 0)
+                rot = 1;
+            else
+                rot = 2;
+            
+            IUVTransformation uvt;
+            if(rot == 1)
+                uvt = new UVT(Rotation.quarterRotations[1].at(new Vector3(8, 0, 16)));
+            else if(rot == 2)
+                uvt = new UVT(Rotation.quarterRotations[1].at(new Vector3(8, 0, 16)).with(new Translation(16, 0, 0)));
+            else
+                return verts;
+            
+            for(Vertex5 vert : verts)
+                vert.apply(uvt);
+            
             return verts;
         }
 
         private Vertex5[] generateStub(int s) {
-            Vertex5[] verts = faceVerts(0.5-w);
-            if (s == 2) {
-                reflectSide(verts, s);
-            }
-
+            Vertex5[] verts = faceVerts(s, 0.5-w);
+            
             UVTranslation t = new UVTranslation(12, 12);
             for(Vertex5 vert : verts)
                 vert.apply(t);
@@ -263,19 +297,21 @@ public class RenderScaffoldWire
             return verts;
         }
         
-        private Vertex5[] faceVerts(double d) {
-            return new Vertex5[]{
+        private Vertex5[] faceVerts(int s, double d) {
+            Vertex5[] verts = new Vertex5[]{
                     new Vertex5(0.5-w, d, 0.5-w, 8-tw, 16+tw),
                     new Vertex5(0.5+w, d, 0.5-w, 8+tw, 16+tw),
                     new Vertex5(0.5+w, d, 0.5+w, 8+tw, 16-tw),
                     new Vertex5(0.5-w, d, 0.5+w, 8-tw, 16-tw)};
-        }
-
-        private static UVT sideReflect = new UVT(Rotation.quarterRotations[2].at(new Vector3(8, 0, 16)));
-        private void reflectSide(Vertex5[] verts, int s) {
-            if(s%2 != 0)//rotate the texture about the y center
+            
+            if(s%2 == 1) {
+                Transformation t = new Scale(1, -1, 1).at(Vector3.center);
                 for(Vertex5 vert : verts)
-                    vert.apply(sideReflect);
+                    vert.apply(t);
+                reverseOrder(verts);
+            }
+            
+            return verts;
         }
 
         public JacketedModel generateJacketedModel(int key) {
@@ -362,8 +398,8 @@ public class RenderScaffoldWire
             else
                 return;
             
-            Vertex5[] verts = faceVerts(d-0.002);
-            Transformation t = Rotation.sideRotations[s].at(Vector3.center);
+            Vertex5[] verts = faceVerts(s, d-0.002);
+            Transformation t = AxisCycle.cycles[s/2].at(Vector3.center);
             IUVTransformation uvt = new UVTranslation(12, 12);
             for(Vertex5 vert : verts) {
                 vert.apply(t);
@@ -371,6 +407,14 @@ public class RenderScaffoldWire
             }
             
             i = addVerts(model, verts, i);
+        }
+    }
+    
+    public static void reverseOrder(Vertex5[] verts) {
+        for(int k = 0; k < verts.length; k+=4) {
+            Vertex5 tmp = verts[k+1];
+            verts[k+1] = verts[k+3];
+            verts[k+3] = tmp;
         }
     }
     
