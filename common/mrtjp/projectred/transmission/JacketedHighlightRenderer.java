@@ -7,6 +7,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import codechicken.lib.raytracer.ExtendedMOP;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.microblock.MicroMaterialRegistry;
 import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer;
 import codechicken.microblock.MicroblockClass;
 import codechicken.multipart.TMultiPart;
@@ -17,7 +18,7 @@ public class JacketedHighlightRenderer implements IMicroHighlightRenderer
     @Override
     public boolean renderHighlight(World world, EntityPlayer player, MovingObjectPosition hit, MicroblockClass mcrClass, int size, int material) {
         TileMultipart tile = BasicUtils.getMultipartTile(world, new BlockCoord(hit.blockX, hit.blockY, hit.blockZ));
-        if(tile == null || mcrClass.classID() != 0 || size != 1 || player.isSneaking())
+        if(tile == null || mcrClass.classID() != 0 || size != 1 || player.isSneaking() || MicroMaterialRegistry.getMaterial(material).isTransparent())
             return false;
         
         Tuple2<Integer, ?> hitData = ExtendedMOP.getData(hit);

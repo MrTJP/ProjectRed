@@ -95,7 +95,6 @@ public class Configurator {
     public static Property gen_SpreadingMoss;
 
     /** Settings **/
-    public static Property networkUpdateRange;
     public static Property debugMode;
 
     public static void initConfig(FMLPreInitializationEvent event) {
@@ -171,12 +170,9 @@ public class Configurator {
         gen_Sapphire = localConfig.get("World Generation", "Sapphire Ore", true);
         gen_Peridot = localConfig.get("World Generation", "Peridot Ore", true);
         gen_MarbleCave = localConfig.get("World Generation", "Marble Caves", true);
-        gen_Volcano = localConfig.get("World Generation", "Valcanos", true);
+        gen_Volcano = localConfig.get("World Generation", "Volcanos", true);
         gen_SpreadingMoss = localConfig.get("World Generation", "Spreading Moss", true);
 
-
-        networkUpdateRange = localConfig.get("general", "Network Update Range", 50.0D);
-        networkUpdateRange.comment = "This is the distance in which players will be notified.  Lower if you experience lag.";
         debugMode = localConfig.get("general", "Enable Debugging", false);
         debugMode.comment = "Enable advanced debugging, should ALWAYS be false.";
 
