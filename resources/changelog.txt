@@ -1,5 +1,9 @@
 Change Log:
 
+v4.0.0pre.38
+- Fixed framed wire rendering.
+
+
 v4.0.0pre.37
 - Added ruby, sapphire, and peridot gems + ores.
 - Added marble, basalt, marble brick, basalt brick, basalt cobble.
@@ -19,9 +23,6 @@ v4.0.0pre.37
 - All modules moved to their own mod.
 - Fixed recipes.
 - Updated license.
-
-
-
 
 v4.0.0pre.36
 - Fixed server/client startup crash.

@@ -11,8 +11,8 @@ import net.minecraft.world.World;
 
 public class GeneratorMetamorphicCave extends GeneratorOre {
 
-    private LinkedList cachedCoords = new LinkedList();
-    private HashSet occupiedCoords = new HashSet();
+    private LinkedList openList = new LinkedList();
+    private HashSet closedList = new HashSet();
 
     private int maxCaveDiameter = 96;
 
@@ -22,11 +22,11 @@ public class GeneratorMetamorphicCave extends GeneratorOre {
 
     private void addBlockForConversion(int x, int y, int z, int sides) {
         List blockCoords = Arrays.asList(new Integer[] { x, y, z });
-        if (this.occupiedCoords.contains(blockCoords)) {
+        if (this.closedList.contains(blockCoords)) {
             return;
         }
-        this.cachedCoords.addLast(Arrays.asList(new Integer[] { x, y, z, sides }));
-        this.occupiedCoords.add(blockCoords);
+        this.openList.addLast(Arrays.asList(new Integer[] { x, y, z, sides }));
+        this.closedList.add(blockCoords);
     }
 
     private void queueSurroundingBlocks(World world, int x, int y, int z, int sides) {
@@ -65,8 +65,8 @@ public class GeneratorMetamorphicCave extends GeneratorOre {
         }
         addBlockForConversion(x, shiftedY, z, 6);
 
-        while ((this.cachedCoords.size() > 0) && (this.veinSize > 0)) {
-            List remainingCoords = (List) this.cachedCoords.removeFirst();
+        while ((this.openList.size() > 0) && (this.veinSize > 0)) {
+            List remainingCoords = (List) this.openList.removeFirst();
             Integer[] rc = (Integer[]) remainingCoords.toArray();
             swapStoneBlock(world, rc[0].intValue(), rc[1].intValue(), rc[2].intValue(), rc[3].intValue());
         }
