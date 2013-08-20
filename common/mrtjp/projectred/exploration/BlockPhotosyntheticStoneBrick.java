@@ -15,9 +15,9 @@ import net.minecraft.world.World;
 public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
 
     public static final String[] STONE_BRICK_TYPES = new String[] { "default", "mossy", "cracked", "chiseled" };
-    public static final String[] field_94407_b = new String[] { null, "mossy", "cracked", "carved" };
+    public static final String[] names = new String[] { null, "mossy", "cracked", "carved" };
     @SideOnly(Side.CLIENT)
-    private Icon[] field_94408_c = new Icon[field_94407_b.length];;
+    private Icon[] icons = new Icon[names.length];;
 
     public BlockPhotosyntheticStoneBrick(int par1) {
         super(par1);
@@ -102,21 +102,22 @@ public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
     @Override
     public void registerIcons(IconRegister reg) {
         super.registerIcons(reg);
-        for (int i = 0; i < this.field_94408_c.length; ++i) {
+        Block.stoneBrick.registerIcons(reg);
+        for (int i = 0; i < this.icons.length; ++i) {
             String s = this.func_111023_E();
-            if (field_94407_b[i] != null) {
-                s = s + "_" + field_94407_b[i];
+            if (names[i] != null) {
+                s = s + "_" + names[i];
             }
-            this.field_94408_c[i] = reg.registerIcon(s);
+            this.icons[i] = reg.registerIcon(s);
         }
     }
 
     @SideOnly(Side.CLIENT)
     public Icon getIcon(int par1, int par2) {
-        if (par2 < 0 || par2 >= field_94407_b.length) {
+        if (par2 < 0 || par2 >= names.length) {
             par2 = 0;
         }
-        return this.field_94408_c[par2];
+        return this.icons[par2];
     }
 
 }

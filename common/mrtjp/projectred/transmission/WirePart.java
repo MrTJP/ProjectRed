@@ -567,9 +567,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         world().playAuxSFX(2000, x(), y(), z(), 0);
     }
 
-    public EnumWire getWireType() {
-        return null;
-    }
+    public abstract EnumWire getWireType();
 
     public int getThickness() {
         return getWireType().thickness;
