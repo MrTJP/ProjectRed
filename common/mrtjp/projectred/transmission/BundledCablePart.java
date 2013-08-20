@@ -18,7 +18,7 @@ import codechicken.multipart.TileMultipart;
 
 import static mrtjp.projectred.transmission.BundledCableCommons.*;
 
-public class BundledCablePart extends WirePart implements IBundledCablePart, IBundledEmitter {
+public class BundledCablePart extends WirePart implements IBundledCablePart {
 
     /**
      * Not available on client
@@ -73,11 +73,11 @@ public class BundledCablePart extends WirePart implements IBundledCablePart, IBu
     }
 
     @Override
-    public boolean canConnectToType(IWirePart wire) {
+    public boolean canConnectToType(IConnectable wire) {
         if (wire instanceof BundledCablePart) {
             int ocolour = ((BundledCablePart) wire).colour;
             return ocolour == -1 || colour == -1 || ocolour == colour;
-        } else if (wire instanceof IInsulatedRedwirePart || wire instanceof IBundledCablePart) {
+        } else if (wire instanceof IInsulatedRedwirePart || wire instanceof IBundledEmitter) {
             return true;
         }
 

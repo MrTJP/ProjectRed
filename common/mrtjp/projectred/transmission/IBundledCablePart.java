@@ -1,6 +1,6 @@
 package mrtjp.projectred.transmission;
 
-public interface IBundledCablePart extends IWirePart
+public interface IBundledCablePart extends IWirePart, IBundledEmitter
 {
     public byte[] getBundledSignal();
 

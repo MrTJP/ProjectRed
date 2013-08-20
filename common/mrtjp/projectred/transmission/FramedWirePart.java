@@ -285,7 +285,7 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     }
     
     @Override
-    public boolean connectStraight(IWirePart wire, int s) {
+    public boolean connectStraight(IConnectable wire, int s) {
         if(canConnectToType(wire) && maskOpen(s)) {
             int oldConn = connMap;
             connMap|=1<<s;
@@ -297,7 +297,7 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     }
     
     @Override
-    public boolean connectInternal(IWirePart wire, int s) {
+    public boolean connectInternal(IConnectable wire, int s) {
         if(canConnectToType(wire)) {
             int oldConn = connMap;
             connMap|=1<<(s+6);
@@ -309,11 +309,11 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     }
     
     @Override
-    public boolean connectCorner(WirePart wire, int r) {
+    public boolean connectCorner(IConnectable wire, int r) {
         return false;
     }
     
-    public abstract boolean canConnectToType(IWirePart wire);
+    public abstract boolean canConnectToType(IConnectable wire);
 
     public void notifyStraightChange(int s) {
         BlockCoord pos = new BlockCoord(getTile()).offset(s);

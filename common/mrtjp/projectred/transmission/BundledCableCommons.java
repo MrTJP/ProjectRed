@@ -115,7 +115,7 @@ public class BundledCableCommons
                     tmpSignal[i] = (byte) (osignal[i] - 1);
         } else if (part instanceof IInsulatedRedwirePart) {
             IInsulatedRedwirePart insPart = (IInsulatedRedwirePart) part;
-            int s = insPart.getRedwireSignal() - 1;
+            int s = insPart.getRedwireSignal(r) - 1;
             if (s > (tmpSignal[insPart.getInsulatedColour()] & 0xFF))
                 tmpSignal[insPart.getInsulatedColour()] = (byte) s;
         } else if (part instanceof IBundledEmitter) {

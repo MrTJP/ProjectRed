@@ -20,7 +20,7 @@ import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import codechicken.multipart.scalatraits.TRedstoneTile;
 
-public abstract class RedwirePart extends WirePart implements IRedwirePart, IRedwireEmitter, IFaceRedstonePart {
+public abstract class RedwirePart extends WirePart implements IRedwirePart, IFaceRedstonePart {
 
     public byte signal;
     
@@ -95,8 +95,8 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
     }
     
     @Override
-    public boolean canConnectToType(IWirePart wire) {
-        return wire instanceof IRedwirePart;
+    public boolean canConnectToType(IConnectable wire) {
+        return wire instanceof IRedwireEmitter;
     }
 
     @Override
@@ -235,14 +235,13 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IRed
 
     public int getPartSignal(TMultiPart part, int r) {
         if(part instanceof IRedwirePart)
-            return ((IRedwirePart) part).getRedwireSignal() - 1;
+            return ((IRedwirePart) part).getRedwireSignal(r) - 1;
         else if(part instanceof IRedwireEmitter)
             return ((IRedwireEmitter) part).getRedwireSignal(r);
         
         return 0;
     }
 
-    @Override
     public int getRedwireSignal() {
         return signal & 0xFF;
     }

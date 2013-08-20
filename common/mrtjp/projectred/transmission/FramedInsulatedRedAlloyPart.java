@@ -62,7 +62,7 @@ public class FramedInsulatedRedAlloyPart extends FramedRedwirePart implements II
     }
 
     @Override
-    public boolean canConnectToType(IWirePart wire) {
+    public boolean canConnectToType(IConnectable wire) {
         if(wire instanceof IInsulatedRedwirePart)
             return ((IInsulatedRedwirePart) wire).getInsulatedColour() == colour;
         
