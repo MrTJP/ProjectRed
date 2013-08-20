@@ -17,7 +17,7 @@ import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 
-public abstract class FramedRedwirePart extends FramedWirePart implements IRedwirePart, IRedwireEmitter, IMaskedRedstonePart
+public abstract class FramedRedwirePart extends FramedWirePart implements IRedwirePart, IMaskedRedstonePart
 {
     public byte signal;
     
@@ -83,7 +83,7 @@ public abstract class FramedRedwirePart extends FramedWirePart implements IRedwi
     }
     
     @Override
-    public boolean canConnectToType(IWirePart wire) {
+    public boolean canConnectToType(IConnectable wire) {
         return wire instanceof IRedwirePart;
     }
 
@@ -187,14 +187,13 @@ public abstract class FramedRedwirePart extends FramedWirePart implements IRedwi
 
     public int getPartSignal(TMultiPart part, int r) {
         if(part instanceof IRedwirePart)
-            return ((IRedwirePart) part).getRedwireSignal() - 1;
+            return ((IRedwirePart) part).getRedwireSignal(r) - 1;
         else if(part instanceof IRedwireEmitter)
             return ((IRedwireEmitter) part).getRedwireSignal(r);
         
         return 0;
     }
-
-    @Override
+    
     public int getRedwireSignal() {
         return signal & 0xFF;
     }

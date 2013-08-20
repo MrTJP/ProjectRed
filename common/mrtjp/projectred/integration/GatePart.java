@@ -655,7 +655,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     /** END RENDERSTUFF **/
 
     @Override
-    public boolean connectStraight(IWirePart wire, int side) {
+    public boolean connectStraight(IConnectable wire, int side) {
         /*if (wire instanceof BundledCablePart) {
             if (hasBundledConnections && ((GateLogic.WithBundledConnections) logic).isBundledConnection(Rotator.absoluteToRelative(side, front, fromDirection^1))) {
                 return true;
@@ -665,12 +665,12 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     }
     
     @Override
-    public boolean connectCorner(WirePart wire, int side) {
+    public boolean connectCorner(IConnectable wire, int side) {
         return connectStraight(wire, side);
     }
     
     @Override
-    public boolean connectInternal(IWirePart wire, int side) {
+    public boolean connectInternal(IConnectable wire, int side) {
         return connectStraight(wire, side);
     }
 }

@@ -151,6 +151,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     
     @Override
     public void onAdded() {
+        super.onAdded();
         if(!world().isRemote) {
             updateOpenConnections();
             boolean changed = updateInternalConnections();
@@ -178,13 +179,9 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     }
 
     @Override
-    public void onChunkLoad()//do nothing on chunk load, we shouldn't have changed between saves
+    public void onMoved()
     {
-    }
-
-    @Override
-    public void onWorldJoin()//when we're moved by a frame or something
-    {
+        super.onMoved();
         onNeighborChanged();
     }
 
@@ -389,7 +386,11 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         return false;
     }
     
-    public boolean renderThisCorner(WirePart wire) {
+    public boolean renderThisCorner(IConnectable part) {
+        if(!(part instanceof WirePart))
+            return false;
+        
+        WirePart wire = (WirePart)part;
         if(wire.getThickness() == getThickness())
             return side < wire.side;
         
@@ -397,7 +398,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     }
 
     @Override
-    public boolean connectCorner(WirePart wire, int r)
+    public boolean connectCorner(IConnectable wire, int r)
     {
         if(canConnectToType(wire) && maskOpen(r))
         {
@@ -414,7 +415,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     }
 
     @Override
-    public boolean connectStraight(IWirePart wire, int r)
+    public boolean connectStraight(IConnectable wire, int r)
     {
         if(canConnectToType(wire) && maskOpen(r))
         {
@@ -428,7 +429,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     }
     
     @Override
-    public boolean connectInternal(IWirePart wire, int r)
+    public boolean connectInternal(IConnectable wire, int r)
     {
         if(canConnectToType(wire))
         {
@@ -441,7 +442,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         return false;
     }
     
-    public abstract boolean canConnectToType(IWirePart wire);
+    public abstract boolean canConnectToType(IConnectable wire);
 
     public void notifyCornerChange(int r) {
         int absDir = Rotation.rotateSide(side, r);

@@ -9,19 +9,19 @@ public interface IConnectable {
      * Called to check whether a wire/logic part can connect to this.
      * If a part returns true it is expected to immediately reflect the fact that it is now connected to wire.
      * 
-     * @param wire The wire asking for connection.
+     * @param part The part asking for connection.
      * @param r The clockwise rotation about the attached face to 
      * @return True to allow the wire connection.
      */
-    public boolean connectStraight(IWirePart wire, int r);
+    public boolean connectStraight(IConnectable part, int r);
 
     /**
      * Connect for internals
      */
-    public boolean connectInternal(IWirePart wire, int r);
+    public boolean connectInternal(IConnectable part, int r);
 
     /**
      * Connect for corners
      */
-    public boolean connectCorner(WirePart wire, int r);
+    public boolean connectCorner(IConnectable part, int r);
 }
