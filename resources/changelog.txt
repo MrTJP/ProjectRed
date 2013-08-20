@@ -2,7 +2,7 @@ Change Log:
 
 v4.0.0pre.38
 - Fixed framed wire rendering.
-
+- Fixed stone textures being messed up from moss spreading.
 
 v4.0.0pre.37
 - Added ruby, sapphire, and peridot gems + ores.
