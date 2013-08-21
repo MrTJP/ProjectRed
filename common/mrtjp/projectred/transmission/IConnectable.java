@@ -24,4 +24,9 @@ public interface IConnectable {
      * Connect for corners
      */
     public boolean connectCorner(IConnectable part, int r);
+    
+    /**
+     * @return True if this part can reach around a corner to another part.
+     */
+    public boolean canConnectCorner(int r);
 }

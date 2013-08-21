@@ -19,6 +19,7 @@ public class ProjectRedIntegration {
         
     /** Multipart items **/
     public static ItemPartGate itemPartGate;
+    public static mrtjp.projectred.integration2.ItemPartGate itemPartGate2;
 
     /** Items **/
     public static ItemScrewdriver itemScrewdriver;
@@ -28,10 +29,13 @@ public class ProjectRedIntegration {
 
     @SidedProxy(clientSide = "mrtjp.projectred.integration.IntegrationClientProxy", serverSide = "mrtjp.projectred.integration.IntegrationProxy")
     public static IProxy proxy;
+    @SidedProxy(clientSide = "mrtjp.projectred.integration2.IntegrationClientProxy", serverSide = "mrtjp.projectred.integration2.IntegrationProxy")
+    public static IProxy proxy2;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         proxy.preinit();
+        proxy2.preinit();
     }
 
     @Mod.EventHandler
@@ -39,11 +43,12 @@ public class ProjectRedIntegration {
         MinecraftForge.EVENT_BUS.register(instance);
         MinecraftForge.EVENT_BUS.register(proxy);
         proxy.init();
+        proxy2.init();
     }
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postinit();
+        proxy2.postinit();
     }
-
 }

@@ -1,6 +1,11 @@
 package mrtjp.projectred.integration2;
 
+import static codechicken.lib.vec.Rotation.sideOrientation;
+
 import java.util.Arrays;
+import java.util.List;
+
+import scala.collection.mutable.LinkedList;
 
 import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.BasicUtils;
@@ -13,20 +18,40 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.lighting.LazyLightMatrix;
+import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
 import codechicken.microblock.FaceMicroClass;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
+import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.PartMap;
+import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, IConnectable
+public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, IConnectable, TFacePart
 {
+    public static Cuboid6[][] oBoxes = new Cuboid6[6][2];
+    
+    static
+    {
+        oBoxes[0][0] = new Cuboid6(1/8D, 0, 0, 7/8D, 1/8D, 1);
+        oBoxes[0][1] = new Cuboid6(0, 0, 1/8D, 1, 1/8D, 7/8D);
+        for(int s = 1; s < 6; s++) {
+            Transformation t = Rotation.sideRotations[s].at(Vector3.center);
+            oBoxes[s][0] = oBoxes[0][0].copy().apply(t);
+            oBoxes[s][1] = oBoxes[0][1].copy().apply(t);
+        }
+    }
+    
     public byte orientation;
     public byte subID;
     public byte shape;
@@ -59,6 +84,16 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         shape = (byte) s;
     }
     
+    public Transformation rotationT() {
+        return sideOrientation(side(), rotation()).at(Vector3.center);
+    }
+
+    public void onPlaced(EntityPlayer player, int side, int meta) {
+        subID = (byte) meta;
+        setSide(side^1);
+        setRotation(Rotation.getSidedRotation(player, side));
+    }
+    
     @Override
     public void save(NBTTagCompound tag) {
         tag.setByte("orient", orientation);
@@ -82,6 +117,21 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         shape = packet.readByte();
     }
     
+    public void read(MCDataInput packet) {
+        read(packet, packet.readUByte());
+    }
+
+    public void read(MCDataInput packet, int switch_key) {
+        if(switch_key == 0) {
+            orientation = packet.readByte();
+            tile().markRender();
+        }
+        else if(switch_key == 1) {
+            shape = packet.readByte();
+            tile().markRender();
+        }
+    }
+    
     @Override
     public void writeDesc(MCDataOutput packet) {
         packet.writeByte(orientation);
@@ -92,8 +142,8 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @Override
     public void onPartChanged(TMultiPart part) {
         if(!world().isRemote) {
-            updateInternalConnections();
-            onChange();
+            if(updateInternalConnections())
+                onChange();
         }
     }
 
@@ -112,25 +162,16 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public void onAdded() {
         super.onAdded();
         if(!world().isRemote) {
-            boolean changed = updateInternalConnections();
-            changed|=updateExternalConnections();//don't use || because it's fail fast
-            if(changed)
-                onChange();
+            updateConnections();
+            onChange();
         }
     }
 
     @Override
     public void onRemoved() {
         super.onRemoved();
-        
         if(!world().isRemote) {
-            for(int r = 0; r < 4; r++)
-                if(maskConnects(r)) {
-                    if((connMap & 1<<r) != 0)
-                        notifyCornerChange(r);
-                    else if((connMap & 0x10<<r) != 0)
-                        notifyStraightChange(r);
-                }
+            notifyNeighbors(0xF);
         }
     }
 
@@ -138,7 +179,11 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public void onMoved()
     {
         super.onMoved();
-        onNeighborChanged();
+        if(!world().isRemote) {
+            updateExternalConnections();
+            notifyNeighbors(0xF);
+            onChange();
+        }
     }
     
     public boolean canStay()
@@ -164,11 +209,21 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     }
     
     public ItemStack getItem() {
-        return getGateType().getItem();
+        return getGateType().getItemStack();
     }
     
-    private EnumGate getGateType() {
+    @Override
+    public ItemStack pickItem(MovingObjectPosition hit) {
+        return getItem();
+    }
+    
+    public EnumGate getGateType() {
         return EnumGate.VALID_GATES[subID&0xFF];
+    }
+    
+    protected void updateConnections() {
+        updateInternalConnections();
+        updateExternalConnections();
     }
 
     /**
@@ -224,27 +279,19 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         BlockCoord pos = new BlockCoord(getTile());
         pos.offset(absDir);
         
-        if(!canConnectThroughCorner(pos, absDir^1, side()))
+        if(!BasicWireUtils.canConnectThroughCorner(world(), pos, absDir^1, side()))
             return false;
         
         pos.offset(side());
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(absDir^1);
-            if (tp instanceof IConnectable)
-                return ((IConnectable) tp).connectCorner(this, Rotation.rotationTo(absDir^1, side()^1));
+            if (tp instanceof IConnectable) {
+                IConnectable conn = (IConnectable) tp;
+                return canConnectTo(conn, r) && 
+                        conn.connectCorner(this, Rotation.rotationTo(absDir^1, side()^1));
+            }
         }
-        
-        return false;
-    }
-
-    public boolean canConnectThroughCorner(BlockCoord pos, int side1, int side2) {
-        if(world().isAirBlock(pos.x, pos.y, pos.z))
-            return true;
-        
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if(t != null)
-            return t.partMap(side1) == null && t.partMap(side2) == null && t.partMap(PartMap.edgeBetween(side1, side2)) == null;
         
         return false;
     }
@@ -256,14 +303,12 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(side());
-            if (tp instanceof IConnectable)
-                return ((IConnectable) tp).connectStraight(this, (r+2)%4);
+            if (tp instanceof IConnectable) {
+                IConnectable conn = (IConnectable) tp;
+                return canConnectTo(conn, r) && conn.connectStraight(this, (r+2)%4);
+            }
         }
         
-        return connectStraightOverride(absDir);
-    }
-
-    public boolean connectStraightOverride(int absDir) {
         return false;
     }
 
@@ -274,8 +319,10 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
             return false;
         
         TMultiPart tp = tile().partMap(absDir);
-        if (tp instanceof IConnectable)
-            return ((IConnectable) tp).connectInternal(this, Rotation.rotationTo(absDir, side()));
+        if (tp instanceof IConnectable) {
+            IConnectable conn = (IConnectable) tp;
+            return canConnectTo(conn, r) && conn.connectInternal(this, Rotation.rotationTo(absDir, side()));
+        }
         
         return false;
     }
@@ -305,16 +352,23 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     
     @Override
     public Iterable<Cuboid6> getOcclusionBoxes() {
-        return Arrays.asList(getBounds());
+        return Arrays.asList(oBoxes[side()]);
+    }
+    
+    @Override
+    public boolean occlusionTest(TMultiPart npart) {
+        return NormalOcclusionTest.apply(this, npart);
     }
     
     @Override
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
         if (held != null && held.getItem() == ProjectRedIntegration.itemScrewdriver) {
-            if (player.isSneaking())
-                configure();
-            else
-                rotate();
+            if(!world().isRemote) {
+                if (player.isSneaking())
+                    configure();
+                else
+                    rotate();
+            }
             
             return true;
         }
@@ -326,26 +380,41 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         int newShape = getLogic().cycleShape(shape());
         if(newShape != shape()) {
             setShape(newShape);
-            notifyChange();
+            
+            updateConnections();
+            tile().markDirty();
+            sendShapeUpdate();
+            notifyNeighbors(0xF);
             onChange();
         }
     }
-
+    
     public void rotate() {
         setRotation((rotation()+1)%4);
-        notifyChange();
+        
+        updateConnections();
+        tile().markDirty();
+        sendOrientationUpdate();
+        notifyNeighbors(0xF);
         onChange();
     }
     
-    public void notifyChange() {
-        tile().markDirty();
-        tile().notifyPartChange(this);
-        sendDescUpdate();
+    public void sendShapeUpdate() {
+        tile().getWriteStream(this).writeByte(1).writeByte(shape);
     }
-
-    public void notifyInternalChange() {
-        tile().markDirty();
-        sendDescUpdate();
+    
+    public void sendOrientationUpdate() {
+        tile().getWriteStream(this).writeByte(0).writeByte(orientation);
+    }
+    
+    /**
+     * Notify neighbor blocks
+     * @param mask A bitmask of absolute rotation sides to notify
+     */
+    public void notifyNeighbors(int mask) {
+        for(int r = 0; r < 4; r++)
+            if((mask & 1<<r) != 0)
+                notifyStraightChange(r);
     }
     
     public void onChange() {
@@ -389,11 +458,69 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         return false;
     }
     
-    public boolean canConnectTo(IConnectable part, int r) {
-        return getLogic().canConnectTo(this, part, r-rotation());
+    @Override
+    public boolean canConnectCorner(int r) {
+        return false;
+    }
+    
+    public int toInternal(int absRot) {
+        return (absRot+6-rotation())%4;
+    }
+    
+    public int toAbsolute(int r) {
+        return (r+rotation()+2)%4;
+    }
+    
+    public int shiftMask(int mask, int r) {
+        return (mask<<r | mask>>(4-r)) & 0xF;
+    }
+    
+    public int toAbsoluteMask(int mask) {
+        return shiftMask(mask, toAbsolute(0));
+    }
+    
+    public int toInternalMask(int mask) {
+        return shiftMask(mask, toInternal(0));
     }
     
     public int relRot(int side) {
-        return Rotation.rotationTo(side(), side)-rotation();
+        return toInternal(Rotation.rotationTo(side(), side));
+    }
+    
+    public boolean canConnectTo(IConnectable part, int r) {
+        return getLogic().canConnectTo(this, part, toInternal(r));
+    }
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
+        if(pass == 0) {
+            CCRenderState.reset();
+            CCRenderState.setBrightness(world(), x(), y(), z());
+            CCRenderState.useModelColours(true);
+            RenderGate.renderStatic(this);
+            CCRenderState.setColour(-1);
+        }
+    }
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void renderDynamic(Vector3 pos, float frame, int pass) {
+        if(pass == 0)
+            RenderGate.renderDynamic(this, pos, frame);
+    }
+    
+    public int getSlotMask() {
+        return 1<<side();
+    }
+    
+    @Override
+    public int redstoneConductionMap() {
+        return 0;
+    }
+    
+    @Override
+    public boolean solid(int side) {
+        return false;
     }
 }

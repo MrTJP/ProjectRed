@@ -1,8 +1,9 @@
-package mrtjp.projectred.transmission;
+package mrtjp.projectred.integration2;
 
 import java.util.List;
 
 import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.transmission.BasicWireUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -18,19 +19,19 @@ import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemPartWire extends JItemMultiPart {
+public class ItemPartGate extends JItemMultiPart {
 
-    public ItemPartWire(int id) {
+    public ItemPartGate(int id) {
         super(id);
         setHasSubtypes(true);
-        setCreativeTab(ProjectRedTabs.tabTransmission);
-        setUnlocalizedName("projred.transmission.wire");
+        setCreativeTab(ProjectRedTabs.tabIntegration);
+        setUnlocalizedName("projred.integration.gate");
     }
 
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float f, float f2, float f3) {
         if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3)) {
-            w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .9F);
+            w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .8F);
             return true;
         }
         return false;
@@ -42,18 +43,18 @@ public class ItemPartWire extends JItemMultiPart {
         if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false))
             return null;
         
-        EnumWire type = EnumWire.VALID_WIRE[item.getItemDamage()];
-        WirePart w = (WirePart) MultiPartRegistry.createPart(type.wireType, false);
-        if(w != null)
-            w.onPlaced(side, item.getItemDamage());
-        return w;
+        EnumGate type = EnumGate.VALID_GATES[item.getItemDamage()];
+        GatePart gate = (GatePart) MultiPartRegistry.createPart(type.gateType, false);
+        if(gate != null)
+            gate.onPlaced(player, side, item.getItemDamage());
+        return gate;
     }
-    
+
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(int id, CreativeTabs tab, List list) {
-        for (EnumWire w : EnumWire.VALID_WIRE) {
-            list.add(w.getItemStack());
+        for (EnumGate g : EnumGate.VALID_GATES) {
+            list.add(g.getItemStack());
         }
     }
 
@@ -63,9 +64,7 @@ public class ItemPartWire extends JItemMultiPart {
 
     @Override
     public void registerIcons(IconRegister reg) {
-        for (EnumWire wireType : EnumWire.VALID_WIRE) {
-            wireType.loadTextures(reg);
-        }
+        ComponentStore.registerIcons(reg);
     }
 
     @Override
@@ -73,5 +72,4 @@ public class ItemPartWire extends JItemMultiPart {
     public int getSpriteNumber() {
         return 0;
     }
-
 }

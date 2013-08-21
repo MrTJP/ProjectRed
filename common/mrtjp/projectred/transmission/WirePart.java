@@ -156,10 +156,10 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             updateOpenConnections();
             boolean changed = updateInternalConnections();
             changed|=updateExternalConnections();//don't use || because it's fail fast
-            if(changed) {
+            if(changed)
                 sendConnUpdate();
-                WirePropogator.propogateTo(this, RISING);
-            }
+            
+            WirePropogator.propogateTo(this, RISING);
         }
     }
 
@@ -440,6 +440,11 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             return true;
         }
         return false;
+    }
+    
+    @Override
+    public boolean canConnectCorner(int r) {
+        return true;
     }
     
     public abstract boolean canConnectToType(IConnectable wire);

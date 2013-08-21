@@ -301,7 +301,7 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
         localCoord.offset(side);
         Block supporter = Block.blocksList[world().getBlockId(localCoord.x, localCoord.y, localCoord.z)];
         if (!BasicWireUtils.canPlaceWireOnSide(world(), localCoord.x, localCoord.y, localCoord.z, ForgeDirection.VALID_DIRECTIONS[side ^ 1], false)) {
-            BasicUtils.dropItemFromLocation(world(), getItem(), false, null, getSide(), 10, new BlockCoord(x(), y(), z()));
+            BasicUtils.dropItemFromLocation(world(), getItemStack(), false, null, getSide(), 10, new BlockCoord(x(), y(), z()));
             tile().remPart(this);
         }
     }
@@ -447,18 +447,18 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
         return hit.sideHit == 1 ? 1.75f : 1.5f;
     }
 
-    public ItemStack getItem() {
+    public ItemStack getItemStack() {
         return new ItemStack(ProjectRedIntegration.itemPartGate, 1, type.ordinal());
     }
 
     @Override
     public Iterable<ItemStack> getDrops() {
-        return Arrays.asList(getItem());
+        return Arrays.asList(getItemStack());
     }
 
     @Override
     public ItemStack pickItem(MovingObjectPosition hit) {
-        return getItem();
+        return getItemStack();
     }
 
     @Override
@@ -672,5 +672,10 @@ public class GatePart extends JCuboidPart implements TFacePart, IBundledEmitter,
     @Override
     public boolean connectInternal(IConnectable wire, int side) {
         return connectStraight(wire, side);
+    }
+    
+    @Override
+    public boolean canConnectCorner(int r) {
+        return false;
     }
 }

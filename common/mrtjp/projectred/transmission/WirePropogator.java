@@ -29,6 +29,14 @@ public class WirePropogator {
     public static boolean redwiresProvidePower = true;
     private static ThreadLocal<Boolean> redwiresConnectable = new ThreadLocal<Boolean>();
     
+    private static TMultiPart notApart = new TMultiPart()
+    {
+        @Override
+        public String getType() {
+            return null;
+        }
+    };
+    
     static {
         try {
             wiresProvidePower.setAccessible(true);
@@ -206,6 +214,6 @@ public class WirePropogator {
 
     public static void propogateTo(IWirePart part, int mode)
     {
-        propogateTo(part, null, mode);
+        propogateTo(part, notApart, mode);
     }
 }
