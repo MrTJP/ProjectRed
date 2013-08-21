@@ -5,18 +5,20 @@ import net.minecraft.item.ItemStack;
 
 public enum EnumGate
 {
-    OR("pr_sgate");
+    OR("OR Gate", "pr_sgate");
 
     public static EnumGate[] VALID_GATES = values();
     
-    public String gateClass;
+    public String name;
+    public String gateType;
     public int meta = this.ordinal();
     
-    private EnumGate(String gateClass) {
-        this.gateClass = gateClass;
+    private EnumGate(String name, String gateClass) {
+        this.name = name;
+        this.gateType = gateClass;
     }
     
-    public ItemStack getItem() {
+    public ItemStack getItemStack() {
         return new ItemStack(ProjectRedIntegration.itemPartGate, 1, meta);
     }
 }

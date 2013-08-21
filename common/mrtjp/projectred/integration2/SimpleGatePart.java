@@ -21,7 +21,7 @@ public class SimpleGatePart extends RedstoneGatePart
     public void save(NBTTagCompound tag) {
         super.save(tag);
         tag.setByte("state", state);
-        tag.setBoolean("scheduled", true);
+        tag.setBoolean("scheduled", scheduled);
     }
     
     @Override
@@ -41,6 +41,16 @@ public class SimpleGatePart extends RedstoneGatePart
     public void readDesc(MCDataInput packet) {
         super.readDesc(packet);
         state = packet.readByte();
+    }
+    
+    @Override
+    public void read(MCDataInput packet, int switch_key) {
+        if(switch_key == 10) {
+            state = packet.readByte();
+            tile().markRender();
+        }
+        else
+            super.read(packet, switch_key);
     }
     
     @Override
@@ -64,5 +74,21 @@ public class SimpleGatePart extends RedstoneGatePart
     public void scheduledTick() {
         scheduled = false;
         super.scheduledTick();
+    }
+
+    public void sendStateUpdate() {
+        tile().getWriteStream(this).writeByte(10).writeByte(state);
+    }
+    
+    public void onInputChange() {
+        tile().markDirty();
+        sendStateUpdate();
+    }
+
+    public void onOutputChange(int mask) {
+        tile().markDirty();
+        sendStateUpdate();
+        tile().internalPartChange(this);
+        notifyNeighbors(toAbsoluteMask(mask));
     }
 }

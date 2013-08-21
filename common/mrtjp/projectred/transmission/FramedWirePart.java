@@ -313,6 +313,11 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
         return false;
     }
     
+    @Override
+    public boolean canConnectCorner(int r) {
+        return false;
+    }
+    
     public abstract boolean canConnectToType(IConnectable wire);
 
     public void notifyStraightChange(int s) {

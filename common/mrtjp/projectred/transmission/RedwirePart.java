@@ -96,7 +96,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     
     @Override
     public boolean canConnectToType(IConnectable wire) {
-        return wire instanceof IRedwireEmitter;
+        return wire instanceof IRedwireEmitter || wire instanceof IRedstonePart;
     }
 
     @Override
@@ -183,7 +183,8 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     public int calculateCornerSignal(int r) {
         int absDir = Rotation.rotateSide(side, r);
         
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side);
+        BlockCoord cnrPos = new BlockCoord(getTile()).offset(absDir);
+        BlockCoord pos = cnrPos.copy().offset(side);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
             return getPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side^1));
@@ -213,16 +214,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         int absDir = Rotation.rotateSide(side, r);
         
         TMultiPart tp = tile().partMap(absDir);
-        int i = getPartSignal(tp, Rotation.rotationTo(absDir, side));
-        if(i > 0)
-            return i;
-        
-        if(tp instanceof IRedstonePart) {
-            IRedstonePart rp = (IRedstonePart) tp;
-            return Math.max(rp.strongPowerLevel(side), rp.weakPowerLevel(side)) << 4;
-        }
-        
-        return 0;
+        return getPartSignal(tp, Rotation.rotationTo(absDir, side));
     }
 
     public int calculateCenterSignal() {
@@ -238,6 +230,11 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
             return ((IRedwirePart) part).getRedwireSignal(r) - 1;
         else if(part instanceof IRedwireEmitter)
             return ((IRedwireEmitter) part).getRedwireSignal(r);
+        else if(part instanceof IFaceRedstonePart) {
+            IFaceRedstonePart rp = (IFaceRedstonePart) part;
+            int side = Rotation.rotateSide(rp.getFace(), r);
+            return Math.max(rp.strongPowerLevel(side), rp.weakPowerLevel(side)) << 4;
+        }
         
         return 0;
     }
