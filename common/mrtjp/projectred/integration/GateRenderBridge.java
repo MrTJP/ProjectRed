@@ -1,9 +1,9 @@
 package mrtjp.projectred.integration;
 
-import static mrtjp.projectred.transmission.BasicWireUtils.BACK;
-import static mrtjp.projectred.transmission.BasicWireUtils.FRONT;
-import static mrtjp.projectred.transmission.BasicWireUtils.LEFT;
-import static mrtjp.projectred.transmission.BasicWireUtils.RIGHT;
+import static mrtjp.projectred.transmission.BasicWireUtils.oldBACK;
+import static mrtjp.projectred.transmission.BasicWireUtils.oldFRONT;
+import static mrtjp.projectred.transmission.BasicWireUtils.oldLEFT;
+import static mrtjp.projectred.transmission.BasicWireUtils.oldRIGHT;
 import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.transmission.EnumWire;

@@ -1,17 +1,22 @@
 package mrtjp.projectred.integration2;
 
+import static mrtjp.projectred.integration2.ComponentStore.base;
+import static mrtjp.projectred.integration2.ComponentStore.baseIcon;
+import static mrtjp.projectred.integration2.ComponentStore.generateWireModels;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import mrtjp.projectred.integration2.ComponentStore.ComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.RedstoneTorchModel;
+import mrtjp.projectred.integration2.ComponentStore.SimpleComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.WireComponentModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
-import static mrtjp.projectred.integration2.ComponentStore.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class RenderGate
@@ -20,6 +25,34 @@ public class RenderGate
             new OR()
         };
     
+    public static void renderStatic(GatePart gate) {
+        GateRenderer r = renderers[gate.subID&0xFF];
+        r.prepare(gate);
+        r.renderStatic(gate.rotationT().with(new Translation(gate.x(), gate.y(), gate.z())));
+    }
+
+    public static void renderDynamic(GatePart gate, Vector3 pos, float frame) {
+        GateRenderer r = renderers[gate.subID&0xFF];
+        if(r.hasSpecials()) {
+            r.prepareDynamic(gate, frame);
+            r.renderDynamic(gate.rotationT().with(pos.translation()));
+        }
+    }
+
+    public static void renderInv(Transformation t, int id) {
+        GateRenderer r = renderers[id];
+        r.prepareInv();
+        CCRenderState.startDrawing(7);
+        r.renderStatic(t);
+        CCRenderState.draw();
+        if(r.hasSpecials())
+            r.renderDynamic(t);
+    }
+
+    public static void spawnParticles(GatePart gate, Random rand) {
+        renderers[gate.subID&0xFF].spawnParticles(gate, rand);
+    }
+
     public static abstract class GateRenderer<PartType extends GatePart>
     {
         public List<ComponentModel> models = new LinkedList<ComponentModel>();
@@ -44,11 +77,11 @@ public class RenderGate
         
         public void prepareDynamic(PartType part, float frame) {
         }
-
+    
         public boolean hasSpecials() {
             return false;
         }
-
+    
         public void spawnParticles(PartType part, Random rand) {
             prepare(part);
             List<RedstoneTorchModel> torches = new LinkedList<RedstoneTorchModel>();
@@ -66,13 +99,13 @@ public class RenderGate
                 }
         }
     }
-        
+
     public static class OR extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("OR", 4);
         RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
-                new RedstoneTorchModel(8.5, 0, 9.5),
-                new RedstoneTorchModel(8.5, 0, 5.5)
+                new RedstoneTorchModel(8.5, -4, 9.5),
+                new RedstoneTorchModel(8.5, -2, 4.5)
             };
         
         public OR() {
@@ -106,32 +139,9 @@ public class RenderGate
             torches[1].on = wires[0].on;
         }
     }
-
-    public static void renderStatic(GatePart gate) {
-        GateRenderer r = renderers[gate.subID&0xFF];
-        r.prepare(gate);
-        r.renderStatic(gate.rotationT().with(new Translation(gate.x(), gate.y(), gate.z())));
-    }
-
-    public static void renderDynamic(GatePart gate, Vector3 pos, float frame) {
-        GateRenderer r = renderers[gate.subID&0xFF];
-        if(r.hasSpecials()) {
-            r.prepareDynamic(gate, frame);
-            r.renderDynamic(gate.rotationT().with(pos.translation()));
-        }
-    }
-
-    public static void renderInv(Transformation t, int id) {
-        GateRenderer r = renderers[id];
-        r.prepareInv();
-        CCRenderState.startDrawing(7);
-        r.renderStatic(t);
-        CCRenderState.draw();
-        if(r.hasSpecials())
-            r.renderDynamic(t);
-    }
-
-    public static void spawnParticles(GatePart gate, Random rand) {
-        renderers[gate.subID&0xFF].spawnParticles(gate, rand);
+    
+    public static class NOR extends GateRenderer<SimpleGatePart>
+    {
+        
     }
 }

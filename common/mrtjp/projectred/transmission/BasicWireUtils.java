@@ -10,10 +10,15 @@ import net.minecraftforge.common.ForgeDirection;
 
 public class BasicWireUtils {
 
-    public static final int FRONT = 0;
-    public static final int BACK = 1;
-    public static final int LEFT = 2;
-    public static final int RIGHT = 3;
+    public static final int oldFRONT = 0;
+    public static final int oldBACK = 1;
+    public static final int oldLEFT = 2;
+    public static final int oldRIGHT = 3;
+    
+    public static final int BACK = 0;
+    public static final int RIGHT = 1;
+    public static final int FRONT = 2;
+    public static final int LEFT = 3;
     
     public static boolean canPlaceWireOnSide(World w, int x, int y, int z, ForgeDirection side, boolean _default) {
         if (!w.blockExists(x, y, z)) {
