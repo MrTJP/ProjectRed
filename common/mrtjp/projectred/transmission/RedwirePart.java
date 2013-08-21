@@ -107,7 +107,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
 
     @Override
     public boolean connectInternalOverride(TMultiPart p, int r) {
-        if (p instanceof IRedstonePart) {
+        if (p instanceof IFaceRedstonePart) {
             IRedstonePart rsPart = (IRedstonePart)p;
             return rsPart.canConnectRedstone(side);
         }
@@ -198,9 +198,9 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
-            int i = getPartSignal(t.partMap(side), (r+2)%4);
-            if(i > 0)
-                return i;
+            TMultiPart tp = t.partMap(side);
+            if(tp != null)
+                return getPartSignal(tp, (r+2)%4);
         }
     
         int blockID = world().getBlockId(pos.x, pos.y, pos.z);
@@ -233,7 +233,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         else if(part instanceof IFaceRedstonePart) {
             IFaceRedstonePart rp = (IFaceRedstonePart) part;
             int side = Rotation.rotateSide(rp.getFace(), r);
-            return Math.max(rp.strongPowerLevel(side), rp.weakPowerLevel(side)) << 4;
+            return Math.max(rp.strongPowerLevel(side), rp.weakPowerLevel(side))*17;
         }
         
         return 0;
