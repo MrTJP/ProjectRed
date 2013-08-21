@@ -1,11 +1,6 @@
 package mrtjp.projectred.integration2;
 
-import static codechicken.lib.vec.Rotation.sideOrientation;
-
 import java.util.Arrays;
-import java.util.List;
-
-import scala.collection.mutable.LinkedList;
 
 import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.BasicUtils;
@@ -85,7 +80,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     }
     
     public Transformation rotationT() {
-        return sideOrientation(side(), rotation()).at(Vector3.center);
+        return Rotation.sideOrientation(side(), rotation()).at(Vector3.center);
     }
 
     public void onPlaced(EntityPlayer player, int side, int meta) {

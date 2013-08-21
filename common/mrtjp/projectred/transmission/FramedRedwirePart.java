@@ -163,9 +163,9 @@ public abstract class FramedRedwirePart extends FramedWirePart implements IRedwi
         BlockCoord pos = new BlockCoord(getTile()).offset(s);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
-            int i = getPartSignal(t.partMap(6), s^1);
-            if(i > 0)
-                return i;
+            TMultiPart tp = t.partMap(6);
+            if(tp != null)
+                return getPartSignal(tp, s^1);
         }
     
         return RedstoneInteractions.getPowerTo(this, s)*17;

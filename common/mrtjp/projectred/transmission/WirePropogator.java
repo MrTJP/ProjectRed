@@ -123,14 +123,10 @@ public class WirePropogator {
             
             for(Entry<TileMultipart, Collection<TMultiPart>> entry : partChanges.asMap().entrySet()) {
                 Collection<TMultiPart> parts = entry.getValue();
-                for(TMultiPart part : entry.getKey().jPartList())
-                    if(parts.contains(part)) {
-                        ((IWirePart)part).onSignalUpdate();
-                    }
-                    else {
-                        for(TMultiPart cpart : parts)
-                            part.onPartChanged(cpart);
-                    }
+                for(TMultiPart part : parts)
+                    ((IWirePart)part).onSignalUpdate();
+                
+                entry.getKey().multiPartChange(parts);
             }
             
             int blockID = ((Block)MultipartProxy.block()).blockID;
