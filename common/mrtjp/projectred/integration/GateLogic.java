@@ -1,9 +1,9 @@
 package mrtjp.projectred.integration;
 
-import static mrtjp.projectred.transmission.BasicWireUtils.BACK;
-import static mrtjp.projectred.transmission.BasicWireUtils.FRONT;
-import static mrtjp.projectred.transmission.BasicWireUtils.LEFT;
-import static mrtjp.projectred.transmission.BasicWireUtils.RIGHT;
+import static mrtjp.projectred.transmission.BasicWireUtils.oldBACK;
+import static mrtjp.projectred.transmission.BasicWireUtils.oldFRONT;
+import static mrtjp.projectred.transmission.BasicWireUtils.oldLEFT;
+import static mrtjp.projectred.transmission.BasicWireUtils.oldRIGHT;
 
 import java.util.Random;
 
@@ -116,15 +116,15 @@ public abstract class GateLogic {
         // gateSettings 4: right input ignored
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            boolean left = inputs[LEFT] != 0 || (gateSettings & 1) != 0;
-            boolean back = inputs[BACK] != 0 || (gateSettings & 2) != 0;
-            boolean right = inputs[RIGHT] != 0 || (gateSettings & 4) != 0;
-            outputs[FRONT] = (short) (left && back && right ? 255 : 0);
+            boolean left = inputs[oldLEFT] != 0 || (gateSettings & 1) != 0;
+            boolean back = inputs[oldBACK] != 0 || (gateSettings & 2) != 0;
+            boolean right = inputs[oldRIGHT] != 0 || (gateSettings & 4) != 0;
+            outputs[oldFRONT] = (short) (left && back && right ? 255 : 0);
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (outputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 4 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 8 : 0) | (inputs[FRONT] != 0 || outputs[FRONT] != 0 ? 128 : 0) | (gateSettings << 4);
+            return (outputs[oldFRONT] != 0 ? 1 : 0) | (inputs[oldBACK] != 0 ? 2 : 0) | (inputs[oldLEFT] != 0 || outputs[oldLEFT] != 0 ? 4 : 0) | (inputs[oldRIGHT] != 0 || outputs[oldRIGHT] != 0 ? 8 : 0) | (inputs[oldFRONT] != 0 || outputs[oldFRONT] != 0 ? 128 : 0) | (gateSettings << 4);
         }
 
         @Override
@@ -139,15 +139,15 @@ public abstract class GateLogic {
         // gateSettings 4: right input ignored
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            boolean left = inputs[LEFT] != 0 && (gateSettings & 1) == 0;
-            boolean back = inputs[BACK] != 0 && (gateSettings & 2) == 0;
-            boolean right = inputs[RIGHT] != 0 && (gateSettings & 4) == 0;
-            outputs[FRONT] = (short) (left || back || right ? 255 : 0);
+            boolean left = inputs[oldLEFT] != 0 && (gateSettings & 1) == 0;
+            boolean back = inputs[oldBACK] != 0 && (gateSettings & 2) == 0;
+            boolean right = inputs[oldRIGHT] != 0 && (gateSettings & 4) == 0;
+            outputs[oldFRONT] = (short) (left || back || right ? 255 : 0);
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[FRONT] != 0 || outputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 4 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 8 : 0) | (outputs[FRONT] != 0 ? 16 : 0) | (gateSettings << 5);
+            return (inputs[oldFRONT] != 0 || outputs[oldFRONT] != 0 ? 1 : 0) | (inputs[oldBACK] != 0 ? 2 : 0) | (inputs[oldLEFT] != 0 || outputs[oldLEFT] != 0 ? 4 : 0) | (inputs[oldRIGHT] != 0 || outputs[oldRIGHT] != 0 ? 8 : 0) | (outputs[oldFRONT] != 0 ? 16 : 0) | (gateSettings << 5);
         }
 
         @Override
@@ -159,18 +159,18 @@ public abstract class GateLogic {
     public static class NOT extends GateLogic implements Stateless {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            outputs[FRONT] = outputs[LEFT] = outputs[RIGHT] = (short) (inputs[BACK] != 0 ? 0 : 255);
+            outputs[oldFRONT] = outputs[oldLEFT] = outputs[oldRIGHT] = (short) (inputs[oldBACK] != 0 ? 0 : 255);
             if ((gateSettings & 1) != 0)
-                outputs[LEFT] = 0;
+                outputs[oldLEFT] = 0;
             if ((gateSettings & 2) != 0)
-                outputs[FRONT] = 0;
+                outputs[oldFRONT] = 0;
             if ((gateSettings & 4) != 0)
-                outputs[RIGHT] = 0;
+                outputs[oldRIGHT] = 0;
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[FRONT] != 0 || outputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 4 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 8 : 0) | (outputs[FRONT] != 0 || outputs[LEFT] != 0 || outputs[RIGHT] != 0 ? 16 : 0) | (gateSettings << 5);
+            return (inputs[oldFRONT] != 0 || outputs[oldFRONT] != 0 ? 1 : 0) | (inputs[oldBACK] != 0 ? 2 : 0) | (inputs[oldLEFT] != 0 || outputs[oldLEFT] != 0 ? 4 : 0) | (inputs[oldRIGHT] != 0 || outputs[oldRIGHT] != 0 ? 8 : 0) | (outputs[oldFRONT] != 0 || outputs[oldLEFT] != 0 || outputs[oldRIGHT] != 0 ? 16 : 0) | (gateSettings << 5);
         }
 
         @Override
@@ -182,23 +182,23 @@ public abstract class GateLogic {
     public static class RSLatch extends GateLogic implements Stateless {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            if (inputs[LEFT] != 0 && inputs[RIGHT] != 0)
-                outputs[LEFT] = outputs[RIGHT] = 0;
-            else if (inputs[LEFT] != 0) {
-                outputs[LEFT] = (short) 255;
-                outputs[RIGHT] = 0;
-            } else if (inputs[RIGHT] != 0) {
-                outputs[RIGHT] = (short) 255;
-                outputs[LEFT] = 0;
+            if (inputs[oldLEFT] != 0 && inputs[oldRIGHT] != 0)
+                outputs[oldLEFT] = outputs[oldRIGHT] = 0;
+            else if (inputs[oldLEFT] != 0) {
+                outputs[oldLEFT] = (short) 255;
+                outputs[oldRIGHT] = 0;
+            } else if (inputs[oldRIGHT] != 0) {
+                outputs[oldRIGHT] = (short) 255;
+                outputs[oldLEFT] = 0;
             }
 
-            outputs[FRONT] = !(inputs[RIGHT] != 0 || outputs[RIGHT] != 0) ? (short) 255 : 0;
-            outputs[BACK] = !(inputs[LEFT] != 0 || outputs[LEFT] != 0) ? (short) 255 : 0;
+            outputs[oldFRONT] = !(inputs[oldRIGHT] != 0 || outputs[oldRIGHT] != 0) ? (short) 255 : 0;
+            outputs[oldBACK] = !(inputs[oldLEFT] != 0 || outputs[oldLEFT] != 0) ? (short) 255 : 0;
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 2 : 0) | (outputs[FRONT] != 0 ? 4 : 0) | (outputs[BACK] != 0 ? 8 : 0);
+            return (inputs[oldLEFT] != 0 || outputs[oldLEFT] != 0 ? 1 : 0) | (inputs[oldRIGHT] != 0 || outputs[oldRIGHT] != 0 ? 2 : 0) | (outputs[oldFRONT] != 0 ? 4 : 0) | (outputs[oldBACK] != 0 ? 8 : 0);
         }
     }
 
@@ -208,14 +208,14 @@ public abstract class GateLogic {
 
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            if (inputs[LEFT] != 0 && !wasLeft)
+            if (inputs[oldLEFT] != 0 && !wasLeft)
                 state = !state;
-            if (inputs[RIGHT] != 0 && !wasRight)
+            if (inputs[oldRIGHT] != 0 && !wasRight)
                 state = !state;
-            wasLeft = inputs[LEFT] != 0;
-            wasRight = inputs[RIGHT] != 0;
-            outputs[FRONT] = !state ? (short) 255 : 0;
-            outputs[BACK] = state ? (short) 255 : 0;
+            wasLeft = inputs[oldLEFT] != 0;
+            wasRight = inputs[oldRIGHT] != 0;
+            outputs[oldFRONT] = !state ? (short) 255 : 0;
+            outputs[oldBACK] = state ? (short) 255 : 0;
         }
 
         @Override
@@ -234,7 +234,7 @@ public abstract class GateLogic {
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[LEFT] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (outputs[FRONT] != 0 ? 4 : 0) | (outputs[BACK] != 0 ? 8 : 0);
+            return (inputs[oldLEFT] != 0 ? 1 : 0) | (inputs[oldRIGHT] != 0 ? 2 : 0) | (outputs[oldFRONT] != 0 ? 4 : 0) | (outputs[oldBACK] != 0 ? 8 : 0);
         }
 
         @Override
@@ -247,15 +247,15 @@ public abstract class GateLogic {
     public static class NOR extends GateLogic implements Stateless {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            boolean left = inputs[LEFT] != 0 && (gateSettings & 1) == 0;
-            boolean back = inputs[BACK] != 0 && (gateSettings & 2) == 0;
-            boolean right = inputs[RIGHT] != 0 && (gateSettings & 4) == 0;
-            outputs[FRONT] = !left && !back && !right ? (short) 255 : 0;
+            boolean left = inputs[oldLEFT] != 0 && (gateSettings & 1) == 0;
+            boolean back = inputs[oldBACK] != 0 && (gateSettings & 2) == 0;
+            boolean right = inputs[oldRIGHT] != 0 && (gateSettings & 4) == 0;
+            outputs[oldFRONT] = !left && !back && !right ? (short) 255 : 0;
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[FRONT] != 0 || outputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 ? 4 : 0) | (inputs[RIGHT] != 0 ? 8 : 0) | (outputs[FRONT] != 0 ? 16 : 0) | (gateSettings << 5);
+            return (inputs[oldFRONT] != 0 || outputs[oldFRONT] != 0 ? 1 : 0) | (inputs[oldBACK] != 0 ? 2 : 0) | (inputs[oldLEFT] != 0 ? 4 : 0) | (inputs[oldRIGHT] != 0 ? 8 : 0) | (outputs[oldFRONT] != 0 ? 16 : 0) | (gateSettings << 5);
         }
 
         @Override
@@ -267,15 +267,15 @@ public abstract class GateLogic {
     public static class NAND extends GateLogic implements Stateless {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            boolean left = inputs[LEFT] != 0 || (gateSettings & 1) != 0;
-            boolean back = inputs[BACK] != 0 || (gateSettings & 2) != 0;
-            boolean right = inputs[RIGHT] != 0 || (gateSettings & 4) != 0;
-            outputs[FRONT] = !(back && left && right) ? (short) 255 : 0;
+            boolean left = inputs[oldLEFT] != 0 || (gateSettings & 1) != 0;
+            boolean back = inputs[oldBACK] != 0 || (gateSettings & 2) != 0;
+            boolean right = inputs[oldRIGHT] != 0 || (gateSettings & 4) != 0;
+            outputs[oldFRONT] = !(back && left && right) ? (short) 255 : 0;
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[FRONT] != 0 || outputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 ? 4 : 0) | (inputs[RIGHT] != 0 ? 8 : 0) | (gateSettings << 4);
+            return (inputs[oldFRONT] != 0 || outputs[oldFRONT] != 0 ? 1 : 0) | (inputs[oldBACK] != 0 ? 2 : 0) | (inputs[oldLEFT] != 0 ? 4 : 0) | (inputs[oldRIGHT] != 0 ? 8 : 0) | (gateSettings << 4);
         }
 
         @Override
@@ -287,58 +287,58 @@ public abstract class GateLogic {
     public static class XOR extends GateLogic implements Stateless {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            outputs[FRONT] = (inputs[LEFT] != 0) ^ (inputs[RIGHT] != 0) ? (short) 255 : 0;
+            outputs[oldFRONT] = (inputs[oldLEFT] != 0) ^ (inputs[oldRIGHT] != 0) ? (short) 255 : 0;
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[LEFT] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (outputs[FRONT] != 0 ? 4 : 0);
+            return (inputs[oldLEFT] != 0 ? 1 : 0) | (inputs[oldRIGHT] != 0 ? 2 : 0) | (outputs[oldFRONT] != 0 ? 4 : 0);
         }
 
         @Override
         public boolean connectsToWire(int side) {
-            return super.connectsToWire(side) && side != BACK;
+            return super.connectsToWire(side) && side != oldBACK;
         }
     }
 
     public static class XNOR extends GateLogic implements Stateless {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            outputs[FRONT] = !((inputs[LEFT] != 0) ^ (inputs[RIGHT] != 0)) ? (short) 255 : 0;
+            outputs[oldFRONT] = !((inputs[oldLEFT] != 0) ^ (inputs[oldRIGHT] != 0)) ? (short) 255 : 0;
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[LEFT] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (outputs[FRONT] != 0 ? 4 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 8 : 0);
+            return (inputs[oldLEFT] != 0 ? 1 : 0) | (inputs[oldRIGHT] != 0 ? 2 : 0) | (outputs[oldFRONT] != 0 ? 4 : 0) | (outputs[oldFRONT] != 0 || inputs[oldFRONT] != 0 ? 8 : 0);
         }
 
         @Override
         public boolean connectsToWire(int side) {
-            return super.connectsToWire(side) && side != BACK;
+            return super.connectsToWire(side) && side != oldBACK;
         }
     }
 
     public static class Buffer extends GateLogic implements Stateless {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            outputs[FRONT] = outputs[LEFT] = outputs[RIGHT] = inputs[BACK];
+            outputs[oldFRONT] = outputs[oldLEFT] = outputs[oldRIGHT] = inputs[oldBACK];
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (outputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 4 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 8 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 16 : 0);
+            return (outputs[oldFRONT] != 0 ? 1 : 0) | (inputs[oldBACK] != 0 ? 2 : 0) | (inputs[oldLEFT] != 0 || outputs[oldLEFT] != 0 ? 4 : 0) | (inputs[oldRIGHT] != 0 || outputs[oldRIGHT] != 0 ? 8 : 0) | (outputs[oldFRONT] != 0 || inputs[oldFRONT] != 0 ? 16 : 0);
         }
     }
 
     public static class Multiplexer extends GateLogic implements Stateless {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            outputs[FRONT] = inputs[BACK] != 0 ? inputs[LEFT] : inputs[RIGHT];
+            outputs[oldFRONT] = inputs[oldBACK] != 0 ? inputs[oldLEFT] : inputs[oldRIGHT];
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[BACK] != 0 ? 1 : 0) | (inputs[LEFT] != 0 ? 2 : 0) | (inputs[RIGHT] != 0 ? 4 : 0) | (outputs[FRONT] != 0 ? 8 : 0) | (inputs[FRONT] != 0 || outputs[FRONT] != 0 ? 16 : 0);
+            return (inputs[oldBACK] != 0 ? 1 : 0) | (inputs[oldLEFT] != 0 ? 2 : 0) | (inputs[oldRIGHT] != 0 ? 4 : 0) | (outputs[oldFRONT] != 0 ? 8 : 0) | (inputs[oldFRONT] != 0 || outputs[oldFRONT] != 0 ? 16 : 0);
         }
     }
 
@@ -358,18 +358,18 @@ public abstract class GateLogic {
 
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            if (inputs[BACK] != 0 && state) {
+            if (inputs[oldBACK] != 0 && state) {
                 timer = 0;
                 return;
             }
 
-            if ((inputs[BACK] != 0) != state && timer == 0) {
+            if ((inputs[oldBACK] != 0) != state && timer == 0) {
                 // Account for 2 game ticks = 1 RS tick
                 timer = DELAYS[gateSettings] * 2 - 2;
 
                 if (timer == 0) {
                     state = !state;
-                    outputs[FRONT] = state ? (short) 255 : 0;
+                    outputs[oldFRONT] = state ? (short) 255 : 0;
                 }
             }
 
@@ -377,7 +377,7 @@ public abstract class GateLogic {
                 timer--;
                 if (timer == 0) {
                     state = !state;
-                    outputs[FRONT] = state ? (short) 255 : 0;
+                    outputs[oldFRONT] = state ? (short) 255 : 0;
                 }
             }
         }
@@ -398,7 +398,7 @@ public abstract class GateLogic {
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return gateSettings | (outputs[FRONT] != 0 ? 32768 : 0) | (inputs[BACK] != 0 ? 64 : 0);
+            return gateSettings | (outputs[oldFRONT] != 0 ? 32768 : 0) | (inputs[oldBACK] != 0 ? 64 : 0);
         }
 
         @Override
@@ -408,7 +408,7 @@ public abstract class GateLogic {
 
         @Override
         public boolean connectsToWire(int side) {
-            return side == FRONT || side == BACK;
+            return side == oldFRONT || side == oldBACK;
         }
     }
 
@@ -420,10 +420,10 @@ public abstract class GateLogic {
 
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            stopped = inputs[BACK] != 0;
-            if (inputs[BACK] != 0) {
+            stopped = inputs[oldBACK] != 0;
+            if (inputs[oldBACK] != 0) {
                 state = true;
-                outputs[FRONT] = outputs[LEFT] = outputs[RIGHT] = 0;
+                outputs[oldFRONT] = outputs[oldLEFT] = outputs[oldRIGHT] = 0;
                 ticksLeft = 0;
                 return;
             }
@@ -431,7 +431,7 @@ public abstract class GateLogic {
             ticksLeft--;
             if (ticksLeft <= 0) {
                 state = !state;
-                outputs[FRONT] = outputs[LEFT] = outputs[RIGHT] = state ? (short) 255 : 0;
+                outputs[oldFRONT] = outputs[oldLEFT] = outputs[oldRIGHT] = state ? (short) 255 : 0;
                 ticksLeft = state ? 2 : intervalTicks - 2;
             }
         }
@@ -478,7 +478,7 @@ public abstract class GateLogic {
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (outputs[FRONT] != 0 ? 1 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 32 : 0) | (outputs[LEFT] != 0 || inputs[LEFT] != 0 ? 2 : 0) | (outputs[RIGHT] != 0 || inputs[RIGHT] != 0 ? 8 : 0) | (inputs[BACK] != 0 ? 4 : 0) | (stopped ? 16 : 0);
+            return (outputs[oldFRONT] != 0 ? 1 : 0) | (outputs[oldFRONT] != 0 || inputs[oldFRONT] != 0 ? 32 : 0) | (outputs[oldLEFT] != 0 || inputs[oldLEFT] != 0 ? 2 : 0) | (outputs[oldRIGHT] != 0 || inputs[oldRIGHT] != 0 ? 8 : 0) | (inputs[oldBACK] != 0 ? 4 : 0) | (stopped ? 16 : 0);
         }
 
         @Override
@@ -593,7 +593,7 @@ public abstract class GateLogic {
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (outputs[LEFT] != 0 ? 4 : 0) | (outputs[RIGHT] != 0 ? 8 : 0) | (inputs[LEFT] != 0 || outputs[LEFT] != 0 ? 16 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 32 : 0)
+            return (inputs[oldFRONT] != 0 ? 1 : 0) | (inputs[oldBACK] != 0 ? 2 : 0) | (outputs[oldLEFT] != 0 ? 4 : 0) | (outputs[oldRIGHT] != 0 ? 8 : 0) | (inputs[oldLEFT] != 0 || outputs[oldLEFT] != 0 ? 16 : 0) | (inputs[oldRIGHT] != 0 || outputs[oldRIGHT] != 0 ? 32 : 0)
             // render state is truncated to 16 bits, but this
             // causes the rendering to update when the pointer moves
             | (getPointerPosition() << 20);
@@ -602,17 +602,17 @@ public abstract class GateLogic {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
 
-            if (inputs[FRONT] != 0 && !wasFront)
+            if (inputs[oldFRONT] != 0 && !wasFront)
                 value = Math.max(0, value - decr);
 
-            if (inputs[BACK] != 0 && !wasBack)
+            if (inputs[oldBACK] != 0 && !wasBack)
                 value = Math.min(max, value + incr);
 
-            outputs[LEFT] = value == 0 ? (short) 255 : 0;
-            outputs[RIGHT] = value == max ? (short) 255 : 0;
+            outputs[oldLEFT] = value == 0 ? (short) 255 : 0;
+            outputs[oldRIGHT] = value == max ? (short) 255 : 0;
 
-            wasFront = inputs[FRONT] != 0;
-            wasBack = inputs[BACK] != 0;
+            wasFront = inputs[oldFRONT] != 0;
+            wasBack = inputs[oldBACK] != 0;
         }
 
         @Override
@@ -654,10 +654,10 @@ public abstract class GateLogic {
                     state = 0;
                 }
             }
-            outputs[FRONT] = state == 0 ? (short) 255 : 0;
-            outputs[RIGHT] = state == 1 ? (short) 255 : 0;
-            outputs[BACK] = state == 2 ? (short) 255 : 0;
-            outputs[LEFT] = state == 3 ? (short) 255 : 0;
+            outputs[oldFRONT] = state == 0 ? (short) 255 : 0;
+            outputs[oldRIGHT] = state == 1 ? (short) 255 : 0;
+            outputs[oldBACK] = state == 2 ? (short) 255 : 0;
+            outputs[oldLEFT] = state == 3 ? (short) 255 : 0;
         }
 
         @Override
@@ -754,21 +754,21 @@ public abstract class GateLogic {
 
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            if (inputs[BACK] != 0 && !prevInput) {
-                outputs[FRONT] = (short) 255;
+            if (inputs[oldBACK] != 0 && !prevInput) {
+                outputs[oldFRONT] = (short) 255;
                 ticksLeft = 3;
             }
             if (ticksLeft > 0) {
                 ticksLeft--;
                 if (ticksLeft == 0)
-                    outputs[FRONT] = 0;
+                    outputs[oldFRONT] = 0;
             }
-            prevInput = inputs[BACK] != 0;
+            prevInput = inputs[oldBACK] != 0;
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[BACK] != 0 ? 1 : 0) | (outputs[FRONT] != 0 ? 2 : 0) | (ticksLeft > 0 ? 4 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 8 : 0);
+            return (inputs[oldBACK] != 0 ? 1 : 0) | (outputs[oldFRONT] != 0 ? 2 : 0) | (ticksLeft > 0 ? 4 : 0) | (outputs[oldFRONT] != 0 || inputs[oldFRONT] != 0 ? 8 : 0);
         }
 
         @Override
@@ -790,14 +790,14 @@ public abstract class GateLogic {
 
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            if (inputs[BACK] != 0 && ticksLeft == 0) {
+            if (inputs[oldBACK] != 0 && ticksLeft == 0) {
                 ticksLeft = 20;
-                outputs[FRONT] = random.nextBoolean() ? (short) 255 : 0;
-                outputs[LEFT] = random.nextBoolean() ? (short) 255 : 0;
-                outputs[RIGHT] = random.nextBoolean() ? (short) 255 : 0;
+                outputs[oldFRONT] = random.nextBoolean() ? (short) 255 : 0;
+                outputs[oldLEFT] = random.nextBoolean() ? (short) 255 : 0;
+                outputs[oldRIGHT] = random.nextBoolean() ? (short) 255 : 0;
             }
 
-            if (inputs[BACK] == 0)
+            if (inputs[oldBACK] == 0)
                 ticksLeft = 0;
 
             if (ticksLeft > 0)
@@ -806,7 +806,7 @@ public abstract class GateLogic {
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[BACK] != 0 ? 1 : 0) | (outputs[LEFT] != 0 ? 2 : 0) | (outputs[RIGHT] != 0 ? 4 : 0) | (outputs[FRONT] != 0 ? 8 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 16 : 0) | (outputs[LEFT] != 0 || inputs[LEFT] != 0 ? 32 : 0) | (outputs[RIGHT] != 0 || inputs[RIGHT] != 0 ? 64 : 0);
+            return (inputs[oldBACK] != 0 ? 1 : 0) | (outputs[oldLEFT] != 0 ? 2 : 0) | (outputs[oldRIGHT] != 0 ? 4 : 0) | (outputs[oldFRONT] != 0 ? 8 : 0) | (outputs[oldFRONT] != 0 || inputs[oldFRONT] != 0 ? 16 : 0) | (outputs[oldLEFT] != 0 || inputs[oldLEFT] != 0 ? 32 : 0) | (outputs[oldRIGHT] != 0 || inputs[oldRIGHT] != 0 ? 64 : 0);
         }
 
         @Override
@@ -883,11 +883,11 @@ public abstract class GateLogic {
 
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            if (inputs[LEFT] != 0 && !timing) {
+            if (inputs[oldLEFT] != 0 && !timing) {
                 timing = true;
                 ticksLeft = intervalTicks;
             }
-            paused = inputs[LEFT] != 0 || inputs[BACK] != 0;
+            paused = inputs[oldLEFT] != 0 || inputs[oldBACK] != 0;
             if (timing && !paused) {
                 ticksLeft--;
                 if (ticksLeft <= 0) {
@@ -895,15 +895,15 @@ public abstract class GateLogic {
                     timing = false;
                 }
             }
-            outputs[FRONT] = timing ? (short) 255 : 0;
-            outputs[RIGHT] = pulseTicks > 0 ? (short) 255 : 0;
+            outputs[oldFRONT] = timing ? (short) 255 : 0;
+            outputs[oldRIGHT] = pulseTicks > 0 ? (short) 255 : 0;
             if (pulseTicks > 0)
                 pulseTicks--;
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 1 : 0) | (inputs[BACK] != 0 ? 2 : 0) | (inputs[LEFT] != 0 ? 4 : 0) | (outputs[RIGHT] != 0 ? 8 : 0) | (timing ? 16 : 0) | (paused ? 32 : 0) | (inputs[RIGHT] != 0 || outputs[RIGHT] != 0 ? 64 : 0);
+            return (outputs[oldFRONT] != 0 || inputs[oldFRONT] != 0 ? 1 : 0) | (inputs[oldBACK] != 0 ? 2 : 0) | (inputs[oldLEFT] != 0 ? 4 : 0) | (outputs[oldRIGHT] != 0 ? 8 : 0) | (timing ? 16 : 0) | (paused ? 32 : 0) | (inputs[oldRIGHT] != 0 || outputs[oldRIGHT] != 0 ? 64 : 0);
         }
 
         @Override
@@ -947,30 +947,30 @@ public abstract class GateLogic {
 
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            if (inputs[LEFT] == 0 && wasLeft)
+            if (inputs[oldLEFT] == 0 && wasLeft)
                 leftLatch = true;
-            if (inputs[RIGHT] == 0 && wasRight)
+            if (inputs[oldRIGHT] == 0 && wasRight)
                 rightLatch = true;
-            if (inputs[BACK] != 0)
+            if (inputs[oldBACK] != 0)
                 leftLatch = rightLatch = false;
             if (leftLatch && rightLatch) {
                 pulseTicks = 2;
                 leftLatch = rightLatch = false;
             }
 
-            wasLeft = inputs[LEFT] != 0;
-            wasRight = inputs[RIGHT] != 0;
+            wasLeft = inputs[oldLEFT] != 0;
+            wasRight = inputs[oldRIGHT] != 0;
 
             if (pulseTicks > 0) {
-                outputs[FRONT] = (short) 255;
+                outputs[oldFRONT] = (short) 255;
                 pulseTicks--;
             } else
-                outputs[FRONT] = 0;
+                outputs[oldFRONT] = 0;
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[LEFT] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (inputs[BACK] != 0 ? 4 : 0) | (outputs[FRONT] != 0 ? 8 : 0) | (leftLatch ? 16 : 0) | (rightLatch ? 32 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 64 : 0);
+            return (inputs[oldLEFT] != 0 ? 1 : 0) | (inputs[oldRIGHT] != 0 ? 2 : 0) | (inputs[oldBACK] != 0 ? 4 : 0) | (outputs[oldFRONT] != 0 ? 8 : 0) | (leftLatch ? 16 : 0) | (rightLatch ? 32 : 0) | (outputs[oldFRONT] != 0 || inputs[oldFRONT] != 0 ? 64 : 0);
         }
 
         @Override
@@ -996,14 +996,14 @@ public abstract class GateLogic {
     public static class DLatch extends GateLogic implements Stateless {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            if (inputs[RIGHT] != 0) {
-                outputs[FRONT] = outputs[LEFT] = (short) (inputs[BACK] != 0 ? 255 : 0);
+            if (inputs[oldRIGHT] != 0) {
+                outputs[oldFRONT] = outputs[oldLEFT] = (short) (inputs[oldBACK] != 0 ? 255 : 0);
             }
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[BACK] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 4 : 0) | (outputs[LEFT] != 0 || inputs[LEFT] != 0 ? 8 : 0);
+            return (inputs[oldBACK] != 0 ? 1 : 0) | (inputs[oldRIGHT] != 0 ? 2 : 0) | (outputs[oldFRONT] != 0 || inputs[oldFRONT] != 0 ? 4 : 0) | (outputs[oldLEFT] != 0 || inputs[oldLEFT] != 0 ? 8 : 0);
         }
     }
 
@@ -1022,39 +1022,39 @@ public abstract class GateLogic {
 
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            if (inputs[RIGHT] != 0 && !clockWasOn) {
-                outputs[FRONT] = outputs[LEFT] = (short) (inputs[BACK] != 0 ? 255 : 0);
+            if (inputs[oldRIGHT] != 0 && !clockWasOn) {
+                outputs[oldFRONT] = outputs[oldLEFT] = (short) (inputs[oldBACK] != 0 ? 255 : 0);
             }
-            clockWasOn = inputs[RIGHT] != 0;
+            clockWasOn = inputs[oldRIGHT] != 0;
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[BACK] != 0 ? 1 : 0) | (inputs[RIGHT] != 0 ? 2 : 0) | (outputs[FRONT] != 0 || inputs[FRONT] != 0 ? 4 : 0) | (outputs[LEFT] != 0 || inputs[LEFT] != 0 ? 8 : 0);
+            return (inputs[oldBACK] != 0 ? 1 : 0) | (inputs[oldRIGHT] != 0 ? 2 : 0) | (outputs[oldFRONT] != 0 || inputs[oldFRONT] != 0 ? 4 : 0) | (outputs[oldLEFT] != 0 || inputs[oldLEFT] != 0 ? 8 : 0);
         }
     }
 
     public static class BundledLatch extends GateLogic implements Stateless, WithBundledConnections {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            if (inputs[RIGHT] != 0) {
-                outputs[FRONT] = inputs[BACK];
+            if (inputs[oldRIGHT] != 0) {
+                outputs[oldFRONT] = inputs[oldBACK];
             }
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[RIGHT] != 0 ? 1 : 0);
+            return (inputs[oldRIGHT] != 0 ? 1 : 0);
         }
 
         @Override
         public boolean connectsToWire(int side) {
-            return side == RIGHT;
+            return side == oldRIGHT;
         }
 
         @Override
         public boolean connectsToBundled(int side) {
-            return side == FRONT || side == BACK;
+            return side == oldFRONT || side == oldBACK;
         }
 
     }
@@ -1062,22 +1062,22 @@ public abstract class GateLogic {
     public static class BundledRelay extends GateLogic implements Stateless, WithBundledConnections {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            outputs[FRONT] = (inputs[RIGHT] != 0) ? inputs[BACK] : 0;
+            outputs[oldFRONT] = (inputs[oldRIGHT] != 0) ? inputs[oldBACK] : 0;
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[RIGHT] != 0 ? 1 : 0);
+            return (inputs[oldRIGHT] != 0 ? 1 : 0);
         }
 
         @Override
         public boolean connectsToWire(int side) {
-            return side == RIGHT;
+            return side == oldRIGHT;
         }
 
         @Override
         public boolean connectsToBundled(int side) {
-            return side == FRONT || side == BACK;
+            return side == oldFRONT || side == oldBACK;
         }
 
     }
@@ -1085,22 +1085,22 @@ public abstract class GateLogic {
     public static class BundledMultiplexer extends GateLogic implements Stateless, WithBundledConnections {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
-            outputs[FRONT] = (inputs[BACK] != 0) ? inputs[RIGHT] : inputs[LEFT];
+            outputs[oldFRONT] = (inputs[oldBACK] != 0) ? inputs[oldRIGHT] : inputs[oldLEFT];
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[BACK] != 0 ? 1 : 0);
+            return (inputs[oldBACK] != 0 ? 1 : 0);
         }
 
         @Override
         public boolean connectsToWire(int side) {
-            return side == BACK;
+            return side == oldBACK;
         }
 
         @Override
         public boolean connectsToBundled(int side) {
-            return side == FRONT || side == LEFT || side == RIGHT;
+            return side == oldFRONT || side == oldLEFT || side == oldRIGHT;
         }
     }
 
@@ -1118,16 +1118,16 @@ public abstract class GateLogic {
             if (w != null && w.getTotalWorldTime() % 8 == 0) {
                 int brightness = BasicUtils.getAbsoluteBrightness(w, x, y, z);
                 if (threshold < 5) {
-                    outputs[BACK] = (short) (brightness >= (threshold * 3 + 3) ? 255 : 0);
+                    outputs[oldBACK] = (short) (brightness >= (threshold * 3 + 3) ? 255 : 0);
                 } else {
-                    outputs[BACK] = (short) (brightness * 17 > 255 ? 255 : brightness * 17);
+                    outputs[oldBACK] = (short) (brightness * 17 > 255 ? 255 : brightness * 17);
                 }
             }
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[BACK] != 0 || outputs[BACK] != 0 ? 1 : 0) | (gateSettings == 0 ? 2 : 0) | (gateSettings == 1 ? 4 : 0) | (gateSettings == 2 ? 8 : 0) | (gateSettings == 3 ? 16 : 0) | (gateSettings == 4 ? 32 : 0) | (gateSettings == 5 ? 64 : 0);
+            return (inputs[oldBACK] != 0 || outputs[oldBACK] != 0 ? 1 : 0) | (gateSettings == 0 ? 2 : 0) | (gateSettings == 1 ? 4 : 0) | (gateSettings == 2 ? 8 : 0) | (gateSettings == 3 ? 16 : 0) | (gateSettings == 4 ? 32 : 0) | (gateSettings == 5 ? 64 : 0);
         }
 
         @Override
@@ -1150,7 +1150,7 @@ public abstract class GateLogic {
         }
 
         public boolean connectsToWire(int side) {
-            return side == BACK;
+            return side == oldBACK;
         }
     }
 
@@ -1164,13 +1164,13 @@ public abstract class GateLogic {
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
             // Dont do this calculation every tick.
             if (w != null && w.getTotalWorldTime() % 8 == 0) {
-                outputs[BACK] = (short) (w.isRaining() && BasicUtils.canBlockSeeSky(w, x, y, z) ? 255 : 0);
+                outputs[oldBACK] = (short) (w.isRaining() && BasicUtils.canBlockSeeSky(w, x, y, z) ? 255 : 0);
             }
         }
 
         @Override
         public int getRenderState(short[] inputs, short[] outputs, int gateSettings) {
-            return (inputs[BACK] != 0 || outputs[BACK] != 0 ? 1 : 0);
+            return (inputs[oldBACK] != 0 || outputs[oldBACK] != 0 ? 1 : 0);
         }
 
         @Override
@@ -1187,7 +1187,7 @@ public abstract class GateLogic {
         }
 
         public boolean connectsToWire(int side) {
-            return side == BACK;
+            return side == oldBACK;
         }
     }
 
@@ -1200,7 +1200,7 @@ public abstract class GateLogic {
         @Override
         public void computeOutFromIn(short[] inputs, short[] outputs, int gateSettings) {
             cachedInputs = new byte[16];
-            short inputMask = inputs[BACK];
+            short inputMask = inputs[oldBACK];
             for (int k = 0; k < 16; k++) {
                 cachedInputs[k] = ((inputMask & 1) != 0) ? (byte) 255 : 0;
                 inputMask >>= 1;
@@ -1213,7 +1213,7 @@ public abstract class GateLogic {
                     outputMask |= 1;
                 }
             }
-            outputs[BACK] = outputMask;
+            outputs[oldBACK] = outputMask;
         }
 
         @Override
@@ -1233,7 +1233,7 @@ public abstract class GateLogic {
 
         @Override
         public boolean connectsToBundled(int side) {
-            return side == BACK;
+            return side == oldBACK;
         }
 
         @Override
@@ -1289,7 +1289,7 @@ public abstract class GateLogic {
 
         @Override
         public boolean canAttachToSide(int rel) {
-            return rel == FRONT;
+            return rel == oldFRONT;
         }
 
         @Override

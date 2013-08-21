@@ -5,7 +5,9 @@ import net.minecraft.item.ItemStack;
 
 public enum EnumGate
 {
-    OR("OR Gate", "pr_sgate");
+    OR("OR Gate", "pr_sgate"),
+    NOR("NOR Gate", "pr_sgate"),
+    ;
 
     public static EnumGate[] VALID_GATES = values();
     

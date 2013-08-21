@@ -1,38 +1,23 @@
 
 package mrtjp.projectred.integration2;
 
+import static mrtjp.projectred.transmission.BasicWireUtils.*;
+
 public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
 {
     public static int[] advanceDead = new int[]{
         1, 2, 4, 0, 5, 6, 3};
     
+    public static SimpleGateLogic[] instances = new SimpleGateLogic[]{
+        new OR(),
+        
+    };
+
     public static int countBits(int n) {
         int c;
         for (c = 0; n != 0; c++) 
           n &= n - 1; // clear the least significant bit set
         return c;
-    }
-    
-    public static SimpleGateLogic[] instances = new SimpleGateLogic[]{
-            new OR()
-        };
-    
-    public static class OR extends SimpleGateLogic
-    {
-        @Override
-        public int inputMask(int shape) {
-            return ~shape<<1 & 0xE;
-        }
-        
-        @Override
-        public int deadSides() {
-            return 3;
-        }
-        
-        @Override
-        public int getOutput(int input) {
-            return input != 0 ? 1 : 0;
-        }
     }
     
     public boolean getOutput(SimpleGatePart gate, int r) {
@@ -77,5 +62,32 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
             gate.onOutputChange(outputMask);
         }
         onChange(gate);
+    }
+
+    public static class OR extends SimpleGateLogic
+    {
+        @Override
+        public int inputMask(int shape) {
+            return ~shape<<1 & 0xE;
+        }
+        
+        @Override
+        public int deadSides() {
+            return 3;
+        }
+        
+        @Override
+        public int getOutput(int input) {
+            return input != 0 ? 1 : 0;
+        }
+    }
+    
+    public static class NOR extends SimpleGateLogic
+    {
+        // unfinished
+        @Override
+        public int getOutput(int input) {
+            return 0;
+        }
     }
 }
