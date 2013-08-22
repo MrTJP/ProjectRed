@@ -101,8 +101,8 @@ public class RenderGate
             for(RedstoneTorchModel m : torches)
                 if(m.on && rand.nextInt(torches.size()) == 0) {
                     Vector3 pos = new Vector3(rand.nextFloat(), rand.nextFloat(), rand.nextFloat())
-                        .add(-0.5).multiply(0.02, 0.1, 0.02);
-                    pos.add(0, 0.45, 0).apply(m.relPos);//height
+                        .add(-0.5).multiply(0.05, 0.1, 0.05);
+                    pos.add(0, m.lightY, 0).apply(m.relPos);//height
                     pos.apply(part.rotationT()).add(part.x(), part.y(), part.z());
                     part.world().spawnParticle("reddust", pos.x, pos.y, pos.z, 0, 0, 0);
                 }
