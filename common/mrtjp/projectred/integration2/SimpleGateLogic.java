@@ -3,6 +3,9 @@ package mrtjp.projectred.integration2;
 
 import java.util.Random;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
 public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
 {
     public static int[] advanceDead = new int[]{
@@ -19,7 +22,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         null,
         null,
         new Pulse(),
-        null,
+        new Repeater(),
         new Randomizer()
     };
 
@@ -198,6 +201,49 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
                     gate.onOutputChange(1);
                 }
             }
+        }
+    }
+    
+    public static class Repeater extends SimpleGateLogic
+    {
+        public int[] delays = new int[]{2, 4, 6, 8, 16, 32, 64, 128, 256};
+        
+        @Override
+        public int getOutput(int input) {
+            return input == 0 ? 0 : 1;
+        }
+        
+        @Override
+        public int inputMask(int shape) {
+            return 4;
+        }
+        
+        @Override
+        public void onChange(SimpleGatePart gate) {
+            if(gate.schedTime < 0)//only accept input changes when not scheduled
+                super.onChange(gate);
+        }
+        
+        @Override
+        public int getDelay(int shape) {
+            return delays[shape];
+        }
+        
+        @Override
+        public int cycleShape(int shape) {
+            return (shape+1)%delays.length;
+        }
+        
+        @Override
+        public boolean activate(SimpleGatePart part, EntityPlayer player, ItemStack held) {
+            if(held == null) {
+                if(!part.world().isRemote)
+                    part.configure();
+                
+                return true;
+            }
+            
+            return false;
         }
     }
     

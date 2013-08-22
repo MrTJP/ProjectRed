@@ -387,6 +387,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     
     @Override
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
+        if(getLogic().activate(this, player, held))
+            return true;
+        
         if (held != null && held.getItem() == ProjectRedIntegration.itemScrewdriver) {
             if(!world().isRemote) {
                 if (player.isSneaking())
