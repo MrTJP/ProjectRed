@@ -25,6 +25,13 @@ public class RenderGate
             new OR(),
             new NOR(),
             new NOT(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            new Pulse()
         };
     
     public static void renderStatic(GatePart gate) {
@@ -173,6 +180,41 @@ public class RenderGate
             wires[1].on = (part.state&4) != 0;
             wires[2].on = (part.state&0x88) != 0;
             torch.on = (part.state&0xF0) != 0;
+        }
+    }
+
+    public static class Pulse extends GateRenderer<SimpleGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("PULSE", 3);
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(4.5, 8.5, 6),
+                new RedstoneTorchModel(12.5, 8.5, 6),
+                new RedstoneTorchModel(8.5, 3, 8)
+            };
+        
+        public Pulse() {
+            models.addAll(Arrays.asList(wires));
+            models.addAll(Arrays.asList(torches));
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = true;
+            wires[1].on = false;
+            wires[2].on = false;
+            torches[0].on = true;
+            torches[1].on = false;
+            torches[2].on = false;
+        }
+        
+        @Override
+        public void prepare(SimpleGatePart part) {
+            wires[0].on = (part.state&4) == 0;
+            wires[1].on = (part.state&4) != 0;
+            wires[2].on = (part.state&0x14) == 4;//input on, output off
+            torches[0].on = wires[0].on;
+            torches[1].on = wires[1].on;
+            torches[2].on = (part.state&0x10) != 0;
         }
     }
 }
