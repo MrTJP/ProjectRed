@@ -58,10 +58,10 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         if(oldInput != newInput) {
             gate.setState(gate.state & 0xF0 | newInput);
             gate.onInputChange();
-            
-            if((oldInput&inputMask) != (newInput&inputMask))
-                gate.scheduleTick(getDelay(gate.shape()));
         }
+        
+        if(getOutput(newInput&inputMask) != gate.state>>4)
+            gate.scheduleTick(getDelay(gate.shape()));
     }
     
     @Override
@@ -69,7 +69,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         int inputMask = inputMask(gate.shape());
         int outputMask = outputMask(gate.shape());
         int oldOutput = gate.state>>4;
-        int newOutput = getOutput(getInput(gate, inputMask));
+        int newOutput = getOutput(gate.state&inputMask);
         if(oldOutput != newOutput) {
             gate.setState(gate.state & 0xF | newOutput<<4);
             gate.onOutputChange(outputMask);
