@@ -31,7 +31,7 @@ public class RenderGate
             null,
             null,
             new Pulse(),
-            null,
+            new Repeater(),
             new Randomizer()
         };
     
@@ -252,6 +252,39 @@ public class RenderGate
             torches[0].on = wires[0].on;
             torches[1].on = wires[1].on;
             torches[2].on = (part.state&0x10) != 0;
+        }
+    }
+
+    public static class Repeater extends GateRenderer<SimpleGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("REPEATER", 2);
+        RedstoneTorchModel endtorch = new RedstoneTorchModel(8, 2, 6);
+        RedstoneTorchModel vartorch = new RedstoneTorchModel(12, 14, 6);
+        
+        public Repeater() {
+            models.addAll(Arrays.asList(wires));
+            models.add(endtorch);
+            models.add(vartorch);
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = true;
+            wires[1].on = false;
+            endtorch.on = true;
+            vartorch.on = false;
+            
+            vartorch.relPos = new Translation(12/16D, 0, 12/16D);
+        }
+        
+        @Override
+        public void prepare(SimpleGatePart part) {
+            wires[0].on = (part.state&0x10) == 0;
+            wires[1].on = (part.state&4) != 0;
+            endtorch.on = (part.state&0x10) != 0;
+            vartorch.on = (part.state&4) == 0;
+            
+            vartorch.relPos = new Translation(12/16D, 0, (12-part.shape())/16D);
         }
     }
 
