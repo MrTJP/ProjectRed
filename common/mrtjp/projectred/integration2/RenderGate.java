@@ -22,7 +22,9 @@ import codechicken.lib.vec.Vector3;
 public class RenderGate
 {
     public static GateRenderer[] renderers = new GateRenderer[]{
-            new OR()
+            new OR(),
+            new NOR(),
+            new NOT(),
         };
     
     public static void renderStatic(GatePart gate) {
@@ -105,8 +107,8 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("OR", 4);
         RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
-                new RedstoneTorchModel(8, -4, 9),
-                new RedstoneTorchModel(8, -2, 2.5)
+                new RedstoneTorchModel(8, -4, 6),
+                new RedstoneTorchModel(8, -2, 8)
             };
         
         public OR() {
@@ -129,7 +131,7 @@ public class RenderGate
         
         @Override
         public void prepare(SimpleGatePart part) {
-            wires[0].on = (part.state&1) == 0;
+            wires[0].on = (part.state&0x10) == 0;
             wires[1].on = (part.state&2) != 0;
             wires[2].on = (part.state&4) != 0;
             wires[3].on = (part.state&8) != 0;
@@ -144,5 +146,34 @@ public class RenderGate
     public static class NOR extends GateRenderer<SimpleGatePart>
     {
         
+    }
+    
+    public static class NOT extends GateRenderer<SimpleGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("NOT", 4);
+        RedstoneTorchModel torch = new RedstoneTorchModel(8, 8, 6);
+        
+        public NOT() {
+            models.addAll(Arrays.asList(wires));
+            models.add(torch);
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = true;
+            wires[2].on = true;
+            wires[3].on = true;
+            wires[1].on = false;
+            torch.on = true;
+        }
+        
+        @Override
+        public void prepare(SimpleGatePart part) {
+            wires[0].on = (part.state&0x11) != 0;
+            wires[3].on = (part.state&0x22) != 0;
+            wires[1].on = (part.state&4) != 0;
+            wires[2].on = (part.state&0x88) != 0;
+            torch.on = (part.state&0xF0) != 0;
+        }
     }
 }

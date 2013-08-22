@@ -157,6 +157,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public void onAdded() {
         super.onAdded();
         if(!world().isRemote) {
+            getLogic().setup(this);
             updateConnections();
             onChange();
         }
