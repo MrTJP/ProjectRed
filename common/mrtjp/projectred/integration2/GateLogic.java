@@ -11,4 +11,7 @@ public abstract class GateLogic<PartType extends GatePart>
     public abstract void onChange(PartType gate);
     
     public abstract void scheduledTick(PartType gate);
+
+    public void setup(PartType part) {
+    }
 }
