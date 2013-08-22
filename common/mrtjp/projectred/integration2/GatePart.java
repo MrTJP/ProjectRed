@@ -27,6 +27,7 @@ import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.PartMap;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TickScheduler;
 import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -52,6 +53,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public byte shape;
     
     public int connMap;
+    public long schedTime;
     
     public abstract GateLogic getLogic();
     
@@ -95,6 +97,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         tag.setByte("subID", subID);
         tag.setByte("shape", shape);
         tag.setShort("connMap", (short) connMap);
+        tag.setLong("schedTime", schedTime);
     }
     
     @Override
@@ -103,6 +106,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         subID = tag.getByte("subID");
         shape = tag.getByte("shape");
         connMap = tag.getShort("connMap")&0xFFFF;
+        schedTime = tag.getLong("schedTime");
     }
     
     @Override
@@ -132,6 +136,31 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         packet.writeByte(orientation);
         packet.writeByte(subID);
         packet.writeByte(shape);
+    }
+    
+    @Override
+    public void scheduleTick(int ticks) {
+        if(schedTime < 0) {
+            schedTime = TickScheduler.getSchedulerTime(world())+ticks;
+        }
+    }
+    
+    private void processScheduled() {
+        if(schedTime >= 0 && TickScheduler.getSchedulerTime(world()) >= schedTime) {
+            schedTime = -1;
+            scheduledTick();
+        }
+    }
+    
+    public void onChange() {
+        processScheduled();
+        getLogic().onChange(this);
+    }
+    
+    @Override
+    public void update() {
+        if(!world().isRemote)
+            processScheduled();
     }
     
     @Override
@@ -411,10 +440,6 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         for(int r = 0; r < 4; r++)
             if((mask & 1<<r) != 0)
                 notifyStraightChange(r);
-    }
-    
-    public void onChange() {
-        getLogic().onChange(this);
     }
     
     public void scheduledTick() {
