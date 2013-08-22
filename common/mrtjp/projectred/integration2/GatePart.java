@@ -492,7 +492,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         return (r+rotation()+2)%4;
     }
     
-    public int shiftMask(int mask, int r) {
+    public static int shiftMask(int mask, int r) {
         return (mask<<r | mask>>(4-r)) & 0xF;
     }
     

@@ -3,7 +3,6 @@ package mrtjp.projectred.integration2;
 import net.minecraft.nbt.NBTTagCompound;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.multipart.TickScheduler;
 
 public class SimpleGatePart extends RedstoneGatePart
 {
