@@ -10,6 +10,13 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         new OR(),
         new NOR(),
         new NOT(),
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        new Pulse()
     };
 
     public static int countBits(int n) {
@@ -120,6 +127,34 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         public int getOutput(int input) {
             return input == 0 ? 0xB : 0;
         }
+    }
+    
+    public static class Pulse extends SimpleGateLogic
+    {
+        @Override
+        public int getOutput(int input) {//after 2 ticks, output is always returned to 0
+            return 0;
+        }
         
+        @Override
+        public int inputMask(int shape) {
+            return 4;
+        }
+        
+        @Override
+        public void onChange(SimpleGatePart gate) {
+            int oldInput = gate.state&0xF;
+            int newInput = getInput(gate, 4);
+            if(oldInput != newInput) {
+                gate.setState(gate.state & 0xF0 | newInput);
+                gate.onInputChange();
+                
+                if(newInput != 0 && (gate.state & 0xF0) == 0) {//input was set high, output is low, set output high, wait 2 ticks
+                    gate.setState(gate.state & 0xF | 0x10);
+                    gate.scheduleTick(2);
+                    gate.onOutputChange(1);
+                }
+            }
+        }
     }
 }

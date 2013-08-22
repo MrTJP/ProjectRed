@@ -44,6 +44,9 @@ public class GateItemRenderer implements IItemRenderer
     }
 
     public void renderGateInv(int meta, float x, float y, float z, float scale) {
+        if(!EnumGate.VALID_GATES[meta].implemented())
+            return;
+        
         TextureUtils.bindAtlas(0);
         CCRenderState.reset();
         CCRenderState.useNormals(true);

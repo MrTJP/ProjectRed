@@ -44,6 +44,8 @@ public class ItemPartGate extends JItemMultiPart {
             return null;
         
         EnumGate type = EnumGate.VALID_GATES[item.getItemDamage()];
+        if(!type.implemented())
+            return null;
         GatePart gate = (GatePart) MultiPartRegistry.createPart(type.gateType, false);
         if(gate != null)
             gate.onPlaced(player, side, item.getItemDamage());
