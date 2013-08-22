@@ -30,7 +30,7 @@ public abstract class RedstoneGateLogic<PartType extends RedstoneGatePart> exten
     
     public int getInput(PartType gate, int inputMask) {
         int input = 0;
-        for(int r = 1; r < 4; r++)
+        for(int r = 0; r < 4; r++)
             if((inputMask & 1<<r) != 0 && gate.getRedwireInput(r) > 0)
                 input |= 1<<r;
         
