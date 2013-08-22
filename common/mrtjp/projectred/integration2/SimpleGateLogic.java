@@ -33,7 +33,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     public int cycleShape(int shape) {
         do 
             shape = advanceDead[shape];
-        while(countBits(shape) > deadSides());
+        while(countBits(shape) >= deadSides() && 32-Integer.numberOfLeadingZeros(shape) <= deadSides());
         return shape;
     }
     
@@ -96,7 +96,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         
         @Override
         public int deadSides() {
-            return 2;
+            return 3;
         }
         
         @Override
