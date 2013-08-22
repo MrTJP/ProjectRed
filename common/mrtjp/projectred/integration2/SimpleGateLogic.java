@@ -1,6 +1,8 @@
 
 package mrtjp.projectred.integration2;
 
+import java.util.Random;
+
 public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
 {
     public static int[] advanceDead = new int[]{
@@ -16,7 +18,9 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         null,
         null,
         null,
-        new Pulse()
+        new Pulse(),
+        null,
+        new Randomizer()
     };
 
     public static int countBits(int n) {
@@ -33,7 +37,8 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     public int cycleShape(int shape) {
         do 
             shape = advanceDead[shape];
-        while(countBits(shape) >= deadSides() && 32-Integer.numberOfLeadingZeros(shape) <= deadSides());
+        while(countBits(shape) > maxDeadSides() && 
+                32-Integer.numberOfLeadingZeros(shape) <= maxDeadSides());
         return shape;
     }
     
@@ -41,18 +46,23 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         return 0;
     }
     
+    public int maxDeadSides() {
+        return deadSides()-1;
+    }
+    
     public int getDelay(int shape) {
         return 2;
     }
     
-    public int feedbackMask() {
+    public int feedbackMask(int shape) {
         return 0;
     }
     
     @Override
     public void onChange(SimpleGatePart gate) {
         int inputMask = inputMask(gate.shape());
-        int feedbackMask = feedbackMask();
+        int outputMask = outputMask(gate.shape());
+        int feedbackMask = feedbackMask(gate.shape());
         int oldInput = gate.state&0xF;
         int newInput = getInput(gate, inputMask|feedbackMask);
         if(oldInput != newInput) {
@@ -60,8 +70,9 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
             gate.onInputChange();
         }
         
-        if(getOutput(newInput&inputMask) != gate.state>>4)
-            gate.scheduleTick(getDelay(gate.shape()));
+        int newOutput = getOutput(gate.state&inputMask) & outputMask;
+        if(newOutput != gate.state>>4)
+            gate.scheduleTick(getDelay(gate.shape()));//we need to update our output state some ticks from now
     }
     
     @Override
@@ -69,7 +80,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         int inputMask = inputMask(gate.shape());
         int outputMask = outputMask(gate.shape());
         int oldOutput = gate.state>>4;
-        int newOutput = getOutput(gate.state&inputMask);
+        int newOutput = getOutput(gate.state&inputMask) & outputMask;
         if(oldOutput != newOutput) {
             gate.setState(gate.state & 0xF | newOutput<<4);
             gate.onOutputChange(outputMask);
@@ -80,7 +91,8 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     @Override
     public void setup(SimpleGatePart gate) {
         int inputMask = inputMask(gate.shape());
-        int output = getOutput(getInput(gate, inputMask));
+        int outputMask = outputMask(gate.shape());
+        int output = getOutput(getInput(gate, inputMask)) & outputMask;
         if(output != 0) {
             gate.setState(output << 4);
             gate.onOutputChange(output);//can use output for output mask because nothing is going low
@@ -108,8 +120,8 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     public static class NOR extends SimpleGateLogic
     {
         @Override
-        public int feedbackMask() {
-            return 0xB;
+        public int feedbackMask(int shape) {
+            return 1;
         }
 
         @Override
@@ -131,18 +143,27 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     public static class NOT extends SimpleGateLogic
     {
         @Override
-        public int feedbackMask() {
-            return 0xB;
+        public int feedbackMask(int shape) {
+            return outputMask(shape);
         }
         
         @Override
         public int outputMask(int shape) {
-            return 0xB;
+            int m = 0;
+            m |= (shape & 1)<<1;//first dead side is right
+            m |= (shape & 2)>>1;//second dead side is back
+            m |= (shape & 4)<<1;//third dead side is left
+            return ~m & 0xB;
         }
         
         @Override
         public int inputMask(int shape) {
             return 4;
+        }
+        
+        @Override
+        public int deadSides() {
+            return 3;
         }
         
         @Override
@@ -177,6 +198,51 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
                     gate.onOutputChange(1);
                 }
             }
+        }
+    }
+    
+    public static class Randomizer extends SimpleGateLogic
+    {
+        public Random rand = new Random();
+        
+        @Override
+        public int getOutput(int input) {
+            return input == 0 ? 0 : GatePart.shiftMask(rand.nextInt(8), 3);
+        }
+        
+        @Override
+        public int outputMask(int shape) {
+            return 0xB;
+        }
+        
+        @Override
+        public int feedbackMask(int shape) {
+            return 0xB;
+        }
+        
+        @Override
+        public int inputMask(int shape) {
+            return 4;
+        }
+        
+        @Override
+        public void onChange(SimpleGatePart gate) {
+            int oldInput = gate.state&0xF;
+            int newInput = getInput(gate, 0xF);
+            
+            if(oldInput != newInput) {
+                gate.setState(gate.state & 0xF0 | newInput);
+                gate.onInputChange();
+            }
+            
+            if(newInput != 0)//only schedule a new tick when we are high, otherwise, leave our output state
+                gate.scheduleTick(2);
+        }
+        
+        @Override
+        public void scheduledTick(SimpleGatePart gate) {
+            if((gate.state & 4) != 0)
+                super.scheduledTick(gate);
         }
     }
 }

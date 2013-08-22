@@ -1,8 +1,6 @@
 package mrtjp.projectred.integration2;
 
-import static mrtjp.projectred.integration2.ComponentStore.base;
-import static mrtjp.projectred.integration2.ComponentStore.baseIcon;
-import static mrtjp.projectred.integration2.ComponentStore.generateWireModels;
+import static mrtjp.projectred.integration2.ComponentStore.*;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -12,6 +10,7 @@ import java.util.Random;
 import mrtjp.projectred.integration2.ComponentStore.ComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.RedstoneTorchModel;
 import mrtjp.projectred.integration2.ComponentStore.SimpleComponentModel;
+import mrtjp.projectred.integration2.ComponentStore.TwoStateComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.WireComponentModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Transformation;
@@ -31,7 +30,9 @@ public class RenderGate
             null,
             null,
             null,
-            new Pulse()
+            new Pulse(),
+            null,
+            new Randomizer()
         };
     
     public static void renderStatic(GatePart gate) {
@@ -173,7 +174,7 @@ public class RenderGate
         
         @Override
         public void prepare(SimpleGatePart part) {
-            wires[0].on = (part.state&0x10) != 0;
+            wires[0].on = (part.state&0x11) != 0;
             wires[1].on = (part.state&2) != 0;
             wires[2].on = (part.state&4) != 0;
             wires[3].on = (part.state&8) != 0;
@@ -197,9 +198,12 @@ public class RenderGate
         @Override
         public void prepareInv() {
             wires[0].on = true;
+            wires[1].on = true;
             wires[2].on = true;
-            wires[3].on = true;
-            wires[1].on = false;
+            wires[3].on = false;
+            wires[3].disabled = false;
+            wires[0].disabled = false;
+            wires[2].disabled = false;
             torch.on = true;
         }
         
@@ -209,6 +213,9 @@ public class RenderGate
             wires[3].on = (part.state&0x22) != 0;
             wires[1].on = (part.state&4) != 0;
             wires[2].on = (part.state&0x88) != 0;
+            wires[3].disabled = (part.shape&1) != 0;
+            wires[0].disabled = (part.shape&2) != 0;
+            wires[2].disabled = (part.shape&4) != 0;
             torch.on = (part.state&0xF0) != 0;
         }
     }
@@ -245,6 +252,43 @@ public class RenderGate
             torches[0].on = wires[0].on;
             torches[1].on = wires[1].on;
             torches[2].on = (part.state&0x10) != 0;
+        }
+    }
+
+    public static class Randomizer extends GateRenderer<SimpleGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("RANDOM", 4);
+        TwoStateComponentModel[] chips = new TwoStateComponentModel[]{
+                new TwoStateComponentModel(taintedChipIcon, 8.5, 0, 5.5, taintedChip),
+                new TwoStateComponentModel(taintedChipIcon, 11.5, 0, 8.5, taintedChip),
+                new TwoStateComponentModel(taintedChipIcon, 5.5, 0, 8.5, taintedChip)
+            };
+        
+        public Randomizer() {
+            models.addAll(Arrays.asList(wires));
+            models.addAll(Arrays.asList(chips));
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = false;
+            wires[1].on = false;
+            wires[2].on = false;
+            wires[3].on = false;
+            chips[0].on = false;
+            chips[1].on = false;
+            chips[2].on = false;
+        }
+        
+        @Override
+        public void prepare(SimpleGatePart part) {
+            wires[1].on = (part.state&4) != 0;
+            wires[0].on = (part.state&0x11) != 0;
+            wires[3].on = (part.state&0x22) != 0;
+            wires[2].on = (part.state&0x88) != 0;
+            chips[0].on = (part.state&0x10) != 0;
+            chips[1].on = (part.state&0x20) != 0;
+            chips[2].on = (part.state&0x80) != 0;
         }
     }
 }

@@ -14,7 +14,9 @@ public enum EnumGate
     XNOR(null, "pr_sgate"),
     Buffer(null, "pr_sgate"),
     Multiplexer(null, "pr_sgate"),
-    Pulse("Pulse Former", "pr_sgate")
+    Pulse("Pulse Former", "pr_sgate"),
+    Repeater(null, "pr_sgate"),
+    Randomizer("Randomizer", "pr_sgate")
     ;
 
     public static EnumGate[] VALID_GATES = values();
