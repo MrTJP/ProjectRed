@@ -15,6 +15,7 @@ import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.MultiIconTransformation;
 import codechicken.lib.render.TextureUtils;
+import codechicken.lib.render.Vertex5;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
@@ -24,14 +25,12 @@ public class ComponentStore
     public static CCModel base;
     public static Icon baseIcon;
     public static Icon[] wireIcons = new Icon[3];
-    public static CCModel redstoneTorch;
     public static Icon[] redstoneTorchIcons = new Icon[2];
     
     static
     {
         base = loadModel("base");
         base.apply(new Translation(0.5, 0, 0.5));
-        redstoneTorch = loadModel("torch");
     }
 
     public static CCModel loadModel(String name) {
@@ -123,12 +122,26 @@ public class ComponentStore
         public IconTransformation[] icont = new IconTransformation[2];
         public boolean on;
         
-        public RedstoneTorchModel(double x, double y, double z) {
-            super(redstoneTorch, new Vector3(x, y, z));
+        public RedstoneTorchModel(double x, double z, int height) {
+            super(genModel(height), new Vector3(x, 0, z));
             icont[0] = new IconTransformation(redstoneTorchIcons[0]);
             icont[1] = new IconTransformation(redstoneTorchIcons[1]);
         }
         
+        public static CCModel genModel(int height) {
+            CCModel m = CCModel.quadModel(20);
+            m.verts[0] = new Vertex5(7/16D, 10/16D, 9/16D, 7/16D, 8/16D);
+            m.verts[1] = new Vertex5(9/16D, 10/16D, 9/16D, 9/16D, 8/16D);
+            m.verts[2] = new Vertex5(9/16D, 10/16D, 7/16D, 9/16D, 6/16D);
+            m.verts[3] = new Vertex5(7/16D, 10/16D, 7/16D, 7/16D, 6/16D);
+            m.generateBlock(4, 6/16D, (10-height)/16D, 7/16D, 10/16D, 11/16D, 9/16D, 0x33);
+            m.generateBlock(12, 7/16D, (10-height)/16D, 6/16D, 9/16D, 11/16D, 10/16D, 0xF);
+            m.apply(new Translation(-0.5, (height-10)/16D, -0.5));
+            m.computeNormals();
+            m.shrinkUVs(0.0005);
+            return m;
+        }
+
         @Override
         public IUVTransformation getIconT() {
             return icont[on ? 1 : 0];
@@ -141,8 +154,8 @@ public class ComponentStore
         wireIcons[0] = r.registerIcon(baseTex+"surface/bordermatte");
         wireIcons[1] = r.registerIcon(baseTex+"surface/wirematte-OFF");
         wireIcons[2] = r.registerIcon(baseTex+"surface/wirematte-ON");
-        redstoneTorchIcons[0] = r.registerIcon(baseTex+"redtorchoff");
-        redstoneTorchIcons[1] = r.registerIcon(baseTex+"redtorchon");
+        redstoneTorchIcons[0] = r.registerIcon("redstone_torch_off");
+        redstoneTorchIcons[1] = r.registerIcon("redstone_torch_on");
     }
     
     public static WireComponentModel[] generateWireModels(String name, int count) {
