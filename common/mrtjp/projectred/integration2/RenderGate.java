@@ -28,7 +28,6 @@ public class RenderGate
         };
     
     public static void renderStatic(GatePart gate) {
-        renderers[gate.subID&0xFF] = new OR();
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
         r.renderStatic(gate.rotationT().with(new Translation(gate.x(), gate.y(), gate.z())));
@@ -107,8 +106,8 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("OR", 4);
         RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
-                new RedstoneTorchModel(8, -4, 6),
-                new RedstoneTorchModel(8, -2, 8)
+                new RedstoneTorchModel(8, 9, 6),
+                new RedstoneTorchModel(8, 2.5, 8)
             };
         
         public OR() {
