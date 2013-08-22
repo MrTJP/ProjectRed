@@ -26,6 +26,7 @@ public class RenderGate
         };
     
     public static void renderStatic(GatePart gate) {
+        renderers[gate.subID&0xFF] = new OR();
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
         r.renderStatic(gate.rotationT().with(new Translation(gate.x(), gate.y(), gate.z())));
@@ -104,8 +105,8 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("OR", 4);
         RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
-                new RedstoneTorchModel(8.5, -4, 9.5),
-                new RedstoneTorchModel(8.5, -2, 4.5)
+                new RedstoneTorchModel(8, -4, 9),
+                new RedstoneTorchModel(8, -2, 2.5)
             };
         
         public OR() {
@@ -115,7 +116,7 @@ public class RenderGate
         
         @Override
         public void prepareInv() {
-            wires[0].on = false;
+            wires[0].on = true;
             wires[1].on = false;
             wires[2].on = false;
             wires[3].on = false;
@@ -128,7 +129,7 @@ public class RenderGate
         
         @Override
         public void prepare(SimpleGatePart part) {
-            wires[0].on = (part.state&1) != 0;
+            wires[0].on = (part.state&1) == 0;
             wires[1].on = (part.state&2) != 0;
             wires[2].on = (part.state&4) != 0;
             wires[3].on = (part.state&8) != 0;
@@ -136,7 +137,7 @@ public class RenderGate
             wires[2].disabled = (part.shape&2) != 0;
             wires[3].disabled = (part.shape&4) != 0;
             torches[0].on = (part.state&0xE) == 0;
-            torches[1].on = wires[0].on;
+            torches[1].on = !wires[0].on;
         }
     }
     
