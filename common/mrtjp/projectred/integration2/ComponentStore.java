@@ -121,9 +121,11 @@ public class ComponentStore
     {
         public IconTransformation[] icont = new IconTransformation[2];
         public boolean on;
+        public double lightY;
         
         public RedstoneTorchModel(double x, double z, int height) {
             super(genModel(height), new Vector3(x, 0, z));
+            lightY = (height-1)/16D;
             icont[0] = new IconTransformation(redstoneTorchIcons[0]);
             icont[1] = new IconTransformation(redstoneTorchIcons[1]);
         }
