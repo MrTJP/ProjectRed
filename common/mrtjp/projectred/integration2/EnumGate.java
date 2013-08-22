@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 public enum EnumGate
 {
     OR("OR Gate", "pr_sgate"),
-    NOR(null, "pr_sgate"),
+    NOR("NOR Gate", "pr_sgate"),
     NOT("NOT Gate", "pr_sgate"),
     AND(null, "pr_sgate"),
     NAND(null, "pr_sgate"),
