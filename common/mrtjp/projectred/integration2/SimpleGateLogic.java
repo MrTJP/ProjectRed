@@ -107,15 +107,30 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     
     public static class NOR extends SimpleGateLogic
     {
-        // unfinished
+        @Override
+        public int feedbackMask() {
+            return 0xB;
+        }
+
+        @Override
+        public int inputMask(int shape) {
+            return ~shape<<1 & 0xE;
+        }
+        
+        @Override
+        public int deadSides() {
+            return 3;
+        }
+        
         @Override
         public int getOutput(int input) {
-            return 0;
+            return input == 0 ? 1 : 0;
         }
     }
     
     public static class NOT extends SimpleGateLogic
     {
+        @Override
         public int feedbackMask() {
             return 0xB;
         }

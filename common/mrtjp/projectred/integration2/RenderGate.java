@@ -151,7 +151,37 @@ public class RenderGate
     
     public static class NOR extends GateRenderer<SimpleGatePart>
     {
+        WireComponentModel[] wires = generateWireModels("OR", 4);
+        RedstoneTorchModel torch = new RedstoneTorchModel(8, 9, 6);
         
+        public NOR() {
+            models.addAll(Arrays.asList(wires));
+            models.add(torch);
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = true;
+            wires[1].on = false;
+            wires[2].on = false;
+            wires[3].on = false;
+            wires[1].disabled = false;
+            wires[2].disabled = false;
+            wires[3].disabled = false;
+            torch.on = true;
+        }
+        
+        @Override
+        public void prepare(SimpleGatePart part) {
+            wires[0].on = (part.state&0x10) != 0;
+            wires[1].on = (part.state&2) != 0;
+            wires[2].on = (part.state&4) != 0;
+            wires[3].on = (part.state&8) != 0;
+            wires[1].disabled = (part.shape&1) != 0;
+            wires[2].disabled = (part.shape&2) != 0;
+            wires[3].disabled = (part.shape&4) != 0;
+            torch.on = (part.state&0xE) == 0;
+        }
     }
     
     public static class NOT extends GateRenderer<SimpleGatePart>
