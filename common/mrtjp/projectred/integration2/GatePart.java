@@ -510,6 +510,10 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         return (mask<<r | mask>>(4-r)) & 0xF;
     }
     
+    public static int flipMaskZ(int mask) {
+        return mask & 5 | mask<<2 & 8 | mask>>2 & 2;
+    }
+    
     public int toAbsoluteMask(int mask) {
         return shiftMask(mask, toAbsolute(0));
     }
