@@ -250,17 +250,25 @@ public class RenderGate
             wires[1].disabled = false;
             wires[2].disabled = false;
             wires[3].disabled = false;
+            torches[0].on = true;
+            torches[1].on = true;
+            torches[2].on = true;
+            torches[3].on = false;
         }
         
         @Override
         public void prepare(SimpleGatePart part) {
-            wires[0].on = (part.state&0x11) != 0;
+            wires[0].on = (part.state&0x11) == 0;
             wires[3].on = (part.state&2) != 0;
             wires[1].on = (part.state&4) != 0;
             wires[2].on = (part.state&8) != 0;
             wires[3].disabled = (part.shape&1) != 0;
             wires[1].disabled = (part.shape&2) != 0;
             wires[2].disabled = (part.shape&4) != 0;
+            torches[2].on = !wires[1].on && !wires[1].disabled;
+            torches[0].on = !wires[2].on && !wires[2].disabled;;
+            torches[1].on = !wires[3].on && !wires[3].disabled;;
+            torches[3].on = !wires[0].on;;
         }
 
     }
