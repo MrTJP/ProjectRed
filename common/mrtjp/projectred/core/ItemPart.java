@@ -104,9 +104,9 @@ public class ItemPart extends Item {
         WOVENCLOTH("Woven Cloth", "partcloth"),
         SAIL("Sail", "partsail"),
         
-        RUBY("Ruby", "gemruby"),
-        SAPPHIRE("Sapphire", "gemsapphire"),
-        PERIDOT("Peridot", "gemperidot"),
+        RUBY("Ruby", "gemRuby"),
+        SAPPHIRE("Sapphire", "gemSapphire"),
+        PERIDOT("Peridot", "gemOlivine"),
         ;
         public String fullName;
         public String unlocalName;
