@@ -29,7 +29,7 @@ public class RenderGate
                 new NOR(),
                 new NOT(),
                 new AND(),
-                null,
+                new NAND(),
                 null,
                 null,
                 null,
@@ -272,6 +272,51 @@ public class RenderGate
         }
 
     }
+    
+    public static class NAND extends GateRenderer<SimpleGatePart>
+    {   
+        WireComponentModel[] wires = generateWireModels("AND", 4);
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(4, 8, 6),
+                new RedstoneTorchModel(12, 8, 6),
+                new RedstoneTorchModel(8, 8, 6)
+        };
+        
+        public NAND() {
+            models.addAll(Arrays.asList(wires));
+            models.addAll(Arrays.asList(torches));
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = true;
+            wires[1].on = false;
+            wires[2].on = false;
+            wires[3].on = false;
+            wires[1].disabled = false;
+            wires[2].disabled = false;
+            wires[3].disabled = false;
+            torches[0].on = true;
+            torches[1].on = true;
+            torches[2].on = true;
+        }
+        
+        @Override
+        public void prepare(SimpleGatePart part) {
+            wires[0].on = (part.state&0x11) != 0;
+            wires[3].on = (part.state&2) != 0;
+            wires[1].on = (part.state&4) != 0;
+            wires[2].on = (part.state&8) != 0;
+            wires[3].disabled = (part.shape&1) != 0;
+            wires[1].disabled = (part.shape&2) != 0;
+            wires[2].disabled = (part.shape&4) != 0;
+            torches[0].on = !wires[2].on && !wires[2].disabled;;
+            torches[1].on = !wires[3].on && !wires[3].disabled;;
+            torches[2].on = !wires[1].on && !wires[1].disabled;
+        }
+        
+    }
+    
     public static class Pulse extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("PULSE", 3);

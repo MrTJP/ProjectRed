@@ -20,7 +20,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
                 new NOR(),
                 new NOT(),
                 new AND(),
-                null,
+                new NAND(),
                 null,
                 null,
                 null,
@@ -196,6 +196,24 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         @Override
         public int calcOutput(SimpleGatePart gate, int input) {
             return input == inputMask(gate.shape()) ? 1 : 0;
+        }
+    }
+    
+    public static class NAND extends SimpleGateLogic
+    {
+        @Override
+        public int inputMask(int shape) {
+            return ~shape<<1 & 0xE;
+        }
+        
+        @Override
+        public int deadSides() {
+            return 3;
+        }
+        
+        @Override
+        public int calcOutput(SimpleGatePart gate, int input) {
+            return input == inputMask(gate.shape()) ? 0 : 1;
         }
     }
     
