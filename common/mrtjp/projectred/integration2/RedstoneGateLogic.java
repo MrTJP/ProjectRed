@@ -37,5 +37,11 @@ public abstract class RedstoneGateLogic<PartType extends RedstoneGatePart> exten
         return input;
     }
     
-    public abstract int getOutput(int input);
+    public int calcOutput(PartType gate, int input) {
+        return calcOutput(input);
+    }
+    
+    public int calcOutput(int input) {
+        return 0;
+    }
 }

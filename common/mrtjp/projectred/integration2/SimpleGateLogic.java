@@ -38,7 +38,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         return c;
     }
     
-    public boolean getOutput(SimpleGatePart gate, int r) {
+    public final boolean getOutput(SimpleGatePart gate, int r) {
         return (gate.state & 0x10<<r) != 0;
     }
     
@@ -78,7 +78,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
             gate.onInputChange();
         }
         
-        int newOutput = getOutput(gate.state&inputMask) & outputMask;
+        int newOutput = calcOutput(gate, gate.state&inputMask) & outputMask;
         if(newOutput != gate.state>>4)
             gate.scheduleTick(getDelay(gate.shape()));//we need to update our output state some ticks from now
     }
@@ -88,7 +88,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         int inputMask = inputMask(gate.shape());
         int outputMask = outputMask(gate.shape());
         int oldOutput = gate.state>>4;
-        int newOutput = getOutput(gate.state&inputMask) & outputMask;
+        int newOutput = calcOutput(gate, gate.state&inputMask) & outputMask;
         if(oldOutput != newOutput) {
             gate.setState(gate.state & 0xF | newOutput<<4);
             gate.onOutputChange(outputMask);
@@ -101,7 +101,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         instances = getInstances();
         int inputMask = inputMask(gate.shape());
         int outputMask = outputMask(gate.shape());
-        int output = getOutput(getInput(gate, inputMask)) & outputMask;
+        int output = calcOutput(gate, getInput(gate, inputMask)) & outputMask;
         if(output != 0) {
             gate.setState(output << 4);
             gate.onOutputChange(output);//can use output for output mask because nothing is going low
@@ -121,7 +121,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         }
         
         @Override
-        public int getOutput(int input) {
+        public int calcOutput(int input) {
             return input != 0 ? 1 : 0;
         }
     }
@@ -144,7 +144,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         }
         
         @Override
-        public int getOutput(int input) {
+        public int calcOutput(int input) {
             return input == 0 ? 1 : 0;
         }
     }
@@ -176,7 +176,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         }
         
         @Override
-        public int getOutput(int input) {
+        public int calcOutput(int input) {
             return input == 0 ? 0xB : 0;
         }
     }
@@ -192,18 +192,17 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         public int deadSides() {
             return 3;
         }
-
-        @Override
-        public int getOutput(int input) {
-            return 0;
-        }
         
+        @Override
+        public int calcOutput(SimpleGatePart gate, int input) {
+            return input == inputMask(gate.shape()) ? 1 : 0;
+        }
     }
     
     public static class Pulse extends SimpleGateLogic
     {
         @Override
-        public int getOutput(int input) {//after 2 ticks, output is always returned to 0
+        public int calcOutput(int input) {//after 2 ticks, output is always returned to 0
             return 0;
         }
         
@@ -234,7 +233,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         public int[] delays = new int[]{2, 4, 6, 8, 16, 32, 64, 128, 256};
         
         @Override
-        public int getOutput(int input) {
+        public int calcOutput(int input) {
             return input == 0 ? 0 : 1;
         }
         
@@ -275,7 +274,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         public Random rand = new Random();
         
         @Override
-        public int getOutput(int input) {
+        public int calcOutput(int input) {
             return input == 0 ? 0 : GatePart.shiftMask(rand.nextInt(8), 3);
         }
         
