@@ -10,6 +10,7 @@ import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
 import codechicken.lib.colour.Colour;
 import codechicken.lib.lighting.LightModel;
+import codechicken.lib.lighting.PlanarLightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
@@ -183,7 +184,7 @@ public class ComponentStore
         
         @Override
         public void renderModel(Transformation t) {
-            model.render(t, getIconT(), LightModel.standardLightModel);
+            model.render(t, getIconT(), PlanarLightModel.standardLightModel);
         }
 
         public abstract IUVTransformation getIconT();
@@ -292,7 +293,7 @@ public class ComponentStore
         
         @Override
         public void renderModel(Transformation t) {
-            getModel().render(t, icont, LightModel.standardLightModel);
+            getModel().render(t, icont, PlanarLightModel.standardLightModel);
         }
     }
     
