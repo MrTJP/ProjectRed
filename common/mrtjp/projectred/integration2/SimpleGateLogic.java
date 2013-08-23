@@ -12,24 +12,23 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     public static int[] advanceDead = new int[]{
         1, 2, 4, 0, 5, 6, 3};
     
-    public static SimpleGateLogic[] instances = getInstances();
-    
-    public static SimpleGateLogic[] getInstances() {
-        return new SimpleGateLogic[]{
-                new OR(),
-                new NOR(),
-                new NOT(),
-                new AND(),
-                new NAND(),
-                null,
-                null,
-                null,
-                null,
-                new Pulse(),
-                new Repeater(),
-                new Randomizer()
-            };
-    }
+    public static SimpleGateLogic[] instances = new SimpleGateLogic[]{
+            new OR(),
+            new NOR(),
+            new NOT(),
+            new AND(),
+            new NAND(),
+            null,
+            null,
+            null,
+            null,
+            new Pulse(),
+            new Repeater(),
+            new Randomizer(),
+            null,
+            null,
+            new TransparentLatch()
+        };
 
     public static int countBits(int n) {
         int c;
@@ -79,7 +78,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         }
         
         int newOutput = calcOutput(gate, gate.state&inputMask) & outputMask;
-        if(newOutput != gate.state>>4)
+        if(newOutput != gate.state()>>4)
             gate.scheduleTick(getDelay(gate.shape()));//we need to update our output state some ticks from now
     }
     
@@ -87,7 +86,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     public void scheduledTick(SimpleGatePart gate) {
         int inputMask = inputMask(gate.shape());
         int outputMask = outputMask(gate.shape());
-        int oldOutput = gate.state>>4;
+        int oldOutput = gate.state()>>4;
         int newOutput = calcOutput(gate, gate.state&inputMask) & outputMask;
         if(oldOutput != newOutput) {
             gate.setState(gate.state & 0xF | newOutput<<4);
@@ -98,7 +97,6 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     
     @Override
     public void setup(SimpleGatePart gate) {
-        instances = getInstances();
         int inputMask = inputMask(gate.shape());
         int outputMask = outputMask(gate.shape());
         int output = calcOutput(gate, getInput(gate, inputMask)) & outputMask;
@@ -292,8 +290,10 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         public Random rand = new Random();
         
         @Override
-        public int calcOutput(int input) {
-            return input == 0 ? 0 : GatePart.shiftMask(rand.nextInt(8), 3);
+        public int calcOutput(SimpleGatePart gate, int input) {
+            return input == 0 ? 
+                    gate.state()>>4 : 
+                    GatePart.shiftMask(rand.nextInt(8), 3);
         }
         
         @Override
@@ -313,22 +313,35 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         
         @Override
         public void onChange(SimpleGatePart gate) {
-            int oldInput = gate.state&0xF;
-            int newInput = getInput(gate, 0xF);
-            
-            if(oldInput != newInput) {
-                gate.setState(gate.state & 0xF0 | newInput);
-                gate.onInputChange();
-            }
-            
-            if(newInput != 0)//only schedule a new tick when we are high, otherwise, leave our output state
-                gate.scheduleTick(4 + rand.nextInt(6));
+            super.onChange(gate);
+            if((gate.state()&4) != 0)
+                gate.scheduleTick(2);
+        }
+    }
+    
+    public static class TransparentLatch extends SimpleGateLogic
+    {
+        @Override
+        public int cycleShape(int shape) {
+            return (shape+1)%2;
         }
         
         @Override
-        public void scheduledTick(SimpleGatePart gate) {
-            if((gate.state & 4) != 0)
-                super.scheduledTick(gate);
+        public int inputMask(int shape) {
+            return shape == 0 ? 0xC : 6;
+        }
+        
+        @Override
+        public int outputMask(int shape) {
+            return shape == 0 ? 3 : 9;
+        }
+        
+        @Override
+        public int calcOutput(SimpleGatePart gate, int input) {
+            if((input&4) == 0)
+                return gate.state()>>4;
+            
+            return (input & 0xA) == 0 ? 0 : 0xF;
         }
     }
 }

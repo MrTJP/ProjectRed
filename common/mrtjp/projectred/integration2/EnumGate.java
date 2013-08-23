@@ -16,7 +16,10 @@ public enum EnumGate
     Multiplexer(null, "pr_sgate"),
     Pulse("Pulse Former", "pr_sgate"),
     Repeater("Repeater", "pr_sgate"),
-    Randomizer("Randomizer", "pr_sgate")
+    Randomizer("Randomizer", "pr_sgate"),
+    RSLatch(null, "pr_sgate"),
+    ToggleLatch(null, "pr_sgate"),
+    TransparentLatch("Transparent Latch", "pr_sgate")
     ;
 
     public static EnumGate[] VALID_GATES = values();
