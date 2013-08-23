@@ -16,6 +16,7 @@ import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.MultiIconTransformation;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.render.Vertex5;
+import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
@@ -26,15 +27,13 @@ public class ComponentStore
     public static Icon baseIcon;
     public static Icon[] wireIcons = new Icon[3];
     public static Icon[] redstoneTorchIcons = new Icon[2];
-    public static CCModel[] taintedChip;
-    public static Icon taintedChipIcon;
+    public static CCModel taintedChip;
+    public static Icon[] taintedChipIcons = new Icon[2];
     
     static
     {
         base = loadBase();
-        taintedChip = loadModelSet("chip", 
-                new String[]{"base", "diodeoff"}, 
-                new String[]{"base", "diodeon"});
+        taintedChip = loadModel("chip");
     }
     
     public static Map<String, CCModel> loadModels(String name) {
@@ -70,7 +69,7 @@ public class ComponentStore
         m.apply(new Translation(0.5, 0, 0.5));
         return m;
     }
-
+    
     public static void registerIcons(IconRegister r) {
         String baseTex = "projectred:gates/";
         baseIcon = r.registerIcon(baseTex+"base");
@@ -79,7 +78,8 @@ public class ComponentStore
         wireIcons[2] = r.registerIcon(baseTex+"surface/wirematte-ON");
         redstoneTorchIcons[0] = r.registerIcon("redstone_torch_off");
         redstoneTorchIcons[1] = r.registerIcon("redstone_torch_on");
-        taintedChipIcon = r.registerIcon(baseTex+"yellowchip");
+        taintedChipIcons[0] = r.registerIcon(baseTex+"yellowchipoff");
+        taintedChipIcons[1] = r.registerIcon(baseTex+"yellowchipon");
     }
 
     public static WireComponentModel[] generateWireModels(String name, int count) {
@@ -247,6 +247,7 @@ public class ComponentStore
             m.apply(new Translation(-0.5, (height-10)/16D, -0.5));
             m.computeNormals();
             m.shrinkUVs(0.0005);
+            m.apply(new Scale(1.0005)); // Eliminates z-fighting when torch is on wire.
             return m;
         }
 
@@ -256,6 +257,23 @@ public class ComponentStore
         }
     }
     
+    public static class ChipModel extends SingleComponentModel {
+        public IconTransformation[] icont = new IconTransformation[2];
+        public boolean on;
+
+        public ChipModel(double x, double z) {
+            super(taintedChip, new Vector3(x, 0, z));
+            icont[0] = new IconTransformation(taintedChipIcons[0]);
+            icont[1] = new IconTransformation(taintedChipIcons[1]);
+        }
+
+        @Override
+        public IUVTransformation getIconT() {
+            return icont[on ? 1 : 0];
+        }
+        
+    }
+
     public static class MultiStateComponentModel extends ComponentModel
     {
         public CCModel[] models;

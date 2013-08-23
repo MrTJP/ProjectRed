@@ -22,12 +22,7 @@ public class ItemScrewdriver extends Item {
 
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float par8, float par9, float par10) {
-        ItemStack held = player.getHeldItem();
-        if (held.itemID == ProjectRedIntegration.itemScrewdriver.itemID) {
-            held.damageItem(1, player);
-        }
         return true;
-
     }
 
     @Override

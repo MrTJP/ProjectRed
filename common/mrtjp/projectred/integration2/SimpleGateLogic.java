@@ -3,6 +3,7 @@ package mrtjp.projectred.integration2;
 
 import java.util.Random;
 
+import mrtjp.projectred.ProjectRedIntegration;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -11,20 +12,24 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     public static int[] advanceDead = new int[]{
         1, 2, 4, 0, 5, 6, 3};
     
-    public static SimpleGateLogic[] instances = new SimpleGateLogic[]{
-        new OR(),
-        new NOR(),
-        new NOT(),
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        new Pulse(),
-        new Repeater(),
-        new Randomizer()
-    };
+    public static SimpleGateLogic[] instances = getInstances();
+    
+    public static SimpleGateLogic[] getInstances() {
+        return new SimpleGateLogic[]{
+                new OR(),
+                new NOR(),
+                new NOT(),
+                new AND(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                new Pulse(),
+                new Repeater(),
+                new Randomizer()
+            };
+    }
 
     public static int countBits(int n) {
         int c;
@@ -93,6 +98,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     
     @Override
     public void setup(SimpleGatePart gate) {
+        instances = getInstances();
         int inputMask = inputMask(gate.shape());
         int outputMask = outputMask(gate.shape());
         int output = getOutput(getInput(gate, inputMask)) & outputMask;
@@ -175,6 +181,25 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         }
     }
     
+    public static class AND extends SimpleGateLogic
+    {
+        @Override
+        public int inputMask(int shape) {
+            return ~shape<<1 & 0xE;
+        }
+        
+        @Override
+        public int deadSides() {
+            return 3;
+        }
+
+        @Override
+        public int getOutput(int input) {
+            return 0;
+        }
+        
+    }
+    
     public static class Pulse extends SimpleGateLogic
     {
         @Override
@@ -236,13 +261,11 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         
         @Override
         public boolean activate(SimpleGatePart part, EntityPlayer player, ItemStack held) {
-            if(held == null) {
+            if(held == null || held.getItem() != ProjectRedIntegration.itemScrewdriver) {
                 if(!part.world().isRemote)
                     part.configure();
-                
                 return true;
             }
-            
             return false;
         }
     }
@@ -282,7 +305,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
             }
             
             if(newInput != 0)//only schedule a new tick when we are high, otherwise, leave our output state
-                gate.scheduleTick(2);
+                gate.scheduleTick(4 + rand.nextInt(6));
         }
         
         @Override

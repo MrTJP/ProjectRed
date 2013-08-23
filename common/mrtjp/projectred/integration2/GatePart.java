@@ -232,16 +232,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         TileMultipart.dropItem(getItem(), world(), Vector3.fromTileEntityCenter(getTile()));
         tile().remPart(this);
     }
-    
-    public ItemStack getItem() {
-        return getGateType().getItemStack();
-    }
-    
-    @Override
-    public ItemStack pickItem(MovingObjectPosition hit) {
-        return getItem();
-    }
-    
+        
     public EnumGate getGateType() {
         return EnumGate.VALID_GATES[subID&0xFF];
     }
@@ -386,6 +377,25 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     }
     
     @Override
+    public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
+        return hit.sideHit == 1 ? 1.75f : 1.5f;
+    }
+
+    public ItemStack getItem() {
+        return getGateType().getItemStack();
+    }
+    
+    @Override
+    public ItemStack pickItem(MovingObjectPosition hit) {
+        return getItem();
+    }
+
+    @Override
+    public Iterable<ItemStack> getDrops() {
+        return Arrays.asList(getItem());
+    }
+
+    @Override
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
         if(getLogic().activate(this, player, held))
             return true;
@@ -396,6 +406,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
                     configure();
                 else
                     rotate();
+                held.damageItem(1, player);
             }
             
             return true;
