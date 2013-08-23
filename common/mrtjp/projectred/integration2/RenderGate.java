@@ -20,22 +20,28 @@ import codechicken.lib.vec.Vector3;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class RenderGate
 {
-    public static GateRenderer[] renderers = new GateRenderer[]{
-            new OR(),
-            new NOR(),
-            new NOT(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            new Pulse(),
-            new Repeater(),
-            new Randomizer()
-        };
+    
+    public static GateRenderer[] renderers = getRenderers();
+    
+    public static GateRenderer[] getRenderers() {
+        return new GateRenderer[]{
+                new OR(),
+                new NOR(),
+                new NOT(),
+                new AND(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                new Pulse(),
+                new Repeater(),
+                new Randomizer()
+            };
+    }
     
     public static void renderStatic(GatePart gate) {
+        renderers = getRenderers();
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
         r.renderStatic(gate.rotationT().with(new Translation(gate.x(), gate.y(), gate.z())));
@@ -220,13 +226,51 @@ public class RenderGate
         }
     }
 
+    public static class AND extends GateRenderer<SimpleGatePart>
+    {   
+        WireComponentModel[] wires = generateWireModels("AND", 4);
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(4, 8, 6),
+                new RedstoneTorchModel(12, 8, 6),
+                new RedstoneTorchModel(8, 8, 6),
+                new RedstoneTorchModel(8, 2, 8)
+            };
+
+        public AND() {
+            models.addAll(Arrays.asList(wires));
+            models.addAll(Arrays.asList(torches));
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = true;
+            wires[1].on = false;
+            wires[2].on = false;
+            wires[3].on = false;
+            wires[1].disabled = false;
+            wires[2].disabled = false;
+            wires[3].disabled = false;
+        }
+        
+        @Override
+        public void prepare(SimpleGatePart part) {
+            wires[0].on = (part.state&0x11) != 0;
+            wires[3].on = (part.state&2) != 0;
+            wires[1].on = (part.state&4) != 0;
+            wires[2].on = (part.state&8) != 0;
+            wires[3].disabled = (part.shape&1) != 0;
+            wires[1].disabled = (part.shape&2) != 0;
+            wires[2].disabled = (part.shape&4) != 0;
+        }
+
+    }
     public static class Pulse extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("PULSE", 3);
         RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
-                new RedstoneTorchModel(4.5, 8.5, 6),
-                new RedstoneTorchModel(12.5, 8.5, 6),
-                new RedstoneTorchModel(8.5, 3, 8)
+                new RedstoneTorchModel(4, 9.5, 6),
+                new RedstoneTorchModel(11, 9.5, 6),
+                new RedstoneTorchModel(8, 3.5, 8)
             };
         
         public Pulse() {
@@ -259,7 +303,7 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("REPEATER", 2);
         RedstoneTorchModel endtorch = new RedstoneTorchModel(8, 2, 6);
-        RedstoneTorchModel vartorch = new RedstoneTorchModel(12, 14, 6);
+        RedstoneTorchModel vartorch = new RedstoneTorchModel(12.5, 14, 6);
         
         public Repeater() {
             models.addAll(Arrays.asList(wires));
@@ -274,7 +318,7 @@ public class RenderGate
             endtorch.on = true;
             vartorch.on = false;
             
-            vartorch.relPos = new Translation(12/16D, 0, 12/16D);
+            vartorch.relPos = new Translation(12.5/16D, 0, 12/16D);
         }
         
         @Override
@@ -284,17 +328,17 @@ public class RenderGate
             endtorch.on = (part.state&0x10) != 0;
             vartorch.on = (part.state&4) == 0;
             
-            vartorch.relPos = new Translation(12/16D, 0, (12-part.shape())/16D);
+            vartorch.relPos = new Translation(12.5/16D, 0, (12-part.shape())/16D);
         }
     }
 
     public static class Randomizer extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("RANDOM", 4);
-        TwoStateComponentModel[] chips = new TwoStateComponentModel[]{
-                new TwoStateComponentModel(taintedChipIcon, 8.5, 0, 5.5, taintedChip),
-                new TwoStateComponentModel(taintedChipIcon, 11.5, 0, 8.5, taintedChip),
-                new TwoStateComponentModel(taintedChipIcon, 5.5, 0, 8.5, taintedChip)
+        ChipModel[] chips = new ChipModel[] {
+                new ChipModel(8, 5.5),
+                new ChipModel(11.5, 12),
+                new ChipModel(4.5, 12),                
             };
         
         public Randomizer() {

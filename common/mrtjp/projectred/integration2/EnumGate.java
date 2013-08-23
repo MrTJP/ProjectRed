@@ -8,7 +8,7 @@ public enum EnumGate
     OR("OR Gate", "pr_sgate"),
     NOR("NOR Gate", "pr_sgate"),
     NOT("NOT Gate", "pr_sgate"),
-    AND(null, "pr_sgate"),
+    AND("AND Gate", "pr_sgate"),
     NAND(null, "pr_sgate"),
     XOR(null, "pr_sgate"),
     XNOR(null, "pr_sgate"),
@@ -35,6 +35,6 @@ public enum EnumGate
     }
     
     public ItemStack getItemStack() {
-        return new ItemStack(ProjectRedIntegration.itemPartGate, 1, meta);
+        return new ItemStack(ProjectRedIntegration.itemPartGate2, 1, meta);
     }
 }
