@@ -10,7 +10,6 @@ import java.util.Random;
 import mrtjp.projectred.integration2.ComponentStore.ComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.RedstoneTorchModel;
 import mrtjp.projectred.integration2.ComponentStore.SimpleComponentModel;
-import mrtjp.projectred.integration2.ComponentStore.TwoStateComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.WireComponentModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Transformation;
@@ -21,27 +20,25 @@ import codechicken.lib.vec.Vector3;
 public class RenderGate
 {
     
-    public static GateRenderer[] renderers = getRenderers();
-    
-    public static GateRenderer[] getRenderers() {
-        return new GateRenderer[]{
-                new OR(),
-                new NOR(),
-                new NOT(),
-                new AND(),
-                new NAND(),
-                null,
-                null,
-                null,
-                null,
-                new Pulse(),
-                new Repeater(),
-                new Randomizer()
-            };
-    }
+    public static GateRenderer[] renderers = new GateRenderer[]{
+            new OR(),
+            new NOR(),
+            new NOT(),
+            new AND(),
+            new NAND(),
+            null,
+            null,
+            null,
+            null,
+            new Pulse(),
+            new Repeater(),
+            new Randomizer(),
+            null,
+            null,
+            new TransparentLatch()
+        };
     
     public static void renderStatic(GatePart gate) {
-        renderers = getRenderers();
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
         r.renderStatic(gate.rotationT().with(new Translation(gate.x(), gate.y(), gate.z())));
@@ -270,7 +267,6 @@ public class RenderGate
             torches[1].on = !wires[3].on && !wires[3].disabled;;
             torches[3].on = !wires[0].on;;
         }
-
     }
     
     public static class NAND extends GateRenderer<SimpleGatePart>
@@ -316,7 +312,7 @@ public class RenderGate
         }
         
     }
-    
+
     public static class Pulse extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("PULSE", 3);
@@ -419,6 +415,54 @@ public class RenderGate
             chips[0].on = (part.state&0x10) != 0;
             chips[1].on = (part.state&0x20) != 0;
             chips[2].on = (part.state&0x80) != 0;
+        }
+    }
+    
+    public static class TransparentLatch extends GateRenderer<SimpleGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("TRANSLATCH", 5);
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(4, 13, 6),
+                new RedstoneTorchModel(4, 7, 6),
+                new RedstoneTorchModel(7, 7, 6),
+                new RedstoneTorchModel(6, 3, 8),
+                new RedstoneTorchModel(12, 7, 8)
+            };
+        
+        public TransparentLatch() {
+            models.addAll(Arrays.asList(wires));
+            models.addAll(Arrays.asList(torches));
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = true;
+            wires[1].on = false;
+            wires[2].on = true;
+            wires[3].on = false;
+            wires[4].on = false;
+            torches[0].on = true;
+            torches[1].on = false;
+            torches[2].on = true;
+            torches[3].on = false;
+            torches[4].on = false;
+        }
+        
+        @Override
+        public void prepare(SimpleGatePart part) {
+            boolean on = (part.state&0x10) != 0;
+            
+            wires[0].on = !on;
+            wires[1].on = (part.state&4) != 0;
+            wires[2].on = (part.state&4) == 0;
+            wires[3].on = on;
+            wires[4].on = (part.state&0xA) != 0;
+            
+            torches[0].on = wires[2].on;
+            torches[1].on = !wires[2].on && !wires[4].on;
+            torches[2].on = !wires[1].on && !wires[3].on;
+            torches[3].on = on;
+            torches[4].on = on;
         }
     }
 }

@@ -9,13 +9,14 @@ import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
 import codechicken.lib.colour.Colour;
-import codechicken.lib.lighting.LightModel;
+import codechicken.lib.lighting.PlanarLightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.MultiIconTransformation;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.render.Vertex5;
+import codechicken.lib.vec.Rectangle4i;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
@@ -107,15 +108,40 @@ public class ComponentStore
                 wireCorners[y*32+x] = true;
             }
         
-        List<Vector3> wirePositions = new LinkedList<Vector3>();
+        List<Rectangle4i> wireRectangles = new LinkedList<Rectangle4i>();
         for(int i = 0; i < 1024; i++)
-            if(wireCorners[i])
-                wirePositions.add(new Vector3((i%32)/32D, 0, (i/32)/32D));
+            if(wireCorners[i]) {
+                Rectangle4i rect = new Rectangle4i(i%32, i/32, 0, 0);
+                int x = rect.x+2;
+                while(x < 30 && wireCorners[rect.y*32+x])
+                    x+=2;
+                rect.w = x-rect.x;
+                
+                int y = rect.y+2;
+                while(y < 30) {
+                    boolean advance = true;
+                    for(int dx = rect.x; dx < rect.x+rect.w && advance; dx+=2)
+                        if(!wireCorners[y*32+dx])
+                            advance = false;
+                    
+                    if(!advance)
+                        break;
+                    
+                    y+=2;
+                }
+                rect.h = y-rect.y;
+
+                for(int dy = rect.y; dy < rect.y+rect.h; dy+=2)
+                    for(int dx = rect.x; dx < rect.x+rect.w; dx+=2)
+                        wireCorners[dy*32+dx] = false;
+                
+                wireRectangles.add(rect);
+            }
         
-        CCModel model = CCModel.quadModel(wirePositions.size()*40);
+        CCModel model = CCModel.quadModel(wireRectangles.size()*40);
         int i = 0;
-        for(Vector3 pos : wirePositions) {
-            generateWireSegment(model, i, pos);
+        for(Rectangle4i rect : wireRectangles) {
+            generateWireSegment(model, i, rect);
             i+=40;
         }
         model.computeNormals();
@@ -123,15 +149,20 @@ public class ComponentStore
         return model;
     }
 
-    private static void generateWireSegment(CCModel model, int i, Vector3 pos) {
+    private static void generateWireSegment(CCModel model, int i, Rectangle4i rect) {
+        double x1 = rect.x/32D;
+        double x2 = (rect.x+rect.w)/32D;
+        double z1 = rect.y/32D;
+        double z2 = (rect.y+rect.h)/32D;
+        
         model.generateBlock(i, //border
-                pos.x-1/16D, 0.125, pos.z-1/16D, 
-                pos.x+2/16D, 0.135, pos.z+2/16D, 1);
+                x1-1/16D, 0.125, z1-1/16D, 
+                x2+1/16D, 0.135, z2+1/16D, 1);
         MultiIconTransformation.setIconIndex(model, i, i+20, 0);
         i+=20;
         model.generateBlock(i, //wire
-                pos.x, 0.125, pos.z, 
-                pos.x+1/16D, 0.145, pos.z+1/16D, 1);
+                x1, 0.125, z1, 
+                x2, 0.145, z2, 1);
         MultiIconTransformation.setIconIndex(model, i, i+20, 1);
     }
 
@@ -183,7 +214,7 @@ public class ComponentStore
         
         @Override
         public void renderModel(Transformation t) {
-            model.render(t, getIconT(), LightModel.standardLightModel);
+            model.render(t, getIconT(), PlanarLightModel.standardLightModel);
         }
 
         public abstract IUVTransformation getIconT();
@@ -292,7 +323,7 @@ public class ComponentStore
         
         @Override
         public void renderModel(Transformation t) {
-            getModel().render(t, icont, LightModel.standardLightModel);
+            getModel().render(t, icont, PlanarLightModel.standardLightModel);
         }
     }
     
