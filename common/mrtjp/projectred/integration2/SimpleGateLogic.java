@@ -18,13 +18,16 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
             new NOT(),
             new AND(),
             new NAND(),
-            null,
-            null,
-            null,
+            new XOR(),
+            new XNOR(),
+            new Buffer(),
             null,
             new Pulse(),
             new Repeater(),
             new Randomizer(),
+            null,            
+            null,
+            null,
             null,
             null,
             new TransparentLatch()
@@ -215,6 +218,74 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         }
     }
     
+    public static class XOR extends SimpleGateLogic 
+    {
+        @Override
+        public int inputMask(int shape) {
+            int m = 0;
+            m |= 1<<1; // Right
+            m |= 1<<3; // Left
+            return m;
+        }
+        
+        @Override
+        public int calcOutput(SimpleGatePart gate, int input) {
+            boolean side1 = (input & 1 << 1) != 0;
+            boolean side2 = (input & 1 << 3) != 0;
+            return side1 != side2 ? 1 : 0;
+        }
+    }
+    
+    public static class XNOR extends SimpleGateLogic 
+    {
+        @Override
+        public int inputMask(int shape) {
+            int m = 0;
+            m |= 1<<1; // Right
+            m |= 1<<3; // Left
+            return m;
+        }
+        
+        @Override
+        public int calcOutput(SimpleGatePart gate, int input) {
+            boolean side1 = (input & 1 << 1) != 0;
+            boolean side2 = (input & 1 << 3) != 0;
+            return side1 == side2 ? 1 : 0;
+        }
+    }
+    
+    public static class Buffer extends SimpleGateLogic
+    {
+        @Override
+        public int feedbackMask(int shape) {
+            return outputMask(shape);
+        }
+        
+        @Override
+        public int outputMask(int shape) {
+            int m = 0;
+            m |= (shape & 1) << 1; // Front
+            m |= (shape & 2) << 2; // Right
+            m |= (shape & 8) << 4; // Left
+            return ~m & 0xB;
+        }
+        
+        @Override
+        public int inputMask(int shape) {
+            return 4;
+        }
+        
+        @Override
+        public int deadSides() {
+            return 2;
+        }
+        
+        @Override
+        public int calcOutput(int input) {
+            return input != 0 ? 0xB : 0;
+        }
+    }
+
     public static class Pulse extends SimpleGateLogic
     {
         @Override
@@ -318,7 +389,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
                 gate.scheduleTick(2);
         }
     }
-    
+
     public static class TransparentLatch extends SimpleGateLogic
     {
         @Override
