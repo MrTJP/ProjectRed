@@ -21,13 +21,10 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
             new XOR(),
             new XNOR(),
             new Buffer(),
-            null,
+            new Multiplexer(),
             new Pulse(),
             new Repeater(),
             new Randomizer(),
-            null,            
-            null,
-            null,
             null,
             null,
             new TransparentLatch()
@@ -283,6 +280,27 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         @Override
         public int calcOutput(int input) {
             return input != 0 ? 0xB : 0;
+        }
+    }
+    
+    public static class Multiplexer extends SimpleGateLogic
+    {
+        @Override
+        public int outputMask(int shape) {
+            return 1;
+        }
+        
+        @Override
+        public int inputMask(int shape) {
+            return 0xE;
+        }
+
+        @Override
+        public int calcOutput(int input) {
+            boolean inRight = (input & 2) != 0;
+            boolean inFront = (input & 4) != 0;
+            boolean inLeft = (input & 8) != 0;
+            return inFront ? inLeft ? 1 : 0 : inRight ? 1 : 0;
         }
     }
 

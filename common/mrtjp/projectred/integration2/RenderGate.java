@@ -29,13 +29,10 @@ public class RenderGate
             new XOR(),
             new XNOR(),
             new Buffer(),
-            null,
+            new Multiplexer(),
             new Pulse(),
             new Repeater(),
             new Randomizer(),
-            null,
-            null,
-            null,
             null,
             null,
             new TransparentLatch()
@@ -429,6 +426,50 @@ public class RenderGate
             wires[3].disabled = (part.shape&2) != 0;
             torches[0].on = (part.state&4) != 0;
             torches[1].on = (part.state&4) == 0;
+        }
+    }
+    
+    public static class Multiplexer extends GateRenderer<SimpleGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("MULTIPLEXER", 6);
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(8, 2, 8),
+                new RedstoneTorchModel(9, 10.5, 6),
+                new RedstoneTorchModel(4.5, 8, 6),
+                new RedstoneTorchModel(11.5, 8, 6),
+        };
+     
+        public Multiplexer() {
+            models.addAll(Arrays.asList(wires));
+            models.addAll(Arrays.asList(torches));
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = false;
+            wires[1].on = true;
+            wires[2].on = true;
+            wires[3].on = false;
+            wires[4].on = false;
+            wires[5].on = false;
+            torches[0].on = false;
+            torches[1].on = true;
+            torches[2].on = false;
+            torches[3].on = true;
+        }
+        
+        @Override
+        public void prepare(SimpleGatePart part) {
+            wires[2].on = (part.state&4) == 0;
+            wires[3].on = (part.state&4) != 0;
+            wires[4].on = (part.state&8) != 0;
+            wires[5].on = (part.state&2) != 0;
+            torches[0].on = (part.state&0x10) != 0;
+            torches[1].on = !wires[3].on;
+            torches[2].on = (part.state&8) == 0 && wires[3].on;
+            torches[3].on = (part.state&4) == 0 && !wires[5].on;
+            wires[0].on = torches[2].on;
+            wires[1].on = torches[1].on;
         }
     }
     
