@@ -28,13 +28,13 @@ public class ComponentStore
     public static Icon baseIcon;
     public static Icon[] wireIcons = new Icon[3];
     public static Icon[] redstoneTorchIcons = new Icon[2];
-    public static CCModel taintedChip;
+    public static CCModel lightChip;
     public static Icon[] taintedChipIcons = new Icon[2];
     
     static
     {
         base = loadBase();
-        taintedChip = loadModel("chip");
+        lightChip = loadModel("chip");
     }
     
     public static Map<String, CCModel> loadModels(String name) {
@@ -293,7 +293,7 @@ public class ComponentStore
         public boolean on;
 
         public ChipModel(double x, double z) {
-            super(taintedChip, new Vector3(x, 0, z));
+            super(lightChip, new Vector3(x, 0, z));
             icont[0] = new IconTransformation(taintedChipIcons[0]);
             icont[1] = new IconTransformation(taintedChipIcons[1]);
         }
