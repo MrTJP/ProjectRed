@@ -1,8 +1,6 @@
 
 package mrtjp.projectred.integration2;
 
-import static mrtjp.projectred.transmission.BasicWireUtils.oldBACK;
-
 import java.util.Random;
 
 import mrtjp.projectred.ProjectRedIntegration;
@@ -441,7 +439,6 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     
     public static class LightSensor extends SimpleGateLogic
     {
-
         @Override
         public int inputMask(int shape) {
             return 0;
@@ -464,19 +461,24 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
 
         @Override
         public int calcOutput(SimpleGatePart gate, int input) {
-            int brightness = BasicUtils.getAbsoluteBrightness(gate.world(), gate.x(), gate.y(), gate.z());
-            return (brightness >= (gate.shape() * 3 + 3) ? 4 : 0);
+            return gate.shape()>>4;
         }
         
         @Override
         public void onTick(SimpleGatePart gate) {
-            onChange(gate);
+            int brightness = BasicUtils.getAbsoluteBrightness(gate.world(), gate.x(), gate.y(), gate.z());
+            int newOutput = brightness >= (gate.shape() * 3 + 3) ? 4 : 0;
+            int oldOutput = gate.state()>>4;
+            
+            if(newOutput != oldOutput) {
+                gate.setState(newOutput<<4 | gate.state&0xF);
+                gate.onOutputChange(4);
+            }
         }
     }
     
     public static class RainSensor extends SimpleGateLogic
     {
-        
         @Override
         public int inputMask(int shape) {
             return 0;
@@ -499,12 +501,18 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         
         @Override
         public int calcOutput(SimpleGatePart gate, int input) {
-            return (gate.world().isRaining() && BasicUtils.canBlockSeeSky(gate.world(), gate.x(), gate.y(), gate.z()) ? 4 : 0);
+            return gate.shape()>>4;
         }
         
         @Override
         public void onTick(SimpleGatePart gate) {
-            onChange(gate);
+            int newOutput = gate.world().isRaining() && BasicUtils.canBlockSeeSky(gate.world(), gate.x(), gate.y(), gate.z()) ? 4 : 0;
+            int oldOutput = gate.state()>>4;
+            
+            if(newOutput != oldOutput) {
+                gate.setState(newOutput<<4 | gate.state&0xF);
+                gate.onOutputChange(4);
+            }
         }
     }
 }
