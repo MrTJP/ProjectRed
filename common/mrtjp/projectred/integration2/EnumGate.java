@@ -19,7 +19,9 @@ public enum EnumGate
     Randomizer("Randomizer", "pr_sgate"),
     RSLatch(null, "pr_sgate"),
     ToggleLatch(null, "pr_sgate"),
-    TransparentLatch("Transparent Latch", "pr_sgate")
+    TransparentLatch("Transparent Latch", "pr_sgate"),
+    LightSensor("Light Sensor", "pr_sgate"),
+    RainSensor("Rain Sensor", "pr_sgate")
     ;
 
     public static EnumGate[] VALID_GATES = values();

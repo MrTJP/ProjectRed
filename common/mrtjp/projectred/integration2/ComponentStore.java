@@ -25,16 +25,23 @@ import codechicken.lib.vec.Vector3;
 public class ComponentStore
 {
     public static CCModel base;
+    public static CCModel lightChip;
+    public static CCModel solarArray;
+    public static CCModel rainSensor;
+    
     public static Icon baseIcon;
     public static Icon[] wireIcons = new Icon[3];
     public static Icon[] redstoneTorchIcons = new Icon[2];
-    public static CCModel lightChip;
     public static Icon[] taintedChipIcons = new Icon[2];
+    public static Icon[] solarIcons = new Icon[5];
+    public static Icon rainIcon;
     
     static
     {
         base = loadBase();
         lightChip = loadModel("chip");
+        solarArray = loadModel("solar");
+        rainSensor = loadModel("rainsensor");
     }
     
     public static Map<String, CCModel> loadModels(String name) {
@@ -81,6 +88,10 @@ public class ComponentStore
         redstoneTorchIcons[1] = r.registerIcon("redstone_torch_on");
         taintedChipIcons[0] = r.registerIcon(baseTex+"yellowchipoff");
         taintedChipIcons[1] = r.registerIcon(baseTex+"yellowchipon");
+        for (int i = 0; i < 5; i++) {
+            solarIcons[i] = r.registerIcon(baseTex+"solar"+i);
+        }
+        rainIcon = r.registerIcon(baseTex+"rainsensor");
     }
 
     public static WireComponentModel[] generateWireModels(String name, int count) {
@@ -229,6 +240,11 @@ public class ComponentStore
             icont = new IconTransformation(icon);
         }
         
+        public SimpleComponentModel(CCModel m, Icon icon, Vector3 pos) {
+            super(m, pos);
+            icont = new IconTransformation(icon);
+        }
+        
         @Override
         public IUVTransformation getIconT() {
             return icont;
@@ -302,7 +318,23 @@ public class ComponentStore
         public IUVTransformation getIconT() {
             return icont[on ? 1 : 0];
         }
+    }
+    
+    public static class SolarModel extends SingleComponentModel {
+        public IconTransformation[] icont = new IconTransformation[5];
+        public int state;
         
+        public SolarModel(double x, double z) {
+            super(solarArray, new Vector3(x, 0, z));
+            for (int i = 0; i < 5; i++) {
+                icont[i] = new IconTransformation(solarIcons[i]);
+            }
+        }
+        
+        @Override
+        public IUVTransformation getIconT() {
+            return icont[state];
+        }
     }
 
     public static class MultiStateComponentModel extends ComponentModel

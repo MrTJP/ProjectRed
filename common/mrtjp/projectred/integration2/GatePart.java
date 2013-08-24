@@ -144,7 +144,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
             schedTime = TickScheduler.getSchedulerTime(world())+ticks;
         }
     }
-    
+        
     private void processScheduled() {
         if(schedTime >= 0 && TickScheduler.getSchedulerTime(world()) >= schedTime) {
             schedTime = -1;
@@ -159,8 +159,10 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     
     @Override
     public void update() {
-        if(!world().isRemote)
+        if(!world().isRemote) {
             processScheduled();
+            getLogic().onTick(this);
+        }
     }
     
     @Override
