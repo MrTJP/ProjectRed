@@ -35,7 +35,9 @@ public class RenderGate
             new Randomizer(),
             null,
             null,
-            new TransparentLatch()
+            new TransparentLatch(),
+            new LightSensor(),
+            new RainSensor()
         };
     
     public static void renderStatic(GatePart gate) {
@@ -53,6 +55,7 @@ public class RenderGate
     }
 
     public static void renderInv(Transformation t, int id) {
+        renderers[16] = new RainSensor();
         GateRenderer r = renderers[id];
         r.prepareInv();
         CCRenderState.startDrawing(7);
@@ -623,6 +626,50 @@ public class RenderGate
             torches[2].on = !wires[1].on && !wires[3].on;
             torches[3].on = on;
             torches[4].on = on;
+        }
+    }
+    
+    public static class LightSensor extends GateRenderer<SimpleGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("LIGHTSENSOR", 1);
+        SolarModel solar = new SolarModel(8, 5.5);
+        
+        public LightSensor() {
+            models.addAll(Arrays.asList(wires));
+            models.add(solar);
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = false;
+            solar.state = 3;
+        }
+        
+        @Override
+        public void prepare(SimpleGatePart part) {
+            wires[0].on = (part.state&0x44) != 0;
+            solar.state = part.shape();
+        }
+    }
+    
+    public static class RainSensor extends GateRenderer<SimpleGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("RAINSENSOR", 1);
+        SimpleComponentModel solar = new SimpleComponentModel(ComponentStore.rainSensor, ComponentStore.rainIcon, new Vector3(8, 0, 6));
+        
+        public RainSensor() {
+            models.addAll(Arrays.asList(wires));
+            models.add(solar);
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = false;
+        }
+        
+        @Override
+        public void prepare(SimpleGatePart part) {
+            wires[0].on = (part.state&0x44) != 0;
         }
     }
 }

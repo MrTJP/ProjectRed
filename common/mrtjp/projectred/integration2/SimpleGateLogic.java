@@ -1,9 +1,12 @@
 
 package mrtjp.projectred.integration2;
 
+import static mrtjp.projectred.transmission.BasicWireUtils.oldBACK;
+
 import java.util.Random;
 
 import mrtjp.projectred.ProjectRedIntegration;
+import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -27,7 +30,9 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
             new Randomizer(),
             null,
             null,
-            new TransparentLatch()
+            new TransparentLatch(),
+            new LightSensor(),
+            new RainSensor()
         };
 
     public static int countBits(int n) {
@@ -431,6 +436,75 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
                 return gate.state()>>4;
             
             return (input & 0xA) == 0 ? 0 : 0xF;
+        }
+    }
+    
+    public static class LightSensor extends SimpleGateLogic
+    {
+
+        @Override
+        public int inputMask(int shape) {
+            return 0;
+        }
+
+        @Override
+        public int outputMask(int shape) {
+            return 4;
+        }
+        
+        @Override
+        public int feedbackMask(int shape) {
+            return 4;
+        }
+        
+        @Override
+        public int cycleShape(int shape) {
+            return (shape + 1) % 5;
+        }
+
+        @Override
+        public int calcOutput(SimpleGatePart gate, int input) {
+            int brightness = BasicUtils.getAbsoluteBrightness(gate.world(), gate.x(), gate.y(), gate.z());
+            return (brightness >= (gate.shape() * 3 + 3) ? 4 : 0);
+        }
+        
+        @Override
+        public void onTick(SimpleGatePart gate) {
+            onChange(gate);
+        }
+    }
+    
+    public static class RainSensor extends SimpleGateLogic
+    {
+        
+        @Override
+        public int inputMask(int shape) {
+            return 0;
+        }
+        
+        @Override
+        public int outputMask(int shape) {
+            return 4;
+        }
+        
+        @Override
+        public int feedbackMask(int shape) {
+            return 4;
+        }
+        
+        @Override
+        public int cycleShape(int shape) {
+            return (shape + 1) % 5;
+        }
+        
+        @Override
+        public int calcOutput(SimpleGatePart gate, int input) {
+            return (gate.world().isRaining() && BasicUtils.canBlockSeeSky(gate.world(), gate.x(), gate.y(), gate.z()) ? 4 : 0);
+        }
+        
+        @Override
+        public void onTick(SimpleGatePart gate) {
+            onChange(gate);
         }
     }
 }
