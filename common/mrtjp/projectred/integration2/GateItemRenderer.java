@@ -52,8 +52,6 @@ public class GateItemRenderer implements IItemRenderer
         CCRenderState.useNormals(true);
         CCRenderState.pullLightmap();
         CCRenderState.setColourOpaque(-1);
-        TransformationList t = new TransformationList();
-        t.with(new Scale(scale)).with(new Translation(x, y, z));
-        RenderGate.renderInv(t, meta);
+        RenderGate.renderInv(new Scale(scale).with(new Translation(x, y, z)), meta);
     }
 }

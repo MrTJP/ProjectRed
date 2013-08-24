@@ -56,9 +56,7 @@ public class WireItemRenderer implements IItemRenderer {
         CCRenderState.pullLightmap();
         CCRenderState.setColourOpaque(type.itemColour);
         CCRenderState.startDrawing(7);
-        TransformationList t = new TransformationList();
-        t.with(new Scale(scale)).with(new Translation(x, y, z));
-        RenderWire.renderInv(type.thickness, t, type.wireSprites[0]);
+        RenderWire.renderInv(type.thickness, new Scale(scale).with(new Translation(x, y, z)), type.wireSprites[0]);
         CCRenderState.draw();
     }
 }
