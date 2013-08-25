@@ -3,7 +3,6 @@ package mrtjp.projectred.transmission;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Scale;
-import codechicken.lib.vec.TransformationList;
 import codechicken.lib.vec.Translation;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
