@@ -33,7 +33,7 @@ public class ComponentStore
     public static Icon[] wireIcons = new Icon[3];
     public static Icon[] redstoneTorchIcons = new Icon[2];
     public static Icon[] taintedChipIcons = new Icon[2];
-    public static Icon[] solarIcons = new Icon[5];
+    public static Icon[] solarIcons = new Icon[3];
     public static Icon rainIcon;
     
     static
@@ -88,7 +88,7 @@ public class ComponentStore
         redstoneTorchIcons[1] = r.registerIcon("redstone_torch_on");
         taintedChipIcons[0] = r.registerIcon(baseTex+"yellowchipoff");
         taintedChipIcons[1] = r.registerIcon(baseTex+"yellowchipon");
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 3; i++) {
             solarIcons[i] = r.registerIcon(baseTex+"solar"+i);
         }
         rainIcon = r.registerIcon(baseTex+"rainsensor");
@@ -321,12 +321,12 @@ public class ComponentStore
     }
     
     public static class SolarModel extends SingleComponentModel {
-        public IconTransformation[] icont = new IconTransformation[5];
+        public IconTransformation[] icont = new IconTransformation[3];
         public int state;
         
         public SolarModel(double x, double z) {
             super(solarArray, new Vector3(x, 0, z));
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 3; i++) {
                 icont[i] = new IconTransformation(solarIcons[i]);
             }
         }
