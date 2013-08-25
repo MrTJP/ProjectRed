@@ -55,7 +55,6 @@ public class RenderGate
     }
 
     public static void renderInv(Transformation t, int id) {
-        renderers[16] = new RainSensor();
         GateRenderer r = renderers[id];
         r.prepareInv();
         CCRenderState.startDrawing(7);

@@ -157,23 +157,6 @@ public class ExplorationProxy implements IProxy {
     @Override
     public void postinit() {
         ExplorationRecipes.initRecipes();
-
-        // Remove default saw recipes
-        ArrayList recipes = (ArrayList) CraftingManager.getInstance().getRecipeList();
-        ArrayList removeQueue = new ArrayList();
-        for (int i = 0; i < recipes.size(); i++) {
-            IRecipe r = (IRecipe) recipes.get(i);
-            if (r instanceof ShapedOreRecipe) {
-                ItemStack result = ((ShapedOreRecipe) r).getRecipeOutput();
-                if (result == null) {
-                    continue;
-                }
-                if (result.getItem() == MicroblockProxy.sawStone() || result.getItem() == MicroblockProxy.sawIron() || result.getItem() == MicroblockProxy.sawDiamond()) {
-                    removeQueue.add(r);
-                }
-            }
-        }
-        recipes.removeAll(removeQueue);
     }
 
 }
