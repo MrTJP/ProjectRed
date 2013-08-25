@@ -7,6 +7,7 @@ import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.EnumSkyBlock;
 
 public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
 {
@@ -40,8 +41,8 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         return c;
     }
     
-    public final boolean getOutput(SimpleGatePart gate, int r) {
-        return (gate.state & 0x10<<r) != 0;
+    public int getOutput(SimpleGatePart gate, int r) {
+        return (gate.state & 0x10<<r) != 0 ? 15 : 0;
     }
     
     public int cycleShape(int shape) {
@@ -440,6 +441,11 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     public static class LightSensor extends SimpleGateLogic
     {
         @Override
+        public int getOutput(SimpleGatePart gate, int r) {
+            return r == 2 ? gate.state()>>4 : 0;
+        }
+        
+        @Override
         public int inputMask(int shape) {
             return 0;
         }
@@ -458,6 +464,11 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         public int cycleShape(int shape) {
             return (shape + 1) % 3;
         }
+        
+        @Override
+        public void setup(SimpleGatePart gate) {
+            onTick(gate);
+        }
 
         @Override
         public int calcOutput(SimpleGatePart gate, int input) {
@@ -466,13 +477,31 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         
         @Override
         public void onTick(SimpleGatePart gate) {
-            int brightness = BasicUtils.getAbsoluteBrightness(gate.world(), gate.x(), gate.y(), gate.z());
-            int newOutput = brightness >= (gate.shape() * 3 + 3) ? 4 : 0;
-            int oldOutput = gate.state()>>4;
+            int sky = gate.world().getSavedLightValue(EnumSkyBlock.Sky, gate.x(), gate.y(), gate.z()) - gate.world().skylightSubtracted;
+            int block = gate.world().getSavedLightValue(EnumSkyBlock.Block, gate.x(), gate.y(), gate.z());
+
+            int shape = gate.shape();
+            int newOutput;
+            if(shape == 0)
+                newOutput = Math.max(sky, block);
+            else if(shape == 1)
+                newOutput = sky;
+            else
+                newOutput = block;
             
-            if(newOutput != oldOutput) {
+            if(newOutput != gate.state()>>4) {
                 gate.setState(newOutput<<4 | gate.state&0xF);
                 gate.onOutputChange(4);
+            }
+        }
+        
+        @Override
+        public void onChange(SimpleGatePart gate) {
+            int oldInput = gate.state&0xF;
+            int newInput = getInput(gate, 4);
+            if(oldInput != newInput) {
+                gate.setState(gate.state & 0xF0 | newInput);
+                gate.onInputChange();
             }
         }
     }

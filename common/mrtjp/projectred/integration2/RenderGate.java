@@ -641,12 +641,12 @@ public class RenderGate
         @Override
         public void prepareInv() {
             wires[0].on = false;
-            solar.state = 3;
+            solar.state = 0;
         }
         
         @Override
         public void prepare(SimpleGatePart part) {
-            wires[0].on = (part.state&0x44) != 0;
+            wires[0].on = (part.state&0xF4) != 0;
             solar.state = part.shape();
         }
     }
