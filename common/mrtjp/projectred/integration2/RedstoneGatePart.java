@@ -26,7 +26,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
         if((side&6) == (side()&6))
             return 0;
         
-        return getLogic().getOutput(this, relRot(side)) ? 15 : 0;
+        return getLogic().getOutput(this, relRot(side));
     }
 
     @Override

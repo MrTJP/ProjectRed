@@ -5,7 +5,7 @@ import mrtjp.projectred.transmission.IRedwireEmitter;
 
 public abstract class RedstoneGateLogic<PartType extends RedstoneGatePart> extends GateLogic<PartType>
 {
-    public abstract boolean getOutput(PartType gate, int r);
+    public abstract int getOutput(PartType gate, int r);
     
     @Override
     public boolean canConnectTo(PartType gate, IConnectable wire, int r) {

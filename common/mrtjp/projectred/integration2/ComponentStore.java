@@ -88,9 +88,8 @@ public class ComponentStore
         redstoneTorchIcons[1] = r.registerIcon("redstone_torch_on");
         taintedChipIcons[0] = r.registerIcon(baseTex+"yellowchipoff");
         taintedChipIcons[1] = r.registerIcon(baseTex+"yellowchipon");
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) 
             solarIcons[i] = r.registerIcon(baseTex+"solar"+i);
-        }
         rainIcon = r.registerIcon(baseTex+"rainsensor");
     }
 
@@ -326,9 +325,8 @@ public class ComponentStore
         
         public SolarModel(double x, double z) {
             super(solarArray, new Vector3(x, 0, z));
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++)
                 icont[i] = new IconTransformation(solarIcons[i]);
-            }
         }
         
         @Override
