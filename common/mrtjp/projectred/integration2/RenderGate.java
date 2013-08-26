@@ -9,7 +9,6 @@ import java.util.Random;
 
 import mrtjp.projectred.integration2.ComponentStore.ComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.RedstoneTorchModel;
-import mrtjp.projectred.integration2.ComponentStore.SimpleComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.WireComponentModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Transformation;
@@ -43,7 +42,7 @@ public class RenderGate
     public static void renderStatic(GatePart gate) {
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
-        r.renderStatic(gate.rotationT().with(new Translation(gate.x(), gate.y(), gate.z())));
+        r.renderStatic(new Translation(gate.x(), gate.y(), gate.z()), gate.orientation&0xFF);
     }
 
     public static void renderDynamic(GatePart gate, Vector3 pos, float frame) {
@@ -58,7 +57,7 @@ public class RenderGate
         GateRenderer r = renderers[id];
         r.prepareInv();
         CCRenderState.startDrawing(7);
-        r.renderStatic(t);
+        r.renderStatic(t, 0);
         CCRenderState.draw();
         if(r.hasSpecials())
             r.renderDynamic(t);
@@ -73,12 +72,12 @@ public class RenderGate
         public List<ComponentModel> models = new LinkedList<ComponentModel>();
         
         public GateRenderer() {
-            models.add(new SimpleComponentModel(base, baseIcon));
+            models.add(new BaseComponentModel());
         }
         
-        public void renderStatic(Transformation t) {
+        public void renderStatic(Transformation t, int orient) {
             for(ComponentModel m : models)
-                m.render(t);
+                m.renderModel(t, orient);
         }
         
         public void renderDynamic(Transformation t) {
@@ -108,7 +107,7 @@ public class RenderGate
                 if(m.on && rand.nextInt(torches.size()) == 0) {
                     Vector3 pos = new Vector3(rand.nextFloat(), rand.nextFloat(), rand.nextFloat())
                         .add(-0.5).multiply(0.05, 0.1, 0.05);
-                    pos.add(0, m.lightY, 0).apply(m.relPos);//height
+                    pos.add(m.lightPos);//height
                     pos.apply(part.rotationT()).add(part.x(), part.y(), part.z());
                     part.world().spawnParticle("reddust", pos.x, pos.y, pos.z, 0, 0, 0);
                 }
@@ -514,12 +513,22 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("REPEATER", 2);
         RedstoneTorchModel endtorch = new RedstoneTorchModel(8, 2, 6);
-        RedstoneTorchModel vartorch = new RedstoneTorchModel(12.5, 14, 6);
+        RedstoneTorchModel[] vartorches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(12.5, 12, 6),
+                new RedstoneTorchModel(12.5, 11, 6),
+                new RedstoneTorchModel(12.5, 10, 6),
+                new RedstoneTorchModel(12.5, 9, 6),
+                new RedstoneTorchModel(12.5, 8, 6),
+                new RedstoneTorchModel(12.5, 7, 6),
+                new RedstoneTorchModel(12.5, 6, 6),
+                new RedstoneTorchModel(12.5, 5, 6),
+                new RedstoneTorchModel(12.5, 4, 6)
+            };
+        int shape = 0;
         
         public Repeater() {
             models.addAll(Arrays.asList(wires));
             models.add(endtorch);
-            models.add(vartorch);
         }
         
         @Override
@@ -527,9 +536,8 @@ public class RenderGate
             wires[0].on = true;
             wires[1].on = false;
             endtorch.on = true;
-            vartorch.on = false;
-            
-            vartorch.relPos = new Translation(12.5/16D, 0, 12/16D);
+            shape = 0;
+            vartorches[0].on = false;
         }
         
         @Override
@@ -537,9 +545,15 @@ public class RenderGate
             wires[0].on = (part.state&0x10) == 0;
             wires[1].on = (part.state&4) != 0;
             endtorch.on = (part.state&0x10) != 0;
-            vartorch.on = (part.state&4) == 0;
             
-            vartorch.relPos = new Translation(12.5/16D, 0, (12-part.shape())/16D);
+            shape = part.shape();
+            vartorches[shape].on = (part.state&4) == 0;
+        }
+        
+        @Override
+        public void renderStatic(Transformation t, int orient) {
+            super.renderStatic(t, orient);
+            vartorches[shape].renderModel(t, orient);
         }
     }
 
@@ -654,7 +668,7 @@ public class RenderGate
     public static class RainSensor extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("RAINSENSOR", 1);
-        SimpleComponentModel solar = new SimpleComponentModel(ComponentStore.rainSensor, ComponentStore.rainIcon, new Vector3(8, 0, 6));
+        RainSensorModel solar = new RainSensorModel(8, 6);
         
         public RainSensor() {
             models.addAll(Arrays.asList(wires));
