@@ -96,6 +96,7 @@ public class WirePropogator {
         private Multimap<TileMultipart, TMultiPart> partChanges = HashMultimap.create();
         private HashSet<BlockCoord> neighborChanges = new HashSet<BlockCoord>();
         private LinkedList<Propogation> propogationList = new LinkedList<Propogation>();
+        private IWirePart first;
         
         public void clear() {
             partChanges.clear();
@@ -108,6 +109,9 @@ public class WirePropogator {
         }
         
         public void finish() {
+            //for analog signal drops, first always needs to recalc himself
+            new Propogation(first, notApart, IWirePart.RISING).propogate();
+            
             currentRun = null;
             
             if(partChanges.isEmpty() && neighborChanges.isEmpty()) {
@@ -167,6 +171,10 @@ public class WirePropogator {
                 lastCaller = prev;
                 count++;
             }
+            
+            if(first == null)
+                first = part;
+            
             propogationList.add(new Propogation(part, prev, mode));
         }
     }
