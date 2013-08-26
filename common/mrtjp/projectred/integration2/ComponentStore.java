@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
 import codechicken.lib.colour.Colour;
-import codechicken.lib.lighting.PlanarLightModel;
+import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
@@ -17,6 +17,7 @@ import codechicken.lib.render.MultiIconTransformation;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.render.Vertex5;
 import codechicken.lib.vec.Rectangle4i;
+import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
@@ -187,69 +188,110 @@ public class ComponentStore
                 data[(y+1)*32+x].rgba() == -1 &&
                 data[(y+1)*32+(x+1)].rgba() == -1;
     }
+    
+    public static Transformation orientT(int orient) {
+        return Rotation.sideOrientation(orient>>2, orient&3).at(Vector3.center);
+    }
 
     public static abstract class ComponentModel
     {
-        public Translation relPos;
-        
-        public ComponentModel() {
-        }
-        
-        public ComponentModel(Vector3 pos) {
-            relPos = pos.multiply(1/16D).translation();
-        }
-        
-        public final void render(Transformation t) {
-            if(relPos != null)
-                renderModel(relPos.with(t));
-            else
-                renderModel(t);
-        }
-        
-        public abstract void renderModel(Transformation t);
+        public abstract void renderModel(Transformation t, int orient);
     }
-
+    
+    public static class BaseComponentModel extends ComponentModel
+    {
+        public static CCModel[] models = new CCModel[24];
+        
+        static {
+            for(int i = 0; i < 24; i++)
+                models[i] = base.copy().apply(orientT(i)).computeLighting(LightModel.standardLightModel);
+        }
+        
+        @Override
+        public void renderModel(Transformation t, int orient) {
+            models[orient].render(t, new IconTransformation(baseIcon));
+        }
+    }
+    
     public static abstract class SingleComponentModel extends ComponentModel
     {
-        public CCModel model;
+        public CCModel[] models = new CCModel[24];
         
         public SingleComponentModel(CCModel m) {
-            model = m;
+            for(int i = 0; i < 24; i++)
+                models[i] = m.copy().apply(orientT(i)).computeLighting(LightModel.standardLightModel);
         }
         
         public SingleComponentModel(CCModel m, Vector3 pos) {
-            super(pos);
-            model = m;
+            this(m.copy().apply(pos.multiply(1/16D).translation()));
         }
         
+        public abstract IUVTransformation getUVT();
+        
         @Override
-        public void renderModel(Transformation t) {
-            model.render(t, getIconT(), PlanarLightModel.standardLightModel);
+        public void renderModel(Transformation t, int orient) {
+            models[orient].render(t, getUVT());
         }
-
-        public abstract IUVTransformation getIconT();
     }
     
-    public static class SimpleComponentModel extends SingleComponentModel
+    public static abstract class SimpleComponentModel extends SingleComponentModel
     {
-        public IconTransformation icont;
-        
-        public SimpleComponentModel(CCModel m, Icon icon) {
+        public SimpleComponentModel(CCModel m) {
             super(m);
-            icont = new IconTransformation(icon);
         }
         
-        public SimpleComponentModel(CCModel m, Icon icon, Vector3 pos) {
+        public SimpleComponentModel(CCModel m, Vector3 pos) {
             super(m, pos);
-            icont = new IconTransformation(icon);
         }
         
         @Override
-        public IUVTransformation getIconT() {
-            return icont;
+        public IUVTransformation getUVT() {
+            return new IconTransformation(getIcon());
+        }
+        
+        public abstract Icon getIcon();
+    }
+    
+    public static abstract class OnOffModel extends SingleComponentModel
+    {
+        public boolean on;
+        
+        public OnOffModel(CCModel m) {
+            super(m);
+        }
+        
+        public OnOffModel(CCModel m, Vector3 pos) {
+            super(m, pos);
+        }
+        
+        public abstract Icon[] getIcons();
+        
+        @Override
+        public IUVTransformation getUVT() {
+            return new IconTransformation(getIcons()[on ? 1 : 0]);
         }
     }
     
+    public static abstract class StateIconModel extends SingleComponentModel
+    {
+        public int state;
+        
+        public StateIconModel(CCModel m) {
+            super(m);
+        }
+        
+        public StateIconModel(CCModel m, Vector3 pos) {
+            super(m, pos);
+        }
+        
+        public abstract Icon[] getIcons();
+        
+        @Override
+        public IUVTransformation getUVT() {
+            return new IconTransformation(getIcons()[state]);
+        }
+    }
+
     public static class WireComponentModel extends SingleComponentModel
     {
         public IUVTransformation[] icont = new IUVTransformation[3];
@@ -258,31 +300,29 @@ public class ComponentStore
         
         public WireComponentModel(CCModel m) {
             super(m);
-            icont[0] = new MultiIconTransformation(new Icon[]{wireIcons[0], wireIcons[1]});
-            icont[1] = new MultiIconTransformation(new Icon[]{wireIcons[0], wireIcons[2]});
-            icont[2] = new IconTransformation(wireIcons[0]);
         }
         
         @Override
-        public IUVTransformation getIconT() {
-            return icont[disabled ? 2 : on ? 1 : 0];
+        public IUVTransformation getUVT() {
+            if(disabled)
+                return new IconTransformation(wireIcons[0]);
+            else if(on)
+                return new MultiIconTransformation(wireIcons[0], wireIcons[2]);
+            else
+                return new MultiIconTransformation(wireIcons[0], wireIcons[1]);
         }
     }
     
-    public static class RedstoneTorchModel extends SingleComponentModel
+    public static class RedstoneTorchModel extends OnOffModel
     {
-        public IconTransformation[] icont = new IconTransformation[2];
-        public boolean on;
-        public double lightY;
+        public Vector3 lightPos;
         
         public RedstoneTorchModel(double x, double z, int height) {
-            super(genModel(height), new Vector3(x, 0, z));
-            lightY = (height-1)/16D;
-            icont[0] = new IconTransformation(redstoneTorchIcons[0]);
-            icont[1] = new IconTransformation(redstoneTorchIcons[1]);
+            super(genModel(height, x, z));
+            lightPos = new Vector3(x, height-1, z).multiply(1/16D);
         }
         
-        public static CCModel genModel(int height) {
+        public static CCModel genModel(int height, double x, double z) {
             CCModel m = CCModel.quadModel(20);
             m.verts[0] = new Vertex5(7/16D, 10/16D, 9/16D, 7/16D, 8/16D);
             m.verts[1] = new Vertex5(9/16D, 10/16D, 9/16D, 9/16D, 8/16D);
@@ -290,85 +330,51 @@ public class ComponentStore
             m.verts[3] = new Vertex5(7/16D, 10/16D, 7/16D, 7/16D, 6/16D);
             m.generateBlock(4, 6/16D, (10-height)/16D, 7/16D, 10/16D, 11/16D, 9/16D, 0x33);
             m.generateBlock(12, 7/16D, (10-height)/16D, 6/16D, 9/16D, 11/16D, 10/16D, 0xF);
-            m.apply(new Translation(-0.5, (height-10)/16D, -0.5));
+            m.apply(new Translation(-0.5+x/16, (height-10)/16D, -0.5+z/16));
             m.computeNormals();
             m.shrinkUVs(0.0005);
             m.apply(new Scale(1.0005)); // Eliminates z-fighting when torch is on wire.
             return m;
         }
-
+        
         @Override
-        public IUVTransformation getIconT() {
-            return icont[on ? 1 : 0];
+        public Icon[] getIcons() {
+            return redstoneTorchIcons;
         }
     }
     
-    public static class ChipModel extends SingleComponentModel {
-        public IconTransformation[] icont = new IconTransformation[2];
-        public boolean on;
-
+    public static class ChipModel extends OnOffModel
+    {
         public ChipModel(double x, double z) {
             super(lightChip, new Vector3(x, 0, z));
-            icont[0] = new IconTransformation(taintedChipIcons[0]);
-            icont[1] = new IconTransformation(taintedChipIcons[1]);
         }
-
+        
         @Override
-        public IUVTransformation getIconT() {
-            return icont[on ? 1 : 0];
+        public Icon[] getIcons() {
+            return taintedChipIcons;
         }
     }
     
-    public static class SolarModel extends SingleComponentModel {
-        public IconTransformation[] icont = new IconTransformation[3];
-        public int state;
-        
+    public static class SolarModel extends StateIconModel {
         public SolarModel(double x, double z) {
             super(solarArray, new Vector3(x, 0, z));
-            for (int i = 0; i < 3; i++)
-                icont[i] = new IconTransformation(solarIcons[i]);
         }
         
         @Override
-        public IUVTransformation getIconT() {
-            return icont[state];
-        }
-    }
-
-    public static class MultiStateComponentModel extends ComponentModel
-    {
-        public CCModel[] models;
-        public IconTransformation icont;
-        public int state;
-        
-        public MultiStateComponentModel(Icon icon, Vector3 pos, CCModel... models) {
-            super(pos);
-            this.models = models;
-            icont = new IconTransformation(icon);
-        }
-        
-        public CCModel getModel() {
-            return models[state];
-        }
-        
-        @Override
-        public void renderModel(Transformation t) {
-            getModel().render(t, icont, PlanarLightModel.standardLightModel);
+        public Icon[] getIcons() {
+            return solarIcons;
         }
     }
     
-    public static class TwoStateComponentModel extends MultiStateComponentModel
+    public static class RainSensorModel extends SimpleComponentModel
     {
-        public boolean on;
-        
-        public TwoStateComponentModel(Icon icon, double x, double y, double z, CCModel[] models) {
-            super(icon, new Vector3(x, y, z), models);
+        public RainSensorModel(double x, double z) {
+            super(rainSensor, new Vector3(x, 0, z));
         }
         
         @Override
-        public CCModel getModel() {
-            state = on ? 1 : 0;
-            return super.getModel();
+        public Icon getIcon() {
+            return rainIcon;
         }
     }
 }

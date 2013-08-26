@@ -58,19 +58,19 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public abstract GateLogic getLogic();
     
     public int side() {
-        return orientation>>4;
+        return orientation>>2;
     }
     
     public void setSide(int s) {
-        orientation = (byte) (orientation&0xF | s<<4);
+        orientation = (byte) (orientation&0x3 | s<<2);
     }
     
     public int rotation() {
-        return orientation&0xF;
+        return orientation&0x3;
     }
     
     public void setRotation(int r) {
-        orientation = (byte) (orientation&0xF0 | r);
+        orientation = (byte) (orientation&0xFC | r);
     }
     
     public int shape() {
@@ -103,6 +103,8 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @Override
     public void load(NBTTagCompound tag) {
         orientation = tag.getByte("orient");
+        if(orientation > 24)
+            orientation = 0;
         subID = tag.getByte("subID");
         shape = tag.getByte("shape");
         connMap = tag.getShort("connMap")&0xFFFF;
