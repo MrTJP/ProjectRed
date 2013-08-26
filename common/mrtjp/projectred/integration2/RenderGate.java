@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.client.renderer.texture.IconRegister;
+
 import mrtjp.projectred.integration2.ComponentStore.ComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.RedstoneTorchModel;
 import mrtjp.projectred.integration2.ComponentStore.WireComponentModel;
@@ -18,7 +20,6 @@ import codechicken.lib.vec.Vector3;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class RenderGate
 {
-    
     public static GateRenderer[] renderers = new GateRenderer[]{
             new OR(),
             new NOR(),
@@ -38,6 +39,12 @@ public class RenderGate
             new LightSensor(),
             new RainSensor()
         };
+    
+    public static void registerIcons(IconRegister r) {
+        for(GateRenderer render : renderers)
+            if(render != null)//TODO remove once complete
+                render.registerIcons(r);
+    }
     
     public static void renderStatic(GatePart gate) {
         GateRenderer r = renderers[gate.subID&0xFF];
@@ -75,6 +82,11 @@ public class RenderGate
             models.add(new BaseComponentModel());
         }
         
+        public void registerIcons(IconRegister r) {
+            for(ComponentModel m : models)
+                m.registerTextures(r);
+        }
+
         public void renderStatic(Transformation t, int orient) {
             for(ComponentModel m : models)
                 m.renderModel(t, orient);

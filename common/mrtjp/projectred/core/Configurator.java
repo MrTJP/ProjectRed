@@ -96,6 +96,7 @@ public class Configurator {
 
     /** Settings **/
     public static Property debugMode;
+    public static Property logicwires3D;
 
     public static void initConfig(FMLPreInitializationEvent event) {
         _configFolder = event.getModConfigurationDirectory();
@@ -175,6 +176,9 @@ public class Configurator {
 
         debugMode = localConfig.get("general", "Enable Debugging", false);
         debugMode.comment = "Enable advanced debugging, should ALWAYS be false.";
+        
+        logicwires3D = localConfig.get("general", "3Dlogicwires", true);
+        logicwires3D.comment = "If set to false, flat wire textures will be used for logic gates. Significant performance improvement";
 
         localConfig.save();
     }

@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.InvertX;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
@@ -14,6 +15,8 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.MultiIconTransformation;
+import codechicken.lib.render.TextureDataHolder;
+import codechicken.lib.render.TextureSpecial;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.render.Vertex5;
 import codechicken.lib.vec.Rectangle4i;
@@ -32,6 +35,7 @@ public class ComponentStore
     
     public static Icon baseIcon;
     public static Icon[] wireIcons = new Icon[3];
+    public static Colour[][] wireData = new Colour[3][];
     public static Icon[] redstoneTorchIcons = new Icon[2];
     public static Icon[] taintedChipIcons = new Icon[2];
     public static Icon[] solarIcons = new Icon[3];
@@ -85,6 +89,12 @@ public class ComponentStore
         wireIcons[0] = r.registerIcon(baseTex+"surface/bordermatte");
         wireIcons[1] = r.registerIcon(baseTex+"surface/wirematte-OFF");
         wireIcons[2] = r.registerIcon(baseTex+"surface/wirematte-ON");
+        for(int i = 0; i < 3; i++) {
+            ResourceLocation res = new ResourceLocation(wireIcons[i].getIconName());
+            wireData[i] = TextureUtils.loadTextureColours(new ResourceLocation(
+                    res.func_110624_b(), "textures/blocks/"+res.func_110623_a()+".png"));
+        }
+        
         redstoneTorchIcons[0] = r.registerIcon("redstone_torch_off");
         redstoneTorchIcons[1] = r.registerIcon("redstone_torch_on");
         taintedChipIcons[0] = r.registerIcon(baseTex+"yellowchipoff");
@@ -92,72 +102,26 @@ public class ComponentStore
         for (int i = 0; i < 3; i++) 
             solarIcons[i] = r.registerIcon(baseTex+"solar"+i);
         rainIcon = r.registerIcon(baseTex+"rainsensor");
+        
+        RenderGate.registerIcons(r);
     }
 
     public static WireComponentModel[] generateWireModels(String name, int count) {
         WireComponentModel[] models = new WireComponentModel[count];
         for(int i = 0; i < count; i++)
-            models[i] = new WireComponentModel(generateWireModel(name+"-"+i));
+            models[i] = generateWireModel(name+"-"+i);
         return models;
     }
 
-    public static CCModel generateWireModel(String name) {
+    @SuppressWarnings("unused")
+    public static WireComponentModel generateWireModel(String name) {
         Colour[] data = TextureUtils.loadTextureColours(new ResourceLocation("projectred:textures/blocks/gates/surface/"+name+".png"));
-        boolean[] wireCorners = new boolean[1024];
-    
-        for(int y = 2; y <= 28; y++)
-            for(int x = 2; x <= 28; x++) {
-                if(data[y*32+x].rgba() != -1)
-                    continue;
-                
-                if(overlap(wireCorners, x, y))
-                    continue;
-                
-                if(!segment2x2(data, x, y))
-                    throw new RuntimeException("Wire segment not 2x2 at ("+x+", "+y+") in "+name);
-                
-                wireCorners[y*32+x] = true;
-            }
-        
-        List<Rectangle4i> wireRectangles = new LinkedList<Rectangle4i>();
-        for(int i = 0; i < 1024; i++)
-            if(wireCorners[i]) {
-                Rectangle4i rect = new Rectangle4i(i%32, i/32, 0, 0);
-                int x = rect.x+2;
-                while(x < 30 && wireCorners[rect.y*32+x])
-                    x+=2;
-                rect.w = x-rect.x;
-                
-                int y = rect.y+2;
-                while(y < 30) {
-                    boolean advance = true;
-                    for(int dx = rect.x; dx < rect.x+rect.w && advance; dx+=2)
-                        if(!wireCorners[y*32+dx])
-                            advance = false;
-                    
-                    if(!advance)
-                        break;
-                    
-                    y+=2;
-                }
-                rect.h = y-rect.y;
-
-                for(int dy = rect.y; dy < rect.y+rect.h; dy+=2)
-                    for(int dx = rect.x; dx < rect.x+rect.w; dx+=2)
-                        wireCorners[dy*32+dx] = false;
-                
-                wireRectangles.add(rect);
-            }
-        
-        CCModel model = CCModel.quadModel(wireRectangles.size()*40);
-        int i = 0;
-        for(Rectangle4i rect : wireRectangles) {
-            generateWireSegment(model, i, rect);
-            i+=40;
-        }
-        model.computeNormals();
-        model.shrinkUVs(0.0005);
-        return model;
+        WireComponentModel m = new WireComponentModel();
+        if(Configurator.logicwires3D.getBoolean(true))
+            new WireModel3D(data, m);
+        else
+            new WireModel2D(data, m);
+        return m;
     }
 
     private static void generateWireSegment(CCModel model, int i, Rectangle4i rect) {
@@ -196,6 +160,9 @@ public class ComponentStore
     public static abstract class ComponentModel
     {
         public abstract void renderModel(Transformation t, int orient);
+
+        public void registerTextures(IconRegister r) {
+        }
     }
     
     public static class BaseComponentModel extends ComponentModel
@@ -291,25 +258,177 @@ public class ComponentStore
             return new IconTransformation(getIcons()[state]);
         }
     }
-
-    public static class WireComponentModel extends SingleComponentModel
+    
+    //use pass down composition to allow different wire model classes but have the same fields and reference type
+    public static class WireComponentModel extends ComponentModel
     {
-        public IUVTransformation[] icont = new IUVTransformation[3];
         public boolean on;
         public boolean disabled;
         
-        public WireComponentModel(CCModel m) {
-            super(m);
+        private ComponentModel model;
+        
+        public WireComponentModel bind(ComponentModel model) {
+            this.model = model;
+            return this;
         }
         
         @Override
+        public void renderModel(Transformation t, int orient) {
+            model.renderModel(t, orient);
+        }
+        
+        @Override
+        public void registerTextures(IconRegister r) {
+            model.registerTextures(r);
+        }
+    }
+    
+    public static class WireModel3D extends SingleComponentModel
+    {
+        private WireComponentModel parent;
+        
+        public WireModel3D(Colour[] data, WireComponentModel parent) {
+            super(generateModel(data));
+            this.parent = parent;
+            parent.bind(this);
+        }
+        
+        private static CCModel generateModel(Colour[] data) {
+            boolean[] wireCorners = new boolean[1024];
+            
+            for(int y = 2; y <= 28; y++)
+                for(int x = 2; x <= 28; x++) {
+                    if(data[y*32+x].rgba() != -1)
+                        continue;
+                    
+                    if(overlap(wireCorners, x, y))
+                        continue;
+                    
+                    if(!segment2x2(data, x, y))
+                        throw new RuntimeException("Wire segment not 2x2 at ("+x+", "+y+")");
+                    
+                    wireCorners[y*32+x] = true;
+                }
+            
+            List<Rectangle4i> wireRectangles = new LinkedList<Rectangle4i>();
+            for(int i = 0; i < 1024; i++)
+                if(wireCorners[i]) {
+                    Rectangle4i rect = new Rectangle4i(i%32, i/32, 0, 0);
+                    int x = rect.x+2;
+                    while(x < 30 && wireCorners[rect.y*32+x])
+                        x+=2;
+                    rect.w = x-rect.x;
+                    
+                    int y = rect.y+2;
+                    while(y < 30) {
+                        boolean advance = true;
+                        for(int dx = rect.x; dx < rect.x+rect.w && advance; dx+=2)
+                            if(!wireCorners[y*32+dx])
+                                advance = false;
+                        
+                        if(!advance)
+                            break;
+                        
+                        y+=2;
+                    }
+                    rect.h = y-rect.y;
+
+                    for(int dy = rect.y; dy < rect.y+rect.h; dy+=2)
+                        for(int dx = rect.x; dx < rect.x+rect.w; dx+=2)
+                            wireCorners[dy*32+dx] = false;
+                    
+                    wireRectangles.add(rect);
+                }
+            
+            CCModel model = CCModel.quadModel(wireRectangles.size()*40);
+            int i = 0;
+            for(Rectangle4i rect : wireRectangles) {
+                generateWireSegment(model, i, rect);
+                i+=40;
+            }
+            model.computeNormals();
+            model.shrinkUVs(0.0005);
+            return model;
+        }
+
+        @Override
         public IUVTransformation getUVT() {
-            if(disabled)
+            if(parent.disabled)
                 return new IconTransformation(wireIcons[0]);
-            else if(on)
+            else if(parent.on)
                 return new MultiIconTransformation(wireIcons[0], wireIcons[2]);
             else
                 return new MultiIconTransformation(wireIcons[0], wireIcons[1]);
+        }
+    }
+    
+    public static class WireModel2D extends ComponentModel
+    {
+        public static CCModel[] models = new CCModel[24];
+        private static int iconCounter = 0;
+        
+        static
+        {
+            CCModel m = CCModel.quadModel(4).generateBlock(0, 0, 0, 0, 1, 1/8D+0.002, 1, ~2).computeNormals();
+            for(int i = 0; i < 24; i++)
+                models[i] = m.copy().apply(orientT(i)).computeLighting(LightModel.standardLightModel);
+        }
+        
+        private WireComponentModel parent;
+        
+        public TextureSpecial[] icons;
+        public Colour[] wireMask;
+        private final int iconIndex = iconCounter++;
+        
+        public WireModel2D(Colour[] data, WireComponentModel parent) {
+            wireMask = data;
+            this.parent = parent;
+            parent.bind(this);
+        }
+        
+        @Override
+        public void renderModel(Transformation t, int orient) {
+            models[orient].render(t, new IconTransformation(icons[parent.disabled ? 0 : parent.on ? 2 : 1]));
+        }
+        
+        @Override
+        public void registerTextures(IconRegister r) {
+            icons = new TextureSpecial[wireData.length];
+            
+            for(int tex = 0; tex < icons.length; tex++) {
+                int[] texMap = new int[1024];
+                for(int y = 2; y <= 28; y++)
+                    for(int x = 2; x <= 28; x++) {
+                        if(wireMask[y*32+x].rgba() != -1)
+                            continue;
+
+                        fillMask(texMap, x, y, 1, 2);
+                        fillMask(texMap, x-2, y-2, 5, 1);
+                    }
+                
+                int pSize = (int)Math.sqrt(wireData[0].length);
+                int size = Math.max(32, pSize);
+                int relM = size/32;
+                int relP = size/pSize;
+                
+                int[] imageData = new int[size*size];
+                for(int i = 0; i < imageData.length; i++) {
+                    int x = i%size; int y = i/size;
+                    int type = texMap[y/relM*32+x/relM];
+                    if(type != 0)
+                        imageData[i] = wireData[type == 1 ? 0 : tex][y/relP*pSize+x/relP].argb();
+                }
+                
+                icons[tex] = TextureUtils.getTextureSpecial(r, "projectred:gates/wire2d_"+iconIndex+"_"+tex)
+                        .addTexture(new TextureDataHolder(imageData, size));
+            }
+        }
+
+        private void fillMask(int[] map, int x, int y, int size, int val) {
+            for(int i = x; i < x+size; i++)
+                for(int j = y; j < y+size; j++)
+                    if(map[j*32+i] < val)
+                        map[j*32+i] = val;
         }
     }
     
