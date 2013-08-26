@@ -77,6 +77,7 @@ public class RenderGate
     public static abstract class GateRenderer<PartType extends GatePart>
     {
         public List<ComponentModel> models = new LinkedList<ComponentModel>();
+        public boolean reflect = false;
         
         public GateRenderer() {
             models.add(new BaseComponentModel());
@@ -87,7 +88,11 @@ public class RenderGate
                 m.registerTextures(r);
         }
 
-        public void renderStatic(Transformation t, int orient) {
+        public final void renderStatic(Transformation t, int orient) {
+            renderModels(t, reflect ? orient+24 : orient);
+        }
+        
+        public void renderModels(Transformation t, int orient) {
             for(ComponentModel m : models)
                 m.renderModel(t, orient);
         }
@@ -563,8 +568,8 @@ public class RenderGate
         }
         
         @Override
-        public void renderStatic(Transformation t, int orient) {
-            super.renderStatic(t, orient);
+        public void renderModels(Transformation t, int orient) {
+            super.renderModels(t, orient);
             vartorches[shape].renderModel(t, orient);
         }
     }
@@ -624,6 +629,7 @@ public class RenderGate
         
         @Override
         public void prepareInv() {
+            reflect = false;
             wires[0].on = true;
             wires[1].on = false;
             wires[2].on = true;
@@ -638,6 +644,7 @@ public class RenderGate
         
         @Override
         public void prepare(SimpleGatePart part) {
+            reflect = part.shape() == 1;
             boolean on = (part.state&0x10) != 0;
             
             wires[0].on = !on;

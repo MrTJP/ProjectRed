@@ -154,7 +154,32 @@ public class ComponentStore
     }
     
     public static Transformation orientT(int orient) {
-        return Rotation.sideOrientation(orient>>2, orient&3).at(Vector3.center);
+        Transformation t = Rotation.sideOrientation(orient%24>>2, orient&3);
+        if(orient >= 24)
+            t = new Scale(-1, 1, 1).with(t);
+        
+        return t.at(Vector3.center);
+    }
+    
+    public static CCModel bakeCopy(CCModel base, int orient) {
+        CCModel m = base.copy();
+        if(orient >= 24) 
+            reverseFacing(m);
+        
+        m.apply(orientT(orient)).computeLighting(LightModel.standardLightModel);
+        return m;
+    }
+    
+    public static CCModel reverseFacing(CCModel m) {
+        for(int i = 0; i < m.verts.length; i+=4) {
+            Vertex5 vtmp = m.verts[i+1];
+            Vector3 ntmp = m.normals[i+1];
+            m.verts[i+1] = m.verts[i+3];
+            m.normals[i+1] = m.normals[i+3];
+            m.verts[i+3] = vtmp;
+            m.normals[i+3] = ntmp;
+        }
+        return m;
     }
 
     public static abstract class ComponentModel
@@ -171,22 +196,22 @@ public class ComponentStore
         
         static {
             for(int i = 0; i < 24; i++)
-                models[i] = base.copy().apply(orientT(i)).computeLighting(LightModel.standardLightModel);
+                models[i] = bakeCopy(base, i);
         }
         
         @Override
         public void renderModel(Transformation t, int orient) {
-            models[orient].render(t, new IconTransformation(baseIcon));
+            models[orient%24].render(t, new IconTransformation(baseIcon));
         }
     }
     
     public static abstract class SingleComponentModel extends ComponentModel
     {
-        public CCModel[] models = new CCModel[24];
+        public CCModel[] models = new CCModel[48];
         
         public SingleComponentModel(CCModel m) {
-            for(int i = 0; i < 24; i++)
-                models[i] = m.copy().apply(orientT(i)).computeLighting(LightModel.standardLightModel);
+            for(int i = 0; i < 48; i++)
+                models[i] = bakeCopy(m, i);
         }
         
         public SingleComponentModel(CCModel m, Vector3 pos) {
@@ -364,14 +389,14 @@ public class ComponentStore
     
     public static class WireModel2D extends ComponentModel
     {
-        public static CCModel[] models = new CCModel[24];
+        public static CCModel[] models = new CCModel[48];
         private static int iconCounter = 0;
         
         static
         {
             CCModel m = CCModel.quadModel(4).generateBlock(0, 0, 0, 0, 1, 1/8D+0.002, 1, ~2).computeNormals();
-            for(int i = 0; i < 24; i++)
-                models[i] = m.copy().apply(orientT(i)).computeLighting(LightModel.standardLightModel);
+            for(int i = 0; i < 48; i++)
+                models[i] = bakeCopy(m, i);
         }
         
         private WireComponentModel parent;
