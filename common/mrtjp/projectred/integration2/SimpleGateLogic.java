@@ -27,7 +27,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
             new Pulse(),
             new Repeater(),
             new Randomizer(),
-            null,
+            new RSLatch(),
             null,
             new TransparentLatch(),
             new LightSensor(),
@@ -409,6 +409,62 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
             super.onChange(gate);
             if((gate.state()&4) != 0)
                 gate.scheduleTick(2);
+        }
+    }
+    
+    public static class RSLatch extends SimpleGateLogic
+    {
+        @Override
+        public int cycleShape(int shape) {
+            return (shape+1)%4;
+        }
+        
+        @Override
+        public int outputMask(int shape) {
+            return shape >> 1 == 0 ? 0xF : 5;
+        }
+        
+        @Override
+        public int inputMask(int shape) {
+            return 0xA;
+        }
+        
+        @Override
+        public int calcOutput(SimpleGatePart gate, int input) {
+            if(input == 0xA)//both inputs on
+                return 0;
+            
+            if((gate.shape & 1) != 0)//reverse
+                input = GatePart.flipMaskZ(input);
+            
+            if(input == 0) {//both inputs on
+                int output = gate.state()>>4;
+                if(output != 0)
+                    return output;//leave state
+                
+                input = gate.world().rand.nextBoolean() ? 2 : 8;
+            }
+            
+            int output = GatePart.shiftMask(input, 1);
+            if((gate.shape & 2) == 0)
+                output |= input;
+
+            if((gate.shape & 1) != 0)//reverse
+                output = GatePart.flipMaskZ(output);
+            
+            return output;
+        }
+        
+        @Override
+        public void onChange(SimpleGatePart gate) {
+            super.onChange(gate);
+            if(gate.schedTime >= 0) {
+                int oldOutput = gate.state()>>4;
+                if(oldOutput != 0) {
+                    gate.setState(gate.state() & 0xF);
+                    gate.onOutputChange(oldOutput);
+                }
+            }
         }
     }
 
