@@ -422,8 +422,8 @@ public class ComponentStore
             
             for(int tex = 0; tex < icons.length; tex++) {
                 int[] texMap = new int[1024];
-                for(int y = 2; y <= 28; y++)
-                    for(int x = 2; x <= 28; x++) {
+                for(int y = 2; y <= 29; y++)
+                    for(int x = 2; x <= 29; x++) {
                         if(wireMask[y*32+x].rgba() != -1)
                             continue;
 
