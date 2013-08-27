@@ -104,6 +104,7 @@ public class WirePropogator {
             count = 0;
             recalcs = 0;
             lastCaller = null;
+            first = null;
             
             reusableRuns.add(this);
         }
