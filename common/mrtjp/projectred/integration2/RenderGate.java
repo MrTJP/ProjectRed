@@ -33,7 +33,7 @@ public class RenderGate
             new Pulse(),
             new Repeater(),
             new Randomizer(),
-            null,
+            new RSLatch(),
             null,
             new TransparentLatch(),
             new LightSensor(),
@@ -608,6 +608,73 @@ public class RenderGate
             chips[0].on = (part.state&0x10) != 0;
             chips[1].on = (part.state&0x20) != 0;
             chips[2].on = (part.state&0x80) != 0;
+        }
+    }
+    
+    public static class RSLatch extends GateRenderer<SimpleGatePart>
+    {
+        WireComponentModel[] wires1 = generateWireModels("RSLATCH", 2);
+        WireComponentModel[] wires2 = generateWireModels("RSLATCH2", 4);
+        RedstoneTorchModel[] torches1 = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(8, 3, 6),
+                new RedstoneTorchModel(8, 13, 6)
+            };
+        RedstoneTorchModel[] torches2 = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(9.5, 3, 6),
+                new RedstoneTorchModel(6.5, 13, 6)
+            };
+        int type = 0;
+        
+        @Override
+        public void prepareInv() {
+            reflect = false;
+            type = 0;
+            wires1[0].on = false;
+            wires1[1].on = true;
+            torches1[0].on = false;
+            torches1[1].on = true;
+        }
+        
+        @Override
+        public void prepare(SimpleGatePart part) {
+            reflect = (part.shape&1) != 0;
+            type = part.shape >> 1;
+            int state = part.state();
+            if(reflect)
+                state = GatePart.flipMaskZ(state>>4)<<4 | GatePart.flipMaskZ(state);
+            
+            if(type == 0) {
+                wires1[0].on = (state&0x88) != 0;
+                wires1[1].on = (state&0x22) != 0;
+                torches1[0].on = (state&0x10) != 0;
+                torches1[1].on = (state&0x40) != 0;
+            }
+            else {
+                wires2[1].on = (state&2) != 0;
+                wires2[3].on = (state&8) != 0;
+                torches2[0].on = (state&0x10) != 0;
+                torches2[1].on = (state&0x40) != 0;
+                wires2[0].on = torches2[1].on;
+                wires2[2].on = torches2[0].on;
+            }
+        }
+        
+        @Override
+        public void renderModels(Transformation t, int orient) {
+            super.renderModels(t, orient);
+
+            for(ComponentModel m : type == 0 ? wires1 : wires2)
+                m.renderModel(t, orient);
+            for(ComponentModel m : type == 0 ? torches1 : torches2)
+                m.renderModel(t, orient);
+        }
+        
+        @Override
+        public void registerIcons(IconRegister r) {
+            for(ComponentModel m : wires1)
+                m.registerTextures(r);
+            for(ComponentModel m : wires2)
+                m.registerTextures(r);
         }
     }
     

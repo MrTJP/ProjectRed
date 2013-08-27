@@ -17,7 +17,7 @@ public enum EnumGate
     Pulse("Pulse Former", "pr_sgate"),
     Repeater("Repeater", "pr_sgate"),
     Randomizer("Randomizer", "pr_sgate"),
-    RSLatch(null, "pr_sgate"),
+    RSLatch("RS Latch", "pr_sgate"),
     ToggleLatch(null, "pr_sgate"),
     TransparentLatch("Transparent Latch", "pr_sgate"),
     LightSensor("Light Sensor", "pr_sgate"),
