@@ -30,6 +30,8 @@ public class ComponentStore
 {
     public static CCModel base;
     public static CCModel lightChip;
+    public static CCModel leverOn;
+    public static CCModel leverOff;
     public static CCModel solarArray;
     public static CCModel rainSensor;
     
@@ -38,6 +40,7 @@ public class ComponentStore
     public static Colour[][] wireData = new Colour[3][];
     public static Icon[] redstoneTorchIcons = new Icon[2];
     public static Icon[] taintedChipIcons = new Icon[2];
+    public static Icon leverIcon;
     public static Icon[] solarIcons = new Icon[3];
     public static Icon rainIcon;
     
@@ -47,6 +50,8 @@ public class ComponentStore
         lightChip = loadModel("chip");
         solarArray = loadModel("solar");
         rainSensor = loadModel("rainsensor");
+        leverOff = loadModel("leveroff");
+        leverOn = loadModel("leveron");
     }
     
     public static Map<String, CCModel> loadModels(String name) {
@@ -102,7 +107,7 @@ public class ComponentStore
         for (int i = 0; i < 3; i++) 
             solarIcons[i] = r.registerIcon(baseTex+"solar"+i);
         rainIcon = r.registerIcon(baseTex+"rainsensor");
-        
+        leverIcon = r.registerIcon(baseTex+"lever");
         RenderGate.registerIcons(r);
     }
 
@@ -224,6 +229,44 @@ public class ComponentStore
         public void renderModel(Transformation t, int orient) {
             models[orient].render(t, getUVT());
         }
+    }
+    
+    public static abstract class MultiComponentModel extends ComponentModel 
+    {
+        public CCModel[][] models;
+        public int state;
+        
+        public MultiComponentModel(CCModel... m) {
+            this(new Vector3(0,0,0), m);
+        }
+        
+        public MultiComponentModel(Vector3 pos, CCModel... m) {
+            models = new CCModel[m.length][48];
+            for(int j = 0; j < m.length; j++)
+                for(int i = 0; i < 48; i++)
+                    models[j][i] = bakeCopy(m[j].copy().apply(pos.copy().multiply(1/16D).translation()), i);
+
+        }
+
+        public abstract IUVTransformation getUVT();
+        
+        @Override
+        public void renderModel(Transformation t, int orient) {
+            models[state][orient].render(t, getUVT());
+        }
+    }
+    
+    public static class LeverModel extends MultiComponentModel {
+
+        public LeverModel(double x, double z) {
+            super(new Vector3(x, 2, z), leverOn, leverOff);
+        }
+        
+        @Override
+        public IUVTransformation getUVT() {
+            return new IconTransformation(leverIcon);
+        }
+        
     }
     
     public static abstract class SimpleComponentModel extends SingleComponentModel
