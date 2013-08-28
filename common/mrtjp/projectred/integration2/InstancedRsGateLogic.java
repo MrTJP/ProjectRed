@@ -3,6 +3,7 @@ package mrtjp.projectred.integration2;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import mrtjp.projectred.ProjectRedIntegration;
+import mrtjp.projectred.core.Configurator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -248,6 +249,8 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             setState2(state2^1);
             sendState2Update(gate);
             gate.scheduleTick(2);
+            if (Configurator.logicGateSounds.getBoolean(true))
+                gate.world().playSoundEffect(gate.x(), gate.y(), gate.z(), "random.click", 0.3F, 0.5F);
         }
     }
 }

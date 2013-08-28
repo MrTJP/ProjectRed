@@ -61,7 +61,6 @@ public abstract class GateRenderBridge {
     public static RotatedPartModel _greenTorchOff;
     public static RotatedPartModel _greenTorchOn;
     public static RotatedPartModel _wire;
-    public static RotatedPartModel _lever;
     public static RotatedPartModel _pointer;
     public static RotatedPartModel _chipYellow;
     public static RotatedPartModel _chipRed;
@@ -84,7 +83,6 @@ public abstract class GateRenderBridge {
         _greenTorchOn = new RotatedPartModel(_torchOff.getCCModels(), "gateparts/torch.obj", reg.registerIcon(baseTex + "greentorchon"));
         _wire = new RotatedPartModel("gateparts/wire.obj", reg.registerIcon(baseTex + "wire"));
         _pointer = new RotatedPartModel("gateparts/pointer.obj", reg.registerIcon(baseTex + "pointer"));
-        _lever = new RotatedPartModel("gateparts/lever.obj", reg.registerIcon(baseTex + "lever"));
         _chipYellow = new RotatedPartModel("gateparts/chip.obj", reg.registerIcon(baseTex + "yellowchip"));
         _chipRed = new RotatedPartModel(_chipYellow.getCCModels(), "gateparts/chip.obj", reg.registerIcon(baseTex + "redchip"));
         _diode = new RotatedPartModel("gateparts/diode.obj", reg.registerIcon(baseTex + "diode"));
@@ -355,8 +353,6 @@ public abstract class GateRenderBridge {
             // Lever model is 6x8
             float xPos = (16f - 10f) / 16f + .03f;
             float zPos = (16f - 8.5f) / 16f + .03f;
-            rt.renderPartModel(_lever, "base", xPos, 2 / 16f, zPos, -1, -1, false);
-            rt.renderPartModel(_lever, (torchState[0] ? "leveron" : "leveroff"), xPos, 2 / 16f, zPos, -1, -1, false);
         }
     }
 

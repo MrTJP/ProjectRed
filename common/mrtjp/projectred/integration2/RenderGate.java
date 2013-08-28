@@ -683,10 +683,10 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("TOGLATCH", 2);
         RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
-                new RedstoneTorchModel(8.5, 3, 6),
-                new RedstoneTorchModel(8.5, 13, 6)
+                new RedstoneTorchModel(4, 4, 6),
+                new RedstoneTorchModel(4, 12, 6)
         };
-        RedstoneTorchModel lever = new RedstoneTorchModel(12, 8, 7);
+        LeverModel lever = new LeverModel(11, 8);
 
         public ToggleLatch() {
             models.addAll(Arrays.asList(wires));
@@ -700,6 +700,7 @@ public class RenderGate
             wires[1].on = false;
             torches[0].on = true;
             torches[1].on = false;
+            lever.state = 0;
         }
         
         @Override
@@ -708,7 +709,7 @@ public class RenderGate
             wires[1].on = (part.state&2) != 0;
             torches[0].on = (part.state&0x10) != 0;
             torches[1].on = (part.state&0x40) != 0;
-            lever.on = ((ExtraStateLogic)part.getLogic()).state2 != 0;
+            lever.state = ((ExtraStateLogic)part.getLogic()).state2 != 0 ? 1 : 0;
         }
     }
     
