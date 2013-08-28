@@ -289,7 +289,7 @@ public class RenderGate
     
     public static class NAND extends GateRenderer<SimpleGatePart>
     {   
-        WireComponentModel[] wires = generateWireModels("AND", 4);
+        WireComponentModel[] wires = generateWireModels("NAND", 4);
         RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
                 new RedstoneTorchModel(4, 8, 6),
                 new RedstoneTorchModel(12, 8, 6),
