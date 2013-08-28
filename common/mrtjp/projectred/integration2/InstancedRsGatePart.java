@@ -22,7 +22,7 @@ public class InstancedRsGatePart extends SimpleGatePart
     @Override
     public void load(NBTTagCompound tag) {
         super.load(tag);
-        logic = InstancedRsGateLogic.create(subID);
+        logic = InstancedRsGateLogic.create(this, subID);
         logic.load(tag);
     }
     
@@ -42,7 +42,7 @@ public class InstancedRsGatePart extends SimpleGatePart
     public void readDesc(MCDataInput packet) {
         super.readDesc(packet);
         if(logic == null)
-            logic = InstancedRsGateLogic.create(subID);
+            logic = InstancedRsGateLogic.create(this, subID);
         logic.readDesc(packet);
     }
     
@@ -57,6 +57,6 @@ public class InstancedRsGatePart extends SimpleGatePart
     @Override
     public void onPlaced(EntityPlayer player, int side, int meta) {
         super.onPlaced(player, side, meta);
-        logic = InstancedRsGateLogic.create(subID);
+        logic = InstancedRsGateLogic.create(this, subID);
     }
 }

@@ -2,7 +2,6 @@ package mrtjp.projectred;
 
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-import mrtjp.projectred.integration.ItemPartGate;
 import mrtjp.projectred.transmission.ItemPartFramedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
 import mrtjp.projectred.transmission.ItemWireDebugger;

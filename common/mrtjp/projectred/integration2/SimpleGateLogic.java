@@ -489,6 +489,9 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         
         @Override
         public void onTick(SimpleGatePart gate) {
+            if(gate.world().isRemote)
+                return;
+            
             int sky = gate.world().getSavedLightValue(EnumSkyBlock.Sky, gate.x(), gate.y(), gate.z()) - gate.world().skylightSubtracted;
             int block = gate.world().getSavedLightValue(EnumSkyBlock.Block, gate.x(), gate.y(), gate.z());
 
@@ -547,6 +550,9 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         
         @Override
         public void onTick(SimpleGatePart gate) {
+            if(gate.world().isRemote)
+                return;
+            
             int newOutput = gate.world().isRaining() && BasicUtils.canBlockSeeSky(gate.world(), gate.x(), gate.y(), gate.z()) ? 4 : 0;
             int oldOutput = gate.state()>>4;
             

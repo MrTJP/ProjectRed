@@ -13,6 +13,8 @@ import mrtjp.projectred.integration2.ComponentStore.ComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.RedstoneTorchModel;
 import mrtjp.projectred.integration2.ComponentStore.WireComponentModel;
 import mrtjp.projectred.integration2.InstancedRsGateLogic.ExtraStateLogic;
+import mrtjp.projectred.integration2.InstancedRsGateLogic.TimerGateLogic;
+import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
@@ -38,7 +40,8 @@ public class RenderGate
             new ToggleLatch(),
             new TransparentLatch(),
             new LightSensor(),
-            new RainSensor()
+            new RainSensor(),
+            new Timer()
         };
     
     public static void registerIcons(IconRegister r) {
@@ -804,6 +807,58 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part) {
             wires[0].on = (part.state&0x44) != 0;
+        }
+    }
+    
+    public static class Timer extends GateRenderer<InstancedRsGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("TIME", 3);
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(8, 3, 6),
+                new RedstoneTorchModel(8, 8, 12)
+            };
+        PointerModel pointer = new PointerModel(8, 8, 8);
+        
+        public Timer() {
+            models.addAll(Arrays.asList(wires));
+            models.addAll(Arrays.asList(torches));
+            torches[1].on = true;
+        }
+        
+        @Override
+        public void prepare(InstancedRsGatePart part) {
+            torches[0].on = (part.state&0x10) != 0;
+            wires[0].on = (part.state&0x88) != 0;
+            wires[1].on = (part.state&0x22) != 0;
+            wires[2].on = (part.state&4) != 0;
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = false;
+            wires[1].on = false;
+            wires[2].on = false;
+            torches[0].on = false;
+            pointer.angle = 0;
+        }
+        
+        @Override
+        public boolean hasSpecials() {
+            return true;
+        }
+        
+        @Override
+        public void prepareDynamic(InstancedRsGatePart part, float frame) {
+            pointer.angle = ((TimerGateLogic)part.getLogic()).interpPointer(frame)*MathHelper.pi*2;
+        }
+        
+        @Override
+        public void renderDynamic(Transformation t) {
+            CCRenderState.startDrawing(7);
+            CCRenderState.pullLightmap();
+            CCRenderState.useNormals(true);
+            pointer.renderModel(t, 0);
+            CCRenderState.draw();
         }
     }
 }
