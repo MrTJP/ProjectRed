@@ -17,6 +17,7 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
@@ -656,6 +657,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     @SideOnly(Side.CLIENT)
     public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
         if (pass == 0) {
+            TextureUtils.bindAtlas(0);
             CCRenderState.reset();
             CCRenderState.setBrightness(world(), x(), y(), z());
             CCRenderState.useModelColours(true);
