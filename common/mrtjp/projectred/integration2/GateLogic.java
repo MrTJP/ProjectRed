@@ -8,7 +8,9 @@ public abstract class GateLogic<PartType extends GatePart>
 {
     public abstract boolean canConnectTo(PartType gate, IConnectable part, int r);
     
-    public abstract int cycleShape(int shape);
+    public boolean cycleShape(PartType gate) {
+        return false;
+    }
     
     public abstract void onChange(PartType gate);
     

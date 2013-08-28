@@ -420,10 +420,8 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     }
 
     public void configure() {
-        int newShape = getLogic().cycleShape(shape());
-        if(newShape != shape()) {
-            setShape(newShape);
-            
+        boolean changed = getLogic().cycleShape(this);
+        if(changed) {
             updateConnections();
             tile().markDirty();
             sendShapeUpdate();
@@ -442,12 +440,16 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         onChange();
     }
     
+    public MCDataOutput getWriteStream(int switch_key) {
+        return tile().getWriteStream(this).writeByte(switch_key);
+    }
+    
     public void sendShapeUpdate() {
-        tile().getWriteStream(this).writeByte(1).writeByte(shape);
+        getWriteStream(1).writeByte(shape);
     }
     
     public void sendOrientationUpdate() {
-        tile().getWriteStream(this).writeByte(0).writeByte(orientation);
+        getWriteStream(0).writeByte(orientation);
     }
     
     /**

@@ -55,12 +55,19 @@ public class SimpleGatePart extends RedstoneGatePart
         return "pr_sgate";
     }
     
-    public SimpleGateLogic getLogic() {
+    public RedstoneGateLogic getLogic() {
         return SimpleGateLogic.instances[subID&0xFF];
     }
 
     public void sendStateUpdate() {
-        tile().getWriteStream(this).writeByte(10).writeByte(state);
+        getWriteStream(10).writeByte(state);
+    }
+    
+    @Override
+    public void onWorldJoin() {
+        super.onWorldJoin();
+        if(getLogic() == null)
+            tile().remPart(this);
     }
     
     public void onInputChange() {
