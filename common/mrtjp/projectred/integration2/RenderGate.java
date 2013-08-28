@@ -9,6 +9,7 @@ import java.util.Random;
 
 import net.minecraft.client.renderer.texture.IconRegister;
 
+import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.integration2.ComponentStore.ComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.RedstoneTorchModel;
 import mrtjp.projectred.integration2.ComponentStore.WireComponentModel;
@@ -16,6 +17,7 @@ import mrtjp.projectred.integration2.InstancedRsGateLogic.ExtraStateLogic;
 import mrtjp.projectred.integration2.InstancedRsGateLogic.TimerGateLogic;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
@@ -66,6 +68,7 @@ public class RenderGate
 
     public static void renderInv(Transformation t, int id) {
         GateRenderer r = renderers[id];
+        TextureUtils.bindAtlas(0);
         r.prepareInv();
         CCRenderState.startDrawing(7);
         r.renderStatic(t, 0);

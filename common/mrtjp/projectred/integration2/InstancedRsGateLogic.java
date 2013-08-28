@@ -271,7 +271,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             sendState2Update(gate);
             gate.scheduleTick(2);
             if (Configurator.logicGateSounds.getBoolean(true))
-                gate.world().playSoundEffect(gate.x(), gate.y(), gate.z(), "random.click", 0.3F, 0.5F);
+                gate.world().playSoundEffect(gate.x()+0.5D, gate.y()+0.5D, gate.z()+0.5D, "random.click", 0.3F, 0.5F);
         }
     }
     
@@ -429,6 +429,8 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void pointerTick() {
             resetPointer();
+            if (Configurator.logicGateSounds.getBoolean(true))
+                gate.world().playSoundEffect(gate.x()+0.5D, gate.y()+0.5D, gate.z()+0.5D, "random.click", 0.3F, 0.5F);
             if(!gate.world().isRemote) {
                 gate.setState(0xB0 | gate.state()&0xF);
                 gate.onOutputChange(0xB);
@@ -441,7 +443,6 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             if(held == null || held.getItem() != ProjectRedIntegration.itemScrewdriver) {
                 if(!gate.world().isRemote)
                     IntegrationSPH.openTimerGui(player, gate);
-                
                 return true;
             }
             return false;
