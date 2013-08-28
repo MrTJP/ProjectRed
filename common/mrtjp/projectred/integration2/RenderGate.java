@@ -611,7 +611,7 @@ public class RenderGate
         }
     }
     
-    public static class RSLatch extends GateRenderer<SimpleGatePart>
+    public static class RSLatch extends GateRenderer<InstancedRsGatePart>
     {
         WireComponentModel[] wires1 = generateWireModels("RSLATCH", 2);
         WireComponentModel[] wires2 = generateWireModels("RSLATCH2", 4);
@@ -636,7 +636,7 @@ public class RenderGate
         }
         
         @Override
-        public void prepare(SimpleGatePart part) {
+        public void prepare(InstancedRsGatePart part) {
             reflect = (part.shape&1) != 0;
             type = part.shape >> 1;
             int state = part.state();

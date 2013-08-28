@@ -27,7 +27,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
             new Pulse(),
             new Repeater(),
             new Randomizer(),
-            new RSLatch(),
+            null,
             null,
             new TransparentLatch(),
             new LightSensor(),
@@ -43,6 +43,18 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     
     public int getOutput(SimpleGatePart gate, int r) {
         return (gate.state & 0x10<<r) != 0 ? 15 : 0;
+    }
+    
+    @Override
+    public boolean cycleShape(SimpleGatePart gate) {
+        int oldShape = gate.shape();
+        int newShape = cycleShape(oldShape);
+        if(newShape != oldShape) {
+            gate.setShape(newShape);
+            return true;
+        }
+        
+        return false;
     }
     
     public int cycleShape(int shape) {
@@ -412,62 +424,6 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         }
     }
     
-    public static class RSLatch extends SimpleGateLogic
-    {
-        @Override
-        public int cycleShape(int shape) {
-            return (shape+1)%4;
-        }
-        
-        @Override
-        public int outputMask(int shape) {
-            return shape >> 1 == 0 ? 0xF : 5;
-        }
-        
-        @Override
-        public int inputMask(int shape) {
-            return 0xA;
-        }
-        
-        @Override
-        public int calcOutput(SimpleGatePart gate, int input) {
-            if(input == 0xA)//both inputs on
-                return 0;
-            
-            if((gate.shape & 1) != 0)//reverse
-                input = GatePart.flipMaskZ(input);
-            
-            if(input == 0) {//both inputs on
-                int output = gate.state()>>4;
-                if(output != 0)
-                    return output;//leave state
-                
-                input = gate.world().rand.nextBoolean() ? 2 : 8;
-            }
-            
-            int output = GatePart.shiftMask(input, 1);
-            if((gate.shape & 2) == 0)
-                output |= input;
-
-            if((gate.shape & 1) != 0)//reverse
-                output = GatePart.flipMaskZ(output);
-            
-            return output;
-        }
-        
-        @Override
-        public void onChange(SimpleGatePart gate) {
-            super.onChange(gate);
-            if(gate.schedTime >= 0) {
-                int oldOutput = gate.state()>>4;
-                if(oldOutput != 0) {
-                    gate.setState(gate.state() & 0xF);
-                    gate.onOutputChange(oldOutput);
-                }
-            }
-        }
-    }
-
     public static class TransparentLatch extends SimpleGateLogic
     {
         @Override
