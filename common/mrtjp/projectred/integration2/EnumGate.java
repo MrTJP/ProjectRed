@@ -21,7 +21,8 @@ public enum EnumGate
     ToggleLatch("Toggle Latch", "pr_igate"),
     TransparentLatch("Transparent Latch", "pr_sgate"),
     LightSensor("Light Sensor", "pr_sgate"),
-    RainSensor("Rain Sensor", "pr_sgate")
+    RainSensor("Rain Sensor", "pr_sgate"),
+    Timer("Timer", "pr_igate")
     ;
 
     public static EnumGate[] VALID_GATES = values();

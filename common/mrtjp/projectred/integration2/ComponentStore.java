@@ -11,6 +11,7 @@ import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
 import codechicken.lib.colour.Colour;
 import codechicken.lib.lighting.LightModel;
+import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
@@ -34,6 +35,7 @@ public class ComponentStore
     public static CCModel leverOff;
     public static CCModel solarArray;
     public static CCModel rainSensor;
+    public static CCModel pointer;
     
     public static Icon baseIcon;
     public static Icon[] wireIcons = new Icon[3];
@@ -43,6 +45,7 @@ public class ComponentStore
     public static Icon leverIcon;
     public static Icon[] solarIcons = new Icon[3];
     public static Icon rainIcon;
+    public static Icon pointerIcon;
     
     static
     {
@@ -50,8 +53,8 @@ public class ComponentStore
         lightChip = loadModel("chip");
         solarArray = loadModel("solar");
         rainSensor = loadModel("rainsensor");
-        leverOff = loadModel("leveroff");
-        leverOn = loadModel("leveron");
+        leverOff = loadModel("leveroff");        leverOn = loadModel("leveron");
+        pointer = loadModel("pointer");
     }
     
     public static Map<String, CCModel> loadModels(String name) {
@@ -108,6 +111,8 @@ public class ComponentStore
             solarIcons[i] = r.registerIcon(baseTex+"solar"+i);
         rainIcon = r.registerIcon(baseTex+"rainsensor");
         leverIcon = r.registerIcon(baseTex+"lever");
+        pointerIcon = r.registerIcon(baseTex+"pointer");
+        
         RenderGate.registerIcons(r);
     }
 
@@ -562,6 +567,22 @@ public class ComponentStore
         @Override
         public Icon getIcon() {
             return rainIcon;
+        }
+    }
+    
+    public static class PointerModel extends ComponentModel
+    {
+        public double angle;
+        public Vector3 pos;
+        
+        public PointerModel(double x, double y, double z) {
+            pos = new Vector3(x, y-6, z).multiply(1/16D);
+        }
+        
+        @Override
+        public void renderModel(Transformation t, int orient) {
+            pointer.render(new Rotation(-angle+MathHelper.pi, 0, 1, 0).with(pos.translation()).with(t), 
+                    new IconTransformation(pointerIcon), LightModel.standardLightModel);
         }
     }
 }

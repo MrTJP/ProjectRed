@@ -2,6 +2,7 @@ package mrtjp.projectred.integration2;
 
 import static mrtjp.projectred.ProjectRedIntegration.itemPartGate2;
 import mrtjp.projectred.core.IProxy;
+import codechicken.lib.packet.PacketCustom;
 import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;
@@ -10,6 +11,7 @@ public class IntegrationProxy implements IProxy, IPartFactory {
 
     @Override
     public void preinit() {
+        PacketCustom.assignHandler(IntegrationSPH.channel, new IntegrationSPH());
     }
     
     @Override
