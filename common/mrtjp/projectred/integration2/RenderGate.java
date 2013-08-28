@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.texture.IconRegister;
 import mrtjp.projectred.integration2.ComponentStore.ComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.RedstoneTorchModel;
 import mrtjp.projectred.integration2.ComponentStore.WireComponentModel;
+import mrtjp.projectred.integration2.InstancedRsGateLogic.ExtraStateLogic;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
@@ -34,7 +35,7 @@ public class RenderGate
             new Repeater(),
             new Randomizer(),
             new RSLatch(),
-            null,
+            new ToggleLatch(),
             new TransparentLatch(),
             new LightSensor(),
             new RainSensor()
@@ -675,6 +676,39 @@ public class RenderGate
                 m.registerTextures(r);
             for(ComponentModel m : wires2)
                 m.registerTextures(r);
+        }
+    }
+    
+    public static class ToggleLatch extends GateRenderer<InstancedRsGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("TOGLATCH", 2);
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(8.5, 3, 6),
+                new RedstoneTorchModel(8.5, 13, 6)
+        };
+        RedstoneTorchModel lever = new RedstoneTorchModel(12, 8, 7);
+
+        public ToggleLatch() {
+            models.addAll(Arrays.asList(wires));
+            models.addAll(Arrays.asList(torches));
+            models.add(lever);
+        }
+
+        @Override
+        public void prepareInv() {
+            wires[0].on = false;
+            wires[1].on = false;
+            torches[0].on = true;
+            torches[1].on = false;
+        }
+        
+        @Override
+        public void prepare(InstancedRsGatePart part) {
+            wires[0].on = (part.state&8) != 0;
+            wires[1].on = (part.state&2) != 0;
+            torches[0].on = (part.state&0x10) != 0;
+            torches[1].on = (part.state&0x40) != 0;
+            lever.on = ((ExtraStateLogic)part.getLogic()).state2 != 0;
         }
     }
     

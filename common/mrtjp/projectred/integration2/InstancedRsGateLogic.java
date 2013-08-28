@@ -2,6 +2,9 @@ package mrtjp.projectred.integration2;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import mrtjp.projectred.ProjectRedIntegration;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRsGatePart>
@@ -10,6 +13,8 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         switch(subID) {
             case 12:
                 return new RSLatch();
+            case 13:
+                return new ToggleLatch();
         }
         return null;
     }
@@ -177,6 +182,72 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 output = GatePart.flipMaskZ(output);
             
             return output;
+        }
+    }
+    
+    public static class ToggleLatch extends ExtraStateLogic
+    {
+        @Override
+        public int outputMask(int shape) {
+            return 5;
+        }
+        
+        @Override
+        public int inputMask(int shape) {
+            return 0xA;
+        }
+        
+        @Override
+        public boolean clientState2() {
+            return true;
+        }
+        
+        @Override
+        public void setup(InstancedRsGatePart gate) {
+            gate.setState(0x10);
+            gate.onOutputChange(1);
+        }
+        
+        @Override
+        public void onChange(InstancedRsGatePart gate) {
+            int oldInput = gate.state()&0xF;
+            int newInput = getInput(gate, 0xA);
+            int high = newInput & ~oldInput;
+            
+            if(high == 2 || high == 8)//one side went high (if both, double change so no change)
+                toggle(gate);
+            
+            if(oldInput != newInput) {
+                gate.setState(gate.state() & 0xF0 | newInput);
+                gate.onInputChange();
+            }
+        }
+
+        @Override
+        public void scheduledTick(InstancedRsGatePart gate) {
+            int oldOutput = gate.state()>>4;
+            int newOutput = state2 == 0 ? 1 : 4;
+            if(oldOutput != newOutput) {
+                gate.setState(newOutput<<4 | gate.state() & 0xF);
+                gate.onOutputChange(outputMask(5));
+            }
+            onChange(gate);
+        }
+        
+        @Override
+        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held) {
+            if(held == null || held.getItem() != ProjectRedIntegration.itemScrewdriver) {
+                if(!gate.world().isRemote)
+                    toggle(gate);
+                return true;
+            }
+            return false;
+        }
+
+        private void toggle(InstancedRsGatePart gate) {
+            setState2(state2^1);
+            sendState2Update(gate);
+            gate.scheduleTick(2);
         }
     }
 }
