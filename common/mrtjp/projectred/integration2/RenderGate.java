@@ -45,6 +45,7 @@ public class RenderGate
             new RainSensor(),
             new Timer(),
             new Sequencer(),
+            new Counter(),
         };
     
     public static void registerIcons(IconRegister r) {
@@ -54,6 +55,7 @@ public class RenderGate
     }
     
     public static void renderStatic(GatePart gate) {
+        renderers[renderers.length-1] = new Counter();
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
         r.renderStatic(new Translation(gate.x(), gate.y(), gate.z()), gate.orientation&0xFF);
@@ -920,5 +922,66 @@ public class RenderGate
             pointer.renderModel(t, 0);
             CCRenderState.draw();
         }
+    }
+    
+    public static class Counter extends GateRenderer<InstancedRsGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("COUNT", 2);
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(11, 8, 12),
+                new RedstoneTorchModel(8, 3, 6),
+                new RedstoneTorchModel(8, 13, 6),
+        };
+        PointerModel pointer = new PointerModel(11, 8, 8, 1.2D);
+        
+        public Counter() {
+            models.addAll(Arrays.asList(wires));
+            models.addAll(Arrays.asList(torches));
+            torches[0].on = true;
+        }
+        
+        @Override
+        public void prepare(InstancedRsGatePart gate) {
+            reflect = gate.shape() == 1;
+            wires[0].on = (gate.state()&8) != 0;
+            wires[1].on = (gate.state()&2) != 0;
+            torches[1].on = (gate.state&0x10) != 0;
+            torches[2].on = (gate.state&0x40) != 0;
+        }
+        
+        @Override
+        public void prepareInv() {
+            reflect = false;
+            wires[0].on = false;
+            wires[1].on = false;
+            torches[1].on = false;
+            torches[2].on = true;
+            pointer.angle = 220 * MathHelper.torad;
+        }
+
+        @Override
+        public void prepareDynamic(InstancedRsGatePart gate, float frame) {
+            int max = ((InstancedRsGateLogic.Counter)gate.getLogic()).max;
+            int val = ((InstancedRsGateLogic.Counter)gate.getLogic()).value;
+            pointer.angle = (val/(double)max * (340-220) + 210)*MathHelper.torad;
+            if (gate.shape() == 1)  {
+                reflect = true;
+            }
+        }
+        
+        @Override
+        public boolean hasSpecials() {
+            return true;
+        }
+
+        @Override
+        public void renderDynamic(Transformation t) {
+            CCRenderState.startDrawing(7);
+            CCRenderState.pullLightmap();
+            CCRenderState.useNormals(true);
+            pointer.renderModel(t, reflect ? 1 : 0);
+            CCRenderState.draw();
+        }
+
     }
 }

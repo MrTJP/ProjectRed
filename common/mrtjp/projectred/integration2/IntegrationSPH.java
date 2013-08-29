@@ -2,6 +2,7 @@ package mrtjp.projectred.integration2;
 
 import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.integration2.GateLogic.ICounterGuiLogic;
 import mrtjp.projectred.integration2.GateLogic.ITimerGuiLogic;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -22,9 +23,32 @@ public class IntegrationSPH implements IServerPacketHandler {
         switch (packet.getType()) {
             case 1:
                 incrTimer(player.worldObj, packet);
+                break;
+            case 2:
+                incCounter(player.worldObj, packet);
+                break;
         }
     }
     
+    private void incCounter(World world, PacketCustom packet) {
+        TMultiPart part = readPartIndex(world, packet);
+        if(part instanceof GatePart) {
+            GatePart gate = (GatePart)part;
+            if(gate.getLogic() instanceof ICounterGuiLogic) {
+                ICounterGuiLogic t = (ICounterGuiLogic)gate.getLogic();
+                int actionID = packet.readByte();
+                
+                if(actionID == 0)
+                    t.setCounterMax(gate, t.getCounterMax()+packet.readShort());
+                else if(actionID == 1)
+                    t.setCounterIncr(gate, t.getCounterIncr()+packet.readShort());
+                else if(actionID == 2)
+                    t.setCounterDecr(gate, t.getCounterDecr()+packet.readShort());
+
+            }
+        }
+    }
+
     private void incrTimer(World world, PacketCustom packet) {
         TMultiPart part = readPartIndex(world, packet);
         if(part instanceof GatePart) {
@@ -55,6 +79,12 @@ public class IntegrationSPH implements IServerPacketHandler {
 
     public static void openTimerGui(EntityPlayer player, GatePart part) {
         PacketCustom packet = new PacketCustom(channel, 1);
+        writePartIndex(packet, part);
+        packet.sendToPlayer(player);
+    }
+    
+    public static void openCounterGui(EntityPlayer player, GatePart part) {
+        PacketCustom packet = new PacketCustom(channel, 2);
         writePartIndex(packet, part);
         packet.sendToPlayer(player);
     }

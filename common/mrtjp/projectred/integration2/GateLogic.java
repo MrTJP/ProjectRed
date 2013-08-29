@@ -26,6 +26,10 @@ public abstract class GateLogic<PartType extends GatePart>
         public int getCounterDecr();
         
         public void setCounterDecr(GatePart gate, int i);
+        
+        public int getCounterValue();
+        
+        public void setCounterValue(GatePart gate, int i);
     }
     
     public abstract boolean canConnectTo(PartType gate, IConnectable part, int r);

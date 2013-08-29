@@ -20,6 +20,8 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 return new Timer(gate);
             case 18:
                 return new Sequencer(gate);
+            case 19:
+                return new Counter(gate);
         }
         throw new IllegalArgumentException("Invalid subID: "+subID);
     }
@@ -526,13 +528,16 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void onTick(InstancedRsGatePart gate) {
             if (!gate.world().isRemote) {
-                int oldOut = gate.state();
+                int oldOut = gate.state()>>4;
                 int out = 1<<gate.world().getWorldTime()%pointer_max/(pointer_max/4);
                 if (gate.shape() == 1)
                     out = GatePart.flipMaskZ(out);
-                gate.setState(out<<4);
-                if (oldOut != out)
+                if (oldOut != out) {
+                    gate.setState(out<<4);
                     gate.onOutputChange(0xF);
+                    if (Configurator.logicGateSounds.getBoolean(true))
+                        gate.world().playSoundEffect(gate.x()+0.5D, gate.y()+0.5D, gate.z()+0.5D, "random.click", 0.3F, 0.5F);
+                }
             }
         }
         
@@ -565,10 +570,10 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
     
     public static class Counter extends InstancedRsGateLogic implements ICounterGuiLogic
     {
-        public int value;
-        public int max;
-        public int incr;
-        public int decr;
+        public int value = 0;
+        public int max = 10;
+        public int incr = 1;
+        public int decr = 1;
         
         public Counter(InstancedRsGatePart gate) {
             super(gate);
@@ -591,6 +596,11 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
 
         @Override
+        public int getCounterValue() {
+            return value;
+        }
+        
+        @Override
         public int getCounterMax() {
             return max;
         }
@@ -603,6 +613,14 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public int getCounterDecr() {
             return decr;
+        }
+        
+        @Override
+        public void setCounterValue(GatePart gate, int i) {
+            int oldVal = value;
+            value = Math.min(max, Math.max(0, i));
+            if (value != oldVal)
+                sendValueUpdate();
         }
 
         @Override
@@ -656,10 +674,45 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
 
         @Override
         public void onChange(InstancedRsGatePart gate) {
+            int oldInput = gate.state()&0xF;
+            int newInput = getInput(gate, 0xA);
+            if (gate.shape() == 1)
+                newInput = GatePart.flipMaskZ(newInput);
+            int high = newInput & ~oldInput;
+            int oldValue = value;
+            if ((high & 2) != 0)
+                setCounterValue(gate, value + incr);
+
+            if ((high & 8) != 0)
+                setCounterValue(gate, value - decr);
+            
+            if(oldInput != newInput) {
+                gate.setState(gate.state() & 0xF0 | newInput);
+                gate.onInputChange();
+                gate.scheduleTick(2);
+            }   
+        }
+
+        @Override
+        public boolean cycleShape(InstancedRsGatePart gate) {
+            gate.setShape(gate.shape() == 1 ? 0 : 1);
+            return true;
         }
 
         @Override
         public void scheduledTick(InstancedRsGatePart gate) {
+            int oldOutput = gate.state();
+            int newOutput = 0;
+            if (value == max)
+                newOutput = 1;
+            else if (value == 0)
+                newOutput = 4;
+            
+            if (newOutput != oldOutput)
+                gate.setState(gate.state()&0xF | newOutput<<4);
+            
+            if (newOutput != oldOutput)
+                gate.onOutputChange(5);
         }
         
         @Override
@@ -671,7 +724,16 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         public int inputMask(int shape) {
             return 2 | 8;
         }
-
+        
+        @Override
+        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held) {
+            if(held == null || held.getItem() != ProjectRedIntegration.itemScrewdriver) {
+                if(!gate.world().isRemote)
+                    IntegrationSPH.openCounterGui(player, gate);
+                return true;
+            }
+            return false;
+        }
     }
 
 }

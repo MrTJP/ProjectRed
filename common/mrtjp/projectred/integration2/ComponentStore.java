@@ -582,13 +582,19 @@ public class ComponentStore
     
     public static class PointerModel extends ComponentModel
     {
-        public static CCModel[] models = bakeDynamic(pointer);
+        public CCModel[] models;
         
         public double angle;
         public Vector3 pos;
         
         public PointerModel(double x, double y, double z) {
-            pos = new Vector3(x, y-6, z).multiply(1/16D);
+            models = bakeDynamic(pointer);
+            pos = new Vector3(x, y-1, z).multiply(1/16D);
+        }
+        
+        public PointerModel(double x, double y, double z, double scale) {
+            models = bakeDynamic(pointer.copy().apply(new Scale(scale, 1, scale)));
+            pos = new Vector3(x, y-1, z).multiply(1/16D);
         }
         
         @Override

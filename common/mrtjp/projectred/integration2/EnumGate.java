@@ -23,7 +23,8 @@ public enum EnumGate
     LightSensor("Light Sensor", "pr_sgate"),
     RainSensor("Rain Sensor", "pr_sgate"),
     Timer("Timer", "pr_igate"),
-    Sequencer("Sequencer", "pr_igate")    
+    Sequencer("Sequencer", "pr_igate"),    
+    Counter("Counter", "pr_igate"),    
     ;
 
     public static EnumGate[] VALID_GATES = values();
