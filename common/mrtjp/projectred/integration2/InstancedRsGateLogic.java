@@ -18,6 +18,8 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 return new ToggleLatch(gate);
             case 17:
                 return new Timer(gate);
+            case 18:
+                return new Sequencer(gate);
         }
         throw new IllegalArgumentException("Invalid subID: "+subID);
     }
@@ -458,4 +460,218 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
     {
         
     }
+    
+    public static class Sequencer extends InstancedRsGateLogic implements ITimerGuiLogic
+    {
+
+        public int pointer_max = 40;
+        
+        public Sequencer(InstancedRsGatePart gate) {
+            super(gate);
+        }
+
+        @Override
+        public void onChange(InstancedRsGatePart gate) {
+        }
+
+        @Override
+        public void scheduledTick(InstancedRsGatePart gate) {   
+        }
+
+        @Override
+        public int getTimerMax() {
+            return pointer_max;
+        }
+        
+        @Override
+        public void setTimerMax(GatePart gate, int t) {
+            if(t < 4)
+                t = 4;
+            if(t != pointer_max) {
+                pointer_max = t;
+                sendPointerMaxUpdate();
+            }
+        }
+        
+        @Override
+        public void save(NBTTagCompound tag) {
+            tag.setInteger("pmax", pointer_max);
+        }
+        
+        @Override
+        public void load(NBTTagCompound tag) {
+            pointer_max = tag.getInteger("pmax");
+        }
+        
+        @Override
+        public void writeDesc(MCDataOutput packet) {
+            packet.writeInt(pointer_max);
+        }
+        
+        @Override
+        public void readDesc(MCDataInput packet) {
+            pointer_max = packet.readInt();
+        }
+        
+        @Override
+        public void read(MCDataInput packet, int switch_key) {
+            if(switch_key == 11)
+                pointer_max = packet.readInt();
+        }
+
+        public void sendPointerMaxUpdate() {
+            gate.getWriteStream(11).writeInt(pointer_max);
+        }
+        
+        @Override
+        public void onTick(InstancedRsGatePart gate) {
+            if (!gate.world().isRemote) {
+                int oldOut = gate.state();
+                int out = 1<<gate.world().getWorldTime()%pointer_max/(pointer_max/4);
+                if (gate.shape() == 1)
+                    out = GatePart.flipMaskZ(out);
+                gate.setState(out<<4);
+                if (oldOut != out)
+                    gate.onOutputChange(0xF);
+            }
+        }
+        
+        @Override
+        public boolean cycleShape(InstancedRsGatePart gate) {
+            gate.setShape(gate.shape() == 1 ? 0 : 1);
+            return true;
+        }
+        
+        @Override
+        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held) {
+            if(held == null || held.getItem() != ProjectRedIntegration.itemScrewdriver) {
+                if(!gate.world().isRemote)
+                    IntegrationSPH.openTimerGui(player, gate);
+                return true;
+            }
+            return false;
+        }
+        
+        @Override
+        public int outputMask(int shape) {
+            return 0xF;
+        }
+        
+        @Override
+        public int inputMask(int shape) {
+            return 0;
+        }
+    }
+    
+    public static class Counter extends InstancedRsGateLogic implements ICounterGuiLogic
+    {
+        public int value;
+        public int max;
+        public int incr;
+        public int decr;
+        
+        public Counter(InstancedRsGatePart gate) {
+            super(gate);
+        }
+        
+        @Override
+        public void save(NBTTagCompound tag) {
+            tag.setInteger("val", value);
+            tag.setInteger("max", max);
+            tag.setInteger("inc", incr);
+            tag.setInteger("dec", decr);
+        }
+        
+        @Override
+        public void load(NBTTagCompound tag) {
+            value = tag.getInteger("val");
+            max = tag.getInteger("max");
+            incr = tag.getInteger("inc");
+            decr = tag.getInteger("dec");
+        }
+
+        @Override
+        public int getCounterMax() {
+            return max;
+        }
+
+        @Override
+        public int getCounterIncr() {
+            return incr;
+        }
+
+        @Override
+        public int getCounterDecr() {
+            return decr;
+        }
+
+        @Override
+        public void setCounterMax(GatePart gate, int i) {
+            int oldMax = max;
+            max = Math.min(32767, Math.max(1, i));
+            if (max != oldMax)
+                sendMaxUpdate();
+        }
+
+        @Override
+        public void setCounterIncr(GatePart gate, int i) {
+            int oldIncr = incr;
+            incr = Math.min(max, Math.max(1, i));
+            if (incr != oldIncr)
+                sendIncrUpdate();
+        }
+
+        @Override
+        public void setCounterDecr(GatePart gate, int i) {
+            int oldDecr = decr;
+            decr = Math.min(max, Math.max(1, i));
+            if (decr != oldDecr)
+                sendDecrUpdate();
+        }
+
+        @Override
+        public void read(MCDataInput packet, int switch_key) {
+            if(switch_key == 11)
+                value = packet.readInt();
+            else if(switch_key == 12)
+                max = packet.readInt();
+            else if(switch_key == 13)
+                incr = packet.readInt();
+            else if(switch_key == 14)
+                decr = packet.readInt();
+        }
+
+        public void sendValueUpdate() {
+            gate.getWriteStream(11).writeInt(value);
+        }
+        public void sendMaxUpdate() {
+            gate.getWriteStream(12).writeInt(max);
+        }
+        public void sendIncrUpdate() {
+            gate.getWriteStream(13).writeInt(incr);
+        }
+        public void sendDecrUpdate() {
+            gate.getWriteStream(14).writeInt(decr);
+        }
+
+        @Override
+        public void onChange(InstancedRsGatePart gate) {
+        }
+
+        @Override
+        public void scheduledTick(InstancedRsGatePart gate) {
+        }
+        
+        @Override
+        public int outputMask(int shape) {
+            return 1 | 4;
+        }
+        
+        @Override
+        public int inputMask(int shape) {
+            return 2 | 8;
+        }
+
+    }
+
 }

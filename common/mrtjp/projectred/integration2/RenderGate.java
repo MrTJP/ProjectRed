@@ -43,7 +43,8 @@ public class RenderGate
             new TransparentLatch(),
             new LightSensor(),
             new RainSensor(),
-            new Timer()
+            new Timer(),
+            new Sequencer(),
         };
     
     public static void registerIcons(IconRegister r) {
@@ -855,6 +856,62 @@ public class RenderGate
             pointer.angle = ((TimerGateLogic)part.getLogic()).interpPointer(frame)*MathHelper.pi*2;
         }
         
+        @Override
+        public void renderDynamic(Transformation t) {
+            CCRenderState.startDrawing(7);
+            CCRenderState.pullLightmap();
+            CCRenderState.useNormals(true);
+            pointer.renderModel(t, 0);
+            CCRenderState.draw();
+        }
+    }
+    
+    public static class Sequencer extends GateRenderer<InstancedRsGatePart>
+    {
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(8, 8, 12),
+                new RedstoneTorchModel(8, 3, 6),
+                new RedstoneTorchModel(13, 8, 6),
+                new RedstoneTorchModel(8, 13, 6),
+                new RedstoneTorchModel(3, 8, 6),
+        };
+        PointerModel pointer = new PointerModel(8, 8, 8);
+        
+        public Sequencer() {
+            models.addAll(Arrays.asList(torches));
+            torches[0].on = true;
+        }
+        
+        @Override
+        public void prepare(InstancedRsGatePart part) {
+            torches[1].on = (part.state&0x10) != 0;
+            torches[2].on = (part.state&0x20) != 0;
+            torches[3].on = (part.state&0x40) != 0;
+            torches[4].on = (part.state&0x80) != 0;
+        }
+        
+        @Override
+        public void prepareInv() {
+            torches[1].on = false;
+            torches[2].on = false;
+            torches[3].on = false;
+            torches[4].on = false;
+            pointer.angle = 0;
+        }
+                
+        @Override
+        public void prepareDynamic(InstancedRsGatePart gate, float frame) {
+            int max = ((InstancedRsGateLogic.Sequencer)gate.getLogic()).pointer_max;
+            pointer.angle = (gate.world().getWorldTime()%max + frame)/max*2*MathHelper.pi;
+            if (gate.shape() == 1) 
+                pointer.angle = -pointer.angle;
+        }
+        
+        @Override
+        public boolean hasSpecials() {
+            return true;
+        }
+
         @Override
         public void renderDynamic(Transformation t) {
             CCRenderState.startDrawing(7);
