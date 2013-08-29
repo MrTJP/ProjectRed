@@ -22,7 +22,8 @@ public enum EnumGate
     TransparentLatch("Transparent Latch", "pr_sgate"),
     LightSensor("Light Sensor", "pr_sgate"),
     RainSensor("Rain Sensor", "pr_sgate"),
-    Timer("Timer", "pr_igate")
+    Timer("Timer", "pr_igate"),
+    Sequencer("Sequencer", "pr_igate")    
     ;
 
     public static EnumGate[] VALID_GATES = values();
