@@ -351,8 +351,12 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         
         @Override
         public void onTick(InstancedRsGatePart gate) {
-            if(pointer_start >= 0 && gate.world().getWorldTime() >= pointer_start+pointer_max)
-                pointerTick();
+            if(pointer_start >= 0) {
+                if(gate.world().getWorldTime() >= pointer_start+pointer_max)
+                    pointerTick();
+                else if(pointer_start > gate.world().getWorldTime())
+                    pointer_start = gate.world().getWorldTime();
+            }
         }
         
         public abstract void pointerTick();
@@ -378,6 +382,17 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 return 0;
             
             return (pointerValue()+f)/pointer_max;
+        }
+        
+        @Override
+        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held) {
+            if(held == null || held.getItem() != ProjectRedIntegration.itemScrewdriver) {
+                if(!gate.world().isRemote)
+                    IntegrationSPH.openTimerGui(player, gate);
+                
+                return true;
+            }
+            return false;
         }
     }
     
@@ -437,15 +452,10 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 gate.scheduleTick(2);
             }
         }
+    }
+    
+    public static class StateCell
+    {
         
-        @Override
-        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held) {
-            if(held == null || held.getItem() != ProjectRedIntegration.itemScrewdriver) {
-                if(!gate.world().isRemote)
-                    IntegrationSPH.openTimerGui(player, gate);
-                return true;
-            }
-            return false;
-        }
     }
 }
