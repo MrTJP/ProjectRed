@@ -1,12 +1,12 @@
 package mrtjp.projectred.integration2;
 
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
 import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.Configurator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
 
 public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRsGatePart>
 {
@@ -24,6 +24,8 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 return new Counter(gate);
             case 20:
                 return new StateCell(gate);
+            case 21:
+                return new Synchronizer(gate);
         }
         throw new IllegalArgumentException("Invalid subID: "+subID);
     }
@@ -803,7 +805,6 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             if (gate.shape() == 1)
                 newInput = GatePart.flipMaskZ(newInput);
             int high = newInput & ~oldInput;
-            int oldValue = value;
             if ((high & 2) != 0)
                 setCounterValue(gate, value + incr);
 
@@ -857,6 +858,106 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 return true;
             }
             return false;
+        }
+    }
+    
+    public static class Synchronizer extends InstancedRsGateLogic 
+    {
+        boolean right;
+        boolean left;
+
+        public Synchronizer(InstancedRsGatePart gate) {
+            super(gate);
+        }
+
+        @Override
+        public void onChange(InstancedRsGatePart gate) {
+            int oldInput = gate.state() & 0xF;
+            int newInput = getInput(gate, 2 | 4 | 8);
+            int high = newInput & ~oldInput;
+            if (oldInput != newInput) {
+                gate.setState(gate.state() & 0xF0 | newInput);
+                gate.onInputChange();
+                
+                if ((newInput & 4) != 0) {
+                    setRight(false);
+                    setLeft(false);
+                } else {
+                    if ((high & 2) != 0)
+                        setRight(true);
+                    if ((high & 8) != 0)
+                        setLeft(true);
+                }
+
+                if (right && left)
+                    pulseOutput(gate);
+            }
+        }
+
+        public void pulseOutput(InstancedRsGatePart gate) {
+            gate.setState(gate.state() | 1<<4);
+            gate.onOutputChange(1);
+            gate.scheduleTick(2);
+        }
+        
+        @Override
+        public void scheduledTick(InstancedRsGatePart gate) {
+            gate.setState(gate.state() & ~(1<<4));
+            gate.onOutputChange(1);
+            setRight(false);
+            setLeft(false);
+        }
+        
+        @Override
+        public void save(NBTTagCompound tag) {
+            tag.setBoolean("l", left);
+            tag.setBoolean("r", right);
+        }
+        
+        @Override
+        public void load(NBTTagCompound tag) {
+            left = tag.getBoolean("l");
+            right = tag.getBoolean("r");
+        }
+        
+        @Override
+        public void read(MCDataInput packet, int switch_key) {
+            if(switch_key == 16)
+                right = packet.readBoolean();
+            else if(switch_key == 17)
+                left = packet.readBoolean();
+        }
+
+        public void sendRightUpdate() {
+            gate.getWriteStream(16).writeBoolean(right);
+        }
+        
+        public void sendLeftUpdate() {
+            gate.getWriteStream(17).writeBoolean(left);
+        }
+        
+        public void setRight(boolean b) {
+            boolean oldValue = right;
+            right = b;
+            if (right != oldValue)
+                sendRightUpdate();
+        }
+        
+        public void setLeft(boolean b) {
+            boolean oldValue = left;
+            left = b;
+            if (left != oldValue)
+                sendLeftUpdate();
+        }
+        
+        @Override
+        public int outputMask(int shape) {
+            return 1;
+        }
+        
+        @Override
+        public int inputMask(int shape) {
+            return 2 | 4 | 8;
         }
     }
 
