@@ -20,6 +20,8 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 return new Timer(gate);
             case 18:
                 return new Sequencer(gate);
+            case 20:
+                return new StateCell(gate);
         }
         throw new IllegalArgumentException("Invalid subID: "+subID);
     }
@@ -99,7 +101,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             return false;
         }
         
-        public void sendState2Update(GatePart gate) {
+        public void sendState2Update() {
             gate.getWriteStream(11).writeByte(state2);
         }
     }
@@ -270,7 +272,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
 
         private void toggle(InstancedRsGatePart gate) {
             setState2(state2^1);
-            sendState2Update(gate);
+            sendState2Update();
             gate.scheduleTick(2);
             if (Configurator.logicGateSounds.getBoolean(true))
                 gate.world().playSoundEffect(gate.x()+0.5D, gate.y()+0.5D, gate.z()+0.5D, "random.click", 0.3F, 0.5F);
@@ -312,9 +314,9 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         
         @Override
         public void read(MCDataInput packet, int switch_key) {
-            if(switch_key == 11)
+            if(switch_key == 12)
                 pointer_max = packet.readInt();
-            else if(switch_key == 12) {
+            else if(switch_key == 13) {
                 pointer_start = packet.readInt();
                 if(pointer_start >= 0)
                     pointer_start = gate.world().getWorldTime()-pointer_start;
@@ -329,11 +331,11 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
         
         public void sendPointerMaxUpdate() {
-            gate.getWriteStream(11).writeInt(pointer_max);
+            gate.getWriteStream(12).writeInt(pointer_max);
         }
         
         public void sendPointerUpdate() {
-            gate.getWriteStream(12).writeInt(pointer_start < 0 ? -1 : pointerValue());
+            gate.getWriteStream(13).writeInt(pointer_start < 0 ? -1 : pointerValue());
         }
         
         @Override
@@ -456,9 +458,131 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
     }
     
-    public static class StateCell
+    public static class StateCell extends TimerGateLogic
     {
+        public byte state2;
         
+        public StateCell(InstancedRsGatePart gate) {
+            super(gate);
+        }
+        
+        public int state2() {
+            return state2&0xFF;
+        }
+        
+        public void setState2(int i) {
+            state2 = (byte)i;
+        }
+        
+        @Override
+        public void save(NBTTagCompound tag) {
+            super.save(tag);
+            tag.setByte("state2", state2);
+        }
+        
+        @Override
+        public void load(NBTTagCompound tag) {
+            super.load(tag);
+            state2 = tag.getByte("state2");
+        }
+        
+        @Override
+        public void readDesc(MCDataInput packet) {
+            super.readDesc(packet);
+            state2 = packet.readByte();
+        }
+        
+        @Override
+        public void writeDesc(MCDataOutput packet) {
+            super.writeDesc(packet);
+            packet.writeByte(state2);
+        }
+        
+        @Override
+        public void read(MCDataInput packet, int switch_key) {
+            if(switch_key == 11)
+                state2 = packet.readByte();
+            else
+                super.read(packet, switch_key);
+        }
+        
+        public void sendState2Update() {
+            gate.getWriteStream(11).writeByte(state2);
+        }
+        
+        @Override
+        public boolean cycleShape(InstancedRsGatePart gate) {
+            gate.setShape((gate.shape()+1)%2);
+            return true;
+        }
+        
+        @Override
+        public int outputMask(int shape) {
+            int output = 9;
+            if(shape == 1)
+                output = GatePart.flipMaskZ(output);
+            
+            return output;
+        }
+        
+        @Override
+        public int inputMask(int shape) {
+            int input = 6;
+            if(shape == 1)
+                input = GatePart.flipMaskZ(input);
+            
+            return input;
+        }
+        
+        @Override
+        public void onChange(InstancedRsGatePart gate) {
+            int oldInput = gate.state()&0xF;
+            int newInput = getInput(gate, 0xE);
+            
+            if(oldInput != newInput) {
+                gate.setState(gate.state()&0xF0 | newInput);
+                gate.onInputChange();
+                
+                if(gate.shape() == 1)
+                    newInput = GatePart.flipMaskZ(newInput);
+                
+                if((newInput & 4) != 0 && state2 == 0) {
+                    setState2(1);
+                    sendState2Update();
+                    gate.scheduleTick(2);
+                }
+                
+                if(state2 != 0) {
+                    if((newInput & 6) != 0)
+                        resetPointer();
+                    else
+                        startPointer();
+                }
+            }
+        }
+
+        @Override
+        public void pointerTick() {
+            resetPointer();
+            if(!gate.world().isRemote) {
+                setState2(0);
+                sendState2Update();
+                gate.setState(0x10 | gate.state()&0xF);
+                gate.onOutputChange(outputMask(gate.shape()));
+                gate.scheduleTick(2);
+            }
+        }
+
+        @Override
+        public void scheduledTick(InstancedRsGatePart gate) {
+            int output = 0;
+            if(state2 != 0)
+                output = 8;
+            if(gate.shape() == 1)
+                output = GatePart.flipMaskZ(output);
+            gate.setState(output<<4 | gate.state()&0xF);
+            gate.onOutputChange(outputMask(gate.shape()));
+        }
     }
     
     public static class Sequencer extends InstancedRsGateLogic implements ITimerGuiLogic
