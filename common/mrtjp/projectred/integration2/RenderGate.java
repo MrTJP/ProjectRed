@@ -46,6 +46,7 @@ public class RenderGate
             new Timer(),
             new Sequencer(),
             new Counter(),
+            new StateCell(),
         };
     
     public static void registerIcons(IconRegister r) {
@@ -55,7 +56,6 @@ public class RenderGate
     }
     
     public static void renderStatic(GatePart gate) {
-        renderers[renderers.length-1] = new Counter();
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
         r.renderStatic(new Translation(gate.x(), gate.y(), gate.z()), gate.orientation&0xFF);
@@ -982,6 +982,77 @@ public class RenderGate
             pointer.renderModel(t, reflect ? 1 : 0);
             CCRenderState.draw();
         }
-
+    }
+    
+    public static class StateCell extends GateRenderer<InstancedRsGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("STATECELL", 5);
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(8, 3, 6),
+                new RedstoneTorchModel(13, 8, 12)
+            };
+        PointerModel pointer = new PointerModel(13, 8, 8);
+        RsChipModel chip = new RsChipModel(6, 10);
+        
+        public StateCell() {
+            models.addAll(Arrays.asList(wires));
+            models.addAll(Arrays.asList(torches));
+            models.add(chip);
+        }
+        
+        public InstancedRsGateLogic.StateCell getLogic(InstancedRsGatePart part) {
+            return (InstancedRsGateLogic.StateCell)part.getLogic();
+        }
+        
+        @Override
+        public void prepareInv() {
+            reflect = false;
+            wires[0].on = false;
+            wires[1].on = false;
+            wires[2].on = false;
+            wires[3].on = false;
+            wires[4].on = false;
+            torches[0].on = false;
+            torches[1].on = true;
+            chip.on = false;
+            pointer.angle = -MathHelper.pi/2;
+        }
+        
+        @Override
+        public void prepare(InstancedRsGatePart part) {
+            reflect = part.shape == 1;
+            int state = part.state();
+            if(reflect)
+                state = GatePart.flipMaskZ(state>>4)<<4 | GatePart.flipMaskZ(state);
+            
+            wires[0].on = (state & 0x10) != 0;
+            wires[1].on = (state & 4) != 0;
+            wires[2].on = (state & 6) != 0;
+            wires[3].on = (state & 0x88) != 0;
+            wires[4].on = (state & 2) != 0;
+            torches[0].on = (state & 0x10) != 0;
+            torches[1].on = getLogic(part).pointer_start >= 0;
+            chip.on = getLogic(part).state2 != 0;
+        }
+        
+        @Override
+        public boolean hasSpecials() {
+            return true;
+        }
+        
+        @Override
+        public void prepareDynamic(InstancedRsGatePart part, float frame) {
+            reflect = part.shape == 1;
+            pointer.angle = getLogic(part).interpPointer(frame)-MathHelper.pi/2;
+        }
+        
+        @Override
+        public void renderDynamic(Transformation t) {
+            CCRenderState.startDrawing(7);
+            CCRenderState.pullLightmap();
+            CCRenderState.useNormals(true);
+            pointer.renderModel(t, reflect ? 1 : 0);
+            CCRenderState.draw();
+        }
     }
 }

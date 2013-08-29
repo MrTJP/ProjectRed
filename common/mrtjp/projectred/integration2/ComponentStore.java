@@ -43,6 +43,7 @@ public class ComponentStore
     public static Colour[][] wireData = new Colour[3][];
     public static Icon[] redstoneTorchIcons = new Icon[2];
     public static Icon[] taintedChipIcons = new Icon[2];
+    public static Icon[] redstoneChipIcons = new Icon[2];
     public static Icon leverIcon;
     public static Icon[] solarIcons = new Icon[3];
     public static Icon rainIcon;
@@ -109,6 +110,8 @@ public class ComponentStore
         redstoneTorchIcons[1] = r.registerIcon("redstone_torch_on");
         taintedChipIcons[0] = r.registerIcon(baseTex+"yellowchipoff");
         taintedChipIcons[1] = r.registerIcon(baseTex+"yellowchipon");
+        redstoneChipIcons[0] = r.registerIcon(baseTex+"redchipoff");
+        redstoneChipIcons[1] = r.registerIcon(baseTex+"redchipon");
         for (int i = 0; i < 3; i++) 
             solarIcons[i] = r.registerIcon(baseTex+"solar"+i);
         rainIcon = r.registerIcon(baseTex+"rainsensor");
@@ -554,6 +557,18 @@ public class ComponentStore
         @Override
         public Icon[] getIcons() {
             return taintedChipIcons;
+        }
+    }
+    
+    public static class RsChipModel extends OnOffModel
+    {
+        public RsChipModel(double x, double z) {
+            super(lightChip, new Vector3(x, 0, z));
+        }
+        
+        @Override
+        public Icon[] getIcons() {
+            return redstoneChipIcons;
         }
     }
     
