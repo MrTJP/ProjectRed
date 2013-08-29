@@ -5,6 +5,4 @@ jdk:
   - openjdk6
 before_script:
   - sudo apt-get install astyle expect
-  - mkdir environment
-  - cd environment
 script: ant test
