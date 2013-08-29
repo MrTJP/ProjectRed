@@ -1,20 +1,25 @@
 package mrtjp.projectred.integration2;
 
-import static mrtjp.projectred.integration2.ComponentStore.*;
+import static mrtjp.projectred.integration2.ComponentStore.generateWireModels;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.client.renderer.texture.IconRegister;
-
-import mrtjp.projectred.core.BasicRenderUtils;
+import mrtjp.projectred.integration2.ComponentStore.BaseComponentModel;
+import mrtjp.projectred.integration2.ComponentStore.ChipModel;
 import mrtjp.projectred.integration2.ComponentStore.ComponentModel;
+import mrtjp.projectred.integration2.ComponentStore.LeverModel;
+import mrtjp.projectred.integration2.ComponentStore.PointerModel;
+import mrtjp.projectred.integration2.ComponentStore.RainSensorModel;
 import mrtjp.projectred.integration2.ComponentStore.RedstoneTorchModel;
+import mrtjp.projectred.integration2.ComponentStore.RsChipModel;
+import mrtjp.projectred.integration2.ComponentStore.SolarModel;
 import mrtjp.projectred.integration2.ComponentStore.WireComponentModel;
 import mrtjp.projectred.integration2.InstancedRsGateLogic.ExtraStateLogic;
 import mrtjp.projectred.integration2.InstancedRsGateLogic.TimerGateLogic;
+import net.minecraft.client.renderer.texture.IconRegister;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
@@ -47,6 +52,7 @@ public class RenderGate
             new Sequencer(),
             new Counter(),
             new StateCell(),
+            new Synchronizer(),
         };
     
     public static void registerIcons(IconRegister r) {
@@ -56,6 +62,7 @@ public class RenderGate
     }
     
     public static void renderStatic(GatePart gate) {
+        renderers[renderers.length-2] = new StateCell();
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
         r.renderStatic(new Translation(gate.x(), gate.y(), gate.z()), gate.orientation&0xFF);
@@ -885,11 +892,11 @@ public class RenderGate
         }
         
         @Override
-        public void prepare(InstancedRsGatePart part) {
-            torches[1].on = (part.state&0x10) != 0;
-            torches[2].on = (part.state&0x20) != 0;
-            torches[3].on = (part.state&0x40) != 0;
-            torches[4].on = (part.state&0x80) != 0;
+        public void prepare(InstancedRsGatePart gate) {
+            torches[1].on = (gate.state&0x10) != 0;
+            torches[2].on = (gate.state&0x20) != 0;
+            torches[3].on = (gate.state&0x40) != 0;
+            torches[4].on = (gate.state&0x80) != 0;
         }
         
         @Override
@@ -988,11 +995,11 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("STATECELL", 5);
         RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
-                new RedstoneTorchModel(8, 3, 6),
+                new RedstoneTorchModel(10, 3.5, 6),
                 new RedstoneTorchModel(13, 8, 12)
             };
         PointerModel pointer = new PointerModel(13, 8, 8);
-        RsChipModel chip = new RsChipModel(6, 10);
+        RsChipModel chip = new RsChipModel(6.5, 10);
         
         public StateCell() {
             models.addAll(Arrays.asList(wires));
@@ -1027,7 +1034,7 @@ public class RenderGate
             
             wires[0].on = (state & 0x10) != 0;
             wires[1].on = (state & 4) != 0;
-            wires[2].on = (state & 6) != 0;
+            wires[2].on = getLogic(part).state2 == 0 || (state & 4) != 0;
             wires[3].on = (state & 0x88) != 0;
             wires[4].on = (state & 2) != 0;
             torches[0].on = (state & 0x10) != 0;
@@ -1054,5 +1061,49 @@ public class RenderGate
             pointer.renderModel(t, reflect ? 1 : 0);
             CCRenderState.draw();
         }
+    }
+    
+    public static class Synchronizer extends GateRenderer<InstancedRsGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("SYNC", 6);
+        RedstoneTorchModel torch = new RedstoneTorchModel(8, 3, 6);
+        RsChipModel[] chips = new RsChipModel[] {
+                new RsChipModel(4.5, 9),
+                new RsChipModel(11.5, 9),
+        };
+        
+        public Synchronizer() {
+            models.addAll(Arrays.asList(wires));
+            models.add(torch);
+            models.addAll(Arrays.asList(chips));
+        }
+        
+        @Override
+        public void prepareInv() {
+            wires[0].on = true;
+            wires[1].on = true;
+            wires[2].on = false;
+            wires[3].on = false;
+            wires[4].on = false;
+            wires[5].on = false;
+            chips[0].on = false;
+            chips[1].on = false;
+            torch.on = false;
+        }
+        
+        @Override
+        public void prepare(InstancedRsGatePart gate) {
+            InstancedRsGateLogic.Synchronizer logic = (InstancedRsGateLogic.Synchronizer) gate.getLogic();
+            wires[0].on = !logic.left;
+            wires[1].on = !logic.right;
+            wires[2].on = (gate.state() & 4) != 0;
+            wires[3].on = logic.left && logic.right;
+            wires[4].on = (gate.state() & 8) != 0;
+            wires[5].on = (gate.state() & 2) != 0;
+            chips[0].on = logic.left;
+            chips[1].on = logic.right;
+            torch.on = (gate.state() & 0x10) != 0;
+        }
+        
     }
 }
