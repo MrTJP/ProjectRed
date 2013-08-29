@@ -21,6 +21,7 @@ import codechicken.lib.render.TextureSpecial;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.render.Vertex5;
 import codechicken.lib.vec.Rectangle4i;
+import codechicken.lib.vec.RedundantTransformation;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
@@ -53,7 +54,8 @@ public class ComponentStore
         lightChip = loadModel("chip");
         solarArray = loadModel("solar");
         rainSensor = loadModel("rainsensor");
-        leverOff = loadModel("leveroff");        leverOn = loadModel("leveron");
+        leverOff = loadModel("leveroff");
+        leverOn = loadModel("leveron");
         pointer = loadModel("pointer");
     }
     
@@ -171,6 +173,10 @@ public class ComponentStore
         return t.at(Vector3.center);
     }
     
+    public static Transformation dynamicT(int orient) {
+        return orient == 0 ? new RedundantTransformation() : new Scale(-1, 1, 1).at(Vector3.center);
+    }
+    
     public static CCModel bakeCopy(CCModel base, int orient) {
         CCModel m = base.copy();
         if(orient >= 24) 
@@ -178,6 +184,10 @@ public class ComponentStore
         
         m.apply(orientT(orient)).computeLighting(LightModel.standardLightModel);
         return m;
+    }
+    
+    public static CCModel[] bakeDynamic(CCModel base) {
+        return new CCModel[]{base.copy(), reverseFacing(base.copy())};
     }
     
     public static CCModel reverseFacing(CCModel m) {
@@ -572,6 +582,8 @@ public class ComponentStore
     
     public static class PointerModel extends ComponentModel
     {
+        public static CCModel[] models = bakeDynamic(pointer);
+        
         public double angle;
         public Vector3 pos;
         
@@ -581,7 +593,9 @@ public class ComponentStore
         
         @Override
         public void renderModel(Transformation t, int orient) {
-            pointer.render(new Rotation(-angle+MathHelper.pi, 0, 1, 0).with(pos.translation()).with(t), 
+            models[orient].render(
+                    new Rotation(-angle+MathHelper.pi, 0, 1, 0).with(pos.translation())
+                        .with(dynamicT(orient)).with(t), 
                     new IconTransformation(pointerIcon), LightModel.standardLightModel);
         }
     }
