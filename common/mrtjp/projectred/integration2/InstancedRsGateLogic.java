@@ -861,10 +861,8 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
     }
     
-    public static class Synchronizer extends InstancedRsGateLogic 
+    public static class Synchronizer extends ExtraStateLogic 
     {
-        boolean right;
-        boolean left;
 
         public Synchronizer(InstancedRsGatePart gate) {
             super(gate);
@@ -880,74 +878,71 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 gate.onInputChange();
                 
                 if ((newInput & 4) != 0) {
-                    setRight(false);
-                    setLeft(false);
+                    off();
                 } else {
                     if ((high & 2) != 0)
-                        setRight(true);
+                        setRight();
                     if ((high & 8) != 0)
-                        setLeft(true);
+                        setLeft();
                 }
 
-                if (right && left)
-                    pulseOutput(gate);
+                if (right() && left())
+                    gate.scheduleTick(2);
             }
         }
 
-        public void pulseOutput(InstancedRsGatePart gate) {
-            gate.setState(gate.state() | 1<<4);
-            gate.onOutputChange(1);
-            gate.scheduleTick(2);
-        }
-        
         @Override
         public void scheduledTick(InstancedRsGatePart gate) {
-            gate.setState(gate.state() & ~(1<<4));
-            gate.onOutputChange(1);
-            setRight(false);
-            setLeft(false);
-        }
-        
-        @Override
-        public void save(NBTTagCompound tag) {
-            tag.setBoolean("l", left);
-            tag.setBoolean("r", right);
-        }
-        
-        @Override
-        public void load(NBTTagCompound tag) {
-            left = tag.getBoolean("l");
-            right = tag.getBoolean("r");
-        }
-        
-        @Override
-        public void read(MCDataInput packet, int switch_key) {
-            if(switch_key == 16)
-                right = packet.readBoolean();
-            else if(switch_key == 17)
-                left = packet.readBoolean();
+            if (!pulsing() && right() && left()) {
+                gate.setState(gate.state() | 1 << 4);
+                gate.onOutputChange(1);
+                setPulsing();
+                gate.scheduleTick(2);
+            } else if (pulsing()){
+                gate.setState(gate.state() & ~(0x10));
+                gate.onOutputChange(1);
+                off();
+            }
         }
 
-        public void sendRightUpdate() {
-            gate.getWriteStream(16).writeBoolean(right);
+        public boolean right() {
+            return (state2() & 1) != 0;
         }
         
-        public void sendLeftUpdate() {
-            gate.getWriteStream(17).writeBoolean(left);
+        public boolean left() {
+            return (state2() & 1<<1) != 0;
         }
         
-        public void setRight(boolean b) {
-            boolean oldValue = right;
-            right = b;
-            if (right != oldValue)
-                sendRightUpdate();
+        public boolean pulsing() {
+            return (state2() & 1<<2) != 0;
         }
         
-        public void setLeft(boolean b) {
-            boolean oldValue = left;
-            left = b;
-            if (left != oldValue)
-                sendLeftUpdate();
+        public void setPulsing() {
+            int oldValue = state2();
+            setState2(state2() | 1<<2);
+            if (state2() != oldValue)
+                sendState2Update();
+        }
+        
+        public void setRight() {
+            int oldValue = state2();
+            setState2(state2() | 1);
+            if (state2() != oldValue)
+                sendState2Update();
+        }
+        
+        public void setLeft() {
+            int oldValue = state2();
+            setState2(state2() | 1<<1);
+            if (state2() != oldValue)
+                sendState2Update();
+        }
+        
+        public void off() {
+            int oldValue = state2();
+            setState2(0);
+            if (state2() != oldValue)
+                sendState2Update();
         }
         
         @Override
