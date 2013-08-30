@@ -1094,14 +1094,14 @@ public class RenderGate
         @Override
         public void prepare(InstancedRsGatePart gate) {
             InstancedRsGateLogic.Synchronizer logic = (InstancedRsGateLogic.Synchronizer) gate.getLogic();
-            wires[0].on = !logic.left;
-            wires[1].on = !logic.right;
+            wires[0].on = !logic.left();
+            wires[1].on = !logic.right();
             wires[2].on = (gate.state() & 4) != 0;
-            wires[3].on = logic.left && logic.right;
+            wires[3].on = logic.left() && logic.right();
             wires[4].on = (gate.state() & 8) != 0;
             wires[5].on = (gate.state() & 2) != 0;
-            chips[0].on = logic.left;
-            chips[1].on = logic.right;
+            chips[0].on = logic.left();
+            chips[1].on = logic.right();
             torch.on = (gate.state() & 0x10) != 0;
         }
         
