@@ -12,14 +12,12 @@ public class ItemBlockStorage extends ItemBlock {
 	private final static String[] subNames = {
 		"Ruby Block",
 		"Sapphire Block",
-		"Peridot Block",
-		"", "", "", "", "", "", "", "", "", "", "", "", ""
+		"Peridot Block"
 	};
 
 	public ItemBlockStorage(int id) {
 		super(id);
 		setHasSubtypes(true);
-		// setItemName("storageblock");
 	}
 
 	@Override
@@ -28,11 +26,7 @@ public class ItemBlockStorage extends ItemBlock {
 	}
 
 	@Override
-	// public String getItemNameIS(ItemStack itemstack) {
-	// return getItemName() + "." + subNames[itemstack.getItemDamage()];
-	// }
 	public String getUnlocalizedName(ItemStack itemstack) {
 		return subNames[itemstack.getItemDamage()];
-		// getItemName() + "." +
 	}
 }
