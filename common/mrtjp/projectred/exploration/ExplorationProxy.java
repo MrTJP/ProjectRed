@@ -2,6 +2,7 @@ package mrtjp.projectred.exploration;
 
 import static mrtjp.projectred.ProjectRedExploration.blockOres;
 import static mrtjp.projectred.ProjectRedExploration.blockStones;
+import static mrtjp.projectred.ProjectRedExploration.blockStores;
 import static mrtjp.projectred.ProjectRedExploration.itemBackpack;
 import static mrtjp.projectred.ProjectRedExploration.itemDiamondSaw;
 import static mrtjp.projectred.ProjectRedExploration.itemDiamondSickle;
@@ -82,6 +83,9 @@ public class ExplorationProxy implements IProxy {
             Block.blocksList[sb] = null;
             new BlockPhotosyntheticStoneBrick(sb);
         }
+
+        blockStores = new BlockStorage(Configurator.block_storesID.getInt());
+        GameRegistry.registerBlock(blockStores, ItemBlockStorage.class, "projectred.exploration.storage");
 
         toolMaterialRuby = EnumHelper.addToolMaterial("RUBY", 2, 500, 8.0F, 4, 12);
         toolMaterialSapphire = EnumHelper.addToolMaterial("SAPPHIRE", 2, 500, 8.0F, 3, 16);
