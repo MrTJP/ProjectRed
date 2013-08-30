@@ -147,7 +147,7 @@ public class ExplorationRecipes {
         );
 
         GameRegistry.addRecipe(
-            new ItemStack(ProjectRedExploration.blockStores, 1, 0),
+            new ItemStack(ProjectRedExploration.blockStores, 1, 1),
             "xxx",
             "xxx",
             "xxx",
@@ -155,11 +155,11 @@ public class ExplorationRecipes {
         );
         GameRegistry.addShapelessRecipe(
             EnumPart.SAPPHIRE.getItemStack(9),
-            new ItemStack(ProjectRedExploration.blockStores, 1, 0)
+            new ItemStack(ProjectRedExploration.blockStores, 1, 1)
         );
 
         GameRegistry.addRecipe(
-            new ItemStack(ProjectRedExploration.blockStores, 1, 0),
+            new ItemStack(ProjectRedExploration.blockStores, 1, 2),
             "xxx",
             "xxx",
             "xxx",
@@ -167,7 +167,7 @@ public class ExplorationRecipes {
         );
         GameRegistry.addShapelessRecipe(
             EnumPart.PERIDOT.getItemStack(9),
-            new ItemStack(ProjectRedExploration.blockStores, 1, 0)
+            new ItemStack(ProjectRedExploration.blockStores, 1, 2)
         );
     }
 
