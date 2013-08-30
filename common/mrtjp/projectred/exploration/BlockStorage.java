@@ -58,9 +58,9 @@ public class BlockStorage extends Block {
 	public void registerIcons(IconRegister reg) {
 		iconBuffer = new Icon[3];
 
-		iconBuffer[0] = reg.registerIcon("projectred:ore/brickmarble");
-		iconBuffer[1] = reg.registerIcon("projectred:ore/brickmarble");
-		iconBuffer[2] = reg.registerIcon("projectred:ore/brickmarble");
+		iconBuffer[0] = reg.registerIcon("projectred:ore/storageruby");
+		iconBuffer[1] = reg.registerIcon("projectred:ore/storagesapphire");
+		iconBuffer[2] = reg.registerIcon("projectred:ore/storageperidot");
 	}
 
 	@Override
