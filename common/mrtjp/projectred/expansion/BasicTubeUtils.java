@@ -12,17 +12,17 @@ import codechicken.multipart.TileMultipart;
 
 public class BasicTubeUtils {
 
-    public static ITransportTubeConnectable getTubeInterface(World w, BlockCoord b) {
+    public static ITubeInterface getTubeInterface(World w, BlockCoord b) {
         TileMultipart t = BasicUtils.getMultipartTile(w, b);
         if (t != null) {
             TMultiPart p = t.partMap(6);
-            if (p instanceof ITransportTubeConnectable) {
-                return (ITransportTubeConnectable) p;
+            if (p instanceof ITubeInterface) {
+                return (ITubeInterface) p;
             }
         }
         TileEntity tile = BasicUtils.getTileEntity(w, b, TileEntity.class);
-        if (tile instanceof ITransportTubeConnectable) {
-            return (ITransportTubeConnectable) tile;
+        if (tile instanceof ITubeInterface) {
+            return (ITubeInterface) tile;
         }
         return null;
     }
@@ -105,7 +105,7 @@ public class BasicTubeUtils {
          * @return
          */
         public boolean addToQuarry(BlockCoord addToQuarry, SearchQuarry parentQuarry, int directionFromStart, int directionFromParent, int newGCost) {
-            ITransportTubeConnectable t = getTubeInterface(w, addToQuarry);
+            ITubeInterface t = getTubeInterface(w, addToQuarry);
             if (t == null)
                 return false;
             if (!t.canAcceptItem(item, directionFromParent))
@@ -123,10 +123,10 @@ public class BasicTubeUtils {
          * searched with standard A* algorithm.
          */
         public BasicTubeRouter findClosestDestination() {
-            ITransportTubeConnectable startTube = getTubeInterface(w, startingNode);
+            ITubeInterface startTube = getTubeInterface(w, startingNode);
             if (startTube != null) {
                 for (int side = 0; side < 6; side++) {
-                    if (side == (initialItemDirection ^ 1) || !startTube.connectedToPipeInDirection(side)) {
+                    if (side == (initialItemDirection ^ 1) || !startTube.maskConnects(side)) {
                         continue;
                     }
                     BlockCoord sidePipe = startingNode.copy().offset(side);
@@ -144,10 +144,10 @@ public class BasicTubeUtils {
                     this.closestDestination = q;
                     return;
                 }
-                ITransportTubeConnectable tube = getTubeInterface(w, startingNode);
+                ITubeInterface tube = getTubeInterface(w, startingNode);
                 if (tube != null) {
                     for (int side = 0; side < 6; side++) {
-                        if (side == (q.directionFromParent ^ 1) || !tube.connectedToPipeInDirection(side)) {
+                        if (side == (q.directionFromParent ^ 1) || !tube.maskConnects(side)) {
                             continue;
                         }
                         BlockCoord sidePipe = q.node.copy().offset(side);

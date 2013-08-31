@@ -19,9 +19,14 @@ public class GenerationManager implements IWorldGenerator {
 
     @Override
     public void generate(Random rand, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
-        if (((chunkGenerator instanceof ChunkProviderHell)) || ((chunkGenerator instanceof ChunkProviderEnd))) {
+        if (((chunkGenerator instanceof ChunkProviderHell)) || ((chunkGenerator instanceof ChunkProviderEnd))) 
             return;
-        }
+        
+        if (world.provider.dimensionId == -1 || world.provider.dimensionId == 1)
+            return;
+        
+        if (world.provider.dimensionId == 0)
+            runOverworldGeneration(rand, chunkX, chunkZ, world);
 
         // Ruby
         if (Configurator.gen_Ruby.getBoolean(true)) {
@@ -52,15 +57,15 @@ public class GenerationManager implements IWorldGenerator {
                 new GeneratorOre(ProjectRedExploration.blockOres.blockID, EnumOre.OREPERIDOT.meta, 5).generate(world, rand, x, y, z);
             }
         }
+    }
 
+    public static void runOverworldGeneration(Random rand, int chunkX, int chunkZ, World world) {
         // Marble caves
         if (Configurator.gen_MarbleCave.getBoolean(true)) {
-            for (int i = 0; i < 4; i++) {
-                int x = chunkX * 16 + rand.nextInt(16);
-                int y = 32 + rand.nextInt(32);
-                int z = chunkZ * 16 + rand.nextInt(16);
-                new GeneratorMetamorphicCave(ProjectRedExploration.blockStones.blockID, EnumSpecialStone.MARBLE.meta, rand.nextInt(4096)).generate(world, rand, x, y, z);
-            }
+            int x = chunkX * 16 + rand.nextInt(16);
+            int y = 32 + rand.nextInt(32);
+            int z = chunkZ * 16 + rand.nextInt(16);
+            new GeneratorMetamorphicCave(ProjectRedExploration.blockStones.blockID, EnumSpecialStone.MARBLE.meta, rand.nextInt(4096)).generate(world, rand, x, y, z);
         }
 
         // Volcanos

@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion;
 
 import codechicken.multipart.TMultiPart;
 
-public interface ITransportTubeConnectable {
+public interface ITubeInterface extends ITubeConnectable {
 
     /**
      * The routing weight for this pipe. Item routing will find the path with
@@ -13,7 +13,7 @@ public interface ITransportTubeConnectable {
     /**
      * True if this interface is connected to a pipe in the direction.
      */
-    public boolean connectedToPipeInDirection(int absDir);
+    public boolean maskConnects(int absDir);
 
     /**
      * True if this can accept the item. This should do checking such as color
@@ -33,4 +33,12 @@ public interface ITransportTubeConnectable {
      * @return
      */
     public boolean isDestinationForItem(TubeItem item, int fromAbsDir);
+    
+    /**
+     * Add the item to the tube flow, can be from another pipe or a machine.
+     * @param item
+     * @param fromAbsDir
+     * @return If the item was added.
+     */
+    public boolean addItem(TubeItem item, int fromAbsDir);
 }
