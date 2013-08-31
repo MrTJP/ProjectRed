@@ -1,8 +1,10 @@
-package mrtjp.projectred.transmission;
+package mrtjp.projectred.expansion;
 
 import java.util.List;
 
 import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.transmission.EnumWire;
+import mrtjp.projectred.transmission.FramedWirePart;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,15 +19,21 @@ import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemPartFramedWire extends JItemMultiPart {
+public class ItemPartPressurizedTube extends JItemMultiPart {
 
-    public ItemPartFramedWire(int id) {
+    public ItemPartPressurizedTube(int id) {
         super(id);
         setHasSubtypes(true);
-        setCreativeTab(ProjectRedTabs.tabTransmission);
-        setUnlocalizedName("projred.transmission.jacwire");
+        setCreativeTab(ProjectRedTabs.tabExpansion);
+        setUnlocalizedName("projred.expansion.ptube");
     }
 
+    @Override
+    public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
+        EnumTube type = EnumTube.VALID_TUBE[item.getItemDamage()];
+        return (PressurizedTubePart) MultiPartRegistry.createPart(type.part, false);
+    }
+    
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
         if (super.onItemUse(stack, player, w, x, y, z, side, hitX, hitY, hitZ)) {
@@ -36,25 +44,15 @@ public class ItemPartFramedWire extends JItemMultiPart {
     }
 
     @Override
-    public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
-        EnumWire type = EnumWire.VALID_WIRE[item.getItemDamage()];
-        FramedWirePart w = (FramedWirePart) MultiPartRegistry.createPart(type.framedType, false);
-        if(w != null)
-            w.onPlaced(item.getItemDamage());
-        return w;
+    public String getUnlocalizedName(ItemStack stack) {
+        return super.getUnlocalizedName() + "|" + stack.getItemDamage();
     }
-
+    
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(int id, CreativeTabs tab, List list) {
-        for (EnumWire w : EnumWire.VALID_WIRE)
-            if(w.hasFramedForm())
-                list.add(w.getFramedItemStack());
-    }
-
-    @Override
-    public String getUnlocalizedName(ItemStack stack) {
-        return super.getUnlocalizedName() + ".jac|" + stack.getItemDamage();
+        for (EnumTube t : EnumTube.VALID_TUBE)
+                list.add(t.getItemStack());
     }
 
     @Override
@@ -65,5 +63,6 @@ public class ItemPartFramedWire extends JItemMultiPart {
     public int getSpriteNumber() {
         return 0;
     }
+
 
 }

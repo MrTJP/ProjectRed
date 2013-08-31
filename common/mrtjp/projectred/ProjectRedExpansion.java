@@ -4,6 +4,7 @@ import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.expansion.BlockMachines;
 import mrtjp.projectred.expansion.ExpansionGuiHandler;
+import mrtjp.projectred.expansion.ItemPartPressurizedTube;
 import mrtjp.projectred.expansion.ItemVAWT;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
@@ -25,6 +26,9 @@ public class ProjectRedExpansion {
 
     /** Items **/
     public static ItemVAWT itemVAWT;
+    
+    /** Multipart items **/
+    public static ItemPartPressurizedTube itemPartTube;
 
     @Instance("ProjRed|Expansion")
     public static ProjectRedExpansion instance;

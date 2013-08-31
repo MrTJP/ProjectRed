@@ -11,6 +11,7 @@ public class TubeItem {
     public byte direction;
     public byte color;
     public boolean hasCrossedCenter;
+    public boolean pathFoundByParent;
     
     public ItemStack item;
     
@@ -36,6 +37,7 @@ public class TubeItem {
         this.direction = nbt.getByte("dir");
         this.color = nbt.getByte("col");
         this.hasCrossedCenter = nbt.getBoolean("cent");
+        this.pathFoundByParent = nbt.getBoolean("route");
         this.item = ItemStack.loadItemStackFromNBT(nbt);
     }
     
@@ -45,7 +47,13 @@ public class TubeItem {
         nbt.setByte("dir", direction);
         nbt.setByte("col", color);
         nbt.setBoolean("cent", hasCrossedCenter);
+        nbt.setBoolean("route", pathFoundByParent);
         item.writeToNBT(nbt);
     }
     
+    public static TubeItem fromNBT(NBTTagCompound nbt) {
+        TubeItem ti = new TubeItem();
+        ti.read(nbt);
+        return ti;
+    }
 }

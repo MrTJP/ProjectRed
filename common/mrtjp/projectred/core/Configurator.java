@@ -38,6 +38,7 @@ public class Configurator {
     public static Property part_invlantern;
     public static Property part_lamp;
     public static Property part_invlamp;
+    public static Property part_tube;
 
     /** Block IDs **/
     public static Property block_machinesID;
@@ -123,6 +124,7 @@ public class Configurator {
         part_invlantern = localConfig.get("MultiPart Item IDs", "Inverted Lantern Part ID", 9034);
         part_lamp = localConfig.get("MultiPart Item IDs", "Lamp Part ID", 9035);
         part_invlamp = localConfig.get("MultiPart Item IDs", "Inverted Lamp Part ID", 9036);
+        part_tube = localConfig.get("MultiPart Item IDs", "Tube Part ID", 9037);
 
         block_machinesID = localConfig.getBlock("block_machinesID", 2129);
         block_oresID = localConfig.getBlock("block_oresID", 2130);
@@ -166,7 +168,7 @@ public class Configurator {
         item_sapphireSickle = localConfig.getItem("sapphiresickle", 9126);
         item_peridotSickle = localConfig.getItem("peridotsickle", 9127);
         item_diamondSickle = localConfig.getItem("diamondsickle", 9128);
-        item_wireDebuggerID = localConfig.getItem("item_wireDebuggerID", 9037);
+        item_wireDebuggerID = localConfig.getItem("item_wireDebuggerID", 9129);
 
         gen_Ruby = localConfig.get("World Generation", "Ruby Ore", true);
         gen_Sapphire = localConfig.get("World Generation", "Sapphire Ore", true);

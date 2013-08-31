@@ -12,8 +12,8 @@ import net.minecraft.world.World;
 
 public class GeneratorVolcano extends GeneratorOre {
 
-    LinkedList queuedList = new LinkedList();
-    HashMap queuedTestList = new HashMap();
+    LinkedList openList = new LinkedList();
+    HashMap closedList = new HashMap();
 
     public GeneratorVolcano(int id, int meta, int veinSize) {
         super(id, meta, veinSize);
@@ -21,16 +21,16 @@ public class GeneratorVolcano extends GeneratorOre {
 
     @Override
     public boolean generate(World world, Random random, int x, int y, int z) {
-        if (world.getBlockId(x, y, z) != Block.lavaStill.blockID) {
+        if (world.getBlockId(x, y, z) != Block.lavaStill.blockID)
             return false;
-        }
+
         int grassHeight = world.getHeightValue(x, z);
         int lavaid = Block.lavaMoving.blockID;
 
         // Make a tube of volcano from the underground lake to grass level.
-        while (canReplaceId(world.getBlockId(x, grassHeight - 1, z))) {
+        while (canReplaceId(world.getBlockId(x, grassHeight - 1, z)))
             grassHeight--;
-        }
+
         for (int i = y; i < grassHeight; i++) {
             world.setBlock(x, i, z, lavaid);
             world.setBlock(x - 1, i, z, this.id, meta, 3);
@@ -47,9 +47,9 @@ public class GeneratorVolcano extends GeneratorOre {
 
         while (this.veinSize > 0) {
             boolean breakOut = false;
-            while (this.queuedList.size() == 0) {
+            while (this.openList.size() == 0) {
                 world.setBlock(x, currentYIndex, z, lavaid);
-                this.queuedTestList.clear();
+                this.closedList.clear();
                 queueNeighboringBlocks(x, currentYIndex, z, head, random);
                 currentYIndex++;
                 if (currentYIndex > 125) {
@@ -57,15 +57,14 @@ public class GeneratorVolcano extends GeneratorOre {
                     break;
                 }
             }
-            if (breakOut) {
+            if (breakOut)
                 break;
-            }
 
-            Integer[] coord = (Integer[]) ((List) this.queuedList.removeFirst()).toArray();
+            Integer[] coord = (Integer[]) ((List) this.openList.removeFirst()).toArray();
 
             world.getBlockId(coord[0].intValue(), 64, coord[2].intValue());
             if (world.blockExists(coord[0].intValue(), 64, coord[2].intValue())) {
-                int pow = ((Integer) this.queuedTestList.get(Arrays.asList(new Integer[] { coord[0], coord[2] }))).intValue();
+                int pow = ((Integer) this.closedList.get(Arrays.asList(new Integer[] { coord[0], coord[2] }))).intValue();
                 int currentLevel = world.getHeightValue(coord[0].intValue(), coord[2].intValue()) + 1;
                 while ((currentLevel > 0) && (canReplaceId(world.getBlockId(coord[0].intValue(), currentLevel - 1, coord[2].intValue())))) {
                     currentLevel--;
@@ -76,9 +75,9 @@ public class GeneratorVolcano extends GeneratorOre {
                         destroyTree(world, coord[0].intValue(), currentLevel, coord[2].intValue());
                         world.setBlock(coord[0].intValue(), currentLevel, coord[2].intValue(), this.id, this.meta, 3);
 
-                        if (coord[1].intValue() > currentLevel) {
+                        if (coord[1].intValue() > currentLevel)
                             pow = Math.max(pow, spread);
-                        }
+
                         queueNeighboringBlocks(coord[0].intValue(), currentLevel, coord[2].intValue(), pow, random);
                         this.veinSize -= 1;
                     }
@@ -101,21 +100,20 @@ public class GeneratorVolcano extends GeneratorOre {
     }
 
     private void queueBlock(int x, int y, int z, int sides) {
-        if (sides <= 0) {
+        if (sides <= 0)
             return;
-        }
-        List sb = Arrays.asList(new Integer[] { x, z });
-        Integer o = (Integer) this.queuedTestList.get(sb);
 
-        if ((o != null) && (sides <= o.intValue())) {
+        List sb = Arrays.asList(new Integer[] { x, z });
+        Integer o = (Integer) this.closedList.get(sb);
+
+        if ((o != null) && (sides <= o.intValue()))
             return;
-        }
-        this.queuedList.addLast(Arrays.asList(new Integer[] { x, y, z }));
-        this.queuedTestList.put(sb, sides);
+
+        this.openList.addLast(Arrays.asList(new Integer[] { x, y, z }));
+        this.closedList.put(sb, sides);
     }
 
     private void queueNeighboringBlocks(int x, int y, int z, int sides, Random random) {
-        // int rp = random.nextInt(32);
         queueBlock(x - 1, y, z, random.nextInt(2) > 0 ? sides - 1 : sides);
         queueBlock(x + 1, y, z, random.nextInt(2) > 0 ? sides - 1 : sides);
         queueBlock(x, y, z - 1, random.nextInt(2) > 0 ? sides - 1 : sides);
@@ -128,23 +126,23 @@ public class GeneratorVolcano extends GeneratorOre {
             world.setBlock(x, y, z, 0);
             return;
         }
-        if ((bid != Block.wood.blockID) && (bid != Block.leaves.blockID) && (bid != Block.vine.blockID)) {
+        if ((bid != Block.wood.blockID) && (bid != Block.leaves.blockID) && (bid != Block.vine.blockID))
             return;
-        }
+
         world.setBlock(x, y, z, 0);
         destroyTree(world, x, y + 1, z);
     }
 
     private boolean canReplaceId(int id) {
-        if (id == 0) {
+        if (id == 0)
             return true;
-        }
-        if ((id == Block.waterMoving.blockID) || (id == Block.waterStill.blockID) || (id == Block.wood.blockID) || (id == Block.leaves.blockID) || (id == Block.vine.blockID) || (id == Block.snow.blockID) || (id == Block.ice.blockID)) {
+
+        if ((id == Block.waterMoving.blockID) || (id == Block.waterStill.blockID) || (id == Block.wood.blockID) || (id == Block.leaves.blockID) || (id == Block.vine.blockID) || (id == Block.snow.blockID) || (id == Block.ice.blockID))
             return true;
-        }
-        if ((Block.blocksList[id] instanceof BlockFlower)) {
+
+        if ((Block.blocksList[id] instanceof BlockFlower))
             return true;
-        }
+
         return false;
     }
 

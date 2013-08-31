@@ -57,6 +57,11 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         
     }
     
+    public void tickSound() {
+        if (Configurator.logicGateSounds.getBoolean(true))
+            gate.world().playSoundEffect(gate.x()+0.5D, gate.y()+0.5D, gate.z()+0.5D, "random.click", 0.3F, 0.5F);
+    }
+    
     public static abstract class ExtraStateLogic extends InstancedRsGateLogic
     {
         public byte state2;
@@ -278,8 +283,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             setState2(state2^1);
             sendState2Update();
             gate.scheduleTick(2);
-            if (Configurator.logicGateSounds.getBoolean(true))
-                gate.world().playSoundEffect(gate.x()+0.5D, gate.y()+0.5D, gate.z()+0.5D, "random.click", 0.3F, 0.5F);
+            tickSound();
         }
     }
     
@@ -452,12 +456,11 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void pointerTick() {
             resetPointer();
-            if (Configurator.logicGateSounds.getBoolean(true))
-                gate.world().playSoundEffect(gate.x()+0.5D, gate.y()+0.5D, gate.z()+0.5D, "random.click", 0.3F, 0.5F);
             if(!gate.world().isRemote) {
                 gate.setState(0xB0 | gate.state()&0xF);
                 gate.onOutputChange(0xB);
                 gate.scheduleTick(2);
+                tickSound();
             }
         }
     }
@@ -574,6 +577,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 gate.setState(0x10 | gate.state()&0xF);
                 gate.onOutputChange(outputMask(gate.shape()));
                 gate.scheduleTick(2);
+                tickSound();
             }
         }
 
@@ -661,8 +665,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 if (oldOut != out) {
                     gate.setState(out<<4);
                     gate.onOutputChange(0xF);
-                    if (Configurator.logicGateSounds.getBoolean(true))
-                        gate.world().playSoundEffect(gate.x()+0.5D, gate.y()+0.5D, gate.z()+0.5D, "random.click", 0.3F, 0.5F);
+                    tickSound();
                 }
             }
         }
@@ -745,32 +748,40 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         public void setCounterValue(GatePart gate, int i) {
             int oldVal = value;
             value = Math.min(max, Math.max(0, i));
-            if (value != oldVal)
+            if (value != oldVal) {
+                tickSound();
                 sendValueUpdate();
+            }
         }
 
         @Override
         public void setCounterMax(GatePart gate, int i) {
             int oldMax = max;
             max = Math.min(32767, Math.max(1, i));
-            if (max != oldMax)
+            if (max != oldMax) {
+                tickSound();
                 sendMaxUpdate();
+            }
         }
 
         @Override
         public void setCounterIncr(GatePart gate, int i) {
             int oldIncr = incr;
             incr = Math.min(max, Math.max(1, i));
-            if (incr != oldIncr)
+            if (incr != oldIncr) {
+                tickSound();
                 sendIncrUpdate();
+            }
         }
 
         @Override
         public void setCounterDecr(GatePart gate, int i) {
             int oldDecr = decr;
             decr = Math.min(max, Math.max(1, i));
-            if (decr != oldDecr)
+            if (decr != oldDecr) {
+                tickSound();
                 sendDecrUpdate();
+            }
         }
 
         @Override
