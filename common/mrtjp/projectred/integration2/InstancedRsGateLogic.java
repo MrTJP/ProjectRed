@@ -295,13 +295,13 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void save(NBTTagCompound tag) {
             tag.setInteger("pmax", pointer_max);
-            tag.setLong("ptonext", gate.world().getWorldTime()-pointer_start);
+            tag.setLong("pelapsed", gate.world().getWorldTime()-pointer_start);
         }
         
         @Override
         public void load(NBTTagCompound tag) {
             pointer_max = tag.getInteger("pmax");
-            pointer_start = gate.world().getWorldTime()-tag.getLong("ptonext");
+            pointer_start = gate.world().getWorldTime()-tag.getLong("pelapsed");
         }
         
         @Override
