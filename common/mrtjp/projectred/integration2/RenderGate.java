@@ -53,6 +53,7 @@ public class RenderGate
             new Counter(),
             new StateCell(),
             new Synchronizer(),
+            new BusTransceiver(),
         };
     
     public static void registerIcons(IconRegister r) {
@@ -1104,6 +1105,11 @@ public class RenderGate
             chips[1].on = logic.right();
             torch.on = (gate.state() & 0x10) != 0;
         }
+        
+    }
+    
+    public static class BusTransceiver extends GateRenderer<SimpleGatePart>
+    {
         
     }
 }
