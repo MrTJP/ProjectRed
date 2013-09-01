@@ -329,17 +329,29 @@ public class PressurizedTubePart extends TMultiPart implements ITubeInterface, T
 
     @Override
     public void update() {
+        LinkedList<TubeItem> removeQueue = new LinkedList<TubeItem>();
         for (TubeItem t : itemFlow) {
             t.update();
             if (t.hasCrossedCenter) {
                 if (!t.pathFoundByParent) {
-                    // TODO Pathfind from here under these conditions:
+                    // TODO Pathfind from here and set item.direction under these conditions:
                     // 1) If this pipe is a node (contains a turn point)
                     // 2) If item cannot continue straight.
                 }
                 t.pathFoundByParent = true;
             }
+            if (t.progress > 100) {
+                BlockCoord bc = new BlockCoord(x(), y(), z()).offset(t.direction);
+                TileMultipart tile = BasicUtils.getMultipartTile(world(), bc);
+                if (tile != null) {
+                    TMultiPart tp = tile.partMap(6);
+                    if (tp instanceof ITubeInterface && ((ITubeInterface)tp).addItem(t, t.direction)) {
+                        removeQueue.add(t);
+                    }
+                }
+            }
         }
+        itemFlow.removeAll(removeQueue);
     }
 
     @Override

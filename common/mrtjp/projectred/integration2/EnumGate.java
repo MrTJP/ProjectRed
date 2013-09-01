@@ -26,7 +26,8 @@ public enum EnumGate
     Sequencer("Sequencer", "pr_igate"),
     Counter("Counter", "pr_igate"),
     StateCell("State Cell", "pr_igate"),
-    Synchronizer("Synchronizer", "pr_igate")
+    Synchronizer("Synchronizer", "pr_igate"),
+    BusTransceiver("Bus Transceiver", "pr_bgate"),
     ;
 
     public static EnumGate[] VALID_GATES = values();

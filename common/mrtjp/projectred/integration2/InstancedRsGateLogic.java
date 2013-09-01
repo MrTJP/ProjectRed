@@ -54,7 +54,6 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
     }
     
     public void read(MCDataInput packet, int switch_key) {
-        
     }
     
     public void tickSound() {

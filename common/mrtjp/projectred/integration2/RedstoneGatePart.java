@@ -71,7 +71,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
             }
     }
     
-    public int getRedwireInput(int r) {
+    public int getRedstoneInput(int r) {
         r = toAbsolute(r);
         if((connMap & 1<<r) != 0)
             return calculateCornerSignal(r);

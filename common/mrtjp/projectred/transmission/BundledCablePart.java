@@ -184,9 +184,9 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
                     s = s + "[" + i + "]";
                 }
             }
-            if (s == "") {
+            if (s == "")
                 s = "off";
-            }
+
             PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreProxy.messengerQueue);
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);

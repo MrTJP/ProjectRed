@@ -17,7 +17,7 @@ public class IntegrationProxy implements IProxy, IPartFactory {
     @Override
     public void init() {
         MultiPartRegistry.registerParts(this, new String[]{
-                "pr_sgate", "pr_igate"});
+                "pr_sgate", "pr_igate", "pr_bgate"});
 
         itemPartGate2 = new ItemPartGate(5678);
     }
@@ -32,6 +32,8 @@ public class IntegrationProxy implements IProxy, IPartFactory {
             return new SimpleGatePart();
         if(id.equals("pr_igate"))
             return new InstancedRsGatePart();
+        if(id.equals("pr_bgate"))
+            return new BundledGatePart();
         return null;
     }
 }

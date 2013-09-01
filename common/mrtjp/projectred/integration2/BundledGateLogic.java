@@ -1,0 +1,189 @@
+package mrtjp.projectred.integration2;
+
+import org.bouncycastle.util.Arrays;
+
+import net.minecraft.nbt.NBTTagCompound;
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Messenger;
+import mrtjp.projectred.transmission.IBundledEmitter;
+import mrtjp.projectred.transmission.IConnectable;
+import mrtjp.projectred.transmission.IRedwireEmitter;
+
+public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart> {
+
+    public static BundledGateLogic create(BundledGatePart gate, int subID) {
+        if (subID == 22)
+            return new BusTransceiver(gate);
+        return null;
+    }
+
+    public BundledGateLogic(BundledGatePart gate) {
+        this.gate = gate;
+    }
+    
+    public BundledGatePart gate;
+
+    @Override
+    public boolean canConnectTo(BundledGatePart gate, IConnectable wire, int r) {
+        if (super.canConnectTo(gate, wire, r))
+            return true;
+        if (wire instanceof IBundledEmitter)
+            return canConnectBundled(gate, r);
+        return false;
+    }
+
+    public boolean canConnectBundled(BundledGatePart gate, int r) {
+        return canConnectBundled(gate.shape(), r);
+    }
+
+    public boolean canConnectBundled(int shape, int r) {
+        return ((bundledInputMask(shape) | bundledOutputMask(shape)) & 1 << r) != 0;
+    }
+
+    public int bundledInputMask(int shape) {
+        return 0;
+    }
+
+    public int bundledOutputMask(int shape) {
+        return 0;
+    }
+
+    @Override
+    public int getOutput(BundledGatePart gate, int r) {
+        return (gate.state & 0x10<<r) != 0 ? 15 : 0;
+    }
+
+    public byte[] getBundledOutput(BundledGatePart gate, int r) {
+        return new byte[16];
+    }
+    
+    @Override
+    public void onChange(BundledGatePart gate) {
+    }
+
+    @Override
+    public void scheduledTick(BundledGatePart gate) {
+    }
+    
+    public void save(NBTTagCompound tag) {
+    }
+    
+    public void load(NBTTagCompound tag) {
+    }
+
+    public void readDesc(MCDataInput packet) {
+    }
+    
+    public void writeDesc(MCDataOutput packet) {
+    }
+    
+    public void read(MCDataInput packet, int switch_key) {
+    }
+
+    public static class BusTransceiver extends BundledGateLogic
+    {
+        public byte[] output0 = new byte[16];
+        public byte[] output2 = new byte[16];
+                
+        public BusTransceiver(BundledGatePart gate) {
+            super(gate);
+        }
+        
+        public void save(NBTTagCompound tag) {
+            tag.setByteArray("in0", output0);
+            tag.setByteArray("in2", output2);
+        }
+        
+        public void load(NBTTagCompound tag) {
+            output0 = tag.getByteArray("in0");
+            output2 = tag.getByteArray("in2");
+        }
+
+        public void read(MCDataInput packet, int switch_key) {
+            if (switch_key == 11)
+                unpackClientData(packet.readInt());
+        }
+        
+        public void sendClientUpdate() {
+            gate.getWriteStream(11).writeInt(packClientData());
+        }
+        
+        public int packClientData() {
+            int packed = 0;
+            for (int i = 0; i < 16; i++) {
+                if (output0[i] != 0)
+                    packed |= 1<<i;
+                if (output2[i] != 0)
+                    packed |= 1<<(i+16);
+            }
+            return packed;
+        }
+        
+        public void unpackClientData(int packed) {
+            for (int i = 0; i < 16; i++) {
+                if ((packed & 1<<i) != 0)
+                    output0[i] = (byte) 255;
+                if ((packed & 1<<(i+16)) != 0)
+                    output2[i] = (byte) 255;
+            }
+        }
+        
+        public int bundledInputMask(int shape) {
+            return 1|4;
+        }
+
+        public int bundledOutputMask(int shape) {
+            return 1|4;
+        }
+        
+        public int inputMask(int shape) {
+            return 2|8;
+        }
+        
+        public int outputMask(int shape) {
+            return 0;
+        }
+
+        public byte[] getBundledOutput(BundledGatePart gate, int r) {
+            return r == 2 ? output0 : r == 0 ? output2 : new byte[16];
+        }
+        
+        @Override
+        public void onChange(BundledGatePart gate) {
+            int oldInput = gate.state() & 0xF;
+            int newInput = getInput(gate, 2|8);
+            if(oldInput != newInput) {
+                gate.setState(gate.state() & 0xF0 | newInput);
+                gate.onInputChange();
+            }
+                        
+            gate.scheduleTick(2);
+        }
+        
+        @Override
+        public void scheduledTick(BundledGatePart gate) {
+            int newInput = gate.state() & 0xF;
+            if ((newInput&8) != 0)
+                output2 = gate.getBundledInput(0);
+            else
+                output2 = new byte[16];
+            if ((newInput&2) != 0)
+                output0 = gate.getBundledInput(2);
+            else
+                output0 = new byte[16];
+
+            repeatOutputs();
+            sendClientUpdate();
+            gate.onOutputChange(1 | 4);            
+        }
+
+        public void repeatOutputs() {
+            for (int i = 0; i < 16; i++) {
+                output0[i] = (byte) (output0[i] > 0 ? 255 : 0);
+                output2[i] = (byte) (output2[i] > 0 ? 255 : 0);
+            }
+        }
+    }
+}
