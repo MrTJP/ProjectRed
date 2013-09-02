@@ -190,8 +190,8 @@ public class LampPart extends JCuboidPart implements TFacePart, JNormalOcclusion
 	}
 
 	@Override
-	public int weakPowerLevel(int arg0) {
-		return 0;
+	public int weakPowerLevel(int s) {
+		return world().getBlockPowerInput(x(), y(), z());
 	}
 
 	@Override
