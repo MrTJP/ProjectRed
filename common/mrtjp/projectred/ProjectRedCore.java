@@ -5,27 +5,8 @@ import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.core.ItemDrawPlate;
 import mrtjp.projectred.core.ItemPart;
-import mrtjp.projectred.expansion.BlockMachines;
-import mrtjp.projectred.expansion.ItemVAWT;
-import mrtjp.projectred.exploration.BlockOre;
-import mrtjp.projectred.exploration.BlockSpecialStone;
-import mrtjp.projectred.exploration.ItemBackpack;
-import mrtjp.projectred.exploration.ItemGemAxe;
-import mrtjp.projectred.exploration.ItemGemHoe;
-import mrtjp.projectred.exploration.ItemGemPickaxe;
-import mrtjp.projectred.exploration.ItemGemSaw;
-import mrtjp.projectred.exploration.ItemGemShovel;
-import mrtjp.projectred.exploration.ItemGemSickle;
-import mrtjp.projectred.exploration.ItemGemSword;
-import mrtjp.projectred.exploration.ItemWoolGin;
-import mrtjp.projectred.illumination.ItemPartLamp;
-import mrtjp.projectred.illumination.ItemPartLantern;
-import mrtjp.projectred.integration.ItemPartGate;
-import mrtjp.projectred.integration.ItemScrewdriver;
-import mrtjp.projectred.transmission.ItemPartFramedWire;
-import mrtjp.projectred.transmission.ItemPartWire;
-import mrtjp.projectred.transmission.ItemWireDebugger;
-import net.minecraft.item.EnumToolMaterial;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
@@ -35,6 +16,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.registry.LanguageRegistry;
 
 /**
  * "Project: Red" serves to provide a complete alternative for Eloraam's
@@ -63,6 +45,23 @@ public class ProjectRedCore {
     
     @SidedProxy(clientSide = "mrtjp.projectred.core.CoreClientProxy", serverSide = "mrtjp.projectred.core.CoreProxy")
     public static IProxy proxy;    
+    
+    static {
+        LanguageRegistry.instance().addStringLocalization("itemGroup.core", "en_US", "Project Red: Core");
+        LanguageRegistry.instance().addStringLocalization("itemGroup.trans", "en_US", "Project Red: Transmission");
+        LanguageRegistry.instance().addStringLocalization("itemGroup.int", "en_US", "Project Red: Integration");
+        LanguageRegistry.instance().addStringLocalization("itemGroup.ill", "en_US", "Project Red: Illumination");
+        LanguageRegistry.instance().addStringLocalization("itemGroup.expansion", "en_US", "Project Red: Expansion");
+        LanguageRegistry.instance().addStringLocalization("itemGroup.exploration", "en_US", "Project Red: Exploration");
+    }
+
+    public static CreativeTabs tabCore = new CreativeTabs("core") {
+        @Override
+        public ItemStack getIconItemStack() {
+            return new ItemStack(ProjectRedIntegration.itemScrewdriver);
+        }
+    };
+
     
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {

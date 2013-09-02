@@ -5,6 +5,8 @@ import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.transmission.ItemPartFramedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
 import mrtjp.projectred.transmission.ItemWireDebugger;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
@@ -20,8 +22,8 @@ public class ProjectRedTransmission {
 
     /** Multipart items **/
     public static ItemPartWire itemPartWire;
-    public static ItemPartFramedWire itemPartFramedWire;    
-    
+    public static ItemPartFramedWire itemPartFramedWire;
+
     /** Items **/
     public static ItemWireDebugger itemWireDebugger;
 
@@ -31,21 +33,31 @@ public class ProjectRedTransmission {
     @SidedProxy(clientSide = "mrtjp.projectred.transmission.TransmissionClientProxy", serverSide = "mrtjp.projectred.transmission.TransmissionProxy")
     public static IProxy proxy;
 
+    public static CreativeTabs tabTransmission = new CreativeTabs("trans") {
+        @Override
+        public ItemStack getIconItemStack() {
+            return new ItemStack(ProjectRedTransmission.itemPartWire);
+        }
+    };
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        proxy.preinit();
+        if (Configurator.module_Transmission.getBoolean(true))
+            proxy.preinit();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(instance);
-        MinecraftForge.EVENT_BUS.register(proxy);
-        proxy.init();
+        if (Configurator.module_Transmission.getBoolean(true)) {
+            MinecraftForge.EVENT_BUS.register(instance);
+            proxy.init();
+        }
     }
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        proxy.postinit();
+        if (Configurator.module_Transmission.getBoolean(true))
+            proxy.postinit();
     }
 
 }

@@ -18,7 +18,7 @@ public class ItemPart extends Item {
 
     public ItemPart(int par1) {
         super(par1);
-        setCreativeTab(ProjectRedTabs.tabCore);
+        setCreativeTab(ProjectRedCore.tabCore);
         setHasSubtypes(true);
     }
 

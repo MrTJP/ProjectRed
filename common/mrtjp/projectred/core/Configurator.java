@@ -23,7 +23,6 @@ public class Configurator {
     public static final String expansionPacketChannel = "PR:Expan";
 
     /** Modules **/
-    public static Property module_Core;
     public static Property module_Integration;
     public static Property module_Transmission;
     public static Property module_Illumination;
@@ -110,7 +109,6 @@ public class Configurator {
         Configuration localConfig = new Configuration(file);
         localConfig.load();
 
-        module_Core = localConfig.get("Modules", "Core", true);
         module_Integration = localConfig.get("Modules", "Integration", true);
         module_Transmission = localConfig.get("Modules", "Transmission", true);
         module_Illumination = localConfig.get("Modules", "Illumination", true);

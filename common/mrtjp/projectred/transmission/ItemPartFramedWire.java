@@ -2,7 +2,7 @@ package mrtjp.projectred.transmission;
 
 import java.util.List;
 
-import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.ProjectRedTransmission;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -22,7 +22,7 @@ public class ItemPartFramedWire extends JItemMultiPart {
     public ItemPartFramedWire(int id) {
         super(id);
         setHasSubtypes(true);
-        setCreativeTab(ProjectRedTabs.tabTransmission);
+        setCreativeTab(ProjectRedTransmission.tabTransmission);
         setUnlocalizedName("projred.transmission.jacwire");
     }
 

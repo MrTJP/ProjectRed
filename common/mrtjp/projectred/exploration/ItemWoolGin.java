@@ -1,7 +1,7 @@
 package mrtjp.projectred.exploration;
 
+import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemCraftingDamage;
-import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.client.renderer.texture.IconRegister;
 
 public class ItemWoolGin extends ItemCraftingDamage {
@@ -10,7 +10,7 @@ public class ItemWoolGin extends ItemCraftingDamage {
         super(par1);
         setUnlocalizedName("projectred.exploration.woolgin");
         setMaxDamage(128);
-        this.setCreativeTab(ProjectRedTabs.tabExploration);
+        this.setCreativeTab(ProjectRedExploration.tabExploration);
     }
 
     @Override

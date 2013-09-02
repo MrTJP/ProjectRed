@@ -1,24 +1,28 @@
 package mrtjp.projectred.integration;
 
 import static mrtjp.projectred.ProjectRedIntegration.itemScrewdriver;
-import mrtjp.projectred.ProjectRedIntegration;
-import mrtjp.projectred.core.Configurator;
-import net.minecraftforge.client.MinecraftForgeClient;
 import codechicken.lib.packet.PacketCustom;
+import mrtjp.projectred.ProjectRedIntegration;
+import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class IntegrationClientProxy extends IntegrationProxy {
 
     @Override
+    public void preinit() {
+        super.preinit();
+        PacketCustom.assignHandler(IntegrationCPH.channel, new IntegrationCPH());
+    }
+    
+    @Override
     public void init() {
         super.init();
-        MinecraftForgeClient.registerItemRenderer(ProjectRedIntegration.itemPartGate.itemID, GateStaticRenderer.instance);
-
-        for (EnumGate g : EnumGate.VALID_GATES) {
-            LanguageRegistry.addName(g.getItemStack(), g.name);
-        }
-        LanguageRegistry.addName(itemScrewdriver, "Screwdriver");
+        MinecraftForgeClient.registerItemRenderer(ProjectRedIntegration.itemPartGate2.itemID, GateItemRenderer.instance);
         
-        PacketCustom.assignHandler(Configurator.integrationPacketChannel, 0, 32, new IntegrationCPH());
+        for (EnumGate g : EnumGate.VALID_GATES)
+            if(g.implemented())
+                LanguageRegistry.addName(g.getItemStack(), g.name);
+        
+        LanguageRegistry.addName(itemScrewdriver, "Screwdriver");
     }
 }

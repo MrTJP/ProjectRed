@@ -2,9 +2,7 @@ package mrtjp.projectred.expansion;
 
 import java.util.List;
 
-import mrtjp.projectred.core.ProjectRedTabs;
-import mrtjp.projectred.transmission.EnumWire;
-import mrtjp.projectred.transmission.FramedWirePart;
+import mrtjp.projectred.ProjectRedExpansion;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -24,7 +22,7 @@ public class ItemPartPressurizedTube extends JItemMultiPart {
     public ItemPartPressurizedTube(int id) {
         super(id);
         setHasSubtypes(true);
-        setCreativeTab(ProjectRedTabs.tabExpansion);
+        setCreativeTab(ProjectRedExpansion.tabExpansion);
         setUnlocalizedName("projred.expansion.ptube");
     }
 

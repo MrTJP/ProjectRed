@@ -1,4 +1,4 @@
-package mrtjp.projectred.integration2;
+package mrtjp.projectred.integration;
 
 import mrtjp.projectred.transmission.IConnectable;
 import mrtjp.projectred.transmission.IRedwireEmitter;

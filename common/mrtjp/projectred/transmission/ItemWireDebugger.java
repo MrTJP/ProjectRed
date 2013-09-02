@@ -1,13 +1,13 @@
 package mrtjp.projectred.transmission;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.ProjectRedTransmission;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemWireDebugger extends Item {
 
@@ -17,7 +17,7 @@ public class ItemWireDebugger extends Item {
         setMaxDamage(256);
         setNoRepair();
         setUnlocalizedName("projectred.transmission.wiredebugger");
-        setCreativeTab(ProjectRedTabs.tabTransmission);
+        setCreativeTab(ProjectRedTransmission.tabTransmission);
     }
 
     @Override

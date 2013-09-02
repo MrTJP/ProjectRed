@@ -4,10 +4,8 @@ import java.util.List;
 
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.GhostContainer;
-import mrtjp.projectred.core.GuiRestrictedSlot;
-import mrtjp.projectred.core.ProjectRedTabs;
-import mrtjp.projectred.core.SimpleInventory;
 import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
+import mrtjp.projectred.core.SimpleInventory;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,7 +28,7 @@ public class ItemBackpack extends Item {
         hasSubtypes = true;
         maxStackSize = 1;
         setUnlocalizedName("projectred.items.backpack");
-        setCreativeTab(ProjectRedTabs.tabCore);
+        setCreativeTab(ProjectRedExploration.tabExploration);
     }
 
     public static IInventory getBackpackInventory(EntityPlayer player) {

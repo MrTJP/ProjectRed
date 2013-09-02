@@ -1,4 +1,4 @@
-package mrtjp.projectred.integration2;
+package mrtjp.projectred.integration;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
