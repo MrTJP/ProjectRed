@@ -1,4 +1,4 @@
-package mrtjp.projectred.integration2;
+package mrtjp.projectred.integration;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;

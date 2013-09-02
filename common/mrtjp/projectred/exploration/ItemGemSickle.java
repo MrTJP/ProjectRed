@@ -1,6 +1,6 @@
 package mrtjp.projectred.exploration;
 
-import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.ProjectRedExploration;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockLeaves;
@@ -23,7 +23,7 @@ public class ItemGemSickle extends ItemTool {
         super(par1, 3, tool.material, new Block[0]);
         this.tool = tool;
         this.setUnlocalizedName("projectred.exploration." + tool.unlocal);
-        this.setCreativeTab(ProjectRedTabs.tabExploration);
+        this.setCreativeTab(ProjectRedExploration.tabExploration);
     }
 
     @Override

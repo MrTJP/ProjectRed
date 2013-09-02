@@ -5,7 +5,6 @@ import java.util.List;
 
 import mrtjp.projectred.ProjectRedExpansion;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -25,7 +24,7 @@ public class BlockMachines extends BlockContainer {
 
     public BlockMachines(int id) {
         super(id, new Material(Material.iron.materialMapColor));
-        setCreativeTab(ProjectRedTabs.tabExpansion);
+        setCreativeTab(ProjectRedExpansion.tabExpansion);
         setHardness(0.75f);
     }
 

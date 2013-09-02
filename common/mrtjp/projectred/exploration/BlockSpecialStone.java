@@ -2,8 +2,8 @@ package mrtjp.projectred.exploration;
 
 import java.util.ArrayList;
 
+import mrtjp.projectred.ProjectRedExpansion;
 import mrtjp.projectred.ProjectRedExploration;
-import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -19,7 +19,7 @@ public class BlockSpecialStone extends Block {
         this.setUnlocalizedName("projectred.exploration.stone");
         setHardness(3.0F);
         setResistance(10.0F);
-        setCreativeTab(ProjectRedTabs.tabExploration);
+        setCreativeTab(ProjectRedExploration.tabExploration);
     }
 
     @Override

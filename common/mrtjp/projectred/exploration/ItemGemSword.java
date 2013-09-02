@@ -1,10 +1,7 @@
 package mrtjp.projectred.exploration;
 
-import mrtjp.projectred.ProjectRedCore;
-import mrtjp.projectred.core.ProjectRedTabs;
-import mrtjp.projectred.core.ItemPart.EnumPart;
+import mrtjp.projectred.ProjectRedExploration;
 import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.item.EnumToolMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 
@@ -16,7 +13,7 @@ public class ItemGemSword extends ItemSword {
         super(par1, tool.material);
         this.tool = tool;
         this.setUnlocalizedName("projectred.exploration." + tool.unlocal);
-        this.setCreativeTab(ProjectRedTabs.tabExploration);
+        this.setCreativeTab(ProjectRedExploration.tabExploration);
     }
 
     @Override

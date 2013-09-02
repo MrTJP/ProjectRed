@@ -1,4 +1,4 @@
-package mrtjp.projectred.integration2;
+package mrtjp.projectred.integration;
 
 import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.Configurator;

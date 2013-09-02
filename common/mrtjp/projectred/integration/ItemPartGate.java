@@ -2,7 +2,8 @@ package mrtjp.projectred.integration;
 
 import java.util.List;
 
-import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.ProjectRedIntegration;
+import mrtjp.projectred.transmission.BasicWireUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -13,6 +14,7 @@ import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.JItemMultiPart;
+import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -22,7 +24,7 @@ public class ItemPartGate extends JItemMultiPart {
     public ItemPartGate(int id) {
         super(id);
         setHasSubtypes(true);
-        setCreativeTab(ProjectRedTabs.tabIntegration);
+        setCreativeTab(ProjectRedIntegration.tabIntegration);
         setUnlocalizedName("projred.integration.gate");
     }
 
@@ -38,11 +40,15 @@ public class ItemPartGate extends JItemMultiPart {
     @Override
     public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
         BlockCoord onPos = pos.copy().offset(side ^ 1);
-        if (!world.isBlockSolidOnSide(onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side))) {
+        if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false))
             return null;
-        }
-        GatePart gate = EnumGate.get(item.getItemDamage()).createPart();
-        gate.setupPlacement(player, side);
+        
+        EnumGate type = EnumGate.VALID_GATES[item.getItemDamage()];
+        if(!type.implemented())
+            return null;
+        GatePart gate = (GatePart) MultiPartRegistry.createPart(type.gateType, false);
+        if(gate != null)
+            gate.onPlaced(player, side, item.getItemDamage());
         return gate;
     }
 
@@ -60,8 +66,7 @@ public class ItemPartGate extends JItemMultiPart {
 
     @Override
     public void registerIcons(IconRegister reg) {
-        GateRenderBridge.registerAllIcons(reg);
-
+        ComponentStore.registerIcons(reg);
     }
 
     @Override
@@ -69,5 +74,4 @@ public class ItemPartGate extends JItemMultiPart {
     public int getSpriteNumber() {
         return 0;
     }
-
 }

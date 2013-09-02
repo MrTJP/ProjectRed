@@ -5,7 +5,6 @@ import java.util.Map;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemCraftingDamage;
 import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.EnumToolMaterial;
 import net.minecraft.item.ItemStack;
@@ -34,7 +33,7 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw {
         this.tool = tool;
         this.setUnlocalizedName("projectred.exploration." + tool.unlocal);
         this.setMaxDamage(tool.material.getMaxUses());
-        this.setCreativeTab(ProjectRedTabs.tabExploration);
+        this.setCreativeTab(ProjectRedExploration.tabExploration);
     }
 
     @Override

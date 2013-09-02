@@ -2,7 +2,7 @@ package mrtjp.projectred.illumination;
 
 import java.util.List;
 
-import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.transmission.BasicWireUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -27,7 +27,7 @@ public class ItemPartLantern extends JItemMultiPart {
         inverted = isInverted;
         this.setHasSubtypes(true);
         this.setUnlocalizedName("projred.illumination.lantern");
-        this.setCreativeTab(ProjectRedTabs.tabLighting);
+        this.setCreativeTab(ProjectRedIllumination.tabLighting);
     }
 
     @Override

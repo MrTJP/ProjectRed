@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion;
 
-import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.ProjectRedExpansion;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
@@ -12,7 +12,7 @@ public class ItemBlockMachines extends ItemBlock {
     public ItemBlockMachines(int par1) {
         super(par1);
         setHasSubtypes(true);
-        setCreativeTab(ProjectRedTabs.tabExpansion);
+        setCreativeTab(ProjectRedExpansion.tabExpansion);
     }
 
     /**
