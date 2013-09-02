@@ -2,7 +2,6 @@ package mrtjp.projectred.integration2;
 
 import mrtjp.projectred.core.BasicGuiUtils;
 import mrtjp.projectred.integration2.GateLogic.ICounterGuiLogic;
-import mrtjp.projectred.integration2.GateLogic.ITimerGuiLogic;
 import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.packet.PacketCustom;

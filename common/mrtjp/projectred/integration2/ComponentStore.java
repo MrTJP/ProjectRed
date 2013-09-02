@@ -13,7 +13,10 @@ import codechicken.lib.colour.Colour;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCModel;
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.ColourMultiplier;
 import codechicken.lib.render.IUVTransformation;
+import codechicken.lib.render.IVertexModifier;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.MultiIconTransformation;
 import codechicken.lib.render.TextureDataHolder;
@@ -39,6 +42,11 @@ public class ComponentStore
     public static CCModel pointer;
     public static CCModel busXcvr;
     public static CCModel busXcvrPanel;
+
+    public static CCModel cellWireBottom;
+    public static CCModel cellWireTop;
+    public static CCModel cellWireSide;
+    public static CCModel cellFrame;
     
     public static Icon baseIcon;
     public static Icon[] wireIcons = new Icon[3];
@@ -51,6 +59,7 @@ public class ComponentStore
     public static Icon rainIcon;
     public static Icon pointerIcon;
     public static Icon busXcvrIcon;
+    public static Icon cellIcon;
     
     static
     {
@@ -63,6 +72,11 @@ public class ComponentStore
         pointer = loadModel("pointer");
         busXcvr = loadModel("array/busxcvr");
         busXcvrPanel = loadModel("array/busxcvrpanel");
+        
+        cellWireBottom = loadModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5));
+        cellWireTop = loadModel("array/celltopwire").apply(new Translation(0.5, 0, 0.5));
+        cellWireSide = loadModel("array/cellsidewire").apply(new Translation(0.5, 0, 0.5));
+        cellFrame = loadModel("array/cellstand").apply(new Translation(0.5, 0, 0.5));
     }
     
     public static Map<String, CCModel> loadModels(String name) {
@@ -122,6 +136,8 @@ public class ComponentStore
         leverIcon = r.registerIcon(baseTex+"lever");
         pointerIcon = r.registerIcon(baseTex+"pointer");
         busXcvrIcon = r.registerIcon(baseTex+"busxcvr");
+        cellIcon = r.registerIcon(baseTex+"cells");
+        
         RenderGate.registerIcons(r);
     }
 
@@ -669,6 +685,67 @@ public class ComponentStore
         public void renderModel(Transformation t, int orient) {
             models[orient].render(t, 
                     new IconTransformation(busXcvrIcon));
+        }
+    }
+    
+    public static class CellWireModel extends ComponentModel
+    {
+        public static CCModel[] bottom = new CCModel[24];
+        public static CCModel[] top = new CCModel[24];
+        public static CCModel[] left = new CCModel[24];
+        public static CCModel[] right = new CCModel[24];
+        
+        static
+        {
+            CCModel cellWireLeft = cellWireSide.copy().apply(new Translation(-7/16D, 0, 0));
+            CCModel cellWireRight = cellWireSide.copy().apply(new Translation(7/16D, 0, 0));
+            for(int i = 0; i < 24; i++) {
+                bottom[i] = bakeCopy(cellWireBottom, i);
+                top[i] = bakeCopy(cellWireTop, i);
+                left[i] = bakeCopy(cellWireLeft, i);
+                right[i] = bakeCopy(cellWireRight, i);
+            }
+        }
+        
+        public byte signal1;
+        public byte signal2;
+        public byte conn;
+        
+        @Override
+        public void renderModel(Transformation t, int orient) {
+            boolean invColour = conn == 0x10;//special flag for inv rendering, just set tessellator colour, don't use modifiers
+            if(invColour)
+                CCRenderState.setColour(signalColour((byte) 0));
+            
+            IconTransformation icont = new IconTransformation(cellIcon);
+            bottom[orient].render(t, icont, new ColourMultiplier(signalColour(signal1)));
+            
+            IVertexModifier colour = new ColourMultiplier(signalColour(signal2));
+            top[orient].render(t, icont, colour);
+            if((conn & 2) == 0)
+                right[orient].render(t, icont, colour);
+            if((conn & 8) == 0)
+                left[orient].render(t, icont, colour);
+            
+
+            if(invColour)
+                CCRenderState.setColour(-1);
+        }
+        
+        public static int signalColour(byte signal) {
+            return ((signal&0xFF)/2 + 60) << 24 | 0xFF;
+        }
+    }
+    
+    public static class CellFrameModel extends SimpleComponentModel
+    {
+        public CellFrameModel() {
+            super(cellFrame);
+        }
+        
+        @Override
+        public Icon getIcon() {
+            return cellIcon;
         }
     }
 }

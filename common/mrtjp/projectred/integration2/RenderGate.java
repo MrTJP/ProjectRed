@@ -10,6 +10,9 @@ import java.util.Random;
 import mrtjp.projectred.integration2.ComponentStore.BaseComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.BusXcvrCableModel;
 import mrtjp.projectred.integration2.ComponentStore.BusXcvrPanelModel;
+import mrtjp.projectred.integration2.ComponentStore.CellFrameModel;
+import mrtjp.projectred.integration2.ComponentStore.CellWireModel;
+import mrtjp.projectred.integration2.ComponentStore.ChipModel;
 import mrtjp.projectred.integration2.ComponentStore.ComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.LeverModel;
 import mrtjp.projectred.integration2.ComponentStore.PointerModel;
@@ -56,6 +59,9 @@ public class RenderGate
             new StateCell(),
             new Synchronizer(),
             new BusXcvr(),
+            new NullCell(),
+            new InvertCell(),
+            new BufferCell(),
         };
     
     public static void registerIcons(IconRegister r) {
@@ -1137,5 +1143,45 @@ public class RenderGate
             wires[1].on = (gate.state()&2) != 0;
         }
 
+    }
+    
+    public static class ArrayCell extends GateRenderer<ArrayGatePart>
+    {
+        public CellWireModel alloyWire = new CellWireModel();
+        
+        public ArrayCell() {
+            models.add(alloyWire);
+            models.add(new CellFrameModel());
+        }
+        
+        @Override
+        public void prepareInv() {
+            alloyWire.signal1 = 0;
+            alloyWire.signal2 = 0;
+            alloyWire.conn = 0x10;
+        }
+        
+        @Override
+        public void prepare(ArrayGatePart part) {
+            alloyWire.signal1 = part.signal1;
+            alloyWire.signal2 = part.signal2;
+            alloyWire.conn = part.topWireConn();
+            super.prepare(part);
+        }
+    }
+    
+    public static class NullCell extends ArrayCell
+    {
+        
+    }
+    
+    public static class InvertCell extends ArrayCell
+    {
+        
+    }
+    
+    public static class BufferCell extends ArrayCell
+    {
+        
     }
 }
