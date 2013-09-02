@@ -110,6 +110,8 @@ public class ComponentStore
     private static CCModel loadBase() {
         CCModel m = loadModel("base");
         m.apply(new Translation(0.5, 0, 0.5));
+        for(int i = 0; i < m.verts.length; i++)//inset each face a little for posts and other stuff that render overtop
+            m.verts[i].vec.subtract(m.normals[i].copy().multiply(0.0002));
         return m;
     }
     
