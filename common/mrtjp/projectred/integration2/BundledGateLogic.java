@@ -2,6 +2,8 @@ package mrtjp.projectred.integration2;
 
 import org.bouncycastle.util.Arrays;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
@@ -84,21 +86,22 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
 
     public static class BusTransceiver extends BundledGateLogic
     {
-        public byte[] output0 = new byte[16];
-        public byte[] output2 = new byte[16];
+        
+        public byte[] input0 = new byte[16];
+        public byte[] input2 = new byte[16];
                 
         public BusTransceiver(BundledGatePart gate) {
             super(gate);
         }
         
         public void save(NBTTagCompound tag) {
-            tag.setByteArray("in0", output0);
-            tag.setByteArray("in2", output2);
+            tag.setByteArray("in0", input0);
+            tag.setByteArray("in2", input2);
         }
         
         public void load(NBTTagCompound tag) {
-            output0 = tag.getByteArray("in0");
-            output2 = tag.getByteArray("in2");
+            input0 = tag.getByteArray("in0");
+            input2 = tag.getByteArray("in2");
         }
 
         public void read(MCDataInput packet, int switch_key) {
@@ -113,20 +116,22 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         public int packClientData() {
             int packed = 0;
             for (int i = 0; i < 16; i++) {
-                if (output0[i] != 0)
+                if (input0[i] != 0)
                     packed |= 1<<i;
-                if (output2[i] != 0)
+                if (input2[i] != 0)
                     packed |= 1<<(i+16);
             }
             return packed;
         }
         
         public void unpackClientData(int packed) {
+            input0 = new byte[16];
+            input2 = new byte[16];
             for (int i = 0; i < 16; i++) {
                 if ((packed & 1<<i) != 0)
-                    output0[i] = (byte) 255;
+                    input0[i] = (byte) 255;
                 if ((packed & 1<<(i+16)) != 0)
-                    output2[i] = (byte) 255;
+                    input2[i] = (byte) 255;
             }
         }
         
@@ -147,43 +152,51 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         }
 
         public byte[] getBundledOutput(BundledGatePart gate, int r) {
-            return r == 2 ? output0 : r == 0 ? output2 : new byte[16];
+            return r == gate.rotation() ? input0 : input2;
         }
         
         @Override
         public void onChange(BundledGatePart gate) {
             int oldInput = gate.state() & 0xF;
             int newInput = getInput(gate, 2|8);
+            if (gate.shape() == 1)
+                newInput = gate.flipMaskZ(newInput);
             if(oldInput != newInput) {
-                gate.setState(gate.state() & 0xF0 | newInput);
+                gate.setState(gate.state() & 0xF0|newInput);
                 gate.onInputChange();
+                gate.scheduleTick(2);
             }
-                        
-            gate.scheduleTick(2);
+
+            byte[] newInput0 = (newInput&8) != 0 ? gate.getBundledInput(0) : new byte[16];
+            byte[] newInput2 = (newInput&2) != 0 ? gate.getBundledInput(2) : new byte[16];
+            
+            if (!Arrays.areEqual(input0, newInput0)) {
+                input0 = newInput0.clone();
+                gate.scheduleTick(2);
+            }
+            if (!Arrays.areEqual(input2, newInput2)) {
+                input2 = newInput2.clone();
+                gate.scheduleTick(2);
+            }
         }
         
         @Override
         public void scheduledTick(BundledGatePart gate) {
-            int newInput = gate.state() & 0xF;
-            if ((newInput&8) != 0)
-                output2 = gate.getBundledInput(0);
-            else
-                output2 = new byte[16];
-            if ((newInput&2) != 0)
-                output0 = gate.getBundledInput(2);
-            else
-                output0 = new byte[16];
-
-            repeatOutputs();
+            gate.onOutputChange(1|4);
             sendClientUpdate();
-            gate.onOutputChange(1 | 4);            
         }
 
-        public void repeatOutputs() {
+        public void repeatOutputs(byte[] in0, byte[] in2) {
             for (int i = 0; i < 16; i++) {
-                output0[i] = (byte) (output0[i] > 0 ? 255 : 0);
-                output2[i] = (byte) (output2[i] > 0 ? 255 : 0);
+                in0[i] = (byte) (in0[i] > 0 ? 255 : 0);
+                in2[i] = (byte) (in2[i] > 0 ? 255 : 0);
             }
+        }
+        
+        @Override
+        public boolean cycleShape(BundledGatePart gate) {
+            gate.setShape(gate.shape() == 0 ? 1 : 0);
+            return true;
         }
     }
 }
