@@ -28,6 +28,9 @@ public enum EnumGate
     StateCell("State Cell", "pr_igate"),
     Synchronizer("Synchronizer", "pr_igate"),
     BusTransceiver("Bus Transceiver", "pr_bgate"),
+    NullCell("Null Cell", "pr_agate"),
+    InvertCell("Invert Cell", "pr_agate"),
+    BufferCell("Buffer Cell", "pr_agate"),
     ;
 
     public static EnumGate[] VALID_GATES = values();
