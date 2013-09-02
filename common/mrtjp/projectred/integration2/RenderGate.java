@@ -8,15 +8,17 @@ import java.util.List;
 import java.util.Random;
 
 import mrtjp.projectred.integration2.ComponentStore.BaseComponentModel;
-import mrtjp.projectred.integration2.ComponentStore.ChipModel;
+import mrtjp.projectred.integration2.ComponentStore.BusXcvrCableModel;
+import mrtjp.projectred.integration2.ComponentStore.BusXcvrPanelModel;
 import mrtjp.projectred.integration2.ComponentStore.ComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.LeverModel;
 import mrtjp.projectred.integration2.ComponentStore.PointerModel;
 import mrtjp.projectred.integration2.ComponentStore.RainSensorModel;
+import mrtjp.projectred.integration2.ComponentStore.RedChipModel;
 import mrtjp.projectred.integration2.ComponentStore.RedstoneTorchModel;
-import mrtjp.projectred.integration2.ComponentStore.RsChipModel;
 import mrtjp.projectred.integration2.ComponentStore.SolarModel;
 import mrtjp.projectred.integration2.ComponentStore.WireComponentModel;
+import mrtjp.projectred.integration2.ComponentStore.YellowChipModel;
 import mrtjp.projectred.integration2.InstancedRsGateLogic.ExtraStateLogic;
 import mrtjp.projectred.integration2.InstancedRsGateLogic.TimerGateLogic;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -53,7 +55,7 @@ public class RenderGate
             new Counter(),
             new StateCell(),
             new Synchronizer(),
-            new BusTransceiver(),
+            new BusXcvr(),
         };
     
     public static void registerIcons(IconRegister r) {
@@ -63,7 +65,6 @@ public class RenderGate
     }
     
     public static void renderStatic(GatePart gate) {
-        renderers[renderers.length-2] = new StateCell();
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
         r.renderStatic(new Translation(gate.x(), gate.y(), gate.z()), gate.orientation&0xFF);
@@ -595,10 +596,10 @@ public class RenderGate
     public static class Randomizer extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("RANDOM", 4);
-        ChipModel[] chips = new ChipModel[] {
-                new ChipModel(8, 5.5),
-                new ChipModel(11.5, 12),
-                new ChipModel(4.5, 12),                
+        YellowChipModel[] chips = new YellowChipModel[] {
+                new YellowChipModel(8, 5.5),
+                new YellowChipModel(11.5, 12),
+                new YellowChipModel(4.5, 12),                
             };
         
         public Randomizer() {
@@ -1000,7 +1001,7 @@ public class RenderGate
                 new RedstoneTorchModel(13, 8, 12)
             };
         PointerModel pointer = new PointerModel(13, 8, 8);
-        RsChipModel chip = new RsChipModel(6.5, 10);
+        RedChipModel chip = new RedChipModel(6.5, 10);
         
         public StateCell() {
             models.addAll(Arrays.asList(wires));
@@ -1068,9 +1069,9 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("SYNC", 6);
         RedstoneTorchModel torch = new RedstoneTorchModel(8, 3, 6);
-        RsChipModel[] chips = new RsChipModel[] {
-                new RsChipModel(4.5, 9),
-                new RsChipModel(11.5, 9),
+        RedChipModel[] chips = new RedChipModel[] {
+                new RedChipModel(4.5, 9),
+                new RedChipModel(11.5, 9),
         };
         
         public Synchronizer() {
@@ -1108,8 +1109,33 @@ public class RenderGate
         
     }
     
-    public static class BusTransceiver extends GateRenderer<SimpleGatePart>
+    public static class BusXcvr extends GateRenderer<BundledGatePart>
     {
+        WireComponentModel[] wires = generateWireModels("BUSXCVR", 2);
+        BusXcvrCableModel cable = new BusXcvrCableModel();
+        BusXcvrPanelModel[] panels = new BusXcvrPanelModel[] {
+                new BusXcvrPanelModel(4, 8, 0),
+                new BusXcvrPanelModel(12, 8, 180*MathHelper.torad),
+        };
+        public BusXcvr () {
+            models.add(cable);
+            models.addAll(Arrays.asList(wires));
+            models.addAll(Arrays.asList(panels));
+        }
         
+        @Override
+        public void prepareInv() {
+            reflect = false;
+            wires[0].on = false;
+            wires[1].on = false;
+        }
+        
+        @Override
+        public void prepare(BundledGatePart gate) {
+            reflect = gate.shape() != 0;
+            wires[0].on = (gate.state()&8) != 0;
+            wires[1].on = (gate.state()&2) != 0;
+        }
+
     }
 }

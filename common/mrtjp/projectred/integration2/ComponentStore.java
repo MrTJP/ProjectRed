@@ -37,6 +37,8 @@ public class ComponentStore
     public static CCModel solarArray;
     public static CCModel rainSensor;
     public static CCModel pointer;
+    public static CCModel busXcvr;
+    public static CCModel busXcvrPanel;
     
     public static Icon baseIcon;
     public static Icon[] wireIcons = new Icon[3];
@@ -48,6 +50,7 @@ public class ComponentStore
     public static Icon[] solarIcons = new Icon[3];
     public static Icon rainIcon;
     public static Icon pointerIcon;
+    public static Icon busXcvrIcon;
     
     static
     {
@@ -58,6 +61,8 @@ public class ComponentStore
         leverOff = loadModel("leveroff");
         leverOn = loadModel("leveron");
         pointer = loadModel("pointer");
+        busXcvr = loadModel("array/busxcvr");
+        busXcvrPanel = loadModel("array/busxcvrpanel");
     }
     
     public static Map<String, CCModel> loadModels(String name) {
@@ -105,7 +110,6 @@ public class ComponentStore
             wireData[i] = TextureUtils.loadTextureColours(new ResourceLocation(
                     res.func_110624_b(), "textures/blocks/"+res.func_110623_a()+".png"));
         }
-        
         redstoneTorchIcons[0] = r.registerIcon("redstone_torch_off");
         redstoneTorchIcons[1] = r.registerIcon("redstone_torch_on");
         taintedChipIcons[0] = r.registerIcon(baseTex+"yellowchipoff");
@@ -117,7 +121,7 @@ public class ComponentStore
         rainIcon = r.registerIcon(baseTex+"rainsensor");
         leverIcon = r.registerIcon(baseTex+"lever");
         pointerIcon = r.registerIcon(baseTex+"pointer");
-        
+        busXcvrIcon = r.registerIcon(baseTex+"busxcvr");
         RenderGate.registerIcons(r);
     }
 
@@ -548,9 +552,9 @@ public class ComponentStore
         }
     }
     
-    public static class ChipModel extends OnOffModel
+    public static class YellowChipModel extends OnOffModel
     {
-        public ChipModel(double x, double z) {
+        public YellowChipModel(double x, double z) {
             super(lightChip, new Vector3(x, 0, z));
         }
         
@@ -560,9 +564,9 @@ public class ComponentStore
         }
     }
     
-    public static class RsChipModel extends OnOffModel
+    public static class RedChipModel extends OnOffModel
     {
-        public RsChipModel(double x, double z) {
+        public RedChipModel(double x, double z) {
             super(lightChip, new Vector3(x, 0, z));
         }
         
@@ -618,6 +622,53 @@ public class ComponentStore
                     new Rotation(-angle+MathHelper.pi, 0, 1, 0).with(pos.translation())
                         .with(dynamicT(orient)).with(t), 
                     new IconTransformation(pointerIcon), LightModel.standardLightModel);
+        }
+    }
+    
+    public static class BusXcvrCableModel extends SingleComponentModel
+    {
+
+        public BusXcvrCableModel() {
+            super(busXcvr, new Vector3(8,0,8));
+        }
+        
+        @Override
+        public void renderModel(Transformation t, int orient) {
+            if ((orient&0x3) == 2)
+                orient = orient&0xFC | 0;
+            else if ((orient&0x3) == 3)
+                orient = orient&0xFC | 1;
+            super.renderModel(t, orient%24);
+        }
+
+        @Override
+        public IUVTransformation getUVT() {
+            return new IconTransformation(busXcvrIcon);
+        }
+    }
+
+    public static class BusXcvrPanelModel extends ComponentModel
+    {
+        public CCModel[] models;
+        
+        double angle;
+        public Vector3 pos;
+        
+        public BusXcvrPanelModel(double x, double z, double angle) {
+            this.angle = angle;
+            this.pos = new Vector3(x, 0, z).multiply(1/16D);
+            CCModel base = busXcvrPanel.copy();
+            base.apply(new Rotation(angle, 0, 1, 0));
+            base.apply(pos.translation());
+            this.models = new CCModel[48];
+            for(int i = 0; i < 48; i++)
+                models[i] = bakeCopy(base, i);
+        }
+        
+        @Override
+        public void renderModel(Transformation t, int orient) {
+            models[orient].render(t, 
+                    new IconTransformation(busXcvrIcon));
         }
     }
 }
