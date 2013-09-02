@@ -7,14 +7,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import mrtjp.projectred.integration2.ComponentStore.BaseCellWireModel;
 import mrtjp.projectred.integration2.ComponentStore.BaseComponentModel;
 import mrtjp.projectred.integration2.ComponentStore.BusXcvrCableModel;
 import mrtjp.projectred.integration2.ComponentStore.BusXcvrPanelModel;
 import mrtjp.projectred.integration2.ComponentStore.CellFrameModel;
-import mrtjp.projectred.integration2.ComponentStore.CellWireModel;
-import mrtjp.projectred.integration2.ComponentStore.ChipModel;
+import mrtjp.projectred.integration2.ComponentStore.CellPlateModel;
 import mrtjp.projectred.integration2.ComponentStore.ComponentModel;
+import mrtjp.projectred.integration2.ComponentStore.ExtendedCellBaseModel;
+import mrtjp.projectred.integration2.ComponentStore.ExtendedCellWireModel;
 import mrtjp.projectred.integration2.ComponentStore.LeverModel;
+import mrtjp.projectred.integration2.ComponentStore.NullCellBaseModel;
+import mrtjp.projectred.integration2.ComponentStore.NullCellWireModel;
 import mrtjp.projectred.integration2.ComponentStore.PointerModel;
 import mrtjp.projectred.integration2.ComponentStore.RainSensorModel;
 import mrtjp.projectred.integration2.ComponentStore.RedChipModel;
@@ -71,6 +75,7 @@ public class RenderGate
     }
     
     public static void renderStatic(GatePart gate) {
+        //renderers[renderers.length-1] = new BufferCell();
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
         r.renderStatic(new Translation(gate.x(), gate.y(), gate.z()), gate.orientation&0xFF);
@@ -110,7 +115,8 @@ public class RenderGate
         
         public void registerIcons(IconRegister r) {
             for(ComponentModel m : models)
-                m.registerTextures(r);
+                if (m != null)
+                    m.registerTextures(r);
         }
 
         public final void renderStatic(Transformation t, int orient) {
@@ -1147,9 +1153,11 @@ public class RenderGate
     
     public static class ArrayCell extends GateRenderer<ArrayGatePart>
     {
-        public CellWireModel alloyWire = new CellWireModel();
+        public BaseCellWireModel alloyWire;
         
-        public ArrayCell() {
+        public ArrayCell(BaseCellWireModel alloy) {
+            alloyWire = alloy;
+            models.clear();
             models.add(alloyWire);
             models.add(new CellFrameModel());
         }
@@ -1172,16 +1180,72 @@ public class RenderGate
     
     public static class NullCell extends ArrayCell
     {
-        
+        public NullCell() {
+            super(new NullCellWireModel());
+            models.add(new NullCellBaseModel());
+        }
     }
     
     public static class InvertCell extends ArrayCell
     {
+        WireComponentModel[] wires = generateWireModels("INVCELL", 1);
+        RedstoneTorchModel torch = new RedstoneTorchModel(8, 8, 6);
+
+        public InvertCell() {
+            super(new ExtendedCellWireModel());
+            models.add(new ExtendedCellBaseModel());
+            models.add(new CellPlateModel());
+            models.addAll(Arrays.asList(wires));
+            models.add(torch);
+        }
         
+        @Override
+        public void prepareInv() {
+            super.prepareInv();
+            wires[0].on = false;
+            torch.on = true;
+        }
+        
+        @Override
+        public void prepare(ArrayGatePart gate) {
+            super.prepare(gate);
+            torch.on = gate.signal1 == 0;
+            wires[0].on = gate.signal1 != 0;
+        }
     }
     
     public static class BufferCell extends ArrayCell
     {
+        WireComponentModel[] wires = generateWireModels("BUFFCELL", 2);
+        RedstoneTorchModel torches[] = new RedstoneTorchModel[] {
+                new RedstoneTorchModel(11, 13, 6),
+                new RedstoneTorchModel(8, 8, 6)                
+        };
+
+        public BufferCell() {
+            super(new ExtendedCellWireModel());
+            models.add(new ExtendedCellBaseModel());
+            models.add(new CellPlateModel());
+            models.addAll(Arrays.asList(wires));
+            models.addAll(Arrays.asList(torches));
+        }
         
+        @Override
+        public void prepareInv() {
+            super.prepareInv();
+            wires[0].on = false;
+            wires[1].on = true;
+            torches[0].on = true;
+            torches[1].on = false;
+        }
+        
+        @Override
+        public void prepare(ArrayGatePart gate) {
+            super.prepare(gate);
+            torches[0].on = gate.signal1 == 0;
+            torches[1].on = gate.signal1 != 0;
+            wires[0].on = gate.signal1 != 0;
+            wires[1].on = gate.signal1 == 0;
+        }
     }
 }

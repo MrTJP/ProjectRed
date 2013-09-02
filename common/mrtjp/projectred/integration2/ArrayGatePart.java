@@ -243,6 +243,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     @Override
     public void onSignalUpdate() {
         tile().markDirty();
+        super.onChange();
         getWriteStream(10).writeByte(signal1).writeByte(signal2);
     }
     
