@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.multipart.handler.MultipartSaveLoad;
 
 public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRsGatePart>
 {
@@ -304,7 +305,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void load(NBTTagCompound tag) {
             pointer_max = tag.getInteger("pmax");
-            pointer_start = gate.world().getWorldTime()-tag.getLong("pelapsed");
+            pointer_start = MultipartSaveLoad.loadingWorld().getWorldTime()-tag.getLong("pelapsed");
         }
         
         @Override
