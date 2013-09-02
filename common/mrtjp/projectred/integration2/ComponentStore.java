@@ -43,10 +43,15 @@ public class ComponentStore
     public static CCModel busXcvr;
     public static CCModel busXcvrPanel;
 
-    public static CCModel cellWireBottom;
-    public static CCModel cellWireTop;
+    public static CCModel nullCellWireBottom;
+    public static CCModel nullCellWireTop;
+    public static CCModel nullCellBase;
+    public static CCModel extendedCellWireBottom;
+    public static CCModel extendedCellWireTop;
+    public static CCModel extendedCellBase;
     public static CCModel cellWireSide;
     public static CCModel cellFrame;
+    public static CCModel cellPlate;
     
     public static Icon baseIcon;
     public static Icon[] wireIcons = new Icon[3];
@@ -73,10 +78,15 @@ public class ComponentStore
         busXcvr = loadModel("array/busxcvr");
         busXcvrPanel = loadModel("array/busxcvrpanel");
         
-        cellWireBottom = loadModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5));
-        cellWireTop = loadModel("array/celltopwire").apply(new Translation(0.5, 0, 0.5));
+        nullCellWireBottom = loadModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5));
+        nullCellWireTop = loadModel("array/nullcelltopwire").apply(new Translation(0.5, 0, 0.5));
+        nullCellBase = loadModel("array/nullcellbase").apply(new Translation(0.5, 0, 0.5));
+        extendedCellWireBottom = loadModel("array/extendedcellbottomwire").apply(new Translation(0.5, 0, 0.5));
+        extendedCellWireTop = loadModel("array/extendedcelltopwire").apply(new Translation(0.5, 0, 0.5));        
+        extendedCellBase = loadModel("array/extendedcellbase").apply(new Translation(0.5, 0, 0.5));        
         cellWireSide = loadModel("array/cellsidewire").apply(new Translation(0.5, 0, 0.5));
         cellFrame = loadModel("array/cellstand").apply(new Translation(0.5, 0, 0.5));
+        cellPlate = loadModel("array/cellplate").apply(new Translation(0.5, 0, 0.5)); 
     }
     
     public static Map<String, CCModel> loadModels(String name) {
@@ -690,20 +700,19 @@ public class ComponentStore
         }
     }
     
-    public static class CellWireModel extends ComponentModel
+    public static class BaseCellWireModel extends ComponentModel
     {
-        public static CCModel[] bottom = new CCModel[24];
-        public static CCModel[] top = new CCModel[24];
-        public static CCModel[] left = new CCModel[24];
-        public static CCModel[] right = new CCModel[24];
+        public CCModel[] bottom = new CCModel[24];
+        public CCModel[] top = new CCModel[24];
+        public CCModel[] left = new CCModel[24];
+        public CCModel[] right = new CCModel[24];
         
-        static
-        {
-            CCModel cellWireLeft = cellWireSide.copy().apply(new Translation(-7/16D, 0, 0));
-            CCModel cellWireRight = cellWireSide.copy().apply(new Translation(7/16D, 0, 0));
+        public BaseCellWireModel(CCModel wireTop, CCModel wireBottom) {
+            CCModel cellWireLeft = cellWireSide.copy().apply(new Translation(-7.001/16D, 0, 0));
+            CCModel cellWireRight = cellWireSide.copy().apply(new Translation(7.001/16D, 0, 0));
             for(int i = 0; i < 24; i++) {
-                bottom[i] = bakeCopy(cellWireBottom, i);
-                top[i] = bakeCopy(cellWireTop, i);
+                bottom[i] = bakeCopy(wireBottom, i);
+                top[i] = bakeCopy(wireTop, i);
                 left[i] = bakeCopy(cellWireLeft, i);
                 right[i] = bakeCopy(cellWireRight, i);
             }
@@ -739,10 +748,60 @@ public class ComponentStore
         }
     }
     
+    public static class NullCellWireModel extends BaseCellWireModel
+    {
+        public NullCellWireModel() {
+            super(ComponentStore.nullCellWireTop, ComponentStore.nullCellWireBottom);
+        }   
+    }
+    
+    public static class ExtendedCellWireModel extends BaseCellWireModel
+    {
+        public ExtendedCellWireModel() {
+            super(ComponentStore.extendedCellWireTop, ComponentStore.extendedCellWireBottom);
+        }   
+    }
+    
     public static class CellFrameModel extends SimpleComponentModel
     {
         public CellFrameModel() {
             super(cellFrame);
+        }
+        
+        @Override
+        public Icon getIcon() {
+            return cellIcon;
+        }
+    }
+    
+    public static class CellPlateModel extends SimpleComponentModel
+    {
+        public CellPlateModel() {
+            super(cellPlate);
+        }
+        
+        @Override
+        public Icon getIcon() {
+            return cellIcon;
+        }
+    }
+    
+    public static class NullCellBaseModel extends SimpleComponentModel
+    {
+        public NullCellBaseModel() {
+            super(nullCellBase);
+        }
+        
+        @Override
+        public Icon getIcon() {
+            return cellIcon;
+        }
+    }
+    
+    public static class ExtendedCellBaseModel extends SimpleComponentModel
+    {
+        public ExtendedCellBaseModel() {
+            super(extendedCellBase);
         }
         
         @Override
