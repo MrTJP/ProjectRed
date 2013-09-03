@@ -170,35 +170,6 @@ public class ComponentStore
             new WireModel2D(data, m);
         return m;
     }
-
-    private static void generateWireSegment(CCModel model, int i, Rectangle4i rect) {
-        double x1 = rect.x/32D;
-        double x2 = (rect.x+rect.w)/32D;
-        double z1 = rect.y/32D;
-        double z2 = (rect.y+rect.h)/32D;
-        
-        model.generateBlock(i, //border
-                x1-1/16D, 0.125, z1-1/16D, 
-                x2+1/16D, 0.135, z2+1/16D, 1);
-        MultiIconTransformation.setIconIndex(model, i, i+20, 0);
-        i+=20;
-        model.generateBlock(i, //wire
-                x1, 0.125, z1, 
-                x2, 0.145, z2, 1);
-        MultiIconTransformation.setIconIndex(model, i, i+20, 1);
-    }
-
-    private static boolean overlap(boolean[] wireCorners, int x, int y) {
-        return wireCorners[y*32+(x-1)] ||
-                wireCorners[(y-1)*32+x] ||
-                wireCorners[(y-1)*32+(x-1)];
-    }
-
-    private static boolean segment2x2(Colour[] data, int x, int y) {
-        return data[y*32+(x+1)].rgba() == -1 &&
-                data[(y+1)*32+x].rgba() == -1 &&
-                data[(y+1)*32+(x+1)].rgba() == -1;
-    }
     
     public static Transformation orientT(int orient) {
         Transformation t = Rotation.sideOrientation(orient%24>>2, orient&3);
@@ -390,32 +361,11 @@ public class ComponentStore
             return this;
         }
         
-        @Override
-        public void renderModel(Transformation t, int orient) {
-            model.renderModel(t, orient);
-        }
-        
-        @Override
-        public void registerTextures(IconRegister r) {
-            model.registerTextures(r);
-        }
-    }
-    
-    public static class WireModel3D extends SingleComponentModel
-    {
-        private WireComponentModel parent;
-        
-        public WireModel3D(Colour[] data, WireComponentModel parent) {
-            super(generateModel(data));
-            this.parent = parent;
-            parent.bind(this);
-        }
-        
-        private static CCModel generateModel(Colour[] data) {
+        protected static List<Rectangle4i> rectangulate(Colour[] data) {
             boolean[] wireCorners = new boolean[1024];
             
-            for(int y = 2; y <= 28; y++)
-                for(int x = 2; x <= 28; x++) {
+            for(int y = 0; y <= 30; y++)
+                for(int x = 0; x <= 30; x++) {
                     if(data[y*32+x].rgba() != -1)
                         continue;
                     
@@ -458,6 +408,62 @@ public class ComponentStore
                     wireRectangles.add(rect);
                 }
             
+            return wireRectangles;
+        }
+
+        private static boolean overlap(boolean[] wireCorners, int x, int y) {
+            return wireCorners[y*32+(x-1)] ||
+                    wireCorners[(y-1)*32+x] ||
+                    wireCorners[(y-1)*32+(x-1)];
+        }
+
+        private static boolean segment2x2(Colour[] data, int x, int y) {
+            return data[y*32+(x+1)].rgba() == -1 &&
+                    data[(y+1)*32+x].rgba() == -1 &&
+                    data[(y+1)*32+(x+1)].rgba() == -1;
+        }
+        
+        public static Rectangle4i border(Rectangle4i wire) {
+            Rectangle4i border = new Rectangle4i(wire.x-2, wire.y-2, wire.w+4, wire.h+4);
+            if(border.x < 0) {
+                border.w+=border.x;
+                border.x = 0;
+            }
+            if(border.y < 0) {
+                border.h+=border.y;
+                border.y = 0;
+            }
+            if(border.x+border.w >= 32)
+                border.w -= border.x+border.w-32;
+            if(border.y+border.h >= 32)
+                border.h -= border.y+border.h-32;
+            
+            return border;
+        }
+        
+        @Override
+        public void renderModel(Transformation t, int orient) {
+            model.renderModel(t, orient);
+        }
+        
+        @Override
+        public void registerTextures(IconRegister r) {
+            model.registerTextures(r);
+        }
+    }
+    
+    public static class WireModel3D extends SingleComponentModel
+    {
+        private WireComponentModel parent;
+        
+        public WireModel3D(Colour[] data, WireComponentModel parent) {
+            super(generateModel(data));
+            this.parent = parent;
+            parent.bind(this);
+        }
+        
+        private static CCModel generateModel(Colour[] data) {
+            List<Rectangle4i> wireRectangles = WireComponentModel.rectangulate(data);
             CCModel model = CCModel.quadModel(wireRectangles.size()*40);
             int i = 0;
             for(Rectangle4i rect : wireRectangles) {
@@ -467,6 +473,23 @@ public class ComponentStore
             model.computeNormals();
             model.shrinkUVs(0.0005);
             return model;
+        }
+
+        private static void generateWireSegment(CCModel model, int i, Rectangle4i rect) {
+            generateWireSegment(model, i, WireComponentModel.border(rect), 0.01, 0);
+            generateWireSegment(model, i+20, rect, 0.02, 1);
+        }
+        
+        private static void generateWireSegment(CCModel model, int i, Rectangle4i rect, double h, int icon) {
+            double x1 = rect.x/32D;
+            double x2 = (rect.x+rect.w)/32D;
+            double z1 = rect.y/32D;
+            double z2 = (rect.y+rect.h)/32D;
+            double d = 0.0005-h/50D;//little offset for the wires go ontop of the border
+            model.generateBlock(i,
+                    x1+d, 0.125, z1+d, 
+                    x2-d, 0.125+h, z2-d, 1);
+            MultiIconTransformation.setIconIndex(model, i, i+20, icon);
         }
 
         @Override
@@ -488,6 +511,8 @@ public class ComponentStore
         static
         {
             CCModel m = CCModel.quadModel(4).generateBlock(0, 0, 0, 0, 1, 1/8D+0.002, 1, ~2).computeNormals();
+            m.shrinkUVs(0.0005);
+            
             for(int i = 0; i < 48; i++)
                 models[i] = bakeCopy(m, i);
         }
@@ -511,18 +536,16 @@ public class ComponentStore
         
         @Override
         public void registerTextures(IconRegister r) {
+            List<Rectangle4i> wireRectangles = WireComponentModel.rectangulate(wireMask);
+            
             icons = new TextureSpecial[wireData.length];
             
             for(int tex = 0; tex < icons.length; tex++) {
                 int[] texMap = new int[1024];
-                for(int y = 2; y <= 29; y++)
-                    for(int x = 2; x <= 29; x++) {
-                        if(wireMask[y*32+x].rgba() != -1)
-                            continue;
-
-                        fillMask(texMap, x, y, 1, 2);
-                        fillMask(texMap, x-2, y-2, 5, 1);
-                    }
+                for(Rectangle4i rect : wireRectangles) {
+                    fillMask(texMap, rect, 2);
+                    fillMask(texMap, WireComponentModel.border(rect), 1);
+                }
                 
                 int pSize = (int)Math.sqrt(wireData[0].length);
                 int size = Math.max(32, pSize);
@@ -542,9 +565,9 @@ public class ComponentStore
             }
         }
 
-        private void fillMask(int[] map, int x, int y, int size, int val) {
-            for(int i = x; i < x+size; i++)
-                for(int j = y; j < y+size; j++)
+        private void fillMask(int[] map, Rectangle4i r, int val) {
+            for(int i = r.x; i < r.x+r.w; i++)
+                for(int j = r.y; j < r.y+r.h; j++)
                     if(map[j*32+i] < val)
                         map[j*32+i] = val;
         }
