@@ -179,13 +179,6 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         }
     }
 
-    @Override
-    public void onMoved()
-    {
-        super.onMoved();
-        onNeighborChanged();
-    }
-
     public void sendConnUpdate() {
         tile().getWriteStream(this).writeByte(0).writeInt(connMap);
     }
