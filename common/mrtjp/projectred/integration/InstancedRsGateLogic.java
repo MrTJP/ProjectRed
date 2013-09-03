@@ -457,9 +457,9 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         public void pointerTick() {
             resetPointer();
             if(!gate.world().isRemote) {
+                gate.scheduleTick(2);
                 gate.setState(0xB0 | gate.state()&0xF);
                 gate.onOutputChange(0xB);
-                gate.scheduleTick(2);
                 tickSound();
             }
         }
