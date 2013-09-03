@@ -205,17 +205,6 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         }
     }
 
-    @Override
-    public void onMoved()
-    {
-        super.onMoved();
-        if(!world().isRemote) {
-            updateExternalConnections();
-            notifyNeighbors(0xF);
-            onChange();
-        }
-    }
-    
     public boolean canStay()
     {
         BlockCoord pos = new BlockCoord(getTile()).offset(side());
@@ -459,7 +448,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
      */
     public void notifyNeighbors(int mask) {
         for(int r = 0; r < 4; r++)
-            if((mask & 1<<r) != 0)
+            if((connMap & 1<<r) != 0)
+                notifyCornerChange(r);
+            else if((connMap & 0x10<<r) != 0)
                 notifyStraightChange(r);
     }
     
