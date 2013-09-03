@@ -481,6 +481,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @Override
     public boolean connectInternal(IConnectable part, int r)
     {
+        if(r < 0)
+            return false;
+        
         if(canConnectTo(part, r))
         {
             connMap|=0x100<<r;

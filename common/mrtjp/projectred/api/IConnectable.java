@@ -16,7 +16,8 @@ public interface IConnectable {
     public boolean connectStraight(IConnectable part, int r);
 
     /**
-     * Connect for internals
+     * Connect for internals.
+     * If r is -1 for a face part. Return true for a connection to the center part of the block.
      */
     public boolean connectInternal(IConnectable part, int r);
 
