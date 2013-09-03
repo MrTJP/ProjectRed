@@ -1,13 +1,7 @@
 package mrtjp.projectred.expansion;
 
-import static mrtjp.projectred.ProjectRedExpansion.blockMachines;
-import static mrtjp.projectred.ProjectRedExpansion.itemVAWT;
-import static mrtjp.projectred.ProjectRedExpansion.itemPartTube;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
-import net.minecraft.item.ItemStack;
 import codechicken.lib.packet.PacketCustom;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class ExpansionClientProxy extends ExpansionProxy {
     

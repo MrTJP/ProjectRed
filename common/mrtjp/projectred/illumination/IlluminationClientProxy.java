@@ -1,10 +1,8 @@
 package mrtjp.projectred.illumination;
 
 import mrtjp.projectred.ProjectRedIllumination;
-import mrtjp.projectred.core.IProxy;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class IlluminationClientProxy extends IlluminationProxy {
 
