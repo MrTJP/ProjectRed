@@ -3,11 +3,10 @@ package mrtjp.projectred;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.expansion.BlockMachines;
+import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import mrtjp.projectred.expansion.ExpansionGuiHandler;
-import mrtjp.projectred.expansion.ExpansionLocalizationHandler;
 import mrtjp.projectred.expansion.ItemPartPressurizedTube;
 import mrtjp.projectred.expansion.ItemVAWT;
-import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -48,7 +47,6 @@ public class ProjectRedExpansion {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-    	ExpansionLocalizationHandler.loadLanguages();
         if (Configurator.module_Expansion.getBoolean(true))
             proxy.preinit();
     }

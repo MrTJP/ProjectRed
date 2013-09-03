@@ -5,7 +5,6 @@ import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.transmission.ItemPartFramedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
 import mrtjp.projectred.transmission.ItemWireDebugger;
-import mrtjp.projectred.transmission.TransmissionLocalizationHandler;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -43,7 +42,6 @@ public class ProjectRedTransmission {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-    	TransmissionLocalizationHandler.loadLanguages();
         if (Configurator.module_Transmission.getBoolean(true))
             proxy.preinit();
     }

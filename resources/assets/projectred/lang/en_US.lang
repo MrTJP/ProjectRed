@@ -1,0 +1,56 @@
+itemGroup.core=Project Red: Core
+	
+partplate.name=Circuit Plate
+partconductiveplate.name=Conductive Plate
+partwiredplate.name=Wired Plate
+partbundledplate.name=Bundled Plate
+partanode.name=Anode
+partcathode.name=Cathode
+partpointer.name=Pointer
+partsiliconchip.name=Silicon Chip
+partenergizedsiliconchip.name=Energized Silicon Chip
+partplatformedplate.name=Platformed Plate
+partredingot.name=Red Alloy Ingot
+partboule.name=Silicon Boule
+partsilicon.name=Silicon
+partinfusedsilicon.name=Infused Silicon
+partenergizedsilicon.name=Energized Silicon
+partmotor.name=Motor
+partcoppercoil.name=Copper Coil
+partironcoil.name=Iron Coil
+partgoldcoil.name=Golden Coil
+partwhitedust.name=White Illumar
+partorangedust.name=Orange Illumar
+partmagentadust.name=Magenta Illumar
+partlightbluedust.name=Light Blue Illumar
+partyellowdust.name=Yellow Illumar
+partlimedust.name=Lime Illumar
+partpinkdust.name=Pink Illumar
+partgreydust.name=Grey Illumar
+partlightgreydust.name=Light Grey Illumar
+partcyandust.name=Cyan Illumar
+partpurpledust.name=Purple Illumar
+partbluedust.name=Blue Illumar
+partbrowndust.name=Brown Illumar
+partgreendust.name=Green Illumar
+partreddust.name=Red Illumar
+partblackdust.name=Black Illumar
+partcloth.name=Woven Cloth
+partsail.name=Sail
+gemruby.name=Ruby
+gemsapphire.name=Sapphire
+gemperidot.name=Peridot
+	
+item.projectred.items.drawplate.name=Draw Plate
+
+itemGroup.expansion=Project Red: Expansion
+
+itemGroup.exploration=Project Red: Expansion
+
+itemGroup.ill=Project Red: Illumination
+
+itemGroup.int=Project Red: Integration
+
+item.projectred:screwdriver.name=Screwdriver
+
+itemGroup.trans=Project Red: Transmission

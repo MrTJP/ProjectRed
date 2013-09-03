@@ -2,7 +2,6 @@ package mrtjp.projectred;
 
 import mrtjp.projectred.core.CommandDebug;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.CoreLocalizationHandler;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.core.ItemDrawPlate;
 import mrtjp.projectred.core.ItemPart;
@@ -17,7 +16,6 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 /**
  * "Project: Red" serves to provide a complete alternative for Eloraam's
@@ -58,7 +56,6 @@ public class ProjectRedCore {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         Configurator.initConfig(event);
-        CoreLocalizationHandler.loadLanguages();
         proxy.preinit();
     }
 

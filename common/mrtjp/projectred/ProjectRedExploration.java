@@ -5,7 +5,6 @@ import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.exploration.BlockOre;
 import mrtjp.projectred.exploration.BlockSpecialStone;
 import mrtjp.projectred.exploration.ExplorationGuiHandler;
-import mrtjp.projectred.exploration.ExplorationLocalizationHandler;
 import mrtjp.projectred.exploration.ItemBackpack;
 import mrtjp.projectred.exploration.ItemGemAxe;
 import mrtjp.projectred.exploration.ItemGemHoe;
@@ -98,7 +97,6 @@ public class ProjectRedExploration {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-    	ExplorationLocalizationHandler.loadLanguages();
         if (Configurator.module_Exploration.getBoolean(true))
             proxy.preinit();
     }

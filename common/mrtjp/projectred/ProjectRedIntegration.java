@@ -3,7 +3,6 @@ package mrtjp.projectred;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.integration.EnumGate;
-import mrtjp.projectred.integration.IntegrationLocalizationHandler;
 import mrtjp.projectred.integration.ItemPartGate;
 import mrtjp.projectred.integration.ItemScrewdriver;
 import net.minecraft.creativetab.CreativeTabs;
@@ -43,7 +42,6 @@ public class ProjectRedIntegration {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-    	IntegrationLocalizationHandler.loadLanguages();
         if (Configurator.module_Integration.getBoolean(true))
             proxy.preinit();
     }
