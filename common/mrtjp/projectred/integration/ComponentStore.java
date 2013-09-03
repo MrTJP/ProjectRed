@@ -13,6 +13,7 @@ import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
 import codechicken.lib.colour.Colour;
 import codechicken.lib.lighting.LightModel;
+import codechicken.lib.lighting.PlanarLightModel;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
@@ -765,12 +766,11 @@ public class ComponentStore
             if(orient >= 24)//flipped x
                 displayPos.x = 1-displayPos.x;
             
-            CCRenderState.setColour(-1);
             Transformation displayT = flip ? new RedundantTransformation() : Rotation.quarterRotations[2];
             displayT = displayT.with(displayPos.translation()).with(orientT(orient%24)).with(t);
             for(int i = 0; i < 16; i++)
                 if((signal & 1<<i) != 0)
-                    displayModels[i].render(displayT, icont);
+                    displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel);
         }
     }
     
