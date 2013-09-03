@@ -1,6 +1,6 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.transmission.IConnectable;
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.transmission.IRedwireEmitter;
 
 public abstract class RedstoneGateLogic<PartType extends RedstoneGatePart> extends GateLogic<PartType>

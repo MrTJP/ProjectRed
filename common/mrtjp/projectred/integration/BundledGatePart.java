@@ -1,7 +1,11 @@
 package mrtjp.projectred.integration;
 
+import static mrtjp.projectred.transmission.BundledCableCommons.calculatePartSignal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.transmission.IBundledEmitter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import codechicken.lib.data.MCDataInput;
@@ -52,9 +56,11 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
         int absDir = Rotation.rotateSide(side(), r);
 
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if (t != null)
-            return getBundledPartSignal(t.partMap(side()), (r+2)%4);
+        TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
+        if(t instanceof IBundledEmitter)
+            getBundledPartSignal(t, absDir^1);
+        else if(t instanceof TileMultipart)
+            return getBundledPartSignal(((TileMultipart)t).partMap(side()), (r+2)%4);
 
         return new byte[16];
     }
@@ -66,7 +72,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
         return getBundledPartSignal(tp, Rotation.rotationTo(absDir, side()));
     }
 
-    public byte[] getBundledPartSignal(TMultiPart part, int r) {
+    public byte[] getBundledPartSignal(Object part, int r) {
         if (part instanceof IBundledEmitter)
             return ((IBundledEmitter) part).getBundledSignal(r);
 

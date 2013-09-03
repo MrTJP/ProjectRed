@@ -8,6 +8,11 @@ import org.bouncycastle.util.Arrays;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import mrtjp.projectred.api.IBundledEmitter;
+import mrtjp.projectred.api.IConnectable;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Messenger;
+import mrtjp.projectred.transmission.IRedwireEmitter;
 
 public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart> {
 

@@ -5,11 +5,14 @@ import static mrtjp.projectred.transmission.BundledCableCommons.tmpSignal;
 
 import java.util.Arrays;
 
+import mrtjp.projectred.api.IBundledEmitter;
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.CoreProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
@@ -89,9 +92,11 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     
     public void calculateStraightSignal(int s) {
         BlockCoord pos = new BlockCoord(getTile()).offset(s);
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if (t != null)
-            calculatePartSignal(t.partMap(6), s^1);
+        TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
+        if(t instanceof IBundledEmitter)
+            calculatePartSignal(t, s^1);
+        else if(t instanceof TileMultipart)
+            calculatePartSignal(((TileMultipart)t).partMap(6), s^1);
     }
 
     public void calculateInternalSignal(int s) {

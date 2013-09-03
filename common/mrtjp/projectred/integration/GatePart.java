@@ -3,9 +3,9 @@ package mrtjp.projectred.integration;
 import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRedIntegration;
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.transmission.BasicWireUtils;
-import mrtjp.projectred.transmission.IConnectable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

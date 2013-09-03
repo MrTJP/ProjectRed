@@ -1,5 +1,7 @@
 package mrtjp.projectred;
 
+import mrtjp.projectred.api.ProjectRedAPI;
+import mrtjp.projectred.api.APIImpl;
 import mrtjp.projectred.core.CommandDebug;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
@@ -35,6 +37,10 @@ dependencies =
 )
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class ProjectRedCore {
+    
+    public ProjectRedCore() {
+        ProjectRedAPI.instance = new APIImpl();
+    }
     
     /** Items **/
     public static ItemPart itemComponent;
