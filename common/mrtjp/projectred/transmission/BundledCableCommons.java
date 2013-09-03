@@ -4,6 +4,7 @@ import static mrtjp.projectred.transmission.IWirePart.DROPPING;
 import static mrtjp.projectred.transmission.IWirePart.FORCE;
 import static mrtjp.projectred.transmission.IWirePart.FORCED;
 import static mrtjp.projectred.transmission.IWirePart.RISING;
+import mrtjp.projectred.api.IBundledEmitter;
 import codechicken.multipart.TMultiPart;
 
 public class BundledCableCommons
@@ -110,7 +111,7 @@ public class BundledCableCommons
         return true;
     }
     
-    public static void calculatePartSignal(TMultiPart part, int r) {
+    public static void calculatePartSignal(Object part, int r) {
         if (part instanceof IBundledCablePart) {
             byte[] osignal = ((IBundledCablePart) part).getBundledSignal();
             for (int i = 0; i < 16; i++)

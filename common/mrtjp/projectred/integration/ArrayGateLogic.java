@@ -1,6 +1,6 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.transmission.IConnectable;
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.transmission.IRedwireEmitter;
 
 public abstract class ArrayGateLogic extends GateLogic<ArrayGatePart>

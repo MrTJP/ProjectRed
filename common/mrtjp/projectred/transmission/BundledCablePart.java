@@ -5,11 +5,14 @@ import static mrtjp.projectred.transmission.BundledCableCommons.tmpSignal;
 
 import java.util.Arrays;
 
+import mrtjp.projectred.api.IBundledEmitter;
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.CoreProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
@@ -136,9 +139,11 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
         int absDir = Rotation.rotateSide(side, r);
 
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if (t != null)
-            calculatePartSignal(t.partMap(side), (r + 2) % 4);
+        TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
+        if(t instanceof IBundledEmitter)
+            calculatePartSignal(t, absDir^1);
+        else if(t instanceof TileMultipart)
+            calculatePartSignal(((TileMultipart)t).partMap(side), (r + 2) % 4);
     }
 
     public void calculateInternalSignal(int r) {
