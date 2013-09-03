@@ -44,4 +44,8 @@ public abstract class RedstoneGateLogic<PartType extends RedstoneGatePart> exten
     public int calcOutput(int input) {
         return 0;
     }
+
+    public boolean requireStrongInput(int r) {
+        return false;
+    }
 }
