@@ -4,19 +4,18 @@ import java.util.List;
 
 import static net.minecraftforge.common.ForgeDirection.UP;
 import mrtjp.projectred.ProjectRedExploration;
-import mrtjp.projectred.core.ProjectRedTabs;
 
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Icon;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProviderEnd;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -25,7 +24,8 @@ public class BlockStorage extends Block {
 	public BlockStorage(int id) {
 		super(id, Material.rock);
 		setResistance(10.0F);
-        setCreativeTab(ProjectRedTabs.tabExploration);
+		setHardness(1.8F);
+        setCreativeTab(ProjectRedExploration.tabExploration);
 	}
 
 	@Override
@@ -34,22 +34,6 @@ public class BlockStorage extends Block {
 			return true;
 		}
 		return false;
-	}
-
-	@Override
-	public float getBlockHardness(World par1World, int par2, int par3, int par4) {
-		int metadata = par1World.getBlockMetadata(par2, par3, par4);
-		if (metadata == 0){
-			return 1.8f;
-		}
-		if (metadata == 1){
-			return 1.8f;
-		}
-		if (metadata == 2){
-			return .8f;
-		}
-
-		return 2f;
 	}
 
 	private Icon[] iconBuffer;
@@ -65,14 +49,8 @@ public class BlockStorage extends Block {
 
 	@Override
 	public Icon getIcon(int side, int metadata) {
-		if (metadata == 0) {
-			return iconBuffer[0];
-		}
-		if (metadata == 1) {
-			return iconBuffer[1];
-		}
-		if (metadata == 2) {
-			return iconBuffer[2];
+		if (metadata <= 2) {
+			return iconBuffer[metadata];
 		}
 		return blockIcon;
 	}
@@ -84,8 +62,8 @@ public class BlockStorage extends Block {
 
 	@SideOnly(Side.CLIENT)
 	public void getSubBlocks(int par1, CreativeTabs tab, List subItems) {
-		for (int ix = 0; ix < 2; ix++) {
-			subItems.add(new ItemStack(this, 1, ix));
+		for (int i = 0; i < 2; i++) {
+			subItems.add(new ItemStack(this, 1, i));
 		}
 	}
 }
