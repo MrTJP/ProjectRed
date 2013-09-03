@@ -104,8 +104,6 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @Override
     public void load(NBTTagCompound tag) {
         orientation = tag.getByte("orient");
-        if(orientation > 24)
-            orientation = 0;
         subID = tag.getByte("subID");
         shape = tag.getByte("shape");
         connMap = tag.getShort("connMap")&0xFFFF;

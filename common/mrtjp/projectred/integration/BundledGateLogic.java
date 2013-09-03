@@ -98,6 +98,16 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
             input0 = tag.getByteArray("in0");
             input2 = tag.getByteArray("in2");
         }
+        
+        @Override
+        public void readDesc(MCDataInput packet) {
+            unpackClientData(packet.readInt());
+        }
+        
+        @Override
+        public void writeDesc(MCDataOutput packet) {
+            packet.writeInt(packClientData());
+        }
 
         public void read(MCDataInput packet, int switch_key) {
             if (switch_key == 11)
