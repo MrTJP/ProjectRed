@@ -1,5 +1,6 @@
 package mrtjp.projectred.transmission;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import net.minecraft.util.Icon;
@@ -84,7 +85,12 @@ public class RenderWire {
             else
                 conns = connCount;
             
-            return conns*3+5;
+            int faces = conns*3+5;
+            for(int i = 0; i < 4; i++)
+                if((mask >> i & 0x11) == 1)
+                    faces++;
+            
+            return faces;
         }
         
         public CCModel generateInvModel(int thickness) {
@@ -195,6 +201,13 @@ public class RenderWire {
             //retexture cap
             for(int i = 0; i < 4; i++)
                 verts[i].apply(new UVTranslation(0, -th));
+            
+            //add end face extending around block
+            verts = Arrays.copyOf(verts, 20);
+            verts[16] = new Vertex5(0.5-w, 0, 1, 8-tw, 24+2*th);
+            verts[17] = new Vertex5(0.5+w, 0, 1, 8+tw, 24+2*th);
+            verts[18] = new Vertex5(0.5+w, 0, 1+h, 8+tw, 24+th);
+            verts[19] = new Vertex5(0.5-w, 0, 1+h, 8-tw, 24+th);
 
             reflectSide(verts, r);
             return verts;
