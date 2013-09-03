@@ -54,6 +54,15 @@ public class LastEventBasedHaloRenderer {
         }
         renderQueue.add(r);
     }
+    
+    public static void removeHaloObject(int x, int y, int z) {
+        for (HaloObject ro : renderQueue) {
+            if (ro.posX == x && ro.posY == y && ro.posZ == z) {
+                renderQueue.remove(ro);
+                break;
+            }
+        }
+    }
 
     @ForgeSubscribe
     public void onRenderWorldLast(RenderWorldLastEvent event) {

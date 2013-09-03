@@ -1,7 +1,10 @@
 package mrtjp.projectred.transmission;
 
+import static mrtjp.projectred.transmission.IWirePart.DROPPING;
+import static mrtjp.projectred.transmission.IWirePart.FORCE;
+import static mrtjp.projectred.transmission.IWirePart.FORCED;
+import static mrtjp.projectred.transmission.IWirePart.RISING;
 import codechicken.multipart.TMultiPart;
-import static mrtjp.projectred.transmission.IWirePart.*;
 
 public class BundledCableCommons
 {

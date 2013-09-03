@@ -1,11 +1,11 @@
 package mrtjp.projectred.transmission;
 
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Icon;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

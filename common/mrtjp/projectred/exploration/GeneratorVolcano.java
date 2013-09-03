@@ -1,9 +1,6 @@
 package mrtjp.projectred.exploration;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -12,128 +9,151 @@ import net.minecraft.world.World;
 
 public class GeneratorVolcano extends GeneratorOre {
 
-    LinkedList openList = new LinkedList();
-    HashMap closedList = new HashMap();
+    LinkedList<Evaluation> openList = new LinkedList<Evaluation>();
+    LinkedList<Evaluation> closedList = new LinkedList<Evaluation>();
 
     public GeneratorVolcano(int id, int meta, int veinSize) {
         super(id, meta, veinSize);
     }
 
     @Override
-    public boolean generate(World world, Random random, int x, int y, int z) {
-        if (world.getBlockId(x, y, z) != Block.lavaStill.blockID)
+    public boolean generate(World w, Random rand, int x, int y, int z) {
+        if (w.getBlockId(x, y, z) != Block.lavaStill.blockID)
             return false;
 
-        int grassHeight = world.getHeightValue(x, z);
-        int lavaid = Block.lavaMoving.blockID;
+        int grass = makeLavaTube(w, x, y, z);
 
-        // Make a tube of volcano from the underground lake to grass level.
-        while (canReplaceId(world.getBlockId(x, grassHeight - 1, z)))
-            grassHeight--;
-
-        for (int i = y; i < grassHeight; i++) {
-            world.setBlock(x, i, z, lavaid);
-            world.setBlock(x - 1, i, z, this.id, meta, 3);
-            world.setBlock(x + 1, i, z, this.id, meta, 3);
-            world.setBlock(x, i, z - 1, this.id, meta, 3);
-            world.setBlock(x, i, z + 1, this.id, meta, 3);
-        }
-
-        // Start at the bottom layer above the grass. Each time we go up, make
-        // the layer smaller.
         int head = 3;
-        int spread = random.nextInt(1);
-        int currentYIndex = grassHeight;
+        int spread = rand.nextInt(1);
+        int yIndex = grass;
 
-        while (this.veinSize > 0) {
-            boolean breakOut = false;
+        while (veinSize > 0) {
+            boolean reachedTop = false;
             while (this.openList.size() == 0) {
-                world.setBlock(x, currentYIndex, z, lavaid);
-                this.closedList.clear();
-                queueNeighboringBlocks(x, currentYIndex, z, head, random);
-                currentYIndex++;
-                if (currentYIndex > 125) {
-                    breakOut = true;
+                w.setBlock(x, yIndex, z, Block.lavaMoving.blockID);
+                closedList.clear();
+                evaluateNeighbors(x, yIndex, z, head, rand);
+                yIndex++;
+                if (yIndex > 125) {
+                    reachedTop = true;
                     break;
                 }
             }
-            if (breakOut)
+            if (reachedTop)
                 break;
+            
+            Evaluation nextEval = openList.removeFirst();
+            
+            if (w.blockExists(nextEval.x, 64, nextEval.z)) {
+                int pow = getClosedEval(nextEval.x, nextEval.z).sides;
+                int evalLevel = w.getHeightValue(nextEval.x, nextEval.z);
+                while (evalLevel > 0 && isUnimportant(w.getBlockId(nextEval.x, evalLevel-1, nextEval.z)))
+                    evalLevel--;
 
-            Integer[] coord = (Integer[]) ((List) this.openList.removeFirst()).toArray();
-
-            world.getBlockId(coord[0].intValue(), 64, coord[2].intValue());
-            if (world.blockExists(coord[0].intValue(), 64, coord[2].intValue())) {
-                int pow = ((Integer) this.closedList.get(Arrays.asList(new Integer[] { coord[0], coord[2] }))).intValue();
-                int currentLevel = world.getHeightValue(coord[0].intValue(), coord[2].intValue()) + 1;
-                while ((currentLevel > 0) && (canReplaceId(world.getBlockId(coord[0].intValue(), currentLevel - 1, coord[2].intValue())))) {
-                    currentLevel--;
-                }
-                if (currentLevel <= coord[1].intValue()) {
-                    int nextBlock = world.getBlockId(coord[0].intValue(), currentLevel, coord[2].intValue());
-                    if (canReplaceId(nextBlock)) {
-                        destroyTree(world, coord[0].intValue(), currentLevel, coord[2].intValue());
-                        world.setBlock(coord[0].intValue(), currentLevel, coord[2].intValue(), this.id, this.meta, 3);
-
-                        if (coord[1].intValue() > currentLevel)
+                if (evalLevel <= nextEval.y) {
+                    if (isUnimportant(w.getBlockId(nextEval.x, evalLevel, nextEval.z))) {
+                        purgeArea(w, nextEval.x, evalLevel, nextEval.z);
+                        w.setBlock(nextEval.x, evalLevel, nextEval.z, this.id, this.meta, 3);
+                        if (nextEval.y > evalLevel)
                             pow = Math.max(pow, spread);
-
-                        queueNeighboringBlocks(coord[0].intValue(), currentLevel, coord[2].intValue(), pow, random);
+                        
+                        evaluateNeighbors(nextEval.x, evalLevel, nextEval.z, pow, rand);
                         this.veinSize -= 1;
                     }
                 }
             }
         }
-
-        world.setBlock(x, currentYIndex, z, lavaid);
-
-        while ((currentYIndex > grassHeight) && (world.getBlockId(x, currentYIndex, z) == lavaid)) {
-            world.markBlockForUpdate(x, currentYIndex, z);
-            world.notifyBlocksOfNeighborChange(x, currentYIndex, z, lavaid);
-            world.scheduledUpdatesAreImmediate = true;
-            Block.blocksList[lavaid].updateTick(world, x, currentYIndex, z, random);
-            world.scheduledUpdatesAreImmediate = false;
-            currentYIndex--;
+        
+        // Make everything flow
+        w.setBlock(x, yIndex, z, Block.lavaStill.blockID);
+        while ((yIndex > grass) && (w.getBlockId(x, yIndex, z) == Block.lavaStill.blockID)) {
+            w.markBlockForUpdate(x, yIndex, z);
+            w.notifyBlocksOfNeighborChange(x, yIndex, z, Block.lavaStill.blockID);
+            w.scheduledUpdatesAreImmediate = true;
+            Block.blocksList[Block.lavaStill.blockID].updateTick(w, x, yIndex, z, rand);
+            w.scheduledUpdatesAreImmediate = false;
+            yIndex--;
         }
-
         return true;
     }
 
-    private void queueBlock(int x, int y, int z, int sides) {
+    public void purgeArea(World world, int x, int y, int z) {
+        int center = world.getBlockId(x, y, z);
+        if (center == 0)
+            return;
+        for (int i = -1; i <= 1; i++)
+            for (int j = -1; j <= 1; j++) {
+                int block = world.getBlockId(x+i, y, z+j);
+                if (block == Block.snow.blockID) {
+                    world.setBlock(x+i, y, z+j, 0);
+                    continue;
+                }
+                if ((block != Block.wood.blockID) && (block != Block.leaves.blockID) && (block != Block.vine.blockID))
+                    continue;
+                world.setBlock(x+i, y, z+j, 0);
+            }
+        purgeArea(world, x, y + 1, z);
+    }
+
+    
+    private Evaluation getClosedEval(int x, int z) {
+        for (Evaluation e : closedList) {
+            if (e.x == x && e.z == z)
+                return e;
+        }
+        return null;
+    }
+    
+    /**
+     * Add block to the A* open list and closed list, with the number of future
+     * sides to evaluate.
+     */
+    private void addBlockForEvaluation(int x, int y, int z, int sides) {
         if (sides <= 0)
             return;
-
-        List sb = Arrays.asList(new Integer[] { x, z });
-        Integer o = (Integer) this.closedList.get(sb);
-
-        if ((o != null) && (sides <= o.intValue()))
+        
+        Evaluation eval = getClosedEval(x, z);
+        if (eval != null && sides <= eval.sides)
             return;
-
-        this.openList.addLast(Arrays.asList(new Integer[] { x, y, z }));
-        this.closedList.put(sb, sides);
+        Evaluation newEval = new Evaluation(x, y, z, sides);
+        openList.addLast(newEval);
+        closedList.add(newEval);
     }
 
-    private void queueNeighboringBlocks(int x, int y, int z, int sides, Random random) {
-        queueBlock(x - 1, y, z, random.nextInt(2) > 0 ? sides - 1 : sides);
-        queueBlock(x + 1, y, z, random.nextInt(2) > 0 ? sides - 1 : sides);
-        queueBlock(x, y, z - 1, random.nextInt(2) > 0 ? sides - 1 : sides);
-        queueBlock(x, y, z + 1, random.nextInt(2) > 0 ? sides - 1 : sides);
+    /**
+     * Queue all surrounding blocks to the A* open list.
+     */
+    private void evaluateNeighbors(int x, int y, int z, int sides, Random random) {
+        addBlockForEvaluation(x - 1, y, z, random.nextInt(2) > 0 ? sides - 1 : sides);
+        addBlockForEvaluation(x + 1, y, z, random.nextInt(2) > 0 ? sides - 1 : sides);
+        addBlockForEvaluation(x, y, z - 1, random.nextInt(2) > 0 ? sides - 1 : sides);
+        addBlockForEvaluation(x, y, z + 1, random.nextInt(2) > 0 ? sides - 1 : sides);
     }
 
-    public void destroyTree(World world, int x, int y, int z) {
-        int bid = world.getBlockId(x, y, z);
-        if (bid == Block.snow.blockID) {
-            world.setBlock(x, y, z, 0);
-            return;
+    /**
+     * Makes a tube of lava from the underground lake to predicted grass level
+     * of the area. Returns the y of the very top of the tube (grass level).
+     */
+    private int makeLavaTube(World w, int x, int y, int z) {
+        int grassHeight = w.getHeightValue(x, z);
+        int lavaid = Block.lavaMoving.blockID;
+        while (isUnimportant(w.getBlockId(x, grassHeight - 1, z)))
+            grassHeight--;
+
+        for (int i = y; i < grassHeight; i++) {
+            w.setBlock(x, i, z, lavaid);
+            w.setBlock(x - 1, i, z, this.id, meta, 3);
+            w.setBlock(x + 1, i, z, this.id, meta, 3);
+            w.setBlock(x, i, z - 1, this.id, meta, 3);
+            w.setBlock(x, i, z + 1, this.id, meta, 3);
         }
-        if ((bid != Block.wood.blockID) && (bid != Block.leaves.blockID) && (bid != Block.vine.blockID))
-            return;
-
-        world.setBlock(x, y, z, 0);
-        destroyTree(world, x, y + 1, z);
+        return grassHeight;
     }
 
-    private boolean canReplaceId(int id) {
+    /**
+     * Define what blocks to eat up.
+     */
+    private boolean isUnimportant(int id) {
         if (id == 0)
             return true;
 

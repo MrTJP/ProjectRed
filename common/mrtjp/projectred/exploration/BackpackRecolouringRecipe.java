@@ -2,7 +2,6 @@ package mrtjp.projectred.exploration;
 
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ShapelessOreNBTRecipe;
-import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

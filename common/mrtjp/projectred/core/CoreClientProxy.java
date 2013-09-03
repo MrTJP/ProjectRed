@@ -3,7 +3,6 @@ package mrtjp.projectred.core;
 import static mrtjp.projectred.ProjectRedCore.itemComponent;
 import static mrtjp.projectred.ProjectRedCore.itemDrawPlate;
 import mrtjp.projectred.core.ItemPart.EnumPart;
-import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import codechicken.lib.packet.PacketCustom;

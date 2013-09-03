@@ -1,5 +1,8 @@
 package mrtjp.projectred.transmission;
 
+import static mrtjp.projectred.transmission.BundledCableCommons.calculatePartSignal;
+import static mrtjp.projectred.transmission.BundledCableCommons.tmpSignal;
+
 import java.util.Arrays;
 
 import mrtjp.projectred.core.BasicUtils;
@@ -15,8 +18,6 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
-
-import static mrtjp.projectred.transmission.BundledCableCommons.*;
 
 public class BundledCablePart extends WirePart implements IBundledCablePart {
 

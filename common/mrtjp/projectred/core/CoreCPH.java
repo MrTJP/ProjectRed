@@ -6,7 +6,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
-import codechicken.lib.vec.BlockCoord;
 
 public class CoreCPH implements IClientPacketHandler {
 

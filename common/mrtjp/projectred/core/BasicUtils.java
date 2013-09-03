@@ -25,7 +25,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TileMultipart;
-import cpw.mods.fml.common.SidedProxy;
 
 public class BasicUtils {
     

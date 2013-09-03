@@ -3,9 +3,13 @@ package mrtjp.projectred.integration;
 import java.util.Arrays;
 import java.util.Random;
 
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.transmission.IRedwireEmitter;
+import mrtjp.projectred.transmission.IRedwirePart;
+import mrtjp.projectred.transmission.IWirePart;
+import mrtjp.projectred.transmission.WirePropogator;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
-
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
@@ -18,11 +22,6 @@ import codechicken.multipart.IRandomDisplayTick;
 import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
-import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.transmission.IRedwireEmitter;
-import mrtjp.projectred.transmission.IRedwirePart;
-import mrtjp.projectred.transmission.IWirePart;
-import mrtjp.projectred.transmission.WirePropogator;
 
 public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedstonePart, IRandomDisplayTick
 {

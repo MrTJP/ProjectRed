@@ -1,17 +1,13 @@
 package mrtjp.projectred.integration;
 
-import org.bouncycastle.util.Arrays;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
-import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Messenger;
 import mrtjp.projectred.transmission.IBundledEmitter;
 import mrtjp.projectred.transmission.IConnectable;
-import mrtjp.projectred.transmission.IRedwireEmitter;
+import net.minecraft.nbt.NBTTagCompound;
+
+import org.bouncycastle.util.Arrays;
+
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
 
 public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart> {
 

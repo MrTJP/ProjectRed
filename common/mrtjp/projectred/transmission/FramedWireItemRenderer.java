@@ -1,11 +1,11 @@
 package mrtjp.projectred.transmission;
 
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.IItemRenderer;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Translation;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.IItemRenderer;
 
 public class FramedWireItemRenderer implements IItemRenderer {
 

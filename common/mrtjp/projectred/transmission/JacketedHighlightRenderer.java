@@ -1,10 +1,10 @@
 package mrtjp.projectred.transmission;
 
-import scala.Tuple2;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import scala.Tuple2;
 import codechicken.lib.raytracer.ExtendedMOP;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.microblock.MicroMaterialRegistry;

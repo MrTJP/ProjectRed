@@ -6,9 +6,8 @@ import static mrtjp.projectred.ProjectRedExpansion.itemVAWT;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
-import mrtjp.projectred.transmission.RedAlloyWirePart;
-import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.MultiPartRegistry;
+import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.common.registry.GameRegistry;
 
