@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import mrtjp.projectred.integration.BundledGateLogic.BusTransceiver;
 import mrtjp.projectred.integration.ComponentStore.BaseCellWireModel;
 import mrtjp.projectred.integration.ComponentStore.BaseComponentModel;
 import mrtjp.projectred.integration.ComponentStore.BusXcvrCableModel;
@@ -1126,8 +1127,8 @@ public class RenderGate
         WireComponentModel[] wires = generateWireModels("BUSXCVR", 2);
         BusXcvrCableModel cable = new BusXcvrCableModel();
         BusXcvrPanelModel[] panels = new BusXcvrPanelModel[] {
-                new BusXcvrPanelModel(4, 8, 0),
-                new BusXcvrPanelModel(12, 8, 180*MathHelper.torad),
+                new BusXcvrPanelModel(4, 8, false),
+                new BusXcvrPanelModel(12, 8, true),
         };
         public BusXcvr () {
             models.add(cable);
@@ -1140,15 +1141,25 @@ public class RenderGate
             reflect = false;
             wires[0].on = false;
             wires[1].on = false;
+            panels[0].signal = 0;
+            panels[1].signal = 0;
         }
         
         @Override
         public void prepare(BundledGatePart gate) {
             reflect = gate.shape() != 0;
-            wires[0].on = (gate.state()&8) != 0;
-            wires[1].on = (gate.state()&2) != 0;
+            int state = gate.state();
+            if(reflect)
+                state = GatePart.flipMaskZ(state);
+            
+            wires[0].on = (gate.state()&2) != 0;
+            wires[1].on = (gate.state()&8) != 0;
+            
+            BusTransceiver logic = (BusTransceiver) gate.getLogic();
+            int packed = logic.packClientData();
+            panels[0].signal = packed & 0xFFFF;
+            panels[1].signal = packed >>> 16;
         }
-
     }
     
     public static class ArrayCell extends GateRenderer<ArrayGatePart>

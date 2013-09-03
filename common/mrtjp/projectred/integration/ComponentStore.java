@@ -24,6 +24,8 @@ import codechicken.lib.render.MultiIconTransformation;
 import codechicken.lib.render.TextureDataHolder;
 import codechicken.lib.render.TextureSpecial;
 import codechicken.lib.render.TextureUtils;
+import codechicken.lib.render.UVScale;
+import codechicken.lib.render.UVTranslation;
 import codechicken.lib.render.Vertex5;
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.lib.vec.RedundantTransformation;
@@ -686,7 +688,7 @@ public class ComponentStore
             for(int orient = 0; orient < 48; orient++) {
                 int side = orient%24>>2;
                 int r = orient&3;
-                boolean reflect = orient > 24;
+                boolean reflect = orient >= 24;
                 boolean rotate = (r+RenderWire.reorientSide[side])%4 >= 2;
                 
                 Transformation t = new RedundantTransformation();
@@ -715,17 +717,40 @@ public class ComponentStore
 
     public static class BusXcvrPanelModel extends ComponentModel
     {
+        public static CCModel[] displayModels = new CCModel[16];
+        
+        static {
+            for(int i = 0; i < 16; i++) {
+                CCModel m = CCModel.quadModel(4);
+                int x = i%4;
+                int z = i/4;
+                m.verts[0] = new Vertex5(x, 0.32, z+1, x, z);
+                m.verts[1] = new Vertex5(x+1, 0.32, z+1, x+1, z);
+                m.verts[2] = new Vertex5(x+1, 0.32, z, x+1, z+1);
+                m.verts[3] = new Vertex5(x, 0.32, z, x, z+1);
+                m.apply(new Scale(1/16D, 1, 1/16D).with(new Translation(-2/16D, 0, -2/16D)));
+                m.apply(new UVTranslation(22, 0));
+                m.apply(new UVScale(1/32D));
+                m.computeNormals();
+                m.shrinkUVs(0.0005);
+                displayModels[i] = m;
+            }
+        }
+        
         public CCModel[] models;
-        
-        double angle;
         public Vector3 pos;
+        public boolean flip;
+        public int signal;
         
-        public BusXcvrPanelModel(double x, double z, double angle) {
-            this.angle = angle;
-            this.pos = new Vector3(x, 0, z).multiply(1/16D);
+        public BusXcvrPanelModel(double x, double z, boolean flip) {
+            this.flip = flip;
+            pos = new Vector3(x, 0, z).multiply(1/16D);
+            
             CCModel base = busXcvrPanel.copy();
-            base.apply(new Rotation(angle, 0, 1, 0));
+            if(flip)
+                base.apply(Rotation.quarterRotations[2]);
             base.apply(pos.translation());
+            
             this.models = new CCModel[48];
             for(int i = 0; i < 48; i++)
                 models[i] = bakeCopy(base, i);
@@ -733,7 +758,19 @@ public class ComponentStore
         
         @Override
         public void renderModel(Transformation t, int orient) {
-            models[orient].render(t, new IconTransformation(busXcvrIcon));
+            IconTransformation icont = new IconTransformation(busXcvrIcon);
+            models[orient].render(t, icont);
+            
+            Vector3 displayPos = pos.copy();
+            if(orient >= 24)//flipped x
+                displayPos.x = 1-displayPos.x;
+            
+            CCRenderState.setColour(-1);
+            Transformation displayT = flip ? new RedundantTransformation() : Rotation.quarterRotations[2];
+            displayT = displayT.with(displayPos.translation()).with(orientT(orient%24)).with(t);
+            for(int i = 0; i < 16; i++)
+                if((signal & 1<<i) != 0)
+                    displayModels[i].render(displayT, icont);
         }
     }
     
