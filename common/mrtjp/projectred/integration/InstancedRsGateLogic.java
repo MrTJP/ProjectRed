@@ -2,11 +2,14 @@ package mrtjp.projectred.integration;
 
 import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.Configurator;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Rotation;
 import codechicken.multipart.handler.MultipartSaveLoad;
 
 public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRsGatePart>
@@ -27,6 +30,8 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 return new StateCell(gate);
             case 21:
                 return new Synchronizer(gate);
+            case 26:
+                return new Comparator(gate);
         }
         throw new IllegalArgumentException("Invalid subID: "+subID);
     }
@@ -967,4 +972,128 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
     }
 
+    public static class Comparator extends InstancedRsGateLogic
+    {
+        public short state2;
+        
+        public Comparator(InstancedRsGatePart gate) {
+            super(gate);
+        }
+        
+        public int state2() {
+            return state2&0xFFFF;
+        }
+        
+        public void setState2(int i) {
+            state2 = (short)i;
+        }
+        
+        @Override
+        public void save(NBTTagCompound tag) {
+            tag.setShort("state2", state2);
+        }
+        
+        @Override
+        public void load(NBTTagCompound tag) {
+            state2 = tag.getShort("state2");
+        }
+        
+        @Override
+        public boolean cycleShape(InstancedRsGatePart gate) {
+            gate.setShape((gate.shape()+1)%2);
+            return true;
+        }
+        
+        @Override
+        public boolean requireStrongInput(int r) {
+            return r%2 == 1;
+        }
+        
+        @Override
+        public boolean canConnect(int shape, int r) {
+            return true;
+        }
+        
+        @Override
+        public int getOutput(InstancedRsGatePart gate, int r) {
+            if(r == 0)
+                return gate.world().isRemote ? 
+                        gate.state()>>4 ://use the output state as analog on the client
+                        state2 & 0xF;
+            
+            return 0;
+        }
+        
+        public int getAnalogInput(int r) {
+            return (gate.getRedstoneInput(r)+16)/17;
+        }
+        
+        public int calcInputA() {
+            int absDir = Rotation.rotateSide(gate.side(), gate.toAbsolute(2));
+            BlockCoord pos = new BlockCoord(gate.getTile()).offset(absDir);
+            Block block = Block.blocksList[gate.world().getBlockId(pos.x, pos.y, pos.z)];
+            if(block != null && block.hasComparatorInputOverride())
+                return block.getComparatorInputOverride(gate.world(), pos.x, pos.y, pos.z, absDir^1);
+            
+            return getAnalogInput(2);
+        }
+        
+        public int calcInput() {
+            return getAnalogInput(1)<<4 |
+                    calcInputA()<<8 |
+                    getAnalogInput(3)<<12;
+        }
+        
+        public static int digitize(int analog) {
+            int digital = 0;
+            for(int i = 0; i < 4; i++)
+                if((analog>>i*4 & 0xF) > 0)
+                    digital|=1<<i;
+            
+            return digital;
+        }
+        
+        @Override
+        public void onChange(InstancedRsGatePart gate) {
+            int oldInput = state2 & 0xFFF0;
+            int newInput = calcInput();
+            
+            if(oldInput != newInput) {
+                setState2(state2 & 0xF | newInput);
+                gate.setState(digitize(newInput) | calcOutput()<<4);
+                
+                gate.onInputChange();
+            }
+            
+            if((state2 & 0xF) != calcOutput())
+                gate.scheduleTick(2);
+        }
+
+        public int calcOutput() {
+            if(gate.shape() == 0)
+                return inputA() >= inputB() ? inputA() : 0;
+            
+            return Math.max(inputA()-inputB(), 0);
+        }
+
+        public int inputA() {
+            return state2 >> 8 & 0xF;
+        }
+        
+        public int inputB() {
+            return Math.max(state2 >> 4 & 0xF, state2 >> 12 & 0xF);
+        }
+
+        @Override
+        public void scheduledTick(InstancedRsGatePart gate) {
+            int oldOutput = state2 & 0xF;
+            int newOutput = calcOutput();
+            
+            if(oldOutput != newOutput) {
+                setState2(state2 & 0xFFF0 | newOutput);
+                gate.setState(gate.state() & 0xF | newOutput<<4);
+                gate.onOutputChange(1);
+            }
+        }
+    }
 }

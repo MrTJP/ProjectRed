@@ -67,6 +67,7 @@ public class RenderGate
             new NullCell(),
             new InvertCell(),
             new BufferCell(),
+            new Comparator()
         };
     
     public static void registerIcons(IconRegister r) {
@@ -1257,6 +1258,50 @@ public class RenderGate
             torches[1].on = gate.signal1 != 0;
             wires[0].on = gate.signal1 != 0;
             wires[1].on = gate.signal1 == 0;
+        }
+    }
+    
+    public static class Comparator extends GateRenderer<InstancedRsGatePart>
+    {
+        RedstoneTorchModel[] intorches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(4, 12, 6),
+                new RedstoneTorchModel(12, 12, 6),
+            };
+        
+        RedstoneTorchModel[] outtorches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(8, 3, 4),
+                new RedstoneTorchModel(8, 3, 7),
+            };
+        
+        int outputTorch;
+        
+        public Comparator() {
+            models.addAll(Arrays.asList(intorches));
+        }
+        
+        @Override
+        public void prepareInv() {
+            outputTorch = 1;
+            intorches[0].on = false;
+            intorches[1].on = false;
+            outtorches[0].on = false;
+        }
+        
+        public void prepare(InstancedRsGatePart part) {
+            outputTorch = part.shape();
+            if(part.shape == 0)
+                outtorches[0].on = false;
+            else
+                outtorches[1].on = true;
+            
+            intorches[0].on = (part.state & 0xF0) != 0;
+            intorches[1].on = intorches[0].on;
+        }
+        
+        @Override
+        public void renderModels(Transformation t, int orient) {
+            super.renderModels(t, orient);
+            outtorches[outputTorch].renderModel(t, orient);
         }
     }
 }
