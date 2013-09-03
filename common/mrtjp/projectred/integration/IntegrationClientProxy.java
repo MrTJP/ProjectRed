@@ -23,6 +23,6 @@ public class IntegrationClientProxy extends IntegrationProxy {
             if(g.implemented())
                 LanguageRegistry.addName(g.getItemStack(), g.name);
         
-        LanguageRegistry.addName(itemScrewdriver, "Screwdriver");
+        /*LanguageRegistry.addName(itemScrewdriver, "Screwdriver");*/
     }
 }

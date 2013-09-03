@@ -3,6 +3,7 @@ package mrtjp.projectred;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.illumination.EnumLantern;
+import mrtjp.projectred.illumination.IlluminationLocalizationHandler;
 import mrtjp.projectred.illumination.ItemPartLamp;
 import mrtjp.projectred.illumination.ItemPartLantern;
 import net.minecraft.creativetab.CreativeTabs;
@@ -41,6 +42,7 @@ public class ProjectRedIllumination {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+    	IlluminationLocalizationHandler.loadLanguages();
         if (Configurator.module_Illumination.getBoolean(true))
             proxy.preinit();
     }

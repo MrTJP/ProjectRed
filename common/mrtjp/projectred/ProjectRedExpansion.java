@@ -4,6 +4,7 @@ import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.expansion.BlockMachines;
 import mrtjp.projectred.expansion.ExpansionGuiHandler;
+import mrtjp.projectred.expansion.ExpansionLocalizationHandler;
 import mrtjp.projectred.expansion.ItemPartPressurizedTube;
 import mrtjp.projectred.expansion.ItemVAWT;
 import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
@@ -47,6 +48,7 @@ public class ProjectRedExpansion {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+    	ExpansionLocalizationHandler.loadLanguages();
         if (Configurator.module_Expansion.getBoolean(true))
             proxy.preinit();
     }
