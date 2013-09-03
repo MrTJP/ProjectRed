@@ -42,6 +42,9 @@ public class RenderWire {
         }
     }
     
+    public static int[] reorientSide = new int[]{
+        0, 3, 3, 0, 0, 3};
+    
     /* 
      * All generations are done on side 0 so know that for rotation r
      * 0 = side 3 = +Z = SOUTH
@@ -51,9 +54,6 @@ public class RenderWire {
      */
     
     private static class WireModelGenerator {
-        
-        public static int[] reorientSide = new int[]{
-            0, 3, 3, 0, 0, 3};
         
         int side;
         int tw;
