@@ -27,7 +27,6 @@ public class GuiCounter extends GuiScreenWidget {
     public void addWidgets() {
         for (int row = 0; row < 3; row++) {
             int y = 16 + 40 * row;
-            int k = row * 8;
             add(new GuiCCButton(5, y, 40, 20, "-10").setActionCommand(row+"-10"));
             add(new GuiCCButton(46, y, 40, 20, "-5").setActionCommand(row+"-5"));
             add(new GuiCCButton(87, y, 40, 20, "-1").setActionCommand(row+"-1"));
