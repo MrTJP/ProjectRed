@@ -1,18 +1,12 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.transmission.IBundledEmitter;
-import mrtjp.projectred.transmission.IConnectable;
 import net.minecraft.nbt.NBTTagCompound;
-
-import org.bouncycastle.util.Arrays;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
-import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Messenger;
-import mrtjp.projectred.transmission.IRedwireEmitter;
+import mrtjp.projectred.transmission.BundledCableCommons;
 
 public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart> {
 
@@ -161,7 +155,8 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
             int oldInput = gate.state() & 0xF;
             int newInput = getInput(gate, 2|8);
             if (gate.shape() == 1)
-                newInput = gate.flipMaskZ(newInput);
+                newInput = GatePart.flipMaskZ(newInput);
+            
             if(oldInput != newInput) {
                 gate.setState(gate.state() & 0xF0|newInput);
                 gate.onInputChange();
@@ -171,11 +166,11 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
             byte[] newInput0 = (newInput&8) != 0 ? gate.getBundledInput(0) : new byte[16];
             byte[] newInput2 = (newInput&2) != 0 ? gate.getBundledInput(2) : new byte[16];
             
-            if (!Arrays.areEqual(input0, newInput0)) {
+            if (!BundledCableCommons.signalsEqual(input0, newInput0)) {
                 input0 = newInput0.clone();
                 gate.scheduleTick(2);
             }
-            if (!Arrays.areEqual(input2, newInput2)) {
+            if (!BundledCableCommons.signalsEqual(input2, newInput2)) {
                 input2 = newInput2.clone();
                 gate.scheduleTick(2);
             }
