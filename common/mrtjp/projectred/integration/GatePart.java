@@ -296,8 +296,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
             TMultiPart tp = t.partMap(absDir^1);
             if (tp instanceof IConnectable) {
                 IConnectable conn = (IConnectable) tp;
-                return canConnectTo(conn, r) && 
-                        conn.connectCorner(this, Rotation.rotationTo(absDir^1, side()^1));
+                int r2 = Rotation.rotationTo(absDir^1, side()^1);
+                return canConnectTo(conn, r) && conn.canConnectCorner(r2) &&
+                        conn.connectCorner(this, r2);
             }
         }
         
