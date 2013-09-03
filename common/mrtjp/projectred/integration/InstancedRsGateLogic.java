@@ -985,7 +985,10 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
         
         public void setState2(int i) {
+            short oldState = state2;
             state2 = (short)i;
+            if (oldState != state2)
+                sendState2Update();
         }
         
         @Override
@@ -1017,10 +1020,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public int getOutput(InstancedRsGatePart gate, int r) {
             if(r == 0)
-                return gate.world().isRemote ? 
-                        gate.state()>>4 ://use the output state as analog on the client
-                        state2 & 0xF;
-            
+                return state2 & 0xF;
             return 0;
         }
         
@@ -1061,7 +1061,6 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             if(oldInput != newInput) {
                 setState2(state2 & 0xF | newInput);
                 gate.setState(digitize(newInput) | calcOutput()<<4);
-                
                 gate.onInputChange();
             }
             
@@ -1081,7 +1080,15 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
         
         public int inputB() {
-            return Math.max(state2 >> 4 & 0xF, state2 >> 12 & 0xF);
+            return Math.max(inputRight(), inputLeft());
+        }
+        
+        public int inputRight() {
+            return state2 >> 4 & 0xF;
+        }
+        
+        public int inputLeft() {
+            return state2 >> 12 & 0xF;
         }
 
         @Override
@@ -1095,5 +1102,26 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 gate.onOutputChange(1);
             }
         }
+        
+        public void sendState2Update() {
+            gate.getWriteStream(11).writeShort(state2);
+        }
+        
+        @Override
+        public void read(MCDataInput packet, int switch_key) {
+            if(switch_key == 11)
+                state2 = packet.readShort();
+        }
+        
+        @Override
+        public void readDesc(MCDataInput packet) {
+            state2 = packet.readShort();
+        }
+
+        @Override
+        public void writeDesc(MCDataOutput packet) {
+            packet.writeShort(state2);
+        }
+
     }
 }

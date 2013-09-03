@@ -64,6 +64,8 @@ public class ComponentStore
     public static Icon[] redstoneTorchIcons = new Icon[2];
     public static Icon[] taintedChipIcons = new Icon[2];
     public static Icon[] redstoneChipIcons = new Icon[2];
+    public static Icon[] minusChipIcons = new Icon[2];
+    public static Icon[] plusChipIcons = new Icon[2];
     public static Icon leverIcon;
     public static Icon[] solarIcons = new Icon[3];
     public static Icon rainIcon;
@@ -147,6 +149,10 @@ public class ComponentStore
         taintedChipIcons[1] = r.registerIcon(baseTex+"yellowchipon");
         redstoneChipIcons[0] = r.registerIcon(baseTex+"redchipoff");
         redstoneChipIcons[1] = r.registerIcon(baseTex+"redchipon");
+        minusChipIcons[0] = r.registerIcon(baseTex+"minuschipoff");
+        minusChipIcons[1] = r.registerIcon(baseTex+"minuschipon");
+        plusChipIcons[0] = r.registerIcon(baseTex+"pluschipoff");
+        plusChipIcons[1] = r.registerIcon(baseTex+"pluschipon");
         for (int i = 0; i < 3; i++) 
             solarIcons[i] = r.registerIcon(baseTex+"solar"+i);
         rainIcon = r.registerIcon(baseTex+"rainsensor");
@@ -629,6 +635,30 @@ public class ComponentStore
         @Override
         public Icon[] getIcons() {
             return redstoneChipIcons;
+        }
+    }
+    
+    public static class MinusChipModel extends OnOffModel
+    {
+        public MinusChipModel(double x, double z) {
+            super(lightChip, new Vector3(x, 0, z));
+        }
+        
+        @Override
+        public Icon[] getIcons() {
+            return minusChipIcons;
+        }
+    }
+    
+    public static class PlusChipModel extends OnOffModel
+    {
+        public PlusChipModel(double x, double z) {
+            super(lightChip, new Vector3(x, 0, z));
+        }
+        
+        @Override
+        public Icon[] getIcons() {
+            return plusChipIcons;
         }
     }
     

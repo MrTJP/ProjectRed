@@ -18,8 +18,11 @@ import mrtjp.projectred.integration.ComponentStore.ComponentModel;
 import mrtjp.projectred.integration.ComponentStore.ExtendedCellBaseModel;
 import mrtjp.projectred.integration.ComponentStore.ExtendedCellWireModel;
 import mrtjp.projectred.integration.ComponentStore.LeverModel;
+import mrtjp.projectred.integration.ComponentStore.MinusChipModel;
 import mrtjp.projectred.integration.ComponentStore.NullCellBaseModel;
 import mrtjp.projectred.integration.ComponentStore.NullCellWireModel;
+import mrtjp.projectred.integration.ComponentStore.OnOffModel;
+import mrtjp.projectred.integration.ComponentStore.PlusChipModel;
 import mrtjp.projectred.integration.ComponentStore.PointerModel;
 import mrtjp.projectred.integration.ComponentStore.RainSensorModel;
 import mrtjp.projectred.integration.ComponentStore.RedChipModel;
@@ -77,7 +80,6 @@ public class RenderGate
     }
     
     public static void renderStatic(GatePart gate) {
-        //renderers[renderers.length-1] = new BufferCell();
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
         r.renderStatic(new Translation(gate.x(), gate.y(), gate.z()), gate.orientation&0xFF);
@@ -968,8 +970,8 @@ public class RenderGate
             reflect = gate.shape() == 1;
             wires[0].on = (gate.state()&8) != 0;
             wires[1].on = (gate.state()&2) != 0;
-            torches[1].on = (gate.state&0x10) != 0;
-            torches[2].on = (gate.state&0x40) != 0;
+            torches[1].on = (gate.state()&0x10) != 0;
+            torches[2].on = (gate.state()&0x40) != 0;
         }
         
         @Override
@@ -1263,45 +1265,56 @@ public class RenderGate
     
     public static class Comparator extends GateRenderer<InstancedRsGatePart>
     {
-        RedstoneTorchModel[] intorches = new RedstoneTorchModel[]{
-                new RedstoneTorchModel(4, 12, 6),
-                new RedstoneTorchModel(12, 12, 6),
-            };
+        WireComponentModel[] wires = generateWireModels("COMPARATOR", 4);
+
+        RedstoneTorchModel torch = new RedstoneTorchModel(8, 2, 6);
         
-        RedstoneTorchModel[] outtorches = new RedstoneTorchModel[]{
-                new RedstoneTorchModel(8, 3, 4),
-                new RedstoneTorchModel(8, 3, 7),
-            };
-        
-        int outputTorch;
-        
+        OnOffModel[] chips = new OnOffModel[] {
+                new MinusChipModel(5, 8),
+                new PlusChipModel(11, 8)
+        };
+                
         public Comparator() {
-            models.addAll(Arrays.asList(intorches));
+            models.addAll(Arrays.asList(wires));
+            models.add(torch);
         }
         
         @Override
         public void prepareInv() {
-            outputTorch = 1;
-            intorches[0].on = false;
-            intorches[1].on = false;
-            outtorches[0].on = false;
+            reflect = false;
+            wires[0].on = false;
+            wires[1].on = false;
+            wires[2].on = false;
+            wires[3].on = false;
+            chips[0].on = false;
+            chips[1].on = false;
+            torch.on = false;
         }
         
-        public void prepare(InstancedRsGatePart part) {
-            outputTorch = part.shape();
-            if(part.shape == 0)
-                outtorches[0].on = false;
-            else
-                outtorches[1].on = true;
+        public void prepare(InstancedRsGatePart gate) {
+            if(gate.shape == 1)
+                reflect = true;
+            wires[0].on = (gate.state()>>4) == 0;
+            wires[1].on = ((InstancedRsGateLogic.Comparator)(gate.getLogic())).inputRight() != 0;
+            wires[2].on = (gate.state()&0xF0) != 0;
+            wires[3].on = ((InstancedRsGateLogic.Comparator)(gate.getLogic())).inputLeft() != 0;
+            chips[0].on = !wires[0].on && gate.shape == 1;
+            chips[1].on = !wires[0].on && gate.shape != 1;
+            torch.on = (((InstancedRsGateLogic.Comparator)(gate.getLogic())).state2&0xF) != 0;
             
-            intorches[0].on = (part.state & 0xF0) != 0;
-            intorches[1].on = intorches[0].on;
+            if(gate.shape == 1) {
+                boolean a = wires[1].on;
+                boolean b = wires[3].on;
+                wires[3].on = a;
+                wires[1].on = b;
+            }
         }
         
         @Override
         public void renderModels(Transformation t, int orient) {
             super.renderModels(t, orient);
-            outtorches[outputTorch].renderModel(t, orient);
+            chips[0].renderModel(t, orient%24);
+            chips[1].renderModel(t, orient%24);
         }
     }
 }

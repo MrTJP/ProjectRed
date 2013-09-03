@@ -6,6 +6,11 @@ import codechicken.lib.data.MCDataOutput;
 
 public class SimpleGatePart extends RedstoneGatePart
 {
+    /**
+     * Mapped inputs and outputs of the gate.
+     * High nybble is output.
+     * Low nybble is input.
+     */
     public byte state;
     
     public int state() {
