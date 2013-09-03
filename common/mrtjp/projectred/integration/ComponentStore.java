@@ -695,8 +695,7 @@ public class ComponentStore
         
         @Override
         public void renderModel(Transformation t, int orient) {
-            models[orient].render(t, 
-                    new IconTransformation(busXcvrIcon));
+            models[orient].render(t, new IconTransformation(busXcvrIcon));
         }
     }
     

@@ -1,6 +1,5 @@
 package mrtjp.projectred.expansion;
 
-import mrtjp.projectred.transmission.IConnectable;
 
 /**
  * Interface implemented by things to connect to various types of tubes.

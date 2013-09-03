@@ -1,24 +1,14 @@
 package mrtjp.projectred.transmission;
 
-import codechicken.lib.vec.BlockCoord;
-import codechicken.multipart.PartMap;
-import codechicken.multipart.TileMultipart;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import codechicken.lib.vec.BlockCoord;
+import codechicken.multipart.PartMap;
+import codechicken.multipart.TileMultipart;
 
 public class BasicWireUtils {
-
-    public static final int oldFRONT = 0;
-    public static final int oldBACK = 1;
-    public static final int oldLEFT = 2;
-    public static final int oldRIGHT = 3;
-    
-    public static final int BACK = 0;
-    public static final int RIGHT = 1;
-    public static final int FRONT = 2;
-    public static final int LEFT = 3;
     
     public static boolean canPlaceWireOnSide(World w, int x, int y, int z, ForgeDirection side, boolean _default) {
         if (!w.blockExists(x, y, z)) {

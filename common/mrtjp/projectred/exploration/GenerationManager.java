@@ -19,12 +19,12 @@ public class GenerationManager implements IWorldGenerator {
 
     @Override
     public void generate(Random rand, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
-        if (((chunkGenerator instanceof ChunkProviderHell)) || ((chunkGenerator instanceof ChunkProviderEnd))) 
+        if (((chunkGenerator instanceof ChunkProviderHell)) || ((chunkGenerator instanceof ChunkProviderEnd)))
             return;
-        
+
         if (world.provider.dimensionId == -1 || world.provider.dimensionId == 1)
             return;
-        
+
         if (world.provider.dimensionId == 0)
             runOverworldGeneration(rand, chunkX, chunkZ, world);
 
@@ -76,5 +76,4 @@ public class GenerationManager implements IWorldGenerator {
             new GeneratorVolcano(ProjectRedExploration.blockStones.blockID, EnumSpecialStone.BASALT.meta, MathHelper.getRandomIntegerInRange(rand, 32000, 64000)).generate(world, rand, x, y, z);
         }
     }
-
 }

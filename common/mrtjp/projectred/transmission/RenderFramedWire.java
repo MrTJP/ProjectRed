@@ -1,9 +1,14 @@
 package mrtjp.projectred.transmission;
 
-import org.lwjgl.opengl.GL11;
-
+import static mrtjp.projectred.transmission.FramedWirePart.boundingBoxes;
+import static mrtjp.projectred.transmission.RenderWire.addVerts;
+import static mrtjp.projectred.transmission.RenderWire.finishModel;
+import mrtjp.projectred.transmission.RenderWire.UVT;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
+
+import org.lwjgl.opengl.GL11;
+
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.render.CCModel;
@@ -29,11 +34,6 @@ import codechicken.microblock.IMicroMaterialRender;
 import codechicken.microblock.JMicroblockClient;
 import codechicken.microblock.MicroMaterialRegistry;
 import codechicken.microblock.MicroMaterialRegistry.IMicroMaterial;
-
-import static mrtjp.projectred.transmission.RenderWire.UVT;
-import static mrtjp.projectred.transmission.RenderWire.addVerts;
-import static mrtjp.projectred.transmission.RenderWire.finishModel;
-import static mrtjp.projectred.transmission.FramedWirePart.boundingBoxes;
 
 public class RenderFramedWire
 {

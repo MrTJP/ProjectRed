@@ -1,9 +1,9 @@
 package mrtjp.projectred.integration;
 
 import static mrtjp.projectred.ProjectRedIntegration.itemScrewdriver;
-import codechicken.lib.packet.PacketCustom;
 import mrtjp.projectred.ProjectRedIntegration;
 import net.minecraftforge.client.MinecraftForgeClient;
+import codechicken.lib.packet.PacketCustom;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class IntegrationClientProxy extends IntegrationProxy {

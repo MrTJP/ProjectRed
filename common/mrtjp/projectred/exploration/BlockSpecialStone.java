@@ -2,7 +2,6 @@ package mrtjp.projectred.exploration;
 
 import java.util.ArrayList;
 
-import mrtjp.projectred.ProjectRedExpansion;
 import mrtjp.projectred.ProjectRedExploration;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

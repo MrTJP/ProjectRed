@@ -1,10 +1,9 @@
 package mrtjp.projectred.integration;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.transmission.IBundledEmitter;
-import mrtjp.projectred.transmission.IRedwireEmitter;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;

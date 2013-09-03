@@ -1,16 +1,15 @@
 package mrtjp.projectred.core;
 
-import codechicken.microblock.ItemMicroPart;
 import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.expansion.AlloySmelterRecipe;
-import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import codechicken.microblock.ItemMicroPart;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CoreRecipes {
