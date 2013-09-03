@@ -1,14 +1,14 @@
-package mrtjp.projectred.expansion;
+package mrtjp.projectred.core;
 
 import java.util.Random;
 
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedExpansion;
-import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.GhostContainer;
+import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
-import mrtjp.projectred.core.SimpleInventory;
-import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
+import mrtjp.projectred.expansion.AlloySmelterRecipe;
+import mrtjp.projectred.expansion.ExpansionGuiHandler;
+import mrtjp.projectred.expansion.ExpansionProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,7 +30,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileAlloySmelter extends TileMachineBase implements IInventory {
+public class TileAlloySmelter extends TileBasicsBase implements IInventory {
 
     private SimpleInventory _inv = new SimpleInventory(11, "alloy", 64);
 
@@ -54,7 +54,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory {
 
     @Override
     public void onBlockBreak() {
-        BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, new ItemStack(ProjectRedExpansion.blockMachines.blockID, 1, EnumMachine.ALLOYSMELTER.meta));
+        BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, new ItemStack(ProjectRedCore.blockMachines.blockID, 1, EnumBasics.ALLOYSMELTER.meta));
         _inv.dropContents(worldObj, xCoord, yCoord, zCoord);
     }
 
@@ -423,7 +423,7 @@ public class TileAlloySmelter extends TileMachineBase implements IInventory {
     }
 
     @Override
-    public EnumMachine getType() {
-        return EnumMachine.ALLOYSMELTER;
+    public EnumBasics getType() {
+        return EnumBasics.ALLOYSMELTER;
     }
 }

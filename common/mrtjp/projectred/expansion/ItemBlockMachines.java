@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion;
 
 import mrtjp.projectred.ProjectRedExpansion;
-import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
+import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -29,7 +29,7 @@ public class ItemBlockMachines extends ItemBlock {
      */
     @Override
     public String getUnlocalizedName(ItemStack itemstack) {
-        return EnumMachine.get(itemstack.getItemDamage()).unlocalname;
+        return EnumBasics.get(itemstack.getItemDamage()).unlocalname;
     }
 
     @Override

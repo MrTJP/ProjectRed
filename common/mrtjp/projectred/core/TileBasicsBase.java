@@ -1,6 +1,6 @@
-package mrtjp.projectred.expansion;
+package mrtjp.projectred.core;
 
-import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
+import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -9,12 +9,12 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 
-public abstract class TileMachineBase extends TileEntity {
+public abstract class TileBasicsBase extends TileEntity {
 
     public int rotation = 2;
     public boolean updateNextTick = false;
     
-    public TileMachineBase() {}
+    public TileBasicsBase() {}
 
     // Should drop the actual block, plus anything else like inv contents, etc.
     public abstract void onBlockBreak();
@@ -23,7 +23,7 @@ public abstract class TileMachineBase extends TileEntity {
     
     public abstract boolean onBlockActivated(EntityPlayer player);
 
-    public abstract EnumMachine getType();
+    public abstract EnumBasics getType();
     
     public void onBlockPlacedBy(EntityLivingBase player, ItemStack item) {
         int entityrotation = MathHelper.floor_double((double) ((player.rotationYaw * 4F) / 360F) + 2.5D) & 3;

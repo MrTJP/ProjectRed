@@ -2,6 +2,7 @@ package mrtjp.projectred.expansion;
 
 import mrtjp.projectred.core.BaseGuiContainer;
 import mrtjp.projectred.core.BasicGuiUtils;
+import mrtjp.projectred.core.TileAlloySmelter;
 import mrtjp.projectred.core.BasicGuiUtils.GuiItemRenderOptions;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

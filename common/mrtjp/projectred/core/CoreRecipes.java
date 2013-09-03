@@ -2,8 +2,10 @@ package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedExploration;
+import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.expansion.AlloySmelterRecipe;
+import mrtjp.projectred.transmission.EnumWire;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,10 +16,22 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CoreRecipes {
     public static void initCoreRecipes() {
+        initApplianceRecipes();
         initPartRecipes();
         initToolRecipes();
     }
 
+    private static void initApplianceRecipes() {
+        /** Alloy Smelter **/
+        GameRegistry.addRecipe(EnumBasics.ALLOYSMELTER.getItemStack(), 
+                "CBC",
+                "BBB",
+                "CBC",
+                'C', Block.blockClay,
+                'B', Block.brick
+        );
+    }
+    
     private static void initToolRecipes() {
         /** Draw Plate **/
         GameRegistry.addRecipe(new ShapedOreNBTRecipe(
