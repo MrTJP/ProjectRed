@@ -6,6 +6,8 @@ import java.util.Map;
 
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.InvertX;
+import mrtjp.projectred.transmission.RenderWire;
+import mrtjp.projectred.transmission.RenderWire.UVT;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
@@ -676,22 +678,35 @@ public class ComponentStore
         }
     }
     
-    public static class BusXcvrCableModel extends SingleComponentModel
+    public static abstract class BundledCableModel extends SingleComponentModel
     {
-
+        public BundledCableModel(CCModel model, Vector3 pos, double texCenterU, double texCenterV) {
+            super(model, pos);
+            
+            for(int orient = 0; orient < 48; orient++) {
+                int side = orient%24>>2;
+                int r = orient&3;
+                boolean reflect = orient > 24;
+                boolean rotate = (r+RenderWire.reorientSide[side])%4 >= 2;
+                
+                Transformation t = new RedundantTransformation();
+                if(reflect)
+                    t = t.with(new Scale(-1, 0, 1));
+                if(rotate)
+                    t = t.with(Rotation.quarterRotations[2]);
+                
+                if(!(t instanceof RedundantTransformation))
+                    models[orient].apply(new UVT(t.at(new Vector3(texCenterU, 0, texCenterV))));
+            }
+        }
+    }
+    
+    public static class BusXcvrCableModel extends BundledCableModel
+    {
         public BusXcvrCableModel() {
-            super(busXcvr, new Vector3(8,0,8));
+            super(busXcvr, new Vector3(8,0,8), 10/32D, 14/32D);
         }
         
-        @Override
-        public void renderModel(Transformation t, int orient) {
-            if ((orient&0x3) == 2)
-                orient = orient&0xFC | 0;
-            else if ((orient&0x3) == 3)
-                orient = orient&0xFC | 1;
-            super.renderModel(t, orient%24);
-        }
-
         @Override
         public IUVTransformation getUVT() {
             return new IconTransformation(busXcvrIcon);
