@@ -1,7 +1,9 @@
 package mrtjp.projectred.core;
 
+import static mrtjp.projectred.ProjectRedCore.blockMachines;
 import static mrtjp.projectred.ProjectRedCore.itemComponent;
 import static mrtjp.projectred.ProjectRedCore.itemDrawPlate;
+import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,6 +19,10 @@ public class CoreClientProxy extends CoreProxy {
             LanguageRegistry.addName(new ItemStack(itemComponent, 1, part.meta), part.fullName);
         }
         
+        for (EnumBasics m : EnumBasics.VALID_MACHINES) {
+            LanguageRegistry.addName(new ItemStack(blockMachines, 1, m.meta), m.fullname);
+        }
+
         LanguageRegistry.addName(itemDrawPlate, "Draw Plate");
                 
         MinecraftForge.EVENT_BUS.register(new Messenger());

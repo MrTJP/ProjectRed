@@ -1,9 +1,9 @@
 package mrtjp.projectred;
 
+import mrtjp.projectred.core.BlockBasics;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-import mrtjp.projectred.expansion.BlockMachines;
-import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
+import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.expansion.ExpansionGuiHandler;
 import mrtjp.projectred.expansion.ItemPartPressurizedTube;
 import mrtjp.projectred.expansion.ItemVAWT;
@@ -23,9 +23,6 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class ProjectRedExpansion {
 
-    /** Blocks **/
-    public static BlockMachines blockMachines;
-
     /** Items **/
     public static ItemVAWT itemVAWT;
 
@@ -41,29 +38,25 @@ public class ProjectRedExpansion {
     public static CreativeTabs tabExpansion = new CreativeTabs("expansion") {
         @Override
         public ItemStack getIconItemStack() {
-            return EnumMachine.ALLOYSMELTER.getItemStack();
+            return EnumBasics.ALLOYSMELTER.getItemStack();
         }
     };
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        if (Configurator.module_Expansion.getBoolean(true))
-            proxy.preinit();
+        proxy.preinit();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        if (Configurator.module_Expansion.getBoolean(true)) {
-            MinecraftForge.EVENT_BUS.register(instance);
-            NetworkRegistry.instance().registerGuiHandler(instance, new ExpansionGuiHandler());
-            proxy.init();
-        }
+        MinecraftForge.EVENT_BUS.register(instance);
+        NetworkRegistry.instance().registerGuiHandler(instance, new ExpansionGuiHandler());
+        proxy.init();
     }
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        if (Configurator.module_Expansion.getBoolean(true))
-            proxy.postinit();
+        proxy.postinit();
     }
 
 }

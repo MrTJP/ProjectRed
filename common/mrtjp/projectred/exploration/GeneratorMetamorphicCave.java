@@ -40,9 +40,9 @@ public class GeneratorMetamorphicCave extends GeneratorOre {
     private void checkStoneBlock(World world, int x, int y, int z, int sides) {
         if (world.getBlockId(x, y, z) == Block.stone.blockID) {
             world.setBlock(x, y, z, id, meta, 2);
-            if (sides > 0) {
+            if (sides > 0)
                 evaluateNeighbors(world, x, y, z, sides - 1);
-            }
+            
             this.veinSize -= 1;
         }
     }
@@ -50,19 +50,16 @@ public class GeneratorMetamorphicCave extends GeneratorOre {
     private boolean isBlockTouchingAir(World w, BlockCoord b) {
         for (int i = 0; i < 6; i++) {
             BlockCoord bc = b.copy().offset(i);
-            int id = w.getBlockId(bc.x, bc.y, bc.z);
-            if (id == 0) {
+            if (w.getBlockId(bc.x, bc.y, bc.z) == 0)
                 return true;
-            }
         }
         return false;
     }
 
     private void evaluateNeighbors(World w, int x, int y, int z, int sides) {
         BlockCoord b = new BlockCoord(x, y, z);
-        if (isBlockTouchingAir(w, b)) {
+        if (isBlockTouchingAir(w, b))
             sides = 6;
-        }
         for (int i = 0; i < 6; i++) {
             BlockCoord bc = b.copy().offset(i);
             addBlockForEvaluation(bc.x, bc.y, bc.z, sides);

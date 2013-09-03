@@ -42,21 +42,17 @@ public class ProjectRedIntegration {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        if (Configurator.module_Integration.getBoolean(true))
-            proxy.preinit();
+        proxy.preinit();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        if (Configurator.module_Integration.getBoolean(true)) {
-            MinecraftForge.EVENT_BUS.register(instance);
-            proxy.init();
-        }
+        MinecraftForge.EVENT_BUS.register(instance);
+        proxy.init();
     }
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        if (Configurator.module_Integration.getBoolean(true))
-            proxy.postinit();
+        proxy.postinit();
     }
 }

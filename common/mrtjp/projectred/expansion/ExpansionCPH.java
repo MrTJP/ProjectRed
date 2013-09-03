@@ -1,6 +1,7 @@
 package mrtjp.projectred.expansion;
 
 import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.TileAlloySmelter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.NetClientHandler;
 import net.minecraft.entity.player.EntityPlayer;

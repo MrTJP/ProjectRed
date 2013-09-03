@@ -2,6 +2,7 @@ package mrtjp.projectred;
 
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.api.APIImpl;
+import mrtjp.projectred.core.BlockBasics;
 import mrtjp.projectred.core.CommandDebug;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
@@ -42,6 +43,9 @@ public class ProjectRedCore {
         ProjectRedAPI.instance = new APIImpl();
     }
     
+    /** Blocks **/
+    public static BlockBasics blockMachines;
+
     /** Items **/
     public static ItemPart itemComponent;
     public static ItemDrawPlate itemDrawPlate;
