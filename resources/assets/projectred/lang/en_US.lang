@@ -1,5 +1,5 @@
 itemGroup.core=Project Red: Core
-	
+
 partplate.name=Circuit Plate
 partconductiveplate.name=Conductive Plate
 partwiredplate.name=Wired Plate
@@ -40,16 +40,104 @@ partsail.name=Sail
 gemruby.name=Ruby
 gemsapphire.name=Sapphire
 gemperidot.name=Peridot
-	
 item.projectred.items.drawplate.name=Draw Plate
 
 itemGroup.expansion=Project Red: Expansion
 
-itemGroup.exploration=Project Red: Expansion
+machinealloy.name=Alloy Smelter
+machinewindgenerator.name=Wind Turbine Rotary
+item.projectred.items.turbine.VAWT.name=Vertical Axis Wind Turbine
+item.projred.expansion.ptube|0.name=Pressurized Tube
+
+itemGroup.exploration=Project Red: Exploration
+
+tile.projectred.exploration.ore.oreruby.name=Ruby Ore
+tile.projectred.exploration.ore.oresapphire.name=Sapphire Ore
+tile.projectred.exploration.ore.oreperidot.name=Peridot Ore
+tile.projectred.exploration.stone.stonemarble.name=Marble
+tile.projectred.exploration.stone.brickmarble.name=Marble Brick
+tile.projectred.exploration.stone.cobblebasalt.name=Basalt Cobblestone
+tile.projectred.exploration.stone.stonebasalt.name=Basalt
+tile.projectred.exploration.stone.brickbasalt.name=Basalt Brick
+item.projectred.exploration.woolgin.name=Wool Gin
+bpwhite.name=White Backpack
+bporange.name=Orange Backpack
+bpmagenta.name=Magenta Backpack
+bplightblue.name=Light Blue Backpack
+bpyellow.name=Yellow Backpack
+bplime.name=Lime Backpack
+bppink.name=Pink Backpack
+bpgrey.name=Grey Backpack
+bplightgrey.name=Light Grey Backpack
+bpcyan.name=Cyan Backpack
+bppurple.name=Purple Backpack
+bpblue.name=Blue Backpack
+bpbrown.name=Brown Backpack
+bpgreen.name=Green Backpack
+bpred.name=Red Backpack
+bpblack.name=Black Backpack
+item.projectred.exploration.axeruby.name=Ruby Axe
+item.projectred.exploration.axesapphire.name=Sapphire Axe
+item.projectred.exploration.axeperidot.name=Peridot Axe
+item.projectred.exploration.hoeruby.name=Ruby Hoe
+item.projectred.exploration.hoesapphire.name=Sapphire Hoe
+item.projectred.exploration.hoeperidot.name=Peridot Hoe
+item.projectred.exploration.pickaxeruby.name=Ruby Pickaxe
+item.projectred.exploration.pickaxesapphire.name=Sapphire Pickaxe
+item.projectred.exploration.pickaxeperidot.name=Peridot Pickaxe
+item.projectred.exploration.shovelruby.name=Ruby Shovel
+item.projectred.exploration.shovelsapphire.name=Sapphire Shovel
+item.projectred.exploration.shovelperidot.name=Peridot Shovel
+item.projectred.exploration.swordruby.name=Ruby Sword
+item.projectred.exploration.swordsapphire.name=Sapphire Sword
+item.projectred.exploration.swordperidot.name=Peridot Sword
+item.projectred.exploration.sawwood.name=Wooden Saw
+item.projectred.exploration.sawstone.name=Stone Saw
+item.projectred.exploration.sawiron.name=Iron Saw
+item.projectred.exploration.sawgold.name=Golden Saw
+item.projectred.exploration.sawruby.name=Ruby Saw
+item.projectred.exploration.sawsapphire.name=Sapphire Saw
+item.projectred.exploration.sawperidot.name=Peridot Saw
+item.projectred.exploration.sawdiamond.name=Diamond Saw
+item.projectred.exploration.sicklewood.name=Wooden Sickle
+item.projectred.exploration.sicklestone.name=Stone Sickle
+item.projectred.exploration.sickleiron.name=Iron Sickle
+item.projectred.exploration.sicklegold.name=Golden Sickle
+item.projectred.exploration.sickleruby.name=Ruby Sickle
+item.projectred.exploration.sicklesapphire.name=Sapphire Sickle
+item.projectred.exploration.sickleperidot.name=Peridot Sickle
+item.projectred.exploration.sicklediamond.name=Diamond Sickle
 
 itemGroup.ill=Project Red: Illumination
 
 itemGroup.int=Project Red: Integration
+
+item.projred.integration.gate|0.name=OR Gate
+item.projred.integration.gate|1.name=NOR Gate
+item.projred.integration.gate|2.name=NOT Gate
+item.projred.integration.gate|3.name=AND Gate
+item.projred.integration.gate|4.name=NAND Gate
+item.projred.integration.gate|5.name=XOR Gate
+item.projred.integration.gate|6.name=XNOR Gate
+item.projred.integration.gate|7.name=Buffer Gate
+item.projred.integration.gate|8.name=Multiplexer
+item.projred.integration.gate|9.name=Pulse Former
+item.projred.integration.gate|10.name=Repeater
+item.projred.integration.gate|11.name=Randomizer
+item.projred.integration.gate|12.name=RS Latch
+item.projred.integration.gate|13.name=Toggle Latch
+item.projred.integration.gate|14.name=Transparent Latch
+item.projred.integration.gate|15.name=Light Sensor
+item.projred.integration.gate|16.name=Rain Sensor
+item.projred.integration.gate|17.name=Timer
+item.projred.integration.gate|18.name=Sequencer
+item.projred.integration.gate|19.name=Counter
+item.projred.integration.gate|20.name=State Cell
+item.projred.integration.gate|21.name=Synchronizer
+item.projred.integration.gate|22.name=Bus Transceiver
+item.projred.integration.gate|23.name=Null Cell
+item.projred.integration.gate|24.name=Invert Cell
+item.projred.integration.gate|25.name=Buffer Cell
 
 item.projectred:screwdriver.name=Screwdriver
 
