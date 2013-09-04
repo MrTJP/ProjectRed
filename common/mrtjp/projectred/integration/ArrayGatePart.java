@@ -195,7 +195,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if (t != null) {
+        if (t != null && (connMap & 0x10<<r) != 0) {
             TMultiPart tp = t.partMap(side());
             if(tp != null)
                 s = getPartSignal(tp, (r+2)%4);
@@ -221,7 +221,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
             return i;
         
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
-        return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, side()^1)*17;
+        return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, absDir)*17;
     }
 
     public int getPartSignal(TMultiPart part, int r) {
