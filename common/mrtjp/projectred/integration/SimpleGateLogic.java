@@ -577,18 +577,16 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
     public static class ANDCell extends SimpleGateLogic
     {
         @Override
-        public int inputMask(int shape) {
-            return 4;
+        public int calcOutput(int input) {
+            return input == 0xE ? 1 : 0;
         }
         
         @Override
-        public int outputMask(int shape) {
-            return 1;
-        }
-        
-        @Override
-        public int calcOutput(SimpleGatePart gate, int input) {
-            return ((RowGatePart)gate).signal != 0 && input != 0 ? 1 : 0;
+        public int getInput(SimpleGatePart gate, int inputMask) {
+            int i = super.getInput(gate, 4);
+            if(((RowGatePart)gate).signal != 0)
+                i |= 0xA;
+            return i;
         }
         
         @Override
