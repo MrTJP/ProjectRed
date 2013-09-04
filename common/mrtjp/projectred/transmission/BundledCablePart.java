@@ -94,11 +94,11 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
     }
 
     @Override
-    public boolean propogateTo(TMultiPart part, int mode) {
+    public boolean propogateTo(TMultiPart part, int mode, int side) {
         if(!BundledCableCommons.shouldPropogate(this, part, mode))
             return true;
 
-        return super.propogateTo(part, mode);
+        return super.propogateTo(part, mode, side);
     }
 
     public void setSignal(byte[] newSignal) {

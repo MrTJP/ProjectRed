@@ -82,7 +82,7 @@ public class BundledCableCommons
                 part.propogate(prev, RISING);
         } else {
             if (mode == DROPPING)
-                part.propogateTo(prev, RISING);
+                part.propogateTo(prev, RISING, Integer.MAX_VALUE);
             else if (mode == FORCE)
                 part.propogate(prev, FORCED);
         }

@@ -1,6 +1,6 @@
 package mrtjp.projectred.integration;
 
-import static mrtjp.projectred.integration.ComponentStore.generateWireModels;
+import static mrtjp.projectred.integration.ComponentStore.*;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -8,28 +8,6 @@ import java.util.List;
 import java.util.Random;
 
 import mrtjp.projectred.integration.BundledGateLogic.BusTransceiver;
-import mrtjp.projectred.integration.ComponentStore.BaseCellWireModel;
-import mrtjp.projectred.integration.ComponentStore.BaseComponentModel;
-import mrtjp.projectred.integration.ComponentStore.BusXcvrCableModel;
-import mrtjp.projectred.integration.ComponentStore.BusXcvrPanelModel;
-import mrtjp.projectred.integration.ComponentStore.CellFrameModel;
-import mrtjp.projectred.integration.ComponentStore.CellPlateModel;
-import mrtjp.projectred.integration.ComponentStore.ComponentModel;
-import mrtjp.projectred.integration.ComponentStore.ExtendedCellBaseModel;
-import mrtjp.projectred.integration.ComponentStore.ExtendedCellWireModel;
-import mrtjp.projectred.integration.ComponentStore.LeverModel;
-import mrtjp.projectred.integration.ComponentStore.MinusChipModel;
-import mrtjp.projectred.integration.ComponentStore.NullCellBaseModel;
-import mrtjp.projectred.integration.ComponentStore.NullCellWireModel;
-import mrtjp.projectred.integration.ComponentStore.OnOffModel;
-import mrtjp.projectred.integration.ComponentStore.PlusChipModel;
-import mrtjp.projectred.integration.ComponentStore.PointerModel;
-import mrtjp.projectred.integration.ComponentStore.RainSensorModel;
-import mrtjp.projectred.integration.ComponentStore.RedChipModel;
-import mrtjp.projectred.integration.ComponentStore.RedstoneTorchModel;
-import mrtjp.projectred.integration.ComponentStore.SolarModel;
-import mrtjp.projectred.integration.ComponentStore.WireComponentModel;
-import mrtjp.projectred.integration.ComponentStore.YellowChipModel;
 import mrtjp.projectred.integration.InstancedRsGateLogic.ExtraStateLogic;
 import mrtjp.projectred.integration.InstancedRsGateLogic.TimerGateLogic;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -70,7 +48,8 @@ public class RenderGate
             new NullCell(),
             new InvertCell(),
             new BufferCell(),
-            new Comparator()
+            new Comparator(),
+            new ANDCell()
         };
     
     public static void registerIcons(IconRegister r) {
@@ -1167,35 +1146,42 @@ public class RenderGate
     
     public static class ArrayCell extends GateRenderer<ArrayGatePart>
     {
-        public BaseCellWireModel alloyWire;
+        public CellBottomWireModel bottomWire;
+        public CellTopWireModel topWire;
         
-        public ArrayCell(BaseCellWireModel alloy) {
-            alloyWire = alloy;
+        public ArrayCell(CellTopWireModel topWire, CellBottomWireModel bottomWire) {
+            this.topWire = topWire;
+            this.bottomWire = bottomWire;
             models.clear();
-            models.add(alloyWire);
+            models.add(topWire);
+            models.add(bottomWire);
             models.add(new CellFrameModel());
         }
         
         @Override
         public void prepareInv() {
-            alloyWire.signal1 = 0;
-            alloyWire.signal2 = 0;
-            alloyWire.conn = 0x10;
+            bottomWire.signal = 0;
+            bottomWire.invColour = true;
+            topWire.signal = 0;
+            topWire.invColour = true;
+            topWire.conn = 0;
         }
         
         @Override
         public void prepare(ArrayGatePart part) {
-            alloyWire.signal1 = part.signal1;
-            alloyWire.signal2 = part.signal2;
-            alloyWire.conn = part.topWireConn();
             super.prepare(part);
+            bottomWire.signal = part.signal1;
+            bottomWire.invColour = false;
+            topWire.signal = part.signal2;
+            topWire.conn = ArrayCommons.topWireConn(part);
+            topWire.invColour = false;
         }
     }
     
     public static class NullCell extends ArrayCell
     {
         public NullCell() {
-            super(new NullCellWireModel());
+            super(new CellTopWireModel(nullCellWireTop), new CellBottomWireModel(nullCellWireBottom));
             models.add(new NullCellBaseModel());
         }
     }
@@ -1206,7 +1192,7 @@ public class RenderGate
         RedstoneTorchModel torch = new RedstoneTorchModel(8, 8, 6);
 
         public InvertCell() {
-            super(new ExtendedCellWireModel());
+            super(new CellTopWireModel(extendedCellWireTop), new CellBottomWireModel(extendedCellWireBottom));
             models.add(new ExtendedCellBaseModel());
             models.add(new CellPlateModel());
             models.addAll(Arrays.asList(wires));
@@ -1237,7 +1223,7 @@ public class RenderGate
         };
 
         public BufferCell() {
-            super(new ExtendedCellWireModel());
+            super(new CellTopWireModel(extendedCellWireTop), new CellBottomWireModel(extendedCellWireBottom));
             models.add(new ExtendedCellBaseModel());
             models.add(new CellPlateModel());
             models.addAll(Arrays.asList(wires));
@@ -1315,6 +1301,40 @@ public class RenderGate
             super.renderModels(t, orient);
             chips[0].renderModel(t, orient%24);
             chips[1].renderModel(t, orient%24);
+        }
+    }
+    
+    public static class ANDCell extends GateRenderer<RowGatePart>
+    {
+        public CellTopWireModel topWire = new CellTopWireModel(nullCellWireTop);
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
+                new RedstoneTorchModel(8, 11, 5),
+                new RedstoneTorchModel(8, 3, 8)
+            };
+        
+        public ANDCell() {
+            models.addAll(Arrays.asList(torches));
+            models.add(topWire);
+            models.add(new CellFrameModel());
+        }
+        
+        @Override
+        public void prepareInv() {
+            topWire.signal = 0;
+            topWire.invColour = true;
+            topWire.conn = 0;
+            torches[0].on = true;
+            torches[1].on = false;
+        }
+        
+        @Override
+        public void prepare(RowGatePart part) {
+            super.prepare(part);
+            topWire.signal = part.signal;
+            topWire.conn = ArrayCommons.topWireConn(part);
+            topWire.invColour = false;
+            torches[0].on = (part.state & 4) == 0;
+            torches[1].on = (part.state & 0x10) != 0;
         }
     }
 }

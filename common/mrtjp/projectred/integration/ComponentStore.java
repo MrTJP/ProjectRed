@@ -75,7 +75,7 @@ public class ComponentStore
     
     static
     {
-        base = loadBase();
+        base = loadBase("base");
         lightChip = loadModel("chip");
         solarArray = loadModel("solar");
         rainSensor = loadModel("rainsensor");
@@ -87,10 +87,10 @@ public class ComponentStore
         
         nullCellWireBottom = loadModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5));
         nullCellWireTop = loadModel("array/nullcelltopwire").apply(new Translation(0.5, 0, 0.5));
-        nullCellBase = loadModel("array/nullcellbase").apply(new Translation(0.5, 0, 0.5));
+        nullCellBase = loadBase("array/nullcellbase");
         extendedCellWireBottom = loadModel("array/extendedcellbottomwire").apply(new Translation(0.5, 0, 0.5));
         extendedCellWireTop = loadModel("array/extendedcelltopwire").apply(new Translation(0.5, 0, 0.5));        
-        extendedCellBase = loadModel("array/extendedcellbase").apply(new Translation(0.5, 0, 0.5));        
+        extendedCellBase = loadBase("array/extendedcellbase");        
         cellWireSide = loadModel("array/cellsidewire").apply(new Translation(0.5, 0, 0.5));
         cellFrame = loadModel("array/cellstand").apply(new Translation(0.5, 0, 0.5));
         cellPlate = loadModel("array/cellplate").apply(new Translation(0.5, 0, 0.5)); 
@@ -124,8 +124,8 @@ public class ComponentStore
         return models;
     }
     
-    private static CCModel loadBase() {
-        CCModel m = loadModel("base");
+    private static CCModel loadBase(String name) {
+        CCModel m = loadModel(name);
         m.apply(new Translation(0.5, 0, 0.5));
         for(int i = 0; i < m.verts.length; i++)//inset each face a little for posts and other stuff that render overtop
             m.verts[i].vec.subtract(m.normals[i].copy().multiply(0.0002));
@@ -809,66 +809,75 @@ public class ComponentStore
         }
     }
     
-    public static class BaseCellWireModel extends ComponentModel
+    public static abstract class CellWireModel extends ComponentModel
     {
-        public CCModel[] bottom = new CCModel[24];
-        public CCModel[] top = new CCModel[24];
-        public CCModel[] left = new CCModel[24];
-        public CCModel[] right = new CCModel[24];
+        public byte signal;
+        public boolean invColour;
         
-        public BaseCellWireModel(CCModel wireTop, CCModel wireBottom) {
+        public static int signalColour(byte signal) {
+            return ((signal&0xFF)/2 + 60) << 24 | 0xFF;
+        }
+        
+        @Override
+        public final void renderModel(Transformation t, int orient) {
+            if(invColour) {
+                CCRenderState.setColour(signalColour((byte) 0));
+                renderWire(t, orient, null);
+                CCRenderState.setColour(-1);
+            }
+            else {
+                renderWire(t, orient, new ColourMultiplier(signalColour(signal)));
+            }
+        }
+        
+        public abstract void renderWire(Transformation t, int orient, IVertexModifier colour);
+    }
+    
+    public static class CellTopWireModel extends CellWireModel
+    {
+        public static CCModel[] left = new CCModel[24];
+        public static CCModel[] right = new CCModel[24];
+        
+        static {
             CCModel cellWireLeft = cellWireSide.copy().apply(new Translation(-7.001/16D, 0, 0));
             CCModel cellWireRight = cellWireSide.copy().apply(new Translation(7.001/16D, 0, 0));
             for(int i = 0; i < 24; i++) {
-                bottom[i] = bakeCopy(wireBottom, i);
-                top[i] = bakeCopy(wireTop, i);
                 left[i] = bakeCopy(cellWireLeft, i);
                 right[i] = bakeCopy(cellWireRight, i);
             }
         }
         
-        public byte signal1;
-        public byte signal2;
+        public CCModel[] top = new CCModel[24];
         public byte conn;
         
-        @Override
-        public void renderModel(Transformation t, int orient) {
-            boolean invColour = conn == 0x10;//special flag for inv rendering, just set tessellator colour, don't use modifiers
-            if(invColour)
-                CCRenderState.setColour(signalColour((byte) 0));
-            
+        public CellTopWireModel(CCModel wireTop) {
+            for(int i = 0; i < 24; i++)
+                top[i] = bakeCopy(wireTop, i);
+        }
+        
+        public void renderWire(Transformation t, int orient, IVertexModifier colour) {
             IconTransformation icont = new IconTransformation(cellIcon);
-            bottom[orient].render(t, icont, new ColourMultiplier(signalColour(signal1)));
-            
-            IVertexModifier colour = new ColourMultiplier(signalColour(signal2));
             top[orient].render(t, icont, colour);
             if((conn & 2) == 0)
                 right[orient].render(t, icont, colour);
             if((conn & 8) == 0)
                 left[orient].render(t, icont, colour);
-            
-
-            if(invColour)
-                CCRenderState.setColour(-1);
+        }
+    }
+    
+    public static class CellBottomWireModel extends CellWireModel
+    {
+        public CCModel[] bottom = new CCModel[24];
+        
+        public CellBottomWireModel(CCModel wireBottom) {
+            for(int i = 0; i < 24; i++)
+                bottom[i] = bakeCopy(wireBottom, i);
         }
         
-        public static int signalColour(byte signal) {
-            return ((signal&0xFF)/2 + 60) << 24 | 0xFF;
+        @Override
+        public void renderWire(Transformation t, int orient, IVertexModifier colour) {
+            bottom[orient].render(t, new IconTransformation(cellIcon), colour);
         }
-    }
-    
-    public static class NullCellWireModel extends BaseCellWireModel
-    {
-        public NullCellWireModel() {
-            super(ComponentStore.nullCellWireTop, ComponentStore.nullCellWireBottom);
-        }   
-    }
-    
-    public static class ExtendedCellWireModel extends BaseCellWireModel
-    {
-        public ExtendedCellWireModel() {
-            super(ComponentStore.extendedCellWireTop, ComponentStore.extendedCellWireBottom);
-        }   
     }
     
     public static class CellFrameModel extends SimpleComponentModel
