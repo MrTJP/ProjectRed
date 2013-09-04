@@ -10,6 +10,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
+import codechicken.multipart.INeighborTileChange;
 import codechicken.multipart.handler.MultipartSaveLoad;
 
 public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRsGatePart>
@@ -972,7 +973,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
     }
 
-    public static class Comparator extends InstancedRsGateLogic
+    public static class Comparator extends InstancedRsGateLogic implements INeighborTileChange
     {
         public short state2;
         
@@ -1032,8 +1033,17 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             int absDir = Rotation.rotateSide(gate.side(), gate.toAbsolute(2));
             BlockCoord pos = new BlockCoord(gate.getTile()).offset(absDir);
             Block block = Block.blocksList[gate.world().getBlockId(pos.x, pos.y, pos.z)];
-            if(block != null && block.hasComparatorInputOverride())
-                return block.getComparatorInputOverride(gate.world(), pos.x, pos.y, pos.z, absDir^1);
+            if(block != null) {
+                if(block.hasComparatorInputOverride())
+                    return block.getComparatorInputOverride(gate.world(), pos.x, pos.y, pos.z, absDir^1);
+                
+                if(block.isBlockNormalCube(gate.world(), pos.x, pos.y, pos.z)) {
+                    pos.offset(absDir);
+                    block = Block.blocksList[gate.world().getBlockId(pos.x, pos.y, pos.z)];
+                    if(block != null && block.hasComparatorInputOverride())
+                        return block.getComparatorInputOverride(gate.world(), pos.x, pos.y, pos.z, absDir^1);
+                }
+            }
             
             return getAnalogInput(2);
         }
@@ -1123,5 +1133,16 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             packet.writeShort(state2);
         }
 
+        
+        @Override
+        public void onNeighborTileChanged(int side, boolean weak) {
+            if(side == Rotation.rotateSide(gate.side(), gate.toAbsolute(2)))
+                gate.onChange();
+        }
+        
+        @Override
+        public boolean weakTileChanges() {
+            return true;
+        }
     }
 }
