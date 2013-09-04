@@ -175,9 +175,9 @@ public class ComponentStore
         Colour[] data = TextureUtils.loadTextureColours(new ResourceLocation("projectred:textures/blocks/gates/surface/"+name+".png"));
         WireComponentModel m = new WireComponentModel();
         if(Configurator.logicwires3D.getBoolean(true))
-            new WireModel3D(data, m);
+            new WireModel3D(data).bind(m);
         else
-            new WireModel2D(data, m);
+            new WireModel2D(data).bind(m);
         return m;
     }
     
@@ -466,8 +466,11 @@ public class ComponentStore
     {
         private WireComponentModel parent;
         
-        public WireModel3D(Colour[] data, WireComponentModel parent) {
+        public WireModel3D(Colour[] data) {
             super(generateModel(data));
+        }
+        
+        public void bind(WireComponentModel parent) {
             this.parent = parent;
             parent.bind(this);
         }
@@ -533,8 +536,11 @@ public class ComponentStore
         public Colour[] wireMask;
         private final int iconIndex = iconCounter++;
         
-        public WireModel2D(Colour[] data, WireComponentModel parent) {
+        public WireModel2D(Colour[] data) {
             wireMask = data;
+        }
+        
+        public void bind(WireComponentModel parent) {
             this.parent = parent;
             parent.bind(this);
         }
