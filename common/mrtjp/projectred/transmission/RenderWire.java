@@ -42,6 +42,9 @@ public class RenderWire {
         }
     }
     
+    public static int[] reorientSide = new int[]{
+        0, 3, 3, 0, 0, 3};
+    
     /* 
      * All generations are done on side 0 so know that for rotation r
      * 0 = side 3 = +Z = SOUTH
@@ -51,9 +54,6 @@ public class RenderWire {
      */
     
     private static class WireModelGenerator {
-        
-        public static int[] reorientSide = new int[]{
-            0, 3, 3, 0, 0, 3};
         
         int side;
         int tw;
@@ -184,6 +184,9 @@ public class RenderWire {
         private Vertex5[] generateStub(int r) {
             Vertex5[] verts = generateExtension(4);
 
+            for(int i = 0; i < 4; i++)
+                verts[i].vec.z-=0.002;//pull the stub in a little so it doesn't z fight with jacketed cables
+            
             reflectSide(verts, r);
             return verts;
         }
@@ -233,13 +236,12 @@ public class RenderWire {
         
         private Vertex5[] generateExtension(int tl) {
             double l = tl/16D;
-            double d = 0.002;
             
             return new Vertex5[]{//cap
-                    new Vertex5(0.5-w, 0, 0.5+l-d, 8-tw, 24+2*th),
-                    new Vertex5(0.5+w, 0, 0.5+l-d, 8+tw, 24+2*th),
-                    new Vertex5(0.5+w, h, 0.5+l-d, 8+tw, 24+th),
-                    new Vertex5(0.5-w, h, 0.5+l-d, 8-tw, 24+th),
+                    new Vertex5(0.5-w, 0, 0.5+l, 8-tw, 24+2*th),
+                    new Vertex5(0.5+w, 0, 0.5+l, 8+tw, 24+2*th),
+                    new Vertex5(0.5+w, h, 0.5+l, 8+tw, 24+th),
+                    new Vertex5(0.5-w, h, 0.5+l, 8-tw, 24+th),
 
                     //top
                     new Vertex5(0.5-w, h, 0.5+l, 8-tw, 16+tl),

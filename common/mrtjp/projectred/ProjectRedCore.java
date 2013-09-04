@@ -1,7 +1,11 @@
 package mrtjp.projectred;
 
+import mrtjp.projectred.api.APIImpl;
+import mrtjp.projectred.api.ProjectRedAPI;
+import mrtjp.projectred.core.BlockBasics;
 import mrtjp.projectred.core.CommandDebug;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.CoreGuiHandler;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.core.ItemDrawPlate;
 import mrtjp.projectred.core.ItemPart;
@@ -16,6 +20,11 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+<<<<<<< HEAD
+=======
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.LanguageRegistry;
+>>>>>>> upstream/master
 
 /**
  * "Project: Red" serves to provide a complete alternative for Eloraam's
@@ -35,6 +44,13 @@ dependencies =
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class ProjectRedCore {
     
+    public ProjectRedCore() {
+        ProjectRedAPI.instance = new APIImpl();
+    }
+    
+    /** Blocks **/
+    public static BlockBasics blockMachines;
+
     /** Items **/
     public static ItemPart itemComponent;
     public static ItemDrawPlate itemDrawPlate;
@@ -62,7 +78,7 @@ public class ProjectRedCore {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(instance);
-        MinecraftForge.EVENT_BUS.register(proxy);
+        NetworkRegistry.instance().registerGuiHandler(instance, new CoreGuiHandler());
         proxy.init();
     }
 

@@ -1,8 +1,16 @@
 package mrtjp.projectred.integration;
 
+<<<<<<< HEAD
 import mrtjp.projectred.ProjectRedIntegration;
 import net.minecraftforge.client.MinecraftForgeClient;
 import codechicken.lib.packet.PacketCustom;
+=======
+import static mrtjp.projectred.ProjectRedIntegration.itemScrewdriver;
+import mrtjp.projectred.ProjectRedIntegration;
+import net.minecraftforge.client.MinecraftForgeClient;
+import codechicken.lib.packet.PacketCustom;
+import cpw.mods.fml.common.registry.LanguageRegistry;
+>>>>>>> upstream/master
 
 public class IntegrationClientProxy extends IntegrationProxy {
 

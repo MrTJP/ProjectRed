@@ -1,5 +1,6 @@
 package mrtjp.projectred.transmission;
 
+import mrtjp.projectred.api.IConnectable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
 import codechicken.lib.data.MCDataInput;

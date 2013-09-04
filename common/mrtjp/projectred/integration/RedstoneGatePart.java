@@ -2,9 +2,9 @@ package mrtjp.projectred.integration;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.transmission.IRedwireEmitter;
+import net.minecraft.block.Block;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.IFaceRedstonePart;
@@ -87,7 +87,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
         int absDir = Rotation.rotateSide(side(), r);
         
         int i = RedstoneInteractions.getPowerTo(this, absDir)*17;
-        if(i > 0)
+        if(i > 0 || getLogic().requireStrongInput(r))
             return i;
         
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);

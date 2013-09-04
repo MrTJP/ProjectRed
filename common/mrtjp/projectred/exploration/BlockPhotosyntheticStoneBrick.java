@@ -2,15 +2,14 @@ package mrtjp.projectred.exploration;
 
 import java.util.Random;
 
-import codechicken.lib.vec.BlockCoord;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStoneBrick;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
+import codechicken.lib.vec.BlockCoord;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
 
@@ -25,7 +24,7 @@ public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
         setResistance(10.0F);
         setStepSound(soundStoneFootstep);
         setUnlocalizedName("stonebricksmooth");
-        func_111022_d("stonebrick");
+        setTextureName("stonebrick");
         setTickRandomly(true);
     }
 
@@ -104,7 +103,7 @@ public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
         super.registerIcons(reg);
         Block.stoneBrick.registerIcons(reg);
         for (int i = 0; i < this.icons.length; ++i) {
-            String s = this.func_111023_E();
+            String s = this.getTextureName();
             if (names[i] != null) {
                 s = s + "_" + names[i];
             }

@@ -69,5 +69,29 @@ public class GeneratorOre extends WorldGenerator {
         }
         return true;
     }
+    
+    protected static class Evaluation {
+        final int x, y, z;
+        int sides;
+        public Evaluation(int x, int y, int z, int sides) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.sides = sides;
+        }
+        
+        public void evaluateSide() {
+            sides--;
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof Evaluation) {
+                Evaluation e = (Evaluation)o;
+                return x == e.x && y == e.y && z == e.z && sides == e.sides;
+            }
+            return false;
+        }
+    }
 
 }

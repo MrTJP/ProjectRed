@@ -2,7 +2,6 @@ package mrtjp.projectred.illumination;
 
 import java.util.Arrays;
 
-import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.client.renderer.RenderBlocks;

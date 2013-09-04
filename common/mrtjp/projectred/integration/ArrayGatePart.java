@@ -3,9 +3,14 @@ package mrtjp.projectred.integration;
 import java.util.Arrays;
 import java.util.Random;
 
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.integration.ArrayCommons.ITopArrayWire;
+import mrtjp.projectred.transmission.IRedwireEmitter;
+import mrtjp.projectred.transmission.IRedwirePart;
+import mrtjp.projectred.transmission.IWirePart;
+import mrtjp.projectred.transmission.WirePropogator;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
-
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
@@ -18,13 +23,8 @@ import codechicken.multipart.IRandomDisplayTick;
 import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
-import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.transmission.IRedwireEmitter;
-import mrtjp.projectred.transmission.IRedwirePart;
-import mrtjp.projectred.transmission.IWirePart;
-import mrtjp.projectred.transmission.WirePropogator;
 
-public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedstonePart, IRandomDisplayTick
+public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedstonePart, IRandomDisplayTick, ITopArrayWire
 {
     public static Cuboid6[][] oBoxes = new Cuboid6[6][2];
     public static Cuboid6[] cBoxes = new Cuboid6[6];
@@ -144,7 +144,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         }
         else {
             if(mode == DROPPING)
-                propogateTo(prev, RISING);
+                propogateTo(prev, RISING, Integer.MAX_VALUE);
             else if(mode == FORCE)
                 propogate(pMask, prev, FORCED);
         }
@@ -225,7 +225,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     }
 
     public int getPartSignal(TMultiPart part, int r) {
-        if(part instanceof IRedwirePart)
+        if(part instanceof IRedwirePart && ((IRedwirePart) part).isWireSide(r))
             return ((IRedwirePart) part).getRedwireSignal(r) - 1;
         else if(part instanceof IRedwireEmitter)
             return ((IRedwireEmitter) part).getRedwireSignal(r);
@@ -269,7 +269,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
             TMultiPart tp = t.partMap(absDir^1);
             if(tp == prev)
                 return;
-            if(propogateTo(tp, mode))
+            if(propogateTo(tp, mode, Rotation.rotationTo(absDir^1, side()^1)))
                 return;
         }
         
@@ -285,7 +285,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
             TMultiPart tp = t.partMap(side());
             if(tp == prev)
                 return;
-            if(propogateTo(tp, mode))
+            if(propogateTo(tp, mode, (r+2)%4))
                 return;
         }
 
@@ -312,10 +312,13 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         return 2;
     }
 
-    public boolean propogateTo(TMultiPart part, int mode) {
+    public boolean propogateTo(TMultiPart part, int mode, int side) {
         if(part instanceof IWirePart) {
-            WirePropogator.propogateTo((IWirePart) part, this, mode);
-            return true;
+            IWirePart wire = (IWirePart) part;
+            if(wire.isWireSide(side)) {
+                WirePropogator.propogateTo(wire, this, mode);
+                return true;
+            }
         }
         
         return false;
@@ -329,31 +332,6 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     @Override
     public void randomDisplayTick(Random rand) {
         RenderGate.spawnParticles(this, rand);
-    }
-
-    public byte topWireConn() {
-        byte i = 0;
-        for(int r = 1; r < 4; r+=2)
-            if(topWireConn(toAbsolute(r)))
-                i|=1<<r;
-        
-        return i;
-    }
-    
-    private boolean topWireConn(int r) {
-        int absDir = Rotation.rotateSide(side(), r);
-        
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if (t != null) {
-            TMultiPart tp = t.partMap(side());
-            if(tp instanceof ArrayGatePart) {
-                int a_r = ((ArrayGatePart) tp).rotation();
-                return (a_r&1) == (rotation()&1);
-            }
-        }
-        
-        return false;
     }
     
     @Override
@@ -390,6 +368,11 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
             return (i+16)/17;
         
         return 0;
+    }
+    
+    @Override
+    public boolean isWireSide(int side) {
+        return side >= 0;
     }
     
     @Override

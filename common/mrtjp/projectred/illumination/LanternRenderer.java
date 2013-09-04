@@ -4,7 +4,6 @@ import java.util.Map;
 
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicRenderUtils;
-import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.InvertX;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.illumination.LastEventBasedHaloRenderer.HaloObject;
@@ -22,14 +21,11 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
-import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.TransformationList;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
-import codechicken.multipart.PartMap;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
 
 public class LanternRenderer implements IItemRenderer {
 
@@ -55,12 +51,13 @@ public class LanternRenderer implements IItemRenderer {
         render = b;
         bindTexture(lan);
         CCRenderState.reset();
-        BasicRenderUtils.bindTerrainResource();
+        TextureUtils.bindAtlas(0);
         BasicRenderUtils.setBrightnessDirect(lan.world(), lan.x(), lan.y(), lan.z());
         renderLampBulb(lan.x(), lan.y(), lan.z(), lan.rotation);
-        if (lan.getLightValue() == 15 && b == null) {
+        if (lan.getLightValue() == 15 && b == null)
             renderLampShade(lan.x(), lan.y(), lan.z(), lan.type.meta);
-        }
+        else if (lan.getLightValue() == 0 && b == null)
+            LastEventBasedHaloRenderer.removeHaloObject(lan.x(), lan.y(), lan.z());
     }
 
     public void renderPart(CCModel cc, double x, double y, double z, int rot) {
@@ -116,20 +113,6 @@ public class LanternRenderer implements IItemRenderer {
         HaloObject r = new HaloObject((int) x, (int) y, (int) z) {
             @Override
             public boolean render(RenderWorldLastEvent event) {
-                TileMultipart t = BasicUtils.getTileEntity(event.context.theWorld, new BlockCoord(posX, posY, posZ), TileMultipart.class);
-                if (t != null) {
-                    TMultiPart p = t.partMap(PartMap.CENTER.i);
-                    if (!(p instanceof LanternPart)) {
-                        return false;
-                    }
-                    if (p instanceof LanternPart) {
-                        if (p.getLightValue() != 15) {
-                            return false;
-                        }
-                    }
-                } else {
-                    return false;
-                }
                 renderPart(models.get("lampshade"), x, y, z, 2);
                 return true;
             }

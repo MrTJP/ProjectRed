@@ -19,7 +19,7 @@ public class IntegrationProxy implements IProxy, IPartFactory {
     @Override
     public void init() {
         MultiPartRegistry.registerParts(this, new String[]{
-                "pr_sgate", "pr_igate", "pr_agate", "pr_bgate"});
+                "pr_sgate", "pr_igate", "pr_agate", "pr_bgate", "pr_tgate", "pr_rgate"});
 
         itemPartGate2 = new ItemPartGate(Configurator.part_gate.getInt());
         itemScrewdriver = new ItemScrewdriver(Configurator.item_screwdriverID.getInt());
@@ -40,6 +40,10 @@ public class IntegrationProxy implements IProxy, IPartFactory {
             return new BundledGatePart();
         if(id.equals("pr_agate"))
             return new ArrayGatePart();
+        if(id.equals("pr_tgate"))
+            return new InstancedRsGatePartT();
+        if(id.equals("pr_rgate"))
+            return new RowGatePart();
         return null;
     }
 }

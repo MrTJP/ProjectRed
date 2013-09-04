@@ -22,13 +22,6 @@ public class Configurator {
     public static final String transmissionPacketChannel = "PR:Trans";
     public static final String expansionPacketChannel = "PR:Expan";
 
-    /** Modules **/
-    public static Property module_Integration;
-    public static Property module_Transmission;
-    public static Property module_Illumination;
-    public static Property module_Expansion;
-    public static Property module_Exploration;
-
     /** Multipart IDs **/
     public static Property part_gate;
     public static Property part_wire;
@@ -108,13 +101,7 @@ public class Configurator {
     public static void loadPropertiesFromFile(File file) {
         Configuration localConfig = new Configuration(file);
         localConfig.load();
-
-        module_Integration = localConfig.get("Modules", "Integration", true);
-        module_Transmission = localConfig.get("Modules", "Transmission", true);
-        module_Illumination = localConfig.get("Modules", "Illumination", true);
-        module_Expansion = localConfig.get("Modules", "Expansion", true);
-        module_Exploration = localConfig.get("Modules", "Exploration", true);
-
+        
         part_gate = localConfig.get("MultiPart Item IDs", "Gate Part ID", 9030);
         part_wire = localConfig.get("MultiPart Item IDs", "Wire Part ID", 9031);
         part_jwire = localConfig.get("MultiPart Item IDs", "Jacketed Wire Part ID", 9032);

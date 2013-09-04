@@ -97,23 +97,19 @@ public class ProjectRedExploration {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        if (Configurator.module_Exploration.getBoolean(true))
-            proxy.preinit();
+        proxy.preinit();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        if (Configurator.module_Exploration.getBoolean(true)) {
-            MinecraftForge.EVENT_BUS.register(instance);
-            NetworkRegistry.instance().registerGuiHandler(instance, new ExplorationGuiHandler());
-            proxy.init();
-        }
+        MinecraftForge.EVENT_BUS.register(instance);
+        NetworkRegistry.instance().registerGuiHandler(instance, new ExplorationGuiHandler());
+        proxy.init();
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {        if (Configurator.module_Exploration.getBoolean(true))
-            if (Configurator.module_Exploration.getBoolean(true))
-                proxy.postinit();
+    public void postInit(FMLPostInitializationEvent event) {
+        proxy.postinit();
     }
 
 }

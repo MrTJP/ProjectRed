@@ -6,11 +6,14 @@ import java.util.Map;
 
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.InvertX;
+import mrtjp.projectred.transmission.RenderWire;
+import mrtjp.projectred.transmission.RenderWire.UVT;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
 import codechicken.lib.colour.Colour;
 import codechicken.lib.lighting.LightModel;
+import codechicken.lib.lighting.PlanarLightModel;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
@@ -22,6 +25,8 @@ import codechicken.lib.render.MultiIconTransformation;
 import codechicken.lib.render.TextureDataHolder;
 import codechicken.lib.render.TextureSpecial;
 import codechicken.lib.render.TextureUtils;
+import codechicken.lib.render.UVScale;
+import codechicken.lib.render.UVTranslation;
 import codechicken.lib.render.Vertex5;
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.lib.vec.RedundantTransformation;
@@ -59,6 +64,8 @@ public class ComponentStore
     public static Icon[] redstoneTorchIcons = new Icon[2];
     public static Icon[] taintedChipIcons = new Icon[2];
     public static Icon[] redstoneChipIcons = new Icon[2];
+    public static Icon[] minusChipIcons = new Icon[2];
+    public static Icon[] plusChipIcons = new Icon[2];
     public static Icon leverIcon;
     public static Icon[] solarIcons = new Icon[3];
     public static Icon rainIcon;
@@ -68,7 +75,7 @@ public class ComponentStore
     
     static
     {
-        base = loadBase();
+        base = loadBase("base");
         lightChip = loadModel("chip");
         solarArray = loadModel("solar");
         rainSensor = loadModel("rainsensor");
@@ -80,10 +87,10 @@ public class ComponentStore
         
         nullCellWireBottom = loadModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5));
         nullCellWireTop = loadModel("array/nullcelltopwire").apply(new Translation(0.5, 0, 0.5));
-        nullCellBase = loadModel("array/nullcellbase").apply(new Translation(0.5, 0, 0.5));
+        nullCellBase = loadBase("array/nullcellbase");
         extendedCellWireBottom = loadModel("array/extendedcellbottomwire").apply(new Translation(0.5, 0, 0.5));
         extendedCellWireTop = loadModel("array/extendedcelltopwire").apply(new Translation(0.5, 0, 0.5));        
-        extendedCellBase = loadModel("array/extendedcellbase").apply(new Translation(0.5, 0, 0.5));        
+        extendedCellBase = loadBase("array/extendedcellbase");        
         cellWireSide = loadModel("array/cellsidewire").apply(new Translation(0.5, 0, 0.5));
         cellFrame = loadModel("array/cellstand").apply(new Translation(0.5, 0, 0.5));
         cellPlate = loadModel("array/cellplate").apply(new Translation(0.5, 0, 0.5)); 
@@ -117,8 +124,8 @@ public class ComponentStore
         return models;
     }
     
-    private static CCModel loadBase() {
-        CCModel m = loadModel("base");
+    private static CCModel loadBase(String name) {
+        CCModel m = loadModel(name);
         m.apply(new Translation(0.5, 0, 0.5));
         for(int i = 0; i < m.verts.length; i++)//inset each face a little for posts and other stuff that render overtop
             m.verts[i].vec.subtract(m.normals[i].copy().multiply(0.0002));
@@ -134,7 +141,7 @@ public class ComponentStore
         for(int i = 0; i < 3; i++) {
             ResourceLocation res = new ResourceLocation(wireIcons[i].getIconName());
             wireData[i] = TextureUtils.loadTextureColours(new ResourceLocation(
-                    res.func_110624_b(), "textures/blocks/"+res.func_110623_a()+".png"));
+                    res.getResourceDomain(), "textures/blocks/"+res.getResourcePath()+".png"));
         }
         redstoneTorchIcons[0] = r.registerIcon("redstone_torch_off");
         redstoneTorchIcons[1] = r.registerIcon("redstone_torch_on");
@@ -142,6 +149,10 @@ public class ComponentStore
         taintedChipIcons[1] = r.registerIcon(baseTex+"yellowchipon");
         redstoneChipIcons[0] = r.registerIcon(baseTex+"redchipoff");
         redstoneChipIcons[1] = r.registerIcon(baseTex+"redchipon");
+        minusChipIcons[0] = r.registerIcon(baseTex+"minuschipoff");
+        minusChipIcons[1] = r.registerIcon(baseTex+"minuschipon");
+        plusChipIcons[0] = r.registerIcon(baseTex+"pluschipoff");
+        plusChipIcons[1] = r.registerIcon(baseTex+"pluschipon");
         for (int i = 0; i < 3; i++) 
             solarIcons[i] = r.registerIcon(baseTex+"solar"+i);
         rainIcon = r.registerIcon(baseTex+"rainsensor");
@@ -160,44 +171,14 @@ public class ComponentStore
         return models;
     }
 
-    @SuppressWarnings("unused")
     public static WireComponentModel generateWireModel(String name) {
         Colour[] data = TextureUtils.loadTextureColours(new ResourceLocation("projectred:textures/blocks/gates/surface/"+name+".png"));
         WireComponentModel m = new WireComponentModel();
         if(Configurator.logicwires3D.getBoolean(true))
-            new WireModel3D(data, m);
+            new WireModel3D(data).bind(m);
         else
-            new WireModel2D(data, m);
+            new WireModel2D(data).bind(m);
         return m;
-    }
-
-    private static void generateWireSegment(CCModel model, int i, Rectangle4i rect) {
-        double x1 = rect.x/32D;
-        double x2 = (rect.x+rect.w)/32D;
-        double z1 = rect.y/32D;
-        double z2 = (rect.y+rect.h)/32D;
-        
-        model.generateBlock(i, //border
-                x1-1/16D, 0.125, z1-1/16D, 
-                x2+1/16D, 0.135, z2+1/16D, 1);
-        MultiIconTransformation.setIconIndex(model, i, i+20, 0);
-        i+=20;
-        model.generateBlock(i, //wire
-                x1, 0.125, z1, 
-                x2, 0.145, z2, 1);
-        MultiIconTransformation.setIconIndex(model, i, i+20, 1);
-    }
-
-    private static boolean overlap(boolean[] wireCorners, int x, int y) {
-        return wireCorners[y*32+(x-1)] ||
-                wireCorners[(y-1)*32+x] ||
-                wireCorners[(y-1)*32+(x-1)];
-    }
-
-    private static boolean segment2x2(Colour[] data, int x, int y) {
-        return data[y*32+(x+1)].rgba() == -1 &&
-                data[(y+1)*32+x].rgba() == -1 &&
-                data[(y+1)*32+(x+1)].rgba() == -1;
     }
     
     public static Transformation orientT(int orient) {
@@ -390,32 +371,11 @@ public class ComponentStore
             return this;
         }
         
-        @Override
-        public void renderModel(Transformation t, int orient) {
-            model.renderModel(t, orient);
-        }
-        
-        @Override
-        public void registerTextures(IconRegister r) {
-            model.registerTextures(r);
-        }
-    }
-    
-    public static class WireModel3D extends SingleComponentModel
-    {
-        private WireComponentModel parent;
-        
-        public WireModel3D(Colour[] data, WireComponentModel parent) {
-            super(generateModel(data));
-            this.parent = parent;
-            parent.bind(this);
-        }
-        
-        private static CCModel generateModel(Colour[] data) {
+        protected static List<Rectangle4i> rectangulate(Colour[] data) {
             boolean[] wireCorners = new boolean[1024];
             
-            for(int y = 2; y <= 28; y++)
-                for(int x = 2; x <= 28; x++) {
+            for(int y = 0; y <= 30; y++)
+                for(int x = 0; x <= 30; x++) {
                     if(data[y*32+x].rgba() != -1)
                         continue;
                     
@@ -458,6 +418,65 @@ public class ComponentStore
                     wireRectangles.add(rect);
                 }
             
+            return wireRectangles;
+        }
+
+        private static boolean overlap(boolean[] wireCorners, int x, int y) {
+            return wireCorners[y*32+(x-1)] ||
+                    wireCorners[(y-1)*32+x] ||
+                    wireCorners[(y-1)*32+(x-1)];
+        }
+
+        private static boolean segment2x2(Colour[] data, int x, int y) {
+            return data[y*32+(x+1)].rgba() == -1 &&
+                    data[(y+1)*32+x].rgba() == -1 &&
+                    data[(y+1)*32+(x+1)].rgba() == -1;
+        }
+        
+        public static Rectangle4i border(Rectangle4i wire) {
+            Rectangle4i border = new Rectangle4i(wire.x-2, wire.y-2, wire.w+4, wire.h+4);
+            if(border.x < 0) {
+                border.w+=border.x;
+                border.x = 0;
+            }
+            if(border.y < 0) {
+                border.h+=border.y;
+                border.y = 0;
+            }
+            if(border.x+border.w >= 32)
+                border.w -= border.x+border.w-32;
+            if(border.y+border.h >= 32)
+                border.h -= border.y+border.h-32;
+            
+            return border;
+        }
+        
+        @Override
+        public void renderModel(Transformation t, int orient) {
+            model.renderModel(t, orient);
+        }
+        
+        @Override
+        public void registerTextures(IconRegister r) {
+            model.registerTextures(r);
+        }
+    }
+    
+    public static class WireModel3D extends SingleComponentModel
+    {
+        private WireComponentModel parent;
+        
+        public WireModel3D(Colour[] data) {
+            super(generateModel(data));
+        }
+        
+        public void bind(WireComponentModel parent) {
+            this.parent = parent;
+            parent.bind(this);
+        }
+        
+        private static CCModel generateModel(Colour[] data) {
+            List<Rectangle4i> wireRectangles = WireComponentModel.rectangulate(data);
             CCModel model = CCModel.quadModel(wireRectangles.size()*40);
             int i = 0;
             for(Rectangle4i rect : wireRectangles) {
@@ -467,6 +486,23 @@ public class ComponentStore
             model.computeNormals();
             model.shrinkUVs(0.0005);
             return model;
+        }
+
+        private static void generateWireSegment(CCModel model, int i, Rectangle4i rect) {
+            generateWireSegment(model, i, WireComponentModel.border(rect), 0.01, 0);
+            generateWireSegment(model, i+20, rect, 0.02, 1);
+        }
+        
+        private static void generateWireSegment(CCModel model, int i, Rectangle4i rect, double h, int icon) {
+            double x1 = rect.x/32D;
+            double x2 = (rect.x+rect.w)/32D;
+            double z1 = rect.y/32D;
+            double z2 = (rect.y+rect.h)/32D;
+            double d = 0.0005-h/50D;//little offset for the wires go ontop of the border
+            model.generateBlock(i,
+                    x1+d, 0.125, z1+d, 
+                    x2-d, 0.125+h, z2-d, 1);
+            MultiIconTransformation.setIconIndex(model, i, i+20, icon);
         }
 
         @Override
@@ -488,6 +524,8 @@ public class ComponentStore
         static
         {
             CCModel m = CCModel.quadModel(4).generateBlock(0, 0, 0, 0, 1, 1/8D+0.002, 1, ~2).computeNormals();
+            m.shrinkUVs(0.0005);
+            
             for(int i = 0; i < 48; i++)
                 models[i] = bakeCopy(m, i);
         }
@@ -498,8 +536,11 @@ public class ComponentStore
         public Colour[] wireMask;
         private final int iconIndex = iconCounter++;
         
-        public WireModel2D(Colour[] data, WireComponentModel parent) {
+        public WireModel2D(Colour[] data) {
             wireMask = data;
+        }
+        
+        public void bind(WireComponentModel parent) {
             this.parent = parent;
             parent.bind(this);
         }
@@ -511,18 +552,16 @@ public class ComponentStore
         
         @Override
         public void registerTextures(IconRegister r) {
+            List<Rectangle4i> wireRectangles = WireComponentModel.rectangulate(wireMask);
+            
             icons = new TextureSpecial[wireData.length];
             
             for(int tex = 0; tex < icons.length; tex++) {
                 int[] texMap = new int[1024];
-                for(int y = 2; y <= 29; y++)
-                    for(int x = 2; x <= 29; x++) {
-                        if(wireMask[y*32+x].rgba() != -1)
-                            continue;
-
-                        fillMask(texMap, x, y, 1, 2);
-                        fillMask(texMap, x-2, y-2, 5, 1);
-                    }
+                for(Rectangle4i rect : wireRectangles) {
+                    fillMask(texMap, rect, 2);
+                    fillMask(texMap, WireComponentModel.border(rect), 1);
+                }
                 
                 int pSize = (int)Math.sqrt(wireData[0].length);
                 int size = Math.max(32, pSize);
@@ -542,9 +581,9 @@ public class ComponentStore
             }
         }
 
-        private void fillMask(int[] map, int x, int y, int size, int val) {
-            for(int i = x; i < x+size; i++)
-                for(int j = y; j < y+size; j++)
+        private void fillMask(int[] map, Rectangle4i r, int val) {
+            for(int i = r.x; i < r.x+r.w; i++)
+                for(int j = r.y; j < r.y+r.h; j++)
                     if(map[j*32+i] < val)
                         map[j*32+i] = val;
         }
@@ -604,6 +643,30 @@ public class ComponentStore
         }
     }
     
+    public static class MinusChipModel extends OnOffModel
+    {
+        public MinusChipModel(double x, double z) {
+            super(lightChip, new Vector3(x, 0, z));
+        }
+        
+        @Override
+        public Icon[] getIcons() {
+            return minusChipIcons;
+        }
+    }
+    
+    public static class PlusChipModel extends OnOffModel
+    {
+        public PlusChipModel(double x, double z) {
+            super(lightChip, new Vector3(x, 0, z));
+        }
+        
+        @Override
+        public Icon[] getIcons() {
+            return plusChipIcons;
+        }
+    }
+    
     public static class SolarModel extends StateIconModel {
         public SolarModel(double x, double z) {
             super(solarArray, new Vector3(x, 0, z));
@@ -653,22 +716,35 @@ public class ComponentStore
         }
     }
     
-    public static class BusXcvrCableModel extends SingleComponentModel
+    public static abstract class BundledCableModel extends SingleComponentModel
     {
-
+        public BundledCableModel(CCModel model, Vector3 pos, double texCenterU, double texCenterV) {
+            super(model, pos);
+            
+            for(int orient = 0; orient < 48; orient++) {
+                int side = orient%24>>2;
+                int r = orient&3;
+                boolean reflect = orient >= 24;
+                boolean rotate = (r+RenderWire.reorientSide[side])%4 >= 2;
+                
+                Transformation t = new RedundantTransformation();
+                if(reflect)
+                    t = t.with(new Scale(-1, 0, 1));
+                if(rotate)
+                    t = t.with(Rotation.quarterRotations[2]);
+                
+                if(!(t instanceof RedundantTransformation))
+                    models[orient].apply(new UVT(t.at(new Vector3(texCenterU, 0, texCenterV))));
+            }
+        }
+    }
+    
+    public static class BusXcvrCableModel extends BundledCableModel
+    {
         public BusXcvrCableModel() {
-            super(busXcvr, new Vector3(8,0,8));
+            super(busXcvr, new Vector3(8,0,8), 10/32D, 14/32D);
         }
         
-        @Override
-        public void renderModel(Transformation t, int orient) {
-            if ((orient&0x3) == 2)
-                orient = orient&0xFC | 0;
-            else if ((orient&0x3) == 3)
-                orient = orient&0xFC | 1;
-            super.renderModel(t, orient%24);
-        }
-
         @Override
         public IUVTransformation getUVT() {
             return new IconTransformation(busXcvrIcon);
@@ -677,17 +753,40 @@ public class ComponentStore
 
     public static class BusXcvrPanelModel extends ComponentModel
     {
+        public static CCModel[] displayModels = new CCModel[16];
+        
+        static {
+            for(int i = 0; i < 16; i++) {
+                CCModel m = CCModel.quadModel(4);
+                int x = i%4;
+                int z = i/4;
+                m.verts[0] = new Vertex5(x, 0.32, z+1, x, z);
+                m.verts[1] = new Vertex5(x+1, 0.32, z+1, x+1, z);
+                m.verts[2] = new Vertex5(x+1, 0.32, z, x+1, z+1);
+                m.verts[3] = new Vertex5(x, 0.32, z, x, z+1);
+                m.apply(new Scale(1/16D, 1, 1/16D).with(new Translation(-2/16D, 0, -2/16D)));
+                m.apply(new UVTranslation(22, 0));
+                m.apply(new UVScale(1/32D));
+                m.computeNormals();
+                m.shrinkUVs(0.0005);
+                displayModels[i] = m;
+            }
+        }
+        
         public CCModel[] models;
-        
-        double angle;
         public Vector3 pos;
+        public boolean flip;
+        public int signal;
         
-        public BusXcvrPanelModel(double x, double z, double angle) {
-            this.angle = angle;
-            this.pos = new Vector3(x, 0, z).multiply(1/16D);
+        public BusXcvrPanelModel(double x, double z, boolean flip) {
+            this.flip = flip;
+            pos = new Vector3(x, 0, z).multiply(1/16D);
+            
             CCModel base = busXcvrPanel.copy();
-            base.apply(new Rotation(angle, 0, 1, 0));
+            if(flip)
+                base.apply(Rotation.quarterRotations[2]);
             base.apply(pos.translation());
+            
             this.models = new CCModel[48];
             for(int i = 0; i < 48; i++)
                 models[i] = bakeCopy(base, i);
@@ -695,71 +794,90 @@ public class ComponentStore
         
         @Override
         public void renderModel(Transformation t, int orient) {
-            models[orient].render(t, 
-                    new IconTransformation(busXcvrIcon));
+            IconTransformation icont = new IconTransformation(busXcvrIcon);
+            models[orient].render(t, icont);
+            
+            Vector3 displayPos = pos.copy();
+            if(orient >= 24)//flipped x
+                displayPos.x = 1-displayPos.x;
+            
+            Transformation displayT = flip ? new RedundantTransformation() : Rotation.quarterRotations[2];
+            displayT = displayT.with(displayPos.translation()).with(orientT(orient%24)).with(t);
+            for(int i = 0; i < 16; i++)
+                if((signal & 1<<i) != 0)
+                    displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel);
         }
     }
     
-    public static class BaseCellWireModel extends ComponentModel
+    public static abstract class CellWireModel extends ComponentModel
     {
-        public CCModel[] bottom = new CCModel[24];
-        public CCModel[] top = new CCModel[24];
-        public CCModel[] left = new CCModel[24];
-        public CCModel[] right = new CCModel[24];
+        public byte signal;
+        public boolean invColour;
         
-        public BaseCellWireModel(CCModel wireTop, CCModel wireBottom) {
+        public static int signalColour(byte signal) {
+            return ((signal&0xFF)/2 + 60) << 24 | 0xFF;
+        }
+        
+        @Override
+        public final void renderModel(Transformation t, int orient) {
+            if(invColour) {
+                CCRenderState.setColour(signalColour((byte) 0));
+                renderWire(t, orient, null);
+                CCRenderState.setColour(-1);
+            }
+            else {
+                renderWire(t, orient, new ColourMultiplier(signalColour(signal)));
+            }
+        }
+        
+        public abstract void renderWire(Transformation t, int orient, IVertexModifier colour);
+    }
+    
+    public static class CellTopWireModel extends CellWireModel
+    {
+        public static CCModel[] left = new CCModel[24];
+        public static CCModel[] right = new CCModel[24];
+        
+        static {
             CCModel cellWireLeft = cellWireSide.copy().apply(new Translation(-7.001/16D, 0, 0));
             CCModel cellWireRight = cellWireSide.copy().apply(new Translation(7.001/16D, 0, 0));
             for(int i = 0; i < 24; i++) {
-                bottom[i] = bakeCopy(wireBottom, i);
-                top[i] = bakeCopy(wireTop, i);
                 left[i] = bakeCopy(cellWireLeft, i);
                 right[i] = bakeCopy(cellWireRight, i);
             }
         }
         
-        public byte signal1;
-        public byte signal2;
+        public CCModel[] top = new CCModel[24];
         public byte conn;
         
-        @Override
-        public void renderModel(Transformation t, int orient) {
-            boolean invColour = conn == 0x10;//special flag for inv rendering, just set tessellator colour, don't use modifiers
-            if(invColour)
-                CCRenderState.setColour(signalColour((byte) 0));
-            
+        public CellTopWireModel(CCModel wireTop) {
+            for(int i = 0; i < 24; i++)
+                top[i] = bakeCopy(wireTop, i);
+        }
+        
+        public void renderWire(Transformation t, int orient, IVertexModifier colour) {
             IconTransformation icont = new IconTransformation(cellIcon);
-            bottom[orient].render(t, icont, new ColourMultiplier(signalColour(signal1)));
-            
-            IVertexModifier colour = new ColourMultiplier(signalColour(signal2));
             top[orient].render(t, icont, colour);
             if((conn & 2) == 0)
                 right[orient].render(t, icont, colour);
             if((conn & 8) == 0)
                 left[orient].render(t, icont, colour);
-            
-
-            if(invColour)
-                CCRenderState.setColour(-1);
+        }
+    }
+    
+    public static class CellBottomWireModel extends CellWireModel
+    {
+        public CCModel[] bottom = new CCModel[24];
+        
+        public CellBottomWireModel(CCModel wireBottom) {
+            for(int i = 0; i < 24; i++)
+                bottom[i] = bakeCopy(wireBottom, i);
         }
         
-        public static int signalColour(byte signal) {
-            return ((signal&0xFF)/2 + 60) << 24 | 0xFF;
+        @Override
+        public void renderWire(Transformation t, int orient, IVertexModifier colour) {
+            bottom[orient].render(t, new IconTransformation(cellIcon), colour);
         }
-    }
-    
-    public static class NullCellWireModel extends BaseCellWireModel
-    {
-        public NullCellWireModel() {
-            super(ComponentStore.nullCellWireTop, ComponentStore.nullCellWireBottom);
-        }   
-    }
-    
-    public static class ExtendedCellWireModel extends BaseCellWireModel
-    {
-        public ExtendedCellWireModel() {
-            super(ComponentStore.extendedCellWireTop, ComponentStore.extendedCellWireBottom);
-        }   
     }
     
     public static class CellFrameModel extends SimpleComponentModel

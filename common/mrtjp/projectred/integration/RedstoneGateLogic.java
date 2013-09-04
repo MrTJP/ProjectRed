@@ -1,6 +1,6 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.transmission.IConnectable;
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.transmission.IRedwireEmitter;
 
 public abstract class RedstoneGateLogic<PartType extends RedstoneGatePart> extends GateLogic<PartType>
@@ -43,5 +43,9 @@ public abstract class RedstoneGateLogic<PartType extends RedstoneGatePart> exten
     
     public int calcOutput(int input) {
         return 0;
+    }
+
+    public boolean requireStrongInput(int r) {
+        return false;
     }
 }

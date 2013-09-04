@@ -1,6 +1,5 @@
 package mrtjp.projectred.expansion;
 
-import codechicken.multipart.TMultiPart;
 
 public interface ITubeInterface extends ITubeConnectable {
 

@@ -2,10 +2,9 @@ package mrtjp.projectred.illumination;
 
 import java.util.Arrays;
 
-import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.transmission.BasicWireUtils;
+import mrtjp.projectred.core.BasicWireUtils;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -87,6 +86,17 @@ public class LanternPart extends JCuboidPart implements TSlottedPart, JNormalOcc
         checkSupport();
         updateNextTick = true;
         updateStateNextTick = true;
+    }
+    
+    @Override
+    public void onPartChanged(TMultiPart t){
+        updateNextTick = true;
+        updateStateNextTick = true;
+    }
+    
+    @Override
+    public void onRemoved() {
+        LastEventBasedHaloRenderer.removeHaloObject(x(), y(), z());
     }
     
     private boolean isBeingPowered() {

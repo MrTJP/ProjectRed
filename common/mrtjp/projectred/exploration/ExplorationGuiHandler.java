@@ -1,6 +1,5 @@
 package mrtjp.projectred.exploration;
 
-import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedExploration;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

@@ -31,7 +31,18 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
             null,
             new TransparentLatch(),
             new LightSensor(),
-            new RainSensor()
+            new RainSensor(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            new ANDCell(),
         };
 
     public static int countBits(int n) {
@@ -560,6 +571,27 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
                 gate.setState(newOutput<<4 | gate.state&0xF);
                 gate.onOutputChange(4);
             }
+        }
+    }
+    
+    public static class ANDCell extends SimpleGateLogic
+    {
+        @Override
+        public int calcOutput(int input) {
+            return input == 0xE ? 1 : 0;
+        }
+        
+        @Override
+        public int getInput(SimpleGatePart gate, int inputMask) {
+            int i = super.getInput(gate, 4);
+            if(((RowGatePart)gate).signal != 0)
+                i |= 0xA;
+            return i;
+        }
+        
+        @Override
+        public boolean canConnect(int shape, int r) {
+            return true;
         }
     }
 }

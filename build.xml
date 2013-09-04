@@ -2,27 +2,30 @@
 	<property environment="env" />
 
 	<property name="mod.version" value="4.0.0" />
-    <property name="mod.version" value="4.0.0" />
-    <condition property="mod.build" value="${env.BUILD_NUMBER}" else="0">
-            <isset property="env.BUILD_NUMBER" />
-    </condition>
+	<condition property="mod.build" value="${env.BUILD_NUMBER}" else="0">
+		<isset property="env.BUILD_NUMBER" />
+	</condition>
+	<property name="mc.version" value="1.6.2" />
+	<property name="forge.version" value="9.10.1.849" />
+	<property name="ccl.version" value="1.0.0.28" />
+	<property name="ccc.version" value="0.9.0.5" />
+	<property name="fmp.version" value="1.0.0.155" />
+	<property name="nei.version" value="1.6.1.3" />
 
 	<property name="src.dir" value="ProjectRed" />
 	<property name="build.dir" value="build" />
 	<property name="download.dir" value="download" />
-	<property name="jar.dir" value="dist" />
+	<property name="jar.dir" value="dist/${mc.version}/${mod.version}-${mod.build}" />
 	<property name="forge.dir" value="${build.dir}/forge" />
 	<property name="fmp.dir" value="${build.dir}/fmp" />
 	<property name="mcp.dir" value="${forge.dir}/mcp" />
 
-	<property name="mc.version" value="1.6.2" />
-	<property name="forge.version" value="9.10.0.829" />
-	<property name="ccl.version" value="1.0.0.24" />
-	<property name="ccc.version" value="0.9.0.5" />
-	<property name="fmp.version" value="1.0.0.154" />
-	<property name="nei.version" value="1.6.1.3" />
 
-	<property name="mod.name" value="ProjectRed-${mc.version}-${mod.version}.${mod.build}.jar" />
+	<property name="mod.name.base" value="ProjectRedBase-${mc.version}-${mod.version}.${mod.build}.jar" />
+	<property name="mod.name.integration" value="ProjectRedIntegration-${mc.version}-${mod.version}.${mod.build}.jar" />
+	<property name="mod.name.mechanical" value="ProjectRedMechanical-${mc.version}-${mod.version}.${mod.build}.jar" />
+	<property name="mod.name.world" value="ProjectRedWorld-${mc.version}-${mod.version}.${mod.build}.jar" />
+
 	<property name="forge.name" value="minecraftforge-src-${mc.version}-${forge.version}.zip" />
 	<property name="ccl.name" value="CodeChickenLib-dev-${mc.version}-${ccl.version}.jar" />
 	<property name="ccc.name" value="CodeChickenCore-dev%20${ccc.version}.jar" />
@@ -265,18 +268,34 @@
 
 	<target name="package">
 		<echo message="Building Jar" />
-		<!-- Build the jar -->
-		<echo message="Packaging" />
 		<mkdir dir="${jar.dir}" />
-		<jar destfile="${jar.dir}/${mod.name}">
-			<fileset dir="${mcp.dir}/reobf/minecraft" />
-			<fileset dir="${mcp.dir}/reobf/resources" />
-		</jar>
-	</target>
 
-	<target name="ci">
-		<delete dir="${jar.dir}" />
-		<antcall target="package" />
+		<!-- ProjectRed Base -->
+		<echo message="Packaging ProjectRed Base" />
+		<jar destfile="${jar.dir}/${mod.name.base}">
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedCore.class, **/mrtjp/projectred/core/**, **/mrtjp/projectred/api/**" />
+			<fileset dir="${mcp.dir}/reobf/resources">
+			</fileset>
+		</jar>
+
+		<!-- ProjectRed Integration -->
+		<echo message="Packaging ProjectRed Integration" />
+		<jar destfile="${jar.dir}/${mod.name.integration}">
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedIntegration.class, **/ProjectRedTransmission.class, **/mrtjp/projectred/integration/**, **/mrtjp/projectred/transmission/**" />
+		</jar>
+
+		<!-- ProjectRed Mechanical -->
+		<echo message="Packaging ProjectRed Mechanical" />
+		<jar destfile="${jar.dir}/${mod.name.mechanical}">
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExpansion.class, **/mrtjp/projectred/expansion/**" />
+		</jar>
+
+		<!-- ProjectRed World -->
+		<echo message="Packaging ProjectRed World" />
+		<jar destfile="${jar.dir}/${mod.name.world}">
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExploration.class, **/ProjectRedIllumination.class, **/mrtjp/projectred/exploration/**, **/mrtjp/projectred/illumination/**" />
+		</jar>
+
 	</target>
 
 	<target name="test">

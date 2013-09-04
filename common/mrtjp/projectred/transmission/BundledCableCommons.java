@@ -1,7 +1,14 @@
 package mrtjp.projectred.transmission;
 
+import static mrtjp.projectred.transmission.IWirePart.DROPPING;
+import static mrtjp.projectred.transmission.IWirePart.FORCE;
+import static mrtjp.projectred.transmission.IWirePart.FORCED;
+import static mrtjp.projectred.transmission.IWirePart.RISING;
+
+import java.util.Arrays;
+
+import mrtjp.projectred.api.IBundledEmitter;
 import codechicken.multipart.TMultiPart;
-import static mrtjp.projectred.transmission.IWirePart.*;
 
 public class BundledCableCommons
 {
@@ -9,13 +16,23 @@ public class BundledCableCommons
     private static int propogatingMask = 0xFFFF;
 
     public static boolean signalsEqual(byte[] signal1, byte[] signal2) {
+        if(signal1 == null) return isSignalZero(signal2);
+        if(signal2 == null) return isSignalZero(signal1);
+        
+        return Arrays.equals(signal1, signal2);
+    }
+    
+    public static boolean isSignalZero(byte[] signal) {
+        if(signal == null)
+            return true;
+        
         for (int i = 0; i < 16; i++)
-            if (signal1[i] != signal2[i])
+            if (signal[i] != 0)
                 return false;
-
+        
         return true;
     }
-
+    
     public static boolean isSignalZero(byte[] signal, int mask) {
         if (signal == null)
             return true;
@@ -65,7 +82,7 @@ public class BundledCableCommons
                 part.propogate(prev, RISING);
         } else {
             if (mode == DROPPING)
-                part.propogateTo(prev, RISING);
+                part.propogateTo(prev, RISING, Integer.MAX_VALUE);
             else if (mode == FORCE)
                 part.propogate(prev, FORCED);
         }
@@ -107,7 +124,7 @@ public class BundledCableCommons
         return true;
     }
     
-    public static void calculatePartSignal(TMultiPart part, int r) {
+    public static void calculatePartSignal(Object part, int r) {
         if (part instanceof IBundledCablePart) {
             byte[] osignal = ((IBundledCablePart) part).getBundledSignal();
             for (int i = 0; i < 16; i++)
@@ -126,5 +143,19 @@ public class BundledCableCommons
                         tmpSignal[i] = osignal[i];
             }
         }
+    }
+
+    public static byte[] raiseSignal(byte[] signal1, byte[] signal2) {
+        if(signal2 == null)
+            return signal1;
+        
+        if(signal1 == null)
+            signal1 = new byte[16];
+        
+        for(int i = 0; i < 16; i++)
+            if((signal1[i]&0xFF) < (signal2[i]&0xFF))
+                signal1[i] = signal2[i];
+        
+        return signal1;
     }
 }

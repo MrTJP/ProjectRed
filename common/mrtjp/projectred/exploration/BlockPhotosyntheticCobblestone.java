@@ -6,7 +6,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
 
@@ -26,7 +25,7 @@ public class BlockPhotosyntheticCobblestone extends Block {
         setStepSound(soundStoneFootstep);
         setUnlocalizedName("stoneMoss");
         setCreativeTab(CreativeTabs.tabBlock);
-        func_111022_d("cobblestone_mossy");
+        setTextureName("cobblestone_mossy");
         setTickRandomly(true);
     }
 

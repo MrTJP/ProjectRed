@@ -6,18 +6,24 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
-import codechicken.lib.vec.BlockCoord;
 
 public class CoreCPH implements IClientPacketHandler {
 
     @Override
-    public void handlePacket(PacketCustom packetCustom, NetClientHandler nethandler, Minecraft mc) {
+    public void handlePacket(PacketCustom packet, NetClientHandler nethandler, Minecraft mc) {
         EntityPlayer player = mc.thePlayer;
         World world = mc.theWorld;
 
-        switch (packetCustom.getType()) {
+        switch (packet.getType()) {
         case CoreProxy.messengerQueue:
-            Messenger.addMessage(packetCustom.readDouble(), packetCustom.readDouble(), packetCustom.readDouble(), packetCustom.readString());
+            Messenger.addMessage(packet.readDouble(), packet.readDouble(), packet.readDouble(), packet.readString());
+        case CoreProxy.alloySmelterWatcherUpdate:
+            TileAlloySmelter t = BasicUtils.getTileEntity(world, packet.readCoord(), TileAlloySmelter.class);
+            if (t != null) {
+                t.heat = packet.readShort();
+                t.progress = packet.readShort();
+            }
+            return;
         }
     }
 

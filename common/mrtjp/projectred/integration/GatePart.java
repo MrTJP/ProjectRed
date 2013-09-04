@@ -3,9 +3,9 @@ package mrtjp.projectred.integration;
 import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRedIntegration;
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.transmission.BasicWireUtils;
-import mrtjp.projectred.transmission.IConnectable;
+import mrtjp.projectred.core.BasicWireUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -104,8 +104,6 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @Override
     public void load(NBTTagCompound tag) {
         orientation = tag.getByte("orient");
-        if(orientation > 24)
-            orientation = 0;
         subID = tag.getByte("subID");
         shape = tag.getByte("shape");
         connMap = tag.getShort("connMap")&0xFFFF;
@@ -205,17 +203,6 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         }
     }
 
-    @Override
-    public void onMoved()
-    {
-        super.onMoved();
-        if(!world().isRemote) {
-            updateExternalConnections();
-            notifyNeighbors(0xF);
-            onChange();
-        }
-    }
-    
     public boolean canStay()
     {
         BlockCoord pos = new BlockCoord(getTile()).offset(side());
@@ -309,8 +296,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
             TMultiPart tp = t.partMap(absDir^1);
             if (tp instanceof IConnectable) {
                 IConnectable conn = (IConnectable) tp;
-                return canConnectTo(conn, r) && 
-                        conn.connectCorner(this, Rotation.rotationTo(absDir^1, side()^1));
+                int r2 = Rotation.rotationTo(absDir^1, side()^1);
+                return canConnectTo(conn, r) && conn.canConnectCorner(r2) &&
+                        conn.connectCorner(this, r2);
             }
         }
         
@@ -459,7 +447,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
      */
     public void notifyNeighbors(int mask) {
         for(int r = 0; r < 4; r++)
-            if((mask & 1<<r) != 0)
+            if((connMap & 1<<r) != 0)
+                notifyCornerChange(r);
+            else if((connMap & 0x10<<r) != 0)
                 notifyStraightChange(r);
     }
     
@@ -492,6 +482,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @Override
     public boolean connectInternal(IConnectable part, int r)
     {
+        if(r < 0)
+            return false;
+        
         if(canConnectTo(part, r))
         {
             connMap|=0x100<<r;
