@@ -46,7 +46,7 @@ public class ItemPartWire extends JItemMultiPart {
         EnumWire type = EnumWire.VALID_WIRE[item.getItemDamage()];
         WirePart w = (WirePart) MultiPartRegistry.createPart(type.wireType, false);
         if(w != null)
-            w.onPlaced(side, item.getItemDamage());
+            w.preparePlacement(side, item.getItemDamage());
         return w;
     }
     

@@ -85,8 +85,8 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public Transformation rotationT() {
         return Rotation.sideOrientation(side(), rotation()).at(Vector3.center);
     }
-
-    public void onPlaced(EntityPlayer player, int side, int meta) {
+    
+    public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta) {
         subID = (byte) meta;
         setSide(side^1);
         setRotation(Rotation.getSidedRotation(player, side));

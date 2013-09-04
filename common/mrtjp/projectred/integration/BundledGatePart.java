@@ -111,8 +111,8 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
     }
 
     @Override
-    public void onPlaced(EntityPlayer player, int side, int meta) {
-        super.onPlaced(player, side, meta);
+    public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta) {
+        super.preparePlacement(player, pos, side, meta);
         logic = BundledGateLogic.create(this, subID);
     }
 

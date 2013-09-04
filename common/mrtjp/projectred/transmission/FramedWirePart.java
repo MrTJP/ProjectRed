@@ -60,7 +60,7 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
      */
     public int material = 0;
     
-    public void onPlaced(int meta) {
+    public void preparePlacement(int meta) {
     }
     
     @Override
