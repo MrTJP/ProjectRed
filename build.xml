@@ -2,8 +2,8 @@
 	<property environment="env" />
 
 	<property name="mod.version" value="4.0.0" />
-	<condition property="mod.build" value="${env.BUILD_NUMBER}" else="0">
-		<isset property="env.BUILD_NUMBER" />
+	<condition property="mod.build" value="${env.TRAVIS_BUILD_NUMBER}" else="0">
+		<isset property="env.TRAVIS_BUILD_NUMBER" />
 	</condition>
 	<property name="mc.version" value="1.6.2" />
 	<property name="forge.version" value="9.10.1.849" />
@@ -71,6 +71,10 @@
 			<equals arg1="${build.dependencies.nei}" arg2="${nei.version}" />
 		</and>
 	</condition>
+    
+    <condition property="runnung-in-ci">
+        <isset property="env.TRAVIS" />
+	</condition>
 
 
 	<!-- Make directories -->
@@ -106,14 +110,18 @@
 		<echo message="Deleteing old Forge" />
 		<delete dir="${forge.dir}" />
 
-		<echo message="Installing Forge" />
+        <condition property="installargs" value=" --no-assets" else="">
+            <isset property="env.TRAVIS" />
+        </condition>
+
+		<echo message="Installing Forge with args '${installargs}'." />
 		<unzip src="${download.dir}/${forge.name}" dest="${forge.dir}/.." />
 		<property name="fml.python.exe" location="${forge.dir}/fml/python/python_fml.exe" />
 		<exec dir="${forge.dir}" executable="${fml.python.exe}" osfamily="windows" failonerror="true">
-			<arg line="install.py --no-assets" />
+			<arg line="install.py${installargs}" />
 		</exec>
 		<exec dir="${forge.dir}" executable="python" osfamily="unix" failonerror="true">
-			<arg line="install.py --no-assets" />
+			<arg line="install.py${installargs}" />
 		</exec>
 
 		<echo message="Updating build.dependencies" />

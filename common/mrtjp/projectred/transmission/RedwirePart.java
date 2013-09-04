@@ -135,7 +135,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         }
         else {
             if(mode == DROPPING)
-                propogateTo(prev, RISING, Integer.MAX_VALUE);
+                propogateTo(prev, RISING);
             else if(mode == FORCE)
                 propogate(prev, FORCED);
         }

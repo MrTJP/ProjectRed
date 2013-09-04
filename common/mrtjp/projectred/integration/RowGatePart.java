@@ -85,6 +85,8 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         int wireMask = wireMask(prev);
         if((wireMask & 2) != 0)
             _updateAndPropogate(prev, mode);
+        else
+            WirePropogator.addNeighborChange(new BlockCoord(getTile()));
     }
 
     private void _updateAndPropogate(TMultiPart prev, int mode) {
@@ -106,7 +108,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         }
         else {
             if(mode == DROPPING)
-                propogateTo(prev, RISING, Integer.MAX_VALUE);
+                propogateTo(prev, RISING);
             else if(mode == FORCE)
                 propogate(prev, FORCED);
         }
@@ -220,7 +222,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
             TMultiPart tp = t.partMap(absDir^1);
             if(tp == prev)
                 return;
-            if(propogateTo(tp, mode, Rotation.rotationTo(absDir^1, side()^1)))
+            if(propogateTo(tp, mode))
                 return;
         }
         
@@ -236,7 +238,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
             TMultiPart tp = t.partMap(side());
             if(tp == prev)
                 return;
-            if(propogateTo(tp, mode, (r+2)%4))
+            if(propogateTo(tp, mode))
                 return;
         }
 
@@ -263,13 +265,10 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         return 2;
     }
 
-    public boolean propogateTo(TMultiPart part, int mode, int side) {
+    public boolean propogateTo(TMultiPart part, int mode) {
         if(part instanceof IWirePart) {
-            IWirePart wire = (IWirePart) part;
-            if(wire.isWireSide(side)) {
-                WirePropogator.propogateTo(wire, this, mode);
-                return true;
-            }
+            WirePropogator.propogateTo((IWirePart) part, this, mode);
+            return true;
         }
         
         return false;
@@ -324,8 +323,6 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     public boolean isWireSide(int side) {
         if(side < 0)
             return false;
-        if(side == Integer.MAX_VALUE)
-            return true;
         
         return toInternal(side)%2 != 0;
     }

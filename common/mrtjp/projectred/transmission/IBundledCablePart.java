@@ -13,5 +13,5 @@ public interface IBundledCablePart extends IWirePart, IBundledEmitter
 
     //Commons callbacks
     public void propogate(TMultiPart prev, int mode);
-    public boolean propogateTo(TMultiPart part, int mode, int side);
+    public boolean propogateTo(TMultiPart part, int mode);
 }

@@ -1004,7 +1004,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         
         @Override
         public boolean cycleShape(InstancedRsGatePart gate) {
-            gate.setShape((gate.shape()+1)%2);
+            gate.setShape(gate.shape() > 0 ? 0 : 1);
             return true;
         }
         
