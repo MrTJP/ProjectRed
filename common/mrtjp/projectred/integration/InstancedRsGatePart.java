@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.vec.BlockCoord;
 
 public class InstancedRsGatePart extends SimpleGatePart
 {
@@ -55,8 +56,8 @@ public class InstancedRsGatePart extends SimpleGatePart
     }
     
     @Override
-    public void onPlaced(EntityPlayer player, int side, int meta) {
-        super.onPlaced(player, side, meta);
+    public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta) {
+        super.preparePlacement(player, pos, side, meta);
         logic = InstancedRsGateLogic.create(this, subID);
     }
 }

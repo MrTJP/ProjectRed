@@ -75,7 +75,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         this.side = (byte) side;
     }
 
-    public void onPlaced(int side, int meta) {
+    public void preparePlacement(int side, int meta) {
         this.side = (byte) (side^1);
     }
 
