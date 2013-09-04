@@ -44,15 +44,6 @@ public class BasicRenderUtils {
         Tessellator.instance.setColorRGBA(255, 255, 255, 255);
     }
     
-    public static void bindTerrainResource() {
-        Minecraft.getMinecraft().renderEngine.func_110577_a(TextureMap.field_110575_b);
-    }
-    
-    public static void bindItemResource() {
-        Minecraft.getMinecraft().renderEngine.func_110577_a(TextureMap.field_110576_c);
-    }
-
-    
     static EntityItem entityItem;
     static RenderItem uniformRenderItem = new RenderItem() {
         @Override

@@ -25,7 +25,7 @@ public class BlockPhotosyntheticCobblestone extends Block {
         setStepSound(soundStoneFootstep);
         setUnlocalizedName("stoneMoss");
         setCreativeTab(CreativeTabs.tabBlock);
-        func_111022_d("cobblestone_mossy");
+        setTextureName("cobblestone_mossy");
         setTickRandomly(true);
     }
 

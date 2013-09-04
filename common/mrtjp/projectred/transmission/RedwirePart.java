@@ -251,7 +251,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
 
     @Override
     protected boolean debug(EntityPlayer ply) {
-        ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((world().isRemote ? "Client" : "Server") + " signal strength: " + getRedwireSignal()));
+        ply.sendChatToPlayer(ChatMessageComponent.createFromTranslationKey((world().isRemote ? "Client" : "Server") + " signal strength: " + getRedwireSignal()));
         return true;
     }
     

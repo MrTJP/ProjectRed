@@ -176,7 +176,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
             sb.append(s);
         }
 
-        ply.sendChatToPlayer(ChatMessageComponent.func_111077_e(sb.toString()));
+        ply.sendChatToPlayer(ChatMessageComponent.createFromTranslationKey(sb.toString()));
         return true;
     }
 
