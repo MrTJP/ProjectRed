@@ -171,7 +171,6 @@ public class ComponentStore
         return models;
     }
 
-    @SuppressWarnings("unused")
     public static WireComponentModel generateWireModel(String name) {
         Colour[] data = TextureUtils.loadTextureColours(new ResourceLocation("projectred:textures/blocks/gates/surface/"+name+".png"));
         WireComponentModel m = new WireComponentModel();

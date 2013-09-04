@@ -10,13 +10,20 @@ import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
 public class CoreCPH implements IClientPacketHandler {
 
     @Override
-    public void handlePacket(PacketCustom packetCustom, NetClientHandler nethandler, Minecraft mc) {
+    public void handlePacket(PacketCustom packet, NetClientHandler nethandler, Minecraft mc) {
         EntityPlayer player = mc.thePlayer;
         World world = mc.theWorld;
 
-        switch (packetCustom.getType()) {
+        switch (packet.getType()) {
         case CoreProxy.messengerQueue:
-            Messenger.addMessage(packetCustom.readDouble(), packetCustom.readDouble(), packetCustom.readDouble(), packetCustom.readString());
+            Messenger.addMessage(packet.readDouble(), packet.readDouble(), packet.readDouble(), packet.readString());
+        case CoreProxy.alloySmelterWatcherUpdate:
+            TileAlloySmelter t = BasicUtils.getTileEntity(world, packet.readCoord(), TileAlloySmelter.class);
+            if (t != null) {
+                t.heat = packet.readShort();
+                t.progress = packet.readShort();
+            }
+            return;
         }
     }
 

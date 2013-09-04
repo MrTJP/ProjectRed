@@ -10,8 +10,6 @@ import codechicken.multipart.TMultiPart;
 
 public class ExpansionProxy implements IProxy, IPartFactory {
 
-    public static final int alloySmelterWatcherUpdate = 1;
-
     @Override
     public void preinit() {
 

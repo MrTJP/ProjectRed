@@ -6,9 +6,6 @@ import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedExpansion;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
-import mrtjp.projectred.expansion.AlloySmelterRecipe;
-import mrtjp.projectred.expansion.ExpansionGuiHandler;
-import mrtjp.projectred.expansion.ExpansionProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -89,7 +86,7 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
     @Override
     public boolean onBlockActivated(EntityPlayer player) {
         if (!player.isSneaking()) {
-            player.openGui(ProjectRedExpansion.instance, ExpansionGuiHandler.alloyID, player.worldObj, xCoord, yCoord, zCoord);
+            player.openGui(ProjectRedExpansion.instance, CoreGuiHandler.alloyID, player.worldObj, xCoord, yCoord, zCoord);
             return true;
         }
         return false;
@@ -288,7 +285,7 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
         if (BasicUtils.isClient(worldObj)) {
             return;
         }
-        PacketCustom packet = new PacketCustom(Configurator.expansionPacketChannel, ExpansionProxy.alloySmelterWatcherUpdate);
+        PacketCustom packet = new PacketCustom(Configurator.expansionPacketChannel, CoreProxy.alloySmelterWatcherUpdate);
         packet.writeCoord(xCoord, yCoord, zCoord);
         packet.writeShort(heat);
         packet.writeShort(progress);

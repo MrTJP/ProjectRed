@@ -3,6 +3,7 @@ package mrtjp.projectred.transmission;
 import java.util.List;
 
 import mrtjp.projectred.ProjectRedTransmission;
+import mrtjp.projectred.core.BasicWireUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;

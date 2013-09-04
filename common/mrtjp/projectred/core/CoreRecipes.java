@@ -4,14 +4,14 @@ import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.ItemPart.EnumPart;
-import mrtjp.projectred.expansion.AlloySmelterRecipe;
-import mrtjp.projectred.transmission.EnumWire;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import codechicken.microblock.ItemMicroPart;
+import codechicken.microblock.handler.MicroblockProxy;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CoreRecipes {
@@ -117,10 +117,15 @@ public class CoreRecipes {
         }, EnumPart.SILICONBOULE.getItemStack(), 500));
         
         /** Silicon **/
+        ItemStack saw;
+        if (Loader.isModLoaded("ProjectRed-Exploration"))
+            saw = new ItemStack(ProjectRedExploration.itemDiamondSaw, 1, Short.MAX_VALUE);
+        else
+            saw = new ItemStack(MicroblockProxy.sawDiamond(), 1, Short.MAX_VALUE);
         GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8), 
                 "s",
                 "b",
-                's', new ItemStack(ProjectRedExploration.itemDiamondSaw, 1, Short.MAX_VALUE), 
+                's', saw, 
                 'b', EnumPart.SILICONBOULE.getItemStack()
         );
         

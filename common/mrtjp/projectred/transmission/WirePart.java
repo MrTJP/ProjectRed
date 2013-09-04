@@ -5,6 +5,7 @@ import java.util.Arrays;
 import mrtjp.projectred.ProjectRedTransmission;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.BasicWireUtils;
 import mrtjp.projectred.core.CommandDebug;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;

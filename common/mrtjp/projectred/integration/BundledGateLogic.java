@@ -1,12 +1,11 @@
 package mrtjp.projectred.integration;
 
-import net.minecraft.nbt.NBTTagCompound;
-
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.transmission.BundledCableCommons;
+import net.minecraft.nbt.NBTTagCompound;
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
 
 public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart> {
 

@@ -1,8 +1,8 @@
 package mrtjp.projectred.integration;
 
+import mrtjp.projectred.api.IConnectable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import mrtjp.projectred.api.IConnectable;
 
 public abstract class GateLogic<PartType extends GatePart>
 {

@@ -1,9 +1,9 @@
 package mrtjp.projectred.transmission;
 
 import mrtjp.projectred.ProjectRedTransmission;
+import mrtjp.projectred.core.AlloySmelterRecipe;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.expansion.AlloySmelterRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

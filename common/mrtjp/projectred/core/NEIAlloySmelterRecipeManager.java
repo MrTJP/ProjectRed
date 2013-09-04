@@ -2,8 +2,6 @@ package mrtjp.projectred.core;
 
 import java.awt.Rectangle;
 
-import mrtjp.projectred.expansion.AlloySmelterRecipe;
-import mrtjp.projectred.expansion.GuiAlloySmelter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
