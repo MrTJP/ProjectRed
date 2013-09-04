@@ -2,16 +2,8 @@ package mrtjp.projectred.transmission;
 
 import static mrtjp.projectred.ProjectRedTransmission.itemPartFramedWire;
 import static mrtjp.projectred.ProjectRedTransmission.itemPartWire;
-<<<<<<< HEAD
 import net.minecraftforge.client.MinecraftForgeClient;
 import codechicken.microblock.MicroMaterialRegistry;
-=======
-import static mrtjp.projectred.ProjectRedTransmission.itemWireDebugger;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.MinecraftForgeClient;
-import codechicken.microblock.MicroMaterialRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
->>>>>>> upstream/master
 
 public class TransmissionClientProxy extends TransmissionProxy {
 

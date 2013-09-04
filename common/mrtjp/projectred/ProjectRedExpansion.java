@@ -3,12 +3,6 @@ package mrtjp.projectred;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-<<<<<<< HEAD
-import mrtjp.projectred.expansion.BlockMachines;
-import mrtjp.projectred.expansion.BlockMachines.EnumMachine;
-import mrtjp.projectred.expansion.ExpansionGuiHandler;
-=======
->>>>>>> upstream/master
 import mrtjp.projectred.expansion.ItemPartPressurizedTube;
 import mrtjp.projectred.expansion.ItemVAWT;
 import net.minecraft.creativetab.CreativeTabs;
