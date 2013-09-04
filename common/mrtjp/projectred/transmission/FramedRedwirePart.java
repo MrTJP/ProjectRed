@@ -126,7 +126,7 @@ public abstract class FramedRedwirePart extends FramedWirePart implements IRedwi
         }
         else {
             if(mode == DROPPING)
-                propogateTo(prev, RISING, Integer.MAX_VALUE);
+                propogateTo(prev, RISING);
             else if(mode == FORCE)
                 propogate(prev, FORCED);
         }
