@@ -1,10 +1,8 @@
 package mrtjp.projectred;
 
-import mrtjp.projectred.core.BlockBasics;
+import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-import mrtjp.projectred.core.BlockBasics.EnumBasics;
-import mrtjp.projectred.expansion.ExpansionGuiHandler;
 import mrtjp.projectred.expansion.ItemPartPressurizedTube;
 import mrtjp.projectred.expansion.ItemVAWT;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,7 +15,6 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(modid = "ProjRed|Expansion", name = "ProjectRed-Expansion", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.2]", dependencies = "required-after:ProjRed|Core;")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
@@ -50,7 +47,6 @@ public class ProjectRedExpansion {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(instance);
-        NetworkRegistry.instance().registerGuiHandler(instance, new ExpansionGuiHandler());
         proxy.init();
     }
 

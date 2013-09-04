@@ -1,13 +1,11 @@
-package mrtjp.projectred.expansion;
+package mrtjp.projectred.core;
 
-import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.TileAlloySmelter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
 import cpw.mods.fml.common.network.IGuiHandler;
 
-public class ExpansionGuiHandler implements IGuiHandler {
+public class CoreGuiHandler implements IGuiHandler {
 
     public static final int alloyID = 1;
 

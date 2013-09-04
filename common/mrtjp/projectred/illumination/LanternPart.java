@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.transmission.BasicWireUtils;
+import mrtjp.projectred.core.BasicWireUtils;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

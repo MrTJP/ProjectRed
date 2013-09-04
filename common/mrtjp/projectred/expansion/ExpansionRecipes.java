@@ -2,7 +2,6 @@ package mrtjp.projectred.expansion;
 
 import mrtjp.projectred.ProjectRedExpansion;
 import mrtjp.projectred.core.ItemPart.EnumPart;
-import mrtjp.projectred.transmission.EnumWire;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;

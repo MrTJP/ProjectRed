@@ -1,11 +1,11 @@
 package mrtjp.projectred.api;
 
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
 /**
  * Internal API Implementation, do not include this class in your mod

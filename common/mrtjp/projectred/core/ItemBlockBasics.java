@@ -1,4 +1,4 @@
-package mrtjp.projectred.expansion;
+package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRedExpansion;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
@@ -7,9 +7,9 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class ItemBlockMachines extends ItemBlock {
+public class ItemBlockBasics extends ItemBlock {
 
-    public ItemBlockMachines(int par1) {
+    public ItemBlockBasics(int par1) {
         super(par1);
         setHasSubtypes(true);
         setCreativeTab(ProjectRedExpansion.tabExpansion);
