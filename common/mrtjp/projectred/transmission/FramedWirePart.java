@@ -354,7 +354,7 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
             TMultiPart tp = t.partMap(6);
             if(tp == prev)
                 return;
-            if(propogateTo(tp, mode, s^1))
+            if(propogateTo(tp, mode))
                 return;
         }
 
@@ -365,16 +365,13 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
         TMultiPart tp = tile().partMap(s);
         if(tp == prev)
             return;
-        propogateTo(tp, mode, -1);
+        propogateTo(tp, mode);
     }
     
-    public boolean propogateTo(TMultiPart part, int mode, int side) {
+    public boolean propogateTo(TMultiPart part, int mode) {
         if(part instanceof IWirePart) {
-            IWirePart wire = (IWirePart) part;
-            if(wire.isWireSide(side)) {
-                WirePropogator.propogateTo(wire, this, mode);
-                return true;
-            }
+            WirePropogator.propogateTo((IWirePart) part, this, mode);
+            return true;
         }
         
         return false;

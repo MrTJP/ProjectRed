@@ -494,7 +494,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             TMultiPart tp = t.partMap(absDir^1);
             if(tp == prev)
                 return;
-            if(propogateTo(tp, mode, Rotation.rotationTo(absDir^1, side^1)))
+            if(propogateTo(tp, mode))
                 return;
         }
         
@@ -510,7 +510,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
             TMultiPart tp = t.partMap(side);
             if(tp == prev)
                 return;
-            if(propogateTo(tp, mode, (r+2)%4))
+            if(propogateTo(tp, mode))
                 return;
         }
 
@@ -522,26 +522,23 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         TMultiPart tp = tile().partMap(absDir);
         if(tp == prev)
             return;
-        propogateTo(tp, mode, Rotation.rotationTo(absDir, side));
+        propogateTo(tp, mode);
     }
     
     public void propogateCenter(TMultiPart prev, int mode) {
         TMultiPart tp = tile().partMap(6);
         if(tp == prev)
             return;
-        propogateTo(tp, mode, side);
+        propogateTo(tp, mode);
     }
 
     public void propogateOther(int mode) {
     }
     
-    public boolean propogateTo(TMultiPart part, int mode, int side) {
+    public boolean propogateTo(TMultiPart part, int mode) {
         if(part instanceof IWirePart) {
-            IWirePart wire = (IWirePart) part;
-            if(wire.isWireSide(side)) {
-                WirePropogator.propogateTo(wire, this, mode);
-                return true;
-            }
+            WirePropogator.propogateTo((IWirePart) part, this, mode);
+            return true;
         }
         
         return false;

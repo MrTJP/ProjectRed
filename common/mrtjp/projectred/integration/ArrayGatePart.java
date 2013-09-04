@@ -144,7 +144,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         }
         else {
             if(mode == DROPPING)
-                propogateTo(prev, RISING, Integer.MAX_VALUE);
+                propogateTo(prev, RISING);
             else if(mode == FORCE)
                 propogate(pMask, prev, FORCED);
         }
@@ -269,7 +269,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
             TMultiPart tp = t.partMap(absDir^1);
             if(tp == prev)
                 return;
-            if(propogateTo(tp, mode, Rotation.rotationTo(absDir^1, side()^1)))
+            if(propogateTo(tp, mode))
                 return;
         }
         
@@ -285,7 +285,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
             TMultiPart tp = t.partMap(side());
             if(tp == prev)
                 return;
-            if(propogateTo(tp, mode, (r+2)%4))
+            if(propogateTo(tp, mode))
                 return;
         }
 
@@ -312,13 +312,10 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         return 2;
     }
 
-    public boolean propogateTo(TMultiPart part, int mode, int side) {
+    public boolean propogateTo(TMultiPart part, int mode) {
         if(part instanceof IWirePart) {
-            IWirePart wire = (IWirePart) part;
-            if(wire.isWireSide(side)) {
-                WirePropogator.propogateTo(wire, this, mode);
-                return true;
-            }
+            WirePropogator.propogateTo((IWirePart) part, this, mode);
+            return true;
         }
         
         return false;
