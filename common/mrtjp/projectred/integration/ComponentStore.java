@@ -598,6 +598,10 @@ public class ComponentStore
             lightPos = new Vector3(x, height-1, z).multiply(1/16D);
         }
         
+        public RedstoneTorchModel(CCModel m) {
+        	super(m);
+        }
+        
         public static CCModel genModel(int height, double x, double z) {
             CCModel m = CCModel.quadModel(20);
             m.verts[0] = new Vertex5(7/16D, 10/16D, 9/16D, 7/16D, 8/16D);
@@ -617,6 +621,16 @@ public class ComponentStore
         public Icon[] getIcons() {
             return redstoneTorchIcons;
         }
+    }
+    
+    public static class FlippedRSTorchModel extends RedstoneTorchModel
+    {
+    	public FlippedRSTorchModel(double x, double z, int depth) {
+			super(genModel(depth, x, z).apply(
+					new Rotation(180*MathHelper.torad, 0, 0, 1).at(Vector3.center)
+					.with(new Translation(new Vector3(0, -depth, 0).multiply(1/16D)))));
+			lightPos = new Vector3(x, depth-1, z).multiply(1/16D);
+    	}
     }
     
     public static class YellowChipModel extends OnOffModel

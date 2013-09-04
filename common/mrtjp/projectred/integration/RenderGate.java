@@ -54,8 +54,7 @@ public class RenderGate
     
     public static void registerIcons(IconRegister r) {
         for(GateRenderer render : renderers)
-            if(render != null)//TODO remove once complete
-                render.registerIcons(r);
+        	render.registerIcons(r);
     }
     
     public static void renderStatic(GatePart gate) {
@@ -1278,8 +1277,10 @@ public class RenderGate
         }
         
         public void prepare(InstancedRsGatePart gate) {
-            if(gate.shape == 1)
+            if(gate.shape() != 0)
                 reflect = true;
+            else
+            	reflect = false;
             wires[0].on = (gate.state()>>4) == 0;
             wires[1].on = ((InstancedRsGateLogic.Comparator)(gate.getLogic())).inputRight() != 0;
             wires[2].on = (gate.state()&0xF0) != 0;
@@ -1288,7 +1289,7 @@ public class RenderGate
             chips[1].on = !wires[0].on && gate.shape != 1;
             torch.on = (((InstancedRsGateLogic.Comparator)(gate.getLogic())).state2&0xF) != 0;
             
-            if(gate.shape == 1) {
+            if(gate.shape() != 0) {
                 boolean a = wires[1].on;
                 boolean b = wires[3].on;
                 wires[3].on = a;
@@ -1306,13 +1307,16 @@ public class RenderGate
     
     public static class ANDCell extends GateRenderer<RowGatePart>
     {
-        public CellTopWireModel topWire = new CellTopWireModel(nullCellWireTop);
+        WireComponentModel[] wires = generateWireModels("ANDCELL", 2);
+        CellTopWireModel topWire = new CellTopWireModel(nullCellWireTop);
         RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
-                new RedstoneTorchModel(8, 11, 5),
-                new RedstoneTorchModel(8, 3, 8)
+                new RedstoneTorchModel(8, 13, 6),
+                new RedstoneTorchModel(8, 2, 8),
+                new FlippedRSTorchModel(8,8,6)
             };
         
         public ANDCell() {
+        	models.addAll(Arrays.asList(wires));
             models.addAll(Arrays.asList(torches));
             models.add(topWire);
             models.add(new CellFrameModel());
@@ -1323,8 +1327,11 @@ public class RenderGate
             topWire.signal = 0;
             topWire.invColour = true;
             topWire.conn = 0;
-            torches[0].on = true;
+            torches[0].on = false;
             torches[1].on = false;
+            torches[2].on = true;
+            wires[0].on = true;
+            wires[1].on = false;
         }
         
         @Override
@@ -1335,6 +1342,9 @@ public class RenderGate
             topWire.invColour = false;
             torches[0].on = (part.state & 4) == 0;
             torches[1].on = (part.state & 0x10) != 0;
+            torches[2].on = (part.state & 0xA) == 0;            
+            wires[0].on = torches[0].on || torches[2].on;
+            wires[1].on = !torches[0].on;
         }
     }
 }
