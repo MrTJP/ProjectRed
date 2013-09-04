@@ -135,7 +135,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         }
         else {
             if(mode == DROPPING)
-                propogateTo(prev, RISING);
+                propogateTo(prev, RISING, Integer.MAX_VALUE);
             else if(mode == FORCE)
                 propogate(prev, FORCED);
         }
@@ -227,7 +227,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     }
 
     public int getPartSignal(TMultiPart part, int r) {
-        if(part instanceof IRedwirePart)
+        if(part instanceof IRedwirePart && ((IRedwirePart) part).isWireSide(r))
             return ((IRedwirePart) part).getRedwireSignal(r) - 1;
         else if(part instanceof IRedwireEmitter)
             return ((IRedwireEmitter) part).getRedwireSignal(r);

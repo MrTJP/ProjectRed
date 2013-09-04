@@ -1,7 +1,6 @@
 package mrtjp.projectred.integration;
 
 import java.util.Arrays;
-import java.util.Random;
 
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.integration.ArrayCommons.ITopArrayWire;
@@ -18,13 +17,11 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
-import codechicken.multipart.IFaceRedstonePart;
-import codechicken.multipart.IRandomDisplayTick;
 import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 
-public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedstonePart, IRandomDisplayTick, ITopArrayWire
+public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArrayWire
 {
     public static Cuboid6[][] oBoxes = new Cuboid6[6][2];
     public static Cuboid6[] cBoxes = new Cuboid6[6];
@@ -42,73 +39,41 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         }
     }
     
-    public byte signal1;
-    public byte signal2;
-    public byte state;
+    public byte signal;
     
-    @Override
-    public ArrayGateLogic getLogic() {
-        return ArrayGateLogic.logic[subID-EnumGate.NullCell.ordinal()];
-    }
-
     @Override
     public String getType() {
-        return "pr_agate";
+        return "pr_rgate";
     }
 
-    public int state() {
-        return state & 0xFF;
-    }
-    
-    public void setState(int newState) {
-        state = (byte)newState;
-    }
-    
-    public void sendStateUpdate() {
-        getWriteStream(11).writeByte(state);
-    }
-    
     @Override
     public void save(NBTTagCompound tag) {
         super.save(tag);
-        tag.setByte("s1", signal1);
-        tag.setByte("s2", signal2);
-        tag.setByte("state", state);
+        tag.setByte("signal", signal);
     }
     
     @Override
     public void load(NBTTagCompound tag) {
         super.load(tag);
-        signal1 = tag.getByte("s1");
-        signal2 = tag.getByte("s2");
-        state = tag.getByte("state");
+        signal = tag.getByte("signal");
     }
     
     @Override
     public void writeDesc(MCDataOutput packet) {
         super.writeDesc(packet);
-        packet.writeByte(signal1);
-        packet.writeByte(signal2);
-        packet.writeByte(state);
+        packet.writeByte(signal);
     }
     
     @Override
     public void readDesc(MCDataInput packet) {
         super.readDesc(packet);
-        signal1 = packet.readByte();
-        signal2 = packet.readByte();
-        state = packet.readByte();
+        signal = packet.readByte();
     }
     
     @Override
     public void read(MCDataInput packet, int switch_key) {
-        if(switch_key == 10) {
-            signal1 = packet.readByte();
-            signal2 = packet.readByte();
-            tile().markRender();
-        }
-        else if(switch_key == 11) {
-            state = packet.readByte();
+        if(switch_key == 11) {
+            signal = packet.readByte();
             tile().markRender();
         }
         else
@@ -118,50 +83,43 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     @Override
     public void updateAndPropogate(TMultiPart prev, int mode) {
         int wireMask = wireMask(prev);
-        if((wireMask & 1) != 0)
-            updateAndPropogate(0, prev, mode);
         if((wireMask & 2) != 0)
-            updateAndPropogate(1, prev, mode);
+            _updateAndPropogate(prev, mode);
     }
 
-    private void updateAndPropogate(int wire, TMultiPart prev, int mode) {
-        int oldSignal = getRedwireSignal(toAbsolute(wire));
+    private void _updateAndPropogate(TMultiPart prev, int mode) {
+        int oldSignal = signal & 0xFF;
         if(mode == DROPPING && oldSignal == 0)
             return;
 
-        int pMask = 5<<wire;
-        int newSignal = calculateSignal(pMask);
+        int newSignal = calculateSignal();
         if(newSignal < oldSignal) {
-            setRedwireSignal(wire, 0);
-            propogate(pMask, prev, DROPPING);
+            signal = 0;
+            propogate(prev, DROPPING);
         }
         else if(newSignal > oldSignal) {
-            setRedwireSignal(wire, newSignal);
+            signal = (byte)newSignal;
             if(mode == DROPPING)
-                propogate(pMask, null, RISING);
+                propogate(null, RISING);
             else
-                propogate(pMask, prev, RISING);
+                propogate(prev, RISING);
         }
         else {
             if(mode == DROPPING)
                 propogateTo(prev, RISING, Integer.MAX_VALUE);
             else if(mode == FORCE)
-                propogate(pMask, prev, FORCED);
+                propogate(prev, FORCED);
         }
     }
 
-    public int calculateSignal(int pMask) {
-        
-        if(pMask == 0xA && getLogic().powerUp(state()))
-            return 255;
-        
+    public int calculateSignal() {
         WirePropogator.setWiresProvidePower(false);
         WirePropogator.redwiresProvidePower = false;
         
         int s = 0;
         int i = 0;
         for(int r = 0; r < 4; r++)
-            if((pMask & 1<<toInternal(r)) != 0) {
+            if(toInternal(r)%2 != 0) {
                 if((connMap & 1<<r) != 0)
                     i = calculateCornerSignal(r);
                 else
@@ -233,26 +191,19 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         return 0;
     }
 
-    public void setRedwireSignal(int wire, int newSignal) {
-        if(wire == 0)
-            signal1 = (byte) newSignal;
-        else
-            signal2 = (byte) newSignal;
-    }
-
     @Override
     public void onSignalUpdate() {
         tile().markDirty();
         super.onChange();
-        getWriteStream(10).writeByte(signal1).writeByte(signal2);
+        getWriteStream(11).writeByte(signal);
     }
     
-    public void propogate(int pMask, TMultiPart prev, int mode) {
+    public void propogate(TMultiPart prev, int mode) {
         if(mode != FORCED)
             WirePropogator.addPartChange(this);
         
         for(int r = 0; r < 4; r++)
-            if((pMask & 1<<toInternal(r)) != 0) {
+            if(toInternal(r)%2 != 0) {
                 if((connMap & 1<<r) != 0)
                     propogateCorner(r, prev, mode);
                 else
@@ -326,12 +277,10 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     
     @Override
     public int getRedwireSignal(int side) {
-        return (toInternal(side)%2 == 0 ? signal1 : signal2) & 0xFF;
-    }
-    
-    @Override
-    public void randomDisplayTick(Random rand) {
-        RenderGate.spawnParticles(this, rand);
+        int r = toInternal(side);
+        return r%2 == 0 ? 
+                getLogic().getOutput(this, r)*17 : 
+                signal & 0xFF;
     }
     
     @Override
@@ -342,25 +291,26 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     
     @Override
     public boolean canConnectRedstone(int side) {
-        return (side&6) != (side()&6);
+        if((side&6) == (side()&6))
+            return false;
+        
+        int r = relRot(side);
+        if(r%2 != 0)
+            return true;
+        
+        return getLogic().canConnect(this, r);
     }
     
-    @Override
-    public int getFace() {
-        return side();
-    }
-
-    @Override
-    public int strongPowerLevel(int side) {
-        return 0;
-    }
-
     @Override
     public int weakPowerLevel(int side) {
         if((side&6) == (side()&6))
             return 0;
         
-        return rsLevel(getRedwireSignal(Rotation.rotationTo(side(), side)));
+        int r = relRot(side);
+        if(r%2 != 0)
+            return rsLevel(signal & 0xFF);
+        
+        return super.weakPowerLevel(side);
     }
     
     public int rsLevel(int i) {
@@ -372,7 +322,12 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     
     @Override
     public boolean isWireSide(int side) {
-        return side >= 0;
+        if(side < 0)
+            return false;
+        if(side == Integer.MAX_VALUE)
+            return true;
+        
+        return toInternal(side)%2 != 0;
     }
     
     @Override
@@ -383,27 +338,5 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     @Override
     public Iterable<Cuboid6> getOcclusionBoxes() {
         return Arrays.asList(oBoxes[side()]);
-    }
-    
-    @Override
-    public void rotate() {
-        int r = rotation();
-        setRotation((r+1)%4);
-        boolean b = tile().canReplacePart(this, this);//test if the rotation is valid for occlusion stuffs (criss crossing)
-        setRotation(r);
-        
-        if(b)
-            super.rotate();
-    }
-    
-    public boolean occlusionTest(TMultiPart npart)
-    {
-        if(getLogic().canCross() && npart instanceof ArrayGatePart) {
-            ArrayGatePart apart = (ArrayGatePart) npart;
-            if(apart.subID == subID && apart.side() == (side()^1) && (apart.rotation()&1) != (rotation()&1))
-                return true;
-        }
-        
-        return super.occlusionTest(npart);
     }
 }
