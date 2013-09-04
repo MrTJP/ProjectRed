@@ -1,11 +1,12 @@
 package mrtjp.projectred.api;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
+import mrtjp.projectred.transmission.BundledCableCommons;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 /**
  * Internal API Implementation, do not include this class in your mod
@@ -26,30 +27,16 @@ public class APIImpl extends ProjectRedAPI
                 int pside = Rotation.rotateSide(side, r);
                 TMultiPart p = tmp.partMap(pside);
                 if(p instanceof IBundledEmitter)
-                    signal = raiseSignal(signal, ((IBundledEmitter) p).getBundledSignal(Rotation.rotationTo(pside, side^1)));
+                    signal = BundledCableCommons.raiseSignal(signal, ((IBundledEmitter) p).getBundledSignal(Rotation.rotationTo(pside, side^1)));
             }
             
             TMultiPart p = tmp.partMap(6);
             if(p instanceof IBundledEmitter)
-                signal = raiseSignal(signal, ((IBundledEmitter) p).getBundledSignal(side^1));
+                signal = BundledCableCommons.raiseSignal(signal, ((IBundledEmitter) p).getBundledSignal(side^1));
             
             return signal;
         }
         
         return null;
-    }
-
-    private byte[] raiseSignal(byte[] signal1, byte[] signal2) {
-        if(signal2 == null)
-            return signal1;
-        
-        if(signal1 == null)
-            signal1 = new byte[16];
-        
-        for(int i = 0; i < 16; i++)
-            if((signal1[i]&0xFF) < (signal2[i]&0xFF))
-                signal1[i] = signal2[i];
-        
-        return signal1;
     }
 }

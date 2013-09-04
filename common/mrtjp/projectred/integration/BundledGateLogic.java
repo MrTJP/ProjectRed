@@ -80,7 +80,6 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
 
     public static class BusTransceiver extends BundledGateLogic
     {
-        
         public byte[] input0 = new byte[16];
         public byte[] input2 = new byte[16];
                 
@@ -159,6 +158,16 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
             return r == gate.rotation() ? input0 : input2;
         }
         
+        public byte[] getBundledInput(int input, int r) {
+            byte[] signal = gate.getBundledInput(r);
+            signal = signal == null ? new byte[16] : signal.clone();
+            
+            if((input & 1<<(r+1)%4) != 0)
+                signal = BundledCableCommons.raiseSignal(signal, getBundledOutput(gate, r));
+            
+            return signal;
+        }
+        
         @Override
         public void onChange(BundledGatePart gate) {
             int oldInput = gate.state() & 0xF;
@@ -172,15 +181,15 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
                 gate.scheduleTick(2);
             }
 
-            byte[] newInput0 = (newInput&8) != 0 ? gate.getBundledInput(0) : new byte[16];
-            byte[] newInput2 = (newInput&2) != 0 ? gate.getBundledInput(2) : new byte[16];
-            
+            byte[] newInput0 = (newInput&8) != 0 ? getBundledInput(newInput, 0) : new byte[16];
             if (!BundledCableCommons.signalsEqual(input0, newInput0)) {
-                input0 = newInput0.clone();
+                input0 = newInput0;
                 gate.scheduleTick(2);
             }
+            
+            byte[] newInput2 = (newInput&2) != 0 ? getBundledInput(newInput, 2) : new byte[16];
             if (!BundledCableCommons.signalsEqual(input2, newInput2)) {
-                input2 = newInput2.clone();
+                input2 = newInput2;
                 gate.scheduleTick(2);
             }
         }
@@ -191,13 +200,6 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
             sendClientUpdate();
         }
 
-        public void repeatOutputs(byte[] in0, byte[] in2) {
-            for (int i = 0; i < 16; i++) {
-                in0[i] = (byte) (in0[i] > 0 ? 255 : 0);
-                in2[i] = (byte) (in2[i] > 0 ? 255 : 0);
-            }
-        }
-        
         @Override
         public boolean cycleShape(BundledGatePart gate) {
             gate.setShape(gate.shape() == 0 ? 1 : 0);

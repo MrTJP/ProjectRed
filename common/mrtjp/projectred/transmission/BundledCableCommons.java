@@ -4,6 +4,9 @@ import static mrtjp.projectred.transmission.IWirePart.DROPPING;
 import static mrtjp.projectred.transmission.IWirePart.FORCE;
 import static mrtjp.projectred.transmission.IWirePart.FORCED;
 import static mrtjp.projectred.transmission.IWirePart.RISING;
+
+import java.util.Arrays;
+
 import mrtjp.projectred.api.IBundledEmitter;
 import codechicken.multipart.TMultiPart;
 
@@ -13,13 +16,23 @@ public class BundledCableCommons
     private static int propogatingMask = 0xFFFF;
 
     public static boolean signalsEqual(byte[] signal1, byte[] signal2) {
+        if(signal1 == null) return isSignalZero(signal2);
+        if(signal2 == null) return isSignalZero(signal1);
+        
+        return Arrays.equals(signal1, signal2);
+    }
+    
+    public static boolean isSignalZero(byte[] signal) {
+        if(signal == null)
+            return true;
+        
         for (int i = 0; i < 16; i++)
-            if (signal1[i] != signal2[i])
+            if (signal[i] != 0)
                 return false;
-
+        
         return true;
     }
-
+    
     public static boolean isSignalZero(byte[] signal, int mask) {
         if (signal == null)
             return true;
@@ -130,5 +143,19 @@ public class BundledCableCommons
                         tmpSignal[i] = osignal[i];
             }
         }
+    }
+
+    public static byte[] raiseSignal(byte[] signal1, byte[] signal2) {
+        if(signal2 == null)
+            return signal1;
+        
+        if(signal1 == null)
+            signal1 = new byte[16];
+        
+        for(int i = 0; i < 16; i++)
+            if((signal1[i]&0xFF) < (signal2[i]&0xFF))
+                signal1[i] = signal2[i];
+        
+        return signal1;
     }
 }
