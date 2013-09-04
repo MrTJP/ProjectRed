@@ -52,6 +52,6 @@ public class RedAlloyWirePart extends RedwirePart {
     @Override
     public int calculateUndersideSignal() {
         BlockCoord pos = new BlockCoord(getTile()).offset(side);
-        return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, side^1)*17;
+        return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, side)*17;
     }
 }
