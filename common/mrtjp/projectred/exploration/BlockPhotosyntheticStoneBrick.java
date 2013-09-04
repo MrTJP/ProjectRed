@@ -24,7 +24,7 @@ public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
         setResistance(10.0F);
         setStepSound(soundStoneFootstep);
         setUnlocalizedName("stonebricksmooth");
-        func_111022_d("stonebrick");
+        setTextureName("stonebrick");
         setTickRandomly(true);
     }
 
@@ -103,7 +103,7 @@ public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
         super.registerIcons(reg);
         Block.stoneBrick.registerIcons(reg);
         for (int i = 0; i < this.icons.length; ++i) {
-            String s = this.func_111023_E();
+            String s = this.getTextureName();
             if (names[i] != null) {
                 s = s + "_" + names[i];
             }

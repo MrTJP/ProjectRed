@@ -141,7 +141,7 @@ public class ComponentStore
         for(int i = 0; i < 3; i++) {
             ResourceLocation res = new ResourceLocation(wireIcons[i].getIconName());
             wireData[i] = TextureUtils.loadTextureColours(new ResourceLocation(
-                    res.func_110624_b(), "textures/blocks/"+res.func_110623_a()+".png"));
+                    res.getResourceDomain(), "textures/blocks/"+res.getResourcePath()+".png"));
         }
         redstoneTorchIcons[0] = r.registerIcon("redstone_torch_off");
         redstoneTorchIcons[1] = r.registerIcon("redstone_torch_on");

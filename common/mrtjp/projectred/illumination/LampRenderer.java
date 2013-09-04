@@ -22,6 +22,7 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
+import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.TransformationList;
 import codechicken.lib.vec.Translation;
 
@@ -58,7 +59,7 @@ public class LampRenderer implements IItemRenderer {
         render = b;
         bindTexture(lamp);
         CCRenderState.reset();
-        BasicRenderUtils.bindTerrainResource();
+        TextureUtils.bindAtlas(0);
         BasicRenderUtils.setBrightnessDirect(lamp.world(), lamp.x(), lamp.y(), lamp.z());
         renderLampBulb(lamp.x(), lamp.y(), lamp.z());
         if (lamp.getLightValue() == 15 && b == null)
@@ -112,7 +113,7 @@ public class LampRenderer implements IItemRenderer {
         GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
         GL11.glScalef(scale, scale, scale);
-        BasicRenderUtils.bindTerrainResource();
+        TextureUtils.bindAtlas(0);
         GL11.glDisable(GL11.GL_LIGHTING);
         CCRenderState.reset();
         CCRenderState.useNormals(true);

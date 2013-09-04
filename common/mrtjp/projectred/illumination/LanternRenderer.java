@@ -21,6 +21,7 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
+import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.TransformationList;
 import codechicken.lib.vec.Translation;
@@ -50,7 +51,7 @@ public class LanternRenderer implements IItemRenderer {
         render = b;
         bindTexture(lan);
         CCRenderState.reset();
-        BasicRenderUtils.bindTerrainResource();
+        TextureUtils.bindAtlas(0);
         BasicRenderUtils.setBrightnessDirect(lan.world(), lan.x(), lan.y(), lan.z());
         renderLampBulb(lan.x(), lan.y(), lan.z(), lan.rotation);
         if (lan.getLightValue() == 15 && b == null)

@@ -59,7 +59,7 @@ public class CommandDebug extends CommandBase {
         else
             throw new WrongUsageException(getCommandUsage(icommandsender));
         
-        MinecraftServer.getServer().getConfigurationManager().sendChatMsg(ChatMessageComponent.func_111077_e("ProjectRed debug feature '" + thing + "' is now " + astring[1]));
+        MinecraftServer.getServer().getConfigurationManager().sendChatMsg(ChatMessageComponent.createFromTranslationKey("ProjectRed debug feature '" + thing + "' is now " + astring[1]));
     }
     
     @Override
