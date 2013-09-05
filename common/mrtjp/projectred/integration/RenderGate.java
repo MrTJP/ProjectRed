@@ -1277,17 +1277,15 @@ public class RenderGate
         }
         
         public void prepare(InstancedRsGatePart gate) {
-            if(gate.shape() != 0)
-                reflect = true;
-            else
-            	reflect = false;
-            wires[0].on = (gate.state()>>4) == 0;
-            wires[1].on = ((InstancedRsGateLogic.Comparator)(gate.getLogic())).inputRight() != 0;
-            wires[2].on = (gate.state()&0xF0) != 0;
-            wires[3].on = ((InstancedRsGateLogic.Comparator)(gate.getLogic())).inputLeft() != 0;
-            chips[0].on = !wires[0].on && gate.shape == 1;
-            chips[1].on = !wires[0].on && gate.shape != 1;
-            torch.on = (((InstancedRsGateLogic.Comparator)(gate.getLogic())).state2&0xF) != 0;
+            reflect = gate.shape() != 0;
+            
+            wires[0].on = (gate.state&0x10) == 0;
+            wires[1].on = (gate.state&2) != 0;
+            wires[2].on = (gate.state&4) != 0;
+            wires[3].on = (gate.state&8) != 0;
+            chips[0].on = (gate.state&1) != 0 && gate.shape == 1;
+            chips[1].on = (gate.state&1) != 0 && gate.shape != 1;
+            torch.on = (gate.state&0x10) != 0;
             
             if(gate.shape() != 0) {
                 boolean a = wires[1].on;
