@@ -3,6 +3,7 @@ package mrtjp.projectred.core;
 import static mrtjp.projectred.ProjectRedCore.blockMachines;
 import static mrtjp.projectred.ProjectRedCore.itemComponent;
 import static mrtjp.projectred.ProjectRedCore.itemDrawPlate;
+import static mrtjp.projectred.ProjectRedCore.itemScrewdriver;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.item.ItemStack;
@@ -24,7 +25,8 @@ public class CoreClientProxy extends CoreProxy {
         }
 
         LanguageRegistry.addName(itemDrawPlate, "Draw Plate");
-                
+        LanguageRegistry.addName(itemScrewdriver, "Screwdriver");
+
         MinecraftForge.EVENT_BUS.register(new Messenger());
         PacketCustom.assignHandler(Configurator.corePacketChannel, 1, 32, new CoreCPH());
     }

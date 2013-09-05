@@ -2,9 +2,9 @@ package mrtjp.projectred;
 
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
+import mrtjp.projectred.core.ItemScrewdriver;
 import mrtjp.projectred.integration.EnumGate;
 import mrtjp.projectred.integration.ItemPartGate;
-import mrtjp.projectred.integration.ItemScrewdriver;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,10 +22,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 public class ProjectRedIntegration {
 
     /** Multipart items **/
-    public static ItemPartGate itemPartGate2;
-
-    /** Items **/
-    public static ItemScrewdriver itemScrewdriver;
+    public static ItemPartGate itemPartGate;
 
     @Instance("ProjRed|Integration")
     public static ProjectRedIntegration instance;

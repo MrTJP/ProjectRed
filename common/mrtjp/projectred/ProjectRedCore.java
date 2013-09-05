@@ -9,6 +9,7 @@ import mrtjp.projectred.core.CoreGuiHandler;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.core.ItemDrawPlate;
 import mrtjp.projectred.core.ItemPart;
+import mrtjp.projectred.core.ItemScrewdriver;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -51,6 +52,7 @@ public class ProjectRedCore {
     /** Items **/
     public static ItemPart itemComponent;
     public static ItemDrawPlate itemDrawPlate;
+    public static ItemScrewdriver itemScrewdriver;
 
     @Instance("ProjRed|Core")
     public static ProjectRedCore instance;
@@ -70,7 +72,7 @@ public class ProjectRedCore {
     public static CreativeTabs tabCore = new CreativeTabs("core") {
         @Override
         public ItemStack getIconItemStack() {
-            return new ItemStack(ProjectRedIntegration.itemScrewdriver);
+            return new ItemStack(ProjectRedCore.itemScrewdriver);
         }
     };
 

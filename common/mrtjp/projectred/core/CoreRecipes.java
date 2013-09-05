@@ -2,6 +2,7 @@ package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedExploration;
+import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.block.Block;
@@ -41,7 +42,16 @@ public class CoreRecipes {
                 " i ",
                 'i', ItemMicroPart.create(770, Block.blockIron.getUnlocalizedName()),
                 'd', ItemMicroPart.create(2, Block.blockDiamond.getUnlocalizedName())
-        ).setCheckNBT());    
+        ).setCheckNBT());  
+        
+        /** Screw Driver **/
+        GameRegistry.addRecipe(new ItemStack(ProjectRedCore.itemScrewdriver),
+                "i  ",
+                " ib",
+                " bi",
+                'i', Item.ingotIron,
+                'b', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId())
+        );        
     }
 
     private static void initPartRecipes() {

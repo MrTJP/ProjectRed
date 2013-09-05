@@ -1,6 +1,6 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.ProjectRedIntegration;
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.Configurator;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -277,7 +277,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         
         @Override
         public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held) {
-            if(held == null || held.getItem() != ProjectRedIntegration.itemScrewdriver) {
+            if(held == null || held.getItem() != ProjectRedCore.itemScrewdriver) {
                 if(!gate.world().isRemote)
                     toggle(gate);
                 return true;
@@ -404,7 +404,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         
         @Override
         public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held) {
-            if(held == null || held.getItem() != ProjectRedIntegration.itemScrewdriver) {
+            if(held == null || held.getItem() != ProjectRedCore.itemScrewdriver) {
                 if(!gate.world().isRemote)
                     IntegrationSPH.openTimerGui(player, gate);
                 
@@ -684,7 +684,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         
         @Override
         public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held) {
-            if(held == null || held.getItem() != ProjectRedIntegration.itemScrewdriver) {
+            if(held == null || held.getItem() != ProjectRedCore.itemScrewdriver) {
                 if(!gate.world().isRemote)
                     IntegrationSPH.openTimerGui(player, gate);
                 return true;
@@ -869,7 +869,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         
         @Override
         public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held) {
-            if(held == null || held.getItem() != ProjectRedIntegration.itemScrewdriver) {
+            if(held == null || held.getItem() != ProjectRedCore.itemScrewdriver) {
                 if(!gate.world().isRemote)
                     IntegrationSPH.openCounterGui(player, gate);
                 return true;
