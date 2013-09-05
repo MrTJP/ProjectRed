@@ -1,5 +1,6 @@
-package mrtjp.projectred.integration;
+package mrtjp.projectred.core;
 
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedIntegration;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,7 +17,7 @@ public class ItemScrewdriver extends Item {
         setMaxStackSize(1);
         setMaxDamage(64);
         setNoRepair();
-        setCreativeTab(ProjectRedIntegration.tabIntegration);
+        setCreativeTab(ProjectRedCore.tabCore);
     }
 
     @Override

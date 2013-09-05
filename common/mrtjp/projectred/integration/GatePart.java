@@ -2,6 +2,7 @@ package mrtjp.projectred.integration;
 
 import java.util.Arrays;
 
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
@@ -393,7 +394,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         if(getLogic().activate(this, player, held))
             return true;
         
-        if (held != null && held.getItem() == ProjectRedIntegration.itemScrewdriver) {
+        if (held != null && held.getItem() == ProjectRedCore.itemScrewdriver) {
             if(!world().isRemote) {
                 if (player.isSneaking())
                     configure();

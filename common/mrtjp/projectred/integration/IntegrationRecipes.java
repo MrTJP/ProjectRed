@@ -12,20 +12,8 @@ public class IntegrationRecipes {
 
     public static void initIntegrationRecipes() {
         initGateRecipes();
-        initMiscRecipes();
     }
     
-    private static void initMiscRecipes() {
-        /** Screw Driver **/
-        GameRegistry.addRecipe(new ItemStack(ProjectRedIntegration.itemScrewdriver),
-                "i  ",
-                " ib",
-                " bi",
-                'i', Item.ingotIron,
-                'b', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId())
-        );        
-    }
-
     private static void initGateRecipes() {
 
         /** AND Gate **/
@@ -84,7 +72,7 @@ public class IntegrationRecipes {
         );
         
         /** Transparent Latch **/
-        GameRegistry.addRecipe(EnumGate.ToggleLatch.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.TransparentLatch.getItemStack(),
                 "CAW",
                 "AAA",
                 "AWP",
@@ -292,24 +280,46 @@ public class IntegrationRecipes {
         GameRegistry.addRecipe(EnumGate.InvertCell.getItemStack(),
                 "PWP",
                 "WSW",
-                "PTP",
+                "PCP",
                 'P', EnumPart.PLATE.getItemStack(),
                 'W', EnumPart.WIREDPLATE.getItemStack(),
                 'S', EnumPart.PLATFORMEDPLATE.getItemStack(),
-                'T', Block.torchRedstoneActive
+                'C', EnumPart.CATHODE.getItemStack()
         );
 
         /** Buffer Cell **/
         GameRegistry.addRecipe(EnumGate.BufferCell.getItemStack(),
                 "PWP",
                 "WSW",
-                "PTC",
+                "PCC",
                 'P', EnumPart.PLATE.getItemStack(),
                 'W', EnumPart.WIREDPLATE.getItemStack(),
                 'S', EnumPart.PLATFORMEDPLATE.getItemStack(),
-                'T', Block.torchRedstoneActive,
                 'C', EnumPart.CATHODE.getItemStack()
         );
+        
+        /** Comparator **/
+        GameRegistry.addRecipe(EnumGate.Comparator.getItemStack(),
+        		"QCQ",
+        		"WWW",
+        		"PWP",
+        		'Q', Item.netherQuartz,
+        		'C', EnumPart.CATHODE.getItemStack(),
+        		'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
+        		'P', EnumPart.PLATE.getItemStack()
+        );
+        
+        /** AND Cell **/
+        GameRegistry.addRecipe(EnumGate.ANDCell.getItemStack(),
+        		"CwC",
+        		"WSW",
+        		"PwC",
+        		'w', EnumPart.CONDUCTIVEPLATE.getItemStack(),
+        		'W', EnumPart.WIREDPLATE.getItemStack(),
+        		'S', EnumPart.PLATFORMEDPLATE.getItemStack(),
+        		'P', EnumPart.PLATE.getItemStack(),
+        		'C', EnumPart.CATHODE.getItemStack()
+       );
         
     }
 }

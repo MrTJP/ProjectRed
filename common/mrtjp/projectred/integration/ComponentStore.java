@@ -625,11 +625,11 @@ public class ComponentStore
     
     public static class FlippedRSTorchModel extends RedstoneTorchModel
     {
-    	public FlippedRSTorchModel(double x, double z, int depth) {
-			super(genModel(depth, x, z).apply(
+    	public FlippedRSTorchModel(double x, double z) {
+			super(genModel(4, x, z).apply(
 					new Rotation(180*MathHelper.torad, 0, 0, 1).at(Vector3.center)
-					.with(new Translation(new Vector3(0, -depth, 0).multiply(1/16D)))));
-			lightPos = new Vector3(x, depth-1, z).multiply(1/16D);
+					.with(new Translation(new Vector3(0, -6, 0).multiply(1/16D)))));
+			lightPos = new Vector3(x, 4-1, z).multiply(1/16D);
     	}
     }
     

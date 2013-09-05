@@ -557,22 +557,6 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     protected abstract boolean debug(EntityPlayer player);
     protected abstract boolean test(EntityPlayer player);
     
-    protected void debugEffect_bonemeal() {
-        world().playAuxSFX(2005, x(), y(), z(), 0);
-    }
-
-    protected void debugEffect_fireburst() {
-        world().playAuxSFX(2004, x(), y(), z(), 0);
-    }
-
-    protected void debugEffect_potion() {
-        world().playAuxSFX(2002, x(), y(), z(), 0);
-    }
-
-    protected void debugEffect_smoke() {
-        world().playAuxSFX(2000, x(), y(), z(), 0);
-    }
-
     public abstract EnumWire getWireType();
 
     public int getThickness() {
