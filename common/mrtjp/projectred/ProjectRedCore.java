@@ -10,6 +10,7 @@ import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.core.ItemDrawPlate;
 import mrtjp.projectred.core.ItemPart;
 import mrtjp.projectred.core.ItemScrewdriver;
+import mrtjp.projectred.core.ItemWireDebugger;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -53,7 +54,9 @@ public class ProjectRedCore {
     public static ItemPart itemComponent;
     public static ItemDrawPlate itemDrawPlate;
     public static ItemScrewdriver itemScrewdriver;
+    public static ItemWireDebugger itemWireDebugger;
 
+    
     @Instance("ProjRed|Core")
     public static ProjectRedCore instance;
     
@@ -76,7 +79,6 @@ public class ProjectRedCore {
         }
     };
 
-    
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         Configurator.initConfig(event);

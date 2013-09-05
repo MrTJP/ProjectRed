@@ -2,9 +2,9 @@ package mrtjp.projectred;
 
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
+import mrtjp.projectred.core.ItemWireDebugger;
 import mrtjp.projectred.transmission.ItemPartFramedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
-import mrtjp.projectred.transmission.ItemWireDebugger;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,9 +23,6 @@ public class ProjectRedTransmission {
     /** Multipart items **/
     public static ItemPartWire itemPartWire;
     public static ItemPartFramedWire itemPartFramedWire;
-
-    /** Items **/
-    public static ItemWireDebugger itemWireDebugger;
 
     @Instance("ProjRed|Transmission")
     public static ProjectRedTransmission instance;

@@ -2,7 +2,6 @@ package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedExploration;
-import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.block.Block;
@@ -51,7 +50,21 @@ public class CoreRecipes {
                 " bi",
                 'i', Item.ingotIron,
                 'b', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId())
-        );        
+        );
+        
+        /** Wire debugger **/
+        GameRegistry.addRecipe(new ItemStack(ProjectRedCore.itemWireDebugger), 
+                "a a",
+                "ber",
+                "bgr",
+                'a', EnumPart.REDINGOT.getItemStack(),
+                'b', new ItemStack(Item.dyePowder, 1, PRColors.BLACK.dyeId()),
+                'e', Item.emerald,
+                'l', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId()),
+                'r', new ItemStack(Item.dyePowder, 1, PRColors.RED.dyeId()),
+                'g', Item.glowstone
+        );
+
     }
 
     private static void initPartRecipes() {
