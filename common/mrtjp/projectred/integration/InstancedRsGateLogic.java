@@ -986,10 +986,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
         
         public void setState2(int i) {
-            short oldState = state2;
             state2 = (short)i;
-            if (oldState != state2)
-                sendState2Update();
         }
         
         @Override
@@ -1070,7 +1067,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             
             if(oldInput != newInput) {
                 setState2(state2 & 0xF | newInput);
-                gate.setState(digitize(newInput) | calcOutput()<<4);
+                gate.setState(digitize(newInput|calcOutput()) | gate.state & 0xF0);
                 gate.onInputChange();
             }
             
@@ -1090,17 +1087,9 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
         
         public int inputB() {
-            return Math.max(inputRight(), inputLeft());
+            return Math.max(state2 >> 4 & 0xF, state2 >> 12 & 0xF);
         }
         
-        public int inputRight() {
-            return state2 >> 4 & 0xF;
-        }
-        
-        public int inputLeft() {
-            return state2 >> 12 & 0xF;
-        }
-
         @Override
         public void scheduledTick(InstancedRsGatePart gate) {
             int oldOutput = state2 & 0xF;
@@ -1108,31 +1097,10 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             
             if(oldOutput != newOutput) {
                 setState2(state2 & 0xFFF0 | newOutput);
-                gate.setState(gate.state() & 0xF | newOutput<<4);
+                gate.setState(gate.state() & 0xF | digitize(newOutput)<<4);
                 gate.onOutputChange(1);
             }
         }
-        
-        public void sendState2Update() {
-            gate.getWriteStream(11).writeShort(state2);
-        }
-        
-        @Override
-        public void read(MCDataInput packet, int switch_key) {
-            if(switch_key == 11)
-                state2 = packet.readShort();
-        }
-        
-        @Override
-        public void readDesc(MCDataInput packet) {
-            state2 = packet.readShort();
-        }
-
-        @Override
-        public void writeDesc(MCDataOutput packet) {
-            packet.writeShort(state2);
-        }
-
         
         @Override
         public void onNeighborTileChanged(int side, boolean weak) {
