@@ -24,8 +24,8 @@ public class FramedInsulatedRedAlloyPart extends FramedRedwirePart implements II
     }
 
     @Override
-    public void onPlaced(int meta) {
-        super.onPlaced(meta);
+    public void preparePlacement(int meta) {
+        super.preparePlacement(meta);
         colour = (byte)(meta-EnumWire.INSULATED_0.ordinal());
     }
 

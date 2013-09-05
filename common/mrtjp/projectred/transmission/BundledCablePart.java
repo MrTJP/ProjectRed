@@ -45,8 +45,8 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
     }
 
     @Override
-    public void onPlaced(int side, int meta) {
-        super.onPlaced(side, meta);
+    public void preparePlacement(int side, int meta) {
+        super.preparePlacement(side, meta);
         colour = (byte) (meta - EnumWire.BUNDLED_0.ordinal());
     }
 

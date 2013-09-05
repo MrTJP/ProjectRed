@@ -40,7 +40,7 @@ public class ItemPartFramedWire extends JItemMultiPart {
         EnumWire type = EnumWire.VALID_WIRE[item.getItemDamage()];
         FramedWirePart w = (FramedWirePart) MultiPartRegistry.createPart(type.framedType, false);
         if(w != null)
-            w.onPlaced(item.getItemDamage());
+            w.preparePlacement(item.getItemDamage());
         return w;
     }
 

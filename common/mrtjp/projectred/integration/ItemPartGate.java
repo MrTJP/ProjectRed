@@ -48,7 +48,7 @@ public class ItemPartGate extends JItemMultiPart {
             return null;
         GatePart gate = (GatePart) MultiPartRegistry.createPart(type.gateType, false);
         if(gate != null)
-            gate.onPlaced(player, side, item.getItemDamage());
+            gate.preparePlacement(player, pos, side, item.getItemDamage());
         return gate;
     }
 

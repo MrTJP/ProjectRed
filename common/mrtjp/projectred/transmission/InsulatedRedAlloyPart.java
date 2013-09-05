@@ -29,8 +29,8 @@ public class InsulatedRedAlloyPart extends RedwirePart implements IInsulatedRedw
     }
 
     @Override
-    public void onPlaced(int side, int meta) {
-        super.onPlaced(side, meta);
+    public void preparePlacement(int side, int meta) {
+        super.preparePlacement(side, meta);
         colour = (byte)(meta-EnumWire.INSULATED_0.ordinal());
     }
 

@@ -10,6 +10,7 @@ import mrtjp.projectred.transmission.IRedwirePart;
 import mrtjp.projectred.transmission.IWirePart;
 import mrtjp.projectred.transmission.WirePropogator;
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
@@ -195,7 +196,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if (t != null) {
+        if (t != null && (connMap & 0x10<<r) != 0) {
             TMultiPart tp = t.partMap(side());
             if(tp != null)
                 s = getPartSignal(tp, (r+2)%4);
@@ -221,7 +222,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
             return i;
         
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
-        return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, side()^1)*17;
+        return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, absDir)*17;
     }
 
     public int getPartSignal(TMultiPart part, int r) {
@@ -391,6 +392,22 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         
         if(b)
             super.rotate();
+    }
+    
+    @Override
+    public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta) {
+        super.preparePlacement(player, pos, side, meta);
+        if(getLogic().canCross()) {
+            TileMultipart t = BasicUtils.getMultipartTile(player.worldObj, pos);
+            if(t != null) {
+                TMultiPart npart = t.partMap(side()^1);
+                if(npart instanceof ArrayGatePart) {
+                    ArrayGatePart apart = (ArrayGatePart) npart;
+                    if(apart.subID == subID && (apart.rotation()&1) == (rotation()&1))
+                        setRotation((rotation()+1)%4);
+                }
+            }
+        }
     }
     
     public boolean occlusionTest(TMultiPart npart)
