@@ -1,5 +1,6 @@
 package mrtjp.projectred.exploration;
 
+import static mrtjp.projectred.ProjectRedExploration.blockStores;
 import static mrtjp.projectred.ProjectRedExploration.itemDiamondSaw;
 import static mrtjp.projectred.ProjectRedExploration.itemDiamondSickle;
 import static mrtjp.projectred.ProjectRedExploration.itemGoldSaw;
@@ -36,6 +37,7 @@ import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
 import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import mrtjp.projectred.exploration.ItemGemSaw.GemSawItemRenderer;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
@@ -89,6 +91,10 @@ public class ExplorationClientProxy extends ExplorationProxy {
         LanguageRegistry.addName(itemSapphireSickle, itemSapphireSickle.tool.name);
         LanguageRegistry.addName(itemPeridotSickle, itemPeridotSickle.tool.name);
         LanguageRegistry.addName(itemDiamondSickle, itemDiamondSickle.tool.name);
+
+        LanguageRegistry.addName(new ItemStack(blockStores, 1, 0), "Ruby block");
+        LanguageRegistry.addName(new ItemStack(blockStores, 1, 1), "Sapphire block");
+        LanguageRegistry.addName(new ItemStack(blockStores, 1, 2), "Peridot block");
 
         MinecraftForgeClient.registerItemRenderer(itemWoodSaw.itemID, GemSawItemRenderer.instance);
         MinecraftForgeClient.registerItemRenderer(itemStoneSaw.itemID, GemSawItemRenderer.instance);

@@ -36,6 +36,7 @@ public class Configurator {
     public static Property block_machinesID;
     public static Property block_oresID;
     public static Property block_stonesID;
+    public static Property block_storesID;
 
     /** Item IDs **/
     public static Property item_screwdriverID;
@@ -45,7 +46,7 @@ public class Configurator {
     public static Property item_backpackID;
     public static Property item_vawtID;
     public static Property item_wireDebuggerID;
-    
+
 
     public static Property item_rubyAxe;
     public static Property item_sapphireAxe;
@@ -114,6 +115,7 @@ public class Configurator {
         block_machinesID = localConfig.getBlock("block_machinesID", 2129);
         block_oresID = localConfig.getBlock("block_oresID", 2130);
         block_stonesID = localConfig.getBlock("block_stonesID", 2131);
+        block_storesID = localConfig.getBlock("block_storesID", 2132);
 
         item_screwdriverID = localConfig.getItem("item_screwdriverID", 9024);
         item_componentsID = localConfig.getItem("item_componentsID", 9025);
@@ -164,7 +166,7 @@ public class Configurator {
 
         debugMode = localConfig.get("general", "Enable Debugging", false);
         debugMode.comment = "Enable advanced debugging, should ALWAYS be false.";
-        
+
         logicwires3D = localConfig.get("general", "3Dlogicwires", true);
         logicwires3D.comment = "If set to false, flat wire textures will be used for logic gates. Significant performance improvement";
 
