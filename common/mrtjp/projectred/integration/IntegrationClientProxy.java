@@ -3,7 +3,6 @@ package mrtjp.projectred.integration;
 import mrtjp.projectred.ProjectRedIntegration;
 import net.minecraftforge.client.MinecraftForgeClient;
 import codechicken.lib.packet.PacketCustom;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class IntegrationClientProxy extends IntegrationProxy {
 
@@ -18,9 +17,10 @@ public class IntegrationClientProxy extends IntegrationProxy {
         super.init();
         MinecraftForgeClient.registerItemRenderer(ProjectRedIntegration.itemPartGate.itemID, GateItemRenderer.instance);
         
-        for (EnumGate g : EnumGate.VALID_GATES)
+        /*for (EnumGate g : EnumGate.VALID_GATES)
             if(g.implemented())
                 LanguageRegistry.addName(g.getItemStack(), g.name);
         
+        LanguageRegistry.addName(itemScrewdriver, "Screwdriver");*/
     }
 }

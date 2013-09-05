@@ -22,7 +22,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 /**
  * "Project: Red" serves to provide a complete alternative for Eloraam's
@@ -58,16 +57,7 @@ public class ProjectRedCore {
     public static ProjectRedCore instance;
     
     @SidedProxy(clientSide = "mrtjp.projectred.core.CoreClientProxy", serverSide = "mrtjp.projectred.core.CoreProxy")
-    public static IProxy proxy;    
-    
-    static {
-        LanguageRegistry.instance().addStringLocalization("itemGroup.core", "en_US", "Project Red: Core");
-        LanguageRegistry.instance().addStringLocalization("itemGroup.trans", "en_US", "Project Red: Transmission");
-        LanguageRegistry.instance().addStringLocalization("itemGroup.int", "en_US", "Project Red: Integration");
-        LanguageRegistry.instance().addStringLocalization("itemGroup.ill", "en_US", "Project Red: Illumination");
-        LanguageRegistry.instance().addStringLocalization("itemGroup.expansion", "en_US", "Project Red: Expansion");
-        LanguageRegistry.instance().addStringLocalization("itemGroup.exploration", "en_US", "Project Red: Exploration");
-    }
+    public static IProxy proxy;
 
     public static CreativeTabs tabCore = new CreativeTabs("core") {
         @Override
