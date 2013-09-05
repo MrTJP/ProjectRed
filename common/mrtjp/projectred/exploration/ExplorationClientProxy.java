@@ -44,7 +44,7 @@ public class ExplorationClientProxy extends ExplorationProxy {
     @Override
     public void init() {
         super.init();
-        LanguageRegistry.addName(itemWoolGin, "Wool Gin");
+        /*LanguageRegistry.addName(itemWoolGin, "Wool Gin");
 
         for (EnumOre o : EnumOre.VALID_ORES) {
             LanguageRegistry.addName(o.getItemStack(1), o.name);
@@ -88,7 +88,7 @@ public class ExplorationClientProxy extends ExplorationProxy {
         LanguageRegistry.addName(itemRubySickle, itemRubySickle.tool.name);
         LanguageRegistry.addName(itemSapphireSickle, itemSapphireSickle.tool.name);
         LanguageRegistry.addName(itemPeridotSickle, itemPeridotSickle.tool.name);
-        LanguageRegistry.addName(itemDiamondSickle, itemDiamondSickle.tool.name);
+        LanguageRegistry.addName(itemDiamondSickle, itemDiamondSickle.tool.name);*/
 
         MinecraftForgeClient.registerItemRenderer(itemWoodSaw.itemID, GemSawItemRenderer.instance);
         MinecraftForgeClient.registerItemRenderer(itemStoneSaw.itemID, GemSawItemRenderer.instance);

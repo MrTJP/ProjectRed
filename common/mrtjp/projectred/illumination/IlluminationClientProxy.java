@@ -3,7 +3,6 @@ package mrtjp.projectred.illumination;
 import mrtjp.projectred.ProjectRedIllumination;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class IlluminationClientProxy extends IlluminationProxy {
 
@@ -14,14 +13,14 @@ public class IlluminationClientProxy extends IlluminationProxy {
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartInvLantern.itemID, LanternRenderer.instance);
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartLamp.itemID, LampRenderer.instance);
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartInvLamp.itemID, LampRenderer.instance);
-        for (EnumLantern e : EnumLantern.values()) {
+        /*for (EnumLantern e : EnumLantern.values()) {
             LanguageRegistry.addName(e.getItemStack(), e.fullName);
             LanguageRegistry.addName(e.getInvertedItemStack(), "Inverted " + e.fullName);
         }
         for (EnumLamp e : EnumLamp.values()) {
             LanguageRegistry.addName(e.getItemStack(), e.fullName);
             LanguageRegistry.addName(e.getInvertedItemStack(), "Inverted " + e.fullName);
-        }
+        }*/
 
         MinecraftForge.EVENT_BUS.register(LastEventBasedHaloRenderer.instance);
     }
