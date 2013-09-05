@@ -1310,7 +1310,7 @@ public class RenderGate
         RedstoneTorchModel[] torches = new RedstoneTorchModel[]{
                 new RedstoneTorchModel(8, 13, 6),
                 new RedstoneTorchModel(8, 2, 8),
-                new FlippedRSTorchModel(8,8,6)
+                new FlippedRSTorchModel(8,8)
             };
         
         public ANDCell() {
