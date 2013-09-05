@@ -281,7 +281,7 @@
 		<!-- ProjectRed Base -->
 		<echo message="Packaging ProjectRed Base" />
 		<jar destfile="${jar.dir}/${mod.name.base}">
-			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedCore.class, **/mrtjp/projectred/core/**, **/mrtjp/projectred/api/**" />
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedCore.class, **/ProjectRedCore$1.class,**/mrtjp/projectred/core/**, **/mrtjp/projectred/api/**" />
 			<fileset dir="${mcp.dir}/reobf/resources">
 			</fileset>
 		</jar>
@@ -289,19 +289,19 @@
 		<!-- ProjectRed Integration -->
 		<echo message="Packaging ProjectRed Integration" />
 		<jar destfile="${jar.dir}/${mod.name.integration}">
-			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedIntegration.class, **/ProjectRedTransmission.class, **/mrtjp/projectred/integration/**, **/mrtjp/projectred/transmission/**" />
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedIntegration.class, **/ProjectRedIntegration$1.class,**/ProjectRedTransmission.class, **/ProjectRedTransmission$1.class,**/mrtjp/projectred/integration/**, **/mrtjp/projectred/transmission/**" />
 		</jar>
 
 		<!-- ProjectRed Mechanical -->
 		<echo message="Packaging ProjectRed Mechanical" />
 		<jar destfile="${jar.dir}/${mod.name.mechanical}">
-			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExpansion.class, **/mrtjp/projectred/expansion/**" />
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExpansion.class, **/ProjectRedExpansion$1.class,**/mrtjp/projectred/expansion/**" />
 		</jar>
 
 		<!-- ProjectRed World -->
 		<echo message="Packaging ProjectRed World" />
 		<jar destfile="${jar.dir}/${mod.name.world}">
-			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExploration.class, **/ProjectRedIllumination.class, **/mrtjp/projectred/exploration/**, **/mrtjp/projectred/illumination/**" />
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExploration.class, **/ProjectRedExploration$1.class,**/ProjectRedIllumination.class, **/ProjectRedIllumination$1.class,**/mrtjp/projectred/exploration/**, **/mrtjp/projectred/illumination/**" />
 		</jar>
 
 	</target>
