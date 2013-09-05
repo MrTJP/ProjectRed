@@ -1,7 +1,6 @@
 package mrtjp.projectred.integration;
 
-import static mrtjp.projectred.ProjectRedIntegration.itemPartGate2;
-import static mrtjp.projectred.ProjectRedIntegration.itemScrewdriver;
+import static mrtjp.projectred.ProjectRedIntegration.itemPartGate;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import codechicken.lib.packet.PacketCustom;
@@ -21,8 +20,7 @@ public class IntegrationProxy implements IProxy, IPartFactory {
         MultiPartRegistry.registerParts(this, new String[]{
                 "pr_sgate", "pr_igate", "pr_agate", "pr_bgate", "pr_tgate", "pr_rgate"});
 
-        itemPartGate2 = new ItemPartGate(Configurator.part_gate.getInt());
-        itemScrewdriver = new ItemScrewdriver(Configurator.item_screwdriverID.getInt());
+        itemPartGate = new ItemPartGate(Configurator.part_gate.getInt());
     }
 
     @Override

@@ -3,7 +3,7 @@ package mrtjp.projectred.integration;
 
 import java.util.Random;
 
-import mrtjp.projectred.ProjectRedIntegration;
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -392,7 +392,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         
         @Override
         public boolean activate(SimpleGatePart part, EntityPlayer player, ItemStack held) {
-            if(held == null || held.getItem() != ProjectRedIntegration.itemScrewdriver) {
+            if(held == null || held.getItem() != ProjectRedCore.itemScrewdriver) {
                 if(!part.world().isRemote)
                     part.configure();
                 return true;
