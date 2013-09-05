@@ -7,6 +7,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import codechicken.lib.math.MathHelper;
 
+/**
+ * Generic world ore generator, pretty much direct copy from WorldGenMinable 
+ */
 public class GeneratorOre extends WorldGenerator {
 
     protected int id;
@@ -28,17 +31,17 @@ public class GeneratorOre extends WorldGenerator {
     @Override
     public boolean generate(World world, Random random, int x, int y, int z) {
         // Randomly space out blocks in vein
-        float f = random.nextFloat() * 3.141593F;
-        double d = x + 8 + MathHelper.sin(f) * this.veinSize / 8.0F;
-        double d1 = x + 8 - MathHelper.sin(f) * this.veinSize / 8.0F;
-        double d2 = z + 8 + MathHelper.cos(f) * this.veinSize / 8.0F;
-        double d3 = z + 8 - MathHelper.cos(f) * this.veinSize / 8.0F;
-        double d4 = y + random.nextInt(3) + 2;
-        double d5 = y + random.nextInt(3) + 2;
+        float f = (float) (random.nextFloat() * Math.PI);
+        double d0 = (double)((float)(x + 8) + MathHelper.sin(f) * (float)this.veinSize / 8.0F);
+        double d1 = (double)((float)(x + 8) - MathHelper.sin(f) * (float)this.veinSize / 8.0F);
+        double d2 = (double)((float)(z + 8) + MathHelper.cos(f) * (float)this.veinSize / 8.0F);
+        double d3 = (double)((float)(z + 8) - MathHelper.cos(f) * (float)this.veinSize / 8.0F);
+        double d4 = (double)(y + random.nextInt(3) - 2);
+        double d5 = (double)(y + random.nextInt(3) - 2);
         
         // Do this once for every block of ore we need to generate.
         for (int l = 0; l <= this.veinSize; l++) {
-            double d6 = d + (d1 - d) * l / this.veinSize;
+            double d6 = d0 + (d1 - d0) * l / this.veinSize;
             double d7 = d4 + (d5 - d4) * l / this.veinSize;
             double d8 = d2 + (d3 - d2) * l / this.veinSize;
             double d9 = random.nextDouble() * this.veinSize / 16.0D;

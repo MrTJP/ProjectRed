@@ -23,7 +23,7 @@ public class ItemPartPressurizedTube extends JItemMultiPart {
         super(id);
         setHasSubtypes(true);
         setCreativeTab(ProjectRedExpansion.tabExpansion);
-        setUnlocalizedName("projred.expansion.ptube");
+        setUnlocalizedName("projectred.expansion.ptube");
     }
 
     @Override

@@ -2,7 +2,6 @@ package mrtjp.projectred.transmission;
 
 import static mrtjp.projectred.ProjectRedTransmission.itemPartFramedWire;
 import static mrtjp.projectred.ProjectRedTransmission.itemPartWire;
-import static mrtjp.projectred.ProjectRedTransmission.itemWireDebugger;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import codechicken.multipart.MultiPartRegistry;
@@ -24,8 +23,6 @@ public class TransmissionProxy implements IProxy, IPartFactory {
 
         itemPartWire = new ItemPartWire(Configurator.part_wire.getInt());
         itemPartFramedWire = new ItemPartFramedWire(Configurator.part_jwire.getInt());
-
-        itemWireDebugger = new ItemWireDebugger(Configurator.item_wireDebuggerID.getInt());
         
         EnumWire.initOreDictDefinitions();
     }

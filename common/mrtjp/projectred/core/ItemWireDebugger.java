@@ -1,5 +1,6 @@
-package mrtjp.projectred.transmission;
+package mrtjp.projectred.core;
 
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedTransmission;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,8 +17,8 @@ public class ItemWireDebugger extends Item {
         setMaxStackSize(1);
         setMaxDamage(256);
         setNoRepair();
-        setUnlocalizedName("projectred.transmission.wiredebugger");
-        setCreativeTab(ProjectRedTransmission.tabTransmission);
+        setUnlocalizedName("projectred.core.wiredebugger");
+        setCreativeTab(ProjectRedCore.tabCore);
     }
 
     @Override

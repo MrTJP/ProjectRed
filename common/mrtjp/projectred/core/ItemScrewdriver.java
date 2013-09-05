@@ -13,7 +13,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ItemScrewdriver extends Item {
     public ItemScrewdriver(int id) {
         super(id);
-        setUnlocalizedName("projectred:screwdriver");
+        setUnlocalizedName("projectred.core.screwdriver");
         setMaxStackSize(1);
         setMaxDamage(64);
         setNoRepair();

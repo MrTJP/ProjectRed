@@ -23,7 +23,7 @@ public class ItemPartLamp extends JItemMultiPart {
         super(id);
         inverted = isInverted;
         this.setHasSubtypes(true);
-        this.setUnlocalizedName("projred.illumination.lamp");
+        this.setUnlocalizedName("projectred.illumination.lamp");
         this.setCreativeTab(ProjectRedIllumination.tabLighting);
     }
 

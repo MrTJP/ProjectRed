@@ -16,23 +16,7 @@ public class TransmissionRecipes {
     public static void initTransmissionRecipes() {
         initWireRecipes();
         initPartRecipes();
-        initToolRecipes();
         initAlloySmelterRecipes();
-    }
-
-    private static void initToolRecipes() {
-        /** Wire debugger **/
-        GameRegistry.addRecipe(new ItemStack(ProjectRedTransmission.itemWireDebugger), 
-                "a a",
-                "ber",
-                "bgr",
-                'a', EnumPart.REDINGOT.getItemStack(),
-                'b', new ItemStack(Item.dyePowder, 1, PRColors.BLACK.dyeId()),
-                'e', Item.emerald,
-                'l', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId()),
-                'r', new ItemStack(Item.dyePowder, 1, PRColors.RED.dyeId()),
-                'g', Item.glowstone
-        );
     }
 
     private static void initWireRecipes() {    

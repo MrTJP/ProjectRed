@@ -25,7 +25,7 @@ public class ItemPartGate extends JItemMultiPart {
         super(id);
         setHasSubtypes(true);
         setCreativeTab(ProjectRedIntegration.tabIntegration);
-        setUnlocalizedName("projred.integration.gate");
+        setUnlocalizedName("projectred.integration.gate");
     }
 
     @Override

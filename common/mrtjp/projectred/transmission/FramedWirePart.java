@@ -3,7 +3,7 @@ package mrtjp.projectred.transmission;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-import mrtjp.projectred.ProjectRedTransmission;
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -534,7 +534,7 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
             }
             return true;
         }
-        if (held.itemID == ProjectRedTransmission.itemWireDebugger.itemID) {
+        if (held.itemID == ProjectRedCore.itemWireDebugger.itemID) {
             held.damageItem(1, player);
             player.swingItem();
             return test(player, hit);
