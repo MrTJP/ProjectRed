@@ -49,8 +49,8 @@ public enum EnumLantern {
         if (iconsLoaded) {
             return;
         }
-        offIcon = reg.registerIcon("projectred:" + "lanternoff/" + unlocalName + "off");
-        onIcon = reg.registerIcon("projectred:" + "lanternon/" + unlocalName + "on");
+        offIcon = reg.registerIcon("projectred:lights/lanternoff/" + unlocalName + "off");
+        onIcon = reg.registerIcon("projectred:lights/lanternon/" + unlocalName + "on");
         iconsLoaded = true;
     }
 

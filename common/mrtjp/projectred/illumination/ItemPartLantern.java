@@ -57,7 +57,7 @@ public class ItemPartLantern extends JItemMultiPart {
     }
 
     public String getUnlocalizedName(ItemStack stack) {
-        return super.getUnlocalizedName() + (inverted ? "inv." : "") + "|" + stack.getItemDamage();
+        return super.getUnlocalizedName() + (inverted ? ".inv" : "") + "|" + stack.getItemDamage();
     }
 
     @Override
