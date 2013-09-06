@@ -109,7 +109,7 @@
 
 	<!-- Targets for installing dependencies -->
 	<target name="install-forge" depends="download-forge" unless="forge-installed">
-		<echo message="Deleteing old Forge" />
+		<echo message="Deleting old Forge" />
 		<delete dir="${forge.dir}" />
 
 		<condition property="installargs" value=" --no-assets" else="">
