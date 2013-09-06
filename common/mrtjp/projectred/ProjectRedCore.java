@@ -1,7 +1,8 @@
 package mrtjp.projectred;
 
-import mrtjp.projectred.api.APIImpl;
+import codechicken.lib.packet.PacketCustom.CustomTinyPacketHandler;
 import mrtjp.projectred.api.ProjectRedAPI;
+import mrtjp.projectred.core.APIImpl;
 import mrtjp.projectred.core.BlockBasics;
 import mrtjp.projectred.core.CommandDebug;
 import mrtjp.projectred.core.Configurator;
@@ -40,7 +41,7 @@ dependencies =
         "after:CCTurtle;" +
         "after:ComputerCraft;"
 )
-@NetworkMod(clientSideRequired = true, serverSideRequired = true)
+@NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
 public class ProjectRedCore {
     
     public ProjectRedCore() {
@@ -63,15 +64,6 @@ public class ProjectRedCore {
     @SidedProxy(clientSide = "mrtjp.projectred.core.CoreClientProxy", serverSide = "mrtjp.projectred.core.CoreProxy")
     public static IProxy proxy;    
     
-    static {
-        LanguageRegistry.instance().addStringLocalization("itemGroup.core", "en_US", "Project Red: Core");
-        LanguageRegistry.instance().addStringLocalization("itemGroup.trans", "en_US", "Project Red: Transmission");
-        LanguageRegistry.instance().addStringLocalization("itemGroup.int", "en_US", "Project Red: Integration");
-        LanguageRegistry.instance().addStringLocalization("itemGroup.ill", "en_US", "Project Red: Illumination");
-        LanguageRegistry.instance().addStringLocalization("itemGroup.expansion", "en_US", "Project Red: Expansion");
-        LanguageRegistry.instance().addStringLocalization("itemGroup.exploration", "en_US", "Project Red: Exploration");
-    }
-
     public static CreativeTabs tabCore = new CreativeTabs("core") {
         @Override
         public ItemStack getIconItemStack() {

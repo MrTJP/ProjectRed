@@ -54,7 +54,7 @@ public class ItemPartFramedWire extends JItemMultiPart {
 
     @Override
     public String getUnlocalizedName(ItemStack stack) {
-        return super.getUnlocalizedName() + ".jac|" + stack.getItemDamage();
+        return super.getUnlocalizedName() + "|" + stack.getItemDamage();
     }
 
     @Override

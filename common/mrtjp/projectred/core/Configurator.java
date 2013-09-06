@@ -17,11 +17,6 @@ public class Configurator {
     public static final String buildnumber = "@BUILD_NUMBER@";
     public static final String modName = "Project: Red";
 
-    public static final String corePacketChannel = "PR:Core";
-    public static final String integrationPacketChannel = "PR:Int";
-    public static final String transmissionPacketChannel = "PR:Trans";
-    public static final String expansionPacketChannel = "PR:Expan";
-
     /** Multipart IDs **/
     public static Property part_gate;
     public static Property part_wire;

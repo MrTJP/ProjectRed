@@ -1,5 +1,6 @@
 package mrtjp.projectred.core;
 
+import mrtjp.projectred.ProjectRedCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.NetClientHandler;
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,7 +9,8 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
 
 public class CoreCPH implements IClientPacketHandler {
-
+    public static Object channel = ProjectRedCore.instance;
+    
     @Override
     public void handlePacket(PacketCustom packet, NetClientHandler nethandler, Minecraft mc) {
         EntityPlayer player = mc.thePlayer;
@@ -17,6 +19,7 @@ public class CoreCPH implements IClientPacketHandler {
         switch (packet.getType()) {
         case CoreProxy.messengerQueue:
             Messenger.addMessage(packet.readDouble(), packet.readDouble(), packet.readDouble(), packet.readString());
+            return;
         case CoreProxy.alloySmelterWatcherUpdate:
             TileAlloySmelter t = BasicUtils.getTileEntity(world, packet.readCoord(), TileAlloySmelter.class);
             if (t != null) {

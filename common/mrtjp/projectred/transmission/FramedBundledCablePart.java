@@ -9,6 +9,7 @@ import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.CoreCPH;
 import mrtjp.projectred.core.CoreProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -126,7 +127,7 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
             if (s == "") {
                 s = "off";
             }
-            PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreProxy.messengerQueue);
+            PacketCustom packet = new PacketCustom(CoreCPH.channel, CoreProxy.messengerQueue);
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);

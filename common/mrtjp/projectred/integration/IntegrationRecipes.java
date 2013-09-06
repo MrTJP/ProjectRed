@@ -51,9 +51,9 @@ public class IntegrationRecipes {
         
         /** RS Latch **/
         GameRegistry.addRecipe(EnumGate.RSLatch.getItemStack(),
-                "WWA",
-                "CPC",
-                "AWW",
+                "ACW",
+                "WPW",
+                "WCA",
                 'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
                 'A', EnumPart.ANODE.getItemStack(),
                 'C', EnumPart.CATHODE.getItemStack(),
@@ -73,9 +73,9 @@ public class IntegrationRecipes {
         
         /** Transparent Latch **/
         GameRegistry.addRecipe(EnumGate.TransparentLatch.getItemStack(),
-                "CAW",
-                "AAA",
-                "AWP",
+                "ACW",
+                "CCC",
+                "CWP",
                 'C', EnumPart.CATHODE.getItemStack(),
                 'A', EnumPart.ANODE.getItemStack(),
                 'P', EnumPart.PLATE.getItemStack(),
@@ -171,9 +171,9 @@ public class IntegrationRecipes {
         
         /** Counter Gate **/
         GameRegistry.addRecipe(EnumGate.Counter.getItemStack(),
-                "PWP",
-                "CTC",
-                "PWP",
+                "PCP",
+                "WWT",
+                "PCP",
                 'P', EnumPart.PLATE.getItemStack(),
                 'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
                 'C', EnumPart.CATHODE.getItemStack(),
@@ -300,12 +300,12 @@ public class IntegrationRecipes {
         
         /** Comparator **/
         GameRegistry.addRecipe(EnumGate.Comparator.getItemStack(),
-        		"QCQ",
-        		"WWW",
+        		"WCW",
+        		"QWQ",
         		"PWP",
-        		'Q', Item.netherQuartz,
-        		'C', EnumPart.CATHODE.getItemStack(),
         		'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
+        		'C', EnumPart.CATHODE.getItemStack(),
+        		'Q', Item.netherQuartz,
         		'P', EnumPart.PLATE.getItemStack()
         );
         

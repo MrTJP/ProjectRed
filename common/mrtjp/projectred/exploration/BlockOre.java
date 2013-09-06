@@ -32,16 +32,17 @@ public class BlockOre extends Block {
         int max = type.maxDrop;
         
         if (min == max) {
-            ret.add(type.getDropStack(max));
+            if (type.drop != null)
+                ret.add(type.getDropStack(max));
+            else
+                ret.add(type.getItemStack(max));
             return ret;
         }
         int count = world.rand.nextInt(fortune + max);
-        if (count > max) {
+        if (count > max)
             count = max;
-        }
-        if (count < min) {
+        if (count < min)
             count = min;
-        }
         dropXpOnBlockBreak(world, x, y, z, MathHelper.getRandomIntegerInRange(world.rand, type.minXP, type.maxXP));
         ret.add(type.getDropStack(count));
         return ret;
@@ -59,6 +60,10 @@ public class BlockOre extends Block {
         }
     }
 
+    @Override
+    public int damageDropped(int meta) {
+        return meta;
+    }
     
     public enum EnumOre {
         ORERUBY("Ruby Ore", "oreruby", 2, EnumPart.RUBY.getItemStack(), 1, 4, 1, 8),

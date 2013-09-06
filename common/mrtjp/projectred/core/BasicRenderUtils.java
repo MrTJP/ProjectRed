@@ -43,45 +43,4 @@ public class BasicRenderUtils {
     public static void setFullColor() {
         Tessellator.instance.setColorRGBA(255, 255, 255, 255);
     }
-    
-    static EntityItem entityItem;
-    static RenderItem uniformRenderItem = new RenderItem() {
-        @Override
-        public boolean shouldBob() {
-            return false;
-        }
-    };
-
-    static {
-        uniformRenderItem.setRenderManager(RenderManager.instance);
-        entityItem = new EntityItem(null);
-        entityItem.hoverStart = 0;
-    }
-
-    public static void renderItemUniform(ItemStack item) {
-        IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(item, ENTITY);
-        boolean is3D = customRenderer != null && customRenderer.shouldUseRenderHelper(ENTITY, item, BLOCK_3D);
-
-        boolean larger = false;
-        if (item.getItem() instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.blocksList[item.itemID].getRenderType())) {
-            int renderType = Block.blocksList[item.itemID].getRenderType();
-            larger = !(renderType == 1 || renderType == 19 || renderType == 12 || renderType == 2);
-        } else if (is3D) {
-            larger = true;
-        }
-
-        double d = 2;
-        double d1 = 1 / d;
-        if (larger)
-            GL11.glScaled(d, d, d);
-
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-
-        entityItem.setEntityItemStack(item);
-        uniformRenderItem.doRenderItem(entityItem, 0, larger ? 0.09 : 0.06, 0, 0, 0);
-
-        if (larger)
-            GL11.glScaled(d1, d1, d1);
-    }
-
 }

@@ -17,10 +17,5 @@ public class IntegrationClientProxy extends IntegrationProxy {
     public void init() {
         super.init();
         MinecraftForgeClient.registerItemRenderer(ProjectRedIntegration.itemPartGate.itemID, GateItemRenderer.instance);
-        
-        for (EnumGate g : EnumGate.VALID_GATES)
-            if(g.implemented())
-                LanguageRegistry.addName(g.getItemStack(), g.name);
-        
     }
 }

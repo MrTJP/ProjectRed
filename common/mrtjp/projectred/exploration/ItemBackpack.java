@@ -27,7 +27,7 @@ public class ItemBackpack extends Item {
         super(par1);
         hasSubtypes = true;
         maxStackSize = 1;
-        setUnlocalizedName("projectred.items.backpack");
+        setUnlocalizedName("projectred.exploration.backpack");
         setCreativeTab(ProjectRedExploration.tabExploration);
     }
 
@@ -94,7 +94,7 @@ public class ItemBackpack extends Item {
 
     @Override
     public String getUnlocalizedName(ItemStack itemstack) {
-        return EnumBackpack.get(itemstack.getItemDamage()).unlocalname;
+        return this.getUnlocalizedName()+"."+EnumBackpack.get(itemstack.getItemDamage()).unlocalname;
     }
 
     @Override
