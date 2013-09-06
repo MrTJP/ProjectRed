@@ -106,7 +106,7 @@ public class LanternRenderer implements IItemRenderer {
 
     public void renderLampShade(int x, int y, int z, int tint) {
         Cuboid6 box = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D).expand(-1/64D);
-        LastEventBasedHaloRenderer.addLight(x, y, z, tint, box);
+        LastEventBasedHaloRenderer.addLight(x, y, z, tint, 6, box);
     }
 
     @Override

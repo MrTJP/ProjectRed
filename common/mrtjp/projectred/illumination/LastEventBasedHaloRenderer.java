@@ -35,16 +35,17 @@ public class LastEventBasedHaloRenderer {
     private static Set<CoordCache> renderQueue = new HashSet<CoordCache>();
 
     private static class CoordCache {
-        int x, y, z;
-        int color;
-        Cuboid6 cube;
-
-        public CoordCache(int x, int y, int z, int colorIndex, Cuboid6 cube) {
+        final int x, y, z;
+        final int color;
+        final Cuboid6 cube;
+        final int multipartSlot;
+        
+        public CoordCache(int x, int y, int z, int colorIndex, int slot, Cuboid6 cube) {
             this.x = x;
             this.y = y;
             this.z = z;
             this.color = colorIndex;
-
+            this.multipartSlot = slot;
             this.cube = cube;
         }
 
@@ -52,15 +53,15 @@ public class LastEventBasedHaloRenderer {
         public boolean equals(Object o) {
             if (o instanceof CoordCache) {
                 CoordCache coord = (CoordCache) o;
-                return x == coord.x && y == coord.y && z == coord.z;
+                return x == coord.x && y == coord.y && z == coord.z && coord.cube.min.equals(cube.min) && coord.cube.max.equals(cube.max);
             }
             return false;
         }
 
     }
     
-    static void addLight(int x, int y, int z, int color, Cuboid6 box) {
-        CoordCache cc = new CoordCache(x, y, z, color, box);
+    static void addLight(int x, int y, int z, int color, int slot, Cuboid6 box) {
+        CoordCache cc = new CoordCache(x, y, z, color, slot, box);
         for (CoordCache c : renderQueue) {
             if (cc.equals(c))
                 return;
@@ -117,7 +118,7 @@ public class LastEventBasedHaloRenderer {
     static boolean shouldRemove(World w, CoordCache cc) {
         TileMultipart t = BasicUtils.getMultipartTile(w, new BlockCoord(cc.x, cc.y, cc.z));
         if (t != null) {
-            TMultiPart tp = t.partMap(6);
+            TMultiPart tp = t.partMap(cc.multipartSlot);
             if (tp instanceof ILight) {
                 return !((ILight)tp).isOn();
             }

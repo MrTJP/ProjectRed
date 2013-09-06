@@ -51,7 +51,7 @@ public class LampRenderer implements IItemRenderer {
 
     public void renderLampShade(int x, int y, int z, int tint) {
         Cuboid6 box = new Cuboid6(0, 0, 0, 1, 1, 1).expand(0.05D);
-        LastEventBasedHaloRenderer.addLight(x, y, z, tint, box);
+        LastEventBasedHaloRenderer.addLight(x, y, z, tint, 6, box);
     }
     
     public void renderInventory(double x, double y, double z, float scale) {

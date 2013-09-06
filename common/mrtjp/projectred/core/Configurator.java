@@ -26,6 +26,7 @@ public class Configurator {
     public static Property part_lamp;
     public static Property part_invlamp;
     public static Property part_tube;
+    public static Property part_lightButton;
 
     /** Block IDs **/
     public static Property block_machinesID;
@@ -105,6 +106,7 @@ public class Configurator {
         part_lamp = localConfig.get("MultiPart Item IDs", "Lamp Part ID", 9035);
         part_invlamp = localConfig.get("MultiPart Item IDs", "Inverted Lamp Part ID", 9036);
         part_tube = localConfig.get("MultiPart Item IDs", "Tube Part ID", 9037);
+        part_lightButton = localConfig.get("MultiPart Item IDs", "Illuminated Button Part ID", 9038);
 
         block_machinesID = localConfig.getBlock("block_machinesID", 2129);
         block_oresID = localConfig.getBlock("block_oresID", 2130);
