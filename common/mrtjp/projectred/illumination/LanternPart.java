@@ -27,7 +27,7 @@ import codechicken.multipart.TSlottedPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class LanternPart extends JCuboidPart implements TSlottedPart, JNormalOcclusion, IRedstonePart {
+public class LanternPart extends JCuboidPart implements TSlottedPart, JNormalOcclusion, IRedstonePart, ILight {
 
     EnumLantern type;
     private boolean isInverted;
@@ -93,12 +93,7 @@ public class LanternPart extends JCuboidPart implements TSlottedPart, JNormalOcc
         updateNextTick = true;
         updateStateNextTick = true;
     }
-    
-    @Override
-    public void onRemoved() {
-        LastEventBasedHaloRenderer.removeHaloObject(x(), y(), z());
-    }
-    
+        
     private boolean isBeingPowered() {
         return world().isBlockIndirectlyGettingPowered(x(), y(), z());
     }
@@ -238,4 +233,8 @@ public class LanternPart extends JCuboidPart implements TSlottedPart, JNormalOcc
         return 0;
     }
     
+    @Override
+    public boolean isOn() {
+        return getLightValue() == 15;
+    }
 }

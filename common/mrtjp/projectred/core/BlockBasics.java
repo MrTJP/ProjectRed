@@ -25,6 +25,7 @@ public class BlockBasics extends BlockContainer {
     public BlockBasics(int id) {
         super(id, new Material(Material.iron.materialMapColor));
         setCreativeTab(ProjectRedExpansion.tabExpansion);
+        this.setUnlocalizedName("projectred.core.appliance");
         setHardness(0.75f);
     }
 

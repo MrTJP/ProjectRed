@@ -181,6 +181,35 @@ public class ExplorationRecipes {
         );
         /** Basalt **/
         FurnaceRecipes.smelting().addSmelting(ProjectRedExploration.blockStones.blockID, EnumSpecialStone.BASALTCOBBLE.meta, EnumSpecialStone.BASALT.getItemStack(), 0);
+        
+        /** Ruby block **/
+        GameRegistry.addRecipe(EnumSpecialStone.RUBYBLOCK.getItemStack(), 
+                "xxx",
+                "xxx",
+                "xxx",
+                'x', EnumPart.RUBY.getItemStack()
+        );
+        /** Sapphire block **/
+        GameRegistry.addRecipe(EnumSpecialStone.SAPPHIREBLOCK.getItemStack(), 
+                "xxx",
+                "xxx",
+                "xxx",
+                'x', EnumPart.SAPPHIRE.getItemStack()
+        );
+        /** Peridot block **/
+        GameRegistry.addRecipe(EnumSpecialStone.PERIDOTBLOCK.getItemStack(), 
+                "xxx",
+                "xxx",
+                "xxx",
+                'x', EnumPart.PERIDOT.getItemStack()
+        );
+        
+        /** Ruby **/
+        GameRegistry.addShapelessRecipe(EnumPart.RUBY.getItemStack(9), EnumSpecialStone.RUBYBLOCK.getItemStack());
+        /** Sapphire **/
+        GameRegistry.addShapelessRecipe(EnumPart.SAPPHIRE.getItemStack(9), EnumSpecialStone.SAPPHIREBLOCK.getItemStack());
+        /** Peridot **/
+        GameRegistry.addShapelessRecipe(EnumPart.PERIDOT.getItemStack(9), EnumSpecialStone.PERIDOTBLOCK.getItemStack());
     }
 
 

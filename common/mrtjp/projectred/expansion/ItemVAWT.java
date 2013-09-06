@@ -19,7 +19,7 @@ public class ItemVAWT extends Item {
         maxStackSize = 1;
         setMaxDamage(1280);
         setNoRepair();
-        setUnlocalizedName("projectred.items.turbine.VAWT");
+        setUnlocalizedName("projectred.expansion.VAWT");
         setCreativeTab(ProjectRedExpansion.tabExpansion);
     }
 

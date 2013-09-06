@@ -5,23 +5,21 @@ import java.util.Map;
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.InvertX;
-import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.illumination.LastEventBasedHaloRenderer.HaloObject;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 
 import org.lwjgl.opengl.GL11;
 
+import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.TextureUtils;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.TransformationList;
 import codechicken.lib.vec.Translation;
@@ -39,6 +37,7 @@ public class LanternRenderer implements IItemRenderer {
         models = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/lantern.obj"), 7, new InvertX());
         for (CCModel c : models.values()) {
             c.apply(new Translation(.5, 0, .5));
+            c.computeLighting(LightModel.standardLightModel);
             c.shrinkUVs(0.0005);
         }
     }
@@ -50,14 +49,13 @@ public class LanternRenderer implements IItemRenderer {
     public void renderLamp(LanternPart lan, RenderBlocks b) {
         render = b;
         bindTexture(lan);
-        CCRenderState.reset();
         TextureUtils.bindAtlas(0);
+        CCRenderState.reset();
         BasicRenderUtils.setBrightnessDirect(lan.world(), lan.x(), lan.y(), lan.z());
+        CCRenderState.useModelColours(true);
         renderLampBulb(lan.x(), lan.y(), lan.z(), lan.rotation);
         if (lan.getLightValue() == 15 && b == null)
             renderLampShade(lan.x(), lan.y(), lan.z(), lan.type.meta);
-        else if (lan.getLightValue() == 0 && b == null)
-            LastEventBasedHaloRenderer.removeHaloObject(lan.x(), lan.y(), lan.z());
     }
 
     public void renderPart(CCModel cc, double x, double y, double z, int rot) {
@@ -76,8 +74,6 @@ public class LanternRenderer implements IItemRenderer {
     }
 
     public void renderLampBulb(double x, double y, double z, int rotation) {
-        // CCRenderState.useNormals(true);
-        // CCRenderState.startDrawing(7);
         renderPart(models.get("covertop"), x, y, z, 2);
         renderPart(models.get("coverbottom"), x, y, z, 2);
         renderPart(models.get("lamp"), x, y, z, 2);
@@ -91,7 +87,6 @@ public class LanternRenderer implements IItemRenderer {
             renderPart(models.get("standside"), x, y, z, rotation);
             renderPart(models.get("goldringtop"), x, y, z, rotation);
         }
-        // CCRenderState.draw();
     }
 
     public void renderInventory(double x, double y, double z, float scale) {
@@ -109,25 +104,9 @@ public class LanternRenderer implements IItemRenderer {
         GL11.glPopMatrix();
     }
 
-    public void renderLampShade(final double x, final double y, final double z, final int tint) {
-        HaloObject r = new HaloObject((int) x, (int) y, (int) z) {
-            @Override
-            public boolean render(RenderWorldLastEvent event) {
-                renderPart(models.get("lampshade"), x, y, z, 2);
-                return true;
-            }
-
-            @Override
-            public void preRender() {
-                Tessellator.instance.setColorRGBA_I(PRColors.get(tint).hex, 128);
-            }
-
-            @Override
-            public void postRender() {
-            }
-        };
-
-        LastEventBasedHaloRenderer.addObjectToRender(r);
+    public void renderLampShade(int x, int y, int z, int tint) {
+        Cuboid6 box = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D).expand(-1/64D);
+        LastEventBasedHaloRenderer.addLight(x, y, z, tint, box);
     }
 
     @Override
@@ -135,13 +114,13 @@ public class LanternRenderer implements IItemRenderer {
         lampIcon = item.getItem() == ProjectRedIllumination.itemPartInvLantern ? EnumLantern.get(item.getItemDamage()).onIcon : EnumLantern.get(item.getItemDamage()).offIcon;
         switch (type) {
         case ENTITY:
-            renderInventory(-.3f, 0f, -.3f, 1.4f);
+            renderInventory(-.25f, 0f, -.25f, 1f);
             return;
         case EQUIPPED:
-            renderInventory(0f, 0f, 0f, 2f);
+            renderInventory(-.15f, -.15f, -.15f, 2f);
             return;
         case EQUIPPED_FIRST_PERSON:
-            renderInventory(0f, 0f, 0f, 2f);
+            renderInventory(-.15f, -.15f, -.15f, 2f);
             return;
         case INVENTORY:
             renderInventory(0f, -.05f, 0f, 2f);
