@@ -1365,11 +1365,8 @@ public class RenderGate
         
         @Override
         public void prepare(BundledGatePart gate) {
-            reflect = gate.shape() != 0;
             int state = gate.state();
-            if(reflect)
-                state = GatePart.flipMaskZ(state);
-
+            
             BusDisplay logic = (BusDisplay) gate.getLogic();
             int packed = logic.packClientData();
             panel.signal = packed & 0xFFFF;
