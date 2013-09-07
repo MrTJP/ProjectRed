@@ -32,7 +32,8 @@ public enum EnumGate
     InvertCell("Invert Cell", "pr_agate"),
     BufferCell("Buffer Cell", "pr_agate"),
     Comparator("Comparator", "pr_tgate"),
-    ANDCell("AND Cell", "pr_rgate")
+    ANDCell("AND Cell", "pr_rgate"),
+    BusDisplay("Bus Display", "pr_bgate")
     ;
 
     public static EnumGate[] VALID_GATES = values();
