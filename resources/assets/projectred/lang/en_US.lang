@@ -241,6 +241,7 @@ item.projectred.integration.gate|24.name=Invert Cell
 item.projectred.integration.gate|25.name=Buffer Cell
 item.projectred.integration.gate|26.name=Comparator
 item.projectred.integration.gate|27.name=AND Cell
+item.projectred.integration.gate|28.name=Bus Display
 
 
 
