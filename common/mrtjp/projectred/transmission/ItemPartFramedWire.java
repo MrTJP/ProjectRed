@@ -2,7 +2,7 @@ package mrtjp.projectred.transmission;
 
 import java.util.List;
 
-import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.ProjectRedTransmission;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -22,8 +22,8 @@ public class ItemPartFramedWire extends JItemMultiPart {
     public ItemPartFramedWire(int id) {
         super(id);
         setHasSubtypes(true);
-        setCreativeTab(ProjectRedTabs.tabTransmission);
-        setUnlocalizedName("projred.transmission.jacwire");
+        setCreativeTab(ProjectRedTransmission.tabTransmission);
+        setUnlocalizedName("projectred.transmission.framewire");
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ItemPartFramedWire extends JItemMultiPart {
         EnumWire type = EnumWire.VALID_WIRE[item.getItemDamage()];
         FramedWirePart w = (FramedWirePart) MultiPartRegistry.createPart(type.framedType, false);
         if(w != null)
-            w.onPlaced(item.getItemDamage());
+            w.preparePlacement(item.getItemDamage());
         return w;
     }
 
@@ -52,8 +52,9 @@ public class ItemPartFramedWire extends JItemMultiPart {
                 list.add(w.getFramedItemStack());
     }
 
+    @Override
     public String getUnlocalizedName(ItemStack stack) {
-        return super.getUnlocalizedName() + ".jac|" + stack.getItemDamage();
+        return super.getUnlocalizedName() + "|" + stack.getItemDamage();
     }
 
     @Override

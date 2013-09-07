@@ -48,8 +48,8 @@ public enum EnumLamp {
 
     public void registerIcon(IconRegister reg) {
         if (!iconsInitialized) {
-            onIcon = reg.registerIcon("projectred:lampon/" + unlocalName + "on");
-            offIcon = reg.registerIcon("projectred:lampoff/" + unlocalName + "off");
+            onIcon = reg.registerIcon("projectred:lights/lampon/" + unlocalName + "on");
+            offIcon = reg.registerIcon("projectred:lights/lampoff/" + unlocalName + "off");
             iconsInitialized = true;
         }
     }

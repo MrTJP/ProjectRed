@@ -2,8 +2,11 @@ package mrtjp.projectred.transmission;
 
 import java.util.Arrays;
 
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedTransmission;
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.BasicWireUtils;
 import mrtjp.projectred.core.CommandDebug;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
@@ -73,7 +76,7 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         this.side = (byte) side;
     }
 
-    public void onPlaced(int side, int meta) {
+    public void preparePlacement(int side, int meta) {
         this.side = (byte) (side^1);
     }
 
@@ -177,13 +180,6 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
                         notifyStraightChange(r);
                 }
         }
-    }
-
-    @Override
-    public void onMoved()
-    {
-        super.onMoved();
-        onNeighborChanged();
     }
 
     public void sendConnUpdate() {
@@ -554,25 +550,14 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         tile().markDirty();
     }
     
+    @Override
+    public boolean isWireSide(int side) {
+        return true;
+    }
+    
     protected abstract boolean debug(EntityPlayer player);
     protected abstract boolean test(EntityPlayer player);
     
-    protected void debugEffect_bonemeal() {
-        world().playAuxSFX(2005, x(), y(), z(), 0);
-    }
-
-    protected void debugEffect_fireburst() {
-        world().playAuxSFX(2004, x(), y(), z(), 0);
-    }
-
-    protected void debugEffect_potion() {
-        world().playAuxSFX(2002, x(), y(), z(), 0);
-    }
-
-    protected void debugEffect_smoke() {
-        world().playAuxSFX(2000, x(), y(), z(), 0);
-    }
-
     public abstract EnumWire getWireType();
 
     public int getThickness() {
@@ -634,10 +619,8 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         if (CommandDebug.WIRE_READING) {
             return debug(player);
         }
-        if (held != null && held.itemID == ProjectRedTransmission.itemWireDebugger.itemID) {
-            if (held.itemID == ProjectRedTransmission.itemWireDebugger.itemID) {
-                held.damageItem(1, player);
-            }
+        if (held != null && held.itemID == ProjectRedCore.itemWireDebugger.itemID) {
+        	held.damageItem(1, player);
             player.swingItem();
             return test(player);
         }

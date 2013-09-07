@@ -1,5 +1,6 @@
 package mrtjp.projectred.transmission;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import net.minecraft.util.Icon;
@@ -41,6 +42,9 @@ public class RenderWire {
         }
     }
     
+    public static int[] reorientSide = new int[]{
+        0, 3, 3, 0, 0, 3};
+    
     /* 
      * All generations are done on side 0 so know that for rotation r
      * 0 = side 3 = +Z = SOUTH
@@ -50,9 +54,6 @@ public class RenderWire {
      */
     
     private static class WireModelGenerator {
-        
-        public static int[] reorientSide = new int[]{
-            0, 3, 3, 0, 0, 3};
         
         int side;
         int tw;
@@ -84,7 +85,12 @@ public class RenderWire {
             else
                 conns = connCount;
             
-            return conns*3+5;
+            int faces = conns*3+5;
+            for(int i = 0; i < 4; i++)
+                if((mask >> i & 0x11) == 1)
+                    faces++;
+            
+            return faces;
         }
         
         public CCModel generateInvModel(int thickness) {
@@ -178,6 +184,9 @@ public class RenderWire {
         private Vertex5[] generateStub(int r) {
             Vertex5[] verts = generateExtension(4);
 
+            for(int i = 0; i < 4; i++)
+                verts[i].vec.z-=0.002;//pull the stub in a little so it doesn't z fight with jacketed cables
+            
             reflectSide(verts, r);
             return verts;
         }
@@ -195,6 +204,13 @@ public class RenderWire {
             //retexture cap
             for(int i = 0; i < 4; i++)
                 verts[i].apply(new UVTranslation(0, -th));
+            
+            //add end face extending around block
+            verts = Arrays.copyOf(verts, 20);
+            verts[16] = new Vertex5(0.5-w, 0, 1, 8-tw, 24+2*th);
+            verts[17] = new Vertex5(0.5+w, 0, 1, 8+tw, 24+2*th);
+            verts[18] = new Vertex5(0.5+w, 0, 1+h, 8+tw, 24+th);
+            verts[19] = new Vertex5(0.5-w, 0, 1+h, 8-tw, 24+th);
 
             reflectSide(verts, r);
             return verts;
@@ -220,13 +236,12 @@ public class RenderWire {
         
         private Vertex5[] generateExtension(int tl) {
             double l = tl/16D;
-            double d = 0.002;
             
             return new Vertex5[]{//cap
-                    new Vertex5(0.5-w, 0, 0.5+l-d, 8-tw, 24+2*th),
-                    new Vertex5(0.5+w, 0, 0.5+l-d, 8+tw, 24+2*th),
-                    new Vertex5(0.5+w, h, 0.5+l-d, 8+tw, 24+th),
-                    new Vertex5(0.5-w, h, 0.5+l-d, 8-tw, 24+th),
+                    new Vertex5(0.5-w, 0, 0.5+l, 8-tw, 24+2*th),
+                    new Vertex5(0.5+w, 0, 0.5+l, 8+tw, 24+2*th),
+                    new Vertex5(0.5+w, h, 0.5+l, 8+tw, 24+th),
+                    new Vertex5(0.5-w, h, 0.5+l, 8-tw, 24+th),
 
                     //top
                     new Vertex5(0.5-w, h, 0.5+l, 8-tw, 16+tl),

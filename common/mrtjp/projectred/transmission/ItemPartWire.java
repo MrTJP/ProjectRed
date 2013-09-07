@@ -2,7 +2,8 @@ package mrtjp.projectred.transmission;
 
 import java.util.List;
 
-import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.ProjectRedTransmission;
+import mrtjp.projectred.core.BasicWireUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -23,8 +24,8 @@ public class ItemPartWire extends JItemMultiPart {
     public ItemPartWire(int id) {
         super(id);
         setHasSubtypes(true);
-        setCreativeTab(ProjectRedTabs.tabTransmission);
-        setUnlocalizedName("projred.transmission.wire");
+        setCreativeTab(ProjectRedTransmission.tabTransmission);
+        setUnlocalizedName("projectred.transmission.wire");
     }
 
     @Override
@@ -45,7 +46,7 @@ public class ItemPartWire extends JItemMultiPart {
         EnumWire type = EnumWire.VALID_WIRE[item.getItemDamage()];
         WirePart w = (WirePart) MultiPartRegistry.createPart(type.wireType, false);
         if(w != null)
-            w.onPlaced(side, item.getItemDamage());
+            w.preparePlacement(side, item.getItemDamage());
         return w;
     }
     

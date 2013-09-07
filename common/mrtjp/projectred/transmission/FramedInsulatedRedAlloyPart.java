@@ -1,5 +1,6 @@
 package mrtjp.projectred.transmission;
 
+import mrtjp.projectred.api.IConnectable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
 import codechicken.lib.data.MCDataInput;
@@ -23,8 +24,8 @@ public class FramedInsulatedRedAlloyPart extends FramedRedwirePart implements II
     }
 
     @Override
-    public void onPlaced(int meta) {
-        super.onPlaced(meta);
+    public void preparePlacement(int meta) {
+        super.preparePlacement(meta);
         colour = (byte)(meta-EnumWire.INSULATED_0.ordinal());
     }
 

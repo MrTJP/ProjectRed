@@ -162,7 +162,7 @@ public class BasicGuiUtils {
 
     public static void drawSlotBackground(Minecraft mc, int x, int y) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.renderEngine.func_110577_a(new ResourceLocation("projectred", "textures/gui/slot.png"));
+        mc.renderEngine.bindTexture(new ResourceLocation("projectred", "textures/gui/slot.png"));
 
         Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -175,7 +175,7 @@ public class BasicGuiUtils {
 
     public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.renderEngine.func_110577_a(new ResourceLocation("/projectred", "textures/gui/slot-big.png"));
+        mc.renderEngine.bindTexture(new ResourceLocation("/projectred", "textures/gui/slot-big.png"));
 
         Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -188,7 +188,7 @@ public class BasicGuiUtils {
 
     public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.renderEngine.func_110577_a(new ResourceLocation("projectred", "textures/gui/slot-small.png"));
+        mc.renderEngine.bindTexture(new ResourceLocation("projectred", "textures/gui/slot-small.png"));
 
         Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -201,7 +201,7 @@ public class BasicGuiUtils {
 
     public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, Icon icon) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.renderEngine.func_110577_a(new ResourceLocation("/gui/items.png"));
+        mc.renderEngine.bindTexture(new ResourceLocation("/gui/items.png"));
 
         Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -220,7 +220,7 @@ public class BasicGuiUtils {
         if (flag) {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         }
-        mc.renderEngine.func_110577_a(new ResourceLocation("projectred", "textures/gui/GuiBackground.png"));
+        mc.renderEngine.bindTexture(new ResourceLocation("projectred", "textures/gui/GuiBackground.png"));
 
         if (displayTop) {
             // Top Side

@@ -1,7 +1,9 @@
 package mrtjp.projectred.transmission;
 
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.CoreCPH;
 import mrtjp.projectred.core.CoreProxy;
 import mrtjp.projectred.core.Messenger;
 import net.minecraft.block.Block;
@@ -226,7 +228,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     }
 
     public int getPartSignal(TMultiPart part, int r) {
-        if(part instanceof IRedwirePart)
+        if(part instanceof IRedwirePart && ((IRedwirePart) part).isWireSide(r))
             return ((IRedwirePart) part).getRedwireSignal(r) - 1;
         else if(part instanceof IRedwireEmitter)
             return ((IRedwireEmitter) part).getRedwireSignal(r);
@@ -250,7 +252,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
 
     @Override
     protected boolean debug(EntityPlayer ply) {
-        ply.sendChatToPlayer(ChatMessageComponent.func_111077_e((world().isRemote ? "Client" : "Server") + " signal strength: " + getRedwireSignal()));
+        ply.sendChatToPlayer(ChatMessageComponent.createFromTranslationKey((world().isRemote ? "Client" : "Server") + " signal strength: " + getRedwireSignal()));
         return true;
     }
     
@@ -259,7 +261,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         if (BasicUtils.isClient(world())) {
             Messenger.addMessage(x() + 0, y() + .5f, z() + 0,  "/#f/#c[c] = " + getRedwireSignal());
         } else {
-            PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreProxy.messengerQueue);
+            PacketCustom packet = new PacketCustom(CoreCPH.channel, CoreProxy.messengerQueue);
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);

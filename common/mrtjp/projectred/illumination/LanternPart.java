@@ -2,10 +2,9 @@ package mrtjp.projectred.illumination;
 
 import java.util.Arrays;
 
-import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.transmission.BasicWireUtils;
+import mrtjp.projectred.core.BasicWireUtils;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -28,7 +27,7 @@ import codechicken.multipart.TSlottedPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class LanternPart extends JCuboidPart implements TSlottedPart, JNormalOcclusion, IRedstonePart {
+public class LanternPart extends JCuboidPart implements TSlottedPart, JNormalOcclusion, IRedstonePart, ILight {
 
     EnumLantern type;
     private boolean isInverted;
@@ -89,6 +88,12 @@ public class LanternPart extends JCuboidPart implements TSlottedPart, JNormalOcc
         updateStateNextTick = true;
     }
     
+    @Override
+    public void onPartChanged(TMultiPart t){
+        updateNextTick = true;
+        updateStateNextTick = true;
+    }
+        
     private boolean isBeingPowered() {
         return world().isBlockIndirectlyGettingPowered(x(), y(), z());
     }
@@ -228,4 +233,8 @@ public class LanternPart extends JCuboidPart implements TSlottedPart, JNormalOcc
         return 0;
     }
     
+    @Override
+    public boolean isOn() {
+        return getLightValue() == 15;
+    }
 }

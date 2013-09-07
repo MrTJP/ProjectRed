@@ -1,6 +1,7 @@
 package mrtjp.projectred.transmission;
 
 import mrtjp.projectred.ProjectRedTransmission;
+import mrtjp.projectred.core.AlloySmelterRecipe;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
 import net.minecraft.block.Block;
@@ -15,22 +16,7 @@ public class TransmissionRecipes {
     public static void initTransmissionRecipes() {
         initWireRecipes();
         initPartRecipes();
-        initToolRecipes();
-    }
-
-    private static void initToolRecipes() {
-        /** Wire debugger **/
-        GameRegistry.addRecipe(new ItemStack(ProjectRedTransmission.itemWireDebugger), 
-                "a a",
-                "ber",
-                "bgr",
-                'a', EnumPart.REDINGOT.getItemStack(),
-                'b', new ItemStack(Item.dyePowder, 1, PRColors.BLACK.dyeId()),
-                'e', Item.emerald,
-                'l', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId()),
-                'r', new ItemStack(Item.dyePowder, 1, PRColors.RED.dyeId()),
-                'g', Item.glowstone
-        );
+        initAlloySmelterRecipes();
     }
 
     private static void initWireRecipes() {    
@@ -120,4 +106,22 @@ public class TransmissionRecipes {
                 'p', EnumPart.PLATE.getItemStack()
         );
     }
+    
+    private static void initAlloySmelterRecipes() {
+        /** Red Alloy Ingot reset recipes **/
+        AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
+                EnumWire.RED_ALLOY.getItemStack(4),
+        }, EnumPart.REDINGOT.getItemStack(), 50));
+        
+        AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
+                EnumWire.BUNDLED_N.getItemStack(8),
+        }, EnumPart.REDINGOT.getItemStack(5), 90));
+        
+        for (EnumWire w : EnumWire.INSULATED_WIRE) {
+            AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
+                    w.getItemStack(4)
+            }, EnumPart.REDINGOT.getItemStack(), 80));
+        }
+    }
+
 }

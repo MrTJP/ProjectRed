@@ -2,7 +2,7 @@ package mrtjp.projectred.illumination;
 
 import java.util.List;
 
-import mrtjp.projectred.core.ProjectRedTabs;
+import mrtjp.projectred.ProjectRedIllumination;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -23,8 +23,8 @@ public class ItemPartLamp extends JItemMultiPart {
         super(id);
         inverted = isInverted;
         this.setHasSubtypes(true);
-        this.setUnlocalizedName("projred.illumination.lamp");
-        this.setCreativeTab(ProjectRedTabs.tabLighting);
+        this.setUnlocalizedName("projectred.illumination.lamp");
+        this.setCreativeTab(ProjectRedIllumination.tabLighting);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ItemPartLamp extends JItemMultiPart {
     }
 
     public String getUnlocalizedName(ItemStack stack) {
-        return super.getUnlocalizedName() + (inverted ? "inv." : "") + "|" + stack.getItemDamage();
+        return super.getUnlocalizedName() + (inverted ? ".inv" : "") + "|" + stack.getItemDamage();
     }
 
     @Override

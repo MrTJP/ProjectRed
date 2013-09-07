@@ -2,8 +2,8 @@ package mrtjp.projectred.expansion;
 
 import java.util.List;
 
+import mrtjp.projectred.ProjectRedExpansion;
 import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -19,8 +19,8 @@ public class ItemVAWT extends Item {
         maxStackSize = 1;
         setMaxDamage(1280);
         setNoRepair();
-        setUnlocalizedName("projectred.items.turbine.VAWT");
-        setCreativeTab(ProjectRedTabs.tabExpansion);
+        setUnlocalizedName("projectred.expansion.VAWT");
+        setCreativeTab(ProjectRedExpansion.tabExpansion);
     }
 
     @Override

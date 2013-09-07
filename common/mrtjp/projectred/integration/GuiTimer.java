@@ -1,20 +1,19 @@
 package mrtjp.projectred.integration;
 
 import mrtjp.projectred.core.BasicGuiUtils;
-import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.integration.GateLogic.ITimerGuiLogic;
 import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.vec.BlockCoord;
 
 public class GuiTimer extends GuiScreenWidget {
 
-    int timerInterval = 4;
-    BlockCoord coords;
-    int face;
-
-    public GuiTimer() {
-        super();
+    public ITimerGuiLogic logic;
+    public GatePart part;
+    
+    public GuiTimer(GatePart part) {
+        this.part = part;
+        logic = ((ITimerGuiLogic)part.getLogic());
     }
 
     @Override
@@ -43,7 +42,7 @@ public class GuiTimer extends GuiScreenWidget {
     @Override
     public void drawBackground() {
         BasicGuiUtils.drawGuiBackGround(mc, 0, 0, xSize, ySize, zLevel, true);
-        String s = "Timer interval: " + String.format("%.2f", timerInterval * 0.05) + "s";
+        String s = "Timer interval: " + String.format("%.2f", logic.getTimerMax() * 0.05) + "s";
         int name_w = fontRenderer.getStringWidth(s);
         fontRenderer.drawString(s, (xSize - name_w) / 2, 8, 0x404040);
     }
@@ -52,12 +51,23 @@ public class GuiTimer extends GuiScreenWidget {
     public boolean doesGuiPauseGame() {
         return false;
     }
+    
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
+        
+        if(part.tile() == null)
+            mc.thePlayer.closeScreen();
+    }
 
     public void actionPerformed(String ident, Object... params) {
-        PacketCustom packet = new PacketCustom(Configurator.integrationPacketChannel, IntegrationProxy.guiGateButtonPressed);
-        packet.writeCoord(coords);
-        packet.writeByte(face);
-        packet.writeString(ident);
+        if(ident.startsWith("+"))
+            ident = ident.substring(1);
+        int value = Integer.parseInt(ident);
+        
+        PacketCustom packet = new PacketCustom(IntegrationCPH.channel, 1);
+        IntegrationSPH.writePartIndex(packet, part);
+        packet.writeShort(value);
         packet.sendToServer();
     }
 }

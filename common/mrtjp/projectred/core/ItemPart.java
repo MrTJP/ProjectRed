@@ -18,7 +18,8 @@ public class ItemPart extends Item {
 
     public ItemPart(int par1) {
         super(par1);
-        setCreativeTab(ProjectRedTabs.tabCore);
+        setUnlocalizedName("projectred.core.part");
+        setCreativeTab(ProjectRedCore.tabCore);
         setHasSubtypes(true);
     }
 
@@ -40,7 +41,7 @@ public class ItemPart extends Item {
      */
     @Override
     public String getUnlocalizedName(ItemStack itemstack) {
-        return EnumPart.get(itemstack.getItemDamage()).unlocalName;
+        return getUnlocalizedName()+"."+EnumPart.get(itemstack.getItemDamage()).unlocalName;
     }
 
     @Override

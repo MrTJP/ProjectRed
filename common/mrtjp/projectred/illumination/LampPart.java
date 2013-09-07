@@ -2,7 +2,6 @@ package mrtjp.projectred.illumination;
 
 import java.util.Arrays;
 
-import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -25,7 +24,7 @@ import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class LampPart extends JCuboidPart implements TFacePart, JNormalOcclusion, IRedstonePart {
+public class LampPart extends JCuboidPart implements TFacePart, JNormalOcclusion, IRedstonePart, ILight {
 
 	EnumLamp type;
 	private boolean isInverted;
@@ -131,7 +130,8 @@ public class LampPart extends JCuboidPart implements TFacePart, JNormalOcclusion
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
-		LampRenderer.instance.renderLamp(this, null);
+	    if (pass == 0)
+	        LampRenderer.instance.renderLamp(this, null);
 	}
 
 	@Override
@@ -161,7 +161,7 @@ public class LampPart extends JCuboidPart implements TFacePart, JNormalOcclusion
 
 	@Override
 	public Cuboid6 getBounds() {
-		return new Cuboid6(0, 0, 0, 1, 1, 1);
+		return Cuboid6.full;
 	}
 
 	@Override
@@ -171,7 +171,7 @@ public class LampPart extends JCuboidPart implements TFacePart, JNormalOcclusion
 
 	@Override
 	public int getSlotMask() {
-		return 1 << PartMap.CENTER.i | 1 << 0 | 1 << 1 | 1 << 2 | 1 << 3 | 1 << 4 | 1 << 5;
+		return 1 << 6 | 1 << 0 | 1 << 1 | 1 << 2 | 1 << 3 | 1 << 4 | 1 << 5;
 	}
 
 	@Override
@@ -190,18 +190,23 @@ public class LampPart extends JCuboidPart implements TFacePart, JNormalOcclusion
 	}
 
 	@Override
-	public int weakPowerLevel(int arg0) {
-		return 0;
+	public int weakPowerLevel(int s) {
+		return world().getBlockPowerInput(x(), y(), z());
 	}
 
 	@Override
 	public int redstoneConductionMap() {
-		return 1 << PartMap.CENTER.i | 1 << 0 | 1 << 1 | 1 << 2 | 1 << 3 | 1 << 4 | 1 << 5;
+		return 1 << 6 | 1 << 0 | 1 << 1 | 1 << 2 | 1 << 3 | 1 << 4 | 1 << 5;
 	}
 
 	@Override
 	public boolean solid(int arg0) {
-		return true;
-	}
+        return true;
+    }
+
+    @Override
+    public boolean isOn() {
+        return getLightValue() == 15;
+    }
 
 }

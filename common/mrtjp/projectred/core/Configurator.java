@@ -17,19 +17,6 @@ public class Configurator {
     public static final String buildnumber = "@BUILD_NUMBER@";
     public static final String modName = "Project: Red";
 
-    public static final String corePacketChannel = "PR:Core";
-    public static final String integrationPacketChannel = "PR:Int";
-    public static final String transmissionPacketChannel = "PR:Trans";
-    public static final String expansionPacketChannel = "PR:Expan";
-
-    /** Modules **/
-    public static Property module_Core;
-    public static Property module_Integration;
-    public static Property module_Transmission;
-    public static Property module_Illumination;
-    public static Property module_Expansion;
-    public static Property module_Exploration;
-
     /** Multipart IDs **/
     public static Property part_gate;
     public static Property part_wire;
@@ -38,6 +25,8 @@ public class Configurator {
     public static Property part_invlantern;
     public static Property part_lamp;
     public static Property part_invlamp;
+    public static Property part_tube;
+    public static Property part_lightButton;
 
     /** Block IDs **/
     public static Property block_machinesID;
@@ -108,14 +97,7 @@ public class Configurator {
     public static void loadPropertiesFromFile(File file) {
         Configuration localConfig = new Configuration(file);
         localConfig.load();
-
-        module_Core = localConfig.get("Modules", "Core", true);
-        module_Integration = localConfig.get("Modules", "Integration", true);
-        module_Transmission = localConfig.get("Modules", "Transmission", true);
-        module_Illumination = localConfig.get("Modules", "Illumination", true);
-        module_Expansion = localConfig.get("Modules", "Expansion", true);
-        module_Exploration = localConfig.get("Modules", "Exploration", true);
-
+        
         part_gate = localConfig.get("MultiPart Item IDs", "Gate Part ID", 9030);
         part_wire = localConfig.get("MultiPart Item IDs", "Wire Part ID", 9031);
         part_jwire = localConfig.get("MultiPart Item IDs", "Jacketed Wire Part ID", 9032);
@@ -123,6 +105,8 @@ public class Configurator {
         part_invlantern = localConfig.get("MultiPart Item IDs", "Inverted Lantern Part ID", 9034);
         part_lamp = localConfig.get("MultiPart Item IDs", "Lamp Part ID", 9035);
         part_invlamp = localConfig.get("MultiPart Item IDs", "Inverted Lamp Part ID", 9036);
+        part_tube = localConfig.get("MultiPart Item IDs", "Tube Part ID", 9037);
+        part_lightButton = localConfig.get("MultiPart Item IDs", "Illuminated Button Part ID", 9038);
 
         block_machinesID = localConfig.getBlock("block_machinesID", 2129);
         block_oresID = localConfig.getBlock("block_oresID", 2130);
@@ -166,7 +150,7 @@ public class Configurator {
         item_sapphireSickle = localConfig.getItem("sapphiresickle", 9126);
         item_peridotSickle = localConfig.getItem("peridotsickle", 9127);
         item_diamondSickle = localConfig.getItem("diamondsickle", 9128);
-        item_wireDebuggerID = localConfig.getItem("item_wireDebuggerID", 9037);
+        item_wireDebuggerID = localConfig.getItem("item_wireDebuggerID", 9129);
 
         gen_Ruby = localConfig.get("World Generation", "Ruby Ore", true);
         gen_Sapphire = localConfig.get("World Generation", "Sapphire Ore", true);

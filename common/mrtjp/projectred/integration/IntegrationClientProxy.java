@@ -1,8 +1,6 @@
 package mrtjp.projectred.integration;
 
-import static mrtjp.projectred.ProjectRedIntegration.itemScrewdriver;
 import mrtjp.projectred.ProjectRedIntegration;
-import mrtjp.projectred.core.Configurator;
 import net.minecraftforge.client.MinecraftForgeClient;
 import codechicken.lib.packet.PacketCustom;
 import cpw.mods.fml.common.registry.LanguageRegistry;
@@ -10,15 +8,14 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 public class IntegrationClientProxy extends IntegrationProxy {
 
     @Override
+    public void preinit() {
+        super.preinit();
+        PacketCustom.assignHandler(IntegrationCPH.channel, new IntegrationCPH());
+    }
+    
+    @Override
     public void init() {
         super.init();
-        MinecraftForgeClient.registerItemRenderer(ProjectRedIntegration.itemPartGate.itemID, GateStaticRenderer.instance);
-
-        for (EnumGate g : EnumGate.VALID_GATES) {
-            LanguageRegistry.addName(g.getItemStack(), g.name);
-        }
-        LanguageRegistry.addName(itemScrewdriver, "Screwdriver");
-        
-        PacketCustom.assignHandler(Configurator.integrationPacketChannel, 0, 32, new IntegrationCPH());
+        MinecraftForgeClient.registerItemRenderer(ProjectRedIntegration.itemPartGate.itemID, GateItemRenderer.instance);
     }
 }

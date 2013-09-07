@@ -1,12 +1,19 @@
 package mrtjp.projectred.transmission;
 
+import static mrtjp.projectred.transmission.BundledCableCommons.calculatePartSignal;
+import static mrtjp.projectred.transmission.BundledCableCommons.tmpSignal;
+
 import java.util.Arrays;
 
+import mrtjp.projectred.api.IBundledEmitter;
+import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.CoreCPH;
 import mrtjp.projectred.core.CoreProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
@@ -15,8 +22,6 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
-
-import static mrtjp.projectred.transmission.BundledCableCommons.*;
 
 public class BundledCablePart extends WirePart implements IBundledCablePart {
 
@@ -41,8 +46,8 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
     }
 
     @Override
-    public void onPlaced(int side, int meta) {
-        super.onPlaced(side, meta);
+    public void preparePlacement(int side, int meta) {
+        super.preparePlacement(side, meta);
         colour = (byte) (meta - EnumWire.BUNDLED_0.ordinal());
     }
 
@@ -135,9 +140,11 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
         int absDir = Rotation.rotateSide(side, r);
 
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if (t != null)
-            calculatePartSignal(t.partMap(side), (r + 2) % 4);
+        TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
+        if(t instanceof IBundledEmitter)
+            calculatePartSignal(t, absDir^1);
+        else if(t instanceof TileMultipart)
+            calculatePartSignal(((TileMultipart)t).partMap(side), (r + 2) % 4);
     }
 
     public void calculateInternalSignal(int r) {
@@ -170,7 +177,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
             sb.append(s);
         }
 
-        ply.sendChatToPlayer(ChatMessageComponent.func_111077_e(sb.toString()));
+        ply.sendChatToPlayer(ChatMessageComponent.createFromTranslationKey(sb.toString()));
         return true;
     }
 
@@ -184,10 +191,10 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
                     s = s + "[" + i + "]";
                 }
             }
-            if (s == "") {
+            if (s == "")
                 s = "off";
-            }
-            PacketCustom packet = new PacketCustom(Configurator.corePacketChannel, CoreProxy.messengerQueue);
+
+            PacketCustom packet = new PacketCustom(CoreCPH.channel, CoreProxy.messengerQueue);
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);

@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Stack;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
 import mrtjp.projectred.core.CommandDebug;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
@@ -19,6 +16,9 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import codechicken.multipart.handler.MultipartProxy;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 public class WirePropogator {
     /**

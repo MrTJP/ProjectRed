@@ -1,24 +1,37 @@
 package mrtjp.projectred.core;
 
-import codechicken.microblock.ItemMicroPart;
 import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedExploration;
+import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.ItemPart.EnumPart;
-import mrtjp.projectred.expansion.AlloySmelterRecipe;
-import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import codechicken.microblock.ItemMicroPart;
+import codechicken.microblock.handler.MicroblockProxy;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CoreRecipes {
     public static void initCoreRecipes() {
+        initApplianceRecipes();
         initPartRecipes();
         initToolRecipes();
     }
 
+    private static void initApplianceRecipes() {
+        /** Alloy Smelter **/
+        GameRegistry.addRecipe(EnumBasics.ALLOYSMELTER.getItemStack(), 
+                "CBC",
+                "BBB",
+                "CBC",
+                'C', Block.blockClay,
+                'B', Block.brick
+        );
+    }
+    
     private static void initToolRecipes() {
         /** Draw Plate **/
         GameRegistry.addRecipe(new ShapedOreNBTRecipe(
@@ -28,7 +41,30 @@ public class CoreRecipes {
                 " i ",
                 'i', ItemMicroPart.create(770, Block.blockIron.getUnlocalizedName()),
                 'd', ItemMicroPart.create(2, Block.blockDiamond.getUnlocalizedName())
-        ).setCheckNBT());    
+        ).setCheckNBT());  
+        
+        /** Screw Driver **/
+        GameRegistry.addRecipe(new ItemStack(ProjectRedCore.itemScrewdriver),
+                "i  ",
+                " ib",
+                " bi",
+                'i', Item.ingotIron,
+                'b', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId())
+        );
+        
+        /** Wire debugger **/
+        GameRegistry.addRecipe(new ItemStack(ProjectRedCore.itemWireDebugger), 
+                "a a",
+                "ber",
+                "bgr",
+                'a', EnumPart.REDINGOT.getItemStack(),
+                'b', new ItemStack(Item.dyePowder, 1, PRColors.BLACK.dyeId()),
+                'e', Item.emerald,
+                'l', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId()),
+                'r', new ItemStack(Item.dyePowder, 1, PRColors.RED.dyeId()),
+                'g', Item.glowstone
+        );
+
     }
 
     private static void initPartRecipes() {
@@ -104,10 +140,15 @@ public class CoreRecipes {
         }, EnumPart.SILICONBOULE.getItemStack(), 500));
         
         /** Silicon **/
+        ItemStack saw;
+        if (Loader.isModLoaded("ProjectRed-Exploration"))
+            saw = new ItemStack(ProjectRedExploration.itemDiamondSaw, 1, Short.MAX_VALUE);
+        else
+            saw = new ItemStack(MicroblockProxy.sawDiamond(), 1, Short.MAX_VALUE);
         GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8), 
                 "s",
                 "b",
-                's', new ItemStack(ProjectRedExploration.itemDiamondSaw, 1, Short.MAX_VALUE), 
+                's', saw, 
                 'b', EnumPart.SILICONBOULE.getItemStack()
         );
         

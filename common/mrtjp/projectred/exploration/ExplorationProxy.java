@@ -38,25 +38,16 @@ import static mrtjp.projectred.ProjectRedExploration.itemWoolGin;
 import static mrtjp.projectred.ProjectRedExploration.toolMaterialPeridot;
 import static mrtjp.projectred.ProjectRedExploration.toolMaterialRuby;
 import static mrtjp.projectred.ProjectRedExploration.toolMaterialSapphire;
-
-import java.util.ArrayList;
-
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
 import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.EnumHelper;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 import codechicken.microblock.BlockMicroMaterial;
-import codechicken.microblock.ItemSaw;
 import codechicken.microblock.MicroMaterialRegistry;
-import codechicken.microblock.handler.MicroblockProxy;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ExplorationProxy implements IProxy {

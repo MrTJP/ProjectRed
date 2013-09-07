@@ -1,11 +1,12 @@
 package mrtjp.projectred.transmission;
 
+import mrtjp.projectred.api.IConnectable;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Icon;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -28,8 +29,8 @@ public class InsulatedRedAlloyPart extends RedwirePart implements IInsulatedRedw
     }
 
     @Override
-    public void onPlaced(int side, int meta) {
-        super.onPlaced(side, meta);
+    public void preparePlacement(int side, int meta) {
+        super.preparePlacement(side, meta);
         colour = (byte)(meta-EnumWire.INSULATED_0.ordinal());
     }
 

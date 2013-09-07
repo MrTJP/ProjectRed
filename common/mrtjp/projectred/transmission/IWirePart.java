@@ -38,11 +38,16 @@ public interface IWirePart
     public void onSignalUpdate();
     
     /**
+     * @param side The side of this part to test for wire connection. 
+     * For face parts, a rotation, or -1 for center. For center parts, a forgedirection.
+     * The special value Integer.MAX_VALUE should always return true and is used for return signals
+     * @return true if the specified side of this block is connected to a 'wire' where signal should decrease by one.
+     */
+    public boolean isWireSide(int side);
+    
+    /**
      * The world in which this part resides
      * @return
      */
     public World world();
-    
-    public void propogate(TMultiPart prev, int mode);
-    public boolean propogateTo(TMultiPart part, int mode);
 }

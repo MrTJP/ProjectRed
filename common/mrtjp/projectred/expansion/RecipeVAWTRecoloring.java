@@ -1,6 +1,5 @@
 package mrtjp.projectred.expansion;
 
-import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.ProjectRedExpansion;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;

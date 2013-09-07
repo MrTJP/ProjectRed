@@ -1,44 +1,26 @@
 package mrtjp.projectred.integration;
 
 import static mrtjp.projectred.ProjectRedIntegration.itemPartGate;
-import static mrtjp.projectred.ProjectRedIntegration.itemScrewdriver;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
-import codechicken.multipart.MultipartGenerator;
 import codechicken.multipart.TMultiPart;
 
 public class IntegrationProxy implements IProxy, IPartFactory {
 
-    public static final int guiGateButtonPressed = 1;
-    
-    public static final int guiTimerOpen = 2;
-    public static final int guiTimerBroadcastChange = 3;
-    
-    public static final int guiCounterOpen = 4;
-    public static final int guiCounterBroadcastChange = 5;
-
     @Override
     public void preinit() {
+        PacketCustom.assignHandler(IntegrationSPH.channel, new IntegrationSPH());
     }
     
     @Override
     public void init() {
-        String[] gates = new String[EnumGate.VALID_GATES.length];
-        for (EnumGate g : EnumGate.VALID_GATES) {
-            gates[g.ordinal()] = g.name;
-        }
-        MultiPartRegistry.registerParts(this, gates);
+        MultiPartRegistry.registerParts(this, new String[]{
+                "pr_sgate", "pr_igate", "pr_agate", "pr_bgate", "pr_tgate", "pr_rgate"});
 
         itemPartGate = new ItemPartGate(Configurator.part_gate.getInt());
-        itemScrewdriver = new ItemScrewdriver(Configurator.item_screwdriverID.getInt());
-        
-        MultipartGenerator.registerPassThroughInterface("dan200.computer.api.IPeripheral");
-        EnumGate.initOreDictDefinitions();
-        
-        PacketCustom.assignHandler(Configurator.integrationPacketChannel, 0, 32, new IntegrationSPH());
     }
 
     @Override
@@ -47,11 +29,19 @@ public class IntegrationProxy implements IProxy, IPartFactory {
     }
 
     @Override
-    public TMultiPart createPart(String name, boolean client) {
-        EnumGate g = EnumGate.getByName(name);
-        if (g != null) {
-            return g.createPart();
-        }
+    public TMultiPart createPart(String id, boolean client) {
+        if(id.equals("pr_sgate"))
+            return new SimpleGatePart();
+        if(id.equals("pr_igate"))
+            return new InstancedRsGatePart();
+        if(id.equals("pr_bgate"))
+            return new BundledGatePart();
+        if(id.equals("pr_agate"))
+            return new ArrayGatePart();
+        if(id.equals("pr_tgate"))
+            return new InstancedRsGatePartT();
+        if(id.equals("pr_rgate"))
+            return new RowGatePart();
         return null;
     }
 }

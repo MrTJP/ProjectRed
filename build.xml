@@ -1,28 +1,35 @@
 <project name="Project: Red" basedir="../" default="test">
 	<property environment="env" />
+	<property file="buildspecs.properties" prefix="buildspecs" />
+
 
 	<property name="mod.version" value="4.0.0" />
-    <property name="mod.version" value="4.0.0" />
-    <condition property="mod.build" value="${env.BUILD_NUMBER}" else="0">
-            <isset property="env.BUILD_NUMBER" />
-    </condition>
+	<condition property="mod.build" value="${env.BUILD_NUMBER}" else="0">
+		<isset property="env.BUILD_NUMBER" />
+	</condition>
+	<property name="mc.version" value="1.6.2" />
+	<property name="forge.version" value="9.10.1.857" />
+	<property name="ccl.version" value="1.0.0.29" />
+	<property name="ccc.version" value="0.9.0.5_d1" />
+	<property name="fmp.version" value="1.0.0.161" />
+	<property name="nei.version" value="1.6.1.3_d1" />
 
 	<property name="src.dir" value="ProjectRed" />
 	<property name="build.dir" value="build" />
 	<property name="download.dir" value="download" />
-	<property name="jar.dir" value="dist" />
+	<property name="jar.dir" value="dist/${mc.version}/${mod.version}-${mod.build}" />
 	<property name="forge.dir" value="${build.dir}/forge" />
 	<property name="fmp.dir" value="${build.dir}/fmp" />
+	<property name="ccc.dir" value="${build.dir}/ccc" />
+	<property name="ccl.dir" value="${build.dir}/ccl" />
 	<property name="mcp.dir" value="${forge.dir}/mcp" />
 
-	<property name="mc.version" value="1.6.2" />
-	<property name="forge.version" value="9.10.0.829" />
-	<property name="ccl.version" value="1.0.0.24" />
-	<property name="ccc.version" value="0.9.0.5" />
-	<property name="fmp.version" value="1.0.0.153" />
-	<property name="nei.version" value="1.6.1.3" />
 
-	<property name="mod.name" value="ProjectRed-${mc.version}-${mod.version}.${mod.build}.jar" />
+	<property name="mod.name.base" value="ProjectRedBase-${mc.version}-${mod.version}.${mod.build}.jar" />
+	<property name="mod.name.integration" value="ProjectRedIntegration-${mc.version}-${mod.version}.${mod.build}.jar" />
+	<property name="mod.name.mechanical" value="ProjectRedMechanical-${mc.version}-${mod.version}.${mod.build}.jar" />
+	<property name="mod.name.world" value="ProjectRedWorld-${mc.version}-${mod.version}.${mod.build}.jar" />
+
 	<property name="forge.name" value="minecraftforge-src-${mc.version}-${forge.version}.zip" />
 	<property name="ccl.name" value="CodeChickenLib-dev-${mc.version}-${ccl.version}.jar" />
 	<property name="ccc.name" value="CodeChickenCore-dev%20${ccc.version}.jar" />
@@ -69,6 +76,10 @@
 		</and>
 	</condition>
 
+	<condition property="runnung-in-ci">
+		<isset property="env.TRAVIS" />
+	</condition>
+
 
 	<!-- Make directories -->
 	<mkdir dir="${build.dir}" />
@@ -100,17 +111,24 @@
 
 	<!-- Targets for installing dependencies -->
 	<target name="install-forge" depends="download-forge" unless="forge-installed">
-		<echo message="Deleteing old Forge" />
+		<echo message="Deleting old Forge" />
 		<delete dir="${forge.dir}" />
 
-		<echo message="Installing Forge" />
+		<condition property="installargs" value=" --no-assets" else="">
+			<or>
+				<isset property="env.TRAVIS" />
+				<isset property="env.BUILD_ID" />
+			</or>
+		</condition>
+
+		<echo message="Installing Forge with args '${installargs}'." />
 		<unzip src="${download.dir}/${forge.name}" dest="${forge.dir}/.." />
 		<property name="fml.python.exe" location="${forge.dir}/fml/python/python_fml.exe" />
 		<exec dir="${forge.dir}" executable="${fml.python.exe}" osfamily="windows" failonerror="true">
-			<arg line="install.py --no-assets" />
+			<arg line="install.py${installargs}" />
 		</exec>
 		<exec dir="${forge.dir}" executable="python" osfamily="unix" failonerror="true">
-			<arg line="install.py --no-assets" />
+			<arg line="install.py${installargs}" />
 		</exec>
 
 		<echo message="Updating build.dependencies" />
@@ -126,6 +144,11 @@
 
 		<echo message="Installing CodeChickenLib" />
 		<copy file="${download.dir}/${ccl.name}" todir="${mcp.dir}/lib" />
+		<unzip src="${download.dir}/${ccl.name}" dest="${ccl.dir}">
+			<patternset>
+				<include name="**/*.class" />
+			</patternset>
+		</unzip>
 
 		<echo message="Updating build.dependencies" />
 		<propertyfile file="${build.dependencies.file}">
@@ -140,6 +163,12 @@
 
 		<echo message="Installing CodeChickenCore" />
 		<copy file="${download.dir}/${ccc.name}" todir="${mcp.dir}/lib" />
+		<unzip src="${download.dir}/${ccc.name}" dest="${ccc.dir}">
+			<patternset>
+				<include name="**/*.class" />
+			</patternset>
+		</unzip>
+
 
 		<echo message="Updating build.dependencies" />
 		<propertyfile file="${build.dependencies.file}">
@@ -236,6 +265,14 @@
 		<copy todir="${mcp.dir}/bin/minecraft">
 			<fileset dir="${fmp.dir}" />
 		</copy>
+		<echo message="Copying CodeChickenCore" />
+		<copy todir="${mcp.dir}/bin/minecraft">
+			<fileset dir="${ccc.dir}" />
+		</copy>
+		<echo message="Copying CodeChickenLib" />
+		<copy todir="${mcp.dir}/bin/minecraft">
+			<fileset dir="${ccl.dir}" />
+		</copy>
 
 		<echo message="Reobfuscating" />
 		<property name="mcp.python.exe" location="${mcp.dir}/runtime/bin/python/python_mcp.exe" />
@@ -255,6 +292,24 @@
 				<present present="both" targetdir="${fmp.dir}" />
 			</fileset>
 		</delete>
+		<echo message="Removing CodeChickenCore" />
+		<delete includeemptydirs="true">
+			<fileset dir="${mcp.dir}/bin/minecraft">
+				<present present="both" targetdir="${ccc.dir}" />
+			</fileset>
+			<fileset dir="${mcp.dir}/reobf/minecraft">
+				<present present="both" targetdir="${ccc.dir}" />
+			</fileset>
+		</delete>
+		<echo message="Removing CodeChickenLib" />
+		<delete includeemptydirs="true">
+			<fileset dir="${mcp.dir}/bin/minecraft">
+				<present present="both" targetdir="${ccl.dir}" />
+			</fileset>
+			<fileset dir="${mcp.dir}/reobf/minecraft">
+				<present present="both" targetdir="${ccl.dir}" />
+			</fileset>
+		</delete>
 
 		<fail message="Failed to reobfuscate">
 			<condition>
@@ -265,18 +320,34 @@
 
 	<target name="package">
 		<echo message="Building Jar" />
-		<!-- Build the jar -->
-		<echo message="Packaging" />
 		<mkdir dir="${jar.dir}" />
-		<jar destfile="${jar.dir}/${mod.name}">
-			<fileset dir="${mcp.dir}/reobf/minecraft" />
-			<fileset dir="${mcp.dir}/reobf/resources" />
-		</jar>
-	</target>
 
-	<target name="ci">
-		<delete dir="${jar.dir}" />
-		<antcall target="package" />
+		<!-- ProjectRed Base -->
+		<echo message="Packaging ProjectRed Base" />
+		<jar destfile="${jar.dir}/${mod.name.base}">
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedCore*.class, **/mrtjp/projectred/core/**, **/mrtjp/projectred/api/**" />
+			<fileset dir="${mcp.dir}/reobf/resources">
+			</fileset>
+		</jar>
+
+		<!-- ProjectRed Integration -->
+		<echo message="Packaging ProjectRed Integration" />
+		<jar destfile="${jar.dir}/${mod.name.integration}">
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedIntegration*.class, **/ProjectRedTransmission*.class, **/mrtjp/projectred/integration/**, **/mrtjp/projectred/transmission/**" />
+		</jar>
+
+		<!-- ProjectRed Mechanical -->
+		<echo message="Packaging ProjectRed Mechanical" />
+		<jar destfile="${jar.dir}/${mod.name.mechanical}">
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExpansion*.class, **/mrtjp/projectred/expansion/**" />
+		</jar>
+
+		<!-- ProjectRed World -->
+		<echo message="Packaging ProjectRed World" />
+		<jar destfile="${jar.dir}/${mod.name.world}">
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExploration*.class, **/ProjectRedIllumination*.class, **/mrtjp/projectred/exploration/**, **/mrtjp/projectred/illumination/**" />
+		</jar>
+
 	</target>
 
 	<target name="test">

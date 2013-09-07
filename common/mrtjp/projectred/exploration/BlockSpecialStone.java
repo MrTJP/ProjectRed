@@ -3,7 +3,6 @@ package mrtjp.projectred.exploration;
 import java.util.ArrayList;
 
 import mrtjp.projectred.ProjectRedExploration;
-import mrtjp.projectred.core.ProjectRedTabs;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -19,7 +18,7 @@ public class BlockSpecialStone extends Block {
         this.setUnlocalizedName("projectred.exploration.stone");
         setHardness(3.0F);
         setResistance(10.0F);
-        setCreativeTab(ProjectRedTabs.tabExploration);
+        setCreativeTab(ProjectRedExploration.tabExploration);
     }
 
     @Override
@@ -49,17 +48,24 @@ public class BlockSpecialStone extends Block {
 
     @Override
     public void registerIcons(IconRegister reg) {
-        for (EnumSpecialStone s : EnumSpecialStone.VALID_STONE) {
+        for (EnumSpecialStone s : EnumSpecialStone.VALID_STONE)
             s.loadTextures(reg);
-        }
+    }
+    
+    @Override
+    public int damageDropped(int meta) {
+        return meta;
     }
 
     public enum EnumSpecialStone {
-        MARBLE("Marble", "stonemarble", 1, 6),
-        MARBLEBRICK("Marble Brick", "brickmarble", 1, 6), 
-        BASALTCOBBLE("Basalt Cobblestone", "cobblebasalt", 2.5f, 16),
+        MARBLE("Marble", "stonemarble", 1, 6, null),
+        MARBLEBRICK("Marble Brick", "brickmarble", 1, 6, null), 
+        BASALTCOBBLE("Basalt Cobblestone", "cobblebasalt", 2.5f, 16, null),
         BASALT("Basalt", "stonebasalt", 2.5f, 8, BASALTCOBBLE.getItemStack()),
-        BASALTBRICK("Basalt Brick", "brickbasalt", 2.5f, 8),
+        BASALTBRICK("Basalt Brick", "brickbasalt", 2.5f, 8, null),
+        RUBYBLOCK("Ruby Block", "storageruby", 5.0F, 10.0F, null),
+        SAPPHIREBLOCK("Sapphire Block", "storagesapphire", 5.0F, 10.0F, null),
+        PERIDOTBLOCK("Peridot Block", "storageperidot", 5.0F, 10.0F, null),
         ;
 
         public final String name;
@@ -70,10 +76,6 @@ public class BlockSpecialStone extends Block {
         public final int meta = ordinal();
         public Icon texture;
         public static EnumSpecialStone[] VALID_STONE = values();
-
-        private EnumSpecialStone(String name, String unlocal, float hardness, float explosionRes) {
-            this(name, unlocal, hardness, explosionRes, null);
-        }
 
         private EnumSpecialStone(String name, String unlocal, float hardness, float explosionRes, ItemStack drop) {
             this.name = name;
@@ -92,7 +94,7 @@ public class BlockSpecialStone extends Block {
         }
         
         public ItemStack getItemStack(int i) {
-            return new ItemStack(ProjectRedExploration.blockStones, 1, meta);
+            return new ItemStack(ProjectRedExploration.blockStones, i, meta);
         }
     }
 }

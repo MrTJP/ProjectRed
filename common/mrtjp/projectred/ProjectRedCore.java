@@ -1,31 +1,19 @@
 package mrtjp.projectred;
 
+import codechicken.lib.packet.PacketCustom.CustomTinyPacketHandler;
+import mrtjp.projectred.api.ProjectRedAPI;
+import mrtjp.projectred.core.APIImpl;
+import mrtjp.projectred.core.BlockBasics;
 import mrtjp.projectred.core.CommandDebug;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.CoreGuiHandler;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.core.ItemDrawPlate;
 import mrtjp.projectred.core.ItemPart;
-import mrtjp.projectred.expansion.BlockMachines;
-import mrtjp.projectred.expansion.ItemVAWT;
-import mrtjp.projectred.exploration.BlockOre;
-import mrtjp.projectred.exploration.BlockSpecialStone;
-import mrtjp.projectred.exploration.ItemBackpack;
-import mrtjp.projectred.exploration.ItemGemAxe;
-import mrtjp.projectred.exploration.ItemGemHoe;
-import mrtjp.projectred.exploration.ItemGemPickaxe;
-import mrtjp.projectred.exploration.ItemGemSaw;
-import mrtjp.projectred.exploration.ItemGemShovel;
-import mrtjp.projectred.exploration.ItemGemSickle;
-import mrtjp.projectred.exploration.ItemGemSword;
-import mrtjp.projectred.exploration.ItemWoolGin;
-import mrtjp.projectred.illumination.ItemPartLamp;
-import mrtjp.projectred.illumination.ItemPartLantern;
-import mrtjp.projectred.integration.ItemPartGate;
-import mrtjp.projectred.integration.ItemScrewdriver;
-import mrtjp.projectred.transmission.ItemPartFramedWire;
-import mrtjp.projectred.transmission.ItemPartWire;
-import mrtjp.projectred.transmission.ItemWireDebugger;
-import net.minecraft.item.EnumToolMaterial;
+import mrtjp.projectred.core.ItemScrewdriver;
+import mrtjp.projectred.core.ItemWireDebugger;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
@@ -35,6 +23,8 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.LanguageRegistry;
 
 /**
  * "Project: Red" serves to provide a complete alternative for Eloraam's
@@ -51,19 +41,36 @@ dependencies =
         "after:CCTurtle;" +
         "after:ComputerCraft;"
 )
-@NetworkMod(clientSideRequired = true, serverSideRequired = true)
+@NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
 public class ProjectRedCore {
     
+    public ProjectRedCore() {
+        ProjectRedAPI.instance = new APIImpl();
+    }
+    
+    /** Blocks **/
+    public static BlockBasics blockMachines;
+
     /** Items **/
     public static ItemPart itemComponent;
     public static ItemDrawPlate itemDrawPlate;
+    public static ItemScrewdriver itemScrewdriver;
+    public static ItemWireDebugger itemWireDebugger;
 
+    
     @Instance("ProjRed|Core")
     public static ProjectRedCore instance;
     
     @SidedProxy(clientSide = "mrtjp.projectred.core.CoreClientProxy", serverSide = "mrtjp.projectred.core.CoreProxy")
     public static IProxy proxy;    
     
+    public static CreativeTabs tabCore = new CreativeTabs("core") {
+        @Override
+        public ItemStack getIconItemStack() {
+            return new ItemStack(ProjectRedCore.itemScrewdriver);
+        }
+    };
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         Configurator.initConfig(event);
@@ -73,7 +80,7 @@ public class ProjectRedCore {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(instance);
-        MinecraftForge.EVENT_BUS.register(proxy);
+        NetworkRegistry.instance().registerGuiHandler(instance, new CoreGuiHandler());
         proxy.init();
     }
 

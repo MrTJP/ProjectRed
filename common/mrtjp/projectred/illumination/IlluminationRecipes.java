@@ -1,8 +1,10 @@
 package mrtjp.projectred.illumination;
 
+import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class IlluminationRecipes {
@@ -56,6 +58,14 @@ public class IlluminationRecipes {
             );
         }
         
+        /** Buttons **/
+        for (int i = 0; i < 16; i++)
+            GameRegistry.addShapelessRecipe(
+                    new ItemStack(ProjectRedIllumination.itemPartIlluminatedButton, 1, i), 
+                    Block.stoneButton, 
+                    EnumPart.ILLUMAR_PARTS[i].getItemStack(), 
+                    EnumPart.ILLUMAR_PARTS[i].getItemStack()
+            );
     }
 }
 

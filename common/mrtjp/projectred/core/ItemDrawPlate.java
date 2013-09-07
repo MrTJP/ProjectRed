@@ -1,14 +1,15 @@
 package mrtjp.projectred.core;
 
+import mrtjp.projectred.ProjectRedCore;
 import net.minecraft.client.renderer.texture.IconRegister;
 
 public class ItemDrawPlate extends ItemCraftingDamage {
 
     public ItemDrawPlate(int par1) {
         super(par1);
-        setUnlocalizedName("projectred.items.drawplate");
+        setUnlocalizedName("projectred.core.drawplate");
         setMaxDamage(512);
-        setCreativeTab(ProjectRedTabs.tabCore);
+        setCreativeTab(ProjectRedCore.tabCore);
     }
 
     @Override
