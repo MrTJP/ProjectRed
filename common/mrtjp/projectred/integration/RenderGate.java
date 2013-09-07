@@ -1351,7 +1351,7 @@ public class RenderGate
     public static class BusEye extends GateRenderer<BundledGatePart>
     {
         BusXcvrCableModel cable = new BusXcvrCableModel();
-        BusXcvrPanelModel panel = new BusXcvrPanelModel(8, 8, false);
+        BusXcvrPanelModel panel = new BusXcvrPanelModel(8, 8, false, 2);
         public BusEye () {
             models.add(cable);
             models.add(panel);
