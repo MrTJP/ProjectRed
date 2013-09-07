@@ -49,7 +49,8 @@ public class RenderGate
             new InvertCell(),
             new BufferCell(),
             new Comparator(),
-            new ANDCell()
+            new ANDCell(),
+            new BusDisplay()
         };
     
     public static void registerIcons(IconRegister r) {
