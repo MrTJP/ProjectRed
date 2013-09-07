@@ -1345,4 +1345,32 @@ public class RenderGate
             wires[1].on = !torches[0].on;
         }
     }
+    
+    public static class BusDisplay extends GateRenderer<BundledGatePart>
+    {
+        BusXcvrCableModel cable = new BusXcvrCableModel();
+        BusXcvrPanelModel panel = new BusXcvrPanelModel(8, 8, true);
+        public BusXcvr () {
+            models.add(cable);
+            models.add(panel);
+        }
+        
+        @Override
+        public void prepareInv() {
+            reflect = false;
+            panel.signal = 0;
+        }
+        
+        @Override
+        public void prepare(BundledGatePart gate) {
+            reflect = gate.shape() != 0;
+            int state = gate.state();
+            if(reflect)
+                state = GatePart.flipMaskZ(state);
+
+            BusDisplay logic = (BusDisplay) gate.getLogic();
+            int packed = logic.packClientData();
+            panel.signal = packed & 0xFFFF;
+        }
+    }
 }
