@@ -1351,7 +1351,7 @@ public class RenderGate
     {
         BusXcvrCableModel cable = new BusXcvrCableModel();
         BusXcvrPanelModel panel = new BusXcvrPanelModel(8, 8, true);
-        public BusXcvr () {
+        public BusDisplay () {
             models.add(cable);
             models.add(panel);
         }
