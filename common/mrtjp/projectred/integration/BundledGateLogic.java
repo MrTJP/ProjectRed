@@ -214,7 +214,7 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
     {
         public byte[] input = new byte[16];
                 
-        public BusTransceiver(BundledGatePart gate) {
+        public BusDisplay(BundledGatePart gate) {
             super(gate);
         }
         
