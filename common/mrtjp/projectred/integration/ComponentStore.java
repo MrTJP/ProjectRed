@@ -790,10 +790,9 @@ public class ComponentStore
         public CCModel[] models;
         public Vector3 pos;
         public boolean flip;
-        public double scale;
         public int signal;
         
-        public BusXcvrPanelModel(double x, double z, boolean flip, double scale) {
+        public BusXcvrPanelModel(double x, double z, boolean flip) {
             this.flip = flip;
             pos = new Vector3(x, 0, z).multiply(1/16D);
             
@@ -806,11 +805,7 @@ public class ComponentStore
             for(int i = 0; i < 48; i++)
                 models[i] = bakeCopy(base, i);
         }
-        
-        public BusXcvrPanelModel(double x, double z, boolean flip) {
-            this(x,z,flip,1);
-        }
-        
+
         @Override
         public void renderModel(Transformation t, int orient) {
             IconTransformation icont = new IconTransformation(busXcvrIcon);
@@ -822,8 +817,7 @@ public class ComponentStore
             
             Transformation displayT = flip ? new RedundantTransformation() : Rotation.quarterRotations[2];
             displayT = displayT.with(displayPos.translation()).with(orientT(orient%24)).with(t);
-            displayT = displayT.with(new Scale(new Vector3(scale,1,scale)));
-            for(int i = 0; i < 16; i++)
+             for(int i = 0; i < 16; i++)
                 if((signal & 1<<i) != 0)
                     displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel);
         }
