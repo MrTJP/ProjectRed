@@ -291,7 +291,7 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         
         @Override
         public void onChange(BundledGatePart gate) {
-            byte[] newInput = getBundledInput(newInput, 0);
+            byte[] newInput = getBundledInput(0, 0);
             if (!BundledCableCommons.signalsEqual(input, newInput)) {
                 input = newInput;
                 gate.scheduleTick(2);
