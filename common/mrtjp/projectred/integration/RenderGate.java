@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Random;
 
 import mrtjp.projectred.integration.BundledGateLogic.BusTransceiver;
+import mrtjp.projectred.integration.BundledGateLogic.BusDisplay;
 import mrtjp.projectred.integration.InstancedRsGateLogic.ExtraStateLogic;
 import mrtjp.projectred.integration.InstancedRsGateLogic.TimerGateLogic;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -50,7 +51,7 @@ public class RenderGate
             new BufferCell(),
             new Comparator(),
             new ANDCell(),
-            new BusDisplay()
+            new BusEye()
         };
     
     public static void registerIcons(IconRegister r) {
@@ -1347,11 +1348,11 @@ public class RenderGate
         }
     }
     
-    public static class BusDisplay extends GateRenderer<BundledGatePart>
+    public static class BusEye extends GateRenderer<BundledGatePart>
     {
         BusXcvrCableModel cable = new BusXcvrCableModel();
         BusXcvrPanelModel panel = new BusXcvrPanelModel(8, 8, true);
-        public BusDisplay () {
+        public BusEye () {
             models.add(cable);
             models.add(panel);
         }
