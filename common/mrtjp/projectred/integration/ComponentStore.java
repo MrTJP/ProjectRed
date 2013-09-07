@@ -823,6 +823,19 @@ public class ComponentStore
         }
     }
     
+    public static class BusDisplayPanelModel extends BusXcvrPanelModel
+    {
+    	public BusDisplayPanelModel(double x, double z, boolean flip) {
+    		super(x,z,flip);
+    	}
+    	
+    	@Override
+    	public void renderModel(Transformation t, int orient) {
+    		super((new Scale(new Vector3(2,1,2)).with(t)),orient);
+    	}
+    }
+
+    
     public static abstract class CellWireModel extends ComponentModel
     {
         public byte signal;
