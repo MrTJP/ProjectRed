@@ -91,9 +91,9 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
             return i;
         
         BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if (t == null)
-            return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, absDir)*17;
+        if (world().isBlockNormalCube(pos.x, pos.y, pos.z))
+            return world().getBlockPowerInput(pos.x, pos.y, pos.z)*17;
+        
         return 0;
     }
 

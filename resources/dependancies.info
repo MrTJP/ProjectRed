@@ -1,0 +1,8 @@
+{
+	"repo": "http://files.minecraftforge.net/ForgeMultipart/",
+	"file": "ForgeMultipart-universal-@MCVERSION@-@FMPVERSION@.jar",
+	"dev": "ForgeMultipart-dev-@MCVERSION@-@FMPVERSION@.jar",
+	"class": "codechicken.multipart.MultipartMod",
+	"fmpversion": "1.0.0.161",
+	"mcversion": "1.6.2"
+}
