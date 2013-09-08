@@ -7,17 +7,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatMessageComponent;
 
 public class CommandDebug extends CommandBase {
-    /**
-     * If true:
-     * Fire particles indicate block updates.
-     * Bonemeal particles indicate packets sent.
-     */
-    public static boolean WIRE_LAG_PARTICLES;
-    
-    /**
-     * If true, bonemeal particles indicate wire strength updates.
-     */
-    public static boolean WIRE_DEBUG_PARTICLES;
     
     /**
      * If true, right-click a wire for signal strength.
@@ -50,11 +39,7 @@ public class CommandDebug extends CommandBase {
         else
             throw new WrongUsageException(getCommandUsage(icommandsender));
         
-        if(thing.equals("lagpart"))
-            WIRE_LAG_PARTICLES = on;
-        else if(thing.equals("debugpart"))
-            WIRE_DEBUG_PARTICLES = on;
-        else if(thing.equals("reading"))
+        if(thing.equals("reading"))
             WIRE_READING = on;
         else
             throw new WrongUsageException(getCommandUsage(icommandsender));

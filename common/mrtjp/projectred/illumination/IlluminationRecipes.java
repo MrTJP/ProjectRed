@@ -61,7 +61,7 @@ public class IlluminationRecipes {
         /** Buttons **/
         for (int i = 0; i < 16; i++)
             GameRegistry.addShapelessRecipe(
-                    new ItemStack(ProjectRedIllumination.itemPartIlluminatedButton, 1, i), 
+                    new ItemStack(ProjectRedIllumination.itemPartIllumarButton, 1, i), 
                     Block.stoneButton, 
                     EnumPart.ILLUMAR_PARTS[i].getItemStack(), 
                     EnumPart.ILLUMAR_PARTS[i].getItemStack()

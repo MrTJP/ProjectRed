@@ -43,24 +43,21 @@ public class GuiAlloySmelter extends BaseGuiContainer {
         // Draw progress indicator
         if (tile.hasWork) {
             AlloySmelterRecipe r = tile.getSuggestedRecipe();
-            if (r == null) {
+            if (r == null)
                 return;
-            }
             int progress = 100 * tile.progress / r.getBurnTime();
             if (progress >= 50) {
                 drawTexturedModalRect(j + 107, k + 38, 176, 14, 10, 24);
                 drawTexturedModalRect(j + 117, k + 38, 186, 14, ((progress - 50) * 26 / 100), 24);
             } else {
-                if (progress >= 25) {
+                if (progress >= 25)
                     drawTexturedModalRect(j + 107, k + 38, 176, 14, ((progress - 25) * 10 / 25), 24);
-                }
                 drawTexturedModalRect(j + 114, k + 38, 183, 14, 3, (progress * 17 / 50));
             }
             
             ItemStack resultstack = r.getResult().copy();
-            if (resultstack != null) {
+            if (resultstack != null)
                 BasicGuiUtils.renderItemOnGui(new GuiItemRenderOptions(resultstack).setPos(guiLeft + 141, guiTop + 47).setPulsate(.15f, .55f));
-            }
         }
     }
 

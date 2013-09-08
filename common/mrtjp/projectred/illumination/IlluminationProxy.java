@@ -1,6 +1,6 @@
 package mrtjp.projectred.illumination;
 
-import static mrtjp.projectred.ProjectRedIllumination.itemPartIlluminatedButton;
+import static mrtjp.projectred.ProjectRedIllumination.itemPartIllumarButton;
 import static mrtjp.projectred.ProjectRedIllumination.itemPartInvLamp;
 import static mrtjp.projectred.ProjectRedIllumination.itemPartInvLantern;
 import static mrtjp.projectred.ProjectRedIllumination.itemPartLamp;
@@ -28,7 +28,7 @@ public class IlluminationProxy implements IProxy, IPartFactory {
         itemPartLamp = new ItemPartLamp(Configurator.part_lamp.getInt(), false);
         itemPartInvLamp = new ItemPartLamp(Configurator.part_invlamp.getInt(), true);
 
-        itemPartIlluminatedButton = new ItemPartIlluminatedButton(Configurator.part_lightButton.getInt());
+        itemPartIllumarButton = new ItemPartIllumarButton(Configurator.part_lightButton.getInt());
         
         EnumLamp.initOreDictDefinitions();
         EnumLantern.initOreDictDefinitions();
@@ -52,7 +52,7 @@ public class IlluminationProxy implements IProxy, IPartFactory {
         else if (name.equals("Lamp"))
             return new LampPart(EnumLamp.WHITE, inverted);
         else if (name.equals("pr_lightbutton"))
-            return new IlluminatedButtonPart();
+            return new IllumarButtonPart();
         return null;
     }
 }

@@ -20,9 +20,8 @@ public class APIImpl extends ProjectRedAPI
     public byte[] getBundledInput(World world, int x, int y, int z, int side) {
         BlockCoord pos = new BlockCoord(x, y, z).offset(side);
         TileEntity t = world.getBlockTileEntity(pos.x, pos.y, pos.z);
-        if(t instanceof IBundledTile) {
+        if(t instanceof IBundledTile)
             return ((IBundledTile) t).getBundledSignal(side^1);
-        }
         else if(t instanceof TileMultipart) {
             TileMultipart tmp = (TileMultipart)t;
             byte[] signal = null;

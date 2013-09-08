@@ -3,7 +3,7 @@ package mrtjp.projectred;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.illumination.EnumLantern;
-import mrtjp.projectred.illumination.ItemPartIlluminatedButton;
+import mrtjp.projectred.illumination.ItemPartIllumarButton;
 import mrtjp.projectred.illumination.ItemPartLamp;
 import mrtjp.projectred.illumination.ItemPartLantern;
 import net.minecraft.creativetab.CreativeTabs;
@@ -26,7 +26,7 @@ public class ProjectRedIllumination {
     public static ItemPartLantern itemPartInvLantern;
     public static ItemPartLamp itemPartLamp;
     public static ItemPartLamp itemPartInvLamp;
-    public static ItemPartIlluminatedButton itemPartIlluminatedButton;
+    public static ItemPartIllumarButton itemPartIllumarButton;
 
     @Instance("ProjRed|Illumination")
     public static ProjectRedIllumination instance;

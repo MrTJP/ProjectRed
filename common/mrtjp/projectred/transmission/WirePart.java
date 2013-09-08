@@ -464,6 +464,10 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         return (connMap & 0x111 << r) != 0;
     }
     
+    public boolean maskConnectsToOutside(int r) {
+        return (connMap & 0x011 << r) != 0 && (connMap & 0x100 << r) == 0;
+    }
+    
     public boolean maskOpen(int r) {
         return (connMap & 0x1000 << r) != 0;
     }

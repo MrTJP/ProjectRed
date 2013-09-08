@@ -46,9 +46,8 @@ public class AlloySmelterRecipe {
                 public void onItemCrafted(ItemStack stack) {
                 }
             };
-        } else {
+        } else
             _handler = handler;
-        }
         _burnTime = burnTime;
     }
 
@@ -80,22 +79,18 @@ public class AlloySmelterRecipe {
      * @return
      */
     public boolean calculateMatch(ItemStack[] inv) {
-        if (inv.length != 9) {
+        if (inv.length != 9)
             return false;
-        }
         for (ItemStack ingredient : _matrix) {
             int missing = ingredient.stackSize;
             for (ItemStack itemInGrid : inv) {
-                if (BasicUtils.areStacksTheSame(ingredient, itemInGrid)) {
+                if (BasicUtils.areStacksTheSame(ingredient, itemInGrid))
                     missing = missing - itemInGrid.stackSize;
-                }
-                if (missing <= 0) {
+                if (missing <= 0)
                     break;
-                }
             }
-            if (missing > 0) {
+            if (missing > 0)
                 return false;
-            }
         }
         return true;
     }

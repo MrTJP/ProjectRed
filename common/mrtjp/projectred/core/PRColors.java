@@ -48,9 +48,8 @@ public enum PRColors {
     public final int hex;
 
     public static PRColors get(int i) {
-        if (i > VALID_COLORS.length - 1) {
+        if (i > VALID_COLORS.length - 1)
             return WHITE;
-        }
         return VALID_COLORS[i];
     }
 }

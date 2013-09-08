@@ -44,25 +44,22 @@ public class ShapelessOreNBTRecipe extends ShapelessOreRecipe {
             ItemStack oldItemWithNBT = null;
             for (int i = 0; i < 9; i++) {
                 ItemStack slot = inv.getStackInSlot(i);
-                if (slot != null) {
+                if (slot != null)
                     if (slot.hasTagCompound()) {
                         oldItemWithNBT = slot;
                         break;
                     }
-                }
             }
-            if (oldItemWithNBT != null) {
+            if (oldItemWithNBT != null)
                 out.setTagCompound(oldItemWithNBT.getTagCompound());
-            }
         }
         return out;
     }
 
     private boolean checkItemEquals(ItemStack target, ItemStack input) {
         if (target.itemID == input.itemID && (target.getItemDamage() == OreDictionary.WILDCARD_VALUE || target.getItemDamage() == input.getItemDamage())) {
-            if (checkNBT) {
+            if (checkNBT)
                 return target.getTagCompound().equals(input.getTagCompound());
-            }
             return true;
         }
         return false;

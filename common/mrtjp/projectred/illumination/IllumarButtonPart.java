@@ -20,13 +20,13 @@ import codechicken.multipart.minecraft.PartMetaAccess;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class IlluminatedButtonPart extends ButtonPart implements ILight {
+public class IllumarButtonPart extends ButtonPart implements ILight {
 
     public byte colorMeta;
 
-    public IlluminatedButtonPart() {}
+    public IllumarButtonPart() {}
     
-    public IlluminatedButtonPart(int meta) {
+    public IllumarButtonPart(int meta) {
         super(meta);
     }
     
@@ -83,7 +83,7 @@ public class IlluminatedButtonPart extends ButtonPart implements ILight {
     }
 
     public ItemStack getItemStack() {
-        return new ItemStack(ProjectRedIllumination.itemPartIlluminatedButton, 1, colorMeta);
+        return new ItemStack(ProjectRedIllumination.itemPartIllumarButton, 1, colorMeta);
     }
     
     @Override
@@ -91,7 +91,7 @@ public class IlluminatedButtonPart extends ButtonPart implements ILight {
     public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
         if (pass == 0) {
             RenderBlocks r = new RenderBlocks(new PartMetaAccess(this));
-            r.renderBlockUsingTexture(getBlock(), x(), y(), z(), ItemPartIlluminatedButton.icons[colorMeta]);
+            r.renderBlockUsingTexture(getBlock(), x(), y(), z(), ItemPartIllumarButton.icons[colorMeta]);
             if (pressed()) {
                 Cuboid6 box = getBounds().expand(0.025D);
                 LastEventBasedHaloRenderer.addLight(x(), y(), z(), colorMeta, getFace(), box);
@@ -102,7 +102,7 @@ public class IlluminatedButtonPart extends ButtonPart implements ILight {
     @Override
     @SideOnly(Side.CLIENT)
     public Icon getBrokenIcon(int side) {
-        return ItemPartIlluminatedButton.icons[colorMeta];
+        return ItemPartIllumarButton.icons[colorMeta];
     }
     
     @Override

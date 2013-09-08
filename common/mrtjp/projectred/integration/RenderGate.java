@@ -1325,7 +1325,7 @@ public class RenderGate
             topWire.signal = 0;
             topWire.invColour = true;
             topWire.conn = 0;
-            torches[0].on = false;
+            torches[0].on = true;
             torches[1].on = false;
             torches[2].on = true;
             wires[0].on = true;

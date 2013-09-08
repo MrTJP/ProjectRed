@@ -76,10 +76,9 @@ public class InsulatedRedAlloyPart extends RedwirePart implements IInsulatedRedw
     }
     
     @Override
-    public int weakPowerLevel(int side)
-    {
+    public int weakPowerLevel(int side) {
         if(this.side == side || this.side == (side^1) ||
-                !maskConnects(Rotation.rotationTo(this.side, side)))
+                !maskConnectsToOutside(Rotation.rotationTo(this.side, side)))
             return 0;
         
         return super.weakPowerLevel(side);

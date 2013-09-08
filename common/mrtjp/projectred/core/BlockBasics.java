@@ -52,9 +52,8 @@ public class BlockBasics extends BlockContainer {
     @Override
     public void breakBlock(World world, int x, int y, int z, int par5, int par6) {
         TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
-        if (tile != null) {
+        if (tile != null)
             tile.onBlockBreak();
-        }
         super.breakBlock(world, x, y, z, par5, par6);
         world.removeBlockTileEntity(x, y, z);
     }
@@ -62,26 +61,23 @@ public class BlockBasics extends BlockContainer {
     @Override
     public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
         TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
-        if (tile != null) {
+        if (tile != null)
             tile.onBlockClicked(player);
-        }
     }
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) {
         TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
-        if (tile != null) {
+        if (tile != null)
             return tile.onBlockActivated(player);
-        }
         return false;
     }
 
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {
         TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
-        if (tile != null) {
+        if (tile != null)
             tile.onBlockPlacedBy(entity, itemstack);
-        }
     }
 
     @Override
@@ -91,18 +87,16 @@ public class BlockBasics extends BlockContainer {
 
     @Override
     public void getSubBlocks(int id, CreativeTabs tab, List list) {
-        for (EnumBasics machine : EnumBasics.VALID_MACHINES) {
+        for (EnumBasics machine : EnumBasics.VALID_MACHINES)
             list.add(new ItemStack(id, 1, machine.meta));
-        }
     }
 
     @Override
     public void registerIcons(IconRegister reg) {
         for (EnumBasics m : EnumBasics.VALID_MACHINES) {
             m.icons = new Icon[m.iconPath.length];
-            for (int i = 0; i < m.iconPath.length; i++) {
+            for (int i = 0; i < m.iconPath.length; i++)
                 m.icons[i] = reg.registerIcon("projectred:machines/" + m.iconPath[i]);
-            }
         }
     }
 
@@ -110,9 +104,8 @@ public class BlockBasics extends BlockContainer {
     @Override
     public Icon getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
         TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(access, new BlockCoord(x, y, z), TileBasicsBase.class);
-        if (tile != null) {
+        if (tile != null)
             return tile.getType().icons[tile.getIconForSide(side)];
-        }
         return null;
     }
 
@@ -125,9 +118,8 @@ public class BlockBasics extends BlockContainer {
     @Override
     public int getLightValue(IBlockAccess world, int x, int y, int z) {
         TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
-        if (tile != null) {
+        if (tile != null)
             return tile.getLightLevel();
-        }
         return 0;
     }
 
@@ -160,9 +152,8 @@ public class BlockBasics extends BlockContainer {
         }
 
         public static EnumBasics get(int ordinal) {
-            if (ordinal > VALID_MACHINES.length - 1) {
+            if (ordinal > VALID_MACHINES.length - 1)
                 return null;
-            }
             return VALID_MACHINES[ordinal];
         }
 
@@ -178,5 +169,4 @@ public class BlockBasics extends BlockContainer {
             public int getIconIndex(int side);
         }
     }
-
 }

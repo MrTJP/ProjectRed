@@ -10,9 +10,8 @@ import codechicken.multipart.TileMultipart;
 public class BasicWireUtils {
     
     public static boolean canPlaceWireOnSide(World w, int x, int y, int z, ForgeDirection side, boolean _default) {
-        if (!w.blockExists(x, y, z)) {
+        if (!w.blockExists(x, y, z))
             return _default;
-        }
 
         Block b = Block.blocksList[w.getBlockId(x, y, z)];
         if (b == null)

@@ -14,7 +14,7 @@ public class IlluminationClientProxy extends IlluminationProxy {
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartInvLantern.itemID, LanternRenderer.instance);
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartLamp.itemID, LampRenderer.instance);
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartInvLamp.itemID, LampRenderer.instance);
-        MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartIlluminatedButton.itemID, IlluminatedButtonRenderer.instance);
+        MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartIllumarButton.itemID, IllumarButtonRenderer.instance);
 
         MinecraftForge.EVENT_BUS.register(LastEventBasedHaloRenderer.instance);
     }
