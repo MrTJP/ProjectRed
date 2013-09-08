@@ -845,7 +845,19 @@ public class ComponentStore
     	
     	@Override
     	public void renderModel(Transformation t, int orient) {
-    		super((new Scale(new Vector3(2,1,2)).with(t)),orient);
+            Transformation t2 = (new Scale(new Vector3(2,1,2))).with(t);
+            IconTransformation icont = new IconTransformation(busDisplayIcon);
+            models[orient].render(t2, icont);
+            
+            Vector3 displayPos = pos.copy();
+            if(orient >= 24)//flipped x
+                displayPos.x = 1-displayPos.x;
+            
+            Transformation displayT = flip ? new RedundantTransformation() : Rotation.quarterRotations[2];
+            displayT = displayT.with(displayPos.translation()).with(orientT(orient%24)).with(t2);
+             for(int i = 0; i < 16; i++)
+                if((signal & 1<<i) != 0)
+                    displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel);
     	}
     }
 
