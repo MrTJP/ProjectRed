@@ -71,6 +71,7 @@ public class ComponentStore
     public static Icon rainIcon;
     public static Icon pointerIcon;
     public static Icon busXcvrIcon;
+    public static Icon busDisplayIcon;
     public static Icon cellIcon;
     
     static
@@ -159,6 +160,7 @@ public class ComponentStore
         leverIcon = r.registerIcon(baseTex+"lever");
         pointerIcon = r.registerIcon(baseTex+"pointer");
         busXcvrIcon = r.registerIcon(baseTex+"busxcvr");
+        busDisplayIcon = r.registerIcon(baseTex+"busdisplay");
         cellIcon = r.registerIcon(baseTex+"cells");
         
         RenderGate.registerIcons(r);
@@ -762,6 +764,18 @@ public class ComponentStore
         @Override
         public IUVTransformation getUVT() {
             return new IconTransformation(busXcvrIcon);
+        }
+    }
+
+    public static class BusDisplayCableModel extends BundledCableModel
+    {
+        public BusDisplayCableModel() {
+            super(busXcvr, new Vector3(8,0,8), 10/32D, 14/32D);
+        }
+        
+        @Override
+        public IUVTransformation getUVT() {
+            return new IconTransformation(busDisplayIcon);
         }
     }
 
