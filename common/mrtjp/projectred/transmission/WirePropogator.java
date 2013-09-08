@@ -29,8 +29,7 @@ public class WirePropogator {
     public static boolean redwiresProvidePower = true;
     private static ThreadLocal<Boolean> redwiresConnectable = new ThreadLocal<Boolean>();
     
-    private static TMultiPart notApart = new TMultiPart()
-    {
+    private static TMultiPart notApart = new TMultiPart() {
         @Override
         public String getType() {
             return null;
@@ -44,20 +43,11 @@ public class WirePropogator {
             throw new RuntimeException(e);
         }
     }
-    
-    public static boolean wiresProvidePower() {
-        try {
-            return wiresProvidePower.getBoolean(Block.redstoneWire);
-        } catch (Throwable t) {
-            return false;
-        }
-    }
-    
+        
     public static void setWiresProvidePower(boolean b) {
         try {
             wiresProvidePower.setBoolean(Block.redstoneWire, b);
-        } catch (Throwable t) {
-        }
+        } catch (Throwable t) {}
     }
     
     public static boolean redwiresConnectable() {
@@ -155,8 +145,7 @@ public class WirePropogator {
             runLoop();
         }
         
-        private void runLoop()
-        {
+        private void runLoop() {
             while(!propogationList.isEmpty()) {
                 List<Propogation> list = propogationList;
                 propogationList = new LinkedList<Propogation>();
@@ -217,8 +206,7 @@ public class WirePropogator {
         }
     }
 
-    public static void propogateTo(IWirePart part, int mode)
-    {
+    public static void propogateTo(IWirePart part, int mode) {
         propogateTo(part, notApart, mode);
     }
 }

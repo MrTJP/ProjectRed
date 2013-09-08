@@ -87,7 +87,7 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
     @Override
     public boolean onBlockActivated(EntityPlayer player) {
         if (!player.isSneaking()) {
-            player.openGui(ProjectRedExpansion.instance, CoreGuiHandler.alloyID, player.worldObj, xCoord, yCoord, zCoord);
+            player.openGui(ProjectRedCore.instance, CoreGuiHandler.alloyID, player.worldObj, xCoord, yCoord, zCoord);
             return true;
         }
         return false;

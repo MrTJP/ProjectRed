@@ -140,15 +140,10 @@ public class CoreRecipes {
         }, EnumPart.SILICONBOULE.getItemStack(), 500));
         
         /** Silicon **/
-        ItemStack saw;
-        if (Loader.isModLoaded("ProjectRed-Exploration"))
-            saw = new ItemStack(ProjectRedExploration.itemDiamondSaw, 1, Short.MAX_VALUE);
-        else
-            saw = new ItemStack(MicroblockProxy.sawDiamond(), 1, Short.MAX_VALUE);
         GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8), 
                 "s",
                 "b",
-                's', saw, 
+                's', new ItemStack(MicroblockProxy.sawDiamond(), 1, Short.MAX_VALUE), 
                 'b', EnumPart.SILICONBOULE.getItemStack()
         );
         

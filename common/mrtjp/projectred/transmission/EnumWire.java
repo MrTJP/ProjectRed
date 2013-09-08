@@ -64,7 +64,7 @@ public enum EnumWire {
 
     public static final String oreDictDefinition = "projredWire";
     public static final String oreDictDefinitionInsulated = "projredInsulatedWire";
-    public static final String oreDictDefinitionFramed = "projredFramedWire";
+    public static final String oreDictDefinitionInsFramed = "projredInsFramedWire";
     public static final String oreDictDefinitionBundled = "projredBundledCable";
 
     private EnumWire(String name, String wireType, String framedType, 
@@ -114,13 +114,13 @@ public enum EnumWire {
     }
 
     public static void initOreDictDefinitions() {
-        for (EnumWire w : EnumWire.VALID_WIRE) {
+        for (EnumWire w : EnumWire.VALID_WIRE)
             OreDictionary.registerOre(oreDictDefinition, w.getItemStack());
+        for (EnumWire w : EnumWire.INSULATED_WIRE){
             if (w.hasFramedForm())
-                OreDictionary.registerOre(oreDictDefinitionFramed, w.getFramedItemStack());
-        }
-        for (EnumWire w : EnumWire.INSULATED_WIRE)
+                OreDictionary.registerOre(oreDictDefinitionInsFramed, w.getFramedItemStack());
             OreDictionary.registerOre(oreDictDefinitionInsulated, w.getItemStack());
+        }
         for (EnumWire w : EnumWire.BUNDLED_WIRE)
             OreDictionary.registerOre(oreDictDefinitionBundled, w.getItemStack());
     }
