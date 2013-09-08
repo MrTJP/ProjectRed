@@ -14,9 +14,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraftforge.client.IItemRenderer;
 
-public class IlluminatedButtonRenderer implements IItemRenderer {
+public class IllumarButtonRenderer implements IItemRenderer {
 
-    public static IlluminatedButtonRenderer instance = new IlluminatedButtonRenderer();
+    public static IllumarButtonRenderer instance = new IllumarButtonRenderer();
     
     Icon icon;
     
@@ -32,7 +32,7 @@ public class IlluminatedButtonRenderer implements IItemRenderer {
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-        icon = ItemPartIlluminatedButton.icons[item.getItemDamage()];
+        icon = ItemPartIllumarButton.icons[item.getItemDamage()];
         switch (type) {
         case ENTITY:
             renderInventory(-.05f, 0, -.1f, .5f);

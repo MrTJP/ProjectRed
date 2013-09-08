@@ -19,11 +19,11 @@ import codechicken.multipart.minecraft.ButtonPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemPartIlluminatedButton extends JItemMultiPart {
+public class ItemPartIllumarButton extends JItemMultiPart {
     
     public static Icon icons[];
     
-    public ItemPartIlluminatedButton(int id) {
+    public ItemPartIllumarButton(int id) {
         super(id);
         this.setHasSubtypes(true);
         this.setUnlocalizedName("projectred.illumination.lightbutton");
@@ -48,7 +48,7 @@ public class ItemPartIlluminatedButton extends JItemMultiPart {
             if(!w.isBlockSolidOnSide(pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side)))
                 return null;
             
-            IlluminatedButtonPart b = new IlluminatedButtonPart(ButtonPart.sideMetaMap[side^1]|0<<4);
+            IllumarButtonPart b = new IllumarButtonPart(ButtonPart.sideMetaMap[side^1]|0<<4);
             if (b != null)
                 b.onPlaced(is);
             return b;

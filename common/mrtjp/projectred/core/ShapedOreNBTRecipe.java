@@ -33,16 +33,14 @@ public class ShapedOreNBTRecipe extends ShapedOreRecipe {
             ItemStack oldItemWithNBT = null;
             for (int i = 0; i < 9; i++) {
                 ItemStack slot = inv.getStackInSlot(i);
-                if (slot != null) {
+                if (slot != null)
                     if (slot.hasTagCompound()) {
                         oldItemWithNBT = slot;
                         break;
                     }
-                }
             }
-            if (oldItemWithNBT != null) {
+            if (oldItemWithNBT != null)
                 out.setTagCompound(oldItemWithNBT.getTagCompound());
-            }
         }
         return out;
     }
@@ -58,13 +56,11 @@ public class ShapedOreNBTRecipe extends ShapedOreRecipe {
     }
 
     private boolean checkItemEquals(ItemStack target, ItemStack input) {
-        if (input == null && target != null || input != null && target == null) {
+        if (input == null && target != null || input != null && target == null)
             return false;
-        }
         if (target.itemID == input.itemID && (target.getItemDamage() == OreDictionary.WILDCARD_VALUE || target.getItemDamage() == input.getItemDamage())) {
-            if (checkNBT) {
+            if (checkNBT)
                 return target.getTagCompound().equals(input.getTagCompound());
-            }
             return true;
         }
         return false;

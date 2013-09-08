@@ -34,24 +34,19 @@ public class GhostContainer extends Container {
     }
 
     public void addNormalSlotsForPlayerInventory(int xOffset, int yOffset, int staticSlot) {
-        if (_playerInventory == null) {
+        if (_playerInventory == null)
             return;
-        }
         // pocket
-        for (int row = 0; row < 3; row++) {
-            for (int column = 0; column < 9; column++) {
+        for (int row = 0; row < 3; row++)
+            for (int column = 0; column < 9; column++)
                 addSlotToContainer(new Slot(_playerInventory, column + row * 9 + 9, xOffset + column * 18, yOffset + row * 18));
-            }
-        }
 
         // hotbar
-        for (int i1 = 0; i1 < 9; i1++) {
-            if (i1 == staticSlot) {
+        for (int i1 = 0; i1 < 9; i1++)
+            if (i1 == staticSlot)
                 addSlotToContainer(new GuiUnmodifiableSlot(_playerInventory, i1, xOffset + i1 * 18, yOffset + 58));
-            } else {
+            else
                 addSlotToContainer(new Slot(_playerInventory, i1, xOffset + i1 * 18, yOffset + 58));
-            }
-        }
     }
 
     /**
@@ -116,19 +111,16 @@ public class GhostContainer extends Container {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
 
-            if (i < 27) {
-                if (!this.mergeItemStack(itemstack1, 27, this.inventorySlots.size(), true)) {
+            if (i < 27)
+                if (!this.mergeItemStack(itemstack1, 27, this.inventorySlots.size(), true))
                     return null;
-                }
-            } else if (!this.mergeItemStack(itemstack1, 0, 27, false)) {
+            else if (!this.mergeItemStack(itemstack1, 0, 27, false))
                 return null;
-            }
 
-            if (itemstack1.stackSize == 0) {
+            if (itemstack1.stackSize == 0)
                 slot.putStack((ItemStack) null);
-            } else {
+            else
                 slot.onSlotChanged();
-            }
         }
         return itemstack;
     }
@@ -137,9 +129,8 @@ public class GhostContainer extends Container {
         boolean flag1 = false;
         int k = startSlot;
 
-        if (doBackwards) {
+        if (doBackwards)
             k = endSlot - 1;
-        }
 
         Slot slot;
         ItemStack itemstack1;
@@ -166,20 +157,18 @@ public class GhostContainer extends Container {
                         }
                     }
                 }
-                if (doBackwards) {
+                if (doBackwards)
                     --k;
-                } else {
+                else
                     ++k;
-                }
             }
         }
 
         if (stack.stackSize > 0) {
-            if (doBackwards) {
+            if (doBackwards)
                 k = endSlot - 1;
-            } else {
+            else
                 k = startSlot;
-            }
 
             while (!doBackwards && k < endSlot || doBackwards && k >= startSlot) {
                 slot = (Slot) this.inventorySlots.get(k);
@@ -194,11 +183,10 @@ public class GhostContainer extends Container {
                         break;
                     }
                 }
-                if (doBackwards) {
+                if (doBackwards)
                     --k;
-                } else {
+                else
                     ++k;
-                }
             }
         }
 
@@ -210,9 +198,8 @@ public class GhostContainer extends Container {
      */
     @Override
     public ItemStack slotClick(int slotId, int mouseButton, int isShift, EntityPlayer entityplayer) {
-        if (slotId < 0) {
+        if (slotId < 0)
             return super.slotClick(slotId, mouseButton, isShift, entityplayer);
-        }
 
         InventoryPlayer inventoryplayer = entityplayer.inventory;
         ItemStack currentlyEquippedStack = inventoryplayer.getItemStack();
@@ -223,9 +210,8 @@ public class GhostContainer extends Container {
         }
 
         // Dont let modify an unmodifiable slot
-        if (slot instanceof GuiUnmodifiableSlot) {
+        if (slot instanceof GuiUnmodifiableSlot)
             return currentlyEquippedStack;
-        }
 
         // Use ghost items if its a ghost slot.
         if (slot instanceof GuiGhostSlot) {
@@ -234,11 +220,10 @@ public class GhostContainer extends Container {
             if (BasicUtils.areStacksTheSame(currentItem, slotItem)) {
                 int counter = isShift == 1 ? 10 : 1;
                 if (mouseButton == 1) {
-                    if (slot.getStack().stackSize + counter <= slot.getSlotStackLimit()) {
+                    if (slot.getStack().stackSize + counter <= slot.getSlotStackLimit())
                         slot.getStack().stackSize += counter;
-                    } else {
+                    else
                         slot.getStack().stackSize = slot.getSlotStackLimit();
-                    }
                     slot.inventory.onInventoryChanged();
                     return currentlyEquippedStack;
                 }
@@ -246,9 +231,8 @@ public class GhostContainer extends Container {
                     if (slot.getStack().stackSize - counter > 0) {
                         slot.getStack().stackSize -= counter;
                         slot.inventory.onInventoryChanged();
-                    } else {
+                    } else
                         slot.putStack(null);
-                    }
                     return currentlyEquippedStack;
                 }
             } else {
@@ -267,19 +251,16 @@ public class GhostContainer extends Container {
                         slot.getStack().stackSize /= 2;
                         slot.inventory.onInventoryChanged();
                     }
-                } else {
+                } else
                     slot.putStack(null);
-                }
                 return currentlyEquippedStack;
             }
             if (!slot.getHasStack()) {
                 slot.putStack(currentlyEquippedStack.copy());
-                if (mouseButton == 1) {
+                if (mouseButton == 1)
                     slot.getStack().stackSize = 1;
-                }
-                if (slot.getStack().stackSize > slot.getSlotStackLimit()) {
+                if (slot.getStack().stackSize > slot.getSlotStackLimit())
                     slot.getStack().stackSize = slot.getSlotStackLimit();
-                }
 
                 slot.inventory.onInventoryChanged();
                 return currentlyEquippedStack;
@@ -302,9 +283,8 @@ public class GhostContainer extends Container {
     @Override
     public Slot getSlotFromInventory(IInventory par1IInventory, int par2) {
         Slot s = super.getSlotFromInventory(par1IInventory, par2);
-        if (s != null) {
+        if (s != null)
             return s;
-        }
         if (inventorySlots.isEmpty() && par1IInventory == _playerInventory) {
             s = new Slot(_playerInventory, par2, 0, 0);
             s.slotNumber = par2;

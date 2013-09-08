@@ -46,6 +46,7 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
     public boolean queueWorkUpdate = false;
     // Cahce, used to avoid checking all recipes every tick.
     public int burnTimeForRecipe = 0;
+    
     public TileAlloySmelter() {
     }
 
@@ -197,30 +198,26 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
             }
         }
         if (heat > 0) {
-            if (BasicUtils.isClient(worldObj)) {
+            if (BasicUtils.isClient(worldObj))
                 spawnParticles();
-            }
-            if (hasWork) {
+            if (hasWork)
                 progress++;
-            }
-            if (heat > 0) {
+            if (heat > 0)
                 heat--;
-            }
-            if (heat <= 0) {
+            if (heat <= 0)
                 updateNextTick = true;
-            }
             queueWatcherUpdate = true;
         }
-        if (hasWork) {
+        if (hasWork)
             if (progress >= burnTimeForRecipe) {
                 AlloySmelterRecipe r = getSuggestedRecipe();
                 if (r != null) {
                     eatAllResourcesForRecipe(r);
                     ItemStack result = r.getResult();
                     r._handler.onItemCrafted(result);
-                    if (_inv.getStackInSlot(10) == null) {
+                    if (_inv.getStackInSlot(10) == null)
                         _inv.setInventorySlotContents(10, result);
-                    } else {
+                    else {
                         ItemStack inslot = _inv.getStackInSlot(10);
                         inslot.stackSize += result.stackSize;
                         _inv.setInventorySlotContents(10, inslot);
@@ -232,7 +229,6 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
                     updateNextTick = true;
                 }
             }
-        }
         if (queueWatcherUpdate) {
 
             queueWatcherUpdate = false;
@@ -255,9 +251,8 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
             worldObj.spawnParticle("smoke", (double) xCoord + .35f + ran.nextFloat() * 4.5F / 16.0F, (double) yCoord + 1, (double) zCoord + .35f + ran.nextFloat() * 4.5F / 16.0F, 0.0D, 0.0D, 0.0D);
             worldObj.spawnParticle("flame", (double) xCoord + .35f + ran.nextFloat() * 4.5F / 16.0F, (double) yCoord + 1, (double) zCoord + .35f + ran.nextFloat() * 4.5F / 16.0F, 0.0D, 0.0D, 0.0D);
         }
-        if (ran.nextFloat() > (hasWork ? .45f : .1f)) {
+        if (ran.nextFloat() > (hasWork ? .45f : .1f))
             return;
-        }
         int l = ForgeDirection.getOrientation(rotation).getOpposite().ordinal();
         float f = (float) xCoord + 0.5F;
         float f1 = (float) yCoord + 0.0F + ran.nextFloat() * 6.0F / 16.0F;
@@ -282,9 +277,8 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
     }
 
     public void updateWatchers() {
-        if (BasicUtils.isClient(worldObj)) {
+        if (BasicUtils.isClient(worldObj))
             return;
-        }
         PacketCustom packet = new PacketCustom(CoreCPH.channel, CoreProxy.alloySmelterWatcherUpdate);
         packet.writeCoord(xCoord, yCoord, zCoord);
         packet.writeShort(heat);
@@ -311,43 +305,36 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
         if (burntime > 0) {
             _inv.decrStackSize(9, 1);
             heat += burntime;
-            if (heat > 6400) {
+            if (heat > 6400)
                 heat = 6400;
-            }
         }
     }
 
     private void eatResource(ItemStack s) {
         int missing = s.stackSize;
-        while (missing > 0) {
+        while (missing > 0)
             for (int i = 0; i < 9; i++) {
                 ItemStack stackinslot = _inv.getStackInSlot(i);
-                if (stackinslot == null) {
+                if (stackinslot == null)
                     continue;
-                }
                 if (BasicUtils.areStacksTheSame(stackinslot, s)) {
                     _inv.decrStackSize(i, 1);
                     missing--;
-                    if (missing <= 0) {
+                    if (missing <= 0)
                         break;
-                    }
                 }
             }
-        }
     }
 
     private void eatAllResourcesForRecipe(AlloySmelterRecipe r) {
-        for (ItemStack s : r.getMatrix()) {
+        for (ItemStack s : r.getMatrix())
             eatResource(s);
-        }
     }
 
     public AlloySmelterRecipe getSuggestedRecipe() {
-        for (AlloySmelterRecipe r : AlloySmelterRecipe.getAlloyRecipes()) {
-            if (r.calculateMatch(getCraftingMatrix())) {
+        for (AlloySmelterRecipe r : AlloySmelterRecipe.getAlloyRecipes())
+            if (r.calculateMatch(getCraftingMatrix()))
                 return r;
-            }
-        }
         return null;
     }
 
@@ -355,29 +342,26 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
         ItemStack[] matrix = new ItemStack[9];
         for (int i = 0; i < 9; i++) {
             ItemStack inslot = _inv.getStackInSlot(i);
-            if (inslot != null) {
+            if (inslot != null)
                 matrix[i] = inslot.copy();
-            } else {
+            else
                 matrix[i] = null;
-            }
         }
         return matrix;
     }
 
     private int getItemBurnTime(ItemStack stack) {
-        if (stack == null) {
+        if (stack == null)
             return 0;
-        } else {
+        else {
             int i = stack.getItem().itemID;
             Item item = stack.getItem();
             if (stack.getItem() instanceof ItemBlock && Block.blocksList[i] != null) {
                 Block block = Block.blocksList[i];
-                if (block == Block.woodSingleSlab) {
+                if (block == Block.woodSingleSlab)
                     return 150;
-                }
-                if (block.blockMaterial == Material.wood) {
+                if (block.blockMaterial == Material.wood) 
                     return 300;
-                }
             }
             if (item instanceof ItemTool && ((ItemTool) item).getToolMaterialName().equals("WOOD"))
                 return 200;
@@ -406,16 +390,13 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
 
     @Override
     public int getIconForSide(int side) {
-        if (side == 0 || side == 1) {
+        if (side == 0 || side == 1)
             return 0;
-        }
-        if (ForgeDirection.OPPOSITES[this.rotation] == side) {
-            if (this.heat > 0) {
+        if (ForgeDirection.OPPOSITES[this.rotation] == side)
+            if (this.heat > 0)
                 return 3;
-            } else {
+            else
                 return 2;
-            }
-        }
         return 1;
     }
 

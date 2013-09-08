@@ -1,7 +1,5 @@
 package mrtjp.projectred.core;
 
-
-
 public abstract interface IProxy {
     
     public abstract void preinit();

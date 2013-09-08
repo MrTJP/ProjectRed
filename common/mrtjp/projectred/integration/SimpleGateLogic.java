@@ -564,7 +564,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
             if(gate.world().isRemote)
                 return;
             
-            int newOutput = gate.world().isRaining() && BasicUtils.canBlockSeeSky(gate.world(), gate.x(), gate.y(), gate.z()) ? 4 : 0;
+            int newOutput = gate.world().isRaining() && gate.world().canBlockSeeTheSky(gate.x(), gate.y()+1, gate.z()) ? 4 : 0;
             int oldOutput = gate.state()>>4;
             
             if(newOutput != oldOutput) {

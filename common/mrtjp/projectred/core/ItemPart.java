@@ -29,9 +29,8 @@ public class ItemPart extends Item {
      */
     @Override
     public void getSubItems(int id, CreativeTabs tab, List list) {
-        for (EnumPart part : EnumPart.VALID_PARTS) {
+        for (EnumPart part : EnumPart.VALID_PARTS)
             list.add(part.getItemStack());
-        }
     }
 
     /**
@@ -47,9 +46,8 @@ public class ItemPart extends Item {
     @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IconRegister reg) {
-        for (EnumPart part : EnumPart.VALID_PARTS) {
+        for (EnumPart part : EnumPart.VALID_PARTS)
             partIcons[part.meta] = reg.registerIcon("projectred:parts/" + part.unlocalName);
-        }
     }
 
     /**
@@ -57,9 +55,8 @@ public class ItemPart extends Item {
      */
     @Override
     public Icon getIconFromDamage(int meta) {
-        if (meta > partIcons.length - 1) {
+        if (meta > partIcons.length - 1)
             return null;
-        }
         return partIcons[meta];
     }
 
@@ -123,9 +120,8 @@ public class ItemPart extends Item {
         }
 
         public static EnumPart get(int ordinal) {
-            if (ordinal > VALID_PARTS.length - 1) {
+            if (ordinal > VALID_PARTS.length - 1)
                 return null;
-            }
             return VALID_PARTS[ordinal];
         }
 
@@ -138,12 +134,10 @@ public class ItemPart extends Item {
         }
 
         public static void initOreDictDefinitions() {
-            for (EnumPart p : EnumPart.VALID_PARTS) {
+            for (EnumPart p : EnumPart.VALID_PARTS)
                 OreDictionary.registerOre(oreDictDefinition, p.getItemStack());
-            }
-            for (EnumPart p : EnumPart.ILLUMAR_PARTS) {
+            for (EnumPart p : EnumPart.ILLUMAR_PARTS)
                 OreDictionary.registerOre(oreDictDefinition_illumar, p.getItemStack());
-            }
         }
     }
 }

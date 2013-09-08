@@ -60,7 +60,7 @@ public class LastEventBasedHaloRenderer {
 
     }
     
-    static void addLight(int x, int y, int z, int color, int slot, Cuboid6 box) {
+    public static void addLight(int x, int y, int z, int color, int slot, Cuboid6 box) {
         CoordCache cc = new CoordCache(x, y, z, color, slot, box);
         for (CoordCache c : renderQueue) {
             if (cc.equals(c))
@@ -109,13 +109,13 @@ public class LastEventBasedHaloRenderer {
         renderQueue.removeAll(removeQueue);
     }
 
-    static void renderHalo(Tessellator tess, CoordCache cc) {
+    private static void renderHalo(Tessellator tess, CoordCache cc) {
         BasicRenderUtils.setFullBrightness();
         tess.setColorRGBA_I(PRColors.VALID_COLORS[cc.color].hex, 128);
         RenderUtils.renderBlock(cc.cube, 0, new Translation(cc.x, cc.y, cc.z), null, null);
     }
 
-    static boolean shouldRemove(World w, CoordCache cc) {
+    private static boolean shouldRemove(World w, CoordCache cc) {
         TileMultipart t = BasicUtils.getMultipartTile(w, new BlockCoord(cc.x, cc.y, cc.z));
         if (t != null) {
             TMultiPart tp = t.partMap(cc.multipartSlot);

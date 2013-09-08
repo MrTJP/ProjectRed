@@ -35,8 +35,7 @@ public class RenderWire {
         }
         
         @Override
-        public void transform(UV uv)
-        {
+        public void transform(UV uv) {
             vec.set(uv.u, 0, uv.v).apply(t);
             uv.set(vec.x, vec.z);
         }
@@ -124,25 +123,23 @@ public class RenderWire {
             int type = (mask>>r)&0x11;
             
             Vertex5[] verts;
-            if(inv) {
+            if(inv)
                 verts = generateSideInv(r);
-            }
-            else if(connCount == 0) {
+
+            else if(connCount == 0)
                 if(r%2 == 1)
                     verts = generateStub(r);
                 else
                     verts = generateFlat(r);
-            }
-            else if(connCount == 1) {
+            
+            else if(connCount == 1)
                 if(connMask == 1<<((r+2)%4))//this side is opposite the one with a connection
                     verts = generateStub(r);
                 else
                     verts = generateSideFromType(type, r);
-            }
+            
             else
-            {
                 verts = generateSideFromType(type, r);
-            }
             
             Transformation t = Rotation.quarterRotations[r].at(Vector3.center);
             for(Vertex5 vert : verts)
@@ -421,12 +418,11 @@ public class RenderWire {
             .apply(Rotation.sideRotations[side].at(Vector3.center)));//center
         for(int r = 0; r < 4; r++) {
             int length;
-            if(connCount == 0) {
+            if(connCount == 0)
                 if(r%2 == 1)
                     length = 4;
                 else
                     length = 0;
-            }
             else if(connCount == 1) {
                 if(connMask == 1<<((r+2)%4))//this side is opposite the one with a connection
                     length = 4;
@@ -436,9 +432,7 @@ public class RenderWire {
                     length = 0;
             }
             else
-            {
                 length = (connMask & 1<<r) != 0 ? 8 : 0;
-            }
             
             if(length > 0) {
                 double l = length/16D;
@@ -447,8 +441,7 @@ public class RenderWire {
             }
         }
         
-        for(Cuboid6 box : boxes) {
+        for(Cuboid6 box : boxes)
             RenderUtils.renderBlock(box, 0, new Translation(wire.x(), wire.y(), wire.z()), new IconTransformation(icon), null);
-        }
     }
 }

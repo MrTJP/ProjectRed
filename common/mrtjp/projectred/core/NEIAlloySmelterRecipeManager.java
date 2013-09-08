@@ -14,14 +14,13 @@ public class NEIAlloySmelterRecipeManager extends ShapedRecipeHandler {
 
     private ShapedRecipeHandler.CachedShapedRecipe getShape(AlloySmelterRecipe r) {
         ShapedRecipeHandler.CachedShapedRecipe shape = new ShapedRecipeHandler.CachedShapedRecipe(0, 0, null, r.getResult());
-        for (int x = 0; x < 3; x++) {
+        for (int x = 0; x < 3; x++)
             for (int y = 0; y < 3; y++) {
                 final int slot = x * 3 + y;
                 final int xPos = 44 - 5 + (y * 18);
                 final int yPos = 17 - 11 + (x * 18);
-                if (slot > r.getMatrix().length - 1) {
+                if (slot > r.getMatrix().length - 1)
                     return shape;
-                }
                 ItemStack ingredient = r.getMatrix()[slot];
                 if (ingredient != null) {
                     PositionedStack stack = new PositionedStack(ingredient, xPos, yPos);
@@ -31,7 +30,6 @@ public class NEIAlloySmelterRecipeManager extends ShapedRecipeHandler {
                     shape.result.rely = 47 - 11;
                 }
             }
-        }
         return shape;
     }
 
@@ -66,33 +64,28 @@ public class NEIAlloySmelterRecipeManager extends ShapedRecipeHandler {
 
     @Override
     public void loadUsageRecipes(ItemStack ingredient) {
-        for (AlloySmelterRecipe r : AlloySmelterRecipe.getAlloyRecipes()) {
-            for (ItemStack ingredientInRecipe : r.getMatrix()) {
+        for (AlloySmelterRecipe r : AlloySmelterRecipe.getAlloyRecipes())
+            for (ItemStack ingredientInRecipe : r.getMatrix())
                 if (NEIClientUtils.areStacksSameTypeCrafting(ingredientInRecipe, ingredient)) {
                     this.arecipes.add(getShape(r));
                     break;
                 }
-            }
-        }
     }
 
     @Override
     public void loadCraftingRecipes(String outputId, Object... results) {
-        if (outputId.equals("alloysmelter") && getClass() == NEIAlloySmelterRecipeManager.class) {
-            for (AlloySmelterRecipe r : AlloySmelterRecipe.getAlloyRecipes()) {
+        if (outputId.equals("alloysmelter") && getClass() == NEIAlloySmelterRecipeManager.class)
+            for (AlloySmelterRecipe r : AlloySmelterRecipe.getAlloyRecipes())
                 this.arecipes.add(getShape(r));
-            }
-        } else {
+        else
             super.loadCraftingRecipes(outputId, results);
-        }
     }
 
     @Override
     public void drawExtras(int recipe) {
         AlloySmelterRecipe r = AlloySmelterRecipe.getAlloyRecipes().get(recipe);
-        if (r == null) {
+        if (r == null)
             return;
-        }
         drawProgressBar(126, 7, 176, 0, 14, 14, 80, 3);
         drawProgressBar(102, 28, 176, 15, 13, 30, r.getBurnTime(), 1);
         drawProgressBar(102, 28, 176, 15, 25, 30, r.getBurnTime(), 0);
