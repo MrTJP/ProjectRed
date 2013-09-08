@@ -310,6 +310,10 @@
 				<present present="both" targetdir="${ccl.dir}" />
 			</fileset>
 		</delete>
+		<echo message="Copying DepLoader.class from CCC" />
+		<copy todir="${mcp.dir}/reobf/minecraft/codechicken/core/launch/">
+			<fileset dir="${ccc.dir}/codechicken/core/launch/" includes="DepLoader*.class" />
+		</copy>
 
 		<fail message="Failed to reobfuscate">
 			<condition>
@@ -324,9 +328,9 @@
 
 		<!-- ProjectRed Base -->
 		<echo message="Packaging ProjectRed Base" />
-		<jar destfile="${jar.dir}/${mod.name.base}">
-			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedCore*.class, **/mrtjp/projectred/core/**, **/mrtjp/projectred/api/**" />
-			<fileset dir="${mcp.dir}/reobf/resources">
+		<jar destfile="${jar.dir}/${mod.name.base}" manifest="${mcp.dir}/reobf/resources/MANIFEST.MF">
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedCore*.class, **/mrtjp/projectred/core/**, **/mrtjp/projectred/api/**, codechicken/core/launch/DepLoader**" />
+			<fileset dir="${mcp.dir}/reobf/resources" excludes="MANIFEST.MF">
 			</fileset>
 		</jar>
 
