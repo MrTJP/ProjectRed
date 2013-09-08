@@ -1,8 +1,10 @@
 package mrtjp.projectred.exploration;
 
+import codechicken.microblock.handler.MicroblockProxy;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
+import mrtjp.projectred.core.ShapelessOreNBTRecipe;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
 import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import net.minecraft.block.Block;
@@ -140,6 +142,15 @@ public class ExplorationRecipes {
                 'g', new ItemStack(ProjectRedExploration.itemWoolGin, 1, Short.MAX_VALUE),
                 'w', Block.cloth
         );
+        
+        /** Silicon **/
+        GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8), 
+                "s",
+                "b",
+                's', new ItemStack(ProjectRedExploration.itemDiamondSaw), 
+                'b', EnumPart.SILICONBOULE.getItemStack()
+        );
+
     }
     
     private static void initToolRecipes() {
@@ -161,9 +172,11 @@ public class ExplorationRecipes {
                     'c', EnumPart.WOVENCLOTH.getItemStack(),
                     'd', PRColors.get(i).getOreDict()
             ));
+            GameRegistry.addRecipe(new ShapelessOreNBTRecipe(EnumBackpack.get(i).getItemStack(), 
+                    EnumBackpack.oreDictDefinition,
+                    PRColors.get(i).getOreDict()
+            ).setKeepNBT());   
         }
-        GameRegistry.addRecipe(new BackpackRecolouringRecipe());
-
     }
     
     private static void initWorldRecipes() {

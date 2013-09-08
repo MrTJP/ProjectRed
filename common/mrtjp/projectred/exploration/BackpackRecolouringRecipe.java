@@ -2,9 +2,11 @@ package mrtjp.projectred.exploration;
 
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ShapelessOreNBTRecipe;
+import mrtjp.projectred.transmission.EnumWire;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class BackpackRecolouringRecipe extends ShapelessOreNBTRecipe {
 
@@ -33,5 +35,4 @@ public class BackpackRecolouringRecipe extends ShapelessOreNBTRecipe {
         trueout.setTagCompound(out.getTagCompound());
         return trueout;
     }
-
 }

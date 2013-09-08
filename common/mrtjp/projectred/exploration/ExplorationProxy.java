@@ -43,6 +43,7 @@ import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
+import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.EnumHelper;
 import net.minecraftforge.common.MinecraftForge;
@@ -148,6 +149,7 @@ public class ExplorationProxy implements IProxy {
     @Override
     public void postinit() {
         ExplorationRecipes.initRecipes();
+        EnumBackpack.initOreDictDefinitions();
     }
 
 }
