@@ -71,6 +71,7 @@ public class ComponentStore
     public static Icon rainIcon;
     public static Icon pointerIcon;
     public static Icon busXcvrIcon;
+    public static Icon busDisplayIcon;
     public static Icon cellIcon;
     
     static
@@ -159,6 +160,7 @@ public class ComponentStore
         leverIcon = r.registerIcon(baseTex+"lever");
         pointerIcon = r.registerIcon(baseTex+"pointer");
         busXcvrIcon = r.registerIcon(baseTex+"busxcvr");
+        busDisplayIcon = r.registerIcon(baseTex+"busdisplay");
         cellIcon = r.registerIcon(baseTex+"cells");
         
         RenderGate.registerIcons(r);
@@ -765,6 +767,18 @@ public class ComponentStore
         }
     }
 
+    public static class BusDisplayCableModel extends BundledCableModel
+    {
+        public BusDisplayCableModel() {
+            super(busXcvr, new Vector3(8,0,8), 10/32D, 14/32D);
+        }
+        
+        @Override
+        public IUVTransformation getUVT() {
+            return new IconTransformation(busDisplayIcon);
+        }
+    }
+
     public static class BusXcvrPanelModel extends ComponentModel
     {
         public static CCModel[] displayModels = new CCModel[16];
@@ -805,7 +819,7 @@ public class ComponentStore
             for(int i = 0; i < 48; i++)
                 models[i] = bakeCopy(base, i);
         }
-        
+
         @Override
         public void renderModel(Transformation t, int orient) {
             IconTransformation icont = new IconTransformation(busXcvrIcon);
@@ -817,11 +831,37 @@ public class ComponentStore
             
             Transformation displayT = flip ? new RedundantTransformation() : Rotation.quarterRotations[2];
             displayT = displayT.with(displayPos.translation()).with(orientT(orient%24)).with(t);
-            for(int i = 0; i < 16; i++)
+             for(int i = 0; i < 16; i++)
                 if((signal & 1<<i) != 0)
                     displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel);
         }
     }
+    
+    public static class BusDisplayPanelModel extends BusXcvrPanelModel
+    {
+    	public BusDisplayPanelModel(double x, double z, boolean flip) {
+    		super(x,z,flip);
+    	}
+    	
+    	@Override
+    	public void renderModel(Transformation t, int orient) {
+            Transformation t2 = (new Scale(new Vector3(2,1,2))).with(t);
+            Transformation t3 = (new Translation(new Vector3(-4,0,-4).multiply(1/16D))).with(t2);
+            IconTransformation icont = new IconTransformation(busDisplayIcon);
+            models[orient].render(t3, icont);
+            
+            Vector3 displayPos = pos.copy();
+            if(orient >= 24)//flipped x
+                displayPos.x = 1-displayPos.x;
+            
+            Transformation displayT = flip ? new RedundantTransformation() : Rotation.quarterRotations[2];
+            displayT = displayT.with(displayPos.translation()).with(orientT(orient%24)).with(t3);
+             for(int i = 0; i < 16; i++)
+                if((signal & 1<<i) != 0)
+                    displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel);
+    	}
+    }
+
     
     public static abstract class CellWireModel extends ComponentModel
     {

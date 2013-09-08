@@ -320,6 +320,16 @@ public class IntegrationRecipes {
         		'P', EnumPart.PLATE.getItemStack(),
         		'C', EnumPart.CATHODE.getItemStack()
        );
+       
+        /** Bundled Display **/
+       GameRegistry.addRecipe(EnumGate.BusDisplay.getItemStack(),
+                "PPP",
+                "PSP",
+                "PBP",
+                'P', EnumPart.PLATE.getItemStack(),
+                'B', EnumPart.BUNDLEDPLATE.getItemStack(),
+                'S', EnumPart.SILICONCHIP.getItemStack()
+        );
         
     }
 }

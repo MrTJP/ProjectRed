@@ -12,6 +12,9 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
     public static BundledGateLogic create(BundledGatePart gate, int subID) {
         if (subID == 22)
             return new BusTransceiver(gate);
+        if (subID == 28)
+            return new BusDisplay(gate);
+
         return null;
     }
 
@@ -204,6 +207,105 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         public boolean cycleShape(BundledGatePart gate) {
             gate.setShape(gate.shape() == 0 ? 1 : 0);
             return true;
+        }
+    }
+    
+    public static class BusDisplay extends BundledGateLogic
+    {
+        public byte[] input = new byte[16];
+                
+        public BusDisplay(BundledGatePart gate) {
+            super(gate);
+        }
+        
+        public void save(NBTTagCompound tag) {
+            tag.setByteArray("in", input);
+        }
+        
+        public void load(NBTTagCompound tag) {
+            input = tag.getByteArray("in");
+        }
+        
+        @Override
+        public void readDesc(MCDataInput packet) {
+            unpackClientData(packet.readInt());
+        }
+        
+        @Override
+        public void writeDesc(MCDataOutput packet) {
+            packet.writeInt(packClientData());
+        }
+
+        public void read(MCDataInput packet, int switch_key) {
+            if (switch_key == 11)
+                unpackClientData(packet.readInt());
+        }
+        
+        public void sendClientUpdate() {
+            gate.getWriteStream(11).writeInt(packClientData());
+        }
+        
+        public int packClientData() {
+            int packed = 0;
+            for (int i = 0; i < 16; i++) {
+                if (input[i] != 0)
+                    packed |= 1<<i;
+            }
+            return packed;
+        }
+        
+        public void unpackClientData(int packed) {
+            input = new byte[16];
+            for (int i = 0; i < 16; i++) {
+                if ((packed & 1<<i) != 0)
+                    input[i] = (byte) 255;
+            }
+        }
+        
+        public int bundledInputMask(int shape) {
+            return 1;
+        }
+
+        public int bundledOutputMask(int shape) {
+            return 0;
+        }
+        
+        public int inputMask(int shape) {
+            return 0;
+        }
+        
+        public int outputMask(int shape) {
+            return 0;
+        }
+
+        public byte[] getBundledOutput(BundledGatePart gate, int r) {
+            return new byte[16];
+        }
+        
+        public byte[] getBundledInput(int in, int r) {
+            byte[] signal = gate.getBundledInput(r);
+            signal = signal == null ? new byte[16] : signal.clone();
+            
+            return signal;
+        }
+        
+        @Override
+        public void onChange(BundledGatePart gate) {
+            byte[] newInput = getBundledInput(0, 0);
+            if (!BundledCableCommons.signalsEqual(input, newInput)) {
+                input = newInput;
+                gate.scheduleTick(2);
+            }
+        }
+        
+        @Override
+        public void scheduledTick(BundledGatePart gate) {
+            sendClientUpdate();
+        }
+
+        @Override
+        public boolean cycleShape(BundledGatePart gate) {
+            return false;
         }
     }
 }
