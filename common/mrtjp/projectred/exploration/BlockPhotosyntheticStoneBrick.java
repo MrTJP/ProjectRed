@@ -16,7 +16,7 @@ public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
     public static final String[] STONE_BRICK_TYPES = new String[] { "default", "mossy", "cracked", "chiseled" };
     public static final String[] names = new String[] { null, "mossy", "cracked", "carved" };
     @SideOnly(Side.CLIENT)
-    private Icon[] icons = new Icon[names.length];;
+    private Icon[] icons;
 
     public BlockPhotosyntheticStoneBrick(int par1) {
         super(par1);
@@ -101,6 +101,7 @@ public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
     @Override
     public void registerIcons(IconRegister reg) {
         super.registerIcons(reg);
+        icons = new Icon[names.length];
         Block.stoneBrick.registerIcons(reg);
         for (int i = 0; i < this.icons.length; ++i) {
             String s = this.getTextureName();
@@ -113,6 +114,8 @@ public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
 
     @SideOnly(Side.CLIENT)
     public Icon getIcon(int par1, int par2) {
+        if (icons == null)
+            icons = new Icon[names.length];
         if (par2 < 0 || par2 >= names.length) {
             par2 = 0;
         }
