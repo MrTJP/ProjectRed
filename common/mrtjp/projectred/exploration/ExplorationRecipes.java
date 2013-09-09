@@ -1,6 +1,5 @@
 package mrtjp.projectred.exploration;
 
-import codechicken.microblock.handler.MicroblockProxy;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;

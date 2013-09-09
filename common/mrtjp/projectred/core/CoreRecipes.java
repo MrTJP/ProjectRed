@@ -1,7 +1,6 @@
 package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRedCore;
-import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.block.Block;
@@ -11,7 +10,6 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import codechicken.microblock.ItemMicroPart;
 import codechicken.microblock.handler.MicroblockProxy;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CoreRecipes {

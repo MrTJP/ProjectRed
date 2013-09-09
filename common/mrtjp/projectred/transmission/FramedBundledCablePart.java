@@ -8,7 +8,6 @@ import java.util.Arrays;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.CoreCPH;
 import mrtjp.projectred.core.CoreProxy;
 import net.minecraft.entity.player.EntityPlayer;

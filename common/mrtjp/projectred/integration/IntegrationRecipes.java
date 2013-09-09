@@ -1,6 +1,5 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.ProjectRedIntegration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
 import net.minecraft.block.Block;

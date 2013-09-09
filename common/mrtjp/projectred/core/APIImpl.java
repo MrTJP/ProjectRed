@@ -1,15 +1,15 @@
 package mrtjp.projectred.core;
 
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Rotation;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.transmission.BundledCableCommons;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Rotation;
+import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 
 /**
  * Internal API Implementation, do not include this class in your mod

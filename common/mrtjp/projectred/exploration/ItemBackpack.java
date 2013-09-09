@@ -6,7 +6,6 @@ import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.GhostContainer;
 import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
 import mrtjp.projectred.core.SimpleInventory;
-import mrtjp.projectred.transmission.EnumWire;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;

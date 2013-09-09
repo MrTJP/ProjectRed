@@ -4,7 +4,6 @@ package mrtjp.projectred.integration;
 import java.util.Random;
 
 import mrtjp.projectred.ProjectRedCore;
-import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.EnumSkyBlock;

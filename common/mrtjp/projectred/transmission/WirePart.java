@@ -3,7 +3,6 @@ package mrtjp.projectred.transmission;
 import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRedCore;
-import mrtjp.projectred.ProjectRedTransmission;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.BasicWireUtils;
