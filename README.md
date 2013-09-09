@@ -1,76 +1,18 @@
 ProjectRed
 ==========
+Project Red is a mod written for Forge Multipart. It brings vastly improved redstone control to Minecraft via compact wiring and integrated logic gates.
+- [Minecraft Forum Thread](http://www.minecraftforum.net/topic/1885652-)
+- [Website](http://bit.ly/mrtjp-projectred)
 
 
-Setting up the dev environment:
+Developing:
+----------
 
-1) Set up your folder structure like this:
-***
-      projred
-      \-ProjectRed
-     	\build.xml
-     	\common
-       	\resources
-      	\dummy
-      	\etc.
-***
-2) CD to ProjectRed folder.
-
-3) Run this command:
-***
-`ant fullfilesetup`
-***
-4) After its done, download the following files to the MCP lib directory, then link the libraries in eclipse (Rightclick on `Minecraft` project, select `buildpath`, and under `libraries` tab click `add external jar`.
-***
-     projred
-     \-build
-       \-forge
-         \-mcp
-           \-lib
-             \CodeChickenCore-dev x.x.x.x.jar
-             \NotEnoughItems-dev x.x.x.x.jar
-             \scala-compiler.jar
-             \CodeChickenLib-dev-1.6.2-x.x.x.x.jar
-             \ForgeMultipart-dev-1.6.2-x.x.x.x.jar
-***
-
-5) Also copy all those files to the mods directory in mcp:
-***
-     projred
-     \-build
-       \-forge
-         \-mcp
-           \-jars
-             \-mods
-               \CodeChickenCore-dev x.x.x.x.jar
-               \NotEnoughItems-dev x.x.x.x.jar
-               \scala-compiler.jar
-               \CodeChickenLib-dev-1.6.2-x.x.x.x.jar
-               \ForgeMultipart-dev-1.6.2-x.x.x.x.jar
-***
-
-6) Open eclipse and link the following sources:
-***
-     projred
-     \-ProjectRed
-       \common
-       \resources
-       \dummy
-***
-
-7) To create a test release, run:
-***
- `ant testbuild`
-***
-
-This will use your dev environment to reobfuscate, then restore the state back to development.
-
-8) The finished jar will be in:
-***
-     projred
-     \-build
-       \dist
-***
-
-9) The finished jar file will not be fully compatible with everything unless you use an
-external utility such as BON to fix the file names (Temporary problem with obfuscation)
+1. Clone repository to empty folder.
+2. Cd to the repository.
+3. Run `install-dependencies` to set up an environment.
+4. Link downloaded lib files as libraries in eclipse.
+5. Link `common` and `resources` as source folders in eclipse.
+6. Edit your code.
+7. Use a debug run to test.
+8. After its bug free, you may submit it as a Pull Request to the main repo.
