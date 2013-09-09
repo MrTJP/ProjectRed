@@ -3,7 +3,6 @@ package mrtjp.projectred.core;
 import java.util.Random;
 
 import mrtjp.projectred.ProjectRedCore;
-import mrtjp.projectred.ProjectRedExpansion;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
 import net.minecraft.block.Block;

@@ -4,7 +4,6 @@ import static mrtjp.projectred.ProjectRedTransmission.itemPartFramedWire;
 import static mrtjp.projectred.ProjectRedTransmission.itemPartWire;
 import net.minecraftforge.client.MinecraftForgeClient;
 import codechicken.microblock.MicroMaterialRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class TransmissionClientProxy extends TransmissionProxy {
 

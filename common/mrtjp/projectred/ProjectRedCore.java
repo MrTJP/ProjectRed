@@ -1,6 +1,5 @@
 package mrtjp.projectred;
 
-import codechicken.lib.packet.PacketCustom.CustomTinyPacketHandler;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.APIImpl;
 import mrtjp.projectred.core.BlockBasics;
@@ -15,6 +14,7 @@ import mrtjp.projectred.core.ItemWireDebugger;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import codechicken.lib.packet.PacketCustom.CustomTinyPacketHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
@@ -24,7 +24,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
 /**
  * "Project: Red" serves to provide a complete alternative for Eloraam's

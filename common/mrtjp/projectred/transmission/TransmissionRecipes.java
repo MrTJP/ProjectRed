@@ -1,18 +1,16 @@
 package mrtjp.projectred.transmission;
 
-import codechicken.microblock.ItemMicroPart;
-import mrtjp.projectred.ProjectRedTransmission;
 import mrtjp.projectred.core.AlloySmelterRecipe;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.ShapedOreNBTRecipe;
 import mrtjp.projectred.core.ShapelessOreNBTRecipe;
 import net.minecraft.block.Block;
-import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import codechicken.microblock.ItemMicroPart;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class TransmissionRecipes {

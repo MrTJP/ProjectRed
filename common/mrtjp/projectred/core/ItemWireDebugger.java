@@ -1,7 +1,6 @@
 package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRedCore;
-import mrtjp.projectred.ProjectRedTransmission;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;

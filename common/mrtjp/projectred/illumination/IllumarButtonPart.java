@@ -3,7 +3,6 @@ package mrtjp.projectred.illumination;
 import java.util.Arrays;
 
 import mrtjp.projectred.ProjectRedIllumination;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockButton;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.item.ItemStack;

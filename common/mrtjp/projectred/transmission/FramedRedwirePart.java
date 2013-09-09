@@ -2,7 +2,6 @@ package mrtjp.projectred.transmission;
 
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.CoreCPH;
 import mrtjp.projectred.core.CoreProxy;
 import mrtjp.projectred.core.Messenger;

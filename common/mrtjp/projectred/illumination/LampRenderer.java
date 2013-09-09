@@ -1,27 +1,18 @@
 package mrtjp.projectred.illumination;
 
-import java.util.Map;
-
 import mrtjp.projectred.ProjectRedIllumination;
-import mrtjp.projectred.core.BasicRenderUtils;
-import mrtjp.projectred.core.InvertX;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.model.IModelCustom;
 
 import org.lwjgl.opengl.GL11;
 
-import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.TransformationList;
 import codechicken.lib.vec.Translation;
 
 public class LampRenderer implements IItemRenderer {

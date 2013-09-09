@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mrtjp.projectred.ProjectRedCore;
-import mrtjp.projectred.ProjectRedExpansion;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -24,7 +23,7 @@ public class BlockBasics extends BlockContainer {
 
     public BlockBasics(int id) {
         super(id, new Material(Material.iron.materialMapColor));
-        setCreativeTab(ProjectRedExpansion.tabExpansion);
+        setCreativeTab(ProjectRedCore.tabCore);
         this.setUnlocalizedName("projectred.core.appliance");
         setHardness(0.75f);
     }
