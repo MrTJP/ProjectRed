@@ -32,15 +32,6 @@ public class RedAlloyWirePart extends RedwirePart {
     }
     
     @Override
-    public int weakPowerLevel(int side) {
-        if(this.side == side || this.side == (side^1) ||
-                maskConnectsToOutside(Rotation.rotationTo(this.side, side)))
-            return super.weakPowerLevel(side);
-        
-        return 0;
-    }
-
-    @Override
     public int redstoneConductionMap() {
         return 0x1F;
     }

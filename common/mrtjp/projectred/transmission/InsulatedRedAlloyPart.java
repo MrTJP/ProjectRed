@@ -59,12 +59,20 @@ public class InsulatedRedAlloyPart extends RedwirePart implements IInsulatedRedw
     }
     
     @Override
-    public int getPartSignal(TMultiPart part, int r)
-    {
+    public int getPartSignal(TMultiPart part, int r) {
         if(part instanceof IBundledCablePart)
             return (((IBundledCablePart) part).getBundledSignal()[colour]&0xFF)-1;
         
         return super.getPartSignal(part, r);
+    }
+
+    @Override
+    public int weakPowerLevel(int side) {
+        if(this.side == side || this.side == (side^1) ||
+                !maskConnects(Rotation.rotationTo(this.side, side)))
+            return 0;
+        
+        return super.weakPowerLevel(side);
     }
 
     @Override
@@ -74,16 +82,7 @@ public class InsulatedRedAlloyPart extends RedwirePart implements IInsulatedRedw
         
         return true;
     }
-    
-    @Override
-    public int weakPowerLevel(int side) {
-        if(this.side == side || this.side == (side^1) ||
-                !maskConnectsToOutside(Rotation.rotationTo(this.side, side)))
-            return 0;
         
-        return super.weakPowerLevel(side);
-    }
-    
     @Override
     @SideOnly(Side.CLIENT)
     public Icon getIcon() {
