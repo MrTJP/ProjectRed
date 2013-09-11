@@ -70,6 +70,9 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     
     @Override
     public int weakPowerLevel(int side) {
+        if((side&6) != (this.side&6) && (connMap & 0x100<<Rotation.rotationTo(this.side, side)) != 0)
+            return 0;
+        
         return rsLevel();
     }
     
