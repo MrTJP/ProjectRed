@@ -1,0 +1,301 @@
+itemGroup.core=Project Red: Core
+
+item.projectred.core.part.partplate.name=Schaltkreisplatte
+item.projectred.core.part.partconductiveplate.name=Leitende Platte
+item.projectred.core.part.partwiredplate.name=Verdrahtete Platte
+item.projectred.core.part.partbundledplate.name=Gebündelte Platte
+item.projectred.core.part.partanode.name=Anode
+item.projectred.core.part.partcathode.name=Kathode
+item.projectred.core.part.partpointer.name=Pointer
+item.projectred.core.part.partsiliconchip.name=Siliziumchip
+item.projectred.core.part.partenergizedsiliconchip.name=Energetisierter Siliziumchip
+item.projectred.core.part.partplatformedplate.name=Plattgeformte Platte
+item.projectred.core.part.partredingot.name=Rotlegierungsbarren
+item.projectred.core.part.partboule.name=Kristallines Silizium
+item.projectred.core.part.partsilicon.name=Silizium
+item.projectred.core.part.partinfusedsilicon.name=Infundiertes Silizium
+item.projectred.core.part.partenergizedsilicon.name=Energetisiertes Silizium
+item.projectred.core.part.partmotor.name=Motor
+item.projectred.core.part.partcoppercoil.name=Kupferspule
+item.projectred.core.part.partironcoil.name=Eisenspule
+item.projectred.core.part.partgoldcoil.name=Goldene spule
+item.projectred.core.part.partwhitedust.name=Weißes Illumar
+item.projectred.core.part.partorangedust.name=Oranges Illumar
+item.projectred.core.part.partmagentadust.name=Magentafarbenes Illumar
+item.projectred.core.part.partlightbluedust.name=Hellblaues Illumar
+item.projectred.core.part.partyellowdust.name=GelbesIllumar
+item.projectred.core.part.partlimedust.name=Hellgrünes Illumar
+item.projectred.core.part.partpinkdust.name=Pinkes Illumar
+item.projectred.core.part.partgreydust.name=Graues Illumar
+item.projectred.core.part.partlightgreydust.name=Hellgraues Illumar
+item.projectred.core.part.partcyandust.name=Türkises Illumar
+item.projectred.core.part.partpurpledust.name=Violettes Illumar
+item.projectred.core.part.partbluedust.name=Blaues Illumar
+item.projectred.core.part.partbrowndust.name=Braunes Illumar
+item.projectred.core.part.partgreendust.name=Grünes Illumar
+item.projectred.core.part.partreddust.name=Rotes Illumar
+item.projectred.core.part.partblackdust.name=Schwarzes Illumar
+item.projectred.core.part.partcloth.name=Gewebter Stoff
+item.projectred.core.part.partsail.name=Segel
+item.projectred.core.part.gemruby.name=Rubin
+item.projectred.core.part.gemsapphire.name=Saphir
+item.projectred.core.part.gemperidot.name=Olivin
+
+tile.projectred.core.appliance.machinealloy.name=Legierungsschmelzerei
+
+item.projectred.core.drawplate.name=Ziehstein
+item.projectred.core.wiredebugger.name=Kabel-Debugger
+item.projectred.core.screwdriver.name=Schraubendreher
+
+
+
+
+itemGroup.expansion=Project Red: Expansion
+
+item.projectred.expansion.VAWT.name=Vertikalaxen-Windturbine
+item.projectred.expansion.ptube|0.name=Druckluftröhre
+
+
+
+
+itemGroup.exploration=Project Red: Exploration
+
+tile.projectred.exploration.ore.oreruby.name=Rubinerz
+tile.projectred.exploration.ore.oresapphire.name=Saphirerz
+tile.projectred.exploration.ore.oreperidot.name=Olivinerz
+tile.projectred.exploration.stone.stonemarble.name=Marmor
+tile.projectred.exploration.stone.brickmarble.name=Marmorziegel
+tile.projectred.exploration.stone.cobblebasalt.name=Basalt-Pflasterstein
+tile.projectred.exploration.stone.stonebasalt.name=Basalt
+tile.projectred.exploration.stone.brickbasalt.name=Basaltziegel
+tile.projectred.exploration.stone.storageruby.name=Rubinblock
+tile.projectred.exploration.stone.storagesapphire.name=Saphirblock
+tile.projectred.exploration.stone.storageperidot.name=Olivinblock
+item.projectred.exploration.woolgin.name=Wollkarde
+item.projectred.exploration.backpack.bpwhite.name=Weißer Rucksack
+item.projectred.exploration.backpack.bporange.name=Oranger Rucksack
+item.projectred.exploration.backpack.bpmagenta.name=Magentafarbener Rucksack
+item.projectred.exploration.backpack.bplightblue.name=Hellblauer Rucksack
+item.projectred.exploration.backpack.bpyellow.name=Gelber Rucksack
+item.projectred.exploration.backpack.bplime.name=Hellgrüner Rucksack
+item.projectred.exploration.backpack.bppink.name=Pinker Rucksack
+item.projectred.exploration.backpack.bpgrey.name=Grauer Rucksack
+item.projectred.exploration.backpack.bplightgrey.name=Hellgrauer Rucksack
+item.projectred.exploration.backpack.bpcyan.name=Türkiser Rucksack
+item.projectred.exploration.backpack.bppurple.name=Violetter Rucksack
+item.projectred.exploration.backpack.bpblue.name=Blauer Rucksack
+item.projectred.exploration.backpack.bpbrown.name=Brauner Rucksack
+item.projectred.exploration.backpack.bpgreen.name=Grüner Rucksack
+item.projectred.exploration.backpack.bpred.name=Roter Rucksack
+item.projectred.exploration.backpack.bpblack.name=Schwarzer Rucksack
+item.projectred.exploration.axeruby.name=Rubinaxt
+item.projectred.exploration.axesapphire.name=Saphiraxt
+item.projectred.exploration.axeperidot.name=Olivinaxt
+item.projectred.exploration.hoeruby.name=Rubinhacke
+item.projectred.exploration.hoesapphire.name=Saphirhacke
+item.projectred.exploration.hoeperidot.name=Olivinhacke
+item.projectred.exploration.pickaxeruby.name=Rubinspitzhacke
+item.projectred.exploration.pickaxesapphire.name=Saphirspitzhacke
+item.projectred.exploration.pickaxeperidot.name=Olivinspitzhacke
+item.projectred.exploration.shovelruby.name=Rubinschaufel
+item.projectred.exploration.shovelsapphire.name=Saphirschaufel
+item.projectred.exploration.shovelperidot.name=Olivinschaufel
+item.projectred.exploration.swordruby.name=Rubinschwert
+item.projectred.exploration.swordsapphire.name=Saphirschwert
+item.projectred.exploration.swordperidot.name=Olivinschwert
+item.projectred.exploration.sawwood.name=Hölzerne Säge
+item.projectred.exploration.sawstone.name=Steinsäge
+item.projectred.exploration.sawiron.name=Eisensäge
+item.projectred.exploration.sawgold.name=Goldene Säge
+item.projectred.exploration.sawruby.name=Rubinsäge
+item.projectred.exploration.sawsapphire.name=Saphirsäge
+item.projectred.exploration.sawperidot.name=Olivinsäge
+item.projectred.exploration.sawdiamond.name=Diamantsäge
+item.projectred.exploration.sicklewood.name=Hölzerne Sichel
+item.projectred.exploration.sicklestone.name=Steinsichel
+item.projectred.exploration.sickleiron.name=Eisensichel
+item.projectred.exploration.sicklegold.name=Goldene sichel
+item.projectred.exploration.sickleruby.name=Rubinsichel
+item.projectred.exploration.sicklesapphire.name=Saphirsichel
+item.projectred.exploration.sickleperidot.name=Olivinsichel
+item.projectred.exploration.sicklediamond.name=Diamantsichel
+
+
+
+
+
+itemGroup.ill=Project Red: Illumination
+
+item.projectred.illumination.lantern|0.name=Weiße Laterne
+item.projectred.illumination.lantern|1.name=Orange Laterne
+item.projectred.illumination.lantern|2.name=Magentafarbene Laterne
+item.projectred.illumination.lantern|3.name=Hellblaue Laterne
+item.projectred.illumination.lantern|4.name=Gelbe Laterne
+item.projectred.illumination.lantern|5.name=Hellgrüne Laterne
+item.projectred.illumination.lantern|6.name=Pinke Laterne
+item.projectred.illumination.lantern|7.name=Graue Laterne
+item.projectred.illumination.lantern|8.name=Hellgraue Laterne
+item.projectred.illumination.lantern|9.name=Türkise Laterne
+item.projectred.illumination.lantern|10.name=Violette Laterne
+item.projectred.illumination.lantern|11.name=Blaue Laterne
+item.projectred.illumination.lantern|12.name=Braune Laterne
+item.projectred.illumination.lantern|13.name=Grüne Laterne
+item.projectred.illumination.lantern|14.name=Rote Laterne
+item.projectred.illumination.lantern|15.name=Schwarze Laterne
+item.projectred.illumination.lantern.inv|0.name=Invertierte Weiße Laterne
+item.projectred.illumination.lantern.inv|1.name=Invertierte Orange Laterne
+item.projectred.illumination.lantern.inv|2.name=Invertierte Magentafarbene Laterne
+item.projectred.illumination.lantern.inv|3.name=Invertierte Hellblaue Laterne
+item.projectred.illumination.lantern.inv|4.name=Invertierte Gelbe Laterne
+item.projectred.illumination.lantern.inv|5.name=Invertierte Hellgrüne Laterne
+item.projectred.illumination.lantern.inv|6.name=Invertierte Pinke Laterne
+item.projectred.illumination.lantern.inv|7.name=Invertierte Graue Laterne
+item.projectred.illumination.lantern.inv|8.name=Invertierte Hellgraue Laterne
+item.projectred.illumination.lantern.inv|9.name=Invertierte Türkise Laterne
+item.projectred.illumination.lantern.inv|10.name=Invertierte Violette Laterne
+item.projectred.illumination.lantern.inv|11.name=Invertierte Blaue Laterne
+item.projectred.illumination.lantern.inv|12.name=Invertierte Braune Laterne
+item.projectred.illumination.lantern.inv|13.name=Invertierte Grüne Laterne
+item.projectred.illumination.lantern.inv|14.name=Invertierte Rote Laterne
+item.projectred.illumination.lantern.inv|15.name=Invertierte Schwarze Laterne
+item.projectred.illumination.lamp|0.name=Weiße Lampe
+item.projectred.illumination.lamp|1.name=Orange Lampe
+item.projectred.illumination.lamp|2.name=Magentafarbene Lampe
+item.projectred.illumination.lamp|3.name=Hellblaue Lampe
+item.projectred.illumination.lamp|4.name=Gelbe Lampe
+item.projectred.illumination.lamp|5.name=Hellgrüne Lampe
+item.projectred.illumination.lamp|6.name=Pinke Lampe
+item.projectred.illumination.lamp|7.name=Graue Lampe
+item.projectred.illumination.lamp|8.name=Hellgraue Lampe
+item.projectred.illumination.lamp|9.name=Türkise Lampe
+item.projectred.illumination.lamp|10.name=Violette Lampe
+item.projectred.illumination.lamp|11.name=Blaue Lampe
+item.projectred.illumination.lamp|12.name=Braune Lampe
+item.projectred.illumination.lamp|13.name=Grüne Lampe
+item.projectred.illumination.lamp|14.name=Rote Lampe
+item.projectred.illumination.lamp|15.name=Schwarze Lampe
+item.projectred.illumination.lamp.inv|0.name=Invertierte Weiße Lampe
+item.projectred.illumination.lamp.inv|1.name=Invertierte Orange Lampe
+item.projectred.illumination.lamp.inv|2.name=Invertierte Magentafarbene Lampe
+item.projectred.illumination.lamp.inv|3.name=Invertierte Hellblaue Lampe
+item.projectred.illumination.lamp.inv|4.name=Invertierte Gelbe Lampe
+item.projectred.illumination.lamp.inv|5.name=Invertierte Hellgrüne Lampe
+item.projectred.illumination.lamp.inv|6.name=Invertierte Pinke Lampe
+item.projectred.illumination.lamp.inv|7.name=Invertierte Graue Lampe
+item.projectred.illumination.lamp.inv|8.name=Invertierte Hellgraue Lampe
+item.projectred.illumination.lamp.inv|9.name=Invertierte Türkise Lampe
+item.projectred.illumination.lamp.inv|10.name=Invertierte Violette Lampe
+item.projectred.illumination.lamp.inv|11.name=Invertierte Blaue Lampe
+item.projectred.illumination.lamp.inv|12.name=Invertierte Braune Lampe
+item.projectred.illumination.lamp.inv|13.name=Invertierte Grüne Lampe
+item.projectred.illumination.lamp.inv|14.name=Invertierte Rote Lampe
+item.projectred.illumination.lamp.inv|15.name=Invertierte Schwarze Lampe
+item.projectred.illumination.lightbutton|0.name=Weißer Illumarknopf
+item.projectred.illumination.lightbutton|1.name=Oranger Illumarknopf
+item.projectred.illumination.lightbutton|2.name=Magentafarbener Illumarknopf
+item.projectred.illumination.lightbutton|3.name=Hellblauer Illumarknopf
+item.projectred.illumination.lightbutton|4.name=Gelber Illumarknopf
+item.projectred.illumination.lightbutton|5.name=Hellgrüner Illumarknopf
+item.projectred.illumination.lightbutton|6.name=Pinker Illumarknopf
+item.projectred.illumination.lightbutton|7.name=Grauer Illumarknopf
+item.projectred.illumination.lightbutton|8.name=Hellgrauer Illumarknopf
+item.projectred.illumination.lightbutton|9.name=Türkiser Illumarknopf
+item.projectred.illumination.lightbutton|10.name=Violetter Illumarknopf
+item.projectred.illumination.lightbutton|11.name=Blauer Illumarknopf
+item.projectred.illumination.lightbutton|12.name=Brauner Illumarknopf
+item.projectred.illumination.lightbutton|13.name=Grüner Illumarknopf
+item.projectred.illumination.lightbutton|14.name=Roter Illumarknopf
+item.projectred.illumination.lightbutton|15.name=Schwarzer Illumarknopf
+
+
+
+
+
+itemGroup.int=Project Red: Integration
+
+item.projectred.integration.gate|0.name=OR-Gatter
+item.projectred.integration.gate|1.name=NOR-Gatter
+item.projectred.integration.gate|2.name=NOT-Gatter
+item.projectred.integration.gate|3.name=AND-Gatter
+item.projectred.integration.gate|4.name=NAND-Gatter
+item.projectred.integration.gate|5.name=XOR-Gatter
+item.projectred.integration.gate|6.name=XNOR-Gatter
+item.projectred.integration.gate|7.name=Buffer-Gatter
+item.projectred.integration.gate|8.name=Multiplexer
+item.projectred.integration.gate|9.name=Puls-Former
+item.projectred.integration.gate|10.name=Repeater
+item.projectred.integration.gate|11.name=Randomizer
+item.projectred.integration.gate|12.name=RS-Flipflop
+item.projectred.integration.gate|13.name=Toggle-Flipflop
+item.projectred.integration.gate|14.name=Transparenter Flipflop
+item.projectred.integration.gate|15.name=Lichtsensor
+item.projectred.integration.gate|16.name=Regensensor
+item.projectred.integration.gate|17.name=Timer
+item.projectred.integration.gate|18.name=Sequenzer
+item.projectred.integration.gate|19.name=Zähler
+item.projectred.integration.gate|20.name=Zustandszelle
+item.projectred.integration.gate|21.name=Synchronizer
+item.projectred.integration.gate|22.name=Bus-Transceiver
+item.projectred.integration.gate|23.name=Null-Zelle
+item.projectred.integration.gate|24.name=Invertier-Zelle
+item.projectred.integration.gate|25.name=Buffer-Zelle
+item.projectred.integration.gate|26.name=Komparator
+item.projectred.integration.gate|27.name=AND-Zelle
+
+
+
+
+itemGroup.trans=Project Red: Transmission
+
+item.projectred.transmission.wire|0.name=Rotlegierungskabel
+item.projectred.transmission.wire|1.name=Weiß isoliertes Kabel
+item.projectred.transmission.wire|2.name=Orange isoliertes Kabel
+item.projectred.transmission.wire|3.name=Magentafarben isoliertes Kabel
+item.projectred.transmission.wire|4.name=Hellblau isoliertes Kabel
+item.projectred.transmission.wire|5.name=Gelb isoliertes Kabel
+item.projectred.transmission.wire|6.name=Hellgrün isoliertes Kabel
+item.projectred.transmission.wire|7.name=Pink isoliertes Kabel
+item.projectred.transmission.wire|8.name=Grau isoliertes Kabel
+item.projectred.transmission.wire|9.name=Hellgrau isoliertes Kabel
+item.projectred.transmission.wire|10.name=Türkis isoliertes Kabel
+item.projectred.transmission.wire|11.name=Violett isoliertes Kabel
+item.projectred.transmission.wire|12.name=Blau isoliertes Kabel
+item.projectred.transmission.wire|13.name=Braun isoliertes Kabel
+item.projectred.transmission.wire|14.name=Grün isoliertes Kabel
+item.projectred.transmission.wire|15.name=Rot isoliertes Kabel
+item.projectred.transmission.wire|16.name=Schwarz isoliertes Kabel
+item.projectred.transmission.wire|17.name=Gebündeltes Kabel
+item.projectred.transmission.wire|18.name=Weißes gebündeltes Kabel
+item.projectred.transmission.wire|19.name=Oranges gebündeltes Kabel
+item.projectred.transmission.wire|20.name=Magentafarbenes gebündeltes Kabel
+item.projectred.transmission.wire|21.name=Hellblaues gebündeltes Kabel
+item.projectred.transmission.wire|22.name=Gelbes gebündeltes Kabel
+item.projectred.transmission.wire|23.name=Hellgrünes gebündeltes Kabel
+item.projectred.transmission.wire|24.name=Pinkes gebündeltes Kabel
+item.projectred.transmission.wire|25.name=Graues gebündeltes Kabel
+item.projectred.transmission.wire|26.name=Hellgraues gebündeltes Kabel
+item.projectred.transmission.wire|27.name=Türkises gebündeltes Kabel
+item.projectred.transmission.wire|28.name=Violettes gebündeltes Kabel
+item.projectred.transmission.wire|29.name=Blaues gebündeltes Kabel
+item.projectred.transmission.wire|30.name=Braunes gebündeltes Kabel
+item.projectred.transmission.wire|31.name=Grünes gebündeltes Kabel
+item.projectred.transmission.wire|32.name=Rotes gebündeltes Kabel
+item.projectred.transmission.wire|33.name=Schwarzes gebündeltes Kabel
+item.projectred.transmission.framewire|0.name=Gerahmtes Rotlegierungskabel
+item.projectred.transmission.framewire|1.name=Gerahmtes weiß isoliertes Kabel
+item.projectred.transmission.framewire|2.name=Gerahmtes orange isoliertes Kabel
+item.projectred.transmission.framewire|3.name=Gerahmtes magentafarben isoliertes Kabel
+item.projectred.transmission.framewire|4.name=Gerahmtes hellblau isoliertes Kabel
+item.projectred.transmission.framewire|5.name=Gerahmtes gelb isoliertes Kabel
+item.projectred.transmission.framewire|6.name=Gerahmtes hellgrün isoliertes Kabel
+item.projectred.transmission.framewire|7.name=Gerahmtes pink isoliertes Kabel
+item.projectred.transmission.framewire|8.name=Gerahmtes grau isoliertes Kabel
+item.projectred.transmission.framewire|9.name=Gerahmtes hellgrau isoliertes Kabel
+item.projectred.transmission.framewire|10.name=Gerahmtes türkis isoliertes Kabel
+item.projectred.transmission.framewire|11.name=Gerahmtes violett isoliertes Kabel
+item.projectred.transmission.framewire|12.name=Gerahmtes blau isoliertes Kabel
+item.projectred.transmission.framewire|13.name=Gerahmtes braun isoliertes Kabel
+item.projectred.transmission.framewire|14.name=Gerahmtes grün isoliertes Kabel
+item.projectred.transmission.framewire|15.name=Gerahmtes rot isoliertes Kabel
+item.projectred.transmission.framewire|16.name=Gerahmtes schwarz isoliertes Kabel
+item.projectred.transmission.framewire|17.name=Gerahmtes gebündeltes Kabel
