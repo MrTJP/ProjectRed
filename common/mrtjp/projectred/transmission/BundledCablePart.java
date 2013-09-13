@@ -9,11 +9,11 @@ import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CoreCPH;
-import mrtjp.projectred.core.CoreProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.Icon;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.PacketCustom;
@@ -186,14 +186,13 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
             String s = "";
             for (int i = 0; i < 16; i++) {
                 int x = getBundledSignal()[i];
-                if (x != 0) {
+                if (x != 0)
                     s = s + "[" + i + "]";
-                }
             }
             if (s == "")
                 s = "off";
 
-            PacketCustom packet = new PacketCustom(CoreCPH.channel, CoreProxy.messengerQueue);
+            PacketCustom packet = new PacketCustom(CoreCPH.channel, CoreCPH.messengerQueue);
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);

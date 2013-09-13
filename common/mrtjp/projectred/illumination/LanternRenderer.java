@@ -94,6 +94,7 @@ public class LanternRenderer implements IItemRenderer {
         GL11.glTranslated(x, y, z);
         GL11.glScalef(scale, scale, scale);
         CCRenderState.reset();
+        TextureUtils.bindAtlas(0);
         CCRenderState.useNormals(true);
         CCRenderState.startDrawing(7);
         renderPart(models.get("covertop"), x, y, z, 2);

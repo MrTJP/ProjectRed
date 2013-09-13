@@ -3,7 +3,6 @@ package mrtjp.projectred.transmission;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CoreCPH;
-import mrtjp.projectred.core.CoreProxy;
 import mrtjp.projectred.core.Messenger;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -190,9 +189,12 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         BlockCoord cnrPos = new BlockCoord(getTile()).offset(absDir);
         BlockCoord pos = cnrPos.copy().offset(side);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if (t != null)
-            return getPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side^1));
-        
+        if (t != null) {
+            TMultiPart tp = t.partMap(absDir^1);
+            if(tp != null)
+                return getPartSignal(tp, Rotation.rotationTo(absDir^1, side^1));
+        }
+            
         return 0;
     }
 
@@ -263,7 +265,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         if (BasicUtils.isClient(world())) {
             Messenger.addMessage(x() + 0, y() + .5f, z() + 0,  "/#f/#c[c] = " + getRedwireSignal());
         } else {
-            PacketCustom packet = new PacketCustom(CoreCPH.channel, CoreProxy.messengerQueue);
+            PacketCustom packet = new PacketCustom(CoreCPH.channel, CoreCPH.messengerQueue);
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);

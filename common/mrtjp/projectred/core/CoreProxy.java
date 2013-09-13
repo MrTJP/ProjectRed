@@ -10,9 +10,7 @@ import mrtjp.projectred.core.ItemPart.EnumPart;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CoreProxy implements IProxy {
-    public static final int messengerQueue = 2;
-    public static final int alloySmelterWatcherUpdate = 3;
-
+    
     @Override
     public void preinit() {
     }
