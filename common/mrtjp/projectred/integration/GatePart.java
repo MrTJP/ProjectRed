@@ -6,9 +6,11 @@ import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.BasicWireUtils;
+import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
@@ -22,7 +24,9 @@ import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
 import codechicken.microblock.FaceMicroClass;
+import codechicken.multipart.IconHitEffects;
 import codechicken.multipart.JCuboidPart;
+import codechicken.multipart.JIconHitEffects;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.PartMap;
@@ -34,7 +38,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, IConnectable, TFacePart
+public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, IConnectable, TFacePart, JIconHitEffects
 {
     public static Cuboid6[][] oBoxes = new Cuboid6[6][2];
     
@@ -564,4 +568,29 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public boolean solid(int side) {
         return false;
     }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public Icon getBreakingIcon(Object arg0, int arg1) {
+        return ComponentStore.baseIcon;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public Icon getBrokenIcon(int arg0) {
+        return ComponentStore.baseIcon;
+    }
+    
+    @Override
+    public void addHitEffects(MovingObjectPosition hit, EffectRenderer effectRenderer) {
+        IconHitEffects.addHitEffects(this, hit, effectRenderer);
+    }
+
+    @Override
+    public void addDestroyEffects(EffectRenderer effectRenderer) {
+        IconHitEffects.addDestroyEffects(this, effectRenderer, false);
+    }
+
+    @Override
+    public abstract String getType();
 }

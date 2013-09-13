@@ -46,13 +46,13 @@ public abstract class TileBasicsBase extends TileEntity {
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
-        nbt.setInteger("rotation", rotation);
+        nbt.setInteger("rot", rotation);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
-        rotation = nbt.getInteger("rotation");
+        rotation = nbt.getInteger("rot");
     }
 
     @Override

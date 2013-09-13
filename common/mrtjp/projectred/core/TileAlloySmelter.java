@@ -106,7 +106,6 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
         _inv.readFromNBT(nbt);
         heat = nbt.getInteger("heat");
         progress = nbt.getInteger("progress");
-        int index = nbt.getInteger("recipeIndex");
         updateNextTick = true;
     }
 
@@ -278,7 +277,7 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
     public void updateWatchers() {
         if (BasicUtils.isClient(worldObj))
             return;
-        PacketCustom packet = new PacketCustom(CoreCPH.channel, CoreProxy.alloySmelterWatcherUpdate);
+        PacketCustom packet = new PacketCustom(CoreCPH.channel, CoreCPH.alloySmelterWatcherUpdate);
         packet.writeCoord(xCoord, yCoord, zCoord);
         packet.writeShort(heat);
         packet.writeShort(progress);
