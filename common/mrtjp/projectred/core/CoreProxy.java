@@ -5,8 +5,10 @@ import static mrtjp.projectred.ProjectRedCore.itemComponent;
 import static mrtjp.projectred.ProjectRedCore.itemDrawPlate;
 import static mrtjp.projectred.ProjectRedCore.itemScrewdriver;
 import static mrtjp.projectred.ProjectRedCore.itemWireDebugger;
+import net.minecraft.tileentity.TileEntity;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.ItemPart.EnumPart;
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CoreProxy implements IProxy {
@@ -23,10 +25,14 @@ public class CoreProxy implements IProxy {
         itemWireDebugger = new ItemWireDebugger(Configurator.item_wireDebuggerID.getInt());
 
         blockMachines = new BlockBasics(Configurator.block_machinesID.getInt());
-        GameRegistry.registerBlock(blockMachines, ItemBlockBasics.class, "projectred.expansion.machines");
-        for (EnumBasics m : EnumBasics.VALID_MACHINES)
-            GameRegistry.registerTileEntity(m.clazz, "tile.projectred.machines." + m.unlocalname);
-
+        GameRegistry.registerBlock(blockMachines, ItemBlockBasics.class, "projectred.core.appliance");
+        
+        for (EnumBasics m : EnumBasics.VALID_MACHINES) {
+            GameRegistry.registerTileEntity(m.clazz, "tile.projectred.core.appliance|" + m.meta);
+            if (m.TESR != null)
+                ClientRegistry.bindTileEntitySpecialRenderer(m.clazz, m.TESR);
+        }
+        
         EnumPart.initOreDictDefinitions();
     }
 

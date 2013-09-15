@@ -12,11 +12,12 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 
 @Mod(modid = "ProjRed|Compatability", name = "ProjectRed-Compatability", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.2]", dependencies = 
-        "required-after:ProjRed|Core;"
+        "required-after:ProjRed|Core;" +
+        "after:TConstruct"
 )
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class ProjectRedCompatability {
-
+		
     @Instance("ProjRed|Compatability")
     public static ProjectRedCompatability instance;
 

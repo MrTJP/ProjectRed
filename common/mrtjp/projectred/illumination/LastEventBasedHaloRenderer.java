@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.ForgeSubscribe;
@@ -119,10 +120,12 @@ public class LastEventBasedHaloRenderer {
         TileMultipart t = BasicUtils.getMultipartTile(w, new BlockCoord(cc.x, cc.y, cc.z));
         if (t != null) {
             TMultiPart tp = t.partMap(cc.multipartSlot);
-            if (tp instanceof ILight) {
+            if (tp instanceof ILight)
                 return !((ILight)tp).isOn();
-            }
         }
+        TileEntity te = BasicUtils.getTileEntity(w, new BlockCoord(cc.x, cc.y, cc.z), TileEntity.class);
+        if (te instanceof ILight)
+            return !((ILight)te).isOn();
         return true;
     }
 
