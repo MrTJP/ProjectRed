@@ -1,7 +1,8 @@
 v4.0.1
 - FIX: alloy smelter crash
 - FIX: Basalt is now resistant to TNT
-- Lighting rewrite
+- CHANGE: Lighting rewrite
+- CHANGE: Updated license
 - ADDED: Cage lamps
 - ADDED: Compat module
 - ADDED: Red Alloy Ingots can be created using using a Tinkers Construct Smeltery
