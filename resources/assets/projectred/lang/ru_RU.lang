@@ -213,15 +213,15 @@ item.projectred.illumination.lightbutton|15.name=Черная светящаяс
 
 itemGroup.int=Project Red: Integration
 
-item.projectred.integration.gate|0.name=OR гейт
-item.projectred.integration.gate|1.name=NOR гейт
-item.projectred.integration.gate|2.name=NOT гейт
-item.projectred.integration.gate|3.name=AND гейт
-item.projectred.integration.gate|4.name=NAND гейт
-item.projectred.integration.gate|5.name=XOR гейт
-item.projectred.integration.gate|6.name=XNOR гейт
+item.projectred.integration.gate|0.name=ИЛИ гейт
+item.projectred.integration.gate|1.name=ИЛИ-НЕ гейт
+item.projectred.integration.gate|2.name=НЕ гейт
+item.projectred.integration.gate|3.name=И гейт
+item.projectred.integration.gate|4.name=И-НЕ гейт
+item.projectred.integration.gate|5.name=Гейт исключающее ИЛИ
+item.projectred.integration.gate|6.name=Гейт исключающее ИЛИ-НЕ
 item.projectred.integration.gate|7.name=Усиливающий гейт
-item.projectred.integration.gate|8.name=Мультиплексер
+item.projectred.integration.gate|8.name=Мультиплексор
 item.projectred.integration.gate|9.name=Формирователь импульса
 item.projectred.integration.gate|10.name=Повторитель
 item.projectred.integration.gate|11.name=Рандомизатор
@@ -240,7 +240,7 @@ item.projectred.integration.gate|23.name=Мост
 item.projectred.integration.gate|24.name=Инверторный элемент
 item.projectred.integration.gate|25.name=Буферный элемент
 item.projectred.integration.gate|26.name=Компаратор
-item.projectred.integration.gate|27.name=AND элемент
+item.projectred.integration.gate|27.name=И элемент
 
 
 
