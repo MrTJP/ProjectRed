@@ -9,9 +9,9 @@
 	</condition>
 	<property name="mc.version" value="1.6.2" />
 	<property name="forge.version" value="9.10.1.857" />
-	<property name="ccl.version" value="1.0.0.29" />
+	<property name="ccl.version" value="1.0.0.31" />
 	<property name="ccc.version" value="0.9.0.5_d2" />
-	<property name="fmp.version" value="1.0.0.161" />
+	<property name="fmp.version" value="1.0.0.171" />
 	<property name="nei.version" value="1.6.1.3_d2" />
 
 	<property name="src.dir" value="ProjectRed" />
@@ -29,6 +29,7 @@
 	<property name="mod.name.integration" value="ProjectRedIntegration-${mc.version}-${mod.version}.${mod.build}.jar" />
 	<property name="mod.name.mechanical" value="ProjectRedMechanical-${mc.version}-${mod.version}.${mod.build}.jar" />
 	<property name="mod.name.world" value="ProjectRedWorld-${mc.version}-${mod.version}.${mod.build}.jar" />
+	<property name="mod.name.compat" value="ProjectRedCompat-${mc.version}-${mod.version}.${mod.build}.jar" />
 
 	<property name="forge.name" value="minecraftforge-src-${mc.version}-${forge.version}.zip" />
 	<property name="ccl.name" value="CodeChickenLib-dev-${mc.version}-${ccl.version}.jar" />
@@ -221,6 +222,9 @@
 		<copy todir="${mcp.dir}/src/minecraft">
 			<fileset dir="${src.dir}/common" />
 		</copy>
+		<copy todir="${mcp.dir}/src/minecraft">
+			<fileset dir="${src.dir}/dummy" />
+		</copy>
 		<copy todir="${mcp.dir}/reobf/resources">
 			<fileset dir="${src.dir}/resources" />
 		</copy>
@@ -233,9 +237,8 @@
 		<replace dir="${mcp.dir}/reobf/resources" token="@VERSION@" value="${mod.version}" />
 		<replace dir="${mcp.dir}/reobf/resources" token="@BUILD_NUMBER@" value="${mod.build}" />
 		<replace dir="${mcp.dir}/reobf/resources" token="@MC_VERSION@" value="${mc.version}" />
-		<replace dir="${mcp.dir}/reobf/resources" token="@FORGE_VERSION@" value="${version.forge}" />
-		<replace dir="${mcp.dir}/reobf/resources" token="@TEST_MSG@" value="..." />
-
+		<replace dir="${mcp.dir}/reobf/resources" token="@FORGE_VERSION@" value="${forge.version}" />
+		<replace dir="${mcp.dir}/reobf/resources" token="@FMP_VERSION@" value="${fmp.version}" />
 
 		<echo message="Recompiling" />
 		<property name="mcp.python.exe" location="${mcp.dir}/runtime/bin/python/python_mcp.exe" />
@@ -250,6 +253,11 @@
 		<delete includeemptydirs="true">
 			<fileset dir="${mcp.dir}/src/minecraft">
 				<present present="both" targetdir="${src.dir}/common" />
+			</fileset>
+		</delete>
+		<delete includeemptydirs="true">
+			<fileset dir="${mcp.dir}/src/minecraft">
+				<present present="both" targetdir="${src.dir}/dummy" />
 			</fileset>
 		</delete>
 
@@ -350,6 +358,12 @@
 		<echo message="Packaging ProjectRed World" />
 		<jar destfile="${jar.dir}/${mod.name.world}">
 			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExploration*.class, **/ProjectRedIllumination*.class, **/mrtjp/projectred/exploration/**, **/mrtjp/projectred/illumination/**" />
+		</jar>
+
+		<!-- ProjectRed Compat -->
+		<echo message="Packaging ProjectRed Compat" />
+		<jar destfile="${jar.dir}/${mod.name.compat}">
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedCompatability*.class, **/mrtjp/projectred/compatability/**" />
 		</jar>
 
 	</target>

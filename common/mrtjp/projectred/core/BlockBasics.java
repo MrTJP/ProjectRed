@@ -7,6 +7,7 @@ import mrtjp.projectred.ProjectRedCore;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -46,6 +47,11 @@ public class BlockBasics extends BlockContainer {
     @Override
     public boolean hasTileEntity(int meta) {
         return true;
+    }
+    
+    @Override
+    public boolean renderAsNormalBlock() {
+        return false;
     }
 
     @Override
@@ -104,14 +110,14 @@ public class BlockBasics extends BlockContainer {
     public Icon getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
         TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(access, new BlockCoord(x, y, z), TileBasicsBase.class);
         if (tile != null)
-            return tile.getType().icons[tile.getIconForSide(side)];
+            return tile.getType().icons[0];
         return null;
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public Icon getIcon(int side, int meta) {
-        return EnumBasics.get(meta).icons[EnumBasics.get(meta).textProvider.getIconIndex(side)];
+        return EnumBasics.get(meta).icons[0];
     }
 
     @Override
@@ -121,33 +127,29 @@ public class BlockBasics extends BlockContainer {
             return tile.getLightLevel();
         return 0;
     }
+    
+    public int getRenderType() {
+        return CoreClientProxy.basicRenderID;
+    }
+
 
     public enum EnumBasics {
-        ALLOYSMELTER("Alloy Smelter", "machinealloy", TileAlloySmelter.class, new IIconIndexer() {
-            @Override
-            public int getIconIndex(int side) {
-                return side == 0 || side == 1 ? 0 : side == 3 ? 2 : 1;
-            }
-        }, "smeltertop", "smelterside", "smelterfront", "smelterfronton");
+        ALLOYSMELTER(TileAlloySmelter.class, new AlloySmelterTESR() , "presser");
 
         public static final EnumBasics[] VALID_MACHINES = { ALLOYSMELTER };
 
-        public String fullname;
-        public String unlocalname;
         public Class<? extends TileBasicsBase> clazz;
+        public TileEntitySpecialRenderer TESR;
         public int meta = this.ordinal();
 
         public String[] iconPath = new String[6];
         public Icon[] icons;
 
-        public IIconIndexer textProvider;
 
-        private EnumBasics(String name, String unlocal, Class<? extends TileBasicsBase> tile, IIconIndexer p, String... sides) {
-            fullname = name;
-            unlocalname = unlocal;
+        private EnumBasics(Class<? extends TileBasicsBase> tile, TileEntitySpecialRenderer tesr, String... sides) {
             clazz = tile;
+            TESR = tesr;
             iconPath = sides;
-            textProvider = p;
         }
 
         public static EnumBasics get(int ordinal) {
@@ -162,10 +164,6 @@ public class BlockBasics extends BlockContainer {
 
         public ItemStack getItemStack(int i) {
             return new ItemStack(ProjectRedCore.blockMachines, i, meta);
-        }
-
-        interface IIconIndexer {
-            public int getIconIndex(int side);
         }
     }
 }
