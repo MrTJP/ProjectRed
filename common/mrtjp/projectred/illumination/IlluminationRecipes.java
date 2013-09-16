@@ -15,45 +15,45 @@ public class IlluminationRecipes {
 
     private static void initLightingRecipes() {
         /** Lamps **/
-        for (EnumLamp l : EnumLamp.VALID_TYPES) {
-            GameRegistry.addRecipe(l.getItemStack(),  // Regular
+        for (int i = 0; i < 16; i++) {
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.blockLamp, 1, i),  // Regular
                     "gIg",
                     "gIg",
                     "gtg",
                     'g', Block.thinGlass,
-                    'I', EnumPart.ILLUMAR_PARTS[l.meta].getItemStack(),
+                    'I', EnumPart.ILLUMAR_PARTS[i].getItemStack(),
                     't', Item.redstone
             );
-            GameRegistry.addRecipe(l.getInvertedItemStack(), // Inverted
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.blockLamp, 1, i+16), // Inverted
                     "gIg",
                     "gIg",
                     "gtg",
                     'g', Block.thinGlass,
-                    'I', EnumPart.ILLUMAR_PARTS[l.meta].getItemStack(),
+                    'I', EnumPart.ILLUMAR_PARTS[i].getItemStack(),
                     't', Block.torchRedstoneActive
             );
         }
 
         /** Lanterns **/
-        for (EnumLantern l : EnumLantern.VALID_TYPES) {
-            GameRegistry.addRecipe(l.getItemStack(), 
+        for (int i = 0; i < 16; i++) {
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartLantern, 1, i), 
                     "PNP",
                     "GIG",
                     "PRP",
                     'P', EnumPart.PLATE.getItemStack(),
                     'N', Item.goldNugget,
                     'G', Block.thinGlass,
-                    'I', EnumPart.ILLUMAR_PARTS[l.meta].getItemStack(),
+                    'I', EnumPart.ILLUMAR_PARTS[i].getItemStack(),
                     'R', Item.redstone    
             );
-            GameRegistry.addRecipe(l.getInvertedItemStack(), 
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartInvLantern, 1, i), 
                     "PNP",
                     "GIG",
                     "PRP",
                     'P', EnumPart.PLATE.getItemStack(),
                     'N', Item.goldNugget,
                     'G', Block.thinGlass,
-                    'I', EnumPart.ILLUMAR_PARTS[l.meta].getItemStack(),
+                    'I', EnumPart.ILLUMAR_PARTS[i].getItemStack(),
                     'R', Block.torchRedstoneActive
             );
         }
@@ -65,7 +65,30 @@ public class IlluminationRecipes {
                     Block.stoneButton, 
                     EnumPart.ILLUMAR_PARTS[i].getItemStack(), 
                     EnumPart.ILLUMAR_PARTS[i].getItemStack()
+        );
+        
+        /** Cage Lamps **/
+        for (int i = 0; i < 16; i++) {
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartCageLamp, 1, i), 
+                    "CCC",
+                    "CIC",
+                    "NPN",
+                    'C', Block.fenceIron,
+                    'I', EnumPart.ILLUMAR_PARTS[i].getItemStack(),
+                    'N', Item.goldNugget,
+                    'P', EnumPart.CONDUCTIVEPLATE.getItemStack()
             );
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartInvCageLamp, 1, i), 
+                    "CCC",
+                    "CIC",
+                    "NPN",
+                    'C', Block.fenceIron,
+                    'I', EnumPart.ILLUMAR_PARTS[i].getItemStack(),
+                    'N', Item.goldNugget,
+                    'P', EnumPart.CATHODE.getItemStack()
+            );
+        }
+
     }
 }
 

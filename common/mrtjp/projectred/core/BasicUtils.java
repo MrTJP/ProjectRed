@@ -92,7 +92,7 @@ public class BasicUtils {
     }
 
 
-    public static <T extends TileEntity> T getTileEntity(IBlockAccess access, BlockCoord coords, Class<T> clazz) {
+    public static <T> T getTileEntity(IBlockAccess access, BlockCoord coords, Class<T> clazz) {
         TileEntity te = access.getBlockTileEntity(coords.x, coords.y, coords.z);
         return !clazz.isInstance(te) ? null : (T)te;
     }

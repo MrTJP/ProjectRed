@@ -25,13 +25,19 @@ public class Configurator {
     public static Property part_invlantern;
     public static Property part_lamp;
     public static Property part_invlamp;
-    public static Property part_tube;
     public static Property part_lightButton;
+    public static Property part_cagelamp;
+    public static Property part_invcagelamp;
+
+    public static Property part_tube;
 
     /** Block IDs **/
     public static Property block_machinesID;
     public static Property block_oresID;
     public static Property block_stonesID;
+    public static Property block_lampID;    
+    public static Property block_redstoneliquidID;
+    public static Property block_redconductiveliquidID;
 
     /** Item IDs **/
     public static Property item_screwdriverID;
@@ -105,13 +111,21 @@ public class Configurator {
         part_invlantern = localConfig.get("MultiPart Item IDs", "Inverted Lantern Part ID", 9034);
         part_lamp = localConfig.get("MultiPart Item IDs", "Lamp Part ID", 9035);
         part_invlamp = localConfig.get("MultiPart Item IDs", "Inverted Lamp Part ID", 9036);
-        part_tube = localConfig.get("MultiPart Item IDs", "Tube Part ID", 9037);
         part_lightButton = localConfig.get("MultiPart Item IDs", "Illuminated Button Part ID", 9038);
+        part_cagelamp = localConfig.get("MultiPart Item IDs", "Cage Lamp Part ID", 9039);
+        part_invcagelamp = localConfig.get("MultiPart Item IDs", "Inverted Cage Lamp Part ID", 9040);
+         
+        //TODO
+        part_tube = localConfig.get("MultiPart Item IDs", "Tube Part ID", 9333);
 
         block_machinesID = localConfig.getBlock("block_machinesID", 2129);
         block_oresID = localConfig.getBlock("block_oresID", 2130);
         block_stonesID = localConfig.getBlock("block_stonesID", 2131);
+        block_lampID = localConfig.getBlock("block_lampID", 2132);
+        block_redstoneliquidID = localConfig.getBlock("block_redstoneliquidID", 2133);
+        block_redconductiveliquidID = localConfig.getBlock("block_redconductiveliquidID", 2134);
 
+        item_wireDebuggerID = localConfig.getItem("item_wireDebuggerID", 9023);
         item_screwdriverID = localConfig.getItem("item_screwdriverID", 9024);
         item_componentsID = localConfig.getItem("item_componentsID", 9025);
         item_drawplateID = localConfig.getItem("item_drawplateID", 9026);
@@ -150,7 +164,6 @@ public class Configurator {
         item_sapphireSickle = localConfig.getItem("sapphiresickle", 9126);
         item_peridotSickle = localConfig.getItem("peridotsickle", 9127);
         item_diamondSickle = localConfig.getItem("diamondsickle", 9128);
-        item_wireDebuggerID = localConfig.getItem("item_wireDebuggerID", 9129);
 
         gen_Ruby = localConfig.get("World Generation", "Ruby Ore", true);
         gen_Sapphire = localConfig.get("World Generation", "Sapphire Ore", true);
