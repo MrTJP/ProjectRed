@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -138,7 +139,7 @@ public class ExplorationRecipes {
         /** Wool Gin to string recipe **/
         GameRegistry.addRecipe(new ItemStack(Item.silk, 4), 
                 "gw",
-                'g', new ItemStack(ProjectRedExploration.itemWoolGin, 1, Short.MAX_VALUE),
+                'g', new ItemStack(ProjectRedExploration.itemWoolGin, 1, OreDictionary.WILDCARD_VALUE),
                 'w', Block.cloth
         );
         
@@ -146,7 +147,7 @@ public class ExplorationRecipes {
         GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8), 
                 "s",
                 "b",
-                's', new ItemStack(ProjectRedExploration.itemDiamondSaw), 
+                's', new ItemStack(ProjectRedExploration.itemDiamondSaw, 1, OreDictionary.WILDCARD_VALUE), 
                 'b', EnumPart.SILICONBOULE.getItemStack()
         );
 

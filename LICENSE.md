@@ -1,7 +1,7 @@
 Restricted Public Software License
 ============================
 
-Version 1.2.0
+Version 1.2.1
 © MrTJP 2013
 
 0. Definitions
@@ -76,8 +76,8 @@ considered derived.
 6. Distribution of original or modified Mod
 -------------------------------------------
 
-A User is cannot distribute this Mod in the following ways:
-   - source files, including assets, no matter how heavily they were edited.
+A User cannot distribute this Mod in the following ways:
+   - source files, including assets, no matter how heavily they were modified.
    - non original binary files that have been edited in ANY way.
 
 A User IS permitted to distribute this Mod as a part of a mod pack under the 

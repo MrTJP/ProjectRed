@@ -2,7 +2,7 @@ package mrtjp.projectred.transmission;
 
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.CoreCPH;
+import mrtjp.projectred.core.CoreSPH;
 import mrtjp.projectred.core.Messenger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -208,7 +208,7 @@ public abstract class FramedRedwirePart extends FramedWirePart implements IRedwi
         if (BasicUtils.isClient(world())) {
             Messenger.addMessage(x() + 0, y() + .5f, z() + 0,  "/#f/#c[c] = " + getRedwireSignal());
         } else {
-            PacketCustom packet = new PacketCustom(CoreCPH.channel, CoreCPH.messengerQueue);
+            PacketCustom packet = new PacketCustom(CoreSPH.channel, CoreSPH.messengerQueue);
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);

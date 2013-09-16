@@ -8,12 +8,11 @@ import java.util.Arrays;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.CoreCPH;
+import mrtjp.projectred.core.CoreSPH;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
-import net.minecraft.util.Icon;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.PacketCustom;
@@ -192,7 +191,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
             if (s == "")
                 s = "off";
 
-            PacketCustom packet = new PacketCustom(CoreCPH.channel, CoreCPH.messengerQueue);
+            PacketCustom packet = new PacketCustom(CoreSPH.channel, CoreSPH.messengerQueue);
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);

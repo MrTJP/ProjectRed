@@ -1,12 +1,19 @@
 v4.0.1
 - FIX: alloy smelter crash
 - FIX: Basalt is now resistant to TNT
+- FIX: Red alloy wires output weak signal to neighbors.
 - CHANGE: Lighting rewrite
 - CHANGE: Updated license
 - ADDED: Cage lamps
 - ADDED: Compat module
 - ADDED: Red Alloy Ingots can be created using using a Tinkers Construct Smeltery
-
+- *FIX: server crash
+- *FIX: alloy smelter render
+- *FIX: wire debugger crash
+- *FIX: diamond saw silicon cutting
 
 v4.0.0
 - Initial release
+
+
+note: a '*' indicates a patch.

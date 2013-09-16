@@ -6,6 +6,7 @@ import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import codechicken.microblock.ItemMicroPart;
@@ -141,7 +142,7 @@ public class CoreRecipes {
         GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8), 
                 "s",
                 "b",
-                's', new ItemStack(MicroblockProxy.sawDiamond(), 1, Short.MAX_VALUE), 
+                's', new ItemStack(MicroblockProxy.sawDiamond(), 1, OreDictionary.WILDCARD_VALUE), 
                 'b', EnumPart.SILICONBOULE.getItemStack()
         );
         
@@ -172,21 +173,21 @@ public class CoreRecipes {
         GameRegistry.addRecipe(new ShapedOreRecipe(EnumPart.COPPERCOIL.getItemStack(), 
                 "cd",
                 'c', "ingotCopper",
-                'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, Short.MAX_VALUE)
+                'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, OreDictionary.WILDCARD_VALUE)
         ));
         
         /** Iron Coil **/
         GameRegistry.addRecipe(EnumPart.IRONCOIL.getItemStack(), 
                 "cd",
                 'c', new ItemStack(Item.ingotIron),
-                'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, Short.MAX_VALUE)
+                'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, OreDictionary.WILDCARD_VALUE)
         );
         
         /** Gold Coil **/
         GameRegistry.addRecipe(EnumPart.GOLDCOIL.getItemStack(), 
                 "cd",
                 'c', new ItemStack(Item.ingotGold),
-                'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, Short.MAX_VALUE)
+                'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, OreDictionary.WILDCARD_VALUE)
         );
         
         /** Red Alloy Ingot **/

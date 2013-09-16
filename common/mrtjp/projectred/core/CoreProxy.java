@@ -27,11 +27,8 @@ public class CoreProxy implements IProxy {
         blockMachines = new BlockBasics(Configurator.block_machinesID.getInt());
         GameRegistry.registerBlock(blockMachines, ItemBlockBasics.class, "projectred.core.appliance");
         
-        for (EnumBasics m : EnumBasics.VALID_MACHINES) {
+        for (EnumBasics m : EnumBasics.VALID_MACHINES)
             GameRegistry.registerTileEntity(m.clazz, "tile.projectred.core.appliance|" + m.meta);
-            if (m.TESR != null)
-                ClientRegistry.bindTileEntitySpecialRenderer(m.clazz, m.TESR);
-        }
         
         EnumPart.initOreDictDefinitions();
     }

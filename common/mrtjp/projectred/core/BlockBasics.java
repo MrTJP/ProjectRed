@@ -89,6 +89,11 @@ public class BlockBasics extends BlockContainer {
     public final ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int metadata, int fortune) {
         return new ArrayList<ItemStack>();
     }
+    
+    @Override
+    public boolean isOpaqueCube() {
+        return false;
+    }
 
     @Override
     public void getSubBlocks(int id, CreativeTabs tab, List list) {
@@ -134,21 +139,19 @@ public class BlockBasics extends BlockContainer {
 
 
     public enum EnumBasics {
-        ALLOYSMELTER(TileAlloySmelter.class, new AlloySmelterTESR() , "presser");
+        ALLOYSMELTER(TileAlloySmelter.class, "presser");
 
         public static final EnumBasics[] VALID_MACHINES = { ALLOYSMELTER };
 
         public Class<? extends TileBasicsBase> clazz;
-        public TileEntitySpecialRenderer TESR;
         public int meta = this.ordinal();
 
         public String[] iconPath = new String[6];
         public Icon[] icons;
 
 
-        private EnumBasics(Class<? extends TileBasicsBase> tile, TileEntitySpecialRenderer tesr, String... sides) {
+        private EnumBasics(Class<? extends TileBasicsBase> tile, String... sides) {
             clazz = tile;
-            TESR = tesr;
             iconPath = sides;
         }
 
