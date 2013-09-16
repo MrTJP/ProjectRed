@@ -27,7 +27,7 @@ public class ItemBlockBasics extends ItemBlock {
 	 */
 	@Override
 	public String getUnlocalizedName(ItemStack itemstack) {
-		return getUnlocalizedName()+"."+EnumBasics.get(itemstack.getItemDamage()).unlocalname;
+		return getUnlocalizedName()+"|"+itemstack.getItemDamage();
 	}
 
 }

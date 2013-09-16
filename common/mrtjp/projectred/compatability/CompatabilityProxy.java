@@ -1,23 +1,19 @@
 package mrtjp.projectred.compatability;
 
-import static mrtjp.projectred.ProjectRedCompatability.*;
-import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
-import codechicken.multipart.MultipartGenerator;
 import codechicken.multipart.TMultiPart;
 
 public class CompatabilityProxy implements IProxy, IPartFactory {
 
     @Override
     public void preinit() {
-
+    	Services.loadServices();
     }
 
     @Override
     public void init() {
-        
+    	Services.getTCProxy().loadTCInteractions();
     }
 
     @Override

@@ -58,14 +58,14 @@ public class BlockSpecialStone extends Block {
     }
 
     public enum EnumSpecialStone {
-        MARBLE("Marble", "stonemarble", 1, 6, null),
-        MARBLEBRICK("Marble Brick", "brickmarble", 1, 6, null), 
-        BASALTCOBBLE("Basalt Cobblestone", "cobblebasalt", 2.5f, 16, null),
-        BASALT("Basalt", "stonebasalt", 2.5f, 8, BASALTCOBBLE.getItemStack()),
-        BASALTBRICK("Basalt Brick", "brickbasalt", 2.5f, 8, null),
-        RUBYBLOCK("Ruby Block", "storageruby", 5.0F, 10.0F, null),
-        SAPPHIREBLOCK("Sapphire Block", "storagesapphire", 5.0F, 10.0F, null),
-        PERIDOTBLOCK("Peridot Block", "storageperidot", 5.0F, 10.0F, null),
+        MARBLE("Marble", "stonemarble", 1, 14, null),
+        MARBLEBRICK("Marble Brick", "brickmarble", 1, 14, null), 
+        BASALTCOBBLE("Basalt Cobblestone", "cobblebasalt", 2.5f, 14, null),
+        BASALT("Basalt", "stonebasalt", 2.5f, 16, BASALTCOBBLE.getItemStack()),
+        BASALTBRICK("Basalt Brick", "brickbasalt", 2.5f, 20, null),
+        RUBYBLOCK("Ruby Block", "storageruby", 5, 10, null),
+        SAPPHIREBLOCK("Sapphire Block", "storagesapphire", 5, 10, null),
+        PERIDOTBLOCK("Peridot Block", "storageperidot", 5, 10, null),
         ;
 
         public final String name;
