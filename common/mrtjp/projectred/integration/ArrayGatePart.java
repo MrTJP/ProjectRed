@@ -133,6 +133,9 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         int pMask = 5<<wire;
         int newSignal = calculateSignal(pMask);
         if(newSignal < oldSignal) {
+            if(newSignal > 0)
+                WirePropogator.propogateAnalogDrop(this);
+            
             setRedwireSignal(wire, 0);
             propogate(pMask, prev, DROPPING);
         }

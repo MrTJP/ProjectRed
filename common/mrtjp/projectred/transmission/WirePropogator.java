@@ -86,7 +86,7 @@ public class WirePropogator {
         private Multimap<TileMultipart, TMultiPart> partChanges = HashMultimap.create();
         private HashSet<BlockCoord> neighborChanges = new HashSet<BlockCoord>();
         private LinkedList<Propogation> propogationList = new LinkedList<Propogation>();
-        private IWirePart first;
+        private LinkedList<Propogation> analogDrops = new LinkedList<Propogation>();
         
         public void clear() {
             partChanges.clear();
@@ -94,15 +94,11 @@ public class WirePropogator {
             count = 0;
             recalcs = 0;
             lastCaller = null;
-            first = null;
             
             reusableRuns.add(this);
         }
         
         public void finish() {
-            //for analog signal drops, first always needs to recalc himself
-            new Propogation(first, notApart, IWirePart.RISING).propogate();
-            
             currentRun = null;
             
             if(partChanges.isEmpty() && neighborChanges.isEmpty()) {
@@ -146,13 +142,19 @@ public class WirePropogator {
         }
         
         private void runLoop() {
-            while(!propogationList.isEmpty()) {
+            do {
                 List<Propogation> list = propogationList;
                 propogationList = new LinkedList<Propogation>();
                 
                 for(Propogation p : list)
                     p.propogate();
+                
+                if(propogationList.isEmpty() && !analogDrops.isEmpty()) {
+                    propogationList = analogDrops;
+                    analogDrops = new LinkedList<Propogation>();
+                }
             }
+            while(!propogationList.isEmpty());
             finish();
         }
         
@@ -162,10 +164,11 @@ public class WirePropogator {
                 count++;
             }
             
-            if(first == null)
-                first = part;
-            
             propogationList.add(new Propogation(part, prev, mode));
+        }
+
+        public void addAnalogDrop(IWirePart part) {
+            analogDrops.add(new Propogation(part, notApart, IWirePart.RISING));
         }
     }
     
@@ -208,5 +211,9 @@ public class WirePropogator {
 
     public static void propogateTo(IWirePart part, int mode) {
         propogateTo(part, notApart, mode);
+    }
+    
+    public static void propogateAnalogDrop(IWirePart part) {
+        currentRun.addAnalogDrop(part);
     }
 }

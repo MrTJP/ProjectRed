@@ -73,6 +73,9 @@ public class BundledCableCommons
         propogatingMask = mask;
         
         if (dropSignalsLessThan(part.getBundledSignal(), newSignal)) {
+            if(!isSignalZero(newSignal, mask))
+                WirePropogator.propogateAnalogDrop(part);
+            
             part.propogate(prev, DROPPING);
         } else if (!signalsEqual(part.getBundledSignal(), newSignal)) {
             part.setSignal(newSignal);
