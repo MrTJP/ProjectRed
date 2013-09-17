@@ -1,17 +1,12 @@
 package mrtjp.projectred.illumination;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Set;
 
-import mrtjp.projectred.core.BasicRenderUtils;
-import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.PRColors;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -33,100 +28,95 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class LastEventBasedHaloRenderer {
     public static LastEventBasedHaloRenderer instance = new LastEventBasedHaloRenderer();
 
-    private static Set<CoordCache> renderQueue = new HashSet<CoordCache>();
+    private static Set<LightCache> renderQueue = new HashSet<LightCache>();
 
-    private static class CoordCache {
-        final int x, y, z;
+    private static class LightCache {
+        final BlockCoord pos;
         final int color;
         final Cuboid6 cube;
         final int multipartSlot;
+        final Translation t;
         
-        public CoordCache(int x, int y, int z, int colorIndex, int slot, Cuboid6 cube) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
+        public LightCache(int x, int y, int z, int colorIndex, int slot, Cuboid6 cube) {
+            this.pos = new BlockCoord(x, y, z);
             this.color = colorIndex;
             this.multipartSlot = slot;
             this.cube = cube;
+            t = new Translation(x, y, z);
         }
 
         @Override
         public boolean equals(Object o) {
-            if (o instanceof CoordCache) {
-                CoordCache coord = (CoordCache) o;
-                return x == coord.x && y == coord.y && z == coord.z && coord.cube.min.equals(cube.min) && coord.cube.max.equals(cube.max);
+            if (o instanceof LightCache) {
+                LightCache o2 = (LightCache) o;
+                return o2.pos.equals(pos) && 
+                        o2.cube.min.equalsT(cube.min) && 
+                        o2.cube.max.equalsT(cube.max);
             }
             return false;
         }
-
+        
+        @Override
+        public int hashCode() {
+            return pos.hashCode();
+        }
     }
     
     public static void addLight(int x, int y, int z, int color, int slot, Cuboid6 box) {
-        CoordCache cc = new CoordCache(x, y, z, color, slot, box);
-        for (CoordCache c : renderQueue) {
-            if (cc.equals(c))
-                return;
-        }
-        renderQueue.add(cc);
+        renderQueue.add(new LightCache(x, y, z, color, slot, box));
     }
-
 
     @ForgeSubscribe
     public void onRenderWorldLast(RenderWorldLastEvent event) {
-        List<CoordCache> removeQueue = new ArrayList<CoordCache>();
         Tessellator tess = Tessellator.instance;
+        WorldClient w = event.context.theWorld;
+        
+        GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glPushMatrix();
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glDepthMask(false);
-        EntityLivingBase view = Minecraft.getMinecraft().renderViewEntity;
-        if (view != null) {
-            double partials = event.partialTicks;
-            double x = view.prevPosX + (view.posX - view.prevPosX) * partials;
-            double y = view.prevPosY + (view.posY - view.prevPosY) * partials;
-            double z = view.prevPosZ + (view.posZ - view.prevPosZ) * partials;
-            GL11.glTranslated(-1 * x, -1 * y, -1 * z);
-        }
-        WorldClient w = event.context.theWorld;
-
+        GL11.glPushMatrix();
+        
+        RenderUtils.translateToWorldCoords(event.context.mc.renderViewEntity, event.partialTicks);
         CCRenderState.reset();
         CCRenderState.startDrawing(7);
-        for (CoordCache r : renderQueue) {
-            if (shouldRemove(w, r))
-                removeQueue.add(r);
+        for (Iterator<LightCache> it = renderQueue.iterator(); it.hasNext();) {
+            LightCache cc = it.next();
+            if (shouldRemove(w, cc))
+                it.remove();
             else
-                renderHalo(tess, r);
+                renderHalo(tess, w, cc);
         }
         CCRenderState.draw();
 
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glColor3f(1, 1, 1);
-        GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();
         GL11.glDepthMask(true);
-
-        renderQueue.removeAll(removeQueue);
+        GL11.glColor3f(1, 1, 1);
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glDisable(GL11.GL_BLEND);
     }
 
-    private static void renderHalo(Tessellator tess, CoordCache cc) {
-        BasicRenderUtils.setFullBrightness();
+    private static void renderHalo(Tessellator tess, World world, LightCache cc) {
+        CCRenderState.setBrightness(world, cc.pos.x, cc.pos.y, cc.pos.z);
         tess.setColorRGBA_I(PRColors.VALID_COLORS[cc.color].hex, 128);
-        RenderUtils.renderBlock(cc.cube, 0, new Translation(cc.x, cc.y, cc.z), null, null);
+        RenderUtils.renderBlock(cc.cube, 0, cc.t, null, null);
     }
 
-    private static boolean shouldRemove(World w, CoordCache cc) {
-        TileMultipart t = BasicUtils.getMultipartTile(w, new BlockCoord(cc.x, cc.y, cc.z));
-        if (t != null) {
-            TMultiPart tp = t.partMap(cc.multipartSlot);
+    private static boolean shouldRemove(World w, LightCache cc) {
+        TileEntity te = w.getBlockTileEntity(cc.pos.x, cc.pos.y, cc.pos.z);
+        if (te instanceof TileMultipart) {
+            TMultiPart tp = ((TileMultipart)te).partMap(cc.multipartSlot);
             if (tp instanceof ILight)
                 return !((ILight)tp).isOn();
         }
-        TileEntity te = BasicUtils.getTileEntity(w, new BlockCoord(cc.x, cc.y, cc.z), TileEntity.class);
-        if (te instanceof ILight)
+        else if (te instanceof ILight)
             return !((ILight)te).isOn();
+        
         return true;
     }
-
 }
