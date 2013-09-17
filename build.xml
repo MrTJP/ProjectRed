@@ -14,13 +14,13 @@
 	<property name="ccc.version" value="0.9.0.5_d2" />
 	<property name="fmp.version" value="1.0.0.171" />
 	<property name="nei.version" value="1.6.1.3_d2" />
+	<property name="tcons.version" value="1.4.5.1" />
 
 	<property name="src.dir" value="ProjectRed" />
 	<property name="build.dir" value="build" />
 	<property name="download.dir" value="download" />
 	<property name="jar.dir" value="dist/${mc.version}/${mod.version}-${mod.build}" />
 	<property name="forge.dir" value="${build.dir}/forge" />
-	<property name="ccc.dir" value="${build.dir}/ccc" />
 	<property name="mcp.dir" value="${forge.dir}/mcp" />
 
 
@@ -31,20 +31,24 @@
 	<property name="mod.name.compat" value="ProjectRedCompat-${mc.version}-${mod.version}.${mod.build}.jar" />
 
 	<property name="forge.name" value="minecraftforge-src-${mc.version}-${forge.version}.zip" />
+	<property name="forgeuni.name" value="minecraftforge-universal-${mc.version}-${forge.version}.jar" />
 	<property name="ccl.name" value="CodeChickenLib-dev-${mc.version}-${ccl.version}.jar" />
 	<property name="ccobf.name" value="CCObfuscator-all-${ccobf.version}.jar" />
 	<property name="ccc.name" value="CodeChickenCore-dev%20${ccc.version}.jar" />
 	<property name="fmp.name" value="ForgeMultipart-dev-${mc.version}-${fmp.version}.jar" />
 	<property name="nei.name" value="NotEnoughItems-dev%20${nei.version}.jar" />
+	<property name="tcons.name" value="TConstruct_${mc.version}_${tcons.version}.jar" />
 
 
 	<!-- Check downloaded dependencies -->
 	<available property="forge-downloaded" file="${download.dir}/${forge.name}" />
+	<available property="forgeuni-downloaded" file="${download.dir}/${forgeuni.name}" />
 	<available property="ccl-downloaded" file="${download.dir}/${ccl.name}" />
 	<available property="ccobf-downloaded" file="${download.dir}/${ccobf.name}" />
 	<available property="ccc-downloaded" file="${download.dir}/${ccc.name}" />
 	<available property="fmp-downloaded" file="${download.dir}/${fmp.name}" />
 	<available property="nei-downloaded" file="${download.dir}/${nei.name}" />
+	<available property="tcons-downloaded" file="${download.dir}/${tcons.name}" />
 
 
 	<!-- Check installed dependencies -->
@@ -57,6 +61,12 @@
 		<and>
 			<isset property="forge-installed" />
 			<equals arg1="${build.dependencies.ccl}" arg2="${ccl.version}" />
+		</and>
+	</condition>
+	<condition property="ccobf-installed">
+		<and>
+			<isset property="forge-installed" />
+			<equals arg1="${build.dependencies.ccobf}" arg2="${ccobf.version}" />
 		</and>
 	</condition>
 	<condition property="ccc-installed">
@@ -77,6 +87,12 @@
 			<equals arg1="${build.dependencies.nei}" arg2="${nei.version}" />
 		</and>
 	</condition>
+	<condition property="tcons-installed">
+		<and>
+			<isset property="forge-installed" />
+			<equals arg1="${build.dependencies.tcons}" arg2="${tcons.version}" />
+		</and>
+	</condition>
 
 	<condition property="runnung-in-ci">
 		<isset property="env.TRAVIS" />
@@ -92,6 +108,10 @@
 	<!-- Targets for downloading dependencies -->
 	<target name="download-forge" unless="forge-downloaded">
 		<get src="http://files.minecraftforge.net/${forge.name}" dest="${download.dir}" usetimestamp="true" />
+	</target>
+	
+	<target name="download-forgeuni" unless="forgeuni-downloaded">
+		<get src="http://files.minecraftforge.net/${forgeuni.name}" dest="${download.dir}" usetimestamp="true" />
 	</target>
 
 	<target name="download-ccl" unless="ccl-downloaded">
@@ -112,6 +132,10 @@
 
 	<target name="download-nei" unless="nei-downloaded">
 		<get src="http://www.chickenbones.craftsaddle.org/Files/New_Versions/${mc.version}/${nei.name}" dest="${download.dir}" usetimestamp="true" />
+	</target>
+
+	<target name="download-tcons" unless="tcons-downloaded">
+		<get src="http://tanis.sunstrike.io/TConstruct/${tcons.name}" dest="${download.dir}" usetimestamp="true" />
 	</target>
 
 
@@ -214,7 +238,29 @@
 		</propertyfile>
 	</target>
 
-	<target name="install-dependencies" depends="install-forge,install-ccl,install-ccobf,install-ccc,install-fmp,install-nei" />
+	<target name="install-tcons" depends="install-forge,download-forgeuni,install-ccobf,download-tcons" unless="tcons-installed">
+		<echo message="Deleting old Tinkers Construct" />
+		<delete file="${mcp.dir}/lib/${build.dependencies.tcons.name}" />
+
+		<echo message="Installing Tinkers Construct" />
+		<java jar="${mcp.dir}/${ccobf.name}" fork="true">
+		 <arg value="-d" />
+		 <arg value="-l" /><arg value="${download.dir}/${forgeuni.name},${mcp.dir}/jars/libraries,${mcp.dir}/temp/minecraft_rg.jar" />
+         <arg value="-i" /><arg value="${download.dir}/${tcons.name}" />
+         <arg value="-o" /><arg value="${mcp.dir}/lib" />
+		 <arg value="-m" /><arg value="${mcp.dir}/conf" />
+		 <arg value="--noclean" />
+		 <arg value="-q" />
+		</java>
+		
+		<echo message="Updating build.dependencies" />
+		<propertyfile file="${build.dependencies.file}">
+			<entry key="tcons" value="${tcons.version}" />
+			<entry key="tcons.name" value="${tcons.name}" />
+		</propertyfile>
+	</target>
+
+	<target name="install-dependencies" depends="install-forge,install-ccl,install-ccobf,install-ccc,install-fmp,install-nei,install-tcons" />
 
 	<!-- Targets for building -->
 	<target name="recompile">
@@ -223,9 +269,6 @@
 		<echo message="Copying source" />
 		<copy todir="${mcp.dir}/src/minecraft">
 			<fileset dir="${src.dir}/common" />
-		</copy>
-		<copy todir="${mcp.dir}/src/minecraft">
-			<fileset dir="${src.dir}/dummy" />
 		</copy>
 
 		<!-- Replace Tokens-->
@@ -248,11 +291,6 @@
 				<present present="both" targetdir="${src.dir}/common" />
 			</fileset>
 		</delete>
-		<delete includeemptydirs="true">
-			<fileset dir="${mcp.dir}/src/minecraft">
-				<present present="both" targetdir="${src.dir}/dummy" />
-			</fileset>
-		</delete>
 
 		<fail message="Failed to recompile">
 			<condition>
@@ -263,11 +301,11 @@
 
 	<target name="reobfuscate">
 		<echo message="Reobfuscating" />
-		<java dir="${mcp.dir}" jar="${mcp.dir}/${ccobf.name}" fork="true" failonerror="true" resultproperty="reobfuscate.code">
+		<java jar="${mcp.dir}/${ccobf.name}" fork="true" failonerror="true" resultproperty="reobfuscate.code">
          <arg value="--mcp" />
          <arg value="-l" /><arg value="jars/libraries,lib" />
 		 <arg value="-q" />
-       </java>
+		</java>
 
 		<echo message="Copying DepLoader.class from CCC" />
 		<unzip src="${download.dir}/${ccc.name}" dest="${mcp.dir}/reobf/minecraft/">
