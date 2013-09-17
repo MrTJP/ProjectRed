@@ -1,0 +1,79 @@
+[
+{
+  "modinfoversion": 3,
+  "modid": "ProjRed|Core",
+  "name": "Project: Red-Core",
+  "description":"Redstone. The way it was meant to be. Built against Forge @FORGE_VERSION@.",
+  "version": "@VERSION@.@BUILD_NUMBER@",
+  "mcversion": "@MC_VERSION@",
+  "url": "http://bit.ly/1clK9U5",
+  "updateUrl": "",
+  "authors": [ "MrTJP", "ChickenBones"],
+  "credits": "Eloraam, GitHub contributers",
+  "logoFile": "",
+  "parent":"",
+  "screenshots": [],
+  "requiredMods": [],
+  "dependencies": [
+      "mod_MinecraftForge",
+      "ForgeMultipart"
+  ]
+},
+
+
+
+{
+  "modinfoversion": 3,
+  "modid": "ProjRed|Expansion",
+  "name": "Project: Red-Expansion",
+  "parent":"ProjRed|Core"
+},
+
+
+
+{
+  "modinfoversion": 3,
+  "modid": "ProjRed|Exploration",
+  "name": "Project: Red-Exploration",
+  "parent":"ProjRed|Core"
+},
+
+
+
+{
+  "modinfoversion": 3,
+  "modid": "ProjRed|Illumination",
+  "name": "Project: Red-Illumination",
+  "parent":"ProjRed|Core"
+},
+
+
+
+{
+  "modinfoversion": 3,
+  "modid": "ProjRed|Integration",
+  "name": "Project: Red-Integration",
+  "parent":"ProjRed|Core"
+},
+
+
+
+{
+  "modinfoversion": 3,
+  "modid": "ProjRed|Transmission",
+  "name": "Project: Red-Transmission",
+  "parent":"ProjRed|Core"
+},
+
+
+
+{
+  "modinfoversion": 3,
+  "modid": "ProjRed|Compatability",
+  "name": "Project: Red-Compatability",
+  "parent":"ProjRed|Core"
+}
+
+
+
+]
