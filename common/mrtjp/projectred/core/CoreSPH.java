@@ -8,7 +8,4 @@ public class CoreSPH {
 	 */
     public static Object channel = ProjectRedCore.instance;
 
-    public static final int messengerQueue = 2;
-    public static final int alloySmelterWatcherUpdate = 3;
-
 }

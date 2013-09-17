@@ -1,6 +1,6 @@
 package mrtjp.projectred.illumination;
 
-import mrtjp.projectred.core.CoreCPH;
+import mrtjp.projectred.core.CoreSPH;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
@@ -59,7 +59,7 @@ public class TileLamp extends TileEntity implements ICustomPacketTile, ILight {
 
     @Override
     public Packet getDescriptionPacket() {
-    	PacketCustom packet = new PacketCustom(CoreCPH.channel, 1);
+    	PacketCustom packet = new PacketCustom(CoreSPH.channel, 1);
     	packet.writeCoord(xCoord, yCoord, zCoord);
     	int pack = color;
     	if(inverted) pack |= 0x10;
