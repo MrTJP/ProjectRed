@@ -1,7 +1,5 @@
 package mrtjp.projectred.core;
 
-import java.util.Random;
-
 import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
@@ -21,7 +19,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.packet.PacketCustom;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;

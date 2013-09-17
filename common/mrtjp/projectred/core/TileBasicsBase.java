@@ -4,10 +4,8 @@ import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MathHelper;
 
 public abstract class TileBasicsBase extends TileEntity {
     

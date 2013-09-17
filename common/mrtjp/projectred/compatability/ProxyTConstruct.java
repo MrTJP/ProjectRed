@@ -1,7 +1,6 @@
 package mrtjp.projectred.compatability;
 
 import static tconstruct.common.TContent.metalPattern;
-import mrtjp.projectred.compatability.Services.ITConstructProxy;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.block.Block;
@@ -19,7 +18,7 @@ import tconstruct.library.TConstructRegistry;
 import tconstruct.library.crafting.Smeltery;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class Proxy_TConstruct implements ITConstructProxy {
+public class ProxyTConstruct {
 	
 	public static Material liquidMetal;
 	
@@ -29,37 +28,31 @@ public class Proxy_TConstruct implements ITConstructProxy {
 	public static Fluid moltenConductiveRedmetalFluid;
 	public static LiquidFiniteSubstance moltenConductiveRedmetal;
 
-	public Proxy_TConstruct() {
+	public ProxyTConstruct() {
 		System.out.println("[ProjectRedCompat] Loaded TConstruct Proxy");
 	}
 	
-	@Override
 	public void addSmeltingRecipe(ItemStack input, int blockID, int metadata, int temperature, FluidStack liquid) {
 		Smeltery.addMelting(input, blockID, metadata, temperature, liquid);
 	}
 
-	@Override
 	public void addAlloyMixing(FluidStack result, FluidStack... mixers) {
 		Smeltery.addAlloyMixing(result, mixers);
 	}
 	
-	@Override
     public void addTableCastingRecipe(ItemStack output, FluidStack metal, ItemStack cast, boolean consume, int delay) {
 		TConstructRegistry.instance.getTableCasting().addCastingRecipe(output, metal, cast, consume, delay);
 	}
 	
-	@Override
 	public void addBasinCastingRecipe(ItemStack output, FluidStack metal, ItemStack cast, boolean consume, int delay) {
 		TConstructRegistry.instance.getBasinCasting().addCastingRecipe(output, metal, cast, consume, delay);
 	}
 	
-	@Override
 	public ItemStack getCastIngot() {
 		return new ItemStack(metalPattern, 1, 0);
 	}
 
     
-	@Override
 	public void loadTCInteractions() {
 		 liquidMetal = new MaterialLiquid(MapColor.tntColor);
 		 

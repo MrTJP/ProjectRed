@@ -1,7 +1,9 @@
 package mrtjp.projectred.illumination;
 
-import static mrtjp.projectred.ProjectRedIllumination.*;
+import static mrtjp.projectred.ProjectRedIllumination.blockLamp;
+import static mrtjp.projectred.ProjectRedIllumination.itemPartCageLamp;
 import static mrtjp.projectred.ProjectRedIllumination.itemPartIllumarButton;
+import static mrtjp.projectred.ProjectRedIllumination.itemPartInvCageLamp;
 import static mrtjp.projectred.ProjectRedIllumination.itemPartInvLantern;
 import static mrtjp.projectred.ProjectRedIllumination.itemPartLantern;
 import mrtjp.projectred.core.Configurator;

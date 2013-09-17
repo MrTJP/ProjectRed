@@ -3,7 +3,6 @@ package mrtjp.projectred.illumination;
 import java.util.Map;
 
 import mrtjp.projectred.ProjectRedIllumination;
-import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.InvertX;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
@@ -19,7 +18,6 @@ import codechicken.lib.render.ColourModifier;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.TextureUtils;
-import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
