@@ -251,7 +251,7 @@ public class TileAlloySmelter extends TileBasicsBase implements IInventory {
     public void updateWatchers() {
         if (BasicUtils.isClient(worldObj))
             return;
-        PacketCustom packet = new PacketCustom(CoreSPH.channel, CoreSPH.alloySmelterWatcherUpdate);
+        PacketCustom packet = new PacketCustom(CoreSPH.channel, 3);
         packet.writeCoord(xCoord, yCoord, zCoord);
         packet.writeShort(heat);
         packet.writeShort(progress);

@@ -211,7 +211,7 @@ public abstract class FramedRedwirePart extends FramedWirePart implements IRedwi
         if (BasicUtils.isClient(world())) {
             Messenger.addMessage(x() + 0, y() + .5f, z() + 0,  "/#f/#c[c] = " + getRedwireSignal());
         } else {
-            PacketCustom packet = new PacketCustom(CoreSPH.channel, CoreSPH.messengerQueue);
+            PacketCustom packet = new PacketCustom(CoreSPH.channel, 2);
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);

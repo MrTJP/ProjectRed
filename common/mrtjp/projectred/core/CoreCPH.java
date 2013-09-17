@@ -22,10 +22,10 @@ public class CoreCPH implements IClientPacketHandler
             case 1:
                 handleTilePacket(world, packet, packet.readCoord());
                 return;
-            case CoreSPH.messengerQueue:
+            case 2:
                 Messenger.addMessage(packet.readDouble(), packet.readDouble(), packet.readDouble(), packet.readString());
                 return;
-            case CoreSPH.alloySmelterWatcherUpdate:
+            case 3:
                 TileAlloySmelter t = BasicUtils.getTileEntity(world, packet.readCoord(), TileAlloySmelter.class);
                 if(t != null) {
                     t.heat = packet.readShort();
