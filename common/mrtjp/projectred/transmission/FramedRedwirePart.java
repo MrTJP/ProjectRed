@@ -113,6 +113,9 @@ public abstract class FramedRedwirePart extends FramedWirePart implements IRedwi
         
         int newSignal = calculateSignal();
         if(newSignal < getRedwireSignal()) {
+            if(newSignal > 0)
+                WirePropogator.propogateAnalogDrop(this);
+            
             signal = 0;
             propogate(prev, DROPPING);
         }

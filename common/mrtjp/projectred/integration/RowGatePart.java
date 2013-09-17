@@ -96,6 +96,9 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
 
         int newSignal = calculateSignal();
         if(newSignal < oldSignal) {
+            if(newSignal > 0)
+                WirePropogator.propogateAnalogDrop(this);
+            
             signal = 0;
             propogate(prev, DROPPING);
         }
