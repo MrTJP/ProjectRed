@@ -97,30 +97,30 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw {
             EnumToolMaterial m = (((ItemGemSaw) saw.getItem()).tool.material);
             
             if (m == EnumToolMaterial.WOOD) {
-                return PRColors.BROWN.hex;
+                return PRColors.BROWN.rgb;
             }
             if (m == EnumToolMaterial.STONE) {
-                return PRColors.LIGHT_GREY.hex;
+                return PRColors.LIGHT_GREY.rgb;
             }
             if (m == EnumToolMaterial.IRON) {
-                return PRColors.WHITE.hex;
+                return PRColors.WHITE.rgb;
             }
             if (m == EnumToolMaterial.GOLD) {
-                return PRColors.YELLOW.hex;
+                return PRColors.YELLOW.rgb;
             }
             if (m == ProjectRedExploration.toolMaterialRuby) {
-                return PRColors.RED.hex;
+                return PRColors.RED.rgb;
             }
             if (m == ProjectRedExploration.toolMaterialSapphire) {
-                return PRColors.BLUE.hex;
+                return PRColors.BLUE.rgb;
             }
             if (m == ProjectRedExploration.toolMaterialPeridot) {
-                return PRColors.GREEN.hex;
+                return PRColors.GREEN.rgb;
             }
             if (m == EnumToolMaterial.EMERALD) {
-                return PRColors.CYAN.hex;
+                return PRColors.CYAN.rgb;
             }
-            return PRColors.BLACK.hex;
+            return PRColors.BLACK.rgb;
         }
 
         @Override
