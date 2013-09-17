@@ -35,6 +35,13 @@ public class RedAlloyWirePart extends RedwirePart {
     public int redstoneConductionMap() {
         return 0x1F;
     }
+    
+    @Override
+    public void onRemoved() {
+        super.onRemoved();
+        if(!world().isRemote)
+            tile().notifyNeighborChange(side);
+    }
 
     @Override
     public void propogateOther(int mode) {
