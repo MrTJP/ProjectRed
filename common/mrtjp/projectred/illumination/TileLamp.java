@@ -1,15 +1,14 @@
 package mrtjp.projectred.illumination;
 
-import mrtjp.projectred.ProjectRedIllumination;
+import mrtjp.projectred.core.CoreCPH;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
+import codechicken.lib.packet.ICustomPacketTile;
 import codechicken.lib.packet.PacketCustom;
 
-public class TileLamp extends TileEntity implements ILight {
+public class TileLamp extends TileEntity implements ICustomPacketTile, ILight {
 
     public boolean inverted;
     public boolean powered;
@@ -23,10 +22,7 @@ public class TileLamp extends TileEntity implements ILight {
     }
             
     public int getLightValue() {
-        if (powered != inverted)
-            return 15;
-        else
-            return 0;
+        return powered != inverted ? 15 : 0;
     }
 
     public ItemStack getDroppedBlock() {
@@ -34,22 +30,10 @@ public class TileLamp extends TileEntity implements ILight {
     }
 
     public void onNeighborBlockChange() {
-        updateState(false);
-    }
-
-    public void updateState(boolean forceRender) {
-        boolean updated = false;
-        if (!powered && isBeingPowered()) {
-            powered = true;
+        if(!worldObj.isRemote && powered != isBeingPowered()) {
+            powered = !powered;
             updateRender();
-            updated = true;
-        } else if (powered && !isBeingPowered()){
-            powered = false;
-            updateRender();
-            updated = true;
         }
-        if (forceRender && !updated)
-            updateRender();
     }
     
     public void updateRender() {
@@ -75,12 +59,22 @@ public class TileLamp extends TileEntity implements ILight {
 
     @Override
     public Packet getDescriptionPacket() {
-    	PacketCustom packet = new PacketCustom(ProjectRedIllumination.instance, 1);
+    	PacketCustom packet = new PacketCustom(CoreCPH.channel, 1);
     	packet.writeCoord(xCoord, yCoord, zCoord);
-    	packet.writeBoolean(inverted);
-    	packet.writeBoolean(powered);
-    	packet.writeByte(color);
+    	int pack = color;
+    	if(inverted) pack |= 0x10;
+    	if(powered) pack |= 0x20;
+    	packet.writeByte(pack);
     	return packet.toPacket();
+    }
+    
+    @Override
+    public void handleDescriptionPacket(PacketCustom packet) {
+        int packed = packet.readUByte();
+        color = (byte) (packed & 0xF);
+        inverted = (packed & 0x10) != 0;
+        powered = (packed & 0x20) != 0;
+        updateRender();
     }
 
     private boolean isBeingPowered() {
