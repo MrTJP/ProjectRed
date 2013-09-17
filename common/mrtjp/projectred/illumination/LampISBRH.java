@@ -1,8 +1,5 @@
 package mrtjp.projectred.illumination;
 
-import org.lwjgl.opengl.GL11;
-
-import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.block.Block;
@@ -11,6 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.IItemRenderer;
+
+import org.lwjgl.opengl.GL11;
+
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.RenderUtils;

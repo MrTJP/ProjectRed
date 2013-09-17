@@ -2,7 +2,6 @@ package mrtjp.projectred.illumination;
 
 import java.util.Arrays;
 
-import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.BasicWireUtils;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -21,7 +20,6 @@ import codechicken.multipart.IRedstonePart;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
-import codechicken.multipart.PartMap;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TSlottedPart;
 import cpw.mods.fml.relauncher.Side;

@@ -4,13 +4,11 @@ import java.util.List;
 
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicWireUtils;
-import mrtjp.projectred.integration.GatePart;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;

@@ -1,13 +1,13 @@
 package mrtjp.projectred.illumination;
 
-import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.Messenger;
+import mrtjp.projectred.ProjectRedIllumination;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
+import codechicken.lib.packet.PacketCustom;
 
 public class TileLamp extends TileEntity implements ILight {
 
@@ -75,16 +75,13 @@ public class TileLamp extends TileEntity implements ILight {
 
     @Override
     public Packet getDescriptionPacket() {
-        NBTTagCompound nbt = new NBTTagCompound();
-        writeToNBT(nbt);
-        return new Packet132TileEntityData(xCoord, yCoord, zCoord, 0, nbt);
+    	PacketCustom packet = new PacketCustom(ProjectRedIllumination.instance, 1);
+    	packet.writeCoord(xCoord, yCoord, zCoord);
+    	packet.writeBoolean(inverted);
+    	packet.writeBoolean(powered);
+    	packet.writeByte(color);
+    	return packet.toPacket();
     }
-
-    @Override
-    public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
-        readFromNBT(pkt.data);
-        updateState(true);
-    }    
 
     private boolean isBeingPowered() {
         return worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);

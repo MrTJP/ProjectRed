@@ -1,7 +1,6 @@
 package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRedCore;
-import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 

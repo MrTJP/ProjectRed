@@ -3,9 +3,7 @@ package mrtjp.projectred.illumination;
 import java.util.Map;
 
 import mrtjp.projectred.ProjectRedIllumination;
-import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.InvertX;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;

@@ -1,6 +1,8 @@
 package mrtjp.projectred.illumination;
 
+import codechicken.lib.packet.PacketCustom;
 import mrtjp.projectred.ProjectRedIllumination;
+import mrtjp.projectred.core.CoreCPH;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -12,6 +14,9 @@ public class IlluminationClientProxy extends IlluminationProxy {
     @Override
     public void init() {
         super.init();
+        
+		PacketCustom.assignHandler(IlluminationCPH.channel, new IlluminationCPH());
+        
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartLantern.itemID, RenderLantern.instance);
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartInvLantern.itemID, RenderLantern.instance);
 
