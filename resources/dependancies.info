@@ -2,7 +2,5 @@
 	"repo": "http://files.minecraftforge.net/ForgeMultipart/",
 	"file": "ForgeMultipart-universal-@MC_VERSION@-@FMP_VERSION@.jar",
 	"dev": "ForgeMultipart-dev-@MC_VERSION@-@FMP_VERSION@.jar",
-	"class": "codechicken.multipart.MultipartMod",
-	"fmpversion": "@FMP_VERSION@",
-	"mcversion": "@MC_VERSION@"
+	"class": "codechicken.multipart.MultipartMod"
 }

@@ -10,6 +10,7 @@
 	<property name="mc.version" value="1.6.2" />
 	<property name="forge.version" value="9.10.1.857" />
 	<property name="ccl.version" value="1.0.0.31" />
+	<property name="ccobf.version" value="1.0.0.14" />
 	<property name="ccc.version" value="0.9.0.5_d2" />
 	<property name="fmp.version" value="1.0.0.171" />
 	<property name="nei.version" value="1.6.1.3_d2" />
@@ -19,9 +20,7 @@
 	<property name="download.dir" value="download" />
 	<property name="jar.dir" value="dist/${mc.version}/${mod.version}-${mod.build}" />
 	<property name="forge.dir" value="${build.dir}/forge" />
-	<property name="fmp.dir" value="${build.dir}/fmp" />
 	<property name="ccc.dir" value="${build.dir}/ccc" />
-	<property name="ccl.dir" value="${build.dir}/ccl" />
 	<property name="mcp.dir" value="${forge.dir}/mcp" />
 
 
@@ -33,6 +32,7 @@
 
 	<property name="forge.name" value="minecraftforge-src-${mc.version}-${forge.version}.zip" />
 	<property name="ccl.name" value="CodeChickenLib-dev-${mc.version}-${ccl.version}.jar" />
+	<property name="ccobf.name" value="CCObfuscator-all-${ccobf.version}.jar" />
 	<property name="ccc.name" value="CodeChickenCore-dev%20${ccc.version}.jar" />
 	<property name="fmp.name" value="ForgeMultipart-dev-${mc.version}-${fmp.version}.jar" />
 	<property name="nei.name" value="NotEnoughItems-dev%20${nei.version}.jar" />
@@ -41,6 +41,7 @@
 	<!-- Check downloaded dependencies -->
 	<available property="forge-downloaded" file="${download.dir}/${forge.name}" />
 	<available property="ccl-downloaded" file="${download.dir}/${ccl.name}" />
+	<available property="ccobf-downloaded" file="${download.dir}/${ccobf.name}" />
 	<available property="ccc-downloaded" file="${download.dir}/${ccc.name}" />
 	<available property="fmp-downloaded" file="${download.dir}/${fmp.name}" />
 	<available property="nei-downloaded" file="${download.dir}/${nei.name}" />
@@ -97,6 +98,10 @@
 		<get src="http://files.minecraftforge.net/CodeChickenLib/${ccl.name}" dest="${download.dir}" usetimestamp="true" />
 	</target>
 
+	<target name="download-ccobf" unless="ccobf-downloaded">
+		<get src="http://files.minecraftforge.net/CCObfuscator/${ccobf.name}" dest="${download.dir}" usetimestamp="true" />
+	</target>
+
 	<target name="download-ccc" unless="ccc-downloaded">
 		<get src="http://www.chickenbones.craftsaddle.org/Files/New_Versions/${mc.version}/${ccc.name}" dest="${download.dir}" usetimestamp="true" />
 	</target>
@@ -145,16 +150,25 @@
 
 		<echo message="Installing CodeChickenLib" />
 		<copy file="${download.dir}/${ccl.name}" todir="${mcp.dir}/lib" />
-		<unzip src="${download.dir}/${ccl.name}" dest="${ccl.dir}">
-			<patternset>
-				<include name="**/*.class" />
-			</patternset>
-		</unzip>
 
 		<echo message="Updating build.dependencies" />
 		<propertyfile file="${build.dependencies.file}">
 			<entry key="ccl" value="${ccl.version}" />
 			<entry key="ccl.name" value="${ccl.name}" />
+		</propertyfile>
+	</target>
+
+	<target name="install-ccobf" depends="install-forge,download-ccobf" unless="ccobf-installed">
+		<echo message="Deleting old CCObfuscator" />
+		<delete file="${mcp.dir}/${build.dependencies.ccobf.name}" />
+
+		<echo message="Installing CCObfuscator" />
+		<copy file="${download.dir}/${ccobf.name}" todir="${mcp.dir}" />
+
+		<echo message="Updating build.dependencies" />
+		<propertyfile file="${build.dependencies.file}">
+			<entry key="ccobf" value="${ccobf.version}" />
+			<entry key="ccobf.name" value="${ccobf.name}" />
 		</propertyfile>
 	</target>
 
@@ -164,12 +178,6 @@
 
 		<echo message="Installing CodeChickenCore" />
 		<copy file="${download.dir}/${ccc.name}" todir="${mcp.dir}/lib" />
-		<unzip src="${download.dir}/${ccc.name}" dest="${ccc.dir}">
-			<patternset>
-				<include name="**/*.class" />
-			</patternset>
-		</unzip>
-
 
 		<echo message="Updating build.dependencies" />
 		<propertyfile file="${build.dependencies.file}">
@@ -181,15 +189,9 @@
 	<target name="install-fmp" depends="install-forge,download-fmp" unless="fmp-installed">
 		<echo message="Deleting old ForgeMultipart" />
 		<delete file="${mcp.dir}/lib/${build.dependencies.fmp.name}" />
-		<delete dir="${fmp.dir}" />
 
 		<echo message="Installing ForgeMultipart" />
 		<copy file="${download.dir}/${fmp.name}" todir="${mcp.dir}/lib" />
-		<unzip src="${download.dir}/${fmp.name}" dest="${fmp.dir}">
-			<patternset>
-				<include name="**/*.class" />
-			</patternset>
-		</unzip>
 
 		<echo message="Updating build.dependencies" />
 		<propertyfile file="${build.dependencies.file}">
@@ -212,7 +214,7 @@
 		</propertyfile>
 	</target>
 
-	<target name="install-dependencies" depends="install-forge,install-ccl,install-ccc,install-fmp,install-nei" />
+	<target name="install-dependencies" depends="install-forge,install-ccl,install-ccobf,install-ccc,install-fmp,install-nei" />
 
 	<!-- Targets for building -->
 	<target name="recompile">
@@ -225,20 +227,11 @@
 		<copy todir="${mcp.dir}/src/minecraft">
 			<fileset dir="${src.dir}/dummy" />
 		</copy>
-		<copy todir="${mcp.dir}/reobf/resources">
-			<fileset dir="${src.dir}/resources" />
-		</copy>
 
 		<!-- Replace Tokens-->
 		<replace dir="${mcp.dir}/src/minecraft/mrtjp/projectred" token="@VERSION@" value="${mod.version}" />
 		<replace dir="${mcp.dir}/src/minecraft/mrtjp/projectred" token="@BUILD_NUMBER@" value="${mod.build}" />
 		<replace dir="${mcp.dir}/src/minecraft/mrtjp/projectred" token="@MC_VERSION@" value="${mc.version}" />
-
-		<replace dir="${mcp.dir}/reobf/resources" token="@VERSION@" value="${mod.version}" />
-		<replace dir="${mcp.dir}/reobf/resources" token="@BUILD_NUMBER@" value="${mod.build}" />
-		<replace dir="${mcp.dir}/reobf/resources" token="@MC_VERSION@" value="${mc.version}" />
-		<replace dir="${mcp.dir}/reobf/resources" token="@FORGE_VERSION@" value="${forge.version}" />
-		<replace dir="${mcp.dir}/reobf/resources" token="@FMP_VERSION@" value="${fmp.version}" />
 
 		<echo message="Recompiling" />
 		<property name="mcp.python.exe" location="${mcp.dir}/runtime/bin/python/python_mcp.exe" />
@@ -269,59 +262,32 @@
 	</target>
 
 	<target name="reobfuscate">
-		<echo message="Copying ForgeMultipart" />
-		<copy todir="${mcp.dir}/bin/minecraft">
-			<fileset dir="${fmp.dir}" />
-		</copy>
-		<echo message="Copying CodeChickenCore" />
-		<copy todir="${mcp.dir}/bin/minecraft">
-			<fileset dir="${ccc.dir}" />
-		</copy>
-		<echo message="Copying CodeChickenLib" />
-		<copy todir="${mcp.dir}/bin/minecraft">
-			<fileset dir="${ccl.dir}" />
-		</copy>
-
 		<echo message="Reobfuscating" />
-		<property name="mcp.python.exe" location="${mcp.dir}/runtime/bin/python/python_mcp.exe" />
-		<exec dir="${mcp.dir}" executable="${mcp.python.exe}" osfamily="windows" resultproperty="reobfuscate.code">
-			<arg line="runtime/reobfuscate.py --srgnames" />
-		</exec>
-		<exec dir="${mcp.dir}" executable="python" osfamily="unix" resultproperty="reobfuscate.code">
-			<arg line="runtime/reobfuscate.py --srgnames" />
-		</exec>
+		<java dir="${mcp.dir}" jar="${mcp.dir}/${ccobf.name}" fork="true" failonerror="true" resultproperty="reobfuscate.code">
+         <arg value="--mcp" />
+         <arg value="-l" /><arg value="jars/libraries,lib" />
+		 <arg value="-q" />
+       </java>
 
-		<echo message="Removing ForgeMultipart" />
-		<delete includeemptydirs="true">
-			<fileset dir="${mcp.dir}/bin/minecraft">
-				<present present="both" targetdir="${fmp.dir}" />
-			</fileset>
-			<fileset dir="${mcp.dir}/reobf/minecraft">
-				<present present="both" targetdir="${fmp.dir}" />
-			</fileset>
-		</delete>
-		<echo message="Removing CodeChickenCore" />
-		<delete includeemptydirs="true">
-			<fileset dir="${mcp.dir}/bin/minecraft">
-				<present present="both" targetdir="${ccc.dir}" />
-			</fileset>
-			<fileset dir="${mcp.dir}/reobf/minecraft">
-				<present present="both" targetdir="${ccc.dir}" />
-			</fileset>
-		</delete>
-		<echo message="Removing CodeChickenLib" />
-		<delete includeemptydirs="true">
-			<fileset dir="${mcp.dir}/bin/minecraft">
-				<present present="both" targetdir="${ccl.dir}" />
-			</fileset>
-			<fileset dir="${mcp.dir}/reobf/minecraft">
-				<present present="both" targetdir="${ccl.dir}" />
-			</fileset>
-		</delete>
 		<echo message="Copying DepLoader.class from CCC" />
-		<copy todir="${mcp.dir}/reobf/minecraft/codechicken/core/launch/">
-			<fileset dir="${ccc.dir}/codechicken/core/launch/" includes="DepLoader*.class" />
+		<unzip src="${download.dir}/${ccc.name}" dest="${mcp.dir}/reobf/minecraft/">
+			<patternset>
+				<include name="codechicken/core/launch/DepLoader*.class" />
+			</patternset>
+		</unzip>
+		
+		<echo message="Copying Resources" />
+		<delete dir="${mcp.dir}/reobf/resources" />
+		<copy todir="${mcp.dir}/reobf/resources">
+			<fileset dir="${src.dir}/resources" />
 		</copy>
+		
+		<!-- Replace Tokens-->
+		<replace dir="${mcp.dir}/reobf/resources" token="@VERSION@" value="${mod.version}" />
+		<replace dir="${mcp.dir}/reobf/resources" token="@BUILD_NUMBER@" value="${mod.build}" />
+		<replace dir="${mcp.dir}/reobf/resources" token="@MC_VERSION@" value="${mc.version}" />
+		<replace dir="${mcp.dir}/reobf/resources" token="@FORGE_VERSION@" value="${forge.version}" />
+		<replace dir="${mcp.dir}/reobf/resources" token="@FMP_VERSION@" value="${fmp.version}" />
 
 		<fail message="Failed to reobfuscate">
 			<condition>
