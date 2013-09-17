@@ -1,34 +1,33 @@
 package mrtjp.projectred.core;
 
-public enum PRColors {
-    WHITE("White", 1.0F, 1.0F, 1.0F, 16777215),
-    ORANGE("Orange", 0.95F, 0.7F, 0.2F, 12608256),
-    MAGENTA("Magenta", 0.9F, 0.5F, 0.85F, 11868853),
-    LIGHT_BLUE("Light Blue", 0.6F, 0.7F, 0.95F, 7308529),
-    YELLOW("Yellow", 0.9F, 0.9F, 0.2F, 12566272),
-    LIME("Lime", 0.5F, 0.8F, 0.1F, 7074048),
-    PINK("Pink", 0.95F, 0.7F, 0.8F, 15812213),
-    GREY("Grey", 0.3F, 0.3F, 0.3F, 5460819),
-    LIGHT_GREY("Light Grey", 0.6F, 0.6F, 0.6F, 9671571),
-    CYAN("Cyan", 0.3F, 0.6F, 0.7F, 34695),
-    PURPLE("Purple", 0.7F, 0.4F, 0.9F, 6160576),
-    BLUE("Blue", 0.2F, 0.4F, 0.8F, 1250240),
-    BROWN("Brown", 0.5F, 0.4F, 0.3F, 5187328),
-    GREEN("Green", 0.2F, 0.8F, 0.2F, 558848),
-    RED("Red", 0.8F, 0.3F, 0.3F, 10620678),
-    BLACK("Black", 0.1F, 0.1F, 0.1F, 2039583),
+import codechicken.lib.colour.Colour;
+import codechicken.lib.colour.ColourRGBA;
 
-    ;
+public enum PRColors {
+    WHITE(0xFFFFFF),
+    ORANGE(0xC06300),
+    MAGENTA(0xB51AB5),
+    LIGHT_BLUE(0x6F84F1),
+    YELLOW(0xBFBF00),
+    LIME(0x6BF100),
+    PINK(0xF14675),
+    GREY(0x535353),
+    LIGHT_GREY(0x939393),
+    CYAN(0x008787),
+    PURPLE(0x5E00C0),
+    BLUE(0x1313C0),
+    BROWN(0x4F2700),
+    GREEN(0x088700),
+    RED(0xA20F06),
+    BLACK(0x1F1F1F);
 
     public static final PRColors[] VALID_COLORS = values();
     private static final String[] dyeDictionary = { "dyeBlack", "dyeRed", "dyeGreen", "dyeBrown", "dyeBlue", "dyePurple", "dyeCyan", "dyeLightGray", "dyeGray", "dyePink", "dyeLime", "dyeYellow", "dyeLightBlue", "dyeMagenta", "dyeOrange", "dyeWhite" };
 
-    private PRColors(String name, float r, float g, float b, int hexcode) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.name = name;
-        this.hex = hexcode;
+    private PRColors(int rgb) {
+        name = name().substring(0, 1)+name().substring(1).toLowerCase();
+        this.rgb = rgb;
+        c = new ColourRGBA(rgb<<8|0xFF);
     }
 
     public int dyeId() {
@@ -44,8 +43,8 @@ public enum PRColors {
     }
 
     public final String name;
-    public final float r, g, b;
-    public final int hex;
+    public final Colour c;
+    public final int rgb;
 
     public static PRColors get(int i) {
         if (i > VALID_COLORS.length - 1)

@@ -103,7 +103,7 @@ public class LastEventBasedHaloRenderer {
 
     private static void renderHalo(Tessellator tess, World world, LightCache cc) {
         CCRenderState.setBrightness(world, cc.pos.x, cc.pos.y, cc.pos.z);
-        tess.setColorRGBA_I(PRColors.VALID_COLORS[cc.color].hex, 128);
+        tess.setColorRGBA_I(PRColors.VALID_COLORS[cc.color].rgb, 128);
         RenderUtils.renderBlock(cc.cube, 0, cc.t, null, null);
     }
 
