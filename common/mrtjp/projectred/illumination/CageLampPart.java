@@ -20,7 +20,7 @@ public class CageLampPart extends BaseLightPart implements TFacePart {
         for (int i = 0; i < 6; i++) {
             Transformation t = Rotation.sideRotations[i].at(Vector3.center);
             bounds[i] = new Cuboid6(2/16D, 0, 2/16D, 14/16D, 11/16D, 14/16D).apply(t);
-            lightBounds[i] = new Cuboid6(4/16D, 0, 4/16D, 12/16D, 10/16D, 12/16D).apply(t);
+            lightBounds[i] = new Cuboid6(4/16D, 0, 4/16D, 12/16D, 10/16D, 12/16D).apply(t).expand(-0.001);
         }
     }
 
