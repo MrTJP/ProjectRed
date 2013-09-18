@@ -97,14 +97,10 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
 
     public void updateState(boolean forceRender) {
         boolean updated = false;
-        if (!powered && isBeingPowered()) {
-            powered = true;
-            updateRender();
-            updated = true;
-        } else if (powered && !isBeingPowered()){
-            powered = false;
-            updateRender();
-            updated = true;
+        if (!world().isRemote && powered != isBeingPowered()) {
+        	powered = !powered;
+        	updateRender();
+        	updated = true;
         }
         if (forceRender && !updated)
             updateRender();
@@ -113,7 +109,7 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     public void updateRender() {
         world().markBlockForUpdate(x(), y(), z());
         world().updateAllLightTypes(x(), y(), z());
-        if (BasicUtils.isServer(world()))
+        if (!world().isRemote)
             sendDescUpdate();
     }
 

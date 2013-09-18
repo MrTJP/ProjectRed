@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -37,11 +38,10 @@ public class BlockLamp extends Block {
     @Override
     public void onNeighborBlockChange(World world, int x, int y, int z, int id) {
         TileLamp tile = (TileLamp) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
-        if (tile != null) {
+        if (tile != null)
             tile.onNeighborBlockChange();
-        }
     }
-
+    
     @Override
     public boolean renderAsNormalBlock() {
         return true;
@@ -64,17 +64,15 @@ public class BlockLamp extends Block {
 
     @Override
     public void getSubBlocks(int id, CreativeTabs tab, List list) {
-        for (int i = 0; i < 32; i++) {
+        for (int i = 0; i < 32; i++)
             list.add(new ItemStack(id, 1, i));
-        }
     }
 
     @Override
     public int getLightValue(IBlockAccess world, int x, int y, int z) {
         TileLamp tile = (TileLamp) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
-        if (tile != null) {
+        if (tile != null)
             return tile.getLightValue();
-        }
         return 0;
     }
 
@@ -105,18 +103,16 @@ public class BlockLamp extends Block {
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
         TileLamp tile = (TileLamp) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
-        if (tile != null) {
+        if (tile != null)
             return tile.getDroppedBlock();
-        }
         return null;
     }
 
     @Override
     public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z) {
         TileLamp tile = (TileLamp) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
-        if (tile != null && !player.capabilities.isCreativeMode) {
+        if (tile != null && !player.capabilities.isCreativeMode)
             BasicUtils.dropItem(world, x, y, z, tile.getDroppedBlock());
-        }
         return super.removeBlockByPlayer(world, player, x, y, z);
     }
 
@@ -138,11 +134,10 @@ public class BlockLamp extends Block {
 
     @Override
     public Icon getIcon(int side, int meta) {
-        if (meta > 15) {
-            return onIcons[meta - 16];
-        } else {
+        if (meta > 15)
+        	return onIcons[meta - 16];
+        else
             return offIcons[meta];
-        }
     }
 
     @Override

@@ -16,6 +16,8 @@ public class TileLamp extends TileEntity implements ICustomPacketTile, ILight {
     
     public TileLamp() {}
     
+    private boolean firstTick = true;
+    
     public void prepairPlacement(boolean inverted, int meta) {
         this.color = (byte) meta;
         this.inverted = inverted;
@@ -39,6 +41,14 @@ public class TileLamp extends TileEntity implements ICustomPacketTile, ILight {
     public void updateRender() {
         worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
         worldObj.updateAllLightTypes(xCoord, yCoord, zCoord);
+    }
+    
+    @Override
+    public void updateEntity() {
+    	if (firstTick) {
+    		onNeighborBlockChange();
+    		firstTick = false;
+    	}
     }
     
     @Override
