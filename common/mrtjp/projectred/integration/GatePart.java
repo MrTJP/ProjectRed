@@ -36,6 +36,7 @@ import codechicken.multipart.TickScheduler;
 import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mrtjp.projectred.api.IScrewdriver
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, IConnectable, TFacePart, JIconHitEffects
@@ -396,18 +397,19 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
         if(getLogic().activate(this, player, held))
             return true;
-        
-        if (held != null && held.getItem() == ProjectRedCore.itemScrewdriver) {
-            if(!world().isRemote) {
-                if (player.isSneaking())
-                    configure();
-                else
-                    rotate();
-                held.damageItem(1, player);
-            }
-            
-            return true;
-        }
+		if (held != null)
+			if (held.getItem() instanceof IScrewdriver) {
+				if(!world().isRemote) {
+					if (player.isSneaking())
+						configure();
+					else
+						rotate();
+					held.damageItem(1, player);
+				}
+				
+				return true;
+			}
+		}
         
         return false;
     }
