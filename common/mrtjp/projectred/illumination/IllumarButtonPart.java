@@ -14,6 +14,7 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Vector3;
+import codechicken.multipart.TileMultipart;
 import codechicken.multipart.minecraft.ButtonPart;
 import codechicken.multipart.minecraft.PartMetaAccess;
 import cpw.mods.fml.relauncher.Side;
@@ -76,6 +77,12 @@ public class IllumarButtonPart extends ButtonPart implements ILight {
         return Arrays.asList(getItemStack());
     }
     
+    @Override
+    public void drop() {
+        tile().remPart(this);
+        TileMultipart.dropItem(getItemStack(), world(), Vector3.fromTileEntityCenter(getTile()));
+    }
+
     @Override
     public ItemStack pickItem(MovingObjectPosition hit) {
         return getItemStack();

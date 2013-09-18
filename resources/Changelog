@@ -1,6 +1,7 @@
 v4.0.2
 - FIX: Analog signal re-propagation
-- 
+- FIX: Illumar buttons dropping regular buttons
+- FIX: Lights are always off on world load
 
 v4.0.1
 - FIX: alloy smelter crash
