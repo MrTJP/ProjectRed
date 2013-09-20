@@ -70,7 +70,7 @@ public class GeneratorVolcano extends GeneratorOre {
             w.markBlockForUpdate(x, yIndex, z);
             w.notifyBlocksOfNeighborChange(x, yIndex, z, Block.lavaStill.blockID);
             w.scheduledUpdatesAreImmediate = true;
-            Block.blocksList[Block.lavaStill.blockID].updateTick(w, x, yIndex, z, rand);
+            Block.lavaStill.updateTick(w, x, yIndex, z, rand);
             w.scheduledUpdatesAreImmediate = false;
             yIndex--;
         }

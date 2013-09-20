@@ -22,7 +22,7 @@ public class ExpansionProxy implements IProxy, IPartFactory {
         });
 
         itemVAWT = new ItemVAWT(Configurator.item_vawtID.getInt());
-        itemPartTube = new ItemPartPressurizedTube(Configurator.part_tube.getInt());
+        //itemPartTube = new ItemPartPressurizedTube(Configurator.part_tube.getInt());
     }
 
     @Override

@@ -17,9 +17,8 @@ public class ItemBlockOre extends ItemBlock {
     }
 
     public void getSubItems(int id, CreativeTabs tab, List list) {
-        for (EnumOre e : EnumOre.VALID_ORES) {
+        for (EnumOre e : EnumOre.VALID_ORES)
             list.add(e.getItemStack(1));
-        }
     }
 
     @Override

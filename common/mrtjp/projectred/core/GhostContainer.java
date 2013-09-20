@@ -1,6 +1,5 @@
 package mrtjp.projectred.core;
 
-import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -93,43 +92,38 @@ public class GhostContainer extends Container {
     /**
      * Slot that will only accept if slotCheck allows it and wont allow removal.
      */
-    public void addFinalRestrictedSlot(int slotId, IInventory inventory,
-            int xCoord, int yCoord, ISlotCheck slotCheck, int stackLimit) {
-        addSlotToContainer(new GuiFinalRestrictedSlot(inventory, slotId,
-                xCoord, yCoord, slotCheck, stackLimit));
+    public void addFinalRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotCheck slotCheck, int stackLimit) {
+        addSlotToContainer(new GuiFinalRestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck, stackLimit));
     }
 
     /**
      * Slot that will not allow removal.
      */
-    public void addUnmodifiableSlot(int slotId, IInventory inventory,
-            int xCoord, int yCoord) {
-        addSlotToContainer(new GuiUnmodifiableSlot(inventory, slotId, xCoord,
-                yCoord));
+    public void addUnmodifiableSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
+        addSlotToContainer(new GuiUnmodifiableSlot(inventory, slotId, xCoord, yCoord));
     }
 
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int i) {
         ItemStack itemstack = null;
-        Slot slot = (Slot) this.inventorySlots.get(i);
-
-        if (slot != null && slot.getHasStack()) {
+        Slot slot = (Slot)inventorySlots.get(i);
+        
+        if(slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
-
-            if (i < 27) {
-                if (!this.mergeItemStack(itemstack1, 27, this.inventorySlots.size(), true)) {
+            
+            int chestSlots = _inv.getSizeInventory();
+            if(i < chestSlots) {
+                if(!mergeItemStack(itemstack1, chestSlots, inventorySlots.size(), true))
                     return null;
-                }
-            } else if (!this.mergeItemStack(itemstack1, 0, 27, false)) {
+            } 
+            else if(!mergeItemStack(itemstack1, 0, chestSlots, false))
                 return null;
-            }
 
-            if (itemstack1.stackSize == 0) {
-                slot.putStack((ItemStack) null);
-            } else {
+            if(itemstack1.stackSize == 0)
+                slot.putStack(null);
+            else
                 slot.onSlotChanged();
-            }
         }
         return itemstack;
     }
@@ -146,20 +140,12 @@ public class GhostContainer extends Container {
         ItemStack itemstack1;
 
         if (stack.isStackable()) {
-            while (stack.stackSize > 0
-                    && (!doBackwards && k < endSlot || doBackwards
-                            && k >= startSlot)) {
+            while (stack.stackSize > 0 && (!doBackwards && k < endSlot || doBackwards && k >= startSlot)) {
                 slot = (Slot) this.inventorySlots.get(k);
                 itemstack1 = slot.getStack();
 
                 if (slot.isItemValid(stack)) {
-                    if (itemstack1 != null
-                            && itemstack1.itemID == stack.itemID
-                            && (!stack.getHasSubtypes() || stack
-                                    .getItemDamage() == itemstack1
-                                    .getItemDamage())
-                            && ItemStack.areItemStackTagsEqual(stack,
-                                    itemstack1)) {
+                    if (itemstack1 != null && itemstack1.itemID == stack.itemID && (!stack.getHasSubtypes() || stack.getItemDamage() == itemstack1.getItemDamage()) && ItemStack.areItemStackTagsEqual(stack, itemstack1)) {
                         int l = itemstack1.stackSize + stack.stackSize;
 
                         if (l <= stack.getMaxStackSize()) {
@@ -167,30 +153,26 @@ public class GhostContainer extends Container {
                             itemstack1.stackSize = l;
                             slot.onSlotChanged();
                             flag1 = true;
-                        } else if (itemstack1.stackSize < stack
-                                .getMaxStackSize()) {
-                            stack.stackSize -= stack.getMaxStackSize()
-                                    - itemstack1.stackSize;
+                        } else if (itemstack1.stackSize < stack .getMaxStackSize()) {
+                            stack.stackSize -= stack.getMaxStackSize() - itemstack1.stackSize;
                             itemstack1.stackSize = stack.getMaxStackSize();
                             slot.onSlotChanged();
                             flag1 = true;
                         }
                     }
                 }
-                if (doBackwards) {
+                if (doBackwards)
                     --k;
-                } else {
+                else
                     ++k;
-                }
             }
         }
 
         if (stack.stackSize > 0) {
-            if (doBackwards) {
+            if (doBackwards)
                 k = endSlot - 1;
-            } else {
+            else
                 k = startSlot;
-            }
 
             while (!doBackwards && k < endSlot || doBackwards && k >= startSlot) {
                 slot = (Slot) this.inventorySlots.get(k);
@@ -205,11 +187,10 @@ public class GhostContainer extends Container {
                         break;
                     }
                 }
-                if (doBackwards) {
+                if (doBackwards)
                     --k;
-                } else {
+                else
                     ++k;
-                }
             }
         }
 
@@ -334,4 +315,113 @@ public class GhostContainer extends Container {
         }
         super.putStackInSlot(slotID, stack);
     }
+    
+    public static class GuiFinalRestrictedSlot extends GuiRestrictedSlot {
+        int limit;
+        public GuiFinalRestrictedSlot(IInventory iinventory, int i, int j, int k, int ItemID, int stackLimit) {
+            super(iinventory, i, j, k, ItemID);
+            this.limit = stackLimit;
+        }
+        
+        public GuiFinalRestrictedSlot(IInventory iinventory, int i, int j, int k, ISlotCheck slotCheck, int stackLimit) {
+            super(iinventory, i, j, k, slotCheck);
+            this.limit = stackLimit;
+        }
+        
+        /**
+         * Return whether this slot's stack can be taken from this slot.
+         */
+        @Override
+        public boolean canTakeStack(EntityPlayer par1EntityPlayer) {
+            return false;
+        }
+        
+        /**
+         * Returns the maximum stack size for a given slot (usually the same as getInventoryStackLimit(), but 1 in the case
+         * of armor slots)
+         */
+        @Override
+        public int getSlotStackLimit() {
+            return limit;
+        }
+    }
+
+    public static class GuiGhostSlot extends Slot {
+        public GuiGhostSlot(IInventory iinventory, int i, int j, int k) {
+            super(iinventory, i, j, k);
+        }
+
+        @Override
+        public boolean canTakeStack(EntityPlayer par1EntityPlayer) {
+            return false;
+        }
+    }
+    
+    public static interface GuiIRenderSlot {
+        public void mouseClicked(int button);
+
+        public boolean drawSlotBackground();
+
+        public int getXPos();
+
+        public int getYPos();
+        
+        public String getToolTipText();
+        
+        public boolean displayToolTip();
+        
+        public abstract int getSize();
+    }
+
+    public static class GuiRestrictedSlot extends Slot {
+
+        private final int ItemID;
+        private final ISlotCheck slotCheck;
+        
+        public GuiRestrictedSlot(IInventory iinventory, int i, int j, int k, int ItemID) {
+            super(iinventory, i, j, k);
+            this.ItemID = ItemID;
+            slotCheck = null;
+        }
+        
+        public GuiRestrictedSlot(IInventory iinventory, int i, int j, int k, ISlotCheck slotCheck) {
+            super(iinventory, i, j, k);
+            this.ItemID = -1;
+            this.slotCheck = slotCheck;
+        }
+
+        /**
+         * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+         */
+        @Override
+        public boolean isItemValid(ItemStack stack) {    
+            if(slotCheck == null) {
+                return stack.itemID == ItemID;
+            } else {
+                return slotCheck.isSlotAllowed(stack);
+            }
+        }
+        
+    }
+
+    public static interface ISlotCheck {
+    	public boolean isSlotAllowed(ItemStack stack);
+    }
+
+    public static class GuiUnmodifiableSlot extends Slot {
+        public GuiUnmodifiableSlot(IInventory par1iInventory, int par2, int par3, int par4) {
+            super(par1iInventory, par2, par3, par4);
+        }
+
+        public GuiUnmodifiableSlot(Slot slot) {
+            super(slot.inventory, slot.getSlotIndex(), slot.xDisplayPosition, slot.yDisplayPosition);
+        }
+
+        @Override
+        public boolean canTakeStack(EntityPlayer par1EntityPlayer) {
+            return false;
+        }
+    }
+
+    
 }

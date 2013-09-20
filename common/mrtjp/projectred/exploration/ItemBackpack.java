@@ -4,7 +4,7 @@ import java.util.List;
 
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.GhostContainer;
-import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
+import mrtjp.projectred.core.GhostContainer.ISlotCheck;
 import mrtjp.projectred.core.SimpleInventory;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;

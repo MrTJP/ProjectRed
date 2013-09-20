@@ -12,7 +12,7 @@ public class CoreGuiHandler implements IGuiHandler {
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == alloyID) {
-            TileAlloySmelter tile = (TileAlloySmelter) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileAlloySmelter.class);
+            TileAlloySmelter tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileAlloySmelter.class);
             if (tile != null)
                 return tile.getContainer(player);
         }
@@ -22,7 +22,7 @@ public class CoreGuiHandler implements IGuiHandler {
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == alloyID) {
-            TileAlloySmelter tile = (TileAlloySmelter) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileAlloySmelter.class);
+            TileAlloySmelter tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileAlloySmelter.class);
             if (tile != null)
                 return new GuiAlloySmelter(player, tile);
         }

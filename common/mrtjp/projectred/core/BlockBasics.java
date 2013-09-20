@@ -55,7 +55,7 @@ public class BlockBasics extends BlockContainer {
 
     @Override
     public void breakBlock(World world, int x, int y, int z, int par5, int par6) {
-        TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
+        TileBasicsBase tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
         if (tile != null)
             tile.onBlockBreak();
         super.breakBlock(world, x, y, z, par5, par6);
@@ -64,14 +64,14 @@ public class BlockBasics extends BlockContainer {
 
     @Override
     public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
-        TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
+        TileBasicsBase tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
         if (tile != null)
             tile.onBlockClicked(player);
     }
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) {
-        TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
+        TileBasicsBase tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
         if (tile != null)
             return tile.onBlockActivated(player);
         return false;
@@ -79,7 +79,7 @@ public class BlockBasics extends BlockContainer {
 
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemstack) {
-        TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
+        TileBasicsBase tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
         if (tile != null)
             tile.onBlockPlacedBy(entity, itemstack);
     }
@@ -112,7 +112,7 @@ public class BlockBasics extends BlockContainer {
     @SideOnly(Side.CLIENT)
     @Override
     public Icon getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
-        TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(access, new BlockCoord(x, y, z), TileBasicsBase.class);
+        TileBasicsBase tile = BasicUtils.getTileEntity(access, new BlockCoord(x, y, z), TileBasicsBase.class);
         if (tile != null)
             return tile.getType().icons[0];
         return null;
@@ -126,7 +126,7 @@ public class BlockBasics extends BlockContainer {
 
     @Override
     public int getLightValue(IBlockAccess world, int x, int y, int z) {
-        TileBasicsBase tile = (TileBasicsBase) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
+        TileBasicsBase tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileBasicsBase.class);
         if (tile != null)
             return tile.getLightLevel();
         return 0;

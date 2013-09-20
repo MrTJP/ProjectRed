@@ -2,7 +2,7 @@ package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
-import mrtjp.projectred.core.GuiRestrictedSlot.ISlotCheck;
+import mrtjp.projectred.core.GhostContainer.ISlotCheck;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;

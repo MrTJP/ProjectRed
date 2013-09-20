@@ -31,28 +31,24 @@ public class BlockPhotosyntheticCobblestone extends Block {
 
     @Override
     public void updateTick(World w, int x, int y, int z, Random ran) {
-        if (!w.isAirBlock(x, y + 1, z) || w.canBlockSeeTheSky(x, y + 1, z)) {
+        if (!w.isAirBlock(x, y + 1, z) || w.canBlockSeeTheSky(x, y + 1, z))
             return;
-        }
+
         for (int i = 0; i < 6; i++) {
             BlockCoord bc = new BlockCoord(x, y, z).offset(i);
             int id = w.getBlockId(bc.x, bc.y, bc.z);
             int meta = w.getBlockMetadata(bc.x, bc.y, bc.z);
-            if (!w.isAirBlock(bc.x, bc.y + 1, bc.z) || w.canBlockSeeTheSky(bc.x, bc.y + 1, bc.z)) {
+            if (!w.isAirBlock(bc.x, bc.y + 1, bc.z) || w.canBlockSeeTheSky(bc.x, bc.y + 1, bc.z))
                 continue;
-            }
+
             if (id == Block.cobblestone.blockID) {
-                if (isBlockWet(w, bc)) {
-                    if (ran.nextInt(3) == 0) {
+                if (isBlockWet(w, bc))
+                    if (ran.nextInt(3) == 0)
                         w.setBlock(bc.x, bc.y, bc.z, Block.cobblestoneMossy.blockID, 0, 3);
-                    }
-                }
             } else if (id == Block.stoneBrick.blockID && meta == 2) {
-                if (isBlockWet(w, bc)) {
-                    if (ran.nextInt(3) == 0) {
+                if (isBlockWet(w, bc))
+                    if (ran.nextInt(3) == 0)
                         w.setBlock(bc.x, bc.y, bc.z, Block.stoneBrick.blockID, 1, 3);
-                    }
-                }
             }
         }
     }
@@ -61,9 +57,8 @@ public class BlockPhotosyntheticCobblestone extends Block {
         for (int i = 0; i < 6; i++) {
             BlockCoord bc = b.copy().offset(i);
             int id = w.getBlockId(bc.x, bc.y, bc.z);
-            if (id == Block.waterMoving.blockID || id == Block.waterStill.blockID) {
+            if (id == Block.waterMoving.blockID || id == Block.waterStill.blockID)
                 return true;
-            }
         }
         return false;
     }
