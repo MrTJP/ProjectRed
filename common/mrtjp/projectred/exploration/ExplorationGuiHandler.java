@@ -13,9 +13,8 @@ public class ExplorationGuiHandler implements IGuiHandler {
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == ID_Bag) {
             ItemStack held = player.getHeldItem();
-            if (held.itemID == ProjectRedExploration.itemBackpack.itemID) {
+            if (held.itemID == ProjectRedExploration.itemBackpack.itemID)
                 return ItemBackpack.getContainer(player);
-            }
         }
         return null;
     }
@@ -24,9 +23,8 @@ public class ExplorationGuiHandler implements IGuiHandler {
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == ID_Bag) {
             ItemStack held = player.getHeldItem();
-            if (held.itemID == ProjectRedExploration.itemBackpack.itemID) {
+            if (held.itemID == ProjectRedExploration.itemBackpack.itemID)
                 return new GuiBackpack(player, ItemBackpack.getBackpackInventory(player), held);
-            }
         }
         return null;
     }

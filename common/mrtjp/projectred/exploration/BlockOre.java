@@ -23,8 +23,7 @@ public class BlockOre extends Block {
     }
 
     @Override
-    public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int meta, int fortune)
-    {
+    public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int meta, int fortune) {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
 
         EnumOre type = EnumOre.VALID_ORES[meta];

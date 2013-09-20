@@ -37,7 +37,7 @@ public class BlockLamp extends Block {
 
     @Override
     public void onNeighborBlockChange(World world, int x, int y, int z, int id) {
-        TileLamp tile = (TileLamp) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
+        TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null)
             tile.onNeighborBlockChange();
     }
@@ -70,7 +70,7 @@ public class BlockLamp extends Block {
 
     @Override
     public int getLightValue(IBlockAccess world, int x, int y, int z) {
-        TileLamp tile = (TileLamp) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
+        TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null)
             return tile.getLightValue();
         return 0;
@@ -102,7 +102,7 @@ public class BlockLamp extends Block {
 
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
-        TileLamp tile = (TileLamp) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
+        TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null)
             return tile.getDroppedBlock();
         return null;
@@ -110,7 +110,7 @@ public class BlockLamp extends Block {
 
     @Override
     public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z) {
-        TileLamp tile = (TileLamp) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
+        TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null && !player.capabilities.isCreativeMode)
             BasicUtils.dropItem(world, x, y, z, tile.getDroppedBlock());
         return super.removeBlockByPlayer(world, player, x, y, z);
@@ -122,7 +122,7 @@ public class BlockLamp extends Block {
 
     @Override
     public Icon getBlockTexture(IBlockAccess world, int x, int y, int z, int side) {
-        TileLamp tile = (TileLamp) BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
+        TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null) {
             if (tile.getLightValue() == 15)
                 return onIcons[tile.color];

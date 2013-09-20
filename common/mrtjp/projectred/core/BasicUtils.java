@@ -43,19 +43,15 @@ public class BasicUtils {
     }
 
     public static void dropItemFromLocation(World w, ItemStack is, boolean violent, EntityPlayer player, int to_side, int tickDelay, BlockCoord coord) {
-        if (w.isRemote) {
+        if (w.isRemote)
             return;
-        }
-        if ((is == null) || (is.stackSize == 0)) {
+        if ((is == null) || (is.stackSize == 0))
             return;
-        }
-        if (player == null) {
+        if (player == null)
             to_side = -1;
-        }
         double mult = 0.02D;
-        if (violent) {
+        if (violent)
             mult = 0.2D;
-        }
         Vec3 pos = w.getWorldVec3Pool().getVecFromPool(coord.x + 0.5D, coord.y + 0.5D, coord.z + 0.5D);
         Vec3 vel = w.getWorldVec3Pool().getVecFromPool(0.0D, 0.0D, 0.0D);
         if (to_side != -1) {
