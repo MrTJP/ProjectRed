@@ -173,8 +173,8 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @Override
     public void onPartChanged(TMultiPart part) {
         if(!world().isRemote) {
-            if(updateInternalConnections())
-                onChange();
+            updateInternalConnections();
+            onChange();
         }
     }
 
@@ -202,29 +202,24 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @Override
     public void onRemoved() {
         super.onRemoved();
-        if(!world().isRemote) {
+        if(!world().isRemote)
             notifyNeighbors(0xF);
-        }
     }
 
-    public boolean canStay()
-    {
+    public boolean canStay() {
         BlockCoord pos = new BlockCoord(getTile()).offset(side());
         return BasicWireUtils.canPlaceWireOnSide(world(), pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side() ^ 1), false);
     }
     
-    public boolean dropIfCantStay()
-    {
-        if(!canStay())
-        {
+    public boolean dropIfCantStay() {
+        if(!canStay()) {
             drop();
             return true;
         }
         return false;
     }
 
-    public void drop()
-    {
+    public void drop() {
         TileMultipart.dropItem(getItem(), world(), Vector3.fromTileEntityCenter(getTile()));
         tile().remPart(this);
     }
@@ -244,16 +239,14 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
      */
     protected boolean updateExternalConnections() {
         int newConn = 0;
-        for(int r = 0; r < 4; r++)
-        {
+        for(int r = 0; r < 4; r++) {
             if(connectStraight(r))
                 newConn|=0x10<<r;
             else if(connectCorner(r))
                 newConn|=1<<r;
         }
         
-        if(newConn != (connMap & 0xF000FF))
-        {
+        if(newConn != (connMap & 0xF000FF)) {
             int diff = connMap^newConn;
             connMap = (connMap&~0xF000FF)|newConn;
             
@@ -277,8 +270,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
             if(connectInternal(r))
                 newConn|=0x100<<r;
         
-        if(newConn != (connMap & 0x10F00))
-        {
+        if(newConn != (connMap & 0x10F00)) {
             connMap = (connMap&~0x10F00)|newConn;
             return true;
         }
@@ -417,6 +409,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         if(changed) {
             updateConnections();
             tile().markDirty();
+            tile().notifyPartChange(this);
             sendShapeUpdate();
             notifyNeighbors(0xF);
             onChange();
@@ -428,6 +421,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         
         updateConnections();
         tile().markDirty();
+        tile().notifyPartChange(this);
         sendOrientationUpdate();
         notifyNeighbors(0xF);
         onChange();

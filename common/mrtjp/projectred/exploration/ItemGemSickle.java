@@ -28,24 +28,23 @@ public class ItemGemSickle extends ItemTool {
 
     @Override
     public boolean getIsRepairable(ItemStack ist1, ItemStack ist2) {
-        if (tool.repairStack.isItemEqual(ist2)) {
+        if (tool.repairStack.isItemEqual(ist2))
             return true;
-        }
+        
         return super.getIsRepairable(ist1, ist2);
     }
 
     @Override
     public float getStrVsBlock(ItemStack ist, Block bl) {
-        if ((bl instanceof BlockLeaves)) {
+        if ((bl instanceof BlockLeaves))
             return this.efficiencyOnProperMaterial;
-        }
         return super.getStrVsBlock(ist, bl);
     }
 
     public boolean recurseLeaves(ItemStack stack, World w, int x, int y, int z, EntityPlayer player) {
         boolean used = false;
-        for (int i = -radiusLeaves; i <= radiusLeaves; i++) {
-            for (int j = -radiusLeaves; j <= radiusLeaves; j++) {
+        for (int i = -radiusLeaves; i <= radiusLeaves; i++)
+            for (int j = -radiusLeaves; j <= radiusLeaves; j++)
                 for (int k = -radiusLeaves; k <= radiusLeaves; k++) {
                     int localX = x + i;
                     int localY = y + j;
@@ -54,24 +53,20 @@ public class ItemGemSickle extends ItemTool {
                     int meta = w.getBlockMetadata(localX, localY, localZ);
                     Block localBlock = Block.blocksList[id];
                     if (localBlock != null && (localBlock.isLeaves(w, localX, localY, localZ) || localBlock instanceof BlockLeaves)) {
-                        if (localBlock.canHarvestBlock(player, meta)) {
+                        if (localBlock.canHarvestBlock(player, meta))
                             localBlock.harvestBlock(w, player, localX, localY, localZ, meta);
-                        }
                         w.setBlock(localX, localY, localZ, 0, 0, 3);
                         used = true;
                     }
                 }
-            }
-        }
-        if (used) {
+        if (used)
             stack.damageItem(1, player);
-        }
         return used;
     }
 
     public boolean recurseCrops(ItemStack stack, World w, int x, int y, int z, EntityPlayer player) {
         boolean used = false;
-        for (int i = -radiusCrops; i <= radiusCrops; i++) {
+        for (int i = -radiusCrops; i <= radiusCrops; i++)
             for (int j = -radiusCrops; j <= radiusCrops; j++) {
                 int localX = x + i;
                 int localY = y;
@@ -80,36 +75,31 @@ public class ItemGemSickle extends ItemTool {
                 int meta = w.getBlockMetadata(localX, localY, localZ);
                 Block localBlock = Block.blocksList[id];
                 if (localBlock != null && (localBlock instanceof BlockFlower || localBlock instanceof IPlantable)) {
-                    if (localBlock.canHarvestBlock(player, meta)) {
+                    if (localBlock.canHarvestBlock(player, meta))
                         localBlock.harvestBlock(w, player, localX, localY, localZ, meta);
-                    }
                     w.setBlock(localX, localY, localZ, 0, 0, 3);
                     used = true;
                 }
             }
-        }
-        if (used) {
+        if (used)
             stack.damageItem(1, player);
-        }
         return used;
     }
 
     public boolean onBlockDestroyed(ItemStack stack, World world, int blockID, int x, int y, int z, EntityLivingBase entity) {
         EntityPlayer player;
-        if (entity instanceof EntityPlayer) {
+        if (entity instanceof EntityPlayer)
             player = (EntityPlayer) entity;
-        } else {
+        else
             return false;
-        }
 
         Block b = Block.blocksList[blockID];
         if (b != null) {
-            if (b.isLeaves(world, x, y, z)) {
+            if (b.isLeaves(world, x, y, z))
                 return recurseLeaves(stack, world, x, y, z, player);
-            }
-            if (b instanceof BlockFlower) {
+
+            if (b instanceof BlockFlower)
                 return recurseCrops(stack, world, x, y, z, player);
-            }
         }
         return super.onBlockDestroyed(stack, world, blockID, x, y, z, entity);
     }

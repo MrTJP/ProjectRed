@@ -192,8 +192,7 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
      */
     protected boolean updateExternalConnections() {
         int newConn = 0;
-        for(int s = 0; s < 6; s++)
-        {
+        for(int s = 0; s < 6; s++) {
             if(!maskOpen(s))
                 continue;
             
@@ -201,8 +200,7 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
                 newConn|=1<<s;
         }
         
-        if(newConn != (connMap & 0x3F))
-        {
+        if(newConn != (connMap & 0x3F)) {
             connMap = (connMap&~0x3F)|newConn;
             return true;
         }
@@ -522,9 +520,9 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
             if (!world().isRemote) {
                 int newMaterialID = ItemMicroPart.getMaterialID(held);
                 IMicroMaterial newMaterial = MicroMaterialRegistry.getMaterial(newMaterialID);
-                if (newMaterial.isTransparent()) {
+                if (newMaterial.isTransparent())
                     return false;
-                }
+
                 dropMaterial(player);
                 material = newMaterialID;
                 world().playSoundEffect(x() + 0.5D, y() + 0.5D, z() + 0.5D, newMaterial.getSound().getPlaceSound(), (newMaterial.getSound().getVolume() + 1.0F) / 2.0F, newMaterial.getSound().getPitch() * 0.8F);

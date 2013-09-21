@@ -27,7 +27,7 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     
     @Override
     public String getType() {
-        return "pr_sbundled";
+        return "pr_fbundled";
     }
 
     @Override

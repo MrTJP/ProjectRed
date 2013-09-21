@@ -23,11 +23,7 @@ import codechicken.multipart.scalatraits.TRedstoneTile;
 public abstract class RedwirePart extends WirePart implements IRedwirePart, IFaceRedstonePart {
 
     public byte signal;
-    
-    public RedwirePart(int side) {
-        super(side);
-    }
-    
+        
     @Override
     public void save(NBTTagCompound tag) {
         super.save(tag);

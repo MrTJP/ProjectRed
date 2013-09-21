@@ -29,10 +29,6 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
     public byte[] signal = new byte[16];
     public byte colour;
 
-    public BundledCablePart(int side) {
-        super(side);
-    }
-
     @Override
     public String getType() {
         return "pr_bundled";
