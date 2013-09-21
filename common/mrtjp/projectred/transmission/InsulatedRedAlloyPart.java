@@ -13,11 +13,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class InsulatedRedAlloyPart extends RedwirePart implements IInsulatedRedwirePart {
 
     public byte colour;
-    
-    public InsulatedRedAlloyPart(int side) {
-        super(side);
-    }
-    
+        
     @Override
     public String getType() {
         return "pr_insulated";

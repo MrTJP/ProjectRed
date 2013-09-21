@@ -3,6 +3,7 @@ v4.0.2
 - FIX: Illumar buttons dropping regular buttons
 - FIX: Lights are always off on world load
 - FIX: Container shift clicking
+- FIX: Gates dont alert wires upon being rotated/configured
 
 v4.0.1
 - FIX: alloy smelter crash

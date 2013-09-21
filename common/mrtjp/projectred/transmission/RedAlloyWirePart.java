@@ -4,11 +4,8 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 
 public class RedAlloyWirePart extends RedwirePart {
-    public RedAlloyWirePart(int side) {
-        super(side);
-    }
 
-    @Override
+	@Override
     public String getType() {
         return "pr_redwire";
     }
