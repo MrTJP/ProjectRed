@@ -305,13 +305,15 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void save(NBTTagCompound tag) {
             tag.setInteger("pmax", pointer_max);
-            tag.setLong("pelapsed", gate.world().getWorldTime()-pointer_start);
+            tag.setLong("pelapsed", pointer_start < 0 ? pointer_start : gate.world().getWorldTime()-pointer_start);
         }
         
         @Override
         public void load(NBTTagCompound tag) {
             pointer_max = tag.getInteger("pmax");
-            pointer_start = MultipartSaveLoad.loadingWorld().getWorldTime()-tag.getLong("pelapsed");
+            pointer_start = tag.getLong("pelapsed");
+            if(pointer_start >= 0)
+                pointer_start = MultipartSaveLoad.loadingWorld().getWorldTime()-pointer_start;
         }
         
         @Override
@@ -382,6 +384,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         public void resetPointer() {
             if(pointer_start >= 0) {
                 pointer_start = -1;
+                gate.tile().markDirty();
                 if(!gate.world().isRemote)
                     sendPointerUpdate();
             }
@@ -390,6 +393,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         public void startPointer() {
             if(pointer_start < 0) {
                 pointer_start = gate.world().getWorldTime();
+                gate.tile().markDirty();
                 if(!gate.world().isRemote)
                     sendPointerUpdate();
             }
