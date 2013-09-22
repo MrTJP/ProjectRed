@@ -4,6 +4,7 @@ import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
@@ -98,10 +99,13 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
         CCRenderState.useNormals(true);
         CCRenderState.pullLightmap();
         CCRenderState.startDrawing(7);
-        
         RenderUtils.renderBlock(Cuboid6.full, 0, new Translation(x, y, z), new IconTransformation(icon), null);
-        
         CCRenderState.draw();
+        if(meta > 15) {
+            LastEventBasedHaloRenderer.prepareRenderState();
+            LastEventBasedHaloRenderer.renderHalo(Tessellator.instance, box, meta-16,  new Translation(x, y, z));
+            LastEventBasedHaloRenderer.restoreRenderState();
+        }
         GL11.glPopMatrix();
     }
 
