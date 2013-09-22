@@ -7,6 +7,8 @@ import static mrtjp.projectred.transmission.IWirePart.RISING;
 
 import java.util.Arrays;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 import mrtjp.projectred.api.IBundledEmitter;
 import codechicken.multipart.TMultiPart;
 
@@ -160,5 +162,43 @@ public class BundledCableCommons
                 signal1[i] = signal2[i];
         
         return signal1;
+    }
+
+    public static byte[] copySignal(byte[] signal) {
+        return signal == null ? null : signal.clone();
+    }
+    
+    public static void saveSignal(NBTTagCompound tag, String key, byte[] signal) {
+        if(signal != null)
+            tag.setByteArray(key, signal);
+    }
+    
+    public static byte[] loadSignal(NBTTagCompound tag, String key) {
+        return tag.hasKey(key) ? tag.getByteArray(key) : null;
+    }
+    
+    public static int packDigital(byte[] signal) {
+        if(signal == null)
+            return 0;
+        
+        int packed = 0;
+        for(int i = 0; i < 16; i++)
+            if(signal[i] != 0)
+                packed|=1<<i;
+        
+        return packed;
+    }
+    
+    public static byte[] unpackDigital(byte[] signal, int packed) {
+        if(packed == 0)
+            return null;
+        
+        if(signal == null)
+            signal = new byte[16];
+        
+        for(int i = 0; i < 16; i++)
+            signal[i] = (byte) ((packed & 1<<i) == 0 ? 0 : 255);
+        
+        return signal;
     }
 }

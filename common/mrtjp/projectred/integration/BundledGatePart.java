@@ -35,7 +35,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
         else if((connMap & 0x100<<r) != 0)
             return calculateBundledInternalSignal(r);
         
-        return new byte[16];
+        return null;
     }
     
     public byte[] calculateBundledCornerSignal(int r) {
@@ -46,7 +46,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
         if (t != null)
             return getBundledPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side()^1));
         
-        return new byte[16];
+        return null;
     }
     
     public byte[] calculateBundledStraightSignal(int r) {
@@ -59,7 +59,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
         else if(t instanceof TileMultipart)
             return getBundledPartSignal(((TileMultipart)t).partMap(side()), (r+2)%4);
 
-        return new byte[16];
+        return null;
     }
 
     public byte[] calculateBundledInternalSignal(int r) {
@@ -73,7 +73,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
         if (part instanceof IBundledEmitter)
             return ((IBundledEmitter) part).getBundledSignal(r);
 
-        return new byte[16];
+        return null;
     }
     @Override
     public void load(NBTTagCompound tag) {
@@ -118,7 +118,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
 
     @Override
     public byte[] getBundledSignal(int r) {
-        return getLogic().getBundledOutput(this, r);
+        return getLogic().getBundledOutput(this, toInternal(r));
     }
 
 }
