@@ -1,9 +1,15 @@
 v4.0.2
+- CHANGE: Ported to Minecraft 1.6.4
+- CHANGE: Lights render halos in inventory
 - FIX: Analog signal re-propagation
 - FIX: Illumar buttons dropping regular buttons
 - FIX: Lights are always off on world load
 - FIX: Container shift clicking
 - FIX: Gates dont alert wires upon being rotated/configured
+- FIX: State cell not saving correctly
+- FIX: Bus Transceiver propagation
+- FIX: Bus Transceiver lights rendering above the panel
+
 
 v4.0.1
 - FIX: alloy smelter crash

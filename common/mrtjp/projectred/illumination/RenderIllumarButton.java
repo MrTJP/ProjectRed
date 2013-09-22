@@ -1,6 +1,7 @@
 package mrtjp.projectred.illumination;
 
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraftforge.client.IItemRenderer;
@@ -14,12 +15,13 @@ import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Translation;
 
-public class IllumarButtonRenderer implements IItemRenderer {
+public class RenderIllumarButton implements IItemRenderer {
 
-    public static IllumarButtonRenderer instance = new IllumarButtonRenderer();
+    public static RenderIllumarButton instance = new RenderIllumarButton();
     
-    Icon icon;
-    
+    private static Cuboid6 invRenderBox = new Cuboid6(0.0, 0.375, 0.5 - 0.1875, 0.25, 0.625, 0.5 + 0.1875);
+    private static Cuboid6 invLightBox = invRenderBox.copy().expand(0.025D);
+
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
         return true;
@@ -32,28 +34,27 @@ public class IllumarButtonRenderer implements IItemRenderer {
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-        icon = ItemPartIllumarButton.icons[item.getItemDamage()];
         switch (type) {
         case ENTITY:
-            renderInventory(-.05f, 0, -.1f, .5f);
+            renderInventory(item.getItemDamage(), -.05f, 0, -.1f, .5f);
             return;
         case EQUIPPED:
-            renderInventory(.2f, 0f, 0f, 1f);
+            renderInventory(item.getItemDamage(), .2f, 0f, 0f, 1f);
             return;
         case EQUIPPED_FIRST_PERSON:
-            renderInventory(.2f, 0f, 0f, 1f);
+            renderInventory(item.getItemDamage(), .2f, 0f, 0f, 1f);
             return;
         case INVENTORY:
-            renderInventory(.25f, 0, 0, 1f);
+            renderInventory(item.getItemDamage(), .25f, 0, 0, 1f);
             return;
         default:
             return;
         }
     }
 
-    private void renderInventory(float x, float y, float z, float scale) {
-        RenderBlocks r = new RenderBlocks();
-        Cuboid6 box = new Cuboid6(0.0, 0.375, 0.5 - 0.1875, 0.25, 0.625, 0.5 + 0.1875);
+    private void renderInventory(int color, float x, float y, float z, float scale) {
+        Icon icon = ItemPartIllumarButton.icons[color];
+
         GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
         GL11.glScalef(scale, scale, scale);
@@ -63,9 +64,11 @@ public class IllumarButtonRenderer implements IItemRenderer {
         CCRenderState.useNormals(true);
         CCRenderState.pullLightmap();
         CCRenderState.startDrawing(7);
-        RenderUtils.renderBlock(box, 0, new Translation(x, y, z), new IconTransformation(icon), null);
+        RenderUtils.renderBlock(invRenderBox, 0, new Translation(x, y, z), new IconTransformation(icon), null);
         CCRenderState.draw();
-        
+        RenderHalo.prepareRenderState();
+        RenderHalo.renderHalo(Tessellator.instance, invLightBox, color,  new Translation(x, y, z));
+        RenderHalo.restoreRenderState();
         GL11.glPopMatrix();
 
     }

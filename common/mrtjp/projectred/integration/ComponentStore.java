@@ -774,11 +774,12 @@ public class ComponentStore
                 CCModel m = CCModel.quadModel(4);
                 int x = i%4;
                 int z = i/4;
-                m.verts[0] = new Vertex5(x, 0.32, z+1, x, z);
-                m.verts[1] = new Vertex5(x+1, 0.32, z+1, x+1, z);
-                m.verts[2] = new Vertex5(x+1, 0.32, z, x+1, z+1);
-                m.verts[3] = new Vertex5(x, 0.32, z, x, z+1);
-                m.apply(new Scale(1/16D, 1, 1/16D).with(new Translation(-2/16D, 0, -2/16D)));
+                double y = 10/32D+0.00001D;
+                m.verts[0] = new Vertex5(x, y, z+1, x, z);
+                m.verts[1] = new Vertex5(x+1, y, z+1, x+1, z);
+                m.verts[2] = new Vertex5(x+1, y, z, x+1, z+1);
+                m.verts[3] = new Vertex5(x, y, z, x, z+1);
+                m.apply(new Scale(1/16D, 1, 1/16D).with(new Translation(-2/16D, 7/16D, -2/16D)));
                 m.apply(new UVTranslation(22, 0));
                 m.apply(new UVScale(1/32D));
                 m.computeNormals();

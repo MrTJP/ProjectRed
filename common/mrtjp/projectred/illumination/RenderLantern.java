@@ -4,6 +4,7 @@ import java.util.Map;
 
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.InvertX;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
@@ -61,7 +62,7 @@ public class RenderLantern implements IItemRenderer {
         CCRenderState.useModelColours(true);
         renderLanternBulb(icon, l.x(), l.y(), l.z(), l.side);
         if (l.isOn())
-            LastEventBasedHaloRenderer.addLight(l.x(), l.y(), l.z(), l.type, 6, box);
+            RenderHalo.addLight(l.x(), l.y(), l.z(), l.type, 6, box);
     }
     
     public void renderBreaking(int x, int y, int z, Icon icon) {
@@ -94,27 +95,29 @@ public class RenderLantern implements IItemRenderer {
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-        Icon icon = item.getItem() == ProjectRedIllumination.itemPartInvLantern ? onIcons[item.getItemDamage()] : offIcons[item.getItemDamage()];
+        boolean on = item.getItem() == ProjectRedIllumination.itemPartInvLantern;
+        int color = item.getItemDamage();
         switch (type) {
         case ENTITY:
-            renderInventory(icon, -0.25D, 0D, -0.25D, 1D);
+            renderInventory(on, color, -0.25D, 0D, -0.25D, 1D);
             return;
         case EQUIPPED:
-            renderInventory(icon, -0.15D, -0.15D, -0.15D, 2D);
+            renderInventory(on, color, -0.15D, -0.15D, -0.15D, 2D);
             return;
         case EQUIPPED_FIRST_PERSON:
-            renderInventory(icon, -0.15D, -0.15D, -0.15D, 2D);
+            renderInventory(on, color, -0.15D, -0.15D, -0.15D, 2D);
             return;
         case INVENTORY:
-            renderInventory(icon, 0D, -0.05D, 0D, 2D);
+            renderInventory(on, color, 0D, -0.05D, 0D, 2D);
             return;
         default:
             return;
         }        
     }
     
-    public void renderInventory(Icon icon, double x, double y, double z, double scale) {
-        GL11.glPushMatrix();
+    public void renderInventory(boolean on, int color, double x, double y, double z, double scale) {
+        Icon icon = on ? onIcons[color] : offIcons[color];
+    	GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
         GL11.glScaled(scale, scale, scale);
         CCRenderState.reset();
@@ -124,6 +127,11 @@ public class RenderLantern implements IItemRenderer {
         renderPart(icon, models.get("bulb"), x, y, z, 2);
         renderPart(icon, models.get("goldringtop"), x, y, z, 2);
         CCRenderState.draw();
+        if(on) {
+            RenderHalo.prepareRenderState();
+            RenderHalo.renderHalo(Tessellator.instance, box, color,  new Translation(x, y, z));
+            RenderHalo.restoreRenderState();
+        }
         GL11.glPopMatrix();
     }
     

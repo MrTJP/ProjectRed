@@ -4,6 +4,7 @@ import java.util.Map;
 
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.InvertX;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
@@ -49,7 +50,7 @@ public class RenderCageLamp implements IItemRenderer {
         CCRenderState.useModelColours(true);
         renderPart(icon, base[l.side], l.x(), l.y(), l.z());
         if (l.isOn())
-            LastEventBasedHaloRenderer.addLight(l.x(), l.y(), l.z(), l.type, l.side, l.lightBounds[l.side]);
+            RenderHalo.addLight(l.x(), l.y(), l.z(), l.type, l.side, l.lightBounds[l.side]);
     }
 
     public void renderBreaking(CageLampPart c, Icon icon) {
@@ -68,27 +69,31 @@ public class RenderCageLamp implements IItemRenderer {
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-        Icon icon = item.getItem() == ProjectRedIllumination.itemPartInvCageLamp ? RenderLantern.onIcons[item.getItemDamage()] : RenderLantern.offIcons[item.getItemDamage()];
+        int color = item.getItemDamage();
+        boolean on = item.getItem() == ProjectRedIllumination.itemPartInvCageLamp;
+        
         switch (type) {
         case ENTITY:
-            renderInventory(icon, -0.1D, 0D, -0.1D, 0.75D);
+            renderInventory(on, color, -0.1D, 0D, -0.1D, 0.75D);
             return;
         case EQUIPPED:
-            renderInventory(icon, -0.15D, -0.15D, -0.15D, 1.5D);
+            renderInventory(on, color, -0.15D, -0.15D, -0.15D, 1.5D);
             return;
         case EQUIPPED_FIRST_PERSON:
-            renderInventory(icon, -0.15D, -0.15D, -0.15D, 1.5D);
+            renderInventory(on, color, -0.15D, -0.15D, -0.15D, 1.5D);
             return;
         case INVENTORY:
-            renderInventory(icon, 0D, -0.05D, 0D, 1D);
+            renderInventory(on, color, 0D, -0.05D, 0D, 1D);
             return;
         default:
             return;
         }        
     }
     
-    public void renderInventory(Icon icon, double x, double y, double z, double scale) {
-        GL11.glPushMatrix();
+    public void renderInventory(boolean on, int color, double x, double y, double z, double scale) {
+        Icon icon = on ? RenderLantern.onIcons[color] : RenderLantern.offIcons[color];
+
+    	GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
         GL11.glScaled(scale, scale, scale);
         CCRenderState.reset();
@@ -97,6 +102,11 @@ public class RenderCageLamp implements IItemRenderer {
         CCRenderState.startDrawing(7);
         renderPart(icon, base[0], x, y, z);
         CCRenderState.draw();
+        if(on) {
+            RenderHalo.prepareRenderState();
+            RenderHalo.renderHalo(Tessellator.instance, CageLampPart.lightBounds[0], color,  new Translation(x, y, z));
+            RenderHalo.restoreRenderState();
+        }
         GL11.glPopMatrix();
     }
 
