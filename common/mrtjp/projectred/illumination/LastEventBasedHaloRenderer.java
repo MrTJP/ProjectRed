@@ -18,6 +18,7 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.RenderUtils;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
@@ -70,18 +71,11 @@ public class LastEventBasedHaloRenderer {
     public void onRenderWorldLast(RenderWorldLastEvent event) {
         Tessellator tess = Tessellator.instance;
         WorldClient w = event.context.theWorld;
-        
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glDepthMask(false);
+
         GL11.glPushMatrix();
-        
         RenderUtils.translateToWorldCoords(event.context.mc.renderViewEntity, event.partialTicks);
-        CCRenderState.reset();
-        CCRenderState.startDrawing(7);
+        prepareRenderState();
+        
         for (Iterator<LightCache> it = renderQueue.iterator(); it.hasNext();) {
             LightCache cc = it.next();
             if (shouldRemove(w, cc))
@@ -89,9 +83,24 @@ public class LastEventBasedHaloRenderer {
             else
                 renderHalo(tess, w, cc);
         }
-        CCRenderState.draw();
-
+        
+        restoreRenderState();
         GL11.glPopMatrix();
+    }
+    
+    public static void prepareRenderState() {
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_CULL_FACE);
+        GL11.glDepthMask(false);
+        CCRenderState.reset();
+        CCRenderState.startDrawing(7);
+    }
+    
+    public static void restoreRenderState() {
+        CCRenderState.draw();
         GL11.glDepthMask(true);
         GL11.glColor3f(1, 1, 1);
         GL11.glEnable(GL11.GL_CULL_FACE);
@@ -103,8 +112,12 @@ public class LastEventBasedHaloRenderer {
 
     private static void renderHalo(Tessellator tess, World world, LightCache cc) {
         CCRenderState.setBrightness(world, cc.pos.x, cc.pos.y, cc.pos.z);
-        tess.setColorRGBA_I(PRColors.VALID_COLORS[cc.color].rgb, 128);
-        RenderUtils.renderBlock(cc.cube, 0, cc.t, null, null);
+        renderHalo(tess, cc.cube, cc.color, cc.t);
+    }
+    
+    public static void renderHalo(Tessellator tess, Cuboid6 cuboid, int colour, Transformation t) {
+        tess.setColorRGBA_I(PRColors.VALID_COLORS[colour].rgb, 128);
+        RenderUtils.renderBlock(cuboid, 0, t, null, null);
     }
 
     private static boolean shouldRemove(World w, LightCache cc) {
