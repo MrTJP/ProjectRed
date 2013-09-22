@@ -1132,14 +1132,14 @@ public class RenderGate
             int state = gate.state();
             if(reflect)
                 state = GatePart.flipMaskZ(state);
-            
-            wires[0].on = (gate.state()&2) != 0;
-            wires[1].on = (gate.state()&8) != 0;
+                
+            wires[0].on = (state&2) != 0;
+            wires[1].on = (state&8) != 0;
             
             BusTransceiver logic = (BusTransceiver) gate.getLogic();
             int packed = logic.packClientData();
-            panels[0].signal = packed & 0xFFFF;
-            panels[1].signal = packed >>> 16;
+            panels[0].signal = packed >>> 16;
+            panels[1].signal = packed & 0xFFFF;
         }
     }
     

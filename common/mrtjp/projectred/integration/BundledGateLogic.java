@@ -2,10 +2,11 @@ package mrtjp.projectred.integration;
 
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
-import mrtjp.projectred.transmission.BundledCableCommons;
 import net.minecraft.nbt.NBTTagCompound;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+
+import static mrtjp.projectred.transmission.BundledCableCommons.*;
 
 public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart> {
 
@@ -52,7 +53,7 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
     }
 
     public byte[] getBundledOutput(BundledGatePart gate, int r) {
-        return new byte[16];
+        return null;
     }
     
     @Override
@@ -80,21 +81,24 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
 
     public static class BusTransceiver extends BundledGateLogic
     {
-        public byte[] input0 = new byte[16];
-        public byte[] input2 = new byte[16];
-                
+        public byte[] input0, output0, input2, output2;
+        
         public BusTransceiver(BundledGatePart gate) {
             super(gate);
         }
         
         public void save(NBTTagCompound tag) {
-            tag.setByteArray("in0", input0);
-            tag.setByteArray("in2", input2);
+            saveSignal(tag, "in0", input0);
+            saveSignal(tag, "out0", output0);
+            saveSignal(tag, "in2", input2);
+            saveSignal(tag, "out2", output2);
         }
         
         public void load(NBTTagCompound tag) {
-            input0 = tag.getByteArray("in0");
-            input2 = tag.getByteArray("in2");
+            input0 = loadSignal(tag, "in0");
+            input2 = loadSignal(tag, "in2");
+            output0 = loadSignal(tag, "out0");
+            output2 = loadSignal(tag, "out2");
         }
         
         @Override
@@ -117,25 +121,12 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         }
         
         public int packClientData() {
-            int packed = 0;
-            for (int i = 0; i < 16; i++) {
-                if (input0[i] != 0)
-                    packed |= 1<<i;
-                if (input2[i] != 0)
-                    packed |= 1<<(i+16);
-            }
-            return packed;
+            return packDigital(output0)|packDigital(output2)<<16;
         }
         
         public void unpackClientData(int packed) {
-            input0 = new byte[16];
-            input2 = new byte[16];
-            for (int i = 0; i < 16; i++) {
-                if ((packed & 1<<i) != 0)
-                    input0[i] = (byte) 255;
-                if ((packed & 1<<(i+16)) != 0)
-                    input2[i] = (byte) 255;
-            }
+            output0 = unpackDigital(output0, packed&0xFFFF);
+            output2 = unpackDigital(output2, packed>>>16);
         }
         
         public int bundledInputMask(int shape) {
@@ -155,47 +146,60 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         }
 
         public byte[] getBundledOutput(BundledGatePart gate, int r) {
-            return r == gate.rotation() ? input0 : input2;
+            return r == 0 ? output0 : output2;
         }
         
         public byte[] getBundledInput(int input, int r) {
-            byte[] signal = gate.getBundledInput(r);
-            signal = signal == null ? new byte[16] : signal.clone();
-            
-            if((input & 1<<(r+1)%4) != 0)
-                signal = BundledCableCommons.raiseSignal(signal, getBundledOutput(gate, r));
-            
-            return signal;
+            return raiseSignal(copySignal(gate.getBundledInput(r)), getBundledOutput(gate, r));//or'd with our output
         }
         
         @Override
         public void onChange(BundledGatePart gate) {
             int oldInput = gate.state() & 0xF;
             int newInput = getInput(gate, 2|8);
-            if (gate.shape() == 1)
-                newInput = GatePart.flipMaskZ(newInput);
-            
             if(oldInput != newInput) {
                 gate.setState(gate.state() & 0xF0|newInput);
                 gate.onInputChange();
-                gate.scheduleTick(2);
             }
 
-            byte[] newInput0 = (newInput&8) != 0 ? getBundledInput(newInput, 0) : new byte[16];
-            if (!BundledCableCommons.signalsEqual(input0, newInput0)) {
+            byte[] newInput0 = getBundledInput(newInput, 0);
+            if (!signalsEqual(input0, newInput0)) {
                 input0 = newInput0;
-                gate.scheduleTick(2);
+                gate.onInputChange();
             }
             
-            byte[] newInput2 = (newInput&2) != 0 ? getBundledInput(newInput, 2) : new byte[16];
-            if (!BundledCableCommons.signalsEqual(input2, newInput2)) {
+            byte[] newInput2 = getBundledInput(newInput, 2);
+            if (!signalsEqual(input2, newInput2)) {
                 input2 = newInput2;
-                gate.scheduleTick(2);
+                gate.onInputChange();
             }
+
+            if (gate.shape() == 1)//flip for output calc
+                newInput = GatePart.flipMaskZ(newInput);
+            
+            if(!signalsEqual(output0, calcBundledOutput(0)) ||
+                    !signalsEqual(output2, calcBundledOutput(2)))
+                gate.scheduleTick(2);
+        }
+        
+        public byte[] calcBundledOutput(int r) {
+            int input = gate.state() & 0xF;
+            if (gate.shape() == 1)
+                input = GatePart.flipMaskZ(input);
+            
+            if(r == 0)
+                return (input&2) != 0 ? input2 : null;
+            if(r == 2)
+                return (input&8) != 0 ? input0 : null;
+                
+            return null;
         }
         
         @Override
         public void scheduledTick(BundledGatePart gate) {
+            output0 = calcBundledOutput(0);
+            output2 = calcBundledOutput(2);
+            
             gate.onOutputChange(1|4);
             sendClientUpdate();
         }
