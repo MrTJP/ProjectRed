@@ -20,7 +20,7 @@ public class IlluminationClientProxy extends IlluminationProxy {
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartLantern.itemID, RenderLantern.instance);
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartInvLantern.itemID, RenderLantern.instance);
 
-        MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartIllumarButton.itemID, IllumarButtonRenderer.instance);
+        MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartIllumarButton.itemID, RenderIllumarButton.instance);
 
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartCageLamp.itemID, RenderCageLamp.instance);
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartInvCageLamp.itemID, RenderCageLamp.instance);
@@ -29,6 +29,6 @@ public class IlluminationClientProxy extends IlluminationProxy {
         RenderingRegistry.registerBlockHandler(LampISBRH.instance);
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.blockLamp.blockID, LampISBRH.instance);
         
-        MinecraftForge.EVENT_BUS.register(LastEventBasedHaloRenderer.instance);
+        MinecraftForge.EVENT_BUS.register(RenderHalo.instance);
     }
 }

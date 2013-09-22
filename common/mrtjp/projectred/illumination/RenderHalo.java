@@ -26,8 +26,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LastEventBasedHaloRenderer {
-    public static LastEventBasedHaloRenderer instance = new LastEventBasedHaloRenderer();
+public class RenderHalo {
+    public static RenderHalo instance = new RenderHalo();
 
     private static Set<LightCache> renderQueue = new HashSet<LightCache>();
 

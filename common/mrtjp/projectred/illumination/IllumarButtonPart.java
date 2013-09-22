@@ -100,7 +100,7 @@ public class IllumarButtonPart extends ButtonPart implements ILight {
             r.renderBlockUsingTexture(getBlock(), x(), y(), z(), ItemPartIllumarButton.icons[colorMeta]);
             if (pressed()) {
                 Cuboid6 box = getBounds().expand(0.025D);
-                LastEventBasedHaloRenderer.addLight(x(), y(), z(), colorMeta, getFace(), box);
+                RenderHalo.addLight(x(), y(), z(), colorMeta, getFace(), box);
             }
         }
     }

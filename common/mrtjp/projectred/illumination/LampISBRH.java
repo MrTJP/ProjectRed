@@ -36,7 +36,6 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
         if (l == null)
             return false;
         
-        int color = l.color;
         TextureUtils.bindAtlas(0);
         
         if (l.isOn())
@@ -45,7 +44,7 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
         r.renderStandardBlock(block, x, y, z);
         
         if (l.isOn())
-            LastEventBasedHaloRenderer.addLight(x, y, z, color, 6, box);
+            RenderHalo.addLight(x, y, z, l.color, 6, box);
         return true;
     }
 
@@ -73,7 +72,7 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         switch (type) {
         case ENTITY:
-            renderInventory(item.getItemDamage(), -.15f, 0f, -.15f, 1f);
+            renderInventory(item.getItemDamage(), -0.15f, 0f, -0.15f, 1f);
             return;
         case EQUIPPED:
             renderInventory(item.getItemDamage(), 0f, 0f, 0f, 1f);
@@ -82,7 +81,7 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
             renderInventory(item.getItemDamage(), 0f, 0f, 0f, 1f);
             return;
         case INVENTORY:
-            renderInventory(item.getItemDamage(), 0f, -0.05f, 0f, 1f);
+            renderInventory(item.getItemDamage(), 0f, -0.05f, 0f, 0.95f);
             return;
         default:
             return;
@@ -102,9 +101,9 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
         RenderUtils.renderBlock(Cuboid6.full, 0, new Translation(x, y, z), new IconTransformation(icon), null);
         CCRenderState.draw();
         if(meta > 15) {
-            LastEventBasedHaloRenderer.prepareRenderState();
-            LastEventBasedHaloRenderer.renderHalo(Tessellator.instance, box, meta-16,  new Translation(x, y, z));
-            LastEventBasedHaloRenderer.restoreRenderState();
+            RenderHalo.prepareRenderState();
+            RenderHalo.renderHalo(Tessellator.instance, box, meta-16,  new Translation(x, y, z));
+            RenderHalo.restoreRenderState();
         }
         GL11.glPopMatrix();
     }
