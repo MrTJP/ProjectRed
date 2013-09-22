@@ -11,7 +11,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 
-@Mod(modid = "ProjRed|Compatability", name = "ProjectRed-Compatability", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.2]", dependencies = 
+@Mod(modid = "ProjRed|Compatability", name = "ProjectRed-Compatability", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = 
         "required-after:ProjRed|Core;" +
         "after:TConstruct"
 )

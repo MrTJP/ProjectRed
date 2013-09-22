@@ -32,7 +32,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
  * @author MrTJP
  * 
  */
-@Mod(modid = "ProjRed|Core", name = "ProjectRed-Core", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.2]",
+@Mod(modid = "ProjRed|Core", name = "ProjectRed-Core", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]",
 dependencies = 
         "required-after:Forge@FORGE_VERSION@;" +
         "required-after:ForgeMultipart;" +
