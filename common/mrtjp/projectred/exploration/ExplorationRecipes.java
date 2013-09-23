@@ -223,7 +223,17 @@ public class ExplorationRecipes {
         GameRegistry.addShapelessRecipe(EnumPart.SAPPHIRE.getItemStack(9), EnumSpecialStone.SAPPHIREBLOCK.getItemStack());
         /** Peridot **/
         GameRegistry.addShapelessRecipe(EnumPart.PERIDOT.getItemStack(9), EnumSpecialStone.PERIDOTBLOCK.getItemStack());
+    
+        /** Walls **/
+        for (EnumSpecialStone s : EnumSpecialStone.VALID_STONE)
+            addWallRecipe(new ItemStack(ProjectRedExploration.blockStoneWalls, 6, s.meta), s.getItemStack());
     }
 
-
+    private static void addWallRecipe(ItemStack o, ItemStack m) {
+        GameRegistry.addRecipe(o, 
+                "mmm",
+                "mmm",
+                'm', m
+        );
+    }
 }

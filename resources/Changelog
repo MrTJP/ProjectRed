@@ -1,6 +1,7 @@
 v4.0.2
 - CHANGE: Ported to Minecraft 1.6.4
 - CHANGE: Lights render halos in inventory
+- CHANGE: Pointer recipe
 - FIX: Analog signal re-propagation
 - FIX: Illumar buttons dropping regular buttons
 - FIX: Lights are always off on world load

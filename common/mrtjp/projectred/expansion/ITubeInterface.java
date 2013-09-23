@@ -20,7 +20,7 @@ public interface ITubeInterface extends ITubeConnectable {
      * destination. (Something like a valve / tube, where items aren't actually
      * stored here, but can pass through here.)
      */
-    public boolean canAcceptItem(TubeItem item, int fromAbsDir);
+    public boolean canAcceptItem(TubeItem item, int onSide);
 
     /**
      * True if item can come and be stored here as a destination. When routing
@@ -28,16 +28,16 @@ public interface ITubeInterface extends ITubeConnectable {
      * route, it will be taken.
      * 
      * @param item
-     * @param fromAbsDir
+     * @param onSide
      * @return
      */
-    public boolean isDestinationForItem(TubeItem item, int fromAbsDir);
+    public boolean isDestinationForItem(TubeItem item, int onSide);
     
     /**
      * Add the item to the tube flow, can be from another pipe or a machine.
      * @param item
-     * @param fromAbsDir
+     * @param onSide
      * @return If the item was added.
      */
-    public boolean addItem(TubeItem item, int fromAbsDir);
+    public boolean addItem(TubeItem item, int onSide);
 }
