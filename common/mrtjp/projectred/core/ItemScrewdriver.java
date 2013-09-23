@@ -8,8 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mrtjp.projectred.api.IScrewdriver
 
-public class ItemScrewdriver extends Item {
+public class ItemScrewdriver extends Item implements IScrewdriver{
     public ItemScrewdriver(int id) {
         super(id);
         setUnlocalizedName("projectred.core.screwdriver");
