@@ -119,6 +119,14 @@ item.projectred.exploration.sickleruby.name=Ruby Sickle
 item.projectred.exploration.sicklesapphire.name=Sapphire Sickle
 item.projectred.exploration.sickleperidot.name=Peridot Sickle
 item.projectred.exploration.sicklediamond.name=Diamond Sickle
+tile.projectred.exploration.stone.stonemarblewall.name=Marble Wall
+tile.projectred.exploration.stone.brickmarblewall.name=Marble Brick Wall
+tile.projectred.exploration.stone.cobblebasaltwall.name=Basalt Cobblestone Wall
+tile.projectred.exploration.stone.stonebasaltwall.name=Basalt Wall
+tile.projectred.exploration.stone.brickbasaltwall.name=Basalt Brick Wall
+tile.projectred.exploration.stone.storagerubywall.name=Ruby Wall
+tile.projectred.exploration.stone.storagesapphirewall.name=Sapphire Wall
+tile.projectred.exploration.stone.storageperidotwall.name=Peridot Wall
 
 
 

@@ -38,6 +38,7 @@ public class Configurator {
     public static Property block_lampID;    
     public static Property block_redstoneliquidID;
     public static Property block_redconductiveliquidID;
+    public static Property block_stoneWallsID;
 
     /** Item IDs **/
     public static Property item_screwdriverID;
@@ -124,6 +125,7 @@ public class Configurator {
         block_lampID = localConfig.getBlock("block_lampID", 2132);
         block_redstoneliquidID = localConfig.getBlock("block_redstoneliquidID", 2133);
         block_redconductiveliquidID = localConfig.getBlock("block_redconductiveliquidID", 2134);
+        block_stoneWallsID = localConfig.getBlock("block_stoneWallsID", 2135);
 
         item_wireDebuggerID = localConfig.getItem("item_wireDebuggerID", 9023);
         item_screwdriverID = localConfig.getItem("item_screwdriverID", 9024);

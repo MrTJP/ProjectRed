@@ -4,6 +4,7 @@ import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.exploration.BlockOre;
 import mrtjp.projectred.exploration.BlockSpecialStone;
+import mrtjp.projectred.exploration.BlockSpecialStoneWall;
 import mrtjp.projectred.exploration.ExplorationGuiHandler;
 import mrtjp.projectred.exploration.ItemBackpack;
 import mrtjp.projectred.exploration.ItemGemAxe;
@@ -35,7 +36,8 @@ public class ProjectRedExploration {
     /** Blocks **/
     public static BlockOre blockOres;
     public static BlockSpecialStone blockStones;
-
+    public static BlockSpecialStoneWall blockStoneWalls;
+    
     /** Items **/
     public static ItemWoolGin itemWoolGin;
     public static ItemBackpack itemBackpack;

@@ -3,7 +3,7 @@ package mrtjp.projectred;
 import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-import mrtjp.projectred.expansion.ItemPartPressurizedTube;
+import mrtjp.projectred.expansion.ItemPartTube;
 import mrtjp.projectred.expansion.ItemVAWT;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -24,7 +24,7 @@ public class ProjectRedExpansion {
     public static ItemVAWT itemVAWT;
 
     /** Multipart items **/
-    public static ItemPartPressurizedTube itemPartTube;
+    public static ItemPartTube itemPartTube;
 
     @Instance("ProjRed|Expansion")
     public static ProjectRedExpansion instance;

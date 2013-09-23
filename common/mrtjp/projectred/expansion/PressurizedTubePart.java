@@ -342,12 +342,8 @@ public class PressurizedTubePart extends TMultiPart implements ITubeInterface, T
             }
             if (t.progress > 100) {
                 BlockCoord bc = new BlockCoord(x(), y(), z()).offset(t.direction);
-                TileMultipart tile = BasicUtils.getMultipartTile(world(), bc);
-                if (tile != null) {
-                    TMultiPart tp = tile.partMap(6);
-                    if (tp instanceof ITubeInterface && ((ITubeInterface)tp).addItem(t, t.direction)) {
-                        removeQueue.add(t);
-                    }
+                if (BasicTubeUtils.passTubeItemTo(world(), bc, t)) {
+                    removeQueue.add(t);
                 }
             }
         }

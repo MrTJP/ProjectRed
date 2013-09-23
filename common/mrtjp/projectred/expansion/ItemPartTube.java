@@ -17,9 +17,9 @@ import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemPartPressurizedTube extends JItemMultiPart {
+public class ItemPartTube extends JItemMultiPart {
 
-    public ItemPartPressurizedTube(int id) {
+    public ItemPartTube(int id) {
         super(id);
         setHasSubtypes(true);
         setCreativeTab(ProjectRedExpansion.tabExpansion);

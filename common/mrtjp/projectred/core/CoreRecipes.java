@@ -101,8 +101,8 @@ public class CoreRecipes {
                 "m",
                 "c",
                 'b', Block.stone,
-                'm', EnumPart.MOTOR.getItemStack(),
-                'c', EnumPart.CATHODE.getItemStack()
+                'm', Block.torchRedstoneActive,
+                'c', EnumPart.PLATE.getItemStack()
         );
 
         /** Silicon Chip **/

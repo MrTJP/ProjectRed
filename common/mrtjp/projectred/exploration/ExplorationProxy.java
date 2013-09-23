@@ -1,43 +1,6 @@
 package mrtjp.projectred.exploration;
 
-import static mrtjp.projectred.ProjectRedExploration.blockOres;
-import static mrtjp.projectred.ProjectRedExploration.blockStones;
-import static mrtjp.projectred.ProjectRedExploration.itemBackpack;
-import static mrtjp.projectred.ProjectRedExploration.itemDiamondSaw;
-import static mrtjp.projectred.ProjectRedExploration.itemDiamondSickle;
-import static mrtjp.projectred.ProjectRedExploration.itemGoldSaw;
-import static mrtjp.projectred.ProjectRedExploration.itemGoldSickle;
-import static mrtjp.projectred.ProjectRedExploration.itemIronSaw;
-import static mrtjp.projectred.ProjectRedExploration.itemIronSickle;
-import static mrtjp.projectred.ProjectRedExploration.itemPeridotAxe;
-import static mrtjp.projectred.ProjectRedExploration.itemPeridotHoe;
-import static mrtjp.projectred.ProjectRedExploration.itemPeridotPickaxe;
-import static mrtjp.projectred.ProjectRedExploration.itemPeridotSaw;
-import static mrtjp.projectred.ProjectRedExploration.itemPeridotShovel;
-import static mrtjp.projectred.ProjectRedExploration.itemPeridotSickle;
-import static mrtjp.projectred.ProjectRedExploration.itemPeridotSword;
-import static mrtjp.projectred.ProjectRedExploration.itemRubyAxe;
-import static mrtjp.projectred.ProjectRedExploration.itemRubyHoe;
-import static mrtjp.projectred.ProjectRedExploration.itemRubyPickaxe;
-import static mrtjp.projectred.ProjectRedExploration.itemRubySaw;
-import static mrtjp.projectred.ProjectRedExploration.itemRubyShovel;
-import static mrtjp.projectred.ProjectRedExploration.itemRubySickle;
-import static mrtjp.projectred.ProjectRedExploration.itemRubySword;
-import static mrtjp.projectred.ProjectRedExploration.itemSapphireAxe;
-import static mrtjp.projectred.ProjectRedExploration.itemSapphireHoe;
-import static mrtjp.projectred.ProjectRedExploration.itemSapphirePickaxe;
-import static mrtjp.projectred.ProjectRedExploration.itemSapphireSaw;
-import static mrtjp.projectred.ProjectRedExploration.itemSapphireShovel;
-import static mrtjp.projectred.ProjectRedExploration.itemSapphireSickle;
-import static mrtjp.projectred.ProjectRedExploration.itemSapphireSword;
-import static mrtjp.projectred.ProjectRedExploration.itemStoneSaw;
-import static mrtjp.projectred.ProjectRedExploration.itemStoneSickle;
-import static mrtjp.projectred.ProjectRedExploration.itemWoodSaw;
-import static mrtjp.projectred.ProjectRedExploration.itemWoodSickle;
-import static mrtjp.projectred.ProjectRedExploration.itemWoolGin;
-import static mrtjp.projectred.ProjectRedExploration.toolMaterialPeridot;
-import static mrtjp.projectred.ProjectRedExploration.toolMaterialRuby;
-import static mrtjp.projectred.ProjectRedExploration.toolMaterialSapphire;
+import static mrtjp.projectred.ProjectRedExploration.*;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
@@ -67,13 +30,15 @@ public class ExplorationProxy implements IProxy {
 
         blockOres = new BlockOre(Configurator.block_oresID.getInt());
         GameRegistry.registerBlock(blockOres, ItemBlockOre.class, "projectred.exploration.ore");
-        for (EnumOre o : EnumOre.VALID_ORES) {
+        for (EnumOre o : EnumOre.VALID_ORES)
             MinecraftForge.setBlockHarvestLevel(blockOres, "pickaxe", o.harvesLevel);
-        }
 
         blockStones = new BlockSpecialStone(Configurator.block_stonesID.getInt());
         GameRegistry.registerBlock(blockStones, ItemBlockSpecialStone.class, "projectred.exploration.stone");
 
+        blockStoneWalls = new BlockSpecialStoneWall(Configurator.block_stoneWallsID.getInt());
+        GameRegistry.registerBlock(blockStoneWalls, ItemBlockSpecialStoneWalls.class, "projectred.exploration.stonewalls");
+        
         if (Configurator.gen_SpreadingMoss.getBoolean(true)) {
             int mc = Block.cobblestoneMossy.blockID;
             Block.blocksList[mc] = null;
