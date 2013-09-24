@@ -119,6 +119,14 @@ item.projectred.exploration.sickleruby.name=红宝石镰刀
 item.projectred.exploration.sicklesapphire.name=蓝宝石镰刀
 item.projectred.exploration.sickleperidot.name=橄榄石镰刀
 item.projectred.exploration.sicklediamond.name=钻石镰刀
+tile.projectred.exploration.stone.stonemarblewall.name=大理石墙壁
+tile.projectred.exploration.stone.brickmarblewall.name=大理石砖墙
+tile.projectred.exploration.stone.cobblebasaltwall.name=玄武岩圆石墙壁
+tile.projectred.exploration.stone.stonebasaltwall.name=玄武岩墙壁
+tile.projectred.exploration.stone.brickbasaltwall.name=玄武岩砖墙
+tile.projectred.exploration.stone.storagerubywall.name=红宝石墙壁
+tile.projectred.exploration.stone.storagesapphirewall.name=蓝宝石墙壁
+tile.projectred.exploration.stone.storageperidotwall.name=橄榄石墙壁
 
 #照明
 itemGroup.ill=红石计划:照明
