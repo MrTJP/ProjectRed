@@ -37,6 +37,8 @@ public class BasicTubeUtils {
         ITubeInterface itube = getTubeInterface(w, bc);
         if (itube != null)
             return itube.addItem(item, item.direction^1);
+        if (canAddToInventory(w, item.item, bc, item.direction^1))
+            return addToInventory(w, item.item, bc, item.direction^1);
         return false;
     }
         
