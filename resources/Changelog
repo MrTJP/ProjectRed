@@ -12,6 +12,7 @@ v4.0.2
 - FIX: State cell not saving correctly
 - FIX: Bus Transceiver propagation
 - FIX: Bus Transceiver lights rendering above the panel
+- *FIX: ProjectRed not loading
 
 v4.0.1
 - FIX: alloy smelter crash

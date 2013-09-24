@@ -109,7 +109,7 @@
 	<target name="download-forge" unless="forge-downloaded">
 		<get src="http://files.minecraftforge.net/${forge.name}" dest="${download.dir}" usetimestamp="true" />
 	</target>
-	
+
 	<target name="download-forgeuni" unless="forgeuni-downloaded">
 		<get src="http://files.minecraftforge.net/${forgeuni.name}" dest="${download.dir}" usetimestamp="true" />
 	</target>
@@ -244,15 +244,19 @@
 
 		<echo message="Installing Tinkers Construct" />
 		<java jar="${mcp.dir}/${ccobf.name}" fork="true">
-		 <arg value="-d" />
-		 <arg value="-l" /><arg value="${download.dir}/${forgeuni.name},${mcp.dir}/jars/libraries,${mcp.dir}/temp/minecraft_rg.jar" />
-         <arg value="-i" /><arg value="${download.dir}/${tcons.name}" />
-         <arg value="-o" /><arg value="${mcp.dir}/lib" />
-		 <arg value="-m" /><arg value="${mcp.dir}/conf" />
-		 <arg value="--noclean" />
-		 <arg value="-q" />
+			<arg value="-d" />
+			<arg value="-l" />
+			<arg value="${download.dir}/${forgeuni.name},${mcp.dir}/jars/libraries,${mcp.dir}/temp/minecraft_rg.jar" />
+			<arg value="-i" />
+			<arg value="${download.dir}/${tcons.name}" />
+			<arg value="-o" />
+			<arg value="${mcp.dir}/lib" />
+			<arg value="-m" />
+			<arg value="${mcp.dir}/conf" />
+			<arg value="--noclean" />
+			<arg value="-q" />
 		</java>
-		
+
 		<echo message="Updating build.dependencies" />
 		<propertyfile file="${build.dependencies.file}">
 			<entry key="tcons" value="${tcons.version}" />
@@ -302,8 +306,9 @@
 	<target name="reobfuscate">
 		<echo message="Reobfuscating" />
 		<java jar="${mcp.dir}/${ccobf.name}" fork="true" failonerror="true" resultproperty="reobfuscate.code">
-         <arg value="--mcp" />
-		 <arg value="-q" />
+			<arg value="--mcp" />
+			<arg value="${mcp.dir}" />
+			<arg value="-q" />
 		</java>
 
 		<echo message="Copying DepLoader.class from CCC" />
@@ -312,13 +317,13 @@
 				<include name="codechicken/core/launch/DepLoader*.class" />
 			</patternset>
 		</unzip>
-		
+
 		<echo message="Copying Resources" />
 		<delete dir="${mcp.dir}/reobf/resources" />
 		<copy todir="${mcp.dir}/reobf/resources">
 			<fileset dir="${src.dir}/resources" />
 		</copy>
-		
+
 		<!-- Replace Tokens-->
 		<replace dir="${mcp.dir}/reobf/resources" token="@VERSION@" value="${mod.version}" />
 		<replace dir="${mcp.dir}/reobf/resources" token="@BUILD_NUMBER@" value="${mod.build}" />
