@@ -132,6 +132,7 @@ public class BlockBasics extends BlockContainer {
         return 0;
     }
     
+    @Override
     public int getRenderType() {
         return CoreClientProxy.basicRenderID;
     }

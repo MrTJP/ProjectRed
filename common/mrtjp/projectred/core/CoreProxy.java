@@ -11,6 +11,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CoreProxy implements IProxy {
     
+    public static int basicRenderID = 0;
+
     @Override
     public void preinit() {
     }
