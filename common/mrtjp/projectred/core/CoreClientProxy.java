@@ -8,8 +8,6 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class CoreClientProxy extends CoreProxy {
 
-	public static int basicRenderID = 0;
-
 	@Override
 	public void init() {
 		super.init();

@@ -1,7 +1,9 @@
 v4.0.2
+- ADDED: Walls for world gen blocks
 - CHANGE: Ported to Minecraft 1.6.4
 - CHANGE: Lights render halos in inventory
 - CHANGE: Pointer recipe
+- FIX: Server crash
 - FIX: Analog signal re-propagation
 - FIX: Illumar buttons dropping regular buttons
 - FIX: Lights are always off on world load
@@ -10,7 +12,6 @@ v4.0.2
 - FIX: State cell not saving correctly
 - FIX: Bus Transceiver propagation
 - FIX: Bus Transceiver lights rendering above the panel
-
 
 v4.0.1
 - FIX: alloy smelter crash

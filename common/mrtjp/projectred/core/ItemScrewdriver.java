@@ -1,6 +1,7 @@
 package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.api.IScrewdriver;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -9,7 +10,7 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemScrewdriver extends Item {
+public class ItemScrewdriver extends Item implements IScrewdriver {
     public ItemScrewdriver(int id) {
         super(id);
         setUnlocalizedName("projectred.core.screwdriver");
