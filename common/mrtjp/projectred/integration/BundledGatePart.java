@@ -41,7 +41,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
     public byte[] calculateBundledCornerSignal(int r) {
         int absDir = Rotation.rotateSide(side(), r);
         
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side());
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
             return getBundledPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side()^1));
@@ -52,7 +52,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
     public byte[] calculateBundledStraightSignal(int r) {
         int absDir = Rotation.rotateSide(side(), r);
 
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
         if(t instanceof IBundledEmitter)
             getBundledPartSignal(t, absDir^1);

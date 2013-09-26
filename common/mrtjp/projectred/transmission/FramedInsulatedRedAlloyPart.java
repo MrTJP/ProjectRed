@@ -15,7 +15,7 @@ public class FramedInsulatedRedAlloyPart extends FramedRedwirePart implements II
     
     @Override
     public String getType() {
-        return "pr_finsulated";
+        return "pr_sinsulated";
     }
 
     @Override

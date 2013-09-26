@@ -42,20 +42,20 @@ public class RedAlloyWirePart extends RedwirePart {
 
     @Override
     public void propogateOther(int mode) {
-        WirePropogator.addNeighborChange(new BlockCoord(getTile()).offset(side));
-        WirePropogator.addNeighborChange(new BlockCoord(getTile()).offset(side^1));
+        WirePropogator.addNeighborChange(new BlockCoord(tile()).offset(side));
+        WirePropogator.addNeighborChange(new BlockCoord(tile()).offset(side^1));
         for(int r = 0; r < 4; r++)
             if(!maskConnects(r))
-                WirePropogator.addNeighborChange(new BlockCoord(getTile()).offset(Rotation.rotateSide(side, r)));
+                WirePropogator.addNeighborChange(new BlockCoord(tile()).offset(Rotation.rotateSide(side, r)));
         
         for(int s = 0; s < 6; s++)
             if(s != (side^1))
-                WirePropogator.addNeighborChange(new BlockCoord(getTile()).offset(side).offset(s));
+                WirePropogator.addNeighborChange(new BlockCoord(tile()).offset(side).offset(s));
     }
 
     @Override
     public int calculateUndersideSignal() {
-        BlockCoord pos = new BlockCoord(getTile()).offset(side);
+        BlockCoord pos = new BlockCoord(tile()).offset(side);
         return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, side)*17;
     }
 }

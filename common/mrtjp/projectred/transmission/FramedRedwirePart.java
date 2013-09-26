@@ -163,7 +163,7 @@ public abstract class FramedRedwirePart extends FramedWirePart implements IRedwi
     }
 
     public int calculateStraightSignal(int s) {
-        BlockCoord pos = new BlockCoord(getTile()).offset(s);
+        BlockCoord pos = new BlockCoord(tile()).offset(s);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(6);

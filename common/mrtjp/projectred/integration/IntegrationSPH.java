@@ -61,7 +61,7 @@ public class IntegrationSPH implements IServerPacketHandler {
     }
 
     public static PacketCustom writePartIndex(PacketCustom out, TMultiPart part) {
-        return out.writeCoord(new BlockCoord(part.getTile()))
+        return out.writeCoord(new BlockCoord(part.tile()))
                 .writeByte(part.tile().jPartList().indexOf(part));
     }
     
@@ -70,6 +70,10 @@ public class IntegrationSPH implements IServerPacketHandler {
         try
         {
             return tile.jPartList().get(in.readUByte());
+        }
+        catch(NullPointerException e)
+        {
+            return null;
         }
         catch(IndexOutOfBoundsException e)
         {

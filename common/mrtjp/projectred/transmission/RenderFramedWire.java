@@ -125,7 +125,7 @@ public class RenderFramedWire
         }
         
         public void render(FramedWirePart w, LazyLightMatrix olm, IUVTransformation uvt, IVertexModifier m, int mat) {
-            renderCovers(w.world(), new BlockCoord(w.getTile()), olm, mat);
+            renderCovers(w.world(), new BlockCoord(w.tile()), olm, mat);
             wireModel.render(new Translation(w.x(), w.y(), w.z()), uvt, m);
         }
         
@@ -493,7 +493,7 @@ public class RenderFramedWire
     }
 
     public static void renderCoverHighlight(FramedWirePart part, int material) {
-        BlockCoord pos = new BlockCoord(part.getTile());
+        BlockCoord pos = new BlockCoord(part.tile());
         
         GL11.glPushMatrix();
         GL11.glTranslated(pos.x+0.5, pos.y+0.5, pos.z+0.5);

@@ -27,7 +27,7 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     
     @Override
     public String getType() {
-        return "pr_fbundled";
+        return "pr_sbundled";
     }
 
     @Override
@@ -90,7 +90,7 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     }
     
     public void calculateStraightSignal(int s) {
-        BlockCoord pos = new BlockCoord(getTile()).offset(s);
+        BlockCoord pos = new BlockCoord(tile()).offset(s);
         TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
         if(t instanceof IBundledEmitter)
             calculatePartSignal(t, s^1);

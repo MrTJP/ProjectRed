@@ -177,8 +177,8 @@ public class PressurizedTubePart extends TMultiPart implements ITubeInterface, T
     }
 
     public void notifyStraightChange(int s) {
-        BlockCoord pos = new BlockCoord(getTile()).offset(s);
-        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, getTile().getBlockType().blockID);
+        BlockCoord pos = new BlockCoord(tile()).offset(s);
+        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile().getBlockType().blockID);
     }
 
     @Override
@@ -258,7 +258,7 @@ public class PressurizedTubePart extends TMultiPart implements ITubeInterface, T
     }
 
     public boolean connect(int absDir) {
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(6);

@@ -257,7 +257,7 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     }
 
     public boolean connectStraight(int s) {
-        BlockCoord pos = new BlockCoord(getTile()).offset(s);
+        BlockCoord pos = new BlockCoord(tile()).offset(s);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(6);
@@ -321,8 +321,8 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     public abstract boolean canConnectToType(IConnectable wire);
 
     public void notifyStraightChange(int s) {
-        BlockCoord pos = new BlockCoord(getTile()).offset(s);
-        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, getTile().getBlockType().blockID);
+        BlockCoord pos = new BlockCoord(tile()).offset(s);
+        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile().getBlockType().blockID);
     }
 
     public boolean maskConnects(int s) {
@@ -345,7 +345,7 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     }
 
     public void propogateStraight(int s, TMultiPart prev, int mode) {
-        BlockCoord pos = new BlockCoord(getTile()).offset(s);
+        BlockCoord pos = new BlockCoord(tile()).offset(s);
 
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {

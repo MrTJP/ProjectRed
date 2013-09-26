@@ -24,7 +24,7 @@ public class ArrayCommons
     private static boolean topWireConn(GatePart g, int r) {
         int absDir = Rotation.rotateSide(g.side(), r);
         
-        BlockCoord pos = new BlockCoord(g.getTile()).offset(absDir);
+        BlockCoord pos = new BlockCoord(g.tile()).offset(absDir);
         TileMultipart t = BasicUtils.getMultipartTile(g.world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(g.side());
