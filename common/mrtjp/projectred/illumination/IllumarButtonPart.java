@@ -80,7 +80,7 @@ public class IllumarButtonPart extends ButtonPart implements ILight {
     @Override
     public void drop() {
         tile().remPart(this);
-        TileMultipart.dropItem(getItemStack(), world(), Vector3.fromTileEntityCenter(getTile()));
+        TileMultipart.dropItem(getItemStack(), world(), Vector3.fromTileEntityCenter(tile()));
     }
 
     @Override

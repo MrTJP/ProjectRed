@@ -771,6 +771,13 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             if (max != oldMax) {
                 tickSound();
                 sendMaxUpdate();
+                
+                int oldVal = value;
+                value = Math.min(max, Math.max(0, i));
+                if (value != oldVal) {
+                    sendValueUpdate();
+                    gate.scheduleTick(2);
+                }
             }
         }
 
@@ -804,6 +811,22 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 incr = packet.readInt();
             else if(switch_key == 14)
                 decr = packet.readInt();
+        }
+        
+        @Override
+        public void writeDesc(MCDataOutput packet) {
+            packet.writeInt(value)
+                .writeInt(max)
+                .writeInt(incr)
+                .writeInt(decr);
+        }
+        
+        @Override
+        public void readDesc(MCDataInput packet) {
+            value = packet.readInt();
+            max = packet.readInt();
+            incr = packet.readInt();
+            decr = packet.readInt();
         }
 
         public void sendValueUpdate() {
@@ -1032,7 +1055,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         
         public int calcInputA() {
             int absDir = Rotation.rotateSide(gate.side(), gate.toAbsolute(2));
-            BlockCoord pos = new BlockCoord(gate.getTile()).offset(absDir);
+            BlockCoord pos = new BlockCoord(gate.tile()).offset(absDir);
             Block block = Block.blocksList[gate.world().getBlockId(pos.x, pos.y, pos.z)];
             if(block != null) {
                 if(block.hasComparatorInputOverride())

@@ -4,7 +4,7 @@ public class FramedRedAlloyWirePart extends FramedRedwirePart
 {
     @Override
     public String getType() {
-        return "pr_fredwire";
+        return "pr_sredwire";
     }
 
     @Override

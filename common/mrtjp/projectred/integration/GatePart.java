@@ -207,7 +207,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     }
 
     public boolean canStay() {
-        BlockCoord pos = new BlockCoord(getTile()).offset(side());
+        BlockCoord pos = new BlockCoord(tile()).offset(side());
         return BasicWireUtils.canPlaceWireOnSide(world(), pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side() ^ 1), false);
     }
     
@@ -220,7 +220,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     }
 
     public void drop() {
-        TileMultipart.dropItem(getItem(), world(), Vector3.fromTileEntityCenter(getTile()));
+        TileMultipart.dropItem(getItem(), world(), Vector3.fromTileEntityCenter(tile()));
         tile().remPart(this);
     }
         
@@ -280,7 +280,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public boolean connectCorner(int r) {
         int absDir = Rotation.rotateSide(side(), r);
         
-        BlockCoord pos = new BlockCoord(getTile());
+        BlockCoord pos = new BlockCoord(tile());
         pos.offset(absDir);
         
         if(!BasicWireUtils.canConnectThroughCorner(world(), pos, absDir^1, side()))
@@ -304,7 +304,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public boolean connectStraight(int r) {
         int absDir = Rotation.rotateSide(side(), r);
         
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(side());
@@ -335,15 +335,15 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public void notifyCornerChange(int r) {
         int absDir = Rotation.rotateSide(side(), r);
         
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side());
-        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, getTile().getBlockType().blockID);
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
+        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile().getBlockType().blockID);
     }
 
     public void notifyStraightChange(int r) {
         int absDir = Rotation.rotateSide(side(), r);
         
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
-        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, getTile().getBlockType().blockID);
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
+        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile().getBlockType().blockID);
     }
 
     public boolean maskConnects(int r) {

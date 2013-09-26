@@ -185,7 +185,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     public int calculateCornerSignal(int r) {
         int absDir = Rotation.rotateSide(side, r);
         
-        BlockCoord cnrPos = new BlockCoord(getTile()).offset(absDir);
+        BlockCoord cnrPos = new BlockCoord(tile()).offset(absDir);
         BlockCoord pos = cnrPos.copy().offset(side);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
@@ -200,7 +200,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     public int calculateStraightSignal(int r) {
         int absDir = Rotation.rotateSide(side, r);
         
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
             TMultiPart tp = t.partMap(side);

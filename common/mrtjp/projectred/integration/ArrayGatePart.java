@@ -184,7 +184,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     public int calculateCornerSignal(int r) {
         int absDir = Rotation.rotateSide(side(), r);
         
-        BlockCoord cnrPos = new BlockCoord(getTile()).offset(absDir);
+        BlockCoord cnrPos = new BlockCoord(tile()).offset(absDir);
         BlockCoord pos = cnrPos.copy().offset(side());
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
@@ -197,7 +197,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         int absDir = Rotation.rotateSide(side(), r);
         int s = 0;
         
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null && (connMap & 0x10<<r) != 0) {
             TMultiPart tp = t.partMap(side());
@@ -224,7 +224,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         if(i > 0)
             return i;
         
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, absDir)*17;
     }
 
@@ -266,7 +266,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
 
     public void propogateCorner(int r, TMultiPart prev, int mode) {
         int absDir = Rotation.rotateSide(side(), r);
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side());
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
 
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {
@@ -282,7 +282,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     
     public void propogateStraight(int r, TMultiPart prev, int mode) {
         int absDir = Rotation.rotateSide(side(), r);
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
 
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null) {

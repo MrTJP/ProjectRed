@@ -90,7 +90,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
         if(i > 0 || getLogic().requireStrongInput(r))
             return i;
         
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         if (world().isBlockNormalCube(pos.x, pos.y, pos.z))
             return world().getBlockPowerInput(pos.x, pos.y, pos.z)*17;
         
@@ -100,7 +100,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
     public int calculateCornerSignal(int r) {
         int absDir = Rotation.rotateSide(side(), r);
         
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir).offset(side());
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
             return getPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side()^1));
@@ -111,7 +111,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
     public int calculateStraightSignal(int r) {
         int absDir = Rotation.rotateSide(side(), r);
 
-        BlockCoord pos = new BlockCoord(getTile()).offset(absDir);
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
             return getPartSignal(t.partMap(side()), (r+2)%4);
