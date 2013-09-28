@@ -238,9 +238,9 @@ public class BasicTubeUtils {
             ITubeInterface startTube = getTubeInterface(w, startingNode);
             if (startTube != null) {
                 for (int side = 0; side < 6; side++) {
-                    if (side == (initialItemDirection ^ 1) || !startTube.maskConnects(side)) {
+                    if (side == (initialItemDirection ^ 1) || !startTube.maskConnects(side))
                         continue;
-                    }
+
                     BlockCoord sidePipe = startingNode.copy().offset(side);
                     addToQuarry(sidePipe, null, side, side, 0);
                 }
