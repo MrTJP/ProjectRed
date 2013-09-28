@@ -565,6 +565,12 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     @Override
     @SideOnly(Side.CLIENT)
+    public int getLightValue() {
+        return 7;
+    }
+    
+    @Override
+    @SideOnly(Side.CLIENT)
     public Icon getBreakingIcon(Object arg0, int arg1) {
         return ComponentStore.baseIcon;
     }

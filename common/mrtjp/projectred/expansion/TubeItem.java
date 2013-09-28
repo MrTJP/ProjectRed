@@ -22,6 +22,12 @@ public class TubeItem {
         this.direction = (byte) initialDirection;
     }
     
+    public void resetProgress() {
+        progress -= 100;
+        hasCrossedCenter = false;
+        pathFoundByParent = false;
+    }
+    
     public void update() {
         int oldProg = progress;
         progress += speed;
