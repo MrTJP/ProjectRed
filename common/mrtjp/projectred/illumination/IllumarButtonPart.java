@@ -5,6 +5,7 @@ import java.util.Arrays;
 import mrtjp.projectred.ProjectRedIllumination;
 import net.minecraft.block.BlockButton;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
@@ -79,8 +80,8 @@ public class IllumarButtonPart extends ButtonPart implements ILight {
     
     @Override
     public void drop() {
-        tile().remPart(this);
         TileMultipart.dropItem(getItemStack(), world(), Vector3.fromTileEntityCenter(tile()));
+        tile().remPart(this);
     }
 
     @Override
@@ -115,10 +116,4 @@ public class IllumarButtonPart extends ButtonPart implements ILight {
     public Icon getBreakingIcon(Object subPart, int side) {
         return getBrokenIcon(side);
     }
-    
-    @Override
-    public int getLightValue() {
-        return pressed() ? 5 : 0;
-    }
-
 }

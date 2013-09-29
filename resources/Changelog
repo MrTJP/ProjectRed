@@ -1,3 +1,7 @@
+v4.0.3
+- ADDED: Fixtures
+- FIX: Many minor bugs
+
 v4.0.2
 - ADDED: Walls for world gen blocks
 - CHANGE: Ported to Minecraft 1.6.4

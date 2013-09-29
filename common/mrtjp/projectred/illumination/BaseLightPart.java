@@ -20,6 +20,7 @@ import codechicken.multipart.IRedstonePart;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
+import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TSlottedPart;
 import cpw.mods.fml.relauncher.Side;
@@ -92,7 +93,7 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     }
         
     private boolean isBeingPowered() {
-        return world().isBlockIndirectlyGettingPowered(x(), y(), z()) || world().getBlockPowerInput(x(), y(), z()) > 0;
+        return world().isBlockIndirectlyGettingPowered(x(), y(), z());
     }
 
     public void updateState(boolean forceRender) {
