@@ -1,15 +1,16 @@
 package mrtjp.projectred;
 
-import codechicken.lib.packet.PacketCustom.CustomTinyPacketHandler;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.illumination.BlockLamp;
 import mrtjp.projectred.illumination.ItemPartCageLamp;
+import mrtjp.projectred.illumination.ItemPartFixture;
 import mrtjp.projectred.illumination.ItemPartIllumarButton;
 import mrtjp.projectred.illumination.ItemPartLantern;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import codechicken.lib.packet.PacketCustom.CustomTinyPacketHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
@@ -31,6 +32,8 @@ public class ProjectRedIllumination {
     public static ItemPartIllumarButton itemPartIllumarButton;
     public static ItemPartCageLamp itemPartCageLamp;
     public static ItemPartCageLamp itemPartInvCageLamp;
+    public static ItemPartFixture itemPartFixture;
+    public static ItemPartFixture itemPartInvFixture;
 
     @Instance("ProjRed|Illumination")
     public static ProjectRedIllumination instance;

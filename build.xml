@@ -8,11 +8,11 @@
 		<isset property="env.BUILD_NUMBER" />
 	</condition>
 	<property name="mc.version" value="1.6.4" />
-	<property name="forge.version" value="9.11.0.889" />
+	<property name="forge.version" value="9.11.0.898" />
 	<property name="ccl.version" value="1.0.0.36" />
 	<property name="ccobf.version" value="1.0.0.15" />
 	<property name="ccc.version" value="0.9.0.6" />
-	<property name="fmp.version" value="1.0.0.190" />
+	<property name="fmp.version" value="1.0.0.191" />
 	<property name="nei.version" value="1.6.1.5" />
 	<property name="tcons.version" value="1.4.7d4" />
 

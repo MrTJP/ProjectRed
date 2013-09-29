@@ -1,6 +1,5 @@
-package mrtjp.projectred.compatability;
+package mrtjp.projectred.core;
 
-import mrtjp.projectred.core.Configurator;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 

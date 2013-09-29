@@ -25,6 +25,9 @@ public class IlluminationClientProxy extends IlluminationProxy {
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartCageLamp.itemID, RenderCageLamp.instance);
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartInvCageLamp.itemID, RenderCageLamp.instance);
 
+        MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartFixture.itemID, RenderFixture.instance);
+        MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartInvFixture.itemID, RenderFixture.instance);
+
         lampRenderID = RenderingRegistry.getNextAvailableRenderId();
         RenderingRegistry.registerBlockHandler(LampISBRH.instance);
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.blockLamp.blockID, LampISBRH.instance);

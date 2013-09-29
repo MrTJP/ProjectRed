@@ -89,6 +89,28 @@ public class IlluminationRecipes {
             );
         }
 
+        /** Fixtures **/
+        for (int i = 0; i < 16; i++) {
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartFixture, 1, i),
+                    "ggg",
+                    "gIg",
+                    "pPp",
+                    'g', Block.thinGlass,
+                    'I', EnumPart.ILLUMAR_PARTS[i].getItemStack(),
+                    'p', EnumPart.PLATE.getItemStack(),
+                    'P', EnumPart.CONDUCTIVEPLATE.getItemStack()
+            );
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartInvFixture, 1, i), 
+                    "ggg",
+                    "gIg",
+                    "pPp",
+                    'g', Block.thinGlass,
+                    'I', EnumPart.ILLUMAR_PARTS[i].getItemStack(),
+                    'p', EnumPart.PLATE.getItemStack(),
+                    'P', EnumPart.CATHODE.getItemStack()
+            );
+        }
+
     }
 }
 

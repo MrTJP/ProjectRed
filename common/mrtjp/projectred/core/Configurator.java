@@ -28,6 +28,8 @@ public class Configurator {
     public static Property part_lightButton;
     public static Property part_cagelamp;
     public static Property part_invcagelamp;
+    public static Property part_fixture;
+    public static Property part_invfixture;
 
     public static Property part_tube;
 
@@ -115,6 +117,8 @@ public class Configurator {
         part_lightButton = localConfig.get("MultiPart Item IDs", "Illuminated Button Part ID", 9038);
         part_cagelamp = localConfig.get("MultiPart Item IDs", "Cage Lamp Part ID", 9039);
         part_invcagelamp = localConfig.get("MultiPart Item IDs", "Inverted Cage Lamp Part ID", 9040);
+        part_fixture = localConfig.get("MultiPart Item IDs", "Fixture Part ID", 9041);
+        part_invfixture = localConfig.get("MultiPart Item IDs", "Inverted Fixture Part ID", 9042);
          
         //TODO
         part_tube = localConfig.get("MultiPart Item IDs", "Tube Part ID", 9333);

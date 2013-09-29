@@ -23,14 +23,14 @@ import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 
-public class RenderCageLamp implements IItemRenderer {
-    public static RenderCageLamp instance = new RenderCageLamp();
+public class RenderFixture implements IItemRenderer {
+    public static RenderFixture instance = new RenderFixture();
     
     static CCModel[] base;
 
     static
     {
-        Map<String, CCModel> models = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/lights/cagelamp.obj"), 7, new InvertX());
+        Map<String, CCModel> models = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/lights/fixture.obj"), 7, new InvertX());
         base = new CCModel[6];
         for (int i = 0; i < 6; i++) {
             CCModel m = models.get("base").copy();
@@ -42,7 +42,7 @@ public class RenderCageLamp implements IItemRenderer {
         }
     }
     
-    public void renderCageLamp(CageLampPart l) {
+    public void renderFixture(FixturePart l) {
         Icon icon = l.isOn()?RenderLantern.onIcons[l.type]:RenderLantern.offIcons[l.type];
         TextureUtils.bindAtlas(0);
         CCRenderState.reset();
@@ -53,7 +53,7 @@ public class RenderCageLamp implements IItemRenderer {
             RenderHalo.addLight(l.x(), l.y(), l.z(), l.type, l.side, l.lightBounds[l.side]);
     }
 
-    public void renderBreaking(CageLampPart c, Icon icon) {
+    public void renderBreaking(FixturePart c, Icon icon) {
         RenderUtils.renderBlock(c.bounds[c.side], 0, new Translation(c.x(), c.y(), c.z()), new IconTransformation(icon), null);
     }
     
@@ -70,7 +70,7 @@ public class RenderCageLamp implements IItemRenderer {
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         int color = item.getItemDamage();
-        boolean on = item.getItem() == ProjectRedIllumination.itemPartInvCageLamp;
+        boolean on = item.getItem() == ProjectRedIllumination.itemPartInvFixture;
         
         switch (type) {
         case ENTITY:
@@ -93,7 +93,7 @@ public class RenderCageLamp implements IItemRenderer {
     public void renderInventory(boolean on, int color, double x, double y, double z, double scale) {
         Icon icon = on ? RenderLantern.onIcons[color] : RenderLantern.offIcons[color];
 
-    	GL11.glPushMatrix();
+        GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
         GL11.glScaled(scale, scale, scale);
         CCRenderState.reset();
@@ -104,7 +104,7 @@ public class RenderCageLamp implements IItemRenderer {
         CCRenderState.draw();
         if(on) {
             RenderHalo.prepareRenderState();
-            RenderHalo.renderHalo(Tessellator.instance, CageLampPart.lightBounds[0], color,  new Translation(x, y, z));
+            RenderHalo.renderHalo(Tessellator.instance, FixturePart.lightBounds[0], color,  new Translation(x, y, z));
             RenderHalo.restoreRenderState();
         }
         GL11.glPopMatrix();
