@@ -2,11 +2,14 @@ package mrtjp.projectred.transmission;
 
 import java.util.Arrays;
 
+import org.lwjgl.opengl.GL11;
+
 import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.BasicWireUtils;
 import mrtjp.projectred.core.CommandDebug;
+import mrtjp.projectred.core.Configurator;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -108,7 +111,8 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
     public void read(MCDataInput packet, int switch_key) {
         if(switch_key == 0) {
             connMap = packet.readInt();
-            tile().markRender();
+            if(useStaticRenderer())
+                tile().markRender();
         }
     }
 
@@ -631,16 +635,32 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
         return -1;
     }
     
+    public boolean useStaticRenderer() {
+        return Configurator.staticWires;
+    }
+    
     @Override
     @SideOnly(Side.CLIENT)
     public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
-        if (pass == 0) {
-            TextureUtils.bindAtlas(0);
-            CCRenderState.reset();
+        if (pass == 0 && useStaticRenderer()) {
             CCRenderState.setBrightness(world(), x(), y(), z());
-            CCRenderState.useModelColours(true);
-            RenderWire.render(this);
+            RenderWire.render(this, pos);
             CCRenderState.setColour(-1);
+        }
+    }
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void renderDynamic(Vector3 pos, float frame, int pass) {
+        if (pass == 0 && !useStaticRenderer()) {
+            GL11.glDisable(GL11.GL_LIGHTING);
+            TextureUtils.bindAtlas(0);
+            CCRenderState.useModelColours(true);
+            CCRenderState.startDrawing(7);
+            RenderWire.render(this, pos);
+            CCRenderState.draw();
+            CCRenderState.setColour(-1);
+            GL11.glEnable(GL11.GL_LIGHTING);
         }
     }
     

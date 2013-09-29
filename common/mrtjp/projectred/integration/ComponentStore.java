@@ -174,7 +174,7 @@ public class ComponentStore
     public static WireComponentModel generateWireModel(String name) {
         Colour[] data = TextureUtils.loadTextureColours(new ResourceLocation("projectred:textures/blocks/gates/surface/"+name+".png"));
         WireComponentModel m = new WireComponentModel();
-        if(Configurator.logicwires3D.getBoolean(true))
+        if(Configurator.logicwires3D)
             new WireModel3D(data).bind(m);
         else
             new WireModel2D(data).bind(m);

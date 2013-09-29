@@ -52,7 +52,8 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     public void read(MCDataInput packet, int switch_key) {
         if(switch_key == 10) {
             signal = packet.readByte();
-            tile().markRender();
+            if(useStaticRenderer())
+                tile().markRender();
         }
         else
             super.read(packet, switch_key);

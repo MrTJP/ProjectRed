@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.integration.ArrayCommons.ITopArrayWire;
 import mrtjp.projectred.transmission.IRedwireEmitter;
 import mrtjp.projectred.transmission.IRedwirePart;
@@ -106,11 +107,13 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         if(switch_key == 10) {
             signal1 = packet.readByte();
             signal2 = packet.readByte();
-            tile().markRender();
+            if(Configurator.staticGates)
+                tile().markRender();
         }
         else if(switch_key == 11) {
             state = packet.readByte();
-            tile().markRender();
+            if(Configurator.staticGates)
+                tile().markRender();
         }
         else
             super.read(packet, switch_key);

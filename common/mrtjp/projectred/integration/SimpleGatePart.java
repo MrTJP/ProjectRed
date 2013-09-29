@@ -1,5 +1,6 @@
 package mrtjp.projectred.integration;
 
+import mrtjp.projectred.core.Configurator;
 import net.minecraft.nbt.NBTTagCompound;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
@@ -49,7 +50,8 @@ public class SimpleGatePart extends RedstoneGatePart
     public void read(MCDataInput packet, int switch_key) {
         if(switch_key == 10) {
             state = packet.readByte();
-            tile().markRender();
+            if(Configurator.staticGates)
+                tile().markRender();
         }
         else
             super.read(packet, switch_key);

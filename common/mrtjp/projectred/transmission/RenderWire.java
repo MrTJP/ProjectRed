@@ -391,9 +391,9 @@ public class RenderWire {
         return m;
     }
     
-    public static void render(WirePart w) {
+    public static void render(WirePart w, Vector3 pos) {
         IVertexModifier m = w.getColour() == -1 ? ColourModifier.instance : new ColourMultiplier(w.getColour());
-        getOrGenerateModel(modelKey(w)).render(new Translation(w.x(), w.y(), w.z()), new IconTransformation(w.getIcon()), m);
+        getOrGenerateModel(modelKey(w)).render(new Translation(pos), new IconTransformation(w.getIcon()), m);
     }
     
     public static void renderInv(int thickness, Transformation t, Icon icon) {

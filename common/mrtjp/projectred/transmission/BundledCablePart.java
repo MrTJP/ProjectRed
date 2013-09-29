@@ -196,4 +196,9 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
         }
         return true;
     }
+    
+    @Override
+    public boolean useStaticRenderer() {
+        return true;
+    }
 }
