@@ -3,6 +3,7 @@ package mrtjp.projectred.integration;
 import java.util.Arrays;
 
 import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.integration.ArrayCommons.ITopArrayWire;
 import mrtjp.projectred.transmission.IRedwireEmitter;
 import mrtjp.projectred.transmission.IRedwirePart;
@@ -74,7 +75,8 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     public void read(MCDataInput packet, int switch_key) {
         if(switch_key == 11) {
             signal = packet.readByte();
-            tile().markRender();
+            if(Configurator.staticGates)
+                tile().markRender();
         }
         else
             super.read(packet, switch_key);

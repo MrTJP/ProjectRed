@@ -94,8 +94,13 @@ public class Configurator {
 
     /** Settings **/
     public static Property debugMode;
-    public static Property logicwires3D;
     public static Property logicGateSounds;
+    
+    /** Render **/
+    public static boolean logicwires3D;
+    public static boolean staticWires;
+    public static boolean staticGates;
+    
 
     public static void initConfig(FMLPreInitializationEvent event) {
         _configFolder = event.getModConfigurationDirectory();
@@ -181,9 +186,20 @@ public class Configurator {
         debugMode = localConfig.get("general", "Enable Debugging", false);
         debugMode.comment = "Enable advanced debugging, should ALWAYS be false.";
         
-        logicwires3D = localConfig.get("general", "3Dlogicwires", true);
-        logicwires3D.comment = "If set to false, flat wire textures will be used for logic gates. Significant performance improvement";
+        Property p_logicwires3D = localConfig.get("general", "3Dlogicwires", true);
+        p_logicwires3D.comment = "If set to false, flat wire textures will be used for logic gates. Significant performance improvement";
+        logicwires3D = p_logicwires3D.getBoolean(true);
+        
+        Property p_staticWires = localConfig.get("general", "renderStaticWires", true);
+        p_staticWires.comment = "If set to false, wires will be rendered in the TESR rather than the WorldRenderer";
+        staticWires = p_staticWires.getBoolean(true);
+        
+        Property p_staticGates = localConfig.get("general", "renderStaticGates", true);
+        p_staticGates.comment = "If set to false, gates will be rendered in the TESR rather than the WorldRenderer";
+        staticGates = p_staticGates.getBoolean(true);
 
+        
+        
         logicGateSounds = localConfig.get("general", "Logic Sounds", true);
         logicGateSounds.comment = "If set to false, logic gates will not make sounds.";
         localConfig.save();

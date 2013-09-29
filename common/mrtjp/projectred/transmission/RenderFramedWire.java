@@ -430,6 +430,8 @@ public class RenderFramedWire
     public static JacketedModel[] jacketModels = new JacketedModel[64*3];
     private static WireModelGenerator gen_inst = new WireModelGenerator();
     
+    private static LazyLightMatrix dynamicLight = new LazyLightMatrix();
+    
     static {
         WireFrameModelGenerator.generateModels();
     }
@@ -455,15 +457,20 @@ public class RenderFramedWire
             jacketModels[key] = m = gen_inst.generateJacketedModel(key);
         return m;
     }
+
+    public static void render(FramedWirePart w, Vector3 pos) {
+        dynamicLight.setPos(w.world(), w.x(), w.y(), w.z());
+        render(w, pos, dynamicLight);
+    }
     
-    public static void render(FramedWirePart w, LazyLightMatrix olm) {
+    public static void render(FramedWirePart w, Vector3 pos, LazyLightMatrix olm) {
         int key = modelKey(w);
         
         IUVTransformation uvt = new IconTransformation(w.getIcon());
         IVertexModifier m = w.getColour() == -1 ? ColourModifier.instance : new ColourMultiplier(w.getColour());
         
         if(w.material == 0) {
-            Transformation t = new Translation(w.x(), w.y(), w.z());
+            Transformation t = new Translation(pos);
             getOrGenerateWireModel(key).render(t, uvt, m);
             renderWireFrame(key, t, uvt);
         }

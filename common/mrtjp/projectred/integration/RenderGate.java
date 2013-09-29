@@ -57,10 +57,10 @@ public class RenderGate
         	render.registerIcons(r);
     }
     
-    public static void renderStatic(GatePart gate) {
+    public static void renderStatic(GatePart gate, Vector3 pos) {
         GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
-        r.renderStatic(new Translation(gate.x(), gate.y(), gate.z()), gate.orientation&0xFF);
+        r.renderStatic(new Translation(pos), gate.orientation&0xFF);
     }
 
     public static void renderDynamic(GatePart gate, Vector3 pos, float frame) {

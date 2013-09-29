@@ -2,10 +2,13 @@ package mrtjp.projectred.integration;
 
 import java.util.Arrays;
 
+import org.lwjgl.opengl.GL11;
+
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.BasicWireUtils;
+import mrtjp.projectred.core.Configurator;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -128,11 +131,13 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public void read(MCDataInput packet, int switch_key) {
         if(switch_key == 0) {
             orientation = packet.readByte();
-            tile().markRender();
+            if(Configurator.staticGates)
+                tile().markRender();
         }
         else if(switch_key == 1) {
             shape = packet.readByte();
-            tile().markRender();
+            if(Configurator.staticGates)
+                tile().markRender();
         }
     }
     
@@ -531,12 +536,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @Override
     @SideOnly(Side.CLIENT)
     public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
-        if(pass == 0) {
-            TextureUtils.bindAtlas(0);
-            CCRenderState.reset();
+        if(pass == 0 && Configurator.staticGates) {
             CCRenderState.setBrightness(world(), x(), y(), z());
-            CCRenderState.useModelColours(true);
-            RenderGate.renderStatic(this);
+            RenderGate.renderStatic(this, pos);
             CCRenderState.setColour(-1);
         }
     }
@@ -544,9 +546,20 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @Override
     @SideOnly(Side.CLIENT)
     public void renderDynamic(Vector3 pos, float frame, int pass) {
-        if(pass == 0)
+        if(pass == 0) {
             TextureUtils.bindAtlas(0);
+            if(!Configurator.staticGates) {
+                GL11.glDisable(GL11.GL_LIGHTING);
+                CCRenderState.useModelColours(true);
+                CCRenderState.startDrawing(7);
+                RenderGate.renderStatic(this, pos);
+                CCRenderState.draw();
+                CCRenderState.setColour(-1);
+                GL11.glEnable(GL11.GL_LIGHTING);
+            }
+            
             RenderGate.renderDynamic(this, pos, frame);
+        }
     }
     
     public int getSlotMask() {
