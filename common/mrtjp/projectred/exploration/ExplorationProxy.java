@@ -88,14 +88,10 @@ public class ExplorationProxy implements IProxy {
         MinecraftForge.setToolClass(itemSapphireSword, "sword", 2);
         MinecraftForge.setToolClass(itemPeridotSword, "sword", 2);
 
-//        itemWoodSaw = new ItemGemSaw(Configurator.item_woodSaw.getInt(), EnumSpecialTool.WOODSAW);
-//        itemStoneSaw = new ItemGemSaw(Configurator.item_stoneSaw.getInt(), EnumSpecialTool.STONESAW);
-//        itemIronSaw = new ItemGemSaw(Configurator.item_ironSaw.getInt(), EnumSpecialTool.IRONSAW);
         itemGoldSaw = new ItemGemSaw(Configurator.item_goldSaw.getInt(), EnumSpecialTool.GOLDSAW);
         itemRubySaw = new ItemGemSaw(Configurator.item_rubySaw.getInt(), EnumSpecialTool.RUBYSAW);
         itemSapphireSaw = new ItemGemSaw(Configurator.item_sapphireSaw.getInt(), EnumSpecialTool.SAPPHIRESAW);
         itemPeridotSaw = new ItemGemSaw(Configurator.item_peridotSaw.getInt(), EnumSpecialTool.PERIDOTSAW);
-//        itemDiamondSaw = new ItemGemSaw(Configurator.item_diamondSaw.getInt(), EnumSpecialTool.DIAMONDSAW);
 
         itemWoodSickle = new ItemGemSickle(Configurator.item_woodSickle.getInt(), EnumSpecialTool.WOODSICKLE);
         itemStoneSickle = new ItemGemSickle(Configurator.item_stoneSickle.getInt(), EnumSpecialTool.STONESICKLE);

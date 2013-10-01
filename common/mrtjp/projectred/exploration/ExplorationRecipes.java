@@ -1,5 +1,6 @@
 package mrtjp.projectred.exploration;
 
+import codechicken.microblock.handler.MicroblockProxy;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
@@ -49,14 +50,10 @@ public class ExplorationRecipes {
         addSwordRecipe(new ItemStack(ProjectRedExploration.itemPeridotSword), EnumPart.PERIDOT.getItemStack());
     
         /** Saw **/
-        addSawRecipe(new ItemStack(ProjectRedExploration.itemWoodSaw), new ItemStack(Block.planks));
-        addSawRecipe(new ItemStack(ProjectRedExploration.itemStoneSaw), new ItemStack(Item.flint));
-        addSawRecipe(new ItemStack(ProjectRedExploration.itemIronSaw), new ItemStack(Item.ingotIron));
         addSawRecipe(new ItemStack(ProjectRedExploration.itemGoldSaw), new ItemStack(Item.ingotGold));
         addSawRecipe(new ItemStack(ProjectRedExploration.itemRubySaw), EnumPart.RUBY.getItemStack());
         addSawRecipe(new ItemStack(ProjectRedExploration.itemSapphireSaw), EnumPart.SAPPHIRE.getItemStack());
         addSawRecipe(new ItemStack(ProjectRedExploration.itemPeridotSaw), EnumPart.PERIDOT.getItemStack());
-        addSawRecipe(new ItemStack(ProjectRedExploration.itemDiamondSaw), new ItemStack(Item.diamond));
    
         /** Sickle **/
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemWoodSickle), new ItemStack(Block.planks));
@@ -147,7 +144,7 @@ public class ExplorationRecipes {
         GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8), 
                 "s",
                 "b",
-                's', new ItemStack(ProjectRedExploration.itemDiamondSaw, 1, OreDictionary.WILDCARD_VALUE), 
+                's', new ItemStack(MicroblockProxy.sawDiamond(), 1, OreDictionary.WILDCARD_VALUE), 
                 'b', EnumPart.SILICONBOULE.getItemStack()
         );
 
