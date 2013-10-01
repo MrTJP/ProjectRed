@@ -199,7 +199,8 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         public void scheduledTick(BundledGatePart gate) {
             output0 = calcBundledOutput(0);
             output2 = calcBundledOutput(2);
-            
+
+            onChange(gate);
             gate.onOutputChange(1|4);
             sendClientUpdate();
         }
