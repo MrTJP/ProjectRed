@@ -153,7 +153,6 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         public void setup(InstancedRsGatePart gate) {
             setState2(2);
             gate.setState(0x30);
-            gate.onOutputChange(0x30);
         }
         
         @Override
@@ -246,7 +245,6 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void setup(InstancedRsGatePart gate) {
             gate.setState(0x10);
-            gate.onOutputChange(1);
         }
         
         @Override
