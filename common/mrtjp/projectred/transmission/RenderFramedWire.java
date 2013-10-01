@@ -124,18 +124,18 @@ public class RenderFramedWire
                 bounds.enclose(boxes[i]);
         }
         
-        public void render(FramedWirePart w, LazyLightMatrix olm, IUVTransformation uvt, IVertexModifier m, int mat) {
-            renderCovers(w.world(), new BlockCoord(w.tile()), olm, mat);
-            wireModel.render(new Translation(w.x(), w.y(), w.z()), uvt, m);
+        public void render(FramedWirePart w, Vector3 t, LazyLightMatrix olm, IUVTransformation uvt, IVertexModifier m, int mat) {
+            renderCovers(w.world(), new BlockCoord(w.tile()), t, olm, mat);
+            wireModel.render(new Translation(t), uvt, m);
         }
         
-        public void renderCovers(World world, BlockCoord pos, LazyLightMatrix olm, int mat) {
+        public void renderCovers(World world, BlockCoord pos, Vector3 t, LazyLightMatrix olm, int mat) {
             this.world = world;
             this.pos.set(pos);
             
             IMicroMaterial material = MicroMaterialRegistry.getMaterial(mat);
             for(IndexedCuboid6 box : boxes)
-                JMicroblockClient.renderCuboid(new Vector3(pos.x, pos.y, pos.z), olm, material, box, (Integer)box.data, this);
+                JMicroblockClient.renderCuboid(t, olm, material, box, (Integer)box.data, this);
         }
 
         @Override
@@ -475,7 +475,7 @@ public class RenderFramedWire
             renderWireFrame(key, t, uvt);
         }
         else {
-            getOrGenerateJacketedModel(key).render(w, olm, uvt, m, w.material);
+            getOrGenerateJacketedModel(key).render(w, pos, olm, uvt, m, w.material);
         }
     }
     
@@ -519,7 +519,7 @@ public class RenderFramedWire
         CCRenderState.useModelColours(true);
         CCRenderState.startDrawing(7);
         
-        getOrGenerateJacketedModel(modelKey(part)).renderCovers(part.world(), new BlockCoord(), null, material);
+        getOrGenerateJacketedModel(modelKey(part)).renderCovers(part.world(), new BlockCoord(), new Vector3(), null, material);
         
         CCRenderState.draw();
         
