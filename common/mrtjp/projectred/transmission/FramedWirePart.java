@@ -168,8 +168,17 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     }
 
     @Override
-    public void onChunkLoad()//do nothing on chunk load, we shouldn't have changed between saves
+    public void onChunkLoad()
     {
+        if((connMap & 0x80000000) != 0) {//compat with converters, recalc connections
+            connMap = 0;
+            
+            updateInternalConnections();
+            if(updateOpenConnections())
+                updateExternalConnections();
+            
+            tile().markDirty();
+        }
     }
 
     @Override
