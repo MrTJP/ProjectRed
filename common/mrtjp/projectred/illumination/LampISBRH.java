@@ -44,7 +44,7 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
         r.renderStandardBlock(block, x, y, z);
         
         if (l.isOn())
-            RenderHalo.addLight(x, y, z, l.color, 6, box);
+            RenderHalo.addLight(x, y, z, world.getBlockMetadata(x, y, z), 6, box);
         return true;
     }
 

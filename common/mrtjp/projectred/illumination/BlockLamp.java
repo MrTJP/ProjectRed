@@ -2,6 +2,7 @@ package mrtjp.projectred.illumination;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicUtils;
@@ -9,7 +10,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -40,6 +40,18 @@ public class BlockLamp extends Block {
         TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null)
             tile.onNeighborBlockChange();
+    }
+    
+    @Override
+    public void updateTick(World world, int x, int y, int z, Random par5Random) {
+        TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
+        if (tile != null)
+            tile.onTick();
+    }
+    
+    @Override
+    public void onBlockAdded(World world, int x, int y, int z) {
+        onNeighborBlockChange(world, x, y, z, 0);
     }
     
     @Override
@@ -125,9 +137,9 @@ public class BlockLamp extends Block {
         TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null) {
             if (tile.getLightValue() == 15)
-                return onIcons[tile.color];
+                return onIcons[tile.colour()];
             else
-                return offIcons[tile.color];
+                return offIcons[tile.colour()];
         }
         return super.getBlockTexture(world, x, y, z, side);
     }
@@ -135,7 +147,7 @@ public class BlockLamp extends Block {
     @Override
     public Icon getIcon(int side, int meta) {
         if (meta > 15)
-        	return onIcons[meta - 16];
+            return onIcons[meta - 16];
         else
             return offIcons[meta];
     }
@@ -143,7 +155,7 @@ public class BlockLamp extends Block {
     @Override
     public TileEntity createTileEntity(World world, int meta) {
         TileLamp t = new TileLamp();
-        t.prepairPlacement(meta>15, meta>15?meta-15:meta);
+        t.prepairPlacement(meta>15, meta>15 ? meta-16 : meta);
         return t;
     }
 

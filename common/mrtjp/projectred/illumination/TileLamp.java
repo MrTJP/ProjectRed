@@ -12,27 +12,36 @@ public class TileLamp extends TileEntity implements ICustomPacketTile, ILight {
 
     public boolean inverted;
     public boolean powered;
-    public byte color;
     
-    public TileLamp() {}
-    
-    private boolean firstTick = true;
+    @Override
+    public boolean canUpdate() {
+        return false;
+    }
     
     public void prepairPlacement(boolean inverted, int meta) {
-        this.color = (byte) meta;
         this.inverted = inverted;
     }
             
     public int getLightValue() {
         return powered != inverted ? 15 : 0;
     }
+    
+    public int colour() {
+        return getBlockMetadata();
+    }
 
     public ItemStack getDroppedBlock() {
-        return new ItemStack(worldObj.getBlockId(xCoord, yCoord, zCoord), 1, color+(inverted?16:0));
+        return new ItemStack(worldObj.getBlockId(xCoord, yCoord, zCoord), 1, colour()+(inverted?16:0));
     }
 
     public void onNeighborBlockChange() {
         if(!worldObj.isRemote && powered != isBeingPowered()) {
+            worldObj.scheduleBlockUpdate(xCoord, yCoord, zCoord, getBlockType().blockID, 2);
+        }
+    }
+    
+    public void onTick() {
+        if(powered != isBeingPowered()) {
             powered = !powered;
             updateRender();
         }
@@ -44,19 +53,10 @@ public class TileLamp extends TileEntity implements ICustomPacketTile, ILight {
     }
     
     @Override
-    public void updateEntity() {
-    	if (firstTick) {
-    		onNeighborBlockChange();
-    		firstTick = false;
-    	}
-    }
-    
-    @Override
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
         nbt.setBoolean("inverted", inverted);
         nbt.setBoolean("powered", powered);
-        nbt.setByte("meta", color);
     }
 
     @Override
@@ -64,16 +64,15 @@ public class TileLamp extends TileEntity implements ICustomPacketTile, ILight {
         super.readFromNBT(nbt);
         inverted = nbt.getBoolean("inverted");
         powered = nbt.getBoolean("powered");
-        color = nbt.getByte("meta");
     }
 
     @Override
     public Packet getDescriptionPacket() {
     	PacketCustom packet = new PacketCustom(CoreSPH.channel, 1);
     	packet.writeCoord(xCoord, yCoord, zCoord);
-    	int pack = color;
-    	if(inverted) pack |= 0x10;
-    	if(powered) pack |= 0x20;
+    	int pack = 0;
+    	if(inverted) pack |= 0x1;
+    	if(powered) pack |= 0x2;
     	packet.writeByte(pack);
     	return packet.toPacket();
     }
@@ -81,9 +80,8 @@ public class TileLamp extends TileEntity implements ICustomPacketTile, ILight {
     @Override
     public void handleDescriptionPacket(PacketCustom packet) {
         int packed = packet.readUByte();
-        color = (byte) (packed & 0xF);
-        inverted = (packed & 0x10) != 0;
-        powered = (packed & 0x20) != 0;
+        inverted = (packed & 0x1) != 0;
+        powered = (packed & 0x2) != 0;
         updateRender();
     }
 
