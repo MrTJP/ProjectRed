@@ -180,6 +180,22 @@ public abstract class WirePart extends TMultiPart implements IConnectable, TFace
                 }
         }
     }
+    
+    @Override
+    public void onChunkLoad() {
+        if((connMap & 0x80000000) != 0) {//compat with converters, recalc connections
+            if(dropIfCantStay())
+                return;
+            
+            connMap = 0;
+            
+            updateInternalConnections();
+            if(updateOpenConnections())
+                updateExternalConnections();
+            
+            tile().markDirty();
+        }
+    }
 
     public void sendConnUpdate() {
         tile().getWriteStream(this).writeByte(0).writeInt(connMap);
