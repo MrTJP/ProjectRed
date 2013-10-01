@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
@@ -31,14 +32,14 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     protected byte type;
     protected boolean isInverted;
     protected boolean powered;
-    protected int side;
+    protected byte side;
     protected boolean initialized = false;
 
     public BaseLightPart() {}
     
     public void preparePlacement(int side, int meta, boolean inv) {
         this.isInverted = inv;
-        this.side = side;
+        this.side = (byte) side;
         this.type = (byte) meta;
     }
     
@@ -62,7 +63,7 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     public void save(NBTTagCompound nbt) {
         nbt.setBoolean("inverted", isInverted);
         nbt.setByte("meta", type);
-        nbt.setInteger("rot", side);
+        nbt.setByte("rot", side);
         nbt.setBoolean("powered", powered);
     }
     
@@ -70,7 +71,10 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     public void load(NBTTagCompound nbt) {
         isInverted = nbt.getBoolean("inverted");
         type = nbt.getByte("meta");
-        side = nbt.getInteger("rot");
+        if(nbt.getTag("rot") instanceof NBTTagInt)//legacy
+            side = (byte) nbt.getInteger("rot");
+        else
+            side = nbt.getByte("rot");
         powered = nbt.getBoolean("powered");
     }
     
