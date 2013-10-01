@@ -66,14 +66,10 @@ public class ProjectRedExploration {
     public static ItemGemSword itemSapphireSword;
     public static ItemGemSword itemPeridotSword;
 
-    public static ItemGemSaw itemWoodSaw;
-    public static ItemGemSaw itemStoneSaw;
-    public static ItemGemSaw itemIronSaw;
     public static ItemGemSaw itemGoldSaw;
     public static ItemGemSaw itemRubySaw;
     public static ItemGemSaw itemSapphireSaw;
     public static ItemGemSaw itemPeridotSaw;
-    public static ItemGemSaw itemDiamondSaw;
 
     public static ItemGemSickle itemWoodSickle;
     public static ItemGemSickle itemStoneSickle;
