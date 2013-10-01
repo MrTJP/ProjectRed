@@ -529,6 +529,11 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
                 gate.onInputChange();
             }
         }
+        
+        @Override
+        public int lightLevel() {
+            return 0;
+        }
     }
     
     public static class RainSensor extends SimpleGateLogic

@@ -55,4 +55,8 @@ public abstract class GateLogic<PartType extends GatePart>
     public boolean activate(PartType part, EntityPlayer player, ItemStack held) {
         return false;
     }
+    
+    public int lightLevel() {
+        return 7;
+    }
 }

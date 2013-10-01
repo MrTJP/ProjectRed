@@ -577,9 +577,8 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public int getLightValue() {
-        return 7;
+        return getLogic().lightLevel();
     }
     
     @Override
