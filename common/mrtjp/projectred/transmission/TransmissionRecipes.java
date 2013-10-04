@@ -1,6 +1,5 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.core.AlloySmelterRecipe;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.ShapedOreNBTRecipe;
@@ -18,7 +17,6 @@ public class TransmissionRecipes {
     public static void initTransmissionRecipes() {
         initWireRecipes();
         initPartRecipes();
-        initAlloySmelterRecipes();
     }
     
     private static void initWireRecipes() {    
@@ -103,22 +101,5 @@ public class TransmissionRecipes {
                 'r', EnumWire.BUNDLED_N.getItemStack(),
                 'p', EnumPart.PLATE.getItemStack()
         );
-    }
-    
-    private static void initAlloySmelterRecipes() {
-        /** Red Alloy Ingot reset recipes **/
-        AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
-                EnumWire.RED_ALLOY.getItemStack(4),
-        }, EnumPart.REDINGOT.getItemStack(), 50));
-        
-        AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
-                EnumWire.BUNDLED_N.getItemStack(8),
-        }, EnumPart.REDINGOT.getItemStack(5), 90));
-        
-        for (EnumWire w : EnumWire.INSULATED_WIRE) {
-            AlloySmelterRecipe.add(new AlloySmelterRecipe(new ItemStack[] {
-                    w.getItemStack(4)
-            }, EnumPart.REDINGOT.getItemStack(), 80));
-        }
     }
 }

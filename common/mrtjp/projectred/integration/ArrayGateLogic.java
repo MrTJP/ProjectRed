@@ -59,6 +59,11 @@ public abstract class ArrayGateLogic extends GateLogic<ArrayGatePart>
         public boolean canCross() {
             return true;
         }
+        
+        @Override
+        public int lightLevel() {
+            return 0;
+        }
     }
     
     public static class Invert extends ArrayGateLogic

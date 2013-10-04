@@ -139,15 +139,6 @@ public class ExplorationRecipes {
                 'g', new ItemStack(ProjectRedExploration.itemWoolGin, 1, OreDictionary.WILDCARD_VALUE),
                 'w', Block.cloth
         );
-        
-        /** Silicon **/
-        GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8), 
-                "s",
-                "b",
-                's', new ItemStack(MicroblockProxy.sawDiamond(), 1, OreDictionary.WILDCARD_VALUE), 
-                'b', EnumPart.SILICONBOULE.getItemStack()
-        );
-
     }
     
     private static void initToolRecipes() {

@@ -210,5 +210,10 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
             gate.setShape(gate.shape() == 0 ? 1 : 0);
             return true;
         }
+        
+        @Override
+        public int lightLevel() {
+            return 0;
+        }
     }
 }

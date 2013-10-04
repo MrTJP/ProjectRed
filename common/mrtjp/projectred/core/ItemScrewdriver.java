@@ -15,14 +15,14 @@ public class ItemScrewdriver extends Item implements IScrewdriver {
         super(id);
         setUnlocalizedName("projectred.core.screwdriver");
         setMaxStackSize(1);
-        setMaxDamage(64);
+        setMaxDamage(128);
         setNoRepair();
         setCreativeTab(ProjectRedCore.tabCore);
     }
 
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float par8, float par9, float par10) {
-        return true;
+        return false;
     }
 
     @Override

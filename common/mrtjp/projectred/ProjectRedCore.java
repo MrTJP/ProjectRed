@@ -2,10 +2,8 @@ package mrtjp.projectred;
 
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.APIImpl;
-import mrtjp.projectred.core.BlockBasics;
 import mrtjp.projectred.core.CommandDebug;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.CoreGuiHandler;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.core.ItemDrawPlate;
 import mrtjp.projectred.core.ItemPart;
@@ -47,9 +45,6 @@ public class ProjectRedCore {
         ProjectRedAPI.instance = new APIImpl();
     }
     
-    /** Blocks **/
-    public static BlockBasics blockMachines;
-
     /** Items **/
     public static ItemPart itemComponent;
     public static ItemDrawPlate itemDrawPlate;
@@ -79,7 +74,6 @@ public class ProjectRedCore {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(instance);
-        NetworkRegistry.instance().registerGuiHandler(instance, new CoreGuiHandler());
         proxy.init();
     }
 
