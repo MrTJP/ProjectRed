@@ -7,8 +7,7 @@ public class NEIProjectRedConfig implements IConfigureNEI {
     @Override
     public void loadConfig() {
         try {
-            API.registerRecipeHandler(new NEIAlloySmelterRecipeManager());
-            API.registerUsageHandler(new NEIAlloySmelterRecipeManager());
+            
         } catch (Throwable e) {
             e.printStackTrace();
         }

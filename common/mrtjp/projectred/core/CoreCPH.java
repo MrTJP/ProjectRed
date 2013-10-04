@@ -25,13 +25,6 @@ public class CoreCPH implements IClientPacketHandler
             case 2:
                 Messenger.addMessage(packet.readDouble(), packet.readDouble(), packet.readDouble(), packet.readString());
                 return;
-            case 3:
-                TileAlloySmelter t = BasicUtils.getTileEntity(world, packet.readCoord(), TileAlloySmelter.class);
-                if(t != null) {
-                    t.heat = packet.readShort();
-                    t.progress = packet.readShort();
-                }
-                return;
         }
     }
 

@@ -1,8 +1,8 @@
 package mrtjp.projectred;
 
-import mrtjp.projectred.core.BlockBasics.EnumBasics;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
+import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.expansion.ItemPartTube;
 import mrtjp.projectred.expansion.ItemVAWT;
 import net.minecraft.creativetab.CreativeTabs;
@@ -35,7 +35,7 @@ public class ProjectRedExpansion {
     public static CreativeTabs tabExpansion = new CreativeTabs("expansion") {
         @Override
         public ItemStack getIconItemStack() {
-            return EnumBasics.ALLOYSMELTER.getItemStack();
+            return EnumPart.COPPERCOIL.getItemStack();
         }
     };
 

@@ -576,6 +576,11 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
                 gate.onOutputChange(4);
             }
         }
+        
+        @Override
+        public int lightLevel() {
+            return 0;
+        }
     }
     
     public static class ANDCell extends SimpleGateLogic
