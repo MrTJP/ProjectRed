@@ -1,5 +1,7 @@
 v4.0.4
 - CHANGE: Alloy smelter removed
+- CHANGE: Only gates with torches emit light
+- FIX: Toggle latch torches being off on placement
 
 v4.0.3
 - ADDED: Fixtures

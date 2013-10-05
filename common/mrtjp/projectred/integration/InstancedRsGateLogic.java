@@ -245,6 +245,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void setup(InstancedRsGatePart gate) {
             gate.setState(0x10);
+            gate.sendStateUpdate();
         }
         
         @Override
@@ -285,7 +286,6 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
 
         private void toggle(InstancedRsGatePart gate) {
             setState2(state2^1);
-            sendState2Update();
             gate.scheduleTick(2);
             tickSound();
         }
