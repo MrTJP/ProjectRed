@@ -4,6 +4,9 @@ import static mrtjp.projectred.ProjectRedCore.itemComponent;
 import static mrtjp.projectred.ProjectRedCore.itemDrawPlate;
 import static mrtjp.projectred.ProjectRedCore.itemScrewdriver;
 import static mrtjp.projectred.ProjectRedCore.itemWireDebugger;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.common.MinecraftForge;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 
 public class CoreProxy implements IProxy {
@@ -12,6 +15,8 @@ public class CoreProxy implements IProxy {
 
     @Override
     public void preinit() {
+        MinecraftForge.EVENT_BUS.register(RetroactiveWorldGenerator.instance);
+        TickRegistry.registerTickHandler(RetroactiveWorldGenerator.instance, Side.SERVER);
     }
 
     @Override
