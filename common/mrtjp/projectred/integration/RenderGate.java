@@ -721,7 +721,7 @@ public class RenderGate
             wires[1].on = (part.state&2) != 0;
             torches[0].on = (part.state&0x10) != 0;
             torches[1].on = (part.state&0x40) != 0;
-            lever.state = ((ExtraStateLogic)part.getLogic()).state2 != 0 ? 1 : 0;
+            lever.state = (part.state&0x10) != 0 ? 0 : 1;
         }
     }
     
