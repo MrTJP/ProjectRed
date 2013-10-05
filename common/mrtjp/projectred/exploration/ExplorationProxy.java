@@ -23,8 +23,12 @@ public class ExplorationProxy implements IProxy {
 
     @Override
     public void init() {
-        GameRegistry.registerWorldGenerator(GenerationManager.instance);
-
+        if (!Configurator.retroGeneration)
+            GameRegistry.registerWorldGenerator(GenerationManager.instance);
+        
+        if (Configurator.retroGeneration)
+            RetroGenerationManager.registerRetroGenerators();
+        
         itemWoolGin = new ItemWoolGin(Configurator.item_woolginID.getInt());
         itemBackpack = new ItemBackpack(Configurator.item_backpackID.getInt());
 

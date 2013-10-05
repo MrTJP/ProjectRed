@@ -11,11 +11,9 @@ public class Configurator {
     protected static File _configFile;
 
     /** Constants **/
-    public static final String modId = "ProjectRed";
-    public static final String modNetworkChannel = "ProjRed";
+    public static final String modName = "Project Red";
     public static final String version = "@VERSION@";
     public static final String buildnumber = "@BUILD_NUMBER@";
-    public static final String modName = "Project: Red";
 
     /** Multipart IDs **/
     public static Property part_gate;
@@ -67,14 +65,10 @@ public class Configurator {
     public static Property item_rubySword;
     public static Property item_sapphireSword;
     public static Property item_peridotSword;
-//    public static Property item_woodSaw;
-//    public static Property item_stoneSaw;
-//    public static Property item_ironSaw;
     public static Property item_goldSaw;
     public static Property item_rubySaw;
     public static Property item_sapphireSaw;
     public static Property item_peridotSaw;
-//    public static Property item_diamondSaw;
     public static Property item_woodSickle;
     public static Property item_stoneSickle;
     public static Property item_ironSickle;
@@ -95,6 +89,10 @@ public class Configurator {
     /** Settings **/
     public static Property debugMode;
     public static Property logicGateSounds;
+    
+    /** Retro Generation **/
+    public static boolean retroGeneration;
+    public static String retroGenID;
     
     /** Render **/
     public static boolean logicwires3D;
@@ -159,14 +157,10 @@ public class Configurator {
         item_rubySword = localConfig.getItem("rubysword", 9109);
         item_sapphireSword = localConfig.getItem("sapphiresword", 9110);
         item_peridotSword = localConfig.getItem("peridotsword", 9112);
-//        item_woodSaw = localConfig.getItem("woodsaw", 9113);
-//        item_stoneSaw = localConfig.getItem("stonesaw", 9114);
-//        item_ironSaw = localConfig.getItem("ironsaw", 9115);
         item_goldSaw = localConfig.getItem("goldsaw", 9116);
         item_rubySaw = localConfig.getItem("rubysaw", 9117);
         item_sapphireSaw = localConfig.getItem("sapphiresaw", 9118);
         item_peridotSaw = localConfig.getItem("peridotsaw", 9119);
-//        item_diamondSaw = localConfig.getItem("diamondsaw", 9120);
         item_woodSickle = localConfig.getItem("woodsickle", 9121);
         item_stoneSickle = localConfig.getItem("stonesickle", 9122);
         item_ironSickle = localConfig.getItem("ironsickle", 9123);
@@ -197,11 +191,18 @@ public class Configurator {
         Property p_staticGates = localConfig.get("general", "renderStaticGates", true);
         p_staticGates.comment = "If set to false, gates will be rendered in the TESR rather than the WorldRenderer";
         staticGates = p_staticGates.getBoolean(true);
-
-        
         
         logicGateSounds = localConfig.get("general", "Logic Sounds", true);
         logicGateSounds.comment = "If set to false, logic gates will not make sounds.";
+        
+        Property p_retroGeneration = localConfig.get("general", "Retro Ore Generation", false);
+        p_retroGeneration.comment = "If set to true, world generation for ProjectRed will attempt to run even in previously generated chunks.";
+        retroGeneration = p_retroGeneration.getBoolean(false);
+        
+        Property p_retroGenID = localConfig.get("general", "Retro Ore Gen ID", "prRG");
+        p_retroGenID.comment = "This ID is used to check if retro gen has been performed on a chunk. Changing it will reset retro gen status.";
+        retroGenID = p_retroGenID.getString();
+        
         localConfig.save();
     }
 }

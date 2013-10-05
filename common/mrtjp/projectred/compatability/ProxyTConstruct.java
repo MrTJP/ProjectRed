@@ -2,6 +2,7 @@ package mrtjp.projectred.compatability;
 
 import static tconstruct.common.TContent.metalPattern;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.PRLogger;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
@@ -29,7 +30,7 @@ public class ProxyTConstruct {
 	public static LiquidFiniteSubstance moltenConductiveRedmetal;
 
 	public ProxyTConstruct() {
-		System.out.println("[ProjectRedCompat] Loaded TConstruct Proxy");
+	    PRLogger.info("Loaded TConstruct Compatability Proxy");
 	}
 	
 	public void addSmeltingRecipe(ItemStack input, int blockID, int metadata, int temperature, FluidStack liquid) {
