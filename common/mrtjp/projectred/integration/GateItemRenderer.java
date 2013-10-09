@@ -26,16 +26,16 @@ public class GateItemRenderer implements IItemRenderer
         int damage = item.getItemDamage();
         switch (type) {
         case ENTITY:
-            renderGateInv(damage, -.3f, 0f, -.3f, .6f);
+            renderGateInv(damage, -0.3f, 0f, -0.3f, 0.6f);
             return;
         case EQUIPPED:
-            renderGateInv(damage, 0f, .15f, 0f, 1f);
+            renderGateInv(damage, 0f, 0.15f, 0f, 1f);
             return;
         case EQUIPPED_FIRST_PERSON:
-            renderGateInv(damage, 1f, -.2f, -.4f, 2f);
+            renderGateInv(damage, 1f, -0.2f, -0.4f, 2f);
             return;
         case INVENTORY:
-            renderGateInv(damage, 0f, .20f, 0f, 1f);
+            renderGateInv(damage, 0f, 0.20f, 0f, 1f);
             return;
         default:
             return;

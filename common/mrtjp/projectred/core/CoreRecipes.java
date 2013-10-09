@@ -40,17 +40,16 @@ public class CoreRecipes {
         ));
         
         /** Wire debugger **/
-        GameRegistry.addRecipe(new ItemStack(ProjectRedCore.itemWireDebugger), 
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemWireDebugger), 
                 "a a",
                 "ber",
                 "bgr",
                 'a', EnumPart.REDINGOT.getItemStack(),
-                'b', new ItemStack(Item.dyePowder, 1, PRColors.BLACK.dyeId()),
+                'b', PRColors.BLACK.getOreDict(),
                 'e', Item.emerald,
-                'l', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId()),
-                'r', new ItemStack(Item.dyePowder, 1, PRColors.RED.dyeId()),
+                'r', PRColors.RED.getOreDict(),
                 'g', Item.glowstone
-        );
+        ));
 
     }
 

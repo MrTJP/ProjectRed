@@ -4,8 +4,11 @@ import java.util.Random;
 
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.PRLogger;
+import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
+import net.minecraft.block.Block;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -57,6 +60,17 @@ public class GenerationManager implements IWorldGenerator {
                 new GeneratorOre(ProjectRedExploration.blockOres.blockID, EnumOre.OREPERIDOT.meta, 5).generate(w, r, x, y, z);
             }
         }
+        
+        // Dye trees
+        if (Configurator.gen_dyeTrees.getBoolean(true)) {
+            int saplingMeta = r.nextInt(16);
+            int x = chunkX * 16 + r.nextInt(16);
+            int z = chunkZ * 16 + r.nextInt(16);
+            int y = w.getHeightValue(x, z);
+            if (r.nextDouble() < EnumDyeTrees.VALID_FOILAGE[saplingMeta].growthChance/3)
+                new GeneratorCustomTree(false, 5, Block.wood.blockID, 0, ProjectRedExploration.blockStainedLeaf.blockID, saplingMeta, -1, -1).generate(w, r, x, y, z);
+        }
+        
     }
 
     public static void runOverworldGeneration(Random r, int chunkX, int chunkZ, World w) {

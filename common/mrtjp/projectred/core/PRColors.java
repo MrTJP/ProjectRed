@@ -1,5 +1,7 @@
 package mrtjp.projectred.core;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import codechicken.lib.colour.Colour;
 import codechicken.lib.colour.ColourRGBA;
 
@@ -47,8 +49,14 @@ public enum PRColors {
     public final int rgb;
 
     public static PRColors get(int i) {
-        if (i > VALID_COLORS.length - 1)
+        if (i > 15)
+            return BLACK;
+        if (i < 0)
             return WHITE;
         return VALID_COLORS[i];
+    }
+    
+    public ItemStack getDye() {
+        return new ItemStack(Item.dyePowder, 1, dyeId());
     }
 }

@@ -2,6 +2,8 @@ package mrtjp.projectred;
 
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
+import mrtjp.projectred.exploration.BlockStainedLeaf;
+import mrtjp.projectred.exploration.BlockStainedSapling;
 import mrtjp.projectred.exploration.BlockOre;
 import mrtjp.projectred.exploration.BlockSpecialStone;
 import mrtjp.projectred.exploration.BlockSpecialStoneWall;
@@ -37,6 +39,8 @@ public class ProjectRedExploration {
     public static BlockOre blockOres;
     public static BlockSpecialStone blockStones;
     public static BlockSpecialStoneWall blockStoneWalls;
+    public static BlockStainedLeaf blockStainedLeaf;
+    public static BlockStainedSapling blockStainedSapling;
     
     /** Items **/
     public static ItemWoolGin itemWoolGin;
