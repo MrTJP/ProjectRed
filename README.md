@@ -3,7 +3,7 @@ ProjectRed
 Project Red is a mod written for Forge Multipart. It brings vastly improved redstone control to Minecraft via compact wiring and integrated logic gates.
 - [![Build Status](https://travis-ci.org/MrTJP/ProjectRed.png?branch=master)](https://travis-ci.org/MrTJP/ProjectRed)
 - [Minecraft Forum Thread](http://www.minecraftforum.net/topic/1885652-)
-- [Website](http://bit.ly/mrtjp-projectred)
+- [Website](http://projectred.endermedia.org)
 
 
 
