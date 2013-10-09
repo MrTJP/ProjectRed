@@ -1,12 +1,15 @@
 package mrtjp.projectred.exploration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
+import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.util.MathHelper;
@@ -16,7 +19,7 @@ public class BlockOre extends Block {
 
     public BlockOre(int par1) {
         super(par1, Material.rock);
-        this.setUnlocalizedName("projectred.exploration.ore");
+        setUnlocalizedName("projectred.exploration.ore");
         setHardness(3.0F);
         setResistance(5.0F);
         setCreativeTab(ProjectRedExploration.tabExploration);
@@ -64,6 +67,12 @@ public class BlockOre extends Block {
         return meta;
     }
     
+    @Override
+    public void getSubBlocks(int id, CreativeTabs tab, List list) {
+        for (EnumOre e : EnumOre.VALID_ORES)
+            list.add(e.getItemStack(1));
+    }
+
     public enum EnumOre {
         ORERUBY("Ruby Ore", "oreruby", 2, EnumPart.RUBY.getItemStack(), 1, 4, 1, 8),
         ORESAPPHIRE("Sapphire Ore", "oresapphire", 2, EnumPart.SAPPHIRE.getItemStack(), 1, 4, 1, 8),

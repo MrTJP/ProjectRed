@@ -1,11 +1,13 @@
 package mrtjp.projectred.exploration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import mrtjp.projectred.ProjectRedExploration;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
@@ -55,6 +57,12 @@ public class BlockSpecialStone extends Block {
     @Override
     public int damageDropped(int meta) {
         return meta;
+    }
+    
+    @Override
+    public void getSubBlocks(int id, CreativeTabs tab, List list) {
+        for (EnumSpecialStone s : EnumSpecialStone.VALID_STONE)
+            list.add(s.getItemStack());
     }
 
     public enum EnumSpecialStone {

@@ -1,7 +1,7 @@
 Restricted Public Software License
 ============================
 
-Version 1.2.1
+Version 1.3.1
 © MrTJP 2013
 
 0. Definitions
@@ -42,10 +42,7 @@ this Mod must also be legally acquired.
 ------------
 
 This Mod is provided 'as is' with no warranties, implied or otherwise. The 
-Developers of this Mod take no responsibility for any damages incurred from 
-the use of this Mod. This Mod alters fundamental parts of the Minecraft game, 
-parts of Minecraft may not work with this Mod installed. All damages caused 
-from the use or misuse of this Mod fall on the User.
+Developers take no responsibility for anything that happens.
 
 3. Play rights
 --------------
@@ -56,36 +53,27 @@ without restriction.
 4. Modification rights
 ----------------------
 
-The User has the right to look at the Mod source code and modify it, only for 
-the sole intention improving the Mod source and submitting it to the Developers. 
-The User is allowed to compile code changes solely for the purpose of testing it 
-privately.
-
+The User has the right to look at the Mod source code and modify it. No matter 
+how heavily it was modified, it cannot be used for anything more than to 
+contribute it to the actual Mod.
 
 5. Derivation rights
 --------------------
 
-The User has the rights to derive code from this Mod, that is to say to
-write code that extends or instanciate the Mod classes or interfaces, refer to its 
-objects, or calls its functions. This code is known as "derived" code. If any User 
-derives code from this Mod, clear and explicit credits must be given to every 
-Developer of this Mod, as well as means of locating the Mod source. Any part of the
-code that is copied without proof of written permission from a Developer is not
-considered derived.
+The User has the rights to write code that extends or instanciate the Mod classes 
+or interfaces, refer to its objects, or calls its functions. This code is known 
+as "derived" code. If any User derives code from this Mod, clear and explicit 
+credits must be given to every Developer of this Mod, as well as means of locating 
+the Mod source. Any part of the code that is copied without proof of written 
+permission from a Developer is not considered derived.
 
 6. Distribution of original or modified Mod
 -------------------------------------------
 
-A User cannot distribute this Mod in the following ways:
-   - source files, including assets, no matter how heavily they were modified.
-   - non original binary files that have been edited in ANY way.
+By default this Mod may only be distributed on its own by the Developers. 
+It may be included in a mod pack with other mods, as long as it is 
+(a)non-profit and (b)legal. URL shorteners or other attempts to make money is 
+strictly forbidden without advance written permission.
 
-A User IS permitted to distribute this Mod as a part of a mod pack under the 
-following conditions:
-   - the mod pack must be provided to the public without any monetary gain
-   - the mod pack must CLEARLY and EXPLICITLY provide credit to the Developers
-   - the mod pack must be completely legal, as in, every other mod in the pack
-     must be legally included
-   - the mod pack must provide means to locate the original source of distribution
-     to the Mod in the form of a direct link to the forum page, website, or 
-     Repository
+A User is allowed to freely copy and distribute the API files found under the
+API package or from a separate download, so long as it is not edited in any way.

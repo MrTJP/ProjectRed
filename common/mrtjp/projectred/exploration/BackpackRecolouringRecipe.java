@@ -10,7 +10,7 @@ import net.minecraftforge.oredict.OreDictionary;
 public class BackpackRecolouringRecipe extends ShapelessOreNBTRecipe {
 
     public BackpackRecolouringRecipe() {
-        super(new ItemStack(ProjectRedExploration.itemBackpack, 1, OreDictionary.WILDCARD_VALUE), new ItemStack(ProjectRedExploration.itemBackpack, 1, Short.MAX_VALUE), new ItemStack(Item.dyePowder, 1, Short.MAX_VALUE));
+        super(new ItemStack(ProjectRedExploration.itemBackpack, 1, OreDictionary.WILDCARD_VALUE), new ItemStack(ProjectRedExploration.itemBackpack, 1, OreDictionary.WILDCARD_VALUE), new ItemStack(Item.dyePowder, 1, OreDictionary.WILDCARD_VALUE));
         this.setKeepNBT();
     }
 

@@ -39,6 +39,8 @@ public class Configurator {
     public static Property block_redstoneliquidID;
     public static Property block_redconductiveliquidID;
     public static Property block_stoneWallsID;
+    public static Property block_stainedLeafID;
+    public static Property block_stainedSaplingID;
 
     /** Item IDs **/
     public static Property item_screwdriverID;
@@ -85,6 +87,7 @@ public class Configurator {
     public static Property gen_Sapphire;
     public static Property gen_Peridot;
     public static Property gen_SpreadingMoss;
+    public static Property gen_dyeTrees;
 
     /** Settings **/
     public static Property debugMode;
@@ -133,6 +136,8 @@ public class Configurator {
         block_redstoneliquidID = localConfig.getBlock("block_redstoneliquidID", 2133);
         block_redconductiveliquidID = localConfig.getBlock("block_redconductiveliquidID", 2134);
         block_stoneWallsID = localConfig.getBlock("block_stoneWallsID", 2135);
+        block_stainedLeafID = localConfig.getBlock("block_dyeLeafID", 2136);
+        block_stainedSaplingID = localConfig.getBlock("block_dyeSaplingID", 2137);
 
         item_wireDebuggerID = localConfig.getItem("item_wireDebuggerID", 9023);
         item_screwdriverID = localConfig.getItem("item_screwdriverID", 9024);
@@ -176,6 +181,7 @@ public class Configurator {
         gen_MarbleCave = localConfig.get("World Generation", "Marble Caves", true);
         gen_Volcano = localConfig.get("World Generation", "Volcanos", true);
         gen_SpreadingMoss = localConfig.get("World Generation", "Spreading Moss", true);
+        gen_dyeTrees = localConfig.get("World Generation", "Stained Trees", true);
 
         debugMode = localConfig.get("general", "Enable Debugging", false);
         debugMode.comment = "Enable advanced debugging, should ALWAYS be false.";

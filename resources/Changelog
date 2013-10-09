@@ -1,5 +1,6 @@
 v4.0.4
 - ADDED: Retroactive world generation
+- ADDED: Stained trees
 - CHANGE: Alloy smelter removed
 - CHANGE: Only gates with torches emit light
 - FIX: Toggle latch torches being off on placement

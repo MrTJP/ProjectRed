@@ -6,8 +6,10 @@ import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.api.IRetroGenerator;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.RetroactiveWorldGenerator;
+import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -26,6 +28,8 @@ public class RetroGenerationManager {
             RetroactiveWorldGenerator.registerRetroGenerator(new RetrogenMarbleCave());
         if (Configurator.gen_Volcano.getBoolean(true))
             RetroactiveWorldGenerator.registerRetroGenerator(new RetrogenVolcano());
+        if (Configurator.gen_dyeTrees.getBoolean(true))
+            RetroactiveWorldGenerator.registerRetroGenerator(new RetrogenDyeTrees());
     }
     
     static class RetrogenRuby implements IRetroGenerator {
@@ -144,6 +148,30 @@ public class RetroGenerationManager {
             int y = r.nextInt(32);
             int z = chunkZ * 16 + r.nextInt(16);
             new GeneratorVolcano(ProjectRedExploration.blockStones.blockID,EnumSpecialStone.BASALT.meta, MathHelper.getRandomIntegerInRange(r, 32000, 64000)) .generate(w, r, x, y, z);
+        }
+    }
+    
+    static class RetrogenDyeTrees implements IRetroGenerator {
+
+        @Override
+        public String getSubgenerationID() {
+            return "pr_dyetrees";
+        }
+
+        @Override
+        public boolean shouldGenerateInLocation(World w, Chunk c) {
+            int id = w.provider.dimensionId;
+            return id != -1 && id != 1;
+        }
+
+        @Override
+        public void generate(Random r, World w, int chunkX, int chunkZ) {
+            int saplingMeta = r.nextInt(16);
+            int x = chunkX * 16 + r.nextInt(16);
+            int z = chunkZ * 16 + r.nextInt(16);
+            int y = w.getHeightValue(x, z);
+            if (r.nextDouble() < EnumDyeTrees.VALID_FOILAGE[saplingMeta].growthChance/3)
+                new GeneratorCustomTree(false, 5, Block.wood.blockID, 0, ProjectRedExploration.blockStainedLeaf.blockID, saplingMeta, -1, -1).generate(w, r, x, y, z);
         }
     }
 }

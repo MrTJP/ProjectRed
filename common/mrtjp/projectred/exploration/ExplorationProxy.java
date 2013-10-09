@@ -1,15 +1,54 @@
 package mrtjp.projectred.exploration;
 
-import static mrtjp.projectred.ProjectRedExploration.*;
+import static mrtjp.projectred.ProjectRedExploration.blockOres;
+import static mrtjp.projectred.ProjectRedExploration.blockStainedLeaf;
+import static mrtjp.projectred.ProjectRedExploration.blockStainedSapling;
+import static mrtjp.projectred.ProjectRedExploration.blockStoneWalls;
+import static mrtjp.projectred.ProjectRedExploration.blockStones;
+import static mrtjp.projectred.ProjectRedExploration.itemBackpack;
+import static mrtjp.projectred.ProjectRedExploration.itemDiamondSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemGoldSaw;
+import static mrtjp.projectred.ProjectRedExploration.itemGoldSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemIronSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotAxe;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotHoe;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotPickaxe;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotSaw;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotShovel;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemPeridotSword;
+import static mrtjp.projectred.ProjectRedExploration.itemRubyAxe;
+import static mrtjp.projectred.ProjectRedExploration.itemRubyHoe;
+import static mrtjp.projectred.ProjectRedExploration.itemRubyPickaxe;
+import static mrtjp.projectred.ProjectRedExploration.itemRubySaw;
+import static mrtjp.projectred.ProjectRedExploration.itemRubyShovel;
+import static mrtjp.projectred.ProjectRedExploration.itemRubySickle;
+import static mrtjp.projectred.ProjectRedExploration.itemRubySword;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphireAxe;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphireHoe;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphirePickaxe;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphireSaw;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphireShovel;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphireSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemSapphireSword;
+import static mrtjp.projectred.ProjectRedExploration.itemStoneSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemWoodSickle;
+import static mrtjp.projectred.ProjectRedExploration.itemWoolGin;
+import static mrtjp.projectred.ProjectRedExploration.toolMaterialPeridot;
+import static mrtjp.projectred.ProjectRedExploration.toolMaterialRuby;
+import static mrtjp.projectred.ProjectRedExploration.toolMaterialSapphire;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
+import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
+import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;
 import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.EnumHelper;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.oredict.OreDictionary;
 import codechicken.microblock.BlockMicroMaterial;
 import codechicken.microblock.MicroMaterialRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -23,11 +62,11 @@ public class ExplorationProxy implements IProxy {
 
     @Override
     public void init() {
-        if (!Configurator.retroGeneration)
-            GameRegistry.registerWorldGenerator(GenerationManager.instance);
-        
         if (Configurator.retroGeneration)
             RetroGenerationManager.registerRetroGenerators();
+        else
+            GameRegistry.registerWorldGenerator(GenerationManager.instance);
+        
         
         itemWoolGin = new ItemWoolGin(Configurator.item_woolginID.getInt());
         itemBackpack = new ItemBackpack(Configurator.item_backpackID.getInt());
@@ -42,6 +81,15 @@ public class ExplorationProxy implements IProxy {
 
         blockStoneWalls = new BlockSpecialStoneWall(Configurator.block_stoneWallsID.getInt());
         GameRegistry.registerBlock(blockStoneWalls, ItemBlockSpecialStoneWalls.class, "projectred.exploration.stonewalls");
+        
+        blockStainedLeaf = new BlockStainedLeaf(Configurator.block_stainedLeafID.getInt());
+        GameRegistry.registerBlock(blockStainedLeaf, ItemBlockMetaHandler.class, "projectred.exploration.dyeleaf");
+
+        blockStainedSapling = new BlockStainedSapling(Configurator.block_stainedSaplingID.getInt());
+        GameRegistry.registerBlock(blockStainedSapling, ItemBlockStainedSapling.class, "projectred.exploration.dyesapling");
+        
+        for (int i = 0; i < 16; i++)
+            OreDictionary.registerOre(PRColors.get(i).getOreDict(), EnumDyeTrees.VALID_FOILAGE[i].getSappling());
         
         if (Configurator.gen_SpreadingMoss.getBoolean(true)) {
             int mc = Block.cobblestoneMossy.blockID;
