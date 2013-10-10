@@ -39,7 +39,7 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
         TextureUtils.bindAtlas(0);
         
         if (l.isOn())
-            BasicRenderUtils.setFullBrightness();
+            Tessellator.instance.setBrightness(0x00F000F0);
         
         r.renderStandardBlock(block, x, y, z);
         

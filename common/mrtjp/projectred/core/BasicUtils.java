@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -107,6 +108,31 @@ public class BasicUtils {
         return is1.itemID == is2.itemID && is1.getItemDamage() == is2.getItemDamage();
     }
 
+    public static void markBlockDirty(World w, int x, int y, int z) {
+        if (w.blockExists(x, y, z))
+            w.getChunkFromBlockCoords(x, z).setChunkModified();
+    }
+    
+    public static void updateIndirectNeighbors(World w, int x, int y, int z, int id) {
+        if ((w.scheduledUpdatesAreImmediate) || (isClient(w)))
+            return;
+        for (int a = -3; a <= 3; a++)
+            for (int b = -3; b <= 3; b++)
+                for (int c = -3; c <= 3; c++) {
+                    int md = a < 0 ? -a : a;
+                    md += (b < 0 ? -b : b);
+                    md += (c < 0 ? -c : c);
+                    if (md <= 3)
+                        notifyBlock(w, x + a, y + b, z + c, id);
+                }
+    }
+
+    public static void notifyBlock(World w, int x, int y, int z, int id) {
+        Block block = Block.blocksList[w.getBlockId(x, y, z)];
+        if (block != null)
+            block.onNeighborBlockChange(w, x, y, z, id);
+    }
+    
     public static void writeNBTToData(NBTBase nbt, DataOutputStream data) throws IOException {
         NBTBase.writeNamedTag(nbt, data);
     }
