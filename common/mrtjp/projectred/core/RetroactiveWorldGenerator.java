@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 
-import mrtjp.projectred.exploration.IRetroGenerator;
+import mrtjp.projectred.api.IRetroGenerator;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;

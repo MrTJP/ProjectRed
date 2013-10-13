@@ -3,6 +3,7 @@ package mrtjp.projectred.exploration;
 import java.util.Random;
 
 import mrtjp.projectred.ProjectRedExploration;
+import mrtjp.projectred.api.IRetroGenerator;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.RetroactiveWorldGenerator;
 import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;

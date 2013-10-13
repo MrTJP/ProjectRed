@@ -1,4 +1,4 @@
-package mrtjp.projectred.exploration;
+package mrtjp.projectred.api;
 
 import java.util.Random;
 
