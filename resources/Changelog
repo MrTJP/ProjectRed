@@ -1,3 +1,7 @@
+v4.0.5
+- ADDED: Ore Dictionary registration for gems
+- FIX: Crash when world is not installed.
+
 v4.0.4
 - ADDED: Retroactive world generation
 - ADDED: Stained trees

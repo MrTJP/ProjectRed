@@ -161,7 +161,6 @@ public class ExplorationProxy implements IProxy {
     @Override
     public void postinit() {
         ExplorationRecipes.initRecipes();
-        EnumBackpack.initOreDictDefinitions();
     }
 
 }
