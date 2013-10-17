@@ -5,6 +5,7 @@ import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.ShapelessOreNBTRecipe;
+import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
 import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import net.minecraft.block.Block;
@@ -21,8 +22,21 @@ public class ExplorationRecipes {
         initGemToolRecipes();
         initToolRecipes();
         initWorldRecipes();
+        initOreDict();
     }
     
+    private static void initOreDict() {
+        EnumBackpack.initOreDictDefinitions();
+        
+        OreDictionary.registerOre("gemRuby", EnumPart.RUBY.getItemStack());
+        OreDictionary.registerOre("gemSapphire", EnumPart.SAPPHIRE.getItemStack());
+        OreDictionary.registerOre("gemPeridot", EnumPart.PERIDOT.getItemStack());        
+        
+        OreDictionary.registerOre("oreRuby", EnumOre.ORERUBY.getItemStack(1));        
+        OreDictionary.registerOre("oreSapphire", EnumOre.ORESAPPHIRE.getItemStack(1));        
+        OreDictionary.registerOre("orePeridot", EnumOre.OREPERIDOT.getItemStack(1));        
+    }
+
     private static void initGemToolRecipes() {
         /** Axes **/
         addAxeRecipe(new ItemStack(ProjectRedExploration.itemRubyAxe), EnumPart.RUBY.getItemStack());
