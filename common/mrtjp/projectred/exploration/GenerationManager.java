@@ -24,7 +24,10 @@ public class GenerationManager implements IWorldGenerator {
     public void generate(Random r, int chunkX, int chunkZ, World w, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
         if (((chunkGenerator instanceof ChunkProviderHell)) || ((chunkGenerator instanceof ChunkProviderEnd)))
             return;
-
+            
+        if (chunkGenerator instanceof ChunkProviderFlat || world.provider.terrainType == WorldType.FLAT)
+            return;
+        
         if (w.provider.dimensionId == -1 || w.provider.dimensionId == 1)
             return;
 
