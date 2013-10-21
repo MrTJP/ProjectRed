@@ -7,101 +7,100 @@ import net.minecraftforge.common.Property;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 public class Configurator {
-    protected static File _configFolder;
-    protected static File _configFile;
+    protected static File      _configFolder;
+    protected static File      _configFile;
 
     /** Constants **/
-    public static final String modName = "Project Red";
-    public static final String version = "@VERSION@";
+    public static final String modName     = "Project Red";
+    public static final String version     = "@VERSION@";
     public static final String buildnumber = "@BUILD_NUMBER@";
 
     /** Multipart IDs **/
-    public static Property part_gate;
-    public static Property part_wire;
-    public static Property part_jwire;
-    public static Property part_lantern;
-    public static Property part_invlantern;
-    public static Property part_lamp;
-    public static Property part_invlamp;
-    public static Property part_lightButton;
-    public static Property part_cagelamp;
-    public static Property part_invcagelamp;
-    public static Property part_fixture;
-    public static Property part_invfixture;
+    public static Property     part_gate;
+    public static Property     part_wire;
+    public static Property     part_jwire;
+    public static Property     part_lantern;
+    public static Property     part_invlantern;
+    public static Property     part_lamp;
+    public static Property     part_invlamp;
+    public static Property     part_lightButton;
+    public static Property     part_cagelamp;
+    public static Property     part_invcagelamp;
+    public static Property     part_fixture;
+    public static Property     part_invfixture;
 
-    public static Property part_tube;
+    public static Property     part_tube;
 
     /** Block IDs **/
-    public static Property block_machinesID;
-    public static Property block_oresID;
-    public static Property block_stonesID;
-    public static Property block_lampID;    
-    public static Property block_redstoneliquidID;
-    public static Property block_redconductiveliquidID;
-    public static Property block_stoneWallsID;
-    public static Property block_stainedLeafID;
-    public static Property block_stainedSaplingID;
+    public static Property     block_machinesID;
+    public static Property     block_oresID;
+    public static Property     block_stonesID;
+    public static Property     block_lampID;
+    public static Property     block_redstoneliquidID;
+    public static Property     block_redconductiveliquidID;
+    public static Property     block_stoneWallsID;
+    public static Property     block_stainedLeafID;
+    public static Property     block_stainedSaplingID;
+    public static Property     block_stainedStoneID;
 
     /** Item IDs **/
-    public static Property item_screwdriverID;
-    public static Property item_componentsID;
-    public static Property item_drawplateID;
-    public static Property item_woolginID;
-    public static Property item_backpackID;
-    public static Property item_vawtID;
-    public static Property item_wireDebuggerID;
-    
+    public static Property     item_screwdriverID;
+    public static Property     item_componentsID;
+    public static Property     item_drawplateID;
+    public static Property     item_woolginID;
+    public static Property     item_backpackID;
+    public static Property     item_vawtID;
+    public static Property     item_wireDebuggerID;
 
-    public static Property item_rubyAxe;
-    public static Property item_sapphireAxe;
-    public static Property item_peridotAxe;
-    public static Property item_rubyHoe;
-    public static Property item_sapphireHoe;
-    public static Property item_peridotHoe;
-    public static Property item_rubyPickaxe;
-    public static Property item_sapphirePickaxe;
-    public static Property item_peridotPickaxe;
-    public static Property item_rubyShovel;
-    public static Property item_sapphireShovel;
-    public static Property item_peridotShovel;
-    public static Property item_rubySword;
-    public static Property item_sapphireSword;
-    public static Property item_peridotSword;
-    public static Property item_goldSaw;
-    public static Property item_rubySaw;
-    public static Property item_sapphireSaw;
-    public static Property item_peridotSaw;
-    public static Property item_woodSickle;
-    public static Property item_stoneSickle;
-    public static Property item_ironSickle;
-    public static Property item_goldSickle;
-    public static Property item_rubySickle;
-    public static Property item_sapphireSickle;
-    public static Property item_peridotSickle;
-    public static Property item_diamondSickle;
+    public static Property     item_rubyAxe;
+    public static Property     item_sapphireAxe;
+    public static Property     item_peridotAxe;
+    public static Property     item_rubyHoe;
+    public static Property     item_sapphireHoe;
+    public static Property     item_peridotHoe;
+    public static Property     item_rubyPickaxe;
+    public static Property     item_sapphirePickaxe;
+    public static Property     item_peridotPickaxe;
+    public static Property     item_rubyShovel;
+    public static Property     item_sapphireShovel;
+    public static Property     item_peridotShovel;
+    public static Property     item_rubySword;
+    public static Property     item_sapphireSword;
+    public static Property     item_peridotSword;
+    public static Property     item_goldSaw;
+    public static Property     item_rubySaw;
+    public static Property     item_sapphireSaw;
+    public static Property     item_peridotSaw;
+    public static Property     item_woodSickle;
+    public static Property     item_stoneSickle;
+    public static Property     item_ironSickle;
+    public static Property     item_goldSickle;
+    public static Property     item_rubySickle;
+    public static Property     item_sapphireSickle;
+    public static Property     item_peridotSickle;
+    public static Property     item_diamondSickle;
 
     /** Generation **/
-    public static Property gen_MarbleCave;
-    public static Property gen_Volcano;
-    public static Property gen_Ruby;
-    public static Property gen_Sapphire;
-    public static Property gen_Peridot;
-    public static Property gen_SpreadingMoss;
-    public static Property gen_dyeTrees;
+    public static Property     gen_MarbleCave;
+    public static Property     gen_Volcano;
+    public static Property     gen_Ruby;
+    public static Property     gen_Sapphire;
+    public static Property     gen_Peridot;
+    public static Property     gen_SpreadingMoss;
+    public static Property     gen_dyeTrees;
 
     /** Settings **/
-    public static Property debugMode;
-    public static Property logicGateSounds;
-    
+    public static Property     debugMode;
+    public static Property     logicGateSounds;
+
     /** Retro Generation **/
-    public static boolean retroGeneration;
-    public static String retroGenID;
-    
+    public static boolean      retroGeneration;
+    public static String       retroGenID;
+
     /** Render **/
-    public static boolean logicwires3D;
-    public static boolean staticWires;
-    public static boolean staticGates;
-    
+    public static boolean      logicwires3D;
+    public static boolean      staticWires;
+    public static boolean      staticGates;
 
     public static void initConfig(FMLPreInitializationEvent event) {
         _configFolder = event.getModConfigurationDirectory();
@@ -112,7 +111,7 @@ public class Configurator {
     public static void loadPropertiesFromFile(File file) {
         Configuration localConfig = new Configuration(file);
         localConfig.load();
-        
+
         part_gate = localConfig.get("MultiPart Item IDs", "Gate Part ID", 9030);
         part_wire = localConfig.get("MultiPart Item IDs", "Wire Part ID", 9031);
         part_jwire = localConfig.get("MultiPart Item IDs", "Jacketed Wire Part ID", 9032);
@@ -125,8 +124,8 @@ public class Configurator {
         part_invcagelamp = localConfig.get("MultiPart Item IDs", "Inverted Cage Lamp Part ID", 9040);
         part_fixture = localConfig.get("MultiPart Item IDs", "Fixture Part ID", 9041);
         part_invfixture = localConfig.get("MultiPart Item IDs", "Inverted Fixture Part ID", 9042);
-         
-        //TODO
+
+        // TODO
         part_tube = localConfig.get("MultiPart Item IDs", "Tube Part ID", 9333);
 
         block_machinesID = localConfig.getBlock("block_machinesID", 2129);
@@ -138,6 +137,7 @@ public class Configurator {
         block_stoneWallsID = localConfig.getBlock("block_stoneWallsID", 2135);
         block_stainedLeafID = localConfig.getBlock("block_dyeLeafID", 2136);
         block_stainedSaplingID = localConfig.getBlock("block_dyeSaplingID", 2137);
+        block_stainedStoneID = localConfig.getBlock("block_dyeStoneID", 2138);
 
         item_wireDebuggerID = localConfig.getItem("item_wireDebuggerID", 9023);
         item_screwdriverID = localConfig.getItem("item_screwdriverID", 9024);
@@ -185,30 +185,30 @@ public class Configurator {
 
         debugMode = localConfig.get("general", "Enable Debugging", false);
         debugMode.comment = "Enable advanced debugging, should ALWAYS be false.";
-        
+
         Property p_logicwires3D = localConfig.get("general", "3Dlogicwires", true);
         p_logicwires3D.comment = "If set to false, flat wire textures will be used for logic gates. Significant performance improvement";
         logicwires3D = p_logicwires3D.getBoolean(true);
-        
+
         Property p_staticWires = localConfig.get("general", "renderStaticWires", true);
         p_staticWires.comment = "If set to false, wires will be rendered in the TESR rather than the WorldRenderer";
         staticWires = p_staticWires.getBoolean(true);
-        
+
         Property p_staticGates = localConfig.get("general", "renderStaticGates", true);
         p_staticGates.comment = "If set to false, gates will be rendered in the TESR rather than the WorldRenderer";
         staticGates = p_staticGates.getBoolean(true);
-        
+
         logicGateSounds = localConfig.get("general", "Logic Sounds", true);
         logicGateSounds.comment = "If set to false, logic gates will not make sounds.";
-        
+
         Property p_retroGeneration = localConfig.get("general", "Retro Ore Generation", false);
         p_retroGeneration.comment = "If set to true, world generation for ProjectRed will attempt to run even in previously generated chunks.";
         retroGeneration = p_retroGeneration.getBoolean(false);
-        
+
         Property p_retroGenID = localConfig.get("general", "Retro Ore Gen ID", "prRG");
         p_retroGenID.comment = "This ID is used to check if retro gen has been performed on a chunk. Changing it will reset retro gen status.";
         retroGenID = p_retroGenID.getString();
-        
+
         localConfig.save();
     }
 }

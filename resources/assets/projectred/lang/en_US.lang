@@ -165,6 +165,22 @@ tile.projectred.exploration.dyesapling|12.name=Brown Stained Sapling
 tile.projectred.exploration.dyesapling|13.name=Green Stained Sapling
 tile.projectred.exploration.dyesapling|14.name=Red Stained Sapling
 tile.projectred.exploration.dyesapling|15.name=Black Stained Sapling
+tile.projectred.exploration.dyestone|0.name=White Stained Stone
+tile.projectred.exploration.dyestone|1.name=Orange Stained Stone
+tile.projectred.exploration.dyestone|2.name=Magenta Stained Stone
+tile.projectred.exploration.dyestone|3.name=Light Blue Stained Stone
+tile.projectred.exploration.dyestone|4.name=Yellow Stained Stone
+tile.projectred.exploration.dyestone|5.name=Lime Stained Stone
+tile.projectred.exploration.dyestone|6.name=Pink Stained Stone
+tile.projectred.exploration.dyestone|7.name=Grey Stained Stone
+tile.projectred.exploration.dyestone|8.name=Light Grey Stained Stone
+tile.projectred.exploration.dyestone|9.name=Cyan Stained Stone
+tile.projectred.exploration.dyestone|10.name=Purple Stained Stone
+tile.projectred.exploration.dyestone|11.name=Blue Stained Stone
+tile.projectred.exploration.dyestone|12.name=Brown Stained Stone
+tile.projectred.exploration.dyestone|13.name=Green Stained Stone
+tile.projectred.exploration.dyestone|14.name=Red Stained Stone
+tile.projectred.exploration.dyestone|15.name=Black Stained Stone
 
 
 

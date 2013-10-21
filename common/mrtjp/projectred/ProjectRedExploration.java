@@ -2,11 +2,12 @@ package mrtjp.projectred;
 
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-import mrtjp.projectred.exploration.BlockStainedLeaf;
-import mrtjp.projectred.exploration.BlockStainedSapling;
 import mrtjp.projectred.exploration.BlockOre;
 import mrtjp.projectred.exploration.BlockSpecialStone;
 import mrtjp.projectred.exploration.BlockSpecialStoneWall;
+import mrtjp.projectred.exploration.BlockStainedLeaf;
+import mrtjp.projectred.exploration.BlockStainedSapling;
+import mrtjp.projectred.exploration.BlockStainedStone;
 import mrtjp.projectred.exploration.ExplorationGuiHandler;
 import mrtjp.projectred.exploration.ItemBackpack;
 import mrtjp.projectred.exploration.ItemGemAxe;
@@ -36,66 +37,67 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 public class ProjectRedExploration {
 
     /** Blocks **/
-    public static BlockOre blockOres;
-    public static BlockSpecialStone blockStones;
+    public static BlockOre              blockOres;
+    public static BlockSpecialStone     blockStones;
     public static BlockSpecialStoneWall blockStoneWalls;
-    public static BlockStainedLeaf blockStainedLeaf;
-    public static BlockStainedSapling blockStainedSapling;
-    
+    public static BlockStainedLeaf      blockStainedLeaf;
+    public static BlockStainedSapling   blockStainedSapling;
+    public static BlockStainedStone     blockStainedStone;
+
     /** Items **/
-    public static ItemWoolGin itemWoolGin;
-    public static ItemBackpack itemBackpack;
+    public static ItemWoolGin           itemWoolGin;
+    public static ItemBackpack          itemBackpack;
 
-    public static EnumToolMaterial toolMaterialRuby;
-    public static EnumToolMaterial toolMaterialSapphire;
-    public static EnumToolMaterial toolMaterialPeridot;
+    public static EnumToolMaterial      toolMaterialRuby;
+    public static EnumToolMaterial      toolMaterialSapphire;
+    public static EnumToolMaterial      toolMaterialPeridot;
 
-    public static ItemGemAxe itemRubyAxe;
-    public static ItemGemAxe itemSapphireAxe;
-    public static ItemGemAxe itemPeridotAxe;
+    public static ItemGemAxe            itemRubyAxe;
+    public static ItemGemAxe            itemSapphireAxe;
+    public static ItemGemAxe            itemPeridotAxe;
 
-    public static ItemGemHoe itemRubyHoe;
-    public static ItemGemHoe itemSapphireHoe;
-    public static ItemGemHoe itemPeridotHoe;
+    public static ItemGemHoe            itemRubyHoe;
+    public static ItemGemHoe            itemSapphireHoe;
+    public static ItemGemHoe            itemPeridotHoe;
 
-    public static ItemGemPickaxe itemRubyPickaxe;
-    public static ItemGemPickaxe itemSapphirePickaxe;
-    public static ItemGemPickaxe itemPeridotPickaxe;
+    public static ItemGemPickaxe        itemRubyPickaxe;
+    public static ItemGemPickaxe        itemSapphirePickaxe;
+    public static ItemGemPickaxe        itemPeridotPickaxe;
 
-    public static ItemGemShovel itemRubyShovel;
-    public static ItemGemShovel itemSapphireShovel;
-    public static ItemGemShovel itemPeridotShovel;
+    public static ItemGemShovel         itemRubyShovel;
+    public static ItemGemShovel         itemSapphireShovel;
+    public static ItemGemShovel         itemPeridotShovel;
 
-    public static ItemGemSword itemRubySword;
-    public static ItemGemSword itemSapphireSword;
-    public static ItemGemSword itemPeridotSword;
+    public static ItemGemSword          itemRubySword;
+    public static ItemGemSword          itemSapphireSword;
+    public static ItemGemSword          itemPeridotSword;
 
-    public static ItemGemSaw itemGoldSaw;
-    public static ItemGemSaw itemRubySaw;
-    public static ItemGemSaw itemSapphireSaw;
-    public static ItemGemSaw itemPeridotSaw;
+    public static ItemGemSaw            itemGoldSaw;
+    public static ItemGemSaw            itemRubySaw;
+    public static ItemGemSaw            itemSapphireSaw;
+    public static ItemGemSaw            itemPeridotSaw;
 
-    public static ItemGemSickle itemWoodSickle;
-    public static ItemGemSickle itemStoneSickle;
-    public static ItemGemSickle itemIronSickle;
-    public static ItemGemSickle itemGoldSickle;
-    public static ItemGemSickle itemRubySickle;
-    public static ItemGemSickle itemSapphireSickle;
-    public static ItemGemSickle itemPeridotSickle;
-    public static ItemGemSickle itemDiamondSickle;
+    public static ItemGemSickle         itemWoodSickle;
+    public static ItemGemSickle         itemStoneSickle;
+    public static ItemGemSickle         itemIronSickle;
+    public static ItemGemSickle         itemGoldSickle;
+    public static ItemGemSickle         itemRubySickle;
+    public static ItemGemSickle         itemSapphireSickle;
+    public static ItemGemSickle         itemPeridotSickle;
+    public static ItemGemSickle         itemDiamondSickle;
 
     @Instance("ProjRed|Exploration")
     public static ProjectRedExploration instance;
 
     @SidedProxy(clientSide = "mrtjp.projectred.exploration.ExplorationClientProxy", serverSide = "mrtjp.projectred.exploration.ExplorationProxy")
-    public static IProxy proxy;
+    public static IProxy                proxy;
 
-    public static CreativeTabs tabExploration = new CreativeTabs("exploration") {
-        @Override
-        public ItemStack getIconItemStack() {
-            return new ItemStack(Block.grass);
-        }
-    };
+    public static CreativeTabs          tabExploration = new CreativeTabs("exploration") {
+                                                           @Override
+                                                           public ItemStack getIconItemStack() {
+                                                               return new ItemStack(Block.grass);
+                                                           }
+                                                       };
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
