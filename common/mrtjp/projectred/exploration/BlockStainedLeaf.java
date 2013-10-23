@@ -99,7 +99,7 @@ public class BlockStainedLeaf extends BlockLeaves {
 
     @Override
     public void beginLeavesDecay(World world, int x, int y, int z) {
-        world.setBlockMetadataWithNotify(x, y, z, world.getBlockMetadata(x, y, z), 4);
+        world.setBlockMetadataWithNotify(x, y, z, world.getBlockMetadata(x, y, z) | 8, 4);
     }
 
     @Override
