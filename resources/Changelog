@@ -1,5 +1,6 @@
 [dev]v4.0.6
 - ADDED: Version checker
+- CHANGE: Lights use torch placement rules
 - FIX: Stained leaf decay
 - FIX: Flatland generation
 
