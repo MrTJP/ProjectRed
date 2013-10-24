@@ -21,6 +21,17 @@ public class BasicWireUtils {
             return true;
         return b.isBlockSolidOnSide(w, x, y, z, side);
     }
+    
+    public static boolean canPlaceTorchOnBlock(World w, int x, int y, int z, boolean _default) {
+        if (!w.blockExists(x, y, z))
+            return _default;
+
+        Block b = Block.blocksList[w.getBlockId(x, y, z)];
+        if (b == null)
+            return false;
+
+        return b.canPlaceTorchOnTop(w, x, y, z);
+    }
 
     public static boolean canConnectThroughCorner(World world, BlockCoord pos, int side1, int side2) {
         if(world.isAirBlock(pos.x, pos.y, pos.z))

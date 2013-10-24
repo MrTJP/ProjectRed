@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.BasicWireUtils;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -122,9 +123,9 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     public boolean checkSupport() {
         if (BasicUtils.isClient(world()))
             return false;
-        BlockCoord bc = new BlockCoord(x(), y(), z());
-        bc.offset(side);
-        if (!BasicWireUtils.canPlaceWireOnSide(world(), bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side ^ 1), false)) {
+        
+        BlockCoord bc = new BlockCoord(x(), y(), z()).offset(side);
+        if (!BasicWireUtils.canPlaceWireOnSide(world(), bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side^1), false) && !(BasicWireUtils.canPlaceTorchOnBlock(world(), bc.x, bc.y, bc.z, false) && (side^1) == 0)) {
             BasicUtils.dropItemFromLocation(world(), getItem(), false, null, side, 10, new BlockCoord(x(), y(), z()));
             tile().remPart(this);
             return true;
