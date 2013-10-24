@@ -4,13 +4,13 @@ import java.util.Random;
 
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.PRLogger;
-import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
+import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;
 import net.minecraft.block.Block;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderEnd;
 import net.minecraft.world.gen.ChunkProviderHell;
@@ -24,7 +24,10 @@ public class GenerationManager implements IWorldGenerator {
     public void generate(Random r, int chunkX, int chunkZ, World w, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
         if (((chunkGenerator instanceof ChunkProviderHell)) || ((chunkGenerator instanceof ChunkProviderEnd)))
             return;
-
+        
+        if (w.provider.terrainType == WorldType.FLAT)
+            return;
+        
         if (w.provider.dimensionId == -1 || w.provider.dimensionId == 1)
             return;
 

@@ -1,3 +1,8 @@
+[dev]v4.0.6
+- ADDED: Version checker
+- FIX: Stained leaf decay
+- FIX: Flatland generation
+
 v4.0.5
 - ADDED: Ore Dictionary registration for gems
 - FIX: Crash when world is not installed.
