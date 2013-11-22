@@ -14,6 +14,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 
 public class BasicUtils {
@@ -100,19 +101,17 @@ public class BasicUtils {
         TileEntity te = access.getBlockTileEntity(pos.x, pos.y, pos.z);
         return te instanceof TileMultipart ? (TileMultipart)te : null;
     }
+    public static TMultiPart getMultiPart(IBlockAccess w, BlockCoord bc, int part) {
+        TileMultipart t = getMultipartTile(w, bc);
+        if (t != null)
+            return t.partMap(part);
+        
+        return null;
+    }
 
     public static boolean areStacksTheSame(ItemStack is1, ItemStack is2) {
         if (is1 == null || is2 == null)
             return false;
         return is1.itemID == is2.itemID && is1.getItemDamage() == is2.getItemDamage();
     }
-
-    public static void writeNBTToData(NBTBase nbt, DataOutputStream data) throws IOException {
-        NBTBase.writeNamedTag(nbt, data);
-    }
-
-    public static NBTBase readNBTFromData(DataInputStream data) throws IOException {
-        return NBTBase.readNamedTag(data);
-    }
-
 }

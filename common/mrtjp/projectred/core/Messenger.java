@@ -107,7 +107,9 @@ public class Messenger {
                 readMessage(m);
             }
         }
-        messages.removeAll(removeQueue);
+        
+        if (!removeQueue.isEmpty())
+            messages.removeAll(removeQueue);
 
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);

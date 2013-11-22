@@ -58,9 +58,16 @@ item.projectred.core.screwdriver.name=Screwdriver
 
 itemGroup.expansion=Project Red: Expansion
 
-item.projectred.expansion.VAWT.name=Vertical Axis Wind Turbine
-item.projectred.expansion.ptube|0.name=Pressurized Tube
+item.projectred.expansion.routingchip|0.name=Item Responder chip
+item.projectred.expansion.routingchip|1.name=Item Extractor chip
+item.projectred.expansion.routingchip|2.name=Item Broadcaster chip
+item.projectred.expansion.routingchip|3.name=Item Stock Keeper chip
+item.projectred.expansion.routingchip|4.name=Dynamic Item Responder chip
 
+item.projectred.expansion.pipe|0.name=Item Transport pipe
+item.projectred.expansion.pipe|1.name=Routed Junction pipe
+item.projectred.expansion.pipe|2.name=Routed Interface pipe
+item.projectred.expansion.pipe|3.name=Routed Crafting pipe
 
 
 

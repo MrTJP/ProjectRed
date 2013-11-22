@@ -5,7 +5,7 @@ import java.util.List;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.GhostContainer;
 import mrtjp.projectred.core.GhostContainer.ISlotCheck;
-import mrtjp.projectred.core.SimpleInventory;
+import mrtjp.projectred.core.inventory.SimpleInventory;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,7 +37,7 @@ public class ItemBackpack extends Item {
         ItemStack held = player.getHeldItem();
         if (held != null && held.itemID == ProjectRedExploration.itemBackpack.itemID) {
             inv = new BagInventory(player, held);
-            inv.readFromNBT(held.getTagCompound(), "conents");
+            inv.load(held.getTagCompound(), "conents");
         }
         return inv;
     }
@@ -149,12 +149,12 @@ public class ItemBackpack extends Item {
         }
 
         private void loadInventory() {
-            this.readFromNBT(_bagOriginal.getTagCompound());
+            this.load(_bagOriginal.getTagCompound());
         }
 
         private void saveInventory() {
             NBTTagCompound nbt = new NBTTagCompound();
-            this.writeToNBT(nbt);
+            this.save(nbt);
             _bagOriginal.setTagCompound(nbt);
             refreshNBT();
         }
