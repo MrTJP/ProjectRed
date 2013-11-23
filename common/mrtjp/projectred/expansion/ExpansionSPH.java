@@ -75,7 +75,6 @@ public class ExpansionSPH implements IServerPacketHandler {
         if (t instanceof IWorldRequester) {
             RequestConsole r = new RequestConsole().setDestination((IWorldRequester) t);
             
-            //TODO send these as options
             boolean pull = packet.readBoolean();
             boolean craft = packet.readBoolean();
             boolean partial = packet.readBoolean();
@@ -85,11 +84,14 @@ public class ExpansionSPH implements IServerPacketHandler {
             ItemKeyStack s = ItemKeyStack.get(packet.readItemStack(true));
             r.makeRequest(s);
             
-            //TODO make this more accurate. Use stat collector.
-            sender.addChatMessage("Requested " + r.requested() + " " + s.makeStack().getDisplayName() + ".");
-            sender.addChatMessage(r.missing()==0 ? "SUCCESSFULL":r.missing() + " missing.");
+            if (r.requested() > 0)
+            	sender.addChatMessage("Successfully requested " + r.requested() + " of " + s.getName() + ".");
+            else {
+            	sender.addChatMessage("Could not request " + s.stackSize + " of " + s.getName() + ". Missing:");
+            	for (Entry<ItemKey, Integer> entry : r.getMissing().entrySet())
+            		sender.addChatMessage(entry.getValue() + " of " + entry.getKey().getName());
+            }
             
-            //TODO sendRequestList after ordering, not true true.
             sendRequestList((IWorldRequester)t, sender, pull, craft);
         }
     }

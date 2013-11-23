@@ -62,7 +62,7 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
             ItemKeyStack request = ItemKeyStack.get(keyStack.key(), missing);
             req.makeRequest(request);
 
-            if (req.success())
+            if (req.requested() > 0)
                 addToRequestList(request.key(), req.requested());
         }
     }

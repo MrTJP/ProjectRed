@@ -5,7 +5,7 @@ import java.util.Map;
 
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
-import mrtjp.projectred.expansion.RequestTreeNode2.DeliveryPromise;
+import mrtjp.projectred.expansion.RequestBranchNode.DeliveryPromise;
 import mrtjp.projectred.expansion.RoutingChipset_ContainerFactory.ChipGhostContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -48,7 +48,7 @@ public abstract class RoutingChipset {
     }
     
     /** Broadcasting **/
-    public void requestPromises(RequestTreeNode2 request, int existingPromises) {
+    public void requestPromises(RequestBranchNode request, int existingPromises) {
     }
     public void deliverPromises(DeliveryPromise promise, IWorldRequester requester) {
     }

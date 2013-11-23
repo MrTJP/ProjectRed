@@ -13,7 +13,7 @@ import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
-import mrtjp.projectred.expansion.RequestTreeNode2.DeliveryPromise;
+import mrtjp.projectred.expansion.RequestBranchNode.DeliveryPromise;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -175,7 +175,7 @@ public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implement
     }
     
     @Override
-    public void requestPromises(RequestTreeNode2 request, int existingPromises) {
+    public void requestPromises(RequestBranchNode request, int existingPromises) {
         for (RoutingChipset r : chips)
             if (r != null)
                 r.requestPromises(request, existingPromises);

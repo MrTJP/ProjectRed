@@ -9,36 +9,24 @@ import mrtjp.projectred.core.utils.HashPair2;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 
-public class RequestTree2 extends RequestTreeNode2 {
+public class RequestBranch extends RequestBranchNode {
 
-    enum RequestFlags {
-        PULL,
-        CRAFT,
-        PARTIALS,
-        SIMULATE,
-        ;
-        
-        public static final EnumSet<RequestFlags> all = EnumSet.allOf(RequestFlags.class);
-        public static final EnumSet<RequestFlags> def = EnumSet.of(PULL, CRAFT);
-    }
+	private HashMap<HashPair2<IWorldBroadcaster, ItemKey>, Integer> totalPromises;
 
-    public RequestTree2(ItemKeyStack requestedPackage, IWorldRequester requester, EnumSet<RequestFlags> type) {
-        super(null, requestedPackage, requester, null, type);
-    }
+	enum RequestFlags {
+		PULL,
+		CRAFT,
+		PARTIALS,
+		SIMULATE,
+		;
+		
+		public static final EnumSet<RequestFlags> all = EnumSet.allOf(RequestFlags.class);
+		public static final EnumSet<RequestFlags> def = EnumSet.of(PULL, CRAFT);
+	}
     
-    private HashMap<HashPair2<IWorldBroadcaster, ItemKey>, Integer> totalPromises;
-    
-    protected LinkedList<ExcessPromise> getAllExcessFor(ItemKey item) {
-        HashMap<IWorldBroadcaster, List<ExcessPromise>> excessMap = new HashMap<IWorldBroadcaster, List<ExcessPromise>>();
-        recurse_GatherExcess(item, excessMap);
-        recurse_RemoveUnusableExcess(item, excessMap);
-        LinkedList<ExcessPromise> excessPromises = new LinkedList<ExcessPromise>();
-        
-        for (List<ExcessPromise> list : excessMap.values())
-            excessPromises.addAll(list);
-        
-        return excessPromises;
-    }
+	public RequestBranch(ItemKeyStack requestedPackage, IWorldRequester requester, EnumSet<RequestFlags> type) {
+		super(null, requestedPackage, requester, null, type);
+	}
     
     protected void promiseAdded(DeliveryPromise promise) {
         HashPair2<IWorldBroadcaster, ItemKey> key = new HashPair2<IWorldBroadcaster, ItemKey>(promise.sender, promise.thePackage);
@@ -53,6 +41,18 @@ public class RequestTree2 extends RequestTreeNode2 {
         else
             totalPromises.put(key, newCount);
         
+    }
+    
+    protected LinkedList<ExcessPromise> getAllExcessFor(ItemKey item) {
+    	HashMap<IWorldBroadcaster, List<ExcessPromise>> excessMap = new HashMap<IWorldBroadcaster, List<ExcessPromise>>();
+    	recurse_GatherExcess(item, excessMap);
+    	recurse_RemoveUnusableExcess(item, excessMap);
+    	LinkedList<ExcessPromise> excessPromises = new LinkedList<ExcessPromise>();
+    	
+    	for (List<ExcessPromise> list : excessMap.values())
+    		excessPromises.addAll(list);
+    	
+    	return excessPromises;
     }
     
     public int getExistingPromisesFor(HashPair2<IWorldBroadcaster, ItemKey> key) {

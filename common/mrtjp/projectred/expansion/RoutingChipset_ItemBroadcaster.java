@@ -10,7 +10,7 @@ import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
-import mrtjp.projectred.expansion.RequestTreeNode2.DeliveryPromise;
+import mrtjp.projectred.expansion.RequestBranchNode.DeliveryPromise;
 import mrtjp.projectred.expansion.RoutedPayload.SendPriority;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -108,7 +108,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset {
     }
     
     @Override
-    public void requestPromises(RequestTreeNode2 request, int existingPromises) {
+    public void requestPromises(RequestBranchNode request, int existingPromises) {
         IInventory real = getInventoryProvider().getInventory();
         if (real == null)
             return;
@@ -128,13 +128,14 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset {
         
             int numberAvailable = inv.getItemCount(requested);
             numberAvailable -= existingPromises;
+            
             if (numberAvailable > 0) {
                 DeliveryPromise promise = new DeliveryPromise();
-                promise.thePackage = requested;
-                promise.size = Math.min(request.getMissingCount(), numberAvailable);
-                promise.sender = getRouteLayer().getBroadcaster();
+                promise.setPackage(requested)
+                .setSize(Math.min(request.getMissingCount(), numberAvailable))
+                .setSender(getRouteLayer().getBroadcaster());
+                
                 request.addPromise(promise);
-
             }
         }
     }
