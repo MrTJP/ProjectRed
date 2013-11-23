@@ -120,6 +120,8 @@ public class ExplorationProxy implements IProxy {
 
         for (EnumSpecialStone s : EnumSpecialStone.VALID_STONE)
             MicroMaterialRegistry.registerMaterial(new BlockMicroMaterial(ProjectRedExploration.blockStones, s.meta), ProjectRedExploration.blockStones.getUnlocalizedName() + (s.meta > 0 ? "_" + s.meta : ""));
+        
+        ExplorationRecipes.initOreDict();
     }
 
     @Override
