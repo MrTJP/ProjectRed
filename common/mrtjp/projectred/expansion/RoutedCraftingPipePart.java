@@ -14,9 +14,9 @@ import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
-import mrtjp.projectred.expansion.RequestTreeNode2.CraftingPromise;
-import mrtjp.projectred.expansion.RequestTreeNode2.DeliveryPromise;
-import mrtjp.projectred.expansion.RequestTreeNode2.ExcessPromise;
+import mrtjp.projectred.expansion.RequestBranchNode.CraftingPromise;
+import mrtjp.projectred.expansion.RequestBranchNode.DeliveryPromise;
+import mrtjp.projectred.expansion.RequestBranchNode.ExcessPromise;
 import mrtjp.projectred.expansion.RoutedPayload.SendPriority;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -227,7 +227,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
 
     
     @Override
-    public void requestPromises(RequestTreeNode2 request, int existingPromises) {
+    public void requestPromises(RequestBranchNode request, int existingPromises) {
         if (excess.isEmpty()) return;
         
         ItemKey requestedItem = request.getRequestedPackage();
@@ -249,10 +249,9 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
             return;
 
         ExcessPromise promise = new ExcessPromise();
-        promise.thePackage = requestedItem;
-        promise.size = Math.min(remaining, request.getMissingCount());
-        promise.sender = this;
-        promise.used = true;
+        promise.setUsed(true).setPackage(requestedItem)
+        .setSize(Math.min(remaining, request.getMissingCount())).setSender(this);
+
         request.addPromise(promise);
     }
 

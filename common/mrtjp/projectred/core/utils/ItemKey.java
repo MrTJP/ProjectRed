@@ -60,7 +60,6 @@ public class ItemKey implements Comparable<ItemKey>{
         return c;
     }
 
-    
     public ItemKey copy() {
         return new ItemKey(itemID, itemDamage, tag);
     }

@@ -1,18 +1,23 @@
 package mrtjp.projectred.expansion;
 
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
+import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
-import mrtjp.projectred.expansion.RequestTree2.RequestFlags;
+import mrtjp.projectred.expansion.RequestBranch.RequestFlags;
 import net.minecraft.item.ItemStack;
 
 public class RequestConsole {
     private EnumSet<RequestFlags> settings = EnumSet.noneOf(RequestFlags.class);        
-    private boolean success;
-    private int requestCount;
-    private int missingCount;
-    
-    IWorldRequester destination = null;
+
+    private IWorldRequester destination = null;
+    private RequestBranch branch = null;
+        
+    private int requested = 0;
+    private Map<ItemKey, Integer> used = null;
+    private Map<ItemKey, Integer> missing = null;
     
     public RequestConsole setPulling(boolean flag) {
         if (flag)
@@ -21,7 +26,6 @@ public class RequestConsole {
             settings.remove(RequestFlags.PULL);
         return this;
     }
-    
     public RequestConsole setCrafting(boolean flag) {
         if (flag)
             settings.add(RequestFlags.CRAFT);
@@ -29,7 +33,6 @@ public class RequestConsole {
             settings.remove(RequestFlags.CRAFT);
         return this;
     }
-    
     public RequestConsole setPartials(boolean flag) {
         if (flag)
             settings.add(RequestFlags.PARTIALS);
@@ -37,7 +40,6 @@ public class RequestConsole {
             settings.remove(RequestFlags.PARTIALS);
         return this;
     }
-    
     public RequestConsole setSimulate(boolean flag) {
         if (flag)
             settings.add(RequestFlags.SIMULATE);
@@ -45,24 +47,15 @@ public class RequestConsole {
             settings.remove(RequestFlags.SIMULATE);
         return this;
     }
-    
     public RequestConsole setDestination(IWorldRequester destination) {
         this.destination = destination;
         return this;
     }
-
-    public boolean success() {
-        return success;
-    }
     
     public int requested() {
-        return requestCount;
+    	return requested;
     }
-    
-    public int missing() {
-        return missingCount;
-    }
-    
+        
     public RequestConsole makeRequest(ItemStack request) {
         return makeRequest(ItemKeyStack.get(request));
     }
@@ -71,14 +64,54 @@ public class RequestConsole {
         if (destination == null)
             return this;
         
-        RequestTree2 tree = new RequestTree2(request, destination, settings);
-        if (tree.isDone() || (settings.contains(RequestFlags.PARTIALS) && tree.getPromisedCount() > 0)) {
-            success = true;
-            requestCount = tree.getPromisedCount();
-            missingCount = tree.getMissingCount();
+        parityBuilt = false;
+        used = null;
+        missing = null;
+        requested = 0;
+        
+        branch = new RequestBranch(request.copy(), destination, settings);
+        
+        if (branch.isDone() || (settings.contains(RequestFlags.PARTIALS) && branch.getPromisedCount() > 0)) {
+            requested = branch.getPromisedCount();
+            
             if (!settings.contains(RequestFlags.SIMULATE))
-                tree.recurse_RequestDelivery();
+                branch.recurse_RequestDelivery();
         }
         return this;
     }
+    
+    private boolean parityBuilt = false;
+    
+    private void rebuildParity() {
+    	if (!parityBuilt)
+    		branch.recurse_RebuildParityTree();
+    	parityBuilt = true;
+    }
+    
+    private void gatherUsed() {
+		if (used == null) {
+			rebuildParity();
+			used = new HashMap<ItemKey, Integer>();
+			branch.recurse_GatherStatisticsUsed(used);
+		}
+    }
+    
+	private void gatherMissing() {
+		if (missing == null) {
+			rebuildParity();
+			missing = new HashMap<ItemKey, Integer>();
+			branch.recurse_GatherStatisticsMissing(missing);
+		}
+    }
+	
+	public Map<ItemKey, Integer> getUsed() {
+		if (used == null)
+			gatherUsed();
+		return used;
+	}
+	public Map<ItemKey, Integer> getMissing() {
+		if (missing == null)
+			gatherMissing();
+		return missing;
+	}
 }

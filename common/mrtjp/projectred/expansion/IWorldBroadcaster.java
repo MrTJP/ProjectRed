@@ -3,11 +3,11 @@ package mrtjp.projectred.expansion;
 import java.util.Map;
 
 import mrtjp.projectred.core.utils.ItemKey;
-import mrtjp.projectred.expansion.RequestTreeNode2.DeliveryPromise;
+import mrtjp.projectred.expansion.RequestBranchNode.DeliveryPromise;
 
 public interface IWorldBroadcaster extends IWorldRouter {
 
-    public void requestPromises(RequestTreeNode2 request, int existingPromises);
+    public void requestPromises(RequestBranchNode request, int existingPromises);
 
     public void deliverPromises(DeliveryPromise promise, IWorldRequester requester);
 
