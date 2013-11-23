@@ -1,8 +1,11 @@
-[dev]v4.0.6
+[dev]v4.1.0
 - ADDED: Version checker
+- ADDED: Option to turn off light halos
 - CHANGE: Lights use torch placement rules
+- CHANGE: Stained trees can only generate in overworld (too OP)
 - FIX: Stained leaf decay
 - FIX: Flatland generation
+- FIX: Ore recipe for tools
 
 v4.0.5
 - ADDED: Ore Dictionary registration for gems

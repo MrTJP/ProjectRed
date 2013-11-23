@@ -90,8 +90,8 @@ public class Configurator {
     public static Property gen_dyeTrees;
 
     /** Settings **/
-    public static Property debugMode;
-    public static Property logicGateSounds;
+    public static boolean debugMode;
+    public static boolean logicGateSounds;
     
     /** Retro Generation **/
     public static boolean retroGeneration;
@@ -101,6 +101,7 @@ public class Configurator {
     public static boolean logicwires3D;
     public static boolean staticWires;
     public static boolean staticGates;
+    public static boolean renderLampHalos;
     
 
     public static void initConfig(FMLPreInitializationEvent event) {
@@ -183,8 +184,9 @@ public class Configurator {
         gen_SpreadingMoss = localConfig.get("World Generation", "Spreading Moss", true);
         gen_dyeTrees = localConfig.get("World Generation", "Stained Trees", true);
 
-        debugMode = localConfig.get("general", "Enable Debugging", false);
-        debugMode.comment = "Enable advanced debugging, should ALWAYS be false.";
+        Property p_debugMode = localConfig.get("general", "Enable Debugging", false);
+        p_debugMode.comment = "Enable advanced debugging, should ALWAYS be false.";
+        debugMode = p_debugMode.getBoolean(false);
         
         Property p_logicwires3D = localConfig.get("general", "3Dlogicwires", true);
         p_logicwires3D.comment = "If set to false, flat wire textures will be used for logic gates. Significant performance improvement";
@@ -198,8 +200,13 @@ public class Configurator {
         p_staticGates.comment = "If set to false, gates will be rendered in the TESR rather than the WorldRenderer";
         staticGates = p_staticGates.getBoolean(true);
         
-        logicGateSounds = localConfig.get("general", "Logic Sounds", true);
-        logicGateSounds.comment = "If set to false, logic gates will not make sounds.";
+        Property p_logicGateSounds = localConfig.get("general", "Logic Sounds", true);
+        p_logicGateSounds.comment = "If set to false, logic gates will not make sounds.";
+        logicGateSounds = p_logicGateSounds.getBoolean(true);
+
+        Property p_renderHalo = localConfig.get("general", "Lamp Halo rendering", true);
+        p_renderHalo.comment = "If set to false, lamps will no longer render halos";
+        renderLampHalos = p_renderHalo.getBoolean(true);
         
         Property p_retroGeneration = localConfig.get("general", "Retro Ore Generation", false);
         p_retroGeneration.comment = "If set to true, world generation for ProjectRed will attempt to run even in previously generated chunks.";
@@ -208,6 +215,7 @@ public class Configurator {
         Property p_retroGenID = localConfig.get("general", "Retro Ore Gen ID", "prRG");
         p_retroGenID.comment = "This ID is used to check if retro gen has been performed on a chunk. Changing it will reset retro gen status.";
         retroGenID = p_retroGenID.getString();
+        
         
         localConfig.save();
     }

@@ -3,16 +3,16 @@
 	<property file="buildspecs.properties" prefix="buildspecs" />
 
 
-	<property name="mod.version" value="4.0.5" />
+	<property name="mod.version" value="4.1.0" />
 	<condition property="mod.build" value="${env.BUILD_NUMBER}" else="0">
 		<isset property="env.BUILD_NUMBER" />
 	</condition>
 	<property name="mc.version" value="1.6.4" />
-	<property name="forge.version" value="9.11.0.898" />
-	<property name="ccl.version" value="1.0.0.36" />
+	<property name="forge.version" value="9.11.1.953" />
+	<property name="ccl.version" value="1.0.0.44" />
 	<property name="ccobf.version" value="1.0.0.15" />
 	<property name="ccc.version" value="0.9.0.7" />
-	<property name="fmp.version" value="1.0.0.191" />
+	<property name="fmp.version" value="1.0.0.212" />
 	<property name="nei.version" value="1.6.1.5_d1" />
 	<property name="tcons.version" value="1.4.7d4" />
 
@@ -26,6 +26,7 @@
 
 	<property name="mod.name.base" value="ProjectRedBase-${mc.version}-${mod.version}.${mod.build}.jar" />
 	<property name="mod.name.integration" value="ProjectRedIntegration-${mc.version}-${mod.version}.${mod.build}.jar" />
+	<property name="mod.name.lighting" value="ProjectRedLighting-${mc.version}-${mod.version}.${mod.build}.jar" />
 	<property name="mod.name.mechanical" value="ProjectRedMechanical-${mc.version}-${mod.version}.${mod.build}.jar" />
 	<property name="mod.name.world" value="ProjectRedWorld-${mc.version}-${mod.version}.${mod.build}.jar" />
 	<property name="mod.name.compat" value="ProjectRedCompat-${mc.version}-${mod.version}.${mod.build}.jar" />
@@ -356,6 +357,12 @@
 			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedIntegration*.class, **/ProjectRedTransmission*.class, **/mrtjp/projectred/integration/**, **/mrtjp/projectred/transmission/**" />
 		</jar>
 
+		<!-- ProjectRed Lighting -->
+		<echo message="Packaging ProjectRed Lighting" />
+		<jar destfile="${jar.dir}/${mod.name.lighting}">
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedIllumination*.class, **/mrtjp/projectred/illumination/**" />
+		</jar>
+
 		<!-- ProjectRed Mechanical -->
 		<echo message="Packaging ProjectRed Mechanical" />
 		<jar destfile="${jar.dir}/${mod.name.mechanical}">
@@ -365,7 +372,7 @@
 		<!-- ProjectRed World -->
 		<echo message="Packaging ProjectRed World" />
 		<jar destfile="${jar.dir}/${mod.name.world}">
-			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExploration*.class, **/ProjectRedIllumination*.class, **/mrtjp/projectred/exploration/**, **/mrtjp/projectred/illumination/**" />
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExploration*.class, **/mrtjp/projectred/exploration/**" />
 		</jar>
 
 		<!-- ProjectRed Compat -->

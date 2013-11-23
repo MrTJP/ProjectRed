@@ -169,11 +169,12 @@ public class RetroGenerationManager {
             if (w.provider.terrainType == WorldType.FLAT)
                 return false;
             
-            return id != -1 && id != 1;
+            return id == 0;
         }
 
         @Override
         public void generate(Random r, World w, int chunkX, int chunkZ) {
+        	// Dye trees
             int saplingMeta = r.nextInt(16);
             int x = chunkX * 16 + r.nextInt(16);
             int z = chunkZ * 16 + r.nextInt(16);

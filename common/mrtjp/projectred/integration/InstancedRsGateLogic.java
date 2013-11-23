@@ -64,7 +64,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
     }
     
     public void tickSound() {
-        if (Configurator.logicGateSounds.getBoolean(true))
+        if (Configurator.logicGateSounds)
             gate.world().playSoundEffect(gate.x()+0.5D, gate.y()+0.5D, gate.z()+0.5D, "random.click", 0.3F, 0.5F);
     }
     
