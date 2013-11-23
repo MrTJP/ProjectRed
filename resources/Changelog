@@ -1,4 +1,4 @@
-[dev]v4.1.0
+v4.1.0
 - ADDED: Version checker
 - ADDED: Option to turn off light halos
 - CHANGE: Lights use torch placement rules
