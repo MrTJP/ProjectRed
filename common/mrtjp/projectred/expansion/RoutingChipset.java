@@ -18,12 +18,12 @@ import codechicken.lib.packet.PacketCustom;
 public abstract class RoutingChipset {
 
     private IInventoryProvider inventoryProvider;
-    private IItemSender itemSender;
+    private IRouteLayer routeLayer;
     private int slot;
 
-    public void setEnvironment(IInventoryProvider inventoryProvider, IItemSender itemSender, int slot) {
+    public void setEnvironment(IInventoryProvider inventoryProvider, IRouteLayer routeLayer, int slot) {
         this.inventoryProvider = inventoryProvider;
-        this.itemSender = itemSender;
+        this.routeLayer = routeLayer;
         this.slot = slot;
     }
 
@@ -31,8 +31,8 @@ public abstract class RoutingChipset {
         return inventoryProvider;
     }
 
-    public IItemSender getItemSender() {
-        return itemSender;
+    public IRouteLayer getRouteLayer() {
+        return routeLayer;
     }
 
     public int getSlot() {
@@ -50,7 +50,7 @@ public abstract class RoutingChipset {
     /** Broadcasting **/
     public void requestPromises(RequestTreeNode2 request, int existingPromises) {
     }
-    public void deliverPromises(DeliveryPromise promise, IWorldRoutedRequester requester) {
+    public void deliverPromises(DeliveryPromise promise, IWorldRequester requester) {
     }
     public void getProvidedItems(Map<ItemKey, Integer> map) {
     }

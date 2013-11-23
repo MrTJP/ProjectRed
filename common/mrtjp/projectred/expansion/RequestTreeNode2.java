@@ -18,11 +18,10 @@ import mrtjp.projectred.expansion.RequestTree2.RequestFlags;
 
 public class RequestTreeNode2 {
 
-    public RequestTreeNode2(CraftingPromise parentCrafter, ItemKeyStack requestedPackage, IWorldRoutedRequester requester, RequestTreeNode2 parent, EnumSet<RequestFlags> type) {
+    public RequestTreeNode2(CraftingPromise parentCrafter, ItemKeyStack requestedPackage, IWorldRequester requester, RequestTreeNode2 parent, EnumSet<RequestFlags> type) {
         this.requestedPackage = requestedPackage;
         this.requester = requester;
         this.parent = parent;
-        this.flags = type;
         
         if (parent != null) {
             parent.subRequests.add(this);
@@ -46,10 +45,9 @@ public class RequestTreeNode2 {
     }
     
     private final ItemKeyStack requestedPackage;
-    private final IWorldRoutedRequester requester;
+    private final IWorldRequester requester;
     private final RequestTreeNode2 parent;
     protected final RequestTree2 root;
-    private final EnumSet<RequestFlags> flags;
     
     private List<RequestTreeNode2> subRequests = new ArrayList<RequestTreeNode2>();
     private List<DeliveryPromise> promises = new ArrayList<DeliveryPromise>();
@@ -69,7 +67,7 @@ public class RequestTreeNode2 {
     }
     
     public ItemKey getRequestedPackage() {
-        return requestedPackage.getKey();
+        return requestedPackage.key();
     }
     
     public boolean isDone() {
@@ -84,24 +82,25 @@ public class RequestTreeNode2 {
             return;
         }
 
-        if (promise.deliveryCount > getMissingCount()) {
-            int more = promise.deliveryCount - getMissingCount();
-            promise.deliveryCount = getMissingCount();
+        if (promise.size > getMissingCount()) {
+            int more = promise.size - getMissingCount();
+            promise.size = getMissingCount();
 
             ExcessPromise excess = new ExcessPromise();
             excess.thePackage = promise.thePackage;
-            excess.deliveryCount = more;
+            excess.size = more;
             excess.sender = promise.sender;
             excessPromises.add(excess);
         }
         
-        if (promise.deliveryCount <= 0)
+        if (promise.size <= 0)
             return;
         
         promises.add(promise);
-        promisedCount += promise.deliveryCount;
+        promisedCount += promise.size;
         root.promiseAdded(promise);
-        System.out.println("Added promise " + promise.thePackage.makeStack(0).getDisplayName());
+        String s = promise instanceof ExcessPromise? "excess" : "";
+        System.out.println("Added " + s + " promise " + promise.thePackage.makeStack(0).getDisplayName());
     }
 
     private boolean getPromisesFromCrafters() {
@@ -112,8 +111,8 @@ public class RequestTreeNode2 {
         List<CraftingPromise> allCrafters = new ArrayList<CraftingPromise>(allRouters.size());
         
         for (Router r : allRouters) {
-            if (r.getParent() instanceof IWorldRoutedCrafter) {
-                IWorldRoutedCrafter cr = (IWorldRoutedCrafter)r.getParent();
+            if (r.getParent() instanceof IWorldCrafter) {
+                IWorldCrafter cr = (IWorldCrafter)r.getParent();
                 CraftingPromise cp = cr.requestCraftPromise(getRequestedPackage());
                 if (cp != null)
                     allCrafters.add(cp);
@@ -246,15 +245,16 @@ public class RequestTreeNode2 {
 
     private boolean getPromisesFromExcess() {
         LinkedList<ExcessPromise> availableExcess = root.getAllExcessFor(getRequestedPackage());
-        
+        //TODO
+        System.out.println("CHECKED EXCESS. " + availableExcess.size() + " excess found. ");
         for (ExcessPromise excess : availableExcess) {
             if (isDone())
                 break;
             
-            if (excess.deliveryCount <= 0)
+            if (excess.size <= 0)
                 continue;
             
-            excess.deliveryCount = Math.min(excess.deliveryCount, getMissingCount());
+            excess.size = Math.min(excess.size, getMissingCount());
             addPromise(excess);
         }
         
@@ -268,10 +268,10 @@ public class RequestTreeNode2 {
             
             IWorldRouter member = r.getParent();
 
-            if (member.needsWork() || !(member instanceof IWorldRoutedBroadcaster))
+            if (member.needsWork() || !(member instanceof IWorldBroadcaster))
                 continue;
-            IWorldRoutedBroadcaster member2 = (IWorldRoutedBroadcaster) member;
-            member2.requestPromises(this, root.getExistingPromisesFor(new HashPair2<IWorldRoutedBroadcaster, ItemKey>(member2, getRequestedPackage())));
+            IWorldBroadcaster member2 = (IWorldBroadcaster) member;
+            member2.requestPromises(this, root.getExistingPromisesFor(new HashPair2<IWorldBroadcaster, ItemKey>(member2, getRequestedPackage())));
         }
         return isDone();
     }
@@ -280,11 +280,11 @@ public class RequestTreeNode2 {
         boolean failed = false;
         int potentialSets = numberOfSets;
         
-        List<Pair2<ItemKeyStack, IWorldRoutedRequester>> ingredients = crafter.getScaledIngredients(numberOfSets);
+        List<Pair2<ItemKeyStack, IWorldRequester>> ingredients = crafter.getScaledIngredients(numberOfSets);
         ArrayList<RequestTreeNode2> children = new ArrayList<RequestTreeNode2>(ingredients.size());
 
-        for (Pair2<ItemKeyStack, IWorldRoutedRequester> item : ingredients) {
-            RequestTreeNode2 req = new RequestTreeNode2(crafter, item.getValue1(), item.getValue2(), this, flags);
+        for (Pair2<ItemKeyStack, IWorldRequester> item : ingredients) {
+            RequestTreeNode2 req = new RequestTreeNode2(crafter, item.getValue1(), item.getValue2(), this, RequestFlags.def);
             children.add(req);
             if (!req.isDone())
                 failed = true;
@@ -308,11 +308,11 @@ public class RequestTreeNode2 {
     private int getCalculatedSubPromises(int numberOfSets, CraftingPromise crafter) {
         ArrayList<RequestTreeNode2> children = new ArrayList<RequestTreeNode2>();
         if (numberOfSets > 0) {
-            List<Pair2<ItemKeyStack, IWorldRoutedRequester>> ingredients = crafter.getScaledIngredients(numberOfSets);
+            List<Pair2<ItemKeyStack, IWorldRequester>> ingredients = crafter.getScaledIngredients(numberOfSets);
             boolean failed = false;
             
-            for (Pair2<ItemKeyStack, IWorldRoutedRequester> item : ingredients) {
-                RequestTreeNode2 req = new RequestTreeNode2(crafter, item.getValue1(), item.getValue2(), this, flags);
+            for (Pair2<ItemKeyStack, IWorldRequester> item : ingredients) {
+                RequestTreeNode2 req = new RequestTreeNode2(crafter, item.getValue1(), item.getValue2(), this, RequestFlags.def);
                 children.add(req);
                 if (!req.isDone())
                     failed = true;
@@ -360,12 +360,12 @@ public class RequestTreeNode2 {
             p.sender.deliverPromises(p, requester);
         
         for (ExcessPromise p : excessPromises)
-            if (p.sender instanceof IWorldRoutedCrafter)
-                ((IWorldRoutedCrafter)p.sender).registerExcess(p);
+            if (p.sender instanceof IWorldCrafter)
+                ((IWorldCrafter)p.sender).registerExcess(p);
             
     }
     
-    protected void recurse_GatherExcess(ItemKey item, HashMap<IWorldRoutedBroadcaster, List<ExcessPromise>> excessMap) {
+    protected void recurse_GatherExcess(ItemKey item, HashMap<IWorldBroadcaster, List<ExcessPromise>> excessMap) {
         for (ExcessPromise extra : excessPromises) {
             if (extra.thePackage == item) {
                 List<ExcessPromise> extras = excessMap.get(extra.sender);
@@ -381,7 +381,7 @@ public class RequestTreeNode2 {
             subNode.recurse_GatherExcess(item, excessMap);
     }
     
-    protected void recurse_RemoveUnusableExcess(ItemKey item, HashMap<IWorldRoutedBroadcaster, List<ExcessPromise>> excessMap) {
+    protected void recurse_RemoveUnusableExcess(ItemKey item, HashMap<IWorldBroadcaster, List<ExcessPromise>> excessMap) {
         for (DeliveryPromise promise : promises) {
             if (promise.thePackage != item)
                 continue;
@@ -394,7 +394,7 @@ public class RequestTreeNode2 {
             if (epromise.used)
                 continue;
 
-            int usedcount = epromise.deliveryCount;
+            int usedcount = epromise.size;
 
             List<ExcessPromise> extras = excessMap.get(epromise.sender);
             if (extras == null)
@@ -403,12 +403,12 @@ public class RequestTreeNode2 {
             Iterator<ExcessPromise> it = extras.iterator();
             while (it.hasNext()) {
                 ExcessPromise extra = it.next();
-                if (extra.deliveryCount >= usedcount) {
-                    extra.deliveryCount -= usedcount;
+                if (extra.size >= usedcount) {
+                    extra.size -= usedcount;
                     usedcount = 0;
                     break;
                 } else {
-                    usedcount -= extra.deliveryCount;
+                    usedcount -= extra.size;
                     it.remove();
                 }
             }
@@ -420,14 +420,25 @@ public class RequestTreeNode2 {
 
     public static class DeliveryPromise {
         public ItemKey thePackage;
-        public int deliveryCount;
-        public IWorldRoutedBroadcaster sender;
+        public int size;
+        public IWorldBroadcaster sender;
+        
+        public DeliveryPromise setPackage(ItemKey thePackage) {
+        	this.thePackage = thePackage;
+        	return this;
+        }
+        public DeliveryPromise setSize(int size) {
+        	this.size = size;
+        	return this;
+        }
+        public DeliveryPromise setSender(IWorldBroadcaster sender) {
+        	this.sender = sender;
+        	return this;
+        }
         
         public DeliveryPromise copy() {
             DeliveryPromise p = new DeliveryPromise();
-            p.thePackage = thePackage;
-            p.deliveryCount = deliveryCount;
-            p.sender = sender;
+            p.setPackage(thePackage).setSize(size).setSender(sender);
             return p;
         }
     }
@@ -437,27 +448,27 @@ public class RequestTreeNode2 {
         public ExcessPromise copy() {
             ExcessPromise p = new ExcessPromise();
             p.thePackage = thePackage;
-            p.deliveryCount = deliveryCount;
+            p.size = size;
             p.sender = sender;
             p.used = used;
             return p;
         }
     }
     public static class CraftingPromise implements Comparable<CraftingPromise> {
-        private IWorldRoutedCrafter crafter;
+        private IWorldCrafter crafter;
         
         private ItemKeyStack result;
-        private ArrayList<Pair2<ItemKeyStack, IWorldRoutedRequester>> ingredients = new ArrayList<Pair2<ItemKeyStack, IWorldRoutedRequester>>(9);
+        private ArrayList<Pair2<ItemKeyStack, IWorldRequester>> ingredients = new ArrayList<Pair2<ItemKeyStack, IWorldRequester>>(9);
         
         private final int priority;
         
-        public CraftingPromise(ItemKeyStack result, IWorldRoutedCrafter crafter, int priority) {
+        public CraftingPromise(ItemKeyStack result, IWorldCrafter crafter, int priority) {
             this.result = result;
             this.crafter = crafter;
             this.priority = priority;
         }
         
-        public IWorldRoutedCrafter getCrafter() {
+        public IWorldCrafter getCrafter() {
             return crafter;
         }
         
@@ -465,29 +476,29 @@ public class RequestTreeNode2 {
             return priority;
         }
         
-        public CraftingPromise addIngredient(ItemKeyStack ingredient, IWorldRoutedRequester crafter) {
-            for (Pair2<ItemKeyStack, IWorldRoutedRequester> ing : ingredients)
-                if (ing.getValue1().getKey().equals(ingredient.getKey()) && ing.getValue2() == crafter) {
+        public CraftingPromise addIngredient(ItemKeyStack ingredient, IWorldRequester crafter) {
+            for (Pair2<ItemKeyStack, IWorldRequester> ing : ingredients)
+                if (ing.getValue1().key().equals(ingredient.key()) && ing.getValue2() == crafter) {
                     ing.getValue1().stackSize += ingredient.stackSize;
                     return this;
                 }
-            ingredients.add(new Pair2<ItemKeyStack, IWorldRoutedRequester>(ingredient, crafter));
+            ingredients.add(new Pair2<ItemKeyStack, IWorldRequester>(ingredient, crafter));
             return this;
         }
         
         public DeliveryPromise getScaledPromise(int numberOfSets) {
             DeliveryPromise p = new DeliveryPromise();
-            p.thePackage = result.getKey().copy();
-            p.deliveryCount = result.stackSize * numberOfSets;
+            p.thePackage = result.key().copy();
+            p.size = result.stackSize * numberOfSets;
             p.sender = crafter;
             return p;
         }
         
-        public List<Pair2<ItemKeyStack, IWorldRoutedRequester>> getScaledIngredients(int numberOfSets) {
-            List<Pair2<ItemKeyStack, IWorldRoutedRequester>> components = new ArrayList<Pair2<ItemKeyStack, IWorldRoutedRequester>>(ingredients.size());
+        public List<Pair2<ItemKeyStack, IWorldRequester>> getScaledIngredients(int numberOfSets) {
+            List<Pair2<ItemKeyStack, IWorldRequester>> components = new ArrayList<Pair2<ItemKeyStack, IWorldRequester>>(ingredients.size());
             
-            for (Pair2<ItemKeyStack, IWorldRoutedRequester> ing : ingredients) {
-                Pair2<ItemKeyStack, IWorldRoutedRequester> newIng = new Pair2<ItemKeyStack, IWorldRoutedRequester>(ing.getValue1().copy(), ing.getValue2());
+            for (Pair2<ItemKeyStack, IWorldRequester> ing : ingredients) {
+                Pair2<ItemKeyStack, IWorldRequester> newIng = new Pair2<ItemKeyStack, IWorldRequester>(ing.getValue1().copy(), ing.getValue2());
                 newIng.getValue1().stackSize *= numberOfSets;
                 components.add(newIng);
             }
@@ -514,7 +525,7 @@ public class RequestTreeNode2 {
         }
         
         public ItemKey getResultItem() {
-            return result.getKey();
+            return result.key();
         }
     }
     
@@ -565,7 +576,7 @@ public class RequestTreeNode2 {
             System.out.println("We are able to craft " + setsAbleToCraft + " sets of items");
             if (setsAbleToCraft > 0) {
                 DeliveryPromise delivery = crafter.getScaledPromise(setsAbleToCraft);
-                if (delivery.deliveryCount != setsAbleToCraft*setSize)
+                if (delivery.size != setsAbleToCraft*setSize)
                     return false;
                 treeNode.addPromise(delivery);
             }

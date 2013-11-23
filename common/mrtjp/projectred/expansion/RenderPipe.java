@@ -26,12 +26,10 @@ import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 
-public class RenderPipe
-{
-    
+public class RenderPipe { 
     private static final EntityItem dummyEntityItem = new EntityItem(null);
     private static final RenderItem customRenderItem;
-    private static Cuboid6 cube = new Cuboid6(0,0,0,1,1,1);
+
     static {
         customRenderItem = new RenderItem() {
             @Override
@@ -128,14 +126,6 @@ public class RenderPipe
         WireFrameModelGenerator.generateModels();
     }
     
-    public static int modelKey(int thickness, int connMap) {
-        return connMap|thickness<<6;
-    }
-    
-    public static int modelKey(BasicPipePart w) {
-        return modelKey(1, w.connMap);
-    }
-        
     public static void render(BasicPipePart w, Vector3 pos) {
         dynamicLight.setPos(w.world(), w.x(), w.y(), w.z());
         render(w, pos, dynamicLight);
@@ -143,7 +133,7 @@ public class RenderPipe
     
     public static void render(BasicPipePart w, Vector3 pos, LazyLightMatrix olm) {
         WireFrameModelGenerator.generateModels();
-        int key = modelKey(w);        
+        int key = w.connMap|1<<6;        
         Transformation t = new Translation(pos);
         IUVTransformation uvt = new IconTransformation(w.getIcon(6));
         
@@ -199,7 +189,7 @@ public class RenderPipe
         GL11.glPopMatrix();
     }
 
-    public static void doRenderItem(RoutedPayload r, double x, double y, double z) {
+    private static void doRenderItem(RoutedPayload r, double x, double y, double z) {
         if (r == null || r.getItemStack() == null)
             return;
         float renderScale = 0.7f;
@@ -221,5 +211,4 @@ public class RenderPipe
         
         GL11.glPopMatrix();
     }
-
 }

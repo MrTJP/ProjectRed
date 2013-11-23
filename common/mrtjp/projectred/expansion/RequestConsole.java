@@ -12,7 +12,7 @@ public class RequestConsole {
     private int requestCount;
     private int missingCount;
     
-    IWorldRoutedRequester destination = null;
+    IWorldRequester destination = null;
     
     public RequestConsole setPulling(boolean flag) {
         if (flag)
@@ -46,7 +46,7 @@ public class RequestConsole {
         return this;
     }
     
-    public RequestConsole setDestination(IWorldRoutedRequester destination) {
+    public RequestConsole setDestination(IWorldRequester destination) {
         this.destination = destination;
         return this;
     }

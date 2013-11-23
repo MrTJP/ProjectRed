@@ -15,17 +15,21 @@ public class RequestTree2 extends RequestTreeNode2 {
         PULL,
         CRAFT,
         PARTIALS,
-        SIMULATE
+        SIMULATE,
+        ;
+        
+        public static final EnumSet<RequestFlags> all = EnumSet.allOf(RequestFlags.class);
+        public static final EnumSet<RequestFlags> def = EnumSet.of(PULL, CRAFT);
     }
 
-    public RequestTree2(ItemKeyStack requestedPackage, IWorldRoutedRequester requester, EnumSet<RequestFlags> type) {
+    public RequestTree2(ItemKeyStack requestedPackage, IWorldRequester requester, EnumSet<RequestFlags> type) {
         super(null, requestedPackage, requester, null, type);
     }
     
-    private HashMap<HashPair2<IWorldRoutedBroadcaster, ItemKey>, Integer> totalPromises;
+    private HashMap<HashPair2<IWorldBroadcaster, ItemKey>, Integer> totalPromises;
     
     protected LinkedList<ExcessPromise> getAllExcessFor(ItemKey item) {
-        HashMap<IWorldRoutedBroadcaster, List<ExcessPromise>> excessMap = new HashMap<IWorldRoutedBroadcaster, List<ExcessPromise>>();
+        HashMap<IWorldBroadcaster, List<ExcessPromise>> excessMap = new HashMap<IWorldBroadcaster, List<ExcessPromise>>();
         recurse_GatherExcess(item, excessMap);
         recurse_RemoveUnusableExcess(item, excessMap);
         LinkedList<ExcessPromise> excessPromises = new LinkedList<ExcessPromise>();
@@ -37,13 +41,13 @@ public class RequestTree2 extends RequestTreeNode2 {
     }
     
     protected void promiseAdded(DeliveryPromise promise) {
-        HashPair2<IWorldRoutedBroadcaster, ItemKey> key = new HashPair2<IWorldRoutedBroadcaster, ItemKey>(promise.sender, promise.thePackage);
-        totalPromises.put(key, getExistingPromisesFor(key) + promise.deliveryCount);
+        HashPair2<IWorldBroadcaster, ItemKey> key = new HashPair2<IWorldBroadcaster, ItemKey>(promise.sender, promise.thePackage);
+        totalPromises.put(key, getExistingPromisesFor(key) + promise.size);
     }
     
     protected void promiseRemoved(DeliveryPromise promise) {
-        HashPair2<IWorldRoutedBroadcaster, ItemKey> key = new HashPair2<IWorldRoutedBroadcaster, ItemKey>(promise.sender, promise.thePackage);
-        int newCount = getExistingPromisesFor(key) - promise.deliveryCount;
+        HashPair2<IWorldBroadcaster, ItemKey> key = new HashPair2<IWorldBroadcaster, ItemKey>(promise.sender, promise.thePackage);
+        int newCount = getExistingPromisesFor(key) - promise.size;
         if (newCount <= 0)
             totalPromises.remove(key);
         else
@@ -51,9 +55,9 @@ public class RequestTree2 extends RequestTreeNode2 {
         
     }
     
-    public int getExistingPromisesFor(HashPair2<IWorldRoutedBroadcaster, ItemKey> key) {
+    public int getExistingPromisesFor(HashPair2<IWorldBroadcaster, ItemKey> key) {
         if (totalPromises == null)
-            totalPromises = new HashMap<HashPair2<IWorldRoutedBroadcaster, ItemKey>, Integer>();
+            totalPromises = new HashMap<HashPair2<IWorldBroadcaster, ItemKey>, Integer>();
         Integer n = totalPromises.get(key);
         if (n == null)
             return 0;

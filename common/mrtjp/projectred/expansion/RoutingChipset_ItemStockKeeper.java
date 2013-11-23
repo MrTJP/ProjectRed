@@ -29,7 +29,7 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
     
     @Override
     public void update() {
-        if (--remainingDelay >= 0)
+        if (--remainingDelay > 0)
             return;
         remainingDelay = operationDelay();
         
@@ -46,24 +46,24 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
         for (int i = 0; i < filter.getSizeInventory(); i++) {
             ItemKeyStack keyStack = ItemKeyStack.get(filter.getStackInSlot(i));
             
-            if (keyStack == null || checked.contains(keyStack.getKey()))
+            if (keyStack == null || checked.contains(keyStack.key()))
                 continue;
                 
             // int toRequest = keyStack.stackSize;//TODO
-            int toRequest = filt.getItemCount(keyStack.getKey());
-            int inInventory = inv.getItemCount(keyStack.getKey()) + getEnroute(keyStack.getKey());
+            int toRequest = filt.getItemCount(keyStack.key());
+            int inInventory = inv.getItemCount(keyStack.key()) + getEnroute(keyStack.key());
             int missing = toRequest - inInventory;
 
             if (missing <= 0 || (requestWhenEmpty && inInventory > 0))
                 continue;
 
-            RequestConsole req = new RequestConsole().setDestination(getItemSender().getRequester());
+            RequestConsole req = new RequestConsole().setDestination(getRouteLayer().getRequester());
             req.setCrafting(true).setPulling(true).setPartials(true);
-            ItemKeyStack request = ItemKeyStack.get(keyStack.getKey(), missing);
+            ItemKeyStack request = ItemKeyStack.get(keyStack.key(), missing);
             req.makeRequest(request);
 
             if (req.success())
-                addToRequestList(request.getKey(), req.requested());
+                addToRequestList(request.key(), req.requested());
         }
     }
 
@@ -100,12 +100,12 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
     @Override
     public void trackedItemLost(ItemKeyStack s) {
         System.out.println(">>>> WARNING ITEM LOST");//TODO
-        removeFromRequestList(s.getKey(), s.stackSize);
+        removeFromRequestList(s.key(), s.stackSize);
     }
     
     @Override
     public void trackedItemReceived(ItemKeyStack s) {
-        removeFromRequestList(s.getKey(), s.stackSize);
+        removeFromRequestList(s.key(), s.stackSize);
     }
 
     

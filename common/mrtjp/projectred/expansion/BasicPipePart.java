@@ -109,11 +109,10 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
             inputQueue.add(item);
         }
 
-        public void performLoad() {
-            if (delay > 0) {
-                delay--;
+        public void executeLoad() {
+            if (delay-- > 0)
                 return;
-            }
+            
             addAll(inputQueue);
             inputQueue.clear();
         }
@@ -126,7 +125,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
             return outputQueue.remove(item);
         }
 
-        public void performRemoval() {
+        public void exececuteRemove() {
             removeAll(outputQueue);
             outputQueue.clear();
         }
@@ -153,8 +152,8 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
     }
     
     protected void pushItemFlow() {
-        itemFlow.performLoad();
-        itemFlow.performRemoval();
+        itemFlow.executeLoad();
+        itemFlow.exececuteRemove();
         
         for (RoutedPayload r : itemFlow) {
             if (r.isCorrupted()) {
@@ -178,7 +177,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
             }
         }
         
-        itemFlow.performRemoval();
+        itemFlow.exececuteRemove();
     }
     
     public void handleDrop(RoutedPayload r) {
@@ -501,10 +500,14 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         return Arrays.asList(getItem());
     }
     
+    @Override
+    public ItemStack pickItem(MovingObjectPosition hit) {
+        return getItem();
+    }
+
     public ItemStack getItem() {
         return EnumPipe.VALID_PIPE[meta].getItemStack();
     }
-
 
     public void notifyStraightChange(int s) {
         BlockCoord pos = new BlockCoord(tile()).offset(s);
@@ -515,8 +518,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
     public void onChunkLoad() {}
 
     @Override
-    public void onWorldJoin()// when we're moved by a frame or something
-    {
+    public void onWorldJoin() {
         onNeighborChanged();
     }
 

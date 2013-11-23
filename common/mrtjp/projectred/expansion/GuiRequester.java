@@ -17,9 +17,9 @@ import codechicken.lib.vec.BlockCoord;
 
 public class GuiRequester extends GhostGuiScreen {
     
-    IWorldRoutedRequester pipe;
+    IWorldRequester pipe;
     
-    public GuiRequester(IWorldRoutedRequester pipe) {
+    public GuiRequester(IWorldRequester pipe) {
         super(280, 230);
         this.pipe = pipe;
     }
@@ -71,7 +71,7 @@ public class GuiRequester extends GhostGuiScreen {
             packet.writeBoolean(true);//pull
             packet.writeBoolean(true);//craft
             packet.writeBoolean(false);//partials
-            packet.writeItemStack(request.getKey().makeStack(amount), true);
+            packet.writeItemStack(request.key().makeStack(amount), true);
             packet.sendToServer();
         }
     }

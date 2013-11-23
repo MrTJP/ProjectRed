@@ -28,7 +28,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset {
     
     int timeRemaining = operationDelay();
 
-    private DeliveryManager manager = new DeliveryManager();
+    private final DeliveryManager manager = new DeliveryManager();
     
     public void shiftOrient() {
         extractOrient++;
@@ -54,20 +54,20 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset {
 
     @Override
     public void update() {
-        if (--timeRemaining >= 0)
+        if (--timeRemaining > 0)
             return;
         timeRemaining = operationDelay();
         
         if (!manager.hasOrders())
             return;
                 
-        Pair2<ItemKeyStack, IWorldRoutedRequester> next = null;
+        Pair2<ItemKeyStack, IWorldRequester> next = null;
         int stacksRemaining = stacksToExtract();
         int itemsRemaining = itemsToExtract();
         while (manager.hasOrders() && (next = manager.peek()) != null && stacksRemaining > 0 && itemsRemaining > 0) {
             IInventory real = getInventoryProvider().getInventory();
             if (real == null) {
-                manager.sendFailed();
+                manager.dispatchFailed();
                 continue;
             }
             
@@ -79,28 +79,28 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset {
             else if (hideMode == 2)
                 inv.setHidePerSlot(true);
             
-            int toExtract = Math.min(inv.getItemCount(next.getValue1().getKey()), next.getValue1().stackSize);
+            int toExtract = Math.min(inv.getItemCount(next.getValue1().key()), next.getValue1().stackSize);
             toExtract = Math.min(toExtract, itemsRemaining);
             toExtract = Math.min(toExtract, next.getValue1().makeStack().getMaxStackSize());
 
-            if (!getItemSender().getWorldRouter().getRouter().canRouteTo(next.getValue2().getRouter().getIPAddress())) {
-                manager.sendFailed();
+            if (!getRouteLayer().getWorldRouter().getRouter().canRouteTo(next.getValue2().getRouter().getIPAddress())) {
+                manager.dispatchFailed();
                 continue;
             }
             
-            int removed = inv.extractItem(next.getValue1().getKey(), toExtract);
+            int removed = inv.extractItem(next.getValue1().key(), toExtract);
             
             if (removed <= 0) {
-                manager.sendFailed();
+                manager.dispatchFailed();
                 continue;
             }
             
-            ItemStack toSend = next.getValue1().getKey().makeStack(removed);
+            ItemStack toSend = next.getValue1().key().makeStack(removed);
             
-            getItemSender().queueStackToSend(toSend, getInventoryProvider().getInterfacedSide(), 
+            getRouteLayer().queueStackToSend(toSend, getInventoryProvider().getInterfacedSide(), 
                     SendPriority.ACTIVE, next.getValue2().getRouter().getIPAddress());
             
-            manager.sendSuccessful(removed, false);
+            manager.dispatchSuccessful(removed, false);
             
             stacksRemaining -= 1;
             itemsRemaining -= removed;
@@ -131,8 +131,8 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset {
             if (numberAvailable > 0) {
                 DeliveryPromise promise = new DeliveryPromise();
                 promise.thePackage = requested;
-                promise.deliveryCount = Math.min(request.getMissingCount(), numberAvailable);
-                promise.sender = getItemSender().getBroadcaster();
+                promise.size = Math.min(request.getMissingCount(), numberAvailable);
+                promise.sender = getRouteLayer().getBroadcaster();
                 request.addPromise(promise);
 
             }
@@ -140,8 +140,8 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset {
     }
     
     @Override
-    public void deliverPromises(DeliveryPromise promise, IWorldRoutedRequester requester) {
-        manager.addOrder(ItemKeyStack.get(promise.thePackage, promise.deliveryCount), requester);
+    public void deliverPromises(DeliveryPromise promise, IWorldRequester requester) {
+        manager.addOrder(ItemKeyStack.get(promise.thePackage, promise.size), requester);
     }
     
     @Override
@@ -173,6 +173,12 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset {
                 }
             }
         }
+    }
+    
+    @Override
+    public void onPipeBroken(){
+    	while (manager.hasOrders())
+    		manager.dispatchFailed();
     }
 
     @Override

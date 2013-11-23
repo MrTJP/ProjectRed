@@ -209,8 +209,8 @@ public class RoutedPayload {
         if (destinationIP > -1) {
             Router r = RouterServices.instance.getRouter(destinationIP);
             if (r != null)
-                if (r.getParent() instanceof IWorldRoutedRequester)
-                    ((IWorldRoutedRequester) r.getParent()).trackedItemLost(payload);
+                if (r.getParent() instanceof IWorldRequester)
+                    ((IWorldRequester) r.getParent()).trackedItemLost(payload);
         }
         destinationIP = -1;
         destinationUUID = null;

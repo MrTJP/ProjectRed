@@ -18,7 +18,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 
-public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRouter, IItemSender, IWorldRoutedRequester {
+public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRouter, IRouteLayer, IWorldRequester {
 
     public int linkMap;
     
@@ -62,8 +62,8 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     
     @Override
     public void itemArrived(RoutedPayload r) {
-        if (this instanceof IWorldRoutedRequester)
-            ((IWorldRoutedRequester) this).trackedItemReceived(r.payload);
+        if (this instanceof IWorldRequester)
+            ((IWorldRequester) this).trackedItemReceived(r.payload);
     }
     
     @Override
@@ -254,7 +254,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         r.refreshIP();
         if (r.destinationIP < 0 || (r.destinationIP >= 0 && r.hasArrived)) {
             r.resetTrip();
-            LogisticPathFinder f = new LogisticPathFinder(getRouter(), r.payload.getKey()).setExclusions(r.travelLog).findBestResult();
+            LogisticPathFinder f = new LogisticPathFinder(getRouter(), r.payload.key()).setExclusions(r.travelLog).findBestResult();
             if (f.getResult() != null)
                 r.setDestination(f.getResult().responder).setPriority(f.getResult().priority);
         }
@@ -265,7 +265,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
             r.output = getDirForIncomingItem(r);
             if (r.output == ForgeDirection.UNKNOWN) {
                 r.resetTrip();
-                LogisticPathFinder f = new LogisticPathFinder(getRouter(), r.payload.getKey()).setExclusions(r.travelLog).findBestResult();
+                LogisticPathFinder f = new LogisticPathFinder(getRouter(), r.payload.key()).setExclusions(r.travelLog).findBestResult();
                 if (f.getResult() != null)
                     r.setDestination(f.getResult().responder).setPriority(f.getResult().priority);
             }
@@ -311,15 +311,15 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     }
 
     @Override
-    public IWorldRoutedBroadcaster getBroadcaster() {
-        if (this instanceof IWorldRoutedBroadcaster)
-            return (IWorldRoutedBroadcaster)this;
+    public IWorldBroadcaster getBroadcaster() {
+        if (this instanceof IWorldBroadcaster)
+            return (IWorldBroadcaster)this;
         
         return null;
     }
 
     @Override
-    public IWorldRoutedRequester getRequester() {
+    public IWorldRequester getRequester() {
         return this;
     }
 }
