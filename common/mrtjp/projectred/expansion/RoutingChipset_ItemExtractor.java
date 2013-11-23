@@ -46,7 +46,7 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
 
     @Override
     public void update() {
-        if (--remainingDelay >= 0)
+        if (--remainingDelay > 0)
             return;
         remainingDelay = operationDelay();
         
@@ -69,7 +69,7 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
                 continue;
             
             BitSet exclusions = new BitSet();
-            SyncResponse s = getItemSender().getLogisticPath(stackKey, exclusions, true);
+            SyncResponse s = getRouteLayer().getLogisticPath(stackKey, exclusions, true);
             if (s == null)
                 continue;
             
@@ -90,14 +90,14 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
                 if (stack2.stackSize == 0)
                     break;
                 
-                getItemSender().queueStackToSend(stack2, getInventoryProvider().getInterfacedSide(), s);
+                getRouteLayer().queueStackToSend(stack2, getInventoryProvider().getInterfacedSide(), s);
                 
                 leftInRun -= stack2.stackSize;
                 if (leftInRun <= 0)
                     break;
                 
                 exclusions.set(s.responder);
-                s = getItemSender().getLogisticPath(stackKey, exclusions, true);
+                s = getRouteLayer().getLogisticPath(stackKey, exclusions, true);
             }
             return;
         }

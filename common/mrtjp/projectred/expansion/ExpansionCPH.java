@@ -60,8 +60,8 @@ public class ExpansionCPH implements IClientPacketHandler {
     private void openRequestGui(PacketCustom packet, Minecraft mc, EntityPlayer player) {
         BlockCoord bc = packet.readCoord();
         TMultiPart p = BasicUtils.getMultiPart(player.worldObj, bc, 6);
-        if (p instanceof IWorldRoutedRequester)
-            mc.displayGuiScreen(new GuiRequester((IWorldRoutedRequester) p));
+        if (p instanceof IWorldRequester)
+            mc.displayGuiScreen(new GuiRequester((IWorldRequester) p));
     }
 
     private void openRoutedInterfacePipeGui(PacketCustom packet, EntityPlayer player) {

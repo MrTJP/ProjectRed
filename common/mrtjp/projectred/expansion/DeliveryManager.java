@@ -8,21 +8,21 @@ import mrtjp.projectred.core.utils.Pair2;
 
 public class DeliveryManager {
     
-    private LinkedList<Pair2<ItemKeyStack, IWorldRoutedRequester>> orders = new LinkedList<Pair2<ItemKeyStack, IWorldRoutedRequester>>();
+    private LinkedList<Pair2<ItemKeyStack, IWorldRequester>> orders = new LinkedList<Pair2<ItemKeyStack, IWorldRequester>>();
     
-    public void addOrder(ItemKeyStack stack, IWorldRoutedRequester requester) {
-        for (Pair2<ItemKeyStack, IWorldRoutedRequester> request : orders)
+    public void addOrder(ItemKeyStack stack, IWorldRequester requester) {
+        for (Pair2<ItemKeyStack, IWorldRequester> request : orders)
             if (request.getValue1() == stack && request.getValue2() == requester) {
                 stack.stackSize += request.getValue1().stackSize;
                 orders.remove(request);
                 break;
             }
-        orders.addLast(new Pair2<ItemKeyStack, IWorldRoutedRequester>(stack, requester));
+        orders.addLast(new Pair2<ItemKeyStack, IWorldRequester>(stack, requester));
         onOrdersChanged();
     }
     
-    public void sendSuccessful(int amountSent, boolean reStack) {
-        Pair2<ItemKeyStack, IWorldRoutedRequester> first = orders.getFirst();
+    public void dispatchSuccessful(int amountSent, boolean reStack) {
+        Pair2<ItemKeyStack, IWorldRequester> first = orders.getFirst();
         first.getValue1().stackSize -= amountSent;
         
         if (first.getValue1().stackSize <= 0)
@@ -31,8 +31,8 @@ public class DeliveryManager {
             reStack();
     }
     
-    public void sendFailed() {
-        Pair2<ItemKeyStack, IWorldRoutedRequester> first = orders.getFirst();
+    public void dispatchFailed() {
+        Pair2<ItemKeyStack, IWorldRequester> first = orders.getFirst();
         first.getValue2().trackedItemLost(first.getValue1());
         if (!orders.isEmpty())
             orders.removeFirst();
@@ -41,14 +41,14 @@ public class DeliveryManager {
     }
     
     public void reStack() {
-        Pair2<ItemKeyStack, IWorldRoutedRequester> p = orders.removeFirst();
+        Pair2<ItemKeyStack, IWorldRequester> p = orders.removeFirst();
         orders.addLast(p);
     }
     
-    public Pair2<ItemKeyStack, IWorldRoutedRequester> peek() {
+    public Pair2<ItemKeyStack, IWorldRequester> peek() {
         if (orders.isEmpty())
             return null;
-        
+
         return orders.getFirst();
     }
     
@@ -58,8 +58,8 @@ public class DeliveryManager {
     
     public int getDeliveryCount(ItemKey item) {
         int count = 0;
-        for (Pair2<ItemKeyStack, IWorldRoutedRequester> order : orders) {
-            if (order.getValue1().getKey().equals(item))
+        for (Pair2<ItemKeyStack, IWorldRequester> order : orders) {
+            if (order.getValue1().key().equals(item))
                 count += order.getValue1().stackSize;
         }
         return count;
@@ -67,7 +67,7 @@ public class DeliveryManager {
     
     public int getTotalDeliveryCount() {
         int count = 0;
-        for (Pair2<ItemKeyStack, IWorldRoutedRequester> request : orders)
+        for (Pair2<ItemKeyStack, IWorldRequester> request : orders)
             count += request.getValue1().stackSize;
         
         return count;

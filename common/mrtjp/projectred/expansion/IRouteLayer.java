@@ -6,7 +6,7 @@ import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.expansion.RoutedPayload.SendPriority;
 import net.minecraft.item.ItemStack;
 
-public interface IItemSender {
+public interface IRouteLayer {
 
     public void queueStackToSend(ItemStack stack, int dirOfInventory, SyncResponse path);
     
@@ -18,7 +18,7 @@ public interface IItemSender {
     
     public IWorldRouter getWorldRouter();
     
-    public IWorldRoutedBroadcaster getBroadcaster();
+    public IWorldBroadcaster getBroadcaster();
     
-    public IWorldRoutedRequester getRequester();
+    public IWorldRequester getRequester();
 }

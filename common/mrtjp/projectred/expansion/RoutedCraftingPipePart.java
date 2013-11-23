@@ -32,11 +32,11 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 
-public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements IWorldRoutedCrafter {
+public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements IWorldCrafter {
     
     public SimpleInventory matrix = new SimpleInventory(10, "matrix", 256);
     private DeliveryManager manager = new DeliveryManager();
-    public final LinkedList<Pair2<ItemKeyStack, IWorldRoutedRequester>> excess = new LinkedList<Pair2<ItemKeyStack, IWorldRoutedRequester>>();
+    public final LinkedList<Pair2<ItemKeyStack, IWorldRequester>> excess = new LinkedList<Pair2<ItemKeyStack, IWorldRequester>>();
 
     public int priority = 0;
     
@@ -94,7 +94,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         IInventory real = getInventory();
         if (real == null) {
             if (manager.hasOrders())
-                manager.sendFailed();
+                manager.dispatchFailed();
             else 
                 excess.clear();
             return;
@@ -111,7 +111,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         int stacksleft = stacksToExtract();
         
         while (itemsleft > 0 && stacksleft > 0 && (manager.hasOrders() || !excess.isEmpty())) {
-            Pair2<ItemKeyStack, IWorldRoutedRequester> nextOrder;
+            Pair2<ItemKeyStack, IWorldRequester> nextOrder;
             boolean processingOrder=false;
             if (manager.hasOrders()) {
                 nextOrder = manager.peek();
@@ -123,12 +123,12 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
             
             int maxToSend = Math.min(itemsleft, nextOrder.getValue1().stackSize);
             maxToSend = Math.min(nextOrder.getValue1().getStackLimit(), maxToSend);
-            int available = inv.extractItem(keyStack.getKey(), maxToSend);
+            int available = inv.extractItem(keyStack.key(), maxToSend);
             
             if (available <= 0)
                 break;
             
-            ItemKey key = keyStack.getKey();
+            ItemKey key = keyStack.key();
             while (available > 0) {
                 int numToSend = Math.min(available, key.getStackLimit());
                 numToSend = Math.min(numToSend, nextOrder.getValue1().stackSize);
@@ -141,7 +141,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
                 
                 if (processingOrder) {
                     queueStackToSend(toSend, side, SendPriority.ACTIVE, nextOrder.getValue2().getRouter().getIPAddress());
-                    manager.sendSuccessful(numToSend, false);
+                    manager.dispatchSuccessful(numToSend, false);
 
                     if (manager.hasOrders())
                         nextOrder = manager.peek();
@@ -160,10 +160,10 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
     }
     
     private void removeExcess(ItemKey item, int amount) {
-        Iterator<Pair2<ItemKeyStack, IWorldRoutedRequester>> iter = excess.iterator();
+        Iterator<Pair2<ItemKeyStack, IWorldRequester>> iter = excess.iterator();
         while (iter.hasNext()) {
             ItemKeyStack stack = iter.next().getValue1();
-            if (stack.getKey().equals(item)) {
+            if (stack.key().equals(item)) {
                 if (amount > stack.stackSize) {
                     amount -= stack.stackSize;
                     iter.remove();
@@ -233,15 +233,15 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         ItemKey requestedItem = request.getRequestedPackage();
         List<ItemKeyStack> providedItem = getCraftedItems();
         for (ItemKeyStack item : providedItem)
-            if (item.getKey() == requestedItem)
+            if (item.key() == requestedItem)
                 return;
         
         if (!providedItem.contains(requestedItem))
             return;
         
         int remaining = 0;
-        for (Pair2<ItemKeyStack, IWorldRoutedRequester> extra : excess)
-            if (extra.getValue1().getKey() == requestedItem)
+        for (Pair2<ItemKeyStack, IWorldRequester> extra : excess)
+            if (extra.getValue1().key() == requestedItem)
                 remaining += extra.getValue1().stackSize;
         
         remaining -= existingPromises;
@@ -250,18 +250,18 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
 
         ExcessPromise promise = new ExcessPromise();
         promise.thePackage = requestedItem;
-        promise.deliveryCount = Math.min(remaining, request.getMissingCount());
+        promise.size = Math.min(remaining, request.getMissingCount());
         promise.sender = this;
         promise.used = true;
         request.addPromise(promise);
     }
 
     @Override
-    public void deliverPromises(DeliveryPromise promise, IWorldRoutedRequester requester) {
+    public void deliverPromises(DeliveryPromise promise, IWorldRequester requester) {
         if (promise instanceof ExcessPromise)
-            removeExcess(promise.thePackage, promise.deliveryCount);
+            removeExcess(promise.thePackage, promise.size);
         
-        manager.addOrder(ItemKeyStack.get(promise.thePackage, promise.deliveryCount), requester);
+        manager.addOrder(ItemKeyStack.get(promise.thePackage, promise.size), requester);
     }
 
     @Override
@@ -278,7 +278,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         ItemKeyStack craftingStack = null;
         for (ItemKeyStack craftable : stack) {
             craftingStack = craftable;
-            if (craftingStack.getKey().equals(item)) {
+            if (craftingStack.key().equals(item)) {
                 found = true;
                 break;
             }
@@ -286,7 +286,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         if (!found)
             return null;
 
-        IWorldRoutedRequester[] requesters = new IWorldRoutedRequester[9];
+        IWorldRequester[] requesters = new IWorldRequester[9];
         for (int i = 0; i < 9; i++)
             requesters[i] = this;
         
@@ -303,8 +303,8 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
 
     @Override
     public void registerExcess(DeliveryPromise promise) {
-        ItemKeyStack keystack = ItemKeyStack.get(promise.thePackage, promise.deliveryCount);
-        excess.add(new Pair2<ItemKeyStack, IWorldRoutedRequester>(keystack, null));
+        ItemKeyStack keystack = ItemKeyStack.get(promise.thePackage, promise.size);
+        excess.add(new Pair2<ItemKeyStack, IWorldRequester>(keystack, null));
     }
 
     @Override

@@ -11,7 +11,7 @@ public class CollectionPathFinder {
 
     private boolean collectBroadcasts = false;
     private boolean collectCrafts = false;
-    private IWorldRoutedRequester requester;
+    private IWorldRequester requester;
     
     private Map<ItemKey, Integer> collected = null;
     
@@ -28,7 +28,7 @@ public class CollectionPathFinder {
         return this;
     }
     
-    public CollectionPathFinder setRequester(IWorldRoutedRequester requester) {
+    public CollectionPathFinder setRequester(IWorldRequester requester) {
         this.requester = requester;
         return this;
     }
@@ -37,18 +37,18 @@ public class CollectionPathFinder {
         Map<ItemKey, Integer> collected = new HashMap<ItemKey, Integer>();
         for (Router r : requester.getRouter().getRoutersByCost()) {
             IWorldRouter wr = r.getParent();
-            if (wr instanceof IWorldRoutedCrafter) {
-                IWorldRoutedCrafter c = (IWorldRoutedCrafter) wr;
+            if (wr instanceof IWorldCrafter) {
+                IWorldCrafter c = (IWorldCrafter) wr;
                 c.getBroadcastedItems(collected);
                 List<ItemKeyStack> list = c.getCraftedItems();
                 if (list != null) {
                     for (ItemKeyStack stack : list)
-                        if (!collected.containsKey(stack.getKey()))
-                            collected.put(stack.getKey(), null);
+                        if (!collected.containsKey(stack.key()))
+                            collected.put(stack.key(), null);
                 }
 
-            } else if (wr instanceof IWorldRoutedBroadcaster) {
-                IWorldRoutedBroadcaster b = (IWorldRoutedBroadcaster) wr;
+            } else if (wr instanceof IWorldBroadcaster) {
+                IWorldBroadcaster b = (IWorldBroadcaster) wr;
                 b.getBroadcastedItems(collected);
             }
         }

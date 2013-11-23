@@ -7,7 +7,7 @@ import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.expansion.RequestTreeNode2.CraftingPromise;
 import mrtjp.projectred.expansion.RequestTreeNode2.DeliveryPromise;
 
-public interface IWorldRoutedCrafter extends IWorldRoutedRequester, IWorldRoutedBroadcaster {
+public interface IWorldCrafter extends IWorldRequester, IWorldBroadcaster {
 
     public CraftingPromise requestCraftPromise(ItemKey item);
     

@@ -43,20 +43,20 @@ public class ExpansionSPH implements IServerPacketHandler {
     private void handleRequestListRefresh(PacketCustom packet, EntityPlayerMP sender) {
         BlockCoord bc = packet.readCoord();
         TMultiPart t = BasicUtils.getMultiPart(sender.worldObj, bc, 6);
-        if (t instanceof IWorldRoutedRequester)
-            sendRequestList((IWorldRoutedRequester) t, sender, packet.readBoolean(), packet.readBoolean());
+        if (t instanceof IWorldRequester)
+            sendRequestList((IWorldRequester) t, sender, packet.readBoolean(), packet.readBoolean());
     }
 
     private void handleRequestAction(PacketCustom packet, EntityPlayerMP sender) {
         BlockCoord bc = packet.readCoord();
         TMultiPart t = BasicUtils.getMultiPart(sender.worldObj, bc, 6);
-        if (t instanceof IWorldRoutedRequester) {
+        if (t instanceof IWorldRequester) {
             String ident = packet.readString();
             //ADD THINGS HERE
         }
     }
     
-    private static void sendRequestList(IWorldRoutedRequester requester, EntityPlayerMP player, boolean collectBroadcast, boolean collectCrafts) {
+    private static void sendRequestList(IWorldRequester requester, EntityPlayerMP player, boolean collectBroadcast, boolean collectCrafts) {
         CollectionPathFinder cpf = new CollectionPathFinder().setRequester(requester);
         cpf.setCollectBroadcasts(collectBroadcast).setCollectCrafts(collectCrafts);
         
@@ -72,8 +72,8 @@ public class ExpansionSPH implements IServerPacketHandler {
 
     private void handleRequestSubmit(PacketCustom packet, EntityPlayerMP sender) {
         TMultiPart t = BasicUtils.getMultiPart(sender.worldObj, packet.readCoord(), 6);
-        if (t instanceof IWorldRoutedRequester) {
-            RequestConsole r = new RequestConsole().setDestination((IWorldRoutedRequester) t);
+        if (t instanceof IWorldRequester) {
+            RequestConsole r = new RequestConsole().setDestination((IWorldRequester) t);
             
             //TODO send these as options
             boolean pull = packet.readBoolean();
@@ -90,7 +90,7 @@ public class ExpansionSPH implements IServerPacketHandler {
             sender.addChatMessage(r.missing()==0 ? "SUCCESSFULL":r.missing() + " missing.");
             
             //TODO sendRequestList after ordering, not true true.
-            sendRequestList((IWorldRoutedRequester)t, sender, pull, craft);
+            sendRequestList((IWorldRequester)t, sender, pull, craft);
         }
     }
 

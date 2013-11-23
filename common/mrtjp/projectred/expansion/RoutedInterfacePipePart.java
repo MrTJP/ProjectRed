@@ -28,7 +28,7 @@ import codechicken.core.ServerUtils;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 
-public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implements IWorldRoutedBroadcaster {
+public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implements IWorldBroadcaster {
     
     public SimpleInventory chipSlots = new SimpleInventory(4, "chips", 1) {
         @Override
@@ -182,7 +182,7 @@ public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implement
     }
 
     @Override
-    public void deliverPromises(DeliveryPromise promise, IWorldRoutedRequester requestor) {
+    public void deliverPromises(DeliveryPromise promise, IWorldRequester requestor) {
         for (RoutingChipset r : chips)
             if (r != null)
                 r.deliverPromises(promise, requestor);

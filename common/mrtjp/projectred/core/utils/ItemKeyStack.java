@@ -39,7 +39,7 @@ public class ItemKeyStack implements Comparable<ItemKeyStack>{
         return new ItemKeyStack(ItemKey.get(stack), stack.stackSize);
     }
 
-    public ItemKey getKey() {
+    public ItemKey key() {
         return key;
     }
 

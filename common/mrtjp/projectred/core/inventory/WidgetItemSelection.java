@@ -92,9 +92,10 @@ public class WidgetItemSelection extends GhostWidget {
     
     private void drawLoadingScreen() {
         int barSizeX = width/2;
-        int percent = ((int) (System.currentTimeMillis()/(waitingForList?40:3)) % barSizeX);
+        long time = System.currentTimeMillis()/(waitingForList ? 40 : 8);
+        int percent = (int) (time % barSizeX);
         
-        if (!waitingForList && percent == 0)
+        if (!waitingForList && percent > barSizeX-8)
             downloadFinished = true;
         
         int xStart = x+width/2-(barSizeX/2);

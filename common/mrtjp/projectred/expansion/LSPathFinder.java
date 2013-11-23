@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.utils.Pair2;
+import mrtjp.projectred.expansion.Router.NodeLink;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
