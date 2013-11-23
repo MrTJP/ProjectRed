@@ -21,10 +21,9 @@ public class ExplorationRecipes {
         initGemToolRecipes();
         initToolRecipes();
         initWorldRecipes();
-        initOreDict();
     }
     
-    private static void initOreDict() {
+    public static void initOreDict() {
         EnumBackpack.initOreDictDefinitions();
         
         OreDictionary.registerOre("gemRuby", EnumPart.RUBY.getItemStack());
