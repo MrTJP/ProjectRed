@@ -92,6 +92,7 @@ public class Configurator {
     /** Settings **/
     public static boolean debugMode;
     public static boolean logicGateSounds;
+
     public static int maxDetectionCount;
     public static int maxDetectionLength;
     public static int detectionFrequency;
@@ -105,6 +106,7 @@ public class Configurator {
     public static boolean logicwires3D;
     public static boolean staticWires;
     public static boolean staticGates;
+    public static boolean renderLampHalos;
     
 
     public static void initConfig(FMLPreInitializationEvent event) {
@@ -129,7 +131,7 @@ public class Configurator {
         part_invcagelamp = localConfig.get("MultiPart Item IDs", "Inverted Cage Lamp Part ID", 9040);
         part_fixture = localConfig.get("MultiPart Item IDs", "Fixture Part ID", 9041);
         part_invfixture = localConfig.get("MultiPart Item IDs", "Inverted Fixture Part ID", 9042);
-        part_pipe = localConfig.get("MultiPart Item IDs", "Tube Part ID", 9043);
+        part_pipe = localConfig.get("MultiPart Item IDs", "Pipe Part ID", 9043);
          
 
         block_machinesID = localConfig.getBlock("block_machinesID", 2129);
@@ -193,11 +195,13 @@ public class Configurator {
         staticGates = localConfig.get("general", "renderStaticGates", true, "If set to false, gates will be rendered in the TESR rather than the WorldRenderer").getBoolean(true);
         retroGeneration = localConfig.get("general", "Retro Ore Generation", false, "If set to true, world generation for ProjectRed will attempt to run even in previously generated chunks.").getBoolean(false);
         retroGenID = localConfig.get("general", "Retro Ore Gen ID", "prRG", "This ID is used to check if retro gen has been performed on a chunk. Changing it will reset retro gen status.").getString();
+        renderLampHalos = localConfig.get("general", "Lamp Halo rendering", true, "If set to false, lamps will no longer render halos").getBoolean(true);
         
         maxDetectionCount = localConfig.get("general", "Max Detection Count", 100, "Max number of links to explore when discovering new routers.").getInt();
         maxDetectionLength = localConfig.get("general", "Max Detection Length", 50, "Max number of links allowed in between routers.").getInt();
         detectionFrequency = localConfig.get("general", "Detection Frequency", 20, "Ticks between router searches.").getInt();
         routerUpdateThreadCount = localConfig.get("general", "Router Update Thread Count", 4, "Number of active threads that update routing tables.").getInt();
+        
         
         localConfig.save();
     }

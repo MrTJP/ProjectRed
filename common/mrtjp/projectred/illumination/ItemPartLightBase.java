@@ -41,8 +41,8 @@ public abstract class ItemPartLightBase extends JItemMultiPart {
 
     @Override
     public TMultiPart newPart(ItemStack is, EntityPlayer player, World w, BlockCoord pos, int side, Vector3 arg5) {
-        BlockCoord onPos = pos.copy().offset(side ^ 1);
-        if (!BasicWireUtils.canPlaceWireOnSide(w, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false))
+        BlockCoord bc = pos.copy().offset(side ^ 1);
+        if (!BasicWireUtils.canPlaceWireOnSide(w, bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side), false) && !(BasicWireUtils.canPlaceTorchOnBlock(w, bc.x, bc.y, bc.z, false) && side == 1))
             return null;
         
         BaseLightPart l = (BaseLightPart) MultiPartRegistry.createPart(getLightPartID(), false);

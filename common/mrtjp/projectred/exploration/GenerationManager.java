@@ -4,13 +4,13 @@ import java.util.Random;
 
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.PRLogger;
-import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
+import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;
 import net.minecraft.block.Block;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderEnd;
 import net.minecraft.world.gen.ChunkProviderHell;
@@ -24,7 +24,10 @@ public class GenerationManager implements IWorldGenerator {
     public void generate(Random r, int chunkX, int chunkZ, World w, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
         if (((chunkGenerator instanceof ChunkProviderHell)) || ((chunkGenerator instanceof ChunkProviderEnd)))
             return;
-
+        
+        if (w.provider.terrainType == WorldType.FLAT)
+            return;
+        
         if (w.provider.dimensionId == -1 || w.provider.dimensionId == 1)
             return;
 
@@ -59,18 +62,7 @@ public class GenerationManager implements IWorldGenerator {
                 int z = chunkZ * 16 + r.nextInt(16);
                 new GeneratorOre(ProjectRedExploration.blockOres.blockID, EnumOre.OREPERIDOT.meta, 5).generate(w, r, x, y, z);
             }
-        }
-        
-        // Dye trees
-        if (Configurator.gen_dyeTrees.getBoolean(true)) {
-            int saplingMeta = r.nextInt(16);
-            int x = chunkX * 16 + r.nextInt(16);
-            int z = chunkZ * 16 + r.nextInt(16);
-            int y = w.getHeightValue(x, z);
-            if (r.nextDouble() < EnumDyeTrees.VALID_FOILAGE[saplingMeta].growthChance/3)
-                new GeneratorCustomTree(false, 5, Block.wood.blockID, 0, ProjectRedExploration.blockStainedLeaf.blockID, saplingMeta, -1, -1).generate(w, r, x, y, z);
-        }
-        
+        }        
     }
 
     public static void runOverworldGeneration(Random r, int chunkX, int chunkZ, World w) {
@@ -88,6 +80,16 @@ public class GenerationManager implements IWorldGenerator {
             int y = r.nextInt(32);
             int z = chunkZ * 16 + r.nextInt(16);
             new GeneratorVolcano(ProjectRedExploration.blockStones.blockID, EnumSpecialStone.BASALT.meta, MathHelper.getRandomIntegerInRange(r, 32000, 64000)).generate(w, r, x, y, z);
+        }
+        
+        // Dye trees
+        if (Configurator.gen_dyeTrees.getBoolean(true)) {
+            int saplingMeta = r.nextInt(16);
+            int x = chunkX * 16 + r.nextInt(16);
+            int z = chunkZ * 16 + r.nextInt(16);
+            int y = w.getHeightValue(x, z);
+            if (r.nextDouble() < EnumDyeTrees.VALID_FOILAGE[saplingMeta].growthChance/3)
+                new GeneratorCustomTree(false, 5, Block.wood.blockID, 0, ProjectRedExploration.blockStainedLeaf.blockID, saplingMeta, -1, -1).generate(w, r, x, y, z);
         }
     }
 }

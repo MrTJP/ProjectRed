@@ -9,6 +9,7 @@ import mrtjp.projectred.core.ItemDrawPlate;
 import mrtjp.projectred.core.ItemPart;
 import mrtjp.projectred.core.ItemScrewdriver;
 import mrtjp.projectred.core.ItemWireDebugger;
+import mrtjp.projectred.core.PRVersionChecker;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -21,7 +22,8 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * "Project: Red" serves to provide a complete alternative for Eloraam's
@@ -80,6 +82,9 @@ public class ProjectRedCore {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postinit();
+        
+        TickRegistry.registerTickHandler(new PRVersionChecker(), Side.CLIENT);
+        
     }
 
     @Mod.EventHandler

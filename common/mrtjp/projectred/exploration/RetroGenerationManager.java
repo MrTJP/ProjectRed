@@ -13,6 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.Chunk;
 
 public class RetroGenerationManager {
@@ -138,7 +139,10 @@ public class RetroGenerationManager {
 
         @Override
         public boolean shouldGenerateInLocation(World w, Chunk c) {
-            return w.provider.dimensionId == 0;
+            if (w.provider.terrainType == WorldType.FLAT)
+                return false;
+            
+            return w.provider.dimensionId == 0;            
         }
 
         @Override
@@ -161,11 +165,16 @@ public class RetroGenerationManager {
         @Override
         public boolean shouldGenerateInLocation(World w, Chunk c) {
             int id = w.provider.dimensionId;
-            return id != -1 && id != 1;
+            
+            if (w.provider.terrainType == WorldType.FLAT)
+                return false;
+            
+            return id == 0;
         }
 
         @Override
         public void generate(Random r, World w, int chunkX, int chunkZ) {
+        	// Dye trees
             int saplingMeta = r.nextInt(16);
             int x = chunkX * 16 + r.nextInt(16);
             int z = chunkZ * 16 + r.nextInt(16);
