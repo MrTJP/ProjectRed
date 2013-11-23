@@ -62,18 +62,7 @@ public class GenerationManager implements IWorldGenerator {
                 int z = chunkZ * 16 + r.nextInt(16);
                 new GeneratorOre(ProjectRedExploration.blockOres.blockID, EnumOre.OREPERIDOT.meta, 5).generate(w, r, x, y, z);
             }
-        }
-        
-        // Dye trees
-        if (Configurator.gen_dyeTrees.getBoolean(true)) {
-            int saplingMeta = r.nextInt(16);
-            int x = chunkX * 16 + r.nextInt(16);
-            int z = chunkZ * 16 + r.nextInt(16);
-            int y = w.getHeightValue(x, z);
-            if (r.nextDouble() < EnumDyeTrees.VALID_FOILAGE[saplingMeta].growthChance/3)
-                new GeneratorCustomTree(false, 5, Block.wood.blockID, 0, ProjectRedExploration.blockStainedLeaf.blockID, saplingMeta, -1, -1).generate(w, r, x, y, z);
-        }
-        
+        }        
     }
 
     public static void runOverworldGeneration(Random r, int chunkX, int chunkZ, World w) {
@@ -91,6 +80,16 @@ public class GenerationManager implements IWorldGenerator {
             int y = r.nextInt(32);
             int z = chunkZ * 16 + r.nextInt(16);
             new GeneratorVolcano(ProjectRedExploration.blockStones.blockID, EnumSpecialStone.BASALT.meta, MathHelper.getRandomIntegerInRange(r, 32000, 64000)).generate(w, r, x, y, z);
+        }
+        
+        // Dye trees
+        if (Configurator.gen_dyeTrees.getBoolean(true)) {
+            int saplingMeta = r.nextInt(16);
+            int x = chunkX * 16 + r.nextInt(16);
+            int z = chunkZ * 16 + r.nextInt(16);
+            int y = w.getHeightValue(x, z);
+            if (r.nextDouble() < EnumDyeTrees.VALID_FOILAGE[saplingMeta].growthChance/3)
+                new GeneratorCustomTree(false, 5, Block.wood.blockID, 0, ProjectRedExploration.blockStainedLeaf.blockID, saplingMeta, -1, -1).generate(w, r, x, y, z);
         }
     }
 }

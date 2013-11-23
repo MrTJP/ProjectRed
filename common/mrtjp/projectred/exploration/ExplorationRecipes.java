@@ -1,6 +1,5 @@
 package mrtjp.projectred.exploration;
 
-import codechicken.microblock.handler.MicroblockProxy;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
@@ -39,94 +38,94 @@ public class ExplorationRecipes {
 
     private static void initGemToolRecipes() {
         /** Axes **/
-        addAxeRecipe(new ItemStack(ProjectRedExploration.itemRubyAxe), EnumPart.RUBY.getItemStack());
-        addAxeRecipe(new ItemStack(ProjectRedExploration.itemSapphireAxe), EnumPart.SAPPHIRE.getItemStack());
-        addAxeRecipe(new ItemStack(ProjectRedExploration.itemPeridotAxe), EnumPart.PERIDOT.getItemStack());
+        addAxeRecipe(new ItemStack(ProjectRedExploration.itemRubyAxe), "gemRuby");
+        addAxeRecipe(new ItemStack(ProjectRedExploration.itemSapphireAxe), "gemSapphire");
+        addAxeRecipe(new ItemStack(ProjectRedExploration.itemPeridotAxe), "gemPeridot");
         
         /** Hoes **/
-        addHoeRecipe(new ItemStack(ProjectRedExploration.itemRubyHoe), EnumPart.RUBY.getItemStack());
-        addHoeRecipe(new ItemStack(ProjectRedExploration.itemSapphireHoe), EnumPart.SAPPHIRE.getItemStack());
-        addHoeRecipe(new ItemStack(ProjectRedExploration.itemPeridotHoe), EnumPart.PERIDOT.getItemStack());
+        addHoeRecipe(new ItemStack(ProjectRedExploration.itemRubyHoe), "gemRuby");
+        addHoeRecipe(new ItemStack(ProjectRedExploration.itemSapphireHoe), "gemSapphire");
+        addHoeRecipe(new ItemStack(ProjectRedExploration.itemPeridotHoe), "gemPeridot");
         
         /** Pickaxe **/
-        addPickaxeRecipe(new ItemStack(ProjectRedExploration.itemRubyPickaxe), EnumPart.RUBY.getItemStack());
-        addPickaxeRecipe(new ItemStack(ProjectRedExploration.itemSapphirePickaxe), EnumPart.SAPPHIRE.getItemStack());
-        addPickaxeRecipe(new ItemStack(ProjectRedExploration.itemPeridotPickaxe), EnumPart.PERIDOT.getItemStack());
+        addPickaxeRecipe(new ItemStack(ProjectRedExploration.itemRubyPickaxe), "gemRuby");
+        addPickaxeRecipe(new ItemStack(ProjectRedExploration.itemSapphirePickaxe), "gemSapphire");
+        addPickaxeRecipe(new ItemStack(ProjectRedExploration.itemPeridotPickaxe), "gemPeridot");
         
         /** Shovel **/
-        addShovelRecipe(new ItemStack(ProjectRedExploration.itemRubyShovel), EnumPart.RUBY.getItemStack());
-        addShovelRecipe(new ItemStack(ProjectRedExploration.itemSapphireShovel), EnumPart.SAPPHIRE.getItemStack());
-        addShovelRecipe(new ItemStack(ProjectRedExploration.itemPeridotShovel), EnumPart.PERIDOT.getItemStack());
+        addShovelRecipe(new ItemStack(ProjectRedExploration.itemRubyShovel), "gemRuby");
+        addShovelRecipe(new ItemStack(ProjectRedExploration.itemSapphireShovel), "gemSapphire");
+        addShovelRecipe(new ItemStack(ProjectRedExploration.itemPeridotShovel), "gemPeridot");
         
         /** Sword **/
-        addSwordRecipe(new ItemStack(ProjectRedExploration.itemRubySword), EnumPart.RUBY.getItemStack());
-        addSwordRecipe(new ItemStack(ProjectRedExploration.itemSapphireSword), EnumPart.SAPPHIRE.getItemStack());
-        addSwordRecipe(new ItemStack(ProjectRedExploration.itemPeridotSword), EnumPart.PERIDOT.getItemStack());
+        addSwordRecipe(new ItemStack(ProjectRedExploration.itemRubySword), "gemRuby");
+        addSwordRecipe(new ItemStack(ProjectRedExploration.itemSapphireSword), "gemSapphire");
+        addSwordRecipe(new ItemStack(ProjectRedExploration.itemPeridotSword), "gemPeridot");
     
         /** Saw **/
         addSawRecipe(new ItemStack(ProjectRedExploration.itemGoldSaw), new ItemStack(Item.ingotGold));
-        addSawRecipe(new ItemStack(ProjectRedExploration.itemRubySaw), EnumPart.RUBY.getItemStack());
-        addSawRecipe(new ItemStack(ProjectRedExploration.itemSapphireSaw), EnumPart.SAPPHIRE.getItemStack());
-        addSawRecipe(new ItemStack(ProjectRedExploration.itemPeridotSaw), EnumPart.PERIDOT.getItemStack());
+        addSawRecipe(new ItemStack(ProjectRedExploration.itemRubySaw), "gemRuby");
+        addSawRecipe(new ItemStack(ProjectRedExploration.itemSapphireSaw), "gemSapphire");
+        addSawRecipe(new ItemStack(ProjectRedExploration.itemPeridotSaw), "gemPeridot");
    
         /** Sickle **/
-        addSickleRecipe(new ItemStack(ProjectRedExploration.itemWoodSickle), new ItemStack(Block.planks));
+        addSickleRecipe(new ItemStack(ProjectRedExploration.itemWoodSickle), "plankWood");
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemStoneSickle), new ItemStack(Item.flint));
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemIronSickle), new ItemStack(Item.ingotIron));
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemGoldSickle), new ItemStack(Item.ingotGold));
-        addSickleRecipe(new ItemStack(ProjectRedExploration.itemRubySickle), EnumPart.RUBY.getItemStack());
-        addSickleRecipe(new ItemStack(ProjectRedExploration.itemSapphireSickle), EnumPart.SAPPHIRE.getItemStack());
-        addSickleRecipe(new ItemStack(ProjectRedExploration.itemPeridotSickle), EnumPart.PERIDOT.getItemStack());
+        addSickleRecipe(new ItemStack(ProjectRedExploration.itemRubySickle), "gemRuby");
+        addSickleRecipe(new ItemStack(ProjectRedExploration.itemSapphireSickle), "gemSapphire");
+        addSickleRecipe(new ItemStack(ProjectRedExploration.itemPeridotSickle), "gemPeridot");
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemDiamondSickle), new ItemStack(Item.diamond));
 
     }
     
-    private static void addAxeRecipe(ItemStack o, ItemStack m) {
-        GameRegistry.addRecipe(o, 
+    private static void addAxeRecipe(ItemStack o, Object m) {
+        GameRegistry.addRecipe(new ShapedOreRecipe(o, 
                 "mm",
                 "ms",
                 " s",
                 'm', m,
                 's', Item.stick
-        );
+        ));
     }
-    private static void addHoeRecipe(ItemStack o, ItemStack m) {
-        GameRegistry.addRecipe(o, 
+    private static void addHoeRecipe(ItemStack o, Object m) {
+        GameRegistry.addRecipe(new ShapedOreRecipe(o, 
                 "mm",
                 " s",
                 " s",
                 'm', m,
                 's', Item.stick
-        );
+        ));
     }
-    private static void addPickaxeRecipe(ItemStack o, ItemStack m) {
-        GameRegistry.addRecipe(o, 
+    private static void addPickaxeRecipe(ItemStack o, Object m) {
+        GameRegistry.addRecipe(new ShapedOreRecipe(o, 
                 "mmm",
                 " s ",
                 " s ",
                 'm', m,
                 's', Item.stick
-        );
+        ));
     }
-    private static void addShovelRecipe(ItemStack o, ItemStack m) {
-        GameRegistry.addRecipe(o, 
+    private static void addShovelRecipe(ItemStack o, Object m) {
+        GameRegistry.addRecipe(new ShapedOreRecipe(o, 
                 "m",
                 "s",
                 "s",
                 'm', m,
                 's', Item.stick
-        );
+        ));
     }
-    private static void addSwordRecipe(ItemStack o, ItemStack m) {
-        GameRegistry.addRecipe(o, 
+    private static void addSwordRecipe(ItemStack o, Object m) {
+        GameRegistry.addRecipe(new ShapedOreRecipe(o, 
                 "m",
                 "m",
                 "s",
                 'm', m,
                 's', Item.stick
-        );
+        ));
     }
-    private static void addSawRecipe(ItemStack o, ItemStack m) {
+    private static void addSawRecipe(ItemStack o, Object m) {
         GameRegistry.addRecipe(new ShapedOreRecipe(o, 
                 "srr", 
                 "sbb", 
@@ -135,7 +134,7 @@ public class ExplorationRecipes {
                 'b', m
         ));
     }
-    private static void addSickleRecipe(ItemStack o, ItemStack m) {
+    private static void addSickleRecipe(ItemStack o, Object m) {
         GameRegistry.addRecipe(new ShapedOreRecipe(o, 
                 " m ", 
                 "  m",
