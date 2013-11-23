@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.PRColors;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.Tessellator;
@@ -64,11 +65,15 @@ public class RenderHalo {
     }
     
     public static void addLight(int x, int y, int z, int color, int slot, Cuboid6 box) {
-        renderQueue.add(new LightCache(x, y, z, color, slot, box));
+    	if (Configurator.renderLampHalos)
+    		renderQueue.add(new LightCache(x, y, z, color, slot, box));
     }
 
     @ForgeSubscribe
     public void onRenderWorldLast(RenderWorldLastEvent event) {
+    	if (!Configurator.renderLampHalos)
+    		return;
+    	
         Tessellator tess = Tessellator.instance;
         WorldClient w = event.context.theWorld;
 

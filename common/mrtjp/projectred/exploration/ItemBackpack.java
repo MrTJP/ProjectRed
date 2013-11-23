@@ -189,7 +189,7 @@ public class ItemBackpack extends Item {
         public final String unlocalname;
         public final int meta = this.ordinal();
         public static final EnumBackpack[] VALID_BP = { WHITE, ORANGE, MAGENTA, LIGHT_BLUE, YELLOW, LIME, PINK, GREY, LIGHT_GREY, CYAN, PURPLE, BLUE, BROWN, GREEN, RED, BLACK };
-        public static final String oreDictDefinition = "pr_bag";
+        public static final String oreDictDefinition = "ProjRed|Exploration:bag";
         
         private EnumBackpack(String name, String unlocal) {
             fullname = name;
