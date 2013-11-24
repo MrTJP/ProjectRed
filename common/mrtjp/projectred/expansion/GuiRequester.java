@@ -1,6 +1,7 @@
 package mrtjp.projectred.expansion;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,14 +31,14 @@ public class GuiRequester extends GhostGuiScreen {
     }
 
     WidgetItemSelection itemList = new WidgetItemSelection(xSize/2-260/2, 10, 260, 140);
-    WidgetTextBox textFilter = new WidgetTextBox(xSize/2-150/2, 160, 150, 16, "") {
+    WidgetTextBox textFilter = new WidgetTextBox(xSize/2-150/2, 185, 150, 16, "") {
         @Override
         public void onTextChanged(String oldText) {
             itemList.setNewFilter(getText());
         }
     }.setMaxStringLength(24);
 
-    WidgetTextBox itemCount = new WidgetTextBox(xSize/2-50/2, 180, 50, 16, "1") {
+    WidgetTextBox itemCount = new WidgetTextBox(xSize/2-50/2, 205, 50, 16, "1") {
         @Override
         public void mouseScrolled(int x, int y, int scroll) {
             if (pointInside(x, y)) {
@@ -87,18 +88,22 @@ public class GuiRequester extends GhostGuiScreen {
     @Override
     public void addWidgets() {
         add(itemList);
-
-        add(new WidgetSimpleButton(10, 185, 50, 16).setActionCommand("refrsh").setText("Re-poll"));
-        add(new WidgetSimpleButton(10, 205, 50, 16).setActionCommand("req").setText("Submit"));
-
-        add(new WidgetSimpleButton(95, 180, 16, 16).setActionCommand("-").setText("-"));
-        add(new WidgetSimpleButton(170, 180, 16, 16).setActionCommand("+").setText("+"));
         add(textFilter);
         add(itemCount);
         
         add(pull);
         add(craft);
         add(partials);
+
+        // Submit and refresh
+        add(new WidgetSimpleButton(10, 185, 50, 16).setActionCommand("refrsh").setText("Re-poll"));
+        add(new WidgetSimpleButton(10, 205, 50, 16).setActionCommand("req").setText("Submit"));
+        // Count + -
+        add(new WidgetSimpleButton(95, 205, 16, 16).setActionCommand("-").setText("-"));
+        add(new WidgetSimpleButton(170, 205, 16, 16).setActionCommand("+").setText("+"));
+        // Page + -
+        add(new WidgetSimpleButton(85, 152, 16, 16).setActionCommand("p-").setText("-"));
+        add(new WidgetSimpleButton(180, 152, 16, 16).setActionCommand("p+").setText("+"));
 
         askForListRefresh();
     }
@@ -184,6 +189,10 @@ public class GuiRequester extends GhostGuiScreen {
             countUp();
         else if (ident.equals("-"))
             countDown();
+        else if (ident.equals("p+"))
+            itemList.pageUp();
+        else if (ident.equals("p-"))
+            itemList.pageDown();
         else
             sendAction(ident);
     }
@@ -193,6 +202,7 @@ public class GuiRequester extends GhostGuiScreen {
         for (Entry<ItemKey, Integer> entry : content.entrySet())
             list.add(ItemKeyStack.get(entry.getKey(), entry.getValue()));
 
+        Collections.sort(list);
         itemList.setDisplayList(list);
     }
 }
