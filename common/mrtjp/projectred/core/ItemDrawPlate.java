@@ -1,6 +1,7 @@
 package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.core.blockutil.ItemCraftingDamage;
 import net.minecraft.client.renderer.texture.IconRegister;
 
 public class ItemDrawPlate extends ItemCraftingDamage {
