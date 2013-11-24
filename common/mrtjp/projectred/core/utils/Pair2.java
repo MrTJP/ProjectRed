@@ -12,7 +12,7 @@ public class Pair2<T1, T2> {
     public T1 getValue1() {
         return value1;
     }
-    
+
     public T2 getValue2() {
         return value2;
     }

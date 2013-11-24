@@ -19,18 +19,18 @@ public class CoreCPH implements IClientPacketHandler
         World world = mc.theWorld;
 
         switch(packet.getType()) {
-            case 1:
-                handleTilePacket(world, packet, packet.readCoord());
-                return;
-            case 2:
-                Messenger.addMessage(packet.readDouble(), packet.readDouble(), packet.readDouble(), packet.readString());
-                return;
+        case 1:
+            handleTilePacket(world, packet, packet.readCoord());
+            return;
+        case 2:
+            Messenger.addMessage(packet.readDouble(), packet.readDouble(), packet.readDouble(), packet.readString());
+            return;
         }
     }
 
     private void handleTilePacket(World world, PacketCustom packet, BlockCoord pos) {
         TileEntity tile =  world.getBlockTileEntity(pos.x, pos.y, pos.z);
-        
+
         if(tile instanceof ICustomPacketTile)
             ((ICustomPacketTile)tile).handleDescriptionPacket(packet);
     }

@@ -2,7 +2,6 @@ package mrtjp.projectred.api;
 
 import java.util.Random;
 
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 

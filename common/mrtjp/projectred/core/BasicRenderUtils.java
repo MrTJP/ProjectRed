@@ -8,7 +8,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class BasicRenderUtils {
-    
+
     public static int currentRenderPass = 0;
 
     public static void setBrightness(IBlockAccess w, int x, int y, int z) {

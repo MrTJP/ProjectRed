@@ -25,7 +25,7 @@ public class ProjectRedIllumination {
 
     /** Blocks **/
     public static BlockLamp blockLamp;
-    
+
     /** Multipart items **/
     public static ItemPartLantern itemPartLantern;
     public static ItemPartLantern itemPartInvLantern;

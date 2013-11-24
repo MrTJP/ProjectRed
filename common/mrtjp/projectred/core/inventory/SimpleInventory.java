@@ -82,7 +82,7 @@ public class SimpleInventory implements IInventory {
     public void load(NBTTagCompound tag, String prefix) {
         if (tag == null)
             return;
-        
+
         NBTTagList nbttaglist = tag.getTagList(prefix + "items");
 
         for (int i = 0; i < nbttaglist.tagCount(); i++) {
@@ -101,28 +101,26 @@ public class SimpleInventory implements IInventory {
     public void save(NBTTagCompound tag, String prefix) {
         if (tag == null)
             return;
-        
+
         NBTTagList itemList = new NBTTagList();
-        for (int i = 0; i < storage.length; i++) {
+        for (int i = 0; i < storage.length; i++)
             if (storage[i] != null && storage[i].stackSize > 0) {
                 NBTTagCompound tag2 = new NBTTagCompound();
                 tag2.setInteger("index", i);
                 storage[i].writeToNBT(tag2);
                 itemList.appendTag(tag2);
             }
-        }
         tag.setTag(prefix + "items", itemList);
         tag.setInteger(prefix + "itemsCount", storage.length);
     }
 
     public void dropContents(World worldObj, int posX, int posY, int posZ) {
         if (BasicUtils.isServer(worldObj)) {
-            for (int i = 0; i < storage.length; i++) {
+            for (int i = 0; i < storage.length; i++)
                 while (storage[i] != null) {
                     ItemStack todrop = decrStackSize(i, storage[i].getMaxStackSize());
                     BasicUtils.dropItem(worldObj, posX, posY, posZ, todrop);
                 }
-            }
             onInventoryChanged();
         }
     }
@@ -151,12 +149,10 @@ public class SimpleInventory implements IInventory {
                 int ans = stack.stackSize - (slot.stackSize - 127);
                 slot.stackSize = 127;
                 return ans;
-            } else {
+            } else
                 return stack.stackSize;
-            }
-        } else {
+        } else
             return 0;
-        }
     }
 
     //TODO remove?
@@ -165,18 +161,16 @@ public class SimpleInventory implements IInventory {
             return 0;
         stack = stack.copy();
         for (int i = 0; i < storage.length; i++) {
-            if (stack.stackSize <= 0) {
+            if (stack.stackSize <= 0)
                 break;
-            }
             if (storage[i] == null)
                 continue; // Skip Empty Slots on first attempt.
             int added = tryAddToSlot(i, stack);
             stack.stackSize -= added;
         }
         for (int i = 0; i < storage.length; i++) {
-            if (stack.stackSize <= 0) {
+            if (stack.stackSize <= 0)
                 break;
-            }
             int added = tryAddToSlot(i, stack);
             stack.stackSize -= added;
         }

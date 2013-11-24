@@ -30,6 +30,7 @@ public class ItemScrewdriver extends Item implements IScrewdriver {
         return true;
     }
 
+    @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IconRegister reg) {
         this.itemIcon = reg.registerIcon("projectred:screwdriver");

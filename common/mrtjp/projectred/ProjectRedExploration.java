@@ -41,7 +41,7 @@ public class ProjectRedExploration {
     public static BlockSpecialStoneWall blockStoneWalls;
     public static BlockStainedLeaf blockStainedLeaf;
     public static BlockStainedSapling blockStainedSapling;
-    
+
     /** Items **/
     public static ItemWoolGin itemWoolGin;
     public static ItemBackpack itemBackpack;

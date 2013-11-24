@@ -12,7 +12,7 @@ public class LonelyList<E> implements List<E> {
     public LonelyList(E object) {
         if (object == null)
             throw new NullPointerException();
-        
+
         this.content = object;
     }
 
@@ -55,9 +55,8 @@ public class LonelyList<E> implements List<E> {
 
     @Override
     public E get(int index) {
-        if (index != 0) {
+        if (index != 0)
             throw new IndexOutOfBoundsException("LonelyList can't access an object at: " + index);
-        }
         return content;
     }
 

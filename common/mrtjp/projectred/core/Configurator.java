@@ -35,7 +35,7 @@ public class Configurator {
     public static Property block_machinesID;
     public static Property block_oresID;
     public static Property block_stonesID;
-    public static Property block_lampID;    
+    public static Property block_lampID;
     public static Property block_redstoneliquidID;
     public static Property block_redconductiveliquidID;
     public static Property block_stoneWallsID;
@@ -50,7 +50,7 @@ public class Configurator {
     public static Property item_backpackID;
     public static Property item_wireDebuggerID;
     public static Property item_routingChipID;
-    
+
 
     public static Property item_rubyAxe;
     public static Property item_sapphireAxe;
@@ -97,17 +97,17 @@ public class Configurator {
     public static int maxDetectionLength;
     public static int detectionFrequency;
     public static int routerUpdateThreadCount;
-    
+
     /** Retro Generation **/
     public static boolean retroGeneration;
     public static String retroGenID;
-    
+
     /** Render **/
     public static boolean logicwires3D;
     public static boolean staticWires;
     public static boolean staticGates;
     public static boolean renderLampHalos;
-    
+
 
     public static void initConfig(FMLPreInitializationEvent event) {
         _configFolder = event.getModConfigurationDirectory();
@@ -118,7 +118,7 @@ public class Configurator {
     public static void loadPropertiesFromFile(File file) {
         Configuration localConfig = new Configuration(file);
         localConfig.load();
-        
+
         part_gate = localConfig.get("MultiPart Item IDs", "Gate Part ID", 9030);
         part_wire = localConfig.get("MultiPart Item IDs", "Wire Part ID", 9031);
         part_jwire = localConfig.get("MultiPart Item IDs", "Jacketed Wire Part ID", 9032);
@@ -132,7 +132,7 @@ public class Configurator {
         part_fixture = localConfig.get("MultiPart Item IDs", "Fixture Part ID", 9041);
         part_invfixture = localConfig.get("MultiPart Item IDs", "Inverted Fixture Part ID", 9042);
         part_pipe = localConfig.get("MultiPart Item IDs", "Pipe Part ID", 9043);
-         
+
 
         block_machinesID = localConfig.getBlock("block_machinesID", 2129);
         block_oresID = localConfig.getBlock("block_oresID", 2130);
@@ -151,7 +151,7 @@ public class Configurator {
         item_woolginID = localConfig.getItem("item_woolginID", 9027);
         item_backpackID = localConfig.getItem("item_backpackID", 9028);
         item_routingChipID = localConfig.getItem("item_routingChipID", 9029);
-        
+
         item_rubyAxe = localConfig.getItem("rubyaxe", 9097);
         item_sapphireAxe = localConfig.getItem("sapphireaxe", 9098);
         item_peridotAxe = localConfig.getItem("peridotaxe", 9099);
@@ -196,13 +196,13 @@ public class Configurator {
         retroGeneration = localConfig.get("general", "Retro Ore Generation", false, "If set to true, world generation for ProjectRed will attempt to run even in previously generated chunks.").getBoolean(false);
         retroGenID = localConfig.get("general", "Retro Ore Gen ID", "prRG", "This ID is used to check if retro gen has been performed on a chunk. Changing it will reset retro gen status.").getString();
         renderLampHalos = localConfig.get("general", "Lamp Halo rendering", true, "If set to false, lamps will no longer render halos").getBoolean(true);
-        
+
         maxDetectionCount = localConfig.get("general", "Max Detection Count", 100, "Max number of links to explore when discovering new routers.").getInt();
         maxDetectionLength = localConfig.get("general", "Max Detection Length", 50, "Max number of links allowed in between routers.").getInt();
         detectionFrequency = localConfig.get("general", "Detection Frequency", 20, "Ticks between router searches.").getInt();
         routerUpdateThreadCount = localConfig.get("general", "Router Update Thread Count", 4, "Number of active threads that update routing tables.").getInt();
-        
-        
+
+
         localConfig.save();
     }
 }

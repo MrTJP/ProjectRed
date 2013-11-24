@@ -1,13 +1,8 @@
 package mrtjp.projectred.core;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
@@ -18,7 +13,7 @@ import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 
 public class BasicUtils {
-    
+
     public static boolean isServer(World world) {
         if (world != null)
             return !world.isRemote;
@@ -34,10 +29,10 @@ public class BasicUtils {
     public static void dropItem(World world, int x, int y, int z, ItemStack itemStack) {
         if (!isClient(world)) {
             double var5 = 0.7D;
-            double var7 = (double) world.rand.nextFloat() * var5 + (1.0D - var5) * 0.5D;
-            double var9 = (double) world.rand.nextFloat() * var5 + (1.0D - var5) * 0.5D;
-            double var11 = (double) world.rand.nextFloat() * var5 + (1.0D - var5) * 0.5D;
-            EntityItem var13 = new EntityItem(world, (double) x + var7, (double) y + var9, (double) z + var11, itemStack);
+            double var7 = world.rand.nextFloat() * var5 + (1.0D - var5) * 0.5D;
+            double var9 = world.rand.nextFloat() * var5 + (1.0D - var5) * 0.5D;
+            double var11 = world.rand.nextFloat() * var5 + (1.0D - var5) * 0.5D;
+            EntityItem var13 = new EntityItem(world, x + var7, y + var9, z + var11, itemStack);
             var13.delayBeforeCanPickup = 10;
             world.spawnEntityInWorld(var13);
         }
@@ -46,7 +41,7 @@ public class BasicUtils {
     public static void dropItemFromLocation(World w, ItemStack is, boolean violent, EntityPlayer player, int to_side, int tickDelay, BlockCoord coord) {
         if (w.isRemote)
             return;
-        if ((is == null) || (is.stackSize == 0))
+        if (is == null || is.stackSize == 0)
             return;
         if (player == null)
             to_side = -1;
@@ -81,9 +76,9 @@ public class BasicUtils {
             vel.zCoord = w.rand.nextGaussian();
         }
         EntityItem ent = new EntityItem(w, pos.xCoord, pos.yCoord, pos.zCoord, is);
-        ent.motionX = (vel.xCoord * mult);
-        ent.motionY = (vel.yCoord * mult);
-        ent.motionZ = (vel.zCoord * mult);
+        ent.motionX = vel.xCoord * mult;
+        ent.motionY = vel.yCoord * mult;
+        ent.motionZ = vel.zCoord * mult;
         ent.delayBeforeCanPickup = tickDelay;
         w.spawnEntityInWorld(ent);
     }
@@ -93,7 +88,7 @@ public class BasicUtils {
         TileEntity te = access.getBlockTileEntity(coords.x, coords.y, coords.z);
         return !clazz.isInstance(te) ? null : (T)te;
     }
-    
+
     /**
      * Faster than class.isInstance
      */
@@ -105,7 +100,7 @@ public class BasicUtils {
         TileMultipart t = getMultipartTile(w, bc);
         if (t != null)
             return t.partMap(part);
-        
+
         return null;
     }
 

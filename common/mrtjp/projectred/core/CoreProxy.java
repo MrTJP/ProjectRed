@@ -10,7 +10,7 @@ import net.minecraftforge.common.MinecraftForge;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 
 public class CoreProxy implements IProxy {
-    
+
     public static int basicRenderID = 0;
 
     @Override
@@ -25,7 +25,7 @@ public class CoreProxy implements IProxy {
         itemDrawPlate = new ItemDrawPlate(Configurator.item_drawplateID.getInt());
         itemScrewdriver = new ItemScrewdriver(Configurator.item_screwdriverID.getInt());
         itemWireDebugger = new ItemWireDebugger(Configurator.item_wireDebuggerID.getInt());
-        
+
         EnumPart.initOreDictDefinitions();
     }
 

@@ -5,10 +5,10 @@ import codechicken.lib.packet.PacketCustom;
 
 public class CoreClientProxy extends CoreProxy {
 
-	@Override
-	public void init() {
-		super.init();
-		MinecraftForge.EVENT_BUS.register(new Messenger());
-		PacketCustom.assignHandler(CoreCPH.channel, new CoreCPH());
-	}
+    @Override
+    public void init() {
+        super.init();
+        MinecraftForge.EVENT_BUS.register(new Messenger());
+        PacketCustom.assignHandler(CoreCPH.channel, new CoreCPH());
+    }
 }

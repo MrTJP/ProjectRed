@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 public abstract class ProjectRedAPI
 {
     public static ProjectRedAPI instance;
-    
+
     /**
      * Queries the block on side of this block for the bundled signal being emmitted to this block.
      * 
