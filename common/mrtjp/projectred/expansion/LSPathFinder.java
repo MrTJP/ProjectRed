@@ -14,7 +14,7 @@ import codechicken.multipart.TMultiPart;
 
 public class LSPathFinder {
 
-    public HashMap<Router, StartEndPath> result;
+    private HashMap<Router, StartEndPath> result;
     private int pipesVisited;
 
     private final int maxVisited;
@@ -22,7 +22,6 @@ public class LSPathFinder {
     private final HashSet<BasicPipePart> setVisited = new HashSet<BasicPipePart>();
 
     private final Router LSAddresser;
-
 
     public LSPathFinder(IWorldRouter start, int maxVisited, int maxLength) {
         this(start, maxVisited, maxLength, ForgeDirection.UNKNOWN);
@@ -106,12 +105,8 @@ public class LSPathFinder {
 
         return foundPipes;
     }
-
-    private int countConns(int connMap) {
-        int conns = 0;
-        for (int i = 0; i < 6; i++)
-            if ((connMap & 1<<i) != 0)
-                conns++;
-        return conns;
+    
+    public HashMap<Router, StartEndPath> getResult() {
+        return result;
     }
 }
