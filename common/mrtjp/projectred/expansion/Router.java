@@ -1,5 +1,6 @@
 package mrtjp.projectred.expansion;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.PriorityQueue;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -26,14 +28,14 @@ public class Router implements Comparable<Router> {
 
     /** Mapped [router, orientation] for connected destinations **/
     private Map<Router, ForgeDirection> routeTable = Collections.unmodifiableMap(new HashMap<Router, ForgeDirection>());
-    /** Mapped [router, distance] for connected destinations **/
-    private Map<Router, Integer> routeCosts = Collections.unmodifiableMap(new HashMap<Router, Integer>());
-    /** List of Routers sorted by distance, closest one having the lowest index **/
-    private List<Router> routersByCost = Collections.unmodifiableList(new LinkedList<Router>());
+        
+    /** List of StartEndPath sorted by distance, closest one having the lowest index **/
+    private List<StartEndPath> routersByCost = Collections.unmodifiableList(new LinkedList<StartEndPath>());
+
     /** Set of known exits from here. Used to determine render color of a side **/
     private EnumSet<ForgeDirection> routedExits = EnumSet.noneOf(ForgeDirection.class);
     /** Link State for all nodes that branch from this one **/
-    private Map<Router, NodeLink> adjacentLinks = new HashMap<Router, NodeLink>();
+    private Map<Router, StartEndPath> adjacentLinks = new HashMap<Router, StartEndPath>();
 
     /** Locks for allowing thread-safe read-write access to router information **/
     protected static final ReentrantReadWriteLock SharedLSADatabaseLock = new ReentrantReadWriteLock();
@@ -47,7 +49,7 @@ public class Router implements Comparable<Router> {
     private static int[] LSALegacyVersion = new int[0];
     private int LSAVersion = 0;
     private static LSA[] SharedLSADatabase = new LSA[0];
-    private LSA LSA; 
+    private LSA LSA;
 
     /** Identification **/
     private final int IPAddress;
@@ -109,8 +111,8 @@ public class Router implements Comparable<Router> {
         IWorldRouter wr = getParent();
         if (wr == null) return false;
         
-        HashMap<Router, NodeLink> newAdjacent;
-        LSPathFinder finder = new LSPathFinder(wr.getContainer(), Configurator.maxDetectionCount, Configurator.maxDetectionLength);
+        HashMap<Router, StartEndPath> newAdjacent;
+        LSPathFinder finder = new LSPathFinder(wr, Configurator.maxDetectionCount, Configurator.maxDetectionLength);
         newAdjacent = finder.result;
 
         for (Router r : newAdjacent.keySet()) {
@@ -130,14 +132,14 @@ public class Router implements Comparable<Router> {
             }
         
         else if (!adjacentChanged) // Edges different
-            for (Entry<Router, NodeLink> r : newAdjacent.entrySet()) {
-                NodeLink oldEdge = adjacentLinks.get(r.getKey());
+            for (Entry<Router, StartEndPath> r : newAdjacent.entrySet()) {
+                StartEndPath oldEdge = adjacentLinks.get(r.getKey());
                 if (oldEdge == null) {
                     adjacentChanged = true;
                     break;
                 }
 
-                NodeLink newEdge = r.getValue();
+                StartEndPath newEdge = r.getValue();
                 if (!newEdge.equals(oldEdge)) {
                     adjacentChanged = true;
                     break;
@@ -147,15 +149,15 @@ public class Router implements Comparable<Router> {
         // Update local LSA
         if (adjacentChanged) {
             EnumSet<ForgeDirection> newExits = EnumSet.noneOf(ForgeDirection.class);
-            for(Entry<Router,NodeLink> r : newAdjacent.entrySet())
-                newExits.add(r.getValue().outOrient);
+            for(Entry<Router,StartEndPath> r : newAdjacent.entrySet())
+                newExits.add(ForgeDirection.getOrientation(r.getValue().dirToFirstHop));
             
             adjacentLinks = Collections.unmodifiableMap(newAdjacent);
             routedExits = newExits;
 
             HashMap<Router, Integer> neighboursWithCost = new HashMap<Router, Integer>();
-            for (Entry<Router, NodeLink> r : adjacentLinks.entrySet())
-                neighboursWithCost.put(r.getKey(), r.getValue().outDistance);
+            for (Entry<Router, StartEndPath> r : adjacentLinks.entrySet())
+                neighboursWithCost.put(r.getKey(), r.getValue().distance);
 
             SharedLSADatabasewriteLock.lock();
             LSA.neighbors = neighboursWithCost;
@@ -239,7 +241,7 @@ public class Router implements Comparable<Router> {
         return routeTable;
     }
     
-    public List<Router> getRoutersByCost() {
+    public List<StartEndPath> getRoutersByCost() {
         refreshRouteTableIfNeeded(true);
         return routersByCost;
     }
@@ -285,118 +287,83 @@ public class Router implements Comparable<Router> {
     public void refreshRoutingTable(int newVersion) {
         if(LSALegacyVersion[IPAddress] >= newVersion)
             return;
-                
-        /** Map of all "approved" routers and the route to get there **/
-        HashMap<Router, LinkedList<Router>> tree =  new HashMap<Router, LinkedList<Router>>();
-        /** The cost to get to an "approved" router **/
-        HashMap<Router, Integer> treeCost = new HashMap<Router, Integer>();
         
-        tree.put(this,  new LinkedList<Router>());
-        treeCost.put(this,  0);
-
-        /** The candidate router and which approved router put it in the candidate list **/
-        HashMap<Router, Router> candidates = new HashMap<Router, Router>();
-        /** The total cost for the candidate route **/
-        HashMap<Router, Integer> candidatesCost = new HashMap<Router, Integer>();
+        /** Map of router and its rudimentary path **/
+        HashMap<Router, StartEndPath> tree2 = new HashMap<Router, StartEndPath>();
+        /** Queue of all candidates that need checking **/
+        PriorityQueue<StartEndPath> candidates2 = new PriorityQueue<StartEndPath>();
+        /** List of all routers connected to this network ordered by cost **/
+        ArrayList<StartEndPath> routersByCost2 = new ArrayList<StartEndPath>();
         
-        // Start at all adjacent routers.
+        // Start by adding our info.
+        tree2.put(this, new StartEndPath(this, this, -1, 0));
         for (Router r : adjacentLinks.keySet()) {
-            candidates.put(r, this);
-            candidatesCost.put(r, adjacentLinks.get(r).outDistance);
+        	StartEndPath l = adjacentLinks.get(r);
+        	candidates2.add(new StartEndPath(l.start, l.end, l.dirToFirstHop, l.distance));
         }
-
+        
         SharedLSADatabasereadLock.lock();
-        while (!candidates.isEmpty()) {
-            // Get next lowest candidate router.
-            Router lowest = null;
-            int lowestCost = Integer.MAX_VALUE;
-            for (Router r : candidatesCost.keySet()) {
-                int newCost = candidatesCost.get(r);
-                if (newCost < lowestCost) {
-                    lowest = r;
-                    lowestCost = newCost;
-                }
-            }
-
-            // Get the approved parent of the lowest cost candidate
-            Router lowestParent = candidates.get(lowest);
-            // Get a copy of the route for the approved router
-            LinkedList<Router> lowestPath = (LinkedList<Router>) tree.get(lowestParent).clone();
-            // Add to the route to get to the candidate
-            lowestPath.addLast(lowest);
-
-            // Approve the candidate
-            tree.put(lowest, lowestPath);
-            treeCost.put(lowest, lowestCost);
-            
-            // Remove as candidate
-            candidates.remove(lowest);
-            candidatesCost.remove(lowest);
-            
+        StartEndPath nextLowest = null;
+        while((nextLowest = candidates2.poll()) != null) {
+        	// We already approved this router. Keep skipping until we get a fresh one.
+        	while (nextLowest != null && tree2.containsKey(nextLowest.end))
+        		nextLowest = candidates2.poll();
+        	
+        	// No more routers to act on. We are done.
+        	if (nextLowest == null)
+        		break;
+        	
+        	// This is the lowest path so far to here. 
+        	StartEndPath lowestPath = tree2.get(nextLowest.start);
+        	// If its null, then we are the start of the path to this router.
+        	if (lowestPath == null)
+        		lowestPath = nextLowest;
+        	
+        	// Add all of our neighbors so they are checked.
             LSA lsa = null;
-            if(lowest.getIPAddress() < SharedLSADatabase.length)
-                lsa = SharedLSADatabase[lowest.getIPAddress()];
-
-            if (lsa == null)
-                continue;
+            if(nextLowest.end.getIPAddress() < SharedLSADatabase.length)
+                lsa = SharedLSADatabase[nextLowest.end.getIPAddress()];
             
-            // Add all linked neighbors of this newly approved router.
-            for (Entry<Router, Integer> entry : ((Map<Router, Integer>)lsa.neighbors.clone()).entrySet()) {
-                Router newCandidate = entry.getKey();
-                
-                if (tree.containsKey(newCandidate))
-                    continue;
-                
-                int newCandidateCost = lowestCost + entry.getValue();
-
-                if (candidates.containsKey(newCandidate) && candidatesCost.get(newCandidate) <= newCandidateCost)
-                    continue;
-                
-                candidates.put(newCandidate, lowest);
-                candidatesCost.put(newCandidate, newCandidateCost);
+            if (lsa != null) {
+				for (Router r : ((Map<Router, Integer>) lsa.neighbors.clone()).keySet()) {
+					if (tree2.containsKey(r))
+						continue;
+					
+					int newCost = nextLowest.distance + lsa.neighbors.get(r);
+					candidates2.add(new StartEndPath(lowestPath.end, r, lowestPath.dirToFirstHop, newCost));
+				}
             }
+            
+            // Approve this candidate
+            nextLowest.start = lowestPath.start;
+            tree2.put(nextLowest.end, nextLowest);
+            routersByCost2.add(nextLowest);
         }
         SharedLSADatabasereadLock.unlock();
-
         
-        // Build the routing table from the approved routers.
-        Map<Router, ForgeDirection> _routeTable = new HashMap<Router, ForgeDirection>(getIPEndPool());
-        Map<Router, Integer> _routeCosts = new HashMap<Router, Integer>(getIPEndPool());
-        LinkedList _routersByCost = new LinkedList<Router>();
-        for (Router node : tree.keySet()) {
-            LinkedList<Router> route = tree.get(node);
-            if (route.size() == 0) {
-                _routeTable.put(node, ForgeDirection.UNKNOWN);
-                continue;
-            }
-            
-            Router firstHop = route.getFirst();
-            if (firstHop == null) continue;
-            
-            if (!adjacentLinks.containsKey(firstHop))
-                continue;
-            
-            _routeCosts.put(node, treeCost.get(node));
-            _routeTable.put(node, adjacentLinks.get(firstHop).outOrient);
+        HashMap<Router, ForgeDirection> routeTable2 = new HashMap<Router, ForgeDirection>(tree2.size());
+        for (StartEndPath l : tree2.values()) {
+        	Router firstHop = l.start;
+        	if (firstHop == null) {
+        		routeTable2.put(l.end, ForgeDirection.UNKNOWN);
+        		continue;
+        	}
+        	
+        	StartEndPath localOutPath = adjacentLinks.get(firstHop);
+        	if (localOutPath == null)
+        		continue;
+        	
+        	routeTable2.put(l.end, ForgeDirection.getOrientation(localOutPath.dirToFirstHop));
         }
 
-        // Sort routers into a list by distance
-        List<Entry<Router, Integer>> temp = new LinkedList<Entry<Router, Integer>>(_routeCosts.entrySet());
-                
-        Collections.sort(temp, c);
-        
-        for (Entry<Router, Integer> e : temp)
-            _routersByCost.addLast(e.getKey());
-        
         // Set the new routing tables.
         routingTableUpdateWriteLock.lock();
         if(newVersion == LSAVersion){
             SharedLSADatabasereadLock.lock();
             if(LSALegacyVersion[IPAddress] < newVersion){
                 LSALegacyVersion[IPAddress] = newVersion;
-                routeTable = Collections.unmodifiableMap(_routeTable);
-                routeCosts = Collections.unmodifiableMap(_routeCosts);
-                routersByCost = Collections.unmodifiableList(_routersByCost);
+                routeTable = Collections.unmodifiableMap(routeTable2);
+                routersByCost = Collections.unmodifiableList(routersByCost2);
             }
             SharedLSADatabasereadLock.unlock();
         }
@@ -434,10 +401,6 @@ public class Router implements Comparable<Router> {
         return IPAddress;
     }
 
-    private static class LSA {
-        public HashMap<Router, Integer> neighbors = new HashMap<Router, Integer>();
-    }
-
     public int getDim() {
         return dim;
     }
@@ -463,38 +426,40 @@ public class Router implements Comparable<Router> {
         nextIP = 1;
     }
     
-    public static class NodeLink implements Comparable<NodeLink> {
-        public ForgeDirection outOrient;
-        public int outDistance;
-        public Router source;
-        public final Router destination;
+    private static class LSA {
+	    public HashMap<Router, Integer> neighbors = new HashMap<Router, Integer>();
+	}
 
-        public NodeLink(Router source, Router destination, int out, int length) {
-            this.source = source;
-            this.destination = destination;
+	public static class StartEndPath implements Comparable<StartEndPath> {
+        public int dirToFirstHop;
+        public int distance;
+        public Router start;
+        public final Router end;
+
+        public StartEndPath(Router start, Router end, int dir, int length) {
+            this.start = start;
+            this.end = end;
             
-            this.outOrient = ForgeDirection.getOrientation(out);
-            
-            this.outDistance = length;
+            this.dirToFirstHop = dir;
+            this.distance = length;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof NodeLink) {
-                NodeLink p = (NodeLink)o;
-                return this.outOrient.equals(p.outOrient) &&
-                        this.outDistance == p.outDistance;
-            }
-            return false;
-        }
+		@Override
+		public boolean equals(Object o) {			
+			if (o instanceof StartEndPath) {
+				StartEndPath p = (StartEndPath) o;
+				return dirToFirstHop == p.dirToFirstHop
+						&& distance == p.distance;
+			}
+			return false;
+		}
 
-        @Override
-        public int compareTo(NodeLink o) {
-            int c = this.outDistance - o.outDistance;
-            if (c != 0) return c;
-            return destination.getIPAddress()-o.destination.getIPAddress();
-        }
-
+		@Override
+		public int compareTo(StartEndPath o) {
+			int c = distance - o.distance;
+			if (c == 0)
+				c = end.getIPAddress() - o.end.getIPAddress();
+			return c;
+		}
     }
-
 }
