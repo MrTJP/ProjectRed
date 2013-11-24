@@ -2,11 +2,13 @@ package mrtjp.projectred.core.inventory;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Mouse;
@@ -48,7 +50,7 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
             if (getPreviousScreen() instanceof IStackableGui)
                 ((IStackableGui) getPreviousScreen()).prepareReDisplay();
 
-            mc.displayGuiScreen(getPreviousScreen());
+            shiftScreen(getPreviousScreen());
             return;
         } else {
             super.keyTyped(c, i);
@@ -135,7 +137,7 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
             Point p = GuiDraw.getMousePosition();
             int scroll = i > 0 ? 1 : -1;
             for (GhostWidget widget : widgets)
-                widget.mouseScrolled(p.x, p.y, scroll);
+                widget.mouseScrolled(p.x - guiLeft, p.y - guiTop, scroll);
         }
     }
 
@@ -146,4 +148,12 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
     public void addWidgets() {
     }
 
+    public void shiftScreen(GuiScreen gui) {
+        mc.displayGuiScreen(gui);
+
+        if (gui instanceof GuiContainer) {
+            GuiContainer guic = (GuiContainer)gui;
+            guic.inventorySlots.windowId = inventorySlots.windowId;
+        }
+    }
 }

@@ -68,7 +68,7 @@ item.projectred.expansion.pipe|0.name=Item Transport pipe
 item.projectred.expansion.pipe|1.name=Routed Junction pipe
 item.projectred.expansion.pipe|2.name=Routed Interface pipe
 item.projectred.expansion.pipe|3.name=Routed Crafting pipe
-
+item.projectred.expansion.pipe|4.name=Routed Request pipe
 
 
 itemGroup.exploration=Project Red: Exploration

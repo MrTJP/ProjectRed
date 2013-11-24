@@ -47,16 +47,16 @@ public class GhostContainer2 extends Container {
 
     @Override
     public ItemStack slotClick(int slotID, int mouseButton, int isShift, EntityPlayer player) {
-        if (slotID >= 0) {
+        if (slotID >= 0 && slotID < inventorySlots.size()) {
             Slot s = (Slot) inventorySlots.get(slotID);
             if (s instanceof SlotExtended) {
                 SlotExtended slot = (SlotExtended) inventorySlots.get(slotID);
                 if (slot.handleClick())
                     return slot.slotClick(mouseButton, isShift, player);
             }
+            return super.slotClick(slotID, mouseButton, isShift, player);
         }
-
-        return super.slotClick(slotID, mouseButton, isShift, player);
+        return null;
     }
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int i) {

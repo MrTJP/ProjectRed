@@ -39,7 +39,7 @@ public class CollectionPathFinder {
         for (StartEndPath l : requester.getRouter().getRoutersByCost()) {
             Router r = l.end;
             IWorldRouter wr = r.getParent();
-            if (wr instanceof IWorldCrafter) {
+            if (wr instanceof IWorldCrafter && collectCrafts) {
                 IWorldCrafter c = (IWorldCrafter) wr;
                 c.getBroadcastedItems(collected);
                 List<ItemKeyStack> list = c.getCraftedItems();
@@ -48,7 +48,7 @@ public class CollectionPathFinder {
                         if (!collected.containsKey(stack.key()))
                             collected.put(stack.key(), null);
 
-            } else if (wr instanceof IWorldBroadcaster) {
+            } else if (wr instanceof IWorldBroadcaster && collectBroadcasts) {
                 IWorldBroadcaster b = (IWorldBroadcaster) wr;
                 b.getBroadcastedItems(collected);
             }
