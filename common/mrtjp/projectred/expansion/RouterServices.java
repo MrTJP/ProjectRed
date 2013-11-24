@@ -56,7 +56,7 @@ public class RouterServices {
         }
     }
 
-    public boolean doesRouterExist(int id) {
+    public boolean routerExists(int id) {
         if (id < 0 || id >= routers.size())
             return false;
 

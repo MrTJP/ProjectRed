@@ -26,10 +26,10 @@ import codechicken.multipart.TMultiPart;
 public class Router implements Comparable<Router>
 {
 
-    /** Mapped [router, orientation] for connected destinations **/
-    private Map<Router, ForgeDirection> routeTable = Collections.unmodifiableMap(new HashMap<Router, ForgeDirection>());
+    /** List of [ForgeDirection] indexed by IP for all routers in this network **/
+    private List<ForgeDirection> routeTable = Collections.unmodifiableList(new ArrayList<ForgeDirection>());
 
-    /** List of StartEndPath sorted by distance, closest one having the lowest index **/
+    /** List of [StartEndPath] sorted by distance, closest one having the lowest index **/
     private List<StartEndPath> routersByCost = Collections.unmodifiableList(new LinkedList<StartEndPath>());
 
     /** Set of known exits from here. Used to determine render color of a side **/
@@ -38,7 +38,7 @@ public class Router implements Comparable<Router>
     /** Link State for all nodes that branch from this one **/
     private Map<Router, StartEndPath> adjacentLinks = new HashMap<Router, StartEndPath>();
 
-    /** Locks for allowing thread-safe read-write access to router information **/
+    /*** Locks for allowing thread-safe read-write access to router information ***/
     protected static final ReentrantReadWriteLock SharedLSADatabaseLock = new ReentrantReadWriteLock();
     protected static final Lock SharedLSADatabasereadLock = SharedLSADatabaseLock.readLock();
     protected static final Lock SharedLSADatabasewriteLock = SharedLSADatabaseLock.writeLock();
@@ -52,7 +52,7 @@ public class Router implements Comparable<Router>
     private static LSA[] SharedLSADatabase = new LSA[0];
     private LSA LSA;
 
-    /** Identification **/
+    /*** Identification ***/
     private final int IPAddress;
     private final UUID ID;
     private final int dim;
@@ -61,27 +61,25 @@ public class Router implements Comparable<Router>
     private static BitSet usedIPs = new BitSet();
 
     public Router(UUID id, int dim, BlockCoord bc) {
-        if (id != null)
-            this.ID = id;
-        else
-            this.ID = UUID.randomUUID();
-
+        this.ID = id == null ? UUID.randomUUID() : id;
         this.dim = dim;
         this.location = bc;
 
-        LSA = new LSA();
+        this.LSA = new LSA();
 
         SharedLSADatabasewriteLock.lock();
 
         this.IPAddress = claimIPAddress();
         if (SharedLSADatabase.length <= IPAddress) {
-            int newlength = (int) (IPAddress * 1.5) + 1;
-            LSA[] new_SharedLSADatabase = new LSA[newlength];
-            System.arraycopy(SharedLSADatabase, 0, new_SharedLSADatabase, 0, SharedLSADatabase.length);
-            SharedLSADatabase = new_SharedLSADatabase;
-            int[] new_lastLSAVersion = new int[newlength];
-            System.arraycopy(LSALegacyVersion, 0, new_lastLSAVersion, 0, LSALegacyVersion.length);
-            LSALegacyVersion = new_lastLSAVersion;
+            int newLength = (int) (IPAddress * 1.5) + 1;
+            
+            LSA[] SharedLSADatabase2 = new LSA[newLength];
+            System.arraycopy(SharedLSADatabase, 0, SharedLSADatabase2, 0, SharedLSADatabase.length);
+            SharedLSADatabase = SharedLSADatabase2;
+            
+            int[] LSALegacyVersion2 = new int[newLength];
+            System.arraycopy(LSALegacyVersion, 0, LSALegacyVersion2, 0, LSALegacyVersion.length);
+            LSALegacyVersion = LSALegacyVersion2;
         }
         LSALegacyVersion[IPAddress] = 0;
         SharedLSADatabase[IPAddress] = LSA;
@@ -101,9 +99,8 @@ public class Router implements Comparable<Router>
                 r.refreshState();
 
             return;
-        }
-
-        if (Configurator.routerUpdateThreadCount > 0)
+            
+        } else if (Configurator.routerUpdateThreadCount > 0)
             refreshRouteTableIfNeeded(false);
     }
 
@@ -115,19 +112,18 @@ public class Router implements Comparable<Router>
 
         HashMap<Router, StartEndPath> newAdjacent;
         LSPathFinder finder = new LSPathFinder(wr, Configurator.maxDetectionCount, Configurator.maxDetectionLength);
-        newAdjacent = finder.result;
+        newAdjacent = finder.getResult();
 
         for (Router r : newAdjacent.keySet())
             if (r.getParent().needsWork())
                 return false;
-
-        if (adjacentLinks.size() != newAdjacent.size()) // Different number of
-            // connections
+        
+        if (adjacentLinks.size() != newAdjacent.size()) // Different number of connections
             adjacentChanged = true;
 
-        else if (!adjacentChanged) // Members missing
+        else if (!adjacentChanged)
             for (Router r : adjacentLinks.keySet()) {
-                if (!newAdjacent.containsKey(r)) {
+                if (!newAdjacent.containsKey(r)) { // Members missing
                     adjacentChanged = true;
                     break;
                 }
@@ -237,7 +233,7 @@ public class Router implements Comparable<Router>
         return ID;
     }
 
-    public Map<Router, ForgeDirection> getRouteTable() {
+    public List<ForgeDirection> getRouteTable() {
         refreshRouteTableIfNeeded(true);
         return routeTable;
     }
@@ -248,10 +244,10 @@ public class Router implements Comparable<Router>
     }
 
     public ForgeDirection getExitDirection(int destination) {
-        if (!RouterServices.instance.doesRouterExist(destination))
+        if (!RouterServices.instance.routerExists(destination))
             return ForgeDirection.UNKNOWN;
 
-        ForgeDirection dir = getRouteTable().get(RouterServices.instance.getRouter(destination));
+        ForgeDirection dir = getRouteTable().get(destination);
         if (dir == null)
             return ForgeDirection.UNKNOWN;
 
@@ -259,14 +255,10 @@ public class Router implements Comparable<Router>
     }
 
     public boolean canRouteTo(int destination) {
-        if (!RouterServices.instance.doesRouterExist(destination))
+        if (!RouterServices.instance.routerExists(destination))
             return false;
 
-        ForgeDirection dir = getRouteTable().get(RouterServices.instance.getRouter(destination));
-        if (dir == null || dir == ForgeDirection.UNKNOWN)
-            return false;
-
-        return true;
+        return getRouteTable().get(destination) != null;
     }
 
     private void refreshRouteTableIfNeeded(boolean force) {
@@ -281,7 +273,7 @@ public class Router implements Comparable<Router>
         if (LSALegacyVersion[IPAddress] >= newVersion)
             return;
 
-        int sizeEstimate = routeTable.size();
+        int sizeEstimate = getIPEndPool();
         if (sizeEstimate == 0)
             sizeEstimate = SharedLSADatabase.length;
 
@@ -338,11 +330,18 @@ public class Router implements Comparable<Router>
         }
         SharedLSADatabasereadLock.unlock();
 
-        HashMap<Router, ForgeDirection> routeTable2 = new HashMap<Router, ForgeDirection>(tree2.size());
+        ArrayList<ForgeDirection> routeTable2 = new ArrayList<ForgeDirection>(getIPEndPool()+1);
+        while(getIPAddress() >= routeTable2.size())
+            routeTable2.add(null);
+        routeTable2.set(getIPAddress(), ForgeDirection.UNKNOWN);
+        
         for (StartEndPath l : tree2.values()) {
             Router firstHop = l.start;
             if (firstHop == null) {
-                routeTable2.put(l.end, ForgeDirection.UNKNOWN);
+                while (l.end.getIPAddress() >= routeTable2.size())
+                    routeTable2.add(null);
+                routeTable2.set(l.end.getIPAddress(), ForgeDirection.UNKNOWN);
+                
                 continue;
             }
 
@@ -350,7 +349,9 @@ public class Router implements Comparable<Router>
             if (localOutPath == null)
                 continue;
 
-            routeTable2.put(l.end, ForgeDirection.getOrientation(localOutPath.dirToFirstHop));
+            while (l.end.getIPAddress() >= routeTable2.size())
+                routeTable2.add(null);
+            routeTable2.set(l.end.getIPAddress(), ForgeDirection.getOrientation(localOutPath.dirToFirstHop));
         }
 
         // Set the new routing tables.
@@ -359,7 +360,7 @@ public class Router implements Comparable<Router>
             SharedLSADatabasereadLock.lock();
             if (LSALegacyVersion[IPAddress] < newVersion) {
                 LSALegacyVersion[IPAddress] = newVersion;
-                routeTable = Collections.unmodifiableMap(routeTable2);
+                routeTable = Collections.unmodifiableList(routeTable2);
                 routersByCost = Collections.unmodifiableList(routersByCost2);
             }
             SharedLSADatabasereadLock.unlock();
