@@ -13,7 +13,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class WireItemRenderer implements IItemRenderer {
 
     public final static WireItemRenderer instance = new WireItemRenderer();
-    
+
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
         return true;

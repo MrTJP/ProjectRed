@@ -10,10 +10,10 @@ public class GuiCounter extends GuiScreenWidget {
 
     public ICounterGuiLogic logic;
     public GatePart part;
-    
+
     public GuiCounter(GatePart part) {
         this.part = part;
-        logic = ((ICounterGuiLogic)part.getLogic());
+        logic = (ICounterGuiLogic)part.getLogic();
     }
 
     @Override
@@ -59,22 +59,23 @@ public class GuiCounter extends GuiScreenWidget {
     public boolean doesGuiPauseGame() {
         return false;
     }
-    
+
     @Override
     public void updateScreen() {
         super.updateScreen();
-        
+
         if(part.tile() == null)
             mc.thePlayer.closeScreen();
     }
 
+    @Override
     public void actionPerformed(String ident, Object... params) {
         int id = Integer.parseInt(ident.substring(0, 1));
         ident = ident.substring(1);
         if(ident.startsWith("+"))
             ident = ident.substring(1);
         int value = Integer.parseInt(ident);
-        
+
         PacketCustom packet = new PacketCustom(IntegrationCPH.channel, 2);
         IntegrationSPH.writePartIndex(packet, part);
         packet.writeByte(id);

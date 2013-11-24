@@ -31,20 +31,20 @@ public interface IWirePart
      * @param mode One of RISING, DROPPING, FORCE and FORCED specified above
      */
     public void updateAndPropogate(TMultiPart prev, int mode);
-    
+
     /**
      * Called at the end of a propogation run for partChanged events. Marks the end of a state change for this part.
      */
     public void onSignalUpdate();
-    
+
     /**
-     * @param side The side of this part to test for wire connection. 
+     * @param side The side of this part to test for wire connection.
      * For face parts, a rotation, or -1 for center. For center parts, a forgedirection.
      * The special value Integer.MAX_VALUE should always return true and is used for return signals
      * @return true if the specified side of this block is connected to a 'wire' where signal should decrease by one.
      */
     public boolean isWireSide(int side);
-    
+
     /**
      * The world in which this part resides
      * @return

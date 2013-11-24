@@ -11,9 +11,9 @@ public class FramedRedAlloyWirePart extends FramedRedwirePart
     public EnumWire getWireType() {
         return EnumWire.RED_ALLOY;
     }
-    
+
     @Override
     public int getColour() {
-        return ((signal&0xFF)/2 + 60) << 24 | 0xFF;
+        return (signal&0xFF)/2 + 60 << 24 | 0xFF;
     }
 }

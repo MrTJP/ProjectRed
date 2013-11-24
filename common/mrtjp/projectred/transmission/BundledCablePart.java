@@ -76,9 +76,8 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
         if (wire instanceof BundledCablePart) {
             int ocolour = ((BundledCablePart) wire).colour;
             return ocolour == -1 || colour == -1 || ocolour == colour;
-        } else if (wire instanceof IInsulatedRedwirePart || wire instanceof IBundledEmitter) {
+        } else if (wire instanceof IInsulatedRedwirePart || wire instanceof IBundledEmitter)
             return true;
-        }
 
         return false;
     }
@@ -96,6 +95,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
         return super.propogateTo(part, mode);
     }
 
+    @Override
     public void setSignal(byte[] newSignal) {
         if (newSignal == null)
             Arrays.fill(signal, (byte) 0);
@@ -103,18 +103,18 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
             System.arraycopy(newSignal, 0, signal, 0, 16);
     }
 
+    @Override
     public byte[] calculateSignal() {
         Arrays.fill(tmpSignal, (byte) 0);
 
         for (int r = 0; r < 4; r++)
-            if (maskConnects(r)) {
+            if (maskConnects(r))
                 if ((connMap & 1 << r) != 0)
                     calculateCornerSignal(r);
                 else if ((connMap & 0x10 << r) != 0)
                     calculateStraightSignal(r);
                 else
                     calculateInternalSignal(r);
-            }
 
         calculateCenterSignal();
 
@@ -196,7 +196,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
         }
         return true;
     }
-    
+
     @Override
     public boolean useStaticRenderer() {
         return true;

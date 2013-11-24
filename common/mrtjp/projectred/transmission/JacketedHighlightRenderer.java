@@ -20,17 +20,17 @@ public class JacketedHighlightRenderer implements IMicroHighlightRenderer
         TileMultipart tile = BasicUtils.getMultipartTile(world, new BlockCoord(hit.blockX, hit.blockY, hit.blockZ));
         if(tile == null || mcrClass.classID() != 0 || size != 1 || player.isSneaking() || MicroMaterialRegistry.getMaterial(material).isTransparent())
             return false;
-        
+
         Tuple2<Integer, ?> hitData = ExtendedMOP.getData(hit);
-        
+
         TMultiPart part = tile.partList().apply(hitData._1$mcI$sp());
         if(!(part instanceof FramedWirePart))
             return false;
-        
+
         FramedWirePart fpart = (FramedWirePart)part;
         if(fpart.material == material)
             return false;
-        
+
         RenderFramedWire.renderCoverHighlight(fpart, material);
         return true;
     }
