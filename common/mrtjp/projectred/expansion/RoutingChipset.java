@@ -46,7 +46,7 @@ public abstract class RoutingChipset {
     public SyncResponse getSyncResponse(ItemKey item, SyncResponse rival) {
         return null;
     }
-    
+
     /** Broadcasting **/
     public void requestPromises(RequestBranchNode request, int existingPromises) {
     }
@@ -54,13 +54,13 @@ public abstract class RoutingChipset {
     }
     public void getProvidedItems(Map<ItemKey, Integer> map) {
     }
-    
+
     /** Requesting **/
     public void trackedItemLost(ItemKeyStack s) {
     }
     public void trackedItemReceived(ItemKeyStack s) {
     }
-    
+
     public void onPipeBroken(){
     }
 

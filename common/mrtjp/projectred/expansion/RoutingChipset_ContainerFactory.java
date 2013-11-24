@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import codechicken.lib.packet.PacketCustom;
 
 public class RoutingChipset_ContainerFactory {
-    
+
     public static class ChipGhostContainer<T extends RoutingChipset> extends GhostContainer2 {
         EntityPlayer player;
         ItemStack stack;
@@ -17,19 +17,19 @@ public class RoutingChipset_ContainerFactory {
         public ChipGhostContainer(EntityPlayer player) {
             this(player, null);
         }
-        
+
         public ChipGhostContainer(EntityPlayer player, T chip) {
             super(player.inventory);
             this.player = player;
             this.slot = player.inventory.currentItem;
             this.stack = player.inventory.mainInventory[slot];
-            this.chip = (chip != null ? chip : (T) ItemRoutingChip.loadChipFromItemStack(stack));
+            this.chip = chip != null ? chip : (T) ItemRoutingChip.loadChipFromItemStack(stack);
         }
-        
+
         public ChipGhostContainer<T> getNewInstance() {
             return new ChipGhostContainer<T>(player, chip);
         }
-        
+
         public T getChip() {
             return chip;
         }
@@ -40,7 +40,7 @@ public class RoutingChipset_ContainerFactory {
             if (player.worldObj.isRemote) {
                 ItemRoutingChip.saveChipToItemStack(player.inventory.mainInventory[slot], chip);
                 player.inventory.onInventoryChanged();
-                
+
                 new PacketCustom(ExpansionCPH.channel, NetConstants.gui_ChipNBTSet)
                 .writeByte(slot).writeItemStack(player.inventory.mainInventory[slot])
                 .sendToServer();

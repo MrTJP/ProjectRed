@@ -14,7 +14,7 @@ import net.minecraftforge.common.ForgeDirection;
 public class RoutedPayload {
 
     ItemKeyStack payload;
-    
+
     private static int maxID = 0;
     public final int payloadID;
 
@@ -23,18 +23,18 @@ public class RoutedPayload {
 
     public ForgeDirection input = ForgeDirection.UNKNOWN;
     public ForgeDirection output = ForgeDirection.UNKNOWN;
-    
+
     public boolean isEntering = true;
 
     public BasicPipePart parent;
-    
+
     public RoutedPayload() {
         this(maxID < Short.MAX_VALUE ? ++maxID : (maxID = Short.MIN_VALUE));
     }
     public RoutedPayload(int id) {
         this.payloadID = id;
     }
-    
+
     public RoutedPayload(double x, double y, double z, ItemKeyStack stack) {
         this();
         this.x = x;
@@ -42,17 +42,17 @@ public class RoutedPayload {
         this.z = z;
         this.payload = stack;
     }
-    
+
     public void bind(BasicPipePart p) {
         parent = p;
     }
-    
+
     public void reset() {
         isEntering = true;
         input = ForgeDirection.UNKNOWN;
         output = ForgeDirection.UNKNOWN;
     }
-    
+
     public void setPosition(double x, double y, double z) {
         this.x = x;
         this.y = y;
@@ -80,7 +80,7 @@ public class RoutedPayload {
     public void setItemStack(ItemStack item) {
         this.payload = ItemKeyStack.get(item);
     }
-    
+
     public boolean isCorrupted() {
         return getItemStack() == null || getItemStack().stackSize <= 0 || Item.itemsList[getItemStack().itemID] == null;
     }
@@ -89,15 +89,15 @@ public class RoutedPayload {
     public int hashCode() {
         return payloadID;
     }
-    
+
     @Override
     public boolean equals(Object o) {
         if (o instanceof RoutedPayload)
             return ((RoutedPayload)o).payloadID == payloadID;
-        
+
         return false;
     }
-    
+
     public void load(NBTTagCompound tag) {
         setPosition(tag.getDouble("x"), tag.getDouble("y"), tag.getDouble("z"));
 
@@ -107,7 +107,7 @@ public class RoutedPayload {
         isEntering = tag.getBoolean("isEnt");
         input = ForgeDirection.getOrientation(tag.getInteger("input"));
         output = ForgeDirection.getOrientation(tag.getInteger("output"));
-        
+
         loadRouting(tag);
     }
 
@@ -123,11 +123,11 @@ public class RoutedPayload {
         tag.setBoolean("isEnt", isEntering);
         tag.setInteger("input", input.ordinal());
         tag.setInteger("output", output.ordinal());
-        
+
         saveRouting(tag);
     }
 
-    
+
     public void move(double step) {
         ForgeDirection orientation = isEntering ? input : output;
         switch (orientation) {
@@ -140,10 +140,10 @@ public class RoutedPayload {
         default:
         }
     }
-    
+
     public EntityItem getEntityForDrop() {
         EntityItem item = new EntityItem(parent.world(), x, y, z, payload.makeStack());
-        
+
         item.motionX = item.motionY = item.motionZ = 0;
         ForgeDirection orientation = isEntering ? input : output;
         switch (orientation) {
@@ -159,18 +159,18 @@ public class RoutedPayload {
         item.lifespan = 1600;
         return item;
     }
-    
+
     /** Server-side Routing **/
-    
+
     int destinationIP = -1;
     UUID destinationUUID = null;
-    
+
     boolean hasArrived = false;
-    
+
     BitSet travelLog = new BitSet();
-    
+
     SendPriority priority = SendPriority.WANDERING;
-    
+
     public static enum SendPriority {
         WANDERING("Wandering", 0.02f, 0.05f, PRColors.RED.ordinal()),
         DEFAULT("Default", 0.05f, 0.10f, PRColors.ORANGE.ordinal()),
@@ -181,7 +181,7 @@ public class RoutedPayload {
         public final float boost;
         public final int color;
         public final String name;
-        
+
         private SendPriority(String name, float speed, float boost, int color) {
             this.name = name;
             this.speed = speed;
@@ -189,7 +189,7 @@ public class RoutedPayload {
             this.boost = boost;
         }
     }
-    
+
     public RoutedPayload setDestination(int ip) {
         destinationIP = ip;
         Router router = RouterServices.instance.getRouter(ip);
@@ -199,7 +199,7 @@ public class RoutedPayload {
             destinationIP = -1;
         return this;
     }
-    
+
     public RoutedPayload setPriority(SendPriority priority) {
         this.priority = priority;
         return this;
@@ -218,17 +218,17 @@ public class RoutedPayload {
         priority = SendPriority.WANDERING;
         return this;
     }
-        
+
     public void refreshIP() {
         Router router = RouterServices.instance.getRouter(destinationIP);
         if (router == null || router.getID() != destinationUUID)
             destinationIP = RouterServices.instance.getIPforUUID(destinationUUID);
     }
-    
+
     public void saveRouting(NBTTagCompound tag) {
-        //TODO 
+        //TODO
     }
-    
+
     public void loadRouting(NBTTagCompound tag) {
         //TODO
     }

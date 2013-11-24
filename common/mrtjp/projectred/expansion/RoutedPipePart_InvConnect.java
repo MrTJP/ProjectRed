@@ -24,7 +24,7 @@ public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart i
         super.save(tag);
         tag.setByte("io", (byte) inOutSide);
     }
-    
+
     @Override
     public void load(NBTTagCompound tag) {
         super.load(tag);
@@ -36,7 +36,7 @@ public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart i
         super.writeDesc(packet);
         packet.writeByte(inOutSide);
     }
-    
+
     @Override
     public void readDesc(MCDataInput packet) {
         super.readDesc(packet);
@@ -51,19 +51,19 @@ public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart i
         }
         super.read(packet, switch_key);
     }
-    
+
     @Override
     public void onNeighborChanged() {
         super.onNeighborChanged();
         shiftOrientation(false);
     }
-    
+
     @Override
     public void onPartChanged(TMultiPart p) {
         super.onPartChanged(p);
         shiftOrientation(false);
     }
-    
+
     @Override
     public void onAdded() {
         super.onAdded();
@@ -73,7 +73,7 @@ public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart i
     public void sendOrientUpdate() {
         tile().getWriteStream(this).writeByte(15).writeByte(inOutSide);
     }
-    
+
     @Override
     public boolean connect(int absDir) {
         if (super.connect(absDir))
@@ -88,15 +88,15 @@ public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart i
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) {
         if (super.activate(player, hit, item))
             return true;
-        
+
         if (player.isSneaking()) {
             shiftOrientation(true);
             return true;
         }
-        
+
         return false;
     }
-    
+
     @Override
     public ForgeDirection getDirForIncomingItem(RoutedPayload r) {
         return ForgeDirection.getOrientation(inOutSide);
@@ -104,15 +104,15 @@ public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart i
 
     public void shiftOrientation(boolean force) {
         if (world().isRemote) return;
-        boolean invalid = force  || !maskConnects(inOutSide) 
-                || !(BasicUtils.getTileEntity(world(), 
-                        new BlockCoord(tile()).offset(inOutSide), 
+        boolean invalid = force  || !maskConnects(inOutSide)
+                || !(BasicUtils.getTileEntity(world(),
+                        new BlockCoord(tile()).offset(inOutSide),
                         TileEntity.class) instanceof IInventory);
         if (!invalid) return;
-        
+
         boolean found = false;
         int oldSide = inOutSide;
-        
+
         for (int i = 0; i < 6; ++i) {
             inOutSide = (inOutSide + 1) % 6;
 
@@ -126,19 +126,19 @@ public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart i
                 break;
             }
         }
-        
-        if (!found) 
+
+        if (!found)
             inOutSide = -1;
-        
+
         if (oldSide != inOutSide)
             sendOrientUpdate();
     }
-    
+
     @Override
     public IInventory getInventory() {
         if (inOutSide < 0 || inOutSide > 5)
             return null;
-        
+
         return InventoryWrapper.getInventory(world(), new BlockCoord(tile()).offset(inOutSide));
     }
 
@@ -146,14 +146,14 @@ public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart i
     public int getInterfacedSide() {
         return inOutSide < 0 || inOutSide > 5 ? -1 : inOutSide^1;
     }
-    
+
     @Override
     public Icon getIcon(int side) {
-        if (side == 6) 
+        if (side == 6)
             return super.getIcon(side);
-        
+
         Icon[] array = side == inOutSide ? EnumPipe.ROUTEDINTERFACE.sprites : EnumPipe.ROUTEDJUNCTION.sprites;
-        
+
         if ((linkMap&1<<side) != 0)
             return array[0];
         else

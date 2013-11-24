@@ -10,7 +10,7 @@ import codechicken.lib.vec.Translation;
 public class PipeItemRenderer implements IItemRenderer {
 
     public static PipeItemRenderer instance = new PipeItemRenderer();
-    
+
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
         return true;

@@ -10,28 +10,28 @@ import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
 
 public class BasicPipeUtils {
-        
+
     public static boolean addToInventory(World world, ItemStack item, BlockCoord bc, int side) {
-      return tryAddToInventory(world, item, bc, side, true);
+        return tryAddToInventory(world, item, bc, side, true);
     }
-    
+
     public static boolean canAddToInventory(World world, ItemStack item, BlockCoord bc, int side) {
-      return tryAddToInventory(world, item, bc, side, false);
+        return tryAddToInventory(world, item, bc, side, false);
     }
-    
+
     public static boolean tryAddToInventory(World world, ItemStack item, BlockCoord bc, int side, boolean doAdd) {
         IInventory inv = getInventory(world, bc);
         if (inv == null)
             return false;
-        
+
         int[] slots = new int[inv.getSizeInventory()];
-        
-        if ((inv instanceof ISidedInventory))
+
+        if (inv instanceof ISidedInventory)
             slots = ((ISidedInventory)inv).getAccessibleSlotsFromSide(side);
         else
             for (int i = 0; i < inv.getSizeInventory(); i++)
                 slots[i] = i;
-        
+
         return addIntoInventory(inv, item, slots, doAdd);
     }
 
@@ -42,7 +42,7 @@ public class BasicPipeUtils {
                 if (!doAdd)
                     return true;
 
-            } else if ((item.isItemEqual(stackInSlot)) && (ItemStack.areItemStackTagsEqual(item, stackInSlot))) {
+            } else if (item.isItemEqual(stackInSlot) && ItemStack.areItemStackTagsEqual(item, stackInSlot)) {
                 int freeSpace = Math.min(stackInSlot.getMaxStackSize(), inv.getInventoryStackLimit());
 
                 freeSpace -= stackInSlot.stackSize;
@@ -74,13 +74,13 @@ public class BasicPipeUtils {
 
         return false;
     }
-    
+
     public static IInventory getInventory(World world, BlockCoord wc) {
         IInventory inv = BasicUtils.getTileEntity(world, wc, IInventory.class);
 
         if (!(inv instanceof TileEntityChest))
             return inv;
-        
+
         for (int i = 2; i < 6; i++) {
             TileEntityChest chest = BasicUtils.getTileEntity(world, wc.copy().offset(i), TileEntityChest.class);
             if (chest != null)

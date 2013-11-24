@@ -49,10 +49,10 @@ public class ItemRoutingChip extends Item {
     public Icon getIconFromDamage(int meta) {
         return EnumRoutingChip.VALID_CHIPS[meta].icon;
     }
-    
+
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4) {
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             if (stack.hasTagCompound()) {
                 RoutingChipset r = loadChipFromItemStack(stack);
                 if (r != null) {
@@ -62,7 +62,6 @@ public class ItemRoutingChip extends Item {
                 }
             } else
                 list.add(EnumChatFormatting.GRAY + "not configured");
-        }
     }
 
     @Override
@@ -74,7 +73,7 @@ public class ItemRoutingChip extends Item {
         }
         return super.onItemRightClick(stack, w, player);
     }
-    
+
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
         if (!w.isRemote && stack != null && stack.getItem() instanceof ItemRoutingChip) {
@@ -89,7 +88,7 @@ public class ItemRoutingChip extends Item {
     public boolean shouldPassSneakingClickToBlock(World par2World, int par4, int par5, int par6) {
         return true;
     }
-    
+
     public static void saveChipToItemStack(ItemStack stack, RoutingChipset chipset) {
         if (stack == null || chipset == null || !(stack.getItem() instanceof ItemRoutingChip))
             return;
@@ -97,24 +96,24 @@ public class ItemRoutingChip extends Item {
         NBTTagCompound mainTag = new NBTTagCompound("main");
         NBTTagCompound chipTag = new NBTTagCompound("ROM");
         chipset.save(chipTag);
-        
+
         mainTag.setTag("chipROM", chipTag);
-        
+
         stack.setTagCompound(mainTag);
     }
-    
+
     public static RoutingChipset loadChipFromItemStack(ItemStack stack) {
         if (stack == null || !(stack.getItem() instanceof ItemRoutingChip))
             return null;
-        
+
         EnumRoutingChip e = EnumRoutingChip.get(stack.getItemDamage());
         if (e != null) {
             RoutingChipset chip = e.createChipset();
-            
+
             NBTTagCompound mainTag = stack.getTagCompound();
             if (mainTag != null && mainTag.hasKey("chipROM"))
                 chip.load(mainTag.getCompoundTag("chipROM"));
-            
+
             return chip;
         }
         return null;
@@ -127,19 +126,19 @@ public class ItemRoutingChip extends Item {
         ITEMSTOCKKEEPER("stockkeeper", RoutingChipset_ItemStockKeeper.class),
         DYNAMICITEMRESPONDER("responder_dyn", RoutingChipset_DynamicItemResponder.class),
         ;
-        
+
         public static final EnumRoutingChip[] VALID_CHIPS = values();
         private final String iconPath;
         public final Class<? extends RoutingChipset> chipset;
-        
+
         public final int meta = this.ordinal();
         public Icon icon;
-        
+
         private EnumRoutingChip(String iconPath, Class<? extends RoutingChipset> chipset) {
             this.iconPath = "projectred:chips/" + iconPath;
             this.chipset = chipset;
         }
-        
+
         public RoutingChipset createChipset() {
             try {
                 return chipset.getConstructor(new Class[]{}).newInstance(new Object[]{});
@@ -148,19 +147,19 @@ public class ItemRoutingChip extends Item {
                 return null;
             }
         }
-        
+
         public void registerIcons(IconRegister reg) {
             icon = reg.registerIcon(iconPath);
         }
-        
+
         public ItemStack getItemStack() {
             return new ItemStack(ProjectRedExpansion.itemRoutingChip, 1, meta);
         }
-        
+
         public static EnumRoutingChip get(int ordinal) {
             if (ordinal < 0 || ordinal >= VALID_CHIPS.length)
                 return null;
-            
+
             return VALID_CHIPS[ordinal];
         }
     }

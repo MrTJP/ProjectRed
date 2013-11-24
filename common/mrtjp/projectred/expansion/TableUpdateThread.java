@@ -39,15 +39,15 @@ public class TableUpdateThread extends Thread {
         try {
             while ((rlu = updateCalls.take()) != null) {
                 long starttime = System.nanoTime();
-                
+
                 rlu.run();
-                
+
                 long took = System.nanoTime() - starttime;
                 synchronized (average) {
                     if (average == 0)
                         average = took;
                     else
-                        average = ((average * 999L) + took) / 1000L;
+                        average = (average * 999L + took) / 1000L;
                 }
             }
         } catch (InterruptedException e) {}
@@ -71,13 +71,13 @@ public class TableUpdateThread extends Thread {
             try {
                 if (router.getParent() == null)
                     return;
-                
+
                 for (int i = 0; i < 10 && router.getParent().needsWork(); i++)
                     Thread.sleep(10);
-                
+
                 if (router.getParent().needsWork())
                     return;
-                
+
                 router.refreshRoutingTable(newVersion);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -90,10 +90,10 @@ public class TableUpdateThread extends Thread {
             int c = 0;
             if (o.newVersion <= 0)
                 c = newVersion - o.newVersion;
-            
+
             if (c != 0)
                 return c;
-            
+
             c = router.getIPAddress() - o.router.getIPAddress();
             if (c != 0)
                 return c;

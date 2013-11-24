@@ -12,17 +12,17 @@ public class LogisticPathFinder {
 
     private BitSet exclusions = new BitSet();
     private BitSet visited;
-    
+
     private boolean excludeSource;
-    
+
     private ItemKey payload;
-    
+
     public LogisticPathFinder(Router source, ItemKey payload) {
         this.source = source;
         this.payload = payload;
         this.visited = new BitSet(Router.getIPEndPool());
     }
-    
+
     public LogisticPathFinder setExclusions(BitSet exclusions) {
         this.exclusions = exclusions;
         return this;
@@ -31,33 +31,33 @@ public class LogisticPathFinder {
         this.excludeSource = excludeSource;
         return this;
     }
-    
+
     public SyncResponse getResult() {
         return result;
     }
-    
+
     public LogisticPathFinder findBestResult() {
         SyncResponse bestResponse = new SyncResponse();
         int bestIP = -1;
-        
+
         for (StartEndPath l : source.getRoutersByCost()) {
-        	Router r = l.end;
+            Router r = l.end;
 
             if (excludeSource && r.getIPAddress() == source.getIPAddress())
                 continue;
-            
+
             if (exclusions.get(r.getIPAddress()) || visited.get(r.getIPAddress()))
                 continue;
-            
+
             visited.set(r.getIPAddress());
-            
+
             IWorldRouter parent = r.getParent();
-            
+
             if (parent == null) continue;
-            
+
             SyncResponse sync = parent.getSyncResponse(payload, bestResponse);
-            
-            if (sync != null) {
+
+            if (sync != null)
                 if (sync.priority.ordinal() > bestResponse.priority.ordinal()) {
                     bestResponse = sync;
                     bestIP = r.getIPAddress();
@@ -65,12 +65,11 @@ public class LogisticPathFinder {
                     bestResponse = sync;
                     bestIP = r.getIPAddress();
                 }
-            }
         }
-        
+
         if (bestIP > -1)
             result = bestResponse.setResponder(bestIP);
-        
+
         return this;
     }
 }

@@ -22,24 +22,24 @@ public class ExpansionSPH implements IServerPacketHandler {
     @Override
     public void handlePacket(PacketCustom packet, NetServerHandler nethandler, EntityPlayerMP sender) {
         switch(packet.getType()) {
-            case NetConstants.gui_ChipNBTSet:
-                setChipNBT(packet, sender);
-                break;
-            case NetConstants.gui_CraftingPipe_action:
-                handleCraftingPipeAction(packet, sender.worldObj);
-                break;
-            case NetConstants.gui_Request_action:
-                handleRequestAction(packet, sender);
-                break;
-            case NetConstants.gui_Request_submit:
-                handleRequestSubmit(packet, sender);
-                break;
-            case NetConstants.gui_Request_listRefresh:
-                handleRequestListRefresh(packet, sender);
-                break;
+        case NetConstants.gui_ChipNBTSet:
+            setChipNBT(packet, sender);
+            break;
+        case NetConstants.gui_CraftingPipe_action:
+            handleCraftingPipeAction(packet, sender.worldObj);
+            break;
+        case NetConstants.gui_Request_action:
+            handleRequestAction(packet, sender);
+            break;
+        case NetConstants.gui_Request_submit:
+            handleRequestSubmit(packet, sender);
+            break;
+        case NetConstants.gui_Request_listRefresh:
+            handleRequestListRefresh(packet, sender);
+            break;
         }
     }
-    
+
     private void handleRequestListRefresh(PacketCustom packet, EntityPlayerMP sender) {
         BlockCoord bc = packet.readCoord();
         TMultiPart t = BasicUtils.getMultiPart(sender.worldObj, bc, 6);
@@ -55,15 +55,15 @@ public class ExpansionSPH implements IServerPacketHandler {
             //ADD THINGS HERE
         }
     }
-    
+
     private static void sendRequestList(IWorldRequester requester, EntityPlayerMP player, boolean collectBroadcast, boolean collectCrafts) {
         CollectionPathFinder cpf = new CollectionPathFinder().setRequester(requester);
         cpf.setCollectBroadcasts(collectBroadcast).setCollectCrafts(collectCrafts);
-        
+
         Map<ItemKey, Integer> map = cpf.collect().getCollection();
-        
+
         PacketCustom packet2 = new PacketCustom(channel, NetConstants.gui_Request_list);
-        
+
         packet2.writeInt(map.size());
         for (Entry<ItemKey, Integer> entry : map.entrySet())
             packet2.writeItemStack(entry.getKey().makeStack(entry.getValue() == null ? 0 : entry.getValue()), true);
@@ -74,24 +74,24 @@ public class ExpansionSPH implements IServerPacketHandler {
         TMultiPart t = BasicUtils.getMultiPart(sender.worldObj, packet.readCoord(), 6);
         if (t instanceof IWorldRequester) {
             RequestConsole r = new RequestConsole().setDestination((IWorldRequester) t);
-            
+
             boolean pull = packet.readBoolean();
             boolean craft = packet.readBoolean();
             boolean partial = packet.readBoolean();
-            
+
             r.setCrafting(craft).setPulling(pull).setPartials(partial);
-            
+
             ItemKeyStack s = ItemKeyStack.get(packet.readItemStack(true));
             r.makeRequest(s);
-            
+
             if (r.requested() > 0)
-            	sender.addChatMessage("Successfully requested " + r.requested() + " of " + s.getName() + ".");
+                sender.addChatMessage("Successfully requested " + r.requested() + " of " + s.getName() + ".");
             else {
-            	sender.addChatMessage("Could not request " + s.stackSize + " of " + s.getName() + ". Missing:");
-            	for (Entry<ItemKey, Integer> entry : r.getMissing().entrySet())
-            		sender.addChatMessage(entry.getValue() + " of " + entry.getKey().getName());
+                sender.addChatMessage("Could not request " + s.stackSize + " of " + s.getName() + ". Missing:");
+                for (Entry<ItemKey, Integer> entry : r.getMissing().entrySet())
+                    sender.addChatMessage(entry.getValue() + " of " + entry.getKey().getName());
             }
-            
+
             sendRequestList((IWorldRequester)t, sender, pull, craft);
         }
     }
@@ -102,7 +102,7 @@ public class ExpansionSPH implements IServerPacketHandler {
         player.inventory.setInventorySlotContents(slot, stack);
         player.inventory.onInventoryChanged();
     }
-    
+
     private void handleCraftingPipeAction(PacketCustom packet, World w) {
         TMultiPart t = BasicUtils.getMultiPart(w, packet.readCoord(), 6);
         if (t instanceof RoutedCraftingPipePart) {

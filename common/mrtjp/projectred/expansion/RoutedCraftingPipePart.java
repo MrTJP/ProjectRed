@@ -24,68 +24,67 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import codechicken.core.IGuiPacketSender;
 import codechicken.core.ServerUtils;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.vec.BlockCoord;
 
 public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements IWorldCrafter {
-    
+
     public SimpleInventory matrix = new SimpleInventory(10, "matrix", 256);
     private DeliveryManager manager = new DeliveryManager();
     public final LinkedList<Pair2<ItemKeyStack, IWorldRequester>> excess = new LinkedList<Pair2<ItemKeyStack, IWorldRequester>>();
 
     public int priority = 0;
-    
+
     private int remainingDelay = operationDelay();
     private int operationDelay() {
         return 40;
     }
-    
+
     protected int itemsToExtract() {
         return 1;
     }
-    
+
     protected int stacksToExtract() {
         return 1;
     }
-    
+
+    @Override
     public void read(MCDataInput packet, int switch_key) {
         if (switch_key == 45)
             priority = packet.readInt();
         else
             super.read(packet, switch_key);
     }
-    
+
     public void priorityUp() {
         int old = priority;
         priority = Math.min(100, priority+1);
         if (old != priority)
             sendPriorityUpdate();
     }
-    
+
     public void priorityDown() {
         int old = priority;
         priority = Math.max(-100, priority-1);
         if (old != priority)
             sendPriorityUpdate();
     }
-    
+
     private void sendPriorityUpdate() {
         if (!world().isRemote)
             tile().getWriteStream(this).writeByte(45).writeInt(priority);
     }
-        
+
     @Override
     public void update() {
         super.update();
         if (--remainingDelay >= 0)
             return;
         remainingDelay = operationDelay();
-        
+
         if (!world().isRemote)
             operationTick();
     }
@@ -95,12 +94,12 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         if (real == null) {
             if (manager.hasOrders())
                 manager.dispatchFailed();
-            else 
+            else
                 excess.clear();
             return;
         }
         int side = getInterfacedSide();
-        
+
         InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSide(side).setSlotsFromSide();
 
         List<ItemKeyStack> wanted = getCraftedItems();
@@ -109,7 +108,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
 
         int itemsleft = itemsToExtract();
         int stacksleft = stacksToExtract();
-        
+
         while (itemsleft > 0 && stacksleft > 0 && (manager.hasOrders() || !excess.isEmpty())) {
             Pair2<ItemKeyStack, IWorldRequester> nextOrder;
             boolean processingOrder=false;
@@ -118,16 +117,16 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
                 processingOrder = true;
             } else
                 nextOrder = excess.getFirst();
-            
+
             ItemKeyStack keyStack = nextOrder.getValue1();
-            
+
             int maxToSend = Math.min(itemsleft, nextOrder.getValue1().stackSize);
             maxToSend = Math.min(nextOrder.getValue1().getStackLimit(), maxToSend);
             int available = inv.extractItem(keyStack.key(), maxToSend);
-            
+
             if (available <= 0)
                 break;
-            
+
             ItemKey key = keyStack.key();
             while (available > 0) {
                 int numToSend = Math.min(available, key.getStackLimit());
@@ -138,7 +137,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
                 itemsleft -= numToSend;
                 available -= numToSend;
                 ItemStack toSend = key.makeStack(numToSend);
-                
+
                 if (processingOrder) {
                     queueStackToSend(toSend, side, SendPriority.ACTIVE, nextOrder.getValue2().getRouter().getIPAddress());
                     manager.dispatchSuccessful(numToSend, false);
@@ -158,12 +157,12 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
             }
         }
     }
-    
+
     private void removeExcess(ItemKey item, int amount) {
         Iterator<Pair2<ItemKeyStack, IWorldRequester>> iter = excess.iterator();
         while (iter.hasNext()) {
             ItemKeyStack stack = iter.next().getValue1();
-            if (stack.key().equals(item)) {
+            if (stack.key().equals(item))
                 if (amount > stack.stackSize) {
                     amount -= stack.stackSize;
                     iter.remove();
@@ -173,22 +172,21 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
                     stack.stackSize -= amount;
                     break;
                 }
-            }
         }
     }
-    
+
     @Override
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) {
         if (super.activate(player, hit, item))
             return true;
-        
+
         openGui(player);
         return true;
     }
-    
+
     public void openGui(EntityPlayer player) {
         if (world().isRemote) return;
-        
+
         ServerUtils.openSMPContainer((EntityPlayerMP) player, createContainer(player), new IGuiPacketSender() {
             @Override
             public void sendPacket(EntityPlayerMP player, int windowId) {
@@ -200,15 +198,15 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
             }
         });
     }
-    
+
     public Container createContainer(EntityPlayer player) {
         GhostContainer2 ghost = new GhostContainer2(player.inventory);
         int slot = 0;
         for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(26, 26, 3, 3, 0, 0))
             ghost.addCustomSlot(new SlotExtended(matrix, slot++, p.getValue1(), p.getValue2()).setGhosting(true));
-        
+
         ghost.addCustomSlot(new SlotExtended(matrix, slot++, 117, 63).setGhosting(true));
-        
+
         ghost.addPlayerInventory(8, 118);
         return ghost;
     }
@@ -218,32 +216,32 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         super.save(tag);
         matrix.save(tag);
     }
-    
+
     @Override
     public void load(NBTTagCompound tag) {
         super.load(tag);
         matrix.load(tag);
     }
 
-    
+
     @Override
     public void requestPromises(RequestBranchNode request, int existingPromises) {
         if (excess.isEmpty()) return;
-        
+
         ItemKey requestedItem = request.getRequestedPackage();
         List<ItemKeyStack> providedItem = getCraftedItems();
         for (ItemKeyStack item : providedItem)
             if (item.key() == requestedItem)
                 return;
-        
+
         if (!providedItem.contains(requestedItem))
             return;
-        
+
         int remaining = 0;
         for (Pair2<ItemKeyStack, IWorldRequester> extra : excess)
             if (extra.getValue1().key() == requestedItem)
                 remaining += extra.getValue1().stackSize;
-        
+
         remaining -= existingPromises;
         if (remaining <= 0)
             return;
@@ -259,7 +257,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
     public void deliverPromises(DeliveryPromise promise, IWorldRequester requester) {
         if (promise instanceof ExcessPromise)
             removeExcess(promise.thePackage, promise.size);
-        
+
         manager.addOrder(ItemKeyStack.get(promise.thePackage, promise.size), requester);
     }
 
@@ -272,7 +270,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         List<ItemKeyStack> stack = getCraftedItems();
         if (stack == null)
             return null;
-        
+
         boolean found = false;
         ItemKeyStack craftingStack = null;
         for (ItemKeyStack craftable : stack) {
@@ -288,7 +286,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         IWorldRequester[] requesters = new IWorldRequester[9];
         for (int i = 0; i < 9; i++)
             requesters[i] = this;
-        
+
         CraftingPromise promise = new CraftingPromise(craftingStack, this, priority);
         for (int i = 0; i < 9; i++) {
             ItemKeyStack keystack = ItemKeyStack.get(matrix.getStackInSlot(i));
@@ -296,7 +294,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
                 continue;
             promise.addIngredient(keystack, requesters[i]);
         }
-        
+
         return promise;
     }
 
@@ -319,7 +317,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
     public int getWorkLoad() {
         return manager.getTotalDeliveryCount();
     }
-    
+
     @Override
     public String getType() {
         return "pr_rcrafting";

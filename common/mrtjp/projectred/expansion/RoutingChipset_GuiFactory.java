@@ -24,7 +24,7 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.FontUtils;
 
 public class RoutingChipset_GuiFactory {
-    
+
     public static GuiContainer getGui(Container c, int meta) {
         if (meta == 0)
             return new GuiChipItemResponder(c);
@@ -36,7 +36,7 @@ public class RoutingChipset_GuiFactory {
             return new GuiChipItemStockKeeper(c);
         else if (meta == 4)
             return new GuiChipDynamicItemResponder(c);
-        
+
         return null;
     }
 
@@ -49,11 +49,11 @@ public class RoutingChipset_GuiFactory {
         public T getChip() {
             return (T) ((ChipGhostContainer) inventorySlots).getChip();
         }
-        
+
         public ChipGhostContainer<T> getCleanContainer() {
             return ((ChipGhostContainer<T>) inventorySlots).getNewInstance();
         }
-        
+
         public GuiChipContainerWidget(Container inventorySlots, GuiScreen previous, int x, int y) {
             super(inventorySlots, previous, x, y);
         }
@@ -67,32 +67,35 @@ public class RoutingChipset_GuiFactory {
             } else
                 super.keyTyped(par1, id);
         }
-        
+
         /** Utils **/
-        
+
         public void drawChipIcon(Icon icon) {
             CCRenderState.changeTexture("projectred:textures/gui/chipcontainer.png");
             drawTexturedModalRect(0, 0, 0, 0, xSize, ySize);
             CCRenderState.changeTexture(TextureMap.locationItemsTexture);
             drawTexturedModelRectFromIcon(55, 14, icon, 64, 64);
         }
-        
+
         public void drawChipOverlay() {
             drawGradientRect(5, 5, 171, 80, -1072689136, -804253680);
         }
-        
+
         /** Abstracts **/
+        @Override
         public abstract void actionPerformed(String ident, Object... params);
+        @Override
         public abstract void addWidgets();
+        @Override
         public abstract void drawBackground();
 
     }
-    
+
     private static class GuiChipItemResponder extends GuiChipContainerWidget<RoutingChipset_ItemResponder> {
         public GuiChipItemResponder(Container inv) {
             super(inv, null);
         }
-        
+
         @Override
         public void actionPerformed(String ident, Object... params) {
             if (ident.equals("pri")) {
@@ -108,7 +111,7 @@ public class RoutingChipset_GuiFactory {
                 mc.displayGuiScreen(new GuiChipItemResponder_Filter(g, this));
             }
         }
-        
+
         @Override
         public void addWidgets() {
             add(new WidgetDotSelector(80, 54) {
@@ -130,31 +133,31 @@ public class RoutingChipset_GuiFactory {
                 }
             }.setActionCommand("filt"));
         }
-        
+
         @Override
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.ITEMRESPONDER.icon);
         }
     }
-    
+
     private static class GuiChipItemResponder_Priority extends GuiChipContainerWidget<RoutingChipset_ItemResponder> {
 
         public GuiChipItemResponder_Priority(Container inv, GuiScreen previous) {
             super(inv, previous);
         }
-        
+
         @Override
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.ITEMRESPONDER.icon);
             drawChipOverlay();
 
-            FontUtils.drawCenteredString(getChip().priority.name, 31, 38, PRColors.WHITE.rgb);  
+            FontUtils.drawCenteredString(getChip().priority.name, 31, 38, PRColors.WHITE.rgb);
             FontUtils.drawCenteredString(getChip().customPriority+"", 146, 38, PRColors.WHITE.rgb);
         }
-        
+
         @Override
         public void actionPerformed(String ident, Object... params) {
-           if (ident.equals("priorityUP"))
+            if (ident.equals("priorityUP"))
                 getChip().priorityUp();
             else if (ident.equals("priorityDOWN"))
                 getChip().priorityDown();
@@ -163,7 +166,7 @@ public class RoutingChipset_GuiFactory {
             else if (ident.equals("customDOWN"))
                 getChip().customDown();
         }
-        
+
         @Override
         public void addWidgets() {
             add(new WidgetSimpleButton(13, 22, 35, 12).setText("+").setActionCommand("priorityUP"));
@@ -179,12 +182,12 @@ public class RoutingChipset_GuiFactory {
         public GuiChipItemResponder_Filter(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
-        
+
         @Override
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.ITEMRESPONDER.icon);
             drawChipOverlay();
-            
+
             for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 BasicGuiUtils.drawSlotBackground(mc, p.getValue1()-1, p.getValue2()-1);
         }
@@ -233,7 +236,7 @@ public class RoutingChipset_GuiFactory {
                 @Override
                 public void drawButton(boolean mouseover) {
                     CCRenderState.changeTexture("projectred:textures/gui/guiextras.png");
-                    int u = (getChip().fuzzyDamageMode*22)+1;
+                    int u = getChip().fuzzyDamageMode*22+1;
                     drawTexturedModalRect(x, y, u, 80, 20, 20);
                 }
                 @Override
@@ -249,11 +252,11 @@ public class RoutingChipset_GuiFactory {
 
 
     private static class GuiChipItemExtractor extends GuiChipContainerWidget<RoutingChipset_ItemExtractor> {
-    
+
         public GuiChipItemExtractor(Container inventorySlots) {
             super(inventorySlots, null);
         }
-    
+
         @Override
         public void actionPerformed(String ident, Object... params) {
             if (ident.equals("filt")) {
@@ -269,7 +272,7 @@ public class RoutingChipset_GuiFactory {
                 mc.displayGuiScreen(new GuiChipItemExtractor_Orient(g, this));
             }
         }
-    
+
         @Override
         public void addWidgets() {
             add(new WidgetDotSelector(100, 54) {
@@ -291,7 +294,7 @@ public class RoutingChipset_GuiFactory {
                 }
             }.setActionCommand("filt"));
         }
-    
+
         @Override
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.ITEMEXTRACTOR.icon);
@@ -299,20 +302,20 @@ public class RoutingChipset_GuiFactory {
     }
 
     private static class GuiChipItemExtractor_Filter extends GuiChipContainerWidget<RoutingChipset_ItemExtractor> {
-        
+
         public GuiChipItemExtractor_Filter(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
-        
+
         @Override
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.ITEMEXTRACTOR.icon);
             drawChipOverlay();
-            
+
             for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 BasicGuiUtils.drawSlotBackground(mc, p.getValue1()-1, p.getValue2()-1);
         }
-        
+
         @Override
         public void actionPerformed(String ident, Object... params) {
             if (ident.equals("ext"))
@@ -322,7 +325,7 @@ public class RoutingChipset_GuiFactory {
             else if (ident.equals("fuzD"))
                 getChip().shiftFuzzy();
         }
-        
+
         @Override
         public void addWidgets() {
             add(new WidgetButton(130, 16, 14, 14) {
@@ -357,7 +360,7 @@ public class RoutingChipset_GuiFactory {
                 @Override
                 public void drawButton(boolean mouseover) {
                     CCRenderState.changeTexture("projectred:textures/gui/guiextras.png");
-                    int u = (getChip().fuzzyDamageMode*22)+1;
+                    int u = getChip().fuzzyDamageMode*22+1;
                     drawTexturedModalRect(x, y, u, 80, 20, 20);
                 }
                 @Override
@@ -372,17 +375,17 @@ public class RoutingChipset_GuiFactory {
     }
 
     private static class GuiChipItemExtractor_Orient extends GuiChipContainerWidget<RoutingChipset_ItemExtractor> {
-        
+
         public GuiChipItemExtractor_Orient(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
-        
+
         @Override
         public void actionPerformed(String ident, Object... params) {
             if (ident.equals("orient"))
                 getChip().shiftOrient();
         }
-        
+
         private static final String[] names = new String[] {"bottom", "top", "North", "South", "West", "East"};
         @Override
         public void addWidgets() {
@@ -396,21 +399,21 @@ public class RoutingChipset_GuiFactory {
                 public List<String> getOverlayText() {
                     List<String> list = new LinkedList<String>();
                     list.add("Extract Orientation");
-                    list.add(EnumChatFormatting.GRAY + 
-                            "Simulated from " 
+                    list.add(EnumChatFormatting.GRAY +
+                            "Simulated from "
                             + (getChip().extractOrient == -1 ? "Default" : names[getChip().extractOrient]));
                     return list;
                 }
             }.setActionCommand("orient"));
         }
-        
+
         @Override
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.ITEMEXTRACTOR.icon);
             drawChipOverlay();
-            
+
             CCRenderState.changeTexture("projectred:textures/gui/guiextras.png");
-            
+
             //TODO icon for dir
         }
     }
@@ -466,20 +469,20 @@ public class RoutingChipset_GuiFactory {
     }
 
     private static class GuiChipItemBroadcaster_Filter extends GuiChipContainerWidget<RoutingChipset_ItemBroadcaster> {
-        
+
         public GuiChipItemBroadcaster_Filter(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
-        
+
         @Override
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.ITEMBROADCASTER.icon);
             drawChipOverlay();
-            
+
             for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 BasicGuiUtils.drawSlotBackground(mc, p.getValue1()-1, p.getValue2()-1);
         }
-        
+
         @Override
         public void actionPerformed(String ident, Object... params) {
             if (ident.equals("ext"))
@@ -487,7 +490,7 @@ public class RoutingChipset_GuiFactory {
             else if (ident.equals("hide"))
                 getChip().shiftHiding();
         }
-        
+
         @Override
         public void addWidgets() {
             add(new WidgetButton(130, 16, 14, 14) {
@@ -508,7 +511,7 @@ public class RoutingChipset_GuiFactory {
                 @Override
                 public void drawButton(boolean mouseover) {
                     CCRenderState.changeTexture("projectred:textures/gui/guiextras.png");
-                    int u = (getChip().hideMode*16)+1;
+                    int u = getChip().hideMode*16+1;
                     drawTexturedModalRect(x, y, u, 118, 14, 14);
                 }
                 @Override
@@ -523,17 +526,17 @@ public class RoutingChipset_GuiFactory {
     }
 
     private static class GuiChipItemBroadcaster_Orient extends GuiChipContainerWidget<RoutingChipset_ItemBroadcaster> {
-        
+
         public GuiChipItemBroadcaster_Orient(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
-        
+
         @Override
         public void actionPerformed(String ident, Object... params) {
             if (ident.equals("orient"))
                 getChip().shiftOrient();
         }
-        
+
         private static final String[] names = new String[] {"bottom", "top", "North", "South", "West", "East"};
         @Override
         public void addWidgets() {
@@ -547,25 +550,25 @@ public class RoutingChipset_GuiFactory {
                 public List<String> getOverlayText() {
                     List<String> list = new LinkedList<String>();
                     list.add("Extract Orientation");
-                    list.add(EnumChatFormatting.GRAY + 
-                            "Simulated from " 
+                    list.add(EnumChatFormatting.GRAY +
+                            "Simulated from "
                             + (getChip().extractOrient == -1 ? "Default" : names[getChip().extractOrient]));
                     return list;
                 }
             }.setActionCommand("orient"));
         }
-        
+
         @Override
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.ITEMBROADCASTER.icon);
             drawChipOverlay();
-            
+
             CCRenderState.changeTexture("projectred:textures/gui/guiextras.png");
-            
+
             //TODO icon for dir
         }
     }
-    
+
     private static class GuiChipItemStockKeeper extends GuiChipContainerWidget<RoutingChipset_ItemStockKeeper> {
         public GuiChipItemStockKeeper(Container container) {
             super(container, null);
@@ -614,7 +617,7 @@ public class RoutingChipset_GuiFactory {
             drawChipIcon(EnumRoutingChip.ITEMSTOCKKEEPER.icon);
         }
     }
-    
+
     private static class GuiChipItemStockKeeper_Stock extends GuiChipContainerWidget<RoutingChipset_ItemStockKeeper> {
 
         public GuiChipItemStockKeeper_Stock(Container inventorySlots, GuiScreen previous) {
@@ -633,12 +636,12 @@ public class RoutingChipset_GuiFactory {
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.ITEMSTOCKKEEPER.icon);
             drawChipOverlay();
-            
+
             for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 BasicGuiUtils.drawSlotBackground(mc, p.getValue1()-1, p.getValue2()-1);
         }
     }
-    
+
     private static class GuiChipItemStockKeeper_FillMode extends GuiChipContainerWidget<RoutingChipset_ItemStockKeeper> {
 
         public GuiChipItemStockKeeper_FillMode(Container inventorySlots, GuiScreen previous) {
@@ -663,7 +666,7 @@ public class RoutingChipset_GuiFactory {
                 public List<String> getOverlayText() {
                     List<String> list = new LinkedList<String>();
                     list.add("Fill mode");
-                    list.add(EnumChatFormatting.GRAY + 
+                    list.add(EnumChatFormatting.GRAY +
                             (getChip().requestWhenEmpty ? "refill when items empty" : "refill when items missing"));
                     return list;
                 }
@@ -676,12 +679,12 @@ public class RoutingChipset_GuiFactory {
             drawChipOverlay();
         }
     }
-    
+
     private static class GuiChipDynamicItemResponder extends GuiChipContainerWidget<RoutingChipset_DynamicItemResponder> {
         public GuiChipDynamicItemResponder(Container inv) {
             super(inv, null);
         }
-        
+
         @Override
         public void actionPerformed(String ident, Object... params) {
             if (ident.equals("pri")) {
@@ -694,7 +697,7 @@ public class RoutingChipset_GuiFactory {
                 mc.displayGuiScreen(new GuiChipDynamicItemResponder_Filter(g, this));
             }
         }
-        
+
         @Override
         public void addWidgets() {
             add(new WidgetDotSelector(80, 54) {
@@ -716,31 +719,31 @@ public class RoutingChipset_GuiFactory {
                 }
             }.setActionCommand("filt"));
         }
-        
+
         @Override
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.DYNAMICITEMRESPONDER.icon);
         }
     }
-    
+
     private static class GuiChipDynamicItemResponder_Priority extends GuiChipContainerWidget<RoutingChipset_DynamicItemResponder> {
 
         public GuiChipDynamicItemResponder_Priority(Container inv, GuiScreen previous) {
             super(inv, previous);
         }
-        
+
         @Override
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.DYNAMICITEMRESPONDER.icon);
             drawChipOverlay();
 
-            FontUtils.drawCenteredString(getChip().priority.name, 31, 38, PRColors.WHITE.rgb);  
+            FontUtils.drawCenteredString(getChip().priority.name, 31, 38, PRColors.WHITE.rgb);
             FontUtils.drawCenteredString(getChip().customPriority+"", 146, 38, PRColors.WHITE.rgb);
         }
-        
+
         @Override
         public void actionPerformed(String ident, Object... params) {
-           if (ident.equals("priorityUP"))
+            if (ident.equals("priorityUP"))
                 getChip().priorityUp();
             else if (ident.equals("priorityDOWN"))
                 getChip().priorityDown();
@@ -749,7 +752,7 @@ public class RoutingChipset_GuiFactory {
             else if (ident.equals("customDOWN"))
                 getChip().customDown();
         }
-        
+
         @Override
         public void addWidgets() {
             add(new WidgetSimpleButton(13, 22, 35, 12).setText("+").setActionCommand("priorityUP"));
@@ -758,13 +761,13 @@ public class RoutingChipset_GuiFactory {
             add(new WidgetSimpleButton(140, 50, 12, 12).setText("-").setActionCommand("customDOWN"));
         }
     }
-    
+
     private static class GuiChipDynamicItemResponder_Filter extends GuiChipContainerWidget<RoutingChipset_DynamicItemResponder> {
 
         public GuiChipDynamicItemResponder_Filter(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
-        
+
         @Override
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.DYNAMICITEMRESPONDER.icon);
@@ -799,7 +802,7 @@ public class RoutingChipset_GuiFactory {
                 @Override
                 public void drawButton(boolean mouseover) {
                     CCRenderState.changeTexture("projectred:textures/gui/guiextras.png");
-                    int u = (getChip().fuzzyDamageMode*22)+1;
+                    int u = getChip().fuzzyDamageMode*22+1;
                     drawTexturedModalRect(x, y, u, 80, 20, 20);
                 }
                 @Override

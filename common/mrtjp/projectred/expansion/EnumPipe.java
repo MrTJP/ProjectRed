@@ -41,7 +41,7 @@ public enum EnumPipe {
                 sprites[i] = reg.registerIcon("projectred:pipes/" + spritePaths[i]);
         }
     }
-    
+
     public ItemStack getItemStack() {
         return new ItemStack(ProjectRedExpansion.itemPartPipe, 1, meta);
     }
