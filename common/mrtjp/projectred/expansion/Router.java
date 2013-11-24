@@ -299,7 +299,7 @@ public class Router implements Comparable<Router> {
         tree2.put(this, new StartEndPath(this, this, -1, 0));
         for (Router r : adjacentLinks.keySet()) {
         	StartEndPath l = adjacentLinks.get(r);
-        	candidates2.add(new StartEndPath(l.start, l.end, l.dirToFirstHop, l.distance));
+        	candidates2.add(new StartEndPath(l.end, l.end, l.dirToFirstHop, l.distance));
         }
         
         SharedLSADatabasereadLock.lock();
