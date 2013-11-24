@@ -6,6 +6,7 @@ import java.util.Map;
 
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
+import mrtjp.projectred.expansion.Router.StartEndPath;
 
 public class CollectionPathFinder {
 
@@ -35,7 +36,8 @@ public class CollectionPathFinder {
     
     public CollectionPathFinder collect() {
         Map<ItemKey, Integer> collected = new HashMap<ItemKey, Integer>();
-        for (Router r : requester.getRouter().getRoutersByCost()) {
+        for (StartEndPath l : requester.getRouter().getRoutersByCost()) {
+        	Router r = l.end;
             IWorldRouter wr = r.getParent();
             if (wr instanceof IWorldCrafter) {
                 IWorldCrafter c = (IWorldCrafter) wr;

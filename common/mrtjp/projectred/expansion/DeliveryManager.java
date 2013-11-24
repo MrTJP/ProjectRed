@@ -36,7 +36,6 @@ public class DeliveryManager {
         first.getValue2().trackedItemLost(first.getValue1());
         if (!orders.isEmpty())
             orders.removeFirst();
-        
         onOrdersChanged();
     }
     

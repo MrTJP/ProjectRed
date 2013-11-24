@@ -16,6 +16,7 @@ import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.expansion.RequestBranch.RequestFlags;
+import mrtjp.projectred.expansion.Router.StartEndPath;
 
 public class RequestBranchNode {
 
@@ -106,10 +107,12 @@ public class RequestBranchNode {
         //TODO
         System.out.println("starting crafters promise seeking");
 
-        List<Router> allRouters = requester.getRouter().getRoutersByCost();
+        List<StartEndPath> allRouters = requester.getRouter().getRoutersByCost();
         List<CraftingPromise> allCrafters = new ArrayList<CraftingPromise>(allRouters.size());
         
-        for (Router r : allRouters) {
+        for (StartEndPath l : allRouters) {
+        	Router r = l.end;
+
             if (r.getParent() instanceof IWorldCrafter) {
                 IWorldCrafter cr = (IWorldCrafter)r.getParent();
                 CraftingPromise cp = cr.requestCraftPromise(getRequestedPackage());
@@ -261,10 +264,10 @@ public class RequestBranchNode {
     }
     
     private boolean getPromisesFromBroadcasters() {
-        for (Router r : requester.getRouter().getRoutersByCost()) {
+        for (StartEndPath l : requester.getRouter().getRoutersByCost()) {
             if (isDone())
                 break;
-            
+            Router r = l.end;
             IWorldRouter member = r.getParent();
 
             if (member.needsWork() || !(member instanceof IWorldBroadcaster))

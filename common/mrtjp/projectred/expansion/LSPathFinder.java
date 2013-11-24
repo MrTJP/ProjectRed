@@ -7,37 +7,35 @@ import java.util.Map.Entry;
 
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.utils.Pair2;
-import mrtjp.projectred.expansion.Router.NodeLink;
+import mrtjp.projectred.expansion.Router.StartEndPath;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 
 public class LSPathFinder {
 
-    public HashMap<Router, NodeLink> result;
+    public HashMap<Router, StartEndPath> result;
     private int pipesVisited;
     
     private final int maxVisited;
     private final int maxLength;
-    private final HashSet<BasicPipePart> setVisited;
+    private final HashSet<BasicPipePart> setVisited = new HashSet<BasicPipePart>();
+    
+    private final Router LSAddresser;
     
 
-    public LSPathFinder(BasicPipePart start, int maxVisited, int maxLength) {
-        this(maxVisited, maxLength);
-        result = getConnectedRoutingPipes(start, ForgeDirection.UNKNOWN);
+    public LSPathFinder(IWorldRouter start, int maxVisited, int maxLength) {
+    	this(start, maxVisited, maxLength, ForgeDirection.UNKNOWN);
     }
-    public LSPathFinder(BasicPipePart start, int maxVisited, int maxLength, ForgeDirection side) {
-        this(maxVisited, maxLength);
-        result = getConnectedRoutingPipes(start, side);
-    }
-    private LSPathFinder(int maxVisited, int maxLength) {
+    public LSPathFinder(IWorldRouter start, int maxVisited, int maxLength, ForgeDirection side) {
         this.maxVisited = maxVisited;
         this.maxLength = maxLength;
-        this.setVisited = new HashSet<BasicPipePart>();
+        this.LSAddresser = start.getRouter();
+        result = getConnectedRoutingPipes(start.getContainer(), side);
     }
     
-    private HashMap<Router, NodeLink> getConnectedRoutingPipes(BasicPipePart start, ForgeDirection side) {
-        HashMap<Router, NodeLink> foundPipes = new HashMap<Router, NodeLink>();
+    private HashMap<Router, StartEndPath> getConnectedRoutingPipes(BasicPipePart start, ForgeDirection side) {
+        HashMap<Router, StartEndPath> foundPipes = new HashMap<Router, StartEndPath>();
 
         boolean root = setVisited.isEmpty();
         
@@ -55,7 +53,7 @@ public class LSPathFinder {
             if (wr.needsWork())
                 return foundPipes;
             
-            foundPipes.put(wr.getRouter(), new NodeLink(null, wr.getRouter(), side.getOpposite().ordinal(), setVisited.size()));
+            foundPipes.put(wr.getRouter(), new StartEndPath(LSAddresser, wr.getRouter(), side.getOpposite().ordinal(), setVisited.size()));
             
             return foundPipes;
         }
@@ -87,24 +85,24 @@ public class LSPathFinder {
             if (setVisited.contains(p))
                 continue;
             
-            int beforeRecurseCount = foundPipes.size();
-            HashMap<Router, NodeLink> result = getConnectedRoutingPipes(p, dir);
-            for(Entry<Router, NodeLink> pipeEntry : result.entrySet()) {
-                pipeEntry.getValue().outOrient = dir;
-                NodeLink foundPipe = foundPipes.get(pipeEntry.getKey());
+            HashMap<Router, StartEndPath> result = getConnectedRoutingPipes(p, dir);
+            for(Entry<Router, StartEndPath> pipeEntry : result.entrySet()) {
+                pipeEntry.getValue().dirToFirstHop = dir.ordinal();
+                StartEndPath foundPipe = foundPipes.get(pipeEntry.getKey());
+                
                 if (foundPipe == null) {
                     foundPipes.put(pipeEntry.getKey(), pipeEntry.getValue());
-                    pipeEntry.getValue().outDistance += resistance;
-                } else if (pipeEntry.getValue().outDistance + resistance < foundPipe.outDistance) {
+                    pipeEntry.getValue().distance += resistance;
+                } else if (pipeEntry.getValue().distance + resistance < foundPipe.distance) {
                     foundPipes.put(pipeEntry.getKey(), pipeEntry.getValue());
-                    pipeEntry.getValue().outDistance += resistance;
+                    pipeEntry.getValue().distance += resistance;
                 }
             }
         }
         setVisited.remove(start);
         if (start instanceof IWorldRouter)
-            for (NodeLink e : foundPipes.values())
-                e.source = ((IWorldRouter) start).getRouter();
+            for (StartEndPath e : foundPipes.values())
+                e.start = ((IWorldRouter) start).getRouter();
         
         return foundPipes;
     }

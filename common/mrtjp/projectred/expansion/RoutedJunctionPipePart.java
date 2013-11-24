@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.Messenger;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.expansion.RoutedPayload.SendPriority;

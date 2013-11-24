@@ -3,6 +3,7 @@ package mrtjp.projectred.expansion;
 import java.util.BitSet;
 
 import mrtjp.projectred.core.utils.ItemKey;
+import mrtjp.projectred.expansion.Router.StartEndPath;
 
 public class LogisticPathFinder {
 
@@ -39,8 +40,9 @@ public class LogisticPathFinder {
         SyncResponse bestResponse = new SyncResponse();
         int bestIP = -1;
         
-        for (Router r : source.getRoutersByCost()) {
-            
+        for (StartEndPath l : source.getRoutersByCost()) {
+        	Router r = l.end;
+
             if (excludeSource && r.getIPAddress() == source.getIPAddress())
                 continue;
             
