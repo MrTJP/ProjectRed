@@ -25,13 +25,13 @@ public class IlluminationProxy implements IProxy, IPartFactory {
         itemPartInvCageLamp = new ItemPartCageLamp(Configurator.part_invcagelamp.getInt(), true);
         itemPartFixture = new ItemPartFixture(Configurator.part_fixture.getInt(), false);
         itemPartInvFixture = new ItemPartFixture(Configurator.part_invfixture.getInt(), true);
-        
+
         itemPartIllumarButton = new ItemPartIllumarButton(Configurator.part_lightButton.getInt());
-        
+
         blockLamp = new BlockLamp(Configurator.block_lampID.getInt());
         GameRegistry.registerBlock(blockLamp, ItemBlockLamp.class, "projectred.illumination.lamp");
         GameRegistry.registerTileEntity(TileLamp.class, "tile.projectred.illumination.lamp");
-        
+
     }
 
     @Override

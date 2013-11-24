@@ -20,9 +20,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemPartIllumarButton extends JItemMultiPart {
-    
+
     public static Icon icons[];
-    
+
     public ItemPartIllumarButton(int id) {
         super(id);
         this.setHasSubtypes(true);
@@ -33,7 +33,7 @@ public class ItemPartIllumarButton extends JItemMultiPart {
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float f, float f2, float f3) {
         if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3)) {
-            w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .9F);
+            w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), Block.soundGlassFootstep.getVolume() * 5.0F, Block.soundGlassFootstep.getPitch() * .9F);
             return true;
         }
         return false;
@@ -41,27 +41,27 @@ public class ItemPartIllumarButton extends JItemMultiPart {
 
     @Override
     public TMultiPart newPart(ItemStack is, EntityPlayer player, World w, BlockCoord pos, int side, Vector3 arg5) {
-            if(side == 0 || side == 1)
-                return null;
-            
-            pos = pos.copy().offset(side^1);
-            if(!w.isBlockSolidOnSide(pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side)))
-                return null;
-            
-            IllumarButtonPart b = new IllumarButtonPart(ButtonPart.sideMetaMap[side^1]|0<<4);
-            if (b != null)
-                b.onPlaced(is);
-            return b;
+        if(side == 0 || side == 1)
+            return null;
+
+        pos = pos.copy().offset(side^1);
+        if(!w.isBlockSolidOnSide(pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side)))
+            return null;
+
+        IllumarButtonPart b = new IllumarButtonPart(ButtonPart.sideMetaMap[side^1]|0<<4);
+        if (b != null)
+            b.onPlaced(is);
+        return b;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(int id, CreativeTabs tab, List list) {
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 16; i++)
             list.add(new ItemStack(this, 1, i));
-        }
     }
 
+    @Override
     public String getUnlocalizedName(ItemStack stack) {
         return super.getUnlocalizedName() + "|" + stack.getItemDamage();
     }

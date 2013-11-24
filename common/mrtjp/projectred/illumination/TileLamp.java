@@ -12,20 +12,20 @@ public class TileLamp extends TileEntity implements ICustomPacketTile, ILight {
 
     public boolean inverted;
     public boolean powered;
-    
+
     @Override
     public boolean canUpdate() {
         return false;
     }
-    
+
     public void prepairPlacement(boolean inverted, int meta) {
         this.inverted = inverted;
     }
-            
+
     public int getLightValue() {
         return powered != inverted ? 15 : 0;
     }
-    
+
     public int colour() {
         return getBlockMetadata();
     }
@@ -35,23 +35,22 @@ public class TileLamp extends TileEntity implements ICustomPacketTile, ILight {
     }
 
     public void onNeighborBlockChange() {
-        if(!worldObj.isRemote && powered != isBeingPowered()) {
+        if(!worldObj.isRemote && powered != isBeingPowered())
             worldObj.scheduleBlockUpdate(xCoord, yCoord, zCoord, getBlockType().blockID, 2);
-        }
     }
-    
+
     public void onTick() {
         if(powered != isBeingPowered()) {
             powered = !powered;
             updateRender();
         }
     }
-    
+
     public void updateRender() {
         worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
         worldObj.updateAllLightTypes(xCoord, yCoord, zCoord);
     }
-    
+
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
@@ -68,15 +67,15 @@ public class TileLamp extends TileEntity implements ICustomPacketTile, ILight {
 
     @Override
     public Packet getDescriptionPacket() {
-    	PacketCustom packet = new PacketCustom(CoreSPH.channel, 1);
-    	packet.writeCoord(xCoord, yCoord, zCoord);
-    	int pack = 0;
-    	if(inverted) pack |= 0x1;
-    	if(powered) pack |= 0x2;
-    	packet.writeByte(pack);
-    	return packet.toPacket();
+        PacketCustom packet = new PacketCustom(CoreSPH.channel, 1);
+        packet.writeCoord(xCoord, yCoord, zCoord);
+        int pack = 0;
+        if(inverted) pack |= 0x1;
+        if(powered) pack |= 0x2;
+        packet.writeByte(pack);
+        return packet.toPacket();
     }
-    
+
     @Override
     public void handleDescriptionPacket(PacketCustom packet) {
         int packed = packet.readUByte();

@@ -51,18 +51,18 @@ public class BlockStainedSapling extends BlockSapling {
 
         if (stack == null)
             return false;
-        
+
         if (!(stack.getItem().itemID == PRColors.WHITE.getDye().getItem().itemID))
             return false;
-        
+
         if (checkArea(w, x, y, z) && w.rand.nextDouble() < EnumDyeTrees.VALID_FOILAGE[w.getBlockMetadata(x, y, z)].growthChance)
             growTree(w, x, y, z, w.rand);
         else
             w.spawnParticle("happyVillager", x + w.rand.nextDouble(), y + w.rand.nextDouble(), z + w.rand.nextDouble(), 0, 0, 0);
-        
+
         if (!player.capabilities.isCreativeMode)
             stack.stackSize--;
-        
+
         return true;
     }
 
@@ -71,12 +71,12 @@ public class BlockStainedSapling extends BlockSapling {
         Material mat = Block.blocksList[id].blockMaterial;
         boolean validSoil = false;
         boolean validArea = true;
-        
+
         if (mat == Material.grass || mat == Material.ground)
             validSoil=true;
         if (!validSoil)
             return false;
-        
+
         BlockCoord bc = new BlockCoord(x,y,z);
         for (int i = 1; i < 6; i++) {
             BlockCoord bc2 = bc.copy().offset(i);
@@ -86,7 +86,7 @@ public class BlockStainedSapling extends BlockSapling {
                 break;
             }
         }
-        
+
         return validSoil && validArea;
     }
 
@@ -94,13 +94,13 @@ public class BlockStainedSapling extends BlockSapling {
     public Icon getIcon(int par1, int par2) {
         return icon;
     }
-    
+
     @Override
     public void getSubBlocks(int id, CreativeTabs tab, List list) {
         for (EnumDyeTrees t : EnumDyeTrees.VALID_FOILAGE)
             list.add(t.getSappling());
     }
-    
+
     @Override
     public int damageDropped(int meta) {
         return meta;

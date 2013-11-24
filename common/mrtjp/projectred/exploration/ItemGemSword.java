@@ -18,12 +18,11 @@ public class ItemGemSword extends ItemSword {
 
     @Override
     public boolean getIsRepairable(ItemStack ist1, ItemStack ist2) {
-        if (tool.repairStack.isItemEqual(ist2)) {
+        if (tool.repairStack.isItemEqual(ist2))
             return true;
-        }
         return super.getIsRepairable(ist1, ist2);
     }
-    
+
     @Override
     public void registerIcons(IconRegister reg) {
         this.itemIcon = reg.registerIcon("projectred:gemtools/" + tool.unlocal);

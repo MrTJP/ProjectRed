@@ -21,13 +21,13 @@ public class BlockSpecialStoneWall extends BlockWall {
         this.setUnlocalizedName("projectred.exploration.stonewalls");
         setCreativeTab(ProjectRedExploration.tabExploration);
     }
-    
+
     @SideOnly(Side.CLIENT)
     @Override
     public Icon getIcon(int side, int meta) {
         return BlockSpecialStone.EnumSpecialStone.VALID_STONE[meta].texture;
     }
-    
+
     @SideOnly(Side.CLIENT)
     @Override
     public void getSubBlocks(int id, CreativeTabs tab, List list) {
@@ -45,10 +45,7 @@ public class BlockSpecialStoneWall extends BlockWall {
         if (l != blockID && l != Block.fenceGate.blockID){
             Block block = Block.blocksList[l];
             return block != null && block.blockMaterial.isOpaque() && block.renderAsNormalBlock() ? block.blockMaterial != Material.pumpkin : false;
-        }
-        else
-        {
+        } else
             return true;
-        }
     }
 }

@@ -44,7 +44,7 @@ public class FixturePart extends BaseLightPart implements TFacePart {
 
     @Override
     public ItemStack getItem() {
-        return new ItemStack(isInverted ? ProjectRedIllumination.itemPartInvFixture : ProjectRedIllumination.itemPartFixture, 1, type);    
+        return new ItemStack(isInverted ? ProjectRedIllumination.itemPartInvFixture : ProjectRedIllumination.itemPartFixture, 1, type);
     }
 
     @Override
