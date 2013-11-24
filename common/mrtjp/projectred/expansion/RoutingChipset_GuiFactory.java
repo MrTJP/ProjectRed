@@ -18,6 +18,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Icon;
 import codechicken.lib.render.CCRenderState;
@@ -57,7 +58,7 @@ public class RoutingChipset_GuiFactory {
         public GuiChipContainerWidget(Container inventorySlots, GuiScreen previous, int x, int y) {
             super(inventorySlots, previous, x, y);
         }
-
+        
         @Override
         public void keyTyped(char par1, int id) {
             if (id >= 2 && id <= 10) {
@@ -101,14 +102,14 @@ public class RoutingChipset_GuiFactory {
             if (ident.equals("pri")) {
                 ChipGhostContainer<RoutingChipset_ItemResponder> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
-                mc.displayGuiScreen(new GuiChipItemResponder_Priority(g, this));
+                shiftScreen(new GuiChipItemResponder_Priority(g, this));
             } else if (ident.equals("filt")) {
                 ChipGhostContainer<RoutingChipset_ItemResponder> g = getCleanContainer();
+                g.addPlayerInventory(8, 86);
                 int s = 0;
                 for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                     g.addCustomSlot(new SlotExtended(g.getChip().filter, s++, p.getValue1(), p.getValue2()).setLimit(1).setGhosting(true));
-                g.addPlayerInventory(8, 86);
-                mc.displayGuiScreen(new GuiChipItemResponder_Filter(g, this));
+                shiftScreen(new GuiChipItemResponder_Filter(g, this));
             }
         }
 
@@ -261,15 +262,15 @@ public class RoutingChipset_GuiFactory {
         public void actionPerformed(String ident, Object... params) {
             if (ident.equals("filt")) {
                 ChipGhostContainer<RoutingChipset_ItemExtractor> g = getCleanContainer();
+                g.addPlayerInventory(8, 86);
                 int s = 0;
                 for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                     g.addCustomSlot(new SlotExtended(g.getChip().filter, s++, p.getValue1(), p.getValue2()).setLimit(1).setGhosting(true));
-                g.addPlayerInventory(8, 86);
-                mc.displayGuiScreen(new GuiChipItemExtractor_Filter(g, this));
+                shiftScreen(new GuiChipItemExtractor_Filter(g, this));
             } else if (ident.equals("sneak")) {
                 ChipGhostContainer<RoutingChipset_ItemExtractor> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
-                mc.displayGuiScreen(new GuiChipItemExtractor_Orient(g, this));
+                shiftScreen(new GuiChipItemExtractor_Orient(g, this));
             }
         }
 
@@ -428,15 +429,15 @@ public class RoutingChipset_GuiFactory {
         public void actionPerformed(String ident, Object... params) {
             if (ident.equals("filt")) {
                 ChipGhostContainer<RoutingChipset_ItemBroadcaster> g = getCleanContainer();
+                g.addPlayerInventory(8, 86);
                 int s = 0;
                 for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                     g.addCustomSlot(new SlotExtended(g.getChip().filter, s++, p.getValue1(), p.getValue2()).setLimit(1).setGhosting(true));
-                g.addPlayerInventory(8, 86);
-                mc.displayGuiScreen(new GuiChipItemBroadcaster_Filter(g, this));
+                shiftScreen(new GuiChipItemBroadcaster_Filter(g, this));
             } else if (ident.equals("sneak")) {
                 ChipGhostContainer<RoutingChipset_ItemBroadcaster> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
-                mc.displayGuiScreen(new GuiChipItemBroadcaster_Orient(g, this));
+                shiftScreen(new GuiChipItemBroadcaster_Orient(g, this));
             }
         }
 
@@ -578,15 +579,15 @@ public class RoutingChipset_GuiFactory {
         public void actionPerformed(String ident, Object... params) {
             if (ident.equals("stock")) {
                 ChipGhostContainer<RoutingChipset_ItemStockKeeper> g = getCleanContainer();
+                g.addPlayerInventory(8, 86);
                 int s = 0;
                 for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                     g.addCustomSlot(new SlotExtended(g.getChip().filter, s++, p.getValue1(), p.getValue2()).setGhosting(true));
-                g.addPlayerInventory(8, 86);
-                mc.displayGuiScreen(new GuiChipItemStockKeeper_Stock(g, this));
+                shiftScreen(new GuiChipItemStockKeeper_Stock(g, this));
             } else if (ident.equals("mode")) {
                 ChipGhostContainer<RoutingChipset_ItemStockKeeper> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
-                mc.displayGuiScreen(new GuiChipItemStockKeeper_FillMode(g, this));
+                shiftScreen(new GuiChipItemStockKeeper_FillMode(g, this));
             }
         }
 
@@ -690,11 +691,11 @@ public class RoutingChipset_GuiFactory {
             if (ident.equals("pri")) {
                 ChipGhostContainer<RoutingChipset_DynamicItemResponder> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
-                mc.displayGuiScreen(new GuiChipDynamicItemResponder_Priority(g, this));
+                shiftScreen(new GuiChipDynamicItemResponder_Priority(g, this));
             }  else if (ident.equals("filt")) {
                 ChipGhostContainer<RoutingChipset_DynamicItemResponder> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
-                mc.displayGuiScreen(new GuiChipDynamicItemResponder_Filter(g, this));
+                shiftScreen(new GuiChipDynamicItemResponder_Filter(g, this));
             }
         }
 

@@ -2,6 +2,7 @@ package mrtjp.projectred.expansion;
 
 import mrtjp.projectred.core.inventory.GhostContainer2;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import codechicken.lib.packet.PacketCustom;
@@ -27,7 +28,9 @@ public class RoutingChipset_ContainerFactory {
         }
 
         public ChipGhostContainer<T> getNewInstance() {
-            return new ChipGhostContainer<T>(player, chip);
+            ChipGhostContainer<T> c = new ChipGhostContainer<T>(player, chip);
+            //c.windowId = this.windowId;
+            return c;
         }
 
         public T getChip() {

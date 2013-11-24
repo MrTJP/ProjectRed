@@ -117,4 +117,53 @@ public abstract class WidgetButton extends GhostWidget {
             return new LinkedList<String>();
         }
     }
+    public static class WidgetCheckBox extends WidgetButton {
+        
+        private boolean checked;
+        
+        public WidgetCheckBox(int x, int y, boolean state) {
+            super(x-7, y-7, 14, 14);
+            checked = state;
+        }
+        
+        public boolean isChecked() {
+            return checked;
+        }
+        
+        @Override
+        public void mouseClicked(int x, int y, int button) {
+            if(pointInside(x, y)) {
+                if (actionCommand != null)
+                    sendAction(actionCommand, button);
+                
+                Minecraft.getMinecraft().sndManager.playSoundFX("random.click", 1, 1);
+                boolean old = checked;
+                checked = !checked;
+                onStateChanged(old);
+            }
+        }
+
+        @Override
+        public void drawButton(boolean mouseover) {
+            CCRenderState.changeTexture("projectred:textures/gui/guiextras.png");
+            int u = checked ? 17 : 1;
+            drawTexturedModalRect(x, y, u, 134, 14, 14);
+        }
+                
+        @Override
+        public List<String> getOverlayText() {
+            return new LinkedList<String>();
+        }
+        
+        public WidgetCheckBox setCheck(boolean flag) {
+            boolean old = checked;
+            checked = flag;
+            if (old != checked)
+                onStateChanged(old);
+            return this;
+        }
+        
+        public void onStateChanged(boolean oldState) {
+        }
+    }
 }

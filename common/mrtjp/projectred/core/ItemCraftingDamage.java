@@ -1,4 +1,4 @@
-package mrtjp.projectred.core.blockutil;
+package mrtjp.projectred.core;
 
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.Item;

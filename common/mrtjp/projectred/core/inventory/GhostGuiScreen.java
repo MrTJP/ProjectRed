@@ -126,7 +126,7 @@ public class GhostGuiScreen extends GuiScreen implements IStackableGui, IGuiActi
             Point p = GuiDraw.getMousePosition();
             int scroll = i > 0 ? 1 : -1;
             for (GhostWidget widget : widgets)
-                widget.mouseScrolled(p.x, p.y, scroll);
+                widget.mouseScrolled(p.x - guiLeft, p.y - guiTop, scroll);
         }
     }
 

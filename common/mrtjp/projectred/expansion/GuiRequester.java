@@ -6,12 +6,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import mrtjp.projectred.core.BasicGuiUtils;
+import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.inventory.GhostGuiScreen;
+import mrtjp.projectred.core.inventory.WidgetButton.WidgetCheckBox;
 import mrtjp.projectred.core.inventory.WidgetButton.WidgetSimpleButton;
 import mrtjp.projectred.core.inventory.WidgetItemSelection;
 import mrtjp.projectred.core.inventory.WidgetTextBox;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
+
+import org.lwjgl.input.Keyboard;
+
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 
@@ -32,8 +37,41 @@ public class GuiRequester extends GhostGuiScreen {
         }
     }.setMaxStringLength(24);
 
-    WidgetTextBox itemCount = new WidgetTextBox(xSize/2-50/2, 180, 50, 16, "1").setAllowedCharacters("0123456789").setMaxStringLength(7);
+    WidgetTextBox itemCount = new WidgetTextBox(xSize/2-50/2, 180, 50, 16, "1") {
+        @Override
+        public void mouseScrolled(int x, int y, int scroll) {
+            if (pointInside(x, y)) {
+                if (scroll > 0)
+                    countUp();
+                else if (scroll < 0)
+                    countDown();
+            }
+        }
+        
+        @Override
+        public void onFocusChanged() {
+            if (getText() == null || getText().isEmpty()) {
+                setText("1");
+            }
+        };
+    }.setAllowedCharacters("0123456789").setMaxStringLength(7);
 
+    WidgetCheckBox pull = new WidgetCheckBox(230, 170, true) {
+        @Override
+        public void onStateChanged(boolean oldState) {
+            itemList.resetDownloadStats();
+            askForListRefresh();
+        }
+    };
+    WidgetCheckBox craft = new WidgetCheckBox(230, 190, true) {
+        @Override
+        public void onStateChanged(boolean oldState) {
+            itemList.resetDownloadStats();
+            askForListRefresh();
+        }
+    };
+    WidgetCheckBox partials = new WidgetCheckBox(230, 210, false);
+    
     @Override
     public void drawBackground() {
         BasicGuiUtils.drawGuiBackGround(mc, 0, 0, xSize, ySize, zLevel, true);
@@ -41,17 +79,26 @@ public class GuiRequester extends GhostGuiScreen {
 
     @Override
     public void drawForeground() {
+        fontRenderer.drawStringWithShadow("Pull", 240, 166, PRColors.WHITE.rgb);
+        fontRenderer.drawStringWithShadow("Craft", 240, 186, PRColors.WHITE.rgb);
+        fontRenderer.drawStringWithShadow("Parials", 240, 206, PRColors.WHITE.rgb);
     }
 
     @Override
     public void addWidgets() {
         add(itemList);
 
-        add(new WidgetSimpleButton(10, 165, 50, 16).setActionCommand("refrsh").setText("Re-poll"));
-        add(new WidgetSimpleButton(10, 185, 50, 16).setActionCommand("req").setText("Submit"));
+        add(new WidgetSimpleButton(10, 185, 50, 16).setActionCommand("refrsh").setText("Re-poll"));
+        add(new WidgetSimpleButton(10, 205, 50, 16).setActionCommand("req").setText("Submit"));
 
+        add(new WidgetSimpleButton(95, 180, 16, 16).setActionCommand("-").setText("-"));
+        add(new WidgetSimpleButton(170, 180, 16, 16).setActionCommand("+").setText("+"));
         add(textFilter);
         add(itemCount);
+        
+        add(pull);
+        add(craft);
+        add(partials);
 
         askForListRefresh();
     }
@@ -70,10 +117,9 @@ public class GuiRequester extends GhostGuiScreen {
         if (request != null) {
             PacketCustom packet = new PacketCustom(ExpansionSPH.channel, NetConstants.gui_Request_submit);
             packet.writeCoord(new BlockCoord(pipe.getContainer().tile()));
-            //TODO options
-            packet.writeBoolean(true);//pull
-            packet.writeBoolean(true);//craft
-            packet.writeBoolean(false);//partials
+            packet.writeBoolean(pull.isChecked());
+            packet.writeBoolean(craft.isChecked());
+            packet.writeBoolean(partials.isChecked());
             packet.writeItemStack(request.key().makeStack(amount), true);
             packet.sendToServer();
         }
@@ -82,9 +128,8 @@ public class GuiRequester extends GhostGuiScreen {
     private void askForListRefresh() {
         PacketCustom packet = new PacketCustom(ExpansionSPH.channel, NetConstants.gui_Request_listRefresh);
         packet.writeCoord(new BlockCoord(pipe.getContainer().tile()));
-        //TODO options
-        packet.writeBoolean(true);//collect broadcasts
-        packet.writeBoolean(true);//collect crafts
+        packet.writeBoolean(pull.isChecked());
+        packet.writeBoolean(craft.isChecked());
         packet.sendToServer();
     }
 
@@ -94,15 +139,51 @@ public class GuiRequester extends GhostGuiScreen {
         packet.writeString(ident);
         packet.sendToServer();
     }
+    
+    private void countUp() {
+        int current = 0;
+        String s = itemCount.getText();
+        if (s != null && !s.isEmpty())
+            current = Integer.parseInt(s);
+        int newCount = 0; 
+        
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+            newCount = current + 10;
+        else
+            newCount = current + 1;
+        
+        if (String.valueOf(newCount).length() <= itemCount.maxStringLength)
+            itemCount.setText(String.valueOf(newCount));
+    }
+    
+    private void countDown() {
+        int current = 0;
+        String s = itemCount.getText();
+        if (s != null && !s.isEmpty())
+            current = Integer.parseInt(s);
+        int newCount = 0; 
+        
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+            newCount = current - 10;
+        else
+            newCount = current - 1;
+        newCount = Math.max(1, newCount);
+        
+        if (String.valueOf(newCount).length() <= itemCount.maxStringLength)
+            itemCount.setText(String.valueOf(newCount));
+    }
 
     @Override
     public void actionPerformed(String ident, Object... params) {
         if (ident.equals("req"))
             sendItemRequest();
         else if (ident.equals("refrsh")) {
-            askForListRefresh();
             itemList.resetDownloadStats();
-        }
+            askForListRefresh();
+        } else if (ident.equals("+"))
+            countUp();
+        else if (ident.equals("-"))
+            countDown();
         else
             sendAction(ident);
     }
