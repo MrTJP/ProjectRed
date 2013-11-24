@@ -18,7 +18,7 @@ public class CoreRecipes {
         initPartRecipes();
         initToolRecipes();
     }
-    
+
     private static void initToolRecipes() {
         /** Draw Plate **/
         GameRegistry.addRecipe(new ShapedOreNBTRecipe(
@@ -28,8 +28,8 @@ public class CoreRecipes {
                 " i ",
                 'i', ItemMicroPart.create(770, Block.blockIron.getUnlocalizedName()),
                 'd', ItemMicroPart.create(2, Block.blockDiamond.getUnlocalizedName())
-        ).setCheckNBT());  
-        
+                ).setCheckNBT());
+
         /** Screw Driver **/
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemScrewdriver),
                 "i  ",
@@ -37,10 +37,10 @@ public class CoreRecipes {
                 " bi",
                 'i', Item.ingotIron,
                 'b', PRColors.BLUE.getOreDict()
-        ));
-        
+                ));
+
         /** Wire debugger **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemWireDebugger), 
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemWireDebugger),
                 "a a",
                 "ber",
                 "bgr",
@@ -49,95 +49,95 @@ public class CoreRecipes {
                 'e', Item.emerald,
                 'r', PRColors.RED.getOreDict(),
                 'g', Item.glowstone
-        ));
+                ));
 
     }
 
     private static void initPartRecipes() {
         /** Circuit Plate **/
         GameRegistry.addSmelting(Block.stone.blockID, EnumPart.PLATE.getItemStack(2), 0f);
-        
+
         /** Conductive Plate **/
-        GameRegistry.addRecipe(EnumPart.CONDUCTIVEPLATE.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.CONDUCTIVEPLATE.getItemStack(),
                 "r",
                 "p",
                 'r', Item.redstone,
                 'p', EnumPart.PLATE.getItemStack()
-        );
-                
+                );
+
         /** Anode **/
-        GameRegistry.addRecipe(EnumPart.ANODE.getItemStack(3), 
+        GameRegistry.addRecipe(EnumPart.ANODE.getItemStack(3),
                 " r ",
                 "rrr",
                 "ppp",
                 'r', Item.redstone,
                 'p', EnumPart.PLATE.getItemStack()
-        );
-        
+                );
+
         /** Cathode **/
-        GameRegistry.addRecipe(EnumPart.CATHODE.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.CATHODE.getItemStack(),
                 "t",
                 "p",
                 't', Block.torchRedstoneActive,
                 'p', EnumPart.PLATE.getItemStack()
-        );
-        
+                );
+
         /** Pointer **/
-        GameRegistry.addRecipe(EnumPart.POINTER.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.POINTER.getItemStack(),
                 "b",
                 "m",
                 "c",
                 'b', Block.stone,
                 'm', Block.torchRedstoneActive,
                 'c', EnumPart.PLATE.getItemStack()
-        );
+                );
 
         /** Silicon Chip **/
-        GameRegistry.addRecipe(EnumPart.SILICONCHIP.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.SILICONCHIP.getItemStack(),
                 " s ",
                 "ppp",
                 's', EnumPart.INFUSEDSILICON.getItemStack(),
                 'p', EnumPart.PLATE.getItemStack()
-        );
-        
+                );
+
         /** Energized Silicon Chip **/
-        GameRegistry.addRecipe(EnumPart.ENERGIZEDSILICONCHIP.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.ENERGIZEDSILICONCHIP.getItemStack(),
                 " e ",
                 "ppp",
                 'e', EnumPart.ENERGIZEDSILICON.getItemStack(),
                 'p', EnumPart.PLATE.getItemStack()
-        );
-        
+                );
+
         /** Platformed Plate **/
-        GameRegistry.addRecipe(EnumPart.PLATFORMEDPLATE.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.PLATFORMEDPLATE.getItemStack(),
                 " r ",
                 "sps",
                 "prp",
                 'r', EnumPart.WIREDPLATE.getItemStack(),
                 's', Item.stick,
                 'p', EnumPart.PLATE.getItemStack()
-        );
+                );
 
-        
+
         /** Silicon Boule **/
         FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemComponent.itemID, EnumPart.SANDYCOALCOMPOUND.meta, EnumPart.SILICONBOULE.getItemStack(), 0);
-        
+
         /** Silicon **/
-        GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8), 
+        GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8),
                 "s",
                 "b",
-                's', new ItemStack(MicroblockProxy.sawDiamond(), 1, OreDictionary.WILDCARD_VALUE), 
+                's', new ItemStack(MicroblockProxy.sawDiamond(), 1, OreDictionary.WILDCARD_VALUE),
                 'b', EnumPart.SILICONBOULE.getItemStack()
-        );
-        
+                );
+
         /** Infused Silicon **/
         FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemComponent.itemID, EnumPart.REDSILICONCOMPOUND.meta, EnumPart.INFUSEDSILICON.getItemStack(), 0);
-        
+
         /** Energized Silicon **/
         FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemComponent.itemID, EnumPart.GLOWINGSILICONCOMPOUND.meta, EnumPart.ENERGIZEDSILICON.getItemStack(), 0);
-        
+
         /** Motor **/
-        GameRegistry.addRecipe(EnumPart.MOTOR.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.MOTOR.getItemStack(),
                 " i ",
                 "scs",
                 "rcr",
@@ -145,95 +145,95 @@ public class CoreRecipes {
                 's', Block.stone,
                 'c', EnumPart.COPPERCOIL.getItemStack(),
                 'r', Item.redstone
-        );
-        
+                );
+
         /** Copper Coil **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(EnumPart.COPPERCOIL.getItemStack(), 
+        GameRegistry.addRecipe(new ShapedOreRecipe(EnumPart.COPPERCOIL.getItemStack(),
                 "cd",
                 'c', "ingotCopper",
                 'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, OreDictionary.WILDCARD_VALUE)
-        ));
-        
+                ));
+
         /** Iron Coil **/
-        GameRegistry.addRecipe(EnumPart.IRONCOIL.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.IRONCOIL.getItemStack(),
                 "cd",
                 'c', new ItemStack(Item.ingotIron),
                 'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, OreDictionary.WILDCARD_VALUE)
-        );
-        
+                );
+
         /** Gold Coil **/
-        GameRegistry.addRecipe(EnumPart.GOLDCOIL.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.GOLDCOIL.getItemStack(),
                 "cd",
                 'c', new ItemStack(Item.ingotGold),
                 'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, OreDictionary.WILDCARD_VALUE)
-        );
-        
+                );
+
         /** Red Alloy Ingot **/
         FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemComponent.itemID, EnumPart.REDIRONCOMPOUND.meta, EnumPart.REDINGOT.getItemStack(), 0);
-        
+
         /** Illumar **/
         for (int i = 0; i < EnumPart.ILLUMAR_PARTS.length; i++) {
             EnumPart p = EnumPart.ILLUMAR_PARTS[i];
-            GameRegistry.addRecipe(new ShapelessOreRecipe(p.getItemStack(), 
+            GameRegistry.addRecipe(new ShapelessOreRecipe(p.getItemStack(),
                     new ItemStack(Item.glowstone),
                     new ItemStack(Item.glowstone),
                     PRColors.get(i).getOreDict(),
                     PRColors.get(i).getOreDict()
-            ));
+                    ));
         }
-        
+
         /** Woven Cloth **/
-        GameRegistry.addRecipe(EnumPart.WOVENCLOTH.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.WOVENCLOTH.getItemStack(),
                 "sss",
                 "sws",
                 "sss",
                 's', Item.silk,
                 'w', Item.stick
-        );
-        
+                );
+
         /** Sail **/
-        GameRegistry.addRecipe(EnumPart.SAIL.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.SAIL.getItemStack(),
                 "ss",
                 "ss",
                 "ss",
                 's', EnumPart.WOVENCLOTH.getItemStack()
-        );
-        
+                );
+
         /** Red Iron Compound **/
-        GameRegistry.addRecipe(EnumPart.REDIRONCOMPOUND.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.REDIRONCOMPOUND.getItemStack(),
                 "rrr",
                 "rir",
                 "rrr",
                 'r', Item.redstone,
                 'i', Item.ingotIron
-        );
+                );
 
         /** Sandy Coal Compound **/
-        GameRegistry.addRecipe(EnumPart.SANDYCOALCOMPOUND.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.SANDYCOALCOMPOUND.getItemStack(),
                 "sss",
                 "scs",
                 "sss",
                 'c', Block.coalBlock,
                 's', Block.sand
-        );
-        
+                );
+
         /** Red Silicon Compound **/
-        GameRegistry.addRecipe(EnumPart.REDSILICONCOMPOUND.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.REDSILICONCOMPOUND.getItemStack(),
                 "rrr",
                 "rsr",
                 "rrr",
                 'r', Item.redstone,
                 's', EnumPart.SILICON.getItemStack()
-        );
+                );
 
         /** Glowing Silicon Compound **/
-        GameRegistry.addRecipe(EnumPart.GLOWINGSILICONCOMPOUND.getItemStack(), 
+        GameRegistry.addRecipe(EnumPart.GLOWINGSILICONCOMPOUND.getItemStack(),
                 "ggg",
                 "gsg",
                 "ggg",
                 'g', Item.glowstone,
                 's', EnumPart.SILICON.getItemStack()
-        );
+                );
 
     }
 

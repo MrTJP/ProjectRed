@@ -1,7 +1,6 @@
 package mrtjp.projectred.core.utils;
 
 import net.minecraft.item.ItemStack;
-import codechicken.lib.data.MCDataOutput;
 
 public class ItemKeyStack implements Comparable<ItemKeyStack>{
 
@@ -13,6 +12,7 @@ public class ItemKeyStack implements Comparable<ItemKeyStack>{
         this.stackSize = size;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o instanceof ItemKeyStack) {
             ItemKeyStack stack = (ItemKeyStack) o;
@@ -21,6 +21,7 @@ public class ItemKeyStack implements Comparable<ItemKeyStack>{
         return false;
     }
 
+    @Override
     public int hashCode() {
         return key.hashCode();
     }
@@ -51,7 +52,7 @@ public class ItemKeyStack implements Comparable<ItemKeyStack>{
     public int getStackLimit() {
         return key.getStackLimit();
     }
-    
+
     public String getName() {
         return key.getName();
     }

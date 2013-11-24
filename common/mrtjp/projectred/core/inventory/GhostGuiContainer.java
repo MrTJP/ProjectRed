@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 import codechicken.core.gui.GuiDraw;
 
 public class GhostGuiContainer extends GuiContainer implements IStackableGui, IGuiActionListener {
-    
+
     protected static final ResourceLocation RL_extras = new ResourceLocation("projectred:textures/gui/guiextras.png");
 
     public ArrayList<GhostWidget> widgets = new ArrayList<GhostWidget>();

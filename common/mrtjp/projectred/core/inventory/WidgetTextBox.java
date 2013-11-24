@@ -135,7 +135,7 @@ public class WidgetTextBox extends GhostWidget {
 
     public String getDrawText() {
         String s = getText();
-        if (isEnabled && isFocused && (cursorCounter / 6) % 2 == 0)
+        if (isEnabled && isFocused && cursorCounter / 6 % 2 == 0)
             s += "_";
         return s;
     }

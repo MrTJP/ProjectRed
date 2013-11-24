@@ -55,7 +55,7 @@ public enum PRColors {
             return WHITE;
         return VALID_COLORS[i];
     }
-    
+
     public ItemStack getDye() {
         return new ItemStack(Item.dyePowder, 1, dyeId());
     }

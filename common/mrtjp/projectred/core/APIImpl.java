@@ -31,14 +31,14 @@ public class APIImpl extends ProjectRedAPI
                 if(p instanceof IBundledEmitter)
                     signal = BundledCableCommons.raiseSignal(signal, ((IBundledEmitter) p).getBundledSignal(Rotation.rotationTo(pside, side^1)));
             }
-            
+
             TMultiPart p = tmp.partMap(6);
             if(p instanceof IBundledEmitter)
                 signal = BundledCableCommons.raiseSignal(signal, ((IBundledEmitter) p).getBundledSignal(side^1));
-            
+
             return signal;
         }
-        
+
         return null;
     }
 }

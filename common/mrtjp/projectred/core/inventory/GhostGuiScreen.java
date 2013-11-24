@@ -18,9 +18,9 @@ public class GhostGuiScreen extends GuiScreen implements IStackableGui, IGuiActi
 
     public ArrayList<GhostWidget> widgets = new ArrayList<GhostWidget>();
     GuiScreen previousGui = null;
-    
+
     public int xSize, ySize, guiTop, guiLeft;
-    
+
     public GhostGuiScreen() {
         this(176, 166);
     }
@@ -30,7 +30,7 @@ public class GhostGuiScreen extends GuiScreen implements IStackableGui, IGuiActi
         this.xSize = xSize;
         this.ySize = ySize;
     }
-    
+
     @Override
     public void initGui() {
         guiTop = (height - ySize) / 2;
