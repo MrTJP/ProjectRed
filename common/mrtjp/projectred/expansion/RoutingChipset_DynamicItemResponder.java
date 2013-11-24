@@ -16,27 +16,27 @@ public class RoutingChipset_DynamicItemResponder extends RoutingChipset {
 
     public SendPriority priority = SendPriority.PASSIVE;
     public int customPriority = 0;
-    
+
     public boolean fuzzyMode = false;
     public int fuzzyDamageMode = 0;
     public static final int[] fuzzyPercent = new int[] {0, 25, 50, 75, 100};
-    
+
     public void priorityUp() {
         int ordinal = priority.ordinal();
         ordinal++;
-        
+
         if (ordinal >= SendPriority.values().length)
             ordinal = SendPriority.values().length-1;
-                
+
         priority = SendPriority.values()[ordinal];
     }
     public void priorityDown() {
         int ordinal = priority.ordinal();
         ordinal--;
-        
+
         if (ordinal <= 0)
             ordinal = 1;
-        
+
         priority = SendPriority.values()[ordinal];
     }
 
@@ -65,10 +65,10 @@ public class RoutingChipset_DynamicItemResponder extends RoutingChipset {
         IInventory real = getInventoryProvider().getInventory();
         int side = getInventoryProvider().getInterfacedSide();
 
-        if (real == null || side < 0) 
+        if (real == null || side < 0)
             return null;
-        
-        if (priority.ordinal() > rival.priority.ordinal() || (priority.ordinal() == rival.priority.ordinal() && customPriority > rival.customPriority)) {
+
+        if (priority.ordinal() > rival.priority.ordinal() || priority.ordinal() == rival.priority.ordinal() && customPriority > rival.customPriority) {
             InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSide(side).setSlotsFromSide()
                     .setFuzzy(fuzzyMode).setFuzzyPercent(fuzzyPercent[fuzzyDamageMode]);
             if (inv.hasItem(item)) {
@@ -103,7 +103,7 @@ public class RoutingChipset_DynamicItemResponder extends RoutingChipset {
         addFilterInfo(list);
         return list;
     }
-    
+
     public void addPriorityInfo(List<String> list) {
         list.add(EnumChatFormatting.GRAY + "Priority: " + priority.name);
         list.add(EnumChatFormatting.GRAY + "Severity: " + customPriority);

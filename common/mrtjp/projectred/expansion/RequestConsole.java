@@ -10,15 +10,15 @@ import mrtjp.projectred.expansion.RequestBranch.RequestFlags;
 import net.minecraft.item.ItemStack;
 
 public class RequestConsole {
-    private EnumSet<RequestFlags> settings = EnumSet.noneOf(RequestFlags.class);        
+    private EnumSet<RequestFlags> settings = EnumSet.noneOf(RequestFlags.class);
 
     private IWorldRequester destination = null;
     private RequestBranch branch = null;
-        
+
     private int requested = 0;
     private Map<ItemKey, Integer> used = null;
     private Map<ItemKey, Integer> missing = null;
-    
+
     public RequestConsole setPulling(boolean flag) {
         if (flag)
             settings.add(RequestFlags.PULL);
@@ -51,67 +51,67 @@ public class RequestConsole {
         this.destination = destination;
         return this;
     }
-    
+
     public int requested() {
-    	return requested;
+        return requested;
     }
-        
+
     public RequestConsole makeRequest(ItemStack request) {
         return makeRequest(ItemKeyStack.get(request));
     }
-    
+
     public RequestConsole makeRequest(ItemKeyStack request) {
         if (destination == null)
             return this;
-        
+
         parityBuilt = false;
         used = null;
         missing = null;
         requested = 0;
-        
+
         branch = new RequestBranch(request.copy(), destination, settings);
-        
-        if (branch.isDone() || (settings.contains(RequestFlags.PARTIALS) && branch.getPromisedCount() > 0)) {
+
+        if (branch.isDone() || settings.contains(RequestFlags.PARTIALS) && branch.getPromisedCount() > 0) {
             requested = branch.getPromisedCount();
-            
+
             if (!settings.contains(RequestFlags.SIMULATE))
                 branch.recurse_RequestDelivery();
         }
         return this;
     }
-    
+
     private boolean parityBuilt = false;
-    
+
     private void rebuildParity() {
-    	if (!parityBuilt)
-    		branch.recurse_RebuildParityTree();
-    	parityBuilt = true;
+        if (!parityBuilt)
+            branch.recurse_RebuildParityTree();
+        parityBuilt = true;
     }
-    
+
     private void gatherUsed() {
-		if (used == null) {
-			rebuildParity();
-			used = new HashMap<ItemKey, Integer>();
-			branch.recurse_GatherStatisticsUsed(used);
-		}
+        if (used == null) {
+            rebuildParity();
+            used = new HashMap<ItemKey, Integer>();
+            branch.recurse_GatherStatisticsUsed(used);
+        }
     }
-    
-	private void gatherMissing() {
-		if (missing == null) {
-			rebuildParity();
-			missing = new HashMap<ItemKey, Integer>();
-			branch.recurse_GatherStatisticsMissing(missing);
-		}
+
+    private void gatherMissing() {
+        if (missing == null) {
+            rebuildParity();
+            missing = new HashMap<ItemKey, Integer>();
+            branch.recurse_GatherStatisticsMissing(missing);
+        }
     }
-	
-	public Map<ItemKey, Integer> getUsed() {
-		if (used == null)
-			gatherUsed();
-		return used;
-	}
-	public Map<ItemKey, Integer> getMissing() {
-		if (missing == null)
-			gatherMissing();
-		return missing;
-	}
+
+    public Map<ItemKey, Integer> getUsed() {
+        if (used == null)
+            gatherUsed();
+        return used;
+    }
+    public Map<ItemKey, Integer> getMissing() {
+        if (missing == null)
+            gatherMissing();
+        return missing;
+    }
 }

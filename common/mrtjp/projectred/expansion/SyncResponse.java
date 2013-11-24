@@ -10,9 +10,9 @@ public class SyncResponse {
     int responder = -1;
 
     public SyncResponse() {
-        
+
     }
-    
+
     public SyncResponse setPriority(SendPriority priority) {
         this.priority = priority;
         return this;

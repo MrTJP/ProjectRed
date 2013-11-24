@@ -69,7 +69,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
     PayloadMovement itemFlow = new PayloadMovement();
     public PipeLogic logic;
     public boolean initialized = false;
-    
+
     public class PayloadMovement extends ForwardingSet<RoutedPayload> {
 
         private final BiMap<Integer, RoutedPayload> delegate = HashBiMap.create();
@@ -112,7 +112,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         public void executeLoad() {
             if (delay-- > 0)
                 return;
-            
+
             addAll(inputQueue);
             inputQueue.clear();
         }
@@ -132,7 +132,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
     };
 
 
-    
+
     public void preparePlacement(int meta) {
         this.meta = (byte) meta;
         logic = PipeLogic.createPipeLogic(this, meta);
@@ -141,58 +141,57 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
     public PipeLogic getLogic() {
         return logic;
     }
-    
+
     @Override
     public void update() {
         if (!initialized)
             initialized = true;
-        
+
         pushItemFlow();
         getLogic().tick();
     }
-    
+
     protected void pushItemFlow() {
         itemFlow.executeLoad();
         itemFlow.exececuteRemove();
-        
+
         for (RoutedPayload r : itemFlow) {
             if (r.isCorrupted()) {
                 itemFlow.scheduleRemoval(r);
                 continue;
             }
-            
+
             r.move(r.getSpeed());
-            
-            if ((r.isEntering && hasReachedMiddle(r)) || hasInvalidLoc(r)) {
+
+            if (r.isEntering && hasReachedMiddle(r) || hasInvalidLoc(r)) {
                 r.isEntering = false;
                 r.setPosition(x() + 0.5D, y() + 0.25D, z() + 0.5D);
-                
+
                 if (r.output == ForgeDirection.UNKNOWN)
                     handleDrop(r);
                 else
                     centerReached(r);
-                
-            } else if (!r.isEntering && hasReachedEnd(r) && itemFlow.scheduleRemoval(r)) {
+
+            } else if (!r.isEntering && hasReachedEnd(r) && itemFlow.scheduleRemoval(r))
                 endReached(r);
-            }
         }
-        
+
         itemFlow.exececuteRemove();
     }
-    
+
     public void handleDrop(RoutedPayload r) {
         if (getLogic().handleDrop(r)) return;
-        
+
         if (itemFlow.scheduleRemoval(r))
             if (!world().isRemote)
                 world().spawnEntityInWorld(r.getEntityForDrop());
     }
-    
+
     public void resolveDestination(RoutedPayload r) {
         if (getLogic().resolveDestination(r)) return;
-        
+
         LinkedList<ForgeDirection> movements = new LinkedList<ForgeDirection>();
-        
+
         for (int i = 0; i < 6; i++) {
             if ((connMap & 1<<i) == 0) continue;
             if (i == r.input.getOpposite().ordinal()) continue;
@@ -202,7 +201,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
                 movements.add(ForgeDirection.getOrientation(i));
 
         }
-        
+
         if (movements.isEmpty())
             r.output = r.input.getOpposite();
         else
@@ -211,7 +210,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
 
     public void endReached(RoutedPayload r) {
         if (getLogic().centerReached(r)) return;
-        if (!world().isRemote) {
+        if (!world().isRemote)
             if (!maskConnects(r.output.ordinal()) || !passToNextPipe(r)) {
                 // Injection to inventories
                 IInventory inv = InventoryWrapper.getInventory(world(), new BlockCoord(tile()).offset(r.output.ordinal()));
@@ -223,9 +222,8 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
                 if (r.payload.stackSize > 0)
                     bounceStack(r);
             }
-        }
     }
-    
+
     public void bounceStack(RoutedPayload r) {
         itemFlow.unscheduleRemoval(r);
         r.isEntering = true;
@@ -235,14 +233,14 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         adjustLoc(r);
         sendItemUpdate(r);
     }
-    
+
     public void centerReached(RoutedPayload r) {
         if (getLogic().centerReached(r)) return;
-        
+
         if (!maskConnects(r.output.ordinal()))
             resolveDestination(r);
     }
-    
+
     public boolean passToNextPipe(RoutedPayload r) {
         TMultiPart p = BasicUtils.getMultiPart(world(), new BlockCoord(tile()).offset(r.output.ordinal()), 6);
         if (p instanceof BasicPipePart) {
@@ -252,11 +250,11 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         }
         return false;
     }
-    
+
     public void adjustSpeed(RoutedPayload r) {
         r.setSpeed(Math.max(r.getSpeed()-0.01f, r.priority.speed));
     }
-    
+
     private void adjustLoc(RoutedPayload r) {
         double x = r.x;
         double y = r.y;
@@ -275,41 +273,41 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
 
         r.setPosition(x, y, z);
     }
-    
+
     protected boolean hasReachedMiddle(RoutedPayload r) {
         float middleLimit = r.getSpeed() * 1.01F;
-        return (Math.abs(x() + 0.5 - r.x) < middleLimit 
-                && Math.abs(y() + 0.25f - r.y) < middleLimit 
-                && Math.abs(z() + 0.5 - r.z) < middleLimit);
+        return Math.abs(x() + 0.5 - r.x) < middleLimit
+                && Math.abs(y() + 0.25f - r.y) < middleLimit
+                && Math.abs(z() + 0.5 - r.z) < middleLimit;
     }
 
     protected boolean hasReachedEnd(RoutedPayload r) {
-        return r.x > x() + 1 
-                || r.x < x() 
-                || r.y > y() + 1 
-                || r.y < y() 
-                || r.z > z() + 1 
+        return r.x > x() + 1
+                || r.x < x()
+                || r.y > y() + 1
+                || r.y < y()
+                || r.z > z() + 1
                 || r.z < z();
     }
 
     protected boolean hasInvalidLoc(RoutedPayload r) {
-        return r.x > x() + 2 
-                || r.x < x() - 1 
-                || r.y > y() + 2 
-                || r.y < y() - 1 
-                || r.z > z() + 2 
+        return r.x > x() + 2
+                || r.x < x() - 1
+                || r.y > y() + 2
+                || r.y < y() - 1
+                || r.z > z() + 2
                 || r.z < z() - 1;
     }
 
     public void injectPayload(RoutedPayload r, ForgeDirection in) {
         if (r.isCorrupted())
             return;
-        
+
         r.bind(this);
         r.reset();
         r.input = in;
         itemFlow.add(r);
-        
+
         if (!world().isRemote) {
             resolveDestination(r);
             adjustSpeed(r);
@@ -317,7 +315,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
             sendItemUpdate(r);
         }
     }
-    
+
     @Override
     public int getHollowSize() {
         return 8;
@@ -370,7 +368,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         super.save(tag);
         tag.setInteger("connMap", connMap);
         tag.setByte("meta", meta);
-        
+
         NBTTagList nbttaglist = new NBTTagList();
 
         for (RoutedPayload r : itemFlow) {
@@ -380,7 +378,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         }
 
         tag.setTag("itemFlow", nbttaglist);
-        
+
         getLogic().save(tag);
     }
 
@@ -389,10 +387,10 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         super.load(tag);
         connMap = tag.getInteger("connMap");
         meta = tag.getByte("meta");
-        
+
         NBTTagList nbttaglist = tag.getTagList("itemFlow");
 
-        for (int j = 0; j < nbttaglist.tagCount(); ++j) {
+        for (int j = 0; j < nbttaglist.tagCount(); ++j)
             try {
                 NBTTagCompound payloadData = (NBTTagCompound) nbttaglist.tagAt(j);
 
@@ -405,8 +403,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
 
                 itemFlow.scheduleLoad(r);
             } catch (Throwable t) {}
-        }
-        
+
         logic = PipeLogic.createPipeLogic(this, meta);
         getLogic().load(tag);
     }
@@ -415,7 +412,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
     public void writeDesc(MCDataOutput packet) {
         packet.writeByte(clientConnMap());
         packet.writeByte(meta);
-        
+
         getLogic().writeDesc(packet);
     }
 
@@ -433,23 +430,21 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         read(packet, packet.readUByte());
     }
 
-    public void read(MCDataInput packet, int switch_key) {        
+    public void read(MCDataInput packet, int switch_key) {
         if (switch_key == 0) {
             connMap = packet.readUByte();
             tile().markRender();
-        } else if (switch_key == 1) {
+        } else if (switch_key == 1)
             handleItemUpdatePacket(packet);
-        }
 
         getLogic().read(packet, switch_key);
     }
 
     @Override
     public void onNeighborChanged() {
-        if (!world().isRemote) {
+        if (!world().isRemote)
             if (updateExternalConnections())
                 sendConnUpdate();
-        }
         int connCount = 0;
         for (int i = 0; i < 6; i++)
             if ((connMap & 1<<i) != 0)
@@ -467,9 +462,8 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
             boolean changed = false;
             if (updateOpenConnections())
                 changed |= updateExternalConnections();
-            if (changed) {
+            if (changed)
                 sendConnUpdate();
-            }
         }
     }
 
@@ -489,17 +483,17 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
             for (int s = 0; s < 6; s++)
                 if ((connMap & 1 << s) != 0)
                     notifyStraightChange(s);
-            
+
             for (RoutedPayload r : itemFlow)
                 world().spawnEntityInWorld(r.getEntityForDrop());
         }
     }
-    
+
     @Override
     public Iterable<ItemStack> getDrops() {
         return Arrays.asList(getItem());
     }
-    
+
     @Override
     public ItemStack pickItem(MovingObjectPosition hit) {
         return getItem();
@@ -529,7 +523,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
     public void sendConnUpdate() {
         tile().getWriteStream(this).writeByte(0).writeByte(clientConnMap());
     }
-    
+
     public void sendItemUpdate(RoutedPayload r) {
         MCDataOutput out = tile().getWriteStream(this).writeByte(1);
 
@@ -540,28 +534,27 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         out.writeFloat((float) r.z);
 
         out.writeItemStack(r.getItemStack());
-        
+
         out.writeByte((byte) r.input.ordinal());
         out.writeByte((byte) r.output.ordinal());
 
         out.writeFloat(r.getSpeed());
-        
+
         out.writeByte(r.priority.ordinal());
     }
-    
+
     public void handleItemUpdatePacket(MCDataInput packet) {
         int id = packet.readShort();
-        
+
         RoutedPayload r = itemFlow.get(id);
         if (r == null) {
             r = new RoutedPayload(id);
             r.setPosition(packet.readFloat(), packet.readFloat(), packet.readFloat());
             itemFlow.add(r);
-        } else {
+        } else
             for (int i = 0; i < 3; i++)
                 packet.readFloat();
-        }
-        
+
         r.setItemStack(packet.readItemStack());
         r.input = ForgeDirection.getOrientation(packet.readByte());
         r.output = ForgeDirection.getOrientation(packet.readByte());
@@ -585,7 +578,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         }
 
         if (newConn != (connMap & 0x3F)) {
-            connMap = (connMap & ~0x3F) | newConn;
+            connMap = connMap & ~0x3F | newConn;
             return true;
         }
         return false;
@@ -601,10 +594,10 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         int newConn = 0;
         for (int s = 0; s < 6; s++)
             if (connectionOpen(s))
-                newConn |= 1 << (s + 12);
+                newConn |= 1 << s + 12;
 
         if (newConn != (connMap & 0x3F000)) {
-            connMap = (connMap & ~0x3F000) | newConn;
+            connMap = connMap & ~0x3F000 | newConn;
             return true;
         }
         return false;
@@ -698,7 +691,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
             CCRenderState.reset();
             CCRenderState.setBrightness(world(), x(), y(), z());
             CCRenderState.useModelColours(true);
-            
+
             RenderPipe.renderItemFlow(this, pos, frame);
             CCRenderState.setColour(-1);
         }
@@ -710,7 +703,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
     public Icon getIcon(int side) {
         return getLogic().getIcon(this, side);
     }
-    
+
     @Override
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held) {
         return false;

@@ -20,41 +20,41 @@ public abstract class PipeLogic {
             return new RoutedRequestPipeLogic(p);
         return null;
     }
-    
+
     BasicPipePart p;
-    
+
     public PipeLogic(BasicPipePart p) {
         this.p = p;
     }
-    
+
     public void save(NBTTagCompound tag) {
     }
-    
+
     public void load(NBTTagCompound tag) {
     }
 
     public void readDesc(MCDataInput packet) {
     }
-    
+
     public void writeDesc(MCDataOutput packet) {
     }
-    
+
     public void read(MCDataInput packet, int switch_key) {
     }
-    
+
     public void tick() {
     }
 
     public abstract boolean endReached(RoutedPayload r);
-    
+
     public abstract boolean centerReached(RoutedPayload r);
-    
+
     public abstract boolean handleDrop(RoutedPayload r);
-    
+
     public abstract boolean resolveDestination(RoutedPayload r);
-    
+
     public abstract Icon getIcon(BasicPipePart p, int i);
-        
+
     public static class BasicPipeLogic extends PipeLogic {
 
         public BasicPipeLogic(BasicPipePart p) {
@@ -74,7 +74,7 @@ public abstract class PipeLogic {
         @Override
         public boolean resolveDestination(RoutedPayload r) {
             return false;
-        }        
+        }
 
         @Override
         public Icon getIcon(BasicPipePart p, int i) {
@@ -86,7 +86,7 @@ public abstract class PipeLogic {
             return false;
         }
     }
-    
+
     public static class RoutedJunctionPipeLogic extends PipeLogic {
 
         public RoutedJunctionPipeLogic(BasicPipePart p) {
@@ -106,7 +106,7 @@ public abstract class PipeLogic {
         @Override
         public boolean resolveDestination(RoutedPayload r) {
             return false;
-        }        
+        }
 
         @Override
         public Icon getIcon(BasicPipePart p, int i) {
@@ -118,13 +118,13 @@ public abstract class PipeLogic {
             return false;
         }
     }
-    
+
     public static class RoutedInterfacePipeLogic extends RoutedJunctionPipeLogic {
 
         public RoutedInterfacePipeLogic(BasicPipePart p) {
             super(p);
         }
-        
+
         @Override
         public Icon getIcon(BasicPipePart p, int i) {
             return EnumPipe.ROUTEDINTERFACE.sprites[0];
@@ -132,22 +132,22 @@ public abstract class PipeLogic {
     }
 
     public static class RoutedCraftingPipeLogic extends RoutedJunctionPipeLogic {
-        
+
         public RoutedCraftingPipeLogic(BasicPipePart p) {
             super(p);
         }
-        
+
         @Override
         public Icon getIcon(BasicPipePart p, int i) {
             return EnumPipe.ROUTEDCRAFTING.sprites[0];
         }
     }
     public static class RoutedRequestPipeLogic extends RoutedJunctionPipeLogic {
-        
+
         public RoutedRequestPipeLogic(BasicPipePart p) {
             super(p);
         }
-        
+
         @Override
         public Icon getIcon(BasicPipePart p, int i) {
             return EnumPipe.ROUTEDREQUEST.sprites[0];

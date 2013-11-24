@@ -10,7 +10,7 @@ import codechicken.lib.vec.BlockCoord;
 public class RouterServices {
 
     public static RouterServices instance = new RouterServices();
-    
+
     /** All registered routers **/
     private final ArrayList<Router> routers = new ArrayList<Router>();
 
@@ -22,7 +22,7 @@ public class RouterServices {
             return null;
         return routers.get(id);
     }
-    
+
     public int getIPforUUID(UUID id){
         if(id == null)
             return -1;
@@ -31,7 +31,7 @@ public class RouterServices {
             return -1;
         return simp.intValue();
     }
-    
+
     public void removeRouter(int id) {
         routers.set(id, null);
     }
@@ -41,10 +41,10 @@ public class RouterServices {
             for (Router r : routers)
                 if (r != null && r.getDim() == dim && r.getLocation().equals(bc))
                     return r;
-            
+
             Router r = new Router(uu, dim, bc);
             int simp = r.getIPAddress();
-            
+
             if (routers.size() <= simp) {
                 routers.ensureCapacity(simp+1);
                 while(routers.size() <= simp)
@@ -59,10 +59,10 @@ public class RouterServices {
     public boolean doesRouterExist(int id) {
         if (id < 0 || id >= routers.size())
             return false;
-        
+
         return routers.get(id) != null;
     }
-    
+
     public static void reboot() {
         instance = new RouterServices();
     }

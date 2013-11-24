@@ -24,38 +24,37 @@ public class RequestBranchNode {
         this.requestedPackage = requestedPackage;
         this.requester = requester;
         this.parent = parent;
-        
+
         if (parent != null) {
             parent.subRequests.add(this);
             root = parent.root;
         } else
             root = (RequestBranch) this;
-        
-        if (parentCrafter != null) {
+
+        if (parentCrafter != null)
             if (!recurse_IsCrafterUsed(parentCrafter))
                 usedCrafters.add(parentCrafter);
-        }
-        
+
         if (type.contains(RequestFlags.PULL) && getPromisesFromBroadcasters())
             return;
-        
+
         if (type.contains(RequestFlags.CRAFT) && getPromisesFromExcess())
             return;
-        
+
         if (type.contains(RequestFlags.CRAFT) && getPromisesFromCrafters())
             return;
     }
-    
+
     private final ItemKeyStack requestedPackage;
     private final IWorldRequester requester;
     private final RequestBranchNode parent;
     protected final RequestBranch root;
-    
+
     private List<RequestBranchNode> subRequests = new ArrayList<RequestBranchNode>();
     private List<DeliveryPromise> promises = new ArrayList<DeliveryPromise>();
     private List<ExcessPromise> excessPromises = new ArrayList<ExcessPromise>();
     private SortedSet<CraftingPromise> usedCrafters = new TreeSet<CraftingPromise>();
-    
+
     private CraftingPromise parityBranch = null;
 
     private int promisedCount = 0;
@@ -63,19 +62,19 @@ public class RequestBranchNode {
     public int getPromisedCount() {
         return promisedCount;
     }
-    
+
     public int getMissingCount() {
         return requestedPackage.stackSize - promisedCount;
     }
-    
+
     public ItemKey getRequestedPackage() {
         return requestedPackage.key();
     }
-    
+
     public boolean isDone() {
         return getMissingCount() <= 0;
     }
-    
+
     public void addPromise(DeliveryPromise promise) {
         if (!promise.thePackage.equals(getRequestedPackage())) {
             //TODO
@@ -92,10 +91,10 @@ public class RequestBranchNode {
             excess.setPackage(promise.thePackage).setSize(more).setSender(promise.sender);
             excessPromises.add(excess);
         }
-        
+
         if (promise.size <= 0)
             return;
-        
+
         promises.add(promise);
         promisedCount += promise.size;
         root.promiseAdded(promise);
@@ -109,9 +108,9 @@ public class RequestBranchNode {
 
         List<StartEndPath> allRouters = requester.getRouter().getRoutersByCost();
         List<CraftingPromise> allCrafters = new ArrayList<CraftingPromise>(allRouters.size());
-        
+
         for (StartEndPath l : allRouters) {
-        	Router r = l.end;
+            Router r = l.end;
 
             if (r.getParent() instanceof IWorldCrafter) {
                 IWorldCrafter cr = (IWorldCrafter)r.getParent();
@@ -127,15 +126,15 @@ public class RequestBranchNode {
             System.out.println("-- " + c.getResultItem().makeStack(0).getDisplayName());
 
         Iterator<CraftingPromise> allCraftersIt = allCrafters.iterator();
-        
+
         PriorityQueue<CraftingTreeInteraction> craftersSamePriority = new PriorityQueue<CraftingTreeInteraction>(5);
         ArrayList<CraftingTreeInteraction> craftersToBalance = new ArrayList<CraftingTreeInteraction>();
 
         boolean recursionFinished = false;
-        
+
         CraftingPromise lastCrafter = null;
         int currentPriority = 0;
-        
+
         //TODO
         System.out.println("Starting crafting searching");
 
@@ -147,10 +146,10 @@ public class RequestBranchNode {
                     lastCrafter = allCraftersIt.next();
             } else if (lastCrafter == null)
                 recursionFinished = true;
-            
+
             //TODO
             System.out.println("lastCrafter set to " + (lastCrafter==null?"null":lastCrafter.result.makeStack().getDisplayName()));
-            
+
             int itemsNeeded = getMissingCount();
             //TODO
             System.out.println(itemsNeeded + " items still needed. ");
@@ -164,16 +163,16 @@ public class RequestBranchNode {
                     //TODO
                     System.out.println("Crafter " +crafter.result.makeStack().getDisplayName()+ " already used. contunuing");
                     continue;
-                } else 
+                } else
                     System.out.println("Crafter " +crafter.result.makeStack().getDisplayName()+ " NOT already used.");
-                
+
                 //TODO
                 System.out.println("CTI added to samePriority list");
                 CraftingTreeInteraction cti = new CraftingTreeInteraction(crafter, itemsNeeded, this);
                 craftersSamePriority.add(cti);
                 continue;
             }
-            
+
             if (craftersToBalance.isEmpty() && craftersSamePriority.isEmpty()) {
                 //TODO
                 System.out.println("No crafters to balance or same crafters.");
@@ -193,20 +192,20 @@ public class RequestBranchNode {
 
                 if (!craftersSamePriority.isEmpty())
                     craftersToBalance.add(craftersSamePriority.poll());
-                
+
                 //TODO
                 System.out.println("Starting crafter load balance.");
                 while (!craftersToBalance.isEmpty() && itemsNeeded > 0) {
-                    
+
                     while (!craftersSamePriority.isEmpty() && craftersSamePriority.peek().toDo() <= craftersToBalance.get(0).toDo())
-                        craftersToBalance.add(craftersSamePriority.poll());                    
-                    
+                        craftersToBalance.add(craftersSamePriority.poll());
+
                     int cap;
                     if (!craftersSamePriority.isEmpty())
                         cap = craftersSamePriority.peek().toDo();
                     else
                         cap = Integer.MAX_VALUE;
-                    
+
                     int floor = craftersToBalance.get(0).toDo();
                     cap = Math.min(cap, floor + (itemsNeeded + craftersToBalance.size() - 1) / craftersToBalance.size());
 
@@ -238,7 +237,7 @@ public class RequestBranchNode {
 
             if (!craftersToBalance.isEmpty())
                 recursionFinished = false;
-            
+
             //TODO
             System.out.println("loop end. " + (recursionFinished?"ALL DONE":"RECURSING"));
         }
@@ -252,17 +251,17 @@ public class RequestBranchNode {
         for (ExcessPromise excess : availableExcess) {
             if (isDone())
                 break;
-            
+
             if (excess.size <= 0)
                 continue;
-            
+
             excess.size = Math.min(excess.size, getMissingCount());
             addPromise(excess);
         }
-        
+
         return isDone();
     }
-    
+
     private boolean getPromisesFromBroadcasters() {
         for (StartEndPath l : requester.getRouter().getRoutersByCost()) {
             if (isDone())
@@ -277,11 +276,11 @@ public class RequestBranchNode {
         }
         return isDone();
     }
-    
+
     private int getPotentialSubPromises(int numberOfSets, CraftingPromise crafter) {
         boolean failed = false;
         int potentialSets = numberOfSets;
-        
+
         List<Pair2<ItemKeyStack, IWorldRequester>> ingredients = crafter.getScaledIngredients(numberOfSets);
         ArrayList<RequestBranchNode> children = new ArrayList<RequestBranchNode>(ingredients.size());
 
@@ -291,35 +290,35 @@ public class RequestBranchNode {
             if (!req.isDone())
                 failed = true;
         }
-        
+
         if (failed) {
             for (RequestBranchNode sub : children)
                 sub.destroy();
-            
+
             parityBranch = crafter;
-            
+
             for (int i = 0; i < ingredients.size(); i++)
                 potentialSets = Math.min(potentialSets, children.get(i).getPromisedCount() / (ingredients.get(i).getValue1().stackSize / numberOfSets));
-            
+
             return getAbsoluteSubPromises(potentialSets, crafter);
         }
-        
+
         return potentialSets;
     }
-    
+
     private int getAbsoluteSubPromises(int numberOfSets, CraftingPromise crafter) {
         ArrayList<RequestBranchNode> children = new ArrayList<RequestBranchNode>();
         if (numberOfSets > 0) {
             List<Pair2<ItemKeyStack, IWorldRequester>> ingredients = crafter.getScaledIngredients(numberOfSets);
             boolean failed = false;
-            
+
             for (Pair2<ItemKeyStack, IWorldRequester> item : ingredients) {
                 RequestBranchNode req = new RequestBranchNode(crafter, item.getValue1(), item.getValue2(), this, RequestFlags.def);
                 children.add(req);
                 if (!req.isDone())
                     failed = true;
             }
-            
+
             if (failed) {
                 for (RequestBranchNode sub : children)
                     sub.destroy();
@@ -328,7 +327,7 @@ public class RequestBranchNode {
         }
         return numberOfSets;
     }
-    
+
     private void destroy() {
         parent.remove(this);
     }
@@ -337,15 +336,15 @@ public class RequestBranchNode {
         subRequests.remove(subNode);
         subNode.recurse_RemoveSubPromisses();
     }
-    
+
     protected void recurse_RemoveSubPromisses() {
         for(DeliveryPromise promise:promises)
             root.promiseRemoved(promise);
-            
+
         for(RequestBranchNode subNode:subRequests)
             subNode.recurse_RemoveSubPromisses();
     }
-    
+
     protected boolean recurse_IsCrafterUsed(CraftingPromise parentCrafter) {
         if (!usedCrafters.isEmpty() && usedCrafters.contains(parentCrafter))
             return true;
@@ -357,18 +356,18 @@ public class RequestBranchNode {
     protected void recurse_RequestDelivery() {
         for (RequestBranchNode subReq : subRequests)
             subReq.recurse_RequestDelivery();
-        
+
         for (DeliveryPromise p : promises)
             p.sender.deliverPromises(p, requester);
-        
+
         for (ExcessPromise p : excessPromises)
             if (p.sender instanceof IWorldCrafter)
                 ((IWorldCrafter)p.sender).registerExcess(p);
-            
+
     }
-    
+
     protected void recurse_GatherExcess(ItemKey item, HashMap<IWorldBroadcaster, List<ExcessPromise>> excessMap) {
-        for (ExcessPromise extra : excessPromises) {
+        for (ExcessPromise extra : excessPromises)
             if (extra.thePackage == item) {
                 List<ExcessPromise> extras = excessMap.get(extra.sender);
                 if (extras == null) {
@@ -377,12 +376,11 @@ public class RequestBranchNode {
                 }
                 extras.add(extra.copy());
             }
-        }
 
         for (RequestBranchNode subNode : subRequests)
             subNode.recurse_GatherExcess(item, excessMap);
     }
-    
+
     protected void recurse_RemoveUnusableExcess(ItemKey item, HashMap<IWorldBroadcaster, List<ExcessPromise>> excessMap) {
         for (DeliveryPromise promise : promises) {
             if (promise.thePackage != item)
@@ -401,7 +399,7 @@ public class RequestBranchNode {
             List<ExcessPromise> extras = excessMap.get(epromise.sender);
             if (extras == null)
                 continue;
-            
+
             Iterator<ExcessPromise> it = extras.iterator();
             while (it.hasNext()) {
                 ExcessPromise extra = it.next();
@@ -419,79 +417,79 @@ public class RequestBranchNode {
         for (RequestBranchNode subNode : subRequests)
             subNode.recurse_RemoveUnusableExcess(item, excessMap);
     }
-    
-    protected void recurse_RebuildParityTree() {
-    	if (isDone())
-    		return;
-    	
-    	if (parityBranch == null)
-    		return;
-    	
-		int setsNeeded = (getMissingCount() + parityBranch.getSizeForSet() - 1) / parityBranch.getSizeForSet();
-		
-		List<Pair2<ItemKeyStack, IWorldRequester>> components = parityBranch.getScaledIngredients(setsNeeded);
-		
-		for (Pair2<ItemKeyStack, IWorldRequester> pair : components)
-			new RequestBranchNode(parityBranch, pair.getValue1(), pair.getValue2(), this, RequestFlags.def);
 
-		addPromise(parityBranch.getScaledPromise(setsNeeded));
-		
-		for (RequestBranchNode sub : subRequests)
-			sub.recurse_RebuildParityTree();
+    protected void recurse_RebuildParityTree() {
+        if (isDone())
+            return;
+
+        if (parityBranch == null)
+            return;
+
+        int setsNeeded = (getMissingCount() + parityBranch.getSizeForSet() - 1) / parityBranch.getSizeForSet();
+
+        List<Pair2<ItemKeyStack, IWorldRequester>> components = parityBranch.getScaledIngredients(setsNeeded);
+
+        for (Pair2<ItemKeyStack, IWorldRequester> pair : components)
+            new RequestBranchNode(parityBranch, pair.getValue1(), pair.getValue2(), this, RequestFlags.def);
+
+        addPromise(parityBranch.getScaledPromise(setsNeeded));
+
+        for (RequestBranchNode sub : subRequests)
+            sub.recurse_RebuildParityTree();
     }
-    
+
     protected void recurse_GatherStatisticsMissing(Map<ItemKey, Integer> map) {
-    	int missing = getMissingCount();
-    	if (missing > 0) {
-    		ItemKey item = getRequestedPackage();
-    		Integer current = map.get(item);
-    		if (current == null)
-    			current = 0;
-    		current += missing;
-    		map.put(item, current);
-    	}
-    	
-    	for (RequestBranchNode sub : subRequests)
-    		sub.recurse_GatherStatisticsMissing(map);
+        int missing = getMissingCount();
+        if (missing > 0) {
+            ItemKey item = getRequestedPackage();
+            Integer current = map.get(item);
+            if (current == null)
+                current = 0;
+            current += missing;
+            map.put(item, current);
+        }
+
+        for (RequestBranchNode sub : subRequests)
+            sub.recurse_GatherStatisticsMissing(map);
     }
-    
+
     protected void recurse_GatherStatisticsUsed(Map<ItemKey, Integer> map) {
-    	int thisUsed = 0;
-    	for (DeliveryPromise p : promises)
-    		if (!(p.sender instanceof IWorldCrafter))
-    			thisUsed += p.size;
-    	
-    	if (thisUsed > 0) {
-    		ItemKey item = getRequestedPackage();
-    		Integer current = map.get(item);
-    		if (current == null)
-    			current = 0;
-    		current += thisUsed;
-    		map.put(item, current);
-    	}
-    	
-    	for (RequestBranchNode sub : subRequests)
-    		sub.recurse_GatherStatisticsUsed(map);
+        int thisUsed = 0;
+        for (DeliveryPromise p : promises)
+            if (!(p.sender instanceof IWorldCrafter))
+                thisUsed += p.size;
+
+        if (thisUsed > 0) {
+            ItemKey item = getRequestedPackage();
+            Integer current = map.get(item);
+            if (current == null)
+                current = 0;
+            current += thisUsed;
+            map.put(item, current);
+        }
+
+        for (RequestBranchNode sub : subRequests)
+            sub.recurse_GatherStatisticsUsed(map);
     }
 
     public static class DeliveryPromise {
         public ItemKey thePackage;
         public int size;
         public IWorldBroadcaster sender;
-        
+
         public DeliveryPromise setPackage(ItemKey thePackage) {
-        	this.thePackage = thePackage;
-        	return this;
+            this.thePackage = thePackage;
+            return this;
         }
         public DeliveryPromise setSize(int size) {
-        	this.size = size;
-        	return this;
+            this.size = size;
+            return this;
         }
         public DeliveryPromise setSender(IWorldBroadcaster sender) {
-        	this.sender = sender;
-        	return this;
+            this.sender = sender;
+            return this;
         }
-        
+
         public DeliveryPromise copy() {
             DeliveryPromise p = new DeliveryPromise();
             p.setPackage(thePackage).setSize(size).setSender(sender);
@@ -500,12 +498,13 @@ public class RequestBranchNode {
     }
     public static class ExcessPromise extends DeliveryPromise {
         public boolean used;
-        
+
         public ExcessPromise setUsed(boolean flag) {
-        	used = flag;
-        	return this;
+            used = flag;
+            return this;
         }
-        
+
+        @Override
         public ExcessPromise copy() {
             ExcessPromise p = new ExcessPromise();
             p.setPackage(thePackage).setSize(size).setSender(sender);
@@ -515,26 +514,26 @@ public class RequestBranchNode {
     }
     public static class CraftingPromise implements Comparable<CraftingPromise> {
         private IWorldCrafter crafter;
-        
+
         private ItemKeyStack result;
         private ArrayList<Pair2<ItemKeyStack, IWorldRequester>> ingredients = new ArrayList<Pair2<ItemKeyStack, IWorldRequester>>(9);
-        
+
         private final int priority;
-        
+
         public CraftingPromise(ItemKeyStack result, IWorldCrafter crafter, int priority) {
             this.result = result;
             this.crafter = crafter;
             this.priority = priority;
         }
-        
+
         public IWorldCrafter getCrafter() {
             return crafter;
         }
-        
+
         public int getPriority() {
             return priority;
         }
-        
+
         public CraftingPromise addIngredient(ItemKeyStack ingredient, IWorldRequester crafter) {
             for (Pair2<ItemKeyStack, IWorldRequester> ing : ingredients)
                 if (ing.getValue1().key().equals(ingredient.key()) && ing.getValue2() == crafter) {
@@ -544,22 +543,22 @@ public class RequestBranchNode {
             ingredients.add(new Pair2<ItemKeyStack, IWorldRequester>(ingredient, crafter));
             return this;
         }
-        
+
         public DeliveryPromise getScaledPromise(int numberOfSets) {
             DeliveryPromise p = new DeliveryPromise();
             p.setPackage(result.key().copy()).setSize(result.stackSize * numberOfSets).setSender(crafter);
             return p;
         }
-        
+
         public List<Pair2<ItemKeyStack, IWorldRequester>> getScaledIngredients(int numberOfSets) {
             List<Pair2<ItemKeyStack, IWorldRequester>> components = new ArrayList<Pair2<ItemKeyStack, IWorldRequester>>(ingredients.size());
-            
+
             for (Pair2<ItemKeyStack, IWorldRequester> ing : ingredients) {
                 Pair2<ItemKeyStack, IWorldRequester> newIng = new Pair2<ItemKeyStack, IWorldRequester>(ing.getValue1().copy(), ing.getValue2());
                 newIng.getValue1().stackSize *= numberOfSets;
                 components.add(newIng);
             }
-            
+
             return components;
         }
 
@@ -572,20 +571,20 @@ public class RequestBranchNode {
                 c = crafter.getRouter().compareTo(p2.crafter.getRouter());
             return c;
         }
-        
+
         public boolean canCraft(ItemKey item) {
             return item.equals(result);
         }
-        
+
         public int getSizeForSet() {
             return result.stackSize;
         }
-        
+
         public ItemKey getResultItem() {
             return result.key();
         }
     }
-    
+
     private class CraftingTreeInteraction implements Comparable<CraftingTreeInteraction> {
         private int setsRequested;
         private final int setSize;
@@ -603,24 +602,24 @@ public class RequestBranchNode {
             this.setSize = crafter.getSizeForSet();
             this.maxSetsAvailable = (treeNode.getMissingCount() + setSize - 1) / setSize;
         }
-        
+
         public int toDo() {
             return originalToDo + setsRequested * setSize;
         }
-        
+
         private int calculateMaxPotentialSets(int maxSets) {
             int needed = 0;
             if (maxSets > 0)
                 needed = maxSets;
             else
                 needed = (treeNode.getMissingCount() + setSize - 1) / setSize;
-            
+
             if (needed <= 0)
                 return 0;
-            
+
             return getPotentialSubPromises(needed, crafter);
         }
-        
+
         public int addToWorkRequest(int extraWork) {
             int stacksRequested = (treeNode.getMissingCount() + setSize - 1) / setSize;
             setsRequested += stacksRequested;

@@ -19,18 +19,18 @@ public class ExpansionProxy implements IProxy, IPartFactory {
     @Override
     public void init() {
         MultiPartRegistry.registerParts(this, new String[]{
-                "pr_ptube",
-                "pr_rbasic",
-                "pr_rinterface",
-                "pr_rcrafting",
-                "pr_rrequest",
+                                                           "pr_ptube",
+                                                           "pr_rbasic",
+                                                           "pr_rinterface",
+                                                           "pr_rcrafting",
+                                                           "pr_rrequest",
         });
         itemPartPipe = new ItemPartPipe(Configurator.part_pipe.getInt());
         itemRoutingChip = new ItemRoutingChip(Configurator.item_routingChipID.getInt());
         for (int i = 0; i < Configurator.routerUpdateThreadCount; i++)
             new TableUpdateThread(i);
-        
-        
+
+
     }
 
     @Override

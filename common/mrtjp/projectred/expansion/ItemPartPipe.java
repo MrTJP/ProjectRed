@@ -30,18 +30,18 @@ public class ItemPartPipe extends JItemMultiPart {
     public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit) {
         EnumPipe type = EnumPipe.VALID_PIPE[item.getItemDamage()];
         BasicPipePart p = (BasicPipePart) MultiPartRegistry.createPart(type.type, false);
-        
+
         if (p == null)
             return null;
-        
+
         p.preparePlacement(item.getItemDamage());
         return p;
     }
-    
+
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
         if (super.onItemUse(stack, player, w, x, y, z, side, hitX, hitY, hitZ)) {
-            w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .9F);
+            w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), Block.soundGlassFootstep.getVolume() * 5.0F, Block.soundGlassFootstep.getPitch() * .9F);
             return true;
         }
         return false;
@@ -51,12 +51,12 @@ public class ItemPartPipe extends JItemMultiPart {
     public String getUnlocalizedName(ItemStack stack) {
         return super.getUnlocalizedName() + "|" + stack.getItemDamage();
     }
-    
+
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(int id, CreativeTabs tab, List list) {
         for (EnumPipe t : EnumPipe.VALID_PIPE)
-                list.add(t.getItemStack());
+            list.add(t.getItemStack());
     }
 
     @Override
