@@ -1,16 +1,9 @@
-package mrtjp.projectred.core;
+package mrtjp.projectred.core.blockutil;
 
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-/**
- * This class makes it VERY easy to add partial damagable items. In constructor,
- * set additional info, and then finish absract methods. DONE.
- * 
- * @author MrTJP
- * 
- */
 public abstract class ItemCraftingDamage extends Item {
 
     public ItemCraftingDamage(int par1) {
@@ -43,5 +36,4 @@ public abstract class ItemCraftingDamage extends Item {
     public boolean doesContainerItemLeaveCraftingGrid(ItemStack is) {
         return false;
     }
-
 }
