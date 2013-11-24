@@ -3,6 +3,7 @@ package mrtjp.projectred.core.inventory;
 import java.util.ArrayList;
 import java.util.List;
 
+import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -23,7 +24,8 @@ public class WidgetItemSelection extends GhostWidget {
     int rows;
     int columns;
     int squareSize = 20;
-    int page = 0;
+    int currentPage = 0;
+    int pagesNeeded = 0;
 
     boolean waitingForList = true;
     boolean downloadFinished = false;
@@ -48,25 +50,25 @@ public class WidgetItemSelection extends GhostWidget {
     public void setDisplayList(List<ItemKeyStack> list) {
         displayList = list;
         waitingForList = false;
+        currentPage = 0;
     }
 
     public void setNewFilter(String filt) {
         filter = filt;
         xLast = yLast = -1;
-        page = 0;
+        currentPage = 0;
     }
 
     public void pageUp() {
-        int needed = displayList.size()/(rows*columns);
-        page++;
-        if (page > needed)
-            page = needed;
+        currentPage++;
+        if (currentPage > pagesNeeded)
+            currentPage = pagesNeeded;
     }
 
     public void pageDown() {
-        page--;
-        if (page < 0)
-            page = 0;
+        currentPage--;
+        if (currentPage < 0)
+            currentPage = 0;
     }
 
     public void resetDownloadStats() {
@@ -79,6 +81,14 @@ public class WidgetItemSelection extends GhostWidget {
             return true;
         //TODO add id searches
         return false;
+    }
+    
+    private int getSeachedCount() {
+        int count = 0;
+        for (ItemKeyStack stack : displayList)
+            if (filterAllows(stack))
+                count++;
+        return count;
     }
 
     private boolean stringsCanSearch(String name, String filter) {
@@ -113,7 +123,7 @@ public class WidgetItemSelection extends GhostWidget {
     private void drawAllItems(int mx, int my) {
         hover = null;
         selection = null;
-        int xOffset = x+2;
+        int xOffset = x-(squareSize-2);
         int yOffset = y+2;
 
         int renderPointerX = 1;
@@ -124,11 +134,10 @@ public class WidgetItemSelection extends GhostWidget {
             if (!filterAllows(keystack))
                 continue;
 
-            int minNum = rows * columns * page;
-            int maxNum = minNum + rows * columns;
-            if (itemNumber < minNum)
+            itemNumber++;
+            if (itemNumber <= rows*columns * currentPage)
                 continue;
-            if (itemNumber > maxNum)
+            if (itemNumber > (rows*columns) * (currentPage+1))
                 break;
 
             int localX = xOffset + renderPointerX * squareSize;
@@ -149,13 +158,12 @@ public class WidgetItemSelection extends GhostWidget {
             inscribeItemStack(localX, localY, keystack.makeStack());
 
             renderPointerX++;
-            if (renderPointerX+1 >= columns) {
+            if (renderPointerX > columns) {
                 renderPointerX = 1;
                 renderPointerY++;
             }
-            if (renderPointerY >= rows)
+            if (renderPointerY > rows)
                 break;
-            itemNumber++;
         }
         glItemPost();
     }
@@ -210,6 +218,13 @@ public class WidgetItemSelection extends GhostWidget {
     @Override
     public void drawBack(int mousex, int mousey, float frame) {
         drawGradientRect(x, y, x+width, y+height, 0xff808080, 0xff808080);
+        pagesNeeded = (getSeachedCount() - 1) / (rows * columns);
+        if (pagesNeeded < 0)
+            pagesNeeded = 0;
+        
+        if (currentPage > pagesNeeded)
+            currentPage = pagesNeeded;
+        
         if (!downloadFinished)
             drawLoadingScreen();
         else
@@ -220,6 +235,8 @@ public class WidgetItemSelection extends GhostWidget {
     public void drawFront(int mousex, int mousey) {
         if (hover != null)
             GuiDraw.drawMultilineTip(mousex+12, mousey-12, hover.makeStack().getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips));
+        
+        FontUtils.drawCenteredString("Page: " + (currentPage+1) + "/" + (pagesNeeded+1), x+(width/2), y+height+6, PRColors.BLACK.rgb);
     }
 
     @Override

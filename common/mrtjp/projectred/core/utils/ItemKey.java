@@ -53,7 +53,7 @@ public class ItemKey implements Comparable<ItemKey>{
 
     @Override
     public int compareTo(ItemKey o) {
-        int c = itemID - itemID;
+        int c = itemID - o.itemID;
         if (c == 0)
             c = itemDamage - o.itemDamage;
         return c;
