@@ -41,19 +41,19 @@ public class BlockLamp extends Block {
         if (tile != null)
             tile.onNeighborBlockChange();
     }
-    
+
     @Override
     public void updateTick(World world, int x, int y, int z, Random par5Random) {
         TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null)
             tile.onTick();
     }
-    
+
     @Override
     public void onBlockAdded(World world, int x, int y, int z) {
         onNeighborBlockChange(world, x, y, z, 0);
     }
-    
+
     @Override
     public boolean renderAsNormalBlock() {
         return true;
@@ -128,6 +128,7 @@ public class BlockLamp extends Block {
         return super.removeBlockByPlayer(world, player, x, y, z);
     }
 
+    @Override
     public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int metadata, int fortune) {
         return new ArrayList<ItemStack>(); // Handled on removeBlockByPlayer
     }
@@ -135,12 +136,11 @@ public class BlockLamp extends Block {
     @Override
     public Icon getBlockTexture(IBlockAccess world, int x, int y, int z, int side) {
         TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
-        if (tile != null) {
+        if (tile != null)
             if (tile.getLightValue() == 15)
                 return onIcons[tile.colour()];
             else
                 return offIcons[tile.colour()];
-        }
         return super.getBlockTexture(world, x, y, z, side);
     }
 

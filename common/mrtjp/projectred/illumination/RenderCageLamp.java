@@ -25,7 +25,7 @@ import codechicken.lib.vec.Vector3;
 
 public class RenderCageLamp implements IItemRenderer {
     public static RenderCageLamp instance = new RenderCageLamp();
-    
+
     static CCModel[] base;
 
     static
@@ -41,7 +41,7 @@ public class RenderCageLamp implements IItemRenderer {
             base[i] = m.copy();
         }
     }
-    
+
     public void renderCageLamp(CageLampPart l) {
         Icon icon = l.isOn()?RenderLantern.onIcons[l.type]:RenderLantern.offIcons[l.type];
         TextureUtils.bindAtlas(0);
@@ -50,13 +50,13 @@ public class RenderCageLamp implements IItemRenderer {
         CCRenderState.useModelColours(true);
         renderPart(icon, base[l.side], l.x(), l.y(), l.z());
         if (l.isOn())
-            RenderHalo.addLight(l.x(), l.y(), l.z(), l.type, l.side, l.lightBounds[l.side]);
+            RenderHalo.addLight(l.x(), l.y(), l.z(), l.type, l.side, CageLampPart.lightBounds[l.side]);
     }
 
     public void renderBreaking(CageLampPart c, Icon icon) {
-        RenderUtils.renderBlock(c.bounds[c.side], 0, new Translation(c.x(), c.y(), c.z()), new IconTransformation(icon), null);
+        RenderUtils.renderBlock(CageLampPart.bounds[c.side], 0, new Translation(c.x(), c.y(), c.z()), new IconTransformation(icon), null);
     }
-    
+
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
         return true;
@@ -71,7 +71,7 @@ public class RenderCageLamp implements IItemRenderer {
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         int color = item.getItemDamage();
         boolean on = item.getItem() == ProjectRedIllumination.itemPartInvCageLamp;
-        
+
         switch (type) {
         case ENTITY:
             renderInventory(on, color, -0.25D, 0D, -0.25D, 0.75D);
@@ -87,13 +87,13 @@ public class RenderCageLamp implements IItemRenderer {
             return;
         default:
             return;
-        }        
+        }
     }
-    
+
     public void renderInventory(boolean on, int color, double x, double y, double z, double scale) {
         Icon icon = on ? RenderLantern.onIcons[color] : RenderLantern.offIcons[color];
 
-    	GL11.glPushMatrix();
+        GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
         GL11.glScaled(scale, scale, scale);
         CCRenderState.reset();

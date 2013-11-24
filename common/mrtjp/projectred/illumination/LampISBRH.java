@@ -24,9 +24,9 @@ import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
 
     public static LampISBRH instance = new LampISBRH();
-    
+
     private static Cuboid6 box = new Cuboid6(0, 0, 0, 1, 1, 1).expand(0.05D);
-    
+
     @Override
     public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer) {}
 
@@ -35,14 +35,14 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
         TileLamp l = BasicUtils.getTileEntity(world, new BlockCoord(x,y,z), TileLamp.class);
         if (l == null)
             return false;
-        
+
         TextureUtils.bindAtlas(0);
-        
+
         if (l.isOn())
             BasicRenderUtils.setFullBrightness();
-        
+
         r.renderStandardBlock(block, x, y, z);
-        
+
         if (l.isOn())
             RenderHalo.addLight(x, y, z, world.getBlockMetadata(x, y, z), 6, box);
         return true;

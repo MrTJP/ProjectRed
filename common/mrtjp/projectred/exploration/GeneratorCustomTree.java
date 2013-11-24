@@ -2,7 +2,6 @@ package mrtjp.projectred.exploration;
 
 import java.util.Random;
 
-import mrtjp.projectred.core.PRLogger;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.util.Direction;
@@ -30,22 +29,23 @@ public class GeneratorCustomTree extends WorldGenerator {
     public GeneratorCustomTree(boolean growFromSapling, int minHeight, int woodID, int woodMeta, int leafID, int leafMeta, int vineID, int vineMeta) {
         super(growFromSapling);
         minTreeHeight = minHeight;
-        
+
         this.woodID = woodID;
         this.woodMeta = woodMeta;
-        
+
         this.leafID = leafID;
         this.leafMeta = leafMeta;
-        
+
         this.vineID = vineID;
         this.vineMeta = vineMeta;
         vinesGrow = vineID > 0;
     }
 
+    @Override
     public boolean generate(World w, Random r, int x, int y, int z) {
         int l = r.nextInt(3) + this.minTreeHeight;
         boolean flag = true;
-        
+
         if (y >= 1 && y + l + 1 <= 256) {
             int i1;
             byte b0;
@@ -55,38 +55,32 @@ public class GeneratorCustomTree extends WorldGenerator {
             for (i1 = y; i1 <= y + 1 + l; ++i1) {
                 b0 = 1;
 
-                if (i1 == y) {
+                if (i1 == y)
                     b0 = 0;
-                }
 
-                if (i1 >= y + 1 + l - 2) {
+                if (i1 >= y + 1 + l - 2)
                     b0 = 2;
-                }
 
-                for (int l1 = x - b0; l1 <= x + b0 && flag; ++l1) {
-                    for (j1 = z - b0; j1 <= z + b0 && flag; ++j1) {
+                for (int l1 = x - b0; l1 <= x + b0 && flag; ++l1)
+                    for (j1 = z - b0; j1 <= z + b0 && flag; ++j1)
                         if (i1 >= 0 && i1 < 256) {
                             k1 = w.getBlockId(l1, i1, j1);
 
                             Block block = Block.blocksList[k1];
                             boolean isAir = w.isAirBlock(l1, i1, j1);
 
-                            if (!isAir && !block.isLeaves(w, l1, i1, j1) && k1 != Block.grass.blockID && k1 != Block.dirt.blockID && !block.isWood(w, l1, i1, j1)) {
+                            if (!isAir && !block.isLeaves(w, l1, i1, j1) && k1 != Block.grass.blockID && k1 != Block.dirt.blockID && !block.isWood(w, l1, i1, j1))
                                 flag = false;
-                            }
-                        } else {
+                        } else
                             flag = false;
-                        }
-                    }
-                }
             }
 
-            if (!flag) {
+            if (!flag)
                 return false;
-            } else {
+            else {
                 i1 = w.getBlockId(x, y - 1, z);
                 Block soil = Block.blocksList[i1];
-                boolean isSoil = (soil != null && soil.canSustainPlant(w, x, y - 1, z, ForgeDirection.UP, (BlockSapling) Block.sapling));
+                boolean isSoil = soil != null && soil.canSustainPlant(w, x, y - 1, z, ForgeDirection.UP, (BlockSapling) Block.sapling);
 
                 if (isSoil && y < 256 - l - 1) {
                     soil.onPlantGrow(w, x, y - 1, z, x, y, z);
@@ -110,9 +104,8 @@ public class GeneratorCustomTree extends WorldGenerator {
                                     int j3 = w.getBlockId(j2, j1, l2);
                                     Block block = Block.blocksList[j3];
 
-                                    if (block == null || block.canBeReplacedByLeaves( w, j2, j1, l2)) {
+                                    if (block == null || block.canBeReplacedByLeaves( w, j2, j1, l2))
                                         this.setBlockAndMetadata(w, j2, j1, l2, leafID, this.leafMeta);
-                                    }
                                 }
                             }
                         }
@@ -127,21 +120,17 @@ public class GeneratorCustomTree extends WorldGenerator {
                             this.setBlockAndMetadata(w, x, y + j1, z, woodID, woodMeta);
 
                             if (this.vinesGrow && j1 > 0) {
-                                if (r.nextInt(3) > 0 && w.isAirBlock(x - 1, y + j1, z)) {
+                                if (r.nextInt(3) > 0 && w.isAirBlock(x - 1, y + j1, z))
                                     this.setBlockAndMetadata(w, x - 1, y + j1, z, vineID, 8);
-                                }
 
-                                if (r.nextInt(3) > 0 && w.isAirBlock(x + 1, y + j1, z)) {
+                                if (r.nextInt(3) > 0 && w.isAirBlock(x + 1, y + j1, z))
                                     this.setBlockAndMetadata(w, x + 1, y + j1, z, vineID, 2);
-                                }
 
-                                if (r.nextInt(3) > 0 && w.isAirBlock(x, y + j1, z - 1)) {
+                                if (r.nextInt(3) > 0 && w.isAirBlock(x, y + j1, z - 1))
                                     this.setBlockAndMetadata(w, x, y + j1, z - 1, vineID, 1);
-                                }
 
-                                if (r.nextInt(3) > 0 && w.isAirBlock(x, y + j1, z + 1)) {
+                                if (r.nextInt(3) > 0 && w.isAirBlock(x, y + j1, z + 1))
                                     this.setBlockAndMetadata(w, x, y + j1, z + 1, vineID, 4);
-                                }
                             }
                         }
                     }
@@ -151,50 +140,40 @@ public class GeneratorCustomTree extends WorldGenerator {
                             k1 = j1 - (y + l);
                             i2 = 2 - k1 / 2;
 
-                            for (j2 = x - i2; j2 <= x + i2; ++j2) {
+                            for (j2 = x - i2; j2 <= x + i2; ++j2)
                                 for (k2 = z - i2; k2 <= z + i2; ++k2) {
                                     Block block = Block.blocksList[w.getBlockId(j2, j1, k2)];
                                     if (block != null && block.isLeaves(w, j2, j1, k2)) {
-                                        if (r.nextInt(4) == 0 && w.isAirBlock(j2 - 1, j1, k2)) {
+                                        if (r.nextInt(4) == 0 && w.isAirBlock(j2 - 1, j1, k2))
                                             this.growVines(w, j2 - 1, j1, k2, 8);
-                                        }
 
-                                        if (r.nextInt(4) == 0 && w.isAirBlock(j2 + 1, j1, k2)) {
+                                        if (r.nextInt(4) == 0 && w.isAirBlock(j2 + 1, j1, k2))
                                             this.growVines(w, j2 + 1, j1, k2, 2);
-                                        }
 
-                                        if (r.nextInt(4) == 0 && w.isAirBlock(j2, j1, k2 - 1)) {
+                                        if (r.nextInt(4) == 0 && w.isAirBlock(j2, j1, k2 - 1))
                                             this.growVines(w, j2, j1, k2 - 1, 1);
-                                        }
 
-                                        if (r.nextInt(4) == 0 && w.isAirBlock(j2, j1, k2 + 1)) {
+                                        if (r.nextInt(4) == 0 && w.isAirBlock(j2, j1, k2 + 1))
                                             this.growVines(w, j2, j1, k2 + 1, 4);
-                                        }
                                     }
                                 }
-                            }
                         }
 
-                        if (r.nextInt(5) == 0 && l > 5) {
-                            for (j1 = 0; j1 < 2; ++j1) {
-                                for (k1 = 0; k1 < 4; ++k1) {
+                        if (r.nextInt(5) == 0 && l > 5)
+                            for (j1 = 0; j1 < 2; ++j1)
+                                for (k1 = 0; k1 < 4; ++k1)
                                     if (r.nextInt(4 - j1) == 0) {
                                         i2 = r.nextInt(3);
                                         this.setBlockAndMetadata(w, x + Direction.offsetX[Direction.rotateOpposite[k1]], y + l - 5 + j1, z + Direction.offsetZ[Direction.rotateOpposite[k1]], Block.cocoaPlant.blockID, i2 << 2 | k1);
                                     }
-                                }
-                            }
-                        }
                     }
 
                     return true;
-                } else {
+                } else
                     return false;
-                }
             }
-        } else {
+        } else
             return false;
-        }
     }
 
     /**
@@ -208,9 +187,8 @@ public class GeneratorCustomTree extends WorldGenerator {
         while (true) {
             --par3;
 
-            if (!par1World.isAirBlock(par2, par3, par4) || i1 <= 0) {
+            if (!par1World.isAirBlock(par2, par3, par4) || i1 <= 0)
                 return;
-            }
 
             this.setBlockAndMetadata(par1World, par2, par3, par4, vineID, par5);
             --i1;

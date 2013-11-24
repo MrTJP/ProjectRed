@@ -60,11 +60,10 @@ public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
                 if (isBlockWet(w, bc))
                     if (ran.nextInt(3) == 0)
                         w.setBlock(bc.x, bc.y, bc.z, Block.cobblestoneMossy.blockID, 0, 3);
-            } else if (id == Block.stoneBrick.blockID && meta == 2) {
+            } else if (id == Block.stoneBrick.blockID && meta == 2)
                 if (isBlockWet(w, bc))
                     if (ran.nextInt(3) == 0)
                         w.setBlock(bc.x, bc.y, bc.z, Block.stoneBrick.blockID, 1, 3);
-            }
         }
     }
 
@@ -101,6 +100,7 @@ public class BlockPhotosyntheticStoneBrick extends BlockStoneBrick {
         }
     }
 
+    @Override
     @SideOnly(Side.CLIENT)
     public Icon getIcon(int par1, int par2) {
         if (icons == null)

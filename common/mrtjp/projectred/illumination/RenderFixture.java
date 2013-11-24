@@ -25,7 +25,7 @@ import codechicken.lib.vec.Vector3;
 
 public class RenderFixture implements IItemRenderer {
     public static RenderFixture instance = new RenderFixture();
-    
+
     static CCModel[] base;
 
     static
@@ -41,7 +41,7 @@ public class RenderFixture implements IItemRenderer {
             base[i] = m.copy();
         }
     }
-    
+
     public void renderFixture(FixturePart l) {
         Icon icon = l.isOn()?RenderLantern.onIcons[l.type]:RenderLantern.offIcons[l.type];
         TextureUtils.bindAtlas(0);
@@ -50,13 +50,13 @@ public class RenderFixture implements IItemRenderer {
         CCRenderState.useModelColours(true);
         renderPart(icon, base[l.side], l.x(), l.y(), l.z());
         if (l.isOn())
-            RenderHalo.addLight(l.x(), l.y(), l.z(), l.type, l.side, l.lightBounds[l.side]);
+            RenderHalo.addLight(l.x(), l.y(), l.z(), l.type, l.side, FixturePart.lightBounds[l.side]);
     }
 
     public void renderBreaking(FixturePart c, Icon icon) {
-        RenderUtils.renderBlock(c.bounds[c.side], 0, new Translation(c.x(), c.y(), c.z()), new IconTransformation(icon), null);
+        RenderUtils.renderBlock(FixturePart.bounds[c.side], 0, new Translation(c.x(), c.y(), c.z()), new IconTransformation(icon), null);
     }
-    
+
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
         return true;
@@ -71,7 +71,7 @@ public class RenderFixture implements IItemRenderer {
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         int color = item.getItemDamage();
         boolean on = item.getItem() == ProjectRedIllumination.itemPartInvFixture;
-        
+
         switch (type) {
         case ENTITY:
             renderInventory(on, color, -0.25D, 0D, -0.25D, 0.75D);
@@ -87,9 +87,9 @@ public class RenderFixture implements IItemRenderer {
             return;
         default:
             return;
-        }        
+        }
     }
-    
+
     public void renderInventory(boolean on, int color, double x, double y, double z, double scale) {
         Icon icon = on ? RenderLantern.onIcons[color] : RenderLantern.offIcons[color];
 

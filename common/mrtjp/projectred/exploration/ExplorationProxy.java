@@ -8,7 +8,6 @@ import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
 import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;
-import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.EnumHelper;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,8 +29,8 @@ public class ExplorationProxy implements IProxy {
             RetroGenerationManager.registerRetroGenerators();
         else
             GameRegistry.registerWorldGenerator(GenerationManager.instance);
-        
-        
+
+
         itemWoolGin = new ItemWoolGin(Configurator.item_woolginID.getInt());
         itemBackpack = new ItemBackpack(Configurator.item_backpackID.getInt());
 
@@ -45,16 +44,16 @@ public class ExplorationProxy implements IProxy {
 
         blockStoneWalls = new BlockSpecialStoneWall(Configurator.block_stoneWallsID.getInt());
         GameRegistry.registerBlock(blockStoneWalls, ItemBlockSpecialStoneWalls.class, "projectred.exploration.stonewalls");
-        
+
         blockStainedLeaf = new BlockStainedLeaf(Configurator.block_stainedLeafID.getInt());
         GameRegistry.registerBlock(blockStainedLeaf, ItemBlockMetaHandler.class, "projectred.exploration.dyeleaf");
 
         blockStainedSapling = new BlockStainedSapling(Configurator.block_stainedSaplingID.getInt());
         GameRegistry.registerBlock(blockStainedSapling, ItemBlockStainedSapling.class, "projectred.exploration.dyesapling");
-        
+
         for (int i = 0; i < 16; i++)
             OreDictionary.registerOre(PRColors.get(i).getOreDict(), EnumDyeTrees.VALID_FOILAGE[i].getSappling());
-        
+
         if (Configurator.gen_SpreadingMoss.getBoolean(true)) {
             int mc = Block.cobblestoneMossy.blockID;
             Block.blocksList[mc] = null;
@@ -120,7 +119,7 @@ public class ExplorationProxy implements IProxy {
 
         for (EnumSpecialStone s : EnumSpecialStone.VALID_STONE)
             MicroMaterialRegistry.registerMaterial(new BlockMicroMaterial(ProjectRedExploration.blockStones, s.meta), ProjectRedExploration.blockStones.getUnlocalizedName() + (s.meta > 0 ? "_" + s.meta : ""));
-        
+
         ExplorationRecipes.initOreDict();
     }
 
