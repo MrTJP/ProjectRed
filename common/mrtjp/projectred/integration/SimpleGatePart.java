@@ -13,39 +13,39 @@ public class SimpleGatePart extends RedstoneGatePart
      * Low nybble is input.
      */
     public byte state;
-    
+
     public int state() {
         return state&0xFF;
     }
-    
+
     public void setState(int s) {
         state = (byte) s;
     }
-    
+
     @Override
     public void save(NBTTagCompound tag) {
         super.save(tag);
         tag.setByte("state", state);
     }
-    
+
     @Override
     public void load(NBTTagCompound tag) {
         super.load(tag);
         state = tag.getByte("state");
     }
-    
+
     @Override
     public void writeDesc(MCDataOutput packet) {
         super.writeDesc(packet);
         packet.writeByte(state);
     }
-    
+
     @Override
     public void readDesc(MCDataInput packet) {
         super.readDesc(packet);
         state = packet.readByte();
     }
-    
+
     @Override
     public void read(MCDataInput packet, int switch_key) {
         if(switch_key == 10) {
@@ -56,12 +56,13 @@ public class SimpleGatePart extends RedstoneGatePart
         else
             super.read(packet, switch_key);
     }
-    
+
     @Override
     public String getType() {
         return "pr_sgate";
     }
-    
+
+    @Override
     public RedstoneGateLogic getLogic() {
         return SimpleGateLogic.instances[subID&0xFF];
     }
@@ -69,14 +70,14 @@ public class SimpleGatePart extends RedstoneGatePart
     public void sendStateUpdate() {
         getWriteStream(10).writeByte(state);
     }
-    
+
     @Override
     public void onWorldJoin() {
         super.onWorldJoin();
         if(getLogic() == null)
             tile().remPart(this);
     }
-    
+
     public void onInputChange() {
         tile().markDirty();
         sendStateUpdate();

@@ -11,7 +11,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public enum EnumWire {
 
     RED_ALLOY("Red alloy wire", "pr_redwire", "pr_sredwire", 0, 0xC80000, "redalloy"),
-    
+
     INSULATED_0("White insulated wire", "pr_insulated", "pr_sinsulated", 1, 0xFFFFFF, "insulated/whiteoff", "insulated/whiteon"),
     INSULATED_1("Orange insulated wire", "pr_insulated", "pr_sinsulated", 1, 0xFFFFFF, "insulated/orangeoff", "insulated/orangeon"),
     INSULATED_2("Magenta insulated wire", "pr_insulated", "pr_sinsulated", 1, 0xFFFFFF, "insulated/magentaoff", "insulated/magentaon"),
@@ -56,7 +56,7 @@ public enum EnumWire {
     public final String framedType;
     public final int thickness;
     public final int itemColour;
-    
+
     // Rendering info
     public Icon[] wireSprites;
     public final String[] wireSpritePaths;
@@ -67,8 +67,8 @@ public enum EnumWire {
     public static final String oreDictDefinitionInsFramed = "projredInsFramedWire";
     public static final String oreDictDefinitionBundled = "projredBundledCable";
 
-    private EnumWire(String name, String wireType, String framedType, 
-        int thickness, int itemColour, String... textures) {
+    private EnumWire(String name, String wireType, String framedType,
+            int thickness, int itemColour, String... textures) {
         this.name = name;
         this.wireType = wireType;
         this.framedType = framedType;
@@ -109,7 +109,7 @@ public enum EnumWire {
     public ItemStack getFramedItemStack(int i) {
         if (!this.hasFramedForm())
             return null;
-        
+
         return new ItemStack(ProjectRedTransmission.itemPartFramedWire, i, meta);
     }
 

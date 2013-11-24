@@ -10,10 +10,10 @@ public class GuiTimer extends GuiScreenWidget {
 
     public ITimerGuiLogic logic;
     public GatePart part;
-    
+
     public GuiTimer(GatePart part) {
         this.part = part;
-        logic = ((ITimerGuiLogic)part.getLogic());
+        logic = (ITimerGuiLogic)part.getLogic();
     }
 
     @Override
@@ -51,20 +51,21 @@ public class GuiTimer extends GuiScreenWidget {
     public boolean doesGuiPauseGame() {
         return false;
     }
-    
+
     @Override
     public void updateScreen() {
         super.updateScreen();
-        
+
         if(part.tile() == null)
             mc.thePlayer.closeScreen();
     }
 
+    @Override
     public void actionPerformed(String ident, Object... params) {
         if(ident.startsWith("+"))
             ident = ident.substring(1);
         int value = Integer.parseInt(ident);
-        
+
         PacketCustom packet = new PacketCustom(IntegrationCPH.channel, 1);
         IntegrationSPH.writePartIndex(packet, part);
         packet.writeShort(value);

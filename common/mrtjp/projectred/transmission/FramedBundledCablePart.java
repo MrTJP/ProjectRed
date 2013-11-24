@@ -24,7 +24,7 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
      * Not available on client
      */
     public byte[] signal = new byte[16];
-    
+
     @Override
     public String getType() {
         return "pr_sbundled";
@@ -51,7 +51,7 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     public boolean canConnectToType(IConnectable wire) {
         if (wire instanceof IInsulatedRedwirePart || wire instanceof IBundledEmitter)
             return true;
-        
+
         return false;
     }
 
@@ -68,6 +68,7 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
         return super.propogateTo(part, mode);
     }
 
+    @Override
     public void setSignal(byte[] newSignal) {
         if (newSignal == null)
             Arrays.fill(signal, (byte) 0);
@@ -75,20 +76,20 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
             System.arraycopy(newSignal, 0, signal, 0, 16);
     }
 
+    @Override
     public byte[] calculateSignal() {
         Arrays.fill(tmpSignal, (byte) 0);
 
         for(int s = 0; s < 6; s++)
-            if (maskConnects(s)) {
+            if (maskConnects(s))
                 if((connMap & 1<<s) != 0)
                     calculateStraightSignal(s);
                 else
                     calculateInternalSignal(s);
-            }
-        
+
         return tmpSignal;
     }
-    
+
     public void calculateStraightSignal(int s) {
         BlockCoord pos = new BlockCoord(tile()).offset(s);
         TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
@@ -101,7 +102,7 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     public void calculateInternalSignal(int s) {
         calculatePartSignal(tile().partMap(s), -1);
     }
-    
+
     @Override
     public byte[] getBundledSignal() {
         return signal;

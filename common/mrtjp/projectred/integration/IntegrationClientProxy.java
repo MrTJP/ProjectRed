@@ -11,7 +11,7 @@ public class IntegrationClientProxy extends IntegrationProxy {
         super.preinit();
         PacketCustom.assignHandler(IntegrationCPH.channel, new IntegrationCPH());
     }
-    
+
     @Override
     public void init() {
         super.init();
