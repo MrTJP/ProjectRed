@@ -106,7 +106,7 @@ public class RequestBranchNode {
         //TODO
         System.out.println("starting crafters promise seeking");
 
-        List<StartEndPath> allRouters = requester.getRouter().getRoutersByCost();
+        List<StartEndPath> allRouters = requester.getRouter().getRoutesByCost();
         List<CraftingPromise> allCrafters = new ArrayList<CraftingPromise>(allRouters.size());
 
         for (StartEndPath l : allRouters) {
@@ -263,7 +263,7 @@ public class RequestBranchNode {
     }
 
     private boolean getPromisesFromBroadcasters() {
-        for (StartEndPath l : requester.getRouter().getRoutersByCost()) {
+        for (StartEndPath l : requester.getRouter().getRoutesByCost()) {
             if (isDone())
                 break;
             Router r = l.end;

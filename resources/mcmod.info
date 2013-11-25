@@ -2,7 +2,7 @@
 {
   "modinfoversion": 3,
   "modid": "ProjRed|Core",
-  "name": "Project: Red-Core",
+  "name": "ProjectRed-Core",
   "description":"Redstone. The way it was meant to be. Built against Forge @FORGE_VERSION@.",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",
@@ -25,7 +25,7 @@
 {
   "modinfoversion": 3,
   "modid": "ProjRed|Expansion",
-  "name": "Project: Red-Expansion",
+  "name": "ProjectRed-Expansion",
   "parent":"ProjRed|Core"
 },
 
@@ -34,7 +34,7 @@
 {
   "modinfoversion": 3,
   "modid": "ProjRed|Exploration",
-  "name": "Project: Red-Exploration",
+  "name": "ProjectRed-Exploration",
   "parent":"ProjRed|Core"
 },
 
@@ -43,7 +43,7 @@
 {
   "modinfoversion": 3,
   "modid": "ProjRed|Illumination",
-  "name": "Project: Red-Illumination",
+  "name": "ProjectRed-Illumination",
   "parent":"ProjRed|Core"
 },
 
@@ -52,7 +52,7 @@
 {
   "modinfoversion": 3,
   "modid": "ProjRed|Integration",
-  "name": "Project: Red-Integration",
+  "name": "ProjectRed-Integration",
   "parent":"ProjRed|Core"
 },
 
@@ -61,7 +61,7 @@
 {
   "modinfoversion": 3,
   "modid": "ProjRed|Transmission",
-  "name": "Project: Red-Transmission",
+  "name": "ProjectRed-Transmission",
   "parent":"ProjRed|Core"
 },
 
@@ -70,7 +70,7 @@
 {
   "modinfoversion": 3,
   "modid": "ProjRed|Compatability",
-  "name": "Project: Red-Compatability",
+  "name": "ProjectRed-Compatability",
   "parent":"ProjRed|Core"
 }
 

@@ -28,6 +28,7 @@ public class PRVersionChecker extends Thread implements ITickHandler {
     @Override
     public void run() {
         if (run) return;
+        run = true;
         try {
             String current = Configurator.version;
             if (current.contains("@"))
@@ -50,12 +51,11 @@ public class PRVersionChecker extends Thread implements ITickHandler {
                 changes.add(changelog);
             }
 
-            isOutdated = current != newVersion;
+            isOutdated = !current.equals(newVersion);
 
         } catch (Throwable e) {
 
         }
-        run = true;
     }
 
     @Override

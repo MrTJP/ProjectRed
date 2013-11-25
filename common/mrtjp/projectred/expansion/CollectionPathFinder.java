@@ -36,7 +36,7 @@ public class CollectionPathFinder {
 
     public CollectionPathFinder collect() {
         Map<ItemKey, Integer> collected = new HashMap<ItemKey, Integer>();
-        for (StartEndPath l : requester.getRouter().getRoutersByCost()) {
+        for (StartEndPath l : requester.getRouter().getRoutesByCost()) {
             Router r = l.end;
             IWorldRouter wr = r.getParent();
             if (wr instanceof IWorldCrafter && collectCrafts) {

@@ -20,7 +20,7 @@ public class LogisticPathFinder {
     public LogisticPathFinder(Router source, ItemKey payload) {
         this.source = source;
         this.payload = payload;
-        this.visited = new BitSet(Router.getIPEndPool());
+        this.visited = new BitSet(Router.getEndOfIPPool());
     }
 
     public LogisticPathFinder setExclusions(BitSet exclusions) {
@@ -40,7 +40,7 @@ public class LogisticPathFinder {
         SyncResponse bestResponse = new SyncResponse();
         int bestIP = -1;
 
-        for (StartEndPath l : source.getRoutersByCost()) {
+        for (StartEndPath l : source.getRoutesByCost()) {
             Router r = l.end;
 
             if (excludeSource && r.getIPAddress() == source.getIPAddress())

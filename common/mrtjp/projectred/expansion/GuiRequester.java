@@ -156,7 +156,7 @@ public class GuiRequester extends GhostGuiScreen {
             newCount = current + 10;
         else
             newCount = current + 1;
-        
+
         if (String.valueOf(newCount).length() <= itemCount.maxStringLength)
             itemCount.setText(String.valueOf(newCount));
     }
