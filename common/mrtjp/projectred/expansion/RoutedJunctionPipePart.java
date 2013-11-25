@@ -152,7 +152,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         if (world().isRemote) return false;
         int link = 0;
         for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS)
-            if (getRouter().LSAExists(d))
+            if (getRouter().LSAConnectionExists(d))
                 link |= 1<<d.ordinal();
         if (linkMap != link) {
             linkMap = link;

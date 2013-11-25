@@ -60,7 +60,7 @@ public class TableUpdateThread extends Thread {
 
         RouteLayerUpdater(Router router) {
             this.complete = false;
-            this.newVersion = router.getLSAVersion();
+            this.newVersion = router.getLinkStateID();
             this.router = router;
         }
 

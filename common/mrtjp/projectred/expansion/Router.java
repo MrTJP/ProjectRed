@@ -39,18 +39,18 @@ public class Router implements Comparable<Router>
     private Map<Router, StartEndPath> adjacentLinks = new HashMap<Router, StartEndPath>();
 
     /*** Locks for allowing thread-safe read-write access to router information ***/
-    protected static final ReentrantReadWriteLock SharedLSADatabaseLock = new ReentrantReadWriteLock();
-    protected static final Lock SharedLSADatabasereadLock = SharedLSADatabaseLock.readLock();
-    protected static final Lock SharedLSADatabasewriteLock = SharedLSADatabaseLock.writeLock();
-    protected final ReentrantReadWriteLock routingTableUpdateLock = new ReentrantReadWriteLock();
-    protected final Lock routingTableUpdateReadLock = routingTableUpdateLock.readLock();
-    protected final Lock routingTableUpdateWriteLock = routingTableUpdateLock.writeLock();
+    protected static final ReentrantReadWriteLock LSADatabaseLock = new ReentrantReadWriteLock();
+    protected static final Lock LSADatabasereadLock = LSADatabaseLock.readLock();
+    protected static final Lock LSADatabasewriteLock = LSADatabaseLock.writeLock();
+    protected final ReentrantReadWriteLock routingTableLock = new ReentrantReadWriteLock();
+    protected final Lock routingTableReadLock = routingTableLock.readLock();
+    protected final Lock routingTableWriteLock = routingTableLock.writeLock();
 
     /*** Link State ***/
-    private static int[] LSALegacyVersion = new int[0];
-    private int LSAVersion = 0;
-    private static LSA[] SharedLSADatabase = new LSA[0];
+    private static int[] LegacyLinkStateID = new int[0];
+    private static LSA[] LSADatabase = new LSA[0];
     private LSA LSA;
+    private int linkStateID = 0;
 
     /*** Identification ***/
     private final int IPAddress;
@@ -67,24 +67,24 @@ public class Router implements Comparable<Router>
 
         this.LSA = new LSA();
 
-        SharedLSADatabasewriteLock.lock();
+        LSADatabasewriteLock.lock();
 
         this.IPAddress = claimIPAddress();
-        if (SharedLSADatabase.length <= IPAddress) {
+        if (LSADatabase.length <= IPAddress) {
             int newLength = (int) (IPAddress * 1.5) + 1;
             
             LSA[] SharedLSADatabase2 = new LSA[newLength];
-            System.arraycopy(SharedLSADatabase, 0, SharedLSADatabase2, 0, SharedLSADatabase.length);
-            SharedLSADatabase = SharedLSADatabase2;
+            System.arraycopy(LSADatabase, 0, SharedLSADatabase2, 0, LSADatabase.length);
+            LSADatabase = SharedLSADatabase2;
             
             int[] LSALegacyVersion2 = new int[newLength];
-            System.arraycopy(LSALegacyVersion, 0, LSALegacyVersion2, 0, LSALegacyVersion.length);
-            LSALegacyVersion = LSALegacyVersion2;
+            System.arraycopy(LegacyLinkStateID, 0, LSALegacyVersion2, 0, LegacyLinkStateID.length);
+            LegacyLinkStateID = LSALegacyVersion2;
         }
-        LSALegacyVersion[IPAddress] = 0;
-        SharedLSADatabase[IPAddress] = LSA;
+        LegacyLinkStateID[IPAddress] = 0;
+        LSADatabase[IPAddress] = LSA;
 
-        SharedLSADatabasewriteLock.unlock();
+        LSADatabasewriteLock.unlock();
     }
 
     public void update(boolean force) {
@@ -156,16 +156,16 @@ public class Router implements Comparable<Router>
             for (Entry<Router, StartEndPath> r : adjacentLinks.entrySet())
                 neighboursWithCost.put(r.getKey(), r.getValue().distance);
 
-            SharedLSADatabasewriteLock.lock();
+            LSADatabasewriteLock.lock();
             LSA.neighbors = neighboursWithCost;
-            SharedLSADatabasewriteLock.unlock();
+            LSADatabasewriteLock.unlock();
         }
 
         return adjacentChanged;
     }
 
     private void startLSAFloodfill() {
-        BitSet prev = new BitSet(getIPEndPool());
+        BitSet prev = new BitSet(getEndOfIPPool());
         prev.set(IPAddress);
 
         for (Router r : adjacentLinks.keySet())
@@ -206,14 +206,14 @@ public class Router implements Comparable<Router>
     }
 
     public void flagForRoutingUpdate() {
-        LSAVersion++;
+        linkStateID++;
     }
 
     public void decommission() {
-        SharedLSADatabasewriteLock.lock();
-        if (IPAddress < SharedLSADatabase.length)
-            SharedLSADatabase[IPAddress] = null;
-        SharedLSADatabasewriteLock.unlock();
+        LSADatabasewriteLock.lock();
+        if (IPAddress < LSADatabase.length)
+            LSADatabase[IPAddress] = null;
+        LSADatabasewriteLock.unlock();
 
         RouterServices.instance.removeRouter(IPAddress);
 
@@ -221,8 +221,8 @@ public class Router implements Comparable<Router>
         releaseIPAddress(IPAddress);
     }
 
-    public int getLSAVersion() {
-        return LSAVersion;
+    public int getLinkStateID() {
+        return linkStateID;
     }
 
     public int getIPAddress() {
@@ -238,7 +238,7 @@ public class Router implements Comparable<Router>
         return routeTable;
     }
 
-    public List<StartEndPath> getRoutersByCost() {
+    public List<StartEndPath> getRoutesByCost() {
         refreshRouteTableIfNeeded(true);
         return routersByCost;
     }
@@ -262,20 +262,20 @@ public class Router implements Comparable<Router>
     }
 
     private void refreshRouteTableIfNeeded(boolean force) {
-        if (LSAVersion > LSALegacyVersion[IPAddress])
+        if (linkStateID > LegacyLinkStateID[IPAddress])
             if (Configurator.routerUpdateThreadCount > 0 && !force)
                 TableUpdateThread.add(new RouteLayerUpdater(this));
             else
-                refreshRoutingTable(LSAVersion);
+                refreshRoutingTable(linkStateID);
     }
 
     public void refreshRoutingTable(int newVersion) {
-        if (LSALegacyVersion[IPAddress] >= newVersion)
+        if (LegacyLinkStateID[IPAddress] >= newVersion)
             return;
 
-        int sizeEstimate = getIPEndPool();
+        int sizeEstimate = getEndOfIPPool();
         if (sizeEstimate == 0)
-            sizeEstimate = SharedLSADatabase.length;
+            sizeEstimate = LSADatabase.length;
 
         /** Map of all routers in this network and its rudimentary path **/
         HashMap<Router, StartEndPath> tree2 = new HashMap<Router, StartEndPath>(sizeEstimate);
@@ -291,7 +291,7 @@ public class Router implements Comparable<Router>
             candidates2.add(new StartEndPath(l.end, l.end, l.dirToFirstHop, l.distance));
         }
 
-        SharedLSADatabasereadLock.lock();
+        LSADatabasereadLock.lock();
         StartEndPath nextLowest = null;
         while ((nextLowest = candidates2.poll()) != null) {
             // We already approved this router. Keep skipping until we get a
@@ -311,8 +311,8 @@ public class Router implements Comparable<Router>
 
             // Add all of our neighbors so they are checked.
             LSA lsa = null;
-            if (nextLowest.end.getIPAddress() < SharedLSADatabase.length)
-                lsa = SharedLSADatabase[nextLowest.end.getIPAddress()];
+            if (nextLowest.end.getIPAddress() < LSADatabase.length)
+                lsa = LSADatabase[nextLowest.end.getIPAddress()];
 
             if (lsa != null)
                 for (Router r : ((Map<Router, Integer>) lsa.neighbors.clone()).keySet()) {
@@ -328,9 +328,9 @@ public class Router implements Comparable<Router>
             tree2.put(nextLowest.end, nextLowest);
             routersByCost2.add(nextLowest);
         }
-        SharedLSADatabasereadLock.unlock();
+        LSADatabasereadLock.unlock();
 
-        ArrayList<ForgeDirection> routeTable2 = new ArrayList<ForgeDirection>(getIPEndPool()+1);
+        ArrayList<ForgeDirection> routeTable2 = new ArrayList<ForgeDirection>(getEndOfIPPool()+1);
         while(getIPAddress() >= routeTable2.size())
             routeTable2.add(null);
         routeTable2.set(getIPAddress(), ForgeDirection.UNKNOWN);
@@ -355,17 +355,17 @@ public class Router implements Comparable<Router>
         }
 
         // Set the new routing tables.
-        routingTableUpdateWriteLock.lock();
-        if (newVersion == LSAVersion) {
-            SharedLSADatabasereadLock.lock();
-            if (LSALegacyVersion[IPAddress] < newVersion) {
-                LSALegacyVersion[IPAddress] = newVersion;
+        routingTableWriteLock.lock();
+        if (newVersion == linkStateID) {
+            LSADatabasereadLock.lock();
+            if (LegacyLinkStateID[IPAddress] < newVersion) {
+                LegacyLinkStateID[IPAddress] = newVersion;
                 routeTable = Collections.unmodifiableList(routeTable2);
                 routersByCost = Collections.unmodifiableList(routersByCost2);
             }
-            SharedLSADatabasereadLock.unlock();
+            LSADatabasereadLock.unlock();
         }
-        routingTableUpdateWriteLock.unlock();
+        routingTableWriteLock.unlock();
     }
 
     public IWorldRouter getParent() {
@@ -392,7 +392,7 @@ public class Router implements Comparable<Router>
             nextIP = ip;
     }
 
-    public static int getIPEndPool() {
+    public static int getEndOfIPPool() {
         return usedIPs.size();
     }
 
@@ -409,7 +409,7 @@ public class Router implements Comparable<Router>
         return location;
     }
 
-    public boolean LSAExists(ForgeDirection dir) {
+    public boolean LSAConnectionExists(ForgeDirection dir) {
         return routedExits.contains(dir);
     }
 
@@ -419,16 +419,17 @@ public class Router implements Comparable<Router>
     }
 
     public static void reboot() {
-        SharedLSADatabasewriteLock.lock();
-        SharedLSADatabase = new LSA[0];
-        LSALegacyVersion = new int[0];
-        SharedLSADatabasewriteLock.unlock();
+        LSADatabasewriteLock.lock();
+        LSADatabase = new LSA[0];
+        LegacyLinkStateID = new int[0];
+        LSADatabasewriteLock.unlock();
         usedIPs.clear();
         nextIP = 1;
     }
 
     private static class LSA
     {
+        /** Map of [Linked Routers, Distance] **/
         public HashMap<Router, Integer> neighbors = new HashMap<Router, Integer>();
     }
 
