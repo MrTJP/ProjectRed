@@ -201,4 +201,29 @@ public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implement
             if (r != null)
                 r.getProvidedItems(map);
     }
+
+    @Override
+    public int getPriority() {
+        int high = Integer.MIN_VALUE;
+        for (RoutingChipset r : chips)
+            if (r != null) {
+                int priority = r.getPriority();
+                if (priority > high)
+                    high = priority;
+            }
+        return high;
+    }
+
+    @Override
+    public double getWorkLoad() {
+        double high = 0;
+        for (RoutingChipset r : chips)
+            if (r != null) {
+                double load = r.getWorkLoad();
+                if (load > high)
+                    high = load;
+            }
+        
+        return high;
+    }
 }

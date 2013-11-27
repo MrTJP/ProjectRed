@@ -6,11 +6,17 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.packet.PacketCustom;
 
-public class RoutedRequesterPipePart extends RoutedPipePart_InvConnect {
+public class RoutedRequestPipePart extends RoutedPipePart_InvConnect {
 
     @Override
     public void centerReached(RoutedPayload r) {
-        //super.centerReached(r);
+        if (getLogic().centerReached(r)) return;
+        
+        if (!maskConnects(r.output.ordinal()) && !world().isRemote)
+            if (itemFlow.scheduleRemoval(r)) {
+                r.move(0.30);
+                world().spawnEntityInWorld(r.getEntityForDrop());
+            }
     }
 
     @Override
@@ -26,25 +32,6 @@ public class RoutedRequesterPipePart extends RoutedPipePart_InvConnect {
     @Override
     public void injectPayload(RoutedPayload r, ForgeDirection in) {
         super.injectPayload(r, in);
-    }
-
-    @Override
-    public boolean passToNextPipe(RoutedPayload r) {
-        int conns = 0;
-        for (int i = 0; i < 6; i++)
-            if ((connMap&1<<i) != 0)
-                conns++;
-        if (conns <= 1) {
-            r.move(-1);
-            r.isEntering = true;
-            r.setSpeed(.1f);
-            itemFlow.scheduleRemoval(r);
-            if (!world().isRemote)
-                world().spawnEntityInWorld(r.getEntityForDrop());
-            r.payload.stackSize = 0;
-            return true;
-        } else
-            return super.passToNextPipe(r);
     }
 
     @Override
@@ -66,8 +53,23 @@ public class RoutedRequesterPipePart extends RoutedPipePart_InvConnect {
     @Override
     public ForgeDirection getDirForIncomingItem(RoutedPayload r) {
         ForgeDirection dir = ForgeDirection.getOrientation(inOutSide);
-        if (dir == ForgeDirection.UNKNOWN)
-            return r.input.getOpposite();
+        if (dir == ForgeDirection.UNKNOWN) {
+            int count = 0;
+            for (int i = 0; i < 6; i++)
+                if ((connMap & 1<<i) != 0)
+                    count++;
+            
+            if (count <= 1)
+                return r.input;
+            else if (count == 2) {
+                for (int i = 0; i < 6; i++) {
+                    if (i == r.input.getOpposite().ordinal())
+                        continue;
+                    if ((connMap & 1<<i) != 0)
+                        return ForgeDirection.getOrientation(i);
+                }
+            }
+        }
         return dir;
     }
 

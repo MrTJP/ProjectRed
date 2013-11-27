@@ -2,8 +2,8 @@ package mrtjp.projectred.expansion;
 
 import mrtjp.projectred.core.utils.ItemKey;
 
-public interface IWorldRouter {
-
+public interface IWorldRouter 
+{
     public Router getRouter();
 
     public boolean needsWork();

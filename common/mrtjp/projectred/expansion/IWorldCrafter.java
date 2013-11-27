@@ -7,13 +7,13 @@ import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.expansion.RequestBranchNode.CraftingPromise;
 import mrtjp.projectred.expansion.RequestBranchNode.DeliveryPromise;
 
-public interface IWorldCrafter extends IWorldRequester, IWorldBroadcaster {
-
+public interface IWorldCrafter extends IWorldRequester, IWorldBroadcaster 
+{
     public CraftingPromise requestCraftPromise(ItemKey item);
 
     public void registerExcess(DeliveryPromise promise);
 
-    public List<ItemKeyStack> getCraftedItems();
-
-    public int getWorkLoad();
+    public List<ItemKeyStack> getCraftedItems();   
+    
+    public int itemsToProcess();
 }
