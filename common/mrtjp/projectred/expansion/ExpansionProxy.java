@@ -49,7 +49,7 @@ public class ExpansionProxy implements IProxy, IPartFactory {
         if(id.equals("pr_rcrafting"))
             return new RoutedCraftingPipePart();
         if(id.equals("pr_rrequest"))
-            return new RoutedRequesterPipePart();
+            return new RoutedRequestPipePart();
         return null;
     }
 

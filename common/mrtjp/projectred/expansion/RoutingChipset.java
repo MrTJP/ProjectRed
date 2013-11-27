@@ -54,6 +54,12 @@ public abstract class RoutingChipset {
     }
     public void getProvidedItems(Map<ItemKey, Integer> map) {
     }
+    public int getPriority() {
+        return Integer.MIN_VALUE;
+    }
+    public double getWorkLoad() {
+        return 0;
+    }
 
     /** Requesting **/
     public void trackedItemLost(ItemKeyStack s) {

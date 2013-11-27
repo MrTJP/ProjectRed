@@ -142,9 +142,9 @@ public class RoutedPayload {
     }
 
     public EntityItem getEntityForDrop() {
-        EntityItem item = new EntityItem(parent.world(), x, y, z, payload.makeStack());
+        EntityItem item = new EntityItem(parent.world(), x, y+0.15, z, payload.makeStack());
 
-        item.motionX = item.motionY = item.motionZ = 0;
+        item.motionX = item.motionY = item.motionZ = item.hoverStart = 0;
         ForgeDirection orientation = isEntering ? input : output;
         switch (orientation) {
         case UP: item.motionY = +getSpeed(); break;

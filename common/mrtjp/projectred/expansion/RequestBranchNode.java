@@ -1,6 +1,8 @@
 package mrtjp.projectred.expansion;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,8 +20,8 @@ import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.expansion.RequestBranch.RequestFlags;
 import mrtjp.projectred.expansion.Router.StartEndPath;
 
-public class RequestBranchNode {
-
+public class RequestBranchNode 
+{
     public RequestBranchNode(CraftingPromise parentCrafter, ItemKeyStack requestedPackage, IWorldRequester requester, RequestBranchNode parent, EnumSet<RequestFlags> type) {
         this.requestedPackage = requestedPackage;
         this.requester = requester;
@@ -76,12 +78,8 @@ public class RequestBranchNode {
     }
 
     public void addPromise(DeliveryPromise promise) {
-        if (!promise.thePackage.equals(getRequestedPackage())) {
-            //TODO
-            System.out.println("NOT RIGHT PACKAGE " + promise.thePackage.makeStack(0).getDisplayName() + " vs " + getRequestedPackage().makeStack(0).getDisplayName());
-
+        if (!promise.thePackage.equals(getRequestedPackage()))
             return;
-        }
 
         if (promise.size > getMissingCount()) {
             int more = promise.size - getMissingCount();
@@ -98,17 +96,13 @@ public class RequestBranchNode {
         promises.add(promise);
         promisedCount += promise.size;
         root.promiseAdded(promise);
-        String s = promise instanceof ExcessPromise? "excess" : "";
-        System.out.println("Added " + s + " promise " + promise.thePackage.makeStack(0).getDisplayName());
     }
 
     private boolean getPromisesFromCrafters() {
-        //TODO
-        System.out.println("starting crafters promise seeking");
-
-        List<StartEndPath> allRouters = requester.getRouter().getRoutesByCost();
+        List<StartEndPath> allRouters = new ArrayList<StartEndPath>(requester.getRouter().getRoutesByCost());
         List<CraftingPromise> allCrafters = new ArrayList<CraftingPromise>(allRouters.size());
-
+        Collections.sort(allRouters, new PathSorter(0));
+        
         for (StartEndPath l : allRouters) {
             Router r = l.end;
 
@@ -120,11 +114,6 @@ public class RequestBranchNode {
             }
         }
 
-        //TODO
-        System.out.println(allCrafters.size() + " Crafters found producing " +getRequestedPackage().makeStack(0).getDisplayName());
-        for (CraftingPromise c : allCrafters)
-            System.out.println("-- " + c.getResultItem().makeStack(0).getDisplayName());
-
         Iterator<CraftingPromise> allCraftersIt = allCrafters.iterator();
 
         PriorityQueue<CraftingTreeInteraction> craftersSamePriority = new PriorityQueue<CraftingTreeInteraction>(5);
@@ -135,66 +124,37 @@ public class RequestBranchNode {
         CraftingPromise lastCrafter = null;
         int currentPriority = 0;
 
-        //TODO
-        System.out.println("Starting crafting searching");
-
         while (!recursionFinished) {
-            //TODO
-            System.out.println("SEARCH RECURSE..");
             if (allCraftersIt.hasNext()) {
                 if (lastCrafter == null)
                     lastCrafter = allCraftersIt.next();
             } else if (lastCrafter == null)
                 recursionFinished = true;
 
-            //TODO
-            System.out.println("lastCrafter set to " + (lastCrafter==null?"null":lastCrafter.result.makeStack().getDisplayName()));
-
             int itemsNeeded = getMissingCount();
-            //TODO
-            System.out.println(itemsNeeded + " items still needed. ");
 
             if (lastCrafter != null && (craftersSamePriority.isEmpty() || currentPriority == lastCrafter.getPriority())) {
-                System.out.println("Pulling crafter.");
                 currentPriority = lastCrafter.getPriority();
                 CraftingPromise crafter = lastCrafter;
                 lastCrafter = null;
-                if (recurse_IsCrafterUsed(crafter)) {
-                    //TODO
-                    System.out.println("Crafter " +crafter.result.makeStack().getDisplayName()+ " already used. contunuing");
+                if (recurse_IsCrafterUsed(crafter))
                     continue;
-                } else
-                    System.out.println("Crafter " +crafter.result.makeStack().getDisplayName()+ " NOT already used.");
 
-                //TODO
-                System.out.println("CTI added to samePriority list");
                 CraftingTreeInteraction cti = new CraftingTreeInteraction(crafter, itemsNeeded, this);
                 craftersSamePriority.add(cti);
                 continue;
             }
 
-            if (craftersToBalance.isEmpty() && craftersSamePriority.isEmpty()) {
-                //TODO
-                System.out.println("No crafters to balance or same crafters.");
+            if (craftersToBalance.isEmpty() && craftersSamePriority.isEmpty())
                 continue;
-            }
 
             if (craftersSamePriority.size() == 1) {
-                //TODO
-                System.out.println("Only one crafter. ");
                 craftersToBalance.add(craftersSamePriority.poll());
                 craftersToBalance.get(0).addToWorkRequest(itemsNeeded);
             } else {
-                //TODO
-                System.out.println("Multiple crafters.");
-                for (CraftingTreeInteraction c : craftersSamePriority)
-                    System.out.println("-- " + c.crafter.getResultItem().makeStack(0).getDisplayName());
-
                 if (!craftersSamePriority.isEmpty())
                     craftersToBalance.add(craftersSamePriority.poll());
 
-                //TODO
-                System.out.println("Starting crafter load balance.");
                 while (!craftersToBalance.isEmpty() && itemsNeeded > 0) {
 
                     while (!craftersSamePriority.isEmpty() && craftersSamePriority.peek().toDo() <= craftersToBalance.get(0).toDo())
@@ -219,15 +179,12 @@ public class RequestBranchNode {
                         }
                     }
                 }
-                //TODO
-                System.out.println("Done balancing crafters via load. ");
             }
-            //TODO
-            System.out.println("Crafter balancing done. Now actually utilizing");
+
             Iterator<CraftingTreeInteraction> iter = craftersToBalance.iterator();
             while (iter.hasNext()) {
                 CraftingTreeInteraction c = iter.next();
-                if (c.setsRequested > 0 && !c.addWorkPromisesToTree())
+                if (c.setsRequested > 0 && !c.finalizeWorkWithPromise())
                     iter.remove();
             }
             itemsNeeded = getMissingCount();
@@ -237,17 +194,12 @@ public class RequestBranchNode {
 
             if (!craftersToBalance.isEmpty())
                 recursionFinished = false;
-
-            //TODO
-            System.out.println("loop end. " + (recursionFinished?"ALL DONE":"RECURSING"));
         }
         return isDone();
     }
 
     private boolean getPromisesFromExcess() {
         LinkedList<ExcessPromise> availableExcess = root.getAllExcessFor(getRequestedPackage());
-        //TODO
-        System.out.println("CHECKED EXCESS. " + availableExcess.size() + " excess found. ");
         for (ExcessPromise excess : availableExcess) {
             if (isDone())
                 break;
@@ -472,7 +424,8 @@ public class RequestBranchNode {
             sub.recurse_GatherStatisticsUsed(map);
     }
 
-    public static class DeliveryPromise {
+    public static class DeliveryPromise 
+    {
         public ItemKey thePackage;
         public int size;
         public IWorldBroadcaster sender;
@@ -496,7 +449,8 @@ public class RequestBranchNode {
             return p;
         }
     }
-    public static class ExcessPromise extends DeliveryPromise {
+    public static class ExcessPromise extends DeliveryPromise 
+    {
         public boolean used;
 
         public ExcessPromise setUsed(boolean flag) {
@@ -512,7 +466,8 @@ public class RequestBranchNode {
             return p;
         }
     }
-    public static class CraftingPromise implements Comparable<CraftingPromise> {
+    public static class CraftingPromise implements Comparable<CraftingPromise> 
+    {
         private IWorldCrafter crafter;
 
         private ItemKeyStack result;
@@ -585,7 +540,8 @@ public class RequestBranchNode {
         }
     }
 
-    private class CraftingTreeInteraction implements Comparable<CraftingTreeInteraction> {
+    private class CraftingTreeInteraction implements Comparable<CraftingTreeInteraction> 
+    {
         private int setsRequested;
         private final int setSize;
         private final int maxSetsAvailable;
@@ -597,7 +553,7 @@ public class RequestBranchNode {
         private CraftingTreeInteraction(CraftingPromise crafter, int maxToCraft, RequestBranchNode interaction) {
             this.crafter = crafter;
             this.treeNode = interaction;
-            this.originalToDo = crafter.getCrafter().getWorkLoad();
+            this.originalToDo = crafter.getCrafter().itemsToProcess();
             this.setsRequested = 0;
             this.setSize = crafter.getSizeForSet();
             this.maxSetsAvailable = (treeNode.getMissingCount() + setSize - 1) / setSize;
@@ -626,11 +582,10 @@ public class RequestBranchNode {
             return stacksRequested*setSize;
         }
 
-        public boolean addWorkPromisesToTree() {
+        public boolean finalizeWorkWithPromise() {
             int setsToCraft = Math.min(setsRequested, maxSetsAvailable);
             int setsAbleToCraft = calculateMaxPotentialSets(setsToCraft);
-            //TODO
-            System.out.println("We are able to craft " + setsAbleToCraft + " sets of items");
+
             if (setsAbleToCraft > 0) {
                 DeliveryPromise delivery = crafter.getScaledPromise(setsAbleToCraft);
                 if (delivery.size != setsAbleToCraft*setSize)
@@ -647,6 +602,51 @@ public class RequestBranchNode {
         @Override
         public int compareTo(CraftingTreeInteraction o2) {
             return toDo() - o2.toDo();
+        }
+    }
+    
+    private static class PathSorter implements Comparator<StartEndPath> 
+    {
+        private final double distanceWeight;
+        public PathSorter(double distanceWeight) {
+            this.distanceWeight = distanceWeight;
+        }
+        
+        @Override
+        public int compare(StartEndPath o1, StartEndPath o2) {
+            double c = 0;
+            
+            IWorldRouter wr1 = o1.end.getParent();
+            IWorldRouter wr2 = o2.end.getParent();
+            
+            int p1 = wr1 instanceof IWorldBroadcaster ? ((IWorldBroadcaster)wr1).getPriority() : Integer.MIN_VALUE;
+            int p2 = wr2 instanceof IWorldBroadcaster ? ((IWorldBroadcaster)wr2).getPriority() : Integer.MIN_VALUE;
+            c = p2-p1;
+            
+            if (c != 0)
+                return (int) c;
+            
+            int switchKey = 1;
+            if (o1.end.getIPAddress() - o2.end.getIPAddress() > 0) {
+                switchKey = -1;
+                StartEndPath temp = o1;
+                o1 = o2;
+                o2 = temp;
+            }
+            
+            double l1 = wr1 instanceof IWorldBroadcaster ? ((IWorldBroadcaster)wr1).getWorkLoad() : 0;
+            double l2 = wr2 instanceof IWorldBroadcaster ? ((IWorldBroadcaster)wr2).getWorkLoad() : 0;
+            
+            c = l1 - l2;
+            c += (o1.distance - o2.distance) * distanceWeight;
+            
+            if (c == 0)
+                return -switchKey;
+            
+            if (c > 0)
+                return (int) (c + 0.5) * switchKey;
+            else
+                return (int) (c - 0.5) * switchKey;
         }
     }
 }

@@ -47,7 +47,6 @@ public class CollectionPathFinder {
                     for (ItemKeyStack stack : list)
                         if (!collected.containsKey(stack.key()))
                             collected.put(stack.key(), null);
-
             } else if (wr instanceof IWorldBroadcaster && collectBroadcasts) {
                 IWorldBroadcaster b = (IWorldBroadcaster) wr;
                 b.getBroadcastedItems(collected);

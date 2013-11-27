@@ -58,19 +58,15 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
     }
 
     /**
-     * lowest 6 bits, flagged for an external connection to that side next 6
-     * bits, flagged for an internal connection to that side next 6 bits,
-     * flagged for an open connection to that side
-     * 
-     * On the client, only the lowest 6 bits contain actual connections.
+     * 6 bits, flagged for an external connection to that side.
      */
     public int connMap;
     public byte meta;
-    PayloadMovement itemFlow = new PayloadMovement();
+    protected PayloadMovement itemFlow = new PayloadMovement();
     public PipeLogic logic;
     public boolean initialized = false;
 
-    public class PayloadMovement extends ForwardingSet<RoutedPayload> {
+    protected static class PayloadMovement extends ForwardingSet<RoutedPayload> {
 
         private final BiMap<Integer, RoutedPayload> delegate = HashBiMap.create();
         private final Set<RoutedPayload> inputQueue = new HashSet<RoutedPayload>();
@@ -131,8 +127,6 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         }
     };
 
-
-
     public void preparePlacement(int meta) {
         this.meta = (byte) meta;
         logic = PipeLogic.createPipeLogic(this, meta);
@@ -163,7 +157,7 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
 
             r.move(r.getSpeed());
 
-            if (r.isEntering && hasReachedMiddle(r) || hasInvalidLoc(r)) {
+            if ((r.isEntering && hasReachedMiddle(r)) || hasInvalidLoc(r)) {
                 r.isEntering = false;
                 r.setPosition(x() + 0.5D, y() + 0.25D, z() + 0.5D);
 
@@ -189,7 +183,11 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
 
     public void resolveDestination(RoutedPayload r) {
         if (getLogic().resolveDestination(r)) return;
-
+        
+        chooseRandomDestination(r);
+    }
+    
+    public void chooseRandomDestination(RoutedPayload r) {
         LinkedList<ForgeDirection> movements = new LinkedList<ForgeDirection>();
 
         for (int i = 0; i < 6; i++) {
@@ -199,7 +197,6 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
             TMultiPart t = BasicUtils.getMultiPart(world(), bc, 6);
             if (t instanceof BasicPipePart)
                 movements.add(ForgeDirection.getOrientation(i));
-
         }
 
         if (movements.isEmpty())

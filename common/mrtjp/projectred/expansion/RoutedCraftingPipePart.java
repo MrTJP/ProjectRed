@@ -314,12 +314,23 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
     }
 
     @Override
-    public int getWorkLoad() {
-        return manager.getTotalDeliveryCount();
+    public int getPriority() {
+        return priority;
     }
 
+    @Override
+    public double getWorkLoad() {
+        return (manager.getTotalDeliveryCount() + 63.0) / 64.0;
+    }
+
+    @Override
+    public int itemsToProcess() {
+        return manager.getTotalDeliveryCount();
+    }
+    
     @Override
     public String getType() {
         return "pr_rcrafting";
     }
+
 }
