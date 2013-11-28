@@ -1,12 +1,16 @@
 package mrtjp.projectred.expansion;
 
 import java.util.BitSet;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.UUID;
+import java.util.concurrent.PriorityBlockingQueue;
 
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
+import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.expansion.RoutedPayload.SendPriority;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -33,7 +37,20 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     public int searchDelay = 0;
 
     private LinkedList<RoutedPayload> sendQueue = new LinkedList<RoutedPayload>();
+    
+    private PriorityBlockingQueue<Pair2<RoutedPayload, Integer>> transitQueue = new PriorityBlockingQueue<Pair2<RoutedPayload, Integer>>(10, new TransitComparator());
+    
+    private class TransitComparator implements Comparator<Pair2<RoutedPayload, Integer>> {
 
+        @Override
+        public int compare(Pair2<RoutedPayload, Integer> o1, Pair2<RoutedPayload, Integer> o2) {
+            int c = o2.getValue2() - o1.getValue2();
+            if (c == 0)
+                c = o2.getValue1().payload.compareTo(o1.getValue1().payload);
+            return c;
+        }
+    }
+    
     public RoutedJunctionPipePart() {
         pipes++;
         searchDelay = pipes % Configurator.detectionFrequency;
@@ -57,14 +74,56 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
 
     @Override
     public void itemEnroute(RoutedPayload r) {
+        transitQueue.add(new Pair2<RoutedPayload, Integer>(r, 200));
     }
 
     @Override
     public void itemArrived(RoutedPayload r) {
+        removeFromTransitQueue(r);
+        
         if (this instanceof IWorldRequester)
             ((IWorldRequester) this).trackedItemReceived(r.payload);
     }
-
+    
+    private void removeFromTransitQueue(RoutedPayload r) {
+        Iterator<Pair2<RoutedPayload, Integer>> it = transitQueue.iterator();
+        while (it.hasNext()) {
+            Pair2<RoutedPayload, Integer> pair = it.next();
+            if (pair.getValue1() == r) {                
+                it.remove();
+                break;
+            }
+        }
+    }
+    
+    private void tickTransitQueue() {
+        Iterator<Pair2<RoutedPayload, Integer>> it = transitQueue.iterator();
+        while (it.hasNext()) {
+            Pair2<RoutedPayload, Integer> pair = it.next();
+            Integer val = pair.getValue2();
+            if (val == null)
+                val = 0;
+            val--;
+            if (val < 0)
+                it.remove();
+            else
+                pair.setValue2(val);
+        }
+    }
+    
+    protected int countInTransit(ItemKey key) {
+        int count = 0;
+        Iterator<Pair2<RoutedPayload, Integer>> it = transitQueue.iterator();
+        while (it.hasNext()) {
+            Pair2<RoutedPayload, Integer> pair = it.next();
+            Integer val = pair.getValue2();
+            ItemKeyStack stack = pair.getValue1().payload;
+            if (stack.key().equals(key))
+                count += val;
+        }
+        return count;
+    }
+    
     @Override
     public void queueStackToSend(ItemStack stack, int dirToInventory, SyncResponse path) {
         queueStackToSend(stack, dirToInventory, path.priority, path.responder);
@@ -135,9 +194,12 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         // Dispatch queued items
         if (!sendQueue.isEmpty())
             dispatchQueuedPayload(sendQueue.removeFirst());
+        
+        // Manage transit queue
+        tickTransitQueue();
     }
 
-    public void coldBoot() {
+    private void coldBoot() {
         if (!world().isRemote)
             getRouter();
     }

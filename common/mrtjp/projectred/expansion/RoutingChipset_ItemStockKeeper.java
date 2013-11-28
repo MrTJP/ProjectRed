@@ -49,7 +49,6 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
             if (keyStack == null || checked.contains(keyStack.key()))
                 continue;
 
-            // int toRequest = keyStack.stackSize;//TODO
             int toRequest = filt.getItemCount(keyStack.key());
             int inInventory = inv.getItemCount(keyStack.key()) + getEnroute(keyStack.key());
             int missing = toRequest - inInventory;
@@ -73,8 +72,6 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
             enrouteItems.put(item, amount);
         else
             enrouteItems.put(item, current+amount);
-
-        System.out.println(">>>> (add)Now expecting " + getEnroute(item));//TODO
     }
 
     private void removeFromRequestList(ItemKey item, int amount) {
@@ -87,7 +84,6 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
             else
                 enrouteItems.put(item, current);
         }
-        System.out.println(">>>> (rem)Now expecting " + getEnroute(item));//TODO
     }
 
     private int getEnroute(ItemKey item) {
@@ -99,7 +95,6 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
 
     @Override
     public void trackedItemLost(ItemKeyStack s) {
-        System.out.println(">>>> WARNING ITEM LOST");//TODO
         removeFromRequestList(s.key(), s.stackSize);
     }
 

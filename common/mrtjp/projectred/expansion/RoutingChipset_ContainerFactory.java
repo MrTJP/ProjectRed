@@ -2,7 +2,6 @@ package mrtjp.projectred.expansion;
 
 import mrtjp.projectred.core.inventory.GhostContainer2;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import codechicken.lib.packet.PacketCustom;

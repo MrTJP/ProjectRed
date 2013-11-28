@@ -99,8 +99,9 @@ public class Router implements Comparable<Router>
                 r.refreshState();
 
             return;
-            
-        } else if (Configurator.routerUpdateThreadCount > 0)
+        }
+        
+        if (Configurator.routerUpdateThreadCount > 0)
             refreshRouteTableIfNeeded(false);
     }
 

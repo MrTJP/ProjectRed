@@ -18,7 +18,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Icon;
 import codechicken.lib.render.CCRenderState;
@@ -415,7 +414,7 @@ public class RoutingChipset_GuiFactory {
 
             CCRenderState.changeTexture("projectred:textures/gui/guiextras.png");
 
-            //TODO icon for dir
+            //TODO 3D graphic for picking orientation.
         }
     }
 
@@ -566,7 +565,7 @@ public class RoutingChipset_GuiFactory {
 
             CCRenderState.changeTexture("projectred:textures/gui/guiextras.png");
 
-            //TODO icon for dir
+            //TODO 3D graphic for picking orientation.
         }
     }
 
