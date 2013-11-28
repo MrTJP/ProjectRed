@@ -11,6 +11,7 @@ public class GhostWidget extends Gui {
 
     protected static final ResourceLocation guiTex = new ResourceLocation("textures/gui/widgets.png");
 
+    public Minecraft mc;
     public GuiScreen parentScreen;
     public TextureManager renderEngine;
     public FontRenderer fontRenderer;
@@ -56,10 +57,10 @@ public class GhostWidget extends Gui {
     public void update() {
     }
 
-    public void drawBack(int mousex, int mousey, float frame) {
+    public void drawBack(int mouseX, int mouseY, float frame) {
     }
 
-    public void drawFront(int mousex, int mousey) {
+    public void drawFront(int mouseX, int mouseY) {
     }
 
     public void keyTyped(char c, int keycode) {
@@ -70,6 +71,7 @@ public class GhostWidget extends Gui {
 
     public void onAdded(GuiScreen s) {
         Minecraft mc = Minecraft.getMinecraft();
+        this.mc = mc;
         parentScreen = s;
         renderEngine = mc.renderEngine;
         fontRenderer = mc.fontRenderer;

@@ -34,10 +34,8 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
         return 8;
     }
 
-    public void shiftOrient() {
-        extractOrient++;
-        if (extractOrient > 5)
-            extractOrient = -1;
+    public void setOrient(int orient) {
+        extractOrient = orient;
     }
 
     public void shiftFuzzy() {
