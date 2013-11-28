@@ -15,8 +15,8 @@ public class TableUpdateThread extends Thread {
         start();
     }
 
-    public static void add(RouteLayerUpdater run) {
-        updateCalls.add(run);
+    public static void add(Router r) {
+        updateCalls.add(new RouteLayerUpdater(r));
     }
 
     public static boolean remove(Runnable run) {

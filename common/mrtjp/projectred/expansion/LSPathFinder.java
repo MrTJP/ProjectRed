@@ -3,11 +3,14 @@ package mrtjp.projectred.expansion;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 
+import mrtjp.projectred.core.APIImpl;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.expansion.Router.StartEndPath;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
@@ -59,7 +62,7 @@ public class LSPathFinder {
 
         setVisited.add(start);
 
-        ArrayDeque<Pair2<BasicPipePart, ForgeDirection>> connections = new ArrayDeque<Pair2<BasicPipePart,ForgeDirection>>();
+        ArrayDeque<Pair2<TileEntity, ForgeDirection>> connections = new ArrayDeque<Pair2<TileEntity,ForgeDirection>>();
 
         for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
             if(root && side != ForgeDirection.UNKNOWN && !dir.equals(side)) continue;
@@ -72,29 +75,47 @@ public class LSPathFinder {
             if (!(t instanceof BasicPipePart)) continue;
             BasicPipePart t2 = (BasicPipePart)t;
 
-            connections.add(new Pair2<BasicPipePart, ForgeDirection>(t2, dir));
+            connections.add(new Pair2<TileEntity, ForgeDirection>(t2.tile(), dir));
         }
 
         while (!connections.isEmpty()) {
-            Pair2<BasicPipePart, ForgeDirection> pair = connections.pollFirst();
-            BasicPipePart p = pair.getValue1();
+            Pair2<TileEntity, ForgeDirection> pair = connections.pollFirst();
+            TileEntity te = pair.getValue1();
             ForgeDirection dir = pair.getValue2();
             int resistance = 0;
 
+            if (root) {
+                List<TileEntity> connected = APIImpl.getConnections(te);
+                if (connected != null && !connected.isEmpty()) {
+                    for (TileEntity tile : connected)
+                        connections.add(new Pair2<TileEntity, ForgeDirection>(tile, dir));
+                    continue;
+                }
+            }
+            
+            TMultiPart part = BasicUtils.getMultiPart(te.worldObj, new BlockCoord(te), 6);
+            BasicPipePart p = null;
+            if (part instanceof BasicPipePart)
+                p = (BasicPipePart) part;
+                
+            if (p == null)
+                continue;
+            
             if (setVisited.contains(p))
                 continue;
 
             HashMap<Router, StartEndPath> result = getConnectedRoutingPipes(p, dir);
-            for(Entry<Router, StartEndPath> pipeEntry : result.entrySet()) {
-                pipeEntry.getValue().dirToFirstHop = dir.ordinal();
-                StartEndPath foundPipe = foundPipes.get(pipeEntry.getKey());
+            
+            for(Entry<Router, StartEndPath> entry : result.entrySet()) {
+                entry.getValue().dirToFirstHop = dir.ordinal();
+                StartEndPath found = foundPipes.get(entry.getKey());
 
-                if (foundPipe == null) {
-                    foundPipes.put(pipeEntry.getKey(), pipeEntry.getValue());
-                    pipeEntry.getValue().distance += resistance;
-                } else if (pipeEntry.getValue().distance + resistance < foundPipe.distance) {
-                    foundPipes.put(pipeEntry.getKey(), pipeEntry.getValue());
-                    pipeEntry.getValue().distance += resistance;
+                if (found == null) {
+                    foundPipes.put(entry.getKey(), entry.getValue());
+                    entry.getValue().distance += resistance;
+                } else if (entry.getValue().distance + resistance < found.distance) {
+                    foundPipes.put(entry.getKey(), entry.getValue());
+                    entry.getValue().distance += resistance;
                 }
             }
         }

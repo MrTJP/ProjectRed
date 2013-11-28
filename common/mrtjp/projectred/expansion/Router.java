@@ -265,7 +265,7 @@ public class Router implements Comparable<Router>
     private void refreshRouteTableIfNeeded(boolean force) {
         if (linkStateID > LegacyLinkStateID[IPAddress])
             if (Configurator.routerUpdateThreadCount > 0 && !force)
-                TableUpdateThread.add(new RouteLayerUpdater(this));
+                TableUpdateThread.add(this);
             else
                 refreshRoutingTable(linkStateID);
     }
@@ -310,7 +310,7 @@ public class Router implements Comparable<Router>
             if (lowestPath == null)
                 lowestPath = nextLowest;
 
-            // Add all of our neighbors so they are checked.
+            // Add all of the lowest's neighbors so they are checked later.
             LSA lsa = null;
             if (nextLowest.end.getIPAddress() < LSADatabase.length)
                 lsa = LSADatabase[nextLowest.end.getIPAddress()];
