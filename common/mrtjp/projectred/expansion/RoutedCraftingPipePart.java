@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.DelayQueue;
 
 import mrtjp.projectred.core.BasicGuiUtils;
 import mrtjp.projectred.core.inventory.GhostContainer2;
@@ -14,6 +15,7 @@ import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
+import mrtjp.projectred.core.utils.PostponedWorkItem;
 import mrtjp.projectred.expansion.RequestBranchNode.CraftingPromise;
 import mrtjp.projectred.expansion.RequestBranchNode.DeliveryPromise;
 import mrtjp.projectred.expansion.RequestBranchNode.ExcessPromise;
@@ -32,14 +34,26 @@ import codechicken.lib.packet.PacketCustom;
 
 public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements IWorldCrafter {
 
-    public SimpleInventory matrix = new SimpleInventory(10, "matrix", 256);
+    private SimpleInventory matrix = new SimpleInventory(10, "matrix", 256);
     private DeliveryManager manager = new DeliveryManager();
-    public final LinkedList<Pair2<ItemKeyStack, IWorldRequester>> excess = new LinkedList<Pair2<ItemKeyStack, IWorldRequester>>();
-
+    
+    private final LinkedList<Pair2<ItemKeyStack, IWorldRequester>> excess = new LinkedList<Pair2<ItemKeyStack, IWorldRequester>>();
+    private final DelayQueue<PostponedWorkItem<ItemKeyStack>> lost = new DelayQueue<PostponedWorkItem<ItemKeyStack>>();
+    
     public int priority = 0;
 
     private int remainingDelay = operationDelay();
+    private int remainindDelay2 = operationDelay2();
+    /**
+     *  Standard operation delay
+     */
     private int operationDelay() {
+        return 10;
+    }
+    /**
+     *  Lost items handling delay
+     */
+    private int operationDelay2() {
         return 40;
     }
 
@@ -81,12 +95,17 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
     @Override
     public void update() {
         super.update();
-        if (--remainingDelay >= 0)
-            return;
-        remainingDelay = operationDelay();
-
-        if (!world().isRemote)
-            operationTick();
+        if (!world().isRemote) {
+            if (--remainingDelay <= 0) {
+                remainingDelay = operationDelay();
+                operationTick();
+            }
+            
+            if (--remainindDelay2 <= 0) {
+                remainindDelay2 = operationDelay2();
+                lostHandleTick();
+            }
+        }
     }
 
     private void operationTick() {
@@ -149,7 +168,6 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
                         if (!excess.isEmpty())
                             nextOrder = excess.getFirst();
                     }
-
                 } else {
                     removeExcess(key, numToSend);
                     queueStackToSend(toSend, side, SendPriority.WANDERING, -1);
@@ -157,7 +175,33 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
             }
         }
     }
-
+    
+    private void lostHandleTick() {
+        if (lost.isEmpty())
+            return;
+        
+        PostponedWorkItem<ItemKeyStack> post = null;
+        
+        while ((post = lost.poll()) != null) {
+            ItemKeyStack stack = post.getItem();
+            
+            RequestConsole req = new RequestConsole().setDestination(this);
+            req.setPulling(true).setCrafting(true).setPartials(true);
+            
+            int requested = req.makeRequest(stack).requested();
+            
+            if (requested < stack.stackSize) {
+                stack.stackSize -= requested;
+                lost.add(new PostponedWorkItem<ItemKeyStack>(stack, 5000));
+            }
+        }
+    }
+    
+    @Override
+    public void trackedItemLost(ItemKeyStack s) {
+        lost.add(new PostponedWorkItem<ItemKeyStack>(s, 5000));
+    }
+    
     private void removeExcess(ItemKey item, int amount) {
         Iterator<Pair2<ItemKeyStack, IWorldRequester>> iter = excess.iterator();
         while (iter.hasNext()) {

@@ -79,7 +79,7 @@ public class WidgetItemSelection extends GhostWidget {
     private boolean filterAllows(ItemKeyStack stack) {
         if (stringsCanSearch(stack.getName().toLowerCase(), filter.toLowerCase()))
             return true;
-        //TODO add id searches
+        //TODO Add more conditions to the filter, such as ID searching, etc.
         return false;
     }
     

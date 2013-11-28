@@ -31,6 +31,14 @@ public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implement
             super.onInventoryChanged();
             refreshChips();
         }
+        
+        @Override
+        public boolean isItemValidForSlot(int i, ItemStack stack) {
+            return stack != null &&
+                    stack.getItem() instanceof ItemRoutingChip &&
+                    stack.hasTagCompound() &&
+                    stack.getTagCompound().hasKey("chipROM");
+        }
     };
 
     public RoutingChipset[] chips = new RoutingChipset[4];
@@ -87,7 +95,7 @@ public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implement
 
         if (item != null && item.getItem() instanceof ItemRoutingChip) {
             for (int i = 0; i < chipSlots.getSizeInventory(); i++)
-                if (chipSlots.getStackInSlot(i) == null) {
+                if (chipSlots.getStackInSlot(i) == null && chipSlots.isItemValidForSlot(i, item)) {
                     ItemStack chip = item.splitStack(1);
                     chipSlots.setInventorySlotContents(i, chip);
                     chipSlots.onInventoryChanged();
@@ -161,8 +169,13 @@ public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implement
                         found = true;
                     }
             }
-        // TODO check enroute to scale down supply
-        return found ? best : null;
+        
+        if (found) {
+            best.itemCount -= countInTransit(item);
+            return best;
+        }
+
+        return null;
     }
 
     @Override

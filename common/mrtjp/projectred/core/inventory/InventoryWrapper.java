@@ -32,7 +32,7 @@ public class InventoryWrapper {
     boolean fuzzyMode = false;
 
     public static InventoryWrapper wrapInventory(IInventory inv) {
-        // TODO special inventory wrapping
+        // TODO Wrapping registration system to allow wrappers from other mods.
         return new InventoryWrapper(inv);
     }
 

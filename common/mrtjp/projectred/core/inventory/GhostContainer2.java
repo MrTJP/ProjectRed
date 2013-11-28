@@ -1,10 +1,14 @@
 package mrtjp.projectred.core.inventory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
 
 public class GhostContainer2 extends Container {
 
@@ -58,95 +62,64 @@ public class GhostContainer2 extends Container {
         }
         return null;
     }
+    
+    public List<IInventory> getAllInventories() {
+        List<IInventory> list = new ArrayList<IInventory>();
+        for (Slot s : (List<Slot>)inventorySlots)
+            if (!list.contains(s.inventory))
+                list.add(s.inventory);
+        
+        return list;
+    }
+    
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int i) {
-        ItemStack itemstack = null;
-        //TODO shift clicking
-        //        Slot slot = (Slot)inventorySlots.get(i);
-        //
-        //        if(slot != null && slot.getHasStack()) {
-        //            ItemStack itemstack1 = slot.getStack();
-        //            itemstack = itemstack1.copy();
-        //
-        //            int chestSlots = inv.getSizeInventory();
-        //            if(i < chestSlots) {
-        //                if(!mergeItemStack(itemstack1, chestSlots, inventorySlots.size(), true))
-        //                    return null;
-        //            }
-        //            else if(!mergeItemStack(itemstack1, 0, chestSlots, false))
-        //                return null;
-        //
-        //            if(itemstack1.stackSize == 0)
-        //                slot.putStack(null);
-        //            else
-        //                slot.onSlotChanged();
-        //        }
-        return itemstack;
-    }
-
-    @Override
-    protected boolean mergeItemStack(ItemStack stack, int startSlot, int endSlot, boolean doBackwards) {
-        boolean flag1 = false;
-        int k = startSlot;
-
-        if (doBackwards)
-            k = endSlot - 1;
-
-        Slot slot;
-        ItemStack itemstack1;
-
-        if (stack.isStackable())
-            while (stack.stackSize > 0 && (!doBackwards && k < endSlot || doBackwards && k >= startSlot)) {
-                slot = (Slot) this.inventorySlots.get(k);
-                itemstack1 = slot.getStack();
-
-                if (slot.isItemValid(stack))
-                    if (itemstack1 != null && itemstack1.itemID == stack.itemID && (!stack.getHasSubtypes() || stack.getItemDamage() == itemstack1.getItemDamage()) && ItemStack.areItemStackTagsEqual(stack, itemstack1)) {
-                        int l = itemstack1.stackSize + stack.stackSize;
-
-                        if (l <= stack.getMaxStackSize()) {
-                            stack.stackSize = 0;
-                            itemstack1.stackSize = l;
-                            slot.onSlotChanged();
-                            flag1 = true;
-                        } else if (itemstack1.stackSize < stack .getMaxStackSize()) {
-                            stack.stackSize -= stack.getMaxStackSize() - itemstack1.stackSize;
-                            itemstack1.stackSize = stack.getMaxStackSize();
-                            slot.onSlotChanged();
-                            flag1 = true;
-                        }
-                    }
-                if (doBackwards)
-                    --k;
-                else
-                    ++k;
-            }
-
-        if (stack.stackSize > 0) {
-            if (doBackwards)
-                k = endSlot - 1;
-            else
-                k = startSlot;
-
-            while (!doBackwards && k < endSlot || doBackwards && k >= startSlot) {
-                slot = (Slot) this.inventorySlots.get(k);
-                itemstack1 = slot.getStack();
-
-                if (slot.isItemValid(stack))
-                    if (itemstack1 == null) {
-                        slot.putStack(stack.copy());
-                        slot.onSlotChanged();
-                        stack.stackSize = 0;
-                        flag1 = true;
-                        break;
-                    }
-                if (doBackwards)
-                    --k;
-                else
-                    ++k;
-            }
+        Slot slot = (Slot) inventorySlots.get(i);
+        if (slot ==  null)
+            return null;
+        
+        List<IInventory> invList = getAllInventories();
+        IInventory inv = null;
+        
+        int currentInvIndex = invList.indexOf(slot.inventory);
+        if (currentInvIndex == -1)
+            return null;
+        
+        for (int j = 1; j <= invList.size(); j++) {
+            int invInd = (currentInvIndex + j) % invList.size();
+            IInventory inv2 = invList.get(invInd);
+            if (inv2 == slot.inventory)
+                continue;
+            
+            inv = inv2;
+            break;
         }
-        return flag1;
+
+        if (inv == null)
+            return null;
+        
+        if (slot.getHasStack()) {
+            InventoryWrapper wrap = InventoryWrapper.wrapInventory(inv).setSlotsAll();
+            ItemStack stack = slot.getStack();
+            ItemStack stack2 = stack.copy();
+            int added = wrap.injectItem(stack, true);
+            if (added > 0)
+                inv.onInventoryChanged();            
+
+            stack.stackSize -= added;
+            if (stack.stackSize <= 0)
+                slot.putStack(null);
+            else
+                slot.onSlotChanged();
+            return stack2;
+        }
+        
+        return null;
+    }
+    
+    @Override
+    protected void retrySlotClick(int par1, int par2, boolean par3, EntityPlayer par4EntityPlayer) {
+        
     }
 
     public static class SlotExtended extends Slot {
