@@ -13,4 +13,5 @@ TODO:
 - Broadcasters should override the getPriority method to allow prioritizing
   broadcasters in request branches.
   
-- 
+- Recode LinkState pathfinder for allowing a registration system for
+  custom connection definitions such as TE tesseracts, etc.
