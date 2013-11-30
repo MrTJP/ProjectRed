@@ -15,8 +15,8 @@ import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 
-public class LSPathFinder {
-
+public class LSPathFinder 
+{
     private HashMap<Router, StartEndPath> result;
     private int pipesVisited;
 
@@ -82,7 +82,6 @@ public class LSPathFinder {
             Pair2<TileEntity, ForgeDirection> pair = connections.pollFirst();
             TileEntity te = pair.getValue1();
             ForgeDirection dir = pair.getValue2();
-            int resistance = 0;
 
             if (root) {
                 List<TileEntity> connected = APIImpl.getConnections(te);
@@ -110,13 +109,10 @@ public class LSPathFinder {
                 entry.getValue().dirToFirstHop = dir.ordinal();
                 StartEndPath found = foundPipes.get(entry.getKey());
 
-                if (found == null) {
+                if (found == null)
                     foundPipes.put(entry.getKey(), entry.getValue());
-                    entry.getValue().distance += resistance;
-                } else if (entry.getValue().distance + resistance < found.distance) {
+                else if (entry.getValue().distance < found.distance)
                     foundPipes.put(entry.getKey(), entry.getValue());
-                    entry.getValue().distance += resistance;
-                }
             }
         }
         setVisited.remove(start);

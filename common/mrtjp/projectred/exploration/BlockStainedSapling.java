@@ -41,7 +41,7 @@ public class BlockStainedSapling extends BlockSapling {
 
     @Override
     public void markOrGrowMarked(World w, int x, int y, int z, Random r) {
-        if (checkArea(w, x, y, z) && w.rand.nextDouble() < EnumDyeTrees.VALID_FOILAGE[w.getBlockMetadata(x, y, z)].growthChance)
+        if (checkArea(w, x, y, z) && w.rand.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[w.getBlockMetadata(x, y, z)].growthChance)
             growTree(w, x, y, z, w.rand);
     }
 
@@ -55,7 +55,7 @@ public class BlockStainedSapling extends BlockSapling {
         if (!(stack.getItem().itemID == PRColors.WHITE.getDye().getItem().itemID))
             return false;
 
-        if (checkArea(w, x, y, z) && w.rand.nextDouble() < EnumDyeTrees.VALID_FOILAGE[w.getBlockMetadata(x, y, z)].growthChance)
+        if (checkArea(w, x, y, z) && w.rand.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[w.getBlockMetadata(x, y, z)].growthChance)
             growTree(w, x, y, z, w.rand);
         else
             w.spawnParticle("happyVillager", x + w.rand.nextDouble(), y + w.rand.nextDouble(), z + w.rand.nextDouble(), 0, 0, 0);
@@ -97,7 +97,7 @@ public class BlockStainedSapling extends BlockSapling {
 
     @Override
     public void getSubBlocks(int id, CreativeTabs tab, List list) {
-        for (EnumDyeTrees t : EnumDyeTrees.VALID_FOILAGE)
+        for (EnumDyeTrees t : EnumDyeTrees.VALID_FOLIAGE)
             list.add(t.getSappling());
     }
 

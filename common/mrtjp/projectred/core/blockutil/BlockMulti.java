@@ -52,7 +52,7 @@ public class BlockMulti extends BlockContainer {
 
     @Override
     public ArrayList getBlockDropped(World w, int x, int y, int z, int meta, int fortune) {
-        ArrayList ist = new ArrayList();
+        ArrayList<ItemStack> ist = new ArrayList<ItemStack>();
 
         TileMulti tl = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
 

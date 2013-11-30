@@ -3,15 +3,22 @@ package mrtjp.projectred.core.blockutil;
 import java.util.ArrayList;
 
 import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.CoreSPH;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.packet.ICustomPacketTile;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.vec.BlockCoord;
 
-public abstract class TileMulti extends TileEntity {
-    protected long timeSched = -1L;
+public abstract class TileMulti extends TileEntity implements ICustomPacketTile {
+    protected long schedTick = -1L;
 
     public void onBlockNeighborChange(int l) {
     }
@@ -41,86 +48,117 @@ public abstract class TileMulti extends TileEntity {
         return null;
     }
 
-    public void onTileTick() {
+    public void onScheduledTick() {
     }
-
+    
+    public void onTileTick(boolean client) {
+    }
+    
+    public abstract int getBlockID();
+        
     public int getMetaData() {
         return 0;
     }
 
-    public abstract int getBlockID();
-
-    public int getExtendedMetadata() {
-        return 0;
-    }
-
-    public void addHarvestContents(ArrayList ist) {
+    public void addHarvestContents(ArrayList<ItemStack> ist) {
         ist.add(new ItemStack(getBlockID(), 1, getMetaData()));
     }
 
     public void scheduleTick(int time) {
-        long tn = this.worldObj.getWorldTime() + time;
-        if ((this.timeSched > 0L) && (this.timeSched < tn))
+        long tn = worldObj.getTotalWorldTime() + time;
+        if (schedTick > 0L && schedTick < tn)
             return;
-        this.timeSched = tn;
-        dirtyBlock();
-    }
-
-    public boolean isTickRunnable() {
-        return (this.timeSched >= 0L) && (this.timeSched <= this.worldObj.getWorldTime());
+        schedTick = tn;
+        markDirty();
     }
 
     public boolean isTickScheduled() {
-        return this.timeSched >= 0L;
-    }
-
-    public void updateBlockChange() {
-        BasicUtils.updateIndirectNeighbors(worldObj, xCoord, yCoord, zCoord, getBlockID());
-
-        this.worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-        BasicUtils.markBlockDirty(worldObj, xCoord, yCoord, zCoord);
-    }
-
-    public void updateBlock() {
-        int md = this.worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-        this.worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-        BasicUtils.markBlockDirty(worldObj, xCoord, yCoord, zCoord);
-    }
-
-    public void dirtyBlock() {
-        BasicUtils.markBlockDirty(worldObj, xCoord, yCoord, zCoord);
+        return schedTick >= 0L;
     }
 
     public void breakBlock() {
         ArrayList<ItemStack> il = new ArrayList<ItemStack>();
         addHarvestContents(il);
+        
         for (ItemStack it : il)
             BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, it);
-        this.worldObj.setBlock(xCoord, yCoord, zCoord, 0);
+        
+        worldObj.setBlock(xCoord, yCoord, zCoord, 0);
     }
 
-    public void updateEntity() {
-        if (BasicUtils.isClient(this.worldObj))
+    public final void markDirty() {
+        BasicUtils.markBlockDirty(worldObj, xCoord, yCoord, zCoord);
+    }
+    
+    public final void markRender() {
+        worldObj.markBlockForRenderUpdate(xCoord, yCoord, zCoord);
+    }
+
+    @Override
+    public final void updateEntity() {
+        if (worldObj.isRemote) {
+            onTileTick(true);
             return;
-        if (this.timeSched < 0L)
+        } else
+            onTileTick(false);
+        
+        if (schedTick < 0L)
             return;
-        long wtime = this.worldObj.getWorldTime();
-        if (this.timeSched > wtime + 1200L) {
-            this.timeSched = (wtime + 1200L);
-        } else if (this.timeSched <= wtime) {
-            this.timeSched = -1L;
-            onTileTick();
-            dirtyBlock();
+        
+        long time = worldObj.getTotalWorldTime();
+        if (schedTick <= time) {
+            schedTick = -1L;
+            onScheduledTick();
+            markDirty();
         }
     }
 
-    public void readFromNBT(NBTTagCompound nbttagcompound) {
-        super.readFromNBT(nbttagcompound);
-        this.timeSched = nbttagcompound.getLong("sched");
+    public final void readFromNBT(NBTTagCompound tag) {
+        super.readFromNBT(tag);
+        schedTick = tag.getLong("sched");
+        load(tag);
     }
 
-    public void writeToNBT(NBTTagCompound nbttagcompound) {
-        super.writeToNBT(nbttagcompound);
-        nbttagcompound.setLong("sched", this.timeSched);
+    public final void writeToNBT(NBTTagCompound tag) {
+        super.writeToNBT(tag);
+        tag.setLong("sched", schedTick);
+        save(tag);
+    }
+    
+    public void save(NBTTagCompound tag) {
+    }
+    
+    public void load(NBTTagCompound tag) {
+    }
+    
+    @Override
+    public final Packet getDescriptionPacket() {
+        PacketCustom packet = writeStream(0);
+        writeDesc(packet);
+        return packet.toPacket();
+    }
+    
+    @Override
+    public final void handleDescriptionPacket(PacketCustom packet){
+        int switchkey = packet.readUByte();
+        if (switchkey == 0)
+            readDesc(packet);
+        else
+            read(packet, switchkey);
+    }
+    
+    public void read(MCDataInput in, int switchkey) {
+    }
+    
+    public void readDesc(MCDataInput in) {
+    }
+    
+    public void writeDesc(MCDataOutput out) {
+    }
+    
+    public PacketCustom writeStream(int switchkey) {
+        PacketCustom stream = new PacketCustom(CoreSPH.channel, 1);
+        stream.writeCoord(new BlockCoord(this)).writeByte(switchkey);
+        return stream;
     }
 }

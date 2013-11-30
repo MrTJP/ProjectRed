@@ -52,7 +52,7 @@ public class ExplorationProxy implements IProxy {
         GameRegistry.registerBlock(blockStainedSapling, ItemBlockStainedSapling.class, "projectred.exploration.dyesapling");
 
         for (int i = 0; i < 16; i++)
-            OreDictionary.registerOre(PRColors.get(i).getOreDict(), EnumDyeTrees.VALID_FOILAGE[i].getSappling());
+            OreDictionary.registerOre(PRColors.get(i).getOreDict(), EnumDyeTrees.VALID_FOLIAGE[i].getSappling());
 
         if (Configurator.gen_SpreadingMoss.getBoolean(true)) {
             int mc = Block.cobblestoneMossy.blockID;
