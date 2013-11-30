@@ -178,7 +178,7 @@ public class RetroGenerationManager {
             int x = chunkX * 16 + r.nextInt(16);
             int z = chunkZ * 16 + r.nextInt(16);
             int y = w.getHeightValue(x, z);
-            if (r.nextDouble() < EnumDyeTrees.VALID_FOILAGE[saplingMeta].growthChance/3)
+            if (r.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[saplingMeta].growthChance/3)
                 new GeneratorCustomTree(false, 5, Block.wood.blockID, 0, ProjectRedExploration.blockStainedLeaf.blockID, saplingMeta, -1, -1).generate(w, r, x, y, z);
         }
     }

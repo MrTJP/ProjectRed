@@ -49,7 +49,7 @@ public class BlockStainedLeaf extends BlockLeaves {
 
     @Override
     public int idDropped(int id, Random r, int f) {
-        return EnumDyeTrees.VALID_FOILAGE[id].getSappling().itemID;
+        return EnumDyeTrees.VALID_FOLIAGE[id].getSappling().itemID;
     }
 
     @Override
@@ -60,10 +60,10 @@ public class BlockStainedLeaf extends BlockLeaves {
     @Override
     public void dropBlockAsItemWithChance(World w, int x, int y, int z, int meta, float chance, int fortune) {
         if (!w.isRemote) {
-            if (w.rand.nextDouble() < EnumDyeTrees.VALID_FOILAGE[meta].saplingChance*(1 + fortune))
-                this.dropBlockAsItem_do(w, x, y, z, EnumDyeTrees.VALID_FOILAGE[meta].getSappling());
+            if (w.rand.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[meta].saplingChance*(1 + fortune))
+                this.dropBlockAsItem_do(w, x, y, z, EnumDyeTrees.VALID_FOLIAGE[meta].getSappling());
 
-            if (w.rand.nextDouble() < EnumDyeTrees.VALID_FOILAGE[meta].appleChance*(1 + fortune * 5))
+            if (w.rand.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[meta].appleChance*(1 + fortune * 5))
                 this.dropBlockAsItem_do(w, x, y, z, new ItemStack(Item.appleRed, 1, 0));
         }
     }
@@ -171,7 +171,7 @@ public class BlockStainedLeaf extends BlockLeaves {
     @Override
     public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
         super.randomDisplayTick(world, x, y, z, rand);
-        //TODO particles
+        //TODO Spawn fx particles relative to dye?
     }
 
     @Override
@@ -191,7 +191,7 @@ public class BlockStainedLeaf extends BlockLeaves {
 
     @Override
     public void getSubBlocks(int id, CreativeTabs tab, List list) {
-        for (EnumDyeTrees t : EnumDyeTrees.VALID_FOILAGE)
+        for (EnumDyeTrees t : EnumDyeTrees.VALID_FOLIAGE)
             list.add(t.getLeaf());
     }
 
@@ -213,7 +213,7 @@ public class BlockStainedLeaf extends BlockLeaves {
         RED(        0.05F,      0.005F,     0.1F),
         BLACK(      0.04F,      0.005F,     0.075F);
 
-        public static final EnumDyeTrees[] VALID_FOILAGE = values();
+        public static final EnumDyeTrees[] VALID_FOLIAGE = values();
 
         public final float saplingChance;
         public final float appleChance;

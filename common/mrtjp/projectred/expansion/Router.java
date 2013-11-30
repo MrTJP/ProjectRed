@@ -25,7 +25,6 @@ import codechicken.multipart.TMultiPart;
 
 public class Router implements Comparable<Router>
 {
-
     /** List of [ForgeDirection] indexed by IP for all routers in this network **/
     private List<ForgeDirection> routeTable = Collections.unmodifiableList(new ArrayList<ForgeDirection>());
 
