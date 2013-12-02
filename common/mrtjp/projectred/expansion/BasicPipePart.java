@@ -1,9 +1,11 @@
 package mrtjp.projectred.expansion;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import mrtjp.projectred.core.BasicUtils;
@@ -712,4 +714,17 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         return false;
     }
 
+    public List<IInventory> getConnectedInventories() {
+        List<IInventory> adjacent = new ArrayList<IInventory>();
+        BlockCoord bc = new BlockCoord(tile());
+        
+        for (int i = 0; i < 6; i++) {
+            if (maskConnects(i)) {
+                IInventory inv = BasicUtils.getTileEntity(world(), bc.copy().offset(i), IInventory.class);
+                if (inv != null)
+                    adjacent.add(inv);
+            }
+        }
+        return adjacent;
+    }
 }

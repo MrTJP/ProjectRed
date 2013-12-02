@@ -290,6 +290,7 @@ public class Router implements Comparable<Router>
             StartEndPath l = adjacentLinks.get(r);
             candidates2.add(new StartEndPath(l.end, l.end, l.dirToFirstHop, l.distance));
         }
+        routersByCost2.add(new StartEndPath(this, this, -1, 0));
 
         LSADatabasereadLock.lock();
         StartEndPath nextLowest = null;
