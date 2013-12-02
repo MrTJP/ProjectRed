@@ -208,9 +208,11 @@ public class RoutedPayload {
     public RoutedPayload resetTrip() {
         if (destinationIP > -1) {
             Router r = RouterServices.instance.getRouter(destinationIP);
-            if (r != null)
-                if (r.getParent() instanceof IWorldRequester)
-                    ((IWorldRequester) r.getParent()).trackedItemLost(payload);
+            if (r != null) {
+                IWorldRouter parent = r.getParent();
+                if (parent instanceof IWorldRequester)
+                    ((IWorldRequester) parent).trackedItemLost(payload);
+            }
         }
         destinationIP = -1;
         destinationUUID = null;

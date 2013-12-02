@@ -15,6 +15,7 @@ public class RoutedRequestPipePart extends RoutedPipePart_InvConnect {
         if (!maskConnects(r.output.ordinal()) && !world().isRemote)
             if (itemFlow.scheduleRemoval(r)) {
                 r.move(0.30);
+                r.resetTrip();
                 world().spawnEntityInWorld(r.getEntityForDrop());
             }
     }
