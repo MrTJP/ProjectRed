@@ -223,6 +223,10 @@ public class RequestBranchNode
 
             if (member.needsWork() || !(member instanceof IWorldBroadcaster))
                 continue;
+            
+            if (LogisticPathFinder.sharesInventory(requester.getContainer(), member.getContainer()))
+                continue;
+            
             IWorldBroadcaster member2 = (IWorldBroadcaster) member;
             member2.requestPromises(this, root.getExistingPromisesFor(new HashPair2<IWorldBroadcaster, ItemKey>(member2, getRequestedPackage())));
         }
