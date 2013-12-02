@@ -177,8 +177,10 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         if (getLogic().handleDrop(r)) return;
 
         if (itemFlow.scheduleRemoval(r))
-            if (!world().isRemote)
+            if (!world().isRemote) {
+                r.resetTrip();
                 world().spawnEntityInWorld(r.getEntityForDrop());
+            }
     }
 
     public void resolveDestination(RoutedPayload r) {
@@ -449,8 +451,10 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
         if (connCount == 0)
             for (RoutedPayload r : itemFlow)
                 if (itemFlow.scheduleRemoval(r))
-                    if (!world().isRemote)
+                    if (!world().isRemote) {
+                        r.resetTrip();
                         world().spawnEntityInWorld(r.getEntityForDrop());
+                    }
     }
 
     @Override
@@ -481,8 +485,10 @@ public class BasicPipePart extends TMultiPart implements IPipeConnectable, TSlot
                 if ((connMap & 1 << s) != 0)
                     notifyStraightChange(s);
 
-            for (RoutedPayload r : itemFlow)
+            for (RoutedPayload r : itemFlow) {
+                r.resetTrip();
                 world().spawnEntityInWorld(r.getEntityForDrop());
+            }
         }
     }
 
