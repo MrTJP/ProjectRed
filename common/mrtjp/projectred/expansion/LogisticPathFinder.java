@@ -51,7 +51,10 @@ public class LogisticPathFinder {
 
             if (excludeSource && r.getIPAddress() == source.getIPAddress())
                 continue;
-
+            
+            if (excludeSource && sharesInventory(source.getParent().getContainer(), r.getParent().getContainer()))
+                continue;
+            
             if (exclusions.get(r.getIPAddress()) || visited.get(r.getIPAddress()))
                 continue;
 
@@ -80,28 +83,14 @@ public class LogisticPathFinder {
     }
     
     public static boolean sharesInventory(BasicPipePart pipe1, BasicPipePart pipe2) {
-        World w = pipe1.tile().worldObj;
-        if (w != pipe2.tile().worldObj)
+        if (pipe1 == null || pipe2 == null)
             return false;
         
-        List<IInventory> adjacent1 = new ArrayList<IInventory>(6);
-        List<IInventory> adjacent2 = new ArrayList<IInventory>(6);
+        if (pipe1.tile().worldObj != pipe2.tile().worldObj)
+            return false;
         
-        BlockCoord bc1 = new BlockCoord(pipe1.tile());
-        BlockCoord bc2 = new BlockCoord(pipe2.tile());
-        
-        for (int i = 0; i < 6; i++) {
-            if (pipe1.maskConnects(i)) {
-                IInventory inv = BasicUtils.getTileEntity(w, bc1.copy().offset(i), IInventory.class);
-                if (inv != null)
-                    adjacent1.add(inv);
-            }
-            if (pipe2.maskConnects(i)) {
-                IInventory inv = BasicUtils.getTileEntity(w, bc2.copy().offset(i), IInventory.class);
-                if (inv != null)
-                    adjacent2.add(inv);
-            }
-        }
+        List<IInventory> adjacent1 = pipe1.getConnectedInventories();
+        List<IInventory> adjacent2 = pipe2.getConnectedInventories();
         
         for (IInventory inv1 : adjacent1)
             if (adjacent2.contains(inv1))

@@ -307,15 +307,58 @@ public class InventoryWrapper {
     public static IInventory getInventory(World world, BlockCoord wc) {
         IInventory inv = BasicUtils.getTileEntity(world, wc, IInventory.class);
 
-        if (!(inv instanceof TileEntityChest))
-            return inv;
+        if (inv instanceof TileEntityChest) {
+            TileEntityChest chest = (TileEntityChest) inv;
+            TileEntityChest lower = null;
+            TileEntityChest upper = null;
 
-        for (int i = 2; i < 6; i++) {
-            TileEntityChest chest = BasicUtils.getTileEntity(world, wc.copy().offset(i), TileEntityChest.class);
-            if (chest != null)
-                return new InventoryLargeChest("Large chest", chest, inv);
+            if (chest.adjacentChestXNeg != null) {
+                upper = chest.adjacentChestXNeg;
+                lower = chest;
+            }
+            if (chest.adjacentChestXPos != null) {
+                upper = chest;
+                lower = chest.adjacentChestXPos;
+            }
+            if (chest.adjacentChestZNeg != null) {
+                upper = chest.adjacentChestZNeg;
+                lower = chest;
+            }
+            if (chest.adjacentChestZPosition != null) {
+                upper = chest;
+                lower = chest.adjacentChestZPosition;
+            }
+            if (lower != null && upper != null)
+                return new HashableLargeChest("Large Chest", upper, lower);
+
+            return inv;
         }
         return inv;
     }
+    
+    public static class HashableLargeChest extends InventoryLargeChest 
+    {
+        private final IInventory upper;
+        private final IInventory lower;
 
+        public HashableLargeChest(String name, IInventory inv1, IInventory inv2) {
+            super(name, inv1, inv2);
+            upper = inv1;
+            lower = inv2;
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof HashableLargeChest) {
+                HashableLargeChest chest = (HashableLargeChest) o;
+                return upper == chest.upper && lower == chest.lower;
+            }
+            return false;
+        }
+        
+        @Override
+        public int hashCode() {
+            return upper.hashCode() ^ lower.hashCode();
+        }
+    }
 }
