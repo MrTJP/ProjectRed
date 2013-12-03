@@ -1,8 +1,7 @@
-package mrtjp.projectred.expansion;
+package mrtjp.projectred.transportation;
 
 
-public class ExpansionRecipes 
-{
+public class TransportationRecipes {
 
     public static void initRecipes() {
         initMiscRecipes();
