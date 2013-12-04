@@ -366,7 +366,7 @@
 		<!-- ProjectRed Mechanical -->
 		<echo message="Packaging ProjectRed Mechanical" />
 		<jar destfile="${jar.dir}/${mod.name.mechanical}">
-			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExpansion*.class, **/mrtjp/projectred/expansion/**" />
+			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExpansion*.class, **/mrtjp/projectred/expansion/**, **/ProjectRedTransportation*.class, **/mrtjp/projectred/transportation/**" />
 		</jar>
 
 		<!-- ProjectRed World -->

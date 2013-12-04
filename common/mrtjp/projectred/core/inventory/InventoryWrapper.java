@@ -1,6 +1,8 @@
 package mrtjp.projectred.core.inventory;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import mrtjp.projectred.core.BasicUtils;
@@ -13,27 +15,62 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
 
-public class InventoryWrapper {
+public abstract class InventoryWrapper 
+{
+    private IInventory inv;
+    
+    private ISidedInventory sidedInv;
+    private int side;
+    
+    private int startIndex;
+    private int endIndex;
+    
+    private int[] slots;
+    
+    private boolean hideOnePerSlot = false;
+    private boolean hideOnePerType = false;
+    
+    private int fuzzyMathPercentage = 0;
+    private boolean fuzzyMode = false;
+    
+    private static List<InventoryWrapper> wrappers = new ArrayList<InventoryWrapper>();
 
-    IInventory inv;
-
-    ISidedInventory sidedInv;
-    int side;
-
-    int startIndex;
-    int endIndex;
-
-    int[] slots;
-
-    boolean hideOnePerSlot = false;
-    boolean hideOnePerType = false;
-
-    int fuzzyMathPercentage = 0;
-    boolean fuzzyMode = false;
-
+    public static void registerWrapper(InventoryWrapper wrapper) {
+        for (InventoryWrapper w : wrappers)
+            if (w.wrapperID().equals(wrapper.wrapperID()))
+                return;
+        
+        wrappers.add(wrapper);
+    }
+    
     public static InventoryWrapper wrapInventory(IInventory inv) {
-        // TODO Wrapping registration system to allow wrappers from other mods.
-        return new InventoryWrapper(inv);
+        for (InventoryWrapper w : wrappers)
+            if (w.shouldUseWrapper(inv))
+                return w.create(inv);
+
+        return new InventoryWrapperVanilla(inv);
+    }
+    
+    public static class InventoryWrapperVanilla extends InventoryWrapper
+    {
+        private InventoryWrapperVanilla(IInventory inv) {
+            super(inv);
+        }
+
+        @Override
+        public String wrapperID() {
+            return "vanilla";
+        }
+
+        @Override
+        public boolean shouldUseWrapper(IInventory inv) {
+            return true;
+        }
+
+        @Override
+        public InventoryWrapper create(IInventory inv) {
+            return new InventoryWrapperVanilla(inv);
+        }
     }
 
     private InventoryWrapper(IInventory inv) {
@@ -44,28 +81,19 @@ public class InventoryWrapper {
         startIndex = 0;
         endIndex = inv.getSizeInventory();
     }
-    public InventoryWrapper setSide(int side) {
+    public InventoryWrapper setSlotsFromSide(int side) {
         this.side = side;
-        return this;
-    }
-    public InventoryWrapper setStart(int start) {
-        if (start < 0) start = 0;
-        this.startIndex = start;
-        return this;
-    }
-    public InventoryWrapper setEnd(int end) {
-        if (end > inv.getSizeInventory()) end = inv.getSizeInventory();
-        this.endIndex = end;
-        return this;
-    }
-    public InventoryWrapper setSlotsFromSide() {
+
         if (sidedInv == null)
             return setSlotsAll();
 
         slots = sidedInv.getAccessibleSlotsFromSide(side);
         return this;
     }
-    public InventoryWrapper setSlotsFromRange() {
+    public InventoryWrapper setSlotsFromRange(int startIndex, int endIndex) {
+        this.startIndex = startIndex;
+        this.endIndex = endIndex;
+        
         slots = new int[endIndex-startIndex];
         for (int i = startIndex; i < endIndex; i++)
             slots[i] = i;
@@ -97,6 +125,23 @@ public class InventoryWrapper {
             hideOnePerSlot = false;
         return this;
     }
+    
+    /** Wrapper Identification **/
+    
+    /**
+     * Unique ID for each type of wrapper.
+     */
+    public abstract String wrapperID();
+    
+    /**
+     * Returns true if this wrapper should be used for the given inventory.
+     */
+    public abstract boolean shouldUseWrapper(IInventory inv);
+    
+    /**
+     * Returns a new instance of this wrapper.
+     */
+    public abstract InventoryWrapper create(IInventory inv);
 
     /** Inventory Manipulation **/
 
@@ -262,7 +307,7 @@ public class InventoryWrapper {
         return items;
     }
 
-    /** Internal Utils**/
+    /** Internal Utils **/
     private boolean canInsertItem(int slot, ItemStack item) {
         return sidedInv == null ? inv.isItemValidForSlot(slot, item) : sidedInv.canInsertItem(slot, item, side);
     }

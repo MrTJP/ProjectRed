@@ -119,7 +119,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         }
         int side = getInterfacedSide();
 
-        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSide(side).setSlotsFromSide();
+        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
 
         List<ItemKeyStack> wanted = getCraftedItems();
         if (wanted == null || wanted.isEmpty())

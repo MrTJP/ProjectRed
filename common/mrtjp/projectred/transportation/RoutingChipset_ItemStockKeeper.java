@@ -38,7 +38,7 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
         if (real == null || side < 0)
             return;
 
-        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSide(side).setSlotsFromSide();
+        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
         InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll();
 
         List<ItemKey> checked = new ArrayList<ItemKey>(9);
