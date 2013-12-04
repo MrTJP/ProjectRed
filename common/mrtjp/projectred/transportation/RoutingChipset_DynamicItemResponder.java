@@ -69,7 +69,7 @@ public class RoutingChipset_DynamicItemResponder extends RoutingChipset {
             return null;
 
         if (priority.ordinal() > rival.priority.ordinal() || priority.ordinal() == rival.priority.ordinal() && customPriority > rival.customPriority) {
-            InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSide(side).setSlotsFromSide()
+            InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side)
                     .setFuzzy(fuzzyMode).setFuzzyPercent(fuzzyPercent[fuzzyDamageMode]);
             if (inv.hasItem(item)) {
                 int room = inv.getRoomAvailableForItem(item);

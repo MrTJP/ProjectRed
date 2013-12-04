@@ -53,7 +53,7 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
             return;
         int side = extractOrient == -1 ? getInventoryProvider().getInterfacedSide() : extractOrient;
 
-        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSide(side).setSlotsFromSide();
+        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
         InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll()
                 .setFuzzy(fuzzyMode).setFuzzyPercent(fuzzyPercent[fuzzyDamageMode]);
 

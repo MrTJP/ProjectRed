@@ -78,7 +78,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset {
                     .setFuzzy(fuzzyMode).setFuzzyPercent(fuzzyPercent[fuzzyDamageMode]);
 
             if (filt.hasItem(item) != filterExclude) {
-                InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSide(side).setSlotsFromSide();
+                InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
                 int room = inv.getRoomAvailableForItem(item);
                 if (room > 0)
                     return new SyncResponse().setPriority(priority).setCustomPriority(customPriority).setItemCount(room);

@@ -194,7 +194,7 @@ public class BasicPipePart extends CorePipePart
                 // Injection to inventories
                 IInventory inv = InventoryWrapper.getInventory(world(), new BlockCoord(tile()).offset(r.output.ordinal()));
                 if (inv != null) {
-                    InventoryWrapper w = InventoryWrapper.wrapInventory(inv).setSide(r.output.getOpposite().ordinal()).setSlotsFromSide();
+                    InventoryWrapper w = InventoryWrapper.wrapInventory(inv).setSlotsFromSide(r.output.getOpposite().ordinal());
                     r.payload.stackSize -= w.injectItem(r.payload.makeStack(), true);
                 }
                 // Bounce

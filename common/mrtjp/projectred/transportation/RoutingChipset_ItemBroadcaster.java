@@ -72,7 +72,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset {
             }
 
             int side = extractOrient == -1 ? getInventoryProvider().getInterfacedSide() : extractOrient;
-            InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSide(side).setSlotsFromSide();
+            InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
 
             if (hideMode == 1)
                 inv.setHidePerType(true);
@@ -114,7 +114,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset {
             return;
         int side = extractOrient == -1 ? getInventoryProvider().getInterfacedSide() : extractOrient;
 
-        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSide(side).setSlotsFromSide();
+        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
         InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll();
 
         ItemKey requested = request.getRequestedPackage();
@@ -153,7 +153,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset {
 
         int side = extractOrient == -1 ? getInventoryProvider().getInterfacedSide() : extractOrient;
 
-        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSide(side).setSlotsFromSide();
+        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
         InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll();
         if (hideMode == 1)
             inv.setHidePerType(true);
