@@ -16,8 +16,8 @@ import cpw.mods.fml.common.network.NetworkMod;
         "after:TConstruct"
         )
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
-public class ProjectRedCompatability {
-
+public class ProjectRedCompatability 
+{
     @Instance("ProjRed|Compatability")
     public static ProjectRedCompatability instance;
 

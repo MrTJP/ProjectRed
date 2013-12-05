@@ -1,4 +1,4 @@
-package mrtjp.projectred.core.gui;
+package mrtjp.projectred.core.inventory;
 
 import mrtjp.projectred.core.utils.OpenGLLib;
 

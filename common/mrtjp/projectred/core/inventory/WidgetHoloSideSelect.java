@@ -5,7 +5,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.core.gui.ClickRotation.ClickRotationHook;
+import mrtjp.projectred.core.inventory.ClickRotation.ClickRotationHook;
 import mrtjp.projectred.core.utils.DirectionalRayTracer;
 import mrtjp.projectred.core.utils.DirectionalRayTracer.HitCoord;
 import mrtjp.projectred.core.utils.MathLib;

@@ -2,9 +2,9 @@ package mrtjp.projectred;
 
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.transportation.ItemPartPipe;
 import mrtjp.projectred.transportation.ItemRoutingChip;
+import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import mrtjp.projectred.transportation.Router;
 import mrtjp.projectred.transportation.RouterServices;
 import net.minecraft.creativetab.CreativeTabs;
@@ -40,7 +40,7 @@ public class ProjectRedTransportation
     public static CreativeTabs tabTransportation = new CreativeTabs("transport") {
         @Override
         public ItemStack getIconItemStack() {
-            return EnumPart.COPPERCOIL.getItemStack();
+            return EnumRoutingChip.ITEMSTOCKKEEPER.getItemStack();
         }
     };
 

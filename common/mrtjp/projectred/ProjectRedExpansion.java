@@ -3,6 +3,7 @@ package mrtjp.projectred;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.core.ItemPart.EnumPart;
+import mrtjp.projectred.expansion.BlockMachine;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,6 +20,9 @@ import cpw.mods.fml.common.network.NetworkMod;
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
 public class ProjectRedExpansion 
 {
+    /** Blocks **/
+    public static BlockMachine machine1;
+    
     @Instance("ProjRed|Expansion")
     public static ProjectRedExpansion instance;
 
@@ -28,6 +32,7 @@ public class ProjectRedExpansion
     public static CreativeTabs tabExpansion = new CreativeTabs("expansion") {
         @Override
         public ItemStack getIconItemStack() {
+            // TODO Change this to one of the machines.
             return EnumPart.COPPERCOIL.getItemStack();
         }
     };
