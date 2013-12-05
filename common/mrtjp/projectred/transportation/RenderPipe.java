@@ -2,7 +2,6 @@ package mrtjp.projectred.transportation;
 
 import static mrtjp.projectred.transmission.RenderWire.finishModel;
 import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.illumination.RenderHalo;
 import mrtjp.projectred.transmission.RenderWire.UVT;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -200,14 +199,36 @@ public class RenderPipe {
         dummyEntityItem.setEntityItemStack(itemstack);
         customRenderItem.doRenderItem(dummyEntityItem, 0, 0, 0, 0, 0);
 
-        RenderHalo.prepareRenderState();
+        prepareRenderState();
         GL11.glEnable(GL11.GL_LIGHTING);
 
         Tessellator.instance.setColorRGBA_I(PRColors.get(r.priority.color).rgb, 32);
         GL11.glScalef(.5f, .5f, .5f);
         RenderUtils.renderBlock(Cuboid6.full, 0, new Translation(-.5, -.5, -.5), null, null);
-        RenderHalo.restoreRenderState();
+        restoreRenderState();
 
         GL11.glPopMatrix();
+    }
+    
+    private static void prepareRenderState() {
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_CULL_FACE);
+        GL11.glDepthMask(false);
+        CCRenderState.reset();
+        CCRenderState.startDrawing(7);
+    }
+
+    private static void restoreRenderState() {
+        CCRenderState.draw();
+        GL11.glDepthMask(true);
+        GL11.glColor3f(1, 1, 1);
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glDisable(GL11.GL_BLEND);
     }
 }
