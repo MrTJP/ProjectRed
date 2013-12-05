@@ -41,8 +41,8 @@ dependencies =
         "after:ComputerCraft;"
         )
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
-public class ProjectRedCore {
-
+public class ProjectRedCore 
+{
     public ProjectRedCore() {
         ProjectRedAPI.instance = new APIImpl();
     }

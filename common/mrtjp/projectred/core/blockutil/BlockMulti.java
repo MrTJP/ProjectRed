@@ -12,22 +12,23 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Rotation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockMulti extends BlockContainer {
+public class BlockMulti extends BlockContainer 
+{
+    private Class[] tiles = new Class[16];
 
-    private Class[] tileEntityMap = new Class[16];
-
-    public BlockMulti(int i, Material m) {
-        super(i, m);
+    public BlockMulti(int id, Material mat) {
+        super(id, mat);
     }
 
     @Override
@@ -46,23 +47,6 @@ public class BlockMulti extends BlockContainer {
     }
 
     @Override
-    public float getBlockHardness(World par1World, int par2, int par3, int par4) {
-        return blockHardness;
-    }
-
-    @Override
-    public ArrayList getBlockDropped(World w, int x, int y, int z, int meta, int fortune) {
-        ArrayList<ItemStack> ist = new ArrayList<ItemStack>();
-
-        TileMulti tl = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
-
-        if (tl == null)
-            return ist;
-        tl.addHarvestContents(ist);
-        return ist;
-    }
-
-    @Override
     public int idDropped(int i, Random random, int j) {
         return 0;
     }
@@ -72,128 +56,29 @@ public class BlockMulti extends BlockContainer {
     }
 
     @Override
-    public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z) {
-        if (BasicUtils.isClient(world))
-            return true;
-
-        int bid = world.getBlockId(x, y, z);
-        int md = world.getBlockMetadata(x, y, z);
-        Block bl = Block.blocksList[bid];
-        if (bl == null)
-            return false;
-        if ((bl.canHarvestBlock(player, md)) && (!player.capabilities.isCreativeMode)) {
-            ArrayList<ItemStack> il = getBlockDropped(world, x, y, z, md, EnchantmentHelper.getFortuneModifier(player));
-
-            for (ItemStack it : il)
-                BasicUtils.dropItem(world, x, y, z, it);
-        }
-        world.setBlock(x, y, z, 0);
-        return true;
-    }
-
-    @Override
-    public void onNeighborBlockChange(World w, int x, int y, int z, int l) {
-        TileMulti tl = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
-
-        if (tl == null) {
-            w.setBlock(x, y, z, 0);
-            return;
-        }
-        tl.onBlockNeighborChange(l);
-    }
-
-    @Override
-    public void onBlockPlacedBy(World w, int x, int y, int z, EntityLivingBase player, ItemStack stack) {
-        TileMulti tl = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
-
-        if (tl == null)
-            return;
-        
-        tl.onBlockPlaced(stack, 0, (EntityPlayer) player);
-    }
-
-    @Override
-    public void breakBlock(World w, int x, int y, int z, int id, int md) {
-        TileMulti tl = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
-
-        if (tl == null)
-            return;
-        
-        tl.onBlockRemoval();
-        super.breakBlock(w, x, y, z, id, md);
-    }
-
-    @Override
-    public int isProvidingStrongPower(IBlockAccess w, int x, int y, int z, int l) {
-        TileMulti tl = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
-
-        if (tl == null)
-            return 0;
-        
-        return tl.isBlockStrongPoweringTo(l);
-    }
-
-    @Override
-    public int isProvidingWeakPower(IBlockAccess w, int x, int y, int z, int l) {
-        TileMulti tl = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
-
-        if (tl == null)
-            return 0;
-        
-        return tl.isBlockWeakPoweringTo(l);
-    }
-
-    @Override
-    public boolean onBlockActivated(World w, int x, int y, int z, EntityPlayer player, int side, float xp, float yp, float zp) {
-        TileMulti tl = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
-
-        if (tl == null)
-            return false;
-        
-        return tl.onBlockActivated(player);
-    }
-
-    @Override
-    public void onEntityCollidedWithBlock(World w, int x, int y, int z, Entity entity) {
-        TileMulti tl = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
-
-        if (tl == null)
-            return;
-        
-        tl.onEntityCollidedWithBlock(entity);
-    }
-
-    @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World w, int x, int y, int z) {
-        TileMulti tl = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
-
-        if (tl != null) {
-            AxisAlignedBB bb = tl.getCollisionBoundingBox();
-            if (bb != null)
-                return bb;
-        }
-        return super.getCollisionBoundingBoxFromPool(w, x, y, z);
-    }
-
-    @Override
     public int getRenderType() {
         return BasicRenderUtils.coreRenderHandlerID;
     }
 
-    @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(World w, int x, int y, int z, Random r) {
-        int md = w.getBlockMetadata(x, y, z);
-        RenderMulti rend = BasicRenderUtils.getRenderer(blockID, md);
-        if (rend != null)
-            rend.randomDisplayTick(w, x, y, z, r);
+    @Override
+    public float getBlockHardness(World par1World, int par2, int par3, int par4) {
+        return blockHardness;
     }
-    
+
+    @SideOnly(Side.CLIENT)
+    public void randomDisplayTick(World w, int x, int y, int z, Random rand) {
+        int md = w.getBlockMetadata(x, y, z);
+        RenderMulti r = BasicRenderUtils.getRenderer(blockID, md);
+        if (r != null)
+            r.randomDisplayTick(w, x, y, z, rand);
+    }
+
     public TileEntity getBlockEntity() {
         return null;
     }
 
-    public void addTileEntityMapping(int meta, Class cl) {
-        tileEntityMap[meta] = cl;
+    public void addTile(int meta, Class<? extends TileMulti> cl) {
+        tiles[meta] = cl;
     }
 
     @Override
@@ -204,9 +89,156 @@ public class BlockMulti extends BlockContainer {
     @Override
     public TileEntity createTileEntity(World world, int meta) {
         try {
-            return (TileEntity) tileEntityMap[meta].getDeclaredConstructor(new Class[0]).newInstance(new Object[0]);
+            return (TileEntity) tiles[meta].getDeclaredConstructor(new Class[0]).newInstance(new Object[0]);
         } catch (Exception e) {            
             return null;
         }
     }
+
+    @Override
+    public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z) {
+        if (BasicUtils.isClient(world))
+            return true;
+    
+        int bid = world.getBlockId(x, y, z);
+        int md = world.getBlockMetadata(x, y, z);
+        Block bl = Block.blocksList[bid];
+        if (bl == null)
+            return false;
+        if (bl.canHarvestBlock(player, md) && !player.capabilities.isCreativeMode) {
+            ArrayList<ItemStack> il = getBlockDropped(world, x, y, z, md, EnchantmentHelper.getFortuneModifier(player));
+    
+            for (ItemStack it : il)
+                BasicUtils.dropItem(world, x, y, z, it);
+        }
+        world.setBlock(x, y, z, 0);
+        return true;
+    }
+
+    @Override
+    public ArrayList getBlockDropped(World w, int x, int y, int z, int meta, int fortune) {
+        ArrayList<ItemStack> ist = new ArrayList<ItemStack>();
+
+        TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
+
+        if (tile == null)
+            return ist;
+        tile.addHarvestContents(ist);
+        return ist;
+    }
+
+    @Override
+    public void onNeighborBlockChange(World w, int x, int y, int z, int l) {
+        TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
+
+        if (tile == null) {
+            w.setBlock(x, y, z, 0);
+            return;
+        }
+        tile.onBlockNeighborChange(l);
+    }
+
+    @Override
+    public void onBlockPlacedBy(World w, int x, int y, int z, EntityLivingBase player, ItemStack stack) {
+        TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
+
+        if (tile == null)
+            return;
+        
+        tile.onBlockPlaced(stack, 0, (EntityPlayer) player);
+    }
+
+    @Override
+    public void breakBlock(World w, int x, int y, int z, int id, int md) {
+        TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
+
+        if (tile == null)
+            return;
+        
+        tile.onBlockRemoval();
+        super.breakBlock(w, x, y, z, id, md);
+    }
+
+    @Override
+    public int isProvidingStrongPower(IBlockAccess w, int x, int y, int z, int l) {
+        TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
+
+        if (tile == null)
+            return 0;
+        
+        return tile.isBlockStrongPoweringTo(l);
+    }
+
+    @Override
+    public int isProvidingWeakPower(IBlockAccess w, int x, int y, int z, int l) {
+        TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
+
+        if (tile == null)
+            return 0;
+        
+        return tile.isBlockWeakPoweringTo(l);
+    }
+
+    @Override
+    public boolean onBlockActivated(World w, int x, int y, int z, EntityPlayer player, int side, float xp, float yp, float zp) {
+        TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
+
+        if (tile == null)
+            return false;
+        
+        return tile.onBlockActivated(player);
+    }
+
+    @Override
+    public void onEntityCollidedWithBlock(World w, int x, int y, int z, Entity entity) {
+        TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
+
+        if (tile == null)
+            return;
+        
+        tile.onEntityCollidedWithBlock(entity);
+    }
+
+    @Override
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World w, int x, int y, int z) {
+        TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
+
+        if (tile != null) {
+            AxisAlignedBB bb = tile.getCollisionBoundingBox();
+            if (bb != null)
+                return bb;
+        }
+        return super.getCollisionBoundingBoxFromPool(w, x, y, z);
+    }
+    
+    @Override
+    public int getLightValue(IBlockAccess w, int x, int y, int z) {
+        TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
+
+        if (tile != null)
+            return tile.getLightValue();
+
+        return super.getLightValue(w, x, y, z);
+    }
+    
+    @Override
+    public boolean isFireSource(World w, int x, int y, int z, int meta, ForgeDirection side) {
+        TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
+
+        if (tile != null)
+            return tile.isFireSource(side);
+
+        return super.isFireSource(w, x, y, z, meta, side);
+    }
+    
+    @Override
+    public boolean isBlockSolidOnSide(World w, int x, int y, int z, ForgeDirection side) {
+        TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
+
+        if (tile != null)
+            return tile.isBlockSolidOnSide(side);
+        
+        return super.isBlockSolidOnSide(w, x, y, z, side);
+    }
+
 }

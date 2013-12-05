@@ -2,11 +2,11 @@ package mrtjp.projectred;
 
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-import mrtjp.projectred.exploration.BlockStainedLeaf;
-import mrtjp.projectred.exploration.BlockStainedSapling;
 import mrtjp.projectred.exploration.BlockOre;
 import mrtjp.projectred.exploration.BlockSpecialStone;
 import mrtjp.projectred.exploration.BlockSpecialStoneWall;
+import mrtjp.projectred.exploration.BlockStainedLeaf;
+import mrtjp.projectred.exploration.BlockStainedSapling;
 import mrtjp.projectred.exploration.ExplorationGuiHandler;
 import mrtjp.projectred.exploration.ItemBackpack;
 import mrtjp.projectred.exploration.ItemGemAxe;
@@ -33,8 +33,8 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(modid = "ProjRed|Exploration", name = "ProjectRed-Exploration", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = "required-after:ProjRed|Core;")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
-public class ProjectRedExploration {
-
+public class ProjectRedExploration 
+{
     /** Blocks **/
     public static BlockOre blockOres;
     public static BlockSpecialStone blockStones;
