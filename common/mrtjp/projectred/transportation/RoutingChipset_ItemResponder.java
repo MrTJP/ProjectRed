@@ -18,32 +18,13 @@ public class RoutingChipset_ItemResponder extends RoutingChipset {
 
     public SimpleInventory filter = new SimpleInventory(9, "filter", 1);
 
-    public SendPriority priority = SendPriority.PASSIVE;
+    private static final SendPriority priority = SendPriority.PASSIVE;
     public int customPriority = 0;
 
     public boolean filterExclude = false;
     public boolean fuzzyMode = false;
     public int fuzzyDamageMode = 0;
     public static final int[] fuzzyPercent = new int[] {0, 25, 50, 75, 100};
-
-    public void priorityUp() {
-        int ordinal = priority.ordinal();
-        ordinal++;
-
-        if (ordinal >= SendPriority.values().length)
-            ordinal = SendPriority.values().length-1;
-
-        priority = SendPriority.values()[ordinal];
-    }
-    public void priorityDown() {
-        int ordinal = priority.ordinal();
-        ordinal--;
-
-        if (ordinal <= 0)
-            ordinal = 1;
-
-        priority = SendPriority.values()[ordinal];
-    }
 
     public void customUp() {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
@@ -90,7 +71,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset {
     @Override
     public void save(NBTTagCompound tag) {
         filter.save(tag);
-        tag.setByte("pri", (byte) priority.ordinal());
+        //tag.setByte("pri", (byte) priority.ordinal());
         tag.setInteger("cpri", customPriority);
         tag.setBoolean("mode", filterExclude);
         tag.setBoolean("fuz", fuzzyMode);
@@ -100,7 +81,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset {
     @Override
     public void load(NBTTagCompound tag) {
         filter.load(tag);
-        priority = SendPriority.values()[tag.getByte("pri")];
+        //priority = SendPriority.values()[tag.getByte("pri")];
         customPriority = tag.getInteger("cpri");
         filterExclude = tag.getBoolean("mode");
         fuzzyMode = tag.getBoolean("fuz");

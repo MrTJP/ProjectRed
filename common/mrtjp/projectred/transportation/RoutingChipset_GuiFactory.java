@@ -160,18 +160,13 @@ public class RoutingChipset_GuiFactory
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.ITEMRESPONDER.icon);
             drawChipOverlay();
-
-            FontUtils.drawCenteredString(getChip().priority.name, 31, 38, PRColors.WHITE.rgb);
+            // TODO graphic for priority
             FontUtils.drawCenteredString(getChip().customPriority + "", 146, 38, PRColors.WHITE.rgb);
         }
 
         @Override
         public void actionPerformed(String ident, Object... params) {
-            if (ident.equals("priorityUP"))
-                getChip().priorityUp();
-            else if (ident.equals("priorityDOWN"))
-                getChip().priorityDown();
-            else if (ident.equals("customUP"))
+            if (ident.equals("customUP"))
                 getChip().customUp();
             else if (ident.equals("customDOWN"))
                 getChip().customDown();
@@ -179,8 +174,6 @@ public class RoutingChipset_GuiFactory
 
         @Override
         public void addWidgets() {
-            add(new WidgetSimpleButton(13, 22, 35, 12).setText("+").setActionCommand("priorityUP"));
-            add(new WidgetSimpleButton(13, 50, 35, 12).setText("-").setActionCommand("priorityDOWN"));
             add(new WidgetSimpleButton(140, 22, 12, 12).setText("+").setActionCommand("customUP"));
             add(new WidgetSimpleButton(140, 50, 12, 12).setText("-").setActionCommand("customDOWN"));
         }
