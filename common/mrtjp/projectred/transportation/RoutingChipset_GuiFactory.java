@@ -29,7 +29,6 @@ import codechicken.lib.render.FontUtils;
 
 public class RoutingChipset_GuiFactory
 {
-
     public static GuiContainer getGui(Container c, int meta) {
         if (meta == 0)
             return new GuiChipItemResponder(c);
@@ -47,7 +46,6 @@ public class RoutingChipset_GuiFactory
 
     public static abstract class GuiChipContainerWidget<T extends RoutingChipset> extends GhostGuiContainer
     {
-
         public GuiChipContainerWidget(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
@@ -151,7 +149,6 @@ public class RoutingChipset_GuiFactory
 
     private static class GuiChipItemResponder_Priority extends GuiChipContainerWidget<RoutingChipset_ItemResponder>
     {
-
         public GuiChipItemResponder_Priority(Container inv, GuiScreen previous) {
             super(inv, previous);
         }
@@ -177,12 +174,10 @@ public class RoutingChipset_GuiFactory
             add(new WidgetSimpleButton(140, 22, 12, 12).setText("+").setActionCommand("customUP"));
             add(new WidgetSimpleButton(140, 50, 12, 12).setText("-").setActionCommand("customDOWN"));
         }
-
     }
 
     private static class GuiChipItemResponder_Filter extends GuiChipContainerWidget<RoutingChipset_ItemResponder>
     {
-
         public GuiChipItemResponder_Filter(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
@@ -259,7 +254,6 @@ public class RoutingChipset_GuiFactory
 
     private static class GuiChipItemExtractor extends GuiChipContainerWidget<RoutingChipset_ItemExtractor>
     {
-
         public GuiChipItemExtractor(Container inventorySlots) {
             super(inventorySlots, null);
         }
@@ -310,7 +304,6 @@ public class RoutingChipset_GuiFactory
 
     private static class GuiChipItemExtractor_Filter extends GuiChipContainerWidget<RoutingChipset_ItemExtractor>
     {
-
         public GuiChipItemExtractor_Filter(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
@@ -387,7 +380,6 @@ public class RoutingChipset_GuiFactory
 
     private static class GuiChipItemExtractor_Orient extends GuiChipContainerWidget<RoutingChipset_ItemExtractor>
     {
-
         public GuiChipItemExtractor_Orient(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
@@ -442,7 +434,6 @@ public class RoutingChipset_GuiFactory
 
     private static class GuiChipItemBroadcaster extends GuiChipContainerWidget<RoutingChipset_ItemBroadcaster>
     {
-
         public GuiChipItemBroadcaster(Container inventorySlots) {
             super(inventorySlots, null);
         }
@@ -493,7 +484,6 @@ public class RoutingChipset_GuiFactory
 
     private static class GuiChipItemBroadcaster_Filter extends GuiChipContainerWidget<RoutingChipset_ItemBroadcaster>
     {
-
         public GuiChipItemBroadcaster_Filter(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
@@ -553,7 +543,6 @@ public class RoutingChipset_GuiFactory
 
     private static class GuiChipItemBroadcaster_Orient extends GuiChipContainerWidget<RoutingChipset_ItemBroadcaster>
     {
-
         public GuiChipItemBroadcaster_Orient(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
@@ -658,7 +647,6 @@ public class RoutingChipset_GuiFactory
 
     private static class GuiChipItemStockKeeper_Stock extends GuiChipContainerWidget<RoutingChipset_ItemStockKeeper>
     {
-
         public GuiChipItemStockKeeper_Stock(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
@@ -683,7 +671,6 @@ public class RoutingChipset_GuiFactory
 
     private static class GuiChipItemStockKeeper_FillMode extends GuiChipContainerWidget<RoutingChipset_ItemStockKeeper>
     {
-
         public GuiChipItemStockKeeper_FillMode(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }
@@ -769,7 +756,6 @@ public class RoutingChipset_GuiFactory
 
     private static class GuiChipDynamicItemResponder_Priority extends GuiChipContainerWidget<RoutingChipset_DynamicItemResponder>
     {
-
         public GuiChipDynamicItemResponder_Priority(Container inv, GuiScreen previous) {
             super(inv, previous);
         }
@@ -806,7 +792,6 @@ public class RoutingChipset_GuiFactory
 
     private static class GuiChipDynamicItemResponder_Filter extends GuiChipContainerWidget<RoutingChipset_DynamicItemResponder>
     {
-
         public GuiChipDynamicItemResponder_Filter(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
         }

@@ -150,7 +150,7 @@ public class RequestBranchNode
 
             if (craftersSamePriority.size() == 1) {
                 craftersToBalance.add(craftersSamePriority.poll());
-                craftersToBalance.get(0).addToWorkRequest(itemsNeeded);
+                craftersToBalance.get(0).addAdditionalItems(itemsNeeded);
             } else {
                 if (!craftersSamePriority.isEmpty())
                     craftersToBalance.add(craftersSamePriority.poll());
@@ -174,7 +174,7 @@ public class RequestBranchNode
                         CraftingTreeInteraction crafter = iter.next();
                         int request = Math.min(itemsNeeded, cap - floor);
                         if (request > 0) {
-                            int craftingDone = crafter.addToWorkRequest(request);
+                            int craftingDone = crafter.addAdditionalItems(request);
                             itemsNeeded -= craftingDone;
                         }
                     }
@@ -184,7 +184,7 @@ public class RequestBranchNode
             Iterator<CraftingTreeInteraction> iter = craftersToBalance.iterator();
             while (iter.hasNext()) {
                 CraftingTreeInteraction c = iter.next();
-                if (c.setsRequested > 0 && !c.finalizeWorkWithPromise())
+                if (c.setsRequested > 0 && !c.finalizeInteraction())
                     iter.remove();
             }
             itemsNeeded = getMissingCount();
@@ -580,13 +580,13 @@ public class RequestBranchNode
             return getPotentialSubPromises(needed, crafter);
         }
 
-        public int addToWorkRequest(int extraWork) {
-            int stacksRequested = (treeNode.getMissingCount() + setSize - 1) / setSize;
+        public int addAdditionalItems(int additional) {
+            int stacksRequested = (additional + setSize - 1) / setSize;
             setsRequested += stacksRequested;
             return stacksRequested*setSize;
         }
 
-        public boolean finalizeWorkWithPromise() {
+        public boolean finalizeInteraction() {
             int setsToCraft = Math.min(setsRequested, maxSetsAvailable);
             int setsAbleToCraft = calculateMaxPotentialSets(setsToCraft);
 
