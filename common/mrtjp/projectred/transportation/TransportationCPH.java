@@ -39,6 +39,9 @@ public class TransportationCPH implements IClientPacketHandler {
         case NetConstants.gui_Request_list:
             receiveRequestList(packet, mc);
             break;
+        case NetConstants.particle_Spawn:
+            RouteFX.handleClientPacket(packet, mc.theWorld);
+            break;
         }
     }
 
