@@ -30,7 +30,7 @@ public class GuiRequester extends GhostGuiScreen {
         this.pipe = pipe;
     }
 
-    WidgetItemSelection itemList = new WidgetItemSelection(xSize/2-260/2, 10, 260, 140);
+    WidgetItemSelection itemList = new WidgetItemSelection(xSize/2-220/2, 10, 220, 140);
     WidgetTextBox textFilter = new WidgetTextBox(xSize/2-150/2, 185, 150, 16, "") {
         @Override
         public void onTextChanged(String oldText) {
@@ -104,6 +104,9 @@ public class GuiRequester extends GhostGuiScreen {
         // Page + -
         add(new WidgetSimpleButton(85, 152, 16, 16).setActionCommand("p-").setText("-"));
         add(new WidgetSimpleButton(180, 152, 16, 16).setActionCommand("p+").setText("+"));
+
+        // Select all
+        add(new WidgetSimpleButton(190, 205, 24, 16).setActionCommand("all").setText("All"));
 
         askForListRefresh();
     }
@@ -193,6 +196,10 @@ public class GuiRequester extends GhostGuiScreen {
             itemList.pageUp();
         else if (ident.equals("p-"))
             itemList.pageDown();
+        else if (ident.equals("all")) {
+            if (itemList.getSelection() != null)
+                itemCount.setText(String.valueOf(Math.max(1, itemList.getSelection().stackSize)));
+        }
         else
             sendAction(ident);
     }

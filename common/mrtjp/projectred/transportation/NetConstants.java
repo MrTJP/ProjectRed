@@ -15,5 +15,7 @@ public class NetConstants {
     public static final int gui_Request_submit = 8;
     public static final int gui_Request_list = 9;
     public static final int gui_Request_listRefresh = 10;
+    
+    public static final int particle_Spawn = 11;
 
 }

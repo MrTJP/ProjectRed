@@ -71,7 +71,8 @@ public class TransportationSPH implements IServerPacketHandler {
     }
 
     private void handleRequestSubmit(PacketCustom packet, EntityPlayerMP sender) {
-        TMultiPart t = BasicUtils.getMultiPart(sender.worldObj, packet.readCoord(), 6);
+        BlockCoord bc = packet.readCoord();
+        TMultiPart t = BasicUtils.getMultiPart(sender.worldObj, bc, 6);
         if (t instanceof IWorldRequester) {
             RequestConsole r = new RequestConsole().setDestination((IWorldRequester) t);
 
@@ -84,10 +85,11 @@ public class TransportationSPH implements IServerPacketHandler {
             ItemKeyStack s = ItemKeyStack.get(packet.readItemStack(true));
             r.makeRequest(s);
 
-            if (r.requested() > 0)
-                sender.addChatMessage("Successfully requested " + r.requested() + " of " + s.getName() + ".");
-            else {
-                sender.addChatMessage("Could not request " + s.stackSize + " of " + s.getName() + ". Missing:");
+            if (r.requested() > 0) {
+                sender.addChatMessage("Successfully requested " + r.requested() + " of " + s.key().getName() + ".");
+                RouteFX.sendSpawnPacket(RouteFX.color_request, 8, bc, sender.worldObj);
+            } else {
+                sender.addChatMessage("Could not request " + s.stackSize + " of " + s.key().getName() + ". Missing:");
                 for (Entry<ItemKey, Integer> entry : r.getMissing().entrySet())
                     sender.addChatMessage(entry.getValue() + " of " + entry.getKey().getName());
             }

@@ -48,15 +48,6 @@ public class ItemKeyStack implements Comparable<ItemKeyStack>{
         return new ItemKeyStack(key.copy(), stackSize);
     }
 
-    /** Stack Interactions **/
-    public int getStackLimit() {
-        return key.getStackLimit();
-    }
-
-    public String getName() {
-        return key.getName();
-    }
-
     @Override
     public int compareTo(ItemKeyStack o) {
         int c = key.compareTo(o.key);

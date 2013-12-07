@@ -16,7 +16,7 @@ import net.minecraft.util.EnumChatFormatting;
 
 public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
 
-    public SimpleInventory filter = new SimpleInventory(9, "filter", 256);
+    public SimpleInventory filter = new SimpleInventory(9, "filter", 127);
 
     public boolean requestWhenEmpty = false;
 

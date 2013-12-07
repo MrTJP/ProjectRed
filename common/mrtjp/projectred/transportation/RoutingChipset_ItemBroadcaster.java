@@ -89,6 +89,9 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
                 manager.dispatchFailed();
                 continue;
             }
+            
+            ItemKeyStack reqKeyStack = next.getValue1();
+            IWorldRequester requester = next.getValue2();
 
             int side = extractOrient == -1 ? getInventoryProvider().getInterfacedSide() : extractOrient;
             InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
@@ -97,13 +100,18 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
                 inv.setHidePerType(true);
             else if (hideMode == 2)
                 inv.setHidePerSlot(true);
+            
+            if (!getRouteLayer().getRouter().canRouteTo(requester.getRouter().getIPAddress())) {
+                manager.dispatchFailed();
+                continue;
+            }
 
-            int toExtract = Math.min(inv.getItemCount(next.getValue1().key()), next.getValue1().stackSize);
+            int toExtract = Math.min(inv.getItemCount(reqKeyStack.key()), reqKeyStack.stackSize);
             toExtract = Math.min(toExtract, itemsRemaining);
-            toExtract = Math.min(toExtract, next.getValue1().makeStack().getMaxStackSize());
+            toExtract = Math.min(toExtract, reqKeyStack.makeStack().getMaxStackSize());
 
             boolean reStock = false;
-            int destinationSpace = next.getValue2().getActiveFreeSpace(next.getValue1().key());
+            int destinationSpace = requester.getActiveFreeSpace(reqKeyStack.key());
             if (destinationSpace < toExtract) {
                 toExtract = destinationSpace;
                 if (toExtract <= 0) {
@@ -113,22 +121,17 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
                 reStock = true;
             }
             
-            if (!getRouteLayer().getWorldRouter().getRouter().canRouteTo(next.getValue2().getRouter().getIPAddress())) {
-                manager.dispatchFailed();
-                continue;
-            }
-
-            int removed = inv.extractItem(next.getValue1().key(), toExtract);
+            int removed = inv.extractItem(reqKeyStack.key(), toExtract);
 
             if (removed <= 0) {
                 manager.dispatchFailed();
                 continue;
             }
 
-            ItemStack toSend = next.getValue1().key().makeStack(removed);
+            ItemStack toSend = reqKeyStack.key().makeStack(removed);
 
             getRouteLayer().queueStackToSend(toSend, getInventoryProvider().getInterfacedSide(),
-                    SendPriority.ACTIVE, next.getValue2().getRouter().getIPAddress());
+                    SendPriority.ACTIVE, requester.getRouter().getIPAddress());
 
             manager.dispatchSuccessful(removed, reStock);
 
