@@ -160,7 +160,10 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         if (dest != null) {
             IWorldRouter wr = dest.getParent();
             wr.itemEnroute(r);
+            RouteFX.sendSpawnPacket(RouteFX.color_sync, 8, new BlockCoord(wr.getContainer().tile()), world());
         }
+        
+        RouteFX.sendSpawnPacket(RouteFX.color_send, 8, new BlockCoord(tile()), world());
     }
 
     @Override
@@ -308,6 +311,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         if (needsWork())
             return;
 
+        int color = -1;
         r.output = ForgeDirection.UNKNOWN;
 
         // Reroute item if it needs one
@@ -315,8 +319,10 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         if (r.destinationIP < 0 || r.destinationIP >= 0 && r.hasArrived) {
             r.resetTrip();
             LogisticPathFinder f = new LogisticPathFinder(getRouter(), r.payload.key()).setExclusions(r.travelLog).findBestResult();
-            if (f.getResult() != null)
+            if (f.getResult() != null) {
                 r.setDestination(f.getResult().responder).setPriority(f.getResult().priority);
+                color = RouteFX.color_route;
+            }
         }
         r.refreshIP();
 
@@ -326,25 +332,31 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
             if (r.output == ForgeDirection.UNKNOWN) {
                 r.resetTrip();
                 LogisticPathFinder f = new LogisticPathFinder(getRouter(), r.payload.key()).setExclusions(r.travelLog).findBestResult();
-                if (f.getResult() != null)
+                if (f.getResult() != null) {
                     r.setDestination(f.getResult().responder).setPriority(f.getResult().priority);
+                    color = RouteFX.color_route;
+                }
             }
             r.hasArrived = true;
             itemArrived(r);
             r.travelLog.set(getRouter().getIPAddress());
+            color = RouteFX.color_receive;
         }
 
         // Relay item
-        if (r.output == ForgeDirection.UNKNOWN)
+        if (r.output == ForgeDirection.UNKNOWN) {
             r.output = getRouter().getExitDirection(r.destinationIP);
+            color = RouteFX.color_relay;
+        }
 
         // Set to wander, clear travel log
         if (r.output == ForgeDirection.UNKNOWN) {
             super.resolveDestination(r);
             r.resetTrip();
             r.travelLog.clear();
+            color = RouteFX.color_routeLost;
         }
-
+        RouteFX.sendSpawnPacket(color, 8, new BlockCoord(tile()), world());
         adjustSpeed(r);
     }
 

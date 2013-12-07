@@ -41,9 +41,9 @@ public class MathLib
     }
 
     public static Vector3 bezier(Vector3 s, Vector3 c1, Vector3 c2, Vector3 e, float t) {
-        if ((t < 0.0F) || (t > 1.0F)) {
-            throw new InvalidParameterException("t is out of range, with a value of :" + t);
-        }
+        if ((t < 0.0F) || (t > 1.0F))
+            return s;
+
         float one_minus_t = 1.0F - t;
 
         Vector3 retValue = new Vector3(0.0D, 0.0D, 0.0D);
@@ -53,9 +53,8 @@ public class MathLib
         terms[2] = calcNewVector(3.0F * one_minus_t * t * t, c2);
         terms[3] = calcNewVector(t * t * t, e);
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++)
             retValue.add(terms[i]);
-        }
 
         return retValue;
     }
