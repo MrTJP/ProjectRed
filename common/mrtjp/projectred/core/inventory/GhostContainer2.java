@@ -10,8 +10,8 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 
-public class GhostContainer2 extends Container {
-
+public class GhostContainer2 extends Container 
+{
     protected IInventory playerInv;
 
     boolean allowDragging = true;
@@ -122,8 +122,8 @@ public class GhostContainer2 extends Container {
         
     }
 
-    public static class SlotExtended extends Slot {
-
+    public static class SlotExtended extends Slot 
+    {
         protected boolean allowRemove = true;
         protected boolean allowPlace = true;
         protected boolean enableGhosting = false;
@@ -195,7 +195,8 @@ public class GhostContainer2 extends Container {
         }
     }
 
-    public static interface ISlotController {
+    public static interface ISlotController 
+    {
         public boolean canTake();
         public boolean canPlace(ItemStack stack);
     }

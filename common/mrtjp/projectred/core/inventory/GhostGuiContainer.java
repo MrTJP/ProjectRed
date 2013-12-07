@@ -2,13 +2,11 @@ package mrtjp.projectred.core.inventory;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Mouse;
@@ -50,7 +48,7 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
             if (getPreviousScreen() instanceof IStackableGui)
                 ((IStackableGui) getPreviousScreen()).prepareReDisplay();
 
-            shiftScreen(getPreviousScreen());
+            shiftScreen(getPreviousScreen(), getPreviousScreen() instanceof GuiContainer);
             return;
         } else {
             super.keyTyped(c, i);
@@ -148,10 +146,10 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
     public void addWidgets() {
     }
 
-    public void shiftScreen(GuiScreen gui) {
+    public void shiftScreen(GuiScreen gui, boolean containerHack) {
         mc.displayGuiScreen(gui);
 
-        if (gui instanceof GuiContainer) {
+        if (gui instanceof GuiContainer && containerHack) {
             GuiContainer guic = (GuiContainer)gui;
             guic.inventorySlots.windowId = inventorySlots.windowId;
         }
