@@ -1,11 +1,3 @@
 TODO:
-
-- Upon sending broadcasts check directly with the receiver for free
-  space. This should allow crafters to craft absurdly large amounts 
-  of items without worrying about storage space. Items will wait until
-  the crafter can manage more before sending.
-
-- Broadcasters should override the getPriority method to allow prioritizing
-  broadcasters in request branches.
   
 - Status fx

@@ -28,7 +28,7 @@ public class DeliveryManager {
         if (first.getValue1().stackSize <= 0)
             orders.removeFirst();
         else if (reStack)
-            reStack();
+            reStock();
     }
 
     public void dispatchFailed() {
@@ -39,7 +39,7 @@ public class DeliveryManager {
         onOrdersChanged();
     }
 
-    public void reStack() {
+    public void reStock() {
         Pair2<ItemKeyStack, IWorldRequester> p = orders.removeFirst();
         orders.addLast(p);
     }

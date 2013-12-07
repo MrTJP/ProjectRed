@@ -28,7 +28,7 @@ public class RoutingChipset_ContainerFactory {
 
         public ChipGhostContainer<T> getNewInstance() {
             ChipGhostContainer<T> c = new ChipGhostContainer<T>(player, chip);
-            //c.windowId = this.windowId;
+
             return c;
         }
 

@@ -100,9 +100,9 @@ public class RequestBranchNode
 
     private boolean getPromisesFromCrafters() {
         List<StartEndPath> allRouters = new ArrayList<StartEndPath>(requester.getRouter().getRoutesByCost());
-        List<CraftingPromise> allCrafters = new ArrayList<CraftingPromise>(allRouters.size());
         Collections.sort(allRouters, new PathSorter(0));
         
+        List<CraftingPromise> allCrafters = new ArrayList<CraftingPromise>(allRouters.size());
         for (StartEndPath l : allRouters) {
             Router r = l.end;
 
@@ -116,8 +116,8 @@ public class RequestBranchNode
 
         Iterator<CraftingPromise> allCraftersIt = allCrafters.iterator();
 
-        PriorityQueue<CraftingTreeInteraction> craftersSamePriority = new PriorityQueue<CraftingTreeInteraction>(5);
-        ArrayList<CraftingTreeInteraction> craftersToBalance = new ArrayList<CraftingTreeInteraction>();
+        PriorityQueue<CraftingTreeInteraction> balanced = new PriorityQueue<CraftingTreeInteraction>(5);
+        ArrayList<CraftingTreeInteraction> unbalanced = new ArrayList<CraftingTreeInteraction>();
 
         boolean recursionFinished = false;
 
@@ -133,7 +133,7 @@ public class RequestBranchNode
 
             int itemsNeeded = getMissingCount();
 
-            if (lastCrafter != null && (craftersSamePriority.isEmpty() || currentPriority == lastCrafter.getPriority())) {
+            if (lastCrafter != null && (balanced.isEmpty() || currentPriority == lastCrafter.getPriority())) {
                 currentPriority = lastCrafter.getPriority();
                 CraftingPromise crafter = lastCrafter;
                 lastCrafter = null;
@@ -141,35 +141,35 @@ public class RequestBranchNode
                     continue;
 
                 CraftingTreeInteraction cti = new CraftingTreeInteraction(crafter, itemsNeeded, this);
-                craftersSamePriority.add(cti);
+                balanced.add(cti);
                 continue;
             }
 
-            if (craftersToBalance.isEmpty() && craftersSamePriority.isEmpty())
+            if (unbalanced.isEmpty() && balanced.isEmpty())
                 continue;
 
-            if (craftersSamePriority.size() == 1) {
-                craftersToBalance.add(craftersSamePriority.poll());
-                craftersToBalance.get(0).addAdditionalItems(itemsNeeded);
+            if (balanced.size() == 1) {
+                unbalanced.add(balanced.poll());
+                unbalanced.get(0).addAdditionalItems(itemsNeeded);
             } else {
-                if (!craftersSamePriority.isEmpty())
-                    craftersToBalance.add(craftersSamePriority.poll());
+                if (!balanced.isEmpty())
+                    unbalanced.add(balanced.poll());
 
-                while (!craftersToBalance.isEmpty() && itemsNeeded > 0) {
+                while (!unbalanced.isEmpty() && itemsNeeded > 0) {
 
-                    while (!craftersSamePriority.isEmpty() && craftersSamePriority.peek().toDo() <= craftersToBalance.get(0).toDo())
-                        craftersToBalance.add(craftersSamePriority.poll());
+                    while (!balanced.isEmpty() && balanced.peek().toDo() <= unbalanced.get(0).toDo())
+                        unbalanced.add(balanced.poll());
 
                     int cap;
-                    if (!craftersSamePriority.isEmpty())
-                        cap = craftersSamePriority.peek().toDo();
+                    if (!balanced.isEmpty())
+                        cap = balanced.peek().toDo();
                     else
                         cap = Integer.MAX_VALUE;
 
-                    int floor = craftersToBalance.get(0).toDo();
-                    cap = Math.min(cap, floor + (itemsNeeded + craftersToBalance.size() - 1) / craftersToBalance.size());
+                    int floor = unbalanced.get(0).toDo();
+                    cap = Math.min(cap, floor + (itemsNeeded + unbalanced.size() - 1) / unbalanced.size());
 
-                    Iterator<CraftingTreeInteraction> iter = craftersToBalance.iterator();
+                    Iterator<CraftingTreeInteraction> iter = unbalanced.iterator();
                     while (iter.hasNext()) {
                         CraftingTreeInteraction crafter = iter.next();
                         int request = Math.min(itemsNeeded, cap - floor);
@@ -181,7 +181,7 @@ public class RequestBranchNode
                 }
             }
 
-            Iterator<CraftingTreeInteraction> iter = craftersToBalance.iterator();
+            Iterator<CraftingTreeInteraction> iter = unbalanced.iterator();
             while (iter.hasNext()) {
                 CraftingTreeInteraction c = iter.next();
                 if (c.setsRequested > 0 && !c.finalizeInteraction())
@@ -192,7 +192,7 @@ public class RequestBranchNode
             if (itemsNeeded <= 0)
                 break;
 
-            if (!craftersToBalance.isEmpty())
+            if (!unbalanced.isEmpty())
                 recursionFinished = false;
         }
         return isDone();
@@ -215,7 +215,10 @@ public class RequestBranchNode
     }
 
     private boolean getPromisesFromBroadcasters() {
-        for (StartEndPath l : requester.getRouter().getRoutesByCost()) {
+        List<StartEndPath> allRouters = new ArrayList<StartEndPath>(requester.getRouter().getRoutesByCost());
+        Collections.sort(allRouters, new PathSorter(1.0));
+
+        for (StartEndPath l : allRouters) {
             if (isDone())
                 break;
             Router r = l.end;
@@ -625,11 +628,18 @@ public class RequestBranchNode
             
             int p1 = wr1 instanceof IWorldBroadcaster ? ((IWorldBroadcaster)wr1).getPriority() : Integer.MIN_VALUE;
             int p2 = wr2 instanceof IWorldBroadcaster ? ((IWorldBroadcaster)wr2).getPriority() : Integer.MIN_VALUE;
-            c = p2-p1;
             
+            if (p1 > Integer.MIN_VALUE) {
+                if (p2 > Integer.MIN_VALUE)
+                    c = p2 - p1;
+                else
+                    return -1;
+            } else if (p2 > Integer.MIN_VALUE)
+                return 1;
+
             if (c != 0)
                 return (int) c;
-            
+
             int switchKey = 1;
             if (o1.end.getIPAddress() - o2.end.getIPAddress() > 0) {
                 switchKey = -1;

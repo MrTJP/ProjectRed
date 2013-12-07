@@ -109,7 +109,7 @@ public class WidgetHoloSideSelect extends GhostWidget
 
         HitCoord coord = tracer.getNearestHit();
 
-        if (coord != null)
+        if (coord != null && !Mouse.isButtonDown(0))
             drawHighlight(t, coord.side, 0x444444);
 
         if (activeHighlight) {

@@ -2,6 +2,7 @@ package mrtjp.projectred.transportation;
 
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.inventory.InventoryWrapper;
+import mrtjp.projectred.core.utils.ItemKey;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -159,5 +160,15 @@ public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart i
         else
             return array[1];
     }
-
+    
+    @Override
+    public int getActiveFreeSpace(ItemKey item) {
+        IInventory real = getInventory();
+        if (real == null)
+            return 0;
+        int side = getInterfacedSide();
+        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
+        int free = inv.getRoomAvailableForItem(item);
+        return free;
+    }
 }
