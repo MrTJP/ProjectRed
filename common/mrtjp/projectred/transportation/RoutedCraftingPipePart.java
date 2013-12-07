@@ -179,16 +179,23 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
     private void lostHandleTick() {
         if (lost.isEmpty())
             return;
-        
+                
         PostponedWorkItem<ItemKeyStack> post = null;
         
         while ((post = lost.poll()) != null) {
             ItemKeyStack stack = post.getItem();
+            int toRequest = stack.stackSize;
+            toRequest = Math.min(toRequest, getActiveFreeSpace(stack.key()));
+            
+            if (toRequest <= 0) {
+                lost.add(new PostponedWorkItem<ItemKeyStack>(stack, 5000));
+                continue;
+            }
             
             RequestConsole req = new RequestConsole().setDestination(this);
             req.setPulling(true).setCrafting(true).setPartials(true);
             
-            int requested = req.makeRequest(stack).requested();
+            int requested = req.makeRequest(ItemKeyStack.get(stack.key(), toRequest)).requested();
             
             if (requested < stack.stackSize) {
                 stack.stackSize -= requested;
@@ -201,7 +208,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
     public void trackedItemLost(ItemKeyStack s) {
         lost.add(new PostponedWorkItem<ItemKeyStack>(s, 5000));
     }
-    
+
     private void removeExcess(ItemKey item, int amount) {
         Iterator<Pair2<ItemKeyStack, IWorldRequester>> iter = excess.iterator();
         while (iter.hasNext()) {

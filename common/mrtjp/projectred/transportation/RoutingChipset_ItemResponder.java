@@ -14,33 +14,33 @@ import net.minecraft.util.EnumChatFormatting;
 
 import org.lwjgl.input.Keyboard;
 
-public class RoutingChipset_ItemResponder extends RoutingChipset {
-
+public class RoutingChipset_ItemResponder extends RoutingChipset
+{
     public SimpleInventory filter = new SimpleInventory(9, "filter", 1);
 
     private static final SendPriority priority = SendPriority.PASSIVE;
-    public int customPriority = 0;
+    public int preference = 0;
 
     public boolean filterExclude = false;
     public boolean fuzzyMode = false;
     public int fuzzyDamageMode = 0;
     public static final int[] fuzzyPercent = new int[] {0, 25, 50, 75, 100};
 
-    public void customUp() {
+    public void prefUp() {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
-            customPriority += 10;
+            preference += 10;
         else
-            customPriority += 1;
-        if (customPriority > 100)
-            customPriority = 100;
+            preference += 1;
+        if (preference > 100)
+            preference = 100;
     }
-    public void customDown() {
+    public void prefDown() {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
-            customPriority -= 10;
+            preference -= 10;
         else
-            customPriority -= 1;
-        if (customPriority < -100)
-            customPriority = -100;
+            preference -= 1;
+        if (preference < -100)
+            preference = -100;
     }
     public void shiftFuzzy() {
         fuzzyDamageMode = (fuzzyDamageMode + 1) % 5;
@@ -54,7 +54,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset {
         if (real == null || side < 0)
             return null;
 
-        if (priority.ordinal() > rival.priority.ordinal() || priority.ordinal() == rival.priority.ordinal() && customPriority > rival.customPriority) {
+        if (priority.ordinal() > rival.priority.ordinal() || priority.ordinal() == rival.priority.ordinal() && preference > rival.customPriority) {
             InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll()
                     .setFuzzy(fuzzyMode).setFuzzyPercent(fuzzyPercent[fuzzyDamageMode]);
 
@@ -62,7 +62,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset {
                 InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
                 int room = inv.getRoomAvailableForItem(item);
                 if (room > 0)
-                    return new SyncResponse().setPriority(priority).setCustomPriority(customPriority).setItemCount(room);
+                    return new SyncResponse().setPriority(priority).setCustomPriority(preference).setItemCount(room);
             }
         }
         return null;
@@ -71,8 +71,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset {
     @Override
     public void save(NBTTagCompound tag) {
         filter.save(tag);
-        //tag.setByte("pri", (byte) priority.ordinal());
-        tag.setInteger("cpri", customPriority);
+        tag.setInteger("cpri", preference);
         tag.setBoolean("mode", filterExclude);
         tag.setBoolean("fuz", fuzzyMode);
         tag.setByte("fuzd", (byte) fuzzyDamageMode);
@@ -81,8 +80,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset {
     @Override
     public void load(NBTTagCompound tag) {
         filter.load(tag);
-        //priority = SendPriority.values()[tag.getByte("pri")];
-        customPriority = tag.getInteger("cpri");
+        preference = tag.getInteger("cpri");
         filterExclude = tag.getBoolean("mode");
         fuzzyMode = tag.getBoolean("fuz");
         fuzzyDamageMode = tag.getByte("fuzd");
@@ -97,8 +95,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset {
     }
 
     public void addPriorityInfo(List<String> list) {
-        list.add(EnumChatFormatting.GRAY + "Priority: " + priority.name);
-        list.add(EnumChatFormatting.GRAY + "Severity: " + customPriority);
+        list.add(EnumChatFormatting.GRAY + "Preference: " + preference);
     }
     public void addFilterInfo(List<String> list) {
         list.add(EnumChatFormatting.GRAY + "Fuzzy Mode: " + fuzzyMode);

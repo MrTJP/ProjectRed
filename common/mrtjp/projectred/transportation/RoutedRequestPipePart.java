@@ -1,5 +1,6 @@
 package mrtjp.projectred.transportation;
 
+import mrtjp.projectred.core.utils.ItemKey;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
@@ -74,6 +75,14 @@ public class RoutedRequestPipePart extends RoutedPipePart_InvConnect {
         return dir;
     }
 
+    @Override
+    public int getActiveFreeSpace(ItemKey item) {
+        if (getInventory() != null)
+            return super.getActiveFreeSpace(item);
+        
+        return Integer.MAX_VALUE;
+    }
+    
     @Override
     public String getType() {
         return "pr_rrequest";

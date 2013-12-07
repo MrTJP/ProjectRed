@@ -366,6 +366,11 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     }
 
     @Override
+    public int getActiveFreeSpace(ItemKey item) {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
     public IWorldRouter getWorldRouter() {
         return this;
     }

@@ -108,14 +108,14 @@ public class RoutingChipset_GuiFactory
             if (ident.equals("pri")) {
                 ChipGhostContainer<RoutingChipset_ItemResponder> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
-                shiftScreen(new GuiChipItemResponder_Priority(g, this));
+                shiftScreen(new GuiChipItemResponder_Priority(g, this), true);
             } else if (ident.equals("filt")) {
                 ChipGhostContainer<RoutingChipset_ItemResponder> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
                 int s = 0;
                 for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                     g.addCustomSlot(new SlotExtended(g.getChip().filter, s++, p.getValue1(), p.getValue2()).setLimit(1).setGhosting(true));
-                shiftScreen(new GuiChipItemResponder_Filter(g, this));
+                shiftScreen(new GuiChipItemResponder_Filter(g, this), true);
             }
         }
 
@@ -157,22 +157,22 @@ public class RoutingChipset_GuiFactory
         public void drawBackground() {
             drawChipIcon(EnumRoutingChip.ITEMRESPONDER.icon);
             drawChipOverlay();
-            // TODO graphic for priority
-            FontUtils.drawCenteredString(getChip().customPriority + "", 146, 38, PRColors.WHITE.rgb);
+
+            FontUtils.drawCenteredString(getChip().preference + "", 88, 38, PRColors.WHITE.rgb);
         }
 
         @Override
         public void actionPerformed(String ident, Object... params) {
-            if (ident.equals("customUP"))
-                getChip().customUp();
-            else if (ident.equals("customDOWN"))
-                getChip().customDown();
+            if (ident.equals("prefUP"))
+                getChip().prefUp();
+            else if (ident.equals("prefDOWN"))
+                getChip().prefDown();
         }
 
         @Override
         public void addWidgets() {
-            add(new WidgetSimpleButton(140, 22, 12, 12).setText("+").setActionCommand("customUP"));
-            add(new WidgetSimpleButton(140, 50, 12, 12).setText("-").setActionCommand("customDOWN"));
+            add(new WidgetSimpleButton(82, 22, 12, 12).setText("+").setActionCommand("prefUP"));
+            add(new WidgetSimpleButton(82, 50, 12, 12).setText("-").setActionCommand("prefDOWN"));
         }
     }
 
@@ -266,11 +266,11 @@ public class RoutingChipset_GuiFactory
                 int s = 0;
                 for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                     g.addCustomSlot(new SlotExtended(g.getChip().filter, s++, p.getValue1(), p.getValue2()).setLimit(1).setGhosting(true));
-                shiftScreen(new GuiChipItemExtractor_Filter(g, this));
+                shiftScreen(new GuiChipItemExtractor_Filter(g, this), true);
             } else if (ident.equals("sneak")) {
                 ChipGhostContainer<RoutingChipset_ItemExtractor> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
-                shiftScreen(new GuiChipItemExtractor_Orient(g, this));
+                shiftScreen(new GuiChipItemExtractor_Orient(g, this), true);
             }
         }
 
@@ -446,26 +446,21 @@ public class RoutingChipset_GuiFactory
                 int s = 0;
                 for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                     g.addCustomSlot(new SlotExtended(g.getChip().filter, s++, p.getValue1(), p.getValue2()).setLimit(1).setGhosting(true));
-                shiftScreen(new GuiChipItemBroadcaster_Filter(g, this));
+                shiftScreen(new GuiChipItemBroadcaster_Filter(g, this), true);
             } else if (ident.equals("sneak")) {
                 ChipGhostContainer<RoutingChipset_ItemBroadcaster> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
-                shiftScreen(new GuiChipItemBroadcaster_Orient(g, this));
+                shiftScreen(new GuiChipItemBroadcaster_Orient(g, this), true);
+            } else if (ident.equals("pri")) {
+                ChipGhostContainer<RoutingChipset_ItemBroadcaster> g = getCleanContainer();
+                g.addPlayerInventory(8, 86);
+                shiftScreen(new GuiChipItemBroadcaster_Priority(g, this), true);
             }
         }
 
         @Override
         public void addWidgets() {
-            add(new WidgetDotSelector(100, 47) {
-                @Override
-                public List<String> getOverlayText() {
-                    List<String> list = new LinkedList<String>();
-                    list.add("Orientation");
-                    getChip().addOrientInfo(list);
-                    return list;
-                }
-            }.setActionCommand("sneak"));
-            add(new WidgetDotSelector(80, 37) {
+            add(new WidgetDotSelector(76, 51) {
                 @Override
                 public List<String> getOverlayText() {
                     List<String> list = new LinkedList<String>();
@@ -474,6 +469,25 @@ public class RoutingChipset_GuiFactory
                     return list;
                 }
             }.setActionCommand("filt"));
+
+            add(new WidgetDotSelector(89, 33) {
+                public List<String> getOverlayText() {
+                    List<String> list = new LinkedList<String>();
+                    list.add("Priority");
+                    getChip().addPriorityInfo(list);
+                    return list;
+                }
+            }.setActionCommand("pri"));
+
+            add(new WidgetDotSelector(105, 47) {
+                @Override
+                public List<String> getOverlayText() {
+                    List<String> list = new LinkedList<String>();
+                    list.add("Orientation");
+                    getChip().addOrientInfo(list);
+                    return list;
+                }
+            }.setActionCommand("sneak"));
         }
 
         @Override
@@ -594,6 +608,36 @@ public class RoutingChipset_GuiFactory
             }
         }
     }
+    
+    private static class GuiChipItemBroadcaster_Priority extends GuiChipContainerWidget<RoutingChipset_ItemBroadcaster>
+    {
+        public GuiChipItemBroadcaster_Priority(Container inventorySlots, GuiScreen previous) {
+            super(inventorySlots, previous);
+        }
+
+        @Override
+        public void actionPerformed(String ident, Object... params) {
+            if (ident.equals("prefUP"))
+                getChip().prefUp();
+            else if (ident.equals("prefDOWN"))
+                getChip().prefDown();
+        }
+
+        @Override
+        public void addWidgets() {
+            add(new WidgetSimpleButton(82, 22, 12, 12).setText("+").setActionCommand("prefUP"));
+            add(new WidgetSimpleButton(82, 50, 12, 12).setText("-").setActionCommand("prefDOWN"));
+        }
+
+        @Override
+        public void drawBackground() {
+            drawChipIcon(EnumRoutingChip.ITEMBROADCASTER.icon);
+            drawChipOverlay();
+
+            FontUtils.drawCenteredString(getChip().preference + "", 88, 38, PRColors.WHITE.rgb);
+        }
+        
+    }
 
     private static class GuiChipItemStockKeeper extends GuiChipContainerWidget<RoutingChipset_ItemStockKeeper>
     {
@@ -609,11 +653,11 @@ public class RoutingChipset_GuiFactory
                 int s = 0;
                 for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                     g.addCustomSlot(new SlotExtended(g.getChip().filter, s++, p.getValue1(), p.getValue2()).setGhosting(true));
-                shiftScreen(new GuiChipItemStockKeeper_Stock(g, this));
+                shiftScreen(new GuiChipItemStockKeeper_Stock(g, this), true);
             } else if (ident.equals("mode")) {
                 ChipGhostContainer<RoutingChipset_ItemStockKeeper> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
-                shiftScreen(new GuiChipItemStockKeeper_FillMode(g, this));
+                shiftScreen(new GuiChipItemStockKeeper_FillMode(g, this), true);
             }
         }
 
@@ -718,11 +762,11 @@ public class RoutingChipset_GuiFactory
             if (ident.equals("pri")) {
                 ChipGhostContainer<RoutingChipset_DynamicItemResponder> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
-                shiftScreen(new GuiChipDynamicItemResponder_Priority(g, this));
+                shiftScreen(new GuiChipDynamicItemResponder_Priority(g, this), true);
             } else if (ident.equals("filt")) {
                 ChipGhostContainer<RoutingChipset_DynamicItemResponder> g = getCleanContainer();
                 g.addPlayerInventory(8, 86);
-                shiftScreen(new GuiChipDynamicItemResponder_Filter(g, this));
+                shiftScreen(new GuiChipDynamicItemResponder_Filter(g, this), true);
             }
         }
 
@@ -765,28 +809,21 @@ public class RoutingChipset_GuiFactory
             drawChipIcon(EnumRoutingChip.DYNAMICITEMRESPONDER.icon);
             drawChipOverlay();
 
-            FontUtils.drawCenteredString(getChip().priority.name, 31, 38, PRColors.WHITE.rgb);
-            FontUtils.drawCenteredString(getChip().customPriority + "", 146, 38, PRColors.WHITE.rgb);
+            FontUtils.drawCenteredString(getChip().preference + "", 88, 38, PRColors.WHITE.rgb);
         }
 
         @Override
         public void actionPerformed(String ident, Object... params) {
-            if (ident.equals("priorityUP"))
-                getChip().priorityUp();
-            else if (ident.equals("priorityDOWN"))
-                getChip().priorityDown();
-            else if (ident.equals("customUP"))
-                getChip().customUp();
-            else if (ident.equals("customDOWN"))
-                getChip().customDown();
+            if (ident.equals("prefUP"))
+                getChip().prefUp();
+            else if (ident.equals("prefDOWN"))
+                getChip().prefDown();
         }
 
         @Override
         public void addWidgets() {
-            add(new WidgetSimpleButton(13, 22, 35, 12).setText("+").setActionCommand("priorityUP"));
-            add(new WidgetSimpleButton(13, 50, 35, 12).setText("-").setActionCommand("priorityDOWN"));
-            add(new WidgetSimpleButton(140, 22, 12, 12).setText("+").setActionCommand("customUP"));
-            add(new WidgetSimpleButton(140, 50, 12, 12).setText("-").setActionCommand("customDOWN"));
+            add(new WidgetSimpleButton(82, 22, 12, 12).setText("+").setActionCommand("prefUP"));
+            add(new WidgetSimpleButton(82, 50, 12, 12).setText("-").setActionCommand("prefDOWN"));
         }
     }
 
