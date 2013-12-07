@@ -6,6 +6,7 @@ import java.util.BitSet;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -116,10 +117,17 @@ public class Router implements Comparable<Router>
         HashMap<Router, StartEndPath> newAdjacent;
         LSPathFinder finder = new LSPathFinder(wr, Configurator.maxDetectionCount, Configurator.maxDetectionLength);
         newAdjacent = finder.getResult();
-
-        for (Router r : newAdjacent.keySet())
-            if (r.getParent().needsWork())
+        
+        Iterator<Router> it = newAdjacent.keySet().iterator();
+        while (it.hasNext()) {
+            Router r = it.next();
+            if (r.getParent() == null) {
+                r.decommission();
+                it.remove();
+            }
+            else if (r.getParent().needsWork())
                 return false;
+        }
         
         if (adjacentLinks.size() != newAdjacent.size()) // Different number of connections
             adjacentChanged = true;
