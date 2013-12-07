@@ -31,10 +31,11 @@ import codechicken.core.IGuiPacketSender;
 import codechicken.core.ServerUtils;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.vec.BlockCoord;
 
 public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements IWorldCrafter {
 
-    private SimpleInventory matrix = new SimpleInventory(10, "matrix", 256);
+    private SimpleInventory matrix = new SimpleInventory(10, "matrix", 127);
     private DeliveryManager manager = new DeliveryManager();
     
     private final LinkedList<Pair2<ItemKeyStack, IWorldRequester>> excess = new LinkedList<Pair2<ItemKeyStack, IWorldRequester>>();
@@ -109,6 +110,9 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
     }
 
     private void operationTick() {
+        if (!manager.hasOrders() && excess.isEmpty())
+            return;
+
         IInventory real = getInventory();
         if (real == null) {
             if (manager.hasOrders())
@@ -124,13 +128,15 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         List<ItemKeyStack> wanted = getCraftedItems();
         if (wanted == null || wanted.isEmpty())
             return;
+        
+        RouteFX.sendSpawnPacket(RouteFX.color_checkInv, 8, new BlockCoord(tile()), world());
 
         int itemsleft = itemsToExtract();
         int stacksleft = stacksToExtract();
 
         while (itemsleft > 0 && stacksleft > 0 && (manager.hasOrders() || !excess.isEmpty())) {
             Pair2<ItemKeyStack, IWorldRequester> nextOrder;
-            boolean processingOrder=false;
+            boolean processingOrder = false;
             if (manager.hasOrders()) {
                 nextOrder = manager.peek();
                 processingOrder = true;
@@ -138,7 +144,6 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
                 nextOrder = excess.getFirst();
 
             ItemKeyStack keyStack = nextOrder.getValue1();
-
             int maxToSend = Math.min(itemsleft, keyStack.stackSize);
             maxToSend = Math.min(keyStack.key().getStackLimit(), maxToSend);
             int available = inv.extractItem(keyStack.key(), maxToSend);
@@ -214,7 +219,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         while (iter.hasNext()) {
             ItemKeyStack stack = iter.next().getValue1();
             if (stack.key().equals(item))
-                if (amount > stack.stackSize) {
+                if (amount >= stack.stackSize) {
                     amount -= stack.stackSize;
                     iter.remove();
                     if (amount <= 0)
