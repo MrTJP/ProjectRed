@@ -12,6 +12,7 @@ import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
+import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise;
 import mrtjp.projectred.transportation.RoutedPayload.SendPriority;
 import net.minecraft.inventory.IInventory;
@@ -84,7 +85,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
         int stacksRemaining = stacksToExtract();
         int itemsRemaining = itemsToExtract();
         while (manager.hasOrders() && (next = manager.peek()) != null && stacksRemaining > 0 && itemsRemaining > 0) {
-            IInventory real = getInventoryProvider().getInventory();
+            IInventory real = inventoryProvider().getInventory();
             if (real == null) {
                 manager.dispatchFailed();
                 continue;
@@ -93,7 +94,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
             ItemKeyStack reqKeyStack = next.getValue1();
             IWorldRequester requester = next.getValue2();
 
-            int side = extractOrient == -1 ? getInventoryProvider().getInterfacedSide() : extractOrient;
+            int side = extractOrient == -1 ? inventoryProvider().getInterfacedSide() : extractOrient;
             InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
 
             if (hideMode == 1)
@@ -101,7 +102,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
             else if (hideMode == 2)
                 inv.setHidePerSlot(true);
             
-            if (!getRouteLayer().getRouter().canRouteTo(requester.getRouter().getIPAddress())) {
+            if (!routeLayer().getRouter().canRouteTo(requester.getRouter().getIPAddress())) {
                 manager.dispatchFailed();
                 continue;
             }
@@ -130,7 +131,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
 
             ItemStack toSend = reqKeyStack.key().makeStack(removed);
 
-            getRouteLayer().queueStackToSend(toSend, getInventoryProvider().getInterfacedSide(),
+            routeLayer().queueStackToSend(toSend, inventoryProvider().getInterfacedSide(),
                     SendPriority.ACTIVE, requester.getRouter().getIPAddress());
 
             manager.dispatchSuccessful(removed, reStock);
@@ -142,10 +143,10 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
 
     @Override
     public void requestPromises(RequestBranchNode request, int existingPromises) {
-        IInventory real = getInventoryProvider().getInventory();
+        IInventory real = inventoryProvider().getInventory();
         if (real == null)
             return;
-        int side = extractOrient == -1 ? getInventoryProvider().getInterfacedSide() : extractOrient;
+        int side = extractOrient == -1 ? inventoryProvider().getInterfacedSide() : extractOrient;
 
         InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
         InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll();
@@ -166,7 +167,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
                 DeliveryPromise promise = new DeliveryPromise();
                 promise.setPackage(requested)
                 .setSize(Math.min(request.getMissingCount(), numberAvailable))
-                .setSender(getRouteLayer().getBroadcaster());
+                .setSender(routeLayer().getBroadcaster());
 
                 request.addPromise(promise);
             }
@@ -180,11 +181,11 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
 
     @Override
     public void getProvidedItems(Map<ItemKey, Integer> map) {
-        IInventory real = getInventoryProvider().getInventory();
+        IInventory real = inventoryProvider().getInventory();
         if (real == null)
             return;
 
-        int side = extractOrient == -1 ? getInventoryProvider().getInterfacedSide() : extractOrient;
+        int side = extractOrient == -1 ? inventoryProvider().getInterfacedSide() : extractOrient;
 
         InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
         InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll();
@@ -269,5 +270,10 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
     
     public void addOrientInfo(List<String> list) {
         list.add(EnumChatFormatting.GRAY + "Extract Orientation: " + (extractOrient == -1 ? "Default" : dirs[extractOrient]));
+    }
+    
+    @Override
+    public EnumRoutingChip getChipType() {
+        return EnumRoutingChip.ITEMBROADCASTER;
     }
 }

@@ -14,7 +14,7 @@ import mrtjp.projectred.core.inventory.WidgetButton.WidgetSimpleButton;
 import mrtjp.projectred.core.inventory.WidgetHoloSideSelect;
 import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
-import mrtjp.projectred.transportation.RoutingChipset_ContainerFactory.ChipGhostContainer;
+import mrtjp.projectred.transportation.RoutingChipContainerFactory.ChipGhostContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -27,20 +27,22 @@ import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.FontUtils;
 
-public class RoutingChipset_GuiFactory
+public class RoutingChipGuiFactory
 {
     public static GuiContainer getGui(Container c, int meta) {
-        if (meta == 0)
+        if (meta == EnumRoutingChip.ITEMRESPONDER.ordinal() || meta == EnumRoutingChip.ITEMTERMINATOR.ordinal())
             return new GuiChipItemResponder(c);
-        else if (meta == 1)
+        else if (meta == EnumRoutingChip.ITEMEXTRACTOR.ordinal())
             return new GuiChipItemExtractor(c);
-        else if (meta == 2)
+        else if (meta == EnumRoutingChip.ITEMBROADCASTER.ordinal())
             return new GuiChipItemBroadcaster(c);
-        else if (meta == 3)
+        else if (meta == EnumRoutingChip.ITEMSTOCKKEEPER.ordinal())
             return new GuiChipItemStockKeeper(c);
-        else if (meta == 4)
+        else if (meta == EnumRoutingChip.DYNAMICITEMRESPONDER.ordinal())
             return new GuiChipDynamicItemResponder(c);
-
+        else if (meta == EnumRoutingChip.ITEMOVERFLOWRESPONDER.ordinal())
+            return new GuiChipItemOverflowResponder(c);
+        
         return null;
     }
 
@@ -71,14 +73,21 @@ public class RoutingChipset_GuiFactory
             } else
                 super.keyTyped(par1, id);
         }
+        
+        @Override
+        public void drawBackground() {
+            drawChipIcon();
+            if (getPreviousScreen() != null)
+                drawChipOverlay();
+        }
 
         /** Utils **/
 
-        public void drawChipIcon(Icon icon) {
+        public void drawChipIcon() {
             CCRenderState.changeTexture("projectred:textures/gui/chipcontainer.png");
             drawTexturedModalRect(0, 0, 0, 0, xSize, ySize);
             CCRenderState.changeTexture(TextureMap.locationItemsTexture);
-            drawTexturedModelRectFromIcon(55, 14, icon, 64, 64);
+            drawTexturedModelRectFromIcon(55, 14, getChip().getChipType().icon, 64, 64);
         }
 
         public void drawChipOverlay() {
@@ -91,9 +100,6 @@ public class RoutingChipset_GuiFactory
 
         @Override
         public abstract void addWidgets();
-
-        @Override
-        public abstract void drawBackground();
 
     }
 
@@ -140,11 +146,6 @@ public class RoutingChipset_GuiFactory
                 }
             }.setActionCommand("filt"));
         }
-
-        @Override
-        public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMRESPONDER.icon);
-        }
     }
 
     private static class GuiChipItemResponder_Priority extends GuiChipContainerWidget<RoutingChipset_ItemResponder>
@@ -155,8 +156,7 @@ public class RoutingChipset_GuiFactory
 
         @Override
         public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMRESPONDER.icon);
-            drawChipOverlay();
+            super.drawBackground();
 
             FontUtils.drawCenteredString(getChip().preference + "", 88, 38, PRColors.WHITE.rgb);
         }
@@ -184,8 +184,7 @@ public class RoutingChipset_GuiFactory
 
         @Override
         public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMRESPONDER.icon);
-            drawChipOverlay();
+            super.drawBackground();
 
             for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 BasicGuiUtils.drawSlotBackground(mc, p.getValue1() - 1, p.getValue2() - 1);
@@ -295,11 +294,6 @@ public class RoutingChipset_GuiFactory
                 }
             }.setActionCommand("filt"));
         }
-
-        @Override
-        public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMEXTRACTOR.icon);
-        }
     }
 
     private static class GuiChipItemExtractor_Filter extends GuiChipContainerWidget<RoutingChipset_ItemExtractor>
@@ -310,8 +304,7 @@ public class RoutingChipset_GuiFactory
 
         @Override
         public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMEXTRACTOR.icon);
-            drawChipOverlay();
+            super.drawBackground();
 
             for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 BasicGuiUtils.drawSlotBackground(mc, p.getValue1() - 1, p.getValue2() - 1);
@@ -418,8 +411,7 @@ public class RoutingChipset_GuiFactory
 
         @Override
         public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMEXTRACTOR.icon);
-            drawChipOverlay();
+            super.drawBackground();
 
             int xOff = 90;
             fontRenderer.drawString("Extraction is", xOff, 20, PRColors.WHITE.rgb, true);
@@ -489,11 +481,6 @@ public class RoutingChipset_GuiFactory
                 }
             }.setActionCommand("sneak"));
         }
-
-        @Override
-        public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMBROADCASTER.icon);
-        }
     }
 
     private static class GuiChipItemBroadcaster_Filter extends GuiChipContainerWidget<RoutingChipset_ItemBroadcaster>
@@ -504,9 +491,8 @@ public class RoutingChipset_GuiFactory
 
         @Override
         public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMBROADCASTER.icon);
-            drawChipOverlay();
-
+            super.drawBackground();
+            
             for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 BasicGuiUtils.drawSlotBackground(mc, p.getValue1() - 1, p.getValue2() - 1);
         }
@@ -595,8 +581,7 @@ public class RoutingChipset_GuiFactory
 
         @Override
         public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMBROADCASTER.icon);
-            drawChipOverlay();
+            super.drawBackground();
 
             int xOff = 90;
             fontRenderer.drawString("Extraction is", xOff, 20, PRColors.WHITE.rgb, true);
@@ -631,9 +616,7 @@ public class RoutingChipset_GuiFactory
 
         @Override
         public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMBROADCASTER.icon);
-            drawChipOverlay();
-
+            super.drawBackground();
             FontUtils.drawCenteredString(getChip().preference + "", 88, 38, PRColors.WHITE.rgb);
         }
         
@@ -682,11 +665,6 @@ public class RoutingChipset_GuiFactory
                 }
             }.setActionCommand("mode"));
         }
-
-        @Override
-        public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMSTOCKKEEPER.icon);
-        }
     }
 
     private static class GuiChipItemStockKeeper_Stock extends GuiChipContainerWidget<RoutingChipset_ItemStockKeeper>
@@ -705,9 +683,7 @@ public class RoutingChipset_GuiFactory
 
         @Override
         public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMSTOCKKEEPER.icon);
-            drawChipOverlay();
-
+            super.drawBackground();
             for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 BasicGuiUtils.drawSlotBackground(mc, p.getValue1() - 1, p.getValue2() - 1);
         }
@@ -742,12 +718,6 @@ public class RoutingChipset_GuiFactory
                     return list;
                 }
             }.setActionCommand("mode"));
-        }
-
-        @Override
-        public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.ITEMSTOCKKEEPER.icon);
-            drawChipOverlay();
         }
     }
 
@@ -791,11 +761,6 @@ public class RoutingChipset_GuiFactory
                 }
             }.setActionCommand("filt"));
         }
-
-        @Override
-        public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.DYNAMICITEMRESPONDER.icon);
-        }
     }
 
     private static class GuiChipDynamicItemResponder_Priority extends GuiChipContainerWidget<RoutingChipset_DynamicItemResponder>
@@ -806,9 +771,7 @@ public class RoutingChipset_GuiFactory
 
         @Override
         public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.DYNAMICITEMRESPONDER.icon);
-            drawChipOverlay();
-
+            super.drawBackground();
             FontUtils.drawCenteredString(getChip().preference + "", 88, 38, PRColors.WHITE.rgb);
         }
 
@@ -831,12 +794,6 @@ public class RoutingChipset_GuiFactory
     {
         public GuiChipDynamicItemResponder_Filter(Container inventorySlots, GuiScreen previous) {
             super(inventorySlots, previous);
-        }
-
-        @Override
-        public void drawBackground() {
-            drawChipIcon(EnumRoutingChip.DYNAMICITEMRESPONDER.icon);
-            drawChipOverlay();
         }
 
         @Override
@@ -880,6 +837,63 @@ public class RoutingChipset_GuiFactory
                     return list;
                 }
             }.setActionCommand("fuzD"));
+        }
+    }
+    
+    private static class GuiChipItemOverflowResponder extends GuiChipContainerWidget<RoutingChipset_ItemOverflowResponder>
+    {
+        public GuiChipItemOverflowResponder(Container inventorySlots) {
+            super(inventorySlots, null);
+        }
+
+        @Override
+        public void actionPerformed(String ident, Object... params) {
+            if (ident.equals("pri")) {
+                ChipGhostContainer<RoutingChipset_ItemOverflowResponder> g = getCleanContainer();
+                g.addPlayerInventory(8, 86);
+                shiftScreen(new GuiChipItemOverflowResponder_Priority(g, this), true);
+            }   
+        }
+
+        @Override
+        public void addWidgets() {
+            add(new WidgetDotSelector(100, 37) {
+                @Override
+                public List<String> getOverlayText() {
+                    List<String> list = new LinkedList<String>();
+                    list.add("Priority");
+                    getChip().addPriorityInfo(list);
+                    return list;
+                }
+            }.setActionCommand("pri"));
+        }
+    }
+    
+    private static class GuiChipItemOverflowResponder_Priority extends GuiChipContainerWidget<RoutingChipset_ItemOverflowResponder>
+    {
+        public GuiChipItemOverflowResponder_Priority(Container inventorySlots, GuiScreen previous) {
+            super(inventorySlots, previous);
+        }
+        
+        @Override
+        public void drawBackground() {
+            super.drawBackground();
+
+            FontUtils.drawCenteredString(getChip().preference + "", 88, 38, PRColors.WHITE.rgb);
+        }
+
+        @Override
+        public void actionPerformed(String ident, Object... params) {
+            if (ident.equals("prefUP"))
+                getChip().prefUp();
+            else if (ident.equals("prefDOWN"))
+                getChip().prefDown();
+        }
+
+        @Override
+        public void addWidgets() {
+            add(new WidgetSimpleButton(82, 22, 12, 12).setText("+").setActionCommand("prefUP"));
+            add(new WidgetSimpleButton(82, 50, 12, 12).setText("-").setActionCommand("prefDOWN"));
         }
     }
 }

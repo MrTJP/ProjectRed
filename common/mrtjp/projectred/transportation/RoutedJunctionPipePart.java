@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
@@ -398,5 +399,15 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     @Override
     public IWorldRequester getRequester() {
         return this;
+    }
+
+    @Override
+    public World getWorld() {
+        return world();
+    }
+
+    @Override
+    public BlockCoord getCoords() {
+        return new BlockCoord(tile());
     }
 }

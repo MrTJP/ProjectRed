@@ -84,7 +84,7 @@ public class RouteFX
             iconshift.setTicksBetweenChange(3);
                         
             c.setIgnoreMaxAge(true);
-            c.setScale(0.05f);
+            c.setScale(0.05f + 0.02f * rand.nextFloat());
             c.setRGBColorF((color.c.r & 0xFF)/255F, (color.c.g & 0xFF)/255F, (color.c.b & 0xFF)/255F);
             
             c.addLogic(orbit);

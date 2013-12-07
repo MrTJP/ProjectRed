@@ -63,10 +63,12 @@ itemGroup.expansion=Project Red: Expansion
 itemGroup.transport=Project Red: Transportation
 
 item.projectred.transportation.routingchip|0.name=Item Responder chip
-item.projectred.transportation.routingchip|1.name=Item Extractor chip
-item.projectred.transportation.routingchip|2.name=Item Broadcaster chip
-item.projectred.transportation.routingchip|3.name=Item Stock Keeper chip
-item.projectred.transportation.routingchip|4.name=Dynamic Item Responder chip
+item.projectred.transportation.routingchip|1.name=Dynamic Item Responder chip
+item.projectred.transportation.routingchip|2.name=Item Overflow Responder chip
+item.projectred.transportation.routingchip|3.name=Item Terminator chip
+item.projectred.transportation.routingchip|4.name=Item Extractor chip
+item.projectred.transportation.routingchip|5.name=Item Broadcaster chip
+item.projectred.transportation.routingchip|6.name=Item Stock Keeper chip
 
 item.projectred.transportation.pipe|0.name=Item Transport pipe
 item.projectred.transportation.pipe|1.name=Routed Junction pipe

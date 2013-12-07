@@ -51,8 +51,8 @@ public class BasicPipePart extends CorePipePart
         logic = PipeLogic.createPipeLogic(this, meta);
     }
 
-    protected static class PayloadMovement extends ForwardingSet<RoutedPayload> {
-
+    protected static class PayloadMovement extends ForwardingSet<RoutedPayload>
+    {
         private final BiMap<Integer, RoutedPayload> delegate = HashBiMap.create();
         private final Set<RoutedPayload> inputQueue = new HashSet<RoutedPayload>();
         private final Set<RoutedPayload> outputQueue = new HashSet<RoutedPayload>();

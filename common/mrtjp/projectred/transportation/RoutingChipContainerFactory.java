@@ -6,7 +6,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import codechicken.lib.packet.PacketCustom;
 
-public class RoutingChipset_ContainerFactory {
+public class RoutingChipContainerFactory {
 
     public static class ChipGhostContainer<T extends RoutingChipset> extends GhostContainer2 {
         EntityPlayer player;

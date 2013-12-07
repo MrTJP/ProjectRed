@@ -5,8 +5,9 @@ import java.util.Map;
 
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
+import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise;
-import mrtjp.projectred.transportation.RoutingChipset_ContainerFactory.ChipGhostContainer;
+import mrtjp.projectred.transportation.RoutingChipContainerFactory.ChipGhostContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -27,15 +28,15 @@ public abstract class RoutingChipset {
         this.slot = slot;
     }
 
-    public IInventoryProvider getInventoryProvider() {
+    public IInventoryProvider inventoryProvider() {
         return inventoryProvider;
     }
 
-    public IRouteLayer getRouteLayer() {
+    public IRouteLayer routeLayer() {
         return routeLayer;
     }
 
-    public int getSlot() {
+    public int slot() {
         return slot;
     }
 
@@ -75,6 +76,8 @@ public abstract class RoutingChipset {
     public abstract void load(NBTTagCompound tag);
 
     public abstract List<String> infoCollection();
+    
+    public abstract EnumRoutingChip getChipType();
 
     public void openGui(EntityPlayer player) {
         if (player.worldObj.isRemote)
