@@ -139,8 +139,8 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
 
             ItemKeyStack keyStack = nextOrder.getValue1();
 
-            int maxToSend = Math.min(itemsleft, nextOrder.getValue1().stackSize);
-            maxToSend = Math.min(nextOrder.getValue1().getStackLimit(), maxToSend);
+            int maxToSend = Math.min(itemsleft, keyStack.stackSize);
+            maxToSend = Math.min(keyStack.key().getStackLimit(), maxToSend);
             int available = inv.extractItem(keyStack.key(), maxToSend);
 
             if (available <= 0)
@@ -149,7 +149,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
             ItemKey key = keyStack.key();
             while (available > 0) {
                 int numToSend = Math.min(available, key.getStackLimit());
-                numToSend = Math.min(numToSend, nextOrder.getValue1().stackSize);
+                numToSend = Math.min(numToSend, keyStack.stackSize);
                 if (numToSend == 0)
                     break;
                 stacksleft -= 1;
