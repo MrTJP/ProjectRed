@@ -9,10 +9,12 @@ import mrtjp.projectred.core.inventory.InventoryWrapper;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
+import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
+import codechicken.lib.vec.BlockCoord;
 
 public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
 
@@ -33,8 +35,8 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
             return;
         remainingDelay = operationDelay();
 
-        IInventory real = getInventoryProvider().getInventory();
-        int side = getInventoryProvider().getInterfacedSide();
+        IInventory real = inventoryProvider().getInventory();
+        int side = inventoryProvider().getInterfacedSide();
         if (real == null || side < 0)
             return;
 
@@ -42,7 +44,8 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
         InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll();
 
         List<ItemKey> checked = new ArrayList<ItemKey>(9);
-
+        boolean requestAttempted = false;
+        
         for (int i = 0; i < filter.getSizeInventory(); i++) {
             ItemKeyStack keyStack = ItemKeyStack.get(filter.getStackInSlot(i));
 
@@ -53,17 +56,20 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
             int inInventory = inv.getItemCount(keyStack.key()) + getEnroute(keyStack.key());
             int missing = toRequest - inInventory;
 
-            if (missing <= 0 || requestWhenEmpty && inInventory > 0)
+            if (missing <= 0 || (requestWhenEmpty && inInventory > 0))
                 continue;
 
-            RequestConsole req = new RequestConsole().setDestination(getRouteLayer().getRequester());
+            RequestConsole req = new RequestConsole().setDestination(routeLayer().getRequester());
             req.setCrafting(true).setPulling(true).setPartials(true);
             ItemKeyStack request = ItemKeyStack.get(keyStack.key(), missing);
             req.makeRequest(request);
-
+            requestAttempted = true;
+            
             if (req.requested() > 0)
                 addToRequestList(request.key(), req.requested());
         }
+        if (requestAttempted)
+            RouteFX.sendSpawnPacket(RouteFX.color_request, 8, routeLayer().getCoords(), routeLayer().getWorld());
     }
 
     private void addToRequestList(ItemKey item, int amount) {
@@ -143,4 +149,8 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
             list.add(EnumChatFormatting.GRAY + " - empty");
     }
 
+    @Override
+    public EnumRoutingChip getChipType() {
+        return EnumRoutingChip.ITEMSTOCKKEEPER;
+    }
 }

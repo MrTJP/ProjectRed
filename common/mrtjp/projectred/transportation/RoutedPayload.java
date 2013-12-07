@@ -174,6 +174,7 @@ public class RoutedPayload {
     public static enum SendPriority {
         WANDERING("Wandering", 0.02f, 0.05f, PRColors.RED.ordinal()),
         DEFAULT("Default", 0.05f, 0.10f, PRColors.ORANGE.ordinal()),
+        TERMINATED("Terminated", 0.02f, 0.05f, PRColors.PURPLE.ordinal()),
         PASSIVE("Passive", 0.10f, 0.20f, PRColors.BLUE.ordinal()),
         ACTIVE("Active", 0.20f, 0.30f, PRColors.GREEN.ordinal()),
         ;

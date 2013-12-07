@@ -92,7 +92,7 @@ public class TransportationCPH implements IClientPacketHandler {
             EnumRoutingChip e = EnumRoutingChip.get(stack.getItemDamage());
             if (e != null) {
                 RoutingChipset r = e.createChipset();
-                ClientUtils.openSMPGui(packet.readByte(), RoutingChipset_GuiFactory.getGui(r.createContainer(player), stack.getItemDamage()));
+                ClientUtils.openSMPGui(packet.readByte(), RoutingChipGuiFactory.getGui(r.createContainer(player), stack.getItemDamage()));
             }
         }
     }

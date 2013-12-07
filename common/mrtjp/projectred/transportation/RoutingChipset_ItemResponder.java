@@ -6,6 +6,7 @@ import java.util.List;
 import mrtjp.projectred.core.inventory.InventoryWrapper;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
+import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import mrtjp.projectred.transportation.RoutedPayload.SendPriority;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -18,7 +19,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
 {
     public SimpleInventory filter = new SimpleInventory(9, "filter", 1);
 
-    private static final SendPriority priority = SendPriority.PASSIVE;
+    private final SendPriority priority = getSendPriority();
     public int preference = 0;
 
     public boolean filterExclude = false;
@@ -34,6 +35,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
         if (preference > 100)
             preference = 100;
     }
+
     public void prefDown() {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             preference -= 10;
@@ -42,14 +44,15 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
         if (preference < -100)
             preference = -100;
     }
+    
     public void shiftFuzzy() {
         fuzzyDamageMode = (fuzzyDamageMode + 1) % 5;
     }
 
     @Override
     public SyncResponse getSyncResponse(ItemKey item, SyncResponse rival) {
-        IInventory real = getInventoryProvider().getInventory();
-        int side = getInventoryProvider().getInterfacedSide();
+        IInventory real = inventoryProvider().getInventory();
+        int side = inventoryProvider().getInterfacedSide();
 
         if (real == null || side < 0)
             return null;
@@ -71,7 +74,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
     @Override
     public void save(NBTTagCompound tag) {
         filter.save(tag);
-        tag.setInteger("cpri", preference);
+        tag.setInteger("pref", preference);
         tag.setBoolean("mode", filterExclude);
         tag.setBoolean("fuz", fuzzyMode);
         tag.setByte("fuzd", (byte) fuzzyDamageMode);
@@ -80,7 +83,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
     @Override
     public void load(NBTTagCompound tag) {
         filter.load(tag);
-        preference = tag.getInteger("cpri");
+        preference = tag.getInteger("pref");
         filterExclude = tag.getBoolean("mode");
         fuzzyMode = tag.getBoolean("fuz");
         fuzzyDamageMode = tag.getByte("fuzd");
@@ -112,5 +115,14 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
         }
         if (!added)
             list.add(EnumChatFormatting.GRAY + " - empty");
+    }
+    
+    protected SendPriority getSendPriority() {
+        return SendPriority.PASSIVE;
+    }
+    
+    @Override
+    public EnumRoutingChip getChipType() {
+        return EnumRoutingChip.ITEMRESPONDER;
     }
 }

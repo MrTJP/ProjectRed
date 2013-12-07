@@ -121,10 +121,12 @@ public class ItemRoutingChip extends Item {
 
     public enum EnumRoutingChip {
         ITEMRESPONDER("responder", RoutingChipset_ItemResponder.class),
+        DYNAMICITEMRESPONDER("responder_dyn", RoutingChipset_DynamicItemResponder.class),
+        ITEMOVERFLOWRESPONDER("overflow", RoutingChipset_ItemOverflowResponder.class),
+        ITEMTERMINATOR("terminator", RoutingChipset_ItemTerminator.class),
         ITEMEXTRACTOR("extractor", RoutingChipset_ItemExtractor.class),
         ITEMBROADCASTER("broadcaster", RoutingChipset_ItemBroadcaster.class),
         ITEMSTOCKKEEPER("stockkeeper", RoutingChipset_ItemStockKeeper.class),
-        DYNAMICITEMRESPONDER("responder_dyn", RoutingChipset_DynamicItemResponder.class),
         ;
 
         public static final EnumRoutingChip[] VALID_CHIPS = values();

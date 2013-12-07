@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import mrtjp.projectred.core.inventory.InventoryWrapper;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
+import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -48,10 +49,10 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
             return;
         remainingDelay = operationDelay();
 
-        IInventory real = getInventoryProvider().getInventory();
+        IInventory real = inventoryProvider().getInventory();
         if (real == null)
             return;
-        int side = extractOrient == -1 ? getInventoryProvider().getInterfacedSide() : extractOrient;
+        int side = extractOrient == -1 ? inventoryProvider().getInterfacedSide() : extractOrient;
 
         InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
         InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll()
@@ -67,7 +68,7 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
                 continue;
 
             BitSet exclusions = new BitSet();
-            SyncResponse s = getRouteLayer().getLogisticPath(stackKey, exclusions, true);
+            SyncResponse s = routeLayer().getLogisticPath(stackKey, exclusions, true);
             if (s == null)
                 continue;
 
@@ -88,14 +89,14 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
                 if (stack2.stackSize == 0)
                     break;
 
-                getRouteLayer().queueStackToSend(stack2, getInventoryProvider().getInterfacedSide(), s);
+                routeLayer().queueStackToSend(stack2, inventoryProvider().getInterfacedSide(), s);
 
                 leftInRun -= stack2.stackSize;
                 if (leftInRun <= 0)
                     break;
 
                 exclusions.set(s.responder);
-                s = getRouteLayer().getLogisticPath(stackKey, exclusions, true);
+                s = routeLayer().getLogisticPath(stackKey, exclusions, true);
             }
             return;
         }
@@ -147,5 +148,10 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
         }
         if (!added)
             list.add(EnumChatFormatting.GRAY + " - empty");
+    }
+    
+    @Override
+    public EnumRoutingChip getChipType() {
+        return EnumRoutingChip.ITEMEXTRACTOR;
     }
 }
