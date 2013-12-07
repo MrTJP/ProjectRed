@@ -1,7 +1,8 @@
 package mrtjp.projectred.expansion;
 
 
-public class ExpansionRecipes {
+public class ExpansionRecipes 
+{
 
     public static void initRecipes() {
         initMiscRecipes();

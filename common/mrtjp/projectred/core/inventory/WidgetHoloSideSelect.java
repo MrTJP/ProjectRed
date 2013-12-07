@@ -5,7 +5,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.core.gui.ClickRotation.ClickRotationHook;
+import mrtjp.projectred.core.inventory.ClickRotation.ClickRotationHook;
 import mrtjp.projectred.core.utils.DirectionalRayTracer;
 import mrtjp.projectred.core.utils.DirectionalRayTracer.HitCoord;
 import mrtjp.projectred.core.utils.MathLib;
@@ -109,7 +109,7 @@ public class WidgetHoloSideSelect extends GhostWidget
 
         HitCoord coord = tracer.getNearestHit();
 
-        if (coord != null)
+        if (coord != null && !Mouse.isButtonDown(0))
             drawHighlight(t, coord.side, 0x444444);
 
         if (activeHighlight) {

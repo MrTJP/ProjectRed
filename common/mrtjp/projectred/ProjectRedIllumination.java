@@ -21,8 +21,8 @@ import cpw.mods.fml.common.network.NetworkMod;
 
 @Mod(modid = "ProjRed|Illumination", name = "ProjectRed-Illumination", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = "required-after:ProjRed|Core;")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
-public class ProjectRedIllumination {
-
+public class ProjectRedIllumination 
+{
     /** Blocks **/
     public static BlockLamp blockLamp;
 
