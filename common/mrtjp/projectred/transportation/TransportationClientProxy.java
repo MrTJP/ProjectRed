@@ -21,6 +21,5 @@ public class TransportationClientProxy extends TransportationProxy {
     @Override
     public void postinit() {
         super.postinit();
-        TransportationRecipes.initRecipes();
     }
 }

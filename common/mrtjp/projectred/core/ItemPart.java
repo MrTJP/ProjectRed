@@ -111,6 +111,7 @@ public class ItemPart extends Item {
         REDSILICONCOMPOUND("Red silicon compound", "partredsiliconcomp"),
         GLOWINGSILICONCOMPOUND("Glowing silicon compound", "partglowsiliconcomp"),
 
+        NULLROUTINGCHIP("Null Routing Chip", "nullchip"),
         ;
         public String fullName;
         public String unlocalName;

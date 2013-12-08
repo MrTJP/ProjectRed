@@ -9,15 +9,14 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public enum EnumPipe {
 
-    BASIC("Basic Pipe", "pr_ptube", "basic"),
-    ROUTEDJUNCTION("Routed Junction Pipe", "pr_rbasic", "routed", "unrouted"),
-    ROUTEDINTERFACE("Routed Interface Pipe", "pr_rinterface", "routedconn", "unroutedconn"),
-    ROUTEDCRAFTING("Routed Crafting Pipe", "pr_rcrafting", "routedcrafting"),
-    ROUTEDREQUEST("Routed Request Pipe", "pr_rrequest", "routedrequest"),
+    BASIC("pr_ptube", "basic"),
+    ROUTEDJUNCTION("pr_rbasic", "routed", "unrouted"),
+    ROUTEDINTERFACE("pr_rinterface", "routedconn", "unroutedconn"),
+    ROUTEDCRAFTING("pr_rcrafting", "routedcrafting"),
+    ROUTEDREQUEST("pr_rrequest", "routedrequest"),
     ;
 
-    private EnumPipe(String name, String type, String... textures) {
-        this.name = name;
+    private EnumPipe(String type, String... textures) {
         this.type = type;
         spritePaths = textures;
         sprites = new Icon[textures.length];
@@ -25,7 +24,6 @@ public enum EnumPipe {
 
     public static EnumPipe[] VALID_PIPE = values();
 
-    public final String name;
     public final String type;
 
     // Rendering info
@@ -43,6 +41,10 @@ public enum EnumPipe {
     }
 
     public ItemStack getItemStack() {
-        return new ItemStack(ProjectRedTransportation.itemPartPipe, 1, meta);
+        return getItemStack(1);
+    }
+    
+    public ItemStack getItemStack(int size) {
+        return new ItemStack(ProjectRedTransportation.itemPartPipe, size, meta);
     }
 }
