@@ -23,6 +23,7 @@ item.projectred.core.part.partmotor.name=马达
 item.projectred.core.part.partcoppercoil.name=铜质线圈
 item.projectred.core.part.partironcoil.name=铁质线圈
 item.projectred.core.part.partgoldcoil.name=金质线圈
+
 item.projectred.core.part.illumar0.name=白色荧光粉
 item.projectred.core.part.illumar1.name=橙色荧光粉
 item.projectred.core.part.illumar2.name=品红色荧光粉
@@ -39,6 +40,7 @@ item.projectred.core.part.illumar12.name=棕色荧光粉
 item.projectred.core.part.illumar13.name=绿色荧光粉
 item.projectred.core.part.illumar14.name=红色荧光粉
 item.projectred.core.part.illumar15.name=黑色荧光粉
+
 item.projectred.core.part.partcloth.name=布匹
 item.projectred.core.part.partsail.name=帆布
 item.projectred.core.part.gemruby.name=红宝石
@@ -49,6 +51,8 @@ item.projectred.core.part.partsandcoalcomp.name=沙煤混合物
 item.projectred.core.part.partredsiliconcomp.name=红硅混合物
 item.projectred.core.part.partglowsiliconcomp.name=荧硅混合物
 
+item.projectred.core.part.nullchip.name=无逻辑路由芯片
+
 tile.projectred.core.appliance.machinealloy.name=合金炉
 
 item.projectred.core.drawplate.name=起模板
@@ -58,8 +62,21 @@ item.projectred.core.screwdriver.name=螺丝刀
 #扩展
 itemGroup.expansion=红石计划:扩展
 
-item.projectred.expansion.VAWT.name=风力涡轮机(转轴铅垂)
-item.projectred.expansion.ptube|0.name=压力管道
+itemGroup.transport=红石计划:运输
+
+item.projectred.transportation.routingchip|0.name=物品响应芯片
+item.projectred.transportation.routingchip|1.name=动态物品响应芯片
+item.projectred.transportation.routingchip|2.name=物品过载响应芯片
+item.projectred.transportation.routingchip|3.name=物品终端芯片
+item.projectred.transportation.routingchip|4.name=物品抽取芯片
+item.projectred.transportation.routingchip|5.name=物品广播芯片
+item.projectred.transportation.routingchip|6.name=物品堆栈维护芯片
+
+item.projectred.transportation.pipe|0.name=物品运输管道
+item.projectred.transportation.pipe|1.name=路由交错管道
+item.projectred.transportation.pipe|2.name=路由接口管道
+item.projectred.transportation.pipe|3.name=路由合成管道
+item.projectred.transportation.pipe|4.name=路由需求管道
 
 #勘矿
 itemGroup.exploration=红石计划:勘矿
