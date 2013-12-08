@@ -47,6 +47,8 @@ item.projectred.core.part.partsandcoalcomp.name=Sandy Coal Compound
 item.projectred.core.part.partredsiliconcomp.name=Red Silicon Compound
 item.projectred.core.part.partglowsiliconcomp.name=Glowing Silicon Compound
 
+item.projectred.core.part.nullchip.name=Null-Logic Routing Chip
+
 tile.projectred.core.appliance|0.name=Alloy Smelter
 
 item.projectred.core.drawplate.name=Draw Plate
