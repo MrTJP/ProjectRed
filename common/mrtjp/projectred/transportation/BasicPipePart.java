@@ -287,10 +287,10 @@ public class BasicPipePart extends CorePipePart
         r.input = in;
         itemFlow.add(r);
 
+        adjustSpeed(r);
+        adjustLoc(r);
         if (!world().isRemote) {
             resolveDestination(r);
-            adjustSpeed(r);
-            adjustLoc(r);
             sendItemUpdate(r);
         }
     }
