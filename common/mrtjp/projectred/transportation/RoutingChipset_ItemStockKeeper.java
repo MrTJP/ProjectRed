@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.inventory.InventoryWrapper;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
@@ -14,7 +15,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
-import codechicken.lib.vec.BlockCoord;
 
 public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
 
@@ -28,12 +28,19 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
     private int operationDelay() {
         return 100;
     }
+    
+    private int operationsWithoutRequest = 0;
+    private int throttleDelay() {
+        int throttle = 10 * operationsWithoutRequest;
+        throttle = Math.min(throttle, 20 * 60);
+        
+        return throttle;
+    }
 
     @Override
     public void update() {
         if (--remainingDelay > 0)
             return;
-        remainingDelay = operationDelay();
 
         IInventory real = inventoryProvider().getInventory();
         int side = inventoryProvider().getInterfacedSide();
@@ -44,7 +51,9 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
         InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll();
 
         List<ItemKey> checked = new ArrayList<ItemKey>(9);
+        
         boolean requestAttempted = false;
+        boolean requestedSomething = false;
         
         for (int i = 0; i < filter.getSizeInventory(); i++) {
             ItemKeyStack keyStack = ItemKeyStack.get(filter.getStackInSlot(i));
@@ -63,13 +72,23 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
             req.setCrafting(true).setPulling(true).setPartials(true);
             ItemKeyStack request = ItemKeyStack.get(keyStack.key(), missing);
             req.makeRequest(request);
+            
             requestAttempted = true;
             
-            if (req.requested() > 0)
+            if (req.requested() > 0) {
                 addToRequestList(request.key(), req.requested());
+                requestedSomething = true;
+            }
         }
         if (requestAttempted)
             RouteFX.sendSpawnPacket(RouteFX.color_request, 8, routeLayer().getCoords(), routeLayer().getWorld());
+        
+        if (requestAttempted && requestedSomething)
+            operationsWithoutRequest = 0;
+        else
+            operationsWithoutRequest++;
+        
+        remainingDelay = operationDelay() + throttleDelay();
     }
 
     private void addToRequestList(ItemKey item, int amount) {
@@ -108,7 +127,17 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
     public void trackedItemReceived(ItemKeyStack s) {
         removeFromRequestList(s.key(), s.stackSize);
     }
-
+    
+    @Override
+    public boolean weakTileChanges() {
+        return true;
+    }
+    
+    @Override
+    public void onNeighborTileChanged(int side, boolean weak) {
+        operationsWithoutRequest = 0;
+        remainingDelay = Math.min(remainingDelay, operationDelay());
+    }
 
     @Override
     public void save(NBTTagCompound tag) {
