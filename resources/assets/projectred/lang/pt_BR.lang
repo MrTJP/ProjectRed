@@ -52,8 +52,26 @@ item.projectred.core.screwdriver.name=Chave de Fenda
 
 itemGroup.expansion=Project Red: Expansion
 
-item.projectred.expansion.VAWT.name=Turbina Vertical de Eixo
-item.projectred.expansion.ptube|0.name=Tubo Pressurizado
+
+
+
+
+itemGroup.transport=Project Red: Transportation
+
+item.projectred.transportation.routingchip|0.name=Chip de resposta a Items
+item.projectred.transportation.routingchip|1.name=Chip de Resposta a Dinamite
+item.projectred.transportation.routingchip|2.name=Chip de Resposta a Sobrecarga de Items
+item.projectred.transportation.routingchip|3.name=Chip de Terminação de Items
+item.projectred.transportation.routingchip|4.name=Chip de Extração de Items
+item.projectred.transportation.routingchip|5.name=Chip de Disperção de Items
+item.projectred.transportation.routingchip|6.name=Chip de Estoque de Items
+
+item.projectred.transportation.pipe|0.name=Tubo de Transporte de Items
+item.projectred.transportation.pipe|1.name=Tubo de Junção Roteada
+item.projectred.transportation.pipe|2.name=Tubo de Interfaçe Roteada
+item.projectred.transportation.pipe|3.name=Tubo de Fabricação Roteada
+item.projectred.transportation.pipe|4.name=Tubo de Pedido Roteado
+
 
 
 
