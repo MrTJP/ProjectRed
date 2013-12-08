@@ -239,4 +239,20 @@ public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implement
         
         return high;
     }
+    
+    @Override
+    public void onNeighborTileChanged(int side, boolean weak) {
+        for (RoutingChipset r : chips)
+            if (r != null)
+                r.onNeighborTileChanged(side, weak);
+    }
+
+    @Override
+    public boolean weakTileChanges() {
+        for (RoutingChipset r : chips)
+            if (r != null)
+                if (r.weakTileChanges())
+                    return true;
+        return false;
+    }
 }

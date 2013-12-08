@@ -14,9 +14,10 @@ import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.multipart.INeighborTileChange;
 import codechicken.multipart.TMultiPart;
 
-public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart implements IInventoryProvider {
+public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart implements IInventoryProvider, INeighborTileChange {
 
     public int inOutSide = 0;
 
@@ -170,5 +171,14 @@ public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart i
         InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
         int free = inv.getRoomAvailableForItem(item);
         return free;
+    }
+    
+    @Override
+    public void onNeighborTileChanged(int side, boolean weak) {
+    }
+
+    @Override
+    public boolean weakTileChanges() {
+        return false;
     }
 }

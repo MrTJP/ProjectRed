@@ -68,7 +68,13 @@ public abstract class RoutingChipset {
     public void trackedItemReceived(ItemKeyStack s) {
     }
 
+    /** World interactions **/
     public void onPipeBroken(){
+    }
+    public void onNeighborTileChanged(int side, boolean weak){
+    }
+    public boolean weakTileChanges() {
+        return false;
     }
 
     public abstract void save(NBTTagCompound tag);
