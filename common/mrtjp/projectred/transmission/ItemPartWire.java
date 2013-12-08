@@ -31,7 +31,7 @@ public class ItemPartWire extends JItemMultiPart {
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float f, float f2, float f3) {
         if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3)) {
-            w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), (Block.soundGlassFootstep.getVolume() * 5.0F), Block.soundGlassFootstep.getPitch() * .9F);
+            w.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, Block.soundGlassFootstep.getPlaceSound(), Block.soundGlassFootstep.getVolume() * 5.0F, Block.soundGlassFootstep.getPitch() * .9F);
             return true;
         }
         return false;
@@ -42,31 +42,30 @@ public class ItemPartWire extends JItemMultiPart {
         BlockCoord onPos = pos.copy().offset(side ^ 1);
         if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false))
             return null;
-        
+
         EnumWire type = EnumWire.VALID_WIRE[item.getItemDamage()];
         WirePart w = (WirePart) MultiPartRegistry.createPart(type.wireType, false);
         if(w != null)
             w.preparePlacement(side, item.getItemDamage());
         return w;
     }
-    
+
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(int id, CreativeTabs tab, List list) {
-        for (EnumWire w : EnumWire.VALID_WIRE) {
+        for (EnumWire w : EnumWire.VALID_WIRE)
             list.add(w.getItemStack());
-        }
     }
 
+    @Override
     public String getUnlocalizedName(ItemStack stack) {
         return super.getUnlocalizedName() + "|" + stack.getItemDamage();
     }
 
     @Override
     public void registerIcons(IconRegister reg) {
-        for (EnumWire wireType : EnumWire.VALID_WIRE) {
+        for (EnumWire wireType : EnumWire.VALID_WIRE)
             wireType.loadTextures(reg);
-        }
     }
 
     @Override

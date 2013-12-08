@@ -10,7 +10,7 @@ import codechicken.lib.vec.Translation;
 public class GateItemRenderer implements IItemRenderer
 {
     public final static GateItemRenderer instance = new GateItemRenderer();
-    
+
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
         return true;
@@ -45,7 +45,7 @@ public class GateItemRenderer implements IItemRenderer
     public void renderGateInv(int meta, float x, float y, float z, float scale) {
         if(!EnumGate.VALID_GATES[meta].implemented())
             return;
-        
+
         TextureUtils.bindAtlas(0);
         CCRenderState.reset();
         CCRenderState.useNormals(true);

@@ -14,11 +14,11 @@ public class IntegrationProxy implements IProxy, IPartFactory {
     public void preinit() {
         PacketCustom.assignHandler(IntegrationSPH.channel, new IntegrationSPH());
     }
-    
+
     @Override
     public void init() {
         MultiPartRegistry.registerParts(this, new String[]{
-                "pr_sgate", "pr_igate", "pr_agate", "pr_bgate", "pr_tgate", "pr_rgate"});
+                                                           "pr_sgate", "pr_igate", "pr_agate", "pr_bgate", "pr_tgate", "pr_rgate"});
 
         itemPartGate = new ItemPartGate(Configurator.part_gate.getInt());
     }

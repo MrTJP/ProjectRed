@@ -30,13 +30,13 @@ public class ItemGemSickle extends ItemTool {
     public boolean getIsRepairable(ItemStack ist1, ItemStack ist2) {
         if (tool.repairStack.isItemEqual(ist2))
             return true;
-        
+
         return super.getIsRepairable(ist1, ist2);
     }
 
     @Override
     public float getStrVsBlock(ItemStack ist, Block bl) {
-        if ((bl instanceof BlockLeaves))
+        if (bl instanceof BlockLeaves)
             return this.efficiencyOnProperMaterial;
         return super.getStrVsBlock(ist, bl);
     }
@@ -86,6 +86,7 @@ public class ItemGemSickle extends ItemTool {
         return used;
     }
 
+    @Override
     public boolean onBlockDestroyed(ItemStack stack, World world, int blockID, int x, int y, int z, EntityLivingBase entity) {
         EntityPlayer player;
         if (entity instanceof EntityPlayer)

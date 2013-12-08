@@ -25,7 +25,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
     public int strongPowerLevel(int side) {
         if((side&6) == (side()&6))
             return 0;
-        
+
         return getLogic().getOutput(this, relRot(side));
     }
 
@@ -38,10 +38,10 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
     public boolean canConnectRedstone(int side) {
         if((side&6) == (side()&6))
             return false;
-        
+
         return getLogic().canConnect(this, relRot(side));
     }
-    
+
     @Override
     public int getFace() {
         return side();
@@ -54,23 +54,23 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
         int blockID = ((Block)MultipartProxy.block()).blockID;
         BlockCoord pos = new BlockCoord();
         BlockCoord pos2 = new BlockCoord();
-        
+
         for(int r = 0; r < 4; r++)
             if((mask & 1<<r) != 0) {
                 int absSide = Rotation.rotateSide(side(), r);
                 pos.set(x(), y(), z()).offset(absSide);
-                
+
                 world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, blockID);
                 for(int s = 0; s < 6; s++)
                     if(s != (absSide^1) && (smask & 1<<s) == 0) {
                         pos2.set(pos).offset(s);
                         world().notifyBlockOfNeighborChange(pos2.x, pos2.y, pos2.z, blockID);
                     }
-                
+
                 smask |= 1<<absSide;
             }
     }
-    
+
     public int getRedstoneInput(int r) {
         r = toAbsolute(r);
         if((connMap & 1<<r) != 0)
@@ -79,35 +79,35 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
             return calculateStraightSignal(r);
         else if((connMap & 0x100<<r) != 0)
             return calculateInternalSignal(r);
-        
+
         return calculateRedstoneSignal(r);
     }
-    
+
     public int calculateRedstoneSignal(int r) {
         int absDir = Rotation.rotateSide(side(), r);
-        
+
         int i = RedstoneInteractions.getPowerTo(this, absDir)*17;
         if(i > 0 || getLogic().requireStrongInput(r))
             return i;
-        
+
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         if (world().isBlockNormalCube(pos.x, pos.y, pos.z))
             return world().getBlockPowerInput(pos.x, pos.y, pos.z)*17;
-        
+
         return 0;
     }
 
     public int calculateCornerSignal(int r) {
         int absDir = Rotation.rotateSide(side(), r);
-        
+
         BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
             return getPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side()^1));
-        
+
         return 0;
     }
-    
+
     public int calculateStraightSignal(int r) {
         int absDir = Rotation.rotateSide(side(), r);
 
@@ -115,33 +115,33 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
             return getPartSignal(t.partMap(side()), (r+2)%4);
-        
+
         return 0;
     }
 
     public int calculateInternalSignal(int r) {
         int absDir = Rotation.rotateSide(side(), r);
-        
+
         TMultiPart tp = tile().partMap(absDir);
         int i = getPartSignal(tp, Rotation.rotationTo(absDir, side()));
         if(i > 0)
             return i;
-        
+
         if(tp instanceof IRedstonePart) {
             IRedstonePart rp = (IRedstonePart) tp;
             return Math.max(rp.strongPowerLevel(side()), rp.weakPowerLevel(side())) << 4;
         }
-        
+
         return 0;
     }
 
     public int getPartSignal(TMultiPart part, int r) {
         if(part instanceof IRedwireEmitter)
             return ((IRedwireEmitter) part).getRedwireSignal(r);
-        
+
         return 0;
     }
-    
+
     @Override
     public void randomDisplayTick(Random rand) {
         RenderGate.spawnParticles(this, rand);

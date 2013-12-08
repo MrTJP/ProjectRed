@@ -53,12 +53,12 @@ public class BlockSpecialStone extends Block {
         for (EnumSpecialStone s : EnumSpecialStone.VALID_STONE)
             s.loadTextures(reg);
     }
-    
+
     @Override
     public int damageDropped(int meta) {
         return meta;
     }
-    
+
     @Override
     public void getSubBlocks(int id, CreativeTabs tab, List list) {
         for (EnumSpecialStone s : EnumSpecialStone.VALID_STONE)
@@ -67,7 +67,7 @@ public class BlockSpecialStone extends Block {
 
     public enum EnumSpecialStone {
         MARBLE("Marble", "stonemarble", 1, 14, null),
-        MARBLEBRICK("Marble Brick", "brickmarble", 1, 14, null), 
+        MARBLEBRICK("Marble Brick", "brickmarble", 1, 14, null),
         BASALTCOBBLE("Basalt Cobblestone", "cobblebasalt", 2.5f, 14, null),
         BASALT("Basalt", "stonebasalt", 2.5f, 16, BASALTCOBBLE.getItemStack()),
         BASALTBRICK("Basalt Brick", "brickbasalt", 2.5f, 20, null),
@@ -100,7 +100,7 @@ public class BlockSpecialStone extends Block {
         public ItemStack getItemStack() {
             return getItemStack(1);
         }
-        
+
         public ItemStack getItemStack(int i) {
             return new ItemStack(ProjectRedExploration.blockStones, i, meta);
         }

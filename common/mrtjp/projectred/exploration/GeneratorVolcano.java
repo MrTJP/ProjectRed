@@ -41,32 +41,31 @@ public class GeneratorVolcano extends GeneratorOre {
             }
             if (reachedTop)
                 break;
-            
+
             Evaluation nextEval = openList.removeFirst();
-            
+
             if (w.blockExists(nextEval.x, 64, nextEval.z)) {
                 int pow = getClosedEval(nextEval.x, nextEval.z).sides;
                 int evalLevel = w.getHeightValue(nextEval.x, nextEval.z);
                 while (evalLevel > 0 && isUnimportant(w.getBlockId(nextEval.x, evalLevel-1, nextEval.z)))
                     evalLevel--;
 
-                if (evalLevel <= nextEval.y) {
+                if (evalLevel <= nextEval.y)
                     if (isUnimportant(w.getBlockId(nextEval.x, evalLevel, nextEval.z))) {
                         purgeArea(w, nextEval.x, evalLevel, nextEval.z);
                         w.setBlock(nextEval.x, evalLevel, nextEval.z, this.id, this.meta, 3);
                         if (nextEval.y > evalLevel)
                             pow = Math.max(pow, spread);
-                        
+
                         evaluateNeighbors(nextEval.x, evalLevel, nextEval.z, pow, rand);
                         this.veinSize -= 1;
                     }
-                }
             }
         }
-        
+
         // Make everything flow
         w.setBlock(x, yIndex, z, Block.lavaStill.blockID);
-        while ((yIndex > grass) && (w.getBlockId(x, yIndex, z) == Block.lavaStill.blockID)) {
+        while (yIndex > grass && w.getBlockId(x, yIndex, z) == Block.lavaStill.blockID) {
             w.markBlockForUpdate(x, yIndex, z);
             w.notifyBlocksOfNeighborChange(x, yIndex, z, Block.lavaStill.blockID);
             w.scheduledUpdatesAreImmediate = true;
@@ -88,22 +87,21 @@ public class GeneratorVolcano extends GeneratorOre {
                     world.setBlock(x+i, y, z+j, 0);
                     continue;
                 }
-                if ((block != Block.wood.blockID) && (block != Block.leaves.blockID) && (block != Block.vine.blockID))
+                if (block != Block.wood.blockID && block != Block.leaves.blockID && block != Block.vine.blockID)
                     continue;
                 world.setBlock(x+i, y, z+j, 0);
             }
         purgeArea(world, x, y + 1, z);
     }
 
-    
+
     private Evaluation getClosedEval(int x, int z) {
-        for (Evaluation e : closedList) {
+        for (Evaluation e : closedList)
             if (e.x == x && e.z == z)
                 return e;
-        }
         return null;
     }
-    
+
     /**
      * Add block to the A* open list and closed list, with the number of future
      * sides to evaluate.
@@ -111,7 +109,7 @@ public class GeneratorVolcano extends GeneratorOre {
     private void addBlockForEvaluation(int x, int y, int z, int sides) {
         if (sides <= 0)
             return;
-        
+
         Evaluation eval = getClosedEval(x, z);
         if (eval != null && sides <= eval.sides)
             return;
@@ -157,10 +155,10 @@ public class GeneratorVolcano extends GeneratorOre {
         if (id == 0)
             return true;
 
-        if ((id == Block.waterMoving.blockID) || (id == Block.waterStill.blockID) || (id == Block.wood.blockID) || (id == Block.leaves.blockID) || (id == Block.vine.blockID) || (id == Block.snow.blockID) || (id == Block.ice.blockID))
+        if (id == Block.waterMoving.blockID || id == Block.waterStill.blockID || id == Block.wood.blockID || id == Block.leaves.blockID || id == Block.vine.blockID || id == Block.snow.blockID || id == Block.ice.blockID)
             return true;
 
-        if ((Block.blocksList[id] instanceof BlockFlower))
+        if (Block.blocksList[id] instanceof BlockFlower)
             return true;
 
         return false;

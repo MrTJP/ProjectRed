@@ -1,11 +1,7 @@
 package mrtjp.projectred.exploration;
 
-import java.util.List;
-
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
 public class ItemBlockSpecialStoneWalls extends ItemBlockMetaHandler {

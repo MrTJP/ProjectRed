@@ -10,7 +10,7 @@ public interface IConnectable {
      * If a part returns true it is expected to immediately reflect the fact that it is now connected to wire.
      * 
      * @param part The part asking for connection.
-     * @param r The clockwise rotation about the attached face to 
+     * @param r The clockwise rotation about the attached face to
      * @return True to allow the wire connection.
      */
     public boolean connectStraight(IConnectable part, int r);
@@ -25,7 +25,7 @@ public interface IConnectable {
      * Connect for corners
      */
     public boolean connectCorner(IConnectable part, int r);
-    
+
     /**
      * @return True if this part can reach around a corner to another part.
      */

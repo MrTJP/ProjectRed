@@ -47,6 +47,8 @@ item.projectred.core.part.partsandcoalcomp.name=Sandy Coal Compound
 item.projectred.core.part.partredsiliconcomp.name=Red Silicon Compound
 item.projectred.core.part.partglowsiliconcomp.name=Glowing Silicon Compound
 
+item.projectred.core.part.nullchip.name=Null-Logic Routing Chip
+
 tile.projectred.core.appliance|0.name=Alloy Smelter
 
 item.projectred.core.drawplate.name=Draw Plate
@@ -58,10 +60,23 @@ item.projectred.core.screwdriver.name=Screwdriver
 
 itemGroup.expansion=Project Red: Expansion
 
-item.projectred.expansion.VAWT.name=Vertical Axis Wind Turbine
-item.projectred.expansion.ptube|0.name=Pressurized Tube
 
 
+itemGroup.transport=Project Red: Transportation
+
+item.projectred.transportation.routingchip|0.name=Item Responder chip
+item.projectred.transportation.routingchip|1.name=Dynamic Item Responder chip
+item.projectred.transportation.routingchip|2.name=Item Overflow Responder chip
+item.projectred.transportation.routingchip|3.name=Item Terminator chip
+item.projectred.transportation.routingchip|4.name=Item Extractor chip
+item.projectred.transportation.routingchip|5.name=Item Broadcaster chip
+item.projectred.transportation.routingchip|6.name=Item Stock Keeper chip
+
+item.projectred.transportation.pipe|0.name=Item Transport pipe
+item.projectred.transportation.pipe|1.name=Routed Junction pipe
+item.projectred.transportation.pipe|2.name=Routed Interface pipe
+item.projectred.transportation.pipe|3.name=Routed Crafting pipe
+item.projectred.transportation.pipe|4.name=Routed Request pipe
 
 
 itemGroup.exploration=Project Red: Exploration

@@ -29,12 +29,13 @@ public class ItemWireDebugger extends Item {
     public boolean onItemUseFirst(ItemStack par1ItemStack, EntityPlayer player, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
         return false;
     }
-    
+
     @Override
     public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer player, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
         return false;
     }
-    
+
+    @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IconRegister reg) {
         this.itemIcon = reg.registerIcon("projectred:debugger");

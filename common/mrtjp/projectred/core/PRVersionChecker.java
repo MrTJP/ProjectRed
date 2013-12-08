@@ -18,64 +18,64 @@ public class PRVersionChecker extends Thread implements ITickHandler {
         this.setDaemon(true);
         this.start();
     }
-    
+
     public boolean isOutdated = false;
     public String newVersion;
     public List<String> changes = new ArrayList<String>();
-    
+
     boolean run = false;
-    
+
+    @Override
     public void run() {
         if (run) return;
+        run = true;
         try {
             String current = Configurator.version;
             if (current.contains("@"))
                 return;
-            
+
             URL url = new URL("https://raw.github.com/MrTJP/ProjectRed/master/resources/Changelog");
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            
+
             String version;
-            while((version=reader.readLine()) != null) {
+            while((version=reader.readLine()) != null)
                 if (version.startsWith("v")) {
                     newVersion = version.substring(1);
                     break;
                 }
-            }
-            
+
             String changelog;
             while((changelog=reader.readLine()) != null) {
                 if (!changelog.startsWith("-"))
                     break;
                 changes.add(changelog);
-            }            
-            
-            isOutdated = current != newVersion;
-            
+            }
+
+            isOutdated = !current.equals(newVersion);
+
         } catch (Throwable e) {
 
         }
-        run = true;
     }
-    
+
     @Override
     public void tickStart(EnumSet<TickType> type, Object... tickData) {
     }
 
     boolean displayed = false;
-    
+
     @Override
     public void tickEnd(EnumSet<TickType> type, Object... tickData) {
-        
+
         if (!isOutdated || displayed) return;
-        
+
         EntityPlayer p = (EntityPlayer) tickData[0];
-        
+
         p.addChatMessage("Version " + newVersion + " of ProjectRed available.");
-        
+
         for (String s : changes)
             p.addChatMessage(s);
-        
+
         displayed = true;
     }
 

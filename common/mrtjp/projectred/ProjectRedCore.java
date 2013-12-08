@@ -33,33 +33,33 @@ import cpw.mods.fml.relauncher.Side;
  * 
  */
 @Mod(modid = "ProjRed|Core", name = "ProjectRed-Core", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]",
-dependencies = 
-        "required-after:Forge@FORGE_VERSION@;" +
+dependencies =
+"required-after:Forge@FORGE_VERSION@;" +
         "required-after:ForgeMultipart;" +
         "required-after:CodeChickenCore;" +
         "after:CCTurtle;" +
         "after:ComputerCraft;"
-)
+        )
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
-public class ProjectRedCore {
-    
+public class ProjectRedCore 
+{
     public ProjectRedCore() {
         ProjectRedAPI.instance = new APIImpl();
     }
-    
+
     /** Items **/
     public static ItemPart itemComponent;
     public static ItemDrawPlate itemDrawPlate;
     public static ItemScrewdriver itemScrewdriver;
     public static ItemWireDebugger itemWireDebugger;
 
-    
+
     @Instance("ProjRed|Core")
     public static ProjectRedCore instance;
-    
+
     @SidedProxy(clientSide = "mrtjp.projectred.core.CoreClientProxy", serverSide = "mrtjp.projectred.core.CoreProxy")
-    public static IProxy proxy;    
-    
+    public static IProxy proxy;
+
     public static CreativeTabs tabCore = new CreativeTabs("core") {
         @Override
         public ItemStack getIconItemStack() {
@@ -82,9 +82,9 @@ public class ProjectRedCore {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postinit();
-        
+
         TickRegistry.registerTickHandler(new PRVersionChecker(), Side.CLIENT);
-        
+
     }
 
     @Mod.EventHandler

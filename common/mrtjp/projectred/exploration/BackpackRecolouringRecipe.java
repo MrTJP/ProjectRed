@@ -20,17 +20,15 @@ public class BackpackRecolouringRecipe extends ShapelessOreNBTRecipe {
         ItemStack dye = null;
         for (int i = 0; i < 9; i++) {
             ItemStack slot = inv.getStackInSlot(i);
-            if (slot != null) {
+            if (slot != null)
                 if (slot.getItem() == Item.dyePowder) {
                     dye = slot;
                     break;
                 }
-            }
         }
         ItemStack trueout = new ItemStack(ProjectRedExploration.itemBackpack.itemID, 1, 15 - dye.getItemDamage());
-        if (trueout.getItemDamage() == out.getItemDamage()) {
+        if (trueout.getItemDamage() == out.getItemDamage())
             return null;
-        }
         trueout.setTagCompound(out.getTagCompound());
         return trueout;
     }

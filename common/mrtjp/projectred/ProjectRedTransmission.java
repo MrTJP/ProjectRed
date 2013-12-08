@@ -17,8 +17,8 @@ import cpw.mods.fml.common.network.NetworkMod;
 
 @Mod(modid = "ProjRed|Transmission", name = "ProjectRed-Transmission", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = "required-after:ProjRed|Core;")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
-public class ProjectRedTransmission {
-
+public class ProjectRedTransmission 
+{
     /** Multipart items **/
     public static ItemPartWire itemPartWire;
     public static ItemPartFramedWire itemPartFramedWire;

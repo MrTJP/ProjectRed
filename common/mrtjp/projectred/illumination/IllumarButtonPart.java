@@ -5,7 +5,6 @@ import java.util.Arrays;
 import mrtjp.projectred.ProjectRedIllumination;
 import net.minecraft.block.BlockButton;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
@@ -26,11 +25,11 @@ public class IllumarButtonPart extends ButtonPart implements ILight {
     public byte colorMeta;
 
     public IllumarButtonPart() {}
-    
+
     public IllumarButtonPart(int meta) {
         super(meta);
     }
-    
+
     public void onPlaced(ItemStack is) {
         colorMeta = (byte) is.getItemDamage();
     }
@@ -67,17 +66,17 @@ public class IllumarButtonPart extends ButtonPart implements ILight {
         super.readDesc(packet);
         colorMeta = packet.readByte();
     }
-    
+
     @Override
     public String getType() {
         return "pr_lightbutton";
     }
-    
+
     @Override
     public Iterable<ItemStack> getDrops() {
         return Arrays.asList(getItemStack());
     }
-    
+
     @Override
     public void drop() {
         TileMultipart.dropItem(getItemStack(), world(), Vector3.fromTileEntityCenter(tile()));
@@ -92,7 +91,7 @@ public class IllumarButtonPart extends ButtonPart implements ILight {
     public ItemStack getItemStack() {
         return new ItemStack(ProjectRedIllumination.itemPartIllumarButton, 1, colorMeta);
     }
-    
+
     @Override
     @SideOnly(Side.CLIENT)
     public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
@@ -105,13 +104,13 @@ public class IllumarButtonPart extends ButtonPart implements ILight {
             }
         }
     }
-    
+
     @Override
     @SideOnly(Side.CLIENT)
     public Icon getBrokenIcon(int side) {
         return ItemPartIllumarButton.icons[colorMeta];
     }
-    
+
     @Override
     public Icon getBreakingIcon(Object subPart, int side) {
         return getBrokenIcon(side);

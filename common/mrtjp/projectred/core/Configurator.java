@@ -29,13 +29,13 @@ public class Configurator {
     public static Property part_fixture;
     public static Property part_invfixture;
 
-    public static Property part_tube;
+    public static Property part_pipe;
 
     /** Block IDs **/
     public static Property block_machinesID;
     public static Property block_oresID;
     public static Property block_stonesID;
-    public static Property block_lampID;    
+    public static Property block_lampID;
     public static Property block_redstoneliquidID;
     public static Property block_redconductiveliquidID;
     public static Property block_stoneWallsID;
@@ -48,9 +48,9 @@ public class Configurator {
     public static Property item_drawplateID;
     public static Property item_woolginID;
     public static Property item_backpackID;
-    public static Property item_vawtID;
     public static Property item_wireDebuggerID;
-    
+    public static Property item_routingChipID;
+
 
     public static Property item_rubyAxe;
     public static Property item_sapphireAxe;
@@ -92,17 +92,22 @@ public class Configurator {
     /** Settings **/
     public static boolean debugMode;
     public static boolean logicGateSounds;
-    
+
+    public static int maxDetectionCount;
+    public static int maxDetectionLength;
+    public static int detectionFrequency;
+    public static int routerUpdateThreadCount;
+
     /** Retro Generation **/
     public static boolean retroGeneration;
     public static String retroGenID;
-    
+
     /** Render **/
     public static boolean logicwires3D;
     public static boolean staticWires;
     public static boolean staticGates;
     public static boolean renderLampHalos;
-    
+
 
     public static void initConfig(FMLPreInitializationEvent event) {
         _configFolder = event.getModConfigurationDirectory();
@@ -113,7 +118,7 @@ public class Configurator {
     public static void loadPropertiesFromFile(File file) {
         Configuration localConfig = new Configuration(file);
         localConfig.load();
-        
+
         part_gate = localConfig.get("MultiPart Item IDs", "Gate Part ID", 9030);
         part_wire = localConfig.get("MultiPart Item IDs", "Wire Part ID", 9031);
         part_jwire = localConfig.get("MultiPart Item IDs", "Jacketed Wire Part ID", 9032);
@@ -126,9 +131,8 @@ public class Configurator {
         part_invcagelamp = localConfig.get("MultiPart Item IDs", "Inverted Cage Lamp Part ID", 9040);
         part_fixture = localConfig.get("MultiPart Item IDs", "Fixture Part ID", 9041);
         part_invfixture = localConfig.get("MultiPart Item IDs", "Inverted Fixture Part ID", 9042);
-         
-        //TODO
-        part_tube = localConfig.get("MultiPart Item IDs", "Tube Part ID", 9333);
+        part_pipe = localConfig.get("MultiPart Item IDs", "Pipe Part ID", 9043);
+
 
         block_machinesID = localConfig.getBlock("block_machinesID", 2129);
         block_oresID = localConfig.getBlock("block_oresID", 2130);
@@ -146,7 +150,7 @@ public class Configurator {
         item_drawplateID = localConfig.getItem("item_drawplateID", 9026);
         item_woolginID = localConfig.getItem("item_woolginID", 9027);
         item_backpackID = localConfig.getItem("item_backpackID", 9028);
-        item_vawtID = localConfig.getItem("item_turbineID", 9029);
+        item_routingChipID = localConfig.getItem("item_routingChipID", 9029);
 
         item_rubyAxe = localConfig.getItem("rubyaxe", 9097);
         item_sapphireAxe = localConfig.getItem("sapphireaxe", 9098);
@@ -184,39 +188,21 @@ public class Configurator {
         gen_SpreadingMoss = localConfig.get("World Generation", "Spreading Moss", true);
         gen_dyeTrees = localConfig.get("World Generation", "Stained Trees", true);
 
-        Property p_debugMode = localConfig.get("general", "Enable Debugging", false);
-        p_debugMode.comment = "Enable advanced debugging, should ALWAYS be false.";
-        debugMode = p_debugMode.getBoolean(false);
-        
-        Property p_logicwires3D = localConfig.get("general", "3Dlogicwires", true);
-        p_logicwires3D.comment = "If set to false, flat wire textures will be used for logic gates. Significant performance improvement";
-        logicwires3D = p_logicwires3D.getBoolean(true);
-        
-        Property p_staticWires = localConfig.get("general", "renderStaticWires", true);
-        p_staticWires.comment = "If set to false, wires will be rendered in the TESR rather than the WorldRenderer";
-        staticWires = p_staticWires.getBoolean(true);
-        
-        Property p_staticGates = localConfig.get("general", "renderStaticGates", true);
-        p_staticGates.comment = "If set to false, gates will be rendered in the TESR rather than the WorldRenderer";
-        staticGates = p_staticGates.getBoolean(true);
-        
-        Property p_logicGateSounds = localConfig.get("general", "Logic Sounds", true);
-        p_logicGateSounds.comment = "If set to false, logic gates will not make sounds.";
-        logicGateSounds = p_logicGateSounds.getBoolean(true);
+        debugMode = localConfig.get("general", "Enable Debugging", false, "Enable advanced debugging, should ALWAYS be false.").getBoolean(false);
+        logicGateSounds = localConfig.get("general", "Logic Sounds", true, "If set to false, logic gates will not make sounds.").getBoolean(true);
+        logicwires3D = localConfig.get("general", "3Dlogicwires", true, "If set to false, flat wire textures will be used for logic gates. Significant performance improvement").getBoolean(true);
+        staticWires = localConfig.get("general", "renderStaticWires", true, "If set to false, wires will be rendered in the TESR rather than the WorldRenderer").getBoolean(true);
+        staticGates = localConfig.get("general", "renderStaticGates", true, "If set to false, gates will be rendered in the TESR rather than the WorldRenderer").getBoolean(true);
+        retroGeneration = localConfig.get("general", "Retro Ore Generation", false, "If set to true, world generation for ProjectRed will attempt to run even in previously generated chunks.").getBoolean(false);
+        retroGenID = localConfig.get("general", "Retro Ore Gen ID", "prRG", "This ID is used to check if retro gen has been performed on a chunk. Changing it will reset retro gen status.").getString();
+        renderLampHalos = localConfig.get("general", "Lamp Halo rendering", true, "If set to false, lamps will no longer render halos").getBoolean(true);
 
-        Property p_renderHalo = localConfig.get("general", "Lamp Halo rendering", true);
-        p_renderHalo.comment = "If set to false, lamps will no longer render halos";
-        renderLampHalos = p_renderHalo.getBoolean(true);
-        
-        Property p_retroGeneration = localConfig.get("general", "Retro Ore Generation", false);
-        p_retroGeneration.comment = "If set to true, world generation for ProjectRed will attempt to run even in previously generated chunks.";
-        retroGeneration = p_retroGeneration.getBoolean(false);
-        
-        Property p_retroGenID = localConfig.get("general", "Retro Ore Gen ID", "prRG");
-        p_retroGenID.comment = "This ID is used to check if retro gen has been performed on a chunk. Changing it will reset retro gen status.";
-        retroGenID = p_retroGenID.getString();
-        
-        
+        maxDetectionCount = localConfig.get("general", "Max Detection Count", 100, "Max number of links to explore when discovering new routers.").getInt();
+        maxDetectionLength = localConfig.get("general", "Max Detection Length", 50, "Max number of links allowed in between routers.").getInt();
+        detectionFrequency = localConfig.get("general", "Detection Frequency", 20, "Ticks between router searches.").getInt();
+        routerUpdateThreadCount = localConfig.get("general", "Router Update Thread Count", 4, "Number of active threads that update routing tables.").getInt();
+
+
         localConfig.save();
     }
 }

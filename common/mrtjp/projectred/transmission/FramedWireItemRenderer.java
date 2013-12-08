@@ -10,7 +10,7 @@ import codechicken.lib.vec.Translation;
 public class FramedWireItemRenderer implements IItemRenderer {
 
     public static FramedWireItemRenderer instance = new FramedWireItemRenderer();
-    
+
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
         return true;

@@ -16,6 +16,7 @@ public class ItemBlockLamp extends ItemBlock {
         setHasSubtypes(true);
     }
 
+    @Override
     public int getMetadata(int md) {
         return md;
     }

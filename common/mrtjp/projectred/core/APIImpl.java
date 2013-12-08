@@ -1,7 +1,11 @@
 package mrtjp.projectred.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
+import mrtjp.projectred.api.ISpecialLinkState;
 import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.transmission.BundledCableCommons;
 import net.minecraft.tileentity.TileEntity;
@@ -31,14 +35,30 @@ public class APIImpl extends ProjectRedAPI
                 if(p instanceof IBundledEmitter)
                     signal = BundledCableCommons.raiseSignal(signal, ((IBundledEmitter) p).getBundledSignal(Rotation.rotationTo(pside, side^1)));
             }
-            
+
             TMultiPart p = tmp.partMap(6);
             if(p instanceof IBundledEmitter)
                 signal = BundledCableCommons.raiseSignal(signal, ((IBundledEmitter) p).getBundledSignal(side^1));
-            
+
             return signal;
         }
-        
+
+        return null;
+    }
+    
+    private static final List<ISpecialLinkState> registeredLSTypes = new ArrayList<ISpecialLinkState>();
+    
+    @Override
+    public void registerSpecialLinkState(ISpecialLinkState link) {
+        registeredLSTypes.add(link);
+    }
+
+    public static List<TileEntity> getConnections(TileEntity tile) {
+        for (ISpecialLinkState link : registeredLSTypes) {
+            List<TileEntity> linked = link.getLinks(tile);
+            if (linked != null)
+                return linked;
+        }
         return null;
     }
 }

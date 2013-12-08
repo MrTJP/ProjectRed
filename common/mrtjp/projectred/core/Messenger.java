@@ -23,7 +23,7 @@ public class Messenger {
      * Adds a string to the location. To apply an option, add a "/#" +
      * an option char anywhere in the string.
      * 
-     * f - Override a message already at that location. 
+     * f - Override a message already at that location.
      * c - Combine message if one already exists there.
      * 
      * @param x
@@ -36,9 +36,8 @@ public class Messenger {
         boolean combine = false;
         boolean override = false;
 
-        if (mail.length() == 0) {
+        if (mail.length() == 0)
             return;
-        }
         if (mail.contains("/#f")) {
             override = true;
             mail = mail.replace("/#f", "");
@@ -48,16 +47,15 @@ public class Messenger {
             mail = mail.replace("/#c", "");
         }
 
-        if ((messages.size() > 64)) {
+        if (messages.size() > 64)
             messages.remove(0);
-        }
 
         ArrayList<Message> readQueue = new ArrayList<Message>();
         ArrayList<Message> removeQueue = new ArrayList<Message>();
         readQueue.addAll(messages);
         float yOffset = 0;
-        for (Message m : readQueue) {
-            if (m.location.equals(location)) {
+        for (Message m : readQueue)
+            if (m.location.equals(location))
                 if (override) {
                     removeQueue.add(m);
                     break;
@@ -66,8 +64,6 @@ public class Messenger {
                     m.receivedOn = System.currentTimeMillis();
                     return;
                 }
-            }
-        }
         messages.removeAll(removeQueue);
         messages.add(new Message().set(location, x, y, z, mail).addY(yOffset));
     }
@@ -75,12 +71,10 @@ public class Messenger {
     @ForgeSubscribe
     public void renderMessages(RenderWorldLastEvent event) {
         World w = Minecraft.getMinecraft().theWorld;
-        if (w == null) {
+        if (w == null)
             return;
-        }
-        if (messages.size() == 0) {
+        if (messages.size() == 0)
             return;
-        }
         long deathTime = System.currentTimeMillis() - 3000L;
         EntityLivingBase view = Minecraft.getMinecraft().renderViewEntity;
         double cx = view.lastTickPosX + (view.posX - view.lastTickPosX) * event.partialTicks;
@@ -100,14 +94,14 @@ public class Messenger {
         ArrayList<Message> readQueue = new ArrayList<Message>();
         readQueue.addAll(messages);
 
-        for (Message m : readQueue) {
-            if ((m.receivedOn < deathTime)) {
+        for (Message m : readQueue)
+            if (m.receivedOn < deathTime)
                 removeQueue.add(m);
-            } else {
+            else
                 readMessage(m);
-            }
-        }
-        messages.removeAll(removeQueue);
+
+        if (!removeQueue.isEmpty())
+            messages.removeAll(removeQueue);
 
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
@@ -132,12 +126,12 @@ public class Messenger {
         scaling *= 0.6666667F;
         GL11.glPushMatrix();
 
-        float y = (float) (m.y + 0.04 * (Math.sin((((int) m.x ^ (int) m.z)) + ClientUtils.getRenderTime() / 4)) + m.yOffset);
+        float y = (float) (m.y + 0.04 * Math.sin(((int) m.x ^ (int) m.z) + ClientUtils.getRenderTime() / 4) + m.yOffset);
 
         GL11.glTranslated(m.x + 0.5F, y, m.z + 0.5F);
         GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-        GL11.glRotatef((float) (-RenderManager.instance.playerViewY + (8 * Math.sin((((int) m.x ^ (int) m.z)) + ClientUtils.getRenderTime() / 6))), 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef((float) (RenderManager.instance.playerViewX), 1.0F, 0.0F, 0.0F);
+        GL11.glRotatef((float) (-RenderManager.instance.playerViewY + 8 * Math.sin(((int) m.x ^ (int) m.z) + ClientUtils.getRenderTime() / 6)), 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(RenderManager.instance.playerViewX, 1.0F, 0.0F, 0.0F);
         GL11.glScalef(-scaling, -scaling, scaling);
         GL11.glTranslatef(0.0F, -10 * lines.length, 0.0F);
 

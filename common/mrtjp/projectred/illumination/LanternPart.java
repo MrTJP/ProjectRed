@@ -11,9 +11,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class LanternPart extends BaseLightPart {
-    
+
     static Cuboid6 bounds = new Cuboid6(.34f, .25f, .34f, .66f, .75f, .66f);
-    
+
     @Override
     @SideOnly(Side.CLIENT)
     public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
@@ -22,7 +22,7 @@ public class LanternPart extends BaseLightPart {
     }
 
     @Override
-    @SideOnly(Side.CLIENT) 
+    @SideOnly(Side.CLIENT)
     public void drawBreaking(RenderBlocks r){
         RenderLantern.instance.renderBreaking(x(), y(), z(), r.overrideBlockTexture);
     }
@@ -36,12 +36,12 @@ public class LanternPart extends BaseLightPart {
     public Cuboid6 getBounds() {
         return bounds;
     }
-    
+
     @Override
     public int getSlotMask() {
         return 1 << PartMap.CENTER.i;
     }
-    
+
     @Override
     public String getType() {
         return "pr_lantern";

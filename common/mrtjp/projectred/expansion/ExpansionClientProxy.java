@@ -1,8 +1,14 @@
 package mrtjp.projectred.expansion;
 
 
-public class ExpansionClientProxy extends ExpansionProxy {
-    
+public class ExpansionClientProxy extends ExpansionProxy 
+{
+
+    @Override
+    public void preinit() {
+        super.preinit();
+    }
+
     @Override
     public void init() {
         super.init();

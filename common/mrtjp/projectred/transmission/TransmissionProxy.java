@@ -18,13 +18,13 @@ public class TransmissionProxy implements IProxy, IPartFactory {
     @Override
     public void init() {
         MultiPartRegistry.registerParts(this, new String[]{
-                "pr_redwire", "pr_insulated", "pr_bundled",
-                "pr_fredwire", "pr_finsulated", "pr_fbundled", //Temporary, in case pr_f[type] had made it out onto official release :(
-                "pr_sredwire", "pr_sinsulated", "pr_sbundled"});
+                                                           "pr_redwire", "pr_insulated", "pr_bundled",
+                                                           "pr_fredwire", "pr_finsulated", "pr_fbundled", //Temporary, in case pr_f[type] had made it out onto official release :(
+                                                           "pr_sredwire", "pr_sinsulated", "pr_sbundled"});
 
         itemPartWire = new ItemPartWire(Configurator.part_wire.getInt());
         itemPartFramedWire = new ItemPartFramedWire(Configurator.part_jwire.getInt());
-        
+
         EnumWire.initOreDictDefinitions();
     }
 

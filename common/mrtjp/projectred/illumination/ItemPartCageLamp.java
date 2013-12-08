@@ -16,7 +16,7 @@ public class ItemPartCageLamp extends ItemPartLightBase {
 
     @Override
     public void registerIcons(IconRegister reg) {
-        
+
     }
 
 }

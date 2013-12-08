@@ -17,9 +17,8 @@ public class GuiBackpack extends BaseGuiContainer {
         super(176, 168, 0, 0);
         _bag = bag;
         _player = player;
-        if (_bag.itemID == ProjectRedExploration.itemBackpack.itemID) {
+        if (_bag.itemID == ProjectRedExploration.itemBackpack.itemID)
             inventorySlots = ItemBackpack.getContainer(player);
-        }
     }
 
     @Override
@@ -41,13 +40,11 @@ public class GuiBackpack extends BaseGuiContainer {
     protected void keyTyped(char par1, int id) {
         if (id >= 2 && id <= 10) {
             int actualKeyboardButton = id - 1;
-            if (actualKeyboardButton == _player.inventory.currentItem + 1) {
+            if (actualKeyboardButton == _player.inventory.currentItem + 1)
                 return;
-            } else {
+            else
                 super.keyTyped(par1, id);
-            }
-        } else {
+        } else
             super.keyTyped(par1, id);
-        }
     }
 }
