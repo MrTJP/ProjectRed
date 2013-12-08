@@ -47,7 +47,7 @@ item.projectred.core.part.partsandcoalcomp.name=Sandige Kohleverbindung
 item.projectred.core.part.partredsiliconcomp.name=Rot-Siliziumverbindung
 item.projectred.core.part.partglowsiliconcomp.name=Scheinende Siliziumverbindung
 
-item.projectred.core.part.nullchip.name=Null-Logik-Routing-Chip
+item.projectred.core.part.nullchip.name=Null-Logik-Routen-Chip
 
 tile.projectred.core.appliance|0.name=Legierungsschmelzerei
 
