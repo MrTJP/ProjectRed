@@ -6,14 +6,14 @@ public class CompatabilityProxy implements IProxy {
 
     @Override
     public void preinit() {
-    	Services.loadServices();
+        Services.loadServices();
     }
 
     @Override
     public void init() {
-    	// Tinkers Construct
-    	if (Services.loadTConstruct)
-    		Services.getTCProxy().loadTCInteractions();
+        // Tinkers Construct
+        if (Services.loadTConstruct)
+            Services.getTCProxy().loadTCInteractions();
     }
 
     @Override

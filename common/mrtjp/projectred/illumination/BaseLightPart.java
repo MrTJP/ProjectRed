@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.BasicWireUtils;
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -22,7 +21,6 @@ import codechicken.multipart.IRedstonePart;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
-import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TSlottedPart;
 import cpw.mods.fml.relauncher.Side;
@@ -37,13 +35,13 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     protected boolean initialized = false;
 
     public BaseLightPart() {}
-    
+
     public void preparePlacement(int side, int meta, boolean inv) {
         this.isInverted = inv;
         this.side = (byte) side;
         this.type = (byte) meta;
     }
-    
+
     @Override
     public void writeDesc(MCDataOutput out) {
         out.writeByte(type);
@@ -51,7 +49,7 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
         out.writeByte(side);
         out.writeBoolean(powered);
     }
-    
+
     @Override
     public void readDesc(MCDataInput in) {
         type = in.readByte();
@@ -59,7 +57,7 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
         side = in.readByte();
         powered = in.readBoolean();
     }
-    
+
     @Override
     public void save(NBTTagCompound nbt) {
         nbt.setBoolean("inverted", isInverted);
@@ -67,7 +65,7 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
         nbt.setByte("rot", side);
         nbt.setBoolean("powered", powered);
     }
-    
+
     @Override
     public void load(NBTTagCompound nbt) {
         isInverted = nbt.getBoolean("inverted");
@@ -78,25 +76,25 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
             side = nbt.getByte("rot");
         powered = nbt.getBoolean("powered");
     }
-    
-    
+
+
     @Override
     public void onNeighborChanged(){
         if (checkSupport())
             return;
         updateState(false);
     }
-    
+
     @Override
     public void onPartChanged(TMultiPart t){
         updateState(false);
     }
-    
+
     @Override
     public void onAdded() {
         updateState(true);
     }
-        
+
     private boolean isBeingPowered() {
         return world().isBlockIndirectlyGettingPowered(x(), y(), z());
     }
@@ -104,14 +102,14 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     public void updateState(boolean forceRender) {
         boolean updated = false;
         if (!world().isRemote && powered != isBeingPowered()) {
-        	powered = !powered;
-        	updateRender();
-        	updated = true;
+            powered = !powered;
+            updateRender();
+            updated = true;
         }
         if (forceRender && !updated)
             updateRender();
     }
-    
+
     public void updateRender() {
         world().markBlockForUpdate(x(), y(), z());
         world().updateAllLightTypes(x(), y(), z());
@@ -119,11 +117,11 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
             sendDescUpdate();
     }
 
-    
+
     public boolean checkSupport() {
         if (BasicUtils.isClient(world()))
             return false;
-        
+
         BlockCoord bc = new BlockCoord(x(), y(), z()).offset(side);
         if (!BasicWireUtils.canPlaceWireOnSide(world(), bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side^1), false) && !(BasicWireUtils.canPlaceTorchOnBlock(world(), bc.x, bc.y, bc.z, false) && (side^1) == 0)) {
             BasicUtils.dropItemFromLocation(world(), getItem(), false, null, side, 10, new BlockCoord(x(), y(), z()));
@@ -133,10 +131,10 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
         return false;
     }
 
-    
+
     @Override
     public abstract String getType();
-    
+
     @Override
     public void update() {
         if (!initialized)
@@ -150,15 +148,15 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
         else
             return 0;
     }
-    
+
     @Override
     @SideOnly(Side.CLIENT)
     public abstract void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass);
 
     @Override
-    @SideOnly(Side.CLIENT) 
+    @SideOnly(Side.CLIENT)
     public abstract void drawBreaking(RenderBlocks r);
-    
+
     @Override
     public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
         return 2;
@@ -179,7 +177,7 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
 
     @Override
     public abstract Cuboid6 getBounds();
-    
+
     @Override
     public boolean occlusionTest(TMultiPart npart) {
         return NormalOcclusionTest.apply(this, npart);
@@ -207,7 +205,7 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     public int weakPowerLevel(int arg0) {
         return 0;
     }
-    
+
     @Override
     public boolean isOn() {
         return getLightValue() == 15;

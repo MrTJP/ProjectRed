@@ -38,7 +38,7 @@ public class RenderHalo {
         final Cuboid6 cube;
         final int multipartSlot;
         final Translation t;
-        
+
         public LightCache(int x, int y, int z, int colorIndex, int slot, Cuboid6 cube) {
             this.pos = new BlockCoord(x, y, z);
             this.color = colorIndex;
@@ -51,36 +51,36 @@ public class RenderHalo {
         public boolean equals(Object o) {
             if (o instanceof LightCache) {
                 LightCache o2 = (LightCache) o;
-                return o2.pos.equals(pos) && 
-                        o2.cube.min.equalsT(cube.min) && 
+                return o2.pos.equals(pos) &&
+                        o2.cube.min.equalsT(cube.min) &&
                         o2.cube.max.equalsT(cube.max);
             }
             return false;
         }
-        
+
         @Override
         public int hashCode() {
             return pos.hashCode();
         }
     }
-    
+
     public static void addLight(int x, int y, int z, int color, int slot, Cuboid6 box) {
-    	if (Configurator.renderLampHalos)
-    		renderQueue.add(new LightCache(x, y, z, color, slot, box));
+        if (Configurator.renderLampHalos)
+            renderQueue.add(new LightCache(x, y, z, color, slot, box));
     }
 
     @ForgeSubscribe
     public void onRenderWorldLast(RenderWorldLastEvent event) {
-    	if (!Configurator.renderLampHalos)
-    		return;
-    	
+        if (!Configurator.renderLampHalos)
+            return;
+
         Tessellator tess = Tessellator.instance;
         WorldClient w = event.context.theWorld;
 
         GL11.glPushMatrix();
         RenderUtils.translateToWorldCoords(event.context.mc.renderViewEntity, event.partialTicks);
         prepareRenderState();
-        
+
         for (Iterator<LightCache> it = renderQueue.iterator(); it.hasNext();) {
             LightCache cc = it.next();
             if (shouldRemove(w, cc))
@@ -88,11 +88,11 @@ public class RenderHalo {
             else
                 renderHalo(tess, w, cc);
         }
-        
+
         restoreRenderState();
         GL11.glPopMatrix();
     }
-    
+
     public static void prepareRenderState() {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
@@ -103,7 +103,7 @@ public class RenderHalo {
         CCRenderState.reset();
         CCRenderState.startDrawing(7);
     }
-    
+
     public static void restoreRenderState() {
         CCRenderState.draw();
         GL11.glDepthMask(true);
@@ -119,7 +119,7 @@ public class RenderHalo {
         CCRenderState.setBrightness(world, cc.pos.x, cc.pos.y, cc.pos.z);
         renderHalo(tess, cc.cube, cc.color, cc.t);
     }
-    
+
     public static void renderHalo(Tessellator tess, Cuboid6 cuboid, int colour, Transformation t) {
         tess.setColorRGBA_I(PRColors.VALID_COLORS[colour].rgb, 128);
         RenderUtils.renderBlock(cuboid, 0, t, null, null);
@@ -134,7 +134,7 @@ public class RenderHalo {
         }
         else if (te instanceof ILight)
             return !((ILight)te).isOn();
-        
+
         return true;
     }
 }

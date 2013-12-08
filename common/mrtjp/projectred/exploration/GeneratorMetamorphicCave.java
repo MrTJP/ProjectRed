@@ -30,7 +30,7 @@ public class GeneratorMetamorphicCave extends GeneratorOre {
 
         addBlockForEvaluation(x, yIndex, z, 6);
 
-        while ((openList.size() > 0) && (veinSize > 0)) {
+        while (openList.size() > 0 && veinSize > 0) {
             Evaluation eval = openList.removeFirst();
             checkStoneBlock(world, eval.x, eval.y, eval.z, eval.sides);
         }
@@ -42,7 +42,7 @@ public class GeneratorMetamorphicCave extends GeneratorOre {
             world.setBlock(x, y, z, id, meta, 2);
             if (sides > 0)
                 evaluateNeighbors(world, x, y, z, sides - 1);
-            
+
             this.veinSize -= 1;
         }
     }

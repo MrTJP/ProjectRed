@@ -94,8 +94,8 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw {
         }
 
         public int getColorForStack(ItemStack saw) {
-            EnumToolMaterial m = (((ItemGemSaw) saw.getItem()).tool.material);
-            
+            EnumToolMaterial m = ((ItemGemSaw) saw.getItem()).tool.material;
+
             if (m == EnumToolMaterial.WOOD)
                 return PRColors.BROWN.rgb;
             if (m == EnumToolMaterial.STONE)

@@ -1,3 +1,8 @@
+[dev]v4.2.0
+- ADDED: ProjectRed: Mechanical package (beta)
+- ADDED: Item routing system (beta)
+- FIX: Version Checker spam
+
 v4.1.0
 - ADDED: Version checker
 - ADDED: Option to turn off light halos

@@ -13,17 +13,17 @@ import codechicken.multipart.TMultiPart;
 
 public class IntegrationCPH implements IClientPacketHandler {
     public static Object channel = ProjectRedIntegration.instance;
-    
+
     @Override
     public void handlePacket(PacketCustom packet, NetClientHandler nethandler, Minecraft mc) {
 
         switch (packet.getType()) {
-            case 1:
-                openTimerGui(mc, mc.theWorld, packet);
-                break;
-            case 2:
-                openCounterGui(mc, mc.theWorld, packet);
-                break;
+        case 1:
+            openTimerGui(mc, mc.theWorld, packet);
+            break;
+        case 2:
+            openCounterGui(mc, mc.theWorld, packet);
+            break;
         }
     }
 
@@ -35,7 +35,7 @@ public class IntegrationCPH implements IClientPacketHandler {
                 mc.displayGuiScreen(new GuiTimer(gate));
         }
     }
-    
+
     private void openCounterGui(Minecraft mc, World world, PacketCustom packet) {
         TMultiPart part = readPartIndex(world, packet);
         if(part instanceof GatePart) {

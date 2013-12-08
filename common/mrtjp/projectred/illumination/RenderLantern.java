@@ -43,17 +43,17 @@ public class RenderLantern implements IItemRenderer {
             c.shrinkUVs(0.0005);
         }
     }
-    
+
     public static void registerIcons(IconRegister reg) {
         offIcons = new Icon[16];
         for (int i = 0; i < 16; i++)
             offIcons[i] = reg.registerIcon("projectred:lights/lanternoff/" + i);
-        
+
         onIcons = new Icon[16];
         for (int i = 0; i < 16; i++)
             onIcons[i] = reg.registerIcon("projectred:lights/lanternon/" + i);
     }
-    
+
     public void renderLantern(LanternPart l) {
         Icon icon = l.isOn()?onIcons[l.type]:offIcons[l.type];
         TextureUtils.bindAtlas(0);
@@ -64,11 +64,11 @@ public class RenderLantern implements IItemRenderer {
         if (l.isOn())
             RenderHalo.addLight(l.x(), l.y(), l.z(), l.type, 6, box);
     }
-    
+
     public void renderBreaking(int x, int y, int z, Icon icon) {
         RenderUtils.renderBlock(breakbox, 0, new Translation(x, y, z), new IconTransformation(icon), null);
     }
-    
+
     public void renderLanternBulb(Icon icon, double x, double y, double z, int rotation) {
         renderPart(icon, models.get("bulb"), x, y, z, 2);
         if (rotation == 0) {
@@ -112,12 +112,12 @@ public class RenderLantern implements IItemRenderer {
             return;
         default:
             return;
-        }        
+        }
     }
-    
+
     public void renderInventory(boolean on, int color, double x, double y, double z, double scale) {
         Icon icon = on ? onIcons[color] : offIcons[color];
-    	GL11.glPushMatrix();
+        GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
         GL11.glScaled(scale, scale, scale);
         CCRenderState.reset();
@@ -134,9 +134,9 @@ public class RenderLantern implements IItemRenderer {
         }
         GL11.glPopMatrix();
     }
-    
+
     public void renderPart(Icon icon, CCModel cc, double x, double y, double z, int rot) {
-        cc.render(0, cc.verts.length, 
+        cc.render(0, cc.verts.length,
                 Rotation.sideOrientation(0, Rotation.rotationTo(0, rot)).at(Vector3.center)
                 .with(new Translation(x, y, z)), new IconTransformation(icon), null);
     }

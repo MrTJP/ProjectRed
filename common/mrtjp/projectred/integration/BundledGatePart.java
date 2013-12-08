@@ -34,21 +34,21 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
             return calculateBundledStraightSignal(r);
         else if((connMap & 0x100<<r) != 0)
             return calculateBundledInternalSignal(r);
-        
+
         return null;
     }
-    
+
     public byte[] calculateBundledCornerSignal(int r) {
         int absDir = Rotation.rotateSide(side(), r);
-        
+
         BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
             return getBundledPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side()^1));
-        
+
         return null;
     }
-    
+
     public byte[] calculateBundledStraightSignal(int r) {
         int absDir = Rotation.rotateSide(side(), r);
 
@@ -81,19 +81,19 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
         logic = BundledGateLogic.create(this, subID);
         logic.load(tag);
     }
-    
+
     @Override
     public void save(NBTTagCompound tag) {
         super.save(tag);
         logic.save(tag);
     }
-    
+
     @Override
     public void writeDesc(MCDataOutput packet) {
         super.writeDesc(packet);
         logic.writeDesc(packet);
     }
-    
+
     @Override
     public void readDesc(MCDataInput packet) {
         super.readDesc(packet);
@@ -101,7 +101,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter {
             logic = BundledGateLogic.create(this, subID);
         logic.readDesc(packet);
     }
-    
+
     @Override
     public void read(MCDataInput packet, int switch_key) {
         if(switch_key <= 10)

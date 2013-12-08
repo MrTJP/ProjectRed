@@ -8,7 +8,7 @@ import cpw.mods.fml.common.network.IGuiHandler;
 
 public class ExplorationGuiHandler implements IGuiHandler {
     public static final int ID_Bag = 1;
-    
+
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == ID_Bag) {

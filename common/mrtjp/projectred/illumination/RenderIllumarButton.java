@@ -1,6 +1,5 @@
 package mrtjp.projectred.illumination;
 
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
@@ -18,7 +17,7 @@ import codechicken.lib.vec.Translation;
 public class RenderIllumarButton implements IItemRenderer {
 
     public static RenderIllumarButton instance = new RenderIllumarButton();
-    
+
     private static Cuboid6 invRenderBox = new Cuboid6(0.0, 0.375, 0.5 - 0.1875, 0.25, 0.625, 0.5 + 0.1875);
     private static Cuboid6 invLightBox = invRenderBox.copy().expand(0.025D);
 

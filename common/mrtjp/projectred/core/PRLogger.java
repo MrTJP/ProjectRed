@@ -25,7 +25,7 @@ public class PRLogger {
     public static void warn(String msg) {
         log(Level.WARNING, msg);
     }
-    
+
     public static void info(String msg) {
         log(Level.INFO, msg);
     }
@@ -37,7 +37,7 @@ public class PRLogger {
     public static void fine(String msg) {
         log(Level.FINE, msg);
     }
-    
+
     public static void finer(String msg) {
         log(Level.FINER, msg);
     }

@@ -101,16 +101,17 @@ public class ItemPart extends Item {
 
         WOVENCLOTH("Woven Cloth", "partcloth"),
         SAIL("Sail", "partsail"),
-        
+
         RUBY("Ruby", "gemruby"),
         SAPPHIRE("Sapphire", "gemsapphire"),
         PERIDOT("Peridot", "gemperidot"),
-        
+
         REDIRONCOMPOUND("Red Iron Compound", "partredironcomp"),
         SANDYCOALCOMPOUND("Sandy coal compound", "partsandcoalcomp"),
         REDSILICONCOMPOUND("Red silicon compound", "partredsiliconcomp"),
         GLOWINGSILICONCOMPOUND("Glowing silicon compound", "partglowsiliconcomp"),
-        
+
+        NULLROUTINGCHIP("Null Routing Chip", "nullchip"),
         ;
         public String fullName;
         public String unlocalName;

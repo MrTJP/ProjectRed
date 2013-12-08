@@ -5,7 +5,7 @@ import java.util.List;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.GhostContainer;
 import mrtjp.projectred.core.GhostContainer.ISlotCheck;
-import mrtjp.projectred.core.SimpleInventory;
+import mrtjp.projectred.core.inventory.SimpleInventory;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,33 +37,30 @@ public class ItemBackpack extends Item {
         ItemStack held = player.getHeldItem();
         if (held != null && held.itemID == ProjectRedExploration.itemBackpack.itemID) {
             inv = new BagInventory(player, held);
-            inv.readFromNBT(held.getTagCompound(), "conents");
+            inv.load(held.getTagCompound(), "conents");
         }
         return inv;
     }
 
     public static Container getContainer(EntityPlayer player) {
         IInventory backpackInv = getBackpackInventory(player);
-        if (backpackInv == null) {
+        if (backpackInv == null)
             backpackInv = new BagInventory(player, new ItemStack(ProjectRedExploration.itemBackpack));
-        }
         GhostContainer ghost = new GhostContainer(player.inventory, backpackInv);
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++)
             for (int j = 0; j < 9; j++) {
                 final int slotNumber = i * 9 + j;
-                ghost.addRestrictedSlot(slotNumber, backpackInv,  8 + (j * 18),  18 + (i * 18), new ISlotCheck() {
+                ghost.addRestrictedSlot(slotNumber, backpackInv,  8 + j * 18,  18 + i * 18, new ISlotCheck() {
 
                     @Override
                     public boolean isSlotAllowed(ItemStack stack) {
-                        if (stack == null) {
+                        if (stack == null)
                             return true;
-                        }
                         return !(stack.itemID == ProjectRedExploration.itemBackpack.itemID);
                     }
-                    
+
                 });
             }
-        }
         ghost.addNormalSlotsForPlayerInventory(8, 86, player.inventory.currentItem);
         return ghost;
     }
@@ -81,16 +78,14 @@ public class ItemBackpack extends Item {
     }
 
     public void openGui(EntityPlayer player) {
-        if (!player.isSneaking()) {
+        if (!player.isSneaking())
             player.openGui(ProjectRedExploration.instance, ExplorationGuiHandler.ID_Bag, player.worldObj, 0, 0, 0);
-        }
     }
 
     @Override
     public void getSubItems(int id, CreativeTabs tab, List list) {
-        for (EnumBackpack b : EnumBackpack.VALID_BP) {
+        for (EnumBackpack b : EnumBackpack.VALID_BP)
             list.add(b.getItemStack());
-        }
     }
 
     @Override
@@ -101,9 +96,8 @@ public class ItemBackpack extends Item {
     @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IconRegister reg) {
-        for (EnumBackpack b : EnumBackpack.VALID_BP) {
+        for (EnumBackpack b : EnumBackpack.VALID_BP)
             bpIcons[b.meta] = reg.registerIcon("projectred:backpacks/" + b.unlocalname);
-        }
     }
 
     /**
@@ -111,9 +105,8 @@ public class ItemBackpack extends Item {
      */
     @Override
     public Icon getIconFromDamage(int meta) {
-        if (meta > bpIcons.length - 1) {
+        if (meta > bpIcons.length - 1)
             return null;
-        }
         return bpIcons[meta];
     }
 
@@ -129,11 +122,11 @@ public class ItemBackpack extends Item {
             loadInventory();
         }
 
+        @Override
         public void onInventoryChanged() {
             super.onInventoryChanged();
-            if (!isLoading) {
+            if (!isLoading)
                 saveInventory();
-            }
         }
 
         @Override
@@ -149,21 +142,20 @@ public class ItemBackpack extends Item {
         }
 
         private void loadInventory() {
-            this.readFromNBT(_bagOriginal.getTagCompound());
+            this.load(_bagOriginal.getTagCompound());
         }
 
         private void saveInventory() {
             NBTTagCompound nbt = new NBTTagCompound();
-            this.writeToNBT(nbt);
+            this.save(nbt);
             _bagOriginal.setTagCompound(nbt);
             refreshNBT();
         }
-        
+
         private void refreshNBT() {
             ItemStack currentBag = _player.getHeldItem();
-            if (currentBag != null && currentBag.itemID == ProjectRedExploration.itemBackpack.itemID) {
+            if (currentBag != null && currentBag.itemID == ProjectRedExploration.itemBackpack.itemID)
                 currentBag.setTagCompound(_bagOriginal.getTagCompound());
-            }
         }
     }
 
@@ -190,16 +182,15 @@ public class ItemBackpack extends Item {
         public final int meta = this.ordinal();
         public static final EnumBackpack[] VALID_BP = { WHITE, ORANGE, MAGENTA, LIGHT_BLUE, YELLOW, LIME, PINK, GREY, LIGHT_GREY, CYAN, PURPLE, BLUE, BROWN, GREEN, RED, BLACK };
         public static final String oreDictDefinition = "ProjRed|Exploration:bag";
-        
+
         private EnumBackpack(String name, String unlocal) {
             fullname = name;
             unlocalname = unlocal;
         }
 
         public static EnumBackpack get(int i) {
-            if (i > VALID_BP.length - 1) {
+            if (i > VALID_BP.length - 1)
                 return WHITE;
-            }
             return VALID_BP[i];
         }
 

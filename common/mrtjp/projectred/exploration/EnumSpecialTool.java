@@ -35,7 +35,7 @@ public enum EnumSpecialTool {
     RUBYSAW("Ruby Saw", "sawruby", ProjectRedExploration.toolMaterialRuby, EnumPart.RUBY.getItemStack()),
     SAPPHIRESAW("Sapphire Saw", "sawsapphire", ProjectRedExploration.toolMaterialSapphire, EnumPart.SAPPHIRE.getItemStack()),
     PERIDOTSAW("Peridot Saw", "sawperidot", ProjectRedExploration.toolMaterialPeridot, EnumPart.PERIDOT.getItemStack()),
-    DIAMONDSAW("Diamond Saw", "sawdiamond", EnumToolMaterial.EMERALD, new ItemStack(Item.diamond)), 
+    DIAMONDSAW("Diamond Saw", "sawdiamond", EnumToolMaterial.EMERALD, new ItemStack(Item.diamond)),
 
     WOODSICKLE("Wood Sickle", "sicklewood", EnumToolMaterial.WOOD, new ItemStack(Block.planks)),
     STONESICKLE("Stone Sickle", "sicklestone", EnumToolMaterial.STONE, new ItemStack(Item.flint)),
@@ -44,7 +44,7 @@ public enum EnumSpecialTool {
     RUBYSICKLE("Ruby Sickle", "sickleruby", ProjectRedExploration.toolMaterialRuby, EnumPart.RUBY.getItemStack()),
     SAPPHIRESICKLE("Sapphire Sickle", "sicklesapphire", ProjectRedExploration.toolMaterialSapphire, EnumPart.SAPPHIRE.getItemStack()),
     PERIDOTSICKLE("Peridot Sickle", "sickleperidot", ProjectRedExploration.toolMaterialPeridot, EnumPart.PERIDOT.getItemStack()),
-    DIAMONDSICKLE("Diamond Sickle", "sicklediamond", EnumToolMaterial.EMERALD, new ItemStack(Item.diamond)), 
+    DIAMONDSICKLE("Diamond Sickle", "sicklediamond", EnumToolMaterial.EMERALD, new ItemStack(Item.diamond)),
     ;
 
     public final EnumToolMaterial material;

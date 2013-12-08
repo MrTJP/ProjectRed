@@ -9,36 +9,36 @@ import codechicken.lib.vec.BlockCoord;
 public class InstancedRsGatePart extends SimpleGatePart
 {
     public InstancedRsGateLogic logic;
-    
+
     @Override
     public String getType() {
         return "pr_igate";
     }
-    
+
     @Override
     public InstancedRsGateLogic getLogic() {
         return logic;
     }
-    
+
     @Override
     public void load(NBTTagCompound tag) {
         super.load(tag);
         logic = InstancedRsGateLogic.create(this, subID);
         logic.load(tag);
     }
-    
+
     @Override
     public void save(NBTTagCompound tag) {
         super.save(tag);
         logic.save(tag);
     }
-    
+
     @Override
     public void writeDesc(MCDataOutput packet) {
         super.writeDesc(packet);
         logic.writeDesc(packet);
     }
-    
+
     @Override
     public void readDesc(MCDataInput packet) {
         super.readDesc(packet);
@@ -46,7 +46,7 @@ public class InstancedRsGatePart extends SimpleGatePart
             logic = InstancedRsGateLogic.create(this, subID);
         logic.readDesc(packet);
     }
-    
+
     @Override
     public void read(MCDataInput packet, int switch_key) {
         if(switch_key <= 10)
@@ -54,7 +54,7 @@ public class InstancedRsGatePart extends SimpleGatePart
         else
             logic.read(packet, switch_key);
     }
-    
+
     @Override
     public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta) {
         super.preparePlacement(player, pos, side, meta);
