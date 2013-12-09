@@ -121,10 +121,8 @@ public class Router implements Comparable<Router>
         Iterator<Router> it = newAdjacent.keySet().iterator();
         while (it.hasNext()) {
             Router r = it.next();
-            if (r.getParent() == null) {
-                r.decommission();
+            if (r.getParent() == null)
                 it.remove();
-            }
             else if (r.getParent().needsWork())
                 return false;
         }
