@@ -302,7 +302,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void save(NBTTagCompound tag) {
             tag.setInteger("pmax", pointer_max);
-            tag.setLong("pelapsed", pointer_start < 0 ? pointer_start : gate.world().getWorldTime()-pointer_start);
+            tag.setLong("pelapsed", pointer_start < 0 ? pointer_start : gate.world().getTotalWorldTime()-pointer_start);
         }
 
         @Override
@@ -310,7 +310,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             pointer_max = tag.getInteger("pmax");
             pointer_start = tag.getLong("pelapsed");
             if(pointer_start >= 0)
-                pointer_start = MultipartSaveLoad.loadingWorld().getWorldTime()-pointer_start;
+                pointer_start = MultipartSaveLoad.loadingWorld().getTotalWorldTime()-pointer_start;
         }
 
         @Override
@@ -332,7 +332,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             else if(switch_key == 13) {
                 pointer_start = packet.readInt();
                 if(pointer_start >= 0)
-                    pointer_start = gate.world().getWorldTime()-pointer_start;
+                    pointer_start = gate.world().getTotalWorldTime()-pointer_start;
             }
         }
 
@@ -340,7 +340,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             if(pointer_start < 0)
                 return 0;
 
-            return (int)(gate.world().getWorldTime()-pointer_start);
+            return (int)(gate.world().getTotalWorldTime()-pointer_start);
         }
 
         public void sendPointerMaxUpdate() {
@@ -369,10 +369,10 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void onTick(InstancedRsGatePart gate) {
             if(pointer_start >= 0)
-                if(gate.world().getWorldTime() >= pointer_start+pointer_max)
+                if(gate.world().getTotalWorldTime() >= pointer_start+pointer_max)
                     pointerTick();
-                else if(pointer_start > gate.world().getWorldTime())
-                    pointer_start = gate.world().getWorldTime();
+                else if(pointer_start > gate.world().getTotalWorldTime())
+                    pointer_start = gate.world().getTotalWorldTime();
         }
 
         public abstract void pointerTick();
@@ -388,7 +388,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
 
         public void startPointer() {
             if(pointer_start < 0) {
-                pointer_start = gate.world().getWorldTime();
+                pointer_start = gate.world().getTotalWorldTime();
                 gate.tile().markDirty();
                 if(!gate.world().isRemote)
                     sendPointerUpdate();
@@ -663,14 +663,14 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         public void onTick(InstancedRsGatePart gate) {
             if (!gate.world().isRemote) {
                 int oldOut = gate.state()>>4;
-            int out = 1<<gate.world().getWorldTime()%pointer_max/(pointer_max/4);
-            if (gate.shape() == 1)
-                out = GatePart.flipMaskZ(out);
-            if (oldOut != out) {
-                gate.setState(out<<4);
-                gate.onOutputChange(0xF);
-                tickSound();
-            }
+                int out = 1<<gate.world().getTotalWorldTime()%pointer_max/(pointer_max/4);
+                if (gate.shape() == 1)
+                    out = GatePart.flipMaskZ(out);
+                if (oldOut != out) {
+                    gate.setState(out<<4);
+                    gate.onOutputChange(0xF);
+                    tickSound();
+                }
             }
         }
 
