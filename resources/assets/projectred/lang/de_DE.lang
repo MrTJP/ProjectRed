@@ -47,6 +47,8 @@ item.projectred.core.part.partsandcoalcomp.name=Sandige Kohleverbindung
 item.projectred.core.part.partredsiliconcomp.name=Rot-Siliziumverbindung
 item.projectred.core.part.partglowsiliconcomp.name=Scheinende Siliziumverbindung
 
+item.projectred.core.part.nullchip.name=Null-Logik-Routen-Chip
+
 tile.projectred.core.appliance|0.name=Legierungsschmelzerei
 
 item.projectred.core.drawplate.name=Ziehstein
@@ -58,13 +60,26 @@ item.projectred.core.screwdriver.name=Schraubendreher
 
 itemGroup.expansion=Project Red: Expansion
 
-item.projectred.expansion.VAWT.name=Vertikalaxen-Windturbine
-item.projectred.expansion.ptube|0.name=Druckluftröhre
 
 
+itemGroup.transport=Project Red: Transport
+
+item.projectred.transportation.routingchip|0.name=Item-Responder-Chip
+item.projectred.transportation.routingchip|1.name=Dynamischer Item-Responder-Chip
+item.projectred.transportation.routingchip|2.name=Item-Überlauf-Responder-Chip
+item.projectred.transportation.routingchip|3.name=Item-Terminator-Chip
+item.projectred.transportation.routingchip|4.name=Item-Extraktor-Chip
+item.projectred.transportation.routingchip|5.name=Item-Sendungs-Chip
+item.projectred.transportation.routingchip|6.name=Item-Vorrats-Bewahrungs-Chip
+
+item.projectred.transportation.pipe|0.name=Item-Transportrohr
+item.projectred.transportation.pipe|1.name=Routen-Kreuzungsrohr
+item.projectred.transportation.pipe|2.name=Routen-Schnittstellenrohr
+item.projectred.transportation.pipe|3.name=Routen-Herstellungsrohr
+item.projectred.transportation.pipe|4.name=Routen-Bestellrohr
 
 
-itemGroup.exploration=Project Red: Exploration
+itemGroup.exploration=Project Red: Erkundung
 
 tile.projectred.exploration.ore.oreruby.name=Rubinerz
 tile.projectred.exploration.ore.oresapphire.name=Saphirerz
