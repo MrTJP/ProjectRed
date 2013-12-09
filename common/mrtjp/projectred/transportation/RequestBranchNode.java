@@ -224,7 +224,7 @@ public class RequestBranchNode
             Router r = l.end;
             IWorldRouter member = r.getParent();
 
-            if (member.needsWork() || !(member instanceof IWorldBroadcaster))
+            if (!(member instanceof IWorldBroadcaster) || member.needsWork())
                 continue;
             
             if (LogisticPathFinder.sharesInventory(requester.getContainer(), member.getContainer()))
