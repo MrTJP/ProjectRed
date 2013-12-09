@@ -21,34 +21,34 @@ import codechicken.lib.vec.Vector3;
 public class RenderGate
 {
     public static GateRenderer[] renderers = new GateRenderer[]{
-                                                                new OR(),
-                                                                new NOR(),
-                                                                new NOT(),
-                                                                new AND(),
-                                                                new NAND(),
-                                                                new XOR(),
-                                                                new XNOR(),
-                                                                new Buffer(),
-                                                                new Multiplexer(),
-                                                                new Pulse(),
-                                                                new Repeater(),
-                                                                new Randomizer(),
-                                                                new RSLatch(),
-                                                                new ToggleLatch(),
-                                                                new TransparentLatch(),
-                                                                new LightSensor(),
-                                                                new RainSensor(),
-                                                                new Timer(),
-                                                                new Sequencer(),
-                                                                new Counter(),
-                                                                new StateCell(),
-                                                                new Synchronizer(),
-                                                                new BusXcvr(),
-                                                                new NullCell(),
-                                                                new InvertCell(),
-                                                                new BufferCell(),
-                                                                new Comparator(),
-                                                                new ANDCell()
+                new OR(),
+                new NOR(),
+                new NOT(),
+                new AND(),
+                new NAND(),
+                new XOR(),
+                new XNOR(),
+                new Buffer(),
+                new Multiplexer(),
+                new Pulse(),
+                new Repeater(),
+                new Randomizer(),
+                new RSLatch(),
+                new ToggleLatch(),
+                new TransparentLatch(),
+                new LightSensor(),
+                new RainSensor(),
+                new Timer(),
+                new Sequencer(),
+                new Counter(),
+                new StateCell(),
+                new Synchronizer(),
+                new BusXcvr(),
+                new NullCell(),
+                new InvertCell(),
+                new BufferCell(),
+                new Comparator(),
+                new ANDCell()
     };
 
     public static void registerIcons(IconRegister r) {
@@ -906,7 +906,7 @@ public class RenderGate
         @Override
         public void prepareDynamic(InstancedRsGatePart gate, float frame) {
             int max = ((InstancedRsGateLogic.Sequencer)gate.getLogic()).pointer_max;
-            pointer.angle = (gate.world().getWorldTime()%max + frame)/max*2*MathHelper.pi;
+            pointer.angle = (gate.world().getTotalWorldTime()%max + frame)/max*2*MathHelper.pi;
             if (gate.shape() == 1)
                 pointer.angle = -pointer.angle;
         }
