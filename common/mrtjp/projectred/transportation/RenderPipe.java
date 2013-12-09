@@ -1,8 +1,6 @@
 package mrtjp.projectred.transportation;
 
-import static mrtjp.projectred.transmission.RenderWire.finishModel;
 import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.transmission.RenderWire.UVT;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -13,11 +11,14 @@ import net.minecraft.util.Icon;
 import org.lwjgl.opengl.GL11;
 
 import codechicken.lib.lighting.LazyLightMatrix;
+import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.IUVTransformation;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.RenderUtils;
+import codechicken.lib.render.UV;
+import codechicken.lib.render.UVScale;
 import codechicken.lib.render.Vertex5;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
@@ -25,7 +26,8 @@ import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 
-public class RenderPipe {
+public class RenderPipe 
+{
     private static final EntityItem dummyEntityItem = new EntityItem(null);
     private static final RenderItem customRenderItem;
 
@@ -37,6 +39,22 @@ public class RenderPipe {
             public boolean shouldSpreadItems() {return false;}
         };
         customRenderItem.setRenderManager(RenderManager.instance);
+    }
+    
+    public static class UVT implements IUVTransformation {
+
+        public Transformation t;
+        private Vector3 vec = new Vector3();
+
+        public UVT(Transformation t) {
+            this.t = t;
+        }
+
+        @Override
+        public void transform(UV uv) {
+            vec.set(uv.u, 0, uv.v).apply(t);
+            uv.set(vec.x, vec.z);
+        }
     }
 
     private static class WireFrameModelGenerator
@@ -107,6 +125,15 @@ public class RenderPipe {
             for(CCModel m : frameModels)
                 finishModel(m);
         }
+    }
+    
+    public static CCModel finishModel(CCModel m) {
+        m.apply(new UVScale(1/32D));
+        m.shrinkUVs(0.0005);
+        m.computeNormals();
+        m.computeLighting(LightModel.standardLightModel);
+
+        return m;
     }
 
     public static void reverseOrder(Vertex5[] verts) {
