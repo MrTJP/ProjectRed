@@ -15,7 +15,8 @@ public class ParticleLogicArcToEntity extends ParticleLogic
     private float offsetFactor;
     private float halfOffsetFactor;
 
-    public ParticleLogicArcToEntity(Vector3 start, Entity target, int priority, boolean finalLogic) {
+    public ParticleLogicArcToEntity(Vector3 start, Entity target, int priority, boolean finalLogic)
+    {
         super(priority, finalLogic);
         this.start = start.copy();
         percent = 0.0F;
@@ -27,7 +28,8 @@ public class ParticleLogicArcToEntity extends ParticleLogic
         generateControlPoints();
     }
 
-    public ParticleLogicArcToEntity generateControlPoints() {
+    public ParticleLogicArcToEntity generateControlPoints()
+    {
         firstControl = new Vector3(start.x + (target.posX - start.x) / 3.0D, start.y + (target.posY - start.y) / 3.0D, start.z + (target.posZ - start.z) / 3.0D);
 
         secondControl = new Vector3(start.x + (target.posX - start.x) / 3.0D * 2.0D, start.y + (target.posY - start.y) / 3.0D * 2.0D, start.z + (target.posZ - start.z) / 3.0D * 2.0D);
@@ -43,21 +45,25 @@ public class ParticleLogicArcToEntity extends ParticleLogic
         return this;
     }
 
-    public ParticleLogicArcToEntity setControlPoints(Vector3 first, Vector3 second) {
+    public ParticleLogicArcToEntity setControlPoints(Vector3 first, Vector3 second)
+    {
         firstControl = first;
         secondControl = second;
         return this;
     }
 
-    public ParticleLogicArcToEntity setSpeed(float speed) {
+    public ParticleLogicArcToEntity setSpeed(float speed)
+    {
         this.speed = speed;
         return this;
     }
 
     @Override
-    public void doUpdate() {
+    public void doUpdate()
+    {
         percent += speed;
-        if (percent >= 1.0F) {
+        if (percent >= 1.0F)
+        {
             finishLogic();
             return;
         }
@@ -66,7 +72,8 @@ public class ParticleLogicArcToEntity extends ParticleLogic
     }
 
     @Override
-    public ParticleLogic clone() {
+    public ParticleLogic clone()
+    {
         return new ParticleLogicArcToEntity(particle.position(), target, priority, finalLogic).setSpeed(speed).setControlPoints(firstControl, secondControl);
     }
 }

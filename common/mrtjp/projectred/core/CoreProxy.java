@@ -10,15 +10,17 @@ import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 public class CoreProxy implements IProxy
-{    
+{
     @Override
-    public void preinit() {
+    public void preinit()
+    {
         MinecraftForge.EVENT_BUS.register(RetroactiveWorldGenerator.instance);
         TickRegistry.registerTickHandler(RetroactiveWorldGenerator.instance, Side.SERVER);
     }
 
     @Override
-    public void init() {
+    public void init()
+    {
         itemComponent = new ItemPart(Configurator.item_componentsID.getInt());
         itemDrawPlate = new ItemDrawPlate(Configurator.item_drawplateID.getInt());
         itemScrewdriver = new ItemScrewdriver(Configurator.item_screwdriverID.getInt());
@@ -28,7 +30,8 @@ public class CoreProxy implements IProxy
     }
 
     @Override
-    public void postinit() {
+    public void postinit()
+    {
         CoreRecipes.initCoreRecipes();
     }
 }

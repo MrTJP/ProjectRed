@@ -15,10 +15,11 @@ public class CoreCPH implements IClientPacketHandler
     public static Object channel = ProjectRedCore.instance;
 
     @Override
-    public void handlePacket(PacketCustom packet, NetClientHandler nethandler, Minecraft mc) {
+    public void handlePacket(PacketCustom packet, NetClientHandler nethandler, Minecraft mc)
+    {
         World world = mc.theWorld;
 
-        switch(packet.getType()) {
+        switch (packet.getType()) {
         case 1:
             handleTilePacket(world, packet, packet.readCoord());
             return;
@@ -28,10 +29,11 @@ public class CoreCPH implements IClientPacketHandler
         }
     }
 
-    private void handleTilePacket(World world, PacketCustom packet, BlockCoord pos) {
-        TileEntity tile =  world.getBlockTileEntity(pos.x, pos.y, pos.z);
+    private void handleTilePacket(World world, PacketCustom packet, BlockCoord pos)
+    {
+        TileEntity tile = world.getBlockTileEntity(pos.x, pos.y, pos.z);
 
-        if(tile instanceof ICustomPacketTile)
-            ((ICustomPacketTile)tile).handleDescriptionPacket(packet);
+        if (tile instanceof ICustomPacketTile)
+            ((ICustomPacketTile) tile).handleDescriptionPacket(packet);
     }
 }

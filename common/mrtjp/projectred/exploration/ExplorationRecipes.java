@@ -15,15 +15,18 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class ExplorationRecipes {
-    public static void initRecipes() {
+public class ExplorationRecipes 
+{
+    public static void initRecipes() 
+    {
         initOtherRecipes();
         initGemToolRecipes();
         initToolRecipes();
         initWorldRecipes();
     }
 
-    public static void initOreDict() {
+    public static void initOreDict() 
+    {
         EnumBackpack.initOreDictDefinitions();
 
         OreDictionary.registerOre("gemRuby", EnumPart.RUBY.getItemStack());
@@ -35,7 +38,8 @@ public class ExplorationRecipes {
         OreDictionary.registerOre("orePeridot", EnumOre.OREPERIDOT.getItemStack(1));
     }
 
-    private static void initGemToolRecipes() {
+    private static void initGemToolRecipes() 
+    {
         /** Axes **/
         addAxeRecipe(new ItemStack(ProjectRedExploration.itemRubyAxe), "gemRuby");
         addAxeRecipe(new ItemStack(ProjectRedExploration.itemSapphireAxe), "gemSapphire");
@@ -79,7 +83,8 @@ public class ExplorationRecipes {
 
     }
 
-    private static void addAxeRecipe(ItemStack o, Object m) {
+    private static void addAxeRecipe(ItemStack o, Object m) 
+    {
         GameRegistry.addRecipe(new ShapedOreRecipe(o,
                 "mm",
                 "ms",
@@ -88,7 +93,8 @@ public class ExplorationRecipes {
                 's', Item.stick
                 ));
     }
-    private static void addHoeRecipe(ItemStack o, Object m) {
+    private static void addHoeRecipe(ItemStack o, Object m) 
+    {
         GameRegistry.addRecipe(new ShapedOreRecipe(o,
                 "mm",
                 " s",
@@ -97,7 +103,8 @@ public class ExplorationRecipes {
                 's', Item.stick
                 ));
     }
-    private static void addPickaxeRecipe(ItemStack o, Object m) {
+    private static void addPickaxeRecipe(ItemStack o, Object m) 
+    {
         GameRegistry.addRecipe(new ShapedOreRecipe(o,
                 "mmm",
                 " s ",
@@ -106,7 +113,8 @@ public class ExplorationRecipes {
                 's', Item.stick
                 ));
     }
-    private static void addShovelRecipe(ItemStack o, Object m) {
+    private static void addShovelRecipe(ItemStack o, Object m) 
+    {
         GameRegistry.addRecipe(new ShapedOreRecipe(o,
                 "m",
                 "s",
@@ -115,7 +123,8 @@ public class ExplorationRecipes {
                 's', Item.stick
                 ));
     }
-    private static void addSwordRecipe(ItemStack o, Object m) {
+    private static void addSwordRecipe(ItemStack o, Object m) 
+    {
         GameRegistry.addRecipe(new ShapedOreRecipe(o,
                 "m",
                 "m",
@@ -124,7 +133,8 @@ public class ExplorationRecipes {
                 's', Item.stick
                 ));
     }
-    private static void addSawRecipe(ItemStack o, Object m) {
+    private static void addSawRecipe(ItemStack o, Object m) 
+    {
         GameRegistry.addRecipe(new ShapedOreRecipe(o,
                 "srr",
                 "sbb",
@@ -133,7 +143,8 @@ public class ExplorationRecipes {
                 'b', m
                 ));
     }
-    private static void addSickleRecipe(ItemStack o, Object m) {
+    private static void addSickleRecipe(ItemStack o, Object m) 
+    {
         GameRegistry.addRecipe(new ShapedOreRecipe(o,
                 " m ",
                 "  m",
@@ -144,7 +155,8 @@ public class ExplorationRecipes {
     }
 
 
-    private static void initOtherRecipes() {
+    private static void initOtherRecipes() 
+    {
         /** Wool Gin to string recipe **/
         GameRegistry.addRecipe(new ItemStack(Item.silk, 4),
                 "gw",
@@ -153,7 +165,8 @@ public class ExplorationRecipes {
                 );
     }
 
-    private static void initToolRecipes() {
+    private static void initToolRecipes() 
+    {
         /** Wool Gin **/
         GameRegistry.addRecipe(new ItemStack(ProjectRedExploration.itemWoolGin),
                 "sis",
@@ -179,7 +192,8 @@ public class ExplorationRecipes {
         }
     }
 
-    private static void initWorldRecipes() {
+    private static void initWorldRecipes() 
+    {
         /** Marble brick **/
         GameRegistry.addRecipe(EnumSpecialStone.MARBLEBRICK.getItemStack(4),
                 "bb",
@@ -229,7 +243,8 @@ public class ExplorationRecipes {
             addWallRecipe(new ItemStack(ProjectRedExploration.blockStoneWalls, 6, s.meta), s.getItemStack());
     }
 
-    private static void addWallRecipe(ItemStack o, ItemStack m) {
+    private static void addWallRecipe(ItemStack o, ItemStack m) 
+    {
         GameRegistry.addRecipe(o,
                 "mmm",
                 "mmm",

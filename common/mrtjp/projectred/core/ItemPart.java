@@ -12,11 +12,12 @@ import net.minecraftforge.oredict.OreDictionary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemPart extends Item {
-
+public class ItemPart extends Item
+{
     public static Icon[] partIcons = new Icon[EnumPart.VALID_PARTS.length];
 
-    public ItemPart(int par1) {
+    public ItemPart(int par1)
+    {
         super(par1);
         setUnlocalizedName("projectred.core.part");
         setCreativeTab(ProjectRedCore.tabCore);
@@ -28,7 +29,8 @@ public class ItemPart extends Item {
      * returns 16 items)
      */
     @Override
-    public void getSubItems(int id, CreativeTabs tab, List list) {
+    public void getSubItems(int id, CreativeTabs tab, List list)
+    {
         for (EnumPart part : EnumPart.VALID_PARTS)
             list.add(part.getItemStack());
     }
@@ -39,13 +41,15 @@ public class ItemPart extends Item {
      * damage or NBT.
      */
     @Override
-    public String getUnlocalizedName(ItemStack itemstack) {
-        return getUnlocalizedName()+"."+EnumPart.get(itemstack.getItemDamage()).unlocalName;
+    public String getUnlocalizedName(ItemStack itemstack)
+    {
+        return getUnlocalizedName() + "." + EnumPart.get(itemstack.getItemDamage()).unlocalName;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerIcons(IconRegister reg) {
+    public void registerIcons(IconRegister reg)
+    {
         for (EnumPart part : EnumPart.VALID_PARTS)
             partIcons[part.meta] = reg.registerIcon("projectred:parts/" + part.unlocalName);
     }
@@ -54,13 +58,15 @@ public class ItemPart extends Item {
      * Gets an icon index based on an item's damage value
      */
     @Override
-    public Icon getIconFromDamage(int meta) {
+    public Icon getIconFromDamage(int meta)
+    {
         if (meta > partIcons.length - 1)
             return null;
         return partIcons[meta];
     }
 
-    public enum EnumPart {
+    public enum EnumPart
+    {
         PLATE("Circuit Plate", "partplate"),
         CONDUCTIVEPLATE("Conductive Plate", "partconductiveplate"),
         WIREDPLATE("Wired Plate", "partwiredplate"),
@@ -111,8 +117,9 @@ public class ItemPart extends Item {
         REDSILICONCOMPOUND("Red silicon compound", "partredsiliconcomp"),
         GLOWINGSILICONCOMPOUND("Glowing silicon compound", "partglowsiliconcomp"),
 
-        NULLROUTINGCHIP("Null Routing Chip", "nullchip"),
+        NULLROUTINGCHIP("Null Routing Chip", "nullchip"), 
         ;
+        
         public String fullName;
         public String unlocalName;
         public static final EnumPart[] VALID_PARTS = values();
@@ -121,26 +128,31 @@ public class ItemPart extends Item {
         public static final String oreDictDefinition = "projredPart";
         public static final String oreDictDefinition_illumar = "projredIllumar";
 
-        private EnumPart(String full, String unlocal) {
+        private EnumPart(String full, String unlocal)
+        {
             fullName = full;
             unlocalName = unlocal;
         }
 
-        public static EnumPart get(int ordinal) {
+        public static EnumPart get(int ordinal)
+        {
             if (ordinal > VALID_PARTS.length - 1)
                 return null;
             return VALID_PARTS[ordinal];
         }
 
-        public ItemStack getItemStack() {
+        public ItemStack getItemStack()
+        {
             return new ItemStack(ProjectRedCore.itemComponent, 1, meta);
         }
 
-        public ItemStack getItemStack(int i) {
+        public ItemStack getItemStack(int i)
+        {
             return new ItemStack(ProjectRedCore.itemComponent, i, meta);
         }
 
-        public static void initOreDictDefinitions() {
+        public static void initOreDictDefinitions()
+        {
             for (EnumPart p : EnumPart.VALID_PARTS)
                 OreDictionary.registerOre(oreDictDefinition, p.getItemStack());
             for (EnumPart p : EnumPart.ILLUMAR_PARTS)

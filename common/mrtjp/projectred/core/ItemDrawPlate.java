@@ -3,9 +3,10 @@ package mrtjp.projectred.core;
 import mrtjp.projectred.ProjectRedCore;
 import net.minecraft.client.renderer.texture.IconRegister;
 
-public class ItemDrawPlate extends ItemCraftingDamage {
-
-    public ItemDrawPlate(int par1) {
+public class ItemDrawPlate extends ItemCraftingDamage
+{
+    public ItemDrawPlate(int par1)
+    {
         super(par1);
         setUnlocalizedName("projectred.core.drawplate");
         setMaxDamage(512);
@@ -13,7 +14,8 @@ public class ItemDrawPlate extends ItemCraftingDamage {
     }
 
     @Override
-    public void registerIcons(IconRegister par1IconRegister) {
+    public void registerIcons(IconRegister par1IconRegister)
+    {
         this.itemIcon = par1IconRegister.registerIcon("projectred:drawplate");
     }
 }

@@ -32,8 +32,7 @@ public enum EnumGate
     InvertCell("Invert Cell", "pr_agate"),
     BufferCell("Buffer Cell", "pr_agate"),
     Comparator("Comparator", "pr_tgate"),
-    ANDCell("AND Cell", "pr_rgate")
-    ;
+    ANDCell("AND Cell", "pr_rgate");
 
     public static EnumGate[] VALID_GATES = values();
 
@@ -41,16 +40,19 @@ public enum EnumGate
     public String gateType;
     public int meta = this.ordinal();
 
-    private EnumGate(String name, String gateClass) {
+    private EnumGate(String name, String gateClass)
+    {
         this.name = name;
         this.gateType = gateClass;
     }
 
-    public boolean implemented() {
+    public boolean implemented()
+    {
         return name != null;
     }
 
-    public ItemStack getItemStack() {
+    public ItemStack getItemStack()
+    {
         return new ItemStack(ProjectRedIntegration.itemPartGate, 1, meta);
     }
 }

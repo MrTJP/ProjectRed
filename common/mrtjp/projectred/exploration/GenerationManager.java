@@ -16,12 +16,13 @@ import net.minecraft.world.gen.ChunkProviderEnd;
 import net.minecraft.world.gen.ChunkProviderHell;
 import cpw.mods.fml.common.IWorldGenerator;
 
-public class GenerationManager implements IWorldGenerator {
-
+public class GenerationManager implements IWorldGenerator
+{
     public static GenerationManager instance = new GenerationManager();
 
     @Override
-    public void generate(Random r, int chunkX, int chunkZ, World w, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
+    public void generate(Random r, int chunkX, int chunkZ, World w, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
+    {
         if (chunkGenerator instanceof ChunkProviderHell || chunkGenerator instanceof ChunkProviderEnd)
             return;
 
@@ -36,7 +37,8 @@ public class GenerationManager implements IWorldGenerator {
 
         // Ruby
         if (Configurator.gen_Ruby.getBoolean(true))
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++)
+            {
                 int x = chunkX * 16 + r.nextInt(16);
                 int y = r.nextInt(48);
                 int z = chunkZ * 16 + r.nextInt(16);
@@ -45,7 +47,8 @@ public class GenerationManager implements IWorldGenerator {
 
         // Saphire
         if (Configurator.gen_Sapphire.getBoolean(true))
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++)
+            {
                 int x = chunkX * 16 + r.nextInt(16);
                 int y = r.nextInt(48);
                 int z = chunkZ * 16 + r.nextInt(16);
@@ -54,7 +57,8 @@ public class GenerationManager implements IWorldGenerator {
 
         // Peridot
         if (Configurator.gen_Peridot.getBoolean(true))
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++)
+            {
                 int x = chunkX * 16 + r.nextInt(16);
                 int y = r.nextInt(48);
                 int z = chunkZ * 16 + r.nextInt(16);
@@ -62,9 +66,11 @@ public class GenerationManager implements IWorldGenerator {
             }
     }
 
-    public static void runOverworldGeneration(Random r, int chunkX, int chunkZ, World w) {
+    public static void runOverworldGeneration(Random r, int chunkX, int chunkZ, World w)
+    {
         // Marble caves
-        if (Configurator.gen_MarbleCave.getBoolean(true)) {
+        if (Configurator.gen_MarbleCave.getBoolean(true))
+        {
             int x = chunkX * 16 + r.nextInt(16);
             int y = 32 + r.nextInt(32);
             int z = chunkZ * 16 + r.nextInt(16);
@@ -72,7 +78,8 @@ public class GenerationManager implements IWorldGenerator {
         }
 
         // Volcanos
-        if (Configurator.gen_Volcano.getBoolean(true)) {
+        if (Configurator.gen_Volcano.getBoolean(true))
+        {
             int x = chunkX * 16 + r.nextInt(16);
             int y = r.nextInt(32);
             int z = chunkZ * 16 + r.nextInt(16);
@@ -80,12 +87,13 @@ public class GenerationManager implements IWorldGenerator {
         }
 
         // Dye trees
-        if (Configurator.gen_dyeTrees.getBoolean(true)) {
+        if (Configurator.gen_dyeTrees.getBoolean(true))
+        {
             int saplingMeta = r.nextInt(16);
             int x = chunkX * 16 + r.nextInt(16);
             int z = chunkZ * 16 + r.nextInt(16);
             int y = w.getHeightValue(x, z);
-            if (r.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[saplingMeta].growthChance/3)
+            if (r.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[saplingMeta].growthChance / 3)
                 new GeneratorCustomTree(false, 5, Block.wood.blockID, 0, ProjectRedExploration.blockStainedLeaf.blockID, saplingMeta, -1, -1).generate(w, r, x, y, z);
         }
     }

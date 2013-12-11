@@ -4,9 +4,10 @@ import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemCraftingDamage;
 import net.minecraft.client.renderer.texture.IconRegister;
 
-public class ItemWoolGin extends ItemCraftingDamage {
-
-    public ItemWoolGin(int par1) {
+public class ItemWoolGin extends ItemCraftingDamage
+{
+    public ItemWoolGin(int par1)
+    {
         super(par1);
         setUnlocalizedName("projectred.exploration.woolgin");
         setMaxDamage(128);
@@ -14,7 +15,8 @@ public class ItemWoolGin extends ItemCraftingDamage {
     }
 
     @Override
-    public void registerIcons(IconRegister par1IconRegister) {
+    public void registerIcons(IconRegister par1IconRegister)
+    {
         this.itemIcon = par1IconRegister.registerIcon("projectred:woolgin");
     }
 }

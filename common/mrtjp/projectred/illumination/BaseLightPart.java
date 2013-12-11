@@ -26,24 +26,28 @@ import codechicken.multipart.TSlottedPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart, JNormalOcclusion, IRedstonePart, ILight {
-
+public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart, JNormalOcclusion, IRedstonePart, ILight
+{
     protected byte type;
     protected boolean isInverted;
     protected boolean powered;
     protected byte side;
     protected boolean initialized = false;
 
-    public BaseLightPart() {}
+    public BaseLightPart()
+    {
+    }
 
-    public void preparePlacement(int side, int meta, boolean inv) {
+    public void preparePlacement(int side, int meta, boolean inv)
+    {
         this.isInverted = inv;
         this.side = (byte) side;
         this.type = (byte) meta;
     }
 
     @Override
-    public void writeDesc(MCDataOutput out) {
+    public void writeDesc(MCDataOutput out)
+    {
         out.writeByte(type);
         out.writeBoolean(isInverted);
         out.writeByte(side);
@@ -51,7 +55,8 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     }
 
     @Override
-    public void readDesc(MCDataInput in) {
+    public void readDesc(MCDataInput in)
+    {
         type = in.readByte();
         isInverted = in.readBoolean();
         side = in.readByte();
@@ -59,7 +64,8 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     }
 
     @Override
-    public void save(NBTTagCompound nbt) {
+    public void save(NBTTagCompound nbt)
+    {
         nbt.setBoolean("inverted", isInverted);
         nbt.setByte("meta", type);
         nbt.setByte("rot", side);
@@ -67,41 +73,47 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     }
 
     @Override
-    public void load(NBTTagCompound nbt) {
+    public void load(NBTTagCompound nbt)
+    {
         isInverted = nbt.getBoolean("inverted");
         type = nbt.getByte("meta");
-        if(nbt.getTag("rot") instanceof NBTTagInt)//legacy
+        if (nbt.getTag("rot") instanceof NBTTagInt)// legacy
             side = (byte) nbt.getInteger("rot");
         else
             side = nbt.getByte("rot");
         powered = nbt.getBoolean("powered");
     }
 
-
     @Override
-    public void onNeighborChanged(){
+    public void onNeighborChanged()
+    {
         if (checkSupport())
             return;
         updateState(false);
     }
 
     @Override
-    public void onPartChanged(TMultiPart t){
+    public void onPartChanged(TMultiPart t)
+    {
         updateState(false);
     }
 
     @Override
-    public void onAdded() {
+    public void onAdded()
+    {
         updateState(true);
     }
 
-    private boolean isBeingPowered() {
+    private boolean isBeingPowered()
+    {
         return world().isBlockIndirectlyGettingPowered(x(), y(), z());
     }
 
-    public void updateState(boolean forceRender) {
+    public void updateState(boolean forceRender)
+    {
         boolean updated = false;
-        if (!world().isRemote && powered != isBeingPowered()) {
+        if (!world().isRemote && powered != isBeingPowered())
+        {
             powered = !powered;
             updateRender();
             updated = true;
@@ -110,20 +122,22 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
             updateRender();
     }
 
-    public void updateRender() {
+    public void updateRender()
+    {
         world().markBlockForUpdate(x(), y(), z());
         world().updateAllLightTypes(x(), y(), z());
         if (!world().isRemote)
             sendDescUpdate();
     }
 
-
-    public boolean checkSupport() {
+    public boolean checkSupport()
+    {
         if (BasicUtils.isClient(world()))
             return false;
 
         BlockCoord bc = new BlockCoord(x(), y(), z()).offset(side);
-        if (!BasicWireUtils.canPlaceWireOnSide(world(), bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side^1), false) && !(BasicWireUtils.canPlaceTorchOnBlock(world(), bc.x, bc.y, bc.z, false) && (side^1) == 0)) {
+        if (!BasicWireUtils.canPlaceWireOnSide(world(), bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side ^ 1), false) && !(BasicWireUtils.canPlaceTorchOnBlock(world(), bc.x, bc.y, bc.z, false) && (side ^ 1) == 0))
+        {
             BasicUtils.dropItemFromLocation(world(), getItem(), false, null, side, 10, new BlockCoord(x(), y(), z()));
             tile().remPart(this);
             return true;
@@ -131,18 +145,19 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
         return false;
     }
 
-
     @Override
     public abstract String getType();
 
     @Override
-    public void update() {
+    public void update()
+    {
         if (!initialized)
             initialized = true;
     }
 
     @Override
-    public int getLightValue() {
+    public int getLightValue()
+    {
         if (powered != isInverted)
             return 15;
         else
@@ -158,28 +173,31 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     public abstract void drawBreaking(RenderBlocks r);
 
     @Override
-    public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
+    public float getStrength(MovingObjectPosition hit, EntityPlayer player)
+    {
         return 2;
     }
 
     public abstract ItemStack getItem();
 
     @Override
-    public Iterable<ItemStack> getDrops() {
+    public Iterable<ItemStack> getDrops()
+    {
         return Arrays.asList(getItem());
     }
 
     @Override
-    public ItemStack pickItem(MovingObjectPosition hit) {
+    public ItemStack pickItem(MovingObjectPosition hit)
+    {
         return getItem();
     }
-
 
     @Override
     public abstract Cuboid6 getBounds();
 
     @Override
-    public boolean occlusionTest(TMultiPart npart) {
+    public boolean occlusionTest(TMultiPart npart)
+    {
         return NormalOcclusionTest.apply(this, npart);
     }
 
@@ -187,27 +205,32 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     public abstract int getSlotMask();
 
     @Override
-    public Iterable<Cuboid6> getOcclusionBoxes() {
+    public Iterable<Cuboid6> getOcclusionBoxes()
+    {
         return Arrays.asList(getBounds());
     }
 
     @Override
-    public boolean canConnectRedstone(int arg0) {
+    public boolean canConnectRedstone(int arg0)
+    {
         return true;
     }
 
     @Override
-    public int strongPowerLevel(int arg0) {
+    public int strongPowerLevel(int arg0)
+    {
         return 0;
     }
 
     @Override
-    public int weakPowerLevel(int arg0) {
+    public int weakPowerLevel(int arg0)
+    {
         return 0;
     }
 
     @Override
-    public boolean isOn() {
+    public boolean isOn()
+    {
         return getLightValue() == 15;
     }
 }

@@ -6,19 +6,22 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import codechicken.lib.packet.PacketCustom;
 
-public class RoutingChipContainerFactory {
-
-    public static class ChipGhostContainer<T extends RoutingChipset> extends GhostContainer2 {
+public class RoutingChipContainerFactory
+{
+    public static class ChipGhostContainer<T extends RoutingChipset> extends GhostContainer2
+    {
         EntityPlayer player;
         ItemStack stack;
         int slot;
         T chip;
 
-        public ChipGhostContainer(EntityPlayer player) {
+        public ChipGhostContainer(EntityPlayer player)
+        {
             this(player, null);
         }
 
-        public ChipGhostContainer(EntityPlayer player, T chip) {
+        public ChipGhostContainer(EntityPlayer player, T chip)
+        {
             super(player.inventory);
             this.player = player;
             this.slot = player.inventory.currentItem;
@@ -26,31 +29,34 @@ public class RoutingChipContainerFactory {
             this.chip = chip != null ? chip : (T) ItemRoutingChip.loadChipFromItemStack(stack);
         }
 
-        public ChipGhostContainer<T> getNewInstance() {
+        public ChipGhostContainer<T> getNewInstance()
+        {
             ChipGhostContainer<T> c = new ChipGhostContainer<T>(player, chip);
 
             return c;
         }
 
-        public T getChip() {
+        public T getChip()
+        {
             return chip;
         }
 
         @Override
-        public void onContainerClosed(EntityPlayer player) {
+        public void onContainerClosed(EntityPlayer player)
+        {
             super.onContainerClosed(player);
-            if (player.worldObj.isRemote) {
+            if (player.worldObj.isRemote)
+            {
                 ItemRoutingChip.saveChipToItemStack(player.inventory.mainInventory[slot], chip);
                 player.inventory.onInventoryChanged();
 
-                new PacketCustom(TransportationCPH.channel, NetConstants.gui_ChipNBTSet)
-                .writeByte(slot).writeItemStack(player.inventory.mainInventory[slot])
-                .sendToServer();
+                new PacketCustom(TransportationCPH.channel, NetConstants.gui_ChipNBTSet).writeByte(slot).writeItemStack(player.inventory.mainInventory[slot]).sendToServer();
             }
         }
 
         @Override
-        public Slot addSlotToContainer(Slot slot) {
+        public Slot addSlotToContainer(Slot slot)
+        {
             if (slot.getSlotIndex() == this.slot)
                 if (slot instanceof SlotExtended)
                     return super.addSlotToContainer(((SlotExtended) slot).setRemoval(false));
@@ -58,5 +64,4 @@ public class RoutingChipContainerFactory {
             return super.addSlotToContainer(slot);
         }
     }
-
 }

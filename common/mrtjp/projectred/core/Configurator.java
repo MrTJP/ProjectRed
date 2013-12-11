@@ -6,7 +6,8 @@ import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-public class Configurator {
+public class Configurator
+{
     protected static File _configFolder;
     protected static File _configFile;
 
@@ -50,7 +51,6 @@ public class Configurator {
     public static Property item_backpackID;
     public static Property item_wireDebuggerID;
     public static Property item_routingChipID;
-
 
     public static Property item_rubyAxe;
     public static Property item_sapphireAxe;
@@ -108,14 +108,15 @@ public class Configurator {
     public static boolean staticGates;
     public static boolean renderLampHalos;
 
-
-    public static void initConfig(FMLPreInitializationEvent event) {
+    public static void initConfig(FMLPreInitializationEvent event)
+    {
         _configFolder = event.getModConfigurationDirectory();
         _configFile = new File(_configFolder.getAbsolutePath() + "/ProjectRed.cfg");
         loadPropertiesFromFile(_configFile);
     }
 
-    public static void loadPropertiesFromFile(File file) {
+    public static void loadPropertiesFromFile(File file)
+    {
         Configuration localConfig = new Configuration(file);
         localConfig.load();
 
@@ -132,7 +133,6 @@ public class Configurator {
         part_fixture = localConfig.get("MultiPart Item IDs", "Fixture Part ID", 9041);
         part_invfixture = localConfig.get("MultiPart Item IDs", "Inverted Fixture Part ID", 9042);
         part_pipe = localConfig.get("MultiPart Item IDs", "Pipe Part ID", 9043);
-
 
         block_machinesID = localConfig.getBlock("block_machinesID", 2129);
         block_oresID = localConfig.getBlock("block_oresID", 2130);
@@ -201,7 +201,6 @@ public class Configurator {
         maxDetectionLength = localConfig.get("general", "Max Detection Length", 50, "Max number of links allowed in between routers.").getInt();
         detectionFrequency = localConfig.get("general", "Detection Frequency", 20, "Ticks between router searches.").getInt();
         routerUpdateThreadCount = localConfig.get("general", "Router Update Thread Count", 4, "Number of active threads that update routing tables.").getInt();
-
 
         localConfig.save();
     }

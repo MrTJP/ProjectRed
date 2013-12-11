@@ -16,8 +16,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 
-public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
-
+public class RoutingChipset_ItemStockKeeper extends RoutingChipset
+{
     public SimpleInventory filter = new SimpleInventory(9, "filter", 127);
 
     public boolean requestWhenEmpty = false;
@@ -25,20 +25,25 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
     private final HashMap<ItemKey, Integer> enrouteItems = new HashMap<ItemKey, Integer>();
 
     private int remainingDelay = operationDelay();
-    private int operationDelay() {
+
+    private int operationDelay()
+    {
         return 100;
     }
-    
+
     private int operationsWithoutRequest = 0;
-    private int throttleDelay() {
+
+    private int throttleDelay()
+    {
         int throttle = 10 * operationsWithoutRequest;
         throttle = Math.min(throttle, 20 * 60);
-        
+
         return throttle;
     }
 
     @Override
-    public void update() {
+    public void update()
+    {
         if (--remainingDelay > 0)
             return;
 
@@ -51,11 +56,12 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
         InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll();
 
         List<ItemKey> checked = new ArrayList<ItemKey>(9);
-        
+
         boolean requestAttempted = false;
         boolean requestedSomething = false;
-        
-        for (int i = 0; i < filter.getSizeInventory(); i++) {
+
+        for (int i = 0; i < filter.getSizeInventory(); i++)
+        {
             ItemKeyStack keyStack = ItemKeyStack.get(filter.getStackInSlot(i));
 
             if (keyStack == null || checked.contains(keyStack.key()))
@@ -72,36 +78,40 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
             req.setCrafting(true).setPulling(true).setPartials(true);
             ItemKeyStack request = ItemKeyStack.get(keyStack.key(), missing);
             req.makeRequest(request);
-            
+
             requestAttempted = true;
-            
-            if (req.requested() > 0) {
+
+            if (req.requested() > 0)
+            {
                 addToRequestList(request.key(), req.requested());
                 requestedSomething = true;
             }
         }
         if (requestAttempted)
             RouteFX.sendSpawnPacket(RouteFX.color_request, 8, routeLayer().getCoords(), routeLayer().getWorld());
-        
+
         if (requestAttempted && requestedSomething)
             operationsWithoutRequest = 0;
         else
             operationsWithoutRequest++;
-        
+
         remainingDelay = operationDelay() + throttleDelay();
     }
 
-    private void addToRequestList(ItemKey item, int amount) {
+    private void addToRequestList(ItemKey item, int amount)
+    {
         Integer current = enrouteItems.get(item);
         if (current == null)
             enrouteItems.put(item, amount);
         else
-            enrouteItems.put(item, current+amount);
+            enrouteItems.put(item, current + amount);
     }
 
-    private void removeFromRequestList(ItemKey item, int amount) {
+    private void removeFromRequestList(ItemKey item, int amount)
+    {
         Integer current = enrouteItems.get(item);
-        if (current != null) {
+        if (current != null)
+        {
             current -= amount;
 
             if (current <= 0)
@@ -111,7 +121,8 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
         }
     }
 
-    private int getEnroute(ItemKey item) {
+    private int getEnroute(ItemKey item)
+    {
         Integer current = enrouteItems.get(item);
         if (current != null)
             return current.intValue();
@@ -119,58 +130,68 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
     }
 
     @Override
-    public void trackedItemLost(ItemKeyStack s) {
+    public void trackedItemLost(ItemKeyStack s)
+    {
         removeFromRequestList(s.key(), s.stackSize);
     }
 
     @Override
-    public void trackedItemReceived(ItemKeyStack s) {
+    public void trackedItemReceived(ItemKeyStack s)
+    {
         removeFromRequestList(s.key(), s.stackSize);
     }
-    
+
     @Override
-    public boolean weakTileChanges() {
+    public boolean weakTileChanges()
+    {
         return true;
     }
-    
+
     @Override
-    public void onNeighborTileChanged(int side, boolean weak) {
+    public void onNeighborTileChanged(int side, boolean weak)
+    {
         operationsWithoutRequest = 0;
         remainingDelay = Math.min(remainingDelay, operationDelay());
     }
 
     @Override
-    public void save(NBTTagCompound tag) {
+    public void save(NBTTagCompound tag)
+    {
         filter.save(tag);
         tag.setBoolean("mode", requestWhenEmpty);
     }
 
     @Override
-    public void load(NBTTagCompound tag) {
+    public void load(NBTTagCompound tag)
+    {
         filter.load(tag);
         requestWhenEmpty = tag.getBoolean("mode");
     }
 
     @Override
-    public List<String> infoCollection() {
+    public List<String> infoCollection()
+    {
         List<String> list = new LinkedList<String>();
         addModeInfo(list);
         addFilterInfo(list);
         return list;
     }
 
-    public void addModeInfo(List<String> list) {
+    public void addModeInfo(List<String> list)
+    {
         list.add(EnumChatFormatting.GRAY + "Stock Mode: " + (requestWhenEmpty ? "full refill" : "partial refill"));
     }
 
-    public void addFilterInfo(List<String> list) {
+    public void addFilterInfo(List<String> list)
+    {
         list.add(EnumChatFormatting.GRAY + "Stock: ");
         boolean added = false;
-        for (int i = 0; i < filter.getSizeInventory(); i++) {
+        for (int i = 0; i < filter.getSizeInventory(); i++)
+        {
             ItemStack stack = filter.getStackInSlot(i);
-            if (stack != null) {
-                list.add(EnumChatFormatting.GRAY + " - " + stack.getDisplayName()
-                        + " (" + stack.stackSize + ")");
+            if (stack != null)
+            {
+                list.add(EnumChatFormatting.GRAY + " - " + stack.getDisplayName() + " (" + stack.stackSize + ")");
                 added = true;
             }
         }
@@ -179,7 +200,8 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset {
     }
 
     @Override
-    public EnumRoutingChip getChipType() {
+    public EnumRoutingChip getChipType()
+    {
         return EnumRoutingChip.ITEMSTOCKKEEPER;
     }
 }

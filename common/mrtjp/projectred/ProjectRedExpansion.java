@@ -18,11 +18,11 @@ import cpw.mods.fml.common.network.NetworkMod;
 
 @Mod(modid = "ProjRed|Expansion", name = "ProjectRed-Expansion", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = "required-after:ProjRed|Core;")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
-public class ProjectRedExpansion 
+public class ProjectRedExpansion
 {
     /** Blocks **/
     public static BlockMachine machine1;
-    
+
     @Instance("ProjRed|Expansion")
     public static ProjectRedExpansion instance;
 
@@ -31,25 +31,29 @@ public class ProjectRedExpansion
 
     public static CreativeTabs tabExpansion = new CreativeTabs("expansion") {
         @Override
-        public ItemStack getIconItemStack() {
+        public ItemStack getIconItemStack()
+        {
             // TODO Change this to one of the machines.
             return EnumPart.COPPERCOIL.getItemStack();
         }
     };
 
     @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit(FMLPreInitializationEvent event)
+    {
         proxy.preinit();
     }
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent event) {
+    public void init(FMLInitializationEvent event)
+    {
         MinecraftForge.EVENT_BUS.register(instance);
         proxy.init();
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
+    public void postInit(FMLPostInitializationEvent event)
+    {
         proxy.postinit();
     }
 }

@@ -13,13 +13,16 @@ import codechicken.microblock.ItemMicroPart;
 import codechicken.microblock.handler.MicroblockProxy;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class CoreRecipes {
-    public static void initCoreRecipes() {
+public class CoreRecipes 
+{
+    public static void initCoreRecipes() 
+    {
         initPartRecipes();
         initToolRecipes();
     }
 
-    private static void initToolRecipes() {
+    private static void initToolRecipes() 
+    {
         /** Draw Plate **/
         GameRegistry.addRecipe(new ShapedOreNBTRecipe(
                 new ItemStack(ProjectRedCore.itemDrawPlate, 1),
@@ -53,7 +56,8 @@ public class CoreRecipes {
 
     }
 
-    private static void initPartRecipes() {
+    private static void initPartRecipes() 
+    {
         /** Circuit Plate **/
         GameRegistry.addSmelting(Block.stone.blockID, EnumPart.PLATE.getItemStack(2), 0f);
 

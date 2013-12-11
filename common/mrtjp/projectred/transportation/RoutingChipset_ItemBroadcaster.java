@@ -20,7 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 
-public class RoutingChipset_ItemBroadcaster extends RoutingChipset 
+public class RoutingChipset_ItemBroadcaster extends RoutingChipset
 {
     public SimpleInventory filter = new SimpleInventory(9, "filter", 1);
     public int extractOrient = -1;
@@ -34,8 +34,9 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
     int timeRemaining = operationDelay();
 
     private final DeliveryManager manager = new DeliveryManager();
-    
-    public void prefUp() {
+
+    public void prefUp()
+    {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             preference += 10;
         else
@@ -43,7 +44,9 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
         if (preference > 100)
             preference = 100;
     }
-    public void prefDown() {
+
+    public void prefDown()
+    {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             preference -= 10;
         else
@@ -51,29 +54,37 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
         if (preference < -100)
             preference = -100;
     }
-    public void shiftOrient() {
+
+    public void shiftOrient()
+    {
         extractOrient++;
         if (extractOrient > 5)
             extractOrient = -1;
     }
-    public void shiftHiding() {
+
+    public void shiftHiding()
+    {
         hideMode = (hideMode + 1) % 3;
     }
 
-    private int stacksToExtract() {
+    private int stacksToExtract()
+    {
         return 1;
     }
 
-    private int itemsToExtract() {
+    private int itemsToExtract()
+    {
         return 8;
     }
 
-    private int operationDelay() {
+    private int operationDelay()
+    {
         return 5;
     }
 
     @Override
-    public void update() {
+    public void update()
+    {
         if (--timeRemaining > 0)
             return;
         timeRemaining = operationDelay();
@@ -84,13 +95,15 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
         Pair2<ItemKeyStack, IWorldRequester> next = null;
         int stacksRemaining = stacksToExtract();
         int itemsRemaining = itemsToExtract();
-        while (manager.hasOrders() && (next = manager.peek()) != null && stacksRemaining > 0 && itemsRemaining > 0) {
+        while (manager.hasOrders() && (next = manager.peek()) != null && stacksRemaining > 0 && itemsRemaining > 0)
+        {
             IInventory real = inventoryProvider().getInventory();
-            if (real == null) {
+            if (real == null)
+            {
                 manager.dispatchFailed();
                 continue;
             }
-            
+
             ItemKeyStack reqKeyStack = next.getValue1();
             IWorldRequester requester = next.getValue2();
 
@@ -101,8 +114,9 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
                 inv.setHidePerType(true);
             else if (hideMode == 2)
                 inv.setHidePerSlot(true);
-            
-            if (!routeLayer().getRouter().canRouteTo(requester.getRouter().getIPAddress())) {
+
+            if (!routeLayer().getRouter().canRouteTo(requester.getRouter().getIPAddress()))
+            {
                 manager.dispatchFailed();
                 continue;
             }
@@ -113,26 +127,28 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
 
             boolean reStock = false;
             int destinationSpace = requester.getActiveFreeSpace(reqKeyStack.key());
-            if (destinationSpace < toExtract) {
+            if (destinationSpace < toExtract)
+            {
                 toExtract = destinationSpace;
-                if (toExtract <= 0) {
+                if (toExtract <= 0)
+                {
                     manager.reStock();
                     break;
                 }
                 reStock = true;
             }
-            
+
             int removed = inv.extractItem(reqKeyStack.key(), toExtract);
 
-            if (removed <= 0) {
+            if (removed <= 0)
+            {
                 manager.dispatchFailed();
                 continue;
             }
 
             ItemStack toSend = reqKeyStack.key().makeStack(removed);
 
-            routeLayer().queueStackToSend(toSend, inventoryProvider().getInterfacedSide(),
-                    SendPriority.ACTIVE, requester.getRouter().getIPAddress());
+            routeLayer().queueStackToSend(toSend, inventoryProvider().getInterfacedSide(), SendPriority.ACTIVE, requester.getRouter().getIPAddress());
 
             manager.dispatchSuccessful(removed, reStock);
 
@@ -142,7 +158,8 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
     }
 
     @Override
-    public void requestPromises(RequestBranchNode request, int existingPromises) {
+    public void requestPromises(RequestBranchNode request, int existingPromises)
+    {
         IInventory real = inventoryProvider().getInventory();
         if (real == null)
             return;
@@ -153,7 +170,8 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
 
         ItemKey requested = request.getRequestedPackage();
 
-        if (filt.hasItem(requested) != filterExclude) {
+        if (filt.hasItem(requested) != filterExclude)
+        {
 
             if (hideMode == 1)
                 inv.setHidePerType(true);
@@ -163,11 +181,10 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
             int numberAvailable = inv.getItemCount(requested);
             numberAvailable -= existingPromises;
 
-            if (numberAvailable > 0) {
+            if (numberAvailable > 0)
+            {
                 DeliveryPromise promise = new DeliveryPromise();
-                promise.setPackage(requested)
-                .setSize(Math.min(request.getMissingCount(), numberAvailable))
-                .setSender(routeLayer().getBroadcaster());
+                promise.setPackage(requested).setSize(Math.min(request.getMissingCount(), numberAvailable)).setSender(routeLayer().getBroadcaster());
 
                 request.addPromise(promise);
             }
@@ -175,12 +192,14 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
     }
 
     @Override
-    public void deliverPromises(DeliveryPromise promise, IWorldRequester requester) {
+    public void deliverPromises(DeliveryPromise promise, IWorldRequester requester)
+    {
         manager.addOrder(ItemKeyStack.get(promise.thePackage, promise.size), requester);
     }
 
     @Override
-    public void getProvidedItems(Map<ItemKey, Integer> map) {
+    public void getProvidedItems(Map<ItemKey, Integer> map)
+    {
         IInventory real = inventoryProvider().getInventory();
         if (real == null)
             return;
@@ -196,7 +215,8 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
 
         Map<ItemKey, Integer> items = inv.getAllItemStacks();
         for (Entry<ItemKey, Integer> entry : items.entrySet())
-            if (filt.hasItem(entry.getKey()) != filterExclude) {
+            if (filt.hasItem(entry.getKey()) != filterExclude)
+            {
                 Integer current = map.get(entry.getKey());
                 int toAdd = entry.getValue() - manager.getDeliveryCount(entry.getKey());
 
@@ -207,20 +227,23 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
                         map.put(entry.getKey(), current + toAdd);
             }
     }
-    
+
     @Override
-    public int getPriority() {
+    public int getPriority()
+    {
         return preference;
     }
 
     @Override
-    public void onPipeBroken(){
+    public void onPipeBroken()
+    {
         while (manager.hasOrders())
             manager.dispatchFailed();
     }
 
     @Override
-    public void save(NBTTagCompound tag) {
+    public void save(NBTTagCompound tag)
+    {
         filter.save(tag);
         tag.setBoolean("mode", filterExclude);
         tag.setInteger("pref", preference);
@@ -229,7 +252,8 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
     }
 
     @Override
-    public void load(NBTTagCompound tag) {
+    public void load(NBTTagCompound tag)
+    {
         filter.load(tag);
         filterExclude = tag.getBoolean("mode");
         preference = tag.getInteger("pref");
@@ -237,10 +261,12 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
         hideMode = tag.getByte("hide");
     }
 
-    public static final String[] dirs = new String[] {"Down", "Up", "North", "South", "West", "East"};
-    public static final String[] hide = new String[] {"off", "one per type", "one per stack"};
+    public static final String[] dirs = new String[] { "Down", "Up", "North", "South", "West", "East" };
+    public static final String[] hide = new String[] { "off", "one per type", "one per stack" };
+
     @Override
-    public List<String> infoCollection() {
+    public List<String> infoCollection()
+    {
         List<String> list = new LinkedList<String>();
         addPriorityInfo(list);
         addOrientInfo(list);
@@ -248,14 +274,17 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
         return list;
     }
 
-    public void addFilterInfo(List<String> list) {
+    public void addFilterInfo(List<String> list)
+    {
         list.add(EnumChatFormatting.GRAY + "Hide Mode: " + hide[hideMode]);
         list.add(EnumChatFormatting.GRAY + "Filter Mode: " + (filterExclude ? "blacklist" : "whitelist"));
         list.add(EnumChatFormatting.GRAY + "Filter: ");
         boolean added = false;
-        for (int i = 0; i < filter.getSizeInventory(); i++) {
+        for (int i = 0; i < filter.getSizeInventory(); i++)
+        {
             ItemStack stack = filter.getStackInSlot(i);
-            if (stack != null) {
+            if (stack != null)
+            {
                 list.add(EnumChatFormatting.GRAY + " - " + stack.getDisplayName());
                 added = true;
             }
@@ -263,17 +292,20 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
         if (!added)
             list.add(EnumChatFormatting.GRAY + " - empty");
     }
-    
-    public void addPriorityInfo(List<String> list) {
+
+    public void addPriorityInfo(List<String> list)
+    {
         list.add(EnumChatFormatting.GRAY + "Preference: " + preference);
     }
-    
-    public void addOrientInfo(List<String> list) {
+
+    public void addOrientInfo(List<String> list)
+    {
         list.add(EnumChatFormatting.GRAY + "Extract Orientation: " + (extractOrient == -1 ? "Default" : dirs[extractOrient]));
     }
-    
+
     @Override
-    public EnumRoutingChip getChipType() {
+    public EnumRoutingChip getChipType()
+    {
         return EnumRoutingChip.ITEMBROADCASTER;
     }
 }

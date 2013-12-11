@@ -6,12 +6,13 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
-public class IlluminationClientProxy extends IlluminationProxy {
-
+public class IlluminationClientProxy extends IlluminationProxy
+{
     public static int lampRenderID = 0;
 
     @Override
-    public void init() {
+    public void init()
+    {
         super.init();
 
         PacketCustom.assignHandler(IlluminationCPH.channel, new IlluminationCPH());

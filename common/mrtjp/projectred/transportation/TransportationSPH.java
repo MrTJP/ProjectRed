@@ -16,12 +16,14 @@ import codechicken.lib.packet.PacketCustom.IServerPacketHandler;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 
-public class TransportationSPH implements IServerPacketHandler {
+public class TransportationSPH implements IServerPacketHandler
+{
     public static final Object channel = ProjectRedTransportation.instance;
 
     @Override
-    public void handlePacket(PacketCustom packet, NetServerHandler nethandler, EntityPlayerMP sender) {
-        switch(packet.getType()) {
+    public void handlePacket(PacketCustom packet, NetServerHandler nethandler, EntityPlayerMP sender)
+    {
+        switch (packet.getType()) {
         case NetConstants.gui_ChipNBTSet:
             setChipNBT(packet, sender);
             break;
@@ -40,23 +42,27 @@ public class TransportationSPH implements IServerPacketHandler {
         }
     }
 
-    private void handleRequestListRefresh(PacketCustom packet, EntityPlayerMP sender) {
+    private void handleRequestListRefresh(PacketCustom packet, EntityPlayerMP sender)
+    {
         BlockCoord bc = packet.readCoord();
         TMultiPart t = BasicUtils.getMultiPart(sender.worldObj, bc, 6);
         if (t instanceof IWorldRequester)
             sendRequestList((IWorldRequester) t, sender, packet.readBoolean(), packet.readBoolean());
     }
 
-    private void handleRequestAction(PacketCustom packet, EntityPlayerMP sender) {
+    private void handleRequestAction(PacketCustom packet, EntityPlayerMP sender)
+    {
         BlockCoord bc = packet.readCoord();
         TMultiPart t = BasicUtils.getMultiPart(sender.worldObj, bc, 6);
-        if (t instanceof IWorldRequester) {
+        if (t instanceof IWorldRequester)
+        {
             String ident = packet.readString();
-            //ADD THINGS HERE
+            // ADD THINGS HERE
         }
     }
 
-    private static void sendRequestList(IWorldRequester requester, EntityPlayerMP player, boolean collectBroadcast, boolean collectCrafts) {
+    private static void sendRequestList(IWorldRequester requester, EntityPlayerMP player, boolean collectBroadcast, boolean collectCrafts)
+    {
         CollectionPathFinder cpf = new CollectionPathFinder().setRequester(requester);
         cpf.setCollectBroadcasts(collectBroadcast).setCollectCrafts(collectCrafts);
 
@@ -70,10 +76,12 @@ public class TransportationSPH implements IServerPacketHandler {
         packet2.compressed().sendToPlayer(player);
     }
 
-    private void handleRequestSubmit(PacketCustom packet, EntityPlayerMP sender) {
+    private void handleRequestSubmit(PacketCustom packet, EntityPlayerMP sender)
+    {
         BlockCoord bc = packet.readCoord();
         TMultiPart t = BasicUtils.getMultiPart(sender.worldObj, bc, 6);
-        if (t instanceof IWorldRequester) {
+        if (t instanceof IWorldRequester)
+        {
             RequestConsole r = new RequestConsole().setDestination((IWorldRequester) t);
 
             boolean pull = packet.readBoolean();
@@ -85,29 +93,35 @@ public class TransportationSPH implements IServerPacketHandler {
             ItemKeyStack s = ItemKeyStack.get(packet.readItemStack(true));
             r.makeRequest(s);
 
-            if (r.requested() > 0) {
+            if (r.requested() > 0)
+            {
                 sender.addChatMessage("Successfully requested " + r.requested() + " of " + s.key().getName() + ".");
                 RouteFX.sendSpawnPacket(RouteFX.color_request, 8, bc, sender.worldObj);
-            } else {
+            }
+            else
+            {
                 sender.addChatMessage("Could not request " + s.stackSize + " of " + s.key().getName() + ". Missing:");
                 for (Entry<ItemKey, Integer> entry : r.getMissing().entrySet())
                     sender.addChatMessage(entry.getValue() + " of " + entry.getKey().getName());
             }
 
-            sendRequestList((IWorldRequester)t, sender, pull, craft);
+            sendRequestList((IWorldRequester) t, sender, pull, craft);
         }
     }
 
-    private void setChipNBT(PacketCustom packet, EntityPlayerMP player) {
+    private void setChipNBT(PacketCustom packet, EntityPlayerMP player)
+    {
         int slot = packet.readByte();
         ItemStack stack = packet.readItemStack();
         player.inventory.setInventorySlotContents(slot, stack);
         player.inventory.onInventoryChanged();
     }
 
-    private void handleCraftingPipeAction(PacketCustom packet, World w) {
+    private void handleCraftingPipeAction(PacketCustom packet, World w)
+    {
         TMultiPart t = BasicUtils.getMultiPart(w, packet.readCoord(), 6);
-        if (t instanceof RoutedCraftingPipePart) {
+        if (t instanceof RoutedCraftingPipePart)
+        {
             RoutedCraftingPipePart pipe = (RoutedCraftingPipePart) t;
             String action = packet.readString();
             if (action.equals("up"))

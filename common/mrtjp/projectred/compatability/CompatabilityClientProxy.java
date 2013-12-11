@@ -1,6 +1,6 @@
 package mrtjp.projectred.compatability;
 
-public class CompatabilityClientProxy extends CompatabilityProxy {
-
+public class CompatabilityClientProxy extends CompatabilityProxy
+{
 
 }

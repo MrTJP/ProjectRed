@@ -5,7 +5,8 @@ import net.minecraft.util.ChatAllowedCharacters;
 
 import org.lwjgl.input.Keyboard;
 
-public class WidgetTextBox extends GhostWidget {
+public class WidgetTextBox extends GhostWidget
+{
     private String text;
     private boolean isFocused;
     private boolean isEnabled;
@@ -16,7 +17,8 @@ public class WidgetTextBox extends GhostWidget {
 
     private String allowedcharacters;
 
-    public WidgetTextBox(int x, int y, int width, int height, String text) {
+    public WidgetTextBox(int x, int y, int width, int height, String text)
+    {
         super(x, y, width, height);
         isFocused = false;
         isEnabled = true;
@@ -25,12 +27,14 @@ public class WidgetTextBox extends GhostWidget {
         allowedcharacters = ChatAllowedCharacters.allowedCharacters;
     }
 
-    public WidgetTextBox setActionCommand(String s) {
+    public WidgetTextBox setActionCommand(String s)
+    {
         actionCommand = s;
         return this;
     }
 
-    public void setText(String s) {
+    public void setText(String s)
+    {
         if (s.equals(text))
             return;
 
@@ -39,43 +43,52 @@ public class WidgetTextBox extends GhostWidget {
         onTextChanged(oldText);
     }
 
-    public void onTextChanged(String oldText) {
+    public void onTextChanged(String oldText)
+    {
     }
 
-    public final String getText() {
+    public final String getText()
+    {
         return text;
     }
 
-    public final boolean isEnabled() {
+    public final boolean isEnabled()
+    {
         return isEnabled;
     }
 
-    public void setEnabled(boolean b) {
+    public void setEnabled(boolean b)
+    {
         isEnabled = b;
         if (!isEnabled && isFocused)
             setFocused(false);
     }
 
-    public final boolean isFocused() {
+    public final boolean isFocused()
+    {
         return isFocused;
     }
 
     @Override
-    public void update() {
+    public void update()
+    {
         cursorCounter++;
     }
 
     @Override
-    public void keyTyped(char c, int keycode) {
+    public void keyTyped(char c, int keycode)
+    {
         if (!isEnabled || !isFocused)
             return;
 
-        if (c == '\026') { //paste
+        if (c == '\026')
+        { // paste
             String s = GuiScreen.getClipboardString();
             if (s == null || s.equals(""))
                 return;
 
-            for (int i = 0; i < s.length(); i++) {
+            for (int i = 0; i < s.length(); i++)
+            {
                 if (text.length() == maxStringLength)
                     return;
 
@@ -84,7 +97,8 @@ public class WidgetTextBox extends GhostWidget {
                     setText(text + tc);
             }
         }
-        if (keycode == Keyboard.KEY_RETURN) {
+        if (keycode == Keyboard.KEY_RETURN)
+        {
             setFocused(false);
             sendAction(actionCommand, getText());
         }
@@ -96,64 +110,77 @@ public class WidgetTextBox extends GhostWidget {
             setText(text + c);
     }
 
-    public boolean canAddChar(char c) {
+    public boolean canAddChar(char c)
+    {
         return allowedcharacters.indexOf(c) >= 0;
     }
 
     @Override
-    public void mouseClicked(int x, int y, int button) {
-        if (isEnabled && pointInside(x, y)) {
+    public void mouseClicked(int x, int y, int button)
+    {
+        if (isEnabled && pointInside(x, y))
+        {
             setFocused(true);
             if (button == 1)
                 setText("");
-        } else
+        }
+        else
             setFocused(false);
     }
 
-    public void setFocused(boolean focus) {
+    public void setFocused(boolean focus)
+    {
         if (focus == isFocused)
             return;
         isFocused = focus;
         onFocusChanged();
     }
 
-    public void onFocusChanged() {
+    public void onFocusChanged()
+    {
         if (isFocused)
             cursorCounter = 0;
     }
 
     @Override
-    public void drawBack(int i, int j, float f) {
+    public void drawBack(int i, int j, float f)
+    {
         drawBackground();
         drawText();
     }
 
-    public void drawBackground() {
+    public void drawBackground()
+    {
         drawRect(x - 1, y - 1, x + width + 1, y + height + 1, 0xffa0a0a0);
         drawRect(x, y, x + width, y + height, 0xff000000);
     }
 
-    public String getDrawText() {
+    public String getDrawText()
+    {
         String s = getText();
         if (isEnabled && isFocused && cursorCounter / 6 % 2 == 0)
             s += "_";
         return s;
     }
 
-    public void drawText() {
+    public void drawText()
+    {
         drawString(fontRenderer, getDrawText(), x + 4, y + height / 2 - 4, getTextColour());
     }
 
-    public int getTextColour() {
+    public int getTextColour()
+    {
         return isEnabled ? 0xe0e0e0 : 0x707070;
     }
 
-    public WidgetTextBox setMaxStringLength(int i) {
+    public WidgetTextBox setMaxStringLength(int i)
+    {
         maxStringLength = i;
         return this;
     }
 
-    public WidgetTextBox setAllowedCharacters(String s) {
+    public WidgetTextBox setAllowedCharacters(String s)
+    {
         if (s == null)
             s = ChatAllowedCharacters.allowedCharacters;
         else

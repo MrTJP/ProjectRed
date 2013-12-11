@@ -24,11 +24,12 @@ import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 
-public class RenderLantern implements IItemRenderer {
+public class RenderLantern implements IItemRenderer
+{
     public static RenderLantern instance = new RenderLantern();
 
     private static Map<String, CCModel> models;
-    private static Cuboid6 box = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D).expand(-1/64D);
+    private static Cuboid6 box = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D).expand(-1 / 64D);
     private static Cuboid6 breakbox = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D);
 
     public static Icon[] onIcons;
@@ -37,14 +38,16 @@ public class RenderLantern implements IItemRenderer {
     static
     {
         models = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/lights/lantern.obj"), 7, new InvertX());
-        for (CCModel c : models.values()) {
+        for (CCModel c : models.values())
+        {
             c.apply(new Translation(.5, 0, .5));
             c.computeLighting(LightModel.standardLightModel);
             c.shrinkUVs(0.0005);
         }
     }
 
-    public static void registerIcons(IconRegister reg) {
+    public static void registerIcons(IconRegister reg)
+    {
         offIcons = new Icon[16];
         for (int i = 0; i < 16; i++)
             offIcons[i] = reg.registerIcon("projectred:lights/lanternoff/" + i);
@@ -54,8 +57,9 @@ public class RenderLantern implements IItemRenderer {
             onIcons[i] = reg.registerIcon("projectred:lights/lanternon/" + i);
     }
 
-    public void renderLantern(LanternPart l) {
-        Icon icon = l.isOn()?onIcons[l.type]:offIcons[l.type];
+    public void renderLantern(LanternPart l)
+    {
+        Icon icon = l.isOn() ? onIcons[l.type] : offIcons[l.type];
         TextureUtils.bindAtlas(0);
         CCRenderState.reset();
         CCRenderState.setBrightness(l.world(), l.x(), l.y(), l.z());
@@ -65,36 +69,46 @@ public class RenderLantern implements IItemRenderer {
             RenderHalo.addLight(l.x(), l.y(), l.z(), l.type, 6, box);
     }
 
-    public void renderBreaking(int x, int y, int z, Icon icon) {
+    public void renderBreaking(int x, int y, int z, Icon icon)
+    {
         RenderUtils.renderBlock(breakbox, 0, new Translation(x, y, z), new IconTransformation(icon), null);
     }
 
-    public void renderLanternBulb(Icon icon, double x, double y, double z, int rotation) {
+    public void renderLanternBulb(Icon icon, double x, double y, double z, int rotation)
+    {
         renderPart(icon, models.get("bulb"), x, y, z, 2);
-        if (rotation == 0) {
+        if (rotation == 0)
+        {
             renderPart(icon, models.get("standbottom"), x, y, z, 2);
             renderPart(icon, models.get("goldringbottom"), x, y, z, 2);
-        } else if (rotation == 1) {
+        }
+        else if (rotation == 1)
+        {
             renderPart(icon, models.get("standtop"), x, y, z, 2);
             renderPart(icon, models.get("goldringtop"), x, y, z, 2);
-        } else {
+        }
+        else
+        {
             renderPart(icon, models.get("standside"), x, y, z, rotation);
             renderPart(icon, models.get("goldringtop"), x, y, z, rotation);
         }
     }
 
     @Override
-    public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+    public boolean handleRenderType(ItemStack item, ItemRenderType type)
+    {
         return true;
     }
 
     @Override
-    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
+    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper)
+    {
         return true;
     }
 
     @Override
-    public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+    public void renderItem(ItemRenderType type, ItemStack item, Object... data)
+    {
         boolean on = item.getItem() == ProjectRedIllumination.itemPartInvLantern;
         int color = item.getItemDamage();
         switch (type) {
@@ -115,7 +129,8 @@ public class RenderLantern implements IItemRenderer {
         }
     }
 
-    public void renderInventory(boolean on, int color, double x, double y, double z, double scale) {
+    public void renderInventory(boolean on, int color, double x, double y, double z, double scale)
+    {
         Icon icon = on ? onIcons[color] : offIcons[color];
         GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
@@ -127,18 +142,17 @@ public class RenderLantern implements IItemRenderer {
         renderPart(icon, models.get("bulb"), x, y, z, 2);
         renderPart(icon, models.get("goldringtop"), x, y, z, 2);
         CCRenderState.draw();
-        if(on) {
+        if (on)
+        {
             RenderHalo.prepareRenderState();
-            RenderHalo.renderHalo(Tessellator.instance, box, color,  new Translation(x, y, z));
+            RenderHalo.renderHalo(Tessellator.instance, box, color, new Translation(x, y, z));
             RenderHalo.restoreRenderState();
         }
         GL11.glPopMatrix();
     }
 
-    public void renderPart(Icon icon, CCModel cc, double x, double y, double z, int rot) {
-        cc.render(0, cc.verts.length,
-                Rotation.sideOrientation(0, Rotation.rotationTo(0, rot)).at(Vector3.center)
-                .with(new Translation(x, y, z)), new IconTransformation(icon), null);
+    public void renderPart(Icon icon, CCModel cc, double x, double y, double z, int rot)
+    {
+        cc.render(0, cc.verts.length, Rotation.sideOrientation(0, Rotation.rotationTo(0, rot)).at(Vector3.center).with(new Translation(x, y, z)), new IconTransformation(icon), null);
     }
-
 }

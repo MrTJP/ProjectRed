@@ -8,38 +8,45 @@ import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.transportation.Router.StartEndPath;
 
-public class CollectionPathFinder {
-
+public class CollectionPathFinder
+{
     private boolean collectBroadcasts = false;
     private boolean collectCrafts = false;
     private IWorldRequester requester;
 
     private Map<ItemKey, Integer> collected = null;
 
-    public CollectionPathFinder() {
+    public CollectionPathFinder()
+    {
     }
 
-    public CollectionPathFinder setCollectBroadcasts(boolean flag) {
+    public CollectionPathFinder setCollectBroadcasts(boolean flag)
+    {
         collectBroadcasts = flag;
         return this;
     }
 
-    public CollectionPathFinder setCollectCrafts(boolean flag) {
+    public CollectionPathFinder setCollectCrafts(boolean flag)
+    {
         collectCrafts = flag;
         return this;
     }
 
-    public CollectionPathFinder setRequester(IWorldRequester requester) {
+    public CollectionPathFinder setRequester(IWorldRequester requester)
+    {
         this.requester = requester;
         return this;
     }
 
-    public CollectionPathFinder collect() {
+    public CollectionPathFinder collect()
+    {
         Map<ItemKey, Integer> collected = new HashMap<ItemKey, Integer>();
-        for (StartEndPath l : requester.getRouter().getRoutesByCost()) {
+        for (StartEndPath l : requester.getRouter().getRoutesByCost())
+        {
             Router r = l.end;
             IWorldRouter wr = r.getParent();
-            if (wr instanceof IWorldCrafter && collectCrafts) {
+            if (wr instanceof IWorldCrafter && collectCrafts)
+            {
                 IWorldCrafter c = (IWorldCrafter) wr;
                 c.getBroadcastedItems(collected);
                 List<ItemKeyStack> list = c.getCraftedItems();
@@ -47,7 +54,9 @@ public class CollectionPathFinder {
                     for (ItemKeyStack stack : list)
                         if (!collected.containsKey(stack.key()))
                             collected.put(stack.key(), null);
-            } else if (wr instanceof IWorldBroadcaster && collectBroadcasts) {
+            }
+            else if (wr instanceof IWorldBroadcaster && collectBroadcasts)
+            {
                 IWorldBroadcaster b = (IWorldBroadcaster) wr;
                 b.getBroadcastedItems(collected);
             }
@@ -57,7 +66,8 @@ public class CollectionPathFinder {
         return this;
     }
 
-    public Map<ItemKey, Integer> getCollection() {
+    public Map<ItemKey, Integer> getCollection()
+    {
         return collected;
     }
 }

@@ -12,14 +12,16 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import codechicken.microblock.ItemMicroPart;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class TransmissionRecipes {
-
-    public static void initTransmissionRecipes() {
+public class TransmissionRecipes 
+{
+    public static void initTransmissionRecipes() 
+    {
         initWireRecipes();
         initPartRecipes();
     }
 
-    private static void initWireRecipes() {
+    private static void initWireRecipes() 
+    {
         /** Red Alloy Wires **/
         GameRegistry.addRecipe(EnumWire.RED_ALLOY.getItemStack(12),
                 " r ",
@@ -29,7 +31,8 @@ public class TransmissionRecipes {
                 );
 
         /** Insulated Wires **/
-        for (int i = 0; i < EnumWire.INSULATED_WIRE.length; i++) {
+        for (int i = 0; i < EnumWire.INSULATED_WIRE.length; i++) 
+        {
             EnumWire w = EnumWire.INSULATED_WIRE[i];
             GameRegistry.addRecipe(w.getItemStack(12),
                     "WrW",
@@ -61,7 +64,8 @@ public class TransmissionRecipes {
                 'S', Item.silk,
                 'W', EnumWire.oreDictDefinitionInsulated
                 ));
-        for (EnumWire w : EnumWire.BUNDLED_WIRE) { // recoloring
+        for (EnumWire w : EnumWire.BUNDLED_WIRE) // recoloring 
+        {
             if (w == EnumWire.BUNDLED_N)
                 continue;
             GameRegistry.addRecipe(new ShapelessOreRecipe(w.getItemStack(),
@@ -84,7 +88,8 @@ public class TransmissionRecipes {
                         ).setCheckNBT());
     }
 
-    private static void initPartRecipes() {
+    private static void initPartRecipes() 
+    {
         /** Wired Plate **/
         GameRegistry.addRecipe(EnumPart.WIREDPLATE.getItemStack(),
                 "r",

@@ -9,12 +9,14 @@ import net.minecraft.nbt.NBTTagCompound;
 public class RoutingChipset_ItemTerminator extends RoutingChipset_ItemResponder
 {
     @Override
-    protected SendPriority getSendPriority() {
+    protected SendPriority getSendPriority()
+    {
         return SendPriority.TERMINATED;
     }
 
     @Override
-    public EnumRoutingChip getChipType() {
+    public EnumRoutingChip getChipType()
+    {
         return EnumRoutingChip.ITEMTERMINATOR;
     }
 }

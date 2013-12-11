@@ -23,12 +23,15 @@ import codechicken.lib.vec.SwapYZ;
 import codechicken.lib.vec.TransformationList;
 import codechicken.lib.vec.Translation;
 import codechicken.microblock.Saw;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemGemSaw extends ItemCraftingDamage implements Saw {
-
+public class ItemGemSaw extends ItemCraftingDamage implements Saw
+{
     EnumSpecialTool tool;
 
-    protected ItemGemSaw(int par1, EnumSpecialTool tool) {
+    protected ItemGemSaw(int par1, EnumSpecialTool tool)
+    {
         super(par1);
         this.tool = tool;
         this.setUnlocalizedName("projectred.exploration." + tool.unlocal);
@@ -37,21 +40,27 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw {
     }
 
     @Override
-    public int getCuttingStrength() {
+    public int getCuttingStrength()
+    {
         return tool.material.getHarvestLevel();
     }
 
     @Override
-    public boolean hasContainerItem() {
+    public boolean hasContainerItem()
+    {
         return true;
     }
 
     @Override
-    public ItemStack getContainerItemStack(ItemStack stack) {
-        if (stack.itemID == this.itemID) {
+    public ItemStack getContainerItemStack(ItemStack stack)
+    {
+        if (stack.itemID == this.itemID)
+        {
             stack.setItemDamage(stack.getItemDamage() + 1);
             return stack;
-        } else {
+        }
+        else
+        {
             ItemStack newStack = new ItemStack(this);
             newStack.setItemDamage(newStack.getMaxDamage());
             return newStack;
@@ -59,15 +68,19 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw {
     }
 
     @Override
-    public boolean doesContainerItemLeaveCraftingGrid(ItemStack is) {
+    public boolean doesContainerItemLeaveCraftingGrid(ItemStack is)
+    {
         return false;
     }
 
     @Override
-    public void registerIcons(IconRegister reg) {
+    public void registerIcons(IconRegister reg)
+    {
     }
 
-    public static class GemSawItemRenderer implements IItemRenderer {
+    @SideOnly(Side.CLIENT)
+    public static class GemSawItemRenderer implements IItemRenderer
+    {
 
         Map<String, CCModel> models;
         CCModel handle;
@@ -76,7 +89,8 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw {
 
         public static GemSawItemRenderer instance = new GemSawItemRenderer();
 
-        public GemSawItemRenderer() {
+        public GemSawItemRenderer()
+        {
             models = CCModel.parseObjModels(new ResourceLocation("microblock", "models/saw.obj"), 7, new SwapYZ());
             handle = models.get("Handle");
             holder = models.get("BladeSupport");
@@ -84,16 +98,19 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw {
         }
 
         @Override
-        public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+        public boolean handleRenderType(ItemStack item, ItemRenderType type)
+        {
             return true;
         }
 
         @Override
-        public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
+        public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper)
+        {
             return true;
         }
 
-        public int getColorForStack(ItemStack saw) {
+        public int getColorForStack(ItemStack saw)
+        {
             EnumToolMaterial m = ((ItemGemSaw) saw.getItem()).tool.material;
 
             if (m == EnumToolMaterial.WOOD)
@@ -116,7 +133,8 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw {
         }
 
         @Override
-        public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+        public void renderItem(ItemRenderType type, ItemStack item, Object... data)
+        {
             TransformationList t;
             switch (type) {
             case INVENTORY:

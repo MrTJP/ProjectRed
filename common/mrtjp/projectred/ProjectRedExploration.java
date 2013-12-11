@@ -33,7 +33,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(modid = "ProjRed|Exploration", name = "ProjectRed-Exploration", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = "required-after:ProjRed|Core;")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
-public class ProjectRedExploration 
+public class ProjectRedExploration
 {
     /** Blocks **/
     public static BlockOre blockOres;
@@ -92,26 +92,29 @@ public class ProjectRedExploration
 
     public static CreativeTabs tabExploration = new CreativeTabs("exploration") {
         @Override
-        public ItemStack getIconItemStack() {
+        public ItemStack getIconItemStack()
+        {
             return new ItemStack(Block.grass);
         }
     };
 
     @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit(FMLPreInitializationEvent event)
+    {
         proxy.preinit();
     }
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent event) {
+    public void init(FMLInitializationEvent event)
+    {
         MinecraftForge.EVENT_BUS.register(instance);
         NetworkRegistry.instance().registerGuiHandler(instance, new ExplorationGuiHandler());
         proxy.init();
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
+    public void postInit(FMLPostInitializationEvent event)
+    {
         proxy.postinit();
     }
-
 }

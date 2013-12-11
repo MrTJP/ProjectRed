@@ -15,7 +15,8 @@ public class ParticleIconRegistry
     public static final ParticleIconRegistry instance = new ParticleIconRegistry();
     private static final HashMap<String, Icon> textures = new HashMap<String, Icon>();
 
-    public Icon getIcon(String name) {
+    public Icon getIcon(String name)
+    {
         Icon icon = textures.get(name);
         if (icon != null)
             return icon;
@@ -24,15 +25,18 @@ public class ParticleIconRegistry
     }
 
     @ForgeSubscribe
-    public void onIconRegistry(TextureStitchEvent.Pre event) {
-        if (event.map.textureType == 1) {
+    public void onIconRegistry(TextureStitchEvent.Pre event)
+    {
+        if (event.map.textureType == 1)
+        {
             reg = event.map;
             registerIcons();
             reg = null;
         }
     }
 
-    private void registerIcons() {
+    private void registerIcons()
+    {
         iconPut("sparkle1");
         iconPut("sparkle2");
         iconPut("ember");
@@ -47,7 +51,8 @@ public class ParticleIconRegistry
     private IconRegister reg = null;
     private static final String textureDir = "projectred:particles/";
 
-    private void iconPut(String s) {
+    private void iconPut(String s)
+    {
         if (reg == null)
             return;
 

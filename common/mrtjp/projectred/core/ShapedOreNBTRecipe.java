@@ -7,34 +7,41 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-public class ShapedOreNBTRecipe extends ShapedOreRecipe {
-
+public class ShapedOreNBTRecipe extends ShapedOreRecipe
+{
     protected boolean checkNBT;
     protected boolean keepNBT;
     protected ItemStack output;
 
-    public ShapedOreNBTRecipe(Block result, Object... recipe) {
+    public ShapedOreNBTRecipe(Block result, Object... recipe)
+    {
         this(new ItemStack(result), recipe);
     }
 
-    public ShapedOreNBTRecipe(Item result, Object... recipe) {
+    public ShapedOreNBTRecipe(Item result, Object... recipe)
+    {
         this(new ItemStack(result), recipe);
     }
 
-    public ShapedOreNBTRecipe(ItemStack result, Object... recipe) {
+    public ShapedOreNBTRecipe(ItemStack result, Object... recipe)
+    {
         super(result, recipe);
         this.output = result.copy();
     }
 
     @Override
-    public ItemStack getCraftingResult(InventoryCrafting inv) {
+    public ItemStack getCraftingResult(InventoryCrafting inv)
+    {
         ItemStack out = output.copy();
-        if (keepNBT) {
+        if (keepNBT)
+        {
             ItemStack oldItemWithNBT = null;
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < 9; i++)
+            {
                 ItemStack slot = inv.getStackInSlot(i);
                 if (slot != null)
-                    if (slot.hasTagCompound()) {
+                    if (slot.hasTagCompound())
+                    {
                         oldItemWithNBT = slot;
                         break;
                     }
@@ -45,20 +52,24 @@ public class ShapedOreNBTRecipe extends ShapedOreRecipe {
         return out;
     }
 
-    public ShapedOreNBTRecipe setKeepNBT() {
+    public ShapedOreNBTRecipe setKeepNBT()
+    {
         keepNBT = true;
         return this;
     }
 
-    public ShapedOreNBTRecipe setCheckNBT() {
+    public ShapedOreNBTRecipe setCheckNBT()
+    {
         checkNBT = true;
         return this;
     }
 
-    private boolean checkItemEquals(ItemStack target, ItemStack input) {
+    private boolean checkItemEquals(ItemStack target, ItemStack input)
+    {
         if (input == null && target != null || input != null && target == null)
             return false;
-        if (target.itemID == input.itemID && (target.getItemDamage() == OreDictionary.WILDCARD_VALUE || target.getItemDamage() == input.getItemDamage())) {
+        if (target.itemID == input.itemID && (target.getItemDamage() == OreDictionary.WILDCARD_VALUE || target.getItemDamage() == input.getItemDamage()))
+        {
             if (checkNBT)
                 return target.getTagCompound().equals(input.getTagCompound());
             return true;

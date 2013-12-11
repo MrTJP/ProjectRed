@@ -30,7 +30,8 @@ public class ParticleManagement implements ITickHandler
 
     public static final ParticleManagement instance = new ParticleManagement();
 
-    public CoreParticle spawn(World world, String name, double x, double y, double z) {
+    public CoreParticle spawn(World world, String name, double x, double y, double z)
+    {
         if (!world.isRemote)
             return null;
 
@@ -42,47 +43,56 @@ public class ParticleManagement implements ITickHandler
         return particle;
     }
 
-    public void addEffect(EntityFX effect) {
+    public void addEffect(EntityFX effect)
+    {
         particleQueue.add(effect);
     }
 
     @ForgeSubscribe
-    public void onRenderWorldLast(RenderWorldLastEvent event) {
+    public void onRenderWorldLast(RenderWorldLastEvent event)
+    {
         render(event.partialTicks);
     }
 
     @ForgeSubscribe
-    public void onWorldUnload(WorldEvent.Unload event) {
+    public void onWorldUnload(WorldEvent.Unload event)
+    {
         particles.clear();
         particleQueue.clear();
     }
 
     @Override
-    public void tickStart(EnumSet<TickType> type, Object... tickData) {
+    public void tickStart(EnumSet<TickType> type, Object... tickData)
+    {
     }
 
     @Override
-    public void tickEnd(EnumSet<TickType> type, Object... tickData) {
+    public void tickEnd(EnumSet<TickType> type, Object... tickData)
+    {
         updateParticles();
     }
 
     @Override
-    public EnumSet<TickType> ticks() {
+    public EnumSet<TickType> ticks()
+    {
         return EnumSet.of(TickType.CLIENT);
     }
 
     @Override
-    public String getLabel() {
+    public String getLabel()
+    {
         return name;
     }
 
-    private void updateParticles() {
+    private void updateParticles()
+    {
         Minecraft.getMinecraft().mcProfiler.startSection(name + "-update");
 
         particles.addAll(particleQueue);
         particleQueue.clear();
 
-        for (Iterator<EntityFX> it = particles.iterator(); it.hasNext();) {
+        for (Iterator<EntityFX> it = particles.iterator(); it.hasNext();)
+        {
             EntityFX particle = it.next();
 
             particle.onUpdate();
@@ -93,7 +103,8 @@ public class ParticleManagement implements ITickHandler
         Minecraft.getMinecraft().mcProfiler.endSection();
     }
 
-    private void render(float partialTicks) {
+    private void render(float partialTicks)
+    {
         Minecraft.getMinecraft().mcProfiler.startSection(name + "-render");
 
         EntityLivingBase player = Minecraft.getMinecraft().renderViewEntity;
@@ -108,7 +119,8 @@ public class ParticleManagement implements ITickHandler
         Minecraft.getMinecraft().mcProfiler.endSection();
     }
 
-    private void renderStandardParticles(float partialTicks) {
+    private void renderStandardParticles(float partialTicks)
+    {
         float rotationX = ActiveRenderInfo.rotationX;
         float rotationZ = ActiveRenderInfo.rotationZ;
         float rotationYZ = ActiveRenderInfo.rotationYZ;
@@ -127,7 +139,8 @@ public class ParticleManagement implements ITickHandler
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
 
-        for (EntityFX particle : particles) {
+        for (EntityFX particle : particles)
+        {
             tessellator.setBrightness(particle.getBrightnessForRender(partialTicks));
             particle.renderParticle(tessellator, partialTicks, rotationX, rotationXZ, rotationZ, rotationYZ, rotationXY);
         }

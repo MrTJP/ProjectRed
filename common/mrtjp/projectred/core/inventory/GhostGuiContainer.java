@@ -14,18 +14,20 @@ import org.lwjgl.opengl.GL11;
 
 import codechicken.core.gui.GuiDraw;
 
-public class GhostGuiContainer extends GuiContainer implements IStackableGui, IGuiActionListener {
-
+public class GhostGuiContainer extends GuiContainer implements IStackableGui, IGuiActionListener
+{
     protected static final ResourceLocation RL_extras = new ResourceLocation("projectred:textures/gui/guiextras.png");
 
     public ArrayList<GhostWidget> widgets = new ArrayList<GhostWidget>();
     GuiScreen previousGui = null;
 
-    public GhostGuiContainer(Container container, GuiScreen previousGui) {
+    public GhostGuiContainer(Container container, GuiScreen previousGui)
+    {
         this(container, previousGui, 176, 166);
     }
 
-    public GhostGuiContainer(Container container, GuiScreen previousGui, int x, int y) {
+    public GhostGuiContainer(Container container, GuiScreen previousGui, int x, int y)
+    {
         super(container);
         this.xSize = x;
         this.ySize = y;
@@ -33,50 +35,60 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
     }
 
     @Override
-    public GuiScreen getPreviousScreen() {
+    public GuiScreen getPreviousScreen()
+    {
         return previousGui;
     }
 
     @Override
-    public void prepareReDisplay() {
+    public void prepareReDisplay()
+    {
         reset();
     }
 
     @Override
-    public void keyTyped(char c, int i) {
-        if (i == 1 && getPreviousScreen() != null) { // esc
+    public void keyTyped(char c, int i)
+    {
+        if (i == 1 && getPreviousScreen() != null)
+        { // esc
             if (getPreviousScreen() instanceof IStackableGui)
                 ((IStackableGui) getPreviousScreen()).prepareReDisplay();
 
             shiftScreen(getPreviousScreen(), getPreviousScreen() instanceof GuiContainer);
             return;
-        } else {
+        }
+        else
+        {
             super.keyTyped(c, i);
             for (GhostWidget widget : widgets)
                 widget.keyTyped(c, i);
         }
     }
 
-    public void reset() {
+    public void reset()
+    {
         widgets.clear();
         addWidgets();
     }
 
     @Override
-    public void setWorldAndResolution(Minecraft mc, int i, int j) {
+    public void setWorldAndResolution(Minecraft mc, int i, int j)
+    {
         boolean init = this.mc == null;
         super.setWorldAndResolution(mc, i, j);
         if (init)
             addWidgets();
     }
 
-    public void add(GhostWidget widget) {
+    public void add(GhostWidget widget)
+    {
         widgets.add(widget);
         widget.onAdded(this);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float f, int mousex, int mousey) {
+    protected void drawGuiContainerBackgroundLayer(float f, int mousex, int mousey)
+    {
         GL11.glTranslated(guiLeft, guiTop, 0);
         drawBackground();
         for (GhostWidget widget : widgets)
@@ -86,41 +98,48 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int mousex, int mousey) {
+    protected void drawGuiContainerForegroundLayer(int mousex, int mousey)
+    {
         drawForeground();
         for (GhostWidget widget : widgets)
             widget.drawFront(mousex - guiLeft, mousey - guiTop);
     }
 
-    public void drawBackground() {
+    public void drawBackground()
+    {
     }
 
-    public void drawForeground() {
+    public void drawForeground()
+    {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int button) {
+    protected void mouseClicked(int x, int y, int button)
+    {
         super.mouseClicked(x, y, button);
         for (GhostWidget widget : widgets)
             widget.mouseClicked(x - guiLeft, y - guiTop, button);
     }
 
     @Override
-    protected void mouseMovedOrUp(int x, int y, int button) {
+    protected void mouseMovedOrUp(int x, int y, int button)
+    {
         super.mouseMovedOrUp(x, y, button);
         for (GhostWidget widget : widgets)
             widget.mouseMovedOrUp(x - guiLeft, y - guiTop, button);
     }
 
     @Override
-    protected void mouseClickMove(int x, int y, int button, long time) {
+    protected void mouseClickMove(int x, int y, int button, long time)
+    {
         super.mouseClickMove(x, y, button, time);
         for (GhostWidget widget : widgets)
             widget.mouseDragged(x - guiLeft, y - guiTop, button, time);
     }
 
     @Override
-    public void updateScreen() {
+    public void updateScreen()
+    {
         super.updateScreen();
         if (mc.currentScreen == this)
             for (GhostWidget widget : widgets)
@@ -128,10 +147,12 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
     }
 
     @Override
-    public void handleMouseInput() {
+    public void handleMouseInput()
+    {
         super.handleMouseInput();
         int i = Mouse.getEventDWheel();
-        if (i != 0) {
+        if (i != 0)
+        {
             Point p = GuiDraw.getMousePosition();
             int scroll = i > 0 ? 1 : -1;
             for (GhostWidget widget : widgets)
@@ -140,17 +161,21 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
     }
 
     @Override
-    public void actionPerformed(String ident, Object... params) {
+    public void actionPerformed(String ident, Object... params)
+    {
     }
 
-    public void addWidgets() {
+    public void addWidgets()
+    {
     }
 
-    public void shiftScreen(GuiScreen gui, boolean containerHack) {
+    public void shiftScreen(GuiScreen gui, boolean containerHack)
+    {
         mc.displayGuiScreen(gui);
 
-        if (gui instanceof GuiContainer && containerHack) {
-            GuiContainer guic = (GuiContainer)gui;
+        if (gui instanceof GuiContainer && containerHack)
+        {
+            GuiContainer guic = (GuiContainer) gui;
             guic.inventorySlots.windowId = inventorySlots.windowId;
         }
     }

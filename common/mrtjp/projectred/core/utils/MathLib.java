@@ -12,7 +12,8 @@ import codechicken.lib.vec.Vector3;
 
 public class MathLib
 {
-    public static Matrix4f createEntityRotateMatrix(Entity entity) {
+    public static Matrix4f createEntityRotateMatrix(Entity entity)
+    {
         double yaw = Math.toRadians(entity.rotationYaw - 180);
         double pitch = Math.toRadians(entity.rotationPitch);
 
@@ -22,8 +23,10 @@ public class MathLib
         return initial;
     }
 
-    public static Vector3 getLook(Entity source, float f) {
-        if (f == 1.0F) {
+    public static Vector3 getLook(Entity source, float f)
+    {
+        if (f == 1.0F)
+        {
             float var2 = MathHelper.cos(-source.rotationYaw * 0.01745329F - 3.141593F);
             float var3 = MathHelper.sin(-source.rotationYaw * 0.01745329F - 3.141593F);
             float var4 = -MathHelper.cos(-source.rotationPitch * 0.01745329F);
@@ -40,7 +43,8 @@ public class MathLib
         return new Vector3(var5 * var6, var7, var4 * var6);
     }
 
-    public static Vector3 bezier(Vector3 s, Vector3 c1, Vector3 c2, Vector3 e, float t) {
+    public static Vector3 bezier(Vector3 s, Vector3 c1, Vector3 c2, Vector3 e, float t)
+    {
         if ((t < 0.0F) || (t > 1.0F))
             return s;
 
@@ -59,10 +63,10 @@ public class MathLib
         return retValue;
     }
 
-    private static Vector3 calcNewVector(float scaler, Vector3 base) {
+    private static Vector3 calcNewVector(float scaler, Vector3 base)
+    {
         Vector3 retValue = new Vector3(base.x, base.y, base.z);
         retValue.multiply(scaler);
         return retValue;
     }
-
 }

@@ -17,7 +17,8 @@ public class ParticleLogicTrail extends ParticleLogic
     private float offsetY;
     private float offsetZ;
 
-    public ParticleLogicTrail(String particleName, boolean ignoreMaxAge, int maxAge, int priority, boolean finalLogic) {
+    public ParticleLogicTrail(String particleName, boolean ignoreMaxAge, int maxAge, int priority, boolean finalLogic)
+    {
         super(priority, finalLogic);
         logics = new ArrayList();
         ticksBetweenSpawns = 2;
@@ -27,24 +28,28 @@ public class ParticleLogicTrail extends ParticleLogic
         updateTicks = 0;
     }
 
-    public ParticleLogicTrail setTicksBetweenSpawns(int ticks) {
+    public ParticleLogicTrail setTicksBetweenSpawns(int ticks)
+    {
         ticksBetweenSpawns = ticks;
         return this;
     }
 
-    public ParticleLogicTrail addLogicForTrail(ParticleLogic logic) {
+    public ParticleLogicTrail addLogicForTrail(ParticleLogic logic)
+    {
         logics.add(logic);
         return this;
     }
 
-    public ParticleLogicTrail setParticleRGB(float red, float green, float blue) {
+    public ParticleLogicTrail setParticleRGB(float red, float green, float blue)
+    {
         r = red;
         g = green;
         b = blue;
         return this;
     }
 
-    public ParticleLogicTrail addRandomOffset(float x, float y, float z) {
+    public ParticleLogicTrail addRandomOffset(float x, float y, float z)
+    {
         offsetX = x;
         offsetY = y;
         offsetZ = z;
@@ -53,12 +58,15 @@ public class ParticleLogicTrail extends ParticleLogic
     }
 
     @Override
-    public void doUpdate() {
+    public void doUpdate()
+    {
         updateTicks += 1;
-        if (updateTicks == ticksBetweenSpawns) {
+        if (updateTicks == ticksBetweenSpawns)
+        {
             updateTicks = 0;
             CoreParticle c = ParticleManagement.instance.spawn(particle.worldObj, particleName, particle.posX, particle.posY, particle.posZ);
-            if (c != null) {
+            if (c != null)
+            {
                 c.setMaxAge(maxAge);
                 c.setIgnoreMaxAge(ignoreMaxAge);
                 c.setRGBColorF(r, g, b);
@@ -70,7 +78,8 @@ public class ParticleLogicTrail extends ParticleLogic
     }
 
     @Override
-    public ParticleLogic clone() {
+    public ParticleLogic clone()
+    {
         ParticleLogicTrail clone = new ParticleLogicTrail(particleName, ignoreMaxAge, maxAge, priority, finalLogic).setParticleRGB(r, g, b).setTicksBetweenSpawns(ticksBetweenSpawns).addRandomOffset(offsetX, offsetY, offsetZ);
 
         for (ParticleLogic logic : logics)

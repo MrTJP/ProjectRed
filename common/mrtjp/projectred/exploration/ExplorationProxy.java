@@ -16,20 +16,20 @@ import codechicken.microblock.BlockMicroMaterial;
 import codechicken.microblock.MicroMaterialRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class ExplorationProxy implements IProxy {
-
+public class ExplorationProxy implements IProxy
+{
     @Override
-    public void preinit() {
-
+    public void preinit()
+    {
     }
 
     @Override
-    public void init() {
+    public void init()
+    {
         if (Configurator.retroGeneration)
             RetroGenerationManager.registerRetroGenerators();
         else
             GameRegistry.registerWorldGenerator(GenerationManager.instance);
-
 
         itemWoolGin = new ItemWoolGin(Configurator.item_woolginID.getInt());
         itemBackpack = new ItemBackpack(Configurator.item_backpackID.getInt());
@@ -54,7 +54,8 @@ public class ExplorationProxy implements IProxy {
         for (int i = 0; i < 16; i++)
             OreDictionary.registerOre(PRColors.get(i).getOreDict(), EnumDyeTrees.VALID_FOLIAGE[i].getSappling());
 
-        if (Configurator.gen_SpreadingMoss.getBoolean(true)) {
+        if (Configurator.gen_SpreadingMoss.getBoolean(true))
+        {
             int mc = Block.cobblestoneMossy.blockID;
             Block.blocksList[mc] = null;
             new BlockPhotosyntheticCobblestone(mc);
@@ -124,8 +125,8 @@ public class ExplorationProxy implements IProxy {
     }
 
     @Override
-    public void postinit() {
+    public void postinit()
+    {
         ExplorationRecipes.initRecipes();
     }
-
 }

@@ -23,7 +23,8 @@ import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 
-public class RenderFixture implements IItemRenderer {
+public class RenderFixture implements IItemRenderer
+{
     public static RenderFixture instance = new RenderFixture();
 
     static CCModel[] base;
@@ -32,7 +33,8 @@ public class RenderFixture implements IItemRenderer {
     {
         Map<String, CCModel> models = CCModel.parseObjModels(new ResourceLocation("projectred", "textures/obj/lights/fixture.obj"), 7, new InvertX());
         base = new CCModel[6];
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; i++)
+        {
             CCModel m = models.get("base").copy();
             m.apply(new Translation(.5, 0, .5));
             m.apply(Rotation.sideOrientation(i, 0).at(Vector3.center));
@@ -42,8 +44,9 @@ public class RenderFixture implements IItemRenderer {
         }
     }
 
-    public void renderFixture(FixturePart l) {
-        Icon icon = l.isOn()?RenderLantern.onIcons[l.type]:RenderLantern.offIcons[l.type];
+    public void renderFixture(FixturePart l)
+    {
+        Icon icon = l.isOn() ? RenderLantern.onIcons[l.type] : RenderLantern.offIcons[l.type];
         TextureUtils.bindAtlas(0);
         CCRenderState.reset();
         CCRenderState.setBrightness(l.world(), l.x(), l.y(), l.z());
@@ -53,22 +56,26 @@ public class RenderFixture implements IItemRenderer {
             RenderHalo.addLight(l.x(), l.y(), l.z(), l.type, l.side, FixturePart.lightBounds[l.side]);
     }
 
-    public void renderBreaking(FixturePart c, Icon icon) {
+    public void renderBreaking(FixturePart c, Icon icon)
+    {
         RenderUtils.renderBlock(FixturePart.bounds[c.side], 0, new Translation(c.x(), c.y(), c.z()), new IconTransformation(icon), null);
     }
 
     @Override
-    public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+    public boolean handleRenderType(ItemStack item, ItemRenderType type)
+    {
         return true;
     }
 
     @Override
-    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
+    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper)
+    {
         return true;
     }
 
     @Override
-    public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+    public void renderItem(ItemRenderType type, ItemStack item, Object... data)
+    {
         int color = item.getItemDamage();
         boolean on = item.getItem() == ProjectRedIllumination.itemPartInvFixture;
 
@@ -90,7 +97,8 @@ public class RenderFixture implements IItemRenderer {
         }
     }
 
-    public void renderInventory(boolean on, int color, double x, double y, double z, double scale) {
+    public void renderInventory(boolean on, int color, double x, double y, double z, double scale)
+    {
         Icon icon = on ? RenderLantern.onIcons[color] : RenderLantern.offIcons[color];
 
         GL11.glPushMatrix();
@@ -102,16 +110,17 @@ public class RenderFixture implements IItemRenderer {
         CCRenderState.startDrawing(7);
         renderPart(icon, base[0], x, y, z);
         CCRenderState.draw();
-        if(on) {
+        if (on)
+        {
             RenderHalo.prepareRenderState();
-            RenderHalo.renderHalo(Tessellator.instance, FixturePart.lightBounds[0], color,  new Translation(x, y, z));
+            RenderHalo.renderHalo(Tessellator.instance, FixturePart.lightBounds[0], color, new Translation(x, y, z));
             RenderHalo.restoreRenderState();
         }
         GL11.glPopMatrix();
     }
 
-    public void renderPart(Icon icon, CCModel cc, double x, double y, double z) {
+    public void renderPart(Icon icon, CCModel cc, double x, double y, double z)
+    {
         cc.render(0, cc.verts.length, new Translation(x, y, z), new IconTransformation(icon), ColourModifier.instance);
     }
-
 }

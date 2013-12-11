@@ -11,8 +11,9 @@ public class IlluminationCPH implements IClientPacketHandler
     public static Object channel = ProjectRedIllumination.instance;
 
     @Override
-    public void handlePacket(PacketCustom packet, NetClientHandler nethandler, Minecraft mc) {
-        switch(packet.getType()) {
+    public void handlePacket(PacketCustom packet, NetClientHandler nethandler, Minecraft mc)
+    {
+        switch (packet.getType()) {
         }
     }
 

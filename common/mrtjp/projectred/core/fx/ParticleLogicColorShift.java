@@ -17,7 +17,8 @@ public final class ParticleLogicColorShift extends ParticleLogic
     private float greenShift;
     private float blueShift;
 
-    public ParticleLogicColorShift(int priority, boolean finalLogic) {
+    public ParticleLogicColorShift(int priority, boolean finalLogic)
+    {
         super(priority, finalLogic);
         minRed = 0.0F;
         minGreen = 0.0F;
@@ -32,7 +33,8 @@ public final class ParticleLogicColorShift extends ParticleLogic
         generateNextColorTarget();
     }
 
-    public ParticleLogicColorShift setColorTarget(float red, float green, float blue) {
+    public ParticleLogicColorShift setColorTarget(float red, float green, float blue)
+    {
         targetRed = red;
         targetGreen = green;
         targetBlue = blue;
@@ -44,7 +46,8 @@ public final class ParticleLogicColorShift extends ParticleLogic
         return this;
     }
 
-    public ParticleLogicColorShift setShiftSpeed(float speed) {
+    public ParticleLogicColorShift setShiftSpeed(float speed)
+    {
         shiftSpeed = speed;
 
         redShift = shiftSpeed;
@@ -54,7 +57,8 @@ public final class ParticleLogicColorShift extends ParticleLogic
         return this;
     }
 
-    public ParticleLogicColorShift setColorRange(float minRed, float minBlue, float minGreen, float maxRed, float maxGreen, float maxBlue) {
+    public ParticleLogicColorShift setColorRange(float minRed, float minBlue, float minGreen, float maxRed, float maxGreen, float maxBlue)
+    {
         this.minRed = minRed;
         this.maxRed = maxRed;
         this.minGreen = minGreen;
@@ -64,25 +68,30 @@ public final class ParticleLogicColorShift extends ParticleLogic
         return this;
     }
 
-    public ParticleLogicColorShift setEndOnReachingTargetColor() {
+    public ParticleLogicColorShift setEndOnReachingTargetColor()
+    {
         endOnReachingColor = true;
         return this;
     }
 
-    private void generateNextColorTarget() {
+    private void generateNextColorTarget()
+    {
         targetRed = rand.nextFloat() * (maxRed - minRed) + minRed;
         targetGreen = rand.nextFloat() * (maxGreen - minGreen) + minGreen;
         targetBlue = rand.nextFloat() * (maxBlue - minBlue) + minBlue;
     }
 
     @Override
-    public void doUpdate() {
+    public void doUpdate()
+    {
         float currentRed = particle.getRed();
         float currentGreen = particle.getGreen();
         float currentBlue = particle.getBlue();
 
-        if (currentRed == targetRed && currentGreen == targetGreen && currentBlue == targetBlue) {
-            if (endOnReachingColor) {
+        if (currentRed == targetRed && currentGreen == targetGreen && currentBlue == targetBlue)
+        {
+            if (endOnReachingColor)
+            {
                 finishLogic();
                 return;
             }
@@ -92,7 +101,8 @@ public final class ParticleLogicColorShift extends ParticleLogic
         particle.setRGBColorF(shiftValue(currentRed, targetRed, redShift), shiftValue(currentGreen, targetGreen, greenShift), shiftValue(currentBlue, targetBlue, blueShift));
     }
 
-    private float shiftValue(float current, float target, float step) {
+    private float shiftValue(float current, float target, float step)
+    {
         float curDist = Math.abs(target - current);
         if (curDist < step)
             step = curDist;
@@ -104,7 +114,8 @@ public final class ParticleLogicColorShift extends ParticleLogic
     }
 
     @Override
-    public ParticleLogic clone() {
+    public ParticleLogic clone()
+    {
         ParticleLogicColorShift clone = new ParticleLogicColorShift(priority, endOnReachingColor).setShiftSpeed(shiftSpeed).setColorRange(minRed, minBlue, minGreen, maxRed, maxGreen, maxBlue).setColorTarget(targetRed, targetGreen, targetBlue);
         if (endOnReachingColor)
             clone.setEndOnReachingTargetColor();

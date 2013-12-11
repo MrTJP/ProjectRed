@@ -1,13 +1,14 @@
 package mrtjp.projectred.api;
 
-
 /**
  * Interface implemented by face parts to connect to various types of wires.
  */
-public interface IConnectable {
+public interface IConnectable
+{
     /**
-     * Called to check whether a wire/logic part can connect to this.
-     * If a part returns true it is expected to immediately reflect the fact that it is now connected to wire.
+     * Called to check whether a wire/logic part can connect to this. If a part
+     * returns true it is expected to immediately reflect the fact that it is
+     * now connected to wire.
      * 
      * @param part The part asking for connection.
      * @param r The clockwise rotation about the attached face to
@@ -16,8 +17,8 @@ public interface IConnectable {
     public boolean connectStraight(IConnectable part, int r);
 
     /**
-     * Connect for internals.
-     * If r is -1 for a face part. Return true for a connection to the center part of the block.
+     * Connect for internals. If r is -1 for a face part. Return true for a
+     * connection to the center part of the block.
      */
     public boolean connectInternal(IConnectable part, int r);
 

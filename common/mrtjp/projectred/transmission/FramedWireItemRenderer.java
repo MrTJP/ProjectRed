@@ -7,22 +7,25 @@ import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Translation;
 
-public class FramedWireItemRenderer implements IItemRenderer {
-
+public class FramedWireItemRenderer implements IItemRenderer
+{
     public static FramedWireItemRenderer instance = new FramedWireItemRenderer();
 
     @Override
-    public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+    public boolean handleRenderType(ItemStack item, ItemRenderType type)
+    {
         return true;
     }
 
     @Override
-    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
+    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper)
+    {
         return true;
     }
 
     @Override
-    public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+    public void renderItem(ItemRenderType type, ItemStack item, Object... data)
+    {
         int damage = item.getItemDamage();
         switch (type) {
         case ENTITY:
@@ -42,7 +45,8 @@ public class FramedWireItemRenderer implements IItemRenderer {
         }
     }
 
-    public void renderWireInventory(int meta, float x, float y, float z, float scale) {
+    public void renderWireInventory(int meta, float x, float y, float z, float scale)
+    {
         EnumWire type = EnumWire.VALID_WIRE[meta];
         if (type == null)
             return;
@@ -55,5 +59,4 @@ public class FramedWireItemRenderer implements IItemRenderer {
         RenderFramedWire.renderInv(type.thickness, new Scale(scale).with(new Translation(x, y, z)), type.wireSprites[0]);
         CCRenderState.draw();
     }
-
 }

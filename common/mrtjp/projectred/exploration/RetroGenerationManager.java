@@ -15,9 +15,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.Chunk;
 
-public class RetroGenerationManager {
-
-    public static void registerRetroGenerators() {
+public class RetroGenerationManager
+{
+    public static void registerRetroGenerators()
+    {
         if (Configurator.gen_Ruby.getBoolean(true))
             RetroactiveWorldGenerator.registerRetroGenerator(new RetrogenRuby());
         if (Configurator.gen_Sapphire.getBoolean(true))
@@ -32,23 +33,28 @@ public class RetroGenerationManager {
             RetroactiveWorldGenerator.registerRetroGenerator(new RetrogenDyeTrees());
     }
 
-    static class RetrogenRuby implements IRetroGenerator {
+    static class RetrogenRuby implements IRetroGenerator
+    {
 
         @Override
-        public String getSubgenerationID() {
+        public String getSubgenerationID()
+        {
             return "pr_ruby";
         }
 
         @Override
-        public boolean shouldGenerateInLocation(World w, Chunk c) {
+        public boolean shouldGenerateInLocation(World w, Chunk c)
+        {
             int id = w.provider.dimensionId;
             return id != -1 && id != 1;
         }
 
         @Override
-        public void generate(Random r, World w, int chunkX, int chunkZ) {
+        public void generate(Random r, World w, int chunkX, int chunkZ)
+        {
             // Ruby
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++)
+            {
                 int x = chunkX * 16 + r.nextInt(16);
                 int y = r.nextInt(48);
                 int z = chunkZ * 16 + r.nextInt(16);
@@ -57,23 +63,27 @@ public class RetroGenerationManager {
         }
     }
 
-    static class RetrogenSapphire implements IRetroGenerator {
-
+    static class RetrogenSapphire implements IRetroGenerator
+    {
         @Override
-        public String getSubgenerationID() {
+        public String getSubgenerationID()
+        {
             return "pr_sapphire";
         }
 
         @Override
-        public boolean shouldGenerateInLocation(World w, Chunk c) {
+        public boolean shouldGenerateInLocation(World w, Chunk c)
+        {
             int id = w.provider.dimensionId;
             return id != -1 && id != 1;
         }
 
         @Override
-        public void generate(Random r, World w, int chunkX, int chunkZ) {
+        public void generate(Random r, World w, int chunkX, int chunkZ)
+        {
             // Saphire
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++)
+            {
                 int x = chunkX * 16 + r.nextInt(16);
                 int y = r.nextInt(48);
                 int z = chunkZ * 16 + r.nextInt(16);
@@ -82,23 +92,27 @@ public class RetroGenerationManager {
         }
     }
 
-    static class RetrogenPeridot implements IRetroGenerator {
-
+    static class RetrogenPeridot implements IRetroGenerator
+    {
         @Override
-        public String getSubgenerationID() {
+        public String getSubgenerationID()
+        {
             return "pr_peridot";
         }
 
         @Override
-        public boolean shouldGenerateInLocation(World w, Chunk c) {
+        public boolean shouldGenerateInLocation(World w, Chunk c)
+        {
             int id = w.provider.dimensionId;
             return id != -1 && id != 1;
         }
 
         @Override
-        public void generate(Random r, World w, int chunkX, int chunkZ) {
+        public void generate(Random r, World w, int chunkX, int chunkZ)
+        {
             // Peridot
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++)
+            {
                 int x = chunkX * 16 + r.nextInt(16);
                 int y = r.nextInt(48);
                 int z = chunkZ * 16 + r.nextInt(16);
@@ -107,20 +121,23 @@ public class RetroGenerationManager {
         }
     }
 
-    static class RetrogenMarbleCave implements IRetroGenerator {
-
+    static class RetrogenMarbleCave implements IRetroGenerator
+    {
         @Override
-        public String getSubgenerationID() {
+        public String getSubgenerationID()
+        {
             return "pr_marbleCave";
         }
 
         @Override
-        public boolean shouldGenerateInLocation(World w, Chunk c) {
+        public boolean shouldGenerateInLocation(World w, Chunk c)
+        {
             return w.provider.dimensionId == 0;
         }
 
         @Override
-        public void generate(Random r, World w, int chunkX, int chunkZ) {
+        public void generate(Random r, World w, int chunkX, int chunkZ)
+        {
             // Marble caves
             int x = chunkX * 16 + r.nextInt(16);
             int y = 32 + r.nextInt(32);
@@ -129,15 +146,17 @@ public class RetroGenerationManager {
         }
     }
 
-    static class RetrogenVolcano implements IRetroGenerator {
-
+    static class RetrogenVolcano implements IRetroGenerator
+    {
         @Override
-        public String getSubgenerationID() {
+        public String getSubgenerationID()
+        {
             return "pr_volcano";
         }
 
         @Override
-        public boolean shouldGenerateInLocation(World w, Chunk c) {
+        public boolean shouldGenerateInLocation(World w, Chunk c)
+        {
             if (w.provider.terrainType == WorldType.FLAT)
                 return false;
 
@@ -145,24 +164,27 @@ public class RetroGenerationManager {
         }
 
         @Override
-        public void generate(Random r, World w, int chunkX, int chunkZ) {
+        public void generate(Random r, World w, int chunkX, int chunkZ)
+        {
             // Volcanos
             int x = chunkX * 16 + r.nextInt(16);
             int y = r.nextInt(32);
             int z = chunkZ * 16 + r.nextInt(16);
-            new GeneratorVolcano(ProjectRedExploration.blockStones.blockID,EnumSpecialStone.BASALT.meta, MathHelper.getRandomIntegerInRange(r, 32000, 64000)).generate(w, r, x, y, z);
+            new GeneratorVolcano(ProjectRedExploration.blockStones.blockID, EnumSpecialStone.BASALT.meta, MathHelper.getRandomIntegerInRange(r, 32000, 64000)).generate(w, r, x, y, z);
         }
     }
 
-    static class RetrogenDyeTrees implements IRetroGenerator {
-
+    static class RetrogenDyeTrees implements IRetroGenerator
+    {
         @Override
-        public String getSubgenerationID() {
+        public String getSubgenerationID()
+        {
             return "pr_dyetrees";
         }
 
         @Override
-        public boolean shouldGenerateInLocation(World w, Chunk c) {
+        public boolean shouldGenerateInLocation(World w, Chunk c)
+        {
             int id = w.provider.dimensionId;
 
             if (w.provider.terrainType == WorldType.FLAT)
@@ -172,13 +194,14 @@ public class RetroGenerationManager {
         }
 
         @Override
-        public void generate(Random r, World w, int chunkX, int chunkZ) {
+        public void generate(Random r, World w, int chunkX, int chunkZ)
+        {
             // Dye trees
             int saplingMeta = r.nextInt(16);
             int x = chunkX * 16 + r.nextInt(16);
             int z = chunkZ * 16 + r.nextInt(16);
             int y = w.getHeightValue(x, z);
-            if (r.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[saplingMeta].growthChance/3)
+            if (r.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[saplingMeta].growthChance / 3)
                 new GeneratorCustomTree(false, 5, Block.wood.blockID, 0, ProjectRedExploration.blockStainedLeaf.blockID, saplingMeta, -1, -1).generate(w, r, x, y, z);
         }
     }

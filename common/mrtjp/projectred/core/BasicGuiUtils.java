@@ -9,9 +9,11 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class BasicGuiUtils {
+public class BasicGuiUtils
+{
 
-    public static void drawPlayerInventoryBackground(Minecraft mc, int xOffset, int yOffset) {
+    public static void drawPlayerInventoryBackground(Minecraft mc, int xOffset, int yOffset)
+    {
         // Player "backpack"
         for (int row = 0; row < 3; row++)
             for (int column = 0; column < 9; column++)
@@ -21,13 +23,15 @@ public class BasicGuiUtils {
             drawSlotBackground(mc, xOffset + i1 * 18 - 1, yOffset + 58 - 1);
     }
 
-    public static void drawPlayerHotbarBackground(Minecraft mc, int xOffset, int yOffset) {
+    public static void drawPlayerHotbarBackground(Minecraft mc, int xOffset, int yOffset)
+    {
         // Player "hotbar"
         for (int i1 = 0; i1 < 9; i1++)
             drawSlotBackground(mc, xOffset + i1 * 18 - 1, yOffset - 1);
     }
 
-    public static void drawSlotBackground(Minecraft mc, int x, int y) {
+    public static void drawSlotBackground(Minecraft mc, int x, int y)
+    {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(new ResourceLocation("projectred", "textures/gui/slot.png"));
 
@@ -40,16 +44,19 @@ public class BasicGuiUtils {
         var9.draw();
     }
 
-    public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag) {
+    public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag)
+    {
         drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, flag, true, true, true, true);
     }
 
-    public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag, boolean displayTop, boolean displayLeft, boolean displayBottom, boolean displayRight) {
+    public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag, boolean displayTop, boolean displayLeft, boolean displayBottom, boolean displayRight)
+    {
         if (flag)
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(new ResourceLocation("projectred", "textures/gui/guibackground.png"));
 
-        if (displayTop) {
+        if (displayTop)
+        {
             // Top Side
             Tessellator var9 = Tessellator.instance;
             var9.startDrawingQuads();
@@ -60,7 +67,8 @@ public class BasicGuiUtils {
             var9.draw();
         }
 
-        if (displayLeft) {
+        if (displayLeft)
+        {
             // Left Side
             Tessellator var9 = Tessellator.instance;
             var9.startDrawingQuads();
@@ -71,7 +79,8 @@ public class BasicGuiUtils {
             var9.draw();
         }
 
-        if (displayBottom) {
+        if (displayBottom)
+        {
             // Bottom Side
             Tessellator var9 = Tessellator.instance;
             var9.startDrawingQuads();
@@ -82,7 +91,8 @@ public class BasicGuiUtils {
             var9.draw();
         }
 
-        if (displayRight) {
+        if (displayRight)
+        {
             // Right Side
             Tessellator var9 = Tessellator.instance;
             var9.startDrawingQuads();
@@ -93,7 +103,8 @@ public class BasicGuiUtils {
             var9.draw();
         }
 
-        if (displayTop && displayLeft) {
+        if (displayTop && displayLeft)
+        {
             // Top Left
             Tessellator var9 = Tessellator.instance;
             var9.startDrawingQuads();
@@ -104,7 +115,8 @@ public class BasicGuiUtils {
             var9.draw();
         }
 
-        if (displayBottom && displayLeft) {
+        if (displayBottom && displayLeft)
+        {
             // Bottom Left
             Tessellator var9 = Tessellator.instance;
             var9.startDrawingQuads();
@@ -115,7 +127,8 @@ public class BasicGuiUtils {
             var9.draw();
         }
 
-        if (displayBottom && displayRight) {
+        if (displayBottom && displayRight)
+        {
             // Bottom Right
             Tessellator var9 = Tessellator.instance;
             var9.startDrawingQuads();
@@ -126,7 +139,8 @@ public class BasicGuiUtils {
             var9.draw();
         }
 
-        if (displayTop && displayRight) {
+        if (displayTop && displayRight)
+        {
             // Top Right
             Tessellator var9 = Tessellator.instance;
             var9.startDrawingQuads();
@@ -149,6 +163,7 @@ public class BasicGuiUtils {
 
     /**
      * Create positions for a grid of slots.
+     * 
      * @param x x staring position
      * @param y y starting position
      * @param xSize x size of grid
@@ -157,13 +172,15 @@ public class BasicGuiUtils {
      * @param ySpacing spacing between slots on y axis
      * @return
      */
-    public static ArrayList<Pair2<Integer, Integer>> createSlotArray(int x, int y, int xSize, int ySize, int xSpacing, int ySpacing) {
-        ArrayList<Pair2<Integer, Integer>> list = new ArrayList<Pair2<Integer, Integer>>(xSize*ySize);
+    public static ArrayList<Pair2<Integer, Integer>> createSlotArray(int x, int y, int xSize, int ySize, int xSpacing, int ySpacing)
+    {
+        ArrayList<Pair2<Integer, Integer>> list = new ArrayList<Pair2<Integer, Integer>>(xSize * ySize);
         xSpacing += 18;
         ySpacing += 18;
 
         for (int i = 0; i < ySize; i++)
-            for (int j = 0; j < xSize; j++) {
+            for (int j = 0; j < xSize; j++)
+            {
                 int slotNumber = i * xSize + j;
                 int xPos = x + j * xSpacing;
                 int yPos = y + i * ySpacing;

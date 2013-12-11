@@ -20,7 +20,8 @@ public final class ParticleLogicOrbitPoint extends ParticleLogic
     private double shrinkSpeed = 0.0D;
     private double shrinkTargetDistance = 0.0D;
 
-    public ParticleLogicOrbitPoint(Vector3 point, int priority, boolean finalLogic) {
+    public ParticleLogicOrbitPoint(Vector3 point, int priority, boolean finalLogic)
+    {
         super(priority, finalLogic);
         target = point.copy();
         orbitAngle = rand.nextInt(360);
@@ -29,65 +30,76 @@ public final class ParticleLogicOrbitPoint extends ParticleLogic
         targetDistance = 1.0D + rand.nextDouble() * 0.5D;
     }
 
-    public ParticleLogicOrbitPoint setOrbitY(double orbitY) {
+    public ParticleLogicOrbitPoint setOrbitY(double orbitY)
+    {
         this.orbitY = orbitY;
         return this;
     }
 
-    public ParticleLogicOrbitPoint setIgnoreYCoordinate(boolean ignore) {
+    public ParticleLogicOrbitPoint setIgnoreYCoordinate(boolean ignore)
+    {
         ignoreYCoord = ignore;
         return this;
     }
 
-    public ParticleLogicOrbitPoint setTargetDistance(double targetDistance) {
+    public ParticleLogicOrbitPoint setTargetDistance(double targetDistance)
+    {
         this.targetDistance = targetDistance;
         useCurrentDistance = false;
         return this;
     }
 
-    public ParticleLogicOrbitPoint setUseCurrentDistance() {
+    public ParticleLogicOrbitPoint setUseCurrentDistance()
+    {
         useCurrentDistance = true;
         return this;
     }
 
-    public ParticleLogicOrbitPoint setOrbitSpeed(double speed) {
+    public ParticleLogicOrbitPoint setOrbitSpeed(double speed)
+    {
         orbitSpeed = speed;
         return this;
     }
 
-    public ParticleLogicOrbitPoint setShrinkingOrbit(double shrinkSpeed, double newTargetDistance) {
+    public ParticleLogicOrbitPoint setShrinkingOrbit(double shrinkSpeed, double newTargetDistance)
+    {
         shrinkingOrbit = true;
         this.shrinkSpeed = shrinkSpeed;
         shrinkTargetDistance = newTargetDistance;
         return this;
     }
 
-    private void generateNewTargetY() {
+    private void generateNewTargetY()
+    {
         if (target != null)
             targetY = new Random().nextDouble() * 2.0D;
         else
             targetY = 0.0D;
     }
 
-    private void generateNewDistance() {
+    private void generateNewDistance()
+    {
         if (target != null)
             targetDistance = new Random().nextDouble() * 2.0D;
         else
             targetDistance = 0.0D;
     }
 
-    public ParticleLogicOrbitPoint setRotateDirection(boolean clockwise) {
+    public ParticleLogicOrbitPoint setRotateDirection(boolean clockwise)
+    {
         rotateClockwise = clockwise;
         return this;
     }
 
-    public ParticleLogicOrbitPoint setStartAngle(float angle) {
+    public ParticleLogicOrbitPoint setStartAngle(float angle)
+    {
         orbitAngle = angle;
         return this;
     }
 
     @Override
-    public void doUpdate() {
+    public void doUpdate()
+    {
         double posY = particle.posY;
 
         double relativeTargetY = target.y + targetY;
@@ -97,20 +109,25 @@ public final class ParticleLogicOrbitPoint extends ParticleLogic
 
         double posX;
         double posZ;
-        if (useCurrentDistance) {
+        if (useCurrentDistance)
+        {
             double deltaz = target.z - particle.posZ;
             double deltax = target.x - particle.posX;
             double currentDistance = Math.sqrt(deltaz * deltaz + deltax * deltax);
             posX = target.x + Math.cos(orbitAngle) * currentDistance;
             posZ = target.z + Math.sin(orbitAngle) * currentDistance;
-        } else {
+        }
+        else
+        {
             if (shrinkingOrbit)
                 if (targetDistance <= shrinkTargetDistance)
                     shrinkingOrbit = false;
-                else if (targetDistance < shrinkTargetDistance + shrinkSpeed * 10.0D) {
+                else if (targetDistance < shrinkTargetDistance + shrinkSpeed * 10.0D)
+                {
                     double delta = targetDistance - shrinkTargetDistance;
                     targetDistance -= delta * shrinkSpeed;
-                } else
+                }
+                else
                     targetDistance -= shrinkSpeed;
 
             posX = target.x + Math.cos(orbitAngle) * targetDistance;
@@ -139,7 +156,8 @@ public final class ParticleLogicOrbitPoint extends ParticleLogic
     }
 
     @Override
-    public ParticleLogic clone() {
+    public ParticleLogic clone()
+    {
         ParticleLogicOrbitPoint clone = new ParticleLogicOrbitPoint(target, priority, finalLogic);
         if (useCurrentDistance)
             clone.setUseCurrentDistance();

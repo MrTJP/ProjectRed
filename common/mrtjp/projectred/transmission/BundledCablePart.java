@@ -21,8 +21,8 @@ import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 
-public class BundledCablePart extends WirePart implements IBundledCablePart {
-
+public class BundledCablePart extends WirePart implements IBundledCablePart
+{
     /**
      * Not available on client
      */
@@ -30,73 +30,86 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
     public byte colour;
 
     @Override
-    public String getType() {
+    public String getType()
+    {
         return "pr_bundled";
     }
 
     @Override
-    public EnumWire getWireType() {
+    public EnumWire getWireType()
+    {
         return EnumWire.BUNDLED_WIRE[colour + 1];
     }
 
     @Override
-    public void preparePlacement(int side, int meta) {
+    public void preparePlacement(int side, int meta)
+    {
         super.preparePlacement(side, meta);
         colour = (byte) (meta - EnumWire.BUNDLED_0.ordinal());
     }
 
     @Override
-    public void save(NBTTagCompound tag) {
+    public void save(NBTTagCompound tag)
+    {
         super.save(tag);
         tag.setByteArray("signal", signal);
         tag.setByte("colour", colour);
     }
 
     @Override
-    public void load(NBTTagCompound tag) {
+    public void load(NBTTagCompound tag)
+    {
         super.load(tag);
         signal = tag.getByteArray("signal");
         colour = tag.getByte("colour");
     }
 
     @Override
-    public void writeDesc(MCDataOutput packet) {
+    public void writeDesc(MCDataOutput packet)
+    {
         super.writeDesc(packet);
         packet.writeByte(colour);
     }
 
     @Override
-    public void readDesc(MCDataInput packet) {
+    public void readDesc(MCDataInput packet)
+    {
         super.readDesc(packet);
         colour = packet.readByte();
     }
 
     @Override
-    public boolean canConnectToType(IConnectable wire) {
-        if (wire instanceof BundledCablePart) {
+    public boolean canConnectToType(IConnectable wire)
+    {
+        if (wire instanceof BundledCablePart)
+        {
             int ocolour = ((BundledCablePart) wire).colour;
             return ocolour == -1 || colour == -1 || ocolour == colour;
-        } else if (wire instanceof IInsulatedRedwirePart || wire instanceof IBundledEmitter)
+        }
+        else if (wire instanceof IInsulatedRedwirePart || wire instanceof IBundledEmitter)
             return true;
 
         return false;
     }
 
     @Override
-    public void updateAndPropogate(TMultiPart prev, int mode) {
+    public void updateAndPropogate(TMultiPart prev, int mode)
+    {
         BundledCableCommons.updateAndPropogate(this, prev, mode);
     }
 
     @Override
-    public boolean propogateTo(TMultiPart part, int mode) {
-        if(!BundledCableCommons.shouldPropogate(this, part, mode))
+    public boolean propogateTo(TMultiPart part, int mode)
+    {
+        if (!BundledCableCommons.shouldPropogate(this, part, mode))
             return true;
 
         return super.propogateTo(part, mode);
     }
 
     @Override
-    public void setSignal(byte[] newSignal) {
+    public void setSignal(byte[] newSignal)
+    {
         if (newSignal == null)
             Arrays.fill(signal, (byte) 0);
         else
@@ -104,7 +117,8 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
     }
 
     @Override
-    public byte[] calculateSignal() {
+    public byte[] calculateSignal()
+    {
         Arrays.fill(tmpSignal, (byte) 0);
 
         for (int r = 0; r < 4; r++)
@@ -121,7 +135,8 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
         return tmpSignal;
     }
 
-    public void calculateCornerSignal(int r) {
+    public void calculateCornerSignal(int r)
+    {
         int absDir = Rotation.rotateSide(side, r);
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side);
@@ -130,41 +145,48 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
             calculatePartSignal(t.partMap(absDir ^ 1), Rotation.rotationTo(absDir ^ 1, side ^ 1));
     }
 
-    public void calculateStraightSignal(int r) {
+    public void calculateStraightSignal(int r)
+    {
         int absDir = Rotation.rotateSide(side, r);
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
-        if(t instanceof IBundledEmitter)
-            calculatePartSignal(t, absDir^1);
-        else if(t instanceof TileMultipart)
-            calculatePartSignal(((TileMultipart)t).partMap(side), (r + 2) % 4);
+        if (t instanceof IBundledEmitter)
+            calculatePartSignal(t, absDir ^ 1);
+        else if (t instanceof TileMultipart)
+            calculatePartSignal(((TileMultipart) t).partMap(side), (r + 2) % 4);
     }
 
-    public void calculateInternalSignal(int r) {
+    public void calculateInternalSignal(int r)
+    {
         int absDir = Rotation.rotateSide(side, r);
 
         calculatePartSignal(tile().partMap(absDir), (r + 2) % 4);
     }
 
-    public void calculateCenterSignal() {
+    public void calculateCenterSignal()
+    {
         calculatePartSignal(tile().partMap(6), side);
     }
 
     @Override
-    public byte[] getBundledSignal() {
+    public byte[] getBundledSignal()
+    {
         return signal;
     }
 
     @Override
-    public byte[] getBundledSignal(int side) {
+    public byte[] getBundledSignal(int side)
+    {
         return getBundledSignal();
     }
 
     @Override
-    protected boolean debug(EntityPlayer ply) {
+    protected boolean debug(EntityPlayer ply)
+    {
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 16; i++)
+        {
             String s = Integer.toHexString(signal[i] & 0xFF).toUpperCase();
             if (s.length() == 1)
                 sb.append('0');
@@ -176,10 +198,13 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
     }
 
     @Override
-    protected boolean test(EntityPlayer player) {
-        if (BasicUtils.isServer(world())) {
+    protected boolean test(EntityPlayer player)
+    {
+        if (BasicUtils.isServer(world()))
+        {
             String s = "";
-            for (int i = 0; i < 16; i++) {
+            for (int i = 0; i < 16; i++)
+            {
                 int x = getBundledSignal()[i];
                 if (x != 0)
                     s = s + "[" + i + "]";
@@ -198,7 +223,8 @@ public class BundledCablePart extends WirePart implements IBundledCablePart {
     }
 
     @Override
-    public boolean useStaticRenderer() {
+    public boolean useStaticRenderer()
+    {
         return true;
     }
 }

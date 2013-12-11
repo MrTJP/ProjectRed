@@ -6,44 +6,50 @@ import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.packet.PacketCustom;
 
-public class GuiCounter extends GuiScreenWidget {
-
+public class GuiCounter extends GuiScreenWidget
+{
     public ICounterGuiLogic logic;
     public GatePart part;
 
-    public GuiCounter(GatePart part) {
+    public GuiCounter(GatePart part)
+    {
         this.part = part;
-        logic = (ICounterGuiLogic)part.getLogic();
+        logic = (ICounterGuiLogic) part.getLogic();
     }
 
     @Override
-    public void initGui() {
+    public void initGui()
+    {
         xSize = 256;
         ySize = 145;
         super.initGui();
     }
 
     @Override
-    public void addWidgets() {
-        for (int row = 0; row < 3; row++) {
+    public void addWidgets()
+    {
+        for (int row = 0; row < 3; row++)
+        {
             int y = 16 + 40 * row;
-            add(new GuiCCButton(5, y, 40, 20, "-10").setActionCommand(row+"-10"));
-            add(new GuiCCButton(46, y, 40, 20, "-5").setActionCommand(row+"-5"));
-            add(new GuiCCButton(87, y, 40, 20, "-1").setActionCommand(row+"-1"));
-            add(new GuiCCButton(129, y, 40, 20, "+1").setActionCommand(row+"+1"));
-            add(new GuiCCButton(170, y, 40, 20, "+5").setActionCommand(row+"+5"));
-            add(new GuiCCButton(211, y, 40, 20, "+10").setActionCommand(row+"+10"));
+            add(new GuiCCButton(5, y, 40, 20, "-10").setActionCommand(row + "-10"));
+            add(new GuiCCButton(46, y, 40, 20, "-5").setActionCommand(row + "-5"));
+            add(new GuiCCButton(87, y, 40, 20, "-1").setActionCommand(row + "-1"));
+            add(new GuiCCButton(129, y, 40, 20, "+1").setActionCommand(row + "+1"));
+            add(new GuiCCButton(170, y, 40, 20, "+5").setActionCommand(row + "+5"));
+            add(new GuiCCButton(211, y, 40, 20, "+10").setActionCommand(row + "+10"));
         }
     }
 
     @Override
-    public void drawScreen(int mousex, int mousey, float f) {
+    public void drawScreen(int mousex, int mousey, float f)
+    {
         drawDefaultBackground();
         super.drawScreen(mousex, mousey, f);
     }
 
     @Override
-    public void drawBackground() {
+    public void drawBackground()
+    {
         BasicGuiUtils.drawGuiBackGround(mc, 0, 0, xSize, ySize, zLevel, true);
         String s = "Maximum: " + logic.getCounterMax();
         fontRenderer.drawString(s, (xSize - fontRenderer.getStringWidth(s)) / 2, 5, 0x404040);
@@ -56,23 +62,26 @@ public class GuiCounter extends GuiScreenWidget {
     }
 
     @Override
-    public boolean doesGuiPauseGame() {
+    public boolean doesGuiPauseGame()
+    {
         return false;
     }
 
     @Override
-    public void updateScreen() {
+    public void updateScreen()
+    {
         super.updateScreen();
 
-        if(part.tile() == null)
+        if (part.tile() == null)
             mc.thePlayer.closeScreen();
     }
 
     @Override
-    public void actionPerformed(String ident, Object... params) {
+    public void actionPerformed(String ident, Object... params)
+    {
         int id = Integer.parseInt(ident.substring(0, 1));
         ident = ident.substring(1);
-        if(ident.startsWith("+"))
+        if (ident.startsWith("+"))
             ident = ident.substring(1);
         int value = Integer.parseInt(ident);
 

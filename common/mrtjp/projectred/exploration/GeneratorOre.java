@@ -10,25 +10,28 @@ import codechicken.lib.math.MathHelper;
 /**
  * Generic world ore generator, pretty much direct copy from WorldGenMinable
  */
-public class GeneratorOre extends WorldGenerator {
-
+public class GeneratorOre extends WorldGenerator
+{
     protected int id;
     protected int meta;
     protected int veinSize;
 
-    public GeneratorOre(int id, int meta, int veinSize) {
+    public GeneratorOre(int id, int meta, int veinSize)
+    {
         this.id = id;
         this.meta = meta;
         this.veinSize = veinSize;
     }
 
-    public void swapStoneBlock(World world, Random random, int x, int y, int z) {
+    public void swapStoneBlock(World world, Random random, int x, int y, int z)
+    {
         if (world.getBlockId(x, y, z) == Block.stone.blockID)
             world.setBlock(x, y, z, id, meta, 2);
     }
 
     @Override
-    public boolean generate(World world, Random random, int x, int y, int z) {
+    public boolean generate(World world, Random random, int x, int y, int z)
+    {
         // Randomly space out blocks in vein
         float f = (float) (random.nextFloat() * Math.PI);
         double d0 = x + 8 + MathHelper.sin(f) * this.veinSize / 8.0F;
@@ -39,7 +42,8 @@ public class GeneratorOre extends WorldGenerator {
         double d5 = y + random.nextInt(3) - 2;
 
         // Do this once for every block of ore we need to generate.
-        for (int l = 0; l <= this.veinSize; l++) {
+        for (int l = 0; l <= this.veinSize; l++)
+        {
             double d6 = d0 + (d1 - d0) * l / this.veinSize;
             double d7 = d4 + (d5 - d4) * l / this.veinSize;
             double d8 = d2 + (d3 - d2) * l / this.veinSize;
@@ -52,13 +56,16 @@ public class GeneratorOre extends WorldGenerator {
             int l1 = MathHelper.floor_double(d6 + d10 / 2.0D);
             int i2 = MathHelper.floor_double(d7 + d11 / 2.0D);
             int j2 = MathHelper.floor_double(d8 + d10 / 2.0D);
-            for (int k2 = i1; k2 <= l1; k2++) {
+            for (int k2 = i1; k2 <= l1; k2++)
+            {
                 double d12 = (k2 + 0.5D - d6) / (d10 / 2.0D);
                 if (d12 * d12 < 1.0D)
-                    for (int l2 = j1; l2 <= i2; l2++) {
+                    for (int l2 = j1; l2 <= i2; l2++)
+                    {
                         double d13 = (l2 + 0.5D - d7) / (d11 / 2.0D);
                         if (d12 * d12 + d13 * d13 < 1.0D)
-                            for (int i3 = k1; i3 <= j2; i3++) {
+                            for (int i3 = k1; i3 <= j2; i3++)
+                            {
                                 double d14 = (i3 + 0.5D - d8) / (d10 / 2.0D);
                                 if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0D)
                                     swapStoneBlock(world, random, k2, l2, i3);
@@ -69,24 +76,30 @@ public class GeneratorOre extends WorldGenerator {
         return true;
     }
 
-    protected static class Evaluation {
+    protected static class Evaluation
+    {
         final int x, y, z;
         int sides;
-        public Evaluation(int x, int y, int z, int sides) {
+
+        public Evaluation(int x, int y, int z, int sides)
+        {
             this.x = x;
             this.y = y;
             this.z = z;
             this.sides = sides;
         }
 
-        public void evaluateSide() {
+        public void evaluateSide()
+        {
             sides--;
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (o instanceof Evaluation) {
-                Evaluation e = (Evaluation)o;
+        public boolean equals(Object o)
+        {
+            if (o instanceof Evaluation)
+            {
+                Evaluation e = (Evaluation) o;
                 return x == e.x && y == e.y && z == e.z && sides == e.sides;
             }
             return false;

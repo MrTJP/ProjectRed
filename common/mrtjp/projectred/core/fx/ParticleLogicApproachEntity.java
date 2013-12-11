@@ -11,7 +11,8 @@ public class ParticleLogicApproachEntity extends ParticleLogic
     private final double approachSpeed;
     private final double targetDistance;
 
-    public ParticleLogicApproachEntity(Entity approachEntity, double approachSpeed, double targetDistance, int priority, boolean finalLogic) {
+    public ParticleLogicApproachEntity(Entity approachEntity, double approachSpeed, double targetDistance, int priority, boolean finalLogic)
+    {
         super(priority, finalLogic);
         target = approachEntity;
         this.approachSpeed = approachSpeed;
@@ -19,8 +20,10 @@ public class ParticleLogicApproachEntity extends ParticleLogic
     }
 
     @Override
-    public void doUpdate() {
-        if (target == null) {
+    public void doUpdate()
+    {
+        if (target == null)
+        {
             finishLogic();
             return;
         }
@@ -36,10 +39,12 @@ public class ParticleLogicApproachEntity extends ParticleLogic
         double posX = particle.posX + approachSpeed * Math.cos(radians);
         double posY = particle.posY;
         double posZ = particle.posZ + approachSpeed * Math.sin(radians);
-        if (target instanceof EntityLiving) {
+        if (target instanceof EntityLiving)
+        {
             EntityLiving entityliving = (EntityLiving) target;
             deltaY = posY - (entityliving.posY + entityliving.getEyeHeight());
-        } else if (target instanceof EntityItem)
+        }
+        else if (target instanceof EntityItem)
             deltaY = posY - target.posY;
         else
             deltaY = (target.boundingBox.minY + target.boundingBox.maxY) / 2.0D - posY;
@@ -56,7 +61,8 @@ public class ParticleLogicApproachEntity extends ParticleLogic
     }
 
     @Override
-    public ParticleLogic clone() {
+    public ParticleLogic clone()
+    {
         return new ParticleLogicApproachEntity(target, approachSpeed, targetDistance, priority, finalLogic);
     }
 }

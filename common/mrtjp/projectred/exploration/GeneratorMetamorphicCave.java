@@ -7,19 +7,21 @@ import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
 
-public class GeneratorMetamorphicCave extends GeneratorOre {
-
+public class GeneratorMetamorphicCave extends GeneratorOre
+{
     LinkedList<Evaluation> openList = new LinkedList<Evaluation>();
     LinkedList<Evaluation> closedList = new LinkedList<Evaluation>();
 
     public static int MAX_DIAMETER = 128;
 
-    public GeneratorMetamorphicCave(int id, int meta, int veinSize) {
+    public GeneratorMetamorphicCave(int id, int meta, int veinSize)
+    {
         super(id, meta, veinSize);
     }
 
     @Override
-    public boolean generate(World world, Random random, int x, int y, int z) {
+    public boolean generate(World world, Random random, int x, int y, int z)
+    {
         if (world.getBlockId(x, y, z) != 0)
             return false;
 
@@ -30,15 +32,18 @@ public class GeneratorMetamorphicCave extends GeneratorOre {
 
         addBlockForEvaluation(x, yIndex, z, 6);
 
-        while (openList.size() > 0 && veinSize > 0) {
+        while (openList.size() > 0 && veinSize > 0)
+        {
             Evaluation eval = openList.removeFirst();
             checkStoneBlock(world, eval.x, eval.y, eval.z, eval.sides);
         }
         return true;
     }
 
-    private void checkStoneBlock(World world, int x, int y, int z, int sides) {
-        if (world.getBlockId(x, y, z) == Block.stone.blockID) {
+    private void checkStoneBlock(World world, int x, int y, int z, int sides)
+    {
+        if (world.getBlockId(x, y, z) == Block.stone.blockID)
+        {
             world.setBlock(x, y, z, id, meta, 2);
             if (sides > 0)
                 evaluateNeighbors(world, x, y, z, sides - 1);
@@ -47,8 +52,10 @@ public class GeneratorMetamorphicCave extends GeneratorOre {
         }
     }
 
-    private boolean isBlockTouchingAir(World w, BlockCoord b) {
-        for (int i = 0; i < 6; i++) {
+    private boolean isBlockTouchingAir(World w, BlockCoord b)
+    {
+        for (int i = 0; i < 6; i++)
+        {
             BlockCoord bc = b.copy().offset(i);
             if (w.getBlockId(bc.x, bc.y, bc.z) == 0)
                 return true;
@@ -56,17 +63,20 @@ public class GeneratorMetamorphicCave extends GeneratorOre {
         return false;
     }
 
-    private void evaluateNeighbors(World w, int x, int y, int z, int sides) {
+    private void evaluateNeighbors(World w, int x, int y, int z, int sides)
+    {
         BlockCoord b = new BlockCoord(x, y, z);
         if (isBlockTouchingAir(w, b))
             sides = 6;
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; i++)
+        {
             BlockCoord bc = b.copy().offset(i);
             addBlockForEvaluation(bc.x, bc.y, bc.z, sides);
         }
     }
 
-    private void addBlockForEvaluation(int x, int y, int z, int sides) {
+    private void addBlockForEvaluation(int x, int y, int z, int sides)
+    {
         Evaluation eval = new Evaluation(x, y, z, sides);
         if (closedList.contains(eval))
             return;

@@ -10,7 +10,8 @@ public class ParticleLogicFleeEntity extends ParticleLogic
     private double fleeSpeed;
     private double targetDistance;
 
-    public ParticleLogicFleeEntity(Entity fleeEntity, double fleeSpeed, double targetDistance, int priority, boolean finalLogic) {
+    public ParticleLogicFleeEntity(Entity fleeEntity, double fleeSpeed, double targetDistance, int priority, boolean finalLogic)
+    {
         super(priority, finalLogic);
         target = fleeEntity;
         this.fleeSpeed = fleeSpeed;
@@ -18,7 +19,8 @@ public class ParticleLogicFleeEntity extends ParticleLogic
     }
 
     @Override
-    public void doUpdate() {
+    public void doUpdate()
+    {
 
         double distanceToTarget = particle.getDistanceToEntity(target);
 
@@ -32,10 +34,12 @@ public class ParticleLogicFleeEntity extends ParticleLogic
         double posY = particle.posY;
         double posZ = particle.posZ + fleeSpeed * Math.sin(radians);
 
-        if (target instanceof EntityLiving) {
+        if (target instanceof EntityLiving)
+        {
             EntityLiving entityliving = (EntityLiving) target;
             deltaY = posY - (entityliving.posY + entityliving.getEyeHeight());
-        } else
+        }
+        else
             deltaY = (target.boundingBox.minY + target.boundingBox.maxY) / 2.0D - posY;
         double horizontalDistance = MathHelper.sqrt_double(deltaX * deltaX + deltaZ * deltaZ);
         float pitchRotation = (float) -Math.atan2(deltaY, horizontalDistance);
@@ -50,7 +54,8 @@ public class ParticleLogicFleeEntity extends ParticleLogic
     }
 
     @Override
-    public ParticleLogic clone() {
+    public ParticleLogic clone()
+    {
         return new ParticleLogicFleeEntity(target, fleeSpeed, targetDistance, priority, finalLogic);
     }
 }

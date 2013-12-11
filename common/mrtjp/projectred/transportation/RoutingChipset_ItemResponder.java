@@ -25,9 +25,10 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
     public boolean filterExclude = false;
     public boolean fuzzyMode = false;
     public int fuzzyDamageMode = 0;
-    public static final int[] fuzzyPercent = new int[] {0, 25, 50, 75, 100};
+    public static final int[] fuzzyPercent = new int[] { 0, 25, 50, 75, 100 };
 
-    public void prefUp() {
+    public void prefUp()
+    {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             preference += 10;
         else
@@ -36,7 +37,8 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
             preference = 100;
     }
 
-    public void prefDown() {
+    public void prefDown()
+    {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             preference -= 10;
         else
@@ -44,24 +46,27 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
         if (preference < -100)
             preference = -100;
     }
-    
-    public void shiftFuzzy() {
+
+    public void shiftFuzzy()
+    {
         fuzzyDamageMode = (fuzzyDamageMode + 1) % 5;
     }
 
     @Override
-    public SyncResponse getSyncResponse(ItemKey item, SyncResponse rival) {
+    public SyncResponse getSyncResponse(ItemKey item, SyncResponse rival)
+    {
         IInventory real = inventoryProvider().getInventory();
         int side = inventoryProvider().getInterfacedSide();
 
         if (real == null || side < 0)
             return null;
 
-        if (priority.ordinal() > rival.priority.ordinal() || priority.ordinal() == rival.priority.ordinal() && preference > rival.customPriority) {
-            InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll()
-                    .setFuzzy(fuzzyMode).setFuzzyPercent(fuzzyPercent[fuzzyDamageMode]);
+        if (priority.ordinal() > rival.priority.ordinal() || priority.ordinal() == rival.priority.ordinal() && preference > rival.customPriority)
+        {
+            InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll().setFuzzy(fuzzyMode).setFuzzyPercent(fuzzyPercent[fuzzyDamageMode]);
 
-            if (filt.hasItem(item) != filterExclude) {
+            if (filt.hasItem(item) != filterExclude)
+            {
                 InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
                 int room = inv.getRoomAvailableForItem(item);
                 if (room > 0)
@@ -72,7 +77,8 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
     }
 
     @Override
-    public void save(NBTTagCompound tag) {
+    public void save(NBTTagCompound tag)
+    {
         filter.save(tag);
         tag.setInteger("pref", preference);
         tag.setBoolean("mode", filterExclude);
@@ -81,7 +87,8 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
     }
 
     @Override
-    public void load(NBTTagCompound tag) {
+    public void load(NBTTagCompound tag)
+    {
         filter.load(tag);
         preference = tag.getInteger("pref");
         filterExclude = tag.getBoolean("mode");
@@ -90,25 +97,31 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
     }
 
     @Override
-    public List<String> infoCollection() {
+    public List<String> infoCollection()
+    {
         List<String> list = new LinkedList<String>();
         addPriorityInfo(list);
         addFilterInfo(list);
         return list;
     }
 
-    public void addPriorityInfo(List<String> list) {
+    public void addPriorityInfo(List<String> list)
+    {
         list.add(EnumChatFormatting.GRAY + "Preference: " + preference);
     }
-    public void addFilterInfo(List<String> list) {
+
+    public void addFilterInfo(List<String> list)
+    {
         list.add(EnumChatFormatting.GRAY + "Fuzzy Mode: " + fuzzyMode);
         list.add(EnumChatFormatting.GRAY + "Fuzzy Tool Damage: " + fuzzyPercent[fuzzyDamageMode] + "%");
         list.add(EnumChatFormatting.GRAY + "Filter Mode: " + (filterExclude ? "blacklist" : "whitelist"));
         list.add(EnumChatFormatting.GRAY + "Filter: ");
         boolean added = false;
-        for (int i = 0; i < filter.getSizeInventory(); i++) {
+        for (int i = 0; i < filter.getSizeInventory(); i++)
+        {
             ItemStack stack = filter.getStackInSlot(i);
-            if (stack != null) {
+            if (stack != null)
+            {
                 list.add(EnumChatFormatting.GRAY + " - " + stack.getDisplayName());
                 added = true;
             }
@@ -116,13 +129,15 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
         if (!added)
             list.add(EnumChatFormatting.GRAY + " - empty");
     }
-    
-    protected SendPriority getSendPriority() {
+
+    protected SendPriority getSendPriority()
+    {
         return SendPriority.PASSIVE;
     }
-    
+
     @Override
-    public EnumRoutingChip getChipType() {
+    public EnumRoutingChip getChipType()
+    {
         return EnumRoutingChip.ITEMRESPONDER;
     }
 }

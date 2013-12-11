@@ -7,7 +7,8 @@ import net.minecraft.item.EnumToolMaterial;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-public enum EnumSpecialTool {
+public enum EnumSpecialTool
+{
     RUBYAXE("Ruby Axe", "axeruby", ProjectRedExploration.toolMaterialRuby, EnumPart.RUBY.getItemStack()),
     SAPPHIREAXE("Sapphire Axe", "axesapphire", ProjectRedExploration.toolMaterialSapphire, EnumPart.SAPPHIRE.getItemStack()),
     PERIDOTAXE("Peridot Axe", "axeperidot", ProjectRedExploration.toolMaterialPeridot, EnumPart.PERIDOT.getItemStack()),
@@ -44,8 +45,7 @@ public enum EnumSpecialTool {
     RUBYSICKLE("Ruby Sickle", "sickleruby", ProjectRedExploration.toolMaterialRuby, EnumPart.RUBY.getItemStack()),
     SAPPHIRESICKLE("Sapphire Sickle", "sicklesapphire", ProjectRedExploration.toolMaterialSapphire, EnumPart.SAPPHIRE.getItemStack()),
     PERIDOTSICKLE("Peridot Sickle", "sickleperidot", ProjectRedExploration.toolMaterialPeridot, EnumPart.PERIDOT.getItemStack()),
-    DIAMONDSICKLE("Diamond Sickle", "sicklediamond", EnumToolMaterial.EMERALD, new ItemStack(Item.diamond)),
-    ;
+    DIAMONDSICKLE("Diamond Sickle", "sicklediamond", EnumToolMaterial.EMERALD, new ItemStack(Item.diamond)), ;
 
     public final EnumToolMaterial material;
     public final String name;
@@ -53,7 +53,8 @@ public enum EnumSpecialTool {
 
     public final ItemStack repairStack;
 
-    private EnumSpecialTool(String name, String unlocal, EnumToolMaterial material, ItemStack repair) {
+    private EnumSpecialTool(String name, String unlocal, EnumToolMaterial material, ItemStack repair)
+    {
         this.name = name;
         this.unlocal = unlocal;
         this.material = material;

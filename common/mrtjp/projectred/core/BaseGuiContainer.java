@@ -9,8 +9,10 @@ import org.lwjgl.opengl.GL11;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+@Deprecated
 @SideOnly(Side.CLIENT)
-public class BaseGuiContainer extends GuiContainer {
+public class BaseGuiContainer extends GuiContainer
+{
     public Container container;
     private String texPath;
     protected int right;
@@ -20,7 +22,8 @@ public class BaseGuiContainer extends GuiContainer {
     protected final int xCenterOffset;
     protected final int yCenterOffset;
 
-    public BaseGuiContainer(Container container, int xSize, int ySize, String texPath) {
+    public BaseGuiContainer(Container container, int xSize, int ySize, String texPath)
+    {
         super(container);
         this.container = container;
         this.xSize = xSize;
@@ -30,7 +33,8 @@ public class BaseGuiContainer extends GuiContainer {
         this.yCenterOffset = 0;
     }
 
-    public BaseGuiContainer(Container container, int xSize, int ySize) {
+    public BaseGuiContainer(Container container, int xSize, int ySize)
+    {
         super(container);
         this.container = container;
         this.xSize = xSize;
@@ -40,12 +44,14 @@ public class BaseGuiContainer extends GuiContainer {
         this.yCenterOffset = 0;
     }
 
-    public BaseGuiContainer(int xSize, int ySize, int xCenterOffset, int yCenterOffset) {
+    public BaseGuiContainer(int xSize, int ySize, int xCenterOffset, int yCenterOffset)
+    {
         this(new GhostContainer(null, null), xSize, ySize);
     }
 
     @Override
-    public void initGui() {
+    public void initGui()
+    {
         super.initGui();
         this.guiLeft = width / 2 - xSize / 2 + xCenterOffset;
         this.guiTop = height / 2 - ySize / 2 + yCenterOffset;
@@ -58,17 +64,20 @@ public class BaseGuiContainer extends GuiContainer {
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
+    protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3)
+    {
         mc.renderEngine.bindTexture(new ResourceLocation(texPath));
         GL11.glColor3f(1, 1, 1);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
-    protected void drawString(String s, int x, int y, int colour) {
+    protected void drawString(String s, int x, int y, int colour)
+    {
         fontRenderer.drawStringWithShadow(s, x + guiLeft, y + guiTop, colour);
     }
 
-    protected void drawStringWithoutShadow(String s, int x, int y, int colour) {
+    protected void drawStringWithoutShadow(String s, int x, int y, int colour)
+    {
         fontRenderer.drawString(s, x + guiLeft, y + guiTop, colour);
     }
 }

@@ -12,17 +12,20 @@ public class GateItemRenderer implements IItemRenderer
     public final static GateItemRenderer instance = new GateItemRenderer();
 
     @Override
-    public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+    public boolean handleRenderType(ItemStack item, ItemRenderType type)
+    {
         return true;
     }
 
     @Override
-    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
+    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper)
+    {
         return true;
     }
 
     @Override
-    public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+    public void renderItem(ItemRenderType type, ItemStack item, Object... data)
+    {
         int damage = item.getItemDamage();
         switch (type) {
         case ENTITY:
@@ -42,8 +45,9 @@ public class GateItemRenderer implements IItemRenderer
         }
     }
 
-    public void renderGateInv(int meta, float x, float y, float z, float scale) {
-        if(!EnumGate.VALID_GATES[meta].implemented())
+    public void renderGateInv(int meta, float x, float y, float z, float scale)
+    {
+        if (!EnumGate.VALID_GATES[meta].implemented())
             return;
 
         TextureUtils.bindAtlas(0);

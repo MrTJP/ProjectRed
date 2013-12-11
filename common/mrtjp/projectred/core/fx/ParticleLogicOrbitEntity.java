@@ -19,7 +19,8 @@ public final class ParticleLogicOrbitEntity extends ParticleLogic
     private double orbitY = -512.0D;
     private boolean ignoreYCoordinate = false;
 
-    public ParticleLogicOrbitEntity(Entity orbitTarget, double orbitSpeed, int priority, boolean finalLogic) {
+    public ParticleLogicOrbitEntity(Entity orbitTarget, double orbitSpeed, int priority, boolean finalLogic)
+    {
         super(priority, finalLogic);
         target = orbitTarget;
         orbitAngle = rand.nextInt(360);
@@ -29,24 +30,28 @@ public final class ParticleLogicOrbitEntity extends ParticleLogic
         this.orbitSpeed = orbitSpeed;
     }
 
-    public ParticleLogicOrbitEntity setOrbitY(double orbitY) {
+    public ParticleLogicOrbitEntity setOrbitY(double orbitY)
+    {
         this.orbitY = orbitY;
         return this;
     }
 
-    public ParticleLogicOrbitEntity setTargetDistance(double targetDistance) {
+    public ParticleLogicOrbitEntity setTargetDistance(double targetDistance)
+    {
         this.targetDistance = targetDistance;
         return this;
     }
 
-    private void generateNewTargetY() {
+    private void generateNewTargetY()
+    {
         if (target != null)
             targetY = new Random().nextDouble() * target.height;
         else
             targetY = 0.0D;
     }
 
-    private void generateNewDistance() {
+    private void generateNewDistance()
+    {
         if (target != null)
             targetDistance = new Random().nextDouble() * 2.0D;
         else
@@ -54,11 +59,13 @@ public final class ParticleLogicOrbitEntity extends ParticleLogic
     }
 
     @Override
-    public void doUpdate() {
+    public void doUpdate()
+    {
         if (firstTick)
             curYOffset = particle.posY - (target.posY + target.getEyeHeight());
 
-        if (target == null || target.isDead) {
+        if (target == null || target.isDead)
+        {
             finishLogic();
             return;
         }
@@ -88,7 +95,8 @@ public final class ParticleLogicOrbitEntity extends ParticleLogic
         if (!ignoreYCoordinate)
             if (orbitY != -512.0D)
                 posY = target.posY + target.getEyeHeight() + orbitY;
-            else {
+            else
+            {
                 int offset = 0;
                 if (target instanceof EntityPlayer && !(target instanceof EntityClientPlayerMP))
                     offset = (int) (offset + 2.0F * target.height);
@@ -99,7 +107,8 @@ public final class ParticleLogicOrbitEntity extends ParticleLogic
     }
 
     @Override
-    public ParticleLogic clone() {
+    public ParticleLogic clone()
+    {
         ParticleLogicOrbitEntity clone = new ParticleLogicOrbitEntity(target, orbitSpeed, priority, rotateClockwise).setTargetDistance(targetDistance);
         if (orbitY != -512.0D)
             clone.setOrbitY(orbitY);
@@ -107,7 +116,8 @@ public final class ParticleLogicOrbitEntity extends ParticleLogic
         return clone;
     }
 
-    public ParticleLogicOrbitEntity setIgnoreYCoordinate(boolean b) {
+    public ParticleLogicOrbitEntity setIgnoreYCoordinate(boolean b)
+    {
         ignoreYCoordinate = b;
         return this;
     }
