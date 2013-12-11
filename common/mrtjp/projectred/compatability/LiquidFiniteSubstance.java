@@ -12,43 +12,47 @@ import net.minecraftforge.fluids.BlockFluidFinite;
 import net.minecraftforge.fluids.Fluid;
 import tconstruct.library.TConstructRegistry;
 
-public class LiquidFiniteSubstance extends BlockFluidFinite {
-
+public class LiquidFiniteSubstance extends BlockFluidFinite
+{
     String texture;
     public Icon stillIcon;
     public Icon flowIcon;
 
-    public LiquidFiniteSubstance(int id, Fluid fluid, String texture, Material m) {
+    public LiquidFiniteSubstance(int id, Fluid fluid, String texture, Material m)
+    {
         super(id, fluid, m);
         this.texture = texture;
         setCreativeTab(TConstructRegistry.blockTab);
     }
 
     @Override
-    public void registerIcons(IconRegister iconRegister) {
-        this.stillIcon = iconRegister.registerIcon("projectred:compat/"
-                + this.texture);
+    public void registerIcons(IconRegister iconRegister)
+    {
+        this.stillIcon = iconRegister.registerIcon("projectred:compat/" + this.texture);
         this.getFluid().setStillIcon(stillIcon);
 
-        this.flowIcon = iconRegister.registerIcon("projectred:compat/"
-                + this.texture + "_flow");
+        this.flowIcon = iconRegister.registerIcon("projectred:compat/" + this.texture + "_flow");
         this.getFluid().setFlowingIcon(flowIcon);
     }
 
     @Override
-    public Icon getIcon(int side, int meta) {
+    public Icon getIcon(int side, int meta)
+    {
         if (side == 0 || side == 1)
             return this.stillIcon;
         return this.flowIcon;
     }
 
     @Override
-    public void onEntityCollidedWithBlock(World par1World, int x, int y, int z, Entity entity) {
-        if (entity instanceof EntityLivingBase) {
+    public void onEntityCollidedWithBlock(World par1World, int x, int y, int z, Entity entity)
+    {
+        if (entity instanceof EntityLivingBase)
+        {
             entity.motionX *= 0.4D;
             entity.motionZ *= 0.4D;
         }
-        if (!(entity instanceof EntityItem) && !entity.isImmuneToFire()) {
+        if (!(entity instanceof EntityItem) && !entity.isImmuneToFire())
+        {
             entity.attackEntityFrom(DamageSource.lava, 4.0F);
             entity.setFire(15);
         }

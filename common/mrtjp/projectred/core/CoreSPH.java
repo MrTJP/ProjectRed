@@ -2,7 +2,8 @@ package mrtjp.projectred.core;
 
 import mrtjp.projectred.ProjectRedCore;
 
-public class CoreSPH {
+public class CoreSPH
+{
     /**
      * None yet... used for packet keys.
      */

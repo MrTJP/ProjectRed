@@ -10,70 +10,79 @@ import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class InsulatedRedAlloyPart extends RedwirePart implements IInsulatedRedwirePart {
-
+public class InsulatedRedAlloyPart extends RedwirePart implements IInsulatedRedwirePart
+{
     public byte colour;
 
     @Override
-    public String getType() {
+    public String getType()
+    {
         return "pr_insulated";
     }
 
     @Override
-    public EnumWire getWireType() {
+    public EnumWire getWireType()
+    {
         return EnumWire.INSULATED_WIRE[colour];
     }
 
     @Override
-    public void preparePlacement(int side, int meta) {
+    public void preparePlacement(int side, int meta)
+    {
         super.preparePlacement(side, meta);
-        colour = (byte)(meta-EnumWire.INSULATED_0.ordinal());
+        colour = (byte) (meta - EnumWire.INSULATED_0.ordinal());
     }
 
     @Override
-    public void save(NBTTagCompound tag) {
+    public void save(NBTTagCompound tag)
+    {
         super.save(tag);
         tag.setByte("colour", colour);
     }
 
     @Override
-    public void load(NBTTagCompound tag) {
+    public void load(NBTTagCompound tag)
+    {
         super.load(tag);
         colour = tag.getByte("colour");
     }
 
     @Override
-    public void writeDesc(MCDataOutput packet) {
+    public void writeDesc(MCDataOutput packet)
+    {
         super.writeDesc(packet);
         packet.writeByte(colour);
     }
 
     @Override
-    public void readDesc(MCDataInput packet) {
+    public void readDesc(MCDataInput packet)
+    {
         super.readDesc(packet);
         colour = packet.readByte();
     }
 
     @Override
-    public int getPartSignal(TMultiPart part, int r) {
-        if(part instanceof IBundledCablePart)
-            return (((IBundledCablePart) part).getBundledSignal()[colour]&0xFF)-1;
+    public int getPartSignal(TMultiPart part, int r)
+    {
+        if (part instanceof IBundledCablePart)
+            return (((IBundledCablePart) part).getBundledSignal()[colour] & 0xFF) - 1;
 
         return super.getPartSignal(part, r);
     }
 
     @Override
-    public int weakPowerLevel(int side) {
-        if(this.side == side || this.side == (side^1) ||
-                !maskConnects(Rotation.rotationTo(this.side, side)))
+    public int weakPowerLevel(int side)
+    {
+        if (this.side == side || this.side == (side ^ 1) || !maskConnects(Rotation.rotationTo(this.side, side)))
             return 0;
 
         return super.weakPowerLevel(side);
     }
 
     @Override
-    public boolean canConnectToType(IConnectable wire) {
-        if(wire instanceof IInsulatedRedwirePart)
+    public boolean canConnectToType(IConnectable wire)
+    {
+        if (wire instanceof IInsulatedRedwirePart)
             return ((IInsulatedRedwirePart) wire).getInsulatedColour() == colour;
 
         return true;
@@ -81,12 +90,14 @@ public class InsulatedRedAlloyPart extends RedwirePart implements IInsulatedRedw
 
     @Override
     @SideOnly(Side.CLIENT)
-    public Icon getIcon() {
+    public Icon getIcon()
+    {
         return getWireType().wireSprites[signal != 0 ? 1 : 0];
     }
 
     @Override
-    public int getInsulatedColour() {
+    public int getInsulatedColour()
+    {
         return colour;
     }
 }

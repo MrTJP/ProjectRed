@@ -18,11 +18,13 @@ public class RoutingChipset_ItemOverflowResponder extends RoutingChipset
     private final SendPriority priority = getSendPriority();
     public int preference = 0;
 
-    protected SendPriority getSendPriority() {
+    protected SendPriority getSendPriority()
+    {
         return SendPriority.DEFAULT;
     }
-    
-    public void prefUp() {
+
+    public void prefUp()
+    {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             preference += 10;
         else
@@ -31,7 +33,8 @@ public class RoutingChipset_ItemOverflowResponder extends RoutingChipset
             preference = 100;
     }
 
-    public void prefDown() {
+    public void prefDown()
+    {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             preference -= 10;
         else
@@ -41,14 +44,16 @@ public class RoutingChipset_ItemOverflowResponder extends RoutingChipset
     }
 
     @Override
-    public SyncResponse getSyncResponse(ItemKey item, SyncResponse rival) {
+    public SyncResponse getSyncResponse(ItemKey item, SyncResponse rival)
+    {
         IInventory real = inventoryProvider().getInventory();
         int side = inventoryProvider().getInterfacedSide();
 
         if (real == null || side < 0)
             return null;
 
-        if (priority.ordinal() > rival.priority.ordinal() || priority.ordinal() == rival.priority.ordinal() && preference > rival.customPriority) {
+        if (priority.ordinal() > rival.priority.ordinal() || priority.ordinal() == rival.priority.ordinal() && preference > rival.customPriority)
+        {
             InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
             int room = inv.getRoomAvailableForItem(item);
             if (room > 0)
@@ -58,28 +63,33 @@ public class RoutingChipset_ItemOverflowResponder extends RoutingChipset
     }
 
     @Override
-    public void save(NBTTagCompound tag) {
+    public void save(NBTTagCompound tag)
+    {
         tag.setInteger("pref", preference);
     }
 
     @Override
-    public void load(NBTTagCompound tag) {
+    public void load(NBTTagCompound tag)
+    {
         preference = tag.getInteger("pref");
     }
 
     @Override
-    public List<String> infoCollection() {
+    public List<String> infoCollection()
+    {
         List<String> list = new LinkedList<String>();
         addPriorityInfo(list);
         return list;
     }
 
     @Override
-    public EnumRoutingChip getChipType() {
+    public EnumRoutingChip getChipType()
+    {
         return EnumRoutingChip.ITEMOVERFLOWRESPONDER;
     }
 
-    public void addPriorityInfo(List<String> list) {
+    public void addPriorityInfo(List<String> list)
+    {
         list.add(EnumChatFormatting.GRAY + "Preference: " + preference);
     }
 }

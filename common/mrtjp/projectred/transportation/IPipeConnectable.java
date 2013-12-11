@@ -1,13 +1,14 @@
 package mrtjp.projectred.transportation;
 
-
 /**
  * Interface implemented by things to connect to various types of tubes.
  */
-public interface IPipeConnectable {
+public interface IPipeConnectable
+{
     /**
-     * Called to check whether a tube part can connect to this.
-     * If a part returns true it is expected to immediately reflect the fact that it is now connected to wire.
+     * Called to check whether a tube part can connect to this. If a part
+     * returns true it is expected to immediately reflect the fact that it is
+     * now connected to wire.
      * 
      * @param part The part asking for connection.
      * @param absDir The absolute direction to connect from.

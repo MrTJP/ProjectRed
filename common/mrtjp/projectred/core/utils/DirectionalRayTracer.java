@@ -11,13 +11,13 @@ import com.google.common.collect.Maps;
 
 public class DirectionalRayTracer
 {
-
     public static class HitCoord
     {
         public final ForgeDirection side;
         public final Vec3 coord;
 
-        public HitCoord(ForgeDirection side, Vec3 coord) {
+        public HitCoord(ForgeDirection side, Vec3 coord)
+        {
             this.side = side;
             this.coord = coord;
         }
@@ -26,7 +26,8 @@ public class DirectionalRayTracer
     private final double negX, negY, negZ;
     private final double posX, posY, posZ;
 
-    public DirectionalRayTracer(double negX, double negY, double negZ, double posX, double posY, double posZ) {
+    public DirectionalRayTracer(double negX, double negY, double negZ, double posX, double posY, double posZ)
+    {
         this.negX = negX;
         this.negY = negY;
         this.negZ = negZ;
@@ -35,16 +36,19 @@ public class DirectionalRayTracer
         this.posZ = posZ;
     }
 
-    public DirectionalRayTracer(double halfSize) {
+    public DirectionalRayTracer(double halfSize)
+    {
         negX = negY = negZ = -halfSize;
         posX = posY = posZ = +halfSize;
     }
 
-    private static Vec3 getMouseVector(float z) {
+    private static Vec3 getMouseVector(float z)
+    {
         return OpenGLLib.unproject(Mouse.getX(), Mouse.getY(), z);
     }
 
-    private Vec3 calculateXPoint(Vec3 near, Vec3 diff, double x) {
+    private Vec3 calculateXPoint(Vec3 near, Vec3 diff, double x)
+    {
         double p = (x - near.xCoord) / diff.xCoord;
 
         double y = near.yCoord + diff.yCoord * p;
@@ -56,7 +60,8 @@ public class DirectionalRayTracer
         return null;
     }
 
-    private Vec3 calculateYPoint(Vec3 near, Vec3 diff, double y) {
+    private Vec3 calculateYPoint(Vec3 near, Vec3 diff, double y)
+    {
         double p = (y - near.yCoord) / diff.yCoord;
 
         double x = near.xCoord + diff.xCoord * p;
@@ -68,7 +73,8 @@ public class DirectionalRayTracer
         return null;
     }
 
-    private Vec3 calculateZPoint(Vec3 near, Vec3 diff, double z) {
+    private Vec3 calculateZPoint(Vec3 near, Vec3 diff, double z)
+    {
         double p = (z - near.zCoord) / diff.zCoord;
 
         double x = near.xCoord + diff.xCoord * p;
@@ -80,12 +86,14 @@ public class DirectionalRayTracer
         return null;
     }
 
-    private static void addPoint(Map<ForgeDirection, Vec3> map, ForgeDirection side, Vec3 value) {
+    private static void addPoint(Map<ForgeDirection, Vec3> map, ForgeDirection side, Vec3 value)
+    {
         if (value != null)
             map.put(side, value);
     }
 
-    private Map<ForgeDirection, Vec3> calculateHitPoints(Vec3 near, Vec3 far) {
+    private Map<ForgeDirection, Vec3> calculateHitPoints(Vec3 near, Vec3 far)
+    {
         Vec3 diff = far.subtract(near);
 
         Map<ForgeDirection, Vec3> result = Maps.newEnumMap(ForgeDirection.class);
@@ -100,7 +108,8 @@ public class DirectionalRayTracer
         return result;
     }
 
-    public Map<ForgeDirection, Vec3> calculateMouseHits() {
+    public Map<ForgeDirection, Vec3> calculateMouseHits()
+    {
         OpenGLLib.updateMatrices();
         Vec3 near = getMouseVector(0);
         Vec3 far = getMouseVector(1);
@@ -108,7 +117,8 @@ public class DirectionalRayTracer
         return calculateHitPoints(near, far);
     }
 
-    public HitCoord getNearestHit() {
+    public HitCoord getNearestHit()
+    {
         OpenGLLib.updateMatrices();
         Vec3 near = getMouseVector(0);
         Vec3 far = getMouseVector(1);
@@ -121,9 +131,11 @@ public class DirectionalRayTracer
         ForgeDirection minForgeDirection = null;
         double minDist = Double.MAX_VALUE;
 
-        for (Map.Entry<ForgeDirection, Vec3> e : hits.entrySet()) {
+        for (Map.Entry<ForgeDirection, Vec3> e : hits.entrySet())
+        {
             double dist = e.getValue().subtract(near).lengthVector();
-            if (dist < minDist) {
+            if (dist < minDist)
+            {
                 minDist = dist;
                 minForgeDirection = e.getKey();
             }

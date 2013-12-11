@@ -2,73 +2,89 @@ package mrtjp.projectred.transportation;
 
 import java.util.concurrent.PriorityBlockingQueue;
 
-public class TableUpdateThread extends Thread {
-
+public class TableUpdateThread extends Thread
+{
     private static PriorityBlockingQueue<RouteLayerUpdater> updateCalls = new PriorityBlockingQueue<RouteLayerUpdater>();
 
     private static Long average = 0L;
 
-    public TableUpdateThread(int i) {
+    public TableUpdateThread(int i)
+    {
         super("PR TableUpdateThread #" + i);
         setDaemon(true);
         setPriority(Thread.NORM_PRIORITY);
         start();
     }
 
-    public static void add(Router r) {
+    public static void add(Router r)
+    {
         updateCalls.add(new RouteLayerUpdater(r));
     }
 
-    public static boolean remove(Runnable run) {
+    public static boolean remove(Runnable run)
+    {
         return updateCalls.remove(run);
     }
 
-    public static int size() {
+    public static int size()
+    {
         return updateCalls.size();
     }
 
-    public static long getAverage() {
-        synchronized (average) {
+    public static long getAverage()
+    {
+        synchronized (average)
+        {
             return average;
         }
     }
 
     @Override
-    public void run() {
+    public void run()
+    {
         RouteLayerUpdater rlu = null;
-        try {
-            while ((rlu = updateCalls.take()) != null) {
+        try
+        {
+            while ((rlu = updateCalls.take()) != null)
+            {
                 long starttime = System.nanoTime();
 
                 rlu.run();
 
                 long took = System.nanoTime() - starttime;
-                synchronized (average) {
+                synchronized (average)
+                {
                     if (average == 0)
                         average = took;
                     else
                         average = (average * 999L + took) / 1000L;
                 }
             }
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException e)
+        {
+        }
     }
 
-    public static class RouteLayerUpdater implements Comparable<RouteLayerUpdater>, Runnable {
+    public static class RouteLayerUpdater implements Comparable<RouteLayerUpdater>, Runnable
+    {
         int newVersion = 0;
         boolean complete = false;
         Router router;
 
-        RouteLayerUpdater(Router router) {
+        RouteLayerUpdater(Router router)
+        {
             this.complete = false;
             this.newVersion = router.getLinkStateID();
             this.router = router;
         }
 
         @Override
-        public void run() {
+        public void run()
+        {
             if (complete)
                 return;
-            try {
+            try
+            {
                 if (router.getParent() == null)
                     return;
 
@@ -79,14 +95,16 @@ public class TableUpdateThread extends Thread {
                     return;
 
                 router.refreshRoutingTable(newVersion);
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
                 e.printStackTrace();
             }
             complete = true;
         }
 
         @Override
-        public int compareTo(RouteLayerUpdater o) {
+        public int compareTo(RouteLayerUpdater o)
+        {
             int c = 0;
             if (o.newVersion <= 0)
                 c = newVersion - o.newVersion;

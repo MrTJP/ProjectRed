@@ -7,14 +7,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class IntegrationRecipes {
-
-    public static void initIntegrationRecipes() {
+public class IntegrationRecipes 
+{
+    public static void initIntegrationRecipes() 
+    {
         initGateRecipes();
     }
 
-    private static void initGateRecipes() {
-
+    private static void initGateRecipes() 
+    {
         /** AND Gate **/
         GameRegistry.addRecipe(EnumGate.AND.getItemStack(),
                 "ACA",
@@ -319,6 +320,5 @@ public class IntegrationRecipes {
                 'P', EnumPart.PLATE.getItemStack(),
                 'C', EnumPart.CATHODE.getItemStack()
                 );
-
     }
 }

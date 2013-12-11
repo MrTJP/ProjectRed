@@ -21,18 +21,21 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Translation;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
-
+public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer
+{
     public static LampISBRH instance = new LampISBRH();
 
     private static Cuboid6 box = new Cuboid6(0, 0, 0, 1, 1, 1).expand(0.05D);
 
     @Override
-    public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer) {}
+    public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer)
+    {
+    }
 
     @Override
-    public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks r) {
-        TileLamp l = BasicUtils.getTileEntity(world, new BlockCoord(x,y,z), TileLamp.class);
+    public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks r)
+    {
+        TileLamp l = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (l == null)
             return false;
 
@@ -40,7 +43,7 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
 
         if (l.isOn())
             Tessellator.instance.setBrightness(0x00F000F0);
-        
+
         r.renderStandardBlock(block, x, y, z);
 
         if (l.isOn())
@@ -49,27 +52,32 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
     }
 
     @Override
-    public boolean shouldRender3DInInventory() {
+    public boolean shouldRender3DInInventory()
+    {
         return true;
     }
 
     @Override
-    public int getRenderId() {
+    public int getRenderId()
+    {
         return IlluminationClientProxy.lampRenderID;
     }
 
     @Override
-    public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+    public boolean handleRenderType(ItemStack item, ItemRenderType type)
+    {
         return true;
     }
 
     @Override
-    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
+    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper)
+    {
         return true;
     }
 
     @Override
-    public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+    public void renderItem(ItemRenderType type, ItemStack item, Object... data)
+    {
         switch (type) {
         case ENTITY:
             renderInventory(item.getItemDamage(), -0.15f, 0f, -0.15f, 1f);
@@ -88,8 +96,9 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
         }
     }
 
-    private void renderInventory(int meta, double x, double y, double z, double scale) {
-        Icon icon = meta>15 ? BlockLamp.onIcons[meta-16] : BlockLamp.offIcons[meta];
+    private void renderInventory(int meta, double x, double y, double z, double scale)
+    {
+        Icon icon = meta > 15 ? BlockLamp.onIcons[meta - 16] : BlockLamp.offIcons[meta];
         GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
         GL11.glScaled(scale, scale, scale);
@@ -100,12 +109,12 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer {
         CCRenderState.startDrawing(7);
         RenderUtils.renderBlock(Cuboid6.full, 0, new Translation(x, y, z), new IconTransformation(icon), null);
         CCRenderState.draw();
-        if(meta > 15) {
+        if (meta > 15)
+        {
             RenderHalo.prepareRenderState();
-            RenderHalo.renderHalo(Tessellator.instance, box, meta-16,  new Translation(x, y, z));
+            RenderHalo.renderHalo(Tessellator.instance, box, meta - 16, new Translation(x, y, z));
             RenderHalo.restoreRenderState();
         }
         GL11.glPopMatrix();
     }
-
 }

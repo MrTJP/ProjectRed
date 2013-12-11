@@ -5,36 +5,41 @@ import mrtjp.projectred.transmission.IRedwireEmitter;
 
 public abstract class ArrayGateLogic extends GateLogic<ArrayGatePart>
 {
-    public static ArrayGateLogic[] logic = new ArrayGateLogic[]{
-                                                                new Null(),
-                                                                new Invert(),
-                                                                new Buffer()
+    public static ArrayGateLogic[] logic = new ArrayGateLogic[] { 
+        new Null(), 
+        new Invert(), 
+        new Buffer() 
     };
 
     @Override
-    public boolean canConnectTo(ArrayGatePart gate, IConnectable wire, int r) {
+    public boolean canConnectTo(ArrayGatePart gate, IConnectable wire, int r)
+    {
         return wire instanceof IRedwireEmitter;
     }
 
     @Override
-    public void onChange(ArrayGatePart gate) {
-        boolean oldSignal = (gate.state&1) != 0;
+    public void onChange(ArrayGatePart gate)
+    {
+        boolean oldSignal = (gate.state & 1) != 0;
         boolean newSignal = gate.signal1 != 0;
 
-        if(oldSignal != newSignal) {
+        if (oldSignal != newSignal)
+        {
             gate.setState(gate.state & 2 | (newSignal ? 1 : 0));
             gate.scheduleTick(2);
-            gate.tile().markDirty();//save
+            gate.tile().markDirty();// save
         }
     }
 
     @Override
-    public void scheduledTick(ArrayGatePart gate) {
-        boolean input = (gate.state&1) != 0;
-        boolean oldOutput = (gate.state&2) != 0;
+    public void scheduledTick(ArrayGatePart gate)
+    {
+        boolean input = (gate.state & 1) != 0;
+        boolean oldOutput = (gate.state & 2) != 0;
         boolean newOutput = !input;
 
-        if(oldOutput != newOutput) {
+        if (oldOutput != newOutput)
+        {
             gate.setState(gate.state & 1 | (newOutput ? 2 : 0));
             gate.sendStateUpdate();
             gate.tile().markDirty();
@@ -42,7 +47,8 @@ public abstract class ArrayGateLogic extends GateLogic<ArrayGatePart>
         }
     }
 
-    public boolean canCross() {
+    public boolean canCross()
+    {
         return false;
     }
 
@@ -51,17 +57,20 @@ public abstract class ArrayGateLogic extends GateLogic<ArrayGatePart>
     public static class Null extends ArrayGateLogic
     {
         @Override
-        public boolean powerUp(int state) {
+        public boolean powerUp(int state)
+        {
             return false;
         }
 
         @Override
-        public boolean canCross() {
+        public boolean canCross()
+        {
             return true;
         }
 
         @Override
-        public int lightLevel() {
+        public int lightLevel()
+        {
             return 0;
         }
     }
@@ -69,16 +78,18 @@ public abstract class ArrayGateLogic extends GateLogic<ArrayGatePart>
     public static class Invert extends ArrayGateLogic
     {
         @Override
-        public boolean powerUp(int state) {
-            return (state&2) != 0;
+        public boolean powerUp(int state)
+        {
+            return (state & 2) != 0;
         }
     }
 
     public static class Buffer extends ArrayGateLogic
     {
         @Override
-        public boolean powerUp(int state) {
-            return (state&2) == 0;
+        public boolean powerUp(int state)
+        {
+            return (state & 2) == 0;
         }
     }
 }

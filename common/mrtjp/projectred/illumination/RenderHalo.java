@@ -27,19 +27,22 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderHalo {
+public class RenderHalo
+{
     public static RenderHalo instance = new RenderHalo();
 
     private static Set<LightCache> renderQueue = new HashSet<LightCache>();
 
-    private static class LightCache {
+    private static class LightCache
+    {
         final BlockCoord pos;
         final int color;
         final Cuboid6 cube;
         final int multipartSlot;
         final Translation t;
 
-        public LightCache(int x, int y, int z, int colorIndex, int slot, Cuboid6 cube) {
+        public LightCache(int x, int y, int z, int colorIndex, int slot, Cuboid6 cube)
+        {
             this.pos = new BlockCoord(x, y, z);
             this.color = colorIndex;
             this.multipartSlot = slot;
@@ -48,29 +51,32 @@ public class RenderHalo {
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (o instanceof LightCache) {
+        public boolean equals(Object o)
+        {
+            if (o instanceof LightCache)
+            {
                 LightCache o2 = (LightCache) o;
-                return o2.pos.equals(pos) &&
-                        o2.cube.min.equalsT(cube.min) &&
-                        o2.cube.max.equalsT(cube.max);
+                return o2.pos.equals(pos) && o2.cube.min.equalsT(cube.min) && o2.cube.max.equalsT(cube.max);
             }
             return false;
         }
 
         @Override
-        public int hashCode() {
+        public int hashCode()
+        {
             return pos.hashCode();
         }
     }
 
-    public static void addLight(int x, int y, int z, int color, int slot, Cuboid6 box) {
+    public static void addLight(int x, int y, int z, int color, int slot, Cuboid6 box)
+    {
         if (Configurator.renderLampHalos)
             renderQueue.add(new LightCache(x, y, z, color, slot, box));
     }
 
     @ForgeSubscribe
-    public void onRenderWorldLast(RenderWorldLastEvent event) {
+    public void onRenderWorldLast(RenderWorldLastEvent event)
+    {
         if (!Configurator.renderLampHalos)
             return;
 
@@ -81,7 +87,8 @@ public class RenderHalo {
         RenderUtils.translateToWorldCoords(event.context.mc.renderViewEntity, event.partialTicks);
         prepareRenderState();
 
-        for (Iterator<LightCache> it = renderQueue.iterator(); it.hasNext();) {
+        for (Iterator<LightCache> it = renderQueue.iterator(); it.hasNext();)
+        {
             LightCache cc = it.next();
             if (shouldRemove(w, cc))
                 it.remove();
@@ -93,7 +100,8 @@ public class RenderHalo {
         GL11.glPopMatrix();
     }
 
-    public static void prepareRenderState() {
+    public static void prepareRenderState()
+    {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -104,7 +112,8 @@ public class RenderHalo {
         CCRenderState.startDrawing(7);
     }
 
-    public static void restoreRenderState() {
+    public static void restoreRenderState()
+    {
         CCRenderState.draw();
         GL11.glDepthMask(true);
         GL11.glColor3f(1, 1, 1);
@@ -115,25 +124,29 @@ public class RenderHalo {
         GL11.glDisable(GL11.GL_BLEND);
     }
 
-    private static void renderHalo(Tessellator tess, World world, LightCache cc) {
+    private static void renderHalo(Tessellator tess, World world, LightCache cc)
+    {
         CCRenderState.setBrightness(world, cc.pos.x, cc.pos.y, cc.pos.z);
         renderHalo(tess, cc.cube, cc.color, cc.t);
     }
 
-    public static void renderHalo(Tessellator tess, Cuboid6 cuboid, int colour, Transformation t) {
+    public static void renderHalo(Tessellator tess, Cuboid6 cuboid, int colour, Transformation t)
+    {
         tess.setColorRGBA_I(PRColors.VALID_COLORS[colour].rgb, 128);
         RenderUtils.renderBlock(cuboid, 0, t, null, null);
     }
 
-    private static boolean shouldRemove(World w, LightCache cc) {
+    private static boolean shouldRemove(World w, LightCache cc)
+    {
         TileEntity te = w.getBlockTileEntity(cc.pos.x, cc.pos.y, cc.pos.z);
-        if (te instanceof TileMultipart) {
-            TMultiPart tp = ((TileMultipart)te).partMap(cc.multipartSlot);
+        if (te instanceof TileMultipart)
+        {
+            TMultiPart tp = ((TileMultipart) te).partMap(cc.multipartSlot);
             if (tp instanceof ILight)
-                return !((ILight)tp).isOn();
+                return !((ILight) tp).isOn();
         }
         else if (te instanceof ILight)
-            return !((ILight)te).isOn();
+            return !((ILight) te).isOn();
 
         return true;
     }

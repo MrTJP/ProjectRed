@@ -63,7 +63,8 @@ public class Router implements Comparable<Router>
     /*** Caches ***/
     private WeakReference<IWorldRouter> parent;
 
-    public Router(UUID id, int dim, BlockCoord bc) {
+    public Router(UUID id, int dim, BlockCoord bc)
+    {
         this.ID = id == null ? UUID.randomUUID() : id;
         this.dim = dim;
         this.location = bc;
@@ -73,13 +74,14 @@ public class Router implements Comparable<Router>
         LSADatabasewriteLock.lock();
 
         this.IPAddress = claimIPAddress();
-        if (LSADatabase.length <= IPAddress) {
+        if (LSADatabase.length <= IPAddress)
+        {
             int newLength = (int) (IPAddress * 1.5) + 1;
-            
+
             LSA[] SharedLSADatabase2 = new LSA[newLength];
             System.arraycopy(LSADatabase, 0, SharedLSADatabase2, 0, LSADatabase.length);
             LSADatabase = SharedLSADatabase2;
-            
+
             int[] LSALegacyVersion2 = new int[newLength];
             System.arraycopy(LegacyLinkStateID, 0, LSALegacyVersion2, 0, LegacyLinkStateID.length);
             LegacyLinkStateID = LSALegacyVersion2;
@@ -90,8 +92,10 @@ public class Router implements Comparable<Router>
         LSADatabasewriteLock.unlock();
     }
 
-    public void update(boolean force) {
-        if (force) {
+    public void update(boolean force)
+    {
+        if (force)
+        {
             if (updateLSAIfNeeded())
                 startLSAFloodfill();
 
@@ -103,12 +107,13 @@ public class Router implements Comparable<Router>
 
             return;
         }
-        
+
         if (Configurator.routerUpdateThreadCount > 0)
             refreshRouteTableIfNeeded(false);
     }
 
-    private boolean updateLSAIfNeeded() {
+    private boolean updateLSAIfNeeded()
+    {
         boolean adjacentChanged = false;
         IWorldRouter wr = getParent();
         if (wr == null)
@@ -117,43 +122,50 @@ public class Router implements Comparable<Router>
         HashMap<Router, StartEndPath> newAdjacent;
         LSPathFinder finder = new LSPathFinder(wr, Configurator.maxDetectionCount, Configurator.maxDetectionLength);
         newAdjacent = finder.getResult();
-        
+
         Iterator<Router> it = newAdjacent.keySet().iterator();
-        while (it.hasNext()) {
+        while (it.hasNext())
+        {
             Router r = it.next();
             if (r.getParent() == null)
                 it.remove();
             else if (r.getParent().needsWork())
                 return false;
         }
-        
+
         if (adjacentLinks.size() != newAdjacent.size()) // Different number of connections
             adjacentChanged = true;
 
         else if (!adjacentChanged)
-            for (Router r : adjacentLinks.keySet()) {
-                if (!newAdjacent.containsKey(r)) { // Members missing
+            for (Router r : adjacentLinks.keySet())
+            {
+                if (!newAdjacent.containsKey(r))
+                { // Members missing
                     adjacentChanged = true;
                     break;
                 }
             }
         else if (!adjacentChanged) // Edges different
-            for (Entry<Router, StartEndPath> r : newAdjacent.entrySet()) {
+            for (Entry<Router, StartEndPath> r : newAdjacent.entrySet())
+            {
                 StartEndPath oldEdge = adjacentLinks.get(r.getKey());
-                if (oldEdge == null) {
+                if (oldEdge == null)
+                {
                     adjacentChanged = true;
                     break;
                 }
 
                 StartEndPath newEdge = r.getValue();
-                if (!newEdge.equals(oldEdge)) {
+                if (!newEdge.equals(oldEdge))
+                {
                     adjacentChanged = true;
                     break;
                 }
             }
 
         // Update local LSA
-        if (adjacentChanged) {
+        if (adjacentChanged)
+        {
             EnumSet<ForgeDirection> newExits = EnumSet.noneOf(ForgeDirection.class);
             for (Entry<Router, StartEndPath> r : newAdjacent.entrySet())
                 newExits.add(ForgeDirection.getOrientation(r.getValue().dirToFirstHop));
@@ -173,7 +185,8 @@ public class Router implements Comparable<Router>
         return adjacentChanged;
     }
 
-    private void startLSAFloodfill() {
+    private void startLSAFloodfill()
+    {
         BitSet prev = new BitSet(getEndOfIPPool());
         prev.set(IPAddress);
 
@@ -189,7 +202,8 @@ public class Router implements Comparable<Router>
             r.adjacentUpdateFloodfill(prev);
     }
 
-    public void LSAUpdateFloodfill(BitSet prev) {
+    public void LSAUpdateFloodfill(BitSet prev)
+    {
         if (prev.get(IPAddress))
             return;
 
@@ -202,7 +216,8 @@ public class Router implements Comparable<Router>
             r.LSAUpdateFloodfill(prev);
     }
 
-    public void adjacentUpdateFloodfill(BitSet prev) {
+    public void adjacentUpdateFloodfill(BitSet prev)
+    {
         if (prev.get(IPAddress))
             return;
 
@@ -214,11 +229,13 @@ public class Router implements Comparable<Router>
             r.adjacentUpdateFloodfill(prev);
     }
 
-    public void flagForRoutingUpdate() {
+    public void flagForRoutingUpdate()
+    {
         linkStateID++;
     }
 
-    public void decommission() {
+    public void decommission()
+    {
         LSADatabasewriteLock.lock();
         if (IPAddress < LSADatabase.length)
             LSADatabase[IPAddress] = null;
@@ -230,40 +247,46 @@ public class Router implements Comparable<Router>
         releaseIPAddress(IPAddress);
     }
 
-    public int getLinkStateID() {
+    public int getLinkStateID()
+    {
         return linkStateID;
     }
 
-    public int getIPAddress() {
+    public int getIPAddress()
+    {
         return IPAddress;
     }
 
-    public UUID getID() {
+    public UUID getID()
+    {
         return ID;
     }
 
-    public List<ForgeDirection> getRouteTable() {
+    public List<ForgeDirection> getRouteTable()
+    {
         refreshRouteTableIfNeeded(true);
         return routeTable;
     }
 
-    public List<StartEndPath> getRoutesByCost() {
+    public List<StartEndPath> getRoutesByCost()
+    {
         refreshRouteTableIfNeeded(true);
         return routersByCost;
     }
 
-    public ForgeDirection getExitDirection(int destination) {
+    public ForgeDirection getExitDirection(int destination)
+    {
         if (destination < 0)
             return ForgeDirection.UNKNOWN;
-        
+
         if (!RouterServices.instance.routerExists(destination))
             return ForgeDirection.UNKNOWN;
-        
+
         List<ForgeDirection> routeTable = getRouteTable();
-        
+
         if (destination >= routeTable.size())
             return ForgeDirection.UNKNOWN;
-        
+
         ForgeDirection dir = routeTable.get(destination);
         if (dir == null)
             return ForgeDirection.UNKNOWN;
@@ -271,22 +294,24 @@ public class Router implements Comparable<Router>
         return dir;
     }
 
-    public boolean canRouteTo(int destination) {
+    public boolean canRouteTo(int destination)
+    {
         if (destination < 0)
             return false;
-        
+
         if (!RouterServices.instance.routerExists(destination))
             return false;
-        
+
         List<ForgeDirection> routeTable = getRouteTable();
-        
+
         if (destination >= routeTable.size())
             return false;
-        
+
         return routeTable.get(destination) != null;
     }
 
-    private void refreshRouteTableIfNeeded(boolean force) {
+    private void refreshRouteTableIfNeeded(boolean force)
+    {
         if (linkStateID > LegacyLinkStateID[IPAddress])
             if (Configurator.routerUpdateThreadCount > 0 && !force)
                 TableUpdateThread.add(this);
@@ -294,7 +319,8 @@ public class Router implements Comparable<Router>
                 refreshRoutingTable(linkStateID);
     }
 
-    public void refreshRoutingTable(int newVersion) {
+    public void refreshRoutingTable(int newVersion)
+    {
         if (LegacyLinkStateID[IPAddress] >= newVersion)
             return;
 
@@ -311,7 +337,8 @@ public class Router implements Comparable<Router>
 
         // Start by adding our info.
         tree2.put(this, new StartEndPath(this, this, -1, 0));
-        for (Router r : adjacentLinks.keySet()) {
+        for (Router r : adjacentLinks.keySet())
+        {
             StartEndPath l = adjacentLinks.get(r);
             candidates2.add(new StartEndPath(l.end, l.end, l.dirToFirstHop, l.distance));
         }
@@ -319,7 +346,8 @@ public class Router implements Comparable<Router>
 
         LSADatabasereadLock.lock();
         StartEndPath nextLowest = null;
-        while ((nextLowest = candidates2.poll()) != null) {
+        while ((nextLowest = candidates2.poll()) != null)
+        {
             // We already approved this router. Keep skipping until we get a
             // fresh one.
             while (nextLowest != null && tree2.containsKey(nextLowest.end))
@@ -341,7 +369,8 @@ public class Router implements Comparable<Router>
                 lsa = LSADatabase[nextLowest.end.getIPAddress()];
 
             if (lsa != null)
-                for (Router r : ((Map<Router, Integer>) lsa.neighbors.clone()).keySet()) {
+                for (Router r : ((Map<Router, Integer>) lsa.neighbors.clone()).keySet())
+                {
                     if (tree2.containsKey(r))
                         continue;
 
@@ -356,18 +385,20 @@ public class Router implements Comparable<Router>
         }
         LSADatabasereadLock.unlock();
 
-        ArrayList<ForgeDirection> routeTable2 = new ArrayList<ForgeDirection>(getEndOfIPPool()+1);
-        while(getIPAddress() >= routeTable2.size())
+        ArrayList<ForgeDirection> routeTable2 = new ArrayList<ForgeDirection>(getEndOfIPPool() + 1);
+        while (getIPAddress() >= routeTable2.size())
             routeTable2.add(null);
         routeTable2.set(getIPAddress(), ForgeDirection.UNKNOWN);
-        
-        for (StartEndPath l : tree2.values()) {
+
+        for (StartEndPath l : tree2.values())
+        {
             Router firstHop = l.start;
-            if (firstHop == null) {
+            if (firstHop == null)
+            {
                 while (l.end.getIPAddress() >= routeTable2.size())
                     routeTable2.add(null);
                 routeTable2.set(l.end.getIPAddress(), ForgeDirection.UNKNOWN);
-                
+
                 continue;
             }
 
@@ -382,9 +413,11 @@ public class Router implements Comparable<Router>
 
         // Set the new routing tables.
         routingTableWriteLock.lock();
-        if (newVersion == linkStateID) {
+        if (newVersion == linkStateID)
+        {
             LSADatabasereadLock.lock();
-            if (LegacyLinkStateID[IPAddress] < newVersion) {
+            if (LegacyLinkStateID[IPAddress] < newVersion)
+            {
                 LegacyLinkStateID[IPAddress] = newVersion;
                 routeTable = Collections.unmodifiableList(routeTable2);
                 routersByCost = Collections.unmodifiableList(routersByCost2);
@@ -394,60 +427,71 @@ public class Router implements Comparable<Router>
         routingTableWriteLock.unlock();
     }
 
-    public IWorldRouter getParent() {
+    public IWorldRouter getParent()
+    {
         if (parent != null)
             return parent.get();
         TMultiPart p = BasicUtils.getMultiPart(getWorld(), location, 6);
         if (p instanceof IWorldRouter)
             parent = new WeakReference<IWorldRouter>((IWorldRouter) p);
-        
+
         return parent == null ? null : parent.get();
     }
 
-    public World getWorld() {
+    public World getWorld()
+    {
         return DimensionManager.getWorld(dim);
     }
 
-    private static int claimIPAddress() {
+    private static int claimIPAddress()
+    {
         int ip = usedIPs.nextClearBit(nextIP);
         nextIP = ip + 1;
         usedIPs.set(ip);
         return ip;
     }
 
-    private static void releaseIPAddress(int ip) {
+    private static void releaseIPAddress(int ip)
+    {
         usedIPs.clear(ip);
         if (ip < nextIP)
             nextIP = ip;
     }
 
-    public static int getEndOfIPPool() {
+    public static int getEndOfIPPool()
+    {
         return usedIPs.size();
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return IPAddress;
     }
 
-    public int getDim() {
+    public int getDim()
+    {
         return dim;
     }
 
-    public BlockCoord getLocation() {
+    public BlockCoord getLocation()
+    {
         return location;
     }
 
-    public boolean LSAConnectionExists(ForgeDirection dir) {
+    public boolean LSAConnectionExists(ForgeDirection dir)
+    {
         return routedExits.contains(dir);
     }
 
     @Override
-    public int compareTo(Router o) {
+    public int compareTo(Router o)
+    {
         return IPAddress - o.getIPAddress();
     }
 
-    public static void reboot() {
+    public static void reboot()
+    {
         LSADatabasewriteLock.lock();
         LSADatabase = new LSA[0];
         LegacyLinkStateID = new int[0];
@@ -466,11 +510,12 @@ public class Router implements Comparable<Router>
     {
         public int dirToFirstHop;
         public int distance;
-        
+
         public Router start;
         public final Router end;
 
-        public StartEndPath(Router start, Router end, int dir, int length) {
+        public StartEndPath(Router start, Router end, int dir, int length)
+        {
             this.start = start;
             this.end = end;
 
@@ -479,8 +524,10 @@ public class Router implements Comparable<Router>
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (o instanceof StartEndPath) {
+        public boolean equals(Object o)
+        {
+            if (o instanceof StartEndPath)
+            {
                 StartEndPath p = (StartEndPath) o;
                 return dirToFirstHop == p.dirToFirstHop && distance == p.distance;
             }
@@ -488,7 +535,8 @@ public class Router implements Comparable<Router>
         }
 
         @Override
-        public int compareTo(StartEndPath o) {
+        public int compareTo(StartEndPath o)
+        {
             int c = distance - o.distance;
             if (c == 0)
                 c = end.getIPAddress() - o.end.getIPAddress();

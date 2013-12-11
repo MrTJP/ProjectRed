@@ -8,33 +8,38 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
-public class SimpleInventory implements IInventory {
-
+public class SimpleInventory implements IInventory
+{
     private final String invName;
     private ItemStack[] storage;
     private final int slotLimit;
 
-    public SimpleInventory(int size, String name, int stackLimit) {
+    public SimpleInventory(int size, String name, int stackLimit)
+    {
         storage = new ItemStack[size];
         invName = name;
         slotLimit = stackLimit;
     }
 
     @Override
-    public int getSizeInventory() {
+    public int getSizeInventory()
+    {
         return storage.length;
     }
 
     @Override
-    public ItemStack getStackInSlot(int i) {
+    public ItemStack getStackInSlot(int i)
+    {
         return storage[i];
     }
 
     @Override
-    public ItemStack decrStackSize(int i, int j) {
+    public ItemStack decrStackSize(int i, int j)
+    {
         if (storage[i] == null)
             return null;
-        if (storage[i].stackSize > j) {
+        if (storage[i].stackSize > j)
+        {
             ItemStack ret = storage[i].splitStack(j);
             return ret;
         }
@@ -44,48 +49,58 @@ public class SimpleInventory implements IInventory {
     }
 
     @Override
-    public void setInventorySlotContents(int i, ItemStack itemstack) {
+    public void setInventorySlotContents(int i, ItemStack itemstack)
+    {
         storage[i] = itemstack;
     }
 
     @Override
-    public String getInvName() {
+    public String getInvName()
+    {
         return invName;
     }
 
     @Override
-    public int getInventoryStackLimit() {
+    public int getInventoryStackLimit()
+    {
         return slotLimit;
     }
 
     @Override
-    public void onInventoryChanged() {
+    public void onInventoryChanged()
+    {
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+    public boolean isUseableByPlayer(EntityPlayer entityplayer)
+    {
         return false;
     }
 
     @Override
-    public void openChest() {
+    public void openChest()
+    {
     }
 
     @Override
-    public void closeChest() {
+    public void closeChest()
+    {
     }
 
-    public void load(NBTTagCompound tag) {
+    public void load(NBTTagCompound tag)
+    {
         load(tag, "");
     }
 
-    public void load(NBTTagCompound tag, String prefix) {
+    public void load(NBTTagCompound tag, String prefix)
+    {
         if (tag == null)
             return;
 
         NBTTagList nbttaglist = tag.getTagList(prefix + "items");
 
-        for (int i = 0; i < nbttaglist.tagCount(); i++) {
+        for (int i = 0; i < nbttaglist.tagCount(); i++)
+        {
             NBTTagCompound nbttagcompound2 = (NBTTagCompound) nbttaglist.tagAt(i);
             int index = nbttagcompound2.getInteger("index");
             if (index < storage.length)
@@ -94,17 +109,20 @@ public class SimpleInventory implements IInventory {
         onInventoryChanged();
     }
 
-    public void save(NBTTagCompound tag) {
+    public void save(NBTTagCompound tag)
+    {
         save(tag, "");
     }
 
-    public void save(NBTTagCompound tag, String prefix) {
+    public void save(NBTTagCompound tag, String prefix)
+    {
         if (tag == null)
             return;
 
         NBTTagList itemList = new NBTTagList();
         for (int i = 0; i < storage.length; i++)
-            if (storage[i] != null && storage[i].stackSize > 0) {
+            if (storage[i] != null && storage[i].stackSize > 0)
+            {
                 NBTTagCompound tag2 = new NBTTagCompound();
                 tag2.setInteger("index", i);
                 storage[i].writeToNBT(tag2);
@@ -114,10 +132,13 @@ public class SimpleInventory implements IInventory {
         tag.setInteger(prefix + "itemsCount", storage.length);
     }
 
-    public void dropContents(World worldObj, int posX, int posY, int posZ) {
-        if (BasicUtils.isServer(worldObj)) {
+    public void dropContents(World worldObj, int posX, int posY, int posZ)
+    {
+        if (BasicUtils.isServer(worldObj))
+        {
             for (int i = 0; i < storage.length; i++)
-                while (storage[i] != null) {
+                while (storage[i] != null)
+                {
                     ItemStack todrop = decrStackSize(i, storage[i].getMaxStackSize());
                     BasicUtils.dropItem(worldObj, posX, posY, posZ, todrop);
                 }
@@ -126,7 +147,8 @@ public class SimpleInventory implements IInventory {
     }
 
     @Override
-    public ItemStack getStackInSlotOnClosing(int i) {
+    public ItemStack getStackInSlotOnClosing(int i)
+    {
         if (this.storage[i] == null)
             return null;
 
@@ -137,16 +159,19 @@ public class SimpleInventory implements IInventory {
     }
 
     @Override
-    public boolean isInvNameLocalized() {
+    public boolean isInvNameLocalized()
+    {
         return true;
     }
 
     @Override
-    public boolean isItemValidForSlot(int i, ItemStack itemstack) {
+    public boolean isItemValidForSlot(int i, ItemStack itemstack)
+    {
         return false;
     }
 
-    public ItemStack[] getContents() {
+    public ItemStack[] getContents()
+    {
         return storage;
     }
 }

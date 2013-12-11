@@ -14,41 +14,48 @@ public class FramedInsulatedRedAlloyPart extends FramedRedwirePart implements II
     public byte colour;
 
     @Override
-    public String getType() {
+    public String getType()
+    {
         return "pr_sinsulated";
     }
 
     @Override
-    public EnumWire getWireType() {
+    public EnumWire getWireType()
+    {
         return EnumWire.INSULATED_WIRE[colour];
     }
 
     @Override
-    public void preparePlacement(int meta) {
+    public void preparePlacement(int meta)
+    {
         super.preparePlacement(meta);
-        colour = (byte)(meta-EnumWire.INSULATED_0.ordinal());
+        colour = (byte) (meta - EnumWire.INSULATED_0.ordinal());
     }
 
     @Override
-    public void save(NBTTagCompound tag) {
+    public void save(NBTTagCompound tag)
+    {
         super.save(tag);
         tag.setByte("colour", colour);
     }
 
     @Override
-    public void load(NBTTagCompound tag) {
+    public void load(NBTTagCompound tag)
+    {
         super.load(tag);
         colour = tag.getByte("colour");
     }
 
     @Override
-    public void writeDesc(MCDataOutput packet) {
+    public void writeDesc(MCDataOutput packet)
+    {
         super.writeDesc(packet);
         packet.writeByte(colour);
     }
 
     @Override
-    public void readDesc(MCDataInput packet) {
+    public void readDesc(MCDataInput packet)
+    {
         super.readDesc(packet);
         colour = packet.readByte();
     }
@@ -56,15 +63,16 @@ public class FramedInsulatedRedAlloyPart extends FramedRedwirePart implements II
     @Override
     public int getPartSignal(TMultiPart part, int r)
     {
-        if(part instanceof IBundledCablePart)
-            return (((IBundledCablePart) part).getBundledSignal()[colour]&0xFF)-1;
+        if (part instanceof IBundledCablePart)
+            return (((IBundledCablePart) part).getBundledSignal()[colour] & 0xFF) - 1;
 
         return super.getPartSignal(part, r);
     }
 
     @Override
-    public boolean canConnectToType(IConnectable wire) {
-        if(wire instanceof IInsulatedRedwirePart)
+    public boolean canConnectToType(IConnectable wire)
+    {
+        if (wire instanceof IInsulatedRedwirePart)
             return ((IInsulatedRedwirePart) wire).getInsulatedColour() == colour;
 
         return true;
@@ -73,7 +81,7 @@ public class FramedInsulatedRedAlloyPart extends FramedRedwirePart implements II
     @Override
     public int weakPowerLevel(int side)
     {
-        if(!maskConnects(side))
+        if (!maskConnects(side))
             return 0;
 
         return super.weakPowerLevel(side);
@@ -81,12 +89,14 @@ public class FramedInsulatedRedAlloyPart extends FramedRedwirePart implements II
 
     @Override
     @SideOnly(Side.CLIENT)
-    public Icon getIcon() {
+    public Icon getIcon()
+    {
         return getWireType().wireSprites[signal != 0 ? 1 : 0];
     }
 
     @Override
-    public int getInsulatedColour() {
+    public int getInsulatedColour()
+    {
         return colour;
     }
 }

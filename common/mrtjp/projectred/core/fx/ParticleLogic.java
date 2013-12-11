@@ -15,7 +15,8 @@ public abstract class ParticleLogic
     private boolean removeLogicWhenFinished;
     protected boolean firstTick = true;
 
-    public ParticleLogic(int priority, boolean finalLogic) {
+    public ParticleLogic(int priority, boolean finalLogic)
+    {
         rand = new Random();
         this.priority = priority;
         this.finalLogic = finalLogic;
@@ -23,17 +24,20 @@ public abstract class ParticleLogic
         removeLogicWhenFinished = false;
     }
 
-    public ParticleLogic setTerminate(boolean kill) {
+    public ParticleLogic setTerminate(boolean kill)
+    {
         terminateWhenFinished = kill;
         return this;
     }
-    
-    public ParticleLogic setRemoveLogic(boolean remove) {
+
+    public ParticleLogic setRemoveLogic(boolean remove)
+    {
         removeLogicWhenFinished = remove;
         return this;
     }
 
-    public boolean isTerminating() {
+    public boolean isTerminating()
+    {
         return terminateWhenFinished;
     }
 
@@ -42,10 +46,12 @@ public abstract class ParticleLogic
     @Override
     public abstract ParticleLogic clone();
 
-    public void onUpdate(World world, CoreParticle particle) {
+    public void onUpdate(World world, CoreParticle particle)
+    {
         this.particle = particle;
-        
-        if (!world.isRemote) {
+
+        if (!world.isRemote)
+        {
             if (particle != null)
                 particle.setDead();
             return;
@@ -58,24 +64,28 @@ public abstract class ParticleLogic
             firstTick = false;
     }
 
-    public int getPriority() {
+    public int getPriority()
+    {
         return priority;
     }
 
-    protected void finishLogic() {
+    protected void finishLogic()
+    {
         finished = true;
-        
+
         if (particle != null && terminateWhenFinished)
             particle.setDead();
         else if (removeLogicWhenFinished)
             particle.removeLogic(this);
     }
 
-    public boolean isFinalLogic() {
+    public boolean isFinalLogic()
+    {
         return finalLogic;
     }
 
-    public boolean getFinished() {
+    public boolean getFinished()
+    {
         return finished;
     }
 }

@@ -7,21 +7,25 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class BackpackRecolouringRecipe extends ShapelessOreNBTRecipe {
-
-    public BackpackRecolouringRecipe() {
+public class BackpackRecolouringRecipe extends ShapelessOreNBTRecipe
+{
+    public BackpackRecolouringRecipe()
+    {
         super(new ItemStack(ProjectRedExploration.itemBackpack, 1, OreDictionary.WILDCARD_VALUE), new ItemStack(ProjectRedExploration.itemBackpack, 1, OreDictionary.WILDCARD_VALUE), new ItemStack(Item.dyePowder, 1, OreDictionary.WILDCARD_VALUE));
         this.setKeepNBT();
     }
 
     @Override
-    public ItemStack getCraftingResult(InventoryCrafting inv) {
+    public ItemStack getCraftingResult(InventoryCrafting inv)
+    {
         ItemStack out = super.getCraftingResult(inv);
         ItemStack dye = null;
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 9; i++)
+        {
             ItemStack slot = inv.getStackInSlot(i);
             if (slot != null)
-                if (slot.getItem() == Item.dyePowder) {
+                if (slot.getItem() == Item.dyePowder)
+                {
                     dye = slot;
                     break;
                 }

@@ -8,15 +8,16 @@ import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class IlluminationProxy implements IProxy, IPartFactory {
-
+public class IlluminationProxy implements IProxy, IPartFactory
+{
     @Override
-    public void preinit() {
-
+    public void preinit()
+    {
     }
 
     @Override
-    public void init() {
+    public void init()
+    {
         MultiPartRegistry.registerParts(this, new String[] { "pr_lantern", "pr_lightbutton", "pr_cagelamp", "pr_fixture" });
 
         itemPartLantern = new ItemPartLantern(Configurator.part_lantern.getInt(), false);
@@ -35,12 +36,14 @@ public class IlluminationProxy implements IProxy, IPartFactory {
     }
 
     @Override
-    public void postinit() {
+    public void postinit()
+    {
         IlluminationRecipes.initIlluminationRecipes();
     }
 
     @Override
-    public TMultiPart createPart(String name, boolean arg1) {
+    public TMultiPart createPart(String name, boolean arg1)
+    {
         if (name.equals("pr_lantern"))
             return new LanternPart();
         else if (name.equals("pr_lightbutton"))

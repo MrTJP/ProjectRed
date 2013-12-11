@@ -38,22 +38,23 @@ import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class FramedWirePart extends TMultiPart implements IConnectable, TSlottedPart, JNormalOcclusion, IWirePart, IHollowConnect {
+public abstract class FramedWirePart extends TMultiPart implements IConnectable, TSlottedPart, JNormalOcclusion, IWirePart, IHollowConnect
+{
     public static Cuboid6[] boundingBoxes = new Cuboid6[7];
     private static int expandBounds = -1;
 
-    static {
-        double w = 2/8D;
-        boundingBoxes[6] = new Cuboid6(0.5-w, 0.5-w, 0.5-w, 0.5+w, 0.5+w, 0.5+w);
-        for(int s = 0; s < 6; s++)
-            boundingBoxes[s] = new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, 0.5-w, 0.5+w)
-        .apply(Rotation.sideRotations[s].at(Vector3.center));
+    static
+    {
+        double w = 2 / 8D;
+        boundingBoxes[6] = new Cuboid6(0.5 - w, 0.5 - w, 0.5 - w, 0.5 + w, 0.5 + w, 0.5 + w);
+        for (int s = 0; s < 6; s++)
+            boundingBoxes[s] = new Cuboid6(0.5 - w, 0, 0.5 - w, 0.5 + w, 0.5 - w, 0.5 + w).apply(Rotation.sideRotations[s].at(Vector3.center));
     }
 
     /**
-     * lowest 6 bits, flagged for an external connection to that side
-     * next 6 bits, flagged for an internal connection to that side
-     * next 6 bits, flagged for an open connection to that side
+     * lowest 6 bits, flagged for an external connection to that side next 6
+     * bits, flagged for an internal connection to that side next 6 bits,
+     * flagged for an open connection to that side
      * 
      * On the client, only the lowest 6 bits contain actual connections.
      */
@@ -63,89 +64,110 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
      */
     public int material = 0;
 
-    public void preparePlacement(int meta) {
+    public void preparePlacement(int meta)
+    {
     }
 
     @Override
-    public void save(NBTTagCompound tag) {
+    public void save(NBTTagCompound tag)
+    {
         super.save(tag);
         tag.setInteger("connMap", connMap);
         tag.setString("mat", MicroMaterialRegistry.materialName(material));
     }
 
     @Override
-    public void load(NBTTagCompound tag) {
+    public void load(NBTTagCompound tag)
+    {
         super.load(tag);
         connMap = tag.getInteger("connMap");
         material = MicroMaterialRegistry.materialID(tag.getString("mat"));
     }
 
     @Override
-    public void writeDesc(MCDataOutput packet) {
+    public void writeDesc(MCDataOutput packet)
+    {
         packet.writeByte(clientConnMap());
         MicroMaterialRegistry.writePartID(packet, material);
     }
 
     @Override
-    public void readDesc(MCDataInput packet) {
+    public void readDesc(MCDataInput packet)
+    {
         connMap = packet.readUByte();
         material = MicroMaterialRegistry.readPartID(packet);
     }
 
     @Override
-    public void read(MCDataInput packet) {
+    public void read(MCDataInput packet)
+    {
         read(packet, packet.readUByte());
     }
 
-    public void read(MCDataInput packet, int switch_key) {
-        if(switch_key == 0) {
+    public void read(MCDataInput packet, int switch_key)
+    {
+        if (switch_key == 0)
+        {
             connMap = packet.readUByte();
-            if(useStaticRenderer())
+            if (useStaticRenderer())
                 tile().markRender();
         }
-        else if(switch_key == 1) {
+        else if (switch_key == 1)
+        {
             material = MicroMaterialRegistry.readPartID(packet);
-            if(useStaticRenderer())
+            if (useStaticRenderer())
                 tile().markRender();
         }
     }
 
     @Override
-    public void onPartChanged(TMultiPart part) {
-        if(!world().isRemote) {
+    public void onPartChanged(TMultiPart part)
+    {
+        if (!world().isRemote)
+        {
             WirePropogator.logCalculation();
 
             boolean changed = updateInternalConnections();
-            if(updateOpenConnections())
-                changed|=updateExternalConnections();
-            if(changed) {
+            if (updateOpenConnections())
+                changed |= updateExternalConnections();
+            if (changed)
+            {
                 sendConnUpdate();
                 WirePropogator.propogateTo(this, FORCE);
-            } else
+            }
+            else
                 WirePropogator.propogateTo(this, RISING);
         }
     }
 
     @Override
-    public void onNeighborChanged() {
-        if (!world().isRemote) {
+    public void onNeighborChanged()
+    {
+        if (!world().isRemote)
+        {
             WirePropogator.logCalculation();
 
-            if(updateExternalConnections()) {
+            if (updateExternalConnections())
+            {
                 sendConnUpdate();
                 WirePropogator.propogateTo(this, FORCE);
-            } else
+            }
+            else
                 WirePropogator.propogateTo(this, RISING);
         }
     }
 
     @Override
-    public void onAdded() {
-        if(!world().isRemote) {
+    public void onAdded()
+    {
+        if (!world().isRemote)
+        {
             updateOpenConnections();
             boolean changed = updateInternalConnections();
-            changed|=updateExternalConnections();//don't use || because it's fail fast
-            if(changed) {
+            changed |= updateExternalConnections();// don't use || because it's
+                                                   // fail fast
+            if (changed)
+            {
                 sendConnUpdate();
                 WirePropogator.propogateTo(this, RISING);
             }
@@ -153,23 +175,25 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     }
 
     @Override
-    public void onRemoved() {
+    public void onRemoved()
+    {
         super.onRemoved();
 
-        if(!world().isRemote)
-            for(int s = 0; s < 6; s++)
-                if((connMap & 1<<s) != 0)
+        if (!world().isRemote)
+            for (int s = 0; s < 6; s++)
+                if ((connMap & 1 << s) != 0)
                     notifyStraightChange(s);
     }
 
     @Override
     public void onChunkLoad()
     {
-        if((connMap & 0x80000000) != 0) {//compat with converters, recalc connections
+        if ((connMap & 0x80000000) != 0)
+        {// compat with converters, recalc connections
             connMap = 0;
 
             updateInternalConnections();
-            if(updateOpenConnections())
+            if (updateOpenConnections())
                 updateExternalConnections();
 
             tile().markDirty();
@@ -177,40 +201,46 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     }
 
     @Override
-    public void onWorldJoin()//when we're moved by a frame or something
+    public void onWorldJoin()// when we're moved by a frame or something
     {
         onNeighborChanged();
     }
 
-    public int clientConnMap() {
-        return connMap&0x3F | connMap>>6&0x3F;
+    public int clientConnMap()
+    {
+        return connMap & 0x3F | connMap >> 6 & 0x3F;
     }
 
-    public void sendConnUpdate() {
+    public void sendConnUpdate()
+    {
         tile().getWriteStream(this).writeByte(0).writeByte(clientConnMap());
     }
 
-    public void sendMatUpdate() {
+    public void sendMatUpdate()
+    {
         MicroMaterialRegistry.writePartID(tile().getWriteStream(this).writeByte(1), material);
     }
 
-
     /**
      * Recalculates connections to blocks outside this sapce
+     * 
      * @return true if a new connection was added or one was removed
      */
-    protected boolean updateExternalConnections() {
+    protected boolean updateExternalConnections()
+    {
         int newConn = 0;
-        for(int s = 0; s < 6; s++) {
-            if(!maskOpen(s))
+        for (int s = 0; s < 6; s++)
+        {
+            if (!maskOpen(s))
                 continue;
 
-            if(connectStraight(s))
-                newConn|=1<<s;
+            if (connectStraight(s))
+                newConn |= 1 << s;
         }
 
-        if(newConn != (connMap & 0x3F)) {
-            connMap = connMap&~0x3F|newConn;
+        if (newConn != (connMap & 0x3F))
+        {
+            connMap = connMap & ~0x3F | newConn;
             return true;
         }
         return false;
@@ -218,44 +248,52 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
 
     /**
      * Recalculates connections to other parts within this space
+     * 
      * @return true if a new connection was added or one was removed
      */
-    protected boolean updateInternalConnections() {
+    protected boolean updateInternalConnections()
+    {
         int newConn = 0;
-        for(int s = 0; s < 6; s++)
-            if(connectInternal(s))
-                newConn|=1<<s+6;
+        for (int s = 0; s < 6; s++)
+            if (connectInternal(s))
+                newConn |= 1 << s + 6;
 
-        if(newConn != (connMap & 0xFC0)) {
-            connMap = connMap&~0xFC0|newConn;
+        if (newConn != (connMap & 0xFC0))
+        {
+            connMap = connMap & ~0xFC0 | newConn;
             return true;
         }
         return false;
     }
 
     /**
-     * Recalculates connections that can be made to other parts outside of this space
+     * Recalculates connections that can be made to other parts outside of this
+     * space
+     * 
      * @return true if external connections should be recalculated
      */
-    protected boolean updateOpenConnections() {
+    protected boolean updateOpenConnections()
+    {
         int newConn = 0;
-        for(int s = 0; s < 6; s++)
-            if(connectionOpen(s))
-                newConn|=1<<s+12;
+        for (int s = 0; s < 6; s++)
+            if (connectionOpen(s))
+                newConn |= 1 << s + 12;
 
-        if(newConn != (connMap & 0x3F000)) {
-            connMap = connMap&~0x3F000|newConn;
+        if (newConn != (connMap & 0x3F000))
+        {
+            connMap = connMap & ~0x3F000 | newConn;
             return true;
         }
         return false;
     }
 
-    public boolean connectionOpen(int s) {
+    public boolean connectionOpen(int s)
+    {
         TMultiPart facePart = tile().partMap(s);
-        if(facePart == null)
+        if (facePart == null)
             return true;
 
-        if(facePart instanceof WirePart && canConnectToType((WirePart)facePart))
+        if (facePart instanceof WirePart && canConnectToType((WirePart) facePart))
             return false;
 
         expandBounds = s;
@@ -265,23 +303,27 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
         return fits;
     }
 
-    public boolean connectStraight(int s) {
+    public boolean connectStraight(int s)
+    {
         BlockCoord pos = new BlockCoord(tile()).offset(s);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if (t != null) {
+        if (t != null)
+        {
             TMultiPart tp = t.partMap(6);
             if (tp instanceof IConnectable)
-                return ((IConnectable) tp).connectStraight(this, s^1);
+                return ((IConnectable) tp).connectStraight(this, s ^ 1);
         }
 
         return connectStraightOverride(s);
     }
 
-    public boolean connectStraightOverride(int s) {
+    public boolean connectStraightOverride(int s)
+    {
         return false;
     }
 
-    public boolean connectInternal(int s) {
+    public boolean connectInternal(int s)
+    {
         TMultiPart tp = tile().partMap(s);
         if (tp instanceof IConnectable)
             return ((IConnectable) tp).connectInternal(this, -1);
@@ -289,16 +331,19 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
         return connectInternalOverride(tp, s);
     }
 
-    public boolean connectInternalOverride(TMultiPart p, int s) {
+    public boolean connectInternalOverride(TMultiPart p, int s)
+    {
         return false;
     }
 
     @Override
-    public boolean connectStraight(IConnectable wire, int s) {
-        if(canConnectToType(wire) && maskOpen(s)) {
+    public boolean connectStraight(IConnectable wire, int s)
+    {
+        if (canConnectToType(wire) && maskOpen(s))
+        {
             int oldConn = connMap;
-            connMap|=1<<s;
-            if(oldConn != connMap)
+            connMap |= 1 << s;
+            if (oldConn != connMap)
                 sendConnUpdate();
             return true;
         }
@@ -306,11 +351,13 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     }
 
     @Override
-    public boolean connectInternal(IConnectable wire, int s) {
-        if(canConnectToType(wire)) {
+    public boolean connectInternal(IConnectable wire, int s)
+    {
+        if (canConnectToType(wire))
+        {
             int oldConn = connMap;
-            connMap|=1<<s+6;
-            if(oldConn != connMap)
+            connMap |= 1 << s + 6;
+            if (oldConn != connMap)
                 sendConnUpdate();
             return true;
         }
@@ -318,65 +365,76 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     }
 
     @Override
-    public boolean connectCorner(IConnectable wire, int r) {
+    public boolean connectCorner(IConnectable wire, int r)
+    {
         return false;
     }
 
     @Override
-    public boolean canConnectCorner(int r) {
+    public boolean canConnectCorner(int r)
+    {
         return false;
     }
 
     public abstract boolean canConnectToType(IConnectable wire);
 
-    public void notifyStraightChange(int s) {
+    public void notifyStraightChange(int s)
+    {
         BlockCoord pos = new BlockCoord(tile()).offset(s);
         world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile().getBlockType().blockID);
     }
 
-    public boolean maskConnects(int s) {
+    public boolean maskConnects(int s)
+    {
         return (connMap & 0x41 << s) != 0;
     }
 
-    public boolean maskOpen(int s) {
+    public boolean maskOpen(int s)
+    {
         return (connMap & 0x1000 << s) != 0;
     }
 
-    public void propogate(TMultiPart prev, int mode) {
-        if(mode != FORCED)
+    public void propogate(TMultiPart prev, int mode)
+    {
+        if (mode != FORCED)
             WirePropogator.addPartChange(this);
 
-        for(int s = 0; s < 6; s++)
-            if((connMap & 1<<s) != 0)
+        for (int s = 0; s < 6; s++)
+            if ((connMap & 1 << s) != 0)
                 propogateStraight(s, prev, mode);
-            else if((connMap & 1<<s+6) != 0)
+            else if ((connMap & 1 << s + 6) != 0)
                 propogateInternal(s, prev, mode);
     }
 
-    public void propogateStraight(int s, TMultiPart prev, int mode) {
+    public void propogateStraight(int s, TMultiPart prev, int mode)
+    {
         BlockCoord pos = new BlockCoord(tile()).offset(s);
 
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if (t != null) {
+        if (t != null)
+        {
             TMultiPart tp = t.partMap(6);
-            if(tp == prev)
+            if (tp == prev)
                 return;
-            if(propogateTo(tp, mode))
+            if (propogateTo(tp, mode))
                 return;
         }
-
+        
         WirePropogator.addNeighborChange(pos);
     }
 
-    public void propogateInternal(int s, TMultiPart prev, int mode) {
+    public void propogateInternal(int s, TMultiPart prev, int mode)
+    {
         TMultiPart tp = tile().partMap(s);
-        if(tp == prev)
+        if (tp == prev)
             return;
         propogateTo(tp, mode);
     }
 
-    public boolean propogateTo(TMultiPart part, int mode) {
-        if(part instanceof IWirePart) {
+    public boolean propogateTo(TMultiPart part, int mode)
+    {
+        if (part instanceof IWirePart)
+        {
             WirePropogator.propogateTo((IWirePart) part, this, mode);
             return true;
         }
@@ -385,103 +443,121 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     }
 
     @Override
-    public void onSignalUpdate() {
+    public void onSignalUpdate()
+    {
         tile().markDirty();
     }
 
     @Override
-    public boolean isWireSide(int side) {
+    public boolean isWireSide(int side)
+    {
         return true;
     }
 
-    public EnumWire getWireType() {
+    public EnumWire getWireType()
+    {
         return null;
     }
 
-    public int getThickness() {
+    public int getThickness()
+    {
         return getWireType().thickness;
     }
 
     /** START TILEMULTIPART INTERACTIONS **/
     @Override
-    public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
+    public float getStrength(MovingObjectPosition hit, EntityPlayer player)
+    {
         if (material > 0)
             return Math.min(4, MicroMaterialRegistry.getMaterial(material).getStrength(player));
         return 4;
     }
 
-    public ItemStack getItem() {
+    public ItemStack getItem()
+    {
         return getWireType().getFramedItemStack();
     }
 
     @Override
-    public Iterable<ItemStack> getDrops() {
+    public Iterable<ItemStack> getDrops()
+    {
         LinkedList<ItemStack> items = new LinkedList<ItemStack>();
         items.add(getItem());
-        if(material != 0)
+        if (material != 0)
             items.add(ItemMicroPart.create(1, material));
         return items;
     }
 
     @Override
-    public ItemStack pickItem(MovingObjectPosition hit) {
+    public ItemStack pickItem(MovingObjectPosition hit)
+    {
         return getItem();
     }
 
     @Override
-    public int getSlotMask() {
+    public int getSlotMask()
+    {
         return 0x40;
     }
 
     @Override
-    public Iterable<IndexedCuboid6> getSubParts() {
+    public Iterable<IndexedCuboid6> getSubParts()
+    {
         Iterable<Cuboid6> boxList = getCollisionBoxes();
         LinkedList<IndexedCuboid6> partList = new LinkedList<IndexedCuboid6>();
-        for(Cuboid6 c : boxList)
+        for (Cuboid6 c : boxList)
             partList.add(new IndexedCuboid6(0, c));
         return partList;
     }
 
     @Override
-    public boolean occlusionTest(TMultiPart npart) {
+    public boolean occlusionTest(TMultiPart npart)
+    {
         return NormalOcclusionTest.apply(this, npart);
     }
 
     @Override
-    public Iterable<Cuboid6> getOcclusionBoxes() {
-        if(expandBounds >= 0)
+    public Iterable<Cuboid6> getOcclusionBoxes()
+    {
+        if (expandBounds >= 0)
             return Arrays.asList(boundingBoxes[expandBounds]);
 
         return Arrays.asList(boundingBoxes[6]);
     }
 
     @Override
-    public Iterable<Cuboid6> getCollisionBoxes() {
+    public Iterable<Cuboid6> getCollisionBoxes()
+    {
         LinkedList<Cuboid6> list = new LinkedList<Cuboid6>();
         list.add(boundingBoxes[6]);
-        for(int s = 0; s < 6; s++)
-            if(maskConnects(s))
+        for (int s = 0; s < 6; s++)
+            if (maskConnects(s))
                 list.add(boundingBoxes[s]);
         return list;
     }
 
     @SideOnly(Side.CLIENT)
-    public Icon getIcon() {
+    public Icon getIcon()
+    {
         return getWireType().wireSprites[0];
     }
 
-    public int getColour() {
+    public int getColour()
+    {
         return -1;
     }
 
-    public boolean useStaticRenderer() {
+    public boolean useStaticRenderer()
+    {
         return Configurator.staticWires;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass) {
-        if (pass == 0 && useStaticRenderer()) {
+    public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass)
+    {
+        if (pass == 0 && useStaticRenderer())
+        {
             CCRenderState.setBrightness(world(), x(), y(), z());
             RenderFramedWire.render(this, pos, olm);
             CCRenderState.setColour(-1);
@@ -490,8 +566,10 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void renderDynamic(Vector3 pos, float frame, int pass) {
-        if (pass == 0 && !useStaticRenderer()) {
+    public void renderDynamic(Vector3 pos, float frame, int pass)
+    {
+        if (pass == 0 && !useStaticRenderer())
+        {
             GL11.glDisable(GL11.GL_LIGHTING);
             TextureUtils.bindAtlas(0);
             CCRenderState.useModelColours(true);
@@ -505,23 +583,28 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void drawBreaking(RenderBlocks renderBlocks) {
+    public void drawBreaking(RenderBlocks renderBlocks)
+    {
         CCRenderState.reset();
         RenderFramedWire.renderBreakingOverlay(renderBlocks.overrideBlockTexture, this);
     }
 
     @Override
-    public boolean doesTick() {
+    public boolean doesTick()
+    {
         return false;
     }
 
     @Override
-    public int getHollowSize() {
+    public int getHollowSize()
+    {
         return 8;
     }
 
-    public void dropMaterial(EntityPlayer player) {
-        if (material > 0 && !player.capabilities.isCreativeMode) {
+    public void dropMaterial(EntityPlayer player)
+    {
+        if (material > 0 && !player.capabilities.isCreativeMode)
+        {
             ItemStack drop = ItemMicroPart.create(1, material);
             BasicUtils.dropItemFromLocation(world(), drop, false, player, -1, 0, new BlockCoord(tile()));
         }
@@ -530,18 +613,23 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
     protected abstract boolean test(EntityPlayer player, MovingObjectPosition hit);
 
     @Override
-    public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) {
+    public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item)
+    {
         ItemStack held = player.getHeldItem();
-        if (held == null) {
-            if (player.isSneaking() && material > 0 && !world().isRemote) {
+        if (held == null)
+        {
+            if (player.isSneaking() && material > 0 && !world().isRemote)
+            {
                 dropMaterial(player);
                 material = 0;
                 sendMatUpdate();
             }
             return false;
         }
-        if (held.getItem() == MicroblockProxy.itemMicro() && held.getItemDamage() == 1 && ItemMicroPart.getMaterialID(held) != material) {
-            if (!world().isRemote) {
+        if (held.getItem() == MicroblockProxy.itemMicro() && held.getItemDamage() == 1 && ItemMicroPart.getMaterialID(held) != material)
+        {
+            if (!world().isRemote)
+            {
                 int newMaterialID = ItemMicroPart.getMaterialID(held);
                 IMicroMaterial newMaterial = MicroMaterialRegistry.getMaterial(newMaterialID);
                 if (newMaterial.isTransparent())
@@ -556,7 +644,8 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
             }
             return true;
         }
-        if (held.itemID == ProjectRedCore.itemWireDebugger.itemID) {
+        if (held.itemID == ProjectRedCore.itemWireDebugger.itemID)
+        {
             held.damageItem(1, player);
             player.swingItem();
             return test(player, hit);

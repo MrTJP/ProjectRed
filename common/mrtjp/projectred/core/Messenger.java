@@ -16,33 +16,37 @@ import org.lwjgl.opengl.GL11;
 import codechicken.core.ClientUtils;
 import codechicken.lib.vec.BlockCoord;
 
-public class Messenger {
+public class Messenger
+{
     static ArrayList<Message> messages = new ArrayList<Message>();
 
     /**
-     * Adds a string to the location. To apply an option, add a "/#" +
-     * an option char anywhere in the string.
+     * Adds a string to the location. To apply an option, add a "/#" + an option
+     * char anywhere in the string.
      * 
-     * f - Override a message already at that location.
-     * c - Combine message if one already exists there.
+     * f - Override a message already at that location. c - Combine message if
+     * one already exists there.
      * 
      * @param x
      * @param y
      * @param z
      * @param mail
      */
-    public static void addMessage(double x, double y, double z, String mail) {
+    public static void addMessage(double x, double y, double z, String mail)
+    {
         BlockCoord location = new BlockCoord((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
         boolean combine = false;
         boolean override = false;
 
         if (mail.length() == 0)
             return;
-        if (mail.contains("/#f")) {
+        if (mail.contains("/#f"))
+        {
             override = true;
             mail = mail.replace("/#f", "");
         }
-        if (mail.contains("/#c")) {
+        if (mail.contains("/#c"))
+        {
             combine = true;
             mail = mail.replace("/#c", "");
         }
@@ -56,10 +60,13 @@ public class Messenger {
         float yOffset = 0;
         for (Message m : readQueue)
             if (m.location.equals(location))
-                if (override) {
+                if (override)
+                {
                     removeQueue.add(m);
                     break;
-                } else if (combine) {
+                }
+                else if (combine)
+                {
                     m.msg = m.msg + "\n" + mail;
                     m.receivedOn = System.currentTimeMillis();
                     return;
@@ -69,7 +76,8 @@ public class Messenger {
     }
 
     @ForgeSubscribe
-    public void renderMessages(RenderWorldLastEvent event) {
+    public void renderMessages(RenderWorldLastEvent event)
+    {
         World w = Minecraft.getMinecraft().theWorld;
         if (w == null)
             return;
@@ -111,12 +119,14 @@ public class Messenger {
         GL11.glPopAttrib();
     }
 
-    private void readMessage(Message m) {
+    private void readMessage(Message m)
+    {
         int width = 0;
         int height = 0;
         String[] lines = m.msg.split("\n");
         FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
-        for (String line : lines) {
+        for (String line : lines)
+        {
             height += fr.FONT_HEIGHT + 4;
             width = Math.max(width, fr.getStringWidth(line));
         }
@@ -149,14 +159,16 @@ public class Messenger {
         tess.draw();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         int i = 0;
-        for (String line : lines) {
+        for (String line : lines)
+        {
             fr.drawString(line, -fr.getStringWidth(line) / 2, 10 * i, -1);
             i++;
         }
         GL11.glPopMatrix();
     }
 
-    static class Message {
+    static class Message
+    {
         BlockCoord location;
         double x;
         double y;
@@ -165,7 +177,8 @@ public class Messenger {
         long receivedOn;
         float yOffset = 0;
 
-        Message set(BlockCoord location, double x, double y, double z, String msg) {
+        Message set(BlockCoord location, double x, double y, double z, String msg)
+        {
             this.receivedOn = System.currentTimeMillis();
             this.msg = msg;
             this.location = location;
@@ -175,7 +188,8 @@ public class Messenger {
             return this;
         }
 
-        Message addY(float y) {
+        Message addY(float y)
+        {
             yOffset += y;
             return this;
         }

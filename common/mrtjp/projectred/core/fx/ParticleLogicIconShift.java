@@ -14,22 +14,26 @@ public class ParticleLogicIconShift extends ParticleLogic
 
     private int iconIndex = 0;
 
-    public ParticleLogicIconShift(int priority, boolean finalLogic) {
+    public ParticleLogicIconShift(int priority, boolean finalLogic)
+    {
         super(priority, finalLogic);
     }
 
-    public ParticleLogicIconShift addIcon(String icon) {
+    public ParticleLogicIconShift addIcon(String icon)
+    {
         icons.add(ParticleIconRegistry.instance.getIcon(icon));
         return this;
     }
 
-    public ParticleLogicIconShift setTicksBetweenChange(int ticks) {
+    public ParticleLogicIconShift setTicksBetweenChange(int ticks)
+    {
         tickDelay = ticksRemaining = ticks;
         return this;
     }
 
     @Override
-    public void doUpdate() {
+    public void doUpdate()
+    {
         if (--ticksRemaining > 0)
             return;
         ticksRemaining = tickDelay;
@@ -43,17 +47,20 @@ public class ParticleLogicIconShift extends ParticleLogic
         particle.setParticleIcon(icons.get(iconIndex));
     }
 
-    private void shiftIconIndex() {
-        iconIndex = (iconIndex+1) % icons.size();
+    private void shiftIconIndex()
+    {
+        iconIndex = (iconIndex + 1) % icons.size();
     }
 
-    private void shiftDelay() {
+    private void shiftDelay()
+    {
         int newDelay = tickDelay + MathHelper.getRandomIntegerInRange(rand, -1, 1);
         setTicksBetweenChange(newDelay);
     }
 
     @Override
-    public ParticleLogic clone() {
+    public ParticleLogic clone()
+    {
         ParticleLogicIconShift clone = new ParticleLogicIconShift(priority, finalLogic);
         clone.setTicksBetweenChange(tickDelay);
         for (Icon icon : icons)

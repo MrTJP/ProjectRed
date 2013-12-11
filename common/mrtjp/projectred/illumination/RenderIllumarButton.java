@@ -14,25 +14,28 @@ import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Translation;
 
-public class RenderIllumarButton implements IItemRenderer {
-
+public class RenderIllumarButton implements IItemRenderer
+{
     public static RenderIllumarButton instance = new RenderIllumarButton();
 
     private static Cuboid6 invRenderBox = new Cuboid6(0.0, 0.375, 0.5 - 0.1875, 0.25, 0.625, 0.5 + 0.1875);
     private static Cuboid6 invLightBox = invRenderBox.copy().expand(0.025D);
 
     @Override
-    public boolean handleRenderType(ItemStack item, ItemRenderType type) {
+    public boolean handleRenderType(ItemStack item, ItemRenderType type)
+    {
         return true;
     }
 
     @Override
-    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
+    public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper)
+    {
         return true;
     }
 
     @Override
-    public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+    public void renderItem(ItemRenderType type, ItemStack item, Object... data)
+    {
         switch (type) {
         case ENTITY:
             renderInventory(item.getItemDamage(), -.05f, 0, -.1f, .5f);
@@ -51,7 +54,8 @@ public class RenderIllumarButton implements IItemRenderer {
         }
     }
 
-    private void renderInventory(int color, float x, float y, float z, float scale) {
+    private void renderInventory(int color, float x, float y, float z, float scale)
+    {
         Icon icon = ItemPartIllumarButton.icons[color];
 
         GL11.glPushMatrix();
@@ -66,9 +70,8 @@ public class RenderIllumarButton implements IItemRenderer {
         RenderUtils.renderBlock(invRenderBox, 0, new Translation(x, y, z), new IconTransformation(icon), null);
         CCRenderState.draw();
         RenderHalo.prepareRenderState();
-        RenderHalo.renderHalo(Tessellator.instance, invLightBox, color,  new Translation(x, y, z));
+        RenderHalo.renderHalo(Tessellator.instance, invLightBox, color, new Translation(x, y, z));
         RenderHalo.restoreRenderState();
         GL11.glPopMatrix();
-
     }
 }

@@ -27,7 +27,8 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
 {
     public static Cuboid6[] boundingBoxes = new Cuboid6[7];
     private static int expandBounds = -1;
-    static {
+    static
+    {
         double w = 2 / 8D;
         boundingBoxes[6] = new Cuboid6(0.5 - w, 0.5 - w, 0.5 - w, 0.5 + w, 0.5 + w, 0.5 + w);
         for (int s = 0; s < 6; s++)
@@ -40,27 +41,32 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
     public int connMap;
     public byte meta;
 
-    public void preparePlacement(int meta) {
+    public void preparePlacement(int meta)
+    {
         this.meta = (byte) meta;
     }
 
     @Override
-    public int getHollowSize() {
+    public int getHollowSize()
+    {
         return 8;
     }
 
     @Override
-    public float getStrength(MovingObjectPosition hit, EntityPlayer player) {
+    public float getStrength(MovingObjectPosition hit, EntityPlayer player)
+    {
         return 2;
     }
 
     @Override
-    public boolean occlusionTest(TMultiPart npart) {
+    public boolean occlusionTest(TMultiPart npart)
+    {
         return NormalOcclusionTest.apply(this, npart);
     }
 
     @Override
-    public Iterable<Cuboid6> getOcclusionBoxes() {
+    public Iterable<Cuboid6> getOcclusionBoxes()
+    {
         if (expandBounds >= 0)
             return Arrays.asList(boundingBoxes[expandBounds]);
 
@@ -68,7 +74,8 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
     }
 
     @Override
-    public Iterable<IndexedCuboid6> getSubParts() {
+    public Iterable<IndexedCuboid6> getSubParts()
+    {
         Iterable<Cuboid6> boxList = getCollisionBoxes();
         LinkedList<IndexedCuboid6> partList = new LinkedList<IndexedCuboid6>();
         for (Cuboid6 c : boxList)
@@ -77,7 +84,8 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
     }
 
     @Override
-    public Iterable<Cuboid6> getCollisionBoxes() {
+    public Iterable<Cuboid6> getCollisionBoxes()
+    {
         LinkedList<Cuboid6> list = new LinkedList<Cuboid6>();
         list.add(boundingBoxes[6]);
         for (int s = 0; s < 6; s++)
@@ -87,58 +95,69 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
     }
 
     @Override
-    public int getSlotMask() {
+    public int getSlotMask()
+    {
         return 0x40;
     }
 
     @Override
-    public void save(NBTTagCompound tag) {
+    public void save(NBTTagCompound tag)
+    {
         super.save(tag);
         tag.setInteger("connMap", connMap);
         tag.setByte("meta", meta);
     }
 
     @Override
-    public void load(NBTTagCompound tag) {
+    public void load(NBTTagCompound tag)
+    {
         super.load(tag);
         connMap = tag.getInteger("connMap");
         meta = tag.getByte("meta");
     }
 
     @Override
-    public void writeDesc(MCDataOutput packet) {
+    public void writeDesc(MCDataOutput packet)
+    {
         packet.writeByte(clientConnMap());
         packet.writeByte(meta);
     }
 
     @Override
-    public void readDesc(MCDataInput packet) {
+    public void readDesc(MCDataInput packet)
+    {
         connMap = packet.readUByte();
         meta = packet.readByte();
     }
-    
+
     @Override
-    public void read(MCDataInput packet) {
+    public void read(MCDataInput packet)
+    {
         read(packet, packet.readUByte());
     }
 
-    public void read(MCDataInput packet, int switch_key) {
-        if (switch_key == 0) {
+    public void read(MCDataInput packet, int switch_key)
+    {
+        if (switch_key == 0)
+        {
             connMap = packet.readUByte();
             tile().markRender();
         }
     }
 
     @Override
-    public void onNeighborChanged() {
+    public void onNeighborChanged()
+    {
         if (!world().isRemote)
             if (updateExternalConnections())
                 sendConnUpdate();
     }
 
     @Override
-    public void onPartChanged(TMultiPart part) {
-        if (!world().isRemote) {
+    public void onPartChanged(TMultiPart part)
+    {
+        if (!world().isRemote)
+        {
             boolean changed = false;
             if (updateOpenConnections())
                 changed |= updateExternalConnections();
@@ -148,8 +167,10 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
     }
 
     @Override
-    public void onAdded() {
-        if (!world().isRemote) {
+    public void onAdded()
+    {
+        if (!world().isRemote)
+        {
             updateOpenConnections();
             if (updateExternalConnections())
                 sendConnUpdate();
@@ -157,9 +178,11 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
     }
 
     @Override
-    public void onRemoved() {
+    public void onRemoved()
+    {
         super.onRemoved();
-        if (!world().isRemote) {
+        if (!world().isRemote)
+        {
             for (int s = 0; s < 6; s++)
                 if ((connMap & 1 << s) != 0)
                     notifyStraightChange(s);
@@ -167,37 +190,46 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
     }
 
     @Override
-    public Iterable<ItemStack> getDrops() {
+    public Iterable<ItemStack> getDrops()
+    {
         return Arrays.asList(getItem());
     }
 
     @Override
-    public ItemStack pickItem(MovingObjectPosition hit) {
+    public ItemStack pickItem(MovingObjectPosition hit)
+    {
         return getItem();
     }
 
-    public ItemStack getItem() {
+    public ItemStack getItem()
+    {
         return EnumPipe.VALID_PIPE[meta].getItemStack();
     }
 
-    public void notifyStraightChange(int s) {
+    public void notifyStraightChange(int s)
+    {
         BlockCoord pos = new BlockCoord(tile()).offset(s);
         world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile().getBlockType().blockID);
     }
 
     @Override
-    public void onChunkLoad() {}
+    public void onChunkLoad()
+    {
+    }
 
     @Override
-    public void onWorldJoin() {
+    public void onWorldJoin()
+    {
         onNeighborChanged();
     }
 
-    public int clientConnMap() {
+    public int clientConnMap()
+    {
         return connMap & 0x3F | connMap >> 6 & 0x3F;
     }
 
-    public void sendConnUpdate() {
+    public void sendConnUpdate()
+    {
         tile().getWriteStream(this).writeByte(0).writeByte(clientConnMap());
     }
 
@@ -206,9 +238,11 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
      * 
      * @return true if a new connection was added or one was removed
      */
-    protected boolean updateExternalConnections() {
+    protected boolean updateExternalConnections()
+    {
         int newConn = 0;
-        for (int s = 0; s < 6; s++) {
+        for (int s = 0; s < 6; s++)
+        {
             if (!maskOpen(s))
                 continue;
 
@@ -216,7 +250,8 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
                 newConn |= 1 << s;
         }
 
-        if (newConn != (connMap & 0x3F)) {
+        if (newConn != (connMap & 0x3F))
+        {
             connMap = connMap & ~0x3F | newConn;
             return true;
         }
@@ -229,20 +264,23 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
      * 
      * @return true if external connections should be recalculated
      */
-    protected boolean updateOpenConnections() {
+    protected boolean updateOpenConnections()
+    {
         int newConn = 0;
         for (int s = 0; s < 6; s++)
             if (connectionOpen(s))
                 newConn |= 1 << s + 12;
 
-        if (newConn != (connMap & 0x3F000)) {
+        if (newConn != (connMap & 0x3F000))
+        {
             connMap = connMap & ~0x3F000 | newConn;
             return true;
         }
         return false;
     }
 
-    public boolean connectionOpen(int s) {
+    public boolean connectionOpen(int s)
+    {
         TMultiPart facePart = tile().partMap(s);
         if (facePart == null)
             return true;
@@ -257,11 +295,13 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
         return fits;
     }
 
-    public boolean connect(int absDir) {
+    public boolean connect(int absDir)
+    {
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileEntity te = BasicUtils.getTileEntity(world(), pos, TileEntity.class);
-        if (te instanceof TileMultipart) {
-            TileMultipart t = (TileMultipart)te;
+        if (te instanceof TileMultipart)
+        {
+            TileMultipart t = (TileMultipart) te;
             TMultiPart tp = t.partMap(6);
             if (tp instanceof IPipeConnectable)
                 return ((IPipeConnectable) tp).connect(this, absDir ^ 1);
@@ -271,8 +311,10 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
     }
 
     @Override
-    public boolean connect(IPipeConnectable tube, int fromAbsDir) {
-        if (canConnectTo(tube) && maskOpen(fromAbsDir)) {
+    public boolean connect(IPipeConnectable tube, int fromAbsDir)
+    {
+        if (canConnectTo(tube) && maskOpen(fromAbsDir))
+        {
             int oldConn = connMap;
             connMap |= 1 << fromAbsDir;
             if (oldConn != connMap)
@@ -283,18 +325,21 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
     }
 
     @Override
-    public boolean canConnectTo(IPipeConnectable tube) {
+    public boolean canConnectTo(IPipeConnectable tube)
+    {
         return true;
     }
 
     @Override
     public abstract String getType();
 
-    public boolean maskConnects(int absDir) {
+    public boolean maskConnects(int absDir)
+    {
         return (connMap & 0x41 << absDir) != 0;
     }
 
-    public boolean maskOpen(int absDir) {
+    public boolean maskOpen(int absDir)
+    {
         return (connMap & 0x1000 << absDir) != 0;
     }
 }

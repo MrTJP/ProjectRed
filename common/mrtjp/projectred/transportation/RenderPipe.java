@@ -26,32 +26,43 @@ import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 
-public class RenderPipe 
+public class RenderPipe
 {
     private static final EntityItem dummyEntityItem = new EntityItem(null);
     private static final RenderItem customRenderItem;
 
-    static {
+    static
+    {
         customRenderItem = new RenderItem() {
             @Override
-            public boolean shouldBob() {return false;}
+            public boolean shouldBob()
+            {
+                return false;
+            }
+
             @Override
-            public boolean shouldSpreadItems() {return false;}
+            public boolean shouldSpreadItems()
+            {
+                return false;
+            }
         };
         customRenderItem.setRenderManager(RenderManager.instance);
     }
-    
-    public static class UVT implements IUVTransformation {
+
+    public static class UVT implements IUVTransformation
+    {
 
         public Transformation t;
         private Vector3 vec = new Vector3();
 
-        public UVT(Transformation t) {
+        public UVT(Transformation t)
+        {
             this.t = t;
         }
 
         @Override
-        public void transform(UV uv) {
+        public void transform(UV uv)
+        {
             vec.set(uv.u, 0, uv.v).apply(t);
             uv.set(vec.x, vec.z);
         }
@@ -59,10 +70,12 @@ public class RenderPipe
 
     private static class WireFrameModelGenerator
     {
-        double w = 2/8D;
-        double d = 1/16D-0.002;//little offset for compensating for the slight uv stretch to eliminate seams
+        double w = 2 / 8D;
+        double d = 1 / 16D - 0.002;// little offset for compensating for the
+                                   // slight uv stretch to eliminate seams
 
-        public static void generateModels() {
+        public static void generateModels()
+        {
             WireFrameModelGenerator gen_inst = new WireFrameModelGenerator();
             gen_inst.generateCenterModel();
             gen_inst.generateSideModels();
@@ -70,65 +83,71 @@ public class RenderPipe
             gen_inst.finishModels();
         }
 
-        public void generateCenterModel() {
+        public void generateCenterModel()
+        {
             CCModel model = CCModel.quadModel(48);
 
-            model.verts[0] = new Vertex5(0.5-w, 0.5-w, 0.5-w, 20, 8);
-            model.verts[1] = new Vertex5(0.5+w, 0.5-w, 0.5-w, 28, 8);
-            model.verts[2] = new Vertex5(0.5+w, 0.5-w, 0.5+w, 28, 0);
-            model.verts[3] = new Vertex5(0.5-w, 0.5-w, 0.5+w, 20, 0);
+            model.verts[0] = new Vertex5(0.5 - w, 0.5 - w, 0.5 - w, 20, 8);
+            model.verts[1] = new Vertex5(0.5 + w, 0.5 - w, 0.5 - w, 28, 8);
+            model.verts[2] = new Vertex5(0.5 + w, 0.5 - w, 0.5 + w, 28, 0);
+            model.verts[3] = new Vertex5(0.5 - w, 0.5 - w, 0.5 + w, 20, 0);
 
-            model.verts[4] = new Vertex5(0.5-w, 0.5-w+d, 0.5+w, 20, 8);
-            model.verts[5] = new Vertex5(0.5+w, 0.5-w+d, 0.5+w, 28, 8);
-            model.verts[6] = new Vertex5(0.5+w, 0.5-w+d, 0.5-w, 28, 0);
-            model.verts[7] = new Vertex5(0.5-w, 0.5-w+d, 0.5-w, 20, 0);
+            model.verts[4] = new Vertex5(0.5 - w, 0.5 - w + d, 0.5 + w, 20, 8);
+            model.verts[5] = new Vertex5(0.5 + w, 0.5 - w + d, 0.5 + w, 28, 8);
+            model.verts[6] = new Vertex5(0.5 + w, 0.5 - w + d, 0.5 - w, 28, 0);
+            model.verts[7] = new Vertex5(0.5 - w, 0.5 - w + d, 0.5 - w, 20, 0);
 
             model.generateSidedParts(0, Vector3.center);
             frameModels[6] = model;
         }
 
-        public void generateSideModels() {
+        public void generateSideModels()
+        {
             CCModel model = CCModel.quadModel(36);
 
-            model.verts[0] = new Vertex5(0.5-w, 0, 0.5+w, 16, 0);
-            model.verts[1] = new Vertex5(0.5+w, 0, 0.5+w, 16, 8);
-            model.verts[2] = new Vertex5(0.5+w, 0.5-w, 0.5+w, 20, 8);
-            model.verts[3] = new Vertex5(0.5-w, 0.5-w, 0.5+w, 20, 0);
+            model.verts[0] = new Vertex5(0.5 - w, 0, 0.5 + w, 16, 0);
+            model.verts[1] = new Vertex5(0.5 + w, 0, 0.5 + w, 16, 8);
+            model.verts[2] = new Vertex5(0.5 + w, 0.5 - w, 0.5 + w, 20, 8);
+            model.verts[3] = new Vertex5(0.5 - w, 0.5 - w, 0.5 + w, 20, 0);
 
-            model.verts[4] = new Vertex5(0.5+w, 0, 0.5+w-d, 16, 0);
-            model.verts[5] = new Vertex5(0.5-w, 0, 0.5+w-d, 16, 8);
-            model.verts[6] = new Vertex5(0.5-w, 0.5-w, 0.5+w-d, 20, 8);
-            model.verts[7] = new Vertex5(0.5+w, 0.5-w, 0.5+w-d, 20, 0);
+            model.verts[4] = new Vertex5(0.5 + w, 0, 0.5 + w - d, 16, 0);
+            model.verts[5] = new Vertex5(0.5 - w, 0, 0.5 + w - d, 16, 8);
+            model.verts[6] = new Vertex5(0.5 - w, 0.5 - w, 0.5 + w - d, 20, 8);
+            model.verts[7] = new Vertex5(0.5 + w, 0.5 - w, 0.5 + w - d, 20, 0);
 
-            for(int r = 1; r < 4; r++)
-                model.apply(Rotation.quarterRotations[r].at(Vector3.center), 0, r*8, 8);
+            for (int r = 1; r < 4; r++)
+                model.apply(Rotation.quarterRotations[r].at(Vector3.center), 0, r * 8, 8);
 
-            model.verts[32] = new Vertex5(0.5-w, 0, 0.5-w, 24, 32);
-            model.verts[33] = new Vertex5(0.5+w, 0, 0.5-w, 32, 32);
-            model.verts[34] = new Vertex5(0.5+w, 0, 0.5+w, 32, 24);
-            model.verts[35] = new Vertex5(0.5-w, 0, 0.5+w, 24, 24);
+            model.verts[32] = new Vertex5(0.5 - w, 0, 0.5 - w, 24, 32);
+            model.verts[33] = new Vertex5(0.5 + w, 0, 0.5 - w, 32, 32);
+            model.verts[34] = new Vertex5(0.5 + w, 0, 0.5 + w, 32, 24);
+            model.verts[35] = new Vertex5(0.5 - w, 0, 0.5 + w, 24, 24);
 
             frameModels[0] = model;
-            for(int s = 1; s < 6; s++) {
+            for (int s = 1; s < 6; s++)
+            {
                 frameModels[s] = model.copy().apply(Rotation.sideRotations[s].at(Vector3.center));
 
-                if(s%2 == 1) {
+                if (s % 2 == 1)
+                {
                     Vertex5[] verts = frameModels[s].verts;
                     UVT t = new UVT(Rotation.quarterRotations[2].at(new Vector3(24, 0, 4)));
-                    for(int i = 0; i < 32; i++)
+                    for (int i = 0; i < 32; i++)
                         verts[i].apply(t);
                 }
             }
         }
 
-        public void finishModels() {
-            for(CCModel m : frameModels)
+        public void finishModels()
+        {
+            for (CCModel m : frameModels)
                 finishModel(m);
         }
     }
-    
-    public static CCModel finishModel(CCModel m) {
-        m.apply(new UVScale(1/32D));
+
+    public static CCModel finishModel(CCModel m)
+    {
+        m.apply(new UVScale(1 / 32D));
         m.shrinkUVs(0.0005);
         m.computeNormals();
         m.computeLighting(LightModel.standardLightModel);
@@ -136,11 +155,13 @@ public class RenderPipe
         return m;
     }
 
-    public static void reverseOrder(Vertex5[] verts) {
-        for(int k = 0; k < verts.length; k+=4) {
-            Vertex5 tmp = verts[k+1];
-            verts[k+1] = verts[k+3];
-            verts[k+3] = tmp;
+    public static void reverseOrder(Vertex5[] verts)
+    {
+        for (int k = 0; k < verts.length; k += 4)
+        {
+            Vertex5 tmp = verts[k + 1];
+            verts[k + 1] = verts[k + 3];
+            verts[k + 3] = tmp;
         }
     }
 
@@ -148,63 +169,83 @@ public class RenderPipe
 
     private static LazyLightMatrix dynamicLight = new LazyLightMatrix();
 
-    static {
+    static
+    {
         WireFrameModelGenerator.generateModels();
     }
 
-    public static void render(BasicPipePart w, Vector3 pos) {
+    public static void render(BasicPipePart w, Vector3 pos)
+    {
         dynamicLight.setPos(w.world(), w.x(), w.y(), w.z());
         render(w, pos, dynamicLight);
     }
 
-    public static void render(BasicPipePart w, Vector3 pos, LazyLightMatrix olm) {
+    public static void render(BasicPipePart w, Vector3 pos, LazyLightMatrix olm)
+    {
         WireFrameModelGenerator.generateModels();
-        int key = w.connMap|1<<6;
+        int key = w.connMap | 1 << 6;
         Transformation t = new Translation(pos);
         IUVTransformation uvt = new IconTransformation(w.getIcon(6));
 
         frameModels[6].render(t, uvt);
-        for(int s = 0; s < 6; s++)
-            if((key&1<<s) != 0) {
+        for (int s = 0; s < 6; s++)
+            if ((key & 1 << s) != 0)
+            {
                 uvt = new IconTransformation(w.getIcon(s));
                 frameModels[s].render(t, uvt);
             }
 
     }
 
-    public static void renderBreakingOverlay(Icon icon, BasicPipePart wire) {
-        for(Cuboid6 box : wire.getCollisionBoxes())
+    public static void renderBreakingOverlay(Icon icon, BasicPipePart wire)
+    {
+        for (Cuboid6 box : wire.getCollisionBoxes())
             RenderUtils.renderBlock(box, 0, new Translation(wire.x(), wire.y(), wire.z()), new IconTransformation(icon), null);
     }
 
-    public static void renderInv(Transformation t, Icon icon) {
+    public static void renderInv(Transformation t, Icon icon)
+    {
         IUVTransformation uvt = new IconTransformation(icon);
 
         CCRenderState.setColour(-1);
 
         frameModels[6].render(t, uvt);
-        for(int s = 0; s < 2; s++)
+        for (int s = 0; s < 2; s++)
             frameModels[s].render(t, uvt);
 
     }
 
-    public static void renderItemFlow(BasicPipePart p, Vector3 pos, float frame) {
+    public static void renderItemFlow(BasicPipePart p, Vector3 pos, float frame)
+    {
         GL11.glPushMatrix();
         GL11.glDisable(2896 /* GL_LIGHTING */);
 
-        for (RoutedPayload r : p.itemFlow) {
+        for (RoutedPayload r : p.itemFlow)
+        {
             float partial = r.getSpeed() * frame;
-            float frameX = (float) (pos.x+r.x-p.x());
-            float frameY = (float) (pos.y+r.y-p.y());
-            float frameZ = (float) (pos.z+r.z-p.z());
+            float frameX = (float) (pos.x + r.x - p.x());
+            float frameY = (float) (pos.y + r.y - p.y());
+            float frameZ = (float) (pos.z + r.z - p.z());
 
             switch (r.isEntering ? r.input : r.output) {
-            case UP: frameY = frameY + partial; break;
-            case DOWN: frameY = frameY - partial; break;
-            case SOUTH: frameZ = frameZ + partial; break;
-            case NORTH: frameZ = frameZ - partial; break;
-            case EAST: frameX = frameX + partial; break;
-            case WEST: frameX = frameX - partial; break;
+            case UP:
+                frameY = frameY + partial;
+                break;
+            case DOWN:
+                frameY = frameY - partial;
+                break;
+            case SOUTH:
+                frameZ = frameZ + partial;
+                break;
+            case NORTH:
+                frameZ = frameZ - partial;
+                break;
+            case EAST:
+                frameX = frameX + partial;
+                break;
+            case WEST:
+                frameX = frameX - partial;
+                break;
             default:
             }
 
@@ -214,7 +255,8 @@ public class RenderPipe
         GL11.glPopMatrix();
     }
 
-    private static void doRenderItem(RoutedPayload r, double x, double y, double z) {
+    private static void doRenderItem(RoutedPayload r, double x, double y, double z)
+    {
         if (r == null || r.getItemStack() == null)
             return;
         float renderScale = 0.7f;
@@ -236,8 +278,9 @@ public class RenderPipe
 
         GL11.glPopMatrix();
     }
-    
-    private static void prepareRenderState() {
+
+    private static void prepareRenderState()
+    {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -248,7 +291,8 @@ public class RenderPipe
         CCRenderState.startDrawing(7);
     }
 
-    private static void restoreRenderState() {
+    private static void restoreRenderState()
+    {
         CCRenderState.draw();
         GL11.glDepthMask(true);
         GL11.glColor3f(1, 1, 1);

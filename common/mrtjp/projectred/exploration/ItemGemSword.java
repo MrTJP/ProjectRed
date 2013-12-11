@@ -5,11 +5,12 @@ import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 
-public class ItemGemSword extends ItemSword {
-
+public class ItemGemSword extends ItemSword
+{
     EnumSpecialTool tool;
 
-    public ItemGemSword(int par1, EnumSpecialTool tool) {
+    public ItemGemSword(int par1, EnumSpecialTool tool)
+    {
         super(par1, tool.material);
         this.tool = tool;
         this.setUnlocalizedName("projectred.exploration." + tool.unlocal);
@@ -17,14 +18,16 @@ public class ItemGemSword extends ItemSword {
     }
 
     @Override
-    public boolean getIsRepairable(ItemStack ist1, ItemStack ist2) {
+    public boolean getIsRepairable(ItemStack ist1, ItemStack ist2)
+    {
         if (tool.repairStack.isItemEqual(ist2))
             return true;
         return super.getIsRepairable(ist1, ist2);
     }
 
     @Override
-    public void registerIcons(IconRegister reg) {
+    public void registerIcons(IconRegister reg)
+    {
         this.itemIcon = reg.registerIcon("projectred:gemtools/" + tool.unlocal);
     }
 }

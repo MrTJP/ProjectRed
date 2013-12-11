@@ -6,40 +6,43 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatMessageComponent;
 
-public class CommandDebug extends CommandBase {
-
+public class CommandDebug extends CommandBase
+{
     /**
-     * If true, right-click a wire for signal strength.
-     * Will not work properly in SMP.
+     * If true, right-click a wire for signal strength. Will not work properly
+     * in SMP.
      */
-    public static boolean WIRE_READING;
+    public static boolean WIRE_READING;
 
     @Override
-    public String getCommandName() {
+    public String getCommandName()
+    {
         return "prdebug";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender par1iCommandSender) {
-        return "/"+getCommandName()+" {lagpart|debugpart|reading} {on|off}";
+    public String getCommandUsage(ICommandSender par1iCommandSender)
+    {
+        return "/" + getCommandName() + " {lagpart|debugpart|reading} {on|off}";
     }
 
     @Override
-    public void processCommand(ICommandSender icommandsender, String[] astring) {
-        if(astring.length != 2)
+    public void processCommand(ICommandSender icommandsender, String[] astring)
+    {
+        if (astring.length != 2)
             throw new WrongUsageException(getCommandUsage(icommandsender));
 
         String thing = astring[0];
         boolean on;
 
-        if(astring[1].equals("on"))
+        if (astring[1].equals("on"))
             on = true;
-        else if(astring[1].equals("off"))
+        else if (astring[1].equals("off"))
             on = false;
         else
             throw new WrongUsageException(getCommandUsage(icommandsender));
 
-        if(thing.equals("reading"))
+        if (thing.equals("reading"))
             WIRE_READING = on;
         else
             throw new WrongUsageException(getCommandUsage(icommandsender));
@@ -48,7 +51,8 @@ public class CommandDebug extends CommandBase {
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender par1iCommandSender) {
+    public boolean canCommandSenderUseCommand(ICommandSender par1iCommandSender)
+    {
         return super.canCommandSenderUseCommand(par1iCommandSender);
     }
 }

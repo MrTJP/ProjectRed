@@ -7,14 +7,17 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.packet.PacketCustom;
 
-public class RoutedRequestPipePart extends RoutedPipePart_InvConnect {
-
+public class RoutedRequestPipePart extends RoutedPipePart_InvConnect
+{
     @Override
-    public void centerReached(RoutedPayload r) {
-        if (getLogic().centerReached(r)) return;
-        
+    public void centerReached(RoutedPayload r)
+    {
+        if (getLogic().centerReached(r))
+            return;
+
         if (!maskConnects(r.output.ordinal()) && !world().isRemote)
-            if (itemFlow.scheduleRemoval(r)) {
+            if (itemFlow.scheduleRemoval(r))
+            {
                 r.move(0.30);
                 r.resetTrip();
                 world().spawnEntityInWorld(r.getEntityForDrop());
@@ -22,22 +25,26 @@ public class RoutedRequestPipePart extends RoutedPipePart_InvConnect {
     }
 
     @Override
-    public void endReached(RoutedPayload r) {
+    public void endReached(RoutedPayload r)
+    {
         super.endReached(r);
     }
 
     @Override
-    public void resolveDestination(RoutedPayload r) {
+    public void resolveDestination(RoutedPayload r)
+    {
         super.resolveDestination(r);
     }
 
     @Override
-    public void injectPayload(RoutedPayload r, ForgeDirection in) {
+    public void injectPayload(RoutedPayload r, ForgeDirection in)
+    {
         super.injectPayload(r, in);
     }
 
     @Override
-    public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) {
+    public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item)
+    {
         if (super.activate(player, hit, item))
             return true;
 
@@ -46,28 +53,33 @@ public class RoutedRequestPipePart extends RoutedPipePart_InvConnect {
         return true;
     }
 
-    private void openGui(EntityPlayer player) {
+    private void openGui(EntityPlayer player)
+    {
         PacketCustom packet = new PacketCustom(TransportationSPH.channel, NetConstants.gui_Request_open);
         packet.writeCoord(x(), y(), z());
         packet.sendToPlayer(player);
     }
 
     @Override
-    public ForgeDirection getDirForIncomingItem(RoutedPayload r) {
+    public ForgeDirection getDirForIncomingItem(RoutedPayload r)
+    {
         ForgeDirection dir = ForgeDirection.getOrientation(inOutSide);
-        if (dir == ForgeDirection.UNKNOWN) {
+        if (dir == ForgeDirection.UNKNOWN)
+        {
             int count = 0;
             for (int i = 0; i < 6; i++)
-                if ((connMap & 1<<i) != 0)
+                if ((connMap & 1 << i) != 0)
                     count++;
-            
+
             if (count <= 1)
                 return r.input;
-            else if (count == 2) {
-                for (int i = 0; i < 6; i++) {
+            else if (count == 2)
+            {
+                for (int i = 0; i < 6; i++)
+                {
                     if (i == r.input.getOpposite().ordinal())
                         continue;
-                    if ((connMap & 1<<i) != 0)
+                    if ((connMap & 1 << i) != 0)
                         return ForgeDirection.getOrientation(i);
                 }
             }
@@ -76,15 +88,17 @@ public class RoutedRequestPipePart extends RoutedPipePart_InvConnect {
     }
 
     @Override
-    public int getActiveFreeSpace(ItemKey item) {
+    public int getActiveFreeSpace(ItemKey item)
+    {
         if (getInventory() != null)
             return super.getActiveFreeSpace(item);
-        
+
         return Integer.MAX_VALUE;
     }
-    
+
     @Override
-    public String getType() {
+    public String getType()
+    {
         return "pr_rrequest";
     }
 }

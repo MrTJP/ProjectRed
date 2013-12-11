@@ -19,11 +19,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import codechicken.lib.vec.BlockCoord;
 
-public class BlockStainedSapling extends BlockSapling {
-
+public class BlockStainedSapling extends BlockSapling
+{
     private Icon icon;
 
-    public BlockStainedSapling(int par1) {
+    public BlockStainedSapling(int par1)
+    {
         super(par1);
         setStepSound(Block.soundGrassFootstep);
         setUnlocalizedName("projectred.exploration.dyesapling");
@@ -31,7 +32,8 @@ public class BlockStainedSapling extends BlockSapling {
     }
 
     @Override
-    public void growTree(World w, int x, int y, int z, Random r) {
+    public void growTree(World w, int x, int y, int z, Random r)
+    {
         int saplingMeta = w.getBlockMetadata(x, y, z);
         GeneratorCustomTree gen = new GeneratorCustomTree(true, 5, Block.wood.blockID, 0, ProjectRedExploration.blockStainedLeaf.blockID, saplingMeta, -1, -1);
         w.setBlock(x, y, z, 0, 0, 3);
@@ -40,13 +42,15 @@ public class BlockStainedSapling extends BlockSapling {
     }
 
     @Override
-    public void markOrGrowMarked(World w, int x, int y, int z, Random r) {
+    public void markOrGrowMarked(World w, int x, int y, int z, Random r)
+    {
         if (checkArea(w, x, y, z) && w.rand.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[w.getBlockMetadata(x, y, z)].growthChance)
             growTree(w, x, y, z, w.rand);
     }
 
     @Override
-    public boolean onBlockActivated(World w, int x, int y, int z, EntityPlayer player, int p6, float a, float b, float c) {
+    public boolean onBlockActivated(World w, int x, int y, int z, EntityPlayer player, int p6, float a, float b, float c)
+    {
         ItemStack stack = player.getCurrentEquippedItem();
 
         if (stack == null)
@@ -66,22 +70,25 @@ public class BlockStainedSapling extends BlockSapling {
         return true;
     }
 
-    public static boolean checkArea(World w, int x, int y, int z) {
-        int id = w.getBlockId(x, y-1, z);
+    public static boolean checkArea(World w, int x, int y, int z)
+    {
+        int id = w.getBlockId(x, y - 1, z);
         Material mat = Block.blocksList[id].blockMaterial;
         boolean validSoil = false;
         boolean validArea = true;
 
         if (mat == Material.grass || mat == Material.ground)
-            validSoil=true;
+            validSoil = true;
         if (!validSoil)
             return false;
 
-        BlockCoord bc = new BlockCoord(x,y,z);
-        for (int i = 1; i < 6; i++) {
+        BlockCoord bc = new BlockCoord(x, y, z);
+        for (int i = 1; i < 6; i++)
+        {
             BlockCoord bc2 = bc.copy().offset(i);
             Block b = blocksList[w.getBlockId(bc2.x, bc2.y, bc2.z)];
-            if (!w.isAirBlock(bc2.x, bc2.y, bc2.z) && !b.canBeReplacedByLeaves(w, bc2.x, bc2.y, bc2.z) && b instanceof IPlantable) {
+            if (!w.isAirBlock(bc2.x, bc2.y, bc2.z) && !b.canBeReplacedByLeaves(w, bc2.x, bc2.y, bc2.z) && b instanceof IPlantable)
+            {
                 validArea = false;
                 break;
             }
@@ -91,34 +98,39 @@ public class BlockStainedSapling extends BlockSapling {
     }
 
     @Override
-    public Icon getIcon(int par1, int par2) {
+    public Icon getIcon(int par1, int par2)
+    {
         return icon;
     }
 
     @Override
-    public void getSubBlocks(int id, CreativeTabs tab, List list) {
+    public void getSubBlocks(int id, CreativeTabs tab, List list)
+    {
         for (EnumDyeTrees t : EnumDyeTrees.VALID_FOLIAGE)
             list.add(t.getSappling());
     }
 
     @Override
-    public int damageDropped(int meta) {
+    public int damageDropped(int meta)
+    {
         return meta;
     }
 
-
     @Override
-    public void registerIcons(IconRegister reg) {
+    public void registerIcons(IconRegister reg)
+    {
         icon = reg.registerIcon("ProjectRed:ore/sapling");
     }
 
     @Override
-    public int getRenderColor(int meta) {
+    public int getRenderColor(int meta)
+    {
         return PRColors.get(meta).rgb;
     }
 
     @Override
-    public int colorMultiplier(IBlockAccess iba, int x, int y, int z) {
+    public int colorMultiplier(IBlockAccess iba, int x, int y, int z)
+    {
         int meta = iba.getBlockMetadata(x, y, z);
         return PRColors.get(meta).rgb;
     }

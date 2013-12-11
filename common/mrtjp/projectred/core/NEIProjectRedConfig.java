@@ -2,23 +2,29 @@ package mrtjp.projectred.core;
 
 import codechicken.nei.api.IConfigureNEI;
 
-public class NEIProjectRedConfig implements IConfigureNEI {
+public class NEIProjectRedConfig implements IConfigureNEI
+{
     @Override
-    public void loadConfig() {
-        try {
+    public void loadConfig()
+    {
+        try
+        {
 
-        } catch (Throwable e) {
+        } catch (Throwable e)
+        {
             e.printStackTrace();
         }
     }
 
     @Override
-    public String getName() {
+    public String getName()
+    {
         return "Project Red";
     }
 
     @Override
-    public String getVersion() {
+    public String getVersion()
+    {
         return Configurator.version + "." + Configurator.buildnumber;
     }
 }

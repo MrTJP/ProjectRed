@@ -26,29 +26,34 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     public byte[] signal = new byte[16];
 
     @Override
-    public String getType() {
+    public String getType()
+    {
         return "pr_sbundled";
     }
 
     @Override
-    public EnumWire getWireType() {
+    public EnumWire getWireType()
+    {
         return EnumWire.BUNDLED_N;
     }
 
     @Override
-    public void save(NBTTagCompound tag) {
+    public void save(NBTTagCompound tag)
+    {
         super.save(tag);
         tag.setByteArray("signal", signal);
     }
 
     @Override
-    public void load(NBTTagCompound tag) {
+    public void load(NBTTagCompound tag)
+    {
         super.load(tag);
         signal = tag.getByteArray("signal");
     }
 
     @Override
-    public boolean canConnectToType(IConnectable wire) {
+    public boolean canConnectToType(IConnectable wire)
+    {
         if (wire instanceof IInsulatedRedwirePart || wire instanceof IBundledEmitter)
             return true;
 
@@ -56,20 +61,23 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     }
 
     @Override
-    public void updateAndPropogate(TMultiPart prev, int mode) {
+    public void updateAndPropogate(TMultiPart prev, int mode)
+    {
         BundledCableCommons.updateAndPropogate(this, prev, mode);
     }
 
     @Override
-    public boolean propogateTo(TMultiPart part, int mode) {
-        if(!BundledCableCommons.shouldPropogate(this, part, mode))
+    public boolean propogateTo(TMultiPart part, int mode)
+    {
+        if (!BundledCableCommons.shouldPropogate(this, part, mode))
             return true;
 
         return super.propogateTo(part, mode);
     }
 
     @Override
-    public void setSignal(byte[] newSignal) {
+    public void setSignal(byte[] newSignal)
+    {
         if (newSignal == null)
             Arrays.fill(signal, (byte) 0);
         else
@@ -77,12 +85,13 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     }
 
     @Override
-    public byte[] calculateSignal() {
+    public byte[] calculateSignal()
+    {
         Arrays.fill(tmpSignal, (byte) 0);
 
-        for(int s = 0; s < 6; s++)
+        for (int s = 0; s < 6; s++)
             if (maskConnects(s))
-                if((connMap & 1<<s) != 0)
+                if ((connMap & 1 << s) != 0)
                     calculateStraightSignal(s);
                 else
                     calculateInternalSignal(s);
@@ -90,34 +99,41 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
         return tmpSignal;
     }
 
-    public void calculateStraightSignal(int s) {
+    public void calculateStraightSignal(int s)
+    {
         BlockCoord pos = new BlockCoord(tile()).offset(s);
         TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
-        if(t instanceof IBundledEmitter)
-            calculatePartSignal(t, s^1);
-        else if(t instanceof TileMultipart)
-            calculatePartSignal(((TileMultipart)t).partMap(6), s^1);
+        if (t instanceof IBundledEmitter)
+            calculatePartSignal(t, s ^ 1);
+        else if (t instanceof TileMultipart)
+            calculatePartSignal(((TileMultipart) t).partMap(6), s ^ 1);
     }
 
-    public void calculateInternalSignal(int s) {
+    public void calculateInternalSignal(int s)
+    {
         calculatePartSignal(tile().partMap(s), -1);
     }
 
     @Override
-    public byte[] getBundledSignal() {
+    public byte[] getBundledSignal()
+    {
         return signal;
     }
 
     @Override
-    public byte[] getBundledSignal(int side) {
+    public byte[] getBundledSignal(int side)
+    {
         return getBundledSignal();
     }
 
     @Override
-    protected boolean test(EntityPlayer player, MovingObjectPosition hit) {
-        if (BasicUtils.isServer(world())) {
+    protected boolean test(EntityPlayer player, MovingObjectPosition hit)
+    {
+        if (BasicUtils.isServer(world()))
+        {
             String s = "";
-            for (int i = 0; i < 16; i++) {
+            for (int i = 0; i < 16; i++)
+            {
                 int x = getBundledSignal()[i];
                 if (x != 0)
                     s = s + "[" + i + "]";

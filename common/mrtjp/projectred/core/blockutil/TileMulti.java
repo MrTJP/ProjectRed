@@ -20,67 +20,83 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 
-public abstract class TileMulti extends TileEntity implements ICustomPacketTile 
+public abstract class TileMulti extends TileEntity implements ICustomPacketTile
 {
     protected long schedTick = -1L;
 
-    public void onBlockNeighborChange(int l) {
+    public void onBlockNeighborChange(int l)
+    {
     }
 
-    public void onBlockPlaced(ItemStack ist, int side, EntityPlayer ent) {
+    public void onBlockPlaced(ItemStack ist, int side, EntityPlayer ent)
+    {
     }
 
-    public void onBlockRemoval() {
+    public void onBlockRemoval()
+    {
     }
 
-    public int isBlockStrongPoweringTo(int side) {
+    public int isBlockStrongPoweringTo(int side)
+    {
         return 0;
     }
 
-    public int isBlockWeakPoweringTo(int side) {
+    public int isBlockWeakPoweringTo(int side)
+    {
         return isBlockStrongPoweringTo(side);
     }
-    
-    public int getLightValue() {
+
+    public int getLightValue()
+    {
         return 0;
     }
-    
-    public boolean isFireSource(ForgeDirection side) {
+
+    public boolean isFireSource(ForgeDirection side)
+    {
         return false;
     }
-    
-    public boolean isBlockSolidOnSide(ForgeDirection side) {
+
+    public boolean isBlockSolidOnSide(ForgeDirection side)
+    {
         return true;
     }
 
-    public boolean onBlockActivated(EntityPlayer player) {
+    public boolean onBlockActivated(EntityPlayer player)
+    {
         return false;
     }
 
-    public void onEntityCollidedWithBlock(Entity ent) {
+    public void onEntityCollidedWithBlock(Entity ent)
+    {
     }
 
-    public AxisAlignedBB getCollisionBoundingBox() {
+    public AxisAlignedBB getCollisionBoundingBox()
+    {
         return null;
     }
 
-    public void onScheduledTick() {
+    public void onScheduledTick()
+    {
     }
-    
-    public void onTileTick(boolean client) {
+
+    public void onTileTick(boolean client)
+    {
     }
-    
+
     public abstract int getBlockID();
-        
-    public int getMetaData() {
+
+    public int getMetaData()
+    {
         return 0;
     }
 
-    public void addHarvestContents(ArrayList<ItemStack> ist) {
+    public void addHarvestContents(ArrayList<ItemStack> ist)
+    {
         ist.add(new ItemStack(getBlockID(), 1, getMetaData()));
     }
 
-    public void scheduleTick(int time) {
+    public void scheduleTick(int time)
+    {
         long tn = worldObj.getTotalWorldTime() + time;
         if (schedTick > 0L && schedTick < tn)
             return;
@@ -88,99 +104,119 @@ public abstract class TileMulti extends TileEntity implements ICustomPacketTile
         markDirty();
     }
 
-    public boolean isTickScheduled() {
+    public boolean isTickScheduled()
+    {
         return schedTick >= 0L;
     }
 
-    public void breakBlock() {
+    public void breakBlock()
+    {
         ArrayList<ItemStack> il = new ArrayList<ItemStack>();
         addHarvestContents(il);
-        
+
         for (ItemStack it : il)
             BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, it);
-        
+
         worldObj.setBlock(xCoord, yCoord, zCoord, 0);
     }
 
-    public final void markDirty() {
+    public final void markDirty()
+    {
         BasicUtils.markBlockDirty(worldObj, xCoord, yCoord, zCoord);
     }
-    
-    public final void markRender() {
+
+    public final void markRender()
+    {
         worldObj.markBlockForRenderUpdate(xCoord, yCoord, zCoord);
     }
 
     @Override
-    public final void updateEntity() {
-        if (worldObj.isRemote) {
+    public final void updateEntity()
+    {
+        if (worldObj.isRemote)
+        {
             onTileTick(true);
             return;
-        } else
+        }
+        else
             onTileTick(false);
-        
+
         if (schedTick < 0L)
             return;
-        
+
         long time = worldObj.getTotalWorldTime();
-        if (schedTick <= time) {
+        if (schedTick <= time)
+        {
             schedTick = -1L;
             onScheduledTick();
             markDirty();
         }
     }
 
-    public final void readFromNBT(NBTTagCompound tag) {
+    public final void readFromNBT(NBTTagCompound tag)
+    {
         super.readFromNBT(tag);
         schedTick = tag.getLong("sched");
         load(tag);
     }
 
-    public final void writeToNBT(NBTTagCompound tag) {
+    public final void writeToNBT(NBTTagCompound tag)
+    {
         super.writeToNBT(tag);
         tag.setLong("sched", schedTick);
         save(tag);
     }
-    
-    public void save(NBTTagCompound tag) {
+
+    public void save(NBTTagCompound tag)
+    {
     }
-    
-    public void load(NBTTagCompound tag) {
+
+    public void load(NBTTagCompound tag)
+    {
     }
-    
+
     @Override
-    public final Packet getDescriptionPacket() {
+    public final Packet getDescriptionPacket()
+    {
         PacketCustom packet = writeStream(0);
         writeDesc(packet);
         return packet.toPacket();
     }
-    
+
     @Override
-    public final void handleDescriptionPacket(PacketCustom packet){
+    public final void handleDescriptionPacket(PacketCustom packet)
+    {
         int switchkey = packet.readUByte();
         if (switchkey == 0)
             readDesc(packet);
         else
             read(packet, switchkey);
     }
-    
-    public void read(MCDataInput in, int switchkey) {
+
+    public void read(MCDataInput in, int switchkey)
+    {
     }
-    
-    public void readDesc(MCDataInput in) {
+
+    public void readDesc(MCDataInput in)
+    {
     }
-    
-    public void writeDesc(MCDataOutput out) {
+
+    public void writeDesc(MCDataOutput out)
+    {
     }
-    
-    public PacketCustom writeStream(int switchkey) {
+
+    public PacketCustom writeStream(int switchkey)
+    {
         PacketCustom stream = new PacketCustom(CoreSPH.channel, 1);
         stream.writeCoord(new BlockCoord(this)).writeByte(switchkey);
         return stream;
     }
-    
-    public int resolveLook(EntityPlayer player) {
+
+    public int resolveLook(EntityPlayer player)
+    {
         int rot = (int) Math.floor(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 0x3;
-        if (Math.abs(player.posX - xCoord) < 2D && Math.abs(player.posZ - zCoord) < 2D) {
+        if (Math.abs(player.posX - xCoord) < 2D && Math.abs(player.posZ - zCoord) < 2D)
+        {
             double p = player.posY + 1.82D - player.yOffset - this.yCoord;
             if (p > 2.0D)
                 return 0;
@@ -188,10 +224,14 @@ public abstract class TileMulti extends TileEntity implements ICustomPacketTile
                 return 1;
         }
         switch (rot) {
-        case 0: return 3;
-        case 1: return 4;
-        case 2: return 2;
-        case 3: return 5;
+        case 0:
+            return 3;
+        case 1:
+            return 4;
+        case 2:
+            return 2;
+        case 3:
+            return 5;
         }
         return 1;
     }

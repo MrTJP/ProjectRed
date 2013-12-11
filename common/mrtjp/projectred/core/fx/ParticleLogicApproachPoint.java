@@ -12,7 +12,8 @@ public class ParticleLogicApproachPoint extends ParticleLogic
     private final double targetDistance;
     private boolean ignoreY;
 
-    public ParticleLogicApproachPoint(Vector3 point, double approachSpeed, double targetDistance, int priority, boolean finalLogic) {
+    public ParticleLogicApproachPoint(Vector3 point, double approachSpeed, double targetDistance, int priority, boolean finalLogic)
+    {
         super(priority, finalLogic);
         this.targetX = point.x;
         this.targetY = point.y;
@@ -21,20 +22,23 @@ public class ParticleLogicApproachPoint extends ParticleLogic
         this.targetDistance = targetDistance;
     }
 
-    private double getDistanceSqToPoint(double x, double y, double z) {
+    private double getDistanceSqToPoint(double x, double y, double z)
+    {
         double var2 = particle.posX - x;
         double var4 = particle.posY - y;
         double var6 = particle.posZ - z;
         return var2 * var2 + var4 * var4 + var6 * var6;
     }
 
-    public ParticleLogicApproachPoint setIgnoreY(boolean ignore) {
+    public ParticleLogicApproachPoint setIgnoreY(boolean ignore)
+    {
         ignoreY = ignore;
         return this;
     }
 
     @Override
-    public void doUpdate() {
+    public void doUpdate()
+    {
         double posX = particle.posX;
         double posZ = particle.posZ;
         double posY = particle.posY;
@@ -42,7 +46,8 @@ public class ParticleLogicApproachPoint extends ParticleLogic
         double distanceToTarget = getDistanceSqToPoint(targetX, targetY, targetZ);
         double deltaZ = targetZ - particle.posZ;
         double deltaX = targetX - particle.posX;
-        if (Math.abs(deltaX) > targetDistance || Math.abs(deltaZ) > targetDistance) {
+        if (Math.abs(deltaX) > targetDistance || Math.abs(deltaZ) > targetDistance)
+        {
             double angle = Math.atan2(deltaZ, deltaX);
 
             double radians = angle;
@@ -51,7 +56,8 @@ public class ParticleLogicApproachPoint extends ParticleLogic
             posZ = particle.posZ + approachSpeed * Math.sin(radians);
         }
 
-        if (!ignoreY) {
+        if (!ignoreY)
+        {
             double deltaY = posY - targetY;
 
             double horizontalDistance = MathHelper.sqrt_double(deltaX * deltaX + deltaZ * deltaZ);
@@ -68,7 +74,8 @@ public class ParticleLogicApproachPoint extends ParticleLogic
     }
 
     @Override
-    public ParticleLogic clone() {
+    public ParticleLogic clone()
+    {
         return new ParticleLogicApproachPoint(new Vector3(targetX, targetY, targetZ), approachSpeed, targetDistance, priority, finalLogic).setIgnoreY(ignoreY);
     }
 }

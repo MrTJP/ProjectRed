@@ -18,13 +18,15 @@ public class OpenGLLib
     private static FloatBuffer projection = GLAllocation.createDirectFloatBuffer(16);
     private static FloatBuffer objectCoords = GLAllocation.createDirectFloatBuffer(3);
 
-    public static void updateMatrices() {
+    public static void updateMatrices()
+    {
         GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelview);
         GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projection);
         GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
     }
 
-    public static Vec3 unproject(float winX, float winY, float winZ) {
+    public static Vec3 unproject(float winX, float winY, float winZ)
+    {
         GLU.gluUnProject(winX, winY, winZ, modelview, projection, viewport, objectCoords);
 
         float objectX = objectCoords.get(0);
@@ -36,7 +38,8 @@ public class OpenGLLib
 
     private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
-    public static synchronized void loadMatrix(Matrix4f transform) {
+    public static synchronized void loadMatrix(Matrix4f transform)
+    {
         transform.store(matrixBuffer);
         matrixBuffer.flip();
         GL11.glMultMatrix(matrixBuffer);

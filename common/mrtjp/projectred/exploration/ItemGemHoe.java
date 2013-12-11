@@ -5,10 +5,12 @@ import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 
-public class ItemGemHoe extends ItemHoe {
+public class ItemGemHoe extends ItemHoe
+{
     EnumSpecialTool tool;
 
-    public ItemGemHoe(int par1, EnumSpecialTool tool) {
+    public ItemGemHoe(int par1, EnumSpecialTool tool)
+    {
         super(par1, tool.material);
         this.tool = tool;
         this.setUnlocalizedName("projectred.exploration." + tool.unlocal);
@@ -16,14 +18,16 @@ public class ItemGemHoe extends ItemHoe {
     }
 
     @Override
-    public boolean getIsRepairable(ItemStack ist1, ItemStack ist2) {
+    public boolean getIsRepairable(ItemStack ist1, ItemStack ist2)
+    {
         if (tool.repairStack.isItemEqual(ist2))
             return true;
         return super.getIsRepairable(ist1, ist2);
     }
 
     @Override
-    public void registerIcons(IconRegister reg) {
+    public void registerIcons(IconRegister reg)
+    {
         this.itemIcon = reg.registerIcon("projectred:gemtools/" + tool.unlocal);
     }
 }

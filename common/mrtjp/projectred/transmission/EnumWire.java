@@ -8,8 +8,8 @@ import net.minecraftforge.oredict.OreDictionary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public enum EnumWire {
-
+public enum EnumWire
+{
     RED_ALLOY("Red alloy wire", "pr_redwire", "pr_sredwire", 0, 0xC80000, "redalloy"),
 
     INSULATED_0("White insulated wire", "pr_insulated", "pr_sinsulated", 1, 0xFFFFFF, "insulated/whiteoff", "insulated/whiteon"),
@@ -67,8 +67,8 @@ public enum EnumWire {
     public static final String oreDictDefinitionInsFramed = "projredInsFramedWire";
     public static final String oreDictDefinitionBundled = "projredBundledCable";
 
-    private EnumWire(String name, String wireType, String framedType,
-            int thickness, int itemColour, String... textures) {
+    private EnumWire(String name, String wireType, String framedType, int thickness, int itemColour, String... textures)
+    {
         this.name = name;
         this.wireType = wireType;
         this.framedType = framedType;
@@ -77,46 +77,57 @@ public enum EnumWire {
         wireSpritePaths = textures;
         wireSprites = new Icon[textures.length];
     }
-    private EnumWire(String name, String wireType, int thickness, int itemColour, String... textures) {
+
+    private EnumWire(String name, String wireType, int thickness, int itemColour, String... textures)
+    {
         this(name, wireType, null, thickness, itemColour, textures);
     }
 
-    public boolean hasFramedForm() {
+    public boolean hasFramedForm()
+    {
         return framedType != null;
     }
 
     @SideOnly(Side.CLIENT)
-    public void loadTextures(IconRegister reg) {
-        if (wireSpritePaths.length > 0) {
+    public void loadTextures(IconRegister reg)
+    {
+        if (wireSpritePaths.length > 0)
+        {
             wireSprites = new Icon[wireSpritePaths.length];
             for (int i = 0; i < wireSpritePaths.length; i++)
                 wireSprites[i] = reg.registerIcon("projectred:wires/" + wireSpritePaths[i]);
         }
     }
 
-    public ItemStack getItemStack() {
+    public ItemStack getItemStack()
+    {
         return getItemStack(1);
     }
 
-    public ItemStack getItemStack(int i) {
+    public ItemStack getItemStack(int i)
+    {
         return new ItemStack(ProjectRedTransmission.itemPartWire, i, meta);
     }
 
-    public ItemStack getFramedItemStack() {
+    public ItemStack getFramedItemStack()
+    {
         return getFramedItemStack(1);
     }
 
-    public ItemStack getFramedItemStack(int i) {
+    public ItemStack getFramedItemStack(int i)
+    {
         if (!this.hasFramedForm())
             return null;
 
         return new ItemStack(ProjectRedTransmission.itemPartFramedWire, i, meta);
     }
 
-    public static void initOreDictDefinitions() {
+    public static void initOreDictDefinitions()
+    {
         for (EnumWire w : EnumWire.VALID_WIRE)
             OreDictionary.registerOre(oreDictDefinition, w.getItemStack());
-        for (EnumWire w : EnumWire.INSULATED_WIRE){
+        for (EnumWire w : EnumWire.INSULATED_WIRE)
+        {
             if (w.hasFramedForm())
                 OreDictionary.registerOre(oreDictDefinitionInsFramed, w.getFramedItemStack());
             OreDictionary.registerOre(oreDictDefinitionInsulated, w.getItemStack());

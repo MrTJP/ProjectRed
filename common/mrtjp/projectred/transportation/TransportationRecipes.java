@@ -10,14 +10,16 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 
-public class TransportationRecipes {
-
-    public static void initRecipes() {
+public class TransportationRecipes 
+{
+    public static void initRecipes() 
+    {
         initPipeRecipes();
         initChipRecipes();
     }
 
-    private static void initPipeRecipes() {
+    private static void initPipeRecipes() 
+    {
         /** Item Transport Pipe **/
         GameRegistry.addRecipe(EnumPipe.BASIC.getItemStack(16),
                 "sgs",
@@ -69,7 +71,8 @@ public class TransportationRecipes {
 
     }
     
-    private static void initChipRecipes() {
+    private static void initChipRecipes() 
+    {
         /** Null chip **/
         GameRegistry.addRecipe(EnumPart.NULLROUTINGCHIP.getItemStack(),
                 "gpp",
@@ -123,7 +126,8 @@ public class TransportationRecipes {
                 EnumPart.BLUEILLUMAR.getItemStack());
     }
     
-    private static void addChipRecipe(ItemStack result, Object bus, Object material2, Object material1, Object dyeLeft, Object dyeRight) {
+    private static void addChipRecipe(ItemStack result, Object bus, Object material2, Object material1, Object dyeLeft, Object dyeRight) 
+    {
         GameRegistry.addRecipe(new ShapedOreRecipe(result,
                 "dMD",
                 "bcm",

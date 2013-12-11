@@ -21,7 +21,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 
 @Mod(modid = "ProjRed|Illumination", name = "ProjectRed-Illumination", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = "required-after:ProjRed|Core;")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
-public class ProjectRedIllumination 
+public class ProjectRedIllumination
 {
     /** Blocks **/
     public static BlockLamp blockLamp;
@@ -43,25 +43,28 @@ public class ProjectRedIllumination
 
     public static CreativeTabs tabLighting = new CreativeTabs("ill") {
         @Override
-        public ItemStack getIconItemStack() {
+        public ItemStack getIconItemStack()
+        {
             return new ItemStack(ProjectRedIllumination.itemPartInvLantern, 1, 14);
         }
     };
 
     @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit(FMLPreInitializationEvent event)
+    {
         proxy.preinit();
     }
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent event) {
+    public void init(FMLInitializationEvent event)
+    {
         MinecraftForge.EVENT_BUS.register(instance);
         proxy.init();
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
+    public void postInit(FMLPostInitializationEvent event)
+    {
         proxy.postinit();
     }
-
 }

@@ -2,23 +2,25 @@ package mrtjp.projectred.compatability;
 
 import mrtjp.projectred.core.IProxy;
 
-public class CompatabilityProxy implements IProxy {
-
+public class CompatabilityProxy implements IProxy
+{
     @Override
-    public void preinit() {
+    public void preinit()
+    {
         Services.loadServices();
     }
 
     @Override
-    public void init() {
+    public void init()
+    {
         // Tinkers Construct
         if (Services.loadTConstruct)
             Services.getTCProxy().loadTCInteractions();
     }
 
     @Override
-    public void postinit() {
+    public void postinit()
+    {
 
     }
-
 }

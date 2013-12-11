@@ -17,7 +17,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 
 @Mod(modid = "ProjRed|Transmission", name = "ProjectRed-Transmission", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = "required-after:ProjRed|Core;")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
-public class ProjectRedTransmission 
+public class ProjectRedTransmission
 {
     /** Multipart items **/
     public static ItemPartWire itemPartWire;
@@ -31,25 +31,28 @@ public class ProjectRedTransmission
 
     public static CreativeTabs tabTransmission = new CreativeTabs("trans") {
         @Override
-        public ItemStack getIconItemStack() {
+        public ItemStack getIconItemStack()
+        {
             return new ItemStack(ProjectRedTransmission.itemPartWire);
         }
     };
 
     @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit(FMLPreInitializationEvent event)
+    {
         proxy.preinit();
     }
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent event) {
+    public void init(FMLInitializationEvent event)
+    {
         MinecraftForge.EVENT_BUS.register(instance);
         proxy.init();
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
+    public void postInit(FMLPostInitializationEvent event)
+    {
         proxy.postinit();
     }
-
 }

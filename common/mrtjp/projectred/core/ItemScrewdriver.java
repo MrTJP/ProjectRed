@@ -10,8 +10,10 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemScrewdriver extends Item implements IScrewdriver {
-    public ItemScrewdriver(int id) {
+public class ItemScrewdriver extends Item implements IScrewdriver
+{
+    public ItemScrewdriver(int id)
+    {
         super(id);
         setUnlocalizedName("projectred.core.screwdriver");
         setMaxStackSize(1);
@@ -21,19 +23,21 @@ public class ItemScrewdriver extends Item implements IScrewdriver {
     }
 
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float par8, float par9, float par10) {
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int x, int y, int z, int side, float par8, float par9, float par10)
+    {
         return false;
     }
 
     @Override
-    public boolean shouldPassSneakingClickToBlock(World w, int x, int y, int z) {
+    public boolean shouldPassSneakingClickToBlock(World w, int x, int y, int z)
+    {
         return true;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerIcons(IconRegister reg) {
+    public void registerIcons(IconRegister reg)
+    {
         this.itemIcon = reg.registerIcon("projectred:screwdriver");
     }
-
 }

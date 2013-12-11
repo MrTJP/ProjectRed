@@ -5,11 +5,13 @@ import java.util.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
-public interface IRetroGenerator {
+public interface IRetroGenerator
+{
     /**
      * This is the string that is stored in the chunk data when generating. It
      * is checked every chunk load, and if it isn't there, the generation is run
      * again.
+     * 
      * @return The unique ID of this structure
      */
     public String getSubgenerationID();
@@ -23,6 +25,7 @@ public interface IRetroGenerator {
 
     /**
      * Called when it is determined that generation should occur in this chunk.
+     * 
      * @param r The world's random generator
      * @param w The world to generate in
      * @param chunkX The chunk x position

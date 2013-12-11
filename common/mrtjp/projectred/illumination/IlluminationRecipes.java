@@ -7,15 +7,18 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class IlluminationRecipes {
-
-    public static void initIlluminationRecipes() {
+public class IlluminationRecipes 
+{
+    public static void initIlluminationRecipes() 
+    {
         initLightingRecipes();
     }
 
-    private static void initLightingRecipes() {
+    private static void initLightingRecipes() 
+    {
         /** Lamps **/
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 16; i++) 
+        {
             GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.blockLamp, 1, i),  // Regular
                     "gIg",
                     "gIg",
@@ -35,7 +38,8 @@ public class IlluminationRecipes {
         }
 
         /** Lanterns **/
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 16; i++) 
+        {
             GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartLantern, 1, i),
                     "PNP",
                     "GIG",
@@ -68,7 +72,8 @@ public class IlluminationRecipes {
                     );
 
         /** Cage Lamps **/
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 16; i++) 
+        {
             GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartCageLamp, 1, i),
                     "CCC",
                     "CIC",
@@ -90,7 +95,8 @@ public class IlluminationRecipes {
         }
 
         /** Fixtures **/
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 16; i++) 
+        {
             GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartFixture, 1, i),
                     "ggg",
                     "gIg",
@@ -110,7 +116,6 @@ public class IlluminationRecipes {
                     'P', EnumPart.CATHODE.getItemStack()
                     );
         }
-
     }
 }
 

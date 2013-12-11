@@ -34,7 +34,8 @@ public abstract class GateLogic<PartType extends GatePart>
 
     public abstract boolean canConnectTo(PartType gate, IConnectable part, int r);
 
-    public boolean cycleShape(PartType gate) {
+    public boolean cycleShape(PartType gate)
+    {
         return false;
     }
 
@@ -42,21 +43,26 @@ public abstract class GateLogic<PartType extends GatePart>
 
     public abstract void scheduledTick(PartType gate);
 
-    public void onTick(PartType gate) {
+    public void onTick(PartType gate)
+    {
     }
 
-    public void setup(PartType part) {
+    public void setup(PartType part)
+    {
     }
 
     /**
      * Beware you don't actually do anything client side.
+     * 
      * @return true if the event is consumed by this part
      */
-    public boolean activate(PartType part, EntityPlayer player, ItemStack held) {
+    public boolean activate(PartType part, EntityPlayer player, ItemStack held)
+    {
         return false;
     }
 
-    public int lightLevel() {
+    public int lightLevel()
+    {
         return 7;
     }
 }

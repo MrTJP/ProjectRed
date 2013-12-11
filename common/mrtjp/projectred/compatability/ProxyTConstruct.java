@@ -19,8 +19,8 @@ import tconstruct.library.TConstructRegistry;
 import tconstruct.library.crafting.Smeltery;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class ProxyTConstruct {
-
+public class ProxyTConstruct
+{
     public static Material liquidMetal;
 
     public static Fluid moltenRedstoneFluid;
@@ -29,32 +29,38 @@ public class ProxyTConstruct {
     public static Fluid moltenConductiveRedmetalFluid;
     public static LiquidFiniteSubstance moltenConductiveRedmetal;
 
-    public ProxyTConstruct() {
+    public ProxyTConstruct()
+    {
         PRLogger.info("Loaded TConstruct Compatability Proxy");
     }
 
-    public void addSmeltingRecipe(ItemStack input, int blockID, int metadata, int temperature, FluidStack liquid) {
+    public void addSmeltingRecipe(ItemStack input, int blockID, int metadata, int temperature, FluidStack liquid)
+    {
         Smeltery.addMelting(input, blockID, metadata, temperature, liquid);
     }
 
-    public void addAlloyMixing(FluidStack result, FluidStack... mixers) {
+    public void addAlloyMixing(FluidStack result, FluidStack... mixers)
+    {
         Smeltery.addAlloyMixing(result, mixers);
     }
 
-    public void addTableCastingRecipe(ItemStack output, FluidStack metal, ItemStack cast, boolean consume, int delay) {
+    public void addTableCastingRecipe(ItemStack output, FluidStack metal, ItemStack cast, boolean consume, int delay)
+    {
         TConstructRegistry.getTableCasting().addCastingRecipe(output, metal, cast, consume, delay);
     }
 
-    public void addBasinCastingRecipe(ItemStack output, FluidStack metal, ItemStack cast, boolean consume, int delay) {
+    public void addBasinCastingRecipe(ItemStack output, FluidStack metal, ItemStack cast, boolean consume, int delay)
+    {
         TConstructRegistry.getBasinCasting().addCastingRecipe(output, metal, cast, consume, delay);
     }
 
-    public ItemStack getCastIngot() {
+    public ItemStack getCastIngot()
+    {
         return new ItemStack(metalPattern, 1, 0);
     }
 
-
-    public void loadTCInteractions() {
+    public void loadTCInteractions()
+    {
         liquidMetal = new MaterialLiquid(MapColor.tntColor);
 
         moltenRedstoneFluid = new Fluid("Molten Redstone");
@@ -71,13 +77,13 @@ public class ProxyTConstruct {
 
         // Molten redstone recipes
         addSmeltingRecipe(new ItemStack(Item.redstone, 4), Block.blockRedstone.blockID, 0, 160, new FluidStack(moltenRedstoneFluid, TConstruct.ingotLiquidValue));
-        addSmeltingRecipe(new ItemStack(Block.blockRedstone), Block.blockRedstone.blockID, 0, 575, new FluidStack(moltenRedstoneFluid, TConstruct.ingotLiquidValue*9));
+        addSmeltingRecipe(new ItemStack(Block.blockRedstone), Block.blockRedstone.blockID, 0, 575, new FluidStack(moltenRedstoneFluid, TConstruct.ingotLiquidValue * 9));
 
         // Conductive Redmetal recipes
-        addAlloyMixing(new FluidStack(moltenConductiveRedmetalFluid, TConstruct.ingotLiquidValue), new FluidStack(moltenRedstoneFluid, TConstruct.ingotLiquidValue*4), new FluidStack(TContent.moltenIronFluid, TConstruct.ingotLiquidValue*1));
-        addAlloyMixing(new FluidStack(moltenConductiveRedmetalFluid, TConstruct.ingotLiquidValue), new FluidStack(moltenRedstoneFluid, TConstruct.ingotLiquidValue*3), new FluidStack(TContent.moltenCopperFluid, TConstruct.ingotLiquidValue*2));
-        addAlloyMixing(new FluidStack(moltenConductiveRedmetalFluid, TConstruct.ingotLiquidValue), new FluidStack(moltenRedstoneFluid, TConstruct.ingotLiquidValue*2), new FluidStack(TContent.moltenTinFluid, TConstruct.ingotLiquidValue*3));
-        addAlloyMixing(new FluidStack(moltenConductiveRedmetalFluid, TConstruct.ingotLiquidValue), new FluidStack(moltenRedstoneFluid, TConstruct.ingotLiquidValue*1), new FluidStack(TContent.moltenAluminumFluid, TConstruct.ingotLiquidValue*4));
+        addAlloyMixing(new FluidStack(moltenConductiveRedmetalFluid, TConstruct.ingotLiquidValue), new FluidStack(moltenRedstoneFluid, TConstruct.ingotLiquidValue * 4), new FluidStack(TContent.moltenIronFluid, TConstruct.ingotLiquidValue * 1));
+        addAlloyMixing(new FluidStack(moltenConductiveRedmetalFluid, TConstruct.ingotLiquidValue), new FluidStack(moltenRedstoneFluid, TConstruct.ingotLiquidValue * 3), new FluidStack(TContent.moltenCopperFluid, TConstruct.ingotLiquidValue * 2));
+        addAlloyMixing(new FluidStack(moltenConductiveRedmetalFluid, TConstruct.ingotLiquidValue), new FluidStack(moltenRedstoneFluid, TConstruct.ingotLiquidValue * 2), new FluidStack(TContent.moltenTinFluid, TConstruct.ingotLiquidValue * 3));
+        addAlloyMixing(new FluidStack(moltenConductiveRedmetalFluid, TConstruct.ingotLiquidValue), new FluidStack(moltenRedstoneFluid, TConstruct.ingotLiquidValue * 1), new FluidStack(TContent.moltenAluminumFluid, TConstruct.ingotLiquidValue * 4));
 
         // Red alloy ingot casting
         addTableCastingRecipe(EnumPart.REDINGOT.getItemStack(), new FluidStack(moltenConductiveRedmetalFluid, TConstruct.ingotLiquidValue), getCastIngot(), false, 32);

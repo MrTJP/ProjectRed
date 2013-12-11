@@ -35,11 +35,13 @@ public class CoreParticle extends EntityFX
     private boolean doVelocityUpdates = true;
     public static String[] particleTypes;
 
-    public void setParticleAge(int age) {
+    public void setParticleAge(int age)
+    {
         particleAge = age;
     }
 
-    public CoreParticle(World par1World, double par2, double par4, double par6) {
+    public CoreParticle(World par1World, double par2, double par4, double par6)
+    {
         super(par1World, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
         motionX = 0.0D;
         motionY = 0.0D;
@@ -61,45 +63,54 @@ public class CoreParticle extends EntityFX
         setRandomScale(0.1F, 0.3F);
     }
 
-    public void setDoRender(boolean doRender) {
+    public void setDoRender(boolean doRender)
+    {
         this.doRender = doRender;
     }
 
-    public CoreParticle setAffectedByGravity() {
+    public CoreParticle setAffectedByGravity()
+    {
         isAffectedByGravity = true;
         return this;
     }
 
-    public CoreParticle setNoLogicRequired() {
+    public CoreParticle setNoLogicRequired()
+    {
         ignoreNoLogics = true;
         return this;
     }
 
     @Override
-    public boolean isBurning() {
+    public boolean isBurning()
+    {
         return false;
     }
 
     @Override
-    protected boolean canTriggerWalking() {
+    protected boolean canTriggerWalking()
+    {
         return false;
     }
 
-    public void setNoVelocityUpdates() {
+    public void setNoVelocityUpdates()
+    {
         doVelocityUpdates = false;
     }
 
     @Override
-    public boolean canAttackWithItem() {
+    public boolean canAttackWithItem()
+    {
         return false;
     }
 
-    public void setTextureByName(String name) {
+    public void setTextureByName(String name)
+    {
         particleName = name;
         particleIcon = ParticleIconRegistry.instance.getIcon(name);
     }
 
-    public void addRandomOffset(double maxX, double maxY, double maxZ) {
+    public void addRandomOffset(double maxX, double maxY, double maxZ)
+    {
         double newX = posX + rand.nextDouble() * maxX - maxX / 2.0D;
         double newY = posY + rand.nextDouble() * maxY - maxY / 2.0D;
         double newZ = posZ + rand.nextDouble() * maxZ - maxZ / 2.0D;
@@ -107,93 +118,113 @@ public class CoreParticle extends EntityFX
         setPosition(newX, newY, newZ);
     }
 
-    public float getScaleX() {
+    public float getScaleX()
+    {
         return scaleX;
     }
 
-    public float getScaleY() {
+    public float getScaleY()
+    {
         return scaleY;
     }
 
-    public float getScaleZ() {
+    public float getScaleZ()
+    {
         return scaleZ;
     }
 
-    public CoreParticle setRandomScale(float min, float max) {
+    public CoreParticle setRandomScale(float min, float max)
+    {
         setScale(rand.nextFloat() * (max - min) + min);
         return this;
     }
 
-    public void setScale(float scale) {
+    public void setScale(float scale)
+    {
         scaleX = scale;
         scaleY = scale;
         scaleZ = scale;
     }
 
-    public void setScale(float scaleX, float scaleY, float scaleZ) {
+    public void setScale(float scaleX, float scaleY, float scaleZ)
+    {
         this.scaleX = scaleX;
         this.scaleY = scaleY;
         this.scaleZ = scaleZ;
     }
 
-    public int getAge() {
+    public int getAge()
+    {
         return particleAge;
     }
 
-    public int getMaxAge() {
+    public int getMaxAge()
+    {
         return particleMaxAge;
     }
 
-    public void setMaxAge(int age) {
+    public void setMaxAge(int age)
+    {
         particleMaxAge = age;
     }
 
-    public void setIgnoreMaxAge(boolean ignore) {
+    public void setIgnoreMaxAge(boolean ignore)
+    {
         ignoreMaxAge = ignore;
         particleAge = 0;
     }
 
-    public void setRGBColorF(float r, float g, float b) {
+    public void setRGBColorF(float r, float g, float b)
+    {
         this.r = r;
         this.g = g;
         this.b = b;
     }
 
-    public void setAlpha(float alpha) {
+    public void setAlpha(float alpha)
+    {
         a = alpha;
     }
 
-    public float getRed() {
+    public float getRed()
+    {
         return r;
     }
 
-    public float getGreen() {
+    public float getGreen()
+    {
         return g;
     }
 
-    public float getBlue() {
+    public float getBlue()
+    {
         return b;
     }
 
-    public float getAlpha() {
+    public float getAlpha()
+    {
         return a;
     }
 
-    public void addLogic(ParticleLogic logic) {
+    public void addLogic(ParticleLogic logic)
+    {
         logics.add(logic);
         Collections.sort(logics, LogicComparator.instance);
     }
 
-    public void removeLogic(ParticleLogic logic) {
+    public void removeLogic(ParticleLogic logic)
+    {
         logics.remove(logic);
     }
 
-    public void clearLogic() {
+    public void clearLogic()
+    {
         logics.clear();
     }
 
     @Override
-    public int getBrightnessForRender(float par1) {
+    public int getBrightnessForRender(float par1)
+    {
         float f = (particleAge + par1) / particleMaxAge;
 
         if (f < 0.0F)
@@ -214,7 +245,8 @@ public class CoreParticle extends EntityFX
     }
 
     @Override
-    public float getBrightness(float par1) {
+    public float getBrightness(float par1)
+    {
         float f = (particleAge + par1) / particleMaxAge;
 
         if (f < 0.0F)
@@ -228,7 +260,8 @@ public class CoreParticle extends EntityFX
     }
 
     @Override
-    public void onUpdate() {
+    public void onUpdate()
+    {
         ticksExisted += 1;
         prevDistanceWalkedModified = distanceWalkedModified;
         prevPosX = posX;
@@ -248,33 +281,38 @@ public class CoreParticle extends EntityFX
         for (ParticleLogic logic : logics)
             if (logic.getFinished())
                 remove.add(logic);
-            else {
+            else
+            {
                 logic.onUpdate(worldObj, this);
                 if (logic.isFinalLogic())
                     break;
             }
-        
+
         logics.removeAll(remove);
 
         if (particleAge++ > particleMaxAge && !ignoreMaxAge || !ignoreNoLogics && logics.size() == 0)
             setDead();
     }
-    
-    public Vector3 position() {
+
+    public Vector3 position()
+    {
         return new Vector3(posX, posY, posZ);
     }
 
     @Override
-    protected void entityInit() {
+    protected void entityInit()
+    {
     }
 
     @Override
-    public int getFXLayer() {
+    public int getFXLayer()
+    {
         return 2;
     }
 
     @Override
-    public void renderParticle(Tessellator tessellator, float partialframe, float cosyaw, float cospitch, float sinyaw, float sinsinpitch, float cossinpitch) {
+    public void renderParticle(Tessellator tessellator, float partialframe, float cosyaw, float cospitch, float sinyaw, float sinsinpitch, float cossinpitch)
+    {
         if (!worldObj.isRemote)
             return;
 
@@ -306,11 +344,11 @@ public class CoreParticle extends EntityFX
     public static class LogicComparator implements Comparator<ParticleLogic>
     {
         public static final LogicComparator instance = new LogicComparator();
-        
+
         @Override
-        public int compare(ParticleLogic o1, ParticleLogic o2) {
+        public int compare(ParticleLogic o1, ParticleLogic o2)
+        {
             return o1 == o2 ? 0 : o1.getPriority() > o2.getPriority() ? 1 : -1;
         }
     }
-
 }

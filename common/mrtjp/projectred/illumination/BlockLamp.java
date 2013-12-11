@@ -22,12 +22,13 @@ import codechicken.lib.vec.BlockCoord;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockLamp extends Block {
-
+public class BlockLamp extends Block
+{
     public static Icon[] onIcons = new Icon[16];
     public static Icon[] offIcons = new Icon[16];
 
-    public BlockLamp(int id) {
+    public BlockLamp(int id)
+    {
         super(id, new Material(Material.circuits.materialMapColor));
         setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         setHardness(0.5F);
@@ -36,52 +37,61 @@ public class BlockLamp extends Block {
     }
 
     @Override
-    public void onNeighborBlockChange(World world, int x, int y, int z, int id) {
+    public void onNeighborBlockChange(World world, int x, int y, int z, int id)
+    {
         TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null)
             tile.onNeighborBlockChange();
     }
 
     @Override
-    public void updateTick(World world, int x, int y, int z, Random par5Random) {
+    public void updateTick(World world, int x, int y, int z, Random par5Random)
+    {
         TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null)
             tile.onTick();
     }
 
     @Override
-    public void onBlockAdded(World world, int x, int y, int z) {
+    public void onBlockAdded(World world, int x, int y, int z)
+    {
         onNeighborBlockChange(world, x, y, z, 0);
     }
 
     @Override
-    public boolean renderAsNormalBlock() {
+    public boolean renderAsNormalBlock()
+    {
         return true;
     }
 
     @Override
-    public int getRenderType() {
+    public int getRenderType()
+    {
         return IlluminationClientProxy.lampRenderID;
     }
 
     @Override
-    public boolean isOpaqueCube() {
+    public boolean isOpaqueCube()
+    {
         return true;
     }
 
     @Override
-    public boolean isBlockNormalCube(World world, int x, int y, int z) {
+    public boolean isBlockNormalCube(World world, int x, int y, int z)
+    {
         return true;
     }
 
     @Override
-    public void getSubBlocks(int id, CreativeTabs tab, List list) {
+    public void getSubBlocks(int id, CreativeTabs tab, List list)
+    {
         for (int i = 0; i < 32; i++)
             list.add(new ItemStack(id, 1, i));
     }
 
     @Override
-    public int getLightValue(IBlockAccess world, int x, int y, int z) {
+    public int getLightValue(IBlockAccess world, int x, int y, int z)
+    {
         TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null)
             return tile.getLightValue();
@@ -89,31 +99,37 @@ public class BlockLamp extends Block {
     }
 
     @Override
-    public boolean canCreatureSpawn(EnumCreatureType type, World world, int x, int y, int z) {
+    public boolean canCreatureSpawn(EnumCreatureType type, World world, int x, int y, int z)
+    {
         return false;
     }
 
     @Override
-    public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
+    public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side)
+    {
         return true;
     }
 
     @Override
-    public boolean canProvidePower() {
+    public boolean canProvidePower()
+    {
         return true;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerIcons(IconRegister reg) {
-        for (int i = 0; i < 16; i++) {
+    public void registerIcons(IconRegister reg)
+    {
+        for (int i = 0; i < 16; i++)
+        {
             onIcons[i] = reg.registerIcon("projectred:lights/lampon/" + i);
             offIcons[i] = reg.registerIcon("projectred:lights/lampoff/" + i);
         }
     }
 
     @Override
-    public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
+    public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z)
+    {
         TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null)
             return tile.getDroppedBlock();
@@ -121,7 +137,8 @@ public class BlockLamp extends Block {
     }
 
     @Override
-    public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z) {
+    public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z)
+    {
         TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null && !player.capabilities.isCreativeMode)
             BasicUtils.dropItem(world, x, y, z, tile.getDroppedBlock());
@@ -129,12 +146,14 @@ public class BlockLamp extends Block {
     }
 
     @Override
-    public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int metadata, int fortune) {
+    public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int metadata, int fortune)
+    {
         return new ArrayList<ItemStack>(); // Handled on removeBlockByPlayer
     }
 
     @Override
-    public Icon getBlockTexture(IBlockAccess world, int x, int y, int z, int side) {
+    public Icon getBlockTexture(IBlockAccess world, int x, int y, int z, int side)
+    {
         TileLamp tile = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
         if (tile != null)
             if (tile.getLightValue() == 15)
@@ -145,7 +164,8 @@ public class BlockLamp extends Block {
     }
 
     @Override
-    public Icon getIcon(int side, int meta) {
+    public Icon getIcon(int side, int meta)
+    {
         if (meta > 15)
             return onIcons[meta - 16];
         else
@@ -153,14 +173,16 @@ public class BlockLamp extends Block {
     }
 
     @Override
-    public TileEntity createTileEntity(World world, int meta) {
+    public TileEntity createTileEntity(World world, int meta)
+    {
         TileLamp t = new TileLamp();
-        t.prepairPlacement(meta>15, meta>15 ? meta-16 : meta);
+        t.prepairPlacement(meta > 15, meta > 15 ? meta - 16 : meta);
         return t;
     }
 
     @Override
-    public boolean hasTileEntity(int meta) {
+    public boolean hasTileEntity(int meta)
+    {
         return true;
     }
 }

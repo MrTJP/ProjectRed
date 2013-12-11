@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation;
 
-public class NetConstants {
-
+public class NetConstants 
+{
     public static final int gui_InterfacePipe_open = 1;
     public static final int gui_CraftingPipe_open = 2;
     public static final int gui_CraftingPipe_action = 3;
@@ -17,5 +17,4 @@ public class NetConstants {
     public static final int gui_Request_listRefresh = 10;
     
     public static final int particle_Spawn = 11;
-
 }

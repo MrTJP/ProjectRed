@@ -15,36 +15,41 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 
-public class RoutingChipset_ItemExtractor extends RoutingChipset {
-
+public class RoutingChipset_ItemExtractor extends RoutingChipset
+{
     public SimpleInventory filter = new SimpleInventory(9, "filter", 1);
     public int extractOrient = -1;
     public boolean filterExclude = false;
 
     public boolean fuzzyMode = false;
     public int fuzzyDamageMode = 0;
-    public static final int[] fuzzyPercent = new int[] {0, 25, 50, 75, 100};
-
+    public static final int[] fuzzyPercent = new int[] { 0, 25, 50, 75, 100 };
 
     private int remainingDelay = operationDelay();
-    private int operationDelay() {
+
+    private int operationDelay()
+    {
         return 20;
     }
 
-    private int itemsToExtract() {
+    private int itemsToExtract()
+    {
         return 8;
     }
 
-    public void setOrient(int orient) {
+    public void setOrient(int orient)
+    {
         extractOrient = orient;
     }
 
-    public void shiftFuzzy() {
+    public void shiftFuzzy()
+    {
         fuzzyDamageMode = (fuzzyDamageMode + 1) % 5;
     }
 
     @Override
-    public void update() {
+    public void update()
+    {
         if (--remainingDelay > 0)
             return;
         remainingDelay = operationDelay();
@@ -55,12 +60,12 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
         int side = extractOrient == -1 ? inventoryProvider().getInterfacedSide() : extractOrient;
 
         InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
-        InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll()
-                .setFuzzy(fuzzyMode).setFuzzyPercent(fuzzyPercent[fuzzyDamageMode]);
+        InventoryWrapper filt = InventoryWrapper.wrapInventory(filter).setSlotsAll().setFuzzy(fuzzyMode).setFuzzyPercent(fuzzyPercent[fuzzyDamageMode]);
 
         Map<ItemKey, Integer> available = inv.getAllItemStacks();
 
-        for (Entry<ItemKey, Integer> items : available.entrySet()) {
+        for (Entry<ItemKey, Integer> items : available.entrySet())
+        {
             ItemKey stackKey = items.getKey();
             int stackSize = items.getValue();
 
@@ -74,7 +79,8 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
 
             int leftInRun = itemsToExtract();
 
-            while (s != null) {
+            while (s != null)
+            {
                 int toExtract = Math.min(leftInRun, stackSize);
                 toExtract = Math.min(toExtract, stackKey.makeStack(0).getMaxStackSize());
                 if (s.itemCount > 0)
@@ -104,7 +110,8 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
     }
 
     @Override
-    public void save(NBTTagCompound tag) {
+    public void save(NBTTagCompound tag)
+    {
         filter.save(tag);
         tag.setBoolean("mode", filterExclude);
         tag.setInteger("orient", extractOrient);
@@ -113,7 +120,8 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
     }
 
     @Override
-    public void load(NBTTagCompound tag) {
+    public void load(NBTTagCompound tag)
+    {
         filter.load(tag);
         filterExclude = tag.getBoolean("mode");
         extractOrient = tag.getInteger("orient");
@@ -121,27 +129,34 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
         fuzzyDamageMode = tag.getByte("fuzd");
     }
 
-    public static final String[] dirs = new String[] {"Down", "Up", "North", "South", "West", "East"};
+    public static final String[] dirs = new String[] { "Down", "Up", "North", "South", "West", "East" };
+
     @Override
-    public List<String> infoCollection() {
+    public List<String> infoCollection()
+    {
         List<String> list = new LinkedList<String>();
         addOrientInfo(list);
         addFilterInfo(list);
         return list;
     }
 
-    public void addOrientInfo(List<String> list) {
+    public void addOrientInfo(List<String> list)
+    {
         list.add(EnumChatFormatting.GRAY + "Extract Orientation: " + (extractOrient == -1 ? "Default" : dirs[extractOrient]));
     }
-    public void addFilterInfo(List<String> list) {
+
+    public void addFilterInfo(List<String> list)
+    {
         list.add(EnumChatFormatting.GRAY + "Fuzzy Mode: " + fuzzyMode);
         list.add(EnumChatFormatting.GRAY + "Fuzzy Tool Damage: " + fuzzyPercent[fuzzyDamageMode] + "%");
         list.add(EnumChatFormatting.GRAY + "Filter Mode: " + (filterExclude ? "exclude" : "include"));
         list.add(EnumChatFormatting.GRAY + "Filter: ");
         boolean added = false;
-        for (int i = 0; i < filter.getSizeInventory(); i++) {
+        for (int i = 0; i < filter.getSizeInventory(); i++)
+        {
             ItemStack stack = filter.getStackInSlot(i);
-            if (stack != null) {
+            if (stack != null)
+            {
                 list.add(EnumChatFormatting.GRAY + " - " + stack.getDisplayName());
                 added = true;
             }
@@ -149,9 +164,10 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset {
         if (!added)
             list.add(EnumChatFormatting.GRAY + " - empty");
     }
-    
+
     @Override
-    public EnumRoutingChip getChipType() {
+    public EnumRoutingChip getChipType()
+    {
         return EnumRoutingChip.ITEMEXTRACTOR;
     }
 }

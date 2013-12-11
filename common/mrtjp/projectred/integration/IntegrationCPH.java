@@ -11,11 +11,13 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
 import codechicken.multipart.TMultiPart;
 
-public class IntegrationCPH implements IClientPacketHandler {
+public class IntegrationCPH implements IClientPacketHandler
+{
     public static Object channel = ProjectRedIntegration.instance;
 
     @Override
-    public void handlePacket(PacketCustom packet, NetClientHandler nethandler, Minecraft mc) {
+    public void handlePacket(PacketCustom packet, NetClientHandler nethandler, Minecraft mc)
+    {
 
         switch (packet.getType()) {
         case 1:
@@ -27,20 +29,24 @@ public class IntegrationCPH implements IClientPacketHandler {
         }
     }
 
-    private void openTimerGui(Minecraft mc, World world, PacketCustom packet) {
+    private void openTimerGui(Minecraft mc, World world, PacketCustom packet)
+    {
         TMultiPart part = readPartIndex(world, packet);
-        if(part instanceof GatePart) {
-            GatePart gate = (GatePart)part;
-            if(gate.getLogic() instanceof ITimerGuiLogic)
+        if (part instanceof GatePart)
+        {
+            GatePart gate = (GatePart) part;
+            if (gate.getLogic() instanceof ITimerGuiLogic)
                 mc.displayGuiScreen(new GuiTimer(gate));
         }
     }
 
-    private void openCounterGui(Minecraft mc, World world, PacketCustom packet) {
+    private void openCounterGui(Minecraft mc, World world, PacketCustom packet)
+    {
         TMultiPart part = readPartIndex(world, packet);
-        if(part instanceof GatePart) {
-            GatePart gate = (GatePart)part;
-            if(gate.getLogic() instanceof ICounterGuiLogic)
+        if (part instanceof GatePart)
+        {
+            GatePart gate = (GatePart) part;
+            if (gate.getLogic() instanceof ICounterGuiLogic)
                 mc.displayGuiScreen(new GuiCounter(gate));
         }
     }

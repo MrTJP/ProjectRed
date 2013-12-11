@@ -20,7 +20,8 @@ import codechicken.multipart.handler.MultipartProxy;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-public class WirePropogator {
+public class WirePropogator
+{
     /**
      * Used to prevent 2 disabled wires on opposite sides of a block from
      * keeping eachother on through a strong block signal.
@@ -31,47 +32,61 @@ public class WirePropogator {
 
     private static TMultiPart notApart = new TMultiPart() {
         @Override
-        public String getType() {
+        public String getType()
+        {
             return null;
         }
     };
 
-    static {
-        try {
+    static
+    {
+        try
+        {
             wiresProvidePower.setAccessible(true);
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             throw new RuntimeException(e);
         }
     }
 
-    public static void setWiresProvidePower(boolean b) {
-        try {
+    public static void setWiresProvidePower(boolean b)
+    {
+        try
+        {
             wiresProvidePower.setBoolean(Block.redstoneWire, b);
-        } catch (Throwable t) {}
+        } catch (Throwable t)
+        {
+        }
     }
 
-    public static boolean redwiresConnectable() {
+    public static boolean redwiresConnectable()
+    {
         Boolean b = redwiresConnectable.get();
         return b == null ? true : b;
     }
 
-    public static void setRedwiresConnectable(boolean b) {
+    public static void setRedwiresConnectable(boolean b)
+    {
         redwiresConnectable.set(b);
     }
 
-    private static class PropogationRun {
-        public class Propogation {
+    private static class PropogationRun
+    {
+        public class Propogation
+        {
             public IWirePart part;
             public TMultiPart prev;
             public int mode;
 
-            public Propogation(IWirePart part, TMultiPart prev, int mode) {
+            public Propogation(IWirePart part, TMultiPart prev, int mode)
+            {
                 this.part = part;
                 this.prev = prev;
                 this.mode = mode;
             }
 
-            public void propogate() {
+            public void propogate()
+            {
                 part.updateAndPropogate(prev, mode);
             }
         }
@@ -88,7 +103,8 @@ public class WirePropogator {
         private LinkedList<Propogation> propogationList = new LinkedList<Propogation>();
         private LinkedList<Propogation> analogDrops = new LinkedList<Propogation>();
 
-        public void clear() {
+        public void clear()
+        {
             partChanges.clear();
             neighborChanges.clear();
             count = 0;
@@ -98,10 +114,12 @@ public class WirePropogator {
             reusableRuns.add(this);
         }
 
-        public void finish() {
+        public void finish()
+        {
             currentRun = null;
 
-            if(partChanges.isEmpty() && neighborChanges.isEmpty()) {
+            if (partChanges.isEmpty() && neighborChanges.isEmpty())
+            {
                 finishing = parent;
                 clear();
                 return;
@@ -109,30 +127,32 @@ public class WirePropogator {
 
             finishing = this;
 
-            if(CommandDebug.WIRE_READING)
-                System.out.println(""+count+" propogations, "+partChanges.size()+" part changes, "+neighborChanges.size()+" block updates");
+            if (CommandDebug.WIRE_READING)
+                System.out.println("" + count + " propogations, " + partChanges.size() + " part changes, " + neighborChanges.size() + " block updates");
 
-            for(Entry<TileMultipart, Collection<TMultiPart>> entry : partChanges.asMap().entrySet()) {
+            for (Entry<TileMultipart, Collection<TMultiPart>> entry : partChanges.asMap().entrySet())
+            {
                 Collection<TMultiPart> parts = entry.getValue();
-                for(TMultiPart part : parts)
-                    ((IWirePart)part).onSignalUpdate();
+                for (TMultiPart part : parts)
+                    ((IWirePart) part).onSignalUpdate();
 
                 entry.getKey().multiPartChange(parts);
             }
 
-            int blockID = ((Block)MultipartProxy.block()).blockID;
-            for(BlockCoord b : neighborChanges)
+            int blockID = ((Block) MultipartProxy.block()).blockID;
+            for (BlockCoord b : neighborChanges)
                 world.notifyBlockOfNeighborChange(b.x, b.y, b.z, blockID);
 
             finishing = parent;
 
-            if(CommandDebug.WIRE_READING)
-                System.out.println(""+recalcs+" recalculations");
+            if (CommandDebug.WIRE_READING)
+                System.out.println("" + recalcs + " recalculations");
 
             clear();
         }
 
-        public void start(PropogationRun parent, World world) {
+        public void start(PropogationRun parent, World world)
+        {
             this.world = world;
             this.parent = parent;
 
@@ -141,25 +161,29 @@ public class WirePropogator {
             runLoop();
         }
 
-        private void runLoop() {
-            do {
+        private void runLoop()
+        {
+            do
+            {
                 List<Propogation> list = propogationList;
                 propogationList = new LinkedList<Propogation>();
 
-                for(Propogation p : list)
+                for (Propogation p : list)
                     p.propogate();
 
-                if(propogationList.isEmpty() && !analogDrops.isEmpty()) {
+                if (propogationList.isEmpty() && !analogDrops.isEmpty())
+                {
                     propogationList = analogDrops;
                     analogDrops = new LinkedList<Propogation>();
                 }
-            }
-            while(!propogationList.isEmpty());
+            } while (!propogationList.isEmpty());
             finish();
         }
 
-        public void add(IWirePart part, TMultiPart prev, int mode) {
-            if(prev != lastCaller) {
+        public void add(IWirePart part, TMultiPart prev, int mode)
+        {
+            if (prev != lastCaller)
+            {
                 lastCaller = prev;
                 count++;
             }
@@ -167,7 +191,8 @@ public class WirePropogator {
             propogationList.add(new Propogation(part, prev, mode));
         }
 
-        public void addAnalogDrop(IWirePart part) {
+        public void addAnalogDrop(IWirePart part)
+        {
             analogDrops.add(new Propogation(part, notApart, IWirePart.RISING));
         }
     }
@@ -176,44 +201,52 @@ public class WirePropogator {
     private static PropogationRun currentRun = null;
     private static PropogationRun finishing = null;
 
-    private static PropogationRun getRun() {
-        if(reusableRuns.isEmpty())
+    private static PropogationRun getRun()
+    {
+        if (reusableRuns.isEmpty())
             return new PropogationRun();
 
         return reusableRuns.pop();
     }
 
-    public static void addNeighborChange(BlockCoord pos) {
+    public static void addNeighborChange(BlockCoord pos)
+    {
         currentRun.neighborChanges.add(pos);
     }
 
-    public static void addPartChange(TMultiPart part) {
+    public static void addPartChange(TMultiPart part)
+    {
         currentRun.partChanges.put(part.tile(), part);
     }
 
-    public static void logCalculation() {
-        if(finishing != null)
+    public static void logCalculation()
+    {
+        if (finishing != null)
             finishing.recalcs++;
     }
 
-    public static void propogateTo(IWirePart part, TMultiPart prev, int mode) {
+    public static void propogateTo(IWirePart part, TMultiPart prev, int mode)
+    {
         PropogationRun p = currentRun;
-        if(p == null)
+        if (p == null)
             p = getRun();
         p.add(part, prev, mode);
-        if(currentRun != p) {
-            if(currentRun != null)
+        if (currentRun != p)
+        {
+            if (currentRun != null)
                 throw new RuntimeException("Report this to ProjectRed developers");
 
             p.start(finishing, part.world());
         }
     }
 
-    public static void propogateTo(IWirePart part, int mode) {
+    public static void propogateTo(IWirePart part, int mode)
+    {
         propogateTo(part, notApart, mode);
     }
 
-    public static void propogateAnalogDrop(IWirePart part) {
+    public static void propogateAnalogDrop(IWirePart part)
+    {
         currentRun.addAnalogDrop(part);
     }
 }

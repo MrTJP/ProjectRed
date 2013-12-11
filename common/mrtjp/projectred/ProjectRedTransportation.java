@@ -23,7 +23,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 
 @Mod(modid = "ProjRed|Transportation", name = "ProjectRed-Transportation", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = "required-after:ProjRed|Core;")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
-public class ProjectRedTransportation 
+public class ProjectRedTransportation
 {
     /** Items **/
     public static ItemRoutingChip itemRoutingChip;
@@ -39,29 +39,34 @@ public class ProjectRedTransportation
 
     public static CreativeTabs tabTransportation = new CreativeTabs("transport") {
         @Override
-        public ItemStack getIconItemStack() {
+        public ItemStack getIconItemStack()
+        {
             return EnumRoutingChip.ITEMSTOCKKEEPER.getItemStack();
         }
     };
 
     @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit(FMLPreInitializationEvent event)
+    {
         proxy.preinit();
     }
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent event) {
+    public void init(FMLInitializationEvent event)
+    {
         MinecraftForge.EVENT_BUS.register(instance);
         proxy.init();
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
+    public void postInit(FMLPostInitializationEvent event)
+    {
         proxy.postinit();
     }
 
     @EventHandler
-    public void serverStopping(FMLServerStoppingEvent event) {
+    public void serverStopping(FMLServerStoppingEvent event)
+    {
         Router.reboot();
         RouterServices.reboot();
     }
