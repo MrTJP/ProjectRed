@@ -223,7 +223,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
             return;
         }
         if (!world().isRemote)
-            getRouter().update(world().getTotalWorldTime() % Configurator.detectionFrequency == searchDelay || firstTick);
+            getRouter().update(this, world().getTotalWorldTime() % Configurator.detectionFrequency == searchDelay || firstTick);
 
         super.update();
         firstTick = false;
@@ -319,6 +319,14 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         pipes = Math.max(pipes - 1, 0);
         if (getRouter() != null)
             getRouter().decommission();
+    }
+        
+    @Override
+    public void onWorldSeparate()
+    {
+        super.onWorldSeparate();
+        if (getRouter() != null)
+            getRouter().clearParentCache();
     }
 
     @Override
