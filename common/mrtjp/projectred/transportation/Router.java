@@ -68,7 +68,7 @@ public class Router implements Comparable<Router>
         this.ID = id == null ? UUID.randomUUID() : id;
         this.dim = dim;
         this.location = bc;
-
+        clearParentCache();
         this.LSA = new LSA();
 
         LSADatabasewriteLock.lock();
@@ -92,8 +92,9 @@ public class Router implements Comparable<Router>
         LSADatabasewriteLock.unlock();
     }
 
-    public void update(boolean force)
+    public void update(IWorldRouter tickSource, boolean force)
     {
+        buildParentCache(tickSource);
         if (force)
         {
             if (updateLSAIfNeeded())
@@ -242,7 +243,8 @@ public class Router implements Comparable<Router>
         LSADatabasewriteLock.unlock();
 
         RouterServices.instance.removeRouter(IPAddress);
-
+        
+        clearParentCache();
         startLSAFloodfill();
         releaseIPAddress(IPAddress);
     }
@@ -429,13 +431,20 @@ public class Router implements Comparable<Router>
 
     public IWorldRouter getParent()
     {
-        if (parent != null)
-            return parent.get();
-        TMultiPart p = BasicUtils.getMultiPart(getWorld(), location, 6);
-        if (p instanceof IWorldRouter)
-            parent = new WeakReference<IWorldRouter>((IWorldRouter) p);
-
         return parent == null ? null : parent.get();
+    }
+    
+    public void clearParentCache()
+    {
+        if (parent != null)
+            parent.clear();
+        parent = null;
+    }
+    
+    private void buildParentCache(IWorldRouter parent)
+    {
+        if (this.parent == null)
+            this.parent = new WeakReference<IWorldRouter>(parent);
     }
 
     public World getWorld()
