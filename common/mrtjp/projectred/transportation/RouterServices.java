@@ -48,15 +48,18 @@ public class RouterServices
                     return r;
 
             Router r = new Router(uu, holder);
-            int newestLease = r.getIPAddress();
+            int newLease = r.getIPAddress();
 
-            if (routers.size() <= newestLease)
+            if (routers.size() <= newLease)
             {
-                routers.ensureCapacity(newestLease + 10);
-                while (routers.size() <= newestLease)
+                int newLength = (int) (newLease * 1.5) + 1;
+
+                routers.ensureCapacity(newLength);
+                while (routers.size() <= newLength)
                     routers.add(null);
             }
-            routers.set(newestLease, r);
+            
+            routers.set(newLease, r);
             UUIDTable.put(r.getID(), r.getIPAddress());
             return r;
         }
