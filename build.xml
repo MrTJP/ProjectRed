@@ -31,8 +31,8 @@
 	<property name="mod.name.world" value="ProjectRedWorld-${mc.version}-${mod.version}.${mod.build}.jar" />
 	<property name="mod.name.compat" value="ProjectRedCompat-${mc.version}-${mod.version}.${mod.build}.jar" />
 
-	<property name="forge.name" value="minecraftforge-src-${mc.version}-${forge.version}.zip" />
-	<property name="forgeuni.name" value="minecraftforge-universal-${mc.version}-${forge.version}.jar" />
+	<property name="forge.name" value="forge-${mc.version}-${forge.version}-src.zip" />
+	<property name="forgeuni.name" value="forge-${mc.version}-${forge.version}-universal.jar" />
 	<property name="ccl.name" value="CodeChickenLib-dev-${mc.version}-${ccl.version}.jar" />
 	<property name="ccobf.name" value="CCObfuscator-all-${ccobf.version}.jar" />
 	<property name="ccc.name" value="CodeChickenCore-dev%20${ccc.version}.jar" />
@@ -108,11 +108,11 @@
 
 	<!-- Targets for downloading dependencies -->
 	<target name="download-forge" unless="forge-downloaded">
-		<get src="http://files.minecraftforge.net/${forge.name}" dest="${download.dir}" usetimestamp="true" />
+		<get src="http://files.minecraftforge.net/maven/net/minecraftforge/forge/${mc.version}-${forge.version}/${forge.name}" dest="${download.dir}" usetimestamp="true" />
 	</target>
 
 	<target name="download-forgeuni" unless="forgeuni-downloaded">
-		<get src="http://files.minecraftforge.net/${forgeuni.name}" dest="${download.dir}" usetimestamp="true" />
+		<get src="http://files.minecraftforge.net/maven/net/minecraftforge/forge/${mc.version}-${forge.version}/${forgeuni.name}" dest="${download.dir}" usetimestamp="true" />
 	</target>
 
 	<target name="download-ccl" unless="ccl-downloaded">
@@ -156,9 +156,6 @@
 		<unzip src="${download.dir}/${forge.name}" dest="${forge.dir}/.." />
 		<property name="fml.python.exe" location="${forge.dir}/fml/python/python_fml.exe" />
 	    
-		<replace file="${forge.dir}/fml/fml.py" token="http://s3.amazonaws.com/Minecraft.Download/libraries" value="https://libraries.minecraft.net/" />
-		<replace file="${forge.dir}/fml/fml.py" token="http://s3.amazonaws.com/Minecraft.Resources" value="http://resources.download.minecraft.net/" />
-
 		<exec dir="${forge.dir}" executable="${fml.python.exe}" osfamily="windows" failonerror="true">
 			<arg line="install.py${installargs}" />
 		</exec>
