@@ -88,10 +88,10 @@ public class TableUpdateThread extends Thread
                 if (router.getParent() == null)
                     return;
 
-                for (int i = 0; i < 10 && router.getParent().needsWork(); i++)
+                for (int i = 0; i < 10 && !router.isLoaded(); i++)
                     Thread.sleep(10);
 
-                if (router.getParent().needsWork())
+                if (!router.isLoaded())
                     return;
 
                 router.refreshRoutingTable(newVersion);

@@ -23,6 +23,7 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 
 public class Router implements Comparable<Router>
 {
@@ -55,20 +56,17 @@ public class Router implements Comparable<Router>
     /*** Identification ***/
     private final int IPAddress;
     private final UUID ID;
-    private final int dim;
-    private final BlockCoord location;
+    private final IWorldRouter parent;
+
     private static int nextIP = 1;
     private static BitSet usedIPs = new BitSet();
     
-    /*** Caches ***/
-    private WeakReference<IWorldRouter> parent;
+    private boolean decommissioned = false;
 
-    public Router(UUID id, int dim, BlockCoord bc)
+    public Router(UUID id, IWorldRouter parent)
     {
         this.ID = id == null ? UUID.randomUUID() : id;
-        this.dim = dim;
-        this.location = bc;
-        clearParentCache();
+        this.parent = parent;
         this.LSA = new LSA();
 
         LSADatabasewriteLock.lock();
@@ -92,9 +90,8 @@ public class Router implements Comparable<Router>
         LSADatabasewriteLock.unlock();
     }
 
-    public void update(IWorldRouter tickSource, boolean force)
+    public void update(boolean force)
     {
-        buildParentCache(tickSource);
         if (force)
         {
             if (updateLSAIfNeeded())
@@ -128,10 +125,8 @@ public class Router implements Comparable<Router>
         while (it.hasNext())
         {
             Router r = it.next();
-            if (r.getParent() == null)
+            if (!r.isLoaded())
                 it.remove();
-            else if (r.getParent().needsWork())
-                return false;
         }
 
         if (adjacentLinks.size() != newAdjacent.size()) // Different number of connections
@@ -211,10 +206,10 @@ public class Router implements Comparable<Router>
         prev.set(IPAddress);
 
         updateLSAIfNeeded();
-        // getParent().refreshState();
 
         for (Router r : adjacentLinks.keySet())
-            r.LSAUpdateFloodfill(prev);
+            if (r.isLoaded())
+                r.LSAUpdateFloodfill(prev);
     }
 
     public void adjacentUpdateFloodfill(BitSet prev)
@@ -227,7 +222,8 @@ public class Router implements Comparable<Router>
         flagForRoutingUpdate();
 
         for (Router r : adjacentLinks.keySet())
-            r.adjacentUpdateFloodfill(prev);
+            if (r.isLoaded())
+                r.adjacentUpdateFloodfill(prev);
     }
 
     public void flagForRoutingUpdate()
@@ -243,8 +239,8 @@ public class Router implements Comparable<Router>
         LSADatabasewriteLock.unlock();
 
         RouterServices.instance.removeRouter(IPAddress);
+        decommissioned = true;
         
-        clearParentCache();
         startLSAFloodfill();
         releaseIPAddress(IPAddress);
     }
@@ -273,7 +269,14 @@ public class Router implements Comparable<Router>
     public List<StartEndPath> getRoutesByCost()
     {
         refreshRouteTableIfNeeded(true);
-        return routersByCost;
+        
+        List<StartEndPath> valid = new LinkedList<StartEndPath>(routersByCost);
+        Iterator<StartEndPath> it = valid.iterator();
+        while (it.hasNext())
+            if (!it.next().end.isLoaded())
+                it.remove();
+        
+        return valid;
     }
 
     public ForgeDirection getExitDirection(int destination)
@@ -431,25 +434,26 @@ public class Router implements Comparable<Router>
 
     public IWorldRouter getParent()
     {
-        return parent == null ? null : parent.get();
+        return parent;
     }
     
-    public void clearParentCache()
+    public boolean isLoaded()
     {
-        if (parent != null)
-            parent.clear();
-        parent = null;
-    }
-    
-    private void buildParentCache(IWorldRouter parent)
-    {
-        if (this.parent == null)
-            this.parent = new WeakReference<IWorldRouter>(parent);
-    }
-
-    public World getWorld()
-    {
-        return DimensionManager.getWorld(dim);
+        if (decommissioned)
+            return false;
+        
+        IWorldRouter parent = getParent();
+        
+        if (getParent() == null)
+            return false;
+        
+        if (getParent().needsWork())
+            return false;
+        
+        if (parent.getContainer().tile() == null || parent.getContainer().tile().isInvalid())
+            return false;
+        
+        return true;
     }
 
     private static int claimIPAddress()
@@ -476,16 +480,6 @@ public class Router implements Comparable<Router>
     public int hashCode()
     {
         return IPAddress;
-    }
-
-    public int getDim()
-    {
-        return dim;
-    }
-
-    public BlockCoord getLocation()
-    {
-        return location;
     }
 
     public boolean LSAConnectionExists(ForgeDirection dir)

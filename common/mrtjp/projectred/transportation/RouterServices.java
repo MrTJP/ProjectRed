@@ -39,35 +39,35 @@ public class RouterServices
         routers.set(id, null);
     }
 
-    public Router getOrCreateRouter(UUID uu, int dim, BlockCoord bc)
+    public Router getOrCreateRouter(UUID uu, IWorldRouter holder)
     {
         synchronized (routers)
         {
             for (Router r : routers)
-                if (r != null && r.getDim() == dim && r.getLocation().equals(bc))
+                if (r != null && r.getParent() == holder)
                     return r;
 
-            Router r = new Router(uu, dim, bc);
-            int simp = r.getIPAddress();
+            Router r = new Router(uu, holder);
+            int newestLease = r.getIPAddress();
 
-            if (routers.size() <= simp)
+            if (routers.size() <= newestLease)
             {
-                routers.ensureCapacity(simp + 1);
-                while (routers.size() <= simp)
+                routers.ensureCapacity(newestLease + 10);
+                while (routers.size() <= newestLease)
                     routers.add(null);
             }
-            routers.set(simp, r);
+            routers.set(newestLease, r);
             UUIDTable.put(r.getID(), r.getIPAddress());
             return r;
         }
     }
 
-    public boolean routerExists(int id)
+    public boolean routerExists(int ip)
     {
-        if (id < 0 || id >= routers.size())
+        if (ip < 0 || ip >= routers.size())
             return false;
 
-        return routers.get(id) != null;
+        return routers.get(ip) != null;
     }
 
     public static void reboot()
