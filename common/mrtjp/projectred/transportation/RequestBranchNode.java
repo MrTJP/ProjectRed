@@ -109,7 +109,7 @@ public class RequestBranchNode
 
     private boolean getPromisesFromCrafters()
     {
-        List<StartEndPath> allRouters = new ArrayList<StartEndPath>(requester.getRouter().getRoutesByCost());
+        List<StartEndPath> allRouters = requester.getRouter().getRoutesByCost();
         Collections.sort(allRouters, new PathSorter(0));
 
         List<CraftingPromise> allCrafters = new ArrayList<CraftingPromise>(allRouters.size());
@@ -241,7 +241,7 @@ public class RequestBranchNode
 
     private boolean getPromisesFromBroadcasters()
     {
-        List<StartEndPath> allRouters = new ArrayList<StartEndPath>(requester.getRouter().getRoutesByCost());
+        List<StartEndPath> allRouters = requester.getRouter().getRoutesByCost();
         Collections.sort(allRouters, new PathSorter(1.0));
 
         for (StartEndPath l : allRouters)
@@ -249,9 +249,13 @@ public class RequestBranchNode
             if (isDone())
                 break;
             Router r = l.end;
+            
+            if (!r.isLoaded())
+                continue;
+            
             IWorldRouter member = r.getParent();
 
-            if (!(member instanceof IWorldBroadcaster) || member.needsWork())
+            if (!(member instanceof IWorldBroadcaster))
                 continue;
 
             if (LogisticPathFinder.sharesInventory(requester.getContainer(), member.getContainer()))

@@ -56,11 +56,11 @@ public class LSPathFinder
 
         if (start instanceof IWorldRouter && !root)
         {
-            IWorldRouter wr = (IWorldRouter) start;
-            if (wr.needsWork())
+            Router r = ((IWorldRouter) start).getRouter();
+            if (!r.isLoaded())
                 return foundPipes;
 
-            foundPipes.put(wr.getRouter(), new StartEndPath(LSAddresser, wr.getRouter(), side.getOpposite().ordinal(), setVisited.size()));
+            foundPipes.put(r, new StartEndPath(LSAddresser, r, side.getOpposite().ordinal(), setVisited.size()));
 
             return foundPipes;
         }

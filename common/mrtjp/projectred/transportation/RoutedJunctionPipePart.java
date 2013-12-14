@@ -72,7 +72,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
                 UUID id = null;
                 if (routerID != null && !routerID.isEmpty())
                     id = UUID.fromString(routerID);
-                router = RouterServices.instance.getOrCreateRouter(id, world().provider.dimensionId, new BlockCoord(tile()));
+                router = RouterServices.instance.getOrCreateRouter(id, this);
             }
 
         return router;
@@ -223,7 +223,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
             return;
         }
         if (!world().isRemote)
-            getRouter().update(this, world().getTotalWorldTime() % Configurator.detectionFrequency == searchDelay || firstTick);
+            getRouter().update(world().getTotalWorldTime() % Configurator.detectionFrequency == searchDelay || firstTick);
 
         super.update();
         firstTick = false;
@@ -317,18 +317,11 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     {
         super.onRemoved();
         pipes = Math.max(pipes - 1, 0);
-        if (getRouter() != null)
-            getRouter().decommission();
+        Router r = getRouter();
+        if (r != null)
+            r.decommission();
     }
         
-    @Override
-    public void onWorldSeparate()
-    {
-        super.onWorldSeparate();
-        if (getRouter() != null)
-            getRouter().clearParentCache();
-    }
-
     @Override
     public void save(NBTTagCompound tag)
     {
