@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
+import net.minecraftforge.common.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -218,40 +219,43 @@ public class RenderPipe
     public static void renderItemFlow(BasicPipePart p, Vector3 pos, float frame)
     {
         GL11.glPushMatrix();
-        GL11.glDisable(2896 /* GL_LIGHTING */);
+        GL11.glDisable(GL11.GL_LIGHTING);
 
         for (RoutedPayload r : p.itemFlow)
         {
-            float partial = r.getSpeed() * frame;
-            float frameX = (float) (pos.x + r.x - p.x());
-            float frameY = (float) (pos.y + r.y - p.y());
-            float frameZ = (float) (pos.z + r.z - p.z());
+            ForgeDirection dir = r.isEntering ? r.input : r.output;
+            
+            double prog = r.progress + (r.speed * frame);
+            
+            double frameX = pos.x + 0.5D;
+            double frameY = pos.y + 0.25D;
+            double frameZ = pos.z + 0.5D;
 
-            switch (r.isEntering ? r.input : r.output) {
+            switch (dir) {
             case UP:
-                frameY = frameY + partial;
+                frameY = (pos.y - 0.25D) + prog;
                 break;
             case DOWN:
-                frameY = frameY - partial;
+                frameY = (pos.y - 0.25D) + (1.0D - prog);
                 break;
             case SOUTH:
-                frameZ = frameZ + partial;
+                frameZ = pos.z + prog;
                 break;
             case NORTH:
-                frameZ = frameZ - partial;
+                frameZ = pos.z + (1.0D - prog);
                 break;
             case EAST:
-                frameX = frameX + partial;
+                frameX = pos.x + prog;
                 break;
             case WEST:
-                frameX = frameX - partial;
+                frameX = pos.x  + (1.0D - prog);
                 break;
             default:
             }
 
             doRenderItem(r, frameX, frameY, frameZ);
         }
-        GL11.glEnable(2896 /* GL_LIGHTING */);
+        GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glPopMatrix();
     }
 

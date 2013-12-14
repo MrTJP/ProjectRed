@@ -150,18 +150,17 @@ public class BasicPipePart extends CorePipePart
                 continue;
             }
 
-            r.move(r.getSpeed());
+            r.moveProgress(r.speed);
 
-            if (r.isEntering && hasReachedMiddle(r) || hasInvalidLoc(r))
+            if (r.isEntering && hasReachedMiddle(r))
             {
                 r.isEntering = false;
-                r.setPosition(x() + 0.5D, y() + 0.25D, z() + 0.5D);
+                r.progress = 0.5F;
 
                 if (r.output == ForgeDirection.UNKNOWN)
                     handleDrop(r);
                 else
                     centerReached(r);
-
             }
             else if (!r.isEntering && hasReachedEnd(r) && itemFlow.scheduleRemoval(r))
                 endReached(r);
@@ -179,7 +178,7 @@ public class BasicPipePart extends CorePipePart
             if (!world().isRemote)
             {
                 r.resetTrip();
-                world().spawnEntityInWorld(r.getEntityForDrop());
+                world().spawnEntityInWorld(r.getEntityForDrop(x(), y(), z()));
             }
     }
 
@@ -240,7 +239,6 @@ public class BasicPipePart extends CorePipePart
         r.input = r.output.getOpposite();
         resolveDestination(r);
         adjustSpeed(r);
-        adjustLoc(r);
         sendItemUpdate(r);
     }
 
@@ -267,43 +265,17 @@ public class BasicPipePart extends CorePipePart
 
     public void adjustSpeed(RoutedPayload r)
     {
-        r.setSpeed(Math.max(r.getSpeed() - 0.01f, r.priority.speed));
-    }
-
-    private void adjustLoc(RoutedPayload r)
-    {
-        double x = r.x;
-        double y = r.y;
-        double z = r.z;
-
-        x = Math.max(x, x() + 0.01);
-        y = Math.max(y, y() + 0.01);
-        z = Math.max(z, z() + 0.01);
-
-        x = Math.min(x, x() + 0.99);
-        y = Math.min(y, y() + 0.99);
-        z = Math.min(z, z() + 0.99);
-
-        if (r.input != ForgeDirection.UP && r.input != ForgeDirection.DOWN)
-            y = y() + 0.25F;
-
-        r.setPosition(x, y, z);
+        r.speed = Math.max(r.speed - 0.01f, r.priority.speed);
     }
 
     protected boolean hasReachedMiddle(RoutedPayload r)
     {
-        float middleLimit = r.getSpeed() * 1.01F;
-        return Math.abs(x() + 0.5 - r.x) < middleLimit && Math.abs(y() + 0.25f - r.y) < middleLimit && Math.abs(z() + 0.5 - r.z) < middleLimit;
+        return r.progress >= 0.5F;
     }
 
     protected boolean hasReachedEnd(RoutedPayload r)
     {
-        return r.x > x() + 1 || r.x < x() || r.y > y() + 1 || r.y < y() || r.z > z() + 1 || r.z < z();
-    }
-
-    protected boolean hasInvalidLoc(RoutedPayload r)
-    {
-        return r.x > x() + 2 || r.x < x() - 1 || r.y > y() + 2 || r.y < y() - 1 || r.z > z() + 2 || r.z < z() - 1;
+        return r.progress >= 1.0F;
     }
 
     public void injectPayload(RoutedPayload r, ForgeDirection in)
@@ -317,7 +289,9 @@ public class BasicPipePart extends CorePipePart
         itemFlow.add(r);
 
         adjustSpeed(r);
-        adjustLoc(r);
+        if (r.progress > 0.0F)
+            r.progress = r.progress - 1.0F;
+
         if (!world().isRemote)
         {
             resolveDestination(r);
@@ -422,7 +396,7 @@ public class BasicPipePart extends CorePipePart
                     if (!world().isRemote)
                     {
                         r.resetTrip();
-                        world().spawnEntityInWorld(r.getEntityForDrop());
+                        world().spawnEntityInWorld(r.getEntityForDrop(x(), y(), z()));
                     }
     }
 
@@ -434,7 +408,7 @@ public class BasicPipePart extends CorePipePart
             for (RoutedPayload r : itemFlow)
             {
                 r.resetTrip();
-                world().spawnEntityInWorld(r.getEntityForDrop());
+                world().spawnEntityInWorld(r.getEntityForDrop(x(), y(), z()));
             }
     }
 
@@ -444,16 +418,14 @@ public class BasicPipePart extends CorePipePart
 
         out.writeShort(r.payloadID);
 
-        out.writeFloat((float) r.x);
-        out.writeFloat((float) r.y);
-        out.writeFloat((float) r.z);
+        out.writeFloat(r.progress);
 
         out.writeItemStack(r.getItemStack());
 
         out.writeByte((byte) r.input.ordinal());
         out.writeByte((byte) r.output.ordinal());
 
-        out.writeFloat(r.getSpeed());
+        out.writeFloat(r.speed);
 
         out.writeByte(r.priority.ordinal());
     }
@@ -461,22 +433,20 @@ public class BasicPipePart extends CorePipePart
     public void handleItemUpdatePacket(MCDataInput packet)
     {
         int id = packet.readShort();
-
+        float progress = packet.readFloat();
+        
         RoutedPayload r = itemFlow.get(id);
         if (r == null)
         {
             r = new RoutedPayload(id);
-            r.setPosition(packet.readFloat(), packet.readFloat(), packet.readFloat());
+            r.progress = progress;
             itemFlow.add(r);
         }
-        else
-            for (int i = 0; i < 3; i++)
-                packet.readFloat();
-
+            
         r.setItemStack(packet.readItemStack());
         r.input = ForgeDirection.getOrientation(packet.readByte());
         r.output = ForgeDirection.getOrientation(packet.readByte());
-        r.setSpeed(packet.readFloat());
+        r.speed = packet.readFloat();
         r.setPriority(SendPriority.values()[packet.readByte()]);
     }
 

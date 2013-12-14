@@ -1,6 +1,7 @@
 package mrtjp.projectred.transportation;
 
 import mrtjp.projectred.core.utils.ItemKey;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
@@ -18,9 +19,12 @@ public class RoutedRequestPipePart extends RoutedPipePart_InvConnect
         if (!maskConnects(r.output.ordinal()) && !world().isRemote)
             if (itemFlow.scheduleRemoval(r))
             {
-                r.move(0.30);
                 r.resetTrip();
-                world().spawnEntityInWorld(r.getEntityForDrop());
+                r.moveProgress(0.375F);
+                r.speed = 0.075F;
+                EntityItem ent = r.getEntityForDrop(x(), y(), z());
+                ent.posY += 0.1F;
+                world().spawnEntityInWorld(ent);
             }
     }
 
