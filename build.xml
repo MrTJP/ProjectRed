@@ -156,8 +156,8 @@
 		<unzip src="${download.dir}/${forge.name}" dest="${forge.dir}/.." />
 		<property name="fml.python.exe" location="${forge.dir}/fml/python/python_fml.exe" />
 	    
-		<replace file="${download.dir}/${forge.name}/fml/fml.py" token="http://s3.amazonaws.com/Minecraft.Download/libraries" value="https://libraries.minecraft.net/" />
-		<replace file="${download.dir}/${forge.name}/fml/fml.py" token="http://s3.amazonaws.com/Minecraft.Resources" value="http://resources.download.minecraft.net/" />
+		<replace file="${forge.dir}/fml/fml.py" token="http://s3.amazonaws.com/Minecraft.Download/libraries" value="https://libraries.minecraft.net/" />
+		<replace file="${forge.dir}/fml/fml.py" token="http://s3.amazonaws.com/Minecraft.Resources" value="http://resources.download.minecraft.net/" />
 
 		<exec dir="${forge.dir}" executable="${fml.python.exe}" osfamily="windows" failonerror="true">
 			<arg line="install.py${installargs}" />
