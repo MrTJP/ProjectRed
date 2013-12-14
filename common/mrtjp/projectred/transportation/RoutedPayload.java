@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
+import codechicken.lib.vec.Vector3;
 
 public class RoutedPayload
 {
@@ -18,8 +19,8 @@ public class RoutedPayload
     private static int maxID = 0;
     public final int payloadID;
 
-    protected float speed = 0.01F;
-    public double x, y, z;
+    public float speed = 0.01F;
+    public float progress = 0.00F;
 
     public ForgeDirection input = ForgeDirection.UNKNOWN;
     public ForgeDirection output = ForgeDirection.UNKNOWN;
@@ -38,12 +39,9 @@ public class RoutedPayload
         this.payloadID = id;
     }
 
-    public RoutedPayload(double x, double y, double z, ItemKeyStack stack)
+    public RoutedPayload(ItemKeyStack stack)
     {
         this();
-        this.x = x;
-        this.y = y;
-        this.z = z;
         this.payload = stack;
     }
 
@@ -59,28 +57,9 @@ public class RoutedPayload
         output = ForgeDirection.UNKNOWN;
     }
 
-    public void setPosition(double x, double y, double z)
+    public void moveProgress(float prog)
     {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    public void movePosition(double x, double y, double z)
-    {
-        this.x += x;
-        this.y += y;
-        this.z += z;
-    }
-
-    public float getSpeed()
-    {
-        return speed;
-    }
-
-    public void setSpeed(float speed)
-    {
-        this.speed = speed;
+        progress += prog;
     }
 
     public ItemStack getItemStack()
@@ -115,9 +94,9 @@ public class RoutedPayload
 
     public void load(NBTTagCompound tag)
     {
-        setPosition(tag.getDouble("x"), tag.getDouble("y"), tag.getDouble("z"));
+        progress = tag.getFloat("prog");
+        speed = tag.getFloat("speed");
 
-        setSpeed(tag.getFloat("speed"));
         setItemStack(ItemStack.loadItemStackFromNBT(tag.getCompoundTag("Item")));
 
         isEntering = tag.getBoolean("isEnt");
@@ -129,10 +108,9 @@ public class RoutedPayload
 
     public void save(NBTTagCompound tag)
     {
-        tag.setDouble("x", x);
-        tag.setDouble("y", y);
-        tag.setDouble("z", z);
-        tag.setFloat("speed", getSpeed());
+        tag.setFloat("prog", progress);
+        tag.setFloat("speed", speed);
+        
         NBTTagCompound nbttagcompound2 = new NBTTagCompound();
         getItemStack().writeToNBT(nbttagcompound2);
         tag.setCompoundTag("Item", nbttagcompound2);
@@ -144,56 +122,60 @@ public class RoutedPayload
         saveRouting(tag);
     }
 
-    public void move(double step)
+    public EntityItem getEntityForDrop(int x, int y, int z)
     {
-        ForgeDirection orientation = isEntering ? input : output;
-        switch (orientation) {
+        ForgeDirection dir = isEntering ? input : output;
+        
+        double prog = progress;
+        
+        double deltaX = x + 0.5D;
+        double deltaY = y + 0.25D;
+        double deltaZ = z + 0.5D;
+
+        switch (dir) {
         case UP:
-            y += step;
+            deltaY = (y - 0.25D) + prog;
             break;
         case DOWN:
-            y -= step;
+            deltaY = (y - 0.25D) + (1.0D - prog);
             break;
         case SOUTH:
-            z += step;
+            deltaZ = z + prog;
             break;
         case NORTH:
-            z -= step;
+            deltaZ = z + (1.0D - prog);
             break;
         case EAST:
-            x += step;
+            deltaX = x + prog;
             break;
         case WEST:
-            x -= step;
+            deltaX = x  + (1.0D - prog);
             break;
         default:
         }
-    }
 
-    public EntityItem getEntityForDrop()
-    {
-        EntityItem item = new EntityItem(parent.world(), x, y + 0.15, z, payload.makeStack());
+        EntityItem item = new EntityItem(parent.world(), deltaX, deltaY, deltaZ, payload.makeStack());
 
         item.motionX = item.motionY = item.motionZ = item.hoverStart = 0;
-        ForgeDirection orientation = isEntering ? input : output;
-        switch (orientation) {
+
+        switch (dir) {
         case UP:
-            item.motionY = +getSpeed();
+            item.motionY = + speed;
             break;
         case DOWN:
-            item.motionY = -getSpeed();
+            item.motionY = - speed;
             break;
         case SOUTH:
-            item.motionZ = +getSpeed();
+            item.motionZ = + speed;
             break;
         case NORTH:
-            item.motionZ = -getSpeed();
+            item.motionZ = - speed;
             break;
         case EAST:
-            item.motionX = +getSpeed();
+            item.motionX = + speed;
             break;
         case WEST:
-            item.motionX = -getSpeed();
+            item.motionX = - speed;
             break;
         default:
         }
@@ -201,7 +183,7 @@ public class RoutedPayload
         item.lifespan = 1600;
         return item;
     }
-
+    
     /** Server-side Routing **/
 
     int destinationIP = -1;

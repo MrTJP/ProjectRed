@@ -148,7 +148,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     @Override
     public void queueStackToSend(ItemStack stack, int dirToInventory, SendPriority priority, int destination)
     {
-        RoutedPayload r = new RoutedPayload(x() + 0.5, y() + 0.25, z() + 0.5, ItemKeyStack.get(stack));
+        RoutedPayload r = new RoutedPayload(ItemKeyStack.get(stack));
         r.input = ForgeDirection.getOrientation(dirToInventory);
         r.setPriority(priority);
         r.setDestination(destination);
@@ -157,34 +157,6 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
 
     private void dispatchQueuedPayload(RoutedPayload r)
     {
-        double x = r.x;
-        double y = r.y;
-        double z = r.z;
-        double step = 0.5;
-        switch (r.input.getOpposite()) {
-        case UP:
-            y += step;
-            break;
-        case DOWN:
-            y -= step;
-            break;
-        case SOUTH:
-            z += step;
-            break;
-        case NORTH:
-            z -= step;
-            break;
-        case EAST:
-            x += step;
-            break;
-        case WEST:
-            x -= step;
-            break;
-        default:
-        }
-
-        r.setPosition(x, y, z);
-
         injectPayload(r, r.input);
         Router dest = RouterServices.instance.getRouter(r.destinationIP);
         if (dest != null)
@@ -431,7 +403,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     @Override
     public void adjustSpeed(RoutedPayload r)
     {
-        r.setSpeed(r.priority.boost);
+        r.speed = r.priority.boost;
     }
 
     @Override
