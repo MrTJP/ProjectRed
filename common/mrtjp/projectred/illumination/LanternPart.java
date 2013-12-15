@@ -24,6 +24,14 @@ public class LanternPart extends BaseLightPart
 
     @Override
     @SideOnly(Side.CLIENT)
+    public void renderDynamic(Vector3 pos, float frame, int pass)
+    {
+        if (pass == 0 && isOn())
+            RenderHalo.addLight(x(), y(), z(), type, side, RenderLantern.box);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
     public void drawBreaking(RenderBlocks r)
     {
         RenderLantern.instance.renderBreaking(x(), y(), z(), r.overrideBlockTexture);

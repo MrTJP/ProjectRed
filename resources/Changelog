@@ -1,3 +1,7 @@
+[dev]v4.2.1
+- FIX: Crash with pipes in unloaded chunks
+- FIX: Gui textures 
+
 v4.2.0
 - ADDED: ProjectRed: Mechanical package (beta)
 - ADDED: Item routing system (beta)

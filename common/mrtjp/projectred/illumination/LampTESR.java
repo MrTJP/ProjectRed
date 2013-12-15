@@ -5,7 +5,9 @@ import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.IItemRenderer;
@@ -21,47 +23,10 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Translation;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer
+public class LampTESR extends TileEntitySpecialRenderer implements IItemRenderer
 {
-    public static LampISBRH instance = new LampISBRH();
-
+    public static LampTESR instance = new LampTESR();
     private static Cuboid6 box = new Cuboid6(0, 0, 0, 1, 1, 1).expand(0.05D);
-
-    @Override
-    public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer)
-    {
-    }
-
-    @Override
-    public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks r)
-    {
-        TileLamp l = BasicUtils.getTileEntity(world, new BlockCoord(x, y, z), TileLamp.class);
-        if (l == null)
-            return false;
-
-        TextureUtils.bindAtlas(0);
-
-        if (l.isOn())
-            Tessellator.instance.setBrightness(0x00F000F0);
-
-        r.renderStandardBlock(block, x, y, z);
-
-        if (l.isOn())
-            RenderHalo.addLight(x, y, z, world.getBlockMetadata(x, y, z), 6, box);
-        return true;
-    }
-
-    @Override
-    public boolean shouldRender3DInInventory()
-    {
-        return true;
-    }
-
-    @Override
-    public int getRenderId()
-    {
-        return IlluminationClientProxy.lampRenderID;
-    }
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type)
@@ -116,5 +81,15 @@ public class LampISBRH implements ISimpleBlockRenderingHandler, IItemRenderer
             RenderHalo.restoreRenderState();
         }
         GL11.glPopMatrix();
+    }
+
+    @Override
+    public void renderTileEntityAt(TileEntity te, double x, double y, double z, float f)
+    {
+        if (te instanceof ILight && ((ILight) te).isOn())
+        {
+            int meta = te.worldObj.getBlockMetadata(te.xCoord, te.yCoord, te.zCoord);
+            RenderHalo.addLight(te.xCoord, te.yCoord, te.zCoord, meta, -1, box);
+        }
     }
 }

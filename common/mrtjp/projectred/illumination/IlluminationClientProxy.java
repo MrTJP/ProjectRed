@@ -4,12 +4,11 @@ import codechicken.lib.packet.PacketCustom;
 import mrtjp.projectred.ProjectRedIllumination;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class IlluminationClientProxy extends IlluminationProxy
 {
-    public static int lampRenderID = 0;
-
     @Override
     public void init()
     {
@@ -28,10 +27,9 @@ public class IlluminationClientProxy extends IlluminationProxy
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartFixture.itemID, RenderFixture.instance);
         MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.itemPartInvFixture.itemID, RenderFixture.instance);
 
-        lampRenderID = RenderingRegistry.getNextAvailableRenderId();
-        RenderingRegistry.registerBlockHandler(LampISBRH.instance);
-        MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.blockLamp.blockID, LampISBRH.instance);
-
+        MinecraftForgeClient.registerItemRenderer(ProjectRedIllumination.blockLamp.blockID, LampTESR.instance);
+        ClientRegistry.bindTileEntitySpecialRenderer(TileLamp.class, LampTESR.instance);
+        
         MinecraftForge.EVENT_BUS.register(RenderHalo.instance);
     }
 }

@@ -52,8 +52,6 @@ public class RenderFixture implements IItemRenderer
         CCRenderState.setBrightness(l.world(), l.x(), l.y(), l.z());
         CCRenderState.useModelColours(true);
         renderPart(icon, base[l.side], l.x(), l.y(), l.z());
-        if (l.isOn())
-            RenderHalo.addLight(l.x(), l.y(), l.z(), l.type, l.side, FixturePart.lightBounds[l.side]);
     }
 
     public void renderBreaking(FixturePart c, Icon icon)
