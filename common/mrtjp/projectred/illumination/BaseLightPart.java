@@ -4,10 +4,6 @@ import java.util.Arrays;
 
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.BasicWireUtils;
-import mrtjp.projectred.core.PRColors;
-import net.minecraft.block.Block;
-import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.client.particle.EntityDiggingFX;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -25,7 +21,6 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.IRedstonePart;
-import codechicken.multipart.IconHitEffects;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;

@@ -1,11 +1,10 @@
 package mrtjp.projectred.illumination;
 
-import codechicken.lib.packet.PacketCustom;
 import mrtjp.projectred.ProjectRedIllumination;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
+import codechicken.lib.packet.PacketCustom;
 import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class IlluminationClientProxy extends IlluminationProxy
 {

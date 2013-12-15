@@ -17,7 +17,6 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.ColourModifier;
 import codechicken.lib.render.IconTransformation;
-import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;

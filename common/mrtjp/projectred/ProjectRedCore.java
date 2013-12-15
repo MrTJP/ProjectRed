@@ -32,11 +32,7 @@ import cpw.mods.fml.relauncher.Side;
  * @author MrTJP
  * 
  */
-@Mod(modid = "ProjRed|Core", name = "ProjectRed-Core", version = Configurator.version
-        + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = "required-after:Forge@FORGE_VERSION@;"
-        + "required-after:ForgeMultipart;"
-        + "required-after:CodeChickenCore;"
-        + "after:CCTurtle;" + "after:ComputerCraft;")
+@Mod(modid = "ProjRed|Core", useMetadata = true)
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
 public class ProjectRedCore
 {

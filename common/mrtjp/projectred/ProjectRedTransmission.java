@@ -15,7 +15,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 
-@Mod(modid = "ProjRed|Transmission", name = "ProjectRed-Transmission", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = "required-after:ProjRed|Core;")
+@Mod(modid = "ProjRed|Transmission", useMetadata = true)
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class ProjectRedTransmission
 {

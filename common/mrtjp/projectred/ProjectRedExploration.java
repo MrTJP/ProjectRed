@@ -31,7 +31,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
-@Mod(modid = "ProjRed|Exploration", name = "ProjectRed-Exploration", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = "required-after:ProjRed|Core;")
+@Mod(modid = "ProjRed|Exploration", useMetadata = true)
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class ProjectRedExploration
 {
