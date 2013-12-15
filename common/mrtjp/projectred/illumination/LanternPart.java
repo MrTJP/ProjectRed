@@ -1,18 +1,16 @@
 package mrtjp.projectred.illumination;
 
 import mrtjp.projectred.ProjectRedIllumination;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.item.ItemStack;
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Vector3;
-import codechicken.multipart.PartMap;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class LanternPart extends BaseLightPart
 {
-    static Cuboid6 bounds = new Cuboid6(.34f, .25f, .34f, .66f, .75f, .66f);
+    private static final Cuboid6 bounds = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D);
 
     @Override
     @SideOnly(Side.CLIENT)
@@ -20,21 +18,6 @@ public class LanternPart extends BaseLightPart
     {
         if (pass == 0)
             RenderLantern.instance.renderLantern(this);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void renderDynamic(Vector3 pos, float frame, int pass)
-    {
-        if (pass == 0 && isOn())
-            RenderHalo.addLight(x(), y(), z(), type, side, RenderLantern.box);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void drawBreaking(RenderBlocks r)
-    {
-        RenderLantern.instance.renderBreaking(x(), y(), z(), r.overrideBlockTexture);
     }
 
     @Override
@@ -52,12 +35,18 @@ public class LanternPart extends BaseLightPart
     @Override
     public int getSlotMask()
     {
-        return 1 << PartMap.CENTER.i;
+        return 1 << 6;
     }
 
     @Override
     public String getType()
     {
         return "pr_lantern";
+    }
+
+    @Override
+    public Cuboid6 getLightBounds()
+    {
+        return RenderLantern.lightBox;
     }
 }

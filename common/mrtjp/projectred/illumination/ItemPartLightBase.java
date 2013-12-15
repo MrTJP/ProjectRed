@@ -71,7 +71,9 @@ public abstract class ItemPartLightBase extends JItemMultiPart
     }
 
     @Override
-    public abstract void registerIcons(IconRegister reg);
+    public void registerIcons(IconRegister reg)
+    {
+    }
 
     @Override
     @SideOnly(Side.CLIENT)

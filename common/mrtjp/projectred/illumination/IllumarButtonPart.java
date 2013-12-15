@@ -5,6 +5,7 @@ import java.util.Arrays;
 import mrtjp.projectred.ProjectRedIllumination;
 import net.minecraft.block.BlockButton;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
@@ -23,6 +24,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class IllumarButtonPart extends ButtonPart implements ILight
 {
     public byte colorMeta;
+    public boolean inverted = false;
 
     public IllumarButtonPart()
     {
@@ -39,9 +41,29 @@ public class IllumarButtonPart extends ButtonPart implements ILight
     }
 
     @Override
+    public boolean activate(EntityPlayer player, MovingObjectPosition part, ItemStack item)
+    {
+        if (pressed())
+            return false;
+        
+        if (!world().isRemote)
+        {
+            if (player.isSneaking())
+            {
+                inverted = !inverted;
+                sendDescUpdate();
+                return true;
+            }
+            return super.activate(player, part, item);
+        }
+        
+        return true;
+    }
+    
+    @Override
     public boolean isOn()
     {
-        return pressed();
+        return pressed() != inverted;
     }
 
     public static BlockButton getButton(int meta)
@@ -54,6 +76,7 @@ public class IllumarButtonPart extends ButtonPart implements ILight
     {
         super.save(tag);
         tag.setByte("colorMeta", colorMeta);
+        tag.setBoolean("inv", inverted);
     }
 
     @Override
@@ -61,6 +84,7 @@ public class IllumarButtonPart extends ButtonPart implements ILight
     {
         super.load(tag);
         colorMeta = tag.getByte("colorMeta");
+        inverted = tag.getBoolean("inv");
     }
 
     @Override
@@ -68,6 +92,7 @@ public class IllumarButtonPart extends ButtonPart implements ILight
     {
         super.writeDesc(packet);
         packet.writeByte(colorMeta);
+        packet.writeBoolean(inverted);
     }
 
     @Override
@@ -75,6 +100,7 @@ public class IllumarButtonPart extends ButtonPart implements ILight
     {
         super.readDesc(packet);
         colorMeta = packet.readByte();
+        inverted = packet.readBoolean();
     }
 
     @Override

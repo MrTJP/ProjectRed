@@ -916,7 +916,7 @@ public class RenderGate
         public void prepareDynamic(InstancedRsGatePart gate, float frame)
         {
             int max = ((InstancedRsGateLogic.Sequencer) gate.getLogic()).pointer_max;
-            pointer.angle = (gate.world().getTotalWorldTime() % max + frame) / max * 2 * MathHelper.pi;
+            pointer.angle = (gate.world().getWorldTime() % max + frame) / max * 2 * MathHelper.pi;
             if (gate.shape() == 1)
                 pointer.angle = -pointer.angle;
         }

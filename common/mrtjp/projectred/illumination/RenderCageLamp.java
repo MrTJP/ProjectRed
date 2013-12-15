@@ -19,15 +19,19 @@ import codechicken.lib.render.ColourModifier;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.TextureUtils;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 
 public class RenderCageLamp implements IItemRenderer
 {
     public static RenderCageLamp instance = new RenderCageLamp();
-
-    static CCModel[] base;
+    
+    private static CCModel[] base;
+    
+    public static final Cuboid6 lightBounds[] = new Cuboid6[6];
 
     static
     {
@@ -41,6 +45,9 @@ public class RenderCageLamp implements IItemRenderer
             m.computeLighting(LightModel.standardLightModel);
             m.shrinkUVs(0.0005);
             base[i] = m.copy();
+            
+            Transformation t = Rotation.sideRotations[i].at(Vector3.center);
+            lightBounds[i] = new Cuboid6(4 / 16D, 0, 4 / 16D, 12 / 16D, 10 / 16D, 12 / 16D).apply(t).expand(-0.001);
         }
     }
 
@@ -111,7 +118,7 @@ public class RenderCageLamp implements IItemRenderer
         if (on)
         {
             RenderHalo.prepareRenderState();
-            RenderHalo.renderHalo(Tessellator.instance, CageLampPart.lightBounds[0], color, new Translation(x, y, z));
+            RenderHalo.renderHalo(Tessellator.instance, lightBounds[0], color, new Translation(x, y, z));
             RenderHalo.restoreRenderState();
         }
         GL11.glPopMatrix();

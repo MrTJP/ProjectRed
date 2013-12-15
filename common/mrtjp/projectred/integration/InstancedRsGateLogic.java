@@ -770,7 +770,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             if (!gate.world().isRemote)
             {
                 int oldOut = gate.state() >> 4;
-                int out = 1 << gate.world().getTotalWorldTime() % pointer_max / (pointer_max / 4);
+                int out = 1 << gate.world().getWorldTime() % pointer_max / (pointer_max / 4);
                 if (gate.shape() == 1)
                     out = GatePart.flipMaskZ(out);
                 if (oldOut != out)

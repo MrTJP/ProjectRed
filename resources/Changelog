@@ -1,6 +1,9 @@
 [dev]v4.2.1
+- CHANGE: Optimized lamp halo render
+- CHANGE: Buttons can be inverted with shift-right-click
+- FIX: Timers getting stuck on world time shifts
 - FIX: Crash with pipes in unloaded chunks
-- FIX: Gui textures 
+- FIX: Gui textures
 
 v4.2.0
 - ADDED: ProjectRed: Mechanical package (beta)
