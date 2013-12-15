@@ -15,9 +15,4 @@ public class ItemPartFixture extends ItemPartLightBase
     {
         return "pr_fixture";
     }
-
-    @Override
-    public void registerIcons(IconRegister reg)
-    {
-    }
 }

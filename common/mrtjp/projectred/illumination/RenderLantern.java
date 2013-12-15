@@ -30,9 +30,8 @@ public class RenderLantern implements IItemRenderer
 
     private static Map<String, CCModel> models;
     
-    public static Cuboid6 box = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D).expand(-1 / 64D);
-    private static Cuboid6 breakbox = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D);
-
+    public static final Cuboid6 lightBox = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D).expand(-1 / 64D);
+    
     public static Icon[] onIcons;
     public static Icon[] offIcons;
 
@@ -66,11 +65,6 @@ public class RenderLantern implements IItemRenderer
         CCRenderState.setBrightness(l.world(), l.x(), l.y(), l.z());
         CCRenderState.useModelColours(true);
         renderLanternBulb(icon, l.x(), l.y(), l.z(), l.side);
-    }
-
-    public void renderBreaking(int x, int y, int z, Icon icon)
-    {
-        RenderUtils.renderBlock(breakbox, 0, new Translation(x, y, z), new IconTransformation(icon), null);
     }
 
     public void renderLanternBulb(Icon icon, double x, double y, double z, int rotation)
@@ -144,7 +138,7 @@ public class RenderLantern implements IItemRenderer
         if (on)
         {
             RenderHalo.prepareRenderState();
-            RenderHalo.renderHalo(Tessellator.instance, box, color, new Translation(x, y, z));
+            RenderHalo.renderHalo(Tessellator.instance, lightBox, color, new Translation(x, y, z));
             RenderHalo.restoreRenderState();
         }
         GL11.glPopMatrix();

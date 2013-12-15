@@ -15,9 +15,4 @@ public class ItemPartCageLamp extends ItemPartLightBase
     {
         return "pr_cagelamp";
     }
-
-    @Override
-    public void registerIcons(IconRegister reg)
-    {
-    }
 }

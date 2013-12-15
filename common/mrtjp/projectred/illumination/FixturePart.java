@@ -1,7 +1,6 @@
 package mrtjp.projectred.illumination;
 
 import mrtjp.projectred.ProjectRedIllumination;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.item.ItemStack;
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.vec.Cuboid6;
@@ -14,15 +13,13 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class FixturePart extends BaseLightPart implements TFacePart
 {
-    static Cuboid6 bounds[] = new Cuboid6[6];
-    static Cuboid6 lightBounds[] = new Cuboid6[6];
+    private static Cuboid6 bounds[] = new Cuboid6[6];
     static
     {
         for (int i = 0; i < 6; i++)
         {
             Transformation t = Rotation.sideRotations[i].at(Vector3.center);
             bounds[i] = new Cuboid6(2 / 16D, 0, 2 / 16D, 14 / 16D, 17 / 32D, 14 / 16D).apply(t);
-            lightBounds[i] = new Cuboid6(5 / 32D, 0, 5 / 32D, 27 / 32D, 17 / 32D, 27 / 32D).apply(t).expand(-0.001);
         }
     }
 
@@ -41,21 +38,6 @@ public class FixturePart extends BaseLightPart implements TFacePart
     }
     
     @Override
-    @SideOnly(Side.CLIENT)
-    public void renderDynamic(Vector3 pos, float frame, int pass)
-    {
-        if (pass == 0 && isOn())
-            RenderHalo.addLight(x(), y(), z(), type, side, lightBounds[side]);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void drawBreaking(RenderBlocks r)
-    {
-        RenderFixture.instance.renderBreaking(this, r.overrideBlockTexture);
-    }
-
-    @Override
     public ItemStack getItem()
     {
         return new ItemStack(isInverted ? ProjectRedIllumination.itemPartInvFixture : ProjectRedIllumination.itemPartFixture, 1, type);
@@ -68,12 +50,6 @@ public class FixturePart extends BaseLightPart implements TFacePart
     }
 
     @Override
-    public int getSlotMask()
-    {
-        return 1 << side;
-    }
-
-    @Override
     public int redstoneConductionMap()
     {
         return 0;
@@ -83,5 +59,11 @@ public class FixturePart extends BaseLightPart implements TFacePart
     public boolean solid(int arg0)
     {
         return false;
+    }
+
+    @Override
+    public Cuboid6 getLightBounds()
+    {
+        return RenderFixture.lightBounds[side];
     }
 }

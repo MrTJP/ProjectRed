@@ -19,7 +19,9 @@ import codechicken.lib.render.ColourModifier;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.TextureUtils;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 
@@ -27,7 +29,9 @@ public class RenderFixture implements IItemRenderer
 {
     public static RenderFixture instance = new RenderFixture();
 
-    static CCModel[] base;
+    private static CCModel[] base;
+    
+    public static final Cuboid6 lightBounds[] = new Cuboid6[6];
 
     static
     {
@@ -41,6 +45,9 @@ public class RenderFixture implements IItemRenderer
             m.computeLighting(LightModel.standardLightModel);
             m.shrinkUVs(0.0005);
             base[i] = m.copy();
+            
+            Transformation t = Rotation.sideRotations[i].at(Vector3.center);
+            lightBounds[i] = new Cuboid6(5 / 32D, 0, 5 / 32D, 27 / 32D, 17 / 32D, 27 / 32D).apply(t).expand(-0.001);
         }
     }
 
@@ -52,11 +59,6 @@ public class RenderFixture implements IItemRenderer
         CCRenderState.setBrightness(l.world(), l.x(), l.y(), l.z());
         CCRenderState.useModelColours(true);
         renderPart(icon, base[l.side], l.x(), l.y(), l.z());
-    }
-
-    public void renderBreaking(FixturePart c, Icon icon)
-    {
-        RenderUtils.renderBlock(FixturePart.bounds[c.side], 0, new Translation(c.x(), c.y(), c.z()), new IconTransformation(icon), null);
     }
 
     @Override
@@ -111,7 +113,7 @@ public class RenderFixture implements IItemRenderer
         if (on)
         {
             RenderHalo.prepareRenderState();
-            RenderHalo.renderHalo(Tessellator.instance, FixturePart.lightBounds[0], color, new Translation(x, y, z));
+            RenderHalo.renderHalo(Tessellator.instance, lightBounds[0], color, new Translation(x, y, z));
             RenderHalo.restoreRenderState();
         }
         GL11.glPopMatrix();
