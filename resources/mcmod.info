@@ -1,79 +1,144 @@
 [
 {
-  "modinfoversion": 3,
+  "modinfoversion": 2,
   "modid": "ProjRed|Core",
-  "name": "ProjectRed-Core",
+  "name": "ProjectRed",
   "description":"Redstone. The way it was meant to be. Built against Forge @FORGE_VERSION@.",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",
-  "url": "http://bit.ly/1clK9U5",
-  "updateUrl": "",
+  "url": "http://projectred.endermedia.org",
   "authors": [ "MrTJP", "ChickenBones"],
   "credits": "Eloraam, GitHub contributers",
   "logoFile": "",
-  "parent":"",
   "screenshots": [],
-  "requiredMods": [],
+  
+  "requiredMods": [
+      "Forge",
+      "ForgeMultipart",
+      "CodeChickenCore"
+  ],
   "dependencies": [
-      "mod_MinecraftForge",
-      "ForgeMultipart"
-  ]
+      "ForgeMultipart",
+      "CodeChickenCore",
+      
+      "CCTurtle",
+      "ComputerCraft"
+  ],
+  "useDependencyInformation": "true"
 },
 
 
-
 {
-  "modinfoversion": 3,
-  "modid": "ProjRed|Expansion",
-  "name": "ProjectRed-Expansion",
-  "parent":"ProjRed|Core"
-},
-
-
-
-{
-  "modinfoversion": 3,
-  "modid": "ProjRed|Exploration",
-  "name": "ProjectRed-Exploration",
-  "parent":"ProjRed|Core"
-},
-
-
-
-{
-  "modinfoversion": 3,
-  "modid": "ProjRed|Illumination",
-  "name": "ProjectRed-Illumination",
-  "parent":"ProjRed|Core"
-},
-
-
-
-{
-  "modinfoversion": 3,
+  "modinfoversion": 2,
   "modid": "ProjRed|Integration",
   "name": "ProjectRed-Integration",
-  "parent":"ProjRed|Core"
+  "parent":"ProjRed|Core",
+  
+  "requiredMods": [
+      "ProjRed|Core",
+      "ProjRed|Transmission"
+  ],
+  "dependencies": [
+      "ProjRed|Core"
+  ],
+  "useDependencyInformation": "true"
 },
 
 
-
 {
-  "modinfoversion": 3,
+  "modinfoversion": 2,
   "modid": "ProjRed|Transmission",
   "name": "ProjectRed-Transmission",
-  "parent":"ProjRed|Core"
+  "parent":"ProjRed|Core",
+  
+  "requiredMods": [
+      "ProjRed|Core",
+      "ProjRed|Integration"
+  ],
+  "dependencies": [
+      "ProjRed|Core"
+  ],
+  "useDependencyInformation": "true"
+},
+
+
+{
+  "modinfoversion": 2,
+  "modid": "ProjRed|Illumination",
+  "name": "ProjectRed-Illumination",
+  "parent":"ProjRed|Core",
+  
+  "requiredMods": [
+      "ProjRed|Core"
+  ],
+  "dependencies": [
+      "ProjRed|Core"
+  ],
+  "useDependencyInformation": "true"
 },
 
 
 
 {
-  "modinfoversion": 3,
+  "modinfoversion": 2,
+  "modid": "ProjRed|Exploration",
+  "name": "ProjectRed-Exploration",
+  "parent":"ProjRed|Core",
+  
+  "requiredMods": [
+      "ProjRed|Core"
+  ],
+  "dependencies": [
+      "ProjRed|Core"
+  ],
+  "useDependencyInformation": "true"
+},
+
+
+{
+  "modinfoversion": 2,
+  "modid": "ProjRed|Expansion",
+  "name": "ProjectRed-Expansion",
+  "parent":"ProjRed|Core",
+  
+  "requiredMods": [
+      "ProjRed|Core"
+  ],
+  "dependencies": [
+      "ProjRed|Core"
+  ],
+  "useDependencyInformation": "true"
+},
+
+{
+  "modinfoversion": 2,
+  "modid": "ProjRed|Transportation",
+  "name": "ProjectRed-Transportation",
+  "parent":"ProjRed|Core",
+  
+  "requiredMods": [
+      "ProjRed|Core"
+  ],
+  "dependencies": [
+      "ProjRed|Core"
+  ],
+  "useDependencyInformation": "true"
+},
+
+{
+  "modinfoversion": 2,
   "modid": "ProjRed|Compatability",
   "name": "ProjectRed-Compatability",
-  "parent":"ProjRed|Core"
+  "parent":"ProjRed|Core",
+  
+  "requiredMods": [
+      "ProjRed|Core"
+  ],
+  "dependencies": [
+      "ProjRed|Core",
+      "TConstruct"
+  ],
+  "useDependencyInformation": "true"
 }
-
-
 
 ]

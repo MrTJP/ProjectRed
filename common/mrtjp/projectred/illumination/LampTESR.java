@@ -1,15 +1,10 @@
 package mrtjp.projectred.illumination;
 
-import mrtjp.projectred.core.BasicRenderUtils;
-import mrtjp.projectred.core.BasicUtils;
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
-import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
@@ -18,10 +13,8 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.IconTransformation;
 import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.TextureUtils;
-import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Translation;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class LampTESR extends TileEntitySpecialRenderer implements IItemRenderer
 {

@@ -16,7 +16,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 
-@Mod(modid = "ProjRed|Expansion", name = "ProjectRed-Expansion", version = Configurator.version + "." + Configurator.buildnumber, acceptedMinecraftVersions = "[1.6.4]", dependencies = "required-after:ProjRed|Core;")
+@Mod(modid = "ProjRed|Expansion", useMetadata = true)
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
 public class ProjectRedExpansion
 {
@@ -29,14 +29,16 @@ public class ProjectRedExpansion
     @SidedProxy(clientSide = "mrtjp.projectred.expansion.ExpansionClientProxy", serverSide = "mrtjp.projectred.expansion.ExpansionProxy")
     public static IProxy proxy;
 
-    public static CreativeTabs tabExpansion = new CreativeTabs("expansion") {
-        @Override
-        public ItemStack getIconItemStack()
-        {
-            // TODO Change this to one of the machines.
-            return EnumPart.COPPERCOIL.getItemStack();
-        }
-    };
+    public static CreativeTabs tabExpansion;
+    
+//    = new CreativeTabs("expansion") {
+//        @Override
+//        public ItemStack getIconItemStack()
+//        {
+//            // TODO Change this to one of the machines.
+//            return EnumPart.COPPERCOIL.getItemStack();
+//        }
+//    };
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)

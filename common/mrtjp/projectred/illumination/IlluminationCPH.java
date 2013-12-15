@@ -1,8 +1,8 @@
 package mrtjp.projectred.illumination;
 
+import mrtjp.projectred.ProjectRedIllumination;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.NetClientHandler;
-import mrtjp.projectred.ProjectRedIllumination;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
 

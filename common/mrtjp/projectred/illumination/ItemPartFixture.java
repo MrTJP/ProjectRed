@@ -1,6 +1,5 @@
 package mrtjp.projectred.illumination;
 
-import net.minecraft.client.renderer.texture.IconRegister;
 
 public class ItemPartFixture extends ItemPartLightBase
 {
