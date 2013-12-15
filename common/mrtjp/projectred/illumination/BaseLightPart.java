@@ -167,6 +167,10 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     @Override
     @SideOnly(Side.CLIENT)
     public abstract void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass);
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public abstract void renderDynamic(Vector3 pos, float frame, int pass);
 
     @Override
     @SideOnly(Side.CLIENT)

@@ -39,6 +39,14 @@ public class CageLampPart extends BaseLightPart implements TFacePart
         if (pass == 0)
             RenderCageLamp.instance.renderCageLamp(this);
     }
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void renderDynamic(Vector3 pos, float frame, int pass)
+    {
+        if (pass == 0 && isOn())
+            RenderHalo.addLight(x(), y(), z(), type, side, lightBounds[side]);
+    }
 
     @Override
     @SideOnly(Side.CLIENT)

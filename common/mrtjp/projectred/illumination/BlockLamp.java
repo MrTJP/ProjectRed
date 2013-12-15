@@ -67,7 +67,7 @@ public class BlockLamp extends Block
     @Override
     public int getRenderType()
     {
-        return IlluminationClientProxy.lampRenderID;
+        return 0;
     }
 
     @Override

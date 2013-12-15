@@ -115,11 +115,17 @@ public class IllumarButtonPart extends ButtonPart implements ILight
         {
             RenderBlocks r = new RenderBlocks(new PartMetaAccess(this));
             r.renderBlockUsingTexture(getBlock(), x(), y(), z(), ItemPartIllumarButton.icons[colorMeta]);
-            if (pressed())
-            {
-                Cuboid6 box = getBounds().expand(0.025D);
-                RenderHalo.addLight(x(), y(), z(), colorMeta, getFace(), box);
-            }
+        }
+    }
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void renderDynamic(Vector3 pos, float frame, int pass)
+    {
+        if (pass == 0 && isOn())
+        {
+            Cuboid6 box = getBounds().expand(0.025D);
+            RenderHalo.addLight(x(), y(), z(), colorMeta, getFace(), box);
         }
     }
 

@@ -29,7 +29,8 @@ public class RenderLantern implements IItemRenderer
     public static RenderLantern instance = new RenderLantern();
 
     private static Map<String, CCModel> models;
-    private static Cuboid6 box = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D).expand(-1 / 64D);
+    
+    public static Cuboid6 box = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D).expand(-1 / 64D);
     private static Cuboid6 breakbox = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D);
 
     public static Icon[] onIcons;
@@ -65,8 +66,6 @@ public class RenderLantern implements IItemRenderer
         CCRenderState.setBrightness(l.world(), l.x(), l.y(), l.z());
         CCRenderState.useModelColours(true);
         renderLanternBulb(icon, l.x(), l.y(), l.z(), l.side);
-        if (l.isOn())
-            RenderHalo.addLight(l.x(), l.y(), l.z(), l.type, 6, box);
     }
 
     public void renderBreaking(int x, int y, int z, Icon icon)

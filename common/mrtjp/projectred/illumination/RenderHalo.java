@@ -1,8 +1,8 @@
 package mrtjp.projectred.illumination;
 
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.PRColors;
@@ -31,7 +31,7 @@ public class RenderHalo
 {
     public static RenderHalo instance = new RenderHalo();
 
-    private static Set<LightCache> renderQueue = new HashSet<LightCache>();
+    private static List<LightCache> renderQueue = new LinkedList<LightCache>();
 
     private static class LightCache
     {
@@ -87,13 +87,11 @@ public class RenderHalo
         RenderUtils.translateToWorldCoords(event.context.mc.renderViewEntity, event.partialTicks);
         prepareRenderState();
 
-        for (Iterator<LightCache> it = renderQueue.iterator(); it.hasNext();)
+        Iterator<LightCache> it = renderQueue.iterator();
+        while(it.hasNext())
         {
             LightCache cc = it.next();
-            if (shouldRemove(w, cc))
-                it.remove();
-            else
-                renderHalo(tess, w, cc);
+            renderHalo(tess, w, cc);
         }
 
         restoreRenderState();
@@ -134,20 +132,5 @@ public class RenderHalo
     {
         tess.setColorRGBA_I(PRColors.VALID_COLORS[colour].rgb, 128);
         RenderUtils.renderBlock(cuboid, 0, t, null, null);
-    }
-
-    private static boolean shouldRemove(World w, LightCache cc)
-    {
-        TileEntity te = w.getBlockTileEntity(cc.pos.x, cc.pos.y, cc.pos.z);
-        if (te instanceof TileMultipart)
-        {
-            TMultiPart tp = ((TileMultipart) te).partMap(cc.multipartSlot);
-            if (tp instanceof ILight)
-                return !((ILight) tp).isOn();
-        }
-        else if (te instanceof ILight)
-            return !((ILight) te).isOn();
-
-        return true;
     }
 }
