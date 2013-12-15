@@ -70,16 +70,12 @@ public class RenderHalo
 
     public static void addLight(int x, int y, int z, int color, int slot, Cuboid6 box)
     {
-        if (Configurator.renderLampHalos)
-            renderQueue.add(new LightCache(x, y, z, color, slot, box));
+        renderQueue.add(new LightCache(x, y, z, color, slot, box));
     }
 
     @ForgeSubscribe
     public void onRenderWorldLast(RenderWorldLastEvent event)
     {
-        if (!Configurator.renderLampHalos)
-            return;
-
         Tessellator tess = Tessellator.instance;
         WorldClient w = event.context.theWorld;
 
