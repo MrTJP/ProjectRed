@@ -12,7 +12,6 @@ public abstract class ParticleLogic
     protected boolean finalLogic;
     private boolean finished;
     private boolean terminateWhenFinished;
-    private boolean removeLogicWhenFinished;
     protected boolean firstTick = true;
 
     public ParticleLogic(int priority, boolean finalLogic)
@@ -21,18 +20,11 @@ public abstract class ParticleLogic
         this.priority = priority;
         this.finalLogic = finalLogic;
         terminateWhenFinished = false;
-        removeLogicWhenFinished = false;
     }
 
     public ParticleLogic setTerminate(boolean kill)
     {
         terminateWhenFinished = kill;
-        return this;
-    }
-
-    public ParticleLogic setRemoveLogic(boolean remove)
-    {
-        removeLogicWhenFinished = remove;
         return this;
     }
 
@@ -75,8 +67,6 @@ public abstract class ParticleLogic
 
         if (particle != null && terminateWhenFinished)
             particle.setDead();
-        else if (removeLogicWhenFinished)
-            particle.removeLogic(this);
     }
 
     public boolean isFinalLogic()

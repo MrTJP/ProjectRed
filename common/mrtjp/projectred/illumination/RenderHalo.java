@@ -40,13 +40,11 @@ public class RenderHalo
         final BlockCoord pos;
         final int color;
         final Cuboid6 cube;
-        final int multipartSlot;
 
-        public LightCache(int x, int y, int z, int colorIndex, int slot, Cuboid6 cube)
+        public LightCache(int x, int y, int z, int colorIndex, Cuboid6 cube)
         {
             this.pos = new BlockCoord(x, y, z);
             this.color = colorIndex;
-            this.multipartSlot = slot;
             this.cube = cube;
         }
 
@@ -60,9 +58,9 @@ public class RenderHalo
 		}
     }
 
-    public static void addLight(int x, int y, int z, int color, int slot, Cuboid6 box)
+    public static void addLight(int x, int y, int z, int color, Cuboid6 box)
     {
-        renderList.add(new LightCache(x, y, z, color, slot, box));
+        renderList.add(new LightCache(x, y, z, color, box));
     }
 
     @ForgeSubscribe

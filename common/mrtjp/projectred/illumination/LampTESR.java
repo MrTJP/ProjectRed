@@ -82,7 +82,7 @@ public class LampTESR extends TileEntitySpecialRenderer implements IItemRenderer
         if (te instanceof ILight && ((ILight) te).isOn())
         {
             int meta = te.worldObj.getBlockMetadata(te.xCoord, te.yCoord, te.zCoord);
-            RenderHalo.addLight(te.xCoord, te.yCoord, te.zCoord, meta, -1, box);
+            RenderHalo.addLight(te.xCoord, te.yCoord, te.zCoord, meta, box);
         }
     }
 }

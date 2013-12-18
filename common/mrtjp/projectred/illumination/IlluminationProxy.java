@@ -3,6 +3,7 @@ package mrtjp.projectred.illumination;
 import static mrtjp.projectred.ProjectRedIllumination.*;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
+import net.minecraft.item.ItemBlock;
 import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;
@@ -33,6 +34,9 @@ public class IlluminationProxy implements IProxy, IPartFactory
         GameRegistry.registerBlock(blockLamp, ItemBlockLamp.class, "projectred.illumination.lamp");
         GameRegistry.registerTileEntity(TileLamp.class, "tile.projectred.illumination.lamp");
 
+        blockAirousLight = new BlockAirousLight(Configurator.block_airousID.getInt());
+        GameRegistry.registerBlock(blockLamp, ItemBlock.class, "projectred.illumination.airousLight");
+        GameRegistry.registerTileEntity(TileAirousLight.class, "tile.projectred.illumination.airousLight");
     }
 
     @Override

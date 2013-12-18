@@ -1,7 +1,7 @@
 package mrtjp.projectred;
 
-import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
+import mrtjp.projectred.illumination.BlockAirousLight;
 import mrtjp.projectred.illumination.BlockLamp;
 import mrtjp.projectred.illumination.ItemPartCageLamp;
 import mrtjp.projectred.illumination.ItemPartFixture;
@@ -25,6 +25,7 @@ public class ProjectRedIllumination
 {
     /** Blocks **/
     public static BlockLamp blockLamp;
+    public static BlockAirousLight blockAirousLight;
 
     /** Multipart items **/
     public static ItemPartLantern itemPartLantern;

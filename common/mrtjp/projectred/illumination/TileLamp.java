@@ -109,4 +109,10 @@ public class TileLamp extends TileEntity implements ICustomPacketTile, ILight
     {
         return getLightValue() == 15;
     }
+
+    @Override
+    public int getColor()
+    {
+        return colour();
+    }
 }
