@@ -42,6 +42,7 @@ public class Configurator
     public static Property block_stoneWallsID;
     public static Property block_stainedLeafID;
     public static Property block_stainedSaplingID;
+    public static Property block_airousID;
 
     /** Item IDs **/
     public static Property item_screwdriverID;
@@ -143,6 +144,7 @@ public class Configurator
         block_stoneWallsID = localConfig.getBlock("block_stoneWallsID", 2135);
         block_stainedLeafID = localConfig.getBlock("block_dyeLeafID", 2136);
         block_stainedSaplingID = localConfig.getBlock("block_dyeSaplingID", 2137);
+        block_airousID = localConfig.getBlock("block_airousID", 2138);
 
         item_wireDebuggerID = localConfig.getItem("item_wireDebuggerID", 9023);
         item_screwdriverID = localConfig.getItem("item_screwdriverID", 9024);

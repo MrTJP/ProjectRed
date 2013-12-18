@@ -2,6 +2,7 @@ package mrtjp.projectred.illumination;
 
 import java.util.Arrays;
 
+import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.BasicWireUtils;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -35,7 +36,6 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     protected boolean isInverted;
     protected boolean powered;
     protected byte side;
-    protected boolean initialized = false;
 
     public BaseLightPart()
     {
@@ -147,14 +147,46 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
         }
         return false;
     }
-
+    
+    @Override
+    public boolean doesTick()
+    {
+        return isAirous();
+    }
+    
     @Override
     public void update()
     {
-        if (!initialized)
-            initialized = true;
-    }
+        if (!world().isRemote && isOn() && isAirous())
+        {
+            int radius = 16;
+            
+            int x = x() + world().rand.nextInt(radius) - world().rand.nextInt(radius);
+            int y = y() + world().rand.nextInt(radius) - world().rand.nextInt(radius);
+            int z = z() + world().rand.nextInt(radius) - world().rand.nextInt(radius);
 
+            if (y > world().getHeightValue(x, z) + 4)
+                y = world().getHeightValue(x, z) + 4;
+
+            if (y < 7)
+                y = 7;
+            
+            if (world().isAirBlock(x, y, z) && world().getBlockLightValue(x, y, z) < 8)
+            {
+                world().setBlock(x, y, z, ProjectRedIllumination.blockAirousLight.blockID, getColor(), 3);
+                
+                TileAirousLight light = (TileAirousLight) world().getBlockTileEntity(x, y, z);
+                if (light != null)
+                    light.setSource(new BlockCoord(tile()), getColor(), side);
+            }
+        }
+    }
+    
+    public boolean isAirous()
+    {
+        return false;
+    }
+    
     @Override
     public int getLightValue()
     {
@@ -173,7 +205,7 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     public void renderDynamic(Vector3 pos, float frame, int pass)
     {
         if (pass == 0 && isOn())
-            RenderHalo.addLight(x(), y(), z(), type, side, getLightBounds());
+            RenderHalo.addLight(x(), y(), z(), type, getLightBounds());
     }
 
     @Override
@@ -250,5 +282,11 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     public boolean isOn()
     {
         return getLightValue() == 15;
+    }
+
+    @Override
+    public int getColor()
+    {
+        return type;
     }
 }

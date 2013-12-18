@@ -151,7 +151,7 @@ public class IllumarButtonPart extends ButtonPart implements ILight
         if (pass == 0 && isOn())
         {
             Cuboid6 box = getBounds().expand(0.025D);
-            RenderHalo.addLight(x(), y(), z(), colorMeta, getFace(), box);
+            RenderHalo.addLight(x(), y(), z(), colorMeta, box);
         }
     }
 
@@ -166,5 +166,11 @@ public class IllumarButtonPart extends ButtonPart implements ILight
     public Icon getBreakingIcon(Object subPart, int side)
     {
         return getBrokenIcon(side);
+    }
+
+    @Override
+    public int getColor()
+    {
+        return colorMeta;
     }
 }

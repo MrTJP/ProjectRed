@@ -3,11 +3,12 @@ package mrtjp.projectred.core.fx;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
+import mrtjp.projectred.core.PRColors;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import codechicken.lib.vec.Vector3;
 
@@ -180,6 +181,11 @@ public class CoreParticle extends EntityFX
         this.g = g;
         this.b = b;
     }
+    
+    public void setPRColor(PRColors color)
+    {
+        setRGBColorF((color.c.r & 0xFF) / 255F, (color.c.g & 0xFF) / 255F, (color.c.b & 0xFF) / 255F);
+    }
 
     public void setAlpha(float alpha)
     {
@@ -276,20 +282,20 @@ public class CoreParticle extends EntityFX
         if (doVelocityUpdates)
             moveEntity(motionX, motionY, motionZ);
 
-        List<ParticleLogic> remove = new ArrayList<ParticleLogic>();
-
-        for (ParticleLogic logic : logics)
-            if (logic.getFinished())
-                remove.add(logic);
-            else
+        Iterator<ParticleLogic> it = logics.iterator();
+        while (it.hasNext())
+        {
+            ParticleLogic l = it.next();
+            if (l.getFinished())
             {
-                logic.onUpdate(worldObj, this);
-                if (logic.isFinalLogic())
-                    break;
+                it.remove();
+                continue;
             }
-
-        logics.removeAll(remove);
-
+            l.onUpdate(worldObj, this);
+            if (l.isFinalLogic())
+                break;
+        }
+        
         if (particleAge++ > particleMaxAge && !ignoreMaxAge || !ignoreNoLogics && logics.size() == 0)
             setDead();
     }
