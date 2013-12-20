@@ -45,9 +45,4 @@ public class GuiCraftingPipe extends GhostGuiContainer
         FontUtils.drawCenteredString("" + pipe.priority, 152, 55, PRColors.BLACK.rgb);
         BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 118);
     }
-
-    @Override
-    public void drawForeground()
-    {
-    }
 }

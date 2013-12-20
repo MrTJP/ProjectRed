@@ -43,9 +43,17 @@ public class TransportationCPH implements IClientPacketHandler
         case NetConstants.particle_Spawn:
             RouteFX.handleClientPacket(packet, mc.theWorld);
             break;
+        case NetConstants.gui_RouterUtil_open:
+            openRouterUtilGui(packet, mc);
+            break;
         }
     }
 
+    private void openRouterUtilGui(PacketCustom packet, Minecraft mc)
+    {
+        ClientUtils.openSMPGui(packet.readUByte(), new GuiRouterUtility(ItemRouterUtility.createContainer(mc.thePlayer)));
+    }
+    
     private void receiveRequestList(PacketCustom packet, Minecraft mc)
     {
         if (mc.currentScreen instanceof GuiRequester)

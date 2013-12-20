@@ -1,8 +1,8 @@
 package mrtjp.projectred;
 
-import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.transportation.ItemPartPipe;
+import mrtjp.projectred.transportation.ItemRouterUtility;
 import mrtjp.projectred.transportation.ItemRoutingChip;
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import mrtjp.projectred.transportation.Router;
@@ -27,6 +27,7 @@ public class ProjectRedTransportation
 {
     /** Items **/
     public static ItemRoutingChip itemRoutingChip;
+    public static ItemRouterUtility itemRouterUtility;
 
     /** Multipart items **/
     public static ItemPartPipe itemPartPipe;

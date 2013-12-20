@@ -213,7 +213,7 @@ public class GhostContainer2 extends Container
         @Override
         public boolean isItemValid(ItemStack stack)
         {
-            return allowPlace && (check == null || check.canPlace(stack));
+            return allowPlace && (check == null || check.canPlace(stack)) && inventory.isItemValidForSlot(getSlotIndex(), stack);
         }
 
         @Override
