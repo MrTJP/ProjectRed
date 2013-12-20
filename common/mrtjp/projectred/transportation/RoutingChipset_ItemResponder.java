@@ -79,6 +79,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
     @Override
     public void save(NBTTagCompound tag)
     {
+        super.save(tag);
         filter.save(tag);
         tag.setInteger("pref", preference);
         tag.setBoolean("mode", filterExclude);
@@ -89,6 +90,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
     @Override
     public void load(NBTTagCompound tag)
     {
+        super.load(tag);
         filter.load(tag);
         preference = tag.getInteger("pref");
         filterExclude = tag.getBoolean("mode");

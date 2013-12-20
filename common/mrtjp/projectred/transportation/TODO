@@ -1,5 +1,7 @@
 TODO:
 
-- Upgrade system for routing chips through GUI. (faster broadcasting, extracting, etc.)
+- Upgrade gui should show latency for each slot.
+
+- Upgrade gui should show which upgrade slots are available.
 
 - New renderer for pipes

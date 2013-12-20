@@ -157,6 +157,7 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset
     @Override
     public void save(NBTTagCompound tag)
     {
+        super.save(tag);
         filter.save(tag);
         tag.setBoolean("mode", requestWhenEmpty);
     }
@@ -164,6 +165,7 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset
     @Override
     public void load(NBTTagCompound tag)
     {
+        super.load(tag);
         filter.load(tag);
         requestWhenEmpty = tag.getBoolean("mode");
     }

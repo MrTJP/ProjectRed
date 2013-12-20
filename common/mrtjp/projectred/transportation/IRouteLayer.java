@@ -10,8 +10,8 @@ import codechicken.lib.vec.BlockCoord;
 
 public interface IRouteLayer 
 {
-    public void queueStackToSend(ItemStack stack, int dirOfInventory, SyncResponse path);
-    public void queueStackToSend(ItemStack stack, int dirToInventory, SendPriority priority, int destination);
+    public void queueStackToSend(ItemStack stack, int dirOfExtraction, SyncResponse path);
+    public void queueStackToSend(ItemStack stack, int dirOfExtraction, SendPriority priority, int destination);
     public SyncResponse getLogisticPath(ItemKey stack, BitSet exclusions, boolean excludeStart);
 
     public Router getRouter();

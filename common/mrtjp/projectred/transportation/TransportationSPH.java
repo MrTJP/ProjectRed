@@ -7,7 +7,9 @@ import mrtjp.projectred.ProjectRedTransportation;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
+import mrtjp.projectred.transportation.ItemRouterUtility.RouterUtilContainer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetServerHandler;
 import net.minecraft.world.World;
@@ -39,6 +41,21 @@ public class TransportationSPH implements IServerPacketHandler
         case NetConstants.gui_Request_listRefresh:
             handleRequestListRefresh(packet, sender);
             break;
+        case NetConstants.gui_RouterUtil_action:
+            handleRouterUtilAction(packet, sender);
+        }
+    }
+
+    private void handleRouterUtilAction(PacketCustom packet, EntityPlayerMP sender)
+    {
+        Container c = sender.openContainer;
+        if (c instanceof RouterUtilContainer)
+        {
+            RouterUtilContainer r = (RouterUtilContainer) c;
+            String action = packet.readString();
+            
+            if (action.equals("inst"))
+                r.installPossibleUpgrades();
         }
     }
 

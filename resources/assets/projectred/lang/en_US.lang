@@ -48,12 +48,18 @@ item.projectred.core.part.partredsiliconcomp.name=Red Silicon Compound
 item.projectred.core.part.partglowsiliconcomp.name=Glowing Silicon Compound
 
 item.projectred.core.part.nullchip.name=Null-Logic Routing Chip
+item.projectred.core.part.upgrd_lx.name=LX Upgrade
+item.projectred.core.part.upgrd_ly.name=LY Upgrade
+item.projectred.core.part.upgrd_lz.name=LZ Upgrade
+item.projectred.core.part.upgrd_rx.name=RX Upgrade
+item.projectred.core.part.upgrd_ry.name=RY Upgrade
+item.projectred.core.part.upgrd_rz.name=RZ Upgrade
 
-tile.projectred.core.appliance|0.name=Alloy Smelter
 
 item.projectred.core.drawplate.name=Draw Plate
 item.projectred.core.wiredebugger.name=Wire Debugger
 item.projectred.core.screwdriver.name=Screwdriver
+item.projectred.core.routerutil.name=Router Utility
 
 
 
@@ -71,6 +77,8 @@ item.projectred.transportation.routingchip|3.name=Item Terminator chip
 item.projectred.transportation.routingchip|4.name=Item Extractor chip
 item.projectred.transportation.routingchip|5.name=Item Broadcaster chip
 item.projectred.transportation.routingchip|6.name=Item Stock Keeper chip
+
+item.projectred.transportation.routerutil.name=Router Utility
 
 item.projectred.transportation.pipe|0.name=Item Transport pipe
 item.projectred.transportation.pipe|1.name=Routed Junction pipe
