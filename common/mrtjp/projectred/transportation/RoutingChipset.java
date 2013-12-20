@@ -1,5 +1,6 @@
 package mrtjp.projectred.transportation;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,8 +11,8 @@ import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise;
 import mrtjp.projectred.transportation.RoutingChipContainerFactory.ChipGhostContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
 import codechicken.core.IGuiPacketSender;
 import codechicken.core.ServerUtils;
 import codechicken.lib.packet.PacketCustom;
@@ -93,9 +94,18 @@ public abstract class RoutingChipset
         return false;
     }
 
-    public abstract void save(NBTTagCompound tag);
+    public void save(NBTTagCompound tag)
+    {
+        NBTTagCompound tag2 = new NBTTagCompound();
+        getUpgradeBus().save(tag2);
+        tag.setTag("upgrd", tag2);
+    }
 
-    public abstract void load(NBTTagCompound tag);
+    public void load(NBTTagCompound tag)
+    {
+        NBTTagCompound tag2 = tag.getCompoundTag("upgrd");
+        getUpgradeBus().load(tag2);
+    }
 
     public abstract List<String> infoCollection();
 
@@ -118,10 +128,198 @@ public abstract class RoutingChipset
         });
     }
 
-    public Container createContainer(EntityPlayer player)
+    public ChipGhostContainer createContainer(EntityPlayer player)
     {
         ChipGhostContainer<RoutingChipset> ghost = new ChipGhostContainer<RoutingChipset>(player);
         ghost.addPlayerInventory(8, 86);
         return ghost;
+    }
+    
+    /** Upgrade bus settings **/
+    
+    private final UpgradeBus upgradeBus = createUpgradeBus();
+    
+    public UpgradeBus createUpgradeBus()
+    {
+        UpgradeBus bus = new UpgradeBus(0, 0);
+        return bus;
+    }
+        
+    public UpgradeBus getUpgradeBus()
+    {
+        return upgradeBus;
+    }
+    
+    public void addUpgradeBusInfo(List<String> list)
+    {
+        List<String> list2 = new LinkedList<String>();
+        
+        UpgradeBus b = getUpgradeBus();
+        if (b.containsUpgrades())
+        {
+            list2.add("---bios upgrades detected---");
+            
+            String s = "";
+            if (b.Lset[0])
+                s = s + "LX(" + b.LXLatency + ")";
+            if (b.Lset[1])
+                s = s + " - LY(" + b.LYLatency + ")";
+            if (b.Lset[2])
+                s = s + " - LZ(" + b.LZLatency + ")";
+            if (!s.isEmpty()) 
+                list2.add(s);
+            
+            String s2 = "";
+            if (b.Rset[0])
+                s2 = s2 + "RX(" + b.RXLatency + ")";
+            if (b.Rset[1])
+                s2 = s2 + " - RY(" + b.RYLatency + ")";
+            if (b.Rset[2])
+                s2 = s2 + " - RZ(" + b.RZLatency + ")";
+            if (!s2.isEmpty())
+                list2.add(s2);
+
+            list2.add("--------------------------");
+            
+            for (int i = 0; i < list2.size(); i++)
+                list2.set(i, EnumChatFormatting.GRAY + list2.get(i));
+            
+            list.addAll(list2);        
+        }
+    }
+    
+    public static class UpgradeBus
+    {
+        public boolean[] Lset = new boolean[3];
+        
+        public boolean[] Rset = new boolean[3];
+
+        public int LXLatency = 0;
+        public int LYLatency = 0;
+        public int LZLatency = 0;
+
+        public int RXLatency = 0;
+        public int RYLatency = 0;
+        public int RZLatency = 0;
+        
+        private final int maxL;
+        private final int maxR;
+        
+        public String Linfo;
+        public String Lformula;
+        
+        public String Rinfo;
+        public String Rformula;
+        
+        public UpgradeBus(int maxL, int maxR)
+        {
+            this.maxL = maxL;
+            this.maxR = maxR;
+        }
+        
+        public int LLatency()
+        {
+            int count = 0;
+            if (Lset[0])
+                count += LXLatency;
+            if (Lset[1])
+                count += LYLatency;
+            if (Lset[2])
+                count += LZLatency;
+            return count;
+        }
+        
+        public int RLatency()
+        {
+            int count = 0;
+            if (Rset[0])
+                count += RXLatency;
+            if (Rset[1])
+                count += RYLatency;
+            if (Rset[2])
+                count += RZLatency;
+            return count;
+        }
+        
+        public UpgradeBus setLatency(int lx, int ly, int lz, int rx, int ry, int rz)
+        {
+            LXLatency = lx;
+            LYLatency = ly;
+            LZLatency = lz;
+            
+            RXLatency = rx;
+            RYLatency = ry;
+            RZLatency = rz;
+            return this;
+        }
+                
+        public int maxL()
+        {
+            return maxL;
+        }
+
+        public int maxR()
+        {
+            return maxR;
+        }
+
+        public boolean installL(int i)
+        {
+            if (i >= maxL)
+                return false;
+            
+            if (i-1 >= 0 && !Lset[i-1])
+                return false;
+
+            if (!Lset[i])
+            {
+                Lset[i] = true;
+                return true;
+            }
+            return false;
+        }
+        
+        public boolean installR(int i)
+        {
+            if (i >= maxR)
+                return false;
+            
+            if (i-1 >= 0 && !Rset[i-1])
+                return false;
+            
+            if (!Rset[i])
+            {
+                Rset[i] = true;
+                return true;
+            }
+            return false;
+        }
+        
+        public boolean containsUpgrades()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                if (Lset[i] || Rset[i]) return true;
+            }
+            return false;
+        }
+        
+        public void save(NBTTagCompound tag)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                tag.setBoolean("L"+i, Lset[i]);
+                tag.setBoolean("R"+i, Rset[i]);
+            }
+        }
+        
+        public void load(NBTTagCompound tag)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                Lset[i] = tag.getBoolean("L"+i);
+                Rset[i] = tag.getBoolean("R"+i);
+            }
+        }
     }
 }

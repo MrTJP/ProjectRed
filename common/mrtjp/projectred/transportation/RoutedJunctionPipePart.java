@@ -43,7 +43,6 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
 
     private class TransitComparator implements Comparator<Pair2<RoutedPayload, Integer>>
     {
-
         @Override
         public int compare(Pair2<RoutedPayload, Integer> o1, Pair2<RoutedPayload, Integer> o2)
         {
@@ -140,16 +139,16 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     }
 
     @Override
-    public void queueStackToSend(ItemStack stack, int dirToInventory, SyncResponse path)
+    public void queueStackToSend(ItemStack stack, int dirOfExtraction, SyncResponse path)
     {
-        queueStackToSend(stack, dirToInventory, path.priority, path.responder);
+        queueStackToSend(stack, dirOfExtraction, path.priority, path.responder);
     }
 
     @Override
-    public void queueStackToSend(ItemStack stack, int dirToInventory, SendPriority priority, int destination)
+    public void queueStackToSend(ItemStack stack, int dirOfExtraction, SendPriority priority, int destination)
     {
         RoutedPayload r = new RoutedPayload(ItemKeyStack.get(stack));
-        r.input = ForgeDirection.getOrientation(dirToInventory);
+        r.input = ForgeDirection.getOrientation(dirOfExtraction);
         r.setPriority(priority);
         r.setDestination(destination);
         sendQueue.addLast(r);
@@ -201,7 +200,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         firstTick = false;
 
         // Dispatch queued items
-        if (!sendQueue.isEmpty())
+        while (!sendQueue.isEmpty())
             dispatchQueuedPayload(sendQueue.removeFirst());
 
         // Manage transit queue

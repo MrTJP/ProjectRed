@@ -65,12 +65,14 @@ public class RoutingChipset_ItemOverflowResponder extends RoutingChipset
     @Override
     public void save(NBTTagCompound tag)
     {
+        super.save(tag);
         tag.setInteger("pref", preference);
     }
 
     @Override
     public void load(NBTTagCompound tag)
     {
+        super.load(tag);
         preference = tag.getInteger("pref");
     }
 

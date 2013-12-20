@@ -23,13 +23,14 @@ import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Icon;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.FontUtils;
 
 public class RoutingChipGuiFactory
 {
-    public static GuiContainer getGui(Container c, int meta)
+    public static GuiContainer getGui(ChipGhostContainer c, int meta)
     {
         if (meta == EnumRoutingChip.ITEMRESPONDER.ordinal() || meta == EnumRoutingChip.ITEMTERMINATOR.ordinal())
             return new GuiChipItemResponder(c);
@@ -49,19 +50,23 @@ public class RoutingChipGuiFactory
 
     public static abstract class GuiChipContainerWidget<T extends RoutingChipset> extends GhostGuiContainer
     {
-        public GuiChipContainerWidget(Container inventorySlots, GuiScreen previous)
+        protected static final ResourceLocation RL_chipCont = new ResourceLocation("projectred:textures/gui/chipcontainer.png");
+        private ChipGhostContainer chipContainer;
+        
+        public GuiChipContainerWidget(ChipGhostContainer inventorySlots, GuiScreen previous)
         {
             super(inventorySlots, previous);
+            chipContainer = inventorySlots;
         }
 
         public T getChip()
         {
-            return (T) ((ChipGhostContainer) inventorySlots).getChip();
+            return (T) chipContainer.getChip();
         }
 
         public ChipGhostContainer<T> getCleanContainer()
         {
-            return ((ChipGhostContainer<T>) inventorySlots).getNewInstance();
+            return chipContainer.getNewInstance();
         }
 
         public GuiChipContainerWidget(Container inventorySlots, GuiScreen previous, int x, int y)
@@ -85,17 +90,22 @@ public class RoutingChipGuiFactory
         @Override
         public void drawBackground()
         {
+            drawChipContainerBackground();
             drawChipIcon();
             if (getPreviousScreen() != null)
                 drawChipOverlay();
         }
-
+        
         /** Utils **/
+        
+        public void drawChipContainerBackground()
+        {
+            CCRenderState.changeTexture(RL_chipCont);
+            drawTexturedModalRect(0, 0, 0, 0, xSize, ySize);
+        }
 
         public void drawChipIcon()
         {
-            CCRenderState.changeTexture("projectred:textures/gui/chipcontainer.png");
-            drawTexturedModalRect(0, 0, 0, 0, xSize, ySize);
             CCRenderState.changeTexture(TextureMap.locationItemsTexture);
             drawTexturedModelRectFromIcon(55, 14, getChip().getChipType().icon, 64, 64);
         }
@@ -116,7 +126,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemResponder extends GuiChipContainerWidget<RoutingChipset_ItemResponder>
     {
-        public GuiChipItemResponder(Container inv)
+        public GuiChipItemResponder(ChipGhostContainer inv)
         {
             super(inv, null);
         }
@@ -169,7 +179,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemResponder_Priority extends GuiChipContainerWidget<RoutingChipset_ItemResponder>
     {
-        public GuiChipItemResponder_Priority(Container inv, GuiScreen previous)
+        public GuiChipItemResponder_Priority(ChipGhostContainer inv, GuiScreen previous)
         {
             super(inv, previous);
         }
@@ -200,7 +210,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemResponder_Filter extends GuiChipContainerWidget<RoutingChipset_ItemResponder>
     {
-        public GuiChipItemResponder_Filter(Container inventorySlots, GuiScreen previous)
+        public GuiChipItemResponder_Filter(ChipGhostContainer inventorySlots, GuiScreen previous)
         {
             super(inventorySlots, previous);
         }
@@ -284,7 +294,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemExtractor extends GuiChipContainerWidget<RoutingChipset_ItemExtractor>
     {
-        public GuiChipItemExtractor(Container inventorySlots)
+        public GuiChipItemExtractor(ChipGhostContainer inventorySlots)
         {
             super(inventorySlots, null);
         }
@@ -337,7 +347,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemExtractor_Filter extends GuiChipContainerWidget<RoutingChipset_ItemExtractor>
     {
-        public GuiChipItemExtractor_Filter(Container inventorySlots, GuiScreen previous)
+        public GuiChipItemExtractor_Filter(ChipGhostContainer inventorySlots, GuiScreen previous)
         {
             super(inventorySlots, previous);
         }
@@ -422,7 +432,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemExtractor_Orient extends GuiChipContainerWidget<RoutingChipset_ItemExtractor>
     {
-        public GuiChipItemExtractor_Orient(Container inventorySlots, GuiScreen previous)
+        public GuiChipItemExtractor_Orient(ChipGhostContainer inventorySlots, GuiScreen previous)
         {
             super(inventorySlots, previous);
         }
@@ -483,7 +493,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemBroadcaster extends GuiChipContainerWidget<RoutingChipset_ItemBroadcaster>
     {
-        public GuiChipItemBroadcaster(Container inventorySlots)
+        public GuiChipItemBroadcaster(ChipGhostContainer inventorySlots)
         {
             super(inventorySlots, null);
         }
@@ -553,7 +563,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemBroadcaster_Filter extends GuiChipContainerWidget<RoutingChipset_ItemBroadcaster>
     {
-        public GuiChipItemBroadcaster_Filter(Container inventorySlots, GuiScreen previous)
+        public GuiChipItemBroadcaster_Filter(ChipGhostContainer inventorySlots, GuiScreen previous)
         {
             super(inventorySlots, previous);
         }
@@ -618,7 +628,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemBroadcaster_Orient extends GuiChipContainerWidget<RoutingChipset_ItemBroadcaster>
     {
-        public GuiChipItemBroadcaster_Orient(Container inventorySlots, GuiScreen previous)
+        public GuiChipItemBroadcaster_Orient(ChipGhostContainer inventorySlots, GuiScreen previous)
         {
             super(inventorySlots, previous);
         }
@@ -679,7 +689,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemBroadcaster_Priority extends GuiChipContainerWidget<RoutingChipset_ItemBroadcaster>
     {
-        public GuiChipItemBroadcaster_Priority(Container inventorySlots, GuiScreen previous)
+        public GuiChipItemBroadcaster_Priority(ChipGhostContainer inventorySlots, GuiScreen previous)
         {
             super(inventorySlots, previous);
         }
@@ -711,7 +721,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemStockKeeper extends GuiChipContainerWidget<RoutingChipset_ItemStockKeeper>
     {
-        public GuiChipItemStockKeeper(Container container)
+        public GuiChipItemStockKeeper(ChipGhostContainer container)
         {
             super(container, null);
         }
@@ -764,7 +774,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemStockKeeper_Stock extends GuiChipContainerWidget<RoutingChipset_ItemStockKeeper>
     {
-        public GuiChipItemStockKeeper_Stock(Container inventorySlots, GuiScreen previous)
+        public GuiChipItemStockKeeper_Stock(ChipGhostContainer inventorySlots, GuiScreen previous)
         {
             super(inventorySlots, previous);
         }
@@ -790,7 +800,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemStockKeeper_FillMode extends GuiChipContainerWidget<RoutingChipset_ItemStockKeeper>
     {
-        public GuiChipItemStockKeeper_FillMode(Container inventorySlots, GuiScreen previous)
+        public GuiChipItemStockKeeper_FillMode(ChipGhostContainer inventorySlots, GuiScreen previous)
         {
             super(inventorySlots, previous);
         }
@@ -827,7 +837,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipDynamicItemResponder extends GuiChipContainerWidget<RoutingChipset_DynamicItemResponder>
     {
-        public GuiChipDynamicItemResponder(Container inv)
+        public GuiChipDynamicItemResponder(ChipGhostContainer inv)
         {
             super(inv, null);
         }
@@ -877,7 +887,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipDynamicItemResponder_Priority extends GuiChipContainerWidget<RoutingChipset_DynamicItemResponder>
     {
-        public GuiChipDynamicItemResponder_Priority(Container inv, GuiScreen previous)
+        public GuiChipDynamicItemResponder_Priority(ChipGhostContainer inv, GuiScreen previous)
         {
             super(inv, previous);
         }
@@ -908,7 +918,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipDynamicItemResponder_Filter extends GuiChipContainerWidget<RoutingChipset_DynamicItemResponder>
     {
-        public GuiChipDynamicItemResponder_Filter(Container inventorySlots, GuiScreen previous)
+        public GuiChipDynamicItemResponder_Filter(ChipGhostContainer inventorySlots, GuiScreen previous)
         {
             super(inventorySlots, previous);
         }
@@ -965,7 +975,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemOverflowResponder extends GuiChipContainerWidget<RoutingChipset_ItemOverflowResponder>
     {
-        public GuiChipItemOverflowResponder(Container inventorySlots)
+        public GuiChipItemOverflowResponder(ChipGhostContainer inventorySlots)
         {
             super(inventorySlots, null);
         }
@@ -999,7 +1009,7 @@ public class RoutingChipGuiFactory
 
     private static class GuiChipItemOverflowResponder_Priority extends GuiChipContainerWidget<RoutingChipset_ItemOverflowResponder>
     {
-        public GuiChipItemOverflowResponder_Priority(Container inventorySlots, GuiScreen previous)
+        public GuiChipItemOverflowResponder_Priority(ChipGhostContainer inventorySlots, GuiScreen previous)
         {
             super(inventorySlots, previous);
         }
