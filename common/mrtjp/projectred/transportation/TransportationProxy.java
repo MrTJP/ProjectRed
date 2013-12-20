@@ -1,6 +1,7 @@
 package mrtjp.projectred.transportation;
 
 import static mrtjp.projectred.ProjectRedTransportation.itemPartPipe;
+import static mrtjp.projectred.ProjectRedTransportation.itemRouterUtility;
 import static mrtjp.projectred.ProjectRedTransportation.itemRoutingChip;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
@@ -24,6 +25,7 @@ public class TransportationProxy implements IProxy, IPartFactory
 
         itemPartPipe = new ItemPartPipe(Configurator.part_pipe.getInt());
         itemRoutingChip = new ItemRoutingChip(Configurator.item_routingChipID.getInt());
+        itemRouterUtility = new ItemRouterUtility(Configurator.item_routerUtilID.getInt());
 
         for (int i = 0; i < Configurator.routerUpdateThreadCount; i++)
             new TableUpdateThread(i);

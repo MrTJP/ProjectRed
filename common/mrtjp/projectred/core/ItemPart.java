@@ -67,60 +67,65 @@ public class ItemPart extends Item
 
     public enum EnumPart
     {
-        PLATE("Circuit Plate", "partplate"),
-        CONDUCTIVEPLATE("Conductive Plate", "partconductiveplate"),
-        WIREDPLATE("Wired Plate", "partwiredplate"),
-        BUNDLEDPLATE("Bundled Plate", "partbundledplate"),
-        ANODE("Anode", "partanode"),
-        CATHODE("Cathode", "partcathode"),
-        POINTER("Pointer", "partpointer"),
-        SILICONCHIP("Silicon Chip", "partsiliconchip"),
-        ENERGIZEDSILICONCHIP("Energized Silicon Chip", "partenergizedsiliconchip"),
-        PLATFORMEDPLATE("Platformed Plate", "partplatformedplate"),
+        PLATE("partplate"),
+        CONDUCTIVEPLATE("partconductiveplate"),
+        WIREDPLATE("partwiredplate"),
+        BUNDLEDPLATE("partbundledplate"),
+        ANODE("partanode"),
+        CATHODE("partcathode"),
+        POINTER("partpointer"),
+        SILICONCHIP("partsiliconchip"),
+        ENERGIZEDSILICONCHIP("partenergizedsiliconchip"),
+        PLATFORMEDPLATE("partplatformedplate"),
 
-        REDINGOT("Red Alloy Ingot", "partredingot"),
-        SILICONBOULE("Silicon Boule", "partboule"),
-        SILICON("Silicon", "partsilicon"),
-        INFUSEDSILICON("Infused Silicon", "partinfusedsilicon"),
-        ENERGIZEDSILICON("Energized Silicon", "partenergizedsilicon"),
-        MOTOR("Motor", "partmotor"),
-        COPPERCOIL("Copper Coil", "partcoppercoil"),
-        IRONCOIL("Iron Coil", "partironcoil"),
-        GOLDCOIL("Golden Coil", "partgoldcoil"),
+        REDINGOT("partredingot"),
+        SILICONBOULE("partboule"),
+        SILICON("partsilicon"),
+        INFUSEDSILICON("partinfusedsilicon"),
+        ENERGIZEDSILICON("partenergizedsilicon"),
+        MOTOR("partmotor"),
+        COPPERCOIL("partcoppercoil"),
+        IRONCOIL("partironcoil"),
+        GOLDCOIL("partgoldcoil"),
 
-        WHITEILLUMAR("White Illumar", "illumar0"),
-        ORANGEILLUMAR("Orange Illumar", "illumar1"),
-        MAGENTAILLUMAR("Magenta Illumar", "illumar2"),
-        LIGHTBLUEILLUMAR("Light Blue Illumar", "illumar3"),
-        YELLOWILLUMAR("Yellow Illumar", "illumar4"),
-        LIMEILLUMAR("Lime Illumar", "illumar5"),
-        PINKILLUMAR("Pink Illumar", "illumar6"),
-        GREYILLUMAR("Grey Illumar", "illumar7"),
-        LIGHTGREYILLUMAR("Light Grey Illumar", "illumar8"),
-        CYANILLUMAR("Cyan Illumar", "illumar9"),
-        PURPLEILLUMAR("Purple Illumar", "illumar10"),
-        BLUEILLUMAR("Blue Illumar", "illumar11"),
-        BROWNILLUMAR("Brown Illumar", "illumar12"),
-        GREENILLUMAR("Green Illumar", "illumar13"),
-        REDILLUMAR("Red Illumar", "illumar14"),
-        BLACKILLUMAR("Black Illumar", "illumar15"),
+        WHITEILLUMAR("illumar0"),
+        ORANGEILLUMAR("illumar1"),
+        MAGENTAILLUMAR("illumar2"),
+        LIGHTBLUEILLUMAR("illumar3"),
+        YELLOWILLUMAR("illumar4"),
+        LIMEILLUMAR("illumar5"),
+        PINKILLUMAR("illumar6"),
+        GREYILLUMAR("illumar7"),
+        LIGHTGREYILLUMAR("illumar8"),
+        CYANILLUMAR("illumar9"),
+        PURPLEILLUMAR("illumar10"),
+        BLUEILLUMAR("illumar11"),
+        BROWNILLUMAR("illumar12"),
+        GREENILLUMAR("illumar13"),
+        REDILLUMAR("illumar14"),
+        BLACKILLUMAR("illumar15"),
 
-        WOVENCLOTH("Woven Cloth", "partcloth"),
-        SAIL("Sail", "partsail"),
+        WOVENCLOTH("partcloth"),
+        SAIL("partsail"),
 
-        RUBY("Ruby", "gemruby"),
-        SAPPHIRE("Sapphire", "gemsapphire"),
-        PERIDOT("Peridot", "gemperidot"),
+        RUBY("gemruby"),
+        SAPPHIRE("gemsapphire"),
+        PERIDOT("gemperidot"),
 
-        REDIRONCOMPOUND("Red Iron Compound", "partredironcomp"),
-        SANDYCOALCOMPOUND("Sandy coal compound", "partsandcoalcomp"),
-        REDSILICONCOMPOUND("Red silicon compound", "partredsiliconcomp"),
-        GLOWINGSILICONCOMPOUND("Glowing silicon compound", "partglowsiliconcomp"),
+        REDIRONCOMPOUND("partredironcomp"),
+        SANDYCOALCOMPOUND("partsandcoalcomp"),
+        REDSILICONCOMPOUND("partredsiliconcomp"),
+        GLOWINGSILICONCOMPOUND("partglowsiliconcomp"),
 
-        NULLROUTINGCHIP("Null Routing Chip", "nullchip"), 
+        NULLROUTINGCHIP("nullchip"),
+        CHIPUPGRADE_LX("upgrd_lx"),
+        CHIPUPGRADE_LY("upgrd_ly"),
+        CHIPUPGRADE_LZ("upgrd_lz"),
+        CHIPUPGRADE_RX("upgrd_rx"),
+        CHIPUPGRADE_RY("upgrd_ry"),
+        CHIPUPGRADE_RZ("upgrd_rz"),
         ;
         
-        public String fullName;
         public String unlocalName;
         public static final EnumPart[] VALID_PARTS = values();
         public static final EnumPart[] ILLUMAR_PARTS = { WHITEILLUMAR, ORANGEILLUMAR, MAGENTAILLUMAR, LIGHTBLUEILLUMAR, YELLOWILLUMAR, LIMEILLUMAR, PINKILLUMAR, GREYILLUMAR, LIGHTGREYILLUMAR, CYANILLUMAR, PURPLEILLUMAR, BLUEILLUMAR, BROWNILLUMAR, GREENILLUMAR, REDILLUMAR, BLACKILLUMAR };
@@ -128,9 +133,8 @@ public class ItemPart extends Item
         public static final String oreDictDefinition = "projredPart";
         public static final String oreDictDefinition_illumar = "projredIllumar";
 
-        private EnumPart(String full, String unlocal)
+        private EnumPart(String unlocal)
         {
-            fullName = full;
             unlocalName = unlocal;
         }
 

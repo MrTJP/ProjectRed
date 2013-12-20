@@ -1,6 +1,7 @@
 package mrtjp.projectred.transportation;
 
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +30,12 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset
 
     private int operationDelay()
     {
-        return 20;
+        return 100 - getUpgradeBus().LLatency();
     }
 
     private int itemsToExtract()
     {
-        return 8;
+        return 8 + getUpgradeBus().RLatency();
     }
 
     public void setOrient(int orient)
@@ -112,6 +113,7 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset
     @Override
     public void save(NBTTagCompound tag)
     {
+        super.save(tag);
         filter.save(tag);
         tag.setBoolean("mode", filterExclude);
         tag.setInteger("orient", extractOrient);
@@ -122,6 +124,7 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset
     @Override
     public void load(NBTTagCompound tag)
     {
+        super.load(tag);
         filter.load(tag);
         filterExclude = tag.getBoolean("mode");
         extractOrient = tag.getInteger("orient");
@@ -135,6 +138,7 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset
     public List<String> infoCollection()
     {
         List<String> list = new LinkedList<String>();
+        addUpgradeBusInfo(list);
         addOrientInfo(list);
         addFilterInfo(list);
         return list;
@@ -169,5 +173,19 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset
     public EnumRoutingChip getChipType()
     {
         return EnumRoutingChip.ITEMEXTRACTOR;
+    }
+    
+    @Override
+    public UpgradeBus createUpgradeBus()
+    {
+        UpgradeBus b = new UpgradeBus(3, 3);
+        b.setLatency(25, 34, 40, 8, 16, 32);
+
+        b.Linfo = "delay between extractions";
+        b.Lformula = "delay = 100 - Latency";
+        
+        b.Rinfo = "items to extract in one operation";
+        b.Rformula = "items = 8 + Latency";
+        return b;
     }
 }

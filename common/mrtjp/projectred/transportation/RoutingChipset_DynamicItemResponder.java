@@ -72,6 +72,7 @@ public class RoutingChipset_DynamicItemResponder extends RoutingChipset
     @Override
     public void save(NBTTagCompound tag)
     {
+        super.save(tag);
         tag.setInteger("cpri", preference);
         tag.setBoolean("fuz", fuzzyMode);
         tag.setByte("fuzd", (byte) fuzzyDamageMode);
@@ -80,6 +81,7 @@ public class RoutingChipset_DynamicItemResponder extends RoutingChipset
     @Override
     public void load(NBTTagCompound tag)
     {
+        super.load(tag);
         preference = tag.getInteger("cpri");
         fuzzyMode = tag.getBoolean("fuz");
         fuzzyDamageMode = tag.getByte("fuzd");

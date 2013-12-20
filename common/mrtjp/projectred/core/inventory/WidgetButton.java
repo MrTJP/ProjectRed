@@ -65,9 +65,14 @@ public abstract class WidgetButton extends GhostWidget
                                                                                                                                         // right
     }
 
-    public abstract void drawButton(boolean mouseover);
+    public void drawButton(boolean mouseover)
+    {
+    }
 
-    public abstract List<String> getOverlayText();
+    public List<String> getOverlayText()
+    {
+        return new LinkedList<String>();
+    }
 
     public WidgetButton setActionCommand(String string)
     {
@@ -104,7 +109,6 @@ public abstract class WidgetButton extends GhostWidget
         {
             return new LinkedList<String>();
         }
-
     }
 
     public static class WidgetDotSelector extends WidgetButton
@@ -112,11 +116,6 @@ public abstract class WidgetButton extends GhostWidget
         public WidgetDotSelector(int x, int y)
         {
             super(x - 4, y - 4, 8, 8);
-        }
-
-        @Override
-        public void drawButton(boolean mouseover)
-        {
         }
 
         @Override
@@ -128,12 +127,6 @@ public abstract class WidgetButton extends GhostWidget
             boolean mouseover = pointInside(mousex, mousey);
             int u = mouseover ? 11 : 1;
             drawTexturedModalRect(x, y, u, 1, 8, 8);
-        }
-
-        @Override
-        public List<String> getOverlayText()
-        {
-            return new LinkedList<String>();
         }
     }
 
@@ -173,12 +166,6 @@ public abstract class WidgetButton extends GhostWidget
             CCRenderState.changeTexture("projectred:textures/gui/guiextras.png");
             int u = checked ? 17 : 1;
             drawTexturedModalRect(x, y, u, 134, 14, 14);
-        }
-
-        @Override
-        public List<String> getOverlayText()
-        {
-            return new LinkedList<String>();
         }
 
         public WidgetCheckBox setCheck(boolean flag)

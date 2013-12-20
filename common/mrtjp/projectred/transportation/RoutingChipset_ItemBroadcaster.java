@@ -1,5 +1,6 @@
 package mrtjp.projectred.transportation;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise;
 import mrtjp.projectred.transportation.RoutedPayload.SendPriority;
+import mrtjp.projectred.transportation.RoutingChipset.UpgradeBus;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -69,12 +71,12 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
 
     private int stacksToExtract()
     {
-        return 1;
+        return 1 + getUpgradeBus().LLatency();
     }
 
     private int itemsToExtract()
     {
-        return 8;
+        return 8 + getUpgradeBus().RLatency();
     }
 
     private int operationDelay()
@@ -244,6 +246,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
     @Override
     public void save(NBTTagCompound tag)
     {
+        super.save(tag);
         filter.save(tag);
         tag.setBoolean("mode", filterExclude);
         tag.setInteger("pref", preference);
@@ -254,6 +257,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
     @Override
     public void load(NBTTagCompound tag)
     {
+        super.load(tag);
         filter.load(tag);
         filterExclude = tag.getBoolean("mode");
         preference = tag.getInteger("pref");
@@ -307,5 +311,19 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
     public EnumRoutingChip getChipType()
     {
         return EnumRoutingChip.ITEMBROADCASTER;
+    }
+    
+    @Override
+    public UpgradeBus createUpgradeBus()
+    {
+        UpgradeBus b = new UpgradeBus(3, 3);
+        b.setLatency(1, 2, 4, 8, 16, 32);
+
+        b.Linfo = "stacks to check in one operation";
+        b.Lformula = "stacks = 1 + Latency";
+
+        b.Rinfo = "items to extract in one operation";
+        b.Rformula = "items = 8 + Latency";
+        return b;
     }
 }

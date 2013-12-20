@@ -32,7 +32,6 @@ public class RoutingChipContainerFactory
         public ChipGhostContainer<T> getNewInstance()
         {
             ChipGhostContainer<T> c = new ChipGhostContainer<T>(player, chip);
-
             return c;
         }
 
