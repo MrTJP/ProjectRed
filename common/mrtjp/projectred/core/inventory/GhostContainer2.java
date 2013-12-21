@@ -53,10 +53,10 @@ public class GhostContainer2 extends Container
         // pocket
         for (int row = 0; row < 3; row++)
             for (int column = 0; column < 9; column++)
-                addSlotToContainer(new SlotExtended(playerInv, column + row * 9 + 9, x + column * 18, y + row * 18));
+                addCustomSlot(new SlotExtended(playerInv, column + row * 9 + 9, x + column * 18, y + row * 18));
         // hotbar
         for (int i = 0; i < 9; i++)
-            addSlotToContainer(new SlotExtended(playerInv, i, x + i * 18, y + 58));
+            addCustomSlot(new SlotExtended(playerInv, i, x + i * 18, y + 58));
 
         return this;
     }

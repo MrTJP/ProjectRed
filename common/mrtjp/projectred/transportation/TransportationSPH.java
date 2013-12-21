@@ -7,7 +7,7 @@ import mrtjp.projectred.ProjectRedTransportation;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
-import mrtjp.projectred.transportation.ItemRouterUtility.RouterUtilContainer;
+import mrtjp.projectred.transportation.ItemRouterUtility.ChipUpgradeContainer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
@@ -49,9 +49,9 @@ public class TransportationSPH implements IServerPacketHandler
     private void handleRouterUtilAction(PacketCustom packet, EntityPlayerMP sender)
     {
         Container c = sender.openContainer;
-        if (c instanceof RouterUtilContainer)
+        if (c instanceof ChipUpgradeContainer)
         {
-            RouterUtilContainer r = (RouterUtilContainer) c;
+            ChipUpgradeContainer r = (ChipUpgradeContainer) c;
             String action = packet.readString();
             
             if (action.equals("inst"))
