@@ -6,6 +6,7 @@ import java.util.Map;
 import mrtjp.projectred.ProjectRedTransportation;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.utils.ItemKey;
+import mrtjp.projectred.transportation.ItemRouterUtility.ChipUpgradeContainer;
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.NetClientHandler;
@@ -51,7 +52,7 @@ public class TransportationCPH implements IClientPacketHandler
 
     private void openRouterUtilGui(PacketCustom packet, Minecraft mc)
     {
-        ClientUtils.openSMPGui(packet.readUByte(), new GuiRouterUtility(ItemRouterUtility.createContainer(mc.thePlayer)));
+        ClientUtils.openSMPGui(packet.readByte(), new GuiChipUpgrade(new ChipUpgradeContainer(mc.thePlayer)));
     }
     
     private void receiveRequestList(PacketCustom packet, Minecraft mc)

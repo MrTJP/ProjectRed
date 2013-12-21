@@ -157,29 +157,29 @@ public abstract class RoutingChipset
         UpgradeBus b = getUpgradeBus();
         if (b.containsUpgrades())
         {
-            list2.add("---bios upgrades detected---");
+            list2.add("--- upgrades ---");
             
             String s = "";
             if (b.Lset[0])
-                s = s + "LX(" + b.LXLatency + ")";
+                s = s + "LX";
             if (b.Lset[1])
-                s = s + " - LY(" + b.LYLatency + ")";
+                s = s + " - LY";
             if (b.Lset[2])
-                s = s + " - LZ(" + b.LZLatency + ")";
+                s = s + " - LZ";
             if (!s.isEmpty()) 
                 list2.add(s);
             
             String s2 = "";
             if (b.Rset[0])
-                s2 = s2 + "RX(" + b.RXLatency + ")";
+                s2 = s2 + "RX";
             if (b.Rset[1])
-                s2 = s2 + " - RY(" + b.RYLatency + ")";
+                s2 = s2 + " - RY";
             if (b.Rset[2])
-                s2 = s2 + " - RZ(" + b.RZLatency + ")";
+                s2 = s2 + " - RZ";
             if (!s2.isEmpty())
                 list2.add(s2);
 
-            list2.add("--------------------------");
+            list2.add("----------------");
             
             for (int i = 0; i < list2.size(); i++)
                 list2.set(i, EnumChatFormatting.GRAY + list2.get(i));
@@ -202,8 +202,8 @@ public abstract class RoutingChipset
         public int RYLatency = 0;
         public int RZLatency = 0;
         
-        private final int maxL;
-        private final int maxR;
+        public final int maxL;
+        public final int maxR;
         
         public String Linfo;
         public String Lformula;
@@ -252,18 +252,8 @@ public abstract class RoutingChipset
             RZLatency = rz;
             return this;
         }
-                
-        public int maxL()
-        {
-            return maxL;
-        }
 
-        public int maxR()
-        {
-            return maxR;
-        }
-
-        public boolean installL(int i)
+        public boolean installL(int i, boolean doInstall)
         {
             if (i >= maxL)
                 return false;
@@ -273,13 +263,14 @@ public abstract class RoutingChipset
 
             if (!Lset[i])
             {
-                Lset[i] = true;
+                if (doInstall)
+                    Lset[i] = true;
                 return true;
             }
             return false;
         }
         
-        public boolean installR(int i)
+        public boolean installR(int i, boolean doInstall)
         {
             if (i >= maxR)
                 return false;
@@ -289,7 +280,8 @@ public abstract class RoutingChipset
             
             if (!Rset[i])
             {
-                Rset[i] = true;
+                if (doInstall)
+                    Rset[i] = true;
                 return true;
             }
             return false;
