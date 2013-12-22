@@ -40,7 +40,13 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw
     }
 
     @Override
-    public int getCuttingStrength()
+    public int getMaxCuttingStrength()
+    {
+        return getCuttingStrength(null);
+    }
+
+    @Override
+    public int getCuttingStrength(ItemStack stack)
     {
         return tool.material.getHarvestLevel();
     }
