@@ -437,8 +437,8 @@ item.projectred.transmission.framewire|17.name=Framed Bundled Cable
 
 
 
-itemGroup.compat=Project Red: Compatability
+itemGroup.compat=Project Red: Compatibility
 
-tile.projectred.compatability.liqredstone.name=Liquid Redstone
-tile.projectred.compatability.liqcondredmetal.name=Molten Conductive Redmetal
+tile.projectred.compatibility.liqredstone.name=Liquid Redstone
+tile.projectred.compatibility.liqcondredmetal.name=Molten Conductive Redmetal
 

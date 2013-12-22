@@ -127,8 +127,8 @@
 
 {
   "modinfoversion": 2,
-  "modid": "ProjRed|Compatability",
-  "name": "ProjectRed-Compatability",
+  "modid": "ProjRed|Compatibility",
+  "name": "ProjectRed-Compatibility",
   "parent":"ProjRed|Core",
   
   "requiredMods": [
