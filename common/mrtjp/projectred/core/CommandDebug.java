@@ -1,6 +1,7 @@
 package mrtjp.projectred.core;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
@@ -54,5 +55,9 @@ public class CommandDebug extends CommandBase
     public boolean canCommandSenderUseCommand(ICommandSender par1iCommandSender)
     {
         return super.canCommandSenderUseCommand(par1iCommandSender);
+    }
+
+    public int compareTo(Object obj) {
+        return this.getCommandName().compareTo(((ICommand) obj).getCommandName());
     }
 }
