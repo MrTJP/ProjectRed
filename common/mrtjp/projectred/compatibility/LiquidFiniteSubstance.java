@@ -1,4 +1,4 @@
-package mrtjp.projectred.compatability;
+package mrtjp.projectred.compatibility;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;

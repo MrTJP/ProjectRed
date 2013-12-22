@@ -1,8 +1,8 @@
-package mrtjp.projectred.compatability;
+package mrtjp.projectred.compatibility;
 
 import mrtjp.projectred.core.IProxy;
 
-public class CompatabilityProxy implements IProxy
+public class CompatibilityProxy implements IProxy
 {
     @Override
     public void preinit()

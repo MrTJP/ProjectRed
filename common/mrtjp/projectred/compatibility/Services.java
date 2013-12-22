@@ -1,4 +1,4 @@
-package mrtjp.projectred.compatability;
+package mrtjp.projectred.compatibility;
 
 import cpw.mods.fml.common.Loader;
 

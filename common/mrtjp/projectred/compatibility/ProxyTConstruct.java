@@ -1,4 +1,4 @@
-package mrtjp.projectred.compatability;
+package mrtjp.projectred.compatibility;
 
 import static tconstruct.common.TContent.metalPattern;
 import mrtjp.projectred.core.Configurator;
@@ -31,7 +31,7 @@ public class ProxyTConstruct
 
     public ProxyTConstruct()
     {
-        PRLogger.info("Loaded TConstruct Compatability Proxy");
+        PRLogger.info("Loaded TConstruct Compatibility Proxy");
     }
 
     public void addSmeltingRecipe(ItemStack input, int blockID, int metadata, int temperature, FluidStack liquid)
@@ -65,14 +65,14 @@ public class ProxyTConstruct
 
         moltenRedstoneFluid = new Fluid("Molten Redstone");
         FluidRegistry.registerFluid(moltenRedstoneFluid);
-        moltenRedstone = (LiquidFiniteSubstance) new LiquidFiniteSubstance(Configurator.block_redstoneliquidID.getInt(), moltenRedstoneFluid, "liqredstone", liquidMetal).setUnlocalizedName("projectred.compatability.liqredstone");
-        GameRegistry.registerBlock(moltenRedstone, "projectred.compatability.liqredstone");
+        moltenRedstone = (LiquidFiniteSubstance) new LiquidFiniteSubstance(Configurator.block_redstoneliquidID.getInt(), moltenRedstoneFluid, "liqredstone", liquidMetal).setUnlocalizedName("projectred.compatibility.liqredstone");
+        GameRegistry.registerBlock(moltenRedstone, "projectred.compatibility.liqredstone");
         moltenRedstoneFluid.setBlockID(moltenRedstone).setLuminosity(12).setDensity(1000).setViscosity(3000);
 
         moltenConductiveRedmetalFluid = new Fluid("Molten Conductive Redmetal");
         FluidRegistry.registerFluid(moltenConductiveRedmetalFluid);
-        moltenConductiveRedmetal = (LiquidFiniteSubstance) new LiquidFiniteSubstance(Configurator.block_redconductiveliquidID.getInt(), moltenConductiveRedmetalFluid, "liqcondredmetal", liquidMetal).setUnlocalizedName("projectred.compatability.liqcondredmetal");
-        GameRegistry.registerBlock(moltenConductiveRedmetal, "projectred.compatability.liqcondredmetal");
+        moltenConductiveRedmetal = (LiquidFiniteSubstance) new LiquidFiniteSubstance(Configurator.block_redconductiveliquidID.getInt(), moltenConductiveRedmetalFluid, "liqcondredmetal", liquidMetal).setUnlocalizedName("projectred.compatibility.liqcondredmetal");
+        GameRegistry.registerBlock(moltenConductiveRedmetal, "projectred.compatibility.liqcondredmetal");
         moltenConductiveRedmetalFluid.setBlockID(moltenConductiveRedmetal).setLuminosity(12).setDensity(2000).setViscosity(4000);
 
         // Molten redstone recipes

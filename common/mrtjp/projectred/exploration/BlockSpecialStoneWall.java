@@ -13,6 +13,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 public class BlockSpecialStoneWall extends BlockWall
 {
@@ -53,5 +54,12 @@ public class BlockSpecialStoneWall extends BlockWall
         }
         else
             return true;
+    }
+    
+    @Override
+    public boolean canPlaceTorchOnTop(World world, int x, int y, int z)
+    {
+        int id = world.getBlockId(x, y, z);
+        return super.canPlaceTorchOnTop(world, x, y, z) || id == ProjectRedExploration.blockStoneWalls.blockID;
     }
 }

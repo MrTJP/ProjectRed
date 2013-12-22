@@ -11,14 +11,14 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 
-@Mod(modid = "ProjRed|Compatability", useMetadata = true)
+@Mod(modid = "ProjRed|Compatibility", useMetadata = true)
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
-public class ProjectRedCompatability
+public class ProjectRedCompatibility
 {
-    @Instance("ProjRed|Compatability")
-    public static ProjectRedCompatability instance;
+    @Instance("ProjRed|Compatibility")
+    public static ProjectRedCompatibility instance;
 
-    @SidedProxy(clientSide = "mrtjp.projectred.compatability.CompatabilityClientProxy", serverSide = "mrtjp.projectred.compatability.CompatabilityProxy")
+    @SidedProxy(clientSide = "mrtjp.projectred.compatibility.CompatibilityClientProxy", serverSide = "mrtjp.projectred.compatibility.CompatibilityProxy")
     public static IProxy proxy;
 
     @Mod.EventHandler
