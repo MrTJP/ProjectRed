@@ -118,6 +118,7 @@ public class ItemPart extends Item
         GLOWINGSILICONCOMPOUND("partglowsiliconcomp"),
 
         NULLROUTINGCHIP("nullchip"),
+        NULLUPGRADECHIP("nullupgrd"),
         CHIPUPGRADE_LX("upgrd_lx"),
         CHIPUPGRADE_LY("upgrd_ly"),
         CHIPUPGRADE_LZ("upgrd_lz"),

@@ -30,15 +30,16 @@ public class ItemRouterUtility extends Item
         super(par1);
         setUnlocalizedName("projectred.transportation.routerutil");
         setCreativeTab(ProjectRedTransportation.tabTransportation);
+        setMaxStackSize(1);
     }
 
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World w, EntityPlayer player)
     {
         if (!w.isRemote && stack != null && stack.getItem() instanceof ItemRouterUtility)
-        {
-            openGui(player);
-        }
+            if (player.isSneaking())
+                openGui(player);
+        
         return super.onItemRightClick(stack, w, player);
     }
 
@@ -46,9 +47,9 @@ public class ItemRouterUtility extends Item
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
     {
         if (!w.isRemote && stack != null && stack.getItem() instanceof ItemRouterUtility)
-        {
-            openGui(player);
-        }
+            if (player.isSneaking())
+                openGui(player);
+        
         return true;
     }
     

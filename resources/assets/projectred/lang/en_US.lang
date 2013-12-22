@@ -48,6 +48,7 @@ item.projectred.core.part.partredsiliconcomp.name=Red Silicon Compound
 item.projectred.core.part.partglowsiliconcomp.name=Glowing Silicon Compound
 
 item.projectred.core.part.nullchip.name=Null-Logic Routing Chip
+item.projectred.core.part.nullupgrd.name=Null-Logic Upgrade Chip
 item.projectred.core.part.upgrd_lx.name=LX Upgrade
 item.projectred.core.part.upgrd_ly.name=LY Upgrade
 item.projectred.core.part.upgrd_lz.name=LZ Upgrade

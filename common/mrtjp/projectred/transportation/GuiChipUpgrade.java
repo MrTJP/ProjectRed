@@ -41,12 +41,16 @@ public class GuiChipUpgrade extends GhostGuiContainer
                 if (c.getChip() != null)
                 {
                     UpgradeBus b = c.getChip().getUpgradeBus();
-                    
-                    list.add("L slot");
-                    list.add(EnumChatFormatting.GRAY + "Latency: " + b.LLatency());
-                    list.add("");
-                    list.add(EnumChatFormatting.GRAY + b.Linfo);
-                    list.add(EnumChatFormatting.YELLOW + b.Lformula);
+                    if (b.maxL != 0)
+                    {
+                        list.add("L slot");
+                        list.add(EnumChatFormatting.GRAY + "Latency: " + b.LLatency());
+                        list.add("");
+                        list.add(EnumChatFormatting.GRAY + b.Linfo);
+                        list.add(EnumChatFormatting.YELLOW + b.Lformula);
+                    }
+                    else
+                        list.add("not upgradable");
                 }
                 return list;
             }
@@ -60,12 +64,16 @@ public class GuiChipUpgrade extends GhostGuiContainer
                 if (c.getChip() != null)
                 {
                     UpgradeBus b = c.getChip().getUpgradeBus();
-                    
-                    list.add("R slot");
-                    list.add(EnumChatFormatting.GRAY + "Latency: " + b.RLatency());
-                    list.add("");
-                    list.add(EnumChatFormatting.GRAY + b.Rinfo);
-                    list.add(EnumChatFormatting.YELLOW + b.Rformula);
+                    if (b.maxR != 0)
+                    {
+                        list.add("R slot");
+                        list.add(EnumChatFormatting.GRAY + "Latency: " + b.RLatency());
+                        list.add("");
+                        list.add(EnumChatFormatting.GRAY + b.Rinfo);
+                        list.add(EnumChatFormatting.YELLOW + b.Rformula);
+                    }
+                    else
+                        list.add("not upgradable");
                 }
                 return list;
             }
