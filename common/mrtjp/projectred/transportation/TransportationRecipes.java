@@ -1,11 +1,14 @@
 package mrtjp.projectred.transportation;
 
-import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.ItemPart.EnumPart;
+import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import net.minecraft.block.Block;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -16,6 +19,7 @@ public class TransportationRecipes
     {
         initPipeRecipes();
         initChipRecipes();
+        initUpgradeRecipes();
     }
 
     private static void initPipeRecipes() 
@@ -73,6 +77,77 @@ public class TransportationRecipes
     
     private static void initChipRecipes() 
     {
+        /** Chip reset **/
+        for (EnumRoutingChip r : EnumRoutingChip.VALID_CHIPS)
+            GameRegistry.addRecipe(new IRecipe() {
+
+                @Override
+                public boolean matches(InventoryCrafting inv, World world)
+                {
+                    return getCraftingResult(inv) != null;
+                }
+
+                @Override
+                public ItemStack getCraftingResult(InventoryCrafting inv)
+                {
+                    EnumRoutingChip type = getType(inv);
+                    if (type != null)
+                        if (isTypeExclusive(type, inv))
+                            return type.getItemStack(countUnits(inv));
+                    
+                    return null;
+                }
+                
+                public EnumRoutingChip getType(InventoryCrafting inv)
+                {
+                    for (int i = 0; i < inv.getSizeInventory(); i++)
+                    {
+                        EnumRoutingChip type = EnumRoutingChip.getForStack(inv.getStackInSlot(i));
+                        if (type != null)
+                            return type;
+                    }
+                    return null;
+                }
+                
+                public boolean isTypeExclusive(EnumRoutingChip type, InventoryCrafting inv)
+                {
+                    for (int i = 0; i < inv.getSizeInventory(); i++)
+                    {
+                        ItemStack stack = inv.getStackInSlot(i);
+                        if (stack != null && !(stack.getItem() instanceof ItemRoutingChip))
+                            return false;
+                        
+                        EnumRoutingChip type2 = EnumRoutingChip.getForStack(stack);
+                        if (type2 != null && !type2.equals(type))
+                            return false;
+                    }
+                    return true;
+                }
+                
+                public int countUnits(InventoryCrafting inv)
+                {
+                    int count = 0;
+                    for (int i = 0; i < inv.getSizeInventory(); i++)
+                        if (inv.getStackInSlot(i) != null)
+                            count++;
+                    
+                    return count;
+                }
+
+                @Override
+                public int getRecipeSize()
+                {
+                    return 2;
+                }
+
+                @Override
+                public ItemStack getRecipeOutput()
+                {
+                    return null;
+                }
+
+            });
+        
         /** Null chip **/
         GameRegistry.addRecipe(EnumPart.NULLROUTINGCHIP.getItemStack(),
                 "gpp",
@@ -139,6 +214,76 @@ public class TransportationRecipes
                 'c', EnumPart.NULLROUTINGCHIP.getItemStack(),
                 'm', material1
                 ));
+    }
+    
+    private static void initUpgradeRecipes()
+    {
+        /** Null Upgrade **/
+        GameRegistry.addRecipe(EnumPart.NULLUPGRADECHIP.getItemStack(),
+                "prp",
+                "rrr",
+                "prp",
+                'p', Item.paper,
+                'r', Item.redstone
+                );
+        
+        /** LX **/
+        GameRegistry.addRecipe(EnumPart.CHIPUPGRADE_LX.getItemStack(),
+                "r r",
+                " ng",
+                "r r",
+                'r', Item.redstone,
+                'n', EnumPart.NULLUPGRADECHIP.getItemStack(),
+                'g', Item.goldNugget
+                );
+
+        /** RX **/
+        GameRegistry.addRecipe(EnumPart.CHIPUPGRADE_RX.getItemStack(),
+                "r r",
+                "gn ",
+                "r r",
+                'r', Item.redstone,
+                'n', EnumPart.NULLUPGRADECHIP.getItemStack(),
+                'g', Item.goldNugget
+                );
+
+        /** LY **/
+        GameRegistry.addRecipe(EnumPart.CHIPUPGRADE_LY.getItemStack(),
+                "l l",
+                " n ",
+                " l ",
+                'l', PRColors.BLUE.getDye(),
+                'n', EnumPart.CHIPUPGRADE_LX.getItemStack()
+                );
+
+        /** RY **/
+        GameRegistry.addRecipe(EnumPart.CHIPUPGRADE_RY.getItemStack(),
+                "l l",
+                " n ",
+                " l ",
+                'l', PRColors.BLUE.getDye(),
+                'n', EnumPart.CHIPUPGRADE_RX.getItemStack()
+                );
+
+        /** LZ **/
+        GameRegistry.addRecipe(EnumPart.CHIPUPGRADE_LZ.getItemStack(),
+                "r r",
+                " n ",
+                "rer",
+                'r', Item.redstone,
+                'n', EnumPart.CHIPUPGRADE_LY.getItemStack(),
+                'e', Item.emerald
+                );
+
+        /** RZ **/
+        GameRegistry.addRecipe(EnumPart.CHIPUPGRADE_RZ.getItemStack(),
+                "r r",
+                " n ",
+                "rer",
+                'r', Item.redstone,
+                'n', EnumPart.CHIPUPGRADE_RY.getItemStack(),
+                'e', Item.emerald
+                );
     }
 }
 

@@ -178,9 +178,22 @@ public class ItemRoutingChip extends Item
 
         public ItemStack getItemStack()
         {
-            return new ItemStack(ProjectRedTransportation.itemRoutingChip, 1, meta);
+            return getItemStack(1);
+        }
+        
+        public ItemStack getItemStack(int i)
+        {
+            return new ItemStack(ProjectRedTransportation.itemRoutingChip, i, meta);
         }
 
+        public static EnumRoutingChip getForStack(ItemStack stack)
+        {
+            if (stack != null && stack.getItem() instanceof ItemRoutingChip)
+                return get(stack.getItemDamage());
+            
+            return null;
+        }
+        
         public static EnumRoutingChip get(int ordinal)
         {
             if (ordinal < 0 || ordinal >= VALID_CHIPS.length)
