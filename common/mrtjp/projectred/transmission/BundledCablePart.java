@@ -125,10 +125,11 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
             if (maskConnects(r))
                 if ((connMap & 1 << r) != 0)
                     calculateCornerSignal(r);
-                else if ((connMap & 0x10 << r) != 0)
-                    calculateStraightSignal(r);
-                else
+                else {
+                    if ((connMap & 0x10 << r) != 0)
+                        calculateStraightSignal(r);
                     calculateInternalSignal(r);
+                }
 
         calculateCenterSignal();
 
