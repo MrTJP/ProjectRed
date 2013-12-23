@@ -162,10 +162,10 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         {
             IWorldRouter wr = dest.getParent();
             wr.itemEnroute(r);
-            RouteFX.sendSpawnPacket(RouteFX.color_sync, 8, new BlockCoord(wr.getContainer().tile()), world());
+            RouteFX.spawnType1(RouteFX.color_sync, 8, new BlockCoord(wr.getContainer().tile()), world());
         }
 
-        RouteFX.sendSpawnPacket(RouteFX.color_send, 8, new BlockCoord(tile()), world());
+        RouteFX.spawnType1(RouteFX.color_send, 8, new BlockCoord(tile()), world());
     }
 
     @Override
@@ -390,7 +390,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
             r.travelLog.clear();
             color = RouteFX.color_routeLost;
         }
-        RouteFX.sendSpawnPacket(color, 8, new BlockCoord(tile()), world());
+        RouteFX.spawnType1(color, 8, new BlockCoord(tile()), world());
         adjustSpeed(r);
     }
 

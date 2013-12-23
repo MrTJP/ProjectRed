@@ -101,6 +101,9 @@ public class BasicUtils
 
     public static <T> T getTileEntity(IBlockAccess access, BlockCoord coords, Class<T> clazz)
     {
+        if (coords.y < 0)
+            return null;
+        
         TileEntity te = access.getBlockTileEntity(coords.x, coords.y, coords.z);
         return !clazz.isInstance(te) ? null : (T) te;
     }

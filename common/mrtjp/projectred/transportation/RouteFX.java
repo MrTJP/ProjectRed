@@ -35,28 +35,39 @@ public class RouteFX
 
     public static final int color_checkInv = PRColors.WHITE.ordinal();
 
-    public static void sendSpawnPacket(int color, int count, BlockCoord bc, World world)
+    public static void spawnType1(int color, int count, BlockCoord bc, World world)
     {
-        if (world.isRemote)
+        if (!world.isRemote)
+        {
+            packetType1(color, count, bc, world);
             return;
-
-        PacketCustom packet = new PacketCustom(TransportationSPH.channel, NetConstants.particle_Spawn);
-
-        packet.writeByte(color).writeByte(count).writeCoord(bc);
-        packet.sendPacketToAllAround(bc.x, bc.y, bc.z, 64.0D, world.provider.dimensionId);
-    }
-
-    public static void handleClientPacket(MCDataInput in, World world)
-    {
-        PRColors color = PRColors.get(in.readUByte());
-        int count = in.readUByte();
-        BlockCoord bc = in.readCoord();
-
+        }
+        
+        PRColors c = PRColors.get(color);
         for (int i = 0; i < count; i++)
-            spawn(color, bc, world);
+            spawnType1(c, bc, world);
     }
+    
+    public static void spawnType2(int color, int count, int dir, BlockCoord bc, World world)
+    {
+        if (!world.isRemote)
+        {
+            packetType2(color, count, dir, bc, world);
+            return;
+        }
+        
+        PRColors c = PRColors.get(color);
+        for (int i = 0; i < count; i++)
+            spawnType2(c, dir, bc, world);
 
-    public static void spawn(PRColors color, BlockCoord bc, World world)
+    }
+    
+    private static void spawnType2(PRColors color, int dir, BlockCoord bc, World world)
+    {
+        
+    }
+    
+    private static void spawnType1(PRColors color, BlockCoord bc, World world)
     {
         if (!world.isRemote)
             return;
@@ -95,5 +106,44 @@ public class RouteFX
             c.addLogic(scale);
             c.addLogic(iconshift);
         }
+    }
+
+    public static void handleClientPacket(MCDataInput in, World world)
+    {
+        int type = in.readUByte();
+        int color = in.readUByte();
+        int count = in.readUByte();
+        int dir = type == 2 ? in.readUByte() : -1;
+        
+        BlockCoord bc = in.readCoord();
+    
+        if (type == 1)
+            spawnType1(count, color, bc, world);
+        else if (type == 2)
+            spawnType2(count, color, dir, bc, world);
+    }
+
+    private static void packetType1(int color, int count, BlockCoord bc, World world)
+    {
+        if (world.isRemote)
+            return;
+    
+        PacketCustom packet = new PacketCustom(TransportationSPH.channel, NetConstants.particle_Spawn);
+    
+        packet.writeByte(1);
+        packet.writeByte(color).writeByte(count).writeCoord(bc);
+        packet.sendPacketToAllAround(bc.x, bc.y, bc.z, 64.0D, world.provider.dimensionId);
+    }
+
+    private static void packetType2(int color, int count, int dir, BlockCoord bc, World world)
+    {
+        if (world.isRemote)
+            return;
+    
+        PacketCustom packet = new PacketCustom(TransportationSPH.channel, NetConstants.particle_Spawn);
+        
+        packet.writeByte(2);
+        packet.writeByte(color).writeByte(count).writeCoord(bc).writeByte(dir);
+        packet.sendPacketToAllAround(bc.x, bc.y, bc.z, 64.0D, world.provider.dimensionId);
     }
 }

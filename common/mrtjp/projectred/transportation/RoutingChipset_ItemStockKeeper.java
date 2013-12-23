@@ -88,7 +88,7 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset
             }
         }
         if (requestAttempted)
-            RouteFX.sendSpawnPacket(RouteFX.color_request, 8, routeLayer().getCoords(), routeLayer().getWorld());
+            RouteFX.spawnType1(RouteFX.color_request, 8, routeLayer().getCoords(), routeLayer().getWorld());
 
         if (requestAttempted && requestedSomething)
             operationsWithoutRequest = 0;

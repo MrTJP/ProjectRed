@@ -145,7 +145,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         if (wanted == null || wanted.isEmpty())
             return;
 
-        RouteFX.sendSpawnPacket(RouteFX.color_checkInv, 8, new BlockCoord(tile()), world());
+        RouteFX.spawnType1(RouteFX.color_checkInv, 8, new BlockCoord(tile()), world());
 
         int itemsleft = itemsToExtract();
         int stacksleft = stacksToExtract();
