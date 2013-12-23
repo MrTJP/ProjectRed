@@ -3,6 +3,8 @@ package mrtjp.projectred.core.inventory;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.input.Mouse;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
@@ -213,21 +215,24 @@ public class GhostContainer2 extends Container
         @Override
         public boolean isItemValid(ItemStack stack)
         {
-            return allowPlace && (check == null || check.canPlace(stack)) && inventory.isItemValidForSlot(getSlotIndex(), stack);
+            return allowPlace && (check == null || check.canPlace(this, stack));
         }
 
         @Override
         public boolean canTakeStack(EntityPlayer player)
         {
-            return allowRemove && (check == null || check.canTake());
+            return allowRemove && (check == null || check.canTake(this));
         }
 
         private ItemStack handleGhostClick(int mouseButton, int isShift, EntityPlayer player)
-        {
+        {            
             ItemStack inSlot = getStack();
             ItemStack inCursor = player.inventory.getItemStack();
             if (InventoryWrapper.areItemsStackable(inSlot, inCursor))
             {
+                if (!Mouse.isButtonDown(mouseButton) && inSlot != null)
+                    mouseButton = -1;
+
                 if (inSlot == null && inCursor != null)
                 {
                     ItemStack newStack = inCursor.copy();
@@ -261,8 +266,24 @@ public class GhostContainer2 extends Container
 
     public static interface ISlotController
     {
-        public boolean canTake();
+        public boolean canTake(SlotExtended slot);
 
-        public boolean canPlace(ItemStack stack);
+        public boolean canPlace(SlotExtended slot, ItemStack stack);
+        
+        public static class InventoryRulesController implements ISlotController
+        {
+            public static InventoryRulesController instance = new InventoryRulesController();
+            @Override
+            public boolean canTake(SlotExtended slot)
+            {
+                return true;
+            }
+
+            @Override
+            public boolean canPlace(SlotExtended slot, ItemStack stack)
+            {
+                return slot.inventory.isItemValidForSlot(slot.getSlotIndex(), stack);
+            }
+        }
     }
 }

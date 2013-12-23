@@ -33,8 +33,8 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
             preference += 10;
         else
             preference += 1;
-        if (preference > 100)
-            preference = 100;
+        if (preference > prefScale())
+            preference = prefScale();
     }
 
     public void prefDown()
@@ -43,8 +43,13 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
             preference -= 10;
         else
             preference -= 1;
-        if (preference < -100)
-            preference = -100;
+        if (preference < -prefScale())
+            preference = -prefScale();
+    }
+    
+    private int prefScale()
+    {
+        return 2 + getUpgradeBus().LLatency();
     }
 
     public void shiftFuzzy()
@@ -141,5 +146,15 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
     public EnumRoutingChip getChipType()
     {
         return EnumRoutingChip.ITEMRESPONDER;
+    }
+    
+    @Override
+    public UpgradeBus createUpgradeBus()
+    {
+        UpgradeBus b = new UpgradeBus(3, 0);
+        b.setLatency(3, 5, 54, 0, 0, 0);
+        b.Linfo = "raise maximum preference value";
+        b.Lformula = "preference value = 2 + Latency";
+        return b;
     }
 }

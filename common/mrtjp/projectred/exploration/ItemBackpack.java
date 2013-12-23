@@ -3,8 +3,10 @@ package mrtjp.projectred.exploration;
 import java.util.List;
 
 import mrtjp.projectred.ProjectRedExploration;
-import mrtjp.projectred.core.GhostContainer;
-import mrtjp.projectred.core.GhostContainer.ISlotCheck;
+import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.inventory.GhostContainer2;
+import mrtjp.projectred.core.inventory.GhostContainer2.ISlotController.InventoryRulesController;
+import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -45,30 +47,38 @@ public class ItemBackpack extends Item
         return inv;
     }
 
-    public static Container getContainer(EntityPlayer player)
+    public static Container getContainer(final EntityPlayer player)
     {
         IInventory backpackInv = getBackpackInventory(player);
+        
         if (backpackInv == null)
             backpackInv = new BagInventory(player, new ItemStack(ProjectRedExploration.itemBackpack));
-        GhostContainer ghost = new GhostContainer(player.inventory, backpackInv);
+        
+        GhostContainer2 container = new GhostContainer2(player.inventory) {
+            @Override
+            public GhostContainer2 addCustomSlot(SlotExtended slot)
+            {
+                if (slot.getSlotIndex() == player.inventory.currentItem)
+                    return super.addCustomSlot(slot.setRemoval(false));
+
+                return super.addCustomSlot(slot);
+            }
+        };
+        
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 9; j++)
             {
                 final int slotNumber = i * 9 + j;
-                ghost.addRestrictedSlot(slotNumber, backpackInv, 8 + j * 18, 18 + i * 18, new ISlotCheck() {
-
-                    @Override
-                    public boolean isSlotAllowed(ItemStack stack)
-                    {
-                        if (stack == null)
-                            return true;
-                        return !(stack.itemID == ProjectRedExploration.itemBackpack.itemID);
-                    }
-
-                });
+                int x = 8 + j * 18;
+                int y = 18 + i * 18;
+                
+                SlotExtended s = new SlotExtended(backpackInv, slotNumber, x, y).setCheck(InventoryRulesController.instance);
+                
+                container.addCustomSlot(s);
             }
-        ghost.addNormalSlotsForPlayerInventory(8, 86, player.inventory.currentItem);
-        return ghost;
+        
+        container.addPlayerInventory(8,  86);
+        return container;
     }
 
     @Override
@@ -157,6 +167,23 @@ public class ItemBackpack extends Item
         public void closeChest()
         {
             saveInventory();
+        }
+        
+        @Override
+        public boolean isItemValidForSlot(int i, ItemStack stack)
+        {
+            if (stack != null)
+            {
+                if (stack.itemID == ProjectRedExploration.itemBackpack.itemID)
+                    return false;
+
+                for (int blocked : Configurator.backpackBlacklist)
+                    if (stack.itemID == blocked)
+                        return false;
+
+                return true;
+            }
+            return false;
         }
 
         private void loadInventory()

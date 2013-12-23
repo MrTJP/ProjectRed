@@ -9,6 +9,7 @@ import mrtjp.projectred.core.inventory.InventoryWrapper;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import mrtjp.projectred.transportation.RoutedPayload.SendPriority;
+import mrtjp.projectred.transportation.RoutingChipset.UpgradeBus;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
@@ -29,8 +30,8 @@ public class RoutingChipset_ItemOverflowResponder extends RoutingChipset
             preference += 10;
         else
             preference += 1;
-        if (preference > 100)
-            preference = 100;
+        if (preference > prefScale())
+            preference = prefScale();
     }
 
     public void prefDown()
@@ -39,8 +40,13 @@ public class RoutingChipset_ItemOverflowResponder extends RoutingChipset
             preference -= 10;
         else
             preference -= 1;
-        if (preference < -100)
-            preference = -100;
+        if (preference < -prefScale())
+            preference = -prefScale();
+    }
+    
+    private int prefScale()
+    {
+        return 2 + getUpgradeBus().LLatency();
     }
 
     @Override
@@ -93,5 +99,15 @@ public class RoutingChipset_ItemOverflowResponder extends RoutingChipset
     public void addPriorityInfo(List<String> list)
     {
         list.add(EnumChatFormatting.GRAY + "Preference: " + preference);
+    }
+    
+    @Override
+    public UpgradeBus createUpgradeBus()
+    {
+        UpgradeBus b = new UpgradeBus(3, 0);
+        b.setLatency(3, 5, 54, 0, 0, 0);
+        b.Linfo = "raise maximum preference value";
+        b.Lformula = "preference value = 2 + Latency";
+        return b;
     }
 }
