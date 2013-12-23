@@ -5,11 +5,6 @@ public class ParticleLogicScale extends ParticleLogic
     private float scaleRate = 0.01F;
     private float scaleAccel = 0F;
 
-    public ParticleLogicScale(int priority, boolean finalLogic)
-    {
-        super(priority, finalLogic);
-    }
-
     public ParticleLogicScale setRate(float scaleRate, float scaleAccel)
     {
         this.scaleRate = scaleRate;
@@ -35,6 +30,6 @@ public class ParticleLogicScale extends ParticleLogic
     @Override
     public ParticleLogic clone()
     {
-        return new ParticleLogicScale(priority, finalLogic).setRate(scaleRate, scaleAccel);
+        return new ParticleLogicScale().setRate(scaleRate, scaleAccel).setFinal(finalLogic).setPriority(priority);
     }
 }

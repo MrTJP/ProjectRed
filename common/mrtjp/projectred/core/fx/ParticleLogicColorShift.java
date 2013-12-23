@@ -17,9 +17,8 @@ public final class ParticleLogicColorShift extends ParticleLogic
     private float greenShift;
     private float blueShift;
 
-    public ParticleLogicColorShift(int priority, boolean finalLogic)
+    public ParticleLogicColorShift()
     {
-        super(priority, finalLogic);
         minRed = 0.0F;
         minGreen = 0.0F;
         minBlue = 0.0F;
@@ -116,9 +115,10 @@ public final class ParticleLogicColorShift extends ParticleLogic
     @Override
     public ParticleLogic clone()
     {
-        ParticleLogicColorShift clone = new ParticleLogicColorShift(priority, endOnReachingColor).setShiftSpeed(shiftSpeed).setColorRange(minRed, minBlue, minGreen, maxRed, maxGreen, maxBlue).setColorTarget(targetRed, targetGreen, targetBlue);
+        ParticleLogicColorShift clone = new ParticleLogicColorShift().setShiftSpeed(shiftSpeed).setColorRange(minRed, minBlue, minGreen, maxRed, maxGreen, maxBlue).setColorTarget(targetRed, targetGreen, targetBlue);
         if (endOnReachingColor)
             clone.setEndOnReachingTargetColor();
+        clone.setFinal(finalLogic).setPriority(priority);
         return clone;
     }
 }

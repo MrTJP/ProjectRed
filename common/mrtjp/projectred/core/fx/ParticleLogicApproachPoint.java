@@ -12,9 +12,8 @@ public class ParticleLogicApproachPoint extends ParticleLogic
     private final double targetDistance;
     private boolean ignoreY;
 
-    public ParticleLogicApproachPoint(Vector3 point, double approachSpeed, double targetDistance, int priority, boolean finalLogic)
+    public ParticleLogicApproachPoint(Vector3 point, double approachSpeed, double targetDistance)
     {
-        super(priority, finalLogic);
         this.targetX = point.x;
         this.targetY = point.y;
         this.targetZ = point.z;
@@ -76,6 +75,6 @@ public class ParticleLogicApproachPoint extends ParticleLogic
     @Override
     public ParticleLogic clone()
     {
-        return new ParticleLogicApproachPoint(new Vector3(targetX, targetY, targetZ), approachSpeed, targetDistance, priority, finalLogic).setIgnoreY(ignoreY);
+        return new ParticleLogicApproachPoint(new Vector3(targetX, targetY, targetZ), approachSpeed, targetDistance).setIgnoreY(ignoreY).setFinal(finalLogic).setPriority(priority);
     }
 }

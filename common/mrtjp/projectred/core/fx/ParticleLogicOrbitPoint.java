@@ -20,9 +20,8 @@ public final class ParticleLogicOrbitPoint extends ParticleLogic
     private double shrinkSpeed = 0.0D;
     private double shrinkTargetDistance = 0.0D;
 
-    public ParticleLogicOrbitPoint(Vector3 point, int priority, boolean finalLogic)
+    public ParticleLogicOrbitPoint(Vector3 point)
     {
-        super(priority, finalLogic);
         target = point.copy();
         orbitAngle = rand.nextInt(360);
         rotateClockwise = rand.nextInt(10) < 5;
@@ -158,7 +157,7 @@ public final class ParticleLogicOrbitPoint extends ParticleLogic
     @Override
     public ParticleLogic clone()
     {
-        ParticleLogicOrbitPoint clone = new ParticleLogicOrbitPoint(target, priority, finalLogic);
+        ParticleLogicOrbitPoint clone = new ParticleLogicOrbitPoint(target);
         if (useCurrentDistance)
             clone.setUseCurrentDistance();
         else
@@ -175,6 +174,6 @@ public final class ParticleLogicOrbitPoint extends ParticleLogic
         if (shrinkingOrbit)
             clone.setShrinkingOrbit(shrinkSpeed, shrinkTargetDistance);
 
-        return clone;
+        return clone.setFinal(finalLogic).setPriority(priority);
     }
 }

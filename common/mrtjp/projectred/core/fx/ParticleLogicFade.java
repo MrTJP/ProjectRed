@@ -5,9 +5,8 @@ public final class ParticleLogicFade extends ParticleLogic
     private float fadeSpeed;
     private float fadeAccel;
 
-    public ParticleLogicFade(int priority, boolean finalLogic)
+    public ParticleLogicFade()
     {
-        super(priority, finalLogic);
         fadeSpeed = 0.01F;
         fadeAccel = 0;
     }
@@ -36,6 +35,6 @@ public final class ParticleLogicFade extends ParticleLogic
     @Override
     public ParticleLogic clone()
     {
-        return new ParticleLogicFade(priority, finalLogic).setFadeSpeed(fadeSpeed, fadeAccel);
+        return new ParticleLogicFade().setFadeSpeed(fadeSpeed, fadeAccel).setFinal(finalLogic).setPriority(priority);
     }
 }

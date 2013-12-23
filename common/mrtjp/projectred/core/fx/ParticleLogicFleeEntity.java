@@ -10,9 +10,8 @@ public class ParticleLogicFleeEntity extends ParticleLogic
     private double fleeSpeed;
     private double targetDistance;
 
-    public ParticleLogicFleeEntity(Entity fleeEntity, double fleeSpeed, double targetDistance, int priority, boolean finalLogic)
+    public ParticleLogicFleeEntity(Entity fleeEntity, double fleeSpeed, double targetDistance)
     {
-        super(priority, finalLogic);
         target = fleeEntity;
         this.fleeSpeed = fleeSpeed;
         this.targetDistance = targetDistance;
@@ -56,6 +55,6 @@ public class ParticleLogicFleeEntity extends ParticleLogic
     @Override
     public ParticleLogic clone()
     {
-        return new ParticleLogicFleeEntity(target, fleeSpeed, targetDistance, priority, finalLogic);
+        return new ParticleLogicFleeEntity(target, fleeSpeed, targetDistance).setFinal(finalLogic).setPriority(priority);
     }
 }

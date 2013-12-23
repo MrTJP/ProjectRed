@@ -15,9 +15,8 @@ public class ParticleLogicArcToEntity extends ParticleLogic
     private float offsetFactor;
     private float halfOffsetFactor;
 
-    public ParticleLogicArcToEntity(Vector3 start, Entity target, int priority, boolean finalLogic)
+    public ParticleLogicArcToEntity(Vector3 start, Entity target)
     {
-        super(priority, finalLogic);
         this.start = start.copy();
         percent = 0.0F;
         speed = 0.03F;
@@ -74,6 +73,6 @@ public class ParticleLogicArcToEntity extends ParticleLogic
     @Override
     public ParticleLogic clone()
     {
-        return new ParticleLogicArcToEntity(particle.position(), target, priority, finalLogic).setSpeed(speed).setControlPoints(firstControl, secondControl);
+        return new ParticleLogicArcToEntity(particle.position(), target).setSpeed(speed).setControlPoints(firstControl, secondControl).setFinal(finalLogic).setPriority(priority);
     }
 }

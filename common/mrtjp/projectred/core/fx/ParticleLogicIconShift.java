@@ -14,11 +14,6 @@ public class ParticleLogicIconShift extends ParticleLogic
 
     private int iconIndex = 0;
 
-    public ParticleLogicIconShift(int priority, boolean finalLogic)
-    {
-        super(priority, finalLogic);
-    }
-
     public ParticleLogicIconShift addIcon(String icon)
     {
         icons.add(ParticleIconRegistry.instance.getIcon(icon));
@@ -61,11 +56,11 @@ public class ParticleLogicIconShift extends ParticleLogic
     @Override
     public ParticleLogic clone()
     {
-        ParticleLogicIconShift clone = new ParticleLogicIconShift(priority, finalLogic);
+        ParticleLogicIconShift clone = new ParticleLogicIconShift();
         clone.setTicksBetweenChange(tickDelay);
         for (Icon icon : icons)
             clone.icons.add(icon);
 
-        return clone;
+        return clone.setFinal(finalLogic).setPriority(priority);
     }
 }

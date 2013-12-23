@@ -9,9 +9,8 @@ public class ParticleLogicBuff extends ParticleLogic
     private EntityLiving entity;
     private int ticksWithoutBuff;
 
-    public ParticleLogicBuff(EntityLiving entity, int buffID, int priority, boolean finalLogic)
+    public ParticleLogicBuff(EntityLiving entity, int buffID)
     {
-        super(priority, finalLogic);
         this.entity = entity;
         this.buffID = buffID;
         ticksWithoutBuff = 0;
@@ -38,6 +37,6 @@ public class ParticleLogicBuff extends ParticleLogic
     @Override
     public ParticleLogic clone()
     {
-        return new ParticleLogicBuff(entity, buffID, priority, finalLogic);
+        return new ParticleLogicBuff(entity, buffID).setFinal(finalLogic).setPriority(priority);
     }
 }

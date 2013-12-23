@@ -14,9 +14,8 @@ public class ParticleLogicArcToPoint extends ParticleLogic
     private final float offsetFactor;
     private final float halfOffsetFactor;
 
-    public ParticleLogicArcToPoint(Vector3 start, Vector3 end, int priority, boolean finalLogic)
+    public ParticleLogicArcToPoint(Vector3 start, Vector3 end)
     {
-        super(priority, finalLogic);
         this.start = start.copy();
         this.target = end.copy();
         percent = 0.0F;
@@ -73,6 +72,6 @@ public class ParticleLogicArcToPoint extends ParticleLogic
     @Override
     public ParticleLogic clone()
     {
-        return new ParticleLogicArcToPoint(particle.position(), target, priority, finalLogic).setSpeed(speed).setControlPoints(firstControl, secondControl);
+        return new ParticleLogicArcToPoint(particle.position(), target).setSpeed(speed).setControlPoints(firstControl, secondControl).setFinal(finalLogic).setPriority(priority);
     }
 }

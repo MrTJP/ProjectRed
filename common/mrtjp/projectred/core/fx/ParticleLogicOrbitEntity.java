@@ -19,9 +19,8 @@ public final class ParticleLogicOrbitEntity extends ParticleLogic
     private double orbitY = -512.0D;
     private boolean ignoreYCoordinate = false;
 
-    public ParticleLogicOrbitEntity(Entity orbitTarget, double orbitSpeed, int priority, boolean finalLogic)
+    public ParticleLogicOrbitEntity(Entity orbitTarget, double orbitSpeed)
     {
-        super(priority, finalLogic);
         target = orbitTarget;
         orbitAngle = rand.nextInt(360);
         rotateClockwise = rand.nextBoolean();
@@ -109,11 +108,11 @@ public final class ParticleLogicOrbitEntity extends ParticleLogic
     @Override
     public ParticleLogic clone()
     {
-        ParticleLogicOrbitEntity clone = new ParticleLogicOrbitEntity(target, orbitSpeed, priority, rotateClockwise).setTargetDistance(targetDistance);
+        ParticleLogicOrbitEntity clone = new ParticleLogicOrbitEntity(target, orbitSpeed).setTargetDistance(targetDistance);
         if (orbitY != -512.0D)
             clone.setOrbitY(orbitY);
         clone.setIgnoreYCoordinate(ignoreYCoordinate);
-        return clone;
+        return clone.setFinal(finalLogic).setPriority(priority);
     }
 
     public ParticleLogicOrbitEntity setIgnoreYCoordinate(boolean b)
