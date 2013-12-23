@@ -212,10 +212,11 @@ public class CoreParticle extends EntityFX
         return a;
     }
 
-    public void addLogic(ParticleLogic logic)
+    public CoreParticle addLogic(ParticleLogic logic)
     {
         logics.add(logic);
         Collections.sort(logics, LogicComparator.instance);
+        return this;
     }
 
     public void removeLogic(ParticleLogic logic)

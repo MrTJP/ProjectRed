@@ -134,22 +134,23 @@ public class BlockAirousLight extends Block
         CoreParticle c = ParticleManagement.instance.spawn(world, "ember", dx, dy, dz);
         if (c != null)
         {   
-            ParticleLogicOrbitPoint orbit = new ParticleLogicOrbitPoint(new Vector3(ex, ey, ez), 2, false);
+            ParticleLogicOrbitPoint orbit = new ParticleLogicOrbitPoint(new Vector3(ex, ey, ez));
             orbit.setOrbitSpeed(0.5f * rand.nextDouble()).setTargetDistance(0.3D);
-            orbit.setShrinkingOrbit(0.01, 0.01);
+            orbit.setShrinkingOrbit(0.01, 0.01).setPriority(2);
 
-            ParticleLogicScale scale = new ParticleLogicScale(1, false);
+            ParticleLogicScale scale = new ParticleLogicScale();
             scale.setRate(-0.001F, -0.0001F * rand.nextFloat());
             scale.setTerminate(true);
 
-            ParticleLogicIconShift iconshift = new ParticleLogicIconShift(1, false);
+            ParticleLogicIconShift iconshift = new ParticleLogicIconShift();
             iconshift.addIcon("flutter1");
             iconshift.addIcon("flutter2");
             iconshift.addIcon("flutter3");
             iconshift.addIcon("flutter4");
             iconshift.setTicksBetweenChange(3);
             
-            ParticleLogicApproachPoint approach = new ParticleLogicApproachPoint(new Vector3(ex, ey, ez), 0.03f, 0.5f, 1, true);
+            ParticleLogicApproachPoint approach = new ParticleLogicApproachPoint(new Vector3(ex, ey, ez), 0.03f, 0.5f);
+            approach.setFinal(true);
             
             c.setIgnoreMaxAge(true);
             c.setScale(0.05f + 0.02f * rand.nextFloat());

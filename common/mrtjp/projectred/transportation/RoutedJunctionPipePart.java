@@ -4,10 +4,12 @@ import java.util.BitSet;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
@@ -22,8 +24,9 @@ import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.multipart.IRandomDisplayTick;
 
-public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRouter, IRouteLayer, IWorldRequester
+public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRouter, IRouteLayer, IWorldRequester, IRandomDisplayTick
 {
     public int linkMap;
 
@@ -253,12 +256,28 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     public void read(MCDataInput packet, int switch_key)
     {
         if (switch_key == 51)
-        {
-            linkMap = packet.readUByte();
-            tile().markRender();
-        }
+            handleLinkMap(packet);
         else
             super.read(packet, switch_key);
+    }
+    
+    private void handleLinkMap(MCDataInput packet)
+    {
+        int old = linkMap;
+        linkMap = packet.readUByte();
+        
+        int high = linkMap & ~old;
+        int low = ~linkMap & old;
+        
+        for (int i = 0; i < 6; i++)
+        {
+            if ((high & 1<<i) != 0)
+                RouteFX.spawnType2(RouteFX.color_linked, 1, i, getCoords(), world());
+            if ((low & 1<<i) != 0)
+                RouteFX.spawnType2(RouteFX.color_unlinked, 1, i, getCoords(), world());
+        }
+        
+        tile().markRender();
     }
 
     public void sendLinkMapUpdate()
@@ -452,5 +471,16 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     public BlockCoord getCoords()
     {
         return new BlockCoord(tile());
+    }
+
+    @Override
+    public void randomDisplayTick(Random rand)
+    {
+        if (rand.nextInt(100) == 0)
+        {
+            for (int i = 0; i < 6; i++)
+                if ((linkMap & 1<<i) != 0)
+                    RouteFX.spawnType2(PRColors.LIGHT_GREY.ordinal(), 1, i, getCoords(), world());
+        }
     }
 }

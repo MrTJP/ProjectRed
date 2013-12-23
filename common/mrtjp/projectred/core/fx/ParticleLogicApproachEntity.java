@@ -11,9 +11,8 @@ public class ParticleLogicApproachEntity extends ParticleLogic
     private final double approachSpeed;
     private final double targetDistance;
 
-    public ParticleLogicApproachEntity(Entity approachEntity, double approachSpeed, double targetDistance, int priority, boolean finalLogic)
+    public ParticleLogicApproachEntity(Entity approachEntity, double approachSpeed, double targetDistance)
     {
-        super(priority, finalLogic);
         target = approachEntity;
         this.approachSpeed = approachSpeed;
         this.targetDistance = targetDistance;
@@ -63,6 +62,6 @@ public class ParticleLogicApproachEntity extends ParticleLogic
     @Override
     public ParticleLogic clone()
     {
-        return new ParticleLogicApproachEntity(target, approachSpeed, targetDistance, priority, finalLogic);
+        return new ParticleLogicApproachEntity(target, approachSpeed, targetDistance).setFinal(finalLogic).setPriority(priority);
     }
 }

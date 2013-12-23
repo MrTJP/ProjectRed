@@ -7,24 +7,28 @@ import net.minecraft.world.World;
 public abstract class ParticleLogic
 {
     protected CoreParticle particle;
-    protected Random rand;
-    protected int priority;
-    protected boolean finalLogic;
-    private boolean finished;
-    private boolean terminateWhenFinished;
+    protected Random rand = new Random();
+    protected int priority = 1;
+    protected boolean finalLogic = false;
+    private boolean finished = false;
+    private boolean terminateWhenFinished = false;
     protected boolean firstTick = true;
-
-    public ParticleLogic(int priority, boolean finalLogic)
-    {
-        rand = new Random();
-        this.priority = priority;
-        this.finalLogic = finalLogic;
-        terminateWhenFinished = false;
-    }
 
     public ParticleLogic setTerminate(boolean kill)
     {
         terminateWhenFinished = kill;
+        return this;
+    }
+    
+    public ParticleLogic setFinal(boolean flag)
+    {
+        finalLogic = flag;
+        return this;
+    }
+    
+    public ParticleLogic setPriority(int pri)
+    {
+        priority = pri;
         return this;
     }
 
