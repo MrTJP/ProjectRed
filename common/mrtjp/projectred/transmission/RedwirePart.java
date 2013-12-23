@@ -177,26 +177,26 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         for (int r = 0; r < 4; r++)
             if (maskConnects(r))
             {
-                if ((connMap & 1 << r) != 0)
+                if ((connMap & 1 << r) != 0) {
                     i = calculateCornerSignal(r);
-                else if ((connMap & 0x10 << r) != 0)
-                    i = calculateStraightSignal(r);
-                else
+                    if (i > s) s = i;
+                }
+                else {
+                    if ((connMap & 0x10 << r) != 0) {
+                        i = calculateStraightSignal(r);
+                        if (i > s) s = i;
+                    }
                     i = calculateInternalSignal(r);
-
-                if (i > s)
-                    s = i;
+                    if (i > s) s = i;
+                }
             }
 
         i = calculateUndersideSignal();
-        if (i > s)
-            s = i;
+        if (i > s) s = i;
 
-        if ((connMap & 0x10000) != 0)
-        {
+        if ((connMap & 0x10000) != 0) {
             i = calculateCenterSignal();
-            if (i > s)
-                s = i;
+            if (i > s) s = i;
         }
 
         WirePropogator.setWiresProvidePower(true);
