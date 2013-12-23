@@ -139,13 +139,13 @@ public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implement
         GhostContainer2 ghost = new GhostContainer2(player.inventory);
         ISlotController sc = new ISlotController() {
             @Override
-            public boolean canTake()
+            public boolean canTake(SlotExtended slot)
             {
                 return true;
             }
 
             @Override
-            public boolean canPlace(ItemStack stack)
+            public boolean canPlace(SlotExtended slot, ItemStack stack)
             {
                 return stack != null && stack.getItem() instanceof ItemRoutingChip && stack.hasTagCompound() && stack.getTagCompound().hasKey("chipROM");
             }

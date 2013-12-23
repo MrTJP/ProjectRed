@@ -94,6 +94,8 @@ public class Configurator
     /** Settings **/
     public static boolean debugMode;
     public static boolean logicGateSounds;
+    
+    public static int[] backpackBlacklist;
 
     public static int maxDetectionCount;
     public static int maxDetectionLength;
@@ -206,6 +208,22 @@ public class Configurator
         detectionFrequency = localConfig.get("general", "Detection Frequency", 20, "Ticks between router searches.").getInt();
         routerUpdateThreadCount = localConfig.get("general", "Router Update Thread Count", 4, "Number of active threads that update routing tables.").getInt();
 
+        String[] s = localConfig.get("general", "Backpack item blacklist", "", "Comma seperated list of item ids that cannot go in a backpack.").getString().split(",");
+        int s1 = 0;
+        backpackBlacklist = new int[s.length];
+        for (String str : s)
+        {
+            String str2 = str.trim();
+            try
+            {
+                backpackBlacklist[s1] = Integer.parseInt(str2);
+            }
+            catch (Throwable t)
+            {
+            }
+            s1++;
+        }
+        
         localConfig.save();
     }
 }

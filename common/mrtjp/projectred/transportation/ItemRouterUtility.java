@@ -2,19 +2,16 @@ package mrtjp.projectred.transportation;
 
 import mrtjp.projectred.ProjectRedTransportation;
 import mrtjp.projectred.core.BasicGuiUtils;
-import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.ItemPart;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.inventory.GhostContainer2;
-import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended;
+import mrtjp.projectred.core.inventory.GhostContainer2.ISlotController.InventoryRulesController;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.transportation.RoutingChipset.UpgradeBus;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -91,17 +88,18 @@ public class ItemRouterUtility extends Item
             addPlayerInventory(8, 86);
 
             upgradeInv = new SimpleInventory(7, "upBus", 1) {
+                
                 @Override
-                public boolean isItemValidForSlot(int slot, ItemStack stack)
+                public boolean isItemValidForSlot(int i, ItemStack stack)
                 {
-                    if (slot == 6)
+                    if (i == 6)
                     {
                         return stack != null && stack.getItem() instanceof ItemRoutingChip && stack.hasTagCompound() && stack.getTagCompound().hasKey("chipROM");
                     }
                     if (stack.getItem() instanceof ItemPart)
                     {
                         int slotForMeta = stack.getItemDamage() - EnumPart.CHIPUPGRADE_LX.meta;
-                        return slotForMeta == slot;
+                        return slotForMeta == i;
                     }
                     return false;
                 }
@@ -112,16 +110,16 @@ public class ItemRouterUtility extends Item
                     refreshChips();
                 }
             };
-            
+                        
             int s = 0;
             for (Pair2<Integer, Integer> coord : BasicGuiUtils.createSlotArray(8, 18, 1, 3, 2, 2))
             {
-                SlotExtended slot = new SlotExtended(upgradeInv, s++, coord.getValue1(), coord.getValue2());
+                SlotExtended slot = new SlotExtended(upgradeInv, s++, coord.getValue1(), coord.getValue2()).setCheck(InventoryRulesController.instance);
                 addCustomSlot(slot);
             }
             for (Pair2<Integer, Integer> coord : BasicGuiUtils.createSlotArray(152, 18, 1, 3, 2, 2))
             {
-                SlotExtended slot = new SlotExtended(upgradeInv, s++, coord.getValue1(), coord.getValue2());
+                SlotExtended slot = new SlotExtended(upgradeInv, s++, coord.getValue1(), coord.getValue2()).setCheck(InventoryRulesController.instance);
                 addCustomSlot(slot);
             }
             addCustomSlot(new SlotExtended(upgradeInv, 6, 80, 38));
