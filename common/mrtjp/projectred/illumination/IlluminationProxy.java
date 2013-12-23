@@ -35,7 +35,6 @@ public class IlluminationProxy implements IProxy, IPartFactory
         GameRegistry.registerTileEntity(TileLamp.class, "tile.projectred.illumination.lamp");
 
         blockAirousLight = new BlockAirousLight(Configurator.block_airousID.getInt());
-        GameRegistry.registerBlock(blockAirousLight, ItemBlock.class, "projectred.illumination.airousLight");
         GameRegistry.registerTileEntity(TileAirousLight.class, "tile.projectred.illumination.airousLight");
     }
 
