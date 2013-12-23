@@ -113,7 +113,7 @@ public class TransportationSPH implements IServerPacketHandler
             if (r.requested() > 0)
             {
                 sender.addChatMessage("Successfully requested " + r.requested() + " of " + s.key().getName() + ".");
-                RouteFX.sendSpawnPacket(RouteFX.color_request, 8, bc, sender.worldObj);
+                RouteFX.spawnType1(RouteFX.color_request, 8, bc, sender.worldObj);
             }
             else
             {
