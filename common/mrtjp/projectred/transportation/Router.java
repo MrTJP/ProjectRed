@@ -129,35 +129,7 @@ public class Router implements Comparable<Router>
                 it.remove();
         }
 
-        if (adjacentLinks.size() != newAdjacent.size()) // Different number of connections
-            adjacentChanged = true;
-
-        else if (!adjacentChanged)
-            for (Router r : adjacentLinks.keySet())
-            {
-                if (!newAdjacent.containsKey(r))
-                { // Members missing
-                    adjacentChanged = true;
-                    break;
-                }
-            }
-        else if (!adjacentChanged) // Edges different
-            for (Entry<Router, StartEndPath> r : newAdjacent.entrySet())
-            {
-                StartEndPath oldEdge = adjacentLinks.get(r.getKey());
-                if (oldEdge == null)
-                {
-                    adjacentChanged = true;
-                    break;
-                }
-
-                StartEndPath newEdge = r.getValue();
-                if (!newEdge.equals(oldEdge))
-                {
-                    adjacentChanged = true;
-                    break;
-                }
-            }
+        adjacentChanged = BasicUtils.compareMaps(newAdjacent, adjacentLinks);
 
         // Update local LSA
         if (adjacentChanged)

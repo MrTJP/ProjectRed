@@ -3,7 +3,11 @@ package mrtjp.projectred.core;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import mrtjp.projectred.transportation.Router;
+import mrtjp.projectred.transportation.Router.StartEndPath;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -170,5 +174,46 @@ public class BasicUtils
     public static NBTBase readNBTFromData(DataInputStream data) throws IOException
     {
         return NBTBase.readNamedTag(data);
+    }
+    
+    public static boolean compareMaps(Map map1, Map map2)
+    {
+        boolean diff = false;
+        
+        // Compare size
+        if (map1.size() != map2.size())
+            diff = true;
+        
+        // Compare contents
+        if (!diff)
+            for (Entry e : ((Map<Object, Object>)map1).entrySet())
+                if (!map2.containsKey(e.getKey()) || !map2.containsValue(e.getValue()))
+                {
+                    diff = true;
+                    break;
+                }
+            
+        // Compare contents equals
+        if (!diff)
+            for (Entry e : ((Map<Object, Object>)map1).entrySet())
+            {
+                Object o1 = e.getValue();
+                Object o2 = map2.get(e.getKey());
+                
+                if (o1 == null || o2 == null)
+                    if (o1 != o2)
+                    {
+                        diff = true;
+                        break;
+                    }
+                
+                if (!o1.equals(o2))
+                {
+                    diff = true;
+                    break;
+                }
+            }
+        
+        return diff;
     }
 }

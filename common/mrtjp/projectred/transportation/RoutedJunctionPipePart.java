@@ -269,12 +269,13 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         int high = linkMap & ~old;
         int low = ~linkMap & old;
         
+        BlockCoord bc = getCoords();
         for (int i = 0; i < 6; i++)
         {
             if ((high & 1<<i) != 0)
-                RouteFX.spawnType2(RouteFX.color_linked, 1, i, getCoords(), world());
+                RouteFX.spawnType2(RouteFX.color_linked, 1, i, bc, world());
             if ((low & 1<<i) != 0)
-                RouteFX.spawnType2(RouteFX.color_unlinked, 1, i, getCoords(), world());
+                RouteFX.spawnType2(RouteFX.color_unlinked, 1, i, bc, world());
         }
         
         tile().markRender();
@@ -476,7 +477,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     @Override
     public void randomDisplayTick(Random rand)
     {
-        if (rand.nextInt(100) == 0)
+        if (rand.nextInt(75) == 0)
         {
             for (int i = 0; i < 6; i++)
                 if ((linkMap & 1<<i) != 0)
