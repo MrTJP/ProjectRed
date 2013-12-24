@@ -5,12 +5,12 @@ import codechicken.lib.vec.Vector3;
 
 public class ParticleLogicApproachPoint extends ParticleLogic
 {
-    private final double targetX;
-    private final double targetY;
-    private final double targetZ;
-    private final double approachSpeed;
-    private final double targetDistance;
-    private boolean ignoreY;
+    protected double targetX;
+    protected double targetY;
+    protected double targetZ;
+    protected double approachSpeed;
+    protected double targetDistance;
+    protected boolean ignoreY;
 
     public ParticleLogicApproachPoint(Vector3 point, double approachSpeed, double targetDistance)
     {
@@ -67,9 +67,14 @@ public class ParticleLogicApproachPoint extends ParticleLogic
         }
 
         if (distanceToTarget <= targetDistance * targetDistance)
-            finishLogic();
+            onDestinationReached();
         else
             particle.setPosition(posX, posY, posZ);
+    }
+    
+    public void onDestinationReached()
+    {
+        finishLogic();
     }
 
     @Override

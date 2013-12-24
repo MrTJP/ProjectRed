@@ -188,7 +188,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     }
 
     @Override
-    public void update()
+    public final void update()
     {
         if (needsWork)
         {
@@ -208,6 +208,19 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
 
         // Manage transit queue
         tickTransitQueue();
+        
+        if (world().isRemote)
+            updateClient();
+        else
+            updateServer();
+    }
+    
+    protected void updateServer()
+    {
+    }
+    
+    protected void updateClient()
+    {
     }
 
     private void coldBoot()
@@ -273,9 +286,9 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         for (int i = 0; i < 6; i++)
         {
             if ((high & 1<<i) != 0)
-                RouteFX.spawnType2(RouteFX.color_linked, 1, i, bc, world());
+                RouteFX.spawnType3(RouteFX.color_linked, 1, i, bc, world());
             if ((low & 1<<i) != 0)
-                RouteFX.spawnType2(RouteFX.color_unlinked, 1, i, bc, world());
+                RouteFX.spawnType3(RouteFX.color_unlinked, 1, i, bc, world());
         }
         
         tile().markRender();
@@ -477,11 +490,11 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     @Override
     public void randomDisplayTick(Random rand)
     {
-        if (rand.nextInt(75) == 0)
+        if (rand.nextInt(100) == 0)
         {
             for (int i = 0; i < 6; i++)
                 if ((linkMap & 1<<i) != 0)
-                    RouteFX.spawnType2(PRColors.LIGHT_GREY.ordinal(), 1, i, getCoords(), world());
+                    RouteFX.spawnType3(RouteFX.color_blink, 1, i, getCoords(), world());
         }
     }
 }

@@ -85,13 +85,12 @@ public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implement
     }
 
     @Override
-    public void update()
+    public void updateServer()
     {
-        super.update();
-        if (!world().isRemote)
-            for (RoutingChipset s : chips)
-                if (s != null)
-                    s.update();
+        super.updateServer();
+        for (RoutingChipset s : chips)
+            if (s != null)
+                s.update();
     }
 
     @Override
