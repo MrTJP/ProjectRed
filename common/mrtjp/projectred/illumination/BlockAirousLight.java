@@ -142,12 +142,7 @@ public class BlockAirousLight extends Block
             scale.setRate(-0.001F, -0.0001F * rand.nextFloat());
             scale.setTerminate(true);
 
-            ParticleLogicIconShift iconshift = new ParticleLogicIconShift();
-            iconshift.addIcon("flutter1");
-            iconshift.addIcon("flutter2");
-            iconshift.addIcon("flutter3");
-            iconshift.addIcon("flutter4");
-            iconshift.setTicksBetweenChange(3);
+            ParticleLogicIconShift iconshift = ParticleLogicIconShift.fluttering();
             
             ParticleLogicApproachPoint approach = new ParticleLogicApproachPoint(new Vector3(ex, ey, ez), 0.03f, 0.5f);
             approach.setFinal(true);

@@ -10,6 +10,7 @@ import mrtjp.projectred.core.PRColors;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
+import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
 
 public class CoreParticle extends EntityFX
@@ -304,6 +305,11 @@ public class CoreParticle extends EntityFX
     public Vector3 position()
     {
         return new Vector3(posX, posY, posZ);
+    }
+    
+    public BlockCoord blockPosition()
+    {
+        return new BlockCoord((int) posX, (int) posY, ((int) posZ) - 1);
     }
 
     @Override

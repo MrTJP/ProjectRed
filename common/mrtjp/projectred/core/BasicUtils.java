@@ -130,13 +130,6 @@ public class BasicUtils
         return null;
     }
 
-    public static boolean areStacksTheSame(ItemStack is1, ItemStack is2)
-    {
-        if (is1 == null || is2 == null)
-            return false;
-        return is1.itemID == is2.itemID && is1.getItemDamage() == is2.getItemDamage();
-    }
-
     public static void markBlockDirty(World w, int x, int y, int z)
     {
         if (w.blockExists(x, y, z))
@@ -166,16 +159,6 @@ public class BasicUtils
             block.onNeighborBlockChange(w, x, y, z, id);
     }
 
-    public static void writeNBTToData(NBTBase nbt, DataOutputStream data) throws IOException
-    {
-        NBTBase.writeNamedTag(nbt, data);
-    }
-
-    public static NBTBase readNBTFromData(DataInputStream data) throws IOException
-    {
-        return NBTBase.readNamedTag(data);
-    }
-    
     public static boolean compareMaps(Map map1, Map map2)
     {
         boolean diff = false;

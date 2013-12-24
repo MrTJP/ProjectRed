@@ -104,22 +104,18 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
     }
 
     @Override
-    public void update()
+    public void updateServer()
     {
-        super.update();
-        if (!world().isRemote)
+        if (--remainingDelay <= 0)
         {
-            if (--remainingDelay <= 0)
-            {
-                remainingDelay = operationDelay();
-                operationTick();
-            }
+            remainingDelay = operationDelay();
+            operationTick();
+        }
 
-            if (--remainindDelay2 <= 0)
-            {
-                remainindDelay2 = operationDelay2();
-                lostHandleTick();
-            }
+        if (--remainindDelay2 <= 0)
+        {
+            remainindDelay2 = operationDelay2();
+            lostHandleTick();
         }
     }
 
