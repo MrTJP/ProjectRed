@@ -1,3 +1,10 @@
+[dev]v4.2.2
+- ADDED: Config option for backpack blacklist
+- ADDED: Routing chip upgrades
+- ADDED: Link/unlink router effects
+- FIX: Redstone propagation bug on certain surfaces
+- FIX: Crash when placing lamps under bedrock
+
 v4.2.1
 - ADDED: Upgrade system for routing chips
 - CHANGE: Optimized lamp halo render

@@ -1,5 +1,7 @@
 package mrtjp.projectred.transportation;
 
+import mrtjp.projectred.ProjectRedTransmission;
+import mrtjp.projectred.ProjectRedTransportation;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
@@ -218,6 +220,16 @@ public class TransportationRecipes
     
     private static void initUpgradeRecipes()
     {
+        /** Router Utility **/
+        GameRegistry.addRecipe(new ItemStack(ProjectRedTransportation.itemRouterUtility),
+                "  r",
+                "iei",
+                "iii",
+                'r', Item.redstone,
+                'i', Item.ingotIron,
+                'e', Item.emerald
+                );
+        
         /** Null Upgrade **/
         GameRegistry.addRecipe(EnumPart.NULLUPGRADECHIP.getItemStack(),
                 "prp",

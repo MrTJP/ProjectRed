@@ -43,7 +43,6 @@ public class RouteFX
     public static final int color_unlinked = PRColors.RED.ordinal();
     public static final int color_rand = PRColors.LIGHT_GREY.ordinal();
 
-
     public static void spawnType1(int color, int count, BlockCoord bc, World world)
     {
         if (!world.isRemote)
@@ -68,7 +67,6 @@ public class RouteFX
         PRColors c = PRColors.get(color);
         for (int i = 0; i < count; i++)
             spawnType2(c, dir, bc, world);
-
     }
     
     private static void spawnType2(final PRColors color, int dir, BlockCoord bc, World world)
@@ -103,8 +101,6 @@ public class RouteFX
                 @Override
                 public void build(CoreParticle c2)
                 {
-                    ParticleLogicStatic stay = new ParticleLogicStatic();
-                    
                     ParticleLogicIconShift iconshift = new ParticleLogicIconShift();
                     iconshift.addIcon("flutter1");
                     iconshift.addIcon("flutter2");
@@ -120,10 +116,10 @@ public class RouteFX
                     c2.setScale(0.05f + 0.02f * rand.nextFloat());
                     c2.setPRColor(color);
                     
-                    c2.addLogic(stay).addLogic(iconshift).addLogic(scale);
+                    c2.addLogic(iconshift).addLogic(scale);
                 }
             };
-            
+
             ParticleLogicTrail trail = new ParticleLogicTrail("box", build);
             
             double speed = MathHelper.getRandomDoubleInRange(rand, 0.1D, 0.2D);
