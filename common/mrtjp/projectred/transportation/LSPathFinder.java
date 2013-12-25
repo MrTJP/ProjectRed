@@ -15,6 +15,7 @@ import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 
+//TODO try A* ?
 public class LSPathFinder
 {
     private HashMap<Router, StartEndPath> result;

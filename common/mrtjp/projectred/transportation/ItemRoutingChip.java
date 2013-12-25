@@ -4,6 +4,8 @@ import java.util.List;
 
 import mrtjp.projectred.ProjectRedTransportation;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -52,7 +54,11 @@ public class ItemRoutingChip extends Item
     @Override
     public Icon getIconFromDamage(int meta)
     {
-        return EnumRoutingChip.VALID_CHIPS[meta].icon;
+        EnumRoutingChip c = EnumRoutingChip.get(meta);
+        if (c != null)
+            return c.icon;
+
+        return null;
     }
 
     @Override
