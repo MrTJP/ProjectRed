@@ -51,13 +51,19 @@ item.projectred.core.part.partsandcoalcomp.name=沙煤混合物
 item.projectred.core.part.partredsiliconcomp.name=红硅混合物
 item.projectred.core.part.partglowsiliconcomp.name=荧硅混合物
 
-item.projectred.core.part.nullchip.name=无逻辑路由芯片
-
-tile.projectred.core.appliance.machinealloy.name=合金炉
+item.projectred.core.part.nullchip.name=空逻辑路由芯片
+item.projectred.core.part.nullupgrd.name=空逻辑升级芯片
+item.projectred.core.part.upgrd_lx.name=左型X升级
+item.projectred.core.part.upgrd_ly.name=左型Y升级
+item.projectred.core.part.upgrd_lz.name=左型Z升级
+item.projectred.core.part.upgrd_rx.name=右型X升级
+item.projectred.core.part.upgrd_ry.name=右型Y升级
+item.projectred.core.part.upgrd_rz.name=右型Z升级
 
 item.projectred.core.drawplate.name=起模板
 item.projectred.core.wiredebugger.name=调线工具
 item.projectred.core.screwdriver.name=螺丝刀
+item.projectred.core.routerutil.name=路由器工具
 
 #扩展
 itemGroup.expansion=红石计划:扩展
@@ -71,6 +77,8 @@ item.projectred.transportation.routingchip|3.name=物品终端芯片
 item.projectred.transportation.routingchip|4.name=物品抽取芯片
 item.projectred.transportation.routingchip|5.name=物品广播芯片
 item.projectred.transportation.routingchip|6.name=物品堆栈维护芯片
+
+item.projectred.transportation.routerutil.name=路由器工具
 
 item.projectred.transportation.pipe|0.name=物品运输管道
 item.projectred.transportation.pipe|1.name=路由交错管道
