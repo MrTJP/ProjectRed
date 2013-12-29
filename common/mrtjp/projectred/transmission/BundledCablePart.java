@@ -6,6 +6,7 @@ import static mrtjp.projectred.transmission.BundledCableCommons.tmpSignal;
 import java.util.Arrays;
 
 import mrtjp.projectred.api.IBundledEmitter;
+import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CoreSPH;
@@ -88,6 +89,16 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
         }
         else if (wire instanceof IInsulatedRedwirePart || wire instanceof IBundledEmitter)
             return true;
+
+        return false;
+    }
+
+    @Override
+    public boolean connectStraightOverride(int absDir) {
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
+        TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
+        if(t instanceof IBundledTile)
+            return ((IBundledTile) t).canConnectBundled(absDir^1);
 
         return false;
     }
@@ -185,7 +196,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
     @Override
     protected boolean debug(EntityPlayer ply)
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 16; i++)
         {
             String s = Integer.toHexString(signal[i] & 0xFF).toUpperCase();

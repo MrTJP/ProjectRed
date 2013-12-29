@@ -11,7 +11,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 
-@Mod(modid = "ProjRed|Compatibility", useMetadata = true)
+@Mod(modid = "ProjRed|Compatibility", useMetadata = true, dependencies = "after:ProjRed|Core")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class ProjectRedCompatibility
 {
