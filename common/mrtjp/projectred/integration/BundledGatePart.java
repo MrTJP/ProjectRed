@@ -1,6 +1,7 @@
 package mrtjp.projectred.integration;
 
 import mrtjp.projectred.api.IBundledEmitter;
+import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,6 +27,16 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
     public String getType()
     {
         return "pr_bgate";
+    }
+
+    @Override
+    public boolean connectStraightOverride(int absDir) {
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
+        TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
+        if(t instanceof IBundledTile)
+            return ((IBundledTile) t).canConnectBundled(absDir^1);
+
+        return false;
     }
 
     public byte[] getBundledInput(int r)
@@ -60,7 +71,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
         if (t instanceof IBundledEmitter)
-            getBundledPartSignal(t, absDir ^ 1);
+            return getBundledPartSignal(t, absDir ^ 1);
         else if (t instanceof TileMultipart)
             return getBundledPartSignal(((TileMultipart) t).partMap(side()), (r + 2) % 4);
 

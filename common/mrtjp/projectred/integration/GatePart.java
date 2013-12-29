@@ -364,6 +364,11 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
             }
         }
 
+        return connectStraightOverride(absDir);
+    }
+
+    public boolean connectStraightOverride(int absDir)
+    {
         return false;
     }
 
