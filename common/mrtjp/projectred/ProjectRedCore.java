@@ -1,6 +1,5 @@
 package mrtjp.projectred;
 
-import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.CommandDebug;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
@@ -9,7 +8,6 @@ import mrtjp.projectred.core.ItemPart;
 import mrtjp.projectred.core.ItemScrewdriver;
 import mrtjp.projectred.core.ItemWireDebugger;
 import mrtjp.projectred.core.PRVersionChecker;
-import mrtjp.projectred.transmission.APIImpl_Transmission;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;

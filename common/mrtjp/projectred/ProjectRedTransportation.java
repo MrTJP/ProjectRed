@@ -1,6 +1,8 @@
 package mrtjp.projectred;
 
+import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.IProxy;
+import mrtjp.projectred.transportation.APIImpl_Transportation;
 import mrtjp.projectred.transportation.ItemPartPipe;
 import mrtjp.projectred.transportation.ItemRouterUtility;
 import mrtjp.projectred.transportation.ItemRoutingChip;
@@ -25,6 +27,11 @@ import cpw.mods.fml.common.network.NetworkMod;
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
 public class ProjectRedTransportation
 {
+    public ProjectRedTransportation()
+    {
+        ProjectRedAPI.transportationAPI = new APIImpl_Transportation();
+    }
+    
     /** Items **/
     public static ItemRoutingChip itemRoutingChip;
     public static ItemRouterUtility itemRouterUtility;
