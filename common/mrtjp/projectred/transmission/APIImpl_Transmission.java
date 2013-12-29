@@ -1,4 +1,4 @@
-package mrtjp.projectred.core;
+package mrtjp.projectred.transmission;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,7 @@ import java.util.List;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.api.ISpecialLinkState;
-import mrtjp.projectred.api.ProjectRedAPI;
-import mrtjp.projectred.transmission.BundledCableCommons;
+import mrtjp.projectred.api.ITransmissionAPI;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
@@ -18,7 +17,7 @@ import codechicken.multipart.TileMultipart;
 /**
  * Internal API Implementation, do not include this class in your mod
  */
-public class APIImpl extends ProjectRedAPI
+public class APIImpl_Transmission implements ITransmissionAPI
 {
     @Override
     public byte[] getBundledInput(World world, int x, int y, int z, int side)
@@ -46,25 +45,6 @@ public class APIImpl extends ProjectRedAPI
             return signal;
         }
 
-        return null;
-    }
-
-    private static final List<ISpecialLinkState> registeredLSTypes = new ArrayList<ISpecialLinkState>();
-
-    @Override
-    public void registerSpecialLinkState(ISpecialLinkState link)
-    {
-        registeredLSTypes.add(link);
-    }
-
-    public static List<TileEntity> getConnections(TileEntity tile)
-    {
-        for (ISpecialLinkState link : registeredLSTypes)
-        {
-            List<TileEntity> linked = link.getLinks(tile);
-            if (linked != null)
-                return linked;
-        }
         return null;
     }
 }

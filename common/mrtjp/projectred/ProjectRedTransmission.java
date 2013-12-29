@@ -1,7 +1,8 @@
 package mrtjp.projectred;
 
-import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.api.ProjectRedAPI;
 import mrtjp.projectred.core.IProxy;
+import mrtjp.projectred.transmission.APIImpl_Transmission;
 import mrtjp.projectred.transmission.ItemPartFramedWire;
 import mrtjp.projectred.transmission.ItemPartWire;
 import net.minecraft.creativetab.CreativeTabs;
@@ -19,6 +20,11 @@ import cpw.mods.fml.common.network.NetworkMod;
 @NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class ProjectRedTransmission
 {
+    public ProjectRedTransmission()
+    {
+        ProjectRedAPI.transmissionAPI = new APIImpl_Transmission();
+    }
+    
     /** Multipart items **/
     public static ItemPartWire itemPartWire;
     public static ItemPartFramedWire itemPartFramedWire;
