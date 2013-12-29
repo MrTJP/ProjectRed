@@ -1,19 +1,20 @@
 package mrtjp.projectred.transportation;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
-import mrtjp.projectred.core.APIImpl;
-import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.api.ISpecialLinkState;
 import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.transportation.Router.StartEndPath;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 
 //TODO try A* ?
 public class LSPathFinder
@@ -79,33 +80,35 @@ public class LSPathFinder
                 continue;
 
             BlockCoord bc = new BlockCoord(start.tile()).offset(dir.ordinal());
-            TMultiPart t = BasicUtils.getMultiPart(start.world(), bc, 6);
+            TileEntity tile = start.world().getBlockTileEntity(bc.x, bc.y, bc.z);
 
-            if (!(t instanceof BasicPipePart))
-                continue;
-            BasicPipePart t2 = (BasicPipePart) t;
-
-            connections.add(new Pair2<TileEntity, ForgeDirection>(t2.tile(), dir));
+            connections.add(new Pair2<TileEntity, ForgeDirection>(tile, dir));
         }
 
         while (!connections.isEmpty())
         {
             Pair2<TileEntity, ForgeDirection> pair = connections.pollFirst();
-            TileEntity te = pair.getValue1();
+            TileEntity tile = pair.getValue1();
             ForgeDirection dir = pair.getValue2();
 
             if (root)
             {
-                List<TileEntity> connected = APIImpl.getConnections(te);
+                List<TileEntity> connected = getConnections(tile);
                 if (connected != null && !connected.isEmpty())
                 {
-                    for (TileEntity tile : connected)
-                        connections.add(new Pair2<TileEntity, ForgeDirection>(tile, dir));
+                    for (TileEntity tile2 : connected)
+                        connections.add(new Pair2<TileEntity, ForgeDirection>(tile2, dir));
+                    
                     continue;
                 }
             }
+            
+            if (!(tile instanceof TileMultipart))
+                continue;
+            
+            TileMultipart tile2 = (TileMultipart) tile;
 
-            TMultiPart part = BasicUtils.getMultiPart(te.worldObj, new BlockCoord(te), 6);
+            TMultiPart part = tile2.partMap(6);
             BasicPipePart p = null;
             if (part instanceof BasicPipePart)
                 p = (BasicPipePart) part;
@@ -123,12 +126,14 @@ public class LSPathFinder
                 entry.getValue().dirToFirstHop = dir.ordinal();
                 StartEndPath found = foundPipes.get(entry.getKey());
 
-                if (found == null)
-                    foundPipes.put(entry.getKey(), entry.getValue());
-                else if (entry.getValue().distance < found.distance)
+                int current = entry.getValue().distance;
+                int previous = found == null ? Integer.MAX_VALUE : found.distance;
+                
+                if (current < previous)
                     foundPipes.put(entry.getKey(), entry.getValue());
             }
         }
+        
         setVisited.remove(start);
         if (start instanceof IWorldRouter)
             for (StartEndPath e : foundPipes.values())
@@ -140,5 +145,23 @@ public class LSPathFinder
     public HashMap<Router, StartEndPath> getResult()
     {
         return result;
+    }
+    
+    private static final List<ISpecialLinkState> registeredLSTypes = new ArrayList<ISpecialLinkState>();
+
+    public static void register(ISpecialLinkState link)
+    {
+        registeredLSTypes.add(link);
+    }
+
+    private static List<TileEntity> getConnections(TileEntity tile)
+    {
+        for (ISpecialLinkState link : registeredLSTypes)
+        {
+            List<TileEntity> linked = link.getLinks(tile);
+            if (linked != null)
+                return linked;
+        }
+        return null;
     }
 }
