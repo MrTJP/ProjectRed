@@ -139,7 +139,7 @@ public class WirePropogator
                 entry.getKey().multiPartChange(parts);
             }
 
-            int blockID = ((Block) MultipartProxy.block()).blockID;
+            int blockID = MultipartProxy.block().blockID;
             for (BlockCoord b : neighborChanges)
                 world.notifyBlockOfNeighborChange(b.x, b.y, b.z, blockID);
 
