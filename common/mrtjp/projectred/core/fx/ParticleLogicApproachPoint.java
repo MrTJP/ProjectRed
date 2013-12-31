@@ -66,7 +66,7 @@ public class ParticleLogicApproachPoint extends ParticleLogic
             posY = particle.posY + approachSpeed * Math.sin(pitchRadians);
         }
 
-        if (distanceToTarget <= targetDistance * targetDistance)
+        if (distanceToTarget <= targetDistance*targetDistance)
             onDestinationReached();
         else
             particle.setPosition(posX, posY, posZ);

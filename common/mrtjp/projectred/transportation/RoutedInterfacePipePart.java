@@ -23,7 +23,7 @@ import codechicken.core.IGuiPacketSender;
 import codechicken.core.ServerUtils;
 import codechicken.lib.packet.PacketCustom;
 
-public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implements IWorldBroadcaster
+public class RoutedInterfacePipePart extends RoutedPipePart_Inv implements IWorldBroadcaster
 {
     public SimpleInventory chipSlots = new SimpleInventory(4, "chips", 1) {
         @Override
@@ -136,19 +136,7 @@ public class RoutedInterfacePipePart extends RoutedPipePart_InvConnect implement
     public Container createContainer(EntityPlayer player)
     {
         GhostContainer2 ghost = new GhostContainer2(player.inventory);
-        ISlotController sc = new ISlotController() {
-            @Override
-            public boolean canTake(SlotExtended slot)
-            {
-                return true;
-            }
-
-            @Override
-            public boolean canPlace(SlotExtended slot, ItemStack stack)
-            {
-                return stack != null && stack.getItem() instanceof ItemRoutingChip && stack.hasTagCompound() && stack.getTagCompound().hasKey("chipROM");
-            }
-        };
+        ISlotController sc = ISlotController.InventoryRulesController.instance;
 
         int slot = 0;
         for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(24, 12, 1, 4, 0, 8))

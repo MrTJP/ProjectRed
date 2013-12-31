@@ -61,6 +61,7 @@ item.projectred.core.drawplate.name=Draw Plate
 item.projectred.core.wiredebugger.name=Wire Debugger
 item.projectred.core.screwdriver.name=Screwdriver
 item.projectred.core.routerutil.name=Router Utility
+item.projectred.core.datacard.name=Data Card
 
 
 
@@ -86,6 +87,7 @@ item.projectred.transportation.pipe|1.name=Routed Junction pipe
 item.projectred.transportation.pipe|2.name=Routed Interface pipe
 item.projectred.transportation.pipe|3.name=Routed Crafting pipe
 item.projectred.transportation.pipe|4.name=Routed Request pipe
+item.projectred.transportation.pipe|5.name=Routed Extension pipe
 
 
 itemGroup.exploration=Project Red: Exploration

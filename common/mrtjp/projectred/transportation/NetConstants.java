@@ -20,4 +20,7 @@ public class NetConstants
 
     public static final int gui_RouterUtil_open = 12;
     public static final int gui_RouterUtil_action = 13;
+    
+    public static final int gui_ExtensionPipe_open = 14;
+
 }

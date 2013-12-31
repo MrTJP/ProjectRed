@@ -53,6 +53,7 @@ public class Configurator
     public static Property item_wireDebuggerID;
     public static Property item_routingChipID;
     public static Property item_routerUtilID;
+    public static Property item_dataCardID;    
 
     public static Property item_rubyAxe;
     public static Property item_sapphireAxe;
@@ -157,6 +158,7 @@ public class Configurator
         item_backpackID = localConfig.getItem("item_backpackID", 9028);
         item_routingChipID = localConfig.getItem("item_routingChipID", 9029);
         item_routerUtilID = localConfig.getItem("item_routerUtilID", 9044);
+        item_dataCardID = localConfig.getItem("item_dataCardID", 9045);
 
         item_rubyAxe = localConfig.getItem("rubyaxe", 9097);
         item_sapphireAxe = localConfig.getItem("sapphireaxe", 9098);

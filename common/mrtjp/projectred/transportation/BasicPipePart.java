@@ -497,12 +497,13 @@ public class BasicPipePart extends CorePipePart
         }
     }
 
-    /**
-     * 0 to 5 for sides, 6 for center
-     */
     public Icon getIcon(int side)
     {
-        return getLogic().getIcon(this, side);
+        Icon i = getLogic().getIcon(this, side);
+        if (i != null)
+            return i;
+        
+        return EnumPipe.BASIC.sprites[0];
     }
 
     public List<IInventory> getConnectedInventories()

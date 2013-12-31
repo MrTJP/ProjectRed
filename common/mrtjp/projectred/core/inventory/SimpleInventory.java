@@ -97,14 +97,14 @@ public class SimpleInventory implements IInventory
         if (tag == null)
             return;
 
-        NBTTagList nbttaglist = tag.getTagList(prefix + "items");
+        NBTTagList tag1 = tag.getTagList(prefix + "items");
 
-        for (int i = 0; i < nbttaglist.tagCount(); i++)
+        for (int i = 0; i < tag1.tagCount(); i++)
         {
-            NBTTagCompound nbttagcompound2 = (NBTTagCompound) nbttaglist.tagAt(i);
-            int index = nbttagcompound2.getInteger("index");
+            NBTTagCompound tag2 = (NBTTagCompound) tag1.tagAt(i);
+            int index = tag2.getInteger("index");
             if (index < storage.length)
-                storage[index] = ItemStack.loadItemStackFromNBT(nbttagcompound2);
+                storage[index] = ItemStack.loadItemStackFromNBT(tag2);
         }
         onInventoryChanged();
     }

@@ -21,6 +21,7 @@ public class RouterServices
     {
         if (id < 0 || id >= routers.size())
             return null;
+        
         return routers.get(id);
     }
 
@@ -28,10 +29,12 @@ public class RouterServices
     {
         if (id == null)
             return -1;
-        Integer simp = UUIDTable.get(id);
-        if (simp == null)
+        
+        Integer ip = UUIDTable.get(id);
+        if (ip == null)
             return -1;
-        return simp.intValue();
+        
+        return ip.intValue();
     }
 
     public void removeRouter(int id)
