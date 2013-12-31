@@ -1,11 +1,9 @@
 package mrtjp.projectred.transportation;
 
-import codechicken.lib.render.CCRenderState;
-import buildcraft.energy.render.RenderEngine;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.inventory.Container;
 import mrtjp.projectred.core.BasicGuiUtils;
 import mrtjp.projectred.core.inventory.GhostGuiContainer;
+import net.minecraft.inventory.Container;
+import codechicken.lib.render.CCRenderState;
 
 public class GuiExtensionPipe extends GhostGuiContainer
 {
