@@ -3,6 +3,7 @@ package mrtjp.projectred;
 import mrtjp.projectred.core.CommandDebug;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
+import mrtjp.projectred.core.ItemDataCard;
 import mrtjp.projectred.core.ItemDrawPlate;
 import mrtjp.projectred.core.ItemPart;
 import mrtjp.projectred.core.ItemScrewdriver;
@@ -39,6 +40,7 @@ public class ProjectRedCore
     public static ItemDrawPlate itemDrawPlate;
     public static ItemScrewdriver itemScrewdriver;
     public static ItemWireDebugger itemWireDebugger;
+    public static ItemDataCard itemDataCard;
 
     @Instance("ProjRed|Core")
     public static ProjectRedCore instance;

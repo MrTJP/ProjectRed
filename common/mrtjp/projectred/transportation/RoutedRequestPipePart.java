@@ -8,7 +8,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.packet.PacketCustom;
 
-public class RoutedRequestPipePart extends RoutedPipePart_InvConnect
+public class RoutedRequestPipePart extends RoutedPipePart_Inv
 {
     @Override
     public void centerReached(RoutedPayload r)

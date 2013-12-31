@@ -221,6 +221,10 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     
     protected void updateClient()
     {
+        if (world().getTotalWorldTime() % (Configurator.detectionFrequency*20) == searchDelay || firstTick)
+            for (int i = 0; i < 6; i++)
+                if ((linkMap & 1<<i) != 0)
+                    RouteFX.spawnType3(RouteFX.color_blink, 1, i, getCoords(), world());
     }
 
     private void coldBoot()
@@ -296,14 +300,12 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
 
     public void sendLinkMapUpdate()
     {
-        tile().getWriteStream(this).writeByte(51).writeByte(linkMap);
+        getWriteStream().writeByte(51).writeByte(linkMap);
     }
 
     @Override
     public Icon getIcon(int side)
     {
-        if (side == 6)
-            return super.getIcon(side);
         if ((linkMap & 1 << side) != 0)
             return EnumPipe.ROUTEDJUNCTION.sprites[0];
         else
@@ -490,11 +492,11 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     @Override
     public void randomDisplayTick(Random rand)
     {
-        if (rand.nextInt(100) == 0)
-        {
-            for (int i = 0; i < 6; i++)
-                if ((linkMap & 1<<i) != 0)
-                    RouteFX.spawnType3(RouteFX.color_blink, 1, i, getCoords(), world());
-        }
+//        if (rand.nextInt(100) == 0)
+//        {
+//            for (int i = 0; i < 6; i++)
+//                if ((linkMap & 1<<i) != 0)
+//                    RouteFX.spawnType3(RouteFX.color_blink, 1, i, getCoords(), world());
+//        }
     }
 }

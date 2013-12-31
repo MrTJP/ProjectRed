@@ -21,7 +21,14 @@ public class TransportationProxy implements IProxy, IPartFactory
     @Override
     public void init()
     {
-        MultiPartRegistry.registerParts(this, new String[] { "pr_ptube", "pr_rbasic", "pr_rinterface", "pr_rcrafting", "pr_rrequest", });
+        MultiPartRegistry.registerParts(this, new String[] { 
+                "pr_ptube", 
+                "pr_rbasic", 
+                "pr_rinterface", 
+                "pr_rcrafting", 
+                "pr_rrequest", 
+                "pr_rextension",
+        });
 
         itemPartPipe = new ItemPartPipe(Configurator.part_pipe.getInt());
         itemRoutingChip = new ItemRoutingChip(Configurator.item_routingChipID.getInt());
@@ -50,6 +57,8 @@ public class TransportationProxy implements IProxy, IPartFactory
             return new RoutedCraftingPipePart();
         if (id.equals("pr_rrequest"))
             return new RoutedRequestPipePart();
+        if (id.equals("pr_rextension"))
+            return new RoutedExtensionPipePart();
         return null;
     }
 

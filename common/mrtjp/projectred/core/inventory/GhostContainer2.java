@@ -273,6 +273,7 @@ public class GhostContainer2 extends Container
         public static class InventoryRulesController implements ISlotController
         {
             public static InventoryRulesController instance = new InventoryRulesController();
+            
             @Override
             public boolean canTake(SlotExtended slot)
             {

@@ -57,11 +57,11 @@ public class TransportationRecipes
         
         /** Routed Crafting Pipe **/
         GameRegistry.addRecipe(EnumPipe.ROUTEDCRAFTING.getItemStack(),
-                "rlr",
+                "rgr",
                 "rjr",
-                "rlr",
+                "rgr",
                 'r', Item.redstone,
-                'l', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId()),
+                'g', Item.glowstone,
                 'j', EnumPipe.ROUTEDJUNCTION.getItemStack()
                 );
         
@@ -75,6 +75,14 @@ public class TransportationRecipes
                 'j', EnumPipe.ROUTEDJUNCTION.getItemStack()
                 );
 
+        /** Routed Crafting Pipe **/
+        GameRegistry.addRecipe(EnumPipe.ROUTEDEXTENSION.getItemStack(),
+                " r ",
+                "rjr",
+                " r ",
+                'r', Item.redstone,
+                'j', EnumPipe.ROUTEDJUNCTION.getItemStack()
+                );
     }
     
     private static void initChipRecipes() 

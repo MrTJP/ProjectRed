@@ -53,6 +53,16 @@ public class CoreRecipes
                 'r', PRColors.RED.getOreDict(),
                 'g', Item.glowstone
                 ));
+        
+        /** Data Card **/
+        GameRegistry.addRecipe(new ItemStack(ProjectRedCore.itemDataCard), 
+                "pp ",
+                "prp",
+                "prp",
+                'p', Item.paper,
+                'r', Item.redstone
+                );
+        
 
     }
 

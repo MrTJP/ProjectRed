@@ -34,6 +34,9 @@ public class ParticleManagement implements ITickHandler
     {
         if (!world.isRemote)
             return null;
+        
+        if (Minecraft.getMinecraft().gameSettings.particleSetting == 2)
+            return null;
 
         CoreParticle particle = new CoreParticle(world, x, y, z);
         particle.setTextureByName(name);

@@ -13,7 +13,9 @@ public enum EnumPipe
     ROUTEDJUNCTION("pr_rbasic", "routed", "unrouted"),
     ROUTEDINTERFACE("pr_rinterface", "routedconn", "unroutedconn"),
     ROUTEDCRAFTING("pr_rcrafting", "routedcrafting"),
-    ROUTEDREQUEST("pr_rrequest", "routedrequest"), ;
+    ROUTEDREQUEST("pr_rrequest", "routedrequest"), 
+    ROUTEDEXTENSION("pr_rextension", "routedextension")
+    ;
 
     private EnumPipe(String type, String... textures)
     {

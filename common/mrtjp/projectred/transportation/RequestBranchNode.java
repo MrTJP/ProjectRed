@@ -578,21 +578,21 @@ public class RequestBranchNode
             return this;
         }
 
-        public DeliveryPromise getScaledPromise(int numberOfSets)
+        public DeliveryPromise getScaledPromise(int sets)
         {
             DeliveryPromise p = new DeliveryPromise();
-            p.setPackage(result.key().copy()).setSize(result.stackSize * numberOfSets).setSender(crafter);
+            p.setPackage(result.key().copy()).setSize(result.stackSize * sets).setSender(crafter);
             return p;
         }
 
-        public List<Pair2<ItemKeyStack, IWorldRequester>> getScaledIngredients(int numberOfSets)
+        public List<Pair2<ItemKeyStack, IWorldRequester>> getScaledIngredients(int sets)
         {
             List<Pair2<ItemKeyStack, IWorldRequester>> components = new ArrayList<Pair2<ItemKeyStack, IWorldRequester>>(ingredients.size());
 
             for (Pair2<ItemKeyStack, IWorldRequester> ing : ingredients)
             {
                 Pair2<ItemKeyStack, IWorldRequester> newIng = new Pair2<ItemKeyStack, IWorldRequester>(ing.getValue1().copy(), ing.getValue2());
-                newIng.getValue1().stackSize *= numberOfSets;
+                newIng.getValue1().stackSize *= sets;
                 components.add(newIng);
             }
 

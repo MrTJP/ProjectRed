@@ -36,7 +36,7 @@ public class TransportationCPH implements IClientPacketHandler
             openChipsetGui(packet, mc.thePlayer);
             break;
         case NetConstants.gui_Request_open:
-            openRequestGui(packet, mc, mc.thePlayer);
+            openRequestGui(packet, mc);
             break;
         case NetConstants.gui_Request_list:
             receiveRequestList(packet, mc);
@@ -47,9 +47,23 @@ public class TransportationCPH implements IClientPacketHandler
         case NetConstants.gui_RouterUtil_open:
             openRouterUtilGui(packet, mc);
             break;
+        case NetConstants.gui_ExtensionPipe_open:
+            openExtensionPipeGui(packet, mc);
+            break;
         }
     }
 
+    private void openExtensionPipeGui(PacketCustom packet, Minecraft mc)
+    {
+        TMultiPart p = BasicUtils.getMultiPart(mc.theWorld, packet.readCoord(), 6);
+        
+        if (p instanceof RoutedExtensionPipePart)
+        {
+            RoutedExtensionPipePart pipe = (RoutedExtensionPipePart) p;
+            ClientUtils.openSMPGui(packet.readUByte(), new GuiExtensionPipe(pipe.createContainer(mc.thePlayer), packet.readString()));
+        }
+    }
+    
     private void openRouterUtilGui(PacketCustom packet, Minecraft mc)
     {
         ClientUtils.openSMPGui(packet.readByte(), new GuiChipUpgrade(new ChipUpgradeContainer(mc.thePlayer)));
@@ -72,18 +86,16 @@ public class TransportationCPH implements IClientPacketHandler
 
     }
 
-    private void openRequestGui(PacketCustom packet, Minecraft mc, EntityPlayer player)
+    private void openRequestGui(PacketCustom packet, Minecraft mc)
     {
-        BlockCoord bc = packet.readCoord();
-        TMultiPart p = BasicUtils.getMultiPart(player.worldObj, bc, 6);
+        TMultiPart p = BasicUtils.getMultiPart(mc.thePlayer.worldObj, packet.readCoord(), 6);
         if (p instanceof IWorldRequester)
             mc.displayGuiScreen(new GuiRequester((IWorldRequester) p));
     }
 
     private void openRoutedInterfacePipeGui(PacketCustom packet, EntityPlayer player)
     {
-        BlockCoord bc = packet.readCoord();
-        TMultiPart p = BasicUtils.getMultiPart(player.worldObj, bc, 6);
+        TMultiPart p = BasicUtils.getMultiPart(player.worldObj, packet.readCoord(), 6);
         if (p instanceof RoutedInterfacePipePart)
         {
             RoutedInterfacePipePart pipe = (RoutedInterfacePipePart) p;
@@ -93,12 +105,12 @@ public class TransportationCPH implements IClientPacketHandler
 
     private void openCraftingPipeGui(PacketCustom packet, EntityPlayer player)
     {
-        BlockCoord bc = packet.readCoord();
-        TMultiPart p = BasicUtils.getMultiPart(player.worldObj, bc, 6);
+        TMultiPart p = BasicUtils.getMultiPart(player.worldObj, packet.readCoord(), 6);
         if (p instanceof RoutedCraftingPipePart)
         {
             RoutedCraftingPipePart pipe = (RoutedCraftingPipePart) p;
             ClientUtils.openSMPGui(packet.readUByte(), new GuiCraftingPipe(pipe.createContainer(player), pipe));
+            pipe.priority = packet.readInt();
         }
     }
 

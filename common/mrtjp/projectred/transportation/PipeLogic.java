@@ -10,16 +10,9 @@ public abstract class PipeLogic
     public static PipeLogic createPipeLogic(BasicPipePart p, int meta)
     {
         if (meta == 0)
-            return new BasicPipeLogic(p);
-        else if (meta == 1)
-            return new RoutedJunctionPipeLogic(p);
-        else if (meta == 2)
-            return new RoutedInterfacePipeLogic(p);
-        else if (meta == 3)
-            return new RoutedCraftingPipeLogic(p);
-        else if (meta == 4)
-            return new RoutedRequestPipeLogic(p);
-        return null;
+            return new NullPipeLogic(p);
+                
+        return new NullPipeLogic(p);
     }
 
     BasicPipePart p;
@@ -63,10 +56,9 @@ public abstract class PipeLogic
 
     public abstract Icon getIcon(BasicPipePart p, int i);
 
-    public static class BasicPipeLogic extends PipeLogic
+    public static class NullPipeLogic extends PipeLogic
     {
-
-        public BasicPipeLogic(BasicPipePart p)
+        public NullPipeLogic(BasicPipePart p)
         {
             super(p);
         }
@@ -92,97 +84,13 @@ public abstract class PipeLogic
         @Override
         public Icon getIcon(BasicPipePart p, int i)
         {
-            return EnumPipe.BASIC.sprites[0];
+            return null;
         }
 
         @Override
         public boolean handleDrop(RoutedPayload r)
         {
             return false;
-        }
-    }
-
-    public static class RoutedJunctionPipeLogic extends PipeLogic
-    {
-
-        public RoutedJunctionPipeLogic(BasicPipePart p)
-        {
-            super(p);
-        }
-
-        @Override
-        public boolean endReached(RoutedPayload r)
-        {
-            return false;
-        }
-
-        @Override
-        public boolean centerReached(RoutedPayload r)
-        {
-            return false;
-        }
-
-        @Override
-        public boolean resolveDestination(RoutedPayload r)
-        {
-            return false;
-        }
-
-        @Override
-        public Icon getIcon(BasicPipePart p, int i)
-        {
-            return EnumPipe.ROUTEDJUNCTION.sprites[0];
-        }
-
-        @Override
-        public boolean handleDrop(RoutedPayload r)
-        {
-            return false;
-        }
-    }
-
-    public static class RoutedInterfacePipeLogic extends RoutedJunctionPipeLogic
-    {
-
-        public RoutedInterfacePipeLogic(BasicPipePart p)
-        {
-            super(p);
-        }
-
-        @Override
-        public Icon getIcon(BasicPipePart p, int i)
-        {
-            return EnumPipe.ROUTEDINTERFACE.sprites[0];
-        }
-    }
-
-    public static class RoutedCraftingPipeLogic extends RoutedJunctionPipeLogic
-    {
-
-        public RoutedCraftingPipeLogic(BasicPipePart p)
-        {
-            super(p);
-        }
-
-        @Override
-        public Icon getIcon(BasicPipePart p, int i)
-        {
-            return EnumPipe.ROUTEDCRAFTING.sprites[0];
-        }
-    }
-
-    public static class RoutedRequestPipeLogic extends RoutedJunctionPipeLogic
-    {
-
-        public RoutedRequestPipeLogic(BasicPipePart p)
-        {
-            super(p);
-        }
-
-        @Override
-        public Icon getIcon(BasicPipePart p, int i)
-        {
-            return EnumPipe.ROUTEDREQUEST.sprites[0];
         }
     }
 }

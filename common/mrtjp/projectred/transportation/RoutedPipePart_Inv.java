@@ -17,7 +17,7 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.INeighborTileChange;
 import codechicken.multipart.TMultiPart;
 
-public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart implements IInventoryProvider, INeighborTileChange
+public abstract class RoutedPipePart_Inv extends RoutedJunctionPipePart implements IInventoryProvider, INeighborTileChange
 {
     public int inOutSide = 0;
 
@@ -170,9 +170,6 @@ public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart i
     @Override
     public Icon getIcon(int side)
     {
-        if (side == 6)
-            return super.getIcon(side);
-
         Icon[] array = side == inOutSide ? EnumPipe.ROUTEDINTERFACE.sprites : EnumPipe.ROUTEDJUNCTION.sprites;
 
         if ((linkMap & 1 << side) != 0)
@@ -203,4 +200,7 @@ public abstract class RoutedPipePart_InvConnect extends RoutedJunctionPipePart i
     {
         return false;
     }
+    
+    @Override
+    public abstract String getType();
 }

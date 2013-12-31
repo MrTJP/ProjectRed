@@ -213,12 +213,12 @@ public class RenderPipe
         render(w, pos, dynamicLight);
     }
 
-    public static void render(BasicPipePart w, Vector3 pos, LazyLightMatrix olm)
+    public static void render(BasicPipePart p, Vector3 pos, LazyLightMatrix olm)
     {
         Transformation t = new Translation(pos);
-        IUVTransformation uvt = new IconTransformation(w.getIcon(6));
+        IUVTransformation uvt = new IconTransformation(EnumPipe.VALID_PIPE[p.meta].sprites[0]);
         
-        int connMap = w.connMap;
+        int connMap = p.connMap;
 
         if (Integer.bitCount(connMap) == 2 && ((connMap&3) == 3 || (connMap&12) == 12 || (connMap&48) == 48))
             for (int a = 0; a < 3; a++)
@@ -232,7 +232,7 @@ public class RenderPipe
         for (int s = 0; s < 6; s++)
             if ((connMap & 1 << s) != 0)
             {
-                uvt = new IconTransformation(w.getIcon(s));
+                uvt = new IconTransformation(p.getIcon(s));
                 sideModels[s].render(t, uvt);
             }
     }

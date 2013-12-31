@@ -5,10 +5,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.DelayQueue;
 
 import mrtjp.projectred.core.BasicGuiUtils;
+import mrtjp.projectred.core.ItemDataCard;
 import mrtjp.projectred.core.inventory.GhostContainer2;
+import mrtjp.projectred.core.inventory.GhostContainer2.ISlotController;
 import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended;
 import mrtjp.projectred.core.inventory.InventoryWrapper;
 import mrtjp.projectred.core.inventory.SimpleInventory;
@@ -33,18 +36,39 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 
-public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements IWorldCrafter
+public class RoutedCraftingPipePart extends RoutedPipePart_Inv implements IWorldCrafter
 {
     private SimpleInventory matrix = new SimpleInventory(10, "matrix", 127);
+    private SimpleInventory cardSlots = new SimpleInventory(9, "links", 1) {
+        
+        @Override
+        public boolean isItemValidForSlot(int i, ItemStack stack) {
+            if (ItemDataCard.hasCardData(stack))
+            {
+                NBTTagCompound tag = ItemDataCard.loadData(stack, "ext_pipe");
+                if (tag.hasKey("id"))
+                    return true;
+            }
+            return false;
+        }
+        
+        @Override
+        public void onInventoryChanged() {
+            refreshExtensions();
+        }
+    };
+    
     private DeliveryManager manager = new DeliveryManager();
 
     private final LinkedList<Pair2<ItemKeyStack, IWorldRequester>> excess = new LinkedList<Pair2<ItemKeyStack, IWorldRequester>>();
     private final DelayQueue<PostponedWorkItem<ItemKeyStack>> lost = new DelayQueue<PostponedWorkItem<ItemKeyStack>>();
+    
+    private final int[] extensionIPs = new int[9];
 
     public int priority = 0;
 
     private int remainingDelay = operationDelay();
-    private int remainindDelay2 = operationDelay2();
+    private int remainingDelay2 = operationDelay2();
 
     /**
      * Standard operation delay
@@ -112,9 +136,9 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
             operationTick();
         }
 
-        if (--remainindDelay2 <= 0)
+        if (--remainingDelay2 <= 0)
         {
-            remainindDelay2 = operationDelay2();
+            remainingDelay2 = operationDelay2();
             lostHandleTick();
         }
     }
@@ -260,6 +284,45 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
                 }
         }
     }
+    
+    private void refreshExtensions()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            ItemStack inslot = cardSlots.getStackInSlot(i);
+            if (inslot != null && ItemDataCard.hasCardData(inslot))
+            {
+                NBTTagCompound data = ItemDataCard.loadData(inslot, "ext_pipe");
+                if (data.hasKey("id"))
+                {
+                    UUID id = null;
+                    try
+                    {
+                        id = UUID.fromString(data.getString("id"));
+                    }
+                    catch (Throwable t)
+                    {
+                        continue;
+                    }
+                    
+                    extensionIPs[i] = RouterServices.instance.getIPforUUID(id);
+                }
+            }
+            else
+                extensionIPs[i] = -1;
+        }
+    }
+    
+    private IWorldRequester getExtensionFor(int slot)
+    {
+        if (extensionIPs[slot] >= 0 && getRouter().canRouteTo(extensionIPs[slot]))
+        {
+            Router r = RouterServices.instance.getRouter(extensionIPs[slot]);
+            if (r != null && r.isLoaded() && r.getParent() instanceof IWorldRequester)
+                return (IWorldRequester) r.getParent();
+        }
+        return this;
+    }
 
     @Override
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item)
@@ -269,6 +332,14 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
 
         openGui(player);
         return true;
+    }
+    
+    @Override
+    public void onRemoved()
+    {
+        super.onRemoved();
+        if (!world().isRemote)
+            cardSlots.dropContents(world(), x(), y(), z());
     }
 
     public void openGui(EntityPlayer player)
@@ -283,8 +354,8 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
                 PacketCustom p = new PacketCustom(TransportationSPH.channel, NetConstants.gui_CraftingPipe_open);
                 p.writeCoord(x(), y(), z());
                 p.writeByte(windowId);
-                p.sendToPlayer(player);
                 p.writeInt(priority);
+                p.sendToPlayer(player);
             }
         });
     }
@@ -292,13 +363,17 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
     public Container createContainer(EntityPlayer player)
     {
         GhostContainer2 ghost = new GhostContainer2(player.inventory);
-        int slot = 0;
-        for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(26, 26, 3, 3, 0, 0))
-            ghost.addCustomSlot(new SlotExtended(matrix, slot++, p.getValue1(), p.getValue2()).setGhosting(true));
+        
+        int s = 0;
+        for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(8, 12, 9, 1, 0, 0))
+            ghost.addCustomSlot(new SlotExtended(matrix, s++, p.getValue1(), p.getValue2()).setGhosting(true));
+        ghost.addCustomSlot(new SlotExtended(matrix, s++, 44, 74).setGhosting(true));
 
-        ghost.addCustomSlot(new SlotExtended(matrix, slot++, 117, 63).setGhosting(true));
+        int s2 = 0;
+        for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(8, 46, 9, 1, 0, 0))
+            ghost.addCustomSlot(new SlotExtended(cardSlots, s2++, p.getValue1(), p.getValue2()).setCheck(ISlotController.InventoryRulesController.instance));
 
-        ghost.addPlayerInventory(8, 118);
+        ghost.addPlayerInventory(8, 138);
         return ghost;
     }
 
@@ -306,14 +381,18 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
     public void save(NBTTagCompound tag)
     {
         super.save(tag);
-        matrix.save(tag);
+        matrix.save(tag, "m");
+        cardSlots.save(tag, "l");
+        tag.setInteger("pri", priority);        
     }
 
     @Override
     public void load(NBTTagCompound tag)
     {
         super.load(tag);
-        matrix.load(tag);
+        matrix.load(tag, "m");
+        cardSlots.load(tag, "l");
+        priority = tag.getInteger("pri");
     }
 
     @Override
@@ -363,27 +442,25 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
     @Override
     public CraftingPromise requestCraftPromise(ItemKey item)
     {
-        List<ItemKeyStack> stack = getCraftedItems();
-        if (stack == null)
+        List<ItemKeyStack> items = getCraftedItems();
+        if (items == null)
             return null;
 
-        boolean found = false;
         ItemKeyStack craftingStack = null;
-        for (ItemKeyStack craftable : stack)
+        for (ItemKeyStack craftable : items)
         {
-            craftingStack = craftable;
-            if (craftingStack.key().equals(item))
+            if (craftable.key().equals(item))
             {
-                found = true;
+                craftingStack = craftable;
                 break;
             }
         }
-        if (!found)
+        if (craftingStack == null)
             return null;
 
         IWorldRequester[] requesters = new IWorldRequester[9];
         for (int i = 0; i < 9; i++)
-            requesters[i] = this;
+            requesters[i] = getExtensionFor(i);
 
         CraftingPromise promise = new CraftingPromise(craftingStack, this, priority);
         for (int i = 0; i < 9; i++)
@@ -391,6 +468,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
             ItemKeyStack keystack = ItemKeyStack.get(matrix.getStackInSlot(i));
             if (keystack == null || keystack.stackSize <= 0)
                 continue;
+
             promise.addIngredient(keystack, requesters[i]);
         }
 
@@ -411,6 +489,7 @@ public class RoutedCraftingPipePart extends RoutedPipePart_InvConnect implements
         ItemStack stack = matrix.getStackInSlot(9);
         if (stack != null)
             list.add(ItemKeyStack.get(stack));
+
         return list;
     }
 

@@ -116,7 +116,7 @@ public class RouteFX
             flow.setTerminate(true);
             
             ParticleLogicScale scale = new ParticleLogicScale();
-            scale.setRate(-0.0001F, -0.0001F);
+            scale.setRate(-0.0001F, 0);
             scale.setTerminate(true);
 
             c.noClip = true;
@@ -124,7 +124,7 @@ public class RouteFX
             c.setScale(0.05f + 0.075f * rand.nextFloat());
             c.setPRColor(color);
             
-            c.addLogic(trail).addLogic(flow);
+            c.addLogic(trail).addLogic(flow).addLogic(scale);
         }
     }
 
@@ -334,13 +334,8 @@ public class RouteFX
                 
                 int connMap = pipe.connMap;
                 connMap &= ~(1<<(dir^1));
-                
-                int count = 0;
-                for (int i = 0; i<6; i++)
-                    if ((connMap & 1<<i) != 0)
-                        count++;
-                
-                if (count == 1)
+                                
+                if (Integer.bitCount(connMap) == 1)
                 {
                     int pos = 0;
                     while ((connMap & 1<<pos) == 0 && pos < 6)
