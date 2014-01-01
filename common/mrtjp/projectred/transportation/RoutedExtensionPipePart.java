@@ -19,7 +19,7 @@ import codechicken.core.IGuiPacketSender;
 import codechicken.core.ServerUtils;
 import codechicken.lib.packet.PacketCustom;
 
-public class RoutedExtensionPipePart extends RoutedPipePart_Inv
+public class RoutedExtensionPipePart extends RoutedJunctionPipePart
 {
     public SimpleInventory cardslot = new SimpleInventory(2, "card", 1) {
         

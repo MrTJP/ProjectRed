@@ -1,4 +1,4 @@
-package mrtjp.projectred.compatibility;
+package mrtjp.projectred.compatibility.tconstruct;
 
 import static tconstruct.common.TContent.metalPattern;
 import mrtjp.projectred.core.Configurator;
@@ -59,7 +59,7 @@ public class ProxyTConstruct
         return new ItemStack(metalPattern, 1, 0);
     }
 
-    public void loadTCInteractions()
+    public void init()
     {
         liquidMetal = new MaterialLiquid(MapColor.tntColor);
 

@@ -36,7 +36,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 
-public class RoutedCraftingPipePart extends RoutedPipePart_Inv implements IWorldCrafter
+public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IWorldCrafter
 {
     private SimpleInventory matrix = new SimpleInventory(10, "matrix", 127);
     private SimpleInventory cardSlots = new SimpleInventory(9, "links", 1) {

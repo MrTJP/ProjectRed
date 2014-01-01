@@ -15,6 +15,8 @@
 	<property name="fmp.version" value="1.0.0.227" />
 	<property name="nei.version" value="1.6.1.8" />
 	<property name="tcons.version" value="1.4.7d4" />
+	<property name="texpan.version" value="3.0.0.0" />
+	<property name="cofh.version" value="2.0.0.0" />
 
 	<property name="src.dir" value="ProjectRed" />
 	<property name="build.dir" value="build" />
@@ -39,6 +41,8 @@
 	<property name="fmp.name" value="ForgeMultipart-dev-${mc.version}-${fmp.version}.jar" />
 	<property name="nei.name" value="NotEnoughItems-dev%20${nei.version}.jar" />
 	<property name="tcons.name" value="TConstruct_${mc.version}_${tcons.version}.jar" />
+	<property name="texpan.name" value="ThermalExpansion-${texpan.version}.jar" />
+	<property name="cofh.name" value="CoFHCore-${cofh.version}.jar" />
 
 
 	<!-- Check downloaded dependencies -->
@@ -50,6 +54,8 @@
 	<available property="fmp-downloaded" file="${download.dir}/${fmp.name}" />
 	<available property="nei-downloaded" file="${download.dir}/${nei.name}" />
 	<available property="tcons-downloaded" file="${download.dir}/${tcons.name}" />
+	<available property="texpan-downloaded" file="${download.dir}/${texpan.name}" />
+	<available property="cofh-downloaded" file="${download.dir}/${cofh.name}" />
 
 
 	<!-- Check installed dependencies -->
@@ -92,6 +98,18 @@
 		<and>
 			<isset property="forge-installed" />
 			<equals arg1="${build.dependencies.tcons}" arg2="${tcons.version}" />
+		</and>
+	</condition>
+	<condition property="texpan-installed">
+		<and>
+			<isset property="forge-installed" />
+			<equals arg1="${build.dependencies.texpan}" arg2="${texpan.version}" />
+		</and>
+	</condition>
+	<condition property="cofh-installed">
+		<and>
+			<isset property="forge-installed" />
+			<equals arg1="${build.dependencies.cofh}" arg2="${cofh.version}" />
 		</and>
 	</condition>
 
@@ -137,6 +155,14 @@
 
 	<target name="download-tcons" unless="tcons-downloaded">
 		<get src="http://tanis.sunstrike.io/TConstruct/development/${tcons.name}" dest="${download.dir}" usetimestamp="true" />
+	</target>
+
+    <target name="download-texpan" unless="texpan-downloaded">
+		<get src="http://dl.dropboxusercontent.com/u/46144650/mod_downloads/${texpan.name}" dest="${download.dir}" usetimestamp="true" />
+	</target>
+
+    <target name="download-cofh" unless="cofh-downloaded">
+		<get src="http://dl.dropboxusercontent.com/u/46144650/mod_downloads/${cofh.name}" dest="${download.dir}" usetimestamp="true" />
 	</target>
 
 
@@ -265,8 +291,60 @@
 			<entry key="tcons.name" value="${tcons.name}" />
 		</propertyfile>
 	</target>
+    
+    <target name="install-texpan" depends="install-forge,download-forgeuni,install-ccobf,download-texpan" unless="texpan-installed">
+        <echo message="Deleting old Thermal Expansion" />
+        <delete file="${mcp.dir}/lib/${build.dependencies.texpan.name}" />
 
-	<target name="install-dependencies" depends="install-forge,install-ccl,install-ccobf,install-ccc,install-fmp,install-nei,install-tcons" />
+        <echo message="Installing Thermal Expansion" />
+        <java jar="${mcp.dir}/${ccobf.name}" fork="true">
+            <arg value="-d" />
+            <arg value="-l" />
+            <arg value="${download.dir}/${forgeuni.name},${mcp.dir}/jars/libraries,${mcp.dir}/temp/minecraft_rg.jar" />
+            <arg value="-i" />
+            <arg value="${download.dir}/${texpan.name}" />
+            <arg value="-o" />
+            <arg value="${mcp.dir}/lib" />
+            <arg value="-m" />
+            <arg value="${mcp.dir}/conf" />
+            <arg value="--noclean" />
+            <arg value="-q" />
+        </java>
+
+        <echo message="Updating build.dependencies" />
+        <propertyfile file="${build.dependencies.file}">
+            <entry key="texpan" value="${texpan.version}" />
+            <entry key="texpan.name" value="${texpan.name}" />
+        </propertyfile>
+    </target>
+
+    <target name="install-cofh" depends="install-forge,download-forgeuni,install-ccobf,download-cofh" unless="cofh-installed">
+        <echo message="Deleting old CoFHCore" />
+        <delete file="${mcp.dir}/lib/${build.dependencies.cofh.name}" />
+
+        <echo message="Installing CoFHCore" />
+        <java jar="${mcp.dir}/${ccobf.name}" fork="true">
+            <arg value="-d" />
+            <arg value="-l" />
+            <arg value="${download.dir}/${forgeuni.name},${mcp.dir}/jars/libraries,${mcp.dir}/temp/minecraft_rg.jar" />
+            <arg value="-i" />
+            <arg value="${download.dir}/${cofh.name}" />
+            <arg value="-o" />
+            <arg value="${mcp.dir}/lib" />
+            <arg value="-m" />
+            <arg value="${mcp.dir}/conf" />
+            <arg value="--noclean" />
+            <arg value="-q" />
+        </java>
+
+        <echo message="Updating build.dependencies" />
+        <propertyfile file="${build.dependencies.file}">
+            <entry key="texpan" value="${cofh.version}" />
+            <entry key="texpan.name" value="${cofh.name}" />
+        </propertyfile>
+    </target>
+
+	<target name="install-dependencies" depends="install-forge,install-ccl,install-ccobf,install-ccc,install-fmp,install-nei,install-tcons,install-texpan,install-cofh" />
 
 	<!-- Targets for building -->
 	<target name="recompile">

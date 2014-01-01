@@ -15,12 +15,15 @@ public class CompatibilityProxy implements IProxy
     {
         // Tinkers Construct
         if (Services.loadTConstruct)
-            Services.getTCProxy().loadTCInteractions();
+            Services.getTCProxy().init();
+        
+        // Thermal Expansion
+        if (Services.loadTExpansion)
+            Services.getTEProxy().init();
     }
 
     @Override
     public void postinit()
     {
-
     }
 }

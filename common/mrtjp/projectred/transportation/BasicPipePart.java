@@ -216,6 +216,7 @@ public class BasicPipePart extends CorePipePart
     {
         if (getLogic().centerReached(r))
             return;
+        
         if (!world().isRemote)
             if (!maskConnects(r.output.ordinal()) || !passToNextPipe(r))
             {

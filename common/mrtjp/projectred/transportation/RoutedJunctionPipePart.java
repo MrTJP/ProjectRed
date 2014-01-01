@@ -4,19 +4,23 @@ import java.util.BitSet;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Random;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import mrtjp.projectred.api.ISpecialLinkState;
+import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.PRColors;
+import mrtjp.projectred.core.inventory.InventoryWrapper;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.transportation.RoutedPayload.SendPriority;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
@@ -24,15 +28,19 @@ import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
-import codechicken.multipart.IRandomDisplayTick;
+import codechicken.multipart.INeighborTileChange;
+import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 
-public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRouter, IRouteLayer, IWorldRequester, IRandomDisplayTick
+public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRouter, IRouteLayer, IWorldRequester, IInventoryProvider, INeighborTileChange
 {
     public int linkMap;
 
     public Router router;
     public String routerID;
     public Object routerIDLock = new Object();
+    
+    public int inOutSide = 0;
 
     public boolean needsWork = true;
     public boolean firstTick = true;
@@ -41,9 +49,9 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     public int searchDelay = 0;
 
     private LinkedList<RoutedPayload> sendQueue = new LinkedList<RoutedPayload>();
-
     private PriorityBlockingQueue<Pair2<RoutedPayload, Integer>> transitQueue = new PriorityBlockingQueue<Pair2<RoutedPayload, Integer>>(10, new TransitComparator());
-
+    private LinkedList<RoutedPayload> swapQueue = new LinkedList<RoutedPayload>();
+    
     private class TransitComparator implements Comparator<Pair2<RoutedPayload, Integer>>
     {
         @Override
@@ -150,10 +158,16 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     @Override
     public void queueStackToSend(ItemStack stack, int dirOfExtraction, SendPriority priority, int destination)
     {
-        RoutedPayload r = new RoutedPayload(ItemKeyStack.get(stack));
-        r.input = ForgeDirection.getOrientation(dirOfExtraction);
-        r.setPriority(priority);
-        r.setDestination(destination);
+        ItemKeyStack stack2 = ItemKeyStack.get(stack);
+        RoutedPayload r = pollFromSwapQueue(stack2);
+        
+        if (r == null) {
+            r = new RoutedPayload(stack2);
+
+            r.input = ForgeDirection.getOrientation(dirOfExtraction);
+            r.setPriority(priority);
+            r.setDestination(destination);
+        }
         sendQueue.addLast(r);
     }
 
@@ -170,7 +184,28 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
 
         RouteFX.spawnType1(RouteFX.color_send, 8, new BlockCoord(tile()), world());
     }
-
+    
+    public void queueSwapSendItem(RoutedPayload r)
+    {
+        swapQueue.add(r);
+    }
+        
+    private RoutedPayload pollFromSwapQueue(ItemKeyStack stack)
+    {
+        Iterator<RoutedPayload> it = swapQueue.iterator();
+        while(it.hasNext())
+        {
+            RoutedPayload r = it.next();
+            if (r.payload.equals(stack))
+            {
+                it.remove();
+                return r;
+            }
+        }
+        
+        return null;
+    }
+    
     @Override
     public SyncResponse getLogisticPath(ItemKey stack, BitSet exclusions, boolean excludeStart)
     {
@@ -208,7 +243,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
 
         // Manage transit queue
         tickTransitQueue();
-        
+                
         if (world().isRemote)
             updateClient();
         else
@@ -264,16 +299,67 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     }
 
     @Override
-    public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item)
+    public void endReached(RoutedPayload r)
     {
-        return false;
+        if (!world().isRemote)
+            if (!maskConnects(r.output.ordinal()) || !passToNextPipe(r))
+            {
+                BlockCoord bc = new BlockCoord(tile()).offset(r.output.ordinal());
+                
+                // Injection to special link state
+                TileEntity tile = BasicUtils.getTileEntity(world(), bc, TileEntity.class);
+                ISpecialLinkState state = LSPathFinder.getLinkState(tile);
+                if (state != null && tile instanceof IInventory)
+                {
+                    TileEntity dest = state.getLink(tile);
+                    IInventory inv = (IInventory) tile;
+                    
+                    if (dest instanceof TileMultipart)
+                    {
+                        TMultiPart part = ((TileMultipart) dest).partMap(6);
+                        if (part instanceof RoutedJunctionPipePart)
+                        {
+                            RoutedJunctionPipePart pipe = (RoutedJunctionPipePart) part;
+                            InventoryWrapper w = InventoryWrapper.wrapInventory(inv).setSlotsFromSide(r.output.getOpposite().ordinal());
+                            int room = w.getRoomAvailableForItem(r.payload.key());
+                            if (room >= r.payload.stackSize)
+                            {
+                                w.injectItem(r.payload.makeStack(), true);
+                                pipe.queueSwapSendItem(r);
+                                return;
+                            }
+                            else
+                            {
+                                bounceStack(r);
+                                return;
+                            }
+                        }
+                    }
+                }
+                
+                // Injection to inventories
+                IInventory inv = InventoryWrapper.getInventory(world(), bc);
+                if (inv != null)
+                {
+                    InventoryWrapper w = InventoryWrapper.wrapInventory(inv).setSlotsFromSide(r.output.getOpposite().ordinal());
+                    r.payload.stackSize -= w.injectItem(r.payload.makeStack(), true);
+                }
+                // Bounce
+                if (r.payload.stackSize > 0)
+                    bounceStack(r);
+            }
     }
-
+    
     @Override
     public void read(MCDataInput packet, int switch_key)
     {
         if (switch_key == 51)
             handleLinkMap(packet);
+        else if (switch_key == 15)
+        {
+            inOutSide = packet.readUByte();
+            tile().markRender();
+        }
         else
             super.read(packet, switch_key);
     }
@@ -301,15 +387,6 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     public void sendLinkMapUpdate()
     {
         getWriteStream().writeByte(51).writeByte(linkMap);
-    }
-
-    @Override
-    public Icon getIcon(int side)
-    {
-        if ((linkMap & 1 << side) != 0)
-            return EnumPipe.ROUTEDJUNCTION.sprites[0];
-        else
-            return EnumPipe.ROUTEDJUNCTION.sprites[1];
     }
 
     @Override
@@ -341,6 +418,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
                     routerID = UUID.randomUUID().toString();
         }
         tag.setString("rid", routerID);
+        tag.setByte("io", (byte) inOutSide);
     }
 
     @Override
@@ -351,6 +429,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         {
             routerID = tag.getString("rid");
         }
+        inOutSide = tag.getByte("io");
     }
 
     @Override
@@ -358,13 +437,138 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     {
         super.writeDesc(packet);
         packet.writeByte(linkMap);
+        packet.writeByte(inOutSide);
     }
 
     @Override
     public void readDesc(MCDataInput packet)
     {
         super.readDesc(packet);
-        linkMap = packet.readByte();
+        linkMap = packet.readUByte();
+        inOutSide = packet.readUByte();
+    }
+    
+    @Override
+    public void onNeighborChanged()
+    {
+        super.onNeighborChanged();
+        shiftOrientation(false);
+    }
+    
+    @Override
+    public void onPartChanged(TMultiPart p)
+    {
+        super.onPartChanged(p);
+        shiftOrientation(false);
+    }
+
+    @Override
+    public void onAdded()
+    {
+        super.onAdded();
+        shiftOrientation(false);
+    }
+    
+    public void sendOrientUpdate()
+    {
+        tile().getWriteStream(this).writeByte(15).writeByte(inOutSide);
+    }
+
+    @Override
+    public boolean connect(int absDir)
+    {
+        if (super.connect(absDir))
+            return true;
+        BlockCoord bc = new BlockCoord(tile()).offset(absDir);
+        TileEntity t = BasicUtils.getTileEntity(world(), bc, TileEntity.class);
+
+        return t instanceof IInventory;
+    }
+
+    @Override
+    public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item)
+    {
+        if (super.activate(player, hit, item))
+            return true;
+
+        if (player.isSneaking())
+        {
+            shiftOrientation(true);
+            return true;
+        }
+
+        return false;
+    }
+
+    public void shiftOrientation(boolean force)
+    {
+        if (world().isRemote)
+            return;
+        boolean invalid = force || !maskConnects(inOutSide) || !(BasicUtils.getTileEntity(world(), new BlockCoord(tile()).offset(inOutSide), TileEntity.class) instanceof IInventory);
+        if (!invalid)
+            return;
+
+        boolean found = false;
+        int oldSide = inOutSide;
+
+        for (int i = 0; i < 6; ++i)
+        {
+            inOutSide = (inOutSide + 1) % 6;
+
+            if (!maskConnects(inOutSide))
+                continue;
+
+            BlockCoord bc = new BlockCoord(tile()).offset(inOutSide);
+            TileEntity t = BasicUtils.getTileEntity(world(), bc, TileEntity.class);
+            if (t instanceof IInventory)
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+            inOutSide = -1;
+
+        if (oldSide != inOutSide)
+            sendOrientUpdate();
+    }
+
+    @Override
+    public IInventory getInventory()
+    {
+        if (inOutSide < 0 || inOutSide > 5)
+            return null;
+
+        return InventoryWrapper.getInventory(world(), new BlockCoord(tile()).offset(inOutSide));
+    }
+
+    @Override
+    public int getInterfacedSide()
+    {
+        return inOutSide < 0 || inOutSide > 5 ? -1 : inOutSide ^ 1;
+    }
+
+    @Override
+    public Icon getIcon(int side)
+    {
+        Icon[] array = side == inOutSide ? EnumPipe.ROUTEDINTERFACE.sprites : EnumPipe.ROUTEDJUNCTION.sprites;
+
+        if ((linkMap & 1 << side) != 0)
+            return array[0];
+        else
+            return array[1];
+    }
+
+    @Override
+    public void onNeighborTileChanged(int side, boolean weak)
+    {
+    }
+
+    @Override
+    public boolean weakTileChanges()
+    {
+        return false;
     }
 
     @Override
@@ -428,10 +632,10 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         RouteFX.spawnType1(color, 8, new BlockCoord(tile()), world());
         adjustSpeed(r);
     }
-
+    
     public ForgeDirection getDirForIncomingItem(RoutedPayload r)
     {
-        return ForgeDirection.UNKNOWN;
+        return ForgeDirection.getOrientation(inOutSide);
     }
 
     @Override
@@ -453,7 +657,13 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     @Override
     public int getActiveFreeSpace(ItemKey item)
     {
-        return Integer.MAX_VALUE;
+        IInventory real = getInventory();
+        if (real == null)
+            return 0;
+        int side = getInterfacedSide();
+        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
+        int free = inv.getRoomAvailableForItem(item);
+        return free;
     }
 
     @Override
@@ -487,16 +697,5 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
     public BlockCoord getCoords()
     {
         return new BlockCoord(tile());
-    }
-
-    @Override
-    public void randomDisplayTick(Random rand)
-    {
-//        if (rand.nextInt(100) == 0)
-//        {
-//            for (int i = 0; i < 6; i++)
-//                if ((linkMap & 1<<i) != 0)
-//                    RouteFX.spawnType3(RouteFX.color_blink, 1, i, getCoords(), world());
-//        }
     }
 }
