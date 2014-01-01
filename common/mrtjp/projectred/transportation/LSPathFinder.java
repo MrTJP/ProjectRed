@@ -93,12 +93,11 @@ public class LSPathFinder
 
             if (root)
             {
-                List<TileEntity> connected = getConnections(tile);
-                if (connected != null && !connected.isEmpty())
+                ISpecialLinkState link = getLinkState(tile);
+                TileEntity connected = link == null ? null : link.getLink(tile);
+                if (connected != null)
                 {
-                    for (TileEntity tile2 : connected)
-                        connections.add(new Pair2<TileEntity, ForgeDirection>(tile2, dir));
-                    
+                    connections.add(new Pair2<TileEntity, ForgeDirection>(connected, dir));
                     continue;
                 }
             }
@@ -153,15 +152,13 @@ public class LSPathFinder
     {
         registeredLSTypes.add(link);
     }
-
-    private static List<TileEntity> getConnections(TileEntity tile)
+    
+    public static ISpecialLinkState getLinkState(TileEntity tile)
     {
         for (ISpecialLinkState link : registeredLSTypes)
-        {
-            List<TileEntity> linked = link.getLinks(tile);
-            if (linked != null)
-                return linked;
-        }
+            if (link.matches(tile))
+                return link;
+
         return null;
     }
 }

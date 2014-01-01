@@ -14,9 +14,6 @@ import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 
-/**
- * Internal API Implementation, do not include this class in your mod
- */
 public class APIImpl_Transmission implements ITransmissionAPI
 {
     @Override

@@ -23,7 +23,7 @@ import codechicken.core.IGuiPacketSender;
 import codechicken.core.ServerUtils;
 import codechicken.lib.packet.PacketCustom;
 
-public class RoutedInterfacePipePart extends RoutedPipePart_Inv implements IWorldBroadcaster
+public class RoutedInterfacePipePart extends RoutedJunctionPipePart implements IWorldBroadcaster
 {
     public SimpleInventory chipSlots = new SimpleInventory(4, "chips", 1) {
         @Override
