@@ -61,6 +61,7 @@ item.projectred.core.drawplate.name=Ziehstein
 item.projectred.core.wiredebugger.name=Kabel-Debugger
 item.projectred.core.screwdriver.name=Schraubendreher
 item.projectred.core.routerutil.name=Router-Werkzeug
+item.projectred.core.datacard.name=Datenkarte
 
 
 
@@ -86,6 +87,7 @@ item.projectred.transportation.pipe|1.name=Routen-Kreuzungsrohr
 item.projectred.transportation.pipe|2.name=Routen-Schnittstellenrohr
 item.projectred.transportation.pipe|3.name=Routen-Herstellungsrohr
 item.projectred.transportation.pipe|4.name=Routen-Bestellrohr
+item.projectred.transportation.pipe|5.name=Routen-Erweiterungsrohr
 
 
 itemGroup.exploration=Project Red: Erkundung
