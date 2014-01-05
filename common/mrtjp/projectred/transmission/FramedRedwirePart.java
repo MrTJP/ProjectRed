@@ -151,6 +151,14 @@ public abstract class FramedRedwirePart extends FramedWirePart implements IRedwi
     }
 
     @Override
+    public void propogateOther(int mode)
+    {
+        for (int s = 0; s < 6; s++)
+            if (!maskConnects(s))
+                WirePropogator.addNeighborChange(new BlockCoord(tile()).offset(s));
+    }
+
+    @Override
     public void onSignalUpdate()
     {
         super.onSignalUpdate();
