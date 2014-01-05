@@ -404,6 +404,8 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
                 propogateStraight(s, prev, mode);
             else if ((connMap & 1 << s + 6) != 0)
                 propogateInternal(s, prev, mode);
+
+        propogateOther(mode);
     }
 
     public void propogateStraight(int s, TMultiPart prev, int mode)
@@ -429,6 +431,10 @@ public abstract class FramedWirePart extends TMultiPart implements IConnectable,
         if (tp == prev)
             return;
         propogateTo(tp, mode);
+    }
+
+    public void propogateOther(int mode)
+    {
     }
 
     public boolean propogateTo(TMultiPart part, int mode)
