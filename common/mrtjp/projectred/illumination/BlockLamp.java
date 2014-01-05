@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import codechicken.multipart.IRedstoneConnectorBlock;
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.block.Block;
@@ -22,7 +23,7 @@ import codechicken.lib.vec.BlockCoord;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockLamp extends Block
+public class BlockLamp extends Block implements IRedstoneConnectorBlock
 {
     public static Icon[] onIcons = new Icon[16];
     public static Icon[] offIcons = new Icon[16];
@@ -184,5 +185,17 @@ public class BlockLamp extends Block
     public boolean hasTileEntity(int meta)
     {
         return true;
+    }
+
+    @Override
+    public int getConnectionMask(IBlockAccess world, int x, int y, int z, int side)
+    {
+        return 0x1F;
+    }
+
+    @Override
+    public int weakPowerLevel(IBlockAccess world, int x, int y, int z, int side, int mask)
+    {
+        return 0;
     }
 }
