@@ -9,14 +9,15 @@
 	</condition>
 	<property name="mc.version" value="1.6.4" />
 	<property name="forge.version" value="9.11.1.953" />
-	<property name="ccl.version" value="1.0.0.49" />
+	<property name="ccl.version" value="1.0.0.50" />
 	<property name="ccobf.version" value="1.0.0.15" />
 	<property name="ccc.version" value="0.9.0.7" />
 	<property name="fmp.version" value="1.0.0.227" />
 	<property name="nei.version" value="1.6.1.8" />
 	<property name="tcons.version" value="1.4.7d4" />
 	<property name="texpan.version" value="3.0.0.0" />
-	<property name="cofh.version" value="2.0.0.0" />
+    <property name="cofh.version" value="2.0.0.0" />
+    <property name="ccraft.version" value="1.58" />
 
 	<property name="src.dir" value="ProjectRed" />
 	<property name="build.dir" value="build" />
@@ -42,7 +43,8 @@
 	<property name="nei.name" value="NotEnoughItems-dev%20${nei.version}.jar" />
 	<property name="tcons.name" value="TConstruct_${mc.version}_${tcons.version}.jar" />
 	<property name="texpan.name" value="ThermalExpansion-${texpan.version}.jar" />
-	<property name="cofh.name" value="CoFHCore-${cofh.version}.jar" />
+    <property name="cofh.name" value="CoFHCore-${cofh.version}.jar" />
+    <property name="ccraft.name" value="ComputerCraft${ccraft.version}.jar" />
 
 
 	<!-- Check downloaded dependencies -->
@@ -55,7 +57,8 @@
 	<available property="nei-downloaded" file="${download.dir}/${nei.name}" />
 	<available property="tcons-downloaded" file="${download.dir}/${tcons.name}" />
 	<available property="texpan-downloaded" file="${download.dir}/${texpan.name}" />
-	<available property="cofh-downloaded" file="${download.dir}/${cofh.name}" />
+    <available property="cofh-downloaded" file="${download.dir}/${cofh.name}" />
+    <available property="ccraft-downloaded" file="${download.dir}/${ccraft.name}" />
 
 
 	<!-- Check installed dependencies -->
@@ -106,12 +109,18 @@
 			<equals arg1="${build.dependencies.texpan}" arg2="${texpan.version}" />
 		</and>
 	</condition>
-	<condition property="cofh-installed">
-		<and>
-			<isset property="forge-installed" />
-			<equals arg1="${build.dependencies.cofh}" arg2="${cofh.version}" />
-		</and>
-	</condition>
+    <condition property="cofh-installed">
+        <and>
+            <isset property="forge-installed" />
+            <equals arg1="${build.dependencies.cofh}" arg2="${cofh.version}" />
+        </and>
+    </condition>
+    <condition property="ccraft-installed">
+        <and>
+            <isset property="forge-installed" />
+            <equals arg1="${build.dependencies.ccraft}" arg2="${ccraft.version}" />
+        </and>
+    </condition>
 
 	<condition property="runnung-in-ci">
 		<isset property="env.TRAVIS" />
@@ -165,6 +174,9 @@
 		<get src="http://dl.dropboxusercontent.com/u/46144650/mod_downloads/${cofh.name}" dest="${download.dir}" usetimestamp="true" />
 	</target>
 
+    <target name="download-ccraft" unless="ccraft-downloaded">
+        <get src="http://www.curseforge.com/media/files/758/858/ComputerCraft${ccraft.version}.zip" dest="${download.dir}/${ccraft.name}" usetimestamp="true" />
+    </target>
 
 	<!-- Targets for installing dependencies -->
 	<target name="install-forge" depends="download-forge" unless="forge-installed">
@@ -339,12 +351,26 @@
 
         <echo message="Updating build.dependencies" />
         <propertyfile file="${build.dependencies.file}">
-            <entry key="texpan" value="${cofh.version}" />
-            <entry key="texpan.name" value="${cofh.name}" />
+            <entry key="cofh" value="${cofh.version}" />
+            <entry key="cofh.name" value="${cofh.name}" />
         </propertyfile>
     </target>
 
-	<target name="install-dependencies" depends="install-forge,install-ccl,install-ccobf,install-ccc,install-fmp,install-nei,install-tcons,install-texpan,install-cofh" />
+    <target name="install-ccraft" depends="install-forge,download-ccraft" unless="ccraft-installed">
+        <echo message="Deleting old ComputerCraft" />
+        <delete file="${mcp.dir}/lib/${build.dependencies.ccraft.name}" />
+
+        <echo message="Installing ComputerCraft" />
+        <copy file="${download.dir}/${ccraft.name}" todir="${mcp.dir}/lib" />
+
+        <echo message="Updating build.dependencies" />
+        <propertyfile file="${build.dependencies.file}">
+            <entry key="ccraft" value="${ccraft.version}" />
+            <entry key="ccraft.name" value="${ccraft.name}" />
+        </propertyfile>
+    </target>
+
+	<target name="install-dependencies" depends="install-forge,install-ccl,install-ccobf,install-ccc,install-fmp,install-nei,install-tcons,install-texpan,install-cofh,install-ccraft" />
 
 	<!-- Targets for building -->
 	<target name="recompile">
@@ -409,7 +435,8 @@
 		<replace dir="${mcp.dir}/reobf/resources" token="@BUILD_NUMBER@" value="${mod.build}" />
 		<replace dir="${mcp.dir}/reobf/resources" token="@MC_VERSION@" value="${mc.version}" />
 		<replace dir="${mcp.dir}/reobf/resources" token="@FORGE_VERSION@" value="${forge.version}" />
-		<replace dir="${mcp.dir}/reobf/resources" token="@FMP_VERSION@" value="${fmp.version}" />
+        <replace dir="${mcp.dir}/reobf/resources" token="@FMP_VERSION@" value="${fmp.version}" />
+        <replace dir="${mcp.dir}/reobf/resources" token="@CCL_VERSION@" value="${ccl.version}" />
 
 		<fail message="Failed to reobfuscate">
 			<condition>
@@ -424,10 +451,13 @@
 
 		<!-- ProjectRed Base -->
 		<echo message="Packaging ProjectRed Base" />
-		<jar destfile="${jar.dir}/${mod.name.base}" manifest="${mcp.dir}/reobf/resources/MANIFEST.MF">
+		<jar destfile="${jar.dir}/${mod.name.base}">
 			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedCore*.class, **/mrtjp/projectred/core/**, **/mrtjp/projectred/api/**, codechicken/core/launch/DepLoader**" />
-			<fileset dir="${mcp.dir}/reobf/resources" excludes="MANIFEST.MF">
-			</fileset>
+            <fileset dir="${mcp.dir}/reobf/resources" />
+            <manifest>
+                <attribute name="FMLCorePlugin" value="codechicken.core.launch.DepLoader"/>
+                <attribute name="FMLCorePluginContainsFMLMod" value="true"/>
+            </manifest>
 		</jar>
 
 		<!-- ProjectRed Integration -->
@@ -458,6 +488,10 @@
 		<echo message="Packaging ProjectRed Compat" />
 		<jar destfile="${jar.dir}/${mod.name.compat}">
 			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedCompatibility*.class, **/mrtjp/projectred/compatibility/**" />
+            <manifest>
+                <attribute name="FMLCorePlugin" value="mrtjp.projectred.compatibility.CompatibilityCorePlugin"/>
+                <attribute name="FMLCorePluginContainsFMLMod" value="true"/>
+            </manifest>
 		</jar>
 
 	</target>

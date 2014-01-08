@@ -190,7 +190,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
     @Override
     public byte[] getBundledSignal(int side)
     {
-        return getBundledSignal();
+        return maskConnects(side) ? getBundledSignal() : null;
     }
 
     @Override

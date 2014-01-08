@@ -187,7 +187,7 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
             return r == 0 ? output0 : output2;
         }
 
-        public byte[] getBundledInput(int input, int r)
+        public byte[] getBundledInput(int r)
         {
             return raiseSignal(copySignal(gate.getBundledInput(r)), getBundledOutput(gate, r));// or'd with our output
         }
@@ -203,14 +203,14 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
                 gate.onInputChange();
             }
 
-            byte[] newInput0 = getBundledInput(newInput, 0);
+            byte[] newInput0 = getBundledInput(0);
             if (!signalsEqual(input0, newInput0))
             {
                 input0 = newInput0;
                 gate.onInputChange();
             }
 
-            byte[] newInput2 = getBundledInput(newInput, 2);
+            byte[] newInput2 = getBundledInput(2);
             if (!signalsEqual(input2, newInput2))
             {
                 input2 = newInput2;
