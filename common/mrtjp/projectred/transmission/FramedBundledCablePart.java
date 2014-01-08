@@ -134,7 +134,7 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     @Override
     public byte[] getBundledSignal(int side)
     {
-        return getBundledSignal();
+        return maskConnects(side) ? getBundledSignal() : null;
     }
 
     @Override

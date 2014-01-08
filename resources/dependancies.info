@@ -1,6 +1,12 @@
-{
+[{
 	"repo": "http://files.minecraftforge.net/ForgeMultipart/",
 	"file": "ForgeMultipart-universal-@MC_VERSION@-@FMP_VERSION@.jar",
 	"dev": "ForgeMultipart-dev-@MC_VERSION@-@FMP_VERSION@.jar",
 	"class": "codechicken.multipart.MultipartMod"
-}
+},
+{
+	"repo": "http://files.minecraftforge.net/CodeChickenLib/",
+	"file": "CodeChickenLib-universal-@MC_VERSION@-@CCL_VERSION@.jar",
+	"dev": "CodeChickenLib-dev-@MC_VERSION@-@CCL_VERSION@.jar",
+	"class": "codechicken.lib.asm.ASMHelper"
+}]

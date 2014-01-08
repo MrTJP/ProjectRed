@@ -144,6 +144,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
     @Override
     public byte[] getBundledSignal(int r)
     {
-        return getLogic().getBundledOutput(this, toInternal(r));
+        int ir = toInternal(r);
+        return (getLogic().bundledOutputMask(shape()) & 1<<ir) != 0 ? getLogic().getBundledOutput(this, ir) : null;
     }
 }
