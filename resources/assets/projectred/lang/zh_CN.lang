@@ -64,6 +64,7 @@ item.projectred.core.drawplate.name=起模板
 item.projectred.core.wiredebugger.name=调线工具
 item.projectred.core.screwdriver.name=螺丝刀
 item.projectred.core.routerutil.name=路由器工具
+item.projectred.core.datacard.name=数据卡
 
 #扩展
 itemGroup.expansion=红石计划:扩展
@@ -85,6 +86,7 @@ item.projectred.transportation.pipe|1.name=路由交错管道
 item.projectred.transportation.pipe|2.name=路由接口管道
 item.projectred.transportation.pipe|3.name=路由合成管道
 item.projectred.transportation.pipe|4.name=路由需求管道
+item.projectred.transportation.pipe|5.name=路由扩展管道
 
 #勘矿
 itemGroup.exploration=红石计划:勘矿
