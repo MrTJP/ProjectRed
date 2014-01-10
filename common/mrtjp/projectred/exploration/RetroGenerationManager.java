@@ -168,7 +168,7 @@ public class RetroGenerationManager
         {
             // Volcanos
             int x = chunkX * 16 + r.nextInt(16);
-            int y = r.nextInt(32);
+            int y = r.nextInt(64);
             int z = chunkZ * 16 + r.nextInt(16);
             new GeneratorVolcano(ProjectRedExploration.blockStones.blockID, EnumSpecialStone.BASALT.meta, MathHelper.getRandomIntegerInRange(r, 32000, 64000)).generate(w, r, x, y, z);
         }

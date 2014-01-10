@@ -1,3 +1,9 @@
+[dev]v4.2.3
+- ADDED: Computercraft bundled cable compatibility
+- CHANGE: Made volcanoes slightly more rare
+- FIX: Backpack slots being locked
+- FIX: Framed alloy wire connection bug
+
 v4.2.2
 - ADDED: Extension pipe
 - ADDED: Config option for backpack blacklist
@@ -43,7 +49,7 @@ v4.0.4
 v4.0.3
 - ADDED: Fixtures
 - ADDED: Config option for moving all rendering to TESR
-- ADDED: Gates emit light 
+- ADDED: Gates emit light
 - FIX: Many minor bugs
 
 v4.0.2
