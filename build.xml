@@ -9,8 +9,8 @@
 	</condition>
 	<property name="mc.version" value="1.6.4" />
 	<property name="forge.version" value="9.11.1.953" />
-	<property name="ccl.version" value="1.0.0.50" />
-	<property name="ccobf.version" value="1.0.0.15" />
+	<property name="ccl.version" value="1.0.0.49" />
+	<property name="ccobf.version" value="1.0.0.17" />
 	<property name="ccc.version" value="0.9.0.7" />
 	<property name="fmp.version" value="1.0.0.227" />
 	<property name="nei.version" value="1.6.1.8" />
@@ -193,7 +193,7 @@
 		<echo message="Installing Forge with args '${installargs}'." />
 		<unzip src="${download.dir}/${forge.name}" dest="${forge.dir}/.." />
 		<property name="fml.python.exe" location="${forge.dir}/fml/python/python_fml.exe" />
-
+	    
 		<exec dir="${forge.dir}" executable="${fml.python.exe}" osfamily="windows" failonerror="true">
 			<arg line="install.py${installargs}" />
 		</exec>
@@ -303,7 +303,7 @@
 			<entry key="tcons.name" value="${tcons.name}" />
 		</propertyfile>
 	</target>
-
+    
     <target name="install-texpan" depends="install-forge,download-forgeuni,install-ccobf,download-texpan" unless="texpan-installed">
         <echo message="Deleting old Thermal Expansion" />
         <delete file="${mcp.dir}/lib/${build.dependencies.texpan.name}" />
@@ -410,6 +410,13 @@
 	</target>
 
 	<target name="reobfuscate">
+		<echo message="Copying ASM assets" />
+		<copy todir="${mcp.dir}/bin/minecraft/assets">
+			<fileset dir="${src.dir}/resources/assets">
+				<include name="**/asm/**" />
+			</fileset>
+		</copy>
+		
 		<echo message="Reobfuscating" />
 		<java jar="${mcp.dir}/${ccobf.name}" fork="true" failonerror="true" resultproperty="reobfuscate.code">
 			<arg value="--mcp" />
@@ -426,6 +433,10 @@
 
 		<echo message="Copying Resources" />
 		<delete dir="${mcp.dir}/reobf/resources" />
+		<!-- Bring asm resources back-->
+		<move todir="${mcp.dir}/reobf/resources/assets" >
+			<fileset dir="${mcp.dir}/reobf/minecraft/assets" />
+		</move>
 		<copy todir="${mcp.dir}/reobf/resources">
 			<fileset dir="${src.dir}/resources" />
 		</copy>
@@ -435,8 +446,7 @@
 		<replace dir="${mcp.dir}/reobf/resources" token="@BUILD_NUMBER@" value="${mod.build}" />
 		<replace dir="${mcp.dir}/reobf/resources" token="@MC_VERSION@" value="${mc.version}" />
 		<replace dir="${mcp.dir}/reobf/resources" token="@FORGE_VERSION@" value="${forge.version}" />
-        <replace dir="${mcp.dir}/reobf/resources" token="@FMP_VERSION@" value="${fmp.version}" />
-        <replace dir="${mcp.dir}/reobf/resources" token="@CCL_VERSION@" value="${ccl.version}" />
+		<replace dir="${mcp.dir}/reobf/resources" token="@FMP_VERSION@" value="${fmp.version}" />
 
 		<fail message="Failed to reobfuscate">
 			<condition>
@@ -464,35 +474,30 @@
 		<echo message="Packaging ProjectRed Integration" />
 		<jar destfile="${jar.dir}/${mod.name.integration}">
 			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedIntegration*.class, **/ProjectRedTransmission*.class, **/mrtjp/projectred/integration/**, **/mrtjp/projectred/transmission/**" />
-            <fileset file="${mcp.dir}/reobf/resources/mcmod.info" />
 		</jar>
 
 		<!-- ProjectRed Lighting -->
 		<echo message="Packaging ProjectRed Lighting" />
 		<jar destfile="${jar.dir}/${mod.name.lighting}">
 			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedIllumination*.class, **/mrtjp/projectred/illumination/**" />
-            <fileset file="${mcp.dir}/reobf/resources/mcmod.info" />
-        </jar>
+		</jar>
 
 		<!-- ProjectRed Mechanical -->
 		<echo message="Packaging ProjectRed Mechanical" />
 		<jar destfile="${jar.dir}/${mod.name.mechanical}">
 			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExpansion*.class, **/mrtjp/projectred/expansion/**, **/ProjectRedTransportation*.class, **/mrtjp/projectred/transportation/**" />
-            <fileset file="${mcp.dir}/reobf/resources/mcmod.info" />
-        </jar>
+		</jar>
 
 		<!-- ProjectRed World -->
 		<echo message="Packaging ProjectRed World" />
 		<jar destfile="${jar.dir}/${mod.name.world}">
 			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExploration*.class, **/mrtjp/projectred/exploration/**" />
-            <fileset file="${mcp.dir}/reobf/resources/mcmod.info" />
-        </jar>
+		</jar>
 
 		<!-- ProjectRed Compat -->
 		<echo message="Packaging ProjectRed Compat" />
 		<jar destfile="${jar.dir}/${mod.name.compat}">
 			<fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedCompatibility*.class, **/mrtjp/projectred/compatibility/**" />
-            <fileset file="${mcp.dir}/reobf/resources/mcmod.info" />
             <manifest>
                 <attribute name="FMLCorePlugin" value="mrtjp.projectred.compatibility.CompatibilityCorePlugin"/>
                 <attribute name="FMLCorePluginContainsFMLMod" value="true"/>
