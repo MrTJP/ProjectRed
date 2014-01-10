@@ -147,8 +147,14 @@ public class TransformerComputerCraft implements IClassTransformer, Opcodes
     public byte[] transform(String name, String transformedName, byte[] bytes) {
         if(bytes == null) return null;
         IClassPatcher patch = patches.get(name);
-        if(patch != null)
-            bytes = patch.apply(name, bytes);
+        if(patch != null) {
+            try {
+                bytes = patch.apply(name, bytes);
+            } catch (Exception e) {
+                System.err.println("Failed to apply ProjectRed integration to ComputerCraft class: "+name+"\n please ensure you have ComputerCraft 1.58 installed");
+                e.printStackTrace();
+            }
+        }
 
         return bytes;
     }
