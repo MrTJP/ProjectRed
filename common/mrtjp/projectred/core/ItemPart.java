@@ -1,7 +1,7 @@
 package mrtjp.projectred.core;
 
-import java.util.List;
-
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRedCore;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -9,8 +9,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraftforge.oredict.OreDictionary;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 public class ItemPart extends Item
 {
@@ -124,12 +124,11 @@ public class ItemPart extends Item
         CHIPUPGRADE_LZ("upgrd_lz"),
         CHIPUPGRADE_RX("upgrd_rx"),
         CHIPUPGRADE_RY("upgrd_ry"),
-        CHIPUPGRADE_RZ("upgrd_rz"),
-        ;
-        
+        CHIPUPGRADE_RZ("upgrd_rz"),;
+
         public String unlocalName;
         public static final EnumPart[] VALID_PARTS = values();
-        public static final EnumPart[] ILLUMAR_PARTS = { WHITEILLUMAR, ORANGEILLUMAR, MAGENTAILLUMAR, LIGHTBLUEILLUMAR, YELLOWILLUMAR, LIMEILLUMAR, PINKILLUMAR, GREYILLUMAR, LIGHTGREYILLUMAR, CYANILLUMAR, PURPLEILLUMAR, BLUEILLUMAR, BROWNILLUMAR, GREENILLUMAR, REDILLUMAR, BLACKILLUMAR };
+        public static final EnumPart[] ILLUMAR_PARTS = {WHITEILLUMAR, ORANGEILLUMAR, MAGENTAILLUMAR, LIGHTBLUEILLUMAR, YELLOWILLUMAR, LIMEILLUMAR, PINKILLUMAR, GREYILLUMAR, LIGHTGREYILLUMAR, CYANILLUMAR, PURPLEILLUMAR, BLUEILLUMAR, BROWNILLUMAR, GREENILLUMAR, REDILLUMAR, BLACKILLUMAR};
         public int meta = this.ordinal();
         public static final String oreDictDefinition = "projredPart";
         public static final String oreDictDefinition_illumar = "projredIllumar";

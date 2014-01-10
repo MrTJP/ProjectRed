@@ -1,7 +1,7 @@
 package mrtjp.projectred.exploration;
 
-import java.util.List;
-
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.inventory.GhostContainer2;
@@ -19,8 +19,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 public class ItemBackpack extends Item
 {
@@ -50,33 +50,34 @@ public class ItemBackpack extends Item
     public static Container getContainer(final EntityPlayer player)
     {
         IInventory backpackInv = getBackpackInventory(player);
-        
+
         if (backpackInv == null)
             backpackInv = new BagInventory(player, new ItemStack(ProjectRedExploration.itemBackpack));
-        
+
         GhostContainer2 container = new GhostContainer2(player.inventory) {
             @Override
             public GhostContainer2 addCustomSlot(SlotExtended slot)
             {
                 if (slot.getSlotIndex() == player.inventory.currentItem)
-                    return super.addCustomSlot(slot.setRemoval(false));
+                    if (slot.inventory == player.inventory)
+                        return super.addCustomSlot(slot.setRemoval(false));
 
                 return super.addCustomSlot(slot);
             }
         };
-        
+
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 9; j++)
             {
                 final int slotNumber = i * 9 + j;
                 int x = 8 + j * 18;
                 int y = 18 + i * 18;
-                
+
                 SlotExtended s = new SlotExtended(backpackInv, slotNumber, x, y).setCheck(InventoryRulesController.instance);
-                
+
                 container.addCustomSlot(s);
             }
-        
+
         container.addPlayerInventory(8,  86);
         return container;
     }
@@ -168,7 +169,7 @@ public class ItemBackpack extends Item
         {
             saveInventory();
         }
-        
+
         @Override
         public boolean isItemValidForSlot(int i, ItemStack stack)
         {

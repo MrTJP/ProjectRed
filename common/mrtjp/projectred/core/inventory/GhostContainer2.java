@@ -1,15 +1,13 @@
 package mrtjp.projectred.core.inventory;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.input.Mouse;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GhostContainer2 extends Container
 {
@@ -78,15 +76,56 @@ public class GhostContainer2 extends Container
             if (s instanceof SlotExtended)
             {
                 SlotExtended slot = (SlotExtended) inventorySlots.get(slotID);
-                if (slot.handleClick())
-                    return slot.slotClick(mouseButton, isShift, player);
+                if (slot.isGhostingEnabled())
+                    return handleGhostClick(slot, mouseButton, isShift, player);
             }
             return super.slotClick(slotID, mouseButton, isShift, player);
         }
         return null;
     }
 
-    public List<IInventory> getAllInventories()
+    private ItemStack handleGhostClick(SlotExtended slot, int mouseButton, int isShift, EntityPlayer player)
+    {
+        ItemStack inSlot = slot.getStack();
+        ItemStack inCursor = player.inventory.getItemStack();
+        boolean stackable = InventoryWrapper.areItemsStackable(inSlot, inCursor);
+
+        if (stackable)
+        {
+            if (inSlot != null && inCursor == null)
+                slot.putStack(null);
+            else if (inSlot == null && inCursor != null)
+            {
+                ItemStack newStack = inCursor.copy();
+                newStack.stackSize = mouseButton == 0 ? Math.min(inCursor.stackSize, slot.getSlotStackLimit()) : 1;
+                slot.putStack(newStack);
+            }
+            else if (inSlot != null && stackable)
+            {
+                int toAdd = isShift == 1 ? 10 : 1;
+
+                if (mouseButton == 0) // add
+                    inSlot.stackSize = Math.min(slot.getSlotStackLimit(), inSlot.stackSize + toAdd);
+                else if (mouseButton == 1) // subtract
+                    inSlot.stackSize = Math.max(0, inSlot.stackSize - toAdd);
+
+                if (inSlot.stackSize > 0)
+                    slot.putStack(inSlot);
+                else
+                    slot.putStack(null);
+            }
+        }
+        else
+        { // Different inslot and incursor
+            ItemStack newStack = inCursor.copy();
+            newStack.stackSize = mouseButton == 0 ? Math.min(inCursor.stackSize, slot.getSlotStackLimit()) : 1;
+            slot.putStack(newStack);
+        }
+        return inCursor;
+    }
+
+
+    private List<IInventory> getAllInventories()
     {
         List<IInventory> list = new ArrayList<IInventory>();
         for (Slot s : (List<Slot>) inventorySlots)
@@ -193,17 +232,9 @@ public class GhostContainer2 extends Container
             return this;
         }
 
-        public boolean handleClick()
+        public boolean isGhostingEnabled()
         {
             return enableGhosting;
-        }
-
-        public ItemStack slotClick(int mouseButton, int isShift, EntityPlayer player)
-        {
-            if (enableGhosting)
-                return handleGhostClick(mouseButton, isShift, player);
-
-            return player.inventory.getItemStack();
         }
 
         @Override
@@ -223,45 +254,6 @@ public class GhostContainer2 extends Container
         {
             return allowRemove && (check == null || check.canTake(this));
         }
-
-        private ItemStack handleGhostClick(int mouseButton, int isShift, EntityPlayer player)
-        {            
-            ItemStack inSlot = getStack();
-            ItemStack inCursor = player.inventory.getItemStack();
-            if (InventoryWrapper.areItemsStackable(inSlot, inCursor))
-            {
-                if (!Mouse.isButtonDown(mouseButton) && inSlot != null)
-                    mouseButton = -1;
-
-                if (inSlot == null && inCursor != null)
-                {
-                    ItemStack newStack = inCursor.copy();
-                    newStack.stackSize = mouseButton == 0 ? Math.min(inCursor.stackSize, getSlotStackLimit()) : 1;
-                    putStack(newStack);
-                }
-                else if (inSlot != null && inCursor == null)
-                {
-                    int toAdd = isShift == 1 ? 10 : 1;
-
-                    if (mouseButton == 0) // add
-                        inSlot.stackSize = Math.min(getSlotStackLimit(), inSlot.stackSize + toAdd);
-                    else if (mouseButton == 1) // subtract
-                        inSlot.stackSize = Math.max(0, inSlot.stackSize - toAdd);
-
-                    if (inSlot.stackSize > 0)
-                        putStack(inSlot);
-                    else
-                        putStack(null);
-                }
-            }
-            else
-            { // Different inslot and incursor
-                ItemStack newStack = inCursor.copy();
-                newStack.stackSize = mouseButton == 0 ? Math.min(inCursor.stackSize, getSlotStackLimit()) : 1;
-                putStack(newStack);
-            }
-            return inCursor;
-        }
     }
 
     public static interface ISlotController
@@ -269,11 +261,11 @@ public class GhostContainer2 extends Container
         public boolean canTake(SlotExtended slot);
 
         public boolean canPlace(SlotExtended slot, ItemStack stack);
-        
+
         public static class InventoryRulesController implements ISlotController
         {
             public static InventoryRulesController instance = new InventoryRulesController();
-            
+
             @Override
             public boolean canTake(SlotExtended slot)
             {

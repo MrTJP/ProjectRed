@@ -1,11 +1,13 @@
 package mrtjp.projectred.core.blockutil;
 
-import java.util.ArrayList;
-
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.packet.ICustomPacketTile;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.vec.BlockCoord;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CoreSPH;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,12 +15,8 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.ForgeDirection;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.packet.ICustomPacketTile;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Rotation;
+
+import java.util.ArrayList;
 
 public abstract class TileMulti extends TileEntity implements ICustomPacketTile
 {
@@ -210,29 +208,5 @@ public abstract class TileMulti extends TileEntity implements ICustomPacketTile
         PacketCustom stream = new PacketCustom(CoreSPH.channel, 1);
         stream.writeCoord(new BlockCoord(this)).writeByte(switchkey);
         return stream;
-    }
-
-    public int resolveLook(EntityPlayer player)
-    {
-        int rot = (int) Math.floor(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 0x3;
-        if (Math.abs(player.posX - xCoord) < 2D && Math.abs(player.posZ - zCoord) < 2D)
-        {
-            double p = player.posY + 1.82D - player.yOffset - this.yCoord;
-            if (p > 2.0D)
-                return 0;
-            if (p < 0.0D)
-                return 1;
-        }
-        switch (rot) {
-        case 0:
-            return 3;
-        case 1:
-            return 4;
-        case 2:
-            return 2;
-        case 3:
-            return 5;
-        }
-        return 1;
     }
 }
