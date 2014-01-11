@@ -465,7 +465,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
                     configure();
                 else
                     rotate();
-                held.damageItem(1, player);
+                ((IScrewdriver)held.getItem()).damageScrewdriver(world(), player);
             }
 
             return true;

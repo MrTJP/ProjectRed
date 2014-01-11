@@ -6,5 +6,5 @@ package mrtjp.projectred.api;
  */
 public interface IScrewdriver
 {
-
+	public void damageScrewdriver(World world, EntityPlayer player); // Damage the item on usage
 }

@@ -40,4 +40,10 @@ public class ItemScrewdriver extends Item implements IScrewdriver
     {
         this.itemIcon = reg.registerIcon("projectred:screwdriver");
     }
+	
+	@Override
+	public void damageScrewdriver(World world, EntityPlayer player)
+	{
+		player.getHeldItem().damageItem(1, player);
+	}
 }
