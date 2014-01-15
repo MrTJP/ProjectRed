@@ -1,0 +1,450 @@
+itemGroup.core=Project Red: Base
+
+item.projectred.core.part.partplate.name=Plaque pour Circuit
+item.projectred.core.part.partconductiveplate.name=Plaque Conductive
+item.projectred.core.part.partwiredplate.name=Plaque Cablée
+item.projectred.core.part.partbundledplate.name=Plaque Câblée avec des Câbles Empaquetés
+item.projectred.core.part.partanode.name=Anode
+item.projectred.core.part.partcathode.name=Cathode
+item.projectred.core.part.partpointer.name=Pointeur
+item.projectred.core.part.partsiliconchip.name=Puce de Silicium
+item.projectred.core.part.partenergizedsiliconchip.name=Puce de Silicium Énergisée
+item.projectred.core.part.partplatformedplate.name=Plaque avec Plateforme
+item.projectred.core.part.partredingot.name=Lingot d'Alliage Rouge
+item.projectred.core.part.partboule.name=Boule de Silicium
+item.projectred.core.part.partsilicon.name=Silicium
+item.projectred.core.part.partinfusedsilicon.name=Silicium Infusé
+item.projectred.core.part.partenergizedsilicon.name=Silicium Énergisé
+item.projectred.core.part.partmotor.name=Moteur
+item.projectred.core.part.partcoppercoil.name=Bobine de Cuivre
+item.projectred.core.part.partironcoil.name=Bobine de Fer
+item.projectred.core.part.partgoldcoil.name=Bobine d'or
+
+item.projectred.core.part.illumar0.name=Illumar Blanc
+item.projectred.core.part.illumar1.name=Illumar Orange
+item.projectred.core.part.illumar2.name=Illumar Magenta
+item.projectred.core.part.illumar3.name=Illumar Bleu Clair
+item.projectred.core.part.illumar4.name=Illumar Jaune
+item.projectred.core.part.illumar5.name=Illumar Vert Clair
+item.projectred.core.part.illumar6.name=Illumar Rose
+item.projectred.core.part.illumar7.name=Illumar Gris
+item.projectred.core.part.illumar8.name=Illumar Gris Clair
+item.projectred.core.part.illumar9.name=Illumar Cyan
+item.projectred.core.part.illumar10.name=Illumar Violet
+item.projectred.core.part.illumar11.name=Illumar Bleu
+item.projectred.core.part.illumar12.name=Illumar Brun
+item.projectred.core.part.illumar13.name=Illumar Vert
+item.projectred.core.part.illumar14.name=Illumar Rouge
+item.projectred.core.part.illumar15.name=Illumar Noir
+
+item.projectred.core.part.partcloth.name=Toile Tissée
+item.projectred.core.part.partsail.name=Voile
+item.projectred.core.part.gemruby.name=Rubis
+item.projectred.core.part.gemsapphire.name=Saphir
+item.projectred.core.part.gemperidot.name=Péridot
+item.projectred.core.part.partredironcomp.name=Composé de Fer Rouge
+item.projectred.core.part.partsandcoalcomp.name=Composé de Sable et de Charbon
+item.projectred.core.part.partredsiliconcomp.name=Composé de Silicium Rouge
+item.projectred.core.part.partglowsiliconcomp.name=Composé de Silicum brillant
+
+item.projectred.core.part.nullchip.name=Vide-Puce Logique de Routage
+item.projectred.core.part.nullupgrd.name=Vide-Puce Logique d'amélioration
+item.projectred.core.part.upgrd_lx.name=Mise à niveau LX
+item.projectred.core.part.upgrd_ly.name=Mise à niveau LY
+item.projectred.core.part.upgrd_lz.name=Mise à niveau LZ
+item.projectred.core.part.upgrd_rx.name=Mise à niveau RX
+item.projectred.core.part.upgrd_ry.name=Mise à niveau RY
+item.projectred.core.part.upgrd_rz.name=Mise à niveau RZ
+
+
+item.projectred.core.drawplate.name=Filière
+item.projectred.core.wiredebugger.name=Multimètre
+item.projectred.core.screwdriver.name=Tournevis
+item.projectred.core.routerutil.name=Utilitaire de Routage
+item.projectred.core.datacard.name=Carte Mémoire
+
+
+
+
+itemGroup.expansion=Project Red: Extension
+
+
+
+itemGroup.transport=Project Red: Transport
+
+item.projectred.transportation.routingchip|0.name=Puce de Répondeur d'Item
+item.projectred.transportation.routingchip|1.name=Puce de Répondeur d'Item Dynamique
+item.projectred.transportation.routingchip|2.name=Puce de Répondeur de débordement d'Item
+item.projectred.transportation.routingchip|3.name=Puce de Terminaison d'Item
+item.projectred.transportation.routingchip|4.name=Puce d'Extraction d'Item
+item.projectred.transportation.routingchip|5.name=Puce de Diffusion d'Item
+item.projectred.transportation.routingchip|6.name=Puce de Garde de Stock d'Item
+
+item.projectred.transportation.routerutil.name=Utilitaire de Routage
+
+item.projectred.transportation.pipe|0.name=Tuyau de Transport d'Item
+item.projectred.transportation.pipe|1.name=Tuyau Routeur de Jonction
+item.projectred.transportation.pipe|2.name=Tuyau Routeur d'Interface
+item.projectred.transportation.pipe|3.name=Tuyau Routeur de Fabrication
+item.projectred.transportation.pipe|4.name=Tuyau Routeur de Requête
+item.projectred.transportation.pipe|5.name=Tuyau Routeur d'Extension
+
+
+itemGroup.exploration=Project Red: Exploration
+
+tile.projectred.exploration.ore.oreruby.name=Minerais de Rubis
+tile.projectred.exploration.ore.oresapphire.name=Minerais de Saphir
+tile.projectred.exploration.ore.oreperidot.name=Minerais de Péridot
+tile.projectred.exploration.stone.stonemarble.name=Marbre
+tile.projectred.exploration.stone.brickmarble.name=Brique de Marbre
+tile.projectred.exploration.stone.cobblebasalt.name=Pierre de Basalte
+tile.projectred.exploration.stone.stonebasalt.name=Basalte
+tile.projectred.exploration.stone.brickbasalt.name=Brique de Basalte
+tile.projectred.exploration.stone.storageruby.name=Bloc de Rubis
+tile.projectred.exploration.stone.storagesapphire.name=Bloc de Saphir
+tile.projectred.exploration.stone.storageperidot.name=Bloc de Péridot
+item.projectred.exploration.woolgin.name=Carde à main
+item.projectred.exploration.backpack.bpwhite.name=Sac à dos Blanc
+item.projectred.exploration.backpack.bporange.name=Sac à dos Orange
+item.projectred.exploration.backpack.bpmagenta.name=Sac à dos Magenta
+item.projectred.exploration.backpack.bplightblue.name=Sac à dos Blue Clair
+item.projectred.exploration.backpack.bpJaune.name=Sac à dos Jaune
+item.projectred.exploration.backpack.bpVert Clair.name=Sac à dos Vert Clair
+item.projectred.exploration.backpack.bpRose.name=Sac à dos Rose
+item.projectred.exploration.backpack.bpGris.name=Sac à dos Gris
+item.projectred.exploration.backpack.bplightGris.name=Sac à dos Gris Clair
+item.projectred.exploration.backpack.bpcyan.name=Sac à dos Cyan
+item.projectred.exploration.backpack.bpViolet.name=Sac à dos Violet
+item.projectred.exploration.backpack.bpblue.name=Sac à dos Bleu
+item.projectred.exploration.backpack.bpbrown.name=Sac à dos Brun
+item.projectred.exploration.backpack.bpgreen.name=Sac à dos Vert
+item.projectred.exploration.backpack.bpred.name=Sac à dos Rouge
+item.projectred.exploration.backpack.bpblack.name=Sac à dos Noir
+item.projectred.exploration.axeruby.name=Hache en Rubis
+item.projectred.exploration.axesapphire.name=Hache en Saphir
+item.projectred.exploration.axeperidot.name=Hache en Péridot
+item.projectred.exploration.hoeruby.name=Houe en Rubis
+item.projectred.exploration.hoesapphire.name=Houe en Saphir
+item.projectred.exploration.hoeperidot.name=Houe en Péridot
+item.projectred.exploration.pickaxeruby.name=Pioche en Rubis
+item.projectred.exploration.pickaxesapphire.name=Pioche en Saphir
+item.projectred.exploration.pickaxeperidot.name=Pioche en Péridot
+item.projectred.exploration.shovelruby.name=Pelle en Rubis
+item.projectred.exploration.shovelsapphire.name=Pelle en Saphir
+item.projectred.exploration.shovelperidot.name=Pelle en Péridot
+item.projectred.exploration.swordruby.name=Épée en Rubis
+item.projectred.exploration.swordsapphire.name=Épée en Saphir
+item.projectred.exploration.swordperidot.name=Épée en Péridot
+item.projectred.exploration.sawwood.name=Scie en Bois
+item.projectred.exploration.sawstone.name=Scie en Pierre
+item.projectred.exploration.sawiron.name=Scie en Fer
+item.projectred.exploration.sawgold.name=Scie en Or
+item.projectred.exploration.sawruby.name=Scie en Rubis
+item.projectred.exploration.sawsapphire.name=Scie en Saphir
+item.projectred.exploration.sawperidot.name=Scie en Péridot
+item.projectred.exploration.sawdiamond.name=Scie en Diamant
+item.projectred.exploration.sicklewood.name=Faucille en Bois
+item.projectred.exploration.sicklestone.name=Faucille en Pierre
+item.projectred.exploration.sickleiron.name=Faucille en Fer
+item.projectred.exploration.sicklegold.name=Faucille en Or
+item.projectred.exploration.sickleruby.name=Faucille en Rubis
+item.projectred.exploration.sicklesapphire.name=Faucille en Saphir
+item.projectred.exploration.sickleperidot.name=Faucille en Péridot
+item.projectred.exploration.sicklediamond.name=Faucille en Diamant
+tile.projectred.exploration.stone.stonemarblewall.name=Muret en Marbre
+tile.projectred.exploration.stone.brickmarblewall.name=Muret en Brique de Marbre
+tile.projectred.exploration.stone.cobblebasaltwall.name=Muret en Pierre de Basalte
+tile.projectred.exploration.stone.stonebasaltwall.name=Muret en Basalte
+tile.projectred.exploration.stone.brickbasaltwall.name=Muret en Brique de Basalate
+tile.projectred.exploration.stone.storagerubywall.name=Muret en Rubis
+tile.projectred.exploration.stone.storagesapphirewall.name=Muret en Saphir
+tile.projectred.exploration.stone.storageperidotwall.name=Muret en Péridot
+tile.projectred.exploration.dyeleaf|0.name=Feuilles Colorées en Blanc
+tile.projectred.exploration.dyeleaf|1.name=Feuilles Colorées en Orange
+tile.projectred.exploration.dyeleaf|2.name=Feuilles Colorées en Magenta
+tile.projectred.exploration.dyeleaf|3.name=Feuilles Colorées en Bleu Clair
+tile.projectred.exploration.dyeleaf|4.name=Feuilles Colorées en Jaune
+tile.projectred.exploration.dyeleaf|5.name=Feuilles Colorées en Vert Clair
+tile.projectred.exploration.dyeleaf|6.name=Feuilles Colorées en Rose
+tile.projectred.exploration.dyeleaf|7.name=Feuilles Colorées en Gris
+tile.projectred.exploration.dyeleaf|8.name=Feuilles Colorées en Gris Clair
+tile.projectred.exploration.dyeleaf|9.name=Feuilles Colorées en Cyan
+tile.projectred.exploration.dyeleaf|10.name=Feuilles Colorées en Violet
+tile.projectred.exploration.dyeleaf|11.name=Feuilles Colorées en Bleu
+tile.projectred.exploration.dyeleaf|12.name=Feuilles Colorées en Brun
+tile.projectred.exploration.dyeleaf|13.name=Feuilles Colorées en Green
+tile.projectred.exploration.dyeleaf|14.name=Feuilles Colorées en Rouge
+tile.projectred.exploration.dyeleaf|15.name=Feuilles Colorées en Noir
+tile.projectred.exploration.dyesapling|0.name=Pousse d'Arbre Colorée en Blanc
+tile.projectred.exploration.dyesapling|1.name=Pousse d'Arbre Colorée en Orange
+tile.projectred.exploration.dyesapling|2.name=Pousse d'Arbre Colorée en Magenta
+tile.projectred.exploration.dyesapling|3.name=Pousse d'Arbre Colorée en Bleu Clair
+tile.projectred.exploration.dyesapling|4.name=Pousse d'Arbre Colorée en Jaune
+tile.projectred.exploration.dyesapling|5.name=Pousse d'Arbre Colorée en Vert Clair
+tile.projectred.exploration.dyesapling|6.name=Pousse d'Arbre Colorée en Rose
+tile.projectred.exploration.dyesapling|7.name=Pousse d'Arbre Colorée en Gris
+tile.projectred.exploration.dyesapling|8.name=Pousse d'Arbre Colorée en Gris Clair
+tile.projectred.exploration.dyesapling|9.name=Pousse d'Arbre Colorée en Cyan
+tile.projectred.exploration.dyesapling|10.name=Pousse d'Arbre Colorée en Violet
+tile.projectred.exploration.dyesapling|11.name=Pousse d'Arbre Colorée en Bleu
+tile.projectred.exploration.dyesapling|12.name=Pousse d'Arbre Colorée en Brun
+tile.projectred.exploration.dyesapling|13.name=Pousse d'Arbre Colorée en Vert
+tile.projectred.exploration.dyesapling|14.name=Pousse d'Arbre Colorée en Rouge
+tile.projectred.exploration.dyesapling|15.name=Pousse d'Arbre Colorée en Noir
+
+
+
+
+
+itemGroup.ill=Project Red: Illumination
+
+item.projectred.illumination.lantern|0.name=Lanterne Blanche
+item.projectred.illumination.lantern|1.name=Lanterne Orange
+item.projectred.illumination.lantern|2.name=Lanterne Magenta
+item.projectred.illumination.lantern|3.name=Lanterne Bleu Clair
+item.projectred.illumination.lantern|4.name=Lanterne Jaune
+item.projectred.illumination.lantern|5.name=Lanterne Verte Clair
+item.projectred.illumination.lantern|6.name=Lanterne Rose
+item.projectred.illumination.lantern|7.name=Lanterne Grise
+item.projectred.illumination.lantern|8.name=Lanterne Gris Clair
+item.projectred.illumination.lantern|9.name=Lanterne Cyan
+item.projectred.illumination.lantern|10.name=Lanterne Violette
+item.projectred.illumination.lantern|11.name=Lanterne Bleue
+item.projectred.illumination.lantern|12.name=Lanterne Brune
+item.projectred.illumination.lantern|13.name=Lanterne Verte
+item.projectred.illumination.lantern|14.name=Lanterne Rouge
+item.projectred.illumination.lantern|15.name=Lanterne Noire
+item.projectred.illumination.lantern.inv|0.name=Lanterne Blanche Inversée
+item.projectred.illumination.lantern.inv|1.name=Lanterne Orange Inversée
+item.projectred.illumination.lantern.inv|2.name=Lanterne Magenta Inversée
+item.projectred.illumination.lantern.inv|3.name=Lanterne Bleu Clair Inversée
+item.projectred.illumination.lantern.inv|4.name=Lanterne Jaune Inversée
+item.projectred.illumination.lantern.inv|5.name=Lanterne Verte Clair Inversée
+item.projectred.illumination.lantern.inv|6.name=Lanterne Rose Inversée
+item.projectred.illumination.lantern.inv|7.name=Lanterne Grise Inversée
+item.projectred.illumination.lantern.inv|8.name=Lanterne Gris Clair Inversée
+item.projectred.illumination.lantern.inv|9.name=Lanterne Cyan Inversée
+item.projectred.illumination.lantern.inv|10.name=Lanterne Violette Inversée
+item.projectred.illumination.lantern.inv|11.name=Lanterne Bleue Inversée
+item.projectred.illumination.lantern.inv|12.name=Lanterne Brune Inversée
+item.projectred.illumination.lantern.inv|13.name=Lanterne Verte Inversée
+item.projectred.illumination.lantern.inv|14.name=Lanterne Rouge Inversée
+item.projectred.illumination.lantern.inv|15.name=Lanterne Noire Inversée
+tile.projectred.illumination.lamp|0.name=Lampe Blanche
+tile.projectred.illumination.lamp|1.name=Lampe Orange
+tile.projectred.illumination.lamp|2.name=Lampe Magenta
+tile.projectred.illumination.lamp|3.name=Lampe Bleu Clair
+tile.projectred.illumination.lamp|4.name=Lampe Jaune
+tile.projectred.illumination.lamp|5.name=Lampe Verte Clair
+tile.projectred.illumination.lamp|6.name=Lampe Rose
+tile.projectred.illumination.lamp|7.name=Lampe Grise
+tile.projectred.illumination.lamp|8.name=Lampe Gris Clair
+tile.projectred.illumination.lamp|9.name=Lampe Cyan
+tile.projectred.illumination.lamp|10.name=Lampe Violette
+tile.projectred.illumination.lamp|11.name=Lampe Bleue
+tile.projectred.illumination.lamp|12.name=Lampe Brune
+tile.projectred.illumination.lamp|13.name=Lampe Verte
+tile.projectred.illumination.lamp|14.name=Lampe Rouge
+tile.projectred.illumination.lamp|15.name=Lampe Noire
+tile.projectred.illumination.lamp.inv|0.name=Lampe Blanche Inversée
+tile.projectred.illumination.lamp.inv|1.name=Lampe Orange Inversée
+tile.projectred.illumination.lamp.inv|2.name=Lampe Magenta Inversée
+tile.projectred.illumination.lamp.inv|3.name=Lampe Bleu Clair Inversée
+tile.projectred.illumination.lamp.inv|4.name=Lampe Jaune Inversée
+tile.projectred.illumination.lamp.inv|5.name=Lampe Verte Clair Inversée
+tile.projectred.illumination.lamp.inv|6.name=Lampe Rose Inversée
+tile.projectred.illumination.lamp.inv|7.name=Lampe Grise Inversée
+tile.projectred.illumination.lamp.inv|8.name=Lampe Gris Clair Inversée
+tile.projectred.illumination.lamp.inv|9.name=Lampe Cyan Inversée
+tile.projectred.illumination.lamp.inv|10.name=Lampe Violette Inversée
+tile.projectred.illumination.lamp.inv|11.name=Lampe Bleue Inversée
+tile.projectred.illumination.lamp.inv|12.name=Lampe Brune Inversée
+tile.projectred.illumination.lamp.inv|13.name=Lampe Verte Inversée
+tile.projectred.illumination.lamp.inv|14.name=Lampe Rouge Inversée
+tile.projectred.illumination.lamp.inv|15.name=Lampe Noire Inversée
+item.projectred.illumination.lightbutton|0.name=Bouton Illuminé Blanc
+item.projectred.illumination.lightbutton|1.name=Bouton Illuminé Orange
+item.projectred.illumination.lightbutton|2.name=Bouton Illuminé Magenta
+item.projectred.illumination.lightbutton|3.name=Bouton Illuminé Bleu Clair
+item.projectred.illumination.lightbutton|4.name=Bouton Illuminé Jaune
+item.projectred.illumination.lightbutton|5.name=Bouton Illuminé Vert Clair
+item.projectred.illumination.lightbutton|6.name=Bouton Illuminé Rose
+item.projectred.illumination.lightbutton|7.name=Bouton Illuminé Gris
+item.projectred.illumination.lightbutton|8.name=Bouton Illuminé Gris Clair
+item.projectred.illumination.lightbutton|9.name=Bouton Illuminé Cyan
+item.projectred.illumination.lightbutton|10.name=Bouton Illuminé Violet
+item.projectred.illumination.lightbutton|11.name=Bouton Illuminé Bleu
+item.projectred.illumination.lightbutton|12.name=Bouton Illuminé Brun
+item.projectred.illumination.lightbutton|13.name=Bouton Illuminé Vert
+item.projectred.illumination.lightbutton|14.name=Bouton Illuminé Rouge
+item.projectred.illumination.lightbutton|15.name=Bouton Illuminé Noir
+item.projectred.illumination.cagelamp|0.name=Lampe Grillagée Blanche
+item.projectred.illumination.cagelamp|1.name=Lampe Grillagée Orange
+item.projectred.illumination.cagelamp|2.name=Lampe Grillagée Magenta
+item.projectred.illumination.cagelamp|3.name=Lampe Grillagée Bleu Clair
+item.projectred.illumination.cagelamp|4.name=Lampe Grillagée Jaune
+item.projectred.illumination.cagelamp|5.name=Lampe Grillagée Verte Clair
+item.projectred.illumination.cagelamp|6.name=Lampe Grillagée Rose
+item.projectred.illumination.cagelamp|7.name=Lampe Grillagée Grise
+item.projectred.illumination.cagelamp|8.name=Lampe Grillagée Gris Clair
+item.projectred.illumination.cagelamp|9.name=Lampe Grillagée Cyan
+item.projectred.illumination.cagelamp|10.name=Lampe Grillagée Violette
+item.projectred.illumination.cagelamp|11.name=Lampe Grillagée Bleue
+item.projectred.illumination.cagelamp|12.name=Lampe Grillagée Brune
+item.projectred.illumination.cagelamp|13.name=Lampe Grillagée Verte
+item.projectred.illumination.cagelamp|14.name=Lampe Grillagée Rouge
+item.projectred.illumination.cagelamp|15.name=Lampe Grillagée Noire
+item.projectred.illumination.cagelamp.inv|0.name=Lampe Grillagée Blanche Inversée
+item.projectred.illumination.cagelamp.inv|1.name=Lampe Grillagée Orange Inversée
+item.projectred.illumination.cagelamp.inv|2.name=Lampe Grillagée Magenta Inversée
+item.projectred.illumination.cagelamp.inv|3.name=Lampe Grillagée Bleu Clair Inversée
+item.projectred.illumination.cagelamp.inv|4.name=Lampe Grillagée Jaune Inversée
+item.projectred.illumination.cagelamp.inv|5.name=Lampe Grillagée Verte Clair Inversée
+item.projectred.illumination.cagelamp.inv|6.name=Lampe Grillagée Rose Inversée
+item.projectred.illumination.cagelamp.inv|7.name=Lampe Grillagée Grise Inversée
+item.projectred.illumination.cagelamp.inv|8.name=Lampe Grillagée Gris Clair Inversée
+item.projectred.illumination.cagelamp.inv|9.name=Lampe Grillagée Cyan Inversée
+item.projectred.illumination.cagelamp.inv|10.name=Lampe Grillagée Violette Inversée
+item.projectred.illumination.cagelamp.inv|11.name=Lampe Grillagée Bleue Inversée
+item.projectred.illumination.cagelamp.inv|12.name=Lampe Grillagée Brune Inversée
+item.projectred.illumination.cagelamp.inv|13.name=Lampe Grillagée Verte Inversée
+item.projectred.illumination.cagelamp.inv|14.name=Lampe Grillagée Rouge Inversée
+item.projectred.illumination.cagelamp.inv|15.name=Lampe Grillagée Noire Inversée
+item.projectred.illumination.fixture|0.name=Lampe Murale Blanche
+item.projectred.illumination.fixture|1.name=Lampe Murale Orange
+item.projectred.illumination.fixture|2.name=Lampe Murale Magenta
+item.projectred.illumination.fixture|3.name=Lampe Murale Bleu Clair
+item.projectred.illumination.fixture|4.name=Lampe Murale Jaune
+item.projectred.illumination.fixture|5.name=Lampe Murale Verte Clair
+item.projectred.illumination.fixture|6.name=Lampe Murale Rose
+item.projectred.illumination.fixture|7.name=Lampe Murale Grise
+item.projectred.illumination.fixture|8.name=Lampe Murale Gris Clair
+item.projectred.illumination.fixture|9.name=Lampe Murale Cyan
+item.projectred.illumination.fixture|10.name=Lampe Murale Violette
+item.projectred.illumination.fixture|11.name=Lampe Murale Bleue
+item.projectred.illumination.fixture|12.name=Lampe Murale Brune
+item.projectred.illumination.fixture|13.name=Lampe Murale Verte
+item.projectred.illumination.fixture|14.name=Lampe Murale Rouge
+item.projectred.illumination.fixture|15.name=Lampe Murale Noire
+item.projectred.illumination.fixture.inv|0.name=Lampe Murale Blanche Inversée
+item.projectred.illumination.fixture.inv|1.name=Lampe Murale Orange Inversée
+item.projectred.illumination.fixture.inv|2.name=Lampe Murale Magenta Inversée
+item.projectred.illumination.fixture.inv|3.name=Lampe Murale Bleu Clair Inversée
+item.projectred.illumination.fixture.inv|4.name=Lampe Murale Jaune Inversée
+item.projectred.illumination.fixture.inv|5.name=Lampe Murale Verte Clair Inversée
+item.projectred.illumination.fixture.inv|6.name=Lampe Murale Rose Inversée
+item.projectred.illumination.fixture.inv|7.name=Lampe Murale Grise Inversée
+item.projectred.illumination.fixture.inv|8.name=Lampe Murale Gris Clair Inversée
+item.projectred.illumination.fixture.inv|9.name=Lampe Murale Cyan Inversée
+item.projectred.illumination.fixture.inv|10.name=Lampe Murale Violette Inversée
+item.projectred.illumination.fixture.inv|11.name=Lampe Murale Bleue Inversée
+item.projectred.illumination.fixture.inv|12.name=Lampe Murale Brune Inversée
+item.projectred.illumination.fixture.inv|13.name=Lampe Murale Verte Inversée
+item.projectred.illumination.fixture.inv|14.name=Lampe Murale Rouge Inversée
+item.projectred.illumination.fixture.inv|15.name=Lampe Murale Noire Inversée
+
+
+
+
+
+itemGroup.int=Project Red: Intégration
+
+item.projectred.integration.gate|0.name=Porte logique OU (OR)
+item.projectred.integration.gate|1.name=Porte logique NON OU (NOR)
+item.projectred.integration.gate|2.name=Porte logique NON (NOT)
+item.projectred.integration.gate|3.name=Porte logique ET (AND)
+item.projectred.integration.gate|4.name=Porte logique NON ET (NAND)
+item.projectred.integration.gate|5.name=Porte logique OU Exclusif (XOR)
+item.projectred.integration.gate|6.name=Porte logique NON OU Exclusif (NXOR)
+item.projectred.integration.gate|7.name=Porte tampon
+item.projectred.integration.gate|8.name=Multiplexeur
+item.projectred.integration.gate|9.name=Formateur de Pulsation
+item.projectred.integration.gate|10.name=Répéteur
+item.projectred.integration.gate|11.name=Générateur Aléatoire
+item.projectred.integration.gate|12.name=Verrou RS
+item.projectred.integration.gate|13.name=Bascule
+
+#No traduction found/Pas de traduction exacte trouvée
+item.projectred.integration.gate|14.name=Transparent Latch
+item.projectred.integration.gate|15.name=Détecteur de Lumière
+item.projectred.integration.gate|16.name=Détecteur de Pluie
+item.projectred.integration.gate|17.name=Minuteur
+item.projectred.integration.gate|18.name=Séquenceur
+item.projectred.integration.gate|19.name=Compteur
+
+#No traduction found/Pas de traduction exacte trouvée
+item.projectred.integration.gate|20.name=State Cell
+item.projectred.integration.gate|21.name=Synchroniseur
+item.projectred.integration.gate|22.name=Émetteur-Récepteur de Bus
+item.projectred.integration.gate|23.name=Croisement de câble
+item.projectred.integration.gate|24.name=Croisement de câble avec inversion
+item.projectred.integration.gate|25.name=Croisement de câble avec tampon
+item.projectred.integration.gate|26.name=Comparateur
+item.projectred.integration.gate|27.name=Croisement de câble avec porte logique ET (AND)
+
+
+
+
+itemGroup.trans=Project Red: Transmission
+
+item.projectred.transmission.wire|0.name=Câble en Alliage Rouge
+item.projectred.transmission.wire|1.name=Câble Isolé Blanc
+item.projectred.transmission.wire|2.name=Câble Isolé Orange
+item.projectred.transmission.wire|3.name=Câble Isolé Magenta
+item.projectred.transmission.wire|4.name=Câble Isolé Bleu Clair
+item.projectred.transmission.wire|5.name=Câble Isolé Jaune
+item.projectred.transmission.wire|6.name=Câble Isolé Vert Clair
+item.projectred.transmission.wire|7.name=Câble Isolé Rose
+item.projectred.transmission.wire|8.name=Câble Isolé Gris
+item.projectred.transmission.wire|9.name=Câble Isolé Gris Clair
+item.projectred.transmission.wire|10.name=Câble Isolé Cyan
+item.projectred.transmission.wire|11.name=Câble Isolé Violet
+item.projectred.transmission.wire|12.name=Câble Isolé Bleu
+item.projectred.transmission.wire|13.name=Câble Isolé Brun
+item.projectred.transmission.wire|14.name=Câble Isolé Vert
+item.projectred.transmission.wire|15.name=Câble Isolé Rouge
+item.projectred.transmission.wire|16.name=Câble Isolé Noir
+item.projectred.transmission.wire|17.name=Câbles Empaquetés
+item.projectred.transmission.wire|18.name=Câbles Empaquetés Blanc
+item.projectred.transmission.wire|19.name=Câbles Empaquetés Orange
+item.projectred.transmission.wire|20.name=Câbles Empaquetés Magenta
+item.projectred.transmission.wire|21.name=Câbles Empaquetés Bleu Clair
+item.projectred.transmission.wire|22.name=Câbles Empaquetés Jaune
+item.projectred.transmission.wire|23.name=Câbles Empaquetés Vert Clair
+item.projectred.transmission.wire|24.name=Câbles Empaquetés Rose
+item.projectred.transmission.wire|25.name=Câbles Empaquetés Gris
+item.projectred.transmission.wire|26.name=Câbles Empaquetés Gris Clair
+item.projectred.transmission.wire|27.name=Câbles Empaquetés Cyan
+item.projectred.transmission.wire|28.name=Câbles Empaquetés Violet
+item.projectred.transmission.wire|29.name=Câbles Empaquetés Bleu
+item.projectred.transmission.wire|30.name=Câbles Empaquetés Brun
+item.projectred.transmission.wire|31.name=Câbles Empaquetés Vert
+item.projectred.transmission.wire|32.name=Câbles Empaquetés Rouge
+item.projectred.transmission.wire|33.name=Câbles Empaquetés Noir
+item.projectred.transmission.framewire|0.name=Câble en Alliage Rouge sur Structure
+item.projectred.transmission.framewire|1.name=Câble Isolé Blanc sur Structure
+item.projectred.transmission.framewire|2.name=Câble Isolé Orange sur Structure
+item.projectred.transmission.framewire|3.name=Câble Isolé Magenta sur Structure
+item.projectred.transmission.framewire|4.name=Câble Isolé Bleu Clair sur Structure
+item.projectred.transmission.framewire|5.name=Câble Isolé Jaune sur Structure
+item.projectred.transmission.framewire|6.name=Câble Isolé Vert Clair sur Structure
+item.projectred.transmission.framewire|7.name=Câble Isolé Rose sur Structure
+item.projectred.transmission.framewire|8.name=Câble Isolé Gris sur Structure
+item.projectred.transmission.framewire|9.name=Câble Isolé Gris Clair sur Structure
+item.projectred.transmission.framewire|10.name=Câble Isolé Cyan sur Structure
+item.projectred.transmission.framewire|11.name=Câble Isolé Violet sur Structure
+item.projectred.transmission.framewire|12.name=Câble Isolé Blue sur Structure
+item.projectred.transmission.framewire|13.name=Câble Isolé Brown sur Structure
+item.projectred.transmission.framewire|14.name=Câble Isolé Vert sur Structure
+item.projectred.transmission.framewire|15.name=Câble Isolé Red sur Structure
+item.projectred.transmission.framewire|16.name=Câble Isolé Noir sur Structure
+item.projectred.transmission.framewire|17.name=Câbles Empaquetés sur Structure
+
+
+
+
+itemGroup.compat=Project Red: Compatibilités
+
+tile.projectred.compatibility.liqredstone.name=Redstone Liquide
+tile.projectred.compatibility.liqcondredmetal.name=Métal Rouge Conductif Fondu
+
