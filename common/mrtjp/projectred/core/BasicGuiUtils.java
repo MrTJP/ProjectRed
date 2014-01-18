@@ -1,13 +1,12 @@
 package mrtjp.projectred.core;
 
-import java.util.ArrayList;
-
 import mrtjp.projectred.core.utils.Pair2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.opengl.GL11;
+
+import java.util.ArrayList;
 
 public class BasicGuiUtils
 {
@@ -163,7 +162,7 @@ public class BasicGuiUtils
 
     /**
      * Create positions for a grid of slots.
-     * 
+     *
      * @param x x staring position
      * @param y y starting position
      * @param xSize x size of grid
@@ -174,14 +173,16 @@ public class BasicGuiUtils
      */
     public static ArrayList<Pair2<Integer, Integer>> createSlotArray(int x, int y, int xSize, int ySize, int xSpacing, int ySpacing)
     {
+        return createGridArray(x, y, xSize, ySize, xSpacing+18, ySpacing+18);
+    }
+
+    public static ArrayList<Pair2<Integer, Integer>> createGridArray(int x, int y, int xSize, int ySize, int xSpacing, int ySpacing)
+    {
         ArrayList<Pair2<Integer, Integer>> list = new ArrayList<Pair2<Integer, Integer>>(xSize * ySize);
-        xSpacing += 18;
-        ySpacing += 18;
 
         for (int i = 0; i < ySize; i++)
             for (int j = 0; j < xSize; j++)
             {
-                int slotNumber = i * xSize + j;
                 int xPos = x + j * xSpacing;
                 int yPos = y + i * ySpacing;
                 list.add(new Pair2<Integer, Integer>(xPos, yPos));

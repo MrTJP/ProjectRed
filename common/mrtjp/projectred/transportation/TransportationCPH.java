@@ -15,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import codechicken.core.ClientUtils;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
-import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 
 public class TransportationCPH implements IClientPacketHandler
@@ -56,19 +55,19 @@ public class TransportationCPH implements IClientPacketHandler
     private void openExtensionPipeGui(PacketCustom packet, Minecraft mc)
     {
         TMultiPart p = BasicUtils.getMultiPart(mc.theWorld, packet.readCoord(), 6);
-        
+
         if (p instanceof RoutedExtensionPipePart)
         {
             RoutedExtensionPipePart pipe = (RoutedExtensionPipePart) p;
             ClientUtils.openSMPGui(packet.readUByte(), new GuiExtensionPipe(pipe.createContainer(mc.thePlayer), packet.readString()));
         }
     }
-    
+
     private void openRouterUtilGui(PacketCustom packet, Minecraft mc)
     {
         ClientUtils.openSMPGui(packet.readByte(), new GuiChipUpgrade(new ChipUpgradeContainer(mc.thePlayer)));
     }
-    
+
     private void receiveRequestList(PacketCustom packet, Minecraft mc)
     {
         if (mc.currentScreen instanceof GuiRequester)

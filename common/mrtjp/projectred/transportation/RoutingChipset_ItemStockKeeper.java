@@ -1,11 +1,5 @@
 package mrtjp.projectred.transportation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.inventory.InventoryWrapper;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
@@ -15,6 +9,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class RoutingChipset_ItemStockKeeper extends RoutingChipset
 {
@@ -66,6 +65,7 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset
 
             if (keyStack == null || checked.contains(keyStack.key()))
                 continue;
+            checked.add(keyStack.key());
 
             int toRequest = filt.getItemCount(keyStack.key());
             int inInventory = inv.getItemCount(keyStack.key()) + getEnroute(keyStack.key());
@@ -125,7 +125,8 @@ public class RoutingChipset_ItemStockKeeper extends RoutingChipset
     {
         Integer current = enrouteItems.get(item);
         if (current != null)
-            return current.intValue();
+            //noinspection UnnecessaryUnboxing
+            return current;
         return 0;
     }
 

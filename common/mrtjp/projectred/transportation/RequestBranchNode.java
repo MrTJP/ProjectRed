@@ -1,24 +1,13 @@
 package mrtjp.projectred.transportation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import mrtjp.projectred.core.utils.HashPair2;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.transportation.RequestBranch.RequestFlags;
 import mrtjp.projectred.transportation.Router.StartEndPath;
+
+import java.util.*;
 
 public class RequestBranchNode
 {
@@ -120,6 +109,10 @@ public class RequestBranchNode
             if (r.getParent() instanceof IWorldCrafter)
             {
                 IWorldCrafter cr = (IWorldCrafter) r.getParent();
+                ItemKey item = recurse_GetCrafterItem(cr);
+                if (item != null && !item.equals(getRequestedPackage()))
+                    continue;
+
                 CraftingPromise cp = cr.requestCraftPromise(getRequestedPackage());
                 if (cp != null)
                     allCrafters.add(cp);
@@ -189,10 +182,8 @@ public class RequestBranchNode
                     int floor = unbalanced.get(0).toDo();
                     cap = Math.min(cap, floor + (itemsNeeded + unbalanced.size() - 1) / unbalanced.size());
 
-                    Iterator<CraftingTreeInteraction> iter = unbalanced.iterator();
-                    while (iter.hasNext())
+                    for (CraftingTreeInteraction crafter : unbalanced)
                     {
-                        CraftingTreeInteraction crafter = iter.next();
                         int request = Math.min(itemsNeeded, cap - floor);
                         if (request > 0)
                         {
@@ -249,10 +240,7 @@ public class RequestBranchNode
             if (isDone())
                 break;
             Router r = l.end;
-            
-            if (!r.isLoaded())
-                continue;
-            
+
             IWorldRouter member = r.getParent();
 
             if (!(member instanceof IWorldBroadcaster))
@@ -354,6 +342,18 @@ public class RequestBranchNode
         return parent.recurse_IsCrafterUsed(parentCrafter);
     }
 
+    protected ItemKey recurse_GetCrafterItem(IWorldCrafter crafter)
+    {
+        for (CraftingPromise c : usedCrafters)
+            if (c.getCrafter().equals(crafter))
+                return c.getResultItem();
+
+        if (parent != null)
+            return parent.recurse_GetCrafterItem(crafter);
+        else
+            return null;
+    }
+
     protected void recurse_RequestDelivery()
     {
         for (RequestBranchNode subReq : subRequests)
@@ -414,7 +414,6 @@ public class RequestBranchNode
                 if (extra.size >= usedcount)
                 {
                     extra.size -= usedcount;
-                    usedcount = 0;
                     break;
                 }
                 else
@@ -610,11 +609,6 @@ public class RequestBranchNode
             return c;
         }
 
-        public boolean canCraft(ItemKey item)
-        {
-            return item.equals(result);
-        }
-
         public int getSizeForSet()
         {
             return result.stackSize;
@@ -653,7 +647,7 @@ public class RequestBranchNode
 
         private int calculateMaxPotentialSets(int maxSets)
         {
-            int needed = 0;
+            int needed;
             if (maxSets > 0)
                 needed = maxSets;
             else

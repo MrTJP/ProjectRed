@@ -1,13 +1,13 @@
 package mrtjp.projectred.transportation;
 
+import mrtjp.projectred.core.utils.HashPair2;
+import mrtjp.projectred.core.utils.ItemKey;
+import mrtjp.projectred.core.utils.ItemKeyStack;
+
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-
-import mrtjp.projectred.core.utils.HashPair2;
-import mrtjp.projectred.core.utils.ItemKey;
-import mrtjp.projectred.core.utils.ItemKeyStack;
 
 public class RequestBranch extends RequestBranchNode
 {
@@ -15,10 +15,10 @@ public class RequestBranch extends RequestBranchNode
 
     enum RequestFlags
     {
-        PULL, 
-        CRAFT, 
-        PARTIALS, 
-        SIMULATE, 
+        PULL,
+        CRAFT,
+        PARTIALS,
+        SIMULATE,
         ;
 
         public static final EnumSet<RequestFlags> all = EnumSet.allOf(RequestFlags.class);
@@ -67,6 +67,6 @@ public class RequestBranch extends RequestBranchNode
         Integer n = totalPromises.get(key);
         if (n == null)
             return 0;
-        return n.intValue();
+        return n;
     }
 }

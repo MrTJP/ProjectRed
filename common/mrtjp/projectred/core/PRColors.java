@@ -31,6 +31,7 @@ public enum PRColors
     {
         name = name().substring(0, 1) + name().substring(1).toLowerCase();
         this.rgb = rgb;
+        rgba = rgb | 0xFF<<24;
         c = new ColourRGBA(rgb << 8 | 0xFF);
     }
 
@@ -52,6 +53,7 @@ public enum PRColors
     public final String name;
     public final Colour c;
     public final int rgb;
+    public final int rgba;
 
     public static PRColors get(int i)
     {

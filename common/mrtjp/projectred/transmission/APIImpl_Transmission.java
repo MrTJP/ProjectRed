@@ -1,11 +1,7 @@
 package mrtjp.projectred.transmission;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
-import mrtjp.projectred.api.ISpecialLinkState;
 import mrtjp.projectred.api.ITransmissionAPI;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;

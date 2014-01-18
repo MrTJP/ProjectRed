@@ -1,7 +1,11 @@
 package mrtjp.projectred.integration;
 
-import java.util.Arrays;
-
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.vec.*;
+import codechicken.multipart.RedstoneInteractions;
+import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.integration.ArrayCommons.ITopArrayWire;
@@ -11,16 +15,8 @@ import mrtjp.projectred.transmission.IWirePart;
 import mrtjp.projectred.transmission.WirePropogator;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Vector3;
-import codechicken.multipart.RedstoneInteractions;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
+
+import java.util.Arrays;
 
 public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArrayWire
 {
@@ -135,7 +131,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         WirePropogator.redwiresProvidePower = false;
 
         int s = 0;
-        int i = 0;
+        int i;
         for (int r = 0; r < 4; r++)
             if (toInternal(r) % 2 != 0)
             {

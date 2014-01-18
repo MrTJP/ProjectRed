@@ -100,7 +100,7 @@ public class GhostContainer2 extends Container
                 newStack.stackSize = mouseButton == 0 ? Math.min(inCursor.stackSize, slot.getSlotStackLimit()) : 1;
                 slot.putStack(newStack);
             }
-            else if (inSlot != null && stackable)
+            else if (inSlot != null)
             {
                 int toAdd = isShift == 1 ? 10 : 1;
 

@@ -1,14 +1,5 @@
 package mrtjp.projectred.transportation;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-
-import mrtjp.projectred.core.BasicUtils;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovingObjectPosition;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.raytracer.IndexedCuboid6;
@@ -17,11 +8,16 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
 import codechicken.microblock.IHollowConnect;
-import codechicken.multipart.JNormalOcclusion;
-import codechicken.multipart.NormalOcclusionTest;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TSlottedPart;
-import codechicken.multipart.TileMultipart;
+import codechicken.multipart.*;
+import mrtjp.projectred.core.BasicUtils;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MovingObjectPosition;
+
+import java.util.Arrays;
+import java.util.LinkedList;
 
 public abstract class CorePipePart extends TMultiPart implements IPipeConnectable, TSlottedPart, JNormalOcclusion, IHollowConnect
 {
@@ -160,7 +156,7 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
         {
             boolean changed = false;
             if (updateOpenConnections())
-                changed |= updateExternalConnections();
+                changed = updateExternalConnections();
             if (changed)
                 sendConnUpdate();
         }
@@ -235,7 +231,7 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
 
     /**
      * Recalculates connections to blocks outside this sapce
-     * 
+     *
      * @return true if a new connection was added or one was removed
      */
     protected boolean updateExternalConnections()
@@ -261,7 +257,7 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
     /**
      * Recalculates connections that can be made to other parts outside of this
      * space
-     * 
+     *
      * @return true if external connections should be recalculated
      */
     protected boolean updateOpenConnections()

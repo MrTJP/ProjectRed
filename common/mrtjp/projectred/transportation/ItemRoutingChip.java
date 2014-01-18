@@ -1,11 +1,9 @@
 package mrtjp.projectred.transportation;
 
-import java.util.List;
-
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRedTransportation;
 import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -14,11 +12,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
-
 import org.lwjgl.input.Keyboard;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.List;
 
 public class ItemRoutingChip extends Item
 {
@@ -102,7 +98,7 @@ public class ItemRoutingChip extends Item
         }
         return true;
     }
-    
+
     @Override
     public boolean shouldPassSneakingClickToBlock(World par2World, int par4, int par5, int par6)
     {
@@ -144,13 +140,14 @@ public class ItemRoutingChip extends Item
 
     public enum EnumRoutingChip
     {
-        ITEMRESPONDER("responder", RoutingChipset_ItemResponder.class),
-        DYNAMICITEMRESPONDER("responder_dyn", RoutingChipset_DynamicItemResponder.class),
-        ITEMOVERFLOWRESPONDER("overflow", RoutingChipset_ItemOverflowResponder.class),
-        ITEMTERMINATOR("terminator", RoutingChipset_ItemTerminator.class),
-        ITEMEXTRACTOR("extractor", RoutingChipset_ItemExtractor.class),
-        ITEMBROADCASTER("broadcaster", RoutingChipset_ItemBroadcaster.class),
-        ITEMSTOCKKEEPER("stockkeeper", RoutingChipset_ItemStockKeeper.class), ;
+        ITEMRESPONDER("responder", RoutingChipset_ItemResponder.class, ChipType.INTERFACE),
+        DYNAMICITEMRESPONDER("responder_dyn", RoutingChipset_DynamicItemResponder.class, ChipType.INTERFACE),
+        ITEMOVERFLOWRESPONDER("overflow", RoutingChipset_ItemOverflowResponder.class, ChipType.INTERFACE),
+        ITEMTERMINATOR("terminator", RoutingChipset_ItemTerminator.class, ChipType.INTERFACE),
+        ITEMEXTRACTOR("extractor", RoutingChipset_ItemExtractor.class, ChipType.INTERFACE),
+        ITEMBROADCASTER("broadcaster", RoutingChipset_ItemBroadcaster.class, ChipType.INTERFACE),
+        ITEMSTOCKKEEPER("stockkeeper", RoutingChipset_ItemStockKeeper.class, ChipType.INTERFACE),
+        ITEMCRAFTING("crafting", RoutingChipset_Crafting.class, ChipType.CRAFTING);
 
         public static final EnumRoutingChip[] VALID_CHIPS = values();
         private final String iconPath;
@@ -159,17 +156,20 @@ public class ItemRoutingChip extends Item
         public final int meta = this.ordinal();
         public Icon icon;
 
-        private EnumRoutingChip(String iconPath, Class<? extends RoutingChipset> chipset)
+        private final ChipType type;
+
+        private EnumRoutingChip(String iconPath, Class<? extends RoutingChipset> chipset, ChipType type)
         {
             this.iconPath = "projectred:chips/" + iconPath;
             this.chipset = chipset;
+            this.type = type;
         }
 
         public RoutingChipset createChipset()
         {
             try
             {
-                return chipset.getConstructor(new Class[] {}).newInstance(new Object[] {});
+                return chipset.getConstructor(new Class[] {}).newInstance();
             } catch (Throwable t)
             {
                 t.printStackTrace();
@@ -186,7 +186,7 @@ public class ItemRoutingChip extends Item
         {
             return getItemStack(1);
         }
-        
+
         public ItemStack getItemStack(int i)
         {
             return new ItemStack(ProjectRedTransportation.itemRoutingChip, i, meta);
@@ -196,16 +196,32 @@ public class ItemRoutingChip extends Item
         {
             if (stack != null && stack.getItem() instanceof ItemRoutingChip)
                 return get(stack.getItemDamage());
-            
+
             return null;
         }
-        
+
         public static EnumRoutingChip get(int ordinal)
         {
             if (ordinal < 0 || ordinal >= VALID_CHIPS.length)
                 return null;
 
             return VALID_CHIPS[ordinal];
+        }
+
+        private enum ChipType
+        {
+            INTERFACE,
+            CRAFTING
+        }
+
+        public boolean isInterfaceChip()
+        {
+            return type == ChipType.INTERFACE;
+        }
+
+        public boolean isCraftingChip()
+        {
+            return type == ChipType.CRAFTING;
         }
     }
 }

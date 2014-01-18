@@ -2,7 +2,7 @@ package mrtjp.projectred.transportation;
 
 import mrtjp.projectred.core.utils.ItemKey;
 
-public interface IWorldRouter 
+public interface IWorldRouter
 {
     public Router getRouter();
 
@@ -10,7 +10,7 @@ public interface IWorldRouter
 
     public boolean refreshState();
 
-    public BasicPipePart getContainer();
+    public RoutedJunctionPipePart getContainer();
 
     /** Item Syncing **/
     public void itemEnroute(RoutedPayload r);

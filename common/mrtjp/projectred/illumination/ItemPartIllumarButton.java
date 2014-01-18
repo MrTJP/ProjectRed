@@ -1,7 +1,12 @@
 package mrtjp.projectred.illumination;
 
-import java.util.List;
-
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Vector3;
+import codechicken.multipart.JItemMultiPart;
+import codechicken.multipart.TMultiPart;
+import codechicken.multipart.minecraft.ButtonPart;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRedIllumination;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -11,13 +16,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Vector3;
-import codechicken.multipart.JItemMultiPart;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.minecraft.ButtonPart;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 public class ItemPartIllumarButton extends JItemMultiPart
 {
@@ -52,7 +52,7 @@ public class ItemPartIllumarButton extends JItemMultiPart
         if (!w.isBlockSolidOnSide(pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side)))
             return null;
 
-        IllumarButtonPart b = new IllumarButtonPart(ButtonPart.sideMetaMap[side ^ 1] | 0 << 4);
+        IllumarButtonPart b = new IllumarButtonPart(ButtonPart.sideMetaMap[side ^ 1]);
         if (b != null)
             b.onPlaced(is);
         return b;

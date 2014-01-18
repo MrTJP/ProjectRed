@@ -1,8 +1,5 @@
 package mrtjp.projectred.transportation;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import mrtjp.projectred.core.inventory.InventoryWrapper;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
@@ -12,8 +9,10 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
-
 import org.lwjgl.input.Keyboard;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class RoutingChipset_ItemResponder extends RoutingChipset
 {
@@ -46,7 +45,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
         if (preference < -prefScale())
             preference = -prefScale();
     }
-    
+
     private int prefScale()
     {
         return 2 + getUpgradeBus().LLatency();
@@ -147,7 +146,7 @@ public class RoutingChipset_ItemResponder extends RoutingChipset
     {
         return EnumRoutingChip.ITEMRESPONDER;
     }
-    
+
     @Override
     public UpgradeBus createUpgradeBus()
     {

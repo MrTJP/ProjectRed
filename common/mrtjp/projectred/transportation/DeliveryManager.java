@@ -1,10 +1,10 @@
 package mrtjp.projectred.transportation;
 
-import java.util.LinkedList;
-
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
+
+import java.util.LinkedList;
 
 public class DeliveryManager
 {

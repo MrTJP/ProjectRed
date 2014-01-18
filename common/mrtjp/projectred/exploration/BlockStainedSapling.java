@@ -1,14 +1,10 @@
 package mrtjp.projectred.exploration;
 
-import java.util.List;
-import java.util.Random;
-
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSapling;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,12 +12,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.IPlantable;
-import codechicken.lib.vec.BlockCoord;
+
+import java.util.List;
+import java.util.Random;
 
 public class BlockStainedSapling extends BlockSapling
 {
     private Icon icon;
+    private static Random r = new Random();
 
     public BlockStainedSapling(int par1)
     {
@@ -34,18 +32,17 @@ public class BlockStainedSapling extends BlockSapling
     @Override
     public void growTree(World w, int x, int y, int z, Random r)
     {
-        int saplingMeta = w.getBlockMetadata(x, y, z);
-        GeneratorCustomTree gen = new GeneratorCustomTree(true, 5, Block.wood.blockID, 0, ProjectRedExploration.blockStainedLeaf.blockID, saplingMeta, -1, -1);
-        w.setBlock(x, y, z, 0, 0, 3);
-        if (!gen.generate(w, r, x, y, z))
-            w.setBlock(x, y, z, ProjectRedExploration.blockStainedSapling.blockID, saplingMeta, 3);
+        growTreeAt(w, x, y, z, height());
+    }
+
+    private int height() {
+        return 5+r.nextInt(3);
     }
 
     @Override
     public void markOrGrowMarked(World w, int x, int y, int z, Random r)
     {
-        if (checkArea(w, x, y, z) && w.rand.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[w.getBlockMetadata(x, y, z)].growthChance)
-            growTree(w, x, y, z, w.rand);
+        growTree(w, x, y, z, r);
     }
 
     @Override
@@ -59,10 +56,11 @@ public class BlockStainedSapling extends BlockSapling
         if (!(stack.getItem().itemID == PRColors.WHITE.getDye().getItem().itemID))
             return false;
 
-        if (checkArea(w, x, y, z) && w.rand.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[w.getBlockMetadata(x, y, z)].growthChance)
-            growTree(w, x, y, z, w.rand);
+        int color = w.getBlockMetadata(x, y, z);
+        if (GeneratorColorTree.canGrowAt(w, x, y, z))
+            growTreeAt(w, x, y, z, player.isSneaking() ? 7 : height());
         else
-            w.spawnParticle("happyVillager", x + w.rand.nextDouble(), y + w.rand.nextDouble(), z + w.rand.nextDouble(), 0, 0, 0);
+            w.spawnParticle("happyVillager", x + r.nextDouble(), y + r.nextDouble(), z + r.nextDouble(), 0, 0, 0);
 
         if (!player.capabilities.isCreativeMode)
             stack.stackSize--;
@@ -70,31 +68,13 @@ public class BlockStainedSapling extends BlockSapling
         return true;
     }
 
-    public static boolean checkArea(World w, int x, int y, int z)
+    private void growTreeAt(World w, int x, int y, int z, int h)
     {
-        int id = w.getBlockId(x, y - 1, z);
-        Material mat = Block.blocksList[id].blockMaterial;
-        boolean validSoil = false;
-        boolean validArea = true;
+        if (w.isRemote)
+            return;
+        int meta = w.getBlockMetadata(x, y, z);
 
-        if (mat == Material.grass || mat == Material.ground)
-            validSoil = true;
-        if (!validSoil)
-            return false;
-
-        BlockCoord bc = new BlockCoord(x, y, z);
-        for (int i = 1; i < 6; i++)
-        {
-            BlockCoord bc2 = bc.copy().offset(i);
-            Block b = blocksList[w.getBlockId(bc2.x, bc2.y, bc2.z)];
-            if (!w.isAirBlock(bc2.x, bc2.y, bc2.z) && !b.canBeReplacedByLeaves(w, bc2.x, bc2.y, bc2.z) && b instanceof IPlantable)
-            {
-                validArea = false;
-                break;
-            }
-        }
-
-        return validSoil && validArea;
+        new GeneratorColorTree(ProjectRedExploration.blockStainedLeaf.blockID).generateTreeAnyType(w, x, y, z, PRColors.get(meta));
     }
 
     @Override

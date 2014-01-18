@@ -1,9 +1,7 @@
 package mrtjp.projectred.exploration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.PRColors;
 import net.minecraft.block.Block;
@@ -17,8 +15,10 @@ import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class BlockStainedLeaf extends BlockLeaves
 {
@@ -103,89 +103,35 @@ public class BlockStainedLeaf extends BlockLeaves
     }
 
     @Override
-    public void updateTick(World w, int x, int y, int z, Random r)
+    public void updateTick(World w, int x, int y, int z, Random rand)
     {
-        if (!w.isRemote)
+        int r = 4;
+        boolean decay = true;
+        for (int i = -r; i <= r; i++)
         {
-            int l = w.getBlockMetadata(x, y, z);
-
-            if (r.nextInt(3) == 0)
+            for (int j = -r; j <= r; j++)
             {
-                byte b0 = 4;
-                int i1 = b0 + 1;
-                byte b1 = 32;
-                int j1 = b1 * b1;
-                int k1 = b1 / 2;
-
-                if (this.adjacentTreeBlocks == null)
-                    this.adjacentTreeBlocks = new int[b1 * b1 * b1];
-
-                int l1;
-
-                if (w.checkChunksExist(x - i1, y - i1, z - i1, x + i1, y + i1, z + i1))
+                for (int k = -r; k <= r; k++)
                 {
-                    int i2;
-                    int j2;
-                    int k2;
-
-                    for (l1 = -b0; l1 <= b0; ++l1)
-                        for (i2 = -b0; i2 <= b0; ++i2)
-                            for (j2 = -b0; j2 <= b0; ++j2)
-                            {
-                                k2 = w.getBlockId(x + l1, y + i2, z + j2);
-
-                                Block block = Block.blocksList[k2];
-
-                                if (block != null && block.canSustainLeaves(w, x + l1, y + i2, z + j2))
-                                    this.adjacentTreeBlocks[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = 0;
-                                else if (block != null && block.isLeaves(w, x + l1, y + i2, z + j2))
-                                    this.adjacentTreeBlocks[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -2;
-                                else
-                                    this.adjacentTreeBlocks[(l1 + k1) * j1 + (i2 + k1) * b1 + j2 + k1] = -1;
-                            }
-
-                    for (l1 = 1; l1 <= 4; ++l1)
-                        for (i2 = -b0; i2 <= b0; ++i2)
-                            for (j2 = -b0; j2 <= b0; ++j2)
-                                for (k2 = -b0; k2 <= b0; ++k2)
-                                    if (this.adjacentTreeBlocks[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1] == l1 - 1)
-                                    {
-                                        if (this.adjacentTreeBlocks[(i2 + k1 - 1) * j1 + (j2 + k1) * b1 + k2 + k1] == -2)
-                                            this.adjacentTreeBlocks[(i2 + k1 - 1) * j1 + (j2 + k1) * b1 + k2 + k1] = l1;
-
-                                        if (this.adjacentTreeBlocks[(i2 + k1 + 1) * j1 + (j2 + k1) * b1 + k2 + k1] == -2)
-                                            this.adjacentTreeBlocks[(i2 + k1 + 1) * j1 + (j2 + k1) * b1 + k2 + k1] = l1;
-
-                                        if (this.adjacentTreeBlocks[(i2 + k1) * j1 + (j2 + k1 - 1) * b1 + k2 + k1] == -2)
-                                            this.adjacentTreeBlocks[(i2 + k1) * j1 + (j2 + k1 - 1) * b1 + k2 + k1] = l1;
-
-                                        if (this.adjacentTreeBlocks[(i2 + k1) * j1 + (j2 + k1 + 1) * b1 + k2 + k1] == -2)
-                                            this.adjacentTreeBlocks[(i2 + k1) * j1 + (j2 + k1 + 1) * b1 + k2 + k1] = l1;
-
-                                        if (this.adjacentTreeBlocks[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1 - 1] == -2)
-                                            this.adjacentTreeBlocks[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1 - 1] = l1;
-
-                                        if (this.adjacentTreeBlocks[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1 + 1] == -2)
-                                            this.adjacentTreeBlocks[(i2 + k1) * j1 + (j2 + k1) * b1 + k2 + k1 + 1] = l1;
-                                    }
+                    int id = w.getBlockId(x+i, y+j, z+k);
+                    int meta = w.getBlockMetadata(x+i, y+j, z+k);
+                    Block b = Block.blocksList[id];
+                    if (b != null && b.isWood(w, x+i, y+j, z+k))
+                    {
+                        decay = false;
+                        i = j = k = r + 1;
+                    }
                 }
-
-                l1 = this.adjacentTreeBlocks[k1 * j1 + k1 * b1 + k1];
-
-                if (l1 >= 0)
-                {
-
-                }
-                else
-                    this.removeLeaves(w, x, y, z);
             }
         }
-    }
 
-    private void removeLeaves(World w, int x, int y, int z)
-    {
-        this.dropBlockAsItem(w, x, y, z, w.getBlockMetadata(x, y, z), 0);
-        w.setBlockToAir(x, y, z);
+        int meta = w.getBlockMetadata(x, y, z);
+        if (decay)
+        {
+            this.dropBlockAsItemWithChance(w, x, y, z, meta, 1, 0);
+            w.setBlock(x, y, z, 0);
+        }
+
     }
 
     @Override

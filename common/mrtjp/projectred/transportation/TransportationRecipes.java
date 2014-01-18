@@ -216,6 +216,13 @@ public class TransportationRecipes
                 EnumPart.BLUEILLUMAR.getItemStack(),
                 EnumPart.BLUEILLUMAR.getItemStack()
         );
+
+        /** Item Crafting **/
+        addChipRecipe(EnumRoutingChip.ITEMCRAFTING.getItemStack(),
+                Item.glowstone, Item.redstone, Item.glowstone,
+                EnumPart.LIMEILLUMAR.getItemStack(),
+                EnumPart.LIMEILLUMAR.getItemStack()
+        );
     }
 
     private static void addChipRecipe(ItemStack result, Object bus, Object material2, Object material1, Object dyeLeft, Object dyeRight)

@@ -1,13 +1,5 @@
 package mrtjp.projectred.transportation;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.lwjgl.input.Keyboard;
-
 import mrtjp.projectred.core.inventory.InventoryWrapper;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
@@ -16,11 +8,16 @@ import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise;
 import mrtjp.projectred.transportation.RoutedPayload.SendPriority;
-import mrtjp.projectred.transportation.RoutingChipset.UpgradeBus;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
+import org.lwjgl.input.Keyboard;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class RoutingChipset_ItemBroadcaster extends RoutingChipset
 {
@@ -94,7 +91,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
         if (!manager.hasOrders())
             return;
 
-        Pair2<ItemKeyStack, IWorldRequester> next = null;
+        Pair2<ItemKeyStack, IWorldRequester> next;
         int stacksRemaining = stacksToExtract();
         int itemsRemaining = itemsToExtract();
         while (manager.hasOrders() && (next = manager.peek()) != null && stacksRemaining > 0 && itemsRemaining > 0)
@@ -312,7 +309,7 @@ public class RoutingChipset_ItemBroadcaster extends RoutingChipset
     {
         return EnumRoutingChip.ITEMBROADCASTER;
     }
-    
+
     @Override
     public UpgradeBus createUpgradeBus()
     {

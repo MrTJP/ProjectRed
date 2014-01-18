@@ -1,19 +1,19 @@
 package mrtjp.projectred.exploration;
 
-import java.util.Random;
-
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IRetroGenerator;
+import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.RetroactiveWorldGenerator;
-import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
-import net.minecraft.block.Block;
+import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.Chunk;
+
+import java.util.Random;
 
 public class RetroGenerationManager
 {
@@ -202,7 +202,7 @@ public class RetroGenerationManager
             int z = chunkZ * 16 + r.nextInt(16);
             int y = w.getHeightValue(x, z);
             if (r.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[saplingMeta].growthChance / 3)
-                new GeneratorCustomTree(false, 5, Block.wood.blockID, 0, ProjectRedExploration.blockStainedLeaf.blockID, saplingMeta, -1, -1).generate(w, r, x, y, z);
+                new GeneratorColorTree(ProjectRedExploration.blockStainedLeaf.blockID).generateTreeAnyType(w, x, y, z, PRColors.get(r.nextInt(16)));
         }
     }
 }

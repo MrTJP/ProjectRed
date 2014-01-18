@@ -1,9 +1,15 @@
 package mrtjp.projectred.integration;
 
-import java.util.Arrays;
-
-import org.lwjgl.opengl.GL11;
-
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.lighting.LazyLightMatrix;
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.TextureUtils;
+import codechicken.lib.vec.*;
+import codechicken.microblock.FaceMicroClass;
+import codechicken.multipart.*;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.BasicUtils;
@@ -16,29 +22,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.lighting.LazyLightMatrix;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.TextureUtils;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Vector3;
-import codechicken.microblock.FaceMicroClass;
-import codechicken.multipart.IconHitEffects;
-import codechicken.multipart.JCuboidPart;
-import codechicken.multipart.JIconHitEffects;
-import codechicken.multipart.JNormalOcclusion;
-import codechicken.multipart.NormalOcclusionTest;
-import codechicken.multipart.PartMap;
-import codechicken.multipart.TFacePart;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TickScheduler;
-import codechicken.multipart.TileMultipart;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Arrays;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, IConnectable, TFacePart, JIconHitEffects
@@ -170,12 +156,12 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public void scheduleTick(int ticks)
     {
         if (schedTime < 0)
-            schedTime = TickScheduler.getSchedulerTime(world()) + ticks;
+            schedTime = world().getTotalWorldTime() + ticks;
     }
 
     private void processScheduled()
     {
-        if (schedTime >= 0 && TickScheduler.getSchedulerTime(world()) >= schedTime)
+        if (schedTime >= 0 && world().getTotalWorldTime() >= schedTime)
         {
             schedTime = -1;
             scheduledTick();
@@ -275,7 +261,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     /**
      * Recalculates connections to blocks outside this sapce
-     * 
+     *
      * @return true if a new connection was added or one was removed
      */
     protected boolean updateExternalConnections()
@@ -304,7 +290,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     /**
      * Recalculates connections to other parts within this space
-     * 
+     *
      * @return true if a new connection was added or one was removed
      */
     protected boolean updateInternalConnections()
@@ -517,7 +503,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     /**
      * Notify neighbor blocks
-     * 
+     *
      * @param mask A bitmask of absolute rotation sides to notify
      */
     public void notifyNeighbors(int mask)

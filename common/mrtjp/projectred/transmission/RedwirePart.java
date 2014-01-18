@@ -298,7 +298,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     protected boolean test(EntityPlayer player)
     {
         if (BasicUtils.isClient(world()))
-            Messenger.addMessage(x() + 0, y() + .5f, z() + 0, "/#f/#c[c] = " + getRedwireSignal());
+            Messenger.addMessage(x(), y() + .5f, z(), "/#f/#c[c] = " + getRedwireSignal());
         else
         {
             PacketCustom packet = new PacketCustom(CoreSPH.channel, 2);

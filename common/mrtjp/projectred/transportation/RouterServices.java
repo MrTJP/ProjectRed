@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import codechicken.lib.vec.BlockCoord;
-
 public class RouterServices
 {
     public static RouterServices instance = new RouterServices();
@@ -21,7 +19,7 @@ public class RouterServices
     {
         if (id < 0 || id >= routers.size())
             return null;
-        
+
         return routers.get(id);
     }
 
@@ -29,12 +27,12 @@ public class RouterServices
     {
         if (id == null)
             return -1;
-        
+
         Integer ip = UUIDTable.get(id);
         if (ip == null)
             return -1;
-        
-        return ip.intValue();
+
+        return ip;
     }
 
     public void removeRouter(int id)
@@ -61,7 +59,7 @@ public class RouterServices
                 while (routers.size() <= newLength)
                     routers.add(null);
             }
-            
+
             routers.set(newLease, r);
             UUIDTable.put(r.getID(), r.getIPAddress());
             return r;

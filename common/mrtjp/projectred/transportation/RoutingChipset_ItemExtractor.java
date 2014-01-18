@@ -1,12 +1,5 @@
 package mrtjp.projectred.transportation;
 
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import mrtjp.projectred.core.inventory.InventoryWrapper;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
@@ -15,6 +8,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
+
+import java.util.BitSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class RoutingChipset_ItemExtractor extends RoutingChipset
 {
@@ -174,7 +173,7 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset
     {
         return EnumRoutingChip.ITEMEXTRACTOR;
     }
-    
+
     @Override
     public UpgradeBus createUpgradeBus()
     {
@@ -183,7 +182,7 @@ public class RoutingChipset_ItemExtractor extends RoutingChipset
 
         b.Linfo = "delay between extractions";
         b.Lformula = "delay = 100 - Latency";
-        
+
         b.Rinfo = "items to extract in one operation";
         b.Rformula = "items = 8 + Latency";
         return b;
