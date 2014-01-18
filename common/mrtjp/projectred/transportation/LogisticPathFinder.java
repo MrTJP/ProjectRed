@@ -1,11 +1,10 @@
 package mrtjp.projectred.transportation;
 
-import java.util.BitSet;
-import java.util.List;
-
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.transportation.Router.StartEndPath;
 import net.minecraft.inventory.IInventory;
+
+import java.util.BitSet;
 
 public class LogisticPathFinder
 {
@@ -89,7 +88,7 @@ public class LogisticPathFinder
         return this;
     }
 
-    public static boolean sharesInventory(BasicPipePart pipe1, BasicPipePart pipe2)
+    public static boolean sharesInventory(RoutedJunctionPipePart pipe1, RoutedJunctionPipePart pipe2)
     {
         if (pipe1 == null || pipe2 == null)
             return false;
@@ -97,13 +96,12 @@ public class LogisticPathFinder
         if (pipe1.tile().worldObj != pipe2.tile().worldObj)
             return false;
 
-        List<IInventory> adjacent1 = pipe1.getConnectedInventories();
-        List<IInventory> adjacent2 = pipe2.getConnectedInventories();
+        IInventory adjacent1 = pipe1.getInventory();
+        IInventory adjacent2 = pipe2.getInventory();
 
-        for (IInventory inv1 : adjacent1)
-            if (adjacent2.contains(inv1))
-                return true;
+        if (adjacent1 == null || adjacent2 == null)
+            return false;
 
-        return false;
+        return adjacent1 == adjacent2;
     }
 }

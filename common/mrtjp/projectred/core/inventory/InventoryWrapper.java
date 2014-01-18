@@ -1,10 +1,6 @@
 package mrtjp.projectred.core.inventory;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import codechicken.lib.vec.BlockCoord;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.utils.ItemKey;
 import net.minecraft.inventory.IInventory;
@@ -13,7 +9,11 @@ import net.minecraft.inventory.InventoryLargeChest;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
-import codechicken.lib.vec.BlockCoord;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class InventoryWrapper
 {
@@ -169,7 +169,7 @@ public abstract class InventoryWrapper
     /**
      * Get a count for how many items of this type can be shoved into the
      * inventory.
-     * 
+     *
      * @param item The item to count free space for. Not manipulated in any way.
      * @return The number of those items this inventory can still take.
      */
@@ -195,7 +195,7 @@ public abstract class InventoryWrapper
 
     /**
      * Counts how many of those items this inventory contains.
-     * 
+     *
      * @param item The item to count. Not manipulated in any way.
      * @return The number of those items this inventory contains.
      */
@@ -222,14 +222,13 @@ public abstract class InventoryWrapper
     /**
      * Returns if the given item is in the inventory somewhere. Failfast of
      * getItemCount
-     * 
+     *
      * @param item the item. Not manipulated in any way.
      * @return
      */
     public boolean hasItem(ItemKey item)
     {
         ItemStack item2 = item.makeStack(0);
-        boolean first = true;
         for (int slot : slots)
         {
             ItemStack inSlot = inv.getStackInSlot(slot);
@@ -244,7 +243,7 @@ public abstract class InventoryWrapper
     /**
      * Inject the ItemStack into the inventory, starting with merging, then to
      * empty slots.
-     * 
+     *
      * @param item The item to try and merge. Not manipulated in any way.
      * @param doAdd whether or not to actually do the merge. Useful for
      *            obtaining a count of how many items COULD be merged.
@@ -292,7 +291,7 @@ public abstract class InventoryWrapper
 
     /**
      * Extract the item a specified number of times.
-     * 
+     *
      * @param item Item to extract from inventory. Not manipulated in any way.
      * @param toExtract Amount to try to extract.
      * @return Amount extracted.
@@ -327,7 +326,7 @@ public abstract class InventoryWrapper
      * Return an ordered map of all available [ItemStack, Amount] in the
      * inventory. The actual inventory is not manipulated. Keys are ItemStacks
      * with zero stack size.
-     * 
+     *
      * @return
      */
     public Map<ItemKey, Integer> getAllItemStacks()

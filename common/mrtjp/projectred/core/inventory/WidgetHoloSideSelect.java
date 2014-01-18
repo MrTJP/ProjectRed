@@ -1,8 +1,6 @@
 package mrtjp.projectred.core.inventory;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.inventory.ClickRotation.ClickRotationHook;
@@ -94,7 +92,7 @@ public class WidgetHoloSideSelect extends GhostWidget
     @Override
     public void drawBack(int mouseX, int mouseY, float frame)
     {
-        if (init == false || Mouse.isButtonDown(2))
+        if (!init || Mouse.isButtonDown(2))
         {
             rotHook.setTransform(MathLib.createEntityRotateMatrix(mc.renderViewEntity));
             init = true;

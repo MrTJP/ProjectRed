@@ -181,10 +181,10 @@ public class WidgetTextBox extends GhostWidget
 
     public WidgetTextBox setAllowedCharacters(String s)
     {
-        if (s == null)
+        if (s == null || s.isEmpty())
             s = ChatAllowedCharacters.allowedCharacters;
-        else
-            allowedcharacters = s;
+
+        allowedcharacters = s;
         return this;
     }
 }

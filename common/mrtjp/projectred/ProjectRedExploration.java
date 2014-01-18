@@ -1,6 +1,5 @@
 package mrtjp.projectred;
 
-import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.exploration.BlockOre;
 import mrtjp.projectred.exploration.BlockSpecialStone;

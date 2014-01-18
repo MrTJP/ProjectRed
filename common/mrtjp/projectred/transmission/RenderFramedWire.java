@@ -1,39 +1,21 @@
 package mrtjp.projectred.transmission;
 
-import static mrtjp.projectred.transmission.FramedWirePart.boundingBoxes;
-import static mrtjp.projectred.transmission.RenderWire.addVerts;
-import static mrtjp.projectred.transmission.RenderWire.finishModel;
-import mrtjp.projectred.transmission.RenderWire.UVT;
-import net.minecraft.util.Icon;
-import net.minecraft.world.World;
-
-import org.lwjgl.opengl.GL11;
-
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.raytracer.IndexedCuboid6;
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.ColourModifier;
-import codechicken.lib.render.ColourMultiplier;
-import codechicken.lib.render.IUVTransformation;
-import codechicken.lib.render.IVertexModifier;
-import codechicken.lib.render.IconTransformation;
-import codechicken.lib.render.RenderUtils;
-import codechicken.lib.render.TextureUtils;
-import codechicken.lib.render.UVTranslation;
-import codechicken.lib.render.Vertex5;
-import codechicken.lib.vec.AxisCycle;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Scale;
-import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Translation;
-import codechicken.lib.vec.Vector3;
+import codechicken.lib.render.*;
+import codechicken.lib.vec.*;
 import codechicken.microblock.IMicroMaterialRender;
 import codechicken.microblock.JMicroblockClient;
 import codechicken.microblock.MicroMaterialRegistry;
 import codechicken.microblock.MicroMaterialRegistry.IMicroMaterial;
+import mrtjp.projectred.transmission.RenderWire.UVT;
+import net.minecraft.util.Icon;
+import net.minecraft.world.World;
+import org.lwjgl.opengl.GL11;
+
+import static mrtjp.projectred.transmission.FramedWirePart.boundingBoxes;
+import static mrtjp.projectred.transmission.RenderWire.addVerts;
+import static mrtjp.projectred.transmission.RenderWire.finishModel;
 
 public class RenderFramedWire
 {
@@ -395,7 +377,7 @@ public class RenderFramedWire
             if (first)
                 box.enclose(boundingBoxes[6]);
 
-            int fMask = 0;
+            int fMask;
             if (first || mask == 3)
                 fMask = 0;
             else if (mask == 1)

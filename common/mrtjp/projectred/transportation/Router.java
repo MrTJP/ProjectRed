@@ -1,29 +1,13 @@
 package mrtjp.projectred.transportation;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.PriorityQueue;
-import java.util.UUID;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeDirection;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Router implements Comparable<Router>
 {
@@ -60,7 +44,7 @@ public class Router implements Comparable<Router>
 
     private static int nextIP = 1;
     private static BitSet usedIPs = new BitSet();
-    
+
     private boolean decommissioned = false;
 
     public Router(UUID id, IWorldRouter parent)
@@ -112,7 +96,7 @@ public class Router implements Comparable<Router>
 
     private boolean updateLSAIfNeeded()
     {
-        boolean adjacentChanged = false;
+        boolean adjacentChanged;
         IWorldRouter wr = getParent();
         if (wr == null)
             return false;
@@ -212,7 +196,7 @@ public class Router implements Comparable<Router>
 
         RouterServices.instance.removeRouter(IPAddress);
         decommissioned = true;
-        
+
         startLSAFloodfill();
         releaseIPAddress(IPAddress);
     }
@@ -241,13 +225,13 @@ public class Router implements Comparable<Router>
     public List<StartEndPath> getRoutesByCost()
     {
         refreshRouteTableIfNeeded(true);
-        
+
         List<StartEndPath> valid = new LinkedList<StartEndPath>(routersByCost);
         Iterator<StartEndPath> it = valid.iterator();
         while (it.hasNext())
             if (!it.next().end.isLoaded())
                 it.remove();
-        
+
         return valid;
     }
 
@@ -322,7 +306,7 @@ public class Router implements Comparable<Router>
         routersByCost2.add(new StartEndPath(this, this, -1, 0));
 
         LSADatabasereadLock.lock();
-        StartEndPath nextLowest = null;
+        StartEndPath nextLowest;
         while ((nextLowest = candidates2.poll()) != null)
         {
             // We already approved this router. Keep skipping until we get a
@@ -408,23 +392,23 @@ public class Router implements Comparable<Router>
     {
         return parent;
     }
-    
+
     public boolean isLoaded()
     {
         if (decommissioned)
             return false;
-        
+
         IWorldRouter parent = getParent();
-        
+
         if (getParent() == null)
             return false;
-        
+
         if (getParent().needsWork())
             return false;
-        
+
         if (parent.getContainer().tile() == null || parent.getContainer().tile().isInvalid())
             return false;
-        
+
         return true;
     }
 

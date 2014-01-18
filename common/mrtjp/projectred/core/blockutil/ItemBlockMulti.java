@@ -1,6 +1,5 @@
 package mrtjp.projectred.core.blockutil;
 
-import mrtjp.projectred.ProjectRedCore;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 

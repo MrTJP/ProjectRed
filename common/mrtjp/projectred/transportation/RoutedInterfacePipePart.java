@@ -1,9 +1,8 @@
 package mrtjp.projectred.transportation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import codechicken.core.IGuiPacketSender;
+import codechicken.core.ServerUtils;
+import codechicken.lib.packet.PacketCustom;
 import mrtjp.projectred.core.BasicGuiUtils;
 import mrtjp.projectred.core.inventory.GhostContainer2;
 import mrtjp.projectred.core.inventory.GhostContainer2.ISlotController;
@@ -12,6 +11,7 @@ import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
+import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -19,9 +19,10 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
-import codechicken.core.IGuiPacketSender;
-import codechicken.core.ServerUtils;
-import codechicken.lib.packet.PacketCustom;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class RoutedInterfacePipePart extends RoutedJunctionPipePart implements IWorldBroadcaster
 {
@@ -36,7 +37,11 @@ public class RoutedInterfacePipePart extends RoutedJunctionPipePart implements I
         @Override
         public boolean isItemValidForSlot(int i, ItemStack stack)
         {
-            return stack != null && stack.getItem() instanceof ItemRoutingChip && stack.hasTagCompound() && stack.getTagCompound().hasKey("chipROM");
+            return stack != null
+                    && stack.getItem() instanceof ItemRoutingChip
+                    && stack.hasTagCompound()
+                    && stack.getTagCompound().hasKey("chipROM")
+                    && EnumRoutingChip.getForStack(stack).isInterfaceChip();
         }
     };
 
@@ -110,9 +115,8 @@ public class RoutedInterfacePipePart extends RoutedJunctionPipePart implements I
                     return true;
                 }
         }
-        else
-            openGui(player);
 
+        openGui(player);
         return true;
     }
 

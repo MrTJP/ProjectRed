@@ -1,11 +1,8 @@
 package mrtjp.projectred;
 
-import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.expansion.BlockMachine;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import codechicken.lib.packet.PacketCustom.CustomTinyPacketHandler;
 import cpw.mods.fml.common.Mod;
@@ -30,7 +27,7 @@ public class ProjectRedExpansion
     public static IProxy proxy;
 
     public static CreativeTabs tabExpansion;
-    
+
 //    = new CreativeTabs("expansion") {
 //        @Override
 //        public ItemStack getIconItemStack()

@@ -1,18 +1,17 @@
 package mrtjp.projectred.core;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-
+import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.common.TickType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.world.ChunkDataEvent;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
 
 public class RetroactiveWorldGenerator implements ITickHandler
 {
@@ -40,7 +39,6 @@ public class RetroactiveWorldGenerator implements ITickHandler
     private void queueRetroactiveGeneration(ChunkDataEvent.Load event)
     {
         World w = event.world;
-        Chunk c = event.getChunk();
 
         RetroDatabase database = getRetroDatabase(w);
 

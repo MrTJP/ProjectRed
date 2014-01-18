@@ -1,22 +1,5 @@
 package mrtjp.projectred.transportation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.inventory.InventoryWrapper;
-import mrtjp.projectred.transportation.RoutedPayload.SendPriority;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.Icon;
-import net.minecraftforge.common.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.lighting.LazyLightMatrix;
@@ -29,21 +12,28 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.TMultiPart;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ForwardingSet;
 import com.google.common.collect.HashBiMap;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.inventory.InventoryWrapper;
+import mrtjp.projectred.transportation.RoutedPayload.SendPriority;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.Icon;
+import net.minecraftforge.common.ForgeDirection;
+
+import java.util.*;
 
 public class BasicPipePart extends CorePipePart
 {
     protected PayloadMovement itemFlow = new PayloadMovement();
     public PipeLogic logic;
     public boolean initialized = false;
-
-    private List<IInventory> cachedInventories;
 
     @Override
     public void preparePlacement(int meta)
@@ -120,7 +110,7 @@ public class BasicPipePart extends CorePipePart
             removeAll(outputQueue);
             outputQueue.clear();
         }
-    };
+    }
 
     public PipeLogic getLogic()
     {
@@ -216,7 +206,7 @@ public class BasicPipePart extends CorePipePart
     {
         if (getLogic().centerReached(r))
             return;
-        
+
         if (!world().isRemote)
             if (!maskConnects(r.output.ordinal()) || !passToNextPipe(r))
             {
@@ -375,17 +365,9 @@ public class BasicPipePart extends CorePipePart
     }
 
     @Override
-    public void onPartChanged(TMultiPart part)
-    {
-        super.onPartChanged(part);
-        cachedInventories = null;
-    }
-
-    @Override
     public void onNeighborChanged()
     {
         super.onNeighborChanged();
-        cachedInventories = null;
 
         int connCount = 0;
         for (int i = 0; i < 6; i++)
@@ -435,7 +417,7 @@ public class BasicPipePart extends CorePipePart
     {
         int id = packet.readShort();
         float progress = packet.readFloat();
-        
+
         RoutedPayload r = itemFlow.get(id);
         if (r == null)
         {
@@ -443,7 +425,7 @@ public class BasicPipePart extends CorePipePart
             r.progress = progress;
             itemFlow.add(r);
         }
-            
+
         r.setItemStack(packet.readItemStack());
         r.input = ForgeDirection.getOrientation(packet.readByte());
         r.output = ForgeDirection.getOrientation(packet.readByte());
@@ -503,27 +485,7 @@ public class BasicPipePart extends CorePipePart
         Icon i = getLogic().getIcon(this, side);
         if (i != null)
             return i;
-        
+
         return EnumPipe.BASIC.sprites[0];
-    }
-
-    public List<IInventory> getConnectedInventories()
-    {
-        if (cachedInventories != null)
-            return cachedInventories;
-
-        List<IInventory> adjacent = new ArrayList<IInventory>();
-        BlockCoord bc = new BlockCoord(tile());
-
-        for (int i = 0; i < 6; i++)
-            if (maskConnects(i))
-            {
-                IInventory inv = InventoryWrapper.getInventory(world(), bc.copy().offset(i));
-                if (inv != null)
-                    adjacent.add(inv);
-            }
-
-        cachedInventories = Collections.unmodifiableList(adjacent);
-        return cachedInventories;
     }
 }

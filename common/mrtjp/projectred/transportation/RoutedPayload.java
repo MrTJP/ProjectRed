@@ -10,7 +10,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
-import codechicken.lib.vec.Vector3;
 
 public class RoutedPayload
 {
@@ -110,7 +109,7 @@ public class RoutedPayload
     {
         tag.setFloat("prog", progress);
         tag.setFloat("speed", speed);
-        
+
         NBTTagCompound nbttagcompound2 = new NBTTagCompound();
         getItemStack().writeToNBT(nbttagcompound2);
         tag.setCompoundTag("Item", nbttagcompound2);
@@ -125,9 +124,9 @@ public class RoutedPayload
     public EntityItem getEntityForDrop(int x, int y, int z)
     {
         ForgeDirection dir = isEntering ? input : output;
-        
+
         double prog = progress;
-        
+
         double deltaX = x + 0.5D;
         double deltaY = y + 0.25D;
         double deltaZ = z + 0.5D;
@@ -183,7 +182,7 @@ public class RoutedPayload
         item.lifespan = 1600;
         return item;
     }
-    
+
     /** Server-side Routing **/
 
     int destinationIP = -1;
@@ -201,9 +200,9 @@ public class RoutedPayload
         DEFAULT("Default", 0.05f, 0.10f, PRColors.ORANGE.ordinal()),
         TERMINATED("Terminated", 0.02f, 0.05f, PRColors.PURPLE.ordinal()),
         PASSIVE("Passive", 0.10f, 0.20f, PRColors.BLUE.ordinal()),
-        ACTIVE("Active", 0.20f, 0.30f, PRColors.GREEN.ordinal()), 
+        ACTIVE("Active", 0.20f, 0.30f, PRColors.GREEN.ordinal()),
         ;
-        
+
         public final float speed;
         public final float boost;
         public final int color;

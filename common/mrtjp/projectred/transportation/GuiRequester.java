@@ -1,11 +1,7 @@
 package mrtjp.projectred.transportation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.vec.BlockCoord;
 import mrtjp.projectred.core.BasicGuiUtils;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.inventory.GhostGuiScreen;
@@ -15,11 +11,13 @@ import mrtjp.projectred.core.inventory.WidgetItemSelection;
 import mrtjp.projectred.core.inventory.WidgetTextBox;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
-
 import org.lwjgl.input.Keyboard;
 
-import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.vec.BlockCoord;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class GuiRequester extends GhostGuiScreen
 {
@@ -169,7 +167,7 @@ public class GuiRequester extends GhostGuiScreen
         String s = itemCount.getText();
         if (s != null && !s.isEmpty())
             current = Integer.parseInt(s);
-        int newCount = 0;
+        int newCount;
 
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             newCount = current + 10;
@@ -186,7 +184,7 @@ public class GuiRequester extends GhostGuiScreen
         String s = itemCount.getText();
         if (s != null && !s.isEmpty())
             current = Integer.parseInt(s);
-        int newCount = 0;
+        int newCount;
 
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             newCount = current - 10;

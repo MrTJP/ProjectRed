@@ -13,14 +13,14 @@ public class ParticleLogicIconShift extends ParticleLogic
     private int ticksRemaining = 0;
 
     private int iconIndex = 0;
-    
+
     public static ParticleLogicIconShift fluttering()
     {
-        ParticleLogicIconShift logic = new ParticleLogicIconShift().addIcon("flutter1").addIcon("flutter2").addIcon("flutter3").addIcon("flutter4");;
+        ParticleLogicIconShift logic = new ParticleLogicIconShift().addIcon("flutter1").addIcon("flutter2").addIcon("flutter3").addIcon("flutter4");
         logic.setTicksBetweenChange(3);
         return logic;
     }
-    
+
     public ParticleLogicIconShift addIcon(String icon)
     {
         icons.add(ParticleIconRegistry.instance.getIcon(icon));

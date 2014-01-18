@@ -1,13 +1,10 @@
 package mrtjp.projectred.transportation;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.DelayQueue;
-
+import codechicken.core.IGuiPacketSender;
+import codechicken.core.ServerUtils;
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.vec.BlockCoord;
 import mrtjp.projectred.core.BasicGuiUtils;
 import mrtjp.projectred.core.ItemDataCard;
 import mrtjp.projectred.core.inventory.GhostContainer2;
@@ -19,6 +16,7 @@ import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.core.utils.PostponedWorkItem;
+import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
 import mrtjp.projectred.transportation.RequestBranchNode.CraftingPromise;
 import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise;
 import mrtjp.projectred.transportation.RequestBranchNode.ExcessPromise;
@@ -30,19 +28,39 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
-import codechicken.core.IGuiPacketSender;
-import codechicken.core.ServerUtils;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.vec.BlockCoord;
+
+import java.util.*;
+import java.util.concurrent.DelayQueue;
 
 public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IWorldCrafter
 {
-    private SimpleInventory matrix = new SimpleInventory(10, "matrix", 127);
-    private SimpleInventory cardSlots = new SimpleInventory(9, "links", 1) {
-        
+    public SimpleInventory chipSlots = new SimpleInventory(8, "chips", 1)
+    {
         @Override
-        public boolean isItemValidForSlot(int i, ItemStack stack) {
+        public void onInventoryChanged()
+        {
+            super.onInventoryChanged();
+            refreshChips();
+        }
+
+        @Override
+        public boolean isItemValidForSlot(int i, ItemStack stack)
+        {
+            return stack != null
+                    && stack.getItem() instanceof ItemRoutingChip
+                    && stack.hasTagCompound()
+                    && stack.getTagCompound().hasKey("chipROM")
+                    && EnumRoutingChip.getForStack(stack).isCraftingChip();
+        }
+    };
+
+    public RoutingChipset_Crafting[] chips = new RoutingChipset_Crafting[9];
+
+    private SimpleInventory cardSlots = new SimpleInventory(9, "links", 1)
+    {
+        @Override
+        public boolean isItemValidForSlot(int i, ItemStack stack)
+        {
             if (ItemDataCard.hasCardData(stack))
             {
                 NBTTagCompound tag = ItemDataCard.loadData(stack, "ext_pipe");
@@ -51,18 +69,19 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
             }
             return false;
         }
-        
+
         @Override
-        public void onInventoryChanged() {
+        public void onInventoryChanged()
+        {
             refreshExtensions();
         }
     };
-    
+
     private DeliveryManager manager = new DeliveryManager();
 
     private final LinkedList<Pair2<ItemKeyStack, IWorldRequester>> excess = new LinkedList<Pair2<ItemKeyStack, IWorldRequester>>();
     private final DelayQueue<PostponedWorkItem<ItemKeyStack>> lost = new DelayQueue<PostponedWorkItem<ItemKeyStack>>();
-    
+
     private final int[] extensionIPs = new int[9];
 
     public int priority = 0;
@@ -108,7 +127,7 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
     public void priorityUp()
     {
         int old = priority;
-        priority = Math.min(100, priority + 1);
+        priority = Math.min(16, priority + 1);
         if (old != priority)
             sendPriorityUpdate();
     }
@@ -116,7 +135,7 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
     public void priorityDown()
     {
         int old = priority;
-        priority = Math.max(-100, priority - 1);
+        priority = Math.max(-16, priority - 1);
         if (old != priority)
             sendPriorityUpdate();
     }
@@ -230,7 +249,7 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
         if (lost.isEmpty())
             return;
 
-        PostponedWorkItem<ItemKeyStack> post = null;
+        PostponedWorkItem<ItemKeyStack> post;
 
         while ((post = lost.poll()) != null)
         {
@@ -284,7 +303,7 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
                 }
         }
     }
-    
+
     private void refreshExtensions()
     {
         for (int i = 0; i < 9; i++)
@@ -295,7 +314,7 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
                 NBTTagCompound data = ItemDataCard.loadData(inslot, "ext_pipe");
                 if (data.hasKey("id"))
                 {
-                    UUID id = null;
+                    UUID id;
                     try
                     {
                         id = UUID.fromString(data.getString("id"));
@@ -304,7 +323,7 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
                     {
                         continue;
                     }
-                    
+
                     extensionIPs[i] = RouterServices.instance.getIPforUUID(id);
                 }
             }
@@ -312,9 +331,28 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
                 extensionIPs[i] = -1;
         }
     }
-    
+
+    public void refreshChips()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            ItemStack stack = chipSlots.getStackInSlot(i);
+            RoutingChipset c = ItemRoutingChip.loadChipFromItemStack(stack);
+            if (c instanceof RoutingChipset_Crafting)
+            {
+                RoutingChipset_Crafting c2 = (RoutingChipset_Crafting) c;
+                c2.setEnvironment(this, this, i);
+                if (chips[i] != c2)
+                    chips[i] = c2;
+            }
+        }
+    }
+
     private IWorldRequester getExtensionFor(int slot)
     {
+        if (slot < 0 || slot >= 9)
+            return this;
+
         if (extensionIPs[slot] >= 0 && getRouter().canRouteTo(extensionIPs[slot]))
         {
             Router r = RouterServices.instance.getRouter(extensionIPs[slot]);
@@ -330,16 +368,31 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
         if (super.activate(player, hit, item))
             return true;
 
+        if (item != null && item.getItem() instanceof ItemRoutingChip)
+        {
+            for (int i = 0; i < chipSlots.getSizeInventory(); i++)
+                if (chipSlots.getStackInSlot(i) == null && chipSlots.isItemValidForSlot(i, item))
+                {
+                    ItemStack chip = item.splitStack(1);
+                    chipSlots.setInventorySlotContents(i, chip);
+                    chipSlots.onInventoryChanged();
+                    return true;
+                }
+        }
+
         openGui(player);
         return true;
     }
-    
+
     @Override
     public void onRemoved()
     {
         super.onRemoved();
         if (!world().isRemote)
+        {
+            chipSlots.dropContents(world(), x(), y(), z());
             cardSlots.dropContents(world(), x(), y(), z());
+        }
     }
 
     public void openGui(EntityPlayer player)
@@ -347,7 +400,8 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
         if (world().isRemote)
             return;
 
-        ServerUtils.openSMPContainer((EntityPlayerMP) player, createContainer(player), new IGuiPacketSender() {
+        ServerUtils.openSMPContainer((EntityPlayerMP) player, createContainer(player), new IGuiPacketSender()
+        {
             @Override
             public void sendPacket(EntityPlayerMP player, int windowId)
             {
@@ -363,14 +417,13 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
     public Container createContainer(EntityPlayer player)
     {
         GhostContainer2 ghost = new GhostContainer2(player.inventory);
-        
+
         int s = 0;
-        for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(8, 12, 9, 1, 0, 0))
-            ghost.addCustomSlot(new SlotExtended(matrix, s++, p.getValue1(), p.getValue2()).setGhosting(true));
-        ghost.addCustomSlot(new SlotExtended(matrix, s++, 44, 74).setGhosting(true));
+        for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 12, 2, 4, 20, 0))
+            ghost.addCustomSlot(new SlotExtended(chipSlots, s++, p.getValue1(), p.getValue2()).setCheck(ISlotController.InventoryRulesController.instance));
 
         int s2 = 0;
-        for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(8, 46, 9, 1, 0, 0))
+        for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(8, 108, 9, 1, 0, 0))
             ghost.addCustomSlot(new SlotExtended(cardSlots, s2++, p.getValue1(), p.getValue2()).setCheck(ISlotController.InventoryRulesController.instance));
 
         ghost.addPlayerInventory(8, 138);
@@ -381,16 +434,16 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
     public void save(NBTTagCompound tag)
     {
         super.save(tag);
-        matrix.save(tag, "m");
+        chipSlots.save(tag, "c");
         cardSlots.save(tag, "l");
-        tag.setInteger("pri", priority);        
+        tag.setInteger("pri", priority);
     }
 
     @Override
     public void load(NBTTagCompound tag)
     {
         super.load(tag);
-        matrix.load(tag, "m");
+        chipSlots.load(tag, "c");
         cardSlots.load(tag, "l");
         priority = tag.getInteger("pri");
     }
@@ -407,7 +460,15 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
             if (item.key() == requestedItem)
                 return;
 
-        if (!providedItem.contains(requestedItem))
+        boolean contains = false;
+        for (ItemKeyStack stack : providedItem)
+            if (stack.key().equals(requestedItem))
+            {
+                contains = true;
+                break;
+            }
+
+        if (!contains)
             return;
 
         int remaining = 0;
@@ -446,26 +507,19 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
         if (items == null)
             return null;
 
-        ItemKeyStack craftingStack = null;
-        for (ItemKeyStack craftable : items)
-        {
-            if (craftable.key().equals(item))
-            {
-                craftingStack = craftable;
-                break;
-            }
-        }
-        if (craftingStack == null)
+        RoutingChipset_Crafting r = getChipFor(item);
+        if (r == null)
             return null;
+        ItemKeyStack result = ItemKeyStack.get(r.getMatrix().getStackInSlot(9));
 
         IWorldRequester[] requesters = new IWorldRequester[9];
         for (int i = 0; i < 9; i++)
-            requesters[i] = getExtensionFor(i);
+            requesters[i] = getExtensionFor(r.extIndex[i]);
 
-        CraftingPromise promise = new CraftingPromise(craftingStack, this, priority);
+        CraftingPromise promise = new CraftingPromise(result, this, priority);
         for (int i = 0; i < 9; i++)
         {
-            ItemKeyStack keystack = ItemKeyStack.get(matrix.getStackInSlot(i));
+            ItemKeyStack keystack = ItemKeyStack.get(r.getMatrix().getStackInSlot(i));
             if (keystack == null || keystack.stackSize <= 0)
                 continue;
 
@@ -485,12 +539,29 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
     @Override
     public List<ItemKeyStack> getCraftedItems()
     {
-        List<ItemKeyStack> list = new ArrayList<ItemKeyStack>(1);
-        ItemStack stack = matrix.getStackInSlot(9);
-        if (stack != null)
-            list.add(ItemKeyStack.get(stack));
+        List<ItemKeyStack> list = new ArrayList<ItemKeyStack>(9);
+        for (RoutingChipset_Crafting r : chips)
+            if (r != null)
+            {
+                ItemStack stack = r.getMatrix().getStackInSlot(9);
+                if (stack != null)
+                    list.add(ItemKeyStack.get(stack));
+            }
 
         return list;
+    }
+
+    public RoutingChipset_Crafting getChipFor(ItemKey key)
+    {
+        for (RoutingChipset_Crafting r : chips)
+            if (r != null)
+            {
+                ItemStack stack = r.getMatrix().getStackInSlot(9);
+                if (stack != null && ItemKey.get(stack).equals(key))
+                    return r;
+            }
+
+        return null;
     }
 
     @Override
@@ -509,6 +580,29 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
     public int itemsToProcess()
     {
         return manager.getTotalDeliveryCount();
+    }
+
+    @Override
+    public int getActiveFreeSpace(ItemKey item)
+    {
+        // Dont craft more than one thing at a time.
+        if (manager.hasOrders())
+        {
+            RoutingChipset_Crafting r = getChipFor(manager.peek().getValue1().key());
+            if (r != null)
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    ItemStack s = r.getMatrix().getStackInSlot(i);
+                    if (s != null && ItemKey.get(s).equals(item))
+                        return super.getActiveFreeSpace(item);
+                }
+            }
+
+            return 0;
+        }
+        else
+            return super.getActiveFreeSpace(item);
     }
 
     @Override

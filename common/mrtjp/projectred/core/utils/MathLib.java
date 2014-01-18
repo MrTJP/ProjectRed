@@ -1,7 +1,5 @@
 package mrtjp.projectred.core.utils;
 
-import java.security.InvalidParameterException;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 

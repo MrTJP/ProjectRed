@@ -9,8 +9,9 @@ public class NEIProjectRedConfig implements IConfigureNEI
     {
         try
         {
-
-        } catch (Throwable e)
+            //TODO
+        }
+        catch (Throwable e)
         {
             e.printStackTrace();
         }

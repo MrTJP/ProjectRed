@@ -1,6 +1,5 @@
 package mrtjp.projectred;
 
-import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;

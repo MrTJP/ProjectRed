@@ -13,7 +13,6 @@ import org.lwjgl.opengl.GL11;
 
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.lighting.LightModel;
-import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.IUVTransformation;
@@ -103,11 +102,11 @@ public class RenderPipe
             model.generateSidedParts(0, Vector3.center);
             centerModels[3] = model;
         }
-        
+
         public void generateCrossExclusiveModels()
         {
             CCModel model = CCModel.quadModel(48);
-            
+
             model.verts[0] = new Vertex5(0.5 - w, 0.5 - w, 0.5 - w, 0, 16);
             model.verts[1] = new Vertex5(0.5 + w, 0.5 - w, 0.5 - w, 8, 16);
             model.verts[2] = new Vertex5(0.5 + w, 0.5 - w, 0.5 + w, 8, 8);
@@ -125,7 +124,7 @@ public class RenderPipe
             for (int i = 0; i < 48; i++)
                 if (model.verts[i] == null)
                     model.verts[i] = new Vertex5();
-            
+
             centerModels[0] = model.copy().apply(Rotation.sideOrientation(2, 1).at(Vector3.center));
             centerModels[1] = model.copy().apply(Rotation.sideOrientation(0, 1).at(Vector3.center));
             centerModels[2] = model;
@@ -217,7 +216,7 @@ public class RenderPipe
     {
         Transformation t = new Translation(pos);
         IUVTransformation uvt = new IconTransformation(EnumPipe.VALID_PIPE[p.meta].sprites[0]);
-        
+
         int connMap = p.connMap;
 
         if (Integer.bitCount(connMap) == 2 && ((connMap&3) == 3 || (connMap&12) == 12 || (connMap&48) == 48))
@@ -227,8 +226,8 @@ public class RenderPipe
                     centerModels[a].render(t, uvt);
             }
         else
-            centerModels[3].render(t, uvt);     
-        
+            centerModels[3].render(t, uvt);
+
         for (int s = 0; s < 6; s++)
             if ((connMap & 1 << s) != 0)
             {
@@ -263,9 +262,9 @@ public class RenderPipe
         for (RoutedPayload r : p.itemFlow)
         {
             ForgeDirection dir = r.isEntering ? r.input : r.output;
-            
+
             double prog = r.progress + (r.speed * frame);
-            
+
             double frameX = pos.x + 0.5D;
             double frameY = pos.y + 0.25D;
             double frameZ = pos.z + 0.5D;

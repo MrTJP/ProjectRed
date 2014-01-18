@@ -1,8 +1,10 @@
 [dev]v4.2.3
 - ADDED: Computercraft bundled cable compatibility
 - CHANGE: Made volcanoes slightly more rare
+- CHANGE: Crafting pipes can craft multiple items
 - FIX: Backpack slots being locked
 - FIX: Framed alloy wire connection bug
+- FIX: Strange tree growth
 
 v4.2.2
 - ADDED: Extension pipe

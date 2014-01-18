@@ -1,10 +1,12 @@
 package mrtjp.projectred.transmission;
 
-import static mrtjp.projectred.transmission.BundledCableCommons.calculatePartSignal;
-import static mrtjp.projectred.transmission.BundledCableCommons.tmpSignal;
-
-import java.util.Arrays;
-
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Rotation;
+import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.api.IConnectable;
@@ -14,13 +16,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Rotation;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
+
+import java.util.Arrays;
+
+import static mrtjp.projectred.transmission.BundledCableCommons.calculatePartSignal;
+import static mrtjp.projectred.transmission.BundledCableCommons.tmpSignal;
 
 public class BundledCablePart extends WirePart implements IBundledCablePart
 {
@@ -221,7 +221,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
                 if (x != 0)
                     s = s + "[" + i + "]";
             }
-            if (s == "")
+            if (s.equals(""))
                 s = "off";
 
             PacketCustom packet = new PacketCustom(CoreSPH.channel, 2);

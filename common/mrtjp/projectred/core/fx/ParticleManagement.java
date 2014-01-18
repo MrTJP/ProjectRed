@@ -16,7 +16,6 @@ import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
@@ -34,7 +33,7 @@ public class ParticleManagement implements ITickHandler
     {
         if (!world.isRemote)
             return null;
-        
+
         if (Minecraft.getMinecraft().gameSettings.particleSetting == 2)
             return null;
 

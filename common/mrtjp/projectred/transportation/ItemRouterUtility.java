@@ -34,9 +34,8 @@ public class ItemRouterUtility extends Item
     public ItemStack onItemRightClick(ItemStack stack, World w, EntityPlayer player)
     {
         if (!w.isRemote && stack != null && stack.getItem() instanceof ItemRouterUtility)
-            if (player.isSneaking())
-                openGui(player);
-        
+            openGui(player);
+
         return super.onItemRightClick(stack, w, player);
     }
 
@@ -44,18 +43,17 @@ public class ItemRouterUtility extends Item
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World w, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
     {
         if (!w.isRemote && stack != null && stack.getItem() instanceof ItemRouterUtility)
-            if (player.isSneaking())
-                openGui(player);
-        
+            openGui(player);
+
         return true;
     }
-    
+
     @Override
     public void registerIcons(IconRegister reg)
     {
         this.itemIcon = reg.registerIcon("projectred:routerutil");
     }
-    
+
     private void openGui(EntityPlayer player)
     {
         if (player.worldObj.isRemote)
@@ -71,24 +69,24 @@ public class ItemRouterUtility extends Item
             }
         });
     }
-        
+
     public static class ChipUpgradeContainer extends GhostContainer2
     {
         public SimpleInventory upgradeInv;
-        
+
         private RoutingChipset chip;
-        
+
         private final int slot;
-        
+
         public ChipUpgradeContainer(EntityPlayer player)
         {
             super(player.inventory);
-            
+
             slot = player.inventory.currentItem;
             addPlayerInventory(8, 86);
 
             upgradeInv = new SimpleInventory(7, "upBus", 1) {
-                
+
                 @Override
                 public boolean isItemValidForSlot(int i, ItemStack stack)
                 {
@@ -103,14 +101,14 @@ public class ItemRouterUtility extends Item
                     }
                     return false;
                 }
-                
+
                 @Override
                 public void onInventoryChanged()
                 {
                     refreshChips();
                 }
             };
-                        
+
             int s = 0;
             for (Pair2<Integer, Integer> coord : BasicGuiUtils.createSlotArray(8, 18, 1, 3, 2, 2))
             {
@@ -124,7 +122,7 @@ public class ItemRouterUtility extends Item
             }
             addCustomSlot(new SlotExtended(upgradeInv, 6, 80, 38));
         }
-        
+
         @Override
         public void onContainerClosed(EntityPlayer p)
         {
@@ -136,20 +134,20 @@ public class ItemRouterUtility extends Item
                     ItemStack todrop = upgradeInv.decrStackSize(i, upgradeInv.getStackInSlot(i).getMaxStackSize());
                     p.dropPlayerItem(todrop);
                 }
-            
+
             upgradeInv.onInventoryChanged();
         }
-        
+
         @Override
         public Slot addSlotToContainer(Slot s)
         {
             if (s.getSlotIndex() == slot && s.inventory == playerInv)
                 if (s instanceof SlotExtended)
                     return super.addSlotToContainer(((SlotExtended) s).setRemoval(false));
-            
+
             return super.addSlotToContainer(s);
         }
-        
+
         private void refreshChips()
         {
             ItemStack stack = getChipStack();
@@ -157,7 +155,7 @@ public class ItemRouterUtility extends Item
             if (chip != c)
                 chip = c;
         }
-        
+
         public void installPossibleUpgrades()
         {
             RoutingChipset r = getChip();
@@ -182,18 +180,18 @@ public class ItemRouterUtility extends Item
                     }
                 }
             }
-            
+
             ItemStack chipStack = getChipStack();
             ItemRoutingChip.saveChipToItemStack(chipStack, r);
             upgradeInv.setInventorySlotContents(6, chipStack);
             detectAndSendChanges();
         }
-        
+
         public RoutingChipset getChip()
         {
             return chip;
         }
-        
+
         public ItemStack getChipStack()
         {
             return upgradeInv.getStackInSlot(6);

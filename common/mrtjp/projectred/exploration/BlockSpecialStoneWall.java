@@ -1,7 +1,5 @@
 package mrtjp.projectred.exploration;
 
-import java.util.List;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRedExploration;
@@ -14,6 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class BlockSpecialStoneWall extends BlockWall
 {
@@ -50,12 +50,12 @@ public class BlockSpecialStoneWall extends BlockWall
         if (l != blockID && l != Block.fenceGate.blockID)
         {
             Block block = Block.blocksList[l];
-            return block != null && block.blockMaterial.isOpaque() && block.renderAsNormalBlock() ? block.blockMaterial != Material.pumpkin : false;
+            return block != null && block.blockMaterial.isOpaque() && block.renderAsNormalBlock() && block.blockMaterial != Material.pumpkin;
         }
         else
             return true;
     }
-    
+
     @Override
     public boolean canPlaceTorchOnTop(World world, int x, int y, int z)
     {

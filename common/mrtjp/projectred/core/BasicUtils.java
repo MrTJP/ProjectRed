@@ -1,18 +1,12 @@
 package mrtjp.projectred.core;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import mrtjp.projectred.transportation.Router;
-import mrtjp.projectred.transportation.Router.StartEndPath;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
@@ -107,7 +101,7 @@ public class BasicUtils
     {
         if (coords.y < 0)
             return null;
-        
+
         TileEntity te = access.getBlockTileEntity(coords.x, coords.y, coords.z);
         return !clazz.isInstance(te) ? null : (T) te;
     }
@@ -162,11 +156,11 @@ public class BasicUtils
     public static boolean compareMaps(Map map1, Map map2)
     {
         boolean diff = false;
-        
+
         // Compare size
         if (map1.size() != map2.size())
             diff = true;
-        
+
         // Compare contents
         if (!diff)
             for (Entry e : ((Map<Object, Object>)map1).entrySet())
@@ -175,28 +169,28 @@ public class BasicUtils
                     diff = true;
                     break;
                 }
-            
+
         // Compare contents equals
         if (!diff)
             for (Entry e : ((Map<Object, Object>)map1).entrySet())
             {
                 Object o1 = e.getValue();
                 Object o2 = map2.get(e.getKey());
-                
+
                 if (o1 == null || o2 == null)
                     if (o1 != o2)
                     {
                         diff = true;
                         break;
                     }
-                
+
                 if (!o1.equals(o2))
                 {
                     diff = true;
                     break;
                 }
             }
-        
+
         return diff;
     }
 }

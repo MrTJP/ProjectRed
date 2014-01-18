@@ -1,6 +1,5 @@
 package mrtjp.projectred;
 
-import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
 import mrtjp.projectred.integration.EnumGate;
 import mrtjp.projectred.integration.ItemPartGate;

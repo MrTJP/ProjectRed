@@ -1,9 +1,7 @@
 package mrtjp.projectred.transportation;
 
-import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.List;
-
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.FontUtils;
 import mrtjp.projectred.core.BasicGuiUtils;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended;
@@ -22,11 +20,13 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeDirection;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.FontUtils;
+import org.lwjgl.opengl.GL11;
+
+import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.List;
 
 public class RoutingChipGuiFactory
 {
@@ -44,7 +44,8 @@ public class RoutingChipGuiFactory
             return new GuiChipDynamicItemResponder(c);
         else if (meta == EnumRoutingChip.ITEMOVERFLOWRESPONDER.ordinal())
             return new GuiChipItemOverflowResponder(c);
-
+        else if (meta == EnumRoutingChip.ITEMCRAFTING.ordinal())
+            return new GuiChipCrafting(c);
         return null;
     }
 
@@ -52,7 +53,7 @@ public class RoutingChipGuiFactory
     {
         protected static final ResourceLocation RL_chipCont = new ResourceLocation("projectred:textures/gui/chipcontainer.png");
         private ChipGhostContainer chipContainer;
-        
+
         public GuiChipContainerWidget(ChipGhostContainer inventorySlots, GuiScreen previous)
         {
             super(inventorySlots, previous);
@@ -90,14 +91,15 @@ public class RoutingChipGuiFactory
         @Override
         public void drawBackground()
         {
+            GL11.glColor4f(1, 1, 1, 1);
             drawChipContainerBackground();
             drawChipIcon();
             if (getPreviousScreen() != null)
                 drawChipOverlay();
         }
-        
+
         /** Utils **/
-        
+
         public void drawChipContainerBackground()
         {
             CCRenderState.changeTexture(RL_chipCont);
@@ -1035,6 +1037,227 @@ public class RoutingChipGuiFactory
         {
             add(new WidgetSimpleButton(82, 22, 12, 12).setText("+").setActionCommand("prefUP"));
             add(new WidgetSimpleButton(82, 50, 12, 12).setText("-").setActionCommand("prefDOWN"));
+        }
+    }
+
+    private static class GuiChipCrafting extends GuiChipContainerWidget<RoutingChipset_Crafting>
+    {
+        private GuiChipCrafting(ChipGhostContainer inventorySlots)
+        {
+            super(inventorySlots, null);
+        }
+
+        @Override
+        public void actionPerformed(String ident, Object... params)
+        {
+            if (ident.equals("mat"))
+            {
+                ChipGhostContainer<RoutingChipset_Crafting> g = getCleanContainer();
+                g.addPlayerInventory(8, 86);
+                int s = 0;
+                for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(25, 15, 3, 3, 0, 0))
+                    g.addCustomSlot(new SlotExtended(g.getChip().getMatrix(), s++, p.getValue1(), p.getValue2()).setLimit(127).setGhosting(true));
+
+                g.addCustomSlot(new SlotExtended(g.getChip().getMatrix(), s, 119, 33).setLimit(127).setGhosting(true));
+                shiftScreen(new GuiChipCrafting_Matrix(g, this), true);
+            }
+            else if (ident.equals("pri"))
+            {
+                ChipGhostContainer<RoutingChipset_Crafting> g = getCleanContainer();
+                g.addPlayerInventory(8, 86);
+                shiftScreen(new GuiChipItemCrafting_Priority(g, this), true);
+            }
+            else if (ident.equals("ext"))
+            {
+                ChipGhostContainer<RoutingChipset_Crafting> g = getCleanContainer();
+                g.addPlayerInventory(8, 86);
+                shiftScreen(new GuiChipItemCrafting_Ext(g, this), true);
+            }
+
+        }
+
+        @Override
+        public void addWidgets()
+        {
+            add(new WidgetDotSelector(100, 32) {
+                @Override
+                public List<String> getOverlayText()
+                {
+                    List<String> list = new LinkedList<String>();
+                    list.add("Crafting matrix");
+                    getChip().addMatrixInfo(list);
+                    return list;
+                }
+            }.setActionCommand("mat"));
+
+            if (getChip().getMaxExtensions() > 0)
+                add(new WidgetDotSelector(78, 37) {
+                    @Override
+                    public List<String> getOverlayText()
+                    {
+                        List<String> list = new LinkedList<String>();
+                        list.add("Extension crafting");
+                        getChip().addExtInfo(list);
+                        return list;
+                    }
+                }.setActionCommand("ext"));
+
+            if (getChip().getMaxPriority() > 0)
+                add(new WidgetDotSelector(90, 50) {
+                    @Override
+                    public List<String> getOverlayText()
+                    {
+                        List<String> list = new LinkedList<String>();
+                        list.add("Priority");
+                        getChip().addPriorityInfo(list);
+                        return list;
+                    }
+                }.setActionCommand("pri"));
+        }
+    }
+
+    private static class GuiChipCrafting_Matrix extends GuiChipContainerWidget<RoutingChipset_Crafting>
+    {
+        private GuiChipCrafting_Matrix(ChipGhostContainer inventorySlots, GuiScreen previous)
+        {
+            super(inventorySlots, previous);
+        }
+
+        @Override
+        public void actionPerformed(String ident, Object... params)
+        {
+        }
+
+        @Override
+        public void addWidgets()
+        {
+        }
+
+        @Override
+        public void drawBackground()
+        {
+            super.drawBackground();
+            for (Pair2<Integer, Integer> p : BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
+                BasicGuiUtils.drawSlotBackground(mc, p.getValue1() - 1, p.getValue2() - 1);
+
+            BasicGuiUtils.drawSlotBackground(mc, 109, 32);
+
+            ResourceLocation craftingTableGuiTextures = new ResourceLocation("textures/gui/container/crafting_table.png");
+            CCRenderState.changeTexture(craftingTableGuiTextures);
+
+            drawTexturedModalRect(15, 10, 20, 12, 146, 62);
+        }
+    }
+
+    private static class GuiChipItemCrafting_Priority extends GuiChipContainerWidget<RoutingChipset_Crafting>
+    {
+        public GuiChipItemCrafting_Priority(ChipGhostContainer inventorySlots, GuiScreen previous)
+        {
+            super(inventorySlots, previous);
+        }
+
+        @Override
+        public void drawBackground()
+        {
+            super.drawBackground();
+            FontUtils.drawCenteredString(getChip().priority + "", 88, 38, PRColors.WHITE.rgb);
+        }
+
+        @Override
+        public void actionPerformed(String ident, Object... params)
+        {
+            if (ident.equals("priUP"))
+                getChip().priorityUp();
+            else if (ident.equals("priDOWN"))
+                getChip().priorityDown();
+        }
+
+        @Override
+        public void addWidgets()
+        {
+            add(new WidgetSimpleButton(82, 22, 12, 12).setText("+").setActionCommand("priUP"));
+            add(new WidgetSimpleButton(82, 50, 12, 12).setText("-").setActionCommand("priDOWN"));
+
+            add(new WidgetButton.WidgetCheckBox(88, 72, getChip().overridePipePriority)
+            {
+                @Override
+                public List<String> getOverlayText()
+                {
+                    List<String> list = new LinkedList<String>();
+                    list.add(EnumChatFormatting.GRAY + "override priority from pipe");
+                    return list;
+                }
+
+                @Override
+                public void onStateChanged(boolean oldState)
+                {
+                    getChip().overridePipePriority = isChecked();
+                }
+            });
+        }
+    }
+
+    private static class GuiChipItemCrafting_Ext extends GuiChipContainerWidget<RoutingChipset_Crafting>
+    {
+        private GuiChipItemCrafting_Ext(ChipGhostContainer inventorySlots, GuiScreen previous)
+        {
+            super(inventorySlots, previous);
+        }
+
+        @Override
+        public void actionPerformed(String ident, Object... params)
+        {
+            int index = Integer.parseInt(ident.substring(0,1));
+            if (ident.substring(1).equals("u"))
+                getChip().extUp(index);
+            else
+                getChip().extDown(index);
+        }
+
+        @Override
+        public void addWidgets()
+        {
+            int index = 0;
+            for (Pair2<Integer, Integer> p : BasicGuiUtils.createGridArray(xSize/2 - 40, 6, 3, 3, 24 + 4, 24 + 1))
+            {
+                if (getChip().getMaxExtensions() >= index)
+                {
+                    add(new WidgetSimpleButton(p.getValue1(), p.getValue2(), 24, 6).setActionCommand(index+"u"));
+                    add(new WidgetSimpleButton(p.getValue1(), p.getValue2()+18, 24, 6).setActionCommand(index+"d"));
+                }
+                else
+                    break;
+                index++;
+            }
+
+        }
+
+        @Override
+        public void drawBackground()
+        {
+            super.drawBackground();
+
+            int index = 0;
+            for (Pair2<Integer, Integer> p : BasicGuiUtils.createGridArray(xSize/2 - 40, 6, 3, 3, 24+4, 24+1))
+            {
+                if (getChip().getMaxExtensions() >= index)
+                {
+                    int ext = getChip().extIndex[index];
+                    if (ext >= 0)
+                    {
+                        int x = p.getValue1()+2;
+                        int y = p.getValue2()+6;
+
+                        drawRect(x, y, x+20, y+18, PRColors.get(ext).rgba);
+                    }
+                    else
+                        drawCenteredString(fontRenderer, "off", p.getValue1()+12, p.getValue2()+8, PRColors.WHITE.rgba);
+                }
+                else
+                    drawCenteredString(fontRenderer, "-", p.getValue1()+12, p.getValue2()+8, PRColors.GREY.rgba);
+
+                index++;
+            }
         }
     }
 }

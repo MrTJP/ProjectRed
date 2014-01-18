@@ -3,7 +3,6 @@ package mrtjp.projectred.illumination;
 import static mrtjp.projectred.ProjectRedIllumination.*;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.IProxy;
-import net.minecraft.item.ItemBlock;
 import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;

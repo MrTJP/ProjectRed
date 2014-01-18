@@ -1,9 +1,8 @@
 package mrtjp.projectred.transportation;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import codechicken.core.IGuiPacketSender;
+import codechicken.core.ServerUtils;
+import codechicken.lib.packet.PacketCustom;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
@@ -13,9 +12,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
-import codechicken.core.IGuiPacketSender;
-import codechicken.core.ServerUtils;
-import codechicken.lib.packet.PacketCustom;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public abstract class RoutingChipset
 {
@@ -134,31 +134,31 @@ public abstract class RoutingChipset
         ghost.addPlayerInventory(8, 86);
         return ghost;
     }
-    
+
     /** Upgrade bus settings **/
-    
+
     private final UpgradeBus upgradeBus = createUpgradeBus();
-    
+
     public UpgradeBus createUpgradeBus()
     {
         UpgradeBus bus = new UpgradeBus(0, 0);
         return bus;
     }
-        
+
     public UpgradeBus getUpgradeBus()
     {
         return upgradeBus;
     }
-    
+
     public void addUpgradeBusInfo(List<String> list)
     {
         List<String> list2 = new LinkedList<String>();
-        
+
         UpgradeBus b = getUpgradeBus();
         if (b.containsUpgrades())
         {
             list2.add("--- upgrades ---");
-            
+
             String s = "";
             if (b.Lset[0])
                 s = s + "LX";
@@ -166,9 +166,9 @@ public abstract class RoutingChipset
                 s = s + " - LY";
             if (b.Lset[2])
                 s = s + " - LZ";
-            if (!s.isEmpty()) 
+            if (!s.isEmpty())
                 list2.add(s);
-            
+
             String s2 = "";
             if (b.Rset[0])
                 s2 = s2 + "RX";
@@ -180,18 +180,18 @@ public abstract class RoutingChipset
                 list2.add(s2);
 
             list2.add("----------------");
-            
+
             for (int i = 0; i < list2.size(); i++)
                 list2.set(i, EnumChatFormatting.GRAY + list2.get(i));
-            
-            list.addAll(list2);        
+
+            list.addAll(list2);
         }
     }
-    
+
     public static class UpgradeBus
     {
         public boolean[] Lset = new boolean[3];
-        
+
         public boolean[] Rset = new boolean[3];
 
         public int LXLatency = 0;
@@ -201,22 +201,22 @@ public abstract class RoutingChipset
         public int RXLatency = 0;
         public int RYLatency = 0;
         public int RZLatency = 0;
-        
+
         public final int maxL;
         public final int maxR;
-        
+
         public String Linfo;
         public String Lformula;
-        
+
         public String Rinfo;
         public String Rformula;
-        
+
         public UpgradeBus(int maxL, int maxR)
         {
             this.maxL = maxL;
             this.maxR = maxR;
         }
-        
+
         public int LLatency()
         {
             int count = 0;
@@ -228,7 +228,7 @@ public abstract class RoutingChipset
                 count += LZLatency;
             return count;
         }
-        
+
         public int RLatency()
         {
             int count = 0;
@@ -240,13 +240,13 @@ public abstract class RoutingChipset
                 count += RZLatency;
             return count;
         }
-        
+
         public UpgradeBus setLatency(int lx, int ly, int lz, int rx, int ry, int rz)
         {
             LXLatency = lx;
             LYLatency = ly;
             LZLatency = lz;
-            
+
             RXLatency = rx;
             RYLatency = ry;
             RZLatency = rz;
@@ -257,7 +257,7 @@ public abstract class RoutingChipset
         {
             if (i >= maxL)
                 return false;
-            
+
             if (i-1 >= 0 && !Lset[i-1])
                 return false;
 
@@ -269,15 +269,15 @@ public abstract class RoutingChipset
             }
             return false;
         }
-        
+
         public boolean installR(int i, boolean doInstall)
         {
             if (i >= maxR)
                 return false;
-            
+
             if (i-1 >= 0 && !Rset[i-1])
                 return false;
-            
+
             if (!Rset[i])
             {
                 if (doInstall)
@@ -286,7 +286,7 @@ public abstract class RoutingChipset
             }
             return false;
         }
-        
+
         public boolean containsUpgrades()
         {
             for (int i = 0; i < 3; i++)
@@ -295,7 +295,7 @@ public abstract class RoutingChipset
             }
             return false;
         }
-        
+
         public void save(NBTTagCompound tag)
         {
             for (int i = 0; i < 3; i++)
@@ -304,7 +304,7 @@ public abstract class RoutingChipset
                 tag.setBoolean("R"+i, Rset[i]);
             }
         }
-        
+
         public void load(NBTTagCompound tag)
         {
             for (int i = 0; i < 3; i++)

@@ -42,7 +42,7 @@ public class TableUpdateThread extends Thread
     @Override
     public void run()
     {
-        RouteLayerUpdater rlu = null;
+        RouteLayerUpdater rlu;
         try
         {
             while ((rlu = updateCalls.take()) != null)
