@@ -6,7 +6,7 @@ item.projectred.core.part.partwiredplate.name=Verdrahtete Platte
 item.projectred.core.part.partbundledplate.name=Gebündelte Platte
 item.projectred.core.part.partanode.name=Anode
 item.projectred.core.part.partcathode.name=Kathode
-item.projectred.core.part.partpointer.name=Pointer
+item.projectred.core.part.partpointer.name=Zeiger
 item.projectred.core.part.partsiliconchip.name=Siliziumchip
 item.projectred.core.part.partenergizedsiliconchip.name=Energetisierter Siliziumchip
 item.projectred.core.part.partplatformedplate.name=Plattgeformte Platte
@@ -48,7 +48,7 @@ item.projectred.core.part.partredsiliconcomp.name=Rot-Siliziumverbindung
 item.projectred.core.part.partglowsiliconcomp.name=Scheinende Siliziumverbindung
 
 item.projectred.core.part.nullchip.name=Null-Logik-Routen-Chip
-item.projectred.core.part.nullupgrd.name=Null-Logi-Upgrade-Chip
+item.projectred.core.part.nullupgrd.name=Null-Logik-Upgrade-Chip
 item.projectred.core.part.upgrd_lx.name=LX-Upgrade
 item.projectred.core.part.upgrd_ly.name=LY-Upgrade
 item.projectred.core.part.upgrd_lz.name=LZ-Upgrade
@@ -79,6 +79,7 @@ item.projectred.transportation.routingchip|3.name=Item-Terminator-Chip
 item.projectred.transportation.routingchip|4.name=Item-Extraktor-Chip
 item.projectred.transportation.routingchip|5.name=Item-Sendungs-Chip
 item.projectred.transportation.routingchip|6.name=Item-Vorrats-Bewahrungs-Chip
+item.projectred.transportation.routingchip|7.name=Item-Herstellungs-Chip
 
 item.projectred.transportation.routerutil.name=Router-Werkzeug
 
@@ -442,5 +443,5 @@ item.projectred.transmission.framewire|17.name=Gerahmtes gebündeltes Kabel
 itemGroup.compat=Project Red: Kompatibilität
 
 tile.projectred.compatibility.liqredstone.name=Flüssiges Redstone
-tile.projectred.compatibility.liqcondredmetal.name=Geschmolzened Konduktivrotmetall
+tile.projectred.compatibility.liqcondredmetal.name=Geschmolzenes Konduktivrotmetall
 
