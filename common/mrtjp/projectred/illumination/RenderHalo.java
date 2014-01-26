@@ -48,13 +48,15 @@ public class RenderHalo
             this.cube = cube;
         }
 
+        private double renderDist() {
+            return vec.set(pos.x, pos.y, pos.z).sub(renderEntityPos).magSquared();
+        }
+
 		@Override
 		public int compareTo(LightCache o) {
-			if(vec.set(pos.x, pos.y, pos.z).sub(renderEntityPos).magSquared() < 
-					vec.set(o.pos.x, o.pos.y, o.pos.z).sub(renderEntityPos).magSquared())
-	            return 1;
-            else 
-            	return -1;
+			double ra = renderDist();
+            double rb = o.renderDist();
+            return ra == rb ? 0 : ra < rb ? 1 : -1;
 		}
     }
 
