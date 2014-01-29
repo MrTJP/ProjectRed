@@ -78,9 +78,9 @@ public class ItemKey implements Comparable<ItemKey>
         return Item.itemsList[itemID];
     }
 
-    public int getStackLimit()
+    public int getMaxStackSize()
     {
-        return getItem().getItemStackLimit();
+        return makeStack(0).getMaxStackSize();
     }
 
     public String getName()

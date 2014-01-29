@@ -1,17 +1,5 @@
 package mrtjp.projectred;
 
-import mrtjp.projectred.core.CommandDebug;
-import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.IProxy;
-import mrtjp.projectred.core.ItemDataCard;
-import mrtjp.projectred.core.ItemDrawPlate;
-import mrtjp.projectred.core.ItemPart;
-import mrtjp.projectred.core.ItemScrewdriver;
-import mrtjp.projectred.core.ItemWireDebugger;
-import mrtjp.projectred.core.PRVersionChecker;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
 import codechicken.lib.packet.PacketCustom.CustomTinyPacketHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
@@ -23,14 +11,11 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
+import mrtjp.projectred.core.*;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 
-/**
- * "Project: Red" serves to provide a complete alternative for Eloraam's
- * RedPower 2 utilizing ForgeMultipart API created by Chickenbones.
- * 
- * @author MrTJP
- * 
- */
 @Mod(modid = "ProjRed|Core", useMetadata = true)
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = CustomTinyPacketHandler.class)
 public class ProjectRedCore

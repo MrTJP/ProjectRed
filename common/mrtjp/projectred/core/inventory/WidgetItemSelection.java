@@ -1,8 +1,7 @@
 package mrtjp.projectred.core.inventory;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import codechicken.core.gui.GuiDraw;
+import codechicken.lib.render.FontUtils;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import net.minecraft.client.Minecraft;
@@ -12,12 +11,11 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import codechicken.core.gui.GuiDraw;
-import codechicken.lib.render.FontUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WidgetItemSelection extends GhostWidget
 {
@@ -113,17 +111,17 @@ public class WidgetItemSelection extends GhostWidget
 
     private void drawLoadingScreen()
     {
-        int barSizeX = width / 2;
+        int barSizeX = width()/2;
         long time = System.currentTimeMillis() / (waitingForList ? 40 : 8);
         int percent = (int) (time % barSizeX);
 
         if (!waitingForList && percent > barSizeX - 8)
             downloadFinished = true;
 
-        int xStart = x + width / 2 - barSizeX / 2;
-        int yStart = y + height / 3;
+        int xStart = x()+width()/2-barSizeX/2;
+        int yStart = y()+height()/3;
 
-        FontUtils.drawCenteredString("downloading data", (x + width) / 2, (y + height) / 3 + squareSize, 0xff165571);
+        FontUtils.drawCenteredString("downloading data", (x()+width()) / 2, (y()+height()) / 3 + squareSize, 0xff165571);
 
         int xSize = percent;
         int ySize = 9;
@@ -135,8 +133,8 @@ public class WidgetItemSelection extends GhostWidget
     {
         hover = null;
         selection = null;
-        int xOffset = x - (squareSize - 2);
-        int yOffset = y + 2;
+        int xOffset = x()-(squareSize - 2);
+        int yOffset = y()+2;
 
         int renderPointerX = 1;
         int renderPointerY = 0;
@@ -189,14 +187,14 @@ public class WidgetItemSelection extends GhostWidget
     {
         FontRenderer font = stack.getItem().getFontRenderer(stack);
         if (font == null)
-            font = fontRenderer;
+            font = fontRenderer();
 
         renderItem.zLevel = 100.0F;
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_LIGHTING);
 
-        renderItem.renderItemAndEffectIntoGUI(font, renderEngine, stack, xPos, yPos);
-        renderItem.renderItemOverlayIntoGUI(font, renderEngine, stack, xPos, yPos, "");
+        renderItem.renderItemAndEffectIntoGUI(font, renderEngine(), stack, xPos, yPos);
+        renderItem.renderItemOverlayIntoGUI(font, renderEngine(), stack, xPos, yPos, "");
 
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -237,7 +235,7 @@ public class WidgetItemSelection extends GhostWidget
     @Override
     public void drawBack(int mousex, int mousey, float frame)
     {
-        drawGradientRect(x, y, x + width, y + height, 0xff808080, 0xff808080);
+        drawGradientRect(x(), y(), x()+width(), y()+height(), 0xff808080, 0xff808080);
         pagesNeeded = (getSeachedCount() - 1) / (rows * columns);
         if (pagesNeeded < 0)
             pagesNeeded = 0;
@@ -257,7 +255,7 @@ public class WidgetItemSelection extends GhostWidget
         if (hover != null)
             GuiDraw.drawMultilineTip(mousex + 12, mousey - 12, hover.makeStack().getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips));
 
-        FontUtils.drawCenteredString("Page: " + (currentPage + 1) + "/" + (pagesNeeded + 1), x + (width / 2), y + height + 6, PRColors.BLACK.rgb);
+        FontUtils.drawCenteredString("Page: " + (currentPage + 1) + "/" + (pagesNeeded + 1), x()+(width()/2), y()+height() + 6, PRColors.BLACK.rgb);
     }
 
     @Override

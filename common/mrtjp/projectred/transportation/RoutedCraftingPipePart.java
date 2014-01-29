@@ -54,7 +54,7 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
         }
     };
 
-    public RoutingChipset_Crafting[] chips = new RoutingChipset_Crafting[9];
+    public ChipCrafting[] chips = new ChipCrafting[9];
 
     private SimpleInventory cardSlots = new SimpleInventory(9, "links", 1)
     {
@@ -203,7 +203,7 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
 
             ItemKeyStack keyStack = nextOrder.getValue1();
             int maxToSend = Math.min(itemsleft, keyStack.stackSize);
-            maxToSend = Math.min(keyStack.key().getStackLimit(), maxToSend);
+            maxToSend = Math.min(keyStack.key().getMaxStackSize(), maxToSend);
             int available = inv.extractItem(keyStack.key(), maxToSend);
 
             if (available <= 0)
@@ -212,7 +212,7 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
             ItemKey key = keyStack.key();
             while (available > 0)
             {
-                int numToSend = Math.min(available, key.getStackLimit());
+                int numToSend = Math.min(available, key.getMaxStackSize());
                 numToSend = Math.min(numToSend, keyStack.stackSize);
                 if (numToSend == 0)
                     break;
@@ -338,9 +338,9 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
         {
             ItemStack stack = chipSlots.getStackInSlot(i);
             RoutingChipset c = ItemRoutingChip.loadChipFromItemStack(stack);
-            if (c instanceof RoutingChipset_Crafting)
+            if (c instanceof ChipCrafting)
             {
-                RoutingChipset_Crafting c2 = (RoutingChipset_Crafting) c;
+                ChipCrafting c2 = (ChipCrafting) c;
                 c2.setEnvironment(this, this, i);
                 if (chips[i] != c2)
                     chips[i] = c2;
@@ -507,19 +507,19 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
         if (items == null)
             return null;
 
-        RoutingChipset_Crafting r = getChipFor(item);
+        ChipCrafting r = getChipFor(item);
         if (r == null)
             return null;
-        ItemKeyStack result = ItemKeyStack.get(r.getMatrix().getStackInSlot(9));
+        ItemKeyStack result = ItemKeyStack.get(r.matrix().getStackInSlot(9));
 
         IWorldRequester[] requesters = new IWorldRequester[9];
         for (int i = 0; i < 9; i++)
-            requesters[i] = getExtensionFor(r.extIndex[i]);
+            requesters[i] = getExtensionFor(r.extIndex()[i]);
 
         CraftingPromise promise = new CraftingPromise(result, this, priority);
         for (int i = 0; i < 9; i++)
         {
-            ItemKeyStack keystack = ItemKeyStack.get(r.getMatrix().getStackInSlot(i));
+            ItemKeyStack keystack = ItemKeyStack.get(r.matrix().getStackInSlot(i));
             if (keystack == null || keystack.stackSize <= 0)
                 continue;
 
@@ -540,10 +540,10 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
     public List<ItemKeyStack> getCraftedItems()
     {
         List<ItemKeyStack> list = new ArrayList<ItemKeyStack>(9);
-        for (RoutingChipset_Crafting r : chips)
+        for (ChipCrafting r : chips)
             if (r != null)
             {
-                ItemStack stack = r.getMatrix().getStackInSlot(9);
+                ItemStack stack = r.matrix().getStackInSlot(9);
                 if (stack != null)
                     list.add(ItemKeyStack.get(stack));
             }
@@ -551,12 +551,12 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
         return list;
     }
 
-    public RoutingChipset_Crafting getChipFor(ItemKey key)
+    public ChipCrafting getChipFor(ItemKey key)
     {
-        for (RoutingChipset_Crafting r : chips)
+        for (ChipCrafting r : chips)
             if (r != null)
             {
-                ItemStack stack = r.getMatrix().getStackInSlot(9);
+                ItemStack stack = r.matrix().getStackInSlot(9);
                 if (stack != null && ItemKey.get(stack).equals(key))
                     return r;
             }
@@ -588,12 +588,12 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
         // Dont craft more than one thing at a time.
         if (manager.hasOrders())
         {
-            RoutingChipset_Crafting r = getChipFor(manager.peek().getValue1().key());
+            ChipCrafting r = getChipFor(manager.peek().getValue1().key());
             if (r != null)
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    ItemStack s = r.getMatrix().getStackInSlot(i);
+                    ItemStack s = r.matrix().getStackInSlot(i);
                     if (s != null && ItemKey.get(s).equals(item))
                         return super.getActiveFreeSpace(item);
                 }

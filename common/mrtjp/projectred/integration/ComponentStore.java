@@ -1,9 +1,11 @@
 package mrtjp.projectred.integration;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import codechicken.lib.colour.Colour;
+import codechicken.lib.lighting.LightModel;
+import codechicken.lib.lighting.PlanarLightModel;
+import codechicken.lib.math.MathHelper;
+import codechicken.lib.render.*;
+import codechicken.lib.vec.*;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.InvertX;
 import mrtjp.projectred.transmission.RenderWire;
@@ -11,30 +13,10 @@ import mrtjp.projectred.transmission.RenderWire.UVT;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
-import codechicken.lib.colour.Colour;
-import codechicken.lib.lighting.LightModel;
-import codechicken.lib.lighting.PlanarLightModel;
-import codechicken.lib.math.MathHelper;
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.ColourMultiplier;
-import codechicken.lib.render.IUVTransformation;
-import codechicken.lib.render.IVertexModifier;
-import codechicken.lib.render.IconTransformation;
-import codechicken.lib.render.MultiIconTransformation;
-import codechicken.lib.render.TextureDataHolder;
-import codechicken.lib.render.TextureSpecial;
-import codechicken.lib.render.TextureUtils;
-import codechicken.lib.render.UVScale;
-import codechicken.lib.render.UVTranslation;
-import codechicken.lib.render.Vertex5;
-import codechicken.lib.vec.Rectangle4i;
-import codechicken.lib.vec.RedundantTransformation;
-import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Scale;
-import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Translation;
-import codechicken.lib.vec.Vector3;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class ComponentStore
 {
@@ -132,9 +114,7 @@ public class ComponentStore
     {
         CCModel m = loadModel(name);
         m.apply(new Translation(0.5, 0, 0.5));
-        for (int i = 0; i < m.verts.length; i++)
-            // inset each face a little for posts and other stuff that render
-            // overtop
+        for (int i = 0; i < m.verts.length; i++)//inset each face a little for posts and other stuff that render overtop
             m.verts[i].vec.subtract(m.normals[i].copy().multiply(0.0002));
         return m;
     }
@@ -549,8 +529,7 @@ public class ComponentStore
             double x2 = (rect.x + rect.w) / 32D;
             double z1 = rect.y / 32D;
             double z2 = (rect.y + rect.h) / 32D;
-            double d = 0.0005 - h / 50D;// little offset for the wires go ontop
-                                        // of the border
+            double d = 0.0005 - h / 50D;// little offset for the wires go ontop of the border
             model.generateBlock(i, x1 + d, 0.125, z1 + d, x2 - d, 0.125 + h, z2 - d, 1);
             MultiIconTransformation.setIconIndex(model, i, i + 20, icon);
         }
@@ -675,8 +654,7 @@ public class ComponentStore
             m.apply(new Translation(-0.5 + x / 16, (height - 10) / 16D, -0.5 + z / 16));
             m.computeNormals();
             m.shrinkUVs(0.0005);
-            m.apply(new Scale(1.0005)); // Eliminates z-fighting when torch is
-                                        // on wire.
+            m.apply(new Scale(1.0005)); // Eliminates z-fighting when torch is on wire.
             return m;
         }
 

@@ -13,7 +13,10 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
+import scala.collection.JavaConversions;
+import scala.collection.mutable.ListBuffer;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class ItemRoutingChip extends Item
@@ -66,9 +69,9 @@ public class ItemRoutingChip extends Item
                 RoutingChipset r = loadChipFromItemStack(stack);
                 if (r != null)
                 {
-                    List<String> s = r.infoCollection();
-                    if (s != null)
-                        list.addAll(s);
+                    List<String> s = new LinkedList<String>();
+                    r.infoCollection((ListBuffer<String>)JavaConversions.asScalaBuffer(s));
+                    list.addAll(s);
                 }
             }
             else
@@ -140,14 +143,14 @@ public class ItemRoutingChip extends Item
 
     public enum EnumRoutingChip
     {
-        ITEMRESPONDER("responder", RoutingChipset_ItemResponder.class, ChipType.INTERFACE),
-        DYNAMICITEMRESPONDER("responder_dyn", RoutingChipset_DynamicItemResponder.class, ChipType.INTERFACE),
-        ITEMOVERFLOWRESPONDER("overflow", RoutingChipset_ItemOverflowResponder.class, ChipType.INTERFACE),
-        ITEMTERMINATOR("terminator", RoutingChipset_ItemTerminator.class, ChipType.INTERFACE),
-        ITEMEXTRACTOR("extractor", RoutingChipset_ItemExtractor.class, ChipType.INTERFACE),
-        ITEMBROADCASTER("broadcaster", RoutingChipset_ItemBroadcaster.class, ChipType.INTERFACE),
-        ITEMSTOCKKEEPER("stockkeeper", RoutingChipset_ItemStockKeeper.class, ChipType.INTERFACE),
-        ITEMCRAFTING("crafting", RoutingChipset_Crafting.class, ChipType.CRAFTING);
+        ITEMRESPONDER("responder", ChipItemResponder.class, ChipType.INTERFACE),
+        DYNAMICITEMRESPONDER("responder_dyn", ChipDynamicItemResponder.class, ChipType.INTERFACE),
+        ITEMOVERFLOWRESPONDER("overflow", ChipItemOverflowResponder.class, ChipType.INTERFACE),
+        ITEMTERMINATOR("terminator", ChipItemTerminator.class, ChipType.INTERFACE),
+        ITEMEXTRACTOR("extractor", ChipExtractor.class, ChipType.INTERFACE),
+        ITEMBROADCASTER("broadcaster", ChipBroadcaster.class, ChipType.INTERFACE),
+        ITEMSTOCKKEEPER("stockkeeper", ChipStockKeeper.class, ChipType.INTERFACE),
+        ITEMCRAFTING("crafting", ChipCrafting.class, ChipType.CRAFTING);
 
         public static final EnumRoutingChip[] VALID_CHIPS = values();
         private final String iconPath;

@@ -1,24 +1,23 @@
 package mrtjp.projectred.core.inventory;
 
-import java.awt.Point;
-import java.util.ArrayList;
-
+import codechicken.core.gui.GuiDraw;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import codechicken.core.gui.GuiDraw;
+import java.awt.*;
+import java.util.ArrayList;
 
 public class GhostGuiContainer extends GuiContainer implements IStackableGui, IGuiActionListener
 {
     protected static final ResourceLocation RL_extras = new ResourceLocation("projectred:textures/gui/guiextras.png");
 
     public ArrayList<GhostWidget> widgets = new ArrayList<GhostWidget>();
+
     GuiScreen previousGui = null;
 
     public GhostGuiContainer(Container container, GuiScreen previousGui)
@@ -32,6 +31,11 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
         this.xSize = x;
         this.ySize = y;
         this.previousGui = previousGui;
+    }
+
+    public GhostGuiContainer(int x, int y)
+    {
+        this(new GhostContainer2(null), null, x, y);
     }
 
     @Override
@@ -161,7 +165,7 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
     }
 
     @Override
-    public void actionPerformed(String ident, Object... params)
+    public void actionPerformed(String ident)
     {
     }
 

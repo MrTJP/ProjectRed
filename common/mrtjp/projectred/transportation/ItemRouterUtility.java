@@ -1,5 +1,8 @@
 package mrtjp.projectred.transportation;
 
+import codechicken.core.IGuiPacketSender;
+import codechicken.core.ServerUtils;
+import codechicken.lib.packet.PacketCustom;
 import mrtjp.projectred.ProjectRedTransportation;
 import mrtjp.projectred.core.BasicGuiUtils;
 import mrtjp.projectred.core.ItemPart;
@@ -8,7 +11,6 @@ import mrtjp.projectred.core.inventory.GhostContainer2;
 import mrtjp.projectred.core.inventory.GhostContainer2.ISlotController.InventoryRulesController;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.Pair2;
-import mrtjp.projectred.transportation.RoutingChipset.UpgradeBus;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -16,9 +18,6 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import codechicken.core.IGuiPacketSender;
-import codechicken.core.ServerUtils;
-import codechicken.lib.packet.PacketCustom;
 
 public class ItemRouterUtility extends Item
 {
@@ -161,7 +160,7 @@ public class ItemRouterUtility extends Item
             RoutingChipset r = getChip();
             if (r != null)
             {
-                UpgradeBus bus = r.getUpgradeBus();
+                UpgradeBus bus = r.upgradeBus();
                 for (int i = 0; i < 6; i++)
                 {
                     ItemStack stack = upgradeInv.getStackInSlot(i);

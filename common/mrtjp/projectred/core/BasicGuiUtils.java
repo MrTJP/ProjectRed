@@ -1,5 +1,7 @@
 package mrtjp.projectred.core;
 
+import codechicken.core.gui.GuiDraw;
+import codechicken.lib.render.CCRenderState;
 import mrtjp.projectred.core.utils.Pair2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -43,121 +45,72 @@ public class BasicGuiUtils
         var9.draw();
     }
 
-    public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag)
+    public static void drawGuiBox(int x, int y, int width, int height, float zLevel)
     {
-        drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, flag, true, true, true, true);
+        drawGuiBox(x, y, width, height, zLevel, true, true, true, true);
     }
 
-    private static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag, boolean displayTop, boolean displayLeft, boolean displayBottom, boolean displayRight)
+    private static ResourceLocation guiBack = new ResourceLocation("projectred", "textures/gui/guibackground.png");
+    private static ResourceLocation guiExtras = new ResourceLocation("projectred:textures/gui/guiextras.png");
+
+    public static void drawGuiBox(int x, int y, int width, int height, float zLevel, boolean top, boolean left, boolean bottom, boolean right)
     {
-        if (flag)
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.renderEngine.bindTexture(new ResourceLocation("projectred", "textures/gui/guibackground.png"));
+        int u = 1;
+        int v = 29;
+        CCRenderState.changeTexture(guiExtras);
+        GuiDraw.gui.setZLevel(zLevel);
 
-        if (displayTop)
+        //renderBackground
+        GL11.glPushMatrix();
+        GL11.glTranslated(x+2, y+2, 0);
+        GL11.glScaled(width-4, height-4, 0);
+        GuiDraw.drawTexturedModalRect(0, 0, u+19, v, 1, 1);
+        GL11.glPopMatrix();
+
+        if (top)
         {
-            // Top Side
-            Tessellator var9 = Tessellator.instance;
-            var9.startDrawingQuads();
-            var9.addVertexWithUV(guiLeft + 15, guiTop + 15, zLevel, 0.33, 0.33);
-            var9.addVertexWithUV(right - 15, guiTop + 15, zLevel, 0.66, 0.33);
-            var9.addVertexWithUV(right - 15, guiTop, zLevel, 0.66, 0);
-            var9.addVertexWithUV(guiLeft + 15, guiTop, zLevel, 0.33, 0);
-            var9.draw();
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+3, y, 0);
+            GL11.glScaled(width-6, 1, 0);
+            GuiDraw.drawTexturedModalRect(0, 0, u+4, v, 1, 3);
+            GL11.glPopMatrix();
         }
 
-        if (displayLeft)
+        if (bottom)
         {
-            // Left Side
-            Tessellator var9 = Tessellator.instance;
-            var9.startDrawingQuads();
-            var9.addVertexWithUV(guiLeft, bottom - 15, zLevel, 0, 0.66);
-            var9.addVertexWithUV(guiLeft + 15, bottom - 15, zLevel, 0.33, 0.66);
-            var9.addVertexWithUV(guiLeft + 15, guiTop + 15, zLevel, 0.33, 0.33);
-            var9.addVertexWithUV(guiLeft, guiTop + 15, zLevel, 0, 0.33);
-            var9.draw();
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+3, y+height-3, 0);
+            GL11.glScaled(width-6, 1, 0);
+            GuiDraw.drawTexturedModalRect(0, 0, u+14, v, 1, 3);
+            GL11.glPopMatrix();
         }
 
-        if (displayBottom)
+        if (left)
         {
-            // Bottom Side
-            Tessellator var9 = Tessellator.instance;
-            var9.startDrawingQuads();
-            var9.addVertexWithUV(guiLeft + 15, bottom, zLevel, 0.33, 1);
-            var9.addVertexWithUV(right - 15, bottom, zLevel, 0.66, 1);
-            var9.addVertexWithUV(right - 15, bottom - 15, zLevel, 0.66, 0.66);
-            var9.addVertexWithUV(guiLeft + 15, bottom - 15, zLevel, 0.33, 0.66);
-            var9.draw();
+            GL11.glPushMatrix();
+            GL11.glTranslated(x, y+3, 0);
+            GL11.glScaled(1, height-6, 0);
+            GuiDraw.drawTexturedModalRect(0, 0, u, v+4, 3, 1);
+            GL11.glPopMatrix();
         }
 
-        if (displayRight)
+        if (right)
         {
-            // Right Side
-            Tessellator var9 = Tessellator.instance;
-            var9.startDrawingQuads();
-            var9.addVertexWithUV(right - 15, bottom - 15, zLevel, 0.66, 0.66);
-            var9.addVertexWithUV(right, bottom - 15, zLevel, 1, 0.66);
-            var9.addVertexWithUV(right, guiTop + 15, zLevel, 1, 0.33);
-            var9.addVertexWithUV(right - 15, guiTop + 15, zLevel, 0.66, 0.33);
-            var9.draw();
+            GL11.glPushMatrix();
+            GL11.glTranslated(x+width-3, y+3, 0);
+            GL11.glScaled(1, height-6, 0);
+            GuiDraw.drawTexturedModalRect(0, 0, u+8, v, 3, 1);
+            GL11.glPopMatrix();
         }
 
-        if (displayTop && displayLeft)
-        {
-            // Top Left
-            Tessellator var9 = Tessellator.instance;
-            var9.startDrawingQuads();
-            var9.addVertexWithUV(guiLeft, guiTop + 15, zLevel, 0, 0.33);
-            var9.addVertexWithUV(guiLeft + 15, guiTop + 15, zLevel, 0.33, 0.33);
-            var9.addVertexWithUV(guiLeft + 15, guiTop, zLevel, 0.33, 0);
-            var9.addVertexWithUV(guiLeft, guiTop, zLevel, 0, 0);
-            var9.draw();
-        }
-
-        if (displayBottom && displayLeft)
-        {
-            // Bottom Left
-            Tessellator var9 = Tessellator.instance;
-            var9.startDrawingQuads();
-            var9.addVertexWithUV(guiLeft, bottom, zLevel, 0, 1);
-            var9.addVertexWithUV(guiLeft + 15, bottom, zLevel, 0.33, 1);
-            var9.addVertexWithUV(guiLeft + 15, bottom - 15, zLevel, 0.33, 0.66);
-            var9.addVertexWithUV(guiLeft, bottom - 15, zLevel, 0, 0.66);
-            var9.draw();
-        }
-
-        if (displayBottom && displayRight)
-        {
-            // Bottom Right
-            Tessellator var9 = Tessellator.instance;
-            var9.startDrawingQuads();
-            var9.addVertexWithUV(right - 15, bottom, zLevel, 0.66, 1);
-            var9.addVertexWithUV(right, bottom, zLevel, 1, 1);
-            var9.addVertexWithUV(right, bottom - 15, zLevel, 1, 0.66);
-            var9.addVertexWithUV(right - 15, bottom - 15, zLevel, 0.66, 0.66);
-            var9.draw();
-        }
-
-        if (displayTop && displayRight)
-        {
-            // Top Right
-            Tessellator var9 = Tessellator.instance;
-            var9.startDrawingQuads();
-            var9.addVertexWithUV(right - 15, guiTop + 15, zLevel, 0.66, 0.33);
-            var9.addVertexWithUV(right, guiTop + 15, zLevel, 1, 0.33);
-            var9.addVertexWithUV(right, guiTop, zLevel, 1, 0);
-            var9.addVertexWithUV(right - 15, guiTop, zLevel, 0.66, 0);
-            var9.draw();
-        }
-
-        // Center
-        Tessellator var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft + 15, bottom - 15, zLevel, 0.33, 0.66);
-        var9.addVertexWithUV(right - 15, bottom - 15, zLevel, 0.66, 0.66);
-        var9.addVertexWithUV(right - 15, guiTop + 15, zLevel, 0.66, 0.33);
-        var9.addVertexWithUV(guiLeft + 15, guiTop + 15, zLevel, 0.33, 0.33);
-        var9.draw();
+        if (top && left)
+            GuiDraw.drawTexturedModalRect(x, y, u, v, 4, 4);
+        if (top && right)
+            GuiDraw.drawTexturedModalRect(x+width-3, y, u+5, v, 3, 3);
+        if (bottom && left)
+            GuiDraw.drawTexturedModalRect(x, y+height-3, u+11, v, 3, 3);
+        if (bottom && right)
+            GuiDraw.drawTexturedModalRect(x+width-4, y+height-4, u+15, v, 4, 4);
     }
 
     /**

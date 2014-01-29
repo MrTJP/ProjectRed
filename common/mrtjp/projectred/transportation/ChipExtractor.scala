@@ -1,0 +1,94 @@
+package mrtjp.projectred.transportation
+
+import java.util
+import java.util.BitSet
+import mrtjp.projectred.core.inventory.InventoryWrapper
+import mrtjp.projectred.core.utils.ItemKey
+import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
+import scala.collection.mutable.ListBuffer
+
+class ChipExtractor extends RoutingChipset with TChipFilter with TChipOrientation
+{
+    private var remainingDelay = operationDelay
+
+    private def operationDelay = 100-upgradeBus.LLatency
+
+    private def itemsToExtract = 8+upgradeBus.RLatency
+
+
+    override def update()
+    {
+        super.update()
+
+        remainingDelay-=1
+        if (remainingDelay>0) return
+        remainingDelay = operationDelay
+
+        val real = inventoryProvider.getInventory
+        if (real == null) return
+
+        val inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side)
+        val filt = applyFilter(InventoryWrapper.wrapInventory(filter))
+
+        val available = inv.getAllItemStacks
+        import scala.collection.JavaConversions._
+        for (items <- available.entrySet())
+        {
+            val stackKey = items.getKey
+            val stackSize = items.getValue
+
+            if (stackKey!=null || filt.hasItem(stackKey)!=filterExclude)
+            {
+                val exclusions = new BitSet
+                var s = routeLayer.getLogisticPath(stackKey, exclusions, true)
+                if (s != null)
+                {
+                    var leftInRun = itemsToExtract
+                    while (s != null)
+                    {
+                        var toExtract = Math.min(leftInRun, stackSize)
+                        toExtract = Math.min(toExtract, stackKey.getMaxStackSize)
+                        if (s.itemCount > 0) toExtract = Math.min(toExtract, s.itemCount)
+
+                        if (toExtract <= 0) return
+
+                        val stack2 = stackKey.makeStack(inv.extractItem(stackKey, toExtract))
+                        if (stack2.stackSize <= 0) return
+
+                        routeLayer.queueStackToSend(stack2, inventoryProvider.getInterfacedSide, s)
+
+                        leftInRun -= stack2.stackSize
+                        if (leftInRun <= 0) return
+
+                        exclusions.set(s.responder)
+                        s = routeLayer.getLogisticPath(stackKey, exclusions, true)
+                    }
+                }
+            }
+        }
+    }
+
+    override def infoCollection(list:ListBuffer[String])
+    {
+        super.infoCollection(list)
+        addOrientInfo(list)
+        addFilterInfo(list)
+    }
+
+    def getChipType = EnumRoutingChip.ITEMEXTRACTOR
+
+
+    override def createUpgradeBus =
+    {
+        val bus = new UpgradeBus(3, 3)
+        bus.setLatency(25, 34, 40, 8, 16, 32)
+        bus.Linfo = "delay between extractions"
+        bus.Lformula = "delay = 100 - Latency"
+        bus.Rinfo = "items to extract in one operation"
+        bus.Rformula = "items = 8 + Latency"
+
+        bus
+    }
+
+    override def enableHiding = false
+}

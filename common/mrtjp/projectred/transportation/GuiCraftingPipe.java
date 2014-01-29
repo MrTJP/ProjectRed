@@ -7,7 +7,7 @@ import codechicken.lib.vec.BlockCoord;
 import mrtjp.projectred.core.BasicGuiUtils;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.inventory.GhostGuiContainer;
-import mrtjp.projectred.core.inventory.WidgetButton.WidgetSimpleButton;
+import mrtjp.projectred.core.inventory.JWidgetButton;
 import mrtjp.projectred.core.utils.Pair2;
 import net.minecraft.inventory.Container;
 import org.lwjgl.opengl.GL11;
@@ -23,7 +23,7 @@ public class GuiCraftingPipe extends GhostGuiContainer
     }
 
     @Override
-    public void actionPerformed(String ident, Object... params)
+    public void actionPerformed(String ident)
     {
         PacketCustom packet = new PacketCustom(TransportationCPH.channel, NetConstants.gui_CraftingPipe_action);
         packet.writeCoord(new BlockCoord(pipe.tile()));
@@ -34,8 +34,8 @@ public class GuiCraftingPipe extends GhostGuiContainer
     @Override
     public void addWidgets()
     {
-        add(new WidgetSimpleButton(138, 12, 20, 14).setText("+").setActionCommand("up"));
-        add(new WidgetSimpleButton(92, 12, 20, 14).setText("-").setActionCommand("down"));
+        add(new JWidgetButton(138, 12, 20, 14).setText("+").setActionCommand("up"));
+        add(new JWidgetButton(92, 12, 20, 14).setText("-").setActionCommand("down"));
     }
 
     @Override

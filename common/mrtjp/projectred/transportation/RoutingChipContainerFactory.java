@@ -8,19 +8,19 @@ import codechicken.lib.packet.PacketCustom;
 
 public class RoutingChipContainerFactory
 {
-    public static class ChipGhostContainer<T extends RoutingChipset> extends GhostContainer2
+    public static class ChipContainer<T extends RoutingChipset> extends GhostContainer2
     {
         EntityPlayer player;
         ItemStack stack;
         int slot;
         T chip;
 
-        public ChipGhostContainer(EntityPlayer player)
+        public ChipContainer(EntityPlayer player)
         {
             this(player, null);
         }
 
-        public ChipGhostContainer(EntityPlayer player, T chip)
+        public ChipContainer(EntityPlayer player, T chip)
         {
             super(player.inventory);
             this.player = player;
@@ -29,9 +29,9 @@ public class RoutingChipContainerFactory
             this.chip = chip != null ? chip : (T) ItemRoutingChip.loadChipFromItemStack(stack);
         }
 
-        public ChipGhostContainer<T> getNewInstance()
+        public ChipContainer<T> getNewInstance()
         {
-            ChipGhostContainer<T> c = new ChipGhostContainer<T>(player, chip);
+            ChipContainer<T> c = new ChipContainer<T>(player, chip);
             return c;
         }
 

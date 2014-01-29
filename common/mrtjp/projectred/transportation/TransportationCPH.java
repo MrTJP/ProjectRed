@@ -1,8 +1,9 @@
 package mrtjp.projectred.transportation;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import codechicken.core.ClientUtils;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
+import codechicken.multipart.TMultiPart;
 import mrtjp.projectred.ProjectRedTransportation;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.utils.ItemKey;
@@ -12,10 +13,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.NetClientHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import codechicken.core.ClientUtils;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
-import codechicken.multipart.TMultiPart;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TransportationCPH implements IClientPacketHandler
 {
@@ -124,7 +124,7 @@ public class TransportationCPH implements IClientPacketHandler
             if (e != null)
             {
                 RoutingChipset r = e.createChipset();
-                ClientUtils.openSMPGui(packet.readByte(), RoutingChipGuiFactory.getGui(r.createContainer(player), stack.getItemDamage()));
+                ClientUtils.openSMPGui(packet.readByte(), RoutingChipGuiFactory.apply(r.createContainer(player)));
             }
         }
     }

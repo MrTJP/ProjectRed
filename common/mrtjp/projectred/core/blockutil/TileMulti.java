@@ -59,7 +59,7 @@ public abstract class TileMulti extends TileEntity implements ICustomPacketTile
         return true;
     }
 
-    public boolean onBlockActivated(EntityPlayer player)
+    public boolean onBlockActivated(EntityPlayer player, int side)
     {
         return false;
     }
@@ -120,7 +120,7 @@ public abstract class TileMulti extends TileEntity implements ICustomPacketTile
 
     public final void markDirty()
     {
-        BasicUtils.markBlockDirty(worldObj, xCoord, yCoord, zCoord);
+        worldObj.markTileEntityChunkModified(xCoord, yCoord, zCoord, this);
     }
 
     public final void markRender()
@@ -208,5 +208,10 @@ public abstract class TileMulti extends TileEntity implements ICustomPacketTile
         PacketCustom stream = new PacketCustom(CoreSPH.channel, 1);
         stream.writeCoord(new BlockCoord(this)).writeByte(switchkey);
         return stream;
+    }
+
+    public void writeStreamSend(PacketCustom out)
+    {
+        out.sendToChunk(worldObj, xCoord/16, zCoord/16);
     }
 }

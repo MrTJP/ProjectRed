@@ -8,7 +8,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
-import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.List;
 
@@ -130,8 +129,6 @@ public class ItemPart extends Item
         public static final EnumPart[] VALID_PARTS = values();
         public static final EnumPart[] ILLUMAR_PARTS = {WHITEILLUMAR, ORANGEILLUMAR, MAGENTAILLUMAR, LIGHTBLUEILLUMAR, YELLOWILLUMAR, LIMEILLUMAR, PINKILLUMAR, GREYILLUMAR, LIGHTGREYILLUMAR, CYANILLUMAR, PURPLEILLUMAR, BLUEILLUMAR, BROWNILLUMAR, GREENILLUMAR, REDILLUMAR, BLACKILLUMAR};
         public int meta = this.ordinal();
-        public static final String oreDictDefinition = "projredPart";
-        public static final String oreDictDefinition_illumar = "projredIllumar";
 
         private EnumPart(String unlocal)
         {
@@ -157,10 +154,6 @@ public class ItemPart extends Item
 
         public static void initOreDictDefinitions()
         {
-            for (EnumPart p : EnumPart.VALID_PARTS)
-                OreDictionary.registerOre(oreDictDefinition, p.getItemStack());
-            for (EnumPart p : EnumPart.ILLUMAR_PARTS)
-                OreDictionary.registerOre(oreDictDefinition_illumar, p.getItemStack());
         }
     }
 }

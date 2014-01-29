@@ -26,21 +26,8 @@ public class BasicRenderUtils
         }
     }
 
-    private static RenderMulti makeRenderer(Block bl, Class renderer)
+    public static void setRenderer(Block b, int meta, RenderMulti render)
     {
-        try
-        {
-            return (RenderMulti) renderer.getDeclaredConstructor(new Class[] { Block.class }).newInstance(new Object[] { bl });
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static void setRenderer(Block b, int meta, Class<? extends RenderMulti> renderer)
-    {
-        RenderMulti render = makeRenderer(b, renderer);
         if (renderers[b.blockID] == null)
         {
             renderers[b.blockID] = new IndexedRender();

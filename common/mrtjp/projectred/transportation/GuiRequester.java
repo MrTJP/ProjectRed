@@ -4,11 +4,7 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import mrtjp.projectred.core.BasicGuiUtils;
 import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.core.inventory.GhostGuiScreen;
-import mrtjp.projectred.core.inventory.WidgetButton.WidgetCheckBox;
-import mrtjp.projectred.core.inventory.WidgetButton.WidgetSimpleButton;
-import mrtjp.projectred.core.inventory.WidgetItemSelection;
-import mrtjp.projectred.core.inventory.WidgetTextBox;
+import mrtjp.projectred.core.inventory.*;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import org.lwjgl.input.Keyboard;
@@ -19,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class GuiRequester extends GhostGuiScreen
+public class GuiRequester extends GhostGuiContainer
 {
     IWorldRequester pipe;
 
@@ -82,7 +78,7 @@ public class GuiRequester extends GhostGuiScreen
     @Override
     public void drawBackground()
     {
-        BasicGuiUtils.drawGuiBackGround(mc, 0, 0, xSize, ySize, zLevel, true);
+        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel);
     }
 
     @Override
@@ -105,17 +101,17 @@ public class GuiRequester extends GhostGuiScreen
         add(partials);
 
         // Submit and refresh
-        add(new WidgetSimpleButton(10, 185, 50, 16).setActionCommand("refrsh").setText("Re-poll"));
-        add(new WidgetSimpleButton(10, 205, 50, 16).setActionCommand("req").setText("Submit"));
+        add(new JWidgetButton(10, 185, 50, 16).setActionCommand("refrsh").setText("Re-poll"));
+        add(new JWidgetButton(10, 205, 50, 16).setActionCommand("req").setText("Submit"));
         // Count + -
-        add(new WidgetSimpleButton(95, 205, 16, 16).setActionCommand("-").setText("-"));
-        add(new WidgetSimpleButton(170, 205, 16, 16).setActionCommand("+").setText("+"));
+        add(new JWidgetButton(95, 205, 16, 16).setActionCommand("-").setText("-"));
+        add(new JWidgetButton(170, 205, 16, 16).setActionCommand("+").setText("+"));
         // Page + -
-        add(new WidgetSimpleButton(85, 152, 16, 16).setActionCommand("p-").setText("-"));
-        add(new WidgetSimpleButton(180, 152, 16, 16).setActionCommand("p+").setText("+"));
+        add(new JWidgetButton(85, 152, 16, 16).setActionCommand("p-").setText("-"));
+        add(new JWidgetButton(180, 152, 16, 16).setActionCommand("p+").setText("+"));
 
         // Select all
-        add(new WidgetSimpleButton(190, 205, 24, 16).setActionCommand("all").setText("All"));
+        add(new JWidgetButton(190, 205, 24, 16).setActionCommand("all").setText("All"));
 
         askForListRefresh();
     }
@@ -136,9 +132,9 @@ public class GuiRequester extends GhostGuiScreen
         {
             PacketCustom packet = new PacketCustom(TransportationSPH.channel, NetConstants.gui_Request_submit);
             packet.writeCoord(new BlockCoord(pipe.getContainer().tile()));
-            packet.writeBoolean(pull.isChecked());
-            packet.writeBoolean(craft.isChecked());
-            packet.writeBoolean(partials.isChecked());
+            packet.writeBoolean(pull.getChecked());
+            packet.writeBoolean(craft.getChecked());
+            packet.writeBoolean(partials.getChecked());
             packet.writeItemStack(request.key().makeStack(amount), true);
             packet.sendToServer();
         }
@@ -148,8 +144,8 @@ public class GuiRequester extends GhostGuiScreen
     {
         PacketCustom packet = new PacketCustom(TransportationSPH.channel, NetConstants.gui_Request_listRefresh);
         packet.writeCoord(new BlockCoord(pipe.getContainer().tile()));
-        packet.writeBoolean(pull.isChecked());
-        packet.writeBoolean(craft.isChecked());
+        packet.writeBoolean(pull.getChecked());
+        packet.writeBoolean(craft.getChecked());
         packet.sendToServer();
     }
 
@@ -197,7 +193,7 @@ public class GuiRequester extends GhostGuiScreen
     }
 
     @Override
-    public void actionPerformed(String ident, Object... params)
+    public void actionPerformed(String ident)
     {
         if (ident.equals("req"))
             sendItemRequest();
