@@ -1,9 +1,12 @@
 package mrtjp.projectred.core;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import codechicken.lib.colour.Colour;
 import codechicken.lib.colour.ColourRGBA;
+import org.lwjgl.opengl.GL11;
 
 public enum PRColors
 {
@@ -67,5 +70,14 @@ public enum PRColors
     public ItemStack getDye()
     {
         return new ItemStack(Item.dyePowder, 1, dyeId());
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void setGL11Color(float alpha)
+    {
+        float r=(rgb>>16&255)/255.0F;
+        float g=(rgb>>8&255)/255.0F;
+        float b=(rgb&255)/255.0F;
+        GL11.glColor4f(r, g, b, alpha);
     }
 }

@@ -151,8 +151,8 @@ public class WidgetTextBox extends GhostWidget
 
     public void drawBackground()
     {
-        drawRect(x - 1, y - 1, x + width + 1, y + height + 1, 0xffa0a0a0);
-        drawRect(x, y, x + width, y + height, 0xff000000);
+        drawRect(x()- 1, y() - 1, x() + width() + 1, y() + height() + 1, 0xffa0a0a0);
+        drawRect(x(), y(), x() + width(), y() + height(), 0xff000000);
     }
 
     public String getDrawText()
@@ -165,7 +165,7 @@ public class WidgetTextBox extends GhostWidget
 
     public void drawText()
     {
-        drawString(fontRenderer, getDrawText(), x + 4, y + height / 2 - 4, getTextColour());
+        drawString(fontRenderer(), getDrawText(), x()+4, y()+height() / 2 - 4, getTextColour());
     }
 
     public int getTextColour()

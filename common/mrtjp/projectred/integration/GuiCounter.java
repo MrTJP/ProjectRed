@@ -50,7 +50,7 @@ public class GuiCounter extends GuiScreenWidget
     @Override
     public void drawBackground()
     {
-        BasicGuiUtils.drawGuiBackGround(mc, 0, 0, xSize, ySize, zLevel, true);
+        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel);
         String s = "Maximum: " + logic.getCounterMax();
         fontRenderer.drawString(s, (xSize - fontRenderer.getStringWidth(s)) / 2, 5, 0x404040);
         s = "Increment: " + logic.getCounterIncr();

@@ -46,7 +46,7 @@ public class GuiTimer extends GuiScreenWidget
     @Override
     public void drawBackground()
     {
-        BasicGuiUtils.drawGuiBackGround(mc, 0, 0, xSize, ySize, zLevel, true);
+        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel);
         String s = "Timer interval: " + String.format("%.2f", logic.getTimerMax() * 0.05) + "s";
         int name_w = fontRenderer.getStringWidth(s);
         fontRenderer.drawString(s, (xSize - name_w) / 2, 8, 0x404040);

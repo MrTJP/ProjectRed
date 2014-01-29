@@ -1,8 +1,9 @@
 package mrtjp.projectred.core.blockutil;
 
-import java.util.ArrayList;
-import java.util.Random;
-
+import codechicken.lib.vec.BlockCoord;
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.core.BasicRenderUtils;
 import mrtjp.projectred.core.BasicUtils;
 import net.minecraft.block.Block;
@@ -18,9 +19,9 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import codechicken.lib.vec.BlockCoord;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 public class BlockMulti extends BlockContainer
 {
@@ -86,9 +87,10 @@ public class BlockMulti extends BlockContainer
         return null;
     }
 
-    public void addTile(int meta, Class<? extends TileMulti> cl)
+    public void addTile(int meta, Class<? extends TileMulti> clazz, String name)
     {
-        tiles[meta] = cl;
+        tiles[meta] = clazz;
+        GameRegistry.registerTileEntity(clazz, name);
     }
 
     @Override
@@ -102,9 +104,11 @@ public class BlockMulti extends BlockContainer
     {
         try
         {
-            return (TileEntity) tiles[meta].getDeclaredConstructor(new Class[0]).newInstance(new Object[0]);
-        } catch (Exception e)
+            return (TileEntity) tiles[meta].newInstance();
+        }
+        catch (Exception e)
         {
+            e.printStackTrace();
             return null;
         }
     }
@@ -134,14 +138,14 @@ public class BlockMulti extends BlockContainer
     @Override
     public ArrayList getBlockDropped(World w, int x, int y, int z, int meta, int fortune)
     {
-        ArrayList<ItemStack> ist = new ArrayList<ItemStack>();
+        ArrayList<ItemStack> list = new ArrayList<ItemStack>();
 
         TileMulti tile = BasicUtils.getTileEntity(w, new BlockCoord(x, y, z), TileMulti.class);
 
         if (tile == null)
-            return ist;
-        tile.addHarvestContents(ist);
-        return ist;
+            return list;
+        tile.addHarvestContents(list);
+        return list;
     }
 
     @Override
@@ -210,7 +214,7 @@ public class BlockMulti extends BlockContainer
         if (tile == null)
             return false;
 
-        return tile.onBlockActivated(player);
+        return tile.onBlockActivated(player, side);
     }
 
     @Override

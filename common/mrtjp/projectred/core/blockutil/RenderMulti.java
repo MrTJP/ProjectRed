@@ -1,11 +1,11 @@
 package mrtjp.projectred.core.blockutil;
 
-import java.util.Random;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import java.util.Random;
 
 public abstract class RenderMulti
 {

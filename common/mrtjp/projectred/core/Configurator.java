@@ -1,10 +1,10 @@
 package mrtjp.projectred.core;
 
-import java.io.File;
-
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+
+import java.io.File;
 
 public class Configurator
 {
@@ -53,7 +53,7 @@ public class Configurator
     public static Property item_wireDebuggerID;
     public static Property item_routingChipID;
     public static Property item_routerUtilID;
-    public static Property item_dataCardID;    
+    public static Property item_dataCardID;
 
     public static Property item_rubyAxe;
     public static Property item_sapphireAxe;
@@ -95,7 +95,7 @@ public class Configurator
     /** Settings **/
     public static boolean debugMode;
     public static boolean logicGateSounds;
-    
+
     public static int[] backpackBlacklist;
 
     public static int maxDetectionCount;
@@ -225,7 +225,7 @@ public class Configurator
             }
             s1++;
         }
-        
+
         localConfig.save();
     }
 }
