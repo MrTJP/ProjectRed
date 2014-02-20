@@ -19,7 +19,7 @@ public class ItemPart extends Item
     {
         super(par1);
         setUnlocalizedName("projectred.core.part");
-        setCreativeTab(ProjectRedCore.tabCore);
+        setCreativeTab(ProjectRedCore.tabCore());
         setHasSubtypes(true);
     }
 
@@ -144,12 +144,12 @@ public class ItemPart extends Item
 
         public ItemStack getItemStack()
         {
-            return new ItemStack(ProjectRedCore.itemComponent, 1, meta);
+            return new ItemStack(ProjectRedCore.itemComponent(), 1, meta);
         }
 
         public ItemStack getItemStack(int i)
         {
-            return new ItemStack(ProjectRedCore.itemComponent, i, meta);
+            return new ItemStack(ProjectRedCore.itemComponent(), i, meta);
         }
 
         public static void initOreDictDefinitions()

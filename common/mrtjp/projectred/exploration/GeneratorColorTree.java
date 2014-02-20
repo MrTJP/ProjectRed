@@ -56,19 +56,19 @@ public class GeneratorColorTree
             int meta = color.ordinal();
             ItemStack log = this.getLogType();
             int w = 2;
-            int h = 5 + rand.nextInt(3);
+            int h = 5+rand.nextInt(3);
 
             for (int i = 0; i < h; i++)
             {
-                world.setBlock(x, y + i, z, log.itemID, log.getItemDamage(), 3);
+                world.setBlock(x, y+i, z, log.itemID, log.getItemDamage(), 3);
             }
             for (int i = -w; i <= w; i++)
             {
                 for (int j = -w; j <= w; j++)
                 {
-                    if (this.canGenerateLeavesAt(world, x + i, y + h - 3, z + j))
+                    if (this.canGenerateLeavesAt(world, x+i, y+h-3, z+j))
                     {
-                        world.setBlock(x + i, y + h - 3, z + j, leafID, meta, 3);
+                        world.setBlock(x+i, y+h-3, z+j, leafID, meta, 3);
                     }
                 }
             }
@@ -76,9 +76,9 @@ public class GeneratorColorTree
             {
                 for (int j = -w; j <= w; j++)
                 {
-                    if (this.canGenerateLeavesAt(world, x + i, y + h - 2, z + j))
+                    if (this.canGenerateLeavesAt(world, x+i, y+h-2, z+j))
                     {
-                        world.setBlock(x + i, y + h - 2, z + j, leafID, meta, 3);
+                        world.setBlock(x+i, y+h-2, z+j, leafID, meta, 3);
                     }
                 }
             }
@@ -86,9 +86,9 @@ public class GeneratorColorTree
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    if (this.canGenerateLeavesAt(world, x + i, y + h - 1, z + j))
+                    if (this.canGenerateLeavesAt(world, x+i, y+h-1, z+j))
                     {
-                        world.setBlock(x + i, y + h - 1, z + j, leafID, meta, 3);
+                        world.setBlock(x+i, y+h-1, z+j, leafID, meta, 3);
                     }
                 }
             }
@@ -96,11 +96,11 @@ public class GeneratorColorTree
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    if (i * j == 0)
+                    if (i*j == 0)
                     {
-                        if (this.canGenerateLeavesAt(world, x + i, y + h, z + j))
+                        if (this.canGenerateLeavesAt(world, x+i, y+h, z+j))
                         {
-                            world.setBlock(x + i, y + h, z + j, leafID, meta, 3);
+                            world.setBlock(x+i, y+h, z+j, leafID, meta, 3);
                         }
                     }
                 }
@@ -112,23 +112,23 @@ public class GeneratorColorTree
     {
         if (canGenerateTree(world, x, z))
         {
-            int h = 10 + rand.nextInt(3);
+            int h = 10+rand.nextInt(3);
             ItemStack log = this.getLogType();
             int meta = color.ordinal();
             int w = 2;
 
             for (int i = 0; i < h; i++)
             {
-                world.setBlock(x, y + i, z, log.itemID, log.getItemDamage(), 3);
+                world.setBlock(x, y+i, z, log.itemID, log.getItemDamage(), 3);
             }
             for (int i = -1; i <= 1; i++)
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    if (i * j == 0)
-                        if (this.canGenerateLeavesAt(world, x + i, y + h - 8, z + j))
+                    if (i*j == 0)
+                        if (this.canGenerateLeavesAt(world, x+i, y+h-8, z+j))
                         {
-                            world.setBlock(x + i, y + h - 8, z + j, leafID, meta, 3);
+                            world.setBlock(x+i, y+h-8, z+j, leafID, meta, 3);
                         }
                 }
             }
@@ -136,9 +136,9 @@ public class GeneratorColorTree
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    if (this.canGenerateLeavesAt(world, x + i, y + h - 7, z + j))
+                    if (this.canGenerateLeavesAt(world, x+i, y+h-7, z+j))
                     {
-                        world.setBlock(x + i, y + h - 7, z + j, leafID, meta, 3);
+                        world.setBlock(x+i, y+h-7, z+j, leafID, meta, 3);
                     }
                 }
             }
@@ -146,10 +146,10 @@ public class GeneratorColorTree
             {
                 for (int j = -w; j <= w; j++)
                 {
-                    if (i * j != w * w && i * j != -w * w)
-                        if (this.canGenerateLeavesAt(world, x + i, y + h - 6, z + j))
+                    if (i*j != w*w && i*j != -w*w)
+                        if (this.canGenerateLeavesAt(world, x+i, y+h-6, z+j))
                         {
-                            world.setBlock(x + i, y + h - 6, z + j, leafID, meta, 3);
+                            world.setBlock(x+i, y+h-6, z+j, leafID, meta, 3);
                         }
                 }
             }
@@ -157,10 +157,10 @@ public class GeneratorColorTree
             {
                 for (int j = -w; j <= w; j++)
                 {
-                    if (i * j != w * w && i * j != -w * w)
-                        if (this.canGenerateLeavesAt(world, x + i, y + h - 5, z + j))
+                    if (i*j != w*w && i*j != -w*w)
+                        if (this.canGenerateLeavesAt(world, x+i, y+h-5, z+j))
                         {
-                            world.setBlock(x + i, y + h - 5, z + j, leafID, meta, 3);
+                            world.setBlock(x+i, y+h-5, z+j, leafID, meta, 3);
                         }
                 }
             }
@@ -168,9 +168,9 @@ public class GeneratorColorTree
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    if (this.canGenerateLeavesAt(world, x + i, y + h - 4, z + j))
+                    if (this.canGenerateLeavesAt(world, x+i, y+h-4, z+j))
                     {
-                        world.setBlock(x + i, y + h - 4, z + j, leafID, meta, 3);
+                        world.setBlock(x+i, y+h-4, z+j, leafID, meta, 3);
                     }
                 }
             }
@@ -178,10 +178,10 @@ public class GeneratorColorTree
             {
                 for (int j = -w; j <= w; j++)
                 {
-                    if (i * j != w * w && i * j != -w * w)
-                        if (this.canGenerateLeavesAt(world, x + i, y + h - 3, z + j))
+                    if (i*j != w*w && i*j != -w*w)
+                        if (this.canGenerateLeavesAt(world, x+i, y+h-3, z+j))
                         {
-                            world.setBlock(x + i, y + h - 3, z + j, leafID, meta, 3);
+                            world.setBlock(x+i, y+h-3, z+j, leafID, meta, 3);
                         }
                 }
             }
@@ -189,10 +189,10 @@ public class GeneratorColorTree
             {
                 for (int j = -w; j <= w; j++)
                 {
-                    if (i * j != w * w && i * j != -w * w)
-                        if (this.canGenerateLeavesAt(world, x + i, y + h - 2, z + j))
+                    if (i*j != w*w && i*j != -w*w)
+                        if (this.canGenerateLeavesAt(world, x+i, y+h-2, z+j))
                         {
-                            world.setBlock(x + i, y + h - 2, z + j, leafID, meta, 3);
+                            world.setBlock(x+i, y+h-2, z+j, leafID, meta, 3);
                         }
                 }
             }
@@ -200,9 +200,9 @@ public class GeneratorColorTree
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    if (this.canGenerateLeavesAt(world, x + i, y + h - 1, z + j))
+                    if (this.canGenerateLeavesAt(world, x+i, y+h-1, z+j))
                     {
-                        world.setBlock(x + i, y + h - 1, z + j, leafID, meta, 3);
+                        world.setBlock(x+i, y+h-1, z+j, leafID, meta, 3);
                     }
                 }
             }
@@ -210,11 +210,11 @@ public class GeneratorColorTree
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    if (i * j == 0)
+                    if (i*j == 0)
                     {
-                        if (this.canGenerateLeavesAt(world, x + i, y + h, z + j))
+                        if (this.canGenerateLeavesAt(world, x+i, y+h, z+j))
                         {
-                            world.setBlock(x + i, y + h, z + j, leafID, meta, 3);
+                            world.setBlock(x+i, y+h, z+j, leafID, meta, 3);
                         }
                     }
                 }
@@ -226,19 +226,19 @@ public class GeneratorColorTree
     {
         if (canGenerateTree(world, x, z))
         {
-            int h = 8 + rand.nextInt(4);
+            int h = 8+rand.nextInt(4);
             ItemStack log = this.getLogType();
             int meta = color.ordinal();
 
             for (int i = 0; i < h; i++)
             {
-                world.setBlock(x, y + i, z, log.itemID, log.getItemDamage(), 3);
+                world.setBlock(x, y+i, z, log.itemID, log.getItemDamage(), 3);
             }
 
             for (int i = 1; i < 2; i++)
             {
-                int dx = x + i;
-                int dy = y + h - 2;
+                int dx = x+i;
+                int dy = y+h-2;
                 int dz = z;
                 world.setBlock(dx, dy, dz, log.itemID, log.getItemDamage(), 3);
                 for (int j = -1; j <= 1; j++)
@@ -247,15 +247,15 @@ public class GeneratorColorTree
                     {
                         for (int m = -1; m <= 1; m++)
                         {
-                            if (j * k * m == 0 && this.canGenerateLeavesAt(world, dx + j, dy + k, dz + m))
+                            if (j*k*m == 0 && this.canGenerateLeavesAt(world, dx+j, dy+k, dz+m))
                             {
-                                world.setBlock(dx + j, dy + k, dz + m, leafID, meta, 3);
+                                world.setBlock(dx+j, dy+k, dz+m, leafID, meta, 3);
                             }
                         }
                     }
                 }
 
-                dx = x - i;
+                dx = x-i;
                 dz = z;
                 world.setBlock(dx, dy, dz, log.itemID, log.getItemDamage(), 3);
                 for (int j = -1; j <= 1; j++)
@@ -264,16 +264,16 @@ public class GeneratorColorTree
                     {
                         for (int m = -1; m <= 1; m++)
                         {
-                            if (j * k * m == 0 && this.canGenerateLeavesAt(world, dx + j, dy + k, dz + m))
+                            if (j*k*m == 0 && this.canGenerateLeavesAt(world, dx+j, dy+k, dz+m))
                             {
-                                world.setBlock(dx + j, dy + k, dz + m, leafID, meta, 3);
+                                world.setBlock(dx+j, dy+k, dz+m, leafID, meta, 3);
                             }
                         }
                     }
                 }
 
                 dx = x;
-                dz = z - i;
+                dz = z-i;
                 world.setBlock(dx, dy, dz, log.itemID, log.getItemDamage(), 3);
                 for (int j = -1; j <= 1; j++)
                 {
@@ -281,16 +281,16 @@ public class GeneratorColorTree
                     {
                         for (int m = -1; m <= 1; m++)
                         {
-                            if (j * k * m == 0 && this.canGenerateLeavesAt(world, dx + j, dy + k, dz + m))
+                            if (j*k*m == 0 && this.canGenerateLeavesAt(world, dx+j, dy+k, dz+m))
                             {
-                                world.setBlock(dx + j, dy + k, dz + m, leafID, meta, 3);
+                                world.setBlock(dx+j, dy+k, dz+m, leafID, meta, 3);
                             }
                         }
                     }
                 }
 
                 dx = x;
-                dz = z + i;
+                dz = z+i;
                 world.setBlock(dx, dy, dz, log.itemID, log.getItemDamage(), 3);
                 for (int j = -1; j <= 1; j++)
                 {
@@ -298,16 +298,16 @@ public class GeneratorColorTree
                     {
                         for (int m = -1; m <= 1; m++)
                         {
-                            if (j * k * m == 0 && this.canGenerateLeavesAt(world, dx + j, dy + k, dz + m))
+                            if (j*k*m == 0 && this.canGenerateLeavesAt(world, dx+j, dy+k, dz+m))
                             {
-                                world.setBlock(dx + j, dy + k, dz + m, leafID, meta, 3);
+                                world.setBlock(dx+j, dy+k, dz+m, leafID, meta, 3);
                             }
                         }
                     }
                 }
 
-                dx = x + i;
-                dy = y + h - 6;
+                dx = x+i;
+                dy = y+h-6;
                 dz = z;
                 world.setBlock(dx, dy, dz, log.itemID, log.getItemDamage(), 3);
                 for (int j = -1; j <= 1; j++)
@@ -316,15 +316,15 @@ public class GeneratorColorTree
                     {
                         for (int m = -1; m <= 1; m++)
                         {
-                            if (j * k * m == 0 && this.canGenerateLeavesAt(world, dx + j, dy + k, dz + m))
+                            if (j*k*m == 0 && this.canGenerateLeavesAt(world, dx+j, dy+k, dz+m))
                             {
-                                world.setBlock(dx + j, dy + k, dz + m, leafID, meta, 3);
+                                world.setBlock(dx+j, dy+k, dz+m, leafID, meta, 3);
                             }
                         }
                     }
                 }
 
-                dx = x - i;
+                dx = x-i;
                 dz = z;
                 world.setBlock(dx, dy, dz, log.itemID, log.getItemDamage(), 3);
                 for (int j = -1; j <= 1; j++)
@@ -333,16 +333,16 @@ public class GeneratorColorTree
                     {
                         for (int m = -1; m <= 1; m++)
                         {
-                            if (j * k * m == 0 && this.canGenerateLeavesAt(world, dx + j, dy + k, dz + m))
+                            if (j*k*m == 0 && this.canGenerateLeavesAt(world, dx+j, dy+k, dz+m))
                             {
-                                world.setBlock(dx + j, dy + k, dz + m, leafID, meta, 3);
+                                world.setBlock(dx+j, dy+k, dz+m, leafID, meta, 3);
                             }
                         }
                     }
                 }
 
                 dx = x;
-                dz = z - i;
+                dz = z-i;
                 world.setBlock(dx, dy, dz, log.itemID, log.getItemDamage(), 3);
                 for (int j = -1; j <= 1; j++)
                 {
@@ -350,16 +350,16 @@ public class GeneratorColorTree
                     {
                         for (int m = -1; m <= 1; m++)
                         {
-                            if (j * k * m == 0 && this.canGenerateLeavesAt(world, dx + j, dy + k, dz + m))
+                            if (j*k*m == 0 && this.canGenerateLeavesAt(world, dx+j, dy+k, dz+m))
                             {
-                                world.setBlock(dx + j, dy + k, dz + m, leafID, meta, 3);
+                                world.setBlock(dx+j, dy+k, dz+m, leafID, meta, 3);
                             }
                         }
                     }
                 }
 
                 dx = x;
-                dz = z + i;
+                dz = z+i;
                 world.setBlock(dx, dy, dz, log.itemID, log.getItemDamage(), 3);
                 for (int j = -1; j <= 1; j++)
                 {
@@ -367,44 +367,44 @@ public class GeneratorColorTree
                     {
                         for (int m = -1; m <= 1; m++)
                         {
-                            if (j * k * m == 0 && this.canGenerateLeavesAt(world, dx + j, dy + k, dz + m))
+                            if (j*k*m == 0 && this.canGenerateLeavesAt(world, dx+j, dy+k, dz+m))
                             {
-                                world.setBlock(dx + j, dy + k, dz + m, leafID, meta, 3);
+                                world.setBlock(dx+j, dy+k, dz+m, leafID, meta, 3);
                             }
                         }
                     }
                 }
             }
 
-            int dy = y + h - 4;
+            int dy = y+h-4;
             for (int i = 1; i < 2; i++)
             {
-                if (this.canGenerateLeavesAt(world, x + i, dy, z))
+                if (this.canGenerateLeavesAt(world, x+i, dy, z))
                 {
-                    world.setBlock(x + i, dy, z, leafID, meta, 3);
+                    world.setBlock(x+i, dy, z, leafID, meta, 3);
                 }
-                if (this.canGenerateLeavesAt(world, x - i, dy, z))
+                if (this.canGenerateLeavesAt(world, x-i, dy, z))
                 {
-                    world.setBlock(x - i, dy, z, leafID, meta, 3);
+                    world.setBlock(x-i, dy, z, leafID, meta, 3);
                 }
-                if (this.canGenerateLeavesAt(world, x, dy, z + i))
+                if (this.canGenerateLeavesAt(world, x, dy, z+i))
                 {
-                    world.setBlock(x, dy, z + i, leafID, meta, 3);
+                    world.setBlock(x, dy, z+i, leafID, meta, 3);
                 }
-                if (this.canGenerateLeavesAt(world, x, dy, z - i))
+                if (this.canGenerateLeavesAt(world, x, dy, z-i))
                 {
-                    world.setBlock(x, dy, z - i, leafID, meta, 3);
+                    world.setBlock(x, dy, z-i, leafID, meta, 3);
                 }
             }
 
-            dy = y + h;
+            dy = y+h;
             for (int k = -1; k <= 1; k++)
             {
                 for (int m = -1; m <= 1; m++)
                 {
-                    if (k * m == 0 && this.canGenerateLeavesAt(world, x + k, dy, z + m))
+                    if (k*m == 0 && this.canGenerateLeavesAt(world, x+k, dy, z+m))
                     {
-                        world.setBlock(x + k, dy, z + m, leafID, meta, 3);
+                        world.setBlock(x+k, dy, z+m, leafID, meta, 3);
                     }
                 }
             }
@@ -444,7 +444,8 @@ public class GeneratorColorTree
         return (w.isAirBlock(x, y, z) || b.canBeReplacedByLeaves(w, x, y, z) || b instanceof IPlantable);
     }
 
-    public static boolean canGrowAt(World world, int x, int y, int z) {
+    public static boolean canGrowAt(World world, int x, int y, int z)
+    {
         int id = world.getBlockId(x, y, z);
         Block b = Block.blocksList[id];
 
@@ -456,8 +457,9 @@ public class GeneratorColorTree
         if (b instanceof BlockFluid)
             return false;
 
-        for (int i = 0; i < 6; i++) {
-            if (!GeneratorColorTree.isSoftBlock(world, x, y + i, z) && !(i == 0 && id == ProjectRedExploration.blockStainedSapling.blockID))
+        for (int i = 0; i < 6; i++)
+        {
+            if (!GeneratorColorTree.isSoftBlock(world, x, y+i, z) && !(i == 0 && id == ProjectRedExploration.blockStainedSapling().blockID))
                 return false;
         }
         return true;

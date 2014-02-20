@@ -15,6 +15,7 @@ import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.BasicWireUtils;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.WireConnLib;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -33,8 +34,8 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     static
     {
-        oBoxes[0][0] = new Cuboid6(1 / 8D, 0, 0, 7 / 8D, 1 / 8D, 1);
-        oBoxes[0][1] = new Cuboid6(0, 0, 1 / 8D, 1, 1 / 8D, 7 / 8D);
+        oBoxes[0][0] = new Cuboid6(1/8D, 0, 0, 7/8D, 1/8D, 1);
+        oBoxes[0][1] = new Cuboid6(0, 0, 1/8D, 1, 1/8D, 7/8D);
         for (int s = 1; s < 6; s++)
         {
             Transformation t = Rotation.sideRotations[s].at(Vector3.center);
@@ -54,27 +55,27 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     public int side()
     {
-        return orientation >> 2;
+        return orientation>>2;
     }
 
     public void setSide(int s)
     {
-        orientation = (byte) (orientation & 0x3 | s << 2);
+        orientation = (byte) (orientation&0x3|s<<2);
     }
 
     public int rotation()
     {
-        return orientation & 0x3;
+        return orientation&0x3;
     }
 
     public void setRotation(int r)
     {
-        orientation = (byte) (orientation & 0xFC | r);
+        orientation = (byte) (orientation&0xFC|r);
     }
 
     public int shape()
     {
-        return shape & 0xFF;
+        return shape&0xFF;
     }
 
     public void setShape(int s)
@@ -90,7 +91,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
     {
         subID = (byte) meta;
-        setSide(side ^ 1);
+        setSide(side^1);
         setRotation(Rotation.getSidedRotation(player, side));
     }
 
@@ -156,7 +157,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public void scheduleTick(int ticks)
     {
         if (schedTime < 0)
-            schedTime = world().getTotalWorldTime() + ticks;
+            schedTime = world().getTotalWorldTime()+ticks;
     }
 
     private void processScheduled()
@@ -229,7 +230,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public boolean canStay()
     {
         BlockCoord pos = new BlockCoord(tile()).offset(side());
-        return BasicWireUtils.canPlaceWireOnSide(world(), pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side() ^ 1), false);
+        return BasicWireUtils.canPlaceWireOnSide(world(), pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side()^1), false);
     }
 
     public boolean dropIfCantStay()
@@ -250,7 +251,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     public EnumGate getGateType()
     {
-        return EnumGate.VALID_GATES[subID & 0xFF];
+        return EnumGate.VALID_GATES[subID&0xFF];
     }
 
     protected void updateConnections()
@@ -269,18 +270,18 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         int newConn = 0;
         for (int r = 0; r < 4; r++)
             if (connectStraight(r))
-                newConn |= 0x10 << r;
+                newConn |= 0x10<<r;
             else if (connectCorner(r))
-                newConn |= 1 << r;
+                newConn |= 1<<r;
 
-        if (newConn != (connMap & 0xF000FF))
+        if (newConn != (connMap&0xF000FF))
         {
-            int diff = connMap ^ newConn;
-            connMap = connMap & ~0xF000FF | newConn;
+            int diff = connMap^newConn;
+            connMap = connMap&~0xF000FF|newConn;
 
             // notify corner disconnections
             for (int r = 0; r < 4; r++)
-                if ((diff & 1 << r) != 0)
+                if ((diff&1<<r) != 0)
                     notifyCornerChange(r);
 
             return true;
@@ -298,11 +299,11 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         int newConn = 0;
         for (int r = 0; r < 4; r++)
             if (connectInternal(r))
-                newConn |= 0x100 << r;
+                newConn |= 0x100<<r;
 
-        if (newConn != (connMap & 0x10F00))
+        if (newConn != (connMap&0x10F00))
         {
-            connMap = connMap & ~0x10F00 | newConn;
+            connMap = connMap&~0x10F00|newConn;
             return true;
         }
         return false;
@@ -315,19 +316,19 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         BlockCoord pos = new BlockCoord(tile());
         pos.offset(absDir);
 
-        if (!BasicWireUtils.canConnectThroughCorner(world(), pos, absDir ^ 1, side()))
+        if (!WireConnLib.canConnectThroughCorner(world(), pos, absDir^1, side()))
             return false;
 
         pos.offset(side());
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
         {
-            TMultiPart tp = t.partMap(absDir ^ 1);
+            TMultiPart tp = t.partMap(absDir^1);
             if (tp instanceof IConnectable)
             {
                 IConnectable conn = (IConnectable) tp;
-                int r2 = Rotation.rotationTo(absDir ^ 1, side() ^ 1);
-                return canConnectTo(conn, r) && conn.canConnectCorner(r2) && conn.connectCorner(this, r2);
+                int r2 = Rotation.rotationTo(absDir^1, side()^1);
+                return canConnectTo(conn, r) && conn.canConnectCorner(r2) && conn.connectCorner(this, r2, -1);
             }
         }
 
@@ -346,7 +347,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
             if (tp instanceof IConnectable)
             {
                 IConnectable conn = (IConnectable) tp;
-                return canConnectTo(conn, r) && conn.connectStraight(this, (r + 2) % 4);
+                return canConnectTo(conn, r) && conn.connectStraight(this, (r+2)%4, -1);
             }
         }
 
@@ -393,13 +394,13 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     public boolean maskConnects(int r)
     {
-        return (connMap & 0x111 << r) != 0;
+        return (connMap&0x111<<r) != 0;
     }
 
     @Override
     public Cuboid6 getBounds()
     {
-        return FaceMicroClass.aBounds()[0x10 | side()];
+        return FaceMicroClass.aBounds()[0x10|side()];
     }
 
     @Override
@@ -476,7 +477,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     public void rotate()
     {
-        setRotation((rotation() + 1) % 4);
+        setRotation((rotation()+1)%4);
 
         updateConnections();
         tile().markDirty();
@@ -509,9 +510,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public void notifyNeighbors(int mask)
     {
         for (int r = 0; r < 4; r++)
-            if ((connMap & 1 << r) != 0)
+            if ((connMap&1<<r) != 0)
                 notifyCornerChange(r);
-            else if ((connMap & 0x10 << r) != 0)
+            else if ((connMap&0x10<<r) != 0)
                 notifyStraightChange(r);
     }
 
@@ -522,22 +523,22 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     }
 
     @Override
-    public boolean connectCorner(IConnectable part, int r)
+    public boolean connectCorner(IConnectable part, int r, int edgeSide)
     {
         if (canConnectTo(part, r))
         {
-            connMap |= 0x1 << r;
+            connMap |= 0x1<<r;
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean connectStraight(IConnectable part, int r)
+    public boolean connectStraight(IConnectable part, int r, int edgeSide)
     {
         if (canConnectTo(part, r))
         {
-            connMap |= 0x10 << r;
+            connMap |= 0x10<<r;
             return true;
         }
         return false;
@@ -551,7 +552,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
         if (canConnectTo(part, r))
         {
-            connMap |= 0x100 << r;
+            connMap |= 0x100<<r;
             return true;
         }
         return false;
@@ -565,22 +566,22 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     public int toInternal(int absRot)
     {
-        return (absRot + 6 - rotation()) % 4;
+        return (absRot+6-rotation())%4;
     }
 
     public int toAbsolute(int r)
     {
-        return (r + rotation() + 2) % 4;
+        return (r+rotation()+2)%4;
     }
 
     public static int shiftMask(int mask, int r)
     {
-        return (mask << r | mask >> 4 - r) & 0xF;
+        return (mask<<r|mask>>4-r)&0xF;
     }
 
     public static int flipMaskZ(int mask)
     {
-        return mask & 5 | mask << 2 & 8 | mask >> 2 & 2;
+        return mask&5|mask<<2&8|mask>>2&2;
     }
 
     public int toAbsoluteMask(int mask)

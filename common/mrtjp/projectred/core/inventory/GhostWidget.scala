@@ -13,7 +13,7 @@ object GhostWidget
     def sendAction(screen:GuiScreen, actionCommand:String)
     {
         if (actionCommand != null && screen.isInstanceOf[IGuiActionListener])
-            (screen.asInstanceOf[IGuiActionListener]).actionPerformed(actionCommand)
+            screen.asInstanceOf[IGuiActionListener].actionPerformed(actionCommand)
     }
 
     val guiTex = new ResourceLocation("textures/gui/widgets.png")
@@ -39,7 +39,7 @@ class GhostWidget(var x:Int, var y:Int, var width:Int, var height:Int) extends G
         this.height = height
     }
 
-    def pointInside(px:Int, py:Int):Boolean = px>=x && px<x+width && py>=y && py<y+height
+    def pointInside(px:Int, py:Int) = px>=x && px<x+width && py>=y && py<y+height
 
     def sendAction(actionCommand:String)
     {
@@ -58,7 +58,7 @@ class GhostWidget(var x:Int, var y:Int, var width:Int, var height:Int) extends G
 
     def mouseDragged(x:Int, y:Int, button:Int, time:Long)
     {
-        if (subWidgets) for (w <- widgets) w.mouseDragged(x, y, button, time)
+        if (subWidgets) for (w <- widgets) w.mouseDragged(x-this.x, y-this.y, button, time)
     }
 
     def update()
@@ -70,9 +70,9 @@ class GhostWidget(var x:Int, var y:Int, var width:Int, var height:Int) extends G
     {
         if (subWidgets)
         {
-            translateTo
-            for (w <- widgets) w.drawBack(mouseX, mouseY, frame)
-            translateFrom
+            translateTo()
+            for (w <- widgets) w.drawBack(mouseX-this.x, mouseY-this.y, frame)
+            translateFrom()
         }
     }
 
@@ -80,9 +80,9 @@ class GhostWidget(var x:Int, var y:Int, var width:Int, var height:Int) extends G
     {
         if (subWidgets)
         {
-            translateTo
-            for (w <- widgets) w.drawFront(mouseX, mouseY)
-            translateFrom
+            translateTo()
+            for (w <- widgets) w.drawFront(mouseX-this.x, mouseY-this.y)
+            translateFrom()
         }
     }
 
@@ -113,5 +113,5 @@ class GhostWidget(var x:Int, var y:Int, var width:Int, var height:Int) extends G
     def translateTo() = GL11.glTranslated(this.x, this.y, 0)
     def translateFrom() = GL11.glTranslated(-this.x, -this.y, 0)
 
-    def subWidgets() = false
+    def subWidgets = false
 }

@@ -243,7 +243,7 @@ public class TransportationRecipes
     private static void initUpgradeRecipes()
     {
         /** Router Utility **/
-        GameRegistry.addRecipe(new ItemStack(ProjectRedTransportation.itemRouterUtility),
+        GameRegistry.addRecipe(new ItemStack(ProjectRedTransportation.itemRouterUtility()),
                 "  r",
                 "iei",
                 "iii",

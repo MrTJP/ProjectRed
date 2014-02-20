@@ -14,7 +14,7 @@ public class ItemGemShovel extends ItemSpade
         super(par1, tool.material);
         this.tool = tool;
         this.setUnlocalizedName("projectred.exploration." + tool.unlocal);
-        this.setCreativeTab(ProjectRedExploration.tabExploration);
+        this.setCreativeTab(ProjectRedExploration.tabExploration());
     }
 
     @Override

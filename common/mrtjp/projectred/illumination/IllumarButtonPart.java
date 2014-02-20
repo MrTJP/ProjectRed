@@ -45,7 +45,7 @@ public class IllumarButtonPart extends ButtonPart implements ILight
     {
         if (pressed())
             return false;
-        
+
         if (!world().isRemote)
         {
             if (player.isSneaking())
@@ -56,10 +56,10 @@ public class IllumarButtonPart extends ButtonPart implements ILight
             }
             return super.activate(player, part, item);
         }
-        
+
         return true;
     }
-    
+
     @Override
     public boolean isOn()
     {
@@ -130,7 +130,7 @@ public class IllumarButtonPart extends ButtonPart implements ILight
 
     public ItemStack getItemStack()
     {
-        return new ItemStack(ProjectRedIllumination.itemPartIllumarButton, 1, colorMeta);
+        return new ItemStack(ProjectRedIllumination.itemPartIllumarButton(), 1, colorMeta);
     }
 
     @Override
@@ -143,7 +143,7 @@ public class IllumarButtonPart extends ButtonPart implements ILight
             r.renderBlockUsingTexture(getBlock(), x(), y(), z(), ItemPartIllumarButton.icons[colorMeta]);
         }
     }
-    
+
     @Override
     @SideOnly(Side.CLIENT)
     public void renderDynamic(Vector3 pos, float frame, int pass)

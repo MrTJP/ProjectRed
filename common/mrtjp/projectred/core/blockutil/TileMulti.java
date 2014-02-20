@@ -26,7 +26,7 @@ public abstract class TileMulti extends TileEntity implements ICustomPacketTile
     {
     }
 
-    public void onBlockPlaced(ItemStack ist, int side, EntityPlayer ent)
+    public void onBlockPlaced(ItemStack stack, int side, EntityPlayer player)
     {
     }
 
@@ -77,7 +77,11 @@ public abstract class TileMulti extends TileEntity implements ICustomPacketTile
     {
     }
 
-    public void onTileTick(boolean client)
+    public void updateClient()
+    {
+    }
+
+    public void update()
     {
     }
 
@@ -128,16 +132,21 @@ public abstract class TileMulti extends TileEntity implements ICustomPacketTile
         worldObj.markBlockForRenderUpdate(xCoord, yCoord, zCoord);
     }
 
+    public final void markLight()
+    {
+        worldObj.updateAllLightTypes(xCoord, yCoord, zCoord);
+    }
+
     @Override
     public final void updateEntity()
     {
         if (worldObj.isRemote)
         {
-            onTileTick(true);
+            updateClient();
             return;
         }
         else
-            onTileTick(false);
+            update();
 
         if (schedTick < 0L)
             return;
@@ -205,7 +214,7 @@ public abstract class TileMulti extends TileEntity implements ICustomPacketTile
 
     public PacketCustom writeStream(int switchkey)
     {
-        PacketCustom stream = new PacketCustom(CoreSPH.channel, 1);
+        PacketCustom stream = new PacketCustom(CoreSPH.channel(), CoreSPH.tilePacket());
         stream.writeCoord(new BlockCoord(this)).writeByte(switchkey);
         return stream;
     }

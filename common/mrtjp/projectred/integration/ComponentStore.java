@@ -80,7 +80,7 @@ public class ComponentStore
 
     public static Map<String, CCModel> loadModels(String name)
     {
-        return CCModel.parseObjModels(new ResourceLocation("projectred:textures/obj/gateparts/" + name + ".obj"), 7, new InvertX());
+        return CCModel.parseObjModels(new ResourceLocation("projectred:textures/obj/gateparts/"+name+".obj"), 7, new InvertX());
     }
 
     public static CCModel loadModel(String name)

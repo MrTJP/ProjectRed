@@ -28,7 +28,7 @@ public class ItemPartIllumarButton extends JItemMultiPart
         super(id);
         this.setHasSubtypes(true);
         this.setUnlocalizedName("projectred.illumination.lightbutton");
-        this.setCreativeTab(ProjectRedIllumination.tabLighting);
+        this.setCreativeTab(ProjectRedIllumination.tabLighting());
     }
 
     @Override

@@ -1,10 +1,10 @@
 package mrtjp.projectred.transportation;
 
+import codechicken.lib.packet.PacketCustom;
 import mrtjp.projectred.core.inventory.GhostContainer2;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import codechicken.lib.packet.PacketCustom;
 
 public class RoutingChipContainerFactory
 {
@@ -49,7 +49,7 @@ public class RoutingChipContainerFactory
                 ItemRoutingChip.saveChipToItemStack(player.inventory.mainInventory[slot], chip);
                 player.inventory.onInventoryChanged();
 
-                new PacketCustom(TransportationCPH.channel, NetConstants.gui_ChipNBTSet).writeByte(slot).writeItemStack(player.inventory.mainInventory[slot]).sendToServer();
+                new PacketCustom(TransportationCPH.channel(), NetConstants.gui_ChipNBTSet).writeByte(slot).writeItemStack(player.inventory.mainInventory[slot]).sendToServer();
             }
         }
 

@@ -18,7 +18,7 @@ public class ItemWireDebugger extends Item
         setMaxDamage(256);
         setNoRepair();
         setUnlocalizedName("projectred.core.wiredebugger");
-        setCreativeTab(ProjectRedCore.tabCore);
+        setCreativeTab(ProjectRedCore.tabCore());
     }
 
     @Override

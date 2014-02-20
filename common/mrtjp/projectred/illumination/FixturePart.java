@@ -36,11 +36,11 @@ public class FixturePart extends BaseLightPart implements TFacePart
         if (pass == 0)
             RenderFixture.instance.renderFixture(this);
     }
-    
+
     @Override
     public ItemStack getItem()
     {
-        return new ItemStack(isInverted ? ProjectRedIllumination.itemPartInvFixture : ProjectRedIllumination.itemPartFixture, 1, type);
+        return new ItemStack(isInverted ? ProjectRedIllumination.itemPartInvFixture() : ProjectRedIllumination.itemPartFixture(), 1, type);
     }
 
     @Override

@@ -102,10 +102,13 @@
   "parent":"ProjRed|Core",
 
   "requiredMods": [
-      "ProjRed|Core"
+      "ProjRed|Core",
+      "ProjRed|Transportation"
   ],
   "dependencies": [
-      "ProjRed|Core"
+      "ProjRed|Core",
+      "ProjRed|Transportation",
+      "ProjRed|Transmission"
   ],
   "useDependencyInformation": "true"
 },

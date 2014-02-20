@@ -1,7 +1,12 @@
 package mrtjp.projectred.transmission;
 
-import java.util.List;
-
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Vector3;
+import codechicken.multipart.JItemMultiPart;
+import codechicken.multipart.MultiPartRegistry;
+import codechicken.multipart.TMultiPart;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRedTransmission;
 import mrtjp.projectred.core.BasicWireUtils;
 import net.minecraft.block.Block;
@@ -11,13 +16,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Vector3;
-import codechicken.multipart.JItemMultiPart;
-import codechicken.multipart.MultiPartRegistry;
-import codechicken.multipart.TMultiPart;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 public class ItemPartWire extends JItemMultiPart
 {
@@ -25,7 +25,7 @@ public class ItemPartWire extends JItemMultiPart
     {
         super(id);
         setHasSubtypes(true);
-        setCreativeTab(ProjectRedTransmission.tabTransmission);
+        setCreativeTab(ProjectRedTransmission.tabTransmission());
         setUnlocalizedName("projectred.transmission.wire");
     }
 
@@ -47,8 +47,8 @@ public class ItemPartWire extends JItemMultiPart
         if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false))
             return null;
 
-        EnumWire type = EnumWire.VALID_WIRE[item.getItemDamage()];
-        WirePart w = (WirePart) MultiPartRegistry.createPart(type.wireType, false);
+        WireDef type = WireDefs.VALID_WIRE()[item.getItemDamage()];
+        WirePart w = (WirePart) MultiPartRegistry.createPart(type.wireType(), false);
         if (w != null)
             w.preparePlacement(side, item.getItemDamage());
         return w;
@@ -58,7 +58,7 @@ public class ItemPartWire extends JItemMultiPart
     @SideOnly(Side.CLIENT)
     public void getSubItems(int id, CreativeTabs tab, List list)
     {
-        for (EnumWire w : EnumWire.VALID_WIRE)
+        for (WireDef w : WireDefs.VALID_WIRE())
             list.add(w.getItemStack());
     }
 
@@ -71,8 +71,8 @@ public class ItemPartWire extends JItemMultiPart
     @Override
     public void registerIcons(IconRegister reg)
     {
-        for (EnumWire wireType : EnumWire.VALID_WIRE)
-            wireType.loadTextures(reg);
+        for (WireDef w : WireDefs.VALID_WIRE())
+            w.loadTextures(reg);
     }
 
     @Override

@@ -79,7 +79,7 @@ public class TileLamp extends TileEntity implements ICustomPacketTile, ILight
     @Override
     public Packet getDescriptionPacket()
     {
-        PacketCustom packet = new PacketCustom(CoreSPH.channel, 1);
+        PacketCustom packet = new PacketCustom(CoreSPH.channel(), CoreSPH.tilePacket());
         packet.writeCoord(xCoord, yCoord, zCoord);
         int pack = 0;
         if (inverted)

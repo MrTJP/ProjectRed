@@ -1,7 +1,13 @@
 package mrtjp.projectred.exploration;
 
-import java.util.Map;
-
+import codechicken.lib.math.MathHelper;
+import codechicken.lib.render.CCModel;
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.UVTranslation;
+import codechicken.lib.vec.*;
+import codechicken.microblock.Saw;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemCraftingDamage;
 import mrtjp.projectred.core.PRColors;
@@ -10,21 +16,9 @@ import net.minecraft.item.EnumToolMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
-
 import org.lwjgl.opengl.GL11;
 
-import codechicken.lib.math.MathHelper;
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.UVTranslation;
-import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Scale;
-import codechicken.lib.vec.SwapYZ;
-import codechicken.lib.vec.TransformationList;
-import codechicken.lib.vec.Translation;
-import codechicken.microblock.Saw;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.Map;
 
 public class ItemGemSaw extends ItemCraftingDamage implements Saw
 {
@@ -36,7 +30,7 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw
         this.tool = tool;
         this.setUnlocalizedName("projectred.exploration." + tool.unlocal);
         this.setMaxDamage(tool.material.getMaxUses());
-        this.setCreativeTab(ProjectRedExploration.tabExploration);
+        this.setCreativeTab(ProjectRedExploration.tabExploration());
     }
 
     @Override
@@ -127,11 +121,11 @@ public class ItemGemSaw extends ItemCraftingDamage implements Saw
                 return PRColors.WHITE.rgb;
             if (m == EnumToolMaterial.GOLD)
                 return PRColors.YELLOW.rgb;
-            if (m == ProjectRedExploration.toolMaterialRuby)
+            if (m == ProjectRedExploration.toolMaterialRuby())
                 return PRColors.RED.rgb;
-            if (m == ProjectRedExploration.toolMaterialSapphire)
+            if (m == ProjectRedExploration.toolMaterialSapphire())
                 return PRColors.BLUE.rgb;
-            if (m == ProjectRedExploration.toolMaterialPeridot)
+            if (m == ProjectRedExploration.toolMaterialPeridot())
                 return PRColors.GREEN.rgb;
             if (m == EnumToolMaterial.EMERALD)
                 return PRColors.CYAN.rgb;

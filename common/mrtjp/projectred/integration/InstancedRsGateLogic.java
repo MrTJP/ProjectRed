@@ -291,8 +291,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             int newInput = getInput(gate, 0xA);
             int high = newInput & ~oldInput;
 
-            if (high == 2 || high == 8)// one side went high (if both, double
-                                       // change so no change)
+            if (high == 2 || high == 8)// one side went high (if both, double change so no change)
                 toggle(gate);
 
             if (oldInput != newInput)

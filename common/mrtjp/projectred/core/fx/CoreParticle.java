@@ -1,17 +1,13 @@
 package mrtjp.projectred.core.fx;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.core.PRColors;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Vector3;
+
+import java.util.*;
 
 public class CoreParticle extends EntityFX
 {
@@ -182,7 +178,7 @@ public class CoreParticle extends EntityFX
         this.g = g;
         this.b = b;
     }
-    
+
     public void setPRColor(PRColors color)
     {
         setRGBColorF((color.c.r & 0xFF) / 255F, (color.c.g & 0xFF) / 255F, (color.c.b & 0xFF) / 255F);
@@ -297,7 +293,7 @@ public class CoreParticle extends EntityFX
             if (l.isFinalLogic())
                 break;
         }
-        
+
         if (particleAge++ > particleMaxAge && !ignoreMaxAge || !ignoreNoLogics && logics.size() == 0)
             setDead();
     }
@@ -306,10 +302,10 @@ public class CoreParticle extends EntityFX
     {
         return new Vector3(posX, posY, posZ);
     }
-    
+
     public BlockCoord blockPosition()
     {
-        return new BlockCoord((int) posX, (int) posY, ((int) posZ) - 1);
+        return new BlockCoord((int)(Math.floor(posX)), (int)(Math.floor(posY)), (int)(Math.floor(posZ)));
     }
 
     @Override

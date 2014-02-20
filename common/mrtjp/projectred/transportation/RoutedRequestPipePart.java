@@ -59,7 +59,7 @@ public class RoutedRequestPipePart extends RoutedJunctionPipePart
 
     private void openGui(EntityPlayer player)
     {
-        PacketCustom packet = new PacketCustom(TransportationSPH.channel, NetConstants.gui_Request_open);
+        PacketCustom packet = new PacketCustom(TransportationSPH.channel(), NetConstants.gui_Request_open);
         packet.writeCoord(x(), y(), z());
         packet.sendToPlayer(player);
     }
@@ -72,7 +72,7 @@ public class RoutedRequestPipePart extends RoutedJunctionPipePart
         {
             int count = 0;
             for (int i = 0; i < 6; i++)
-                if ((connMap & 1 << i) != 0)
+                if ((connMap&1<<i) != 0)
                     count++;
 
             if (count <= 1)
@@ -83,7 +83,7 @@ public class RoutedRequestPipePart extends RoutedJunctionPipePart
                 {
                     if (i == r.input.getOpposite().ordinal())
                         continue;
-                    if ((connMap & 1 << i) != 0)
+                    if ((connMap&1<<i) != 0)
                         return ForgeDirection.getOrientation(i);
                 }
             }

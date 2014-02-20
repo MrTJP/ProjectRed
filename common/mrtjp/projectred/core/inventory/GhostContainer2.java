@@ -165,7 +165,7 @@ public class GhostContainer2 extends Container
 
         if (slot.getHasStack())
         {
-            InventoryWrapper wrap = InventoryWrapper.wrapInventory(inv).setSlotsAll();
+            InventoryWrapper wrap = InventoryWrapper.wrapInventory(inv).setSlotsAll(); // TODO set from method
             ItemStack stack = slot.getStack();
             ItemStack stack2 = stack.copy();
             int added = wrap.injectItem(stack, true);

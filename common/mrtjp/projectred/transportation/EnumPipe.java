@@ -13,7 +13,7 @@ public enum EnumPipe
     ROUTEDJUNCTION("pr_rbasic", "routed", "unrouted"),
     ROUTEDINTERFACE("pr_rinterface", "routedconn", "unroutedconn"),
     ROUTEDCRAFTING("pr_rcrafting", "routedcrafting"),
-    ROUTEDREQUEST("pr_rrequest", "routedrequest"), 
+    ROUTEDREQUEST("pr_rrequest", "routedrequest"),
     ROUTEDEXTENSION("pr_rextension", "routedextension")
     ;
 
@@ -51,6 +51,6 @@ public enum EnumPipe
 
     public ItemStack getItemStack(int size)
     {
-        return new ItemStack(ProjectRedTransportation.itemPartPipe, size, meta);
+        return new ItemStack(ProjectRedTransportation.itemPartPipe(), size, meta);
     }
 }

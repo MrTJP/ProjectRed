@@ -26,7 +26,7 @@ public class BlockStainedSapling extends BlockSapling
         super(par1);
         setStepSound(Block.soundGrassFootstep);
         setUnlocalizedName("projectred.exploration.dyesapling");
-        setCreativeTab(ProjectRedExploration.tabExploration);
+        setCreativeTab(ProjectRedExploration.tabExploration());
     }
 
     @Override
@@ -74,7 +74,7 @@ public class BlockStainedSapling extends BlockSapling
             return;
         int meta = w.getBlockMetadata(x, y, z);
 
-        new GeneratorColorTree(ProjectRedExploration.blockStainedLeaf.blockID).generateTreeAnyType(w, x, y, z, PRColors.get(meta));
+        new GeneratorColorTree(ProjectRedExploration.blockStainedLeaf().blockID).generateTreeAnyType(w, x, y, z, PRColors.get(meta));
     }
 
     @Override

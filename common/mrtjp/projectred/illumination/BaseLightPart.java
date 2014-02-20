@@ -147,20 +147,20 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
         }
         return false;
     }
-    
+
     @Override
     public boolean doesTick()
     {
         return isAirous();
     }
-    
+
     @Override
     public void update()
     {
         if (!world().isRemote && isOn() && isAirous())
         {
             int radius = 16;
-            
+
             int x = x() + world().rand.nextInt(radius) - world().rand.nextInt(radius);
             int y = y() + world().rand.nextInt(radius) - world().rand.nextInt(radius);
             int z = z() + world().rand.nextInt(radius) - world().rand.nextInt(radius);
@@ -170,23 +170,23 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
 
             if (y < 7)
                 y = 7;
-            
+
             if (world().isAirBlock(x, y, z) && world().getBlockLightValue(x, y, z) < 8)
             {
-                world().setBlock(x, y, z, ProjectRedIllumination.blockAirousLight.blockID, getColor(), 3);
-                
+                world().setBlock(x, y, z, ProjectRedIllumination.blockAirousLight().blockID, getColor(), 3);
+
                 TileAirousLight light = (TileAirousLight) world().getBlockTileEntity(x, y, z);
                 if (light != null)
                     light.setSource(new BlockCoord(tile()), getColor(), side);
             }
         }
     }
-    
+
     public boolean isAirous()
     {
         return false;
     }
-    
+
     @Override
     public int getLightValue()
     {
@@ -199,7 +199,7 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     @Override
     @SideOnly(Side.CLIENT)
     public abstract void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass);
-    
+
     @Override
     @SideOnly(Side.CLIENT)
     public void renderDynamic(Vector3 pos, float frame, int pass)
@@ -213,17 +213,17 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
     public void drawBreaking(RenderBlocks r) {
         RenderUtils.renderBlock(getLightBounds(), 0, new Translation(x(), y(), z()), new IconTransformation(r.overrideBlockTexture), null);
     }
-    
+
     @Override
     public abstract String getType();
-    
+
     @Override
     public abstract Cuboid6 getBounds();
 
     public abstract Cuboid6 getLightBounds();
-    
+
     public abstract ItemStack getItem();
-    
+
     @Override
     public int getSlotMask()
     {

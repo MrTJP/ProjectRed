@@ -1,16 +1,12 @@
 package mrtjp.projectred.transmission;
 
-import static mrtjp.projectred.transmission.IWirePart.DROPPING;
-import static mrtjp.projectred.transmission.IWirePart.FORCE;
-import static mrtjp.projectred.transmission.IWirePart.FORCED;
-import static mrtjp.projectred.transmission.IWirePart.RISING;
+import codechicken.multipart.TMultiPart;
+import mrtjp.projectred.api.IBundledEmitter;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Arrays;
 
-import net.minecraft.nbt.NBTTagCompound;
-
-import mrtjp.projectred.api.IBundledEmitter;
-import codechicken.multipart.TMultiPart;
+import static mrtjp.projectred.transmission.IWirePart.*;
 
 public class BundledCableCommons
 {
@@ -45,7 +41,7 @@ public class BundledCableCommons
             return true;
 
         for (int i = 0; i < 16; i++)
-            if ((mask & 1 << i) != 0 && signal[i] != 0)
+            if ((mask&1<<i) != 0 && signal[i] != 0)
                 return false;
 
         return true;
@@ -56,7 +52,7 @@ public class BundledCableCommons
         boolean dropped = false;
 
         for (int i = 0; i < 16; i++)
-            if ((signal2[i] & 0xFF) < (signal1[i] & 0xFF))
+            if ((signal2[i]&0xFF) < (signal1[i]&0xFF))
             {
                 signal1[i] = 0;
                 dropped = true;
@@ -68,7 +64,7 @@ public class BundledCableCommons
     public static void applyChangeMask(byte[] signal, byte[] newSignal, int mask)
     {
         for (int i = 0; i < 16; i++)
-            if ((mask & 1 << i) == 0)
+            if ((mask&1<<i) == 0)
                 newSignal[i] = signal[i];
     }
 
@@ -139,7 +135,7 @@ public class BundledCableCommons
     {
         // no point propogating to an ins wire if we didn't change their colour
         if (part instanceof IInsulatedRedwirePart)
-            if ((propogatingMask & 1 << ((IInsulatedRedwirePart) part).getInsulatedColour()) == 0)
+            if ((propogatingMask&1 << ((IInsulatedRedwirePart) part).getInsulatedColour()) == 0)
                 return false;
 
         return true;
@@ -151,14 +147,14 @@ public class BundledCableCommons
         {
             byte[] osignal = ((IBundledCablePart) part).getBundledSignal();
             for (int i = 0; i < 16; i++)
-                if ((osignal[i] & 0xFF) - 1 > (tmpSignal[i] & 0xFF))
-                    tmpSignal[i] = (byte) (osignal[i] - 1);
+                if ((osignal[i]&0xFF)-1 > (tmpSignal[i]&0xFF))
+                    tmpSignal[i] = (byte) (osignal[i]-1);
         }
         else if (part instanceof IInsulatedRedwirePart)
         {
             IInsulatedRedwirePart insPart = (IInsulatedRedwirePart) part;
-            int s = insPart.getRedwireSignal(r) - 1;
-            if (s > (tmpSignal[insPart.getInsulatedColour()] & 0xFF))
+            int s = insPart.getRedwireSignal(r)-1;
+            if (s > (tmpSignal[insPart.getInsulatedColour()]&0xFF))
                 tmpSignal[insPart.getInsulatedColour()] = (byte) s;
         }
         else if (part instanceof IBundledEmitter)
@@ -166,7 +162,7 @@ public class BundledCableCommons
             byte[] osignal = ((IBundledEmitter) part).getBundledSignal(r);
             if (osignal != null)
                 for (int i = 0; i < 16; i++)
-                    if ((osignal[i] & 0xFF) > (tmpSignal[i] & 0xFF))
+                    if ((osignal[i]&0xFF) > (tmpSignal[i]&0xFF))
                         tmpSignal[i] = osignal[i];
         }
     }
@@ -180,7 +176,7 @@ public class BundledCableCommons
             signal1 = new byte[16];
 
         for (int i = 0; i < 16; i++)
-            if ((signal1[i] & 0xFF) < (signal2[i] & 0xFF))
+            if ((signal1[i]&0xFF) < (signal2[i]&0xFF))
                 signal1[i] = signal2[i];
 
         return signal1;
@@ -210,7 +206,7 @@ public class BundledCableCommons
         int packed = 0;
         for (int i = 0; i < 16; i++)
             if (signal[i] != 0)
-                packed |= 1 << i;
+                packed |= 1<<i;
 
         return packed;
     }
@@ -224,7 +220,7 @@ public class BundledCableCommons
             signal = new byte[16];
 
         for (int i = 0; i < 16; i++)
-            signal[i] = (byte) ((packed & 1 << i) == 0 ? 0 : 255);
+            signal[i] = (byte) ((packed&1<<i) == 0 ? 0 : 255);
 
         return signal;
     }

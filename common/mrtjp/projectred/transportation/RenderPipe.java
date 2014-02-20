@@ -34,7 +34,8 @@ public class RenderPipe
 
     static
     {
-        customRenderItem = new RenderItem() {
+        customRenderItem = new RenderItem()
+        {
             @Override
             public boolean shouldBob()
             {
@@ -71,9 +72,8 @@ public class RenderPipe
 
     private static class PipeModelGenerator
     {
-        double w = 2 / 8D;
-        double d = 1 / 16D - 0.002;// little offset for compensating for the
-                                   // slight uv stretch to eliminate seams
+        double w = 2/8D;
+        double d = 1/16D-0.002;// little offset for compensating for the slight uv stretch to eliminate seams
 
         public static void generateModels()
         {
@@ -89,15 +89,15 @@ public class RenderPipe
         {
             CCModel model = CCModel.quadModel(48);
 
-            model.verts[0] = new Vertex5(0.5 - w, 0.5 - w, 0.5 - w, 4, 8);
-            model.verts[1] = new Vertex5(0.5 + w, 0.5 - w, 0.5 - w, 12, 8);
-            model.verts[2] = new Vertex5(0.5 + w, 0.5 - w, 0.5 + w, 12, 0);
-            model.verts[3] = new Vertex5(0.5 - w, 0.5 - w, 0.5 + w, 4, 0);
+            model.verts[0] = new Vertex5(0.5-w, 0.5-w, 0.5-w, 4, 8);
+            model.verts[1] = new Vertex5(0.5+w, 0.5-w, 0.5-w, 12, 8);
+            model.verts[2] = new Vertex5(0.5+w, 0.5-w, 0.5+w, 12, 0);
+            model.verts[3] = new Vertex5(0.5-w, 0.5-w, 0.5+w, 4, 0);
 
-            model.verts[4] = new Vertex5(0.5 - w, 0.5 - w + d, 0.5 + w, 4, 8);
-            model.verts[5] = new Vertex5(0.5 + w, 0.5 - w + d, 0.5 + w, 12, 8);
-            model.verts[6] = new Vertex5(0.5 + w, 0.5 - w + d, 0.5 - w, 12, 0);
-            model.verts[7] = new Vertex5(0.5 - w, 0.5 - w + d, 0.5 - w, 4, 0);
+            model.verts[4] = new Vertex5(0.5-w, 0.5-w+d, 0.5+w, 4, 8);
+            model.verts[5] = new Vertex5(0.5+w, 0.5-w+d, 0.5+w, 12, 8);
+            model.verts[6] = new Vertex5(0.5+w, 0.5-w+d, 0.5-w, 12, 0);
+            model.verts[7] = new Vertex5(0.5-w, 0.5-w+d, 0.5-w, 4, 0);
 
             model.generateSidedParts(0, Vector3.center);
             centerModels[3] = model;
@@ -107,17 +107,17 @@ public class RenderPipe
         {
             CCModel model = CCModel.quadModel(48);
 
-            model.verts[0] = new Vertex5(0.5 - w, 0.5 - w, 0.5 - w, 0, 16);
-            model.verts[1] = new Vertex5(0.5 + w, 0.5 - w, 0.5 - w, 8, 16);
-            model.verts[2] = new Vertex5(0.5 + w, 0.5 - w, 0.5 + w, 8, 8);
-            model.verts[3] = new Vertex5(0.5 - w, 0.5 - w, 0.5 + w, 0, 8);
+            model.verts[0] = new Vertex5(0.5-w, 0.5-w, 0.5-w, 0, 16);
+            model.verts[1] = new Vertex5(0.5+w, 0.5-w, 0.5-w, 8, 16);
+            model.verts[2] = new Vertex5(0.5+w, 0.5-w, 0.5+w, 8, 8);
+            model.verts[3] = new Vertex5(0.5-w, 0.5-w, 0.5+w, 0, 8);
 
-            model.verts[4] = new Vertex5(0.5 - w, 0.5 - w + d, 0.5 + w, 0, 16);
-            model.verts[5] = new Vertex5(0.5 + w, 0.5 - w + d, 0.5 + w, 8, 16);
-            model.verts[6] = new Vertex5(0.5 + w, 0.5 - w + d, 0.5 - w, 8, 8);
-            model.verts[7] = new Vertex5(0.5 - w, 0.5 - w + d, 0.5 - w, 0, 8);
+            model.verts[4] = new Vertex5(0.5-w, 0.5-w+d, 0.5+w, 0, 16);
+            model.verts[5] = new Vertex5(0.5+w, 0.5-w+d, 0.5+w, 8, 16);
+            model.verts[6] = new Vertex5(0.5+w, 0.5-w+d, 0.5-w, 8, 8);
+            model.verts[7] = new Vertex5(0.5-w, 0.5-w+d, 0.5-w, 0, 8);
 
-            for(int s = 1; s < 4; s++)
+            for (int s = 1; s < 4; s++)
                 model.generateSidedPart(0, s, Vector3.center, 0, 8*s, 8);
 
             //TODO ask CB about this
@@ -134,30 +134,30 @@ public class RenderPipe
         {
             CCModel model = CCModel.quadModel(36);
 
-            model.verts[0] = new Vertex5(0.5 - w, 0, 0.5 + w, 0, 0);
-            model.verts[1] = new Vertex5(0.5 + w, 0, 0.5 + w, 0, 8);
-            model.verts[2] = new Vertex5(0.5 + w, 0.5 - w, 0.5 + w, 4, 8);
-            model.verts[3] = new Vertex5(0.5 - w, 0.5 - w, 0.5 + w, 4, 0);
+            model.verts[0] = new Vertex5(0.5-w, 0, 0.5+w, 0, 0);
+            model.verts[1] = new Vertex5(0.5+w, 0, 0.5+w, 0, 8);
+            model.verts[2] = new Vertex5(0.5+w, 0.5-w, 0.5+w, 4, 8);
+            model.verts[3] = new Vertex5(0.5-w, 0.5-w, 0.5+w, 4, 0);
 
-            model.verts[4] = new Vertex5(0.5 + w, 0, 0.5 + w - d, 0, 0);
-            model.verts[5] = new Vertex5(0.5 - w, 0, 0.5 + w - d, 0, 8);
-            model.verts[6] = new Vertex5(0.5 - w, 0.5 - w, 0.5 + w - d, 4, 8);
-            model.verts[7] = new Vertex5(0.5 + w, 0.5 - w, 0.5 + w - d, 4, 0);
+            model.verts[4] = new Vertex5(0.5+w, 0, 0.5+w-d, 0, 0);
+            model.verts[5] = new Vertex5(0.5-w, 0, 0.5+w-d, 0, 8);
+            model.verts[6] = new Vertex5(0.5-w, 0.5-w, 0.5+w-d, 4, 8);
+            model.verts[7] = new Vertex5(0.5+w, 0.5-w, 0.5+w-d, 4, 0);
 
             for (int r = 1; r < 4; r++)
-                model.apply(Rotation.quarterRotations[r].at(Vector3.center), 0, r * 8, 8);
+                model.apply(Rotation.quarterRotations[r].at(Vector3.center), 0, r*8, 8);
 
-            model.verts[32] = new Vertex5(0.5 - w, 0, 0.5 - w, 8, 16);
-            model.verts[33] = new Vertex5(0.5 + w, 0, 0.5 - w, 16, 16);
-            model.verts[34] = new Vertex5(0.5 + w, 0, 0.5 + w, 16, 8);
-            model.verts[35] = new Vertex5(0.5 - w, 0, 0.5 + w, 8, 8);
+            model.verts[32] = new Vertex5(0.5-w, 0, 0.5-w, 8, 16);
+            model.verts[33] = new Vertex5(0.5+w, 0, 0.5-w, 16, 16);
+            model.verts[34] = new Vertex5(0.5+w, 0, 0.5+w, 16, 8);
+            model.verts[35] = new Vertex5(0.5-w, 0, 0.5+w, 8, 8);
 
             sideModels[0] = model;
             for (int s = 1; s < 6; s++)
             {
                 sideModels[s] = model.copy().apply(Rotation.sideRotations[s].at(Vector3.center));
 
-                if (s % 2 == 1)
+                if (s%2 == 1)
                 {
                     Vertex5[] verts = sideModels[s].verts;
                     UVT t = new UVT(Rotation.quarterRotations[2].at(new Vector3(8, 0, 4)));
@@ -178,7 +178,7 @@ public class RenderPipe
 
     public static CCModel finishModel(CCModel m)
     {
-        m.apply(new UVScale(1 / 16D));
+        m.apply(new UVScale(1/16D));
         m.shrinkUVs(0.0005);
         m.computeNormals();
         m.computeLighting(LightModel.standardLightModel);
@@ -190,9 +190,9 @@ public class RenderPipe
     {
         for (int k = 0; k < verts.length; k += 4)
         {
-            Vertex5 tmp = verts[k + 1];
-            verts[k + 1] = verts[k + 3];
-            verts[k + 3] = tmp;
+            Vertex5 tmp = verts[k+1];
+            verts[k+1] = verts[k+3];
+            verts[k+3] = tmp;
         }
     }
 
@@ -222,14 +222,14 @@ public class RenderPipe
         if (Integer.bitCount(connMap) == 2 && ((connMap&3) == 3 || (connMap&12) == 12 || (connMap&48) == 48))
             for (int a = 0; a < 3; a++)
             {
-                if (connMap >> a * 2 == 3)
+                if (connMap>>a*2 == 3)
                     centerModels[a].render(t, uvt);
             }
         else
             centerModels[3].render(t, uvt);
 
         for (int s = 0; s < 6; s++)
-            if ((connMap & 1 << s) != 0)
+            if ((connMap&1<<s) != 0)
             {
                 uvt = new IconTransformation(p.getIcon(s));
                 sideModels[s].render(t, uvt);
@@ -263,20 +263,21 @@ public class RenderPipe
         {
             ForgeDirection dir = r.isEntering ? r.input : r.output;
 
-            double prog = r.progress + (r.speed * frame);
+            double prog = r.progress+(r.speed*frame);
 
-            double frameX = pos.x + 0.5D;
-            double frameY = pos.y + 0.25D;
-            double frameZ = pos.z + 0.5D;
+            double frameX = pos.x+0.5D;
+            double frameY = pos.y+0.25D;
+            double frameZ = pos.z+0.5D;
 
-            switch (dir) {
-            case UP: frameY = (pos.y - 0.25D) + prog; break;
-            case DOWN: frameY = (pos.y - 0.25D) + (1.0D - prog); break;
-            case SOUTH: frameZ = pos.z + prog; break;
-            case NORTH: frameZ = pos.z + (1.0D - prog); break;
-            case EAST: frameX = pos.x + prog; break;
-            case WEST: frameX = pos.x  + (1.0D - prog); break;
-            default:
+            switch (dir)
+            {
+                case UP:    frameY = (pos.y-0.25D)+prog; break;
+                case DOWN:  frameY = (pos.y-0.25D)+(1.0D-prog); break;
+                case SOUTH: frameZ = pos.z+prog; break;
+                case NORTH: frameZ = pos.z+(1.0D-prog); break;
+                case EAST:  frameX = pos.x+prog; break;
+                case WEST:  frameX = pos.x+(1.0D-prog); break;
+                default:
             }
 
             doRenderItem(r, frameX, frameY, frameZ);
@@ -292,7 +293,7 @@ public class RenderPipe
         float renderScale = 0.7f;
         ItemStack itemstack = r.getItemStack();
         GL11.glPushMatrix();
-        GL11.glTranslatef((float) x, (float) y, (float) z);
+        GL11.glTranslatef((float)x, (float)y, (float)z);
         GL11.glTranslatef(0, 0.25F, 0);
         GL11.glScalef(renderScale, renderScale, renderScale);
         dummyEntityItem.setEntityItemStack(itemstack);

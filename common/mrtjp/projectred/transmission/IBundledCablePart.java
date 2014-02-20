@@ -1,7 +1,7 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.api.IBundledEmitter;
 import codechicken.multipart.TMultiPart;
+import mrtjp.projectred.api.IBundledEmitter;
 
 public interface IBundledCablePart extends IWirePart, IBundledEmitter
 {

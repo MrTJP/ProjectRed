@@ -10,7 +10,8 @@ public class ProxyThermalExpansion
     public void init()
     {
 
-     // cant be used if tesseracts dont auto-eject into pipes.
+//     cant be used if tesseracts dont auto-eject into pipes.
+
 //        if (ProjectRedAPI.transportationAPI != null)
 //            ProjectRedAPI.transportationAPI.registerSpecialLinkState(new LinkStateTesseract());
 

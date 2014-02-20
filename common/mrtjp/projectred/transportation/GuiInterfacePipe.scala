@@ -1,14 +1,10 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.render.CCRenderState
-import mrtjp.projectred.core.{PRColors, BasicGuiUtils}
-import mrtjp.projectred.core.inventory.{TStackTab, WidgetTab, WidgetTabController, GhostGuiContainer}
+import mrtjp.projectred.core.BasicGuiUtils
+import mrtjp.projectred.core.inventory.GhostGuiContainer
 import net.minecraft.inventory.Container
-import mrtjp.projectred.transmission.EnumWire
 import net.minecraft.util.ResourceLocation
-import net.minecraft.block.Block
-import net.minecraft.item.ItemStack
-import mrtjp.projectred.integration.EnumGate
 
 class GuiInterfacePipe(slots:Container, pipe:RoutedInterfacePipePart) extends GhostGuiContainer(slots, null, 176, 200)
 {

@@ -21,7 +21,7 @@ public class BlockSpecialStoneWall extends BlockWall
     {
         super(par1, Block.stone);
         this.setUnlocalizedName("projectred.exploration.stonewalls");
-        setCreativeTab(ProjectRedExploration.tabExploration);
+        setCreativeTab(ProjectRedExploration.tabExploration());
     }
 
     @SideOnly(Side.CLIENT)
@@ -36,7 +36,7 @@ public class BlockSpecialStoneWall extends BlockWall
     public void getSubBlocks(int id, CreativeTabs tab, List list)
     {
         for (EnumSpecialStone s : EnumSpecialStone.VALID_STONE)
-            list.add(new ItemStack(ProjectRedExploration.blockStoneWalls, 1, s.meta));
+            list.add(new ItemStack(ProjectRedExploration.blockStoneWalls(), 1, s.meta));
     }
 
     @Override
@@ -60,6 +60,6 @@ public class BlockSpecialStoneWall extends BlockWall
     public boolean canPlaceTorchOnTop(World world, int x, int y, int z)
     {
         int id = world.getBlockId(x, y, z);
-        return super.canPlaceTorchOnTop(world, x, y, z) || id == ProjectRedExploration.blockStoneWalls.blockID;
+        return super.canPlaceTorchOnTop(world, x, y, z) || id == ProjectRedExploration.blockStoneWalls().blockID;
     }
 }

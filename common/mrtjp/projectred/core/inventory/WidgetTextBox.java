@@ -100,7 +100,7 @@ public class WidgetTextBox extends GhostWidget
         if (keycode == Keyboard.KEY_RETURN)
         {
             setFocused(false);
-            sendAction(actionCommand, getText());
+            sendAction(actionCommand);
         }
 
         if (keycode == Keyboard.KEY_BACK && text.length() > 0)

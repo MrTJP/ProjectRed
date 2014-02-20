@@ -4,12 +4,8 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.IconTransformation;
-import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.TMultiPart;
 import com.google.common.collect.BiMap;
@@ -27,7 +23,10 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.Icon;
 import net.minecraftforge.common.ForgeDirection;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 public class BasicPipePart extends CorePipePart
 {
@@ -443,8 +442,7 @@ public class BasicPipePart extends CorePipePart
     @SideOnly(Side.CLIENT)
     public void drawBreaking(RenderBlocks r)
     {
-        for (Cuboid6 box : getCollisionBoxes())
-            RenderUtils.renderBlock(box, 0, new Translation(x(), y(), z()), new IconTransformation(r.overrideBlockTexture), null);
+        RenderPipe.renderBreakingOverlay(r.overrideBlockTexture, this);
     }
 
     @Override

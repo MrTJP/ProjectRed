@@ -36,11 +36,11 @@ public class CageLampPart extends BaseLightPart implements TFacePart
         if (pass == 0)
             RenderCageLamp.instance.renderCageLamp(this);
     }
-    
+
     @Override
     public ItemStack getItem()
     {
-        return new ItemStack(isInverted ? ProjectRedIllumination.itemPartInvCageLamp : ProjectRedIllumination.itemPartCageLamp, 1, type);
+        return new ItemStack(isInverted ? ProjectRedIllumination.itemPartInvCageLamp() : ProjectRedIllumination.itemPartCageLamp(), 1, type);
     }
 
     @Override

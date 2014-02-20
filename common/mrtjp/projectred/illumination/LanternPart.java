@@ -23,7 +23,7 @@ public class LanternPart extends BaseLightPart
     @Override
     public ItemStack getItem()
     {
-        return new ItemStack(isInverted ? ProjectRedIllumination.itemPartInvLantern : ProjectRedIllumination.itemPartLantern, 1, type);
+        return new ItemStack(isInverted ? ProjectRedIllumination.itemPartInvLantern() : ProjectRedIllumination.itemPartLantern(), 1, type);
     }
 
     @Override

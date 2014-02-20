@@ -1,7 +1,7 @@
 package mrtjp.projectred.transmission;
 
-import net.minecraft.world.World;
 import codechicken.multipart.TMultiPart;
+import net.minecraft.world.World;
 
 public interface IWirePart
 {
@@ -31,7 +31,7 @@ public interface IWirePart
      * Recalculates the signal of this wire and calls the appropriate
      * propogation methods in WirePropogator. DO NOT CALL THIS YOURSELF. Use
      * WirePropogator.propogateTo
-     * 
+     *
      * @param prev The part which called this propogation (should be connected)
      *            may be null.
      * @param mode One of RISING, DROPPING, FORCE and FORCED specified above
@@ -56,7 +56,7 @@ public interface IWirePart
 
     /**
      * The world in which this part resides
-     * 
+     *
      * @return
      */
     public World world();

@@ -85,8 +85,8 @@ public class GuiCounter extends GuiScreenWidget
             ident = ident.substring(1);
         int value = Integer.parseInt(ident);
 
-        PacketCustom packet = new PacketCustom(IntegrationCPH.channel, 2);
-        IntegrationSPH.writePartIndex(packet, part);
+        PacketCustom packet = new PacketCustom(IntegrationCPH.channel(), 2);
+        IntegrationCPH.writePartIndex(packet, part);
         packet.writeByte(id);
         packet.writeShort(value);
         packet.sendToServer();

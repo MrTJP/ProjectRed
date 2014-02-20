@@ -1,7 +1,8 @@
 package mrtjp.projectred.illumination;
 
-import java.util.Map;
-
+import codechicken.lib.lighting.LightModel;
+import codechicken.lib.render.*;
+import codechicken.lib.vec.*;
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.InvertX;
 import net.minecraft.client.renderer.Tessellator;
@@ -9,28 +10,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
-
 import org.lwjgl.opengl.GL11;
 
-import codechicken.lib.lighting.LightModel;
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.ColourModifier;
-import codechicken.lib.render.IconTransformation;
-import codechicken.lib.render.RenderUtils;
-import codechicken.lib.render.TextureUtils;
-import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Translation;
-import codechicken.lib.vec.Vector3;
+import java.util.Map;
 
 public class RenderCageLamp implements IItemRenderer
 {
     public static RenderCageLamp instance = new RenderCageLamp();
-    
+
     private static CCModel[] base;
-    
+
     public static final Cuboid6 lightBounds[] = new Cuboid6[6];
 
     static
@@ -45,7 +34,7 @@ public class RenderCageLamp implements IItemRenderer
             m.computeLighting(LightModel.standardLightModel);
             m.shrinkUVs(0.0005);
             base[i] = m.copy();
-            
+
             Transformation t = Rotation.sideRotations[i].at(Vector3.center);
             lightBounds[i] = new Cuboid6(4 / 16D, 0, 4 / 16D, 12 / 16D, 10 / 16D, 12 / 16D).apply(t).expand(-0.001);
         }
@@ -82,7 +71,7 @@ public class RenderCageLamp implements IItemRenderer
     public void renderItem(ItemRenderType type, ItemStack item, Object... data)
     {
         int color = item.getItemDamage();
-        boolean on = item.getItem() == ProjectRedIllumination.itemPartInvCageLamp;
+        boolean on = item.getItem() == ProjectRedIllumination.itemPartInvCageLamp();
 
         switch (type) {
         case ENTITY:
@@ -104,6 +93,8 @@ public class RenderCageLamp implements IItemRenderer
 
     public void renderInventory(boolean on, int color, double x, double y, double z, double scale)
     {
+        if (color > 15 || color < 0) return;
+
         Icon icon = on ? RenderLantern.onIcons[color] : RenderLantern.offIcons[color];
 
         GL11.glPushMatrix();

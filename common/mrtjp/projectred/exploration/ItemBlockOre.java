@@ -14,7 +14,7 @@ public class ItemBlockOre extends ItemBlockMetaHandler
     @Override
     public String getUnlocalizedName(ItemStack itemstack)
     {
-        return ProjectRedExploration.blockOres.getUnlocalizedName() + "." + EnumOre.VALID_ORES[itemstack.getItemDamage()].unlocal;
+        return ProjectRedExploration.blockOres().getUnlocalizedName() + "." + EnumOre.VALID_ORES[itemstack.getItemDamage()].unlocal;
     }
 
 }

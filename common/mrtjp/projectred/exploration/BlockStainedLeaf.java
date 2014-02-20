@@ -29,7 +29,7 @@ public class BlockStainedLeaf extends BlockLeaves
     {
         super(ID);
         setUnlocalizedName("projectred.exploration.dyeleaf");
-        setCreativeTab(ProjectRedExploration.tabExploration);
+        setCreativeTab(ProjectRedExploration.tabExploration());
         setLightOpacity(1);
         setStepSound(Block.soundGrassFootstep);
         setHardness(0.2F);
@@ -201,12 +201,12 @@ public class BlockStainedLeaf extends BlockLeaves
 
         public ItemStack getSappling()
         {
-            return new ItemStack(ProjectRedExploration.blockStainedSapling, 1, this.meta);
+            return new ItemStack(ProjectRedExploration.blockStainedSapling(), 1, this.meta);
         }
 
         public ItemStack getLeaf()
         {
-            return new ItemStack(ProjectRedExploration.blockStainedLeaf, 1, this.meta);
+            return new ItemStack(ProjectRedExploration.blockStainedLeaf(), 1, this.meta);
         }
     }
 }

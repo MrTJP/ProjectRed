@@ -1,8 +1,5 @@
 package mrtjp.projectred.exploration;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import net.minecraft.block.Block;
@@ -14,6 +11,9 @@ import net.minecraft.util.Icon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BlockOre extends Block
 {
     public BlockOre(int par1)
@@ -22,7 +22,7 @@ public class BlockOre extends Block
         setUnlocalizedName("projectred.exploration.ore");
         setHardness(3.0F);
         setResistance(5.0F);
-        setCreativeTab(ProjectRedExploration.tabExploration);
+        setCreativeTab(ProjectRedExploration.tabExploration());
     }
 
     @Override
@@ -42,7 +42,7 @@ public class BlockOre extends Block
                 ret.add(type.getItemStack(max));
             return ret;
         }
-        
+
         int count = world.rand.nextInt(fortune + max);
         if (count > max)
             count = max;
@@ -123,7 +123,7 @@ public class BlockOre extends Block
 
         public ItemStack getItemStack(int i)
         {
-            return new ItemStack(ProjectRedExploration.blockOres, i, meta);
+            return new ItemStack(ProjectRedExploration.blockOres(), i, meta);
         }
 
         public ItemStack getDropStack(int i)

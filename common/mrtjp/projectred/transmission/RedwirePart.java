@@ -1,5 +1,12 @@
 package mrtjp.projectred.transmission;
 
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Rotation;
+import codechicken.multipart.*;
+import codechicken.multipart.scalatraits.TRedstoneTile;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CoreSPH;
@@ -8,17 +15,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatMessageComponent;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Rotation;
-import codechicken.multipart.IFaceRedstonePart;
-import codechicken.multipart.IRedstonePart;
-import codechicken.multipart.RedstoneInteractions;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
-import codechicken.multipart.scalatraits.TRedstoneTile;
 
 public abstract class RedwirePart extends WirePart implements IRedwirePart, IFaceRedstonePart
 {
@@ -116,7 +112,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     @Override
     public boolean connectStraightOverride(int absDir)
     {
-        return (RedstoneInteractions.otherConnectionMask(world(), x(), y(), z(), absDir, false) & RedstoneInteractions.connectionMask(this, absDir)) != 0;
+        return (RedstoneInteractions.otherConnectionMask(world(), x(), y(), z(), absDir, false)&RedstoneInteractions.connectionMask(this, absDir)) != 0;
     }
 
     @Override
@@ -301,7 +297,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
             Messenger.addMessage(x(), y() + .5f, z(), "/#f/#c[c] = " + getRedwireSignal());
         else
         {
-            PacketCustom packet = new PacketCustom(CoreSPH.channel, 2);
+            PacketCustom packet = new PacketCustom(CoreSPH.channel(), CoreSPH.messagePacket());
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);

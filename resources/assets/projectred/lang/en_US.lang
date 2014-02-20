@@ -418,6 +418,7 @@ item.projectred.transmission.wire|30.name=Brown Bundled Cable
 item.projectred.transmission.wire|31.name=Green Bundled Cable
 item.projectred.transmission.wire|32.name=Red Bundled Cable
 item.projectred.transmission.wire|33.name=Black Bundled Cable
+item.projectred.transmission.wire|34.name=100V Power Line
 item.projectred.transmission.framewire|0.name=Framed Red Alloy Wire
 item.projectred.transmission.framewire|1.name=Framed White Insulated Wire
 item.projectred.transmission.framewire|2.name=Framed Orange Insulated Wire
@@ -436,6 +437,7 @@ item.projectred.transmission.framewire|14.name=Framed Green Insulated Wire
 item.projectred.transmission.framewire|15.name=Framed Red Insulated Wire
 item.projectred.transmission.framewire|16.name=Framed Black Insulated Wire
 item.projectred.transmission.framewire|17.name=Framed Bundled Cable
+item.projectred.transmission.framewire|34.name=Framed 100V Power Line
 
 
 

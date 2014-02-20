@@ -1,18 +1,5 @@
 package mrtjp.projectred.illumination;
 
-import java.util.Map;
-
-import mrtjp.projectred.ProjectRedIllumination;
-import mrtjp.projectred.core.InvertX;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.IItemRenderer;
-
-import org.lwjgl.opengl.GL11;
-
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
@@ -22,15 +9,26 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
+import mrtjp.projectred.ProjectRedIllumination;
+import mrtjp.projectred.core.InvertX;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Icon;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.IItemRenderer;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Map;
 
 public class RenderLantern implements IItemRenderer
 {
     public static RenderLantern instance = new RenderLantern();
 
     private static Map<String, CCModel> models;
-    
+
     public static final Cuboid6 lightBox = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D).expand(-1 / 64D);
-    
+
     public static Icon[] onIcons;
     public static Icon[] offIcons;
 
@@ -101,7 +99,7 @@ public class RenderLantern implements IItemRenderer
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data)
     {
-        boolean on = item.getItem() == ProjectRedIllumination.itemPartInvLantern;
+        boolean on = item.getItem() == ProjectRedIllumination.itemPartInvLantern();
         int color = item.getItemDamage();
         switch (type) {
         case ENTITY:
@@ -123,7 +121,9 @@ public class RenderLantern implements IItemRenderer
 
     public void renderInventory(boolean on, int color, double x, double y, double z, double scale)
     {
+        if (color > 15 || color < 0) return;
         Icon icon = on ? onIcons[color] : offIcons[color];
+
         GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
         GL11.glScaled(scale, scale, scale);
