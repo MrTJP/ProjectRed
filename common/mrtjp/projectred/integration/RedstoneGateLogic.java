@@ -20,7 +20,7 @@ public abstract class RedstoneGateLogic<PartType extends RedstoneGatePart> exten
 
     public boolean canConnect(int shape, int r)
     {
-        return ((inputMask(shape) | outputMask(shape)) & 1 << r) != 0;
+        return ((inputMask(shape)|outputMask(shape))&1<<r) != 0;
     }
 
     public int inputMask(int shape)
@@ -37,8 +37,8 @@ public abstract class RedstoneGateLogic<PartType extends RedstoneGatePart> exten
     {
         int input = 0;
         for (int r = 0; r < 4; r++)
-            if ((inputMask & 1 << r) != 0 && gate.getRedstoneInput(r) > 0)
-                input |= 1 << r;
+            if ((inputMask&1<<r) != 0 && gate.getRedstoneInput(r) > 0)
+                input |= 1<<r;
 
         return input;
     }

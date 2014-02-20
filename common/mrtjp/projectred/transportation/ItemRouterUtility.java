@@ -25,7 +25,7 @@ public class ItemRouterUtility extends Item
     {
         super(par1);
         setUnlocalizedName("projectred.transportation.routerutil");
-        setCreativeTab(ProjectRedTransportation.tabTransportation);
+        setCreativeTab(ProjectRedTransportation.tabTransportation());
         setMaxStackSize(1);
     }
 
@@ -62,7 +62,7 @@ public class ItemRouterUtility extends Item
             @Override
             public void sendPacket(EntityPlayerMP player, int windowId)
             {
-                PacketCustom packet = new PacketCustom(TransportationSPH.channel, NetConstants.gui_RouterUtil_open);
+                PacketCustom packet = new PacketCustom(TransportationSPH.channel(), NetConstants.gui_RouterUtil_open);
                 packet.writeByte(windowId);
                 packet.sendToPlayer(player);
             }

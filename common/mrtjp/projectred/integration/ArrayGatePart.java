@@ -430,9 +430,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     {
         int r = rotation();
         setRotation((r + 1) % 4);
-        boolean b = tile().canReplacePart(this, this);// test if the rotation is
-                                                      // valid for occlusion
-                                                      // stuffs (criss crossing)
+        boolean b = tile().canReplacePart(this, this);// test if the rotation is valid for occlusion stuffs (criss crossing)
         setRotation(r);
 
         if (b)

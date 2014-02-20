@@ -14,7 +14,7 @@ public class ItemBlockSpecialStoneWalls extends ItemBlockMetaHandler
     @Override
     public String getUnlocalizedName(ItemStack itemstack)
     {
-        return ProjectRedExploration.blockStones.getUnlocalizedName() + "." + EnumSpecialStone.VALID_STONE[itemstack.getItemDamage()].unlocal + "wall";
+        return ProjectRedExploration.blockStones().getUnlocalizedName() + "." + EnumSpecialStone.VALID_STONE[itemstack.getItemDamage()].unlocal + "wall";
     }
 
 }

@@ -34,8 +34,8 @@ public enum PRColors
     {
         name = name().substring(0, 1) + name().substring(1).toLowerCase();
         this.rgb = rgb;
-        rgba = rgb | 0xFF<<24;
-        c = new ColourRGBA(rgb << 8 | 0xFF);
+        rgba = rgb<<8|0xFF;
+        c = new ColourRGBA(rgb<<8|0xFF);
     }
 
     public int dyeId()

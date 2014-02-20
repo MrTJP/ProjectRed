@@ -25,9 +25,9 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
 
     static
     {
-        oBoxes[0][0] = new Cuboid6(1 / 8D, 0, 0, 7 / 8D, 6 / 8D, 1);
-        oBoxes[0][1] = new Cuboid6(0, 0, 1 / 8D, 1, 6 / 8D, 7 / 8D);
-        cBoxes[0] = new Cuboid6(0, 0, 0, 1, 6 / 8D, 1);
+        oBoxes[0][0] = new Cuboid6(1/8D, 0, 0, 7/8D, 6/8D, 1);
+        oBoxes[0][1] = new Cuboid6(0, 0, 1/8D, 1, 6/8D, 7/8D);
+        cBoxes[0] = new Cuboid6(0, 0, 0, 1, 6/8D, 1);
         for (int s = 1; s < 6; s++)
         {
             Transformation t = Rotation.sideRotations[s].at(Vector3.center);
@@ -90,7 +90,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     public void updateAndPropogate(TMultiPart prev, int mode)
     {
         int wireMask = wireMask(prev);
-        if ((wireMask & 2) != 0)
+        if ((wireMask&2) != 0)
             _updateAndPropogate(prev, mode);
         else
             WirePropogator.addNeighborChange(new BlockCoord(tile()));
@@ -98,7 +98,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
 
     private void _updateAndPropogate(TMultiPart prev, int mode)
     {
-        int oldSignal = signal & 0xFF;
+        int oldSignal = signal&0xFF;
         if (mode == DROPPING && oldSignal == 0)
             return;
 
@@ -113,7 +113,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         }
         else if (newSignal > oldSignal)
         {
-            signal = (byte) newSignal;
+            signal = (byte)newSignal;
             if (mode == DROPPING)
                 propogate(null, RISING);
             else
@@ -133,9 +133,9 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         int s = 0;
         int i;
         for (int r = 0; r < 4; r++)
-            if (toInternal(r) % 2 != 0)
+            if (toInternal(r)%2 != 0)
             {
-                if ((connMap & 1 << r) != 0)
+                if ((connMap&1<<r) != 0)
                     i = calculateCornerSignal(r);
                 else
                     i = calculateStraightSignal(r);
@@ -159,7 +159,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         BlockCoord pos = cnrPos.copy().offset(side());
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
-            return getPartSignal(t.partMap(absDir ^ 1), Rotation.rotationTo(absDir ^ 1, side() ^ 1));
+            return getPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side()^1));
 
         return 0;
     }
@@ -172,17 +172,17 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
-        if (t != null && (connMap & 0x10 << r) != 0)
+        if (t != null && (connMap&0x10<<r) != 0)
         {
             TMultiPart tp = t.partMap(side());
             if (tp != null)
-                s = getPartSignal(tp, (r + 2) % 4);
+                s = getPartSignal(tp, (r+2)%4);
         }
         else
         {
             int blockID = world().getBlockId(pos.x, pos.y, pos.z);
             if (blockID == Block.redstoneWire.blockID)
-                return world().getBlockMetadata(pos.x, pos.y, pos.z) - 1;
+                return world().getBlockMetadata(pos.x, pos.y, pos.z)-1;
         }
 
         int i = calculateRedstoneSignal(r);
@@ -197,21 +197,21 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     {
         int absDir = Rotation.rotateSide(side(), r);
 
-        int i = RedstoneInteractions.getPowerTo(this, absDir) * 17;
+        int i = RedstoneInteractions.getPowerTo(this, absDir)*17;
         if (i > 0)
             return i;
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
-        return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, absDir) * 17;
+        return world().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, absDir)*17;
     }
 
     @Override
     public int getPartSignal(TMultiPart part, int r)
     {
-        if (part instanceof IRedwirePart && ((IRedwirePart) part).isWireSide(r))
-            return ((IRedwirePart) part).getRedwireSignal(r) - 1;
+        if (part instanceof IRedwirePart && ((IRedwirePart)part).isWireSide(r))
+            return ((IRedwirePart)part).getRedwireSignal(r)-1;
         else if (part instanceof IRedwireEmitter)
-            return ((IRedwireEmitter) part).getRedwireSignal(r);
+            return ((IRedwireEmitter)part).getRedwireSignal(r);
 
         return 0;
     }
@@ -230,8 +230,8 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
             WirePropogator.addPartChange(this);
 
         for (int r = 0; r < 4; r++)
-            if (toInternal(r) % 2 != 0)
-                if ((connMap & 1 << r) != 0)
+            if (toInternal(r)%2 != 0)
+                if ((connMap&1<<r) != 0)
                     propogateCorner(r, prev, mode);
                 else
                     propogateStraight(r, prev, mode);
@@ -245,7 +245,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
         {
-            TMultiPart tp = t.partMap(absDir ^ 1);
+            TMultiPart tp = t.partMap(absDir^1);
             if (tp == prev)
                 return;
             if (propogateTo(tp, mode))
@@ -278,7 +278,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         if (propogator.tile() == null)
             return 3;
 
-        if (sideDiff(propogator) == Rotation.rotateSide(side(), toAbsolute(0)) >> 1)
+        if (sideDiff(propogator) == Rotation.rotateSide(side(), toAbsolute(0))>>1)
             return 1;
 
         return 2;
@@ -286,7 +286,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
 
     public int sideDiff(TMultiPart part)
     {
-        int a = side() >> 1;
+        int a = side()>>1;
         if (a != 0 && y() != part.y())
             return 0;
         if (a != 1 && z() != part.z())
@@ -299,7 +299,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     {
         if (part instanceof IWirePart)
         {
-            WirePropogator.propogateTo((IWirePart) part, this, mode);
+            WirePropogator.propogateTo((IWirePart)part, this, mode);
             return true;
         }
 
@@ -310,7 +310,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     public int getRedwireSignal(int side)
     {
         int r = toInternal(side);
-        return r % 2 == 0 ? getLogic().getOutput(this, r) * 17 : signal & 0xFF;
+        return r%2 == 0 ? getLogic().getOutput(this, r)*17 : signal&0xFF;
     }
 
     @Override
@@ -323,11 +323,11 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     @Override
     public boolean canConnectRedstone(int side)
     {
-        if ((side & 6) == (side() & 6))
+        if ((side&6) == (side()&6))
             return false;
 
         int r = relRot(side);
-        if (r % 2 != 0)
+        if (r%2 != 0)
             return true;
 
         return getLogic().canConnect(this, r);
@@ -336,12 +336,12 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     @Override
     public int weakPowerLevel(int side)
     {
-        if ((side & 6) == (side() & 6))
+        if ((side&6) == (side()&6))
             return 0;
 
         int r = relRot(side);
-        if (r % 2 != 0)
-            return rsLevel(signal & 0xFF);
+        if (r%2 != 0)
+            return rsLevel(signal&0xFF);
 
         return super.weakPowerLevel(side);
     }
@@ -349,7 +349,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     public int rsLevel(int i)
     {
         if (WirePropogator.redwiresProvidePower)
-            return (i + 16) / 17;
+            return (i+16)/17;
 
         return 0;
     }
@@ -360,7 +360,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         if (side < 0)
             return false;
 
-        return toInternal(side) % 2 != 0;
+        return toInternal(side)%2 != 0;
     }
 
     @Override

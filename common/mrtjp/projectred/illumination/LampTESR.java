@@ -19,7 +19,7 @@ import codechicken.lib.vec.Translation;
 public class LampTESR extends TileEntitySpecialRenderer implements IItemRenderer
 {
     public static LampTESR instance = new LampTESR();
-    private static Cuboid6 box = new Cuboid6(0, 0, 0, 1, 1, 1).expand(0.05D);
+    private static Cuboid6 box = Cuboid6.full.copy().expand(0.05D);
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type)
@@ -50,7 +50,6 @@ public class LampTESR extends TileEntitySpecialRenderer implements IItemRenderer
             renderInventory(item.getItemDamage(), 0f, -0.05f, 0f, 0.95f);
             return;
         default:
-            return;
         }
     }
 
@@ -79,7 +78,7 @@ public class LampTESR extends TileEntitySpecialRenderer implements IItemRenderer
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float f)
     {
-        if (te instanceof ILight && ((ILight) te).isOn())
+        if (te instanceof ILight && ((ILight)te).isOn())
         {
             int meta = te.worldObj.getBlockMetadata(te.xCoord, te.yCoord, te.zCoord);
             RenderHalo.addLight(te.xCoord, te.yCoord, te.zCoord, meta, box);

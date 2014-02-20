@@ -76,9 +76,9 @@ public class RouteFX
 
     private static void doSpawnType3(final PRColors color, int dir, BlockCoord bc, World world)
     {
-        double x = bc.x + 0.5;
-        double y = bc.y + 0.5;
-        double z = bc.z + 0.5;
+        double x = bc.x+0.5;
+        double y = bc.y+0.5;
+        double z = bc.z+0.5;
 
         CoreParticle c = ParticleManagement.instance.spawn(world, "box", x, y, z);
         if (c != null)
@@ -123,23 +123,23 @@ public class RouteFX
 
     private static void doSpawnType2(final PRColors color, int dir, BlockCoord bc, World world)
     {
-        double x = bc.x + 0.5;
-        double y = bc.y + 0.5;
-        double z = bc.z + 0.5;
+        double x = bc.x+0.5;
+        double y = bc.y+0.5;
+        double z = bc.z+0.5;
 
-        double x1 = bc.x + 0.5 + MathHelper.getRandomDoubleInRange(rand, -1/16d, 1/16d);
-        double y1 = bc.y + 0.5 + MathHelper.getRandomDoubleInRange(rand, -1/16d, 1/16d);
-        double z1 = bc.z + 0.5 + MathHelper.getRandomDoubleInRange(rand, -1/16d, 1/16d);
+        double x1 = bc.x+0.5+MathHelper.getRandomDoubleInRange(rand, -1/16d, 1/16d);
+        double y1 = bc.y+0.5+MathHelper.getRandomDoubleInRange(rand, -1/16d, 1/16d);
+        double z1 = bc.z+0.5+MathHelper.getRandomDoubleInRange(rand, -1/16d, 1/16d);
 
         double shift = MathHelper.getRandomDoubleInRange(rand, 0.8D, 1.0D);
         switch (dir)
         {
-            case 0: y1 = bc.y + 0.5 - shift; break;
-            case 1: y1 = bc.y + 0.5 + shift; break;
-            case 2: z1 = bc.z + 0.5 - shift; break;
-            case 3: z1 = bc.z + 0.5 + shift; break;
-            case 4: x1 = bc.x + 0.5 - shift; break;
-            case 5: x1 = bc.x + 0.5 + shift; break;
+            case 0: y1 = bc.y+0.5-shift; break;
+            case 1: y1 = bc.y+0.5+shift; break;
+            case 2: z1 = bc.z+0.5-shift; break;
+            case 3: z1 = bc.z+0.5+shift; break;
+            case 4: x1 = bc.x+0.5-shift; break;
+            case 5: x1 = bc.x+0.5+shift; break;
         }
 
         CoreParticle c = ParticleManagement.instance.spawn(world, "box", x, y, z);
@@ -185,13 +185,13 @@ public class RouteFX
 
     private static void doSpawnType1(PRColors color, BlockCoord bc, World world)
     {
-        double x = bc.x + 0.5 + MathHelper.getRandomDoubleInRange(rand, -1/4d, 1/4d);
-        double y = bc.y + 0.5 + MathHelper.getRandomDoubleInRange(rand, -1/8d, 1/8d);
-        double z = bc.z + 0.5 + MathHelper.getRandomDoubleInRange(rand, -1/4d, 1/4d);
+        double x = bc.x+0.5+MathHelper.getRandomDoubleInRange(rand, -1/4d, 1/4d);
+        double y = bc.y+0.5+MathHelper.getRandomDoubleInRange(rand, -1/8d, 1/8d);
+        double z = bc.z+0.5+MathHelper.getRandomDoubleInRange(rand, -1/4d, 1/4d);
 
-        double x1 = bc.x + 0.5;
-        double y1 = bc.y + 0.5 + 1;
-        double z1 = bc.z + 0.5;
+        double x1 = bc.x+0.5;
+        double y1 = bc.y+0.5+1;
+        double z1 = bc.z+0.5;
 
         CoreParticle c = ParticleManagement.instance.spawn(world, "flutter1", x, y, z);
         if (c != null)
@@ -237,7 +237,7 @@ public class RouteFX
         if (world.isRemote)
             return;
 
-        PacketCustom packet = new PacketCustom(TransportationSPH.channel, NetConstants.particle_Spawn);
+        PacketCustom packet = new PacketCustom(TransportationSPH.channel(), NetConstants.particle_Spawn);
 
         packet.writeByte(1);
         packet.writeByte(color).writeByte(count).writeCoord(bc);
@@ -249,7 +249,7 @@ public class RouteFX
         if (world.isRemote)
             return;
 
-        PacketCustom packet = new PacketCustom(TransportationSPH.channel, NetConstants.particle_Spawn);
+        PacketCustom packet = new PacketCustom(TransportationSPH.channel(), NetConstants.particle_Spawn);
 
         packet.writeByte(2);
         packet.writeByte(color).writeByte(count).writeCoord(bc).writeByte(dir);
@@ -261,7 +261,7 @@ public class RouteFX
         if (world.isRemote)
             return;
 
-        PacketCustom packet = new PacketCustom(TransportationSPH.channel, NetConstants.particle_Spawn);
+        PacketCustom packet = new PacketCustom(TransportationSPH.channel(), NetConstants.particle_Spawn);
 
         packet.writeByte(3);
         packet.writeByte(color).writeByte(count).writeCoord(bc).writeByte(dir);
@@ -290,20 +290,20 @@ public class RouteFX
             if (bc == null)
                 bc = particle.blockPosition();
 
-            double x1 = bc.x + 0.5 + MathHelper.getRandomDoubleInRange(rand, -deviation, deviation);
-            double y1 = bc.y + 0.5 + MathHelper.getRandomDoubleInRange(rand, -deviation, deviation);
-            double z1 = bc.z + 0.5 + MathHelper.getRandomDoubleInRange(rand, -deviation, deviation);
+            double x1 = bc.x+0.5+MathHelper.getRandomDoubleInRange(rand, -deviation, deviation);
+            double y1 = bc.y+0.5+MathHelper.getRandomDoubleInRange(rand, -deviation, deviation);
+            double z1 = bc.z+0.5+MathHelper.getRandomDoubleInRange(rand, -deviation, deviation);
 
             double shift = MathHelper.getRandomDoubleInRange(rand, 1-deviation, 1+deviation);
 
             switch (dir)
             {
-                case 0: y1 = bc.y + 0.5 - shift; break;
-                case 1: y1 = bc.y + 0.5 + shift; break;
-                case 2: z1 = bc.z + 0.5 - shift; break;
-                case 3: z1 = bc.z + 0.5 + shift; break;
-                case 4: x1 = bc.x + 0.5 - shift; break;
-                case 5: x1 = bc.x + 0.5 + shift; break;
+                case 0: y1 = bc.y+0.5-shift; break;
+                case 1: y1 = bc.y+0.5+shift; break;
+                case 2: z1 = bc.z+0.5-shift; break;
+                case 3: z1 = bc.z+0.5+shift; break;
+                case 4: x1 = bc.x+0.5-shift; break;
+                case 5: x1 = bc.x+0.5+shift; break;
             }
 
             return new Vector3(x1, y1, z1);
@@ -320,6 +320,7 @@ public class RouteFX
         public void onDestinationReached()
         {
             BlockCoord bc = particle.blockPosition();
+            System.out.println(particle.position().toString()+" vs "+(bc.x+1)+","+bc.y+","+bc.z);
             TMultiPart part = BasicUtils.getMultiPart(particle.worldObj, bc, 6);
             if (part instanceof BasicPipePart && !(part instanceof RoutedJunctionPipePart))
             {
@@ -341,7 +342,7 @@ public class RouteFX
                 else
                 {
                     for (int i = 0; i<6; i++)
-                        if ((connMap & 1<<i) != 0)
+                        if ((connMap&1<<i) != 0)
                             RouteFX.spawnType2(color, 1, i, bc, particle.worldObj);
 
                     finishLogic();

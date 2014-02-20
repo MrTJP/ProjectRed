@@ -23,7 +23,7 @@ public class ItemPartPipe extends JItemMultiPart
     {
         super(id);
         setHasSubtypes(true);
-        setCreativeTab(ProjectRedTransportation.tabTransportation);
+        setCreativeTab(ProjectRedTransportation.tabTransportation());
         setUnlocalizedName("projectred.transportation.pipe");
     }
 

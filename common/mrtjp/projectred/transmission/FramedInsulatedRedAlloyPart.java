@@ -1,35 +1,29 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.api.IConnectable;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Icon;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mrtjp.projectred.api.IConnectable;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Icon;
 
 public class FramedInsulatedRedAlloyPart extends FramedRedwirePart implements IInsulatedRedwirePart
 {
     public byte colour;
 
     @Override
-    public String getType()
+    public WireDef getWireType()
     {
-        return "pr_sinsulated";
-    }
-
-    @Override
-    public EnumWire getWireType()
-    {
-        return EnumWire.INSULATED_WIRE[colour];
+        return WireDefs.INSULATED_WIRE()[colour];
     }
 
     @Override
     public void preparePlacement(int meta)
     {
         super.preparePlacement(meta);
-        colour = (byte) (meta - EnumWire.INSULATED_0.ordinal());
+        colour = (byte) (meta-WireDefs.INSULATED_0().meta());
     }
 
     @Override
@@ -75,7 +69,7 @@ public class FramedInsulatedRedAlloyPart extends FramedRedwirePart implements II
         if (wire instanceof IInsulatedRedwirePart)
             return ((IInsulatedRedwirePart) wire).getInsulatedColour() == colour;
 
-        return true;
+        return (wire instanceof IBundledCablePart || wire instanceof IRedwirePart);
     }
 
     @Override
@@ -91,7 +85,7 @@ public class FramedInsulatedRedAlloyPart extends FramedRedwirePart implements II
     @SideOnly(Side.CLIENT)
     public Icon getIcon()
     {
-        return getWireType().wireSprites[signal != 0 ? 1 : 0];
+        return getWireType().wireSprites()[signal != 0 ? 1 : 0];
     }
 
     @Override

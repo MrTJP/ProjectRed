@@ -1,21 +1,16 @@
 package mrtjp.projectred.transmission;
 
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.vec.BlockCoord;
+import codechicken.multipart.*;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.CoreSPH;
 import mrtjp.projectred.core.Messenger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MovingObjectPosition;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.multipart.IMaskedRedstonePart;
-import codechicken.multipart.IRedstonePart;
-import codechicken.multipart.RedstoneInteractions;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
 
 public abstract class FramedRedwirePart extends FramedWirePart implements IRedwirePart, IMaskedRedstonePart
 {
@@ -242,13 +237,13 @@ public abstract class FramedRedwirePart extends FramedWirePart implements IRedwi
     }
 
     @Override
-    protected boolean test(EntityPlayer player, MovingObjectPosition hit)
+    protected boolean test(EntityPlayer player)
     {
         if (BasicUtils.isClient(world()))
             Messenger.addMessage(x(), y() + .5f, z(), "/#f/#c[c] = " + getRedwireSignal());
         else
         {
-            PacketCustom packet = new PacketCustom(CoreSPH.channel, 2);
+            PacketCustom packet = new PacketCustom(CoreSPH.channel(), CoreSPH.messagePacket());
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);

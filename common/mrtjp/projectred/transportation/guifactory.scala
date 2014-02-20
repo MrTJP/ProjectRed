@@ -91,12 +91,12 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
             case "orient" if chip.isInstanceOf[TChipOrientation] => shiftScreen(new GuiChipOrient(cFor[TChipOrientation], this), true)
             case "prior" if chip.isInstanceOf[TChipPriority] => shiftScreen(new GuiChipPriority(cFor[TChipPriority], this), true)
             case "stock" if chip.isInstanceOf[TChipStock] =>
-                val c2 = chip.asInstanceOf[TChipFilter]
+                val c2 = chip.asInstanceOf[TChipStock]
                 var s = 0
                 import scala.collection.JavaConversions._
                 for (p <- BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 {
-                    c.addCustomSlot(new GhostContainer2.SlotExtended(c2.filter, s, p.getValue1, p.getValue2).setGhosting(true))
+                    c.addCustomSlot(new GhostContainer2.SlotExtended(c2.stock, s, p.getValue1, p.getValue2).setGhosting(true))
                     s += 1
                 }
                 shiftScreen(new GuiChipStock(cFor[TChipStock], this), true)
@@ -117,7 +117,7 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
     }
     override def addWidgets()
     {
-        if (chip.isInstanceOf[TChipFilter])
+        if (chip.isInstanceOf[TChipFilter] && chip.asInstanceOf[TChipFilter].enableFilter)
             add(new WidgetDotSelector(85, 34)
             {
                 override def buildTooltip(list:ListBuffer[String])
@@ -282,6 +282,8 @@ class GuiChipOrient(cont:ChipContainer[TChipOrientation], prev:GuiScreen) extend
 
     override def drawBackground()
     {
+        super.drawBackground()
+
         val xOff = 90
         fontRenderer.drawString("Extraction is", xOff, 20, PRColors.WHITE.rgb, true)
         if (chip.extractOrient == -1) fontRenderer.drawString("not simulated", xOff, 30, PRColors.WHITE.rgb, true)

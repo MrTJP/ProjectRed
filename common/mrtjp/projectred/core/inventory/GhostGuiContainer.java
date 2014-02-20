@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class GhostGuiContainer extends GuiContainer implements IStackableGui, IGuiActionListener
 {
-    protected static final ResourceLocation RL_extras = new ResourceLocation("projectred:textures/gui/guiextras.png");
+    protected static final ResourceLocation guiExtras= new ResourceLocation("projectred:textures/gui/guiextras.png");
 
     public ArrayList<GhostWidget> widgets = new ArrayList<GhostWidget>();
 

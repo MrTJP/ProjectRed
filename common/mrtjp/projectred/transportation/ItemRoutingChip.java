@@ -13,8 +13,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
-import scala.collection.JavaConversions;
-import scala.collection.mutable.ListBuffer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +23,7 @@ public class ItemRoutingChip extends Item
     {
         super(par1);
         setUnlocalizedName("projectred.transportation.routingchip");
-        setCreativeTab(ProjectRedTransportation.tabTransportation);
+        setCreativeTab(ProjectRedTransportation.tabTransportation());
         setHasSubtypes(true);
     }
 
@@ -70,7 +68,7 @@ public class ItemRoutingChip extends Item
                 if (r != null)
                 {
                     List<String> s = new LinkedList<String>();
-                    r.infoCollection((ListBuffer<String>)JavaConversions.asScalaBuffer(s));
+                    r.JInfoCollection(s);
                     list.addAll(s);
                 }
             }
@@ -192,7 +190,7 @@ public class ItemRoutingChip extends Item
 
         public ItemStack getItemStack(int i)
         {
-            return new ItemStack(ProjectRedTransportation.itemRoutingChip, i, meta);
+            return new ItemStack(ProjectRedTransportation.itemRoutingChip(), i, meta);
         }
 
         public static EnumRoutingChip getForStack(ItemStack stack)

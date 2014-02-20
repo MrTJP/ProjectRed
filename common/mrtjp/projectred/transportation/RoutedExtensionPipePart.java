@@ -153,7 +153,7 @@ public class RoutedExtensionPipePart extends RoutedJunctionPipePart
             @Override
             public void sendPacket(EntityPlayerMP player, int windowId)
             {
-                PacketCustom p = new PacketCustom(TransportationSPH.channel, NetConstants.gui_ExtensionPipe_open);
+                PacketCustom p = new PacketCustom(TransportationSPH.channel(), NetConstants.gui_ExtensionPipe_open);
                 p.writeCoord(x(), y(), z());
                 p.writeByte(windowId);
                 p.writeString(getRouter().getID().toString());

@@ -19,9 +19,9 @@ class WidgetTab(c:Int, wMin:Int, hMin:Int, wMax:Int, hMax:Int) extends GhostWidg
 
     var active = false
 
-    def isOpen() = active && width==wMax && height==hMax
+    def isOpen = active && width==wMax && height==hMax
 
-    override def subWidgets() = isOpen
+    override def subWidgets = isOpen
 
     override def drawBack(mouseX:Int, mouseY:Int, frame:Float)
     {
@@ -42,7 +42,6 @@ class WidgetTab(c:Int, wMin:Int, hMin:Int, wMax:Int, hMax:Int) extends GhostWidg
 
         if (isOpen) drawTab()
     }
-
 
     override def drawFront(mouseX:Int, mouseY:Int)
     {
@@ -78,6 +77,8 @@ class WidgetTab(c:Int, wMin:Int, hMin:Int, wMax:Int, hMax:Int) extends GhostWidg
 
     override def mouseClicked(px:Int, py:Int, button:Int)
     {
+        super.mouseClicked(px, py, button)
+
         if (pointInsideStart(px, py))
             if (controller != null)
                 controller.onTabClicked(this)
@@ -173,5 +174,5 @@ class WidgetTabController(x:Int, y:Int) extends GhostWidget(x, y, 0, 0)
         }
     }
 
-    override def subWidgets() = true
+    override def subWidgets = true
 }

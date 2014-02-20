@@ -22,6 +22,8 @@ public abstract class InventoryWrapper
     private ISidedInventory sidedInv;
     private int side;
 
+    private boolean internalManipulation = false;
+
     private int startIndex;
     private int endIndex;
 
@@ -119,6 +121,22 @@ public abstract class InventoryWrapper
         return this;
     }
 
+    public InventoryWrapper setSingleSlot(int slot)
+    {
+        startIndex = slot;
+        endIndex = slot;
+        slots = new int[1];
+
+        slots[0] = slot;
+        return this;
+    }
+
+    public InventoryWrapper setManipMode(boolean flag)
+    {
+        internalManipulation = flag;
+        return this;
+    }
+
     public InventoryWrapper setFuzzy(boolean flag)
     {
         fuzzyMode = flag;
@@ -180,6 +198,7 @@ public abstract class InventoryWrapper
         int slotStackLimit = Math.min(inv.getInventoryStackLimit(), item2.getMaxStackSize());
         for (int slot : slots)
         {
+
             ItemStack s = inv.getStackInSlot(slot);
 
             if (!canInsertItem(slot, item2))
@@ -352,11 +371,13 @@ public abstract class InventoryWrapper
     /** Internal Utils **/
     private boolean canInsertItem(int slot, ItemStack item)
     {
+        if (internalManipulation) return true;
         return sidedInv == null ? inv.isItemValidForSlot(slot, item) : sidedInv.canInsertItem(slot, item, side);
     }
 
     private boolean canExtractItem(int slot, ItemStack item)
     {
+        if (internalManipulation) return true;
         return sidedInv == null ? inv.isItemValidForSlot(slot, item) : sidedInv.canExtractItem(slot, item, side);
     }
 

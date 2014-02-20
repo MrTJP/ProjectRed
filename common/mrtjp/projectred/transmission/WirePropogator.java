@@ -1,24 +1,19 @@
 package mrtjp.projectred.transmission;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Stack;
-
-import mrtjp.projectred.core.CommandDebug;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRedstoneWire;
-import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import codechicken.multipart.handler.MultipartProxy;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import mrtjp.projectred.core.CommandDebug;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRedstoneWire;
+import net.minecraft.world.World;
+
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class WirePropogator
 {

@@ -1,14 +1,5 @@
 package mrtjp.projectred.transmission;
 
-import java.util.List;
-
-import mrtjp.projectred.ProjectRedTransmission;
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.JItemMultiPart;
@@ -16,6 +7,15 @@ import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mrtjp.projectred.ProjectRedTransmission;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+
+import java.util.List;
 
 public class ItemPartFramedWire extends JItemMultiPart
 {
@@ -23,7 +23,7 @@ public class ItemPartFramedWire extends JItemMultiPart
     {
         super(id);
         setHasSubtypes(true);
-        setCreativeTab(ProjectRedTransmission.tabTransmission);
+        setCreativeTab(ProjectRedTransmission.tabTransmission());
         setUnlocalizedName("projectred.transmission.framewire");
     }
 
@@ -41,8 +41,8 @@ public class ItemPartFramedWire extends JItemMultiPart
     @Override
     public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit)
     {
-        EnumWire type = EnumWire.VALID_WIRE[item.getItemDamage()];
-        FramedWirePart w = (FramedWirePart) MultiPartRegistry.createPart(type.framedType, false);
+        WireDef type = WireDefs.VALID_WIRE()[item.getItemDamage()];
+        FramedWirePart w = (FramedWirePart) MultiPartRegistry.createPart(type.framedType(), false);
         if (w != null)
             w.preparePlacement(item.getItemDamage());
         return w;
@@ -52,7 +52,7 @@ public class ItemPartFramedWire extends JItemMultiPart
     @SideOnly(Side.CLIENT)
     public void getSubItems(int id, CreativeTabs tab, List list)
     {
-        for (EnumWire w : EnumWire.VALID_WIRE)
+        for (WireDef w : WireDefs.VALID_WIRE())
             if (w.hasFramedForm())
                 list.add(w.getFramedItemStack());
     }

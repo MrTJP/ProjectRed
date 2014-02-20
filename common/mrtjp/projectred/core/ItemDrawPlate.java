@@ -10,7 +10,7 @@ public class ItemDrawPlate extends ItemCraftingDamage
         super(par1);
         setUnlocalizedName("projectred.core.drawplate");
         setMaxDamage(512);
-        setCreativeTab(ProjectRedCore.tabCore);
+        setCreativeTab(ProjectRedCore.tabCore());
     }
 
     @Override

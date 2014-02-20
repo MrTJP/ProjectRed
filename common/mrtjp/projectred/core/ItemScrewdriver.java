@@ -19,7 +19,7 @@ public class ItemScrewdriver extends Item implements IScrewdriver
         setMaxStackSize(1);
         setMaxDamage(128);
         setNoRepair();
-        setCreativeTab(ProjectRedCore.tabCore);
+        setCreativeTab(ProjectRedCore.tabCore());
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ItemScrewdriver extends Item implements IScrewdriver
     {
         this.itemIcon = reg.registerIcon("projectred:screwdriver");
     }
-	
+
 	@Override
 	public void damageScrewdriver(World world, EntityPlayer player)
 	{

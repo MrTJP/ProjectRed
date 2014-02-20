@@ -3,19 +3,21 @@ package mrtjp.projectred.transportation
 import codechicken.core.IGuiPacketSender
 import codechicken.core.ServerUtils
 import codechicken.lib.packet.PacketCustom
+import java.util
 import mrtjp.projectred.core.inventory.{InventoryWrapper, SimpleInventory}
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise
 import mrtjp.projectred.transportation.RoutedPayload.SendPriority
+import mrtjp.projectred.transportation.RoutingChipContainerFactory.ChipContainer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.Keyboard
+import scala.collection.convert.WrapAsJava
 import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.transportation.RoutingChipContainerFactory.ChipContainer
 
 abstract class RoutingChipset
 {
@@ -77,6 +79,14 @@ abstract class RoutingChipset
     {
         addUpgradeBusInfo(list)
     }
+    def JInfoCollection(list:util.List[String])
+    {
+        val l2 = new ListBuffer[String]
+        infoCollection(l2)
+
+        val l = WrapAsJava.bufferAsJavaList[String](l2)
+        list.addAll(l)
+    }
 
     def getChipType:EnumRoutingChip
 
@@ -97,7 +107,7 @@ abstract class RoutingChipset
 
     def createContainer(player:EntityPlayer) =
     {
-        val cont = new ChipContainer[this.type](player)
+        val cont = new ChipContainer[RoutingChipset](player)
         cont.addPlayerInventory(8, 86)
         cont
     }

@@ -1,11 +1,11 @@
 package mrtjp.projectred.transmission;
 
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.IItemRenderer;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Translation;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.IItemRenderer;
 
 public class FramedWireItemRenderer implements IItemRenderer
 {
@@ -47,16 +47,16 @@ public class FramedWireItemRenderer implements IItemRenderer
 
     public void renderWireInventory(int meta, float x, float y, float z, float scale)
     {
-        EnumWire type = EnumWire.VALID_WIRE[meta];
+        WireDef type = WireDefs.VALID_WIRE()[meta];
         if (type == null)
             return;
         TextureUtils.bindAtlas(0);
         CCRenderState.reset();
         CCRenderState.useNormals(true);
         CCRenderState.pullLightmap();
-        CCRenderState.setColourOpaque(type.itemColour);
+        CCRenderState.setColourOpaque(type.itemColour());
         CCRenderState.startDrawing(7);
-        RenderFramedWire.renderInv(type.thickness, new Scale(scale).with(new Translation(x, y, z)), type.wireSprites[0]);
+        RenderFramedWire.renderInv(type.thickness(), new Scale(scale).with(new Translation(x, y, z)), type.wireSprites()[0]);
         CCRenderState.draw();
     }
 }

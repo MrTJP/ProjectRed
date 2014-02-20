@@ -3,16 +3,16 @@
     <property file="buildspecs.properties" prefix="buildspecs"/>
 
 
-    <property name="mod.version" value="4.2.2"/>
+    <property name="mod.version" value="4.3.0"/>
     <condition property="mod.build" value="${env.BUILD_NUMBER}" else="0">
         <isset property="env.BUILD_NUMBER"/>
     </condition>
     <property name="mc.version" value="1.6.4"/>
-    <property name="forge.version" value="9.11.1.953"/>
-    <property name="ccl.version" value="1.0.0.49"/>
+    <property name="forge.version" value="9.11.1.965"/>
+    <property name="ccl.version" value="1.0.0.61"/>
     <property name="ccobf.version" value="1.0.0.17"/>
     <property name="ccc.version" value="0.9.0.7"/>
-    <property name="fmp.version" value="1.0.0.227"/>
+    <property name="fmp.version" value="1.0.0.240"/>
     <property name="nei.version" value="1.6.1.8"/>
     <property name="tcons.version" value="1.4.7d4"/>
     <property name="texpan.version" value="3.0.0.0"/>
@@ -26,11 +26,10 @@
     <property name="forge.dir" value="${build.dir}/forge"/>
     <property name="mcp.dir" value="${forge.dir}/mcp"/>
 
-
     <property name="mod.name.base" value="ProjectRedBase-${mc.version}-${mod.version}.${mod.build}.jar"/>
     <property name="mod.name.integration" value="ProjectRedIntegration-${mc.version}-${mod.version}.${mod.build}.jar"/>
     <property name="mod.name.lighting" value="ProjectRedLighting-${mc.version}-${mod.version}.${mod.build}.jar"/>
-    <property name="mod.name.mechanical" value="ProjectRedMechanical-${mc.version}-${mod.version}.${mod.build}.jar"/>
+    <property name="mod.name.mechanical" value="ProjectRedMechanical-BETA-${mc.version}-${mod.version}.${mod.build}.jar"/>
     <property name="mod.name.world" value="ProjectRedWorld-${mc.version}-${mod.version}.${mod.build}.jar"/>
     <property name="mod.name.compat" value="ProjectRedCompat-${mc.version}-${mod.version}.${mod.build}.jar"/>
 
@@ -64,6 +63,7 @@
     <!-- Check installed dependencies -->
     <property name="build.dependencies.file" value="${build.dir}/dependencies.properties"/>
     <property prefix="build.dependencies" file="${build.dependencies.file}"/>
+
     <condition property="forge-installed">
         <equals arg1="${build.dependencies.forge}" arg2="${forge.version}"/>
     </condition>
@@ -487,7 +487,7 @@
         <!-- ProjectRed Mechanical -->
         <echo message="Packaging ProjectRed Mechanical"/>
         <jar destfile="${jar.dir}/${mod.name.mechanical}">
-            <fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExpansion*.scala, **/mrtjp/projectred/expansion/**, **/ProjectRedTransportation*.class, **/mrtjp/projectred/transportation/**"/>
+            <fileset dir="${mcp.dir}/reobf/minecraft" includes="**/ProjectRedExpansion*.class, **/mrtjp/projectred/expansion/**, **/ProjectRedTransportation*.class, **/mrtjp/projectred/transportation/**"/>
             <fileset file="${mcp.dir}/reobf/resources/mcmod.info"/>
         </jar>
 

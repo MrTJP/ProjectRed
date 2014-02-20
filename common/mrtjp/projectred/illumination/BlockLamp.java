@@ -34,7 +34,7 @@ public class BlockLamp extends Block implements IRedstoneConnectorBlock
         setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         setHardness(0.5F);
         setUnlocalizedName("projectred.illumination.lamp");
-        setCreativeTab(ProjectRedIllumination.tabLighting);
+        setCreativeTab(ProjectRedIllumination.tabLighting());
     }
 
     @Override

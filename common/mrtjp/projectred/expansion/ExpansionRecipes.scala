@@ -4,6 +4,7 @@ object ExpansionRecipes
 {
     def initRecipes()
     {
+        FurnaceRecipeLib.init()
         initMiscRecipes()
     }
 

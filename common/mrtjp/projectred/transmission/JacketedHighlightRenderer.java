@@ -1,10 +1,5 @@
 package mrtjp.projectred.transmission;
 
-import mrtjp.projectred.core.BasicUtils;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.World;
-import scala.Tuple2;
 import codechicken.lib.raytracer.ExtendedMOP;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.microblock.MicroMaterialRegistry;
@@ -12,6 +7,11 @@ import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer;
 import codechicken.microblock.MicroblockClass;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
+import mrtjp.projectred.core.BasicUtils;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
+import scala.Tuple2;
 
 public class JacketedHighlightRenderer implements IMicroHighlightRenderer
 {
@@ -24,7 +24,7 @@ public class JacketedHighlightRenderer implements IMicroHighlightRenderer
 
         Tuple2<Integer, ?> hitData = ExtendedMOP.getData(hit);
 
-        TMultiPart part = tile.partList().apply(hitData._1$mcI$sp());
+        TMultiPart part = tile.partList().apply(hitData._1());
         if (!(part instanceof FramedWirePart))
             return false;
 

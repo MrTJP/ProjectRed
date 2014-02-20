@@ -3,9 +3,6 @@ package mrtjp.projectred.core;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.multipart.PartMap;
-import codechicken.multipart.TileMultipart;
 
 public class BasicWireUtils
 {
@@ -33,17 +30,5 @@ public class BasicWireUtils
             return false;
 
         return b.canPlaceTorchOnTop(w, x, y, z);
-    }
-
-    public static boolean canConnectThroughCorner(World world, BlockCoord pos, int side1, int side2)
-    {
-        if (world.isAirBlock(pos.x, pos.y, pos.z))
-            return true;
-
-        TileMultipart t = BasicUtils.getMultipartTile(world, pos);
-        if (t != null)
-            return t.partMap(side1) == null && t.partMap(side2) == null && t.partMap(PartMap.edgeBetween(side1, side2)) == null;
-
-        return false;
     }
 }

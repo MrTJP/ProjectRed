@@ -405,7 +405,7 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
             @Override
             public void sendPacket(EntityPlayerMP player, int windowId)
             {
-                PacketCustom p = new PacketCustom(TransportationSPH.channel, NetConstants.gui_CraftingPipe_open);
+                PacketCustom p = new PacketCustom(TransportationSPH.channel(), NetConstants.gui_CraftingPipe_open);
                 p.writeCoord(x(), y(), z());
                 p.writeByte(windowId);
                 p.writeInt(priority);

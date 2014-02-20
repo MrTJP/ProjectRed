@@ -7,19 +7,19 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class IlluminationRecipes 
+public class IlluminationRecipes
 {
-    public static void initIlluminationRecipes() 
+    public static void initIlluminationRecipes()
     {
         initLightingRecipes();
     }
 
-    private static void initLightingRecipes() 
+    private static void initLightingRecipes()
     {
         /** Lamps **/
-        for (int i = 0; i < 16; i++) 
+        for (int i = 0; i < 16; i++)
         {
-            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.blockLamp, 1, i),  // Regular
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.blockLamp(), 1, i),  // Regular
                     "gIg",
                     "gIg",
                     "gtg",
@@ -27,7 +27,7 @@ public class IlluminationRecipes
                     'I', EnumPart.ILLUMAR_PARTS[i].getItemStack(),
                     't', Item.redstone
                     );
-            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.blockLamp, 1, i+16), // Inverted
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.blockLamp(), 1, i+16), // Inverted
                     "gIg",
                     "gIg",
                     "gtg",
@@ -38,9 +38,9 @@ public class IlluminationRecipes
         }
 
         /** Lanterns **/
-        for (int i = 0; i < 16; i++) 
+        for (int i = 0; i < 16; i++)
         {
-            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartLantern, 1, i),
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartLantern(), 1, i),
                     "PNP",
                     "GIG",
                     "PRP",
@@ -50,7 +50,7 @@ public class IlluminationRecipes
                     'I', EnumPart.ILLUMAR_PARTS[i].getItemStack(),
                     'R', Item.redstone
                     );
-            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartInvLantern, 1, i),
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartInvLantern(), 1, i),
                     "PNP",
                     "GIG",
                     "PRP",
@@ -65,16 +65,16 @@ public class IlluminationRecipes
         /** Buttons **/
         for (int i = 0; i < 16; i++)
             GameRegistry.addShapelessRecipe(
-                    new ItemStack(ProjectRedIllumination.itemPartIllumarButton, 1, i),
+                    new ItemStack(ProjectRedIllumination.itemPartIllumarButton(), 1, i),
                     Block.stoneButton,
                     EnumPart.ILLUMAR_PARTS[i].getItemStack(),
                     EnumPart.ILLUMAR_PARTS[i].getItemStack()
                     );
 
         /** Cage Lamps **/
-        for (int i = 0; i < 16; i++) 
+        for (int i = 0; i < 16; i++)
         {
-            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartCageLamp, 1, i),
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartCageLamp(), 1, i),
                     "CCC",
                     "CIC",
                     "NPN",
@@ -83,7 +83,7 @@ public class IlluminationRecipes
                     'N', Item.goldNugget,
                     'P', EnumPart.CONDUCTIVEPLATE.getItemStack()
                     );
-            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartInvCageLamp, 1, i),
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartInvCageLamp(), 1, i),
                     "CCC",
                     "CIC",
                     "NPN",
@@ -95,9 +95,9 @@ public class IlluminationRecipes
         }
 
         /** Fixtures **/
-        for (int i = 0; i < 16; i++) 
+        for (int i = 0; i < 16; i++)
         {
-            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartFixture, 1, i),
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartFixture(), 1, i),
                     "ggg",
                     "gIg",
                     "pPp",
@@ -106,7 +106,7 @@ public class IlluminationRecipes
                     'p', EnumPart.PLATE.getItemStack(),
                     'P', EnumPart.CONDUCTIVEPLATE.getItemStack()
                     );
-            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartInvFixture, 1, i),
+            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.itemPartInvFixture(), 1, i),
                     "ggg",
                     "gIg",
                     "pPp",

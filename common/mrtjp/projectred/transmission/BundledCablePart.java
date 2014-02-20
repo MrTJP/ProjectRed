@@ -31,22 +31,16 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
     public byte colour;
 
     @Override
-    public String getType()
+    public WireDef getWireType()
     {
-        return "pr_bundled";
-    }
-
-    @Override
-    public EnumWire getWireType()
-    {
-        return EnumWire.BUNDLED_WIRE[colour + 1];
+        return WireDefs.BUNDLED_WIRE()[colour + 1];
     }
 
     @Override
     public void preparePlacement(int side, int meta)
     {
         super.preparePlacement(side, meta);
-        colour = (byte) (meta - EnumWire.BUNDLED_0.ordinal());
+        colour = (byte) (meta - WireDefs.BUNDLED_0().meta());
     }
 
     @Override
@@ -115,7 +109,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
         if (!BundledCableCommons.shouldPropogate(this, part, mode))
             return true;
 
-        return super.propogateTo(part, mode);
+        return super.propogateTo((IConnectable)part, mode);
     }
 
     @Override
@@ -134,10 +128,10 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
 
         for (int r = 0; r < 4; r++)
             if (maskConnects(r))
-                if ((connMap & 1 << r) != 0)
+                if ((connMap&1<<r) != 0)
                     calculateCornerSignal(r);
                 else {
-                    if ((connMap & 0x10 << r) != 0)
+                    if ((connMap&0x10<<r) != 0)
                         calculateStraightSignal(r);
                     calculateInternalSignal(r);
                 }
@@ -154,7 +148,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
         BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side);
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
-            calculatePartSignal(t.partMap(absDir ^ 1), Rotation.rotationTo(absDir ^ 1, side ^ 1));
+            calculatePartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side^1));
     }
 
     public void calculateStraightSignal(int r)
@@ -164,16 +158,16 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
         if (t instanceof IBundledEmitter)
-            calculatePartSignal(t, absDir ^ 1);
+            calculatePartSignal(t, absDir^1);
         else if (t instanceof TileMultipart)
-            calculatePartSignal(((TileMultipart) t).partMap(side), (r + 2) % 4);
+            calculatePartSignal(((TileMultipart) t).partMap(side), (r+2)%4);
     }
 
     public void calculateInternalSignal(int r)
     {
         int absDir = Rotation.rotateSide(side, r);
 
-        calculatePartSignal(tile().partMap(absDir), (r + 2) % 4);
+        calculatePartSignal(tile().partMap(absDir), (r+2)%4);
     }
 
     public void calculateCenterSignal()
@@ -199,7 +193,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 16; i++)
         {
-            String s = Integer.toHexString(signal[i] & 0xFF).toUpperCase();
+            String s = Integer.toHexString(signal[i]&0xFF).toUpperCase();
             if (s.length() == 1)
                 sb.append('0');
             sb.append(s);
@@ -224,7 +218,7 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
             if (s.equals(""))
                 s = "off";
 
-            PacketCustom packet = new PacketCustom(CoreSPH.channel, 2);
+            PacketCustom packet = new PacketCustom(CoreSPH.channel(), CoreSPH.messagePacket());
             packet.writeDouble(x() + 0.0D);
             packet.writeDouble(y() + 0.5D);
             packet.writeDouble(z() + 0.0D);

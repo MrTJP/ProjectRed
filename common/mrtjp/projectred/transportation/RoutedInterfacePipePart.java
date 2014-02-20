@@ -129,7 +129,7 @@ public class RoutedInterfacePipePart extends RoutedJunctionPipePart implements I
             @Override
             public void sendPacket(EntityPlayerMP player, int windowId)
             {
-                PacketCustom p = new PacketCustom(TransportationSPH.channel, NetConstants.gui_InterfacePipe_open);
+                PacketCustom p = new PacketCustom(TransportationSPH.channel(), NetConstants.gui_InterfacePipe_open);
                 p.writeCoord(x(), y(), z());
                 p.writeByte(windowId);
                 p.sendToPlayer(player);

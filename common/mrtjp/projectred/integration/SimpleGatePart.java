@@ -8,20 +8,20 @@ import codechicken.lib.data.MCDataOutput;
 public class SimpleGatePart extends RedstoneGatePart
 {
     /**
-     * Mapped inputs and outputs of the gate. 
-     * High nybble is output. 
+     * Mapped inputs and outputs of the gate.
+     * High nybble is output.
      * Low nybble is input.
      */
     public byte state;
 
     public int state()
     {
-        return state & 0xFF;
+        return state&0xFF;
     }
 
     public void setState(int s)
     {
-        state = (byte) s;
+        state = (byte)s;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class SimpleGatePart extends RedstoneGatePart
     @Override
     public RedstoneGateLogic getLogic()
     {
-        return SimpleGateLogic.instances[subID & 0xFF];
+        return SimpleGateLogic.instances[subID&0xFF];
     }
 
     public void sendStateUpdate()

@@ -1,14 +1,10 @@
 package mrtjp.projectred.illumination;
 
-import java.util.Random;
-
+import codechicken.lib.vec.Vector3;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.core.fx.CoreParticle;
-import mrtjp.projectred.core.fx.ParticleLogicApproachPoint;
-import mrtjp.projectred.core.fx.ParticleLogicIconShift;
-import mrtjp.projectred.core.fx.ParticleLogicOrbitPoint;
-import mrtjp.projectred.core.fx.ParticleLogicScale;
-import mrtjp.projectred.core.fx.ParticleManagement;
+import mrtjp.projectred.core.fx.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -17,9 +13,8 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import codechicken.lib.vec.Vector3;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
+import java.util.Random;
 
 public class BlockAirousLight extends Block
 {
@@ -122,23 +117,23 @@ public class BlockAirousLight extends Block
         int color = world.getBlockMetadata(x, y, z);
         int dist = 3;
 
-        int dx = x + rand.nextInt(dist) - rand.nextInt(dist);
-        int dy = y + rand.nextInt(dist) - rand.nextInt(dist);
-        int dz = z + rand.nextInt(dist) - rand.nextInt(dist);
+        int dx = x+rand.nextInt(dist)-rand.nextInt(dist);
+        int dy = y+rand.nextInt(dist)-rand.nextInt(dist);
+        int dz = z+rand.nextInt(dist)-rand.nextInt(dist);
 
-        int ex = dx + rand.nextInt(dist) - rand.nextInt(dist);
-        int ey = dy + rand.nextInt(dist) - rand.nextInt(dist);
-        int ez = dz + rand.nextInt(dist) - rand.nextInt(dist);
+        int ex = dx+rand.nextInt(dist)-rand.nextInt(dist);
+        int ey = dy+rand.nextInt(dist)-rand.nextInt(dist);
+        int ez = dz+rand.nextInt(dist)-rand.nextInt(dist);
 
         CoreParticle c = ParticleManagement.instance.spawn(world, "ember", dx, dy, dz);
         if (c != null)
         {
             ParticleLogicOrbitPoint orbit = new ParticleLogicOrbitPoint(new Vector3(ex, ey, ez));
-            orbit.setOrbitSpeed(0.5f * rand.nextDouble()).setTargetDistance(0.3D);
+            orbit.setOrbitSpeed(0.5f*rand.nextDouble()).setTargetDistance(0.3D);
             orbit.setShrinkingOrbit(0.01, 0.01).setPriority(2);
 
             ParticleLogicScale scale = new ParticleLogicScale();
-            scale.setRate(-0.001F, -0.0001F * rand.nextFloat());
+            scale.setRate(-0.001F, -0.0001F*rand.nextFloat());
             scale.setTerminate(true);
 
             ParticleLogicIconShift iconshift = ParticleLogicIconShift.fluttering();
@@ -147,7 +142,7 @@ public class BlockAirousLight extends Block
             approach.setFinal(true);
 
             c.setIgnoreMaxAge(true);
-            c.setScale(0.05f + 0.02f * rand.nextFloat());
+            c.setScale(0.05f+0.02f*rand.nextFloat());
             c.setPRColor(PRColors.get(color));
 
             c.addLogic(orbit);

@@ -21,7 +21,7 @@ public class BlockSpecialStone extends Block
         this.setUnlocalizedName("projectred.exploration.stone");
         setHardness(3.0F);
         setResistance(10.0F);
-        setCreativeTab(ProjectRedExploration.tabExploration);
+        setCreativeTab(ProjectRedExploration.tabExploration());
     }
 
     @Override
@@ -114,7 +114,7 @@ public class BlockSpecialStone extends Block
 
         public ItemStack getItemStack(int i)
         {
-            return new ItemStack(ProjectRedExploration.blockStones, i, meta);
+            return new ItemStack(ProjectRedExploration.blockStones(), i, meta);
         }
     }
 }

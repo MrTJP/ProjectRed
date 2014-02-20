@@ -50,12 +50,12 @@ public class RenderIllumarButton implements IItemRenderer
             renderInventory(item.getItemDamage(), .25f, 0, 0, 1f);
             return;
         default:
-            return;
         }
     }
 
     private void renderInventory(int color, float x, float y, float z, float scale)
     {
+        if (color > 15 || color < 0) return;
         Icon icon = ItemPartIllumarButton.icons[color];
 
         GL11.glPushMatrix();

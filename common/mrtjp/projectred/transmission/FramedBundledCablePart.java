@@ -12,7 +12,6 @@ import mrtjp.projectred.core.CoreSPH;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovingObjectPosition;
 
 import java.util.Arrays;
 
@@ -27,15 +26,9 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     public byte[] signal = new byte[16];
 
     @Override
-    public String getType()
+    public WireDef getWireType()
     {
-        return "pr_sbundled";
-    }
-
-    @Override
-    public EnumWire getWireType()
-    {
-        return EnumWire.BUNDLED_N;
+        return WireDefs.BUNDLED_N();
     }
 
     @Override
@@ -62,11 +55,12 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     }
 
     @Override
-    public boolean connectStraightOverride(int absDir) {
+    public boolean connectStraightOverride(int absDir)
+    {
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
-        if(t instanceof IBundledTile)
-            return ((IBundledTile) t).canConnectBundled(absDir^1);
+        if (t instanceof IBundledTile)
+            return ((IBundledTile)t).canConnectBundled(absDir^1);
 
         return false;
     }
@@ -90,7 +84,7 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     public void setSignal(byte[] newSignal)
     {
         if (newSignal == null)
-            Arrays.fill(signal, (byte) 0);
+            Arrays.fill(signal, (byte)0);
         else
             System.arraycopy(newSignal, 0, signal, 0, 16);
     }
@@ -98,11 +92,11 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     @Override
     public byte[] calculateSignal()
     {
-        Arrays.fill(tmpSignal, (byte) 0);
+        Arrays.fill(tmpSignal, (byte)0);
 
         for (int s = 0; s < 6; s++)
             if (maskConnects(s))
-                if ((connMap & 1 << s) != 0)
+                if ((connMap&1<<s) != 0)
                     calculateStraightSignal(s);
                 else
                     calculateInternalSignal(s);
@@ -115,9 +109,9 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
         BlockCoord pos = new BlockCoord(tile()).offset(s);
         TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
         if (t instanceof IBundledEmitter)
-            calculatePartSignal(t, s ^ 1);
+            calculatePartSignal(t, s^1);
         else if (t instanceof TileMultipart)
-            calculatePartSignal(((TileMultipart) t).partMap(6), s ^ 1);
+            calculatePartSignal(((TileMultipart)t).partMap(6), s^1);
     }
 
     public void calculateInternalSignal(int s)
@@ -138,7 +132,7 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     }
 
     @Override
-    protected boolean test(EntityPlayer player, MovingObjectPosition hit)
+    protected boolean test(EntityPlayer player)
     {
         if (BasicUtils.isServer(world()))
         {
@@ -147,16 +141,16 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
             {
                 int x = getBundledSignal()[i];
                 if (x != 0)
-                    s = s + "[" + i + "]";
+                    s = s+"["+i+"]";
             }
             if (s.equals(""))
                 s = "off";
 
-            PacketCustom packet = new PacketCustom(CoreSPH.channel, 2);
-            packet.writeDouble(x() + 0.0D);
-            packet.writeDouble(y() + 0.5D);
-            packet.writeDouble(z() + 0.0D);
-            packet.writeString("/#f" + s);
+            PacketCustom packet = new PacketCustom(CoreSPH.channel(), CoreSPH.messagePacket());
+            packet.writeDouble(x()+0.0D);
+            packet.writeDouble(y()+0.5D);
+            packet.writeDouble(z()+0.0D);
+            packet.writeString("/#f"+s);
             packet.sendToPlayer(player);
         }
         return true;

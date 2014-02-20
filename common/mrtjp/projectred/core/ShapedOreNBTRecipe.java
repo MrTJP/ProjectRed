@@ -76,5 +76,4 @@ public class ShapedOreNBTRecipe extends ShapedOreRecipe
         }
         return false;
     }
-
 }

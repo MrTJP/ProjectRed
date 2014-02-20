@@ -24,7 +24,7 @@ public class ItemGemSickle extends ItemTool
         super(par1, 3, tool.material, new Block[0]);
         this.tool = tool;
         this.setUnlocalizedName("projectred.exploration." + tool.unlocal);
-        this.setCreativeTab(ProjectRedExploration.tabExploration);
+        this.setCreativeTab(ProjectRedExploration.tabExploration());
     }
 
     @Override

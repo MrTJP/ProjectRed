@@ -3,6 +3,7 @@ package mrtjp.projectred.exploration;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRedExploration;
+import mrtjp.projectred.ProjectRedExploration$;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.inventory.GhostContainer2;
 import mrtjp.projectred.core.inventory.GhostContainer2.ISlotController.InventoryRulesController;
@@ -32,14 +33,14 @@ public class ItemBackpack extends Item
         hasSubtypes = true;
         maxStackSize = 1;
         setUnlocalizedName("projectred.exploration.backpack");
-        setCreativeTab(ProjectRedExploration.tabExploration);
+        setCreativeTab(ProjectRedExploration.tabExploration());
     }
 
     public static IInventory getBackpackInventory(EntityPlayer player)
     {
         SimpleInventory inv = null;
         ItemStack held = player.getHeldItem();
-        if (held != null && held.itemID == ProjectRedExploration.itemBackpack.itemID)
+        if (held != null && held.itemID == ProjectRedExploration.itemBackpack().itemID)
         {
             inv = new BagInventory(player, held);
             inv.load(held.getTagCompound(), "conents");
@@ -52,7 +53,7 @@ public class ItemBackpack extends Item
         IInventory backpackInv = getBackpackInventory(player);
 
         if (backpackInv == null)
-            backpackInv = new BagInventory(player, new ItemStack(ProjectRedExploration.itemBackpack));
+            backpackInv = new BagInventory(player, new ItemStack(ProjectRedExploration.itemBackpack()));
 
         GhostContainer2 container = new GhostContainer2(player.inventory) {
             @Override
@@ -99,7 +100,7 @@ public class ItemBackpack extends Item
     public void openGui(EntityPlayer player)
     {
         if (!player.isSneaking())
-            player.openGui(ProjectRedExploration.instance, ExplorationGuiHandler.ID_Bag, player.worldObj, 0, 0, 0);
+            player.openGui(ProjectRedExploration$.MODULE$, ExplorationProxy.ID_Bag(), player.worldObj, 0, 0, 0);
     }
 
     @Override
@@ -175,7 +176,7 @@ public class ItemBackpack extends Item
         {
             if (stack != null)
             {
-                if (stack.itemID == ProjectRedExploration.itemBackpack.itemID)
+                if (stack.itemID == ProjectRedExploration.itemBackpack().itemID)
                     return false;
 
                 for (int blocked : Configurator.backpackBlacklist)
@@ -203,7 +204,7 @@ public class ItemBackpack extends Item
         private void refreshNBT()
         {
             ItemStack currentBag = _player.getHeldItem();
-            if (currentBag != null && currentBag.itemID == ProjectRedExploration.itemBackpack.itemID)
+            if (currentBag != null && currentBag.itemID == ProjectRedExploration.itemBackpack().itemID)
                 currentBag.setTagCompound(_bagOriginal.getTagCompound());
         }
     }
@@ -253,7 +254,7 @@ public class ItemBackpack extends Item
 
         public ItemStack getItemStack(int i)
         {
-            return new ItemStack(ProjectRedExploration.itemBackpack, i, meta);
+            return new ItemStack(ProjectRedExploration.itemBackpack(), i, meta);
         }
 
         public static void initOreDictDefinitions()

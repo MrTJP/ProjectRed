@@ -1,13 +1,13 @@
 package mrtjp.projectred.transmission;
 
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.IItemRenderer;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Translation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.IItemRenderer;
 
 @SideOnly(Side.CLIENT)
 public class WireItemRenderer implements IItemRenderer
@@ -50,16 +50,17 @@ public class WireItemRenderer implements IItemRenderer
 
     public void renderWireInventory(int meta, float x, float y, float z, float scale)
     {
-        EnumWire type = EnumWire.VALID_WIRE[meta];
+        WireDef type = WireDefs.VALID_WIRE()[meta];
+
         if (type == null)
             return;
         TextureUtils.bindAtlas(0);
         CCRenderState.reset();
         CCRenderState.useNormals(true);
         CCRenderState.pullLightmap();
-        CCRenderState.setColourOpaque(type.itemColour);
+        CCRenderState.setColourOpaque(type.itemColour());
         CCRenderState.startDrawing(7);
-        RenderWire.renderInv(type.thickness, new Scale(scale).with(new Translation(x, y, z)), type.wireSprites[0]);
+        RenderWire.renderInv(type.thickness(), new Scale(scale).with(new Translation(x, y, z)), type.wireSprites()[0]);
         CCRenderState.draw();
     }
 }

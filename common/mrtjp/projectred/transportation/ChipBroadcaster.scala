@@ -14,7 +14,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
     private var timeRemaining = operationDelay
     private val manager = new DeliveryManager
 
-    def prefScale = 100 //TODO
+    def prefScale = 100 //TODO utilize upgrades?
 
     def stacksToExtract = 1+upgradeBus.LLatency
 

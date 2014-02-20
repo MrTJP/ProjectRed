@@ -167,7 +167,7 @@ public class SimpleInventory implements IInventory
     @Override
     public boolean isItemValidForSlot(int i, ItemStack itemstack)
     {
-        return false;
+        return true;
     }
 
     public ItemStack[] getContents()

@@ -1,5 +1,7 @@
 package mrtjp.projectred.transmission;
 
+import codechicken.microblock.ItemMicroPart;
+import cpw.mods.fml.common.registry.GameRegistry;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.ShapedOreNBTRecipe;
@@ -9,21 +11,19 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import codechicken.microblock.ItemMicroPart;
-import cpw.mods.fml.common.registry.GameRegistry;
 
-public class TransmissionRecipes 
+public class TransmissionRecipes
 {
-    public static void initTransmissionRecipes() 
+    public static void initTransmissionRecipes()
     {
         initWireRecipes();
         initPartRecipes();
     }
 
-    private static void initWireRecipes() 
+    private static void initWireRecipes()
     {
         /** Red Alloy Wires **/
-        GameRegistry.addRecipe(EnumWire.RED_ALLOY.getItemStack(12),
+        GameRegistry.addRecipe(WireDefs.RED_ALLOY().getItemStack(12),
                 " r ",
                 " r ",
                 " r ",
@@ -31,9 +31,9 @@ public class TransmissionRecipes
                 );
 
         /** Insulated Wires **/
-        for (int i = 0; i < EnumWire.INSULATED_WIRE.length; i++) 
+        for (int i = 0; i < WireDefs.INSULATED_WIRE().length; i++)
         {
-            EnumWire w = EnumWire.INSULATED_WIRE[i];
+            WireDef w = WireDefs.INSULATED_WIRE()[i];
             GameRegistry.addRecipe(w.getItemStack(12),
                     "WrW",
                     "WrW",
@@ -42,41 +42,41 @@ public class TransmissionRecipes
                     'r', EnumPart.REDINGOT.getItemStack()
                     );
         }
-        for (EnumWire w : EnumWire.INSULATED_WIRE) // Recoloring
+        for (WireDef w : WireDefs.INSULATED_WIRE()) // Recoloring
             GameRegistry.addRecipe(new ShapelessOreRecipe(w.getItemStack(),
-                    PRColors.get(w.meta-EnumWire.INSULATED_0.meta).getOreDict(),
-                    EnumWire.oreDictDefinitionInsulated,
+                    PRColors.get(w.meta()-WireDefs.INSULATED_0().meta()).getOreDict(),
+                    WireDefs.oreDictDefinitionInsulated(),
                     Item.silk
                     ));
-        for (EnumWire w : EnumWire.INSULATED_WIRE) // Framed Recoloring
+        for (WireDef w : WireDefs.INSULATED_WIRE()) // Framed Recoloring
             GameRegistry.addRecipe(new ShapelessOreNBTRecipe(w.getFramedItemStack(),
-                    PRColors.get(w.meta-EnumWire.INSULATED_0.meta).getOreDict(),
-                    EnumWire.oreDictDefinitionInsFramed,
+                    PRColors.get(w.meta()-WireDefs.INSULATED_0().meta()).getOreDict(),
+                    WireDefs.oreDictDefinitionInsFramed(),
                     ItemMicroPart.create(769, Block.wood.getUnlocalizedName())
                     ).setCheckNBT());
 
 
         /** Bundled Cables **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(EnumWire.BUNDLED_N.getItemStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(WireDefs.BUNDLED_N().getItemStack(),
                 "SWS",
                 "WWW",
                 "SWS",
                 'S', Item.silk,
-                'W', EnumWire.oreDictDefinitionInsulated
+                'W', WireDefs.oreDictDefinitionInsulated()
                 ));
-        for (EnumWire w : EnumWire.BUNDLED_WIRE) // recoloring 
+        for (WireDef w : WireDefs.BUNDLED_WIRE()) // recoloring
         {
-            if (w == EnumWire.BUNDLED_N)
+            if (w == WireDefs.BUNDLED_N())
                 continue;
             GameRegistry.addRecipe(new ShapelessOreRecipe(w.getItemStack(),
-                    PRColors.get(w.meta-EnumWire.BUNDLED_0.meta).getOreDict(),
-                    EnumWire.oreDictDefinitionBundled,
+                    PRColors.get(w.meta()-WireDefs.BUNDLED_0().meta()).getOreDict(),
+                    WireDefs.oreDictDefinitionBundled(),
                     Item.silk
                     ));
         }
 
         /** Framed Wiring **/
-        for (EnumWire w : EnumWire.VALID_WIRE)
+        for (WireDef w : WireDefs.VALID_WIRE())
             if (w.hasFramedForm())
                 // Regular to framed
                 GameRegistry.addRecipe(new ShapedOreNBTRecipe(w.getFramedItemStack(),
@@ -88,13 +88,13 @@ public class TransmissionRecipes
                         ).setCheckNBT());
     }
 
-    private static void initPartRecipes() 
+    private static void initPartRecipes()
     {
         /** Wired Plate **/
         GameRegistry.addRecipe(EnumPart.WIREDPLATE.getItemStack(),
                 "r",
                 "p",
-                'r', EnumWire.RED_ALLOY.getItemStack(),
+                'r', WireDefs.RED_ALLOY().getItemStack(),
                 'p', EnumPart.PLATE.getItemStack()
                 );
 
@@ -102,7 +102,7 @@ public class TransmissionRecipes
         GameRegistry.addRecipe(EnumPart.BUNDLEDPLATE.getItemStack(),
                 "r",
                 "p",
-                'r', EnumWire.BUNDLED_N.getItemStack(),
+                'r', WireDefs.BUNDLED_N().getItemStack(),
                 'p', EnumPart.PLATE.getItemStack()
                 );
     }

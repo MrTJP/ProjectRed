@@ -42,7 +42,7 @@ public class GenerationManager implements IWorldGenerator
                 int x = chunkX * 16 + r.nextInt(16);
                 int y = r.nextInt(48);
                 int z = chunkZ * 16 + r.nextInt(16);
-                new GeneratorOre(ProjectRedExploration.blockOres.blockID, EnumOre.ORERUBY.meta, 5).generate(w, r, x, y, z);
+                new GeneratorOre(ProjectRedExploration.blockOres().blockID, EnumOre.ORERUBY.meta, 5).generate(w, r, x, y, z);
             }
 
         // Saphire
@@ -52,7 +52,7 @@ public class GenerationManager implements IWorldGenerator
                 int x = chunkX * 16 + r.nextInt(16);
                 int y = r.nextInt(48);
                 int z = chunkZ * 16 + r.nextInt(16);
-                new GeneratorOre(ProjectRedExploration.blockOres.blockID, EnumOre.ORESAPPHIRE.meta, 5).generate(w, r, x, y, z);
+                new GeneratorOre(ProjectRedExploration.blockOres().blockID, EnumOre.ORESAPPHIRE.meta, 5).generate(w, r, x, y, z);
             }
 
         // Peridot
@@ -62,7 +62,7 @@ public class GenerationManager implements IWorldGenerator
                 int x = chunkX * 16 + r.nextInt(16);
                 int y = r.nextInt(48);
                 int z = chunkZ * 16 + r.nextInt(16);
-                new GeneratorOre(ProjectRedExploration.blockOres.blockID, EnumOre.OREPERIDOT.meta, 5).generate(w, r, x, y, z);
+                new GeneratorOre(ProjectRedExploration.blockOres().blockID, EnumOre.OREPERIDOT.meta, 5).generate(w, r, x, y, z);
             }
     }
 
@@ -74,7 +74,7 @@ public class GenerationManager implements IWorldGenerator
             int x = chunkX * 16 + r.nextInt(16);
             int y = 32 + r.nextInt(32);
             int z = chunkZ * 16 + r.nextInt(16);
-            new GeneratorMetamorphicCave(ProjectRedExploration.blockStones.blockID, EnumSpecialStone.MARBLE.meta, r.nextInt(4096)).generate(w, r, x, y, z);
+            new GeneratorMetamorphicCave(ProjectRedExploration.blockStones().blockID, EnumSpecialStone.MARBLE.meta, r.nextInt(4096)).generate(w, r, x, y, z);
         }
 
         // Volcanos
@@ -83,7 +83,7 @@ public class GenerationManager implements IWorldGenerator
             int x = chunkX * 16 + r.nextInt(16);
             int y = r.nextInt(64);
             int z = chunkZ * 16 + r.nextInt(16);
-            new GeneratorVolcano(ProjectRedExploration.blockStones.blockID, EnumSpecialStone.BASALT.meta, MathHelper.getRandomIntegerInRange(r, 32000, 64000)).generate(w, r, x, y, z);
+            new GeneratorVolcano(ProjectRedExploration.blockStones().blockID, EnumSpecialStone.BASALT.meta, MathHelper.getRandomIntegerInRange(r, 32000, 64000)).generate(w, r, x, y, z);
         }
 
         // Dye trees
@@ -94,7 +94,7 @@ public class GenerationManager implements IWorldGenerator
             int z = chunkZ * 16 + r.nextInt(16);
             int y = w.getHeightValue(x, z);
             if (r.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[saplingMeta].growthChance / 3)
-                new GeneratorColorTree(ProjectRedExploration.blockStainedLeaf.blockID).generateTreeAnyType(w, x, y, z, PRColors.get(r.nextInt(16)));
+                new GeneratorColorTree(ProjectRedExploration.blockStainedLeaf().blockID).generateTreeAnyType(w, x, y, z, PRColors.get(r.nextInt(16)));
         }
     }
 }

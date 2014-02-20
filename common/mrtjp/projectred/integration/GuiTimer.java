@@ -14,7 +14,7 @@ public class GuiTimer extends GuiScreenWidget
     public GuiTimer(GatePart part)
     {
         this.part = part;
-        logic = (ITimerGuiLogic) part.getLogic();
+        logic = (ITimerGuiLogic)part.getLogic();
     }
 
     @Override
@@ -47,9 +47,9 @@ public class GuiTimer extends GuiScreenWidget
     public void drawBackground()
     {
         BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel);
-        String s = "Timer interval: " + String.format("%.2f", logic.getTimerMax() * 0.05) + "s";
+        String s = "Timer interval: "+String.format("%.2f", logic.getTimerMax()*0.05)+"s";
         int name_w = fontRenderer.getStringWidth(s);
-        fontRenderer.drawString(s, (xSize - name_w) / 2, 8, 0x404040);
+        fontRenderer.drawString(s, (xSize-name_w)/2, 8, 0x404040);
     }
 
     @Override
@@ -74,8 +74,8 @@ public class GuiTimer extends GuiScreenWidget
             ident = ident.substring(1);
         int value = Integer.parseInt(ident);
 
-        PacketCustom packet = new PacketCustom(IntegrationCPH.channel, 1);
-        IntegrationSPH.writePartIndex(packet, part);
+        PacketCustom packet = new PacketCustom(IntegrationCPH.channel(), 1);
+        IntegrationCPH.writePartIndex(packet, part);
         packet.writeShort(value);
         packet.sendToServer();
     }

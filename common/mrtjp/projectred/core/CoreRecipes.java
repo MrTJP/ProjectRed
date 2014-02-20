@@ -13,19 +13,19 @@ import codechicken.microblock.ItemMicroPart;
 import codechicken.microblock.handler.MicroblockProxy;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class CoreRecipes 
+public class CoreRecipes
 {
-    public static void initCoreRecipes() 
+    public static void initCoreRecipes()
     {
         initPartRecipes();
         initToolRecipes();
     }
 
-    private static void initToolRecipes() 
+    private static void initToolRecipes()
     {
         /** Draw Plate **/
         GameRegistry.addRecipe(new ShapedOreNBTRecipe(
-                new ItemStack(ProjectRedCore.itemDrawPlate, 1),
+                new ItemStack(ProjectRedCore.itemDrawPlate(), 1),
                 " i ",
                 "idi",
                 " i ",
@@ -34,7 +34,7 @@ public class CoreRecipes
                 ).setCheckNBT());
 
         /** Screw Driver **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemScrewdriver),
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemScrewdriver()),
                 "i  ",
                 " ib",
                 " bi",
@@ -43,7 +43,7 @@ public class CoreRecipes
                 ));
 
         /** Wire debugger **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemWireDebugger),
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemWireDebugger()),
                 "a a",
                 "ber",
                 "bgr",
@@ -53,20 +53,20 @@ public class CoreRecipes
                 'r', PRColors.RED.getOreDict(),
                 'g', Item.glowstone
                 ));
-        
+
         /** Data Card **/
-        GameRegistry.addRecipe(new ItemStack(ProjectRedCore.itemDataCard), 
+        GameRegistry.addRecipe(new ItemStack(ProjectRedCore.itemDataCard()),
                 "pp ",
                 "prp",
                 "prp",
                 'p', Item.paper,
                 'r', Item.redstone
                 );
-        
+
 
     }
 
-    private static void initPartRecipes() 
+    private static void initPartRecipes()
     {
         /** Circuit Plate **/
         GameRegistry.addSmelting(Block.stone.blockID, EnumPart.PLATE.getItemStack(2), 0f);
@@ -134,7 +134,7 @@ public class CoreRecipes
 
 
         /** Silicon Boule **/
-        FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemComponent.itemID, EnumPart.SANDYCOALCOMPOUND.meta, EnumPart.SILICONBOULE.getItemStack(), 0);
+        FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemComponent().itemID, EnumPart.SANDYCOALCOMPOUND.meta, EnumPart.SILICONBOULE.getItemStack(), 0);
 
         /** Silicon **/
         GameRegistry.addRecipe(EnumPart.SILICON.getItemStack(8),
@@ -145,10 +145,10 @@ public class CoreRecipes
                 );
 
         /** Infused Silicon **/
-        FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemComponent.itemID, EnumPart.REDSILICONCOMPOUND.meta, EnumPart.INFUSEDSILICON.getItemStack(), 0);
+        FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemComponent().itemID, EnumPart.REDSILICONCOMPOUND.meta, EnumPart.INFUSEDSILICON.getItemStack(), 0);
 
         /** Energized Silicon **/
-        FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemComponent.itemID, EnumPart.GLOWINGSILICONCOMPOUND.meta, EnumPart.ENERGIZEDSILICON.getItemStack(), 0);
+        FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemComponent().itemID, EnumPart.GLOWINGSILICONCOMPOUND.meta, EnumPart.ENERGIZEDSILICON.getItemStack(), 0);
 
         /** Motor **/
         GameRegistry.addRecipe(EnumPart.MOTOR.getItemStack(),
@@ -165,25 +165,25 @@ public class CoreRecipes
         GameRegistry.addRecipe(new ShapedOreRecipe(EnumPart.COPPERCOIL.getItemStack(),
                 "cd",
                 'c', "ingotCopper",
-                'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, OreDictionary.WILDCARD_VALUE)
+                'd', new ItemStack(ProjectRedCore.itemDrawPlate(), 1, OreDictionary.WILDCARD_VALUE)
                 ));
 
         /** Iron Coil **/
         GameRegistry.addRecipe(EnumPart.IRONCOIL.getItemStack(),
                 "cd",
                 'c', new ItemStack(Item.ingotIron),
-                'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, OreDictionary.WILDCARD_VALUE)
+                'd', new ItemStack(ProjectRedCore.itemDrawPlate(), 1, OreDictionary.WILDCARD_VALUE)
                 );
 
         /** Gold Coil **/
         GameRegistry.addRecipe(EnumPart.GOLDCOIL.getItemStack(),
                 "cd",
                 'c', new ItemStack(Item.ingotGold),
-                'd', new ItemStack(ProjectRedCore.itemDrawPlate, 1, OreDictionary.WILDCARD_VALUE)
+                'd', new ItemStack(ProjectRedCore.itemDrawPlate(), 1, OreDictionary.WILDCARD_VALUE)
                 );
 
         /** Red Alloy Ingot **/
-        FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemComponent.itemID, EnumPart.REDIRONCOMPOUND.meta, EnumPart.REDINGOT.getItemStack(), 0);
+        FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemComponent().itemID, EnumPart.REDIRONCOMPOUND.meta, EnumPart.REDINGOT.getItemStack(), 0);
 
         /** Illumar **/
         for (int i = 0; i < EnumPart.ILLUMAR_PARTS.length; i++) {
