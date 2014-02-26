@@ -320,7 +320,6 @@ public class RouteFX
         public void onDestinationReached()
         {
             BlockCoord bc = particle.blockPosition();
-            System.out.println(particle.position().toString()+" vs "+(bc.x+1)+","+bc.y+","+bc.z);
             TMultiPart part = BasicUtils.getMultiPart(particle.worldObj, bc, 6);
             if (part instanceof BasicPipePart && !(part instanceof RoutedJunctionPipePart))
             {

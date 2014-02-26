@@ -11,7 +11,7 @@ public abstract class PipeLogic
     {
         if (meta == 0)
             return new NullPipeLogic(p);
-                
+
         return new NullPipeLogic(p);
     }
 
@@ -54,7 +54,7 @@ public abstract class PipeLogic
 
     public abstract boolean resolveDestination(RoutedPayload r);
 
-    public abstract Icon getIcon(BasicPipePart p, int i);
+    public abstract Icon getIcon(int i);
 
     public static class NullPipeLogic extends PipeLogic
     {
@@ -82,7 +82,7 @@ public abstract class PipeLogic
         }
 
         @Override
-        public Icon getIcon(BasicPipePart p, int i)
+        public Icon getIcon(int i)
         {
             return null;
         }

@@ -406,7 +406,7 @@ class GuiChipCraftExt(cont:ChipContainer[TChipCrafter], prev:GuiScreen) extends 
                 {
                     val x = p.getValue1+2
                     val y = p.getValue2+6
-                    Gui.drawRect(x, y, x+20, y+18, PRColors.get(ext).rgba)
+                    Gui.drawRect(x, y, x+20, y+18, PRColors.get(ext).argb)
                 }
                 else drawCenteredString(fontRenderer, "off", p.getValue1+12, p.getValue2+8, PRColors.WHITE.rgba)
             }

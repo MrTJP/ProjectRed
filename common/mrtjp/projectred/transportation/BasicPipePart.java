@@ -203,7 +203,7 @@ public class BasicPipePart extends CorePipePart
 
     public void endReached(RoutedPayload r)
     {
-        if (getLogic().centerReached(r))
+        if (getLogic().endReached(r))
             return;
 
         if (!world().isRemote)
@@ -480,7 +480,7 @@ public class BasicPipePart extends CorePipePart
 
     public Icon getIcon(int side)
     {
-        Icon i = getLogic().getIcon(this, side);
+        Icon i = getLogic().getIcon(side);
         if (i != null)
             return i;
 

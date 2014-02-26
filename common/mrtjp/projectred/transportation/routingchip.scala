@@ -289,6 +289,7 @@ trait TChipFilter extends RoutingChipset
         {
             case 1 => inv.setHidePerType(true)
             case 2 => inv.setHidePerSlot(true)
+            case _ =>
         }
 
         inv
