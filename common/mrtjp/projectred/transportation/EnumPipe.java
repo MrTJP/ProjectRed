@@ -10,8 +10,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public enum EnumPipe
 {
     BASIC("pr_ptube", "basic"),
-    ROUTEDJUNCTION("pr_rbasic", "routed", "unrouted"),
-    ROUTEDINTERFACE("pr_rinterface", "routedconn", "unroutedconn"),
+    ROUTEDJUNCTION("pr_rbasic", "routedjunc", "routed", "unrouted", "routedconn", "unroutedconn"),
+    ROUTEDINTERFACE("pr_rinterface", "routedint"),
     ROUTEDCRAFTING("pr_rcrafting", "routedcrafting"),
     ROUTEDREQUEST("pr_rrequest", "routedrequest"),
     ROUTEDEXTENSION("pr_rextension", "routedextension")

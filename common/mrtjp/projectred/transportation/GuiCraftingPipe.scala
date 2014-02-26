@@ -47,7 +47,7 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
             drawTexturedModalRect(p.getValue1, p.getValue2, 1, 11, 16, 16)
             val x = p.getValue1 + 4
             val y = p.getValue2 - 2
-            Gui.drawRect(x, y, x + 8, y + 2, PRColors.get(color).rgba)
+            Gui.drawRect(x, y, x + 8, y + 2, PRColors.get(color).argb)
             color += 1
         }
     }

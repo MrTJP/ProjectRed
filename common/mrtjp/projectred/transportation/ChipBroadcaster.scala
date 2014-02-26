@@ -11,10 +11,12 @@ import scala.collection.mutable.ListBuffer
 
 class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientation with TChipPriority
 {
+    filterExclude = true
+
     private var timeRemaining = operationDelay
     private val manager = new DeliveryManager
 
-    def prefScale = 100 //TODO utilize upgrades?
+    def prefScale = 32 //TODO utilize upgrades?
 
     def stacksToExtract = 1+upgradeBus.LLatency
 
@@ -133,10 +135,10 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
         import scala.collection.JavaConversions._
         for (entry <- items.entrySet) if (filt.hasItem(entry.getKey) != filterExclude)
         {
-            val current = map.get(entry.getKey)
+            val current = map.getOrElse[Integer](entry.getKey, 0)
             val toAdd = entry.getValue-manager.getDeliveryCount(entry.getKey)
 
-            if (toAdd > 0) map.put(entry.getKey, current + toAdd)
+            if (toAdd > 0) map.put(entry.getKey, toAdd + current)
         }
     }
 
@@ -144,7 +146,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
 
     override def onPipeBroken()
     {
-        while (manager.hasOrders) manager.dispatchFailed
+        while (manager.hasOrders) manager.dispatchFailed()
     }
 
 

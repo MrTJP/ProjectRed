@@ -1,12 +1,12 @@
 package mrtjp.projectred.transportation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.transportation.Router.StartEndPath;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CollectionPathFinder
 {
@@ -15,10 +15,6 @@ public class CollectionPathFinder
     private IWorldRequester requester;
 
     private Map<ItemKey, Integer> collected = null;
-
-    public CollectionPathFinder()
-    {
-    }
 
     public CollectionPathFinder setCollectBroadcasts(boolean flag)
     {

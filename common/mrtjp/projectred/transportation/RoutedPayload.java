@@ -1,8 +1,5 @@
 package mrtjp.projectred.transportation;
 
-import java.util.BitSet;
-import java.util.UUID;
-
 import mrtjp.projectred.core.PRColors;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import net.minecraft.entity.item.EntityItem;
@@ -10,6 +7,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
+
+import java.util.BitSet;
+import java.util.UUID;
 
 public class RoutedPayload
 {
@@ -127,30 +127,18 @@ public class RoutedPayload
 
         double prog = progress;
 
-        double deltaX = x + 0.5D;
-        double deltaY = y + 0.25D;
-        double deltaZ = z + 0.5D;
+        double deltaX = x+0.5D;
+        double deltaY = y+0.25D;
+        double deltaZ = z+0.5D;
 
         switch (dir) {
-        case UP:
-            deltaY = (y - 0.25D) + prog;
-            break;
-        case DOWN:
-            deltaY = (y - 0.25D) + (1.0D - prog);
-            break;
-        case SOUTH:
-            deltaZ = z + prog;
-            break;
-        case NORTH:
-            deltaZ = z + (1.0D - prog);
-            break;
-        case EAST:
-            deltaX = x + prog;
-            break;
-        case WEST:
-            deltaX = x  + (1.0D - prog);
-            break;
-        default:
+            case UP: deltaY = (y-0.25D)+prog; break;
+            case DOWN: deltaY = (y-0.25D)+(1.0D-prog); break;
+            case SOUTH: deltaZ = z+prog; break;
+            case NORTH: deltaZ = z+(1.0D-prog); break;
+            case EAST: deltaX = x+prog; break;
+            case WEST: deltaX = x+(1.0D-prog); break;
+            default:
         }
 
         EntityItem item = new EntityItem(parent.world(), deltaX, deltaY, deltaZ, payload.makeStack());
@@ -158,24 +146,12 @@ public class RoutedPayload
         item.motionX = item.motionY = item.motionZ = item.hoverStart = 0;
 
         switch (dir) {
-        case UP:
-            item.motionY = + speed;
-            break;
-        case DOWN:
-            item.motionY = - speed;
-            break;
-        case SOUTH:
-            item.motionZ = + speed;
-            break;
-        case NORTH:
-            item.motionZ = - speed;
-            break;
-        case EAST:
-            item.motionX = + speed;
-            break;
-        case WEST:
-            item.motionX = - speed;
-            break;
+        case UP: item.motionY = +speed; break;
+        case DOWN: item.motionY = -speed; break;
+        case SOUTH: item.motionZ = +speed; break;
+        case NORTH: item.motionZ = -speed; break;
+        case EAST: item.motionX = +speed; break;
+        case WEST: item.motionX = -speed; break;
         default:
         }
         item.delayBeforeCanPickup = 10;

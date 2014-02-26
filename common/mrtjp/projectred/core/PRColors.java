@@ -35,6 +35,7 @@ public enum PRColors
         name = name().substring(0, 1) + name().substring(1).toLowerCase();
         this.rgb = rgb;
         rgba = rgb<<8|0xFF;
+        argb = 0xFF000000|rgb;
         c = new ColourRGBA(rgb<<8|0xFF);
     }
 
@@ -57,6 +58,7 @@ public enum PRColors
     public final Colour c;
     public final int rgb;
     public final int rgba;
+    public final int argb;
 
     public static PRColors get(int i)
     {
