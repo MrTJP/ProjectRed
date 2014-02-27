@@ -418,6 +418,7 @@ item.projectred.transmission.wire|30.name=Braunes gebündeltes Kabel
 item.projectred.transmission.wire|31.name=Grünes gebündeltes Kabel
 item.projectred.transmission.wire|32.name=Rotes gebündeltes Kabel
 item.projectred.transmission.wire|33.name=Schwarzes gebündeltes Kabel
+item.projectred.transmission.wire|34.name=100V-Energieleitung
 item.projectred.transmission.framewire|0.name=Gerahmtes Rotlegierungskabel
 item.projectred.transmission.framewire|1.name=Gerahmtes weiß isoliertes Kabel
 item.projectred.transmission.framewire|2.name=Gerahmtes orange isoliertes Kabel
@@ -436,6 +437,7 @@ item.projectred.transmission.framewire|14.name=Gerahmtes grün isoliertes Kabel
 item.projectred.transmission.framewire|15.name=Gerahmtes rot isoliertes Kabel
 item.projectred.transmission.framewire|16.name=Gerahmtes schwarz isoliertes Kabel
 item.projectred.transmission.framewire|17.name=Gerahmtes gebündeltes Kabel
+item.projectred.transmission.framewire|34.name=Gerahmte 100V-Energieleitung
 
 
 
