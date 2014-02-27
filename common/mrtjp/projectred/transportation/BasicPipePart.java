@@ -14,7 +14,7 @@ import com.google.common.collect.HashBiMap;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.inventory.InventoryWrapper;
+import mrtjp.projectred.core.inventory.InvWrapper;
 import mrtjp.projectred.transportation.RoutedPayload.SendPriority;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.inventory.IInventory;
@@ -210,10 +210,10 @@ public class BasicPipePart extends CorePipePart
             if (!maskConnects(r.output.ordinal()) || !passToNextPipe(r))
             {
                 // Injection to inventories
-                IInventory inv = InventoryWrapper.getInventory(world(), new BlockCoord(tile()).offset(r.output.ordinal()));
+                IInventory inv = InvWrapper.getInventory(world(), new BlockCoord(tile()).offset(r.output.ordinal()));
                 if (inv != null)
                 {
-                    InventoryWrapper w = InventoryWrapper.wrapInventory(inv).setSlotsFromSide(r.output.getOpposite().ordinal());
+                    InvWrapper w = InvWrapper.wrap(inv).setSlotsFromSide(r.output.getOpposite().ordinal());
                     r.payload.stackSize -= w.injectItem(r.payload.makeStack(), true);
                 }
                 // Bounce

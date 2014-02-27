@@ -4,7 +4,7 @@ import codechicken.core.IGuiPacketSender
 import codechicken.core.ServerUtils
 import codechicken.lib.packet.PacketCustom
 import java.util
-import mrtjp.projectred.core.inventory.{InventoryWrapper, SimpleInventory}
+import mrtjp.projectred.core.inventory.{InvWrapper, SimpleInventory}
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
@@ -23,7 +23,7 @@ abstract class RoutingChipset
 {
     private var invProv:IInventoryProvider = null
     private var rl:IRouteLayer = null
-    private var s = 0
+    private var s = -1
 
     private val upgrdBus = createUpgradeBus
 
@@ -34,10 +34,8 @@ abstract class RoutingChipset
         s = slot
     }
 
-    def inventoryProvider = invProv
-
+    def invProvider = invProv
     def routeLayer = rl
-
     def slot = s
 
     def update() {}
@@ -64,14 +62,14 @@ abstract class RoutingChipset
 
     def save(tag:NBTTagCompound)
     {
-        val tag2:NBTTagCompound = new NBTTagCompound
+        val tag2 = new NBTTagCompound
         upgradeBus.save(tag2)
         tag.setTag("upgrd", tag2)
     }
 
     def load(tag:NBTTagCompound)
     {
-        val tag2:NBTTagCompound = tag.getCompoundTag("upgrd")
+        val tag2 = tag.getCompoundTag("upgrd")
         upgradeBus.load(tag2)
     }
 
@@ -97,7 +95,7 @@ abstract class RoutingChipset
         {
             def sendPacket(player:EntityPlayerMP, windowId:Int)
             {
-                val packet:PacketCustom = new PacketCustom(TransportationSPH.channel, NetConstants.gui_Chipset_open)
+                val packet = new PacketCustom(TransportationSPH.channel, NetConstants.gui_Chipset_open)
                 packet.writeByte(player.inventory.currentItem)
                 packet.writeByte(windowId)
                 packet.sendToPlayer(player)
@@ -139,8 +137,7 @@ abstract class RoutingChipset
             if (!s2.isEmpty) list2 += s2
             list2 += "----------------"
 
-            for (i <- 0 until list2.length)
-                list2.insert(i, EnumChatFormatting.GRAY.toString+list2(i))
+            list2.transform(s => EnumChatFormatting.GRAY+s)
 
             list ++= list2
         }
@@ -170,7 +167,7 @@ class UpgradeBus(val maxL:Int, val maxR:Int)
         if (Lset(0)) count += LXLatency
         if (Lset(1)) count += LYLatency
         if (Lset(2)) count += LZLatency
-        return count
+        count
     }
 
     def RLatency:Int =
@@ -179,7 +176,7 @@ class UpgradeBus(val maxL:Int, val maxR:Int)
         if (Rset(0)) count += RXLatency
         if (Rset(1)) count += RYLatency
         if (Rset(2)) count += RZLatency
-        return count
+        count
     }
 
     def setLatency(lx:Int, ly:Int, lz:Int, rx:Int, ry:Int, rz:Int) =
@@ -202,7 +199,7 @@ class UpgradeBus(val maxL:Int, val maxR:Int)
             if (doInstall) Lset(i) = true
             return true
         }
-        return false
+        false
     }
 
     def installR(i:Int, doInstall:Boolean):Boolean =
@@ -214,7 +211,7 @@ class UpgradeBus(val maxL:Int, val maxR:Int)
             if (doInstall) Rset(i) = true
             return true
         }
-        return false
+        false
     }
 
     def containsUpgrades:Boolean =
@@ -222,7 +219,7 @@ class UpgradeBus(val maxL:Int, val maxR:Int)
         for (i <- 0 until 3)
             if (Lset(i) || Rset(i)) return true
 
-        return false
+        false
     }
 
     def save(tag:NBTTagCompound)
@@ -249,9 +246,12 @@ trait TChipFilter extends RoutingChipset
     val filter = new SimpleInventory(9, "filter", 1)
     var filterExclude = false
 
-    var fuzzyMode = false
-    var fuzzyDamageMode = 0
-    val fuzzyPercent = Seq(0, 25, 50, 75, 100)
+    var metaMatch = true
+    var nbtMatch = true
+    var oreMatch = true
+
+    var damageGroupMode = 0
+    val grpPerc = Seq(0, 25, 50, 75, 100)
 
     // 0-none, 1-type, 2-slot
     var hideMode = 0
@@ -261,14 +261,24 @@ trait TChipFilter extends RoutingChipset
         filterExclude = !filterExclude
     }
 
-    def toggleFuzzyMode()
+    def toggleMetaMode()
     {
-        fuzzyMode = !fuzzyMode
+        metaMatch = !metaMatch
     }
 
-    def shiftFuzzyDamageMode()
+    def toggleNBTMode()
     {
-        fuzzyDamageMode = (fuzzyDamageMode+1)%5
+        nbtMatch = !nbtMatch
+    }
+
+    def toggleOreMode()
+    {
+        oreMatch = !oreMatch
+    }
+
+    def shiftDamageGroup()
+    {
+        damageGroupMode = (damageGroupMode+1)%5
     }
 
     def shiftHiding()
@@ -276,14 +286,14 @@ trait TChipFilter extends RoutingChipset
         hideMode = (hideMode+1)%3
     }
 
-    def applyFilter(inv:InventoryWrapper, fuzzy:Boolean=true, hide:Boolean=true):InventoryWrapper =
+    def applyFilter(inv:InvWrapper, fuzzy:Boolean=true, hide:Boolean=true):InvWrapper =
     {
         if (inv == null) return null
 
         inv.setSlotsAll()
 
-        if (enableFuzzy && fuzzy)
-            inv.setFuzzy(fuzzyMode).setFuzzyPercent(fuzzyPercent(fuzzyDamageMode))
+        if (enablePatterns && fuzzy)
+            inv.setMatchOptions(metaMatch, nbtMatch, oreMatch).setDamageGroup(grpPerc(damageGroupMode))
 
         if (enableHiding && hide) hideMode match
         {
@@ -297,14 +307,16 @@ trait TChipFilter extends RoutingChipset
 
     def enableHiding = true
     def enableFilter = true
-    def enableFuzzy = true
+    def enablePatterns = true
 
     abstract override def save(tag:NBTTagCompound)
     {
         filter.save(tag)
         tag.setBoolean("mode", filterExclude)
-        tag.setBoolean("fuz", fuzzyMode)
-        tag.setByte("fuzd", fuzzyDamageMode.asInstanceOf[Byte])
+        tag.setBoolean("mm", metaMatch)
+        tag.setBoolean("nbtm", nbtMatch)
+        tag.setBoolean("om", oreMatch)
+        tag.setByte("grp", damageGroupMode.asInstanceOf[Byte])
         tag.setByte("hide", hideMode.asInstanceOf[Byte])
         super.save(tag)
     }
@@ -313,8 +325,10 @@ trait TChipFilter extends RoutingChipset
     {
         filter.load(tag)
         filterExclude = tag.getBoolean("mode")
-        fuzzyMode = tag.getBoolean("fuz")
-        fuzzyDamageMode = tag.getByte("fuzd")
+        metaMatch = tag.getBoolean("mm")
+        nbtMatch = tag.getBoolean("nbtm")
+        oreMatch = tag.getBoolean("om")
+        damageGroupMode = tag.getByte("grp")
         hideMode = tag.getByte("hide")
         super.load(tag)
     }
@@ -322,17 +336,22 @@ trait TChipFilter extends RoutingChipset
     val hide = Seq("off", "one per type", "one per stack")
     def addFilterInfo(list:ListBuffer[String])
     {
-        if (enableHiding) list+=(EnumChatFormatting.GRAY.toString+"Hide Mode: "+hide(hideMode))
+        if (enableHiding) list+=(EnumChatFormatting.GRAY.toString+"Hide mode: "+hide(hideMode))
 
-        if (enableFuzzy)
+        if (enablePatterns)
         {
-            list+=(EnumChatFormatting.GRAY.toString+"FuzzyMode: "+fuzzyMode)
-            list+=(EnumChatFormatting.GRAY.toString+"FuzzyToolDamage: "+fuzzyPercent(fuzzyDamageMode)+"%")
+            var s = ""
+            def sep = if (s == "") "" else ", "
+            if (metaMatch) s += "Meta"
+            if (nbtMatch) s += sep+"NBT"
+            if (oreMatch) s += sep+"Ore Dictionary"
+            list+=(EnumChatFormatting.GRAY.toString+"Matching: "+(if (s.isEmpty) "ignore all" else s))
+            if (damageGroupMode!=0)list+=(EnumChatFormatting.GRAY.toString+"Damage group: "+grpPerc(damageGroupMode)+"%")
         }
 
         if (enableFilter)
         {
-            list+=(EnumChatFormatting.GRAY.toString+"FilterMode: "+(if (filterExclude) "blacklist" else "whitelist"))
+            list+=(EnumChatFormatting.GRAY.toString+"Filter mode: "+(if (filterExclude) "blacklist" else "whitelist"))
             list+=(EnumChatFormatting.GRAY.toString+"Filter: ")
             var added = false
 
@@ -396,7 +415,7 @@ trait TChipOrientation extends RoutingChipset
 {
     var extractOrient = -1
 
-    def side = if (extractOrient <= -1) inventoryProvider.getInterfacedSide else extractOrient
+    def side = if (extractOrient <= -1) invProvider.getInterfacedSide else extractOrient
 
     abstract override def save(tag:NBTTagCompound)
     {
@@ -414,7 +433,7 @@ trait TChipOrientation extends RoutingChipset
 
     def addOrientInfo(list:ListBuffer[String])
     {
-        list+=(EnumChatFormatting.GRAY.toString+"Extract Orientation: "+(if (extractOrient == -1) "Default" else dirs(extractOrient)))
+        list+=(EnumChatFormatting.GRAY.toString+"Extract orientation: "+(if (extractOrient == -1) "Default" else dirs(extractOrient)))
     }
 }
 
@@ -444,6 +463,7 @@ trait TChipStock extends RoutingChipset
 
     def addStockInfo(list:ListBuffer[String])
     {
+        list+=(EnumChatFormatting.GRAY+"Fill mode: when "+(if(requestWhenEmpty) "empty" else "missing"))
         list+=(EnumChatFormatting.GRAY.toString+"Stock: ")
         var added = false
         for (i <- 0 until stock.getSizeInventory)

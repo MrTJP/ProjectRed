@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion
 
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended
-import mrtjp.projectred.core.inventory.{InventoryWrapper, SimpleInventory}
+import mrtjp.projectred.core.inventory.{InvWrapper, SimpleInventory}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 
@@ -65,9 +65,9 @@ class TileFurnace extends TileMachineWorking
         val r = FurnaceRecipeLib.getRecipeFor(getStackInSlot(0))
         if (r != null)
         {
-            val wrap = InventoryWrapper.wrapInventory(this).setManipMode(true).setSingleSlot(0)
+            val wrap = InvWrapper.wrap(this).setInternalMode(true).setSlotSingle(0)
             wrap.extractItem(r.inputKey, 1)
-            wrap.setSingleSlot(1).injectItem(r.output, true)
+            wrap.setSlotSingle(1).injectItem(r.output, true)
         }
     }
 
@@ -90,7 +90,7 @@ class TileFurnace extends TileMachineWorking
         if (rec == null) return false
 
         val stack = rec.outputKey
-        val room = InventoryWrapper.wrapInventory(this).setSingleSlot(1).setManipMode(true).getRoomAvailableForItem(stack.key())
+        val room = InvWrapper.wrap(this).setSlotSingle(1).setInternalMode(true).getSpaceForItem(stack.key())
         room >= stack.stackSize
     }
 }

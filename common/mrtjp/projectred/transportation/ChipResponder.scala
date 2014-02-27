@@ -1,6 +1,6 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.inventory.InventoryWrapper
+import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import mrtjp.projectred.transportation.RoutedPayload.SendPriority
@@ -13,8 +13,8 @@ class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriori
 
     override def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse =
     {
-        val real = inventoryProvider.getInventory
-        val side = inventoryProvider.getInterfacedSide
+        val real = invProvider.getInventory
+        val side = invProvider.getInterfacedSide
 
         if (real==null || side<0) return null
 
@@ -22,8 +22,8 @@ class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriori
         {
             if (filterAllows(item))
             {
-                val inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side)
-                val room = inv.getRoomAvailableForItem(item)
+                val inv = InvWrapper.wrap(real).setSlotsFromSide(side)
+                val room = inv.getSpaceForItem(item)
                 if (room > 0) return new SyncResponse().setPriority(sendPriority).setCustomPriority(preference).setItemCount(room)
             }
         }
@@ -31,7 +31,7 @@ class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriori
         null
     }
 
-    def filterAllows(item:ItemKey) = applyFilter(InventoryWrapper.wrapInventory(filter)).hasItem(item) != filterExclude
+    def filterAllows(item:ItemKey) = applyFilter(InvWrapper.wrap(filter)).hasItem(item) != filterExclude
 
     override def infoCollection(list:ListBuffer[String])
     {
@@ -61,7 +61,7 @@ class ChipItemOverflowResponder extends ChipItemResponder
     override def getChipType = EnumRoutingChip.ITEMOVERFLOWRESPONDER
 
     override def enableFilter = false
-    override def enableFuzzy = false
+    override def enablePatterns = false
 }
 
 class ChipItemTerminator extends ChipItemResponder
@@ -77,5 +77,5 @@ class ChipDynamicItemResponder extends ChipItemResponder
 
     override def enableFilter = false
 
-    override def filterAllows(item:ItemKey) = applyFilter(InventoryWrapper.wrapInventory(inventoryProvider.getInventory)).hasItem(item)
+    override def filterAllows(item:ItemKey) = applyFilter(InvWrapper.wrap(invProvider.getInventory)).hasItem(item)
 }

@@ -88,7 +88,7 @@ public class GhostContainer2 extends Container
     {
         ItemStack inSlot = slot.getStack();
         ItemStack inCursor = player.inventory.getItemStack();
-        boolean stackable = InventoryWrapper.areItemsStackable(inSlot, inCursor);
+        boolean stackable = InvWrapper.areItemsStackable(inSlot, inCursor);
 
         if (stackable)
         {
@@ -165,7 +165,7 @@ public class GhostContainer2 extends Container
 
         if (slot.getHasStack())
         {
-            InventoryWrapper wrap = InventoryWrapper.wrapInventory(inv).setSlotsAll(); // TODO set from method
+            InvWrapper wrap = InvWrapper.wrap(inv).setSlotsAll(); // TODO set from method
             ItemStack stack = slot.getStack();
             ItemStack stack2 = stack.copy();
             int added = wrap.injectItem(stack, true);
