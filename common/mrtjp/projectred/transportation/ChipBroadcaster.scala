@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation
 
 import java.util
-import mrtjp.projectred.core.inventory.InventoryWrapper
+import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.LabelBreaks._
 import mrtjp.projectred.core.utils.{ItemKey, Pair2, ItemKeyStack}
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
@@ -42,7 +42,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
         {
             while (manager.hasOrders && assign(manager.peek)!=null && stacksRemaining>0 && itemsRemaining>0) label("cont")
             {
-                val real = inventoryProvider.getInventory
+                val real = invProvider.getInventory
                 if (real == null)
                 {
                     manager.dispatchFailed()
@@ -52,7 +52,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                 val reqKeyStack = next.getValue1
                 val requester = next.getValue2
 
-                val inv = applyFilter(InventoryWrapper.wrapInventory(real)).setSlotsFromSide(side)
+                val inv = applyFilter(InvWrapper.wrap(real)).setSlotsFromSide(side)
 
                 if (!routeLayer.getRouter.canRouteTo(requester.getRouter.getIPAddress))
                 {
@@ -86,7 +86,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                 }
 
                 val toSend = reqKeyStack.key.makeStack(removed)
-                routeLayer.queueStackToSend(toSend, inventoryProvider.getInterfacedSide, SendPriority.ACTIVE, requester.getRouter.getIPAddress)
+                routeLayer.queueStackToSend(toSend, invProvider.getInterfacedSide, SendPriority.ACTIVE, requester.getRouter.getIPAddress)
                 manager.dispatchSuccessful(removed, restock)
 
                 stacksRemaining -= 1
@@ -97,11 +97,11 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
 
     override def requestPromises(request:RequestBranchNode, existingPromises:Int)
     {
-        val real = inventoryProvider.getInventory
+        val real = invProvider.getInventory
         if (real == null) return
 
-        val inv = applyFilter(InventoryWrapper.wrapInventory(real)).setSlotsFromSide(side)
-        val filt = applyFilter(InventoryWrapper.wrapInventory(filter), hide=false)
+        val inv = applyFilter(InvWrapper.wrap(real)).setSlotsFromSide(side)
+        val filt = applyFilter(InvWrapper.wrap(filter), hide=false)
 
         val requested = request.getRequestedPackage
 
@@ -125,20 +125,20 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
 
     override def getProvidedItems(map:util.Map[ItemKey, Integer])
     {
-        val real = inventoryProvider.getInventory
+        val real = invProvider.getInventory
         if (real == null) return
 
-        val inv = applyFilter(InventoryWrapper.wrapInventory(real)).setSlotsFromSide(side)
-        val filt = applyFilter(InventoryWrapper.wrapInventory(filter), hide=false)
+        val inv = applyFilter(InvWrapper.wrap(real)).setSlotsFromSide(side)
+        val filt = applyFilter(InvWrapper.wrap(filter), hide=false)
 
-        val items:util.Map[ItemKey, Integer] = inv.getAllItemStacks
+        val items = inv.getAllItemStacks
         import scala.collection.JavaConversions._
-        for (entry <- items.entrySet) if (filt.hasItem(entry.getKey) != filterExclude)
+        for ((k, v) <- items) if (filt.hasItem(k) != filterExclude)
         {
-            val current = map.getOrElse[Integer](entry.getKey, 0)
-            val toAdd = entry.getValue-manager.getDeliveryCount(entry.getKey)
+            val current = map.getOrElse[Integer](k, 0)
+            val toAdd = v-manager.getDeliveryCount(k)
 
-            if (toAdd > 0) map.put(entry.getKey, toAdd + current)
+            if (toAdd > 0) map.put(k, toAdd + current)
         }
     }
 
@@ -172,7 +172,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
 
     override def enableHiding = true
     override def enableFilter = true
-    override def enableFuzzy = false
+    override def enablePatterns = false
 
     def getChipType = EnumRoutingChip.ITEMBROADCASTER
 }

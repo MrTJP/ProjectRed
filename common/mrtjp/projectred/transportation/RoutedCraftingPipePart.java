@@ -10,7 +10,7 @@ import mrtjp.projectred.core.ItemDataCard;
 import mrtjp.projectred.core.inventory.GhostContainer2;
 import mrtjp.projectred.core.inventory.GhostContainer2.ISlotController;
 import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended;
-import mrtjp.projectred.core.inventory.InventoryWrapper;
+import mrtjp.projectred.core.inventory.InvWrapper;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
@@ -178,7 +178,7 @@ public class RoutedCraftingPipePart extends RoutedJunctionPipePart implements IW
         }
         int side = getInterfacedSide();
 
-        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
+        InvWrapper inv = InvWrapper.wrap(real).setSlotsFromSide(side);
 
         List<ItemKeyStack> wanted = getCraftedItems();
         if (wanted == null || wanted.isEmpty())

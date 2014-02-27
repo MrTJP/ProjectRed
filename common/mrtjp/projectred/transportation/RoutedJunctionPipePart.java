@@ -10,7 +10,7 @@ import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.api.ISpecialLinkState;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.inventory.InventoryWrapper;
+import mrtjp.projectred.core.inventory.InvWrapper;
 import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
@@ -314,8 +314,8 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
                         if (part instanceof RoutedJunctionPipePart)
                         {
                             RoutedJunctionPipePart pipe = (RoutedJunctionPipePart)part;
-                            InventoryWrapper w = InventoryWrapper.wrapInventory(inv).setSlotsFromSide(r.output.getOpposite().ordinal());
-                            int room = w.getRoomAvailableForItem(r.payload.key());
+                            InvWrapper w = InvWrapper.wrap(inv).setSlotsFromSide(r.output.getOpposite().ordinal());
+                            int room = w.getSpaceForItem(r.payload.key());
                             if (room >= r.payload.stackSize)
                             {
                                 w.injectItem(r.payload.makeStack(), true);
@@ -332,10 +332,10 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
                 }
 
                 // Injection to inventories
-                IInventory inv = InventoryWrapper.getInventory(world(), bc);
+                IInventory inv = InvWrapper.getInventory(world(), bc);
                 if (inv != null)
                 {
-                    InventoryWrapper w = InventoryWrapper.wrapInventory(inv).setSlotsFromSide(r.output.getOpposite().ordinal());
+                    InvWrapper w = InvWrapper.wrap(inv).setSlotsFromSide(r.output.getOpposite().ordinal());
                     r.payload.stackSize -= w.injectItem(r.payload.makeStack(), true);
                 }
                 // Bounce
@@ -535,7 +535,7 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         if (inOutSide < 0 || inOutSide > 5)
             return null;
 
-        return InventoryWrapper.getInventory(world(), new BlockCoord(tile()).offset(inOutSide));
+        return InvWrapper.getInventory(world(), new BlockCoord(tile()).offset(inOutSide));
     }
 
     @Override
@@ -661,9 +661,8 @@ public class RoutedJunctionPipePart extends BasicPipePart implements IWorldRoute
         if (real == null)
             return 0;
         int side = getInterfacedSide();
-        InventoryWrapper inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side);
-        int free = inv.getRoomAvailableForItem(item);
-        return free;
+        InvWrapper inv = InvWrapper.wrap(real).setSlotsFromSide(side);
+        return inv.getSpaceForItem(item);
     }
 
     @Override

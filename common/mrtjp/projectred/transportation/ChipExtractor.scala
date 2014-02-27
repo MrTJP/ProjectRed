@@ -1,9 +1,7 @@
 package mrtjp.projectred.transportation
 
-import java.util
 import java.util.BitSet
-import mrtjp.projectred.core.inventory.InventoryWrapper
-import mrtjp.projectred.core.utils.ItemKey
+import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import scala.collection.mutable.ListBuffer
 
@@ -24,20 +22,19 @@ class ChipExtractor extends RoutingChipset with TChipFilter with TChipOrientatio
         if (remainingDelay>0) return
         remainingDelay = operationDelay
 
-        val real = inventoryProvider.getInventory
+        val real = invProvider.getInventory
         if (real == null) return
 
-        val inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side)
-        val filt = applyFilter(InventoryWrapper.wrapInventory(filter))
+        val inv = InvWrapper.wrap(real).setSlotsFromSide(side)
+        val filt = applyFilter(InvWrapper.wrap(filter))
 
         val available = inv.getAllItemStacks
-        import scala.collection.JavaConversions._
-        for (items <- available.entrySet())
+        for ((k,v) <- available)
         {
-            val stackKey = items.getKey
-            val stackSize = items.getValue
+            val stackKey = k
+            val stackSize = v
 
-            if (stackKey!=null || filt.hasItem(stackKey)!=filterExclude)
+            if (stackKey!=null && filt.hasItem(stackKey)!=filterExclude)
             {
                 val exclusions = new BitSet
                 var s = routeLayer.getLogisticPath(stackKey, exclusions, true)
@@ -55,7 +52,7 @@ class ChipExtractor extends RoutingChipset with TChipFilter with TChipOrientatio
                         val stack2 = stackKey.makeStack(inv.extractItem(stackKey, toExtract))
                         if (stack2.stackSize <= 0) return
 
-                        routeLayer.queueStackToSend(stack2, inventoryProvider.getInterfacedSide, s)
+                        routeLayer.queueStackToSend(stack2, invProvider.getInterfacedSide, s)
 
                         leftInRun -= stack2.stackSize
                         if (leftInRun <= 0) return

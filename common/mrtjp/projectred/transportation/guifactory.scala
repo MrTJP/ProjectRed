@@ -12,6 +12,7 @@ import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.{EnumChatFormatting, ResourceLocation}
 import org.lwjgl.opengl.GL11
 import scala.collection.mutable.ListBuffer
+import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended
 
 object RoutingChipGuiFactory
 {
@@ -83,7 +84,7 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
                 import scala.collection.JavaConversions._
                 for (p <- BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 {
-                    c.addCustomSlot(new GhostContainer2.SlotExtended(c2.filter, s, p.getValue1, p.getValue2).setGhosting(true))
+                    c.addCustomSlot(new SlotExtended(c2.filter, s, p.getValue1, p.getValue2).setGhosting(true))
                     s += 1
                 }
                 shiftScreen(new GuiChipFilter(cFor[TChipFilter], this), true)
@@ -96,7 +97,7 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
                 import scala.collection.JavaConversions._
                 for (p <- BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 {
-                    c.addCustomSlot(new GhostContainer2.SlotExtended(c2.stock, s, p.getValue1, p.getValue2).setGhosting(true))
+                    c.addCustomSlot(new SlotExtended(c2.stock, s, p.getValue1, p.getValue2).setGhosting(true))
                     s += 1
                 }
                 shiftScreen(new GuiChipStock(cFor[TChipStock], this), true)
@@ -106,10 +107,10 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
                 import scala.collection.JavaConversions._
                 for (p <- BasicGuiUtils.createSlotArray(25, 15, 3, 3, 0, 0))
                 {
-                    c.addCustomSlot(new GhostContainer2.SlotExtended(c2.matrix, s, p.getValue1, p.getValue2).setGhosting(true))
+                    c.addCustomSlot(new SlotExtended(c2.matrix, s, p.getValue1, p.getValue2).setGhosting(true))
                     s += 1
                 }
-                c.addCustomSlot(new GhostContainer2.SlotExtended(c2.matrix, s, 119, 33).setGhosting(true))
+                c.addCustomSlot(new SlotExtended(c2.matrix, s, 119, 33).setGhosting(true))
                 shiftScreen(new GuiChipCraftMatrix(cFor[TChipCrafter], this), true)
             case "craftext" if chip.isInstanceOf[TChipCrafter] => shiftScreen(new GuiChipCraftExt(cFor[TChipCrafter], this), true)
 
@@ -128,7 +129,7 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
             }.setActionCommand("filt"))
 
         if (chip.isInstanceOf[TChipOrientation])
-            add(new WidgetDotSelector(100, 60)
+            add(new WidgetDotSelector(100, 50)
             {
                 override def buildTooltip(list:ListBuffer[String])
                 {
@@ -209,43 +210,75 @@ class GuiChipFilter(cont:ChipContainer[TChipFilter], prev:GuiScreen) extends Gui
             }
         }.setActionCommand("filtmode"))
 
-        if (chip.enableFuzzy) add(new WidgetButton(150, 16, 14, 14) with TButtonMCStyle
+        if (chip.enablePatterns)
+        {
+            add(new WidgetButton(150, 16, 14, 14) with TButtonMCStyle
+            {
+                override def drawButton(mouseover:Boolean)
+                {
+                    CCRenderState.changeTexture(GhostWidget.guiExtras)
+                    drawTexturedModalRect(x, y, if (chip.metaMatch) 49 else 65, 118, 14, 14)
+                }
+
+                override def buildTooltip(list:ListBuffer[String])
+                {
+                    list+="Metadata matching"
+                    list+=(EnumChatFormatting.GRAY+"Meta is "+(if (chip.metaMatch) "checked" else "ignored"))
+                }
+            }.setActionCommand("md"))
+
+            add(new WidgetButton(150, 32, 14, 14) with TButtonMCStyle
+            {
+                override def drawButton(mouseover:Boolean)
+                {
+                    CCRenderState.changeTexture(GhostWidget.guiExtras)
+                    drawTexturedModalRect(x, y, if (chip.nbtMatch) 33 else 49, 102, 14, 14)
+                }
+
+                override def buildTooltip(list:ListBuffer[String])
+                {
+                    list+="NBT matching"
+                    list+=(EnumChatFormatting.GRAY+"NBT is "+(if (chip.nbtMatch) "checked" else "ignored"))
+                }
+            }.setActionCommand("nbt"))
+
+            add(new WidgetButton(150, 48, 14, 14) with TButtonMCStyle
+            {
+                override def drawButton(mouseover:Boolean)
+                {
+                    CCRenderState.changeTexture(GhostWidget.guiExtras)
+                    drawTexturedModalRect(x, y, if (chip.oreMatch) 81 else 97, 118, 14, 14)
+                }
+
+                override def buildTooltip(list:ListBuffer[String])
+                {
+                    list+="Ore Dictionary matching"
+                    list+=(EnumChatFormatting.GRAY+"Ore Dictionary is "+(if (chip.oreMatch) "checked" else "ignored"))
+                }
+            }.setActionCommand("ore"))
+
+            add(new WidgetButton(125, 35, 20, 20) with TButtonMCStyle
+            {
+                override def drawButton(mouseover:Boolean)
+                {
+                    CCRenderState.changeTexture(GhostWidget.guiExtras)
+                    val u = chip.damageGroupMode*22+1
+                    drawTexturedModalRect(x, y, u, 80, 20, 20)
+                }
+                override def buildTooltip(list:ListBuffer[String])
+                {
+                    list+="Damage groups"
+                    list+=(EnumChatFormatting.GRAY+"Tools grouped at "+chip.grpPerc(chip.damageGroupMode)+"%")
+                }
+            }.setActionCommand("grp"))
+        }
+
+        if (chip.enableHiding) add(new WidgetButton(114, 16, 14, 14) with TButtonMCStyle
         {
             override def drawButton(mouseover:Boolean)
             {
                 CCRenderState.changeTexture(GhostWidget.guiExtras)
-                drawTexturedModalRect(x, y, if (chip.fuzzyMode) 49 else 33, 102, 14, 14)
-            }
-
-            override def buildTooltip(list:ListBuffer[String])
-            {
-                list+="Fuzzy mode"
-                list+=(EnumChatFormatting.GRAY + (if (chip.fuzzyMode) "NBT is ignored" else "NBT is checked"))
-            }
-        }.setActionCommand("fuzmode"))
-
-        if (chip.enableFuzzy) add(new WidgetButton(130, 35, 20, 20) with TButtonMCStyle
-        {
-            override def drawButton(mouseover:Boolean)
-            {
-                CCRenderState.changeTexture("projectred:textures/gui/guiextras.png")
-                val u:Int = chip.fuzzyDamageMode * 22 + 1
-                drawTexturedModalRect(x, y, u, 80, 20, 20)
-            }
-            override def buildTooltip(list:ListBuffer[String])
-            {
-                list+="Fuzzy tool damage"
-                list+=(EnumChatFormatting.GRAY+"Tools grouped at "+chip.fuzzyPercent(chip.fuzzyDamageMode)+"%")
-            }
-        }.setActionCommand("fuzdmode"))
-
-
-        if (chip.enableHiding) add(new WidgetButton(130, 32, 14, 14) with TButtonMCStyle
-        {
-            override def drawButton(mouseover:Boolean)
-            {
-                CCRenderState.changeTexture("projectred:textures/gui/guiextras.png")
-                val u:Int = chip.hideMode * 16 + 1
+                val u = chip.hideMode*16+1
                 drawTexturedModalRect(x, y, u, 118, 14, 14)
             }
 
@@ -260,15 +293,17 @@ class GuiChipFilter(cont:ChipContainer[TChipFilter], prev:GuiScreen) extends Gui
     override def actionPerformed(ident:String) = ident match
     {
         case "filtmode" => chip.toggleExcludeMode()
-        case "fuzmode" => chip.toggleFuzzyMode()
-        case "fuzdmode" => chip.shiftFuzzyDamageMode()
+        case "md" => chip.toggleMetaMode()
+        case "nbt" => chip.toggleNBTMode()
+        case "ore" => chip.toggleOreMode()
+        case "grp" => chip.shiftDamageGroup()
         case "hide" => chip.shiftHiding()
     }
 }
 
 class GuiChipOrient(cont:ChipContainer[TChipOrientation], prev:GuiScreen) extends GuiChipContainer[TChipOrientation](cont, prev)
 {
-    val sideWidget = new WidgetSideSelect(20 ,20, 50, 50, 40) with TWidgetSideHighlight with TWidgetSideTE with TWidgetSidePicker
+    val sideWidget = new WidgetSideSelect(20 ,20, 50, 50, 40) with TWidgetSideTE with TWidgetSideHighlight with TWidgetSidePicker
     {
         override def onSideChanged(s:Int) = shiftSides()
     }
@@ -366,7 +401,7 @@ class GuiChipStock(cont:ChipContainer[TChipStock], prev:GuiScreen) extends GuiCh
             override def buildTooltip(list:ListBuffer[String])
             {
                 list+="Fill mode"
-                list+=(EnumChatFormatting.GRAY+"refill when "+(if (chip.requestWhenEmpty) "items empty" else "items missing"))
+                list+=(EnumChatFormatting.GRAY+"refill when items "+(if (chip.requestWhenEmpty) "empty" else "missing"))
             }
         }.setActionCommand("fillmode"))
     }

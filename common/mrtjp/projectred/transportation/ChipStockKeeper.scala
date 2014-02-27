@@ -1,6 +1,6 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.inventory.InventoryWrapper
+import mrtjp.projectred.core.inventory.{InvWrapper, InventoryWrapper}
 import mrtjp.projectred.core.utils.LabelBreaks._
 import mrtjp.projectred.core.utils.{ItemKeyStack, ItemKey}
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
@@ -29,12 +29,12 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
         remainingDelay -= 1
         if (remainingDelay > 0) return
 
-        val real = inventoryProvider.getInventory
-        val side = inventoryProvider.getInterfacedSide
+        val real = invProvider.getInventory
+        val side = invProvider.getInterfacedSide
         if (real == null || side < 0) return
 
-        val inv = InventoryWrapper.wrapInventory(real).setSlotsFromSide(side)
-        val filt = InventoryWrapper.wrapInventory(stock).setSlotsAll()
+        val inv = InvWrapper.wrap(real).setSlotsFromSide(side)
+        val filt = InvWrapper.wrap(stock).setSlotsAll()
 
         var checked = List[ItemKey]()
         var requestAttempted = false
