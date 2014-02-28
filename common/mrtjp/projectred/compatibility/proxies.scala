@@ -13,6 +13,7 @@ class CompatibilityProxy_server extends IProxy
     {
         if (Services.loadTConstruct) Services.tcProxy.init()
         if (Services.loadTExpansion) Services.teProxy.init()
+        if (Services.loadTreecapitator) Services.treecapProxy.init()
     }
 
     def postinit() {}

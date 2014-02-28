@@ -139,6 +139,7 @@
   ],
   "dependencies": [
       "ProjRed|Core",
+      "ProjRed|Exploration",
       "ProjRed|Transportation",
       "TConstruct",
       "ThermalExpansion"
