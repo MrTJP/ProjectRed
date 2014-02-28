@@ -11,10 +11,10 @@
     <property name="forge.version" value="9.11.1.965"/>
     <property name="ccl.version" value="1.0.0.61"/>
     <property name="ccobf.version" value="1.0.0.19"/>
-    <property name="ccc.version" value="0.9.0.7"/>
+    <property name="ccc.version" value="0.9.0.8"/>
     <property name="fmp.version" value="1.0.0.240"/>
-    <property name="nei.version" value="1.6.1.8"/>
-    <property name="tcons.version" value="1.4.7d4"/>
+    <property name="nei.version" value="1.6.1.9"/>
+    <property name="tcons.version" value="1.5.3"/>
     <property name="texpan.version" value="3.0.0.0"/>
     <property name="cofh.version" value="2.0.0.0"/>
     <property name="ccraft.version" value="1.58"/>
@@ -40,7 +40,7 @@
     <property name="ccc.name" value="CodeChickenCore-dev%20${ccc.version}.jar"/>
     <property name="fmp.name" value="ForgeMultipart-dev-${mc.version}-${fmp.version}.jar"/>
     <property name="nei.name" value="NotEnoughItems-dev%20${nei.version}.jar"/>
-    <property name="tcons.name" value="TConstruct_${mc.version}_${tcons.version}.jar"/>
+    <property name="tcons.name" value="TConstruct_mc${mc.version}_${tcons.version}.jar"/>
     <property name="texpan.name" value="ThermalExpansion-${texpan.version}.jar"/>
     <property name="cofh.name" value="CoFHCore-${cofh.version}.jar"/>
     <property name="ccraft.name" value="ComputerCraft${ccraft.version}.jar"/>
@@ -163,7 +163,7 @@
     </target>
 
     <target name="download-tcons" unless="tcons-downloaded">
-        <get src="http://tanis.sunstrike.io/TConstruct/development/${tcons.name}" dest="${download.dir}" usetimestamp="true"/>
+        <get src="http://www.curseforge.com/media/files/775/458/${tcons.name}" dest="${download.dir}" usetimestamp="true"/>
     </target>
 
     <target name="download-texpan" unless="texpan-downloaded">
