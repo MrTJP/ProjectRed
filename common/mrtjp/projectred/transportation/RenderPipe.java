@@ -215,7 +215,7 @@ public class RenderPipe
     public static void render(BasicPipePart p, Vector3 pos, LazyLightMatrix olm)
     {
         Transformation t = new Translation(pos);
-        IUVTransformation uvt = new IconTransformation(EnumPipe.VALID_PIPE[p.meta].sprites[0]);
+        IUVTransformation uvt = new IconTransformation(PipeDef.VALID_PIPE()[p.meta].sprites()[0]);
 
         int connMap = p.connMap;
 

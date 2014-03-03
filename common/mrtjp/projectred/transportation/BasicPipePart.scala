@@ -306,6 +306,6 @@ class BasicPipePart extends CorePipePart
     {
         val i = getLogic.getIcon(side)
         if (i != null) return i
-        EnumPipe.BASIC.sprites(0)
+        PipeDef.BASIC.sprites(0)
     }
 }

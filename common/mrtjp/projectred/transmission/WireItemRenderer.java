@@ -50,7 +50,7 @@ public class WireItemRenderer implements IItemRenderer
 
     public void renderWireInventory(int meta, float x, float y, float z, float scale)
     {
-        WireDef type = WireDefs.VALID_WIRE()[meta];
+        WireDef type = WireDef.VALID_WIRE()[meta];
 
         if (type == null)
             return;

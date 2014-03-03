@@ -28,7 +28,7 @@ public class FramedBundledCablePart extends FramedWirePart implements IBundledCa
     @Override
     public WireDef getWireType()
     {
-        return WireDefs.BUNDLED_N();
+        return WireDef.BUNDLED_N();
     }
 
     @Override

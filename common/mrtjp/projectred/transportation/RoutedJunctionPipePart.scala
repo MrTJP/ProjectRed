@@ -6,13 +6,13 @@ import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.INeighborTileChange
 import codechicken.multipart.TMultiPart
 import codechicken.multipart.TileMultipart
+import java.util.UUID
 import mrtjp.projectred.api.IScrewdriver
-import mrtjp.projectred.api.ISpecialLinkState
-import mrtjp.projectred.core.{Messenger, BasicUtils, Configurator}
 import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.core.utils.Pair2
+import mrtjp.projectred.core.{BasicUtils, Configurator}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
@@ -20,14 +20,8 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.Icon
 import net.minecraft.util.MovingObjectPosition
-import net.minecraft.world.World
 import net.minecraftforge.common.ForgeDirection
 import scala.collection.immutable.BitSet
-import java.util.Comparator
-import java.util.Iterator
-import java.util.LinkedList
-import java.util.UUID
-import java.util.concurrent.PriorityBlockingQueue
 import scala.collection.mutable
 
 object RoutedJunctionPipePart
@@ -418,7 +412,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
 
     override def getIcon(side:Int):Icon =
     {
-        val array = EnumPipe.ROUTEDJUNCTION.sprites
+        val array = PipeDef.ROUTEDJUNCTION.sprites
         val ind = if (side == inOutSide) 2 else 0
         if ((linkMap&1<<side) != 0) array(1+ind)
         else array(2+ind)

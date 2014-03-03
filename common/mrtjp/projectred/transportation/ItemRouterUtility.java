@@ -62,7 +62,7 @@ public class ItemRouterUtility extends Item
             @Override
             public void sendPacket(EntityPlayerMP player, int windowId)
             {
-                PacketCustom packet = new PacketCustom(TransportationSPH.channel(), NetConstants.gui_RouterUtil_open);
+                PacketCustom packet = new PacketCustom(TransportationSPH.channel(), TransportationSPH.gui_RouterUtil_open());
                 packet.writeByte(windowId);
                 packet.sendToPlayer(player);
             }

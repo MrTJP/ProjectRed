@@ -8,7 +8,7 @@ public class RedAlloyWirePart extends RedwirePart
     @Override
     public WireDef getWireType()
     {
-        return WireDefs.RED_ALLOY();
+        return WireDef.RED_ALLOY();
     }
 
     @Override

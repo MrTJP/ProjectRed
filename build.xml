@@ -1,23 +1,10 @@
 <project name="Project: Red" basedir="../" default="test">
     <property environment="env"/>
-    <property file="buildspecs.properties" prefix="buildspecs"/>
+    <property file="ProjectRed/build.properties"/>
 
-
-    <property name="mod.version" value="4.3.0"/>
     <condition property="mod.build" value="${env.BUILD_NUMBER}" else="0">
         <isset property="env.BUILD_NUMBER"/>
     </condition>
-    <property name="mc.version" value="1.6.4"/>
-    <property name="forge.version" value="9.11.1.965"/>
-    <property name="ccl.version" value="1.0.0.61"/>
-    <property name="ccobf.version" value="1.0.0.19"/>
-    <property name="ccc.version" value="0.9.0.7"/>
-    <property name="fmp.version" value="1.0.0.240"/>
-    <property name="nei.version" value="1.6.1.8"/>
-    <property name="tcons.version" value="1.4.7d4"/>
-    <property name="texpan.version" value="3.0.0.0"/>
-    <property name="cofh.version" value="2.0.0.0"/>
-    <property name="ccraft.version" value="1.58"/>
 
     <property name="src.dir" value="ProjectRed"/>
     <property name="build.dir" value="build"/>
@@ -40,10 +27,10 @@
     <property name="ccc.name" value="CodeChickenCore-dev%20${ccc.version}.jar"/>
     <property name="fmp.name" value="ForgeMultipart-dev-${mc.version}-${fmp.version}.jar"/>
     <property name="nei.name" value="NotEnoughItems-dev%20${nei.version}.jar"/>
-    <property name="tcons.name" value="TConstruct_${mc.version}_${tcons.version}.jar"/>
+    <property name="tcons.name" value="TConstruct_mc${mc.version}_${tcons.version}.jar"/>
     <property name="texpan.name" value="ThermalExpansion-${texpan.version}.jar"/>
     <property name="cofh.name" value="CoFHCore-${cofh.version}.jar"/>
-    <property name="ccraft.name" value="ComputerCraft${ccraft.version}.jar"/>
+    <property name="ccraft.name" value="ComputerCraft${ccraft.version}.zip"/>
 
 
     <!-- Check downloaded dependencies -->
@@ -163,7 +150,7 @@
     </target>
 
     <target name="download-tcons" unless="tcons-downloaded">
-        <get src="http://tanis.sunstrike.io/TConstruct/development/${tcons.name}" dest="${download.dir}" usetimestamp="true"/>
+        <get src="http://www.curseforge.com/media/files/${tcons.cf}/${tcons.name}" dest="${download.dir}" usetimestamp="true"/>
     </target>
 
     <target name="download-texpan" unless="texpan-downloaded">
@@ -175,7 +162,7 @@
     </target>
 
     <target name="download-ccraft" unless="ccraft-downloaded">
-        <get src="http://www.curseforge.com/media/files/758/858/ComputerCraft${ccraft.version}.zip" dest="${download.dir}/${ccraft.name}" usetimestamp="true"/>
+        <get src="http://www.curseforge.com/media/files/${ccraft.cf}/${ccraft.name}" dest="${download.dir}/${ccraft.name}" usetimestamp="true"/>
     </target>
 
     <!-- Targets for installing dependencies -->
@@ -372,8 +359,71 @@
 
     <target name="install-dependencies" depends="install-forge,install-ccl,install-ccobf,install-ccc,install-fmp,install-nei,install-tcons,install-texpan,install-cofh,install-ccraft"/>
 
+    <target name="init-comp">
+        <!-- check for required tools -->
+        <fail message="Missing SCALA_HOME variable in OS environment">
+            <condition>
+                <isset property="${env.SCALA_HOME}"/>
+            </condition>
+        </fail>
+
+        <!-- variables for paths and files -->
+        <property name="scala.dir" location="${env.SCALA_HOME}"/>
+        <property name="scala-library.jar" location="${scala.dir}/lib/scala-library.jar"/>
+        <property name="scala-reflect.jar" location="${scala.dir}/lib/scala-reflect.jar"/>
+        <property name="scala-compiler.jar" location="${scala.dir}/lib/scala-compiler.jar"/>
+
+        <!-- used during recompilation -->
+        <path id="scala.classpath">
+            <pathelement location="${scala-compiler.jar}"/>
+            <pathelement location="${scala-reflect.jar}"/>
+            <pathelement location="${scala-library.jar}"/>
+        </path>
+
+        <!-- load scala's ant tasks -->
+        <taskdef resource="scala/tools/ant/antlib.xml" classpathref="scala.classpath"/>
+
+        <!-- print where this project will get scala from -->
+        <echo message="Init compiler with scala.dir = ${scala.dir}"/>
+
+        <property name="comp.out" location="${mcp.dir}/bin/minecraft"/>
+        <property name="comp.in" location="${mcp.dir}/src/minecraft"/>
+
+        <path id="comp.classpath">
+            <pathelement location="${comp.out}"/>
+            <pathelement location="${mcp.dir}/jars/versions/1.6.4/1.6.4.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/argo/argo/2.25_fixed/argo-2.25_fixed.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/org/ow2/asm/asm-debug-all/4.1/asm-debug-all-4.1.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/org/bouncycastle/bcprov-jdk15on/1.47/bcprov-jdk15on-1.47.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/com/paulscode/codecjorbis/20101023/codecjorbis-20101023.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/com/paulscode/codecwav/20101023/codecwav-20101023.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/commons-io/commons-io/2.4/commons-io-2.4.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/org/apache/commons/commons-lang3/3.1/commons-lang3-3.1.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/com/google/code/gson/gson/2.2.2/gson-2.2.2.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/com/google/guava/guava/14.0/guava-14.0.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/net/sf/jopt-simple/jopt-simple/4.5/jopt-simple-4.5.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/net/minecraft/launchwrapper/1.8/launchwrapper-1.8.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/com/paulscode/libraryjavasound/20101123/libraryjavasound-20101123.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/com/paulscode/librarylwjglopenal/20100824/librarylwjglopenal-20100824.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/lzma/lzma/0.0.1/lzma-0.0.1.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/org/scala-lang/scala-library/2.10.2/scala-library-2.10.2.jar"/>
+            <pathelement location="${mcp.dir}/jars/libraries/com/paulscode/soundsystem/20120107/soundsystem-20120107.jar"/>
+
+            <fileset dir="${mcp.dir}/lib"/>
+        </path>
+    </target>
+
     <!-- Targets for building -->
     <target name="recompile">
+        <antcall target="init-comp"/>
+        <echo message="Cleaning bin"/>
+        <!--<delete includeemptydirs="true">-->
+            <!--<fileset dir="${mcp.dir}/bin"/>-->
+        <!--</delete>-->
 
         <!-- Copy PR source -->
         <echo message="Copying source"/>
@@ -386,7 +436,24 @@
         <replace dir="${mcp.dir}/src/minecraft/mrtjp/projectred" token="@BUILD_NUMBER@" value="${mod.build}"/>
         <replace dir="${mcp.dir}/src/minecraft/mrtjp/projectred" token="@MC_VERSION@" value="${mc.version}"/>
 
+        <!-- Recompile -->
         <echo message="Recompiling"/>
+        <scalac destdir="${comp.out}" classpathref="comp.classpath">
+            <include name="**/*.scala"/>
+            <include name="**/*.java"/>
+            <src>
+                <pathelement location="${comp.in}"/>
+            </src>
+        </scalac>
+
+        <javac destdir="${comp.out}" classpathref="comp.classpath">
+            <include name="**/*.java"/>
+            <src>
+                <pathelement location="${comp.in}"/>
+            </src>
+        </javac>
+
+        <!--
         <property name="mcp.python.exe" location="${mcp.dir}/runtime/bin/python/python_mcp.exe"/>
         <exec dir="${mcp.dir}" executable="${mcp.python.exe}" osfamily="windows" resultproperty="recompile.code">
             <arg line="runtime/recompile.py"/>
@@ -394,6 +461,7 @@
         <exec dir="${mcp.dir}" executable="python" osfamily="unix" resultproperty="recompile.code">
             <arg line="runtime/recompile.py"/>
         </exec>
+        -->
 
         <echo message="Removing source"/>
         <delete includeemptydirs="true">

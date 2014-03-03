@@ -33,14 +33,14 @@ public class BundledCablePart extends WirePart implements IBundledCablePart
     @Override
     public WireDef getWireType()
     {
-        return WireDefs.BUNDLED_WIRE()[colour + 1];
+        return WireDef.BUNDLED_WIRE()[colour + 1];
     }
 
     @Override
     public void preparePlacement(int side, int meta)
     {
         super.preparePlacement(side, meta);
-        colour = (byte) (meta - WireDefs.BUNDLED_0().meta());
+        colour = (byte) (meta - WireDef.BUNDLED_0().meta());
     }
 
     @Override

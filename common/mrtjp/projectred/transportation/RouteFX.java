@@ -325,7 +325,7 @@ public class RouteFX
             {
                 BasicPipePart pipe = (BasicPipePart) part;
 
-                int connMap = pipe.connMap;
+                int connMap = pipe.connMap&0x3F;
                 connMap &= ~(1<<(dir^1));
 
                 if (Integer.bitCount(connMap) == 1)

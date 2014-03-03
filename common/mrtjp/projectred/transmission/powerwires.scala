@@ -10,7 +10,7 @@ class PowerWire_100v extends PowerWire
         override def capacitance = 8.0D
     }
 
-    def getWireType = WireDefs.POWER_100v
+    def getWireType = WireDef.POWER_100v
 
     override def canConnectToType(part:IConnectable) =
         part.isInstanceOf[PowerWire_100v] ||
@@ -26,7 +26,7 @@ class FramedPowerWire_100v extends FramedPowerWire
         override def capacitance = 8.0D
     }
 
-    override def getWireType = WireDefs.POWER_100v
+    override def getWireType = WireDef.POWER_100v
 
     override def canConnectToType(part:IConnectable) =
         part.isInstanceOf[PowerWire_100v] ||

@@ -16,14 +16,14 @@ public class FramedInsulatedRedAlloyPart extends FramedRedwirePart implements II
     @Override
     public WireDef getWireType()
     {
-        return WireDefs.INSULATED_WIRE()[colour];
+        return WireDef.INSULATED_WIRE()[colour];
     }
 
     @Override
     public void preparePlacement(int meta)
     {
         super.preparePlacement(meta);
-        colour = (byte) (meta-WireDefs.INSULATED_0().meta());
+        colour = (byte) (meta-WireDef.INSULATED_0().meta());
     }
 
     @Override

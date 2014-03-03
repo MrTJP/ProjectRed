@@ -23,7 +23,7 @@ public class TransmissionRecipes
     private static void initWireRecipes()
     {
         /** Red Alloy Wires **/
-        GameRegistry.addRecipe(WireDefs.RED_ALLOY().getItemStack(12),
+        GameRegistry.addRecipe(WireDef.RED_ALLOY().getItemStack(12),
                 " r ",
                 " r ",
                 " r ",
@@ -31,9 +31,9 @@ public class TransmissionRecipes
                 );
 
         /** Insulated Wires **/
-        for (int i = 0; i < WireDefs.INSULATED_WIRE().length; i++)
+        for (int i = 0; i < WireDef.INSULATED_WIRE().length; i++)
         {
-            WireDef w = WireDefs.INSULATED_WIRE()[i];
+            WireDef w = WireDef.INSULATED_WIRE()[i];
             GameRegistry.addRecipe(w.getItemStack(12),
                     "WrW",
                     "WrW",
@@ -42,41 +42,41 @@ public class TransmissionRecipes
                     'r', EnumPart.REDINGOT.getItemStack()
                     );
         }
-        for (WireDef w : WireDefs.INSULATED_WIRE()) // Recoloring
+        for (WireDef w : WireDef.INSULATED_WIRE()) // Recoloring
             GameRegistry.addRecipe(new ShapelessOreRecipe(w.getItemStack(),
-                    PRColors.get(w.meta()-WireDefs.INSULATED_0().meta()).getOreDict(),
-                    WireDefs.oreDictDefinitionInsulated(),
+                    PRColors.get(w.meta()-WireDef.INSULATED_0().meta()).getOreDict(),
+                    WireDef.oreDictDefinitionInsulated(),
                     Item.silk
                     ));
-        for (WireDef w : WireDefs.INSULATED_WIRE()) // Framed Recoloring
+        for (WireDef w : WireDef.INSULATED_WIRE()) // Framed Recoloring
             GameRegistry.addRecipe(new ShapelessOreNBTRecipe(w.getFramedItemStack(),
-                    PRColors.get(w.meta()-WireDefs.INSULATED_0().meta()).getOreDict(),
-                    WireDefs.oreDictDefinitionInsFramed(),
+                    PRColors.get(w.meta()-WireDef.INSULATED_0().meta()).getOreDict(),
+                    WireDef.oreDictDefinitionInsFramed(),
                     ItemMicroPart.create(769, Block.wood.getUnlocalizedName())
                     ).setCheckNBT());
 
 
         /** Bundled Cables **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(WireDefs.BUNDLED_N().getItemStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(WireDef.BUNDLED_N().getItemStack(),
                 "SWS",
                 "WWW",
                 "SWS",
                 'S', Item.silk,
-                'W', WireDefs.oreDictDefinitionInsulated()
+                'W', WireDef.oreDictDefinitionInsulated()
                 ));
-        for (WireDef w : WireDefs.BUNDLED_WIRE()) // recoloring
+        for (WireDef w : WireDef.BUNDLED_WIRE()) // recoloring
         {
-            if (w == WireDefs.BUNDLED_N())
+            if (w == WireDef.BUNDLED_N())
                 continue;
             GameRegistry.addRecipe(new ShapelessOreRecipe(w.getItemStack(),
-                    PRColors.get(w.meta()-WireDefs.BUNDLED_0().meta()).getOreDict(),
-                    WireDefs.oreDictDefinitionBundled(),
+                    PRColors.get(w.meta()-WireDef.BUNDLED_0().meta()).getOreDict(),
+                    WireDef.oreDictDefinitionBundled(),
                     Item.silk
                     ));
         }
 
         /** Framed Wiring **/
-        for (WireDef w : WireDefs.VALID_WIRE())
+        for (WireDef w : WireDef.VALID_WIRE())
             if (w.hasFramedForm())
                 // Regular to framed
                 GameRegistry.addRecipe(new ShapedOreNBTRecipe(w.getFramedItemStack(),
@@ -94,7 +94,7 @@ public class TransmissionRecipes
         GameRegistry.addRecipe(EnumPart.WIREDPLATE.getItemStack(),
                 "r",
                 "p",
-                'r', WireDefs.RED_ALLOY().getItemStack(),
+                'r', WireDef.RED_ALLOY().getItemStack(),
                 'p', EnumPart.PLATE.getItemStack()
                 );
 
@@ -102,7 +102,7 @@ public class TransmissionRecipes
         GameRegistry.addRecipe(EnumPart.BUNDLEDPLATE.getItemStack(),
                 "r",
                 "p",
-                'r', WireDefs.BUNDLED_N().getItemStack(),
+                'r', WireDef.BUNDLED_N().getItemStack(),
                 'p', EnumPart.PLATE.getItemStack()
                 );
     }

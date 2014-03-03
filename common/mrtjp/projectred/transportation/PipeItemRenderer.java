@@ -47,7 +47,7 @@ public class PipeItemRenderer implements IItemRenderer
 
     public void renderWireInventory(int meta, float x, float y, float z, float scale)
     {
-        EnumPipe type = EnumPipe.VALID_PIPE[meta];
+        PipeDef type = PipeDef.VALID_PIPE()[meta];
         if (type == null)
             return;
         TextureUtils.bindAtlas(0);
@@ -56,7 +56,7 @@ public class PipeItemRenderer implements IItemRenderer
         CCRenderState.pullLightmap();
         CCRenderState.setColourOpaque(-1);
         CCRenderState.startDrawing(7);
-        RenderPipe.renderInv(new Scale(scale).with(new Translation(x, y, z)), type.sprites[0]);
+        RenderPipe.renderInv(new Scale(scale).with(new Translation(x, y, z)), type.sprites()[0]);
         CCRenderState.draw();
     }
 

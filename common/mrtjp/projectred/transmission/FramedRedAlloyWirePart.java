@@ -5,7 +5,7 @@ public class FramedRedAlloyWirePart extends FramedRedwirePart
     @Override
     public WireDef getWireType()
     {
-        return WireDefs.RED_ALLOY();
+        return WireDef.RED_ALLOY();
     }
 
     @Override

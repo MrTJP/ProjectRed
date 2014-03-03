@@ -47,7 +47,7 @@ public class ItemPartWire extends JItemMultiPart
         if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false))
             return null;
 
-        WireDef type = WireDefs.VALID_WIRE()[item.getItemDamage()];
+        WireDef type = WireDef.VALID_WIRE()[item.getItemDamage()];
         WirePart w = (WirePart) MultiPartRegistry.createPart(type.wireType(), false);
         if (w != null)
             w.preparePlacement(side, item.getItemDamage());
@@ -58,7 +58,7 @@ public class ItemPartWire extends JItemMultiPart
     @SideOnly(Side.CLIENT)
     public void getSubItems(int id, CreativeTabs tab, List list)
     {
-        for (WireDef w : WireDefs.VALID_WIRE())
+        for (WireDef w : WireDef.VALID_WIRE())
             list.add(w.getItemStack());
     }
 
@@ -71,7 +71,7 @@ public class ItemPartWire extends JItemMultiPart
     @Override
     public void registerIcons(IconRegister reg)
     {
-        for (WireDef w : WireDefs.VALID_WIRE())
+        for (WireDef w : WireDef.VALID_WIRE())
             w.loadTextures(reg);
     }
 

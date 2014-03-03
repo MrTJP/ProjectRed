@@ -41,7 +41,7 @@ public class ItemPartFramedWire extends JItemMultiPart
     @Override
     public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit)
     {
-        WireDef type = WireDefs.VALID_WIRE()[item.getItemDamage()];
+        WireDef type = WireDef.VALID_WIRE()[item.getItemDamage()];
         FramedWirePart w = (FramedWirePart) MultiPartRegistry.createPart(type.framedType(), false);
         if (w != null)
             w.preparePlacement(item.getItemDamage());
@@ -52,7 +52,7 @@ public class ItemPartFramedWire extends JItemMultiPart
     @SideOnly(Side.CLIENT)
     public void getSubItems(int id, CreativeTabs tab, List list)
     {
-        for (WireDef w : WireDefs.VALID_WIRE())
+        for (WireDef w : WireDef.VALID_WIRE())
             if (w.hasFramedForm())
                 list.add(w.getFramedItemStack());
     }

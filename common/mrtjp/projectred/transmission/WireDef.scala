@@ -9,7 +9,7 @@ import net.minecraft.util.Icon
 import net.minecraftforge.oredict.OreDictionary
 import scala.collection.mutable
 
-object WireDefs extends LiteEnumCollector
+object WireDef extends LiteEnumCollector
 {
     val RED_ALLOY = WireDef("pr_redwire", "pr_fredwire", 0, 0xC80000, "redalloy")
 
@@ -71,14 +71,12 @@ object WireDefs extends LiteEnumCollector
         build.result()
     }
 
-    val oreDictDefinition = "projredWire"
     val oreDictDefinitionInsulated = "projredInsulatedWire"
     val oreDictDefinitionInsFramed = "projredInsFramedWire"
     val oreDictDefinitionBundled = "projredBundledCable"
 
     def initOreDict()
     {
-        for (w <- VALID_WIRE) OreDictionary.registerOre(oreDictDefinition, w.getItemStack)
         for (w <- INSULATED_WIRE)
         {
             if (w.hasFramedForm) OreDictionary.registerOre(oreDictDefinitionInsFramed, w.getFramedItemStack)
@@ -87,37 +85,32 @@ object WireDefs extends LiteEnumCollector
         for (w <- BUNDLED_WIRE) OreDictionary.registerOre(oreDictDefinitionBundled, w.getItemStack)
     }
 
+    def apply(wireType:String, framedType:String, thickness:Int, itemColour:Int, textures:String*) =
+        new WireDef(wireType, framedType, thickness, itemColour, textures)
 }
 
-class WireDef(val wireType: String, val framedType: String, val thickness: Int, val itemColour: Int, textures: Seq[String]) extends LiteEnumVal
+class WireDef(val wireType:String, val framedType:String, val thickness:Int, val itemColour:Int, textures:Seq[String]) extends LiteEnumVal
 {
     def hasFramedForm = framedType != null
-
-    var wireSprites: Array[Icon] = null
 
     val meta = ordinal
 
     @SideOnly(Side.CLIENT)
+    val wireSprites = new Array[Icon](textures.length)
+
+    @SideOnly(Side.CLIENT)
     def loadTextures(reg: IconRegister)
     {
-        wireSprites = new Array[Icon](textures.length)
-
         for (i <- 0 until textures.length)
             wireSprites(i) = reg.registerIcon("projectred:wires/" + textures(i))
-
     }
 
-    def getItemStack: ItemStack = getItemStack(1)
-    def getItemStack(i: Int): ItemStack = new ItemStack(ProjectRedTransmission.itemPartWire, i, meta)
+    def getItemStack:ItemStack = getItemStack(1)
+    def getItemStack(i:Int) = new ItemStack(ProjectRedTransmission.itemPartWire, i, meta)
 
-    def getFramedItemStack: ItemStack = getFramedItemStack(1)
-    def getFramedItemStack(i: Int) = if (hasFramedForm) new ItemStack(ProjectRedTransmission.itemPartFramedWire, i, meta) else null
+    def getFramedItemStack:ItemStack = getFramedItemStack(1)
+    def getFramedItemStack(i:Int) =
+        if (hasFramedForm) new ItemStack(ProjectRedTransmission.itemPartFramedWire, i, meta) else null
 
-    override def getCollector = WireDefs
-}
-
-object WireDef
-{
-    def apply(wireType: String, framedType: String, thickness: Int, itemColour: Int, textures: String*) =
-        new WireDef(wireType, framedType, thickness, itemColour, textures)
+    override def getCollector = WireDef
 }

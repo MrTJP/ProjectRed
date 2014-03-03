@@ -25,7 +25,7 @@ class TransmissionProxy_server extends IProxy with IPartFactory
 
     override def postinit()
     {
-        WireDefs.initOreDict()
+        WireDef.initOreDict()
         TransmissionRecipes.initTransmissionRecipes()
     }
 

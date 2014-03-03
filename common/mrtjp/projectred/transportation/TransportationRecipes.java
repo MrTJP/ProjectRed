@@ -26,14 +26,14 @@ public class TransportationRecipes
     private static void initPipeRecipes()
     {
         /** Item Transport Pipe **/
-        GameRegistry.addRecipe(EnumPipe.BASIC.getItemStack(16),
+        GameRegistry.addRecipe(PipeDef.BASIC().getItemStack(16),
                 "sgs",
                 'g', Block.thinGlass,
                 's', Block.stone
         );
 
         /** Routed Junction Pipe **/
-        GameRegistry.addRecipe(EnumPipe.ROUTEDJUNCTION.getItemStack(16),
+        GameRegistry.addRecipe(PipeDef.ROUTEDJUNCTION().getItemStack(16),
                 "RrG",
                 "dgd",
                 "GrR",
@@ -45,42 +45,42 @@ public class TransportationRecipes
         );
 
         /** Routed Interface Pipe **/
-        GameRegistry.addRecipe(EnumPipe.ROUTEDINTERFACE.getItemStack(),
+        GameRegistry.addRecipe(PipeDef.ROUTEDINTERFACE().getItemStack(),
                 "rgr",
                 "gjg",
                 "rgr",
                 'g', Item.goldNugget,
-                'j', EnumPipe.ROUTEDJUNCTION.getItemStack(),
+                'j', PipeDef.ROUTEDJUNCTION().getItemStack(),
                 'r', Item.redstone
         );
 
         /** Routed Crafting Pipe **/
-        GameRegistry.addRecipe(EnumPipe.ROUTEDCRAFTING.getItemStack(),
+        GameRegistry.addRecipe(PipeDef.ROUTEDCRAFTING().getItemStack(),
                 "rgr",
                 "rjr",
                 "rgr",
                 'r', Item.redstone,
                 'g', Item.glowstone,
-                'j', EnumPipe.ROUTEDJUNCTION.getItemStack()
+                'j', PipeDef.ROUTEDJUNCTION().getItemStack()
         );
 
         /** Routed Request Pipe **/
-        GameRegistry.addRecipe(EnumPipe.ROUTEDREQUEST.getItemStack(),
+        GameRegistry.addRecipe(PipeDef.ROUTEDREQUEST().getItemStack(),
                 "rdr",
                 "rjr",
                 "rdr",
                 'r', Item.redstone,
                 'd', Item.diamond,
-                'j', EnumPipe.ROUTEDJUNCTION.getItemStack()
+                'j', PipeDef.ROUTEDJUNCTION().getItemStack()
         );
 
         /** Routed Crafting Pipe **/
-        GameRegistry.addRecipe(EnumPipe.ROUTEDEXTENSION.getItemStack(),
+        GameRegistry.addRecipe(PipeDef.ROUTEDEXTENSION().getItemStack(),
                 " r ",
                 "rjr",
                 " r ",
                 'r', Item.redstone,
-                'j', EnumPipe.ROUTEDJUNCTION.getItemStack()
+                'j', PipeDef.ROUTEDJUNCTION().getItemStack()
         );
     }
 

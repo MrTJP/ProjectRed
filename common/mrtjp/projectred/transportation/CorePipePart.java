@@ -200,7 +200,7 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
 
     public ItemStack getItem()
     {
-        return EnumPipe.VALID_PIPE[meta].getItemStack();
+        return PipeDef.VALID_PIPE()[meta].getItemStack();
     }
 
     public void notifyStraightChange(int s)
