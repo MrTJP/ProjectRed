@@ -3,7 +3,6 @@ package mrtjp.projectred.transportation
 import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
-import mrtjp.projectred.transportation.RoutedPayload.SendPriority
 import scala.collection.mutable.ListBuffer
 
 class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriority

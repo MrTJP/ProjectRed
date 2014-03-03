@@ -1,12 +1,10 @@
 package mrtjp.projectred.transportation
 
-import java.util
 import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.LabelBreaks._
 import mrtjp.projectred.core.utils.{ItemKey, Pair2, ItemKeyStack}
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise
-import mrtjp.projectred.transportation.RoutedPayload.SendPriority
 import scala.collection.mutable.ListBuffer
 
 class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientation with TChipPriority
@@ -123,7 +121,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
         manager.addOrder(ItemKeyStack.get(promise.thePackage, promise.size), requester)
     }
 
-    override def getProvidedItems(map:util.Map[ItemKey, Integer])
+    override def getProvidedItems(map:collection.mutable.Map[ItemKey, Int])
     {
         val real = invProvider.getInventory
         if (real == null) return
@@ -132,13 +130,12 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
         val filt = applyFilter(InvWrapper.wrap(filter), hide=false)
 
         val items = inv.getAllItemStacks
-        import scala.collection.JavaConversions._
         for ((k, v) <- items) if (filt.hasItem(k) != filterExclude)
         {
-            val current = map.getOrElse[Integer](k, 0)
+            val current = map.getOrElse(k, 0)
             val toAdd = v-manager.getDeliveryCount(k)
 
-            if (toAdd > 0) map.put(k, toAdd + current)
+            if (toAdd > 0) map.put(k, toAdd+current)
         }
     }
 

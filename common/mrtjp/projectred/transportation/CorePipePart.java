@@ -23,12 +23,13 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
 {
     public static Cuboid6[] boundingBoxes = new Cuboid6[7];
     private static int expandBounds = -1;
+
     static
     {
-        double w = 2 / 8D;
-        boundingBoxes[6] = new Cuboid6(0.5 - w, 0.5 - w, 0.5 - w, 0.5 + w, 0.5 + w, 0.5 + w);
+        double w = 2/8D;
+        boundingBoxes[6] = new Cuboid6(0.5-w, 0.5-w, 0.5-w, 0.5+w, 0.5+w, 0.5+w);
         for (int s = 0; s < 6; s++)
-            boundingBoxes[s] = new Cuboid6(0.5 - w, 0, 0.5 - w, 0.5 + w, 0.5 - w, 0.5 + w).apply(Rotation.sideRotations[s].at(Vector3.center));
+            boundingBoxes[s] = new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, 0.5-w, 0.5+w).apply(Rotation.sideRotations[s].at(Vector3.center));
     }
 
     /**
@@ -39,7 +40,7 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
 
     public void preparePlacement(int meta)
     {
-        this.meta = (byte) meta;
+        this.meta = (byte)meta;
     }
 
     @Override
@@ -180,7 +181,7 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
         if (!world().isRemote)
         {
             for (int s = 0; s < 6; s++)
-                if ((connMap & 1 << s) != 0)
+                if ((connMap&1<<s) != 0)
                     notifyStraightChange(s);
         }
     }
@@ -221,7 +222,7 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
 
     public int clientConnMap()
     {
-        return connMap & 0x3F | connMap >> 6 & 0x3F;
+        return connMap&0x3F|connMap>>6&0x3F;
     }
 
     public void sendConnUpdate()
@@ -243,12 +244,12 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
                 continue;
 
             if (connect(s))
-                newConn |= 1 << s;
+                newConn |= 1<<s;
         }
 
-        if (newConn != (connMap & 0x3F))
+        if (newConn != (connMap&0x3F))
         {
-            connMap = connMap & ~0x3F | newConn;
+            connMap = connMap&~0x3F|newConn;
             return true;
         }
         return false;
@@ -265,11 +266,11 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
         int newConn = 0;
         for (int s = 0; s < 6; s++)
             if (connectionOpen(s))
-                newConn |= 1 << s + 12;
+                newConn |= 1<<s+12;
 
-        if (newConn != (connMap & 0x3F000))
+        if (newConn != (connMap&0x3F000))
         {
-            connMap = connMap & ~0x3F000 | newConn;
+            connMap = connMap&~0x3F000|newConn;
             return true;
         }
         return false;
@@ -281,7 +282,7 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
         if (facePart == null)
             return true;
 
-        if (facePart instanceof IPipeConnectable && canConnectTo((IPipeConnectable) facePart))
+        if (facePart instanceof IPipeConnectable && canConnectTo((IPipeConnectable)facePart))
             return false;
 
         expandBounds = s;
@@ -297,10 +298,10 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
         TileEntity te = BasicUtils.getTileEntity(world(), pos, TileEntity.class);
         if (te instanceof TileMultipart)
         {
-            TileMultipart t = (TileMultipart) te;
+            TileMultipart t = (TileMultipart)te;
             TMultiPart tp = t.partMap(6);
             if (tp instanceof IPipeConnectable)
-                return ((IPipeConnectable) tp).connect(this, absDir ^ 1);
+                return ((IPipeConnectable)tp).connect(this, absDir^1);
         }
 
         return false;
@@ -312,7 +313,7 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
         if (canConnectTo(tube) && maskOpen(fromAbsDir))
         {
             int oldConn = connMap;
-            connMap |= 1 << fromAbsDir;
+            connMap |= 1<<fromAbsDir;
             if (oldConn != connMap)
                 sendConnUpdate();
             return true;
@@ -331,11 +332,11 @@ public abstract class CorePipePart extends TMultiPart implements IPipeConnectabl
 
     public boolean maskConnects(int absDir)
     {
-        return (connMap & 0x41 << absDir) != 0;
+        return (connMap&0x41<<absDir) != 0;
     }
 
     public boolean maskOpen(int absDir)
     {
-        return (connMap & 0x1000 << absDir) != 0;
+        return (connMap&0x1000<<absDir) != 0;
     }
 }

@@ -237,7 +237,7 @@ public class RouteFX
         if (world.isRemote)
             return;
 
-        PacketCustom packet = new PacketCustom(TransportationSPH.channel(), NetConstants.particle_Spawn);
+        PacketCustom packet = new PacketCustom(TransportationSPH.channel(), TransportationSPH.particle_Spawn());
 
         packet.writeByte(1);
         packet.writeByte(color).writeByte(count).writeCoord(bc);
@@ -249,7 +249,7 @@ public class RouteFX
         if (world.isRemote)
             return;
 
-        PacketCustom packet = new PacketCustom(TransportationSPH.channel(), NetConstants.particle_Spawn);
+        PacketCustom packet = new PacketCustom(TransportationSPH.channel(), TransportationSPH.particle_Spawn());
 
         packet.writeByte(2);
         packet.writeByte(color).writeByte(count).writeCoord(bc).writeByte(dir);
@@ -261,7 +261,7 @@ public class RouteFX
         if (world.isRemote)
             return;
 
-        PacketCustom packet = new PacketCustom(TransportationSPH.channel(), NetConstants.particle_Spawn);
+        PacketCustom packet = new PacketCustom(TransportationSPH.channel(), TransportationSPH.particle_Spawn());
 
         packet.writeByte(3);
         packet.writeByte(color).writeByte(count).writeCoord(bc).writeByte(dir);

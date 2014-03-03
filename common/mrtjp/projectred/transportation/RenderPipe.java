@@ -259,11 +259,11 @@ public class RenderPipe
         GL11.glPushMatrix();
         GL11.glDisable(GL11.GL_LIGHTING);
 
-        for (RoutedPayload r : p.itemFlow)
+        for (RoutedPayload r : p.itemFlow().Jdel())
         {
-            ForgeDirection dir = r.isEntering ? r.input : r.output;
+            ForgeDirection dir = r.isEntering() ? r.input() : r.output();
 
-            double prog = r.progress+(r.speed*frame);
+            double prog = r.progress()+(r.speed()*frame);
 
             double frameX = pos.x+0.5D;
             double frameY = pos.y+0.25D;
@@ -302,7 +302,7 @@ public class RenderPipe
         prepareRenderState();
         GL11.glEnable(GL11.GL_LIGHTING);
 
-        Tessellator.instance.setColorRGBA_I(PRColors.get(r.priority.color).rgb, 32);
+        Tessellator.instance.setColorRGBA_I(PRColors.get(r.priority().color()).rgb, 32);
         GL11.glScalef(0.5f, 0.5f, 0.5f);
         RenderUtils.renderBlock(Cuboid6.full, 0, new Translation(-0.5, -0.5, -0.5), null, null);
         restoreRenderState();

@@ -63,7 +63,7 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends GhostGuiContainer(c
 
     override def actionPerformed(ident:String)
     {
-        new PacketCustom(TransportationSPH.channel, NetConstants.gui_RouterUtil_action).writeString(ident).sendToServer()
+        new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_RouterUtil_action).writeString(ident).sendToServer()
     }
 
     override def drawBackground()

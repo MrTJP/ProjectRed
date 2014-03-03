@@ -18,7 +18,7 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
 {
     override def actionPerformed(ident:String)
     {
-        val packet = new PacketCustom(TransportationCPH.channel, NetConstants.gui_CraftingPipe_action)
+        val packet = new PacketCustom(TransportationCPH.channel, TransportationCPH.gui_CraftingPipe_action)
         packet.writeCoord(new BlockCoord(pipe.tile))
         packet.writeString(ident)
         packet.sendToServer()

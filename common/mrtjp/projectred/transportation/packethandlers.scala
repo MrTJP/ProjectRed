@@ -12,27 +12,47 @@ import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.NetClientHandler
 import net.minecraft.entity.player.{EntityPlayerMP, EntityPlayer}
-import net.minecraft.item.ItemStack
 import net.minecraft.network.NetServerHandler
 import net.minecraft.world.World
 
 class TransportationPH
 {
     val channel = ProjectRedTransportation
+
+    val gui_InterfacePipe_open = 1
+    val gui_CraftingPipe_open = 2
+    val gui_CraftingPipe_action = 3
+
+    val gui_ChipNBTSet = 4
+
+    val gui_Chipset_open = 5
+
+    val gui_Request_open = 6
+    val gui_Request_action = 7
+    val gui_Request_submit = 8
+    val gui_Request_list = 9
+    val gui_Request_listRefresh = 10
+
+    val particle_Spawn = 11
+
+    val gui_RouterUtil_open = 12
+    val gui_RouterUtil_action = 13
+
+    val gui_ExtensionPipe_open = 14
 }
 
 object TransportationCPH extends TransportationPH with IClientPacketHandler
 {
     def handlePacket(packet:PacketCustom, net:NetClientHandler, mc:Minecraft) = packet.getType match
     {
-        case NetConstants.gui_InterfacePipe_open => openRoutedInterfacePipeGui(packet, mc.thePlayer)
-        case NetConstants.gui_CraftingPipe_open => openCraftingPipeGui(packet, mc.thePlayer)
-        case NetConstants.gui_Chipset_open => openChipsetGui(packet, mc.thePlayer)
-        case NetConstants.gui_Request_open => openRequestGui(packet, mc)
-        case NetConstants.gui_Request_list => receiveRequestList(packet, mc)
-        case NetConstants.particle_Spawn => RouteFX.handleClientPacket(packet, mc.theWorld)
-        case NetConstants.gui_RouterUtil_open => openRouterUtilGui(packet, mc)
-        case NetConstants.gui_ExtensionPipe_open => openExtensionPipeGui(packet, mc)
+        case this.gui_InterfacePipe_open => openRoutedInterfacePipeGui(packet, mc.thePlayer)
+        case this.gui_CraftingPipe_open => openCraftingPipeGui(packet, mc.thePlayer)
+        case this.gui_Chipset_open => openChipsetGui(packet, mc.thePlayer)
+        case this.gui_Request_open => openRequestGui(packet, mc)
+        case this.gui_Request_list => receiveRequestList(packet, mc)
+        case this.particle_Spawn => RouteFX.handleClientPacket(packet, mc.theWorld)
+        case this.gui_RouterUtil_open => openRouterUtilGui(packet, mc)
+        case this.gui_ExtensionPipe_open => openExtensionPipeGui(packet, mc)
     }
 
     private def openExtensionPipeGui(packet:PacketCustom, mc:Minecraft)
@@ -106,7 +126,7 @@ object TransportationCPH extends TransportationPH with IClientPacketHandler
             if (e != null)
             {
                 val r = e.createChipset
-                ClientUtils.openSMPGui(packet.readByte, RoutingChipGuiFactory(r.createContainer(player)))
+                ClientUtils.openSMPGui(packet.readByte, ChipGuiFactory(r.createContainer(player)))
             }
         }
     }
@@ -116,12 +136,12 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
 {
     def handlePacket(packet:PacketCustom, nethandler:NetServerHandler, sender:EntityPlayerMP) = packet.getType match
     {
-        case NetConstants.gui_ChipNBTSet => setChipNBT(packet, sender)
-        case NetConstants.gui_CraftingPipe_action => handleCraftingPipeAction(packet, sender.worldObj)
-        case NetConstants.gui_Request_action => handleRequestAction(packet, sender)
-        case NetConstants.gui_Request_submit => handleRequestSubmit(packet, sender)
-        case NetConstants.gui_Request_listRefresh => handleRequestListRefresh(packet, sender)
-        case NetConstants.gui_RouterUtil_action => handleRouterUtilAction(packet, sender)
+        case this.gui_ChipNBTSet => setChipNBT(packet, sender)
+        case this.gui_CraftingPipe_action => handleCraftingPipeAction(packet, sender.worldObj)
+        case this.gui_Request_action => handleRequestAction(packet, sender)
+        case this.gui_Request_submit => handleRequestSubmit(packet, sender)
+        case this.gui_Request_listRefresh => handleRequestListRefresh(packet, sender)
+        case this.gui_RouterUtil_action => handleRouterUtilAction(packet, sender)
     }
 
     private def handleRouterUtilAction(packet:PacketCustom, sender:EntityPlayerMP)
@@ -159,12 +179,11 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
         val cpf = new CollectionPathFinder().setRequester(requester)
         cpf.setCollectBroadcasts(collectBroadcast).setCollectCrafts(collectCrafts)
 
-        val map:util.Map[ItemKey, Integer] = cpf.collect.getCollection
-        val packet2 = new PacketCustom(channel, NetConstants.gui_Request_list)
+        val map = cpf.collect.getCollection
+        val packet2 = new PacketCustom(channel, gui_Request_list)
         packet2.writeInt(map.size)
 
-        import scala.collection.JavaConversions._
-        for (entry <- map.entrySet) packet2.writeItemStack(entry.getKey.makeStack(if (entry.getValue == null) 0 else entry.getValue), true)
+        for ((k,v) <- map) packet2.writeItemStack(k.makeStack(v), true)
 
         packet2.compressed.sendToPlayer(player)
     }
@@ -200,8 +219,8 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
 
     private def setChipNBT(packet:PacketCustom, player:EntityPlayerMP)
     {
-        val slot:Int = packet.readByte
-        val stack:ItemStack = packet.readItemStack
+        val slot = packet.readUByte
+        val stack = packet.readItemStack
         player.inventory.setInventorySlotContents(slot, stack)
         player.inventory.onInventoryChanged()
     }

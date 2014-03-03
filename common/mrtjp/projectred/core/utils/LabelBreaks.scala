@@ -6,7 +6,7 @@ class LabelBreaks
 {
     val throwable = new LabelThrowable()
 
-    def label(tag:String)(op: => Unit)
+    def label(tag:String)(op: => Unit):Unit =
     {
         try
         {
@@ -19,7 +19,11 @@ class LabelBreaks
         }
     }
 
-    def break(tag:String) = throw throwable(tag)
+    def break(tag:String):Unit = throw throwable(tag)
+
+    //Shorthand single break
+    def label(op: => Unit):Unit = label("$1")(op)
+    def break:Unit = break("$1")
 }
 
 class LabelThrowable extends ControlThrowable

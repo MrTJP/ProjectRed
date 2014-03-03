@@ -5,7 +5,6 @@ import mrtjp.projectred.core.utils.ItemKey;
 import mrtjp.projectred.core.utils.ItemKeyStack;
 import mrtjp.projectred.core.utils.Pair2;
 import mrtjp.projectred.transportation.RequestBranch.RequestFlags;
-import mrtjp.projectred.transportation.Router.StartEndPath;
 
 import java.util.*;
 
@@ -98,13 +97,13 @@ public class RequestBranchNode
 
     private boolean getPromisesFromCrafters()
     {
-        List<StartEndPath> allRouters = requester.getRouter().getRoutesByCost();
+        List<StartEndPath> allRouters = requester.getRouter().JGetRoutesByCost();
         Collections.sort(allRouters, new PathSorter(0));
 
         List<CraftingPromise> allCrafters = new ArrayList<CraftingPromise>(allRouters.size());
         for (StartEndPath l : allRouters)
         {
-            Router r = l.end;
+            Router r = l.end();
 
             if (r.getParent() instanceof IWorldCrafter)
             {
@@ -232,14 +231,14 @@ public class RequestBranchNode
 
     private boolean getPromisesFromBroadcasters()
     {
-        List<StartEndPath> allRouters = requester.getRouter().getRoutesByCost();
+        List<StartEndPath> allRouters = requester.getRouter().JGetRoutesByCost();
         Collections.sort(allRouters, new PathSorter(1.0));
 
         for (StartEndPath l : allRouters)
         {
             if (isDone())
                 break;
-            Router r = l.end;
+            Router r = l.end();
 
             IWorldRouter member = r.getParent();
 
@@ -706,8 +705,8 @@ public class RequestBranchNode
         {
             double c = 0;
 
-            IWorldRouter wr1 = o1.end.getParent();
-            IWorldRouter wr2 = o2.end.getParent();
+            IWorldRouter wr1 = o1.end().getParent();
+            IWorldRouter wr2 = o2.end().getParent();
 
             int p1 = wr1 instanceof IWorldBroadcaster ? ((IWorldBroadcaster) wr1).getPriority() : Integer.MIN_VALUE;
             int p2 = wr2 instanceof IWorldBroadcaster ? ((IWorldBroadcaster) wr2).getPriority() : Integer.MIN_VALUE;
@@ -726,7 +725,7 @@ public class RequestBranchNode
                 return (int) c;
 
             int switchKey = 1;
-            if (o1.end.getIPAddress() - o2.end.getIPAddress() > 0)
+            if (o1.end().getIPAddress() - o2.end().getIPAddress() > 0)
             {
                 switchKey = -1;
                 StartEndPath temp = o1;
@@ -738,7 +737,7 @@ public class RequestBranchNode
             double l2 = wr2 instanceof IWorldBroadcaster ? ((IWorldBroadcaster) wr2).getWorkLoad() : 0;
 
             c = l1 - l2;
-            c += (o1.distance - o2.distance) * distanceWeight;
+            c += (o1.distance() - o2.distance()) * distanceWeight;
 
             if (c == 0)
                 return -switchKey;

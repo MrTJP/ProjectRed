@@ -290,7 +290,6 @@ abstract class InvWrapper(val inv:IInventory)
 
             return true
         }
-        println(stack1.getDisplayName + ", " + stack2.getDisplayName +"did not match.")
         false
     }
 }

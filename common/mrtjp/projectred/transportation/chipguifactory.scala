@@ -1,20 +1,21 @@
 package mrtjp.projectred.transportation
 
+import codechicken.lib.packet.PacketCustom
 import codechicken.lib.render.{FontUtils, CCRenderState}
+import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended
 import mrtjp.projectred.core.inventory._
-import mrtjp.projectred.core.utils.Pair2
 import mrtjp.projectred.core.{PRColors, BasicGuiUtils}
-import mrtjp.projectred.transportation.RoutingChipContainerFactory.ChipContainer
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.{Gui, GuiScreen}
 import net.minecraft.client.renderer.texture.TextureMap
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.inventory.Slot
 import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.{EnumChatFormatting, ResourceLocation}
 import org.lwjgl.opengl.GL11
 import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended
 
-object RoutingChipGuiFactory
+object ChipGuiFactory
 {
     def apply(c:ChipContainer[RoutingChipset]) = new GuiChipRoot(c)
 }
@@ -22,6 +23,42 @@ object RoutingChipGuiFactory
 object GuiChipContainerWidget
 {
     val resource = new ResourceLocation("projectred:textures/gui/chipcontainer.png")
+}
+
+class ChipContainer[T <: RoutingChipset](player:EntityPlayer) extends GhostContainer2(player.inventory)
+{
+    private val slot = player.inventory.currentItem
+    private val stack = player.inventory.mainInventory(slot)
+    private var chip = ItemRoutingChip.loadChipFromItemStack(stack).asInstanceOf[T]
+
+    def this(player:EntityPlayer, c:T) =
+    {
+        this(player)
+        chip = c
+    }
+
+    def getNewInstance = new ChipContainer[T](player, chip)
+
+    def getChip:T = chip
+
+    override def onContainerClosed(player:EntityPlayer)
+    {
+        super.onContainerClosed(player)
+        if (player.worldObj.isRemote)
+        {
+            ItemRoutingChip.saveChipToItemStack(player.inventory.mainInventory(slot), getChip)
+            player.inventory.onInventoryChanged()
+            new PacketCustom(TransportationCPH.channel, TransportationCPH.gui_ChipNBTSet)
+                .writeByte(slot).writeItemStack(player.inventory.mainInventory(slot)).sendToServer()
+        }
+    }
+
+    override def addSlotToContainer(slot:Slot):Slot =
+    {
+        if (slot.getSlotIndex == this.slot) if (slot.isInstanceOf[GhostContainer2.SlotExtended])
+            return super.addSlotToContainer(slot.asInstanceOf[GhostContainer2.SlotExtended].setRemoval(false))
+        super.addSlotToContainer(slot)
+    }
 }
 
 abstract class GuiChipContainer[T <: RoutingChipset](cont:ChipContainer[T], prev:GuiScreen) extends GhostGuiContainer(cont, prev)

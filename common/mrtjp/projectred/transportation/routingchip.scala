@@ -9,8 +9,6 @@ import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise
-import mrtjp.projectred.transportation.RoutedPayload.SendPriority
-import mrtjp.projectred.transportation.RoutingChipContainerFactory.ChipContainer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.nbt.NBTTagCompound
@@ -46,7 +44,7 @@ abstract class RoutingChipset
     /** Broadcasting **/
     def requestPromises(request:RequestBranchNode, existingPromises:Int) {}
     def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester) {}
-    def getProvidedItems(map:java.util.Map[ItemKey, Integer]) {}
+    def getProvidedItems(map:collection.mutable.Map[ItemKey, Int]) {}
 
     def getPriority = Integer.MAX_VALUE
     def getWorkLoad:Double = 0
@@ -95,7 +93,7 @@ abstract class RoutingChipset
         {
             def sendPacket(player:EntityPlayerMP, windowId:Int)
             {
-                val packet = new PacketCustom(TransportationSPH.channel, NetConstants.gui_Chipset_open)
+                val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Chipset_open)
                 packet.writeByte(player.inventory.currentItem)
                 packet.writeByte(windowId)
                 packet.sendToPlayer(player)
@@ -286,13 +284,13 @@ trait TChipFilter extends RoutingChipset
         hideMode = (hideMode+1)%3
     }
 
-    def applyFilter(inv:InvWrapper, fuzzy:Boolean=true, hide:Boolean=true):InvWrapper =
+    def applyFilter(inv:InvWrapper, patterns:Boolean=true, hide:Boolean=true):InvWrapper =
     {
         if (inv == null) return null
 
         inv.setSlotsAll()
 
-        if (enablePatterns && fuzzy)
+        if (enablePatterns && patterns)
             inv.setMatchOptions(metaMatch, nbtMatch, oreMatch).setDamageGroup(grpPerc(damageGroupMode))
 
         if (enableHiding && hide) hideMode match

@@ -107,7 +107,7 @@ class GuiRequester(pipe:IWorldRequester) extends GhostGuiContainer(280, 230)
         val request = itemList.getSelection
         if (request != null)
         {
-            val packet = new PacketCustom(TransportationSPH.channel, NetConstants.gui_Request_submit)
+            val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Request_submit)
             packet.writeCoord(new BlockCoord(pipe.getContainer.tile))
             packet.writeBoolean(pull.getChecked)
             packet.writeBoolean(craft.getChecked)
@@ -119,7 +119,7 @@ class GuiRequester(pipe:IWorldRequester) extends GhostGuiContainer(280, 230)
 
     private def askForListRefresh()
     {
-        val packet = new PacketCustom(TransportationSPH.channel, NetConstants.gui_Request_listRefresh)
+        val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Request_listRefresh)
         packet.writeCoord(new BlockCoord(pipe.getContainer.tile))
         packet.writeBoolean(pull.getChecked)
         packet.writeBoolean(craft.getChecked)
@@ -128,7 +128,7 @@ class GuiRequester(pipe:IWorldRequester) extends GhostGuiContainer(280, 230)
 
     private def sendAction(ident:String)
     {
-        val packet = new PacketCustom(TransportationSPH.channel, NetConstants.gui_Request_action)
+        val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Request_action)
         packet.writeCoord(new BlockCoord(pipe.getContainer.tile))
         packet.writeString(ident)
         packet.sendToServer()
