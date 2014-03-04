@@ -8,6 +8,7 @@
 
     <property name="src.dir" value="ProjectRed"/>
     <property name="build.dir" value="build"/>
+    <property name="scala.dir" value="${build.dir}/scala"/>
     <property name="download.dir" value="download"/>
     <property name="jar.dir" value="dist/${mc.version}/${mod.version}-${mod.build}"/>
     <property name="forge.dir" value="${build.dir}/forge"/>
@@ -21,6 +22,7 @@
     <property name="mod.name.compat" value="ProjectRedCompat-${mc.version}-${mod.version}.${mod.build}.jar"/>
 
     <property name="forge.name" value="forge-${mc.version}-${forge.version}-src.zip"/>
+    <property name="scala.name" value="scala.zip"/>
     <property name="forgeuni.name" value="forge-${mc.version}-${forge.version}-universal.jar"/>
     <property name="ccl.name" value="CodeChickenLib-dev-${mc.version}-${ccl.version}.jar"/>
     <property name="ccobf.name" value="CCObfuscator-all-${ccobf.version}.jar"/>
@@ -35,6 +37,7 @@
 
     <!-- Check downloaded dependencies -->
     <available property="forge-downloaded" file="${download.dir}/${forge.name}"/>
+    <available property="scala-downloaded" file="${download.dir}/${scala.name}"/>
     <available property="forgeuni-downloaded" file="${download.dir}/${forgeuni.name}"/>
     <available property="ccl-downloaded" file="${download.dir}/${ccl.name}"/>
     <available property="ccobf-downloaded" file="${download.dir}/${ccobf.name}"/>
@@ -53,6 +56,9 @@
 
     <condition property="forge-installed">
         <equals arg1="${build.dependencies.forge}" arg2="${forge.version}"/>
+    </condition>
+    <condition property="scala-installed">
+        <equals arg1="${build.dependencies.scala}" arg2="${scala.version}"/>
     </condition>
     <condition property="ccl-installed">
         <and>
@@ -125,6 +131,10 @@
         <get src="http://files.minecraftforge.net/maven/net/minecraftforge/forge/${mc.version}-${forge.version}/${forge.name}" dest="${download.dir}" usetimestamp="true"/>
     </target>
 
+    <target name="download-scala" unless="scala-downloaded">
+        <get src="http://dl.dropboxusercontent.com/u/46144650/${scala.name}" dest="${download.dir}" usetimestamp="true"/>
+    </target>
+
     <target name="download-forgeuni" unless="forgeuni-downloaded">
         <get src="http://files.minecraftforge.net/maven/net/minecraftforge/forge/${mc.version}-${forge.version}/${forgeuni.name}" dest="${download.dir}" usetimestamp="true"/>
     </target>
@@ -192,6 +202,20 @@
         <delete file="${build.dependencies.file}"/>
         <propertyfile file="${build.dependencies.file}">
             <entry key="forge" value="${forge.version}"/>
+        </propertyfile>
+    </target>
+
+    <target name="install-scala" depends="install-forge,download-scala" unless="scala-installed">
+        <echo message="Deleting old Scala"/>
+        <delete file="${build.dir}/${build.dependencies.scala.name}"/>
+
+        <echo message="Installing Scala"/>
+        <unzip src="${download.dir}/${scala.name}" dest="${scala.dir}"/>
+
+        <echo message="Updating build.dependencies"/>
+        <propertyfile file="${build.dependencies.file}">
+            <entry key="scala" value="${scala.version}"/>
+            <entry key="scala.name" value="${scala.name}"/>
         </propertyfile>
     </target>
 
@@ -357,7 +381,7 @@
         </propertyfile>
     </target>
 
-    <target name="install-dependencies" depends="install-forge,install-ccl,install-ccobf,install-ccc,install-fmp,install-nei,install-tcons,install-texpan,install-cofh,install-ccraft"/>
+    <target name="install-dependencies" depends="install-forge,install-scala,install-ccl,install-ccobf,install-ccc,install-fmp,install-nei,install-tcons,install-texpan,install-cofh,install-ccraft"/>
 
     <target name="init-comp">
         <!-- check for required tools -->
@@ -368,7 +392,7 @@
         </fail>
 
         <!-- variables for paths and files -->
-        <property name="scala.dir" location="${env.SCALA_HOME}"/>
+        <!--<property name="scala.dir" location="${env.SCALA_HOME}"/>-->
         <property name="scala-library.jar" location="${scala.dir}/lib/scala-library.jar"/>
         <property name="scala-reflect.jar" location="${scala.dir}/lib/scala-reflect.jar"/>
         <property name="scala-compiler.jar" location="${scala.dir}/lib/scala-compiler.jar"/>
