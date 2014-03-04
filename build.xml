@@ -419,7 +419,19 @@
 
     <!-- Targets for building -->
     <target name="recompile" depends="init-comp">
-        <echo message="Cleaning bin"/>
+        <echo message="Cleaning"/>
+        <echo message="Removing source"/>
+        <delete includeemptydirs="true">
+            <fileset dir="${comp.in}">
+                <present present="both" targetdir="${src.dir}/common"/>
+            </fileset>
+        </delete>
+        <delete includeemptydirs="true">
+            <fileset dir="${comp.out}">
+                <include name="**/*.class"/>
+            </fileset>
+        </delete>
+
         <!--<delete includeemptydirs="true">-->
             <!--<fileset dir="${mcp.dir}/bin"/>-->
         <!--</delete>-->
@@ -452,30 +464,13 @@
             </src>
         </javac>
 
-        <!--
-        <property name="mcp.python.exe" location="${mcp.dir}/runtime/bin/python/python_mcp.exe"/>
-        <exec dir="${mcp.dir}" executable="${mcp.python.exe}" osfamily="windows" resultproperty="recompile.code">
-            <arg line="runtime/recompile.py"/>
-        </exec>
-        <exec dir="${mcp.dir}" executable="python" osfamily="unix" resultproperty="recompile.code">
-            <arg line="runtime/recompile.py"/>
-        </exec>
-        -->
-
         <echo message="Removing source"/>
         <delete includeemptydirs="true">
-            <fileset dir="${mcp.dir}/src/minecraft">
+            <fileset dir="${comp.in}">
                 <present present="both" targetdir="${src.dir}/common"/>
             </fileset>
         </delete>
-
-<!--
-        <fail message="Failed to recompile">
-            <condition>
-                <isfailure code="${recompile.code}"/>
-            </condition>
-        </fail>
--->
+  
     </target>
 
     <target name="reobfuscate">

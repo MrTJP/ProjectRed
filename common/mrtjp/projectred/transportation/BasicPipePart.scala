@@ -133,7 +133,7 @@ class BasicPipePart extends CorePipePart
 
     def adjustSpeed(r:RoutedPayload)
     {
-        r.speed = Math.max(r.speed - 0.01f, r.priority.speed)
+        r.speed = Math.max(r.speed-0.01f, r.priority.speed)
     }
 
     protected def hasReachedMiddle(r:RoutedPayload) = r.progress >= 0.5F

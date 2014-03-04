@@ -1,10 +1,86 @@
 package mrtjp.projectred.core.world
 
 import codechicken.lib.vec.Vector3
-import net.minecraft.block.Block
 import mrtjp.projectred.core.world.Replacement.Replacement
+import net.minecraft.util.MathHelper
+import net.minecraft.world.World
+import net.minecraft.block.Block
 
-abstract class GeneratorTree(var tree:ITreeGenData) extends WorldGenCore
+abstract class GeneratorCustomTreeBase(tree:ITreeGenData) extends GeneratorTreeBase(tree)
+{
+    var girth = 0
+    var height = 0
+
+    def getCenteredAt(yCenter:Int, offset:Int) =
+    {
+        val cent = if (girth%2 == 0) 0.5F else 0.0F
+        new Vector3(cent + offset, yCenter, cent + offset)
+    }
+
+    def gen()
+    {
+        genTrunk(height, girth)
+        var leafSpawn = height+1
+
+        genAdjustedCylinder(leafSpawn, 0.0F, 1, leaf, Replacement.None)
+        leafSpawn -= 1
+        genAdjustedCylinder(leafSpawn, 0.5F, 1, leaf, Replacement.None)
+        leafSpawn -= 1
+        genAdjustedCylinder(leafSpawn, 1.9F, 1, leaf, Replacement.None)
+        leafSpawn -= 1
+        genAdjustedCylinder(leafSpawn, 1.9F, 1, leaf, Replacement.None)
+        leafSpawn -= 1
+    }
+
+    def genAdjustedCylinder(yCenter:Int, radius:Float, height:Int, block:BlockType)
+    {
+        genAdjustedCylinder(yCenter, 0, radius, height, block, Replacement.None)
+    }
+
+    def genAdjustedCylinder(yCenter:Int, radius:Float, height:Int, block:BlockType, repl:Replacement)
+    {
+        genAdjustedCylinder(yCenter, 0, radius, height, block, repl)
+    }
+
+    def genAdjustedCylinder(yCenter:Int, offset:Int, radius:Float, height:Int, block:BlockType, repl:Replacement)
+    {
+        genCylinder(getCenteredAt(yCenter, offset), radius+girth, height, block, repl)
+    }
+
+    def canGrow = tree.canGrow(world, startX, startY, startZ, girth, height)
+
+    def preGenerate()
+    {
+        height = determineHeight(tree.height, tree.heightVar)
+        girth = determineGirth(tree.girth, tree.girthVar)
+    }
+
+    def determineGirth(required:Int, variation:Int) =
+    {
+        required+MathHelper.getRandomIntegerInRange(rand, -variation, variation)
+    }
+
+    def determineHeight(required:Int, variation:Int) =
+    {
+        required+MathHelper.getRandomIntegerInRange(rand, -variation, variation)
+    }
+
+    def getWood = new BlockTypeWood
+
+    def getLeaf = new BlockTypeLeaf
+}
+
+class BlockTypeWood extends BlockType(0,0)
+{
+    override def setBlock(world:World, tree:ITreeGenData, x:Int, y:Int, z:Int) = tree.setWood(world, x, y, z)
+}
+
+class BlockTypeLeaf extends BlockType(0,0)
+{
+    override def setBlock(world:World, tree:ITreeGenData, x:Int, y:Int, z:Int) = tree.setLeaves(world, x, y, z)
+}
+
+abstract class GeneratorTreeBase(var tree:ITreeGenData) extends WorldGenCore
 {
     var startX = 0
     var startY = 0
@@ -46,7 +122,7 @@ abstract class GeneratorTree(var tree:ITreeGenData) extends WorldGenCore
 
     def startVec = new Vector3(startX, startY, startZ)
 
-    def genTrunk(height:Int, girth:Int) = genTrunk(height, girth, 0)
+    def genTrunk(height:Int, girth:Int) {genTrunk(height, girth, 0)}
     def genTrunk(height:Int, girth:Int, vines:Float)
     {
         val offset = (girth-1)/2
@@ -89,14 +165,12 @@ abstract class GeneratorTree(var tree:ITreeGenData) extends WorldGenCore
         }
     }
 
-
     override def addBlock(x:Int, y:Int, z:Int, block:BlockType, repl:Replacement)
     {
         if (repl == Replacement.All ||
             (repl == Replacement.Soft && GenLib.isSoft(world, startX+x, startY+y, startZ+z)) ||
             world.isAirBlock(startX+x, startY+y, startZ+z))
                 block.setBlock(world, tree, startX+x, startY+y, startZ+z)
-
     }
 
     def addWood(x:Int, y:Int, z:Int, repl:Replacement) = addBlock(x, y, z, wood, repl)
