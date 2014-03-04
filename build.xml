@@ -418,8 +418,7 @@
     </target>
 
     <!-- Targets for building -->
-    <target name="recompile">
-        <antcall target="init-comp"/>
+    <target name="recompile" depends="init-comp">
         <echo message="Cleaning bin"/>
         <!--<delete includeemptydirs="true">-->
             <!--<fileset dir="${mcp.dir}/bin"/>-->
@@ -470,11 +469,13 @@
             </fileset>
         </delete>
 
+<!--
         <fail message="Failed to recompile">
             <condition>
                 <isfailure code="${recompile.code}"/>
             </condition>
         </fail>
+-->
     </target>
 
     <target name="reobfuscate">
