@@ -11,8 +11,8 @@ item.projectred.core.part.partbundledplate.name=集束板
 item.projectred.core.part.partanode.name=陽極
 item.projectred.core.part.partcathode.name=陰極
 item.projectred.core.part.partpointer.name=指針
-item.projectred.core.part.partsiliconchip.name=硅芯片
-item.projectred.core.part.partenergizedsiliconchip.name=充能硅芯片
+item.projectred.core.part.partsiliconchip.name=硅晶片
+item.projectred.core.part.partenergizedsiliconchip.name=充能硅晶片
 item.projectred.core.part.partplatformedplate.name=底板
 item.projectred.core.part.partredingot.name=紅石合金錠
 item.projectred.core.part.partboule.name=硅晶錠
@@ -51,8 +51,8 @@ item.projectred.core.part.partsandcoalcomp.name=沙煤混合物
 item.projectred.core.part.partredsiliconcomp.name=紅硅混合物
 item.projectred.core.part.partglowsiliconcomp.name=熒硅混合物
 
-item.projectred.core.part.nullchip.name=空邏輯路由芯片
-item.projectred.core.part.nullupgrd.name=空邏輯升級芯片
+item.projectred.core.part.nullchip.name=空邏輯路由晶片
+item.projectred.core.part.nullupgrd.name=空邏輯升級晶片
 item.projectred.core.part.upgrd_lx.name=左型X升級
 item.projectred.core.part.upgrd_ly.name=左型Y升級
 item.projectred.core.part.upgrd_lz.name=左型Z升級
@@ -64,19 +64,21 @@ item.projectred.core.drawplate.name=起模板
 item.projectred.core.wiredebugger.name=調線工具
 item.projectred.core.screwdriver.name=螺絲刀
 item.projectred.core.routerutil.name=路由器工具
+item.projectred.core.datacard.name=資料卡
 
 #擴展
 itemGroup.expansion=紅石計劃:擴展
 
 itemGroup.transport=紅石計劃:運輸
 
-item.projectred.transportation.routingchip|0.name=物品響應芯片
-item.projectred.transportation.routingchip|1.name=動態物品響應芯片
-item.projectred.transportation.routingchip|2.name=物品過載響應芯片
-item.projectred.transportation.routingchip|3.name=物品終端芯片
-item.projectred.transportation.routingchip|4.name=物品抽取芯片
-item.projectred.transportation.routingchip|5.name=物品廣播芯片
-item.projectred.transportation.routingchip|6.name=物品堆棧維護芯片
+item.projectred.transportation.routingchip|0.name=物品響應晶片
+item.projectred.transportation.routingchip|1.name=動態物品響應晶片
+item.projectred.transportation.routingchip|2.name=物品過載響應晶片
+item.projectred.transportation.routingchip|3.name=物品終端晶片
+item.projectred.transportation.routingchip|4.name=物品抽取晶片
+item.projectred.transportation.routingchip|5.name=物品廣播晶片
+item.projectred.transportation.routingchip|6.name=物品堆棧維護晶片
+item.projectred.transportation.routingchip|7.name=物品合成晶片
 
 item.projectred.transportation.routerutil.name=路由器工具
 
@@ -85,6 +87,7 @@ item.projectred.transportation.pipe|1.name=路由交錯管道
 item.projectred.transportation.pipe|2.name=路由接口管道
 item.projectred.transportation.pipe|3.name=路由合成管道
 item.projectred.transportation.pipe|4.name=路由需求管道
+item.projectred.transportation.pipe|5.name=路由擴充管道
 
 #勘礦
 itemGroup.exploration=紅石計劃:勘礦
@@ -224,38 +227,6 @@ item.projectred.illumination.lantern.inv|12.name=反相棕色燈籠
 item.projectred.illumination.lantern.inv|13.name=反相綠色燈籠
 item.projectred.illumination.lantern.inv|14.name=反相紅色燈籠
 item.projectred.illumination.lantern.inv|15.name=反相黑色燈籠
-item.projectred.illumination.lamp|0.name=白色燈
-item.projectred.illumination.lamp|1.name=橙色燈
-item.projectred.illumination.lamp|2.name=品紅色燈
-item.projectred.illumination.lamp|3.name=淺藍色燈
-item.projectred.illumination.lamp|4.name=黃色燈
-item.projectred.illumination.lamp|5.name=檸檬色燈
-item.projectred.illumination.lamp|6.name=粉色燈
-item.projectred.illumination.lamp|7.name=灰色燈
-item.projectred.illumination.lamp|8.name=淺灰色燈
-item.projectred.illumination.lamp|9.name=青色燈
-item.projectred.illumination.lamp|10.name=紫色燈
-item.projectred.illumination.lamp|11.name=藍色燈
-item.projectred.illumination.lamp|12.name=棕色燈
-item.projectred.illumination.lamp|13.name=綠色燈
-item.projectred.illumination.lamp|14.name=紅色燈
-item.projectred.illumination.lamp|15.name=黑色燈
-item.projectred.illumination.lamp.inv|0.name=反相白色燈
-item.projectred.illumination.lamp.inv|1.name=反相橙色燈
-item.projectred.illumination.lamp.inv|2.name=反相品紅色燈
-item.projectred.illumination.lamp.inv|3.name=反相淺藍色燈
-item.projectred.illumination.lamp.inv|4.name=反相黃色燈
-item.projectred.illumination.lamp.inv|5.name=反相檸檬色燈
-item.projectred.illumination.lamp.inv|6.name=反相粉色燈
-item.projectred.illumination.lamp.inv|7.name=反相灰色燈
-item.projectred.illumination.lamp.inv|8.name=反相淺灰色燈
-item.projectred.illumination.lamp.inv|9.name=反相青色燈
-item.projectred.illumination.lamp.inv|10.name=反相紫色燈
-item.projectred.illumination.lamp.inv|11.name=反相藍色燈
-item.projectred.illumination.lamp.inv|12.name=反相棕色燈
-item.projectred.illumination.lamp.inv|13.name=反相綠色燈
-item.projectred.illumination.lamp.inv|14.name=反相紅色燈
-item.projectred.illumination.lamp.inv|15.name=反相黑色燈
 tile.projectred.illumination.lamp|0.name=白色燈
 tile.projectred.illumination.lamp|1.name=橙色燈
 tile.projectred.illumination.lamp|2.name=品紅色燈
@@ -438,6 +409,7 @@ item.projectred.transmission.wire|30.name=棕色集束線纜
 item.projectred.transmission.wire|31.name=綠色集束線纜
 item.projectred.transmission.wire|32.name=紅色集束線纜
 item.projectred.transmission.wire|33.name=黑色集束線纜
+item.projectred.transmission.wire|34.name=100V 電源線
 item.projectred.transmission.framewire|0.name=框架紅色合金絲
 item.projectred.transmission.framewire|1.name=框架白色絕緣線纜
 item.projectred.transmission.framewire|2.name=框架橙色絕緣線纜
@@ -456,6 +428,7 @@ item.projectred.transmission.framewire|14.name=框架綠色絕緣線纜
 item.projectred.transmission.framewire|15.name=框架紅色絕緣線纜
 item.projectred.transmission.framewire|16.name=框架黑色絕緣線纜
 item.projectred.transmission.framewire|17.name=框架集束線纜
+item.projectred.transmission.framewire|34.name=加框100V電源線
 
 itemGroup.compat=紅石計劃:相容
 
