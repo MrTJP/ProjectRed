@@ -15,7 +15,7 @@ public class DeliveryManager
         for (Pair2<ItemKeyStack, IWorldRequester> request : orders)
             if (request.getValue1() == stack && request.getValue2() == requester)
             {
-                stack.stackSize += request.getValue1().stackSize;
+                stack.setSize(stack.stackSize() + request.getValue1().stackSize());
                 orders.remove(request);
                 break;
             }
@@ -26,9 +26,9 @@ public class DeliveryManager
     public void dispatchSuccessful(int amountSent, boolean reStack)
     {
         Pair2<ItemKeyStack, IWorldRequester> first = orders.getFirst();
-        first.getValue1().stackSize -= amountSent;
+        first.getValue1().setSize(first.getValue1().stackSize() - amountSent);
 
-        if (first.getValue1().stackSize <= 0)
+        if (first.getValue1().stackSize() <= 0)
             orders.removeFirst();
         else if (reStack)
             restock();
@@ -67,7 +67,7 @@ public class DeliveryManager
         int count = 0;
         for (Pair2<ItemKeyStack, IWorldRequester> order : orders)
             if (order.getValue1().key().equals(item))
-                count += order.getValue1().stackSize;
+                count += order.getValue1().stackSize();
         return count;
     }
 
@@ -75,7 +75,7 @@ public class DeliveryManager
     {
         int count = 0;
         for (Pair2<ItemKeyStack, IWorldRequester> request : orders)
-            count += request.getValue1().stackSize;
+            count += request.getValue1().stackSize();
 
         return count;
     }

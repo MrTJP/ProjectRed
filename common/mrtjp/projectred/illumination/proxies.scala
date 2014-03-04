@@ -10,6 +10,7 @@ import net.minecraftforge.client.MinecraftForgeClient
 import mrtjp.projectred.ProjectRedIllumination
 import cpw.mods.fml.client.registry.ClientRegistry
 import net.minecraftforge.common.MinecraftForge
+import mrtjp.projectred.core.utils.ItemKey
 
 class IlluminationProxy_server extends IProxy with IPartFactory
 {
@@ -37,7 +38,10 @@ class IlluminationProxy_server extends IProxy with IPartFactory
         GameRegistry.registerTileEntity(classOf[TileAirousLight], "tile.projectred.illumination.airousLight")
     }
 
-    override def postinit() {}
+    override def postinit()
+    {
+        IlluminationRecipes.initRecipes()
+    }
 
     override def createPart(name:String, client:Boolean) = name match
     {

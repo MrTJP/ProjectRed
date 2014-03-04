@@ -1,5 +1,6 @@
 [dev]v4.3.1
-- ADDED: Computercraft bundled cable compatibility
+- FIX: No recipes for lights
+- FIX: Stock keeper crash
 
 v4.3.0
 - CHANGE: Made volcanoes slightly more rare

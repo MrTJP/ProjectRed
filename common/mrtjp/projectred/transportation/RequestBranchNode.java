@@ -59,7 +59,7 @@ public class RequestBranchNode
 
     public int getMissingCount()
     {
-        return requestedPackage.stackSize - promisedCount;
+        return requestedPackage.stackSize()-promisedCount;
     }
 
     public ItemKey getRequestedPackage()
@@ -278,7 +278,7 @@ public class RequestBranchNode
             parityBranch = crafter;
 
             for (int i = 0; i < ingredients.size(); i++)
-                potentialSets = Math.min(potentialSets, children.get(i).getPromisedCount() / (ingredients.get(i).getValue1().stackSize / numberOfSets));
+                potentialSets = Math.min(potentialSets, children.get(i).getPromisedCount()/(ingredients.get(i).getValue1().stackSize()/numberOfSets));
 
             return getAbsoluteSubPromises(potentialSets, crafter);
         }
@@ -569,7 +569,7 @@ public class RequestBranchNode
             for (Pair2<ItemKeyStack, IWorldRequester> ing : ingredients)
                 if (ing.getValue1().key().equals(ingredient.key()) && ing.getValue2() == crafter)
                 {
-                    ing.getValue1().stackSize += ingredient.stackSize;
+                    ing.getValue1().setSize(ing.getValue1().stackSize() + ingredient.stackSize());
                     return this;
                 }
             ingredients.add(new Pair2<ItemKeyStack, IWorldRequester>(ingredient, crafter));
@@ -579,7 +579,7 @@ public class RequestBranchNode
         public DeliveryPromise getScaledPromise(int sets)
         {
             DeliveryPromise p = new DeliveryPromise();
-            p.setPackage(result.key().copy()).setSize(result.stackSize * sets).setSender(crafter);
+            p.setPackage(result.key().copy()).setSize(result.stackSize()*sets).setSender(crafter);
             return p;
         }
 
@@ -590,7 +590,7 @@ public class RequestBranchNode
             for (Pair2<ItemKeyStack, IWorldRequester> ing : ingredients)
             {
                 Pair2<ItemKeyStack, IWorldRequester> newIng = new Pair2<ItemKeyStack, IWorldRequester>(ing.getValue1().copy(), ing.getValue2());
-                newIng.getValue1().stackSize *= sets;
+                newIng.getValue1().setSize(newIng.getValue1().stackSize() * sets);
                 components.add(newIng);
             }
 
@@ -610,7 +610,7 @@ public class RequestBranchNode
 
         public int getSizeForSet()
         {
-            return result.stackSize;
+            return result.stackSize();
         }
 
         public ItemKey getResultItem()

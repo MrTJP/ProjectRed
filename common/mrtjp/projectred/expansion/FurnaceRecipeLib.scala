@@ -109,10 +109,10 @@ object FurnaceRecipeLib
 class RecipeFurnace(in:ItemKey, out:ItemKeyStack, val ticks:Int)
 {
     def input = in.makeStack(1)
-    def output = out.makeStack()
+    def output = out.makeStack
 
-    def inputKey = in.copy()
-    def outputKey = out.copy()
+    def inputKey = in.copy
+    def outputKey = out.copy
 
     def matchesIn(inputstack:ItemKey) = inputstack == in
     def matchesOut(outputstack:ItemKey) = outputstack == out

@@ -90,7 +90,7 @@ class TileFurnace extends TileMachineWorking
         if (rec == null) return false
 
         val stack = rec.outputKey
-        val room = InvWrapper.wrap(this).setSlotSingle(1).setInternalMode(true).getSpaceForItem(stack.key())
+        val room = InvWrapper.wrap(this).setSlotSingle(1).setInternalMode(true).getSpaceForItem(stack.key)
         room >= stack.stackSize
     }
 }

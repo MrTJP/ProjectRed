@@ -8,14 +8,14 @@ import net.minecraft.util.ResourceLocation
 
 class GuiInterfacePipe(slots:Container, pipe:RoutedInterfacePipePart) extends GhostGuiContainer(slots, null, 176, 200)
 {
-    override def drawBackground
+    override def drawBackground()
     {
         CCRenderState.changeTexture(GuiInterfacePipe.resource)
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
         BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 118)
     }
 
-    override def drawForeground
+    override def drawForeground()
     {
         CCRenderState.changeTexture(GuiInterfacePipe.resource)
         val oldZ:Float = zLevel

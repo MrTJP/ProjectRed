@@ -4,8 +4,8 @@ import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.LabelBreaks._
 import mrtjp.projectred.core.utils.{ItemKeyStack, ItemKey}
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
-import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
+import scala.collection.immutable.HashMap
 
 class ChipStockKeeper extends RoutingChipset with TChipStock
 {
@@ -20,7 +20,7 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
         throttle
     }
 
-    val enrouteItems = HashMap[ItemKey, Int]().withDefaultValue(0)
+    var enrouteItems = HashMap[ItemKey, Int]().withDefaultValue(0)
 
     override def update()
     {
@@ -40,11 +40,11 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
         var requestAttempted = false
         var requestedSomething = false
 
-        for (i <- 0 to stock.getSizeInventory) label("1")
+        for (i <- 0 until stock.getSizeInventory) label("1")
         {
             val keyStack = ItemKeyStack.get(stock.getStackInSlot(i))
             if (keyStack == null || checked.contains(keyStack.key)) break("1")
-            checked :+= keyStack.key()
+            checked :+= keyStack.key
 
             val toRequest = filt.getItemCount(keyStack.key)
             val inInventory = inv.getItemCount(keyStack.key)+getEnroute(keyStack.key)

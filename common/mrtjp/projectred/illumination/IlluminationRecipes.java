@@ -9,7 +9,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class IlluminationRecipes
 {
-    public static void initIlluminationRecipes()
+    public static void initRecipes()
     {
         initLightingRecipes();
     }

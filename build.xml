@@ -10,7 +10,7 @@
     <property name="build.dir" value="build"/>
     <property name="scala.dir" value="${build.dir}/scala"/>
     <property name="download.dir" value="download"/>
-    <property name="jar.dir" value="dist/${mc.version}/${mod.version}-${mod.build}"/>
+    <property name="jar.dir" value="dist"/>
     <property name="forge.dir" value="${build.dir}/forge"/>
     <property name="mcp.dir" value="${forge.dir}/mcp"/>
 

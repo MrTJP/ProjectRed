@@ -59,7 +59,6 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
                 ((IStackableGui) getPreviousScreen()).prepareReDisplay();
 
             shiftScreen(getPreviousScreen(), getPreviousScreen() instanceof GuiContainer);
-            return;
         }
         else
         {
