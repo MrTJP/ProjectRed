@@ -1,11 +1,11 @@
-package mrtjp.projectred.exploration;
+package mrtjp.projectred.core.world;
 
-import java.util.Random;
-
+import codechicken.lib.math.MathHelper;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
-import codechicken.lib.math.MathHelper;
+
+import java.util.Random;
 
 /**
  * Generic world ore generator, pretty much direct copy from WorldGenMinable

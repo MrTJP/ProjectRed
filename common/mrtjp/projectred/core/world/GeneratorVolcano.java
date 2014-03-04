@@ -1,8 +1,9 @@
-package mrtjp.projectred.exploration;
+package mrtjp.projectred.core.world;
 
 import java.util.LinkedList;
 import java.util.Random;
 
+import mrtjp.projectred.core.world.GeneratorOre;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.world.World;

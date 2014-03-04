@@ -35,7 +35,8 @@ public class BlockStainedSapling extends BlockSapling
         growTreeAt(w, x, y, z, height());
     }
 
-    private int height() {
+    private int height()
+    {
         return 5+r.nextInt(3);
     }
 

@@ -1,11 +1,11 @@
-package mrtjp.projectred.exploration;
+package mrtjp.projectred.core.world;
+
+import codechicken.lib.vec.BlockCoord;
+import net.minecraft.block.Block;
+import net.minecraft.world.World;
 
 import java.util.LinkedList;
 import java.util.Random;
-
-import net.minecraft.block.Block;
-import net.minecraft.world.World;
-import codechicken.lib.vec.BlockCoord;
 
 public class GeneratorMetamorphicCave extends GeneratorOre
 {
