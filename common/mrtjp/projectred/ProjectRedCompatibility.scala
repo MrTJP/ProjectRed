@@ -13,6 +13,7 @@ import mrtjp.projectred.compatibility.CompatibilityProxy
     @Mod.EventHandler
     def preInit(event:FMLPreInitializationEvent)
     {
+        CompatibilityProxy.versionCheck()
         CompatibilityProxy.preinit()
     }
 

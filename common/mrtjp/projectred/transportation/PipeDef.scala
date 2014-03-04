@@ -34,7 +34,6 @@ class PipeDef(val partname:String, val textures:Seq[String]) extends LiteEnumVal
 
     val meta = ordinal
 
-    @SideOnly(Side.CLIENT)
     val sprites = new Array[Icon](textures.length)
 
     @SideOnly(Side.CLIENT)

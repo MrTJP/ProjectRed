@@ -33,7 +33,8 @@
   "modid": "ProjRed|Integration",
   "name": "ProjectRed-Integration",
   "parent":"ProjRed|Core",
-
+  "version": "@VERSION@.@BUILD_NUMBER@",
+  "mcversion": "@MC_VERSION@",
   "requiredMods": [
       "ProjRed|Core",
       "ProjRed|Transmission"
@@ -50,7 +51,8 @@
   "modid": "ProjRed|Transmission",
   "name": "ProjectRed-Transmission",
   "parent":"ProjRed|Core",
-
+  "version": "@VERSION@.@BUILD_NUMBER@",
+  "mcversion": "@MC_VERSION@",
   "requiredMods": [
       "ProjRed|Core",
       "ProjRed|Integration"
@@ -67,7 +69,8 @@
   "modid": "ProjRed|Illumination",
   "name": "ProjectRed-Illumination",
   "parent":"ProjRed|Core",
-
+  "version": "@VERSION@.@BUILD_NUMBER@",
+  "mcversion": "@MC_VERSION@",
   "requiredMods": [
       "ProjRed|Core"
   ],
@@ -84,7 +87,8 @@
   "modid": "ProjRed|Exploration",
   "name": "ProjectRed-Exploration",
   "parent":"ProjRed|Core",
-
+  "version": "@VERSION@.@BUILD_NUMBER@",
+  "mcversion": "@MC_VERSION@",
   "requiredMods": [
       "ProjRed|Core"
   ],
@@ -100,7 +104,8 @@
   "modid": "ProjRed|Expansion",
   "name": "ProjectRed-Expansion",
   "parent":"ProjRed|Core",
-
+  "version": "@VERSION@.@BUILD_NUMBER@",
+  "mcversion": "@MC_VERSION@",
   "requiredMods": [
       "ProjRed|Core",
       "ProjRed|Transportation"
@@ -118,7 +123,8 @@
   "modid": "ProjRed|Transportation",
   "name": "ProjectRed-Transportation",
   "parent":"ProjRed|Core",
-
+  "version": "@VERSION@.@BUILD_NUMBER@",
+  "mcversion": "@MC_VERSION@",
   "requiredMods": [
       "ProjRed|Core"
   ],
@@ -133,7 +139,8 @@
   "modid": "ProjRed|Compatibility",
   "name": "ProjectRed-Compatibility",
   "parent":"ProjRed|Core",
-
+  "version": "@VERSION@.@BUILD_NUMBER@",
+  "mcversion": "@MC_VERSION@",
   "requiredMods": [
       "ProjRed|Core"
   ],

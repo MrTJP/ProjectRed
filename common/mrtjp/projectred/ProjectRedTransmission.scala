@@ -32,6 +32,7 @@ object ProjectRedTransmission
     @Mod.EventHandler
     def preInit(event:FMLPreInitializationEvent)
     {
+        TransmissionProxy.versionCheck()
         TransmissionProxy.preinit()
     }
 

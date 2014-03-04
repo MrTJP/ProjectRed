@@ -442,7 +442,7 @@
             <fileset dir="${src.dir}/common"/>
         </copy>
 
-        <!-- Replace Tokens-->
+        <!-- Replace Tokens (Sources) -->
         <replace dir="${mcp.dir}/src/minecraft/mrtjp/projectred" token="@VERSION@" value="${mod.version}"/>
         <replace dir="${mcp.dir}/src/minecraft/mrtjp/projectred" token="@BUILD_NUMBER@" value="${mod.build}"/>
         <replace dir="${mcp.dir}/src/minecraft/mrtjp/projectred" token="@MC_VERSION@" value="${mc.version}"/>
@@ -470,7 +470,7 @@
                 <present present="both" targetdir="${src.dir}/common"/>
             </fileset>
         </delete>
-  
+
     </target>
 
     <target name="reobfuscate">
@@ -505,12 +505,13 @@
             <fileset dir="${src.dir}/resources"/>
         </copy>
 
-        <!-- Replace Tokens-->
+        <!-- Replace Tokens (Resources) -->
         <replace dir="${mcp.dir}/reobf/resources" token="@VERSION@" value="${mod.version}"/>
         <replace dir="${mcp.dir}/reobf/resources" token="@BUILD_NUMBER@" value="${mod.build}"/>
         <replace dir="${mcp.dir}/reobf/resources" token="@MC_VERSION@" value="${mc.version}"/>
         <replace dir="${mcp.dir}/reobf/resources" token="@FORGE_VERSION@" value="${forge.version}"/>
         <replace dir="${mcp.dir}/reobf/resources" token="@FMP_VERSION@" value="${fmp.version}"/>
+        <replace dir="${mcp.dir}/reobf/resources" token="@CCL_VERSION@" value="${ccl.version}"/>
 
         <fail message="Failed to reobfuscate">
             <condition>

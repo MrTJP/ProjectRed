@@ -137,15 +137,15 @@ public class ItemBackpack extends Item
 
     public static class BagInventory extends SimpleInventory
     {
-        public ItemStack _bagOriginal;
-        public EntityPlayer _player;
+        public ItemStack bag;
+        public EntityPlayer player;
         public boolean isLoading = false;
 
         public BagInventory(EntityPlayer player, ItemStack bag)
         {
             super(27, "bag", 64);
-            _bagOriginal = bag;
-            _player = player;
+            this.bag = bag;
+            this.player = player;
             loadInventory();
         }
 
@@ -188,24 +188,34 @@ public class ItemBackpack extends Item
             return false;
         }
 
+        private void assertNBT(ItemStack s)
+        {
+            if (!s.hasTagCompound()) s.setTagCompound(new NBTTagCompound());
+        }
+
         private void loadInventory()
         {
-            this.load(_bagOriginal.getTagCompound());
+            assertNBT(bag);
+            if (bag.getTagCompound().getBoolean("notLegacy"))//legacy loading TODO remove at some point
+                load(bag.getTagCompound().getCompoundTag("baginv"));
+            else load(bag.getTagCompound());
         }
 
         private void saveInventory()
         {
             NBTTagCompound nbt = new NBTTagCompound();
-            this.save(nbt);
-            _bagOriginal.setTagCompound(nbt);
+            save(nbt);
+            assertNBT(bag);
+            bag.getTagCompound().setCompoundTag("baginv", nbt);
+            nbt.setBoolean("notLegacy", true); //legacy loading TODO remove at some point
             refreshNBT();
         }
 
         private void refreshNBT()
         {
-            ItemStack currentBag = _player.getHeldItem();
+            ItemStack currentBag = player.getHeldItem();
             if (currentBag != null && currentBag.itemID == ProjectRedExploration.itemBackpack().itemID)
-                currentBag.setTagCompound(_bagOriginal.getTagCompound());
+                currentBag.setTagCompound(bag.getTagCompound());
         }
     }
 

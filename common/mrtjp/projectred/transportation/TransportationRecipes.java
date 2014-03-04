@@ -263,7 +263,7 @@ public class TransportationRecipes
 
         /** LX **/
         GameRegistry.addRecipe(EnumPart.CHIPUPGRADE_LX.getItemStack(),
-                "r r",
+                "rrr",
                 " ng",
                 "r r",
                 'r', Item.redstone,
@@ -275,7 +275,7 @@ public class TransportationRecipes
         GameRegistry.addRecipe(EnumPart.CHIPUPGRADE_RX.getItemStack(),
                 "r r",
                 "gn ",
-                "r r",
+                "rrr",
                 'r', Item.redstone,
                 'n', EnumPart.NULLUPGRADECHIP.getItemStack(),
                 'g', Item.goldNugget

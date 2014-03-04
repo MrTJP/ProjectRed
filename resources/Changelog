@@ -1,5 +1,7 @@
-[dev]v4.3.0
+[dev]v4.3.1
 - ADDED: Computercraft bundled cable compatibility
+
+v4.3.0
 - CHANGE: Made volcanoes slightly more rare
 - CHANGE: Crafting pipes can craft multiple items
 - FIX: Backpack slots being locked
@@ -7,6 +9,8 @@
 - FIX: Strange tree growth
 - FIX: Routing FX
 - FIX: Rare lamp render crash when teleporting
+- FIX: Backpacks resetting anvil name
+- FIX: Recipe mirroring
 
 v4.2.2
 - ADDED: Extension pipe

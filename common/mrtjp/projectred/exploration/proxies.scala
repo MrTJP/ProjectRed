@@ -142,6 +142,9 @@ class ExplorationProxy_server extends IProxy with IGuiHandler
         }
         null
     }
+
+    override def version = "@VERSION@"
+    override def build = "@BUILD_NUMBER@"
 }
 
 class ExplorationProxy_client extends ExplorationProxy_server

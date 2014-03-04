@@ -65,6 +65,7 @@ object ProjectRedExploration
     @Mod.EventHandler
     def preInit(event:FMLPreInitializationEvent)
     {
+        ExplorationProxy.versionCheck()
         ExplorationProxy.preinit()
     }
 

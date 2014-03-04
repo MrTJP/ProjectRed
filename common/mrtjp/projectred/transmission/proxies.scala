@@ -42,6 +42,9 @@ class TransmissionProxy_server extends IProxy with IPartFactory
         case "pr_sinsulated" => new FramedInsulatedRedAlloyPart
         case "pr_sbundled" => new FramedBundledCablePart
     }
+
+    override def version = "@VERSION@"
+    override def build = "@BUILD_NUMBER@"
 }
 
 class TransmissionProxy_client extends TransmissionProxy_server

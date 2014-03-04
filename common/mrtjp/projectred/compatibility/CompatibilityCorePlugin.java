@@ -7,28 +7,33 @@ import java.util.Map;
 public class CompatibilityCorePlugin implements IFMLLoadingPlugin
 {
     @Override
-    public String[] getASMTransformerClass() {
-        return new String[]{"mrtjp.projectred.compatibility.computercraft.TransformerComputerCraft"};
+    public String[] getASMTransformerClass()
+    {
+        //return new String[]{"mrtjp.projectred.compatibility.computercraft.TransformerComputerCraft"};
+        return new String[]{}; //Temporarily disabled until its fixed
     }
 
     @Override
-    public String getModContainerClass() {
+    public String getModContainerClass()
+    {
         return null;
     }
 
     @Override
-    public String getSetupClass() {
+    public String getSetupClass()
+    {
         return null;
     }
 
     @Override
-    public void injectData(Map<String, Object> data) {
-
+    public void injectData(Map<String, Object> data)
+    {
     }
 
     //kept for forge 953 compilation
     @Deprecated
-    public String[] getLibraryRequestClass() {
+    public String[] getLibraryRequestClass()
+    {
         return null;
     }
 }

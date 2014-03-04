@@ -40,6 +40,9 @@ class IntegrationProxy_server extends IProxy with IPartFactory
         case "pr_tgate" => new InstancedRsGatePartT
         case "pr_rgate" => new RowGatePart
     }
+
+    override def version = "@VERSION@"
+    override def build = "@BUILD_NUMBER@"
 }
 
 class IntegrationProxy_client extends IntegrationProxy_server

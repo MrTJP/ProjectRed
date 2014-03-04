@@ -43,6 +43,9 @@ class TransportationProxy_server extends IProxy with IPartFactory
         case "pr_rrequest" => new RoutedRequestPipePart
         case "pr_rextension" => new RoutedExtensionPipePart
     }
+
+    override def version = "@VERSION@"
+    override def build = "@BUILD_NUMBER@"
 }
 
 class TransportationProxy_client extends TransportationProxy_server

@@ -37,6 +37,9 @@ class ExpansionProxy_server extends IProxy with IPartFactory
         case "pr_100v" => new PowerWire_100v
         case "pr_f100v" => new FramedPowerWire_100v
     }
+
+    override def version = "@VERSION@"
+    override def build = "@BUILD_NUMBER@"
 }
 
 class ExpansionProxy_client extends ExpansionProxy_server

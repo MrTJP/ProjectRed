@@ -1,6 +1,7 @@
 package mrtjp.projectred.compatibility
 
-import mrtjp.projectred.core.IProxy
+import mrtjp.projectred.core.{Configurator, IProxy}
+import sun.security.krb5.Config
 
 class CompatibilityProxy_server extends IProxy
 {
@@ -17,6 +18,9 @@ class CompatibilityProxy_server extends IProxy
     }
 
     def postinit() {}
+
+    override def version = "@VERSION@"
+    override def build = "@BUILD_NUMBER@"
 }
 
 class CompatibilityProxy_client extends CompatibilityProxy_server

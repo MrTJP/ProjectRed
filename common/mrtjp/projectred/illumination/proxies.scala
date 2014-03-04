@@ -46,6 +46,9 @@ class IlluminationProxy_server extends IProxy with IPartFactory
         case "pr_cagelamp" => new CageLampPart
         case "pr_fixture" => new FixturePart
     }
+
+    override def version = "@VERSION@"
+    override def build = "@BUILD_NUMBER@"
 }
 
 class IlluminationProxy_client extends IlluminationProxy_server

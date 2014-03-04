@@ -95,7 +95,6 @@ class WireDef(val wireType:String, val framedType:String, val thickness:Int, val
 
     val meta = ordinal
 
-    @SideOnly(Side.CLIENT)
     val wireSprites = new Array[Icon](textures.length)
 
     @SideOnly(Side.CLIENT)
