@@ -8,7 +8,7 @@ import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api.{IScrewdriver, IConnectable}
 import mrtjp.projectred.core._
 import mrtjp.projectred.core.blockutil.{BlockMulti, TileMulti}
-import mrtjp.projectred.core.inventory.GhostContainer2
+import mrtjp.projectred.core.inventory.SpecialContainer
 import mrtjp.projectred.core.utils.TPortableInventory
 import mrtjp.projectred.transmission.{PowerWire_100v, FramedPowerWire_100v, WirePart}
 import net.minecraft.block.material.Material
@@ -548,7 +548,7 @@ with TMachinePowerable with TileMachineIO with TileGuiMachine with TileMachineSi
     override def getLightValue = if (isWorking) 13 else 0
 }
 
-class WorkingMachineContainer(player:EntityPlayer, tile:TileMachineWorking) extends GhostContainer2(player.inventory)
+class WorkingMachineContainer(player:EntityPlayer, tile:TileMachineWorking) extends SpecialContainer(player.inventory)
 {
     var ch = 0
     var work = 0

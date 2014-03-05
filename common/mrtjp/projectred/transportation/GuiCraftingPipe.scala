@@ -6,7 +6,7 @@ import codechicken.lib.render.FontUtils
 import codechicken.lib.vec.BlockCoord
 import mrtjp.projectred.core.BasicGuiUtils
 import mrtjp.projectred.core.PRColors
-import mrtjp.projectred.core.inventory.GhostGuiContainer
+import mrtjp.projectred.core.inventory.SpecialGuiContainer
 import mrtjp.projectred.core.inventory.JWidgetButton
 import mrtjp.projectred.core.utils.Pair2
 import net.minecraft.inventory.Container
@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11
 import net.minecraft.client.gui.Gui
 import net.minecraft.util.ResourceLocation
 
-class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends GhostGuiContainer(container, null, 176, 220)
+class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends SpecialGuiContainer(container, null, 176, 220)
 {
     override def actionPerformed(ident:String)
     {
@@ -38,7 +38,7 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
         BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 138)
 
         var color = 0
-        CCRenderState.changeTexture(GhostGuiContainer.guiExtras)
+        CCRenderState.changeTexture(SpecialGuiContainer.guiExtras)
 
         import scala.collection.JavaConversions._
         for (p <- BasicGuiUtils.createSlotArray(8, 108, 9, 1, 0, 0))

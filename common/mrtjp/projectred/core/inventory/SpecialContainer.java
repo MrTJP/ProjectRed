@@ -9,14 +9,14 @@ import net.minecraft.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GhostContainer2 extends Container
+public class SpecialContainer extends Container
 {
     protected IInventory playerInv;
 
     boolean allowDragging = true;
     boolean canInteract = true;
 
-    public GhostContainer2(IInventory playerInv)
+    public SpecialContainer(IInventory playerInv)
     {
         this.playerInv = playerInv;
     }
@@ -27,7 +27,7 @@ public class GhostContainer2 extends Container
         return allowDragging;
     }
 
-    public GhostContainer2 setDragging(boolean flag)
+    public SpecialContainer setDragging(boolean flag)
     {
         allowDragging = flag;
         return this;
@@ -39,13 +39,13 @@ public class GhostContainer2 extends Container
         return canInteract;
     }
 
-    public GhostContainer2 setInteraction(boolean flag)
+    public SpecialContainer setInteraction(boolean flag)
     {
         canInteract = flag;
         return this;
     }
 
-    public GhostContainer2 addPlayerInventory(int x, int y)
+    public SpecialContainer addPlayerInventory(int x, int y)
     {
         if (playerInv == null)
             return this;
@@ -61,7 +61,7 @@ public class GhostContainer2 extends Container
         return this;
     }
 
-    public GhostContainer2 addCustomSlot(SlotExtended slot)
+    public SpecialContainer addCustomSlot(SlotExtended slot)
     {
         addSlotToContainer(slot);
         return this;
@@ -278,5 +278,13 @@ public class GhostContainer2 extends Container
                 return slot.inventory.isItemValidForSlot(slot.getSlotIndex(), stack);
             }
         }
+    }
+
+    //Hack to fix when SpecialGuiContainer is used as GuiScreen. //TODO actual fix
+    @Override
+    public void putStackInSlot(int slot, ItemStack stack)
+    {
+        if (inventorySlots.isEmpty() || inventorySlots.size()<slot) return;
+        else super.putStackInSlot(slot, stack);
     }
 }

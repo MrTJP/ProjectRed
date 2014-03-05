@@ -1,7 +1,7 @@
 package mrtjp.projectred.exploration;
 
 import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.core.inventory.GhostGuiContainer;
+import mrtjp.projectred.core.inventory.SpecialGuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiBackpack extends GhostGuiContainer
+public class GuiBackpack extends SpecialGuiContainer
 {
     ItemStack _bag;
     EntityPlayer _player;
@@ -20,7 +20,7 @@ public class GuiBackpack extends GhostGuiContainer
         _bag = bag;
         _player = player;
     }
-    
+
     @Override
     public void drawBackground()
     {
@@ -29,7 +29,7 @@ public class GuiBackpack extends GhostGuiContainer
 
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize);
     }
-    
+
     @Override
     public void drawForeground()
     {

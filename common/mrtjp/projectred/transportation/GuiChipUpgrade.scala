@@ -16,7 +16,7 @@ object GuiChipUpgrade
     private final val resource = new ResourceLocation("projectred:textures/gui/chipupgradecontainer.png")
 }
 
-class GuiChipUpgrade(container:ChipUpgradeContainer) extends GhostGuiContainer(container, null, 176, 200)
+class GuiChipUpgrade(container:ChipUpgradeContainer) extends SpecialGuiContainer(container, null, 176, 200)
 {
     override def addWidgets()
     {

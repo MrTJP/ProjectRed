@@ -2,7 +2,7 @@ package mrtjp.projectred.transportation
 
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.render.{FontUtils, CCRenderState}
-import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended
+import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
 import mrtjp.projectred.core.inventory._
 import mrtjp.projectred.core.{PRColors, BasicGuiUtils}
 import net.minecraft.client.Minecraft
@@ -25,7 +25,7 @@ object GuiChipContainerWidget
     val resource = new ResourceLocation("projectred:textures/gui/chipcontainer.png")
 }
 
-class ChipContainer[T <: RoutingChipset](player:EntityPlayer) extends GhostContainer2(player.inventory)
+class ChipContainer[T <: RoutingChipset](player:EntityPlayer) extends SpecialContainer(player.inventory)
 {
     private val slot = player.inventory.currentItem
     private val stack = player.inventory.mainInventory(slot)
@@ -55,13 +55,13 @@ class ChipContainer[T <: RoutingChipset](player:EntityPlayer) extends GhostConta
 
     override def addSlotToContainer(slot:Slot):Slot =
     {
-        if (slot.getSlotIndex == this.slot) if (slot.isInstanceOf[GhostContainer2.SlotExtended])
-            return super.addSlotToContainer(slot.asInstanceOf[GhostContainer2.SlotExtended].setRemoval(false))
+        if (slot.getSlotIndex == this.slot) if (slot.isInstanceOf[SpecialContainer.SlotExtended])
+            return super.addSlotToContainer(slot.asInstanceOf[SpecialContainer.SlotExtended].setRemoval(false))
         super.addSlotToContainer(slot)
     }
 }
 
-abstract class GuiChipContainer[T <: RoutingChipset](cont:ChipContainer[T], prev:GuiScreen) extends GhostGuiContainer(cont, prev)
+abstract class GuiChipContainer[T <: RoutingChipset](cont:ChipContainer[T], prev:GuiScreen) extends SpecialGuiContainer(cont, prev)
 {
     def chip = cont.getChip
     def cleanContainer = cont.getNewInstance

@@ -2,11 +2,11 @@ package mrtjp.projectred.transportation
 
 import codechicken.lib.render.CCRenderState
 import mrtjp.projectred.core.BasicGuiUtils
-import mrtjp.projectred.core.inventory.GhostGuiContainer
+import mrtjp.projectred.core.inventory.SpecialGuiContainer
 import net.minecraft.inventory.Container
 import net.minecraft.util.ResourceLocation
 
-class GuiInterfacePipe(slots:Container, pipe:RoutedInterfacePipePart) extends GhostGuiContainer(slots, null, 176, 200)
+class GuiInterfacePipe(slots:Container, pipe:RoutedInterfacePipePart) extends SpecialGuiContainer(slots, null, 176, 200)
 {
     override def drawBackground()
     {

@@ -1,11 +1,11 @@
 package mrtjp.projectred.transportation
 
 import mrtjp.projectred.core.BasicGuiUtils
-import mrtjp.projectred.core.inventory.{GhostWidget, GhostGuiContainer}
+import mrtjp.projectred.core.inventory.{GhostWidget, SpecialGuiContainer}
 import net.minecraft.inventory.Container
 import codechicken.lib.render.CCRenderState
 
-class GuiExtensionPipe(container:Container, id:String) extends GhostGuiContainer(container, null)
+class GuiExtensionPipe(container:Container, id:String) extends SpecialGuiContainer(container, null)
 {
     override def drawBackground()
     {
@@ -23,7 +23,7 @@ class GuiExtensionPipe(container:Container, id:String) extends GhostGuiContainer
 
         BasicGuiUtils.drawSlotBackground(mc, 133, 19)
         BasicGuiUtils.drawSlotBackground(mc, 133, 49)
-        CCRenderState.changeTexture(GhostGuiContainer.guiExtras)
+        CCRenderState.changeTexture(SpecialGuiContainer.guiExtras)
         drawTexturedModalRect(134, 20, 1, 11, 16, 16)
     }
 }

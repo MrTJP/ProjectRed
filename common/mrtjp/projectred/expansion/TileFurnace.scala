@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion
 
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended
+import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
 import mrtjp.projectred.core.inventory.{InvWrapper, SimpleInventory}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack

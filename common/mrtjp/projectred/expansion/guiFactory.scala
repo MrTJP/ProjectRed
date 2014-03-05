@@ -100,7 +100,7 @@ abstract class TabSideConfig(c:Int, tile:TileMachineSideConfig) extends WidgetTa
     def tessellateTile(s:Int, r:Int)
 }
 
-abstract class GuiMachineWorking(tile:TileMachineWorking, cont:Container) extends GhostGuiContainer(cont, null)
+abstract class GuiMachineWorking(tile:TileMachineWorking, cont:Container) extends SpecialGuiContainer(cont, null)
 {
     val controller = new WidgetTabController(xSize, 0)
     override def addWidgets()

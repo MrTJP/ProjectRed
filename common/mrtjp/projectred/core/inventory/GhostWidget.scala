@@ -23,7 +23,7 @@ object GhostWidget
 class GhostWidget(var x:Int, var y:Int, var width:Int, var height:Int) extends Gui
 {
     var mc:Minecraft = null
-    var parentScreen:GhostGuiContainer = null
+    var parentScreen:SpecialGuiContainer = null
     var renderEngine:TextureManager = null
     var fontRenderer:FontRenderer = null
 
@@ -96,7 +96,7 @@ class GhostWidget(var x:Int, var y:Int, var width:Int, var height:Int) extends G
         for (w <- widgets) w.mouseScrolled(x-this.x, y-this.y, scroll)
     }
 
-    def onAdded(s:GhostGuiContainer)
+    def onAdded(s:SpecialGuiContainer)
     {
         mc = Minecraft.getMinecraft
         parentScreen = s

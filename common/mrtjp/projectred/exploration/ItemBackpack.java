@@ -5,9 +5,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.ProjectRedExploration$;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.inventory.GhostContainer2;
-import mrtjp.projectred.core.inventory.GhostContainer2.ISlotController.InventoryRulesController;
-import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended;
+import mrtjp.projectred.core.inventory.SpecialContainer;
+import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController.InventoryRulesController;
+import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -55,9 +55,9 @@ public class ItemBackpack extends Item
         if (backpackInv == null)
             backpackInv = new BagInventory(player, new ItemStack(ProjectRedExploration.itemBackpack()));
 
-        GhostContainer2 container = new GhostContainer2(player.inventory) {
+        SpecialContainer container = new SpecialContainer(player.inventory) {
             @Override
-            public GhostContainer2 addCustomSlot(SlotExtended slot)
+            public SpecialContainer addCustomSlot(SlotExtended slot)
             {
                 if (slot.getSlotIndex() == player.inventory.currentItem)
                     if (slot.inventory == player.inventory)

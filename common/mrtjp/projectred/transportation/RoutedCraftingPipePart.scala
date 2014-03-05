@@ -9,8 +9,8 @@ import java.util.UUID
 import java.util.concurrent.DelayQueue
 import mrtjp.projectred.core.BasicGuiUtils
 import mrtjp.projectred.core.ItemDataCard
-import mrtjp.projectred.core.inventory.GhostContainer2
-import mrtjp.projectred.core.inventory.GhostContainer2.ISlotController
+import mrtjp.projectred.core.inventory.SpecialContainer
+import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
 import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.inventory.SimpleInventory
 import mrtjp.projectred.core.utils.ItemKey
@@ -354,18 +354,18 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
     def createContainer(player:EntityPlayer):Container =
     {
-        val ghost = new GhostContainer2(player.inventory)
+        val ghost = new SpecialContainer(player.inventory)
         var s = 0
         import scala.collection.JavaConversions._
         for (p <- BasicGuiUtils.createSlotArray(20, 12, 2, 4, 20, 0))
         {
-            ghost.addCustomSlot(new GhostContainer2.SlotExtended(chipSlots, s, p.getValue1, p.getValue2).setCheck(ISlotController.InventoryRulesController.instance))
+            ghost.addCustomSlot(new SpecialContainer.SlotExtended(chipSlots, s, p.getValue1, p.getValue2).setCheck(ISlotController.InventoryRulesController.instance))
             s += 1
         }
         var s2 = 0
         for (p <- BasicGuiUtils.createSlotArray(8, 108, 9, 1, 0, 0))
         {
-            ghost.addCustomSlot(new GhostContainer2.SlotExtended(cardSlots, s2, p.getValue1, p.getValue2).setCheck(ISlotController.InventoryRulesController.instance))
+            ghost.addCustomSlot(new SpecialContainer.SlotExtended(cardSlots, s2, p.getValue1, p.getValue2).setCheck(ISlotController.InventoryRulesController.instance))
             s2 += 1
         }
         ghost.addPlayerInventory(8, 138)

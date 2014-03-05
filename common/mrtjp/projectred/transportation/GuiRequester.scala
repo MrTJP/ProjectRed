@@ -14,7 +14,7 @@ import mrtjp.projectred.core.utils.ItemKeyStack
 import org.lwjgl.input.Keyboard
 import java.util
 
-class GuiRequester(pipe:IWorldRequester) extends GhostGuiContainer(280, 230)
+class GuiRequester(pipe:IWorldRequester) extends SpecialGuiContainer(280, 230)
 {
     var itemList = new WidgetItemSelection(xSize/2-220/2, 10, 220, 140)
 
@@ -65,6 +65,9 @@ class GuiRequester(pipe:IWorldRequester) extends GhostGuiContainer(280, 230)
     }
 
     var partials = new WidgetCheckBox(230, 210, false)
+
+
+    override def forwardClosingKey = !textFilter.isFocused
 
     override def drawBackground()
     {

@@ -4,9 +4,9 @@ import codechicken.core.IGuiPacketSender
 import codechicken.core.ServerUtils
 import codechicken.lib.packet.PacketCustom
 import mrtjp.projectred.core.ItemDataCard
-import mrtjp.projectred.core.inventory.GhostContainer2
-import mrtjp.projectred.core.inventory.GhostContainer2.ISlotController
-import mrtjp.projectred.core.inventory.GhostContainer2.SlotExtended
+import mrtjp.projectred.core.inventory.SpecialContainer
+import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
+import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
 import mrtjp.projectred.core.inventory.SimpleInventory
 import mrtjp.projectred.core.utils.ItemKeyStack
 import net.minecraft.entity.player.EntityPlayer
@@ -138,10 +138,10 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
 
     def createContainer(player:EntityPlayer):Container =
     {
-        val ghost = new GhostContainer2(player.inventory)
+        val ghost = new SpecialContainer(player.inventory)
         val sc = ISlotController.InventoryRulesController.instance
-        ghost.addCustomSlot(new GhostContainer2.SlotExtended(cardslot, 0, 134, 20).setCheck(sc))
-        ghost.addCustomSlot(new GhostContainer2.SlotExtended(cardslot, 1, 134, 50).setPlacement(false))
+        ghost.addCustomSlot(new SpecialContainer.SlotExtended(cardslot, 0, 134, 20).setCheck(sc))
+        ghost.addCustomSlot(new SpecialContainer.SlotExtended(cardslot, 1, 134, 50).setPlacement(false))
         ghost.addPlayerInventory(8, 84)
         ghost
     }

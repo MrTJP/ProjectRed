@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class GhostGuiContainer extends GuiContainer implements IStackableGui, IGuiActionListener
+public class SpecialGuiContainer extends GuiContainer implements IStackableGui, IGuiActionListener
 {
     protected static final ResourceLocation guiExtras= new ResourceLocation("projectred:textures/gui/guiextras.png");
 
@@ -20,12 +20,12 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
 
     GuiScreen previousGui = null;
 
-    public GhostGuiContainer(Container container, GuiScreen previousGui)
+    public SpecialGuiContainer(Container container, GuiScreen previousGui)
     {
         this(container, previousGui, 176, 166);
     }
 
-    public GhostGuiContainer(Container container, GuiScreen previousGui, int x, int y)
+    public SpecialGuiContainer(Container container, GuiScreen previousGui, int x, int y)
     {
         super(container);
         this.xSize = x;
@@ -33,9 +33,9 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
         this.previousGui = previousGui;
     }
 
-    public GhostGuiContainer(int x, int y)
+    public SpecialGuiContainer(int x, int y)
     {
-        this(new GhostContainer2(null), null, x, y);
+        this(new SpecialContainer(null), null, x, y);
     }
 
     @Override
@@ -62,10 +62,15 @@ public class GhostGuiContainer extends GuiContainer implements IStackableGui, IG
         }
         else
         {
-            super.keyTyped(c, i);
+            if (forwardClosingKey() || c==1) super.keyTyped(c, i); //always forward esc
             for (GhostWidget widget : widgets)
                 widget.keyTyped(c, i);
         }
+    }
+
+    public boolean forwardClosingKey()
+    {
+        return true;
     }
 
     public void reset()

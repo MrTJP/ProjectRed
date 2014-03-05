@@ -7,8 +7,8 @@ import mrtjp.projectred.ProjectRedTransportation;
 import mrtjp.projectred.core.BasicGuiUtils;
 import mrtjp.projectred.core.ItemPart;
 import mrtjp.projectred.core.ItemPart.EnumPart;
-import mrtjp.projectred.core.inventory.GhostContainer2;
-import mrtjp.projectred.core.inventory.GhostContainer2.ISlotController.InventoryRulesController;
+import mrtjp.projectred.core.inventory.SpecialContainer;
+import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController.InventoryRulesController;
 import mrtjp.projectred.core.inventory.SimpleInventory;
 import mrtjp.projectred.core.utils.Pair2;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -69,7 +69,7 @@ public class ItemRouterUtility extends Item
         });
     }
 
-    public static class ChipUpgradeContainer extends GhostContainer2
+    public static class ChipUpgradeContainer extends SpecialContainer
     {
         public SimpleInventory upgradeInv;
 

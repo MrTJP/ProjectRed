@@ -4,8 +4,8 @@ import codechicken.core.IGuiPacketSender
 import codechicken.core.ServerUtils
 import codechicken.lib.packet.PacketCustom
 import mrtjp.projectred.core.BasicGuiUtils
-import mrtjp.projectred.core.inventory.GhostContainer2
-import mrtjp.projectred.core.inventory.GhostContainer2.ISlotController
+import mrtjp.projectred.core.inventory.SpecialContainer
+import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
 import mrtjp.projectred.core.inventory.SimpleInventory
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
@@ -101,14 +101,14 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
 
     def createContainer(player:EntityPlayer) =
     {
-        val ghost = new GhostContainer2(player.inventory)
+        val ghost = new SpecialContainer(player.inventory)
         val sc = ISlotController.InventoryRulesController.instance
 
         var slot = 0
         import scala.collection.JavaConversions._
         for (p <- BasicGuiUtils.createSlotArray(24, 12, 1, 4, 0, 8))
         {
-            ghost.addCustomSlot(new GhostContainer2.SlotExtended(chipSlots, slot, p.getValue1, p.getValue2).setCheck(sc))
+            ghost.addCustomSlot(new SpecialContainer.SlotExtended(chipSlots, slot, p.getValue1, p.getValue2).setCheck(sc))
             slot += 1
         }
 
