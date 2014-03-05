@@ -64,7 +64,7 @@ public class ShapedOreNBTRecipe extends ShapedOreRecipe
         return this;
     }
 
-    private boolean checkItemEquals(ItemStack target, ItemStack input)
+    public boolean checkItemEquals(ItemStack target, ItemStack input)
     {
         if (input == null && target != null || input != null && target == null)
             return false;
