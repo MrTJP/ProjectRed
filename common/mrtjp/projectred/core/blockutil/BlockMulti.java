@@ -61,6 +61,7 @@ public class BlockMulti extends BlockContainer
     {
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public int getRenderType()
     {
