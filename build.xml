@@ -545,6 +545,12 @@
     </target>
 
     <target name="package">
+        <echo message="Cleaning output"/>
+        <delete includeemptydirs="true">
+            <fileset dir="${jar.dir}"/>
+        </delete>
+        <mkdir dir="${jar.dir}"/>
+
         <echo message="Building Jar"/>
         <mkdir dir="${jar.dir}"/>
 

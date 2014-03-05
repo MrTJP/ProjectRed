@@ -1,6 +1,8 @@
 [dev]v4.3.1
 - FIX: No recipes for lights
 - FIX: Stock keeper crash
+- FIX: Request gui crash
+- FIX: ExtraUtils Server crash
 
 v4.3.0
 - CHANGE: Made volcanoes slightly more rare
