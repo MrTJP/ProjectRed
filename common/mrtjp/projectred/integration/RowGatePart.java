@@ -20,23 +20,6 @@ import java.util.Arrays;
 
 public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArrayWire
 {
-    public static Cuboid6[][] oBoxes = new Cuboid6[6][2];
-    public static Cuboid6[] cBoxes = new Cuboid6[6];
-
-    static
-    {
-        oBoxes[0][0] = new Cuboid6(1/8D, 0, 0, 7/8D, 6/8D, 1);
-        oBoxes[0][1] = new Cuboid6(0, 0, 1/8D, 1, 6/8D, 7/8D);
-        cBoxes[0] = new Cuboid6(0, 0, 0, 1, 6/8D, 1);
-        for (int s = 1; s < 6; s++)
-        {
-            Transformation t = Rotation.sideRotations[s].at(Vector3.center);
-            oBoxes[s][0] = oBoxes[0][0].copy().apply(t);
-            oBoxes[s][1] = oBoxes[0][1].copy().apply(t);
-            cBoxes[s] = cBoxes[0].copy().apply(t);
-        }
-    }
-
     public byte signal;
 
     @Override
@@ -366,12 +349,12 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     @Override
     public Cuboid6 getBounds()
     {
-        return cBoxes[side()];
+        return ArrayCommons.cBoxes[side()];
     }
 
     @Override
     public Iterable<Cuboid6> getOcclusionBoxes()
     {
-        return Arrays.asList(oBoxes[side()]);
+        return Arrays.asList(ArrayCommons.oBoxes[side()]);
     }
 }

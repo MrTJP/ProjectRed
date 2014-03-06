@@ -27,7 +27,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, IConnectable, TFacePart, JIconHitEffects
 {
     public static Cuboid6[][] oBoxes = new Cuboid6[6][2];
@@ -60,7 +60,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     public void setSide(int s)
     {
-        orientation = (byte) (orientation&0x3|s<<2);
+        orientation = (byte)(orientation&0x3|s<<2);
     }
 
     public int rotation()
@@ -70,7 +70,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     public void setRotation(int r)
     {
-        orientation = (byte) (orientation&0xFC|r);
+        orientation = (byte)(orientation&0xFC|r);
     }
 
     public int shape()
@@ -80,7 +80,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     public void setShape(int s)
     {
-        shape = (byte) s;
+        shape = (byte)s;
     }
 
     public Transformation rotationT()
@@ -90,7 +90,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
     {
-        subID = (byte) meta;
+        subID = (byte)meta;
         setSide(side^1);
         setRotation(Rotation.getSidedRotation(player, side));
     }
@@ -101,7 +101,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         tag.setByte("orient", orientation);
         tag.setByte("subID", subID);
         tag.setByte("shape", shape);
-        tag.setShort("connMap", (short) connMap);
+        tag.setShort("connMap", (short)connMap);
         tag.setLong("schedTime", schedTime);
     }
 
@@ -111,7 +111,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         orientation = tag.getByte("orient");
         subID = tag.getByte("subID");
         shape = tag.getByte("shape");
-        connMap = tag.getShort("connMap") & 0xFFFF;
+        connMap = tag.getShort("connMap")&0xFFFF;
         schedTime = tag.getLong("schedTime");
     }
 
@@ -326,7 +326,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
             TMultiPart tp = t.partMap(absDir^1);
             if (tp instanceof IConnectable)
             {
-                IConnectable conn = (IConnectable) tp;
+                IConnectable conn = (IConnectable)tp;
                 int r2 = Rotation.rotationTo(absDir^1, side()^1);
                 return canConnectTo(conn, r) && conn.canConnectCorner(r2) && conn.connectCorner(this, r2, -1);
             }
@@ -346,7 +346,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
             TMultiPart tp = t.partMap(side());
             if (tp instanceof IConnectable)
             {
-                IConnectable conn = (IConnectable) tp;
+                IConnectable conn = (IConnectable)tp;
                 return canConnectTo(conn, r) && conn.connectStraight(this, (r+2)%4, -1);
             }
         }
@@ -369,7 +369,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         TMultiPart tp = tile().partMap(absDir);
         if (tp instanceof IConnectable)
         {
-            IConnectable conn = (IConnectable) tp;
+            IConnectable conn = (IConnectable)tp;
             return canConnectTo(conn, r) && conn.connectInternal(this, Rotation.rotationTo(absDir, side()));
         }
 
@@ -641,7 +641,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @Override
     public int getSlotMask()
     {
-        return 1 << side();
+        return 1<<side();
     }
 
     @Override

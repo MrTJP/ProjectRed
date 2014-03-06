@@ -70,7 +70,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     @Override
     public int weakPowerLevel(int side)
     {
-        if ((side & 6) != (this.side & 6) && (connMap & 0x100 << Rotation.rotationTo(this.side, side)) != 0)
+        if ((side&6) != (this.side&6) && (connMap&0x100<<Rotation.rotationTo(this.side, side)) != 0)
             return 0;
 
         return rsLevel();
@@ -85,7 +85,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     public int rsLevel()
     {
         if (WirePropogator.redwiresProvidePower)
-            return ((signal & 0xFF) + 16) / 17;
+            return ((signal&0xFF)+16)/17;
 
         return 0;
     }
@@ -100,7 +100,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     public boolean connectionOpen(int r)
     {
         int absDir = Rotation.rotateSide(side, r);
-        return (((TRedstoneTile) tile()).openConnections(absDir) & 1 << Rotation.rotationTo(absDir & 6, side)) != 0;
+        return (((TRedstoneTile)tile()).openConnections(absDir)&1<<Rotation.rotationTo(absDir&6, side)) != 0;
     }
 
     @Override
@@ -120,7 +120,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     {
         if (p instanceof IFaceRedstonePart)
         {
-            IRedstonePart rsPart = (IRedstonePart) p;
+            IRedstonePart rsPart = (IRedstonePart)p;
             return rsPart.canConnectRedstone(side);
         }
 
@@ -144,7 +144,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         }
         else if (newSignal > getRedwireSignal())
         {
-            signal = (byte) newSignal;
+            signal = (byte)newSignal;
             if (mode == DROPPING)
                 propogate(null, RISING);
             else
@@ -173,12 +173,15 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         for (int r = 0; r < 4; r++)
             if (maskConnects(r))
             {
-                if ((connMap & 1 << r) != 0) {
+                if ((connMap&1<<r) != 0)
+                {
                     i = calculateCornerSignal(r);
                     if (i > s) s = i;
                 }
-                else {
-                    if ((connMap & 0x10 << r) != 0) {
+                else
+                {
+                    if ((connMap&0x10<<r) != 0)
+                    {
                         i = calculateStraightSignal(r);
                         if (i > s) s = i;
                     }
@@ -190,7 +193,8 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         i = calculateUndersideSignal();
         if (i > s) s = i;
 
-        if ((connMap & 0x10000) != 0) {
+        if ((connMap&0x10000) != 0)
+        {
             i = calculateCenterSignal();
             if (i > s) s = i;
         }
@@ -210,9 +214,9 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
         {
-            TMultiPart tp = t.partMap(absDir ^ 1);
+            TMultiPart tp = t.partMap(absDir^1);
             if (tp != null)
-                return getPartSignal(tp, Rotation.rotationTo(absDir ^ 1, side ^ 1));
+                return getPartSignal(tp, Rotation.rotationTo(absDir^1, side^1));
         }
 
         return 0;
@@ -228,14 +232,14 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
         {
             TMultiPart tp = t.partMap(side);
             if (tp != null)
-                return getPartSignal(tp, (r + 2) % 4);
+                return getPartSignal(tp, (r+2)%4);
         }
 
         int blockID = world().getBlockId(pos.x, pos.y, pos.z);
         if (blockID == Block.redstoneWire.blockID)
-            return world().getBlockMetadata(pos.x, pos.y, pos.z) - 1;
+            return world().getBlockMetadata(pos.x, pos.y, pos.z)-1;
 
-        return RedstoneInteractions.getPowerTo(this, absDir) * 17;
+        return RedstoneInteractions.getPowerTo(this, absDir)*17;
     }
 
     public int calculateInternalSignal(int r)
@@ -258,15 +262,15 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
 
     public int getPartSignal(TMultiPart part, int r)
     {
-        if (part instanceof IRedwirePart && ((IRedwirePart) part).isWireSide(r))
-            return ((IRedwirePart) part).getRedwireSignal(r) - 1;
+        if (part instanceof IRedwirePart && ((IRedwirePart)part).isWireSide(r))
+            return ((IRedwirePart)part).getRedwireSignal(r)-1;
         else if (part instanceof IRedwireEmitter)
-            return ((IRedwireEmitter) part).getRedwireSignal(r);
+            return ((IRedwireEmitter)part).getRedwireSignal(r);
         else if (part instanceof IFaceRedstonePart)
         {
-            IFaceRedstonePart rp = (IFaceRedstonePart) part;
+            IFaceRedstonePart rp = (IFaceRedstonePart)part;
             int side = Rotation.rotateSide(rp.getFace(), r);
-            return Math.max(rp.strongPowerLevel(side), rp.weakPowerLevel(side)) * 17;
+            return Math.max(rp.strongPowerLevel(side), rp.weakPowerLevel(side))*17;
         }
 
         return 0;
@@ -274,7 +278,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
 
     public int getRedwireSignal()
     {
-        return signal & 0xFF;
+        return signal&0xFF;
     }
 
     @Override
@@ -286,7 +290,7 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     @Override
     protected boolean debug(EntityPlayer ply)
     {
-        ply.sendChatToPlayer(ChatMessageComponent.createFromTranslationKey((world().isRemote ? "Client" : "Server") + " signal strength: " + getRedwireSignal()));
+        ply.sendChatToPlayer(ChatMessageComponent.createFromTranslationKey((world().isRemote ? "Client" : "Server")+" signal strength: "+getRedwireSignal()));
         return true;
     }
 
@@ -294,14 +298,14 @@ public abstract class RedwirePart extends WirePart implements IRedwirePart, IFac
     protected boolean test(EntityPlayer player)
     {
         if (BasicUtils.isClient(world()))
-            Messenger.addMessage(x(), y() + .5f, z(), "/#f/#c[c] = " + getRedwireSignal());
+            Messenger.addMessage(x(), y()+.5f, z(), "/#f/#c[c] = "+getRedwireSignal());
         else
         {
             PacketCustom packet = new PacketCustom(CoreSPH.channel(), CoreSPH.messagePacket());
-            packet.writeDouble(x() + 0.0D);
-            packet.writeDouble(y() + 0.5D);
-            packet.writeDouble(z() + 0.0D);
-            packet.writeString("/#c[s] = " + getRedwireSignal());
+            packet.writeDouble(x()+0.0D);
+            packet.writeDouble(y()+0.5D);
+            packet.writeDouble(z()+0.0D);
+            packet.writeString("/#c[s] = "+getRedwireSignal());
             packet.sendToPlayer(player);
         }
         return true;

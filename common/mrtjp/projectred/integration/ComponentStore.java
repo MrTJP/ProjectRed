@@ -20,25 +20,25 @@ import java.util.Map;
 
 public class ComponentStore
 {
-    public static CCModel base;
-    public static CCModel lightChip;
-    public static CCModel leverOn;
-    public static CCModel leverOff;
-    public static CCModel solarArray;
-    public static CCModel rainSensor;
-    public static CCModel pointer;
-    public static CCModel busXcvr;
-    public static CCModel busXcvrPanel;
+    public static CCModel base = loadBase("base");
+    public static CCModel lightChip = loadModel("chip");
+    public static CCModel leverOn = loadModel("leveron");
+    public static CCModel leverOff = loadModel("leveroff");
+    public static CCModel solarArray = loadModel("solar");
+    public static CCModel rainSensor = loadModel("rainsensor");
+    public static CCModel pointer = loadModel("pointer");
+    public static CCModel busXcvr = loadModel("array/busxcvr");
+    public static CCModel busXcvrPanel = loadModel("array/busxcvrpanel");
 
-    public static CCModel nullCellWireBottom;
-    public static CCModel nullCellWireTop;
-    public static CCModel nullCellBase;
-    public static CCModel extendedCellWireBottom;
-    public static CCModel extendedCellWireTop;
-    public static CCModel extendedCellBase;
-    public static CCModel cellWireSide;
-    public static CCModel cellFrame;
-    public static CCModel cellPlate;
+    public static CCModel nullCellWireBottom = loadModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5));
+    public static CCModel nullCellWireTop = loadModel("array/nullcelltopwire").apply(new Translation(0.5, 0, 0.5));
+    public static CCModel nullCellBase = loadBase("array/nullcellbase");
+    public static CCModel extendedCellWireBottom = loadModel("array/extendedcellbottomwire").apply(new Translation(0.5, 0, 0.5));
+    public static CCModel extendedCellWireTop = loadModel("array/extendedcelltopwire").apply(new Translation(0.5, 0, 0.5));
+    public static CCModel extendedCellBase = loadBase("array/extendedcellbase");
+    public static CCModel cellWireSide = loadModel("array/cellsidewire").apply(new Translation(0.5, 0, 0.5));
+    public static CCModel cellFrame = loadModel("array/cellstand").apply(new Translation(0.5, 0, 0.5));
+    public static CCModel cellPlate = loadModel("array/cellplate").apply(new Translation(0.5, 0, 0.5));
 
     public static Icon baseIcon;
     public static Icon[] wireIcons = new Icon[3];
@@ -54,29 +54,6 @@ public class ComponentStore
     public static Icon pointerIcon;
     public static Icon busXcvrIcon;
     public static Icon cellIcon;
-
-    static
-    {
-        base = loadBase("base");
-        lightChip = loadModel("chip");
-        solarArray = loadModel("solar");
-        rainSensor = loadModel("rainsensor");
-        leverOff = loadModel("leveroff");
-        leverOn = loadModel("leveron");
-        pointer = loadModel("pointer");
-        busXcvr = loadModel("array/busxcvr");
-        busXcvrPanel = loadModel("array/busxcvrpanel");
-
-        nullCellWireBottom = loadModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5));
-        nullCellWireTop = loadModel("array/nullcelltopwire").apply(new Translation(0.5, 0, 0.5));
-        nullCellBase = loadBase("array/nullcellbase");
-        extendedCellWireBottom = loadModel("array/extendedcellbottomwire").apply(new Translation(0.5, 0, 0.5));
-        extendedCellWireTop = loadModel("array/extendedcelltopwire").apply(new Translation(0.5, 0, 0.5));
-        extendedCellBase = loadBase("array/extendedcellbase");
-        cellWireSide = loadModel("array/cellsidewire").apply(new Translation(0.5, 0, 0.5));
-        cellFrame = loadModel("array/cellstand").apply(new Translation(0.5, 0, 0.5));
-        cellPlate = loadModel("array/cellplate").apply(new Translation(0.5, 0, 0.5));
-    }
 
     public static Map<String, CCModel> loadModels(String name)
     {
@@ -122,32 +99,32 @@ public class ComponentStore
     public static void registerIcons(IconRegister r)
     {
         String baseTex = "projectred:gates/";
-        baseIcon = r.registerIcon(baseTex + "base");
-        wireIcons[0] = r.registerIcon(baseTex + "surface/bordermatte");
-        wireIcons[1] = r.registerIcon(baseTex + "surface/wirematte-OFF");
-        wireIcons[2] = r.registerIcon(baseTex + "surface/wirematte-ON");
+        baseIcon = r.registerIcon(baseTex+"base");
+        wireIcons[0] = r.registerIcon(baseTex+"surface/bordermatte");
+        wireIcons[1] = r.registerIcon(baseTex+"surface/wirematte-OFF");
+        wireIcons[2] = r.registerIcon(baseTex+"surface/wirematte-ON");
         for (int i = 0; i < 3; i++)
         {
             ResourceLocation res = new ResourceLocation(wireIcons[i].getIconName());
-            wireData[i] = TextureUtils.loadTextureColours(new ResourceLocation(res.getResourceDomain(), "textures/blocks/" + res.getResourcePath() + ".png"));
+            wireData[i] = TextureUtils.loadTextureColours(new ResourceLocation(res.getResourceDomain(), "textures/blocks/"+res.getResourcePath()+".png"));
         }
         redstoneTorchIcons[0] = r.registerIcon("redstone_torch_off");
         redstoneTorchIcons[1] = r.registerIcon("redstone_torch_on");
-        taintedChipIcons[0] = r.registerIcon(baseTex + "yellowchipoff");
-        taintedChipIcons[1] = r.registerIcon(baseTex + "yellowchipon");
-        redstoneChipIcons[0] = r.registerIcon(baseTex + "redchipoff");
-        redstoneChipIcons[1] = r.registerIcon(baseTex + "redchipon");
-        minusChipIcons[0] = r.registerIcon(baseTex + "minuschipoff");
-        minusChipIcons[1] = r.registerIcon(baseTex + "minuschipon");
-        plusChipIcons[0] = r.registerIcon(baseTex + "pluschipoff");
-        plusChipIcons[1] = r.registerIcon(baseTex + "pluschipon");
+        taintedChipIcons[0] = r.registerIcon(baseTex+"yellowchipoff");
+        taintedChipIcons[1] = r.registerIcon(baseTex+"yellowchipon");
+        redstoneChipIcons[0] = r.registerIcon(baseTex+"redchipoff");
+        redstoneChipIcons[1] = r.registerIcon(baseTex+"redchipon");
+        minusChipIcons[0] = r.registerIcon(baseTex+"minuschipoff");
+        minusChipIcons[1] = r.registerIcon(baseTex+"minuschipon");
+        plusChipIcons[0] = r.registerIcon(baseTex+"pluschipoff");
+        plusChipIcons[1] = r.registerIcon(baseTex+"pluschipon");
         for (int i = 0; i < 3; i++)
-            solarIcons[i] = r.registerIcon(baseTex + "solar" + i);
-        rainIcon = r.registerIcon(baseTex + "rainsensor");
-        leverIcon = r.registerIcon(baseTex + "lever");
-        pointerIcon = r.registerIcon(baseTex + "pointer");
-        busXcvrIcon = r.registerIcon(baseTex + "busxcvr");
-        cellIcon = r.registerIcon(baseTex + "cells");
+            solarIcons[i] = r.registerIcon(baseTex+"solar"+i);
+        rainIcon = r.registerIcon(baseTex+"rainsensor");
+        leverIcon = r.registerIcon(baseTex+"lever");
+        pointerIcon = r.registerIcon(baseTex+"pointer");
+        busXcvrIcon = r.registerIcon(baseTex+"busxcvr");
+        cellIcon = r.registerIcon(baseTex+"cells");
 
         RenderGate.registerIcons(r);
     }
@@ -156,13 +133,13 @@ public class ComponentStore
     {
         WireComponentModel[] models = new WireComponentModel[count];
         for (int i = 0; i < count; i++)
-            models[i] = generateWireModel(name + "-" + i);
+            models[i] = generateWireModel(name+"-"+i);
         return models;
     }
 
     public static WireComponentModel generateWireModel(String name)
     {
-        Colour[] data = TextureUtils.loadTextureColours(new ResourceLocation("projectred:textures/blocks/gates/surface/" + name + ".png"));
+        Colour[] data = TextureUtils.loadTextureColours(new ResourceLocation("projectred:textures/blocks/gates/surface/"+name+".png"));
         WireComponentModel m = new WireComponentModel();
         if (Configurator.logicwires3D)
             new WireModel3D(data).bind(m);
@@ -173,7 +150,7 @@ public class ComponentStore
 
     public static Transformation orientT(int orient)
     {
-        Transformation t = Rotation.sideOrientation(orient % 24 >> 2, orient & 3);
+        Transformation t = Rotation.sideOrientation(orient%24>>2, orient&3);
         if (orient >= 24)
             t = new Scale(-1, 1, 1).with(t);
 
@@ -197,19 +174,19 @@ public class ComponentStore
 
     public static CCModel[] bakeDynamic(CCModel base)
     {
-        return new CCModel[] { base.copy(), reverseFacing(base.copy()) };
+        return new CCModel[]{base.copy(), reverseFacing(base.copy())};
     }
 
     public static CCModel reverseFacing(CCModel m)
     {
         for (int i = 0; i < m.verts.length; i += 4)
         {
-            Vertex5 vtmp = m.verts[i + 1];
-            Vector3 ntmp = m.normals[i + 1];
-            m.verts[i + 1] = m.verts[i + 3];
-            m.normals[i + 1] = m.normals[i + 3];
-            m.verts[i + 3] = vtmp;
-            m.normals[i + 3] = ntmp;
+            Vertex5 vtmp = m.verts[i+1];
+            Vector3 ntmp = m.normals[i+1];
+            m.verts[i+1] = m.verts[i+3];
+            m.normals[i+1] = m.normals[i+3];
+            m.verts[i+3] = vtmp;
+            m.normals[i+3] = ntmp;
         }
         return m;
     }
@@ -236,7 +213,7 @@ public class ComponentStore
         @Override
         public void renderModel(Transformation t, int orient)
         {
-            models[orient % 24].render(t, new IconTransformation(baseIcon));
+            models[orient%24].render(t, new IconTransformation(baseIcon));
         }
     }
 
@@ -252,7 +229,7 @@ public class ComponentStore
 
         public SingleComponentModel(CCModel m, Vector3 pos)
         {
-            this(m.copy().apply(pos.multiply(1 / 16D).translation()));
+            this(m.copy().apply(pos.multiply(1/16D).translation()));
         }
 
         public abstract IUVTransformation getUVT();
@@ -279,7 +256,7 @@ public class ComponentStore
             models = new CCModel[m.length][48];
             for (int j = 0; j < m.length; j++)
                 for (int i = 0; i < 48; i++)
-                    models[j][i] = bakeCopy(m[j].copy().apply(pos.copy().multiply(1 / 16D).translation()), i);
+                    models[j][i] = bakeCopy(m[j].copy().apply(pos.copy().multiply(1/16D).translation()), i);
 
         }
 
@@ -396,34 +373,34 @@ public class ComponentStore
             for (int y = 0; y <= 30; y++)
                 for (int x = 0; x <= 30; x++)
                 {
-                    if (data[y * 32 + x].rgba() != -1)
+                    if (data[y*32+x].rgba() != -1)
                         continue;
 
                     if (overlap(wireCorners, x, y))
                         continue;
 
                     if (!segment2x2(data, x, y))
-                        throw new RuntimeException("Wire segment not 2x2 at (" + x + ", " + y + ")");
+                        throw new RuntimeException("Wire segment not 2x2 at ("+x+", "+y+")");
 
-                    wireCorners[y * 32 + x] = true;
+                    wireCorners[y*32+x] = true;
                 }
 
             List<Rectangle4i> wireRectangles = new LinkedList<Rectangle4i>();
             for (int i = 0; i < 1024; i++)
                 if (wireCorners[i])
                 {
-                    Rectangle4i rect = new Rectangle4i(i % 32, i / 32, 0, 0);
-                    int x = rect.x + 2;
-                    while (x < 30 && wireCorners[rect.y * 32 + x])
+                    Rectangle4i rect = new Rectangle4i(i%32, i/32, 0, 0);
+                    int x = rect.x+2;
+                    while (x < 30 && wireCorners[rect.y*32+x])
                         x += 2;
-                    rect.w = x - rect.x;
+                    rect.w = x-rect.x;
 
-                    int y = rect.y + 2;
+                    int y = rect.y+2;
                     while (y < 30)
                     {
                         boolean advance = true;
-                        for (int dx = rect.x; dx < rect.x + rect.w && advance; dx += 2)
-                            if (!wireCorners[y * 32 + dx])
+                        for (int dx = rect.x; dx < rect.x+rect.w && advance; dx += 2)
+                            if (!wireCorners[y*32+dx])
                                 advance = false;
 
                         if (!advance)
@@ -431,11 +408,11 @@ public class ComponentStore
 
                         y += 2;
                     }
-                    rect.h = y - rect.y;
+                    rect.h = y-rect.y;
 
-                    for (int dy = rect.y; dy < rect.y + rect.h; dy += 2)
-                        for (int dx = rect.x; dx < rect.x + rect.w; dx += 2)
-                            wireCorners[dy * 32 + dx] = false;
+                    for (int dy = rect.y; dy < rect.y+rect.h; dy += 2)
+                        for (int dx = rect.x; dx < rect.x+rect.w; dx += 2)
+                            wireCorners[dy*32+dx] = false;
 
                     wireRectangles.add(rect);
                 }
@@ -445,17 +422,17 @@ public class ComponentStore
 
         private static boolean overlap(boolean[] wireCorners, int x, int y)
         {
-            return wireCorners[y * 32 + x - 1] || wireCorners[(y - 1) * 32 + x] || wireCorners[(y - 1) * 32 + x - 1];
+            return wireCorners[y*32+x-1] || wireCorners[(y-1)*32+x] || wireCorners[(y-1)*32+x-1];
         }
 
         private static boolean segment2x2(Colour[] data, int x, int y)
         {
-            return data[y * 32 + x + 1].rgba() == -1 && data[(y + 1) * 32 + x].rgba() == -1 && data[(y + 1) * 32 + x + 1].rgba() == -1;
+            return data[y*32+x+1].rgba() == -1 && data[(y+1)*32+x].rgba() == -1 && data[(y+1)*32+x+1].rgba() == -1;
         }
 
         public static Rectangle4i border(Rectangle4i wire)
         {
-            Rectangle4i border = new Rectangle4i(wire.x - 2, wire.y - 2, wire.w + 4, wire.h + 4);
+            Rectangle4i border = new Rectangle4i(wire.x-2, wire.y-2, wire.w+4, wire.h+4);
             if (border.x < 0)
             {
                 border.w += border.x;
@@ -466,10 +443,10 @@ public class ComponentStore
                 border.h += border.y;
                 border.y = 0;
             }
-            if (border.x + border.w >= 32)
-                border.w -= border.x + border.w - 32;
-            if (border.y + border.h >= 32)
-                border.h -= border.y + border.h - 32;
+            if (border.x+border.w >= 32)
+                border.w -= border.x+border.w-32;
+            if (border.y+border.h >= 32)
+                border.h -= border.y+border.h-32;
 
             return border;
         }
@@ -505,7 +482,7 @@ public class ComponentStore
         private static CCModel generateModel(Colour[] data)
         {
             List<Rectangle4i> wireRectangles = WireComponentModel.rectangulate(data);
-            CCModel model = CCModel.quadModel(wireRectangles.size() * 40);
+            CCModel model = CCModel.quadModel(wireRectangles.size()*40);
             int i = 0;
             for (Rectangle4i rect : wireRectangles)
             {
@@ -520,18 +497,18 @@ public class ComponentStore
         private static void generateWireSegment(CCModel model, int i, Rectangle4i rect)
         {
             generateWireSegment(model, i, WireComponentModel.border(rect), 0.01, 0);
-            generateWireSegment(model, i + 20, rect, 0.02, 1);
+            generateWireSegment(model, i+20, rect, 0.02, 1);
         }
 
         private static void generateWireSegment(CCModel model, int i, Rectangle4i rect, double h, int icon)
         {
-            double x1 = rect.x / 32D;
-            double x2 = (rect.x + rect.w) / 32D;
-            double z1 = rect.y / 32D;
-            double z2 = (rect.y + rect.h) / 32D;
-            double d = 0.0005 - h / 50D;// little offset for the wires go ontop of the border
-            model.generateBlock(i, x1 + d, 0.125, z1 + d, x2 - d, 0.125 + h, z2 - d, 1);
-            MultiIconTransformation.setIconIndex(model, i, i + 20, icon);
+            double x1 = rect.x/32D;
+            double x2 = (rect.x+rect.w)/32D;
+            double z1 = rect.y/32D;
+            double z2 = (rect.y+rect.h)/32D;
+            double d = 0.0005-h/50D;// little offset for the wires go ontop of the border
+            model.generateBlock(i, x1+d, 0.125, z1+d, x2-d, 0.125+h, z2-d, 1);
+            MultiIconTransformation.setIconIndex(model, i, i+20, icon);
         }
 
         @Override
@@ -553,7 +530,7 @@ public class ComponentStore
 
         static
         {
-            CCModel m = CCModel.quadModel(4).generateBlock(0, 0, 0, 0, 1, 1 / 8D + 0.002, 1, ~2).computeNormals();
+            CCModel m = CCModel.quadModel(4).generateBlock(0, 0, 0, 0, 1, 1/8D+0.002, 1, ~2).computeNormals();
             m.shrinkUVs(0.0005);
 
             for (int i = 0; i < 48; i++)
@@ -599,31 +576,31 @@ public class ComponentStore
                     fillMask(texMap, WireComponentModel.border(rect), 1);
                 }
 
-                int pSize = (int) Math.sqrt(wireData[0].length);
+                int pSize = (int)Math.sqrt(wireData[0].length);
                 int size = Math.max(32, pSize);
-                int relM = size / 32;
-                int relP = size / pSize;
+                int relM = size/32;
+                int relP = size/pSize;
 
-                int[] imageData = new int[size * size];
+                int[] imageData = new int[size*size];
                 for (int i = 0; i < imageData.length; i++)
                 {
-                    int x = i % size;
-                    int y = i / size;
-                    int type = texMap[y / relM * 32 + x / relM];
+                    int x = i%size;
+                    int y = i/size;
+                    int type = texMap[y/relM*32+x/relM];
                     if (type != 0)
-                        imageData[i] = wireData[type == 1 ? 0 : tex][y / relP * pSize + x / relP].argb();
+                        imageData[i] = wireData[type == 1 ? 0 : tex][y/relP*pSize+x/relP].argb();
                 }
 
-                icons[tex] = TextureUtils.getTextureSpecial(r, "projectred:gates/wire2d_" + iconIndex + "_" + tex).addTexture(new TextureDataHolder(imageData, size));
+                icons[tex] = TextureUtils.getTextureSpecial(r, "projectred:gates/wire2d_"+iconIndex+"_"+tex).addTexture(new TextureDataHolder(imageData, size));
             }
         }
 
         private void fillMask(int[] map, Rectangle4i r, int val)
         {
-            for (int i = r.x; i < r.x + r.w; i++)
-                for (int j = r.y; j < r.y + r.h; j++)
-                    if (map[j * 32 + i] < val)
-                        map[j * 32 + i] = val;
+            for (int i = r.x; i < r.x+r.w; i++)
+                for (int j = r.y; j < r.y+r.h; j++)
+                    if (map[j*32+i] < val)
+                        map[j*32+i] = val;
         }
     }
 
@@ -634,7 +611,7 @@ public class ComponentStore
         public RedstoneTorchModel(double x, double z, int height)
         {
             super(genModel(height, x, z));
-            lightPos = new Vector3(x, height - 1, z).multiply(1 / 16D);
+            lightPos = new Vector3(x, height-1, z).multiply(1/16D);
         }
 
         public RedstoneTorchModel(CCModel m)
@@ -645,13 +622,13 @@ public class ComponentStore
         public static CCModel genModel(int height, double x, double z)
         {
             CCModel m = CCModel.quadModel(20);
-            m.verts[0] = new Vertex5(7 / 16D, 10 / 16D, 9 / 16D, 7 / 16D, 8 / 16D);
-            m.verts[1] = new Vertex5(9 / 16D, 10 / 16D, 9 / 16D, 9 / 16D, 8 / 16D);
-            m.verts[2] = new Vertex5(9 / 16D, 10 / 16D, 7 / 16D, 9 / 16D, 6 / 16D);
-            m.verts[3] = new Vertex5(7 / 16D, 10 / 16D, 7 / 16D, 7 / 16D, 6 / 16D);
-            m.generateBlock(4, 6 / 16D, (10 - height) / 16D, 7 / 16D, 10 / 16D, 11 / 16D, 9 / 16D, 0x33);
-            m.generateBlock(12, 7 / 16D, (10 - height) / 16D, 6 / 16D, 9 / 16D, 11 / 16D, 10 / 16D, 0xF);
-            m.apply(new Translation(-0.5 + x / 16, (height - 10) / 16D, -0.5 + z / 16));
+            m.verts[0] = new Vertex5(7/16D, 10/16D, 9/16D, 7/16D, 8/16D);
+            m.verts[1] = new Vertex5(9/16D, 10/16D, 9/16D, 9/16D, 8/16D);
+            m.verts[2] = new Vertex5(9/16D, 10/16D, 7/16D, 9/16D, 6/16D);
+            m.verts[3] = new Vertex5(7/16D, 10/16D, 7/16D, 7/16D, 6/16D);
+            m.generateBlock(4, 6/16D, (10-height)/16D, 7/16D, 10/16D, 11/16D, 9/16D, 0x33);
+            m.generateBlock(12, 7/16D, (10-height)/16D, 6/16D, 9/16D, 11/16D, 10/16D, 0xF);
+            m.apply(new Translation(-0.5+x/16, (height-10)/16D, -0.5+z/16));
             m.computeNormals();
             m.shrinkUVs(0.0005);
             m.apply(new Scale(1.0005)); // Eliminates z-fighting when torch is on wire.
@@ -669,8 +646,8 @@ public class ComponentStore
     {
         public FlippedRSTorchModel(double x, double z)
         {
-            super(genModel(4, x, z).apply(new Rotation(180 * MathHelper.torad, 0, 0, 1).at(Vector3.center).with(new Translation(new Vector3(0, -6, 0).multiply(1 / 16D)))));
-            lightPos = new Vector3(x, 4 - 1, z).multiply(1 / 16D);
+            super(genModel(4, x, z).apply(new Rotation(180*MathHelper.torad, 0, 0, 1).at(Vector3.center).with(new Translation(new Vector3(0, -6, 0).multiply(1/16D)))));
+            lightPos = new Vector3(x, 4-1, z).multiply(1/16D);
         }
     }
 
@@ -768,19 +745,19 @@ public class ComponentStore
         public PointerModel(double x, double y, double z)
         {
             models = bakeDynamic(pointer);
-            pos = new Vector3(x, y - 1, z).multiply(1 / 16D);
+            pos = new Vector3(x, y-1, z).multiply(1/16D);
         }
 
         public PointerModel(double x, double y, double z, double scale)
         {
             models = bakeDynamic(pointer.copy().apply(new Scale(scale, 1, scale)));
-            pos = new Vector3(x, y - 1, z).multiply(1 / 16D);
+            pos = new Vector3(x, y-1, z).multiply(1/16D);
         }
 
         @Override
         public void renderModel(Transformation t, int orient)
         {
-            models[orient].render(new Rotation(-angle + MathHelper.pi, 0, 1, 0).with(pos.translation()).with(dynamicT(orient)).with(t), new IconTransformation(pointerIcon), LightModel.standardLightModel);
+            models[orient].render(new Rotation(-angle+MathHelper.pi, 0, 1, 0).with(pos.translation()).with(dynamicT(orient)).with(t), new IconTransformation(pointerIcon), LightModel.standardLightModel);
         }
     }
 
@@ -792,10 +769,10 @@ public class ComponentStore
 
             for (int orient = 0; orient < 48; orient++)
             {
-                int side = orient % 24 >> 2;
-                int r = orient & 3;
+                int side = orient%24>>2;
+                int r = orient&3;
                 boolean reflect = orient >= 24;
-                boolean rotate = (r + RenderWire.reorientSide[side]) % 4 >= 2;
+                boolean rotate = (r+RenderWire.reorientSide[side])%4 >= 2;
 
                 Transformation t = new RedundantTransformation();
                 if (reflect)
@@ -813,7 +790,7 @@ public class ComponentStore
     {
         public BusXcvrCableModel()
         {
-            super(busXcvr, new Vector3(8, 0, 8), 10 / 32D, 14 / 32D);
+            super(busXcvr, new Vector3(8, 0, 8), 10/32D, 14/32D);
         }
 
         @Override
@@ -832,16 +809,16 @@ public class ComponentStore
             for (int i = 0; i < 16; i++)
             {
                 CCModel m = CCModel.quadModel(4);
-                int x = i % 4;
-                int z = i / 4;
-                double y = 10 / 32D + 0.0001D;
-                m.verts[0] = new Vertex5(x, y, z + 1, x, z);
-                m.verts[1] = new Vertex5(x + 1, y, z + 1, x + 1, z);
-                m.verts[2] = new Vertex5(x + 1, y, z, x + 1, z + 1);
-                m.verts[3] = new Vertex5(x, y, z, x, z + 1);
-                m.apply(new Scale(1 / 16D, 1, 1 / 16D).with(new Translation(-2 / 16D, 0, -2 / 16D)));
+                int x = i%4;
+                int z = i/4;
+                double y = 10/32D+0.0001D;
+                m.verts[0] = new Vertex5(x, y, z+1, x, z);
+                m.verts[1] = new Vertex5(x+1, y, z+1, x+1, z);
+                m.verts[2] = new Vertex5(x+1, y, z, x+1, z+1);
+                m.verts[3] = new Vertex5(x, y, z, x, z+1);
+                m.apply(new Scale(1/16D, 1, 1/16D).with(new Translation(-2/16D, 0, -2/16D)));
                 m.apply(new UVTranslation(22, 0));
-                m.apply(new UVScale(1 / 32D));
+                m.apply(new UVScale(1/32D));
                 m.computeNormals();
                 m.shrinkUVs(0.0005);
                 displayModels[i] = m;
@@ -856,7 +833,7 @@ public class ComponentStore
         public BusXcvrPanelModel(double x, double z, boolean flip)
         {
             this.flip = flip;
-            pos = new Vector3(x, 0, z).multiply(1 / 16D);
+            pos = new Vector3(x, 0, z).multiply(1/16D);
 
             CCModel base = busXcvrPanel.copy();
             if (flip)
@@ -876,12 +853,12 @@ public class ComponentStore
 
             Vector3 displayPos = pos.copy();
             if (orient >= 24)// flipped x
-                displayPos.x = 1 - displayPos.x;
+                displayPos.x = 1-displayPos.x;
 
             Transformation displayT = flip ? new RedundantTransformation() : Rotation.quarterRotations[2];
-            displayT = displayT.with(displayPos.translation()).with(orientT(orient % 24)).with(t);
+            displayT = displayT.with(displayPos.translation()).with(orientT(orient%24)).with(t);
             for (int i = 0; i < 16; i++)
-                if ((signal & 1 << i) != 0)
+                if ((signal&1<<i) != 0)
                     displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel);
         }
     }
@@ -893,7 +870,7 @@ public class ComponentStore
 
         public static int signalColour(byte signal)
         {
-            return (signal & 0xFF) / 2 + 60 << 24 | 0xFF;
+            return (signal&0xFF)/2+60<<24|0xFF;
         }
 
         @Override
@@ -901,7 +878,7 @@ public class ComponentStore
         {
             if (invColour)
             {
-                CCRenderState.setColour(signalColour((byte) 0));
+                CCRenderState.setColour(signalColour((byte)0));
                 renderWire(t, orient, null);
                 CCRenderState.setColour(-1);
             }
@@ -919,8 +896,8 @@ public class ComponentStore
 
         static
         {
-            CCModel cellWireLeft = cellWireSide.copy().apply(new Translation(-7.001 / 16D, 0, 0));
-            CCModel cellWireRight = cellWireSide.copy().apply(new Translation(7.001 / 16D, 0, 0));
+            CCModel cellWireLeft = cellWireSide.copy().apply(new Translation(-7.001/16D, 0, 0));
+            CCModel cellWireRight = cellWireSide.copy().apply(new Translation(7.001/16D, 0, 0));
             for (int i = 0; i < 24; i++)
             {
                 left[i] = bakeCopy(cellWireLeft, i);
@@ -942,9 +919,9 @@ public class ComponentStore
         {
             IconTransformation icont = new IconTransformation(cellIcon);
             top[orient].render(t, icont, colour);
-            if ((conn & 2) == 0)
+            if ((conn&2) == 0)
                 right[orient].render(t, icont, colour);
-            if ((conn & 8) == 0)
+            if ((conn&8) == 0)
                 left[orient].render(t, icont, colour);
         }
     }

@@ -30,11 +30,12 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
     }
 
     @Override
-    public boolean connectStraightOverride(int absDir) {
+    public boolean connectStraightOverride(int absDir)
+    {
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
-        if(t instanceof IBundledTile)
-            return ((IBundledTile) t).canConnectBundled(absDir^1);
+        if (t instanceof IBundledTile)
+            return ((IBundledTile)t).canConnectBundled(absDir^1);
 
         return false;
     }
@@ -42,11 +43,11 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
     public byte[] getBundledInput(int r)
     {
         r = toAbsolute(r);
-        if ((connMap & 1 << r) != 0)
+        if ((connMap&1<<r) != 0)
             return calculateBundledCornerSignal(r);
-        else if ((connMap & 0x10 << r) != 0)
+        else if ((connMap&0x10<<r) != 0)
             return calculateBundledStraightSignal(r);
-        else if ((connMap & 0x100 << r) != 0)
+        else if ((connMap&0x100<<r) != 0)
             return calculateBundledInternalSignal(r);
 
         return null;
@@ -59,7 +60,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
         BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
-            return getBundledPartSignal(t.partMap(absDir ^ 1), Rotation.rotationTo(absDir ^ 1, side() ^ 1));
+            return getBundledPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side()^1));
 
         return null;
     }
@@ -71,9 +72,9 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
         if (t instanceof IBundledEmitter)
-            return getBundledPartSignal(t, absDir ^ 1);
+            return getBundledPartSignal(t, absDir^1);
         else if (t instanceof TileMultipart)
-            return getBundledPartSignal(((TileMultipart) t).partMap(side()), (r + 2) % 4);
+            return getBundledPartSignal(((TileMultipart)t).partMap(side()), (r+2)%4);
 
         return null;
     }
@@ -89,7 +90,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
     public byte[] getBundledPartSignal(Object part, int r)
     {
         if (part instanceof IBundledEmitter)
-            return ((IBundledEmitter) part).getBundledSignal(r);
+            return ((IBundledEmitter)part).getBundledSignal(r);
 
         return null;
     }
@@ -145,6 +146,6 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
     public byte[] getBundledSignal(int r)
     {
         int ir = toInternal(r);
-        return (getLogic().bundledOutputMask(shape()) & 1<<ir) != 0 ? getLogic().getBundledOutput(this, ir) : null;
+        return (getLogic().bundledOutputMask(shape())&1<<ir) != 0 ? getLogic().getBundledOutput(this, ir) : null;
     }
 }
