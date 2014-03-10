@@ -44,7 +44,7 @@ public class ItemPartFramedWire extends JItemMultiPart
         WireDef type = WireDef.VALID_WIRE()[item.getItemDamage()];
         FramedWirePart w = (FramedWirePart) MultiPartRegistry.createPart(type.framedType(), false);
         if (w != null)
-            w.preparePlacement(item.getItemDamage());
+            w.preparePlacement(side, item.getItemDamage());
         return w;
     }
 

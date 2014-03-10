@@ -12,7 +12,7 @@ abstract class PowerWire extends WirePart with TPowerConnectable
 {
     val cond:PowerConductor
 
-    protected override def debug(player:EntityPlayer) = false
+    override def debug(player:EntityPlayer) = false
 
     override def test(player:EntityPlayer):Boolean =
     {
@@ -30,7 +30,7 @@ abstract class PowerWire extends WirePart with TPowerConnectable
         true
     }
 
-    def updateAndPropogate(prev:TMultiPart, mode:Int) {}
+    override def updateAndPropagate(prev:TMultiPart, mode:Int) {}
 
     override def conductor(side:Int) = cond
     override def conductorOut(id:Int):PowerConductor =
@@ -85,7 +85,7 @@ abstract class PowerWire extends WirePart with TPowerConnectable
 
     override def doesTick = true
 
-    override def connectStraightOverride(absDir:Int):Boolean =
+    override def discoverStraightOverride(absDir:Int):Boolean =
     {
         val pos = new BlockCoord(tile).offset(absDir)
         val t = BasicUtils.getTileEntity(world, pos, classOf[TPowerConnectable])
@@ -94,7 +94,7 @@ abstract class PowerWire extends WirePart with TPowerConnectable
         false
     }
 
-    override def connectCornerOverride(absDir:Int):Boolean =
+    override def discoverCornerOverride(absDir:Int):Boolean =
     {
         val pos = new BlockCoord(tile)
         pos.offset(absDir)
@@ -129,7 +129,7 @@ abstract class FramedPowerWire extends FramedWirePart with TPowerConnectable
 {
     val cond:PowerConductor
 
-    override def updateAndPropogate(prev:TMultiPart, mode:Int) {}
+    override def updateAndPropagate(prev:TMultiPart, mode:Int) {}
 
     override def test(player:EntityPlayer):Boolean =
     {
@@ -176,7 +176,7 @@ abstract class FramedPowerWire extends FramedWirePart with TPowerConnectable
 
     override def doesTick = true
 
-    override def connectStraightOverride(s:Int):Boolean =
+    override def discoverStraightOverride(s:Int):Boolean =
     {
         val pos = new BlockCoord(tile).offset(s)
         val tp = BasicUtils.getTileEntity(world, pos, classOf[TPowerConnectable])

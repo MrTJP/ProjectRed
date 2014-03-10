@@ -38,14 +38,12 @@ public class ItemBackpack extends Item
 
     public static IInventory getBackpackInventory(EntityPlayer player)
     {
-        SimpleInventory inv = null;
         ItemStack held = player.getHeldItem();
         if (held != null && held.itemID == ProjectRedExploration.itemBackpack().itemID)
         {
-            inv = new BagInventory(player, held);
-            inv.load(held.getTagCompound(), "conents");
+            return new BagInventory(player, held);
         }
-        return inv;
+        else return null;
     }
 
     public static Container getContainer(final EntityPlayer player)
@@ -70,9 +68,9 @@ public class ItemBackpack extends Item
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 9; j++)
             {
-                final int slotNumber = i * 9 + j;
-                int x = 8 + j * 18;
-                int y = 18 + i * 18;
+                int slotNumber = i*9+j;
+                int x = 8+j*18;
+                int y = 18+i*18;
 
                 SlotExtended s = new SlotExtended(backpackInv, slotNumber, x, y).setCheck(InventoryRulesController.instance);
 
@@ -139,7 +137,6 @@ public class ItemBackpack extends Item
     {
         public ItemStack bag;
         public EntityPlayer player;
-        public boolean isLoading = false;
 
         public BagInventory(EntityPlayer player, ItemStack bag)
         {
@@ -149,25 +146,35 @@ public class ItemBackpack extends Item
             loadInventory();
         }
 
+        private void loadInventory()
+        {
+            assertNBT(bag);
+            if (bag.getTagCompound().getBoolean("notLegacy"))//legacy loading TODO remove at some point
+                load(bag.getTagCompound().getCompoundTag("baginv"));
+            else load(bag.getTagCompound());
+        }
+
+        private void saveInventory()
+        {
+            NBTTagCompound nbt = new NBTTagCompound();
+            save(nbt);
+            assertNBT(bag);
+            bag.getTagCompound().setCompoundTag("baginv", nbt);
+            bag.getTagCompound().setBoolean("notLegacy", true); //legacy loading TODO remove at some point
+            refreshNBT();
+        }
+
+        private void refreshNBT()
+        {
+            ItemStack currentBag = player.getHeldItem();
+            if (currentBag != null && currentBag.itemID == ProjectRedExploration.itemBackpack().itemID)
+                currentBag.setTagCompound(bag.getTagCompound());
+        }
+
         @Override
         public void onInventoryChanged()
         {
             super.onInventoryChanged();
-            if (!isLoading)
-                saveInventory();
-        }
-
-        @Override
-        public void openChest()
-        {
-            isLoading = true;
-            loadInventory();
-            isLoading = false;
-        }
-
-        @Override
-        public void closeChest()
-        {
             saveInventory();
         }
 
@@ -191,31 +198,6 @@ public class ItemBackpack extends Item
         private void assertNBT(ItemStack s)
         {
             if (!s.hasTagCompound()) s.setTagCompound(new NBTTagCompound());
-        }
-
-        private void loadInventory()
-        {
-            assertNBT(bag);
-            if (bag.getTagCompound().getBoolean("notLegacy"))//legacy loading TODO remove at some point
-                load(bag.getTagCompound().getCompoundTag("baginv"));
-            else load(bag.getTagCompound());
-        }
-
-        private void saveInventory()
-        {
-            NBTTagCompound nbt = new NBTTagCompound();
-            save(nbt);
-            assertNBT(bag);
-            bag.getTagCompound().setCompoundTag("baginv", nbt);
-            nbt.setBoolean("notLegacy", true); //legacy loading TODO remove at some point
-            refreshNBT();
-        }
-
-        private void refreshNBT()
-        {
-            ItemStack currentBag = player.getHeldItem();
-            if (currentBag != null && currentBag.itemID == ProjectRedExploration.itemBackpack().itemID)
-                currentBag.setTagCompound(bag.getTagCompound());
         }
     }
 
@@ -273,5 +255,4 @@ public class ItemBackpack extends Item
                 OreDictionary.registerOre(oreDictDefinition, b.getItemStack());
         }
     }
-
 }

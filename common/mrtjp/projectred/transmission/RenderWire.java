@@ -401,7 +401,7 @@ public class RenderWire
 
     public static int modelKey(WirePart w)
     {
-        return modelKey(w.side, w.getThickness(), w.connMap);
+        return modelKey(w.side(), w.getThickness(), w.connMap());
     }
 
     public static CCModel getOrGenerateModel(int key)
@@ -414,7 +414,7 @@ public class RenderWire
 
     public static void render(WirePart w, Vector3 pos)
     {
-        IVertexModifier m = w.getColour() == -1 ? ColourModifier.instance : new ColourMultiplier(w.getColour());
+        IVertexModifier m = w.renderHue() == -1 ? ColourModifier.instance : new ColourMultiplier(w.renderHue());
         getOrGenerateModel(modelKey(w)).render(new Translation(pos), new IconTransformation(w.getIcon()), m);
     }
 

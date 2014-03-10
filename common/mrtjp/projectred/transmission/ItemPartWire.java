@@ -43,7 +43,7 @@ public class ItemPartWire extends JItemMultiPart
     @Override
     public TMultiPart newPart(ItemStack item, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 vhit)
     {
-        BlockCoord onPos = pos.copy().offset(side ^ 1);
+        BlockCoord onPos = pos.copy().offset(side^1);
         if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false))
             return null;
 

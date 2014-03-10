@@ -13,9 +13,9 @@ import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
-import static mrtjp.projectred.transmission.FramedWirePart.boundingBoxes;
 import static mrtjp.projectred.transmission.RenderWire.addVerts;
 import static mrtjp.projectred.transmission.RenderWire.finishModel;
+import static mrtjp.projectred.transmission.WireBoxes.fOBounds;
 
 public class RenderFramedWire
 {
@@ -339,7 +339,7 @@ public class RenderFramedWire
         private IndexedCuboid6[] generateJacketedBoxes()
         {
             if (connCount == 0)
-                return new IndexedCuboid6[] { new IndexedCuboid6(0, boundingBoxes[6]) };
+                return new IndexedCuboid6[] { new IndexedCuboid6(0, fOBounds()[6]) };
 
             int n = 0;
             for (int a = 0; a < 3; a++)
@@ -364,18 +364,18 @@ public class RenderFramedWire
 
             Cuboid6 box;
             if (mask == 1)
-                box = boundingBoxes[0].copy();
+                box = fOBounds()[0].copy();
             else if (mask == 2)
-                box = boundingBoxes[1].copy();
+                box = fOBounds()[1].copy();
             else
             {// mask == 3
-                box = boundingBoxes[0].copy();
+                box = fOBounds()[0].copy();
                 box.max.y = 1;
             }
             box.apply(Rotation.sideRotations[a * 2].at(Vector3.center));
 
             if (first)
-                box.enclose(boundingBoxes[6]);
+                box.enclose(fOBounds()[6]);
 
             int fMask;
             if (first || mask == 3)
@@ -462,7 +462,7 @@ public class RenderFramedWire
 
     public static int modelKey(FramedWirePart w)
     {
-        return modelKey(w.getThickness(), w.connMap);
+        return modelKey(w.getThickness(), w.connMap());
     }
 
     public static CCModel getOrGenerateWireModel(int key)
@@ -492,16 +492,16 @@ public class RenderFramedWire
         int key = modelKey(w);
 
         IUVTransformation uvt = new IconTransformation(w.getIcon());
-        IVertexModifier m = w.getColour() == -1 ? ColourModifier.instance : new ColourMultiplier(w.getColour());
+        IVertexModifier m = w.renderHue() == -1 ? ColourModifier.instance : new ColourMultiplier(w.renderHue());
 
-        if (w.material == 0)
+        if (w.material() == 0)
         {
             Transformation t = new Translation(pos);
             getOrGenerateWireModel(key).render(t, uvt, m);
             renderWireFrame(key, t, uvt);
         }
         else
-            getOrGenerateJacketedModel(key).render(w, pos, olm, uvt, m, w.material);
+            getOrGenerateJacketedModel(key).render(w, pos, olm, uvt, m, w.material());
     }
 
     private static void renderWireFrame(int key, Transformation t, IUVTransformation uvt)

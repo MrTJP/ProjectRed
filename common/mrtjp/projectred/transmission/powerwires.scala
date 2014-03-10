@@ -12,7 +12,7 @@ class PowerWire_100v extends PowerWire
 
     def getWireType = WireDef.POWER_100v
 
-    override def canConnectToType(part:IConnectable) =
+    override def canConnectPart(part:IConnectable, r:Int) =
         part.isInstanceOf[PowerWire_100v] ||
             part.isInstanceOf[FramedPowerWire_100v] ||
             (!part.isInstanceOf[WirePart] && part.isInstanceOf[TPowerConnectable])
@@ -28,7 +28,7 @@ class FramedPowerWire_100v extends FramedPowerWire
 
     override def getWireType = WireDef.POWER_100v
 
-    override def canConnectToType(part:IConnectable) =
+    override def canConnectPart(part:IConnectable, s:Int) =
         part.isInstanceOf[PowerWire_100v] ||
             part.isInstanceOf[FramedPowerWire_100v] ||
             (!part.isInstanceOf[WirePart] && part.isInstanceOf[TPowerConnectable])

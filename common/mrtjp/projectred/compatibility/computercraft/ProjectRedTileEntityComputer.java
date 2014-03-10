@@ -4,7 +4,7 @@ import dan200.ComputerCraft;
 import dan200.computer.shared.BlockComputerBase;
 import dan200.computer.shared.TileEntityComputer;
 import mrtjp.projectred.api.IBundledTile;
-import mrtjp.projectred.transmission.BundledCableCommons;
+import mrtjp.projectred.transmission.BundledCommons;
 
 public class ProjectRedTileEntityComputer extends TileEntityComputer implements IBundledTile
 {
@@ -22,6 +22,6 @@ public class ProjectRedTileEntityComputer extends TileEntityComputer implements 
 
     @Override
     public byte[] getBundledSignal(int side) {
-        return BundledCableCommons.unpackDigital(null, getBundledPowerOutput(BlockComputerBase.getLocalSide(side^1, ComputerCraft.Blocks.computer.getDirection(worldObj, xCoord, yCoord, zCoord))));
+        return BundledCommons.unpackDigital(null, getBundledPowerOutput(BlockComputerBase.getLocalSide(side^1, ComputerCraft.Blocks.computer.getDirection(worldObj, xCoord, yCoord, zCoord))));
     }
 }

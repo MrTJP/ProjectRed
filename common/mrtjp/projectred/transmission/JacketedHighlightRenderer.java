@@ -29,7 +29,7 @@ public class JacketedHighlightRenderer implements IMicroHighlightRenderer
             return false;
 
         FramedWirePart fpart = (FramedWirePart) part;
-        if (fpart.material == material)
+        if (fpart.material() == material)
             return false;
 
         RenderFramedWire.renderCoverHighlight(fpart, material);

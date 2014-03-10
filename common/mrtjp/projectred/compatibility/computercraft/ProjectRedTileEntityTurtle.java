@@ -3,8 +3,7 @@ package mrtjp.projectred.compatibility.computercraft;
 import dan200.computer.shared.BlockComputerBase;
 import dan200.turtle.shared.TileEntityTurtle;
 import mrtjp.projectred.api.IBundledTile;
-import mrtjp.projectred.transmission.BundledCableCommons;
-import net.minecraft.entity.player.EntityPlayer;
+import mrtjp.projectred.transmission.BundledCommons;
 
 public class ProjectRedTileEntityTurtle extends TileEntityTurtle implements IBundledTile
 {
@@ -22,6 +21,6 @@ public class ProjectRedTileEntityTurtle extends TileEntityTurtle implements IBun
 
     @Override
     public byte[] getBundledSignal(int side) {
-        return BundledCableCommons.unpackDigital(null, getBundledPowerOutput(BlockComputerBase.getLocalSide(side^1, getFacingDir())));
+        return BundledCommons.unpackDigital(null, getBundledPowerOutput(BlockComputerBase.getLocalSide(side^1, getFacingDir())));
     }
 }
