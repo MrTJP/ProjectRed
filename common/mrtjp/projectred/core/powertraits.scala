@@ -11,12 +11,13 @@ trait TPowerConnectable extends IConnectable
 {
     /**
      * Getter for the local conductor
-     * @param side Side of the required conductor, this
+     * @param dir Side of the required conductor, this
      *             is only used if the tile has multiple
      *             linked conductors (such as voltage transformers).
+     *             Rotation for face parts, absDir else.
      * @return The local conductor managed by this object.
      */
-    def conductor(side:Int):PowerConductor
+    def conductor(dir:Int):PowerConductor
 
     /**
      * This should reach out and grab a conductor from another
@@ -71,19 +72,18 @@ class PowerConductor(val parent:TPowerConnectable, ids:Seq[Int])
      * Re-calculates V and I if needed.
      * @return The electric potential, in Volts (V)
      */
-    def voltage():Double =
+    def voltage() =
     {
         val tick = parent.world.getTotalWorldTime
-
-        if ((tick&0xFFFF) == time) return Vloc
-        time = (tick&0xFFFF).asInstanceOf[Int]
-
-        //calculate voltage
-        Iloc = 0.5D*Iflow
-        Iflow = 0.0D
-        Vloc += 0.05D*Vflow*capacitance
-        Vflow = 0.0D
-
+        if ((tick&0xFFFF) != time)
+        {
+            time = (tick&0xFFFF).asInstanceOf[Int]
+            //calculate voltage
+            Iloc = 0.5D*Iflow
+            Iflow = 0.0D
+            Vloc += 0.05D*Vflow*capacitance
+            Vflow = 0.0D
+        }
         Vloc
     }
 
@@ -139,22 +139,24 @@ class PowerConductor(val parent:TPowerConnectable, ids:Seq[Int])
         }
     }
 
-    def surge(cond:PowerConductor, id:Int):Boolean =
+    def surge(cond:PowerConductor, id:Int) =
     {
-        if (cond == null) return false
-        if (cond.parent == parent) return false
-        if (surgeIn.contains(cond)) return true
+        if (cond == null) false
+        else if (cond.parent == parent) false
+        else if (surgeIn.contains(cond)) true
+        else
+        {
+            val r = resistance+cond.resistance
+            var I = flows(id)
+            val V = Vloc-cond.voltage()
+            flows(id) += (V-I*r)*scaleOfInductance
+            I += V*scaleOfParallelFlow
 
-        val r = resistance+cond.resistance
-        var I = flows(id)
-        val V = Vloc-cond.voltage()
-        flows(id) += (V-I*r)*scaleOfInductance
-        I += V*scaleOfParallelFlow
+            applyCurrent(-I)
+            cond.applySurge(this, I)
 
-        applyCurrent(-I)
-        cond.applySurge(this, I)
-
-        true
+            true
+        }
     }
 
     var surgeIn = Seq[PowerConductor]()

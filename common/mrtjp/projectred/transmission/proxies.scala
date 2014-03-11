@@ -53,9 +53,9 @@ class TransmissionProxy_client extends TransmissionProxy_server
     override def init()
     {
         super.init()
-        MinecraftForgeClient.registerItemRenderer(itemPartWire.itemID, WireItemRenderer.instance)
-        MinecraftForgeClient.registerItemRenderer(itemPartFramedWire.itemID, FramedWireItemRenderer.instance)
-        MicroMaterialRegistry.registerHighlightRenderer(new JacketedHighlightRenderer)
+        MinecraftForgeClient.registerItemRenderer(itemPartWire.itemID, WireItemRenderer)
+        MinecraftForgeClient.registerItemRenderer(itemPartFramedWire.itemID, FramedWireItemRenderer)
+        MicroMaterialRegistry.registerHighlightRenderer(JacketedHighlightRenderer)
     }
 }
 

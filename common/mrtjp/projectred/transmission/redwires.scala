@@ -194,7 +194,6 @@ abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcq
     {
         WirePropagator.setDustProvidePower(false)
         WirePropagator.redwiresProvidePower = false
-
         var s = 0
         def raise(sig:Int) {if (sig > s) s = sig}
 
