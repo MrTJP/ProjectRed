@@ -2,6 +2,7 @@ package mrtjp.projectred.transmission
 
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.{IRedstonePart, IFaceRedstonePart, TMultiPart, RedstoneInteractions}
+import mrtjp.projectred.transportation.RouteFX
 
 trait TRSAcquisitionsCommons extends TAcquisitionsCommons with IRedstonePart
 {
@@ -58,32 +59,24 @@ trait TCenterRSAcquisitions extends TRSAcquisitionsCommons with TCenterAcquisiti
 
 trait TPropagationAcquisitions extends TMultiPart with IWirePart
 {
-    /**
-     * Should propagate to all connected IWireParts then call propogateOther
-     * @param from Part that propogated to this, can be null
-     * @param mode mode from IWirePart
-     */
-    def propogate(from:TMultiPart, mode:Int)
-
-    def propogateExternal(to:TMultiPart, at:BlockCoord, from:TMultiPart, mode:Int)
+    def propagateExternal(to:TMultiPart, at:BlockCoord, from:TMultiPart, mode:Int)
     {
         if (to != null)
         {
             if (to == from) return
-            if (propogateTo(to, mode)) return
+            RouteFX.spawnType1(0, 16, at, to.world)
+            if (propagateTo(to, mode)) return
         }
         WirePropagator.addNeighborChange(at)
     }
 
-    def propogateInternal(to:TMultiPart, from:TMultiPart, mode:Int)
+    def propagateInternal(to:TMultiPart, from:TMultiPart, mode:Int)
     {
         if (to == from) return
-        propogateTo(to, mode)
+        propagateTo(to, mode)
     }
 
-    def propogateOther(mode:Int) {}
-
-    def propogateTo(part:TMultiPart, mode:Int) = part match
+    def propagateTo(part:TMultiPart, mode:Int) = part match
     {
         case w:IWirePart =>
             WirePropagator.propagateTo(w, this, mode)

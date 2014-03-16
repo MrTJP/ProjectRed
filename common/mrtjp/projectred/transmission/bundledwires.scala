@@ -97,16 +97,16 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
         if (dropSignalsLessThan(getBundledSignal, newSignal))
         {
             if (!isSignalZero(newSignal, mask)) WirePropagator.propagateAnalogDrop(this)
-            propogate(from, DROPPING)
+            propagate(from, DROPPING)
         }
         else if (!signalsEqual(getBundledSignal, newSignal))
         {
             setSignal(newSignal)
-            if (mode == DROPPING) propogate(null, RISING)
-            else propogate(from, RISING)
+            if (mode == DROPPING) propagate(null, RISING)
+            else propagate(from, RISING)
         }
-        else if (mode == DROPPING) propogateTo(from, RISING)
-        else if (mode == FORCE) propogate(from, FORCED)
+        else if (mode == DROPPING) propagateTo(from, RISING)
+        else if (mode == FORCE) propagate(from, FORCED)
 
         propogatingMask = 0xFFFF
     }
@@ -135,8 +135,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
 
     abstract override def calcStraightArray(dir:Int) =
     {
-        val pos = posOfStraight(dir)
-        val te = BasicUtils.getTileEntity(world, pos, classOf[IBundledEmitter])
+        val te = BasicUtils.getTileEntity(world, posOfStraight(dir), classOf[IBundledEmitter])
         if (te != null)
         {
             raiseSignalFrom(te, dir)
@@ -164,7 +163,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
         case _ =>
     }
 
-    override def propogateTo(part:TMultiPart, mode:Int) =
+    override def propagateTo(part:TMultiPart, mode:Int) =
     {
         def shouldPropogate(part:TMultiPart, mode:Int) = part match
         {
@@ -172,7 +171,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
             case _ => true
         }
 
-        if (shouldPropogate(part, mode)) super.propogateTo(part, mode)
+        if (shouldPropogate(part, mode)) super.propagateTo(part, mode)
         else true
     }
 

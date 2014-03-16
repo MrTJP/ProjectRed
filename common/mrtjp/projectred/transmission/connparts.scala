@@ -85,9 +85,14 @@ trait TConnectableCommons extends TMultiPart with IConnectable
 
     /**
      * Sets of defs that are common in all subtypes.
-     * @param dir rotation for face, absDir for center implementations
+     * dir is rotation for face, absDir for center implementations
      */
 
+    /**
+     * Should always return true if this is a logic part for example, where
+     * mask is always open, because edges are are all the way on the side,
+     * so strips cant block conns.
+     */
     def maskOpen(dir:Int):Boolean
     def maskConnects(dir:Int):Boolean
 
@@ -155,7 +160,7 @@ trait TConnectableCommons extends TMultiPart with IConnectable
 
     def notifyAllExternals()
 
-    def onMaskChanged()
+    def onMaskChanged() {}
 }
 
 trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
@@ -208,8 +213,13 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
         else false
     }
 
-    def canConnectPart(part:IConnectable, r:Int):Boolean
-
+    /**
+     * If this is a wire, should return true if this wire is smaller
+     * than that wire. This is used for corner rendering. (This renders
+     * to that, not that to this). Always false if not wire.
+     * @param part The part to connect to
+     * @return true if this should render instead of that
+     */
     def setRenderFlag(part:IConnectable):Boolean
 
     def maskOpen(r:Int) = (connMap&0x1000<<r) != 0
@@ -241,7 +251,8 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
         {
             case c:IConnectable =>
                 if ((c.canConnectCorner(rotFromCorner(r)) || canConnectCorner(r)) &&
-                    c.connectCorner(this, rotFromCorner(r), -1)) if (setRenderFlag(c)) 2 else 1
+                    canConnectPart(c, r) && c.connectCorner(this, rotFromCorner(r), -1))
+                    if (setRenderFlag(c)) 2 else 1
                 else 0
             case _ => 0
         }
@@ -250,7 +261,7 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
 
     def discoverStraight(r:Int) = getStraight(r) match
     {
-        case c:IConnectable => c.connectStraight(this, rotFromStraight(r), -1)
+        case c:IConnectable => canConnectPart(c, r) && c.connectStraight(this, rotFromStraight(r), -1)
         case _ => discoverStraightOverride(absoluteDir(r))
     }
 
@@ -258,7 +269,7 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
     {
         if (tile.partMap(PartMap.edgeBetween(absoluteDir(r), side)) == null) getInternal(r) match
         {
-            case c:IConnectable => c.connectInternal(this, rotFromInternal(r))
+            case c:IConnectable => canConnectPart(c, r) && c.connectInternal(this, rotFromInternal(r))
             case p => discoverInternalOverride(p, r)
         }
         else false
@@ -397,13 +408,13 @@ trait TCenterConnectable extends TConnectableCommons with TCenterAcquisitions
 
     def discoverStraight(s:Int) = getStraight(s) match
     {
-        case c:IConnectable => c.connectStraight(this, s^1, -1)
+        case c:IConnectable => canConnectPart(c, s) && c.connectStraight(this, s^1, -1)
         case _ => discoverStraightOverride(s)
     }
 
     def discoverInternal(s:Int) = getInternal(s) match
     {
-        case c:IConnectable => c.connectInternal(this, -1)
+        case c:IConnectable => canConnectPart(c, s) && c.connectInternal(this, -1)
         case p => discoverInternalOverride(p, s)
     }
 

@@ -56,6 +56,9 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
         }
     }
 
+    def propagate(from:TMultiPart, mode:Int)
+    def propagateOther(mode:Int) {}
+
     override def onAdded()
     {
         super.onAdded()
@@ -85,7 +88,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
 
     def sendConnUpdate()
 
-    def onMaskChanged()
+    override def onMaskChanged()
     {
         sendConnUpdate()
     }
@@ -268,17 +271,17 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
         }
     }
 
-    def propogate(from:TMultiPart, mode:Int)
+    def propagate(from:TMultiPart, mode:Int)
     {
         if (mode != FORCED) WirePropagator.addPartChange(this)
         for (r <- 0 until 4)
         {
-            if (maskConnectsCorner(r)) propogateExternal(getCorner(r), posOfCorner(r), from, mode)
-            else if (maskConnectsStraight(r)) propogateExternal(getStraight(r), posOfStraight(r), from, mode)
-            else if (maskConnectsInside(r)) propogateInternal(getInternal(r), from, mode)
+            if (maskConnectsCorner(r)) propagateExternal(getCorner(r), posOfCorner(r), from, mode)
+            else if (maskConnectsStraight(r)) propagateExternal(getStraight(r), posOfStraight(r), from, mode)
+            else if (maskConnectsInside(r)) propagateInternal(getInternal(r), from, mode)
         }
-        if (maskConnectsCenter) propogateInternal(getCenter, from, mode)
-        propogateOther(mode)
+        if (maskConnectsCenter) propagateInternal(getCenter, from, mode)
+        propagateOther(mode)
     }
 
     override def getType = getWireType.wireType
@@ -356,14 +359,14 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
             fits
     }
 
-    def propogate(from:TMultiPart, mode:Int)
+    def propagate(from:TMultiPart, mode:Int)
     {
         if (mode != FORCED) WirePropagator.addPartChange(this)
         for (s <- 0 until 6)
-            if (maskConnectsOut(s)) propogateExternal(getStraight(s), posOfStraight(s), from, mode)
-            else if (maskConnectsIn(s)) propogateInternal(getInternal(s), from, mode)
+            if (maskConnectsOut(s)) propagateExternal(getStraight(s), posOfStraight(s), from, mode)
+            else if (maskConnectsIn(s)) propagateInternal(getInternal(s), from, mode)
 
-        propogateOther(mode)
+        propagateOther(mode)
     }
 
     def getType = getWireType.framedType

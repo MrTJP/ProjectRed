@@ -93,16 +93,16 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with IRed
         {
             if (newSignal > 0) WirePropagator.propagateAnalogDrop(this)
             signal = 0
-            propogate(prev, DROPPING)
+            propagate(prev, DROPPING)
         }
         else if (newSignal > getRedwireSignal)
         {
             signal = newSignal.asInstanceOf[Byte]
-            if (mode == DROPPING) propogate(null, RISING)
-            else propogate(prev, RISING)
+            if (mode == DROPPING) propagate(null, RISING)
+            else propagate(prev, RISING)
         }
-        else if (mode == DROPPING) propogateTo(prev, RISING)
-        else if (mode == FORCE) propogate(prev, FORCED)
+        else if (mode == DROPPING) propagateTo(prev, RISING)
+        else if (mode == FORCE) propagate(prev, FORCED)
     }
 
     override def onSignalUpdate()
@@ -238,7 +238,7 @@ abstract class FramedRedwirePart extends FramedWirePart with TRedwireCommons wit
         case _ => false
     }
 
-    override def propogateOther(mode:Int)
+    override def propagateOther(mode:Int)
     {
         for (s <- 0 until 6) if (!maskConnects(s))
             WirePropagator.addNeighborChange(new BlockCoord(tile).offset(s))
@@ -307,7 +307,7 @@ class RedAlloyWirePart extends RedwirePart with TRedAlloyCommons
         if (!world.isRemote) tile.notifyNeighborChange(side)
     }
 
-    override def propogateOther(mode:Int)
+    override def propagateOther(mode:Int)
     {
         WirePropagator.addNeighborChange(new BlockCoord(tile).offset(side))
         WirePropagator.addNeighborChange(new BlockCoord(tile).offset(side^1))
