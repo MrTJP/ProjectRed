@@ -1,6 +1,5 @@
 package mrtjp.projectred.transportation
 
-import com.google.common.collect.HashBiMap
 import java.util._
 import mrtjp.projectred.core.PRColors
 import mrtjp.projectred.core.utils.{LiteEnumVal, LiteEnumCollector, ItemKeyStack}
@@ -9,10 +8,9 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.common.ForgeDirection
-import scala.collection.{mutable, IterableLike, immutable}
-import scala.collection.immutable.BitSet
-import mrtjp.projectred.transmission.WireDef
 import scala.collection.convert.WrapAsJava
+import scala.collection.immutable.BitSet
+import scala.collection.{mutable, immutable}
 
 object RoutedPayload
 {
@@ -76,9 +74,9 @@ class RoutedPayload(val payloadID:Int)
     var input = ForgeDirection.UNKNOWN
     var output = ForgeDirection.UNKNOWN
     var isEntering = true
-    var parent:BasicPipePart = null
+    var parent:FlowingPipePart = null
 
-    def bind(p:BasicPipePart)
+    def bind(p:FlowingPipePart)
     {
         parent = p
     }

@@ -64,7 +64,6 @@ trait TPropagationAcquisitions extends TMultiPart with IWirePart
         if (to != null)
         {
             if (to == from) return
-            RouteFX.spawnType1(0, 16, at, to.world)
             if (propagateTo(to, mode)) return
         }
         WirePropagator.addNeighborChange(at)

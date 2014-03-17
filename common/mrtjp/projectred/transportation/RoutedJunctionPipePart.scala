@@ -351,9 +351,9 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         tile.getWriteStream(this).writeByte(15).writeByte(inOutSide)
     }
 
-    override def connect(absDir:Int):Boolean =
+    override def discoverStraight(absDir:Int):Boolean =
     {
-        if (super.connect(absDir)) return true
+        if (super.discoverStraight(absDir)) return true
         val bc = new BlockCoord(tile).offset(absDir)
         val t = BasicUtils.getTileEntity(world, bc, classOf[TileEntity])
         t != null && t.isInstanceOf[IInventory]

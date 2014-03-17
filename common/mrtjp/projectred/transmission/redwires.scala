@@ -8,7 +8,7 @@ import codechicken.multipart.scalatraits.TRedstoneTile
 import codechicken.multipart._
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.{CoreSPH, Messenger, BasicUtils}
+import mrtjp.projectred.core.{Configurator, CoreSPH, Messenger, BasicUtils}
 import net.minecraft.block.Block
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
@@ -67,7 +67,7 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with IRed
     {
         case 10 =>
             signal = packet.readByte
-            if (useStaticRenderer) tile.markRender()
+            if (Configurator.staticWires) tile.markRender()
         case _ => super.read(packet, key)
     }
 
@@ -108,14 +108,14 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with IRed
     override def onSignalUpdate()
     {
         super.onSignalUpdate()
-        tile.getWriteStream(this).writeByte(10).writeByte(signal)
+        getWriteStreamOf(10).writeByte(signal)
     }
 
     def calculateSignal:Int
 
-    override def debug(ply:EntityPlayer) =
+    override def debug(player:EntityPlayer) =
     {
-        ply.sendChatToPlayer(ChatMessageComponent.createFromTranslationKey(
+        player.sendChatToPlayer(ChatMessageComponent.createFromTranslationKey(
             (if (world.isRemote) "Client" else "Server")+" signal strength: "+getRedwireSignal))
         true
     }

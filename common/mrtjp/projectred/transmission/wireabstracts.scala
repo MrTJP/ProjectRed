@@ -22,7 +22,7 @@ import net.minecraftforge.common.ForgeDirection
 import org.lwjgl.opengl.GL11
 import scala.collection.JavaConversions._
 
-trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion with IWirePart
+trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion
 {
     def preparePlacement(side:Int, meta:Int) {}
 
@@ -93,8 +93,6 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
         sendConnUpdate()
     }
 
-    def useStaticRenderer = Configurator.staticWires
-
     def canStay:Boolean
 
     def dropIfCantStay() =
@@ -159,11 +157,9 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
         if (pass == 0 && useStaticRenderer)
         {
             CCRenderState.setBrightness(world, x, y, z)
-            this match
-            {
-                case w:WirePart => RenderWire.render(w, pos)
-                case fw:FramedWirePart => RenderFramedWire.render(fw, pos, olm)
-            }
+
+            doStaticTessellation(pos, olm, pass)
+
             CCRenderState.setColour(-1)
         }
     }
@@ -177,11 +173,9 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
             TextureUtils.bindAtlas(0)
             CCRenderState.useModelColours(true)
             CCRenderState.startDrawing(7)
-            this match
-            {
-                case w:WirePart => RenderWire.render(w, pos)
-                case fw:FramedWirePart => RenderFramedWire.render(fw, pos)
-            }
+
+            doDynamicTessellation(pos, frame, pass)
+
             CCRenderState.draw()
             CCRenderState.setColour(-1)
             GL11.glEnable(GL11.GL_LIGHTING)
@@ -192,12 +186,17 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     override def drawBreaking(renderBlocks:RenderBlocks)
     {
         CCRenderState.reset()
-        this match
-        {
-            case w:WirePart => RenderWire.renderBreakingOverlay(renderBlocks.overrideBlockTexture, w)
-            case fw:FramedWirePart => RenderFramedWire.renderBreakingOverlay(renderBlocks.overrideBlockTexture, fw)
-        }
+        doBreakTessellation(renderBlocks)
     }
+
+    @SideOnly(Side.CLIENT)
+    def doStaticTessellation(pos:Vector3, olm:LazyLightMatrix, pass:Int)
+    @SideOnly(Side.CLIENT)
+    def doDynamicTessellation(pos:Vector3, frame:Float, pass:Int)
+    @SideOnly(Side.CLIENT)
+    def doBreakTessellation(renderBlocks:RenderBlocks)
+
+    def useStaticRenderer = Configurator.staticWires
 }
 
 abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectable
@@ -295,6 +294,22 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
     override def redstoneConductionMap = 0xF
 
     override def solid(arg0:Int) = false
+
+    @SideOnly(Side.CLIENT)
+    override def doBreakTessellation(renderBlocks:RenderBlocks)
+    {
+        RenderWire.renderBreakingOverlay(renderBlocks.overrideBlockTexture, this)
+    }
+    @SideOnly(Side.CLIENT)
+    override def doDynamicTessellation(pos:Vector3, frame:Float, pass:Int)
+    {
+        RenderWire.render(this, pos)
+    }
+    @SideOnly(Side.CLIENT)
+    override def doStaticTessellation(pos:Vector3, olm:LazyLightMatrix, pass:Int)
+    {
+        RenderWire.render(this, pos)
+    }
 }
 
 abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterConnectable with IHollowConnect
@@ -458,26 +473,38 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
         }
         else false
     }
+
+    @SideOnly(Side.CLIENT)
+    override def doBreakTessellation(renderBlocks:RenderBlocks)
+    {
+        RenderFramedWire.renderBreakingOverlay(renderBlocks.overrideBlockTexture, this)
+    }
+    @SideOnly(Side.CLIENT)
+    override def doDynamicTessellation(pos:Vector3, frame:Float, pass:Int)
+    {
+        RenderFramedWire.render(this, pos)
+    }
+    @SideOnly(Side.CLIENT)
+    override def doStaticTessellation(pos:Vector3, olm:LazyLightMatrix, pass:Int)
+    {
+        RenderFramedWire.render(this, pos, olm)
+    }
 }
 
 object WireBoxes
 {
-    var sBounds = Array[Array[Cuboid6]]()
-    var oBounds = Array[Array[Cuboid6]]()
+    var sBounds = Array.ofDim[Cuboid6](3, 6)
+    var oBounds = Array.ofDim[Cuboid6](3, 6)
 
     for (t <- 0 until 3)
     {
         val selection = new Cuboid6(0, 0, 0, 1, (t+2)/16D, 1).expand(-0.005)
         val occlusion = new Cuboid6(2/8D, 0, 2/8D, 6/8D, (t+2)/16D, 6/8D)
-        var sel = Array[Cuboid6]()
-        var occ = Array[Cuboid6]()
         for (s <- 0 until 6)
         {
-            sel :+= selection.copy.apply(Rotation.sideRotations(s).at(Vector3.center))
-            occ :+= occlusion.copy.apply(Rotation.sideRotations(s).at(Vector3.center))
+            sBounds(t)(s) = selection.copy.apply(Rotation.sideRotations(s).at(Vector3.center))
+            oBounds(t)(s) = occlusion.copy.apply(Rotation.sideRotations(s).at(Vector3.center))
         }
-        sBounds :+= sel
-        oBounds :+= occ
     }
 
     var fOBounds =

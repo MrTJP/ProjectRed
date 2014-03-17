@@ -1,11 +1,12 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.{Configurator, IProxy}
 import codechicken.lib.packet.PacketCustom
-import codechicken.multipart.{TMultiPart, MultiPartRegistry}
-import mrtjp.projectred.ProjectRedTransportation._
+import codechicken.microblock.MicroMaterialRegistry
+import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.MultiPartRegistry.IPartFactory
 import cpw.mods.fml.relauncher.{SideOnly, Side}
+import mrtjp.projectred.ProjectRedTransportation._
+import mrtjp.projectred.core.{Configurator, IProxy}
 import net.minecraftforge.client.MinecraftForgeClient
 
 class TransportationProxy_server extends IProxy with IPartFactory
@@ -62,6 +63,7 @@ class TransportationProxy_client extends TransportationProxy_server
     {
         super.init()
         MinecraftForgeClient.registerItemRenderer(itemPartPipe.itemID, PipeItemRenderer.instance)
+        MicroMaterialRegistry.registerHighlightRenderer(PipeRSHighlightRenderer)
     }
 }
 

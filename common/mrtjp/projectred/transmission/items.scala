@@ -27,7 +27,6 @@ abstract class ItemWireCommon(id:Int) extends Item(id) with TItemMultiPart
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedTransmission.tabTransmission)
-    setUnlocalizedName("projectred.transmission.wire")
 
     override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World, x:Int, y:Int, z:Int, side:Int, f:Float, f2:Float, f3:Float) =
     {
@@ -48,6 +47,8 @@ abstract class ItemWireCommon(id:Int) extends Item(id) with TItemMultiPart
 
 class ItemPartWire(id:Int) extends ItemWireCommon(id)
 {
+    setUnlocalizedName("projectred.transmission.wire")
+
     def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3) =
     {
         val onPos = pos.copy.offset(side^1)
@@ -64,7 +65,10 @@ class ItemPartWire(id:Int) extends ItemWireCommon(id)
     @SideOnly(Side.CLIENT)
     override def getSubItems(id:Int, tab:CreativeTabs, list:JList[_])
     {
-        for (w <- WireDef.VALID_WIRE) list.asInstanceOf[JList[ItemStack]].add(w.getItemStack)
+        val l2 = list.asInstanceOf[JList[ItemStack]]
+
+        for (w <- Seq(WireDef.RED_ALLOY)++WireDef.INSULATED_WIRE++WireDef.BUNDLED_WIRE)
+            if (w.hasWireForm) l2.add(w.getItemStack)
     }
 
     @SideOnly(Side.CLIENT)
@@ -76,6 +80,8 @@ class ItemPartWire(id:Int) extends ItemWireCommon(id)
 
 class ItemPartFramedWire(id:Int) extends ItemWireCommon(id)
 {
+    setUnlocalizedName("projectred.transmission.framewire")
+
     def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3) =
     {
         val wiredef = WireDef.VALID_WIRE(item.getItemDamage)
@@ -84,10 +90,13 @@ class ItemPartFramedWire(id:Int) extends ItemWireCommon(id)
         w
     }
 
-    @SideOnly(Side.CLIENT) override def getSubItems(id:Int, tab:CreativeTabs, list:JList[_])
+    @SideOnly(Side.CLIENT)
+    override def getSubItems(id:Int, tab:CreativeTabs, list:JList[_])
     {
-        for (w <- WireDef.VALID_WIRE)
-            if (w.hasFramedForm) list.asInstanceOf[JList[ItemStack]].add(w.getFramedItemStack)
+        val l2 = list.asInstanceOf[JList[ItemStack]]
+
+        for (w <- Seq(WireDef.RED_ALLOY)++WireDef.INSULATED_WIRE++WireDef.BUNDLED_WIRE)
+            if (w.hasFramedForm) l2.add(w.getFramedItemStack)
     }
 }
 

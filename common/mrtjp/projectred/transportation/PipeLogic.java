@@ -7,7 +7,7 @@ import codechicken.lib.data.MCDataOutput;
 
 public abstract class PipeLogic
 {
-    public static PipeLogic createPipeLogic(BasicPipePart p, int meta)
+    public static PipeLogic createPipeLogic(FlowingPipePart p, int meta)
     {
         if (meta == 0)
             return new NullPipeLogic(p);
@@ -15,9 +15,9 @@ public abstract class PipeLogic
         return new NullPipeLogic(p);
     }
 
-    BasicPipePart p;
+    FlowingPipePart p;
 
-    public PipeLogic(BasicPipePart p)
+    public PipeLogic(FlowingPipePart p)
     {
         this.p = p;
     }
@@ -38,7 +38,12 @@ public abstract class PipeLogic
     {
     }
 
-    public void read(MCDataInput packet, int switch_key)
+    /**
+     *
+     * @param packet
+     * @param key allocated >= 10
+     */
+    public void read(MCDataInput packet, int key)
     {
     }
 
@@ -58,7 +63,7 @@ public abstract class PipeLogic
 
     public static class NullPipeLogic extends PipeLogic
     {
-        public NullPipeLogic(BasicPipePart p)
+        public NullPipeLogic(FlowingPipePart p)
         {
             super(p);
         }

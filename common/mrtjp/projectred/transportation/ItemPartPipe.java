@@ -36,7 +36,7 @@ public class ItemPartPipe extends JItemMultiPart
         if (p == null)
             return null;
 
-        p.preparePlacement(item.getItemDamage());
+        p.preparePlacement(side, item.getItemDamage());
         return p;
     }
 
