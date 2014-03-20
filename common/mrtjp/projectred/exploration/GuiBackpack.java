@@ -33,7 +33,7 @@ public class GuiBackpack extends SpecialGuiContainer
     @Override
     public void drawForeground()
     {
-        fontRenderer.drawString("Backpack", 8, 6, PRColors.GREY.rgb);
+        fontRenderer.drawString(_bag.getDisplayName(), 8, 6, PRColors.GREY.rgb);
         fontRenderer.drawString("Inventory", 8, 75, PRColors.GREY.rgb);
     }
 
