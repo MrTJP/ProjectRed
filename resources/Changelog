@@ -1,3 +1,6 @@
+[dev]v4.3.3
+- FIX: Java 6 crash
+
 v4.3.2
 - FIX: Bag load/save
 
