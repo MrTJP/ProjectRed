@@ -40,8 +40,8 @@ object RouterServices
                 val r = Router(uu, holder)
 
                 val newLease = r.getIPAddress
-                if (routers.size <= newLease)
-                    while (routers.size <= (newLease*1.5).asInstanceOf[Int]+1) routers :+= null
+                if (routers.length <= newLease)
+                    while (routers.length <= (newLease*1.5).asInstanceOf[Int]+1) routers :+= null
 
                 routers(newLease) = r
                 UUIDTable += (r.getID -> r.getIPAddress)
@@ -70,14 +70,12 @@ class LSA
 
 class StartEndPath(var start:Router, var end:Router, var dirToFirstHop:Int, var distance:Int) extends Ordered[StartEndPath]
 {
-    override def equals(o:Any):Boolean =
+    override def equals(other:Any) = other match
     {
-        if (o.isInstanceOf[StartEndPath])
-        {
-            val p = o.asInstanceOf[StartEndPath]
-            return dirToFirstHop == p.dirToFirstHop && distance == p.distance
-        }
-        false
+        case that:StartEndPath =>
+                dirToFirstHop == that.dirToFirstHop &&
+                distance == that.distance
+        case _ => false
     }
 
     override def compare(that:StartEndPath) =

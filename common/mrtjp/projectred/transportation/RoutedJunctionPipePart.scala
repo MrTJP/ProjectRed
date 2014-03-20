@@ -12,7 +12,7 @@ import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.core.utils.Pair2
-import mrtjp.projectred.core.{BasicUtils, Configurator}
+import mrtjp.projectred.core.{Messenger, BasicUtils, Configurator}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
@@ -180,6 +180,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
             sendQueue = sendQueue.filterNot(p => p == first)
             first
         }
+
+        if (!world.isRemote) Messenger.addMessage(x, y, z, getRouter.getIPAddress.toString)
     }
 
     protected def updateServer() {}
@@ -251,13 +253,23 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         }
     }
 
-    override def read(packet:MCDataInput, switch_key:Int) = switch_key match
+    override def read(packet:MCDataInput, key:Int) = key match
     {
-        case 51 => handleLinkMap(packet)
-        case 15 =>
+        case 5 => handleLinkMap(packet)
+        case 6 =>
             inOutSide = packet.readUByte
             tile.markRender()
-        case _ => super.read(packet, switch_key)
+        case _ => super.read(packet, key)
+    }
+
+    def sendLinkMapUpdate()
+    {
+        getWriteStreamOf(5).writeByte(linkMap)
+    }
+
+    def sendOrientUpdate()
+    {
+        getWriteStreamOf(6).writeByte(inOutSide)
     }
 
     private def handleLinkMap(packet:MCDataInput)
@@ -275,11 +287,6 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         }
 
         tile.markRender()
-    }
-
-    def sendLinkMapUpdate()
-    {
-        getWriteStream.writeByte(51).writeByte(linkMap)
     }
 
     override def getType = "pr_rbasic"
@@ -344,11 +351,6 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
     {
         super.onAdded()
         shiftOrientation(false)
-    }
-
-    def sendOrientUpdate()
-    {
-        tile.getWriteStream(this).writeByte(15).writeByte(inOutSide)
     }
 
     override def discoverStraight(absDir:Int):Boolean =

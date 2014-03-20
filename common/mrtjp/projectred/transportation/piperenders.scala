@@ -1,22 +1,21 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.lighting.{LazyLightMatrix, LightModel}
+import codechicken.lib.raytracer.ExtendedMOP
 import codechicken.lib.render._
 import codechicken.lib.vec._
+import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
+import codechicken.microblock.{BlockMicroMaterial, MicroMaterialRegistry, MicroblockClass}
 import mrtjp.projectred.core.{BasicUtils, PRColors}
+import net.minecraft.block.Block
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.entity.{RenderManager, RenderItem}
 import net.minecraft.entity.item.EntityItem
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.{MovingObjectPosition, Icon}
+import net.minecraft.world.World
 import net.minecraftforge.common.ForgeDirection
 import org.lwjgl.opengl.GL11
-import mrtjp.projectred.transmission.{RenderFramedWire, FramedWirePart}
-import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
-import net.minecraft.world.World
-import net.minecraft.entity.player.EntityPlayer
-import codechicken.microblock.{BlockMicroMaterial, MicroMaterialRegistry, MicroblockClass}
-import codechicken.lib.raytracer.ExtendedMOP
-import net.minecraft.block.Block
 
 object RenderPipe
 {
@@ -69,12 +68,12 @@ object RenderPipe
             uvt = new IconTransformation(p.getIcon(s))
             sideModels(s).render(t, uvt)
         }
-        if (p.material) renderRSWiring(p, t)
+        if (p.material) renderRSWiring(p, t, p.signal)
     }
 
-    private def renderRSWiring(p:FlowingPipePart, t:Translation)
+    private def renderRSWiring(p:FlowingPipePart, t:Translation, signal:Int)
     {
-        val colour = new ColourMultiplier((p.signal&0xFF)/2+60<<24|0xFF)
+        val colour = new ColourMultiplier((signal&0xFF)/2+60<<24|0xFF)
         val uvt2 = new IconTransformation(PipeDef.BASIC.sprites(1))
         val connMap = p.connMap
 
@@ -87,11 +86,11 @@ object RenderPipe
         for (s <- 0 until 6) if ((connMap&1<<s) != 0) sideModelsRS(s).render(t, uvt2, colour)
     }
 
-    def renderBreakingOverlay(icon:Icon, wire:FlowingPipePart)
+    def renderBreakingOverlay(icon:Icon, pipe:FlowingPipePart)
     {
         import scala.collection.JavaConversions._
-        for (box <- wire.getCollisionBoxes)
-            RenderUtils.renderBlock(box, 0, new Translation(wire.x, wire.y, wire.z), new IconTransformation(icon), null)
+        for (box <- pipe.getCollisionBoxes)
+            RenderUtils.renderBlock(box, 0, new Translation(pipe.x, pipe.y, pipe.z), new IconTransformation(icon), null)
     }
 
     def renderInv(t:Transformation, icon:Icon)
@@ -197,7 +196,7 @@ object RenderPipe
         CCRenderState.useModelColours(true)
         CCRenderState.startDrawing(7)
 
-        renderRSWiring(part, Vector3.zero.translation)
+        renderRSWiring(part, Vector3.zero.translation, 255)
 
         CCRenderState.draw()
         GL11.glDisable(GL11.GL_BLEND)
@@ -303,8 +302,8 @@ private class PipeModelGenerator(val w:Double = 2/8D, val d:Double = 1/16D-0.002
 
     def applyScale(scale:Double)
     {
-        val nscale = 1+(1-scale)+0.0002
-        val tscale = (1-scale)/2D//-0.0002
+        val nscale = 2.0002D-scale
+        val tscale = (1-scale)/2D
         val trans = Seq(
             new Translation(0, tscale, 0),
             new Translation(0, -tscale, 0),
@@ -371,6 +370,4 @@ object PipeRSHighlightRenderer extends IMicroHighlightRenderer
             }
         }
     }
-
-
 }

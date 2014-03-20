@@ -4,7 +4,6 @@ import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.LabelBreaks._
 import mrtjp.projectred.core.utils.{ItemKey, Pair2, ItemKeyStack}
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
-import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise
 import scala.collection.mutable.ListBuffer
 
 class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientation with TChipPriority

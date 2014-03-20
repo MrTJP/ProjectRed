@@ -51,8 +51,7 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
             val missing = toRequest-inInventory
             if (missing <= 0 || (requestWhenEmpty && inInventory > 0)) break("1")
 
-            val req = new RequestConsole().setDestination(routeLayer.getRequester)
-            req.setCrafting(true).setPulling(true).setPartials(true)
+            val req = new RequestConsole(RequestFlags.full).setDestination(routeLayer.getRequester)
             val request = ItemKeyStack.get(keyStack.key, missing)
             req.makeRequest(request)
 

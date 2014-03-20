@@ -46,7 +46,7 @@ trait IWorldBroadcaster extends IWorldRouter
 {
     def requestPromises(request:RequestBranchNode, existingPromises:Int)
 
-    def deliverPromises(promise:RequestBranchNode.DeliveryPromise, requester:IWorldRequester)
+    def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester)
 
     def getBroadcastedItems(map:mutable.HashMap[ItemKey, Int])
 
@@ -57,9 +57,9 @@ trait IWorldBroadcaster extends IWorldRouter
 
 trait IWorldCrafter extends IWorldRequester with IWorldBroadcaster
 {
-    def requestCraftPromise(item:ItemKey):RequestBranchNode.CraftingPromise
+    def requestCraftPromise(item:ItemKey):CraftingPromise
 
-    def registerExcess(promise:RequestBranchNode.DeliveryPromise)
+    def registerExcess(promise:DeliveryPromise)
 
     def getCraftedItems:List[ItemKeyStack]
 

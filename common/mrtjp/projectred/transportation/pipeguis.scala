@@ -1,18 +1,136 @@
 package mrtjp.projectred.transportation
 
+import net.minecraft.inventory.Container
+import mrtjp.projectred.core.inventory._
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.BlockCoord
-import java.util.ArrayList
-import java.util.Collections
-import java.util.List
-import java.util.Map
-import mrtjp.projectred.core.BasicGuiUtils
-import mrtjp.projectred.core.PRColors
-import mrtjp.projectred.core.inventory._
-import mrtjp.projectred.core.utils.ItemKey
-import mrtjp.projectred.core.utils.ItemKeyStack
+import codechicken.lib.render.{FontUtils, CCRenderState}
+import mrtjp.projectred.core.{BasicGuiUtils, PRColors}
+import org.lwjgl.opengl.GL11
+import net.minecraft.client.gui.Gui
+import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import java.util
+import mrtjp.projectred.core.utils.{ItemKeyStack, ItemKey}
+import java.util.Collections
+
+class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends SpecialGuiContainer(container, null, 176, 220)
+{
+    override def actionPerformed(ident:String)
+    {
+        val packet = new PacketCustom(TransportationCPH.channel, TransportationCPH.gui_CraftingPipe_action)
+        packet.writeCoord(new BlockCoord(pipe.tile))
+        packet.writeString(ident)
+        packet.sendToServer()
+    }
+
+    override def addWidgets()
+    {
+        add(new JWidgetButton(138, 12, 20, 14).setText("+").setActionCommand("up"))
+        add(new JWidgetButton(92, 12, 20, 14).setText("-").setActionCommand("down"))
+    }
+
+    override def drawBackground()
+    {
+        CCRenderState.changeTexture(GuiCraftingPipe.resource)
+        drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
+        FontUtils.drawCenteredString("" + pipe.priority, 126, 15, PRColors.BLACK.rgb)
+        BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 138)
+
+        var color = 0
+        CCRenderState.changeTexture(SpecialGuiContainer.guiExtras)
+
+        import scala.collection.JavaConversions._
+        for (p <- BasicGuiUtils.createSlotArray(8, 108, 9, 1, 0, 0))
+        {
+            GL11.glColor4f(1, 1, 1, 1)
+            drawTexturedModalRect(p.getValue1, p.getValue2, 1, 11, 16, 16)
+            val x = p.getValue1 + 4
+            val y = p.getValue2 - 2
+            Gui.drawRect(x, y, x + 8, y + 2, PRColors.get(color).argb)
+            color += 1
+        }
+    }
+
+    override def drawForeground()
+    {
+        CCRenderState.changeTexture(GuiCraftingPipe.resource)
+        val oldZ = zLevel
+        zLevel = 300
+        var i = 0
+        import scala.collection.JavaConversions._
+        for (p <- BasicGuiUtils.createSlotArray(20, 12, 2, 4, 20, 0))
+        {
+            val x = p.getValue1 - 5
+            val y = p.getValue2 - 2
+            val u = 178
+            val v = if (inventorySlots.getSlot(i).getStack == null) 107 else 85
+            i += 1
+            drawTexturedModalRect(x, y, u, v, 25, 20)
+        }
+        zLevel = oldZ
+    }
+}
+
+object GuiCraftingPipe
+{
+    val resource = new ResourceLocation("projectred:textures/gui/guicraftingpipe.png")
+}
+
+class GuiExtensionPipe(container:Container, id:String) extends SpecialGuiContainer(container, null)
+{
+    override def drawBackground()
+    {
+        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel)
+        BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 84)
+
+        fontRenderer.drawString("Extension ID:", 10, 10, 0xff000000)
+
+        var i = 0
+        for (s <- id.split("-"))
+        {
+            fontRenderer.drawString(s, 10, 25+10*i, 0xff000000)
+            i+=1
+        }
+
+        BasicGuiUtils.drawSlotBackground(mc, 133, 19)
+        BasicGuiUtils.drawSlotBackground(mc, 133, 49)
+        CCRenderState.changeTexture(SpecialGuiContainer.guiExtras)
+        drawTexturedModalRect(134, 20, 1, 11, 16, 16)
+    }
+}
+
+class GuiInterfacePipe(slots:Container, pipe:RoutedInterfacePipePart) extends SpecialGuiContainer(slots, null, 176, 200)
+{
+    override def drawBackground()
+    {
+        CCRenderState.changeTexture(GuiInterfacePipe.resource)
+        drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
+        BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 118)
+    }
+
+    override def drawForeground()
+    {
+        CCRenderState.changeTexture(GuiInterfacePipe.resource)
+        val oldZ:Float = zLevel
+        zLevel = 300
+
+        for (i <- 0 until 4)
+        {
+            val x:Int = 19
+            val y:Int = 10 + i * 26
+            val u:Int = 178
+            val v:Int = if (inventorySlots.getSlot(i).getStack == null) 107 else 85
+            drawTexturedModalRect(x, y, u, v, 25, 20)
+        }
+        zLevel = oldZ
+    }
+}
+
+object GuiInterfacePipe
+{
+    val resource = new ResourceLocation("projectred:textures/gui/guiinterfacepipe.png")
+}
 
 class GuiRequester(pipe:IWorldRequester) extends SpecialGuiContainer(280, 230)
 {

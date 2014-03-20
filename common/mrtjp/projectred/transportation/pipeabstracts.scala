@@ -21,9 +21,11 @@ import net.minecraft.client.renderer.RenderBlocks
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagList, NBTTagCompound}
-import net.minecraft.util.{ChatMessageComponent, MovingObjectPosition}
+import net.minecraft.util.{Icon, ChatMessageComponent, MovingObjectPosition}
 import net.minecraftforge.common.ForgeDirection
 import scala.collection.JavaConversions._
+import scala.annotation.meta
+import mrtjp.projectred.transportation.PipeLogic.NullPipeLogic
 
 abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion with IHollowConnect
 {
@@ -401,7 +403,7 @@ abstract class CorePipePart extends SubcorePipePart with TCenterRSAcquisitions w
         if (BasicUtils.isClient(world)) Messenger.addMessage(x, y+.5f, z, "/#f/#c[c] = "+getRedwireSignal)
         else
         {
-            val packet:PacketCustom = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)
+            val packet = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)
             packet.writeDouble(x+0.0D)
             packet.writeDouble(y+0.5D)
             packet.writeDouble(z+0.0D)
@@ -632,7 +634,7 @@ class FlowingPipePart extends CorePipePart
 
     def sendItemUpdate(r:RoutedPayload)
     {
-        val out = tile.getWriteStream(this).writeByte(1)
+        val out = getWriteStreamOf(4)
         out.writeShort(r.payloadID)
         out.writeFloat(r.progress)
         out.writeItemStack(r.getItemStack)
@@ -712,3 +714,54 @@ class FlowingPipePart extends CorePipePart
         else false
     }
 }
+
+object PipeLogic
+{
+    def createPipeLogic(p:FlowingPipePart, meta:Int) = meta match
+    {
+        case 0 => new NullPipeLogic(p)
+        case _ => new NullPipeLogic(p)
+    }
+
+    def apply(p:FlowingPipePart, meta:Int) = createPipeLogic(p, meta)
+
+    class NullPipeLogic(p:FlowingPipePart) extends PipeLogic(p)
+    {
+        def endReached(r:RoutedPayload) = false
+        def centerReached(r:RoutedPayload) = false
+        def handleDrop(r:RoutedPayload) = false
+        def resolveDestination(r:RoutedPayload) = false
+        def getIcon(i:Int) = null
+    }
+}
+
+abstract class PipeLogic(p:FlowingPipePart)
+{
+    def save(tag:NBTTagCompound) {}
+
+    def load(tag:NBTTagCompound) {}
+
+    def readDesc(packet:MCDataInput) {}
+
+    def writeDesc(packet:MCDataOutput) {}
+
+    /**
+     *
+     * @param packet
+     * @param key allocated >= 10
+     */
+    def read(packet:MCDataInput, key:Int) {}
+
+    def tick() {}
+
+    def endReached(r:RoutedPayload):Boolean
+
+    def centerReached(r:RoutedPayload):Boolean
+
+    def handleDrop(r:RoutedPayload):Boolean
+
+    def resolveDestination(r:RoutedPayload):Boolean
+
+    def getIcon(i:Int):Icon
+}
+

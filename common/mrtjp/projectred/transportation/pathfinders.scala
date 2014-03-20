@@ -160,7 +160,6 @@ class CollectionPathFinder
 
                 if (list != null)
                 {
-                    import scala.collection.JavaConversions._
                     for (stack <- list) if (!pool.contains(stack.key)) pool.put(stack.key, 0)
                 }
             }
@@ -267,7 +266,7 @@ class SyncResponse
         this
     }
 
-    def setItemCount(count:Int):SyncResponse =
+    def setItemCount(count:Int) =
     {
         itemCount = count
         this
@@ -279,13 +278,9 @@ class SyncResponse
         this
     }
 
-
-    def canEqual(other:Any) = other.isInstanceOf[SyncResponse]
-
     override def equals(other:Any) = other match
     {
         case that:SyncResponse =>
-            (that canEqual this) &&
                 priority == that.priority &&
                 customPriority == that.customPriority &&
                 itemCount == that.itemCount &&
@@ -296,6 +291,6 @@ class SyncResponse
     override def hashCode() =
     {
         val state = Seq(priority, customPriority, itemCount, responder)
-        state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+        state.map(_.hashCode()).foldLeft(0)((a, b) => 31*a+b)
     }
 }

@@ -8,7 +8,6 @@ import mrtjp.projectred.core.inventory.{InvWrapper, SimpleInventory}
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
-import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.nbt.NBTTagCompound
@@ -246,7 +245,7 @@ trait TChipFilter extends RoutingChipset
 
     var metaMatch = true
     var nbtMatch = true
-    var oreMatch = true
+    var oreMatch = false
 
     var damageGroupMode = 0
     val grpPerc = Seq(0, 25, 50, 75, 100)

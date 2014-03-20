@@ -62,7 +62,7 @@ class TransportationProxy_client extends TransportationProxy_server
     override def init()
     {
         super.init()
-        MinecraftForgeClient.registerItemRenderer(itemPartPipe.itemID, PipeItemRenderer.instance)
+        MinecraftForgeClient.registerItemRenderer(itemPartPipe.itemID, PipeItemRenderer)
         MicroMaterialRegistry.registerHighlightRenderer(PipeRSHighlightRenderer)
     }
 }

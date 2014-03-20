@@ -9,16 +9,15 @@ import java.util.UUID
 import java.util.concurrent.DelayQueue
 import mrtjp.projectred.core.BasicGuiUtils
 import mrtjp.projectred.core.ItemDataCard
-import mrtjp.projectred.core.inventory.SpecialContainer
-import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
 import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.inventory.SimpleInventory
+import mrtjp.projectred.core.inventory.SpecialContainer
+import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.core.utils.Pair2
 import mrtjp.projectred.core.utils.PostponedWorkItem
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
-import mrtjp.projectred.transportation.RequestBranchNode.{DeliveryPromise, CraftingPromise, ExcessPromise}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.inventory.Container
@@ -217,11 +216,10 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
             if (toRequest <= 0)
             {
                 lost.add(new PostponedWorkItem[ItemKeyStack](stack, 5000))
-                break
+                break()
             }
 
-            val req = new RequestConsole().setDestination(this)
-            req.setPulling(true).setCrafting(true).setPartials(true)
+            val req = new RequestConsole(RequestFlags.full).setDestination(this)
             val requested = req.makeRequest(ItemKeyStack.get(stack.key, toRequest)).requested
             if (requested < stack.stackSize)
             {
@@ -406,7 +404,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         request.addPromise(promise)
     }
 
-    def deliverPromises(promise:RequestBranchNode.DeliveryPromise, requester:IWorldRequester)
+    def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester)
     {
         if (promise.isInstanceOf[ExcessPromise]) removeExcess(promise.thePackage, promise.size)
         manager.addOrder(ItemKeyStack.get(promise.thePackage, promise.size), requester)

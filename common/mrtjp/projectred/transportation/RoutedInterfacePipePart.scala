@@ -4,9 +4,9 @@ import codechicken.core.IGuiPacketSender
 import codechicken.core.ServerUtils
 import codechicken.lib.packet.PacketCustom
 import mrtjp.projectred.core.BasicGuiUtils
+import mrtjp.projectred.core.inventory.SimpleInventory
 import mrtjp.projectred.core.inventory.SpecialContainer
 import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
-import mrtjp.projectred.core.inventory.SimpleInventory
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
@@ -155,7 +155,7 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
         for (r <- chips) if (r != null) r.requestPromises(request, existingPromises)
     }
 
-    def deliverPromises(promise:RequestBranchNode.DeliveryPromise, requestor:IWorldRequester)
+    def deliverPromises(promise:DeliveryPromise, requestor:IWorldRequester)
     {
         for (r <- chips) if (r != null) r.deliverPromises(promise, requestor)
     }

@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 import java.util.LinkedList
+import mrtjp.projectred.transportation.RequestFlags._
 
 class RoutedExtensionPipePart extends RoutedJunctionPipePart
 {
@@ -77,11 +78,9 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
             if (toRequest <= 0)
             {
                 lost :+= stack
-                break
+                break()
             }
-
-            val req = new RequestConsole().setDestination(this)
-            req.setPulling(true).setCrafting(true).setPartials(true)
+            val req = new RequestConsole(RequestFlags.full).setDestination(this)
             val requested = req.makeRequest(ItemKeyStack.get(stack.key, toRequest)).requested
             if (requested < stack.stackSize)
             {

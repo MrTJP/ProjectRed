@@ -194,11 +194,15 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
         val t = BasicUtils.getMultiPart(sender.worldObj, bc, 6)
         if (t.isInstanceOf[IWorldRequester])
         {
-            val r = new RequestConsole().setDestination(t.asInstanceOf[IWorldRequester])
+            import RequestFlags._
+            var opt = RequestFlags.ValueSet.newBuilder
             val pull = packet.readBoolean
             val craft = packet.readBoolean
             val partial = packet.readBoolean
-            r.setCrafting(craft).setPulling(pull).setPartials(partial)
+            if (pull) opt += PULL
+            if (craft) opt += CRAFT
+            if (partial) opt += PARTIAL
+            val r = new RequestConsole(opt.result()).setDestination(t.asInstanceOf[IWorldRequester])
 
             val s = ItemKeyStack.get(packet.readItemStack(true))
             r.makeRequest(s)
@@ -210,8 +214,7 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
             else
             {
                 sender.addChatMessage("Could not request "+s.stackSize+" of "+s.key.getName+". Missing:")
-                import scala.collection.JavaConversions._
-                for (entry <- r.getMissing.entrySet) sender.addChatMessage(entry.getValue+" of "+entry.getKey.getName)
+                for ((k,v) <- r.getMissing) sender.addChatMessage(v+" of "+k.getName)
             }
             sendRequestList(t.asInstanceOf[IWorldRequester], sender, pull, craft)
         }
