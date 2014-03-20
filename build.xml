@@ -473,7 +473,7 @@
 
         <!-- Recompile -->
         <echo message="Recompiling"/>
-        <scalac destdir="${comp.out}" classpathref="comp.classpath">
+        <scalac destdir="${comp.out}" classpathref="comp.classpath" target="jvm-1.6">
             <include name="**/*.scala"/>
             <include name="**/*.java"/>
             <src>
@@ -481,7 +481,7 @@
             </src>
         </scalac>
 
-        <javac destdir="${comp.out}" classpathref="comp.classpath">
+        <javac destdir="${comp.out}" classpathref="comp.classpath" target="1.6">
             <include name="**/*.java"/>
             <src>
                 <pathelement location="${comp.in}"/>
