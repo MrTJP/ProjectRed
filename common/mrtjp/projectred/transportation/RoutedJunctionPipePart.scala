@@ -289,8 +289,6 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         tile.markRender()
     }
 
-    override def getType = "pr_rbasic"
-
     override def onRemoved()
     {
         super.onRemoved()

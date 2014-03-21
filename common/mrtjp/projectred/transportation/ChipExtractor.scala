@@ -13,7 +13,6 @@ class ChipExtractor extends RoutingChipset with TChipFilter with TChipOrientatio
 
     private def itemsToExtract = 8+upgradeBus.RLatency
 
-
     override def update()
     {
         super.update()

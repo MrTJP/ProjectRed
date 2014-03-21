@@ -48,8 +48,6 @@ object RenderPipe
 
     def render(p:FlowingPipePart, pos:Vector3, olm:LazyLightMatrix)
     {
-        generate()
-
         val t = new Translation(pos)
         var uvt = new IconTransformation(p.getPipeType.sprites(0))
         val connMap = p.connMap
@@ -182,7 +180,7 @@ object RenderPipe
     {
         val pos = new BlockCoord(part.tile)
         GL11.glPushMatrix()
-        GL11.glTranslated(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5)
+        GL11.glTranslated(pos.x+0.5, pos.y+0.5, pos.z+0.5)
         GL11.glScaled(1.002, 1.002, 1.002)
         GL11.glTranslated(-0.5, -0.5, -0.5)
         GL11.glEnable(GL11.GL_BLEND)

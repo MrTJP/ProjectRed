@@ -58,6 +58,4 @@ class RoutedRequestPipePart extends RoutedJunctionPipePart
         if (getInventory != null) super.getActiveFreeSpace(item)
         else Integer.MAX_VALUE
     }
-
-    override def getType = "pr_rrequest"
 }
