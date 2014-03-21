@@ -62,9 +62,9 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     private val chips = new Array[ChipCrafting](9)
 
     private val manager = new DeliveryManager
-    private final var excess = List[Pair2[ItemKeyStack, IWorldRequester]]() //TODO can change to List[ItemKeyStack], IWR is always null
-    private final val lost = new DelayQueue[PostponedWorkItem[ItemKeyStack]]
-    private final val extensionIPs = new Array[Int](9)
+    private var excess = List[Pair2[ItemKeyStack, IWorldRequester]]() //TODO can change to List[ItemKeyStack], IWR is always null
+    private val lost = new DelayQueue[PostponedWorkItem[ItemKeyStack]]
+    private val extensionIPs = new Array[Int](9)
 
     var priority = 0
     private var remainingDelay = operationDelay
@@ -286,12 +286,12 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         for (i <- 0 until 8)
         {
             val stack = chipSlots.getStackInSlot(i)
-            val c = ItemRoutingChip.loadChipFromItemStack(stack)
-            if (c.isInstanceOf[ChipCrafting])
+            ItemRoutingChip.loadChipFromItemStack(stack) match
             {
-                val c2 = c.asInstanceOf[ChipCrafting]
-                c2.setEnvironment(this, this, i)
-                if (chips(i) != c2) chips(i) = c2
+                case c2:ChipCrafting =>
+                    c2.setEnvironment(this, this, i)
+                    if (chips(i) != c2) chips(i) = c2
+                case _ =>
             }
         }
     }
@@ -488,6 +488,4 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         }
         else super.getActiveFreeSpace(item)
     }
-
-    override def getType = "pr_rcrafting"
 }

@@ -334,6 +334,7 @@ class RequestRoot(thePackage:ItemKeyStack, requester:IWorldRequester, opt:Reques
     def getExistingPromisesFor(b:IWorldBroadcaster, item:ItemKey):Int = getExistingPromisesFor(new HashPair2(b, item))
     def getExistingPromisesFor(pair:HashPair2[IWorldBroadcaster, ItemKey]) =
     {
+        //This may not be constucted yet, because this is called from code before the constructor
         if (tableOfPromises == null) tableOfPromises = new HashMap[HashPair2[IWorldBroadcaster, ItemKey], Int]()
         tableOfPromises.getOrElse(pair, 0)
     }
@@ -364,7 +365,6 @@ class RequestRoot(thePackage:ItemKeyStack, requester:IWorldRequester, opt:Reques
         else tableOfPromises += key -> newCount
     }
 }
-
 
 class PathSorter(distanceWeight:Double) extends Ordering[StartEndPath]
 {

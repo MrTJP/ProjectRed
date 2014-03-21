@@ -4,8 +4,8 @@ import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.LabelBreaks._
 import mrtjp.projectred.core.utils.{ItemKeyStack, ItemKey}
 import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
-import scala.collection.mutable.ListBuffer
 import scala.collection.immutable.HashMap
+import scala.collection.mutable.ListBuffer
 
 class ChipStockKeeper extends RoutingChipset with TChipStock
 {
@@ -40,16 +40,16 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
         var requestAttempted = false
         var requestedSomething = false
 
-        for (i <- 0 until stock.getSizeInventory) label("1")
+        for (i <- 0 until stock.getSizeInventory) label
         {
             val keyStack = ItemKeyStack.get(stock.getStackInSlot(i))
-            if (keyStack == null || checked.contains(keyStack.key)) break("1")
+            if (keyStack == null || checked.contains(keyStack.key)) break()
             checked :+= keyStack.key
 
             val toRequest = filt.getItemCount(keyStack.key)
             val inInventory = inv.getItemCount(keyStack.key)+getEnroute(keyStack.key)
             val missing = toRequest-inInventory
-            if (missing <= 0 || (requestWhenEmpty && inInventory > 0)) break("1")
+            if (missing <= 0 || (requestWhenEmpty && inInventory > 0)) break()
 
             val req = new RequestConsole(RequestFlags.full).setDestination(routeLayer.getRequester)
             val request = ItemKeyStack.get(keyStack.key, missing)
@@ -66,9 +66,9 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
 
         if (requestAttempted) RouteFX.spawnType1(RouteFX.color_request, 8, routeLayer.getCoords, routeLayer.getWorld)
         if (requestAttempted && requestedSomething) operationsWithoutRequest = 0
-        else operationsWithoutRequest = operationsWithoutRequest+1
+        else operationsWithoutRequest += 1
 
-        remainingDelay = operationDelay + throttleDelay
+        remainingDelay = operationDelay+throttleDelay
     }
 
     def addToRequestList(item:ItemKey, amount:Int)

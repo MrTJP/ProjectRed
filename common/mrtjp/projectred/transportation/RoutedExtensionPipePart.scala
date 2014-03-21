@@ -145,8 +145,6 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
         ghost
     }
 
-    override def getType = "pr_rextension"
-
     var cardslot = new SimpleInventory(2, "card", 1)
     {
         override def isItemValidForSlot(i:Int, stack:ItemStack) =

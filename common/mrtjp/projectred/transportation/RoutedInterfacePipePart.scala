@@ -35,8 +35,6 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
     }
     var chips = new Array[RoutingChipset](4)
 
-    override def getType = "pr_rinterface"
-
     override def save(tag:NBTTagCompound)
     {
         super.save(tag)
