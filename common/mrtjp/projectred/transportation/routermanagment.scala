@@ -214,8 +214,8 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
 
     private def updateLSAIfNeeded():Boolean =
     {
-        var adjacentChanged:Boolean = false
-        val wr:IWorldRouter = getParent
+        var adjacentChanged = false
+        val wr = getParent
 
         if (wr == null) return false
 
@@ -347,7 +347,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         /** List of all routers in this network ordered by cost **/
         var routersByCost2 = new Array[StartEndPath](sizeEstimate)
         /** Queue of all candidates that need checking **/
-        val candidates2 = new JPriorityQueue[StartEndPath]()
+        val candidates2 = new JPriorityQueue[StartEndPath](Math.sqrt(sizeEstimate).asInstanceOf[Int])//scala PQ is not working ?!
 
         // Start by adding our info.
         tree2 += (this -> new StartEndPath(this, this, -1, 0))
@@ -356,7 +356,6 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
 
         import mrtjp.projectred.core.utils.LabelBreaks._
         Router.LSADatabasereadLock.lock()
-        var stat = ""
         while (!candidates2.isEmpty) label
         {
             var dequeue = candidates2.poll()
@@ -369,12 +368,12 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             val low = tree2.getOrElse(dequeue.start, dequeue)
 
             // Add all of the lowest's neighbors so they are checked later.
-            val lsa =
+            val lsa = dequeue.end.getIPAddress match
             {
-                val ip = dequeue.end.getIPAddress
-                if (Router.LSADatabase.isDefinedAt(ip)) Router.LSADatabase(ip)
-                else null
+                case ip if Router.LSADatabase.isDefinedAt(ip) => Router.LSADatabase(ip)
+                case _ => null
             }
+
             if (lsa != null) for ((k,v) <- lsa.neighbors) if (!tree2.contains(k))
                 candidates2.add(new StartEndPath(low.end, k, low.dirToFirstHop, dequeue.distance+v))
 
@@ -382,10 +381,8 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             dequeue.start = low.start
             tree2 += (dequeue.end -> dequeue)
             routersByCost2 :+= dequeue
-            stat += "#approved "+dequeue.end.getIPAddress+"\n"
         }
         Router.LSADatabasereadLock.unlock()
-        if(getIPAddress==2) println(stat)
 
         var routeTable2 = new Array[ForgeDirection](Router.getEndOfIPPool+1)
         while (getIPAddress >= routeTable2.length) routeTable2 :+= null
@@ -422,33 +419,6 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             Router.LSADatabasereadLock.unlock()
         }
         routingTableWriteLock.unlock()
-
-        if(getIPAddress==2)
-        {
-            println("\n---bycost of ")
-            var s = ""
-            for (l <- routersByCost2.filter(p=> p != null)) s+="#"+l.end.getIPAddress+" with dist "+l.distance+"\n"
-            println(s)
-
-            println("\n---tableof")
-            var p = ""
-            for (l <- routeTable2.filter(p=> p != null)) p+="#to "+routeTable2.indexOf(l)+": "+l.toString+"\n"
-            println(p)
-
-            println("\n---original metrics")
-            var m = ""
-            for ((k,v) <- LSA.neighbors) m+="#to "+k.getIPAddress+" with metrics "+v+" in dir "+(adjacentLinks.getOrElse(k, null) match
-            {
-                case ds:StartEndPath => ds.dirToFirstHop.toString
-                case _ => "UNKNOWNS"
-            })+"\n"
-            println(m)
-
-            println("\n---tree has")
-            m =""
-            for ((k,v) <- tree2) m+="#from "+k.getIPAddress+" to "+v.end.getIPAddress+" in dir "+v.dirToFirstHop+"\n"
-            println(m)
-        }
     }
 
     def getParent = parent
