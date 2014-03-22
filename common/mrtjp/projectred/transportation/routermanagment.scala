@@ -2,11 +2,13 @@ package mrtjp.projectred.transportation
 
 import java.util.UUID
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import java.util.{PriorityQueue => JPriorityQueue}
 import mrtjp.projectred.core.Configurator
+import mrtjp.projectred.core.utils.ItemKey
 import net.minecraftforge.common.ForgeDirection
 import scala.collection.immutable.BitSet
 import scala.collection.immutable.HashMap
-import scala.collection.{JavaConversions, mutable}
+import scala.collection.mutable
 
 object RouterServices
 {
@@ -86,6 +88,25 @@ class StartEndPath(var start:Router, var end:Router, var dirToFirstHop:Int, var 
     }
 }
 
+object PathFlags extends Enumeration
+{
+    type PathFlags = Value
+    val RouteTo, RequestFrom, PowerFrom = Value
+
+    def all = RouteTo+RequestFrom+PowerFrom
+}
+
+abstract class PathFiltering
+{
+    def allowItem(item:ItemKey):Boolean
+    def allowRouting:Boolean
+    def allowBroadcast:Boolean
+    def allowCrafting:Boolean
+    def allowController:Boolean
+
+    def getPathFlags = 0
+}
+
 object Router
 {
     /*** Locks for allowing thread-safe read-write access to router information ***/
@@ -157,9 +178,9 @@ object Router
 class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
 {
     /** List of [ForgeDirection] indexed by IP for all routers in this network **/
-    private var routeTable = Array[ForgeDirection]()
+    private var routeTable = List[ForgeDirection]()
     /** List of [StartEndPath] sorted by distance, closest one having the lowest index **/
-    private var routersByCost = Array[StartEndPath]()
+    private var routersByCost = List[StartEndPath]()
     /** Set of known exits from here. Used to determine render color of a side **/
     private var routedExits = java.util.EnumSet.noneOf(classOf[ForgeDirection]) //TODO seems a little chunky, how about a bitset?
     /** Link State for all nodes that branch from this one **/
@@ -326,22 +347,22 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         /** List of all routers in this network ordered by cost **/
         var routersByCost2 = new Array[StartEndPath](sizeEstimate)
         /** Queue of all candidates that need checking **/
-        var candidates2 = new mutable.PriorityQueue[StartEndPath]()
+        val candidates2 = new JPriorityQueue[StartEndPath]()
 
         // Start by adding our info.
         tree2 += (this -> new StartEndPath(this, this, -1, 0))
-        for ((k,v) <- adjacentLinks) candidates2 += new StartEndPath(v.end, v.end, v.dirToFirstHop, v.distance)
+        for ((k,v) <- adjacentLinks) candidates2.add(new StartEndPath(v.end, v.end, v.dirToFirstHop, v.distance))
         routersByCost2 :+= new StartEndPath(this, this, -1, 0)
 
         import mrtjp.projectred.core.utils.LabelBreaks._
         Router.LSADatabasereadLock.lock()
+        var stat = ""
         while (!candidates2.isEmpty) label
         {
-            var dequeue = candidates2.dequeue()
+            var dequeue = candidates2.poll()
 
             // We already approved this router. Keep skipping until we get a fresh one.
-            while (!candidates2.isEmpty && tree2.keySet.contains(dequeue.end)) dequeue = candidates2.dequeue()
-            if (tree2.keySet.contains(dequeue.end)) break()
+            if (tree2.contains(dequeue.end)) break()
 
             // This is the lowest path so far to here.
             // If its null, then we are the start of the path to this router.
@@ -355,20 +376,22 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
                 else null
             }
             if (lsa != null) for ((k,v) <- lsa.neighbors) if (!tree2.contains(k))
-                candidates2 += new StartEndPath(low.end, k, low.dirToFirstHop, dequeue.distance+v)
+                candidates2.add(new StartEndPath(low.end, k, low.dirToFirstHop, dequeue.distance+v))
 
             // Approve this candidate
             dequeue.start = low.start
             tree2 += (dequeue.end -> dequeue)
             routersByCost2 :+= dequeue
+            stat += "#approved "+dequeue.end.getIPAddress+"\n"
         }
         Router.LSADatabasereadLock.unlock()
+        if(getIPAddress==2) println(stat)
 
         var routeTable2 = new Array[ForgeDirection](Router.getEndOfIPPool+1)
         while (getIPAddress >= routeTable2.length) routeTable2 :+= null
         routeTable2(getIPAddress) = ForgeDirection.UNKNOWN //consider ourselves for logistic path
 
-        for (p <- tree2.values) label
+        for ((k, p) <- tree2) label
         {
             val firstHop = p.start
             if (firstHop == null)
@@ -382,7 +405,6 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             if (localOutPath == null) break()
 
             while (p.end.getIPAddress >= routeTable2.length) routeTable2 :+= null
-            routeTable2(p.end.getIPAddress) = ForgeDirection.UNKNOWN
             routeTable2(p.end.getIPAddress) = ForgeDirection.getOrientation(localOutPath.dirToFirstHop)
         }
 
@@ -394,12 +416,39 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             if (Router.LegacyLinkStateID(IPAddress) < newVer)
             {
                 Router.LegacyLinkStateID(IPAddress) = newVer
-                routeTable = routeTable2
-                routersByCost = routersByCost2
+                routeTable = routeTable2.toList
+                routersByCost = routersByCost2.toList
             }
             Router.LSADatabasereadLock.unlock()
         }
         routingTableWriteLock.unlock()
+
+        if(getIPAddress==2)
+        {
+            println("\n---bycost of ")
+            var s = ""
+            for (l <- routersByCost2.filter(p=> p != null)) s+="#"+l.end.getIPAddress+" with dist "+l.distance+"\n"
+            println(s)
+
+            println("\n---tableof")
+            var p = ""
+            for (l <- routeTable2.filter(p=> p != null)) p+="#to "+routeTable2.indexOf(l)+": "+l.toString+"\n"
+            println(p)
+
+            println("\n---original metrics")
+            var m = ""
+            for ((k,v) <- LSA.neighbors) m+="#to "+k.getIPAddress+" with metrics "+v+" in dir "+(adjacentLinks.getOrElse(k, null) match
+            {
+                case ds:StartEndPath => ds.dirToFirstHop.toString
+                case _ => "UNKNOWNS"
+            })+"\n"
+            println(m)
+
+            println("\n---tree has")
+            m =""
+            for ((k,v) <- tree2) m+="#from "+k.getIPAddress+" to "+v.end.getIPAddress+" in dir "+v.dirToFirstHop+"\n"
+            println(m)
+        }
     }
 
     def getParent = parent

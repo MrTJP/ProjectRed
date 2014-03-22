@@ -45,8 +45,8 @@ class LSPathFinder(start:IWorldRouter, maxVisited:Int, maxLength:Int, side:Forge
         val root = setVisited.isEmpty
 
         if (setVisited.size == 1) pipesVisited = 0
-
         pipesVisited += 1
+
         if (pipesVisited > maxVisited) return foundPipes
         if (setVisited.size > maxLength) return foundPipes
         if (!start.initialized) return foundPipes
