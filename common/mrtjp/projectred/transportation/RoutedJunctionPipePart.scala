@@ -3,16 +3,16 @@ package mrtjp.projectred.transportation
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.data.MCDataOutput
 import codechicken.lib.vec.BlockCoord
-import codechicken.multipart.INeighborTileChange
 import codechicken.multipart.TMultiPart
 import codechicken.multipart.TileMultipart
 import java.util.UUID
+import java.util.concurrent.PriorityBlockingQueue
 import mrtjp.projectred.api.IScrewdriver
 import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.core.utils.Pair2
-import mrtjp.projectred.core.{Messenger, BasicUtils, Configurator}
+import mrtjp.projectred.core.{BasicUtils, Configurator}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
@@ -21,15 +21,15 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.Icon
 import net.minecraft.util.MovingObjectPosition
 import net.minecraftforge.common.ForgeDirection
+import scala.collection.JavaConversions._
 import scala.collection.immutable.BitSet
-import scala.collection.mutable
 
 object RoutedJunctionPipePart
 {
     var pipes = 0
 }
 
-class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRouteLayer with IWorldRequester with IInventoryProvider with INeighborTileChange
+class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRouteLayer with IWorldRequester with IInventoryProvider
 {
     var searchDelay =
     {
@@ -48,7 +48,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
     var firstTick = true
 
     var sendQueue = List[RoutedPayload]()
-    var transitQueue = mutable.PriorityQueue[Pair2[RoutedPayload, Int]]()(TransitComparator)
+    var transitQueue = new PriorityBlockingQueue[Pair2[RoutedPayload, Int]](10, TransitComparator)
     var swapQueue = List[RoutedPayload]()
 
     def getRouter:Router =
@@ -65,7 +65,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
 
     def itemEnroute(r:RoutedPayload)
     {
-        transitQueue += new Pair2(r, 200)
+        transitQueue.add(new Pair2(r, 200))
     }
 
     def itemArrived(r:RoutedPayload)
@@ -76,16 +76,16 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
 
     private def removeFromTransitQueue(r:RoutedPayload)
     {
-        transitQueue = transitQueue.filterNot(p => p.getValue1 == r)
+        transitQueue.removeAll(transitQueue.filter(p => p.getValue1 == r))
     }
 
     private def tickTransitQueue()
     {
-        transitQueue = transitQueue.filter(p =>
+        transitQueue.removeAll(transitQueue.filterNot(p =>
         {
             p.setValue2(p.getValue2-1)
             p.getValue2 >= 0
-        })
+        }))
     }
 
     protected def countInTransit(key:ItemKey) =
@@ -180,8 +180,6 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
             sendQueue = sendQueue.filterNot(p => p == first)
             first
         }
-
-        if (!world.isRemote) Messenger.addMessage(x, y, z, getRouter.getIPAddress.toString)
     }
 
     protected def updateServer() {}
@@ -417,9 +415,6 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         if ((linkMap&1<<side) != 0) array(1+ind)
         else array(2+ind)
     }
-
-    def onNeighborTileChanged(side:Int, weak:Boolean) {}
-    def weakTileChanges = false
 
     override def resolveDestination(r:RoutedPayload)
     {

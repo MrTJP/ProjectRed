@@ -15,8 +15,9 @@ import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
+import codechicken.multipart.INeighborTileChange
 
-class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcaster
+class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcaster with INeighborTileChange
 {
     var chipSlots = new SimpleInventory(4, "chips", 1)
     {
@@ -178,7 +179,7 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
         var high = Integer.MIN_VALUE
         for (r <- chips) if (r != null)
         {
-            val priority:Int = r.getPriority
+            val priority = r.getPriority
             if (priority > high) high = priority
         }
         high
