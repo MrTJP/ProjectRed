@@ -327,21 +327,20 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         /** List of all routers in this network ordered by cost **/
         var routersByCost2 = new Array[StartEndPath](sizeEstimate)
         /** Queue of all candidates that need checking **/
-        var candidates2 = new mutable.PriorityQueue[StartEndPath]()
+        val candidates2 = new java.util.PriorityQueue[StartEndPath]()
 
         // Start by adding our info.
         tree2 += (this -> new StartEndPath(this, this, -1, 0))
-        for ((k,v) <- adjacentLinks) candidates2 += new StartEndPath(v.end, v.end, v.dirToFirstHop, v.distance)
+        for ((k,v) <- adjacentLinks) candidates2.add(new StartEndPath(v.end, v.end, v.dirToFirstHop, v.distance))
         routersByCost2 :+= new StartEndPath(this, this, -1, 0)
 
         import mrtjp.projectred.core.utils.LabelBreaks._
         Router.LSADatabasereadLock.lock()
         while (!candidates2.isEmpty) label("1")
         {
-            var dequeue = candidates2.dequeue()
+            var dequeue = candidates2.poll
 
             // We already approved this router. Keep skipping until we get a fresh one.
-            while (!candidates2.isEmpty && tree2.keySet.contains(dequeue.end)) dequeue = candidates2.dequeue()
             if (tree2.keySet.contains(dequeue.end)) break("1")
 
             // This is the lowest path so far to here.
@@ -356,7 +355,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
                 else null
             }
             if (lsa != null) for ((k,v) <- lsa.neighbors) if (!tree2.contains(k))
-                candidates2 += new StartEndPath(low.end, k, low.dirToFirstHop, dequeue.distance+v)
+                candidates2 add new StartEndPath(low.end, k, low.dirToFirstHop, dequeue.distance+v)
 
             // Approve this candidate
             dequeue.start = low.start
@@ -366,7 +365,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         Router.LSADatabasereadLock.unlock()
 
         var routeTable2 = new Array[ForgeDirection](Router.getEndOfIPPool+1)
-        while (getIPAddress >= routeTable2.size) routeTable2 :+= null
+        while (getIPAddress >= routeTable2.length) routeTable2 :+= null
         routeTable2(getIPAddress) = ForgeDirection.UNKNOWN //consider ourselves for logistic path
 
         for (p <- tree2.values) label("1")
@@ -374,7 +373,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             val firstHop = p.start
             if (firstHop == null)
             {
-                while (p.end.getIPAddress >= routeTable2.size) routeTable2 :+= null
+                while (p.end.getIPAddress >= routeTable2.length) routeTable2 :+= null
                 routeTable2(p.end.getIPAddress) = ForgeDirection.UNKNOWN
                 break("1")
             }
@@ -382,7 +381,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             val localOutPath = adjacentLinks.getOrElse(firstHop, null)
             if (localOutPath == null) break("1")
 
-            while (p.end.getIPAddress >= routeTable2.size) routeTable2 :+= null
+            while (p.end.getIPAddress >= routeTable2.length) routeTable2 :+= null
             routeTable2(p.end.getIPAddress) = ForgeDirection.UNKNOWN
             routeTable2(p.end.getIPAddress) = ForgeDirection.getOrientation(localOutPath.dirToFirstHop)
         }
