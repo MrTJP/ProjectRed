@@ -12,9 +12,9 @@ object RequestFlags extends Enumeration
     type RequestFlags = Value
     val PULL, CRAFT, PARTIAL, SIMULATE = Value
 
-    val all = PULL+CRAFT+PARTIAL+SIMULATE
-    val full = PULL+CRAFT+PARTIAL
-    val default = PULL+CRAFT
+    def all = PULL+CRAFT+PARTIAL+SIMULATE
+    def full = PULL+CRAFT+PARTIAL
+    def default = PULL+CRAFT
 }
 
 class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, requester:IWorldRequester, parent:RequestBranchNode, opt:RequestFlags.ValueSet)
@@ -77,8 +77,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
 
     def doPullReq() =
     {
-        val allRouters = requester.getRouter.getRoutesByCost
-        Sorting.quickSort(allRouters)(new PathSorter(1.0D))
+        val allRouters = requester.getRouter.getRoutesByCost.sorted(new PathSorter(1.0D))
         def doUntilDone()
         {
             for (l <- allRouters) if (isDone) return else l.end.getParent match
@@ -113,8 +112,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
 
     def doCraftReq() =
     {
-        val allRouters = requester.getRouter.getRoutesByCost
-        Sorting.quickSort(allRouters)(new PathSorter(0.0D))
+        val allRouters = requester.getRouter.getRoutesByCost.sorted(new PathSorter(1.0D))
 
         var allCrafters = List[CraftingPromise]()
         for (l <- allRouters) l.end.getParent match
