@@ -115,8 +115,12 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
     {
         if (super.activate(player, hit, item)) return true
-        openGui(player)
-        true
+        if (!player.isSneaking)
+        {
+            openGui(player)
+            true
+        }
+        else false
     }
 
     private def openGui(player:EntityPlayer)

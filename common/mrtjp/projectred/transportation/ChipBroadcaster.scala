@@ -51,7 +51,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
 
                 val inv = applyFilter(InvWrapper.wrap(real)).setSlotsFromSide(side)
 
-                if (!routeLayer.getRouter.canRouteTo(requester.getRouter.getIPAddress))
+                if (!routeLayer.getRouter.canRouteTo(requester.getRouter.getIPAddress, reqKeyStack.key, SendPriority.ACTIVE))
                 {
                     manager.dispatchFailed()
                     break("cont")

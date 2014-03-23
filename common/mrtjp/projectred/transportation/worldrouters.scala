@@ -2,6 +2,7 @@ package mrtjp.projectred.transportation
 
 import codechicken.lib.vec.BlockCoord
 import mrtjp.projectred.core.utils.{ItemKeyStack, ItemKey}
+import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.world.World
