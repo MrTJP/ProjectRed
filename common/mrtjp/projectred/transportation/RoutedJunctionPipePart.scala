@@ -39,8 +39,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
 
     var linkMap = 0
 
-    var router:Router = null
-    var routerID:String = null
+    var router: Router = null
+    var routerId: UUID = null
 
     val routerIDLock = new AnyRef
     var inOutSide = 0
@@ -50,16 +50,22 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
     var sendQueue = List[RoutedPayload]()
     var transitQueue = mutable.PriorityQueue[Pair2[RoutedPayload, Int]]()(TransitComparator)
     var swapQueue = List[RoutedPayload]()
+    
+    private def getRouterId: UUID = {
+    	if (routerId == null) routerIDLock synchronized {
+    		routerId =
+    			if (router != null) router.getID
+    			else UUID.randomUUID
+    	}
+    	routerId
+	}
 
     def getRouter:Router =
     {
         if (needsWork) return null
-        if (router == null) routerIDLock synchronized
-            {
-                var id:UUID = null
-                if (routerID != null && !routerID.isEmpty) id = UUID.fromString(routerID)
-                router = RouterServices.getOrCreateRouter(id, this)
-            }
+        if (router == null) routerIDLock synchronized {
+            router = RouterServices.getOrCreateRouter(getRouterId, this)
+        }
         router
     }
 
@@ -295,22 +301,16 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
     override def save(tag:NBTTagCompound)
     {
         super.save(tag)
-        routerIDLock synchronized
-            {
-                if (routerID == null || routerID.isEmpty) if (router != null) routerID = getRouter.getID.toString
-                else routerID = UUID.randomUUID.toString
-            }
-        tag.setString("rid", routerID)
+        tag.setString("rid", getRouterId.toString)
         tag.setByte("io", inOutSide.asInstanceOf[Byte])
     }
 
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        routerIDLock synchronized
-            {
-                routerID = tag.getString("rid")
-            }
+        routerIDLock synchronized {
+            routerId = UUID.fromString(tag.getString("rid"))
+        }
         inOutSide = tag.getByte("io")
     }
 
@@ -319,6 +319,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         super.writeDesc(packet)
         packet.writeByte(linkMap)
         packet.writeByte(inOutSide)
+        packet.writeLong(getRouterId.getMostSignificantBits)
+        packet.writeLong(getRouterId.getLeastSignificantBits)
     }
 
     override def readDesc(packet:MCDataInput)
@@ -326,6 +328,11 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         super.readDesc(packet)
         linkMap = packet.readUByte
         inOutSide = packet.readUByte
+       	val mostSigBits = packet.readLong
+       	val leastSigBits = packet.readLong
+        routerIDLock synchronized {
+        	routerId = new UUID(mostSigBits, leastSigBits)
+        }
     }
 
     override def onNeighborChanged()
