@@ -1,3 +1,7 @@
+[dev]v4.3.4
+- FIX: !! Huge memory leak in pipe routing thread !!
+- FIX: Rare crash when removing pipes
+
 v4.3.3
 - CHANGE: Backpacks show name in gui
 - FIX: Java 6 crash
