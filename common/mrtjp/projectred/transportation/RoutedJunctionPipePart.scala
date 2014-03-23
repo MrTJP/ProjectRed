@@ -50,22 +50,23 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
     var sendQueue = List[RoutedPayload]()
     var transitQueue = mutable.PriorityQueue[Pair2[RoutedPayload, Int]]()(TransitComparator)
     var swapQueue = List[RoutedPayload]()
-    
-    private def getRouterId: UUID = {
-    	if (routerId == null) routerIDLock synchronized {
-    		routerId =
-    			if (router != null) router.getID
-    			else UUID.randomUUID
-    	}
-    	routerId
-	}
+
+    private def getRouterId =
+    {
+        if (routerId == null) routerIDLock synchronized
+            {
+                routerId = if (router != null) router.getID else UUID.randomUUID
+            }
+        routerId
+    }
 
     def getRouter:Router =
     {
         if (needsWork) return null
-        if (router == null) routerIDLock synchronized {
-            router = RouterServices.getOrCreateRouter(getRouterId, this)
-        }
+        if (router == null) routerIDLock synchronized
+            {
+                router = RouterServices.getOrCreateRouter(getRouterId, this)
+            }
         router
     }
 
@@ -308,9 +309,10 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        routerIDLock synchronized {
-            routerId = UUID.fromString(tag.getString("rid"))
-        }
+        routerIDLock synchronized
+            {
+                routerId = UUID.fromString(tag.getString("rid"))
+            }
         inOutSide = tag.getByte("io")
     }
 
@@ -330,9 +332,10 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         inOutSide = packet.readUByte
        	val mostSigBits = packet.readLong
        	val leastSigBits = packet.readLong
-        routerIDLock synchronized {
-        	routerId = new UUID(mostSigBits, leastSigBits)
-        }
+        routerIDLock synchronized
+            {
+                routerId = new UUID(mostSigBits, leastSigBits)
+            }
     }
 
     override def onNeighborChanged()
