@@ -1,4 +1,4 @@
-[dev]v4.3.4
+v4.3.4
 - FIX: !! Huge memory leak in pipe routing thread !!
 - FIX: Rare crash when removing pipes
 
