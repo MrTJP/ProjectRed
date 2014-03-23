@@ -122,7 +122,7 @@ object Router
         if (ip < nextIP) nextIP = ip
     }
 
-    def getEndOfIPPool = usedIPs.size
+    def getEndOfIPPool = usedIPs.lastKey
 
     def reboot()
     {
