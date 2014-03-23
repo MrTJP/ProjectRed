@@ -13,6 +13,7 @@ import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.core.utils.Pair2
 import mrtjp.projectred.core.{BasicUtils, Configurator}
+import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
@@ -437,7 +438,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         r.refreshIP()
 
         // Deliver item, or reroute
-        if (r.destinationIP > 0 && (r.destinationUUID == getRouter.getID))
+        if (r.destinationIP > 0 && r.destinationUUID == getRouter.getID)
         {
             r.output = getDirForIncomingItem(r)
             if (r.output == ForgeDirection.UNKNOWN)
@@ -462,7 +463,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         // Relay item
         if (r.output == ForgeDirection.UNKNOWN)
         {
-            r.output = getRouter.getExitDirection(r.destinationIP)
+            r.output = getRouter.getDirection(r.destinationIP, r.payload.key, r.priority)
             color = RouteFX.color_relay
         }
 

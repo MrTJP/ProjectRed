@@ -274,9 +274,9 @@ abstract class CorePipePart extends SubcorePipePart with TCenterRSAcquisitions w
     {
         case null => true
         case _ =>
-            WireBoxes.expandBounds = s
+            PipeBoxes.expandBounds = s
             val fits = tile.canReplacePart(this, this)
-            WireBoxes.expandBounds = -1
+            PipeBoxes.expandBounds = -1
             fits
     }
 
@@ -659,8 +659,10 @@ class FlowingPipePart extends CorePipePart
         r.input = ForgeDirection.getOrientation(packet.readByte)
         r.output = ForgeDirection.getOrientation(packet.readByte)
         r.speed = packet.readFloat
-        r.setPriority(SendPriority.typeValues(packet.readUByte))
+        r.setPriority(SendPriority(packet.readUByte).asInstanceOf[SendPriority.PriorityVal])
     }
+
+    def routeFilter(forSide:Int) = PathFilter.default
 
     @SideOnly(Side.CLIENT)
     override def drawBreaking(r:RenderBlocks)

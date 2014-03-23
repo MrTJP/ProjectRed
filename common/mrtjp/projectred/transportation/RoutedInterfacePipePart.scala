@@ -79,8 +79,12 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
                 }
         }
 
-        openGui(player)
-        true
+        if (!player.isSneaking)
+        {
+            openGui(player)
+            true
+        }
+        else false
     }
 
     def openGui(player:EntityPlayer)

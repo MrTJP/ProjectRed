@@ -296,9 +296,9 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         }
     }
 
-    private def getExtensionFor(slot:Int):IWorldRequester =
+    private def getExtensionFor(slot:Int, item:ItemKey):IWorldRequester =
     {
-        if (0 until 9 contains slot) if (extensionIPs(slot) >= 0 && getRouter.canRouteTo(extensionIPs(slot)))
+        if (0 until 9 contains slot) if (extensionIPs(slot) >= 0 && getRouter.canRouteTo(extensionIPs(slot), item, SendPriority.ACTIVE))
         {
             val r = RouterServices.getRouter(extensionIPs(slot))
             if (r != null && r.isLoaded && r.getParent.isInstanceOf[IWorldRequester])
@@ -320,8 +320,12 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
                 return true
             }
         }
-        openGui(player)
-        true
+        if (!player.isSneaking)
+        {
+            openGui(player)
+            true
+        }
+        else false
     }
 
     override def onRemoved()
@@ -423,7 +427,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         val result = ItemKeyStack.get(r.matrix.getStackInSlot(9))
         val requesters = new Array[IWorldRequester](9)
 
-        for (i <- 0 until 9) requesters(i) = getExtensionFor(r.extIndex(i))
+        for (i <- 0 until 9) requesters(i) = getExtensionFor(r.extIndex(i), item)
 
         val promise = new CraftingPromise(result, this, priority)
 

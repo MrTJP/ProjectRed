@@ -25,12 +25,17 @@ class RoutedRequestPipePart extends RoutedJunctionPipePart
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
     {
         if (super.activate(player, hit, item)) return true
-        if (!world.isRemote) openGui(player)
-        true
+        if (!player.isSneaking)
+        {
+            openGui(player)
+            true
+        }
+        else false
     }
 
     private def openGui(player:EntityPlayer)
     {
+        if (world.isRemote) return
         val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Request_open)
         packet.writeCoord(x, y, z)
         packet.sendToPlayer(player)
