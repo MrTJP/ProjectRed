@@ -12,7 +12,7 @@ import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.core.utils.Pair2
-import mrtjp.projectred.core.{BasicUtils, Configurator}
+import mrtjp.projectred.core.{Messenger, BasicUtils, Configurator}
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
@@ -183,7 +183,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         }
     }
 
-    protected def updateServer() {}
+    protected def updateServer() {Messenger.addMessage(x,y,z,"/#f"+getRouter.getIPAddress)}
 
     protected def updateClient()
     {
