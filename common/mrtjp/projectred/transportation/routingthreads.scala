@@ -18,13 +18,7 @@ object TableUpdateThread
 
     def size = updateCalls.size
 
-    def getAverage:Long =
-    {
-        avgSync synchronized
-            {
-                return average
-            }
-    }
+    def getAverage = avgSync synchronized average
 }
 
 class TableUpdateThread(i:Int) extends Thread("PR RoutingThread #"+i)
@@ -35,13 +29,15 @@ class TableUpdateThread(i:Int) extends Thread("PR RoutingThread #"+i)
 
     override def run()
     {
-        while (true) try
+        import TableUpdateThread._
+
+        var job:RouteLayerUpdater = null
+        try
         {
-            while (!TableUpdateThread.updateCalls.isEmpty)
+            while ({job = updateCalls.take; job} != null)
             {
-                val rlu = TableUpdateThread.updateCalls.poll()
                 val starttime = System.nanoTime
-                if (rlu != null) rlu.run()
+                job.run()
                 val took = System.nanoTime-starttime
 
                 TableUpdateThread.avgSync synchronized
