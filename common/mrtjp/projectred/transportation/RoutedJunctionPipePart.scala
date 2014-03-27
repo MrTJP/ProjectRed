@@ -361,10 +361,23 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
     {
         if (super.activate(player, hit, item)) return true
+
+        if (item != null && item.getItem.isInstanceOf[ItemRouterUtility])
+        {
+            if (!world.isRemote)
+            {
+                //TODO routing stats
+            }
+            return true
+        }
+
         if (item != null && item.getItem.isInstanceOf[IScrewdriver])
         {
-            shiftOrientation(true)
-            item.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
+            if (!world.isRemote)
+            {
+                shiftOrientation(true)
+                item.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
+            }
             return true
         }
         false
@@ -391,7 +404,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
                     if (t.isInstanceOf[IInventory])
                     {
                         found = true
-                        break
+                        break()
                     }
                 }
             }

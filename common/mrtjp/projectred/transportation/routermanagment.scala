@@ -68,10 +68,11 @@ object RouterServices
 class LSA
 {
     /** Map of [Linked Routers, Absolute Path] **/
-    var neighbors = HashMap[Router, StartEndPath]()
+    //var neighbors = HashMap[Router, StartEndPath]()
+    var neighbors = Vector[StartEndPath]()
 }
 
-class StartEndPath(var start:Router, var end:Router, var dirToFirstHop:Int, var distance:Int, val filters:Set[PathFilter]) extends Ordered[StartEndPath]
+class StartEndPath(var start:Router, var end:Router, var hopDir:Int, var distance:Int, val filters:Set[PathFilter]) extends Ordered[StartEndPath]
 {
     def this(start:Router, end:Router, dirToFirstHop:Int, distance:Int, filter:PathFilter) = this(start, end, dirToFirstHop, distance, Set(filter))
     def this(start:Router, end:Router, dirToFirstHop:Int, distance:Int) = this(start, end, dirToFirstHop, distance, PathFilter.default)
@@ -79,11 +80,13 @@ class StartEndPath(var start:Router, var end:Router, var dirToFirstHop:Int, var 
     override def equals(other:Any) = other match
     {
         case that:StartEndPath =>
-                dirToFirstHop == that.dirToFirstHop &&
+                hopDir == that.hopDir &&
                 distance == that.distance &&
                 filters == that.filters
         case _ => false
     }
+
+    def -->(to:StartEndPath) = new StartEndPath(start, to.end, hopDir, distance+to.distance, filters ++ to.filters)
 
     override def compare(that:StartEndPath) =
     {
@@ -93,48 +96,30 @@ class StartEndPath(var start:Router, var end:Router, var dirToFirstHop:Int, var 
     }
 
     def allowItem(item:ItemKey) = filters.forall(f => f.filterExclude != f.filterItems.contains(item))
-    def allowRouting = filters.forall(f => f.allowRouting)
-    def allowBroadcast = filters.forall(f => f.allowBroadcast)
-    def allowCrafting = filters.forall(f => f.allowCrafting)
-    def allowController = filters.forall(f => f.allowController)
+    val allowRouting = filters.forall(f => f.allowRouting)
+    val allowBroadcast = filters.forall(f => f.allowBroadcast)
+    val allowCrafting = filters.forall(f => f.allowCrafting)
+    val allowController = filters.forall(f => f.allowController)
 
     val pathFlags = filters.foldLeft(0x7)((b, f) => f.pathFlags&b)
     val emptyFilter = !filters.exists(f => f != PathFilter.default)
+
+    val flagRouteTo = (pathFlags&0x1) != 0
+    val flagRouteFrom = (pathFlags&0x2) != 0
+    val flagPowerFrom = (pathFlags&0x3) != 0
 }
 
 object PathFilter
 {
-    val default = new PathFilter
-    {
-        override val filterExclude = true
-        override val filterItems = Set[ItemKey]()
-
-        override val allowRouting = true
-        override val allowBroadcast = true
-        override val allowCrafting = true
-        override val allowController = true
-    }
+    val default = new PathFilter(true, Set[ItemKey](), true, true, true, true, 0x7)
 }
 
-abstract class PathFilter
+class PathFilter(val filterExclude:Boolean, val filterItems:Set[ItemKey],
+                 val allowRouting:Boolean, val allowBroadcast:Boolean,
+                 val allowCrafting:Boolean, val allowController:Boolean,
+                 val pathFlags:Int)
 {
-    val filterExclude:Boolean
-    val filterItems:Set[ItemKey]
-
-    val allowRouting:Boolean
-    val allowBroadcast:Boolean
-    val allowCrafting:Boolean
-    val allowController:Boolean
-
-    /**
-     * 0x1 = can route to
-     * 0x2 = can request from
-     * 0x4 = can access controller from
-     */
-    def pathFlags =
-        (if (allowRouting) 1 else 0) |
-            (if (allowBroadcast||allowCrafting) 2 else 0) |
-            (if (allowController) 4 else 0)
+    def this(flags:Int) = this(true, Set[ItemKey](), true, true, true, true, flags)
 
     override def equals(other:Any) = other match
     {
@@ -144,7 +129,8 @@ abstract class PathFilter
                 allowRouting == that.allowRouting &&
                 allowBroadcast == that.allowBroadcast &&
                 allowCrafting == that.allowCrafting &&
-                allowController == that.allowController
+                allowController == that.allowController &&
+                pathFlags == that.pathFlags
         case _ => false
     }
 }
@@ -219,14 +205,14 @@ object Router
 
 class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
 {
-    /** List of [ForgeDirection] indexed by IP for all routers in this network **/
+    /** Vector, indexed by IP, of Vector of all paths to said IP ordered by distance **/
     private var routeTable = Vector[Vector[StartEndPath]]()
-    /** List of [StartEndPath] sorted by distance, closest one having the lowest index **/
+    /** Vector of [StartEndPath] sorted by distance, closest one having the lowest index **/
     private var routersByCost = Vector[StartEndPath]()
-    /** Set of known exits from here. Used to determine render color of a side **/
-    private var routedExits = java.util.EnumSet.noneOf(classOf[ForgeDirection]) //TODO seems a little chunky, how about a bitset?
+    /** Mask of known exits from here. Used to determine render color. **/
+    private var routedExits = 0
     /** Link State for all nodes that branch from this one **/
-    private var adjacentLinks = HashMap[Router, StartEndPath]()
+    private var adjacentLinks = Vector[StartEndPath]()
 
     /*** Locks for allowing thread-safe read-write access to router information ***/
     protected val routingTableLock = new ReentrantReadWriteLock
@@ -261,23 +247,19 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
 
         if (wr == null) return false
 
-        val finder = new LSPathFinder(wr, Configurator.maxDetectionCount, Configurator.maxDetectionLength)
-        val newAdjacent = finder.getResult.filter(kv => kv._1.isLoaded)
+        val finder = new LSPathFinder2(wr, Configurator.maxDetectionCount, getParent.getContainer.world)
+        finder.start()
+        val newAdjacent = finder.getResult.filter(p => p.end.isLoaded)
 
         adjacentChanged = adjacentLinks != newAdjacent
 
         if (adjacentChanged)
         {
-            val newExits = java.util.EnumSet.noneOf(classOf[ForgeDirection])
-            for ((k,v) <- newAdjacent) newExits.add(ForgeDirection.getOrientation(v.dirToFirstHop))
             adjacentLinks = newAdjacent
-            routedExits = newExits
-
-            var neighboursWithCost = HashMap[Router, StartEndPath]()
-            for ((k,v) <- adjacentLinks) neighboursWithCost += (k -> v)
+            routedExits = newAdjacent.foldLeft(0)((b, p) => (b|1<<p.hopDir)&0x3F)
 
             Router.LSADatabasewriteLock.lock()
-            LSA.neighbors = neighboursWithCost
+            LSA.neighbors = adjacentLinks.toVector //add to database so another thread can make the route table.
             Router.LSADatabasewriteLock.unlock()
         }
         adjacentChanged
@@ -287,12 +269,12 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
     {
         val prev = mutable.BitSet(Router.getEndOfIPPool)
         prev += IPAddress
-        for (r <- adjacentLinks.keySet) r.LSAUpdateFloodfill(prev)
+        for (p <- adjacentLinks) p.end.LSAUpdateFloodfill(prev)
         prev.clear()
         prev += IPAddress
 
         flagForRoutingUpdate()
-        for (r <- adjacentLinks.keySet) r.adjacentUpdateFloodfill(prev)
+        for (p <- adjacentLinks) p.end.adjacentUpdateFloodfill(prev)
     }
 
     def LSAUpdateFloodfill(prev:mutable.BitSet)
@@ -300,7 +282,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         if (prev(IPAddress)) return
         prev += IPAddress
         updateLSAIfNeeded()
-        for (r <- adjacentLinks.keySet) if (r.isLoaded) r.LSAUpdateFloodfill(prev)
+        for (p <- adjacentLinks) if (p.end.isLoaded) p.end.LSAUpdateFloodfill(prev)
     }
 
     def adjacentUpdateFloodfill(prev:mutable.BitSet)
@@ -308,7 +290,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         if (prev(IPAddress)) return
         prev += IPAddress
         flagForRoutingUpdate()
-        for (r <- adjacentLinks.keySet) if (r.isLoaded) r.adjacentUpdateFloodfill(prev)
+        for (p <- adjacentLinks) if (p.end.isLoaded) p.end.adjacentUpdateFloodfill(prev)
     }
 
     def flagForRoutingUpdate()
@@ -355,7 +337,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
     def canRouteTo(destination:Int, item:ItemKey, priority:SendPriority) = pathTo(destination, item, priority) != null
     def getDirection(destination:Int, item:ItemKey, priority:SendPriority) = pathTo(destination, item, priority) match
     {
-        case path:StartEndPath => ForgeDirection.getOrientation(path.dirToFirstHop)
+        case path:StartEndPath => ForgeDirection.getOrientation(path.hopDir)
         case _ => ForgeDirection.UNKNOWN
     }
 
@@ -366,8 +348,8 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         {
             val paths = rt(destination)
             if (paths != null)
-                for (path <- paths)
-                    if (path.allowRouting && (!priority.active || path.allowBroadcast || path.allowCrafting) && path.allowItem(item))
+                for (path <- paths) if (path.flagRouteTo)
+                    if ((!priority.active && path.allowRouting) || (priority.active && (path.allowBroadcast || path.allowCrafting)) && path.allowItem(item))
                         return path
         }
         null
@@ -399,10 +381,10 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
 
         /** Previously found properties that are checked before adding a new path **/
         var closedFilters = new Array[Vector[Set[PathFilter]]](Router.getEndOfIPPool+1)
-        def ensureClosed(size:Int){while (closedFilters.length <= size) closedFilters :+= null}
+        def ensureClosed(size:Int){while (closedFilters.length <= size) closedFilters :+= null}//; closedFlags :+= 0}
 
         // Start by adding our info.
-        for ((k,v) <- adjacentLinks) candidates2.add(new StartEndPath(v.end, v.end, v.dirToFirstHop, v.distance, v.filters))
+        for (p <- adjacentLinks) candidates2.add(new StartEndPath(p.end, p.end, p.hopDir, p.distance, p.filters))
         closedFilters(getIPAddress) = Vector(Set[PathFilter](PathFilter.default))
 
         import mrtjp.projectred.core.utils.LabelBreaks._
@@ -412,11 +394,12 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             val dequeue = candidates2.poll()
             val deqIP = dequeue.end.getIPAddress
             ensureClosed(deqIP)
+            val pflags = dequeue.pathFlags
 
-            //Skip this one UNLESS the filters on this differs from previously discovered paths to here.
+            //Skip if we have found path with identical filters
             val filtSetsClosed = closedFilters(deqIP)
             if (filtSetsClosed != null) for (filtsClosed <- filtSetsClosed)
-                if (filtsClosed.subsetOf(dequeue.filters)) break()
+                if (filtsClosed.subsetOf(dequeue.filters)) break() //dequeue's filters contain all closed filters
 
             // Add all of the lowest's neighbors so they are checked later.
             val lsa = deqIP match
@@ -425,12 +408,10 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
                 case _ => null
             }
 
-            if (lsa != null) for ((k,v) <- lsa.neighbors) if ((dequeue.pathFlags&v.pathFlags) != 0)//if we can do something with this route
-                candidates2.add(new StartEndPath(dequeue.start, k, dequeue.dirToFirstHop, dequeue.distance+v.distance,
-                    dequeue.filters ++ v.filters))
+            if (lsa != null) for (p <- lsa.neighbors) if ((pflags&p.pathFlags) != 0) candidates2.add(dequeue --> p)
 
             // Approve this candidate
-            if ((dequeue.pathFlags&0x3) != 0) routersByCost2 :+= dequeue //if can route to or request from its a possibe routeByCost
+            if ((pflags&0x3) != 0) routersByCost2 :+= dequeue //if can route to or request from its a possibe routeByCost
             closedFilters(deqIP) = if (filtSetsClosed != null) filtSetsClosed ++ Vector(dequeue.filters) else Vector(dequeue.filters)
         }
         Router.LSADatabasereadLock.unlock()
@@ -444,12 +425,12 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         for (p <- routersByCost2) if (p != null) label
         {
             val firstHop = p.start
-            val rootHop = adjacentLinks.getOrElse(firstHop, null)
+            val rootHop = adjacentLinks.find(p => p.end == firstHop).getOrElse(null)
 
             if (rootHop == null) break()
 
             p.start = this
-            p.dirToFirstHop = rootHop.dirToFirstHop
+            p.hopDir = rootHop.hopDir
 
             val endIP = p.end.getIPAddress
             ensureRT2(endIP)
@@ -485,7 +466,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         true
     }
 
-    def LSAConnectionExists(dir:ForgeDirection) = routedExits.contains(dir)
+    def LSAConnectionExists(dir:ForgeDirection) = (routedExits&1<<dir.ordinal()) != 0
 
     override def hashCode = IPAddress
 

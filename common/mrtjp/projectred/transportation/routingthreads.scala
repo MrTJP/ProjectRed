@@ -35,13 +35,15 @@ class TableUpdateThread(i:Int) extends Thread("PR RoutingThread #"+i)
 
     override def run()
     {
-        while (true) try
+        import TableUpdateThread._
+
+        var job:RouteLayerUpdater = null
+        try
         {
-            while (!TableUpdateThread.updateCalls.isEmpty)
+            while ({job = updateCalls.take; job} != null)
             {
-                val rlu = TableUpdateThread.updateCalls.poll()
                 val starttime = System.nanoTime
-                if (rlu != null) rlu.run()
+                job.run()
                 val took = System.nanoTime-starttime
 
                 TableUpdateThread.avgSync synchronized
@@ -81,14 +83,12 @@ private[this] class RouteLayerUpdater(val router:Router) extends Runnable with O
         complete = true
     }
 
-    override def compare(that:RouteLayerUpdater):Int =
+    override def compare(that:RouteLayerUpdater) =
     {
         var c = 0
         if (that.newVersion <= 0) c = newVersion-that.newVersion
-        if (c != 0) return c
-        c = router.getIPAddress-that.router.getIPAddress
-        if (c != 0) return c
-        c = that.newVersion-newVersion
+        if (c == 0) c = router.getIPAddress-that.router.getIPAddress
+        if (c == 0) c = that.newVersion-newVersion
         c
     }
 }
