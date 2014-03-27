@@ -67,8 +67,7 @@ object RouterServices
 
 class LSA
 {
-    /** Map of [Linked Routers, Absolute Path] **/
-    //var neighbors = HashMap[Router, StartEndPath]()
+    /** Vector of [StartEndPath] of all neighboring pipes **/
     var neighbors = Vector[StartEndPath]()
 }
 
