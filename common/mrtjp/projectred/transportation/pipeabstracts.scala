@@ -664,6 +664,8 @@ class FlowingPipePart extends CorePipePart
 
     def routeFilter(forSide:Int) = PathFilter.default
 
+    def routeWeight = 1
+
     @SideOnly(Side.CLIENT)
     override def drawBreaking(r:RenderBlocks)
     {

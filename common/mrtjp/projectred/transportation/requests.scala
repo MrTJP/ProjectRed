@@ -30,8 +30,6 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         else this.asInstanceOf[RequestRoot]
     }
 
-    if (parentCrafter != null) if (!recurse_IsCrafterUsed(parentCrafter)) usedCrafters += parentCrafter
-
     private var subRequests = List[RequestBranchNode]()
 
     private var promises = List[DeliveryPromise]()
@@ -41,6 +39,8 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
     var parityBranch:CraftingPromise = null
 
     private var promisedCount = 0
+
+    if (parentCrafter != null) if (!recurse_IsCrafterUsed(parentCrafter)) usedCrafters += parentCrafter
 
     {
         def doRequest()
@@ -79,7 +79,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
     def doPullReq() =
     {
         val allRouters = requester.getRouter
-            .getFilteredRoutesByCost(p => p.allowBroadcast && p.allowItem(getRequestedPackage))
+            .getFilteredRoutesByCost(p => p.flagRouteFrom && p.allowBroadcast && p.allowItem(getRequestedPackage))
             .sorted(PathSorter.defaultSort)
         def search()
         {
@@ -106,10 +106,10 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
             import LabelBreaks._
             for (excess <- all) if (isDone) return else if (excess.size > 0) label
             {
-                val pathsTo = requester.getRouter.getRouteTable(excess.sender.getRouter.getIPAddress)
-                val pathsFrom = excess.sender.getRouter.getRouteTable(requester.getRouter.getIPAddress)
-                for (from <- pathsFrom) if (from != null && from.allowRouting)
-                    for (to <- pathsTo) if (to != null && (to.allowController || to.allowBroadcast))
+                val pathsToThis = requester.getRouter.getRouteTable(excess.sender.getRouter.getIPAddress)
+                val pathsFromThat = excess.sender.getRouter.getRouteTable(requester.getRouter.getIPAddress)
+                for (from <- pathsFromThat) if (from != null && from.flagRouteTo)
+                    for (to <- pathsToThis) if (to != null && to.flagRouteFrom)
                     {
                         excess.size = Math.min(excess.size, getMissingCount)
                         addPromise(excess)
@@ -124,7 +124,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
     def doCraftReq() =
     {
         val allRouters = requester.getRouter
-            .getFilteredRoutesByCost(p => p.allowCrafting && p.allowItem(getRequestedPackage))
+            .getFilteredRoutesByCost(p => p.flagRouteFrom && p.allowCrafting && p.allowItem(getRequestedPackage))
             .sorted(PathSorter.workSort)
 
         var allCrafters = List[CraftingPromise]()

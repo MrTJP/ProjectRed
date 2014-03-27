@@ -39,6 +39,9 @@ class TransportationPH
     val gui_RouterUtil_action = 13
 
     val gui_ExtensionPipe_open = 14
+
+    val gui_FirewallPipe_open = 16
+    val gui_FirewallPipe_action = 17
 }
 
 object TransportationCPH extends TransportationPH with IClientPacketHandler
@@ -53,11 +56,27 @@ object TransportationCPH extends TransportationPH with IClientPacketHandler
         case this.particle_Spawn => RouteFX.handleClientPacket(packet, mc.theWorld)
         case this.gui_RouterUtil_open => openRouterUtilGui(packet, mc)
         case this.gui_ExtensionPipe_open => openExtensionPipeGui(packet, mc)
+        case this.gui_FirewallPipe_open => openFirewallPipeGui(packet, mc)
+    }
+
+    private def openFirewallPipeGui(packet:PacketCustom, mc:Minecraft)
+    {
+        val p = BasicUtils.getMultiPart(mc.theWorld, packet.readCoord, 6)
+        if (p.isInstanceOf[RoutedFirewallPipe])
+        {
+            val pipe = p.asInstanceOf[RoutedFirewallPipe]
+            pipe.filtExclude = packet.readBoolean()
+            pipe.allowRoute = packet.readBoolean()
+            pipe.allowBroadcast = packet.readBoolean()
+            pipe.allowCrafting = packet.readBoolean()
+            pipe.allowController = packet.readBoolean()
+            ClientUtils.openSMPGui(packet.readUByte, new GuiFirewallPipe(pipe.createContainer(mc.thePlayer), pipe))
+        }
     }
 
     private def openExtensionPipeGui(packet:PacketCustom, mc:Minecraft)
     {
-        val p:TMultiPart = BasicUtils.getMultiPart(mc.theWorld, packet.readCoord, 6)
+        val p = BasicUtils.getMultiPart(mc.theWorld, packet.readCoord, 6)
         if (p.isInstanceOf[RoutedExtensionPipePart])
         {
             val pipe:RoutedExtensionPipePart = p.asInstanceOf[RoutedExtensionPipePart]
@@ -142,6 +161,27 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
         case this.gui_Request_submit => handleRequestSubmit(packet, sender)
         case this.gui_Request_listRefresh => handleRequestListRefresh(packet, sender)
         case this.gui_RouterUtil_action => handleRouterUtilAction(packet, sender)
+        case this.gui_FirewallPipe_action => handleFirewallAction(packet, sender)
+    }
+
+    private def handleFirewallAction(packet:PacketCustom, sender:EntityPlayerMP)
+    {
+        val bc = packet.readCoord()
+        val action = packet.readString()
+        val t = BasicUtils.getMultiPart(sender.worldObj, bc, 6)
+        if (t.isInstanceOf[RoutedFirewallPipe])
+        {
+            val p = t.asInstanceOf[RoutedFirewallPipe]
+            action match
+            {
+                case "excl" => p.filtExclude = !p.filtExclude
+                case "route" => p.allowRoute = !p.allowRoute
+                case "broad" => p.allowBroadcast = !p.allowBroadcast
+                case "craft" => p.allowCrafting = !p.allowCrafting
+                case "cont" => p.allowController = !p.allowController
+            }
+            p.sendOptUpdate()
+        }
     }
 
     private def handleRouterUtilAction(packet:PacketCustom, sender:EntityPlayerMP)

@@ -7,12 +7,13 @@ import codechicken.lib.vec.BlockCoord
 import codechicken.lib.render.{FontUtils, CCRenderState}
 import mrtjp.projectred.core.{BasicGuiUtils, PRColors}
 import org.lwjgl.opengl.GL11
-import net.minecraft.client.gui.Gui
+import net.minecraft.client.gui.{GuiButton, Gui}
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import java.util
 import mrtjp.projectred.core.utils.{ItemKeyStack, ItemKey}
 import java.util.Collections
+import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
 
 class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends SpecialGuiContainer(container, null, 176, 220)
 {
@@ -303,5 +304,48 @@ class GuiRequester(pipe:IWorldRequester) extends SpecialGuiContainer(280, 230)
         for (entry <- content.entrySet) list.add(ItemKeyStack.get(entry.getKey, entry.getValue))
         Collections.sort(list)
         itemList.setDisplayList(list)
+    }
+}
+
+class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends SpecialGuiContainer(slots, null, 176, 200)
+{
+    override def addWidgets()
+    {
+        add(new JWidgetButton(130, 8, 20, 10).setActionCommand("excl").setText("blacklist"))
+        add(new JWidgetButton(130, 30, 20, 10).setActionCommand("route").setText("routing"))
+        add(new JWidgetButton(130, 52, 20, 10).setActionCommand("broad").setText("broadcasting"))
+        add(new JWidgetButton(130, 72, 20, 10).setActionCommand("craft").setText("crafting"))
+        add(new JWidgetButton(130, 94, 20, 10).setActionCommand("cont").setText("controller"))
+    }
+
+    override def actionPerformed(ident:String)
+    {
+        new PacketCustom(TransportationCPH.channel, TransportationCPH.gui_FirewallPipe_action)
+            .writeCoord(new BlockCoord(pipe.tile)).writeString(ident).sendToServer()
+    }
+
+    override def drawBackground()
+    {
+        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel)
+        BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 120)
+
+        import scala.collection.JavaConversions._
+        for (p <- BasicGuiUtils.createSlotArray(8, 8, 7, 5, 0, 0))
+            BasicGuiUtils.drawSlotBackground(mc, p.getValue1-1, p.getValue2-1)
+
+        val flags = Seq(pipe.filtExclude, pipe.allowRoute, pipe.allowBroadcast, pipe.allowCrafting, pipe.allowController)
+        for (i <- 0 until 5)
+        {
+            val x = 170
+            val y = 10+(22*i)
+            val x2 = x+10
+            val y2 = y+5
+            val c = flags(i) match
+            {
+                case true => PRColors.LIME.argb
+                case false => PRColors.RED.argb
+            }
+            Gui.drawRect(x, y, x2, y2, c)
+        }
     }
 }
