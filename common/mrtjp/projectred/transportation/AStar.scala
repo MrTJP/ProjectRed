@@ -50,11 +50,13 @@ class PathNode(val path:Vector[PathNode], val bc:BlockCoord, val dist:Int, val d
 {
     def this(bc:BlockCoord, dir:Int) = this(Vector[PathNode](), bc.copy().offset(dir), 1, dir, dir)
 
-    def -->(to:PathNode, toDir:Int) = new PathNode(path :+ this, to.bc, dist+to.dist, toDir, hop)
+    def -->(to:PathNode, toDir:Int):PathNode = new PathNode(path :+ this, to.bc, dist+to.dist, toDir, hop)
 
-    def -->(toDir:Int, distAway:Int = 1) = new PathNode(path :+ this, bc.copy().offset(toDir), dist+distAway, toDir, hop)
+    def -->(toDir:Int, distAway:Int):PathNode = new PathNode(path :+ this, bc.copy().offset(toDir), dist+distAway, toDir, hop)
+    def -->(toDir:Int):PathNode = this --> (toDir, 1)
 
-    def -->(to:BlockCoord, distAway:Int = 1) = new PathNode(path :+ this, to, dist+distAway, dir, hop)
+    def -->(to:BlockCoord, distAway:Int):PathNode = new PathNode(path :+ this, to, dist+distAway, dir, hop)
+    def -->(to:BlockCoord):PathNode = this --> (to, 1)
 
     override def compare(that:PathNode) = dist-that.dist
 
