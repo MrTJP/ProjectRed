@@ -1,4 +1,4 @@
-package mrtjp.projectred.transmission
+package mrtjp.projectred.core
 
 import codechicken.lib.data.{MCDataOutput, MCDataInput}
 import codechicken.lib.vec.{Vector3, Rotation}

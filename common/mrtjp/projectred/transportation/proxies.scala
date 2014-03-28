@@ -20,7 +20,8 @@ class TransportationProxy_server extends IProxy with IPartFactory
     {
         MultiPartRegistry.registerParts(this, Array[String](
             "pr_ptube", "pr_rbasic", "pr_rinterface",
-            "pr_rcrafting", "pr_rrequest", "pr_rextension"
+            "pr_rcrafting", "pr_rrequest", "pr_rextension",
+            "pr_rfire"
         ))
 
         itemPartPipe = new ItemPartPipe(Configurator.part_pipe.getInt)
@@ -43,6 +44,7 @@ class TransportationProxy_server extends IProxy with IPartFactory
         case "pr_rcrafting" => new RoutedCraftingPipePart
         case "pr_rrequest" => new RoutedRequestPipePart
         case "pr_rextension" => new RoutedExtensionPipePart
+        case "pr_rfire" => new RoutedFirewallPipe
     }
 
     override def version = "@VERSION@"

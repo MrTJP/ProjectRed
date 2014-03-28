@@ -1,16 +1,17 @@
 package mrtjp.projectred.transportation
 
-import java.util._
+import java.util.UUID
 import mrtjp.projectred.core.PRColors
-import mrtjp.projectred.core.utils.{LiteEnumVal, LiteEnumCollector, ItemKeyStack}
+import mrtjp.projectred.core.utils.ItemKeyStack
+import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.common.ForgeDirection
 import scala.collection.convert.WrapAsJava
+import scala.collection.immutable
 import scala.collection.immutable.BitSet
-import scala.collection.{mutable, immutable}
 
 object RoutedPayload
 {
@@ -44,24 +45,21 @@ object RoutedPayload
     }
 }
 
-class SendPriority(val ident:String, val speed:Float, val boost:Float, val color:Int) extends LiteEnumVal
+object SendPriority extends Enumeration
 {
-    override def getCollector = SendPriority
-}
+    type SendPriority = PriorityVal
 
-object SendPriority extends LiteEnumCollector
-{
-    val WANDERING = new SendPriority("Wandering", 0.02f, 0.05f, PRColors.RED.ordinal)
-    val DEFAULT = new SendPriority("Default", 0.05f, 0.10f, PRColors.ORANGE.ordinal())
-    val TERMINATED = new SendPriority("Terminated", 0.02f, 0.05f, PRColors.PURPLE.ordinal())
-    val PASSIVE = new SendPriority("Passive", 0.10f, 0.20f, PRColors.BLUE.ordinal())
-    val ACTIVE = new SendPriority("Active", 0.20f, 0.30f, PRColors.GREEN.ordinal())
+    val WANDERING = new PriorityVal("Wandering", 0.02f, 0.05f, PRColors.RED.ordinal)
+    val DEFAULT = new PriorityVal("Default", 0.05f, 0.10f, PRColors.ORANGE.ordinal())
+    val TERMINATED = new PriorityVal("Terminated", 0.02f, 0.05f, PRColors.PURPLE.ordinal())
+    val PASSIVE = new PriorityVal("Passive", 0.10f, 0.20f, PRColors.BLUE.ordinal())
+    val ACTIVE = new PriorityVal("Active", 0.20f, 0.30f, PRColors.GREEN.ordinal(), true)
 
-    var typeValues =
+    class PriorityVal(val ident:String, val speed:Float, val boost:Float, val color:Int, val active:Boolean) extends Val
     {
-        val build = new mutable.ArrayBuilder.ofRef[SendPriority]
-        for (i <- values) build += i.asInstanceOf[SendPriority]
-        build.result()
+        def this(ident:String, speed:Float, boost:Float, color:Int) = this(ident, speed, boost, color, false)
+
+        val ordinal = this.id
     }
 }
 
@@ -206,8 +204,11 @@ class RoutedPayload(val payloadID:Int)
             if (r != null)
             {
                 val parent = r.getParent
-                if (parent.isInstanceOf[IWorldRequester])
-                    (parent.asInstanceOf[IWorldRequester]).trackedItemLost(payload)
+                parent match
+                {
+                    case wr:IWorldRequester => wr.trackedItemLost(payload)
+                    case _ =>
+                }
             }
         }
         destinationIP = -1

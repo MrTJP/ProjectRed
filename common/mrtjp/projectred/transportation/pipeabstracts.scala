@@ -24,8 +24,6 @@ import net.minecraft.nbt.{NBTTagList, NBTTagCompound}
 import net.minecraft.util.{Icon, ChatMessageComponent, MovingObjectPosition}
 import net.minecraftforge.common.ForgeDirection
 import scala.collection.JavaConversions._
-import scala.annotation.meta
-import mrtjp.projectred.transportation.PipeLogic.NullPipeLogic
 
 abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion with IHollowConnect
 {
@@ -98,7 +96,7 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
             if (updateInward()) sendConnUpdate()
             WirePropagator.propagateTo(this, FORCE)
         }
-        getWriteStreamOf (1).writeBoolean(material)
+        getWriteStreamOf(1).writeBoolean(material)
     }
 
     override def onSignalUpdate()
@@ -274,9 +272,9 @@ abstract class CorePipePart extends SubcorePipePart with TCenterRSAcquisitions w
     {
         case null => true
         case _ =>
-            WireBoxes.expandBounds = s
+            PipeBoxes.expandBounds = s
             val fits = tile.canReplacePart(this, this)
-            WireBoxes.expandBounds = -1
+            PipeBoxes.expandBounds = -1
             fits
     }
 
@@ -659,8 +657,12 @@ class FlowingPipePart extends CorePipePart
         r.input = ForgeDirection.getOrientation(packet.readByte)
         r.output = ForgeDirection.getOrientation(packet.readByte)
         r.speed = packet.readFloat
-        r.setPriority(SendPriority.typeValues(packet.readUByte))
+        r.setPriority(SendPriority(packet.readUByte).asInstanceOf[SendPriority.PriorityVal])
     }
+
+    def routeFilter(forSide:Int) = PathFilter.default
+
+    def routeWeight = 1
 
     @SideOnly(Side.CLIENT)
     override def drawBreaking(r:RenderBlocks)
@@ -764,4 +766,3 @@ abstract class PipeLogic(p:FlowingPipePart)
 
     def getIcon(i:Int):Icon
 }
-

@@ -20,6 +20,12 @@ import mrtjp.projectred.transportation.RequestFlags._
 
 class RoutedExtensionPipePart extends RoutedJunctionPipePart
 {
+    var cardslot = new SimpleInventory(2, "card", 1)
+    {
+        override def isItemValidForSlot(i:Int, stack:ItemStack) =
+            stack != null && stack.getItem.isInstanceOf[ItemDataCard]
+    }
+
     private var lost = List[ItemKeyStack]()
     private var remainingDelay = operationDelay
 
@@ -30,6 +36,7 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
 
     override def updateServer()
     {
+        super.updateServer()
         remainingDelay -= 1
         if (remainingDelay <= 0)
         {
@@ -115,8 +122,12 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
     {
         if (super.activate(player, hit, item)) return true
-        openGui(player)
-        true
+        if (!player.isSneaking)
+        {
+            openGui(player)
+            true
+        }
+        else false
     }
 
     private def openGui(player:EntityPlayer)
@@ -143,11 +154,5 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
         ghost.addCustomSlot(new SpecialContainer.SlotExtended(cardslot, 1, 134, 50).setPlacement(false))
         ghost.addPlayerInventory(8, 84)
         ghost
-    }
-
-    var cardslot = new SimpleInventory(2, "card", 1)
-    {
-        override def isItemValidForSlot(i:Int, stack:ItemStack) =
-            stack != null && stack.getItem.isInstanceOf[ItemDataCard]
     }
 }

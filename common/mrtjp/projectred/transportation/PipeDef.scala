@@ -17,6 +17,7 @@ object PipeDef extends LiteEnumCollector
     val ROUTEDCRAFTING = PipeDef("pr_rcrafting", "routedcrafting")
     val ROUTEDREQUEST = PipeDef("pr_rrequest", "routedrequest")
     val ROUTEDEXTENSION = PipeDef("pr_rextension", "routedextension")
+    val ROUTEDFIREWALL = PipeDef("pr_rfire", "routedfire")
 
     def VALID_PIPE =
     {

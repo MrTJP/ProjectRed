@@ -43,6 +43,7 @@ public class Configurator
     public static Property block_stainedLeafID;
     public static Property block_stainedSaplingID;
     public static Property block_airousID;
+    public static Property block_machines2ID;
 
     /** Item IDs **/
     public static Property item_screwdriverID;
@@ -149,6 +150,7 @@ public class Configurator
         block_stainedLeafID = localConfig.getBlock("block_dyeLeafID", 2136);
         block_stainedSaplingID = localConfig.getBlock("block_dyeSaplingID", 2137);
         block_airousID = localConfig.getBlock("block_airousID", 2138);
+        block_machines2ID = localConfig.getBlock("block_machines2ID", 2139);
 
         item_wireDebuggerID = localConfig.getItem("item_wireDebuggerID", 9023);
         item_screwdriverID = localConfig.getItem("item_screwdriverID", 9024);

@@ -111,6 +111,8 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
     override def updateServer()
     {
+        super.updateServer()
+
         remainingDelay -= 1
         if (remainingDelay <= 0)
         {
@@ -152,8 +154,8 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         label {
             while (itemsleft > 0 && stacksleft > 0 && (manager.hasOrders || !excess.isEmpty))
             {
-                var nextOrder:Pair2[ItemKeyStack, IWorldRequester] = null
                 var processingOrder = false
+                var nextOrder:Pair2[ItemKeyStack, IWorldRequester] = null
                 if (manager.hasOrders)
                 {
                     nextOrder = manager.peek
@@ -166,14 +168,14 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
                 maxToSend = Math.min(keyStack.key.getMaxStackSize, maxToSend)
                 var available = inv.extractItem(keyStack.key, maxToSend)
 
-                if (available <= 0) break
+                if (available <= 0) break()
 
                 val key = keyStack.key
                 while (available > 0)
                 {
                     var numToSend = Math.min(available, key.getMaxStackSize)
                     numToSend = Math.min(numToSend, keyStack.stackSize)
-                    if (numToSend == 0) break
+                    if (numToSend == 0) break()
                     stacksleft -= 1
                     itemsleft -= numToSend
                     available -= numToSend
@@ -239,23 +241,24 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     private def removeExcess(item:ItemKey, amount:Int)
     {
         var left = amount
-
-        excess = excess.filter(p =>
+        excess.forall(p =>
         {
             val stack = p.getValue1
             if (stack.key == item)
                 if (left >= stack.stackSize)
                 {
                     left -= stack.stackSize
-                    false
+                    stack.stackSize = 0
+                    true
                 }
                 else
                 {
                     stack.stackSize -= left
-                    true
+                    false
                 }
             true
         })
+        excess = excess.filter(p => p.getValue1.stackSize > 0)
     }
 
     private def refreshExtensions()
@@ -296,9 +299,10 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         }
     }
 
-    private def getExtensionFor(slot:Int):IWorldRequester =
+    private def getExtensionFor(slot:Int, item:ItemKey):IWorldRequester =
     {
-        if (0 until 9 contains slot) if (extensionIPs(slot) >= 0 && getRouter.canRouteTo(extensionIPs(slot)))
+        if (0 until 9 contains slot) if (extensionIPs(slot) >= 0 &&
+            getRouter.canRouteTo(extensionIPs(slot), item, SendPriority.ACTIVE))
         {
             val r = RouterServices.getRouter(extensionIPs(slot))
             if (r != null && r.isLoaded && r.getParent.isInstanceOf[IWorldRequester])
@@ -320,8 +324,12 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
                 return true
             }
         }
-        openGui(player)
-        true
+        if (!player.isSneaking)
+        {
+            openGui(player)
+            true
+        }
+        else false
     }
 
     override def onRemoved()
@@ -423,7 +431,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         val result = ItemKeyStack.get(r.matrix.getStackInSlot(9))
         val requesters = new Array[IWorldRequester](9)
 
-        for (i <- 0 until 9) requesters(i) = getExtensionFor(r.extIndex(i))
+        for (i <- 0 until 9) requesters(i) = getExtensionFor(r.extIndex(i), item)
 
         val promise = new CraftingPromise(result, this, priority)
 
