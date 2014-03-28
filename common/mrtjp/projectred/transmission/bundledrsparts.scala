@@ -2,6 +2,7 @@ package mrtjp.projectred.transmission
 
 import codechicken.multipart.TMultiPart
 import net.minecraft.nbt.NBTTagCompound
+import mrtjp.projectred.core.{TCenterAcquisitions, TFaceAcquisitions, TAcquisitionsCommons}
 
 trait TBundledAquisitionsCommons extends TAcquisitionsCommons
 {

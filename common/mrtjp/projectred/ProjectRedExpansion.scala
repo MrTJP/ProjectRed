@@ -16,6 +16,8 @@ object ProjectRedExpansion
     /** Blocks **/
     var machine1:BlockMachine = null
 
+    var machine2:BlockMachine = null
+
     val tabExpansion = new CreativeTabs("expansion")
     {
         override def getIconItemStack = new ItemStack(Block.hopperBlock)

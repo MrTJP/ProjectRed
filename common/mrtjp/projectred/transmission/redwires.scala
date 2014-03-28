@@ -8,7 +8,7 @@ import codechicken.multipart.scalatraits.TRedstoneTile
 import codechicken.multipart._
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.{Configurator, CoreSPH, Messenger, BasicUtils}
+import mrtjp.projectred.core._
 import net.minecraft.block.Block
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound

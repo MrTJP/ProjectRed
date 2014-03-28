@@ -2,7 +2,7 @@ package mrtjp.projectred.transmission
 
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.{IRedstonePart, IFaceRedstonePart, TMultiPart, RedstoneInteractions}
-import mrtjp.projectred.transportation.RouteFX
+import mrtjp.projectred.core.{TCenterAcquisitions, TFaceAcquisitions, TAcquisitionsCommons}
 
 trait TRSAcquisitionsCommons extends TAcquisitionsCommons with IRedstonePart
 {
