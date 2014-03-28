@@ -146,7 +146,7 @@ object LogisticPathFinder
     def sharesInventory(pipe1:RoutedJunctionPipePart, pipe2:RoutedJunctionPipePart):Boolean =
     {
         if (pipe1 == null || pipe2 == null) return false
-        if (pipe1.tile.worldObj ne pipe2.tile.worldObj) return false
+        if (pipe1.tile.worldObj != pipe2.tile.worldObj) return false
 
         val adjacent1 = pipe1.getInventory
         val adjacent2 = pipe2.getInventory
@@ -172,7 +172,7 @@ class LogisticPathFinder(source:Router, payload:ItemKey)
 
     def setExcludeSource(flag:Boolean) =
     {
-        this.excludeSource = flag
+        excludeSource = flag
         this
     }
 

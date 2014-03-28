@@ -43,7 +43,6 @@ abstract class AStar(world:World)
         openInitials()
         recurse()
     }
-
 }
 
 class PathNode(val path:Vector[PathNode], val bc:BlockCoord, val dist:Int, val dir:Int, val hop:Int) extends Ordered[PathNode]
