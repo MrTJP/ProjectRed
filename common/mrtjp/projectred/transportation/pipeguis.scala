@@ -7,12 +7,17 @@ import codechicken.lib.vec.BlockCoord
 import codechicken.lib.render.{FontUtils, CCRenderState}
 import mrtjp.projectred.core.{BasicGuiUtils, PRColors}
 import org.lwjgl.opengl.GL11
-import net.minecraft.client.gui.Gui
-import net.minecraft.util.ResourceLocation
+import net.minecraft.client.gui.{GuiButton, Gui}
+import net.minecraft.util.{EnumChatFormatting, MathHelper, ResourceLocation}
 import org.lwjgl.input.Keyboard
 import java.util
 import mrtjp.projectred.core.utils.{ItemKeyStack, ItemKey}
 import java.util.Collections
+import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
+import cpw.mods.fml.client.FMLClientHandler
+import net.minecraft.client.renderer.Tessellator
+import scala.util.Random
+import scala.collection.mutable.ListBuffer
 
 class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends SpecialGuiContainer(container, null, 176, 220)
 {
@@ -303,5 +308,94 @@ class GuiRequester(pipe:IWorldRequester) extends SpecialGuiContainer(280, 230)
         for (entry <- content.entrySet) list.add(ItemKeyStack.get(entry.getKey, entry.getValue))
         Collections.sort(list)
         itemList.setDisplayList(list)
+    }
+}
+
+class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends SpecialGuiContainer(slots, null, 276, 200)
+{
+    private[this] class SelectButton(x:Int, y:Int, f: => Boolean, desc:String) extends WidgetButton(x, y, 14, 14) with TButtonMCStyle
+    {
+        override def drawButton(mouseover:Boolean)
+        {
+            CCRenderState.changeTexture(GhostWidget.guiExtras)
+            drawTexturedModalRect(x, y, if (f) 33 else 49, 134, 14, 14)
+        }
+
+        override def buildTooltip(list:ListBuffer[String])
+        {
+            list += (EnumChatFormatting.GRAY+desc)
+        }
+    }
+
+    override def addWidgets()
+    {
+        add(new WidgetButton(134, 8, 14, 14) with TButtonMCStyle
+        {
+            override def drawButton(mouseover:Boolean)
+            {
+                CCRenderState.changeTexture(GhostWidget.guiExtras)
+                drawTexturedModalRect(x, y, if (pipe.filtExclude) 1 else 17, 102, 14, 14)
+            }
+
+            override def buildTooltip(list:ListBuffer[String])
+            {
+                list+=(EnumChatFormatting.GRAY+"Items are "+(if (pipe.filtExclude) "blacklisted" else "whitelisted"))
+            }
+        }.setActionCommand("excl"))
+
+        add(new SelectButton(183-7, 130-7, pipe.allowRoute, "Push routing").setActionCommand("route"))
+        add(new SelectButton(208-7, 130-7, pipe.allowBroadcast, "Pulling").setActionCommand("broad"))
+        add(new SelectButton(233-7, 130-7, pipe.allowCrafting, "Crafting").setActionCommand("craft"))
+        add(new SelectButton(258-7, 130-7, pipe.allowController, "Controller access").setActionCommand("cont"))
+    }
+
+    override def actionPerformed(ident:String)
+    {
+        new PacketCustom(TransportationCPH.channel, TransportationCPH.gui_FirewallPipe_action)
+            .writeCoord(new BlockCoord(pipe.tile)).writeString(ident).sendToServer()
+    }
+
+    override def drawBackground()
+    {
+        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel)
+        BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 120)
+
+        import scala.collection.JavaConversions._
+        for (p <- BasicGuiUtils.createSlotArray(8, 8, 7, 5, 0, 0))
+            BasicGuiUtils.drawSlotBackground(mc, p.getValue1-1, p.getValue2-1)
+
+        val inX = 221
+        val inY = 180
+        val spread = 25
+        val rootY = 20
+        val flowY = 120
+
+        val outY = inY-2*rootY-flowY
+        val outX = inX
+        val inOut = 15
+
+        val flags = Seq(pipe.allowRoute, pipe.allowBroadcast, pipe.allowCrafting, pipe.allowController)
+        for (i <- 0 until 4)
+        {
+            val dx = (inX-(1.5D*spread))+spread*i
+            val dy = inY-rootY
+            BasicGuiUtils.drawLine(inX, inY, dx, dy)
+
+            val dx2 = dx
+            val dy2 = dy-flowY*0.25D
+            BasicGuiUtils.drawLine(dx, dy, dx2, dy2)
+
+            val dx3 = dx2
+            val dy3 = dy-flowY
+            if (flags(i)) BasicGuiUtils.drawLine(dx2, dy2, dx3, dy3)
+            else BasicGuiUtils.drawLine(dx2, dy2, dx3, dy3, PRColors.GREY.rgb)
+
+            if (flags(i)) BasicGuiUtils.drawLine(dx3, dy3, outX, outY)
+            else BasicGuiUtils.drawLine(dx3, dy3, outX, outY, PRColors.GREY.rgb)
+        }
+
+        BasicGuiUtils.drawLine(inX, inY, inX, inY+inOut)
+        BasicGuiUtils.drawLine(outX, outY, outX, outY-inOut)
+        BasicGuiUtils.drawLine(141, 15, outX, 15)
     }
 }

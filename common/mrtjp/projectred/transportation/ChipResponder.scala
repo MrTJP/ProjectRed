@@ -7,6 +7,7 @@ import scala.collection.mutable.ListBuffer
 
 class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriority
 {
+    def sendPriority = SendPriority.PASSIVE
 
     def prefScale = 2+upgradeBus.LLatency
 

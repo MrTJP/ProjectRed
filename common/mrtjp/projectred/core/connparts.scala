@@ -1,9 +1,8 @@
-package mrtjp.projectred.transmission
+package mrtjp.projectred.core
 
 import codechicken.lib.vec.{BlockCoord, Rotation}
 import codechicken.multipart._
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.BasicUtils
 
 trait TAcquisitionsCommons extends TMultiPart
 {

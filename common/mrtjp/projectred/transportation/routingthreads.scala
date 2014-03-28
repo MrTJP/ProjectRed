@@ -1,20 +1,20 @@
 package mrtjp.projectred.transportation
 
-import scala.collection.mutable
+import java.util.concurrent.PriorityBlockingQueue
 
 object TableUpdateThread
 {
-    private var updateCalls = new mutable.PriorityQueue[RouteLayerUpdater]
+    private val updateCalls = new PriorityBlockingQueue[RouteLayerUpdater]()
     private var average = 0L
 
     val avgSync = new AnyRef
 
     def add(r:Router)
     {
-        updateCalls += new RouteLayerUpdater(r)
+        updateCalls.add(new RouteLayerUpdater(r))
     }
 
-    def remove(run:Runnable) = updateCalls.filterNot(p => p == run)
+    def remove(run:Runnable) = updateCalls.remove(run)
 
     def size = updateCalls.size
 
@@ -35,13 +35,15 @@ class TableUpdateThread(i:Int) extends Thread("PR RoutingThread #"+i)
 
     override def run()
     {
+        import TableUpdateThread._
+
+        var job:RouteLayerUpdater = null
         try
         {
-            while (!TableUpdateThread.updateCalls.isEmpty)
+            while ({job = updateCalls.take; job} != null)
             {
-                val rlu = TableUpdateThread.updateCalls.dequeue()
                 val starttime = System.nanoTime
-                rlu.run()
+                job.run()
                 val took = System.nanoTime-starttime
 
                 TableUpdateThread.avgSync synchronized
@@ -55,7 +57,7 @@ class TableUpdateThread(i:Int) extends Thread("PR RoutingThread #"+i)
     }
 }
 
-class RouteLayerUpdater(val router:Router) extends Ordered[RouteLayerUpdater] with Runnable
+private[this] class RouteLayerUpdater(val router:Router) extends Runnable with Ordered[RouteLayerUpdater]
 {
     private val newVersion = router.getLinkStateID
     private var complete = false
@@ -81,16 +83,12 @@ class RouteLayerUpdater(val router:Router) extends Ordered[RouteLayerUpdater] wi
         complete = true
     }
 
-    override def compare(o:RouteLayerUpdater):Int =
+    override def compare(that:RouteLayerUpdater) =
     {
         var c = 0
-        if (o.newVersion <= 0) c = newVersion-o.newVersion
-        if (c != 0) return c
-        c = router.getIPAddress-o.router.getIPAddress
-        if (c != 0) return c
-        c = o.newVersion-newVersion
+        if (that.newVersion <= 0) c = newVersion-that.newVersion
+        if (c == 0) c = router.getIPAddress-that.router.getIPAddress
+        if (c == 0) c = that.newVersion-newVersion
         c
     }
-
-
 }

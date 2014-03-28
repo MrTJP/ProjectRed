@@ -2,12 +2,15 @@ package mrtjp.projectred.core;
 
 import codechicken.core.gui.GuiDraw;
 import codechicken.lib.render.CCRenderState;
+import cpw.mods.fml.client.FMLClientHandler;
 import mrtjp.projectred.core.utils.Pair2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class BasicGuiUtils
@@ -142,5 +145,45 @@ public class BasicGuiUtils
             }
 
         return list;
+    }
+
+    public static void drawLine(double x, double y, double x2, double y2)
+    {
+        int count = FMLClientHandler.instance().getClient().thePlayer.ticksExisted;
+        float red = 0.7F+MathHelper.sin((float)((count+x)/10.0D))*0.15F+0.15F;
+        float green = 0.0F+MathHelper.sin((float)((count+x+y)/11.0D))*0.15F+0.15F;
+        float blue = 0.0F+MathHelper.sin((float)((count+y)/12.0D))*0.15F+0.15F;
+        drawLine(x, y, x2, y2, new Color(red, green*0, blue*0).getRGB());
+    }
+
+    public static void drawLine(double x, double y, double x2, double y2, int color)
+    {
+        int count = FMLClientHandler.instance().getClient().thePlayer.ticksExisted;
+        float alpha = 0.3F+MathHelper.sin((float)(count+x))*0.3F+0.3F;
+
+        Color c = new Color(color);
+        float red = c.getRed()/255.0F;
+        float green = c.getGreen()/255.0F;
+        float blue = c.getBlue()/255.0F;
+
+
+
+        Tessellator var12 = Tessellator.instance;
+        GL11.glPushMatrix();
+        GL11.glLineWidth(3.0F);
+        GL11.glDisable(3553);
+
+        GL11.glBlendFunc(770, 1);
+        var12.startDrawing(3);
+
+        var12.setColorRGBA_F(red, green, blue, alpha);
+        var12.addVertex(x, y, 0.0D);
+        var12.addVertex(x2, y2, 0.0D);
+
+        var12.draw();
+        GL11.glBlendFunc(770, 771);
+        GL11.glDisable(32826);
+        GL11.glEnable(3553);
+        GL11.glPopMatrix();
     }
 }

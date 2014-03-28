@@ -372,8 +372,6 @@ trait TChipPriority extends RoutingChipset
     var preference = 0
     var priorityFlag = false
 
-    def sendPriority = SendPriority.PASSIVE
-
     private def shift = if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) 10 else 1
     def prefUp()
     {

@@ -45,6 +45,11 @@ abstract class ItemWireCommon(id:Int) extends Item(id) with TItemMultiPart
     override def getSpriteNumber = 0
 }
 
+object ItemPartWire
+{
+    var additionalWires = Seq[ItemStack]()
+}
+
 class ItemPartWire(id:Int) extends ItemWireCommon(id)
 {
     setUnlocalizedName("projectred.transmission.wire")
@@ -69,6 +74,8 @@ class ItemPartWire(id:Int) extends ItemWireCommon(id)
 
         for (w <- Seq(WireDef.RED_ALLOY)++WireDef.INSULATED_WIRE++WireDef.BUNDLED_WIRE)
             if (w.hasWireForm) l2.add(w.getItemStack)
+
+        for (w <- ItemPartWire.additionalWires) l2.add(w)
     }
 
     @SideOnly(Side.CLIENT)
@@ -77,6 +84,8 @@ class ItemPartWire(id:Int) extends ItemWireCommon(id)
         for (w <- WireDef.VALID_WIRE) w.loadTextures(reg)
     }
 }
+
+
 
 class ItemPartFramedWire(id:Int) extends ItemWireCommon(id)
 {
@@ -97,7 +106,14 @@ class ItemPartFramedWire(id:Int) extends ItemWireCommon(id)
 
         for (w <- Seq(WireDef.RED_ALLOY)++WireDef.INSULATED_WIRE++WireDef.BUNDLED_WIRE)
             if (w.hasFramedForm) l2.add(w.getFramedItemStack)
+
+        for (w <- ItemPartFramedWire.additionalWires) l2.add(w)
     }
+}
+
+object ItemPartFramedWire
+{
+    var additionalWires = Seq[ItemStack]()
 }
 
 trait TWireItemRenderCommon extends IItemRenderer

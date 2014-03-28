@@ -6,15 +6,16 @@ import net.minecraft.item.ItemStack
 import scala.collection.immutable.{HashMap, TreeSet}
 import scala.collection.mutable
 import scala.util.Sorting
+import java.util.{PriorityQueue => JPriorityQueue}
 
 object RequestFlags extends Enumeration
 {
     type RequestFlags = Value
     val PULL, CRAFT, PARTIAL, SIMULATE = Value
 
-    val all = PULL+CRAFT+PARTIAL+SIMULATE
-    val full = PULL+CRAFT+PARTIAL
-    val default = PULL+CRAFT
+    def all = PULL+CRAFT+PARTIAL+SIMULATE
+    def full = PULL+CRAFT+PARTIAL
+    def default = PULL+CRAFT
 }
 
 class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, requester:IWorldRequester, parent:RequestBranchNode, opt:RequestFlags.ValueSet)
@@ -29,8 +30,6 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         else this.asInstanceOf[RequestRoot]
     }
 
-    if (parentCrafter != null) if (!recurse_IsCrafterUsed(parentCrafter)) usedCrafters += parentCrafter
-
     private var subRequests = List[RequestBranchNode]()
 
     private var promises = List[DeliveryPromise]()
@@ -40,6 +39,8 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
     var parityBranch:CraftingPromise = null
 
     private var promisedCount = 0
+
+    if (parentCrafter != null) if (!recurse_IsCrafterUsed(parentCrafter)) usedCrafters += parentCrafter
 
     {
         def doRequest()
@@ -77,9 +78,10 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
 
     def doPullReq() =
     {
-        val allRouters = requester.getRouter.getRoutesByCost
-        Sorting.quickSort(allRouters)(new PathSorter(1.0D))
-        def doUntilDone()
+        val allRouters = requester.getRouter
+            .getFilteredRoutesByCost(p => p.flagRouteFrom && p.allowBroadcast && p.allowItem(getRequestedPackage))
+            .sorted(PathSorter.defaultSort)
+        def search()
         {
             for (l <- allRouters) if (isDone) return else l.end.getParent match
             {
@@ -92,7 +94,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                 case _ =>
             }
         }
-        doUntilDone()
+        search()
         isDone
     }
 
@@ -101,10 +103,18 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         val all = root.gatherExcessFor(getRequestedPackage)
         def locate()
         {
-            for (excess <- all) if (isDone) return else if (excess.size > 0)
+            import LabelBreaks._
+            for (excess <- all) if (isDone) return else if (excess.size > 0) label
             {
-                excess.size = Math.min(excess.size, getMissingCount)
-                addPromise(excess)
+                val pathsToThis = requester.getRouter.getRouteTable(excess.sender.getRouter.getIPAddress)
+                val pathsFromThat = excess.sender.getRouter.getRouteTable(requester.getRouter.getIPAddress)
+                for (from <- pathsFromThat) if (from != null && from.flagRouteTo)
+                    for (to <- pathsToThis) if (to != null && to.flagRouteFrom)
+                    {
+                        excess.size = Math.min(excess.size, getMissingCount)
+                        addPromise(excess)
+                        break()
+                    }
             }
         }
         locate()
@@ -113,15 +123,16 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
 
     def doCraftReq() =
     {
-        val allRouters = requester.getRouter.getRoutesByCost
-        Sorting.quickSort(allRouters)(new PathSorter(0.0D))
+        val allRouters = requester.getRouter
+            .getFilteredRoutesByCost(p => p.flagRouteFrom && p.allowCrafting && p.allowItem(getRequestedPackage))
+            .sorted(PathSorter.workSort)
 
         var allCrafters = List[CraftingPromise]()
         for (l <- allRouters) l.end.getParent match
         {
             case wc:IWorldCrafter =>
                 val item = recurse_GetCrafterItem(wc)
-                if (item == null || item == getRequestedPackage)
+                if (item == null || item == getRequestedPackage) //dont use a crafter that has been used for a different item in this request tree
                 {
                     val cp = wc.requestCraftPromise(getRequestedPackage)
                     if (cp != null) allCrafters :+= cp
@@ -130,7 +141,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         }
 
         val it = allCrafters.iterator
-        var balanced = mutable.PriorityQueue[CraftingInitializer]()
+        val balanced = new JPriorityQueue[CraftingInitializer](16)
         var unbalanced = List[CraftingInitializer]()
 
         var finished = false
@@ -158,7 +169,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                     if (recurse_IsCrafterUsed(crafter)) break("1")
 
                     val cti = new CraftingInitializer(crafter, itemsNeeded, this)
-                    balanced += cti
+                    balanced.add(cti)
                     break()
                 }
 
@@ -166,18 +177,18 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
 
                 if (balanced.size == 1)
                 {
-                    unbalanced :+= balanced.dequeue()
+                    unbalanced :+= balanced.poll()
                     unbalanced(0).addAdditionalItems(itemsNeeded)
                 }
                 else
                 {
-                    if (!balanced.isEmpty) unbalanced :+= balanced.dequeue()
+                    if (!balanced.isEmpty) unbalanced :+= balanced.poll
                     while (!unbalanced.isEmpty && itemsNeeded > 0)
                     {
-                        while (!balanced.isEmpty && balanced.head.toDo <= unbalanced(0).toDo)
-                            unbalanced :+= balanced.dequeue()
+                        while (!balanced.isEmpty && balanced.peek.toDo <= unbalanced(0).toDo)
+                            unbalanced :+= balanced.poll
 
-                        var cap = if (!unbalanced.isEmpty) balanced.head.toDo else Int.MaxValue
+                        var cap = if (!unbalanced.isEmpty) balanced.peek.toDo else Int.MaxValue
 
                         val floor = unbalanced(0).toDo
                         cap = Math.min(cap, floor+(itemsNeeded+unbalanced.size-1)/unbalanced.size)
@@ -364,6 +375,12 @@ class RequestRoot(thePackage:ItemKeyStack, requester:IWorldRequester, opt:Reques
         if (newCount <= 0) tableOfPromises = tableOfPromises.filterNot(k => k._1 == key)
         else tableOfPromises += key -> newCount
     }
+}
+
+object PathSorter
+{
+    val defaultSort = new PathSorter(1.0D)
+    val workSort = new PathSorter(0.0D)
 }
 
 class PathSorter(distanceWeight:Double) extends Ordering[StartEndPath]

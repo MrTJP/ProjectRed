@@ -35,16 +35,21 @@ class BlockMachine(id:Int) extends BlockMulti(id, Material.rock)
     override def registerIcons(reg:IconRegister)
     {
         super.registerIcons(reg)
-        BlockMachine.iconIO = reg.registerIcon("projectred:machines/machineio")
-        BlockMachine.bottom = reg.registerIcon("projectred:machines/machbottom")
-        BlockMachine.top = reg.registerIcon("projectred:machines/machtop")
-        BlockMachine.side = reg.registerIcon("projectred:machines/machside")
+        if (BlockMachine.loaded) return
+        def put(name:String) = reg.registerIcon("projectred:machines/"+name)
 
-        BlockMachine.nowork = reg.registerIcon("projectred:machines/machnowork")
-        BlockMachine.work = reg.registerIcon("projectred:machines/machwork")
+        BlockMachine.iconIO = put("machineio")
+        BlockMachine.bottom = put("machbottom")
+        BlockMachine.top = put("machtop")
+        BlockMachine.side = put("machside")
 
-        BlockMachine.furnaceFront = reg.registerIcon("projectred:machines/furnacefront")
-        BlockMachine.furnaceFrontOn = reg.registerIcon("projectred:machines/furnacefronton")
+        BlockMachine.nowork = put("machnowork")
+        BlockMachine.work = put("machwork")
+
+        BlockMachine.furnaceFront = put("furnacefront")
+        BlockMachine.furnaceFrontOn = put("furnacefronton")
+
+        BlockMachine.loaded = true
     }
 
     override def getIcon(s:Int, md:Int) = s match
@@ -57,6 +62,8 @@ class BlockMachine(id:Int) extends BlockMulti(id, Material.rock)
 
 object BlockMachine
 {
+    var loaded = false
+
     var iconIO:Icon = _
 
     var bottom:Icon = _
