@@ -12,7 +12,7 @@ import codechicken.multipart.{PartMap, TileMultipart, TMultiPart, TNormalOcclusi
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.{BasicUtils, Configurator, CommandDebug, BasicWireUtils}
+import mrtjp.projectred.core._
 import net.minecraft.client.renderer.RenderBlocks
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack

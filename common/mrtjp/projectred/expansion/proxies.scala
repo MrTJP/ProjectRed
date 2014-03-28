@@ -8,7 +8,8 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.core.blockutil.ItemBlockMulti
 import mrtjp.projectred.core.{BasicRenderUtils, Configurator, IProxy}
-import mrtjp.projectred.transmission.{PowerWire_100v, FramedPowerWire_100v}
+import mrtjp.projectred.transmission._
+import cpw.mods.fml.common.Loader
 
 class ExpansionProxy_server extends IProxy with IPartFactory
 {
@@ -19,12 +20,29 @@ class ExpansionProxy_server extends IProxy with IPartFactory
 
     def init()
     {
-        MultiPartRegistry.registerParts(this, Array("pr_100v", "pr_f100v"))
+        if (version.contains("@")) //dev only
+        {
+            if (Loader.isModLoaded("ProjRed|Transmission"))
+            {
+                MultiPartRegistry.registerParts(this, Array("pr_100v", "pr_f100v"))
+                ItemPartWire.additionalWires :+= WireDef.POWER_100v.getItemStack
+                ItemPartFramedWire.additionalWires :+= WireDef.POWER_100v.getFramedItemStack
+            }
 
-        ProjectRedExpansion.machine1 = new BlockMachine(Configurator.block_machinesID.getInt)
-        ProjectRedExpansion.machine1.setUnlocalizedName("projectred.expansion.machine1")
-        GameRegistry.registerBlock(ProjectRedExpansion.machine1, classOf[ItemBlockMulti], "projectred.expansion.machine1")
-        ProjectRedExpansion.machine1.addTile(0, classOf[TileFurnace], "projectred.expansion.machine1.furnace")
+            //Machine1 (processing)
+            ProjectRedExpansion.machine1 = new BlockMachine(Configurator.block_machinesID.getInt)
+            ProjectRedExpansion.machine1.setUnlocalizedName("projectred.expansion.machine1")
+            GameRegistry.registerBlock(ProjectRedExpansion.machine1, classOf[ItemBlockMulti], "projectred.expansion.machine1")
+            //Machine1 tiles
+            ProjectRedExpansion.machine1.addTile(0, classOf[TileFurnace], "projectred.expansion.machine1.furnace")
+
+            //Machine2 (devices)
+            ProjectRedExpansion.machine2 = new BlockMachine(Configurator.block_machines2ID.getInt)
+            ProjectRedExpansion.machine2.setUnlocalizedName("projectred.expansion.machine2")
+            GameRegistry.registerBlock(ProjectRedExpansion.machine2, classOf[ItemBlockMulti], "projectred.expansion.machine2")
+            //Machine2 tiles
+            //...
+        }
     }
 
     def postinit()

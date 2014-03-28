@@ -11,7 +11,7 @@ import scala.collection.mutable.{HashMap => MHashMap}
 import scala.collection.immutable.{BitSet, HashMap, HashSet}
 import net.minecraft.world.World
 import java.util.PriorityQueue
-import mrtjp.projectred.core.BasicUtils
+import mrtjp.projectred.core.{PathNode, AStar, BasicUtils}
 
 object LSPathFinder
 {

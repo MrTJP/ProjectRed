@@ -1,4 +1,4 @@
-package mrtjp.projectred.transportation
+package mrtjp.projectred.core
 
 import codechicken.lib.vec.BlockCoord
 import java.util.PriorityQueue

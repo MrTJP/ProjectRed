@@ -24,8 +24,6 @@ import net.minecraft.nbt.{NBTTagList, NBTTagCompound}
 import net.minecraft.util.{Icon, ChatMessageComponent, MovingObjectPosition}
 import net.minecraftforge.common.ForgeDirection
 import scala.collection.JavaConversions._
-import scala.annotation.meta
-import mrtjp.projectred.transportation.PipeLogic.NullPipeLogic
 
 abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion with IHollowConnect
 {
@@ -98,7 +96,7 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
             if (updateInward()) sendConnUpdate()
             WirePropagator.propagateTo(this, FORCE)
         }
-        getWriteStreamOf (1).writeBoolean(material)
+        getWriteStreamOf(1).writeBoolean(material)
     }
 
     override def onSignalUpdate()
@@ -768,4 +766,3 @@ abstract class PipeLogic(p:FlowingPipePart)
 
     def getIcon(i:Int):Icon
 }
-
