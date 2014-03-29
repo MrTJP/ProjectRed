@@ -17,7 +17,6 @@ import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.core.utils.Pair2
 import mrtjp.projectred.core.utils.PostponedWorkItem
-import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.inventory.Container
@@ -56,7 +55,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
         override def onInventoryChanged()
         {
-            refreshExtensions()
+            extensionsNeedRefresh = true
         }
     }
     private val chips = new Array[ChipCrafting](9)
@@ -64,6 +63,8 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     private val manager = new DeliveryManager
     private var excess = List[Pair2[ItemKeyStack, IWorldRequester]]() //TODO can change to List[ItemKeyStack], IWR is always null
     private val lost = new DelayQueue[PostponedWorkItem[ItemKeyStack]]
+
+    private var extensionsNeedRefresh = false
     private val extensionIPs = new Array[Int](9)
 
     var priority = 0
@@ -183,7 +184,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
                     if (processingOrder)
                     {
-                        queueStackToSend(toSend, side, SendPriority.ACTIVE, nextOrder.getValue2.getRouter.getIPAddress)
+                        queueStackToSend(toSend, side, SendPriority.ACTIVEC, nextOrder.getValue2.getRouter.getIPAddress)
                         manager.dispatchSuccessful(numToSend, false)
 
                         if (manager.hasOrders) nextOrder = manager.peek
@@ -301,8 +302,10 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
     private def getExtensionFor(slot:Int, item:ItemKey):IWorldRequester =
     {
+        if (extensionsNeedRefresh) refreshExtensions()
+
         if (0 until 9 contains slot) if (extensionIPs(slot) >= 0 &&
-            getRouter.canRouteTo(extensionIPs(slot), item, SendPriority.ACTIVE))
+            getRouter.isInNetwork(extensionIPs(slot)))
         {
             val r = RouterServices.getRouter(extensionIPs(slot))
             if (r != null && r.isLoaded && r.getParent.isInstanceOf[IWorldRequester])
@@ -472,7 +475,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         null
     }
 
-    def getPriority = priority
+    def getBroadcastPriority = priority
 
     def getWorkLoad = (manager.getTotalDeliveryCount+63.0D)/64.0D
 

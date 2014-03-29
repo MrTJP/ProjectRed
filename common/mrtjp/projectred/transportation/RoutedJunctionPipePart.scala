@@ -94,11 +94,6 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         transitQueue.filter(p => p.getValue1.payload.key == key).foldLeft(0)((b,a) => b+a.getValue2)
     }
 
-    def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, path:SyncResponse)
-    {
-        queueStackToSend(stack, dirOfExtraction, path.priority, path.responder)
-    }
-
     def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:SendPriority, destination:Int)
     {
         val stack2 = ItemKeyStack.get(stack)

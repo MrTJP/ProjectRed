@@ -8,7 +8,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent
 import cpw.mods.fml.common.event.FMLServerStoppingEvent
 import cpw.mods.fml.common.network.NetworkMod
 import mrtjp.projectred.api.ProjectRedAPI
-import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import mrtjp.projectred.transportation._
 import net.minecraft.creativetab.CreativeTabs
 

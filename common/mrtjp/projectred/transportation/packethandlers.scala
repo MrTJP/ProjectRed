@@ -3,12 +3,10 @@ package mrtjp.projectred.transportation
 import codechicken.core.ClientUtils
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.packet.PacketCustom.{IServerPacketHandler, IClientPacketHandler}
-import codechicken.multipart.TMultiPart
 import java.util
 import mrtjp.projectred.ProjectRedTransportation
 import mrtjp.projectred.core.BasicUtils
 import mrtjp.projectred.core.utils.{ItemKeyStack, ItemKey}
-import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.NetClientHandler
 import net.minecraft.entity.player.{EntityPlayerMP, EntityPlayer}

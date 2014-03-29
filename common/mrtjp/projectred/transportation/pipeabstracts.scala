@@ -24,6 +24,7 @@ import net.minecraft.nbt.{NBTTagList, NBTTagCompound}
 import net.minecraft.util.{Icon, ChatMessageComponent, MovingObjectPosition}
 import net.minecraftforge.common.ForgeDirection
 import scala.collection.JavaConversions._
+import mrtjp.projectred.transportation.SendPriority.SendPriority
 
 abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion with IHollowConnect
 {
@@ -657,7 +658,7 @@ class FlowingPipePart extends CorePipePart
         r.input = ForgeDirection.getOrientation(packet.readByte)
         r.output = ForgeDirection.getOrientation(packet.readByte)
         r.speed = packet.readFloat
-        r.setPriority(SendPriority(packet.readUByte).asInstanceOf[SendPriority.PriorityVal])
+        r.setPriority(SendPriority(packet.readUByte).asInstanceOf[SendPriority])
     }
 
     def routeFilter(forSide:Int) = PathFilter.default

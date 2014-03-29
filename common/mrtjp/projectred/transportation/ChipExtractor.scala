@@ -1,7 +1,6 @@
 package mrtjp.projectred.transportation
 
 import mrtjp.projectred.core.inventory.InvWrapper
-import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import scala.collection.immutable.BitSet
 import scala.collection.mutable.ListBuffer
 

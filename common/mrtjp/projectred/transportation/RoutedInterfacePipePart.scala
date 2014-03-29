@@ -3,19 +3,18 @@ package mrtjp.projectred.transportation
 import codechicken.core.IGuiPacketSender
 import codechicken.core.ServerUtils
 import codechicken.lib.packet.PacketCustom
+import codechicken.multipart.INeighborTileChange
 import mrtjp.projectred.core.BasicGuiUtils
 import mrtjp.projectred.core.inventory.SimpleInventory
 import mrtjp.projectred.core.inventory.SpecialContainer
 import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
-import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
-import codechicken.multipart.INeighborTileChange
 
 class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcaster with INeighborTileChange
 {
@@ -178,12 +177,12 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
         for (r <- chips) if (r != null) r.getProvidedItems(map)
     }
 
-    def getPriority =
+    def getBroadcastPriority =
     {
         var high = Integer.MIN_VALUE
         for (r <- chips) if (r != null)
         {
-            val priority = r.getPriority
+            val priority = r.getBroadcastPriority
             if (priority > high) high = priority
         }
         high
@@ -205,7 +204,7 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
         for (r <- chips) if (r != null) r.onNeighborTileChanged(side, weak)
     }
 
-    override def weakTileChanges:Boolean =
+    override def weakTileChanges():Boolean =
     {
         for (r <- chips) if (r != null) if (r.weakTileChanges) return true
         false

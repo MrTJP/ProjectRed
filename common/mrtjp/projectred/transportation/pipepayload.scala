@@ -48,18 +48,30 @@ object RoutedPayload
 object SendPriority extends Enumeration
 {
     type SendPriority = PriorityVal
+    val passiveDef = {path:StartEndPath => path.allowRouting}
+    val activeDef = {path:StartEndPath => path.allowBroadcast||path.allowCrafting}
 
     val WANDERING = new PriorityVal("Wandering", 0.02f, 0.05f, PRColors.RED.ordinal)
     val DEFAULT = new PriorityVal("Default", 0.05f, 0.10f, PRColors.ORANGE.ordinal())
     val TERMINATED = new PriorityVal("Terminated", 0.02f, 0.05f, PRColors.PURPLE.ordinal())
     val PASSIVE = new PriorityVal("Passive", 0.10f, 0.20f, PRColors.BLUE.ordinal())
-    val ACTIVE = new PriorityVal("Active", 0.20f, 0.30f, PRColors.GREEN.ordinal(), true)
+    val ACTIVEB = new PriorityVal("Active Broadcast", 0.20f, 0.30f, PRColors.GREEN.ordinal(), p => p.allowBroadcast)
+    val ACTIVEC = new PriorityVal("Active Craft", 0.20f, 0.30f, PRColors.GREEN.ordinal(), p => p.allowCrafting)
 
-    class PriorityVal(val ident:String, val speed:Float, val boost:Float, val color:Int, val active:Boolean) extends Val
+    class PriorityVal(val ident:String, val speed:Float, val boost:Float, val color:Int, f: StartEndPath => Boolean) extends Val
     {
-        def this(ident:String, speed:Float, boost:Float, color:Int) = this(ident, speed, boost, color, false)
+        def this(ident:String, speed:Float, boost:Float, color:Int) = this(ident, speed, boost, color, passiveDef)
 
-        val ordinal = this.id
+        val ordinal = id
+
+        /**
+         * Used to check if a particular router can route to another on this priority
+         * with the given path. This should see if said path does not restrict this
+         * priority. (Item checks are done on the fly, ignore them)
+         * @param path The path to check routing for
+         * @return True if this priority can route using given path.
+         */
+        def isPathUsable(path:StartEndPath) = f(path)
     }
 }
 
