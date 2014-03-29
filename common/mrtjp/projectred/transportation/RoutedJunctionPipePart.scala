@@ -185,7 +185,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         }
     }
 
-    protected def updateServer() {Messenger.addMessage(x,y,z,"/#f"+getRouter.getIPAddress)}
+    protected def updateServer() {}
 
     protected def updateClient()
     {

@@ -478,8 +478,8 @@ class FlowingPipePart extends CorePipePart
 
     override def read(packet:MCDataInput, key:Int) = key match
     {
-        case k if k >= 10 => logic.read(packet, key)
         case 4 => handleItemUpdatePacket(packet)
+        case k if k >= 50 => logic.read(packet, key)
         case _ => super.read(packet, key)
     }
 
@@ -751,7 +751,7 @@ abstract class PipeLogic(p:FlowingPipePart)
     /**
      *
      * @param packet
-     * @param key allocated >= 10
+     * @param key allocated >= 50
      */
     def read(packet:MCDataInput, key:Int) {}
 

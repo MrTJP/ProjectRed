@@ -136,13 +136,11 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
         for (r <- chips) if (r != null)
         {
             val response = r.getSyncResponse(item, best)
-            if (response != null)
-                if (response.priority.ordinal > best.priority.ordinal ||
-                    response.priority.ordinal == best.priority.ordinal && response.customPriority > best.customPriority)
-                {
-                    best = response
-                    found = true
-                }
+            if (response != null) if (response.isPreferredOver(best))
+            {
+                best = response
+                found = true
+            }
         }
         if (found)
         {

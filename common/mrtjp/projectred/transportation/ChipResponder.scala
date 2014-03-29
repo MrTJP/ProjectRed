@@ -17,7 +17,7 @@ class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriori
 
         if (real==null || side<0) return null
 
-        if (sendPriority.ordinal>rival.priority.ordinal || sendPriority.ordinal==rival.priority.ordinal && preference>rival.customPriority)
+        if (SyncResponse.isPreferredOver(sendPriority.ordinal, preference, rival))
         {
             if (filterAllows(item))
             {
