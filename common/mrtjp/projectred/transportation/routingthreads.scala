@@ -18,13 +18,7 @@ object TableUpdateThread
 
     def size = updateCalls.size
 
-    def getAverage:Long =
-    {
-        avgSync synchronized
-            {
-                return average
-            }
-    }
+    def getAverage = avgSync synchronized average
 }
 
 class TableUpdateThread(i:Int) extends Thread("PR RoutingThread #"+i)

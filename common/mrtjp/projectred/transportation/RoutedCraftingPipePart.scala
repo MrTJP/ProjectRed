@@ -64,7 +64,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     private var excess = List[Pair2[ItemKeyStack, IWorldRequester]]() //TODO can change to List[ItemKeyStack], IWR is always null
     private val lost = new DelayQueue[PostponedWorkItem[ItemKeyStack]]
 
-    private var extensionsNeedRefresh = false
+    private var extensionsNeedRefresh = true
     private val extensionIPs = new Array[Int](9)
 
     var priority = 0
@@ -302,7 +302,11 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
     private def getExtensionFor(slot:Int, item:ItemKey):IWorldRequester =
     {
-        if (extensionsNeedRefresh) refreshExtensions()
+        if (extensionsNeedRefresh)
+        {
+            refreshExtensions()
+            extensionsNeedRefresh = false
+        }
 
         if (0 until 9 contains slot) if (extensionIPs(slot) >= 0 &&
             getRouter.isInNetwork(extensionIPs(slot)))
