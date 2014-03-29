@@ -196,12 +196,7 @@ class LogisticPathFinder(source:Router, payload:ItemKey)
             if (parent == null) break()
 
             val sync = parent.getSyncResponse(payload, bestResponse)
-            if (sync != null) if (sync.priority.ordinal > bestResponse.priority.ordinal)
-            {
-                bestResponse = sync
-                bestIP = r.getIPAddress
-            }
-            else if (sync.priority.ordinal == bestResponse.priority.ordinal && sync.customPriority > bestResponse.customPriority)
+            if (sync != null) if (sync.isPreferredOver(bestResponse))
             {
                 bestResponse = sync
                 bestIP = r.getIPAddress
@@ -257,5 +252,16 @@ class SyncResponse
     {
         val state = Seq(priority, customPriority, itemCount, responder)
         state.map(_.hashCode()).foldLeft(0)((a, b) => 31*a+b)
+    }
+
+    def isPreferredOver(that:SyncResponse) = SyncResponse.isPreferredOver(priority.ordinal, customPriority, that)
+}
+
+object SyncResponse
+{
+    def isPreferredOver(priority:Int, customPriority:Int, that:SyncResponse) =
+    {
+        priority > that.priority.ordinal ||
+            priority == that.priority.ordinal && customPriority > that.customPriority
     }
 }

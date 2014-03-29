@@ -85,12 +85,6 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
     protected def stacksToExtract = 1
 
-    override def read(packet:MCDataInput, switch_key:Int)
-    {
-        if (switch_key == 45) priority = packet.readInt
-        else super.read(packet, switch_key)
-    }
-
     def priorityUp()
     {
         val old = priority
@@ -107,7 +101,13 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
     private def sendPriorityUpdate()
     {
-        if (!world.isRemote) tile.getWriteStream(this).writeByte(45).writeInt(priority)
+        if (!world.isRemote) getWriteStreamOf(7).writeInt(priority)
+    }
+
+    override def read(packet:MCDataInput, key:Int) = key match
+    {
+        case 7 => priority = packet.readInt()
+        case _ => super.read(packet, key)
     }
 
     override def updateServer()
@@ -407,7 +407,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         val requestedItem = request.getRequestedPackage
         val jobs = getCraftedItems
 
-        if (jobs.find(p => p.key == requestedItem).getOrElse(null) == null) return
+        if (!jobs.exists(p => p.key == requestedItem)) return
 
         var remaining = 0
         for (extra <- excess) if (extra.getValue1.key == requestedItem) remaining += extra.getValue1.stackSize
@@ -427,7 +427,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
     def getBroadcastedItems(map:collection.mutable.HashMap[ItemKey, Int]) {}
 
-    def requestCraftPromise(item:ItemKey):CraftingPromise =
+    def requestCraftPromise(item:ItemKey):CraftingPromise = //TODO return ARRAY because we can have multiple recipes for same item. (change how requestbranchnode handles said array as well)
     {
         val items = getCraftedItems
         if (items == null || items.isEmpty) return null
