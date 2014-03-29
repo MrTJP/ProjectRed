@@ -397,12 +397,12 @@ class PathSorter(distanceWeight:Double) extends Ordering[StartEndPath]
 
         val p1 = wr1 match
         {
-            case b:IWorldBroadcaster => b.getPriority
+            case b:IWorldBroadcaster => b.getBroadcastPriority
             case _ => Integer.MIN_VALUE
         }
         val p2 = wr2 match
         {
-            case b:IWorldBroadcaster => b.getPriority
+            case b:IWorldBroadcaster => b.getBroadcastPriority
             case _ => Integer.MIN_VALUE
         }
 

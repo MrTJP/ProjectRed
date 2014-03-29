@@ -333,6 +333,17 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         routersByCost.filter(p => p != null && p.end.isLoaded && f(p))
     }
 
+    def isInNetwork(destination:Int):Boolean =
+    {
+        val rt = getRouteTable
+        if (rt.isDefinedAt(destination) && RouterServices.routerExists(destination))
+        {
+            val paths = rt(destination)
+            if (paths != null) return true
+        }
+        false
+    }
+
     def canRouteTo(destination:Int, item:ItemKey, priority:SendPriority) = pathTo(destination, item, priority) != null
     def getDirection(destination:Int, item:ItemKey, priority:SendPriority) = pathTo(destination, item, priority) match
     {
@@ -348,7 +359,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             val paths = rt(destination)
             if (paths != null)
                 for (path <- paths) if (path.flagRouteTo)
-                    if ((!priority.active && path.allowRouting) || (priority.active && (path.allowBroadcast || path.allowCrafting)) && path.allowItem(item))
+                    if (priority.isPathUsable(path) && path.allowItem(item))
                         return path
         }
         null
@@ -446,7 +457,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             {
                 Router.LegacyLinkStateID(IPAddress) = newVer
                 routeTable = routeTable2.toVector
-                routersByCost = routersByCost2.toVector
+                routersByCost = routersByCost2
             }
             Router.LSADatabasereadLock.unlock()
         }

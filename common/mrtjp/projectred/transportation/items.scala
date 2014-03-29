@@ -11,9 +11,15 @@ import net.minecraft.client.renderer.texture.IconRegister
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.{Icon, EnumChatFormatting}
 import net.minecraft.world.World
 import net.minecraftforge.client.IItemRenderer
 import net.minecraftforge.client.IItemRenderer.{ItemRendererHelper, ItemRenderType}
+import org.lwjgl.input.Keyboard
+import scala.collection.mutable.ListBuffer
+import mrtjp.projectred.transportation.EnumRoutingChip.ChipType.ChipType
+import scala.collection.mutable
 
 class ItemPartPipe(id:Int) extends Item(id) with TItemMultiPart
 {
@@ -94,3 +100,160 @@ object PipeItemRenderer extends IItemRenderer
     }
 }
 
+class ItemRoutingChip(id:Int) extends Item(id)
+{
+    setUnlocalizedName("projectred.transportation.routingchip")
+    setCreativeTab(ProjectRedTransportation.tabTransportation)
+    setHasSubtypes(true)
+
+    override def getSubItems(id:Int, tab:CreativeTabs, list:JList[_])
+    {
+        val list2 = list.asInstanceOf[JList[ItemStack]]
+        for (c <- EnumRoutingChip.VALID_CHIPS) list2.add(c.getItemStack)
+    }
+
+    override def getUnlocalizedName(stack:ItemStack) = super.getUnlocalizedName+"|"+stack.getItemDamage
+
+    @SideOnly(Side.CLIENT)
+    override def registerIcons(reg:IconRegister)
+    {
+        for (c <- EnumRoutingChip.VALID_CHIPS) c.registerIcons(reg)
+    }
+
+    override def getIconFromDamage(meta:Int) =
+    {
+        val c = EnumRoutingChip.get(meta)
+        if (c != null) c.icon
+        else null
+    }
+
+    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
+    {
+        val list2 = list.asInstanceOf[JList[String]]
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) if (stack.hasTagCompound)
+        {
+            import scala.collection.JavaConversions._
+            val r = ItemRoutingChip.loadChipFromItemStack(stack)
+            if (r != null)
+            {
+                val s = new ListBuffer[String]
+                r.infoCollection(s)
+                list2.addAll(s)
+            }
+        }
+        else list2.add(EnumChatFormatting.GRAY+"not configured")
+    }
+
+    override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer):ItemStack =
+    {
+        if (!w.isRemote && stack != null && stack.getItem.isInstanceOf[ItemRoutingChip])
+        {
+            val r = ItemRoutingChip.loadChipFromItemStack(stack)
+            if (r != null) r.openGui(player)
+        }
+        super.onItemRightClick(stack, w, player)
+    }
+
+    override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World, par4:Int, par5:Int, par6:Int, par7:Int, par8:Float, par9:Float, par10:Float):Boolean =
+    {
+        if (!w.isRemote && stack != null && stack.getItem.isInstanceOf[ItemRoutingChip])
+        {
+            val r = ItemRoutingChip.loadChipFromItemStack(stack)
+            if (r != null) r.openGui(player)
+        }
+        true
+    }
+
+    override def shouldPassSneakingClickToBlock(par2World:World, par4:Int, par5:Int, par6:Int) = true
+}
+
+object ItemRoutingChip
+{
+    def saveChipToItemStack(stack:ItemStack, chipset:RoutingChipset)
+    {
+        if (stack == null || chipset == null || !stack.getItem.isInstanceOf[ItemRoutingChip]) return
+        val mainTag = new NBTTagCompound("main")
+        val chipTag = new NBTTagCompound("ROM")
+        chipset.save(chipTag)
+        mainTag.setTag("chipROM", chipTag)
+        stack.setTagCompound(mainTag)
+    }
+
+    def loadChipFromItemStack(stack:ItemStack) =
+    {
+        if (stack == null || !stack.getItem.isInstanceOf[ItemRoutingChip]) null
+        else
+        {
+            val e = EnumRoutingChip.get(stack.getItemDamage)
+            if (e != null)
+            {
+                val chip = e.createChipset
+                val mainTag = stack.getTagCompound
+                if (mainTag != null && mainTag.hasKey("chipROM")) chip.load(mainTag.getCompoundTag("chipROM"))
+                chip
+            }
+            else null
+        }
+    }
+}
+
+object EnumRoutingChip extends Enumeration
+{
+    type EnumRoutingChip = ChipVal
+
+    val ITEMRESPONDER = new ChipVal("responder", new ChipItemResponder)
+    val DYNAMICITEMRESPONDER = new ChipVal("responder_dyn", new ChipDynamicItemResponder)
+    val ITEMOVERFLOWRESPONDER = new ChipVal("overflow", new ChipItemOverflowResponder)
+    val ITEMTERMINATOR = new ChipVal("terminator", new ChipItemTerminator)
+    val ITEMEXTRACTOR = new ChipVal("extractor", new ChipExtractor)
+    val ITEMBROADCASTER = new ChipVal("broadcaster", new ChipBroadcaster)
+    val ITEMSTOCKKEEPER = new ChipVal("stockkeeper", new ChipStockKeeper)
+    val ITEMCRAFTING = new ChipVal("crafting", new ChipCrafting, ChipType.CRAFTING)
+
+    val VALID_CHIPS =
+    {
+        var array = new mutable.ArrayBuilder.ofRef[EnumRoutingChip]()
+        for (v <- values) array += v.asInstanceOf[EnumRoutingChip]
+        array.result()
+    }
+
+    def getForStack(stack:ItemStack):EnumRoutingChip =
+    {
+        if (stack != null && stack.getItem.isInstanceOf[ItemRoutingChip]) return get(stack.getItemDamage)
+        null
+    }
+
+    def get(ordinal:Int):EnumRoutingChip =
+    {
+        if (ordinal < 0 || ordinal >= VALID_CHIPS.length) null
+        else VALID_CHIPS(ordinal)
+    }
+
+    class ChipVal(iconPath:String, f: => RoutingChipset, cType:ChipType) extends Val
+    {
+        def this(icon:String, f: => RoutingChipset) = this(icon, f, ChipType.INTERFACE)
+        val meta = id
+        var icon:Icon = null
+
+        def registerIcons(reg:IconRegister)
+        {
+            icon = reg.registerIcon("projectred:chips/"+iconPath)
+        }
+
+        def getItemStack:ItemStack = getItemStack(1)
+
+        def getItemStack(i:Int) = new ItemStack(ProjectRedTransportation.itemRoutingChip, i, meta)
+
+        def isInterfaceChip = cType == ChipType.INTERFACE
+
+        def isCraftingChip = cType == ChipType.CRAFTING
+
+        def createChipset = f
+    }
+
+    object ChipType extends Enumeration
+    {
+        type ChipType = Value
+        val INTERFACE, CRAFTING = Value
+    }
+}

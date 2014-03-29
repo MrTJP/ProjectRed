@@ -51,7 +51,7 @@ trait IWorldBroadcaster extends IWorldRouter
 
     def getBroadcastedItems(map:mutable.HashMap[ItemKey, Int])
 
-    def getPriority:Int
+    def getBroadcastPriority:Int
 
     def getWorkLoad:Double
 }
@@ -70,6 +70,9 @@ trait IWorldCrafter extends IWorldRequester with IWorldBroadcaster
 trait IRouteLayer
 {
     def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, path:SyncResponse)
+    {
+        queueStackToSend(stack, dirOfExtraction, path.priority, path.responder)
+    }
     def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:SendPriority, destination:Int)
     def getLogisticPath(stack:ItemKey, exclusions:BitSet, excludeStart:Boolean):SyncResponse
 

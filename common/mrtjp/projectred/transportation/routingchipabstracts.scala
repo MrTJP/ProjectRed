@@ -7,7 +7,6 @@ import java.util
 import mrtjp.projectred.core.inventory.{InvWrapper, SimpleInventory}
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
-import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.nbt.NBTTagCompound
@@ -15,6 +14,7 @@ import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.Keyboard
 import scala.collection.convert.WrapAsJava
 import scala.collection.mutable.ListBuffer
+import mrtjp.projectred.transportation.EnumRoutingChip.EnumRoutingChip
 
 abstract class RoutingChipset
 {
@@ -45,7 +45,7 @@ abstract class RoutingChipset
     def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester) {}
     def getProvidedItems(map:collection.mutable.Map[ItemKey, Int]) {}
 
-    def getPriority = Integer.MAX_VALUE
+    def getBroadcastPriority = Integer.MAX_VALUE
     def getWorkLoad:Double = 0
 
     /** Requesting **/
