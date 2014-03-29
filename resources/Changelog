@@ -1,5 +1,12 @@
-[dev]v4.3.4
+[dev]v4.3.6
 - FIX: Broadcasters using ore dictionary to provide
+
+v4.3.5
+- FIX: !! Routing thread eating up all of CPU !!
+
+v4.3.4
+- FIX: !! Huge memory leak in pipe routing thread !!
+- FIX: Rare crash when removing pipes
 
 v4.3.3
 - CHANGE: Backpacks show name in gui
