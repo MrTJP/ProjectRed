@@ -10,6 +10,7 @@ import mrtjp.projectred.transmission.IWirePart._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ChatMessageComponent
+import net.minecraft.tileentity.TileEntity
 
 trait IBundledCablePart extends IWirePart with IBundledEmitter
 {
@@ -133,33 +134,22 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
         tmpSignal
     }
 
-    abstract override def calcStraightArray(dir:Int) =
-    {
-        val te = BasicUtils.getTileEntity(world, posOfStraight(dir), classOf[IBundledEmitter])
-        if (te != null)
-        {
-            raiseSignalFrom(te, dir)
-            tmpSignal
-        }
-        else super.calcStraightArray(dir)
-    }
-
     val tmpSignal = new Array[Byte](16)
     def tmpSignalClear()
     {
         tmpSignal.transform(_ => 0.asInstanceOf[Byte])
     }
-    def raiseSignalFrom(part:AnyRef, r:Int) = part match
+    def raiseSignalFrom(part:AnyRef, dir:Int) = part match
     {
         case b:IBundledCablePart =>
             val osig = b.getBundledSignal
             for (i <- 0 until 16)
                 if ((osig(i)&0xFF)-1 > (tmpSignal(i)&0xFF)) tmpSignal(i) = (osig(i)-1).asInstanceOf[Byte]
         case i:IInsulatedRedwirePart =>
-            val s = i.getRedwireSignal(r)-1
+            val s = i.getRedwireSignal(dir)-1
             if (s > (tmpSignal(i.getInsulatedColour)&0xFF))
                 tmpSignal(i.getInsulatedColour) = s.asInstanceOf[Byte]
-        case b:IBundledEmitter => BundledCommons.raiseSignal(tmpSignal, b.getBundledSignal(r))
+        case b:IBundledEmitter => BundledCommons.raiseSignal(tmpSignal, b.getBundledSignal(dir))
         case _ =>
     }
 
@@ -238,6 +228,17 @@ class BundledCablePart extends WirePart with TFaceBundledAquisitions with TBundl
         if (maskConnectsCenter) calcCenterArray
         tmpSignal
     }
+
+    override def calcStraightArray(r:Int) =
+    {
+        val te = BasicUtils.getTileEntity(world, posOfStraight(r), classOf[IBundledEmitter])
+        if (te != null)
+        {
+            raiseSignalFrom(te, absoluteDir(rotFromStraight(r)))
+            tmpSignal
+        }
+        else super.calcStraightArray(r)
+    }
 }
 
 class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitions with TBundledCableCommons
@@ -250,5 +251,16 @@ class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitio
             else calcInternalArray(s)
 
         tmpSignal
+    }
+
+    override def calcStraightArray(s:Int) =
+    {
+        val te = BasicUtils.getTileEntity(world, posOfStraight(s), classOf[IBundledEmitter])
+        if (te != null)
+        {
+            raiseSignalFrom(te, s^1)
+            tmpSignal
+        }
+        else super.calcStraightArray(s)
     }
 }

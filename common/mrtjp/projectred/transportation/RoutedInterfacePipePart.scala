@@ -18,7 +18,7 @@ import net.minecraft.util.MovingObjectPosition
 
 class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcaster with INeighborTileChange
 {
-    var chipSlots = new SimpleInventory(4, "chips", 1)
+    val chipSlots = new SimpleInventory(4, "chips", 1)
     {
         override def onInventoryChanged()
         {
@@ -33,7 +33,7 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
                 stack.getTagCompound.hasKey("chipROM") &&
                 EnumRoutingChip.getForStack(stack).isInterfaceChip
     }
-    var chips = new Array[RoutingChipset](4)
+    val chips = new Array[RoutingChipset](4)
 
     override def save(tag:NBTTagCompound)
     {
