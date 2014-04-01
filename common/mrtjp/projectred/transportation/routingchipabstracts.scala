@@ -5,8 +5,7 @@ import codechicken.core.ServerUtils
 import codechicken.lib.packet.PacketCustom
 import java.util
 import mrtjp.projectred.core.inventory.{InvWrapper, SimpleInventory}
-import mrtjp.projectred.core.utils.ItemKey
-import mrtjp.projectred.core.utils.ItemKeyStack
+import mrtjp.projectred.core.utils.{Pair2, ItemKey, ItemKeyStack}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.nbt.NBTTagCompound
@@ -503,6 +502,25 @@ trait TChipCrafter extends RoutingChipset
         matrix.load(tag)
         extIndex = tag.getIntArray("ext")
         super.load(tag)
+    }
+
+    def getCraftedItem = ItemKeyStack.get(matrix.getStackInSlot(9))
+
+    def buildCraftPromise(item:ItemKey, pipe:RoutedCraftingPipePart) =
+    {
+        val result = ItemKeyStack.get(matrix.getStackInSlot(9))
+        if (result != null)
+        {
+            val promise = new CraftingPromise(result, pipe, pipe.priority)
+            for (i <- 0 until 9)
+            {
+                val keystack = ItemKeyStack.get(matrix.getStackInSlot(i))
+                if (keystack != null && keystack.stackSize > 0)
+                    promise.addIngredient(keystack, pipe.getExtensionFor(extIndex(i), item))
+            }
+            promise
+        }
+        else null
     }
 
     def addMatrixInfo(list:ListBuffer[String])

@@ -30,10 +30,10 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         else this.asInstanceOf[RequestRoot]
     }
 
-    private var subRequests = List[RequestBranchNode]()
+    private var subRequests = Vector[RequestBranchNode]()
 
-    private var promises = List[DeliveryPromise]()
-    private var excessPromises = List[ExcessPromise]()
+    private var promises = Vector[DeliveryPromise]()
+    private var excessPromises = Vector[ExcessPromise]()
 
     private var usedCrafters = TreeSet[CraftingPromise]()
     var parityBranch:CraftingPromise = null
@@ -127,22 +127,22 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
             .getFilteredRoutesByCost(p => p.flagRouteFrom && p.allowCrafting && p.allowItem(getRequestedPackage))
             .sorted(PathSorter.workSort)
 
-        var allCrafters = List[CraftingPromise]()
+        var jobs = Vector.newBuilder[CraftingPromise]
         for (l <- allRouters) l.end.getParent match
         {
             case wc:IWorldCrafter =>
                 val item = recurse_GetCrafterItem(wc)
                 if (item == null || item == getRequestedPackage) //dont use a crafter that has been used for a different item in this request tree
                 {
-                    val cp = wc.requestCraftPromise(getRequestedPackage)
-                    if (cp != null) allCrafters :+= cp
+                    val cpl = wc.buildCraftPromises(getRequestedPackage)
+                    for (cp <- cpl) jobs += cp
                 }
             case _ =>
         }
 
-        val it = allCrafters.iterator
+        val it = jobs.result().iterator
         val balanced = new JPriorityQueue[CraftingInitializer](16)
-        var unbalanced = List[CraftingInitializer]()
+        var unbalanced = Vector[CraftingInitializer]()
 
         var finished = false
         var priority = 0
@@ -219,7 +219,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
 
     protected def remove(subNode:RequestBranchNode)
     {
-        subRequests = subRequests.filterNot(r => r == subNode)
+        subRequests = subRequests.filterNot(_ == subNode)
         subNode.recurse_RemoveSubPromisses()
     }
 
@@ -239,17 +239,17 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         if (usedCrafters.contains(crafter)) true
         else parent != null && parent.recurse_IsCrafterUsed(crafter)
     }
-    protected def recurse_GatherExcess(item:ItemKey, excessMap:MHashMap[IWorldBroadcaster, List[ExcessPromise]])
+    protected def recurse_GatherExcess(item:ItemKey, excessMap:MHashMap[IWorldBroadcaster, Vector[ExcessPromise]])
     {
         for (excess <- excessPromises) if (excess.thePackage == item)
         {
-            var prev = excessMap.getOrElse(excess.sender, List[ExcessPromise]())
+            var prev = excessMap.getOrElse(excess.sender, Vector[ExcessPromise]())
             prev :+= excess.copy
             excessMap += excess.sender -> prev
         }
         for (subNode <- subRequests) subNode.recurse_GatherExcess(item, excessMap)
     }
-    protected def recurse_RemoveUnusableExcess(item:ItemKey, excessMap:MHashMap[IWorldBroadcaster, List[ExcessPromise]])
+    protected def recurse_RemoveUnusableExcess(item:ItemKey, excessMap:MHashMap[IWorldBroadcaster, Vector[ExcessPromise]])
     {
         for (promise <- promises) if (promise.thePackage == item && promise.isInstanceOf[ExcessPromise])
         {
@@ -260,7 +260,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                 var extras = excessMap.getOrElse(epromise.sender, null)
                 if (extras != null)
                 {
-                    var toRem = List[ExcessPromise]()
+                    var toRem = Vector[ExcessPromise]()
                     def remove()
                     {
                         for (e <- extras)
@@ -358,21 +358,21 @@ class RequestRoot(thePackage:ItemKeyStack, requester:IWorldRequester, opt:Reques
 
     def gatherExcessFor(item:ItemKey) =
     {
-        val excessMap = new MHashMap[IWorldBroadcaster, List[ExcessPromise]]
+        val excessMap = new MHashMap[IWorldBroadcaster, Vector[ExcessPromise]]
 
         recurse_GatherExcess(item, excessMap)
         recurse_RemoveUnusableExcess(item, excessMap)
 
-        var all = List[ExcessPromise]()
+        var all = Vector.newBuilder[ExcessPromise]
         excessMap.foreach(p => all ++= p._2)
-        all
+        all.result()
     }
 
     def promiseRemoved(promise:DeliveryPromise)
     {
         val key = new HashPair2(promise.sender, promise.thePackage)
         val newCount = getExistingPromisesFor(key)-promise.size
-        if (newCount <= 0) tableOfPromises = tableOfPromises.filterNot(k => k._1 == key)
+        if (newCount <= 0) tableOfPromises = tableOfPromises.filterNot(_._1 == key)
         else tableOfPromises += key -> newCount
     }
 }
@@ -496,7 +496,7 @@ class ExcessPromise extends DeliveryPromise
 
 class CraftingPromise(val result:ItemKeyStack, val crafter:IWorldCrafter, val priority:Int) extends Ordered[CraftingPromise]
 {
-    var ingredients = List[Pair2[ItemKeyStack, IWorldRequester]]()
+    var ingredients = Vector[Pair2[ItemKeyStack, IWorldRequester]]()
 
     def getCrafter = crafter
 
@@ -522,14 +522,14 @@ class CraftingPromise(val result:ItemKeyStack, val crafter:IWorldCrafter, val pr
 
     def getScaledIngredients(sets:Int) =
     {
-        var components = List[Pair2[ItemKeyStack, IWorldRequester]]()
+        var components = Vector.newBuilder[Pair2[ItemKeyStack, IWorldRequester]]
         for (i <- ingredients)
         {
             val newI = new Pair2(i.getValue1.copy, i.getValue2)
             newI.getValue1.setSize(newI.getValue1.stackSize*sets)
-            components :+= newI
+            components += newI
         }
-        components
+        components.result()
     }
 
     override def compare(that:CraftingPromise) =
@@ -566,9 +566,9 @@ class CraftingInitializer(crafter:CraftingPromise, maxToCraft:Int, branch:Reques
 
     def addAdditionalItems(additional:Int):Int =
     {
-        val stacksRequested:Int = (additional + setSize - 1) / setSize
+        val stacksRequested:Int = (additional+setSize-1)/setSize
         setsRequested += stacksRequested
-        stacksRequested * setSize
+        stacksRequested*setSize
     }
 
     def finalizeInteraction():Boolean =
@@ -592,18 +592,19 @@ class CraftingInitializer(crafter:CraftingPromise, maxToCraft:Int, branch:Reques
     {
         var failed = false
         var potentialSets = numberOfSets
-        var children = List[RequestBranchNode]()
+        var subs = Vector.newBuilder[RequestBranchNode]
         val ingredients = crafter.getScaledIngredients(numberOfSets)
 
         for (item <- ingredients)
         {
             val req = new RequestBranchNode(crafter, item.getValue1, item.getValue2, branch, RequestFlags.default)
-            children :+= req
+            subs += req
             if (!req.isDone) failed = true
         }
 
         if (failed)
         {
+            val children = subs.result()
             for (sub <- children) sub.destroy()
 
             branch.parityBranch = crafter
@@ -616,9 +617,9 @@ class CraftingInitializer(crafter:CraftingPromise, maxToCraft:Int, branch:Reques
         else potentialSets
     }
 
-    def getAbsoluteSubPromises(numberOfSets:Int, crafter:CraftingPromise) =
+    def getAbsoluteSubPromises(numberOfSets:Int, crafter:CraftingPromise):Int =
     {
-        var children = List[RequestBranchNode]()
+        var children = Vector.newBuilder[RequestBranchNode]
         if (numberOfSets > 0)
         {
             val ingredients = crafter.getScaledIngredients(numberOfSets)
@@ -627,18 +628,17 @@ class CraftingInitializer(crafter:CraftingPromise, maxToCraft:Int, branch:Reques
             for (item <- ingredients)
             {
                 val req = new RequestBranchNode(crafter, item.getValue1, item.getValue2, branch, RequestFlags.default)
-                children :+= req
+                children += req
                 if (!req.isDone) failed = true
             }
 
             if (failed)
             {
-                for (sub <- children) sub.destroy()
-                0
+                for (sub <- children.result()) sub.destroy()
+                return 0
             }
-            else numberOfSets
         }
-        else numberOfSets
+        numberOfSets
     }
 }
 

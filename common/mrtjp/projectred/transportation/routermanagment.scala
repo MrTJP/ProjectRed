@@ -384,7 +384,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         }
 
         val localPath = new StartEndPath(this, this, -1, 0)
-        /** List of all paths in this network ordered by cost **/
+        /** Vector of all paths in this network ordered by cost **/
         var routersByCost2 = Vector[StartEndPath](localPath)
         /** Queue of all candidates that need checking **/
         val candidates2 = new JPriorityQueue[StartEndPath](Math.sqrt(sizeEstimate).asInstanceOf[Int])//scala PQ is not working ?!
@@ -435,7 +435,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         for (p <- routersByCost2) if (p != null) label
         {
             val firstHop = p.start
-            val rootHop = adjacentLinks.find(p => p.end == firstHop).getOrElse(null)
+            val rootHop = adjacentLinks.find(_.end == firstHop).getOrElse(null)
 
             if (rootHop == null) break()
 

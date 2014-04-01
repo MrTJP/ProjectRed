@@ -58,11 +58,11 @@ trait IWorldBroadcaster extends IWorldRouter
 
 trait IWorldCrafter extends IWorldRequester with IWorldBroadcaster
 {
-    def requestCraftPromise(item:ItemKey):CraftingPromise
+    def buildCraftPromises(item:ItemKey):Vector[CraftingPromise]
 
     def registerExcess(promise:DeliveryPromise)
 
-    def getCraftedItems:List[ItemKeyStack]
+    def getCraftedItems:Vector[ItemKeyStack]
 
     def itemsToProcess:Int
 }

@@ -49,7 +49,7 @@ object SendPriority extends Enumeration
 {
     type SendPriority = PriorityVal
     val passiveDef = {path:StartEndPath => path.allowRouting}
-    val activeDef = {path:StartEndPath => path.allowBroadcast||path.allowCrafting}
+    val activeDef = {path:StartEndPath => path.allowBroadcast || path.allowCrafting}
 
     val WANDERING = new PriorityVal("Wandering", 0.02f, 0.05f, PRColors.RED.ordinal)
     val DEFAULT = new PriorityVal("Default", 0.05f, 0.10f, PRColors.ORANGE.ordinal())
@@ -197,7 +197,7 @@ class RoutedPayload(val payloadID:Int)
     {
         destinationIP = ip
         val router = RouterServices.getRouter(ip)
-        if (router != null) this.destinationUUID = router.getID
+        if (router != null) destinationUUID = router.getID
         else destinationIP = -1
         this
     }
@@ -213,14 +213,10 @@ class RoutedPayload(val payloadID:Int)
         if (destinationIP > -1)
         {
             val r = RouterServices.getRouter(destinationIP)
-            if (r != null)
+            if (r != null) r.getParent match
             {
-                val parent = r.getParent
-                parent match
-                {
-                    case wr:IWorldRequester => wr.trackedItemLost(payload)
-                    case _ =>
-                }
+                case wr:IWorldRequester => wr.trackedItemLost(payload)
+                case _ =>
             }
         }
         destinationIP = -1
@@ -232,7 +228,7 @@ class RoutedPayload(val payloadID:Int)
 
     def refreshIP()
     {
-        val router:Router = RouterServices.getRouter(destinationIP)
+        val router = RouterServices.getRouter(destinationIP)
         if (router == null || router.getID != destinationUUID) destinationIP = RouterServices.getIPforUUID(destinationUUID)
     }
 
@@ -248,7 +244,7 @@ class PayloadMovement
     var outputQueue = immutable.HashSet[RoutedPayload]()
     private var delay = 0
 
-    def get(id:Int) = delegate.find(r => r.payloadID == id).getOrElse(null)
+    def get(id:Int) = delegate.find(_.payloadID == id).getOrElse(null)
 
     def scheduleLoad(item:RoutedPayload)
     {
