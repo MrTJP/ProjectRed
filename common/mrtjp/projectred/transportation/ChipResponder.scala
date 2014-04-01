@@ -2,11 +2,11 @@ package mrtjp.projectred.transportation
 
 import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.ItemKey
-import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import scala.collection.mutable.ListBuffer
 
 class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriority
 {
+    def sendPriority = SendPriority.PASSIVE
 
     def prefScale = 2+upgradeBus.LLatency
 
@@ -17,7 +17,7 @@ class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriori
 
         if (real==null || side<0) return null
 
-        if (sendPriority.ordinal>rival.priority.ordinal || sendPriority.ordinal==rival.priority.ordinal && preference>rival.customPriority)
+        if (SyncResponse.isPreferredOver(sendPriority.ordinal, preference, rival))
         {
             if (filterAllows(item))
             {
@@ -39,7 +39,7 @@ class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriori
         addFilterInfo(list)
     }
 
-    def getChipType:EnumRoutingChip = EnumRoutingChip.ITEMRESPONDER
+    def getChipType = EnumRoutingChip.ITEMRESPONDER
 
     override def createUpgradeBus =
     {

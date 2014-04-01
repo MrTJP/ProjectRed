@@ -3,9 +3,8 @@ package mrtjp.projectred.transportation
 import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.LabelBreaks._
 import mrtjp.projectred.core.utils.{ItemKey, Pair2, ItemKeyStack}
-import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
-import mrtjp.projectred.transportation.RequestBranchNode.DeliveryPromise
 import scala.collection.mutable.ListBuffer
+import mrtjp.projectred.transportation.EnumRoutingChip.EnumRoutingChip
 
 class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientation with TChipPriority
 {
@@ -52,7 +51,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
 
                 val inv = applyFilter(InvWrapper.wrap(real)).setSlotsFromSide(side)
 
-                if (!routeLayer.getRouter.canRouteTo(requester.getRouter.getIPAddress))
+                if (!routeLayer.getRouter.canRouteTo(requester.getRouter.getIPAddress, reqKeyStack.key, SendPriority.ACTIVEB))
                 {
                     manager.dispatchFailed()
                     break("cont")
@@ -84,7 +83,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                 }
 
                 val toSend = reqKeyStack.key.makeStack(removed)
-                routeLayer.queueStackToSend(toSend, invProvider.getInterfacedSide, SendPriority.ACTIVE, requester.getRouter.getIPAddress)
+                routeLayer.queueStackToSend(toSend, invProvider.getInterfacedSide, SendPriority.ACTIVEB, requester.getRouter.getIPAddress)
                 manager.dispatchSuccessful(removed, restock)
 
                 stacksRemaining -= 1
@@ -139,7 +138,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
         }
     }
 
-    override def getPriority = preference
+    override def getBroadcastPriority = preference
 
     override def onPipeBroken()
     {
@@ -171,5 +170,5 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
     override def enableFilter = true
     override def enablePatterns = false
 
-    def getChipType = EnumRoutingChip.ITEMBROADCASTER
+    def getChipType:EnumRoutingChip = EnumRoutingChip.ITEMBROADCASTER
 }

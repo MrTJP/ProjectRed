@@ -1,7 +1,6 @@
 package mrtjp.projectred.transportation
 
 import mrtjp.projectred.core.inventory.InvWrapper
-import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import scala.collection.immutable.BitSet
 import scala.collection.mutable.ListBuffer
 
@@ -12,7 +11,6 @@ class ChipExtractor extends RoutingChipset with TChipFilter with TChipOrientatio
     private def operationDelay = 100-upgradeBus.LLatency
 
     private def itemsToExtract = 8+upgradeBus.RLatency
-
 
     override def update()
     {

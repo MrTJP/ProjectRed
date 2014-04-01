@@ -3,16 +3,17 @@ package mrtjp.projectred.transportation
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.data.MCDataOutput
 import codechicken.lib.vec.BlockCoord
-import codechicken.multipart.INeighborTileChange
 import codechicken.multipart.TMultiPart
 import codechicken.multipart.TileMultipart
 import java.util.UUID
+import java.util.concurrent.PriorityBlockingQueue
 import mrtjp.projectred.api.IScrewdriver
 import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.core.utils.Pair2
-import mrtjp.projectred.core.{BasicUtils, Configurator}
+import mrtjp.projectred.core.{CoreSPH, Messenger, BasicUtils, Configurator}
+import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
@@ -21,15 +22,16 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.Icon
 import net.minecraft.util.MovingObjectPosition
 import net.minecraftforge.common.ForgeDirection
+import scala.collection.JavaConversions._
 import scala.collection.immutable.BitSet
-import scala.collection.mutable
+import codechicken.lib.packet.PacketCustom
 
 object RoutedJunctionPipePart
 {
     var pipes = 0
 }
 
-class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRouteLayer with IWorldRequester with IInventoryProvider with INeighborTileChange
+class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRouteLayer with IWorldRequester with IInventoryProvider
 {
     var searchDelay =
     {
@@ -39,8 +41,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
 
     var linkMap = 0
 
-    var router: Router = null
-    var routerId: UUID = null
+    var router:Router = null
+    var routerId:UUID = null
 
     val routerIDLock = new AnyRef
     var inOutSide = 0
@@ -48,8 +50,12 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
     var firstTick = true
 
     var sendQueue = List[RoutedPayload]()
-    var transitQueue = mutable.PriorityQueue[Pair2[RoutedPayload, Int]]()(TransitComparator)
+    var transitQueue = new PriorityBlockingQueue[Pair2[RoutedPayload, Int]](10, TransitComparator)
     var swapQueue = List[RoutedPayload]()
+
+    var statsReceived = 0
+    var statsSent = 0
+    var statsRelayed = 0
 
     private def getRouterId =
     {
@@ -72,37 +78,34 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
 
     def itemEnroute(r:RoutedPayload)
     {
-        transitQueue += new Pair2(r, 200)
+        transitQueue.add(new Pair2(r, 200))
     }
 
     def itemArrived(r:RoutedPayload)
     {
         removeFromTransitQueue(r)
         trackedItemReceived(r.payload)
+
+        statsReceived+=1
     }
 
     private def removeFromTransitQueue(r:RoutedPayload)
     {
-        transitQueue = transitQueue.filterNot(p => p.getValue1 == r)
+        transitQueue.removeAll(transitQueue.filter(p => p.getValue1 == r))
     }
 
     private def tickTransitQueue()
     {
-        transitQueue = transitQueue.filter(p =>
+        transitQueue.removeAll(transitQueue.filterNot(p =>
         {
             p.setValue2(p.getValue2-1)
             p.getValue2 >= 0
-        })
+        }))
     }
 
     protected def countInTransit(key:ItemKey) =
     {
         transitQueue.filter(p => p.getValue1.payload.key == key).foldLeft(0)((b,a) => b+a.getValue2)
-    }
-
-    def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, path:SyncResponse)
-    {
-        queueStackToSend(stack, dirOfExtraction, path.priority, path.responder)
     }
 
     def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:SendPriority, destination:Int)
@@ -130,6 +133,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
             RouteFX.spawnType1(RouteFX.color_sync, 8, new BlockCoord(wr.getContainer.tile), world)
         }
         RouteFX.spawnType1(RouteFX.color_send, 8, new BlockCoord(tile), world)
+
+        statsSent += 1
     }
 
     def queueSwapSendItem(r:RoutedPayload)
@@ -258,13 +263,23 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         }
     }
 
-    override def read(packet:MCDataInput, switch_key:Int) = switch_key match
+    override def read(packet:MCDataInput, key:Int) = key match
     {
-        case 51 => handleLinkMap(packet)
-        case 15 =>
+        case 5 => handleLinkMap(packet)
+        case 6 =>
             inOutSide = packet.readUByte
             tile.markRender()
-        case _ => super.read(packet, switch_key)
+        case _ => super.read(packet, key)
+    }
+
+    def sendLinkMapUpdate()
+    {
+        getWriteStreamOf(5).writeByte(linkMap)
+    }
+
+    def sendOrientUpdate()
+    {
+        getWriteStreamOf(6).writeByte(inOutSide)
     }
 
     private def handleLinkMap(packet:MCDataInput)
@@ -284,13 +299,6 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         tile.markRender()
     }
 
-    def sendLinkMapUpdate()
-    {
-        getWriteStream.writeByte(51).writeByte(linkMap)
-    }
-
-    override def getType = "pr_rbasic"
-
     override def onRemoved()
     {
         super.onRemoved()
@@ -304,6 +312,9 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         super.save(tag)
         tag.setString("rid", getRouterId.toString)
         tag.setByte("io", inOutSide.asInstanceOf[Byte])
+        tag.setInteger("sent", statsSent)
+        tag.setInteger("rec", statsReceived)
+        tag.setInteger("relay", statsRelayed)
     }
 
     override def load(tag:NBTTagCompound)
@@ -314,6 +325,10 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
                 routerId = UUID.fromString(tag.getString("rid"))
             }
         inOutSide = tag.getByte("io")
+
+        statsSent = tag.getInteger("sent")
+        statsReceived = tag.getInteger("rec")
+        statsRelayed = tag.getInteger("relay")
     }
 
     override def writeDesc(packet:MCDataOutput)
@@ -356,14 +371,9 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         shiftOrientation(false)
     }
 
-    def sendOrientUpdate()
+    override def discoverStraight(absDir:Int):Boolean =
     {
-        tile.getWriteStream(this).writeByte(15).writeByte(inOutSide)
-    }
-
-    override def connect(absDir:Int):Boolean =
-    {
-        if (super.connect(absDir)) return true
+        if (super.discoverStraight(absDir)) return true
         val bc = new BlockCoord(tile).offset(absDir)
         val t = BasicUtils.getTileEntity(world, bc, classOf[TileEntity])
         t != null && t.isInstanceOf[IInventory]
@@ -372,10 +382,33 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
     {
         if (super.activate(player, hit, item)) return true
+
+        if (item != null && item.getItem.isInstanceOf[ItemRouterUtility])
+        {
+            if (!world.isRemote)
+            {
+                val s = "/#f"+"route statistics: "+
+                        "\nreceived: "+statsReceived+
+                        "\nsent: "+statsSent+
+                        "\nrelayed: "+statsRelayed+
+                        "\n\nroute table size: "+getRouter.getRouteTable.foldLeft(0)((b, v) => if (v != null) b+1 else b)
+                val packet = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)
+                packet.writeDouble(x+0.0D)
+                packet.writeDouble(y+0.5D)
+                packet.writeDouble(z+0.0D)
+                packet.writeString(s)
+                packet.sendToPlayer(player)
+            }
+            return true
+        }
+
         if (item != null && item.getItem.isInstanceOf[IScrewdriver])
         {
-            shiftOrientation(true)
-            item.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
+            if (!world.isRemote)
+            {
+                shiftOrientation(true)
+                item.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
+            }
             return true
         }
         false
@@ -402,7 +435,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
                     if (t.isInstanceOf[IInventory])
                     {
                         found = true
-                        break
+                        break()
                     }
                 }
             }
@@ -428,18 +461,13 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         else array(2+ind)
     }
 
-    def onNeighborTileChanged(side:Int, weak:Boolean) {}
-    def weakTileChanges = false
-
     override def resolveDestination(r:RoutedPayload)
     {
         if (needsWork) return
         var color = -1
         r.output = ForgeDirection.UNKNOWN
 
-        // Reroute if needed
-        r.refreshIP()
-        if (r.destinationIP < 0 || r.destinationIP >= 0 && r.hasArrived)
+        def reRoute(r:RoutedPayload)
         {
             r.resetTrip
             val f = new LogisticPathFinder(getRouter, r.payload.key).setExclusions(r.travelLog).findBestResult
@@ -449,22 +477,17 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
                 color = RouteFX.color_route
             }
         }
+
+        // Reroute if needed
+        r.refreshIP()
+        if (r.destinationIP <= 0 || (r.destinationIP > 0 && r.hasArrived)) reRoute(r)
         r.refreshIP()
 
         // Deliver item, or reroute
-        if (r.destinationIP > 0 && (r.destinationUUID == getRouter.getID))
+        if (r.destinationIP > 0 && r.destinationUUID == getRouter.getID)
         {
             r.output = getDirForIncomingItem(r)
-            if (r.output == ForgeDirection.UNKNOWN)
-            {
-                r.resetTrip
-                val f = new LogisticPathFinder(getRouter, r.payload.key).setExclusions(r.travelLog).findBestResult
-                if (f.getResult != null)
-                {
-                    r.setDestination(f.getResult.responder).setPriority(f.getResult.priority)
-                    color = RouteFX.color_route
-                }
-            }
+            if (r.output == ForgeDirection.UNKNOWN) reRoute(r)
             else
             {
                 color = RouteFX.color_receive
@@ -477,7 +500,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         // Relay item
         if (r.output == ForgeDirection.UNKNOWN)
         {
-            r.output = getRouter.getExitDirection(r.destinationIP)
+            r.output = getRouter.getDirection(r.destinationIP, r.payload.key, r.priority)
             color = RouteFX.color_relay
         }
 
@@ -489,6 +512,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
             r.travelLog = BitSet()
             color = RouteFX.color_routeLost
         }
+
+        if (color == RouteFX.color_relay) statsRelayed += 1
         RouteFX.spawnType1(color, 8, new BlockCoord(tile), world)
         adjustSpeed(r)
     }

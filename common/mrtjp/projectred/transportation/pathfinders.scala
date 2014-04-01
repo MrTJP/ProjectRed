@@ -2,14 +2,16 @@ package mrtjp.projectred.transportation
 
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.TileMultipart
-import java.util
 import mrtjp.projectred.api.ISpecialLinkState
 import mrtjp.projectred.core.utils.{ItemKey, Pair2}
+import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.tileentity.TileEntity
 import net.minecraftforge.common.ForgeDirection
-import scala.collection
+import scala.collection.mutable.{HashMap => MHashMap}
 import scala.collection.immutable.{BitSet, HashMap, HashSet}
-import scala.collection.immutable.BitSet.BitSet1
+import net.minecraft.world.World
+import java.util.PriorityQueue
+import mrtjp.projectred.core.{PathNode, AStar, BasicUtils}
 
 object LSPathFinder
 {
@@ -27,96 +29,66 @@ object LSPathFinder
     }
 }
 
-class LSPathFinder(start:IWorldRouter, maxVisited:Int, maxLength:Int, side:ForgeDirection)
+class LSPathFinder2(start:IWorldRouter, maxVisited:Int, world:World) extends AStar(world)
 {
-    def this(start:IWorldRouter, maxVisited:Int, maxLength:Int) =
-        this(start, maxVisited, maxLength, ForgeDirection.UNKNOWN)
+    val pipe = start.getContainer
+    val startBC = pipe.getCoords
+    var visited = 0
 
-    private var pipesVisited = 0
-    private var setVisited = HashSet[BasicPipePart]()
+    var found = Vector[StartEndPath]()
 
-    val LSAddresser = start.getRouter
-    var result = getConnectedRoutingPipes(start.getContainer, side)
-
-
-    private def getConnectedRoutingPipes(start:BasicPipePart, side:ForgeDirection):HashMap[Router, StartEndPath] =
+    override def openInitials()
     {
-        var foundPipes = HashMap[Router, StartEndPath]()
-        val root = setVisited.isEmpty
 
-        if (setVisited.size == 1) pipesVisited = 0
-
-        pipesVisited += 1
-        if (pipesVisited > maxVisited) return foundPipes
-        if (setVisited.size > maxLength) return foundPipes
-        if (!start.initialized) return foundPipes
-
-        if (start.isInstanceOf[IWorldRouter] && !root)
-        {
-            val r = (start.asInstanceOf[IWorldRouter]).getRouter
-            if (!r.isLoaded) return foundPipes
-            foundPipes += (r -> new StartEndPath(LSAddresser, r, side.getOpposite.ordinal, setVisited.size))
-            return foundPipes
-        }
-        setVisited += start
-
-        val connections = new java.util.ArrayDeque[Pair2[TileEntity, ForgeDirection]]
-
-        import mrtjp.projectred.core.utils.LabelBreaks._
-        for (dir <- ForgeDirection.VALID_DIRECTIONS) label("1")
-        {
-            if (root && side != ForgeDirection.UNKNOWN && !(dir == side)) break("1")
-            if (!start.maskConnects(dir.ordinal)) break("1")
-            val bc = new BlockCoord(start.tile).offset(dir.ordinal)
-            val tile = start.world.getBlockTileEntity(bc.x, bc.y, bc.z)
-            connections.add(new Pair2[TileEntity, ForgeDirection](tile, dir))
-        }
-
-        while (!connections.isEmpty) label("1")
-        {
-            val pair:Pair2[TileEntity, ForgeDirection] = connections.pollFirst
-            val tile:TileEntity = pair.getValue1
-            val dir:ForgeDirection = pair.getValue2
-            if (root)
-            {
-                val link:ISpecialLinkState = LSPathFinder.getLinkState(tile)
-                val connected = if (link == null) null else link.getLink(tile)
-                if (connected != null)
-                {
-                    connections.add(new Pair2[TileEntity, ForgeDirection](connected, dir))
-                    break("1")
-                }
-            }
-
-            if (!(tile.isInstanceOf[TileMultipart])) break("1")
-            val tile2 = tile.asInstanceOf[TileMultipart]
-            val part = tile2.partMap(6)
-            var p:BasicPipePart = null
-            if (part.isInstanceOf[BasicPipePart]) p = part.asInstanceOf[BasicPipePart]
-
-            if (p == null) break("1")
-            if (setVisited.contains(p)) break("1")
-
-            val result = getConnectedRoutingPipes(p, dir)
-
-            for ((k, v) <- result)
-            {
-                v.dirToFirstHop = dir.ordinal
-                val found = foundPipes.getOrElse(k, null)
-                val current = v.distance
-                val previous = if (found == null) Integer.MAX_VALUE else found.distance
-                if (current < previous) foundPipes += (k -> v)
-            }
-        }
-
-        setVisited -= start
-        if (start.isInstanceOf[IWorldRouter])
-            for (e <- foundPipes.values) e.start = start.asInstanceOf[IWorldRouter].getRouter
-
-        foundPipes
+        for (s <- 0 until 6) if (pipe.maskConnects(s)) open(new PathNode(pipe.getCoords, s))
     }
 
-    def getResult = result
+    override def evaluate(n:PathNode)
+    {
+        visited += 1
+        if (visited > maxVisited) return
+        val thisPipe = getPipe(n.bc)
+
+        thisPipe match
+        {
+            case iwr:IWorldRouter =>
+                val r = iwr.getRouter
+                if (r != null && r.isLoaded)
+                    found :+= new StartEndPath(start.getRouter, r, n.hop, n.dist, thisPipe.routeFilter(n.dir^1))
+            case p:FlowingPipePart =>
+                for (s <- 0 until 6) if ((s^1) != n.dir && thisPipe.maskConnects(s))
+                {
+                    val pConn = getPipe(n.bc.copy().offset(s))
+                    if (pConn != null) open(n --> (s, p.routeWeight))
+                }
+            case null => if (nextToStart(n)) //Tile interactions, power, etc.
+            {
+                val tile = getTile(n.bc)
+                val link = LSPathFinder.getLinkState(tile)
+                val te = if (link != null) link.getLink(tile) else null
+                if (te != null)
+                {
+                    val bc = new BlockCoord(te)
+                    val linkedPipe = getPipe(bc)
+                    if (linkedPipe != null) open(n --> (bc, linkedPipe.routeWeight))
+                }
+            }
+        }
+    }
+
+    override def isClosed(n:PathNode) = super.isClosed(n) || n.bc == startBC
+
+    def getPipe(bc:BlockCoord) = BasicUtils.getMultiPart(world, bc, 6) match
+    {
+        case p:FlowingPipePart => p
+        case _ => null
+    }
+
+    def getTile(bc:BlockCoord) = world.getBlockTileEntity(bc.x, bc.y, bc.z)
+
+    def nextToStart(n:PathNode) = startBC.copy.sub(n.bc).mag() == 1D
+
+    def getResult = found
 }
 
 class CollectionPathFinder
@@ -146,31 +118,23 @@ class CollectionPathFinder
 
     def collect =
     {
-        val pool = collection.mutable.HashMap[ItemKey, Int]()
-
-        for (l <- requester.getRouter.getRoutesByCost)
+        var pool = MHashMap[ItemKey, Int]()
+        for (p <- requester.getRouter.getRoutesByCost)
         {
-            val r = l.end
-            val wr = r.getParent
-            if (wr.isInstanceOf[IWorldCrafter] && collectCrafts)
+            p.end.getParent match
             {
-                val c = wr.asInstanceOf[IWorldCrafter]
-                c.getBroadcastedItems(pool)
-                val list = c.getCraftedItems
-
-                if (list != null)
-                {
-                    import scala.collection.JavaConversions._
-                    for (stack <- list) if (!pool.contains(stack.key)) pool.put(stack.key, 0)
-                }
+                case c:IWorldCrafter if collectCrafts && p.flagRouteFrom && p.allowCrafting =>
+                    c.getBroadcastedItems(pool)
+                    val list = c.getCraftedItems
+                    if (list != null) for (stack <- list)
+                        if (!pool.contains(stack.key)) pool += stack.key -> 0
+                case b:IWorldBroadcaster if collectBroadcasts && p.flagRouteFrom && p.allowBroadcast =>
+                    b.getBroadcastedItems(pool)
+                case _ =>
             }
-            else if (wr.isInstanceOf[IWorldBroadcaster] && collectBroadcasts)
-            {
-                val b = wr.asInstanceOf[IWorldBroadcaster]
-                b.getBroadcastedItems(pool)
-            }
+            pool = pool.filter(i => p.allowItem(i._1))
         }
-        collected = HashMap() ++ pool
+        collected = pool.toMap
         this
     }
 
@@ -182,7 +146,7 @@ object LogisticPathFinder
     def sharesInventory(pipe1:RoutedJunctionPipePart, pipe2:RoutedJunctionPipePart):Boolean =
     {
         if (pipe1 == null || pipe2 == null) return false
-        if (pipe1.tile.worldObj ne pipe2.tile.worldObj) return false
+        if (pipe1.tile.worldObj != pipe2.tile.worldObj) return false
 
         val adjacent1 = pipe1.getInventory
         val adjacent2 = pipe2.getInventory
@@ -208,7 +172,7 @@ class LogisticPathFinder(source:Router, payload:ItemKey)
 
     def setExcludeSource(flag:Boolean) =
     {
-        this.excludeSource = flag
+        excludeSource = flag
         this
     }
 
@@ -220,24 +184,19 @@ class LogisticPathFinder(source:Router, payload:ItemKey)
         var bestIP = -1
         import mrtjp.projectred.core.utils.LabelBreaks._
 
-        for (l <- source.getRoutesByCost) label("1")
+        for (l <- source.getFilteredRoutesByCost(p => p.flagRouteTo && p.allowRouting && p.allowItem(payload))) label
         {
             val r = l.end
-            if (excludeSource && r.getIPAddress == source.getIPAddress) break("1")
-            if (excludeSource && LogisticPathFinder.sharesInventory(source.getParent.getContainer, r.getParent.getContainer)) break("1")
-            if (exclusions(r.getIPAddress) || visited(r.getIPAddress)) break("1")
+            if (excludeSource && r.getIPAddress == source.getIPAddress) break()
+            if (excludeSource && LogisticPathFinder.sharesInventory(source.getParent.getContainer, r.getParent.getContainer)) break()
+            if (exclusions(r.getIPAddress) || visited(r.getIPAddress)) break()
 
             visited += r.getIPAddress
             val parent = r.getParent
-            if (parent == null) break("1")
+            if (parent == null) break()
 
             val sync = parent.getSyncResponse(payload, bestResponse)
-            if (sync != null) if (sync.priority.ordinal > bestResponse.priority.ordinal)
-            {
-                bestResponse = sync
-                bestIP = r.getIPAddress
-            }
-            else if (sync.priority.ordinal == bestResponse.priority.ordinal && sync.customPriority > bestResponse.customPriority)
+            if (sync != null) if (sync.isPreferredOver(bestResponse))
             {
                 bestResponse = sync
                 bestIP = r.getIPAddress
@@ -267,7 +226,7 @@ class SyncResponse
         this
     }
 
-    def setItemCount(count:Int):SyncResponse =
+    def setItemCount(count:Int) =
     {
         itemCount = count
         this
@@ -279,13 +238,9 @@ class SyncResponse
         this
     }
 
-
-    def canEqual(other:Any) = other.isInstanceOf[SyncResponse]
-
     override def equals(other:Any) = other match
     {
         case that:SyncResponse =>
-            (that canEqual this) &&
                 priority == that.priority &&
                 customPriority == that.customPriority &&
                 itemCount == that.itemCount &&
@@ -296,6 +251,17 @@ class SyncResponse
     override def hashCode() =
     {
         val state = Seq(priority, customPriority, itemCount, responder)
-        state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+        state.map(_.hashCode()).foldLeft(0)((a, b) => 31*a+b)
+    }
+
+    def isPreferredOver(that:SyncResponse) = SyncResponse.isPreferredOver(priority.ordinal, customPriority, that)
+}
+
+object SyncResponse
+{
+    def isPreferredOver(priority:Int, customPriority:Int, that:SyncResponse) =
+    {
+        priority > that.priority.ordinal ||
+            priority == that.priority.ordinal && customPriority > that.customPriority
     }
 }

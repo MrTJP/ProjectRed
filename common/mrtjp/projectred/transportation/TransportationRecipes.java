@@ -4,7 +4,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import mrtjp.projectred.ProjectRedTransportation;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip;
+import mrtjp.projectred.transportation.EnumRoutingChip.ChipVal;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
@@ -74,7 +74,7 @@ public class TransportationRecipes
                 'j', PipeDef.ROUTEDJUNCTION().getItemStack()
         );
 
-        /** Routed Crafting Pipe **/
+        /** Routed Extension Pipe **/
         GameRegistry.addRecipe(PipeDef.ROUTEDEXTENSION().getItemStack(),
                 " r ",
                 "rjr",
@@ -82,12 +82,22 @@ public class TransportationRecipes
                 'r', Item.redstone,
                 'j', PipeDef.ROUTEDJUNCTION().getItemStack()
         );
+
+        /** Routed Firewall Pipe **/
+        GameRegistry.addRecipe(PipeDef.ROUTEDFIREWALL().getItemStack(),
+                "bcb",
+                "cjc",
+                "bcb",
+                'b', Block.netherBrick,
+                'c', Item.magmaCream,
+                'j', PipeDef.ROUTEDJUNCTION().getItemStack()
+        );
     }
 
     private static void initChipRecipes()
     {
         /** Chip reset **/
-        for (EnumRoutingChip r : EnumRoutingChip.VALID_CHIPS)
+        for (ChipVal r : EnumRoutingChip.VALID_CHIPS())
             GameRegistry.addRecipe(new IRecipe()
             {
 
@@ -100,7 +110,7 @@ public class TransportationRecipes
                 @Override
                 public ItemStack getCraftingResult(InventoryCrafting inv)
                 {
-                    EnumRoutingChip type = getType(inv);
+                    ChipVal type = getType(inv);
                     if (type != null)
                         if (isTypeExclusive(type, inv))
                             return type.getItemStack(countUnits(inv));
@@ -108,18 +118,18 @@ public class TransportationRecipes
                     return null;
                 }
 
-                public EnumRoutingChip getType(InventoryCrafting inv)
+                public ChipVal getType(InventoryCrafting inv)
                 {
                     for (int i = 0; i < inv.getSizeInventory(); i++)
                     {
-                        EnumRoutingChip type = EnumRoutingChip.getForStack(inv.getStackInSlot(i));
+                        ChipVal type = EnumRoutingChip.getForStack(inv.getStackInSlot(i));
                         if (type != null)
                             return type;
                     }
                     return null;
                 }
 
-                public boolean isTypeExclusive(EnumRoutingChip type, InventoryCrafting inv)
+                public boolean isTypeExclusive(ChipVal type, InventoryCrafting inv)
                 {
                     for (int i = 0; i < inv.getSizeInventory(); i++)
                     {
@@ -127,7 +137,7 @@ public class TransportationRecipes
                         if (stack != null && !(stack.getItem() instanceof ItemRoutingChip))
                             return false;
 
-                        EnumRoutingChip type2 = EnumRoutingChip.getForStack(stack);
+                        ChipVal type2 = EnumRoutingChip.getForStack(stack);
                         if (type2 != null && !type2.equals(type))
                             return false;
                     }
@@ -169,56 +179,56 @@ public class TransportationRecipes
         );
 
         /** Item Responder **/
-        addChipRecipe(EnumRoutingChip.ITEMRESPONDER.getItemStack(),
+        addChipRecipe(EnumRoutingChip.ITEMRESPONDER().getItemStack(),
                 Item.ingotIron, Item.redstone, Item.redstone,
                 EnumPart.ORANGEILLUMAR.getItemStack(),
                 EnumPart.ORANGEILLUMAR.getItemStack()
         );
 
         /** Dynamic Item Responder **/
-        addChipRecipe(EnumRoutingChip.DYNAMICITEMRESPONDER.getItemStack(),
+        addChipRecipe(EnumRoutingChip.DYNAMICITEMRESPONDER().getItemStack(),
                 Item.ingotIron, Item.redstone, EnumPart.CYANILLUMAR.getItemStack(),
                 EnumPart.ORANGEILLUMAR.getItemStack(),
                 EnumPart.ORANGEILLUMAR.getItemStack()
         );
 
         /** Item Overflow Responder **/
-        addChipRecipe(EnumRoutingChip.ITEMOVERFLOWRESPONDER.getItemStack(),
+        addChipRecipe(EnumRoutingChip.ITEMOVERFLOWRESPONDER().getItemStack(),
                 Item.ingotIron, Item.redstone, Item.redstone,
                 EnumPart.GREENILLUMAR.getItemStack(),
                 EnumPart.GREENILLUMAR.getItemStack()
         );
 
         /** Item Terminator **/
-        addChipRecipe(EnumRoutingChip.ITEMTERMINATOR.getItemStack(),
+        addChipRecipe(EnumRoutingChip.ITEMTERMINATOR().getItemStack(),
                 Item.ingotIron, Item.redstone, Item.redstone,
                 EnumPart.PURPLEILLUMAR.getItemStack(),
                 EnumPart.GREYILLUMAR.getItemStack()
         );
 
         /** Item Extractor **/
-        addChipRecipe(EnumRoutingChip.ITEMEXTRACTOR.getItemStack(),
+        addChipRecipe(EnumRoutingChip.ITEMEXTRACTOR().getItemStack(),
                 Item.ingotIron, Item.redstone, Item.redstone,
                 EnumPart.CYANILLUMAR.getItemStack(),
                 EnumPart.CYANILLUMAR.getItemStack()
         );
 
         /** Item Broadcaster **/
-        addChipRecipe(EnumRoutingChip.ITEMBROADCASTER.getItemStack(),
+        addChipRecipe(EnumRoutingChip.ITEMBROADCASTER().getItemStack(),
                 Item.ingotGold, Item.redstone, Item.redstone,
                 EnumPart.MAGENTAILLUMAR.getItemStack(),
                 EnumPart.MAGENTAILLUMAR.getItemStack()
         );
 
         /** Item Stock Keeper **/
-        addChipRecipe(EnumRoutingChip.ITEMSTOCKKEEPER.getItemStack(),
+        addChipRecipe(EnumRoutingChip.ITEMSTOCKKEEPER().getItemStack(),
                 Item.diamond, Item.redstone, Item.redstone,
                 EnumPart.BLUEILLUMAR.getItemStack(),
                 EnumPart.BLUEILLUMAR.getItemStack()
         );
 
         /** Item Crafting **/
-        addChipRecipe(EnumRoutingChip.ITEMCRAFTING.getItemStack(),
+        addChipRecipe(EnumRoutingChip.ITEMCRAFTING().getItemStack(),
                 Item.glowstone, Item.redstone, Item.glowstone,
                 EnumPart.LIMEILLUMAR.getItemStack(),
                 EnumPart.LIMEILLUMAR.getItemStack()

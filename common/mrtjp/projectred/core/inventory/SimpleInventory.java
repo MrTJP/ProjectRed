@@ -74,7 +74,7 @@ public class SimpleInventory implements IInventory
     @Override
     public boolean isUseableByPlayer(EntityPlayer entityplayer)
     {
-        return false;
+        return true;
     }
 
     @Override

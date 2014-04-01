@@ -7,25 +7,24 @@ class CompatibilityProxy_server extends IProxy
 {
     def preinit()
     {
-        Services.loadServices()
+        try{Services.servicesReflect()}catch{case e:Throwable=>}
+        Services.doPreInit()
     }
 
     def init()
     {
-        if (Services.loadTConstruct) Services.tcProxy.init()
-        if (Services.loadTExpansion) Services.teProxy.init()
-        if (Services.loadTreecapitator) Services.treecapProxy.init()
+        Services.doInit()
     }
 
-    def postinit() {}
+    def postinit()
+    {
+        Services.doPostInit()
+    }
 
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"
 }
 
 class CompatibilityProxy_client extends CompatibilityProxy_server
-{
-
-}
 
 object CompatibilityProxy extends CompatibilityProxy_client

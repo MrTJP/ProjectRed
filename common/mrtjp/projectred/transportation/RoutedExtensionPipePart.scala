@@ -16,9 +16,16 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 import java.util.LinkedList
+import mrtjp.projectred.transportation.RequestFlags._
 
 class RoutedExtensionPipePart extends RoutedJunctionPipePart
 {
+    var cardslot = new SimpleInventory(2, "card", 1)
+    {
+        override def isItemValidForSlot(i:Int, stack:ItemStack) =
+            stack != null && stack.getItem.isInstanceOf[ItemDataCard]
+    }
+
     private var lost = List[ItemKeyStack]()
     private var remainingDelay = operationDelay
 
@@ -29,6 +36,7 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
 
     override def updateServer()
     {
+        super.updateServer()
         remainingDelay -= 1
         if (remainingDelay <= 0)
         {
@@ -77,11 +85,9 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
             if (toRequest <= 0)
             {
                 lost :+= stack
-                break
+                break()
             }
-
-            val req = new RequestConsole().setDestination(this)
-            req.setPulling(true).setCrafting(true).setPartials(true)
+            val req = new RequestConsole(RequestFlags.full).setDestination(this)
             val requested = req.makeRequest(ItemKeyStack.get(stack.key, toRequest)).requested
             if (requested < stack.stackSize)
             {
@@ -116,8 +122,12 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
     {
         if (super.activate(player, hit, item)) return true
-        openGui(player)
-        true
+        if (!player.isSneaking)
+        {
+            openGui(player)
+            true
+        }
+        else false
     }
 
     private def openGui(player:EntityPlayer)
@@ -144,13 +154,5 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
         ghost.addCustomSlot(new SpecialContainer.SlotExtended(cardslot, 1, 134, 50).setPlacement(false))
         ghost.addPlayerInventory(8, 84)
         ghost
-    }
-
-    override def getType = "pr_rextension"
-
-    var cardslot = new SimpleInventory(2, "card", 1)
-    {
-        override def isItemValidForSlot(i:Int, stack:ItemStack) =
-            stack != null && stack.getItem.isInstanceOf[ItemDataCard]
     }
 }

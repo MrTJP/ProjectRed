@@ -2,17 +2,16 @@ package mrtjp.projectred.integration;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.vec.*;
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Rotation;
 import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.integration.ArrayCommons.ITopArrayWire;
-import mrtjp.projectred.transmission.IRedwireEmitter;
-import mrtjp.projectred.transmission.IRedwirePart;
-import mrtjp.projectred.transmission.IWirePart;
-import mrtjp.projectred.transmission.WirePropogator;
+import mrtjp.projectred.transmission.*;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -70,48 +69,48 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     }
 
     @Override
-    public void updateAndPropogate(TMultiPart prev, int mode)
+    public void updateAndPropagate(TMultiPart prev, int mode)
     {
         int wireMask = wireMask(prev);
         if ((wireMask&2) != 0)
             _updateAndPropogate(prev, mode);
         else
-            WirePropogator.addNeighborChange(new BlockCoord(tile()));
+            WirePropagator.addNeighborChange(new BlockCoord(tile()));
     }
 
     private void _updateAndPropogate(TMultiPart prev, int mode)
     {
         int oldSignal = signal&0xFF;
-        if (mode == DROPPING && oldSignal == 0)
+        if (mode == IWirePart$.MODULE$.DROPPING() && oldSignal == 0)
             return;
 
         int newSignal = calculateSignal();
         if (newSignal < oldSignal)
         {
             if (newSignal > 0)
-                WirePropogator.propogateAnalogDrop(this);
+                WirePropagator.propagateAnalogDrop(this);
 
             signal = 0;
-            propogate(prev, DROPPING);
+            propogate(prev, IWirePart$.MODULE$.DROPPING());
         }
         else if (newSignal > oldSignal)
         {
             signal = (byte)newSignal;
-            if (mode == DROPPING)
-                propogate(null, RISING);
+            if (mode == IWirePart$.MODULE$.DROPPING())
+                propogate(null, IWirePart$.MODULE$.RISING());
             else
-                propogate(prev, RISING);
+                propogate(prev, IWirePart$.MODULE$.RISING());
         }
-        else if (mode == DROPPING)
-            propogateTo(prev, RISING);
-        else if (mode == FORCE)
-            propogate(prev, FORCED);
+        else if (mode == IWirePart$.MODULE$.DROPPING())
+            propogateTo(prev, IWirePart$.MODULE$.RISING());
+        else if (mode == IWirePart$.MODULE$.FORCE())
+            propogate(prev, IWirePart$.MODULE$.FORCED());
     }
 
     public int calculateSignal()
     {
-        WirePropogator.setWiresProvidePower(false);
-        WirePropogator.redwiresProvidePower = false;
+        WirePropagator.setDustProvidePower(false);
+        WirePropagator$.MODULE$.redwiresProvidePower_$eq(false);
 
         int s = 0;
         int i;
@@ -127,8 +126,8 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
                     s = i;
             }
 
-        WirePropogator.setWiresProvidePower(true);
-        WirePropogator.redwiresProvidePower = true;
+        WirePropagator.setDustProvidePower(true);
+        WirePropagator$.MODULE$.redwiresProvidePower_$eq(true);
 
         return s;
     }
@@ -138,8 +137,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     {
         int absDir = Rotation.rotateSide(side(), r);
 
-        BlockCoord cnrPos = new BlockCoord(tile()).offset(absDir);
-        BlockCoord pos = cnrPos.copy().offset(side());
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
         TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
         if (t != null)
             return getPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side()^1));
@@ -209,8 +207,8 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
 
     public void propogate(TMultiPart prev, int mode)
     {
-        if (mode != FORCED)
-            WirePropogator.addPartChange(this);
+        if (mode != IWirePart$.MODULE$.FORCED())
+            WirePropagator.addPartChange(this);
 
         for (int r = 0; r < 4; r++)
             if (toInternal(r)%2 != 0)
@@ -235,7 +233,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
                 return;
         }
 
-        WirePropogator.addNeighborChange(pos);
+        WirePropagator.addNeighborChange(pos);
     }
 
     public void propogateStraight(int r, TMultiPart prev, int mode)
@@ -253,7 +251,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
                 return;
         }
 
-        WirePropogator.addNeighborChange(pos);
+        WirePropagator.addNeighborChange(pos);
     }
 
     public int wireMask(TMultiPart propogator)
@@ -282,7 +280,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     {
         if (part instanceof IWirePart)
         {
-            WirePropogator.propogateTo((IWirePart)part, this, mode);
+            WirePropagator.propagateTo((IWirePart)part, this, mode);
             return true;
         }
 
@@ -300,7 +298,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     public void onChange()
     {
         super.onChange();
-        WirePropogator.propogateTo(this, RISING);
+        WirePropagator.propagateTo(this, IWirePart$.MODULE$.RISING());
     }
 
     @Override
@@ -331,7 +329,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
 
     public int rsLevel(int i)
     {
-        if (WirePropogator.redwiresProvidePower)
+        if (WirePropagator$.MODULE$.redwiresProvidePower())
             return (i+16)/17;
 
         return 0;

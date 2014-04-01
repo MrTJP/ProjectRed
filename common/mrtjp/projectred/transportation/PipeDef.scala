@@ -11,12 +11,13 @@ import mrtjp.projectred.transmission.WireDef
 
 object PipeDef extends LiteEnumCollector
 {
-    val BASIC = PipeDef("pr_ptube", "basic")
+    val BASIC = PipeDef("pr_ptube", "basic", "rs")
     val ROUTEDJUNCTION = PipeDef("pr_rbasic", "routedjunc", "routed", "unrouted", "routedconn", "unroutedconn")
     val ROUTEDINTERFACE = PipeDef("pr_rinterface", "routedint")
     val ROUTEDCRAFTING = PipeDef("pr_rcrafting", "routedcrafting")
     val ROUTEDREQUEST = PipeDef("pr_rrequest", "routedrequest")
     val ROUTEDEXTENSION = PipeDef("pr_rextension", "routedextension")
+    val ROUTEDFIREWALL = PipeDef("pr_rfire", "routedfire")
 
     def VALID_PIPE =
     {

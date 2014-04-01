@@ -1,18 +1,17 @@
 package mrtjp.projectred.transportation
 
-import com.google.common.collect.HashBiMap
-import java.util._
+import java.util.UUID
 import mrtjp.projectred.core.PRColors
-import mrtjp.projectred.core.utils.{LiteEnumVal, LiteEnumCollector, ItemKeyStack}
+import mrtjp.projectred.core.utils.ItemKeyStack
+import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.common.ForgeDirection
-import scala.collection.{mutable, IterableLike, immutable}
-import scala.collection.immutable.BitSet
-import mrtjp.projectred.transmission.WireDef
 import scala.collection.convert.WrapAsJava
+import scala.collection.immutable
+import scala.collection.immutable.BitSet
 
 object RoutedPayload
 {
@@ -46,24 +45,33 @@ object RoutedPayload
     }
 }
 
-class SendPriority(val ident:String, val speed:Float, val boost:Float, val color:Int) extends LiteEnumVal
+object SendPriority extends Enumeration
 {
-    override def getCollector = SendPriority
-}
+    type SendPriority = PriorityVal
+    val passiveDef = {path:StartEndPath => path.allowRouting}
+    val activeDef = {path:StartEndPath => path.allowBroadcast || path.allowCrafting}
 
-object SendPriority extends LiteEnumCollector
-{
-    val WANDERING = new SendPriority("Wandering", 0.02f, 0.05f, PRColors.RED.ordinal)
-    val DEFAULT = new SendPriority("Default", 0.05f, 0.10f, PRColors.ORANGE.ordinal())
-    val TERMINATED = new SendPriority("Terminated", 0.02f, 0.05f, PRColors.PURPLE.ordinal())
-    val PASSIVE = new SendPriority("Passive", 0.10f, 0.20f, PRColors.BLUE.ordinal())
-    val ACTIVE = new SendPriority("Active", 0.20f, 0.30f, PRColors.GREEN.ordinal())
+    val WANDERING = new PriorityVal("Wandering", 0.02f, 0.05f, PRColors.RED.ordinal)
+    val DEFAULT = new PriorityVal("Default", 0.05f, 0.10f, PRColors.ORANGE.ordinal())
+    val TERMINATED = new PriorityVal("Terminated", 0.02f, 0.05f, PRColors.PURPLE.ordinal())
+    val PASSIVE = new PriorityVal("Passive", 0.10f, 0.20f, PRColors.BLUE.ordinal())
+    val ACTIVEB = new PriorityVal("Active Broadcast", 0.20f, 0.30f, PRColors.GREEN.ordinal(), p => p.allowBroadcast)
+    val ACTIVEC = new PriorityVal("Active Craft", 0.20f, 0.30f, PRColors.GREEN.ordinal(), p => p.allowCrafting)
 
-    var typeValues =
+    class PriorityVal(val ident:String, val speed:Float, val boost:Float, val color:Int, f: StartEndPath => Boolean) extends Val
     {
-        val build = new mutable.ArrayBuilder.ofRef[SendPriority]
-        for (i <- values) build += i.asInstanceOf[SendPriority]
-        build.result()
+        def this(ident:String, speed:Float, boost:Float, color:Int) = this(ident, speed, boost, color, passiveDef)
+
+        val ordinal = id
+
+        /**
+         * Used to check if a particular router can route to another on this priority
+         * with the given path. This should see if said path does not restrict this
+         * priority. (Item checks are done on the fly, ignore them)
+         * @param path The path to check routing for
+         * @return True if this priority can route using given path.
+         */
+        def isPathUsable(path:StartEndPath) = f(path)
     }
 }
 
@@ -76,9 +84,9 @@ class RoutedPayload(val payloadID:Int)
     var input = ForgeDirection.UNKNOWN
     var output = ForgeDirection.UNKNOWN
     var isEntering = true
-    var parent:BasicPipePart = null
+    var parent:FlowingPipePart = null
 
-    def bind(p:BasicPipePart)
+    def bind(p:FlowingPipePart)
     {
         parent = p
     }
@@ -189,7 +197,7 @@ class RoutedPayload(val payloadID:Int)
     {
         destinationIP = ip
         val router = RouterServices.getRouter(ip)
-        if (router != null) this.destinationUUID = router.getID
+        if (router != null) destinationUUID = router.getID
         else destinationIP = -1
         this
     }
@@ -205,11 +213,10 @@ class RoutedPayload(val payloadID:Int)
         if (destinationIP > -1)
         {
             val r = RouterServices.getRouter(destinationIP)
-            if (r != null)
+            if (r != null) r.getParent match
             {
-                val parent = r.getParent
-                if (parent.isInstanceOf[IWorldRequester])
-                    (parent.asInstanceOf[IWorldRequester]).trackedItemLost(payload)
+                case wr:IWorldRequester => wr.trackedItemLost(payload)
+                case _ =>
             }
         }
         destinationIP = -1
@@ -221,7 +228,7 @@ class RoutedPayload(val payloadID:Int)
 
     def refreshIP()
     {
-        val router:Router = RouterServices.getRouter(destinationIP)
+        val router = RouterServices.getRouter(destinationIP)
         if (router == null || router.getID != destinationUUID) destinationIP = RouterServices.getIPforUUID(destinationUUID)
     }
 
@@ -237,7 +244,7 @@ class PayloadMovement
     var outputQueue = immutable.HashSet[RoutedPayload]()
     private var delay = 0
 
-    def get(id:Int) = delegate.find(r => r.payloadID == id).getOrElse(null)
+    def get(id:Int) = delegate.find(_.payloadID == id).getOrElse(null)
 
     def scheduleLoad(item:RoutedPayload)
     {

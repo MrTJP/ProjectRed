@@ -7,10 +7,7 @@ import codechicken.multipart.*;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.integration.ArrayCommons.ITopArrayWire;
-import mrtjp.projectred.transmission.IRedwireEmitter;
-import mrtjp.projectred.transmission.IRedwirePart;
-import mrtjp.projectred.transmission.IWirePart;
-import mrtjp.projectred.transmission.WirePropogator;
+import mrtjp.projectred.transmission.*;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -108,7 +105,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     }
 
     @Override
-    public void updateAndPropogate(TMultiPart prev, int mode)
+    public void updateAndPropagate(TMultiPart prev, int mode)
     {
         int wireMask = wireMask(prev);
         if ((wireMask&1) != 0)
@@ -120,7 +117,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     private void updateAndPropogate(int wire, TMultiPart prev, int mode)
     {
         int oldSignal = getRedwireSignal(toAbsolute(wire));
-        if (mode == DROPPING && oldSignal == 0)
+        if (mode == IWirePart$.MODULE$.DROPPING() && oldSignal == 0)
             return;
 
         int pMask = 5<<wire;
@@ -128,23 +125,23 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         if (newSignal < oldSignal)
         {
             if (newSignal > 0)
-                WirePropogator.propogateAnalogDrop(this);
+                WirePropagator.propagateAnalogDrop(this);
 
             setRedwireSignal(wire, 0);
-            propogate(pMask, prev, DROPPING);
+            propogate(pMask, prev, IWirePart$.MODULE$.DROPPING());
         }
         else if (newSignal > oldSignal)
         {
             setRedwireSignal(wire, newSignal);
-            if (mode == DROPPING)
-                propogate(pMask, null, RISING);
+            if (mode == IWirePart$.MODULE$.DROPPING())
+                propogate(pMask, null, IWirePart$.MODULE$.RISING());
             else
-                propogate(pMask, prev, RISING);
+                propogate(pMask, prev, IWirePart$.MODULE$.RISING());
         }
-        else if (mode == DROPPING)
-            propogateTo(prev, RISING);
-        else if (mode == FORCE)
-            propogate(pMask, prev, FORCED);
+        else if (mode == IWirePart$.MODULE$.DROPPING())
+            propogateTo(prev, IWirePart$.MODULE$.RISING());
+        else if (mode == IWirePart$.MODULE$.FORCE())
+            propogate(pMask, prev, IWirePart$.MODULE$.FORCED());
     }
 
     public int calculateSignal(int pMask)
@@ -153,8 +150,8 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         if (pMask == 0xA && getLogic().powerUp(state()))
             return 255;
 
-        WirePropogator.setWiresProvidePower(false);
-        WirePropogator.redwiresProvidePower = false;
+        WirePropagator.setDustProvidePower(false);
+        WirePropagator$.MODULE$.redwiresProvidePower_$eq(false);
 
         int s = 0;
         int i;
@@ -170,9 +167,8 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
                     s = i;
             }
 
-        WirePropogator.setWiresProvidePower(true);
-        WirePropogator.redwiresProvidePower = true;
-
+        WirePropagator.setDustProvidePower(true);
+        WirePropagator$.MODULE$.redwiresProvidePower_$eq(true);
         return s;
     }
 
@@ -256,8 +252,8 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
 
     public void propogate(int pMask, TMultiPart prev, int mode)
     {
-        if (mode != FORCED)
-            WirePropogator.addPartChange(this);
+        if (mode != IWirePart$.MODULE$.FORCED())
+            WirePropagator.addPartChange(this);
 
         for (int r = 0; r < 4; r++)
             if ((pMask&1<<toInternal(r)) != 0)
@@ -282,7 +278,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
                 return;
         }
 
-        WirePropogator.addNeighborChange(pos);
+        WirePropagator.addNeighborChange(pos);
     }
 
     public void propogateStraight(int r, TMultiPart prev, int mode)
@@ -300,7 +296,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
                 return;
         }
 
-        WirePropogator.addNeighborChange(pos);
+        WirePropagator.addNeighborChange(pos);
     }
 
     public int wireMask(TMultiPart propogator)
@@ -329,7 +325,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     {
         if (part instanceof IWirePart)
         {
-            WirePropogator.propogateTo((IWirePart)part, this, mode);
+            WirePropagator.propagateTo((IWirePart)part, this, mode);
             return true;
         }
 
@@ -352,7 +348,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     public void onChange()
     {
         super.onChange();
-        WirePropogator.propogateTo(this, RISING);
+        WirePropagator.propagateTo(this, IWirePart$.MODULE$.RISING());
     }
 
     @Override
@@ -384,7 +380,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
 
     public int rsLevel(int i)
     {
-        if (WirePropogator.redwiresProvidePower)
+        if (WirePropagator.redwiresProvidePower())
             return (i+16)/17;
 
         return 0;

@@ -2,6 +2,7 @@ package mrtjp.projectred.transportation
 
 import codechicken.lib.vec.BlockCoord
 import mrtjp.projectred.core.utils.{ItemKeyStack, ItemKey}
+import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.world.World
@@ -46,22 +47,22 @@ trait IWorldBroadcaster extends IWorldRouter
 {
     def requestPromises(request:RequestBranchNode, existingPromises:Int)
 
-    def deliverPromises(promise:RequestBranchNode.DeliveryPromise, requester:IWorldRequester)
+    def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester)
 
     def getBroadcastedItems(map:mutable.HashMap[ItemKey, Int])
 
-    def getPriority:Int
+    def getBroadcastPriority:Int
 
     def getWorkLoad:Double
 }
 
 trait IWorldCrafter extends IWorldRequester with IWorldBroadcaster
 {
-    def requestCraftPromise(item:ItemKey):RequestBranchNode.CraftingPromise
+    def buildCraftPromises(item:ItemKey):Vector[CraftingPromise]
 
-    def registerExcess(promise:RequestBranchNode.DeliveryPromise)
+    def registerExcess(promise:DeliveryPromise)
 
-    def getCraftedItems:List[ItemKeyStack]
+    def getCraftedItems:Vector[ItemKeyStack]
 
     def itemsToProcess:Int
 }
@@ -69,6 +70,9 @@ trait IWorldCrafter extends IWorldRequester with IWorldBroadcaster
 trait IRouteLayer
 {
     def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, path:SyncResponse)
+    {
+        queueStackToSend(stack, dirOfExtraction, path.priority, path.responder)
+    }
     def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:SendPriority, destination:Int)
     def getLogisticPath(stack:ItemKey, exclusions:BitSet, excludeStart:Boolean):SyncResponse
 

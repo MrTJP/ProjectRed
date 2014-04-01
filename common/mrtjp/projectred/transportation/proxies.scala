@@ -1,11 +1,12 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.{Configurator, IProxy}
 import codechicken.lib.packet.PacketCustom
-import codechicken.multipart.{TMultiPart, MultiPartRegistry}
-import mrtjp.projectred.ProjectRedTransportation._
+import codechicken.microblock.MicroMaterialRegistry
+import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.MultiPartRegistry.IPartFactory
 import cpw.mods.fml.relauncher.{SideOnly, Side}
+import mrtjp.projectred.ProjectRedTransportation._
+import mrtjp.projectred.core.{Configurator, IProxy}
 import net.minecraftforge.client.MinecraftForgeClient
 
 class TransportationProxy_server extends IProxy with IPartFactory
@@ -19,7 +20,8 @@ class TransportationProxy_server extends IProxy with IPartFactory
     {
         MultiPartRegistry.registerParts(this, Array[String](
             "pr_ptube", "pr_rbasic", "pr_rinterface",
-            "pr_rcrafting", "pr_rrequest", "pr_rextension"
+            "pr_rcrafting", "pr_rrequest", "pr_rextension",
+            "pr_rfire"
         ))
 
         itemPartPipe = new ItemPartPipe(Configurator.part_pipe.getInt)
@@ -42,6 +44,7 @@ class TransportationProxy_server extends IProxy with IPartFactory
         case "pr_rcrafting" => new RoutedCraftingPipePart
         case "pr_rrequest" => new RoutedRequestPipePart
         case "pr_rextension" => new RoutedExtensionPipePart
+        case "pr_rfire" => new RoutedFirewallPipe
     }
 
     override def version = "@VERSION@"
@@ -61,7 +64,8 @@ class TransportationProxy_client extends TransportationProxy_server
     override def init()
     {
         super.init()
-        MinecraftForgeClient.registerItemRenderer(itemPartPipe.itemID, PipeItemRenderer.instance)
+        MinecraftForgeClient.registerItemRenderer(itemPartPipe.itemID, PipeItemRenderer)
+        MicroMaterialRegistry.registerHighlightRenderer(PipeRSHighlightRenderer)
     }
 }
 

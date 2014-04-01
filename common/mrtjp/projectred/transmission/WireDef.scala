@@ -91,6 +91,7 @@ object WireDef extends LiteEnumCollector
 
 class WireDef(val wireType:String, val framedType:String, val thickness:Int, val itemColour:Int, textures:Seq[String]) extends LiteEnumVal
 {
+    def hasWireForm = wireType != null
     def hasFramedForm = framedType != null
 
     val meta = ordinal

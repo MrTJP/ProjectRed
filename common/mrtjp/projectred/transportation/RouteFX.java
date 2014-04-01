@@ -321,17 +321,21 @@ public class RouteFX
         {
             BlockCoord bc = particle.blockPosition();
             TMultiPart part = BasicUtils.getMultiPart(particle.worldObj, bc, 6);
-            if (part instanceof BasicPipePart && !(part instanceof RoutedJunctionPipePart))
+            if (part instanceof FlowingPipePart && !(part instanceof RoutedJunctionPipePart))
             {
-                BasicPipePart pipe = (BasicPipePart) part;
+                FlowingPipePart pipe = (FlowingPipePart) part;
 
-                int connMap = pipe.connMap&0x3F;
+                int connMap = pipe.connMap()&0x3F;
                 connMap &= ~(1<<(dir^1));
+
+                for (int i = 0; i < 6; i++)
+                    if ((connMap&1<<i) != 0 && !(pipe.getStraight(i) instanceof FlowingPipePart))
+                        connMap &= ~(1<<i);
 
                 if (Integer.bitCount(connMap) == 1)
                 {
                     int pos = 0;
-                    while ((connMap & 1<<pos) == 0 && pos < 6)
+                    while ((connMap&1<<pos) == 0 && pos < 6)
                         pos++;
                     dir = pos;
 

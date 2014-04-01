@@ -32,7 +32,7 @@
     <property name="tcons.name" value="TConstruct_mc${mc.version}_${tcons.version}.jar"/>
     <property name="texpan.name" value="ThermalExpansion-${texpan.version}.jar"/>
     <property name="cofh.name" value="CoFHCore-${cofh.version}.jar"/>
-    <property name="ccraft.name" value="ComputerCraft${ccraft.version}.zip"/>
+    <property name="ccraft.name" value="ComputerCraft${ccraft.version}.jar"/>
 
 
     <!-- Check downloaded dependencies -->
@@ -164,11 +164,11 @@
     </target>
 
     <target name="download-texpan" unless="texpan-downloaded">
-        <get src="http://dl.dropboxusercontent.com/u/46144650/mod_downloads/${texpan.name}" dest="${download.dir}" usetimestamp="true"/>
+        <get src="http://www.curseforge.com/media/files/${texpan.cf}/${texpan.name}" dest="${download.dir}" usetimestamp="true"/>
     </target>
 
     <target name="download-cofh" unless="cofh-downloaded">
-        <get src="http://dl.dropboxusercontent.com/u/46144650/mod_downloads/${cofh.name}" dest="${download.dir}" usetimestamp="true"/>
+        <get src="http://www.curseforge.com/media/files/${cofh.cf}/${cofh.name}" dest="${download.dir}" usetimestamp="true"/>
     </target>
 
     <target name="download-ccraft" unless="ccraft-downloaded">
