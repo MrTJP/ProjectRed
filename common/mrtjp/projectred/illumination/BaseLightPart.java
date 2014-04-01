@@ -1,7 +1,17 @@
 package mrtjp.projectred.illumination;
 
-import java.util.Arrays;
-
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.lighting.LazyLightMatrix;
+import codechicken.lib.render.IconTransformation;
+import codechicken.lib.render.RenderUtils;
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Translation;
+import codechicken.lib.vec.Vector3;
+import codechicken.multipart.*;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRedIllumination;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.core.BasicWireUtils;
@@ -12,23 +22,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.lighting.LazyLightMatrix;
-import codechicken.lib.render.IconTransformation;
-import codechicken.lib.render.RenderUtils;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Translation;
-import codechicken.lib.vec.Vector3;
-import codechicken.multipart.IRedstonePart;
-import codechicken.multipart.JCuboidPart;
-import codechicken.multipart.JNormalOcclusion;
-import codechicken.multipart.NormalOcclusionTest;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TSlottedPart;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
+import java.util.Arrays;
 
 public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart, JNormalOcclusion, IRedstonePart, ILight
 {
@@ -131,6 +126,7 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
         world().updateAllLightTypes(x(), y(), z());
         if (!world().isRemote)
             sendDescUpdate();
+        tile().markRender();
     }
 
     public boolean checkSupport()
@@ -161,12 +157,12 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
         {
             int radius = 16;
 
-            int x = x() + world().rand.nextInt(radius) - world().rand.nextInt(radius);
-            int y = y() + world().rand.nextInt(radius) - world().rand.nextInt(radius);
-            int z = z() + world().rand.nextInt(radius) - world().rand.nextInt(radius);
+            int x = x()+world().rand.nextInt(radius)-world().rand.nextInt(radius);
+            int y = y()+world().rand.nextInt(radius)-world().rand.nextInt(radius);
+            int z = z()+world().rand.nextInt(radius)-world().rand.nextInt(radius);
 
-            if (y > world().getHeightValue(x, z) + 4)
-                y = world().getHeightValue(x, z) + 4;
+            if (y > world().getHeightValue(x, z)+4)
+                y = world().getHeightValue(x, z)+4;
 
             if (y < 7)
                 y = 7;
@@ -175,7 +171,7 @@ public abstract class BaseLightPart extends JCuboidPart implements TSlottedPart,
             {
                 world().setBlock(x, y, z, ProjectRedIllumination.blockAirousLight().blockID, getColor(), 3);
 
-                TileAirousLight light = (TileAirousLight) world().getBlockTileEntity(x, y, z);
+                TileAirousLight light = (TileAirousLight)world().getBlockTileEntity(x, y, z);
                 if (light != null)
                     light.setSource(new BlockCoord(tile()), getColor(), side);
             }

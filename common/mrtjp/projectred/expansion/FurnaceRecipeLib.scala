@@ -73,7 +73,6 @@ object FurnaceRecipeLib
         addRecipe(new ItemStack(Item.chickenRaw), new ItemStack(Item.chickenCooked), 400)
         addRecipe(new ItemStack(Item.potato), new ItemStack(Item.bakedPotato), 400)
 
-        import LabelBreaks._
         import scala.collection.JavaConversions._
         val sl2 = FurnaceRecipes.smelting.getMetaSmeltingList
         val sl = FurnaceRecipes.smelting.getSmeltingList
@@ -91,17 +90,18 @@ object FurnaceRecipeLib
             else addRecipe(input, output, 160)
         }
 
-        for (k <- sl.keySet()) label("cont")
+        for (k <- sl.keySet())
         {
             val key = k.asInstanceOf[Integer]
 
             val input = new ItemStack(key.intValue, 1, 0)
-            if (recipeExists(input)) break("cont")
+            if (!recipeExists(input))
+            {
+                val output = sl.get(key).asInstanceOf[ItemStack]
 
-            val output = sl.get(key).asInstanceOf[ItemStack]
-
-            if (isDust(input) && isIngot(output)) addOreRecipe(input, output, 160*10/16)
-            else addOreRecipe(input, output, 160)
+                if (isDust(input) && isIngot(output)) addOreRecipe(input, output, 160*10/16)
+                else addOreRecipe(input, output, 160)
+            }
         }
     }
 }

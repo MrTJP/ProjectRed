@@ -6,7 +6,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 
-import static mrtjp.projectred.transmission.BundledCableCommons.*;
+import static mrtjp.projectred.transmission.BundledCommons.*;
 
 public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart>
 {

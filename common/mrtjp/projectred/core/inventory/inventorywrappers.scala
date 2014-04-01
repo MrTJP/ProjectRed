@@ -104,7 +104,7 @@ abstract class InvWrapper(val inv:IInventory)
 
     var matchMeta = true
     var matchNBT = true
-    var matchOre = true
+    var matchOre = false
 
     var internalMode = false
 
@@ -325,7 +325,7 @@ trait TDefWrapHandler extends InvWrapper
             val inSlot = inv.getStackInSlot(slot)
             if (resolveItemMatch(inSlot, item2))
             {
-                val toAdd = inSlot.stackSize - (if (hidePerSlot || hidePerType && first) 1 else 0)
+                val toAdd = inSlot.stackSize-(if (hidePerSlot || hidePerType && first) 1 else 0)
                 first = false
                 count += toAdd
             }

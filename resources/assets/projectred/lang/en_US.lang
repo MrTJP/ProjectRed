@@ -89,6 +89,7 @@ item.projectred.transportation.pipe|2.name=Routed Interface pipe
 item.projectred.transportation.pipe|3.name=Routed Crafting pipe
 item.projectred.transportation.pipe|4.name=Routed Request pipe
 item.projectred.transportation.pipe|5.name=Routed Extension pipe
+item.projectred.transportation.pipe|6.name=Routed Firewall pipe
 
 
 itemGroup.exploration=Project Red: Exploration

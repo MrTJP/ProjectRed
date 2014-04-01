@@ -9,8 +9,7 @@ public class CompatibilityCorePlugin implements IFMLLoadingPlugin
     @Override
     public String[] getASMTransformerClass()
     {
-        //return new String[]{"mrtjp.projectred.compatibility.computercraft.TransformerComputerCraft"};
-        return new String[]{}; //Temporarily disabled until its fixed
+        return new String[]{};
     }
 
     @Override

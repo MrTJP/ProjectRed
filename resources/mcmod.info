@@ -146,10 +146,12 @@
   ],
   "dependencies": [
       "ProjRed|Core",
+      "ProjRed|Transmission",
       "ProjRed|Exploration",
       "ProjRed|Transportation",
       "TConstruct",
-      "ThermalExpansion"
+      "ThermalExpansion",
+      "ComputerCraft"
   ],
   "useDependencyInformation": "true"
 }

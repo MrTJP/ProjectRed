@@ -1,16 +1,16 @@
 package mrtjp.projectred.compatibility.thermalexpansion;
 
-import java.util.LinkedList;
-import java.util.List;
-
+import codechicken.lib.vec.BlockCoord;
+import codechicken.multipart.TMultiPart;
+import cofh.api.transport.IEnderAttuned;
 import mrtjp.projectred.api.ISpecialLinkState;
 import mrtjp.projectred.core.BasicUtils;
 import mrtjp.projectred.transportation.RoutedJunctionPipePart;
 import net.minecraft.tileentity.TileEntity;
 import thermalexpansion.block.tesseract.TileTesseract;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.multipart.TMultiPart;
-import cofh.api.transport.IEnderAttuned;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class LinkStateTesseract implements ISpecialLinkState
 {
@@ -24,39 +24,39 @@ public class LinkStateTesseract implements ISpecialLinkState
             if (links.size() == 1)
             {
                 TileTesseract tess2 = links.get(0);
-                
+
                 int localConns = getConnectedPipeCount(tess);
                 List<TileEntity> linkedConns = getConnectedPipeTiles(tess2);
 
                 if (localConns == 1 && linkedConns.size() == 1)
                     return linkedConns.get(0);
-                
+
             }
         }
         return null;
     }
-    
+
     private List<TileTesseract> getConnectedTesseracts(TileTesseract tess)
     {
         List<TileTesseract> links = new LinkedList<TileTesseract>();
-        
+
         List<IEnderAttuned> conns = tess.getValidItemOutputs();
         for (IEnderAttuned obj : conns)
             if (obj instanceof TileTesseract)
                 links.add((TileTesseract) obj);
-        
+
         return links;
     }
-    
+
     private List<TileEntity> getConnectedPipeTiles(TileTesseract tess)
-    {        
+    {
         BlockCoord bc = new BlockCoord(tess);
         List<TileEntity> multipartTiles = new LinkedList<TileEntity>();
-        
+
         for (int i = 0; i < 6; i++)
         {
             TMultiPart part = BasicUtils.getMultiPart(tess.worldObj, bc.copy().offset(i), 6);
-            if (part instanceof RoutedJunctionPipePart) //TODO this is temporary. Replace with a capable pipe
+            if (part instanceof RoutedJunctionPipePart)
             {
                 RoutedJunctionPipePart pipe = (RoutedJunctionPipePart) part;
                 if (pipe.maskConnects(i^1))
@@ -66,7 +66,7 @@ public class LinkStateTesseract implements ISpecialLinkState
 
         return multipartTiles;
     }
-    
+
     private int getConnectedPipeCount(TileTesseract tess)
     {
         int conns = 0;
@@ -75,14 +75,14 @@ public class LinkStateTesseract implements ISpecialLinkState
         for (int i = 0; i < 6; i++)
         {
             TMultiPart part = BasicUtils.getMultiPart(tess.worldObj, bc.copy().offset(i), 6);
-            if (part instanceof RoutedJunctionPipePart) //TODO this is temporary. Replace with a capable pipe
+            if (part instanceof RoutedJunctionPipePart)
             {
                 RoutedJunctionPipePart pipe = (RoutedJunctionPipePart) part;
                 if (pipe.maskConnects(i^1))
                     conns++;
             }
         }
-        
+
         return conns;
     }
 

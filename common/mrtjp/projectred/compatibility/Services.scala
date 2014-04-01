@@ -1,37 +1,51 @@
 package mrtjp.projectred.compatibility
 
+import codechicken.core.ClassDiscoverer
 import cpw.mods.fml.common.Loader
-import mrtjp.projectred.compatibility.tconstruct.ProxyTConstruct
-import mrtjp.projectred.compatibility.thermalexpansion.ProxyThermalExpansion
-import mrtjp.projectred.compatibility.treecapitator.ProxyTreecapitator
+import mrtjp.projectred.core.PRLogger
+import scala.collection.immutable.HashMap
 
 object Services
 {
-    /** loaded interactions **/
-    var loadTConstruct = false
-    var loadTExpansion = false
-    var loadTreecapitator = false
+    var plugins = HashMap[String, IPRPlugin]()
 
-    def loadServices()
+    def servicesReflect()
     {
-        if (Loader.isModLoaded("TConstruct"))
+        val finder = new ClassDiscoverer(classOf[IPRPlugin])
+        finder.findClasses()
+
+        import scala.collection.JavaConversions._
+        for (c <- finder.classes) try
         {
-            loadTConstruct = true
-            tcProxy = new ProxyTConstruct
+            val plugin = c.newInstance().asInstanceOf[IPRPlugin]
+            if (Loader.isModLoaded(plugin.getModID))
+            {
+                plugins += plugin.getModID -> plugin
+                PRLogger.info("Loaded ProjectRed compat plugin for '"+plugin.getModID+"'")
+            }
         }
-        if (Loader.isModLoaded("ThermalExpansion"))
-        {
-            loadTExpansion = true
-            teProxy = new ProxyThermalExpansion
-        }
-        if (Loader.isModLoaded("TreeCapitator") && Loader.isModLoaded("ProjRed|Exploration"))
-        {
-            loadTreecapitator = true
-            treecapProxy = new ProxyTreecapitator
-        }
+        catch
+            {
+                case e:Exception =>
+                    System.out.println("Failed to load " + c.getName)
+                    e.printStackTrace()
+            }
+
+        PRLogger.info("Finished loading PojectRed compat plugins")
     }
 
-    var tcProxy:ProxyTConstruct = null
-    var teProxy:ProxyThermalExpansion = null
-    var treecapProxy:ProxyTreecapitator = null
+    def doPreInit()
+    {
+        for ((id, p) <- plugins) p.preInit()
+    }
+
+    def doInit()
+    {
+        for ((id, p) <- plugins) p.init()
+    }
+
+    def doPostInit()
+    {
+        for ((id, p) <- plugins) p.postInit()
+    }
 }

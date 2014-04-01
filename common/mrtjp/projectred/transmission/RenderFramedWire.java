@@ -13,17 +13,17 @@ import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
-import static mrtjp.projectred.transmission.FramedWirePart.boundingBoxes;
 import static mrtjp.projectred.transmission.RenderWire.addVerts;
 import static mrtjp.projectred.transmission.RenderWire.finishModel;
+import static mrtjp.projectred.transmission.WireBoxes.fOBounds;
 
 public class RenderFramedWire
 {
     private static class WireFrameModelGenerator
     {
-        double w = 2 / 8D;
-        double d = 1 / 16D - 0.002;// little offset for compensating for the
-                                   // slight uv stretch to eliminate seams
+        double w = 2/8D;
+        double d = 1/16D-0.002;// little offset for compensating for the
+        // slight uv stretch to eliminate seams
 
         public static void generateModels()
         {
@@ -38,15 +38,15 @@ public class RenderFramedWire
         {
             CCModel model = CCModel.quadModel(48);
 
-            model.verts[0] = new Vertex5(0.5 - w, 0.5 - w, 0.5 - w, 20, 8);
-            model.verts[1] = new Vertex5(0.5 + w, 0.5 - w, 0.5 - w, 28, 8);
-            model.verts[2] = new Vertex5(0.5 + w, 0.5 - w, 0.5 + w, 28, 0);
-            model.verts[3] = new Vertex5(0.5 - w, 0.5 - w, 0.5 + w, 20, 0);
+            model.verts[0] = new Vertex5(0.5-w, 0.5-w, 0.5-w, 20, 8);
+            model.verts[1] = new Vertex5(0.5+w, 0.5-w, 0.5-w, 28, 8);
+            model.verts[2] = new Vertex5(0.5+w, 0.5-w, 0.5+w, 28, 0);
+            model.verts[3] = new Vertex5(0.5-w, 0.5-w, 0.5+w, 20, 0);
 
-            model.verts[4] = new Vertex5(0.5 - w, 0.5 - w + d, 0.5 + w, 20, 8);
-            model.verts[5] = new Vertex5(0.5 + w, 0.5 - w + d, 0.5 + w, 28, 8);
-            model.verts[6] = new Vertex5(0.5 + w, 0.5 - w + d, 0.5 - w, 28, 0);
-            model.verts[7] = new Vertex5(0.5 - w, 0.5 - w + d, 0.5 - w, 20, 0);
+            model.verts[4] = new Vertex5(0.5-w, 0.5-w+d, 0.5+w, 20, 8);
+            model.verts[5] = new Vertex5(0.5+w, 0.5-w+d, 0.5+w, 28, 8);
+            model.verts[6] = new Vertex5(0.5+w, 0.5-w+d, 0.5-w, 28, 0);
+            model.verts[7] = new Vertex5(0.5-w, 0.5-w+d, 0.5-w, 20, 0);
 
             model.generateSidedParts(0, Vector3.center);
             frameModels[6] = model;
@@ -56,30 +56,30 @@ public class RenderFramedWire
         {
             CCModel model = CCModel.quadModel(36);
 
-            model.verts[0] = new Vertex5(0.5 - w, 0, 0.5 + w, 16, 0);
-            model.verts[1] = new Vertex5(0.5 + w, 0, 0.5 + w, 16, 8);
-            model.verts[2] = new Vertex5(0.5 + w, 0.5 - w, 0.5 + w, 20, 8);
-            model.verts[3] = new Vertex5(0.5 - w, 0.5 - w, 0.5 + w, 20, 0);
+            model.verts[0] = new Vertex5(0.5-w, 0, 0.5+w, 16, 0);
+            model.verts[1] = new Vertex5(0.5+w, 0, 0.5+w, 16, 8);
+            model.verts[2] = new Vertex5(0.5+w, 0.5-w, 0.5+w, 20, 8);
+            model.verts[3] = new Vertex5(0.5-w, 0.5-w, 0.5+w, 20, 0);
 
-            model.verts[4] = new Vertex5(0.5 + w, 0, 0.5 + w - d, 16, 0);
-            model.verts[5] = new Vertex5(0.5 - w, 0, 0.5 + w - d, 16, 8);
-            model.verts[6] = new Vertex5(0.5 - w, 0.5 - w, 0.5 + w - d, 20, 8);
-            model.verts[7] = new Vertex5(0.5 + w, 0.5 - w, 0.5 + w - d, 20, 0);
+            model.verts[4] = new Vertex5(0.5+w, 0, 0.5+w-d, 16, 0);
+            model.verts[5] = new Vertex5(0.5-w, 0, 0.5+w-d, 16, 8);
+            model.verts[6] = new Vertex5(0.5-w, 0.5-w, 0.5+w-d, 20, 8);
+            model.verts[7] = new Vertex5(0.5+w, 0.5-w, 0.5+w-d, 20, 0);
 
             for (int r = 1; r < 4; r++)
-                model.apply(Rotation.quarterRotations[r].at(Vector3.center), 0, r * 8, 8);
+                model.apply(Rotation.quarterRotations[r].at(Vector3.center), 0, r*8, 8);
 
-            model.verts[32] = new Vertex5(0.5 - w, 0, 0.5 - w, 24, 32);
-            model.verts[33] = new Vertex5(0.5 + w, 0, 0.5 - w, 32, 32);
-            model.verts[34] = new Vertex5(0.5 + w, 0, 0.5 + w, 32, 24);
-            model.verts[35] = new Vertex5(0.5 - w, 0, 0.5 + w, 24, 24);
+            model.verts[32] = new Vertex5(0.5-w, 0, 0.5-w, 24, 32);
+            model.verts[33] = new Vertex5(0.5+w, 0, 0.5-w, 32, 32);
+            model.verts[34] = new Vertex5(0.5+w, 0, 0.5+w, 32, 24);
+            model.verts[35] = new Vertex5(0.5-w, 0, 0.5+w, 24, 24);
 
             frameModels[0] = model;
             for (int s = 1; s < 6; s++)
             {
                 frameModels[s] = model.copy().apply(Rotation.sideRotations[s].at(Vector3.center));
 
-                if (s % 2 == 1)
+                if (s%2 == 1)
                 {
                     Vertex5[] verts = frameModels[s].verts;
                     UVT t = new UVT(Rotation.quarterRotations[2].at(new Vector3(24, 0, 4)));
@@ -127,7 +127,7 @@ public class RenderFramedWire
 
             IMicroMaterial material = MicroMaterialRegistry.getMaterial(mat);
             for (IndexedCuboid6 box : boxes)
-                JMicroblockClient.renderCuboid(t, olm, material, box, (Integer) box.data, this);
+                JMicroblockClient.renderCuboid(t, olm, material, box, (Integer)box.data, this);
         }
 
         @Override
@@ -174,25 +174,25 @@ public class RenderFramedWire
         {
             int n = 0;
             for (int s = 0; s < 6; s++)
-                if ((connMap & 1 << s) != 0)
+                if ((connMap&1<<s) != 0)
                     n += 1;
             return n;
         }
 
         private void setup(int key)
         {
-            connMap = key & 0x3F;
+            connMap = key&0x3F;
             connCount = countConnections(connMap);
-            int thickness = key >> 6;
-            tw = thickness + 1;
-            w = tw / 16D + 0.004;
+            int thickness = key>>6;
+            tw = thickness+1;
+            w = tw/16D+0.004;
             i = 0;
         }
 
         public CCModel generateWireModel(int key)
         {
             setup(key);
-            model = CCModel.quadModel(connCount * 16 + 24);
+            model = CCModel.quadModel(connCount*16+24);
 
             for (int s = 0; s < 6; s++)
                 generateSide(s);
@@ -207,7 +207,7 @@ public class RenderFramedWire
                 verts = generateStub(s);
             else if (connCount == 1)
             {
-                if ((connMap & 1 << (s ^ 1)) != 0)
+                if ((connMap&1<<(s^1)) != 0)
                     verts = generateStub(s);
                 else
                     verts = generateSideFromType(s);
@@ -215,7 +215,7 @@ public class RenderFramedWire
             else
                 verts = generateSideFromType(s);
 
-            Transformation t = AxisCycle.cycles[s / 2].at(Vector3.center);
+            Transformation t = AxisCycle.cycles[s/2].at(Vector3.center);
             for (Vertex5 vert : verts)
                 vert.apply(t);
 
@@ -224,7 +224,7 @@ public class RenderFramedWire
 
         private Vertex5[] generateSideFromType(int s)
         {
-            if ((connMap & 1 << s) != 0)
+            if ((connMap&1<<s) != 0)
                 return generateStraight(s);
 
             return generateFlat(s);
@@ -237,28 +237,28 @@ public class RenderFramedWire
             Vertex5[] verts = new Vertex5[20];
             System.arraycopy(faceVerts(s, 0), 0, verts, 0, 4);
 
-            if (s % 2 == 0)
+            if (s%2 == 0)
             {
-                verts[4] = new Vertex5(0.5 - w, 0, 0.5 + w, 8 - tw, 24);
-                verts[5] = new Vertex5(0.5 + w, 0, 0.5 + w, 8 + tw, 24);
-                verts[6] = new Vertex5(0.5 + w, 0.5 - w, 0.5 + w, 8 + tw, 16 + tw);
-                verts[7] = new Vertex5(0.5 - w, 0.5 - w, 0.5 + w, 8 - tw, 16 + tw);
+                verts[4] = new Vertex5(0.5-w, 0, 0.5+w, 8-tw, 24);
+                verts[5] = new Vertex5(0.5+w, 0, 0.5+w, 8+tw, 24);
+                verts[6] = new Vertex5(0.5+w, 0.5-w, 0.5+w, 8+tw, 16+tw);
+                verts[7] = new Vertex5(0.5-w, 0.5-w, 0.5+w, 8-tw, 16+tw);
             }
             else
             {
-                verts[4] = new Vertex5(0.5 - w, 0.5 + w, 0.5 + w, 8 - tw, 16 - tw);
-                verts[5] = new Vertex5(0.5 + w, 0.5 + w, 0.5 + w, 8 + tw, 16 - tw);
-                verts[6] = new Vertex5(0.5 + w, 1, 0.5 + w, 8 + tw, 8);
-                verts[7] = new Vertex5(0.5 - w, 1, 0.5 + w, 8 - tw, 8);
+                verts[4] = new Vertex5(0.5-w, 0.5+w, 0.5+w, 8-tw, 16-tw);
+                verts[5] = new Vertex5(0.5+w, 0.5+w, 0.5+w, 8+tw, 16-tw);
+                verts[6] = new Vertex5(0.5+w, 1, 0.5+w, 8+tw, 8);
+                verts[7] = new Vertex5(0.5-w, 1, 0.5+w, 8-tw, 8);
             }
             for (int r = 1; r < 4; r++)
             {
                 Transformation t = Rotation.quarterRotations[r].at(Vector3.center);
                 for (int i = 0; i < 4; i++)
                 {
-                    verts[i + r * 4 + 4] = verts[i + 4].copy().apply(t);
+                    verts[i+r*4+4] = verts[i+4].copy().apply(t);
                     if (r >= 2)
-                        verts[i + r * 4 + 4].apply(uvReflect);
+                        verts[i+r*4+4].apply(uvReflect);
                 }
             }
 
@@ -271,20 +271,20 @@ public class RenderFramedWire
 
         private Vertex5[] generateFlat(int s)
         {
-            Vertex5[] verts = faceVerts(s, 0.5 - w);
+            Vertex5[] verts = faceVerts(s, 0.5-w);
 
             int fConnMask = 0;
             for (int i = 0; i < 4; i++)
             {
-                int absSide = ((s & 6) + i + 2) % 6;
-                if ((connMap & 1 << absSide) != 0)
-                    fConnMask |= 1 << i;
+                int absSide = ((s&6)+i+2)%6;
+                if ((connMap&1<<absSide) != 0)
+                    fConnMask |= 1<<i;
             }
 
             int rot;
-            if ((fConnMask & 0xC) == 0)
+            if ((fConnMask&0xC) == 0)
                 rot = 0;
-            else if ((fConnMask & 3) == 0)
+            else if ((fConnMask&3) == 0)
                 rot = 1;
             else
                 rot = 2;
@@ -305,7 +305,7 @@ public class RenderFramedWire
 
         private Vertex5[] generateStub(int s)
         {
-            Vertex5[] verts = faceVerts(s, 0.5 - w);
+            Vertex5[] verts = faceVerts(s, 0.5-w);
 
             UVTranslation t = new UVTranslation(12, 12);
             for (Vertex5 vert : verts)
@@ -316,9 +316,9 @@ public class RenderFramedWire
 
         private Vertex5[] faceVerts(int s, double d)
         {
-            Vertex5[] verts = new Vertex5[] { new Vertex5(0.5 - w, d, 0.5 - w, 8 - tw, 16 + tw), new Vertex5(0.5 + w, d, 0.5 - w, 8 + tw, 16 + tw), new Vertex5(0.5 + w, d, 0.5 + w, 8 + tw, 16 - tw), new Vertex5(0.5 - w, d, 0.5 + w, 8 - tw, 16 - tw) };
+            Vertex5[] verts = new Vertex5[]{new Vertex5(0.5-w, d, 0.5-w, 8-tw, 16+tw), new Vertex5(0.5+w, d, 0.5-w, 8+tw, 16+tw), new Vertex5(0.5+w, d, 0.5+w, 8+tw, 16-tw), new Vertex5(0.5-w, d, 0.5+w, 8-tw, 16-tw)};
 
-            if (s % 2 == 1)
+            if (s%2 == 1)
             {
                 Transformation t = new Scale(1, -1, 1).at(Vector3.center);
                 for (Vertex5 vert : verts)
@@ -339,11 +339,11 @@ public class RenderFramedWire
         private IndexedCuboid6[] generateJacketedBoxes()
         {
             if (connCount == 0)
-                return new IndexedCuboid6[] { new IndexedCuboid6(0, boundingBoxes[6]) };
+                return new IndexedCuboid6[]{new IndexedCuboid6(0, fOBounds()[6])};
 
             int n = 0;
             for (int a = 0; a < 3; a++)
-                if ((connMap & 3 << a * 2) != 0)
+                if ((connMap&3<<a*2) != 0)
                     n++;
 
             IndexedCuboid6[] boxes = new IndexedCuboid6[n];
@@ -358,33 +358,33 @@ public class RenderFramedWire
 
         private boolean generateAxialJacketBoxes(int a, boolean first, IndexedCuboid6[] boxes)
         {
-            int mask = connMap >> a * 2 & 3;
+            int mask = connMap>>a*2&3;
             if (mask == 0)
                 return false;
 
             Cuboid6 box;
             if (mask == 1)
-                box = boundingBoxes[0].copy();
+                box = fOBounds()[0].copy();
             else if (mask == 2)
-                box = boundingBoxes[1].copy();
+                box = fOBounds()[1].copy();
             else
             {// mask == 3
-                box = boundingBoxes[0].copy();
+                box = fOBounds()[0].copy();
                 box.max.y = 1;
             }
-            box.apply(Rotation.sideRotations[a * 2].at(Vector3.center));
+            box.apply(Rotation.sideRotations[a*2].at(Vector3.center));
 
             if (first)
-                box.enclose(boundingBoxes[6]);
+                box.enclose(fOBounds()[6]);
 
             int fMask;
             if (first || mask == 3)
                 fMask = 0;
             else if (mask == 1)
-                fMask = 1 << 2 * a + 1;
+                fMask = 1<<2*a+1;
             else
                 // mask == 2
-                fMask = 1 << 2 * a;
+                fMask = 1<<2*a;
 
             boxes[i] = new IndexedCuboid6(fMask, box);
             i++;
@@ -400,7 +400,7 @@ public class RenderFramedWire
                 n = 2;
             else
                 n = connCount;
-            model = CCModel.quadModel(n * 4);
+            model = CCModel.quadModel(n*4);
 
             for (int s = 0; s < 6; s++)
                 generateJacketedSide(s);
@@ -411,17 +411,17 @@ public class RenderFramedWire
         private void generateJacketedSide(int s)
         {
             double d;
-            if ((connMap & 1 << s) != 0)
+            if ((connMap&1<<s) != 0)
                 d = 0;
             else if (connCount == 0)
                 d = 0.25;
-            else if (connCount == 1 && (connMap & 1 << (s ^ 1)) != 0)
+            else if (connCount == 1 && (connMap&1<<(s^1)) != 0)
                 d = 0.25;
             else
                 return;
 
-            Vertex5[] verts = faceVerts(s, d - 0.002);
-            Transformation t = AxisCycle.cycles[s / 2].at(Vector3.center);
+            Vertex5[] verts = faceVerts(s, d-0.002);
+            Transformation t = AxisCycle.cycles[s/2].at(Vector3.center);
             IUVTransformation uvt = new UVTranslation(12, 12);
             for (Vertex5 vert : verts)
             {
@@ -437,15 +437,15 @@ public class RenderFramedWire
     {
         for (int k = 0; k < verts.length; k += 4)
         {
-            Vertex5 tmp = verts[k + 1];
-            verts[k + 1] = verts[k + 3];
-            verts[k + 3] = tmp;
+            Vertex5 tmp = verts[k+1];
+            verts[k+1] = verts[k+3];
+            verts[k+3] = tmp;
         }
     }
 
     public static CCModel[] frameModels = new CCModel[7];
-    public static CCModel[] wireModels = new CCModel[64 * 3];
-    public static JacketedModel[] jacketModels = new JacketedModel[64 * 3];
+    public static CCModel[] wireModels = new CCModel[64*3];
+    public static JacketedModel[] jacketModels = new JacketedModel[64*3];
     private static WireModelGenerator gen_inst = new WireModelGenerator();
 
     private static LazyLightMatrix dynamicLight = new LazyLightMatrix();
@@ -457,12 +457,12 @@ public class RenderFramedWire
 
     public static int modelKey(int thickness, int connMap)
     {
-        return connMap | thickness << 6;
+        return connMap|thickness<<6;
     }
 
     public static int modelKey(FramedWirePart w)
     {
-        return modelKey(w.getThickness(), w.connMap);
+        return modelKey(w.getThickness(), w.connMap());
     }
 
     public static CCModel getOrGenerateWireModel(int key)
@@ -492,23 +492,23 @@ public class RenderFramedWire
         int key = modelKey(w);
 
         IUVTransformation uvt = new IconTransformation(w.getIcon());
-        IVertexModifier m = w.getColour() == -1 ? ColourModifier.instance : new ColourMultiplier(w.getColour());
+        IVertexModifier m = w.renderHue() == -1 ? ColourModifier.instance : new ColourMultiplier(w.renderHue());
 
-        if (w.material == 0)
+        if (w.material() == 0)
         {
             Transformation t = new Translation(pos);
             getOrGenerateWireModel(key).render(t, uvt, m);
             renderWireFrame(key, t, uvt);
         }
         else
-            getOrGenerateJacketedModel(key).render(w, pos, olm, uvt, m, w.material);
+            getOrGenerateJacketedModel(key).render(w, pos, olm, uvt, m, w.material());
     }
 
     private static void renderWireFrame(int key, Transformation t, IUVTransformation uvt)
     {
         frameModels[6].render(t, uvt);
         for (int s = 0; s < 6; s++)
-            if ((key & 1 << s) != 0)
+            if ((key&1<<s) != 0)
                 frameModels[s].render(t, uvt);
     }
 
@@ -532,7 +532,7 @@ public class RenderFramedWire
         BlockCoord pos = new BlockCoord(part.tile());
 
         GL11.glPushMatrix();
-        GL11.glTranslated(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5);
+        GL11.glTranslated(pos.x+0.5, pos.y+0.5, pos.z+0.5);
         GL11.glScaled(1.002, 1.002, 1.002);
         GL11.glTranslated(-0.5, -0.5, -0.5);
 

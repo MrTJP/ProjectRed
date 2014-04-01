@@ -1,6 +1,5 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.transportation.ItemRoutingChip.EnumRoutingChip
 import scala.collection.mutable.ListBuffer
 
 class ChipCrafting extends RoutingChipset with TChipCrafter with TChipPriority
