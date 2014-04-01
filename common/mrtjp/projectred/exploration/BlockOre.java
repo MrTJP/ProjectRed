@@ -56,7 +56,9 @@ public class BlockOre extends Block
     @Override
     public Icon getIcon(int side, int meta)
     {
-        return EnumOre.VALID_ORES[meta].texture;
+        if (meta >= 0 && meta < EnumOre.VALID_ORES.length)
+            return EnumOre.VALID_ORES[meta].texture;
+        else return null;
     }
 
     @Override
