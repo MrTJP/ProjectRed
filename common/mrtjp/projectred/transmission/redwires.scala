@@ -125,7 +125,7 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with IRed
         if (BasicUtils.isClient(world)) Messenger.addMessage(x, y+.5f, z, "/#f/#c[c] = "+getRedwireSignal)
         else
         {
-            val packet:PacketCustom = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)
+            val packet = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)
             packet.writeDouble(x+0.0D)
             packet.writeDouble(y+0.5D)
             packet.writeDouble(z+0.0D)

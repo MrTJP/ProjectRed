@@ -74,12 +74,22 @@ public class TransportationRecipes
                 'j', PipeDef.ROUTEDJUNCTION().getItemStack()
         );
 
-        /** Routed Crafting Pipe **/
+        /** Routed Extension Pipe **/
         GameRegistry.addRecipe(PipeDef.ROUTEDEXTENSION().getItemStack(),
                 " r ",
                 "rjr",
                 " r ",
                 'r', Item.redstone,
+                'j', PipeDef.ROUTEDJUNCTION().getItemStack()
+        );
+
+        /** Routed Firewall Pipe **/
+        GameRegistry.addRecipe(PipeDef.ROUTEDFIREWALL().getItemStack(),
+                "bcb",
+                "cjc",
+                "bcb",
+                'b', Block.netherBrick,
+                'c', Item.magmaCream,
                 'j', PipeDef.ROUTEDJUNCTION().getItemStack()
         );
     }

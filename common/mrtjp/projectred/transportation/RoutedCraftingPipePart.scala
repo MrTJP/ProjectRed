@@ -61,7 +61,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     private val chips = new Array[ChipCrafting](9)
 
     private val manager = new DeliveryManager
-    private var excess = List[Pair2[ItemKeyStack, IWorldRequester]]() //TODO can change to List[ItemKeyStack], IWR is always null
+    private var excess = Vector[Pair2[ItemKeyStack, IWorldRequester]]() //TODO can change to Vector[ItemKeyStack], IWR is always null
     private val lost = new DelayQueue[PostponedWorkItem[ItemKeyStack]]
 
     private var extensionsNeedRefresh = true
@@ -137,7 +137,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         if (real == null)
         {
             if (manager.hasOrders) manager.dispatchFailed()
-            else excess = List()
+            else excess = Vector()
             return
         }
         val side = getInterfacedSide
@@ -259,7 +259,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
                 }
             true
         })
-        excess = excess.filter(p => p.getValue1.stackSize > 0)
+        excess = excess.filter(_.getValue1.stackSize > 0)
     }
 
     private def refreshExtensions()
@@ -300,7 +300,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         }
     }
 
-    private def getExtensionFor(slot:Int, item:ItemKey):IWorldRequester =
+    def getExtensionFor(slot:Int, item:ItemKey):IWorldRequester =
     {
         if (extensionsNeedRefresh)
         {
@@ -407,7 +407,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         val requestedItem = request.getRequestedPackage
         val jobs = getCraftedItems
 
-        if (!jobs.exists(p => p.key == requestedItem)) return
+        if (!jobs.exists(_.key == requestedItem)) return
 
         var remaining = 0
         for (extra <- excess) if (extra.getValue1.key == requestedItem) remaining += extra.getValue1.stackSize
@@ -427,28 +427,15 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
     def getBroadcastedItems(map:collection.mutable.HashMap[ItemKey, Int]) {}
 
-    def requestCraftPromise(item:ItemKey):CraftingPromise = //TODO return ARRAY because we can have multiple recipes for same item. (change how requestbranchnode handles said array as well)
+    def buildCraftPromises(item:ItemKey) =
     {
-        val items = getCraftedItems
-        if (items == null || items.isEmpty) return null
-
-        val r = getChipFor(item)
-        if (r == null) return null
-
-        val result = ItemKeyStack.get(r.matrix.getStackInSlot(9))
-        val requesters = new Array[IWorldRequester](9)
-
-        for (i <- 0 until 9) requesters(i) = getExtensionFor(r.extIndex(i), item)
-
-        val promise = new CraftingPromise(result, this, priority)
-
-        for (i <- 0 until 9)
+        val jobs = Vector.newBuilder[CraftingPromise]
+        for (r <- chips) if (r != null)
         {
-            val keystack = ItemKeyStack.get(r.matrix.getStackInSlot(i))
-            if (keystack != null && keystack.stackSize > 0) promise.addIngredient(keystack, requesters(i))
+            val p = r.buildCraftPromise(item, this)
+            if (p != null) jobs += p
         }
-
-        promise
+        jobs.result()
     }
 
     def registerExcess(promise:DeliveryPromise)
@@ -457,16 +444,15 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         excess :+= new Pair2(keystack, null.asInstanceOf[IWorldRequester])
     }
 
-    def getCraftedItems:immutable.List[ItemKeyStack] =
+    def getCraftedItems:Vector[ItemKeyStack] =
     {
-        var list = List[ItemKeyStack]()
-
+        var b = Vector.newBuilder[ItemKeyStack]
         for (r <- chips) if (r != null)
         {
-            val stack = r.matrix.getStackInSlot(9)
-            if (stack != null) list :+= ItemKeyStack.get(stack)
+            val s = r.getCraftedItem
+            if (s != null) b += s
         }
-        list
+        b.result()
     }
 
     def getChipFor(key:ItemKey):ChipCrafting =
