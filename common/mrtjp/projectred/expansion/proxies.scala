@@ -72,8 +72,8 @@ class ExpansionProxy_client extends ExpansionProxy_server
     override def init()
     {
         super.init()
-
-        BasicRenderUtils.setRenderer(ProjectRedExpansion.machine1, 0, RenderFurnace)
+        if (version.contains("@"))
+            BasicRenderUtils.setRenderer(ProjectRedExpansion.machine1, 0, RenderFurnace)
     }
 }
 
