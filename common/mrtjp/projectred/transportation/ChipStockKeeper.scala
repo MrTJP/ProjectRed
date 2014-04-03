@@ -35,7 +35,7 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
         val inv = InvWrapper.wrap(real).setSlotsFromSide(side)
         val filt = InvWrapper.wrap(stock).setSlotsAll()
 
-        var checked = List[ItemKey]()
+        var checked = Set[ItemKey]()
         var requestAttempted = false
         var requestedSomething = false
 
@@ -43,7 +43,7 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
         {
             val keyStack = ItemKeyStack.get(stock.getStackInSlot(i))
             if (keyStack == null || checked.contains(keyStack.key)) break()
-            checked :+= keyStack.key
+            checked += keyStack.key
 
             val toRequest = filt.getItemCount(keyStack.key)
             val inInventory = inv.getItemCount(keyStack.key)+getEnroute(keyStack.key)

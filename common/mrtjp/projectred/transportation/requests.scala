@@ -392,8 +392,8 @@ class PathSorter(distanceWeight:Double) extends Ordering[StartEndPath]
 
         var c = 0.0D
 
-        val wr1 = x.end.getParent
-        val wr2 = y.end.getParent
+        def wr1 = x.end.getParent
+        def wr2 = y.end.getParent
 
         val p1 = wr1 match
         {
@@ -406,13 +406,15 @@ class PathSorter(distanceWeight:Double) extends Ordering[StartEndPath]
             case _ => Integer.MIN_VALUE
         }
 
-        if (p1 > Integer.MIN_VALUE)
-        {
-            if (p2 > Integer.MIN_VALUE) c = p2-p1
-            else return -1
-        }
-        else if (p2 > Integer.MIN_VALUE) return 1
-        if (c != 0) return c.asInstanceOf[Int]
+//        if (p1 > Integer.MIN_VALUE)
+//        {
+//            if (p2 > Integer.MIN_VALUE) c = p2-p1
+//            else return -1
+//        }
+//        else if (p2 > Integer.MIN_VALUE) return 1
+//        if (c != 0) return c.asInstanceOf[Int]
+
+        if (p1 != p2) return if (p2 > p1) 1 else -1
 
         var switchKey = 1
         if (x.end.getIPAddress-y.end.getIPAddress > 0)
