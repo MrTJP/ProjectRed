@@ -16,6 +16,7 @@ import net.minecraft.util.{MovingObjectPosition, Icon}
 import net.minecraft.world.World
 import net.minecraftforge.common.ForgeDirection
 import org.lwjgl.opengl.GL11
+import java.text.DecimalFormat
 
 object RenderPipe
 {
@@ -103,23 +104,22 @@ object RenderPipe
     {
         GL11.glPushMatrix()
         GL11.glDisable(GL11.GL_LIGHTING)
-        for (r <- p.itemFlow.delegate)
+        for (r <- p.itemFlow.delegate) if (!p.itemFlow.outputQueue.contains(r))
         {
             val dir = if (r.isEntering) r.input else r.output
             val prog = r.progress+(r.speed*frame)
+
             var frameX = pos.x+0.5D
             var frameY = pos.y+0.25D
             var frameZ = pos.z+0.5D
-
-            import ForgeDirection._
-            dir match
+            dir.ordinal match
             {
-                case UP => frameY = (pos.y-0.25D)+prog
-                case DOWN => frameY = (pos.y-0.25D)+(1.0D-prog)
-                case SOUTH => frameZ = pos.z+prog
-                case NORTH => frameZ = pos.z+(1.0D-prog)
-                case EAST => frameX = pos.x+prog
-                case WEST => frameX = pos.x+(1.0D-prog)
+                case 0 => frameY = (pos.y-0.25D)+(1.0D-prog)
+                case 1 => frameY = (pos.y-0.25D)+prog
+                case 2 => frameZ = pos.z+(1.0D-prog)
+                case 3 => frameZ = pos.z+prog
+                case 4 => frameX = pos.x+(1.0D-prog)
+                case 5 => frameX = pos.x+prog
                 case _ =>
             }
             doRenderItem(r, frameX, frameY, frameZ)

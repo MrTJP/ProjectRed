@@ -1,54 +1,54 @@
 package mrtjp.projectred.integration;
 
-import static mrtjp.projectred.integration.ComponentStore.*;
-
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
-import mrtjp.projectred.integration.BundledGateLogic.BusTransceiver;
-import mrtjp.projectred.integration.InstancedRsGateLogic.TimerGateLogic;
-import net.minecraft.client.renderer.texture.IconRegister;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
+import mrtjp.projectred.integration.BundledGateLogic.BusTransceiver;
+import mrtjp.projectred.integration.InstancedRsGateLogic.TimerGateLogic;
+import net.minecraft.client.renderer.texture.IconRegister;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import static mrtjp.projectred.integration.ComponentStore.*;
+
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RenderGate
 {
-    public static GateRenderer[] renderers = new GateRenderer[] { 
-        new OR(), 
-        new NOR(), 
-        new NOT(), 
-        new AND(), 
-        new NAND(), 
-        new XOR(), 
-        new XNOR(), 
-        new Buffer(), 
-        new Multiplexer(), 
-        new Pulse(), 
-        new Repeater(), 
-        new Randomizer(), 
-        new RSLatch(), 
-        new ToggleLatch(), 
-        new TransparentLatch(), 
-        new LightSensor(), 
-        new RainSensor(), 
-        new Timer(), 
-        new Sequencer(), 
-        new Counter(), 
-        new StateCell(), 
-        new Synchronizer(), 
-        new BusXcvr(), 
-        new NullCell(), 
-        new InvertCell(), 
-        new BufferCell(), 
-        new Comparator(), 
-        new ANDCell() 
+    public static GateRenderer[] renderers = new GateRenderer[]{
+            new OR(),
+            new NOR(),
+            new NOT(),
+            new AND(),
+            new NAND(),
+            new XOR(),
+            new XNOR(),
+            new Buffer(),
+            new Multiplexer(),
+            new Pulse(),
+            new Repeater(),
+            new Randomizer(),
+            new RSLatch(),
+            new ToggleLatch(),
+            new TransparentLatch(),
+            new LightSensor(),
+            new RainSensor(),
+            new Timer(),
+            new Sequencer(),
+            new Counter(),
+            new StateCell(),
+            new Synchronizer(),
+            new BusXcvr(),
+            new NullCell(),
+            new InvertCell(),
+            new BufferCell(),
+            new Comparator(),
+            new ANDCell()
     };
 
     public static void registerIcons(IconRegister r)
@@ -59,14 +59,14 @@ public class RenderGate
 
     public static void renderStatic(GatePart gate, Vector3 pos)
     {
-        GateRenderer r = renderers[gate.subID & 0xFF];
+        GateRenderer r = renderers[gate.subID&0xFF];
         r.prepare(gate);
-        r.renderStatic(new Translation(pos), gate.orientation & 0xFF);
+        r.renderStatic(new Translation(pos), gate.orientation&0xFF);
     }
 
     public static void renderDynamic(GatePart gate, Vector3 pos, float frame)
     {
-        GateRenderer r = renderers[gate.subID & 0xFF];
+        GateRenderer r = renderers[gate.subID&0xFF];
         if (r.hasSpecials())
         {
             r.prepareDynamic(gate, frame);
@@ -88,7 +88,7 @@ public class RenderGate
 
     public static void spawnParticles(GatePart gate, Random rand)
     {
-        renderers[gate.subID & 0xFF].spawnParticles(gate, rand);
+        renderers[gate.subID&0xFF].spawnParticles(gate, rand);
     }
 
     public static abstract class GateRenderer<PartType extends GatePart>
@@ -110,7 +110,7 @@ public class RenderGate
 
         public final void renderStatic(Transformation t, int orient)
         {
-            renderModels(t, reflect ? orient + 24 : orient);
+            renderModels(t, reflect ? orient+24 : orient);
         }
 
         public void renderModels(Transformation t, int orient)
@@ -146,7 +146,7 @@ public class RenderGate
             List<RedstoneTorchModel> torches = new LinkedList<RedstoneTorchModel>();
             for (ComponentModel m : models)
                 if (m instanceof RedstoneTorchModel)
-                    torches.add((RedstoneTorchModel) m);
+                    torches.add((RedstoneTorchModel)m);
 
             for (RedstoneTorchModel m : torches)
                 if (m.on && rand.nextInt(torches.size()) == 0)
@@ -162,7 +162,7 @@ public class RenderGate
     public static class OR extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("OR", 4);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(8, 9, 6), new RedstoneTorchModel(8, 2.5, 8) };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(8, 9, 6), new RedstoneTorchModel(8, 2.5, 8)};
 
         public OR()
         {
@@ -187,14 +187,14 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[0].on = (part.state & 0x10) == 0;
-            wires[1].on = (part.state & 2) != 0;
-            wires[2].on = (part.state & 4) != 0;
-            wires[3].on = (part.state & 8) != 0;
-            wires[1].disabled = (part.shape & 1) != 0;
-            wires[2].disabled = (part.shape & 2) != 0;
-            wires[3].disabled = (part.shape & 4) != 0;
-            torches[0].on = (part.state & 0xE) == 0;
+            wires[0].on = (part.state&0x10) == 0;
+            wires[1].on = (part.state&2) != 0;
+            wires[2].on = (part.state&4) != 0;
+            wires[3].on = (part.state&8) != 0;
+            wires[1].disabled = (part.shape&1) != 0;
+            wires[2].disabled = (part.shape&2) != 0;
+            wires[3].disabled = (part.shape&4) != 0;
+            torches[0].on = (part.state&0xE) == 0;
             torches[1].on = !wires[0].on;
         }
     }
@@ -226,14 +226,14 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[0].on = (part.state & 0x11) != 0;
-            wires[1].on = (part.state & 2) != 0;
-            wires[2].on = (part.state & 4) != 0;
-            wires[3].on = (part.state & 8) != 0;
-            wires[1].disabled = (part.shape & 1) != 0;
-            wires[2].disabled = (part.shape & 2) != 0;
-            wires[3].disabled = (part.shape & 4) != 0;
-            torch.on = (part.state & 0xE) == 0;
+            wires[0].on = (part.state&0x11) != 0;
+            wires[1].on = (part.state&2) != 0;
+            wires[2].on = (part.state&4) != 0;
+            wires[3].on = (part.state&8) != 0;
+            wires[1].disabled = (part.shape&1) != 0;
+            wires[2].disabled = (part.shape&2) != 0;
+            wires[3].disabled = (part.shape&4) != 0;
+            torch.on = (part.state&0xE) == 0;
         }
     }
 
@@ -264,21 +264,21 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[0].on = (part.state & 0x11) != 0;
-            wires[3].on = (part.state & 0x22) != 0;
-            wires[1].on = (part.state & 4) != 0;
-            wires[2].on = (part.state & 0x88) != 0;
-            wires[3].disabled = (part.shape & 1) != 0;
-            wires[0].disabled = (part.shape & 2) != 0;
-            wires[2].disabled = (part.shape & 4) != 0;
-            torch.on = (part.state & 0xF0) != 0;
+            wires[0].on = (part.state&0x11) != 0;
+            wires[3].on = (part.state&0x22) != 0;
+            wires[1].on = (part.state&4) != 0;
+            wires[2].on = (part.state&0x88) != 0;
+            wires[3].disabled = (part.shape&1) != 0;
+            wires[0].disabled = (part.shape&2) != 0;
+            wires[2].disabled = (part.shape&4) != 0;
+            torch.on = (part.state&0xF0) != 0;
         }
     }
 
     public static class AND extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("AND", 4);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(4, 8, 6), new RedstoneTorchModel(12, 8, 6), new RedstoneTorchModel(8, 8, 6), new RedstoneTorchModel(8, 2, 8) };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(4, 8, 6), new RedstoneTorchModel(12, 8, 6), new RedstoneTorchModel(8, 8, 6), new RedstoneTorchModel(8, 2, 8)};
 
         public AND()
         {
@@ -305,13 +305,13 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[0].on = (part.state & 0x11) == 0;
-            wires[3].on = (part.state & 2) != 0;
-            wires[1].on = (part.state & 4) != 0;
-            wires[2].on = (part.state & 8) != 0;
-            wires[3].disabled = (part.shape & 1) != 0;
-            wires[1].disabled = (part.shape & 2) != 0;
-            wires[2].disabled = (part.shape & 4) != 0;
+            wires[0].on = (part.state&0x11) == 0;
+            wires[3].on = (part.state&2) != 0;
+            wires[1].on = (part.state&4) != 0;
+            wires[2].on = (part.state&8) != 0;
+            wires[3].disabled = (part.shape&1) != 0;
+            wires[1].disabled = (part.shape&2) != 0;
+            wires[2].disabled = (part.shape&4) != 0;
             torches[2].on = !wires[1].on && !wires[1].disabled;
             torches[0].on = !wires[2].on && !wires[2].disabled;
             torches[1].on = !wires[3].on && !wires[3].disabled;
@@ -322,7 +322,7 @@ public class RenderGate
     public static class NAND extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("NAND", 4);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(4, 8, 6), new RedstoneTorchModel(12, 8, 6), new RedstoneTorchModel(8, 8, 6) };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(4, 8, 6), new RedstoneTorchModel(12, 8, 6), new RedstoneTorchModel(8, 8, 6)};
 
         public NAND()
         {
@@ -348,13 +348,13 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[0].on = (part.state & 0x11) != 0;
-            wires[3].on = (part.state & 2) != 0;
-            wires[1].on = (part.state & 4) != 0;
-            wires[2].on = (part.state & 8) != 0;
-            wires[3].disabled = (part.shape & 1) != 0;
-            wires[1].disabled = (part.shape & 2) != 0;
-            wires[2].disabled = (part.shape & 4) != 0;
+            wires[0].on = (part.state&0x11) != 0;
+            wires[3].on = (part.state&2) != 0;
+            wires[1].on = (part.state&4) != 0;
+            wires[2].on = (part.state&8) != 0;
+            wires[3].disabled = (part.shape&1) != 0;
+            wires[1].disabled = (part.shape&2) != 0;
+            wires[2].disabled = (part.shape&4) != 0;
             torches[0].on = !wires[2].on && !wires[2].disabled;
             torches[1].on = !wires[3].on && !wires[3].disabled;
             torches[2].on = !wires[1].on && !wires[1].disabled;
@@ -365,7 +365,7 @@ public class RenderGate
     public static class XOR extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("XOR", 4);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(4.5, 8, 6), new RedstoneTorchModel(11.5, 8, 6), new RedstoneTorchModel(8, 12, 6) };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(4.5, 8, 6), new RedstoneTorchModel(11.5, 8, 6), new RedstoneTorchModel(8, 12, 6)};
 
         public XOR()
         {
@@ -388,9 +388,9 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[0].on = (part.state & 0x11) != 0;
-            wires[3].on = (part.state & 2) != 0;
-            wires[2].on = (part.state & 8) != 0;
+            wires[0].on = (part.state&0x11) != 0;
+            wires[3].on = (part.state&2) != 0;
+            wires[2].on = (part.state&8) != 0;
             wires[1].on = !wires[3].on && !wires[2].on;
             torches[0].on = !wires[2].on && !wires[1].on;
             torches[1].on = !wires[3].on && !wires[1].on;
@@ -401,7 +401,7 @@ public class RenderGate
     public static class XNOR extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("XNOR", 5);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(8, 2, 8), new RedstoneTorchModel(4.5, 8, 6), new RedstoneTorchModel(11.5, 8, 6), new RedstoneTorchModel(8, 12, 6) };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(8, 2, 8), new RedstoneTorchModel(4.5, 8, 6), new RedstoneTorchModel(11.5, 8, 6), new RedstoneTorchModel(8, 12, 6)};
 
         public XNOR()
         {
@@ -425,22 +425,22 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[0].on = (part.state & 2) != 0 && (part.state & 8) == 0;
-            wires[1].on = (part.state & 8) != 0 && (part.state & 2) == 0;
-            wires[2].on = (part.state & 8) != 0;
-            wires[3].on = (part.state & 2) != 0;
+            wires[0].on = (part.state&2) != 0 && (part.state&8) == 0;
+            wires[1].on = (part.state&8) != 0 && (part.state&2) == 0;
+            wires[2].on = (part.state&8) != 0;
+            wires[3].on = (part.state&2) != 0;
             wires[4].on = !wires[3].on && !wires[2].on;
-            torches[0].on = (part.state & 0x11) != 0;
-            torches[1].on = !wires[4].on && (part.state & 8) == 0;
-            torches[2].on = !wires[4].on && (part.state & 2) == 0;
-            torches[3].on = (part.state & 2) == 0 && (part.state & 8) == 0;
+            torches[0].on = (part.state&0x11) != 0;
+            torches[1].on = !wires[4].on && (part.state&8) == 0;
+            torches[2].on = !wires[4].on && (part.state&2) == 0;
+            torches[3].on = (part.state&2) == 0 && (part.state&8) == 0;
         }
     }
 
     public static class Buffer extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("BUFFER", 4);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(8, 2, 8), new RedstoneTorchModel(8, 9, 6), };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(8, 2, 8), new RedstoneTorchModel(8, 9, 6),};
 
         public Buffer()
         {
@@ -464,21 +464,21 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[0].on = (part.state & 4) == 0;
-            wires[1].on = (part.state & 0x22) != 0;
-            wires[2].on = (part.state & 0x44) != 0;
-            wires[3].on = (part.state & 0x88) != 0;
-            wires[1].disabled = (part.shape & 1) != 0;
-            wires[3].disabled = (part.shape & 2) != 0;
-            torches[0].on = (part.state & 4) != 0;
-            torches[1].on = (part.state & 4) == 0;
+            wires[0].on = (part.state&4) == 0;
+            wires[1].on = (part.state&0x22) != 0;
+            wires[2].on = (part.state&0x44) != 0;
+            wires[3].on = (part.state&0x88) != 0;
+            wires[1].disabled = (part.shape&1) != 0;
+            wires[3].disabled = (part.shape&2) != 0;
+            torches[0].on = (part.state&4) != 0;
+            torches[1].on = (part.state&4) == 0;
         }
     }
 
     public static class Multiplexer extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("MULTIPLEXER", 6);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(8, 2, 8), new RedstoneTorchModel(9, 10.5, 6), new RedstoneTorchModel(4.5, 8, 6), new RedstoneTorchModel(11.5, 8, 6), };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(8, 2, 8), new RedstoneTorchModel(9, 10.5, 6), new RedstoneTorchModel(4.5, 8, 6), new RedstoneTorchModel(11.5, 8, 6),};
 
         public Multiplexer()
         {
@@ -504,14 +504,14 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[2].on = (part.state & 4) == 0;
-            wires[3].on = (part.state & 4) != 0;
-            wires[4].on = (part.state & 8) != 0;
-            wires[5].on = (part.state & 2) != 0;
-            torches[0].on = (part.state & 0x10) != 0;
+            wires[2].on = (part.state&4) == 0;
+            wires[3].on = (part.state&4) != 0;
+            wires[4].on = (part.state&8) != 0;
+            wires[5].on = (part.state&2) != 0;
+            torches[0].on = (part.state&0x10) != 0;
             torches[1].on = !wires[3].on;
-            torches[2].on = (part.state & 8) == 0 && wires[3].on;
-            torches[3].on = (part.state & 4) == 0 && !wires[5].on;
+            torches[2].on = (part.state&8) == 0 && wires[3].on;
+            torches[3].on = (part.state&4) == 0 && !wires[5].on;
             wires[0].on = torches[2].on;
             wires[1].on = torches[1].on;
         }
@@ -520,7 +520,7 @@ public class RenderGate
     public static class Pulse extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("PULSE", 3);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(4, 9.5, 6), new RedstoneTorchModel(11, 9.5, 6), new RedstoneTorchModel(8, 3.5, 8) };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(4, 9.5, 6), new RedstoneTorchModel(11, 9.5, 6), new RedstoneTorchModel(8, 3.5, 8)};
 
         public Pulse()
         {
@@ -542,12 +542,12 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[0].on = (part.state & 4) == 0;
-            wires[1].on = (part.state & 4) != 0;
-            wires[2].on = (part.state & 0x14) == 4;// input on, output off
+            wires[0].on = (part.state&4) == 0;
+            wires[1].on = (part.state&4) != 0;
+            wires[2].on = (part.state&0x14) == 4;// input on, output off
             torches[0].on = wires[0].on;
             torches[1].on = wires[1].on;
-            torches[2].on = (part.state & 0x10) != 0;
+            torches[2].on = (part.state&0x10) != 0;
         }
     }
 
@@ -555,7 +555,7 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("REPEATER", 2);
         RedstoneTorchModel endtorch = new RedstoneTorchModel(8, 2, 6);
-        RedstoneTorchModel[] vartorches = new RedstoneTorchModel[] { new RedstoneTorchModel(12.5, 12, 6), new RedstoneTorchModel(12.5, 11, 6), new RedstoneTorchModel(12.5, 10, 6), new RedstoneTorchModel(12.5, 9, 6), new RedstoneTorchModel(12.5, 8, 6), new RedstoneTorchModel(12.5, 7, 6), new RedstoneTorchModel(12.5, 6, 6), new RedstoneTorchModel(12.5, 5, 6), new RedstoneTorchModel(12.5, 4, 6) };
+        RedstoneTorchModel[] vartorches = new RedstoneTorchModel[]{new RedstoneTorchModel(12.5, 12, 6), new RedstoneTorchModel(12.5, 11, 6), new RedstoneTorchModel(12.5, 10, 6), new RedstoneTorchModel(12.5, 9, 6), new RedstoneTorchModel(12.5, 8, 6), new RedstoneTorchModel(12.5, 7, 6), new RedstoneTorchModel(12.5, 6, 6), new RedstoneTorchModel(12.5, 5, 6), new RedstoneTorchModel(12.5, 4, 6)};
         int shape = 0;
 
         public Repeater()
@@ -577,12 +577,12 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[0].on = (part.state & 0x10) == 0;
-            wires[1].on = (part.state & 4) != 0;
-            endtorch.on = (part.state & 0x10) != 0;
+            wires[0].on = (part.state&0x10) == 0;
+            wires[1].on = (part.state&4) != 0;
+            endtorch.on = (part.state&0x10) != 0;
 
             shape = part.shape();
-            vartorches[shape].on = (part.state & 4) == 0;
+            vartorches[shape].on = (part.state&4) == 0;
         }
 
         @Override
@@ -596,7 +596,7 @@ public class RenderGate
     public static class Randomizer extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("RANDOM", 4);
-        YellowChipModel[] chips = new YellowChipModel[] { new YellowChipModel(8, 5.5), new YellowChipModel(11.5, 12), new YellowChipModel(4.5, 12), };
+        YellowChipModel[] chips = new YellowChipModel[]{new YellowChipModel(8, 5.5), new YellowChipModel(11.5, 12), new YellowChipModel(4.5, 12),};
 
         public Randomizer()
         {
@@ -619,13 +619,13 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[1].on = (part.state & 4) != 0;
-            wires[0].on = (part.state & 0x11) != 0;
-            wires[3].on = (part.state & 0x22) != 0;
-            wires[2].on = (part.state & 0x88) != 0;
-            chips[0].on = (part.state & 0x10) != 0;
-            chips[1].on = (part.state & 0x20) != 0;
-            chips[2].on = (part.state & 0x80) != 0;
+            wires[1].on = (part.state&4) != 0;
+            wires[0].on = (part.state&0x11) != 0;
+            wires[3].on = (part.state&0x22) != 0;
+            wires[2].on = (part.state&0x88) != 0;
+            chips[0].on = (part.state&0x10) != 0;
+            chips[1].on = (part.state&0x20) != 0;
+            chips[2].on = (part.state&0x80) != 0;
         }
     }
 
@@ -633,8 +633,8 @@ public class RenderGate
     {
         WireComponentModel[] wires1 = generateWireModels("RSLATCH", 2);
         WireComponentModel[] wires2 = generateWireModels("RSLATCH2", 4);
-        RedstoneTorchModel[] torches1 = new RedstoneTorchModel[] { new RedstoneTorchModel(8, 3, 6), new RedstoneTorchModel(8, 13, 6) };
-        RedstoneTorchModel[] torches2 = new RedstoneTorchModel[] { new RedstoneTorchModel(9.5, 3, 6), new RedstoneTorchModel(6.5, 13, 6) };
+        RedstoneTorchModel[] torches1 = new RedstoneTorchModel[]{new RedstoneTorchModel(8, 3, 6), new RedstoneTorchModel(8, 13, 6)};
+        RedstoneTorchModel[] torches2 = new RedstoneTorchModel[]{new RedstoneTorchModel(9.5, 3, 6), new RedstoneTorchModel(6.5, 13, 6)};
         int type = 0;
 
         @Override
@@ -651,25 +651,25 @@ public class RenderGate
         @Override
         public void prepare(InstancedRsGatePart part)
         {
-            reflect = (part.shape & 1) != 0;
-            type = part.shape >> 1;
+            reflect = (part.shape&1) != 0;
+            type = part.shape>>1;
             int state = part.state();
             if (reflect)
-                state = GatePart.flipMaskZ(state >> 4) << 4 | GatePart.flipMaskZ(state);
+                state = GatePart.flipMaskZ(state>>4)<<4|GatePart.flipMaskZ(state);
 
             if (type == 0)
             {
-                wires1[0].on = (state & 0x88) != 0;
-                wires1[1].on = (state & 0x22) != 0;
-                torches1[0].on = (state & 0x10) != 0;
-                torches1[1].on = (state & 0x40) != 0;
+                wires1[0].on = (state&0x88) != 0;
+                wires1[1].on = (state&0x22) != 0;
+                torches1[0].on = (state&0x10) != 0;
+                torches1[1].on = (state&0x40) != 0;
             }
             else
             {
-                wires2[1].on = (state & 2) != 0;
-                wires2[3].on = (state & 8) != 0;
-                torches2[0].on = (state & 0x10) != 0;
-                torches2[1].on = (state & 0x40) != 0;
+                wires2[1].on = (state&2) != 0;
+                wires2[3].on = (state&8) != 0;
+                torches2[0].on = (state&0x10) != 0;
+                torches2[1].on = (state&0x40) != 0;
                 wires2[0].on = torches2[1].on;
                 wires2[2].on = torches2[0].on;
             }
@@ -699,7 +699,7 @@ public class RenderGate
     public static class ToggleLatch extends GateRenderer<InstancedRsGatePart>
     {
         WireComponentModel[] wires = generateWireModels("TOGLATCH", 2);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(4, 4, 6), new RedstoneTorchModel(4, 12, 6) };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(4, 4, 6), new RedstoneTorchModel(4, 12, 6)};
         LeverModel lever = new LeverModel(11, 8);
 
         public ToggleLatch()
@@ -722,18 +722,18 @@ public class RenderGate
         @Override
         public void prepare(InstancedRsGatePart part)
         {
-            wires[0].on = (part.state & 8) != 0;
-            wires[1].on = (part.state & 2) != 0;
-            torches[0].on = (part.state & 0x10) != 0;
-            torches[1].on = (part.state & 0x40) != 0;
-            lever.state = (part.state & 0x10) != 0 ? 0 : 1;
+            wires[0].on = (part.state&8) != 0;
+            wires[1].on = (part.state&2) != 0;
+            torches[0].on = (part.state&0x10) != 0;
+            torches[1].on = (part.state&0x40) != 0;
+            lever.state = (part.state&0x10) != 0 ? 0 : 1;
         }
     }
 
     public static class TransparentLatch extends GateRenderer<SimpleGatePart>
     {
         WireComponentModel[] wires = generateWireModels("TRANSLATCH", 5);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(4, 12.5, 6), new RedstoneTorchModel(4, 8, 6), new RedstoneTorchModel(8, 8, 6), new RedstoneTorchModel(8, 2, 8), new RedstoneTorchModel(14, 8, 8) };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(4, 12.5, 6), new RedstoneTorchModel(4, 8, 6), new RedstoneTorchModel(8, 8, 6), new RedstoneTorchModel(8, 2, 8), new RedstoneTorchModel(14, 8, 8)};
 
         public TransparentLatch()
         {
@@ -761,13 +761,13 @@ public class RenderGate
         public void prepare(SimpleGatePart part)
         {
             reflect = part.shape() == 1;
-            boolean on = (part.state & 0x10) != 0;
+            boolean on = (part.state&0x10) != 0;
 
             wires[0].on = !on;
-            wires[1].on = (part.state & 4) != 0;
-            wires[2].on = (part.state & 4) == 0;
+            wires[1].on = (part.state&4) != 0;
+            wires[2].on = (part.state&4) == 0;
             wires[3].on = on;
-            wires[4].on = (part.state & 0xA) != 0;
+            wires[4].on = (part.state&0xA) != 0;
 
             torches[0].on = wires[2].on;
             torches[1].on = !wires[2].on && !wires[4].on;
@@ -798,7 +798,7 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[0].on = (part.state & 0xF4) != 0;
+            wires[0].on = (part.state&0xF4) != 0;
             solar.state = part.shape();
         }
     }
@@ -823,14 +823,14 @@ public class RenderGate
         @Override
         public void prepare(SimpleGatePart part)
         {
-            wires[0].on = (part.state & 0x44) != 0;
+            wires[0].on = (part.state&0x44) != 0;
         }
     }
 
     public static class Timer extends GateRenderer<InstancedRsGatePart>
     {
         WireComponentModel[] wires = generateWireModels("TIME", 3);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(8, 3, 6), new RedstoneTorchModel(8, 8, 12) };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(8, 3, 6), new RedstoneTorchModel(8, 8, 12)};
         PointerModel pointer = new PointerModel(8, 8, 8);
 
         public Timer()
@@ -843,10 +843,10 @@ public class RenderGate
         @Override
         public void prepare(InstancedRsGatePart part)
         {
-            torches[0].on = (part.state & 0x10) != 0;
-            wires[0].on = (part.state & 0x88) != 0;
-            wires[1].on = (part.state & 0x22) != 0;
-            wires[2].on = (part.state & 4) != 0;
+            torches[0].on = (part.state&0x10) != 0;
+            wires[0].on = (part.state&0x88) != 0;
+            wires[1].on = (part.state&0x22) != 0;
+            wires[2].on = (part.state&4) != 0;
         }
 
         @Override
@@ -868,7 +868,7 @@ public class RenderGate
         @Override
         public void prepareDynamic(InstancedRsGatePart part, float frame)
         {
-            pointer.angle = ((TimerGateLogic) part.getLogic()).interpPointer(frame) * MathHelper.pi * 2;
+            pointer.angle = ((TimerGateLogic)part.getLogic()).interpPointer(frame)*MathHelper.pi*2;
         }
 
         @Override
@@ -884,7 +884,7 @@ public class RenderGate
 
     public static class Sequencer extends GateRenderer<InstancedRsGatePart>
     {
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(8, 8, 12), new RedstoneTorchModel(8, 3, 6), new RedstoneTorchModel(13, 8, 6), new RedstoneTorchModel(8, 13, 6), new RedstoneTorchModel(3, 8, 6), };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(8, 8, 12), new RedstoneTorchModel(8, 3, 6), new RedstoneTorchModel(13, 8, 6), new RedstoneTorchModel(8, 13, 6), new RedstoneTorchModel(3, 8, 6),};
         PointerModel pointer = new PointerModel(8, 8, 8);
 
         public Sequencer()
@@ -896,10 +896,10 @@ public class RenderGate
         @Override
         public void prepare(InstancedRsGatePart gate)
         {
-            torches[1].on = (gate.state & 0x10) != 0;
-            torches[2].on = (gate.state & 0x20) != 0;
-            torches[3].on = (gate.state & 0x40) != 0;
-            torches[4].on = (gate.state & 0x80) != 0;
+            torches[1].on = (gate.state&0x10) != 0;
+            torches[2].on = (gate.state&0x20) != 0;
+            torches[3].on = (gate.state&0x40) != 0;
+            torches[4].on = (gate.state&0x80) != 0;
         }
 
         @Override
@@ -915,8 +915,8 @@ public class RenderGate
         @Override
         public void prepareDynamic(InstancedRsGatePart gate, float frame)
         {
-            int max = ((InstancedRsGateLogic.Sequencer) gate.getLogic()).pointer_max;
-            pointer.angle = (gate.world().getWorldTime() % max + frame) / max * 2 * MathHelper.pi;
+            int max = ((InstancedRsGateLogic.Sequencer)gate.getLogic()).pointer_max;
+            pointer.angle = (gate.world().getWorldTime()%max+frame)/max*2*MathHelper.pi;
             if (gate.shape() == 1)
                 pointer.angle = -pointer.angle;
         }
@@ -941,7 +941,7 @@ public class RenderGate
     public static class Counter extends GateRenderer<InstancedRsGatePart>
     {
         WireComponentModel[] wires = generateWireModels("COUNT", 2);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(11, 8, 12), new RedstoneTorchModel(8, 3, 6), new RedstoneTorchModel(8, 13, 6), };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(11, 8, 12), new RedstoneTorchModel(8, 3, 6), new RedstoneTorchModel(8, 13, 6),};
         PointerModel pointer = new PointerModel(11, 8, 8, 1.2D);
 
         public Counter()
@@ -955,10 +955,10 @@ public class RenderGate
         public void prepare(InstancedRsGatePart gate)
         {
             reflect = gate.shape() == 1;
-            wires[0].on = (gate.state() & 8) != 0;
-            wires[1].on = (gate.state() & 2) != 0;
-            torches[1].on = (gate.state() & 0x10) != 0;
-            torches[2].on = (gate.state() & 0x40) != 0;
+            wires[0].on = (gate.state()&8) != 0;
+            wires[1].on = (gate.state()&2) != 0;
+            torches[1].on = (gate.state()&0x10) != 0;
+            torches[2].on = (gate.state()&0x40) != 0;
         }
 
         @Override
@@ -969,15 +969,15 @@ public class RenderGate
             wires[1].on = false;
             torches[1].on = false;
             torches[2].on = true;
-            pointer.angle = 220 * MathHelper.torad;
+            pointer.angle = 220*MathHelper.torad;
         }
 
         @Override
         public void prepareDynamic(InstancedRsGatePart gate, float frame)
         {
-            int max = ((InstancedRsGateLogic.Counter) gate.getLogic()).max;
-            int val = ((InstancedRsGateLogic.Counter) gate.getLogic()).value;
-            pointer.angle = (val / (double) max * (340 - 220) + 210) * MathHelper.torad;
+            int max = ((InstancedRsGateLogic.Counter)gate.getLogic()).max;
+            int val = ((InstancedRsGateLogic.Counter)gate.getLogic()).value;
+            pointer.angle = (val/(double)max*(340-220)+210)*MathHelper.torad;
             if (gate.shape() == 1)
                 reflect = true;
         }
@@ -1002,7 +1002,7 @@ public class RenderGate
     public static class StateCell extends GateRenderer<InstancedRsGatePart>
     {
         WireComponentModel[] wires = generateWireModels("STATECELL", 5);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(10, 3.5, 6), new RedstoneTorchModel(13, 8, 12) };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(10, 3.5, 6), new RedstoneTorchModel(13, 8, 12)};
         PointerModel pointer = new PointerModel(13, 8, 8);
         RedChipModel chip = new RedChipModel(6.5, 10);
 
@@ -1015,7 +1015,7 @@ public class RenderGate
 
         public InstancedRsGateLogic.StateCell getLogic(InstancedRsGatePart part)
         {
-            return (InstancedRsGateLogic.StateCell) part.getLogic();
+            return (InstancedRsGateLogic.StateCell)part.getLogic();
         }
 
         @Override
@@ -1030,7 +1030,7 @@ public class RenderGate
             torches[0].on = false;
             torches[1].on = true;
             chip.on = false;
-            pointer.angle = -MathHelper.pi / 2;
+            pointer.angle = -MathHelper.pi/2;
         }
 
         @Override
@@ -1039,14 +1039,14 @@ public class RenderGate
             reflect = part.shape == 1;
             int state = part.state();
             if (reflect)
-                state = GatePart.flipMaskZ(state >> 4) << 4 | GatePart.flipMaskZ(state);
+                state = GatePart.flipMaskZ(state>>4)<<4|GatePart.flipMaskZ(state);
 
-            wires[0].on = (state & 0x10) != 0;
-            wires[1].on = (state & 4) != 0;
-            wires[2].on = getLogic(part).state2 == 0 || (state & 4) != 0;
-            wires[3].on = (state & 0x88) != 0;
-            wires[4].on = (state & 2) != 0;
-            torches[0].on = (state & 0x10) != 0;
+            wires[0].on = (state&0x10) != 0;
+            wires[1].on = (state&4) != 0;
+            wires[2].on = getLogic(part).state2 == 0 || (state&4) != 0;
+            wires[3].on = (state&0x88) != 0;
+            wires[4].on = (state&2) != 0;
+            torches[0].on = (state&0x10) != 0;
             torches[1].on = getLogic(part).pointer_start >= 0;
             chip.on = getLogic(part).state2 != 0;
         }
@@ -1061,7 +1061,7 @@ public class RenderGate
         public void prepareDynamic(InstancedRsGatePart part, float frame)
         {
             reflect = part.shape == 1;
-            pointer.angle = getLogic(part).interpPointer(frame) - MathHelper.pi / 2;
+            pointer.angle = getLogic(part).interpPointer(frame)-MathHelper.pi/2;
         }
 
         @Override
@@ -1079,7 +1079,7 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("SYNC", 6);
         RedstoneTorchModel torch = new RedstoneTorchModel(8, 3, 6);
-        RedChipModel[] chips = new RedChipModel[] { new RedChipModel(4.5, 9), new RedChipModel(11.5, 9), };
+        RedChipModel[] chips = new RedChipModel[]{new RedChipModel(4.5, 9), new RedChipModel(11.5, 9),};
 
         public Synchronizer()
         {
@@ -1105,16 +1105,16 @@ public class RenderGate
         @Override
         public void prepare(InstancedRsGatePart gate)
         {
-            InstancedRsGateLogic.Synchronizer logic = (InstancedRsGateLogic.Synchronizer) gate.getLogic();
+            InstancedRsGateLogic.Synchronizer logic = (InstancedRsGateLogic.Synchronizer)gate.getLogic();
             wires[0].on = !logic.left();
             wires[1].on = !logic.right();
-            wires[2].on = (gate.state() & 4) != 0;
+            wires[2].on = (gate.state()&4) != 0;
             wires[3].on = logic.left() && logic.right();
-            wires[4].on = (gate.state() & 8) != 0;
-            wires[5].on = (gate.state() & 2) != 0;
+            wires[4].on = (gate.state()&8) != 0;
+            wires[5].on = (gate.state()&2) != 0;
             chips[0].on = logic.left();
             chips[1].on = logic.right();
-            torch.on = (gate.state() & 0x10) != 0;
+            torch.on = (gate.state()&0x10) != 0;
         }
 
     }
@@ -1123,7 +1123,7 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("BUSXCVR", 2);
         BusXcvrCableModel cable = new BusXcvrCableModel();
-        BusXcvrPanelModel[] panels = new BusXcvrPanelModel[] { new BusXcvrPanelModel(4, 8, false), new BusXcvrPanelModel(12, 8, true), };
+        BusXcvrPanelModel[] panels = new BusXcvrPanelModel[]{new BusXcvrPanelModel(4, 8, false), new BusXcvrPanelModel(12, 8, true),};
 
         public BusXcvr()
         {
@@ -1150,13 +1150,13 @@ public class RenderGate
             if (reflect)
                 state = GatePart.flipMaskZ(state);
 
-            wires[0].on = (state & 2) != 0;
-            wires[1].on = (state & 8) != 0;
+            wires[0].on = (state&2) != 0;
+            wires[1].on = (state&8) != 0;
 
-            BusTransceiver logic = (BusTransceiver) gate.getLogic();
+            BusTransceiver logic = (BusTransceiver)gate.getLogic();
             int packed = logic.packClientData();
-            panels[0].signal = packed >>> 16;
-            panels[1].signal = packed & 0xFFFF;
+            panels[0].signal = packed>>>16;
+            panels[1].signal = packed&0xFFFF;
         }
     }
 
@@ -1224,6 +1224,7 @@ public class RenderGate
         public void prepareInv()
         {
             super.prepareInv();
+            topWire.signal = (byte)255;
             wires[0].on = false;
             torch.on = true;
         }
@@ -1240,7 +1241,7 @@ public class RenderGate
     public static class BufferCell extends ArrayCell
     {
         WireComponentModel[] wires = generateWireModels("BUFFCELL", 2);
-        RedstoneTorchModel torches[] = new RedstoneTorchModel[] { new RedstoneTorchModel(11, 13, 6), new RedstoneTorchModel(8, 8, 6) };
+        RedstoneTorchModel torches[] = new RedstoneTorchModel[]{new RedstoneTorchModel(11, 13, 6), new RedstoneTorchModel(8, 8, 6)};
 
         public BufferCell()
         {
@@ -1278,7 +1279,7 @@ public class RenderGate
 
         RedstoneTorchModel torch = new RedstoneTorchModel(8, 2, 6);
 
-        OnOffModel[] chips = new OnOffModel[] { new MinusChipModel(5, 8), new PlusChipModel(11, 8) };
+        OnOffModel[] chips = new OnOffModel[]{new MinusChipModel(5, 8), new PlusChipModel(11, 8)};
 
         public Comparator()
         {
@@ -1304,13 +1305,13 @@ public class RenderGate
         {
             reflect = gate.shape() != 0;
 
-            wires[0].on = (gate.state & 0x10) == 0;
-            wires[1].on = (gate.state & 2) != 0;
-            wires[2].on = (gate.state & 4) != 0;
-            wires[3].on = (gate.state & 8) != 0;
-            chips[0].on = (gate.state & 1) != 0 && gate.shape == 1;
-            chips[1].on = (gate.state & 1) != 0 && gate.shape != 1;
-            torch.on = (gate.state & 0x10) != 0;
+            wires[0].on = (gate.state&0x10) == 0;
+            wires[1].on = (gate.state&2) != 0;
+            wires[2].on = (gate.state&4) != 0;
+            wires[3].on = (gate.state&8) != 0;
+            chips[0].on = (gate.state&1) != 0 && gate.shape == 1;
+            chips[1].on = (gate.state&1) != 0 && gate.shape != 1;
+            torch.on = (gate.state&0x10) != 0;
 
             if (gate.shape() != 0)
             {
@@ -1325,8 +1326,8 @@ public class RenderGate
         public void renderModels(Transformation t, int orient)
         {
             super.renderModels(t, orient);
-            chips[0].renderModel(t, orient % 24);
-            chips[1].renderModel(t, orient % 24);
+            chips[0].renderModel(t, orient%24);
+            chips[1].renderModel(t, orient%24);
         }
     }
 
@@ -1334,7 +1335,7 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("ANDCELL", 2);
         CellTopWireModel topWire = new CellTopWireModel(nullCellWireTop);
-        RedstoneTorchModel[] torches = new RedstoneTorchModel[] { new RedstoneTorchModel(8, 13, 6), new RedstoneTorchModel(8, 2, 8), new FlippedRSTorchModel(8, 8) };
+        RedstoneTorchModel[] torches = new RedstoneTorchModel[]{new RedstoneTorchModel(8, 13, 6), new RedstoneTorchModel(8, 2, 8), new FlippedRSTorchModel(8, 8)};
 
         public ANDCell()
         {
@@ -1364,9 +1365,9 @@ public class RenderGate
             topWire.signal = part.signal;
             topWire.conn = ArrayCommons.topWireConn(part);
             topWire.invColour = false;
-            torches[0].on = (part.state & 4) == 0;
-            torches[1].on = (part.state & 0x10) != 0;
-            torches[2].on = (part.state & 0xA) == 0;
+            torches[0].on = (part.state&4) == 0;
+            torches[1].on = (part.state&0x10) != 0;
+            torches[2].on = (part.state&0xA) == 0;
             wires[0].on = torches[0].on || torches[2].on;
             wires[1].on = !torches[0].on;
         }

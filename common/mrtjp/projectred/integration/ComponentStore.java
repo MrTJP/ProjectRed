@@ -878,7 +878,7 @@ public class ComponentStore
         {
             if (invColour)
             {
-                CCRenderState.setColour(signalColour((byte)0));
+                CCRenderState.setColour(signalColour(signal));
                 renderWire(t, orient, null);
                 CCRenderState.setColour(-1);
             }

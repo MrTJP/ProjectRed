@@ -16,6 +16,7 @@ import mrtjp.projectred.core._
 import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.transmission.IWirePart._
 import mrtjp.projectred.transmission._
+import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderBlocks
 import net.minecraft.entity.player.EntityPlayer
@@ -24,7 +25,6 @@ import net.minecraft.nbt.{NBTTagList, NBTTagCompound}
 import net.minecraft.util.{Icon, ChatMessageComponent, MovingObjectPosition}
 import net.minecraftforge.common.ForgeDirection
 import scala.collection.JavaConversions._
-import mrtjp.projectred.transportation.SendPriority.SendPriority
 
 abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion with IHollowConnect
 {
@@ -502,7 +502,6 @@ class FlowingPipePart extends CorePipePart
             if (r.isEntering && hasReachedMiddle(r))
             {
                 r.isEntering = false
-                r.progress = 0.5F
                 if (r.output == ForgeDirection.UNKNOWN) handleDrop(r)
                 else centerReached(r)
             }
@@ -594,13 +593,14 @@ class FlowingPipePart extends CorePipePart
     def injectPayload(r:RoutedPayload, in:ForgeDirection)
     {
         if (r.isCorrupted) return
+        if (itemFlow.delegate.contains(r)) return
         r.bind(this)
         r.reset()
         r.input = in
         itemFlow.add(r)
 
         adjustSpeed(r)
-        if (r.progress > 0.0F) r.progress = r.progress-1.0F
+        if (r.progress > 0.0F) r.progress = Math.max(0, r.progress-1.0F)
 
         if (!world.isRemote)
         {
