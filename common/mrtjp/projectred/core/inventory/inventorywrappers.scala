@@ -426,7 +426,7 @@ class VanillaWrapper(inv:IInventory) extends InvWrapper(inv) with TDefWrapHandle
 {
     override def create(inv:IInventory) = new VanillaWrapper(inv)
 
-    override def matches(inv:IInventory) = true
+    override def matches(inv:IInventory) = inv != null
 
     override def wrapperID = "vanilla"
 }
