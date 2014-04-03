@@ -3,13 +3,13 @@ package mrtjp.projectred.expansion
 import codechicken.lib.packet.PacketCustom
 import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.MultiPartRegistry.IPartFactory
+import cpw.mods.fml.common.Loader
 import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.core.blockutil.ItemBlockMulti
 import mrtjp.projectred.core.{BasicRenderUtils, Configurator, IProxy}
 import mrtjp.projectred.transmission._
-import cpw.mods.fml.common.Loader
 
 class ExpansionProxy_server extends IProxy with IPartFactory
 {
