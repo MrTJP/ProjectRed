@@ -45,7 +45,7 @@ abstract class RoutingChipset
     def getProvidedItems(map:collection.mutable.Map[ItemKey, Int]) {}
 
     def getBroadcastPriority = Integer.MAX_VALUE
-    def getWorkLoad:Double = 0
+    def getWorkLoad = 0.0D
 
     /** Requesting **/
     def trackedItemLost(s:ItemKeyStack) {}
@@ -72,14 +72,6 @@ abstract class RoutingChipset
     def infoCollection(list:ListBuffer[String])
     {
         addUpgradeBusInfo(list)
-    }
-    def JInfoCollection(list:util.List[String])
-    {
-        val l2 = new ListBuffer[String]
-        infoCollection(l2)
-
-        val l = WrapAsJava.bufferAsJavaList[String](l2)
-        list.addAll(l)
     }
 
     def getChipType:EnumRoutingChip

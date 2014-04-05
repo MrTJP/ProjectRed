@@ -94,13 +94,15 @@ public class Configurator
     public static Property gen_dyeTrees;
 
     /** Settings **/
+    public static boolean versionChecking;
+    public static boolean versionCheckDevBuilds;
+
     public static boolean debugMode;
     public static boolean logicGateSounds;
 
     public static int[] backpackBlacklist;
 
     public static int maxDetectionCount;
-    public static int maxDetectionLength;
     public static int detectionFrequency;
     public static int routerUpdateThreadCount;
 
@@ -198,6 +200,9 @@ public class Configurator
         gen_SpreadingMoss = localConfig.get("World Generation", "Spreading Moss", true);
         gen_dyeTrees = localConfig.get("World Generation", "Stained Trees", true);
 
+        versionChecking = localConfig.get("general", "Enable Version checking", true, "If enabled, the player will be alerted if a newer version of PR is available").getBoolean(true);
+        versionCheckDevBuilds = localConfig.get("general", "Dev Version checking", false, "Include dev builds in version checks").getBoolean(false);
+
         debugMode = localConfig.get("general", "Enable Debugging", false, "Enable advanced debugging, should ALWAYS be false.").getBoolean(false);
         logicGateSounds = localConfig.get("general", "Logic Sounds", true, "If set to false, logic gates will not make sounds.").getBoolean(true);
         logicwires3D = localConfig.get("general", "3Dlogicwires", true, "If set to false, flat wire textures will be used for logic gates. Significant performance improvement").getBoolean(true);
@@ -208,7 +213,6 @@ public class Configurator
         lightHaloMax = localConfig.get("general", "Light Halo Render Count", true, "Number of lights to render, -1 for unlimited").getInt();
 
         maxDetectionCount = localConfig.get("general", "Max Detection Count", 100, "Max number of links to explore when discovering new routers.").getInt();
-        maxDetectionLength = localConfig.get("general", "Max Detection Length", 50, "Max number of links allowed in between routers.").getInt();
         detectionFrequency = localConfig.get("general", "Detection Frequency", 20, "Ticks between router searches.").getInt();
         routerUpdateThreadCount = localConfig.get("general", "Router Update Thread Count", 4, "Number of active threads that update routing tables.").getInt();
 

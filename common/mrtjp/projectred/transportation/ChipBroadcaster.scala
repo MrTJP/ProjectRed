@@ -46,8 +46,8 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                     break("cont")
                 }
 
-                val reqKeyStack = next.getValue1
-                val requester = next.getValue2
+                val reqKeyStack = next.get1
+                val requester = next.get2
 
                 val inv = applyFilter(InvWrapper.wrap(real)).setSlotsFromSide(side)
 
@@ -144,7 +144,6 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
     {
         while (manager.hasOrders) manager.dispatchFailed()
     }
-
 
     override def createUpgradeBus =
     {

@@ -70,8 +70,8 @@ abstract class GuiChipContainer[T <: RoutingChipset](cont:ChipContainer[T], prev
     {
         if (id >= 2 && id <= 10)
         {
-            val actualKeyboardButton:Int = id - 1
-            if (actualKeyboardButton == Minecraft.getMinecraft.thePlayer.inventory.currentItem + 1) return
+            val actualKeyboardButton = id-1
+            if (actualKeyboardButton == Minecraft.getMinecraft.thePlayer.inventory.currentItem+1) return
         }
         else super.keyTyped(par1, id)
     }
@@ -121,7 +121,7 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
                 import scala.collection.JavaConversions._
                 for (p <- BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 {
-                    c.addCustomSlot(new SlotExtended(c2.filter, s, p.getValue1, p.getValue2).setGhosting(true))
+                    c.addCustomSlot(new SlotExtended(c2.filter, s, p.get1, p.get2).setGhosting(true))
                     s += 1
                 }
                 shiftScreen(new GuiChipFilter(cFor[TChipFilter], this), true)
@@ -134,7 +134,7 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
                 import scala.collection.JavaConversions._
                 for (p <- BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
                 {
-                    c.addCustomSlot(new SlotExtended(c2.stock, s, p.getValue1, p.getValue2).setGhosting(true))
+                    c.addCustomSlot(new SlotExtended(c2.stock, s, p.get1, p.get2).setGhosting(true))
                     s += 1
                 }
                 shiftScreen(new GuiChipStock(cFor[TChipStock], this), true)
@@ -144,7 +144,7 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
                 import scala.collection.JavaConversions._
                 for (p <- BasicGuiUtils.createSlotArray(25, 15, 3, 3, 0, 0))
                 {
-                    c.addCustomSlot(new SlotExtended(c2.matrix, s, p.getValue1, p.getValue2).setGhosting(true))
+                    c.addCustomSlot(new SlotExtended(c2.matrix, s, p.get1, p.get2).setGhosting(true))
                     s += 1
                 }
                 c.addCustomSlot(new SlotExtended(c2.matrix, s, 119, 33).setGhosting(true))
@@ -227,7 +227,7 @@ class GuiChipFilter(cont:ChipContainer[TChipFilter], prev:GuiScreen) extends Gui
         import scala.collection.JavaConversions._
         if (chip.enableFilter)
             for (p <- BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
-                BasicGuiUtils.drawSlotBackground(mc, p.getValue1 - 1, p.getValue2 - 1)
+                BasicGuiUtils.drawSlotBackground(mc, p.get1 - 1, p.get2 - 1)
     }
 
     override def addWidgets()
@@ -422,7 +422,7 @@ class GuiChipStock(cont:ChipContainer[TChipStock], prev:GuiScreen) extends GuiCh
         super.drawBackground()
         import scala.collection.JavaConversions._
         for (p <- BasicGuiUtils.createSlotArray(20, 15, 3, 3, 0, 0))
-            BasicGuiUtils.drawSlotBackground(mc, p.getValue1 - 1, p.getValue2 - 1)
+            BasicGuiUtils.drawSlotBackground(mc, p.get1 - 1, p.get2 - 1)
     }
 
     override def addWidgets()
@@ -476,13 +476,13 @@ class GuiChipCraftExt(cont:ChipContainer[TChipCrafter], prev:GuiScreen) extends 
                 val ext = chip.extIndex(index)
                 if (ext >= 0)
                 {
-                    val x = p.getValue1+2
-                    val y = p.getValue2+6
+                    val x = p.get1+2
+                    val y = p.get2+6
                     Gui.drawRect(x, y, x+20, y+18, PRColors.get(ext).argb)
                 }
-                else drawCenteredString(fontRenderer, "off", p.getValue1+12, p.getValue2+8, PRColors.WHITE.rgba)
+                else drawCenteredString(fontRenderer, "off", p.get1+12, p.get2+8, PRColors.WHITE.rgba)
             }
-            else drawCenteredString(fontRenderer, "-", p.getValue1+12, p.getValue2+8, PRColors.GREY.rgba)
+            else drawCenteredString(fontRenderer, "-", p.get1+12, p.get2+8, PRColors.GREY.rgba)
             index += 1
         }
     }
@@ -496,8 +496,8 @@ class GuiChipCraftExt(cont:ChipContainer[TChipCrafter], prev:GuiScreen) extends 
         {
             if (chip.maxExtensions >= index)
             {
-                add((new WidgetButton(p.getValue1, p.getValue2, 24, 6) with TButtonMCStyle with TButtonTextOverlay).setActionCommand(index+"u"))
-                add((new WidgetButton(p.getValue1, p.getValue2+18, 24, 6) with TButtonMCStyle with TButtonTextOverlay).setActionCommand(index+"d"))
+                add((new WidgetButton(p.get1, p.get2, 24, 6) with TButtonMCStyle with TButtonTextOverlay).setActionCommand(index+"u"))
+                add((new WidgetButton(p.get1, p.get2+18, 24, 6) with TButtonMCStyle with TButtonTextOverlay).setActionCommand(index+"d"))
             }
             else break("1")
             index += 1

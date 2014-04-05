@@ -164,7 +164,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
                 }
                 else nextOrder = excess(0)
 
-                val keyStack = nextOrder.getValue1
+                val keyStack = nextOrder.get1
                 var maxToSend = Math.min(itemsleft, keyStack.stackSize)
                 maxToSend = Math.min(keyStack.key.getMaxStackSize, maxToSend)
                 var available = inv.extractItem(keyStack.key, maxToSend)
@@ -184,7 +184,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
                     if (processingOrder)
                     {
-                        queueStackToSend(toSend, side, SendPriority.ACTIVEC, nextOrder.getValue2.getRouter.getIPAddress)
+                        queueStackToSend(toSend, side, SendPriority.ACTIVEC, nextOrder.get2.getRouter.getIPAddress)
                         manager.dispatchSuccessful(numToSend, false)
 
                         if (manager.hasOrders) nextOrder = manager.peek
@@ -244,7 +244,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         var left = amount
         excess.forall(p =>
         {
-            val stack = p.getValue1
+            val stack = p.get1
             if (stack.key == item)
                 if (left >= stack.stackSize)
                 {
@@ -259,7 +259,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
                 }
             true
         })
-        excess = excess.filter(_.getValue1.stackSize > 0)
+        excess = excess.filter(_.get1.stackSize > 0)
     }
 
     private def refreshExtensions()
@@ -372,13 +372,13 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         import scala.collection.JavaConversions._
         for (p <- BasicGuiUtils.createSlotArray(20, 12, 2, 4, 20, 0))
         {
-            ghost.addCustomSlot(new SpecialContainer.SlotExtended(chipSlots, s, p.getValue1, p.getValue2).setCheck(ISlotController.InventoryRulesController.instance))
+            ghost.addCustomSlot(new SpecialContainer.SlotExtended(chipSlots, s, p.get1, p.get2).setCheck(ISlotController.InventoryRulesController.instance))
             s += 1
         }
         var s2 = 0
         for (p <- BasicGuiUtils.createSlotArray(8, 108, 9, 1, 0, 0))
         {
-            ghost.addCustomSlot(new SpecialContainer.SlotExtended(cardSlots, s2, p.getValue1, p.getValue2).setCheck(ISlotController.InventoryRulesController.instance))
+            ghost.addCustomSlot(new SpecialContainer.SlotExtended(cardSlots, s2, p.get1, p.get2).setCheck(ISlotController.InventoryRulesController.instance))
             s2 += 1
         }
         ghost.addPlayerInventory(8, 138)
@@ -410,7 +410,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         if (!jobs.exists(_.key == requestedItem)) return
 
         var remaining = 0
-        for (extra <- excess) if (extra.getValue1.key == requestedItem) remaining += extra.getValue1.stackSize
+        for (extra <- excess) if (extra.get1.key == requestedItem) remaining += extra.get1.stackSize
         remaining -= existingPromises
         if (remaining <= 0) return
 
@@ -475,7 +475,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     {
         if (manager.hasOrders)
         {
-            val r = getChipFor(manager.peek.getValue1.key)
+            val r = getChipFor(manager.peek.get1.key)
             if (r != null)
             {
                 for (i <- 0 until 10)
