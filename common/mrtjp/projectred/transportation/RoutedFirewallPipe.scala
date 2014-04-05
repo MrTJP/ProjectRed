@@ -106,10 +106,10 @@ class RoutedFirewallPipe extends RoutedJunctionPipePart
         var s = 0
         for (p <- BasicGuiUtils.createSlotArray(8, 8, 7, 5, 0, 0))
         {
-            cont.addCustomSlot(new SlotExtended(filt, s, p.get1, p.get2))
+            cont.addCustomSlot(new SlotExtended(filt, s, p.get1, p.get2).setGhosting(true))
             s += 1
         }
-        cont.addPlayerInventory(8, 120)
+        cont.addPlayerInventory(8, 120).setShiftClick(false)
     }
 
     override def routeFilter(forSide:Int) =

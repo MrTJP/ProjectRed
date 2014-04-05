@@ -15,6 +15,7 @@ public class SpecialContainer extends Container
 
     boolean allowDragging = true;
     boolean canInteract = true;
+    boolean allowShiftClick = true;
 
     public SpecialContainer(IInventory playerInv)
     {
@@ -30,6 +31,12 @@ public class SpecialContainer extends Container
     public SpecialContainer setDragging(boolean flag)
     {
         allowDragging = flag;
+        return this;
+    }
+
+    public SpecialContainer setShiftClick(boolean flag)
+    {
+        allowShiftClick = flag;
         return this;
     }
 
@@ -138,6 +145,8 @@ public class SpecialContainer extends Container
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int i)
     {
+        if (!allowShiftClick) return null;
+
         Slot slot = (Slot) inventorySlots.get(i);
         if (slot == null)
             return null;

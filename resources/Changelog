@@ -2,6 +2,7 @@
 - ADDED: Version checking config
 - FIX: Pipe priority sorting crash
 - FIX: Invert cell inventory render
+- FIX: Firewall pipe items not being ghosted
 
 v4.3.7
 - FIX: Startup crash
