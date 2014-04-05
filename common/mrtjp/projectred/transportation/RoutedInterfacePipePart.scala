@@ -110,7 +110,7 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
         import scala.collection.JavaConversions._
         for (p <- BasicGuiUtils.createSlotArray(24, 12, 1, 4, 0, 8))
         {
-            ghost.addCustomSlot(new SpecialContainer.SlotExtended(chipSlots, slot, p.getValue1, p.getValue2).setCheck(sc))
+            ghost.addCustomSlot(new SpecialContainer.SlotExtended(chipSlots, slot, p.get1, p.get2).setCheck(sc))
             slot += 1
         }
 

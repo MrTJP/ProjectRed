@@ -84,16 +84,16 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends SpecialGuiContainer
         import scala.collection.JavaConversions._
         for (coord <- BasicGuiUtils.createSlotArray(8, 18, 1, 3, 2, 2))
         {
-            val x = coord.getValue1
-            val y = coord.getValue2
+            val x = coord.get1
+            val y = coord.get2
             val color = getColorForSlot(s)
             s+=1
             drawGradientRect(x-2, y+4, x, y+12, color, color)
         }
         for (coord <- BasicGuiUtils.createSlotArray(152, 18, 1, 3, 2, 2))
         {
-            val x = coord.getValue1
-            val y = coord.getValue2
+            val x = coord.get1
+            val y = coord.get2
             val color = getColorForSlot(s)
             s+=1
             drawGradientRect(x+16, y+4, x+18, y+12, color, color)

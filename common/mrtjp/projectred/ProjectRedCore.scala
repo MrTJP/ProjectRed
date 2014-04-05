@@ -47,7 +47,7 @@ object ProjectRedCore
     def postInit(event:FMLPostInitializationEvent)
     {
         CoreProxy.postinit()
-        TickRegistry.registerTickHandler(new PRVersionChecker, Side.CLIENT)
+        TickRegistry.registerTickHandler(new PRVersioningThread, Side.CLIENT)
     }
 
     @Mod.EventHandler

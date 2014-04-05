@@ -49,9 +49,9 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
         for (p <- BasicGuiUtils.createSlotArray(8, 108, 9, 1, 0, 0))
         {
             GL11.glColor4f(1, 1, 1, 1)
-            drawTexturedModalRect(p.getValue1, p.getValue2, 1, 11, 16, 16)
-            val x = p.getValue1 + 4
-            val y = p.getValue2 - 2
+            drawTexturedModalRect(p.get1, p.get2, 1, 11, 16, 16)
+            val x = p.get1 + 4
+            val y = p.get2 - 2
             Gui.drawRect(x, y, x + 8, y + 2, PRColors.get(color).argb)
             color += 1
         }
@@ -66,8 +66,8 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
         import scala.collection.JavaConversions._
         for (p <- BasicGuiUtils.createSlotArray(20, 12, 2, 4, 20, 0))
         {
-            val x = p.getValue1 - 5
-            val y = p.getValue2 - 2
+            val x = p.get1 - 5
+            val y = p.get2 - 2
             val u = 178
             val v = if (inventorySlots.getSlot(i).getStack == null) 107 else 85
             i += 1
@@ -362,7 +362,7 @@ class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends SpecialG
 
         import scala.collection.JavaConversions._
         for (p <- BasicGuiUtils.createSlotArray(8, 8, 7, 5, 0, 0))
-            BasicGuiUtils.drawSlotBackground(mc, p.getValue1-1, p.getValue2-1)
+            BasicGuiUtils.drawSlotBackground(mc, p.get1-1, p.get2-1)
 
         val inX = 221
         val inY = 180

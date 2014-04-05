@@ -111,12 +111,12 @@ public class ItemRouterUtility extends Item
             int s = 0;
             for (Pair2<Integer, Integer> coord : BasicGuiUtils.createSlotArray(8, 18, 1, 3, 2, 2))
             {
-                SlotExtended slot = new SlotExtended(upgradeInv, s++, coord.getValue1(), coord.getValue2()).setCheck(InventoryRulesController.instance);
+                SlotExtended slot = new SlotExtended(upgradeInv, s++, coord.get1(), coord.get2()).setCheck(InventoryRulesController.instance);
                 addCustomSlot(slot);
             }
             for (Pair2<Integer, Integer> coord : BasicGuiUtils.createSlotArray(152, 18, 1, 3, 2, 2))
             {
-                SlotExtended slot = new SlotExtended(upgradeInv, s++, coord.getValue1(), coord.getValue2()).setCheck(InventoryRulesController.instance);
+                SlotExtended slot = new SlotExtended(upgradeInv, s++, coord.get1(), coord.get2()).setCheck(InventoryRulesController.instance);
                 addCustomSlot(slot);
             }
             addCustomSlot(new SlotExtended(upgradeInv, 6, 80, 38));

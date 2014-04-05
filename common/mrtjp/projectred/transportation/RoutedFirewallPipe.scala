@@ -106,7 +106,7 @@ class RoutedFirewallPipe extends RoutedJunctionPipePart
         var s = 0
         for (p <- BasicGuiUtils.createSlotArray(8, 8, 7, 5, 0, 0))
         {
-            cont.addCustomSlot(new SlotExtended(filt, s, p.getValue1, p.getValue2))
+            cont.addCustomSlot(new SlotExtended(filt, s, p.get1, p.get2))
             s += 1
         }
         cont.addPlayerInventory(8, 120)

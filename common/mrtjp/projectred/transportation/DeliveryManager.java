@@ -13,9 +13,9 @@ public class DeliveryManager
     public void addOrder(ItemKeyStack stack, IWorldRequester requester)
     {
         for (Pair2<ItemKeyStack, IWorldRequester> request : orders)
-            if (request.getValue1() == stack && request.getValue2() == requester)
+            if (request.get1() == stack && request.get2() == requester)
             {
-                stack.setSize(stack.stackSize() + request.getValue1().stackSize());
+                stack.setSize(stack.stackSize() + request.get1().stackSize());
                 orders.remove(request);
                 break;
             }
@@ -26,9 +26,9 @@ public class DeliveryManager
     public void dispatchSuccessful(int amountSent, boolean reStack)
     {
         Pair2<ItemKeyStack, IWorldRequester> first = orders.getFirst();
-        first.getValue1().setSize(first.getValue1().stackSize() - amountSent);
+        first.get1().setSize(first.get1().stackSize() - amountSent);
 
-        if (first.getValue1().stackSize() <= 0)
+        if (first.get1().stackSize() <= 0)
             orders.removeFirst();
         else if (reStack)
             restock();
@@ -37,7 +37,7 @@ public class DeliveryManager
     public void dispatchFailed()
     {
         Pair2<ItemKeyStack, IWorldRequester> first = orders.getFirst();
-        first.getValue2().trackedItemLost(first.getValue1());
+        first.get2().trackedItemLost(first.get1());
         if (!orders.isEmpty())
             orders.removeFirst();
         onOrdersChanged();
@@ -66,8 +66,8 @@ public class DeliveryManager
     {
         int count = 0;
         for (Pair2<ItemKeyStack, IWorldRequester> order : orders)
-            if (order.getValue1().key().equals(item))
-                count += order.getValue1().stackSize();
+            if (order.get1().key().equals(item))
+                count += order.get1().stackSize();
         return count;
     }
 
@@ -75,7 +75,7 @@ public class DeliveryManager
     {
         int count = 0;
         for (Pair2<ItemKeyStack, IWorldRequester> request : orders)
-            count += request.getValue1().stackSize();
+            count += request.get1().stackSize();
 
         return count;
     }

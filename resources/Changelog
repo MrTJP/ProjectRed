@@ -1,3 +1,8 @@
+[dev]v4.3.8
+- ADDED: Version checking config
+- FIX: Pipe priority sorting crash
+- FIX: Invert cell inventory render
+
 v4.3.7
 - FIX: Startup crash
 

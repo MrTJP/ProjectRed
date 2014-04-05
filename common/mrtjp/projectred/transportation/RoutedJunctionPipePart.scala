@@ -91,21 +91,21 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
 
     private def removeFromTransitQueue(r:RoutedPayload)
     {
-        transitQueue.removeAll(transitQueue.filter(p => p.getValue1 == r))
+        transitQueue.removeAll(transitQueue.filter(p => p.get1 == r))
     }
 
     private def tickTransitQueue()
     {
         transitQueue.removeAll(transitQueue.filterNot(p =>
         {
-            p.setValue2(p.getValue2-1)
-            p.getValue2 >= 0
+            p.set2(p.get2-1)
+            p.get2 >= 0
         }))
     }
 
     protected def countInTransit(key:ItemKey) =
     {
-        transitQueue.filter(p => p.getValue1.payload.key == key).foldLeft(0)((b,a) => b+a.getValue2)
+        transitQueue.filter(p => p.get1.payload.key == key).foldLeft(0)((b,a) => b+a.get2)
     }
 
     def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:SendPriority, destination:Int)
@@ -551,8 +551,8 @@ object TransitComparator extends Ordering[Pair2[RoutedPayload, Int]]
 {
     def compare(a:Pair2[RoutedPayload, Int], b:Pair2[RoutedPayload, Int]) =
     {
-        var c = b.getValue2-a.getValue2
-        if (c == 0) c = b.getValue1.payload.compareTo(a.getValue1.payload)
+        var c = b.get2-a.get2
+        if (c == 0) c = b.get1.payload.compareTo(a.get1.payload)
         c
     }
 }
