@@ -374,7 +374,7 @@ trait TDefWrapHandler extends InvWrapper
             if (itemsLeft == 0) return item.stackSize
         }
 
-        item.stackSize - itemsLeft
+        item.stackSize-itemsLeft
     }
 
     override def extractItem(item:ItemKey, toExtract:Int):Int =

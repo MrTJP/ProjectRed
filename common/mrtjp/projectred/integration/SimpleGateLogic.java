@@ -398,8 +398,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
                 gate.onInputChange();
 
                 if (newInput != 0 && (gate.state&0xF0) == 0)
-                {// input was set high, output is low, set output high, wait 2
-                    // ticks
+                {//input was set high, output is low, set output high, wait 2 ticks
                     gate.setState(gate.state&0xF|0x10);
                     gate.scheduleTick(2);
                     gate.onOutputChange(1);
