@@ -905,7 +905,7 @@ public class RenderGate
         @Override
         public void prepareInv()
         {
-            torches[1].on = false;
+            torches[1].on = true;
             torches[2].on = false;
             torches[3].on = false;
             torches[4].on = false;
@@ -1291,7 +1291,7 @@ public class RenderGate
         public void prepareInv()
         {
             reflect = false;
-            wires[0].on = false;
+            wires[0].on = true;
             wires[1].on = false;
             wires[2].on = false;
             wires[3].on = false;

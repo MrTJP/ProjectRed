@@ -35,7 +35,11 @@ class LSPathFinder2(start:IWorldRouter, maxVisited:Int, world:World) extends ASt
     val startBC = pipe.getCoords
     var visited = 0
 
-    var found = Vector[StartEndPath]()
+    private var routers = Vector.newBuilder[StartEndPath]
+    private var controller:ControllerPath = null
+
+    def foundRouters = routers.result()
+    def foundController = controller
 
     override def openInitials()
     {
@@ -54,7 +58,7 @@ class LSPathFinder2(start:IWorldRouter, maxVisited:Int, world:World) extends ASt
             case iwr:IWorldRouter =>
                 val r = iwr.getRouter
                 if (r != null && r.isLoaded)
-                    found :+= new StartEndPath(start.getRouter, r, n.hop, n.dist, thisPipe.routeFilter(n.dir^1))
+                    routers += new StartEndPath(start.getRouter, r, n.hop, n.dist, thisPipe.routeFilter(n.dir^1))
             case p:FlowingPipePart =>
                 for (s <- 0 until 6) if ((s^1) != n.dir && thisPipe.maskConnects(s))
                 {
@@ -65,12 +69,21 @@ class LSPathFinder2(start:IWorldRouter, maxVisited:Int, world:World) extends ASt
             {
                 val tile = getTile(n.bc)
                 val link = LSPathFinder.getLinkState(tile)
-                val te = if (link != null) link.getLink(tile) else null
-                if (te != null)
+                if (link != null) //Special LS
                 {
-                    val bc = new BlockCoord(te)
-                    val linkedPipe = getPipe(bc)
-                    if (linkedPipe != null) open(n --> (bc, linkedPipe.routeWeight))
+                    val te = link.getLink(tile)
+                    if (te != null)
+                    {
+                        val bc = new BlockCoord(te)
+                        val linkedPipe = getPipe(bc)
+                        if (linkedPipe != null) open(n --> (bc, linkedPipe.routeWeight)) //TODO ask linkstate for route weight
+                    }
+                }
+                else tile match
+                {
+                    case layer:TControllerLayer if n.dir == 0 && controller == null => //Controller conn
+                        controller = new ControllerPath(layer)
+                    case _ =>
                 }
             }
         }
@@ -87,8 +100,6 @@ class LSPathFinder2(start:IWorldRouter, maxVisited:Int, world:World) extends ASt
     def getTile(bc:BlockCoord) = world.getBlockTileEntity(bc.x, bc.y, bc.z)
 
     def nextToStart(n:PathNode) = startBC.copy.sub(n.bc).mag() == 1D
-
-    def getResult = found
 }
 
 class CollectionPathFinder

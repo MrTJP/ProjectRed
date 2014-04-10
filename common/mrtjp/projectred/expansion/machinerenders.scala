@@ -93,3 +93,33 @@ object RenderFurnace extends TileMachineRender(ProjectRedExpansion.machine1)
     override def getFront(working:Boolean) =
         if (working) BlockMachine.furnaceFrontOn else BlockMachine.furnaceFront
 }
+
+object RenderController extends RenderMulti(ProjectRedExpansion.machine1)
+{
+    val model =
+    {
+        val m = CCModel.quadModel(6*4).generateBlock(0, Cuboid6.full)
+        m.computeNormals()
+        m.shrinkUVs(0.0005D)
+        m
+    }
+    val matrix = new LightMatrix
+
+    override def renderWorldBlock(r:RenderBlocks, w:IBlockAccess, x:Int, y:Int, z:Int, meta:Int)
+    {
+        val tile = BasicUtils.getTileEntity(w, new BlockCoord(x,y,z), classOf[TileRouterController])
+        if (tile != null)
+        {
+            matrix.computeAt(w, x, y, z)
+
+            val iconT = if (r.overrideBlockTexture != null) new IconTransformation(r.overrideBlockTexture)
+                else new MultiIconTransformation(bottom, top, side, side, side, side)
+
+            model.render(tile.rotationT.`with`(Vector3.fromTileEntity(tile).translation()), iconT, matrix)
+        }
+    }
+
+    override def renderInvBlock(r:RenderBlocks, meta:Int) {}
+
+    override def randomDisplayTick(w:World, x:Int, y:Int, z:Int, r:Random) {}
+}

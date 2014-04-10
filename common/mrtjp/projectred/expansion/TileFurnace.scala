@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack
 
 class TileFurnace extends TileMachineWorking
 {
-    override def getBlockMetadata = 0
     def getBlockID = ProjectRedExpansion.machine1.blockID
 
     def createContainer(player:EntityPlayer) = new WorkingMachineContainer(player, this)

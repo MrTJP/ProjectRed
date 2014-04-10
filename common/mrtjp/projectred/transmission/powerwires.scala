@@ -8,6 +8,8 @@ import mrtjp.projectred.core._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import mrtjp.projectred.api.IConnectable
+import net.minecraft.util.MovingObjectPosition
+import net.minecraft.item.ItemStack
 
 abstract class PowerWire extends WirePart with TPowerConnectable
 {
@@ -141,8 +143,8 @@ abstract class FramedPowerWire extends FramedWirePart with TPowerConnectable
         var s = "/#f"+"#VV\n"+"#IA\n"+"#PW"
         val d = new DecimalFormat("00.00")
         s = s.replace("#V", d.format(cond.voltage()))
-        s = s.replace("#I", d.format(cond.amperage))
-        s = s.replace("#P", d.format(cond.wattage))
+            .replace("#I", d.format(cond.amperage))
+            .replace("#P", d.format(cond.wattage))
         p.writeString(s)
         p.sendToPlayer(player)
         true

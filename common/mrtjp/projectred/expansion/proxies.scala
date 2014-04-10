@@ -34,12 +34,13 @@ class ExpansionProxy_server extends IProxy with IPartFactory
             ProjectRedExpansion.machine1.setUnlocalizedName("projectred.expansion.machine1")
             GameRegistry.registerBlock(ProjectRedExpansion.machine1, classOf[ItemBlockMulti], "projectred.expansion.machine1")
             //Machine1 tiles
-            ProjectRedExpansion.machine1.addTile(0, classOf[TileFurnace], "projectred.expansion.machine1.furnace")
+            ProjectRedExpansion.machine1.addTile(0, classOf[TileRouterController], "projectred.expansion.machine1.controller")
+            ProjectRedExpansion.machine1.addTile(1, classOf[TileFurnace], "projectred.expansion.machine1.furnace")
 
             //Machine2 (devices)
-            ProjectRedExpansion.machine2 = new BlockMachine(Configurator.block_machines2ID.getInt)
-            ProjectRedExpansion.machine2.setUnlocalizedName("projectred.expansion.machine2")
-            GameRegistry.registerBlock(ProjectRedExpansion.machine2, classOf[ItemBlockMulti], "projectred.expansion.machine2")
+//            ProjectRedExpansion.machine2 = new BlockMachine(Configurator.block_machines2ID.getInt)
+//            ProjectRedExpansion.machine2.setUnlocalizedName("projectred.expansion.machine2")
+//            GameRegistry.registerBlock(ProjectRedExpansion.machine2, classOf[ItemBlockMulti], "projectred.expansion.machine2")
             //Machine2 tiles
             //...
         }
@@ -73,7 +74,10 @@ class ExpansionProxy_client extends ExpansionProxy_server
     {
         super.init()
         if (version.contains("@"))
-            BasicRenderUtils.setRenderer(ProjectRedExpansion.machine1, 0, RenderFurnace)
+        {
+            BasicRenderUtils.setRenderer(ProjectRedExpansion.machine1, 0, RenderController)
+            BasicRenderUtils.setRenderer(ProjectRedExpansion.machine1, 1, RenderFurnace)
+        }
     }
 }
 

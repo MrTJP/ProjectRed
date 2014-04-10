@@ -8,6 +8,7 @@ import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.ProjectRedTransportation._
 import mrtjp.projectred.core.{Configurator, IProxy}
 import net.minecraftforge.client.MinecraftForgeClient
+import mrtjp.projectred.expansion.ItemCPU
 
 class TransportationProxy_server extends IProxy with IPartFactory
 {
@@ -27,6 +28,7 @@ class TransportationProxy_server extends IProxy with IPartFactory
         itemPartPipe = new ItemPartPipe(Configurator.part_pipe.getInt)
         itemRoutingChip = new ItemRoutingChip(Configurator.item_routingChipID.getInt)
         itemRouterUtility = new ItemRouterUtility(Configurator.item_routerUtilID.getInt)
+        itemRouterCPU = new ItemCPU(Configurator.item_routerCPUID.getInt)
 
         for (i <- 0 until Configurator.routerUpdateThreadCount) new TableUpdateThread(i)
     }

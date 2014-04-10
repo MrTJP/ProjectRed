@@ -10,6 +10,7 @@ import cpw.mods.fml.common.network.NetworkMod
 import mrtjp.projectred.api.ProjectRedAPI
 import mrtjp.projectred.transportation._
 import net.minecraft.creativetab.CreativeTabs
+import mrtjp.projectred.expansion.ItemCPU
 
 @Mod(modid = "ProjRed|Transportation", useMetadata = true, modLanguage = "scala")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = classOf[PacketCustom.CustomTinyPacketHandler])
@@ -20,6 +21,7 @@ object ProjectRedTransportation
     /** Items **/
     var itemRoutingChip:ItemRoutingChip = null
     var itemRouterUtility:ItemRouterUtility = null
+    var itemRouterCPU:ItemCPU = null
 
     /** Multipart items **/
     var itemPartPipe:ItemPartPipe = null

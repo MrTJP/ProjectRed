@@ -381,7 +381,7 @@ class InsulatedRedAlloyPart extends RedwirePart with TInsulatedCommons
 {
     override def weakPowerLevel(side:Int) =
     {
-        if (this.side == side || this.side == (side^1) || !maskConnects(Rotation.rotationTo(this.side, side))) 0
+        if (this.side == side || this.side == (side^1) || !maskConnects(absoluteRot(side))) 0
         else super.weakPowerLevel(side)
     }
 

@@ -89,7 +89,7 @@ public abstract class TileMulti extends TileEntity implements ICustomPacketTile
 
     public int getMetaData()
     {
-        return 0;
+        return getBlockMetadata();
     }
 
     public void addHarvestContents(ArrayList<ItemStack> ist)

@@ -18,12 +18,12 @@ import mrtjp.projectred.transportation.EnumRoutingChip.EnumRoutingChip
 abstract class RoutingChipset
 {
     private var invProv:IInventoryProvider = null
-    private var rl:IRouteLayer = null
+    private var rl:TRouteLayer = null
     private var s = -1
 
     private val upgrdBus = createUpgradeBus
 
-    def setEnvironment(inventoryProvider:IInventoryProvider, routeLayer:IRouteLayer, slot:Int)
+    def setEnvironment(inventoryProvider:IInventoryProvider, routeLayer:TRouteLayer, slot:Int)
     {
         invProv = inventoryProvider
         rl = routeLayer
@@ -33,6 +33,7 @@ abstract class RoutingChipset
     def invProvider = invProv
     def routeLayer = rl
     def slot = s
+    def controller = routeLayer.getRouter.getController
 
     def update() {}
 

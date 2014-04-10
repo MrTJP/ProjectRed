@@ -661,7 +661,12 @@ class FlowingPipePart extends CorePipePart
         r.setPriority(SendPriority(packet.readUByte).asInstanceOf[SendPriority])
     }
 
-    def routeFilter(forSide:Int) = PathFilter.default
+    /**
+     * Filter for items this pipe will except on the dir
+     * @param inputDir Input dir
+     * @return The path filter for this input dir
+     */
+    def routeFilter(inputDir:Int) = PathFilter.default
 
     def routeWeight = 1
 

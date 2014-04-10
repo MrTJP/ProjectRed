@@ -67,7 +67,7 @@ trait IWorldCrafter extends IWorldRequester with IWorldBroadcaster
     def itemsToProcess:Int
 }
 
-trait IRouteLayer
+trait TRouteLayer
 {
     def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, path:SyncResponse)
     {
@@ -83,6 +83,15 @@ trait IRouteLayer
 
     def getWorld:World
     def getCoords:BlockCoord
+}
+
+trait TControllerLayer
+{
+    def canUsePower(P:Double) = getPower >= P
+
+    def usePower(P:Double):Boolean
+
+    def getPower:Double
 }
 
 trait IInventoryProvider
