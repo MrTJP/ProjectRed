@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion
 
 import codechicken.lib.render._
 import codechicken.lib.vec.{Rotation, Translation, Cuboid6}
-import mrtjp.projectred.core.PRColors
+import mrtjp.projectred.core.{BasicGuiUtils, PRColors}
 import mrtjp.projectred.core.inventory._
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -15,15 +15,26 @@ object MachineGuiFactory
 {
     val mc = Minecraft.getMinecraft
 
-    val id_furnace = 0
+    val id_controller = 0
+    val id_furnace = 1
 
     def createGui(id:Int, tile:TileGuiMachine):GuiContainer = id match
     {
+        case this.id_controller => new GuiRouterController(tile.asInstanceOf[TileRouterController].createContainer(mc.thePlayer))
         case this.id_furnace => new GuiFurnace(tile.asInstanceOf[TileFurnace], tile.createContainer(mc.thePlayer))
         case _ => null
     }
 
     def apply(id:Int, tile:TileGuiMachine) = createGui(id, tile)
+}
+
+class GuiRouterController(container:Container) extends SpecialGuiContainer(container, null)
+{
+    override def drawBackground()
+    {
+        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel)
+        BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 84)
+    }
 }
 
 abstract class TabSideConfig(c:Int, tile:TileMachineSideConfig) extends WidgetTab(c, 20, 20, 100, 100)

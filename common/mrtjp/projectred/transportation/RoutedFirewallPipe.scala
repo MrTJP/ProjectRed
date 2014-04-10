@@ -112,7 +112,7 @@ class RoutedFirewallPipe extends RoutedJunctionPipePart
         cont.addPlayerInventory(8, 120).setShiftClick(false)
     }
 
-    override def routeFilter(forSide:Int) =
+    override def routeFilter(inputDir:Int) =
         new PathFilter(filtExclude, itemset, allowRoute, allowBroadcast, allowCrafting, allowController, 0x7)
 
     var itemset = Set[ItemKey]()

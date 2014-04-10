@@ -31,7 +31,7 @@ object RoutedJunctionPipePart
     var pipes = 0
 }
 
-class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRouteLayer with IWorldRequester with IInventoryProvider
+class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRouteLayer with IWorldRequester with IInventoryProvider
 {
     var searchDelay =
     {
@@ -207,7 +207,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
     {
         if (world.isRemote) return false
         var link = 0
-        for (d <- ForgeDirection.VALID_DIRECTIONS) if (getRouter.LSAConnectionExists(d)) link |= 1<<d.ordinal
+        for (s <- 0 until 6) if (getRouter.LSAConnectionExists(s)) link |= 1<<s
+        if (getRouter.hasUsableController) link |= 1<<6
         if (linkMap != link)
         {
             linkMap = link
@@ -371,12 +372,14 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
         shiftOrientation(false)
     }
 
-    override def discoverStraight(absDir:Int):Boolean =
+    override def discoverStraightOverride(s:Int):Boolean =
     {
-        if (super.discoverStraight(absDir)) return true
-        val bc = new BlockCoord(tile).offset(absDir)
-        val t = BasicUtils.getTileEntity(world, bc, classOf[TileEntity])
-        t != null && t.isInstanceOf[IInventory]
+        BasicUtils.getTileEntity(world, posOfStraight(s), classOf[TileEntity]) match
+        {
+            case inv:IInventoryProvider => true
+            case pow:TControllerLayer if s == 0 => true
+            case _ => false
+        }
     }
 
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
@@ -456,7 +459,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with IRoute
     override def getIcon(side:Int):Icon =
     {
         val array = PipeDef.ROUTEDJUNCTION.sprites
-        val ind = if (side == inOutSide) 2 else 0
+        var ind = if (side == inOutSide) 2 else 0
+        if ((linkMap&1<<6) != 0) ind += 4
         if ((linkMap&1<<side) != 0) array(1+ind)
         else array(2+ind)
     }

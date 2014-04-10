@@ -42,16 +42,15 @@ trait TFaceOrient extends TMultiPart with TFacePart
 
     def onOrientationChanged(oldOrient:Int) {}
 
-    // internal r from external absRot
+    // internal r from absRot
     def toInternal(absRot:Int) = (absRot+6-rotation)%4
     // absRot from internal r
     def toAbsolute(r:Int) = (r+rotation+2)%4
 
     // absDir from absRot
     def absoluteDir(absRot:Int) = Rotation.rotateSide(side, absRot)
-
-    // internal r from absDir
-    def relRot(absDir:Int) = toInternal(Rotation.rotationTo(side, absDir))
+    // absRot from absDir
+    def absoluteRot(absDir:Int) = Rotation.rotationTo(side, absDir)
 
     override def getSlotMask = 1<<side
 }

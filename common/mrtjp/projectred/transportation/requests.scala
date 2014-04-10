@@ -166,8 +166,8 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                     lastCrafter = null
                     if (recurse_IsCrafterUsed(crafter)) break("1")
 
-                    val cti = new CraftingInitializer(crafter, itemsNeeded, this)
-                    balanced.add(cti)
+                    val ci = new CraftingInitializer(crafter, itemsNeeded, this)
+                    balanced.add(ci)
                     break()
                 }
 

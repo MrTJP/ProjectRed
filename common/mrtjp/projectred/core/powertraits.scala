@@ -49,11 +49,7 @@ trait TPowerConnectable extends IConnectable
  */
 class PowerConductor(val parent:TPowerConnectable, ids:Seq[Int])
 {
-    val flows =
-    {
-        val highest = ids.foldLeft(0){(start, in) => Math.max(start, in)}
-        new Array[Double](highest+1)
-    }
+    val flows = new Array[Double](ids.max+1)
 
     var Vloc = 0.0D //local electric potential
     var Iloc = 0.0D //local intensity of electric current
@@ -110,17 +106,19 @@ class PowerConductor(val parent:TPowerConnectable, ids:Seq[Int])
 
     def applyPower(P:Double)
     {
-        val Ptot = Vloc*Vloc + 0.1D*P*capacitance
+        val Ptot = voltage()*Vloc + 0.1D*P*capacitance
         val dP = Math.sqrt(Ptot)-Vloc
         applyCurrent(20.0D*dP/capacitance)
     }
 
     def drawPower(P:Double)
     {
-        val Ptot = Vloc*Vloc - 0.1D*P*capacitance
+        val Ptot = voltage()*Vloc - 0.1D*P*capacitance
         val dP = if (Ptot < 0.0D) 0.0D else Math.sqrt(Ptot)-Vloc
         applyCurrent(20.0D*dP/capacitance)
     }
+
+    def powerTotal = (voltage()*Vloc)/(0.1D*capacitance)
 
     def update()
     {
@@ -129,7 +127,7 @@ class PowerConductor(val parent:TPowerConnectable, ids:Seq[Int])
         for (id <- idsFrom(index))
             if (!surge(parent.conductorOut(id), id)) flows(id) = 0.0D
 
-        surgeIn = Seq[PowerConductor]()
+        surgeIn = Set[PowerConductor]()
 
         def idsFrom(index:Int) =
         {
@@ -159,10 +157,10 @@ class PowerConductor(val parent:TPowerConnectable, ids:Seq[Int])
         }
     }
 
-    var surgeIn = Seq[PowerConductor]()
+    var surgeIn = Set[PowerConductor]()
     def applySurge(from:PowerConductor, Iin:Double)
     {
-        surgeIn :+= from
+        surgeIn += from
         applyCurrent(Iin)
     }
 
