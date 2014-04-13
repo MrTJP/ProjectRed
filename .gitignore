@@ -1,6 +1,37 @@
 
+#ant stuff
+/bin/
+#Remove OS generated garbage
+*/.DS_Store
 .DS_Store
-
+.DS_Store?
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+#gradle stuff
+/.gradle
+/build/
+/run/
+#IDEA files from Gradle
+.idea/
+/*.iml
+/*.ipr
+/*.iws
+#Vim backups
+*~
+#eclipse stuffs
+/.classpath
+/.project
+/.settings/
+/debug/
+*.lock
+/.metadata/
+/config/
+/logs/
+options.txt
+/saves/
+#Modeling stuff
 *.blend1
-
 *.blend2
