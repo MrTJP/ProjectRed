@@ -2,12 +2,14 @@ package mrtjp.projectred.expansion
 
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.entity.player.EntityPlayer
-import mrtjp.projectred.core.{TPowerFlow, PowerConductor}
-import mrtjp.projectred.transportation.TControllerLayer
+import mrtjp.projectred.core.{BasicUtils, TPowerFlow, PowerConductor}
+import mrtjp.projectred.transportation.{RoutedJunctionPipePart, IInventoryProvider, TControllerLayer}
 import mrtjp.projectred.core.inventory.{SpecialContainer, SimpleInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
+import net.minecraft.inventory.{ICrafting, IInventory}
+import codechicken.lib.vec.BlockCoord
 
 class TileRouterController extends TileMachine with TileGuiMachine with TControllerLayer
 {
@@ -17,21 +19,27 @@ class TileRouterController extends TileMachine with TileGuiMachine with TControl
             stack != null && stack.getItem.isInstanceOf[ItemCPU]
     }
 
+    var client_hasConflict = false
+
     override def getBlockID = ProjectRedExpansion.machine1.blockID
 
     override def doesRotate = false
 
     override def guiID = MachineGuiFactory.id_controller
 
-    override def createContainer(player:EntityPlayer) =
+    override def createContainer(player:EntityPlayer) = new ControllerCont(this, player)
+
+    override def load(tag:NBTTagCompound)
     {
-        val cont = new SpecialContainer(player.inventory)
-        val sc = ISlotController.InventoryRulesController.instance
-        cont.addCustomSlot(new SpecialContainer.SlotExtended(cpuSlot, 0, 134, 20).setCheck(sc))
-        cont.addPlayerInventory(8, 84)
-        cont
+        super.load(tag)
+        cpuSlot.load(tag, "cpu")
     }
 
+    override def save(tag:NBTTagCompound)
+    {
+        super.save(tag)
+        cpuSlot.save(tag, "cpu")
+    }
 
     override def update()
     {
@@ -77,5 +85,46 @@ class TileRouterController extends TileMachine with TileGuiMachine with TControl
             newPow >= 0
         }
         else false
+    }
+
+    def hasControllerConflict =
+    {
+        BasicUtils.getMultiPart(worldObj, new BlockCoord(this).offset(1), 6) match
+        {
+            case p:RoutedJunctionPipePart =>
+                val r = p.getRouter
+                if (r != null && p.maskConnects(0) && r.controllerConflict) true else false
+            case _ => false
+        }
+    }
+}
+
+class ControllerCont(tile:TileRouterController, player:EntityPlayer) extends SpecialContainer(player.inventory)
+{
+    val sc = ISlotController.InventoryRulesController.instance
+    addCustomSlot(new SpecialContainer.SlotExtended(tile.cpuSlot, 0, 44, 36).setCheck(sc))
+    addPlayerInventory(8, 86)
+
+    var conflict = false
+
+    override def detectAndSendChanges()
+    {
+        super.detectAndSendChanges()
+
+        val newConflict = tile.hasControllerConflict
+
+        import scala.collection.JavaConversions._
+        for (i <- crafters)
+        {
+            val ic = i.asInstanceOf[ICrafting]
+            if (conflict != newConflict) ic.sendProgressBarUpdate(this, 0, if (newConflict) 1 else 2)
+        }
+
+        conflict = newConflict
+    }
+
+    override def updateProgressBar(id:Int, bar:Int) = id match
+    {
+        case 0 => tile.client_hasConflict = bar == 1
     }
 }

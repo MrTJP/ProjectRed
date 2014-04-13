@@ -81,6 +81,8 @@ item.projectred.transportation.routingchip|5.name=Item Broadcaster chip
 item.projectred.transportation.routingchip|6.name=Item Stock Keeper chip
 item.projectred.transportation.routingchip|7.name=Item Crafting chip
 
+item.projectred.transportation.cpu|0.name=Routing Network CPU
+
 item.projectred.transportation.routerutil.name=Router Utility
 
 item.projectred.transportation.pipe|0.name=Item Transport pipe
