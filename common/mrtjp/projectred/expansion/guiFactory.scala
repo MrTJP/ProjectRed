@@ -10,6 +10,7 @@ import net.minecraft.inventory.Container
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import scala.collection.mutable.ListBuffer
+import codechicken.core.gui.GuiDraw
 
 object MachineGuiFactory
 {
@@ -20,7 +21,7 @@ object MachineGuiFactory
 
     def createGui(id:Int, tile:TileGuiMachine):GuiContainer = id match
     {
-        case this.id_controller => new GuiRouterController(tile.asInstanceOf[TileRouterController].createContainer(mc.thePlayer))
+        case this.id_controller => new GuiRouterController(tile.asInstanceOf[TileRouterController], tile.createContainer(mc.thePlayer))
         case this.id_furnace => new GuiFurnace(tile.asInstanceOf[TileFurnace], tile.createContainer(mc.thePlayer))
         case _ => null
     }
@@ -28,14 +29,22 @@ object MachineGuiFactory
     def apply(id:Int, tile:TileGuiMachine) = createGui(id, tile)
 }
 
-class GuiRouterController(container:Container) extends SpecialGuiContainer(container, null)
+class GuiRouterController(tile:TileRouterController, container:Container) extends SpecialGuiContainer(container, null)
 {
     override def drawBackground()
     {
-        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel)
-        BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 84)
+        CCRenderState.changeTexture(GuiRouterController.resource)
+        drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
+
+        if (tile.client_hasConflict) GuiDraw.drawString("Controller conflict!", 65, 40, PRColors.RED.argb, false)
     }
 }
+
+object GuiRouterController
+{
+    val resource = new ResourceLocation("projectred:textures/gui/rcontr.png")
+}
+
 
 abstract class TabSideConfig(c:Int, tile:TileMachineSideConfig) extends WidgetTab(c, 20, 20, 100, 100)
 {
@@ -150,7 +159,6 @@ abstract class GuiMachineWorking(tile:TileMachineWorking, cont:Container) extend
 
 class GuiFurnace(tile:TileFurnace, cont:Container) extends GuiMachineWorking(tile, cont)
 {
-
     override def drawTileForTab(s:Int, r:Int)
     {
         RenderFurnace.renderForSideSelect(r)

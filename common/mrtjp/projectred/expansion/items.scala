@@ -27,7 +27,7 @@ class ItemCPU(id:Int) extends Item(id)
     @SideOnly(Side.CLIENT)
     override def registerIcons(reg:IconRegister)
     {
-
+        itemIcon = reg.registerIcon("projectred:cpu")
     }
 
     override def getIconFromDamage(meta:Int) =

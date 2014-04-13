@@ -119,7 +119,17 @@ object RenderController extends RenderMulti(ProjectRedExpansion.machine1)
         }
     }
 
-    override def renderInvBlock(r:RenderBlocks, meta:Int) {}
+    override def renderInvBlock(r:RenderBlocks, meta:Int)
+    {
+        val iconT = new MultiIconTransformation(bottom, top, side, side, side, side)
+        CCRenderState.reset()
+        CCRenderState.useNormals(true)
+        CCRenderState.useModelColours(true)
+        CCRenderState.startDrawing(7)
+        model.render(new Translation(-0.5D, -0.5D, -0.5D), iconT, null)
+        CCRenderState.draw()
+        CCRenderState.setColour(-1)
+    }
 
     override def randomDisplayTick(w:World, x:Int, y:Int, z:Int, r:Random) {}
 }
