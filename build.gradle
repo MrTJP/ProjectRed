@@ -1,0 +1,124 @@
+// This sets us up for building a forge project - you need all of these
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+    }
+}
+
+// Apply the forge plugin - this adds all the magic for automatically obfuscating, deobfuscating etc
+apply plugin: 'forge'
+apply plugin: 'scala'
+
+// This is our group
+group = "mrtjp" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+// This is our actual project within the group.
+archivesBaseName = "ProjectRed"
+
+// Define properties file
+ext.configFile = file "build.properties"
+
+configFile.withReader {
+    // Load config.  It shall from now be referenced as simply config or project.config
+    def prop = new Properties()
+    prop.load(it)
+    project.ext.config = new ConfigSlurper().parse prop
+}
+
+//we will put all deps in libs folder for autodetection
+//dependencies {
+//    compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:dev"
+//}
+
+version =  "${project.config.mod_version}." + System.getenv("BUILD_NUMBER") ?: "1"
+
+println  config.mc_version + "-" + config.forge_version
+// Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
+minecraft {
+    version = config.mc_version + "-" + config.forge_version
+    if (file('../run').exists()) {
+    	assetDir = "../run/assets"
+    } else {
+    	assetDir = "assets"
+    }
+}
+
+// this sets our output jar to have a 'tag' of 'universal' on it
+// It also adds the minecraft version in a custom version name
+// The result is files named <projectname>-<mcversion>-<version>-universal.jar
+jar {
+    classifier = 'universal'
+    version = "${project.minecraft.version}-${project.version}"
+    manifest {
+        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
+        attributes 'FMLCorePluginContainsFMLMod': 'true'
+    }
+
+}
+sourceSets {
+    main {
+        def root = project.projectDir
+        scala {
+            srcDir new File(root, "src")
+        }
+        resources {
+            srcDir new File(root, "resources")
+        }
+    }
+}
+processResources {
+    //redo task if any of these properties change
+    inputs.property "version", project.version
+    inputs.property "mc_version", config.mc_version
+    inputs.property "fmp_version", config.fmp_version
+    inputs.property "ccl_version", config.ccl_version
+
+    // Replace properties in all files
+    from(sourceSets.main.resources.srcDirs) {
+        include '*.info'
+        include '*.scala'
+        include '*.java'
+        expand '@VERSION@':config.mod_version, '@BUILD_NUMBER@':System.getenv("BUILD_NUMBER") ?: "1", '@MC_VERSION@':config.mc_version, '@FORGE_VERSION@':config.forge_version, '@FMP_VERSION@':config.fmp_version, '@CCL_VERSION@':config.ccl_version
+    }
+    // Copy everything else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'assets/**/*.*'
+    }
+}
+
+// Add in a source jar for people, should they desire to download such a thing
+//task sourceJar(type: Jar) {
+//    from sourceSets.main.allSource
+//    classifier = 'src'
+//    version = "${project.minecraft.version}-${project.version}"
+//}
+
+// Add in an mcp named jar, for those who wish to run in a development environment (assuming mcp naming matches)
+//task deobfJar(type: Jar) {
+//    from sourceSets.main.output
+//    classifier = 'dev'
+//    version = "${project.minecraft.version}-${project.version}"
+//    manifest {
+//        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
+//        attributes 'FMLCorePluginContainsFMLMod': 'true'
+//    }
+//}
+
+// Tell the artifact system about our extra jars
+//artifacts {
+//    archives sourceJar
+//}
+
+// Configure an upload task. this is setup for uploading to files.minecraftforge.net. There are other examples around
+//uploadArchives {
+//}
