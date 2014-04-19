@@ -1,6 +1,6 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.utils.{LiteEnumVal, LiteEnumCollector}
+import mrtjp.projectred.core.utils.LiteEnumVal
 import net.minecraft.util.Icon
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import net.minecraft.client.renderer.texture.IconRegister
@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack
 import mrtjp.projectred.ProjectRedTransportation
 import scala.collection.mutable
 import mrtjp.projectred.transmission.WireDef
+import mrtjp.projectred.core.lib.{LiteEnumVal, LiteEnumCollector}
 
 object PipeDef extends LiteEnumCollector
 {

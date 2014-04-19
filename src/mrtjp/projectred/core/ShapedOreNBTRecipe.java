@@ -68,7 +68,7 @@ public class ShapedOreNBTRecipe extends ShapedOreRecipe
     {
         if (input == null && target != null || input != null && target == null)
             return false;
-        if (target.itemID == input.itemID && (target.getItemDamage() == OreDictionary.WILDCARD_VALUE || target.getItemDamage() == input.getItemDamage()))
+        if (target.getItem() == input.getItem() && (target.getItemDamage() == OreDictionary.WILDCARD_VALUE || target.getItemDamage() == input.getItemDamage()))
         {
             if (checkNBT)
                 return target.getTagCompound().equals(input.getTagCompound());

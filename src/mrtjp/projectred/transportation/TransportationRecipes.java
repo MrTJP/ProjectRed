@@ -3,7 +3,7 @@ package mrtjp.projectred.transportation;
 import cpw.mods.fml.common.registry.GameRegistry;
 import mrtjp.projectred.ProjectRedTransportation;
 import mrtjp.projectred.core.ItemPart.EnumPart;
-import mrtjp.projectred.core.PRColors;
+import mrtjp.projectred.core.libmc.PRColors;
 import mrtjp.projectred.transportation.EnumRoutingChip.ChipVal;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.InventoryCrafting;

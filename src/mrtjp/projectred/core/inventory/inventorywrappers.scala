@@ -1,13 +1,12 @@
 package mrtjp.projectred.core.inventory
 
 import codechicken.lib.vec.BlockCoord
-import mrtjp.projectred.core.BasicUtils
-import mrtjp.projectred.core.utils.ItemKey
 import net.minecraft.inventory.{InventoryLargeChest, ISidedInventory, IInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.world.World
 import net.minecraftforge.oredict.OreDictionary
+import mrtjp.projectred.core.libmc.{BasicUtils, ItemKey}
 
 object InvWrapper
 {
@@ -33,7 +32,7 @@ object InvWrapper
     def areItemsSame(stack1:ItemStack, stack2:ItemStack):Boolean =
     {
         if (stack1 == null || stack2 == null) return stack1 == stack2
-        stack1.itemID == stack2.itemID && stack2.getItemDamage == stack1.getItemDamage && ItemStack.areItemStackTagsEqual(stack2, stack1)
+        stack1.getItem == stack2.getItem && stack2.getItemDamage == stack1.getItemDamage && ItemStack.areItemStackTagsEqual(stack2, stack1)
     }
 
     def getInventory(world:World, wc:BlockCoord):IInventory =
@@ -60,10 +59,10 @@ object InvWrapper
                 upper = chest.adjacentChestZNeg
                 lower = chest
             }
-            if (chest.adjacentChestZPosition != null)
+            if (chest.adjacentChestZPos != null)
             {
                 upper = chest
-                lower = chest.adjacentChestZPosition
+                lower = chest.adjacentChestZPos
             }
             if (lower != null && upper != null) return new HashableLargeChest("Large Chest", upper, lower)
             return inv
@@ -76,12 +75,9 @@ class HashableLargeChest(name:String, val inv1:IInventory, val inv2:IInventory) 
 {
     override def hashCode = inv1.hashCode^inv2.hashCode
 
-    def canEqual(other: Any) = other.isInstanceOf[HashableLargeChest]
-
     override def equals(other:Any) = other match
     {
-        case that:HashableLargeChest =>
-            (that canEqual this) && inv1 == that.inv1 && inv2 == that.inv2
+        case that:HashableLargeChest => inv1 == that.inv1 && inv2 == that.inv2
         case _ => false
     }
 }
@@ -279,7 +275,7 @@ abstract class InvWrapper(val inv:IInventory)
             if (a == b && a != -1) return true
         }
 
-        if (stack1.itemID == stack2.itemID)
+        if (stack1.getItem == stack2.getItem)
         {
             if (matchNBT && !ItemStack.areItemStackTagsEqual(stack1, stack2)) return false
             if (matchMeta)

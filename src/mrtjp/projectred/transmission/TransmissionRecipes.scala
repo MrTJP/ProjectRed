@@ -3,7 +3,6 @@ package mrtjp.projectred.transmission
 import codechicken.microblock.ItemMicroPart
 import cpw.mods.fml.common.registry.GameRegistry
 import mrtjp.projectred.core.ItemPart.EnumPart
-import mrtjp.projectred.core.PRColors
 import mrtjp.projectred.core.ShapedOreNBTRecipe
 import mrtjp.projectred.core.ShapelessOreNBTRecipe
 import net.minecraft.block.Block
@@ -11,6 +10,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraftforge.oredict.ShapedOreRecipe
 import net.minecraftforge.oredict.ShapelessOreRecipe
+import mrtjp.projectred.core.libmc.PRColors
 
 object TransmissionRecipes
 {

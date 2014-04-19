@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.PRColors;
+import mrtjp.projectred.core.libmc.PRColors;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
@@ -34,7 +34,7 @@ public class RenderHalo
     private static List<LightCache> renderList = new ArrayList<LightCache>();
     private static Vector3 renderEntityPos = new Vector3();
     private static Vector3 vec = new Vector3();
-    
+
     private static class LightCache implements Comparable<LightCache>
     {
         final BlockCoord pos;
@@ -72,13 +72,13 @@ public class RenderHalo
         WorldClient w = event.context.theWorld;
         EntityLivingBase entity = event.context.mc.renderViewEntity;
         renderEntityPos.set(entity.posX, entity.posY+entity.getEyeHeight(), entity.posZ);
-        
+
         Collections.sort(renderList);
-        
+
         GL11.glPushMatrix();
         RenderUtils.translateToWorldCoords(event.context.mc.renderViewEntity, event.partialTicks);
         prepareRenderState();
-        
+
         Iterator<LightCache> it = renderList.iterator();
         int max = Configurator.lightHaloMax < 0 ? renderList.size() : Configurator.lightHaloMax;
         for(int i = 0; i < max && it.hasNext(); i++)
@@ -86,7 +86,7 @@ public class RenderHalo
             LightCache cc = it.next();
             renderHalo(tess, w, cc);
         }
-        
+
         renderList.clear();
         restoreRenderState();
         GL11.glPopMatrix();

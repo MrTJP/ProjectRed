@@ -1,13 +1,14 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.vec.BlockCoord
-import mrtjp.projectred.core.utils.{ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.world.World
 import scala.collection.immutable.BitSet
 import scala.collection.mutable
+import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
 
 trait IWorldRouter
 {

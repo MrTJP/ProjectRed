@@ -3,14 +3,13 @@ package mrtjp.projectred.transportation
 import codechicken.core.{IGuiPacketSender, ServerUtils}
 import codechicken.lib.data.{MCDataOutput, MCDataInput}
 import codechicken.lib.packet.PacketCustom
-import mrtjp.projectred.core.BasicGuiUtils
 import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
 import mrtjp.projectred.core.inventory.{SpecialContainer, SimpleInventory}
 import net.minecraft.entity.player.{EntityPlayerMP, EntityPlayer}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
-import mrtjp.projectred.core.utils.ItemKey
+import mrtjp.projectred.core.libmc.{BasicGuiUtils, ItemKey}
 
 class RoutedFirewallPipe extends RoutedJunctionPipePart
 {

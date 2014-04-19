@@ -7,21 +7,21 @@ import codechicken.lib.vec.{BlockCoord, Vector3, Rotation, Transformation}
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api.{IScrewdriver, IConnectable}
 import mrtjp.projectred.core._
-import mrtjp.projectred.core.blockutil.{BlockMulti, TileMulti}
 import mrtjp.projectred.core.inventory.SpecialContainer
-import mrtjp.projectred.core.utils.TPortableInventory
 import mrtjp.projectred.transmission.{PowerWire_100v, FramedPowerWire_100v, WirePart}
 import net.minecraft.block.material.Material
-import net.minecraft.client.renderer.texture.IconRegister
 import net.minecraft.entity.player.{EntityPlayerMP, EntityPlayer}
 import net.minecraft.inventory.{ICrafting, Container, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.Icon
-import net.minecraft.world.World
-import net.minecraftforge.common.ForgeDirection
+import net.minecraft.world.IBlockAccess
+import mrtjp.projectred.core.libmc.{MultiTileTile, MultiTileBlock, BasicUtils, TPortableInventory}
+import net.minecraftforge.common.util.ForgeDirection
+import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.util.IIcon
+import net.minecraft.entity.EntityLivingBase
 
-class BlockMachine(id:Int) extends BlockMulti(id, Material.rock)
+class BlockMachine(id:Int) extends MultiTileBlock(Material.rock)
 {
     setHardness(2)
     setCreativeTab(ProjectRedExpansion.tabExpansion)
@@ -30,11 +30,11 @@ class BlockMachine(id:Int) extends BlockMulti(id, Material.rock)
 
     override def renderAsNormalBlock = true
 
-    override def isBlockSolidOnSide(world:World, x:Int, y:Int, z:Int, side:ForgeDirection) = true
+    override def isSideSolid(w:IBlockAccess, x:Int, y:Int, z:Int, side:ForgeDirection) = true
 
-    override def registerIcons(reg:IconRegister)
+    override def registerBlockIcons(reg:IIconRegister)
     {
-        super.registerIcons(reg)
+        super.registerBlockIcons(reg)
         if (BlockMachine.loaded) return
         def put(name:String) = reg.registerIcon("projectred:machines/"+name)
 
@@ -64,19 +64,19 @@ object BlockMachine
 {
     var loaded = false
 
-    var iconIO:Icon = _
+    var iconIO:IIcon = _
 
-    var bottom:Icon = _
-    var top:Icon = _
-    var side:Icon = _
-    var nowork:Icon = _
-    var work:Icon = _
+    var bottom:IIcon = _
+    var top:IIcon = _
+    var side:IIcon = _
+    var nowork:IIcon = _
+    var work:IIcon = _
 
-    var furnaceFront:Icon = _
-    var furnaceFrontOn:Icon = _
+    var furnaceFront:IIcon = _
+    var furnaceFrontOn:IIcon = _
 }
 
-abstract class TileMachine extends TileMulti
+abstract class TileMachine extends MultiTileTile
 {
     protected var orientation:Byte = 0
 
@@ -96,10 +96,18 @@ abstract class TileMachine extends TileMulti
 
     def rotationT:Transformation = Rotation.sideOrientation(side, rotation).at(Vector3.center)
 
-    override def onBlockPlaced(stack:ItemStack, s:Int, player:EntityPlayer)
+    override def onBlockPlaced(s:Int)
     {
         setSide(if (doesOrient) s^1 else 0)
-        setRotation(Rotation.getSidedRotation(player, side^1))
+    }
+
+    override def onBlockPlacedBy(stack:ItemStack, player:EntityLivingBase)
+    {
+        player match
+        {
+            case p:EntityPlayer => setRotation(Rotation.getSidedRotation(p, side^1))
+            case _ =>
+        }
     }
 
     override def writeDesc(out:MCDataOutput)
@@ -192,7 +200,7 @@ trait TileMachineIO extends TileMachine with TPortableInventory with ISidedInven
         inv.load(tag)
     }
 
-    abstract override def onInventoryChanged() = super.onInventoryChanged()
+    abstract override def markDirty() = super.markDirty()
 
     abstract override def onBlockRemoval()
     {
@@ -513,9 +521,11 @@ with TMachinePowerable with TileMachineIO with TileGuiMachine with TileMachineSi
 
     override def onBlockRemoval() = super.onBlockRemoval()
 
-    override def onInventoryChanged()
+    override def onBlockPlaced(s:Int) = super.onBlockPlaced(s)
+
+    override def markDirty()
     {
-        super.onInventoryChanged()
+        super.markDirty()
         if (isWorking && !canStart)
         {
             isWorking = false

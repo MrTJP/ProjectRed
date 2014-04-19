@@ -179,7 +179,7 @@ public class SpecialContainer extends Container
             ItemStack stack2 = stack.copy();
             int added = wrap.injectItem(stack, true);
             if (added > 0)
-                inv.onInventoryChanged();
+                inv.markDirty();
 
             stack.stackSize -= added;
             if (stack.stackSize <= 0)

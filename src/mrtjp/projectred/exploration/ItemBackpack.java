@@ -172,9 +172,9 @@ public class ItemBackpack extends Item
         }
 
         @Override
-        public void onInventoryChanged()
+        public void markDirty()
         {
-            super.onInventoryChanged();
+            super.markDirty();
             saveInventory();
         }
 

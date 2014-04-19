@@ -1,7 +1,7 @@
 package mrtjp.projectred.integration;
 
 import codechicken.lib.vec.*;
-import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.libmc.BasicUtils;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 

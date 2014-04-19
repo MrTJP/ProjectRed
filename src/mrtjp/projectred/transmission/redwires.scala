@@ -13,6 +13,7 @@ import net.minecraft.block.Block
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ChatMessageComponent
+import mrtjp.projectred.core.libmc.BasicUtils
 
 trait IRedwirePart extends IWirePart with IRedwireEmitter
 

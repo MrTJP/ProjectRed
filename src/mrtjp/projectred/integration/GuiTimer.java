@@ -1,6 +1,6 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.core.BasicGuiUtils;
+import mrtjp.projectred.core.libmc.BasicGuiUtils;
 import mrtjp.projectred.integration.GateLogic.ITimerGuiLogic;
 import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiScreenWidget;

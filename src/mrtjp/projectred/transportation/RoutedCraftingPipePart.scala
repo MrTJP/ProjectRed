@@ -7,16 +7,11 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.BlockCoord
 import java.util.UUID
 import java.util.concurrent.DelayQueue
-import mrtjp.projectred.core.BasicGuiUtils
 import mrtjp.projectred.core.ItemDataCard
 import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.inventory.SimpleInventory
 import mrtjp.projectred.core.inventory.SpecialContainer
 import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
-import mrtjp.projectred.core.utils.ItemKey
-import mrtjp.projectred.core.utils.ItemKeyStack
-import mrtjp.projectred.core.utils.Pair2
-import mrtjp.projectred.core.utils.PostponedWorkItem
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.inventory.Container
@@ -25,6 +20,8 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 import scala.collection
 import scala.collection.immutable
+import mrtjp.projectred.core.lib.{PostponedWorkItem, LabelBreaks, Pair2}
+import mrtjp.projectred.core.libmc.{BasicGuiUtils, ItemKeyStack, ItemKey}
 
 class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 {
@@ -32,7 +29,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     {
         override def onInventoryChanged()
         {
-            super.onInventoryChanged()
+            super.markDirty()
             refreshChips()
         }
 
@@ -151,7 +148,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         var itemsleft = itemsToExtract
         var stacksleft = stacksToExtract
 
-        import mrtjp.projectred.core.utils.LabelBreaks._
+        import LabelBreaks._
         label {
             while (itemsleft > 0 && stacksleft > 0 && (manager.hasOrders || !excess.isEmpty))
             {
@@ -209,7 +206,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         if (lost.isEmpty) return
         var post = lost.peek()
 
-        import mrtjp.projectred.core.utils.LabelBreaks._
+        import LabelBreaks._
         while (post != null) label
         {
             val stack = post.getItem
@@ -327,7 +324,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
             {
                 val chip = item.splitStack(1)
                 chipSlots.setInventorySlotContents(i, chip)
-                chipSlots.onInventoryChanged()
+                chipSlots.markDirty()
                 return true
             }
         }

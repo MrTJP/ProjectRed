@@ -4,13 +4,13 @@ import codechicken.core.IGuiPacketSender;
 import codechicken.core.ServerUtils;
 import codechicken.lib.packet.PacketCustom;
 import mrtjp.projectred.ProjectRedTransportation;
-import mrtjp.projectred.core.BasicGuiUtils;
+import mrtjp.projectred.core.libmc.BasicGuiUtils;
 import mrtjp.projectred.core.ItemPart;
 import mrtjp.projectred.core.ItemPart.EnumPart;
 import mrtjp.projectred.core.inventory.SpecialContainer;
 import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController.InventoryRulesController;
 import mrtjp.projectred.core.inventory.SimpleInventory;
-import mrtjp.projectred.core.utils.Pair2;
+import mrtjp.projectred.core.lib.Pair2;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -102,7 +102,7 @@ public class ItemRouterUtility extends Item
                 }
 
                 @Override
-                public void onInventoryChanged()
+                public void markDirty()
                 {
                     refreshChips();
                 }
@@ -134,7 +134,7 @@ public class ItemRouterUtility extends Item
                     p.dropPlayerItem(todrop);
                 }
 
-            upgradeInv.onInventoryChanged();
+            upgradeInv.markDirty();
         }
 
         @Override

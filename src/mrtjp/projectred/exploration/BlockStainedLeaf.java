@@ -3,7 +3,7 @@ package mrtjp.projectred.exploration;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import mrtjp.projectred.ProjectRedExploration;
-import mrtjp.projectred.core.PRColors;
+import mrtjp.projectred.core.libmc.PRColors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.client.Minecraft;

@@ -1,8 +1,8 @@
 package mrtjp.projectred.core;
 
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.Property;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 
 import java.io.File;
 

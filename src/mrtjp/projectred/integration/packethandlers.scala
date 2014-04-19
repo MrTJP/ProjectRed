@@ -5,12 +5,12 @@ import codechicken.lib.packet.PacketCustom.{IServerPacketHandler, IClientPacketH
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.TMultiPart
 import mrtjp.projectred.ProjectRedIntegration
-import mrtjp.projectred.core.BasicUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.NetClientHandler
 import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
 import net.minecraft.network.NetServerHandler
 import net.minecraft.world.World
+import mrtjp.projectred.core.libmc.BasicUtils
 
 class IntegrationPH
 {

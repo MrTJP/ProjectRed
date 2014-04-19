@@ -2,7 +2,7 @@ package mrtjp.projectred.expansion
 
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.entity.player.EntityPlayer
-import mrtjp.projectred.core.{BasicUtils, TPowerFlow, PowerConductor}
+import mrtjp.projectred.core.{TPowerFlow, PowerConductor}
 import mrtjp.projectred.transportation.{RoutedJunctionPipePart, IInventoryProvider, TControllerLayer}
 import mrtjp.projectred.core.inventory.{SpecialContainer, SimpleInventory}
 import net.minecraft.item.ItemStack
@@ -10,6 +10,7 @@ import net.minecraft.nbt.NBTTagCompound
 import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
 import net.minecraft.inventory.{ICrafting, IInventory}
 import codechicken.lib.vec.BlockCoord
+import mrtjp.projectred.core.libmc.BasicUtils
 
 class TileRouterController extends TileMachine with TileGuiMachine with TControllerLayer
 {
@@ -21,7 +22,7 @@ class TileRouterController extends TileMachine with TileGuiMachine with TControl
 
     var client_hasConflict = false
 
-    override def getBlockID = ProjectRedExpansion.machine1.blockID
+    override def getBlock = ProjectRedExpansion.machine1
 
     override def doesRotate = false
 

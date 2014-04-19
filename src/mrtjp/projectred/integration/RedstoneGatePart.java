@@ -4,7 +4,7 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.*;
 import codechicken.multipart.handler.MultipartProxy;
-import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.libmc.BasicUtils;
 import mrtjp.projectred.transmission.IRedwireEmitter;
 
 import java.util.Random;

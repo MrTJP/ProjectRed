@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.inventory;
 
-import mrtjp.projectred.core.utils.OpenGLLib;
+import mrtjp.projectred.core.libmc.OpenGLLib;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Matrix4f;

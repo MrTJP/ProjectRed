@@ -4,6 +4,7 @@ import codechicken.lib.vec.{Rotation, BlockCoord}
 import codechicken.multipart.PartMap
 import mrtjp.projectred.api.IConnectable
 import net.minecraft.world.World
+import mrtjp.projectred.core.libmc.BasicUtils
 
 object WireConnLib
 {

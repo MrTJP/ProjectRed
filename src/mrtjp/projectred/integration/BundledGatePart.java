@@ -2,7 +2,7 @@ package mrtjp.projectred.integration;
 
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
-import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.libmc.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;

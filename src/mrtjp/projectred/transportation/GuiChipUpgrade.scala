@@ -3,13 +3,12 @@ package mrtjp.projectred.transportation
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.render.FontUtils
-import mrtjp.projectred.core.BasicGuiUtils
-import mrtjp.projectred.core.PRColors
 import mrtjp.projectred.core.inventory._
 import mrtjp.projectred.transportation.ItemRouterUtility.ChipUpgradeContainer
 import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.ResourceLocation
 import scala.collection.mutable.ListBuffer
+import mrtjp.projectred.core.libmc.{PRColors, BasicGuiUtils}
 
 object GuiChipUpgrade
 {

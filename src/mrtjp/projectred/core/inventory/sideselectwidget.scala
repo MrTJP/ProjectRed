@@ -5,23 +5,22 @@ import codechicken.lib.math.MathHelper
 import codechicken.lib.render.CCModel
 import codechicken.lib.render.Vertex5
 import codechicken.lib.vec.Rotation
-import mrtjp.projectred.core.PRColors
-import mrtjp.projectred.core.utils.DirectionalRayTracer
-import mrtjp.projectred.core.utils.DirectionalRayTracer.HitCoord
-import mrtjp.projectred.core.utils.MathLib
+import mrtjp.projectred.core.libmc.{PRColors, MathLib, DirectionalRayTracer}
+import DirectionalRayTracer.HitCoord
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderBlocks
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.TextureMap
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.tileentity.TileEntity
-import net.minecraftforge.common.ForgeDirection
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Matrix4f
 import org.lwjgl.util.vector.Vector3f
 import scala.collection.JavaConversions
 import scala.collection.mutable.ListBuffer
+import net.minecraft.init.Blocks
+import net.minecraftforge.common.util.ForgeDirection
 
 class WidgetSideSelect(x:Int, y:Int, width:Int, height:Int, scale:Double) extends GhostWidget(x, y, width, height)
 {
@@ -231,12 +230,12 @@ trait TWidgetSideBlock extends WidgetSideSelect
         renderEngine.bindTexture(TextureMap.locationBlocksTexture)
         renderBlocks.setRenderBounds(0, 0, 0, 1, 1, 1)
         t.startDrawingQuads()
-        renderBlocks.renderFaceXNeg(Block.stone, -0.5, -0.5, -0.5, block.getIcon(4, meta))
-        renderBlocks.renderFaceXPos(Block.stone, -0.5, -0.5, -0.5, block.getIcon(5, meta))
-        renderBlocks.renderFaceYPos(Block.stone, -0.5, -0.5, -0.5, block.getIcon(1, meta))
-        renderBlocks.renderFaceYNeg(Block.stone, -0.5, -0.5, -0.5, block.getIcon(0, meta))
-        renderBlocks.renderFaceZNeg(Block.stone, -0.5, -0.5, -0.5, block.getIcon(2, meta))
-        renderBlocks.renderFaceZPos(Block.stone, -0.5, -0.5, -0.5, block.getIcon(3, meta))
+        renderBlocks.renderFaceXNeg(Blocks.stone, -0.5, -0.5, -0.5, block.getIcon(4, meta))
+        renderBlocks.renderFaceXPos(Blocks.stone, -0.5, -0.5, -0.5, block.getIcon(5, meta))
+        renderBlocks.renderFaceYPos(Blocks.stone, -0.5, -0.5, -0.5, block.getIcon(1, meta))
+        renderBlocks.renderFaceYNeg(Blocks.stone, -0.5, -0.5, -0.5, block.getIcon(0, meta))
+        renderBlocks.renderFaceZNeg(Blocks.stone, -0.5, -0.5, -0.5, block.getIcon(2, meta))
+        renderBlocks.renderFaceZPos(Blocks.stone, -0.5, -0.5, -0.5, block.getIcon(3, meta))
         t.draw
     }
 }
@@ -259,7 +258,7 @@ trait TWidgetSideTE extends WidgetSideSelect
     abstract override def draw()
     {
         super.draw()
-        TileEntityRenderer.instance.renderTileEntityAt(tile, -0.5, -0.5, -0.5, 0)
+        TileEntityRendererDispatcher.instance.renderTileEntityAt(tile, -0.5, -0.5, -0.5, 0)
     }
 }
 

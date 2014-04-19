@@ -4,7 +4,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.*;
 import codechicken.multipart.*;
-import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.libmc.BasicUtils;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.integration.ArrayCommons.ITopArrayWire;
 import mrtjp.projectred.transmission.*;

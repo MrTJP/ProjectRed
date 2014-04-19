@@ -3,7 +3,6 @@ package mrtjp.projectred.transportation
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.TileMultipart
 import mrtjp.projectred.api.ISpecialLinkState
-import mrtjp.projectred.core.utils.{ItemKey, Pair2}
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.tileentity.TileEntity
 import net.minecraftforge.common.ForgeDirection
@@ -11,7 +10,9 @@ import scala.collection.mutable.{HashMap => MHashMap}
 import scala.collection.immutable.{BitSet, HashMap, HashSet}
 import net.minecraft.world.World
 import java.util.PriorityQueue
-import mrtjp.projectred.core.{PathNode, AStar, BasicUtils}
+import mrtjp.projectred.core.{PathNode, AStar}
+import mrtjp.projectred.core.lib.LabelBreaks
+import mrtjp.projectred.core.libmc.{BasicUtils, ItemKey}
 
 object LSPathFinder
 {
@@ -193,7 +194,7 @@ class LogisticPathFinder(source:Router, payload:ItemKey)
     {
         var bestResponse = new SyncResponse
         var bestIP = -1
-        import mrtjp.projectred.core.utils.LabelBreaks._
+        import LabelBreaks._
 
         for (l <- source.getFilteredRoutesByCost(p => p.flagRouteTo && p.allowRouting && p.allowItem(payload))) label
         {

@@ -9,8 +9,12 @@ import java.util
 import java.util.Date
 import net.minecraft.entity.player.EntityPlayer
 import scala.util.parsing.json.JSON
+import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent
+import cpw.mods.fml.common.eventhandler.SubscribeEvent
+import net.minecraft.util.{ChatComponentText, ChatComponentStyle}
+import cpw.mods.fml.common.gameevent.TickEvent
 
-class PRVersioningThread extends Thread("PR Version Check") with ITickHandler
+class PRVersioningThread extends Thread("PR Version Check")
 {
     var parser = new PRBuildsParser(Configurator.version)
     var outdated = false
@@ -26,22 +30,22 @@ class PRVersioningThread extends Thread("PR Version Check") with ITickHandler
         outdated = parser.isOutdated
     }
 
-    override def getLabel = "PR Version Checker"
-
-    override def ticks() = util.EnumSet.of(TickType.PLAYER)
-    override def tickStart(tick:util.EnumSet[TickType], tickData:AnyRef*){}
-
     var displayed = false
-    override def tickEnd(tick:util.EnumSet[TickType], tickData:AnyRef*)
+
+    @SubscribeEvent
+    def tickEnd(event:PlayerTickEvent)
     {
-        if (!outdated || displayed) return
+        if (event.phase == TickEvent.Phase.END)
+        {
+            if (!outdated || displayed) return
 
-        val p = tickData(0).asInstanceOf[EntityPlayer]
-        val target = parser.getTargetBuild
-        p.addChatMessage("Version "+target.version+" of ProjectRed was released on "+target.buildDate+".")
-        for (s <- parser.getChangelogSince) p.addChatMessage(s)
+            val p = event.player
+            val target = parser.getTargetBuild
+            p.addChatMessage(new ChatComponentText("Version "+target.version+" of ProjectRed was released on "+target.buildDate+"."))
+            for (s <- parser.getChangelogSince) p.addChatMessage(new ChatComponentText(s))
 
-        displayed = true
+            displayed = true
+        }
     }
 }
 

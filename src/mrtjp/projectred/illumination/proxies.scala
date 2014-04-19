@@ -10,7 +10,7 @@ import net.minecraftforge.client.MinecraftForgeClient
 import mrtjp.projectred.ProjectRedIllumination
 import cpw.mods.fml.client.registry.ClientRegistry
 import net.minecraftforge.common.MinecraftForge
-import mrtjp.projectred.core.utils.ItemKey
+import mrtjp.projectred.core.libmc.ItemKey
 
 class IlluminationProxy_server extends IProxy with IPartFactory
 {

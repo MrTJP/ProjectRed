@@ -5,12 +5,13 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.TMultiPart
 import mrtjp.projectred.api.{IBundledTile, IConnectable, IBundledEmitter}
-import mrtjp.projectred.core.{CoreSPH, BasicUtils}
+import mrtjp.projectred.core.CoreSPH
 import mrtjp.projectred.transmission.IWirePart._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ChatMessageComponent
 import net.minecraft.tileentity.TileEntity
+import mrtjp.projectred.core.libmc.BasicUtils
 
 trait IBundledCablePart extends IWirePart with IBundledEmitter
 {

@@ -5,10 +5,10 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.TMultiPart;
-import mrtjp.projectred.core.BasicUtils;
-import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.core.fx.*;
-import mrtjp.projectred.core.fx.ParticleLogicTrail.IParticleBuilder;
+import mrtjp.projectred.core.libmc.BasicUtils;
+import mrtjp.projectred.core.libmc.PRColors;
+import mrtjp.projectred.core.libmc.fx.*;
+import mrtjp.projectred.core.libmc.fx.ParticleLogicTrail.IParticleBuilder;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
