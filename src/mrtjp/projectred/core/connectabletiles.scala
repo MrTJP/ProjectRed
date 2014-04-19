@@ -7,6 +7,8 @@ import mrtjp.projectred.core.blockutil.TileMulti
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
+import mrtjp.projectred.core.libmc.{MultiTileTile, BasicUtils}
+import net.minecraft.block.Block
 
 trait TConnectableTile extends TileEntity with IConnectable
 {
@@ -124,7 +126,7 @@ trait TConnectableTile extends TileEntity with IConnectable
     def rebuildConns() = if (updateExternals()) sendConnUpdate()
 }
 
-trait TConnectableTileMulti extends TileMulti with TConnectableTile
+trait TConnectableTileMulti extends MultiTileTile with TConnectableTile
 {
     def clientNeedsMap = false
 
@@ -136,21 +138,21 @@ trait TConnectableTileMulti extends TileMulti with TConnectableTile
         case _ => super.read(in, switchkey)
     }
 
-    abstract override def onBlockNeighborChange(l:Int)
+    abstract override def onNeighborChange(b:Block)
     {
-        super.onBlockNeighborChange(l)
+        super.onNeighborChange(b)
         if (!worldObj.isRemote) rebuildConns()
     }
 
-    abstract override def onBlockPlaced(stack:ItemStack, side:Int, player:EntityPlayer)
+    abstract override def onBlockPlaced(side:Int)
     {
-        super.onBlockPlaced(stack, side, player)
+        super.onBlockPlaced(side)
         if (!worldObj.isRemote) rebuildConns()
     }
 
     abstract override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        BasicUtils.updateIndirectNeighbors(worldObj, xCoord, yCoord, zCoord, getBlockID)
+        BasicUtils.updateIndirectNeighbors(worldObj, xCoord, yCoord, zCoord, getBlock)
     }
 }

@@ -8,7 +8,7 @@ import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.ProjectRedIllumination;
-import mrtjp.projectred.core.BasicWireUtils;
+import mrtjp.projectred.core.libmc.BasicWireUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;

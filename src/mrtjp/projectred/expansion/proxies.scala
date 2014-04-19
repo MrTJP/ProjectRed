@@ -7,9 +7,9 @@ import cpw.mods.fml.common.Loader
 import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.core.blockutil.ItemBlockMulti
-import mrtjp.projectred.core.{BasicRenderUtils, Configurator, IProxy}
+import mrtjp.projectred.core.{Configurator, IProxy}
 import mrtjp.projectred.transmission._
+import mrtjp.projectred.core.libmc.{BasicRenderUtils, ItemBlockMulti}
 
 class ExpansionProxy_server extends IProxy with IPartFactory
 {

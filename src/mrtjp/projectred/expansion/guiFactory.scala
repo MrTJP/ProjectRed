@@ -2,7 +2,6 @@ package mrtjp.projectred.expansion
 
 import codechicken.lib.render._
 import codechicken.lib.vec.{Rotation, Translation, Cuboid6}
-import mrtjp.projectred.core.{BasicGuiUtils, PRColors}
 import mrtjp.projectred.core.inventory._
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -11,6 +10,8 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import scala.collection.mutable.ListBuffer
 import codechicken.core.gui.GuiDraw
+import mrtjp.projectred.core.libmc.PRColors
+import codechicken.lib.render.uv.IconTransformation
 
 object MachineGuiFactory
 {
@@ -72,19 +73,19 @@ abstract class TabSideConfig(c:Int, tile:TileMachineSideConfig) extends WidgetTa
 
             CCRenderState.reset()
 
-            CCRenderState.startDrawing(7)
+            CCRenderState.startDrawing()
             tessellateTile(stile.side, stile.rotation)
             CCRenderState.draw()
 
             for (s <- 0 until 6) if (s != Rotation.rotateSide(stile.side, stile.rotation))
             {
-                CCRenderState.setColourOpaque(PRColors.get(stile.sideConfig(s)).rgb)
-                CCRenderState.startDrawing(7)
+                CCRenderState.setColour(PRColors.get(stile.sideConfig(s)).rgb)
+                CCRenderState.startDrawing()
                 val s2 = SideConfigSS.sides.copy()
                 s2.shrinkUVs(0.0005D)
                 s2.apply(new Translation(-0.5, -0.5, -0.5))
-                s2.apply(new IconTransformation(BlockMachine.iconIO))
-                s2.render(s*4, 4, null, null, ColourModifier.instance)
+                s2.apply(new uv.IconTransformation(BlockMachine.iconIO))
+                s2.render(s*4, 4, null, null)
                 CCRenderState.draw()
             }
         }

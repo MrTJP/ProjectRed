@@ -3,14 +3,12 @@ package mrtjp.projectred
 import codechicken.lib.packet.PacketCustom
 import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.event.{FMLPreInitializationEvent, FMLInitializationEvent, FMLPostInitializationEvent}
-import cpw.mods.fml.common.network.NetworkMod
 import mrtjp.projectred.expansion.{ExpansionProxy, BlockMachine}
-import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.ItemStack
+import net.minecraft.init.Blocks
 
 @Mod(modid = "ProjRed|Expansion", useMetadata = true, modLanguage = "scala")
-@NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = classOf[PacketCustom.CustomTinyPacketHandler])
 object ProjectRedExpansion
 {
     /** Blocks **/
@@ -20,7 +18,9 @@ object ProjectRedExpansion
 
     val tabExpansion = new CreativeTabs("expansion")
     {
-        override def getIconItemStack = new ItemStack(Block.hopperBlock)
+        override def getIconItemStack = new ItemStack(Blocks.hopper)
+
+        override def getTabIconItem = getIconItemStack.getItem
     }
 
     @Mod.EventHandler

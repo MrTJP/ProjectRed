@@ -1,14 +1,14 @@
 package mrtjp.projectred.core.inventory
 
 import codechicken.core.gui.GuiDraw
-import mrtjp.projectred.core.BasicGuiUtils
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.entity.RenderItem
 import net.minecraft.item.ItemStack
-import net.minecraft.util.Icon
+import net.minecraft.util.IIcon
 import org.lwjgl.opengl.{GL12, GL11}
 import scala.collection.JavaConversions
 import scala.collection.mutable.ListBuffer
+import mrtjp.projectred.core.libmc.BasicGuiUtils
 
 class WidgetTab(c:Int, wMin:Int, hMin:Int, wMax:Int, hMax:Int) extends GhostWidget(0, 0, wMin, hMin)
 {
@@ -119,9 +119,9 @@ trait TStackTab extends WidgetTab
 
 trait TIconTab extends WidgetTab
 {
-    var icon:Icon = _
+    var icon:IIcon = _
 
-    def setIcon(i:Icon) =
+    def setIcon(i:IIcon) =
     {
         icon = i
         this

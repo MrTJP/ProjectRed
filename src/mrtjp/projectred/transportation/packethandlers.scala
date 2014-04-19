@@ -5,13 +5,13 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.lib.packet.PacketCustom.{IServerPacketHandler, IClientPacketHandler}
 import java.util
 import mrtjp.projectred.ProjectRedTransportation
-import mrtjp.projectred.core.BasicUtils
-import mrtjp.projectred.core.utils.{ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.utils.ItemKeyStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.NetClientHandler
 import net.minecraft.entity.player.{EntityPlayerMP, EntityPlayer}
 import net.minecraft.network.NetServerHandler
 import net.minecraft.world.World
+import mrtjp.projectred.core.libmc.{BasicUtils, ItemKeyStack, ItemKey}
 
 class TransportationPH
 {

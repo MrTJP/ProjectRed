@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.inventory;
 
-import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.libmc.BasicUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -55,9 +55,15 @@ public class SimpleInventory implements IInventory
     }
 
     @Override
-    public String getInvName()
+    public String getInventoryName()
     {
         return invName;
+    }
+
+    @Override
+    public boolean hasCustomInventoryName()
+    {
+        return true;
     }
 
     @Override
@@ -67,7 +73,7 @@ public class SimpleInventory implements IInventory
     }
 
     @Override
-    public void onInventoryChanged()
+    public void markDirty()
     {
     }
 
@@ -78,12 +84,12 @@ public class SimpleInventory implements IInventory
     }
 
     @Override
-    public void openChest()
+    public void openInventory()
     {
     }
 
     @Override
-    public void closeChest()
+    public void closeInventory()
     {
     }
 
@@ -97,16 +103,16 @@ public class SimpleInventory implements IInventory
         if (tag == null)
             return;
 
-        NBTTagList tag1 = tag.getTagList(prefix + "items");
+        NBTTagList tag1 = tag.getTagList(prefix+"items", 0);
 
         for (int i = 0; i < tag1.tagCount(); i++)
         {
-            NBTTagCompound tag2 = (NBTTagCompound) tag1.tagAt(i);
+            NBTTagCompound tag2 = tag1.getCompoundTagAt(i);
             int index = tag2.getInteger("index");
             if (index < storage.length)
                 storage[index] = ItemStack.loadItemStackFromNBT(tag2);
         }
-        onInventoryChanged();
+        markDirty();
     }
 
     public void save(NBTTagCompound tag)
@@ -128,8 +134,8 @@ public class SimpleInventory implements IInventory
                 storage[i].writeToNBT(tag2);
                 itemList.appendTag(tag2);
             }
-        tag.setTag(prefix + "items", itemList);
-        tag.setInteger(prefix + "itemsCount", storage.length);
+        tag.setTag(prefix+"items", itemList);
+        tag.setInteger(prefix+"itemsCount", storage.length);
     }
 
     public void dropContents(World worldObj, int posX, int posY, int posZ)
@@ -142,7 +148,7 @@ public class SimpleInventory implements IInventory
                     ItemStack todrop = decrStackSize(i, storage[i].getMaxStackSize());
                     BasicUtils.dropItem(worldObj, posX, posY, posZ, todrop);
                 }
-            onInventoryChanged();
+            markDirty();
         }
     }
 
@@ -154,14 +160,8 @@ public class SimpleInventory implements IInventory
 
         ItemStack stackToTake = this.storage[i];
         this.storage[i] = null;
-        onInventoryChanged();
+        markDirty();
         return stackToTake;
-    }
-
-    @Override
-    public boolean isInvNameLocalized()
-    {
-        return true;
     }
 
     @Override

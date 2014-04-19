@@ -3,6 +3,7 @@ package mrtjp.projectred.core
 import codechicken.lib.vec.{BlockCoord, Rotation}
 import codechicken.multipart._
 import mrtjp.projectred.api.IConnectable
+import mrtjp.projectred.core.libmc.BasicUtils
 
 trait TAcquisitionsCommons extends TMultiPart
 {
@@ -15,7 +16,7 @@ trait TAcquisitionsCommons extends TMultiPart
     def notifyStraight(dir:Int)
     {
         val pos = posOfStraight(dir)
-        world.notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile.getBlockType.blockID)
+        world.notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile.getBlockType)
     }
 
     def notifyInternal(dir:Int)
@@ -59,7 +60,7 @@ trait TFaceAcquisitions extends TAcquisitionsCommons with TFaceOrient
     def notifyCorner(r:Int)
     {
         val pos = posOfCorner(r)
-        world.notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile.getBlockType.blockID)
+        world.notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile.getBlockType)
     }
 }
 

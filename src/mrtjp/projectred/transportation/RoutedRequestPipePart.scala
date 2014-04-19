@@ -1,11 +1,11 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.packet.PacketCustom
-import mrtjp.projectred.core.utils.ItemKey
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.MovingObjectPosition
 import net.minecraftforge.common.ForgeDirection
+import mrtjp.projectred.core.libmc.ItemKey
 
 class RoutedRequestPipePart extends RoutedJunctionPipePart
 {

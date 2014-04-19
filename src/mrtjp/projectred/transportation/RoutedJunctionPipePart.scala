@@ -9,10 +9,7 @@ import java.util.UUID
 import java.util.concurrent.PriorityBlockingQueue
 import mrtjp.projectred.api.IScrewdriver
 import mrtjp.projectred.core.inventory.InvWrapper
-import mrtjp.projectred.core.utils.ItemKey
-import mrtjp.projectred.core.utils.ItemKeyStack
-import mrtjp.projectred.core.utils.Pair2
-import mrtjp.projectred.core.{CoreSPH, Messenger, BasicUtils, Configurator}
+import mrtjp.projectred.core.{CoreSPH, Messenger, Configurator}
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
@@ -25,6 +22,8 @@ import net.minecraftforge.common.ForgeDirection
 import scala.collection.JavaConversions._
 import scala.collection.immutable.BitSet
 import codechicken.lib.packet.PacketCustom
+import mrtjp.projectred.core.lib.{LabelBreaks, Pair2}
+import mrtjp.projectred.core.libmc.{BasicUtils, ItemKeyStack, ItemKey}
 
 object RoutedJunctionPipePart
 {
@@ -426,7 +425,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         var found = false
         val oldSide = inOutSide
 
-        import mrtjp.projectred.core.utils.LabelBreaks._
+        import LabelBreaks._
         label {
             for (i <- 0 until 6)
             {

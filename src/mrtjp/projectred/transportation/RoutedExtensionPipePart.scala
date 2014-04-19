@@ -8,7 +8,6 @@ import mrtjp.projectred.core.inventory.SpecialContainer
 import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
 import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
 import mrtjp.projectred.core.inventory.SimpleInventory
-import mrtjp.projectred.core.utils.ItemKeyStack
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.inventory.Container
@@ -17,6 +16,8 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 import java.util.LinkedList
 import mrtjp.projectred.transportation.RequestFlags._
+import mrtjp.projectred.core.lib.LabelBreaks
+import mrtjp.projectred.core.libmc.ItemKeyStack
 
 class RoutedExtensionPipePart extends RoutedJunctionPipePart
 {
@@ -62,7 +63,7 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
             }
             cardslot.setInventorySlotContents(0, null)
             cardslot.setInventorySlotContents(1, stack)
-            cardslot.onInventoryChanged()
+            cardslot.markDirty()
         }
     }
 
@@ -70,7 +71,7 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
     {
         if (lost.isEmpty) return
 
-        import mrtjp.projectred.core.utils.LabelBreaks._
+        import LabelBreaks._
         while (!lost.isEmpty) label
         {
             val stack =

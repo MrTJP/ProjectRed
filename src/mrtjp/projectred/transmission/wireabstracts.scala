@@ -21,6 +21,7 @@ import net.minecraft.util.MovingObjectPosition
 import net.minecraftforge.common.ForgeDirection
 import org.lwjgl.opengl.GL11
 import scala.collection.JavaConversions._
+import mrtjp.projectred.core.libmc.{BasicWireUtils, BasicUtils}
 
 trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion
 {

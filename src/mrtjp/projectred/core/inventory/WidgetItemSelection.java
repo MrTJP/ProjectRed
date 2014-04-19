@@ -2,8 +2,8 @@ package mrtjp.projectred.core.inventory;
 
 import codechicken.core.gui.GuiDraw;
 import codechicken.lib.render.FontUtils;
-import mrtjp.projectred.core.PRColors;
-import mrtjp.projectred.core.utils.ItemKeyStack;
+import mrtjp.projectred.core.libmc.PRColors;
+import mrtjp.projectred.core.libmc.ItemKeyStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;

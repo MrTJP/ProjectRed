@@ -6,7 +6,6 @@ import codechicken.lib.render._
 import codechicken.lib.vec._
 import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
 import codechicken.microblock.{BlockMicroMaterial, MicroMaterialRegistry, MicroblockClass}
-import mrtjp.projectred.core.{BasicUtils, PRColors}
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.entity.{RenderManager, RenderItem}
@@ -17,6 +16,7 @@ import net.minecraft.world.World
 import net.minecraftforge.common.ForgeDirection
 import org.lwjgl.opengl.GL11
 import java.text.DecimalFormat
+import mrtjp.projectred.core.libmc.{PRColors, BasicUtils}
 
 object RenderPipe
 {

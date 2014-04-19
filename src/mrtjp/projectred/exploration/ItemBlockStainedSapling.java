@@ -1,6 +1,6 @@
 package mrtjp.projectred.exploration;
 
-import mrtjp.projectred.core.PRColors;
+import mrtjp.projectred.core.libmc.PRColors;
 import net.minecraft.item.ItemStack;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

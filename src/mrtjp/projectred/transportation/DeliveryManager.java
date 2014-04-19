@@ -1,8 +1,8 @@
 package mrtjp.projectred.transportation;
 
-import mrtjp.projectred.core.utils.ItemKey;
-import mrtjp.projectred.core.utils.ItemKeyStack;
-import mrtjp.projectred.core.utils.Pair2;
+import mrtjp.projectred.core.libmc.ItemKey;
+import mrtjp.projectred.core.libmc.ItemKeyStack;
+import mrtjp.projectred.core.lib.Pair2;
 
 import java.util.LinkedList;
 

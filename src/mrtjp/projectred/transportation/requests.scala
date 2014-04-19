@@ -5,6 +5,8 @@ import java.util.{PriorityQueue => JPriorityQueue}
 import mrtjp.projectred.core.utils._
 import net.minecraft.item.ItemStack
 import scala.collection.immutable.{HashMap, TreeSet}
+import mrtjp.projectred.core.lib.{LabelBreaks, Pair2, HashPair2}
+import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
 
 object RequestFlags extends Enumeration
 {

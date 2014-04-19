@@ -35,3 +35,7 @@ options.txt
 #Modeling stuff
 *.blend1
 *.blend2
+#libs
+/libs/
+/assets/
+/out/

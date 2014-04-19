@@ -1,19 +1,17 @@
 package mrtjp.projectred.core;
 
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.world.ChunkDataEvent;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 
-public class RetroactiveWorldGenerator implements ITickHandler
+public class RetroactiveWorldGenerator
 {
     public static final RetroactiveWorldGenerator instance = new RetroactiveWorldGenerator();
 
@@ -30,7 +28,7 @@ public class RetroactiveWorldGenerator implements ITickHandler
         generators.add(g);
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     public void chunkLoad(ChunkDataEvent.Load event)
     {
         queueRetroactiveGeneration(event);
@@ -85,27 +83,11 @@ public class RetroactiveWorldGenerator implements ITickHandler
         }
     }
 
-    @Override
-    public void tickStart(EnumSet<TickType> type, Object... tickData)
-    {
-    }
 
-    @Override
-    public void tickEnd(EnumSet<TickType> type, Object... tickData)
+    @SubscribeEvent
+    public void tickEnd(WorldTickEvent event)
     {
-        runRetroactiveGeneration((WorldServer) tickData[0]);
-    }
-
-    @Override
-    public EnumSet<TickType> ticks()
-    {
-        return EnumSet.of(TickType.WORLD);
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return "pr_retrogen_ticker";
+        if (event.phase == Phase.END) runRetroactiveGeneration(event.world);
     }
 
     private void runRetroactiveGeneration(World w1)

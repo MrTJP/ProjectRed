@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack
 object ProjectRedCore
 {
     /** Items **/
-    var itemComponent:ItemPart = null
+    var itemPart:ItemPart = null
     var itemDrawPlate:ItemDrawPlate = null
     var itemScrewdriver:ItemScrewdriver = null
     var itemWireDebugger:ItemWireDebugger = null

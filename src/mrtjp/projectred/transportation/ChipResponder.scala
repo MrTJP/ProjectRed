@@ -1,8 +1,8 @@
 package mrtjp.projectred.transportation
 
 import mrtjp.projectred.core.inventory.InvWrapper
-import mrtjp.projectred.core.utils.ItemKey
 import scala.collection.mutable.ListBuffer
+import mrtjp.projectred.core.libmc.ItemKey
 
 class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriority
 {

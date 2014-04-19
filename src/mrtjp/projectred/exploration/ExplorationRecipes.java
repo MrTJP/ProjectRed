@@ -2,7 +2,7 @@ package mrtjp.projectred.exploration;
 
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.ItemPart.EnumPart;
-import mrtjp.projectred.core.PRColors;
+import mrtjp.projectred.core.libmc.PRColors;
 import mrtjp.projectred.core.ShapelessOreNBTRecipe;
 import mrtjp.projectred.exploration.BlockOre.EnumOre;
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;

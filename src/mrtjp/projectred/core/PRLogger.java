@@ -12,7 +12,6 @@ public class PRLogger
     static
     {
         pr_logger = Logger.getLogger(Configurator.modName);
-        pr_logger.setParent(FMLLog.getLogger());
     }
 
     private static void log(Level lvl, String msg)

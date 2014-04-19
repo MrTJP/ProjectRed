@@ -1,8 +1,6 @@
 package mrtjp.projectred.transportation
 
 import java.util.UUID
-import mrtjp.projectred.core.PRColors
-import mrtjp.projectred.core.utils.ItemKeyStack
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.Item
@@ -12,6 +10,7 @@ import net.minecraftforge.common.ForgeDirection
 import scala.collection.convert.WrapAsJava
 import scala.collection.immutable
 import scala.collection.immutable.BitSet
+import mrtjp.projectred.core.libmc.{PRColors, ItemKeyStack}
 
 object RoutedPayload
 {

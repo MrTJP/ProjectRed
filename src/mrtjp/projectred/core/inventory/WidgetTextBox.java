@@ -24,7 +24,7 @@ public class WidgetTextBox extends GhostWidget
         isEnabled = true;
         this.text = text;
 
-        allowedcharacters = ChatAllowedCharacters.allowedCharacters;
+        allowedcharacters = new String(ChatAllowedCharacters.allowedCharacters);
     }
 
     public WidgetTextBox setActionCommand(String s)
@@ -182,7 +182,7 @@ public class WidgetTextBox extends GhostWidget
     public WidgetTextBox setAllowedCharacters(String s)
     {
         if (s == null || s.isEmpty())
-            s = ChatAllowedCharacters.allowedCharacters;
+            s = new String(ChatAllowedCharacters.allowedCharacters);
 
         allowedcharacters = s;
         return this;

@@ -4,7 +4,7 @@ import codechicken.lib.vec._
 import codechicken.multipart.{TileMultipart, TMultiPart, TItemMultiPart, MultiPartRegistry}
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.ProjectRedTransmission
-import mrtjp.projectred.core.{BasicUtils, BasicWireUtils}
+import mrtjp.projectred.core.BasicWireUtils
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.texture.IconRegister
 import net.minecraft.creativetab.CreativeTabs
@@ -22,6 +22,7 @@ import scala.collection.mutable
 import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
 import codechicken.microblock.{MicroblockClass, MicroMaterialRegistry}
 import codechicken.lib.raytracer.ExtendedMOP
+import mrtjp.projectred.core.libmc.{BasicWireUtils, BasicUtils}
 
 abstract class ItemWireCommon(id:Int) extends Item(id) with TItemMultiPart
 {

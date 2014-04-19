@@ -4,17 +4,15 @@ import codechicken.core.IGuiPacketSender
 import codechicken.core.ServerUtils
 import codechicken.lib.packet.PacketCustom
 import codechicken.multipart.INeighborTileChange
-import mrtjp.projectred.core.BasicGuiUtils
 import mrtjp.projectred.core.inventory.SimpleInventory
 import mrtjp.projectred.core.inventory.SpecialContainer
 import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
-import mrtjp.projectred.core.utils.ItemKey
-import mrtjp.projectred.core.utils.ItemKeyStack
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
+import mrtjp.projectred.core.libmc.{BasicGuiUtils, ItemKeyStack, ItemKey}
 
 class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcaster with INeighborTileChange
 {
@@ -22,7 +20,7 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
     {
         override def onInventoryChanged()
         {
-            super.onInventoryChanged()
+            super.markDirty()
             refreshChips()
         }
 
@@ -73,7 +71,7 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
                 {
                     val chip = item.splitStack(1)
                     chipSlots.setInventorySlotContents(i, chip)
-                    chipSlots.onInventoryChanged()
+                    chipSlots.markDirty()
                     return true
                 }
         }

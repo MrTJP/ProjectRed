@@ -5,15 +5,15 @@ import codechicken.lib.render._
 import codechicken.lib.vec._
 import java.util.Random
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.core.blockutil.RenderMulti
-import mrtjp.projectred.core.{PRColors, BasicUtils}
 import mrtjp.projectred.expansion.BlockMachine._
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderBlocks
-import net.minecraft.util.Icon
+import net.minecraft.util.IIcon
 import net.minecraft.world.{IBlockAccess, World}
+import mrtjp.projectred.core.libmc.{MultiTileRender, PRColors, BasicUtils}
+import codechicken.lib.render.uv.{MultiIconTransformation, IconTransformation}
 
-abstract class TileMachineRender(b:Block) extends RenderMulti(b)
+abstract class TileMachineRender(b:Block) extends MultiTileRender(b)
 {
     val matrix = new LightMatrix
     val sides =
@@ -33,28 +33,28 @@ abstract class TileMachineRender(b:Block) extends RenderMulti(b)
 
     def renderWorldBlock(r:RenderBlocks, w:IBlockAccess, x:Int, y:Int, z:Int, meta:Int)
     {
-        matrix.computeAt(w, x, y, z)
+        matrix.locate(w, x, y, z)
         val tile = BasicUtils.getTileEntity(w, new BlockCoord(x,y,z), classOf[TileMachineWorking])
         if (tile != null)
         {
             CCRenderState.reset()
-            CCRenderState.useModelColours(true)
+            //CCRenderState.useModelColours(true)
             for (s <- 0 until 6)
                 if (s != Rotation.rotateSide(tile.side, tile.rotation))
                 {
                     sides.setColour(PRColors.get(tile.sideConfig(s)).rgba)
-                    sides.render(s*4, 4, Vector3.fromTileEntity(tile).translation(), new IconTransformation(BlockMachine.iconIO), matrix)
+                    sides.render(s*4, 4, Vector3.fromTileEntity(tile).translation(), new uv.IconTransformation(BlockMachine.iconIO), matrix)
                 }
                 else
                 {
                     sides.setColour(-1)
-                    val w = new IconTransformation(if (tile.isWorking) BlockMachine.work else BlockMachine.nowork)
+                    val w = new uv.IconTransformation(if (tile.isWorking) BlockMachine.work else BlockMachine.nowork)
                     sides.render(s*4, 4, Vector3.fromTileEntity(tile).translation(), w, matrix)
                 }
 
             val iconT =
             {
-                if (r.overrideBlockTexture != null) new IconTransformation(r.overrideBlockTexture)
+                if (r.overrideBlockTexture != null) new uv.IconTransformation(r.overrideBlockTexture)
                 else new MultiIconTransformation(bottom, top, side, getFront(tile.isWorking), side, side)
             }
 
@@ -70,16 +70,16 @@ abstract class TileMachineRender(b:Block) extends RenderMulti(b)
         s2.render(null, iconT, null)
     }
 
-    def getFront(working:Boolean):Icon
+    def getFront(working:Boolean):IIcon
 
     def renderInvBlock(r:RenderBlocks, meta:Int)
     {
         val iconT = new MultiIconTransformation(bottom, top, side, getFront(false), side, side)
 
         CCRenderState.reset()
-        CCRenderState.useNormals(true)
-        CCRenderState.useModelColours(true)
-        CCRenderState.startDrawing(7)
+        //CCRenderState.useNormals(true)
+        //CCRenderState.useModelColours(true)
+        CCRenderState.startDrawing()
         model.render(new Translation(-0.5D, -0.5D, -0.5D), iconT, null)
         CCRenderState.draw()
         CCRenderState.setColour(-1)
@@ -94,7 +94,7 @@ object RenderFurnace extends TileMachineRender(ProjectRedExpansion.machine1)
         if (working) BlockMachine.furnaceFrontOn else BlockMachine.furnaceFront
 }
 
-object RenderController extends RenderMulti(ProjectRedExpansion.machine1)
+object RenderController extends MultiTileRender(ProjectRedExpansion.machine1)
 {
     val model =
     {
@@ -110,10 +110,10 @@ object RenderController extends RenderMulti(ProjectRedExpansion.machine1)
         val tile = BasicUtils.getTileEntity(w, new BlockCoord(x,y,z), classOf[TileRouterController])
         if (tile != null)
         {
-            matrix.computeAt(w, x, y, z)
+            matrix.locate(w, x, y, z)
 
             val iconT = if (r.overrideBlockTexture != null) new IconTransformation(r.overrideBlockTexture)
-                else new MultiIconTransformation(bottom, top, side, side, side, side)
+                else new uv.MultiIconTransformation(bottom, top, side, side, side, side)
 
             model.render(tile.rotationT.`with`(Vector3.fromTileEntity(tile).translation()), iconT, matrix)
         }
@@ -123,9 +123,9 @@ object RenderController extends RenderMulti(ProjectRedExpansion.machine1)
     {
         val iconT = new MultiIconTransformation(bottom, top, side, side, side, side)
         CCRenderState.reset()
-        CCRenderState.useNormals(true)
-        CCRenderState.useModelColours(true)
-        CCRenderState.startDrawing(7)
+        //CCRenderState.useNormals(true)
+        //CCRenderState.useModelColours(true)
+        CCRenderState.startDrawing()
         model.render(new Translation(-0.5D, -0.5D, -0.5D), iconT, null)
         CCRenderState.draw()
         CCRenderState.setColour(-1)

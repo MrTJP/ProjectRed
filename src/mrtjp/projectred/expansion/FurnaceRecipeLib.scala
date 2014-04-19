@@ -1,10 +1,11 @@
 package mrtjp.projectred.expansion
 
-import mrtjp.projectred.core.utils.{ItemKey, LabelBreaks, ItemKeyStack}
-import net.minecraft.block.Block
 import net.minecraft.item.crafting.FurnaceRecipes
-import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.item.ItemStack
 import net.minecraftforge.oredict.OreDictionary
+import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
+import net.minecraft.init.{Items, Blocks}
+import java.util.{Map => JMap}
 
 object FurnaceRecipeLib
 {
@@ -66,41 +67,35 @@ object FurnaceRecipeLib
     def init()
     {
         //default
-        addRecipe(new ItemStack(Block.cactus), new ItemStack(Item.dyePowder, 1, 2), 800)
-        addRecipe(new ItemStack(Item.porkRaw), new ItemStack(Item.porkCooked), 400)
-        addRecipe(new ItemStack(Item.fishRaw), new ItemStack(Item.fishCooked), 400)
-        addRecipe(new ItemStack(Item.beefRaw), new ItemStack(Item.beefCooked), 400)
-        addRecipe(new ItemStack(Item.chickenRaw), new ItemStack(Item.chickenCooked), 400)
-        addRecipe(new ItemStack(Item.potato), new ItemStack(Item.bakedPotato), 400)
+        addRecipe(new ItemStack(Blocks.cactus), new ItemStack(Items.dye, 1, 2), 800)
+        addRecipe(new ItemStack(Items.porkchop), new ItemStack(Items.cooked_porkchop), 400)
+        addRecipe(new ItemStack(Items.fish), new ItemStack(Items.cooked_fished), 400)
+        addRecipe(new ItemStack(Items.beef), new ItemStack(Items.cooked_beef), 400)
+        addRecipe(new ItemStack(Items.chicken), new ItemStack(Items.cooked_chicken), 400)
+        addRecipe(new ItemStack(Items.potato), new ItemStack(Items.baked_potato), 400)
 
         import scala.collection.JavaConversions._
-        val sl2 = FurnaceRecipes.smelting.getMetaSmeltingList
-        val sl = FurnaceRecipes.smelting.getSmeltingList
+        val sl = FurnaceRecipes.smelting.getSmeltingList.asInstanceOf[JMap[ItemStack, ItemStack]]
 
         def isDust(stack:ItemStack) = getOreName(stack).startsWith("dust")
         def isIngot(stack:ItemStack) = getOreName(stack).startsWith("ingot")
         def getOreName(stack:ItemStack) = OreDictionary.getOreName(OreDictionary.getOreID(stack))
 
-        for (key <- sl2.keySet())
+//        for (key <- sl2.keySet())
+//        {
+//            val input = new ItemStack(key.get(0).intValue, 1, key.get(1).intValue)
+//            val output = sl2.get(key)
+//
+//            if (isDust(input) && isIngot(output)) addRecipe(input, output, 160*10/16)
+//            else addRecipe(input, output, 160)
+//        }
+
+        for ((in, out) <- sl)
         {
-            val input = new ItemStack(key.get(0).intValue, 1, key.get(1).intValue)
-            val output = sl2.get(key)
-
-            if (isDust(input) && isIngot(output)) addRecipe(input, output, 160*10/16)
-            else addRecipe(input, output, 160)
-        }
-
-        for (k <- sl.keySet())
-        {
-            val key = k.asInstanceOf[Integer]
-
-            val input = new ItemStack(key.intValue, 1, 0)
-            if (!recipeExists(input))
+            if (!recipeExists(in))
             {
-                val output = sl.get(key).asInstanceOf[ItemStack]
-
-                if (isDust(input) && isIngot(output)) addOreRecipe(input, output, 160*10/16)
-                else addOreRecipe(input, output, 160)
+                if (isDust(in) && isIngot(out)) addOreRecipe(in, out, 160*10/16)
+                else addOreRecipe(in, out, 160)
             }
         }
     }

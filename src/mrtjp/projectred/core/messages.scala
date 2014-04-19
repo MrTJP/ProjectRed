@@ -6,9 +6,9 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.ForgeSubscribe
 import org.lwjgl.opengl.GL11
 import scala.collection.mutable
+import cpw.mods.fml.common.eventhandler.SubscribeEvent
 
 object Messenger
 {
@@ -40,7 +40,7 @@ object Messenger
         messages += mess
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     def renderMessages(event: RenderWorldLastEvent)
     {
         val w = Minecraft.getMinecraft.theWorld

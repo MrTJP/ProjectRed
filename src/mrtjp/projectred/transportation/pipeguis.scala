@@ -5,19 +5,19 @@ import mrtjp.projectred.core.inventory._
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.BlockCoord
 import codechicken.lib.render.{FontUtils, CCRenderState}
-import mrtjp.projectred.core.{BasicGuiUtils, PRColors}
 import org.lwjgl.opengl.GL11
 import net.minecraft.client.gui.{GuiButton, Gui}
 import net.minecraft.util.{EnumChatFormatting, MathHelper, ResourceLocation}
 import org.lwjgl.input.Keyboard
 import java.util
-import mrtjp.projectred.core.utils.{ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.utils.ItemKeyStack
 import java.util.Collections
 import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
 import cpw.mods.fml.client.FMLClientHandler
 import net.minecraft.client.renderer.Tessellator
 import scala.util.Random
 import scala.collection.mutable.ListBuffer
+import mrtjp.projectred.core.libmc.{PRColors, BasicGuiUtils, ItemKeyStack, ItemKey}
 
 class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends SpecialGuiContainer(container, null, 176, 220)
 {

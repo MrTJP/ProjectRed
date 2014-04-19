@@ -4,12 +4,13 @@ import java.util.UUID
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import java.util.{PriorityQueue => JPriorityQueue}
 import mrtjp.projectred.core.Configurator
-import mrtjp.projectred.core.utils.ItemKey
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraftforge.common.ForgeDirection
 import scala.collection.immutable.BitSet
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
+import mrtjp.projectred.core.lib.LabelBreaks
+import mrtjp.projectred.core.libmc.ItemKey
 
 object RouterServices
 {
@@ -427,7 +428,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         for (p <- adjacentLinks) candidates2.add(new StartEndPath(p.end, p.end, p.hopDir, p.distance, p.filters))
         closedFilters(getIPAddress) = Vector(Set[PathFilter](PathFilter.default))
 
-        import mrtjp.projectred.core.utils.LabelBreaks._
+        import LabelBreaks._
         Router.LSADatabasereadLock.lock()
         while (!candidates2.isEmpty) label
         {

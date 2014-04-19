@@ -1,6 +1,6 @@
 package mrtjp.projectred.exploration;
 
-import mrtjp.projectred.core.PRColors;
+import mrtjp.projectred.core.libmc.PRColors;
 import mrtjp.projectred.core.inventory.SpecialGuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;

@@ -4,7 +4,6 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.lib.render.{FontUtils, CCRenderState}
 import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
 import mrtjp.projectred.core.inventory._
-import mrtjp.projectred.core.{PRColors, BasicGuiUtils}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.{Gui, GuiScreen}
 import net.minecraft.client.renderer.texture.TextureMap
@@ -14,6 +13,8 @@ import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.{EnumChatFormatting, ResourceLocation}
 import org.lwjgl.opengl.GL11
 import scala.collection.mutable.ListBuffer
+import mrtjp.projectred.core.lib.LabelBreaks
+import mrtjp.projectred.core.libmc.{PRColors, BasicGuiUtils}
 
 object ChipGuiFactory
 {
@@ -490,7 +491,7 @@ class GuiChipCraftExt(cont:ChipContainer[TChipCrafter], prev:GuiScreen) extends 
     override def addWidgets()
     {
         var index = 0
-        import mrtjp.projectred.core.utils.LabelBreaks._
+        import LabelBreaks._
         import scala.collection.JavaConversions._
         for (p <- BasicGuiUtils.createGridArray(xSize/2-40, 6, 3, 3, 24+4, 24+1)) label("1")
         {

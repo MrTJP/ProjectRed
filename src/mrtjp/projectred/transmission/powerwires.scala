@@ -10,6 +10,7 @@ import net.minecraft.nbt.NBTTagCompound
 import mrtjp.projectred.api.IConnectable
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.item.ItemStack
+import mrtjp.projectred.core.libmc.BasicUtils
 
 abstract class PowerWire extends WirePart with TPowerConnectable
 {

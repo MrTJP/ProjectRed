@@ -1,6 +1,6 @@
 package mrtjp.projectred.illumination;
 
-import mrtjp.projectred.core.BasicUtils;
+import mrtjp.projectred.core.libmc.BasicUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import codechicken.lib.vec.BlockCoord;
@@ -11,7 +11,7 @@ public class TileAirousLight extends TileEntity
     private BlockCoord source;
     private int sourcePartID = -1;
     private int color = -1;
-    
+
     private int delay = 100;
 
     @Override
@@ -24,12 +24,12 @@ public class TileAirousLight extends TileEntity
             delay = worldObj.rand.nextInt(100);
 
             ILight tile = getLight();
-            
+
             if (tile == null || !tile.isOn() || tile.getColor() != color)
                 worldObj.setBlockToAir(xCoord, yCoord, zCoord);
         }
     }
-    
+
     private ILight getLight()
     {
         if (sourcePartID > -1)
@@ -38,10 +38,10 @@ public class TileAirousLight extends TileEntity
             if (part instanceof ILight)
                 return (ILight) part;
         }
-        
+
         return BasicUtils.getTileEntity(worldObj, source, ILight.class);
     }
-    
+
     public TileAirousLight setSource(BlockCoord source, int color, int partID)
     {
         this.source = source;
@@ -49,18 +49,18 @@ public class TileAirousLight extends TileEntity
         sourcePartID = partID;
         return this;
     }
-    
+
     public void readFromNBT(NBTTagCompound tag)
     {
         super.readFromNBT(tag);
-        
+
         int x = tag.getInteger("sX");
         int y = tag.getInteger("sY");
         int z = tag.getInteger("sZ");
-        
+
         sourcePartID = tag.getByte("spID");
         color = tag.getByte("col");
-        
+
         source = new BlockCoord(x, y, z);
     }
 
@@ -71,11 +71,11 @@ public class TileAirousLight extends TileEntity
         tag.setInteger("sX", source.x);
         tag.setInteger("sY", source.y);
         tag.setInteger("sX", source.z);
-        
+
         tag.setByte("spID", (byte) sourcePartID);
         tag.setByte("col", (byte) color);
     }
-    
+
     public int getColor()
     {
         return color;

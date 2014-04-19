@@ -25,6 +25,7 @@ import net.minecraft.nbt.{NBTTagList, NBTTagCompound}
 import net.minecraft.util.{Icon, ChatMessageComponent, MovingObjectPosition}
 import net.minecraftforge.common.ForgeDirection
 import scala.collection.JavaConversions._
+import mrtjp.projectred.core.libmc.BasicUtils
 
 abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion with IHollowConnect
 {

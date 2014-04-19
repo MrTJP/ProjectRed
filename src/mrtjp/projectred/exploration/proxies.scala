@@ -6,7 +6,7 @@ import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.ProjectRedExploration._
-import mrtjp.projectred.core.{PRColors, Configurator, IProxy}
+import mrtjp.projectred.core.{Configurator, IProxy}
 import mrtjp.projectred.exploration.BlockOre.EnumOre
 import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone
 import mrtjp.projectred.exploration.BlockStainedLeaf.EnumDyeTrees
@@ -17,6 +17,7 @@ import net.minecraft.world.World
 import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.common.{EnumHelper, MinecraftForge}
 import net.minecraftforge.oredict.OreDictionary
+import mrtjp.projectred.core.libmc.PRColors
 
 class ExplorationProxy_server extends IProxy with IGuiHandler
 {

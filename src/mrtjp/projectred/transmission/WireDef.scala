@@ -2,12 +2,13 @@ package mrtjp.projectred.transmission
 
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.ProjectRedTransmission
-import mrtjp.projectred.core.utils.{LiteEnumVal, LiteEnumCollector}
+import mrtjp.projectred.core.utils.LiteEnumVal
 import net.minecraft.client.renderer.texture.IconRegister
 import net.minecraft.item.ItemStack
 import net.minecraft.util.Icon
 import net.minecraftforge.oredict.OreDictionary
 import scala.collection.mutable
+import mrtjp.projectred.core.lib.{LiteEnumVal, LiteEnumCollector}
 
 object WireDef extends LiteEnumCollector
 {

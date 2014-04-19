@@ -5,7 +5,7 @@ import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 
 public class CommandDebug extends CommandBase
 {
@@ -48,7 +48,8 @@ public class CommandDebug extends CommandBase
         else
             throw new WrongUsageException(getCommandUsage(icommandsender));
 
-        MinecraftServer.getServer().getConfigurationManager().sendChatMsg(ChatMessageComponent.createFromTranslationKey("ProjectRed debug feature '" + thing + "' is now " + astring[1]));
+        MinecraftServer.getServer().getConfigurationManager().sendChatMsg(
+                new ChatComponentText("ProjectRed debug feature '"+thing+"' is now "+astring[1]));
     }
 
     @Override

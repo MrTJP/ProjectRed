@@ -5,7 +5,7 @@ import codechicken.core.ServerUtils
 import codechicken.lib.packet.PacketCustom
 import java.util
 import mrtjp.projectred.core.inventory.{InvWrapper, SimpleInventory}
-import mrtjp.projectred.core.utils.{Pair2, ItemKey, ItemKeyStack}
+import mrtjp.projectred.core.utils.ItemKeyStack
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.nbt.NBTTagCompound
@@ -14,6 +14,7 @@ import org.lwjgl.input.Keyboard
 import scala.collection.convert.WrapAsJava
 import scala.collection.mutable.ListBuffer
 import mrtjp.projectred.transportation.EnumRoutingChip.EnumRoutingChip
+import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
 
 abstract class RoutingChipset
 {
