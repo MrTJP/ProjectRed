@@ -48,9 +48,15 @@ public class BlockOre extends Block
             count = max;
         if (count < min)
             count = min;
-        dropXpOnBlockBreak(world, x, y, z, MathHelper.getRandomIntegerInRange(world.rand, type.minXP, type.maxXP));
         ret.add(type.getDropStack(count));
         return ret;
+    }
+
+    @Override
+    public int getExpDrop(World world, int data, int enchantmentLevel)
+    {
+        EnumOre type = EnumOre.VALID_ORES[data];
+        return MathHelper.getRandomIntegerInRange(world.rand, type.minXP, type.maxXP);
     }
 
     @Override
@@ -89,7 +95,7 @@ public class BlockOre extends Block
 
         public final String name;
         public final String unlocal;
-        public final int harvesLevel;
+        public final int harvestLevel;
         public final ItemStack drop;
         public final int minDrop;
         public final int maxDrop;
@@ -110,7 +116,7 @@ public class BlockOre extends Block
         {
             this.name = name;
             this.unlocal = unlocal;
-            this.harvesLevel = harvestLevel;
+            this.harvestLevel = harvestLevel;
             this.drop = drop;
             this.minDrop = min;
             this.maxDrop = max;

@@ -32,7 +32,7 @@ class ExplorationProxy_server extends IProxy with IGuiHandler
 
         blockOres = new BlockOre(Configurator.block_oresID.getInt)
         GameRegistry.registerBlock(blockOres, classOf[ItemBlockOre], "projectred.exploration.ore")
-        for (o <- EnumOre.VALID_ORES) MinecraftForge.setBlockHarvestLevel(blockOres, "pickaxe", o.harvesLevel)
+        for (o <- EnumOre.VALID_ORES) MinecraftForge.setBlockHarvestLevel(blockOres, "pickaxe", o.harvestLevel)
 
         blockStones = new BlockSpecialStone(Configurator.block_stonesID.getInt)
         GameRegistry.registerBlock(blockStones, classOf[ItemBlockSpecialStone], "projectred.exploration.stone")
