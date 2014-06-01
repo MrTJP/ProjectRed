@@ -8,3 +8,7 @@
 
 .project
 .classpath
+.settings/
+
+/target
+*.cache
