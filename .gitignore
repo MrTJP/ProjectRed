@@ -4,3 +4,7 @@
 *.blend1
 
 *.blend2
+/bin/
+
+.project
+.classpath
