@@ -186,7 +186,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                         while (!balanced.isEmpty && balanced.peek.toDo <= unbalanced(0).toDo)
                             unbalanced :+= balanced.poll
 
-                        var cap = if (!unbalanced.isEmpty) balanced.peek.toDo else Int.MaxValue
+                        var cap = if (!balanced.isEmpty) balanced.peek.toDo else Int.MaxValue
 
                         val floor = unbalanced(0).toDo
                         cap = Math.min(cap, floor+(itemsNeeded+unbalanced.size-1)/unbalanced.size)
