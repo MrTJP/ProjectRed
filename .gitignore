@@ -4,3 +4,11 @@
 *.blend1
 
 *.blend2
+/bin/
+
+.project
+.classpath
+.settings/
+
+/target
+*.cache

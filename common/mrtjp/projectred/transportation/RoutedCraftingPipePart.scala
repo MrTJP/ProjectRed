@@ -207,7 +207,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     private def lostHandleTick()
     {
         if (lost.isEmpty) return
-        var post = lost.peek()
+        var post = lost.poll()
 
         import mrtjp.projectred.core.utils.LabelBreaks._
         while (post != null) label
@@ -219,6 +219,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
             if (toRequest <= 0)
             {
                 lost.add(new PostponedWorkItem[ItemKeyStack](stack, 5000))
+                post = lost.poll()
                 break()
             }
 
@@ -230,7 +231,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
                 lost.add(new PostponedWorkItem[ItemKeyStack](stack, 5000))
             }
 
-            post = lost.peek()
+            post = lost.poll()
         }
     }
 
