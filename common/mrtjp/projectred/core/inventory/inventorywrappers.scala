@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.world.World
 import net.minecraftforge.oredict.OreDictionary
+import scala.collection.mutable
 
 object InvWrapper
 {
@@ -107,6 +108,11 @@ abstract class InvWrapper(val inv:IInventory)
     var matchOre = false
 
     var internalMode = false
+    
+    /**
+     * A cache for the ore dictionary
+     */
+    var cachedOreDictValues = mutable.Map.empty[ItemKey, Int]
 
     /**
      * Unique ID for each type of wrapper.
@@ -274,8 +280,16 @@ abstract class InvWrapper(val inv:IInventory)
 
         if (matchOre)
         {
-            val a = OreDictionary.getOreID(stack1)
-            val b = OreDictionary.getOreID(stack2)
+            val s1key = ItemKey.get(stack1)
+            val s2key = ItemKey.get(stack2)
+            if (!(cachedOreDictValues contains s1key)) {
+                cachedOreDictValues(s1key) = OreDictionary.getOreID(stack1)
+            }
+            if (!(cachedOreDictValues contains s2key)) {
+                cachedOreDictValues(s2key) = OreDictionary.getOreID(stack2)
+            }
+            val a = cachedOreDictValues(s1key)
+            val b = cachedOreDictValues(s1key)
             if (a == b && a != -1) return true
         }
 
