@@ -128,7 +128,10 @@
 
     <!-- Targets for downloading dependencies -->
     <target name="download-forge" unless="forge-downloaded">
-        <get src="http://files.minecraftforge.net/maven/net/minecraftforge/forge/${mc.version}-${forge.version}/${forge.name}" dest="${download.dir}" usetimestamp="true"/>
+        <!--
+        <get src="http://files.minecraftforge.net/maven/net/minecraftforge/forge/${mc.version}-${forge.version}/${forge.name}"  dest="${download.dir}" usetimestamp="true"/>
+        -->
+        <get src="https://www.dropbox.com/meta_dl/eyJzdWJfcGF0aCI6ICIiLCAidGVzdF9saW5rIjogZmFsc2UsICJzZXJ2ZXIiOiAiZGwuZHJvcGJveHVzZXJjb250ZW50LmNvbSIsICJpdGVtX2lkIjogbnVsbCwgImlzX2RpciI6IGZhbHNlLCAidGtleSI6ICI2cGJsa2VtcmxscWZjb24ifQ/AAJWQecnNt8hDgbWedBSA8pLFW1hPrrcGOxyt_xC1JOxFA?dl=1" dest="${download.dir}" usetimestamp="true"/>
     </target>
 
     <target name="download-scala" unless="scala-downloaded">
