@@ -1,13 +1,12 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.inventory.InvWrapper
-import mrtjp.projectred.core.lib.{LabelBreaks, Pair2}
+import mrtjp.projectred.core.lib.LabelBreaks
 import LabelBreaks._
-import mrtjp.projectred.core.utils.ItemKeyStack
 import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.transportation.EnumRoutingChip.EnumRoutingChip
 import mrtjp.projectred.core.lib.Pair2
 import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.libmc.inventory.InvWrapper
+import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 
 class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientation with TChipPriority
 {
@@ -72,7 +71,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                     toExtract = destinationSpace
                     if (toExtract <= 0)
                     {
-                        manager.restock()
+                        manager.restackOrders()
                         break("while")
                     }
                     restock = true
@@ -172,5 +171,5 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
     override def enableFilter = true
     override def enablePatterns = false
 
-    def getChipType:EnumRoutingChip = EnumRoutingChip.ITEMBROADCASTER
+    def getChipType:ChipVal = RoutingChipDefs.ITEMBROADCASTER
 }

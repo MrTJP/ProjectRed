@@ -2,7 +2,6 @@ package mrtjp.projectred.integration;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.lighting.LazyLightMatrix;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.*;
@@ -12,17 +11,17 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.api.IScrewdriver;
-import mrtjp.projectred.core.libmc.BasicUtils;
-import mrtjp.projectred.core.libmc.BasicWireUtils;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.WireConnLib;
+import mrtjp.projectred.core.libmc.BasicWireUtils;
+import mrtjp.projectred.core.libmc.PRLib;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
@@ -320,7 +319,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
             return false;
 
         pos.offset(side());
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null)
         {
             TMultiPart tp = t.partMap(absDir^1);
@@ -340,7 +339,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         int absDir = Rotation.rotateSide(side(), r);
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null)
         {
             TMultiPart tp = t.partMap(side());
@@ -381,7 +380,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         int absDir = Rotation.rotateSide(side(), r);
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
-        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile().getBlockType().blockID);
+        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile().getBlockType());
     }
 
     public void notifyStraightChange(int r)
@@ -389,7 +388,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
         int absDir = Rotation.rotateSide(side(), r);
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
-        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile().getBlockType().blockID);
+        world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, tile().getBlockType());
     }
 
     public boolean maskConnects(int r)
@@ -423,7 +422,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     public ItemStack getItem()
     {
-        return getGateType().getItemStack();
+        return getGateType().makeStack();
     }
 
     @Override
@@ -606,14 +605,16 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void renderStatic(Vector3 pos, LazyLightMatrix olm, int pass)
+    public boolean renderStatic(Vector3 pos, int pass)
     {
         if (pass == 0 && Configurator.staticGates)
         {
             CCRenderState.setBrightness(world(), x(), y(), z());
             RenderGate.renderStatic(this, pos);
             CCRenderState.setColour(-1);
+            return true;
         }
+        else return false;
     }
 
     @Override
@@ -626,8 +627,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
             if (!Configurator.staticGates)
             {
                 GL11.glDisable(GL11.GL_LIGHTING);
-                CCRenderState.useModelColours(true);
-                CCRenderState.startDrawing(7);
+                CCRenderState.startDrawing();
                 RenderGate.renderStatic(this, pos);
                 CCRenderState.draw();
                 CCRenderState.setColour(-1);
@@ -664,14 +664,14 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 
     @Override
     @SideOnly(Side.CLIENT)
-    public Icon getBreakingIcon(Object arg0, int arg1)
+    public IIcon getBreakingIcon(Object arg0, int arg1)
     {
         return ComponentStore.baseIcon;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public Icon getBrokenIcon(int arg0)
+    public IIcon getBrokenIcon(int arg0)
     {
         return ComponentStore.baseIcon;
     }

@@ -5,8 +5,8 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.TMultiPart;
-import mrtjp.projectred.core.libmc.BasicUtils;
 import mrtjp.projectred.core.libmc.PRColors;
+import mrtjp.projectred.core.libmc.PRLib;
 import mrtjp.projectred.core.libmc.fx.*;
 import mrtjp.projectred.core.libmc.fx.ParticleLogicTrail.IParticleBuilder;
 import net.minecraft.util.MathHelper;
@@ -98,7 +98,7 @@ public class RouteFX
                     c2.setScale(0.05f + 0.02f * rand.nextFloat());
                     c2.setPRColor(color);
 
-                    c2.addLogic(iconshift).addLogic(scale);
+                    c2.$plus$eq(iconshift).$plus$eq(scale);
                 }
             };
 
@@ -117,7 +117,7 @@ public class RouteFX
             c.setScale(0.05f + 0.075f * rand.nextFloat());
             c.setPRColor(color);
 
-            c.addLogic(trail).addLogic(flow).addLogic(scale);
+            c.$plus$eq(trail).$plus$eq(flow).$plus$eq(scale);
         }
     }
 
@@ -160,7 +160,7 @@ public class RouteFX
                     c2.setScale(0.05f + 0.02f * rand.nextFloat());
                     c2.setPRColor(color);
 
-                    c2.addLogic(iconshift).addLogic(scale);
+                    c2.$plus$eq(iconshift).$plus$eq(scale);
                 }
             };
 
@@ -179,7 +179,7 @@ public class RouteFX
             c.setScale(0.05f + 0.075f * rand.nextFloat());
             c.setPRColor(color);
 
-            c.addLogic(trail).addLogic(scale).addLogic(approach);
+            c.$plus$eq(trail).$plus$eq(scale).$plus$eq(approach);
         }
     }
 
@@ -210,9 +210,9 @@ public class RouteFX
             c.setScale(0.05f + 0.02f * rand.nextFloat());
             c.setPRColor(color);
 
-            c.addLogic(orbit);
-            c.addLogic(scale);
-            c.addLogic(iconshift);
+            c.$plus$eq(orbit);
+            c.$plus$eq(scale);
+            c.$plus$eq(iconshift);
         }
     }
 
@@ -320,7 +320,7 @@ public class RouteFX
         public void onDestinationReached()
         {
             BlockCoord bc = particle.blockPosition();
-            TMultiPart part = BasicUtils.getMultiPart(particle.worldObj, bc, 6);
+            TMultiPart part = PRLib.getMultiPart(particle.worldObj, bc, 6);
             if (part instanceof FlowingPipePart && !(part instanceof RoutedJunctionPipePart))
             {
                 FlowingPipePart pipe = (FlowingPipePart) part;

@@ -2,16 +2,15 @@ package mrtjp.projectred.expansion
 
 import codechicken.lib.render._
 import codechicken.lib.vec.{Rotation, Translation, Cuboid6}
-import mrtjp.projectred.core.inventory._
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.Container
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import scala.collection.mutable.ListBuffer
-import codechicken.core.gui.GuiDraw
-import mrtjp.projectred.core.libmc.PRColors
-import codechicken.lib.render.uv.IconTransformation
+import mrtjp.projectred.core.libmc.{ResourceLib, PRColors}
+import mrtjp.projectred.core.libmc.gui._
+import codechicken.lib.gui.GuiDraw
 
 object MachineGuiFactory
 {
@@ -30,9 +29,9 @@ object MachineGuiFactory
     def apply(id:Int, tile:TileGuiMachine) = createGui(id, tile)
 }
 
-class GuiRouterController(tile:TileRouterController, container:Container) extends SpecialGuiContainer(container, null)
+class GuiRouterController(tile:TileRouterController, container:Container) extends WidgetGui(container)
 {
-    override def drawBackground()
+    override def drawBack_Impl(mouse:Point, frame:Float)
     {
         CCRenderState.changeTexture(GuiRouterController.resource)
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
@@ -47,7 +46,7 @@ object GuiRouterController
 }
 
 
-abstract class TabSideConfig(c:Int, tile:TileMachineSideConfig) extends WidgetTab(c, 20, 20, 100, 100)
+abstract class TabSideConfig(c:Int, tile:TileMachineSideConfig) extends WidgetTab(20, 20, 100, 100, c)
 {
     object SideConfigSS
     {
@@ -107,7 +106,7 @@ abstract class TabSideConfig(c:Int, tile:TileMachineSideConfig) extends WidgetTa
 
     override def drawIcon()
     {
-        CCRenderState.changeTexture(GhostWidget.guiExtras)
+        ResourceLib.guiExtras.bind()
         GL11.glColor4d(1, 1, 1, 1)
         drawTexturedModalRect(2, 2, 21, 1, 16, 16)
     }
@@ -121,10 +120,10 @@ abstract class TabSideConfig(c:Int, tile:TileMachineSideConfig) extends WidgetTa
     def tessellateTile(s:Int, r:Int)
 }
 
-abstract class GuiMachineWorking(tile:TileMachineWorking, cont:Container) extends SpecialGuiContainer(cont, null)
+abstract class GuiMachineWorking(tile:TileMachineWorking, cont:Container) extends WidgetGui(cont)
 {
-    val controller = new WidgetTabController(xSize, 0)
-    override def addWidgets()
+    val controller = new WidgetTabControl(xSize, 0)
+    override def runInit_Impl()
     {
         controller.add(new TabSideConfig(PRColors.LIGHT_BLUE.rgba, tile)
         {
@@ -140,7 +139,7 @@ abstract class GuiMachineWorking(tile:TileMachineWorking, cont:Container) extend
 
     def drawChargeTank()
     {
-        CCRenderState.changeTexture(GhostWidget.guiExtras)
+        ResourceLib.guiExtras.bind()
         drawTexturedModalRect(7, 13, 1, 150, 7, 57) //chargebar
         if (tile.cond.canWork) drawTexturedModalRect(9, 13, 20, 150, 3, 6)
 
@@ -149,7 +148,7 @@ abstract class GuiMachineWorking(tile:TileMachineWorking, cont:Container) extend
     }
     def drawFlowTank()
     {
-        CCRenderState.changeTexture(GhostWidget.guiExtras)
+        ResourceLib.guiExtras.bind()
         drawTexturedModalRect(14, 13, 10, 150, 7, 57) //flowbar
         if (tile.cond.flow == -1) drawTexturedModalRect(16, 13, 27, 150, 3, 6)
 
@@ -165,9 +164,8 @@ class GuiFurnace(tile:TileFurnace, cont:Container) extends GuiMachineWorking(til
         RenderFurnace.renderForSideSelect(r)
     }
 
-    override def drawBackground()
+    override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        super.drawBackground()
         CCRenderState.changeTexture(GuiFurnace.resource)
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
 

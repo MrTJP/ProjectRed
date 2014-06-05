@@ -6,11 +6,10 @@ import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.TMultiPart
 import mrtjp.projectred.ProjectRedIntegration
 import net.minecraft.client.Minecraft
-import net.minecraft.client.multiplayer.NetClientHandler
 import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
-import net.minecraft.network.NetServerHandler
 import net.minecraft.world.World
-import mrtjp.projectred.core.libmc.BasicUtils
+import mrtjp.projectred.core.libmc.PRLib
+import net.minecraft.network.play.{INetHandlerPlayClient, INetHandlerPlayServer}
 
 class IntegrationPH
 {
@@ -18,15 +17,15 @@ class IntegrationPH
 
     def writePartIndex(out:PacketCustom, part:TMultiPart) =
     {
-        out.writeCoord(new BlockCoord(part.tile)).writeByte(part.tile.jPartList.indexOf(part))
+        out.writeCoord(new BlockCoord(part.tile)).writeByte(part.tile.partList.indexOf(part))
     }
 
     def readPartIndex(world:World, in:PacketCustom):TMultiPart =
     {
-        val tile = BasicUtils.getMultipartTile(world, in.readCoord)
+        val tile = PRLib.getMultipartTile(world, in.readCoord)
         try
         {
-            tile.jPartList.get(in.readUByte)
+            tile.partList(in.readUByte)
         }
         catch
         {
@@ -52,7 +51,7 @@ class IntegrationPH
 
 object IntegrationSPH extends IntegrationPH with IServerPacketHandler
 {
-    override def handlePacket(packet:PacketCustom, nethandler:NetServerHandler, sender:EntityPlayerMP) = packet.getType match
+    override def handlePacket(packet:PacketCustom, sender:EntityPlayerMP, handler:INetHandlerPlayServer) = packet.getType match
     {
         case 1 => incrTimer(sender.worldObj, packet)
         case 2 => incCounter(sender.worldObj, packet)
@@ -92,7 +91,7 @@ object IntegrationSPH extends IntegrationPH with IServerPacketHandler
 
 object IntegrationCPH extends IntegrationPH with IClientPacketHandler
 {
-    override def handlePacket(packet:PacketCustom, nethandler:NetClientHandler, mc:Minecraft) = packet.getType match
+    override def handlePacket(packet:PacketCustom, mc:Minecraft, handler:INetHandlerPlayClient) = packet.getType match
     {
         case 1 => openTimerGui(mc, mc.theWorld, packet)
         case 2 => openCounterGui(mc, mc.theWorld, packet)

@@ -2,12 +2,15 @@ package mrtjp.projectred.core.libmc
 
 import scala.collection.TraversableOnce
 import net.minecraftforge.oredict.{ShapedOreRecipe, OreDictionary}
-import net.minecraft.item.ItemStack
+import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.init.Blocks
 import net.minecraft.inventory.InventoryCrafting
 import net.minecraft.world.World
+import net.minecraft.block.Block
+import net.minecraft.item.crafting.IRecipe
+import cpw.mods.fml.common.registry.GameRegistry
 
-class RecipeLib
+object RecipeLib
 {
     def newShapedBuilder = new ShapedOreRecipeBuilder
 }
@@ -18,12 +21,8 @@ trait RecipeBuilder[In <: Input, Out <: Output]
     protected var outputs = Vector.newBuilder[Out]
 
     def +=(elem:In):this.type = {inputs += elem;this}
-    def +=(elem1:In, elem2:In, elems:In*):this.type = this += elem1 += elem2 ++= elems
-    def ++=(xs:TraversableOnce[In]):this.type = {xs.seq foreach += ;this}
 
-    def -->(elem:Out):this.type = {outputs += elem;this}
-    def -->(elem1:Out, elem2:Out, elems:Out*):this.type = this --> elem1 --> elem2 +--> elems
-    def +-->(xs:TraversableOnce[Out]):this.type = {xs.seq foreach --> ;this}
+    def +=(elem:Out):this.type = {outputs += elem;this}
 
     def clear()
     {
@@ -67,22 +66,26 @@ trait RecipeBuilder[In <: Input, Out <: Output]
 trait BuildResult[Result] extends RecipeBuilder[Input, Output]
 {
     def result:Result
+    def registerResult()
 }
-trait TRecipeCommons
+trait TRecipeObject
 {
     var id = ""
-    def <->(i:String):this.type = {id = i.substring(0,1);this}
+    def to(i:String):this.type = {id = i.substring(0,1);this}
 
     def matches(that:ItemKeyStack):Boolean
 }
-trait Input extends TRecipeCommons
-trait Output extends TRecipeCommons
+trait Input extends TRecipeObject
+trait Output extends TRecipeObject
 {
     def createOutput:ItemStack
 }
 
 class OreIn(val oreID:String) extends Input
 {
+    def this(stack:ItemKeyStack) =
+        this(OreDictionary.getOreName(OreDictionary.getOreID(stack.makeStack)))
+
     def matches(that:ItemKeyStack) =
     {
         val thatID = OreDictionary.getOreName(OreDictionary.getOreID(that.makeStack))
@@ -92,6 +95,10 @@ class OreIn(val oreID:String) extends Input
 
 class ItemIn(val key:ItemKeyStack) extends Input
 {
+    def this(s:ItemStack) = this(ItemKeyStack(s))
+    def this(b:Block) = this(new ItemStack(b))
+    def this(i:Item) = this(new ItemStack(i))
+
     private var nbt = true
     def matchNBT(flag:Boolean):this.type = {nbt = flag; this}
 
@@ -103,6 +110,10 @@ class ItemIn(val key:ItemKeyStack) extends Input
 
 class ItemOut(val key:ItemKeyStack) extends Output
 {
+    def this(s:ItemStack) = this(ItemKeyStack(s))
+    def this(b:Block) = this(new ItemStack(b))
+    def this(i:Item) = this(new ItemStack(i))
+
     override def matches(that:ItemKeyStack) =
         key == that
 
@@ -114,12 +125,12 @@ class ShapedOreRecipeBuilder extends RecipeBuilder[Input, Output] with BuildResu
     override def result =
     {
         subResult()
-        new ShapedOreRecipe(new ItemStack(Blocks.stone), Array())
+        new ShapedOreRecipe(new ItemStack(Blocks.stone))
         {
             override def getRecipeSize = Math.sqrt(map.length).asInstanceOf[Int]
 
             override def getCraftingResult(var1:InventoryCrafting) = getRecipeOutput
-            override def getRecipeOutput = outResult(0).createOutput
+            override def getRecipeOutput = outResult.head.createOutput
 
             override def getInput =
             {
@@ -146,4 +157,6 @@ class ShapedOreRecipeBuilder extends RecipeBuilder[Input, Output] with BuildResu
             }
         }
     }
+
+    override def registerResult() = GameRegistry.addRecipe(result)
 }

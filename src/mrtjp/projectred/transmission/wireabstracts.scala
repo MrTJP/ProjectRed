@@ -2,12 +2,11 @@ package mrtjp.projectred.transmission
 
 import IWirePart._
 import codechicken.lib.data.{MCDataOutput, MCDataInput}
-import codechicken.lib.lighting.LazyLightMatrix
 import codechicken.lib.raytracer.IndexedCuboid6
 import codechicken.lib.render.{TextureUtils, CCRenderState}
 import codechicken.lib.vec.{Rotation, Cuboid6, Vector3, BlockCoord}
 import codechicken.microblock.handler.MicroblockProxy
-import codechicken.microblock.{ItemMicroPart, IHollowConnect, MicroMaterialRegistry}
+import codechicken.microblock.{ISidedHollowConnect, ItemMicroPart, MicroMaterialRegistry}
 import codechicken.multipart.{PartMap, TileMultipart, TMultiPart, TNormalOcclusion}
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.ProjectRedCore
@@ -18,10 +17,11 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
-import net.minecraftforge.common.ForgeDirection
 import org.lwjgl.opengl.GL11
 import scala.collection.JavaConversions._
-import mrtjp.projectred.core.libmc.{BasicWireUtils, BasicUtils}
+import mrtjp.projectred.core.libmc.{PRLib, BasicWireUtils}
+import net.minecraftforge.common.util.ForgeDirection
+import mrtjp.projectred.transmission.WireDef.WireDef
 
 trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion
 {
@@ -136,7 +136,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, held:ItemStack) =
     {
         if (CommandDebug.WIRE_READING) debug(player)
-        else if (held != null && held.itemID == ProjectRedCore.itemWireDebugger.itemID)
+        else if (held != null && held.getItem == ProjectRedCore.itemWireDebugger)
         {
             held.damageItem(1, player)
             player.swingItem()
@@ -153,16 +153,18 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     override def doesTick = false
 
     @SideOnly(Side.CLIENT)
-    override def renderStatic(pos:Vector3, olm:LazyLightMatrix, pass:Int)
+    override def renderStatic(pos:Vector3, pass:Int) =
     {
         if (pass == 0 && useStaticRenderer)
         {
             CCRenderState.setBrightness(world, x, y, z)
 
-            doStaticTessellation(pos, olm, pass)
+            doStaticTessellation(pos, pass)
 
             CCRenderState.setColour(-1)
+            true
         }
+        else false
     }
 
     @SideOnly(Side.CLIENT)
@@ -172,8 +174,8 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
         {
             GL11.glDisable(GL11.GL_LIGHTING)
             TextureUtils.bindAtlas(0)
-            CCRenderState.useModelColours(true)
-            CCRenderState.startDrawing(7)
+            CCRenderState.hasColour = true
+            CCRenderState.startDrawing()
 
             doDynamicTessellation(pos, frame, pass)
 
@@ -191,7 +193,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     }
 
     @SideOnly(Side.CLIENT)
-    def doStaticTessellation(pos:Vector3, olm:LazyLightMatrix, pass:Int)
+    def doStaticTessellation(pos:Vector3, pass:Int)
     @SideOnly(Side.CLIENT)
     def doDynamicTessellation(pos:Vector3, frame:Float, pass:Int)
     @SideOnly(Side.CLIENT)
@@ -251,7 +253,7 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
         BasicWireUtils.canPlaceWireOnSide(world, pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side^1), false)
     }
 
-    def getItem = getWireType.getItemStack
+    def getItem = getWireType.makeStack
 
     def setRenderFlag(part:IConnectable) = part match
     {
@@ -307,13 +309,13 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
         RenderWire.render(this, pos)
     }
     @SideOnly(Side.CLIENT)
-    override def doStaticTessellation(pos:Vector3, olm:LazyLightMatrix, pass:Int)
+    override def doStaticTessellation(pos:Vector3, pass:Int)
     {
         RenderWire.render(this, pos)
     }
 }
 
-abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterConnectable with IHollowConnect
+abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterConnectable with ISidedHollowConnect
 {
     var material = 0
 
@@ -332,13 +334,13 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
     override def writeDesc(packet:MCDataOutput)
     {
         packet.writeByte(clientConnMap)
-        MicroMaterialRegistry.writePartID(packet, material)
+        MicroMaterialRegistry.writeMaterialID(packet, material)
     }
 
     override def readDesc(packet:MCDataInput)
     {
         connMap = packet.readUByte()
-        material = MicroMaterialRegistry.readPartID(packet)
+        material = MicroMaterialRegistry.readMaterialID(packet)
     }
 
     override def read(packet:MCDataInput, key:Int) = key match
@@ -347,7 +349,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
             connMap = packet.readUByte()
             if (useStaticRenderer) tile.markRender()
         case 1 =>
-            material = MicroMaterialRegistry.readPartID(packet)
+            material = MicroMaterialRegistry.readMaterialID(packet)
             if (useStaticRenderer) tile.markRender()
         case _ =>
     }
@@ -361,7 +363,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
 
     def sendMatUpdate()
     {
-        MicroMaterialRegistry.writePartID(getWriteStreamOf(1), material)
+        MicroMaterialRegistry.writeMaterialID(getWriteStreamOf(1), material)
     }
 
     def discoverOpen(s:Int) = getInternal(s) match
@@ -395,7 +397,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
         else 4
     }
 
-    def getItem = getWireType.getFramedItemStack
+    def getItem = getWireType.makeFramedStack
 
     override def getDrops =
     {
@@ -426,7 +428,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
         boxes
     }
 
-    def getHollowSize = 8
+    override def getHollowSize(side:Int) = 8
 
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, held:ItemStack) =
     {
@@ -435,7 +437,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
             if (material > 0 && !player.capabilities.isCreativeMode)
             {
                 val drop = ItemMicroPart.create(1, material)
-                BasicUtils.dropItemFromLocation(world, drop, false, player, -1, 0, new BlockCoord(tile))
+                PRLib.dropTowardsPlayer(world, x, y, z, drop, player)
             }
         }
 
@@ -463,7 +465,8 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
                     {
                         dropMaterial()
                         material = newmatid
-                        world.playSoundEffect(x+0.5D, y+0.5D, z+0.5D, newmat.getSound.getPlaceSound, (newmat.getSound.getVolume+1.0F)/2.0F, newmat.getSound.getPitch*0.8F)
+                        world.playSoundEffect(x+0.5D, y+0.5D, z+0.5D, newmat.getSound.func_150496_b(),
+                            (newmat.getSound.getVolume+1.0F)/2.0F, newmat.getSound.getPitch*0.8F)
                         sendMatUpdate()
                         if (!player.capabilities.isCreativeMode) held.stackSize-=1
                     }
@@ -486,9 +489,9 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
         RenderFramedWire.render(this, pos)
     }
     @SideOnly(Side.CLIENT)
-    override def doStaticTessellation(pos:Vector3, olm:LazyLightMatrix, pass:Int)
+    override def doStaticTessellation(pos:Vector3, pass:Int)
     {
-        RenderFramedWire.render(this, pos, olm)
+        RenderFramedWire.render(this, pos)
     }
 }
 

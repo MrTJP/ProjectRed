@@ -4,7 +4,7 @@ import codechicken.lib.vec.{Rotation, BlockCoord}
 import codechicken.multipart.PartMap
 import mrtjp.projectred.api.IConnectable
 import net.minecraft.world.World
-import mrtjp.projectred.core.libmc.BasicUtils
+import mrtjp.projectred.core.libmc.PRLib
 
 object WireConnLib
 {
@@ -32,7 +32,7 @@ object WireConnLib
 
         pos.offset(side)
 
-        val t = BasicUtils.getMultipartTile(world, pos)
+        val t = PRLib.getMultipartTile(world, pos)
         if (t != null)
         {
             val tp = t.partMap(absDir^1)
@@ -44,7 +44,7 @@ object WireConnLib
     def canConnectThroughCorner(world:World, pos:BlockCoord, side1:Int, side2:Int):Boolean =
     {
         if (world.isAirBlock(pos.x, pos.y, pos.z)) return true
-        val t = BasicUtils.getMultipartTile(world, pos)
+        val t = PRLib.getMultipartTile(world, pos)
 
         if (t != null) return t.partMap(side1) == null && t.partMap(side2) == null && t.partMap(PartMap.edgeBetween(side1, side2)) == null
 
@@ -55,7 +55,7 @@ object WireConnLib
     {
         val absDir = Rotation.rotateSide(side, r)
         val pos = from.offset(absDir)
-        val t = BasicUtils.getMultipartTile(world, pos)
+        val t = PRLib.getMultipartTile(world, pos)
 
         if (t != null)
         {
@@ -68,7 +68,7 @@ object WireConnLib
     def getInsideFace(world:World, side:Int, r:Int, from:BlockCoord):IConnectable =
     {
         val absDir = Rotation.rotateSide(side, r)
-        val t = BasicUtils.getMultipartTile(world, from)
+        val t = PRLib.getMultipartTile(world, from)
 
         if (t != null)
         {
@@ -82,7 +82,7 @@ object WireConnLib
 
     def getCenter(world:World, from:BlockCoord):IConnectable =
     {
-        val t = BasicUtils.getMultipartTile(world, from)
+        val t = PRLib.getMultipartTile(world, from)
         if (t != null)
         {
             val tp = t.partMap(6)
@@ -128,7 +128,7 @@ object BlockConnLib
         if (!WireConnLib.canConnectThroughCorner(world, pos, absDir^1, sideTo)) return null
         pos.offset(sideTo)
 
-        val t = BasicUtils.getMultipartTile(world, pos)
+        val t = PRLib.getMultipartTile(world, pos)
         if (t != null)
         {
             val tp = t.partMap(absDir^1)
@@ -140,7 +140,7 @@ object BlockConnLib
     def getStraight(world:World, absDir:Int, edgeRot:Int, from:BlockCoord):IConnectable =
     {
         val pos = from.offset(absDir)
-        val t = BasicUtils.getMultipartTile(world, pos)
+        val t = PRLib.getMultipartTile(world, pos)
 
         if (t != null)
         {

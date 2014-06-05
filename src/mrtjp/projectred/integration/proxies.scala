@@ -6,7 +6,7 @@ import codechicken.multipart.MultiPartRegistry.IPartFactory
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedIntegration
 import mrtjp.projectred.ProjectRedIntegration._
-import mrtjp.projectred.core.{Configurator, IProxy}
+import mrtjp.projectred.core.IProxy
 import net.minecraftforge.client.MinecraftForgeClient
 
 class IntegrationProxy_server extends IProxy with IPartFactory
@@ -23,7 +23,7 @@ class IntegrationProxy_server extends IProxy with IPartFactory
             "pr_bgate", "pr_tgate", "pr_rgate"
         ))
 
-        itemPartGate = new ItemPartGate(Configurator.part_gate.getInt)
+        itemPartGate = new ItemPartGate
     }
 
     override def postinit()
@@ -58,7 +58,7 @@ class IntegrationProxy_client extends IntegrationProxy_server
     override def init()
     {
         super.init()
-        MinecraftForgeClient.registerItemRenderer(ProjectRedIntegration.itemPartGate.itemID, GateItemRenderer.instance)
+        MinecraftForgeClient.registerItemRenderer(ProjectRedIntegration.itemPartGate, GateItemRenderer)
     }
 }
 

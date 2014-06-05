@@ -1,10 +1,10 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.core.libmc.BasicGuiUtils;
-import mrtjp.projectred.integration.GateLogic.ICounterGuiLogic;
 import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.packet.PacketCustom;
+import mrtjp.projectred.core.libmc.gui.GuiLib;
+import mrtjp.projectred.integration.GateLogic.ICounterGuiLogic;
 
 public class GuiCounter extends GuiScreenWidget
 {
@@ -50,15 +50,15 @@ public class GuiCounter extends GuiScreenWidget
     @Override
     public void drawBackground()
     {
-        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel);
+        GuiLib.drawGuiBox(0, 0, xSize, ySize, zLevel);
         String s = "Maximum: " + logic.getCounterMax();
-        fontRenderer.drawString(s, (xSize - fontRenderer.getStringWidth(s)) / 2, 5, 0x404040);
+        fontRendererObj.drawString(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, 5, 0x404040);
         s = "Increment: " + logic.getCounterIncr();
-        fontRenderer.drawString(s, (xSize - fontRenderer.getStringWidth(s)) / 2, 45, 0x404040);
+        fontRendererObj.drawString(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, 45, 0x404040);
         s = "Decrement: " + logic.getCounterDecr();
-        fontRenderer.drawString(s, (xSize - fontRenderer.getStringWidth(s)) / 2, 85, 0x404040);
+        fontRendererObj.drawString(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, 85, 0x404040);
         s = "State: " + logic.getCounterValue();
-        fontRenderer.drawString(s, (xSize - fontRenderer.getStringWidth(s)) / 2, 125, 0x404040);
+        fontRendererObj.drawString(s, (xSize - fontRendererObj.getStringWidth(s)) / 2, 125, 0x404040);
     }
 
     @Override

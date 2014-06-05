@@ -8,18 +8,19 @@ import net.minecraft.world.World
 import codechicken.lib.packet.PacketCustom.{IServerPacketHandler, IClientPacketHandler}
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.network.play.{INetHandlerPlayServer, INetHandlerPlayClient}
-import mrtjp.projectred.core.libmc.BasicUtils
+import mrtjp.projectred.core.libmc.PRLib
 
 class CorePH
 {
     var channel = ProjectRedCore
 
-    var tilePacket = 1
-    var messagePacket = 2
+    val tilePacket = 1
+    val messagePacket = 2
+    val guiPacket = 3
 
     def handleTilePacket(world:World, packet:PacketCustom, pos:BlockCoord)
     {
-        val t = BasicUtils.getTileEntity(world, pos, classOf[ICustomPacketTile])
+        val t = PRLib.getTileEntity(world, pos, classOf[ICustomPacketTile])
         if (t != null) t.handleDescriptionPacket(packet)
     }
 }
@@ -31,10 +32,10 @@ object CoreCPH extends CorePH with IClientPacketHandler
         val world = mc.theWorld
         packet.getType match
         {
-            case 1 => handleTilePacket(world, packet, packet.readCoord)
-            case 2 => Messenger.addMessage(packet.readDouble, packet.readDouble, packet.readDouble, packet.readString)
+            case this.tilePacket => handleTilePacket(world, packet, packet.readCoord)
+            case this.messagePacket => Messenger.addMessage(packet.readDouble, packet.readDouble, packet.readDouble, packet.readString)
+            case this.guiPacket => GuiManager.receiveGuiPacket(packet)
         }
-
     }
 }
 
@@ -44,7 +45,7 @@ object CoreSPH extends CorePH with IServerPacketHandler
     {
         packet.getType match
         {
-            case 1 => handleTilePacket(sender.theItemInWorldManager.theWorld, packet, packet.readCoord())
+            case this.tilePacket => handleTilePacket(sender.theItemInWorldManager.theWorld, packet, packet.readCoord())
         }
     }
 }

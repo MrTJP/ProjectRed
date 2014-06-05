@@ -30,5 +30,5 @@ class ChipCrafting extends RoutingChipset with TChipCrafter with TChipPriority
         if (maxExtensions > 0) addExtInfo(list)
     }
 
-    def getChipType = EnumRoutingChip.ITEMCRAFTING
+    def getChipType = RoutingChipDefs.ITEMCRAFTING
 }

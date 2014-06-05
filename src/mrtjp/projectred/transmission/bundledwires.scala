@@ -9,9 +9,8 @@ import mrtjp.projectred.core.CoreSPH
 import mrtjp.projectred.transmission.IWirePart._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.ChatMessageComponent
-import net.minecraft.tileentity.TileEntity
-import mrtjp.projectred.core.libmc.BasicUtils
+import net.minecraft.util.ChatComponentText
+import mrtjp.projectred.core.libmc.PRLib
 
 trait IBundledCablePart extends IWirePart with IBundledEmitter
 {
@@ -32,7 +31,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
     var signal = new Array[Byte](16)
     var colour:Byte = 0
 
-    def getWireType = WireDef.BUNDLED_WIRE(colour+1)
+    def getWireType = WireDef.values(WireDef.BUNDLED_N.meta+colour+1)
 
     override def preparePlacement(side:Int, meta:Int)
     {
@@ -77,7 +76,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
     override def discoverStraightOverride(absDir:Int) =
     {
         val pos = new BlockCoord(tile).offset(absDir)
-        world.getBlockTileEntity(pos.x, pos.y, pos.z) match
+        world.getTileEntity(pos.x, pos.y, pos.z) match
         {
             case b:IBundledTile => b.canConnectBundled(absDir^1)
             case _ => false
@@ -187,13 +186,13 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
             if (s.length == 1) sb.append('0')
             sb.append(s)
         }
-        player.sendChatToPlayer(ChatMessageComponent.createFromTranslationKey(sb.toString()))
+        player.addChatComponentMessage(new ChatComponentText(sb.toString()))
         true
     }
 
     override def test(player:EntityPlayer) =
     {
-        if (BasicUtils.isServer(world))
+        if (!world.isRemote)
         {
             var s = ""
             for (i <- 0 until 16) if (getBundledSignal.apply(i) != 0) s = s+"["+i+"]"
@@ -232,7 +231,7 @@ class BundledCablePart extends WirePart with TFaceBundledAquisitions with TBundl
 
     override def calcStraightArray(r:Int) =
     {
-        val te = BasicUtils.getTileEntity(world, posOfStraight(r), classOf[IBundledEmitter])
+        val te = PRLib.getTileEntity(world, posOfStraight(r), classOf[IBundledEmitter])
         if (te != null)
         {
             raiseSignalFrom(te, absoluteDir(rotFromStraight(r)))
@@ -256,7 +255,7 @@ class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitio
 
     override def calcStraightArray(s:Int) =
     {
-        val te = BasicUtils.getTileEntity(world, posOfStraight(s), classOf[IBundledEmitter])
+        val te = PRLib.getTileEntity(world, posOfStraight(s), classOf[IBundledEmitter])
         if (te != null)
         {
             raiseSignalFrom(te, s^1)

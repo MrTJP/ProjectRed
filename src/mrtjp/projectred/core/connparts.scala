@@ -3,7 +3,7 @@ package mrtjp.projectred.core
 import codechicken.lib.vec.{BlockCoord, Rotation}
 import codechicken.multipart._
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.libmc.BasicUtils
+import mrtjp.projectred.core.libmc.PRLib
 
 trait TAcquisitionsCommons extends TMultiPart
 {
@@ -32,7 +32,7 @@ trait TFaceAcquisitions extends TAcquisitionsCommons with TFaceOrient
         val absDir = absoluteDir(r)
         val pos = new BlockCoord(tile).offset(absDir).offset(side)
 
-        val t = BasicUtils.getMultipartTile(world, pos)
+        val t = PRLib.getMultipartTile(world, pos)
         if (t != null) t.partMap(absDir^1)
         else null
     }
@@ -41,7 +41,7 @@ trait TFaceAcquisitions extends TAcquisitionsCommons with TFaceOrient
     {
         val pos = new BlockCoord(tile).offset(absoluteDir(r))
 
-        val t = BasicUtils.getMultipartTile(world, pos)
+        val t = PRLib.getMultipartTile(world, pos)
         if (t != null) t.partMap(side)
         else null
     }
@@ -69,7 +69,7 @@ trait TCenterAcquisitions extends TAcquisitionsCommons with TCenterOrient
     def getStraight(s:Int) =
     {
         val pos = new BlockCoord(tile).offset(s)
-        val t = BasicUtils.getMultipartTile(world, pos)
+        val t = PRLib.getMultipartTile(world, pos)
         if (t != null) t.partMap(6)
         else null
     }
@@ -238,7 +238,7 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
         {
             val side1 = absDir^1
             val side2 = side
-            val t = BasicUtils.getMultipartTile(world, pos)
+            val t = PRLib.getMultipartTile(world, pos)
             if (t != null)
                 t.partMap(side1) == null && t.partMap(side2) == null && t.partMap(PartMap.edgeBetween(side1, side2)) == null
             else false

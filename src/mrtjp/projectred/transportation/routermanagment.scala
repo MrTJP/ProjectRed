@@ -5,12 +5,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import java.util.{PriorityQueue => JPriorityQueue}
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.transportation.SendPriority.SendPriority
-import net.minecraftforge.common.ForgeDirection
 import scala.collection.immutable.BitSet
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
 import mrtjp.projectred.core.lib.LabelBreaks
 import mrtjp.projectred.core.libmc.ItemKey
+import net.minecraftforge.common.util.ForgeDirection
 
 object RouterServices
 {

@@ -1,0 +1,26 @@
+[
+{
+  "modid": "ProjRed|Core",
+  "name": "ProjectRed",
+  "description":"Redstone. The way it was meant to be. Built against Forge @FORGE_VERSION@.",
+  "version": "@VERSION@.@BUILD_NUMBER@",
+  "mcversion": "@MC_VERSION@",
+  "url": "http://projectredwiki.com",
+  "authors": [ "MrTJP", "ChickenBones"],
+  "credits": "Eloraam, GitHub contributers",
+  "logoFile": "",
+  "screenshots": [],
+  "requiredMods": [
+      "Forge",
+      "ForgeMultipart",
+      "CodeChickenCore"
+  ],
+  "dependencies": [
+      "ForgeMultipart",
+      "CodeChickenCore",
+      "CCTurtle",
+      "ComputerCraft"
+  ],
+  "useDependencyInformation": "true"
+}
+]

@@ -9,6 +9,7 @@ import mrtjp.projectred.core.CommandDebug
 import net.minecraft.block.{Block, BlockRedstoneWire}
 import net.minecraft.world.World
 import scala.collection.immutable.HashSet
+import net.minecraft.init.Blocks
 
 object WirePropagator
 {
@@ -24,7 +25,7 @@ object WirePropagator
     }
     def setDustProvidePower(b:Boolean)
     {
-        try {wiresProvidePower.setBoolean(Block.redstoneWire, b)}
+        try {wiresProvidePower.setBoolean(Blocks.redstone_wire, b)}
         catch {case t:Throwable =>}
     }
 
@@ -128,8 +129,7 @@ class PropagationRun
             entry.getKey.multiPartChange(parts)
         }
 
-        val blockID = MultipartProxy.block.blockID
-        neighborChanges.foreach(b => world.notifyBlockOfNeighborChange(b.x, b.y, b.z, blockID))
+        neighborChanges.foreach(b => world.notifyBlockOfNeighborChange(b.x, b.y, b.z, MultipartProxy.block))
 
         WirePropagator.finishing = parent
 

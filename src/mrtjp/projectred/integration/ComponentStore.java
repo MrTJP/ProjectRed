@@ -5,13 +5,15 @@ import codechicken.lib.lighting.LightModel;
 import codechicken.lib.lighting.PlanarLightModel;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.*;
+import codechicken.lib.render.CCRenderState.IVertexOperation;
+import codechicken.lib.render.uv.*;
 import codechicken.lib.vec.*;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.InvertX;
-import mrtjp.projectred.transmission.RenderWire;
-import mrtjp.projectred.transmission.RenderWire.UVT;
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.util.Icon;
+import mrtjp.projectred.transmission.UVT;
+import mrtjp.projectred.transmission.WireModelGen$;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.LinkedList;
@@ -40,20 +42,20 @@ public class ComponentStore
     public static CCModel cellFrame = loadModel("array/cellstand").apply(new Translation(0.5, 0, 0.5));
     public static CCModel cellPlate = loadModel("array/cellplate").apply(new Translation(0.5, 0, 0.5));
 
-    public static Icon baseIcon;
-    public static Icon[] wireIcons = new Icon[3];
+    public static IIcon baseIcon;
+    public static IIcon[] wireIcons = new IIcon[3];
     public static Colour[][] wireData = new Colour[3][];
-    public static Icon[] redstoneTorchIcons = new Icon[2];
-    public static Icon[] taintedChipIcons = new Icon[2];
-    public static Icon[] redstoneChipIcons = new Icon[2];
-    public static Icon[] minusChipIcons = new Icon[2];
-    public static Icon[] plusChipIcons = new Icon[2];
-    public static Icon leverIcon;
-    public static Icon[] solarIcons = new Icon[3];
-    public static Icon rainIcon;
-    public static Icon pointerIcon;
-    public static Icon busXcvrIcon;
-    public static Icon cellIcon;
+    public static IIcon[] redstoneTorchIcons = new IIcon[2];
+    public static IIcon[] taintedChipIcons = new IIcon[2];
+    public static IIcon[] redstoneChipIcons = new IIcon[2];
+    public static IIcon[] minusChipIcons = new IIcon[2];
+    public static IIcon[] plusChipIcons = new IIcon[2];
+    public static IIcon leverIcon;
+    public static IIcon[] solarIcons = new IIcon[3];
+    public static IIcon rainIcon;
+    public static IIcon pointerIcon;
+    public static IIcon busXcvrIcon;
+    public static IIcon cellIcon;
 
     public static Map<String, CCModel> loadModels(String name)
     {
@@ -92,11 +94,11 @@ public class ComponentStore
         CCModel m = loadModel(name);
         m.apply(new Translation(0.5, 0, 0.5));
         for (int i = 0; i < m.verts.length; i++)//inset each face a little for posts and other stuff that render overtop
-            m.verts[i].vec.subtract(m.normals[i].copy().multiply(0.0002));
+            m.verts[i].vec.subtract(m.normals()[i].copy().multiply(0.0002));
         return m;
     }
 
-    public static void registerIcons(IconRegister r)
+    public static void registerIcons(IIconRegister r)
     {
         String baseTex = "projectred:gates/";
         baseIcon = r.registerIcon(baseTex+"base");
@@ -182,11 +184,11 @@ public class ComponentStore
         for (int i = 0; i < m.verts.length; i += 4)
         {
             Vertex5 vtmp = m.verts[i+1];
-            Vector3 ntmp = m.normals[i+1];
+            Vector3 ntmp = m.normals()[i+1];
             m.verts[i+1] = m.verts[i+3];
-            m.normals[i+1] = m.normals[i+3];
+            m.normals()[i+1] = m.normals()[i+3];
             m.verts[i+3] = vtmp;
-            m.normals[i+3] = ntmp;
+            m.normals()[i+3] = ntmp;
         }
         return m;
     }
@@ -195,7 +197,7 @@ public class ComponentStore
     {
         public abstract void renderModel(Transformation t, int orient);
 
-        public void registerTextures(IconRegister r)
+        public void registerTextures(IIconRegister r)
         {
         }
     }
@@ -232,7 +234,7 @@ public class ComponentStore
             this(m.copy().apply(pos.multiply(1/16D).translation()));
         }
 
-        public abstract IUVTransformation getUVT();
+        public abstract UVTransformation getUVT();
 
         @Override
         public void renderModel(Transformation t, int orient)
@@ -260,7 +262,7 @@ public class ComponentStore
 
         }
 
-        public abstract IUVTransformation getUVT();
+        public abstract UVTransformation getUVT();
 
         @Override
         public void renderModel(Transformation t, int orient)
@@ -278,7 +280,7 @@ public class ComponentStore
         }
 
         @Override
-        public IUVTransformation getUVT()
+        public UVTransformation getUVT()
         {
             return new IconTransformation(leverIcon);
         }
@@ -298,12 +300,12 @@ public class ComponentStore
         }
 
         @Override
-        public IUVTransformation getUVT()
+        public UVTransformation getUVT()
         {
             return new IconTransformation(getIcon());
         }
 
-        public abstract Icon getIcon();
+        public abstract IIcon getIcon();
     }
 
     public static abstract class OnOffModel extends SingleComponentModel
@@ -320,10 +322,10 @@ public class ComponentStore
             super(m, pos);
         }
 
-        public abstract Icon[] getIcons();
+        public abstract IIcon[] getIcons();
 
         @Override
-        public IUVTransformation getUVT()
+        public UVTransformation getUVT()
         {
             return new IconTransformation(getIcons()[on ? 1 : 0]);
         }
@@ -343,10 +345,10 @@ public class ComponentStore
             super(m, pos);
         }
 
-        public abstract Icon[] getIcons();
+        public abstract IIcon[] getIcons();
 
         @Override
-        public IUVTransformation getUVT()
+        public UVTransformation getUVT()
         {
             return new IconTransformation(getIcons()[state]);
         }
@@ -458,7 +460,7 @@ public class ComponentStore
         }
 
         @Override
-        public void registerTextures(IconRegister r)
+        public void registerTextures(IIconRegister r)
         {
             model.registerTextures(r);
         }
@@ -508,11 +510,11 @@ public class ComponentStore
             double z2 = (rect.y+rect.h)/32D;
             double d = 0.0005-h/50D;// little offset for the wires go ontop of the border
             model.generateBlock(i, x1+d, 0.125, z1+d, x2-d, 0.125+h, z2-d, 1);
-            MultiIconTransformation.setIconIndex(model, i, i+20, icon);
+            //MultiIconTransformation.setIconIndex(model, i, i+20, icon); //TODO ?
         }
 
         @Override
-        public IUVTransformation getUVT()
+        public UVTransformation getUVT()
         {
             if (parent.disabled)
                 return new IconTransformation(wireIcons[0]);
@@ -561,7 +563,7 @@ public class ComponentStore
         }
 
         @Override
-        public void registerTextures(IconRegister r)
+        public void registerTextures(IIconRegister r)
         {
             List<Rectangle4i> wireRectangles = WireComponentModel.rectangulate(wireMask);
 
@@ -636,7 +638,7 @@ public class ComponentStore
         }
 
         @Override
-        public Icon[] getIcons()
+        public IIcon[] getIcons()
         {
             return redstoneTorchIcons;
         }
@@ -659,7 +661,7 @@ public class ComponentStore
         }
 
         @Override
-        public Icon[] getIcons()
+        public IIcon[] getIcons()
         {
             return taintedChipIcons;
         }
@@ -673,7 +675,7 @@ public class ComponentStore
         }
 
         @Override
-        public Icon[] getIcons()
+        public IIcon[] getIcons()
         {
             return redstoneChipIcons;
         }
@@ -687,7 +689,7 @@ public class ComponentStore
         }
 
         @Override
-        public Icon[] getIcons()
+        public IIcon[] getIcons()
         {
             return minusChipIcons;
         }
@@ -701,7 +703,7 @@ public class ComponentStore
         }
 
         @Override
-        public Icon[] getIcons()
+        public IIcon[] getIcons()
         {
             return plusChipIcons;
         }
@@ -715,7 +717,7 @@ public class ComponentStore
         }
 
         @Override
-        public Icon[] getIcons()
+        public IIcon[] getIcons()
         {
             return solarIcons;
         }
@@ -729,7 +731,7 @@ public class ComponentStore
         }
 
         @Override
-        public Icon getIcon()
+        public IIcon getIcon()
         {
             return rainIcon;
         }
@@ -772,7 +774,7 @@ public class ComponentStore
                 int side = orient%24>>2;
                 int r = orient&3;
                 boolean reflect = orient >= 24;
-                boolean rotate = (r+RenderWire.reorientSide[side])%4 >= 2;
+                boolean rotate = (r+WireModelGen$.MODULE$.reorientSide()[side])%4 >= 2;
 
                 Transformation t = new RedundantTransformation();
                 if (reflect)
@@ -794,7 +796,7 @@ public class ComponentStore
         }
 
         @Override
-        public IUVTransformation getUVT()
+        public UVTransformation getUVT()
         {
             return new IconTransformation(busXcvrIcon);
         }
@@ -886,7 +888,7 @@ public class ComponentStore
                 renderWire(t, orient, new ColourMultiplier(signalColour(signal)));
         }
 
-        public abstract void renderWire(Transformation t, int orient, IVertexModifier colour);
+        public abstract void renderWire(Transformation t, int orient, IVertexOperation colour);
     }
 
     public static class CellTopWireModel extends CellWireModel
@@ -915,7 +917,7 @@ public class ComponentStore
         }
 
         @Override
-        public void renderWire(Transformation t, int orient, IVertexModifier colour)
+        public void renderWire(Transformation t, int orient, IVertexOperation colour)
         {
             IconTransformation icont = new IconTransformation(cellIcon);
             top[orient].render(t, icont, colour);
@@ -937,7 +939,7 @@ public class ComponentStore
         }
 
         @Override
-        public void renderWire(Transformation t, int orient, IVertexModifier colour)
+        public void renderWire(Transformation t, int orient, IVertexOperation colour)
         {
             bottom[orient].render(t, new IconTransformation(cellIcon), colour);
         }
@@ -951,7 +953,7 @@ public class ComponentStore
         }
 
         @Override
-        public Icon getIcon()
+        public IIcon getIcon()
         {
             return cellIcon;
         }
@@ -965,7 +967,7 @@ public class ComponentStore
         }
 
         @Override
-        public Icon getIcon()
+        public IIcon getIcon()
         {
             return cellIcon;
         }
@@ -979,7 +981,7 @@ public class ComponentStore
         }
 
         @Override
-        public Icon getIcon()
+        public IIcon getIcon()
         {
             return cellIcon;
         }
@@ -993,7 +995,7 @@ public class ComponentStore
         }
 
         @Override
-        public Icon getIcon()
+        public IIcon getIcon()
         {
             return cellIcon;
         }

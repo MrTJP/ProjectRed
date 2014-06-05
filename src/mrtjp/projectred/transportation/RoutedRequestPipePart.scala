@@ -4,8 +4,8 @@ import codechicken.lib.packet.PacketCustom
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.MovingObjectPosition
-import net.minecraftforge.common.ForgeDirection
 import mrtjp.projectred.core.libmc.ItemKey
+import net.minecraftforge.common.util.ForgeDirection
 
 class RoutedRequestPipePart extends RoutedJunctionPipePart
 {
@@ -37,8 +37,7 @@ class RoutedRequestPipePart extends RoutedJunctionPipePart
     {
         if (world.isRemote) return
         val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Request_open)
-        packet.writeCoord(x, y, z)
-        packet.sendToPlayer(player)
+        packet.writeCoord(x, y, z).sendToPlayer(player)
     }
 
     override def getDirForIncomingItem(r:RoutedPayload):ForgeDirection =

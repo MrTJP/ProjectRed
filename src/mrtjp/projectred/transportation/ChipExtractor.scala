@@ -1,8 +1,8 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.inventory.InvWrapper
 import scala.collection.immutable.BitSet
 import scala.collection.mutable.ListBuffer
+import mrtjp.projectred.core.libmc.inventory.InvWrapper
 
 class ChipExtractor extends RoutingChipset with TChipFilter with TChipOrientation
 {
@@ -70,7 +70,7 @@ class ChipExtractor extends RoutingChipset with TChipFilter with TChipOrientatio
         addFilterInfo(list)
     }
 
-    def getChipType = EnumRoutingChip.ITEMEXTRACTOR
+    def getChipType = RoutingChipDefs.ITEMEXTRACTOR
 
 
     override def createUpgradeBus =

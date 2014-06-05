@@ -2,9 +2,9 @@ package mrtjp.projectred.core.libmc.fx
 
 import net.minecraft.client.particle.EntityFX
 import net.minecraft.world.World
-import mrtjp.projectred.core.libmc.fx.ParticleLogic
 import codechicken.lib.vec.{BlockCoord, Vector3}
 import mrtjp.projectred.core.libmc.PRColors
+import net.minecraft.client.renderer.Tessellator
 
 class CoreParticle(w:World, px:Double, py:Double, pz:Double) extends EntityFX(w, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D)
 {
@@ -24,8 +24,8 @@ class CoreParticle(w:World, px:Double, py:Double, pz:Double) extends EntityFX(w,
     var scaleY = 0.2F
     var scaleZ = 0.2F
 
-    var particleMaxAge = 0
-    private var particleAge = 0
+    //var particleMaxAge = 0
+    //var particleAge = 0
     private var ignoreMaxAge = false
 
     var ignoreNoLogics = false
@@ -67,13 +67,13 @@ class CoreParticle(w:World, px:Double, py:Double, pz:Double) extends EntityFX(w,
         particleAge = 0
     }
 
-    def +=(logic:ParticleLogic) =
+    def +=(logic:ParticleLogic):this.type  =
     {
         (logics :+ logic).sorted(LogicComparator)
         this
     }
 
-    def ++=(it:Iterable[ParticleLogic]) =
+    def ++=(it:Iterable[ParticleLogic]):this.type =
     {
         (logics ++ it).sorted(LogicComparator)
         this
@@ -144,6 +144,30 @@ class CoreParticle(w:World, px:Double, py:Double, pz:Double) extends EntityFX(w,
     override def entityInit(){}
 
     override def getFXLayer = 2
+
+    override def renderParticle(tessellator:Tessellator, partialframe:Float, cosyaw:Float, cospitch:Float, sinyaw:Float, sinsinpitch:Float, cossinpitch:Float)
+    {
+        if (!worldObj.isRemote) return
+
+        val f11 = (prevPosX+(posX-prevPosX)*partialframe-EntityFX.interpPosX).asInstanceOf[Float]
+        val f12 = (prevPosY+(posY-prevPosY)*partialframe-EntityFX.interpPosY).asInstanceOf[Float]
+        val f13 = (prevPosZ+(posZ-prevPosZ)*partialframe-EntityFX.interpPosZ).asInstanceOf[Float]
+
+        if (particleIcon == null) return
+
+        tessellator.setBrightness(251658480)
+        tessellator.setColorRGBA_F(r, g, b, a)
+
+        val min_u = particleIcon.getMinU
+        val min_v = particleIcon.getMinV
+        val max_u = particleIcon.getMaxU
+        val max_v = particleIcon.getMaxV
+
+        tessellator.addVertexWithUV(f11-cosyaw*scaleX-sinsinpitch*scaleX, f12-cospitch*scaleY, f13-sinyaw*scaleZ-cossinpitch*scaleZ, max_u, max_v)
+        tessellator.addVertexWithUV(f11-cosyaw*scaleX+sinsinpitch*scaleX, f12+cospitch*scaleY, f13-sinyaw*scaleZ+cossinpitch*scaleZ, max_u, min_v)
+        tessellator.addVertexWithUV(f11+cosyaw*scaleX+sinsinpitch*scaleX, f12+cospitch*scaleY, f13+sinyaw*scaleZ+cossinpitch*scaleZ, min_u, min_v)
+        tessellator.addVertexWithUV(f11+cosyaw*scaleX-sinsinpitch*scaleX, f12-cospitch*scaleY, f13+sinyaw*scaleZ-cossinpitch*scaleZ, min_u, max_v)
+    }
 }
 
 object LogicComparator extends Ordering[ParticleLogic]

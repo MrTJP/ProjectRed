@@ -1,9 +1,9 @@
 package mrtjp.projectred.integration;
 
 import codechicken.lib.vec.*;
-import mrtjp.projectred.core.libmc.BasicUtils;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
+import mrtjp.projectred.core.libmc.PRLib;
 
 public class ArrayCommons
 {
@@ -43,7 +43,7 @@ public class ArrayCommons
         int absDir = Rotation.rotateSide(g.side(), r);
 
         BlockCoord pos = new BlockCoord(g.tile()).offset(absDir);
-        TileMultipart t = BasicUtils.getMultipartTile(g.world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(g.world(), pos);
         if (t != null)
         {
             TMultiPart tp = t.partMap(g.side());

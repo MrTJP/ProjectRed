@@ -1,26 +1,122 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.render.CCRenderState
 import codechicken.lib.render.FontUtils
-import mrtjp.projectred.core.inventory._
-import mrtjp.projectred.transportation.ItemRouterUtility.ChipUpgradeContainer
 import net.minecraft.util.EnumChatFormatting
-import net.minecraft.util.ResourceLocation
 import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.core.libmc.{PRColors, BasicGuiUtils}
+import mrtjp.projectred.core.libmc.{ResourceLib, PRColors}
+import mrtjp.projectred.core.libmc.gui._
+import mrtjp.projectred.core.{PartDefs, ItemPart, GuiIDs, TGuiBuilder}
+import net.minecraft.entity.player.EntityPlayer
+import codechicken.lib.data.MCDataInput
+import mrtjp.projectred.core.libmc.inventory.{Slot2, SimpleInventory, WidgetContainer}
+import net.minecraft.item.ItemStack
 
-object GuiChipUpgrade
+class ChipUpgradeContainer(player:EntityPlayer) extends WidgetContainer
 {
-    private final val resource = new ResourceLocation("projectred:textures/gui/chipupgradecontainer.png")
+    val upgradeInv = new SimpleInventory(1, "upBus", 1)
+    {
+        override def isItemValidForSlot(i:Int, stack:ItemStack) =
+        {
+            if (i == 6)
+                stack != null &&
+                    stack.getItem.isInstanceOf[ItemRoutingChip] &&
+                    stack.hasTagCompound && stack.getTagCompound.hasKey("chipROM")
+
+            else if (stack.getItem.isInstanceOf[ItemPart])
+            {
+                val slotForMeta = stack.getItemDamage-PartDefs.CHIPUPGRADE_LX.meta
+                slotForMeta == i
+            }
+            else false
+        }
+
+        override def markDirty()
+        {
+            super.markDirty()
+            refreshChips()
+        }
+    }
+
+    val slot = player.inventory.currentItem
+
+    addPlayerInv(player, 8, 86)
+    private var s = 0
+    private def next = {s += 1; s-1}
+    for ((x, y) <- GuiLib.createSlotGrid(8, 18, 1, 3, 2, 2))
+        this + new Slot2(upgradeInv, next, x, y)
+    for ((x, y) <- GuiLib.createSlotGrid(152, 18, 1, 3, 2, 2))
+        this + new Slot2(upgradeInv, next, x, y)
+    this + new Slot2(upgradeInv, next, 80, 38)
+
+    override def onContainerClosed(p:EntityPlayer)
+    {
+        super.onContainerClosed(p)
+        for (i <- 0 until upgradeInv.getSizeInventory)
+            if (upgradeInv.getStackInSlot(i) != null)
+            {
+                p.dropPlayerItemWithRandomChoice(upgradeInv.getStackInSlot(i), false)
+                upgradeInv.setInventorySlotContents(i, null)
+            }
+        upgradeInv.markDirty()
+    }
+
+    override def +(s:Slot2):this.type =
+    {
+        if (s.getSlotIndex == slot && s.inventory == player.inventory)
+            s.setRemove(false)
+        super.+(s)
+    }
+
+    private var chip:RoutingChipset = null
+    private def refreshChips()
+    {
+        val stack = upgradeInv.getStackInSlot(6)
+        val c = ItemRoutingChip.loadChipFromItemStack(stack)
+        if (chip != c) chip = c
+    }
+
+    def install()
+    {
+        val r = chip
+        if (r != null)
+        {
+            val bus = r.upgradeBus
+            for (i <- 0 until 6)
+            {
+                val stack = upgradeInv.getStackInSlot(i)
+                if (stack != null)
+                {
+                    if (i < 3)
+                    {
+                        if (bus.installL(i, true))
+                            upgradeInv.setInventorySlotContents(i, null)
+                    }
+                    else
+                    {
+                        if (bus.installR(i-3, true))
+                            upgradeInv.setInventorySlotContents(i, null)
+
+                    }
+                }
+            }
+        }
+
+        val chipStack = upgradeInv.getStackInSlot(6)
+        ItemRoutingChip.saveChipToItemStack(chipStack, r)
+        upgradeInv.setInventorySlotContents(6, chipStack)
+        detectAndSendChanges()
+    }
+
+    def getChip = chip
 }
 
-class GuiChipUpgrade(container:ChipUpgradeContainer) extends SpecialGuiContainer(container, null, 176, 200)
+class GuiChipUpgrade(container:ChipUpgradeContainer) extends WidgetGui(container, 176, 200)
 {
-    override def addWidgets()
+    override def runInit_Impl()
     {
-        add((new WidgetButton(xSize/2-20, 56, 40, 15) with TButtonMCStyle with TButtonTextOverlay).setText("Install").setActionCommand("inst"))
-        add(new WidgetDotSelector(67, 45)
+        add(new WidgetButtonMC(xSize / 2 - 20, 56, 40, 15).setText("Install").setAction("inst"))
+        add(new WidgetDotSelect(67, 45)
         {
             override def buildTooltip(list:ListBuffer[String])
             {
@@ -35,11 +131,11 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends SpecialGuiContainer
                         list += (EnumChatFormatting.GRAY.toString+b.Linfo)
                         list += (EnumChatFormatting.YELLOW.toString+b.Lformula)
                     }
-                    else list += ("not upgradable")
+                    else list += "not upgradable"
                 }
             }
         })
-        add(new WidgetDotSelector(110, 45)
+        add(new WidgetDotSelect(110, 45)
         {
             override def buildTooltip(list:ListBuffer[String])
             {
@@ -60,14 +156,14 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends SpecialGuiContainer
         })
     }
 
-    override def actionPerformed(ident:String)
+    override def receiveMessage_Impl(message:String)
     {
-        new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_RouterUtil_action).writeString(ident).sendToServer()
+        new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_RouterUtil_action).writeString(message).sendToServer()
     }
 
-    override def drawBackground()
+    override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        CCRenderState.changeTexture(GuiChipUpgrade.resource)
+        ResourceLib.guiChipUpgrade.bind()
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
         if (container.getChip != null)
         {
@@ -80,19 +176,14 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends SpecialGuiContainer
             FontUtils.drawRightString(String.valueOf(if (b.RZLatency > 0) b.RZLatency else "-"), 148, 63, PRColors.GREY.rgb)
         }
         var s = 0
-        import scala.collection.JavaConversions._
-        for (coord <- BasicGuiUtils.createSlotArray(8, 18, 1, 3, 2, 2))
+        for ((x, y) <- GuiLib.createSlotGrid(8, 18, 1, 3, 2, 2))
         {
-            val x = coord.get1
-            val y = coord.get2
             val color = getColorForSlot(s)
             s+=1
             drawGradientRect(x-2, y+4, x, y+12, color, color)
         }
-        for (coord <- BasicGuiUtils.createSlotArray(152, 18, 1, 3, 2, 2))
+        for ((x, y) <- GuiLib.createSlotGrid(152, 18, 1, 3, 2, 2))
         {
-            val x = coord.get1
-            val y = coord.get2
             val color = getColorForSlot(s)
             s+=1
             drawGradientRect(x+16, y+4, x+18, y+12, color, color)
@@ -128,4 +219,12 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends SpecialGuiContainer
         }
         0
     }
+}
+
+object GuiChipUpgrade extends TGuiBuilder
+{
+    override def getID = GuiIDs.chipUpgrade
+
+    override def buildGui(player:EntityPlayer, data:MCDataInput) =
+        new GuiChipUpgrade(new ChipUpgradeContainer(player))
 }

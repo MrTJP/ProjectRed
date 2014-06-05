@@ -1,0 +1,16 @@
+[
+{
+  "modid": "ProjRed|Transportation",
+  "name": "ProjectRed-Transportation",
+  "parent":"ProjRed|Core",
+  "version": "@VERSION@.@BUILD_NUMBER@",
+  "mcversion": "@MC_VERSION@",
+  "requiredMods": [
+      "ProjRed|Core"
+  ],
+  "dependencies": [
+      "ProjRed|Core"
+  ],
+  "useDependencyInformation": "true"
+}
+]

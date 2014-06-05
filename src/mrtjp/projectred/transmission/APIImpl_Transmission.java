@@ -16,7 +16,7 @@ public class APIImpl_Transmission implements ITransmissionAPI
     public byte[] getBundledInput(World world, int x, int y, int z, int side)
     {
         BlockCoord pos = new BlockCoord(x, y, z).offset(side);
-        TileEntity t = world.getBlockTileEntity(pos.x, pos.y, pos.z);
+        TileEntity t = world.getTileEntity(pos.x, pos.y, pos.z);
         if (t instanceof IBundledTile)
             return ((IBundledTile) t).getBundledSignal(side^1);
         else if (t instanceof TileMultipart)

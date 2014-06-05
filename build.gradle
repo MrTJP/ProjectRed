@@ -17,8 +17,8 @@ buildscript {
 }
 
 // Apply the forge plugin - this adds all the magic for automatically obfuscating, deobfuscating etc
-apply plugin: 'forge'
 apply plugin: 'scala'
+apply plugin: 'forge'
 
 // This is our group
 group = "mrtjp" // http://maven.apache.org/guides/mini/guide-naming-conventions.html

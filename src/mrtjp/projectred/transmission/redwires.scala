@@ -9,11 +9,10 @@ import codechicken.multipart._
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
-import net.minecraft.block.Block
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.ChatMessageComponent
-import mrtjp.projectred.core.libmc.BasicUtils
+import net.minecraft.util.ChatComponentText
+import net.minecraft.init.Blocks
 
 trait IRedwirePart extends IWirePart with IRedwireEmitter
 
@@ -116,14 +115,14 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with IRed
 
     override def debug(player:EntityPlayer) =
     {
-        player.sendChatToPlayer(ChatMessageComponent.createFromTranslationKey(
+        player.addChatComponentMessage(new ChatComponentText(
             (if (world.isRemote) "Client" else "Server")+" signal strength: "+getRedwireSignal))
         true
     }
 
     override def test(player:EntityPlayer) =
     {
-        if (BasicUtils.isClient(world)) Messenger.addMessage(x, y+.5f, z, "/#f/#c[c] = "+getRedwireSignal)
+        if (world.isRemote) Messenger.addMessage(x, y+.5f, z, "/#f/#c[c] = "+getRedwireSignal)
         else
         {
             val packet = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)
@@ -174,9 +173,8 @@ abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcq
         {
             val absDir = absoluteDir(r)
             val pos = new BlockCoord(tile).offset(absDir)
-            val blockID = world.getBlockId(pos.x, pos.y, pos.z)
-
-            if (blockID == Block.redstoneWire.blockID) world.getBlockMetadata(pos.x, pos.y, pos.z)-1
+            val block = world.getBlock(pos.x, pos.y, pos.z)
+            if (block == Blocks.redstone_wire) world.getBlockMetadata(pos.x, pos.y, pos.z)-1
             else RedstoneInteractions.getPowerTo(this, absDir)*17
         }
     }
@@ -327,7 +325,7 @@ trait TInsulatedCommons extends TRedwireCommons with IInsulatedRedwirePart
 {
     var colour:Byte = 0
 
-    def getWireType = WireDef.INSULATED_WIRE(colour)
+    def getWireType = WireDef.INSULATED_WIRES(colour)
 
     override def preparePlacement(side:Int, meta:Int)
     {

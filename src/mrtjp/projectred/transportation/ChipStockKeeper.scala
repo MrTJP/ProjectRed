@@ -1,12 +1,11 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.core.lib.LabelBreaks
 import LabelBreaks._
-import mrtjp.projectred.core.utils.ItemKeyStack
 import scala.collection.immutable.HashMap
 import scala.collection.mutable.ListBuffer
 import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.libmc.inventory.InvWrapper
 
 class ChipStockKeeper extends RoutingChipset with TChipStock
 {
@@ -114,5 +113,5 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
         addStockInfo(list)
     }
 
-    def getChipType = EnumRoutingChip.ITEMSTOCKKEEPER
+    def getChipType = RoutingChipDefs.ITEMSTOCKKEEPER
 }

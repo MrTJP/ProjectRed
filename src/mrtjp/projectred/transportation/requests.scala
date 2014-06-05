@@ -2,7 +2,6 @@ package mrtjp.projectred.transportation
 
 import collection.mutable.{HashMap => MHashMap}
 import java.util.{PriorityQueue => JPriorityQueue}
-import mrtjp.projectred.core.utils._
 import net.minecraft.item.ItemStack
 import scala.collection.immutable.{HashMap, TreeSet}
 import mrtjp.projectred.core.lib.{LabelBreaks, Pair2, HashPair2}
@@ -188,7 +187,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                         while (!balanced.isEmpty && balanced.peek.toDo <= unbalanced(0).toDo)
                             unbalanced :+= balanced.poll
 
-                        var cap = if (!unbalanced.isEmpty) balanced.peek.toDo else Int.MaxValue
+                        var cap = if (!balanced.isEmpty) balanced.peek.toDo else Int.MaxValue
 
                         val floor = unbalanced(0).toDo
                         cap = Math.min(cap, floor+(itemsNeeded+unbalanced.size-1)/unbalanced.size)
@@ -501,7 +500,7 @@ class CraftingPromise(val result:ItemKeyStack, val crafter:IWorldCrafter, val pr
     {
         for (i <- ingredients) if ((i.get1.key == ingredient.key) && i.get2 == crafter)
         {
-            i.get1.setSize(i.get1.stackSize+ingredient.stackSize)
+            i.get1.stackSize += ingredient.stackSize
             return this
         }
         ingredients :+= new Pair2(ingredient, crafter)
@@ -521,7 +520,7 @@ class CraftingPromise(val result:ItemKeyStack, val crafter:IWorldCrafter, val pr
         for (i <- ingredients)
         {
             val newI = new Pair2(i.get1.copy, i.get2)
-            newI.get1.setSize(newI.get1.stackSize*sets)
+            newI.get1.stackSize *= sets
             components += newI
         }
         components.result()

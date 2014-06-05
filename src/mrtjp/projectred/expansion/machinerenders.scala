@@ -10,7 +10,7 @@ import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderBlocks
 import net.minecraft.util.IIcon
 import net.minecraft.world.{IBlockAccess, World}
-import mrtjp.projectred.core.libmc.{MultiTileRender, PRColors, BasicUtils}
+import mrtjp.projectred.core.libmc.{PRLib, MultiTileRender, PRColors}
 import codechicken.lib.render.uv.{MultiIconTransformation, IconTransformation}
 
 abstract class TileMachineRender(b:Block) extends MultiTileRender(b)
@@ -34,7 +34,7 @@ abstract class TileMachineRender(b:Block) extends MultiTileRender(b)
     def renderWorldBlock(r:RenderBlocks, w:IBlockAccess, x:Int, y:Int, z:Int, meta:Int)
     {
         matrix.locate(w, x, y, z)
-        val tile = BasicUtils.getTileEntity(w, new BlockCoord(x,y,z), classOf[TileMachineWorking])
+        val tile = PRLib.getTileEntity(w, new BlockCoord(x,y,z), classOf[TileMachineWorking])
         if (tile != null)
         {
             CCRenderState.reset()
@@ -107,7 +107,7 @@ object RenderController extends MultiTileRender(ProjectRedExpansion.machine1)
 
     override def renderWorldBlock(r:RenderBlocks, w:IBlockAccess, x:Int, y:Int, z:Int, meta:Int)
     {
-        val tile = BasicUtils.getTileEntity(w, new BlockCoord(x,y,z), classOf[TileRouterController])
+        val tile = PRLib.getTileEntity(w, new BlockCoord(x,y,z), classOf[TileRouterController])
         if (tile != null)
         {
             matrix.locate(w, x, y, z)
