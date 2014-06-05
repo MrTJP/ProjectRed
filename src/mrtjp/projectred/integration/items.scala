@@ -1,12 +1,11 @@
 package mrtjp.projectred.integration
 
-import mrtjp.projectred.core.ItemCore
+import mrtjp.projectred.core.{TItemGlassSound, ItemCore}
 import codechicken.multipart.{MultiPartRegistry, TMultiPart, TItemMultiPart}
 import mrtjp.projectred.ProjectRedIntegration
-import net.minecraft.item.ItemStack
+import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.world.World
-import net.minecraft.block.Block
 import codechicken.lib.vec.{Translation, Scale, Vector3, BlockCoord}
 import mrtjp.projectred.core.libmc.BasicWireUtils
 import net.minecraftforge.common.util.ForgeDirection
@@ -17,22 +16,12 @@ import cpw.mods.fml.relauncher.{SideOnly, Side}
 import net.minecraftforge.client.IItemRenderer
 import net.minecraftforge.client.IItemRenderer.{ItemRendererHelper, ItemRenderType}
 import codechicken.lib.render.{CCRenderState, TextureUtils}
+import net.minecraft.client.renderer.texture.IIconRegister
 
-class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMultiPart
+class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMultiPart with TItemGlassSound
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedIntegration.tabIntegration)
-
-    override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World, x:Int, y:Int, z:Int, side:Int, f:Float, f2:Float, f3:Float) =
-    {
-        if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3))
-        {
-            w.playSoundEffect(x+0.5, y+0.5, z+0.5, Block.soundTypeGlass.func_150496_b(),
-                Block.soundTypeGlass.getVolume*5.0F, Block.soundTypeGlass.getPitch*.9F)
-            true
-        }
-        else false
-    }
 
     def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3):TMultiPart =
     {
@@ -48,13 +37,13 @@ class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMul
     }
 
     @SideOnly(Side.CLIENT)
-    def getSubItems(id:Int, tab:CreativeTabs, list:JList[_])
+    override def getSubItems(id:Item, tab:CreativeTabs, list:JList[_])
     {
         val l2 = list.asInstanceOf[JList[ItemStack]]
         for (g <- EnumGate.VALID_GATES) l2.add(g.makeStack)
     }
 
-    def registerIcons(reg:Nothing)
+    override def registerIcons(reg:IIconRegister)
     {
         ComponentStore.registerIcons(reg)
     }
