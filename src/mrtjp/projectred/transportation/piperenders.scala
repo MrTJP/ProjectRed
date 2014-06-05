@@ -1,22 +1,20 @@
 package mrtjp.projectred.transportation
 
-import codechicken.lib.lighting.{LazyLightMatrix, LightModel}
+import codechicken.lib.lighting.LightModel
 import codechicken.lib.raytracer.ExtendedMOP
 import codechicken.lib.render._
 import codechicken.lib.vec._
 import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
 import codechicken.microblock.{BlockMicroMaterial, MicroMaterialRegistry, MicroblockClass}
-import net.minecraft.block.Block
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.entity.{RenderManager, RenderItem}
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.{MovingObjectPosition, Icon}
-import net.minecraft.world.World
-import net.minecraftforge.common.ForgeDirection
+import net.minecraft.util.{IIcon, MovingObjectPosition}
 import org.lwjgl.opengl.GL11
-import java.text.DecimalFormat
-import mrtjp.projectred.core.libmc.{PRColors, BasicUtils}
+import mrtjp.projectred.core.libmc.{PRLib, PRColors}
+import codechicken.lib.render.uv.{UVTransformation, UV, UVScale, IconTransformation}
+import net.minecraft.init.Blocks
 
 object RenderPipe
 {
@@ -47,7 +45,7 @@ object RenderPipe
     }
     generate()
 
-    def render(p:FlowingPipePart, pos:Vector3, olm:LazyLightMatrix)
+    def render(p:FlowingPipePart, pos:Vector3)
     {
         val t = new Translation(pos)
         var uvt = new IconTransformation(p.getPipeType.sprites(0))
@@ -73,7 +71,7 @@ object RenderPipe
     private def renderRSWiring(p:FlowingPipePart, t:Translation, signal:Int)
     {
         val colour = new ColourMultiplier((signal&0xFF)/2+60<<24|0xFF)
-        val uvt2 = new IconTransformation(PipeDef.BASIC.sprites(1))
+        val uvt2 = new IconTransformation(PipeDefs.BASIC.sprites(1))
         val connMap = p.connMap
 
         if (Integer.bitCount(connMap) == 2 && ((connMap&3) == 3 || (connMap&12) == 12 || (connMap&48) == 48)) for (a <- 0 until 3)
@@ -85,14 +83,15 @@ object RenderPipe
         for (s <- 0 until 6) if ((connMap&1<<s) != 0) sideModelsRS(s).render(t, uvt2, colour)
     }
 
-    def renderBreakingOverlay(icon:Icon, pipe:FlowingPipePart)
+    def renderBreakingOverlay(icon:IIcon, pipe:FlowingPipePart)
     {
+        CCRenderState.setPipeline(new Translation(pipe.x, pipe.y, pipe.z), new IconTransformation(icon))
         import scala.collection.JavaConversions._
         for (box <- pipe.getCollisionBoxes)
-            RenderUtils.renderBlock(box, 0, new Translation(pipe.x, pipe.y, pipe.z), new IconTransformation(icon), null)
+            BlockRenderer.renderCuboid(box, 0)
     }
 
-    def renderInv(t:Transformation, icon:Icon)
+    def renderInv(t:Transformation, icon:IIcon)
     {
         val uvt = new IconTransformation(icon)
         CCRenderState.setColour(-1)
@@ -140,13 +139,14 @@ object RenderPipe
         GL11.glScalef(renderScale, renderScale, renderScale)
 
         dummyEntityItem.setEntityItemStack(itemstack)
-        customRenderItem.doRenderItem(dummyEntityItem, 0, 0, 0, 0, 0)
+        customRenderItem.doRender(dummyEntityItem, 0, 0, 0, 0, 0)
         prepareRenderState()
         GL11.glEnable(GL11.GL_LIGHTING)
         Tessellator.instance.setColorRGBA_I(PRColors.get(r.priority.color).rgb, 32)
         GL11.glScalef(0.5f, 0.5f, 0.5f)
 
-        RenderUtils.renderBlock(Cuboid6.full, 0, new Translation(-0.5, -0.5, -0.5), null, null)
+        CCRenderState.setPipeline(new Translation(-0.5, -0.5, -0.5))
+        BlockRenderer.renderCuboid(Cuboid6.full, 0)
 
         restoreRenderState()
         GL11.glPopMatrix()
@@ -161,7 +161,7 @@ object RenderPipe
         GL11.glDisable(GL11.GL_CULL_FACE)
         GL11.glDepthMask(false)
         CCRenderState.reset()
-        CCRenderState.startDrawing(7)
+        CCRenderState.startDrawing()
     }
 
     private def restoreRenderState()
@@ -188,11 +188,10 @@ object RenderPipe
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         CCRenderState.reset()
         TextureUtils.bindAtlas(0)
-        CCRenderState.useNormals(true)
+        CCRenderState.useNormals = true
         CCRenderState.setBrightness(part.world, pos.x, pos.y, pos.z)
-        CCRenderState.setAlpha(127)
-        CCRenderState.useModelColours(true)
-        CCRenderState.startDrawing(7)
+        CCRenderState.alphaOverride = 127
+        CCRenderState.startDrawing()
 
         renderRSWiring(part, Vector3.zero.translation, 255)
 
@@ -324,29 +323,38 @@ private class PipeModelGenerator(val w:Double = 2/8D, val d:Double = 1/16D-0.002
         for (f <- 0 until 4) centerModels(f).apply(new Scale(cscale, cscale, cscale).at(Vector3.center))
     }
 
-    private class UVT(var t:Transformation) extends IUVTransformation
-    {
-        private val vec = new Vector3
+}
 
-        def transform(uv:UV)
-        {
-            vec.set(uv.u, 0, uv.v).apply(t)
-            uv.set(vec.x, vec.z)
-        }
+private class UVT(t:Transformation) extends UVTransformation
+{
+    private val vec = new Vector3
+
+    def transform(uv:UV)
+    {
+        vec.set(uv.u, 0, uv.v).apply(t)
+        uv.set(vec.x, vec.z)
     }
+
+    override def apply(uv:UV) =
+    {
+        vec.set(uv.u, 0, uv.v).apply(t)
+        uv.set(vec.x, vec.z)
+    }
+
+    override def inverse() = new UVT(t.inverse())
 }
 
 object PipeRSHighlightRenderer extends IMicroHighlightRenderer
 {
-    def renderHighlight(world:World, player:EntityPlayer, hit:MovingObjectPosition, mcrClass:MicroblockClass, size:Int, material:Int) =
+    def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:MicroblockClass, size:Int, material:Int) =
     {
-        val tile = BasicUtils.getMultipartTile(world, new BlockCoord(hit.blockX, hit.blockY, hit.blockZ))
+        val tile = PRLib.getMultipartTile(player.worldObj, hit.blockX, hit.blockY, hit.blockZ)
         if (tile == null || mcrClass.classID != 3 || size != 1 || player.isSneaking) false
         else
         {
             val failed = MicroMaterialRegistry.getMaterial(material) match
             {
-                case b:BlockMicroMaterial if b.block == Block.blockRedstone => false
+                case b:BlockMicroMaterial if b.block == Blocks.redstone_block => false
                 case _ => true
             }
 

@@ -2,15 +2,13 @@ package mrtjp.projectred.expansion
 
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.entity.player.EntityPlayer
-import mrtjp.projectred.core.{TPowerFlow, PowerConductor}
-import mrtjp.projectred.transportation.{RoutedJunctionPipePart, IInventoryProvider, TControllerLayer}
-import mrtjp.projectred.core.inventory.{SpecialContainer, SimpleInventory}
+import mrtjp.projectred.transportation.{ItemCPU, RoutedJunctionPipePart, TControllerLayer}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
-import net.minecraft.inventory.{ICrafting, IInventory}
+import net.minecraft.inventory.ICrafting
 import codechicken.lib.vec.BlockCoord
-import mrtjp.projectred.core.libmc.BasicUtils
+import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory}
+import mrtjp.projectred.core.libmc.PRLib
 
 class TileRouterController extends TileMachine with TileGuiMachine with TControllerLayer
 {
@@ -90,7 +88,7 @@ class TileRouterController extends TileMachine with TileGuiMachine with TControl
 
     def hasControllerConflict =
     {
-        BasicUtils.getMultiPart(worldObj, new BlockCoord(this).offset(1), 6) match
+        PRLib.getMultiPart(worldObj, new BlockCoord(this).offset(1), 6) match
         {
             case p:RoutedJunctionPipePart =>
                 val r = p.getRouter
@@ -100,11 +98,10 @@ class TileRouterController extends TileMachine with TileGuiMachine with TControl
     }
 }
 
-class ControllerCont(tile:TileRouterController, player:EntityPlayer) extends SpecialContainer(player.inventory)
+class ControllerCont(tile:TileRouterController, player:EntityPlayer) extends WidgetContainer
 {
-    val sc = ISlotController.InventoryRulesController.instance
-    addCustomSlot(new SpecialContainer.SlotExtended(tile.cpuSlot, 0, 44, 36).setCheck(sc))
-    addPlayerInventory(8, 86)
+    this + new Slot2(tile.cpuSlot, 0, 44, 36)
+    addPlayerInv(player, 8, 86)
 
     var conflict = false
 

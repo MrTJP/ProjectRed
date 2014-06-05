@@ -8,7 +8,6 @@ import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.ProjectRedTransportation._
 import mrtjp.projectred.core.{Configurator, IProxy}
 import net.minecraftforge.client.MinecraftForgeClient
-import mrtjp.projectred.expansion.ItemCPU
 
 class TransportationProxy_server extends IProxy with IPartFactory
 {
@@ -20,15 +19,15 @@ class TransportationProxy_server extends IProxy with IPartFactory
     override def init()
     {
         MultiPartRegistry.registerParts(this, Array[String](
-            "pr_ptube", "pr_rbasic", "pr_rinterface",
+            "pr_pipe", "pr_rbasic", "pr_rinterface",
             "pr_rcrafting", "pr_rrequest", "pr_rextension",
             "pr_rfire"
         ))
 
-        itemPartPipe = new ItemPartPipe(Configurator.part_pipe.getInt)
-        itemRoutingChip = new ItemRoutingChip(Configurator.item_routingChipID.getInt)
-        itemRouterUtility = new ItemRouterUtility(Configurator.item_routerUtilID.getInt)
-        itemRouterCPU = new ItemCPU(Configurator.item_routerCPUID.getInt)
+        itemPartPipe = new ItemPartPipe
+        itemRoutingChip = new ItemRoutingChip
+        itemRouterUtility = new ItemRouterUtility
+        itemRouterCPU = new ItemCPU
 
         for (i <- 0 until Configurator.routerUpdateThreadCount) new TableUpdateThread(i)
     }
@@ -66,7 +65,7 @@ class TransportationProxy_client extends TransportationProxy_server
     override def init()
     {
         super.init()
-        MinecraftForgeClient.registerItemRenderer(itemPartPipe.itemID, PipeItemRenderer)
+        MinecraftForgeClient.registerItemRenderer(itemPartPipe, PipeItemRenderer)
         MicroMaterialRegistry.registerHighlightRenderer(PipeRSHighlightRenderer)
     }
 }

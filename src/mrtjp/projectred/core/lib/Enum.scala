@@ -4,6 +4,7 @@ import scala.collection.immutable.BitSet
 import scala.collection.{mutable, SortedSetLike, immutable}
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable.{Builder => MBuilder, BitSet => MBitSet}
+import scala.xml.Null
 
 trait Enum
 {
@@ -20,14 +21,18 @@ trait Enum
         vals.indexOf(newVal)
     }
 
+    def isDefinedAt(idx:Int) = vals.isDefinedAt(idx)
+
     def apply(ordinal:Int):EnumVal =
         if (vals.isDefinedAt(ordinal)) vals(ordinal)
-        else null
+        else null.asInstanceOf[EnumVal]
 
     protected trait Value extends Ordered[EnumVal]
     {
-        self:EnumVal =>
-        final val ordinal = addEnumVal(this)
+        //self:EnumVal =>
+        def getThis = this.asInstanceOf[EnumVal]
+
+        final val ordinal = addEnumVal(getThis)
 
         def name:String
         override def toString = name
@@ -48,11 +53,12 @@ trait Enum
 
         override def hashCode = 31*(this.getClass.## +name.## +ordinal)
 
-        def +(v:EnumVal) = ValSet(this, v)
+        def +(v:EnumVal) = ValSet(getThis, v)
+        def ++(xs:TraversableOnce[EnumVal]) = (ValSet.newBuilder ++= xs).result()
 
         def until(v:EnumVal) = build(ordinal until v.ordinal)
         def to(v:EnumVal) = build(ordinal to v.ordinal)
-        private def build (r:Range) =
+        private def build(r:Range) =
         {
             val b = ValSet.newBuilder
             for (i <- r) b += apply(i)
@@ -86,7 +92,7 @@ trait Enum
     {
         val empty = new ValSet(BitSet.empty)
 
-        def apply(elems: EnumVal*) = (newBuilder ++= elems).result()
+        def apply(elems:EnumVal*) = (newBuilder ++= elems).result()
 
         def newBuilder = new MBuilder[EnumVal, ValSet]
         {

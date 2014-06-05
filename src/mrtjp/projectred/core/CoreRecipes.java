@@ -5,18 +5,15 @@ import codechicken.microblock.handler.MicroblockProxy;
 import cpw.mods.fml.common.registry.GameRegistry;
 import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.libmc.PRColors;
-import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import scala.collection.Iterator;
 
-import static mrtjp.projectred.core.PartCollection.*;
+import static mrtjp.projectred.core.PartDefs.*;
 
 public class CoreRecipes
 {
@@ -139,7 +136,7 @@ public class CoreRecipes
 
 
         /** Silicon Boule **/
-        FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemPart(), SANDYCOALCOMPOUND().meta(), SILICONBOULE().makeStack(), 0);
+        GameRegistry.addSmelting(SANDYCOALCOMPOUND().makeStack(), SILICONBOULE().makeStack(), 0);
 
         /** Silicon **/
         GameRegistry.addRecipe(SILICON().makeStack(8),
@@ -150,10 +147,10 @@ public class CoreRecipes
                 );
 
         /** Infused Silicon **/
-        FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemPart(), REDSILICONCOMPOUND().meta(), INFUSEDSILICON().makeStack(), 0);
+        GameRegistry.addSmelting(REDSILICONCOMPOUND().makeStack(), INFUSEDSILICON().makeStack(), 0);
 
         /** Energized Silicon **/
-        FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemPart(), GLOWINGSILICONCOMPOUND().meta(), ENERGIZEDSILICON().makeStack(), 0);
+        GameRegistry.addSmelting(GLOWINGSILICONCOMPOUND().makeStack(), ENERGIZEDSILICON().makeStack(), 0);
 
         /** Motor **/
         GameRegistry.addRecipe(MOTOR().makeStack(),
@@ -188,7 +185,7 @@ public class CoreRecipes
                 );
 
         /** Red Alloy Ingot **/
-        FurnaceRecipes.smelting().addSmelting(ProjectRedCore.itemPart(), REDIRONCOMPOUND().meta(), REDINGOT().makeStack(), 0);
+        GameRegistry.addSmelting(REDIRONCOMPOUND().makeStack(), REDINGOT().makeStack(), 0);
 
         /** Illumar **/
         Iterator it = ILLUMARS().iterator();
@@ -207,8 +204,8 @@ public class CoreRecipes
                 "sss",
                 "sws",
                 "sss",
-                's', Item.itemRegistry.getObject("silk"),
-                'w', Item.itemRegistry.getObject("stick")
+                's', Items.string,
+                'w', Items.stick
                 );
 
         /** Sail **/
@@ -233,8 +230,8 @@ public class CoreRecipes
                 "sss",
                 "scs",
                 "sss",
-                'c', Block.getBlockFromName("coal_block"),
-                's', Block.getBlockFromName("sand")
+                'c', Blocks.coal_block,
+                's', Blocks.sand
                 );
 
         /** Red Silicon Compound **/

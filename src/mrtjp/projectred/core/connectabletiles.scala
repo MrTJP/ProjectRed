@@ -3,11 +3,8 @@ package mrtjp.projectred.core
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.vec.{BlockCoord, Rotation}
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.blockutil.TileMulti
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
-import mrtjp.projectred.core.libmc.{MultiTileTile, BasicUtils}
+import mrtjp.projectred.core.libmc.{PRLib, MultiTileTile}
 import net.minecraft.block.Block
 
 trait TConnectableTile extends TileEntity with IConnectable
@@ -72,7 +69,7 @@ trait TConnectableTile extends TileEntity with IConnectable
 
     def tryConnectStraight(absDir:Int, edgeRot:Int):Boolean =
     {
-        val tp = BlockConnLib.getStraight(worldObj, absDir, edgeRot, new BlockCoord(this))
+        val tp = BlockConnLib.getStraight(getWorldObj, absDir, edgeRot, new BlockCoord(this))
 
         if (tp != null)
         {
@@ -98,7 +95,7 @@ trait TConnectableTile extends TileEntity with IConnectable
     def tryConnectStraightOverride(absDir:Int):Boolean =
     {
         val pos = new BlockCoord(this).offset(absDir)
-        val t = BasicUtils.getTileEntity(worldObj, pos, classOf[TConnectableTile])
+        val t = PRLib.getTileEntity(getWorldObj, pos, classOf[TConnectableTile])
         if (t != null && canConnect(t)) return t.connectStraight(this, absDir^1, -1)
 
         false
@@ -106,7 +103,7 @@ trait TConnectableTile extends TileEntity with IConnectable
 
     def tryConnectCorner(absDir:Int, edgeRot:Int):Boolean =
     {
-        val tp = BlockConnLib.getCorner(worldObj, absDir, edgeRot, new BlockCoord(this))
+        val tp = BlockConnLib.getCorner(getWorldObj, absDir, edgeRot, new BlockCoord(this))
         if (tp != null && tp.isInstanceOf[IConnectable] && canConnect(tp.asInstanceOf[IConnectable]))
         {
             val sideTo = Rotation.rotateSide(absDir^1, edgeRot)
@@ -141,18 +138,18 @@ trait TConnectableTileMulti extends MultiTileTile with TConnectableTile
     abstract override def onNeighborChange(b:Block)
     {
         super.onNeighborChange(b)
-        if (!worldObj.isRemote) rebuildConns()
+        if (!getWorldObj.isRemote) rebuildConns()
     }
 
-    abstract override def onBlockPlaced(side:Int)
+    abstract override def onBlockPlaced(side:Int, meta:Int)
     {
-        super.onBlockPlaced(side)
-        if (!worldObj.isRemote) rebuildConns()
+        super.onBlockPlaced(side, meta)
+        if (!getWorldObj.isRemote) rebuildConns()
     }
 
     abstract override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        BasicUtils.updateIndirectNeighbors(worldObj, xCoord, yCoord, zCoord, getBlock)
+        PRLib.bulkBlockUpdate(getWorldObj, xCoord, yCoord, zCoord, getBlock)
     }
 }

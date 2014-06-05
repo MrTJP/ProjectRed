@@ -4,8 +4,9 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.*;
 import codechicken.multipart.handler.MultipartProxy;
-import mrtjp.projectred.core.libmc.BasicUtils;
+import mrtjp.projectred.core.libmc.PRLib;
 import mrtjp.projectred.transmission.IRedwireEmitter;
+import net.minecraft.block.Block;
 
 import java.util.Random;
 
@@ -50,7 +51,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
     {
         int smask = 0;
 
-        int blockID = MultipartProxy.block().blockID;
+        Block block = MultipartProxy.block();
         BlockCoord pos = new BlockCoord();
         BlockCoord pos2 = new BlockCoord();
 
@@ -60,12 +61,12 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
                 int absSide = Rotation.rotateSide(side(), r);
                 pos.set(x(), y(), z()).offset(absSide);
 
-                world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, blockID);
+                world().notifyBlockOfNeighborChange(pos.x, pos.y, pos.z, block);
                 for (int s = 0; s < 6; s++)
                     if (s != (absSide^1) && (smask&1<<s) == 0)
                     {
                         pos2.set(pos).offset(s);
-                        world().notifyBlockOfNeighborChange(pos2.x, pos2.y, pos2.z, blockID);
+                        world().notifyBlockOfNeighborChange(pos2.x, pos2.y, pos2.z, block);
                     }
 
                 smask |= 1<<absSide;
@@ -94,7 +95,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
             return i;
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
-        if (world().isBlockNormalCube(pos.x, pos.y, pos.z))
+        if (world().isBlockNormalCubeDefault(pos.x, pos.y, pos.z, false))
             return world().getBlockPowerInput(pos.x, pos.y, pos.z)*17;
 
         return 0;
@@ -105,7 +106,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
         int absDir = Rotation.rotateSide(side(), r);
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null)
             return getPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side()^1));
 
@@ -117,7 +118,7 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
         int absDir = Rotation.rotateSide(side(), r);
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null)
             return getPartSignal(t.partMap(side()), (r+2)%4);
 

@@ -4,12 +4,11 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.MultiPartRegistry.IPartFactory
 import cpw.mods.fml.common.Loader
-import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.core.{Configurator, IProxy}
+import mrtjp.projectred.core.IProxy
 import mrtjp.projectred.transmission._
-import mrtjp.projectred.core.libmc.{BasicRenderUtils, ItemBlockMulti}
+import mrtjp.projectred.core.libmc.BasicRenderUtils
 
 class ExpansionProxy_server extends IProxy with IPartFactory
 {
@@ -25,17 +24,15 @@ class ExpansionProxy_server extends IProxy with IPartFactory
             if (Loader.isModLoaded("ProjRed|Transmission"))
             {
                 MultiPartRegistry.registerParts(this, Array("pr_100v", "pr_f100v"))
-                ItemPartWire.additionalWires :+= WireDef.POWER_100v.getItemStack
-                ItemPartFramedWire.additionalWires :+= WireDef.POWER_100v.getFramedItemStack
+                ItemPartWire.additionalWires :+= WireDef.POWER_100v.makeStack
+                ItemPartFramedWire.additionalWires :+= WireDef.POWER_100v.makeFramedStack
             }
 
             //Machine1 (processing)
-            ProjectRedExpansion.machine1 = new BlockMachine(Configurator.block_machinesID.getInt)
-            ProjectRedExpansion.machine1.setUnlocalizedName("projectred.expansion.machine1")
-            GameRegistry.registerBlock(ProjectRedExpansion.machine1, classOf[ItemBlockMulti], "projectred.expansion.machine1")
+            ProjectRedExpansion.machine1 = new BlockMachine("projectred.expansion.machine1")
             //Machine1 tiles
-            ProjectRedExpansion.machine1.addTile(0, classOf[TileRouterController], "projectred.expansion.machine1.controller")
-            ProjectRedExpansion.machine1.addTile(1, classOf[TileFurnace], "projectred.expansion.machine1.furnace")
+            ProjectRedExpansion.machine1.addTile(classOf[TileRouterController], 0)
+            ProjectRedExpansion.machine1.addTile(classOf[TileFurnace], 1)
 
             //Machine2 (devices)
 //            ProjectRedExpansion.machine2 = new BlockMachine(Configurator.block_machines2ID.getInt)

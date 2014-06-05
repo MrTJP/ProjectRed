@@ -5,10 +5,8 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.lib.packet.PacketCustom.{IServerPacketHandler, IClientPacketHandler}
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.client.Minecraft
-import net.minecraft.client.multiplayer.NetClientHandler
 import net.minecraft.entity.player.EntityPlayerMP
-import net.minecraft.network.NetServerHandler
-import mrtjp.projectred.core.libmc.BasicUtils
+import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.network.play.{INetHandlerPlayServer, INetHandlerPlayClient}
 
 class ExpansionPH
@@ -29,7 +27,7 @@ object ExpansionCPH extends ExpansionPH with IClientPacketHandler
 
     def openMachineGui(packet:PacketCustom, mc:Minecraft)
     {
-        val machine = BasicUtils.getTileEntity(mc.theWorld, packet.readCoord(), classOf[TileGuiMachine])
+        val machine = PRLib.getTileEntity(mc.theWorld, packet.readCoord(), classOf[TileGuiMachine])
         if (machine != null)
             ClientUtils.openSMPGui(packet.readUByte(), MachineGuiFactory(packet.readUByte(), machine))
     }

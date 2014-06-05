@@ -1,33 +1,26 @@
 package mrtjp.projectred.transportation
 
-import codechicken.core.IGuiPacketSender
-import codechicken.core.ServerUtils
 import codechicken.lib.data.MCDataInput
-import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.BlockCoord
 import java.util.UUID
 import java.util.concurrent.DelayQueue
 import mrtjp.projectred.core.ItemDataCard
-import mrtjp.projectred.core.inventory.InvWrapper
-import mrtjp.projectred.core.inventory.SimpleInventory
-import mrtjp.projectred.core.inventory.SpecialContainer
-import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.inventory.Container
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 import scala.collection
-import scala.collection.immutable
 import mrtjp.projectred.core.lib.{PostponedWorkItem, LabelBreaks, Pair2}
-import mrtjp.projectred.core.libmc.{BasicGuiUtils, ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory, InvWrapper}
+import mrtjp.projectred.core.libmc.gui.GuiLib
 
 class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 {
     private val chipSlots = new SimpleInventory(8, "chips", 1)
     {
-        override def onInventoryChanged()
+        override def markDirty()
         {
             super.markDirty()
             refreshChips()
@@ -36,21 +29,21 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         override def isItemValidForSlot(i:Int, stack:ItemStack) =
             stack != null && stack.getItem.isInstanceOf[ItemRoutingChip] &&
                 stack.hasTagCompound && stack.getTagCompound.hasKey("chipROM") &&
-                EnumRoutingChip.getForStack(stack).isCraftingChip
+                RoutingChipDefs.getForStack(stack).isCraftingChip
     }
     private val cardSlots = new SimpleInventory(9, "links", 1)
     {
         override def isItemValidForSlot(i:Int, stack:ItemStack):Boolean =
         {
-            if (ItemDataCard.hasCardData(stack))
+            if (ItemDataCard.hasData(stack))
             {
-                val tag = ItemDataCard.loadData(stack, "ext_pipe")
-                if (tag.hasKey("id")) return true
+                val id = ItemDataCard.getData(stack, "extension")
+                return !id.isEmpty
             }
             false
         }
 
-        override def onInventoryChanged()
+        override def markDirty()
         {
             extensionsNeedRefresh = true
         }
@@ -204,10 +197,10 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     private def lostHandleTick()
     {
         if (lost.isEmpty) return
-        var post = lost.peek()
+        var post:PostponedWorkItem[ItemKeyStack] = null
 
         import LabelBreaks._
-        while (post != null) label
+        while ({post = lost.poll(); post} != null) label
         {
             val stack = post.getItem
             var toRequest = stack.stackSize
@@ -226,8 +219,6 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
                 stack.stackSize -= requested
                 lost.add(new PostponedWorkItem[ItemKeyStack](stack, 5000))
             }
-
-            post = lost.peek()
         }
     }
 
@@ -264,19 +255,15 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         for (i <- 0 until 9)
         {
             val inslot = cardSlots.getStackInSlot(i)
-            if (inslot != null && ItemDataCard.hasCardData(inslot))
+            if (inslot != null && ItemDataCard.hasData(inslot))
             {
-                val data = ItemDataCard.loadData(inslot, "ext_pipe")
-                if (data.hasKey("id"))
+                val data = ItemDataCard.getData(inslot, "extension")
+                if (!data.isEmpty) try
                 {
-                    var id:UUID = null
-                    try
-                    {
-                        id = UUID.fromString(data.getString("id"))
-                        extensionIPs(i) = RouterServices.getIPforUUID(id)
-                    }
-                    catch {case t:Throwable =>}
+                    val id = UUID.fromString(data)
+                    extensionIPs(i) = RouterServices.getIPforUUID(id)
                 }
+                catch {case t:Throwable =>}
             }
             else extensionIPs(i) = -1
         }
@@ -349,37 +336,26 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     def openGui(player:EntityPlayer)
     {
         if (world.isRemote) return
-        ServerUtils.openSMPContainer(player.asInstanceOf[EntityPlayerMP], createContainer(player), new IGuiPacketSender
-        {
-            def sendPacket(player:EntityPlayerMP, windowId:Int)
-            {
-                val p = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_CraftingPipe_open)
-                p.writeCoord(x, y, z)
-                p.writeByte(windowId)
-                p.writeInt(priority)
-                p.sendToPlayer(player)
-            }
-        })
+        GuiCraftingPipe.open(player, createContainer(player), _.writeCoord(x, y, z).writeInt(priority))
     }
 
     def createContainer(player:EntityPlayer):Container =
     {
-        val ghost = new SpecialContainer(player.inventory)
+        val container = new WidgetContainer
         var s = 0
-        import scala.collection.JavaConversions._
-        for (p <- BasicGuiUtils.createSlotArray(20, 12, 2, 4, 20, 0))
+        for ((x, y) <- GuiLib.createSlotGrid(20, 12, 2, 4, 20, 0))
         {
-            ghost.addCustomSlot(new SpecialContainer.SlotExtended(chipSlots, s, p.get1, p.get2).setCheck(ISlotController.InventoryRulesController.instance))
+            container + new Slot2(chipSlots, s, x, y)
             s += 1
         }
         var s2 = 0
-        for (p <- BasicGuiUtils.createSlotArray(8, 108, 9, 1, 0, 0))
+        for ((x, y) <- GuiLib.createSlotGrid(8, 108, 9, 1, 0, 0))
         {
-            ghost.addCustomSlot(new SpecialContainer.SlotExtended(cardSlots, s2, p.get1, p.get2).setCheck(ISlotController.InventoryRulesController.instance))
+            container + new Slot2(cardSlots, s2, x, y)
             s2 += 1
         }
-        ghost.addPlayerInventory(8, 138)
-        ghost
+        container.addPlayerInv(player, 8, 138)
+        container
     }
 
     override def save(tag:NBTTagCompound)

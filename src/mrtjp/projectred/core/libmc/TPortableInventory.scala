@@ -3,7 +3,7 @@ package mrtjp.projectred.core.libmc
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.entity.player.EntityPlayer
-import mrtjp.projectred.core.inventory.SimpleInventory
+import mrtjp.projectred.core.libmc.inventory.SimpleInventory
 
 trait TPortableInventory extends IInventory
 {

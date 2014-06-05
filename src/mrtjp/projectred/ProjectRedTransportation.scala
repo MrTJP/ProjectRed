@@ -1,19 +1,15 @@
 package mrtjp.projectred
 
-import codechicken.lib.packet.PacketCustom
 import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.event.FMLInitializationEvent
 import cpw.mods.fml.common.event.FMLPostInitializationEvent
 import cpw.mods.fml.common.event.FMLPreInitializationEvent
 import cpw.mods.fml.common.event.FMLServerStoppingEvent
-import cpw.mods.fml.common.network.NetworkMod
 import mrtjp.projectred.api.ProjectRedAPI
 import mrtjp.projectred.transportation._
 import net.minecraft.creativetab.CreativeTabs
-import mrtjp.projectred.expansion.ItemCPU
 
 @Mod(modid = "ProjRed|Transportation", useMetadata = true, modLanguage = "scala")
-@NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = classOf[PacketCustom.CustomTinyPacketHandler])
 object ProjectRedTransportation
 {
     ProjectRedAPI.transportationAPI = new APIImpl_Transportation
@@ -28,7 +24,8 @@ object ProjectRedTransportation
 
     var tabTransportation = new CreativeTabs("transport")
     {
-        override def getIconItemStack = EnumRoutingChip.ITEMSTOCKKEEPER.getItemStack
+        override def getIconItemStack = RoutingChipDefs.ITEMSTOCKKEEPER.makeStack
+        override def getTabIconItem = getIconItemStack.getItem
     }
 
     @Mod.EventHandler

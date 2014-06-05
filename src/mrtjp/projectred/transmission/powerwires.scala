@@ -8,9 +8,7 @@ import mrtjp.projectred.core._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import mrtjp.projectred.api.IConnectable
-import net.minecraft.util.MovingObjectPosition
-import net.minecraft.item.ItemStack
-import mrtjp.projectred.core.libmc.BasicUtils
+import mrtjp.projectred.core.libmc.PRLib
 
 abstract class PowerWire extends WirePart with TPowerConnectable
 {
@@ -54,7 +52,7 @@ abstract class PowerWire extends WirePart with TPowerConnectable
                 if (WireConnLib.canConnectThroughCorner(world, pos, absDir^1, side))
                 {
                     pos.offset(side)
-                    t2 = BasicUtils.getTileEntity(world, pos, classOf[TPowerConnectable])
+                    t2 = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
                 }
                 if (t2 != null) return t2.conductor(absDir^1)
                 else return null
@@ -66,7 +64,7 @@ abstract class PowerWire extends WirePart with TPowerConnectable
                 if (t != null && t.isInstanceOf[TPowerConnectable]) return t.asInstanceOf[TPowerConnectable].conductor(absDir^1)
 
                 val pos = new BlockCoord(tile).offset(absDir)
-                val t2 = BasicUtils.getTileEntity(world, pos, classOf[TPowerConnectable])
+                val t2 = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
                 if (t != null) return t2.conductor(absDir^1)
                 else return null
             }
@@ -92,7 +90,7 @@ abstract class PowerWire extends WirePart with TPowerConnectable
     override def discoverStraightOverride(absDir:Int):Boolean =
     {
         val pos = new BlockCoord(tile).offset(absDir)
-        val t = BasicUtils.getTileEntity(world, pos, classOf[TPowerConnectable])
+        val t = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
         if (t != null) return t.connectStraight(this, absDir^1, Rotation.rotationTo(absDir, side))
 
         false
@@ -104,7 +102,7 @@ abstract class PowerWire extends WirePart with TPowerConnectable
         pos.offset(absDir)
         if (!WireConnLib.canConnectThroughCorner(world, pos, absDir^1, side)) return false
         pos.offset(side)
-        val t = BasicUtils.getTileEntity(world, pos, classOf[TPowerConnectable])
+        val t = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
         if (t != null) return t.connectCorner(this, side^1, Rotation.rotationTo(side, absDir^1))
 
         false
@@ -159,13 +157,13 @@ abstract class FramedPowerWire extends FramedWirePart with TPowerConnectable
             if ((connMap&1<<id) != 0)//straight
             {
                 val pos = new BlockCoord(tile).offset(id)
-                val t = BasicUtils.getMultipartTile(world, pos)
+                val t = PRLib.getMultipartTile(world, pos)
                 if (t != null)
                 {
                     val tp = t.partMap(6)
                     if (tp != null && tp.isInstanceOf[TPowerConnectable]) return tp.asInstanceOf[TPowerConnectable].conductor(id^1)
                 }
-                val t2 = BasicUtils.getTileEntity(world, pos, classOf[TPowerConnectable])
+                val t2 = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
                 if (t2 != null) t2.conductor(id^1)
                 else return null
             }
@@ -183,7 +181,7 @@ abstract class FramedPowerWire extends FramedWirePart with TPowerConnectable
     override def discoverStraightOverride(s:Int):Boolean =
     {
         val pos = new BlockCoord(tile).offset(s)
-        val tp = BasicUtils.getTileEntity(world, pos, classOf[TPowerConnectable])
+        val tp = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
         if (tp != null) return tp.connectStraight(this, s^1, -1)
         false
     }

@@ -1,10 +1,10 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.core.libmc.BasicGuiUtils;
-import mrtjp.projectred.integration.GateLogic.ITimerGuiLogic;
 import codechicken.core.gui.GuiCCButton;
 import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.packet.PacketCustom;
+import mrtjp.projectred.core.libmc.gui.GuiLib;
+import mrtjp.projectred.integration.GateLogic.ITimerGuiLogic;
 
 public class GuiTimer extends GuiScreenWidget
 {
@@ -46,10 +46,10 @@ public class GuiTimer extends GuiScreenWidget
     @Override
     public void drawBackground()
     {
-        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel);
+        GuiLib.drawGuiBox(0, 0, xSize, ySize, zLevel);
         String s = "Timer interval: "+String.format("%.2f", logic.getTimerMax()*0.05)+"s";
-        int name_w = fontRenderer.getStringWidth(s);
-        fontRenderer.drawString(s, (xSize-name_w)/2, 8, 0x404040);
+        int name_w = fontRendererObj.getStringWidth(s);
+        fontRendererObj.drawString(s, (xSize-name_w)/2, 8, 0x404040);
     }
 
     @Override

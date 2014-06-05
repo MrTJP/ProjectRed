@@ -1,93 +1,93 @@
 package mrtjp.projectred.transportation
 
 import net.minecraft.inventory.Container
-import mrtjp.projectred.core.inventory._
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.BlockCoord
-import codechicken.lib.render.{FontUtils, CCRenderState}
+import codechicken.lib.render.FontUtils
 import org.lwjgl.opengl.GL11
-import net.minecraft.client.gui.{GuiButton, Gui}
-import net.minecraft.util.{EnumChatFormatting, MathHelper, ResourceLocation}
+import net.minecraft.client.gui.Gui
+import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.Keyboard
-import java.util
-import mrtjp.projectred.core.utils.ItemKeyStack
-import java.util.Collections
-import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
-import cpw.mods.fml.client.FMLClientHandler
-import net.minecraft.client.renderer.Tessellator
-import scala.util.Random
 import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.core.libmc.{PRColors, BasicGuiUtils, ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.libmc._
+import mrtjp.projectred.core.libmc.gui._
+import mrtjp.projectred.core.{GuiIDs, TGuiBuilder}
+import net.minecraft.entity.player.EntityPlayer
+import codechicken.lib.data.MCDataInput
 
-class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends SpecialGuiContainer(container, null, 176, 220)
+class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends WidgetGui(container, 176, 220)
 {
-    override def actionPerformed(ident:String)
+    override def receiveMessage_Impl(message:String)
     {
         val packet = new PacketCustom(TransportationCPH.channel, TransportationCPH.gui_CraftingPipe_action)
         packet.writeCoord(new BlockCoord(pipe.tile))
-        packet.writeString(ident)
+        packet.writeString(message)
         packet.sendToServer()
     }
 
-    override def addWidgets()
+    override def runInit_Impl()
     {
-        add(new JWidgetButton(138, 12, 20, 14).setText("+").setActionCommand("up"))
-        add(new JWidgetButton(92, 12, 20, 14).setText("-").setActionCommand("down"))
+        add(new WidgetButtonMC(138, 12, 20, 14).setText("+").setAction("up"))
+        add(new WidgetButtonMC(92, 12, 20, 14).setText("-").setAction("down"))
     }
 
-    override def drawBackground()
+    override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        CCRenderState.changeTexture(GuiCraftingPipe.resource)
+        ResourceLib.guiPipeCrafting.bind()
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
         FontUtils.drawCenteredString("" + pipe.priority, 126, 15, PRColors.BLACK.rgb)
-        BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 138)
+        GuiLib.drawPlayerInvBackground(8, 138)
 
         var color = 0
-        CCRenderState.changeTexture(SpecialGuiContainer.guiExtras)
+        ResourceLib.guiExtras.bind()
 
-        import scala.collection.JavaConversions._
-        for (p <- BasicGuiUtils.createSlotArray(8, 108, 9, 1, 0, 0))
+        for ((x, 7) <- GuiLib.createSlotGrid(8, 108, 9, 1, 0, 0))
         {
             GL11.glColor4f(1, 1, 1, 1)
-            drawTexturedModalRect(p.get1, p.get2, 1, 11, 16, 16)
-            val x = p.get1 + 4
-            val y = p.get2 - 2
-            Gui.drawRect(x, y, x + 8, y + 2, PRColors.get(color).argb)
+            drawTexturedModalRect(x, y, 1, 11, 16, 16)
+            Gui.drawRect(x, y, x+8, y+2, PRColors.get(color).argb)
             color += 1
         }
     }
 
-    override def drawForeground()
+    override def drawFront_Impl(mouse:Point, frame:Float)
     {
-        CCRenderState.changeTexture(GuiCraftingPipe.resource)
+        ResourceLib.guiPipeCrafting.bind()
         val oldZ = zLevel
         zLevel = 300
         var i = 0
-        import scala.collection.JavaConversions._
-        for (p <- BasicGuiUtils.createSlotArray(20, 12, 2, 4, 20, 0))
+        for ((x, y) <- GuiLib.createSlotGrid(20, 12, 2, 4, 20, 0))
         {
-            val x = p.get1 - 5
-            val y = p.get2 - 2
             val u = 178
             val v = if (inventorySlots.getSlot(i).getStack == null) 107 else 85
             i += 1
-            drawTexturedModalRect(x, y, u, v, 25, 20)
+            drawTexturedModalRect(x-5, y-2, u, v, 25, 20)
         }
         zLevel = oldZ
     }
 }
 
-object GuiCraftingPipe
+object GuiCraftingPipe extends TGuiBuilder
 {
-    val resource = new ResourceLocation("projectred:textures/gui/guicraftingpipe.png")
+    override def getID = GuiIDs.craftingPipe
+
+    override def buildGui(player:EntityPlayer, data:MCDataInput) =
+    {
+        PRLib.getMultiPart(player.worldObj, data.readCoord(), 6) match
+        {
+            case pipe:RoutedCraftingPipePart =>
+                new GuiCraftingPipe(pipe.createContainer(player), pipe)
+            case _ => null
+        }
+    }
 }
 
-class GuiExtensionPipe(container:Container, id:String) extends SpecialGuiContainer(container, null)
+class GuiExtensionPipe(container:Container, id:String) extends WidgetGui(container)
 {
-    override def drawBackground()
+    override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel)
-        BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 84)
+        GuiLib.drawGuiBox(0, 0, xSize, ySize, zLevel)
+        GuiLib.drawPlayerInvBackground(8, 84)
 
         fontRenderer.drawString("Extension ID:", 10, 10, 0xff000000)
 
@@ -98,113 +98,126 @@ class GuiExtensionPipe(container:Container, id:String) extends SpecialGuiContain
             i+=1
         }
 
-        BasicGuiUtils.drawSlotBackground(mc, 133, 19)
-        BasicGuiUtils.drawSlotBackground(mc, 133, 49)
-        CCRenderState.changeTexture(SpecialGuiContainer.guiExtras)
+        GuiLib.drawSlotBackground(133, 19)
+        GuiLib.drawSlotBackground(133, 49)
+        ResourceLib.guiExtras.bind()
         drawTexturedModalRect(134, 20, 1, 11, 16, 16)
     }
 }
 
-class GuiInterfacePipe(slots:Container, pipe:RoutedInterfacePipePart) extends SpecialGuiContainer(slots, null, 176, 200)
+object GuiExtensionPipe extends TGuiBuilder
 {
-    override def drawBackground()
+    override def getID = GuiIDs.extensionPipe
+
+    override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        CCRenderState.changeTexture(GuiInterfacePipe.resource)
+        val coord = data.readCoord()
+        val id = data.readString()
+        PRLib.getMultiPart(player.worldObj, coord, 6) match
+        {
+            case pipe:RoutedExtensionPipePart =>
+                new GuiExtensionPipe(pipe.createContainer(player), id)
+            case _ => null
+        }
+    }
+}
+
+class GuiInterfacePipe(container:Container, pipe:RoutedInterfacePipePart) extends WidgetGui(container, 176, 200)
+{
+    override def drawBack_Impl(mouse:Point, frame:Float)
+    {
+        ResourceLib.guiPipeInterface.bind()
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
-        BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 118)
+        GuiLib.drawPlayerInvBackground(8, 118)
     }
 
-    override def drawForeground()
+    override def drawFront_Impl(mouse:Point, frame:Float)
     {
-        CCRenderState.changeTexture(GuiInterfacePipe.resource)
-        val oldZ:Float = zLevel
+        ResourceLib.guiPipeInterface.bind()
+        val oldZ = zLevel
         zLevel = 300
 
         for (i <- 0 until 4)
         {
-            val x:Int = 19
-            val y:Int = 10 + i * 26
-            val u:Int = 178
-            val v:Int = if (inventorySlots.getSlot(i).getStack == null) 107 else 85
+            val x = 19
+            val y = 10+i*26
+            val u = 178
+            val v = if (inventorySlots.getSlot(i).getStack == null) 107 else 85
             drawTexturedModalRect(x, y, u, v, 25, 20)
         }
         zLevel = oldZ
     }
 }
 
-object GuiInterfacePipe
+object GuiInterfacePipe extends TGuiBuilder
 {
-    val resource = new ResourceLocation("projectred:textures/gui/guiinterfacepipe.png")
+    override def getID = GuiIDs.interfacePipe
+
+    override def buildGui(player:EntityPlayer, data:MCDataInput) =
+    {
+        val coord = data.readCoord()
+        PRLib.getMultiPart(player.worldObj, coord, 6) match
+        {
+            case pipe:RoutedInterfacePipePart =>
+                new GuiInterfacePipe(pipe.createContainer(player), pipe)
+            case _ => null
+        }
+    }
 }
 
-class GuiRequester(pipe:IWorldRequester) extends SpecialGuiContainer(280, 230)
+class GuiRequester(pipe:IWorldRequester) extends WidgetGui(280, 230)
 {
-    var itemList = new WidgetItemSelection(xSize/2-220/2, 10, 220, 140)
+    var itemList = new WidgetItemList(xSize/2-220/2, 10, 220, 140)
 
-    var textFilter = new WidgetTextBox(xSize/2-150/2, 185, 150, 16, "")
+    var textFilter = new WidgetTextBox(xSize/2-150/2, 185, 150, 16)
     {
         override def onTextChanged(oldText:String)
         {
-            itemList.setNewFilter(getText)
+            itemList.setNewFilter(text)
         }
-    }.setMaxStringLength(24)
+    }.setMaxCharCount(24)
 
     var itemCount = new WidgetTextBox(xSize/2-50/2, 205, 50, 16, "1")
     {
-        override def mouseScrolled(x:Int, y:Int, scroll:Int)
+        override def mouseScrolled_Impl(p:Point, dir:Int, consumed:Boolean) =
         {
-            if (pointInside(x, y))
+            if (!consumed && bounds.intersects(p))
             {
-                if (scroll > 0) countUp()
-                else if (scroll < 0) countDown()
+                if (dir > 0) countUp()
+                else if (dir < 0) countDown()
+                true
             }
+            else false
         }
 
         override def onFocusChanged()
         {
-            if (getText == null || getText.isEmpty)
+            if (text == null || text.isEmpty)
             {
                 setText("1")
             }
         }
-    }.setAllowedCharacters("0123456789").setMaxStringLength(7)
+    }.setAllowedChars("0123456789").setMaxCharCount(7)
 
-    var pull = new WidgetCheckBox(230, 170, true)
-    {
-        override def onStateChanged(oldState:Boolean)
-        {
-            itemList.resetDownloadStats()
-            askForListRefresh()
-        }
-    }
-
-    var craft = new WidgetCheckBox(230, 190, true)
-    {
-        override def onStateChanged(oldState:Boolean)
-        {
-            itemList.resetDownloadStats()
-            askForListRefresh()
-        }
-    }
-
+    var pull = new WidgetCheckBox(230, 170, true).setAction("refrsh")
+    var craft = new WidgetCheckBox(230, 190, true).setAction("refrsh")
     var partials = new WidgetCheckBox(230, 210, false)
 
+    override def forwardClosing = !textFilter.isFocused
 
-    override def forwardClosingKey = !textFilter.isFocused
-
-    override def drawBackground()
+    override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel)
+        GuiLib.drawGuiBox(0, 0, xSize, ySize, zLevel)
     }
 
-    override def drawForeground()
+    override def drawFront_Impl(mouse:Point, frame:Float)
     {
         fontRenderer.drawStringWithShadow("Pull", 240, 166, PRColors.WHITE.rgb)
         fontRenderer.drawStringWithShadow("Craft", 240, 186, PRColors.WHITE.rgb)
         fontRenderer.drawStringWithShadow("Parials", 240, 206, PRColors.WHITE.rgb)
     }
 
-    override def addWidgets()
+    override def runInit_Impl()
     {
         add(itemList)
         add(textFilter)
@@ -212,32 +225,32 @@ class GuiRequester(pipe:IWorldRequester) extends SpecialGuiContainer(280, 230)
         add(pull)
         add(craft)
         add(partials)
-        add(new JWidgetButton(10, 185, 50, 16).setActionCommand("refrsh").setText("Re-poll"))
-        add(new JWidgetButton(10, 205, 50, 16).setActionCommand("req").setText("Submit"))
-        add(new JWidgetButton(95, 205, 16, 16).setActionCommand("-").setText("-"))
-        add(new JWidgetButton(170, 205, 16, 16).setActionCommand("+").setText("+"))
-        add(new JWidgetButton(85, 152, 16, 16).setActionCommand("p-").setText("-"))
-        add(new JWidgetButton(180, 152, 16, 16).setActionCommand("p+").setText("+"))
-        add(new JWidgetButton(190, 205, 24, 16).setActionCommand("all").setText("All"))
+        add(new WidgetButtonMC(10, 185, 50, 16).setAction("refrsh").setText("Re-poll"))
+        add(new WidgetButtonMC(10, 205, 50, 16).setAction("req").setText("Submit"))
+        add(new WidgetButtonMC(95, 205, 16, 16).setAction("-").setText("-"))
+        add(new WidgetButtonMC(170, 205, 16, 16).setAction("+").setText("+"))
+        add(new WidgetButtonMC(85, 152, 16, 16).setAction("p-").setText("-"))
+        add(new WidgetButtonMC(180, 152, 16, 16).setAction("p+").setText("+"))
+        add(new WidgetButtonMC(190, 205, 24, 16).setAction("all").setText("All"))
         askForListRefresh()
     }
 
     private def sendItemRequest()
     {
-        val count = itemCount.getText
+        val count = itemCount.text
         if (count == null || count.isEmpty) return
 
         val amount = Integer.parseInt(count)
         if (amount <= 0) return
 
-        val request = itemList.getSelection
+        val request = itemList.getSelected
         if (request != null)
         {
             val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Request_submit)
             packet.writeCoord(new BlockCoord(pipe.getContainer.tile))
-            packet.writeBoolean(pull.getChecked)
-            packet.writeBoolean(craft.getChecked)
-            packet.writeBoolean(partials.getChecked)
+            packet.writeBoolean(pull.state)
+            packet.writeBoolean(craft.state)
+            packet.writeBoolean(partials.state)
             packet.writeItemStack(request.key.makeStack(amount), true)
             packet.sendToServer()
         }
@@ -247,8 +260,8 @@ class GuiRequester(pipe:IWorldRequester) extends SpecialGuiContainer(280, 230)
     {
         val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Request_listRefresh)
         packet.writeCoord(new BlockCoord(pipe.getContainer.tile))
-        packet.writeBoolean(pull.getChecked)
-        packet.writeBoolean(craft.getChecked)
+        packet.writeBoolean(pull.state)
+        packet.writeBoolean(craft.state)
         packet.sendToServer()
     }
 
@@ -263,20 +276,21 @@ class GuiRequester(pipe:IWorldRequester) extends SpecialGuiContainer(280, 230)
     private def countUp()
     {
         var current = 0
-        val s = itemCount.getText
+        val s = itemCount.text
         if (s != null && !s.isEmpty) current = Integer.parseInt(s)
 
         var newCount = 0
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) newCount = current + 10
         else newCount = current + 1
 
-        if (String.valueOf(newCount).length <= itemCount.maxStringLength) itemCount.setText(String.valueOf(newCount))
+        if (String.valueOf(newCount).length <= itemCount.maxStringLength)
+            itemCount.setText(String.valueOf(newCount))
     }
 
     private def countDown()
     {
         var current = 0
-        val s = itemCount.getText
+        val s = itemCount.text
         if (s != null && !s.isEmpty) current = Integer.parseInt(s)
 
         var newCount = 0
@@ -287,7 +301,7 @@ class GuiRequester(pipe:IWorldRequester) extends SpecialGuiContainer(280, 230)
         if (String.valueOf(newCount).length <= itemCount.maxStringLength) itemCount.setText(String.valueOf(newCount))
     }
 
-    override def actionPerformed(ident:String) = ident match
+    override def receiveMessage_Impl(message:String) = message match
     {
         case "req" => sendItemRequest()
         case "refrsh" =>
@@ -297,27 +311,24 @@ class GuiRequester(pipe:IWorldRequester) extends SpecialGuiContainer(280, 230)
         case "-" => countDown()
         case "p+" => itemList.pageUp()
         case "p-" => itemList.pageDown()
-        case "all" => if (itemList.getSelection != null) itemCount.setText(String.valueOf(Math.max(1, itemList.getSelection.stackSize)))
-        case _ => sendAction(ident)
+        case "all" => if (itemList.getSelected != null) itemCount.setText(String.valueOf(Math.max(1, itemList.getSelected.stackSize)))
+        case _ => sendAction(message)
     }
 
-    def receiveContentList(content:util.Map[ItemKey, Integer])
+    def receiveContentList(content:Map[ItemKey, Int])
     {
-        val list = new util.ArrayList[ItemKeyStack](content.size)
-        import scala.collection.JavaConversions._
-        for (entry <- content.entrySet) list.add(ItemKeyStack.get(entry.getKey, entry.getValue))
-        Collections.sort(list)
-        itemList.setDisplayList(list)
+        itemList.setDisplayList(
+            content.map(p => ItemKeyStack(p._1, p._2)).toVector.sorted)
     }
 }
 
-class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends SpecialGuiContainer(slots, null, 276, 200)
+class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends WidgetGui(slots, 276, 200)
 {
-    private[this] class SelectButton(x:Int, y:Int, f: => Boolean, desc:String) extends WidgetButton(x, y, 14, 14) with TButtonMCStyle
+    private[this] class SelectButton(x:Int, y:Int, f: => Boolean, desc:String) extends WidgetButtonIcon(x, y, 14, 14)
     {
         override def drawButton(mouseover:Boolean)
         {
-            CCRenderState.changeTexture(GhostWidget.guiExtras)
+            ResourceLib.guiExtras.bind()
             drawTexturedModalRect(x, y, if (f) 33 else 49, 134, 14, 14)
         }
 
@@ -327,13 +338,13 @@ class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends SpecialG
         }
     }
 
-    override def addWidgets()
+    override def runInit_Impl()
     {
-        add(new WidgetButton(134, 8, 14, 14) with TButtonMCStyle
+        add(new WidgetButtonIcon(134, 8, 14, 14)
         {
             override def drawButton(mouseover:Boolean)
             {
-                CCRenderState.changeTexture(GhostWidget.guiExtras)
+                ResourceLib.guiExtras.bind()
                 drawTexturedModalRect(x, y, if (pipe.filtExclude) 1 else 17, 102, 14, 14)
             }
 
@@ -341,28 +352,26 @@ class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends SpecialG
             {
                 list+=(EnumChatFormatting.GRAY+"Items are "+(if (pipe.filtExclude) "blacklisted" else "whitelisted"))
             }
-        }.setActionCommand("excl"))
+        }.setAction("excl"))
 
-        add(new SelectButton(183-7, 130-7, pipe.allowRoute, "Push routing").setActionCommand("route"))
-        add(new SelectButton(208-7, 130-7, pipe.allowBroadcast, "Pulling").setActionCommand("broad"))
-        add(new SelectButton(233-7, 130-7, pipe.allowCrafting, "Crafting").setActionCommand("craft"))
-        add(new SelectButton(258-7, 130-7, pipe.allowController, "Controller access").setActionCommand("cont"))
+        add(new SelectButton(183-7, 130-7, pipe.allowRoute, "Push routing").setAction("route"))
+        add(new SelectButton(208-7, 130-7, pipe.allowBroadcast, "Pulling").setAction("broad"))
+        add(new SelectButton(233-7, 130-7, pipe.allowCrafting, "Crafting").setAction("craft"))
+        add(new SelectButton(258-7, 130-7, pipe.allowController, "Controller access").setAction("cont"))
     }
 
-    override def actionPerformed(ident:String)
+    override def receiveMessage_Impl(message:String)
     {
         new PacketCustom(TransportationCPH.channel, TransportationCPH.gui_FirewallPipe_action)
-            .writeCoord(new BlockCoord(pipe.tile)).writeString(ident).sendToServer()
+            .writeCoord(new BlockCoord(pipe.tile)).writeString(message).sendToServer()
     }
 
-    override def drawBackground()
+    override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        BasicGuiUtils.drawGuiBox(0, 0, xSize, ySize, zLevel)
-        BasicGuiUtils.drawPlayerInventoryBackground(mc, 8, 120)
-
-        import scala.collection.JavaConversions._
-        for (p <- BasicGuiUtils.createSlotArray(8, 8, 7, 5, 0, 0))
-            BasicGuiUtils.drawSlotBackground(mc, p.get1-1, p.get2-1)
+        GuiLib.drawGuiBox(0, 0, xSize, ySize, zLevel)
+        GuiLib.drawPlayerInvBackground(8, 120)
+        for ((x, y) <- GuiLib.createSlotGrid(8, 8, 7, 5, 0, 0))
+            GuiLib.drawSlotBackground(x-1, y-1)
 
         val inX = 221
         val inY = 180
@@ -379,23 +388,49 @@ class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends SpecialG
         {
             val dx = (inX-(1.5D*spread))+spread*i
             val dy = inY-rootY
-            BasicGuiUtils.drawLine(inX, inY, dx, dy)
+            GuiLib.drawLine(inX, inY, dx, dy)
 
             val dx2 = dx
             val dy2 = dy-flowY*0.25D
-            BasicGuiUtils.drawLine(dx, dy, dx2, dy2)
+            GuiLib.drawLine(dx, dy, dx2, dy2)
 
             val dx3 = dx2
             val dy3 = dy-flowY
-            if (flags(i)) BasicGuiUtils.drawLine(dx2, dy2, dx3, dy3)
-            else BasicGuiUtils.drawLine(dx2, dy2, dx3, dy3, PRColors.GREY.rgb)
+            if (flags(i)) GuiLib.drawLine(dx2, dy2, dx3, dy3)
+            else GuiLib.drawLine(dx2, dy2, dx3, dy3, PRColors.GREY.rgb)
 
-            if (flags(i)) BasicGuiUtils.drawLine(dx3, dy3, outX, outY)
-            else BasicGuiUtils.drawLine(dx3, dy3, outX, outY, PRColors.GREY.rgb)
+            if (flags(i)) GuiLib.drawLine(dx3, dy3, outX, outY)
+            else GuiLib.drawLine(dx3, dy3, outX, outY, PRColors.GREY.rgb)
         }
 
-        BasicGuiUtils.drawLine(inX, inY, inX, inY+inOut)
-        BasicGuiUtils.drawLine(outX, outY, outX, outY-inOut)
-        BasicGuiUtils.drawLine(141, 15, outX, 15)
+        GuiLib.drawLine(inX, inY, inX, inY+inOut)
+        GuiLib.drawLine(outX, outY, outX, outY-inOut)
+        GuiLib.drawLine(141, 15, outX, 15)
+    }
+}
+
+object GuiFirewallPipe extends TGuiBuilder
+{
+    override def getID = GuiIDs.firewallPipe
+
+    override def buildGui(player:EntityPlayer, data:MCDataInput) =
+    {
+        val coord = data.readCoord()
+        val filtExclude = data.readBoolean()
+        val allowRoute = data.readBoolean()
+        val allowBroadcast = data.readBoolean()
+        val allowCrafting = data.readBoolean()
+        val allowController = data.readBoolean()
+        PRLib.getMultiPart(player.worldObj, coord, 6) match
+        {
+            case pipe:RoutedFirewallPipe =>
+                pipe.filtExclude = filtExclude
+                pipe.allowRoute = allowRoute
+                pipe.allowBroadcast = allowBroadcast
+                pipe.allowCrafting = allowCrafting
+                pipe.allowController = allowController
+                new GuiFirewallPipe(pipe.createContainer(player), pipe)
+            case _ => null
+        }
     }
 }

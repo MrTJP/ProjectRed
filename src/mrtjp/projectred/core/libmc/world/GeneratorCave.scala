@@ -6,7 +6,7 @@ import net.minecraft.world.World
 import java.util.Random
 import codechicken.lib.vec.BlockCoord
 
-class GeneratorCave(b:Block, meta:Int, veinSize:Int) extends GeneratorOre(b, meta, veinSize)
+class GeneratorCave(b:Block, meta:Int, vein:Int) extends GeneratorOre(b, meta, vein)
 {
     var openList = Vector[Evaluation]()
     var closedList = Set[Evaluation]()
@@ -30,7 +30,7 @@ class GeneratorCave(b:Block, meta:Int, veinSize:Int) extends GeneratorOre(b, met
 
         addBlockForEvaluation(x, yIndex, z, 6)
 
-        while (openList.size > 0 && veinSize > 0)
+        while (openList.size > 0 && vein > 0)
         {
             val eval = openListPoll
             checkStoneBlock(world, eval.x, eval.y, eval.z, eval.sides)

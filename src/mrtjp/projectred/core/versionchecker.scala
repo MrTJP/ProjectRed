@@ -1,18 +1,16 @@
 package mrtjp.projectred.core
 
-import cpw.mods.fml.common.{TickType, ITickHandler}
 import java.io.{BufferedReader, InputStreamReader}
 import java.net.URL
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
-import java.util
 import java.util.Date
-import net.minecraft.entity.player.EntityPlayer
 import scala.util.parsing.json.JSON
 import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent
 import cpw.mods.fml.common.eventhandler.SubscribeEvent
-import net.minecraft.util.{ChatComponentText, ChatComponentStyle}
+import net.minecraft.util.ChatComponentText
 import cpw.mods.fml.common.gameevent.TickEvent
+import cpw.mods.fml.relauncher.Side
 
 class PRVersioningThread extends Thread("PR Version Check")
 {
@@ -35,7 +33,7 @@ class PRVersioningThread extends Thread("PR Version Check")
     @SubscribeEvent
     def tickEnd(event:PlayerTickEvent)
     {
-        if (event.phase == TickEvent.Phase.END)
+        if (event.phase == TickEvent.Phase.END && event.side == Side.CLIENT)
         {
             if (!outdated || displayed) return
 

@@ -1,24 +1,19 @@
 package mrtjp.projectred.transportation
 
-import codechicken.core.IGuiPacketSender
-import codechicken.core.ServerUtils
-import codechicken.lib.packet.PacketCustom
 import codechicken.multipart.INeighborTileChange
-import mrtjp.projectred.core.inventory.SimpleInventory
-import mrtjp.projectred.core.inventory.SpecialContainer
-import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
-import mrtjp.projectred.core.libmc.{BasicGuiUtils, ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory}
+import mrtjp.projectred.core.libmc.gui.GuiLib
 
 class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcaster with INeighborTileChange
 {
     val chipSlots = new SimpleInventory(4, "chips", 1)
     {
-        override def onInventoryChanged()
+        override def markDirty()
         {
             super.markDirty()
             refreshChips()
@@ -29,7 +24,7 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
                 stack.getItem.isInstanceOf[ItemRoutingChip] &&
                 stack.hasTagCompound &&
                 stack.getTagCompound.hasKey("chipROM") &&
-                EnumRoutingChip.getForStack(stack).isInterfaceChip
+                RoutingChipDefs.getForStack(stack).isInterfaceChip
     }
     val chips = new Array[RoutingChipset](4)
 
@@ -87,33 +82,22 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
     def openGui(player:EntityPlayer)
     {
         if (world.isRemote) return
-        ServerUtils.openSMPContainer(player.asInstanceOf[EntityPlayerMP], createContainer(player), new IGuiPacketSender
-        {
-            def sendPacket(player:EntityPlayerMP, windowId:Int)
-            {
-                val p = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_InterfacePipe_open)
-                p.writeCoord(x, y, z)
-                p.writeByte(windowId)
-                p.sendToPlayer(player)
-            }
-        })
+        GuiInterfacePipe.open(player, createContainer(player), _.writeCoord(x, y, z))
     }
 
     def createContainer(player:EntityPlayer) =
     {
-        val ghost = new SpecialContainer(player.inventory)
-        val sc = ISlotController.InventoryRulesController.instance
-
+        val container = new WidgetContainer
         var slot = 0
-        import scala.collection.JavaConversions._
-        for (p <- BasicGuiUtils.createSlotArray(24, 12, 1, 4, 0, 8))
+
+        for ((x, y) <- GuiLib.createSlotGrid(24, 12, 1, 4, 0, 8))
         {
-            ghost.addCustomSlot(new SpecialContainer.SlotExtended(chipSlots, slot, p.get1, p.get2).setCheck(sc))
+            container + new Slot2(chipSlots, slot, x, y)
             slot += 1
         }
 
-        ghost.addPlayerInventory(8, 118)
-        ghost
+        container.addPlayerInv(player, 8, 118)
+        container
     }
 
     def refreshChips()

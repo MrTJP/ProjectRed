@@ -4,31 +4,28 @@ import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.event.FMLInitializationEvent
 import cpw.mods.fml.common.event.FMLPostInitializationEvent
 import cpw.mods.fml.common.event.FMLPreInitializationEvent
-import cpw.mods.fml.common.network.NetworkMod
-import cpw.mods.fml.common.network.NetworkRegistry
 import mrtjp.projectred.exploration._
-import net.minecraft.block.Block
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.item.EnumToolMaterial
 import net.minecraft.item.ItemStack
+import net.minecraft.init.Blocks
+import net.minecraft.item.Item.ToolMaterial
 
 @Mod(modid = "ProjRed|Exploration", useMetadata = true, modLanguage = "scala")
-@NetworkMod(clientSideRequired = true, serverSideRequired = true)
 object ProjectRedExploration
 {
     /** Blocks **/
     var blockOres:BlockOre = null
-    var blockStones:BlockSpecialStone = null
-    var blockStoneWalls:BlockSpecialStoneWall = null
-    var blockStainedLeaf:BlockStainedLeaf = null
-    var blockStainedSapling:BlockStainedSapling = null
+    var blockDecoratives:BlockDecoratives = null
+    var blockDecorativeWalls:BlockDecorativeWalls = null
+//    var blockStainedLeaf:BlockStainedLeaf = null //TODO replace
+//    var blockStainedSapling:BlockStainedSapling = null
 
     /** Items **/
     var itemWoolGin:ItemWoolGin = null
     var itemBackpack:ItemBackpack = null
-    var toolMaterialRuby:EnumToolMaterial = null
-    var toolMaterialSapphire:EnumToolMaterial = null
-    var toolMaterialPeridot:EnumToolMaterial = null
+    var toolMaterialRuby:ToolMaterial = null
+    var toolMaterialSapphire:ToolMaterial = null
+    var toolMaterialPeridot:ToolMaterial = null
     var itemRubyAxe:ItemGemAxe = null
     var itemSapphireAxe:ItemGemAxe = null
     var itemPeridotAxe:ItemGemAxe = null
@@ -59,7 +56,8 @@ object ProjectRedExploration
 
     var tabExploration:CreativeTabs = new CreativeTabs("exploration")
     {
-        override def getIconItemStack = new ItemStack(Block.grass)
+        override def getIconItemStack = new ItemStack(Blocks.grass)
+        override def getTabIconItem = getIconItemStack.getItem
     }
 
     @Mod.EventHandler
@@ -72,7 +70,6 @@ object ProjectRedExploration
     @Mod.EventHandler
     def init(event:FMLInitializationEvent)
     {
-        NetworkRegistry.instance.registerGuiHandler(this, ExplorationProxy)
         ExplorationProxy.init()
     }
 

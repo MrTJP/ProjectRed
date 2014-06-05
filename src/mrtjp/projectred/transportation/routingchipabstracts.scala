@@ -1,20 +1,13 @@
 package mrtjp.projectred.transportation
 
-import codechicken.core.IGuiPacketSender
-import codechicken.core.ServerUtils
-import codechicken.lib.packet.PacketCustom
-import java.util
-import mrtjp.projectred.core.inventory.{InvWrapper, SimpleInventory}
-import mrtjp.projectred.core.utils.ItemKeyStack
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.Keyboard
-import scala.collection.convert.WrapAsJava
 import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.transportation.EnumRoutingChip.EnumRoutingChip
 import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.libmc.inventory.{SimpleInventory, InvWrapper}
+import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 
 abstract class RoutingChipset
 {
@@ -76,27 +69,18 @@ abstract class RoutingChipset
         addUpgradeBusInfo(list)
     }
 
-    def getChipType:EnumRoutingChip
+    def getChipType:ChipVal
 
     def openGui(player:EntityPlayer)
     {
         if (player.worldObj.isRemote) return
-        ServerUtils.openSMPContainer(player.asInstanceOf[EntityPlayerMP], createContainer(player), new IGuiPacketSender
-        {
-            def sendPacket(player:EntityPlayerMP, windowId:Int)
-            {
-                val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Chipset_open)
-                packet.writeByte(player.inventory.currentItem)
-                packet.writeByte(windowId)
-                packet.sendToPlayer(player)
-            }
-        })
+        ChipGuiFactory.open(player, createContainer(player), _.writeByte(player.inventory.currentItem))
     }
 
     def createContainer(player:EntityPlayer) =
     {
         val cont = new ChipContainer[RoutingChipset](player)
-        cont.addPlayerInventory(8, 86)
+        cont.addPlayerInv(player, 8, 86)
         cont
     }
 

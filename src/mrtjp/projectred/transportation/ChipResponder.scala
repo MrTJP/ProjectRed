@@ -1,8 +1,8 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.inventory.InvWrapper
 import scala.collection.mutable.ListBuffer
 import mrtjp.projectred.core.libmc.ItemKey
+import mrtjp.projectred.core.libmc.inventory.InvWrapper
 
 class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriority
 {
@@ -39,7 +39,7 @@ class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriori
         addFilterInfo(list)
     }
 
-    def getChipType = EnumRoutingChip.ITEMRESPONDER
+    def getChipType = RoutingChipDefs.ITEMRESPONDER
 
     override def createUpgradeBus =
     {
@@ -57,7 +57,7 @@ class ChipItemOverflowResponder extends ChipItemResponder
 {
     override def sendPriority = SendPriority.DEFAULT
 
-    override def getChipType = EnumRoutingChip.ITEMOVERFLOWRESPONDER
+    override def getChipType = RoutingChipDefs.ITEMOVERFLOWRESPONDER
 
     override def enableFilter = false
     override def enablePatterns = false
@@ -67,12 +67,12 @@ class ChipItemTerminator extends ChipItemResponder
 {
     override def sendPriority = SendPriority.TERMINATED
 
-    override def getChipType = EnumRoutingChip.ITEMTERMINATOR
+    override def getChipType = RoutingChipDefs.ITEMTERMINATOR
 }
 
 class ChipDynamicItemResponder extends ChipItemResponder
 {
-    override def getChipType = EnumRoutingChip.DYNAMICITEMRESPONDER
+    override def getChipType = RoutingChipDefs.DYNAMICITEMRESPONDER
 
     override def enableFilter = false
 

@@ -1,20 +1,16 @@
 package mrtjp.projectred
 
-import codechicken.lib.packet.PacketCustom
 import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.event.FMLInitializationEvent
 import cpw.mods.fml.common.event.FMLPostInitializationEvent
 import cpw.mods.fml.common.event.FMLPreInitializationEvent
 import cpw.mods.fml.common.event.FMLServerStartingEvent
-import cpw.mods.fml.common.network.NetworkMod
-import cpw.mods.fml.common.registry.TickRegistry
-import cpw.mods.fml.relauncher.Side
 import mrtjp.projectred.core._
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.ItemStack
+import net.minecraftforge.common.MinecraftForge
 
 @Mod(modid = "ProjRed|Core", useMetadata = true, modLanguage = "scala")
-@NetworkMod(clientSideRequired = true, serverSideRequired = true, tinyPacketHandler = classOf[PacketCustom.CustomTinyPacketHandler])
 object ProjectRedCore
 {
     /** Items **/
@@ -27,6 +23,7 @@ object ProjectRedCore
     var tabCore = new CreativeTabs("core")
     {
         override def getIconItemStack = new ItemStack(ProjectRedCore.itemScrewdriver)
+        override def getTabIconItem = getIconItemStack.getItem
     }
 
     @Mod.EventHandler
@@ -47,7 +44,7 @@ object ProjectRedCore
     def postInit(event:FMLPostInitializationEvent)
     {
         CoreProxy.postinit()
-        TickRegistry.registerTickHandler(new PRVersioningThread, Side.CLIENT)
+        MinecraftForge.EVENT_BUS.register(new PRVersioningThread)
     }
 
     @Mod.EventHandler

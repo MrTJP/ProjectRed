@@ -1,6 +1,5 @@
 package mrtjp.projectred
 
-import codechicken.lib.packet.PacketCustom
 import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.event.{FMLPreInitializationEvent, FMLInitializationEvent, FMLPostInitializationEvent}
 import mrtjp.projectred.expansion.{ExpansionProxy, BlockMachine}

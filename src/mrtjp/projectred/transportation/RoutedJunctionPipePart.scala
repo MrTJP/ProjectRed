@@ -8,22 +8,21 @@ import codechicken.multipart.TileMultipart
 import java.util.UUID
 import java.util.concurrent.PriorityBlockingQueue
 import mrtjp.projectred.api.IScrewdriver
-import mrtjp.projectred.core.inventory.InvWrapper
-import mrtjp.projectred.core.{CoreSPH, Messenger, Configurator}
+import mrtjp.projectred.core.{CoreSPH, Configurator}
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.Icon
-import net.minecraft.util.MovingObjectPosition
-import net.minecraftforge.common.ForgeDirection
+import net.minecraft.util.{IIcon, MovingObjectPosition}
 import scala.collection.JavaConversions._
 import scala.collection.immutable.BitSet
 import codechicken.lib.packet.PacketCustom
 import mrtjp.projectred.core.lib.{LabelBreaks, Pair2}
-import mrtjp.projectred.core.libmc.{BasicUtils, ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.libmc.{PRLib, ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.libmc.inventory.InvWrapper
+import net.minecraftforge.common.util.ForgeDirection
 
 object RoutedJunctionPipePart
 {
@@ -224,7 +223,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         if (!world.isRemote) if (!maskConnects(r.output.ordinal) || !passToNextPipe(r))
         {
             val bc = new BlockCoord(tile).offset(r.output.ordinal)
-            val t = BasicUtils.getTileEntity(world, bc, classOf[TileEntity])
+            val t = PRLib.getTileEntity(world, bc, classOf[TileEntity])
             val state = LSPathFinder.getLinkState(t)
 
             if (state != null && t.isInstanceOf[IInventory])
@@ -373,7 +372,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
 
     override def discoverStraightOverride(s:Int):Boolean =
     {
-        BasicUtils.getTileEntity(world, posOfStraight(s), classOf[TileEntity]) match
+        PRLib.getTileEntity(world, posOfStraight(s), classOf[TileEntity]) match
         {
             case inv:IInventoryProvider => true
             case pow:TControllerLayer if s == 0 => true
@@ -420,7 +419,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
     {
         if (world.isRemote) return
         val invalid = force || !maskConnects(inOutSide) ||
-            BasicUtils.getTileEntity(world, new BlockCoord(tile).offset(inOutSide), classOf[IInventory]) == null
+            PRLib.getTileEntity(world, new BlockCoord(tile).offset(inOutSide), classOf[IInventory]) == null
         if (!invalid) return
         var found = false
         val oldSide = inOutSide
@@ -433,7 +432,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
                 if (maskConnects(inOutSide))
                 {
                     val bc = new BlockCoord(tile).offset(inOutSide)
-                    val t = BasicUtils.getTileEntity(world, bc, classOf[TileEntity])
+                    val t = PRLib.getTileEntity(world, bc, classOf[TileEntity])
                     if (t.isInstanceOf[IInventory])
                     {
                         found = true
@@ -455,9 +454,9 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
 
     def getInterfacedSide = if (inOutSide < 0 || inOutSide > 5) -1 else inOutSide^1
 
-    override def getIcon(side:Int):Icon =
+    override def getIcon(side:Int):IIcon =
     {
-        val array = PipeDef.ROUTEDJUNCTION.sprites
+        val array = PipeDefs.ROUTEDJUNCTION.sprites
         var ind = if (side == inOutSide) 2 else 0
         if ((linkMap&1<<6) != 0) ind += 4
         if ((linkMap&1<<side) != 0) array(1+ind)

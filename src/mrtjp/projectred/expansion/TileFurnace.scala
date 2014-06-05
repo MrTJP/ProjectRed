@@ -1,10 +1,9 @@
 package mrtjp.projectred.expansion
 
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
-import mrtjp.projectred.core.inventory.{InvWrapper, SimpleInventory}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
+import mrtjp.projectred.core.libmc.inventory.{SimpleInventory, Slot2, InvWrapper}
 
 class TileFurnace extends TileMachineWorking
 {
@@ -12,9 +11,9 @@ class TileFurnace extends TileMachineWorking
 
     def createContainer(player:EntityPlayer) = new WorkingMachineContainer(player, this)
     {
-        addPlayerInventory(8, 84)
-        addCustomSlot(new SlotExtended(TileFurnace.this, 0, 44, 37)) //input
-        addCustomSlot(new SlotExtended(TileFurnace.this, 1, 104, 37).setPlacement(false)) //output
+        addPlayerInv(player, 8, 84)
+        this + new Slot2(TileFurnace.this, 0, 44, 37)
+        this + new Slot2(TileFurnace.this, 1, 104, 37).setPlace(false)
     }
 
     def guiID = MachineGuiFactory.id_furnace

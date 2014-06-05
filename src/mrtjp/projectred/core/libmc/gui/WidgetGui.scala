@@ -1,0 +1,107 @@
+package mrtjp.projectred.core.libmc.gui
+
+import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.inventory.Container
+import net.minecraft.client.gui.GuiScreen
+import org.lwjgl.input.Mouse
+import net.minecraft.client.Minecraft
+import mrtjp.projectred.core.libmc.inventory.WidgetContainer
+import codechicken.lib.gui.GuiDraw
+
+class WidgetGui(c:Container, w:Int, h:Int) extends GuiContainer(c) with TWidget
+{
+    def this(c:Container) = this(c, 176, 166)
+    def this(x:Int, y:Int) = this(new WidgetContainer, x, y)
+
+    xSize = w
+    ySize = h
+    this <--> this
+
+    override def mcInst = mc
+    override def renderEngine = mcInst.renderEngine
+    override def fontRenderer = mcInst.fontRenderer
+    override def getZ = zLevel
+
+    override val bounds = new Rect().setMin(guiLeft, guiTop).setWH(xSize, ySize)
+
+    var prevGui:GuiScreen = null
+    def setJumpBack(p:GuiScreen){prevGui = p}
+
+    def jumpTo(g:GuiScreen, containerHack:Boolean)
+    {
+        mcInst.displayGuiScreen(g)
+        if (containerHack) g match
+        {
+            case cont:GuiContainer =>
+                cont.inventorySlots.windowId = inventorySlots.windowId
+            case _ =>
+        }
+    }
+
+    final override def updateScreen()
+    {
+        super.updateScreen()
+        update()
+    }
+
+    final override def setWorldAndResolution(mc:Minecraft, i:Int, j:Int)
+    {
+        val init = this.mc == null
+        super.setWorldAndResolution(mc, i, j)
+        if (init) runInit()
+    }
+
+    final override def mouseClicked(x:Int, y:Int, button:Int)
+    {
+        super.mouseClicked(x, y, button)
+        mouseClicked(new Point(x, y), button, false)
+    }
+
+    final override def mouseMovedOrUp(x:Int, y:Int, button:Int)
+    {
+        super.mouseMovedOrUp(x, y, button)
+        if (button != -1) mouseReleased(new Point(x, y), button, false)
+    }
+
+    final override def mouseClickMove(x:Int, y:Int, button:Int, time:Long)
+    {
+        super.mouseClickMove(x, y, button, time)
+        mouseDragged(new Point(x, y), button, time, false)
+    }
+
+    final override def handleMouseInput()
+    {
+        super.handleMouseInput()
+        val i = Mouse.getEventDWheel
+        if (i != 0)
+        {
+            val p = GuiDraw.getMousePosition
+            mouseScrolled(new Point(p.x, p.y), if (i > 0) 1 else -1, false)
+        }
+    }
+
+    final override def keyTyped(c:Char, i:Int)
+    {
+        if (c == 1 && forwardClosing) super.keyTyped(c, i) //esc
+        if ((2 to 10 contains i) && !(blockedHotkeyNumbers contains i-1))
+            super.keyTyped(c, i) //number for slot moving
+        keyPressed(c, i, false)
+    }
+
+    def forwardClosing = true
+    def blockedHotkeyNumbers:Set[Int] = Set()
+
+    private var lastFrame = 0.0F
+    final override def drawGuiContainerBackgroundLayer(f:Float, mx:Int, my:Int)
+    {
+        lastFrame = f
+        translateTo()
+        drawBack(new Point(mx, my), f)
+        translateFrom()
+    }
+
+    final override def drawGuiContainerForegroundLayer(mx:Int, my:Int)
+    {
+        drawFront(new Point(mx, my), lastFrame)
+    }
+}

@@ -2,16 +2,17 @@ package mrtjp.projectred.transmission
 
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.ProjectRedTransmission
-import mrtjp.projectred.core.utils.LiteEnumVal
-import net.minecraft.client.renderer.texture.IconRegister
+import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.item.ItemStack
-import net.minecraft.util.Icon
+import net.minecraft.util.IIcon
 import net.minecraftforge.oredict.OreDictionary
-import scala.collection.mutable
-import mrtjp.projectred.core.lib.{LiteEnumVal, LiteEnumCollector}
+import mrtjp.projectred.core.ItemDefinition
 
-object WireDef extends LiteEnumCollector
+object WireDef extends ItemDefinition
 {
+    override type EnumVal = WireDef
+    override def getItem = ProjectRedTransmission.itemPartWire
+
     val RED_ALLOY = WireDef("pr_redwire", "pr_fredwire", 0, 0xC80000, "redalloy")
 
     val INSULATED_0 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/whiteoff", "insulated/whiteon")
@@ -51,26 +52,9 @@ object WireDef extends LiteEnumCollector
 
     val POWER_100v = WireDef("pr_100v", "pr_f100v", 1, 0xFFFFFF, "power/100v")
 
-    def VALID_WIRE =
-    {
-        val build = new mutable.ArrayBuilder.ofRef[WireDef]
-        for (i <- values) build += i.asInstanceOf[WireDef]
-        build.result()
-    }
-
-    val INSULATED_WIRE =
-    {
-        val build = new mutable.ArrayBuilder.ofRef[WireDef]
-        for (i <- INSULATED_0.meta to INSULATED_15.meta) build += VALID_WIRE(i)
-        build.result()
-    }
-
-    val BUNDLED_WIRE =
-    {
-        val build = new mutable.ArrayBuilder.ofRef[WireDef]
-        for (i <- BUNDLED_N.meta to BUNDLED_15.meta) build += VALID_WIRE(i)
-        build.result()
-    }
+    //Groups
+    val INSULATED_WIRES = INSULATED_0 to INSULATED_15 toArray
+    val BUNDLED_WIRES = BUNDLED_N to BUNDLED_15 toArray
 
     val oreDictDefinitionInsulated = "projredInsulatedWire"
     val oreDictDefinitionInsFramed = "projredInsFramedWire"
@@ -78,40 +62,33 @@ object WireDef extends LiteEnumCollector
 
     def initOreDict()
     {
-        for (w <- INSULATED_WIRE)
+        for (w <- INSULATED_WIRES)
         {
-            if (w.hasFramedForm) OreDictionary.registerOre(oreDictDefinitionInsFramed, w.getFramedItemStack)
-            OreDictionary.registerOre(oreDictDefinitionInsulated, w.getItemStack)
+            if (w.hasFramedForm) OreDictionary.registerOre(oreDictDefinitionInsFramed, w.makeFramedStack)
+            OreDictionary.registerOre(oreDictDefinitionInsulated, w.makeStack)
         }
-        for (w <- BUNDLED_WIRE) OreDictionary.registerOre(oreDictDefinitionBundled, w.getItemStack)
+        for (w <- BUNDLED_WIRES) OreDictionary.registerOre(oreDictDefinitionBundled, w.makeStack)
     }
 
     def apply(wireType:String, framedType:String, thickness:Int, itemColour:Int, textures:String*) =
         new WireDef(wireType, framedType, thickness, itemColour, textures)
-}
 
-class WireDef(val wireType:String, val framedType:String, val thickness:Int, val itemColour:Int, textures:Seq[String]) extends LiteEnumVal
-{
-    def hasWireForm = wireType != null
-    def hasFramedForm = framedType != null
-
-    val meta = ordinal
-
-    val wireSprites = new Array[Icon](textures.length)
-
-    @SideOnly(Side.CLIENT)
-    def loadTextures(reg: IconRegister)
+    class WireDef(val wireType:String, val framedType:String, val thickness:Int, val itemColour:Int, textures:Seq[String]) extends ItemDef
     {
-        for (i <- 0 until textures.length)
-            wireSprites(i) = reg.registerIcon("projectred:wires/" + textures(i))
-    }
+        def hasWireForm = wireType != null
+        def hasFramedForm = framedType != null
 
-    def getItemStack:ItemStack = getItemStack(1)
-    def getItemStack(i:Int) = new ItemStack(ProjectRedTransmission.itemPartWire, i, meta)
+        val wireSprites = new Array[IIcon](textures.length)
 
-    def getFramedItemStack:ItemStack = getFramedItemStack(1)
-    def getFramedItemStack(i:Int) =
+        @SideOnly(Side.CLIENT)
+        def loadTextures(reg:IIconRegister)
+        {
+            for (i <- 0 until textures.length)
+                wireSprites(i) = reg.registerIcon("projectred:wires/"+textures(i))
+        }
+
+        def makeFramedStack:ItemStack = makeFramedStack(1)
+        def makeFramedStack(i:Int) =
         if (hasFramedForm) new ItemStack(ProjectRedTransmission.itemPartFramedWire, i, meta) else null
-
-    override def getCollector = WireDef
+    }
 }

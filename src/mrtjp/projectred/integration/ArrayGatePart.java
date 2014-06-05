@@ -2,14 +2,17 @@ package mrtjp.projectred.integration;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.vec.*;
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Rotation;
 import codechicken.multipart.*;
-import mrtjp.projectred.core.libmc.BasicUtils;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.libmc.PRLib;
 import mrtjp.projectred.integration.ArrayCommons.ITopArrayWire;
 import mrtjp.projectred.transmission.*;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Arrays;
@@ -178,7 +181,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
 
         BlockCoord cnrPos = new BlockCoord(tile()).offset(absDir);
         BlockCoord pos = cnrPos.copy().offset(side());
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null)
             return getPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side()^1));
 
@@ -191,7 +194,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         int s = 0;
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null && (connMap&0x10<<r) != 0)
         {
             TMultiPart tp = t.partMap(side());
@@ -200,8 +203,8 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         }
         else
         {
-            int blockID = world().getBlockId(pos.x, pos.y, pos.z);
-            if (blockID == Block.redstoneWire.blockID)
+            Block block = world().getBlock(pos.x, pos.y, pos.z);
+            if (block == Blocks.redstone_wire)
                 return world().getBlockMetadata(pos.x, pos.y, pos.z)-1;
         }
 
@@ -268,7 +271,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         int absDir = Rotation.rotateSide(side(), r);
         BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
 
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null)
         {
             TMultiPart tp = t.partMap(absDir^1);
@@ -286,7 +289,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         int absDir = Rotation.rotateSide(side(), r);
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
 
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null)
         {
             TMultiPart tp = t.partMap(side());
@@ -422,7 +425,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
         super.preparePlacement(player, pos, side, meta);
         if (getLogic().canCross())
         {
-            TileMultipart t = BasicUtils.getMultipartTile(player.worldObj, pos);
+            TileMultipart t = PRLib.getMultipartTile(player.worldObj, pos);
             if (t != null)
             {
                 TMultiPart npart = t.partMap(side()^1);

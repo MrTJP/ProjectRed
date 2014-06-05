@@ -1,18 +1,15 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.vec.BlockCoord
-import codechicken.multipart.TileMultipart
 import mrtjp.projectred.api.ISpecialLinkState
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.tileentity.TileEntity
-import net.minecraftforge.common.ForgeDirection
 import scala.collection.mutable.{HashMap => MHashMap}
-import scala.collection.immutable.{BitSet, HashMap, HashSet}
+import scala.collection.immutable.BitSet
 import net.minecraft.world.World
-import java.util.PriorityQueue
 import mrtjp.projectred.core.{PathNode, AStar}
 import mrtjp.projectred.core.lib.LabelBreaks
-import mrtjp.projectred.core.libmc.{BasicUtils, ItemKey}
+import mrtjp.projectred.core.libmc.{PRLib, ItemKey}
 
 object LSPathFinder
 {
@@ -92,13 +89,13 @@ class LSPathFinder2(start:IWorldRouter, maxVisited:Int, world:World) extends ASt
 
     override def isClosed(n:PathNode) = super.isClosed(n) || n.bc == startBC
 
-    def getPipe(bc:BlockCoord) = BasicUtils.getMultiPart(world, bc, 6) match
+    def getPipe(bc:BlockCoord) = PRLib.getMultiPart(world, bc, 6) match
     {
         case p:FlowingPipePart => p
         case _ => null
     }
 
-    def getTile(bc:BlockCoord) = world.getBlockTileEntity(bc.x, bc.y, bc.z)
+    def getTile(bc:BlockCoord) = world.getTileEntity(bc.x, bc.y, bc.z)
 
     def nextToStart(n:PathNode) = startBC.copy.sub(n.bc).mag() == 1D
 }
@@ -158,7 +155,7 @@ object LogisticPathFinder
     def sharesInventory(pipe1:RoutedJunctionPipePart, pipe2:RoutedJunctionPipePart):Boolean =
     {
         if (pipe1 == null || pipe2 == null) return false
-        if (pipe1.tile.worldObj != pipe2.tile.worldObj) return false
+        if (pipe1.tile.getWorldObj != pipe2.tile.getWorldObj) return false
 
         val adjacent1 = pipe1.getInventory
         val adjacent2 = pipe2.getInventory

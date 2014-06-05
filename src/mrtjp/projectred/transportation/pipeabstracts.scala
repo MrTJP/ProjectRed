@@ -1,19 +1,17 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.lighting.LazyLightMatrix
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.raytracer.IndexedCuboid6
 import codechicken.lib.render.{CCRenderState, TextureUtils}
 import codechicken.lib.vec.{Rotation, Cuboid6, BlockCoord, Vector3}
 import codechicken.microblock.handler.MicroblockProxy
-import codechicken.microblock.{BlockMicroMaterial, ItemMicroPart, IHollowConnect}
+import codechicken.microblock.{ISidedHollowConnect, BlockMicroMaterial, ItemMicroPart}
 import codechicken.multipart._
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
-import mrtjp.projectred.core.inventory.InvWrapper
 import mrtjp.projectred.transmission.IWirePart._
 import mrtjp.projectred.transmission._
 import mrtjp.projectred.transportation.SendPriority.SendPriority
@@ -22,12 +20,14 @@ import net.minecraft.client.renderer.RenderBlocks
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagList, NBTTagCompound}
-import net.minecraft.util.{Icon, ChatMessageComponent, MovingObjectPosition}
-import net.minecraftforge.common.ForgeDirection
+import net.minecraft.util.{IIcon, ChatComponentText, MovingObjectPosition}
 import scala.collection.JavaConversions._
-import mrtjp.projectred.core.libmc.BasicUtils
+import mrtjp.projectred.core.libmc.inventory.InvWrapper
+import net.minecraft.init.Blocks
+import mrtjp.projectred.core.libmc.PRLib
+import net.minecraftforge.common.util.ForgeDirection
 
-abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion with IHollowConnect
+abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion with ISidedHollowConnect
 {
     var meta:Byte = 0
     var signal:Byte = 0
@@ -167,8 +167,8 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
         sendConnUpdate()
     }
 
-    def getItem = getPipeType.getItemStack
-    def getPipeType = PipeDef.VALID_PIPE(meta)
+    def getItem = getPipeType.makeStack
+    def getPipeType = PipeDefs.values(meta)
 
     def getType = getPipeType.partname
 
@@ -181,11 +181,11 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
         drops
     }
 
-    def createMaterialStack = ItemMicroPart.create(769, Block.blockRedstone.getUnlocalizedName)
+    def createMaterialStack = ItemMicroPart.create(769, Blocks.redstone_block.getUnlocalizedName)
 
     override def pickItem(hit:MovingObjectPosition) = getItem
 
-    override def getHollowSize = 8
+    override def getHollowSize(side:Int) = 8
 
     override def isWireSide(side:Int) = true
 
@@ -198,14 +198,11 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
         def dropMaterial()
         {
             if (material && !player.capabilities.isCreativeMode)
-            {
-                val drop = createMaterialStack
-                BasicUtils.dropItemFromLocation(world, drop, false, player, -1, 0, new BlockCoord(tile))
-            }
+                PRLib.dropTowardsPlayer(world, x, y, z, createMaterialStack, player)
         }
 
         if (CommandDebug.WIRE_READING) debug(player)
-        else if (held != null && held.itemID == ProjectRedCore.itemWireDebugger.itemID)
+        else if (held != null && held.getItem == ProjectRedCore.itemWireDebugger)
         {
             held.damageItem(1, player)
             player.swingItem()
@@ -225,12 +222,12 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
         {
             ItemMicroPart.getMaterial(held) match
             {
-                case bm:BlockMicroMaterial if bm.block == Block.blockRedstone =>
+                case bm:BlockMicroMaterial if bm.block == Blocks.redstone_block =>
                     if (!world.isRemote)
                     {
                         material = true
-                        world.playSoundEffect(x+0.5, y+0.5, z+0.5, Block.soundGlassFootstep.getPlaceSound,
-                            Block.soundGlassFootstep.getVolume*5.0F, Block.soundGlassFootstep.getPitch*.9F)
+                        world.playSoundEffect(x+0.5, y+0.5, z+0.5, Block.soundTypeGlass.func_150496_b(),
+                            Block.soundTypeGlass.getVolume*5.0F, Block.soundTypeGlass.getPitch*.9F)
                         sendMatUpdate()
                         if (!player.capabilities.isCreativeMode) held.stackSize-=1
                     }
@@ -393,14 +390,14 @@ abstract class CorePipePart extends SubcorePipePart with TCenterRSAcquisitions w
 
     override def debug(player:EntityPlayer) =
     {
-        player.sendChatToPlayer(ChatMessageComponent.createFromTranslationKey(
+        player.addChatComponentMessage(new ChatComponentText(
             (if (world.isRemote) "Client" else "Server")+" signal strength: "+getRedwireSignal))
         true
     }
 
     override def test(player:EntityPlayer) =
     {
-        if (BasicUtils.isClient(world)) Messenger.addMessage(x, y+.5f, z, "/#f/#c[c] = "+getRedwireSignal)
+        if (world.isRemote) Messenger.addMessage(x, y+.5f, z, "/#f/#c[c] = "+getRedwireSignal)
         else
         {
             val packet = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)
@@ -445,13 +442,13 @@ class FlowingPipePart extends CorePipePart
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        val nbttaglist = tag.getTagList("itemFlow")
+        val nbttaglist = tag.getTagList("itemFlow", 0)
 
         for (j <- 0 until nbttaglist.tagCount)
         {
             try
             {
-                val payloadData = nbttaglist.tagAt(j).asInstanceOf[NBTTagCompound]
+                val payloadData = nbttaglist.getCompoundTagAt(j)
                 val r = RoutedPayload()
                 r.bind(this)
                 r.load(payloadData)
@@ -678,15 +675,17 @@ class FlowingPipePart extends CorePipePart
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderStatic(pos:Vector3, olm:LazyLightMatrix, pass:Int)
+    override def renderStatic(pos:Vector3, pass:Int) =
     {
         if (pass == 0)
         {
             TextureUtils.bindAtlas(0)
             CCRenderState.setBrightness(world, x, y, z)
-            RenderPipe.render(this, pos, olm)
+            RenderPipe.render(this, pos)
             CCRenderState.setColour(-1)
+            true
         }
+        else false
     }
 
     @SideOnly(Side.CLIENT)
@@ -697,7 +696,6 @@ class FlowingPipePart extends CorePipePart
             TextureUtils.bindAtlas(0)
             CCRenderState.reset()
             CCRenderState.setBrightness(world, x, y, z)
-            CCRenderState.useModelColours(true)
             RenderPipe.renderItemFlow(this, pos, frame)
             CCRenderState.setColour(-1)
         }
@@ -771,5 +769,5 @@ abstract class PipeLogic(p:FlowingPipePart)
 
     def resolveDestination(r:RoutedPayload):Boolean
 
-    def getIcon(i:Int):Icon
+    def getIcon(i:Int):IIcon
 }

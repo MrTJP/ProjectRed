@@ -1,17 +1,17 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.api.IBundledEmitter;
-import mrtjp.projectred.api.IBundledTile;
-import mrtjp.projectred.core.libmc.BasicUtils;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
+import mrtjp.projectred.api.IBundledEmitter;
+import mrtjp.projectred.api.IBundledTile;
+import mrtjp.projectred.core.libmc.PRLib;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
 {
@@ -33,7 +33,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
     public boolean connectStraightOverride(int absDir)
     {
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
-        TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
+        TileEntity t = world().getTileEntity(pos.x, pos.y, pos.z);
         if (t instanceof IBundledTile)
             return ((IBundledTile)t).canConnectBundled(absDir^1);
 
@@ -58,7 +58,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
         int absDir = Rotation.rotateSide(side(), r);
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null)
             return getBundledPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side()^1));
 
@@ -70,7 +70,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
         int absDir = Rotation.rotateSide(side(), r);
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
-        TileEntity t = world().getBlockTileEntity(pos.x, pos.y, pos.z);
+        TileEntity t = world().getTileEntity(pos.x, pos.y, pos.z);
         if (t instanceof IBundledEmitter)
             return getBundledPartSignal(t, absDir^1);
         else if (t instanceof TileMultipart)

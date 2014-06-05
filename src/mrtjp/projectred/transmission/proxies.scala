@@ -16,11 +16,11 @@ class TransmissionProxy_server extends IProxy with IPartFactory
     {
         MultiPartRegistry.registerParts(this, Array[String](
             "pr_redwire", "pr_insulated", "pr_bundled",
-            "pr_fredwire", "pr_finsulated", "pr_fbundled",
-            "pr_sredwire", "pr_sinsulated", "pr_sbundled" //legacy
+            "pr_fredwire", "pr_finsulated", "pr_fbundled"
+//            "pr_sredwire", "pr_sinsulated", "pr_sbundled" //legacy
         ))
-        itemPartWire = new ItemPartWire(Configurator.part_wire.getInt)
-        itemPartFramedWire = new ItemPartFramedWire(Configurator.part_jwire.getInt)
+        itemPartWire = new ItemPartWire
+        itemPartFramedWire = new ItemPartFramedWire
     }
 
     override def postinit()
@@ -37,10 +37,11 @@ class TransmissionProxy_server extends IProxy with IPartFactory
         case "pr_fredwire" => new FramedRedAlloyWirePart
         case "pr_finsulated" => new FramedInsulatedRedAlloyPart
         case "pr_fbundled" => new FramedBundledCablePart
-        //legacy
-        case "pr_sredwire" => new FramedRedAlloyWirePart
-        case "pr_sinsulated" => new FramedInsulatedRedAlloyPart
-        case "pr_sbundled" => new FramedBundledCablePart
+//        //legacy
+//        case "pr_sredwire" => new FramedRedAlloyWirePart
+//        case "pr_sinsulated" => new FramedInsulatedRedAlloyPart
+//        case "pr_sbundled" => new FramedBundledCablePart
+        case _ => null
     }
 
     override def version = "@VERSION@"
@@ -53,8 +54,8 @@ class TransmissionProxy_client extends TransmissionProxy_server
     override def init()
     {
         super.init()
-        MinecraftForgeClient.registerItemRenderer(itemPartWire.itemID, WireItemRenderer)
-        MinecraftForgeClient.registerItemRenderer(itemPartFramedWire.itemID, FramedWireItemRenderer)
+        MinecraftForgeClient.registerItemRenderer(itemPartWire, WireItemRenderer)
+        MinecraftForgeClient.registerItemRenderer(itemPartFramedWire, FramedWireItemRenderer)
         MicroMaterialRegistry.registerHighlightRenderer(JacketedHighlightRenderer)
     }
 }

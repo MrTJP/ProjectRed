@@ -28,7 +28,7 @@ trait TFaceRSAcquisitions extends TRSAcquisitionsCommons with TFaceAcquisitions 
     def calcWeakSignal(r:Int) =
     {
         val pos = new BlockCoord(tile).offset(absoluteDir(r))
-        if (world.isBlockNormalCube(pos.x, pos.y, pos.z)) world.getBlockPowerInput(pos.x, pos.y, pos.z)*17
+        if (world.isBlockNormalCubeDefault(pos.x, pos.y, pos.z, false)) world.getBlockPowerInput(pos.x, pos.y, pos.z)*17
         else 0
     }
 
@@ -52,7 +52,7 @@ trait TCenterRSAcquisitions extends TRSAcquisitionsCommons with TCenterAcquisiti
     def calcWeakSignal(s:Int) =
     {
         val pos = new BlockCoord(tile).offset(s)
-        if (world.isBlockNormalCube(pos.x, pos.y, pos.z)) world.getBlockPowerInput(pos.x, pos.y, pos.z)*17
+        if (world.isBlockNormalCubeDefault(pos.x, pos.y, pos.z, false)) world.getBlockPowerInput(pos.x, pos.y, pos.z)*17
         else 0
     }
 }

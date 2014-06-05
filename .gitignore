@@ -39,3 +39,6 @@ options.txt
 /libs/
 /assets/
 /out/
+/crash-reports/
+/asm/
+/mods/

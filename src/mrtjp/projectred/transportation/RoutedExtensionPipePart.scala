@@ -1,23 +1,13 @@
 package mrtjp.projectred.transportation
 
-import codechicken.core.IGuiPacketSender
-import codechicken.core.ServerUtils
-import codechicken.lib.packet.PacketCustom
 import mrtjp.projectred.core.ItemDataCard
-import mrtjp.projectred.core.inventory.SpecialContainer
-import mrtjp.projectred.core.inventory.SpecialContainer.ISlotController
-import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
-import mrtjp.projectred.core.inventory.SimpleInventory
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.player.EntityPlayerMP
-import net.minecraft.inventory.Container
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
-import java.util.LinkedList
-import mrtjp.projectred.transportation.RequestFlags._
 import mrtjp.projectred.core.lib.LabelBreaks
 import mrtjp.projectred.core.libmc.ItemKeyStack
+import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory}
 
 class RoutedExtensionPipePart extends RoutedJunctionPipePart
 {
@@ -51,16 +41,10 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
     {
         if (cardslot.getStackInSlot(0) != null && cardslot.getStackInSlot(1) == null)
         {
-            val stack:ItemStack = cardslot.getStackInSlot(0)
+            val stack = cardslot.getStackInSlot(0)
             if (stack.getItem.isInstanceOf[ItemDataCard])
-            {
-                val data:NBTTagCompound = new NBTTagCompound
-                val id = getRouter.getID.toString
-                data.setString("id", id)
-                val s = "- ID: " + id.split("-")(0) + "..."
-                ItemDataCard.nameData(data, "Extension pipe data", s)
-                ItemDataCard.saveData(stack, data, "ext_pipe")
-            }
+                ItemDataCard.setData(stack, "extension", getRouter.getID.toString)
+
             cardslot.setInventorySlotContents(0, null)
             cardslot.setInventorySlotContents(1, stack)
             cardslot.markDirty()
@@ -74,12 +58,8 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
         import LabelBreaks._
         while (!lost.isEmpty) label
         {
-            val stack =
-            {
-                val f = lost(0)
-                lost = lost.filterNot(p => p == f)
-                f
-            }
+            val stack = lost.head
+            lost = lost.tail
 
             var toRequest = stack.stackSize
             toRequest = Math.min(toRequest, getActiveFreeSpace(stack.key))
@@ -134,26 +114,17 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
     private def openGui(player:EntityPlayer)
     {
         if (world.isRemote) return
-        ServerUtils.openSMPContainer(player.asInstanceOf[EntityPlayerMP], createContainer(player), new IGuiPacketSender
-        {
-            def sendPacket(player:EntityPlayerMP, windowId:Int)
-            {
-                val p = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_ExtensionPipe_open)
-                p.writeCoord(x, y, z)
-                p.writeByte(windowId)
-                p.writeString(getRouter.getID.toString)
-                p.sendToPlayer(player)
-            }
-        })
+
+        GuiExtensionPipe.open(player, createContainer(player),
+            _.writeCoord(x, y, z).writeString(getRouter.getID.toString))
     }
 
-    def createContainer(player:EntityPlayer):Container =
+    def createContainer(player:EntityPlayer) =
     {
-        val ghost = new SpecialContainer(player.inventory)
-        val sc = ISlotController.InventoryRulesController.instance
-        ghost.addCustomSlot(new SpecialContainer.SlotExtended(cardslot, 0, 134, 20).setCheck(sc))
-        ghost.addCustomSlot(new SpecialContainer.SlotExtended(cardslot, 1, 134, 50).setPlacement(false))
-        ghost.addPlayerInventory(8, 84)
-        ghost
+        val container = new WidgetContainer
+        container + new Slot2(cardslot, 0, 134, 20)
+        container + new Slot2(cardslot, 1, 134, 50).setPlace(false)
+        container.addPlayerInv(player, 8, 84)
+        container
     }
 }

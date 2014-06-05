@@ -1,11 +1,11 @@
 package mrtjp.projectred.integration;
 
-import mrtjp.projectred.core.ItemPart.EnumPart;
-import mrtjp.projectred.core.libmc.PRColors;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
+import mrtjp.projectred.core.PartDefs$;
+import mrtjp.projectred.core.libmc.PRColors;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 
 public class IntegrationRecipes
 {
@@ -17,308 +17,308 @@ public class IntegrationRecipes
     private static void initGateRecipes()
     {
         /** AND Gate **/
-        GameRegistry.addRecipe(EnumGate.AND.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.AND.makeStack(),
                 "ACA",
                 "CCC",
                 "PWP",
-                'A', EnumPart.ANODE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'P', EnumPart.PLATE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** OR Gate **/
-        GameRegistry.addRecipe(EnumGate.OR.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.OR.makeStack(),
                 "PCP",
                 "WCW",
                 "PWP",
-                'P', EnumPart.PLATE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** NOT Gate**/
-        GameRegistry.addRecipe(EnumGate.NOT.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.NOT.makeStack(),
                 "PCP",
                 "CAC",
                 "PWP",
-                'P', EnumPart.PLATE.getItemStack(),
-                'A', EnumPart.ANODE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
                 );
 
 
         /** RS Latch **/
-        GameRegistry.addRecipe(EnumGate.RSLatch.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.RSLatch.makeStack(),
                 "ACW",
                 "WPW",
                 "WCA",
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
-                'A', EnumPart.ANODE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'P', EnumPart.PLATE.getItemStack()
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'P', PartDefs$.MODULE$.PLATE().makeStack()
                 );
 
         /** Toggle Latch **/
-        GameRegistry.addRecipe(EnumGate.ToggleLatch.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.ToggleLatch.makeStack(),
                 "CPP",
                 "WLW",
                 "CPP",
-                'C', EnumPart.CATHODE.getItemStack(),
-                'P', EnumPart.PLATE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
-                'L', Block.lever
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'L', Blocks.lever
                 );
 
         /** Transparent Latch **/
-        GameRegistry.addRecipe(EnumGate.TransparentLatch.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.TransparentLatch.makeStack(),
                 "ACW",
                 "CCC",
                 "CWP",
-                'C', EnumPart.CATHODE.getItemStack(),
-                'A', EnumPart.ANODE.getItemStack(),
-                'P', EnumPart.PLATE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** NOR Gate **/
-        GameRegistry.addRecipe(EnumGate.NOR.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.NOR.makeStack(),
                 "PAP",
                 "WCW",
                 "PWP",
-                'P', EnumPart.PLATE.getItemStack(),
-                'A', EnumPart.ANODE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack()
                 );
 
         /** NAND Gate **/
-        GameRegistry.addRecipe(EnumGate.NAND.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.NAND.makeStack(),
                 "AAA",
                 "CCC",
                 "PWP",
-                'A', EnumPart.ANODE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'P', EnumPart.PLATE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** XOR Gate **/
-        GameRegistry.addRecipe(EnumGate.XOR.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.XOR.makeStack(),
                 "AWA",
                 "CAC",
                 "WCW",
-                'A', EnumPart.ANODE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack()
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack()
                 );
 
         /** XNOR Gate **/
-        GameRegistry.addRecipe(EnumGate.XNOR.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.XNOR.makeStack(),
                 "ACA",
                 "CAC",
                 "WCW",
-                'A', EnumPart.ANODE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** Buffer Gate **/
-        GameRegistry.addRecipe(EnumGate.Buffer.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.Buffer.makeStack(),
                 "ACA",
                 "WCW",
                 "PWP",
-                'A', EnumPart.ANODE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
-                'P', EnumPart.PLATE.getItemStack()
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'P', PartDefs$.MODULE$.PLATE().makeStack()
                 );
 
         /** Multiplexer Gate **/
-        GameRegistry.addRecipe(EnumGate.Multiplexer.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.Multiplexer.makeStack(),
                 "ACA",
                 "CPC",
                 "ACW",
-                'A', EnumPart.ANODE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'P', EnumPart.PLATE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** Repeater Gate **/
-        GameRegistry.addRecipe(EnumGate.Repeater.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.Repeater.makeStack(),
                 "PCA",
                 "ACP",
                 "PWP",
-                'P', EnumPart.PLATE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'A', EnumPart.ANODE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** Timer Gate **/
-        GameRegistry.addRecipe(EnumGate.Timer.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.Timer.makeStack(),
                 "ACA",
                 "WTW",
                 "PWP",
-                'A', EnumPart.ANODE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
-                'T', EnumPart.POINTER.getItemStack(),
-                'P', EnumPart.PLATE.getItemStack()
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'T', PartDefs$.MODULE$.POINTER().makeStack(),
+                'P', PartDefs$.MODULE$.PLATE().makeStack()
                 );
 
         /** Counter Gate **/
-        GameRegistry.addRecipe(EnumGate.Counter.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.Counter.makeStack(),
                 "PCP",
                 "WWT",
                 "PCP",
-                'P', EnumPart.PLATE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'T', EnumPart.POINTER.getItemStack(),
-                'A', EnumPart.ANODE.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'T', PartDefs$.MODULE$.POINTER().makeStack(),
+                'A', PartDefs$.MODULE$.ANODE().makeStack()
                 );
 
         /** Sequencer Gate **/
-        GameRegistry.addRecipe(EnumGate.Sequencer.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.Sequencer.makeStack(),
                 "PCP",
                 "CTC",
                 "PCP",
-                'P', EnumPart.PLATE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'T', EnumPart.POINTER.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'T', PartDefs$.MODULE$.POINTER().makeStack()
                 );
 
         /** Pulse Former Gate **/
-        GameRegistry.addRecipe(EnumGate.Pulse.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.Pulse.makeStack(),
                 "ACA",
                 "CAC",
                 "WWP",
-                'A', EnumPart.ANODE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
-                'P', EnumPart.PLATE.getItemStack()
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'P', PartDefs$.MODULE$.PLATE().makeStack()
                 );
 
         /** Randomizer Gate **/
-        GameRegistry.addRecipe(EnumGate.Randomizer.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.Randomizer.makeStack(),
                 "PEP",
                 "WWW",
                 "EWE",
-                'P', EnumPart.PLATE.getItemStack(),
-                'E', EnumPart.ENERGIZEDSILICONCHIP.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'E', PartDefs$.MODULE$.ENERGIZEDSILICONCHIP().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** State Cell Gate **/
-        GameRegistry.addRecipe(EnumGate.StateCell.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.StateCell.makeStack(),
                 "PAC",
                 "WST",
                 "PWP",
-                'P', EnumPart.PLATE.getItemStack(),
-                'A', EnumPart.ANODE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
-                'S', EnumPart.SILICONCHIP.getItemStack(),
-                'T', EnumPart.POINTER.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'A', PartDefs$.MODULE$.ANODE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'S', PartDefs$.MODULE$.SILICONCHIP().makeStack(),
+                'T', PartDefs$.MODULE$.POINTER().makeStack()
                 );
 
         /** Synchronizer Gate **/
-        GameRegistry.addRecipe(EnumGate.Synchronizer.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.Synchronizer.makeStack(),
                 "WCW",
                 "SAS",
                 "WWW",
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'S', EnumPart.SILICONCHIP.getItemStack(),
-                'A', EnumPart.ANODE.getItemStack()
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'S', PartDefs$.MODULE$.SILICONCHIP().makeStack(),
+                'A', PartDefs$.MODULE$.ANODE().makeStack()
                 );
 
         /** Light Sensor **/
-        GameRegistry.addRecipe(EnumGate.LightSensor.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.LightSensor.makeStack(),
                 "PPP",
                 "LLL",
                 "PWP",
-                'P', EnumPart.PLATE.getItemStack(),
-                'L', new ItemStack(Item.dyePowder, 1, PRColors.BLUE.dyeId()),
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'L', new ItemStack(Items.dye, 1, PRColors.BLUE.dyeId()),
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** Rain Sensor **/
-        GameRegistry.addRecipe(EnumGate.RainSensor.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.RainSensor.makeStack(),
                 "PPP",
                 "SSS",
                 "PWP",
-                'P', EnumPart.PLATE.getItemStack(),
-                'S', Item.slimeBall,
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'S', Items.slime_ball,
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** Bundled Latch **/
-        GameRegistry.addRecipe(EnumGate.BusTransceiver.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.BusTransceiver.makeStack(),
                 "BBB",
                 "SPS",
                 "BBB",
-                'P', EnumPart.PLATE.getItemStack(),
-                'B', EnumPart.BUNDLEDPLATE.getItemStack(),
-                'S', EnumPart.SILICONCHIP.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'B', PartDefs$.MODULE$.BUNDLEDPLATE().makeStack(),
+                'S', PartDefs$.MODULE$.SILICONCHIP().makeStack()
                 );
 
         /** Null Cell **/
-        GameRegistry.addRecipe(EnumGate.NullCell.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.NullCell.makeStack(),
                 "PWP",
                 "WSW",
                 "PWP",
-                'P', EnumPart.PLATE.getItemStack(),
-                'W', EnumPart.WIREDPLATE.getItemStack(),
-                'S', EnumPart.PLATFORMEDPLATE.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'W', PartDefs$.MODULE$.WIREDPLATE().makeStack(),
+                'S', PartDefs$.MODULE$.PLATFORMEDPLATE().makeStack()
                 );
 
         /** Invert Cell **/
-        GameRegistry.addRecipe(EnumGate.InvertCell.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.InvertCell.makeStack(),
                 "PWP",
                 "WSW",
                 "PCP",
-                'P', EnumPart.PLATE.getItemStack(),
-                'W', EnumPart.WIREDPLATE.getItemStack(),
-                'S', EnumPart.PLATFORMEDPLATE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'W', PartDefs$.MODULE$.WIREDPLATE().makeStack(),
+                'S', PartDefs$.MODULE$.PLATFORMEDPLATE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack()
                 );
 
         /** Buffer Cell **/
-        GameRegistry.addRecipe(EnumGate.BufferCell.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.BufferCell.makeStack(),
                 "PWP",
                 "WSW",
                 "PCC",
-                'P', EnumPart.PLATE.getItemStack(),
-                'W', EnumPart.WIREDPLATE.getItemStack(),
-                'S', EnumPart.PLATFORMEDPLATE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack()
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'W', PartDefs$.MODULE$.WIREDPLATE().makeStack(),
+                'S', PartDefs$.MODULE$.PLATFORMEDPLATE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack()
                 );
 
         /** Comparator **/
-        GameRegistry.addRecipe(EnumGate.Comparator.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.Comparator.makeStack(),
                 "WCW",
                 "QWQ",
                 "PWP",
-                'W', EnumPart.CONDUCTIVEPLATE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack(),
-                'Q', Item.netherQuartz,
-                'P', EnumPart.PLATE.getItemStack()
+                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'Q', Items.quartz,
+                'P', PartDefs$.MODULE$.PLATE().makeStack()
                 );
 
         /** AND Cell **/
-        GameRegistry.addRecipe(EnumGate.ANDCell.getItemStack(),
+        GameRegistry.addRecipe(EnumGate.ANDCell.makeStack(),
                 "CwC",
                 "WSW",
                 "PwC",
-                'w', EnumPart.CONDUCTIVEPLATE.getItemStack(),
-                'W', EnumPart.WIREDPLATE.getItemStack(),
-                'S', EnumPart.PLATFORMEDPLATE.getItemStack(),
-                'P', EnumPart.PLATE.getItemStack(),
-                'C', EnumPart.CATHODE.getItemStack()
+                'w', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'W', PartDefs$.MODULE$.WIREDPLATE().makeStack(),
+                'S', PartDefs$.MODULE$.PLATFORMEDPLATE().makeStack(),
+                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'C', PartDefs$.MODULE$.CATHODE().makeStack()
                 );
     }
 }

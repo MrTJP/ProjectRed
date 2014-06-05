@@ -1,19 +1,16 @@
 package mrtjp.projectred.exploration;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import mrtjp.projectred.ProjectRedExploration;
-import mrtjp.projectred.core.ItemPart.EnumPart;
-import mrtjp.projectred.core.libmc.PRColors;
+import mrtjp.projectred.core.PartDefs;
 import mrtjp.projectred.core.ShapelessOreNBTRecipe;
-import mrtjp.projectred.exploration.BlockOre.EnumOre;
-import mrtjp.projectred.exploration.BlockSpecialStone.EnumSpecialStone;
-import mrtjp.projectred.exploration.ItemBackpack.EnumBackpack;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
+import mrtjp.projectred.core.libmc.PRColors;
+import mrtjp.projectred.exploration.DecorativeStoneDefs.StoneVal;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ExplorationRecipes
 {
@@ -27,15 +24,16 @@ public class ExplorationRecipes
 
     public static void initOreDict()
     {
-        EnumBackpack.initOreDictDefinitions();
+        for (int i = 0; i < 16; i++) OreDictionary.registerOre(ItemBackpack.oreDictionaryVal(),
+                new ItemStack(ProjectRedExploration.itemBackpack(), 1, i));
 
-        OreDictionary.registerOre("gemRuby", EnumPart.RUBY.getItemStack());
-        OreDictionary.registerOre("gemSapphire", EnumPart.SAPPHIRE.getItemStack());
-        OreDictionary.registerOre("gemPeridot", EnumPart.PERIDOT.getItemStack());
+        OreDictionary.registerOre("gemRuby", PartDefs.RUBY().makeStack());
+        OreDictionary.registerOre("gemSapphire", PartDefs.SAPPHIRE().makeStack());
+        OreDictionary.registerOre("gemPeridot", PartDefs.PERIDOT().makeStack());
 
-        OreDictionary.registerOre("oreRuby", EnumOre.ORERUBY.getItemStack(1));
-        OreDictionary.registerOre("oreSapphire", EnumOre.ORESAPPHIRE.getItemStack(1));
-        OreDictionary.registerOre("orePeridot", EnumOre.OREPERIDOT.getItemStack(1));
+        OreDictionary.registerOre("oreRuby", OreDefs.ORERUBY().makeStack());
+        OreDictionary.registerOre("oreSapphire", OreDefs.ORESAPPHIRE().makeStack());
+        OreDictionary.registerOre("orePeridot", OreDefs.OREPERIDOT().makeStack());
     }
 
     private static void initGemToolRecipes()
@@ -66,20 +64,20 @@ public class ExplorationRecipes
         addSwordRecipe(new ItemStack(ProjectRedExploration.itemPeridotSword()), "gemPeridot");
 
         /** Saw **/
-        addSawRecipe(new ItemStack(ProjectRedExploration.itemGoldSaw()), new ItemStack(Item.ingotGold));
+        addSawRecipe(new ItemStack(ProjectRedExploration.itemGoldSaw()), new ItemStack(Items.gold_ingot));
         addSawRecipe(new ItemStack(ProjectRedExploration.itemRubySaw()), "gemRuby");
         addSawRecipe(new ItemStack(ProjectRedExploration.itemSapphireSaw()), "gemSapphire");
         addSawRecipe(new ItemStack(ProjectRedExploration.itemPeridotSaw()), "gemPeridot");
 
         /** Sickle **/
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemWoodSickle()), "plankWood");
-        addSickleRecipe(new ItemStack(ProjectRedExploration.itemStoneSickle()), new ItemStack(Item.flint));
-        addSickleRecipe(new ItemStack(ProjectRedExploration.itemIronSickle()), new ItemStack(Item.ingotIron));
-        addSickleRecipe(new ItemStack(ProjectRedExploration.itemGoldSickle()), new ItemStack(Item.ingotGold));
+        addSickleRecipe(new ItemStack(ProjectRedExploration.itemStoneSickle()), new ItemStack(Items.flint));
+        addSickleRecipe(new ItemStack(ProjectRedExploration.itemIronSickle()), new ItemStack(Items.iron_ingot));
+        addSickleRecipe(new ItemStack(ProjectRedExploration.itemGoldSickle()), new ItemStack(Items.gold_ingot));
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemRubySickle()), "gemRuby");
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemSapphireSickle()), "gemSapphire");
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemPeridotSickle()), "gemPeridot");
-        addSickleRecipe(new ItemStack(ProjectRedExploration.itemDiamondSickle()), new ItemStack(Item.diamond));
+        addSickleRecipe(new ItemStack(ProjectRedExploration.itemDiamondSickle()), new ItemStack(Items.diamond));
 
     }
 
@@ -90,7 +88,7 @@ public class ExplorationRecipes
                 "ms",
                 " s",
                 'm', m,
-                's', Item.stick
+                's', Items.stick
                 ));
     }
     private static void addHoeRecipe(ItemStack o, Object m)
@@ -100,7 +98,7 @@ public class ExplorationRecipes
                 " s",
                 " s",
                 'm', m,
-                's', Item.stick
+                's', Items.stick
                 ));
     }
     private static void addPickaxeRecipe(ItemStack o, Object m)
@@ -110,7 +108,7 @@ public class ExplorationRecipes
                 " s ",
                 " s ",
                 'm', m,
-                's', Item.stick
+                's', Items.stick
                 ));
     }
     private static void addShovelRecipe(ItemStack o, Object m)
@@ -120,7 +118,7 @@ public class ExplorationRecipes
                 "s",
                 "s",
                 'm', m,
-                's', Item.stick
+                's', Items.stick
                 ));
     }
     private static void addSwordRecipe(ItemStack o, Object m)
@@ -130,7 +128,7 @@ public class ExplorationRecipes
                 "m",
                 "s",
                 'm', m,
-                's', Item.stick
+                's', Items.stick
                 ));
     }
     private static void addSawRecipe(ItemStack o, Object m)
@@ -138,7 +136,7 @@ public class ExplorationRecipes
         GameRegistry.addRecipe(new ShapedOreRecipe(o,
                 "srr",
                 "sbb",
-                's', Item.stick,
+                's', Items.stick,
                 'r', "stoneRod",
                 'b', m
                 ));
@@ -149,7 +147,7 @@ public class ExplorationRecipes
                 " m ",
                 "  m",
                 "sm ",
-                's', Item.stick,
+                's', Items.stick,
                 'm', m
                 ));
     }
@@ -158,10 +156,10 @@ public class ExplorationRecipes
     private static void initOtherRecipes()
     {
         /** Wool Gin to string recipe **/
-        GameRegistry.addRecipe(new ItemStack(Item.silk, 4),
+        GameRegistry.addRecipe(new ItemStack(Items.string, 4),
                 "gw",
                 'g', new ItemStack(ProjectRedExploration.itemWoolGin(), 1, OreDictionary.WILDCARD_VALUE),
-                'w', Block.cloth
+                'w', Blocks.wool
                 );
     }
 
@@ -172,21 +170,21 @@ public class ExplorationRecipes
                 "sis",
                 "sss",
                 " s ",
-                's', Item.stick,
-                'i', EnumPart.IRONCOIL.getItemStack()
+                's', Items.stick,
+                'i', PartDefs.IRONCOIL().makeStack()
                 );
 
         /** Backpacks **/
-        for (int i = 0; i < EnumBackpack.VALID_BP.length; i++) {
-            GameRegistry.addRecipe(new ShapedOreRecipe(EnumBackpack.get(i).getItemStack(),
+        for (int i = 0; i < 16; i++) {
+            GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedExploration.itemBackpack(), 1, i),
                     "ccc",
                     "cdc",
                     "ccc",
-                    'c', EnumPart.WOVENCLOTH.getItemStack(),
+                    'c', PartDefs.WOVENCLOTH().makeStack(),
                     'd', PRColors.get(i).getOreDict()
                     ));
-            GameRegistry.addRecipe(new ShapelessOreNBTRecipe(EnumBackpack.get(i).getItemStack(),
-                    EnumBackpack.oreDictDefinition,
+            GameRegistry.addRecipe(new ShapelessOreNBTRecipe(new ItemStack(ProjectRedExploration.itemBackpack(), 1, i),
+                    ItemBackpack.oreDictionaryVal(),
                     PRColors.get(i).getOreDict()
                     ).setKeepNBT());
         }
@@ -195,52 +193,55 @@ public class ExplorationRecipes
     private static void initWorldRecipes()
     {
         /** Marble brick **/
-        GameRegistry.addRecipe(EnumSpecialStone.MARBLEBRICK.getItemStack(4),
+        GameRegistry.addRecipe(DecorativeStoneDefs.MARBLEBRICK().makeStack(4),
                 "bb",
                 "bb",
-                'b', EnumSpecialStone.MARBLE.getItemStack()
+                'b', DecorativeStoneDefs.MARBLE().makeStack()
                 );
         /** Basalt brick **/
-        GameRegistry.addRecipe(EnumSpecialStone.BASALTBRICK.getItemStack(4),
+        GameRegistry.addRecipe(DecorativeStoneDefs.BASALTBRICK().makeStack(4),
                 "bb",
                 "bb",
-                'b', EnumSpecialStone.BASALT.getItemStack()
+                'b', DecorativeStoneDefs.BASALT().makeStack()
                 );
         /** Basalt **/
-        FurnaceRecipes.smelting().addSmelting(ProjectRedExploration.blockStones().blockID, EnumSpecialStone.BASALTCOBBLE.meta, EnumSpecialStone.BASALT.getItemStack(), 0);
+        GameRegistry.addSmelting(DecorativeStoneDefs.BASALTCOBBLE().makeStack(), DecorativeStoneDefs.BASALT().makeStack(), 0);
 
         /** Ruby block **/
-        GameRegistry.addRecipe(EnumSpecialStone.RUBYBLOCK.getItemStack(),
+        GameRegistry.addRecipe(DecorativeStoneDefs.RUBYBLOCK().makeStack(),
                 "xxx",
                 "xxx",
                 "xxx",
-                'x', EnumPart.RUBY.getItemStack()
+                'x', PartDefs.RUBY().makeStack()
                 );
         /** Sapphire block **/
-        GameRegistry.addRecipe(EnumSpecialStone.SAPPHIREBLOCK.getItemStack(),
+        GameRegistry.addRecipe(DecorativeStoneDefs.SAPPHIREBLOCK().makeStack(),
                 "xxx",
                 "xxx",
                 "xxx",
-                'x', EnumPart.SAPPHIRE.getItemStack()
+                'x', PartDefs.SAPPHIRE().makeStack()
                 );
         /** Peridot block **/
-        GameRegistry.addRecipe(EnumSpecialStone.PERIDOTBLOCK.getItemStack(),
+        GameRegistry.addRecipe(DecorativeStoneDefs.PERIDOTBLOCK().makeStack(),
                 "xxx",
                 "xxx",
                 "xxx",
-                'x', EnumPart.PERIDOT.getItemStack()
+                'x', PartDefs.PERIDOT().makeStack()
                 );
 
         /** Ruby **/
-        GameRegistry.addShapelessRecipe(EnumPart.RUBY.getItemStack(9), EnumSpecialStone.RUBYBLOCK.getItemStack());
+        GameRegistry.addShapelessRecipe(PartDefs.RUBY().makeStack(9), DecorativeStoneDefs.RUBYBLOCK().makeStack());
         /** Sapphire **/
-        GameRegistry.addShapelessRecipe(EnumPart.SAPPHIRE.getItemStack(9), EnumSpecialStone.SAPPHIREBLOCK.getItemStack());
+        GameRegistry.addShapelessRecipe(PartDefs.SAPPHIRE().makeStack(9), DecorativeStoneDefs.SAPPHIREBLOCK().makeStack());
         /** Peridot **/
-        GameRegistry.addShapelessRecipe(EnumPart.PERIDOT.getItemStack(9), EnumSpecialStone.PERIDOTBLOCK.getItemStack());
+        GameRegistry.addShapelessRecipe(PartDefs.PERIDOT().makeStack(9), DecorativeStoneDefs.PERIDOTBLOCK().makeStack());
 
         /** Walls **/
-        for (EnumSpecialStone s : EnumSpecialStone.VALID_STONE)
-            addWallRecipe(new ItemStack(ProjectRedExploration.blockStoneWalls(), 6, s.meta), s.getItemStack());
+        for (int i = 0; i < DecorativeStoneDefs.values().size(); i++)
+        {
+            StoneVal s = (StoneVal) DecorativeStoneDefs.values().apply(i);
+            addWallRecipe(new ItemStack(ProjectRedExploration.blockDecorativeWalls(), 6, s.meta()), s.makeStack());
+        }
     }
 
     private static void addWallRecipe(ItemStack o, ItemStack m)

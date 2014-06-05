@@ -1221,16 +1221,16 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         {
             int absDir = Rotation.rotateSide(gate.side(), gate.toAbsolute(2));
             BlockCoord pos = new BlockCoord(gate.tile()).offset(absDir);
-            Block block = Block.blocksList[gate.world().getBlockId(pos.x, pos.y, pos.z)];
+            Block block = gate.world().getBlock(pos.x, pos.y, pos.z);
             if (block != null)
             {
                 if (block.hasComparatorInputOverride())
                     return block.getComparatorInputOverride(gate.world(), pos.x, pos.y, pos.z, absDir ^ 1);
 
-                if (block.isBlockNormalCube(gate.world(), pos.x, pos.y, pos.z))
+                if (block.isNormalCube(gate.world(), pos.x, pos.y, pos.z))
                 {
                     pos.offset(absDir);
-                    block = Block.blocksList[gate.world().getBlockId(pos.x, pos.y, pos.z)];
+                    block = gate.world().getBlock(pos.x, pos.y, pos.z);
                     if (block != null && block.hasComparatorInputOverride())
                         return block.getComparatorInputOverride(gate.world(), pos.x, pos.y, pos.z, absDir ^ 1);
                 }

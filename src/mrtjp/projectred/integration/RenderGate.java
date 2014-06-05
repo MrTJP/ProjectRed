@@ -8,7 +8,7 @@ import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.integration.BundledGateLogic.BusTransceiver;
 import mrtjp.projectred.integration.InstancedRsGateLogic.TimerGateLogic;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -51,7 +51,7 @@ public class RenderGate
             new ANDCell()
     };
 
-    public static void registerIcons(IconRegister r)
+    public static void registerIcons(IIconRegister r)
     {
         for (GateRenderer render : renderers)
             render.registerIcons(r);
@@ -79,7 +79,7 @@ public class RenderGate
         GateRenderer r = renderers[id];
         TextureUtils.bindAtlas(0);
         r.prepareInv();
-        CCRenderState.startDrawing(7);
+        CCRenderState.startDrawing();
         r.renderStatic(t, 0);
         CCRenderState.draw();
         if (r.hasSpecials())
@@ -101,7 +101,7 @@ public class RenderGate
             models.add(new BaseComponentModel());
         }
 
-        public void registerIcons(IconRegister r)
+        public void registerIcons(IIconRegister r)
         {
             for (ComponentModel m : models)
                 if (m != null)
@@ -687,7 +687,7 @@ public class RenderGate
         }
 
         @Override
-        public void registerIcons(IconRegister r)
+        public void registerIcons(IIconRegister r)
         {
             for (ComponentModel m : wires1)
                 m.registerTextures(r);
@@ -874,9 +874,9 @@ public class RenderGate
         @Override
         public void renderDynamic(Transformation t)
         {
-            CCRenderState.startDrawing(7);
+            CCRenderState.startDrawing();
             CCRenderState.pullLightmap();
-            CCRenderState.useNormals(true);
+            CCRenderState.useNormals = true;
             pointer.renderModel(t, 0);
             CCRenderState.draw();
         }
@@ -930,9 +930,9 @@ public class RenderGate
         @Override
         public void renderDynamic(Transformation t)
         {
-            CCRenderState.startDrawing(7);
+            CCRenderState.startDrawing();
             CCRenderState.pullLightmap();
-            CCRenderState.useNormals(true);
+            CCRenderState.useNormals = true;
             pointer.renderModel(t, 0);
             CCRenderState.draw();
         }
@@ -991,9 +991,9 @@ public class RenderGate
         @Override
         public void renderDynamic(Transformation t)
         {
-            CCRenderState.startDrawing(7);
+            CCRenderState.startDrawing();
             CCRenderState.pullLightmap();
-            CCRenderState.useNormals(true);
+            CCRenderState.useNormals = true;
             pointer.renderModel(t, reflect ? 1 : 0);
             CCRenderState.draw();
         }
@@ -1067,9 +1067,9 @@ public class RenderGate
         @Override
         public void renderDynamic(Transformation t)
         {
-            CCRenderState.startDrawing(7);
+            CCRenderState.startDrawing();
             CCRenderState.pullLightmap();
-            CCRenderState.useNormals(true);
+            CCRenderState.useNormals = true;
             pointer.renderModel(t, reflect ? 1 : 0);
             CCRenderState.draw();
         }

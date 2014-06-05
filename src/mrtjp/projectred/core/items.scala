@@ -18,14 +18,12 @@ abstract class ItemCraftingDamage(name:String) extends ItemCore(name)
     setMaxStackSize(1)
     setNoRepair()
 
-    override def registerIcons(par1IconRegister:IIconRegister)
-
     override def hasContainerItem(itemStack:ItemStack) = true
 
     override def getContainerItem(stack:ItemStack) =
         if (stack.getItem == this)
         {
-            stack.setItemDamage(stack.getItemDamage + 1)
+            stack.setItemDamage(stack.getItemDamage+1)
             stack
         }
         else
@@ -56,25 +54,25 @@ class ItemPart extends ItemCore("projectred.core.part")
 
     override def getSubItems(item:Item, tab:CreativeTabs, list:JList[_])
     {
-        for (i <- PartCollection.values)
+        for (i <- PartDefs.values)
             list.asInstanceOf[JList[ItemStack]].add(i.makeStack)
     }
 
     @SideOnly(Side.CLIENT)
     override def registerIcons(reg:IIconRegister)
     {
-        for (i <- PartCollection.values) i.registerIcon(reg)
+        for (i <- PartDefs.values) i.registerIcon(reg)
     }
 
     override def getIconFromDamage(meta:Int) =
     {
-        val col = PartCollection(meta)
+        val col = PartDefs(meta)
         if (col != null) col.icon
         else null
     }
 }
 
-object PartCollection extends ItemCollection
+object PartDefs extends ItemDefinition
 {
     override type EnumVal = PartVal
     override def getItem = ProjectRedCore.itemPart
@@ -141,7 +139,7 @@ object PartCollection extends ItemCollection
     //Groups
     val ILLUMARS = WHITEILLUMAR to BLACKILLUMAR
 
-    class PartVal(iconName:String) extends ItemColVal
+    class PartVal(iconName:String) extends ItemDef
     {
         var icon:IIcon = null
         def registerIcon(reg:IIconRegister)

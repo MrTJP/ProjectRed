@@ -1,21 +1,19 @@
 package mrtjp.projectred.transportation
 
-import codechicken.core.{IGuiPacketSender, ServerUtils}
 import codechicken.lib.data.{MCDataOutput, MCDataInput}
-import codechicken.lib.packet.PacketCustom
-import mrtjp.projectred.core.inventory.SpecialContainer.SlotExtended
-import mrtjp.projectred.core.inventory.{SpecialContainer, SimpleInventory}
-import net.minecraft.entity.player.{EntityPlayerMP, EntityPlayer}
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
-import mrtjp.projectred.core.libmc.{BasicGuiUtils, ItemKey}
+import mrtjp.projectred.core.libmc.ItemKey
+import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory}
+import mrtjp.projectred.core.libmc.gui.GuiLib
 
 class RoutedFirewallPipe extends RoutedJunctionPipePart
 {
     var filt = new SimpleInventory(7*5, "filt", 1)
     {
-        override def onInventoryChanged()
+        override def markDirty()
         {
             buildItemSet()
         }
@@ -85,30 +83,24 @@ class RoutedFirewallPipe extends RoutedJunctionPipePart
     private def openGui(player:EntityPlayer)
     {
         if (world.isRemote) return
-        ServerUtils.openSMPContainer(player.asInstanceOf[EntityPlayerMP], createContainer(player), new IGuiPacketSender
+        GuiFirewallPipe.open(player, createContainer(player), p =>
         {
-            def sendPacket(player:EntityPlayerMP, windowId:Int)
-            {
-                val p = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_FirewallPipe_open)
-                p.writeCoord(x, y, z)
-                writeInfo(p)
-                p.writeByte(windowId)
-                p.sendToPlayer(player)
-            }
+            p.writeCoord(x, y, z)
+            writeInfo(p)
         })
     }
 
     def createContainer(player:EntityPlayer) =
     {
-        val cont = new SpecialContainer(player.inventory)
-        import scala.collection.JavaConversions._
+        val cont = new WidgetContainer
+
         var s = 0
-        for (p <- BasicGuiUtils.createSlotArray(8, 8, 7, 5, 0, 0))
+        for ((x, y) <- GuiLib.createSlotGrid(8, 8, 7, 5, 0, 0))
         {
-            cont.addCustomSlot(new SlotExtended(filt, s, p.get1, p.get2).setGhosting(true))
+            cont + new Slot2(filt, s, x, y).setGhosting(true)
             s += 1
         }
-        cont.addPlayerInventory(8, 120).setShiftClick(false)
+        cont.addPlayerInv(8, 120).setShift(false)
     }
 
     override def routeFilter(inputDir:Int) =

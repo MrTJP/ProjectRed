@@ -7,7 +7,6 @@ import codechicken.lib.vec.{BlockCoord, Vector3, Rotation, Transformation}
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api.{IScrewdriver, IConnectable}
 import mrtjp.projectred.core._
-import mrtjp.projectred.core.inventory.SpecialContainer
 import mrtjp.projectred.transmission.{PowerWire_100v, FramedPowerWire_100v, WirePart}
 import net.minecraft.block.material.Material
 import net.minecraft.entity.player.{EntityPlayerMP, EntityPlayer}
@@ -15,13 +14,14 @@ import net.minecraft.inventory.{ICrafting, Container, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.IBlockAccess
-import mrtjp.projectred.core.libmc.{MultiTileTile, MultiTileBlock, BasicUtils, TPortableInventory}
+import mrtjp.projectred.core.libmc.{PRLib, MultiTileTile, MultiTileBlock, TPortableInventory}
 import net.minecraftforge.common.util.ForgeDirection
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.util.IIcon
 import net.minecraft.entity.EntityLivingBase
+import mrtjp.projectred.core.libmc.inventory.WidgetContainer
 
-class BlockMachine(id:Int) extends MultiTileBlock(Material.rock)
+class BlockMachine(name:String) extends MultiTileBlock(name, Material.rock)
 {
     setHardness(2)
     setCreativeTab(ProjectRedExpansion.tabExpansion)
@@ -96,7 +96,7 @@ abstract class TileMachine extends MultiTileTile
 
     def rotationT:Transformation = Rotation.sideOrientation(side, rotation).at(Vector3.center)
 
-    override def onBlockPlaced(s:Int)
+    override def onBlockPlaced(s:Int, meta:Int)
     {
         setSide(if (doesOrient) s^1 else 0)
     }
@@ -200,13 +200,13 @@ trait TileMachineIO extends TileMachine with TPortableInventory with ISidedInven
         inv.load(tag)
     }
 
-    abstract override def markDirty() = super.markDirty()
-
     abstract override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        inv.dropContents(worldObj, xCoord, yCoord, zCoord)
+        inv.dropContents(getWorldObj, xCoord, yCoord, zCoord)
     }
+
+    override def markDirty() = super.markDirty()
 }
 
 trait TileGuiMachine extends TileMachine
@@ -218,7 +218,7 @@ trait TileGuiMachine extends TileMachine
 
     def openGui(player:EntityPlayer) =
     {
-        if (!worldObj.isRemote && !player.isSneaking)
+        if (!getWorldObj.isRemote && !player.isSneaking)
             ServerUtils.openSMPContainer(player.asInstanceOf[EntityPlayerMP], createContainer(player), new IGuiPacketSender
             {
                 def sendPacket(player:EntityPlayerMP, windowId:Int)
@@ -248,7 +248,7 @@ trait TMachinePowerable extends TileMachine with TConnectableTileMulti with TPow
             part.isInstanceOf[FramedPowerWire_100v] ||
             (!part.isInstanceOf[WirePart] && part.isInstanceOf[TPowerConnectable])
 
-    override def world = worldObj
+    override def world = getWorldObj
 
     override def conductor(side:Int) = cond
 
@@ -260,7 +260,7 @@ trait TMachinePowerable extends TileMachine with TConnectableTileMulti with TPow
             val edgeRot = id%4
             if ((connMap&(0x1<<edgeRot)<<absDir)!= 0)
             {
-                val tp = BlockConnLib.getStraight(worldObj, absDir, edgeRot, new BlockCoord(this))
+                val tp = BlockConnLib.getStraight(world, absDir, edgeRot, new BlockCoord(this))
 
                 if (tp.isInstanceOf[TPowerConnectable]) return tp.asInstanceOf[TPowerConnectable].conductor(absDir^1)
             }
@@ -270,11 +270,11 @@ trait TMachinePowerable extends TileMachine with TConnectableTileMulti with TPow
             val absDir = id-24
             if ((connMap&0x1000000<<absDir)!= 0)
             {
-                val tp = BlockConnLib.getStraight(worldObj, absDir, -1, new BlockCoord(this))
+                val tp = BlockConnLib.getStraight(world, absDir, -1, new BlockCoord(this))
                 if (tp.isInstanceOf[TPowerConnectable]) return tp.asInstanceOf[TPowerConnectable].conductor(absDir^1)
 
                 val pos = new BlockCoord(this).offset(absDir)
-                val t = BasicUtils.getTileEntity(worldObj, pos, classOf[TPowerConnectable])
+                val t = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
                 if (t != null) return t.conductor(absDir^1)
             }
         }
@@ -285,7 +285,7 @@ trait TMachinePowerable extends TileMachine with TConnectableTileMulti with TPow
             if ((connMap&(0x100000000L<<edgeRot)<<absDir)!=0)
             {
                 val sideTo = Rotation.rotateSide(absDir^1, edgeRot)
-                val tp = BlockConnLib.getCorner(worldObj, absDir, edgeRot, new BlockCoord(this))
+                val tp = BlockConnLib.getCorner(world, absDir, edgeRot, new BlockCoord(this))
                 if (tp != null && tp.isInstanceOf[TPowerConnectable]) return tp.asInstanceOf[TPowerConnectable].conductor(sideTo^1)
             }
         }
@@ -517,12 +517,6 @@ with TMachinePowerable with TileMachineIO with TileGuiMachine with TileMachineSi
         workMax = tag.getInteger("max")
     }
 
-    override def onBlockNeighborChange(l:Int) = super.onBlockNeighborChange(l)
-
-    override def onBlockRemoval() = super.onBlockRemoval()
-
-    override def onBlockPlaced(s:Int) = super.onBlockPlaced(s)
-
     override def markDirty()
     {
         super.markDirty()
@@ -565,7 +559,7 @@ with TMachinePowerable with TileMachineIO with TileGuiMachine with TileMachineSi
     override def getLightValue = if (isWorking) 13 else 0
 }
 
-class WorkingMachineContainer(player:EntityPlayer, tile:TileMachineWorking) extends SpecialContainer(player.inventory)
+class WorkingMachineContainer(player:EntityPlayer, tile:TileMachineWorking) extends WidgetContainer
 {
     var ch = 0
     var work = 0

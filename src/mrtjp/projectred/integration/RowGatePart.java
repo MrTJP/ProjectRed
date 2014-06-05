@@ -8,11 +8,12 @@ import codechicken.lib.vec.Rotation;
 import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
-import mrtjp.projectred.core.libmc.BasicUtils;
 import mrtjp.projectred.core.Configurator;
+import mrtjp.projectred.core.libmc.PRLib;
 import mrtjp.projectred.integration.ArrayCommons.ITopArrayWire;
 import mrtjp.projectred.transmission.*;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Arrays;
@@ -138,7 +139,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         int absDir = Rotation.rotateSide(side(), r);
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null)
             return getPartSignal(t.partMap(absDir^1), Rotation.rotationTo(absDir^1, side()^1));
 
@@ -152,7 +153,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         int s = 0;
 
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null && (connMap&0x10<<r) != 0)
         {
             TMultiPart tp = t.partMap(side());
@@ -161,8 +162,8 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         }
         else
         {
-            int blockID = world().getBlockId(pos.x, pos.y, pos.z);
-            if (blockID == Block.redstoneWire.blockID)
+            Block b = world().getBlock(pos.x, pos.y, pos.z);
+            if (b == Blocks.redstone_wire)
                 return world().getBlockMetadata(pos.x, pos.y, pos.z)-1;
         }
 
@@ -223,7 +224,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         int absDir = Rotation.rotateSide(side(), r);
         BlockCoord pos = new BlockCoord(tile()).offset(absDir).offset(side());
 
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null)
         {
             TMultiPart tp = t.partMap(absDir^1);
@@ -241,7 +242,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
         int absDir = Rotation.rotateSide(side(), r);
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
 
-        TileMultipart t = BasicUtils.getMultipartTile(world(), pos);
+        TileMultipart t = PRLib.getMultipartTile(world(), pos);
         if (t != null)
         {
             TMultiPart tp = t.partMap(side());

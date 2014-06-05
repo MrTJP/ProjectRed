@@ -4,27 +4,34 @@ import net.minecraft.block.{Block, BlockContainer}
 import net.minecraft.block.material.Material
 import net.minecraft.world.{EnumSkyBlock, IBlockAccess, World}
 import net.minecraft.entity.player.EntityPlayer
-import mrtjp.projectred.core.CoreSPH
+import mrtjp.projectred.core.{ItemBlockCore, CoreSPH}
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import java.util.Random
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.enchantment.EnchantmentHelper
-import net.minecraft.item.{ItemBlock, ItemStack}
+import net.minecraft.item.ItemStack
 import java.util
 import codechicken.lib.vec.BlockCoord
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraftforge.common.util.ForgeDirection
 import codechicken.lib.packet.{PacketCustom, ICustomPacketTile}
-import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.{MovingObjectPosition, AxisAlignedBB}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.client.renderer.RenderBlocks
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
+import net.minecraft.init.Blocks
+import cpw.mods.fml.common.registry.GameRegistry
 
-class MultiTileBlock(mat:Material) extends BlockContainer(mat)
+class MultiTileBlock(name:String, mat:Material) extends BlockContainer(mat)
 {
-    private val tiles:Array[Class[_]] = new Array[Class[_]](16)
+    setBlockName(name)
+    GameRegistry.registerBlock(this, getItemBlockClass, name)
+    def getItemBlockClass = classOf[ItemBlockCore]
+
+    private var singleTile = false
+    private val tiles = new Array[Class[_ <: TileEntity]](16)
 
     override def isOpaqueCube = false
 
@@ -32,8 +39,7 @@ class MultiTileBlock(mat:Material) extends BlockContainer(mat)
 
     override def damageDropped(damage:Int) = damage
 
-    override def harvestBlock(w:World, player:EntityPlayer, x:Int, y:Int, z:Int, l:Int)
-    {}
+    override def harvestBlock(w:World, player:EntityPlayer, x:Int, y:Int, z:Int, l:Int){}
 
     override def getRenderType = BasicRenderUtils.coreRenderHandlerID
 
@@ -49,16 +55,17 @@ class MultiTileBlock(mat:Material) extends BlockContainer(mat)
 
     override def createTileEntity(world:World, meta:Int) =
     {
-        try
-        {
-            tiles(meta).newInstance.asInstanceOf[TileEntity]
-        }
-        catch
-            {
-                case e:Exception => e.printStackTrace()
-            }
+        try {if (singleTile) tiles(0).newInstance else tiles(meta).newInstance}
+        catch {case e:Exception => e.printStackTrace()}
         null
     }
+
+    def addTile[A <: TileEntity](t:Class[A], meta:Int)
+    {
+        tiles(meta) = t
+        GameRegistry.registerTileEntity(t, getUnlocalizedName+"|"+meta)
+    }
+    def addSingleTile[A <: TileEntity](t:Class[A]){addTile(t, 0); singleTile = true}
 
     override def removedByPlayer(world:World, player:EntityPlayer, x:Int, y:Int, z:Int) =
     {
@@ -70,10 +77,9 @@ class MultiTileBlock(mat:Material) extends BlockContainer(mat)
             if (b.canHarvestBlock(player, md) && !player.capabilities.isCreativeMode)
             {
                 val il = getDrops(world, x, y, z, md, EnchantmentHelper.getFortuneModifier(player))
-                import scala.collection.JavaConversions._
-                for (it <- il) BasicUtils.dropItem(world, x, y, z, it)
+                for (it <- il) PRLib.dropItem(world, x, y, z, it)
             }
-            world.setBlock(x, y, z, Block.getBlockFromName("air"))
+            world.setBlock(x, y, z, Blocks.air)
             true
         }
     }
@@ -89,6 +95,12 @@ class MultiTileBlock(mat:Material) extends BlockContainer(mat)
         new util.ArrayList[ItemStack](list)
     }
 
+    override def getPickBlock(target:MovingObjectPosition, w:World, x:Int, y:Int, z:Int) =  w.getTileEntity(x, y, z) match
+    {
+        case t:MultiTileTile => t.getPickBlock
+        case _ => super.getPickBlock(target, w, x, y, z)
+    }
+
     override def onNeighborBlockChange(w:World, x:Int, y:Int, z:Int, b:Block)
     {
         w.getTileEntity(x, y, z) match
@@ -98,11 +110,11 @@ class MultiTileBlock(mat:Material) extends BlockContainer(mat)
         }
     }
 
-    override def onBlockPlaced(w:World, x:Int, y:Int, z:Int, side:Int, hx:Float, hy:Float, hz:Float, meta:Int)
+    override def onBlockPlaced(w:World, x:Int, y:Int, z:Int, side:Int, hx:Float, hy:Float, hz:Float, meta:Int) =
     {
         w.getTileEntity(x, y, z) match
         {
-            case t:MultiTileTile => t.onBlockPlaced(side)
+            case t:MultiTileTile => t.onBlockPlaced(side, meta)
             case _ =>
         }
         meta
@@ -193,7 +205,7 @@ abstract class MultiTileTile extends TileEntity with ICustomPacketTile
 
     def onNeighborChange(b:Block){}
 
-    def onBlockPlaced(side:Int){}
+    def onBlockPlaced(side:Int, meta:Int){}
 
     def onBlockPlacedBy(stack:ItemStack, player:EntityLivingBase){}
 
@@ -224,9 +236,11 @@ abstract class MultiTileTile extends TileEntity with ICustomPacketTile
 
     def getMetaData = getBlockMetadata
 
+    def getPickBlock = new ItemStack(getBlock, 1, getMetaData)
+
     def addHarvestContents(ist:ListBuffer[ItemStack])
     {
-        ist += new ItemStack(getBlock, 1, getMetaData)
+        ist += getPickBlock
     }
 
     def world = worldObj
@@ -245,18 +259,18 @@ abstract class MultiTileTile extends TileEntity with ICustomPacketTile
     {
         val il = new ListBuffer[ItemStack]
         addHarvestContents(il)
-        for (stack <- il) BasicUtils.dropItem(worldObj, xCoord, yCoord, zCoord, stack)
-        worldObj.setBlock(xCoord, yCoord, zCoord, Block.getBlockFromName("air"))
+        for (stack <- il) PRLib.dropItem(worldObj, xCoord, yCoord, zCoord, stack)
+        worldObj.setBlock(xCoord, yCoord, zCoord, Blocks.air)
     }
 
-    final override def markDirty()
+    override def markDirty()
     {
         worldObj.markTileEntityChunkModified(xCoord, yCoord, zCoord, this)
     }
 
     final def markRender()
     {
-        worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord)
+        worldObj.func_147479_m(xCoord, yCoord, zCoord)
     }
 
     final def markLight()
@@ -317,14 +331,14 @@ abstract class MultiTileTile extends TileEntity with ICustomPacketTile
     def readDesc(in:MCDataInput){}
     def writeDesc(out:MCDataOutput){}
 
-    def writeStream(switchkey:Int):PacketCustom =
+    final def writeStream(switchkey:Int):PacketCustom =
     {
         val stream = new PacketCustom(CoreSPH.channel, CoreSPH.tilePacket)
         stream.writeCoord(new BlockCoord(this)).writeByte(switchkey)
         stream
     }
 
-    def writeStreamSend(out:PacketCustom)
+    final def writeStreamSend(out:PacketCustom)
     {
         out.sendToChunk(worldObj, xCoord/16, zCoord/16)
     }
@@ -337,11 +351,4 @@ abstract class MultiTileRender(val block:Block)
     def renderInvBlock(r:RenderBlocks, meta:Int)
 
     def randomDisplayTick(w:World, x:Int, y:Int, z:Int, r:Random)
-}
-
-class ItemBlockMulti(b:Block) extends ItemBlock(b)
-{
-    override def getMetadata(md:Int) = md
-
-    override def getUnlocalizedName(itemstack:ItemStack) = getUnlocalizedName+"|"+itemstack.getItemDamage
 }
