@@ -1,4 +1,4 @@
-<project name="Project: Red" basedir="../" default="test">
+<project name="Project: Red" basedir="./" default="test">
     <property environment="env"/>
     <property file="ProjectRed/build.properties"/>
 
