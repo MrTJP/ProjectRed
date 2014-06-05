@@ -4,7 +4,7 @@ import codechicken.lib.vec._
 import codechicken.multipart.{TItemMultiPart, MultiPartRegistry}
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.ProjectRedTransmission
-import mrtjp.projectred.core.ItemCore
+import mrtjp.projectred.core.{TItemGlassSound, ItemCore}
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
@@ -19,21 +19,10 @@ import net.minecraft.util.IIcon
 import mrtjp.projectred.core.libmc.BasicWireUtils
 import net.minecraftforge.common.util.ForgeDirection
 
-abstract class ItemWireCommon(name:String) extends ItemCore(name) with TItemMultiPart
+abstract class ItemWireCommon(name:String) extends ItemCore(name) with TItemMultiPart with TItemGlassSound
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedTransmission.tabTransmission)
-
-    override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World, x:Int, y:Int, z:Int, side:Int, f:Float, f2:Float, f3:Float) =
-    {
-        if (super.onItemUse(stack, player, w, x, y, z, side, f, f2, f3))
-        {
-            w.playSoundEffect(x+0.5, y+0.5, z+0.5, Block.soundTypeGlass.func_150496_b(),
-                Block.soundTypeGlass.getVolume*5.0F, Block.soundTypeGlass.getPitch*.9F)
-            true
-        }
-        else false
-    }
 
     @SideOnly(Side.CLIENT)
     override def getSpriteNumber = 0
