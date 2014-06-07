@@ -5,4 +5,5 @@ jdk:
   - openjdk6
 before_script:
   - sudo apt-get install astyle expect
-script: ant test
+  - gradlew setupCIWorkspace
+script: gradlew build
