@@ -31,7 +31,7 @@ object Services
                     e.printStackTrace()
             }
 
-        PRLogger.info("Finished loading PojectRed compat plugins")
+        PRLogger.info("Finished loading ProjectRed compat plugins")
     }
 
     def doPreInit()

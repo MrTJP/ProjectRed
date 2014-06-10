@@ -35,4 +35,9 @@ public class CompatibilityCorePlugin implements IFMLLoadingPlugin
     {
         return null;
     }
+
+    @Override
+    public String getAccessTransformerClass() {
+        return null;
+    }
 }

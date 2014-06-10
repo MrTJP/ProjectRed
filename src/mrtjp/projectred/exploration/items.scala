@@ -81,7 +81,7 @@ object ItemBackpack
         {
             override def +(s:Slot2):this.type =
             {
-                if (s.getSlotIndex == player.inventory.currentItem)
+                if (s.getSlotIndex == player.inventory.currentItem && s.inventory == player.inventory)
                     s.setRemove(false)
                 super.+(s)
             }

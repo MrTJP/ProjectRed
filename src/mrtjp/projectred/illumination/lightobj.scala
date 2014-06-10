@@ -257,7 +257,7 @@ object LightObjCage extends LightObject with TLightRenderHelper
             prepairInvRender(x, y, z, scale)
 
             val trans = new Translation(x, y, z)
-            lModels(6).render(trans, icon)
+            lModels(5).render(trans, icon)
             doInvRender()
             if (inverted) renderInvLightBox(color, trans)
 

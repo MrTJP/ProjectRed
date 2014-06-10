@@ -52,7 +52,7 @@ class SimpleInventory(size:Int, name:String, stackLimit:Int) extends IInventory
     def load(tag:NBTTagCompound){load(tag, name)}
     def load(tag:NBTTagCompound, prefix:String)
     {
-        val tag1 = tag.getTagList(prefix+"items", 0)
+        val tag1 = tag.getTagList(prefix+"items", 10 /*COMPOUND*/)
         for (i <- 0 until tag1.tagCount())
         {
             val tag2 = tag1.getCompoundTagAt(i)
