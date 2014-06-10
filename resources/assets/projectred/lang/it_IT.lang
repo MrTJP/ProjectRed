@@ -81,6 +81,8 @@ item.projectred.transportation.routingchip|5.name=Chip Emittente
 item.projectred.transportation.routingchip|6.name=Chip Mantenimento Stock
 item.projectred.transportation.routingchip|7.name=Chip di Crafting
 
+item.projectred.transportation.cpu|0.name=CPU routing di rete
+
 item.projectred.transportation.routerutil.name=Utilità di routing
 
 item.projectred.transportation.pipe|0.name=Tubo trasporto Oggetti
