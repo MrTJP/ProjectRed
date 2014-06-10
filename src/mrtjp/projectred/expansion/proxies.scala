@@ -12,6 +12,8 @@ import mrtjp.projectred.core.libmc.BasicRenderUtils
 
 class ExpansionProxy_server extends IProxy with IPartFactory
 {
+    var loadPowerTest = false
+
     def preinit()
     {
         PacketCustom.assignHandler(ExpansionSPH.channel, ExpansionSPH)
@@ -23,9 +25,8 @@ class ExpansionProxy_server extends IProxy with IPartFactory
         {
             if (Loader.isModLoaded("ProjRed|Transmission"))
             {
+                loadPowerTest = true
                 MultiPartRegistry.registerParts(this, Array("pr_100v", "pr_f100v"))
-                ItemPartWire.additionalWires :+= WireDef.POWER_100v.makeStack
-                ItemPartFramedWire.additionalWires :+= WireDef.POWER_100v.makeFramedStack
             }
 
             //Machine1 (processing)
@@ -35,9 +36,7 @@ class ExpansionProxy_server extends IProxy with IPartFactory
             ProjectRedExpansion.machine1.addTile(classOf[TileFurnace], 1)
 
             //Machine2 (devices)
-//            ProjectRedExpansion.machine2 = new BlockMachine(Configurator.block_machines2ID.getInt)
-//            ProjectRedExpansion.machine2.setUnlocalizedName("projectred.expansion.machine2")
-//            GameRegistry.registerBlock(ProjectRedExpansion.machine2, classOf[ItemBlockMulti], "projectred.expansion.machine2")
+//            ProjectRedExpansion.machine2 = new BlockMachine("projectred.expansion.machine2")
             //Machine2 tiles
             //...
         }
@@ -46,6 +45,12 @@ class ExpansionProxy_server extends IProxy with IPartFactory
     def postinit()
     {
         ExpansionRecipes.initRecipes()
+
+        // In dev mode, this module may load before transmission, therefore this must go in postInit
+        if (loadPowerTest) {
+            ItemPartWire.additionalWires :+= WireDef.POWER_100v.makeStack
+            ItemPartFramedWire.additionalWires :+= WireDef.POWER_100v.makeFramedStack
+        }
     }
 
     def createPart(name:String, client:Boolean) = name match

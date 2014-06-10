@@ -344,8 +344,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         super.readDesc(packet)
         linkMap = packet.readUByte
         inOutSide = packet.readUByte
-       	val mostSigBits = packet.readLong
-       	val leastSigBits = packet.readLong
+        val mostSigBits = packet.readLong
+        val leastSigBits = packet.readLong
         routerIDLock synchronized
             {
                 routerId = new UUID(mostSigBits, leastSigBits)

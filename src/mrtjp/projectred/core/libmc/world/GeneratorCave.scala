@@ -30,7 +30,7 @@ class GeneratorCave(b:Block, meta:Int, vein:Int) extends GeneratorOre(b, meta, v
 
         addBlockForEvaluation(x, yIndex, z, 6)
 
-        while (openList.size > 0 && vein > 0)
+        while (openList.size > 0 && veinSize > 0)
         {
             val eval = openListPoll
             checkStoneBlock(world, eval.x, eval.y, eval.z, eval.sides)

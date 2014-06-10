@@ -23,6 +23,8 @@ import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import net.minecraft.init.Blocks
 import cpw.mods.fml.common.registry.GameRegistry
+import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.item.Item
 
 class MultiTileBlock(name:String, mat:Material) extends BlockContainer(mat)
 {
@@ -196,6 +198,16 @@ class MultiTileBlock(name:String, mat:Material) extends BlockContainer(mat)
     {
         case t:MultiTileTile => t.isBlockSolidOnSide(side)
         case _ => super.isSideSolid(w, x, y, z, side)
+    }
+
+    @SideOnly(Side.CLIENT)
+    override def getSubBlocks(thisItem: Item, tab: CreativeTabs, list: util.List[_]) {
+        val itemList = list.asInstanceOf[util.List[ItemStack]]
+        for (i <- 0 until tiles.length) {
+            if (tiles(i) != null) {
+                itemList.add(new ItemStack(thisItem, 1, i))
+            }
+        }
     }
 }
 
