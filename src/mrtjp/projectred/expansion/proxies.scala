@@ -24,8 +24,6 @@ class ExpansionProxy_server extends IProxy with IPartFactory
             if (Loader.isModLoaded("ProjRed|Transmission"))
             {
                 MultiPartRegistry.registerParts(this, Array("pr_100v", "pr_f100v"))
-                ItemPartWire.additionalWires :+= WireDef.POWER_100v.makeStack
-                ItemPartFramedWire.additionalWires :+= WireDef.POWER_100v.makeFramedStack
             }
 
             //Machine1 (processing)

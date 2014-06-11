@@ -5,17 +5,12 @@ import codechicken.multipart.{TItemMultiPart, MultiPartRegistry}
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.ProjectRedTransmission
 import mrtjp.projectred.core.{TItemGlassSound, ItemCore}
-import net.minecraft.block.Block
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.world.World
 import java.util.{List => JList}
-import net.minecraftforge.client.IItemRenderer
-import net.minecraftforge.client.IItemRenderer.ItemRendererHelper
-import codechicken.lib.render.TextureUtils
-import net.minecraft.util.IIcon
 import mrtjp.projectred.core.libmc.BasicWireUtils
 import net.minecraftforge.common.util.ForgeDirection
 
@@ -26,11 +21,6 @@ abstract class ItemWireCommon(name:String) extends ItemCore(name) with TItemMult
 
     @SideOnly(Side.CLIENT)
     override def getSpriteNumber = 0
-}
-
-object ItemPartWire
-{
-    var additionalWires = Seq[ItemStack]()
 }
 
 class ItemPartWire extends ItemWireCommon("projectred.transmission.wire")
@@ -53,10 +43,8 @@ class ItemPartWire extends ItemWireCommon("projectred.transmission.wire")
     {
         val l2 = list.asInstanceOf[JList[ItemStack]]
 
-        for (w <- WireDef.RED_ALLOY++WireDef.INSULATED_WIRES++WireDef.BUNDLED_WIRES)
+        for (w <- Seq(WireDef.RED_ALLOY)++WireDef.INSULATED_WIRES++WireDef.BUNDLED_WIRES)
             if (w.hasWireForm) l2.add(w.makeStack)
-
-        for (w <- ItemPartWire.additionalWires) l2.add(w)
     }
 
     @SideOnly(Side.CLIENT)
@@ -81,14 +69,7 @@ class ItemPartFramedWire extends ItemWireCommon("projectred.transmission.framewi
     {
         val l2 = list.asInstanceOf[JList[ItemStack]]
 
-        for (w <- WireDef.RED_ALLOY++WireDef.INSULATED_WIRES++WireDef.BUNDLED_WIRES)
+        for (w <- Seq(WireDef.RED_ALLOY)++WireDef.INSULATED_WIRES++WireDef.BUNDLED_WIRES)
             if (w.hasFramedForm) l2.add(w.makeFramedStack)
-
-        for (w <- ItemPartFramedWire.additionalWires) l2.add(w)
     }
-}
-
-object ItemPartFramedWire
-{
-    var additionalWires = Seq[ItemStack]()
 }

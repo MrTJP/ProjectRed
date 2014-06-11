@@ -8,7 +8,7 @@ import mrtjp.projectred.core.libmc.{PRLib, BasicWireUtils}
 import net.minecraftforge.common.util.ForgeDirection
 import net.minecraft.world.EnumSkyBlock
 import cpw.mods.fml.relauncher.{SideOnly, Side}
-import net.minecraft.item.ItemStack
+import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.entity.player.EntityPlayer
 import scala.collection.JavaConversions._
@@ -132,7 +132,7 @@ class BaseLightPart(obj:LightObject) extends TMultiPart with TCuboidPart with TS
 
     override def doesTick = false
 
-    def getItem = new ItemStack(obj.getItem(inverted))
+    def getItem = new ItemStack(obj.getItem(inverted), 1, meta)
     def getLightBounds = obj.getLBounds(side)
     override def getBounds = obj.getBounds(side)
     override def getType = obj.getType
@@ -214,10 +214,7 @@ abstract class LightObject
     @SideOnly(Side.CLIENT)
     def initClient()
     {
-        MinecraftForgeClient.registerItemRenderer(item, getItemRenderer)
-        MinecraftForgeClient.registerItemRenderer(itemInv, getItemRenderer)
-
-        def getItemRenderer = new IItemRenderer
+        val renderer = new IItemRenderer
         {
             override def handleRenderType(item:ItemStack, t:ItemRenderType) = true
             override def shouldUseRenderHelper(t:ItemRenderType, item:ItemStack, helper:ItemRendererHelper) = true
@@ -225,9 +222,18 @@ abstract class LightObject
             override def renderItem(t:ItemRenderType, item:ItemStack, data:AnyRef*)
             {
                 if (0 until 16 contains item.getItemDamage) //else invalid colour
-                    renderInv(item.getItemDamage, item.getItem == getItem(true), t)
+                    renderInv(item.getItemDamage, isInv(item.getItem), t)
+            }
+
+            private def isInv(item:Item) = item match
+            {
+                case i:ItemBaseLight => i.inverted
+                case _ => false
             }
         }
+
+        MinecraftForgeClient.registerItemRenderer(item, renderer)
+        MinecraftForgeClient.registerItemRenderer(itemInv, renderer)
     }
 
     @SideOnly(Side.CLIENT)

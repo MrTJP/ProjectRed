@@ -42,3 +42,4 @@ options.txt
 /crash-reports/
 /asm/
 /mods/
+*.log

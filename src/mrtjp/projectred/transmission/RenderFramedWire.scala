@@ -2,11 +2,10 @@ package mrtjp.projectred.transmission
 
 import codechicken.lib.render._
 import codechicken.lib.vec._
-import codechicken.lib.render.uv.{UVTransformation, IconTransformation, UVTranslation, UVScale}
+import codechicken.lib.render.uv.{IconTransformation, UVTranslation, UVScale}
 import codechicken.lib.lighting.LightModel
-import net.minecraft.world.World
 import codechicken.lib.raytracer.{ExtendedMOP, IndexedCuboid6}
-import codechicken.microblock.{MicroblockClass, MicroblockRender, MicroMaterialRegistry, IMicroMaterialRender}
+import codechicken.microblock.{MicroblockClass, MicroblockRender, MicroMaterialRegistry}
 import codechicken.lib.render.CCRenderState.IVertexOperation
 import net.minecraft.util.{MovingObjectPosition, IIcon}
 import org.lwjgl.opengl.GL11
@@ -16,14 +15,14 @@ import mrtjp.projectred.core.libmc.PRLib
 
 object RenderFramedWire
 {
-    val frameModels = FWireModelFrameGen.generateModels
-    val wireModels = new Array[CCModel](64*3)
-    val jacketModels = new Array[FWireModelJacket](64*3)
+    private val frameModels = FWireFrameModelGen.generateModels
+    private val wireModels = new Array[CCModel](64*3)
+    private val jacketModels = new Array[FWireJacketModel](64*3)
 
-    def modelKey(thickness:Int, connMap:Int):Int = connMap|thickness<<6
-    def modelKey(w:FramedWirePart):Int = modelKey(w.getThickness, w.connMap)
+    private def modelKey(thickness:Int, connMap:Int):Int = connMap|thickness<<6
+    private def modelKey(w:FramedWirePart):Int = modelKey(w.getThickness, w.connMap)
 
-    def getOrGenerateWireModel(key:Int) =
+    private def getOrGenerateWireModel(key:Int) =
     {
         var m = wireModels(key)
         if (m == null) wireModels(key) =
@@ -31,7 +30,7 @@ object RenderFramedWire
         m
     }
 
-    def getOrGenerateJacketedModel(key:Int) =
+    private def getOrGenerateJacketedModel(key:Int) =
     {
         var m = jacketModels(key)
         if (m == null) jacketModels(key) =
@@ -45,34 +44,36 @@ object RenderFramedWire
         val uvt = new IconTransformation(w.getIcon)
         val m = ColourMultiplier.instance(w.renderHue)
 
+        val ops = Seq[IVertexOperation](pos.translation(), uvt, CCRenderState.colourAttrib)
+        val wireOps = ops :+ m
+
         if (w.material == 0)
         {
-            val t = new Translation(pos)
-            getOrGenerateWireModel(key).render(t, uvt, m)
-            renderWireFrame(key, t, uvt)
+            getOrGenerateWireModel(key).render(wireOps:_*)
+            renderWireFrame(key, ops:_*)
         }
-        else getOrGenerateJacketedModel(key).render(w, pos, w.material, uvt, m)
+        else getOrGenerateJacketedModel(key)
+            .renderWire(wireOps:_*)
+            .renderMaterial(pos, w.material)
     }
 
-    private def renderWireFrame(key:Int, t:Transformation, uvt:UVTransformation)
+    private def renderWireFrame(key:Int, ops:IVertexOperation*)
     {
-        frameModels(6).render(t, uvt)
-        for (s <- 0 until 6) if ((key&1<<s) != 0) frameModels(s).render(t, uvt)
+        frameModels(6).render(ops:_*)
+        for (s <- 0 until 6) if ((key&1<<s) != 0) frameModels(s).render(ops:_*)
     }
 
     def renderBreakingOverlay(icon:IIcon, wire:FramedWirePart)
     {
-        import scala.collection.JavaConversions._
         CCRenderState.setPipeline(new Translation(wire.x, wire.y, wire.z), new IconTransformation(icon))
+        import scala.collection.JavaConversions._
         for (box <- wire.getCollisionBoxes) BlockRenderer.renderCuboid(box, 0)
     }
 
-    def renderInv(thickness:Int, t:Transformation, icon:IIcon)
+    def renderInv(thickness:Int, hue:Int, ops:IVertexOperation*)
     {
-        val uvt = new IconTransformation(icon)
-        getOrGenerateWireModel(modelKey(thickness, 0x3F)).render(t, uvt)
-        CCRenderState.setColour(-1)
-        renderWireFrame(modelKey(thickness, 0), t, uvt)
+        getOrGenerateWireModel(modelKey(thickness, 0x3F)).render(ops :+ ColourMultiplier.instance(hue):_*)
+        renderWireFrame(modelKey(thickness, 0), ops:_*)
     }
 
     def renderCoverHighlight(part:FramedWirePart, material:Int)
@@ -95,7 +96,7 @@ object RenderFramedWire
         CCRenderState.alphaOverride = 127
         CCRenderState.startDrawing()
 
-        getOrGenerateJacketedModel(modelKey(part)).renderCovers(part.world, new BlockCoord, new Vector3, material)
+        getOrGenerateJacketedModel(modelKey(part)).renderMaterial(Vector3.zero, material)
 
         CCRenderState.draw()
 
@@ -105,7 +106,7 @@ object RenderFramedWire
     }
 }
 
-private object FWireModelFrameGen
+private object FWireFrameModelGen
 {
     private val w = 2/8D
     private val d = 1/16D-0.002
@@ -220,18 +221,18 @@ private object FWireModelGen
         val verts = connCount match
         {
             case 0 => generateStub(s)
-            case 1  if (connMap&1<<(s^1))!=0 => generateStub(s)
+            case 1  if (connMap&1<<(s^1)) != 0 => generateStub(s)
             case _ => generateSideFromType(s)
         }
 
-        val t = AxisCycle.cycles(s / 2).at(Vector3.center)
+        val t = AxisCycle.cycles(s/2).at(Vector3.center)
         for (vert <- verts) vert.apply(t)
         i = addVerts(model, verts, i)
     }
 
     private def generateStub(s:Int) =
     {
-        val verts = faceVerts(s, 0.5 - w)
+        val verts = faceVerts(s, 0.5-w)
         val t = new UVTranslation(12, 12)
         for (vert <- verts) vert.apply(t)
         verts
@@ -265,8 +266,9 @@ private object FWireModelGen
     private def generateStraight(s:Int):Array[Vertex5] =
     {
         val verts = new Array[Vertex5](20)
-        System.arraycopy(faceVerts(s, 0), 0, verts, 0, 4)
-        if (s % 2 == 0)
+        Array.copy(faceVerts(s, 0), 0, verts, 0, 4)
+
+        if (s%2 == 0)
         {
             verts(4) = new Vertex5(0.5-w, 0, 0.5+w, 8-tw, 24)
             verts(5) = new Vertex5(0.5+w, 0, 0.5+w, 8+tw, 24)
@@ -296,7 +298,7 @@ private object FWireModelGen
 
     private def generateFlat(s:Int):Array[Vertex5] =
     {
-        val verts = faceVerts(s, 0.5 - w)
+        val verts = faceVerts(s, 0.5-w)
         var fConnMask = 0
         for (i <- 0 until 4)
         {
@@ -323,7 +325,7 @@ private object FWireModelGen
     def generateJacketedModel(key:Int) =
     {
         setup(key)
-        new FWireModelJacket(generateJacketedWireModel, generateJacketedBoxes)
+        new FWireJacketModel(generateJacketedWireModel, generateJacketedBoxes)
     }
 
     private def generateJacketedWireModel:CCModel =
@@ -436,36 +438,20 @@ private object FWireModelGen
     }
 }
 
-class FWireModelJacket(wireModel:CCModel, boxes:Array[IndexedCuboid6]) extends IMicroMaterialRender
+class FWireJacketModel(wire:CCModel, boxes:Array[IndexedCuboid6])
 {
-    private val bounds =
+    def renderWire(ops:IVertexOperation*) =
     {
-        val b = boxes(0).copy()
-        for (box <- boxes) b.enclose(box)
-        b
-    }
-    private var theWorld:World = null
-    private var pos:BlockCoord = new BlockCoord
-
-    def render(w:FramedWirePart, pos:Vector3, mat:Int, icon:UVTransformation, col:IVertexOperation)
-    {
-        renderCovers(w.world, w.posOfInternal, pos, mat)
-        wireModel.render(new Translation(pos), icon, col)
+        wire.render(ops:_*)
+        this
     }
 
-    def renderCovers(world:World, bc:BlockCoord, vec:Vector3, mat:Int)
+    def renderMaterial(vec:Vector3, mat:Int) =
     {
-        theWorld = world
-        pos = bc
         val material = MicroMaterialRegistry.getMaterial(mat)
-        for (b <- boxes) MicroblockRender.renderCuboid(vec, material, -1, b, b.data.asInstanceOf[Int])
+        for (b <- boxes) MicroblockRender.renderCuboid(vec, material, 0, b, b.data.asInstanceOf[Int])
+        this
     }
-
-    override def x = pos.x
-    override def y = pos.y
-    override def z = pos.z
-    override def world = theWorld
-    override def getRenderBounds = bounds
 }
 
 object JacketedHighlightRenderer extends IMicroHighlightRenderer
