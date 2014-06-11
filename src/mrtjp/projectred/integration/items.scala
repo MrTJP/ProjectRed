@@ -79,7 +79,6 @@ object GateItemRenderer extends IItemRenderer
         CCRenderState.reset()
         CCRenderState.useNormals = true
         CCRenderState.pullLightmap()
-        CCRenderState.setColour(-1)
         RenderGate.renderInv(new Scale(scale).`with`(new Translation(x, y, z)), meta)
     }
 }

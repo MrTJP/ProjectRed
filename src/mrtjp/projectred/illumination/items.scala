@@ -16,7 +16,7 @@ import codechicken.multipart.minecraft.ButtonPart
 import net.minecraft.util.IIcon
 import net.minecraft.client.renderer.texture.IIconRegister
 
-class ItemBaseLight(obj:LightObject, inverted:Boolean) extends ItemCore(obj.getItemName+(if (inverted) ".inv" else "")) with TItemMultiPart with TItemGlassSound
+class ItemBaseLight(obj:LightObject, val inverted:Boolean) extends ItemCore(obj.getItemName+(if (inverted) ".inv" else "")) with TItemMultiPart with TItemGlassSound
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedIllumination.tabLighting)

@@ -3,9 +3,11 @@ package mrtjp.projectred.transmission
 import net.minecraftforge.client.IItemRenderer
 import net.minecraft.item.ItemStack
 import net.minecraftforge.client.IItemRenderer.{ItemRendererHelper, ItemRenderType}
-import codechicken.lib.render.{CCRenderState, TextureUtils}
+import codechicken.lib.render.{ColourMultiplier, CCRenderState, TextureUtils}
 import codechicken.lib.vec.{Transformation, Translation, Scale}
 import net.minecraft.util.IIcon
+import codechicken.lib.render.CCRenderState.IVertexOperation
+import codechicken.lib.render.uv.IconTransformation
 
 trait TWireItemRenderCommon extends IItemRenderer
 {
@@ -21,15 +23,15 @@ trait TWireItemRenderCommon extends IItemRenderer
         CCRenderState.reset()
         CCRenderState.useNormals = true
         CCRenderState.pullLightmap()
-        CCRenderState.setColour(wdef.itemColour)
         CCRenderState.startDrawing()
 
-        doRender(wdef.thickness, new Scale(scale).`with`(new Translation(x, y, z)), wdef.wireSprites(0))
+        doRender(wdef.thickness, wdef.itemColour<<8|0xFF, new Scale(scale).`with`(new Translation(x, y, z)),
+            new IconTransformation(wdef.wireSprites(0)))
 
         CCRenderState.draw()
     }
 
-    def doRender(thickness:Int, t:Transformation, icon:IIcon)
+    def doRender(thickness:Int, renderHue:Int, ops:IVertexOperation*)
 }
 
 object WireItemRenderer extends TWireItemRenderCommon
@@ -48,9 +50,9 @@ object WireItemRenderer extends TWireItemRenderCommon
         }
     }
 
-    override def doRender(thickness:Int, t:Transformation, icon:IIcon)
+    override def doRender(thickness:Int, renderHue:Int, ops:IVertexOperation*)
     {
-        RenderWire.renderInv(thickness, t, icon)
+        RenderWire.renderInv(thickness, renderHue, ops:_*)
     }
 }
 
@@ -70,8 +72,8 @@ object FramedWireItemRenderer extends TWireItemRenderCommon
         }
     }
 
-    override def doRender(thickness:Int, t:Transformation, icon:IIcon)
+    override def doRender(thickness:Int, renderHue:Int, ops:IVertexOperation*)
     {
-        RenderFramedWire.renderInv(thickness, t, icon)
+        RenderFramedWire.renderInv(thickness, renderHue, ops:_*)
     }
 }

@@ -126,7 +126,7 @@ object RenderController extends MultiTileRender(ProjectRedExpansion.machine1)
         //CCRenderState.useNormals(true)
         //CCRenderState.useModelColours(true)
         CCRenderState.startDrawing()
-        model.render(new Translation(-0.5D, -0.5D, -0.5D), iconT, null)
+        model.render(new Translation(-0.5D, -0.5D, -0.5D), iconT)
         CCRenderState.draw()
         CCRenderState.setColour(-1)
     }

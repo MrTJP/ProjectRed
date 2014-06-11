@@ -24,6 +24,7 @@ trait TLightRenderHelper extends LightObject
         CCRenderState.reset()
         TextureUtils.bindAtlas(0)
         CCRenderState.useNormals = true
+        CCRenderState.pullLightmap()
         CCRenderState.startDrawing()
     }
 
@@ -69,9 +70,9 @@ object LightObjLantern extends LightObject with TLightRenderHelper
 
         for (s <- 2 until 6)
         {
-            lModels(s) = CCModel.combine(Seq(
-                side.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s))),
-                topRing.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s)))
+            lModels(s) = CCModel.combine(Seq(bulb,
+                side.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s)).at(Vector3.center)),
+                topRing.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s)).at(Vector3.center))
             ))
         }
 
@@ -105,7 +106,7 @@ object LightObjLantern extends LightObject with TLightRenderHelper
     {
         val icon = new IconTransformation(if (isOn) on(color) else off(color))
         TextureUtils.bindAtlas(0)
-        lModels(part.side).render(new Translation(pos), icon)
+        lModels(part.side).render(pos.translation(), icon, CCRenderState.colourAttrib)
     }
 
     @SideOnly(Side.CLIENT)
@@ -171,7 +172,7 @@ object LightObjFixture extends LightObject with TLightRenderHelper
     {
         val icon = new IconTransformation(if (isOn) LightObjLantern.on(color) else LightObjLantern.off(color))
         TextureUtils.bindAtlas(0)
-        lModels(part.side).render(new Translation(pos), icon)
+        lModels(part.side).render(pos.translation(), icon, CCRenderState.colourAttrib)
     }
 
     @SideOnly(Side.CLIENT)
@@ -235,7 +236,7 @@ object LightObjCage extends LightObject with TLightRenderHelper
     {
         val icon = new IconTransformation(if (isOn) LightObjLantern.on(color) else LightObjLantern.off(color))
         TextureUtils.bindAtlas(0)
-        lModels(part.side).render(new Translation(pos), icon)
+        lModels(part.side).render(pos.translation(), icon, CCRenderState.colourAttrib)
     }
 
     @SideOnly(Side.CLIENT)
@@ -257,7 +258,7 @@ object LightObjCage extends LightObject with TLightRenderHelper
             prepairInvRender(x, y, z, scale)
 
             val trans = new Translation(x, y, z)
-            lModels(6).render(trans, icon)
+            lModels(0).render(trans, icon)
             doInvRender()
             if (inverted) renderInvLightBox(color, trans)
 

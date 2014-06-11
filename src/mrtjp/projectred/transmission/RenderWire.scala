@@ -5,8 +5,9 @@ import codechicken.lib.vec._
 import codechicken.lib.render.uv._
 import codechicken.lib.math.MathHelper
 import java.util
-import codechicken.lib.lighting.LightModel
+import codechicken.lib.lighting.{LightMatrix, LightModel}
 import net.minecraft.util.IIcon
+import codechicken.lib.render.CCRenderState.IVertexOperation
 
 object RenderWire
 {
@@ -34,13 +35,16 @@ object RenderWire
      */
     def modelKey(side:Int, thickness:Int, connMap:Int):Int =
     {
-        var key = connMap&0xFF
+        var key = connMap&0xFF //take the straight and corner connections
+
         val renderCorner = connMap>>20&0xF
-        key |= (renderCorner^key&0xF)<<4
-        key &= ~0xF|renderCorner
-        val internal = (connMap&0xF00)>>8
-        key |= internal<<4|internal
-        key |= side+thickness*6<<8
+        key |= (renderCorner^key&0xF)<<4 //any corner conns that arent rendered convert to straight
+        key &= ~0xF|renderCorner //set corners to renderCorers
+
+        val internal = (connMap&0xF00)>>8 //internal cons
+        key |= internal<<4|internal //if internal is set, set both straight and corner to 1
+
+        key |= side+thickness*6<<8 //add side and thickness
         key
     }
     def modelKey(w:WirePart):Int = modelKey(w.side, w.getThickness, w.connMap)
@@ -54,21 +58,22 @@ object RenderWire
     }
     def getOrGenerateInvModel(thickness:Int) =
     {
-        var m = wireModels(thickness)
-        if (m == null) wireModels(thickness) =
+        var m = invModels(thickness)
+        if (m == null) invModels(thickness) =
             {m = WireModelGen.generateInvModel(thickness); m}
         m
     }
 
     def render(w:WirePart, pos:Vector3)
     {
-        val m = ColourMultiplier.instance(w.renderHue)
-        getOrGenerateModel(modelKey(w)).render(new Translation(pos), new IconTransformation(w.getIcon), m)
+        getOrGenerateModel(modelKey(w)).render(
+            pos.translation(), new IconTransformation(w.getIcon),
+            ColourMultiplier.instance(w.renderHue), CCRenderState.colourAttrib)
     }
 
-    def renderInv(thickness:Int, t:Transformation, icon:IIcon)
+    def renderInv(thickness:Int, hue:Int, ops:IVertexOperation*)
     {
-        getOrGenerateInvModel(thickness).render(t, new IconTransformation(icon))
+        getOrGenerateInvModel(thickness).render(ops :+ ColourMultiplier.instance(hue):_*)
     }
 
     def renderBreakingOverlay(icon:IIcon, wire:WirePart)
@@ -82,7 +87,7 @@ object RenderWire
         val connCount = WireModelGen.countConnections(connMask)
 
         val boxes = Vector.newBuilder[Cuboid6]
-        boxes += new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, h, 0.5+w).apply(Rotation.sideRotations(side).at(Vector3.center))
+        boxes += new Cuboid6(0.5-w, 0, 0.5-w, 0.5+w, h, 0.5+w).apply(Rotation.sideRotations(side).at(Vector3.center)) //center
 
         for (r <- 0 until 4)
         {
@@ -107,7 +112,6 @@ object RenderWire
             }
         }
 
-        CCRenderState.reset()
         CCRenderState.setPipeline(new Translation(wire.x, wire.y, wire.z), new IconTransformation(icon))
         for (box <- boxes.result()) BlockRenderer.renderCuboid(box, 0)
     }
@@ -230,7 +234,7 @@ private object WireModelGen
 
     private def generateSide(r:Int)
     {
-        val stype = mask>>r&0x11
+        val stype = (mask>>r)&0x11
 
         val verts = if (inv) generateSideInv(r) else connCount match
         {
@@ -342,7 +346,7 @@ private object WireModelGen
 
         //offset side textures
         reflectSide(verts, r)
-        for (i <- 0 until 4) verts(i).apply(new UVTranslation(16, 0))
+        for (i <- 4 until 16) verts(i).apply(new UVTranslation(16, 0))
 
         verts
     }
