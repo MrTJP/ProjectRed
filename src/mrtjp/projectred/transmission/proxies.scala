@@ -1,9 +1,9 @@
 package mrtjp.projectred.transmission
 
-import codechicken.multipart.{TMultiPart, MultiPartRegistry}
+import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.MultiPartRegistry.IPartFactory
 import mrtjp.projectred.ProjectRedTransmission._
-import mrtjp.projectred.core.{Configurator, IProxy}
+import mrtjp.projectred.core.IProxy
 import net.minecraftforge.client.MinecraftForgeClient
 import codechicken.microblock.MicroMaterialRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
