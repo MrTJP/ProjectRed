@@ -158,10 +158,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
         if (pass == 0 && useStaticRenderer)
         {
             CCRenderState.setBrightness(world, x, y, z)
-
             doStaticTessellation(pos, pass)
-
-            CCRenderState.setColour(-1)
             true
         }
         else false
@@ -180,7 +177,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
             doDynamicTessellation(pos, frame, pass)
 
             CCRenderState.draw()
-            CCRenderState.setColour(-1)
+            CCRenderState.hasColour = false
             GL11.glEnable(GL11.GL_LIGHTING)
         }
     }

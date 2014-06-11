@@ -103,9 +103,11 @@ object RenderHalo
 
     def renderHalo(tess:Tessellator, cuboid:Cuboid6, colour:Int, t:Transformation)
     {
-        tess.setColorRGBA_I(PRColors.VALID_COLORS(colour).rgb, 128)
+        //tess.setColorRGBA_I(PRColors.VALID_COLORS(colour).rgb, 128)
         CCRenderState.reset()
         CCRenderState.setPipeline(t)
+        CCRenderState.baseColour = PRColors.VALID_COLORS(colour).rgb
+        CCRenderState.alphaOverride = 128
         BlockRenderer.renderCuboid(cuboid, 0)
     }
 }
