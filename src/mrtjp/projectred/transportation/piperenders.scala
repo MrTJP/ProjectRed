@@ -15,6 +15,10 @@ import org.lwjgl.opengl.GL11
 import mrtjp.projectred.core.libmc.{PRLib, PRColors}
 import codechicken.lib.render.uv.{UVTransformation, UV, UVScale, IconTransformation}
 import net.minecraft.init.Blocks
+import net.minecraftforge.client.IItemRenderer
+import net.minecraft.item.ItemStack
+import net.minecraftforge.client.IItemRenderer.{ItemRendererHelper, ItemRenderType}
+import codechicken.lib.render.CCRenderState.IVertexOperation
 
 object RenderPipe
 {
@@ -32,7 +36,6 @@ object RenderPipe
     var sideModelsRS = new Array[CCModel](6)
     var centerModelsRS = new Array[CCModel](4)
 
-    private def generate()
     {
         val gen = new PipeModelGenerator
         sideModels = gen.sideModels
@@ -43,7 +46,6 @@ object RenderPipe
         sideModelsRS = rsgen.sideModels
         centerModelsRS = rsgen.centerModels
     }
-    generate()
 
     def render(p:FlowingPipePart, pos:Vector3)
     {
@@ -55,15 +57,15 @@ object RenderPipe
         {
             if ((connMap>>a*2) == 3)
             {
-                centerModels(a).render(t, uvt)
+                centerModels(a).render(t, uvt, CCRenderState.colourAttrib)
             }
         }
-        else centerModels(3).render(t, uvt)
+        else centerModels(3).render(t, uvt, CCRenderState.colourAttrib)
 
         for (s <- 0 until 6) if ((connMap&1<<s) != 0)
         {
             uvt = new IconTransformation(p.getIcon(s))
-            sideModels(s).render(t, uvt)
+            sideModels(s).render(t, uvt, CCRenderState.colourAttrib)
         }
         if (p.material) renderRSWiring(p, t, p.signal)
     }
@@ -76,11 +78,12 @@ object RenderPipe
 
         if (Integer.bitCount(connMap) == 2 && ((connMap&3) == 3 || (connMap&12) == 12 || (connMap&48) == 48)) for (a <- 0 until 3)
         {
-            if ((connMap>>a*2) == 3) centerModelsRS(a).render(t, uvt2, colour)
+            if ((connMap>>a*2) == 3) centerModelsRS(a).render(t, uvt2, colour, CCRenderState.colourAttrib)
         }
-        else centerModelsRS(3).render(t, uvt2, colour)
+        else centerModelsRS(3).render(t, uvt2, colour, CCRenderState.colourAttrib)
 
-        for (s <- 0 until 6) if ((connMap&1<<s) != 0) sideModelsRS(s).render(t, uvt2, colour)
+        for (s <- 0 until 6) if ((connMap&1<<s) != 0)
+            sideModelsRS(s).render(t, uvt2, colour, CCRenderState.colourAttrib)
     }
 
     def renderBreakingOverlay(icon:IIcon, pipe:FlowingPipePart)
@@ -91,12 +94,10 @@ object RenderPipe
             BlockRenderer.renderCuboid(box, 0)
     }
 
-    def renderInv(t:Transformation, icon:IIcon)
+    def renderInv(ops:IVertexOperation*)
     {
-        val uvt = new IconTransformation(icon)
-        CCRenderState.setColour(-1)
-        centerModels(3).render(t, uvt)
-        for (s <- Seq(0, 1)) sideModels(s).render(t, uvt)
+        centerModels(3).render(ops:_*)
+        for (s <- 0 to 1) sideModels(s).render(ops:_*)
     }
 
     def renderItemFlow(p:FlowingPipePart, pos:Vector3, frame:Float)
@@ -375,5 +376,40 @@ object PipeRSHighlightRenderer extends IMicroHighlightRenderer
                 }
             }
         }
+    }
+}
+
+object PipeItemRenderer extends IItemRenderer
+{
+    def handleRenderType(item:ItemStack, r:ItemRenderType) = true
+    def shouldUseRenderHelper(r:ItemRenderType, item:ItemStack, helper:ItemRendererHelper) = true
+
+    def renderItem(rtype:ItemRenderType, item:ItemStack, data:AnyRef*)
+    {
+        val damage = item.getItemDamage
+        import ItemRenderType._
+        rtype match
+        {
+            case ENTITY => renderWireInventory(damage, -.5f, 0f, -.5f, 1f)
+            case EQUIPPED => renderWireInventory(damage, 0f, .0f, 0f, 1f)
+            case EQUIPPED_FIRST_PERSON => renderWireInventory(damage, 1f, -.6f, -.4f, 2f)
+            case INVENTORY => renderWireInventory(damage, 0f, -.1f, 0f, 1f)
+            case _ =>
+        }
+    }
+
+    def renderWireInventory(meta:Int, x:Float, y:Float, z:Float, scale:Float)
+    {
+        val pdef = PipeDefs.values(meta)
+        if (pdef == null) return
+        TextureUtils.bindAtlas(0)
+        CCRenderState.reset()
+        CCRenderState.useNormals = true
+        CCRenderState.pullLightmap()
+        CCRenderState.startDrawing()
+
+        RenderPipe.renderInv(new Scale(scale).`with`(new Translation(x, y, z)), new IconTransformation(pdef.sprites(0)))
+
+        CCRenderState.draw()
     }
 }
