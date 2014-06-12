@@ -18,6 +18,8 @@ object GuiManager
      */
     def openSMPContainer(player1:EntityPlayer, cont:Container, guiID:Int, dataWrite:MCDataOutput => Unit)
     {
+        if (!player1.isInstanceOf[EntityPlayerMP])
+            return
         val player = player1.asInstanceOf[EntityPlayerMP]
         player.getNextWindowId()
         player.closeContainer()

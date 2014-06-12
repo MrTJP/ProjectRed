@@ -1,12 +1,13 @@
 package mrtjp.projectred.compatibility.tconstruct;
 
+/*
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidFinite;
 import net.minecraftforge.fluids.Fluid;
@@ -15,18 +16,18 @@ import tconstruct.library.TConstructRegistry;
 public class LiquidFiniteSubstance extends BlockFluidFinite
 {
     String texture;
-    public Icon stillIcon;
-    public Icon flowIcon;
+    public IIcon stillIcon;
+    public IIcon flowIcon;
 
-    public LiquidFiniteSubstance(int id, Fluid fluid, String texture, Material m)
+    public LiquidFiniteSubstance(Fluid fluid, String texture, Material m)
     {
-        super(id, fluid, m);
+        super(fluid, m);
         this.texture = texture;
         setCreativeTab(TConstructRegistry.blockTab);
     }
 
     @Override
-    public void registerIcons(IconRegister iconRegister)
+    public void registerBlockIcons(IIconRegister iconRegister)
     {
         this.stillIcon = iconRegister.registerIcon("projectred:compat/" + this.texture);
         this.getFluid().setStillIcon(stillIcon);
@@ -36,7 +37,7 @@ public class LiquidFiniteSubstance extends BlockFluidFinite
     }
 
     @Override
-    public Icon getIcon(int side, int meta)
+    public IIcon getIcon(int side, int meta)
     {
         if (side == 0 || side == 1)
             return this.stillIcon;
@@ -58,3 +59,4 @@ public class LiquidFiniteSubstance extends BlockFluidFinite
         }
     }
 }
+*/

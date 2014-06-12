@@ -23,6 +23,11 @@ abstract class ItemWireCommon(name:String) extends ItemCore(name) with TItemMult
     override def getSpriteNumber = 0
 }
 
+object ItemPartWire
+{
+    var additionalWires = Seq[ItemStack]()
+}
+
 class ItemPartWire extends ItemWireCommon("projectred.transmission.wire")
 {
     def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3) =
@@ -45,6 +50,8 @@ class ItemPartWire extends ItemWireCommon("projectred.transmission.wire")
 
         for (w <- Seq(WireDef.RED_ALLOY)++WireDef.INSULATED_WIRES++WireDef.BUNDLED_WIRES)
             if (w.hasWireForm) l2.add(w.makeStack)
+
+        for (w <- ItemPartWire.additionalWires) l2.add(w)
     }
 
     @SideOnly(Side.CLIENT)
@@ -71,5 +78,12 @@ class ItemPartFramedWire extends ItemWireCommon("projectred.transmission.framewi
 
         for (w <- Seq(WireDef.RED_ALLOY)++WireDef.INSULATED_WIRES++WireDef.BUNDLED_WIRES)
             if (w.hasFramedForm) l2.add(w.makeFramedStack)
+
+        for (w <- ItemPartFramedWire.additionalWires) l2.add(w)
     }
+}
+
+object ItemPartFramedWire
+{
+    var additionalWires = Seq[ItemStack]()
 }

@@ -81,6 +81,8 @@ item.projectred.transportation.routingchip|5.name=Item-Sendungs-Chip
 item.projectred.transportation.routingchip|6.name=Item-Vorrats-Bewahrungs-Chip
 item.projectred.transportation.routingchip|7.name=Item-Herstellungs-Chip
 
+item.projectred.transportation.cpu|0.name=Routen-Netzwerk-CPU
+
 item.projectred.transportation.routerutil.name=Router-Werkzeug
 
 item.projectred.transportation.pipe|0.name=Item-Transportrohr
