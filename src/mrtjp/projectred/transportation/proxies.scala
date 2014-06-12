@@ -37,15 +37,17 @@ class TransportationProxy_server extends IProxy with IPartFactory
         TransportationRecipes.initRecipes()
     }
 
+    import PipeDefs._
     override def createPart(name:String, client:Boolean) = name match
     {
-        case "pr_ptube" => new BasicPipePart
-        case "pr_rbasic" => new RoutedJunctionPipePart
-        case "pr_rinterface" => new RoutedInterfacePipePart
-        case "pr_rcrafting" => new RoutedCraftingPipePart
-        case "pr_rrequest" => new RoutedRequestPipePart
-        case "pr_rextension" => new RoutedExtensionPipePart
-        case "pr_rfire" => new RoutedFirewallPipe
+        case BASIC.partname => new BasicPipePart
+        case ROUTEDJUNCTION.partname => new RoutedJunctionPipePart
+        case ROUTEDINTERFACE.partname => new RoutedInterfacePipePart
+        case ROUTEDCRAFTING.partname => new RoutedCraftingPipePart
+        case ROUTEDREQUEST.partname => new RoutedRequestPipePart
+        case ROUTEDEXTENSION.partname => new RoutedExtensionPipePart
+        case ROUTEDFIREWALL.partname => new RoutedFirewallPipe
+        case _ => null
     }
 
     override def version = "@VERSION@"

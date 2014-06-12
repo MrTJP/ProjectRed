@@ -28,15 +28,15 @@ object GemSawRenderer extends IItemRenderer
     import ProjectRedExploration.{toolMaterialPeridot, toolMaterialRuby, toolMaterialSapphire}
     private def colour(stack:ItemStack) = stack.getItem.asInstanceOf[ItemGemSaw].tool.mat match
     {
-        case ToolMaterial.WOOD => BROWN.rgb
-        case ToolMaterial.STONE => LIGHT_GREY.rgb
-        case ToolMaterial.IRON => WHITE.rgb
-        case ToolMaterial.GOLD => YELLOW.rgb
-        case t if t == toolMaterialRuby => RED.rgb
-        case t if t == toolMaterialSapphire => BLUE.rgb
-        case t if t == toolMaterialPeridot => GREEN.rgb
-        case ToolMaterial.EMERALD => CYAN.rgb
-        case _ => BLACK.rgb
+        case ToolMaterial.WOOD => BROWN.rgba
+        case ToolMaterial.STONE => LIGHT_GREY.rgba
+        case ToolMaterial.IRON => WHITE.rgba
+        case ToolMaterial.GOLD => YELLOW.rgba
+        case t if t == toolMaterialRuby => RED.rgba
+        case t if t == toolMaterialSapphire => BLUE.rgba
+        case t if t == toolMaterialPeridot => GREEN.rgba
+        case ToolMaterial.EMERALD => CYAN.rgba
+        case _ => BLACK.rgba
     }
 
     override def renderItem(rtype:ItemRenderType, item:ItemStack, data:AnyRef*)
@@ -56,7 +56,7 @@ object GemSawRenderer extends IItemRenderer
         CCRenderState.useNormals = true
         CCRenderState.pullLightmap()
         CCRenderState.changeTexture("microblock:textures/items/saw.png")
-        CCRenderState.setColour(0xFFFFFFFF)
+        CCRenderState.baseColour = 0xFFFFFFFF
 
         CCRenderState.startDrawing()
         handle.render(t)
@@ -67,9 +67,9 @@ object GemSawRenderer extends IItemRenderer
         GL11.glDisable(GL11.GL_CULL_FACE)
 
         CCRenderState.startDrawing()
-        CCRenderState.setColour(colour(item))
+        CCRenderState.baseColour = colour(item)
         blade.render(t, new UVTranslation(0, 4/64D))
-        CCRenderState.setColour(0xFFFFFFFF)
+        CCRenderState.baseColour = 0xFFFFFFFF
         CCRenderState.draw()
 
         GL11.glEnable(GL11.GL_CULL_FACE)

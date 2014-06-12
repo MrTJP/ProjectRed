@@ -682,7 +682,6 @@ class FlowingPipePart extends CorePipePart
             TextureUtils.bindAtlas(0)
             CCRenderState.setBrightness(world, x, y, z)
             RenderPipe.render(this, pos)
-            CCRenderState.setColour(-1)
             true
         }
         else false
@@ -697,7 +696,6 @@ class FlowingPipePart extends CorePipePart
             CCRenderState.reset()
             CCRenderState.setBrightness(world, x, y, z)
             RenderPipe.renderItemFlow(this, pos, frame)
-            CCRenderState.setColour(-1)
         }
     }
 

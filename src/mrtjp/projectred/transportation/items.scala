@@ -49,41 +49,6 @@ class ItemPartPipe extends ItemCore("projectred.transportation.pipe") with TItem
     override def getSpriteNumber = 0
 }
 
-object PipeItemRenderer extends IItemRenderer
-{
-    def handleRenderType(item:ItemStack, r:ItemRenderType) = true
-    def shouldUseRenderHelper(r:ItemRenderType, item:ItemStack, helper:ItemRendererHelper) = true
-
-    def renderItem(rtype:ItemRenderType, item:ItemStack, data:AnyRef*)
-    {
-        val damage = item.getItemDamage
-        import ItemRenderType._
-        rtype match
-        {
-            case ENTITY => renderWireInventory(damage, -.5f, 0f, -.5f, 1f)
-            case EQUIPPED => renderWireInventory(damage, 0f, .0f, 0f, 1f)
-            case EQUIPPED_FIRST_PERSON => renderWireInventory(damage, 1f, -.6f, -.4f, 2f)
-            case INVENTORY => renderWireInventory(damage, 0f, -.1f, 0f, 1f)
-            case _ =>
-        }
-    }
-
-    def renderWireInventory(meta:Int, x:Float, y:Float, z:Float, scale:Float)
-    {
-        val pdef = PipeDefs.values(meta)
-        if (pdef == null) return
-        TextureUtils.bindAtlas(0)
-        CCRenderState.reset()
-        CCRenderState.useNormals = true
-        CCRenderState.pullLightmap()
-        CCRenderState.startDrawing()
-
-        RenderPipe.renderInv(new Scale(scale).`with`(new Translation(x, y, z)), pdef.sprites(0))
-
-        CCRenderState.draw()
-    }
-}
-
 object PipeDefs extends ItemDefinition
 {
     override type EnumVal = PipeVal
@@ -249,6 +214,7 @@ object RoutingChipDefs extends ItemDefinition
 class ItemRouterUtility extends ItemCore("projectred.transportation.routerutil")
 {
     setMaxStackSize(1)
+    setTextureName("projectred:routerutil")
     setCreativeTab(ProjectRedTransportation.tabTransportation)
 
     override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer) =
@@ -274,22 +240,12 @@ class ItemCPU extends ItemCore("projectred.transportation.cpu")
     setCreativeTab(ProjectRedTransportation.tabTransportation)
     setHasSubtypes(true)
     setMaxStackSize(1)
+    setTextureName("projectred:cpu")
 
     override def getSubItems(i:Item, tab:CreativeTabs, list:JList[_])
     {
         val list2 = list.asInstanceOf[JList[ItemStack]]
         list2.add(new ItemStack(this))
-    }
-
-    @SideOnly(Side.CLIENT)
-    override def registerIcons(reg:IIconRegister)
-    {
-        itemIcon = reg.registerIcon("projectred:cpu")
-    }
-
-    override def getIconFromDamage(meta:Int) =
-    {
-        super.getIconFromDamage(meta)
     }
 
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
