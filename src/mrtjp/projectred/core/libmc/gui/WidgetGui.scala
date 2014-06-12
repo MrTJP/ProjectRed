@@ -22,7 +22,8 @@ class WidgetGui(c:Container, w:Int, h:Int) extends GuiContainer(c) with TWidget
     override def fontRenderer = mcInst.fontRenderer
     override def getZ = zLevel
 
-    override val bounds = new Rect().setMin(guiLeft, guiTop).setWH(xSize, ySize)
+    // Lazy because initGui has to be called before this
+    override lazy val bounds = new Rect().setMin(guiLeft, guiTop).setWH(xSize, ySize)
 
     var prevGui:GuiScreen = null
     def setJumpBack(p:GuiScreen){prevGui = p}
@@ -82,7 +83,7 @@ class WidgetGui(c:Container, w:Int, h:Int) extends GuiContainer(c) with TWidget
 
     final override def keyTyped(c:Char, i:Int)
     {
-        if (c == 1 && forwardClosing) super.keyTyped(c, i) //esc
+        if (i == 1 && forwardClosing) super.keyTyped(c, i) //esc
         if ((2 to 10 contains i) && !(blockedHotkeyNumbers contains i-1))
             super.keyTyped(c, i) //number for slot moving
         keyPressed(c, i, false)

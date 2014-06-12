@@ -1,10 +1,11 @@
 package mrtjp.projectred.compatibility.thermalexpansion;
 
+/*
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 import cofh.api.transport.IEnderAttuned;
 import mrtjp.projectred.api.ISpecialLinkState;
-import mrtjp.projectred.core.libmc.BasicUtils;
+import mrtjp.projectred.core.libmc.PRLib;
 import mrtjp.projectred.transportation.RoutedJunctionPipePart;
 import net.minecraft.tileentity.TileEntity;
 import thermalexpansion.block.tesseract.TileTesseract;
@@ -55,7 +56,7 @@ public class LinkStateTesseract implements ISpecialLinkState
 
         for (int i = 0; i < 6; i++)
         {
-            TMultiPart part = BasicUtils.getMultiPart(tess.worldObj, bc.copy().offset(i), 6);
+            TMultiPart part = PRLib.getMultiPart(tess.worldObj, bc.copy().offset(i), 6);
             if (part instanceof RoutedJunctionPipePart)
             {
                 RoutedJunctionPipePart pipe = (RoutedJunctionPipePart) part;
@@ -74,7 +75,7 @@ public class LinkStateTesseract implements ISpecialLinkState
 
         for (int i = 0; i < 6; i++)
         {
-            TMultiPart part = BasicUtils.getMultiPart(tess.worldObj, bc.copy().offset(i), 6);
+            TMultiPart part = PRLib.getMultiPart(tess.worldObj, bc.copy().offset(i), 6);
             if (part instanceof RoutedJunctionPipePart)
             {
                 RoutedJunctionPipePart pipe = (RoutedJunctionPipePart) part;
@@ -92,3 +93,4 @@ public class LinkStateTesseract implements ISpecialLinkState
         return tile instanceof TileTesseract;
     }
 }
+*/

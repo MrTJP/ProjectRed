@@ -11,7 +11,7 @@ import codechicken.lib.vec.*;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.InvertX;
 import mrtjp.projectred.transmission.UVT;
-import mrtjp.projectred.transmission.WireModelGen$;
+import mrtjp.projectred.transmission.WireModelGen;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
@@ -774,7 +774,7 @@ public class ComponentStore
                 int side = orient%24>>2;
                 int r = orient&3;
                 boolean reflect = orient >= 24;
-                boolean rotate = (r+WireModelGen$.MODULE$.reorientSide()[side])%4 >= 2;
+                boolean rotate = (r+WireModelGen.reorientSide()[side])%4 >= 2;
 
                 Transformation t = new RedundantTransformation();
                 if (reflect)
@@ -920,11 +920,19 @@ public class ComponentStore
         public void renderWire(Transformation t, int orient, IVertexOperation colour)
         {
             IconTransformation icont = new IconTransformation(cellIcon);
-            top[orient].render(t, icont, colour);
-            if ((conn&2) == 0)
-                right[orient].render(t, icont, colour);
-            if ((conn&8) == 0)
-                left[orient].render(t, icont, colour);
+            if (colour != null) {
+                top[orient].render(t, icont, colour);
+                if ((conn&2) == 0)
+                    right[orient].render(t, icont, colour);
+                if ((conn&8) == 0)
+                    left[orient].render(t, icont, colour);
+            } else {
+                top[orient].render(t, icont);
+                if ((conn&2) == 0)
+                    right[orient].render(t, icont);
+                if ((conn&8) == 0)
+                    left[orient].render(t, icont);
+            }
         }
     }
 
@@ -941,7 +949,8 @@ public class ComponentStore
         @Override
         public void renderWire(Transformation t, int orient, IVertexOperation colour)
         {
-            bottom[orient].render(t, new IconTransformation(cellIcon), colour);
+            if (colour != null) bottom[orient].render(t, new IconTransformation(cellIcon), colour);
+            else bottom[orient].render(t, new IconTransformation(cellIcon));
         }
     }
 
