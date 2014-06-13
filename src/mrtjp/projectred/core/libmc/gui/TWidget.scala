@@ -102,6 +102,13 @@ trait TWidget extends Gui
             translateFrom()
         }
     }
+    final def rootDrawBack(mouse:Point, frame:Float)
+    {
+        translateTo()
+        drawBack_Impl(mouse, frame)
+        if (enableChildren) for (w <- widgets) w.drawBack(mouse-pos, frame)
+        translateFrom()
+    }
 
     protected final def drawFront(mouse:Point, frame:Float)
     {
@@ -112,6 +119,11 @@ trait TWidget extends Gui
             for (w <- widgets) w.drawFront(mouse-pos, frame)
             translateFrom()
         }
+    }
+    final def rootDrawFront(mouse:Point, frame:Float)
+    {
+        drawFront_Impl(mouse, frame)
+        if (enableChildren) for (w <- widgets) w.drawFront(mouse-pos, frame)
     }
 
     protected def translateTo(){GL11.glTranslated(pos.x, pos.y, 0)}

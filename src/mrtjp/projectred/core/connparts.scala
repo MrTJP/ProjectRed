@@ -216,7 +216,7 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
     /**
      * If this is a wire, should return true if this wire is smaller
      * than that wire. This is used for corner rendering. (This renders
-     * to that, not that to this). Always false if not wire.
+     * to that, not that to this). Always false if this is not a wire.
      * @param part The part to connect to
      * @return true if this should render instead of that
      */

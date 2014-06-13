@@ -42,42 +42,36 @@ abstract class PowerWire extends WirePart with TPowerConnectable
             if (!maskConnects(id)) return null
             if ((connMap&1<<id) != 0) //Corner
             {
-                val t = WireConnLib.getCorner(world, side, id, new BlockCoord(tile))
+                val t = getCorner(id)
                 if (t != null && t.isInstanceOf[TPowerConnectable]) return t.asInstanceOf[TPowerConnectable].conductor(id)
 
                 var t2:TPowerConnectable = null
-                val absDir = Rotation.rotateSide(side, id)
-                val pos = new BlockCoord(tile)
-                pos.offset(absDir)
-                if (WireConnLib.canConnectThroughCorner(world, pos, absDir^1, side))
+                if (outsideCornerEdgeOpen(id))
                 {
-                    pos.offset(side)
-                    t2 = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
+                    t2 = PRLib.getTileEntity(world, posOfCorner(id), classOf[TPowerConnectable])
                 }
-                if (t2 != null) return t2.conductor(absDir^1)
+                if (t2 != null) return t2.conductor(rotFromCorner(id))
                 else return null
             }
             else if ((connMap&0x10<<id) != 0) //Straight
             {
-                val t = WireConnLib.getStraight(world, side, id, new BlockCoord(tile))
-                val absDir = Rotation.rotateSide(side, id)
-                if (t != null && t.isInstanceOf[TPowerConnectable]) return t.asInstanceOf[TPowerConnectable].conductor(absDir^1)
+                val t = getStraight(id)
+                if (t != null && t.isInstanceOf[TPowerConnectable]) return t.asInstanceOf[TPowerConnectable].conductor(absoluteDir(rotFromStraight(id)))
 
-                val pos = new BlockCoord(tile).offset(absDir)
-                val t2 = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
-                if (t != null) return t2.conductor(absDir^1)
+                val t2 = PRLib.getTileEntity(world, posOfStraight(id), classOf[TPowerConnectable])
+                if (t2 != null) return t2.conductor(absoluteDir(rotFromStraight(id)))
                 else return null
             }
             else if ((connMap&0x100<<id) != 0) // internal face
             {
-                val t = WireConnLib.getInsideFace(world, side, id, new BlockCoord(tile))
+                val t = getInternal(id)
                 if (t != null && t.isInstanceOf[TPowerConnectable]) return t.asInstanceOf[TPowerConnectable].conductor(id)
                 else return null
             }
         }
         else if (id == 4) // center
         {
-            val t = WireConnLib.getCenter(world, new BlockCoord(tile))
+            val t = getCenter
             if (t != null && t.isInstanceOf[TPowerConnectable]) return t.asInstanceOf[TPowerConnectable].conductor(side)
             else return null
         }
@@ -98,11 +92,8 @@ abstract class PowerWire extends WirePart with TPowerConnectable
 
     override def discoverCornerOverride(absDir:Int):Boolean =
     {
-        val pos = new BlockCoord(tile)
-        pos.offset(absDir)
-        if (!WireConnLib.canConnectThroughCorner(world, pos, absDir^1, side)) return false
-        pos.offset(side)
-        val t = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
+        if (!outsideCornerEdgeOpen(absoluteRot(absDir))) return false
+        val t = PRLib.getTileEntity(world, posOfCorner(absoluteRot(absDir)), classOf[TPowerConnectable])
         if (t != null) return t.connectCorner(this, side^1, Rotation.rotationTo(side, absDir^1))
 
         false

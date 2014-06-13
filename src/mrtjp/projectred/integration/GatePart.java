@@ -12,7 +12,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.WireConnLib;
 import mrtjp.projectred.core.libmc.BasicWireUtils;
 import mrtjp.projectred.core.libmc.PRLib;
 import net.minecraft.client.particle.EffectRenderer;
@@ -312,11 +311,17 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     {
         int absDir = Rotation.rotateSide(side(), r);
 
-        BlockCoord pos = new BlockCoord(tile());
-        pos.offset(absDir);
-
-        if (!WireConnLib.canConnectThroughCorner(world(), pos, absDir^1, side()))
-            return false;
+        BlockCoord pos = new BlockCoord(tile()).offset(absDir);
+        if (!world().isAirBlock(pos.x, pos.y, pos.z))
+        {
+            int side1 = absDir^1;
+            int side2 = side();
+            TileMultipart t = PRLib.getMultipartTile(world(), pos);
+            if (t != null)
+                if (t.partMap(side1) != null || t.partMap(side2) != null ||
+                        t.partMap(PartMap.edgeBetween(side1, side2)) != null)
+                    return false;
+        }
 
         pos.offset(side());
         TileMultipart t = PRLib.getMultipartTile(world(), pos);
@@ -609,9 +614,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     {
         if (pass == 0 && Configurator.staticGates)
         {
+            TextureUtils.bindAtlas(0);
             CCRenderState.setBrightness(world(), x(), y(), z());
             RenderGate.renderStatic(this, pos);
-            CCRenderState.setColour(-1);
             return true;
         }
         else return false;
@@ -630,7 +635,6 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
                 CCRenderState.startDrawing();
                 RenderGate.renderStatic(this, pos);
                 CCRenderState.draw();
-                CCRenderState.setColour(-1);
                 GL11.glEnable(GL11.GL_LIGHTING);
             }
 
@@ -666,7 +670,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @SideOnly(Side.CLIENT)
     public IIcon getBreakingIcon(Object arg0, int arg1)
     {
-        return ComponentStore.baseIcon;
+        return getBrokenIcon(arg1);
     }
 
     @Override

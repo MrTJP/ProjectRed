@@ -195,6 +195,15 @@ public class ComponentStore
 
     public static abstract class ComponentModel
     {
+        private static IVertexOperation noColour = new RedundantTransformation();
+        protected static IVertexOperation colour = noColour;
+
+        public static void setModelColour(boolean flag)
+        {
+            if (flag) colour = CCRenderState.colourAttrib;
+            else colour = noColour;
+        }
+
         public abstract void renderModel(Transformation t, int orient);
 
         public void registerTextures(IIconRegister r)
@@ -215,7 +224,7 @@ public class ComponentStore
         @Override
         public void renderModel(Transformation t, int orient)
         {
-            models[orient%24].render(t, new IconTransformation(baseIcon));
+            models[orient%24].render(t, new IconTransformation(baseIcon), colour);
         }
     }
 
@@ -239,7 +248,7 @@ public class ComponentStore
         @Override
         public void renderModel(Transformation t, int orient)
         {
-            models[orient].render(t, getUVT());
+            models[orient].render(t, getUVT(), colour);
         }
     }
 
@@ -267,7 +276,7 @@ public class ComponentStore
         @Override
         public void renderModel(Transformation t, int orient)
         {
-            models[state][orient].render(t, getUVT());
+            models[state][orient].render(t, getUVT(), colour);
         }
     }
 
@@ -510,7 +519,11 @@ public class ComponentStore
             double z2 = (rect.y+rect.h)/32D;
             double d = 0.0005-h/50D;// little offset for the wires go ontop of the border
             model.generateBlock(i, x1+d, 0.125, z1+d, x2-d, 0.125+h, z2-d, 1);
-            //MultiIconTransformation.setIconIndex(model, i, i+20, icon); //TODO ?
+            for (int v = i; v < i+20; v++)
+            {
+                UV uv = model.verts[v].uv;
+                uv.set(uv.u%2, uv.v%2, icon);
+            }
         }
 
         @Override
@@ -559,7 +572,7 @@ public class ComponentStore
         @Override
         public void renderModel(Transformation t, int orient)
         {
-            models[orient].render(t, new IconTransformation(icons[parent.disabled ? 0 : parent.on ? 2 : 1]));
+            models[orient].render(t, new IconTransformation(icons[parent.disabled ? 0 : parent.on ? 2 : 1]), colour);
         }
 
         @Override
@@ -631,6 +644,11 @@ public class ComponentStore
             m.generateBlock(4, 6/16D, (10-height)/16D, 7/16D, 10/16D, 11/16D, 9/16D, 0x33);
             m.generateBlock(12, 7/16D, (10-height)/16D, 6/16D, 9/16D, 11/16D, 10/16D, 0xF);
             m.apply(new Translation(-0.5+x/16, (height-10)/16D, -0.5+z/16));
+            for (int v = 4; v < 20; v++)
+            {
+                UV uv = m.verts[v].uv;
+                uv.set(uv.u%2, uv.v%2);
+            }
             m.computeNormals();
             m.shrinkUVs(0.0005);
             m.apply(new Scale(1.0005)); // Eliminates z-fighting when torch is on wire.
@@ -851,7 +869,7 @@ public class ComponentStore
         public void renderModel(Transformation t, int orient)
         {
             IconTransformation icont = new IconTransformation(busXcvrIcon);
-            models[orient].render(t, icont);
+            models[orient].render(t, icont, colour);
 
             Vector3 displayPos = pos.copy();
             if (orient >= 24)// flipped x
@@ -861,34 +879,23 @@ public class ComponentStore
             displayT = displayT.with(displayPos.translation()).with(orientT(orient%24)).with(t);
             for (int i = 0; i < 16; i++)
                 if ((signal&1<<i) != 0)
-                    displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel);
+                    displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel, colour);
         }
     }
 
     public static abstract class CellWireModel extends ComponentModel
     {
         public byte signal;
-        public boolean invColour;
 
         public static int signalColour(byte signal)
         {
             return (signal&0xFF)/2+60<<24|0xFF;
         }
 
-        @Override
-        public final void renderModel(Transformation t, int orient)
+        public IVertexOperation colourMult()
         {
-            if (invColour)
-            {
-                CCRenderState.setColour(signalColour(signal));
-                renderWire(t, orient, null);
-                CCRenderState.setColour(-1);
-            }
-            else
-                renderWire(t, orient, new ColourMultiplier(signalColour(signal)));
+            return ColourMultiplier.instance(signalColour(signal));
         }
-
-        public abstract void renderWire(Transformation t, int orient, IVertexOperation colour);
     }
 
     public static class CellTopWireModel extends CellWireModel
@@ -917,22 +924,14 @@ public class ComponentStore
         }
 
         @Override
-        public void renderWire(Transformation t, int orient, IVertexOperation colour)
+        public void renderModel(Transformation t, int orient)
         {
             IconTransformation icont = new IconTransformation(cellIcon);
-            if (colour != null) {
-                top[orient].render(t, icont, colour);
-                if ((conn&2) == 0)
-                    right[orient].render(t, icont, colour);
-                if ((conn&8) == 0)
-                    left[orient].render(t, icont, colour);
-            } else {
-                top[orient].render(t, icont);
-                if ((conn&2) == 0)
-                    right[orient].render(t, icont);
-                if ((conn&8) == 0)
-                    left[orient].render(t, icont);
-            }
+            top[orient].render(t, icont, colourMult());
+            if ((conn&2) == 0)
+                right[orient].render(t, icont, colourMult());
+            if ((conn&8) == 0)
+                left[orient].render(t, icont, colourMult());
         }
     }
 
@@ -947,10 +946,9 @@ public class ComponentStore
         }
 
         @Override
-        public void renderWire(Transformation t, int orient, IVertexOperation colour)
+        public void renderModel(Transformation t, int orient)
         {
-            if (colour != null) bottom[orient].render(t, new IconTransformation(cellIcon), colour);
-            else bottom[orient].render(t, new IconTransformation(cellIcon));
+            bottom[orient].render(t, new IconTransformation(cellIcon), colourMult());
         }
     }
 

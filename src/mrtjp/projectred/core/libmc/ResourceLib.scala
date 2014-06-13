@@ -8,7 +8,7 @@ object ResourceLib
 {
     val guiSlot = registerPR("textures/gui/slot.png")
     val guiExtras = registerPR("textures/gui/guiextras.png")
-    val guiTex = registerPR("textures/gui/widgets.png")
+    val guiTex = register("textures/gui/widgets.png")
     val guiBag = registerPR("textures/gui/bpgui.png")
     val guiChipContainer = registerPR("textures/gui/chipcontainer.png")
     val guiChipUpgrade = registerPR("textures/gui/chipupgradecontainer.png")

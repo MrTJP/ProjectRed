@@ -4,7 +4,6 @@ import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.integration.BundledGateLogic.BusTransceiver;
 import mrtjp.projectred.integration.InstancedRsGateLogic.TimerGateLogic;
@@ -60,13 +59,15 @@ public class RenderGate
     public static void renderStatic(GatePart gate, Vector3 pos)
     {
         GateRenderer r = renderers[gate.subID&0xFF];
+        ComponentModel.setModelColour(true); //use model vert colours
         r.prepare(gate);
-        r.renderStatic(new Translation(pos), gate.orientation&0xFF);
+        r.renderStatic(pos.translation(), gate.orientation&0xFF);
     }
 
     public static void renderDynamic(GatePart gate, Vector3 pos, float frame)
     {
         GateRenderer r = renderers[gate.subID&0xFF];
+        ComponentModel.setModelColour(false);
         if (r.hasSpecials())
         {
             r.prepareDynamic(gate, frame);
@@ -77,6 +78,7 @@ public class RenderGate
     public static void renderInv(Transformation t, int id)
     {
         GateRenderer r = renderers[id];
+        ComponentModel.setModelColour(false);
         TextureUtils.bindAtlas(0);
         r.prepareInv();
         CCRenderState.startDrawing();
@@ -1179,9 +1181,7 @@ public class RenderGate
         public void prepareInv()
         {
             bottomWire.signal = 0;
-            bottomWire.invColour = true;
             topWire.signal = 0;
-            topWire.invColour = true;
             topWire.conn = 0;
         }
 
@@ -1190,10 +1190,8 @@ public class RenderGate
         {
             super.prepare(part);
             bottomWire.signal = part.signal1;
-            bottomWire.invColour = false;
             topWire.signal = part.signal2;
             topWire.conn = ArrayCommons.topWireConn(part);
-            topWire.invColour = false;
         }
     }
 
@@ -1349,7 +1347,6 @@ public class RenderGate
         public void prepareInv()
         {
             topWire.signal = 0;
-            topWire.invColour = true;
             topWire.conn = 0;
             torches[0].on = true;
             torches[1].on = false;
@@ -1361,10 +1358,8 @@ public class RenderGate
         @Override
         public void prepare(RowGatePart part)
         {
-            super.prepare(part);
             topWire.signal = part.signal;
             topWire.conn = ArrayCommons.topWireConn(part);
-            topWire.invColour = false;
             torches[0].on = (part.state&4) == 0;
             torches[1].on = (part.state&0x10) != 0;
             torches[2].on = (part.state&0xA) == 0;
