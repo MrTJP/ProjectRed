@@ -1188,7 +1188,6 @@ public class RenderGate
         @Override
         public void prepare(ArrayGatePart part)
         {
-            super.prepare(part);
             bottomWire.signal = part.signal1;
             topWire.signal = part.signal2;
             topWire.conn = ArrayCommons.topWireConn(part);
@@ -1337,10 +1336,12 @@ public class RenderGate
 
         public ANDCell()
         {
+            models.clear();
+            models.add(topWire);
+            models.add(new BaseComponentModel());
+            models.add(new CellFrameModel());
             models.addAll(Arrays.asList(wires));
             models.addAll(Arrays.asList(torches));
-            models.add(topWire);
-            models.add(new CellFrameModel());
         }
 
         @Override

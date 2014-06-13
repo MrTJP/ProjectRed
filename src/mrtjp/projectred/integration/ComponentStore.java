@@ -195,7 +195,7 @@ public class ComponentStore
 
     public static abstract class ComponentModel
     {
-        private static IVertexOperation noColour = new RedundantTransformation();
+        private static IVertexOperation noColour = new ColourMultiplier(-1);
         protected static IVertexOperation colour = noColour;
 
         public static void setModelColour(boolean flag)
