@@ -19,7 +19,7 @@ class IlluminationProxy_server extends IProxy with IPartFactory
 
     override def init()
     {
-        MultiPartRegistry.registerParts(this, lights.map(_.getType).toArray)
+        MultiPartRegistry.registerParts(this, (lights.map(_.getType) :+ "pr_lightbutton").toArray)
         for (l <- lights) l.initServer()
 
         itemPartIllumarButton = new ItemPartButton
