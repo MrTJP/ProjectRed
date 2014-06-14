@@ -1,6 +1,6 @@
 package mrtjp.projectred.transportation
 
-import codechicken.lib.data.MCDataInput
+import codechicken.lib.data.{MCDataOutput, MCDataInput}
 import codechicken.lib.vec.BlockCoord
 import java.util.UUID
 import java.util.concurrent.DelayQueue
@@ -22,8 +22,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     {
         override def markDirty()
         {
-            super.markDirty()
-            refreshChips()
+            chipsNeedRefresh = true
         }
 
         override def isItemValidForSlot(i:Int, stack:ItemStack) =
@@ -54,7 +53,9 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     private var excess = Vector[Pair2[ItemKeyStack, IWorldRequester]]() //TODO can change to Vector[ItemKeyStack], IWR is always null
     private val lost = new DelayQueue[PostponedWorkItem[ItemKeyStack]]
 
+    private var chipsNeedRefresh = true
     private var extensionsNeedRefresh = true
+
     private val extensionIPs = new Array[Int](9)
 
     var priority = 0
@@ -100,9 +101,27 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         case _ => super.read(packet, key)
     }
 
+    override def readDesc(packet:MCDataInput)
+    {
+        super.readDesc(packet)
+        priority = packet.readInt()
+    }
+
+    override def writeDesc(packet:MCDataOutput)
+    {
+        super.writeDesc(packet)
+        packet.writeInt(priority)
+    }
+
     override def updateServer()
     {
         super.updateServer()
+
+        if (chipsNeedRefresh)
+        {
+            chipsNeedRefresh = false
+            refreshChips()
+        }
 
         remainingDelay -= 1
         if (remainingDelay <= 0)

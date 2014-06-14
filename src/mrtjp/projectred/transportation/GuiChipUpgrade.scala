@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack
 
 class ChipUpgradeContainer(player:EntityPlayer) extends WidgetContainer
 {
-    val upgradeInv = new SimpleInventory(1, "upBus", 1)
+    val upgradeInv = new SimpleInventory(7, "upBus", 1)
     {
         override def isItemValidForSlot(i:Int, stack:ItemStack) =
         {

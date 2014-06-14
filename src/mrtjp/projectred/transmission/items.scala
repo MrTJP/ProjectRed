@@ -21,6 +21,8 @@ abstract class ItemWireCommon(name:String) extends ItemCore(name) with TItemMult
 
     @SideOnly(Side.CLIENT)
     override def getSpriteNumber = 0
+
+    override def registerIcons(reg:IIconRegister){}
 }
 
 object ItemPartWire

@@ -11,7 +11,7 @@ import mrtjp.projectred.api.IScrewdriver
 import mrtjp.projectred.core.{CoreSPH, Configurator}
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.IInventory
+import net.minecraft.inventory.{ISidedInventory, IInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
@@ -374,7 +374,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
     {
         PRLib.getTileEntity(world, posOfStraight(s), classOf[TileEntity]) match
         {
-            case inv:IInventoryProvider => true
+            case sinv:ISidedInventory => !sinv.getAccessibleSlotsFromSide(s^1).isEmpty
+            case inv:IInventory => true
             case pow:TControllerLayer if s == 0 => true
             case _ => false
         }
