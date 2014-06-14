@@ -81,14 +81,21 @@ trait Output extends TRecipeObject
     def createOutput:ItemStack
 }
 
+object OreIn {
+    private def getOreName(stack: ItemStack) = {
+        val IDs = OreDictionary.getOreIDs(stack)
+        if (IDs.length == 0) "Unknown" else OreDictionary.getOreName(IDs(0));
+    }
+}
+
 class OreIn(val oreID:String) extends Input
 {
     def this(stack:ItemKeyStack) =
-        this(OreDictionary.getOreName(OreDictionary.getOreID(stack.makeStack)))
+        this(OreIn.getOreName(stack.makeStack))
 
     def matches(that:ItemKeyStack) =
     {
-        val thatID = OreDictionary.getOreName(OreDictionary.getOreID(that.makeStack))
+        val thatID = OreIn.getOreName(that.makeStack)
         thatID != "Unknown" && oreID == thatID
     }
 }
