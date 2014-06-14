@@ -32,6 +32,8 @@ Thumbs.db
 /logs/
 options.txt
 /saves/
+#sbt-eclipse junk
+/target/
 #Modeling stuff
 *.blend1
 *.blend2
