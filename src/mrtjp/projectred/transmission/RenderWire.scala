@@ -68,7 +68,7 @@ object RenderWire
     {
         getOrGenerateModel(modelKey(w)).render(
             pos.translation(), new IconTransformation(w.getIcon),
-            ColourMultiplier.instance(w.renderHue), CCRenderState.colourAttrib)
+            ColourMultiplier.instance(w.renderHue))
     }
 
     def renderInv(thickness:Int, hue:Int, ops:IVertexOperation*)

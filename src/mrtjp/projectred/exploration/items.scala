@@ -246,9 +246,10 @@ class ItemGemSaw(val tool:ToolVal) extends ItemCraftingDamage("projectred.explor
     setCreativeTab(ProjectRedExploration.tabExploration)
 
     override def getCuttingStrength(item:ItemStack) = tool.mat.getHarvestLevel
+    override def registerIcons(reg:IIconRegister){}
 }
 
-class ItemGemSickle(override val tool:ToolVal) extends ItemTool(3, tool.mat, new java.util.TreeSet) with TGemTool
+class  ItemGemSickle(override val tool:ToolVal) extends ItemTool(3, tool.mat, new java.util.HashSet) with TGemTool
 {
     private val radiusLeaves = 1
     private val radiusCrops = 2

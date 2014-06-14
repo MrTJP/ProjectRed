@@ -106,7 +106,7 @@ object LightObjLantern extends LightObject with TLightRenderHelper
     {
         val icon = new IconTransformation(if (isOn) on(color) else off(color))
         TextureUtils.bindAtlas(0)
-        lModels(part.side).render(pos.translation(), icon, CCRenderState.colourAttrib)
+        lModels(part.side).render(pos.translation(), icon)
     }
 
     @SideOnly(Side.CLIENT)
@@ -172,7 +172,7 @@ object LightObjFixture extends LightObject with TLightRenderHelper
     {
         val icon = new IconTransformation(if (isOn) LightObjLantern.on(color) else LightObjLantern.off(color))
         TextureUtils.bindAtlas(0)
-        lModels(part.side).render(pos.translation(), icon, CCRenderState.colourAttrib)
+        lModels(part.side).render(pos.translation(), icon)
     }
 
     @SideOnly(Side.CLIENT)
@@ -236,7 +236,7 @@ object LightObjCage extends LightObject with TLightRenderHelper
     {
         val icon = new IconTransformation(if (isOn) LightObjLantern.on(color) else LightObjLantern.off(color))
         TextureUtils.bindAtlas(0)
-        lModels(part.side).render(pos.translation(), icon, CCRenderState.colourAttrib)
+        lModels(part.side).render(pos.translation(), icon)
     }
 
     @SideOnly(Side.CLIENT)

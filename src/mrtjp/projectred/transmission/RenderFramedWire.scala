@@ -44,7 +44,7 @@ object RenderFramedWire
         val uvt = new IconTransformation(w.getIcon)
         val m = ColourMultiplier.instance(w.renderHue)
 
-        val ops = Seq[IVertexOperation](pos.translation(), uvt, CCRenderState.colourAttrib)
+        val ops = Seq[IVertexOperation](pos.translation(), uvt)
         val wireOps = ops :+ m
 
         if (w.material == 0)

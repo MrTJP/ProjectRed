@@ -138,7 +138,7 @@ task integrationJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    classifier = 'Integration'
+    appendix = 'Integration'
 }
 
 task lightingJar(type: Jar, dependsOn: reobf) {
@@ -155,7 +155,7 @@ task lightingJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    classifier = 'Lighting'
+    appendix = 'Lighting'
 }
 
 task mechanicalJar(type: Jar, dependsOn: reobf) {
@@ -175,7 +175,7 @@ task mechanicalJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    classifier = 'Mechanical'
+    appendix = 'Mechanical'
 }
 
 task worldJar(type: Jar, dependsOn: reobf) {
@@ -191,7 +191,7 @@ task worldJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    classifier = 'World'
+    appendix = 'World'
 }
 
 task compatJar(type: Jar, dependsOn: reobf) {
@@ -212,7 +212,7 @@ task compatJar(type: Jar, dependsOn: reobf) {
         attributes 'FMLCorePluginContainsFMLMod': 'true'
     }
     version = project.ext.jarVer
-    classifier = 'Compat'
+    appendix = 'Compat'
 }
 
 task baseJar(type: Jar, dependsOn: reobf) {
@@ -226,7 +226,7 @@ task baseJar(type: Jar, dependsOn: reobf) {
         attributes 'FMLCorePluginContainsFMLMod': 'true'
     }
     version = project.ext.jarVer
-    classifier = 'Base'
+    appendix = 'Base'
 
 }
 

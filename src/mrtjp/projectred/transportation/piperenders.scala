@@ -57,15 +57,15 @@ object RenderPipe
         {
             if ((connMap>>a*2) == 3)
             {
-                centerModels(a).render(t, uvt, CCRenderState.colourAttrib)
+                centerModels(a).render(t, uvt)
             }
         }
-        else centerModels(3).render(t, uvt, CCRenderState.colourAttrib)
+        else centerModels(3).render(t, uvt)
 
         for (s <- 0 until 6) if ((connMap&1<<s) != 0)
         {
             uvt = new IconTransformation(p.getIcon(s))
-            sideModels(s).render(t, uvt, CCRenderState.colourAttrib)
+            sideModels(s).render(t, uvt)
         }
         if (p.material) renderRSWiring(p, t, p.signal)
     }
@@ -78,12 +78,12 @@ object RenderPipe
 
         if (Integer.bitCount(connMap) == 2 && ((connMap&3) == 3 || (connMap&12) == 12 || (connMap&48) == 48)) for (a <- 0 until 3)
         {
-            if ((connMap>>a*2) == 3) centerModelsRS(a).render(t, uvt2, colour, CCRenderState.colourAttrib)
+            if ((connMap>>a*2) == 3) centerModelsRS(a).render(t, uvt2, colour)
         }
-        else centerModelsRS(3).render(t, uvt2, colour, CCRenderState.colourAttrib)
+        else centerModelsRS(3).render(t, uvt2, colour)
 
         for (s <- 0 until 6) if ((connMap&1<<s) != 0)
-            sideModelsRS(s).render(t, uvt2, colour, CCRenderState.colourAttrib)
+            sideModelsRS(s).render(t, uvt2, colour)
     }
 
     def renderBreakingOverlay(icon:IIcon, pipe:FlowingPipePart)

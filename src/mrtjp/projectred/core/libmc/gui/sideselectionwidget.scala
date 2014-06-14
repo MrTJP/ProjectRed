@@ -158,7 +158,7 @@ trait TWidgetSideHighlight extends WidgetSideSelect
         CCRenderState.baseColour = color
         CCRenderState.alphaOverride = 64
         CCRenderState.startDrawing()
-        TWidgetSideHighlight.highlights(side).render(CCRenderState.colourAttrib)
+        TWidgetSideHighlight.highlights(side).render()
         CCRenderState.draw()
 
         GL11.glEnable(GL11.GL_DEPTH_TEST)

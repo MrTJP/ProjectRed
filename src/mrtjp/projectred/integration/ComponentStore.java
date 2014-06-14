@@ -195,15 +195,6 @@ public class ComponentStore
 
     public static abstract class ComponentModel
     {
-        private static IVertexOperation noColour = new ColourMultiplier(-1);
-        protected static IVertexOperation colour = noColour;
-
-        public static void setModelColour(boolean flag)
-        {
-            if (flag) colour = CCRenderState.colourAttrib;
-            else colour = noColour;
-        }
-
         public abstract void renderModel(Transformation t, int orient);
 
         public void registerTextures(IIconRegister r)
@@ -224,7 +215,7 @@ public class ComponentStore
         @Override
         public void renderModel(Transformation t, int orient)
         {
-            models[orient%24].render(t, new IconTransformation(baseIcon), colour);
+            models[orient%24].render(t, new IconTransformation(baseIcon));
         }
     }
 
@@ -248,7 +239,7 @@ public class ComponentStore
         @Override
         public void renderModel(Transformation t, int orient)
         {
-            models[orient].render(t, getUVT(), colour);
+            models[orient].render(t, getUVT());
         }
     }
 
@@ -276,7 +267,7 @@ public class ComponentStore
         @Override
         public void renderModel(Transformation t, int orient)
         {
-            models[state][orient].render(t, getUVT(), colour);
+            models[state][orient].render(t, getUVT());
         }
     }
 
@@ -572,7 +563,7 @@ public class ComponentStore
         @Override
         public void renderModel(Transformation t, int orient)
         {
-            models[orient].render(t, new IconTransformation(icons[parent.disabled ? 0 : parent.on ? 2 : 1]), colour);
+            models[orient].render(t, new IconTransformation(icons[parent.disabled ? 0 : parent.on ? 2 : 1]));
         }
 
         @Override
@@ -869,7 +860,7 @@ public class ComponentStore
         public void renderModel(Transformation t, int orient)
         {
             IconTransformation icont = new IconTransformation(busXcvrIcon);
-            models[orient].render(t, icont, colour);
+            models[orient].render(t, icont);
 
             Vector3 displayPos = pos.copy();
             if (orient >= 24)// flipped x
@@ -879,7 +870,7 @@ public class ComponentStore
             displayT = displayT.with(displayPos.translation()).with(orientT(orient%24)).with(t);
             for (int i = 0; i < 16; i++)
                 if ((signal&1<<i) != 0)
-                    displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel, colour);
+                    displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel);
         }
     }
 

@@ -59,7 +59,6 @@ public class RenderGate
     public static void renderStatic(GatePart gate, Vector3 pos)
     {
         GateRenderer r = renderers[gate.subID&0xFF];
-        ComponentModel.setModelColour(true); //use model vert colours
         r.prepare(gate);
         r.renderStatic(pos.translation(), gate.orientation&0xFF);
     }
@@ -67,7 +66,6 @@ public class RenderGate
     public static void renderDynamic(GatePart gate, Vector3 pos, float frame)
     {
         GateRenderer r = renderers[gate.subID&0xFF];
-        ComponentModel.setModelColour(false);
         if (r.hasSpecials())
         {
             r.prepareDynamic(gate, frame);
@@ -78,7 +76,6 @@ public class RenderGate
     public static void renderInv(Transformation t, int id)
     {
         GateRenderer r = renderers[id];
-        ComponentModel.setModelColour(false);
         TextureUtils.bindAtlas(0);
         r.prepareInv();
         CCRenderState.startDrawing();
