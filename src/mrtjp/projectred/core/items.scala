@@ -71,6 +71,12 @@ class ItemPart extends ItemCore("projectred.core.part")
         if (col != null) col.icon
         else null
     }
+
+    override def getUnlocalizedName(stack: ItemStack):String = {
+        val col = PartDefs(stack.getItemDamage())
+        if (col != null) getUnlocalizedName() + "." + col.name
+        else super.getUnlocalizedName(stack)
+    }
 }
 
 object PartDefs extends ItemDefinition
@@ -147,7 +153,9 @@ object PartDefs extends ItemDefinition
         {
             icon = reg.registerIcon("projectred:parts/"+iconName)
         }
-    }
+
+    override def name = iconName
+  }
 }
 
 class ItemScrewdriver extends ItemCore("projectred.core.screwdriver") with IScrewdriver
