@@ -15,8 +15,7 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
     {
         override def markDirty()
         {
-            super.markDirty()
-            refreshChips()
+            chipsNeedRefresh = true
         }
 
         override def isItemValidForSlot(i:Int, stack:ItemStack) =
@@ -27,6 +26,8 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
                 RoutingChipDefs.getForStack(stack).isInterfaceChip
     }
     val chips = new Array[RoutingChipset](4)
+
+    private var chipsNeedRefresh = true
 
     override def save(tag:NBTTagCompound)
     {
@@ -53,6 +54,13 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
     override def updateServer()
     {
         super.updateServer()
+
+        if (chipsNeedRefresh)
+        {
+            chipsNeedRefresh = false
+            refreshChips()
+        }
+
         for (s <- chips) if (s != null) s.update()
     }
 

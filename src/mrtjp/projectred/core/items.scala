@@ -5,13 +5,14 @@ import net.minecraft.item.{Item, ItemStack}
 import mrtjp.projectred.ProjectRedCore
 import net.minecraft.util.{EnumChatFormatting, IIcon}
 import net.minecraft.creativetab.CreativeTabs
-import java.util.{List => JList}
+import java.util.{List => JList, Set => JSet}
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.world.World
 import mrtjp.projectred.api.IScrewdriver
 import net.minecraft.nbt.NBTTagCompound
 import org.lwjgl.input.Keyboard
+import scala.collection.JavaConversions
 
 abstract class ItemCraftingDamage(name:String) extends ItemCore(name)
 {
@@ -228,11 +229,16 @@ class ItemDataCard extends ItemCore("projectred.core.datacard")
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)||Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) && stack.hasTagCompound)
         {
             val tag = stack.getTagCompound
-            for (key <- tag.func_150296_c().asInstanceOf[Set[String]])
+            import JavaConversions._
+            var hasData = false
+            for (key <- tag.func_150296_c().asInstanceOf[JSet[String]])
+            {
                 l2.add(EnumChatFormatting.GRAY+
                     key+"->"+tag.getString(key).substring(0, 10)+(if (key.length>16) "..." else ""))
+                hasData = true
+            }
+            if (!hasData) l2.add(EnumChatFormatting.GRAY + "no data")
         }
-        else l2.add(EnumChatFormatting.GRAY + "no data")
     }
 }
 

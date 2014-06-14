@@ -138,6 +138,14 @@ class WidgetCheckBox(x1:Int, y1:Int, var state:Boolean) extends WidgetButton(x1-
         state = !state
     }
 
+    override def drawButton(mouseover:Boolean)
+    {
+        super.drawButton(mouseover)
+        ResourceLib.guiExtras.bind()
+        val u = if (state) 17 else 1
+        drawTexturedModalRect(x, y, u, 134, 14, 14)
+    }
+
     def setState(flag:Boolean):this.type = {state = flag; this}
 
     def setActions(unchecked:String, checked:String):this.type =

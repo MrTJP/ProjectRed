@@ -28,6 +28,8 @@ class ItemKey(val item:Item, val itemDamage:Int, val tag:NBTTagCompound) extends
         case _ => false
     }
 
+    override def toString = getName
+
     def compare(that:ItemKey) =
     {
         val c = itemID-that.itemID
@@ -73,6 +75,8 @@ class ItemKeyStack(val key:ItemKey, var stackSize:Int) extends Ordered[ItemKeySt
             key == that.key && stackSize == that.stackSize
         case _ => false
     }
+
+    override def toString = "["+key.toString+", "+stackSize+"]"
 
     def makeStack = key.makeStack(stackSize)
 

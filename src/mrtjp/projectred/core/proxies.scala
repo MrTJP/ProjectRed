@@ -7,13 +7,14 @@ import mrtjp.projectred.core.libmc.fx.{ParticleIconRegistry, ParticleManagement}
 import codechicken.lib.packet.PacketCustom
 import cpw.mods.fml.client.registry.RenderingRegistry
 import mrtjp.projectred.core.libmc.BasicRenderUtils
+import cpw.mods.fml.client.FMLClientHandler
+import cpw.mods.fml.common.FMLCommonHandler
 
 class CoreProxy_server extends IProxy
 {
     def preinit()
     {
         MinecraftForge.EVENT_BUS.register(RetroactiveWorldGenerator.instance)
-        //TickRegistry.registerTickHandler(RetroactiveWorldGenerator.instance, Side.SERVER)
     }
 
     def init()
@@ -39,20 +40,21 @@ class CoreProxy_server extends IProxy
 class CoreProxy_client extends CoreProxy_server
 {
     @SideOnly(Side.CLIENT)
-    override def preinit()
+    override def postinit()
     {
-        super.preinit()
+        super.postinit()
+        MinecraftForge.EVENT_BUS.register(Messenger)
         MinecraftForge.EVENT_BUS.register(ParticleManagement.instance)
+        FMLCommonHandler.instance().bus().register(ParticleManagement.instance)
         MinecraftForge.EVENT_BUS.register(ParticleIconRegistry.instance)
-        //TickRegistry.registerTickHandler(ParticleManagement.instance, Side.CLIENT)
     }
 
     @SideOnly(Side.CLIENT)
     override def init()
     {
         super.init()
-        MinecraftForge.EVENT_BUS.register(Messenger)
         PacketCustom.assignHandler(CoreCPH.channel, CoreCPH)
+
         BasicRenderUtils.coreRenderHandlerID = RenderingRegistry.getNextAvailableRenderId
         RenderingRegistry.registerBlockHandler(BasicRenderUtils.MultiRenderHandler.instance)
     }

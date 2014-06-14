@@ -9,7 +9,7 @@ class WidgetTextBox(x:Int, y:Int, w:Int, h:Int, var text:String) extends TWidget
     def this(x:Int, y:Int, w:Int, h:Int) = this(x, y, w, h, "")
 
     var isFocused = false
-    private var isEnabled = false
+    private var isEnabled = true
     private var cursorCounter = 0
     private var action = ""
 

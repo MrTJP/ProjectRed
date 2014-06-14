@@ -73,16 +73,14 @@ class WidgetItemList(x:Int, y:Int, w:Int, h:Int) extends TWidget
 
     def filterAllows(stack:ItemKeyStack):Boolean =
     {
-        if (stringMatch(stack.key.getName.toLowerCase, filter)) true
-        //TODO ID matching
-        else false
-
         def stringMatch(name:String, filter:String):Boolean =
         {
             for (s <- filter.split(" ")) if (!name.contains(s)) return false
             true
         }
-        false
+
+        if (stringMatch(stack.key.getName.toLowerCase, filter)) true
+        else false
     }
 
     private def getSeachedCount =
@@ -154,7 +152,6 @@ class WidgetItemList(x:Int, y:Int, w:Int, h:Int) extends TWidget
         glItemPre()
 
         import mrtjp.projectred.core.lib.LabelBreaks._
-
         label("b")
         {
             for (keystack <- displayList) label("c")

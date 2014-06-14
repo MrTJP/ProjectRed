@@ -8,7 +8,7 @@ import scala.collection.JavaConversions
 import scala.collection.mutable.ListBuffer
 import mrtjp.projectred.core.libmc.DirectionalRayTracer.HitCoord
 import net.minecraft.client.renderer.{RenderBlocks, Tessellator}
-import codechicken.lib.render.{Vertex5, CCModel}
+import codechicken.lib.render.{CCRenderState, Vertex5, CCModel}
 import codechicken.lib.vec.Rotation
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.texture.TextureMap
@@ -125,7 +125,7 @@ trait TWidgetSidePicker extends WidgetSideSelect
 
 trait TWidgetSideHighlight extends WidgetSideSelect
 {
-    private var color = PRColors.LIME.rgb
+    private var color = PRColors.LIME.rgba
     private var activeHighlight = false
 
     def setColor(c:Int):this.type = {color = c; this}
@@ -147,17 +147,20 @@ trait TWidgetSideHighlight extends WidgetSideSelect
 
     private def renderHighlight(side:Int)
     {
-        val t = Tessellator.instance
-
         GL11.glDisable(GL11.GL_LIGHTING)
         GL11.glEnable(GL11.GL_BLEND)
         GL11.glDisable(GL11.GL_DEPTH_TEST)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        t.startDrawingQuads()
-        t.setColorRGBA_I(color, 64)
-        TWidgetSideHighlight.highlights(side).render()
-        t.draw
+
+        CCRenderState.reset()
+        CCRenderState.pullLightmap()
+        CCRenderState.baseColour = color
+        CCRenderState.alphaOverride = 64
+        CCRenderState.startDrawing()
+        TWidgetSideHighlight.highlights(side).render(CCRenderState.colourAttrib)
+        CCRenderState.draw()
+
         GL11.glEnable(GL11.GL_DEPTH_TEST)
         GL11.glEnable(GL11.GL_TEXTURE_2D)
         GL11.glDisable(GL11.GL_BLEND)
@@ -178,6 +181,8 @@ object TWidgetSideHighlight
 
         for (s <- 1 until 6)
             highlights(s) = model.copy.apply(Rotation.sideRotations(s))
+
+        highlights.foreach(_.computeNormals())
     }
 
     var highlights:Array[CCModel] = _
