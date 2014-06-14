@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 // This sets us up for building a forge project - you need all of these
 buildscript {
     repositories {
@@ -13,6 +15,13 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+    }
+}
+
+repositories {
+    maven {
+        name "chickenbones"
+        url "http://chickenbones.net/maven/"
     }
 }
 
@@ -35,14 +44,17 @@ configFile.withReader {
     project.ext.config = new ConfigSlurper().parse prop
 }
 
-//we will put all deps in libs folder for autodetection
-//dependencies {
-//    compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:dev"
-//}
+dependencies {
+    compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:dev"
+    compile "codechicken:ForgeMultipart:${config.mc_version}-${config.fmp_version}:dev"
+    compile "codechicken:CodeChickenCore:${config.mc_version}-${config.ccc_version}:dev"
+    compile "codechicken:NotEnoughItems:${config.mc_version}-${config.nei_version}:dev"
+}
 
-version =  "${project.config.mod_version}." + System.getenv("BUILD_NUMBER") ?: "1"
+def build_number = (System.getenv("BUILD_NUMBER") ?: "1")
+version =  "${project.config.mod_version}." + build_number
 
-println  config.mc_version + "-" + config.forge_version
+println config.mc_version + "-" + config.forge_version
 // Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
 minecraft {
     version = config.mc_version + "-" + config.forge_version
@@ -53,18 +65,6 @@ minecraft {
     }
 }
 
-// this sets our output jar to have a 'tag' of 'universal' on it
-// It also adds the minecraft version in a custom version name
-// The result is files named <projectname>-<mcversion>-<version>-universal.jar
-jar {
-    classifier = 'universal'
-    version = "${project.minecraft.version}-${project.version}"
-    manifest {
-        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
-
-}
 sourceSets {
     main {
         def root = project.projectDir
@@ -76,6 +76,19 @@ sourceSets {
         }
     }
 }
+
+task updateVersion(type: Copy) {
+    // Replace tokens
+    from(sourceSets.main.scala.srcDirs)
+    into 'build/sources/scala'
+    filter(ReplaceTokens, tokens: [
+        'VERSION': config.mod_version,
+        'BUILD_NUMBER': build_number
+    ])
+}
+
+compileScala.dependsOn updateVersion
+
 processResources {
     //redo task if any of these properties change
     inputs.property "version", project.version
@@ -85,14 +98,145 @@ processResources {
 
     // Replace properties in all files
     from(sourceSets.main.resources.srcDirs) {
-        include '*.info'
-        include '*.scala'
-        include '*.java'
-        expand '@VERSION@':config.mod_version, '@BUILD_NUMBER@':System.getenv("BUILD_NUMBER") ?: "1", '@MC_VERSION@':config.mc_version, '@FORGE_VERSION@':config.forge_version, '@FMP_VERSION@':config.fmp_version, '@CCL_VERSION@':config.ccl_version
+        include '**.info'
+        filter(ReplaceTokens, tokens: [
+            'VERSION': config.mod_version,
+            'BUILD_NUMBER': build_number,
+            'MC_VERSION': config.mc_version,
+            'FORGE_VERSION': config.forge_version,
+            'FMP_VERSION': config.fmp_version,
+            'CCL_VERSION': config.ccl_version
+        ])
     }
     // Copy everything else
     from(sourceSets.main.resources.srcDirs) {
         include 'assets/**/*.*'
+    }
+}
+
+// Short-hand variable
+ext.jarVer = "${project.minecraft.version}-${project.version}"
+// Output of reobf task
+ext.jarFile = reobf.outputs.files.each{}.collect{ zipTree(it) }
+// Files to not include in baseJar
+ext.baseExcludes = []
+
+task integrationJar(type: Jar, dependsOn: reobf) {
+    from (project.ext.jarFile) {
+        include "**/ProjectRedIntegration*.class"
+        include "**/ProjectRedTransmission*.class"
+        include "**/mrtjp/projectred/integration/**"
+        include "**/mrtjp/projectred/transmission/**"
+
+        include "**/assets/projectred/textures/blocks/gates/**"
+        include "**/assets/projectred/textures/blocks/wires/**"
+        include "**/assets/projectred/textures/obj/gateparts/**"
+
+        include "integration_mod.info"
+        rename ("integration_mod.info", 'mcmod.info')
+
+        project.ext.baseExcludes.addAll(includes)
+    }
+    version = project.ext.jarVer
+    classifier = 'Integration'
+}
+
+task lightingJar(type: Jar, dependsOn: reobf) {
+    from (project.ext.jarFile) {
+        include "**/ProjectRedIllumination*.class"
+        include "**/mrtjp/projectred/illumination/**"
+
+        include "**/assets/projectred/textures/blocks/lights/**"
+        include "**/assets/projectred/textures/obj/lights/**"
+
+        include "lighting_mod.info"
+        rename ("lighting_mod.info", 'mcmod.info')
+
+        project.ext.baseExcludes.addAll(includes)
+    }
+    version = project.ext.jarVer
+    classifier = 'Lighting'
+}
+
+task mechanicalJar(type: Jar, dependsOn: reobf) {
+    from (project.ext.jarFile) {
+        include "**/ProjectRedExpansion*.class"
+        include "**/mrtjp/projectred/expansion/**"
+        include "**/ProjectRedTransportation*.class"
+        include "**/mrtjp/projectred/transportation/**"
+
+        include "**/assets/projectred/textures/blocks/machines/**"
+        include "**/assets/projectred/textures/blocks/pipes/**"
+        include "**/assets/projectred/textures/obj/machines/**"
+
+        include "mechanical_mod.info"
+        rename ("mechanical_mod.info", 'mcmod.info')
+
+        project.ext.baseExcludes.addAll(includes)
+    }
+    version = project.ext.jarVer
+    classifier = 'Mechanical'
+}
+
+task worldJar(type: Jar, dependsOn: reobf) {
+    from (project.ext.jarFile) {
+        include "**/ProjectRedExploration*.class"
+        include "**/mrtjp/projectred/exploration/**"
+
+        include "**/assets/projectred/textures/blocks/ore/**"
+
+        include "world_mod.info"
+        rename ("world_mod.info", 'mcmod.info')
+
+        project.ext.baseExcludes.addAll(includes)
+    }
+    version = project.ext.jarVer
+    classifier = 'World'
+}
+
+task compatJar(type: Jar, dependsOn: reobf) {
+    from (project.ext.jarFile) {
+        include "**/ProjectRedCompatibility*.class"
+        include "**/mrtjp/projectred/compatibility/**"
+
+        include "**/assets/asm/**"
+        include "**/assets/projectred/textures/blocks/compat/**"
+
+        include "compat_mod.info"
+        rename ("compat_mod.info", 'mcmod.info')
+
+        project.ext.baseExcludes.addAll(includes)
+    }
+    manifest {
+        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
+        attributes 'FMLCorePluginContainsFMLMod': 'true'
+    }
+    version = project.ext.jarVer
+    classifier = 'Compat'
+}
+
+task baseJar(type: Jar, dependsOn: reobf) {
+    from (project.ext.jarFile) {
+        exclude project.ext.baseExcludes
+
+        rename ("base_mod.info", 'mcmod.info')
+    }
+    manifest {
+        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
+        attributes 'FMLCorePluginContainsFMLMod': 'true'
+    }
+    version = project.ext.jarVer
+    classifier = 'Base'
+
+}
+
+// baseJar pulls all files not in any other jar. Therefore must run last
+baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && !task.name.equals('baseJar')) } }
+
+gradle.taskGraph.afterTask { task, TaskState state ->
+    if (task == baseJar) {
+        // Delete original jar now it has been split into separate jars.
+        reobf.outputs.files.each{delete it}
     }
 }
 
@@ -115,9 +259,14 @@ processResources {
 //}
 
 // Tell the artifact system about our extra jars
-//artifacts {
-//    archives sourceJar
-//}
+artifacts {
+    archives integrationJar
+    archives lightingJar
+    archives mechanicalJar
+    archives worldJar
+    archives compatJar
+    archives baseJar
+}
 
 // Configure an upload task. this is setup for uploading to files.minecraftforge.net. There are other examples around
 //uploadArchives {

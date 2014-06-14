@@ -1,7 +1,7 @@
 [
 {
-  "modid": "ProjRed|Exploration",
-  "name": "ProjectRed-Exploration",
+  "modid": "ProjRed|Illumination",
+  "name": "ProjectRed-Illumination",
   "parent":"ProjRed|Core",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",
@@ -11,6 +11,7 @@
   "dependencies": [
       "ProjRed|Core"
   ],
-  "useDependencyInformation": "true"
+  "dependants" : [],
+  "useDependencyInformation": true
 }
 ]

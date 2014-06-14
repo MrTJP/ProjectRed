@@ -17,6 +17,7 @@
       "ThermalExpansion",
       "ComputerCraft"
   ],
-  "useDependencyInformation": "true"
+  "dependants" : [],
+  "useDependencyInformation": true
 }
 ]

@@ -7,7 +7,7 @@
   "mcversion": "@MC_VERSION@",
   "url": "http://projectredwiki.com",
   "authors": [ "MrTJP", "ChickenBones"],
-  "credits": "Eloraam, GitHub contributers",
+  "credits": "Eloraam, GitHub contributors",
   "logoFile": "",
   "screenshots": [],
   "requiredMods": [
@@ -17,10 +17,17 @@
   ],
   "dependencies": [
       "ForgeMultipart",
-      "CodeChickenCore",
-      "CCTurtle",
-      "ComputerCraft"
+      "CodeChickenCore"
   ],
-  "useDependencyInformation": "true"
+  "dependants" : [
+      "ProjRed|Transmission",
+      "ProjRed|Integration",
+      "ProjRed|Illumination",
+      "ProjRed|Expansion",
+      "ProjRed|Transportation",
+      "ProjRed|Exploration",
+      "ProjRed|Compatibility"
+      ],
+  "useDependencyInformation": true
 }
 ]
