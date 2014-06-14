@@ -41,7 +41,7 @@ object FurnaceRecipeLib
 
     def addOreRecipe(in:ItemStack, out:ItemStack, ticks:Int)
     {
-        if (OreDictionary.getOreName(OreDictionary.getOreID(in)) == "Unknown")
+        if (OreDictionary.getOreIDs(in).length == 0)
         {
             addRecipe(in, out, ticks)
             return
@@ -58,8 +58,8 @@ object FurnaceRecipeLib
 
     def addOreRecipe(in:Int, out:ItemStack, ticks:Int)
     {
-        val list = OreDictionary.getOres(in)
-        if (!list.isEmpty) addOreRecipe(list.get(0), out, ticks)
+        val name = OreDictionary.getOreName(in)
+        if ("Unknown" != name) addOreRecipe(OreDictionary.getOres(name).get(0), out, ticks)
     }
 
     def recipeExists(input:ItemStack) = getRecipeOf(input) != null
@@ -79,7 +79,10 @@ object FurnaceRecipeLib
 
         def isDust(stack:ItemStack) = getOreName(stack).startsWith("dust")
         def isIngot(stack:ItemStack) = getOreName(stack).startsWith("ingot")
-        def getOreName(stack:ItemStack) = OreDictionary.getOreName(OreDictionary.getOreID(stack))
+        def getOreName(stack:ItemStack) = {
+          val IDs = OreDictionary.getOreIDs(stack)
+          if (IDs.length == 0) "Unknown" else OreDictionary.getOreName(IDs(0));
+        }
 
 //        for (key <- sl2.keySet())
 //        {
@@ -115,9 +118,9 @@ class RecipeFurnace(in:ItemKey, out:ItemKeyStack, val ticks:Int)
 
 trait FurnaceOreDicRecipe extends RecipeFurnace
 {
-    val oreDicID = OreDictionary.getOreID(input)
+    val oreDicID = OreDictionary.getOreIDs(input)
 
     override def matchesIn(inputstack:ItemKey) =
         super.matchesIn(inputstack) ||
-            (oreDicID > -1 && oreDicID == OreDictionary.getOreID(inputstack.makeStack(1)))
+            (oreDicID.length > 0 && oreDicID == OreDictionary.getOreIDs(inputstack.makeStack(1)))
 }

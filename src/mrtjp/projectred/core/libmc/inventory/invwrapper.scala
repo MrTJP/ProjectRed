@@ -270,9 +270,9 @@ abstract class InvWrapper(val inv:IInventory)
 
         if (matchOre)
         {
-            val a = OreDictionary.getOreID(stack1)
-            val b = OreDictionary.getOreID(stack2)
-            if (a == b && a != -1) return true
+            val a = OreDictionary.getOreIDs(stack1)
+            val b = OreDictionary.getOreIDs(stack2)
+            if (a == b && a.length != 0) return true
         }
 
         if (stack1.getItem == stack2.getItem)
