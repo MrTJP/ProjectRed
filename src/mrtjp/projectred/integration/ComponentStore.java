@@ -635,11 +635,6 @@ public class ComponentStore
             m.generateBlock(4, 6/16D, (10-height)/16D, 7/16D, 10/16D, 11/16D, 9/16D, 0x33);
             m.generateBlock(12, 7/16D, (10-height)/16D, 6/16D, 9/16D, 11/16D, 10/16D, 0xF);
             m.apply(new Translation(-0.5+x/16, (height-10)/16D, -0.5+z/16));
-            for (int v = 4; v < 20; v++)
-            {
-                UV uv = m.verts[v].uv;
-                uv.set(uv.u%2, uv.v%2);
-            }
             m.computeNormals();
             m.shrinkUVs(0.0005);
             m.apply(new Scale(1.0005)); // Eliminates z-fighting when torch is on wire.
