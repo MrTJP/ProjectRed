@@ -21,7 +21,7 @@ trait TWireItemRenderCommon extends IItemRenderer
         if (wdef == null) return
         TextureUtils.bindAtlas(0)
         CCRenderState.reset()
-        CCRenderState.useNormals = true
+        CCRenderState.setDynamic()
         CCRenderState.pullLightmap()
         CCRenderState.startDrawing()
 
