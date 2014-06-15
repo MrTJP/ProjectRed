@@ -19,29 +19,29 @@ item.projectred.core.part.partmotor.name=Motor
 item.projectred.core.part.partcoppercoil.name=Bobina de Cobre
 item.projectred.core.part.partironcoil.name=Bobina de Ferro
 item.projectred.core.part.partgoldcoil.name=Bobina de Ouro
-item.projectred.core.part.partwhitedust.name=Pó Brilhante Branco
-item.projectred.core.part.partorangedust.name=Pó Brilhante Laranja
-item.projectred.core.part.partmagentadust.name=Pó Brilhante Magenta
-item.projectred.core.part.partlightbluedust.name=Pó Brilhante Azul Claro
-item.projectred.core.part.partyellowdust.name=Pó Brilhante Amarelo
-item.projectred.core.part.partlimedust.name=Pó Brilhante Lima
-item.projectred.core.part.partpinkdust.name=Pó Brilhante Rosa
-item.projectred.core.part.partgreydust.name=Pó Brilhante Cinza
-item.projectred.core.part.partlightgreydust.name=Pó Brilhante Cinza Claro
-item.projectred.core.part.partcyandust.name=Pó Brilhante Cyano
-item.projectred.core.part.partpurpledust.name=Pó Brilhante Roxo
-item.projectred.core.part.partbluedust.name=Pó Brilhante Azul
-item.projectred.core.part.partbrowndust.name=Pó Brilhante Marrom
-item.projectred.core.part.partgreendust.name=Pó Brilhante Verde
-item.projectred.core.part.partreddust.name=Pó Brilhante Vermelho
-item.projectred.core.part.partblackdust.name=Pó Brilhante Preto
+
+item.projectred.core.part.illumar0.name=Pó Brilhante Branco
+item.projectred.core.part.illumar1.name=Pó Brilhante Laranja
+item.projectred.core.part.illumar2.name=Pó Brilhante Magenta
+item.projectred.core.part.illumar3.name=Pó Brilhante Azul Claro
+item.projectred.core.part.illumar4.name=Pó Brilhante Amarelo
+item.projectred.core.part.illumar5.name=Pó Brilhante Lima
+item.projectred.core.part.illumar6.name=Pó Brilhante Rosa
+item.projectred.core.part.illumar7.name=Pó Brilhante Cinza
+item.projectred.core.part.illumar8.name=Pó Brilhante Cinza Claro
+item.projectred.core.part.illumar9.name=Pó Brilhante Cyano
+item.projectred.core.part.illumar10.name=Pó Brilhante Roxo
+item.projectred.core.part.illumar11.name=Pó Brilhante Azul
+item.projectred.core.part.illumar12.name=Pó Brilhante Marrom
+item.projectred.core.part.illumar13.name=Pó Brilhante Verde
+item.projectred.core.part.illumar14.name=Pó Brilhante Vermelho
+item.projectred.core.part.illumar15.name=Pó Brilhante Preto
+
 item.projectred.core.part.partcloth.name=Pano
 item.projectred.core.part.partsail.name=Vela
 item.projectred.core.part.gemruby.name=Rubi
 item.projectred.core.part.gemsapphire.name=Safira
 item.projectred.core.part.gemperidot.name=Peridoto
-
-tile.projectred.core.appliance|0.name=Fornalha de Ligas
 
 item.projectred.core.drawplate.name=Placa de Molde
 item.projectred.core.wiredebugger.name=Depurador De fio
@@ -51,8 +51,6 @@ item.projectred.core.screwdriver.name=Chave de Fenda
 
 
 itemGroup.expansion=Project Red: Expansion
-
-
 
 
 
@@ -78,34 +76,34 @@ item.projectred.transportation.pipe|4.name=Tubo de Pedido Roteado
 
 itemGroup.exploration=Project Red: Exploration
 
-tile.projectred.exploration.ore.oreruby.name=Minério de Rubi
-tile.projectred.exploration.ore.oresapphire.name=Minério de Safira
-tile.projectred.exploration.ore.oreperidot.name=Minério de Peridoto
-tile.projectred.exploration.stone.stonemarble.name=Marmore
-tile.projectred.exploration.stone.brickmarble.name=Tijolo de Mármore
-tile.projectred.exploration.stone.cobblebasalt.name=Pedregulho de Basalto
-tile.projectred.exploration.stone.stonebasalt.name=Basalto
-tile.projectred.exploration.stone.brickbasalt.name=Tijolo de Basalto
-tile.projectred.exploration.stone.storageruby.name=Bloco de Rubi
-tile.projectred.exploration.stone.storagesapphire.name=Bloco de Safira
-tile.projectred.exploration.stone.storageperidot.name=Bloco de Peridoto
+tile.projectred.exploration.ore|0.name=Minério de Rubi
+tile.projectred.exploration.ore|1.name=Minério de Safira
+tile.projectred.exploration.ore|2.name=Minério de Peridoto
+tile.projectred.exploration.stone|0.name=Marmore
+tile.projectred.exploration.stone|1.name=Tijolo de Mármore
+tile.projectred.exploration.stone|2.name=Pedregulho de Basalto
+tile.projectred.exploration.stone|3.name=Basalto
+tile.projectred.exploration.stone|4.name=Tijolo de Basalto
+tile.projectred.exploration.stone|5.name=Bloco de Rubi
+tile.projectred.exploration.stone|6.name=Bloco de Safira
+tile.projectred.exploration.stone|7.name=Bloco de Peridoto
 item.projectred.exploration.woolgin.name=Desfiador de Lã
-item.projectred.exploration.backpack.bpwhite.name=Mochila Branca
-item.projectred.exploration.backpack.bporange.name=Mochila Laranja
-item.projectred.exploration.backpack.bpmagenta.name=Mochila Magenta
-item.projectred.exploration.backpack.bplightblue.name=Mochila Azul Clara
-item.projectred.exploration.backpack.bpyellow.name=Mochila Amarela
-item.projectred.exploration.backpack.bplime.name=Mochila Lima
-item.projectred.exploration.backpack.bppink.name=Mochila Rosa
-item.projectred.exploration.backpack.bpgrey.name=Mochila Cinza
-item.projectred.exploration.backpack.bplightgrey.name=Mochila Cinza Claro
-item.projectred.exploration.backpack.bpcyan.name=Mochila Ciano
-item.projectred.exploration.backpack.bppurple.name=Mochila Roxa
-item.projectred.exploration.backpack.bpblue.name=Mochila Azul
-item.projectred.exploration.backpack.bpbrown.name=Mochila Marrom
-item.projectred.exploration.backpack.bpgreen.name=Mochila Verde
-item.projectred.exploration.backpack.bpred.name=Mochila Vermelha
-item.projectred.exploration.backpack.bpblack.name=Mochila Preta
+item.projectred.exploration.backpack|0.name=Mochila Branca
+item.projectred.exploration.backpack|1.name=Mochila Laranja
+item.projectred.exploration.backpack|2.name=Mochila Magenta
+item.projectred.exploration.backpack|3.name=Mochila Azul Clara
+item.projectred.exploration.backpack|4.name=Mochila Amarela
+item.projectred.exploration.backpack|5.name=Mochila Lima
+item.projectred.exploration.backpack|6.name=Mochila Rosa
+item.projectred.exploration.backpack|7.name=Mochila Cinza
+item.projectred.exploration.backpack|8.name=Mochila Cinza Claro
+item.projectred.exploration.backpack|9.name=Mochila Ciano
+item.projectred.exploration.backpack|10.name=Mochila Roxa
+item.projectred.exploration.backpack|11.name=Mochila Azul
+item.projectred.exploration.backpack|12.name=Mochila Marrom
+item.projectred.exploration.backpack|13.name=Mochila Verde
+item.projectred.exploration.backpack|14.name=Mochila Vermelha
+item.projectred.exploration.backpack|15.name=Mochila Preta
 item.projectred.exploration.axeruby.name=Machado de Rubi
 item.projectred.exploration.axesapphire.name=Machado de Safira
 item.projectred.exploration.axeperidot.name=Machado de Peridoto
@@ -137,14 +135,14 @@ item.projectred.exploration.sickleruby.name=Foice de Rubi
 item.projectred.exploration.sicklesapphire.name=Foice de Safira
 item.projectred.exploration.sickleperidot.name=Foice de Peridoto
 item.projectred.exploration.sicklediamond.name=Foice de Diamante
-tile.projectred.exploration.stone.stonemarblewall.name=Parede de Mármore
-tile.projectred.exploration.stone.brickmarblewall.name=Parede de Tijolo de Mármore
-tile.projectred.exploration.stone.cobblebasaltwall.name=Parede de Pedregulho de Bassalto
-tile.projectred.exploration.stone.stonebasaltwall.name=Parede de Bassalto
-tile.projectred.exploration.stone.brickbasaltwall.name=Parede de Tijolo de Bassalto
-tile.projectred.exploration.stone.storagerubywall.name=Parede de Rubi
-tile.projectred.exploration.stone.storagesapphirewall.name=Parede de Safira
-tile.projectred.exploration.stone.storageperidotwall.name=Parede de Peridoto
+tile.projectred.exploration.stonewalls|0.name=Parede de Mármore
+tile.projectred.exploration.stonewalls|1.name=Parede de Tijolo de Mármore
+tile.projectred.exploration.stonewalls|2.name=Parede de Pedregulho de Bassalto
+tile.projectred.exploration.stonewalls|3.name=Parede de Bassalto
+tile.projectred.exploration.stonewalls|4.name=Parede de Tijolo de Bassalto
+tile.projectred.exploration.stonewalls|5.name=Parede de Rubi
+tile.projectred.exploration.stonewalls|6.name=Parede de Safira
+tile.projectred.exploration.stonewalls|7.name=Parede de Peridoto
 
 
 
@@ -393,7 +391,7 @@ item.projectred.transmission.framewire|17.name=Framed Bundled Cable
 
 
 
-itemGroup.compat=Project Red: Compatability
+itemGroup.compat=Project Red: Compatibility
 
-tile.projectred.compatability.liqredstone.name=Redstone liquida
-tile.projectred.compatability.liqcondredmetal.name=Liga de Metal Vermelho Derretida
+tile.projectred.compatibility.liqredstone.name=Redstone liquida
+tile.projectred.compatibility.liqcondredmetal.name=Liga de Metal Vermelho Derretida

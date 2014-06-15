@@ -19,9 +19,17 @@ import net.minecraft.tileentity.TileEntity
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.core.libmc.fx._
 import codechicken.lib.vec.{BlockCoord, Vector3}
+import mrtjp.projectred.core.ItemBlockCore
+
+class ItemBlockLamp(b:Block) extends ItemBlockCore(b)
+{
+    override def getUnlocalizedName(stack: ItemStack) =
+        super.getUnlocalizedName() + (if (stack.getItemDamage() > 15) ".inv" else "") + "|" +stack.getItemDamage % 16
+}
 
 class BlockLamp extends MultiTileBlock("projectred.illumination.lamp", new Material(Material.circuits.getMaterialMapColor)) with IRedstoneConnectorBlock
 {
+    override def getItemBlockClass: Class[_ <: ItemBlockCore] = classOf[ItemBlockLamp]
     setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F)
     setHardness(0.5F)
     setCreativeTab(ProjectRedIllumination.tabLighting)
