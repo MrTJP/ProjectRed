@@ -25,13 +25,12 @@ import net.minecraft.init.Blocks
 import cpw.mods.fml.common.registry.GameRegistry
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item
-import net.minecraft.item.ItemBlock
 
 class MultiTileBlock(name:String, mat:Material) extends BlockContainer(mat)
 {
     setBlockName(name)
     GameRegistry.registerBlock(this, getItemBlockClass, name)
-    def getItemBlockClass: Class[_ <: ItemBlock] = classOf[ItemBlockCore]
+    def getItemBlockClass = classOf[ItemBlockCore]
 
     private var singleTile = false
     private val tiles = new Array[Class[_ <: TileEntity]](16)
