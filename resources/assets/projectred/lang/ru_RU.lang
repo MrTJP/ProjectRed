@@ -19,29 +19,29 @@ item.projectred.core.part.partmotor.name=Двигатель
 item.projectred.core.part.partcoppercoil.name=Медная катушка
 item.projectred.core.part.partironcoil.name=Железная катушка
 item.projectred.core.part.partgoldcoil.name=Золотая катушка
-item.projectred.core.part.partwhitedust.name=Белая светопыль
-item.projectred.core.part.partorangedust.name=Оранжевая светопыль
-item.projectred.core.part.partmagentadust.name=Сиреневая светопыль
-item.projectred.core.part.partlightbluedust.name=Светло-синяя светопыль
-item.projectred.core.part.partyellowdust.name=Жёлтая светопыль
-item.projectred.core.part.partlimedust.name=Лаймовая светопыль
-item.projectred.core.part.partpinkdust.name=Розовая светопыль
-item.projectred.core.part.partgreydust.name=Серая светопыль
-item.projectred.core.part.partlightgreydust.name=Светло-серая светопыль
-item.projectred.core.part.partcyandust.name=Бирюзовая светопыль
-item.projectred.core.part.partpurpledust.name=Фиолетовая светопыль
-item.projectred.core.part.partbluedust.name=Синяя светопыль
-item.projectred.core.part.partbrowndust.name=Коричневая светопыль
-item.projectred.core.part.partgreendust.name=Зелёная светопыль
-item.projectred.core.part.partreddust.name=Красная светопыль
-item.projectred.core.part.partblackdust.name=Чёрная светопыль
+
+item.projectred.core.part.illumar0.name=Белая светопыль
+item.projectred.core.part.illumar1.name=Оранжевая светопыль
+item.projectred.core.part.illumar2.name=Сиреневая светопыль
+item.projectred.core.part.illumar3.name=Светло-синяя светопыль
+item.projectred.core.part.illumar4.name=Жёлтая светопыль
+item.projectred.core.part.illumar5.name=Лаймовая светопыль
+item.projectred.core.part.illumar6.name=Розовая светопыль
+item.projectred.core.part.illumar7.name=Серая светопыль
+item.projectred.core.part.illumar8.name=Светло-серая светопыль
+item.projectred.core.part.illumar9.name=Бирюзовая светопыль
+item.projectred.core.part.illumar10.name=Фиолетовая светопыль
+item.projectred.core.part.illumar11.name=Синяя светопыль
+item.projectred.core.part.illumar12.name=Коричневая светопыль
+item.projectred.core.part.illumar13.name=Зелёная светопыль
+item.projectred.core.part.illumar14.name=Красная светопыль
+item.projectred.core.part.illumar15.name=Чёрная светопыль
+
 item.projectred.core.part.partcloth.name=Плетёная ткань
 item.projectred.core.part.partsail.name=Sail
 item.projectred.core.part.gemruby.name=Рубин
 item.projectred.core.part.gemsapphire.name=Сапфир
 item.projectred.core.part.gemperidot.name=Перидот
-
-tile.projectred.core.appliance.machinealloy.name=Плавильная печь
 
 item.projectred.core.drawplate.name=Фильера
 item.projectred.core.wiredebugger.name=Отладчик проводов
@@ -52,42 +52,38 @@ item.projectred.core.screwdriver.name=Отвёртка
 
 itemGroup.expansion=Project Red: Expansion
 
-item.projectred.expansion.VAWT.name=Вертикальная воздушная турбина
-item.projectred.expansion.ptube|0.name=Труба высокого давления
-
-
 
 
 itemGroup.exploration=Project Red: Exploration
 
-tile.projectred.exploration.ore.oreruby.name=Рубиновая руда
-tile.projectred.exploration.ore.oresapphire.name=Сапфировая руда
-tile.projectred.exploration.ore.oreperidot.name=Перидотовая руда
-tile.projectred.exploration.stone.stonemarble.name=Мрамор
-tile.projectred.exploration.stone.brickmarble.name=Мраморный кирпич
-tile.projectred.exploration.stone.cobblebasalt.name=Базальтовый булыжник
-tile.projectred.exploration.stone.stonebasalt.name=Базальт
-tile.projectred.exploration.stone.brickbasalt.name=Базальтовый кирпич
-tile.projectred.exploration.stone.storageruby.name=Рубиновый блок
-tile.projectred.exploration.stone.storagesapphire.name=Сапфировый блок
-tile.projectred.exploration.stone.storageperidot.name=Перидотовый блок
+tile.projectred.exploration.ore|0.name=Рубиновая руда
+tile.projectred.exploration.ore|1.name=Сапфировая руда
+tile.projectred.exploration.ore|2.name=Перидотовая руда
+tile.projectred.exploration.stone|0.name=Мрамор
+tile.projectred.exploration.stone|1.name=Мраморный кирпич
+tile.projectred.exploration.stone|2.name=Базальтовый булыжник
+tile.projectred.exploration.stone|3.name=Базальт
+tile.projectred.exploration.stone|4.name=Базальтовый кирпич
+tile.projectred.exploration.stone|5.name=Рубиновый блок
+tile.projectred.exploration.stone|6.name=Сапфировый блок
+tile.projectred.exploration.stone|7.name=Перидотовый блок
 item.projectred.exploration.woolgin.name=Чесалка
-item.projectred.exploration.backpack.bpwhite.name=Белый рюкзак
-item.projectred.exploration.backpack.bporange.name=Оранжевый рюкзак
-item.projectred.exploration.backpack.bpmagenta.name=Сиреневый рюкзак
-item.projectred.exploration.backpack.bplightblue.name=Светло-синий рюкзак
-item.projectred.exploration.backpack.bpyellow.name=Жёлтый рюкзак
-item.projectred.exploration.backpack.bplime.name=Лаймовый рюкзак
-item.projectred.exploration.backpack.bppink.name=Розовый рюкзак
-item.projectred.exploration.backpack.bpgrey.name=Серый рюкзак
-item.projectred.exploration.backpack.bplightgrey.name=Светло-серый рюкзак
-item.projectred.exploration.backpack.bpcyan.name=Бирюзовый рюкзак
-item.projectred.exploration.backpack.bppurple.name=Фиолетовый рюкзак
-item.projectred.exploration.backpack.bpblue.name=Синий рюкзак
-item.projectred.exploration.backpack.bpbrown.name=Коричневый рюкзак
-item.projectred.exploration.backpack.bpgreen.name=Зелёный рюкзак
-item.projectred.exploration.backpack.bpred.name=Красный рюкзак
-item.projectred.exploration.backpack.bpblack.name=Чёрный рюкзак
+item.projectred.exploration.backpack|0.name=Белый рюкзак
+item.projectred.exploration.backpack|1.name=Оранжевый рюкзак
+item.projectred.exploration.backpack|2.name=Сиреневый рюкзак
+item.projectred.exploration.backpack|3.name=Светло-синий рюкзак
+item.projectred.exploration.backpack|4.name=Жёлтый рюкзак
+item.projectred.exploration.backpack|5.name=Лаймовый рюкзак
+item.projectred.exploration.backpack|6.name=Розовый рюкзак
+item.projectred.exploration.backpack|7.name=Серый рюкзак
+item.projectred.exploration.backpack|8.name=Светло-серый рюкзак
+item.projectred.exploration.backpack|9.name=Бирюзовый рюкзак
+item.projectred.exploration.backpack|10.name=Фиолетовый рюкзак
+item.projectred.exploration.backpack|11.name=Синий рюкзак
+item.projectred.exploration.backpack|12.name=Коричневый рюкзак
+item.projectred.exploration.backpack|13.name=Зелёный рюкзак
+item.projectred.exploration.backpack|14.name=Красный рюкзак
+item.projectred.exploration.backpack|15.name=Чёрный рюкзак
 item.projectred.exploration.axeruby.name=Рубиновый топор
 item.projectred.exploration.axesapphire.name=Сапфировый топор
 item.projectred.exploration.axeperidot.name=Перидотовый топор
@@ -119,14 +115,14 @@ item.projectred.exploration.sickleruby.name=Рубиновый серп
 item.projectred.exploration.sicklesapphire.name=Сапфировый серп
 item.projectred.exploration.sickleperidot.name=Перидотовый серп
 item.projectred.exploration.sicklediamond.name=Алмазный серп
-tile.projectred.exploration.stone.stonemarblewall.name=Стена из мрамора
-tile.projectred.exploration.stone.brickmarblewall.name=Стена из мраморного кирпича
-tile.projectred.exploration.stone.cobblebasaltwall.name=Стена из базальтового булыжника
-tile.projectred.exploration.stone.stonebasaltwall.name=Стена из базальта
-tile.projectred.exploration.stone.brickbasaltwall.name=Стена из базальтового кирпича
-tile.projectred.exploration.stone.storagerubywall.name=Стена из рубина
-tile.projectred.exploration.stone.storagesapphirewall.name=Стена из сапфира
-tile.projectred.exploration.stone.storageperidotwall.name=Стена из перидота
+tile.projectred.exploration.stonewalls|0.name=Стена из мрамора
+tile.projectred.exploration.stonewalls|1.name=Стена из мраморного кирпича
+tile.projectred.exploration.stonewalls|2.name=Стена из базальтового булыжника
+tile.projectred.exploration.stonewalls|3.name=Стена из базальта
+tile.projectred.exploration.stonewalls|4.name=Стена из базальтового кирпича
+tile.projectred.exploration.stonewalls|5.name=Стена из рубина
+tile.projectred.exploration.stonewalls|6.name=Стена из сапфира
+tile.projectred.exploration.stonewalls|7.name=Стена из перидота
 
 
 
@@ -343,8 +339,8 @@ item.projectred.transmission.framewire|17.name=Шина в оболочке
 
 
 
-itemGroup.compat=Project Red: Compatability
+itemGroup.compat=Project Red: Compatibility
 
-tile.projectred.compatability.liqredstone.name=Liquid Redstone
-tile.projectred.compatability.liqcondredmetal.name=Molten Conductive Redmetal
+tile.projectred.compatibility.liqredstone.name=Liquid Redstone
+tile.projectred.compatibility.liqcondredmetal.name=Molten Conductive Redmetal
 
