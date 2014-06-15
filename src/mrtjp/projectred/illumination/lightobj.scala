@@ -21,9 +21,9 @@ trait TLightRenderHelper extends LightObject
         GL11.glPushMatrix()
         GL11.glTranslated(x, y, z)
         GL11.glScaled(s, s, s)
-        CCRenderState.reset()
         TextureUtils.bindAtlas(0)
-        CCRenderState.useNormals = true
+        CCRenderState.reset()
+        CCRenderState.setDynamic()
         CCRenderState.pullLightmap()
         CCRenderState.startDrawing()
     }

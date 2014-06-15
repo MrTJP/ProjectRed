@@ -77,7 +77,7 @@ object GateItemRenderer extends IItemRenderer
         if (!EnumGate.VALID_GATES(meta).implemented) return
         TextureUtils.bindAtlas(0)
         CCRenderState.reset()
-        CCRenderState.useNormals = true
+        CCRenderState.setDynamic()
         CCRenderState.pullLightmap()
         RenderGate.renderInv(new Scale(scale).`with`(new Translation(x, y, z)), meta)
     }

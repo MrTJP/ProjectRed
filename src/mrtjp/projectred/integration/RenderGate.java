@@ -875,7 +875,7 @@ public class RenderGate
         {
             CCRenderState.startDrawing();
             CCRenderState.pullLightmap();
-            CCRenderState.useNormals = true;
+            CCRenderState.setDynamic();
             pointer.renderModel(t, 0);
             CCRenderState.draw();
         }
@@ -931,7 +931,7 @@ public class RenderGate
         {
             CCRenderState.startDrawing();
             CCRenderState.pullLightmap();
-            CCRenderState.useNormals = true;
+            CCRenderState.setDynamic();
             pointer.renderModel(t, 0);
             CCRenderState.draw();
         }
@@ -992,7 +992,7 @@ public class RenderGate
         {
             CCRenderState.startDrawing();
             CCRenderState.pullLightmap();
-            CCRenderState.useNormals = true;
+            CCRenderState.setDynamic();
             pointer.renderModel(t, reflect ? 1 : 0);
             CCRenderState.draw();
         }
@@ -1068,7 +1068,7 @@ public class RenderGate
         {
             CCRenderState.startDrawing();
             CCRenderState.pullLightmap();
-            CCRenderState.useNormals = true;
+            CCRenderState.setDynamic();
             pointer.renderModel(t, reflect ? 1 : 0);
             CCRenderState.draw();
         }

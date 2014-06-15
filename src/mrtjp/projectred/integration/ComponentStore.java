@@ -510,11 +510,7 @@ public class ComponentStore
             double z2 = (rect.y+rect.h)/32D;
             double d = 0.0005-h/50D;// little offset for the wires go ontop of the border
             model.generateBlock(i, x1+d, 0.125, z1+d, x2-d, 0.125+h, z2-d, 1);
-            for (int v = i; v < i+20; v++)
-            {
-                UV uv = model.verts[v].uv;
-                uv.set(uv.u%2, uv.v%2, icon);
-            }
+            for (int v = i; v < i+20; v++) model.verts[v].uv.tex = icon;
         }
 
         @Override
@@ -763,7 +759,7 @@ public class ComponentStore
         @Override
         public void renderModel(Transformation t, int orient)
         {
-            models[orient].render(new Rotation(-angle+MathHelper.pi, 0, 1, 0).with(pos.translation()).with(dynamicT(orient)).with(t), new IconTransformation(pointerIcon), LightModel.standardLightModel);
+            models[orient].render(new Rotation(-angle+MathHelper.pi, 0, 1, 0).with(pos.translation()).with(dynamicT(orient)).with(t), new IconTransformation(pointerIcon));
         }
     }
 

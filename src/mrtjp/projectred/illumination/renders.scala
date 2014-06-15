@@ -138,7 +138,7 @@ object LampTESR extends TileEntitySpecialRenderer with IItemRenderer
             GL11.glScaled(s, s, s)
             TextureUtils.bindAtlas(0)
             CCRenderState.reset()
-            CCRenderState.useNormals = true
+            CCRenderState.setDynamic()
             CCRenderState.pullLightmap()
             CCRenderState.startDrawing()
 
@@ -205,7 +205,7 @@ object RenderButton extends IItemRenderer
 
                 TextureUtils.bindAtlas(0)
                 CCRenderState.reset()
-                CCRenderState.useNormals = true
+                CCRenderState.setDynamic()
                 CCRenderState.pullLightmap()
                 CCRenderState.startDrawing()
 

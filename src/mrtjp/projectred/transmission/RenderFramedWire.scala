@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11
 import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
 import net.minecraft.entity.player.EntityPlayer
 import mrtjp.projectred.core.libmc.PRLib
+import scala.concurrent.ops
 
 object RenderFramedWire
 {
@@ -41,19 +42,17 @@ object RenderFramedWire
     def render(w:FramedWirePart, pos:Vector3)
     {
         val key = modelKey(w)
+        val t = pos.translation()
         val uvt = new IconTransformation(w.getIcon)
         val m = ColourMultiplier.instance(w.renderHue)
 
-        val ops = Seq[IVertexOperation](pos.translation(), uvt)
-        val wireOps = ops :+ m
-
         if (w.material == 0)
         {
-            getOrGenerateWireModel(key).render(wireOps:_*)
-            renderWireFrame(key, ops:_*)
+            getOrGenerateWireModel(key).render(t, uvt, m)
+            renderWireFrame(key, t, uvt)
         }
         else getOrGenerateJacketedModel(key)
-            .renderWire(wireOps:_*)
+            .renderWire(t, uvt, m)
             .renderMaterial(pos, w.material)
     }
 
@@ -91,7 +90,7 @@ object RenderFramedWire
 
         CCRenderState.reset()
         TextureUtils.bindAtlas(0)
-        CCRenderState.useNormals = true
+        CCRenderState.setDynamic()
         CCRenderState.setBrightness(part.world, pos.x, pos.y, pos.z)
         CCRenderState.alphaOverride = 127
         CCRenderState.startDrawing()
