@@ -157,6 +157,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     {
         if (pass == 0 && useStaticRenderer)
         {
+            TextureUtils.bindAtlas(0)
             CCRenderState.setBrightness(world, x, y, z)
             doStaticTessellation(pos, pass)
             true

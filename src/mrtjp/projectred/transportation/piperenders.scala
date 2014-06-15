@@ -49,16 +49,13 @@ object RenderPipe
 
     def render(p:FlowingPipePart, pos:Vector3)
     {
-        val t = new Translation(pos)
+        val t = pos.translation()
         var uvt = new IconTransformation(p.getPipeType.sprites(0))
-        val connMap = p.connMap
+        val connMap = p.connMap&0x3F
 
-        if (Integer.bitCount(connMap) == 2 && ((connMap&3) == 3 || (connMap&12) == 12 || (connMap&48) == 48)) for (a <- 0 until 3)
+        if (connMap == 0x3 || connMap == 0xC || connMap == 0x30) for (a <- 0 until 3)
         {
-            if ((connMap>>a*2) == 3)
-            {
-                centerModels(a).render(t, uvt)
-            }
+            if ((connMap>>a*2) == 3) centerModels(a).render(t, uvt)
         }
         else centerModels(3).render(t, uvt)
 
@@ -72,11 +69,11 @@ object RenderPipe
 
     private def renderRSWiring(p:FlowingPipePart, t:Translation, signal:Int)
     {
-        val colour = new ColourMultiplier((signal&0xFF)/2+60<<24|0xFF)
+        val colour = ColourMultiplier.instance((signal&0xFF)/2+60<<24|0xFF)
         val uvt2 = new IconTransformation(PipeDefs.BASIC.sprites(1))
-        val connMap = p.connMap
+        val connMap = p.connMap&0x3F
 
-        if (Integer.bitCount(connMap) == 2 && ((connMap&3) == 3 || (connMap&12) == 12 || (connMap&48) == 48)) for (a <- 0 until 3)
+        if (connMap == 0x3 || connMap == 0xC || connMap == 0x30) for (a <- 0 until 3)
         {
             if ((connMap>>a*2) == 3) centerModelsRS(a).render(t, uvt2, colour)
         }
@@ -189,7 +186,7 @@ object RenderPipe
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         CCRenderState.reset()
         TextureUtils.bindAtlas(0)
-        CCRenderState.useNormals = true
+        CCRenderState.setDynamic()
         CCRenderState.setBrightness(part.world, pos.x, pos.y, pos.z)
         CCRenderState.alphaOverride = 127
         CCRenderState.startDrawing()
@@ -234,7 +231,7 @@ private class PipeModelGenerator(val w:Double = 2/8D, val d:Double = 1/16D-0.002
 
     def generateCrossExclusiveModels()
     {
-        val model = CCModel.quadModel(48)
+        val model = CCModel.quadModel(32)
         model.verts(0) = new Vertex5(0.5-w, 0.5-w, 0.5-w, 0, 16)
         model.verts(1) = new Vertex5(0.5+w, 0.5-w, 0.5-w, 8, 16)
         model.verts(2) = new Vertex5(0.5+w, 0.5-w, 0.5+w, 8, 8)
@@ -245,8 +242,6 @@ private class PipeModelGenerator(val w:Double = 2/8D, val d:Double = 1/16D-0.002
         model.verts(7) = new Vertex5(0.5-w, 0.5-w+d, 0.5-w, 0, 8)
 
         for (s <- 1 until 4) model.generateSidedPart(0, s, Vector3.center, 0, 8*s, 8)
-
-        for (i <- 0 until 48) if (model.verts(i) == null) model.verts(i) = new Vertex5
 
         centerModels(0) = model.copy.apply(Rotation.sideOrientation(2, 1).at(Vector3.center))
         centerModels(1) = model.copy.apply(Rotation.sideOrientation(0, 1).at(Vector3.center))
@@ -286,16 +281,13 @@ private class PipeModelGenerator(val w:Double = 2/8D, val d:Double = 1/16D-0.002
 
     def finishModels()
     {
-        def finishModel(m:CCModel) =
+        for (m <- centerModels++sideModels)
         {
             m.apply(new UVScale(1/16D))
             m.shrinkUVs(0.0005)
             m.computeNormals
             m.computeLighting(LightModel.standardLightModel)
-            m
         }
-
-        for (m <- sideModels++centerModels) finishModel(m)
     }
 
     def applyScale(scale:Double)
@@ -404,7 +396,7 @@ object PipeItemRenderer extends IItemRenderer
         if (pdef == null) return
         TextureUtils.bindAtlas(0)
         CCRenderState.reset()
-        CCRenderState.useNormals = true
+        CCRenderState.setDynamic()
         CCRenderState.pullLightmap()
         CCRenderState.startDrawing()
 

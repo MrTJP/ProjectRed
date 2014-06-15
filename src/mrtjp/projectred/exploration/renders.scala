@@ -53,7 +53,7 @@ object GemSawRenderer extends IItemRenderer
         }
 
         CCRenderState.reset()
-        CCRenderState.useNormals = true
+        CCRenderState.setDynamic()
         CCRenderState.pullLightmap()
         CCRenderState.changeTexture("microblock:textures/items/saw.png")
         CCRenderState.baseColour = 0xFFFFFFFF
