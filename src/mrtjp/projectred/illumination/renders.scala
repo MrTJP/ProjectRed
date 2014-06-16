@@ -131,7 +131,7 @@ object LampTESR extends TileEntitySpecialRenderer with IItemRenderer
         def render(x:Double, y:Double, z:Double, s:Double)
         {
             val meta = item.getItemDamage
-            val icon = new IconTransformation(if (meta > 15) BlockLamp.on(meta - 16) else BlockLamp.off(meta))
+            val icon = new IconTransformation(if (meta > 15) BlockLamp.on(meta%16) else BlockLamp.off(meta))
 
             GL11.glPushMatrix()
             GL11.glTranslated(x, y, z)
@@ -144,13 +144,13 @@ object LampTESR extends TileEntitySpecialRenderer with IItemRenderer
 
             val t = new Translation(x, y, z)
             CCRenderState.setPipeline(t, icon)
-            BlockRenderer.renderCuboid(lBounds, 0)
+            BlockRenderer.renderCuboid(Cuboid6.full, 0)
             CCRenderState.draw()
 
             if (meta > 15)
             {
                 RenderHalo.prepareRenderState()
-                RenderHalo.renderHalo(lBounds, meta-16, t)
+                RenderHalo.renderHalo(lBounds, meta%16, t)
                 RenderHalo.restoreRenderState()
             }
 
