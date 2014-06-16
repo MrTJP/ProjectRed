@@ -148,7 +148,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         var lastCrafter:CraftingPromise = null
 
         import LabelBreaks._
-        label("1")
+        label("outer")
         {
             while (!finished) label
             {
@@ -165,7 +165,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                     priority = lastCrafter.getPriority
                     val crafter = lastCrafter
                     lastCrafter = null
-                    if (recurse_IsCrafterUsed(crafter)) break("1")
+                    if (recurse_IsCrafterUsed(crafter)) break("outer")
 
                     val ci = new CraftingInitializer(crafter, itemsNeeded, this)
                     balanced.add(ci)
@@ -203,7 +203,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                 unbalanced = unbalanced.filterNot(c => c.setsRequested > 0 && !c.finalizeInteraction())
 
                 itemsNeeded = getMissingCount
-                if (itemsNeeded <= 0) break("1")
+                if (itemsNeeded <= 0) break("outer")
                 if (!unbalanced.isEmpty) finished = false
             }
         }
@@ -229,10 +229,12 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
     }
     protected def recurse_GetCrafterItem(crafter:IWorldCrafter):ItemKey =
     {
-        val c = usedCrafters.find(_.getCrafter == crafter).getOrElse(null)
-        if (c != null) c.getResultItem
-        else if (parent != null) parent.recurse_GetCrafterItem(crafter)
-        else null
+        usedCrafters.find(_.getCrafter == crafter) match
+        {
+            case Some(c) => c.getResultItem
+            case None if parent != null => parent.recurse_GetCrafterItem(crafter)
+            case None => null
+        }
     }
     protected def recurse_IsCrafterUsed(crafter:CraftingPromise):Boolean =
     {
@@ -560,7 +562,7 @@ class CraftingInitializer(crafter:CraftingPromise, maxToCraft:Int, branch:Reques
 
     def addAdditionalItems(additional:Int):Int =
     {
-        val stacksRequested:Int = (additional+setSize-1)/setSize
+        val stacksRequested = (additional+setSize-1)/setSize
         setsRequested += stacksRequested
         stacksRequested*setSize
     }

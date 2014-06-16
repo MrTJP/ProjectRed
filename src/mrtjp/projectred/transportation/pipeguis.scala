@@ -14,6 +14,7 @@ import mrtjp.projectred.core.libmc.gui._
 import mrtjp.projectred.core.{GuiIDs, TGuiBuilder}
 import net.minecraft.entity.player.EntityPlayer
 import codechicken.lib.data.MCDataInput
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 
 class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends WidgetGui(container, 176, 220)
 {
@@ -71,6 +72,7 @@ object GuiCraftingPipe extends TGuiBuilder
 {
     override def getID = GuiIDs.craftingPipe
 
+    @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
         PRLib.getMultiPart(player.worldObj, data.readCoord(), 6) match
@@ -109,6 +111,7 @@ object GuiExtensionPipe extends TGuiBuilder
 {
     override def getID = GuiIDs.extensionPipe
 
+    @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
         val coord = data.readCoord()
@@ -153,6 +156,7 @@ object GuiInterfacePipe extends TGuiBuilder
 {
     override def getID = GuiIDs.interfacePipe
 
+    @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
         val coord = data.readCoord()
@@ -412,6 +416,7 @@ object GuiFirewallPipe extends TGuiBuilder
 {
     override def getID = GuiIDs.firewallPipe
 
+    @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
         val coord = data.readCoord()

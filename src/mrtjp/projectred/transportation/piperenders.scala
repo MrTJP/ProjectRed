@@ -138,12 +138,14 @@ object RenderPipe
 
         dummyEntityItem.setEntityItemStack(itemstack)
         customRenderItem.doRender(dummyEntityItem, 0, 0, 0, 0, 0)
+
         prepareRenderState()
         GL11.glEnable(GL11.GL_LIGHTING)
-        Tessellator.instance.setColorRGBA_I(PRColors.get(r.priority.color).rgb, 32)
         GL11.glScalef(0.5f, 0.5f, 0.5f)
 
         CCRenderState.setPipeline(new Translation(-0.5, -0.5, -0.5))
+        CCRenderState.alphaOverride = 32
+        CCRenderState.baseColour = PRColors.get(r.priority.color).rgba
         BlockRenderer.renderCuboid(Cuboid6.full, 0)
 
         restoreRenderState()
@@ -159,6 +161,7 @@ object RenderPipe
         GL11.glDisable(GL11.GL_CULL_FACE)
         GL11.glDepthMask(false)
         CCRenderState.reset()
+        CCRenderState.setDynamic()
         CCRenderState.startDrawing()
     }
 

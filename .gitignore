@@ -45,3 +45,11 @@ options.txt
 /asm/
 /mods/
 *.log
+#Server stuff
+banned-ips.txt
+banned-players.txt
+ops.txt
+server.properties
+servers.dat
+white-list.txt
+/world/

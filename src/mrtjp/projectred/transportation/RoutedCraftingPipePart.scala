@@ -303,7 +303,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         }
     }
 
-    def getExtensionFor(slot:Int, item:ItemKey):IWorldRequester =
+    def getExtensionFor(slot:Int):IWorldRequester =
     {
         if (extensionsNeedRefresh)
         {

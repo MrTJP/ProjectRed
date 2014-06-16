@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack
 import java.util.{List => JList}
 import mrtjp.projectred.core.libmc.gui.GuiLib
 import net.minecraft.client.Minecraft
+import cpw.mods.fml.relauncher.{SideOnly, Side}
 
 class WidgetContainer extends Container
 {
@@ -24,6 +25,7 @@ class WidgetContainer extends Container
 
     def +(s:Slot2):this.type = {addSlotToContainer(s);this}
 
+    @SideOnly(Side.CLIENT)
     def addPlayerInv(x:Int, y:Int):this.type = addPlayerInv(Minecraft.getMinecraft.thePlayer, x, y)
     def addPlayerInv(player:EntityPlayer, x:Int, y:Int):this.type =
     {

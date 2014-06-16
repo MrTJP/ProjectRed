@@ -13,7 +13,8 @@ import net.minecraft.util.ChatComponentText
 
 class TransportationPH
 {
-    val channel = ProjectRedTransportation
+    //val channel = ProjectRedTransportation
+    val channel = "PR|Transp" //temporary, until PacketCustom is fixed
 
     val gui_CraftingPipe_action = 3
 
@@ -179,8 +180,8 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
 
     private def setChipNBT(packet:PacketCustom, player:EntityPlayerMP)
     {
-        val slot = packet.readUByte
-        val stack = packet.readItemStack
+        val slot = packet.readUByte()
+        val stack = packet.readItemStack()
         player.inventory.setInventorySlotContents(slot, stack)
         player.inventory.markDirty()
     }

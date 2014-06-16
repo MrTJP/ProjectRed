@@ -6,6 +6,11 @@ import codechicken.lib.packet.PacketCustom
 import net.minecraft.inventory.Container
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.projectred.exploration.GuiBackpack
+import mrtjp.projectred.transportation._
+import scala.Some
+import cpw.mods.fml.common.event.FMLLoadCompleteEvent
 
 object GuiManager
 {
@@ -18,8 +23,7 @@ object GuiManager
      */
     def openSMPContainer(player1:EntityPlayer, cont:Container, guiID:Int, dataWrite:MCDataOutput => Unit)
     {
-        if (!player1.isInstanceOf[EntityPlayerMP])
-            return
+        if (!player1.isInstanceOf[EntityPlayerMP]) return
         val player = player1.asInstanceOf[EntityPlayerMP]
         player.getNextWindowId()
         player.closeContainer()
@@ -37,6 +41,7 @@ object GuiManager
      * @param windowID The window ID the server defined to client
      * @param gui The gui created by the client
      */
+    @SideOnly(Side.CLIENT)
     def openSMPContainer(windowID:Int, gui:GuiScreen)
     {
         val mc = Minecraft.getMinecraft
@@ -50,6 +55,7 @@ object GuiManager
      * @param data Raw data built by the server, includes windowID as byte and
      *             guiID as short, as well as custom gui data.
      */
+    @SideOnly(Side.CLIENT)
     def receiveGuiPacket(data:MCDataInput)
     {
         val win = data.readUByte()
@@ -63,9 +69,17 @@ object GuiManager
     }
 
     private var guiMap = Map[Int, TGuiBuilder]()
-    def register(id:Int, g:TGuiBuilder)
+    @SideOnly(Side.CLIENT)
+    def initBuilders()
     {
-        guiMap += id -> g
+        import GuiIDs._
+        guiMap += backpacks -> GuiBackpack
+        guiMap += chipUpgrade -> GuiChipUpgrade
+        guiMap += craftingPipe -> GuiCraftingPipe
+        guiMap += extensionPipe -> GuiExtensionPipe
+        guiMap += interfacePipe -> GuiInterfacePipe
+        guiMap += firewallPipe -> GuiFirewallPipe
+        guiMap += routingChips -> ChipGuiFactory
     }
 }
 
@@ -82,10 +96,9 @@ object GuiIDs //hardcoded list to prevent server/client mismatch
 
 trait TGuiBuilder
 {
-    GuiManager.register(getID, this)
-
     def getID:Int
 
+    @SideOnly(Side.CLIENT)
     def buildGui(player:EntityPlayer, data:MCDataInput):GuiScreen
 
     def open(player:EntityPlayer, cont:Container){open(player, cont, {d => })}
