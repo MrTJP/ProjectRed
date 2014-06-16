@@ -96,13 +96,9 @@ abstract class TileMachine extends MultiTileTile
 
     def rotationT:Transformation = Rotation.sideOrientation(side, rotation).at(Vector3.center)
 
-    override def onBlockPlaced(s:Int, meta:Int)
+    override def onBlockPlaced(s:Int, meta:Int, player:EntityLivingBase, stack:ItemStack, hit:Vector3)
     {
         setSide(if (doesOrient) s^1 else 0)
-    }
-
-    override def onBlockPlacedBy(stack:ItemStack, player:EntityLivingBase)
-    {
         player match
         {
             case p:EntityPlayer => setRotation(Rotation.getSidedRotation(p, side^1))

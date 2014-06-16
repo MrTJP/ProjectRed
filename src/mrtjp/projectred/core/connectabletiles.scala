@@ -1,11 +1,13 @@
 package mrtjp.projectred.core
 
 import codechicken.lib.data.MCDataInput
-import codechicken.lib.vec.{BlockCoord, Rotation}
+import codechicken.lib.vec.{Vector3, BlockCoord, Rotation}
 import mrtjp.projectred.api.IConnectable
 import net.minecraft.tileentity.TileEntity
 import mrtjp.projectred.core.libmc.{PRLib, MultiTileTile}
 import net.minecraft.block.Block
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.item.ItemStack
 
 trait TConnectableTile extends TileEntity with IConnectable
 {
@@ -141,9 +143,9 @@ trait TConnectableTileMulti extends MultiTileTile with TConnectableTile
         if (!getWorldObj.isRemote) rebuildConns()
     }
 
-    abstract override def onBlockPlaced(side:Int, meta:Int)
+    abstract override def onBlockPlaced(side:Int, meta:Int, player:EntityLivingBase, stack:ItemStack, hit:Vector3)
     {
-        super.onBlockPlaced(side, meta)
+        super.onBlockPlaced(side, meta, player, stack, hit)
         if (!getWorldObj.isRemote) rebuildConns()
     }
 

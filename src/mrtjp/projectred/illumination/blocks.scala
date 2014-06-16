@@ -6,7 +6,7 @@ import mrtjp.projectred.ProjectRedIllumination
 import net.minecraft.item.{ItemStack, Item}
 import net.minecraft.creativetab.CreativeTabs
 import java.util.{List => JList, Random}
-import net.minecraft.entity.EnumCreatureType
+import net.minecraft.entity.{EntityLivingBase, EnumCreatureType}
 import net.minecraft.world.{World, IBlockAccess}
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.util.IIcon
@@ -67,7 +67,7 @@ class BlockLamp extends MultiTileBlock("projectred.illumination.lamp", new Mater
         else super.getIcon(w, x, y, z, side)
     }
 
-    override def getIcon(side:Int, meta:Int) = if (meta>15) BlockLamp.on(meta-16) else BlockLamp.off(meta)
+    override def getIcon(side:Int, meta:Int) = if (meta>15) BlockLamp.on(meta%16) else BlockLamp.off(meta)
 
     def getConnectionMask(world:IBlockAccess, x:Int, y:Int, z:Int, side:Int) = 0x1F
     def weakPowerLevel(world:IBlockAccess, x:Int, y:Int, z:Int, side:Int, mask:Int) = 0
@@ -85,16 +85,18 @@ class TileLamp extends MultiTileTile with ILight
     var powered = false
 
     override def getBlock = ProjectRedIllumination.blockLamp
+    override def getMetaData = getColor+(if (inverted) 16 else 0)
 
-    override def onBlockPlaced(side:Int, meta:Int){inverted = meta > 15}
+    override def onBlockPlaced(side:Int, meta:Int, player:EntityLivingBase, stack:ItemStack, hit:Vector3)
+    {
+        inverted = meta > 15
+    }
 
     override def getLightValue = if (inverted != powered) 15 else 0
 
-    override def getPickBlock = new ItemStack(ProjectRedIllumination.blockLamp, 1, getColor+(if (inverted) 16 else 0))
-
     override def onNeighborChange(b:Block)
     {
-        if (!world.isRemote && powered != checkPower) scheduleTick(2)
+        if (!world.isRemote) scheduleTick(2)
     }
 
     def checkPower =
@@ -107,7 +109,7 @@ class TileLamp extends MultiTileTile with ILight
     {
         val old = powered
         powered = checkPower
-        if (old != powered) sendStateUpdate()
+        if (old != powered) markDescUpdate()
     }
 
     override def readDesc(in:MCDataInput)
@@ -117,20 +119,10 @@ class TileLamp extends MultiTileTile with ILight
         markRender()
         markLight()
     }
-    override def writeDesc(out:MCDataOutput){out.writeBoolean(inverted).writeBoolean(powered)}
 
-    def sendStateUpdate()
+    override def writeDesc(out:MCDataOutput)
     {
-        writeStreamSend(writeStream(1).writeBoolean(powered))
-    }
-
-    override def read(in:MCDataInput, key:Int) = key match
-    {
-        case 1 =>
-            powered = in.readBoolean()
-            markRender()
-            markLight()
-        case _ => super.read(in, key)
+        out.writeBoolean(inverted).writeBoolean(powered)
     }
 
     override def load(tag:NBTTagCompound)
@@ -165,7 +157,7 @@ class BlockAirousLight extends BlockCore("projectred.illumination.airousLight", 
     override def randomDisplayTick(world:World, x:Int, y:Int, z:Int, rand:Random)
     {
         if (rand.nextInt(10) > 0) return
-        val color = world.getBlockMetadata(x, y, z)
+        val color = world.getBlockMetadata(x, y, z)%16
 
         val dist = 3
         val dx = x+rand.nextInt(dist)-rand.nextInt(dist)
