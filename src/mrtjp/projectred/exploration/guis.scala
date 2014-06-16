@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack
 import mrtjp.projectred.ProjectRedExploration
 import org.lwjgl.opengl.GL11
 import mrtjp.projectred.core.libmc.{PRColors, ResourceLib}
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 
 class GuiBackpack(player:EntityPlayer, bag:ItemStack) extends WidgetGui(ItemBackpack.createContainer(player), 176, 168)
 {
@@ -29,6 +30,7 @@ class GuiBackpack(player:EntityPlayer, bag:ItemStack) extends WidgetGui(ItemBack
 
 object GuiBackpack extends TGuiBuilder
 {
+    @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
         val held = player.getHeldItem

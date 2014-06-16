@@ -11,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayer
 import codechicken.lib.data.MCDataInput
 import mrtjp.projectred.core.libmc.inventory.{Slot2, SimpleInventory, WidgetContainer}
 import net.minecraft.item.ItemStack
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 
 class ChipUpgradeContainer(player:EntityPlayer) extends WidgetContainer
 {
@@ -225,6 +226,7 @@ object GuiChipUpgrade extends TGuiBuilder
 {
     override def getID = GuiIDs.chipUpgrade
 
+    @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
         new GuiChipUpgrade(new ChipUpgradeContainer(player))
 }

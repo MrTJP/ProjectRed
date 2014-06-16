@@ -79,7 +79,7 @@ abstract class RoutingChipset
 
     def createContainer(player:EntityPlayer) =
     {
-        val cont = new ChipContainer[RoutingChipset](player)
+        val cont = new ChipContainer(player)
         cont.addPlayerInv(player, 8, 86)
         cont
     }
@@ -487,14 +487,14 @@ trait TChipCrafter extends RoutingChipset
     def buildCraftPromise(item:ItemKey, pipe:RoutedCraftingPipePart) =
     {
         val result = ItemKeyStack.get(matrix.getStackInSlot(9))
-        if (result != null)
+        if (result != null && result.key == item)
         {
             val promise = new CraftingPromise(result, pipe, pipe.priority)
             for (i <- 0 until 9)
             {
                 val keystack = ItemKeyStack.get(matrix.getStackInSlot(i))
                 if (keystack != null && keystack.stackSize > 0)
-                    promise.addIngredient(keystack, pipe.getExtensionFor(extIndex(i), item))
+                    promise.addIngredient(keystack, pipe.getExtensionFor(extIndex(i)))
             }
             promise
         }

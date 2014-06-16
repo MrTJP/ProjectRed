@@ -16,11 +16,13 @@ import mrtjp.projectred.core.libmc.gui._
 import mrtjp.projectred.core.{GuiIDs, TGuiBuilder}
 import codechicken.lib.data.MCDataInput
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 
 object ChipGuiFactory extends TGuiBuilder
 {
     override def getID = GuiIDs.routingChips
 
+    @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
         val slot = data.readUByte()
@@ -33,26 +35,25 @@ object ChipGuiFactory extends TGuiBuilder
         }
     }
 
-    def apply(c:ChipContainer[RoutingChipset]) = new GuiChipRoot(c)
+    @SideOnly(Side.CLIENT)
+    def apply(c:ChipContainer) = new GuiChipRoot(c)
 }
 
-class ChipContainer[T <: RoutingChipset](player:EntityPlayer, private var chip:T) extends WidgetContainer
+class ChipContainer(player:EntityPlayer, var chip:RoutingChipset) extends WidgetContainer
 {
-    def this(player:EntityPlayer) = this(player, ItemRoutingChip.loadChipFromItemStack(player.getHeldItem).asInstanceOf[T])
+    def this(player:EntityPlayer) = this(player, ItemRoutingChip.loadChipFromItemStack(player.getHeldItem))
 
     private val slot = player.inventory.currentItem
     private val stack = player.inventory.mainInventory(slot)
 
-    def getNewInstance = new ChipContainer[T](player, chip)
-
-    def getChip:T = chip
+    def getNewInstance = new ChipContainer(player, chip)
 
     override def onContainerClosed(player:EntityPlayer)
     {
         super.onContainerClosed(player)
         if (player.worldObj.isRemote)
         {
-            ItemRoutingChip.saveChipToItemStack(player.inventory.mainInventory(slot), getChip)
+            ItemRoutingChip.saveChipToItemStack(player.inventory.mainInventory(slot), chip)
             player.inventory.markDirty()
             new PacketCustom(TransportationCPH.channel, TransportationCPH.gui_ChipNBTSet)
                 .writeByte(slot).writeItemStack(player.inventory.mainInventory(slot)).sendToServer()
@@ -61,17 +62,17 @@ class ChipContainer[T <: RoutingChipset](player:EntityPlayer, private var chip:T
 
     override def addSlotToContainer(slot:Slot):Slot =
     {
-        if (slot.getSlotIndex == this.slot) if (slot.isInstanceOf[Slot2])
+        if (slot.getSlotIndex == this.slot && slot.inventory == player.inventory) if (slot.isInstanceOf[Slot2])
             return super.addSlotToContainer(slot.asInstanceOf[Slot2].setRemove(false))
         super.addSlotToContainer(slot)
     }
 }
 
-abstract class GuiChipContainer[T <: RoutingChipset](cont:ChipContainer[T], prev:GuiScreen) extends WidgetGui(cont)
+abstract class GuiChipContainer[T <: RoutingChipset](cont:ChipContainer, prev:GuiScreen) extends WidgetGui(cont)
 {
     setJumpBack(prev)
 
-    def chip = cont.getChip
+    def chip:T = cont.chip.asInstanceOf[T]
     def cleanContainer = cont.getNewInstance
 
     override def blockedHotkeyNumbers = Set(mcInst.thePlayer.inventory.currentItem+1)
@@ -106,14 +107,12 @@ abstract class GuiChipContainer[T <: RoutingChipset](cont:ChipContainer[T], prev
     }
 }
 
-class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[RoutingChipset](cont, null)
+class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChipset](cont, null)
 {
     override def receiveMessage_Impl(message:String)
     {
         val c = cleanContainer
         c.addPlayerInv(8, 86)
-
-        def cFor[T<:RoutingChipset] = c.asInstanceOf[ChipContainer[T]]
 
         message match
         {
@@ -125,10 +124,10 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
                     c + new Slot2(c2.filter, s, x, y).setGhosting(true)
                     s += 1
                 }
-                jumpTo(new GuiChipFilter(cFor[TChipFilter], this), true)
+                jumpTo(new GuiChipFilter(c, this), true)
 
-            case "orient" if chip.isInstanceOf[TChipOrientation] => jumpTo(new GuiChipOrient(cFor[TChipOrientation], this), true)
-            case "prior" if chip.isInstanceOf[TChipPriority] => jumpTo(new GuiChipPriority(cFor[TChipPriority], this), true)
+            case "orient" if chip.isInstanceOf[TChipOrientation] => jumpTo(new GuiChipOrient(c, this), true)
+            case "prior" if chip.isInstanceOf[TChipPriority] => jumpTo(new GuiChipPriority(c, this), true)
             case "stock" if chip.isInstanceOf[TChipStock] =>
                 val c2 = chip.asInstanceOf[TChipStock]
                 var s = 0
@@ -137,7 +136,7 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
                     c + new Slot2(c2.stock, s, x, y).setGhosting(true)
                     s += 1
                 }
-                jumpTo(new GuiChipStock(cFor[TChipStock], this), true)
+                jumpTo(new GuiChipStock(c, this), true)
             case "craftmatrix" if chip.isInstanceOf[TChipCrafter] =>
                 val c2 = chip.asInstanceOf[TChipCrafter]
                 var s = 0
@@ -147,8 +146,8 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
                     s += 1
                 }
                 c + new Slot2(c2.matrix, s, 119, 33).setGhosting(true)
-                jumpTo(new GuiChipCraftMatrix(cFor[TChipCrafter], this), true)
-            case "craftext" if chip.isInstanceOf[TChipCrafter] => jumpTo(new GuiChipCraftExt(cFor[TChipCrafter], this), true)
+                jumpTo(new GuiChipCraftMatrix(c, this), true)
+            case "craftext" if chip.isInstanceOf[TChipCrafter] => jumpTo(new GuiChipCraftExt(c, this), true)
 
         }
     }
@@ -217,7 +216,7 @@ class GuiChipRoot(cont:ChipContainer[RoutingChipset]) extends GuiChipContainer[R
     }
 }
 
-class GuiChipFilter(cont:ChipContainer[TChipFilter], prev:GuiScreen) extends GuiChipContainer[TChipFilter](cont, prev)
+class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer[TChipFilter](cont, prev)
 {
 
     override def drawBackExtra(mouse:Point, frame:Float)
@@ -335,7 +334,7 @@ class GuiChipFilter(cont:ChipContainer[TChipFilter], prev:GuiScreen) extends Gui
     }
 }
 
-class GuiChipOrient(cont:ChipContainer[TChipOrientation], prev:GuiScreen) extends GuiChipContainer[TChipOrientation](cont, prev)
+class GuiChipOrient(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer[TChipOrientation](cont, prev)
 {
     val sideWidget = new WidgetSideSelect(20 ,20, 50, 50, 40) with TWidgetSideTE with TWidgetSideHighlight with TWidgetSidePicker
     {
@@ -380,7 +379,7 @@ class GuiChipOrient(cont:ChipContainer[TChipOrientation], prev:GuiScreen) extend
     }
 }
 
-class GuiChipPriority(cont:ChipContainer[TChipPriority], prev:GuiScreen) extends GuiChipContainer[TChipPriority](cont, prev)
+class GuiChipPriority(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer[TChipPriority](cont, prev)
 {
     override def drawBackExtra(mouse:Point, frame:Float)
     {
@@ -404,7 +403,7 @@ class GuiChipPriority(cont:ChipContainer[TChipPriority], prev:GuiScreen) extends
     }
 }
 
-class GuiChipStock(cont:ChipContainer[TChipStock], prev:GuiScreen) extends GuiChipContainer[TChipStock](cont, prev)
+class GuiChipStock(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer[TChipStock](cont, prev)
 {
     override def drawBackExtra(mouse:Point, frame:Float)
     {
@@ -436,7 +435,7 @@ class GuiChipStock(cont:ChipContainer[TChipStock], prev:GuiScreen) extends GuiCh
     }
 }
 
-class GuiChipCraftMatrix(cont:ChipContainer[TChipCrafter], prev:GuiScreen) extends GuiChipContainer[TChipCrafter](cont, prev)
+class GuiChipCraftMatrix(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer[TChipCrafter](cont, prev)
 {
     val tableResource = new ResourceLocation("textures/gui/container/crafting_table.png")
 
@@ -447,7 +446,7 @@ class GuiChipCraftMatrix(cont:ChipContainer[TChipCrafter], prev:GuiScreen) exten
     }
 }
 
-class GuiChipCraftExt(cont:ChipContainer[TChipCrafter], prev:GuiScreen) extends GuiChipContainer[TChipCrafter](cont, prev)
+class GuiChipCraftExt(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer[TChipCrafter](cont, prev)
 {
     override def drawBackExtra(mouse:Point, frame:Float)
     {
