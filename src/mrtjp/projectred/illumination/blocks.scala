@@ -97,7 +97,11 @@ class TileLamp extends MultiTileTile with ILight
         if (!world.isRemote && powered != checkPower) scheduleTick(2)
     }
 
-    def checkPower = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord)
+    def checkPower =
+    {
+        worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord) ||
+            worldObj.getBlockPowerInput(xCoord, yCoord, zCoord) != 0
+    }
 
     override def onScheduledTick()
     {
@@ -141,7 +145,7 @@ class TileLamp extends MultiTileTile with ILight
         tag.setBoolean("pow", powered)
     }
 
-    override def getColor = getBlockMetadata
+    override def getColor = getBlockMetadata%16
     override def isOn = inverted != powered
 }
 

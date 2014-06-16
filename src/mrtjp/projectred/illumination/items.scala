@@ -10,7 +10,7 @@ import mrtjp.projectred.core.{TItemGlassSound, ItemCore}
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import net.minecraft.creativetab.CreativeTabs
 import java.util.{List => JList}
-import mrtjp.projectred.core.libmc.BasicWireUtils
+import mrtjp.projectred.core.libmc.WireLib
 import net.minecraftforge.common.util.ForgeDirection
 import codechicken.multipart.minecraft.ButtonPart
 import net.minecraft.util.IIcon
@@ -24,7 +24,7 @@ class ItemBaseLight(obj:LightObject, val inverted:Boolean) extends ItemCore(obj.
     override def newPart(stack:ItemStack, player:EntityPlayer, w:World, pos:BlockCoord, side:Int, vhit:Vector3):TMultiPart =
     {
         val bc = pos.copy.offset(side^1)
-        if (!BasicWireUtils.canPlaceWireOnSide(w, bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side), false) && !(BasicWireUtils.canPlaceTorchOnBlock(w, bc.x, bc.y, bc.z, false) && side == 1)) return null
+        if (!WireLib.canPlaceWireOnSide(w, bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side), false) && !(WireLib.canPlaceTorchOnBlock(w, bc.x, bc.y, bc.z, false) && side == 1)) return null
 
         val light = MultiPartRegistry.createPart(obj.getType, false).asInstanceOf[BaseLightPart]
         if (light != null) light.preparePlacement(side^1, stack.getItemDamage, inverted)

@@ -11,7 +11,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.world.World
 import java.util.{List => JList}
-import mrtjp.projectred.core.libmc.BasicWireUtils
+import mrtjp.projectred.core.libmc.WireLib
 import net.minecraftforge.common.util.ForgeDirection
 
 abstract class ItemWireCommon(name:String) extends ItemCore(name) with TItemMultiPart with TItemGlassSound
@@ -35,7 +35,7 @@ class ItemPartWire extends ItemWireCommon("projectred.transmission.wire")
     def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3) =
     {
         val onPos = pos.copy.offset(side^1)
-        if (!BasicWireUtils.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) null
+        if (!WireLib.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) null
         else
         {
             val wiredef = WireDef.values(item.getItemDamage)

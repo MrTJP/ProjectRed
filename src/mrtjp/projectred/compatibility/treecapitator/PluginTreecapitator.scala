@@ -7,7 +7,7 @@ import cpw.mods.fml.common.event.FMLInterModComms
 import net.minecraft.item.Item
 import net.minecraft.block.Block
 
-class PluginTreecapitator extends IPRPlugin
+object PluginTreecapitator extends IPRPlugin
 {
     override def getModID = "TreeCapitator"
 

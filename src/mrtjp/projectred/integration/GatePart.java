@@ -12,7 +12,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.libmc.BasicWireUtils;
+import mrtjp.projectred.core.libmc.WireLib;
 import mrtjp.projectred.core.libmc.PRLib;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -228,7 +228,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public boolean canStay()
     {
         BlockCoord pos = new BlockCoord(tile()).offset(side());
-        return BasicWireUtils.canPlaceWireOnSide(world(), pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side()^1), false);
+        return WireLib.canPlaceWireOnSide(world(), pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side()^1), false);
     }
 
     public boolean dropIfCantStay()

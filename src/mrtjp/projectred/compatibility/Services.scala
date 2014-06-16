@@ -1,51 +1,40 @@
 package mrtjp.projectred.compatibility
 
-import codechicken.core.ClassDiscoverer
 import cpw.mods.fml.common.Loader
 import mrtjp.projectred.core.PRLogger
-import scala.collection.immutable.HashMap
+import mrtjp.projectred.compatibility.treecapitator.PluginTreecapitator
+import mrtjp.projectred.compatibility.computercraft.PluginComputerCraft
 
 object Services
 {
-    var plugins = HashMap[String, IPRPlugin]()
+    var plugins = Seq[IPRPlugin]()
 
-    def servicesReflect()
+    def servicesLoad()
     {
-        val finder = new ClassDiscoverer(classOf[IPRPlugin])
-        finder.findClasses()
-
-        import scala.collection.JavaConversions._
-        for (c <- finder.classes) try
+        PRLogger.info("Started loading ProjectRed compat plugins")
+        try
         {
-            val plugin = c.newInstance().asInstanceOf[IPRPlugin]
-            if (Loader.isModLoaded(plugin.getModID))
-            {
-                plugins += plugin.getModID -> plugin
-                PRLogger.info("Loaded ProjectRed compat plugin for '"+plugin.getModID+"'")
-            }
+            val rootPlugins = Seq[IPRPlugin](PluginTreecapitator, PluginComputerCraft)
+            for (p <- rootPlugins)
+                if (Loader.isModLoaded(p.getModID)) plugins :+= p
+                else PRLogger.warn("Failed to load PR Plugin for "+p.getModID)
         }
-        catch
-            {
-                case e:Exception =>
-                    System.out.println("Failed to load " + c.getName)
-                    e.printStackTrace()
-            }
-
+        catch {case e:Exception =>}
         PRLogger.info("Finished loading ProjectRed compat plugins")
     }
 
     def doPreInit()
     {
-        for ((id, p) <- plugins) p.preInit()
+        for (p <- plugins) p.preInit()
     }
 
     def doInit()
     {
-        for ((id, p) <- plugins) p.init()
+        for (p <- plugins) p.init()
     }
 
     def doPostInit()
     {
-        for ((id, p) <- plugins) p.postInit()
+        for (p <- plugins) p.postInit()
     }
 }
