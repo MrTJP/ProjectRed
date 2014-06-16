@@ -9,7 +9,7 @@ import cpw.mods.fml.relauncher.{SideOnly, Side}
 import java.util.Random
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.enchantment.EnchantmentHelper
-import net.minecraft.item.ItemStack
+import net.minecraft.item.{ItemBlock, ItemStack, Item}
 import java.util
 import codechicken.lib.vec.BlockCoord
 import net.minecraft.entity.{Entity, EntityLivingBase}
@@ -24,13 +24,12 @@ import scala.collection.JavaConversions._
 import net.minecraft.init.Blocks
 import cpw.mods.fml.common.registry.GameRegistry
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.item.Item
 
 class MultiTileBlock(name:String, mat:Material) extends BlockContainer(mat)
 {
     setBlockName(name)
     GameRegistry.registerBlock(this, getItemBlockClass, name)
-    def getItemBlockClass = classOf[ItemBlockCore]
+    def getItemBlockClass:Class[_ <: ItemBlock] = classOf[ItemBlockCore]
 
     private var singleTile = false
     private val tiles = new Array[Class[_ <: TileEntity]](16)
@@ -43,13 +42,13 @@ class MultiTileBlock(name:String, mat:Material) extends BlockContainer(mat)
 
     override def harvestBlock(w:World, player:EntityPlayer, x:Int, y:Int, z:Int, l:Int){}
 
-    override def getRenderType = BasicRenderUtils.coreRenderHandlerID
+    override def getRenderType = RenderLib.multiRenderID
 
     @SideOnly(Side.CLIENT)
     override def randomDisplayTick(w:World, x:Int, y:Int, z:Int, rand:Random)
     {
         val md = w.getBlockMetadata(x, y, z)
-        val r = BasicRenderUtils.getRenderer(this, md)
+        val r = RenderLib.getRenderer(this, md)
         if (r != null) r.randomDisplayTick(w, x, y, z, rand)
     }
 
@@ -57,9 +56,10 @@ class MultiTileBlock(name:String, mat:Material) extends BlockContainer(mat)
 
     override def createTileEntity(world:World, meta:Int) =
     {
-        try {if (singleTile) tiles(0).newInstance else tiles(meta).newInstance}
+        var t:TileEntity = null
+        try {t = if (singleTile) tiles(0).newInstance else tiles(meta).newInstance}
         catch {case e:Exception => e.printStackTrace()}
-        null
+        t
     }
 
     def addTile[A <: TileEntity](t:Class[A], meta:Int)
@@ -67,6 +67,7 @@ class MultiTileBlock(name:String, mat:Material) extends BlockContainer(mat)
         tiles(meta) = t
         GameRegistry.registerTileEntity(t, getUnlocalizedName+"|"+meta)
     }
+
     def addSingleTile[A <: TileEntity](t:Class[A]){addTile(t, 0); singleTile = true}
 
     override def removedByPlayer(world:World, player:EntityPlayer, x:Int, y:Int, z:Int) =
@@ -354,13 +355,4 @@ abstract class MultiTileTile extends TileEntity with ICustomPacketTile
     {
         out.sendToChunk(worldObj, xCoord/16, zCoord/16)
     }
-}
-
-abstract class MultiTileRender(val block:Block)
-{
-    def renderWorldBlock(r:RenderBlocks, w:IBlockAccess, x:Int, y:Int, z:Int, meta:Int)
-
-    def renderInvBlock(r:RenderBlocks, meta:Int)
-
-    def randomDisplayTick(w:World, x:Int, y:Int, z:Int, r:Random)
 }

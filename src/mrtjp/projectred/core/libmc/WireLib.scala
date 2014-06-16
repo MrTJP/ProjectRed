@@ -4,7 +4,7 @@ import net.minecraftforge.common.util.ForgeDirection
 import net.minecraft.world.World
 import net.minecraft.init.Blocks
 
-object BasicWireUtils
+object WireLib
 {
     private val wireWhitelist = Seq(Blocks.glowstone, Blocks.piston, Blocks.sticky_piston, Blocks.piston_extension)
     def canPlaceWireOnSide(w:World, x:Int, y:Int, z:Int, side:ForgeDirection, default:Boolean):Boolean =

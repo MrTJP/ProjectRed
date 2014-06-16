@@ -4,7 +4,7 @@ import codechicken.multipart._
 import codechicken.lib.data.{MCDataOutput, MCDataInput}
 import net.minecraft.nbt.NBTTagCompound
 import codechicken.lib.vec.{Cuboid6, Vector3, BlockCoord}
-import mrtjp.projectred.core.libmc.{PRLib, BasicWireUtils}
+import mrtjp.projectred.core.libmc.{PRLib, WireLib}
 import net.minecraftforge.common.util.ForgeDirection
 import net.minecraft.world.EnumSkyBlock
 import cpw.mods.fml.relauncher.{SideOnly, Side}
@@ -71,8 +71,8 @@ class BaseLightPart(obj:LightObject) extends TMultiPart with TCuboidPart with TS
     {
         if (world.isRemote) return false
         val bc = new BlockCoord(x, y, z).offset(side)
-        if (!BasicWireUtils.canPlaceWireOnSide(world, bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side^1), false)
-            && !(BasicWireUtils.canPlaceTorchOnBlock(world, bc.x, bc.y, bc.z, false) && (side^1) == 0))
+        if (!WireLib.canPlaceWireOnSide(world, bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side^1), false)
+            && !(WireLib.canPlaceTorchOnBlock(world, bc.x, bc.y, bc.z, false) && (side^1) == 0))
         {
             PRLib.dropItem(world, x, y, z, getItem)
             tile.remPart(this)

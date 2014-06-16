@@ -19,7 +19,7 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 import org.lwjgl.opengl.GL11
 import scala.collection.JavaConversions._
-import mrtjp.projectred.core.libmc.{PRLib, BasicWireUtils}
+import mrtjp.projectred.core.libmc.{PRLib, WireLib}
 import net.minecraftforge.common.util.ForgeDirection
 import mrtjp.projectred.transmission.WireDef.WireDef
 
@@ -248,7 +248,7 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
     def canStay =
     {
         val pos = new BlockCoord(tile).offset(side)
-        BasicWireUtils.canPlaceWireOnSide(world, pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side^1), false)
+        WireLib.canPlaceWireOnSide(world, pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side^1), false)
     }
 
     def getItem = getWireType.makeStack

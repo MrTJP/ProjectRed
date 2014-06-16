@@ -6,9 +6,8 @@ import net.minecraftforge.common.MinecraftForge
 import mrtjp.projectred.core.libmc.fx.{ParticleIconRegistry, ParticleManagement}
 import codechicken.lib.packet.PacketCustom
 import cpw.mods.fml.client.registry.RenderingRegistry
-import mrtjp.projectred.core.libmc.BasicRenderUtils
-import cpw.mods.fml.client.FMLClientHandler
 import cpw.mods.fml.common.FMLCommonHandler
+import mrtjp.projectred.core.libmc.{MultiRenderHandler, RenderLib}
 
 class CoreProxy_server extends IProxy
 {
@@ -55,8 +54,8 @@ class CoreProxy_client extends CoreProxy_server
         super.init()
         PacketCustom.assignHandler(CoreCPH.channel, CoreCPH)
 
-        BasicRenderUtils.coreRenderHandlerID = RenderingRegistry.getNextAvailableRenderId
-        RenderingRegistry.registerBlockHandler(BasicRenderUtils.MultiRenderHandler.instance)
+        RenderLib.multiRenderID = RenderingRegistry.getNextAvailableRenderId
+        RenderingRegistry.registerBlockHandler(MultiRenderHandler)
     }
 }
 

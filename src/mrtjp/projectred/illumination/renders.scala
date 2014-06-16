@@ -45,7 +45,6 @@ object RenderHalo
     @SubscribeEvent
     def onRenderWorldLast(event:RenderWorldLastEvent)
     {
-        val tess = Tessellator.instance
         val w = Minecraft.getMinecraft.theWorld
         val entity = Minecraft.getMinecraft.renderViewEntity
         renderEntityPos.set(entity.posX, entity.posY+entity.getEyeHeight, entity.posZ)
@@ -62,7 +61,7 @@ object RenderHalo
         while (i < max && it.hasNext)
         {
             val cc = it.next()
-            renderHalo(tess, w, cc)
+            renderHalo(w, cc)
             i += 1
         }
 
@@ -80,6 +79,7 @@ object RenderHalo
         GL11.glDisable(GL11.GL_CULL_FACE)
         GL11.glDepthMask(false)
         CCRenderState.reset()
+        CCRenderState.setDynamic()
         CCRenderState.startDrawing()
     }
 
@@ -95,13 +95,13 @@ object RenderHalo
         GL11.glDisable(GL11.GL_BLEND)
     }
 
-    private def renderHalo(tess:Tessellator, world:World, cc:LightCache)
+    private def renderHalo(world:World, cc:LightCache)
     {
         CCRenderState.setBrightness(world, cc.pos.x, cc.pos.y, cc.pos.z)
-        renderHalo(tess, cc.cube, cc.color, new Translation(cc.pos.x, cc.pos.y, cc.pos.z))
+        renderHalo(cc.cube, cc.color, new Translation(cc.pos.x, cc.pos.y, cc.pos.z))
     }
 
-    def renderHalo(tess:Tessellator, cuboid:Cuboid6, colour:Int, t:Transformation)
+    def renderHalo(cuboid:Cuboid6, colour:Int, t:Transformation)
     {
         CCRenderState.reset()
         CCRenderState.setPipeline(t)
@@ -150,7 +150,7 @@ object LampTESR extends TileEntitySpecialRenderer with IItemRenderer
             if (meta > 15)
             {
                 RenderHalo.prepareRenderState()
-                RenderHalo.renderHalo(Tessellator.instance, lBounds, meta-16, t)
+                RenderHalo.renderHalo(lBounds, meta-16, t)
                 RenderHalo.restoreRenderState()
             }
 
@@ -214,7 +214,7 @@ object RenderButton extends IItemRenderer
 
                 CCRenderState.draw()
                 RenderHalo.prepareRenderState()
-                RenderHalo.renderHalo(Tessellator.instance, invLightBox, color, t)
+                RenderHalo.renderHalo(invLightBox, color, t)
                 RenderHalo.restoreRenderState()
                 GL11.glPopMatrix()
             }

@@ -35,7 +35,7 @@ trait TLightRenderHelper extends LightObject
     def renderInvLightBox(color:Int, trans:Transformation)
     {
         RenderHalo.prepareRenderState()
-        RenderHalo.renderHalo(Tessellator.instance, getLBounds(0), color, trans)
+        RenderHalo.renderHalo(getLBounds(0), color, trans)
         RenderHalo.restoreRenderState()
     }
 
