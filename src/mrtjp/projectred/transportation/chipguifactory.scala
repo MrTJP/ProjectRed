@@ -301,7 +301,12 @@ class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
                 override def buildTooltip(list:ListBuffer[String])
                 {
                     list+="Damage groups"
-                    list+=(EnumChatFormatting.GRAY+"Tools grouped at "+chip.grpPerc(chip.damageGroupMode)+"%")
+                    val percent = chip.grpPerc(chip.damageGroupMode)
+                    list+=(EnumChatFormatting.GRAY+(percent match
+                    {
+                        case -1 => "Tools are not grouped by damage."
+                        case _ => "Tools grouped at "+percent+"%"
+                    }))
                 }
             }.setAction("grp"))
         }
@@ -336,17 +341,23 @@ class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
 
 class GuiChipOrient(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer[TChipOrientation](cont, prev)
 {
-    val sideWidget = new WidgetSideSelect(20 ,20, 50, 50, 40) with TWidgetSideTE with TWidgetSideHighlight with TWidgetSidePicker
+    val sideWidget = new JWidgetSideSelect(20 ,20, 50, 50, 40)
     {
-        override def onSideChanged(s:Int) = shiftSides()
-    }
+        override def onSideChanged(s:Int)
+        {
+            val mask = sideMask
+            for (i <- 0 until 6) if ((mask&1<<i) != 0)
+            {
+                chip.extractOrient = i
+                return
+            }
+            chip.extractOrient = -1
+        }
+    }.setSideHighlighting(true).setTile(new TileEntityChest).setExclusive(true)
 
-    sideWidget.setSideHighlighting(true)
-    sideWidget.setTile(new TileEntityChest)
-    sideWidget.setExclusive(true)
     if (chip.extractOrient >= 0) sideWidget.setSideMask(1<<chip.extractOrient)
 
-    private val names = Seq[String]("bottom", "top", "North", "South", "West", "East")
+    private val names = Seq("bottom", "top", "North", "South", "West", "East")
 
     override def drawBackExtra(mouse:Point, frame:Float)
     {
@@ -358,19 +369,6 @@ class GuiChipOrient(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
             fontRenderer.drawString("simulated from", xOff, 30, PRColors.WHITE.rgb, true)
             fontRenderer.drawString("the " + names(chip.extractOrient), xOff, 40, PRColors.WHITE.rgb, true)
         }
-    }
-
-    def shiftSides()
-    {
-        val s = sideWidget.sideMask
-        for (i <- 0 until 6)
-            if ((s&1<<i) != 0)
-            {
-                chip.extractOrient = i
-                return
-            }
-
-        chip.extractOrient = -1
     }
 
     override def runInit_Impl()

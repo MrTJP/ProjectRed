@@ -3,16 +3,17 @@ package mrtjp.projectred.expansion
 import codechicken.lib.lighting.LightMatrix
 import codechicken.lib.render._
 import codechicken.lib.vec._
-import java.util.Random
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.expansion.BlockMachine._
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderBlocks
 import net.minecraft.util.IIcon
-import net.minecraft.world.{IBlockAccess, World}
+import net.minecraft.world.IBlockAccess
 import mrtjp.projectred.core.libmc.{PRLib, MultiTileRender, PRColors}
-import codechicken.lib.render.uv.{MultiIconTransformation, IconTransformation}
+import codechicken.lib.render.uv.MultiIconTransformation
+import net.minecraft.client.renderer.texture.IIconRegister
 
+@Deprecated
 abstract class TileMachineRender(b:Block) extends MultiTileRender(b)
 {
     val matrix = new LightMatrix
@@ -84,10 +85,9 @@ abstract class TileMachineRender(b:Block) extends MultiTileRender(b)
         CCRenderState.draw()
         CCRenderState.setColour(-1)
     }
-
-    def randomDisplayTick(w:World, x:Int, y:Int, z:Int, r:Random) {}
 }
 
+@Deprecated
 object RenderFurnace extends TileMachineRender(ProjectRedExpansion.machine1)
 {
     override def getFront(working:Boolean) =
@@ -96,40 +96,19 @@ object RenderFurnace extends TileMachineRender(ProjectRedExpansion.machine1)
 
 object RenderController extends MultiTileRender(ProjectRedExpansion.machine1)
 {
-    val model =
-    {
-        val m = CCModel.quadModel(6*4).generateBlock(0, Cuboid6.full)
-        m.computeNormals()
-        m.shrinkUVs(0.0005D)
-        m
-    }
-    val matrix = new LightMatrix
-
     override def renderWorldBlock(r:RenderBlocks, w:IBlockAccess, x:Int, y:Int, z:Int, meta:Int)
     {
         val tile = PRLib.getTileEntity(w, new BlockCoord(x,y,z), classOf[TileRouterController])
         if (tile != null)
         {
-            matrix.locate(w, x, y, z)
-
-            val iconT = if (r.overrideBlockTexture != null) new IconTransformation(r.overrideBlockTexture)
-                else new uv.MultiIconTransformation(bottom, top, side, side, side, side)
-
-            model.render(tile.rotationT.`with`(Vector3.fromTileEntity(tile).translation()), iconT, matrix)
         }
     }
 
     override def renderInvBlock(r:RenderBlocks, meta:Int)
     {
-        val iconT = new MultiIconTransformation(bottom, top, side, side, side, side)
-        CCRenderState.reset()
-        //CCRenderState.useNormals(true)
-        //CCRenderState.useModelColours(true)
-        CCRenderState.startDrawing()
-        model.render(new Translation(-0.5D, -0.5D, -0.5D), iconT)
-        CCRenderState.draw()
-        CCRenderState.setColour(-1)
     }
 
-    override def randomDisplayTick(w:World, x:Int, y:Int, z:Int, r:Random) {}
+    override def registerIcons(reg:IIconRegister)
+    {
+    }
 }

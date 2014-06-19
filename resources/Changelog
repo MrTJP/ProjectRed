@@ -1,6 +1,7 @@
 [dev]v4.4.0
 - PORT: Minecraft 1.7.2
 - ADDED: Version checking config
+- REMOVED: Colored trees (to be replaced)
 - FIX: Pipe priority sorting crash
 - FIX: Invert cell inventory render
 - FIX: Firewall pipe items not being ghosted

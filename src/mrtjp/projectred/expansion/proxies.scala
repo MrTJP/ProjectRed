@@ -32,13 +32,12 @@ class ExpansionProxy_server extends IProxy with IPartFactory
             //Machine1 (processing)
             ProjectRedExpansion.machine1 = new BlockMachine("projectred.expansion.machine1")
             //Machine1 tiles
-            ProjectRedExpansion.machine1.addTile(classOf[TileRouterController], 0)
-            ProjectRedExpansion.machine1.addTile(classOf[TileFurnace], 1)
+            ProjectRedExpansion.machine1.addTile(classOf[TileFurnace], 0)
 
             //Machine2 (devices)
             ProjectRedExpansion.machine2 = new BlockMachine("projectred.expansion.machine2")
             //Machine2 tiles
-            //...
+            ProjectRedExpansion.machine2.addTile(classOf[TileRouterController], 0)
         }
     }
 

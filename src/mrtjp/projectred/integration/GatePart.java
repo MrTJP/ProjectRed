@@ -90,7 +90,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     {
         subID = (byte)meta;
         setSide(side^1);
-        setRotation(Rotation.getSidedRotation(player, side));
+        setRotation((Rotation.getSidedRotation(player, side)+2)%4);//temporary fix for getSidedRotation bug
     }
 
     @Override

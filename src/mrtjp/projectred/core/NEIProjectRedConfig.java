@@ -1,6 +1,7 @@
 package mrtjp.projectred.core;
 
 import codechicken.nei.api.IConfigureNEI;
+import mrtjp.projectred.core.libmc.recipe.RecipeLib;
 
 public class NEIProjectRedConfig implements IConfigureNEI
 {
@@ -9,7 +10,7 @@ public class NEIProjectRedConfig implements IConfigureNEI
     {
         try
         {
-            //TODO
+            RecipeLib.loadNEI();
         }
         catch (Throwable e)
         {

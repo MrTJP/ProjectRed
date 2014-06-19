@@ -137,7 +137,7 @@ public class ExplorationRecipes
                 "srr",
                 "sbb",
                 's', Items.stick,
-                'r', "stoneRod",
+                'r', "rodStone",
                 'b', m
                 ));
     }
