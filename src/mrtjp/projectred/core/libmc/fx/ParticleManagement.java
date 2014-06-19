@@ -1,5 +1,6 @@
 package mrtjp.projectred.core.libmc.fx;
 
+import codechicken.lib.render.TextureUtils;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -7,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -21,8 +21,8 @@ public class ParticleManagement
 {
     public static String name = "pr-fx";
 
-    private final ArrayList<EntityFX> particles = new ArrayList<EntityFX>();
-    private final ArrayList<EntityFX> particleQueue = new ArrayList<EntityFX>();
+    private final ArrayList<CoreParticle> particles = new ArrayList<CoreParticle>();
+    private final ArrayList<CoreParticle> particleQueue = new ArrayList<CoreParticle>();
 
     public static final ParticleManagement instance = new ParticleManagement();
 
@@ -42,7 +42,7 @@ public class ParticleManagement
         return particle;
     }
 
-    public void addEffect(EntityFX effect)
+    public void addEffect(CoreParticle effect)
     {
         particleQueue.add(effect);
     }
@@ -74,14 +74,13 @@ public class ParticleManagement
         particles.addAll(particleQueue);
         particleQueue.clear();
 
-        for (Iterator<EntityFX> it = particles.iterator(); it.hasNext();)
+        for (Iterator<CoreParticle> it = particles.iterator(); it.hasNext();)
         {
             EntityFX particle = it.next();
 
             particle.onUpdate();
 
-            if (particle.isDead)
-                it.remove();
+            if (particle.isDead) it.remove();
         }
         Minecraft.getMinecraft().mcProfiler.endSection();
     }
@@ -95,7 +94,7 @@ public class ParticleManagement
         EntityFX.interpPosY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
         EntityFX.interpPosZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
 
-        Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationItemsTexture);
+        TextureUtils.bindAtlas(1);
 
         renderStandardParticles(partialTicks);
 
@@ -122,7 +121,7 @@ public class ParticleManagement
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
 
-        for (EntityFX particle : particles)
+        for (CoreParticle particle : particles)
         {
             tessellator.setBrightness(particle.getBrightnessForRender(partialTicks));
             particle.renderParticle(tessellator, partialTicks, rotationX, rotationXZ, rotationZ, rotationYZ, rotationXY);
