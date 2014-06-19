@@ -225,7 +225,7 @@ trait TChipFilter extends RoutingChipset
     var oreMatch = false
 
     var damageGroupMode = 0
-    val grpPerc = Seq(0, 25, 50, 75, 100)
+    val grpPerc = Seq(-1, 25, 50, 75, 99)
 
     // 0-none, 1-type, 2-slot
     var hideMode = 0

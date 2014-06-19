@@ -6,6 +6,8 @@ import net.minecraft.world.{World, IBlockAccess}
 import java.util.Random
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler
 import mrtjp.projectred.core.PRLogger
+import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.util.IIcon
 
 object RenderLib
 {
@@ -20,6 +22,14 @@ object RenderLib
     }
 
     def getRenderer(b:Block, meta:Int) = renders(Block.getIdFromBlock(b))(meta)
+
+    def registerIcons(b:Block, reg:IIconRegister)
+    {
+        for (r <- renders(Block.getIdFromBlock(b)))
+            if (r != null) r.registerIcons(reg)
+    }
+
+    def getIcon(b:Block, side:Int, meta:Int) = getRenderer(b, meta).getIcon(side, meta)
 }
 
 object MultiRenderHandler extends ISimpleBlockRenderingHandler
@@ -67,6 +77,10 @@ abstract class MultiTileRender(val block:Block)
 
     def renderInvBlock(r:RenderBlocks, meta:Int)
 
-    def randomDisplayTick(w:World, x:Int, y:Int, z:Int, r:Random)
+    def randomDisplayTick(w:World, x:Int, y:Int, z:Int, r:Random){}
+
+    def registerIcons(reg:IIconRegister){}
+
+    def getIcon(side:Int, meta:Int):IIcon = null
 }
 

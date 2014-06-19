@@ -23,6 +23,7 @@ import scala.collection.JavaConversions._
 import net.minecraft.init.Blocks
 import cpw.mods.fml.common.registry.GameRegistry
 import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.client.renderer.texture.IIconRegister
 
 class MultiTileBlock(name:String, mat:Material) extends BlockContainer(mat)
 {
@@ -42,6 +43,10 @@ class MultiTileBlock(name:String, mat:Material) extends BlockContainer(mat)
     override def harvestBlock(w:World, player:EntityPlayer, x:Int, y:Int, z:Int, l:Int){}
 
     override def getRenderType = RenderLib.multiRenderID
+
+    override def registerBlockIcons(reg:IIconRegister){RenderLib.registerIcons(this, reg)}
+
+    override def getIcon(side:Int, meta:Int) = RenderLib.getIcon(this, side, meta)
 
     @SideOnly(Side.CLIENT)
     override def randomDisplayTick(w:World, x:Int, y:Int, z:Int, rand:Random)

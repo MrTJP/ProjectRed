@@ -5,12 +5,14 @@ import java.net.URL
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
-import scala.util.parsing.json.JSON
-import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent
+
 import cpw.mods.fml.common.eventhandler.SubscribeEvent
-import net.minecraft.util.ChatComponentText
 import cpw.mods.fml.common.gameevent.TickEvent
+import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent
 import cpw.mods.fml.relauncher.Side
+import net.minecraft.util.ChatComponentText
+
+import scala.util.parsing.json.JSON
 
 class PRVersioningThread extends Thread("PR Version Check")
 {

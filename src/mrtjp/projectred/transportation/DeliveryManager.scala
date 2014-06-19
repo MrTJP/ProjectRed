@@ -14,7 +14,7 @@ class DeliveryManager
             case Some(p) =>
                 p.get1.stackSize += stack.stackSize
                 val idx = orders.indexOf(p)
-                orders = orders.take(idx) ++ orders.takeRight(idx) :+ p
+                orders = orders.take(idx) ++ orders.drop(idx+1) :+ p
             case None => orders :+= new Pair2(stack, requester)
         }
         onOrdersChanged()
@@ -38,7 +38,7 @@ class DeliveryManager
     {
         val first = orders.head
         first.get2.trackedItemLost(first.get1)
-        if (!orders.isEmpty) orders = orders.tail
+        if (orders.nonEmpty) orders = orders.tail
     }
 
     def peek =
@@ -47,7 +47,7 @@ class DeliveryManager
         else orders(0)
     }
 
-    def hasOrders = !orders.isEmpty
+    def hasOrders = orders.nonEmpty
 
     def getDeliveryCount(item:ItemKey) = orders.foldLeft(0)(
         (b, p) => b+(if (p.get1.key == item) p.get1.stackSize else 0))

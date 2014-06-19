@@ -2,6 +2,7 @@ package mrtjp.projectred.core
 
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.ProjectRedCore._
+import mrtjp.projectred.core.libmc.recipe.RecipeLib
 import net.minecraftforge.common.MinecraftForge
 import mrtjp.projectred.core.libmc.fx.{ParticleIconRegistry, ParticleManagement}
 import codechicken.lib.packet.PacketCustom
@@ -29,6 +30,7 @@ class CoreProxy_server extends IProxy
 
     def postinit()
     {
+        RecipeLib.loadLib()
         CoreRecipes.initCoreRecipes()
     }
 

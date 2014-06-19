@@ -1,13 +1,12 @@
 package mrtjp.projectred.transmission
 
-import codechicken.microblock.ItemMicroPart
 import cpw.mods.fml.common.registry.GameRegistry
-import mrtjp.projectred.core.{PartDefs, ShapedOreNBTRecipe, ShapelessOreNBTRecipe}
+import mrtjp.projectred.core.PartDefs
+import mrtjp.projectred.core.libmc._
+import mrtjp.projectred.core.libmc.recipe._
+import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.ItemStack
-import net.minecraftforge.oredict.ShapedOreRecipe
-import net.minecraftforge.oredict.ShapelessOreRecipe
-import mrtjp.projectred.core.libmc.PRColors
-import net.minecraft.init.{Items, Blocks}
+import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 
 object TransmissionRecipes
 {
@@ -35,9 +34,11 @@ object TransmissionRecipes
                 WireDef.oreDictDefinitionInsulated, Items.string))
 
         for (w <- WireDef.INSULATED_WIRES)
-            GameRegistry.addRecipe(new ShapelessOreNBTRecipe(
-                w.makeFramedStack, PRColors.get(w.meta - WireDef.INSULATED_0.meta).getOreDict,
-                WireDef.oreDictDefinitionInsFramed, ItemMicroPart.create(769, Blocks.log.getUnlocalizedName)).setCheckNBT())
+            (RecipeLib.newShapelessBuilder
+                += new OreIn(PRColors.get(w.meta - WireDef.INSULATED_0.meta).getOreDict)
+                += new OreIn(WireDef.oreDictDefinitionInsFramed)
+                += new MicroIn(MicroIn.edge, MicroIn.eight, Blocks.log)
+                += new ItemOut(w.makeFramedStack)).registerResult()
 
         GameRegistry.addRecipe(new ShapedOreRecipe(WireDef.BUNDLED_N.makeStack,
             "SWS", "WWW", "SWS",
@@ -49,10 +50,10 @@ object TransmissionRecipes
                 WireDef.oreDictDefinitionBundled, Items.string))
 
         for (w <- WireDef.values) if (w.hasFramedForm)
-            GameRegistry.addRecipe(new ShapedOreNBTRecipe(w.makeFramedStack,
-                "sss", "sis", "sss",
-                'i':Character, w.makeStack,
-                's':Character, ItemMicroPart.create(769, Blocks.log.getUnlocalizedName)).setCheckNBT())
+            (RecipeLib.newShapedBuilder <-> "sss"+"sis"+"sss"
+                += new ItemIn(w.makeStack) to "i"
+                += new MicroIn(MicroIn.edge, MicroIn.eight, Blocks.log) to "s"
+                += new ItemOut(w.makeFramedStack)).registerResult()
     }
 
     private def initPartRecipes()

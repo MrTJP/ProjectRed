@@ -96,7 +96,7 @@ abstract class InvWrapper(val inv:IInventory)
     var hidePerSlot = false
     var hidePerType = false
 
-    var damageGroup = 0
+    var damageGroup = -1
 
     var matchMeta = true
     var matchNBT = true
@@ -280,7 +280,7 @@ abstract class InvWrapper(val inv:IInventory)
             if (matchNBT && !ItemStack.areItemStackTagsEqual(stack1, stack2)) return false
             if (matchMeta)
             {
-                if (stack1.isItemStackDamageable && stack2.isItemStackDamageable) return areDamagesGrouped(stack1, stack2)
+                if (stack1.isItemStackDamageable && stack2.isItemStackDamageable && damageGroup > -1) return areDamagesGrouped(stack1, stack2)
                 else return stack1.getItemDamage == stack2.getItemDamage
             }
 

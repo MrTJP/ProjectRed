@@ -1,28 +1,28 @@
 package mrtjp.projectred.transportation
 
-import codechicken.lib.data.MCDataInput
-import codechicken.lib.data.MCDataOutput
-import codechicken.lib.vec.BlockCoord
-import codechicken.multipart.TMultiPart
-import codechicken.multipart.TileMultipart
 import java.util.UUID
 import java.util.concurrent.PriorityBlockingQueue
+
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.packet.PacketCustom
+import codechicken.lib.vec.BlockCoord
+import codechicken.multipart.{TMultiPart, TileMultipart}
 import mrtjp.projectred.api.IScrewdriver
-import mrtjp.projectred.core.{CoreSPH, Configurator}
+import mrtjp.projectred.core.lib.{LabelBreaks, Pair2}
+import mrtjp.projectred.core.libmc.inventory.InvWrapper
+import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack, PRLib}
+import mrtjp.projectred.core.{Configurator, CoreSPH}
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.{ISidedInventory, IInventory}
+import net.minecraft.inventory.{IInventory, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.{IIcon, MovingObjectPosition}
+import net.minecraftforge.common.util.ForgeDirection
+
 import scala.collection.JavaConversions._
 import scala.collection.immutable.BitSet
-import codechicken.lib.packet.PacketCustom
-import mrtjp.projectred.core.lib.{LabelBreaks, Pair2}
-import mrtjp.projectred.core.libmc.{PRLib, ItemKeyStack, ItemKey}
-import mrtjp.projectred.core.libmc.inventory.InvWrapper
-import net.minecraftforge.common.util.ForgeDirection
 
 object RoutedJunctionPipePart
 {
@@ -47,9 +47,9 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
     var needsWork = true
     var firstTick = true
 
-    var sendQueue = List[RoutedPayload]()
+    var sendQueue = Vector[RoutedPayload]()
     var transitQueue = new PriorityBlockingQueue[Pair2[RoutedPayload, Int]](10, TransitComparator)
-    var swapQueue = List[RoutedPayload]()
+    var swapQueue = Vector[RoutedPayload]()
 
     var statsReceived = 0
     var statsSent = 0
@@ -140,18 +140,16 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         swapQueue :+= r
     }
 
-    private def pollFromSwapQueue(stack:ItemKeyStack):RoutedPayload =
+    private def pollFromSwapQueue(stack:ItemKeyStack) =
     {
-        var rem:RoutedPayload = null
-        swapQueue = swapQueue.filterNot(r =>
+        swapQueue.find(_.payload == stack) match
         {
-            if (r.payload == stack)
-            {
-                rem = r
-                true
-            } else false
-        })
-        rem
+            case Some(r) =>
+                val idx = swapQueue.indexOf(r)
+                swapQueue = swapQueue.take(idx) ++ swapQueue.drop(idx+1)
+                r
+            case None => null
+        }
     }
 
     def getLogisticPath(stack:ItemKey, exclusions:BitSet, excludeStart:Boolean) =
@@ -177,7 +175,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         firstTick = false
 
         // Dispatch queued items
-        while (!sendQueue.isEmpty) dispatchQueuedPayload(sendPoll())
+        while (sendQueue.nonEmpty) dispatchQueuedPayload(sendPoll())
 
         tickTransitQueue()
 
@@ -186,8 +184,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
 
         def sendPoll() =
         {
-            val first = sendQueue(0)
-            sendQueue = sendQueue.filterNot(p => p == first)
+            val first = sendQueue.head
+            sendQueue = sendQueue.tail
             first
         }
     }
@@ -425,7 +423,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         var found = false
         val oldSide = inOutSide
 
-        import LabelBreaks._
+        import mrtjp.projectred.core.lib.LabelBreaks._
         label {
             for (i <- 0 until 6)
             {

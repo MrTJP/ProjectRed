@@ -1,10 +1,10 @@
 package mrtjp.projectred.core;
 
-import codechicken.microblock.ItemMicroPart;
 import codechicken.microblock.handler.MicroblockProxy;
 import cpw.mods.fml.common.registry.GameRegistry;
 import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.libmc.PRColors;
+import mrtjp.projectred.core.libmc.recipe.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -25,15 +25,13 @@ public class CoreRecipes
 
     private static void initToolRecipes()
     {
+        ShapedRecipeBuilder b = RecipeLib.newShapedBuilder();
         /** Draw Plate **/
-        GameRegistry.addRecipe(new ShapedOreNBTRecipe(
-                new ItemStack(ProjectRedCore.itemDrawPlate(), 1),
-                " i ",
-                "idi",
-                " i ",
-                'i', ItemMicroPart.create(770, Blocks.iron_block.getUnlocalizedName()),
-                'd', ItemMicroPart.create(2, Blocks.diamond_block.getUnlocalizedName())
-                ).setCheckNBT());
+        b.$less$minus$greater(" i "+"idi"+" i ")
+                .$plus$eq((Input)new MicroIn(MicroIn.edge(), MicroIn.fourth(), Blocks.iron_block).to("i"))
+                .$plus$eq((Input)new MicroIn(MicroIn.face(), MicroIn.fourth(), Blocks.diamond_block).to("d"))
+                .$plus$eq((Output)new ItemOut(ProjectRedCore.itemDrawPlate()));
+        b.registerResult();
 
         /** Screw Driver **/
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemScrewdriver()),
@@ -42,7 +40,7 @@ public class CoreRecipes
                 " bi",
                 'i', Items.iron_ingot,
                 'b', PRColors.BLUE.getOreDict()
-                ));
+        ));
 
         /** Wire debugger **/
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemWireDebugger()),
