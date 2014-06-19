@@ -77,7 +77,7 @@ public class Configurator
         staticGates = localConfig.get("general", "renderStaticGates", true, "If set to false, gates will be rendered in the TESR rather than the WorldRenderer").getBoolean(true);
         retroGeneration = localConfig.get("general", "Retro Ore Generation", false, "If set to true, world generation for ProjectRed will attempt to run even in previously generated chunks.").getBoolean(false);
         retroGenID = localConfig.get("general", "Retro Ore Gen ID", "prRG", "This ID is used to check if retro gen has been performed on a chunk. Changing it will reset retro gen status.").getString();
-        lightHaloMax = localConfig.get("general", "Light Halo Render Count", true, "Number of lights to render, -1 for unlimited").getInt();
+        lightHaloMax = localConfig.get("general", "Light Halo Render Count", -1, "Number of lights to render, -1 for unlimited").getInt();
 
         maxDetectionCount = localConfig.get("general", "Max Detection Count", 100, "Max number of links to explore when discovering new routers.").getInt();
         detectionFrequency = localConfig.get("general", "Detection Frequency", 20, "Ticks between router searches.").getInt();

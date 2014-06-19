@@ -8,7 +8,7 @@ import scala.collection.JavaConversions
 import scala.collection.mutable.ListBuffer
 import mrtjp.projectred.core.libmc.DirectionalRayTracer.HitCoord
 import net.minecraft.client.renderer.{RenderBlocks, Tessellator}
-import codechicken.lib.render.{CCRenderState, Vertex5, CCModel}
+import codechicken.lib.render.{ColourMultiplier, CCRenderState, Vertex5, CCModel}
 import codechicken.lib.vec.Rotation
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.texture.TextureMap
@@ -155,10 +155,11 @@ trait TWidgetSideHighlight extends WidgetSideSelect
 
         CCRenderState.reset()
         CCRenderState.pullLightmap()
+        CCRenderState.setDynamic()
         CCRenderState.baseColour = color
         CCRenderState.alphaOverride = 64
         CCRenderState.startDrawing()
-        TWidgetSideHighlight.highlights(side).render()
+        TWidgetSideHighlight.highlights(side).render(ColourMultiplier.instance(color))
         CCRenderState.draw()
 
         GL11.glEnable(GL11.GL_DEPTH_TEST)
@@ -295,7 +296,7 @@ class SphericalRotation
 
 class SphereRotationHook(mouseButton:Int, radius:Int)
 {
-    private final val target = new SphericalRotation
+    private val target = new SphericalRotation
     private var isDragging = false
 
     def update(mouseX:Int, mouseY:Int, drag:Boolean)

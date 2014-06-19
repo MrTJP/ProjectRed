@@ -449,13 +449,13 @@ class GuiChipCraftExt(cont:ChipContainer, prev:GuiScreen) extends GuiChipContain
     override def drawBackExtra(mouse:Point, frame:Float)
     {
         var index = 0
-        for ((x, y) <- GuiLib.createGrid(xSize/2-40, 6, 3, 3, 24+4, 24+1))
+        for ((x, y) <- GuiLib.createGrid(xSize/2-40, 6, 3, 3, 28, 25))
         {
             if (chip.maxExtensions >= index)
             {
                 val ext = chip.extIndex(index)
                 if (ext >= 0)
-                    Gui.drawRect(x, y, x+20, y+18, PRColors.get(ext).argb)
+                    Gui.drawRect(x+2, y, x+2+20, y+18, PRColors.get(ext).argb)
                 else drawCenteredString(fontRenderer, "off", x+12, y+8, PRColors.WHITE.rgba)
             }
             else drawCenteredString(fontRenderer, "-", x+12, y+8, PRColors.GREY.rgba)

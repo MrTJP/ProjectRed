@@ -5,6 +5,8 @@
 - FIX: Pipe priority sorting crash
 - FIX: Invert cell inventory render
 - FIX: Firewall pipe items not being ghosted
+- FIX: Recipes with microblocks not checking NBT
+-
 
 v4.3.7
 - FIX: Startup crash

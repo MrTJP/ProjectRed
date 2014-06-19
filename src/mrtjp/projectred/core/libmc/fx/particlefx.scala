@@ -1,19 +1,22 @@
 package mrtjp.projectred.core.libmc.fx
 
-import net.minecraft.client.particle.EntityFX
-import net.minecraft.world.World
 import codechicken.lib.vec.{BlockCoord, Vector3}
 import mrtjp.projectred.core.libmc.PRColors
+import net.minecraft.client.particle.EntityFX
 import net.minecraft.client.renderer.Tessellator
+import net.minecraft.world.World
 
 class CoreParticle(w:World, px:Double, py:Double, pz:Double) extends EntityFX(w, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D)
 {
-    setPosition(px, py, pz)
-    noClip = true
-
     motionX = 0.0D
     motionY = 0.0D
     motionZ = 0.0D
+
+    setPosition(px, py, pz)
+    noClip = true
+    isDead = false
+    particleMaxAge = 20+rand.nextInt(20)
+    particleGravity = 1
 
     var r = 1.0F
     var g = 1.0F
@@ -69,13 +72,13 @@ class CoreParticle(w:World, px:Double, py:Double, pz:Double) extends EntityFX(w,
 
     def +=(logic:ParticleLogic):this.type  =
     {
-        (logics :+ logic).sorted(LogicComparator)
+        logics = (logics :+ logic).sorted(LogicComparator)
         this
     }
 
     def ++=(it:Iterable[ParticleLogic]):this.type =
     {
-        (logics ++ it).sorted(LogicComparator)
+        logics = (logics ++ it).sorted(LogicComparator)
         this
     }
 
@@ -115,25 +118,20 @@ class CoreParticle(w:World, px:Double, py:Double, pz:Double) extends EntityFX(w,
 
         if (!ignoreVelocity) moveEntity(motionX, motionY, motionZ)
 
-        val rem = Vector.newBuilder[ParticleLogic]
         def iterate()
         {
-            for (l <- logics)
+            for (l <- logics) if (!l.getFinished)
             {
-                if (l.getFinished) rem += l
-                else
-                {
-                    l.onUpdate(worldObj, this)
-                    if (l.isFinalLogic) return
-                }
+                l.onUpdate(worldObj, this)
+                if (l.isFinalLogic) return
             }
         }
         iterate()
-        val toRem = rem.result()
-        logics = logics.filterNot(l => toRem.contains(l))
 
-        if ({particleAge+=1; particleAge-1} > particleMaxAge && !ignoreMaxAge ||
-            !ignoreNoLogics && logics.size == 0) setDead()
+        logics = logics.filterNot(_.getFinished)
+
+        if (({particleAge+=1; particleAge-1} > particleMaxAge && !ignoreMaxAge) ||
+            (!ignoreNoLogics && logics.size == 0)) setDead()
     }
 
     def position = new Vector3(posX, posY, posZ)
