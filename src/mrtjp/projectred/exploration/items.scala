@@ -165,52 +165,52 @@ object ToolDefs extends Enum
     private val sapphire = PartDefs.SAPPHIRE.makeStack
     private val peridot = PartDefs.PERIDOT.makeStack
     private val diamond = new ItemStack(Items.diamond)
-    private val matWood = ToolMaterial.WOOD
-    private val matStone = ToolMaterial.STONE
-    private val matIron = ToolMaterial.IRON
-    private val matGold = ToolMaterial.GOLD
-    private val matRuby = ProjectRedExploration.toolMaterialRuby
-    private val matSapphire = ProjectRedExploration.toolMaterialSapphire
-    private val matPeridot = ProjectRedExploration.toolMaterialPeridot
-    private val matDiamond = ToolMaterial.EMERALD
 
-    val RUBYAXE = ToolDefs("axeruby", matRuby, ruby)
-    val SAPPHIREAXE = ToolDefs("axesapphire", matSapphire, sapphire)
-    val PERIDOTAXE = ToolDefs("axeperidot", matPeridot, peridot)
+    import ToolMaterial.
+    {
+        WOOD => toolMaterialWood, STONE => toolMaterialStone,
+        IRON => toolMaterialIron, GOLD => toolMaterialGold,
+        EMERALD => toolMaterialEmerald
+    }
+    import ProjectRedExploration.{toolMaterialRuby, toolMaterialSapphire, toolMaterialPeridot}
 
-    val RUBYPICKAXE = ToolDefs("pickaxeruby", matRuby, ruby)
-    val SAPPHIREPICKAXE = ToolDefs("pickaxesapphire", matSapphire, sapphire)
-    val PERIDOTPICKAXE = ToolDefs("pickaxeperidot", matPeridot, peridot)
+    val RUBYAXE = ToolDefs("axeruby", toolMaterialRuby, ruby)
+    val SAPPHIREAXE = ToolDefs("axesapphire", toolMaterialSapphire, sapphire)
+    val PERIDOTAXE = ToolDefs("axeperidot", toolMaterialPeridot, peridot)
 
-    val RUBYSHOVEL = ToolDefs("shovelruby", matRuby, ruby)
-    val SAPPHIRESHOVEL = ToolDefs("shovelsapphire", matSapphire, sapphire)
-    val PERIDOTSHOVEL = ToolDefs("shovelperidot", matPeridot, peridot)
+    val RUBYPICKAXE = ToolDefs("pickaxeruby", toolMaterialRuby, ruby)
+    val SAPPHIREPICKAXE = ToolDefs("pickaxesapphire", toolMaterialSapphire, sapphire)
+    val PERIDOTPICKAXE = ToolDefs("pickaxeperidot", toolMaterialPeridot, peridot)
 
-    val RUBYSWORD = ToolDefs("swordruby", matRuby, ruby)
-    val SAPPHIRESWORD = ToolDefs("swordsapphire", matSapphire, sapphire)
-    val PERIDOTSWORD = ToolDefs("swordperidot", matPeridot, peridot)
+    val RUBYSHOVEL = ToolDefs("shovelruby", toolMaterialRuby, ruby)
+    val SAPPHIRESHOVEL = ToolDefs("shovelsapphire", toolMaterialSapphire, sapphire)
+    val PERIDOTSHOVEL = ToolDefs("shovelperidot", toolMaterialPeridot, peridot)
 
-    val RUBYHOE = ToolDefs("hoeruby", matRuby, ruby)
-    val SAPPHIREHOE = ToolDefs("hoesapphire", matSapphire, sapphire)
-    val PERIDOTHOE = ToolDefs("hoeperidot", matPeridot, peridot)
+    val RUBYSWORD = ToolDefs("swordruby", toolMaterialRuby, ruby)
+    val SAPPHIRESWORD = ToolDefs("swordsapphire", toolMaterialSapphire, sapphire)
+    val PERIDOTSWORD = ToolDefs("swordperidot", toolMaterialPeridot, peridot)
 
-    val WOODSAW = ToolDefs("sawwood", matWood, wood)
-    val STONESAW = ToolDefs("sawstone", matStone, flint)
-    val IRONSAW = ToolDefs("sawiron", matIron, iron)
-    val GOLDSAW = ToolDefs("sawgold", matGold, gold)
-    val RUBYSAW = ToolDefs("sawruby", matRuby, ruby)
-    val SAPPHIRESAW = ToolDefs("sawsapphire", matSapphire, sapphire)
-    val PERIDOTSAW = ToolDefs("sawperidot", matPeridot, peridot)
-    val DIAMONDSAW = ToolDefs("sawdiamond", matDiamond, diamond)
+    val RUBYHOE = ToolDefs("hoeruby", toolMaterialRuby, ruby)
+    val SAPPHIREHOE = ToolDefs("hoesapphire", toolMaterialSapphire, sapphire)
+    val PERIDOTHOE = ToolDefs("hoeperidot", toolMaterialPeridot, peridot)
 
-    val WOODSICKLE = ToolDefs("sicklewood", matWood, wood)
-    val STONESICKLE = ToolDefs("sicklestone", matStone, flint)
-    val IRONSICKLE = ToolDefs("sickleiron", matIron, iron)
-    val GOLDSICKLE = ToolDefs("sicklegold", matGold, gold)
-    val RUBYSICKLE = ToolDefs("sickleruby", matRuby, ruby)
-    val SAPPHIRESICKLE = ToolDefs("sicklesapphire", matSapphire, sapphire)
-    val PERIDOTSICKLE = ToolDefs("sickleperidot", matPeridot, peridot)
-    val DIAMONDSICKLE = ToolDefs("sicklediamond", matDiamond, diamond)
+    val WOODSAW = ToolDefs("sawwood", toolMaterialWood, wood)
+    val STONESAW = ToolDefs("sawstone", toolMaterialStone, flint)
+    val IRONSAW = ToolDefs("sawiron", toolMaterialIron, iron)
+    val GOLDSAW = ToolDefs("sawgold", toolMaterialGold, gold)
+    val RUBYSAW = ToolDefs("sawruby", toolMaterialRuby, ruby)
+    val SAPPHIRESAW = ToolDefs("sawsapphire", toolMaterialSapphire, sapphire)
+    val PERIDOTSAW = ToolDefs("sawperidot", toolMaterialPeridot, peridot)
+    val DIAMONDSAW = ToolDefs("sawdiamond", toolMaterialEmerald, diamond)
+
+    val WOODSICKLE = ToolDefs("sicklewood", toolMaterialWood, wood)
+    val STONESICKLE = ToolDefs("sicklestone", toolMaterialStone, flint)
+    val IRONSICKLE = ToolDefs("sickleiron", toolMaterialIron, iron)
+    val GOLDSICKLE = ToolDefs("sicklegold", toolMaterialGold, gold)
+    val RUBYSICKLE = ToolDefs("sickleruby", toolMaterialRuby, ruby)
+    val SAPPHIRESICKLE = ToolDefs("sicklesapphire", toolMaterialSapphire, sapphire)
+    val PERIDOTSICKLE = ToolDefs("sickleperidot", toolMaterialPeridot, peridot)
+    val DIAMONDSICKLE = ToolDefs("sicklediamond", toolMaterialEmerald, diamond)
 
     def apply(s:String, m:ToolMaterial, r:ItemStack) = new ToolVal(s, m, r)
     class ToolVal(val unlocal:String, val mat:ToolMaterial, val repair:ItemStack) extends Value
