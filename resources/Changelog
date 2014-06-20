@@ -6,7 +6,7 @@
 - FIX: Invert cell inventory render
 - FIX: Firewall pipe items not being ghosted
 - FIX: Recipes with microblocks not checking NBT
--
+- FIX: Pipe crafting crash
 
 v4.3.7
 - FIX: Startup crash

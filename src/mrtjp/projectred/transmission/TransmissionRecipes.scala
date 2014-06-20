@@ -2,7 +2,7 @@ package mrtjp.projectred.transmission
 
 import cpw.mods.fml.common.registry.GameRegistry
 import mrtjp.projectred.core.PartDefs
-import mrtjp.projectred.core.libmc._
+import mrtjp.projectred.core.libmc.PRColors
 import mrtjp.projectred.core.libmc.recipe._
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.ItemStack

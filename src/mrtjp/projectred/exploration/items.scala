@@ -1,27 +1,28 @@
 package mrtjp.projectred.exploration
 
-import mrtjp.projectred.core.{ItemCraftingDamage, PartDefs, ItemCore}
-import mrtjp.projectred.ProjectRedExploration
-import net.minecraft.item._
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.world.World
-import net.minecraft.creativetab.CreativeTabs
 import java.util.{List => JList}
-import net.minecraft.client.renderer.texture.IIconRegister
-import cpw.mods.fml.relauncher.{SideOnly, Side}
-import net.minecraft.util.IIcon
-import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory}
-import net.minecraft.nbt.NBTTagCompound
-import mrtjp.projectred.core.libmc.gui.GuiLib
-import mrtjp.projectred.core.lib.Enum
-import net.minecraft.item.Item.ToolMaterial
-import net.minecraft.init.{Items, Blocks}
-import cpw.mods.fml.common.registry.GameRegistry
+
 import codechicken.microblock.Saw
-import net.minecraft.block.{BlockFlower, BlockLeaves, Block}
-import net.minecraft.entity.EntityLivingBase
-import net.minecraftforge.common.IPlantable
+import cpw.mods.fml.common.registry.GameRegistry
+import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.projectred.ProjectRedExploration
+import mrtjp.projectred.core.lib.Enum
+import mrtjp.projectred.core.libmc.gui.GuiLib
+import mrtjp.projectred.core.libmc.inventory.{SimpleInventory, Slot2, WidgetContainer}
+import mrtjp.projectred.core.{ItemCore, ItemCraftingDamage, PartDefs}
 import mrtjp.projectred.exploration.ToolDefs.ToolVal
+import net.minecraft.block.{Block, BlockFlower, BlockLeaves}
+import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.{Blocks, Items}
+import net.minecraft.item.Item.ToolMaterial
+import net.minecraft.item._
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.IIcon
+import net.minecraft.world.World
+import net.minecraftforge.common.IPlantable
 
 class ItemBackpack extends ItemCore("projectred.exploration.backpack")
 {
