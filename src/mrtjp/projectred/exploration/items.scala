@@ -235,10 +235,11 @@ trait TGemTool extends Item
     }
 }
 
-class ItemGemAxe(override val tool:ToolVal) extends ItemAxe(tool.mat) with TGemTool
-class ItemGemPickaxe(override val tool:ToolVal) extends ItemPickaxe(tool.mat) with TGemTool
-class ItemGemShovel(override val tool:ToolVal) extends ItemSpade(tool.mat) with TGemTool
-class ItemGemSword(override val tool:ToolVal) extends ItemSword(tool.mat) with TGemTool
+// Weird scala compiler issue. These classes are implemented in java.
+//class ItemGemAxe(override val tool:ToolVal) extends ItemAxe(tool.mat) with TGemTool
+//class ItemGemPickaxe(override val tool:ToolVal) extends ItemPickaxe(tool.mat) with TGemTool
+//class ItemGemShovel(override val tool:ToolVal) extends ItemSpade(tool.mat) with TGemTool
+//class ItemGemSword(override val tool:ToolVal) extends ItemSword(tool.mat) with TGemTool
 class ItemGemHoe(override val tool:ToolVal) extends ItemHoe(tool.mat) with TGemTool
 
 class ItemGemSaw(val tool:ToolVal) extends ItemCraftingDamage("projectred.exploration."+tool.unlocal) with Saw
