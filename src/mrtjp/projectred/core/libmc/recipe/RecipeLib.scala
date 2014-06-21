@@ -1,7 +1,5 @@
 package mrtjp.projectred.core.libmc.recipe
 
-import codechicken.nei.api.{API => neiapi}
-import codechicken.nei.recipe.{ICraftingHandler, IUsageHandler}
 import mrtjp.projectred.core.libmc.ItemKeyStack
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.IRecipe
@@ -17,18 +15,6 @@ object RecipeLib
     {
         RecipeSorter.register("projectred:shaped", classOf[ShapedBuilderRecipe], SHAPED, "after:forge:shaped")
         RecipeSorter.register("projectred:shapeless", classOf[ShapelessBuilderRecipe], SHAPELESS, "after:forge:shapeless")
-    }
-
-    def loadNEI()
-    {
-        def reg(handler:IUsageHandler with ICraftingHandler)
-        {
-            neiapi.registerRecipeHandler(handler)
-            neiapi.registerUsageHandler(handler)
-        }
-
-        reg(new PRShapedRecipeHandler)
-        reg(new PRShapelessRecipeHandler)
     }
 }
 
