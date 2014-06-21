@@ -45,19 +45,19 @@ configFile.withReader {
 }
 
 dependencies {
-    compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:dev"
-    compile "codechicken:ForgeMultipart:${config.mc_version}-${config.fmp_version}:dev"
-    compile "codechicken:CodeChickenCore:${config.mc_version}-${config.ccc_version}:dev"
-    compile "codechicken:NotEnoughItems:${config.mc_version}-${config.nei_version}:dev"
+    compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
+    compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
+    compile "codechicken:CodeChickenCore:${config.mc.version}-${config.ccc.version}:dev"
+    compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
 }
 
 def build_number = (System.getenv("BUILD_NUMBER") ?: "1")
-version =  "${project.config.mod_version}." + build_number
+version =  "${project.config.mod.version}." + build_number
 
-println config.mc_version + "-" + config.forge_version
+println config.mc.version + "-" + config.forge.version
 // Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
 minecraft {
-    version = config.mc_version + "-" + config.forge_version
+    version = config.mc.version + "-" + config.forge.version
     if (file('../run').exists()) {
     	assetDir = "../run/assets"
     } else {
@@ -82,7 +82,7 @@ task updateVersion(type: Copy) {
     from(sourceSets.main.scala.srcDirs)
     into 'build/sources/scala'
     filter(ReplaceTokens, tokens: [
-        'VERSION': config.mod_version,
+        'VERSION': config.mod.version,
         'BUILD_NUMBER': build_number
     ])
 }
@@ -92,20 +92,20 @@ compileScala.dependsOn updateVersion
 processResources {
     //redo task if any of these properties change
     inputs.property "version", project.version
-    inputs.property "mc_version", config.mc_version
-    inputs.property "fmp_version", config.fmp_version
-    inputs.property "ccl_version", config.ccl_version
+    inputs.property "mc.version", config.mc.version
+    inputs.property "fmp.version", config.fmp.version
+    inputs.property "ccl.version", config.ccl.version
 
     // Replace properties in all files
     from(sourceSets.main.resources.srcDirs) {
         include '**.info'
         filter(ReplaceTokens, tokens: [
-            'VERSION': config.mod_version,
+            'VERSION': config.mod.version,
             'BUILD_NUMBER': build_number,
-            'MC_VERSION': config.mc_version,
-            'FORGE_VERSION': config.forge_version,
-            'FMP_VERSION': config.fmp_version,
-            'CCL_VERSION': config.ccl_version
+            'MC_VERSION': config.mc.version,
+            'FORGE_VERSION': config.forge.version,
+            'FMP_VERSION': config.fmp.version,
+            'CCL_VERSION': config.ccl.version
         ])
     }
     // Copy everything else
