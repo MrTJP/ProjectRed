@@ -6,9 +6,10 @@ import codechicken.multipart.MultiPartRegistry.IPartFactory
 import cpw.mods.fml.common.Loader
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.core.IProxy
+import mrtjp.projectred.core.{GuiManager, IProxy}
 import mrtjp.projectred.transmission._
 import mrtjp.projectred.core.libmc.RenderLib
+import mrtjp.projectred.transportation._
 
 class ExpansionProxy_server extends IProxy with IPartFactory
 {
@@ -80,6 +81,14 @@ class ExpansionProxy_client extends ExpansionProxy_server
             RenderLib.setRenderer(ProjectRedExpansion.machine1, 0, RenderController)
             RenderLib.setRenderer(ProjectRedExpansion.machine1, 1, RenderFurnace)
         }
+
+        import mrtjp.projectred.core.GuiIDs._
+        GuiManager.register(GuiChipUpgrade, chipUpgrade)
+        GuiManager.register(GuiCraftingPipe, craftingPipe)
+        GuiManager.register(GuiExtensionPipe, extensionPipe)
+        GuiManager.register(GuiInterfacePipe, interfacePipe)
+        GuiManager.register(GuiFirewallPipe, firewallPipe)
+        GuiManager.register(ChipGuiFactory, routingChips)
     }
 }
 

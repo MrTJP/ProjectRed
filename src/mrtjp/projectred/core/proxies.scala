@@ -55,7 +55,6 @@ class CoreProxy_client extends CoreProxy_server
     {
         super.init()
         PacketCustom.assignHandler(CoreCPH.channel, CoreCPH)
-        GuiManager.initBuilders()
 
         RenderLib.multiRenderID = RenderingRegistry.getNextAvailableRenderId
         RenderingRegistry.registerBlockHandler(MultiRenderHandler)

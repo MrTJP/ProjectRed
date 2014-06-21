@@ -5,7 +5,7 @@ import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.ProjectRedExploration._
-import mrtjp.projectred.core.{Configurator, IProxy}
+import mrtjp.projectred.core.{Configurator, GuiIDs, GuiManager, IProxy}
 import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.common.util.EnumHelper
 
@@ -107,6 +107,8 @@ class ExplorationProxy_client extends ExplorationProxy_server
         MinecraftForgeClient.registerItemRenderer(itemRubySaw, GemSawRenderer)
         MinecraftForgeClient.registerItemRenderer(itemSapphireSaw, GemSawRenderer)
         MinecraftForgeClient.registerItemRenderer(itemPeridotSaw, GemSawRenderer)
+
+        GuiManager.register(GuiBackpack, GuiIDs.backpacks)
     }
 }
 

@@ -69,18 +69,8 @@ object GuiManager
     }
 
     private var guiMap = Map[Int, TGuiBuilder]()
-    @SideOnly(Side.CLIENT)
-    def initBuilders()
-    {
-        import GuiIDs._
-        guiMap += backpacks -> GuiBackpack
-        guiMap += chipUpgrade -> GuiChipUpgrade
-        guiMap += craftingPipe -> GuiCraftingPipe
-        guiMap += extensionPipe -> GuiExtensionPipe
-        guiMap += interfacePipe -> GuiInterfacePipe
-        guiMap += firewallPipe -> GuiFirewallPipe
-        guiMap += routingChips -> ChipGuiFactory
-    }
+
+    def register(b:TGuiBuilder, id:Int){guiMap += id -> b}
 }
 
 object GuiIDs //hardcoded list to prevent server/client mismatch
