@@ -1,3 +1,8 @@
+v4.4.1
+- FIX: Automatic ForgeMultipart downloads
+- FIX: Dependency on NEI
+- FIX: Dependency on other modules
+
 v4.4.0
 - PORT: Minecraft 1.7.2
 - ADDED: Version checking config
