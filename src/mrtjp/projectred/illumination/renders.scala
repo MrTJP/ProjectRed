@@ -45,6 +45,7 @@ object RenderHalo
     @SubscribeEvent
     def onRenderWorldLast(event:RenderWorldLastEvent)
     {
+        if (renderList.size == 0) return
         val w = Minecraft.getMinecraft.theWorld
         val entity = Minecraft.getMinecraft.renderViewEntity
         renderEntityPos.set(entity.posX, entity.posY+entity.getEyeHeight, entity.posZ)
