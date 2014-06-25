@@ -234,7 +234,7 @@ class ItemDataCard extends ItemCore("projectred.core.datacard")
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
     {
         val l2 = list.asInstanceOf[JList[String]]
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)||Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) && stack.hasTagCompound)
+        if ((Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)||Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) && stack.hasTagCompound)
         {
             val tag = stack.getTagCompound
             import JavaConversions._
