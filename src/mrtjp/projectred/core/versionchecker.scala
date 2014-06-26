@@ -8,10 +8,12 @@ import java.util.Date
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent
 import cpw.mods.fml.common.gameevent.TickEvent
-import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent
+import cpw.mods.fml.common.gameevent.TickEvent.{ClientTickEvent, PlayerTickEvent}
 import cpw.mods.fml.relauncher.Side
+import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatComponentText
 
+import scala.collection.immutable.ListMap
 import scala.util.parsing.json.JSON
 
 class PRVersioningThread extends Thread("PR Version Check")
@@ -35,11 +37,11 @@ class PRVersioningThread extends Thread("PR Version Check")
     @SubscribeEvent
     def tickEnd(event:PlayerTickEvent)
     {
-        if (event.phase == TickEvent.Phase.END && event.side == Side.CLIENT)
+        if (event.phase == TickEvent.Phase.END)
         {
             if (!outdated || displayed) return
 
-            val p = event.player
+            val p = Minecraft.getMinecraft.thePlayer
             val target = parser.getTargetBuild
             p.addChatMessage(new ChatComponentText("Version "+target.version+" of ProjectRed was released on "+target.buildDate+"."))
             for (s <- parser.getChangelogSince) p.addChatMessage(new ChatComponentText(s))
@@ -79,13 +81,13 @@ class PRBuildsParser(val current:String)
     {
         val parse = JSONfrom("1=htped?nosj/ipa/deR02%tcejorP/boj/0808:moc.sikiweidni.ic//:ptth".reverse)
         val rawBuilds = parse.get("builds").get.asInstanceOf[List[Map[String, Any]]]
-        val buildB = Map.newBuilder[String, BuildDef]
+        val buildB = Vector.newBuilder[BuildDef]
         for (m <- rawBuilds)
         {
             def bdef = new BuildDef(m, false)
-            buildB += bdef.version -> bdef
+            buildB += bdef
         }
-        buildB.result().filter(_._2.isValidBuild)
+        ListMap(buildB.result().filter(_.isValidBuild).sorted.reverse.map(b => b.version -> b):_*)
     }
 
     def parseStableBuilds =
@@ -93,14 +95,18 @@ class PRBuildsParser(val current:String)
         val parse = JSONfrom("2=htped?nosj/ipa/dednemmoceR/ssecorp/noitomorp/deR02%tcejorP/boj/0808:moc.sikiweidni.ic//:ptth".reverse)
         val rawBuilds = parse.get("builds").get.asInstanceOf[List[Map[String, Any]]]
         val versionB = Set.newBuilder[Int]
-        for (b <- rawBuilds) versionB += b.get("target").get.asInstanceOf[Map[String, Double]].get("number").get.toInt
+        for (b <- rawBuilds) b.get("target") match
+        {
+            case Some(e) if e != null => versionB += e.asInstanceOf[Map[String, Double]].get("number").get.toInt
+            case _ =>
+        }
         versionB.result()
     }
 
     def parseChanges =
     {
         val stream2 = reader("https://raw.github.com/MrTJP/ProjectRed/master/resources/Changelog")
-        val changeB = Map.newBuilder[String, Vector[String]]
+        val changeB = ListMap.newBuilder[String, Vector[String]]
         var next:String = null
         def poll() = {next = stream2.readLine(); next}
         while (poll() != null)
@@ -121,22 +127,31 @@ class PRBuildsParser(val current:String)
     {
         builds = parseBuilds
         val stables = parseStableBuilds
-        for (b <- builds) if (stables.contains(b._2.buildNumber)) b._2.isRecommended = true
+        for ((v, b) <- builds) if (stables.contains(b.buildNumber)) b.isRecommended = true
 
+        var lastBuild:BuildDef = null
         for ((k, v) <- parseChanges)
         {
             val build = builds.getOrElse(k, null)
-            if (build != null) build.changes = v
+            if (build != null)
+            {
+                lastBuild = build
+                build.changes = v
+            }
+            else if (lastBuild != null) //for builds that are no longer valid
+                lastBuild.changes = (Vector.newBuilder[String]
+                        ++= lastBuild.changes
+                        += "(since v"+k+")" ++= v).result()
         }
     }
 
-    def isOutdated = getTargetBuild > getCurrentBuild
+    def isOutdated = getCurrentBuild == null || getTargetBuild > getCurrentBuild
 
     def getCurrentBuild = builds.getOrElse(current, null)
 
     def getTargetBuild:BuildDef =
     {
-        for (b <- builds) if (b._2.isRecommended || checkUnstables) return b._2
+        for ((v, b) <- builds) if (b.isRecommended || checkUnstables) return b
         null
     }
 
@@ -154,12 +169,7 @@ class PRBuildsParser(val current:String)
                 val b = it.next()._2
                 if (b <= target)
                 {
-                    if (b > from)
-                    {
-                        builder += "(since v"+b.version+")"
-                        builder ++= b.changes
-                        builder += "\n"
-                    }
+                    if (b > from) builder += "(since v"+b.version+")" ++= b.changes
                     else return
                 }
             }
@@ -175,18 +185,18 @@ class BuildDef(val data:Map[String, Any], var isRecommended:Boolean) extends Ord
     private val coreJarName =
     {
         val one = get[List[Map[String, Any]]]("artifacts")
-        if (!one.isEmpty) one(1).asInstanceOf[Map[String, String]]("fileName")
+        if (one.nonEmpty) one(1).asInstanceOf[Map[String, String]]("fileName").replace("ProjectRed-", "ProjectRed")
         else "#PR-#version-#build"
     }
 
-    val isSuccessful = get[String]("result") == "SUCCESS"
-    val isPublic = get[String]("description") == "public"
+    val isSuccessful = get[String]("result") contains "SUCCESS"
+    val isPublic = get[String]("description") contains "public"
 
     val buildNumber = get[Double]("number").toInt
     val version = coreJarName.split("-")(2).replace("."+buildNumber+".jar", "")
     val mcVersion = coreJarName.split("-")(1)
 
-    private[BuildDef] val date = new Date(new Timestamp(get[Double]("timestamp").toLong).getTime)
+    private val date = new Date(new Timestamp(get[Double]("timestamp").toLong).getTime)
     val buildDate = new SimpleDateFormat("MM/dd/yyyy").format(date)
 
     var changes:Vector[String] = Vector[String]()
@@ -204,5 +214,5 @@ class BuildDef(val data:Map[String, Any], var isRecommended:Boolean) extends Ord
         case _ => false
     }
 
-    override def compare(that:BuildDef) = date.compareTo(that.date)
+    override def compare(that:BuildDef) = buildNumber-that.buildNumber
 }
