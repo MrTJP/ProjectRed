@@ -44,7 +44,6 @@ object ProjectRedCore
     def postInit(event:FMLPostInitializationEvent)
     {
         CoreProxy.postinit()
-        MinecraftForge.EVENT_BUS.register(new PRVersioningThread)
     }
 
     @Mod.EventHandler
