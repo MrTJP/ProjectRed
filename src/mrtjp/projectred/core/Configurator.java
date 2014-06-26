@@ -17,12 +17,16 @@ public class Configurator
 
     /** Generation **/
     public static boolean gen_MarbleCave;
+    public static int gen_MarbleCave_resistance;
     public static boolean gen_Volcano;
+    public static int gen_Volcano_resistance;
     public static boolean gen_Ruby;
+    public static int gen_Ruby_resistance;
     public static boolean gen_Sapphire;
+    public static int gen_Sapphire_resistance;
     public static boolean gen_Peridot;
+    public static int gen_Peridot_resistance;
     public static boolean gen_SpreadingMoss;
-    public static boolean gen_dyeTrees;
 
     /** Settings **/
     public static boolean versionChecking;
@@ -59,13 +63,18 @@ public class Configurator
         Configuration localConfig = new Configuration(file);
         localConfig.load();
 
+        localConfig.addCustomCategoryComment("World Generation", "Toggle generation of structures, or increase resistance to lessen chances for generation.");
         gen_Ruby = localConfig.get("World Generation", "Ruby Ore", true).getBoolean(true);
+        gen_Ruby_resistance = localConfig.get("World Generation", "Ruby Ore resistance", 0).getInt();
         gen_Sapphire = localConfig.get("World Generation", "Sapphire Ore", true).getBoolean(true);
+        gen_Sapphire_resistance = localConfig.get("World Generation", "Sapphire Ore resistance", 0).getInt();
         gen_Peridot = localConfig.get("World Generation", "Peridot Ore", true).getBoolean(true);
+        gen_Peridot_resistance = localConfig.get("World Generation", "Peridot Ore resistance", 0).getInt();
         gen_MarbleCave = localConfig.get("World Generation", "Marble Caves", true).getBoolean(true);
+        gen_MarbleCave_resistance = localConfig.get("World Generation", "Marble Caves resistance", 4).getInt();
         gen_Volcano = localConfig.get("World Generation", "Volcanos", true).getBoolean(true);
+        gen_Volcano_resistance = localConfig.get("World Generation", "Volcano resistance", 16).getInt();
         gen_SpreadingMoss = localConfig.get("World Generation", "Spreading Moss", true).getBoolean(true);
-        gen_dyeTrees = localConfig.get("World Generation", "Stained Trees", true).getBoolean(true);
 
         versionChecking = localConfig.get("general", "Enable Version checking", true, "If enabled, the player will be alerted if a newer version of PR is available").getBoolean(true);
         versionCheckDevBuilds = localConfig.get("general", "Dev Version checking", false, "Include dev builds in version checks").getBoolean(false);
@@ -83,20 +92,20 @@ public class Configurator
         detectionFrequency = localConfig.get("general", "Detection Frequency", 20, "Ticks between router searches.").getInt();
         routerUpdateThreadCount = localConfig.get("general", "Router Update Thread Count", 4, "Number of active threads that update routing tables.").getInt();
 
-        String[] s = localConfig.get("general", "Backpack item blacklist", "", "Comma seperated list of item ids that cannot go in a backpack.").getString().split(",");
-        int s1 = 0;
-        backpackBlacklist = new int[s.length];
-        for (String str : s)
-        {
-            String str2 = str.trim();
-            try
-            {
-                backpackBlacklist[s1] = Integer.parseInt(str2);
-            }
-            catch (Throwable t){}
-            s1++;
-        }
-
+//        String[] s = localConfig.get("general", "Backpack item blacklist", "", "Comma seperated list of item ids that cannot go in a backpack.").getString().split(",");
+//        int s1 = 0;
+//        backpackBlacklist = new int[s.length];
+//        for (String str : s)
+//        {
+//            String str2 = str.trim();
+//            try
+//            {
+//                backpackBlacklist[s1] = Integer.parseInt(str2);
+//            }
+//            catch (Throwable t){}
+//            s1++;
+//        }
+//
         localConfig.save();
     }
 }
