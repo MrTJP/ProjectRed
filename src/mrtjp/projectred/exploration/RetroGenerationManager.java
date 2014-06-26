@@ -28,8 +28,6 @@ public class RetroGenerationManager
             RetroactiveWorldGenerator.registerRetroGenerator(new RetrogenMarbleCave());
         if (Configurator.gen_Volcano)
             RetroactiveWorldGenerator.registerRetroGenerator(new RetrogenVolcano());
-//        if (Configurator.gen_dyeTrees)//TODO replace
-//            RetroactiveWorldGenerator.registerRetroGenerator(new RetrogenDyeTrees());
     }
 
     static class RetrogenRuby implements IRetroGenerator
@@ -51,13 +49,16 @@ public class RetroGenerationManager
         @Override
         public void generate(Random r, World w, int chunkX, int chunkZ)
         {
-            // Ruby
-            for (int i = 0; i < 2; i++)
+            if (r.nextInt(Configurator.gen_Ruby_resistance) == 0)
             {
-                int x = chunkX * 16 + r.nextInt(16);
-                int y = r.nextInt(48);
-                int z = chunkZ * 16 + r.nextInt(16);
-                new GeneratorOre(ProjectRedExploration.blockOres(), OreDefs.ORERUBY().meta(), 5).generate(w, r, x, y, z);
+                // Ruby
+                for (int i = 0; i < 2; i++)
+                {
+                    int x = chunkX * 16 + r.nextInt(16);
+                    int y = r.nextInt(48);
+                    int z = chunkZ * 16 + r.nextInt(16);
+                    new GeneratorOre(ProjectRedExploration.blockOres(), OreDefs.ORERUBY().meta(), 5).generate(w, r, x, y, z);
+                }
             }
         }
     }
@@ -80,13 +81,16 @@ public class RetroGenerationManager
         @Override
         public void generate(Random r, World w, int chunkX, int chunkZ)
         {
-            // Saphire
-            for (int i = 0; i < 2; i++)
+            if (r.nextInt(Configurator.gen_Sapphire_resistance) == 0)
             {
-                int x = chunkX * 16 + r.nextInt(16);
-                int y = r.nextInt(48);
-                int z = chunkZ * 16 + r.nextInt(16);
-                new GeneratorOre(ProjectRedExploration.blockOres(), OreDefs.ORESAPPHIRE().meta(), 5).generate(w, r, x, y, z);
+                // Saphire
+                for (int i = 0; i < 2; i++)
+                {
+                    int x = chunkX * 16 + r.nextInt(16);
+                    int y = r.nextInt(48);
+                    int z = chunkZ * 16 + r.nextInt(16);
+                    new GeneratorOre(ProjectRedExploration.blockOres(), OreDefs.ORESAPPHIRE().meta(), 5).generate(w, r, x, y, z);
+                }
             }
         }
     }
@@ -109,13 +113,16 @@ public class RetroGenerationManager
         @Override
         public void generate(Random r, World w, int chunkX, int chunkZ)
         {
-            // Peridot
-            for (int i = 0; i < 2; i++)
+            if (r.nextInt(Configurator.gen_Peridot_resistance) == 0)
             {
-                int x = chunkX * 16 + r.nextInt(16);
-                int y = r.nextInt(48);
-                int z = chunkZ * 16 + r.nextInt(16);
-                new GeneratorOre(ProjectRedExploration.blockOres(), OreDefs.OREPERIDOT().meta(), 5).generate(w, r, x, y, z);
+                // Peridot
+                for (int i = 0; i < 2; i++)
+                {
+                    int x = chunkX * 16 + r.nextInt(16);
+                    int y = r.nextInt(48);
+                    int z = chunkZ * 16 + r.nextInt(16);
+                    new GeneratorOre(ProjectRedExploration.blockOres(), OreDefs.OREPERIDOT().meta(), 5).generate(w, r, x, y, z);
+                }
             }
         }
     }
@@ -137,11 +144,14 @@ public class RetroGenerationManager
         @Override
         public void generate(Random r, World w, int chunkX, int chunkZ)
         {
-            // Marble caves
-            int x = chunkX * 16 + r.nextInt(16);
-            int y = 32 + r.nextInt(32);
-            int z = chunkZ * 16 + r.nextInt(16);
-            new GeneratorCave(ProjectRedExploration.blockDecoratives(), DecorativeStoneDefs.MARBLE().meta(), r.nextInt(4096)).generate(w, r, x, y, z);
+            if (r.nextInt(Configurator.gen_MarbleCave_resistance) == 0)
+            {
+                //Marble caves
+                int x = chunkX * 16 + r.nextInt(16);
+                int y = 32 + r.nextInt(32);
+                int z = chunkZ * 16 + r.nextInt(16);
+                new GeneratorCave(ProjectRedExploration.blockDecoratives(), DecorativeStoneDefs.MARBLE().meta(), r.nextInt(4096)).generate(w, r, x, y, z);
+            }
         }
     }
 
@@ -165,43 +175,14 @@ public class RetroGenerationManager
         @Override
         public void generate(Random r, World w, int chunkX, int chunkZ)
         {
-            // Volcanos
-            int x = chunkX * 16 + r.nextInt(16);
-            int y = r.nextInt(64);
-            int z = chunkZ * 16 + r.nextInt(16);
-            new GeneratorVolcano(ProjectRedExploration.blockDecoratives(), DecorativeStoneDefs.BASALT().meta(), MathHelper.getRandomIntegerInRange(r, 32000, 64000)).generate(w, r, x, y, z);
+            if (r.nextInt(Configurator.gen_Volcano_resistance) == 0)
+            {
+                //Volcanos
+                int x = chunkX * 16 + r.nextInt(16);
+                int y = r.nextInt(64);
+                int z = chunkZ * 16 + r.nextInt(16);
+                new GeneratorVolcano(ProjectRedExploration.blockDecoratives(), DecorativeStoneDefs.BASALT().meta(), MathHelper.getRandomIntegerInRange(r, 32000, 64000)).generate(w, r, x, y, z);
+            }
         }
     }
-
-//    static class RetrogenDyeTrees implements IRetroGenerator//TODO replace
-//    {
-//        @Override
-//        public String getSubgenerationID()
-//        {
-//            return "pr_dyetrees";
-//        }
-//
-//        @Override
-//        public boolean shouldGenerateInLocation(World w, Chunk c)
-//        {
-//            int id = w.provider.dimensionId;
-//
-//            if (w.provider.terrainType == WorldType.FLAT)
-//                return false;
-//
-//            return id == 0;
-//        }
-//
-//        @Override
-//        public void generate(Random r, World w, int chunkX, int chunkZ)
-//        {
-//            // Dye trees
-//            int saplingMeta = r.nextInt(16);
-//            int x = chunkX * 16 + r.nextInt(16);
-//            int z = chunkZ * 16 + r.nextInt(16);
-//            int y = w.getHeightValue(x, z);
-//            if (r.nextDouble() < EnumDyeTrees.VALID_FOLIAGE[saplingMeta].growthChance / 3)
-//                new GeneratorColorTree(ProjectRedExploration.blockStainedLeaf()).generateTreeAnyType(w, x, y, z, PRColors.get(r.nextInt(16)));
-//        }
-//    }
 }

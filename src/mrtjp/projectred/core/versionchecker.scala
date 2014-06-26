@@ -8,8 +8,7 @@ import java.util.Date
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent
 import cpw.mods.fml.common.gameevent.TickEvent
-import cpw.mods.fml.common.gameevent.TickEvent.{ClientTickEvent, PlayerTickEvent}
-import cpw.mods.fml.relauncher.Side
+import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatComponentText
 
