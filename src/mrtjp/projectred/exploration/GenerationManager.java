@@ -35,7 +35,7 @@ public class GenerationManager implements IWorldGenerator
             runOverworldGeneration(r, chunkX, chunkZ, w);
 
         // Ruby
-        if (Configurator.gen_Ruby) if (r.nextInt(Configurator.gen_Ruby_resistance) == 0)
+        if (Configurator.gen_Ruby) if (Configurator.gen_Ruby_resistance <= 0 || r.nextInt(Configurator.gen_Ruby_resistance) == 0)
             for (int i = 0; i < 2; i++)
             {
                 int x = chunkX * 16 + r.nextInt(16);
@@ -45,7 +45,7 @@ public class GenerationManager implements IWorldGenerator
             }
 
         // Saphire
-        if (Configurator.gen_Sapphire) if (r.nextInt(Configurator.gen_Sapphire_resistance) == 0)
+        if (Configurator.gen_Sapphire) if (Configurator.gen_Sapphire_resistance <= 0 || r.nextInt(Configurator.gen_Sapphire_resistance) == 0)
             for (int i = 0; i < 2; i++)
             {
                 int x = chunkX * 16 + r.nextInt(16);
@@ -55,7 +55,7 @@ public class GenerationManager implements IWorldGenerator
             }
 
         // Peridot
-        if (Configurator.gen_Peridot) if (r.nextInt(Configurator.gen_Peridot_resistance) == 0)
+        if (Configurator.gen_Peridot) if (Configurator.gen_Peridot_resistance <= 0 || r.nextInt(Configurator.gen_Peridot_resistance) == 0)
             for (int i = 0; i < 2; i++)
             {
                 int x = chunkX * 16 + r.nextInt(16);
@@ -68,7 +68,7 @@ public class GenerationManager implements IWorldGenerator
     public static void runOverworldGeneration(Random r, int chunkX, int chunkZ, World w)
     {
         // Marble caves
-        if (Configurator.gen_MarbleCave) if (r.nextInt(Configurator.gen_MarbleCave_resistance) == 0)
+        if (Configurator.gen_MarbleCave) if (Configurator.gen_MarbleCave_resistance <= 0 || r.nextInt(Configurator.gen_MarbleCave_resistance) == 0)
         {
             int x = chunkX * 16 + r.nextInt(16);
             int y = 32 + r.nextInt(32);
@@ -77,7 +77,7 @@ public class GenerationManager implements IWorldGenerator
         }
 
         // Volcanos
-        if (Configurator.gen_Volcano) if (r.nextInt(Configurator.gen_Volcano_resistance) == 0)
+        if (Configurator.gen_Volcano) if (Configurator.gen_Volcano_resistance <= 0 || r.nextInt(Configurator.gen_Volcano_resistance) == 0)
         {
             int x = chunkX * 16 + r.nextInt(16);
             int y = r.nextInt(64);
