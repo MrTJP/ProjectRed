@@ -3,23 +3,23 @@ package mrtjp.projectred.expansion
 import codechicken.core.{IGuiPacketSender, ServerUtils}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.vec.{BlockCoord, Vector3, Rotation, Transformation}
+import codechicken.lib.vec.{BlockCoord, Rotation, Vector3}
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.api.{IScrewdriver, IConnectable}
+import mrtjp.projectred.api.{IConnectable, IScrewdriver}
 import mrtjp.projectred.core._
-import mrtjp.projectred.transmission.{PowerWire_100v, FramedPowerWire_100v, WirePart}
+import mrtjp.projectred.core.libmc.inventory.WidgetContainer
+import mrtjp.projectred.core.libmc.{MultiTileBlock, MultiTileTile, PRLib, TPortableInventory}
+import mrtjp.projectred.transmission.{FramedPowerWire_100v, PowerWire_100v, WirePart}
 import net.minecraft.block.material.Material
-import net.minecraft.entity.player.{EntityPlayerMP, EntityPlayer}
-import net.minecraft.inventory.{ICrafting, Container, ISidedInventory}
+import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
+import net.minecraft.inventory.{Container, ICrafting, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.world.IBlockAccess
-import mrtjp.projectred.core.libmc.{PRLib, MultiTileTile, MultiTileBlock, TPortableInventory}
-import net.minecraftforge.common.util.ForgeDirection
-import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.util.IIcon
-import net.minecraft.entity.EntityLivingBase
-import mrtjp.projectred.core.libmc.inventory.WidgetContainer
+import net.minecraft.world.IBlockAccess
+import net.minecraftforge.common.util.ForgeDirection
 
 class BlockMachine(name:String) extends MultiTileBlock(name, Material.rock)
 {
@@ -76,26 +76,8 @@ object BlockMachine
     var furnaceFrontOn:IIcon = _
 }
 
-abstract class TileMachine extends MultiTileTile
+abstract class TileMachine extends MultiTileTile with TTileOrient
 {
-    protected var orientation:Byte = 0
-
-    def side = orientation>>2
-
-    def setSide(s:Int)
-    {
-        orientation = (orientation&0x3|s<<2).asInstanceOf[Byte]
-    }
-
-    def rotation = orientation&0x3
-
-    def setRotation(r:Int)
-    {
-        orientation = (orientation&0xFC|r).asInstanceOf[Byte]
-    }
-
-    def rotationT:Transformation = Rotation.sideOrientation(side, rotation).at(Vector3.center)
-
     override def onBlockPlaced(s:Int, meta:Int, player:EntityLivingBase, stack:ItemStack, hit:Vector3)
     {
         setSide(if (doesOrient) s^1 else 0)
@@ -252,40 +234,37 @@ trait TMachinePowerable extends TileMachine with TConnectableTileMulti with TPow
     {
         if (0 until 24 contains id) //straight conns w/ edge rot
         {
-            val absDir = id/4
+            val s = id/4
             val edgeRot = id%4
-            if ((connMap&(0x1<<edgeRot)<<absDir)!= 0)
+            if (maskConnectsStraight(s, edgeRot)) getStraight(s, edgeRot) match
             {
-                val tp = BlockConnLib.getStraight(world, absDir, edgeRot, new BlockCoord(this))
-
-                if (tp.isInstanceOf[TPowerConnectable]) return tp.asInstanceOf[TPowerConnectable].conductor(absDir^1)
+                case tp:TPowerConnectable => return tp.conductor(s^1)
+                case _ =>
             }
         }
         else if (24 until 30 contains id) //straight face
         {
-            val absDir = id-24
-            if ((connMap&0x1000000<<absDir)!= 0)
+            val s = id-24
+            if (maskConnectsStraightCenter(s)) getStraightCenter(s) match
             {
-                val tp = BlockConnLib.getStraight(world, absDir, -1, new BlockCoord(this))
-                if (tp.isInstanceOf[TPowerConnectable]) return tp.asInstanceOf[TPowerConnectable].conductor(absDir^1)
-
-                val pos = new BlockCoord(this).offset(absDir)
-                val t = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
-                if (t != null) return t.conductor(absDir^1)
+                case tp:TPowerConnectable => return tp.conductor(s^1)
+                case _ => PRLib.getTileEntity(world, posOfInternal.offset(s), classOf[TPowerConnectable]) match
+                {
+                    case tp:TPowerConnectable => return tp.conductor(s^1)
+                    case _ =>
+                }
             }
         }
         else if (32 until 56 contains id) //corner
         {
-            val absDir = (id-32)/4
+            val s = (id-32)/4
             val edgeRot = (id-32)/4
-            if ((connMap&(0x100000000L<<edgeRot)<<absDir)!=0)
+            if (maskConnectsCorner(s, edgeRot)) getCorner(s, edgeRot) match
             {
-                val sideTo = Rotation.rotateSide(absDir^1, edgeRot)
-                val tp = BlockConnLib.getCorner(world, absDir, edgeRot, new BlockCoord(this))
-                if (tp != null && tp.isInstanceOf[TPowerConnectable]) return tp.asInstanceOf[TPowerConnectable].conductor(sideTo^1)
+                case tp:TPowerConnectable => return tp.conductor(Rotation.rotateSide(s^1, edgeRot)^1)
+                case _ =>
             }
         }
-
         null
     }
 

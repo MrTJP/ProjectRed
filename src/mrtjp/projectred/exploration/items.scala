@@ -33,7 +33,7 @@ class ItemBackpack extends ItemCore("projectred.exploration.backpack")
     override def onItemUse(stack:ItemStack, player:EntityPlayer, world:World, x:Int, y:Int, z:Int, par7:Int, par8:Float, par9:Float, par10:Float) =
     {
         openGui(player)
-        super.onItemUse(stack, player, world, x, y, z, par7, par8, par9, par10)
+        true
     }
 
     override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer) =
@@ -166,13 +166,8 @@ object ToolDefs extends Enum
     private val peridot = PartDefs.PERIDOT.makeStack
     private val diamond = new ItemStack(Items.diamond)
 
-    import ToolMaterial.
-    {
-        WOOD => toolMaterialWood, STONE => toolMaterialStone,
-        IRON => toolMaterialIron, GOLD => toolMaterialGold,
-        EMERALD => toolMaterialEmerald
-    }
-    import ProjectRedExploration.{toolMaterialRuby, toolMaterialSapphire, toolMaterialPeridot}
+    import mrtjp.projectred.ProjectRedExploration.{toolMaterialPeridot, toolMaterialRuby, toolMaterialSapphire}
+    import net.minecraft.item.Item.ToolMaterial.{EMERALD => toolMaterialEmerald, GOLD => toolMaterialGold, IRON => toolMaterialIron, STONE => toolMaterialStone, WOOD => toolMaterialWood}
 
     val RUBYAXE = ToolDefs("axeruby", toolMaterialRuby, ruby)
     val SAPPHIREAXE = ToolDefs("axesapphire", toolMaterialSapphire, sapphire)

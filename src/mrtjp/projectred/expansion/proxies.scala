@@ -81,14 +81,6 @@ class ExpansionProxy_client extends ExpansionProxy_server
             RenderLib.setRenderer(ProjectRedExpansion.machine1, 0, RenderController)
             RenderLib.setRenderer(ProjectRedExpansion.machine1, 1, RenderFurnace)
         }
-
-        import mrtjp.projectred.core.GuiIDs._
-        GuiManager.register(GuiChipUpgrade, chipUpgrade)
-        GuiManager.register(GuiCraftingPipe, craftingPipe)
-        GuiManager.register(GuiExtensionPipe, extensionPipe)
-        GuiManager.register(GuiInterfacePipe, interfacePipe)
-        GuiManager.register(GuiFirewallPipe, firewallPipe)
-        GuiManager.register(ChipGuiFactory, routingChips)
     }
 }
 

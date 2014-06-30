@@ -1,10 +1,8 @@
 package mrtjp.projectred
 
 import cpw.mods.fml.common.Mod
-import cpw.mods.fml.common.event.FMLInitializationEvent
-import cpw.mods.fml.common.event.FMLPostInitializationEvent
-import cpw.mods.fml.common.event.FMLPreInitializationEvent
-import mrtjp.projectred.integration.{IntegrationProxy, EnumGate, ItemPartGate}
+import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
+import mrtjp.projectred.integration.{EnumGate, IntegrationProxy, ItemPartGate}
 import net.minecraft.creativetab.CreativeTabs
 
 @Mod(modid = "ProjRed|Integration", useMetadata = true, modLanguage = "scala")

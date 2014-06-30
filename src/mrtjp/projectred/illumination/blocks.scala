@@ -1,24 +1,25 @@
 package mrtjp.projectred.illumination
 
-import mrtjp.projectred.core.libmc.{PRColors, PRLib, MultiTileTile, MultiTileBlock}
-import net.minecraft.block.material.Material
-import mrtjp.projectred.ProjectRedIllumination
-import net.minecraft.item.{ItemStack, Item}
-import net.minecraft.creativetab.CreativeTabs
-import java.util.{List => JList, Random}
-import net.minecraft.entity.{EntityLivingBase, EnumCreatureType}
-import net.minecraft.world.{World, IBlockAccess}
-import net.minecraft.client.renderer.texture.IIconRegister
-import net.minecraft.util.IIcon
-import codechicken.multipart.IRedstoneConnectorBlock
-import net.minecraft.block.Block
+import java.util.{Random, List => JList}
+
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import net.minecraft.nbt.NBTTagCompound
-import mrtjp.projectred.core.BlockCore
-import net.minecraft.tileentity.TileEntity
-import cpw.mods.fml.relauncher.{SideOnly, Side}
-import mrtjp.projectred.core.libmc.fx._
 import codechicken.lib.vec.{BlockCoord, Vector3}
+import codechicken.multipart.IRedstoneConnectorBlock
+import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.projectred.ProjectRedIllumination
+import mrtjp.projectred.core.BlockCore
+import mrtjp.projectred.core.libmc.fx._
+import mrtjp.projectred.core.libmc.{MultiTileBlock, MultiTileTile, PRColors, PRLib}
+import net.minecraft.block.Block
+import net.minecraft.block.material.Material
+import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.entity.{EntityLivingBase, EnumCreatureType}
+import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.IIcon
+import net.minecraft.world.{IBlockAccess, World}
 
 class BlockLamp extends MultiTileBlock("projectred.illumination.lamp", new Material(Material.circuits.getMaterialMapColor)) with IRedstoneConnectorBlock
 {

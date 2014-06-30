@@ -1,10 +1,7 @@
 package mrtjp.projectred
 
 import cpw.mods.fml.common.Mod
-import cpw.mods.fml.common.event.FMLInitializationEvent
-import cpw.mods.fml.common.event.FMLPostInitializationEvent
-import cpw.mods.fml.common.event.FMLPreInitializationEvent
-import cpw.mods.fml.common.event.FMLServerStoppingEvent
+import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStoppingEvent}
 import mrtjp.projectred.api.ProjectRedAPI
 import mrtjp.projectred.transportation._
 import net.minecraft.creativetab.CreativeTabs

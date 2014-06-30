@@ -6,7 +6,7 @@ import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.MultiPartRegistry.IPartFactory
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.projectred.ProjectRedTransportation._
-import mrtjp.projectred.core.{Configurator, IProxy}
+import mrtjp.projectred.core.{GuiManager, Configurator, IProxy}
 import net.minecraftforge.client.MinecraftForgeClient
 
 class TransportationProxy_server extends IProxy with IPartFactory
@@ -69,6 +69,14 @@ class TransportationProxy_client extends TransportationProxy_server
         super.init()
         MinecraftForgeClient.registerItemRenderer(itemPartPipe, PipeItemRenderer)
         MicroMaterialRegistry.registerHighlightRenderer(PipeRSHighlightRenderer)
+
+        import mrtjp.projectred.core.GuiIDs._
+        GuiManager.register(GuiChipUpgrade, chipUpgrade)
+        GuiManager.register(GuiCraftingPipe, craftingPipe)
+        GuiManager.register(GuiExtensionPipe, extensionPipe)
+        GuiManager.register(GuiInterfacePipe, interfacePipe)
+        GuiManager.register(GuiFirewallPipe, firewallPipe)
+        GuiManager.register(ChipGuiFactory, routingChips)
     }
 }
 

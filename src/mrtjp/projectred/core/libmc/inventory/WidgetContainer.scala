@@ -1,12 +1,13 @@
 package mrtjp.projectred.core.libmc.inventory
 
-import net.minecraft.inventory.{IInventory, Slot, Container}
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemStack
 import java.util.{List => JList}
+
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.core.libmc.gui.GuiLib
 import net.minecraft.client.Minecraft
-import cpw.mods.fml.relauncher.{SideOnly, Side}
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.inventory.{Container, IInventory, Slot}
+import net.minecraft.item.ItemStack
 
 class WidgetContainer extends Container
 {

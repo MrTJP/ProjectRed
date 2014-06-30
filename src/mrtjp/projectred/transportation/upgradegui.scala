@@ -1,116 +1,16 @@
 package mrtjp.projectred.transportation
 
+import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.render.FontUtils
-import net.minecraft.util.EnumChatFormatting
-import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.core.libmc.{ResourceLib, PRColors}
-import mrtjp.projectred.core.libmc.gui._
-import mrtjp.projectred.core.{PartDefs, ItemPart, GuiIDs, TGuiBuilder}
-import net.minecraft.entity.player.EntityPlayer
-import codechicken.lib.data.MCDataInput
-import mrtjp.projectred.core.libmc.inventory.{Slot2, SimpleInventory, WidgetContainer}
-import net.minecraft.item.ItemStack
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.projectred.core.libmc.gui._
+import mrtjp.projectred.core.libmc.{PRColors, ResourceLib}
+import mrtjp.projectred.core.{GuiIDs, TGuiBuilder}
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.EnumChatFormatting
 
-class ChipUpgradeContainer(player:EntityPlayer) extends WidgetContainer
-{
-    val upgradeInv = new SimpleInventory(7, "upBus", 1)
-    {
-        override def isItemValidForSlot(i:Int, stack:ItemStack) =
-        {
-            if (i == 6)
-                stack != null &&
-                    stack.getItem.isInstanceOf[ItemRoutingChip] &&
-                    stack.hasTagCompound && stack.getTagCompound.hasKey("chipROM")
-
-            else if (stack.getItem.isInstanceOf[ItemPart])
-            {
-                val slotForMeta = stack.getItemDamage-PartDefs.CHIPUPGRADE_LX.meta
-                slotForMeta == i
-            }
-            else false
-        }
-
-        override def markDirty()
-        {
-            super.markDirty()
-            refreshChips()
-        }
-    }
-
-    val slot = player.inventory.currentItem
-
-    addPlayerInv(player, 8, 86)
-    private var s = 0
-    private def next = {s += 1; s-1}
-    for ((x, y) <- GuiLib.createSlotGrid(8, 18, 1, 3, 2, 2))
-        this + new Slot2(upgradeInv, next, x, y)
-    for ((x, y) <- GuiLib.createSlotGrid(152, 18, 1, 3, 2, 2))
-        this + new Slot2(upgradeInv, next, x, y)
-    this + new Slot2(upgradeInv, next, 80, 38)
-
-    override def onContainerClosed(p:EntityPlayer)
-    {
-        super.onContainerClosed(p)
-        for (i <- 0 until upgradeInv.getSizeInventory)
-            if (upgradeInv.getStackInSlot(i) != null)
-            {
-                p.dropPlayerItemWithRandomChoice(upgradeInv.getStackInSlot(i), false)
-                upgradeInv.setInventorySlotContents(i, null)
-            }
-        upgradeInv.markDirty()
-    }
-
-    override def +(s:Slot2):this.type =
-    {
-        if (s.getSlotIndex == slot && s.inventory == player.inventory)
-            s.setRemove(false)
-        super.+(s)
-    }
-
-    private var chip:RoutingChipset = null
-    private def refreshChips()
-    {
-        val stack = upgradeInv.getStackInSlot(6)
-        val c = ItemRoutingChip.loadChipFromItemStack(stack)
-        if (chip != c) chip = c
-    }
-
-    def install()
-    {
-        val r = chip
-        if (r != null)
-        {
-            val bus = r.upgradeBus
-            for (i <- 0 until 6)
-            {
-                val stack = upgradeInv.getStackInSlot(i)
-                if (stack != null)
-                {
-                    if (i < 3)
-                    {
-                        if (bus.installL(i, true))
-                            upgradeInv.setInventorySlotContents(i, null)
-                    }
-                    else
-                    {
-                        if (bus.installR(i-3, true))
-                            upgradeInv.setInventorySlotContents(i, null)
-
-                    }
-                }
-            }
-        }
-
-        val chipStack = upgradeInv.getStackInSlot(6)
-        ItemRoutingChip.saveChipToItemStack(chipStack, r)
-        upgradeInv.setInventorySlotContents(6, chipStack)
-        detectAndSendChanges()
-    }
-
-    def getChip = chip
-}
+import scala.collection.mutable.ListBuffer
 
 class GuiChipUpgrade(container:ChipUpgradeContainer) extends WidgetGui(container, 176, 200)
 {
