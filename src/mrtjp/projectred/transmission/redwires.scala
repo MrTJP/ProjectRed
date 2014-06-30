@@ -1,18 +1,18 @@
 package mrtjp.projectred.transmission
 
-import IWirePart._
-import codechicken.lib.data.{MCDataOutput, MCDataInput}
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.{BlockCoord, Rotation}
-import codechicken.multipart.scalatraits.TRedstoneTile
 import codechicken.multipart._
-import cpw.mods.fml.relauncher.{SideOnly, Side}
+import codechicken.multipart.scalatraits.TRedstoneTile
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
+import mrtjp.projectred.transmission.IWirePart._
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Blocks
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ChatComponentText
-import net.minecraft.init.Blocks
 
 trait IRedwirePart extends IWirePart with IRedwireEmitter
 
