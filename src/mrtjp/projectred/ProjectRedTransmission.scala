@@ -1,9 +1,9 @@
 package mrtjp.projectred
 
 import cpw.mods.fml.common.Mod
-import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
+import cpw.mods.fml.common.event._
 import mrtjp.projectred.api.ProjectRedAPI
-import mrtjp.projectred.transmission.{APIImpl_Transmission, ItemPartFramedWire, ItemPartWire, TransmissionProxy}
+import mrtjp.projectred.transmission._
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.ItemStack
 
@@ -39,5 +39,11 @@ object ProjectRedTransmission
     def postInit(event:FMLPostInitializationEvent)
     {
         TransmissionProxy.postinit()
+    }
+
+    @Mod.EventHandler
+    def serverStopping(event:FMLServerAboutToStartEvent)
+    {
+        WirePropagator.reset()
     }
 }

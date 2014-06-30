@@ -47,7 +47,6 @@ object ProjectRedTransportation
     @Mod.EventHandler
     def serverStopping(event:FMLServerStoppingEvent)
     {
-        Router.reboot()
         RouterServices.reboot()
     }
 }

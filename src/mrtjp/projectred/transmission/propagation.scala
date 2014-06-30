@@ -1,15 +1,17 @@
 package mrtjp.projectred.transmission
 
+import java.util.{Stack => JStack}
+
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.handler.MultipartProxy
-import codechicken.multipart.{TileMultipart, TMultiPart}
+import codechicken.multipart.{TMultiPart, TileMultipart}
 import com.google.common.collect.HashMultimap
-import java.util
-import mrtjp.projectred.core.CommandDebug
-import net.minecraft.block.{Block, BlockRedstoneWire}
-import net.minecraft.world.World
-import scala.collection.immutable.HashSet
+import mrtjp.projectred.core.{PRLogger, CommandDebug}
+import net.minecraft.block.BlockRedstoneWire
 import net.minecraft.init.Blocks
+import net.minecraft.world.World
+
+import scala.collection.immutable.HashSet
 
 object WirePropagator
 {
@@ -29,14 +31,20 @@ object WirePropagator
         catch {case t:Throwable =>}
     }
 
-    private val rwConnectable = new ThreadLocal[Boolean]
-    rwConnectable.set(true)
+    private val rwConnectable = {val b = new ThreadLocal[Boolean]; b.set(true); b}
     def redwiresConnectable = rwConnectable.get
     def setRedwiresConnectable(b:Boolean) {rwConnectable.set(b)}
 
     var redwiresProvidePower = true
 
-    val reusableRuns = new util.Stack[PropagationRun]
+    def reset()
+    {
+        setDustProvidePower(true)
+        setRedwiresConnectable(true)
+        redwiresProvidePower = true
+    }
+
+    val reusableRuns = new JStack[PropagationRun]()
     var currentRun:PropagationRun = null
     var finishing:PropagationRun = null
 
