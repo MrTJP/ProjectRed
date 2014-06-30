@@ -190,7 +190,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     @Override
     public int getPartSignal(TMultiPart part, int r)
     {
-        if (part instanceof IRedwirePart && ((IRedwirePart)part).isWireSide(r))
+        if (part instanceof IRedwirePart && ((IRedwirePart)part).diminishOnSide(r))
             return ((IRedwirePart)part).getRedwireSignal(r)-1;
         else if (part instanceof IRedwireEmitter)
             return ((IRedwireEmitter)part).getRedwireSignal(r);
@@ -337,7 +337,7 @@ public class RowGatePart extends SimpleGatePart implements IRedwirePart, ITopArr
     }
 
     @Override
-    public boolean isWireSide(int side)
+    public boolean diminishOnSide(int side)
     {
         if (side < 0)
             return false;

@@ -187,7 +187,7 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
 
     override def getHollowSize(side:Int) = 8
 
-    override def isWireSide(side:Int) = true
+    override def diminishOnSide(side:Int) = true
 
     def debug(player:EntityPlayer) = false
 
@@ -360,7 +360,7 @@ abstract class CorePipePart extends SubcorePipePart with TCenterRSAcquisitions w
 
     override def resolveSignal(part:TMultiPart, s:Int) = part match
     {
-        case rw:IRedwirePart if rw.isWireSide(s) => rw.getRedwireSignal(s)-1
+        case rw:IRedwirePart if rw.diminishOnSide(s) => rw.getRedwireSignal(s)-1
         case re:IRedwireEmitter => re.getRedwireSignal(s)
         case _ => 0
     }
