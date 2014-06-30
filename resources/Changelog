@@ -1,3 +1,6 @@
+v4.4.3
+- FIX: World generation crash
+
 v4.4.2
 - FIX: Everything being dark when using shaders
 - FIX: Data card inventory crash

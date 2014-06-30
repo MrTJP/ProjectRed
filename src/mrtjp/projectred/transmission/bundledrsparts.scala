@@ -10,7 +10,7 @@ trait TBundledAquisitionsCommons extends TAcquisitionsCommons
 
     def calcInternalArray(dir:Int):Array[Byte]
 
-    def resolveArray(part:TMultiPart, r:Int):Array[Byte]
+    def resolveArray(part:TMultiPart, dir:Int):Array[Byte]
 }
 
 trait TFaceBundledAquisitions extends TBundledAquisitionsCommons with TFaceAcquisitions

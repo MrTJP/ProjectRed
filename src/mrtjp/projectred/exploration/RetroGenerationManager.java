@@ -49,7 +49,7 @@ public class RetroGenerationManager
         @Override
         public void generate(Random r, World w, int chunkX, int chunkZ)
         {
-            if (r.nextInt(Configurator.gen_Ruby_resistance) == 0)
+            if (Configurator.gen_Ruby_resistance <= 0 || r.nextInt(Configurator.gen_Ruby_resistance) == 0)
             {
                 // Ruby
                 for (int i = 0; i < 2; i++)
@@ -81,7 +81,7 @@ public class RetroGenerationManager
         @Override
         public void generate(Random r, World w, int chunkX, int chunkZ)
         {
-            if (r.nextInt(Configurator.gen_Sapphire_resistance) == 0)
+            if (Configurator.gen_Sapphire_resistance <= 0 || r.nextInt(Configurator.gen_Sapphire_resistance) == 0)
             {
                 // Saphire
                 for (int i = 0; i < 2; i++)
@@ -113,7 +113,7 @@ public class RetroGenerationManager
         @Override
         public void generate(Random r, World w, int chunkX, int chunkZ)
         {
-            if (r.nextInt(Configurator.gen_Peridot_resistance) == 0)
+            if (Configurator.gen_Peridot_resistance <= 0 || r.nextInt(Configurator.gen_Peridot_resistance) == 0)
             {
                 // Peridot
                 for (int i = 0; i < 2; i++)
@@ -144,7 +144,7 @@ public class RetroGenerationManager
         @Override
         public void generate(Random r, World w, int chunkX, int chunkZ)
         {
-            if (r.nextInt(Configurator.gen_MarbleCave_resistance) == 0)
+            if (Configurator.gen_MarbleCave_resistance <= 0 || r.nextInt(Configurator.gen_MarbleCave_resistance) == 0)
             {
                 //Marble caves
                 int x = chunkX * 16 + r.nextInt(16);
@@ -175,7 +175,7 @@ public class RetroGenerationManager
         @Override
         public void generate(Random r, World w, int chunkX, int chunkZ)
         {
-            if (r.nextInt(Configurator.gen_Volcano_resistance) == 0)
+            if (Configurator.gen_Volcano_resistance <= 0 || r.nextInt(Configurator.gen_Volcano_resistance) == 0)
             {
                 //Volcanos
                 int x = chunkX * 16 + r.nextInt(16);
