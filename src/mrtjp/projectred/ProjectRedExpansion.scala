@@ -1,11 +1,11 @@
 package mrtjp.projectred
 
 import cpw.mods.fml.common.Mod
-import cpw.mods.fml.common.event.{FMLPreInitializationEvent, FMLInitializationEvent, FMLPostInitializationEvent}
-import mrtjp.projectred.expansion.{ExpansionProxy, BlockMachine}
+import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
+import mrtjp.projectred.expansion.{BlockMachine, ExpansionProxy}
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.item.ItemStack
 import net.minecraft.init.Blocks
+import net.minecraft.item.ItemStack
 
 @Mod(modid = "ProjRed|Expansion", useMetadata = true, modLanguage = "scala")
 object ProjectRedExpansion

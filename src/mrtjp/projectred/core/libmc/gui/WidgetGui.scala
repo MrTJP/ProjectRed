@@ -1,12 +1,12 @@
 package mrtjp.projectred.core.libmc.gui
 
+import codechicken.lib.gui.GuiDraw
+import mrtjp.projectred.core.libmc.inventory.WidgetContainer
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.Container
-import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
-import net.minecraft.client.Minecraft
-import mrtjp.projectred.core.libmc.inventory.WidgetContainer
-import codechicken.lib.gui.GuiDraw
 
 class WidgetGui(c:Container, w:Int, h:Int) extends GuiContainer(c) with TWidget
 {

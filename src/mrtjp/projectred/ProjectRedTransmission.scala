@@ -1,13 +1,11 @@
 package mrtjp.projectred
 
+import cpw.mods.fml.common.Mod
+import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import mrtjp.projectred.api.ProjectRedAPI
-import mrtjp.projectred.transmission.{TransmissionProxy, APIImpl_Transmission, ItemPartFramedWire, ItemPartWire}
+import mrtjp.projectred.transmission.{APIImpl_Transmission, ItemPartFramedWire, ItemPartWire, TransmissionProxy}
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.ItemStack
-import cpw.mods.fml.common.Mod
-import cpw.mods.fml.common.event.FMLInitializationEvent
-import cpw.mods.fml.common.event.FMLPostInitializationEvent
-import cpw.mods.fml.common.event.FMLPreInitializationEvent
 
 @Mod(modid = "ProjRed|Transmission", useMetadata = true, modLanguage = "scala")
 object ProjectRedTransmission

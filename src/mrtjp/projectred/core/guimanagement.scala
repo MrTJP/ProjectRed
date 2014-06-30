@@ -1,16 +1,12 @@
 package mrtjp.projectred.core
 
-import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.packet.PacketCustom
-import net.minecraft.inventory.Container
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.projectred.exploration.GuiBackpack
-import mrtjp.projectred.transportation._
-import scala.Some
-import cpw.mods.fml.common.event.FMLLoadCompleteEvent
+import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
+import net.minecraft.inventory.Container
 
 object GuiManager
 {

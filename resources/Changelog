@@ -1,3 +1,9 @@
+v4.4.2
+- FIX: Everything being dark when using shaders
+- FIX: Data card inventory crash
+- FIX: Router utility upgrade gui crash
+- FIX: Version checker parsing
+
 v4.4.1
 - FIX: Automatic ForgeMultipart downloads
 - FIX: Dependency on NEI

@@ -1,12 +1,10 @@
 package mrtjp.projectred
 
 import cpw.mods.fml.common.Mod
-import cpw.mods.fml.common.event.FMLInitializationEvent
-import cpw.mods.fml.common.event.FMLPostInitializationEvent
-import cpw.mods.fml.common.event.FMLPreInitializationEvent
+import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
+import mrtjp.projectred.core.libmc.PRColors
 import mrtjp.projectred.illumination._
 import net.minecraft.creativetab.CreativeTabs
-import mrtjp.projectred.core.libmc.PRColors
 
 @Mod(modid = "ProjRed|Illumination", useMetadata = true, modLanguage = "scala")
 object ProjectRedIllumination

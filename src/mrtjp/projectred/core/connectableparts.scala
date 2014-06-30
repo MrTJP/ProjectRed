@@ -68,7 +68,7 @@ trait TCenterAcquisitions extends TAcquisitionsCommons with TCenterOrient
 {
     def getStraight(s:Int) =
     {
-        val pos = new BlockCoord(tile).offset(s)
+        val pos = posOfInternal.offset(s)
         val t = PRLib.getMultipartTile(world, pos)
         if (t != null) t.partMap(6)
         else null

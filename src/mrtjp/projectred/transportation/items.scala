@@ -1,24 +1,25 @@
 package mrtjp.projectred.transportation
 
-import codechicken.lib.render.{CCRenderState, TextureUtils}
-import codechicken.lib.vec.{Translation, Scale, BlockCoord, Vector3}
-import codechicken.multipart.{TItemMultiPart, MultiPartRegistry}
-import cpw.mods.fml.relauncher.{SideOnly, Side}
 import java.util.{List => JList}
+
+import codechicken.lib.vec.{BlockCoord, Vector3}
+import codechicken.multipart.{MultiPartRegistry, TItemMultiPart}
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedTransportation
+import mrtjp.projectred.core._
+import mrtjp.projectred.core.libmc.gui.GuiLib
+import mrtjp.projectred.core.libmc.inventory.{SimpleInventory, Slot2, WidgetContainer}
+import mrtjp.projectred.transportation.RoutingChipDefs.ChipType.ChipType
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.{IIcon, EnumChatFormatting}
+import net.minecraft.util.{EnumChatFormatting, IIcon}
 import net.minecraft.world.World
-import net.minecraftforge.client.IItemRenderer
-import net.minecraftforge.client.IItemRenderer.{ItemRendererHelper, ItemRenderType}
 import org.lwjgl.input.Keyboard
+
 import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.core._
-import mrtjp.projectred.transportation.RoutingChipDefs.ChipType.ChipType
 
 class ItemPartPipe extends ItemCore("projectred.transportation.pipe") with TItemMultiPart with TItemGlassSound
 {
@@ -231,7 +232,9 @@ class ItemRouterUtility extends ItemCore("projectred.transportation.routerutil")
 
     private def openGui(player:EntityPlayer)
     {
-        GuiChipUpgrade.open(player, new ChipUpgradeContainer(player))
+        //TODO Temporary fix
+        //GuiChipUpgrade.open(player, new ChipUpgradeContainer(player))
+        GuiManager.openSMPContainer(player, new ChipUpgradeContainer(player), 2, {_=>})
     }
 }
 
@@ -254,4 +257,101 @@ class ItemCPU extends ItemCore("projectred.transportation.cpu")
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) if (stack.hasTagCompound)
             list2.add(stack.getTagCompound.getDouble("cycles")+" cycles remaining")
     }
+}
+
+class ChipUpgradeContainer(player:EntityPlayer) extends WidgetContainer
+{
+    val upgradeInv = new SimpleInventory(7, "upBus", 1)
+    {
+        override def isItemValidForSlot(i:Int, stack:ItemStack) =
+        {
+            if (i == 6)
+                stack != null &&
+                    stack.getItem.isInstanceOf[ItemRoutingChip] &&
+                    stack.hasTagCompound && stack.getTagCompound.hasKey("chipROM")
+
+            else if (stack.getItem.isInstanceOf[ItemPart])
+            {
+                val slotForMeta = stack.getItemDamage-PartDefs.CHIPUPGRADE_LX.meta
+                slotForMeta == i
+            }
+            else false
+        }
+
+        override def markDirty()
+        {
+            super.markDirty()
+            refreshChips()
+        }
+    }
+
+    val slot = player.inventory.currentItem
+
+    {
+        addPlayerInv(player, 8, 86)
+        var s = 0
+        def next = {s += 1; s-1}
+
+        for ((x, y) <- GuiLib.createSlotGrid(8, 18, 1, 3, 2, 2))
+            this + new Slot2(upgradeInv, next, x, y)
+        for ((x, y) <- GuiLib.createSlotGrid(152, 18, 1, 3, 2, 2))
+            this + new Slot2(upgradeInv, next, x, y)
+
+        this + new Slot2(upgradeInv, next, 80, 38)
+    }
+
+    override def onContainerClosed(p:EntityPlayer)
+    {
+        super.onContainerClosed(p)
+        for (i <- 0 until upgradeInv.getSizeInventory)
+            if (upgradeInv.getStackInSlot(i) != null)
+            {
+                p.dropPlayerItemWithRandomChoice(upgradeInv.getStackInSlot(i), false)
+                upgradeInv.setInventorySlotContents(i, null)
+            }
+        upgradeInv.markDirty()
+    }
+
+    override def +(s:Slot2):this.type =
+    {
+        if (s.getSlotIndex == slot && s.inventory == player.inventory)
+            s.setRemove(false)
+        super.+(s)
+    }
+
+    private var chip:RoutingChipset = null
+    private def refreshChips()
+    {
+        val stack = upgradeInv.getStackInSlot(6)
+        val c = ItemRoutingChip.loadChipFromItemStack(stack)
+        if (chip != c) chip = c
+    }
+
+    def install()
+    {
+        if (chip != null)
+        {
+            val bus = chip.upgradeBus
+            for (i <- 0 until 6) if (upgradeInv.getStackInSlot(i) != null)
+            {
+                if (i < 3)
+                {
+                    if (bus.installL(i, true))
+                        upgradeInv.setInventorySlotContents(i, null)
+                }
+                else
+                {
+                    if (bus.installR(i-3, true))
+                        upgradeInv.setInventorySlotContents(i, null)
+                }
+            }
+        }
+
+        val chipStack = upgradeInv.getStackInSlot(6)
+        ItemRoutingChip.saveChipToItemStack(chipStack, chip)
+        upgradeInv.setInventorySlotContents(6, chipStack)
+        detectAndSendChanges()
+    }
+
+    def getChip = chip
 }

@@ -1,14 +1,12 @@
 package mrtjp.projectred
 
 import cpw.mods.fml.common.Mod
-import cpw.mods.fml.common.event.FMLInitializationEvent
-import cpw.mods.fml.common.event.FMLPostInitializationEvent
-import cpw.mods.fml.common.event.FMLPreInitializationEvent
+import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import mrtjp.projectred.exploration._
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.item.ItemStack
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item.ToolMaterial
+import net.minecraft.item.ItemStack
 
 @Mod(modid = "ProjRed|Exploration", useMetadata = true, modLanguage = "scala")
 object ProjectRedExploration
