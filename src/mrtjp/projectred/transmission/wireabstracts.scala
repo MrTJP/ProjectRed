@@ -127,7 +127,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
         tile.markDirty()
     }
 
-    override def isWireSide(side:Int) = true
+    override def diminishOnSide(side:Int) = true
 
     def debug(player:EntityPlayer) = false
 

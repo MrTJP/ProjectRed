@@ -229,7 +229,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
 
     public int getPartSignal(TMultiPart part, int r)
     {
-        if (part instanceof IRedwirePart && ((IRedwirePart)part).isWireSide(r))
+        if (part instanceof IRedwirePart && ((IRedwirePart)part).diminishOnSide(r))
             return ((IRedwirePart)part).getRedwireSignal(r)-1;
         else if (part instanceof IRedwireEmitter)
             return ((IRedwireEmitter)part).getRedwireSignal(r);
@@ -390,7 +390,7 @@ public class ArrayGatePart extends GatePart implements IRedwirePart, IFaceRedsto
     }
 
     @Override
-    public boolean isWireSide(int side)
+    public boolean diminishOnSide(int side)
     {
         return side >= 0;
     }

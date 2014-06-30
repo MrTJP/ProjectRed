@@ -156,8 +156,14 @@ abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcq
         wire.isInstanceOf[IRedwireEmitter] || wire.isInstanceOf[IRedstonePart]
 
     override def discoverStraightOverride(absDir:Int) =
-        (RedstoneInteractions.otherConnectionMask(world, x, y, z, absDir, false)&
+    {
+        val conn = WirePropagator.redwiresConnectable
+        WirePropagator.setRedwiresConnectable(true)
+        val disc = (RedstoneInteractions.otherConnectionMask(world, x, y, z, absDir, false)&
             RedstoneInteractions.connectionMask(this, absDir)) != 0
+        WirePropagator.setRedwiresConnectable(conn)
+        disc
+    }
 
     override def discoverInternalOverride(p:TMultiPart, r:Int) = p match
     {
@@ -181,7 +187,7 @@ abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcq
 
     override def resolveSignal(part:TMultiPart, r:Int) = part match
     {
-        case t:IRedwirePart if t.isWireSide(r) => t.getRedwireSignal(r)-1
+        case t:IRedwirePart if t.diminishOnSide(r) => t.getRedwireSignal(r)-1
         case t:IRedwireEmitter => t.getRedwireSignal(r)
         case t:IFaceRedstonePart =>
             val s = Rotation.rotateSide(t.getFace, r)
@@ -281,7 +287,7 @@ abstract class FramedRedwirePart extends FramedWirePart with TRedwireCommons wit
 
     override def resolveSignal(part:TMultiPart, s:Int) = part match
     {
-        case rw:IRedwirePart if rw.isWireSide(s) => rw.getRedwireSignal(s)-1
+        case rw:IRedwirePart if rw.diminishOnSide(s) => rw.getRedwireSignal(s)-1
         case re:IRedwireEmitter => re.getRedwireSignal(s)
         case _ => 0
     }

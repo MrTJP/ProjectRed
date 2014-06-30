@@ -5,7 +5,7 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.TMultiPart
 import mrtjp.projectred.api.{IBundledTile, IConnectable, IBundledEmitter}
-import mrtjp.projectred.core.CoreSPH
+import mrtjp.projectred.core.{Configurator, CoreSPH}
 import mrtjp.projectred.transmission.IWirePart._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound

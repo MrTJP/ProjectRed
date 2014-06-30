@@ -6,7 +6,7 @@ import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.handler.MultipartProxy
 import codechicken.multipart.{TMultiPart, TileMultipart}
 import com.google.common.collect.HashMultimap
-import mrtjp.projectred.core.{PRLogger, CommandDebug}
+import mrtjp.projectred.core.CommandDebug
 import net.minecraft.block.BlockRedstoneWire
 import net.minecraft.init.Blocks
 import net.minecraft.world.World
@@ -160,15 +160,15 @@ class PropagationRun
         {
             val tmp = propagationList
             propagationList = List[Propagation]()
-            tmp.foreach(p => p.go())
+            tmp.foreach(_.go())
 
-            if (propagationList.isEmpty && !analogDrops.isEmpty)
+            if (propagationList.isEmpty && analogDrops.nonEmpty)
             {
                 propagationList = analogDrops
                 analogDrops = List[Propagation]()
             }
         }
-        while (!propagationList.isEmpty)
+        while (propagationList.nonEmpty)
         finish()
     }
 
@@ -248,10 +248,10 @@ trait IWirePart
      *             parts, a rotation, or -1 for center. For center parts, a
      *             forgedirection. The special value Integer.MAX_VALUE should
      *             always return true and is used for return signals
-     * @return true if the specified side of this block is connected to a 'wire'
-     *         where signal should decrease by one.
+     * @return true if the specified side of this block is connected to, for
+     *         example, a 'wire' where signal should decrease by one.
      */
-    def isWireSide(side:Int):Boolean
+    def diminishOnSide(side:Int):Boolean
 
     /**
      * The world in which this part resides
