@@ -72,10 +72,10 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
 
     override def read(packet:MCDataInput, key:Int) = key match
     {
-        case 0 =>
+        case 1 =>
             connMap = packet.readUByte()
             tile.markRender()
-        case 1 =>
+        case 2 =>
             material = packet.readBoolean()
             tile.markRender()
         case 3 =>
@@ -88,7 +88,7 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
 
     def sendConnUpdate()
     {
-        getWriteStreamOf(0).writeByte(clientConnMap)
+        getWriteStreamOf(1).writeByte(clientConnMap)
     }
 
     def sendMatUpdate()
@@ -98,7 +98,7 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
             if (updateInward()) sendConnUpdate()
             WirePropagator.propagateTo(this, FORCE)
         }
-        getWriteStreamOf(1).writeBoolean(material)
+        getWriteStreamOf(2).writeBoolean(material)
     }
 
     override def onSignalUpdate()

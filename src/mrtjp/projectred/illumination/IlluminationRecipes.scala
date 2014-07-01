@@ -1,9 +1,10 @@
 package mrtjp.projectred.illumination
 
 import cpw.mods.fml.common.registry.GameRegistry
+import net.minecraft.init
 import net.minecraft.item.ItemStack
 import mrtjp.projectred.ProjectRedIllumination
-import net.minecraft.init.{Items, Blocks}
+import net.minecraft.init.{Blocks, Items}
 import mrtjp.projectred.core.PartDefs
 import java.lang.{Character => JC}
 object IlluminationRecipes
@@ -69,6 +70,10 @@ object IlluminationRecipes
                 Blocks.stone_button,
                 PartDefs.ILLUMARS.toSeq(i).makeStack,
                 PartDefs.ILLUMARS.toSeq(i).makeStack
+            )
+            GameRegistry.addShapelessRecipe(new ItemStack(ProjectRedIllumination.itemPartIllumarFButton, 1, i),
+                new ItemStack(ProjectRedIllumination.itemPartIllumarButton, 1, i),
+                Blocks.redstone_torch
             )
         }
 

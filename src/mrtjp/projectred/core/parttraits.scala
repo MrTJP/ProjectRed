@@ -11,9 +11,15 @@ trait TSwitchPacket extends TMultiPart
         read(packet, packet.readUByte())
     }
 
-    def read(packet:MCDataInput, key:Int)
+    def read(packet:MCDataInput, key:Int) = key match
+    {
+        case 0 => readDesc(packet)
+        case _ =>
+    }
 
     def getWriteStreamOf(key:Int):MCDataOutput = getWriteStream.writeByte(key)
+
+    override def sendDescUpdate() = writeDesc(getWriteStreamOf(0))
 }
 
 trait TFaceOrient extends TMultiPart with TFacePart

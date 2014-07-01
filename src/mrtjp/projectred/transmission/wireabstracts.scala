@@ -231,16 +231,17 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
         orientation = packet.readByte
     }
 
-    def read(packet:MCDataInput, key:Int) = key match
+    override def read(packet:MCDataInput, key:Int) = key match
     {
-        case 0 =>
+        case 1 =>
             connMap = packet.readInt
             if (useStaticRenderer) tile.markRender()
+        case _ => super.read(packet, key)
     }
 
     override def sendConnUpdate()
     {
-        getWriteStreamOf(0).writeInt(connMap)
+        getWriteStreamOf(1).writeInt(connMap)
     }
 
     override def canConnectCorner(r:Int) = true
@@ -343,10 +344,10 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
 
     override def read(packet:MCDataInput, key:Int) = key match
     {
-        case 0 =>
+        case 1 =>
             connMap = packet.readUByte()
             if (useStaticRenderer) tile.markRender()
-        case 1 =>
+        case 2 =>
             material = MicroMaterialRegistry.readMaterialID(packet)
             if (useStaticRenderer) tile.markRender()
         case _ =>
@@ -356,12 +357,12 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
 
     def sendConnUpdate()
     {
-        getWriteStreamOf(0).writeByte(clientConnMap)
+        getWriteStreamOf(1).writeByte(clientConnMap)
     }
 
     def sendMatUpdate()
     {
-        MicroMaterialRegistry.writeMaterialID(getWriteStreamOf(1), material)
+        MicroMaterialRegistry.writeMaterialID(getWriteStreamOf(2), material)
     }
 
     def discoverOpen(s:Int) = getInternal(s) match
