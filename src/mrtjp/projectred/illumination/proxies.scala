@@ -19,10 +19,11 @@ class IlluminationProxy_server extends IProxy with IPartFactory
 
     override def init()
     {
-        MultiPartRegistry.registerParts(this, (lights.map(_.getType) :+ "pr_lightbutton").toArray)
+        MultiPartRegistry.registerParts(this, (lights.map(_.getType) :+ "pr_lightbutton" :+ "pr_flightbutton").toArray)
         for (l <- lights) l.initServer()
 
         itemPartIllumarButton = new ItemPartButton
+        itemPartIllumarFButton = new ItemPartFButton
 
         blockLamp = new BlockLamp
         blockLamp.addSingleTile(classOf[TileLamp])
@@ -39,6 +40,7 @@ class IlluminationProxy_server extends IProxy with IPartFactory
     override def createPart(name:String, client:Boolean) = name match
     {
         case "pr_lightbutton" => new LightButtonPart
+        case "pr_flightbutton" => new FLightButtonPart
         case _ => getLight(name)
     }
 
@@ -62,6 +64,7 @@ class IlluminationProxy_client extends IlluminationProxy_server
         for (l <- lights) l.initClient()
 
         MinecraftForgeClient.registerItemRenderer(itemPartIllumarButton, RenderButton)
+        MinecraftForgeClient.registerItemRenderer(itemPartIllumarFButton, RenderFButton)
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ProjectRedIllumination.blockLamp), LampTESR)
         ClientRegistry.bindTileEntitySpecialRenderer(classOf[TileLamp], LampTESR)

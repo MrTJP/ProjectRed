@@ -15,6 +15,7 @@ object ProjectRedIllumination
 
     /** Multipart items **/
     var itemPartIllumarButton:ItemPartButton = null
+    var itemPartIllumarFButton:ItemPartFButton = null
 
     var tabLighting = new CreativeTabs("ill")
     {

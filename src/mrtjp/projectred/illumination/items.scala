@@ -46,7 +46,7 @@ class ItemBaseLight(obj:LightObject, val inverted:Boolean) extends ItemCore(obj.
     }
 }
 
-class ItemPartButton extends ItemCore("projectred.illumination.lightbutton") with TItemMultiPart with TItemGlassSound
+abstract class ItemPartButtonCommons(name:String) extends ItemCore(name) with TItemMultiPart with TItemGlassSound
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedIllumination.tabLighting)
@@ -57,10 +57,12 @@ class ItemPartButton extends ItemCore("projectred.illumination.lightbutton") wit
         val pos = pos1.copy.offset(side^1)
         if (!w.isSideSolid(pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side))) return null
 
-        val b = new LightButtonPart(ButtonPart.sideMetaMap(side^1))
+        val b = getNewInst(ButtonPart.sideMetaMap(side^1))
         if (b != null) b.onPlaced(item)
         b
     }
+
+    def getNewInst(sMask:Int):LightButtonPart
 
     override def getSubItems(item:Item, tab:CreativeTabs, list:JList[_])
     {
@@ -68,17 +70,27 @@ class ItemPartButton extends ItemCore("projectred.illumination.lightbutton") wit
     }
 
     @SideOnly(Side.CLIENT)
+    override def getSpriteNumber = 0
+}
+
+class ItemPartButton extends ItemPartButtonCommons("projectred.illumination.lightbutton") with TItemMultiPart with TItemGlassSound
+{
+    @SideOnly(Side.CLIENT)
     override def registerIcons(reg:IIconRegister)
     {
         for (i <- 0 until 16)
             ItemPartButton.icons(i) = reg.registerIcon("projectred:lights/button/"+i)
     }
 
-    @SideOnly(Side.CLIENT)
-    override def getSpriteNumber = 0
+    override def getNewInst(sMask:Int) = new LightButtonPart(sMask)
 }
 
 object ItemPartButton
 {
     val icons = new Array[IIcon](16)
+}
+
+class ItemPartFButton extends ItemPartButtonCommons("projectred.illumination.flightbutton")
+{
+    override def getNewInst(sMask:Int) = new FLightButtonPart(sMask)
 }

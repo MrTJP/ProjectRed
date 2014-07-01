@@ -1,6 +1,7 @@
 package mrtjp.projectred.illumination
 
 import codechicken.multipart.minecraft.{PartMetaAccess, ButtonPart}
+import mrtjp.projectred.core.TSwitchPacket
 import net.minecraft.item.ItemStack
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.{IIcon, MovingObjectPosition}
@@ -8,12 +9,12 @@ import codechicken.lib.data.{MCDataOutput, MCDataInput}
 import net.minecraft.nbt.NBTTagCompound
 import mrtjp.projectred.ProjectRedIllumination
 import scala.collection.JavaConversions._
-import codechicken.multipart.TileMultipart
-import codechicken.lib.vec.Vector3
+import codechicken.multipart.{RedstoneInteractions, TileMultipart}
+import codechicken.lib.vec.{BlockCoord, Vector3}
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import net.minecraft.client.renderer.RenderBlocks
 
-class LightButtonPart(meta:Int) extends ButtonPart(meta) with ILight
+class LightButtonPart(m:Int) extends ButtonPart(m) with ILight with TSwitchPacket
 {
     def this() = this(0)
 
@@ -33,12 +34,24 @@ class LightButtonPart(meta:Int) extends ButtonPart(meta) with ILight
             if (player.isSneaking)
             {
                 inverted = !inverted
-                sendDescUpdate()
-                true
+                sendInvUpdate()
             }
-            else super.activate(player, part, item)
+            else toggle()
+            true
         }
         else true
+    }
+
+    private def toggle()
+    {
+        val in = !pressed
+        meta = (meta^8).asInstanceOf[Byte]
+        world.playSoundEffect(x+0.5, y+0.5, z+0.5, "random.click", 0.3F, if (in) 0.6F else 0.5F)
+        if (in) scheduleTick(delay)
+        sendDescUpdate()
+        tile.notifyPartChange(this)
+        tile.notifyNeighborChange(ButtonPart.metaSideMap(meta&7))
+        tile.markDirty()
     }
 
     override def isOn = pressed != inverted
@@ -71,6 +84,14 @@ class LightButtonPart(meta:Int) extends ButtonPart(meta) with ILight
         super.readDesc(packet)
         colorMeta = packet.readByte
         inverted = packet.readBoolean
+    }
+
+    def sendInvUpdate() {getWriteStreamOf(1).writeBoolean(inverted)}
+
+    override def read(packet:MCDataInput, key:Int) = key match
+    {
+        case 1 => inverted = packet.readBoolean()
+        case _ => super.read(packet, key)
     }
 
     override def getType = "pr_lightbutton"
@@ -112,4 +133,65 @@ class LightButtonPart(meta:Int) extends ButtonPart(meta) with ILight
 
     @SideOnly(Side.CLIENT)
     override def getBreakingIcon(subPart:scala.Any, side:Int) = getBrokenIcon(side)
+}
+
+class FLightButtonPart(m:Int) extends LightButtonPart(m)
+{
+    def this() = this(0)
+
+    var powered = false
+
+    override def isOn = powered != inverted
+
+    override def onAdded()
+    {
+        super.onAdded()
+        checkAndUpdatePower()
+    }
+
+    override def onNeighborChanged()
+    {
+        super.onNeighborChanged()
+        checkAndUpdatePower()
+    }
+
+    def checkAndUpdatePower()
+    {
+        val old = powered
+        powered = isPowered
+        if (old != powered) sendPowUpdate()
+    }
+
+    def isPowered =
+    {
+        val side = sideForMeta(meta)
+        if (0 until 6 contains side)
+        {
+            val pos = new BlockCoord(tile).offset(side)
+            world.getBlockPowerInput(pos.x, pos.y, pos.z) != 0
+        }
+        else false
+    }
+
+    override def writeDesc(packet:MCDataOutput)
+    {
+        super.writeDesc(packet)
+        packet.writeBoolean(powered)
+    }
+
+    override def readDesc(packet:MCDataInput)
+    {
+        super.readDesc(packet)
+        powered = packet.readBoolean()
+    }
+
+    def sendPowUpdate() {getWriteStreamOf(2).writeBoolean(powered)}
+
+    override def read(packet:MCDataInput, key:Int) = key match
+    {
+        case 2 => powered = packet.readBoolean()
+        case _ => super.read(packet, key)
+    }
+
+    override def getType = "pr_flightbutton"
 }
