@@ -37,7 +37,7 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
     {
         ResourceLib.guiPipeCrafting.bind()
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
-        FontUtils.drawCenteredString("" + pipe.priority, 126, 15, PRColors.BLACK.rgb)
+        FontUtils.drawCenteredString(""+pipe.priority, 126, 15, PRColors.BLACK.rgb)
         GuiLib.drawPlayerInvBackground(8, 138)
 
         var color = 0
@@ -194,10 +194,7 @@ class GuiRequester(pipe:IWorldRequester) extends WidgetGui(280, 230)
 
         override def onFocusChanged()
         {
-            if (text == null || text.isEmpty)
-            {
-                setText("1")
-            }
+            if (text == null || text.isEmpty) setText("1")
         }
     }.setAllowedChars("0123456789").setMaxCharCount(7)
 

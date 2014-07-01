@@ -20,6 +20,12 @@ trait TWidget extends Gui
 
     def isRoot = parentWidget == this
 
+    def getRoot:WidgetGui = this match
+    {
+        case wg:WidgetGui => wg
+        case _ => parentWidget.getRoot
+    }
+
     var widgets = Seq[TWidget]()
 
     val bounds:Rect
