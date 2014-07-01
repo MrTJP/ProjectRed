@@ -60,8 +60,14 @@ class WidgetTextBox(x:Int, y:Int, w:Int, h:Int, var text:String) extends TWidget
 
     override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean):Boolean =
     {
-        if (isEnabled && isFocused)
+        if (isEnabled && isFocused && !consumed)
         {
+            if (keycode == 1)//esc
+            {
+                setFocused(false)
+                return true
+            }
+
             if (c == '\026') //paste
             {
                 val s = GuiScreen.getClipboardString

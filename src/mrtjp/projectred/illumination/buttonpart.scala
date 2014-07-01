@@ -2,7 +2,8 @@ package mrtjp.projectred.illumination
 
 import codechicken.multipart.minecraft.{PartMetaAccess, ButtonPart}
 import mrtjp.projectred.core.TSwitchPacket
-import net.minecraft.item.ItemStack
+import net.minecraft.entity.projectile.EntityArrow
+import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.{IIcon, MovingObjectPosition}
 import codechicken.lib.data.{MCDataOutput, MCDataInput}
@@ -36,23 +37,14 @@ class LightButtonPart(m:Int) extends ButtonPart(m) with ILight with TSwitchPacke
                 inverted = !inverted
                 sendInvUpdate()
             }
-            else toggle()
+            else super.activate(player, part, item)
             true
         }
         else true
     }
 
-    private def toggle()
-    {
-        val in = !pressed
-        meta = (meta^8).asInstanceOf[Byte]
-        world.playSoundEffect(x+0.5, y+0.5, z+0.5, "random.click", 0.3F, if (in) 0.6F else 0.5F)
-        if (in) scheduleTick(delay)
-        sendDescUpdate()
-        tile.notifyPartChange(this)
-        tile.notifyNeighborChange(ButtonPart.metaSideMap(meta&7))
-        tile.markDirty()
-    }
+    //hacked override point to remap description update to just a meta update.
+    override def sendDescUpdate() {sendMetaUpdate()}
 
     override def isOn = pressed != inverted
 
@@ -88,15 +80,21 @@ class LightButtonPart(m:Int) extends ButtonPart(m) with ILight with TSwitchPacke
 
     def sendInvUpdate() {getWriteStreamOf(1).writeBoolean(inverted)}
 
+    def sendMetaUpdate() {getWriteStreamOf(2).writeByte(meta)}
+
     override def read(packet:MCDataInput, key:Int) = key match
     {
         case 1 => inverted = packet.readBoolean()
+        case 2 =>
+            meta = packet.readByte()
+            tile.markRender()
         case _ => super.read(packet, key)
     }
 
     override def getType = "pr_lightbutton"
 
-    def getItemStack = new ItemStack(ProjectRedIllumination.itemPartIllumarButton, 1, colorMeta)
+    def getItem:Item = ProjectRedIllumination.itemPartIllumarButton
+    def getItemStack = new ItemStack(getItem, 1, colorMeta)
     override def getDrops = Seq(getItemStack)
     override def pickItem(hit:MovingObjectPosition) = getItemStack
 
@@ -185,13 +183,15 @@ class FLightButtonPart(m:Int) extends LightButtonPart(m)
         powered = packet.readBoolean()
     }
 
-    def sendPowUpdate() {getWriteStreamOf(2).writeBoolean(powered)}
+    def sendPowUpdate() {getWriteStreamOf(3).writeBoolean(powered)}
 
     override def read(packet:MCDataInput, key:Int) = key match
     {
-        case 2 => powered = packet.readBoolean()
+        case 3 => powered = packet.readBoolean()
         case _ => super.read(packet, key)
     }
+
+    override def getItem = ProjectRedIllumination.itemPartIllumarFButton
 
     override def getType = "pr_flightbutton"
 }

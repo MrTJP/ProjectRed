@@ -39,6 +39,12 @@ class WidgetGui(c:Container, w:Int, h:Int) extends GuiContainer(c) with TWidget
         }
     }
 
+    override def initGui()
+    {
+        super.initGui()
+        bounds.setMin(guiLeft, guiTop).setWH(xSize, ySize)
+    }
+
     final override def updateScreen()
     {
         super.updateScreen()
@@ -83,7 +89,7 @@ class WidgetGui(c:Container, w:Int, h:Int) extends GuiContainer(c) with TWidget
 
     final override def keyTyped(c:Char, i:Int)
     {
-        if (i == 1) //esc
+        if (isClosingKey(i)) //esc
         {
             if (prevGui != null) jumpTo(prevGui, prevGui.isInstanceOf[GuiContainer])
             else if (forwardClosing) super.keyTyped(c, i)
@@ -94,6 +100,8 @@ class WidgetGui(c:Container, w:Int, h:Int) extends GuiContainer(c) with TWidget
     }
 
     def forwardClosing = true
+    def isClosingKey(keycode:Int) =
+        keycode == 1 || keycode == mc.gameSettings.keyBindInventory.getKeyCode //esc or inv key
     def blockedHotkeyNumbers:Set[Int] = Set()
 
     /**
