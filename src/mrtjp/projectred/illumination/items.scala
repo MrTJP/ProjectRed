@@ -71,6 +71,9 @@ abstract class ItemPartButtonCommons(name:String) extends ItemCore(name) with TI
 
     @SideOnly(Side.CLIENT)
     override def getSpriteNumber = 0
+
+    @SideOnly(Side.CLIENT)
+    override def registerIcons(reg:IIconRegister) {}
 }
 
 class ItemPartButton extends ItemPartButtonCommons("projectred.illumination.lightbutton") with TItemMultiPart with TItemGlassSound

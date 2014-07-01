@@ -1,20 +1,21 @@
 package mrtjp.projectred.transportation
 
-import net.minecraft.inventory.Container
+import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.vec.BlockCoord
 import codechicken.lib.render.FontUtils
-import org.lwjgl.opengl.GL11
-import net.minecraft.client.gui.Gui
-import net.minecraft.util.EnumChatFormatting
-import org.lwjgl.input.Keyboard
-import scala.collection.mutable.ListBuffer
+import codechicken.lib.vec.BlockCoord
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.core.libmc._
 import mrtjp.projectred.core.libmc.gui._
 import mrtjp.projectred.core.{GuiIDs, TGuiBuilder}
+import net.minecraft.client.gui.Gui
 import net.minecraft.entity.player.EntityPlayer
-import codechicken.lib.data.MCDataInput
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import net.minecraft.inventory.Container
+import net.minecraft.util.EnumChatFormatting
+import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
+
+import scala.collection.mutable.ListBuffer
 
 class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends WidgetGui(container, 176, 220)
 {
@@ -175,10 +176,7 @@ class GuiRequester(pipe:IWorldRequester) extends WidgetGui(280, 230)
 
     var textFilter = new WidgetTextBox(xSize/2-150/2, 185, 150, 16)
     {
-        override def onTextChanged(oldText:String)
-        {
-            itemList.setNewFilter(text)
-        }
+        override def onTextChanged(oldText:String) {itemList.setNewFilter(text)}
     }.setMaxCharCount(24)
 
     var itemCount = new WidgetTextBox(xSize/2-50/2, 205, 50, 16, "1")
