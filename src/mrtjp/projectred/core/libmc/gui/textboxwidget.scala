@@ -1,7 +1,7 @@
 package mrtjp.projectred.core.libmc.gui
 
-import net.minecraft.util.ChatAllowedCharacters
 import net.minecraft.client.gui.{Gui, GuiScreen}
+import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
 
 class WidgetTextBox(x:Int, y:Int, w:Int, h:Int, var text:String) extends TWidget
@@ -13,7 +13,7 @@ class WidgetTextBox(x:Int, y:Int, w:Int, h:Int, var text:String) extends TWidget
     private var cursorCounter = 0
     private var action = ""
 
-    private var allowedcharacters = new String(ChatAllowedCharacters.allowedCharacters)
+    private var allowedcharacters:String = null
     var maxStringLength = 0
 
     override val bounds = new Rect().setMin(x, y).setWH(w, h)
@@ -52,7 +52,9 @@ class WidgetTextBox(x:Int, y:Int, w:Int, h:Int, var text:String) extends TWidget
         if (isFocused) cursorCounter = 0
     }
 
-    def canAddChar(c:Char) = allowedcharacters.indexOf(c) >= 0
+    def canAddChar(c:Char) =
+        if (allowedcharacters == null) ChatAllowedCharacters.isAllowedCharacter(c)
+        else allowedcharacters.indexOf(c) >= 0
 
     override def update_Impl(){cursorCounter += 1}
 
@@ -106,14 +108,9 @@ class WidgetTextBox(x:Int, y:Int, w:Int, h:Int, var text:String) extends TWidget
         Gui.drawRect(x-1, y-1, x+bWidth+1, y+bHeight+1, 0xffa0a0a0)
         Gui.drawRect(x, y, x+bWidth, y+bHeight, 0xff000000)
 
-        drawString(fontRenderer, getDrawText, x+4, y+bHeight/2-4, if (isEnabled) 0xe0e0e0 else 0x707070)
+        val drawText = text+(if (isEnabled && isFocused && cursorCounter/6%2 == 0) "_" else "")
 
-        def getDrawText =
-        {
-            var s = text
-            if (isEnabled && isFocused && cursorCounter/6%2 == 0) s += "_"
-            s
-        }
+        drawString(fontRenderer, drawText, x+4, y+bHeight/2-4, if (isEnabled) 0xe0e0e0 else 0x707070)
     }
 
     def setMaxCharCount(i:Int):this.type = {maxStringLength = i; this}
