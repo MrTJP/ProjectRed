@@ -9,14 +9,14 @@ item.projectred.core.part.partcathode.name=Negative Pool
 item.projectred.core.part.partpointer.name=Wijzer
 item.projectred.core.part.partsiliconchip.name=Silicone Chip
 item.projectred.core.part.partenergizedsiliconchip.name=Electrische Silicone Chip
-item.projectred.core.part.partplatformedplate.name=Stevige Plate
-item.projectred.core.part.partredingot.name=Rode Gemengde IStaaf
+item.projectred.core.part.partplatformedplate.name=Stevige Plaat
+item.projectred.core.part.partredingot.name=Rode Gemengde Staaf
 item.projectred.core.part.partboule.name=Silicone Bal
 item.projectred.core.part.partsilicon.name=Silicone
 item.projectred.core.part.partinfusedsilicon.name=Getrekte Silicone
 item.projectred.core.part.partenergizedsilicon.name=Electrische Silicone
 item.projectred.core.part.partmotor.name=Moter
-item.projectred.core.part.partcoppercoil.name=Copperen Spoel
+item.projectred.core.part.partcoppercoil.name=Koperen Spoel
 item.projectred.core.part.partironcoil.name=IJzeren Spoel
 item.projectred.core.part.partgoldcoil.name=Gouden Spoel
 
@@ -42,15 +42,57 @@ item.projectred.core.part.partsail.name=Zeil
 item.projectred.core.part.gemruby.name=Robijn
 item.projectred.core.part.gemsapphire.name=Saffier
 item.projectred.core.part.gemperidot.name=Peridot
+#item.projectred.core.part.partredironcomp.name=Rood Ijzer 'Ding'
+#item.projectred.core.part.partsandcoalcomp.name=Zanderig Kool 'Ding'
+#item.projectred.core.part.partredsiliconcomp.name=Rood Silicone 'Ding'
+#item.projectred.core.part.partglowsiliconcomp.name=Gloeiend Silicone 'Ding'
+
+item.projectred.core.part.nullchip.name=Null-Logic Router Chip
+item.projectred.core.part.nullupgrd.name=Null-Logic Upgrade Chip
+item.projectred.core.part.upgrd_lx.name=LX Upgrade
+item.projectred.core.part.upgrd_ly.name=LY Upgrade
+item.projectred.core.part.upgrd_lz.name=LZ Upgrade
+item.projectred.core.part.upgrd_rx.name=RX Upgrade
+item.projectred.core.part.upgrd_ry.name=RY Upgrade
+item.projectred.core.part.upgrd_rz.name=RZ Upgrade
+
 
 item.projectred.core.drawplate.name=Tekenplaat
 item.projectred.core.wiredebugger.name=Draad Helper
 item.projectred.core.screwdriver.name=Schroevendraaier
-
+item.projectred.core.routerutil.name=Router Upgrader
+#item.projectred.core.datacard.name=Data Card
+#Data Card-> SD card, MicroSD card?
 
 
 
 itemGroup.expansion=Project Red: Expansion
+
+
+
+itemGroup.transport=Project Red: Transportation
+
+item.projectred.transportation.routingchip|0.name=Item Responder chip
+item.projectred.transportation.routingchip|1.name=Dynamic Item Responder chip
+item.projectred.transportation.routingchip|2.name=Item Overflow Responder chip
+item.projectred.transportation.routingchip|3.name=Item Terminator chip
+item.projectred.transportation.routingchip|4.name=Item Extractor chip
+item.projectred.transportation.routingchip|5.name=Item Broadcaster chip
+item.projectred.transportation.routingchip|6.name=Item Stock Keeper chip
+item.projectred.transportation.routingchip|7.name=Item Crafting chip
+
+item.projectred.transportation.cpu|0.name=Router Netwerk CPU
+
+item.projectred.transportation.routerutil.name=Router Ding
+
+item.projectred.transportation.pipe|0.name=Item Verplaats pijp
+#TODO: update translation
+item.projectred.transportation.pipe|1.name=Routed Junction pijp
+item.projectred.transportation.pipe|2.name=Routed Interface pijp
+item.projectred.transportation.pipe|3.name=Routed Crafting pijp
+item.projectred.transportation.pipe|4.name=Routed Request pijp
+item.projectred.transportation.pipe|5.name=Routed Extension pijp
+item.projectred.transportation.pipe|6.name=Routed Firewall pijp
 
 
 
@@ -202,20 +244,36 @@ item.projectred.illumination.lightbutton|12.name=Bruine Knop
 item.projectred.illumination.lightbutton|13.name=Groene Knop
 item.projectred.illumination.lightbutton|14.name=Rode Knop
 item.projectred.illumination.lightbutton|15.name=Zwarte Knop
-
+#TODO:update translations
+item.projectred.illumination.flightbutton|0.name=Witte Feedback Button
+item.projectred.illumination.flightbutton|1.name=Oranje Illumar Feedback Button
+item.projectred.illumination.flightbutton|2.name=Magenta Illumar Feedback Button
+item.projectred.illumination.flightbutton|3.name=Lichtblauwe Illumar Feedback Button
+item.projectred.illumination.flightbutton|4.name=Gele Illumar Feedback Button
+item.projectred.illumination.flightbutton|5.name=Citroen Illumar Feedback Button
+item.projectred.illumination.flightbutton|6.name=Roze Illumar Feedback Button
+item.projectred.illumination.flightbutton|7.name=Grijze Illumar Feedback Button
+item.projectred.illumination.flightbutton|8.name=LichtGrijze Illumar Feedback Button
+item.projectred.illumination.flightbutton|9.name=Cyaane Illumar Feedback Button
+item.projectred.illumination.flightbutton|10.name=Paarse Illumar Feedback Button
+item.projectred.illumination.flightbutton|11.name=Blauwe Illumar Feedback Button
+item.projectred.illumination.flightbutton|12.name=Bruine Illumar Feedback Button
+item.projectred.illumination.flightbutton|13.name=Groene Illumar Feedback Button
+item.projectred.illumination.flightbutton|14.name=Rode Illumar Feedback Button
+item.projectred.illumination.flightbutton|15.name=Zwarte Illumar Feedback Button
 
 
 
 itemGroup.int=Project Red: Integration
 
-item.projectred.integration.gate|0.name=OR Gate
-item.projectred.integration.gate|1.name=NOR Gate
-item.projectred.integration.gate|2.name=NOT Gate
-item.projectred.integration.gate|3.name=AND Gate
-item.projectred.integration.gate|4.name=NAND Gate
-item.projectred.integration.gate|5.name=XOR Gate
-item.projectred.integration.gate|6.name=XNOR Gate
-item.projectred.integration.gate|7.name=Buffer Gate
+item.projectred.integration.gate|0.name=OR Poort
+item.projectred.integration.gate|1.name=NOR Poort
+item.projectred.integration.gate|2.name=NOT Poort
+item.projectred.integration.gate|3.name=AND Poort
+item.projectred.integration.gate|4.name=NAND Poort
+item.projectred.integration.gate|5.name=XOR Poort
+item.projectred.integration.gate|6.name=XNOR Poort
+item.projectred.integration.gate|7.name=Buffer Poort
 item.projectred.integration.gate|8.name=Multiplexer
 item.projectred.integration.gate|9.name=Pulsevormer
 item.projectred.integration.gate|10.name=Versterker
