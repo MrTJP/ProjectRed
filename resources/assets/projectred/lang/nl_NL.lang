@@ -1,4 +1,4 @@
-itemGroup.core=Project Red: Core
+itemGroup.core=Project Rode: Core
 
 item.projectred.core.part.partplate.name=Circuit Plaat
 item.projectred.core.part.partconductiveplate.name=Geleidende Plaat
@@ -28,7 +28,7 @@ item.projectred.core.part.illumar4.name=Gele Kleurstof
 item.projectred.core.part.illumar5.name=Citroen Groene Kleurstof
 item.projectred.core.part.illumar6.name=Groze Kleurstof
 item.projectred.core.part.illumar7.name=Grijze Kleurstof
-item.projectred.core.part.illumar8.name=Lichte Grey Kleurstof
+item.projectred.core.part.illumar8.name=Lichte Grijze Kleurstof
 item.projectred.core.part.illumar9.name=Cyaan Kleurstof
 item.projectred.core.part.illumar10.name=Paarse Kleurstof
 item.projectred.core.part.illumar11.name=Blauwe Kleurstof
@@ -66,11 +66,11 @@ item.projectred.core.routerutil.name=Router Upgrader
 
 
 
-itemGroup.expansion=Project Red: Expansion
+itemGroup.expansion=Project Rode: Expansion
 
 
 
-itemGroup.transport=Project Red: Transportation
+itemGroup.transport=Project Rode: Transportation
 
 item.projectred.transportation.routingchip|0.name=Item Responder chip
 item.projectred.transportation.routingchip|1.name=Dynamic Item Responder chip
@@ -96,7 +96,7 @@ item.projectred.transportation.pipe|6.name=Routed Firewall pijp
 
 
 
-itemGroup.exploration=Project Red: Exploration
+itemGroup.exploration=Project Rode: Exploration
 
 tile.projectred.exploration.ore|0.name=Robijnen Erts
 tile.projectred.exploration.ore|1.name=Saffieren Erts
@@ -201,7 +201,7 @@ tile.projectred.exploration.dyesapling|15.name=Zwart Gekleurde Kiemplant
 
 
 
-itemGroup.ill=Project Red: Illumination
+itemGroup.ill=Project Rode: Illumination
 
 item.projectred.illumination.lantern|0.name=Witte Lantaarn
 item.projectred.illumination.lantern|1.name=Oranje lantaarn
@@ -243,7 +243,7 @@ tile.projectred.illumination.lamp|4.name=Gele Lamp
 tile.projectred.illumination.lamp|5.name=Citroen Groene Lamp
 tile.projectred.illumination.lamp|6.name=Roze Lamp
 tile.projectred.illumination.lamp|7.name=Grijze Lamp
-tile.projectred.illumination.lamp|8.name=Licht Grijze Lamp
+tile.projectred.illumination.lamp|8.name=Lichtgrijze Lamp
 tile.projectred.illumination.lamp|9.name=Cyaane Lamp
 tile.projectred.illumination.lamp|10.name=Paarse Lamp
 tile.projectred.illumination.lamp|11.name=Blauwe Lamp
@@ -284,26 +284,90 @@ item.projectred.illumination.lightbutton|13.name=Groene Knop
 item.projectred.illumination.lightbutton|14.name=Rode Knop
 item.projectred.illumination.lightbutton|15.name=Zwarte Knop
 #TODO:update translations
-item.projectred.illumination.flightbutton|0.name=Witte Feedback Button
-item.projectred.illumination.flightbutton|1.name=Oranje Illumar Feedback Button
-item.projectred.illumination.flightbutton|2.name=Magenta Illumar Feedback Button
-item.projectred.illumination.flightbutton|3.name=Lichtblauwe Illumar Feedback Button
-item.projectred.illumination.flightbutton|4.name=Gele Illumar Feedback Button
-item.projectred.illumination.flightbutton|5.name=Citroen Illumar Feedback Button
-item.projectred.illumination.flightbutton|6.name=Roze Illumar Feedback Button
-item.projectred.illumination.flightbutton|7.name=Grijze Illumar Feedback Button
-item.projectred.illumination.flightbutton|8.name=LichtGrijze Illumar Feedback Button
-item.projectred.illumination.flightbutton|9.name=Cyaane Illumar Feedback Button
-item.projectred.illumination.flightbutton|10.name=Paarse Illumar Feedback Button
-item.projectred.illumination.flightbutton|11.name=Blauwe Illumar Feedback Button
-item.projectred.illumination.flightbutton|12.name=Bruine Illumar Feedback Button
-item.projectred.illumination.flightbutton|13.name=Groene Illumar Feedback Button
-item.projectred.illumination.flightbutton|14.name=Rode Illumar Feedback Button
-item.projectred.illumination.flightbutton|15.name=Zwarte Illumar Feedback Button
+item.projectred.illumination.flightbutton|0.name=Witte Feedback Knop
+item.projectred.illumination.flightbutton|1.name=Oranje Illumar Feedback Knop
+item.projectred.illumination.flightbutton|2.name=Magenta Illumar Feedback Knop
+item.projectred.illumination.flightbutton|3.name=Lichtblauwe Illumar Feedback Knop
+item.projectred.illumination.flightbutton|4.name=Gele Illumar Feedback Knop
+item.projectred.illumination.flightbutton|5.name=Citroen Illumar Feedback Knop
+item.projectred.illumination.flightbutton|6.name=Roze Illumar Feedback Knop
+item.projectred.illumination.flightbutton|7.name=Grijze Illumar Feedback Knop
+item.projectred.illumination.flightbutton|8.name=LichtGrijze Illumar Feedback Knop
+item.projectred.illumination.flightbutton|9.name=Cyaane Illumar Feedback Knop
+item.projectred.illumination.flightbutton|10.name=Paarse Illumar Feedback Knop
+item.projectred.illumination.flightbutton|11.name=Blauwe Illumar Feedback Knop
+item.projectred.illumination.flightbutton|12.name=Bruine Illumar Feedback Knop
+item.projectred.illumination.flightbutton|13.name=Groene Illumar Feedback Knop
+item.projectred.illumination.flightbutton|14.name=Rode Illumar Feedback Knop
+item.projectred.illumination.flightbutton|15.name=Zwarte Illumar Feedback Knop
+item.projectred.illumination.cagelamp|0.name=Witte Cage Lamp
+item.projectred.illumination.cagelamp|1.name=Oranje Cage Lamp
+item.projectred.illumination.cagelamp|2.name=Magenta Cage Lamp
+item.projectred.illumination.cagelamp|3.name=Lichtblauw Cage Lamp
+item.projectred.illumination.cagelamp|4.name=Geel Cage Lamp
+item.projectred.illumination.cagelamp|5.name=Citroen Cage Lamp
+item.projectred.illumination.cagelamp|6.name=Roze Cage Lamp
+item.projectred.illumination.cagelamp|7.name=Grijze Cage Lamp
+item.projectred.illumination.cagelamp|8.name=Lichtgrijze Cage Lamp
+item.projectred.illumination.cagelamp|9.name=Cyaan Cage Lamp
+item.projectred.illumination.cagelamp|10.name=Paars Cage Lamp
+item.projectred.illumination.cagelamp|11.name=Blauw Cage Lamp
+item.projectred.illumination.cagelamp|12.name=Bruine Cage Lamp
+item.projectred.illumination.cagelamp|13.name=Groene Cage Lamp
+item.projectred.illumination.cagelamp|14.name=Rode Cage Lamp
+item.projectred.illumination.cagelamp|15.name=Zwarte Cage Lamp
+item.projectred.illumination.cagelamp.inv|0.name=Omgekeerde Witte Cage Lamp
+item.projectred.illumination.cagelamp.inv|1.name=Omgekeerde Oranje Cage Lamp
+item.projectred.illumination.cagelamp.inv|2.name=Omgekeerde Magenta Cage Lamp
+item.projectred.illumination.cagelamp.inv|3.name=Omgekeerde Lichtblauw Cage Lamp
+item.projectred.illumination.cagelamp.inv|4.name=Omgekeerde Geel Cage Lamp
+item.projectred.illumination.cagelamp.inv|5.name=Omgekeerde Citroen Cage Lamp
+item.projectred.illumination.cagelamp.inv|6.name=Omgekeerde Roze Cage Lamp
+item.projectred.illumination.cagelamp.inv|7.name=Omgekeerde Grijze Cage Lamp
+item.projectred.illumination.cagelamp.inv|8.name=Omgekeerde Lichtgrijze Cage Lamp
+item.projectred.illumination.cagelamp.inv|9.name=Omgekeerde Cyaan Cage Lamp
+item.projectred.illumination.cagelamp.inv|10.name=Omgekeerde Paars Cage Lamp
+item.projectred.illumination.cagelamp.inv|11.name=Omgekeerde Blauw Cage Lamp
+item.projectred.illumination.cagelamp.inv|12.name=Omgekeerde Bruine Cage Lamp
+item.projectred.illumination.cagelamp.inv|13.name=Omgekeerde Groene Cage Lamp
+item.projectred.illumination.cagelamp.inv|14.name=Omgekeerde Rode Cage Lamp
+item.projectred.illumination.cagelamp.inv|15.name=Omgekeerde Zwarte Cage Lamp
+item.projectred.illumination.fixture|0.name=Witte Fixture
+item.projectred.illumination.fixture|1.name=Oranje Fixture
+item.projectred.illumination.fixture|2.name=Magenta Fixture
+item.projectred.illumination.fixture|3.name=Lichtblauw Fixture
+item.projectred.illumination.fixture|4.name=Geel Fixture
+item.projectred.illumination.fixture|5.name=Citroen Fixture
+item.projectred.illumination.fixture|6.name=Roze Fixture
+item.projectred.illumination.fixture|7.name=Grijze Fixture
+item.projectred.illumination.fixture|8.name=Lichtgrijze Fixture
+item.projectred.illumination.fixture|9.name=Cyaan Fixture
+item.projectred.illumination.fixture|10.name=Paars Fixture
+item.projectred.illumination.fixture|11.name=Blauw Fixture
+item.projectred.illumination.fixture|12.name=Bruine Fixture
+item.projectred.illumination.fixture|13.name=Groene Fixture
+item.projectred.illumination.fixture|14.name=Rode Fixture
+item.projectred.illumination.fixture|15.name=Zwarte Fixture
+item.projectred.illumination.fixture.inv|0.name=Omgekeerde Witte Fixture
+item.projectred.illumination.fixture.inv|1.name=Omgekeerde Oranje Fixture
+item.projectred.illumination.fixture.inv|2.name=Omgekeerde Magenta Fixture
+item.projectred.illumination.fixture.inv|3.name=Omgekeerde Lichtblauw Fixture
+item.projectred.illumination.fixture.inv|4.name=Omgekeerde Geel Fixture
+item.projectred.illumination.fixture.inv|5.name=Omgekeerde Citroen Fixture
+item.projectred.illumination.fixture.inv|6.name=Omgekeerde Roze Fixture
+item.projectred.illumination.fixture.inv|7.name=Omgekeerde Grijze Fixture
+item.projectred.illumination.fixture.inv|8.name=Omgekeerde Lichtgrijze Fixture
+item.projectred.illumination.fixture.inv|9.name=Omgekeerde Cyaan Fixture
+item.projectred.illumination.fixture.inv|10.name=Omgekeerde Paars Fixture
+item.projectred.illumination.fixture.inv|11.name=Omgekeerde Blauw Fixture
+item.projectred.illumination.fixture.inv|12.name=Omgekeerde Bruine Fixture
+item.projectred.illumination.fixture.inv|13.name=Omgekeerde Groene Fixture
+item.projectred.illumination.fixture.inv|14.name=Omgekeerde Rode Fixture
+item.projectred.illumination.fixture.inv|15.name=Omgekeerde Zwarte Fixture
 
 
 
-itemGroup.int=Project Red: Integration
+itemGroup.int=Project Rode: Integration
 
 item.projectred.integration.gate|0.name=OR Poort
 item.projectred.integration.gate|1.name=NOR Poort
@@ -337,7 +401,7 @@ item.projectred.integration.gate|27.name=AND Cell
 
 
 
-itemGroup.trans=Project Red: Transmission
+itemGroup.trans=Project Rode: Transmission
 
 item.projectred.transmission.wire|0.name=Rode Gemengde Draad
 item.projectred.transmission.wire|1.name=Witte Geïsoleerde Draad
@@ -348,8 +412,8 @@ item.projectred.transmission.wire|5.name=Gele Geïsoleerde Draad
 item.projectred.transmission.wire|6.name=Citroen Groene Geïsoleerde Draad
 item.projectred.transmission.wire|7.name=Roze Geïsoleerde Draad
 item.projectred.transmission.wire|8.name=Grijze Geïsoleerde Draad
-item.projectred.transmission.wire|9.name=Licht Grijze Geïsoleerde Draad
-item.projectred.transmission.wire|10.name=Cyaane Geïsoleerde Draad
+item.projectred.transmission.wire|9.name=Lichtgrijze Geïsoleerde Draad
+item.projectred.transmission.wire|10.name=Cyaan Geïsoleerde Draad
 item.projectred.transmission.wire|11.name=Paarse Geïsoleerde Draad
 item.projectred.transmission.wire|12.name=Blauwe Geïsoleerde Draad
 item.projectred.transmission.wire|13.name=Bruine Geïsoleerde Draad
@@ -359,14 +423,15 @@ item.projectred.transmission.wire|16.name=Zwarte Geïsoleerde Draad
 item.projectred.transmission.wire|17.name=Gebundelde Kabel
 item.projectred.transmission.wire|18.name=Witte Gebundelde Kabel
 item.projectred.transmission.wire|19.name=Oranje Gebundelde Kabel
-item.projectred.transmission.wire|20.name=Rood Paarse Gebundelde Kabel
+#roodpaars? ?
+item.projectred.transmission.wire|20.name=Roodpaarse Gebundelde Kabel
 item.projectred.transmission.wire|21.name=Licht Blauwe Gebundelde Kabel
 item.projectred.transmission.wire|22.name=Gele Gebundelde Kabel
 item.projectred.transmission.wire|23.name=Citroen Groene Gebundelde Kabel
 item.projectred.transmission.wire|24.name=Groze Gebundelde Kabel
 item.projectred.transmission.wire|25.name=Grijze Gebundelde Kabel
-item.projectred.transmission.wire|26.name=Licht Grijze Gebundelde Kabel
-item.projectred.transmission.wire|27.name=Cyaane Gebundelde Kabel
+item.projectred.transmission.wire|26.name=Lichtgrijze Gebundelde Kabel
+item.projectred.transmission.wire|27.name=Cyaan Gebundelde Kabel
 item.projectred.transmission.wire|28.name=Paarse Gebundelde Kabel
 item.projectred.transmission.wire|29.name=Blauwe Gebundelde Kabel
 item.projectred.transmission.wire|30.name=Bruine Gebundelde Kabel
@@ -383,8 +448,8 @@ item.projectred.transmission.framewire|5.name=Framed Gele Geïsoleerde Draad
 item.projectred.transmission.framewire|6.name=Framed Citroen Groene Geïsoleerde Draad
 item.projectred.transmission.framewire|7.name=Framed Roze Geïsoleerde Draad
 item.projectred.transmission.framewire|8.name=Framed Grijze Geïsoleerde Draad
-item.projectred.transmission.framewire|9.name=Framed Licht Grijze Geïsoleerde Draad
-item.projectred.transmission.framewire|10.name=Framed Cyaane Geïsoleerde Draad
+item.projectred.transmission.framewire|9.name=Framed Lichtgrijze Geïsoleerde Draad
+item.projectred.transmission.framewire|10.name=Framed Cyaan Geïsoleerde Draad
 item.projectred.transmission.framewire|11.name=Framed Paarse Geïsoleerde Draad
 item.projectred.transmission.framewire|12.name=Framed Blauwe Geïsoleerde Draad
 item.projectred.transmission.framewire|13.name=Framed Bruine Geïsoleerde Draad
@@ -397,8 +462,8 @@ item.projectred.transmission.framewire|34.name=Framed 100V Electriciteit Draad
 
 
 
-itemGroup.compat=Project Red: Compatibility
+itemGroup.compat=Project Rode: Compatibility
 
-tile.projectred.compatibility.liqredstone.name=Vloeibare Redstone
+tile.projectred.compatibility.liqredstone.name=Vloeibare Redestone
 tile.projectred.compatibility.liqcondredmetal.name=Gesmolten Geleidende Rood Metaal
 
