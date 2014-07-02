@@ -1,4 +1,4 @@
-itemGroup.core=Project Rode: Core
+itemGroup.core=Project Red: Core
 
 item.projectred.core.part.partplate.name=Circuit Plaat
 item.projectred.core.part.partconductiveplate.name=Geleidende Plaat
@@ -28,7 +28,7 @@ item.projectred.core.part.illumar4.name=Gele Kleurstof
 item.projectred.core.part.illumar5.name=Citroen Groene Kleurstof
 item.projectred.core.part.illumar6.name=Groze Kleurstof
 item.projectred.core.part.illumar7.name=Grijze Kleurstof
-item.projectred.core.part.illumar8.name=Lichte Grijze Kleurstof
+item.projectred.core.part.illumar8.name=Lichtegrijze Kleurstof
 item.projectred.core.part.illumar9.name=Cyaan Kleurstof
 item.projectred.core.part.illumar10.name=Paarse Kleurstof
 item.projectred.core.part.illumar11.name=Blauwe Kleurstof
@@ -66,11 +66,11 @@ item.projectred.core.routerutil.name=Router Upgrader
 
 
 
-itemGroup.expansion=Project Rode: Expansion
+itemGroup.expansion=Project Red: Expansion
 
 
 
-itemGroup.transport=Project Rode: Transportation
+itemGroup.transport=Project Red: Transportation
 
 item.projectred.transportation.routingchip|0.name=Item Responder chip
 item.projectred.transportation.routingchip|1.name=Dynamic Item Responder chip
@@ -96,7 +96,7 @@ item.projectred.transportation.pipe|6.name=Routed Firewall pijp
 
 
 
-itemGroup.exploration=Project Rode: Exploration
+itemGroup.exploration=Project Red: Exploration
 
 tile.projectred.exploration.ore|0.name=Robijnen Erts
 tile.projectred.exploration.ore|1.name=Saffieren Erts
@@ -201,7 +201,7 @@ tile.projectred.exploration.dyesapling|15.name=Zwart Gekleurde Kiemplant
 
 
 
-itemGroup.ill=Project Rode: Illumination
+itemGroup.ill=Project Red: Illumination
 
 item.projectred.illumination.lantern|0.name=Witte Lantaarn
 item.projectred.illumination.lantern|1.name=Oranje lantaarn
@@ -367,7 +367,7 @@ item.projectred.illumination.fixture.inv|15.name=Omgekeerde Zwarte Fixture
 
 
 
-itemGroup.int=Project Rode: Integration
+itemGroup.int=Project Red: Integration
 
 item.projectred.integration.gate|0.name=OR Poort
 item.projectred.integration.gate|1.name=NOR Poort
@@ -401,7 +401,7 @@ item.projectred.integration.gate|27.name=AND Cell
 
 
 
-itemGroup.trans=Project Rode: Transmission
+itemGroup.trans=Project Red: Transmission
 
 item.projectred.transmission.wire|0.name=Rode Gemengde Draad
 item.projectred.transmission.wire|1.name=Witte Geïsoleerde Draad
@@ -462,8 +462,8 @@ item.projectred.transmission.framewire|34.name=Framed 100V Electriciteit Draad
 
 
 
-itemGroup.compat=Project Rode: Compatibility
+itemGroup.compat=Project Red: Compatibility
 
-tile.projectred.compatibility.liqredstone.name=Vloeibare Redestone
-tile.projectred.compatibility.liqcondredmetal.name=Gesmolten Geleidende Rood Metaal
+tile.projectred.compatibility.liqredstone.name=Vloeibare Redstone
+tile.projectred.compatibility.liqcondredmetal.name=Gesmolten Geleidend Rood Metaal
 
