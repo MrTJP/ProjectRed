@@ -334,6 +334,7 @@ item.projectred.transmission.wire|30.name=Bruine Gebundelde Kabel
 item.projectred.transmission.wire|31.name=Groene Gebundelde Kabel
 item.projectred.transmission.wire|32.name=Rode Gebundelde Kabel
 item.projectred.transmission.wire|33.name=Zwarte Gebundelde Kabel
+item.projectred.transmission.wire|34.name=100V Power Line
 item.projectred.transmission.framewire|0.name=Framed Rode Gemengde Draad
 item.projectred.transmission.framewire|1.name=Framed Witte Geïsoleerde Draad
 item.projectred.transmission.framewire|2.name=Framed Oranje Geïsoleerde Draad
@@ -352,3 +353,13 @@ item.projectred.transmission.framewire|14.name=Framed Groene Geïsoleerde Draad
 item.projectred.transmission.framewire|15.name=Framed Rode Geïsoleerde Draad
 item.projectred.transmission.framewire|16.name=Framed Zwarte Geïsoleerde Draad
 item.projectred.transmission.framewire|17.name=Framed Gebundelde Kabel
+item.projectred.transmission.framewire|34.name=Framed 100V Electriciteit Draad
+
+
+
+
+itemGroup.compat=Project Red: Compatibility
+
+tile.projectred.compatibility.liqredstone.name=Vloeibare Redstone
+tile.projectred.compatibility.liqcondredmetal.name=Gesmolten Geleidende Rood Metaal
+
