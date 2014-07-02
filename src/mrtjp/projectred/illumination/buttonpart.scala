@@ -144,13 +144,13 @@ class FLightButtonPart(m:Int) extends LightButtonPart(m)
     override def onAdded()
     {
         super.onAdded()
-        checkAndUpdatePower()
+        if (!world.isRemote) checkAndUpdatePower()
     }
 
     override def onNeighborChanged()
     {
         super.onNeighborChanged()
-        checkAndUpdatePower()
+        if (!world.isRemote) checkAndUpdatePower()
     }
 
     def checkAndUpdatePower()
@@ -158,17 +158,17 @@ class FLightButtonPart(m:Int) extends LightButtonPart(m)
         val old = powered
         powered = isPowered
         if (old != powered) sendPowUpdate()
-    }
 
-    def isPowered =
-    {
-        val side = sideForMeta(meta)
-        if (0 until 6 contains side)
+        def isPowered =
         {
-            val pos = new BlockCoord(tile).offset(side)
-            world.getBlockPowerInput(pos.x, pos.y, pos.z) != 0
+            val side = sideForMeta(meta)
+            if (0 until 6 contains side)
+            {
+                val pos = new BlockCoord(tile).offset(side)
+                world.getBlockPowerInput(pos.x, pos.y, pos.z) != 0
+            }
+            else false
         }
-        else false
     }
 
     override def writeDesc(packet:MCDataOutput)
