@@ -98,15 +98,16 @@ class PropagationRun
     var lastCaller:TMultiPart = null
     var count = 0
     var recalcs = 0
+
     var partChanges = HashMultimap.create[TileMultipart, TMultiPart]
-    var neighborChanges = HashSet[BlockCoord]()
-    var propagationList = List[Propagation]()
-    var analogDrops = List[Propagation]()
+    var neighborChanges = HashSet.newBuilder[BlockCoord]
+    var propagationList = Vector.newBuilder[Propagation]
+    var analogDrops = Vector.newBuilder[Propagation]
 
     def clear()
     {
         partChanges.clear()
-        neighborChanges = HashSet[BlockCoord]()
+        neighborChanges.clear()
         count = 0
         recalcs = 0
         lastCaller = null
@@ -116,7 +117,9 @@ class PropagationRun
     def finish()
     {
         WirePropagator.currentRun = null
-        if (partChanges.isEmpty && neighborChanges.isEmpty)
+        val res_NeighborChanges = neighborChanges.result()
+
+        if (partChanges.isEmpty && res_NeighborChanges.isEmpty)
         {
             WirePropagator.finishing = parent
             clear()
@@ -125,19 +128,18 @@ class PropagationRun
 
         WirePropagator.finishing = this
         if (CommandDebug.WIRE_READING)
-            println(count+" propogations, "+partChanges.size+" part changes, "+neighborChanges.size+" block updates")
+            println(count+" propogations, "+partChanges.size+" part changes, "+res_NeighborChanges.size+" block updates")
 
         import scala.collection.JavaConversions._
         for (entry <- partChanges.asMap.entrySet)
         {
             val parts = entry.getValue
 
-            import scala.collection.JavaConversions._
             for (part <- parts) part.asInstanceOf[IWirePart].onSignalUpdate()
             entry.getKey.multiPartChange(parts)
         }
 
-        neighborChanges.foreach(b => world.notifyBlockOfNeighborChange(b.x, b.y, b.z, MultipartProxy.block))
+        res_NeighborChanges.foreach(b => world.notifyBlockOfNeighborChange(b.x, b.y, b.z, MultipartProxy.block))
 
         WirePropagator.finishing = parent
 
@@ -154,21 +156,36 @@ class PropagationRun
         runLoop()
     }
 
+    private var pChange = false
+    private var aChange = false
     private def runLoop()
     {
+        var ptmp:Vector[Propagation] = null
+        var atmp:Vector[Propagation] = null
+
+        def fetch()
+        {
+            if (pChange || ptmp == null) ptmp = propagationList.result()
+            if (aChange || atmp == null) atmp = analogDrops.result()
+            pChange = false
+            aChange = false
+        }
+        fetch()
+
         do
         {
-            val tmp = propagationList
-            propagationList = List[Propagation]()
-            tmp.foreach(_.go())
+            propagationList.clear(); pChange = true //we emptied it, probably changed it, but if we didnt, the loop will break anyway.
+            ptmp.foreach(_.go())
 
-            if (propagationList.isEmpty && analogDrops.nonEmpty)
+            fetch() //Update results
+
+            if (ptmp.isEmpty && atmp.nonEmpty)
             {
-                propagationList = analogDrops
-                analogDrops = List[Propagation]()
+                propagationList = analogDrops; ptmp = atmp; pChange = false //atmp is already up to date, so now ptmp is too.
+                analogDrops = Vector.newBuilder; aChange = true //atmp was nonempty, now it is
             }
         }
-        while (propagationList.nonEmpty)
+        while (ptmp.nonEmpty)
         finish()
     }
 
@@ -179,12 +196,14 @@ class PropagationRun
             lastCaller = from
             count += 1
         }
-        propagationList :+= new Propagation(part, from, mode)
+        propagationList += new Propagation(part, from, mode)
+        pChange = true
     }
 
     def addAnalogDrop(part:IWirePart)
     {
-        analogDrops :+= new Propagation(part, WirePropagator.notApart, IWirePart.RISING)
+        analogDrops += new Propagation(part, WirePropagator.notApart, IWirePart.RISING)
+        aChange = true
     }
 }
 
