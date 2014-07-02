@@ -101,7 +101,7 @@ itemGroup.exploration=Project Red: Exploration
 tile.projectred.exploration.ore|0.name=Robijnen Erts
 tile.projectred.exploration.ore|1.name=Saffieren Erts
 tile.projectred.exploration.ore|2.name=Peridot Erts
-tile.projectred.exploration.stone|0.name=Marber
+tile.projectred.exploration.stone|0.name=Marmer
 tile.projectred.exploration.stone|1.name=Marmeren Baksteen
 tile.projectred.exploration.stone|2.name=Bazalt Keisteen
 tile.projectred.exploration.stone|3.name=Bazalt
@@ -158,7 +158,46 @@ item.projectred.exploration.sicklesapphire.name=Saffieren Sikkel
 item.projectred.exploration.sickleperidot.name=Peridoten Sikkel
 item.projectred.exploration.sicklediamond.name=Diamanten Sikkel
 
-
+tile.projectred.exploration.stonewalls|0.name=Marmeren Muur
+tile.projectred.exploration.stonewalls|1.name=Marmeren Baksteen Muur
+tile.projectred.exploration.stonewalls|2.name=Bazalten Keisteen Muur
+tile.projectred.exploration.stonewalls|3.name=Bazalten Muur
+tile.projectred.exploration.stonewalls|4.name=Bazalten Baksteen Muur
+tile.projectred.exploration.stonewalls|5.name=Robijnen Muur
+tile.projectred.exploration.stonewalls|6.name=Saffieren Wall
+tile.projectred.exploration.stonewalls|7.name=Peridoten Wall
+tile.projectred.exploration.dyeleaf|0.name=Wit Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|1.name=Oranje Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|2.name=Magenta Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|3.name=Lichtblauw Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|4.name=Geel Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|5.name=Citroen Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|6.name=Paars Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|7.name=Grijs Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|8.name=Lichtgrijs Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|9.name=Cyaan Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|10.name=Paars Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|11.name=Blauw Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|12.name=Bruin Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|13.name=Groen Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|14.name=Rood Gekleurde Bladeren
+tile.projectred.exploration.dyeleaf|15.name=Zwart Gekleurde Bladeren
+tile.projectred.exploration.dyesapling|0.name=Wit Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|1.name=Oranje Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|2.name=Magenta Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|3.name=Lichtblauw Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|4.name=Geel Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|5.name=Citroen Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|6.name=Paars Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|7.name=Grijs Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|8.name=Lichtgrijs Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|9.name=Cyaan Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|10.name=Paars Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|11.name=Blauw Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|12.name=Bruin Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|13.name=Groen Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|14.name=Rood Gekleurde Kiemplant
+tile.projectred.exploration.dyesapling|15.name=Zwart Gekleurde Kiemplant
 
 
 
