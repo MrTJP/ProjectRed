@@ -100,7 +100,7 @@ class RoutedFirewallPipe extends RoutedJunctionPipePart
             cont + new Slot2(filt, s, x, y).setGhosting(true)
             s += 1
         }
-        cont.addPlayerInv(8, 120).setShift(false)
+        cont.addPlayerInv(player, 8, 120).setShift(false)
     }
 
     override def routeFilter(inputDir:Int) =
