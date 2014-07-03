@@ -9,6 +9,7 @@ public class SimpleGatePart extends RedstoneGatePart
 {
     /**
      * Mapped inputs and outputs of the gate.
+     * OOOO IIII
      * High nybble is output.
      * Low nybble is input.
      */
