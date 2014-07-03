@@ -122,7 +122,7 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with IRed
 
     override def test(player:EntityPlayer) =
     {
-        if (world.isRemote) Messenger.addMessage(x, y+.5f, z, "/#f/#c[c] = "+getRedwireSignal)
+        if (world.isRemote) Messenger.addMessage(x, y+0.5, z, "/#f/#c[c] = "+getRedwireSignal)
         else
         {
             val packet = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)

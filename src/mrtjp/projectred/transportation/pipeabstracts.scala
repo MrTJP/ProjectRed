@@ -256,16 +256,22 @@ object PipeBoxes
 abstract class CorePipePart extends SubcorePipePart with TCenterRSAcquisitions with IRedwirePart with IMaskedRedstonePart
 {
     override def strongPowerLevel(side:Int) = 0
+
     override def weakPowerLevel(side:Int) =
     {
         if (!maskConnects(side) || !material) 0
         else rsLevel
     }
+
     override def canConnectRedstone(side:Int) = material
+
     override def getConnectionMask(side:Int) = 0x10
 
-    override def canConnectPart(part:IConnectable, s:Int) =
-        part.isInstanceOf[FramedRedwirePart] && material
+    override def canConnectPart(part:IConnectable, s:Int) = part match
+    {
+        case fr:FramedRedwirePart if material => true
+        case _ => false
+    }
 
     override def discoverOpen(s:Int) = getInternal(s) match
     {

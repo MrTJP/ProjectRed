@@ -47,7 +47,8 @@ public class RenderGate
             new InvertCell(),
             new BufferCell(),
             new Comparator(),
-            new ANDCell()
+            new ANDCell(),
+            new BusRandomizer()
     };
 
     public static void registerIcons(IIconRegister r)
@@ -1122,7 +1123,7 @@ public class RenderGate
     {
         WireComponentModel[] wires = generateWireModels("BUSXCVR", 2);
         BusXcvrCableModel cable = new BusXcvrCableModel();
-        BusXcvrPanelModel[] panels = new BusXcvrPanelModel[]{new BusXcvrPanelModel(4, 8, false), new BusXcvrPanelModel(12, 8, true),};
+        SigLightPanelModel[] panels = new SigLightPanelModel[]{new SigLightPanelModel(4, 8, false), new SigLightPanelModel(12, 8, true),};
 
         public BusXcvr()
         {
@@ -1363,6 +1364,59 @@ public class RenderGate
             torches[2].on = (part.state&0xA) == 0;
             wires[0].on = torches[0].on || torches[2].on;
             wires[1].on = !torches[0].on;
+        }
+    }
+
+    public static class BusRandomizer extends GateRenderer<BundledGatePart>
+    {
+        BusRandCableModel cable = new BusRandCableModel();
+        SigLightPanelModel panel = new SigLightPanelModel(8, 8, true, 0x756900FF, 0xe1d600FF, false);
+        WireComponentModel[] wires1 = generateWireModels("BUSRAND1", 2);
+        WireComponentModel[] wires2 = generateWireModels("BUSRAND2", 2);
+
+        int type = 0;
+
+        public BusRandomizer()
+        {
+            models.add(cable);
+            models.add(panel);
+        }
+
+        @Override
+        public void prepareInv()
+        {
+            type = 0;
+            panel.signal = 0;
+            panel.disableMask = 0;
+
+            wires1[0].on = wires2[0].on = false;
+            wires1[1].on = wires2[1].on = false;
+        }
+
+        @Override
+        public void prepare(BundledGatePart part)
+        {
+            type = part.shape();
+            BundledGateLogic.BusRandomizer logic = ((BundledGateLogic.BusRandomizer)part.getLogic());
+            panel.signal = logic.output;
+            panel.disableMask = ~logic.mask;
+
+            wires1[0].on = wires2[0].on = (part.state()&2) != 0;
+            wires1[1].on = wires2[1].on = (part.state()&8) != 0;
+        }
+
+        @Override
+        public void registerIcons(IIconRegister r)
+        {
+            for (ComponentModel m : wires1) m.registerTextures(r);
+            for (ComponentModel m : wires2) m.registerTextures(r);
+        }
+
+        @Override
+        public void renderModels(Transformation t, int orient)
+        {
+            super.renderModels(t, orient);
+            for (ComponentModel m : (type == 0 ? wires1 : wires2)) m.renderModel(t, orient);
         }
     }
 }
