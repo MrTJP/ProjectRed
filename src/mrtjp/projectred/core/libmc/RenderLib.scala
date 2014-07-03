@@ -45,7 +45,7 @@ object MultiRenderHandler extends ISimpleBlockRenderingHandler
         val render = RenderLib.getRenderer(b, meta)
         if (render == null)
         {
-            PRLogger.severe("No render mapping found for "+b.getUnlocalizedName+":"+meta)
+            PRLogger.error("No render mapping found for "+b.getUnlocalizedName+":"+meta)
             return
         }
 
@@ -62,7 +62,7 @@ object MultiRenderHandler extends ISimpleBlockRenderingHandler
 
         if (render == null)
         {
-            PRLogger.severe("No render mapping found for "+b.getUnlocalizedName+":"+meta)
+            PRLogger.error("No render mapping found for "+b.getUnlocalizedName+":"+meta)
             return true
         }
 
