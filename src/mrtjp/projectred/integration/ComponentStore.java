@@ -10,6 +10,7 @@ import codechicken.lib.render.uv.*;
 import codechicken.lib.vec.*;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.InvertX;
+import mrtjp.projectred.core.libmc.PRColors;
 import mrtjp.projectred.transmission.UVT;
 import mrtjp.projectred.transmission.WireModelGen;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -30,7 +31,9 @@ public class ComponentStore
     public static CCModel rainSensor = loadModel("rainsensor");
     public static CCModel pointer = loadModel("pointer");
     public static CCModel busXcvr = loadModel("array/busxcvr");
-    public static CCModel busXcvrPanel = loadModel("array/busxcvrpanel");
+    public static CCModel lightPanel1 = loadModel("array/lightpanel1");
+    public static CCModel lightPanel2 = loadModel("array/lightpanel2");
+    public static CCModel busRand = loadModel("array/busrand");
 
     public static CCModel nullCellWireBottom = loadModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5));
     public static CCModel nullCellWireTop = loadModel("array/nullcelltopwire").apply(new Translation(0.5, 0, 0.5));
@@ -56,6 +59,7 @@ public class ComponentStore
     public static IIcon pointerIcon;
     public static IIcon busXcvrIcon;
     public static IIcon cellIcon;
+    public static IIcon busRandIcon;
 
     public static Map<String, CCModel> loadModels(String name)
     {
@@ -127,6 +131,7 @@ public class ComponentStore
         pointerIcon = r.registerIcon(baseTex+"pointer");
         busXcvrIcon = r.registerIcon(baseTex+"busxcvr");
         cellIcon = r.registerIcon(baseTex+"cells");
+        busRandIcon = r.registerIcon(baseTex+"busrand");
 
         RenderGate.registerIcons(r);
     }
@@ -802,7 +807,21 @@ public class ComponentStore
         }
     }
 
-    public static class BusXcvrPanelModel extends ComponentModel
+    public static class BusRandCableModel extends BundledCableModel
+    {
+        public BusRandCableModel()
+        {
+            super(busRand, new Vector3(8, 0, 8), 7/32D, 12/32D);
+        }
+
+        @Override
+        public UVTransformation getUVT()
+        {
+            return new IconTransformation(busRandIcon);
+        }
+    }
+
+    public static class SigLightPanelModel extends ComponentModel
     {
         public static CCModel[] displayModels = new CCModel[16];
 
@@ -831,15 +850,26 @@ public class ComponentStore
         public Vector3 pos;
         public boolean flip;
         public int signal;
+        public int disableMask;
 
-        public BusXcvrPanelModel(double x, double z, boolean flip)
+        public int offColour = 0x420000FF;
+        public int onColour = 0xEC0000FF;
+        public int disableColour = PRColors.GREY.rgba;
+
+        public SigLightPanelModel(double x, double z, boolean flip)
+        {
+            this(x, z, flip, 0x420000FF, 0xEC0000FF, true);
+        }
+
+        public SigLightPanelModel(double x, double z, boolean flip, int offc, int onc, boolean sideIndicator)
         {
             this.flip = flip;
+            offColour = offc;
+            onColour = onc;
             pos = new Vector3(x, 0, z).multiply(1/16D);
 
-            CCModel base = busXcvrPanel.copy();
-            if (flip)
-                base.apply(Rotation.quarterRotations[2]);
+            CCModel base = sideIndicator ? lightPanel1.copy() : lightPanel2.copy();
+            if (flip) base.apply(Rotation.quarterRotations[2]);
             base.apply(pos.translation());
 
             this.models = new CCModel[48];
@@ -860,8 +890,8 @@ public class ComponentStore
             Transformation displayT = flip ? new RedundantTransformation() : Rotation.quarterRotations[2];
             displayT = displayT.with(displayPos.translation()).with(orientT(orient%24)).with(t);
             for (int i = 0; i < 16; i++)
-                if ((signal&1<<i) != 0)
-                    displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel);
+                displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel,
+                        ColourMultiplier.instance((signal&1<<i) != 0 ? onColour : (disableMask&1<<i) != 0 ? disableColour : offColour));
         }
     }
 
