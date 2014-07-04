@@ -380,7 +380,7 @@ item.projectred.integration.gate|7.name=Buffer Poort
 item.projectred.integration.gate|8.name=Multiplexer
 item.projectred.integration.gate|9.name=Pulsevormer
 item.projectred.integration.gate|10.name=Versterker
-item.projectred.integration.gate|11.name=Randomizer
+item.projectred.integration.gate|11.name=Willekeurigheid Generator
 item.projectred.integration.gate|12.name=RS Latch
 item.projectred.integration.gate|13.name=Toggle Latch
 item.projectred.integration.gate|14.name=Transparent Latch
@@ -391,14 +391,13 @@ item.projectred.integration.gate|18.name=Sequencer
 item.projectred.integration.gate|19.name=Teller
 item.projectred.integration.gate|20.name=State Cell
 item.projectred.integration.gate|21.name=Synchronizer
-item.projectred.integration.gate|22.name=Bus Transceiver
+item.projectred.integration.gate|22.name=Gebundelde Richting Kiezer
 item.projectred.integration.gate|23.name=Null Cell
 item.projectred.integration.gate|24.name=Invert Cell
 item.projectred.integration.gate|25.name=Buffer Cell
 item.projectred.integration.gate|26.name=Comparator
 item.projectred.integration.gate|27.name=AND Cell
-
-
+item.projectred.integration.gate|28.name=Gebundelde Willekeurigheid Generator
 
 
 itemGroup.trans=Project Red: Transmission
