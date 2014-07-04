@@ -1,9 +1,8 @@
 package mrtjp.projectred.core;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import cpw.mods.fml.common.FMLLog;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PRLogger
 {
@@ -11,46 +10,36 @@ public class PRLogger
 
     static
     {
-        pr_logger = Logger.getLogger(Configurator.modName);
+        pr_logger = LogManager.getFormatterLogger(Configurator.modName);
     }
 
-    private static void log(Level lvl, String msg)
+    public static void fatal(String msg)
     {
-        pr_logger.log(lvl, msg);
+        pr_logger.fatal(msg);
     }
 
-    public static void severe(String msg)
+    public static void error(String msg)
     {
-        log(Level.SEVERE, msg);
+        pr_logger.error(msg);
     }
 
     public static void warn(String msg)
     {
-        log(Level.WARNING, msg);
+        pr_logger.warn(msg);
     }
 
     public static void info(String msg)
     {
-        log(Level.INFO, msg);
+        pr_logger.info(msg);
     }
 
-    public static void config(String msg)
+    public static void debug(String msg)
     {
-        log(Level.CONFIG, msg);
+        pr_logger.debug(msg);
     }
 
-    public static void fine(String msg)
+    public static void trace(String msg)
     {
-        log(Level.FINE, msg);
-    }
-
-    public static void finer(String msg)
-    {
-        log(Level.FINER, msg);
-    }
-
-    public static void finest(String msg)
-    {
-        log(Level.FINEST, msg);
+        pr_logger.trace(msg);
     }
 }
