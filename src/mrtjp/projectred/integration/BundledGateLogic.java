@@ -330,7 +330,7 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         public void scheduledTick(BundledGatePart gate)
         {
             int oldOut = output;
-            output = gate.shape() == 0 ? calc1BitOut() : calcNBitOut();
+            output = (gate.state()&0xF) != 0 ? gate.shape() == 0 ? calc1BitOut() : calcNBitOut() : oldOut;
             if (oldOut != output)
             {
                 unpackedOut = unpackDigital(unpackedOut, output);
@@ -352,7 +352,7 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         private int calcNBitOut()
         {
             int out = 0;
-            for (int i = 0; i < 16; i++) if ((mask&1<<i) != 0) out |= (rand.nextBoolean()?1:0)<<i;
+            for (int i = 0; i < 16; i++) if ((mask&1<<i) != 0 && rand.nextBoolean()) out |= 1<<i;
             return out;
         }
 

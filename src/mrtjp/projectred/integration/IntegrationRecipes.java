@@ -1,7 +1,7 @@
 package mrtjp.projectred.integration;
 
 import cpw.mods.fml.common.registry.GameRegistry;
-import mrtjp.projectred.core.PartDefs$;
+import mrtjp.projectred.core.PartDefs;
 import mrtjp.projectred.core.libmc.PRColors;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -21,10 +21,10 @@ public class IntegrationRecipes
                 "ACA",
                 "CCC",
                 "PWP",
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
+                'A', PartDefs.ANODE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'P', PartDefs.PLATE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** OR Gate **/
@@ -32,9 +32,9 @@ public class IntegrationRecipes
                 "PCP",
                 "WCW",
                 "PWP",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
+                'P', PartDefs.PLATE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** NOT Gate**/
@@ -42,10 +42,10 @@ public class IntegrationRecipes
                 "PCP",
                 "CAC",
                 "PWP",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
+                'P', PartDefs.PLATE().makeStack(),
+                'A', PartDefs.ANODE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
 
@@ -54,10 +54,10 @@ public class IntegrationRecipes
                 "ACW",
                 "WPW",
                 "WCA",
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'P', PartDefs$.MODULE$.PLATE().makeStack()
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'A', PartDefs.ANODE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'P', PartDefs.PLATE().makeStack()
                 );
 
         /** Toggle Latch **/
@@ -65,9 +65,9 @@ public class IntegrationRecipes
                 "CPP",
                 "WLW",
                 "CPP",
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'P', PartDefs.PLATE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack(),
                 'L', Blocks.lever
                 );
 
@@ -76,10 +76,10 @@ public class IntegrationRecipes
                 "ACW",
                 "CCC",
                 "CWP",
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
+                'C', PartDefs.CATHODE().makeStack(),
+                'A', PartDefs.ANODE().makeStack(),
+                'P', PartDefs.PLATE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** NOR Gate **/
@@ -87,10 +87,10 @@ public class IntegrationRecipes
                 "PAP",
                 "WCW",
                 "PWP",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack()
+                'P', PartDefs.PLATE().makeStack(),
+                'A', PartDefs.ANODE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack()
                 );
 
         /** NAND Gate **/
@@ -98,10 +98,10 @@ public class IntegrationRecipes
                 "AAA",
                 "CCC",
                 "PWP",
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
+                'A', PartDefs.ANODE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'P', PartDefs.PLATE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** XOR Gate **/
@@ -109,9 +109,9 @@ public class IntegrationRecipes
                 "AWA",
                 "CAC",
                 "WCW",
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack()
+                'A', PartDefs.ANODE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack()
                 );
 
         /** XNOR Gate **/
@@ -119,9 +119,9 @@ public class IntegrationRecipes
                 "ACA",
                 "CAC",
                 "WCW",
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
+                'A', PartDefs.ANODE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** Buffer Gate **/
@@ -129,10 +129,10 @@ public class IntegrationRecipes
                 "ACA",
                 "WCW",
                 "PWP",
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
-                'P', PartDefs$.MODULE$.PLATE().makeStack()
+                'A', PartDefs.ANODE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'P', PartDefs.PLATE().makeStack()
                 );
 
         /** Multiplexer Gate **/
@@ -140,10 +140,10 @@ public class IntegrationRecipes
                 "ACA",
                 "CPC",
                 "ACW",
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
+                'A', PartDefs.ANODE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'P', PartDefs.PLATE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** Repeater Gate **/
@@ -151,10 +151,10 @@ public class IntegrationRecipes
                 "PCA",
                 "ACP",
                 "PWP",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
+                'P', PartDefs.PLATE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'A', PartDefs.ANODE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** Timer Gate **/
@@ -162,11 +162,11 @@ public class IntegrationRecipes
                 "ACA",
                 "WTW",
                 "PWP",
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
-                'T', PartDefs$.MODULE$.POINTER().makeStack(),
-                'P', PartDefs$.MODULE$.PLATE().makeStack()
+                'A', PartDefs.ANODE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'T', PartDefs.POINTER().makeStack(),
+                'P', PartDefs.PLATE().makeStack()
                 );
 
         /** Counter Gate **/
@@ -174,11 +174,11 @@ public class IntegrationRecipes
                 "PCP",
                 "WWT",
                 "PCP",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'T', PartDefs$.MODULE$.POINTER().makeStack(),
-                'A', PartDefs$.MODULE$.ANODE().makeStack()
+                'P', PartDefs.PLATE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'T', PartDefs.POINTER().makeStack(),
+                'A', PartDefs.ANODE().makeStack()
                 );
 
         /** Sequencer Gate **/
@@ -186,9 +186,9 @@ public class IntegrationRecipes
                 "PCP",
                 "CTC",
                 "PCP",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'T', PartDefs$.MODULE$.POINTER().makeStack()
+                'P', PartDefs.PLATE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'T', PartDefs.POINTER().makeStack()
                 );
 
         /** Pulse Former Gate **/
@@ -196,10 +196,10 @@ public class IntegrationRecipes
                 "ACA",
                 "CAC",
                 "WWP",
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
-                'P', PartDefs$.MODULE$.PLATE().makeStack()
+                'A', PartDefs.ANODE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'P', PartDefs.PLATE().makeStack()
                 );
 
         /** Randomizer Gate **/
@@ -207,9 +207,9 @@ public class IntegrationRecipes
                 "PEP",
                 "WWW",
                 "EWE",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'E', PartDefs$.MODULE$.ENERGIZEDSILICONCHIP().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
+                'P', PartDefs.PLATE().makeStack(),
+                'E', PartDefs.ENERGIZEDSILICONCHIP().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** State Cell Gate **/
@@ -217,12 +217,12 @@ public class IntegrationRecipes
                 "PAC",
                 "WST",
                 "PWP",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'A', PartDefs$.MODULE$.ANODE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
-                'S', PartDefs$.MODULE$.SILICONCHIP().makeStack(),
-                'T', PartDefs$.MODULE$.POINTER().makeStack()
+                'P', PartDefs.PLATE().makeStack(),
+                'A', PartDefs.ANODE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'S', PartDefs.SILICONCHIP().makeStack(),
+                'T', PartDefs.POINTER().makeStack()
                 );
 
         /** Synchronizer Gate **/
@@ -230,10 +230,10 @@ public class IntegrationRecipes
                 "WCW",
                 "SAS",
                 "WWW",
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
-                'S', PartDefs$.MODULE$.SILICONCHIP().makeStack(),
-                'A', PartDefs$.MODULE$.ANODE().makeStack()
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
+                'S', PartDefs.SILICONCHIP().makeStack(),
+                'A', PartDefs.ANODE().makeStack()
                 );
 
         /** Light Sensor **/
@@ -241,9 +241,9 @@ public class IntegrationRecipes
                 "PPP",
                 "LLL",
                 "PWP",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'P', PartDefs.PLATE().makeStack(),
                 'L', new ItemStack(Items.dye, 1, PRColors.BLUE.dyeId()),
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
         /** Rain Sensor **/
@@ -251,19 +251,19 @@ public class IntegrationRecipes
                 "PPP",
                 "SSS",
                 "PWP",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
+                'P', PartDefs.PLATE().makeStack(),
                 'S', Items.slime_ball,
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack()
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
-        /** Bundled Latch **/
+        /** Bus Transceiver **/
         GameRegistry.addRecipe(EnumGate.BusTransceiver.makeStack(),
                 "BBB",
                 "SPS",
                 "BBB",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'B', PartDefs$.MODULE$.BUNDLEDPLATE().makeStack(),
-                'S', PartDefs$.MODULE$.SILICONCHIP().makeStack()
+                'P', PartDefs.PLATE().makeStack(),
+                'B', PartDefs.BUNDLEDPLATE().makeStack(),
+                'S', PartDefs.SILICONCHIP().makeStack()
                 );
 
         /** Null Cell **/
@@ -271,9 +271,9 @@ public class IntegrationRecipes
                 "PWP",
                 "WSW",
                 "PWP",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'W', PartDefs$.MODULE$.WIREDPLATE().makeStack(),
-                'S', PartDefs$.MODULE$.PLATFORMEDPLATE().makeStack()
+                'P', PartDefs.PLATE().makeStack(),
+                'W', PartDefs.WIREDPLATE().makeStack(),
+                'S', PartDefs.PLATFORMEDPLATE().makeStack()
                 );
 
         /** Invert Cell **/
@@ -281,10 +281,10 @@ public class IntegrationRecipes
                 "PWP",
                 "WSW",
                 "PCP",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'W', PartDefs$.MODULE$.WIREDPLATE().makeStack(),
-                'S', PartDefs$.MODULE$.PLATFORMEDPLATE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack()
+                'P', PartDefs.PLATE().makeStack(),
+                'W', PartDefs.WIREDPLATE().makeStack(),
+                'S', PartDefs.PLATFORMEDPLATE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack()
                 );
 
         /** Buffer Cell **/
@@ -292,10 +292,10 @@ public class IntegrationRecipes
                 "PWP",
                 "WSW",
                 "PCC",
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'W', PartDefs$.MODULE$.WIREDPLATE().makeStack(),
-                'S', PartDefs$.MODULE$.PLATFORMEDPLATE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack()
+                'P', PartDefs.PLATE().makeStack(),
+                'W', PartDefs.WIREDPLATE().makeStack(),
+                'S', PartDefs.PLATFORMEDPLATE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack()
                 );
 
         /** Comparator **/
@@ -303,10 +303,10 @@ public class IntegrationRecipes
                 "WCW",
                 "QWQ",
                 "PWP",
-                'W', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack(),
+                'W', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack(),
                 'Q', Items.quartz,
-                'P', PartDefs$.MODULE$.PLATE().makeStack()
+                'P', PartDefs.PLATE().makeStack()
                 );
 
         /** AND Cell **/
@@ -314,11 +314,21 @@ public class IntegrationRecipes
                 "CwC",
                 "WSW",
                 "PwC",
-                'w', PartDefs$.MODULE$.CONDUCTIVEPLATE().makeStack(),
-                'W', PartDefs$.MODULE$.WIREDPLATE().makeStack(),
-                'S', PartDefs$.MODULE$.PLATFORMEDPLATE().makeStack(),
-                'P', PartDefs$.MODULE$.PLATE().makeStack(),
-                'C', PartDefs$.MODULE$.CATHODE().makeStack()
+                'w', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'W', PartDefs.WIREDPLATE().makeStack(),
+                'S', PartDefs.PLATFORMEDPLATE().makeStack(),
+                'P', PartDefs.PLATE().makeStack(),
+                'C', PartDefs.CATHODE().makeStack()
+                );
+
+        /** Bus Randomizer **/
+        GameRegistry.addRecipe(EnumGate.BusRandomizer.makeStack(),
+                "BBB",
+                "RGR",
+                "BBB",
+                'R', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'B', PartDefs.BUNDLEDPLATE().makeStack(),
+                'G', PartDefs.ENERGIZEDSILICONCHIP().makeStack()
                 );
     }
 }

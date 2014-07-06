@@ -1,3 +1,12 @@
+v4.4.4
+- ADDED: Illumar feedback buttons
+- ADDED: Bus randomizer gate
+- CHANGE: Slightly more efficient wire propagation
+- FIX: Wires loosing connectivity on world reload
+- FIX: Unusable text boxes in guis
+- FIX: Inventories not closing with inventory hot key
+- FIX: Firewall pipe crash
+
 v4.4.3
 - FIX: World generation crash
 
