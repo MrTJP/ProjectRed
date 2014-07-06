@@ -1370,7 +1370,7 @@ public class RenderGate
     public static class BusRandomizer extends GateRenderer<BundledGatePart>
     {
         BusRandCableModel cable = new BusRandCableModel();
-        SigLightPanelModel panel = new SigLightPanelModel(8, 8, true, 0x756900FF, 0xe1d600FF, false);
+        SigLightPanelModel panel = new SigLightPanelModel(8, 8, true, 0x756900FF, 0xe1d600FF, true);
         WireComponentModel[] wires1 = generateWireModels("BUSRAND1", 2);
         WireComponentModel[] wires2 = generateWireModels("BUSRAND2", 2);
 
