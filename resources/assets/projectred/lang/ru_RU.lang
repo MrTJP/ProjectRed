@@ -38,7 +38,7 @@ item.projectred.core.part.illumar14.name=Красная светопыль
 item.projectred.core.part.illumar15.name=Чёрная светопыль
 
 item.projectred.core.part.partcloth.name=Плетёная ткань
-item.projectred.core.part.partsail.name=Sail
+item.projectred.core.part.partsail.name=Парус
 item.projectred.core.part.gemruby.name=Рубин
 item.projectred.core.part.gemsapphire.name=Сапфир
 item.projectred.core.part.gemperidot.name=Перидот
@@ -341,6 +341,5 @@ item.projectred.transmission.framewire|17.name=Шина в оболочке
 
 itemGroup.compat=Project Red: Compatibility
 
-tile.projectred.compatibility.liqredstone.name=Liquid Redstone
-tile.projectred.compatibility.liqcondredmetal.name=Molten Conductive Redmetal
-
+tile.projectred.compatibility.liqredstone.name=Жидкий редстоун
+tile.projectred.compatibility.liqcondredmetal.name=Расплавленный проводящий красный метал
