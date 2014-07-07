@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL11
 import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
 import net.minecraft.entity.player.EntityPlayer
 import mrtjp.projectred.core.libmc.PRLib
-import scala.concurrent.ops
 
 object RenderFramedWire
 {
