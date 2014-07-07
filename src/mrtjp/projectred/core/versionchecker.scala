@@ -5,15 +5,13 @@ import java.net.URL
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
-
 import cpw.mods.fml.common.eventhandler.SubscribeEvent
 import cpw.mods.fml.common.gameevent.TickEvent
 import cpw.mods.fml.common.gameevent.TickEvent.PlayerTickEvent
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatComponentText
-
 import scala.collection.immutable.ListMap
-import scala.util.parsing.json.JSON
+import com.google.gson.{JsonParser, JsonObject, JsonArray, JsonPrimitive}
 
 class PRVersioningThread extends Thread("PR Version Check")
 {
@@ -73,17 +71,17 @@ class PRBuildsParser(val current:String)
         while ({in = stream.readLine(); in} != null) builder.append(in)
         val jtext = builder.result()
         stream.close()
-        JSON.parseFull(jtext).get.asInstanceOf[Map[String, Any]]
+        new JsonParser().parse(jtext).getAsJsonObject()
     }
 
     def parseBuilds =
     {
         val parse = JSONfrom("1=htped?nosj/ipa/deR02%tcejorP/boj/0808:moc.sikiweidni.ic//:ptth".reverse)
-        val rawBuilds = parse.get("builds").get.asInstanceOf[List[Map[String, Any]]]
+        val rawBuildsIter = parse.getAsJsonArray("builds").iterator()
         val buildB = Vector.newBuilder[BuildDef]
-        for (m <- rawBuilds)
+        while (rawBuildsIter.hasNext())
         {
-            def bdef = new BuildDef(m, false)
+            def bdef = new BuildDef(rawBuildsIter.next().getAsJsonObject(), false)
             buildB += bdef
         }
         ListMap(buildB.result().filter(_.isValidBuild).sorted.reverse.map(b => b.version -> b):_*)
@@ -92,12 +90,13 @@ class PRBuildsParser(val current:String)
     def parseStableBuilds =
     {
         val parse = JSONfrom("2=htped?nosj/ipa/dednemmoceR/ssecorp/noitomorp/deR02%tcejorP/boj/0808:moc.sikiweidni.ic//:ptth".reverse)
-        val rawBuilds = parse.get("builds").get.asInstanceOf[List[Map[String, Any]]]
+        val rawBuildsIter = parse.getAsJsonArray("builds").iterator()
         val versionB = Set.newBuilder[Int]
-        for (b <- rawBuilds) b.get("target") match
+        while(rawBuildsIter.hasNext())
         {
-            case Some(e) if e != null => versionB += e.asInstanceOf[Map[String, Double]].get("number").get.toInt
-            case _ =>
+            var e = rawBuildsIter.next().getAsJsonObject().get("target")
+            if (e.isInstanceOf[JsonObject])
+                versionB += e.asInstanceOf[JsonObject].getAsJsonPrimitive("number").getAsInt()
         }
         versionB.result()
     }
@@ -178,24 +177,24 @@ class PRBuildsParser(val current:String)
     }
 }
 
-class BuildDef(val data:Map[String, Any], var isRecommended:Boolean) extends Ordered[BuildDef]
+class BuildDef(val data:JsonObject, var isRecommended:Boolean) extends Ordered[BuildDef]
 {
-    private def get[T](key:String) = data.get(key).get.asInstanceOf[T]
+    private def get[T](key:String) = data.get(key).asInstanceOf[T]
     private val coreJarName =
     {
-        val one = get[List[Map[String, Any]]]("artifacts")
-        if (one.nonEmpty) one(1).asInstanceOf[Map[String, String]]("fileName").replace("ProjectRed-", "ProjectRed")
+        val one = get[JsonArray]("artifacts")
+        if (one.size() > 0) one.get(1).getAsJsonObject().getAsJsonPrimitive("fileName").getAsString().replace("ProjectRed-", "ProjectRed")
         else "#PR-#version-#build"
     }
 
-    val isSuccessful = get[String]("result") contains "SUCCESS"
-    val isPublic = get[String]("description") contains "public"
+    val isSuccessful = get[JsonPrimitive]("result").getAsString() contains "SUCCESS"
+    val isPublic = get[JsonPrimitive]("description").getAsString() contains "public"
 
-    val buildNumber = get[Double]("number").toInt
+    val buildNumber = get[JsonPrimitive]("number").getAsInt()
     val version = coreJarName.split("-")(2).replace("."+buildNumber+".jar", "")
     val mcVersion = coreJarName.split("-")(1)
 
-    private val date = new Date(new Timestamp(get[Double]("timestamp").toLong).getTime)
+    private val date = new Date(new Timestamp(get[JsonPrimitive]("timestamp").getAsLong()).getTime)
     val buildDate = new SimpleDateFormat("MM/dd/yyyy").format(date)
 
     var changes:Vector[String] = Vector[String]()
