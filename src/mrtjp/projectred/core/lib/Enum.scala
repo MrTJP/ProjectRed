@@ -86,6 +86,8 @@ trait Enum
         override def +(elem:EnumVal) = new ValSet(set + elem.ordinal)
         override def -(elem:EnumVal) = new ValSet(set - elem.ordinal)
         override def iterator = set.iterator map (id => thisenum(id))
+        override def keysIteratorFrom(start: EnumVal) =
+            throw new NotImplementedError("Please report this crash")
     }
 
     object ValSet
