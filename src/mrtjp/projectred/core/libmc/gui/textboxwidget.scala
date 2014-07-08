@@ -68,7 +68,7 @@ class WidgetTextBox(x:Int, y:Int, w:Int, h:Int, var text:String) extends TWidget
                 return true
             }
 
-            if (c == '\026') //paste
+            if (c == '\u0016') //paste
             {
                 val s = GuiScreen.getClipboardString
                 if (s == null || (s == "")) return true
