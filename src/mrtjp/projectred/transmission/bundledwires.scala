@@ -25,10 +25,7 @@ trait IBundledCablePart extends IWirePart with IBundledEmitter
 
 trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons with IBundledCablePart
 {
-    /**
-     * Not available on client
-     */
-    var signal = new Array[Byte](16)
+    var signal = new Array[Byte](16) //server-side only
     var colour:Byte = 0
 
     def getWireType = WireDef.values(WireDef.BUNDLED_N.meta+colour+1)

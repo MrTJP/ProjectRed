@@ -1,16 +1,17 @@
 package mrtjp.projectred.transmission
 
-import codechicken.lib.packet.PacketCustom
-import codechicken.lib.vec.{BlockCoord, Rotation}
-import codechicken.multipart.TMultiPart
 import java.text.DecimalFormat
+
+import codechicken.lib.packet.PacketCustom
+import codechicken.lib.vec.Rotation
+import codechicken.multipart.TMultiPart
+import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
+import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
-import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.libmc.PRLib
 
-abstract class PowerWire extends WirePart with TPowerConnectable
+trait TPowerWireCommons extends TWireCommons with IPowerConnectable
 {
     val cond:PowerConductor
 
@@ -35,69 +36,10 @@ abstract class PowerWire extends WirePart with TPowerConnectable
     override def updateAndPropagate(prev:TMultiPart, mode:Int) {}
 
     override def conductor(side:Int) = cond
-    override def conductorOut(id:Int):PowerConductor =
-    {
-        if (0 to 3 contains id)
-        {
-            if (!maskConnects(id)) return null
-            if ((connMap&1<<id) != 0) //Corner
-            {
-                val t = getCorner(id)
-                if (t != null && t.isInstanceOf[TPowerConnectable]) return t.asInstanceOf[TPowerConnectable].conductor(id)
 
-                var t2:TPowerConnectable = null
-                if (outsideCornerEdgeOpen(id))
-                {
-                    t2 = PRLib.getTileEntity(world, posOfCorner(id), classOf[TPowerConnectable])
-                }
-                if (t2 != null) return t2.conductor(rotFromCorner(id))
-                else return null
-            }
-            else if ((connMap&0x10<<id) != 0) //Straight
-            {
-                val t = getStraight(id)
-                if (t != null && t.isInstanceOf[TPowerConnectable]) return t.asInstanceOf[TPowerConnectable].conductor(absoluteDir(rotFromStraight(id)))
-
-                val t2 = PRLib.getTileEntity(world, posOfStraight(id), classOf[TPowerConnectable])
-                if (t2 != null) return t2.conductor(absoluteDir(rotFromStraight(id)))
-                else return null
-            }
-            else if ((connMap&0x100<<id) != 0) // internal face
-            {
-                val t = getInternal(id)
-                if (t != null && t.isInstanceOf[TPowerConnectable]) return t.asInstanceOf[TPowerConnectable].conductor(id)
-                else return null
-            }
-        }
-        else if (id == 4) // center
-        {
-            val t = getCenter
-            if (t != null && t.isInstanceOf[TPowerConnectable]) return t.asInstanceOf[TPowerConnectable].conductor(side)
-            else return null
-        }
-
-        null
-    }
+    override def conductorOut(id:Int):PowerConductor
 
     override def doesTick = true
-
-    override def discoverStraightOverride(absDir:Int):Boolean =
-    {
-        val pos = new BlockCoord(tile).offset(absDir)
-        val t = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
-        if (t != null) return t.connectStraight(this, absDir^1, Rotation.rotationTo(absDir, side))
-
-        false
-    }
-
-    override def discoverCornerOverride(absDir:Int):Boolean =
-    {
-        if (!outsideCornerEdgeOpen(absoluteRot(absDir))) return false
-        val t = PRLib.getTileEntity(world, posOfCorner(absoluteRot(absDir)), classOf[TPowerConnectable])
-        if (t != null) return t.connectCorner(this, side^1, Rotation.rotationTo(side, absDir^1))
-
-        false
-    }
 
     override def save(tag: NBTTagCompound)
     {
@@ -116,113 +58,116 @@ abstract class PowerWire extends WirePart with TPowerConnectable
         super.update()
         if (!world.isRemote) cond.update()
     }
+
+    override def canConnectPart(part:IConnectable, dir:Int) = part match
+    {
+        case w:IPowerConnectable => true
+        case _ => false
+    }
 }
 
-abstract class FramedPowerWire extends FramedWirePart with TPowerConnectable
+abstract class PowerWire extends WirePart with TPowerWireCommons
 {
-    val cond:PowerConductor
-
-    override def updateAndPropagate(prev:TMultiPart, mode:Int) {}
-
-    override def test(player:EntityPlayer):Boolean =
+    override def conductorOut(id:Int):PowerConductor =
     {
-        if (world.isRemote) return true
+        if (0 to 3 contains id)
+        {
+            if (!maskConnects(id)) return null
+            if ((connMap&1<<id) != 0) getCorner(id) match //corner
+            {
+                case p:IPowerConnectable => return p.conductor(rotFromCorner(id))
+                case _ => PRLib.getTileEntity(world, posOfCorner(id), classOf[IPowerConnectable]) match
+                {
+                    case p:IPowerConnectable if outsideCornerEdgeOpen(id) => return p.conductor(absoluteDir(rotFromCorner(id)))
+                    case _ =>
+                }
+            }
+            else if ((connMap&0x10<<id) != 0) getStraight(id) match //straight
+            {
+                case p:IPowerConnectable => return p.conductor(rotFromStraight(id))
+                case _ => PRLib.getTileEntity(world, posOfStraight(id), classOf[IPowerConnectable]) match
+                {
+                    case p:IPowerConnectable => return p.conductor(absoluteDir(rotFromStraight(id)))
+                    case _ =>
+                }
+            }
+            else if ((connMap&0x100<<id) != 0) getInternal(id) match //internal face
+            {
+                case p:IPowerConnectable => return p.conductor(id)
+                case _ =>
+            }
+        }
+        else if (id == 4) getCenter match
+        {
+            case p:IPowerConnectable => return p.conductor(side)
+            case _ =>
+        }
 
-        val p = new PacketCustom(CoreCPH.channel, CoreCPH.messagePacket)
-        p.writeDouble(x).writeDouble(y).writeDouble(z)
-        var s = "/#f"+"#VV\n"+"#IA\n"+"#PW"
-        val d = new DecimalFormat("00.00")
-        s = s.replace("#V", d.format(cond.voltage()))
-            .replace("#I", d.format(cond.amperage))
-            .replace("#P", d.format(cond.wattage))
-        p.writeString(s)
-        p.sendToPlayer(player)
-        true
+        null
     }
 
-    override def conductor(id:Int) = cond
+    override def discoverStraightOverride(absDir:Int) = PRLib.getTileEntity(world, posOfStraight(absDir), classOf[IPowerConnectable]) match
+    {
+        case p:IPowerConnectable => p.connectStraight(this, absDir^1, Rotation.rotationTo(absDir, side))
+        case _ => false
+    }
+
+    override def discoverCornerOverride(absDir:Int) = PRLib.getTileEntity(world, posOfCorner(absoluteRot(absDir)), classOf[IPowerConnectable]) match
+    {
+        case p:IPowerConnectable => p.connectCorner(this, side^1, Rotation.rotationTo(side, absDir^1))
+        case _ => false
+    }
+}
+
+abstract class FramedPowerWire extends FramedWirePart with TPowerWireCommons
+{
     override def conductorOut(id:Int):PowerConductor =
     {
         if (0 until 6 contains id)
         {
-            if ((connMap&1<<id) != 0)//straight
+            if ((connMap&1<<id) != 0) getStraight(id) match //straight
             {
-                val pos = new BlockCoord(tile).offset(id)
-                val t = PRLib.getMultipartTile(world, pos)
-                if (t != null)
+                case p:IPowerConnectable => return p.conductor(id^1)
+                case _ => PRLib.getTileEntity(world, posOfStraight(id), classOf[IPowerConnectable]) match
                 {
-                    val tp = t.partMap(6)
-                    if (tp != null && tp.isInstanceOf[TPowerConnectable]) return tp.asInstanceOf[TPowerConnectable].conductor(id^1)
+                    case p:IPowerConnectable => return p.conductor(id^1)
+                    case _ =>
                 }
-                val t2 = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
-                if (t2 != null) t2.conductor(id^1)
-                else return null
             }
-            else if ((connMap&1<<id+6) != 0)//internal
+            else if ((connMap&1<<id+6) != 0) getInternal(id) match //internal
             {
-                val t = tile.partMap(id)
-                if (t != null && t.isInstanceOf[TPowerConnectable]) return t.asInstanceOf[TPowerConnectable].conductor(id^1)
+                case p:IPowerConnectable => return p.conductor(id^1)
+                case _ =>
             }
         }
         null
     }
 
-    override def doesTick = true
-
-    override def discoverStraightOverride(s:Int):Boolean =
+    override def discoverStraightOverride(s:Int) = PRLib.getTileEntity(world, posOfStraight(s), classOf[IPowerConnectable]) match
     {
-        val pos = new BlockCoord(tile).offset(s)
-        val tp = PRLib.getTileEntity(world, pos, classOf[TPowerConnectable])
-        if (tp != null) return tp.connectStraight(this, s^1, -1)
-        false
-    }
-
-    override def save(tag:NBTTagCompound)
-    {
-        super.save(tag)
-        cond.save(tag)
-    }
-
-    override def load(tag:NBTTagCompound)
-    {
-        super.load(tag)
-        cond.load(tag)
-    }
-
-    override def update()
-    {
-        super.update()
-        if (!world.isRemote) cond.update()
+        case p:IPowerConnectable => p.connectStraight(this, s^1, -1)
+        case _ => false
     }
 }
 
-class PowerWire_100v extends PowerWire
+trait TPW100vCommons extends TPowerWireCommons
 {
-    val cond = new PowerConductor(this, 0 until 5)
+    protected def connIDRange:Seq[Int]
+
+    val cond = new PowerConductor(this, connIDRange)
     {
         override def capacitance = 8.0D
     }
 
     def getWireType = WireDef.POWER_100v
-
-    override def canConnectPart(part:IConnectable, r:Int) =
-        part.isInstanceOf[PowerWire_100v] ||
-            part.isInstanceOf[FramedPowerWire_100v] ||
-            (!part.isInstanceOf[WirePart] && part.isInstanceOf[TPowerConnectable])
-
 }
 
-class FramedPowerWire_100v extends FramedPowerWire
+class PowerWire100v extends PowerWire with TPW100vCommons
 {
-    val cond = new PowerConductor(this, 0 until 6)
-    {
-        override def capacitance = 8.0D
-    }
+    override protected def connIDRange = 0 until 5
+}
 
-    override def getWireType = WireDef.POWER_100v
-
-    override def canConnectPart(part:IConnectable, s:Int) =
-        part.isInstanceOf[PowerWire_100v] ||
-            part.isInstanceOf[FramedPowerWire_100v] ||
-            (!part.isInstanceOf[WirePart] && part.isInstanceOf[TPowerConnectable])
+class FramedPowerWire100v extends FramedPowerWire with TPW100vCommons
+{
+    override protected def connIDRange = 0 until 6
 }

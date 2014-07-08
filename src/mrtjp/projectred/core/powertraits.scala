@@ -5,9 +5,9 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.World
 
 /**
- * Trait for things that wish to conduct/use electricity.
+ * Interface for things that wish to conduct/use electricity.
  */
-trait TPowerConnectable extends IConnectable
+trait IPowerConnectable extends IConnectable
 {
     /**
      * Getter for the local conductor
@@ -47,7 +47,7 @@ trait TPowerConnectable extends IConnectable
  * @param ids The possible connections to other conductors
  *            this can make.
  */
-class PowerConductor(val parent:TPowerConnectable, ids:Seq[Int])
+class PowerConductor(val parent:IPowerConnectable, ids:Seq[Int])
 {
     val flows = new Array[Double](ids.max+1)
 

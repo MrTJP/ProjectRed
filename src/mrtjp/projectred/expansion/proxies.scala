@@ -56,8 +56,8 @@ class ExpansionProxy_server extends IProxy with IPartFactory
 
     def createPart(name:String, client:Boolean) = name match
     {
-        case "pr_100v" => new PowerWire_100v
-        case "pr_f100v" => new FramedPowerWire_100v
+        case "pr_100v" => new PowerWire100v
+        case "pr_f100v" => new FramedPowerWire100v
     }
 
     override def version = "@VERSION@"

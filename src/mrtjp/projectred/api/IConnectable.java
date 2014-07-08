@@ -12,7 +12,8 @@ public interface IConnectable
      *
      * @param part The part asking for connection.
      * @param r The clockwise rotation about the attached face for face part,
-     *          ForgeDirection for non-face part or tile.
+     *          ForgeDirection for non-face part or tile. This direction is
+     *          from this towards the part asking for a connection.
      * @param edgeRot The clockwise rotation of the common edge about the
      *                connecting face. -1 unless this is a non-part.
      * @return True to allow the wire connection.
