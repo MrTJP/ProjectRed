@@ -3,13 +3,12 @@ package mrtjp.projectred.expansion
 import codechicken.core.{IGuiPacketSender, ServerUtils}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.vec.{BlockCoord, Rotation, Vector3}
+import codechicken.lib.vec.{Rotation, Vector3}
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.api.{IConnectable, IScrewdriver}
+import mrtjp.projectred.api._
 import mrtjp.projectred.core._
 import mrtjp.projectred.core.libmc.inventory.WidgetContainer
 import mrtjp.projectred.core.libmc.{MultiTileBlock, MultiTileTile, PRLib, TPortableInventory}
-import mrtjp.projectred.transmission.{FramedPowerWire_100v, PowerWire_100v, WirePart}
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.entity.EntityLivingBase
@@ -216,15 +215,16 @@ trait TileGuiMachine extends TileMachine
     def guiID:Int
 }
 
-trait TMachinePowerable extends TileMachine with TConnectableTileMulti with TPowerConnectable
+trait TMachinePowerable extends TileMachine with TConnectableTileMulti with IPowerConnectable
 {
     val cond:PowerConductor
     def condIds = (0 until 30) ++ (32 until 56)
 
-    override def canConnect(part:IConnectable) =
-        part.isInstanceOf[PowerWire_100v] ||
-            part.isInstanceOf[FramedPowerWire_100v] ||
-            (!part.isInstanceOf[WirePart] && part.isInstanceOf[TPowerConnectable])
+    override def canConnect(part:IConnectable) = part match
+    {
+        case w:IPowerConnectable => true
+        case _ => false
+    }
 
     override def world = getWorldObj
 
@@ -238,7 +238,7 @@ trait TMachinePowerable extends TileMachine with TConnectableTileMulti with TPow
             val edgeRot = id%4
             if (maskConnectsStraight(s, edgeRot)) getStraight(s, edgeRot) match
             {
-                case tp:TPowerConnectable => return tp.conductor(s^1)
+                case tp:IPowerConnectable => return tp.conductor(s^1)
                 case _ =>
             }
         }
@@ -247,10 +247,10 @@ trait TMachinePowerable extends TileMachine with TConnectableTileMulti with TPow
             val s = id-24
             if (maskConnectsStraightCenter(s)) getStraightCenter(s) match
             {
-                case tp:TPowerConnectable => return tp.conductor(s^1)
-                case _ => PRLib.getTileEntity(world, posOfInternal.offset(s), classOf[TPowerConnectable]) match
+                case tp:IPowerConnectable => return tp.conductor(s^1)
+                case _ => PRLib.getTileEntity(world, posOfInternal.offset(s), classOf[IPowerConnectable]) match
                 {
-                    case tp:TPowerConnectable => return tp.conductor(s^1)
+                    case tp:IPowerConnectable => return tp.conductor(s^1)
                     case _ =>
                 }
             }
@@ -261,7 +261,7 @@ trait TMachinePowerable extends TileMachine with TConnectableTileMulti with TPow
             val edgeRot = (id-32)/4
             if (maskConnectsCorner(s, edgeRot)) getCorner(s, edgeRot) match
             {
-                case tp:TPowerConnectable => return tp.conductor(Rotation.rotateSide(s^1, edgeRot)^1)
+                case tp:IPowerConnectable => return tp.conductor(Rotation.rotateSide(s^1, edgeRot)^1)
                 case _ =>
             }
         }
