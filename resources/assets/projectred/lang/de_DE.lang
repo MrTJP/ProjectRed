@@ -397,6 +397,7 @@ item.projectred.integration.gate|24.name=Invertier-Zelle
 item.projectred.integration.gate|25.name=Buffer-Zelle
 item.projectred.integration.gate|26.name=Komparator
 item.projectred.integration.gate|27.name=AND-Zelle
+item.projectred.integration.gate|28.name=Bus-Randomizer
 
 
 
