@@ -150,6 +150,7 @@ class FLightButtonPart(m:Int) extends LightButtonPart(m)
     override def onNeighborChanged()
     {
         super.onNeighborChanged()
+        if (world == null) return
         if (!world.isRemote) checkAndUpdatePower()
     }
 
