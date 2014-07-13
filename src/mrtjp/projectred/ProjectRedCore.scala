@@ -1,12 +1,13 @@
 package mrtjp.projectred
 
+import cpw.mods.fml.common.FMLCommonHandler
 import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStartingEvent}
 import mrtjp.projectred.core._
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.ItemStack
 
-@Mod(modid = "ProjRed|Core", useMetadata = true, modLanguage = "scala")
+@Mod(modid = "ProjRed|Core", useMetadata = true, modLanguage = "scala", guiFactory = "mrtjp.projectred.core.GuiConfigFactory")
 object ProjectRedCore
 {
     /** Items **/
@@ -33,6 +34,7 @@ object ProjectRedCore
     @Mod.EventHandler
     def init(event:FMLInitializationEvent)
     {
+        FMLCommonHandler.instance().bus().register(new Configurator)
         CoreProxy.init()
     }
 

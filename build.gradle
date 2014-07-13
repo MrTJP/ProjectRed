@@ -59,9 +59,9 @@ println config.mc.version + "-" + config.forge.version
 minecraft {
     version = config.mc.version + "-" + config.forge.version
     if (file('../run').exists()) {
-    	assetDir = "../run/assets"
+        runDir = "../run"
     } else {
-    	assetDir = "assets"
+        runDir = "run"
     }
 }
 
