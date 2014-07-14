@@ -1,17 +1,19 @@
 package mrtjp.projectred.transportation
 
+import java.lang.{Character => JC}
+
 import cpw.mods.fml.common.registry.GameRegistry
-import net.minecraft.init.{Items, Blocks}
+import mrtjp.projectred.ProjectRedTransportation
 import mrtjp.projectred.core.PartDefs
-import net.minecraft.item.ItemStack
+import mrtjp.projectred.core.libmc.PRColors
+import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
+import net.minecraft.init.{Blocks, Items}
 import net.minecraft.inventory.InventoryCrafting
+import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.IRecipe
 import net.minecraft.world.World
-import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
-import net.minecraftforge.oredict.ShapedOreRecipe
-import mrtjp.projectred.ProjectRedTransportation
-import mrtjp.projectred.core.libmc.PRColors
-import java.lang.{Character => JC}
+import net.minecraftforge.oredict.RecipeSorter.Category._
+import net.minecraftforge.oredict.{RecipeSorter, ShapedOreRecipe}
 
 object TransportationRecipes
 {
@@ -87,51 +89,10 @@ object TransportationRecipes
 
     private def initChipRecipes()
     {
+        RecipeSorter.register("projectred:chipreset", classOf[ChipResetRecipe], SHAPED, "after:forge:shaped")
+
         /** Chip reset **/
-        for (r <- RoutingChipDefs.values) GameRegistry.addRecipe(new IRecipe
-        {
-            def matches(inv:InventoryCrafting, world:World) = getCraftingResult(inv) != null
-
-            def getCraftingResult(inv:InventoryCrafting):ItemStack =
-            {
-                val cdef = getType(inv)
-                if (cdef != null) if (isTypeExclusive(cdef, inv)) return  cdef.makeStack(countUnits(inv))
-                null
-            }
-
-            def getType(inv:InventoryCrafting):ChipVal =
-            {
-                for (i <- 0 until inv.getSizeInventory)
-                {
-                    val cdef = RoutingChipDefs.getForStack(inv.getStackInSlot(i))
-                    if (cdef != null) return cdef
-                }
-                null
-            }
-
-            def isTypeExclusive(cdef:ChipVal, inv:InventoryCrafting):Boolean =
-            {
-                for (i <- 0 until inv.getSizeInventory)
-                {
-                    val stack = inv.getStackInSlot(i)
-                    if (stack != null && !stack.getItem.isInstanceOf[ItemRoutingChip]) return false
-                    val type2 = RoutingChipDefs.getForStack(stack)
-                    if (type2 != null && !(type2 == cdef)) return false
-                }
-                true
-            }
-
-            def countUnits(inv:InventoryCrafting):Int =
-            {
-                var count = 0
-                for (i <- 0 until inv.getSizeInventory)
-                    if (inv.getStackInSlot(i) != null) count += 1
-                count
-            }
-
-            def getRecipeSize = 2
-            def getRecipeOutput = null
-        })
+        GameRegistry.addRecipe(new ChipResetRecipe)
 
         /** Null chip **/
         GameRegistry.addRecipe(PartDefs.NULLROUTINGCHIP.makeStack,
@@ -257,4 +218,49 @@ object TransportationRecipes
             'n':JC, PartDefs.CHIPUPGRADE_RY.makeStack,
             'e':JC, Items.emerald)
     }
+}
+
+class ChipResetRecipe extends IRecipe
+{
+    def matches(inv:InventoryCrafting, world:World) = getCraftingResult(inv) != null
+
+    def getCraftingResult(inv:InventoryCrafting):ItemStack =
+    {
+        val cdef = getType(inv)
+        if (cdef != null) if (isTypeExclusive(cdef, inv)) return cdef.makeStack(countUnits(inv))
+        null
+    }
+
+    def getType(inv:InventoryCrafting):ChipVal =
+    {
+        for (i <- 0 until inv.getSizeInventory)
+        {
+            val cdef = RoutingChipDefs.getForStack(inv.getStackInSlot(i))
+            if (cdef != null) return cdef
+        }
+        null
+    }
+
+    def isTypeExclusive(cdef:ChipVal, inv:InventoryCrafting):Boolean =
+    {
+        for (i <- 0 until inv.getSizeInventory)
+        {
+            val stack = inv.getStackInSlot(i)
+            if (stack != null && !stack.getItem.isInstanceOf[ItemRoutingChip]) return false
+            val type2 = RoutingChipDefs.getForStack(stack)
+            if (type2 != null && !(type2 == cdef)) return false
+        }
+        true
+    }
+
+    def countUnits(inv:InventoryCrafting):Int =
+    {
+        var count = 0
+        for (i <- 0 until inv.getSizeInventory)
+            if (inv.getStackInSlot(i) != null) count += 1
+        count
+    }
+
+    def getRecipeSize = 2
+    def getRecipeOutput = null
 }
