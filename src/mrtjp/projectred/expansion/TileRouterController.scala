@@ -1,14 +1,13 @@
 package mrtjp.projectred.expansion
 
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import mrtjp.projectred.ProjectRedExpansion
+import mrtjp.projectred.core.GuiManager
+import mrtjp.projectred.core.libmc.inventory.{SimpleInventory, Slot2, WidgetContainer}
+import mrtjp.projectred.transportation.{ItemCPU, TControllerLayer}
 import net.minecraft.entity.player.EntityPlayer
-import mrtjp.projectred.transportation.{ItemCPU, RoutedJunctionPipePart, TControllerLayer}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.inventory.ICrafting
-import codechicken.lib.vec.BlockCoord
-import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory}
-import mrtjp.projectred.core.libmc.PRLib
 
 class TileRouterController extends TileMachine with TileGuiMachine with TControllerLayer
 {
@@ -16,15 +15,27 @@ class TileRouterController extends TileMachine with TileGuiMachine with TControl
     {
         override def isItemValidForSlot(i:Int, stack:ItemStack) =
             stack != null && stack.getItem.isInstanceOf[ItemCPU]
+
+        override def markDirty()
+        {
+            if (world.isRemote) return
+            val old = operational
+            operational = isOperational
+            if (operational != old) sendOpUpdate()
+        }
     }
 
     var client_hasConflict = false
+    var operational = false //TODO sync to client
 
-    override def getBlock = ProjectRedExpansion.machine1
+    override def getBlock = ProjectRedExpansion.machine2
 
     override def doesRotate = false
 
-    override def guiID = MachineGuiFactory.id_controller
+    override def openGui(player:EntityPlayer)
+    {
+        GuiRouterController.open(player, createContainer(player), _.writeCoord(xCoord, yCoord, zCoord))
+    }
 
     override def createContainer(player:EntityPlayer) = new ControllerCont(this, player)
 
@@ -86,15 +97,31 @@ class TileRouterController extends TileMachine with TileGuiMachine with TControl
         else false
     }
 
-    def hasControllerConflict =
+    def isOperational:Boolean = getPower > 0
+
+    override def writeDesc(out:MCDataOutput)
     {
-        PRLib.getMultiPart(worldObj, new BlockCoord(this).offset(1), 6) match
-        {
-            case p:RoutedJunctionPipePart =>
-                val r = p.getRouter
-                if (r != null && p.maskConnects(0) && r.controllerConflict) true else false
-            case _ => false
-        }
+        super.writeDesc(out)
+        out.writeBoolean(operational)
+    }
+
+    override def readDesc(in:MCDataInput)
+    {
+        super.readDesc(in)
+        operational = in.readBoolean()
+    }
+
+    override def read(in:MCDataInput, key:Int) = key match
+    {
+        case 2 =>
+            operational = in.readBoolean()
+            markRender()
+        case _ => super.read(in, key)
+    }
+
+    def sendOpUpdate()
+    {
+        writeStreamSend(writeStream(2).writeBoolean(operational))
     }
 }
 
@@ -102,27 +129,4 @@ class ControllerCont(tile:TileRouterController, player:EntityPlayer) extends Wid
 {
     this + new Slot2(tile.cpuSlot, 0, 44, 36)
     addPlayerInv(player, 8, 86)
-
-    var conflict = false
-
-    override def detectAndSendChanges()
-    {
-        super.detectAndSendChanges()
-
-        val newConflict = tile.hasControllerConflict
-
-        import scala.collection.JavaConversions._
-        for (i <- crafters)
-        {
-            val ic = i.asInstanceOf[ICrafting]
-            if (conflict != newConflict) ic.sendProgressBarUpdate(this, 0, if (newConflict) 1 else 2)
-        }
-
-        conflict = newConflict
-    }
-
-    override def updateProgressBar(id:Int, bar:Int) = id match
-    {
-        case 0 => tile.client_hasConflict = bar == 1
-    }
 }

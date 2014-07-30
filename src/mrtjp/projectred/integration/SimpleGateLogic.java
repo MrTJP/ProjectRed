@@ -497,7 +497,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         @Override
         public int cycleShape(int shape)
         {
-            return (shape+1)%2;
+            return shape^1;
         }
 
         @Override

@@ -1,12 +1,13 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.lib.LabelBreaks
-import LabelBreaks._
-import scala.collection.mutable.ListBuffer
+import mrtjp.projectred.core.lib.LabelBreaks._
 import mrtjp.projectred.core.lib.Pair2
-import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
 import mrtjp.projectred.core.libmc.inventory.InvWrapper
+import mrtjp.projectred.core.libmc.{ItemQueue, ItemKey, ItemKeyStack}
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
+
+import scala.collection.immutable.HashMap
+import scala.collection.mutable.{ListBuffer, Builder => MBuilder}
 
 class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientation with TChipPriority
 {
@@ -22,6 +23,8 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
     def itemsToExtract = 8+upgradeBus.RLatency
 
     def operationDelay = 5
+
+    def powerPerOp = 1.0D
 
     override def update()
     {
@@ -63,7 +66,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                 toExtract = Math.min(toExtract, itemsRemaining)
                 toExtract = Math.min(toExtract, reqKeyStack.makeStack.getMaxStackSize)
 
-                var restock = false
+                var restack = false
 
                 val destinationSpace = requester.getActiveFreeSpace(reqKeyStack.key)
                 if (destinationSpace < toExtract)
@@ -74,8 +77,10 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                         manager.restackOrders()
                         break("while")
                     }
-                    restock = true
+                    restack = true
                 }
+
+                if (!controller.canUsePower(toExtract*powerPerOp)) break("while")
 
                 val removed = inv.extractItem(reqKeyStack.key, toExtract)
                 if (removed <= 0)
@@ -84,9 +89,11 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                     break("cont")
                 }
 
+                controller.usePower(removed*powerPerOp)
+
                 val toSend = reqKeyStack.key.makeStack(removed)
                 routeLayer.queueStackToSend(toSend, invProvider.getInterfacedSide, SendPriority.ACTIVEB, requester.getRouter.getIPAddress)
-                manager.dispatchSuccessful(removed, restock)
+                manager.dispatchSuccessful(removed, restack)
 
                 stacksRemaining -= 1
                 itemsRemaining -= removed
@@ -108,21 +115,19 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
         {
             var numberAvailable = inv.getItemCount(requested)
             numberAvailable -= existingPromises
-            if (numberAvailable > 0)
-            {
-                val promise = new DeliveryPromise
-                promise.setPackage(requested).setSize(Math.min(request.getMissingCount, numberAvailable)).setSender(routeLayer.getBroadcaster)
-                request.addPromise(promise)
-            }
+            if (numberAvailable > 0) request.addPromise(
+                new DeliveryPromise(requested, Math.min(
+                    request.getMissingCount, numberAvailable), routeLayer.getBroadcaster)
+            )
         }
     }
 
     override def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester)
     {
-        manager.addOrder(ItemKeyStack.get(promise.thePackage, promise.size), requester)
+        manager.addOrder(ItemKeyStack.get(promise.item, promise.size), requester)
     }
 
-    override def getProvidedItems(map:collection.mutable.Map[ItemKey, Int])
+    override def getProvidedItems(col:ItemQueue)
     {
         val real = invProvider.getInventory
         if (real == null) return
@@ -133,10 +138,8 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
         val items = inv.getAllItemStacks
         for ((k, v) <- items) if (filt.hasItem(k) != filterExclude)
         {
-            val current = map.getOrElse(k, 0)
             val toAdd = v-manager.getDeliveryCount(k)
-
-            if (toAdd > 0) map.put(k, toAdd+current)
+            if (toAdd > 0) col += k -> toAdd
         }
     }
 

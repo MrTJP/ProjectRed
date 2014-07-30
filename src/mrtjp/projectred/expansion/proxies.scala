@@ -6,10 +6,9 @@ import codechicken.multipart.MultiPartRegistry.IPartFactory
 import cpw.mods.fml.common.Loader
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.core.{GuiManager, IProxy}
-import mrtjp.projectred.transmission._
 import mrtjp.projectred.core.libmc.RenderLib
-import mrtjp.projectred.transportation._
+import mrtjp.projectred.core.{GuiIDs, GuiManager, IProxy}
+import mrtjp.projectred.transmission._
 
 class ExpansionProxy_server extends IProxy with IPartFactory
 {
@@ -22,24 +21,21 @@ class ExpansionProxy_server extends IProxy with IPartFactory
 
     def init()
     {
-        if (version.contains("@")) //dev only
+        if (Loader.isModLoaded("ProjRed|Transmission"))
         {
-            if (Loader.isModLoaded("ProjRed|Transmission"))
-            {
-                loadPowerTest = true
-                MultiPartRegistry.registerParts(this, Array("pr_100v", "pr_f100v"))
-            }
-
-            //Machine1 (processing)
-            ProjectRedExpansion.machine1 = new BlockMachine("projectred.expansion.machine1")
-            //Machine1 tiles
-            ProjectRedExpansion.machine1.addTile(classOf[TileFurnace], 0)
-
-            //Machine2 (devices)
-            ProjectRedExpansion.machine2 = new BlockMachine("projectred.expansion.machine2")
-            //Machine2 tiles
-            ProjectRedExpansion.machine2.addTile(classOf[TileRouterController], 0)
+            loadPowerTest = true
+            MultiPartRegistry.registerParts(this, Array("pr_100v", "pr_f100v"))
         }
+
+//        //Machine1 (processing)
+//        ProjectRedExpansion.machine1 = new BlockMachine("projectred.expansion.machine1")
+//        //Machine1 tiles
+//        ProjectRedExpansion.machine1.addTile(classOf[TileFurnace], 0)
+
+        //Machine2 (devices)
+        ProjectRedExpansion.machine2 = new BlockMachine("projectred.expansion.machine2")
+        //Machine2 tiles
+        ProjectRedExpansion.machine2.addTile(classOf[TileRouterController], 0)
     }
 
     def postinit()
@@ -69,6 +65,7 @@ class ExpansionProxy_client extends ExpansionProxy_server
     @SideOnly(Side.CLIENT)
     override def preinit()
     {
+        super.preinit()
         PacketCustom.assignHandler(ExpansionCPH.channel, ExpansionCPH)
     }
 
@@ -76,11 +73,15 @@ class ExpansionProxy_client extends ExpansionProxy_server
     override def init()
     {
         super.init()
-        if (version.contains("@"))
-        {
-            RenderLib.setRenderer(ProjectRedExpansion.machine1, 0, RenderController)
-            RenderLib.setRenderer(ProjectRedExpansion.machine1, 1, RenderFurnace)
-        }
+        GuiManager.register(GuiRouterController, GuiIDs.routingController)
+    }
+
+    @SideOnly(Side.CLIENT)
+    override def postinit()
+    {
+        super.postinit()
+//        RenderLib.setRenderer(ProjectRedExpansion.machine1, 0, RenderFurnace)
+        RenderLib.setRenderer(ProjectRedExpansion.machine2, 0, RenderController)
     }
 }
 

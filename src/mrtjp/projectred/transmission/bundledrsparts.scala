@@ -105,4 +105,14 @@ object BundledCommons
         for (i <- 0 until 16) sig(i) = (if ((packed&1<<i) == 0) 0 else 255).asInstanceOf[Byte]
         sig
     }
+
+    def mostSignificantBit(mask:Int) =
+    {
+        var idx = 0
+        var m2 = mask>>1
+        while (m2 != 0){m2 >>= 1; idx += 1}
+        idx
+    }
+
+    def signalToString(signal:Array[Byte]) = signal.mkString
 }

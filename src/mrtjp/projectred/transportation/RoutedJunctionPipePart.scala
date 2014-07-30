@@ -387,7 +387,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         {
             if (!world.isRemote)
             {
-                val s = "/#f"+"route statistics: "+
+                val s = "/#f"+"R"+getRouter.getIPAddress+" route statistics: "+
                         "\nreceived: "+statsReceived+
                         "\nsent: "+statsSent+
                         "\nrelayed: "+statsRelayed+

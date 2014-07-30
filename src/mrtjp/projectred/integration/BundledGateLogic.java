@@ -18,6 +18,8 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
             return new BusTransceiver(gate);
         if (subID == 28)
             return new BusRandomizer(gate);
+        if (subID == 29)
+            return new BusConverter(gate);
         return null;
     }
 
@@ -421,6 +423,183 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         public int lightLevel()
         {
             return 0;
+        }
+    }
+
+    public static class BusConverter extends BundledGateLogic
+    {
+        public int bIn, bOut;
+        public int rsIn, rsOut;
+        public byte[] bOutUnpacked;
+
+        public BusConverter(BundledGatePart gate)
+        {
+            super(gate);
+        }
+
+        public void setBOut(int newBOut)
+        {
+            if (bOut == newBOut) return;
+            bOut = newBOut;
+            bOutUnpacked = unpackDigital(bOutUnpacked, bOut);
+        }
+
+        @Override
+        public int bundledOutputMask(int shape){ return shape == 0 ? 1 : 0; }
+
+        @Override
+        public int bundledInputMask(int shape){ return shape == 0 ? 0 : 1; }
+
+        @Override
+        public int outputMask(int shape){ return shape == 0 ? 10 : 14; }
+
+        @Override
+        public int inputMask(int shape){ return shape == 0 ? 4 : 0; }
+
+        @Override
+        public void save(NBTTagCompound tag)
+        {
+            tag.setByte("in", (byte)rsIn);
+            tag.setByte("out", (byte)rsOut);
+            tag.setByte("in0", (byte)bIn);
+            tag.setByte("out0", (byte)bOut);
+        }
+
+        @Override
+        public void load(NBTTagCompound tag)
+        {
+            rsIn = tag.getByte("in");
+            rsOut = tag.getByte("out");
+            bIn = tag.getByte("in0");
+            setBOut(tag.getByte("out0"));
+        }
+
+        @Override
+        public void onChange(BundledGatePart gate)
+        {
+            if (gate.shape() == 0)
+            {
+                int oldInput = rsIn;
+                rsIn = gate.getRedstoneInput(2)/17;
+                if (oldInput != rsIn)
+                {
+                    gate.onInputChange();
+                    gate.scheduleTick(2);
+                }
+            }
+            else
+            {
+                int oldInput = bIn;
+                bIn = packDigital(gate.getBundledInput(0));
+                if (oldInput != bIn)
+                {
+                    gate.onInputChange();
+                    gate.scheduleTick(2);
+                }
+            }
+        }
+
+        @Override
+        public void scheduledTick(BundledGatePart gate)
+        {
+            int changeMask = 0;
+
+            if (gate.shape() == 0)
+            {
+                int oldOut = bOut;
+                setBOut(1<<rsIn);
+                if (oldOut != bOut) changeMask = 1;
+            }
+            else
+            {
+                int oldOut = rsOut;
+                rsOut = mostSignificantBit(bIn);
+                if (rsOut != oldOut) changeMask = 4;
+            }
+
+            int oldOut2 = gate.state()>>4;
+            int newOut2 = (gate.shape() == 0 ? rsIn : bIn) != 0 ? 10 : 0;
+            if (oldOut2 != newOut2)
+            {
+                gate.setState(gate.state()&0xF|newOut2<<4);
+                changeMask |= 10;
+            }
+
+            if (changeMask != 0) gate.onOutputChange(changeMask);
+            onChange(gate);
+        }
+
+        @Override
+        public int getOutput(BundledGatePart gate, int r)
+        {
+            return gate.shape() == 1 && r == 2 ? rsOut : (gate.state()&0x10<<r) != 0 ? 15 : 0;
+        }
+
+        @Override
+        public byte[] getBundledOutput(BundledGatePart gate, int r)
+        {
+            return gate.shape() == 0 && r == 0 ? bOutUnpacked : null;
+        }
+
+        /**
+         * Shape 0: Analog to Digital (RS to Bundled)
+         * Shape 1: Digital to Analog (Bundled to RS)
+         */
+        @Override
+        public boolean cycleShape(BundledGatePart gate)
+        {
+            gate.setShape(gate.shape()^1);
+            return true;
+        }
+
+        @Override
+        public int lightLevel()
+        {
+            return 0;
+        }
+
+        public int packBData(){ return bIn<<16|bOut; }
+        public void unpackBData(int pack)
+        {
+            bIn = pack>>16;
+            bOut = pack&0xFFFF;
+        }
+
+        public int packData(){ return rsIn<<4|rsOut; }
+        public void unpackData(int pack)
+        {
+            rsIn = pack>>4;
+            rsOut = pack&0xF;
+        }
+
+        public void sendBUpdate()
+        {
+            gate.getWriteStream(11).writeInt(packBData());
+        }
+
+        public void sendUpdate()
+        {
+            gate.getWriteStream(12).writeShort(packData());
+        }
+
+        @Override
+        public void readDesc(MCDataInput packet)
+        {
+            unpackBData(packet.readInt());
+            unpackData(packet.readUShort());
+        }
+
+        @Override
+        public void writeDesc(MCDataOutput packet)
+        {
+            packet.writeInt(packBData()).writeShort(packData());
+        }
+
+        @Override
+        public void read(MCDataInput packet, int key)
+        {
+            if (key == 11) unpackBData(packet.readInt());
+            else if (key == 12) unpackData(packet.readUShort());
         }
     }
 }

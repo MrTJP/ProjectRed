@@ -1,13 +1,15 @@
 package mrtjp.projectred.transportation
 
+import mrtjp.projectred.core.libmc.inventory.{InvWrapper, SimpleInventory}
+import mrtjp.projectred.core.libmc.{ItemQueue, ItemKey, ItemKeyStack}
+import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.Keyboard
-import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
-import mrtjp.projectred.core.libmc.inventory.{SimpleInventory, InvWrapper}
-import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
+
+import scala.collection.immutable.HashMap
+import scala.collection.mutable.{ListBuffer, Builder => MBuilder}
 
 abstract class RoutingChipset
 {
@@ -29,26 +31,26 @@ abstract class RoutingChipset
     def slot = s
     def controller = routeLayer.getRouter.getController
 
-    def update() {}
+    def update(){}
 
     /** Syncing **/
     def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse = null
 
     /** Broadcasting **/
-    def requestPromises(request:RequestBranchNode, existingPromises:Int) {}
-    def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester) {}
-    def getProvidedItems(map:collection.mutable.Map[ItemKey, Int]) {}
+    def requestPromises(request:RequestBranchNode, existingPromises:Int){}
+    def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester){}
+    def getProvidedItems(col:ItemQueue){}
 
     def getBroadcastPriority = Integer.MAX_VALUE
     def getWorkLoad = 0.0D
 
     /** Requesting **/
-    def trackedItemLost(s:ItemKeyStack) {}
-    def trackedItemReceived(s:ItemKeyStack) {}
+    def trackedItemLost(s:ItemKeyStack){}
+    def trackedItemReceived(s:ItemKeyStack){}
 
     /** World interactions **/
-    def onPipeBroken() {}
-    def onNeighborTileChanged(side:Int, weak:Boolean) {}
+    def onPipeBroken(){}
+    def onNeighborTileChanged(side:Int, weak:Boolean){}
     def weakTileChanges = false
 
     def save(tag:NBTTagCompound)

@@ -30,49 +30,6 @@ class BlockMachine(name:String) extends MultiTileBlock(name, Material.rock)
     override def renderAsNormalBlock = true
 
     override def isSideSolid(w:IBlockAccess, x:Int, y:Int, z:Int, side:ForgeDirection) = true
-
-    override def registerBlockIcons(reg:IIconRegister)
-    {
-        super.registerBlockIcons(reg)
-        if (BlockMachine.loaded) return
-        def put(name:String) = reg.registerIcon("projectred:machines/"+name)
-
-        BlockMachine.iconIO = put("machineio")
-        BlockMachine.bottom = put("machbottom")
-        BlockMachine.top = put("machtop")
-        BlockMachine.side = put("machside")
-
-        BlockMachine.nowork = put("machnowork")
-        BlockMachine.work = put("machwork")
-
-        BlockMachine.furnaceFront = put("furnacefront")
-        BlockMachine.furnaceFrontOn = put("furnacefronton")
-
-        BlockMachine.loaded = true
-    }
-
-    override def getIcon(s:Int, md:Int) = s match
-    {
-        case 0 => BlockMachine.bottom
-        case 1 => BlockMachine.top
-        case _ => BlockMachine.side
-    }
-}
-
-object BlockMachine
-{
-    var loaded = false
-
-    var iconIO:IIcon = _
-
-    var bottom:IIcon = _
-    var top:IIcon = _
-    var side:IIcon = _
-    var nowork:IIcon = _
-    var work:IIcon = _
-
-    var furnaceFront:IIcon = _
-    var furnaceFrontOn:IIcon = _
 }
 
 abstract class TileMachine extends MultiTileTile with TTileOrient
@@ -190,29 +147,18 @@ trait TileGuiMachine extends TileMachine
 {
     abstract override def onBlockActivated(player:EntityPlayer, side:Int) =
     {
-        super.onBlockActivated(player, side) || openGui(player)
+        if (super.onBlockActivated(player, side)) true
+        else if (!world.isRemote && !player.isSneaking)
+        {
+            openGui(player)
+            true
+        }
+        else false
     }
 
-    def openGui(player:EntityPlayer) =
-    {
-        if (!getWorldObj.isRemote && !player.isSneaking)
-            ServerUtils.openSMPContainer(player.asInstanceOf[EntityPlayerMP], createContainer(player), new IGuiPacketSender
-            {
-                def sendPacket(player:EntityPlayerMP, windowId:Int)
-                {
-                    val p = new PacketCustom(ExpansionSPH.channel, ExpansionSPH.machine_gui_open)
-                    p.writeCoord(xCoord, yCoord, zCoord)
-                    p.writeByte(windowId).writeByte(guiID)
-                    p.sendToPlayer(player)
-                }
-            })
-
-        !player.isSneaking
-    }
+    def openGui(player:EntityPlayer)
 
     def createContainer(player:EntityPlayer):Container
-
-    def guiID:Int
 }
 
 trait TMachinePowerable extends TileMachine with TConnectableTileMulti with IPowerConnectable

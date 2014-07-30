@@ -1,20 +1,20 @@
 package mrtjp.projectred.transportation
 
-import codechicken.lib.data.{MCDataOutput, MCDataInput}
-import codechicken.lib.vec.BlockCoord
 import java.util.UUID
 import java.util.concurrent.DelayQueue
+
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.vec.BlockCoord
 import mrtjp.projectred.core.ItemDataCard
+import mrtjp.projectred.core.lib.{Pair2, PostponedWorkItem}
+import mrtjp.projectred.core.libmc.gui.GuiLib
+import mrtjp.projectred.core.libmc.inventory.{InvWrapper, SimpleInventory, Slot2, WidgetContainer}
+import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Container
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
-import scala.collection
-import mrtjp.projectred.core.lib.{PostponedWorkItem, LabelBreaks, Pair2}
-import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
-import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory, InvWrapper}
-import mrtjp.projectred.core.libmc.gui.GuiLib
 
 class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 {
@@ -75,6 +75,8 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
     protected def itemsToExtract = 1
 
     protected def stacksToExtract = 1
+
+    def powerPerOp = 10.0D
 
     def priorityUp()
     {
@@ -160,9 +162,9 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         var itemsleft = itemsToExtract
         var stacksleft = stacksToExtract
 
-        import LabelBreaks._
+        import mrtjp.projectred.core.lib.LabelBreaks._
         label {
-            while (itemsleft > 0 && stacksleft > 0 && (manager.hasOrders || !excess.isEmpty))
+            while (itemsleft > 0 && stacksleft > 0 && (manager.hasOrders || excess.nonEmpty))
             {
                 var processingOrder = false
                 var nextOrder:Pair2[ItemKeyStack, IWorldRequester] = null
@@ -176,8 +178,10 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
                 val keyStack = nextOrder.get1
                 var maxToSend = Math.min(itemsleft, keyStack.stackSize)
                 maxToSend = Math.min(keyStack.key.getMaxStackSize, maxToSend)
-                var available = inv.extractItem(keyStack.key, maxToSend)
 
+                while (!router.getController.usePower(powerPerOp*maxToSend) && maxToSend > 0) maxToSend -= 1
+
+                var available = inv.extractItem(keyStack.key, maxToSend)
                 if (available <= 0) break()
 
                 val key = keyStack.key
@@ -200,7 +204,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
                         else
                         {
                             processingOrder = false
-                            if (!excess.isEmpty) nextOrder = excess(0)
+                            if (excess.nonEmpty) nextOrder = excess(0)
                         }
                     }
                     else
@@ -218,7 +222,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         if (lost.isEmpty) return
         var post:PostponedWorkItem[ItemKeyStack] = null
 
-        import LabelBreaks._
+        import mrtjp.projectred.core.lib.LabelBreaks._
         while ({post = lost.poll(); post} != null) label
         {
             val stack = post.getItem
@@ -406,18 +410,15 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         remaining -= existingPromises
         if (remaining <= 0) return
 
-        val promise = new ExcessPromise
-        promise.setUsed(true).setPackage(requestedItem).setSize(Math.min(remaining, request.getMissingCount)).setSender(this)
-        request.addPromise(promise)
+        request.addPromise(new DeliveryPromise(requestedItem,
+            Math.min(remaining, request.getMissingCount), this, true, true))
     }
 
     def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester)
     {
-        if (promise.isInstanceOf[ExcessPromise]) removeExcess(promise.thePackage, promise.size)
-        manager.addOrder(ItemKeyStack.get(promise.thePackage, promise.size), requester)
+        if (promise.isExcess) removeExcess(promise.item, promise.size)
+        manager.addOrder(ItemKeyStack.get(promise.item, promise.size), requester)
     }
-
-    def getBroadcastedItems(map:collection.mutable.HashMap[ItemKey, Int]) {}
 
     def buildCraftPromises(item:ItemKey) =
     {
@@ -432,7 +433,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
     def registerExcess(promise:DeliveryPromise)
     {
-        val keystack = ItemKeyStack.get(promise.thePackage, promise.size)
+        val keystack = ItemKeyStack.get(promise.item, promise.size)
         excess :+= new Pair2(keystack, null.asInstanceOf[IWorldRequester])
     }
 

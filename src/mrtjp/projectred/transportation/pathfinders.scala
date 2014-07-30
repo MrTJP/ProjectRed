@@ -2,14 +2,13 @@ package mrtjp.projectred.transportation
 
 import codechicken.lib.vec.BlockCoord
 import mrtjp.projectred.api.ISpecialLinkState
+import mrtjp.projectred.core.libmc.{ItemKey, ItemQueue, PRLib}
+import mrtjp.projectred.core.{AStar, PathNode}
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.tileentity.TileEntity
-import scala.collection.mutable.{HashMap => MHashMap}
-import scala.collection.immutable.BitSet
 import net.minecraft.world.World
-import mrtjp.projectred.core.{PathNode, AStar}
-import mrtjp.projectred.core.lib.LabelBreaks
-import mrtjp.projectred.core.libmc.{PRLib, ItemKey}
+
+import scala.collection.immutable.BitSet
 
 object LSPathFinder
 {
@@ -127,23 +126,27 @@ class CollectionPathFinder
 
     def collect =
     {
-        var pool = MHashMap[ItemKey, Int]()
+        var pool = new ItemQueue
+        val builder = new ItemQueue
+
         for (p <- requester.getRouter.getRoutesByCost)
         {
+            builder.clear()
             p.end.getParent match
             {
                 case c:IWorldCrafter if collectCrafts && p.flagRouteFrom && p.allowCrafting =>
-                    c.getBroadcastedItems(pool)
+                    c.getBroadcasts(builder)
                     val list = c.getCraftedItems
-                    if (list != null) for (stack <- list)
-                        if (!pool.contains(stack.key)) pool += stack.key -> 0
+                    if (list != null) for (stack <- list) builder += stack.key -> 0
+
                 case b:IWorldBroadcaster if collectBroadcasts && p.flagRouteFrom && p.allowBroadcast =>
-                    b.getBroadcastedItems(pool)
+                    b.getBroadcasts(builder)
+
                 case _ =>
             }
-            pool = pool.filter(i => p.allowItem(i._1))
+            pool ++= builder.result.filter(i => p.allowItem(i._1))
         }
-        collected = pool.toMap
+        collected = pool.result
         this
     }
 
@@ -191,7 +194,7 @@ class LogisticPathFinder(source:Router, payload:ItemKey)
     {
         var bestResponse = new SyncResponse
         var bestIP = -1
-        import LabelBreaks._
+        import mrtjp.projectred.core.lib.LabelBreaks._
 
         for (l <- source.getFilteredRoutesByCost(p => p.flagRouteTo && p.allowRouting && p.allowItem(payload))) label
         {
