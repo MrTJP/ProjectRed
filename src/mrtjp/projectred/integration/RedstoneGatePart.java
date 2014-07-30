@@ -19,10 +19,9 @@ public abstract class RedstoneGatePart extends GatePart implements IFaceRedstone
     @Override
     public int strongPowerLevel(int side)
     {
-        if ((side&6) == (side()&6))
-            return 0;
-
-        return getLogic().getOutput(this, relRot(side));
+        if ((side&6) == (side()&6)) return 0;
+        int ir = relRot(side);
+        return (getLogic().outputMask(shape())&1<<ir) != 0 ? getLogic().getOutput(this, ir) : 0;
     }
 
     @Override

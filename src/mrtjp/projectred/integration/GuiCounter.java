@@ -13,16 +13,9 @@ public class GuiCounter extends GuiScreenWidget
 
     public GuiCounter(GatePart part)
     {
+        super(256, 145);
         this.part = part;
         logic = (ICounterGuiLogic) part.getLogic();
-    }
-
-    @Override
-    public void initGui()
-    {
-        xSize = 256;
-        ySize = 145;
-        super.initGui();
     }
 
     @Override

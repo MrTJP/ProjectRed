@@ -13,16 +13,9 @@ public class GuiTimer extends GuiScreenWidget
 
     public GuiTimer(GatePart part)
     {
+        super(256, 55);
         this.part = part;
         logic = (ITimerGuiLogic)part.getLogic();
-    }
-
-    @Override
-    public void initGui()
-    {
-        xSize = 256;
-        ySize = 55;
-        super.initGui();
     }
 
     @Override

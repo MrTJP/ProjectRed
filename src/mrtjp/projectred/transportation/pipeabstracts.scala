@@ -66,8 +66,8 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
     {
         connMap = packet.readUByte()
         material = packet.readBoolean()
-        signal = packet.readByte
-        meta = packet.readByte
+        signal = packet.readByte()
+        meta = packet.readByte()
     }
 
     override def read(packet:MCDataInput, key:Int) = key match

@@ -3,6 +3,9 @@ package mrtjp.projectred.core.libmc
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 
+import scala.collection.generic.Growable
+import scala.collection.immutable.HashMap
+
 object ItemKey
 {
     def apply(stack:ItemStack) = get(stack)
@@ -88,4 +91,22 @@ class ItemKeyStack(val key:ItemKey, var stackSize:Int) extends Ordered[ItemKeySt
         if (c == 0) stackSize-that.stackSize
         else c
     }
+}
+
+class ItemQueue extends Growable[(ItemKey, Int)]
+{
+    private var collection = HashMap[ItemKey, Int]()
+
+    override def +=(elem:(ItemKey, Int)) =
+    {
+        val current = collection.getOrElse(elem._1, 0)
+        collection += elem._1 -> (current+elem._2)
+        this
+    }
+
+    override def clear(){collection = HashMap[ItemKey, Int]()}
+
+    def ++=(that:ItemQueue) = {that.result.foreach(this += _); this}
+
+    def result = collection
 }

@@ -1,13 +1,13 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.vec.BlockCoord
+import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack, ItemQueue}
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.world.World
+
 import scala.collection.immutable.BitSet
-import scala.collection.mutable
-import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
 
 trait IWorldRouter
 {
@@ -49,7 +49,10 @@ trait IWorldBroadcaster extends IWorldRouter
 
     def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester)
 
-    def getBroadcastedItems(map:mutable.HashMap[ItemKey, Int])
+    def operate(req:RequestMain){}//TODO
+    def act(action:SupplyAction){}//TODO
+
+    def getBroadcasts(col:ItemQueue){}
 
     def getBroadcastPriority:Int
 
@@ -61,6 +64,8 @@ trait IWorldCrafter extends IWorldRequester with IWorldBroadcaster
     def buildCraftPromises(item:ItemKey):Vector[CraftingPromise]
 
     def registerExcess(promise:DeliveryPromise)
+
+    def actOnExcess(action:SupplyAction){}//TODO
 
     def getCraftedItems:Vector[ItemKeyStack]
 

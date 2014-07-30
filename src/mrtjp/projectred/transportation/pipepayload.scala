@@ -59,7 +59,7 @@ object SendPriority extends Enum
     val ACTIVEB = new PriorityVal("Active Broadcast", 0.20f, 0.30f, PRColors.GREEN.ordinal(), _.allowBroadcast)
     val ACTIVEC = new PriorityVal("Active Craft", 0.20f, 0.30f, PRColors.GREEN.ordinal(), _.allowCrafting)
 
-    class PriorityVal(val ident:String, val speed:Float, val boost:Float, val color:Int, f: StartEndPath => Boolean) extends Value
+    class PriorityVal(val ident:String, val speed:Float, val boost:Float, val color:Int, f:StartEndPath => Boolean) extends Value
     {
         def this(ident:String, speed:Float, boost:Float, color:Int) = this(ident, speed, boost, color, passiveDef)
 
@@ -245,7 +245,7 @@ class PayloadMovement
     var outputQueue = immutable.HashSet[RoutedPayload]()
     private var delay = 0
 
-    def get(id:Int) = delegate.find(_.payloadID == id).getOrElse(null)
+    def get(id:Int) = delegate.find(_.payloadID == id).orNull
 
     def scheduleLoad(item:RoutedPayload)
     {

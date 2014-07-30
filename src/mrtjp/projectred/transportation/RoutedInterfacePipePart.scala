@@ -1,13 +1,16 @@
 package mrtjp.projectred.transportation
 
 import codechicken.multipart.INeighborTileChange
+import mrtjp.projectred.core.libmc.gui.GuiLib
+import mrtjp.projectred.core.libmc.inventory.{SimpleInventory, Slot2, WidgetContainer}
+import mrtjp.projectred.core.libmc.{ItemQueue, ItemKey, ItemKeyStack}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
-import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
-import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory}
-import mrtjp.projectred.core.libmc.gui.GuiLib
+
+import scala.collection.immutable.HashMap
+import scala.collection.mutable.{Builder => MBuilder}
 
 class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcaster with INeighborTileChange
 {
@@ -140,12 +143,12 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
         null
     }
 
-    def requestPromises(request:RequestBranchNode, existingPromises:Int)
+    override def requestPromises(request:RequestBranchNode, existingPromises:Int)
     {
         for (r <- chips) if (r != null) r.requestPromises(request, existingPromises)
     }
 
-    def deliverPromises(promise:DeliveryPromise, requestor:IWorldRequester)
+    override def deliverPromises(promise:DeliveryPromise, requestor:IWorldRequester)
     {
         for (r <- chips) if (r != null) r.deliverPromises(promise, requestor)
     }
@@ -160,12 +163,12 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
         for (r <- chips) if (r != null) r.trackedItemReceived(s)
     }
 
-    def getBroadcastedItems(map:collection.mutable.HashMap[ItemKey, Int])
+    override def getBroadcasts(col:ItemQueue)
     {
-        for (r <- chips) if (r != null) r.getProvidedItems(map)
+        for (r <- chips) if (r != null) r.getProvidedItems(col)
     }
 
-    def getBroadcastPriority =
+    override def getBroadcastPriority =
     {
         var high = Integer.MIN_VALUE
         for (r <- chips) if (r != null)
@@ -176,7 +179,7 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
         high
     }
 
-    def getWorkLoad =
+    override def getWorkLoad =
     {
         var high = 0.0D
         for (r <- chips) if (r != null)

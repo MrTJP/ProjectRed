@@ -17,25 +17,26 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
 {
     public static InstancedRsGateLogic create(InstancedRsGatePart gate, int subID)
     {
-        switch (subID) {
-        case 12:
-            return new RSLatch(gate);
-        case 13:
-            return new ToggleLatch(gate);
-        case 17:
-            return new Timer(gate);
-        case 18:
-            return new Sequencer(gate);
-        case 19:
-            return new Counter(gate);
-        case 20:
-            return new StateCell(gate);
-        case 21:
-            return new Synchronizer(gate);
-        case 26:
-            return new Comparator(gate);
+        switch (subID)
+        {
+            case 12:
+                return new RSLatch(gate);
+            case 13:
+                return new ToggleLatch(gate);
+            case 17:
+                return new Timer(gate);
+            case 18:
+                return new Sequencer(gate);
+            case 19:
+                return new Counter(gate);
+            case 20:
+                return new StateCell(gate);
+            case 21:
+                return new Synchronizer(gate);
+            case 26:
+                return new Comparator(gate);
         }
-        throw new IllegalArgumentException("Invalid subID: " + subID);
+        throw new IllegalArgumentException("Invalid subID: "+subID);
     }
 
     public InstancedRsGateLogic(InstancedRsGatePart gate)
@@ -48,7 +49,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
     @Override
     public int getOutput(InstancedRsGatePart gate, int r)
     {
-        return (gate.state & 0x10 << r) != 0 ? 15 : 0;
+        return (gate.state&0x10<<r) != 0 ? 15 : 0;
     }
 
     public void save(NBTTagCompound tag)
@@ -74,7 +75,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
     public void tickSound()
     {
         if (Configurator.logicGateSounds)
-            gate.world().playSoundEffect(gate.x() + 0.5D, gate.y() + 0.5D, gate.z() + 0.5D, "random.click", 0.3F, 0.5F);
+            gate.world().playSoundEffect(gate.x()+0.5D, gate.y()+0.5D, gate.z()+0.5D, "random.click", 0.3F, 0.5F);
     }
 
     public static abstract class ExtraStateLogic extends InstancedRsGateLogic
@@ -88,12 +89,12 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
 
         public int state2()
         {
-            return state2 & 0xFF;
+            return state2&0xFF;
         }
 
         public void setState2(int i)
         {
-            state2 = (byte) i;
+            state2 = (byte)i;
         }
 
         @Override
@@ -150,7 +151,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public boolean cycleShape(InstancedRsGatePart gate)
         {
-            int newShape = (gate.shape() + 1) % 4;
+            int newShape = (gate.shape()+1)%4;
             gate.setShape(newShape);
             setState2(GatePart.flipMaskZ(state2()));
             gate.setState(GatePart.flipMaskZ(gate.state()));
@@ -162,7 +163,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public int outputMask(int shape)
         {
-            return shape >> 1 == 0 ? 0xF : 5;
+            return shape>>1 == 0 ? 0xF : 5;
         }
 
         @Override
@@ -183,9 +184,9 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         {
             int stateInput = state2();
 
-            int oldInput = gate.state() & 0xF;
+            int oldInput = gate.state()&0xF;
             int newInput = getInput(gate, 0xA);
-            int oldOutput = gate.state() >> 4;
+            int oldOutput = gate.state()>>4;
 
             if (newInput != oldInput)
                 if (stateInput != 0xA && newInput != 0 && newInput != state2())
@@ -197,7 +198,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 }
                 else
                 {
-                    gate.setState(oldOutput << 4 | newInput);
+                    gate.setState(oldOutput<<4|newInput);
                     gate.onInputChange();
                 }
         }
@@ -205,11 +206,11 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void scheduledTick(InstancedRsGatePart gate)
         {
-            int oldOutput = gate.state() >> 4;
+            int oldOutput = gate.state()>>4;
             int newOutput = calcOutput(gate);
             if (oldOutput != newOutput)
             {
-                gate.setState(gate.state() & 0xF | newOutput << 4);
+                gate.setState(gate.state()&0xF|newOutput<<4);
                 gate.onOutputChange(outputMask(gate.shape()));
             }
             onChange(gate);
@@ -217,10 +218,10 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
 
         public int calcOutput(SimpleGatePart gate)
         {
-            int input = gate.state() & 0xF;
+            int input = gate.state()&0xF;
             int stateInput = state2();
 
-            if ((gate.shape & 1) != 0)
+            if ((gate.shape&1) != 0)
             {// reverse
                 input = GatePart.flipMaskZ(input);
                 stateInput = GatePart.flipMaskZ(stateInput);
@@ -242,10 +243,10 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             }
 
             int output = GatePart.shiftMask(stateInput, 1);
-            if ((gate.shape & 2) == 0)
+            if ((gate.shape&2) == 0)
                 output |= stateInput;
 
-            if ((gate.shape & 1) != 0)// reverse
+            if ((gate.shape&1) != 0)// reverse
                 output = GatePart.flipMaskZ(output);
 
             return output;
@@ -287,16 +288,16 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void onChange(InstancedRsGatePart gate)
         {
-            int oldInput = gate.state() & 0xF;
+            int oldInput = gate.state()&0xF;
             int newInput = getInput(gate, 0xA);
-            int high = newInput & ~oldInput;
+            int high = newInput&~oldInput;
 
             if (high == 2 || high == 8)// one side went high (if both, double change so no change)
                 toggle(gate);
 
             if (oldInput != newInput)
             {
-                gate.setState(gate.state() & 0xF0 | newInput);
+                gate.setState(gate.state()&0xF0|newInput);
                 gate.onInputChange();
             }
         }
@@ -304,11 +305,11 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void scheduledTick(InstancedRsGatePart gate)
         {
-            int oldOutput = gate.state() >> 4;
+            int oldOutput = gate.state()>>4;
             int newOutput = state2 == 0 ? 1 : 4;
             if (oldOutput != newOutput)
             {
-                gate.setState(newOutput << 4 | gate.state() & 0xF);
+                gate.setState(newOutput<<4|gate.state()&0xF);
                 gate.onOutputChange(outputMask(5));
             }
             onChange(gate);
@@ -328,7 +329,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
 
         private void toggle(InstancedRsGatePart gate)
         {
-            setState2(state2 ^ 1);
+            setState2(state2^1);
             gate.scheduleTick(2);
             tickSound();
         }
@@ -348,7 +349,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         public void save(NBTTagCompound tag)
         {
             tag.setInteger("pmax", pointer_max);
-            tag.setLong("pelapsed", pointer_start < 0 ? pointer_start : gate.world().getTotalWorldTime() - pointer_start);
+            tag.setLong("pelapsed", pointer_start < 0 ? pointer_start : gate.world().getTotalWorldTime()-pointer_start);
         }
 
         @Override
@@ -357,7 +358,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             pointer_max = tag.getInteger("pmax");
             pointer_start = tag.getLong("pelapsed");
             if (pointer_start >= 0)
-                pointer_start = MultipartSaveLoad.loadingWorld().getTotalWorldTime() - pointer_start;
+                pointer_start = MultipartSaveLoad.loadingWorld().getTotalWorldTime()-pointer_start;
         }
 
         @Override
@@ -383,7 +384,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             {
                 pointer_start = packet.readInt();
                 if (pointer_start >= 0)
-                    pointer_start = gate.world().getTotalWorldTime() - pointer_start;
+                    pointer_start = gate.world().getTotalWorldTime()-pointer_start;
             }
         }
 
@@ -392,7 +393,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             if (pointer_start < 0)
                 return 0;
 
-            return (int) (gate.world().getTotalWorldTime() - pointer_start);
+            return (int)(gate.world().getTotalWorldTime()-pointer_start);
         }
 
         public void sendPointerMaxUpdate()
@@ -408,7 +409,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public int getTimerMax()
         {
-            return pointer_max + 2;
+            return pointer_max+2;
         }
 
         @Override
@@ -418,7 +419,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 t = 4;
             if (t != pointer_max)
             {
-                pointer_max = t - 2;
+                pointer_max = t-2;
                 sendPointerMaxUpdate();
             }
         }
@@ -427,7 +428,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         public void onTick(InstancedRsGatePart gate)
         {
             if (pointer_start >= 0)
-                if (gate.world().getTotalWorldTime() >= pointer_start + pointer_max)
+                if (gate.world().getTotalWorldTime() >= pointer_start+pointer_max)
                     pointerTick();
                 else if (pointer_start > gate.world().getTotalWorldTime())
                     pointer_start = gate.world().getTotalWorldTime();
@@ -462,7 +463,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             if (pointer_start < 0)
                 return 0;
 
-            return (pointerValue() + f) / pointer_max;
+            return (pointerValue()+f)/pointer_max;
         }
 
         @Override
@@ -507,7 +508,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void scheduledTick(InstancedRsGatePart gate)
         {
-            gate.setState(gate.state() & 0xF);
+            gate.setState(gate.state()&0xF);
             gate.onOutputChange(0xB);
             onChange(gate);
         }
@@ -515,11 +516,11 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void onChange(InstancedRsGatePart gate)
         {
-            int oldInput = gate.state() & 0xF;
+            int oldInput = gate.state()&0xF;
             int newInput = getInput(gate, 0xE);
             if (newInput != oldInput)
             {
-                gate.setState(gate.state() & 0xF0 | newInput);
+                gate.setState(gate.state()&0xF0|newInput);
                 gate.onInputChange();
             }
 
@@ -537,7 +538,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             if (!gate.world().isRemote)
             {
                 gate.scheduleTick(2);
-                gate.setState(0xB0 | gate.state() & 0xF);
+                gate.setState(0xB0|gate.state()&0xF);
                 gate.onOutputChange(0xB);
                 tickSound();
             }
@@ -555,12 +556,12 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
 
         public int state2()
         {
-            return state2 & 0xFF;
+            return state2&0xFF;
         }
 
         public void setState2(int i)
         {
-            state2 = (byte) i;
+            state2 = (byte)i;
         }
 
         @Override
@@ -608,7 +609,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public boolean cycleShape(InstancedRsGatePart gate)
         {
-            gate.setShape((gate.shape() + 1) % 2);
+            gate.setShape((gate.shape()+1)%2);
             return true;
         }
 
@@ -635,18 +636,18 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void onChange(InstancedRsGatePart gate)
         {
-            int oldInput = gate.state() & 0xF;
+            int oldInput = gate.state()&0xF;
             int newInput = getInput(gate, 0xE);
 
             if (oldInput != newInput)
             {
-                gate.setState(gate.state() & 0xF0 | newInput);
+                gate.setState(gate.state()&0xF0|newInput);
                 gate.onInputChange();
 
                 if (gate.shape() == 1)
                     newInput = GatePart.flipMaskZ(newInput);
 
-                if ((newInput & 4) != 0 && state2 == 0)
+                if ((newInput&4) != 0 && state2 == 0)
                 {
                     setState2(1);
                     sendState2Update();
@@ -654,7 +655,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 }
 
                 if (state2 != 0)
-                    if ((newInput & 6) != 0)
+                    if ((newInput&6) != 0)
                         resetPointer();
                     else
                         startPointer();
@@ -669,7 +670,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             {
                 setState2(0);
                 sendState2Update();
-                gate.setState(0x10 | gate.state() & 0xF);
+                gate.setState(0x10|gate.state()&0xF);
                 gate.onOutputChange(outputMask(gate.shape()));
                 gate.scheduleTick(2);
                 tickSound();
@@ -684,7 +685,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 output = 8;
             if (gate.shape() == 1)
                 output = GatePart.flipMaskZ(output);
-            gate.setState(output << 4 | gate.state() & 0xF);
+            gate.setState(output<<4|gate.state()&0xF);
             gate.onOutputChange(outputMask(gate.shape()));
         }
     }
@@ -768,13 +769,13 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         {
             if (!gate.world().isRemote)
             {
-                int oldOut = gate.state() >> 4;
-                int out = 1 << gate.world().getWorldTime() % pointer_max / (pointer_max / 4);
+                int oldOut = gate.state()>>4;
+                int out = 1<<gate.world().getWorldTime()%pointer_max/(pointer_max/4);
                 if (gate.shape() == 1)
                     out = GatePart.flipMaskZ(out);
                 if (oldOut != out)
                 {
-                    gate.setState(out << 4);
+                    gate.setState(out<<4);
                     gate.onOutputChange(0xF);
                     tickSound();
                 }
@@ -974,20 +975,20 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void onChange(InstancedRsGatePart gate)
         {
-            int oldInput = gate.state() & 0xF;
+            int oldInput = gate.state()&0xF;
             int newInput = getInput(gate, 0xA);
             if (gate.shape() == 1)
                 newInput = GatePart.flipMaskZ(newInput);
-            int high = newInput & ~oldInput;
-            if ((high & 2) != 0)
-                setCounterValue(gate, value + incr);
+            int high = newInput&~oldInput;
+            if ((high&2) != 0)
+                setCounterValue(gate, value+incr);
 
-            if ((high & 8) != 0)
-                setCounterValue(gate, value - decr);
+            if ((high&8) != 0)
+                setCounterValue(gate, value-decr);
 
             if (oldInput != newInput)
             {
-                gate.setState(gate.state() & 0xF0 | newInput);
+                gate.setState(gate.state()&0xF0|newInput);
                 gate.onInputChange();
                 gate.scheduleTick(2);
             }
@@ -1011,7 +1012,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
                 newOutput = 4;
 
             if (newOutput != oldOutput)
-                gate.setState(gate.state() & 0xF | newOutput << 4);
+                gate.setState(gate.state()&0xF|newOutput<<4);
 
             if (newOutput != oldOutput)
                 gate.onOutputChange(5);
@@ -1020,13 +1021,13 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public int outputMask(int shape)
         {
-            return 1 | 4;
+            return 1|4;
         }
 
         @Override
         public int inputMask(int shape)
         {
-            return 2 | 8;
+            return 2|8;
         }
 
         @Override
@@ -1053,21 +1054,21 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void onChange(InstancedRsGatePart gate)
         {
-            int oldInput = gate.state() & 0xF;
-            int newInput = getInput(gate, 2 | 4 | 8);
-            int high = newInput & ~oldInput;
+            int oldInput = gate.state()&0xF;
+            int newInput = getInput(gate, 2|4|8);
+            int high = newInput&~oldInput;
             if (oldInput != newInput)
             {
-                gate.setState(gate.state() & 0xF0 | newInput);
+                gate.setState(gate.state()&0xF0|newInput);
                 gate.onInputChange();
 
-                if ((newInput & 4) != 0)
+                if ((newInput&4) != 0)
                     off();
                 else
                 {
-                    if ((high & 2) != 0)
+                    if ((high&2) != 0)
                         setRight();
-                    if ((high & 8) != 0)
+                    if ((high&8) != 0)
                         setLeft();
                 }
 
@@ -1081,14 +1082,14 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         {
             if (!pulsing() && right() && left())
             {
-                gate.setState(gate.state() | 1 << 4);
+                gate.setState(gate.state()|1<<4);
                 gate.onOutputChange(1);
                 setPulsing();
                 gate.scheduleTick(2);
             }
             else if (pulsing())
             {
-                gate.setState(gate.state() & ~0x10);
+                gate.setState(gate.state()&~0x10);
                 gate.onOutputChange(1);
                 off();
             }
@@ -1096,23 +1097,23 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
 
         public boolean right()
         {
-            return (state2() & 1) != 0;
+            return (state2()&1) != 0;
         }
 
         public boolean left()
         {
-            return (state2() & 1 << 1) != 0;
+            return (state2()&1<<1) != 0;
         }
 
         public boolean pulsing()
         {
-            return (state2() & 1 << 2) != 0;
+            return (state2()&1<<2) != 0;
         }
 
         public void setPulsing()
         {
             int oldValue = state2();
-            setState2(state2() | 1 << 2);
+            setState2(state2()|1<<2);
             if (state2() != oldValue)
                 sendState2Update();
         }
@@ -1120,7 +1121,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         public void setRight()
         {
             int oldValue = state2();
-            setState2(state2() | 1);
+            setState2(state2()|1);
             if (state2() != oldValue)
                 sendState2Update();
         }
@@ -1128,7 +1129,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         public void setLeft()
         {
             int oldValue = state2();
-            setState2(state2() | 1 << 1);
+            setState2(state2()|1<<1);
             if (state2() != oldValue)
                 sendState2Update();
         }
@@ -1150,7 +1151,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public int inputMask(int shape)
         {
-            return 2 | 4 | 8;
+            return 2|4|8;
         }
     }
 
@@ -1165,12 +1166,12 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
 
         public int state2()
         {
-            return state2 & 0xFFFF;
+            return state2&0xFFFF;
         }
 
         public void setState2(int i)
         {
-            state2 = (short) i;
+            state2 = (short)i;
         }
 
         @Override
@@ -1195,7 +1196,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public boolean requireStrongInput(int r)
         {
-            return r % 2 == 1;
+            return r%2 == 1;
         }
 
         @Override
@@ -1208,13 +1209,13 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         public int getOutput(InstancedRsGatePart gate, int r)
         {
             if (r == 0)
-                return state2 & 0xF;
+                return state2&0xF;
             return 0;
         }
 
         public int getAnalogInput(int r)
         {
-            return (gate.getRedstoneInput(r) + 16) / 17;
+            return (gate.getRedstoneInput(r)+16)/17;
         }
 
         public int calcInputA()
@@ -1225,14 +1226,14 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             if (block != null)
             {
                 if (block.hasComparatorInputOverride())
-                    return block.getComparatorInputOverride(gate.world(), pos.x, pos.y, pos.z, absDir ^ 1);
+                    return block.getComparatorInputOverride(gate.world(), pos.x, pos.y, pos.z, absDir^1);
 
                 if (block.isNormalCube(gate.world(), pos.x, pos.y, pos.z))
                 {
                     pos.offset(absDir);
                     block = gate.world().getBlock(pos.x, pos.y, pos.z);
                     if (block != null && block.hasComparatorInputOverride())
-                        return block.getComparatorInputOverride(gate.world(), pos.x, pos.y, pos.z, absDir ^ 1);
+                        return block.getComparatorInputOverride(gate.world(), pos.x, pos.y, pos.z, absDir^1);
                 }
             }
 
@@ -1241,15 +1242,15 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
 
         public int calcInput()
         {
-            return getAnalogInput(1) << 4 | calcInputA() << 8 | getAnalogInput(3) << 12;
+            return getAnalogInput(1)<<4|calcInputA()<<8|getAnalogInput(3)<<12;
         }
 
         public static int digitize(int analog)
         {
             int digital = 0;
             for (int i = 0; i < 4; i++)
-                if ((analog >> i * 4 & 0xF) > 0)
-                    digital |= 1 << i;
+                if ((analog>>i*4&0xF) > 0)
+                    digital |= 1<<i;
 
             return digital;
         }
@@ -1257,17 +1258,17 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         @Override
         public void onChange(InstancedRsGatePart gate)
         {
-            int oldInput = state2 & 0xFFF0;
+            int oldInput = state2&0xFFF0;
             int newInput = calcInput();
 
             if (oldInput != newInput)
             {
-                setState2(state2 & 0xF | newInput);
-                gate.setState(digitize(newInput | calcOutput()) | gate.state & 0xF0);
+                setState2(state2&0xF|newInput);
+                gate.setState(digitize(newInput|calcOutput())|gate.state&0xF0);
                 gate.onInputChange();
             }
 
-            if ((state2 & 0xF) != calcOutput())
+            if ((state2&0xF) != calcOutput())
                 gate.scheduleTick(2);
         }
 
@@ -1276,29 +1277,29 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
             if (gate.shape() == 0)
                 return inputA() >= inputB() ? inputA() : 0;
 
-            return Math.max(inputA() - inputB(), 0);
+            return Math.max(inputA()-inputB(), 0);
         }
 
         public int inputA()
         {
-            return state2 >> 8 & 0xF;
+            return state2>>8&0xF;
         }
 
         public int inputB()
         {
-            return Math.max(state2 >> 4 & 0xF, state2 >> 12 & 0xF);
+            return Math.max(state2>>4&0xF, state2>>12&0xF);
         }
 
         @Override
         public void scheduledTick(InstancedRsGatePart gate)
         {
-            int oldOutput = state2 & 0xF;
+            int oldOutput = state2&0xF;
             int newOutput = calcOutput();
 
             if (oldOutput != newOutput)
             {
-                setState2(state2 & 0xFFF0 | newOutput);
-                gate.setState(gate.state() & 0xF | digitize(newOutput) << 4);
+                setState2(state2&0xFFF0|newOutput);
+                gate.setState(gate.state()&0xF|digitize(newOutput)<<4);
                 gate.onOutputChange(1);
             }
         }

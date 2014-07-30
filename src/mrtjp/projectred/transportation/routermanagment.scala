@@ -122,13 +122,13 @@ class Path(val filters:Set[PathFilter])
     }
 
     def allowItem(item:ItemKey) = filters.forall(f => f.filterExclude != f.filterItems.contains(item))
-    val allowRouting = filters.forall(f => f.allowRouting)
-    val allowBroadcast = filters.forall(f => f.allowBroadcast)
-    val allowCrafting = filters.forall(f => f.allowCrafting)
-    val allowController = filters.forall(f => f.allowController)
+    val allowRouting = filters.forall(_.allowRouting)
+    val allowBroadcast = filters.forall(_.allowBroadcast)
+    val allowCrafting = filters.forall(_.allowCrafting)
+    val allowController = filters.forall(_.allowController)
 
     val pathFlags = filters.foldLeft(0x7)((b, f) => f.pathFlags&b)
-    val emptyFilter = !filters.exists(f => f != PathFilter.default)
+    val emptyFilter = !filters.exists(_ != PathFilter.default)
 
     val flagRouteTo = (pathFlags&0x1) != 0
     val flagRouteFrom = (pathFlags&0x2) != 0
@@ -277,7 +277,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
 
         val finder = new LSPathFinder2(parent, Configurator.maxDetectionCount, getParent.getContainer.world)
         finder.start()
-        val newAdjacent = finder.foundRouters.filter(p => p.end.isLoaded)
+        val newAdjacent = finder.foundRouters.filter(_.end.isLoaded)
         val newController = finder.foundController
 
         adjacentChanged = adjacentLinks != newAdjacent || adjacentController != newController
@@ -471,7 +471,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         for (p <- routersByCost2) if (p != null) label
         {
             val firstHop = p.start
-            val rootHop = adjacentLinks.find(_.end == firstHop).getOrElse(null)
+            val rootHop = adjacentLinks.find(_.end == firstHop).orNull
 
             if (rootHop == null) break()
 
@@ -521,7 +521,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         valid.length == 1 && valid(0).controller.getPower > 0 //no controller conflict
     }
 
-    def controllerConflict = controllerTable.filter(_.allowController).length > 1
+    def controllerConflict = controllerTable.count(_.allowController) > 1
 
     def getController =
     {
@@ -533,6 +533,8 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
     override def hashCode = IPAddress
 
     override def compare(that:Router) = IPAddress-that.getIPAddress
+
+    override def toString = "Router(["+IPAddress+"] "+ID+")"
 }
 
 object NullController extends TControllerLayer

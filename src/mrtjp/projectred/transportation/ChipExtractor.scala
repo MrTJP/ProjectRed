@@ -12,6 +12,8 @@ class ChipExtractor extends RoutingChipset with TChipFilter with TChipOrientatio
 
     private def itemsToExtract = 8+upgradeBus.RLatency
 
+    def powerPerOp = 5.0D
+
     override def update()
     {
         super.update()
@@ -44,6 +46,8 @@ class ChipExtractor extends RoutingChipset with TChipFilter with TChipOrientatio
                         var toExtract = Math.min(leftInRun, stackSize)
                         toExtract = Math.min(toExtract, stackKey.getMaxStackSize)
                         if (s.itemCount > 0) toExtract = Math.min(toExtract, s.itemCount)
+
+                        while (!controller.usePower(powerPerOp*toExtract) && toExtract > 0) toExtract -= 1
 
                         if (toExtract <= 0) return
 

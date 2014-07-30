@@ -78,6 +78,7 @@ object GuiIDs //hardcoded list to prevent server/client mismatch
     val interfacePipe = 5
     val firewallPipe = 6
     val routingChips = 7
+    val routingController = 8
 }
 
 trait TGuiBuilder

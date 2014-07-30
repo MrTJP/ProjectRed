@@ -18,7 +18,6 @@ object ProjectRedExpansion
     val tabExpansion = new CreativeTabs("expansion")
     {
         override def getIconItemStack = new ItemStack(Blocks.hopper)
-
         override def getTabIconItem = getIconItemStack.getItem
     }
 

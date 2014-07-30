@@ -170,7 +170,7 @@ object ItemRoutingChip
 
 object RoutingChipDefs extends ItemDefinition
 {
-    override type EnumVal = ChipVal
+    type EnumVal = ChipVal
     override def getItem = ProjectRedTransportation.itemRoutingChip
 
     val ITEMRESPONDER = new ChipVal("responder", new ChipItemResponder)

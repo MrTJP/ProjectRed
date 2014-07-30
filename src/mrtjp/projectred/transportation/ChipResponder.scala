@@ -1,8 +1,9 @@
 package mrtjp.projectred.transportation
 
-import scala.collection.mutable.ListBuffer
 import mrtjp.projectred.core.libmc.ItemKey
 import mrtjp.projectred.core.libmc.inventory.InvWrapper
+
+import scala.collection.mutable.ListBuffer
 
 class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriority
 {
@@ -10,21 +11,20 @@ class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriori
 
     def prefScale = 2+upgradeBus.LLatency
 
+    def powerPerOp = 1.0D
+
     override def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse =
     {
         val real = invProvider.getInventory
         val side = invProvider.getInterfacedSide
 
-        if (real==null || side<0) return null
+        if (real == null || side < 0) return null
 
-        if (SyncResponse.isPreferredOver(sendPriority.ordinal, preference, rival))
+        if (SyncResponse.isPreferredOver(sendPriority.ordinal, preference, rival) && filterAllows(item) && controller.usePower(powerPerOp))
         {
-            if (filterAllows(item))
-            {
-                val inv = InvWrapper.wrap(real).setSlotsFromSide(side)
-                val room = inv.getSpaceForItem(item)
-                if (room > 0) return new SyncResponse().setPriority(sendPriority).setCustomPriority(preference).setItemCount(room)
-            }
+            val inv = InvWrapper.wrap(real).setSlotsFromSide(side)
+            val room = inv.getSpaceForItem(item)
+            if (room > 0) return new SyncResponse().setPriority(sendPriority).setCustomPriority(preference).setItemCount(room)
         }
 
         null

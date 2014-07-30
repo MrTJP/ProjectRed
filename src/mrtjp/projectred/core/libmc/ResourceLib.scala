@@ -14,6 +14,8 @@ object ResourceLib
     val guiChipUpgrade = registerPR("textures/gui/chipupgradecontainer.png")
     val guiPipeInterface = registerPR("textures/gui/guiinterfacepipe.png")
     val guiPipeCrafting = registerPR("textures/gui/guicraftingpipe.png")
+    val guiFurnace = registerPR("textures/gui/furnace.png")
+    val guiRouterControl = registerPR("textures/gui/rcontr.png")
 
     val soundButton = register("gui.button.press")
 

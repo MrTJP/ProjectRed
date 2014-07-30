@@ -1,11 +1,13 @@
 package mrtjp.projectred.transportation
 
-import collection.mutable.{HashMap => MHashMap}
 import java.util.{PriorityQueue => JPriorityQueue}
+
+import mrtjp.projectred.core.lib.{HashPair2, Pair2}
+import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack}
 import net.minecraft.item.ItemStack
+
 import scala.collection.immutable.{HashMap, TreeSet}
-import mrtjp.projectred.core.lib.{LabelBreaks, Pair2, HashPair2}
-import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
+import scala.collection.mutable.{HashMap => MHashMap}
 
 object RequestFlags extends Enumeration
 {
@@ -32,7 +34,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
     private var subRequests = Vector[RequestBranchNode]()
 
     private var promises = Vector[DeliveryPromise]()
-    private var excessPromises = Vector[ExcessPromise]()
+    private var excessPromises = Vector[DeliveryPromise]()
 
     private var usedCrafters = TreeSet[CraftingPromise]()
     var parityBranch:CraftingPromise = null
@@ -58,14 +60,13 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
 
     def addPromise(promise:DeliveryPromise)
     {
-        if (promise.thePackage != getRequestedPackage) return
+        assert(promise.item == getRequestedPackage)
 
         if (promise.size > getMissingCount)
         {
             val more = promise.size-getMissingCount
             promise.size = getMissingCount
-            val excess = new ExcessPromise
-            excess.setPackage(promise.thePackage).setSize(more).setSender(promise.sender)
+            val excess = new DeliveryPromise(promise.item, more, promise.from, true)
             excessPromises :+= excess
         }
 
@@ -102,11 +103,11 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         val all = root.gatherExcessFor(getRequestedPackage)
         def locate()
         {
-            import LabelBreaks._
+            import mrtjp.projectred.core.lib.LabelBreaks._
             for (excess <- all) if (isDone) return else if (excess.size > 0) label
             {
-                val pathsToThis = requester.getRouter.getRouteTable(excess.sender.getRouter.getIPAddress)
-                val pathsFromThat = excess.sender.getRouter.getRouteTable(requester.getRouter.getIPAddress)
+                val pathsToThis = requester.getRouter.getRouteTable(excess.from.getRouter.getIPAddress)
+                val pathsFromThat = excess.from.getRouter.getRouteTable(requester.getRouter.getIPAddress)
                 for (from <- pathsFromThat) if (from != null && from.flagRouteTo)
                     for (to <- pathsToThis) if (to != null && to.flagRouteFrom)
                     {
@@ -147,7 +148,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         var priority = 0
         var lastCrafter:CraftingPromise = null
 
-        import LabelBreaks._
+        import mrtjp.projectred.core.lib.LabelBreaks._
         label("outer")
         {
             while (!finished) label
@@ -160,9 +161,9 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
 
                 var itemsNeeded = getMissingCount
 
-                if (lastCrafter != null && (balanced.isEmpty || priority == lastCrafter.getPriority))
+                if (lastCrafter != null && (balanced.isEmpty || priority == lastCrafter.priority))
                 {
-                    priority = lastCrafter.getPriority
+                    priority = lastCrafter.priority
                     val crafter = lastCrafter
                     lastCrafter = null
                     if (recurse_IsCrafterUsed(crafter)) break("outer")
@@ -182,7 +183,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                 else
                 {
                     if (!balanced.isEmpty) unbalanced :+= balanced.poll
-                    while (!unbalanced.isEmpty && itemsNeeded > 0)
+                    while (unbalanced.nonEmpty && itemsNeeded > 0)
                     {
                         while (!balanced.isEmpty && balanced.peek.toDo <= unbalanced(0).toDo)
                             unbalanced :+= balanced.poll
@@ -204,7 +205,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
 
                 itemsNeeded = getMissingCount
                 if (itemsNeeded <= 0) break("outer")
-                if (!unbalanced.isEmpty) finished = false
+                if (unbalanced.nonEmpty) finished = false
             }
         }
 
@@ -224,12 +225,12 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
 
     protected def recurse_RemoveSubPromisses()
     {
-        promises.foreach(root.promiseAdded)
+        promises.foreach(root.promiseRemoved)
         subRequests.foreach(_.recurse_RemoveSubPromisses())
     }
     protected def recurse_GetCrafterItem(crafter:IWorldCrafter):ItemKey =
     {
-        usedCrafters.find(_.getCrafter == crafter) match
+        usedCrafters.find(_.crafter == crafter) match
         {
             case Some(c) => c.getResultItem
             case None if parent != null => parent.recurse_GetCrafterItem(crafter)
@@ -241,28 +242,28 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         if (usedCrafters.contains(crafter)) true
         else parent != null && parent.recurse_IsCrafterUsed(crafter)
     }
-    protected def recurse_GatherExcess(item:ItemKey, excessMap:MHashMap[IWorldBroadcaster, Vector[ExcessPromise]])
+    protected def recurse_GatherExcess(item:ItemKey, excessMap:MHashMap[IWorldBroadcaster, Vector[DeliveryPromise]])
     {
-        for (excess <- excessPromises) if (excess.thePackage == item)
+        for (excess <- excessPromises) if (excess.item == item)
         {
-            var prev = excessMap.getOrElse(excess.sender, Vector[ExcessPromise]())
+            var prev = excessMap.getOrElse(excess.from, Vector[DeliveryPromise]())
             prev :+= excess.copy
-            excessMap += excess.sender -> prev
+            excessMap += excess.from -> prev
         }
         for (subNode <- subRequests) subNode.recurse_GatherExcess(item, excessMap)
     }
-    protected def recurse_RemoveUnusableExcess(item:ItemKey, excessMap:MHashMap[IWorldBroadcaster, Vector[ExcessPromise]])
+    protected def recurse_RemoveUnusableExcess(item:ItemKey, excessMap:MHashMap[IWorldBroadcaster, Vector[DeliveryPromise]])
     {
-        for (promise <- promises) if (promise.thePackage == item && promise.isInstanceOf[ExcessPromise])
+        for (promise <- promises) if (promise.item == item && promise.isInstanceOf[DeliveryPromise])
         {
-            val epromise = promise.asInstanceOf[ExcessPromise]
+            val epromise = promise.asInstanceOf[DeliveryPromise]
             if (!epromise.used)
             {
                 var usedcount = epromise.size
-                var extras = excessMap.getOrElse(epromise.sender, null)
+                var extras = excessMap.getOrElse(epromise.from, null)
                 if (extras != null)
                 {
-                    var toRem = Vector[ExcessPromise]()
+                    var toRem = Vector[DeliveryPromise]()
                     def remove()
                     {
                         for (e <- extras)
@@ -281,10 +282,9 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                     }
                     remove()
                     extras = extras.filterNot(e => toRem.contains(e))
-                    excessMap += epromise.sender -> extras
+                    excessMap += epromise.from -> extras
                 }
             }
-
         }
         for (subNode <- subRequests) subNode.recurse_RemoveUnusableExcess(item, excessMap)
     }
@@ -292,8 +292,8 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
     def recurse_StartDelivery()
     {
         subRequests.foreach(_.recurse_StartDelivery())
-        for (p <- promises) p.sender.deliverPromises(p, requester)
-        for (p <- excessPromises) p.sender match
+        for (p <- promises) p.from.deliverPromises(p, requester)
+        for (p <- excessPromises) p.from match
         {
             case wc:IWorldCrafter => wc.registerExcess(p)
             case _ =>
@@ -329,7 +329,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
     def recurse_GatherStatisticsUsed(map:MHashMap[ItemKey, Int])
     {
         var thisUsed = 0
-        for (p <- promises) if (!p.sender.isInstanceOf[IWorldCrafter]) thisUsed += p.size
+        for (p <- promises) if (!p.from.isInstanceOf[IWorldCrafter]) thisUsed += p.size
         if (thisUsed > 0)
         {
             val item = getRequestedPackage
@@ -354,25 +354,25 @@ class RequestRoot(thePackage:ItemKeyStack, requester:IWorldRequester, opt:Reques
 
     def promiseAdded(p:DeliveryPromise)
     {
-        val key = new HashPair2(p.sender, p.thePackage)
+        val key = new HashPair2(p.from, p.item)
         tableOfPromises += key -> (getExistingPromisesFor(key)+p.size)
     }
 
     def gatherExcessFor(item:ItemKey) =
     {
-        val excessMap = new MHashMap[IWorldBroadcaster, Vector[ExcessPromise]]
+        val excessMap = new MHashMap[IWorldBroadcaster, Vector[DeliveryPromise]]
 
         recurse_GatherExcess(item, excessMap)
         recurse_RemoveUnusableExcess(item, excessMap)
 
-        var all = Vector.newBuilder[ExcessPromise]
+        var all = Vector.newBuilder[DeliveryPromise]
         excessMap.foreach(all ++= _._2)
         all.result()
     }
 
     def promiseRemoved(promise:DeliveryPromise)
     {
-        val key = new HashPair2(promise.sender, promise.thePackage)
+        val key = new HashPair2(promise.from, promise.item)
         val newCount = getExistingPromisesFor(key)-promise.size
         if (newCount <= 0) tableOfPromises = tableOfPromises.filterNot(_._1 == key)
         else tableOfPromises += key -> newCount
@@ -439,64 +439,14 @@ class PathOrdering(distanceWeight:Double) extends Ordering[StartEndPath]
     }
 }
 
-class DeliveryPromise
+class DeliveryPromise(var item:ItemKey, var size:Int, var from:IWorldBroadcaster, var isExcess:Boolean = false, var used:Boolean = false)
 {
-    var thePackage:ItemKey = null
-    var size = 0
-    var sender:IWorldBroadcaster = null
-
-    def setPackage(thePackage:ItemKey) =
-    {
-        this.thePackage = thePackage
-        this
-    }
-
-    def setSize(size:Int) =
-    {
-        this.size = size
-        this
-    }
-
-    def setSender(sender:IWorldBroadcaster) =
-    {
-        this.sender = sender
-        this
-    }
-
-    def copy =
-    {
-        val p = new DeliveryPromise
-        p.setPackage(thePackage).setSize(size).setSender(sender)
-        p
-    }
-}
-
-class ExcessPromise extends DeliveryPromise
-{
-    var used = false
-
-    def setUsed(flag:Boolean) =
-    {
-        used = flag
-        this
-    }
-
-    override def copy =
-    {
-        val p = new ExcessPromise
-        p.setPackage(thePackage).setSize(size).setSender(sender)
-        p.setUsed(used)
-        p
-    }
+    def copy = new DeliveryPromise(item, size, from, isExcess, used)
 }
 
 class CraftingPromise(val result:ItemKeyStack, val crafter:IWorldCrafter, val priority:Int) extends Ordered[CraftingPromise]
 {
     var ingredients = Vector[Pair2[ItemKeyStack, IWorldRequester]]()
-
-    def getCrafter = crafter
-
-    def getPriority = priority
 
     def addIngredient(ingredient:ItemKeyStack, crafter:IWorldRequester):CraftingPromise =
     {
@@ -509,12 +459,7 @@ class CraftingPromise(val result:ItemKeyStack, val crafter:IWorldCrafter, val pr
         this
     }
 
-    def getScaledPromise(sets:Int) =
-    {
-        val p = new DeliveryPromise
-        p.setPackage(result.key.copy).setSize(result.stackSize*sets).setSender(crafter)
-        p
-    }
+    def getScaledPromise(sets:Int) = new DeliveryPromise(result.key.copy, result.stackSize*sets, crafter)
 
     def getScaledIngredients(sets:Int) =
     {
@@ -545,7 +490,7 @@ class CraftingInitializer(crafter:CraftingPromise, maxToCraft:Int, branch:Reques
 {
     val setSize = crafter.getSizeForSet
     val maxSetsAvailable = (branch.getMissingCount+setSize-1)/setSize
-    val originalToDo = crafter.getCrafter.itemsToProcess
+    val originalToDo = crafter.crafter.itemsToProcess
 
     var setsRequested = 0
 

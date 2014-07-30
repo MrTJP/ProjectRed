@@ -1,13 +1,15 @@
 package mrtjp.projectred.expansion
 
 import mrtjp.projectred.ProjectRedExpansion
+import mrtjp.projectred.core.libmc.inventory.{InvWrapper, SimpleInventory, Slot2}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
-import mrtjp.projectred.core.libmc.inventory.{SimpleInventory, Slot2, InvWrapper}
 
 class TileFurnace extends TileMachineWorking
 {
     def getBlock = ProjectRedExpansion.machine1
+
+    override def openGui(player:EntityPlayer){}
 
     def createContainer(player:EntityPlayer) = new WorkingMachineContainer(player, this)
     {
@@ -15,8 +17,6 @@ class TileFurnace extends TileMachineWorking
         this + new Slot2(TileFurnace.this, 0, 44, 37)
         this + new Slot2(TileFurnace.this, 1, 104, 37).setPlace(false)
     }
-
-    def guiID = MachineGuiFactory.id_furnace
 
     def getAccessibleSlotsFromSide(var1:Int) = var1 match
     {
