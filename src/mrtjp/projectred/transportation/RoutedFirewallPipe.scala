@@ -13,10 +13,7 @@ class RoutedFirewallPipe extends RoutedJunctionPipePart
 {
     var filt = new SimpleInventory(7*5, "filt", 1)
     {
-        override def markDirty()
-        {
-            buildItemSet()
-        }
+        override def markDirty(){buildItemSet()}
     }
     var filtExclude = true
 
@@ -40,6 +37,7 @@ class RoutedFirewallPipe extends RoutedJunctionPipePart
     {
         super.load(tag)
         filt.load(tag)
+        buildItemSet()
         filtExclude = tag.getBoolean("excl")
         allowRoute = tag.getBoolean("route")
         allowBroadcast = tag.getBoolean("broad")
