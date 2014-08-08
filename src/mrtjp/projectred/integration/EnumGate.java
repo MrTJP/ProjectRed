@@ -33,7 +33,8 @@ public enum EnumGate
     BufferCell("Buffer Cell", "pr_agate"),
     Comparator("Comparator", "pr_tgate"),
     ANDCell("AND Cell", "pr_rgate"),
-    BusRandomizer("Bus Randomizer", "pr_bgate");
+    BusRandomizer("Bus Randomizer", "pr_bgate"),
+    BusConverter("Bus Converter", "pr_bgate");
 
     public static EnumGate[] VALID_GATES = values();
 

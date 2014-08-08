@@ -48,7 +48,8 @@ public class RenderGate
             new BufferCell(),
             new Comparator(),
             new ANDCell(),
-            new BusRandomizer()
+            new BusRandomizer(),
+            new BusConverter(),
     };
 
     public static void registerIcons(IIconRegister r)
@@ -1417,6 +1418,41 @@ public class RenderGate
         {
             super.renderModels(t, orient);
             for (ComponentModel m : (type == 0 ? wires1 : wires2)) m.renderModel(t, orient);
+        }
+    }
+
+    public static class BusConverter extends GateRenderer<BundledGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("BUSCONV", 3);
+        BusConvCableModel cable = new BusConvCableModel();
+        SignalBarModel bar = new SignalBarModel(8, 8);
+
+        public BusConverter()
+        {
+            models.add(cable);
+            models.add(bar);
+            models.addAll(Arrays.asList(wires));
+        }
+
+        @Override
+        public void prepare(BundledGatePart part)
+        {
+            BundledGateLogic.BusConverter logic = (BundledGateLogic.BusConverter)part.getLogic();
+            wires[0].on = (part.state()&0x20) != 0;
+            wires[1].on = (part.state()&0x80) != 0;
+            wires[2].on = (logic.rsIn|logic.rsOut) != 0;
+            bar.inverted = part.shape() != 0;
+            bar.signal = logic.rsIn|logic.rsOut;
+        }
+
+        @Override
+        public void prepareInv()
+        {
+            wires[0].on = false;
+            wires[1].on = false;
+            wires[2].on = false;
+            bar.signal = 0;
+            bar.inverted = false;
         }
     }
 }

@@ -477,25 +477,21 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         @Override
         public void onChange(BundledGatePart gate)
         {
-            if (gate.shape() == 0)
+            boolean changed = false;
+
+            int oldRSIn = rsIn;
+            rsIn = gate.shape() == 0 ? gate.getRedstoneInput(2)/17 : 0;
+            if (oldRSIn != rsIn) changed = true;
+
+            int oldBIn = bIn;
+            bIn = gate.shape() == 0 ? 0 : packDigital(gate.getBundledInput(0));
+            if (oldBIn != bIn) changed = true;
+
+            if (changed)
             {
-                int oldInput = rsIn;
-                rsIn = gate.getRedstoneInput(2)/17;
-                if (oldInput != rsIn)
-                {
-                    gate.onInputChange();
-                    gate.scheduleTick(2);
-                }
-            }
-            else
-            {
-                int oldInput = bIn;
-                bIn = packDigital(gate.getBundledInput(0));
-                if (oldInput != bIn)
-                {
-                    gate.onInputChange();
-                    gate.scheduleTick(2);
-                }
+                gate.onInputChange();
+                gate.scheduleTick(2);
+                sendClientUpdate();
             }
         }
 
@@ -504,18 +500,13 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         {
             int changeMask = 0;
 
-            if (gate.shape() == 0)
-            {
-                int oldOut = bOut;
-                setBOut(1<<rsIn);
-                if (oldOut != bOut) changeMask = 1;
-            }
-            else
-            {
-                int oldOut = rsOut;
-                rsOut = mostSignificantBit(bIn);
-                if (rsOut != oldOut) changeMask = 4;
-            }
+            int oldBOut = bOut;
+            setBOut(gate.shape() == 0 ? rsIn > 0 ? 1<<rsIn : 0 : 0);
+            if (oldBOut != bOut) changeMask |= 1;
+
+            int oldRSOut = rsOut;
+            rsOut = gate.shape() == 0 ? 0 : mostSignificantBit(bIn);
+            if (rsOut != oldRSOut) changeMask |= 4;
 
             int oldOut2 = gate.state()>>4;
             int newOut2 = (gate.shape() == 0 ? rsIn : bIn) != 0 ? 10 : 0;
@@ -525,14 +516,18 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
                 changeMask |= 10;
             }
 
-            if (changeMask != 0) gate.onOutputChange(changeMask);
+            if (changeMask != 0)
+            {
+                gate.onOutputChange(changeMask);
+                sendClientUpdate();
+            }
             onChange(gate);
         }
 
         @Override
         public int getOutput(BundledGatePart gate, int r)
         {
-            return gate.shape() == 1 && r == 2 ? rsOut : (gate.state()&0x10<<r) != 0 ? 15 : 0;
+            return gate.shape() != 0 && r == 2 ? rsOut : (gate.state()&0x10<<r) != 0 ? 15 : 0;
         }
 
         @Override
@@ -558,48 +553,45 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
             return 0;
         }
 
-        public int packBData(){ return bIn<<16|bOut; }
-        public void unpackBData(int pack)
+        public int packClientData()
         {
-            bIn = pack>>16;
-            bOut = pack&0xFFFF;
+            //bbbb BBBB rrrr RRRR
+            //R - rsIn
+            //r - rsOut
+            //B - bundled in
+            //b - bunbled out
+            return rsIn|rsOut<<4|mostSignificantBit(bIn)<<8|mostSignificantBit(bOut)<<12;
         }
 
-        public int packData(){ return rsIn<<4|rsOut; }
-        public void unpackData(int pack)
+        public void unpackClientData(int data)
         {
-            rsIn = pack>>4;
-            rsOut = pack&0xF;
+            rsIn = data&0xF;
+            rsOut = data>>4&0xF;
+            bIn = 1<<(data>>8&0xF);
+            setBOut(1<<(data>>12&0xF));
         }
 
-        public void sendBUpdate()
+        public void sendClientUpdate()
         {
-            gate.getWriteStream(11).writeInt(packBData());
-        }
-
-        public void sendUpdate()
-        {
-            gate.getWriteStream(12).writeShort(packData());
+            gate.getWriteStream(11).writeShort(packClientData());
         }
 
         @Override
         public void readDesc(MCDataInput packet)
         {
-            unpackBData(packet.readInt());
-            unpackData(packet.readUShort());
+            unpackClientData(packet.readUShort());
         }
 
         @Override
         public void writeDesc(MCDataOutput packet)
         {
-            packet.writeInt(packBData()).writeShort(packData());
+            packet.writeShort(packClientData());
         }
 
         @Override
         public void read(MCDataInput packet, int key)
         {
-            if (key == 11) unpackBData(packet.readInt());
-            else if (key == 12) unpackData(packet.readUShort());
+            if (key == 11) unpackClientData(packet.readUShort());
         }
     }
 }

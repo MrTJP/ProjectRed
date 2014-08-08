@@ -67,7 +67,7 @@ item.projectred.core.datacard.name=Data Card
 
 
 itemGroup.expansion=Project Red: Expansion
-
+tile.projectred.expansion.machine2|0.name=Routing Network Controller
 
 
 itemGroup.transport=Project Red: Transportation
@@ -398,6 +398,7 @@ item.projectred.integration.gate|25.name=Buffer Cell
 item.projectred.integration.gate|26.name=Comparator
 item.projectred.integration.gate|27.name=AND Cell
 item.projectred.integration.gate|28.name=Bus Randomizer
+item.projectred.integration.gate|29.name=Bus Converter
 
 
 

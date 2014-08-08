@@ -34,6 +34,8 @@ public class ComponentStore
     public static CCModel lightPanel1 = loadModel("array/lightpanel1");
     public static CCModel lightPanel2 = loadModel("array/lightpanel2");
     public static CCModel busRand = loadModel("array/busrand");
+    public static CCModel busConv = loadModel("array/busconv");
+    public static CCModel signalPanel = loadModel("array/signalpanel");
 
     public static CCModel nullCellWireBottom = loadModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5));
     public static CCModel nullCellWireTop = loadModel("array/nullcelltopwire").apply(new Translation(0.5, 0, 0.5));
@@ -60,6 +62,7 @@ public class ComponentStore
     public static IIcon busXcvrIcon;
     public static IIcon cellIcon;
     public static IIcon busRandIcon;
+    public static IIcon busConvIcon;
 
     public static Map<String, CCModel> loadModels(String name)
     {
@@ -132,6 +135,7 @@ public class ComponentStore
         busXcvrIcon = r.registerIcon(baseTex+"busxcvr");
         cellIcon = r.registerIcon(baseTex+"cells");
         busRandIcon = r.registerIcon(baseTex+"busrand");
+        busConvIcon = r.registerIcon(baseTex+"busconv");
 
         RenderGate.registerIcons(r);
     }
@@ -821,6 +825,20 @@ public class ComponentStore
         }
     }
 
+    public static class BusConvCableModel extends BundledCableModel
+    {
+        public BusConvCableModel()
+        {
+            super(busConv, new Vector3(8, 0, 8), 7/32D, 12/32D);
+        }
+
+        @Override
+        public UVTransformation getUVT()
+        {
+            return new IconTransformation(busConvIcon);
+        }
+    }
+
     public static class SigLightPanelModel extends ComponentModel
     {
         public static CCModel[] displayModels = new CCModel[16];
@@ -892,6 +910,81 @@ public class ComponentStore
             for (int i = 0; i < 16; i++)
                 displayModels[i].render(displayT, icont, PlanarLightModel.standardLightModel,
                         ColourMultiplier.instance((signal&1<<i) != 0 ? onColour : (disableMask&1<<i) != 0 ? disableColour : offColour));
+        }
+    }
+
+    public static class SignalBarModel extends ComponentModel
+    {
+        public CCModel[] models;
+        public static CCModel[] bars;
+        public static CCModel[] barsInv;
+        public static CCModel barsBg;
+        public static CCModel barsBgInv;
+        public Vector3 pos;
+
+        public int signal;
+        public boolean inverted;
+
+        static
+        {
+            buildBars();
+        }
+
+        public static void buildBars()
+        {
+            bars = new CCModel[16];
+            barsInv = new CCModel[16];
+            for (int i = 1; i < 17; i++)
+            {
+                CCModel bar = CCModel.quadModel(4);
+                double y = 12/32D+0.0001D;
+                bar.verts[0] = new Vertex5(0, y, 0, 0, 0);
+                bar.verts[1] = new Vertex5(0, y, i, 0, i);
+                bar.verts[2] = new Vertex5(1, y, i, 2, i);
+                bar.verts[3] = new Vertex5(1, y, 0, 2, 0);
+                bar.apply(new UVTranslation(22, 0));
+                bar.apply(new UVScale(1/32D, 1/128D));
+                bar.shrinkUVs(0.0005);
+
+                CCModel bar1 = bar.backfacedCopy();
+                bar1.apply(new Translation(-0.5, 0, -12));
+                bar1.apply(new Scale(1/16D, 1, -1/64D));
+                bar1.computeNormals();
+                CCModel bar2 = bar.copy();
+                bar2.apply(new Translation(-0.5, 0, -1.25*4));
+                bar2.apply(new Scale(1/16D, 1, 1/64D));
+                bar2.computeNormals();
+
+                bars[i-1] = bar1;
+                barsInv[i-1] = bar2;
+            }
+
+            Transformation t = new Scale(4/8D+1, 0.9999D, 4/32D+1);
+            barsBg = bars[15].copy().apply(t);
+            barsBgInv = barsInv[15].copy().apply(t);
+        }
+
+        public SignalBarModel(double x, double z)
+        {
+            pos = new Vector3(x, 0, z).multiply(1/16D);
+
+            CCModel base = signalPanel.copy().apply(pos.translation());
+            this.models = new CCModel[48];
+            for (int i = 0; i < 48; i++) models[i] = bakeCopy(base, i);
+        }
+
+        @Override
+        public void renderModel(Transformation t, int orient)
+        {
+            IconTransformation iconT = new IconTransformation(busConvIcon);
+            models[orient%24].render(t, iconT);
+            Transformation position = new TransformationList(pos.translation()).with(orientT(orient%24)).with(t);
+
+            (inverted?barsBgInv:barsBg).render(position, iconT, PlanarLightModel.standardLightModel,
+                    ColourMultiplier.instance(0x535353FF));
+
+            (inverted?barsInv:bars)[Math.min(signal, 15)].render(position, iconT, PlanarLightModel.standardLightModel,
+                ColourMultiplier.instance(0xEC0000FF));
         }
     }
 
