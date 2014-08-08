@@ -22,6 +22,7 @@ object TransportationRecipes
         initPipeRecipes()
         initChipRecipes()
         initUpgradeRecipes()
+        initMiscRecipes()
     }
 
     private def initPipeRecipes()
@@ -217,6 +218,17 @@ object TransportationRecipes
             'r':JC, Items.redstone,
             'n':JC, PartDefs.CHIPUPGRADE_RY.makeStack,
             'e':JC, Items.emerald)
+    }
+
+    def initMiscRecipes()
+    {
+        GameRegistry.addRecipe(new ItemStack(ProjectRedTransportation.itemRouterCPU),
+            "ggg",
+            " d ",
+            "ggg",
+            'g':JC, Items.gold_nugget,
+            'd':JC, Items.diamond
+        )
     }
 }
 

@@ -330,5 +330,16 @@ public class IntegrationRecipes
                 'B', PartDefs.BUNDLEDPLATE().makeStack(),
                 'G', PartDefs.ENERGIZEDSILICONCHIP().makeStack()
                 );
+
+        /** Bus Converter **/
+        GameRegistry.addRecipe(EnumGate.BusConverter.makeStack(),
+                "PBP",
+                "RSR",
+                "PRP",
+                'P', PartDefs.PLATE().makeStack(),
+                'B', PartDefs.BUNDLEDPLATE().makeStack(),
+                'R', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'S', PartDefs.SILICONCHIP().makeStack()
+                );
     }
 }
