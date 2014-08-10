@@ -50,7 +50,8 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
 
             val toRequest = filt.getItemCount(keyStack.key)
             val inInventory = inv.getItemCount(keyStack.key)+getEnroute(keyStack.key)
-            val missing = toRequest-inInventory
+            val spaceInInventory = routeLayer.getRequester.getActiveFreeSpace(keyStack.key)
+            val missing = math.min(toRequest-inInventory, spaceInInventory)
             if (missing <= 0 || (requestWhenEmpty && inInventory > 0)) break()
             if (!controller.canUsePower(powerPerOp)) break()
 
