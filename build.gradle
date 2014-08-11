@@ -175,7 +175,7 @@ task mechanicalJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    appendix = 'Mechanical'
+    appendix = 'Mechanical_beta'
 }
 
 task worldJar(type: Jar, dependsOn: reobf) {

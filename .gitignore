@@ -53,3 +53,14 @@ server.properties
 servers.dat
 white-list.txt
 /world/
+banned-ips.json
+banned-ips.txt.converted
+banned-players.json
+banned-players.txt.converted
+eula.txt
+ops.txt.converted
+ops.json
+usercache.json
+white-list.txt.converted
+whitelist.json
+world-20140811-075700.zip

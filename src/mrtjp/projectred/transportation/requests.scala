@@ -31,7 +31,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         else this.asInstanceOf[RequestRoot]
     }
 
-    private var subRequests = Vector[RequestBranchNode]()
+    var subRequests = Vector[RequestBranchNode]()
 
     private var promises = Vector[DeliveryPromise]()
     private var excessPromises = Vector[DeliveryPromise]()
@@ -602,12 +602,24 @@ class RequestConsole(opt:RequestFlags.ValueSet)
 
     def makeRequest(request:ItemKeyStack):RequestConsole =
     {
-        if (destination == null) return this
+        buildRequestTree(request)
+        startRequest()
+    }
+
+    def buildRequestTree(request:ItemKeyStack):RequestConsole =
+    {
+        assert(destination != null)
         parityBuilt = false
         used = null
         missing = null
         requested = 0
         branch = new RequestRoot(request.copy, destination, opt)
+
+        this
+    }
+
+    def startRequest():RequestConsole =
+    {
         if (branch.isDone || opt.contains(RequestFlags.PARTIAL) && branch.getPromisedCount > 0)
         {
             requested = branch.getPromisedCount
@@ -655,5 +667,13 @@ class RequestConsole(opt:RequestFlags.ValueSet)
     {
         if (missing == null) gatherMissing()
         missing
+    }
+
+    def getRequiredPower =
+    {
+        def count(p:RequestBranchNode):Int =
+            p.subRequests.foldLeft(1)((c, r) => c+count(r))
+
+        count(branch)*10.0D
     }
 }

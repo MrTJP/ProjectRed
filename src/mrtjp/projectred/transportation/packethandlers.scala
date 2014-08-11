@@ -1,15 +1,13 @@
 package mrtjp.projectred.transportation
 
-import codechicken.core.ClientUtils
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.packet.PacketCustom.{IServerPacketHandler, IClientPacketHandler}
-import mrtjp.projectred.ProjectRedTransportation
+import codechicken.lib.packet.PacketCustom.{IClientPacketHandler, IServerPacketHandler}
+import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack, PRLib}
 import net.minecraft.client.Minecraft
-import net.minecraft.entity.player.{EntityPlayerMP, EntityPlayer}
-import net.minecraft.world.World
-import mrtjp.projectred.core.libmc.{PRLib, ItemKeyStack, ItemKey}
+import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.network.play.{INetHandlerPlayClient, INetHandlerPlayServer}
 import net.minecraft.util.ChatComponentText
+import net.minecraft.world.World
 
 class TransportationPH
 {
@@ -152,7 +150,7 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
         val t = PRLib.getMultiPart(sender.worldObj, bc, 6)
         if (t.isInstanceOf[IWorldRequester])
         {
-            import RequestFlags._
+            import mrtjp.projectred.transportation.RequestFlags._
             var opt = RequestFlags.ValueSet.newBuilder
             val pull = packet.readBoolean
             val craft = packet.readBoolean
@@ -160,20 +158,34 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
             if (pull) opt += PULL
             if (craft) opt += CRAFT
             if (partial) opt += PARTIAL
-            val r = new RequestConsole(opt.result()).setDestination(t.asInstanceOf[IWorldRequester])
 
+            val router = t.asInstanceOf[IWorldRouter].getRouter
+            val r = new RequestConsole(opt.result()).setDestination(t.asInstanceOf[IWorldRequester])
             val s = ItemKeyStack.get(packet.readItemStack(true))
-            r.makeRequest(s)
-            if (r.requested > 0)
+
+            r.buildRequestTree(s)
+
+            if (!router.getController.usePower(r.getRequiredPower))
             {
-                sender.addChatMessage(new ChatComponentText("Successfully requested "+r.requested+" of "+s.key.getName+"."))
-                RouteFX.spawnType1(RouteFX.color_request, 8, bc, sender.worldObj)
+                sender.addChatMessage(new ChatComponentText("Could not request "+s.stackSize+" of "+s.key.getName+"."))
+                sender.addChatMessage(new ChatComponentText("Sufficient power not available."))
             }
             else
             {
-                sender.addChatMessage(new ChatComponentText("Could not request "+s.stackSize+" of "+s.key.getName+". Missing:"))
-                for ((k,v) <- r.getMissing) sender.addChatMessage(new ChatComponentText(v+" of "+k.getName))
+                r.startRequest()
+
+                if (r.requested > 0)
+                {
+                    sender.addChatMessage(new ChatComponentText("Successfully requested "+r.requested+" of "+s.key.getName+"."))
+                    RouteFX.spawnType1(RouteFX.color_request, 8, bc, sender.worldObj)
+                }
+                else
+                {
+                    sender.addChatMessage(new ChatComponentText("Could not request "+s.stackSize+" of "+s.key.getName+". Missing:"))
+                    for ((k,v) <- r.getMissing) sender.addChatMessage(new ChatComponentText(v+" of "+k.getName))
+                }
             }
+
             sendRequestList(t.asInstanceOf[IWorldRequester], sender, pull, craft)
         }
     }
