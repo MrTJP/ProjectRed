@@ -1,3 +1,12 @@
+v4.4.6
+- ADDED: Bus Converter gate
+- ADDED: Router controller and Routing CPU
+- CHANGE: Routing networks require a controller and CPU
+- FIX: Furnace recipe crash
+- FIX: Firewall item filter loading
+- FIX: Firewall item blocking request collection
+- FIX: Feedback light button crash
+
 v4.4.5
 - PORT: Minecraft 1.7.10
 
