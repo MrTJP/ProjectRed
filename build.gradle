@@ -199,6 +199,9 @@ task compatJar(type: Jar, dependsOn: reobf) {
         include "**/ProjectRedCompatibility*.class"
         include "**/mrtjp/projectred/compatibility/**"
 
+        //APIs
+        include "**/dan200/**"
+
         include "**/assets/asm/**"
         include "**/assets/projectred/textures/blocks/compat/**"
 

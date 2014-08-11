@@ -1,26 +1,33 @@
 package mrtjp.projectred.compatibility
 
 import cpw.mods.fml.common.Loader
-import mrtjp.projectred.core.PRLogger
+import mrtjp.projectred.compatibility.computercraft.PluginCC_BundledCable
 import mrtjp.projectred.compatibility.treecapitator.PluginTreecapitator
-import mrtjp.projectred.compatibility.computercraft.PluginComputerCraft
+import mrtjp.projectred.core.PRLogger
 
 object Services
 {
+    //Hardcoded list of all possible plugins
+    val rootPlugins = Seq[IPRPlugin](
+        PluginTreecapitator,
+        PluginCC_BundledCable
+    )
+
+    //List of all loaded plugins
     var plugins = Seq[IPRPlugin]()
 
     def servicesLoad()
     {
-        PRLogger.info("Started loading ProjectRed compat plugins")
         try
         {
-            val rootPlugins = Seq[IPRPlugin](PluginTreecapitator, PluginComputerCraft)
             for (p <- rootPlugins)
-                if (Loader.isModLoaded(p.getModID)) plugins :+= p
-                else PRLogger.warn("Failed to load PR Plugin for "+p.getModID)
+                if (p.getModIDs.forall(Loader.isModLoaded))
+                {
+                    plugins :+= p
+                }
+                else PRLogger.warn(p.loadFailedDesc())
         }
         catch {case e:Exception =>}
-        PRLogger.info("Finished loading ProjectRed compat plugins")
     }
 
     def doPreInit()

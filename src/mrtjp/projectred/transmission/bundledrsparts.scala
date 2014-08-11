@@ -1,8 +1,7 @@
 package mrtjp.projectred.transmission
 
-import codechicken.multipart.TMultiPart
+import mrtjp.projectred.core.{TAcquisitionsCommons, TCenterAcquisitions, TFaceAcquisitions}
 import net.minecraft.nbt.NBTTagCompound
-import mrtjp.projectred.core.{TCenterAcquisitions, TFaceAcquisitions, TAcquisitionsCommons}
 
 trait TBundledAquisitionsCommons extends TAcquisitionsCommons
 {
@@ -10,7 +9,7 @@ trait TBundledAquisitionsCommons extends TAcquisitionsCommons
 
     def calcInternalArray(dir:Int):Array[Byte]
 
-    def resolveArray(part:TMultiPart, dir:Int):Array[Byte]
+    def resolveArray(part:Any, dir:Int):Array[Byte]
 }
 
 trait TFaceBundledAquisitions extends TBundledAquisitionsCommons with TFaceAcquisitions
@@ -114,5 +113,13 @@ object BundledCommons
         idx
     }
 
-    def signalToString(signal:Array[Byte]) = signal.mkString
+    def signalToString(signal:Array[Byte]) =
+        if (isSignalZero(signal)) "off"
+        else
+        {
+            var s = "["
+            for (i <- 0 until 16) s += signal(i)
+            s += "]"
+            s
+        }
 }

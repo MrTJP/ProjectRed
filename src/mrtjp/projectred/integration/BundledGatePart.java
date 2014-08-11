@@ -9,6 +9,7 @@ import codechicken.multipart.TileMultipart;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.core.libmc.PRLib;
+import mrtjp.projectred.transmission.APIImpl_Transmission;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -34,9 +35,8 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
     {
         BlockCoord pos = new BlockCoord(tile()).offset(absDir);
         TileEntity t = world().getTileEntity(pos.x, pos.y, pos.z);
-        if (t instanceof IBundledTile)
-            return ((IBundledTile)t).canConnectBundled(absDir^1);
-
+        if (t instanceof IBundledTile) return ((IBundledTile)t).canConnectBundled(absDir^1);
+        if (APIImpl_Transmission.canConnectBundled(world(), pos, absDir^1)) return true;
         return false;
     }
 
@@ -75,8 +75,7 @@ public class BundledGatePart extends SimpleGatePart implements IBundledEmitter
             return getBundledPartSignal(t, absDir^1);
         else if (t instanceof TileMultipart)
             return getBundledPartSignal(((TileMultipart)t).partMap(side()), (r+2)%4);
-
-        return null;
+        else return APIImpl_Transmission.getBundledSignal(world(), pos, absDir^1);
     }
 
     public byte[] calculateBundledInternalSignal(int r)

@@ -185,7 +185,7 @@ abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcq
         }
     }
 
-    override def resolveSignal(part:TMultiPart, r:Int) = part match
+    override def resolveSignal(part:Any, r:Int) = part match
     {
         case t:IRedwirePart if t.diminishOnSide(r) => t.getRedwireSignal(r)-1
         case t:IRedwireEmitter => t.getRedwireSignal(r)
@@ -285,7 +285,7 @@ abstract class FramedRedwirePart extends FramedWirePart with TRedwireCommons wit
         }
     }
 
-    override def resolveSignal(part:TMultiPart, s:Int) = part match
+    override def resolveSignal(part:Any, s:Int) = part match
     {
         case rw:IRedwirePart if rw.diminishOnSide(s) => rw.getRedwireSignal(s)-1
         case re:IRedwireEmitter => re.getRedwireSignal(s)
@@ -363,7 +363,7 @@ trait TInsulatedCommons extends TRedwireCommons with IInsulatedRedwirePart
         colour = packet.readByte
     }
 
-    abstract override def resolveSignal(part:TMultiPart, dir:Int) = part match
+    abstract override def resolveSignal(part:Any, dir:Int) = part match
     {
         case b:IBundledCablePart => (b.getBundledSignal.apply(colour)&0xFF)-1
         case p => super.resolveSignal(p, dir)
