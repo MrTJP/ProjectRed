@@ -364,7 +364,7 @@ abstract class CorePipePart extends SubcorePipePart with TCenterRSAcquisitions w
         case _ => calcStrongSignal(s)
     }
 
-    override def resolveSignal(part:TMultiPart, s:Int) = part match
+    override def resolveSignal(part:Any, s:Int) = part match
     {
         case rw:IRedwirePart if rw.diminishOnSide(s) => rw.getRedwireSignal(s)-1
         case re:IRedwireEmitter => re.getRedwireSignal(s)

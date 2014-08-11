@@ -9,6 +9,7 @@ import mrtjp.projectred.core.{Configurator, CoreSPH}
 import mrtjp.projectred.transmission.IWirePart._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ChatComponentText
 import mrtjp.projectred.core.libmc.PRLib
 
@@ -76,7 +77,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
         world.getTileEntity(pos.x, pos.y, pos.z) match
         {
             case b:IBundledTile => b.canConnectBundled(absDir^1)
-            case _ => false
+            case _ => APIImpl_Transmission.canConnectBundled(world, pos, absDir^1)
         }
     }
 
@@ -125,29 +126,30 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
         case _ => 0xFFFF
     }
 
-    override def resolveArray(part:TMultiPart, r:Int) =
+    override def resolveArray(part:Any, r:Int) =
     {
-        raiseSignalFrom(part, r)
+        part match
+        {
+            case b:IBundledCablePart =>
+                val osig = b.getBundledSignal
+                for (i <- 0 until 16) if ((osig(i)&0xFF)-1 > (tmpSignal(i)&0xFF))
+                    tmpSignal(i) = (osig(i)-1).asInstanceOf[Byte]
+            case i:IInsulatedRedwirePart =>
+                val s = i.getRedwireSignal(r)-1
+                if (s > (tmpSignal(i.getInsulatedColour)&0xFF))
+                    tmpSignal(i.getInsulatedColour) = s.asInstanceOf[Byte]
+            case b:IBundledEmitter => BundledCommons.raiseSignal(tmpSignal, b.getBundledSignal(r))
+            case t:TileEntity => BundledCommons.raiseSignal(tmpSignal,
+                APIImpl_Transmission.getBundledSignal(t.getWorldObj, t.xCoord, t.yCoord, t.zCoord, r))
+            case _ =>
+        }
         tmpSignal
     }
 
-    val tmpSignal = new Array[Byte](16)
+    var tmpSignal = new Array[Byte](16)
     def tmpSignalClear()
     {
-        tmpSignal.transform(_ => 0.asInstanceOf[Byte])
-    }
-    def raiseSignalFrom(part:AnyRef, dir:Int) = part match
-    {
-        case b:IBundledCablePart =>
-            val osig = b.getBundledSignal
-            for (i <- 0 until 16)
-                if ((osig(i)&0xFF)-1 > (tmpSignal(i)&0xFF)) tmpSignal(i) = (osig(i)-1).asInstanceOf[Byte]
-        case i:IInsulatedRedwirePart =>
-            val s = i.getRedwireSignal(dir)-1
-            if (s > (tmpSignal(i.getInsulatedColour)&0xFF))
-                tmpSignal(i.getInsulatedColour) = s.asInstanceOf[Byte]
-        case b:IBundledEmitter => BundledCommons.raiseSignal(tmpSignal, b.getBundledSignal(dir))
-        case _ =>
+        for (i <- 0 until 16) tmpSignal(i) = 0.asInstanceOf[Byte]
     }
 
     override def propagateTo(part:TMultiPart, mode:Int) =
@@ -228,13 +230,13 @@ class BundledCablePart extends WirePart with TFaceBundledAquisitions with TBundl
 
     override def calcStraightArray(r:Int) =
     {
-        val te = PRLib.getTileEntity(world, posOfStraight(r), classOf[IBundledEmitter])
-        if (te != null)
+        PRLib.getTileEntity(world, posOfStraight(r), classOf[TileEntity]) match
         {
-            raiseSignalFrom(te, absoluteDir(rotFromStraight(r)))
-            tmpSignal
+            case ibe:IBundledEmitter => resolveArray(ibe, absoluteDir(rotFromStraight(r)))
+            case t if APIImpl_Transmission.isValidInteractionFor(world, t.xCoord, t.yCoord, t.zCoord) =>
+                resolveArray(t, absoluteDir(rotFromStraight(r)))
+            case _ => super.calcStraightArray(r)
         }
-        else super.calcStraightArray(r)
     }
 }
 
@@ -252,12 +254,12 @@ class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitio
 
     override def calcStraightArray(s:Int) =
     {
-        val te = PRLib.getTileEntity(world, posOfStraight(s), classOf[IBundledEmitter])
-        if (te != null)
+        PRLib.getTileEntity(world, posOfStraight(s), classOf[TileEntity]) match
         {
-            raiseSignalFrom(te, s^1)
-            tmpSignal
+            case ibe:IBundledEmitter => resolveArray(ibe, s^1)
+            case t if APIImpl_Transmission.isValidInteractionFor(world, t.xCoord, t.yCoord, t.zCoord) =>
+                resolveArray(t, s^1)
+            case _ => super.calcStraightArray(s)
         }
-        else super.calcStraightArray(s)
     }
 }

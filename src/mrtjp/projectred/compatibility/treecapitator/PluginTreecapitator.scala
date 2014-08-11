@@ -9,7 +9,7 @@ import net.minecraft.block.Block
 
 object PluginTreecapitator extends IPRPlugin
 {
-    override def getModID = "TreeCapitator"
+    override def getModIDs = Array("TreeCapitator")
 
     override def preInit() {}
 
@@ -67,4 +67,6 @@ object PluginTreecapitator extends IPRPlugin
     }
 
     override def postInit() {}
+
+    override def desc() = "Gem axe compatibility"
 }

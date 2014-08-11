@@ -1,5 +1,6 @@
 package mrtjp.projectred.core.libmc
 
+import net.minecraft.tileentity.TileEntity
 import net.minecraft.world.{IBlockAccess, World}
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemStack

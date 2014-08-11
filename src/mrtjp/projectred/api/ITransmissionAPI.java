@@ -16,4 +16,13 @@ public interface ITransmissionAPI
      * @return A bundled signal {@link IBundledEmitter}
      */
     public byte[] getBundledInput(World world, int x, int y, int z, int side);
+
+    /**
+     * Used to register a IBundledTileInteraction to allow PR wiring to use
+     * your block's signals without having to implement an interface on your
+     * tile entity.
+     *
+     * @param interaction The interaction class you want to register
+     */
+    public void registerBundledTileInteraction(IBundledTileInteraction interaction);
 }

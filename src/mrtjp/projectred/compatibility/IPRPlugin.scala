@@ -2,9 +2,14 @@ package mrtjp.projectred.compatibility
 
 trait IPRPlugin
 {
-    def getModID:String
+    def getModIDs:Array[String]
 
     def preInit()
     def init()
     def postInit()
+
+    def loadFailedDesc():String = "Failed to load PR Plugin: "+desc()
+    def loadCompleteDesc():String = "Loaded PR Plugin: "+desc()
+
+    def desc():String
 }

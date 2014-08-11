@@ -1,8 +1,8 @@
 package mrtjp.projectred.transmission
 
 import codechicken.lib.vec.BlockCoord
-import codechicken.multipart.{IRedstonePart, IFaceRedstonePart, TMultiPart, RedstoneInteractions}
-import mrtjp.projectred.core.{TCenterAcquisitions, TFaceAcquisitions, TAcquisitionsCommons}
+import codechicken.multipart.{IFaceRedstonePart, IRedstonePart, RedstoneInteractions, TMultiPart}
+import mrtjp.projectred.core.{TAcquisitionsCommons, TCenterAcquisitions, TFaceAcquisitions}
 
 trait TRSAcquisitionsCommons extends TAcquisitionsCommons with IRedstonePart
 {
@@ -10,7 +10,7 @@ trait TRSAcquisitionsCommons extends TAcquisitionsCommons with IRedstonePart
 
     def calcInternalSignal(r:Int):Int
 
-    def resolveSignal(part:TMultiPart, dir:Int):Int
+    def resolveSignal(part:Any, dir:Int):Int
 }
 
 trait TFaceRSAcquisitions extends TRSAcquisitionsCommons with TFaceAcquisitions with IFaceRedstonePart
