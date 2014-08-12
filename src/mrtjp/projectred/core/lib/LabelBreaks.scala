@@ -35,6 +35,11 @@ class LabelThrowable extends ControlThrowable
         ident = tag
         this
     }
+
+    override def toString() =
+    {
+        super.toString() + ": " + ident
+    }
 }
 
 object LabelBreaks extends LabelBreaks
