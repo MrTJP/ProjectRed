@@ -4,8 +4,6 @@ import scala.util.control.ControlThrowable
 
 class LabelBreaks
 {
-    val throwable = new LabelThrowable()
-
     def label(tag:String)(op: => Any):Unit =
     {
         try
@@ -19,7 +17,7 @@ class LabelBreaks
         }
     }
 
-    def break(tag:String):Unit = throw throwable(tag)
+    def break(tag:String):Unit = throw new LabelThrowable()(tag)
 
     //Shorthand single break
     def label(op: => Any):Unit = label("$1")(op)
