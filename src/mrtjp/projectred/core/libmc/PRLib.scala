@@ -17,7 +17,7 @@ object PRLib
     }
     def dropItem(w:World, x:Int, y:Int, z:Int, stack:ItemStack)
     {
-        if (!w.isRemote)
+        if (!w.isRemote && w.getGameRules().getGameRuleBooleanValue("doTileDrops"))
         {
             val d = 0.7D
             val dx = w.rand.nextFloat*d+(1.0D-d)*0.5D
@@ -35,7 +35,7 @@ object PRLib
     }
     def dropTowardsPlayer(w:World, x:Int, y:Int, z:Int, stack:ItemStack, p:EntityPlayer)
     {
-        if (!w.isRemote)
+        if (!w.isRemote && w.getGameRules().getGameRuleBooleanValue("doTileDrops"))
         {
             val vel = ~new Vector3(p.posX-x, p.posY-y, p.posZ-z)
             val pos = new Vector3(x+0.5, y+0.5, z+0.5)+(vel.copy*0.25)
