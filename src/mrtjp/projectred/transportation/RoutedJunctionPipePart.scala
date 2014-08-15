@@ -8,7 +8,7 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.{TMultiPart, TileMultipart}
 import mrtjp.projectred.api.IScrewdriver
-import mrtjp.projectred.core.lib.{LabelBreaks, Pair2}
+import mrtjp.projectred.core.lib.Pair2
 import mrtjp.projectred.core.libmc.inventory.InvWrapper
 import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack, PRLib}
 import mrtjp.projectred.core.{Configurator, CoreSPH}
@@ -423,8 +423,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         var found = false
         val oldSide = inOutSide
 
-        import mrtjp.projectred.core.lib.LabelBreaks._
-        label {
+        import scala.util.control.Breaks._
+        breakable {
             for (i <- 0 until 6)
             {
                 inOutSide = (inOutSide+1)%6
