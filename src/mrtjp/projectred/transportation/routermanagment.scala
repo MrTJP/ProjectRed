@@ -8,7 +8,6 @@ import mrtjp.projectred.transportation.SendPriority.SendPriority
 import scala.collection.immutable.BitSet
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
-import mrtjp.projectred.core.lib.LabelBreaks
 import mrtjp.projectred.core.libmc.ItemKey
 import net.minecraftforge.common.util.ForgeDirection
 
@@ -429,9 +428,9 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         for (p <- adjacentLinks) candidates2.add(new StartEndPath(p.end, p.end, p.hopDir, p.distance, p.filters))
         closedFilters(getIPAddress) = Vector(Set[PathFilter](PathFilter.default))
 
-        import LabelBreaks._
+        var a, b = new scala.util.control.Breaks
         Router.LSADatabasereadLock.lock()
-        while (!candidates2.isEmpty) label
+        while (!candidates2.isEmpty) a.breakable
         {
             val dequeue = candidates2.poll()
             val deqIP = dequeue.end.getIPAddress
@@ -441,7 +440,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             //Skip if we have found path with identical filters
             val filtSetsClosed = closedFilters(deqIP)
             if (filtSetsClosed != null) for (filtsClosed <- filtSetsClosed)
-                if (filtsClosed.subsetOf(dequeue.filters)) break() //dequeue's filters contain all closed filters
+                if (filtsClosed.subsetOf(dequeue.filters)) a.break() //dequeue's filters contain all closed filters
 
             // Add all of the lowest's neighbors so they are checked later.
             val lsa = deqIP match
@@ -468,12 +467,12 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         ensureRT2(getIPAddress)
         routeTable2(getIPAddress) = Vector(new StartEndPath(this, this, -1, 0)) //consider ourselves for logistic path
 
-        for (p <- routersByCost2) if (p != null) label
+        for (p <- routersByCost2) if (p != null) b.breakable
         {
             val firstHop = p.start
             val rootHop = adjacentLinks.find(_.end == firstHop).orNull
 
-            if (rootHop == null) break()
+            if (rootHop == null) b.break()
 
             p.start = this
             p.hopDir = rootHop.hopDir

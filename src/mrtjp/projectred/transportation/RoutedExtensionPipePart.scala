@@ -5,7 +5,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
-import mrtjp.projectred.core.lib.LabelBreaks
 import mrtjp.projectred.core.libmc.ItemKeyStack
 import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory}
 
@@ -55,8 +54,8 @@ class RoutedExtensionPipePart extends RoutedJunctionPipePart
     {
         if (lost.isEmpty) return
 
-        import LabelBreaks._
-        while (!lost.isEmpty) label
+        import scala.util.control.Breaks._
+        while (!lost.isEmpty) breakable
         {
             val stack = lost.head
             lost = lost.tail

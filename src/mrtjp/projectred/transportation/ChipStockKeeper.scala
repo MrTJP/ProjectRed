@@ -1,7 +1,5 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.lib.LabelBreaks
-import LabelBreaks._
 import scala.collection.immutable.HashMap
 import scala.collection.mutable.ListBuffer
 import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
@@ -42,7 +40,8 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
         var requestAttempted = false
         var requestedSomething = false
 
-        for (i <- 0 until stock.getSizeInventory) label
+        import scala.util.control.Breaks._
+        for (i <- 0 until stock.getSizeInventory) breakable
         {
             val keyStack = ItemKeyStack.get(stock.getStackInSlot(i))
             if (keyStack == null || checked.contains(keyStack.key)) break()

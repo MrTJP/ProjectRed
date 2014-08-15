@@ -194,9 +194,9 @@ class LogisticPathFinder(source:Router, payload:ItemKey)
     {
         var bestResponse = new SyncResponse
         var bestIP = -1
-        import mrtjp.projectred.core.lib.LabelBreaks._
+        import scala.util.control.Breaks._
 
-        for (l <- source.getFilteredRoutesByCost(p => p.flagRouteTo && p.allowRouting && p.allowItem(payload))) label
+        for (l <- source.getFilteredRoutesByCost(p => p.flagRouteTo && p.allowRouting && p.allowItem(payload))) breakable
         {
             val r = l.end
             if (excludeSource && r.getIPAddress == source.getIPAddress) break()
