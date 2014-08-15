@@ -1,6 +1,5 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.lib.LabelBreaks._
 import mrtjp.projectred.core.lib.Pair2
 import mrtjp.projectred.core.libmc.inventory.InvWrapper
 import mrtjp.projectred.core.libmc.{ItemQueue, ItemKey, ItemKeyStack}
@@ -40,15 +39,16 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
 
         def assign(n:Pair2[ItemKeyStack, IWorldRequester]) = {next=n; next}
 
-        label("while")
+        var wh, cont = new scala.util.control.Breaks
+        wh.breakable
         {
-            while (manager.hasOrders && assign(manager.peek)!=null && stacksRemaining>0 && itemsRemaining>0) label("cont")
+            while (manager.hasOrders && assign(manager.peek)!=null && stacksRemaining>0 && itemsRemaining>0) cont.breakable
             {
                 val real = invProvider.getInventory
                 if (real == null)
                 {
                     manager.dispatchFailed()
-                    break("cont")
+                    cont.break()
                 }
 
                 val reqKeyStack = next.get1
@@ -59,7 +59,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                 if (!routeLayer.getRouter.canRouteTo(requester.getRouter.getIPAddress, reqKeyStack.key, SendPriority.ACTIVEB))
                 {
                     manager.dispatchFailed()
-                    break("cont")
+                    cont.break()
                 }
 
                 var toExtract = Math.min(inv.getItemCount(reqKeyStack.key), reqKeyStack.stackSize)
@@ -75,18 +75,18 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                     if (toExtract <= 0)
                     {
                         manager.restackOrders()
-                        break("while")
+                        wh.break()
                     }
                     restack = true
                 }
 
-                if (!controller.canUsePower(toExtract*powerPerOp)) break("while")
+                if (!controller.canUsePower(toExtract*powerPerOp)) wh.break()
 
                 val removed = inv.extractItem(reqKeyStack.key, toExtract)
                 if (removed <= 0)
                 {
                     manager.dispatchFailed()
-                    break("cont")
+                    cont.break()
                 }
 
                 controller.usePower(removed*powerPerOp)

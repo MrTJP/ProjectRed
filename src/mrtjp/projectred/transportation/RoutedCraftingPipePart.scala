@@ -162,8 +162,8 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         var itemsleft = itemsToExtract
         var stacksleft = stacksToExtract
 
-        import mrtjp.projectred.core.lib.LabelBreaks._
-        label {
+        import scala.util.control.Breaks._
+        breakable {
             while (itemsleft > 0 && stacksleft > 0 && (manager.hasOrders || excess.nonEmpty))
             {
                 var processingOrder = false
@@ -222,8 +222,8 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
         if (lost.isEmpty) return
         var post:PostponedWorkItem[ItemKeyStack] = null
 
-        import mrtjp.projectred.core.lib.LabelBreaks._
-        while ({post = lost.poll(); post} != null) label
+        import scala.util.control.Breaks._
+        while ({post = lost.poll(); post} != null) breakable
         {
             val stack = post.getItem
             var toRequest = stack.stackSize
