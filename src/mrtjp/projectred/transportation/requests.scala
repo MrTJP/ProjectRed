@@ -103,8 +103,8 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         val all = root.gatherExcessFor(getRequestedPackage)
         def locate()
         {
-            import mrtjp.projectred.core.lib.LabelBreaks._
-            for (excess <- all) if (isDone) return else if (excess.size > 0) label
+            import scala.util.control.Breaks._
+            for (excess <- all) if (isDone) return else if (excess.size > 0) breakable
             {
                 val pathsToThis = requester.getRouter.getRouteTable(excess.from.getRouter.getIPAddress)
                 val pathsFromThat = excess.from.getRouter.getRouteTable(requester.getRouter.getIPAddress)
@@ -148,10 +148,10 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         var priority = 0
         var lastCrafter:CraftingPromise = null
 
-        import mrtjp.projectred.core.lib.LabelBreaks._
-        label("outer")
+        var outer, inner = new scala.util.control.Breaks
+        outer.breakable
         {
-            while (!finished) label
+            while (!finished) inner.breakable
             {
                 if (it.hasNext)
                 {
@@ -166,14 +166,14 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                     priority = lastCrafter.priority
                     val crafter = lastCrafter
                     lastCrafter = null
-                    if (recurse_IsCrafterUsed(crafter)) break("outer")
+                    if (recurse_IsCrafterUsed(crafter)) outer.break()
 
                     val ci = new CraftingInitializer(crafter, itemsNeeded, this)
                     balanced.add(ci)
-                    break()
+                    inner.break()
                 }
 
-                if (unbalanced.isEmpty && balanced.isEmpty) break()
+                if (unbalanced.isEmpty && balanced.isEmpty) inner.break()
 
                 if (balanced.size == 1)
                 {
@@ -204,7 +204,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                 unbalanced = unbalanced.filterNot(c => c.setsRequested > 0 && !c.finalizeInteraction())
 
                 itemsNeeded = getMissingCount
-                if (itemsNeeded <= 0) break("outer")
+                if (itemsNeeded <= 0) outer.break()
                 if (unbalanced.nonEmpty) finished = false
             }
         }
