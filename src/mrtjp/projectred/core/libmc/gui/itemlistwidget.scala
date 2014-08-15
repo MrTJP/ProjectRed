@@ -151,15 +151,15 @@ class WidgetItemList(x:Int, y:Int, w:Int, h:Int) extends TWidget
 
         glItemPre()
 
-        import mrtjp.projectred.core.lib.LabelBreaks._
-        label("b")
+        var b, c = new scala.util.control.Breaks
+        b.breakable
         {
-            for (keystack <- displayList) label("c")
+            for (keystack <- displayList) c.breakable
             {
-                if (!filterAllows(keystack)) break("c")
+                if (!filterAllows(keystack)) c.break()
                 itemNumber += 1
-                if (itemNumber <= rows*columns*currentPage) break("c")
-                if (itemNumber > (rows*columns)*(currentPage+1)) break("b")
+                if (itemNumber <= rows*columns*currentPage) c.break()
+                if (itemNumber > (rows*columns)*(currentPage+1)) b.break()
 
                 val localX = xOffset+renderPointerX*squareSize
                 val localY = yOffset+renderPointerY*squareSize
@@ -181,7 +181,7 @@ class WidgetItemList(x:Int, y:Int, w:Int, h:Int) extends TWidget
                     renderPointerX = 1
                     renderPointerY += 1
                 }
-                if (renderPointerY > rows) break("b")
+                if (renderPointerY > rows) b.break()
             }
         }
         glItemPost()

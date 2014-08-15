@@ -9,7 +9,6 @@ import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.{EnumChatFormatting, ResourceLocation}
 import org.lwjgl.opengl.GL11
 import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.core.lib.LabelBreaks
 import mrtjp.projectred.core.libmc.{ResourceLib, PRColors}
 import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer}
 import mrtjp.projectred.core.libmc.gui._
@@ -466,15 +465,15 @@ class GuiChipCraftExt(cont:ChipContainer, prev:GuiScreen) extends GuiChipContain
     override def runInit_Impl()
     {
         var index = 0
-        import LabelBreaks._
-        for ((x, y) <- GuiLib.createGrid(xSize/2-40, 6, 3, 3, 24+4, 24+1)) label("1")
+        import scala.util.control.Breaks._
+        for ((x, y) <- GuiLib.createGrid(xSize/2-40, 6, 3, 3, 24+4, 24+1)) breakable
         {
             if (chip.maxExtensions >= index)
             {
                 add(new WidgetButtonMC(x, y, 24, 6).setAction(index+"u"))
                 add(new WidgetButtonMC(x, y+18, 24, 6).setAction(index+"d"))
             }
-            else break("1")
+            else break()
             index += 1
         }
     }
