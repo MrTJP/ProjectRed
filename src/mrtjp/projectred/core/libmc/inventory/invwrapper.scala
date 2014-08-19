@@ -14,7 +14,7 @@ object InvWrapper
 
     def register(w:InvWrapper)
     {
-        for (w <- wrappers) if (w.wrapperID == w.wrapperID) return
+        for (wr <- wrappers) if (wr.wrapperID == w.wrapperID) return
         wrappers :+= w
     }
 
