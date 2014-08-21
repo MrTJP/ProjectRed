@@ -28,6 +28,7 @@ class TransportationProxy_server extends IProxy with IPartFactory
         itemRoutingChip = new ItemRoutingChip
         itemRouterUtility = new ItemRouterUtility
         itemRouterCPU = new ItemCPU
+        itemRouterCreativeCPU = new ItemCreativeCPU
 
         for (i <- 0 until Configurator.routerUpdateThreadCount) new TableUpdateThread(i)
     }

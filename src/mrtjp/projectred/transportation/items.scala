@@ -259,6 +259,21 @@ class ItemCPU extends ItemCore("projectred.transportation.cpu")
     }
 }
 
+class ItemCreativeCPU extends ItemCore("projectred.transportation.creativecpu")
+{
+    setCreativeTab(ProjectRedTransportation.tabTransportation)
+    setHasSubtypes(false)
+    setMaxStackSize(1)
+    setTextureName("projectred:cpu")
+
+    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
+    {
+        val list2 = list.asInstanceOf[JList[String]]
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+            list2.add("Infinite cycles remaining")
+    }
+}
+
 class ChipUpgradeContainer(player:EntityPlayer) extends WidgetContainer
 {
     val upgradeInv = new SimpleInventory(7, "upBus", 1)

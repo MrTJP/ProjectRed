@@ -4,7 +4,7 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.core.GuiManager
 import mrtjp.projectred.core.libmc.inventory.{SimpleInventory, Slot2, WidgetContainer}
-import mrtjp.projectred.transportation.{ItemCPU, TControllerLayer}
+import mrtjp.projectred.transportation.{ItemCPU, ItemCreativeCPU, TControllerLayer}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
@@ -14,7 +14,7 @@ class TileRouterController extends TileMachine with TileGuiMachine with TControl
     val cpuSlot = new SimpleInventory(1, "inv", 1)
     {
         override def isItemValidForSlot(i:Int, stack:ItemStack) =
-            stack != null && stack.getItem.isInstanceOf[ItemCPU]
+            stack != null && (stack.getItem.isInstanceOf[ItemCPU] || stack.getItem.isInstanceOf[ItemCreativeCPU])
 
         override def markDirty()
         {
@@ -55,7 +55,7 @@ class TileRouterController extends TileMachine with TileGuiMachine with TControl
     {
         super.update()
         val stack = cpuSlot.getStackInSlot(0)
-        if (stack != null)
+        if (stack != null && !stack.getItem.isInstanceOf[ItemCreativeCPU])
         {
             assureNBT(stack)
             if (stack.getTagCompound.getDouble("cycles") <= 0)
@@ -78,8 +78,12 @@ class TileRouterController extends TileMachine with TileGuiMachine with TControl
         val stack = cpuSlot.getStackInSlot(0)
         if (stack != null)
         {
-            assureNBT(stack)
-            stack.getTagCompound.getDouble("cycles")
+            if (stack.getItem.isInstanceOf[ItemCreativeCPU]) {
+                Short.MaxValue
+            } else {
+                assureNBT(stack)
+                stack.getTagCompound.getDouble("cycles")
+            }
         }
         else 0
     }
@@ -89,10 +93,14 @@ class TileRouterController extends TileMachine with TileGuiMachine with TControl
         val stack = cpuSlot.getStackInSlot(0)
         if (stack != null)
         {
-            assureNBT(stack)
-            val newPow = stack.getTagCompound.getDouble("cycles")-P
-            stack.getTagCompound.setDouble("cycles", newPow)
-            newPow >= 0
+            if (stack.getItem.isInstanceOf[ItemCreativeCPU]) {
+                true
+            } else {
+                assureNBT(stack)
+                val newPow = stack.getTagCompound.getDouble("cycles")-P
+                stack.getTagCompound.setDouble("cycles", newPow)
+                newPow >= 0
+            }
         }
         else false
     }
