@@ -6,7 +6,7 @@ import codechicken.lib.vec._
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import net.minecraft.util.{ResourceLocation, IIcon}
 import codechicken.lib.render.{TextureUtils, CCRenderState, CCModel}
-import mrtjp.projectred.core.InvertX
+import mrtjp.projectred.core.{RenderHalo, InvertX}
 import codechicken.lib.lighting.LightModel
 import codechicken.lib.render.uv.IconTransformation
 import org.lwjgl.opengl.GL11

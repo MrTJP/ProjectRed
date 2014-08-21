@@ -6,7 +6,9 @@ import net.minecraft.tileentity.TileEntity;
  * Allows adding of special tile entities that point to other BasicPipeParts.
  * Used for allowing things such as TE Tesseracts to be used as via points for
  * Link-State path finding, which is used to establish a connection from one
- * routed pipe to another. This is registered through the ProjectRedAPI.
+ * routed pipe to another.
+ *
+ * This is registered through the ProjectRedAPI.
  */
 public interface ISpecialLinkState
 {

@@ -4,16 +4,19 @@ import codechicken.lib.colour.Colour;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.lighting.PlanarLightModel;
 import codechicken.lib.math.MathHelper;
+import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.render.*;
 import codechicken.lib.render.CCRenderState.IVertexOperation;
 import codechicken.lib.render.uv.*;
 import codechicken.lib.vec.*;
 import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.InvertX;
+import mrtjp.projectred.core.RenderHalo;
 import mrtjp.projectred.core.libmc.PRColors;
 import mrtjp.projectred.transmission.UVT;
 import mrtjp.projectred.transmission.WireModelGen;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 
@@ -36,6 +39,7 @@ public class ComponentStore
     public static CCModel busRand = loadModel("array/busrand");
     public static CCModel busConv = loadModel("array/busconv");
     public static CCModel signalPanel = loadModel("array/signalpanel");
+    public static CCModel busInput = loadModel("array/businput");
 
     public static CCModel nullCellWireBottom = loadModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5));
     public static CCModel nullCellWireTop = loadModel("array/nullcelltopwire").apply(new Translation(0.5, 0, 0.5));
@@ -63,6 +67,7 @@ public class ComponentStore
     public static IIcon cellIcon;
     public static IIcon busRandIcon;
     public static IIcon busConvIcon;
+    public static IIcon busInputIcon;
 
     public static Map<String, CCModel> loadModels(String name)
     {
@@ -136,7 +141,7 @@ public class ComponentStore
         cellIcon = r.registerIcon(baseTex+"cells");
         busRandIcon = r.registerIcon(baseTex+"busrand");
         busConvIcon = r.registerIcon(baseTex+"busconv");
-
+        busInputIcon = r.registerIcon(baseTex+"businput");
         RenderGate.registerIcons(r);
     }
 
@@ -201,6 +206,28 @@ public class ComponentStore
         }
         return m;
     }
+
+    public static IndexedCuboid6[] buildCubeArray(int xSize, int zSize, Cuboid6 box, Vector3 expand)
+    {
+        Vector3 min = box.min;
+        Vector3 max = box.max;
+        min.multiply(1/16D);
+        max.multiply(1/16D);
+        expand.multiply(1/16D);
+        IndexedCuboid6[] data = new IndexedCuboid6[xSize*zSize];
+        for (int i = 0; i < data.length; i++)
+        {
+            int x = i%xSize;
+            int z = i/zSize;
+            double dx = (max.x-min.x)/xSize;
+            double dz = (max.z-min.z)/zSize;
+            Vector3 min1 = new Vector3(min.x+dx*x, min.y, min.z+dz*z);
+            Vector3 max1 = new Vector3(min1.x+dx, max.y, min1.z+dz);
+            data[i] = new IndexedCuboid6(i, new Cuboid6(min1, max1).expand(expand));
+        }
+        return data;
+    }
+
 
     public static abstract class ComponentModel
     {
@@ -433,7 +460,9 @@ public class ComponentStore
 
         private static boolean overlap(boolean[] wireCorners, int x, int y)
         {
-            return wireCorners[y*32+x-1] || wireCorners[(y-1)*32+x] || wireCorners[(y-1)*32+x-1];
+            return wireCorners[y*32+x-1] ||
+                    (y > 0 && wireCorners[(y-1)*32+x]) ||
+                    (y > 0 && wireCorners[(y-1)*32+x-1]);
         }
 
         private static boolean segment2x2(Colour[] data, int x, int y)
@@ -839,6 +868,20 @@ public class ComponentStore
         }
     }
 
+    public static class BusInputPanelCableModel extends BundledCableModel
+    {
+        public BusInputPanelCableModel()
+        {
+            super(busInput, new Vector3(8, 0, 8), 16/32D, 16/32D);
+        }
+
+        @Override
+        public UVTransformation getUVT()
+        {
+            return new IconTransformation(busInputIcon);
+        }
+    }
+
     public static class SigLightPanelModel extends ComponentModel
     {
         public static CCModel[] displayModels = new CCModel[16];
@@ -1110,6 +1153,37 @@ public class ComponentStore
         public IIcon getIcon()
         {
             return cellIcon;
+        }
+    }
+
+    public static class InputPanelButtons extends ComponentModel
+    {
+        public static IndexedCuboid6[] unpressed = buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 3, 13), new Vector3(-0.25, 0, -0.25));
+        public static IndexedCuboid6[] pressed = buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25));
+        public static IndexedCuboid6[] lights = buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25).add(0.2));
+
+        int pressMask = 0;
+        BlockCoord pos = new BlockCoord();
+        Transformation orientT;
+
+        @Override
+        public void renderModel(Transformation t, int orient)
+        {
+            UVTransformation icon = new IconTransformation(Blocks.stone.getIcon(0, 0));
+            for (int i = 0; i < 16; i++)
+            {
+                CCRenderState.setPipeline(CCRenderState.lightMatrix, orientT(orient).with(t),
+                        icon, ColourMultiplier.instance(PRColors.get(i).rgba));
+                BlockRenderer.renderCuboid((pressMask&1<<i) != 0 ? pressed[i] : unpressed[i], 1);
+            }
+        }
+
+        public void renderLights()
+        {
+            for (int i = 0; i < 16; i++) if ((pressMask&1<<i) != 0)
+            {
+                RenderHalo.addLight(pos.x, pos.y, pos.z, i, lights[i].copy().apply(orientT));
+            }
         }
     }
 }

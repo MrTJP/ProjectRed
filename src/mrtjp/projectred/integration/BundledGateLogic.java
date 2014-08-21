@@ -2,10 +2,19 @@ package mrtjp.projectred.integration;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.raytracer.ExtendedMOP;
+import codechicken.lib.raytracer.IndexedCuboid6;
+import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
+import mrtjp.projectred.api.IScrewdriver;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MovingObjectPosition;
 
+import java.util.List;
 import java.util.Random;
 
 import static mrtjp.projectred.transmission.BundledCommons.*;
@@ -20,6 +29,8 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
             return new BusRandomizer(gate);
         if (subID == 29)
             return new BusConverter(gate);
+        if (subID == 30)
+            return new BusInputPanel(gate);
         return null;
     }
 
@@ -592,6 +603,182 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
         public void read(MCDataInput packet, int key)
         {
             if (key == 11) unpackClientData(packet.readUShort());
+        }
+    }
+
+    public static class BusInputPanel extends BundledGateLogic
+    {
+        public static IndexedCuboid6[] unpressed;
+        public static IndexedCuboid6[] pressed;
+
+        static
+        {
+            unpressed = ComponentStore.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 3, 13), new Vector3(-0.25, 0, -0.25));
+            pressed = ComponentStore.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25));
+        }
+
+        public int pressMask = 0;
+
+        public int bOut = 0;
+        public byte[] bOutUnpack;
+
+        public void setBOut(int newBOut)
+        {
+            if (bOut == newBOut) return;
+            bOut = (short)newBOut;
+            bOutUnpack = unpackDigital(bOutUnpack, bOut);
+        }
+
+        public BusInputPanel(BundledGatePart gate)
+        {
+            super(gate);
+        }
+
+        @Override
+        public void addSubParts(BundledGatePart part, List<IndexedCuboid6> list)
+        {
+            for (int i = 0; i < 16; i++)
+            {
+                IndexedCuboid6[] array = (pressMask&1<<i) == 0 ? unpressed : pressed;
+                list.add(new IndexedCuboid6(i, array[i].copy().apply(ComponentStore.orientT(part.orientation))));
+            }
+        }
+
+        @Override
+        public boolean activate(BundledGatePart part, EntityPlayer player, ItemStack held, MovingObjectPosition hit)
+        {
+            if (held != null && held.getItem() instanceof IScrewdriver) return false;
+            ExtendedMOP hit1 = (ExtendedMOP)hit;
+            int hitdata = ((Integer)hit1.data);
+            if (hitdata != -1)
+            {
+                pressMask ^= (1<<hitdata);
+                if (!part.world().isRemote) onChange(part);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public int bundledOutputMask(int shape)
+        {
+            return 4;
+        }
+
+        @Override
+        public int bundledInputMask(int shape)
+        {
+            return 0;
+        }
+
+        @Override
+        public int outputMask(int shape)
+        {
+            return 0;
+        }
+
+        @Override
+        public int inputMask(int shape)
+        {
+            return 1;
+        }
+
+        @Override
+        public void save(NBTTagCompound tag)
+        {
+            tag.setShort("press", (short)pressMask);
+            tag.setShort("mask", (short)bOut);
+        }
+
+        @Override
+        public void load(NBTTagCompound tag)
+        {
+            pressMask = tag.getShort("press");
+            setBOut(tag.getShort("mask"));
+        }
+
+        @Override
+        public void onChange(BundledGatePart gate)
+        {
+            boolean inputChanged = false;
+
+            int oldInput = gate.state()&0xF;
+            int newInput = getInput(gate, 1);
+            if (oldInput != newInput)
+            {
+                gate.setState(gate.state()&0xF0|newInput);
+                inputChanged = true;
+            }
+
+            if ((gate.state()&1) != 0) pressMask = 0;
+
+            int oldBInput = bOut;
+            int newBInput = pressMask;
+            if (oldBInput != newBInput)
+            {
+                inputChanged = true;
+            }
+
+            if (inputChanged)
+            {
+                gate.onInputChange();
+                gate.scheduleTick(2);
+            }
+        }
+
+        @Override
+        public void scheduledTick(BundledGatePart gate)
+        {
+            boolean outputChanged = false;
+
+            int oldBOut = bOut;
+            int newBOut = pressMask;
+            if (oldBOut != newBOut)
+            {
+                setBOut(pressMask);
+                outputChanged = true;
+                sendClientUpdate();
+            }
+
+            if (outputChanged)
+                gate.onOutputChange(bundledOutputMask(gate.shape()));
+
+            onChange(gate);
+        }
+
+        @Override
+        public int getOutput(BundledGatePart gate, int r)
+        {
+            return (gate.state()&0x10<<r) != 0 ? 15 : 0;
+        }
+
+        @Override
+        public byte[] getBundledOutput(BundledGatePart gate, int r)
+        {
+            return bOutUnpack;
+        }
+
+        public void sendClientUpdate()
+        {
+            gate.getWriteStream(11).writeShort(pressMask);
+        }
+
+        @Override
+        public void read(MCDataInput packet, int key)
+        {
+            if (key == 11) pressMask = packet.readUShort();
+        }
+
+        @Override
+        public void readDesc(MCDataInput packet)
+        {
+            pressMask = packet.readUShort();
+        }
+
+        @Override
+        public void writeDesc(MCDataOutput packet)
+        {
+            packet.writeShort(pressMask);
         }
     }
 }

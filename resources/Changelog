@@ -1,3 +1,8 @@
+v4.4.7
+- ADDED: Bus Input Panel gate
+- ADDED: Computercraft bundled cable compatability
+- FIX: Stock keepers requesting more than available space
+
 v4.4.6
 - ADDED: Bus Converter gate
 - ADDED: Router controller and Routing CPU

@@ -2,6 +2,7 @@ package mrtjp.projectred.integration;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.*;
@@ -23,7 +24,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Arrays;
+import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, IConnectable, TFacePart, JIconHitEffects
@@ -408,6 +409,15 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     }
 
     @Override
+    public Iterable<IndexedCuboid6> getSubParts()
+    {
+        List<IndexedCuboid6> list = new ArrayList<IndexedCuboid6>();
+        list.add(new IndexedCuboid6(-1, getBounds()));
+        getLogic().addSubParts(this, list);
+        return list;
+    }
+
+    @Override
     public Iterable<Cuboid6> getOcclusionBoxes()
     {
         return Arrays.asList(oBoxes[side()]);
@@ -445,7 +455,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     @Override
     public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack held)
     {
-        if (getLogic().activate(this, player, held))
+        if (getLogic().activate(this, player, held, hit))
             return true;
 
         if (held != null && held.getItem() instanceof IScrewdriver)

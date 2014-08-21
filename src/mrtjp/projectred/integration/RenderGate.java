@@ -3,6 +3,7 @@ package mrtjp.projectred.integration;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
+import codechicken.lib.vec.RedundantTransformation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.integration.BundledGateLogic.BusTransceiver;
@@ -50,6 +51,7 @@ public class RenderGate
             new ANDCell(),
             new BusRandomizer(),
             new BusConverter(),
+            new BusInputPanel()
     };
 
     public static void registerIcons(IIconRegister r)
@@ -1453,6 +1455,57 @@ public class RenderGate
             wires[2].on = false;
             bar.signal = 0;
             bar.inverted = false;
+        }
+    }
+
+    public static class BusInputPanel extends GateRenderer<BundledGatePart>
+    {
+        WireComponentModel[] wires = generateWireModels("BUSINPUT", 1);
+        InputPanelButtons buttons = new InputPanelButtons();
+        BusInputPanelCableModel cable = new BusInputPanelCableModel();
+
+        public BusInputPanel()
+        {
+            models.add(buttons);
+            models.add(cable);
+            models.addAll(Arrays.asList(wires));
+        }
+
+        @Override
+        public void prepareInv()
+        {
+            wires[0].on = false;
+
+            buttons.pressMask = 0;
+            buttons.pos.set(0, 0, 0);
+            buttons.orientT = new RedundantTransformation();
+        }
+
+        @Override
+        public void prepare(BundledGatePart part)
+        {
+            wires[0].on = (part.state()&1) != 0;
+            buttons.pressMask = ((BundledGateLogic.BusInputPanel)part.getLogic()).pressMask;
+        }
+
+        @Override
+        public void prepareDynamic(BundledGatePart part, float frame)
+        {
+            buttons.pressMask = ((BundledGateLogic.BusInputPanel)part.getLogic()).pressMask;
+            buttons.pos.set(part.x(), part.y(), part.z());
+            buttons.orientT = part.rotationT();
+        }
+
+        @Override
+        public void renderDynamic(Transformation t)
+        {
+            buttons.renderLights();
+        }
+
+        @Override
+        public boolean hasSpecials()
+        {
+            return true;
         }
     }
 }

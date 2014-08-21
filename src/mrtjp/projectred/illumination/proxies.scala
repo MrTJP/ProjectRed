@@ -2,7 +2,7 @@ package mrtjp.projectred.illumination
 
 import codechicken.multipart.MultiPartRegistry
 import mrtjp.projectred.ProjectRedIllumination._
-import mrtjp.projectred.core.IProxy
+import mrtjp.projectred.core.{RenderHalo, IProxy}
 import codechicken.multipart.MultiPartRegistry.IPartFactory
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.client.MinecraftForgeClient
@@ -68,8 +68,6 @@ class IlluminationProxy_client extends IlluminationProxy_server
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ProjectRedIllumination.blockLamp), LampTESR)
         ClientRegistry.bindTileEntitySpecialRenderer(classOf[TileLamp], LampTESR)
-
-        MinecraftForge.EVENT_BUS.register(RenderHalo)
     }
 }
 

@@ -10,6 +10,8 @@ import net.minecraft.world.World;
  *
  * This should be a standalone class that you have to create on the side,
  * you probably dont want this to be implemented on your tile.
+ *
+ * Register this class in the Transmission API
  */
 public interface IBundledTileInteraction
 {

@@ -12,6 +12,7 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.INeighborTileChange;
 import codechicken.multipart.handler.MultipartSaveLoad;
+import net.minecraft.util.MovingObjectPosition;
 
 public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRsGatePart>
 {
@@ -316,7 +317,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
 
         @Override
-        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held)
+        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held, MovingObjectPosition hit)
         {
             if (held == null || !(held.getItem() instanceof IScrewdriver))
             {
@@ -467,7 +468,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
 
         @Override
-        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held)
+        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held, MovingObjectPosition hit)
         {
             if (held == null || !(held.getItem() instanceof IScrewdriver))
             {
@@ -790,7 +791,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
 
         @Override
-        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held)
+        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held, MovingObjectPosition hit)
         {
             if (held == null || !(held.getItem() instanceof IScrewdriver))
             {
@@ -1031,7 +1032,7 @@ public abstract class InstancedRsGateLogic extends RedstoneGateLogic<InstancedRs
         }
 
         @Override
-        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held)
+        public boolean activate(InstancedRsGatePart gate, EntityPlayer player, ItemStack held, MovingObjectPosition hit)
         {
             if (held == null || !(held.getItem() instanceof IScrewdriver))
             {
