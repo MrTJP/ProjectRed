@@ -1,4 +1,4 @@
-itemGroup.core=Project Red: Ядро
+itemGroup.core=Project Red: Основной мод
 
 item.projectred.core.part.partplate.name=Печатная плата
 item.projectred.core.part.partconductiveplate.name=Токопроводящая плата
@@ -67,7 +67,7 @@ item.projectred.core.datacard.name=Карта памяти
 
 
 
-itemGroup.expansion=Project Red: Expansion
+itemGroup.expansion=Project Red: Расширение
 tile.projectred.expansion.machine2|0.name=Сетевой контроллер маршрутизации
 
 
@@ -83,7 +83,7 @@ item.projectred.transportation.routingchip|5.name=Чип "Информатор"
 item.projectred.transportation.routingchip|6.name=Чип "Хранитель склада"
 item.projectred.transportation.routingchip|7.name=Чип "Крафт"
 
-item.projectred.transportation.cpu|0.name=ЦПУ сетевой маршрутизации
+item.projectred.transportation.cpu|0.name=ЦПУ сетевого маршрутизатора
 
 item.projectred.transportation.routerutil.name=Устройство маршрутизации
 
