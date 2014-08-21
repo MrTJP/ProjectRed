@@ -404,13 +404,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
         else super.getDrops
     }
 
-    override def getSubParts =
-    {
-        val b = getCollisionBoxes
-        var i = Seq[IndexedCuboid6]()
-        for (c <- b) i :+= new IndexedCuboid6(0, c)
-        i
-    }
+    override def getSubParts = getCollisionBoxes.map(that => new IndexedCuboid6(0, that))
 
     override def getOcclusionBoxes =
     {
@@ -422,9 +416,9 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
     override def getCollisionBoxes =
     {
         import WireBoxes._
-        var boxes = Seq(fOBounds(6))
-        for (s <- 0 until 6) if (maskConnects(s)) boxes :+= fOBounds(s)
-        boxes
+        var b = Seq.newBuilder[Cuboid6].+=(fOBounds(6))
+        for (s <- 0 until 6) if (maskConnects(s)) b += fOBounds(s)
+        b.result()
     }
 
     override def getHollowSize(side:Int) = 8

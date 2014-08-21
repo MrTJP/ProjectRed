@@ -2,6 +2,7 @@ package mrtjp.projectred.illumination
 
 import codechicken.multipart._
 import codechicken.lib.data.{MCDataOutput, MCDataInput}
+import mrtjp.projectred.core.RenderHalo
 import net.minecraft.nbt.NBTTagCompound
 import codechicken.lib.vec.{Cuboid6, Vector3, BlockCoord}
 import mrtjp.projectred.core.libmc.{PRLib, WireLib}

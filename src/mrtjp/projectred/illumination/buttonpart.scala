@@ -1,7 +1,7 @@
 package mrtjp.projectred.illumination
 
 import codechicken.multipart.minecraft.{PartMetaAccess, ButtonPart}
-import mrtjp.projectred.core.TSwitchPacket
+import mrtjp.projectred.core.{RenderHalo, TSwitchPacket}
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.entity.player.EntityPlayer

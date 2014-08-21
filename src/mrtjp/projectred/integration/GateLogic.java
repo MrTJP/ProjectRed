@@ -1,8 +1,12 @@
 package mrtjp.projectred.integration;
 
+import codechicken.lib.raytracer.IndexedCuboid6;
 import mrtjp.projectred.api.IConnectable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MovingObjectPosition;
+
+import java.util.List;
 
 public abstract class GateLogic<PartType extends GatePart>
 {
@@ -53,12 +57,16 @@ public abstract class GateLogic<PartType extends GatePart>
 
     /**
      * Beware you don't actually do anything client side.
-     * 
+     *
      * @return true if the event is consumed by this part
      */
-    public boolean activate(PartType part, EntityPlayer player, ItemStack held)
+    public boolean activate(PartType part, EntityPlayer player, ItemStack held, MovingObjectPosition hit)
     {
         return false;
+    }
+
+    public void addSubParts(PartType part, List<IndexedCuboid6> list)
+    {
     }
 
     public int lightLevel()

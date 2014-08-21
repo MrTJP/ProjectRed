@@ -3,6 +3,7 @@ package mrtjp.projectred.integration;
 import mrtjp.projectred.api.IScrewdriver;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.EnumSkyBlock;
 
 import java.util.Random;
@@ -443,7 +444,7 @@ public abstract class SimpleGateLogic extends RedstoneGateLogic<SimpleGatePart>
         }
 
         @Override
-        public boolean activate(SimpleGatePart part, EntityPlayer player, ItemStack held)
+        public boolean activate(SimpleGatePart part, EntityPlayer player, ItemStack held, MovingObjectPosition hit)
         {
             if (held == null || !(held.getItem() instanceof IScrewdriver))
             {
