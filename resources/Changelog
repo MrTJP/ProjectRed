@@ -1,7 +1,9 @@
 v4.4.7
 - ADDED: Bus Input Panel gate
 - ADDED: Computercraft bundled cable compatability
+- ADDED: Creative Routing CPU
 - FIX: Stock keepers requesting more than available space
+- FIX: Tiles dropping things when they shoudnt
 
 v4.4.6
 - ADDED: Bus Converter gate

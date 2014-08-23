@@ -6,6 +6,7 @@ import mrtjp.projectred.core.libmc.PRColors;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class IntegrationRecipes
 {
@@ -341,5 +342,15 @@ public class IntegrationRecipes
                 'R', PartDefs.CONDUCTIVEPLATE().makeStack(),
                 'S', PartDefs.SILICONCHIP().makeStack()
                 );
+
+        /** Bus Input Panel **/
+        GameRegistry.addRecipe(new ShapedOreRecipe(EnumGate.BusInputPanel.makeStack(),
+                "BRB",
+                "BIB",
+                "BBB",
+                'B', PartDefs.BUNDLEDPLATE().makeStack(),
+                'R', PartDefs.CONDUCTIVEPLATE().makeStack(),
+                'I', PartDefs.oreDictDefinitionIllumar()
+        ));
     }
 }

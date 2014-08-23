@@ -12,6 +12,7 @@ object TransmissionRecipes
 {
     def initTransmissionRecipes()
     {
+        WireDef.initOreDict()
         initWireRecipes()
         initPartRecipes()
     }
