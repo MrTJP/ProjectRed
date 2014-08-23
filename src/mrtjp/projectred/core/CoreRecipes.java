@@ -19,6 +19,7 @@ public class CoreRecipes
 {
     public static void initCoreRecipes()
     {
+        PartDefs.initOreDict();
         initPartRecipes();
         initToolRecipes();
     }
@@ -249,7 +250,6 @@ public class CoreRecipes
                 'g', Items.glowstone_dust,
                 's', SILICON().makeStack()
                 );
-
     }
 
 }

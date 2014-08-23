@@ -11,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.world.World
 import mrtjp.projectred.api.IScrewdriver
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraftforge.oredict.OreDictionary
 import org.lwjgl.input.Keyboard
 import scala.collection.JavaConversions
 
@@ -146,16 +147,24 @@ object PartDefs extends ItemDefinition
     //Groups
     val ILLUMARS = WHITEILLUMAR to BLACKILLUMAR
 
+    val oreDictDefinitionIllumar = "projredIllumar"
+
+    def initOreDict()
+    {
+        for (i <- ILLUMARS) OreDictionary.registerOre(oreDictDefinitionIllumar, i.makeStack)
+    }
+
     class PartVal(iconName:String) extends ItemDef
     {
         var icon:IIcon = null
+
         def registerIcon(reg:IIconRegister)
         {
             icon = reg.registerIcon("projectred:parts/"+iconName)
         }
 
-    override def name = iconName
-  }
+        override def name = iconName
+    }
 }
 
 class ItemScrewdriver extends ItemCore("projectred.core.screwdriver") with IScrewdriver
