@@ -4,16 +4,12 @@ import mrtjp.projectred.compatibility.IPRPlugin
 import net.minecraft.nbt.{NBTTagList, NBTTagCompound}
 import mrtjp.projectred.ProjectRedExploration
 import cpw.mods.fml.common.event.FMLInterModComms
+import cpw.mods.fml.common.Loader
 import net.minecraft.item.Item
 import net.minecraft.block.Block
 
-object PluginTreecapitator extends IPRPlugin
-{
-    override def getModIDs = Array("TreeCapitator")
-
-    override def preInit() {}
-
-    override def init()
+object AfterWorldCheck {
+    def checkedInit()
     {
         val tpModCfg = new NBTTagCompound
         tpModCfg.setString("modID", "ProjRed|Exploration")
@@ -64,6 +60,18 @@ object PluginTreecapitator extends IPRPlugin
 
 
         FMLInterModComms.sendMessage("TreeCapitator", "ThirdPartyModConfig", tpModCfg)
+    }
+}
+
+object PluginTreecapitator extends IPRPlugin
+{
+    override def getModIDs = Array("TreeCapitator", "ProjRed|Exploration")
+
+    override def preInit() {}
+
+    override def init()
+    {
+        AfterWorldCheck.checkedInit();
     }
 
     override def postInit() {}
