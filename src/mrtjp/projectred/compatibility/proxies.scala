@@ -7,7 +7,7 @@ class CompatibilityProxy_server extends IProxy
 {
     def preinit()
     {
-        try{Services.servicesLoad()}catch{case e:Throwable=>}
+        Services.servicesLoad()
         Services.doPreInit()
     }
 
