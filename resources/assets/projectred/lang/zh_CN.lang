@@ -82,6 +82,7 @@ item.projectred.transportation.routingchip|6.name=物品堆栈维护芯片
 item.projectred.transportation.routingchip|7.name=物品合成芯片
 
 item.projectred.transportation.cpu|0.name=路由网络CPU
+item.projectred.transportation.creativecpu|0.name=创造路由网络CPU
 
 item.projectred.transportation.routerutil.name=路由器工具
 
@@ -397,9 +398,9 @@ item.projectred.integration.gate|24.name=转换单元
 item.projectred.integration.gate|25.name=缓冲单元 
 item.projectred.integration.gate|26.name=比较器
 item.projectred.integration.gate|27.name=与单元 
-item.projectred.integration.gate|28.name=总线随机选择器
+item.projectred.integration.gate|28.name=总线随机发生器
 item.projectred.integration.gate|29.name=总线转换器
-
+item.projectred.integration.gate|30.name=总线输入板
 
 
 
