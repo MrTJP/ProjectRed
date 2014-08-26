@@ -1,3 +1,6 @@
+v4.4.8
+- FIX: Modular dependency on World
+
 v4.4.7
 - ADDED: Bus Input Panel gate
 - ADDED: Computercraft bundled cable compatability
