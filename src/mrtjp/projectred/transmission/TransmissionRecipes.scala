@@ -1,9 +1,9 @@
 package mrtjp.projectred.transmission
 
 import cpw.mods.fml.common.registry.GameRegistry
-import mrtjp.projectred.core.PartDefs
 import mrtjp.projectred.core.libmc.PRColors
 import mrtjp.projectred.core.libmc.recipe._
+import mrtjp.projectred.core.{Configurator, PartDefs}
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.ItemStack
 import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
@@ -53,7 +53,8 @@ object TransmissionRecipes
         for (w <- WireDef.values) if (w.hasFramedForm)
             (RecipeLib.newShapedBuilder <-> "sss"+"sis"+"sss"
                 += new ItemIn(w.makeStack) to "i"
-                += new MicroIn(MicroIn.edge, MicroIn.eight, Blocks.log) to "s"
+                += (if (Configurator.simpleFramedWireRecipe) new ItemIn(Items.stick) to "s"
+                    else new MicroIn(MicroIn.edge, MicroIn.eight, Blocks.log) to "s")
                 += new ItemOut(w.makeFramedStack)).registerResult()
     }
 
