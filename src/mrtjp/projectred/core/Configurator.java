@@ -38,7 +38,7 @@ public class Configurator
     public static boolean debugMode;
     public static boolean logicGateSounds;
 
-    public static int[] backpackBlacklist;
+    public static boolean simpleFramedWireRecipe;
 
     public static int maxDetectionCount;
     public static int detectionFrequency;
@@ -93,20 +93,8 @@ public class Configurator
         detectionFrequency = config.get("general", "Detection Frequency", 20, "Ticks between router searches.").getInt();
         routerUpdateThreadCount = config.get("general", "Router Update Thread Count", 4, "Number of active threads that update routing tables.").getInt();
 
-//        String[] s = localConfig.get("general", "Backpack item blacklist", "", "Comma seperated list of item ids that cannot go in a backpack.").getString().split(",");
-//        int s1 = 0;
-//        backpackBlacklist = new int[s.length];
-//        for (String str : s)
-//        {
-//            String str2 = str.trim();
-//            try
-//            {
-//                backpackBlacklist[s1] = Integer.parseInt(str2);
-//            }
-//            catch (Throwable t){}
-//            s1++;
-//        }
-//
+        simpleFramedWireRecipe = config.get("general", "Simple Framed Wire recipe", false, "Use sticks instead of wood strips in framed wire recipes.").getBoolean();
+
         if (config.hasChanged())
             config.save();
     }
