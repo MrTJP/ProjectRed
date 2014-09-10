@@ -9,6 +9,7 @@ import codechicken.lib.vec.Vector3;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.api.IScrewdriver;
+import mrtjp.projectred.core.libmc.VecLib;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -613,8 +614,8 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
 
         static
         {
-            unpressed = ComponentStore.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 3, 13), new Vector3(-0.25, 0, -0.25));
-            pressed = ComponentStore.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25));
+            unpressed = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 3, 13), new Vector3(-0.25, 0, -0.25));
+            pressed = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25));
         }
 
         public int pressMask = 0;
@@ -640,7 +641,7 @@ public abstract class BundledGateLogic extends RedstoneGateLogic<BundledGatePart
             for (int i = 0; i < 16; i++)
             {
                 IndexedCuboid6[] array = (pressMask&1<<i) == 0 ? unpressed : pressed;
-                list.add(new IndexedCuboid6(i, array[i].copy().apply(ComponentStore.orientT(part.orientation))));
+                list.add(new IndexedCuboid6(i, array[i].copy().apply(VecLib.orientT(part.orientation))));
             }
         }
 
