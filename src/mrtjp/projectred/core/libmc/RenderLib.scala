@@ -94,4 +94,3 @@ abstract class MultiTileRender(val block:Block)
 
     def getIcon(side:Int, meta:Int):IIcon
 }
-

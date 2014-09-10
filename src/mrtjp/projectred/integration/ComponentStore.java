@@ -13,6 +13,7 @@ import mrtjp.projectred.core.Configurator;
 import mrtjp.projectred.core.InvertX;
 import mrtjp.projectred.core.RenderHalo;
 import mrtjp.projectred.core.libmc.PRColors;
+import mrtjp.projectred.core.libmc.VecLib;
 import mrtjp.projectred.transmission.UVT;
 import mrtjp.projectred.transmission.WireModelGen;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -167,8 +168,7 @@ public class ComponentStore
     public static Transformation orientT(int orient)
     {
         Transformation t = Rotation.sideOrientation(orient%24>>2, orient&3);
-        if (orient >= 24)
-            t = new Scale(-1, 1, 1).with(t);
+        if (orient >= 24) t = new Scale(-1, 1, 1).with(t);
 
         return t.at(Vector3.center);
     }
@@ -206,28 +206,6 @@ public class ComponentStore
         }
         return m;
     }
-
-    public static IndexedCuboid6[] buildCubeArray(int xSize, int zSize, Cuboid6 box, Vector3 expand)
-    {
-        Vector3 min = box.min;
-        Vector3 max = box.max;
-        min.multiply(1/16D);
-        max.multiply(1/16D);
-        expand.multiply(1/16D);
-        IndexedCuboid6[] data = new IndexedCuboid6[xSize*zSize];
-        for (int i = 0; i < data.length; i++)
-        {
-            int x = i%xSize;
-            int z = i/zSize;
-            double dx = (max.x-min.x)/xSize;
-            double dz = (max.z-min.z)/zSize;
-            Vector3 min1 = new Vector3(min.x+dx*x, min.y, min.z+dz*z);
-            Vector3 max1 = new Vector3(min1.x+dx, max.y, min1.z+dz);
-            data[i] = new IndexedCuboid6(i, new Cuboid6(min1, max1).expand(expand));
-        }
-        return data;
-    }
-
 
     public static abstract class ComponentModel
     {
@@ -1158,9 +1136,9 @@ public class ComponentStore
 
     public static class InputPanelButtons extends ComponentModel
     {
-        public static IndexedCuboid6[] unpressed = buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 3, 13), new Vector3(-0.25, 0, -0.25));
-        public static IndexedCuboid6[] pressed = buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25));
-        public static IndexedCuboid6[] lights = buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25).add(0.2));
+        public static IndexedCuboid6[] unpressed = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 3, 13), new Vector3(-0.25, 0, -0.25));
+        public static IndexedCuboid6[] pressed = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25));
+        public static IndexedCuboid6[] lights = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25).add(0.2));
 
         int pressMask = 0;
         BlockCoord pos = new BlockCoord();
@@ -1181,9 +1159,7 @@ public class ComponentStore
         public void renderLights()
         {
             for (int i = 0; i < 16; i++) if ((pressMask&1<<i) != 0)
-            {
                 RenderHalo.addLight(pos.x, pos.y, pos.z, i, lights[i].copy().apply(orientT));
-            }
         }
     }
 }
