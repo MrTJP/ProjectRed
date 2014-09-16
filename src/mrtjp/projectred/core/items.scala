@@ -152,6 +152,8 @@ object PartDefs extends ItemDefinition
     def initOreDict()
     {
         for (i <- ILLUMARS) OreDictionary.registerOre(oreDictDefinitionIllumar, i.makeStack)
+
+        OreDictionary.registerOre("ingotRedAlloy", REDINGOT.makeStack);
     }
 
     class PartVal(iconName:String) extends ItemDef
