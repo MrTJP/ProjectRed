@@ -1,3 +1,7 @@
+v4.4.9
+- FIX: Server crash
+- FIX: Added Red alloy ingot to ore dictionary
+
 v4.4.8
 - FIX: Modular dependency on World
 
