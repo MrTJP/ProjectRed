@@ -117,7 +117,7 @@ processResources {
 // Short-hand variable
 ext.jarVer = "${project.minecraft.version}-${project.version}"
 // Output of reobf task
-ext.jarFile = reobf.outputs.files.each{}.collect{ zipTree(it) }
+ext.jarFile = zipTree(jar.archivePath)
 // Files to not include in baseJar
 ext.baseExcludes = []
 
@@ -239,7 +239,7 @@ baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && !ta
 gradle.taskGraph.afterTask { task, TaskState state ->
     if (task == baseJar) {
         // Delete original jar now it has been split into separate jars.
-        reobf.outputs.files.each{delete it}
+        delete jar.archivePath
     }
 }
 
