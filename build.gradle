@@ -200,7 +200,7 @@ task compatJar(type: Jar, dependsOn: reobf) {
         include "**/mrtjp/projectred/compatibility/**"
 
         //APIs
-        include "**/dan200/**"
+        //include "**/dan200/**"
 
         include "**/assets/asm/**"
         include "**/assets/projectred/textures/blocks/compat/**"
