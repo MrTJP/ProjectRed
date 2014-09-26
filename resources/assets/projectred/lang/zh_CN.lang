@@ -82,7 +82,7 @@ item.projectred.transportation.routingchip|6.name=物品堆栈维护芯片
 item.projectred.transportation.routingchip|7.name=物品合成芯片
 
 item.projectred.transportation.cpu|0.name=路由网络CPU
-item.projectred.transportation.creativecpu|0.name=创造路由网络CPU
+item.projectred.transportation.creativecpu.name=创造路由网络CPU
 
 item.projectred.transportation.routerutil.name=路由器工具
 
