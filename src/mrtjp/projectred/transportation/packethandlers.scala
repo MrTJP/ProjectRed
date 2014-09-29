@@ -159,31 +159,22 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
             if (craft) opt += CRAFT
             if (partial) opt += PARTIAL
 
-            val router = t.asInstanceOf[IWorldRouter].getRouter
             val r = new RequestConsole(opt.result()).setDestination(t.asInstanceOf[IWorldRequester])
             val s = ItemKeyStack.get(packet.readItemStack(true))
 
             r.buildRequestTree(s)
 
-            if (!router.getController.usePower(r.getRequiredPower))
+            r.startRequest()
+
+            if (r.requested > 0)
             {
-                sender.addChatMessage(new ChatComponentText("Could not request "+s.stackSize+" of "+s.key.getName+"."))
-                sender.addChatMessage(new ChatComponentText("Sufficient power not available."))
+                sender.addChatMessage(new ChatComponentText("Successfully requested "+r.requested+" of "+s.key.getName+"."))
+                RouteFX.spawnType1(RouteFX.color_request, 8, bc, sender.worldObj)
             }
             else
             {
-                r.startRequest()
-
-                if (r.requested > 0)
-                {
-                    sender.addChatMessage(new ChatComponentText("Successfully requested "+r.requested+" of "+s.key.getName+"."))
-                    RouteFX.spawnType1(RouteFX.color_request, 8, bc, sender.worldObj)
-                }
-                else
-                {
-                    sender.addChatMessage(new ChatComponentText("Could not request "+s.stackSize+" of "+s.key.getName+". Missing:"))
-                    for ((k,v) <- r.getMissing) sender.addChatMessage(new ChatComponentText(v+" of "+k.getName))
-                }
+                sender.addChatMessage(new ChatComponentText("Could not request "+s.stackSize+" of "+s.key.getName+". Missing:"))
+                for ((k,v) <- r.getMissing) sender.addChatMessage(new ChatComponentText(v+" of "+k.getName))
             }
 
             sendRequestList(t.asInstanceOf[IWorldRequester], sender, pull, craft)

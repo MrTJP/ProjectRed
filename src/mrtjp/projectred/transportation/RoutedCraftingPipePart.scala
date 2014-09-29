@@ -76,8 +76,6 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
     protected def stacksToExtract = 1
 
-    def powerPerOp = 10.0D
-
     def priorityUp()
     {
         val old = priority
@@ -178,8 +176,6 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
                 val keyStack = nextOrder.get1
                 var maxToSend = Math.min(itemsleft, keyStack.stackSize)
                 maxToSend = Math.min(keyStack.key.getMaxStackSize, maxToSend)
-
-                while (!router.getController.usePower(powerPerOp*maxToSend) && maxToSend > 0) maxToSend -= 1
 
                 var available = inv.extractItem(keyStack.key, maxToSend)
                 if (available <= 0) break()

@@ -222,13 +222,6 @@ object TransportationRecipes
 
     def initMiscRecipes()
     {
-        GameRegistry.addRecipe(new ItemStack(ProjectRedTransportation.itemRouterCPU),
-            "ggg",
-            " d ",
-            "ggg",
-            'g':JC, Items.gold_nugget,
-            'd':JC, Items.diamond
-        )
     }
 }
 

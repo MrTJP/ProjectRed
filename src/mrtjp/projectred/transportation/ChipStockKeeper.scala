@@ -18,8 +18,6 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
         throttle
     }
 
-    def powerPerOp = 10.0D
-
     var enrouteItems = HashMap[ItemKey, Int]().withDefaultValue(0)
 
     override def update()
@@ -52,7 +50,6 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
             val spaceInInventory = routeLayer.getRequester.getActiveFreeSpace(keyStack.key)
             val missing = math.min(toRequest-inInventory, spaceInInventory)
             if (missing <= 0 || (requestWhenEmpty && inInventory > 0)) break()
-            if (!controller.canUsePower(powerPerOp)) break()
 
             val req = new RequestConsole(RequestFlags.full).setDestination(routeLayer.getRequester)
             val request = ItemKeyStack.get(keyStack.key, missing)
@@ -64,7 +61,6 @@ class ChipStockKeeper extends RoutingChipset with TChipStock
             {
                 addToRequestList(request.key, req.requested)
                 requestedSomething = true
-                controller.usePower(powerPerOp)
             }
         }
 

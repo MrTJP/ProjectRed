@@ -31,7 +31,7 @@ public interface ISpecialLinkState
      * pipe should consider as found.
      *
      * @param tile The tile in question.
-     * @return A list of all connected pipes (as TileMultiparts).
+     * @return The connected pipe (as a TileMultipart).
      */
     public TileEntity getLink(TileEntity tile);
 }

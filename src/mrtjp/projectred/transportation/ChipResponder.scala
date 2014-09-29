@@ -11,8 +11,6 @@ class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriori
 
     def prefScale = 2+upgradeBus.LLatency
 
-    def powerPerOp = 1.0D
-
     override def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse =
     {
         val real = invProvider.getInventory
@@ -20,7 +18,7 @@ class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriori
 
         if (real == null || side < 0) return null
 
-        if (SyncResponse.isPreferredOver(sendPriority.ordinal, preference, rival) && filterAllows(item) && controller.usePower(powerPerOp))
+        if (SyncResponse.isPreferredOver(sendPriority.ordinal, preference, rival) && filterAllows(item))
         {
             val inv = InvWrapper.wrap(real).setSlotsFromSide(side)
             val room = inv.getSpaceForItem(item)

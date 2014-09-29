@@ -57,14 +57,12 @@ object PipeDefs extends ItemDefinition
 
     val BASIC = new PipeVal("pr_pipe", "basic", "rs")
     val ROUTEDJUNCTION = new PipeVal("pr_rbasic", "routedjunc",
-        "routed", "unrouted", "routedconn", "unroutedconn",
-        "pow_routed", "pow_unrouted", "pow_routedconn", "pow_unroutedconn")
+        "routed", "unrouted", "routedconn", "unroutedconn")
     val ROUTEDINTERFACE = new PipeVal("pr_rinterface", "routedint")
     val ROUTEDCRAFTING = new PipeVal("pr_rcrafting", "routedcrafting")
     val ROUTEDREQUEST = new PipeVal("pr_rrequest", "routedrequest")
     val ROUTEDEXTENSION = new PipeVal("pr_rextension", "routedextension")
     val ROUTEDFIREWALL = new PipeVal("pr_rfire", "routedfire")
-
 
     class PipeVal(val partname:String, val textures:String*) extends ItemDef
     {
@@ -235,42 +233,6 @@ class ItemRouterUtility extends ItemCore("projectred.transportation.routerutil")
         //TODO Temporary fix
         //GuiChipUpgrade.open(player, new ChipUpgradeContainer(player))
         GuiManager.openSMPContainer(player, new ChipUpgradeContainer(player), 2, {_=>})
-    }
-}
-
-class ItemCPU extends ItemCore("projectred.transportation.cpu")
-{
-    setCreativeTab(ProjectRedTransportation.tabTransportation)
-    setHasSubtypes(true)
-    setMaxStackSize(1)
-    setTextureName("projectred:cpu")
-
-    override def getSubItems(i:Item, tab:CreativeTabs, list:JList[_])
-    {
-        val list2 = list.asInstanceOf[JList[ItemStack]]
-        list2.add(new ItemStack(this))
-    }
-
-    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
-    {
-        val list2 = list.asInstanceOf[JList[String]]
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) if (stack.hasTagCompound)
-            list2.add(stack.getTagCompound.getDouble("cycles")+" cycles remaining")
-    }
-}
-
-class ItemCreativeCPU extends ItemCore("projectred.transportation.creativecpu")
-{
-    setCreativeTab(ProjectRedTransportation.tabTransportation)
-    setHasSubtypes(false)
-    setMaxStackSize(1)
-    setTextureName("projectred:cpu")
-
-    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
-    {
-        val list2 = list.asInstanceOf[JList[String]]
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
-            list2.add("Infinite cycles remaining")
     }
 }
 

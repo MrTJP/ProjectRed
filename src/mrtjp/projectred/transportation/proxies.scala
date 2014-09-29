@@ -4,9 +4,9 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.microblock.MicroMaterialRegistry
 import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.MultiPartRegistry.IPartFactory
-import cpw.mods.fml.relauncher.{SideOnly, Side}
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedTransportation._
-import mrtjp.projectred.core.{GuiManager, Configurator, IProxy}
+import mrtjp.projectred.core.{Configurator, GuiManager, IProxy}
 import net.minecraftforge.client.MinecraftForgeClient
 
 class TransportationProxy_server extends IProxy with IPartFactory
@@ -27,8 +27,6 @@ class TransportationProxy_server extends IProxy with IPartFactory
         itemPartPipe = new ItemPartPipe
         itemRoutingChip = new ItemRoutingChip
         itemRouterUtility = new ItemRouterUtility
-        itemRouterCPU = new ItemCPU
-        itemRouterCreativeCPU = new ItemCreativeCPU
 
         for (i <- 0 until Configurator.routerUpdateThreadCount) new TableUpdateThread(i)
     }
@@ -38,7 +36,7 @@ class TransportationProxy_server extends IProxy with IPartFactory
         TransportationRecipes.initRecipes()
     }
 
-    import PipeDefs._
+    import mrtjp.projectred.transportation.PipeDefs._
     override def createPart(name:String, client:Boolean) = name match
     {
         case BASIC.partname => new BasicPipePart

@@ -33,10 +33,8 @@ class LSPathFinder2(start:IWorldRouter, maxVisited:Int, world:World) extends ASt
     var visited = 0
 
     private var routers = Vector.newBuilder[StartEndPath]
-    private var controller:ControllerPath = null
 
     def foundRouters = routers.result()
-    def foundController = controller
 
     override def openInitials()
     {
@@ -75,12 +73,6 @@ class LSPathFinder2(start:IWorldRouter, maxVisited:Int, world:World) extends ASt
                         val linkedPipe = getPipe(bc)
                         if (linkedPipe != null) open(n --> (bc, linkedPipe.routeWeight)) //TODO ask linkstate for route weight
                     }
-                }
-                else tile match
-                {
-                    case layer:TControllerLayer if n.dir == 0 && controller == null => //Controller conn
-                        controller = new ControllerPath(layer)
-                    case _ =>
                 }
             }
         }
