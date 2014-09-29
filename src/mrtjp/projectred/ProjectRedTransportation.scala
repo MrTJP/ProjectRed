@@ -14,8 +14,6 @@ object ProjectRedTransportation
     /** Items **/
     var itemRoutingChip:ItemRoutingChip = null
     var itemRouterUtility:ItemRouterUtility = null
-    var itemRouterCPU:ItemCPU = null
-    var itemRouterCreativeCPU:ItemCreativeCPU = null
 
     /** Multipart items **/
     var itemPartPipe:ItemPartPipe = null

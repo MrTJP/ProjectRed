@@ -84,15 +84,6 @@ object FurnaceRecipeLib
           if (IDs.length == 0) "Unknown" else OreDictionary.getOreName(IDs(0));
         }
 
-//        for (key <- sl2.keySet())
-//        {
-//            val input = new ItemStack(key.get(0).intValue, 1, key.get(1).intValue)
-//            val output = sl2.get(key)
-//
-//            if (isDust(input) && isIngot(output)) addRecipe(input, output, 160*10/16)
-//            else addRecipe(input, output, 160)
-//        }
-
         for ((in, out) <- sl)
         {
             if (!recipeExists(in))

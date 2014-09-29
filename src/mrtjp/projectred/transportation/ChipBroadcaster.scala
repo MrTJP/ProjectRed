@@ -23,8 +23,6 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
 
     def operationDelay = 5
 
-    def powerPerOp = 1.0D
-
     override def update()
     {
         timeRemaining -= 1
@@ -80,16 +78,12 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                     restack = true
                 }
 
-                if (!controller.canUsePower(toExtract*powerPerOp)) wh.break()
-
                 val removed = inv.extractItem(reqKeyStack.key, toExtract)
                 if (removed <= 0)
                 {
                     manager.dispatchFailed()
                     cont.break()
                 }
-
-                controller.usePower(removed*powerPerOp)
 
                 val toSend = reqKeyStack.key.makeStack(removed)
                 routeLayer.queueStackToSend(toSend, invProvider.getInterfacedSide, SendPriority.ACTIVEB, requester.getRouter.getIPAddress)

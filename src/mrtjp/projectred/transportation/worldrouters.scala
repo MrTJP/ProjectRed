@@ -18,6 +18,8 @@ trait IWorldRouter
     def refreshState:Boolean
 
     def getContainer:RoutedJunctionPipePart
+    def getWorld:World
+    def getCoords:BlockCoord
 
     /** Item Syncing **/
     def itemEnroute(r:RoutedPayload)
@@ -88,15 +90,6 @@ trait TRouteLayer
 
     def getWorld:World
     def getCoords:BlockCoord
-}
-
-trait TControllerLayer
-{
-    def canUsePower(P:Double) = getPower >= P
-
-    def usePower(P:Double):Boolean
-
-    def getPower:Double
 }
 
 trait IInventoryProvider

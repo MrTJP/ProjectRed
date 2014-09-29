@@ -195,7 +195,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
     protected def updateClient()
     {
         if (world.getTotalWorldTime%(Configurator.detectionFrequency*20) == searchDelay || firstTick)
-            for (i <- 0 until 6) if ((linkMap & 1 << i) != 0)
+            for (i <- 0 until 6) if ((linkMap&1<<i) != 0)
                 RouteFX.spawnType3(RouteFX.color_blink, 1, i, getCoords, world)
     }
 
@@ -204,7 +204,6 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         if (world.isRemote) return false
         var link = 0
         for (s <- 0 until 6) if (getRouter.LSAConnectionExists(s)) link |= 1<<s
-        if (getRouter.hasUsableController) link |= 1<<6
         if (linkMap != link)
         {
             linkMap = link
@@ -374,7 +373,6 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         {
             case sinv:ISidedInventory => !sinv.getAccessibleSlotsFromSide(s^1).isEmpty
             case inv:IInventory => true
-            case pow:TControllerLayer if s == 0 => true
             case _ => false
         }
     }
@@ -456,8 +454,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
     override def getIcon(side:Int):IIcon =
     {
         val array = PipeDefs.ROUTEDJUNCTION.sprites
-        var ind = if (side == inOutSide) 2 else 0
-        if ((linkMap&1<<6) != 0) ind += 4
+        val ind = if (side == inOutSide) 2 else 0
         if ((linkMap&1<<side) != 0) array(1+ind)
         else array(2+ind)
     }
@@ -544,8 +541,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
     }
     def getRequester = this
 
-    def getWorld = world
-    def getCoords = new BlockCoord(tile)
+    override def getWorld = world
+    override def getCoords = new BlockCoord(tile)
 }
 
 object TransitComparator extends Ordering[Pair2[RoutedPayload, Int]]

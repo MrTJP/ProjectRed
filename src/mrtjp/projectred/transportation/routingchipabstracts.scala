@@ -29,7 +29,6 @@ abstract class RoutingChipset
     def invProvider = invProv
     def routeLayer = rl
     def slot = s
-    def controller = routeLayer.getRouter.getController
 
     def update(){}
 
