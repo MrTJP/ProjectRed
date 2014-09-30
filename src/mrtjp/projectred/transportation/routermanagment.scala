@@ -255,9 +255,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         var adjacentChanged = false
         if (!isLoaded) return false
 
-        val finder = new LSPathFinder2(parent, Configurator.maxDetectionCount, getParent.getContainer.world)
-        finder.start()
-        val newAdjacent = finder.foundRouters.filter(_.end.isLoaded)
+        val newAdjacent = new LSPathFinder3(parent, Configurator.maxDetectionCount).result().filter(_.end.isLoaded)
 
         adjacentChanged = adjacentLinks != newAdjacent
 
