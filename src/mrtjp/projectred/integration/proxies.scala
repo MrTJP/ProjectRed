@@ -24,12 +24,11 @@ class IntegrationProxy_server extends IProxy with IPartFactory
         ))
 
         itemPartGate = new ItemPartGate
-    }
 
-    override def postinit()
-    {
         IntegrationRecipes.initRecipes()
     }
+
+    override def postinit(){}
 
     override def createPart(name:String, client:Boolean) = name match
     {

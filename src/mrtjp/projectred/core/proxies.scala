@@ -26,13 +26,12 @@ class CoreProxy_server extends IProxy
         itemScrewdriver = new ItemScrewdriver
         itemWireDebugger = new ItemWireDebugger
         itemDataCard = new ItemDataCard
-    }
 
-    def postinit()
-    {
         RecipeLib.loadLib()
         CoreRecipes.initCoreRecipes()
     }
+
+    def postinit(){}
 
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"

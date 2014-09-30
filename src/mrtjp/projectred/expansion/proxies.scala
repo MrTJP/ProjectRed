@@ -38,12 +38,11 @@ class ExpansionProxy_server extends IProxy
 //        ProjectRedExpansion.machine2 = new BlockMachine("projectred.expansion.machine2")
 //        //Machine2 tiles
 
+        ExpansionRecipes.initRecipes()
     }
 
     def postinit()
     {
-        ExpansionRecipes.initRecipes()
-
         // In dev mode, this module may load before transmission, therefore this must go in postInit
         if (loadPowerTest)
         {

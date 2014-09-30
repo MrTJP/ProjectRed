@@ -1,3 +1,11 @@
+v4.5.0
+- CHANGE: Removed power requirement for pipe networks
+- CHANGE: Removed router controller and CPU
+- CHANGE: More efficient path finding for pipes
+- FIX: ComputerCraft API crash
+- FIX: Ore dictionary glitches
+- FIX: Recipe glitches
+
 v4.4.9
 - FIX: Server crash
 - FIX: Added Red alloy ingot to ore dictionary

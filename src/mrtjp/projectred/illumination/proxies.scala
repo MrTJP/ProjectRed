@@ -30,12 +30,11 @@ class IlluminationProxy_server extends IProxy with IPartFactory
 
         blockAirousLight = new BlockAirousLight
         blockAirousLight.bindTile(classOf[TileAirousLight])
-    }
 
-    override def postinit()
-    {
         IlluminationRecipes.initRecipes()
     }
+
+    override def postinit(){}
 
     override def createPart(name:String, client:Boolean) = name match
     {

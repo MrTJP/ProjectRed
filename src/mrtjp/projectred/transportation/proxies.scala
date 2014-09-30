@@ -29,12 +29,11 @@ class TransportationProxy_server extends IProxy with IPartFactory
         itemRouterUtility = new ItemRouterUtility
 
         for (i <- 0 until Configurator.routerUpdateThreadCount) new TableUpdateThread(i)
-    }
 
-    override def postinit()
-    {
         TransportationRecipes.initRecipes()
     }
+
+    override def postinit(){}
 
     import mrtjp.projectred.transportation.PipeDefs._
     override def createPart(name:String, client:Boolean) = name match

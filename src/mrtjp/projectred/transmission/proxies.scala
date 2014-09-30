@@ -21,12 +21,11 @@ class TransmissionProxy_server extends IProxy with IPartFactory
         ))
         itemPartWire = new ItemPartWire
         itemPartFramedWire = new ItemPartFramedWire
-    }
 
-    override def postinit()
-    {
         TransmissionRecipes.initTransmissionRecipes()
     }
+
+    override def postinit(){}
 
     override def createPart(name:String, client:Boolean) = name match
     {

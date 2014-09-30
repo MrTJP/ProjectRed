@@ -85,13 +85,12 @@ class ExplorationProxy_server extends IProxy
 
         for (s <- DecorativeStoneDefs.values)
             BlockMicroMaterial.createAndRegister(ProjectRedExploration.blockDecoratives, s.meta)
-        ExplorationRecipes.initOreDict()
-    }
 
-    override def postinit()
-    {
+        ExplorationRecipes.initOreDict()
         ExplorationRecipes.initRecipes()
     }
+
+    override def postinit(){}
 
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"
