@@ -3,12 +3,12 @@ package mrtjp.projectred.transportation
 import codechicken.lib.vec.BlockCoord
 import mrtjp.projectred.api.ISpecialLinkState
 import mrtjp.projectred.core.libmc.{ItemKey, ItemQueue, PRLib}
-import mrtjp.projectred.core.{AStar, PathNode}
 import mrtjp.projectred.transportation.SendPriority.SendPriority
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.world.World
 
-import scala.collection.immutable.BitSet
+import scala.annotation.tailrec
+import scala.collection.immutable.{BitSet, Queue}
+import scala.collection.mutable.{Builder => MBuilder}
 
 object LSPathFinder
 {
@@ -21,48 +21,48 @@ object LSPathFinder
 
     def getLinkState(tile:TileEntity):ISpecialLinkState =
     {
+        if (tile == null) return null
         for (l <- registeredLSTypes) if (l.matches(tile)) return l
         null
     }
 }
 
-class LSPathFinder2(start:IWorldRouter, maxVisited:Int, world:World) extends AStar(world)
+class LSPathFinder3(start:IWorldRouter, max:Int)
 {
-    val pipe = start.getContainer
-    val startBC = pipe.getCoords
-    var visited = 0
-
-    private var routers = Vector.newBuilder[StartEndPath]
-
-    def foundRouters = routers.result()
-
-    override def openInitials()
+    def result() =
     {
-
-        for (s <- 0 until 6) if (pipe.maskConnects(s)) open(new PathNode(pipe.getCoords, s))
+        val pipe = start.getContainer
+        val bc = start.getCoords
+        val q = Queue.newBuilder[Node]
+        for (s <- 0 until 6 if pipe.maskConnects(s)) q += Node(bc, s)
+        iterate(q.result())
     }
 
-    override def evaluate(n:PathNode)
-    {
-        visited += 1
-        if (visited > maxVisited) return
-        val thisPipe = getPipe(n.bc)
+    def world = start.getWorld
 
-        thisPipe match
+    @tailrec
+    private def iterate(open:Seq[Node], closed:Set[Node] = Set.empty,
+                        coll:MBuilder[StartEndPath, Vector[StartEndPath]] =
+                        Vector.newBuilder[StartEndPath]):Vector[StartEndPath] = open match
+    {
+        case _ if closed.size > max => coll.result()
+        case Seq() => coll.result()
+        case Seq(next, rest@_*) => getPipe(next.bc) match
         {
-            case iwr:IWorldRouter =>
-                val r = iwr.getRouter
-                if (r != null && r.isLoaded)
-                    routers += new StartEndPath(start.getRouter, r, n.hop, n.dist, thisPipe.routeFilter(n.dir^1))
+            case iwr:IWorldRouter if {val r = iwr.getRouter; r != null && r.isLoaded} =>
+                iterate(rest, closed+next, coll += new StartEndPath(start.getRouter,
+                    iwr.getRouter, next.hop, next.dist, iwr.routeFilter(next.dir^1)))
             case p:FlowingPipePart =>
-                for (s <- 0 until 6) if ((s^1) != n.dir && thisPipe.maskConnects(s))
+                val upNext = Vector.newBuilder[Node]
+                for (s <- 0 until 6) if (s != (next.dir^1) && p.maskConnects(s))
                 {
-                    val pConn = getPipe(n.bc.copy().offset(s))
-                    if (pConn != null) open(n --> (s, p.routeWeight))
+                    val route = next --> (s, p.routeWeight)
+                    if (!closed(route)) upNext += route
                 }
-            case null => if (nextToStart(n)) //Tile interactions, power, etc.
-            {
-                val tile = getTile(n.bc)
+                iterate(rest++upNext.result(), closed+next, coll)
+            case _ =>
+                val upNext = Vector.newBuilder[Node]
+                val tile = getTile(next.bc)
                 val link = LSPathFinder.getLinkState(tile)
                 if (link != null) //Special LS
                 {
@@ -71,24 +71,47 @@ class LSPathFinder2(start:IWorldRouter, maxVisited:Int, world:World) extends ASt
                     {
                         val bc = new BlockCoord(te)
                         val linkedPipe = getPipe(bc)
-                        if (linkedPipe != null) open(n --> (bc, linkedPipe.routeWeight)) //TODO ask linkstate for route weight
+                        if (linkedPipe != null)
+                        {
+                            val route = next -->(bc, linkedPipe.routeWeight)
+                            if (!closed(route)) upNext += route
+                        }
                     }
                 }
-            }
+                iterate(rest++upNext.result(), closed+next, coll) //Pipe connected to nothing?
         }
     }
 
-    override def isClosed(n:PathNode) = super.isClosed(n) || n.bc == startBC
-
-    def getPipe(bc:BlockCoord) = PRLib.getMultiPart(world, bc, 6) match
+    private def getPipe(bc:BlockCoord) = PRLib.getMultiPart(world, bc, 6) match
     {
         case p:FlowingPipePart => p
         case _ => null
     }
 
-    def getTile(bc:BlockCoord) = world.getTileEntity(bc.x, bc.y, bc.z)
+    private def getTile(bc:BlockCoord) = world.getTileEntity(bc.x, bc.y, bc.z)
 
-    def nextToStart(n:PathNode) = startBC.copy.sub(n.bc).mag() == 1D
+    private object Node
+    {
+        def apply(bc:BlockCoord, dir:Int):Node = Node(bc.copy().offset(dir), 1, dir, dir)
+    }
+    private case class Node(bc:BlockCoord, dist:Int, dir:Int, hop:Int) extends Ordered[Node]
+    {
+        def -->(to:Node, toDir:Int):Node = Node(to.bc, dist + to.dist, toDir, hop)
+
+        def -->(toDir:Int, distAway:Int):Node = Node(bc.copy().offset(toDir), dist+distAway, toDir, hop)
+        def -->(toDir:Int):Node = this -->(toDir, 1)
+
+        def -->(to:BlockCoord, distAway:Int):Node = Node(to, dist+distAway, dir, hop)
+        def -->(to:BlockCoord):Node = this -->(to, 1)
+
+        override def compare(that:Node) = dist-that.dist
+
+        override def equals(other:Any) = other match
+        {
+            case that:Node => bc == that.bc && hop == that.hop
+            case _ => false
+        }
+    }
 }
 
 class CollectionPathFinder
