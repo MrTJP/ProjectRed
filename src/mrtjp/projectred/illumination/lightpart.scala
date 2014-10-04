@@ -112,7 +112,8 @@ class BaseLightPart(obj:LightObject) extends TMultiPart with TCuboidPart with TS
         tile.markRender()
     }
 
-    override def getLightValue = if (inverted != powered) 15 else 0
+    override def getLightValue = if (inverted != powered)
+        IlluminationProxy.makeRGBLightValue(getColor, 15) else 0
 
     @SideOnly(Side.CLIENT)
     override def renderDynamic(pos:Vector3, frame:Float, pass:Int)

@@ -93,7 +93,8 @@ class TileLamp extends MultiTileTile with ILight
         inverted = meta > 15
     }
 
-    override def getLightValue = if (inverted != powered) 15 else 0
+    override def getLightValue = if (inverted != powered)
+        IlluminationProxy.makeRGBLightValue(getColor, 15) else 0
 
     override def onNeighborChange(b:Block)
     {
@@ -191,6 +192,12 @@ class BlockAirousLight extends BlockCore("projectred.illumination.airousLight", 
             c += approach
         }
     }
+
+    override def getLightValue(world:IBlockAccess, x:Int, y:Int, z:Int) =
+    {
+        val te = PRLib.getTileEntity(world, x, y, z, classOf[TileAirousLight])
+        if (te != null) te.lightVal else 0
+    }
 }
 
 class TileAirousLight extends TileEntity
@@ -252,4 +259,6 @@ class TileAirousLight extends TileEntity
         tag.setByte("spID", sourcePartID.asInstanceOf[Byte])
         tag.setByte("col", color.asInstanceOf[Byte])
     }
+
+    def lightVal = IlluminationProxy.makeRGBLightValue(color, 15)
 }

@@ -131,6 +131,12 @@ class LightButtonPart(m:Int) extends ButtonPart(m) with ILight with TSwitchPacke
 
     @SideOnly(Side.CLIENT)
     override def getBreakingIcon(subPart:scala.Any, side:Int) = getBrokenIcon(side)
+
+    //Disabled, colored lights is buggy on buttons..
+//    override def getLightValue = if (isOn)
+//        IlluminationProxy.makeRGBLightValue(getColor, 5) else 0
+
+    override def getLightValue = if (isOn) 5 else 0
 }
 
 class FLightButtonPart(m:Int) extends LightButtonPart(m)
