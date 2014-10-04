@@ -74,6 +74,10 @@ public enum PRColors
         return new ItemStack(Items.dye, 1, dyeId());
     }
 
+    public float rF() { return (rgb>>16&255)/255.0F; }
+    public float gF() { return (rgb>>8&255)/255.0F; }
+    public float bF() { return (rgb&255)/255.0F; }
+
     @SideOnly(Side.CLIENT)
     public void setGL11Color(float alpha)
     {
