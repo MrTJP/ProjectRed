@@ -89,6 +89,7 @@ object LightObjLantern extends LightObject with TLightRenderHelper
 
         for (c <- lModels)
         {
+            c.computeNormals()
             c.computeLighting(LightModel.standardLightModel)
             c.shrinkUVs(0.0005)
         }
@@ -172,6 +173,7 @@ object LightObjFixture extends LightObject with TLightRenderHelper
             val m = models.get("base").copy
             m.apply(new Translation(0.5, 0, 0.5))
             m.apply(Rotation.sideOrientation(s, 0).at(Vector3.center))
+            m.computeNormals()
             m.computeLighting(LightModel.standardLightModel)
             m.shrinkUVs(0.0005)
             lModels(s) = m
@@ -212,7 +214,7 @@ object LightObjFixture extends LightObject with TLightRenderHelper
     }
 }
 
-object LightObjCage extends LightObject with TLightRenderHelper
+object LightObjFallout extends LightObject with TLightRenderHelper
 {
     private val bounds = new Array[Cuboid6](6)
     private val lBounds = new Array[Cuboid6](6)
@@ -244,6 +246,84 @@ object LightObjCage extends LightObject with TLightRenderHelper
             val m = models.get("base").copy
             m.apply(new Translation(0.5, 0, 0.5))
             m.apply(Rotation.sideOrientation(s, 0).at(Vector3.center))
+            m.computeNormals()
+            m.computeLighting(LightModel.standardLightModel)
+            m.shrinkUVs(0.0005)
+            lModels(s) = m
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    override def render(part:BaseLightPart, color:Int, isOn:Boolean, pos:Vector3)
+    {
+        val icon = new IconTransformation(if (isOn) LightObjLantern.on(color) else LightObjLantern.off(color))
+        TextureUtils.bindAtlas(0)
+        lModels(part.side).render(pos.translation(), icon)
+    }
+
+    @SideOnly(Side.CLIENT)
+    override def renderInv(color:Int, inverted:Boolean, t:ItemRenderType)
+    {
+        val icon = new IconTransformation(if (inverted) LightObjLantern.on(color) else LightObjLantern.off(color))
+        import ItemRenderType._
+        t match
+        {
+            case ENTITY => render(-0.25D, 0D, -0.25D, 0.75D)
+            case EQUIPPED => render(-0.15D, -0.15D, -0.15D, 1.5D)
+            case EQUIPPED_FIRST_PERSON => render(-0.15D, -0.15D, -0.15D, 1.5D)
+            case INVENTORY => render(0D, -0.05D, 0D, 1D)
+            case _ =>
+        }
+
+        def render(x:Double, y:Double, z:Double, scale:Double)
+        {
+            prepairInvRender(x, y, z, scale)
+
+            val trans = new Translation(x, y, z)
+            lModels(0).render(trans, icon)
+            doInvRender()
+            if (inverted) renderInvLightBox(color, trans)
+
+            endInvRender()
+        }
+    }
+}
+
+object LightObjCage extends LightObject with TLightRenderHelper
+{
+    private val bounds = new Array[Cuboid6](6)
+    private val lBounds = new Array[Cuboid6](6)
+
+    {
+        for (s <- 0 until 6)
+        {
+            val t = Rotation.sideRotations(s).at(Vector3.center)
+            bounds(s) = new Cuboid6(3.5/16D, 0, 3.5/16D, 12.5/16D, 12/16D, 12.5/16D).apply(t)
+            lBounds(s) = new Cuboid6(4.5/16D, 0, 4.5/16D, 11.5/16D, 11/16D, 11.5/16D).apply(t)
+        }
+    }
+
+    private val lModels = new Array[CCModel](6)
+
+    override def getItemName = "projectred.illumination.cagelamp2"
+    override def getType = "pr_cagelamp2"
+
+    override def getBounds(side:Int) = bounds(side)
+    override def getLBounds(side:Int) = lBounds(side)
+
+
+    @SideOnly(Side.CLIENT)
+    override def initClient()
+    {
+        super.initClient()
+        val m1 = CCModel.combine(CCModel.parseObjModels(new ResourceLocation("projectred",
+            "textures/obj/lights/cagelamp2.obj"), 7, new InvertX).values())
+        for (s <- 0 until 6)
+        {
+            val m = m1.copy
+            m.apply(new Translation(0.5, 0, 0.5))
+            m.apply(Rotation.sideOrientation(s, 0).at(Vector3.center))
+            m.computeNormals()
             m.computeLighting(LightModel.standardLightModel)
             m.shrinkUVs(0.0005)
             lModels(s) = m
