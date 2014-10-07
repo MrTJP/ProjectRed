@@ -80,7 +80,7 @@ object IlluminationRecipes
         /** Cage Lamps **/
         for (i <- 0 until 16)
         {
-            GameRegistry.addRecipe(LightObjCage.makeStack(i),
+            GameRegistry.addRecipe(LightObjFallout.makeStack(i),
                 "CCC", "CIC", "NPN",
                 'C':JC, Blocks.iron_bars,
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
@@ -88,7 +88,7 @@ object IlluminationRecipes
                 'P':JC, PartDefs.CONDUCTIVEPLATE.makeStack
             )
 
-            GameRegistry.addRecipe(LightObjCage.makeInvStack(i),
+            GameRegistry.addRecipe(LightObjFallout.makeInvStack(i),
                 "CCC", "CIC", "NPN",
                 'C':JC, Blocks.iron_bars,
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,

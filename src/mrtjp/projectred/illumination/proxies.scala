@@ -1,21 +1,19 @@
 package mrtjp.projectred.illumination
 
 import codechicken.multipart.MultiPartRegistry
-import cpw.mods.fml.common.FMLLog
-import mrtjp.projectred.ProjectRedIllumination._
-import mrtjp.projectred.core.libmc.PRColors
-import mrtjp.projectred.core.{RenderHalo, IProxy}
 import codechicken.multipart.MultiPartRegistry.IPartFactory
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import net.minecraftforge.client.MinecraftForgeClient
-import mrtjp.projectred.ProjectRedIllumination
 import cpw.mods.fml.client.registry.ClientRegistry
-import net.minecraftforge.common.MinecraftForge
+import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.projectred.ProjectRedIllumination
+import mrtjp.projectred.ProjectRedIllumination._
+import mrtjp.projectred.core.IProxy
+import mrtjp.projectred.core.libmc.PRColors
 import net.minecraft.item.Item
+import net.minecraftforge.client.MinecraftForgeClient
 
 class IlluminationProxy_server extends IProxy with IPartFactory
 {
-    val lights = Seq(LightObjLantern, LightObjFixture, LightObjCage)
+    val lights = Seq(LightObjLantern, LightObjFixture, LightObjFallout, LightObjCage)
 
     override def preinit(){}
 
@@ -121,7 +119,7 @@ class IlluminationProxy_client extends IlluminationProxy_server
     {
         if (lValue >= 15) return cache(meta)
         val color = PRColors.get(meta)
-        import color.{rF, gF, bF}
+        import color.{bF, gF, rF}
         makeRGBLightValue(rF, gF, bF, lValue/15.0F)
     }
 }
