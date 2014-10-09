@@ -77,7 +77,7 @@ object IlluminationRecipes
             )
         }
 
-        /** Cage Lamps **/
+        /** Fallout Lights **/
         for (i <- 0 until 16)
         {
             GameRegistry.addRecipe(LightObjFallout.makeStack(i),
@@ -93,6 +93,26 @@ object IlluminationRecipes
                 'C':JC, Blocks.iron_bars,
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 'N':JC, Items.gold_nugget,
+                'P':JC, PartDefs.CATHODE.makeStack
+            )
+        }
+
+        /** Cage Lamps **/
+        for (i <- 0 until 16)
+        {
+            GameRegistry.addRecipe(LightObjFallout.makeStack(i),
+                " C ", "CIC", "pPp",
+                'C':JC, Blocks.iron_bars,
+                'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
+                'p':JC, PartDefs.PLATE.makeStack,
+                'P':JC, PartDefs.CONDUCTIVEPLATE.makeStack
+            )
+
+            GameRegistry.addRecipe(LightObjFallout.makeInvStack(i),
+                " C ", "CIC", "pPp",
+                'C':JC, Blocks.iron_bars,
+                'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
+                'p':JC, PartDefs.PLATE.makeStack,
                 'P':JC, PartDefs.CATHODE.makeStack
             )
         }

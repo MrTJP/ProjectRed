@@ -249,7 +249,7 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
     def canStay =
     {
         val pos = new BlockCoord(tile).offset(side)
-        WireLib.canPlaceWireOnSide(world, pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side^1), false)
+        WireLib.canPlaceWireOnSide(world, pos.x, pos.y, pos.z, side^1, false)
     }
 
     def getItem = getWireType.makeStack
