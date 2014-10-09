@@ -26,7 +26,7 @@ class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMul
     def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3):TMultiPart =
     {
         val onPos = pos.copy.offset(side^1)
-        if (!WireLib.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) return null
+        if (!WireLib.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, side, false)) return null
 
         val gtype = EnumGate.VALID_GATES(item.getItemDamage)
         if (!gtype.implemented) return null

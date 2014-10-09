@@ -1,20 +1,21 @@
 package mrtjp.projectred.illumination
 
-import net.minecraft.item.{ItemStack, Item}
-import codechicken.multipart.{TMultiPart, MultiPartRegistry, TItemMultiPart}
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.world.World
-import codechicken.lib.vec.{Vector3, BlockCoord}
-import mrtjp.projectred.ProjectRedIllumination
-import mrtjp.projectred.core.{TItemGlassSound, ItemCore}
-import cpw.mods.fml.relauncher.{SideOnly, Side}
-import net.minecraft.creativetab.CreativeTabs
 import java.util.{List => JList}
-import mrtjp.projectred.core.libmc.WireLib
-import net.minecraftforge.common.util.ForgeDirection
+
+import codechicken.lib.vec.{BlockCoord, Vector3}
 import codechicken.multipart.minecraft.ButtonPart
-import net.minecraft.util.IIcon
+import codechicken.multipart.{MultiPartRegistry, TItemMultiPart, TMultiPart}
+import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.projectred.ProjectRedIllumination
+import mrtjp.projectred.core.libmc.WireLib
+import mrtjp.projectred.core.{ItemCore, TItemGlassSound}
 import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.util.IIcon
+import net.minecraft.world.World
+import net.minecraftforge.common.util.ForgeDirection
 
 class ItemBaseLight(obj:LightObject, val inverted:Boolean) extends ItemCore(obj.getItemName+(if (inverted) ".inv" else "")) with TItemMultiPart with TItemGlassSound
 {
@@ -24,7 +25,7 @@ class ItemBaseLight(obj:LightObject, val inverted:Boolean) extends ItemCore(obj.
     override def newPart(stack:ItemStack, player:EntityPlayer, w:World, pos:BlockCoord, side:Int, vhit:Vector3):TMultiPart =
     {
         val bc = pos.copy.offset(side^1)
-        if (!WireLib.canPlaceWireOnSide(w, bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side), false) && !(WireLib.canPlaceTorchOnBlock(w, bc.x, bc.y, bc.z, false) && side == 1)) return null
+        if (!WireLib.canPlaceLight(w, bc.x, bc.y, bc.z, side, obj.canFloat)) return null
 
         val light = MultiPartRegistry.createPart(obj.getType, false).asInstanceOf[BaseLightPart]
         if (light != null) light.preparePlacement(side^1, stack.getItemDamage, inverted)

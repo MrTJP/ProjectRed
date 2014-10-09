@@ -6,7 +6,7 @@ import cpw.mods.fml.client.registry.ClientRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.ProjectRedIllumination._
-import mrtjp.projectred.core.IProxy
+import mrtjp.projectred.core.{Configurator, IProxy}
 import mrtjp.projectred.core.libmc.PRColors
 import net.minecraft.item.Item
 import net.minecraftforge.client.MinecraftForgeClient
@@ -117,6 +117,7 @@ class IlluminationProxy_client extends IlluminationProxy_server
     }
     def makeRGBLightValue(meta:Int, lValue:Int):Int =
     {
+        if (!Configurator.coloredLightsCompat) return lValue
         if (lValue >= 15) return cache(meta)
         val color = PRColors.get(meta)
         import color.{bF, gF, rF}

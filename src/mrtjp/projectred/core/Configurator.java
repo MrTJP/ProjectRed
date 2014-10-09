@@ -53,6 +53,7 @@ public class Configurator
     public static boolean staticWires;
     public static boolean staticGates;
     public static int lightHaloMax;
+    public static boolean coloredLightsCompat;
 
     public static void initConfig(FMLPreInitializationEvent event)
     {
@@ -88,6 +89,7 @@ public class Configurator
         retroGeneration = config.get("general", "Retro Ore Generation", false, "If set to true, world generation for ProjectRed will attempt to run even in previously generated chunks.").getBoolean(false);
         retroGenID = config.get("general", "Retro Ore Gen ID", "prRG", "This ID is used to check if retro gen has been performed on a chunk. Changing it will reset retro gen status.").getString();
         lightHaloMax = config.get("general", "Light Halo Render Count", -1, "Number of lights to render, -1 for unlimited").getInt();
+        coloredLightsCompat = config.get("general", "coloredLightsCompat", false, "Enable compatability with ColoredLightsCore. CLC is in beta state and is known to cause many glitches.").getBoolean(false);
 
         maxDetectionCount = config.get("general", "Max Detection Count", 100, "Max number of links to explore when discovering new routers.").getInt();
         detectionFrequency = config.get("general", "Detection Frequency", 20, "Ticks between router searches.").getInt();

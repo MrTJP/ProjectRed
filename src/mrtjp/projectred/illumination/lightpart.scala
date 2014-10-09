@@ -1,17 +1,21 @@
 package mrtjp.projectred.illumination
 
+import codechicken.lib.lighting.LightModel
+import codechicken.lib.render.{CCRenderState, ColourMultiplier, TextureUtils, CCModel}
+import codechicken.lib.render.uv.IconTransformation
 import codechicken.multipart._
 import codechicken.lib.data.{MCDataOutput, MCDataInput}
-import mrtjp.projectred.core.RenderHalo
+import mrtjp.projectred.core.{InvertX, RenderHalo}
 import net.minecraft.nbt.NBTTagCompound
-import codechicken.lib.vec.{Cuboid6, Vector3, BlockCoord}
-import mrtjp.projectred.core.libmc.{PRLib, WireLib}
+import codechicken.lib.vec._
+import mrtjp.projectred.core.libmc.{PRColors, PRLib, WireLib}
 import net.minecraftforge.common.util.ForgeDirection
 import net.minecraft.world.EnumSkyBlock
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.{ResourceLocation, IIcon, MovingObjectPosition}
 import net.minecraft.entity.player.EntityPlayer
+import org.lwjgl.opengl.GL11
 import scala.collection.JavaConversions._
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraftforge.client.{MinecraftForgeClient, IItemRenderer}
@@ -71,9 +75,10 @@ class BaseLightPart(obj:LightObject) extends TMultiPart with TCuboidPart with TS
     def checkSupport:Boolean =
     {
         if (world.isRemote) return false
-        val bc = new BlockCoord(x, y, z).offset(side)
-        if (!WireLib.canPlaceWireOnSide(world, bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side^1), false)
-            && !(WireLib.canPlaceTorchOnBlock(world, bc.x, bc.y, bc.z, false) && (side^1) == 0))
+        if (obj.canFloat) return false
+        val bc = new BlockCoord(tile).offset(side)
+
+        if (!WireLib.canPlaceLight(world, bc.x, bc.y, bc.z, side^1, obj.canFloat))
         {
             PRLib.dropItem(world, x, y, z, getItem)
             tile.remPart(this)
@@ -82,9 +87,17 @@ class BaseLightPart(obj:LightObject) extends TMultiPart with TCuboidPart with TS
         false
     }
 
-    override def onPartChanged(part:TMultiPart){updateState(false)}
+    override def onPartChanged(part:TMultiPart)
+    {
+        if (checkSupport) return
+        updateState(false)
+    }
 
-    override def onAdded(){updateState(true)}
+    override def onAdded()
+    {
+        if (checkSupport) return
+        updateState(true)
+    }
 
     private def checkPower = world.isBlockIndirectlyGettingPowered(x, y, z)
 
@@ -126,6 +139,7 @@ class BaseLightPart(obj:LightObject) extends TMultiPart with TCuboidPart with TS
     {
         if (pass == 0)
         {
+            CCRenderState.setBrightness(world, x, y, z)
             obj.render(this, meta, isOn, pos)
             true
         }
@@ -154,10 +168,17 @@ class BaseLightPart(obj:LightObject) extends TMultiPart with TCuboidPart with TS
     override def getColor = meta
 }
 
-class BaseLightFacePart(obj:LightObject) extends BaseLightPart(obj) with TFacePart
+class BaseLightFacePart(obj:LightObject) extends BaseLightPart(obj) with TFacePart with IMaskedRedstonePart
 {
     override def solid(side:Int) = false
-    override def getSlotMask = 1<<side
+    override def getSlotMask = (1<<side)&0x40
+
+    override def getConnectionMask(s:Int) =
+    {
+        if ((s^1) == side) 0
+        else if (s == side) 0x10
+        else 1<<Rotation.rotationTo(s&6, side)
+    }
 }
 
 trait TAirousLight extends BaseLightPart
@@ -188,14 +209,22 @@ trait TAirousLight extends BaseLightPart
 
 abstract class LightObject
 {
+    private var item:ItemBaseLight = null
+    private var itemInv:ItemBaseLight = null
+
     def getItemName:String
     def getType:String
 
     def getBounds(side:Int):Cuboid6
     def getLBounds(side:Int):Cuboid6
-
-    private var item:ItemBaseLight = null
-    private var itemInv:ItemBaseLight = null
+    def bakedBoxes(box:Cuboid6) =
+    {
+        val boxes = new Array[Cuboid6](6)
+        boxes(0) = box.copy
+        for (s <- 1 until 6)
+            boxes(s) = box.copy.apply(Rotation.sideRotations(s).at(Vector3.center))
+        boxes
+    }
 
     def getItem(inv:Boolean) = if (inv) itemInv else item
     final def initServer()
@@ -212,6 +241,8 @@ abstract class LightObject
 
     def createItem(inverted:Boolean):ItemBaseLight = new ItemBaseLight(this, inverted)
     def createPart:BaseLightPart = new BaseLightFacePart(this)
+
+    def canFloat = false
 
     @SideOnly(Side.CLIENT)
     def initClient()
@@ -236,15 +267,105 @@ abstract class LightObject
 
         MinecraftForgeClient.registerItemRenderer(item, renderer)
         MinecraftForgeClient.registerItemRenderer(itemInv, renderer)
+
+        loadModels()
     }
 
+    def loadModels()
+    def parseModel(name:String) =
+    {
+        val models = CCModel.parseObjModels(
+            new ResourceLocation("projectred", "textures/obj/lights/"+name+".obj"), 7, new InvertX)
+        for (m <- models.values()) m.apply(new Translation(0.5, 0, 0.5))
+        models
+    }
+    def bakeCopy(s:Int, m1:CCModel) =
+    {
+        val m = m1.copy
+        m.apply(Rotation.sideOrientation(s, 0).at(Vector3.center))
+        finishModel(m)
+        m
+    }
+    def finishModel(m:CCModel) =
+    {
+        m.computeNormals()
+        m.computeLighting(LightModel.standardLightModel)
+        m.shrinkUVs(0.0005)
+    }
+
+    def getModelBulb(side:Int):CCModel
+    def getModelChassi(side:Int):CCModel
+
+    def getInvModelBulb:CCModel = getModelBulb(0)
+    def getInvModelChassi:CCModel = getModelChassi(0)
+    def getInvLBounds:Cuboid6 = getLBounds(0)
+
+    def getIcon:IIcon
+
     @SideOnly(Side.CLIENT)
-    def registerIcons(reg:IIconRegister){}
+    def registerIcons(reg:IIconRegister)
 
     @SideOnly(Side.CLIENT)
     def render(part:BaseLightPart, color:Int, isOn:Boolean, pos:Vector3)
+    {
+        val icon = new IconTransformation(getIcon)
+        val t = pos.translation()
+        TextureUtils.bindAtlas(0)
+        getModelChassi(part.side).render(t, icon)
+        getModelBulb(part.side).render(t, icon, cMult(color, isOn))
+    }
+
+    import net.minecraftforge.client.IItemRenderer.ItemRenderType._
+    def getInvT(t:ItemRenderType):(Vector3, Double) = t match
+    {
+        case ENTITY => (new Vector3(-0.25D, 0D, -0.25D), 0.75D)
+        case EQUIPPED => (new Vector3(-0.15D, -0.15D, -0.15D), 1.5D)
+        case EQUIPPED_FIRST_PERSON => (new Vector3(-0.15D, -0.15D, -0.15D), 1.5D)
+        case INVENTORY => (new Vector3(0D, -0.05D, 0D), 1D)
+        case _ => (Vector3.zero, 1)
+    }
 
     @SideOnly(Side.CLIENT)
     def renderInv(color:Int, inverted:Boolean, t:ItemRenderType)
+    {
+        val icon = new IconTransformation(getIcon)
+        val (pos, scale) = getInvT(t)
+        val trans = new Translation(pos)
+
+        //Repair render
+        GL11.glPushMatrix()
+        GL11.glTranslated(pos.x, pos.y, pos.z)
+        GL11.glScaled(scale, scale, scale)
+        TextureUtils.bindAtlas(0)
+        CCRenderState.reset()
+        CCRenderState.setDynamic()
+        CCRenderState.pullLightmap()
+        CCRenderState.startDrawing()
+
+        //Tessellate
+        getInvModelChassi.render(trans, icon)
+        getInvModelBulb.render(trans, icon, cMult(color, inverted))
+
+        //Draw
+        CCRenderState.draw()
+
+        //Render Halo
+        if (inverted)
+        {
+            RenderHalo.prepareRenderState()
+            RenderHalo.renderHalo(getInvLBounds, color, trans)
+            RenderHalo.restoreRenderState()
+        }
+
+        //Finish
+        GL11.glPopMatrix()
+    }
+
+    def cMult(color:Int, on:Boolean):ColourMultiplier =
+    {
+        val c = PRColors.get(color).c.copy
+        if (!on) c.multiply(PRColors.LIGHT_GREY.c)
+        ColourMultiplier.instance(c.rgba)
+    }
 }
 

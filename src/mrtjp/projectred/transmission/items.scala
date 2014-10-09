@@ -35,7 +35,7 @@ class ItemPartWire extends ItemWireCommon("projectred.transmission.wire")
     def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3) =
     {
         val onPos = pos.copy.offset(side^1)
-        if (!WireLib.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, ForgeDirection.getOrientation(side), false)) null
+        if (!WireLib.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, side, false)) null
         else
         {
             val wiredef = WireDef.values(item.getItemDamage)

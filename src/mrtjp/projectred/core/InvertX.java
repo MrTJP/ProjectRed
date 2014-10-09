@@ -9,7 +9,7 @@ public class InvertX extends VariableTransformation
 {
     public InvertX()
     {
-        super(new Matrix4(1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1));
+        super(new Matrix4().setIdentity());
     }
 
     @Override

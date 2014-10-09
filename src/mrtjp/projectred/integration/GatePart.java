@@ -229,7 +229,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public boolean canStay()
     {
         BlockCoord pos = new BlockCoord(tile()).offset(side());
-        return WireLib.canPlaceWireOnSide(world(), pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side()^1), false);
+        return WireLib.canPlaceWireOnSide(world(), pos.x, pos.y, pos.z, side()^1, false);
     }
 
     public boolean dropIfCantStay()

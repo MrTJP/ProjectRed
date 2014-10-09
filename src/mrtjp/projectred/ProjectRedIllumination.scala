@@ -19,7 +19,7 @@ object ProjectRedIllumination
 
     var tabLighting = new CreativeTabs("ill")
     {
-        override def getIconItemStack = LightObjLantern.makeInvStack(PRColors.RED.ordinal())
+        override def getIconItemStack = LightObjCage.makeInvStack(PRColors.RED.ordinal())
         override def getTabIconItem = getIconItemStack.getItem
     }
 
