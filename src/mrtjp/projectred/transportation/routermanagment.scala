@@ -5,7 +5,7 @@ import java.util.{UUID, PriorityQueue => JPriorityQueue}
 
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.libmc.ItemKey
-import mrtjp.projectred.transportation.SendPriority.SendPriority
+import mrtjp.projectred.transportation.SendPriorities.SendPriority
 import net.minecraftforge.common.util.ForgeDirection
 
 import scala.collection.immutable.{BitSet, HashMap}
@@ -70,78 +70,6 @@ class LSA
 {
     /** Vector of [StartEndPath] of all neighboring pipes **/
     var neighbors = Vector[StartEndPath]()
-}
-
-class StartEndPath(var start:Router, var end:Router, var hopDir:Int, var distance:Int, filters:Set[PathFilter]) extends Path(filters) with Ordered[StartEndPath]
-{
-    def this(start:Router, end:Router, dirToFirstHop:Int, distance:Int, filter:PathFilter) = this(start, end, dirToFirstHop, distance, Set(filter))
-    def this(start:Router, end:Router, dirToFirstHop:Int, distance:Int) = this(start, end, dirToFirstHop, distance, PathFilter.default)
-
-    override def equals(other:Any) = other match
-    {
-        case that:StartEndPath =>
-                hopDir == that.hopDir &&
-                distance == that.distance &&
-                super.equals(that)
-        case _ => false
-    }
-
-    def -->(to:StartEndPath) = new StartEndPath(start, to.end, hopDir, distance+to.distance, filters ++ to.filters)
-
-    override def compare(that:StartEndPath) =
-    {
-        var c = distance-that.distance
-        if (c == 0) c = end.getIPAddress-that.end.getIPAddress
-        c
-    }
-}
-
-class Path(val filters:Set[PathFilter])
-{
-    override def equals(other:Any) = other match
-    {
-        case that:Path => filters == that.filters
-        case _ => false
-    }
-
-    def allowItem(item:ItemKey) = filters.forall(f => f.filterExclude != f.filterItems.contains(item))
-    val allowRouting = filters.forall(_.allowRouting)
-    val allowBroadcast = filters.forall(_.allowBroadcast)
-    val allowCrafting = filters.forall(_.allowCrafting)
-    val allowController = filters.forall(_.allowController)
-
-    val pathFlags = filters.foldLeft(0x7)((b, f) => f.pathFlags&b)
-    val emptyFilter = !filters.exists(_ != PathFilter.default)
-
-    val flagRouteTo = (pathFlags&0x1) != 0
-    val flagRouteFrom = (pathFlags&0x2) != 0
-    val flagPowerFrom = (pathFlags&0x4) != 0
-}
-
-object PathFilter
-{
-    val default = new PathFilter(true, Set[ItemKey](), true, true, true, true, 0x7)
-}
-
-class PathFilter(val filterExclude:Boolean, val filterItems:Set[ItemKey],
-                 val allowRouting:Boolean, val allowBroadcast:Boolean,
-                 val allowCrafting:Boolean, val allowController:Boolean,
-                 val pathFlags:Int)
-{
-    def this(flags:Int) = this(true, Set[ItemKey](), true, true, true, true, flags)
-
-    override def equals(other:Any) = other match
-    {
-        case that:PathFilter =>
-            filterExclude == that.filterExclude &&
-                filterItems == that.filterItems &&
-                allowRouting == that.allowRouting &&
-                allowBroadcast == that.allowBroadcast &&
-                allowCrafting == that.allowCrafting &&
-                allowController == that.allowController &&
-                pathFlags == that.pathFlags
-        case _ => false
-    }
 }
 
 object Router

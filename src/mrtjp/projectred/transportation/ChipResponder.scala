@@ -7,7 +7,7 @@ import scala.collection.mutable.ListBuffer
 
 class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriority
 {
-    def sendPriority = SendPriority.PASSIVE
+    def sendPriority = SendPriorities.PASSIVE
 
     def prefScale = 2+upgradeBus.LLatency
 
@@ -53,7 +53,7 @@ class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriori
 
 class ChipItemOverflowResponder extends ChipItemResponder
 {
-    override def sendPriority = SendPriority.DEFAULT
+    override def sendPriority = SendPriorities.DEFAULT
 
     override def getChipType = RoutingChipDefs.ITEMOVERFLOWRESPONDER
 
@@ -63,7 +63,7 @@ class ChipItemOverflowResponder extends ChipItemResponder
 
 class ChipItemTerminator extends ChipItemResponder
 {
-    override def sendPriority = SendPriority.TERMINATED
+    override def sendPriority = SendPriorities.TERMINATED
 
     override def getChipType = RoutingChipDefs.ITEMTERMINATOR
 }

@@ -47,7 +47,7 @@ object RenderPipe
         centerModelsRS = rsgen.centerModels
     }
 
-    def render(p:FlowingPipePart, pos:Vector3)
+    def render(p:PayloadPipePart, pos:Vector3)
     {
         val t = pos.translation()
         var uvt = new IconTransformation(p.getPipeType.sprites(0))
@@ -64,10 +64,16 @@ object RenderPipe
             uvt = new IconTransformation(p.getIcon(s))
             sideModels(s).render(t, uvt)
         }
-        if (p.material) renderRSWiring(p, t, p.signal)
+
+        p match
+        {
+            case rsp:TRedstonePipe =>
+                if (rsp.material) renderRSWiring(rsp, t, rsp.signal)
+            case _ =>
+        }
     }
 
-    private def renderRSWiring(p:FlowingPipePart, t:Translation, signal:Int)
+    private def renderRSWiring(p:TRedstonePipe, t:Translation, signal:Int)
     {
         val colour = ColourMultiplier.instance((signal&0xFF)/2+60<<24|0xFF)
         val uvt2 = new IconTransformation(PipeDefs.BASIC.sprites(1))
@@ -83,7 +89,7 @@ object RenderPipe
             sideModelsRS(s).render(t, uvt2, colour)
     }
 
-    def renderBreakingOverlay(icon:IIcon, pipe:FlowingPipePart)
+    def renderBreakingOverlay(icon:IIcon, pipe:PayloadPipePart)
     {
         CCRenderState.setPipeline(new Translation(pipe.x, pipe.y, pipe.z), new IconTransformation(icon))
         import scala.collection.JavaConversions._
@@ -97,7 +103,7 @@ object RenderPipe
         for (s <- 0 to 1) sideModels(s).render(ops:_*)
     }
 
-    def renderItemFlow(p:FlowingPipePart, pos:Vector3, frame:Float)
+    def renderItemFlow(p:PayloadPipePart, pos:Vector3, frame:Float)
     {
         GL11.glPushMatrix()
         GL11.glDisable(GL11.GL_LIGHTING)
@@ -177,7 +183,7 @@ object RenderPipe
         GL11.glDisable(GL11.GL_BLEND)
     }
 
-    def renderMircoHighlight(part:FlowingPipePart)
+    def renderMircoHighlight(part:TRedstonePipe)
     {
         val pos = new BlockCoord(part.tile)
         GL11.glPushMatrix()
@@ -360,7 +366,7 @@ object PipeRSHighlightRenderer extends IMicroHighlightRenderer
                 val hitData:(Integer, Any) = ExtendedMOP.getData(hit)
                 tile.partList(hitData._1) match
                 {
-                    case p:FlowingPipePart =>
+                    case p:TRedstonePipe =>
                         if (p.material) false
                         else
                         {

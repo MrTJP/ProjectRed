@@ -148,7 +148,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
         var priority = 0
         var lastCrafter:CraftingPromise = null
 
-        var outer, inner = new scala.util.control.Breaks
+        val outer, inner = new scala.util.control.Breaks
         outer.breakable
         {
             while (!finished) inner.breakable
