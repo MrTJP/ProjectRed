@@ -46,7 +46,7 @@ trait Enum
 
         override def equals(other:Any) = other match
         {
-            case that:EnumVal => (outerEnum == that.outerEnum) &&
+            case that:Value => (outerEnum == that.outerEnum) &&
                 (ordinal == that.ordinal)
             case _ => false
         }

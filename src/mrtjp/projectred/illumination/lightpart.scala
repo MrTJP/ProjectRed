@@ -319,8 +319,8 @@ abstract class LightObject
     def getInvT(t:ItemRenderType):(Vector3, Double) = t match
     {
         case ENTITY => (new Vector3(-0.25D, 0D, -0.25D), 0.75D)
-        case EQUIPPED => (new Vector3(-0.15D, -0.15D, -0.15D), 1.5D)
-        case EQUIPPED_FIRST_PERSON => (new Vector3(-0.15D, -0.15D, -0.15D), 1.5D)
+        case EQUIPPED => (new Vector3(-0.15D, 0, -0.15D), 1.5D)
+        case EQUIPPED_FIRST_PERSON => (new Vector3(-0.15D, 0, -0.15D), 1.5D)
         case INVENTORY => (new Vector3(0D, -0.05D, 0D), 1D)
         case _ => (Vector3.zero, 1)
     }

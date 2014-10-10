@@ -5,14 +5,15 @@ import codechicken.lib.vec._
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.util.IIcon
+import net.minecraftforge.client.IItemRenderer.ItemRenderType
+import net.minecraftforge.client.IItemRenderer.ItemRenderType._
 
 import scala.collection.JavaConversions._
 
 object LightObjFixture extends LightObject
 {
-    //TODO to val
-    var bounds = bakedBoxes(new Cuboid6(2/16D, 0, 2/16D, 14/16D, 17/32D, 14/16D))
-    var lBounds = bakedBoxes(new Cuboid6(4/16D, 1/16, 4/16D, 12/16D, 6.5/16D, 12/16D))
+    val bounds = bakedBoxes(new Cuboid6(3.5/16D, 0, 3.5/16D, 12.5/16D, 6.5/16D, 12.5/16D))
+    val lBounds = bakedBoxes(new Cuboid6(4/16D, 1.5/16, 4/16D, 12/16D, 6.5/16D, 12/16D))
 
     var icon:IIcon = _
 
@@ -52,7 +53,7 @@ object LightObjFixture extends LightObject
 object LightObjFallout extends LightObject
 {
     val bounds = bakedBoxes(new Cuboid6(2/16D, 0, 2/16D, 14/16D, 11/16D, 14/16D))
-    val lBounds = bakedBoxes(new Cuboid6(4/16D, 1/16, 4/16D, 12/16D, 10/16D, 12/16D).expand(-0.002))
+    val lBounds = bakedBoxes(new Cuboid6(4/16D, 1.5/16, 4/16D, 12/16D, 10/16D, 12/16D).expand(-0.002))
 
     var icon:IIcon = _
 
@@ -92,7 +93,7 @@ object LightObjFallout extends LightObject
 object LightObjCage extends LightObject
 {
     val bounds = bakedBoxes(new Cuboid6(3.5/16D, 0, 3.5/16D, 12.5/16D, 12/16D, 12.5/16D))
-    val lBounds = bakedBoxes(new Cuboid6(4.5/16D, 1/16, 4.5/16D, 11.5/16D, 11.5/16D, 11.5/16D))
+    val lBounds = bakedBoxes(new Cuboid6(4.5/16D, 1.5/16, 4.5/16D, 11.5/16D, 11.5/16D, 11.5/16D))
 
     var icon:IIcon = _
 
@@ -156,6 +157,12 @@ object LightObjLantern extends LightObject
     override def registerIcons(reg:IIconRegister)
     {
         icon = reg.registerIcon("projectred:lights/lantern")
+    }
+
+    override def getInvT(t:ItemRenderType):(Vector3, Double) = t match
+    {
+        case INVENTORY => (new Vector3(0D, -0.05D, 0D), 1.5D)
+        case _ => super.getInvT(t)
     }
 
     override def loadModels()
