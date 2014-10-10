@@ -423,7 +423,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
 
     override def getHollowSize(side:Int) = 8
 
-    override def activate(player:EntityPlayer, hit:MovingObjectPosition, held:ItemStack) =
+    override def activate(player:EntityPlayer, hit:MovingObjectPosition, held:ItemStack):Boolean =
     {
         def dropMaterial()
         {
@@ -434,8 +434,9 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
             }
         }
 
-        if (super.activate(player, hit, held)) true
-        else if (held == null)
+        if (super.activate(player, hit, held)) return true
+
+        if (held == null)
         {
             if (!world.isRemote && player.isSneaking && material > 0)
             {
@@ -443,9 +444,10 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
                 material = 0
                 sendMatUpdate()
             }
-            false
+            return false
         }
-        else if (held.getItem == MicroblockProxy.itemMicro && held.getItemDamage == 1)
+
+        if (held.getItem == MicroblockProxy.itemMicro && held.getItemDamage == 1)
         {
             val newmatid = ItemMicroPart.getMaterialID(held)
             if (newmatid != material)
@@ -453,7 +455,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
                 if(!world.isRemote)
                 {
                     val newmat = MicroMaterialRegistry.getMaterial(newmatid)
-                    if (newmat == null || newmat.isTransparent) false
+                    if (newmat == null || newmat.isTransparent) return false
                     else
                     {
                         dropMaterial()
@@ -464,11 +466,11 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
                         if (!player.capabilities.isCreativeMode) held.stackSize-=1
                     }
                 }
-                true
+                return true
             }
-            else false
         }
-        else false
+
+        false
     }
 
     @SideOnly(Side.CLIENT)
