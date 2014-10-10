@@ -7,7 +7,7 @@ import net.minecraft.util.MovingObjectPosition
 import mrtjp.projectred.core.libmc.ItemKey
 import net.minecraftforge.common.util.ForgeDirection
 
-class RoutedRequestPipePart extends RoutedJunctionPipePart
+class RoutedRequestPipePart extends BasicPipeAbstraction with TNetworkPipe
 {
     override def centerReached(r:RoutedPayload)
     {

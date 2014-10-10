@@ -32,7 +32,7 @@ class ChipExtractor extends RoutingChipset with TChipFilter with TChipOrientatio
             val stackKey = k
             val stackSize = v
 
-            if (stackKey!=null && filt.hasItem(stackKey)!=filterExclude)
+            if (stackKey != null && filt.hasItem(stackKey) != filterExclude)
             {
                 var exclusions = BitSet()
                 var s = routeLayer.getLogisticPath(stackKey, exclusions, true)

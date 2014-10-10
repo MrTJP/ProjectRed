@@ -6,46 +6,125 @@ import java.util.concurrent.PriorityBlockingQueue
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.BlockCoord
-import codechicken.multipart.{TMultiPart, TileMultipart}
-import mrtjp.projectred.api.IScrewdriver
+import codechicken.multipart.TileMultipart
 import mrtjp.projectred.core.lib.Pair2
 import mrtjp.projectred.core.libmc.inventory.InvWrapper
-import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack, PRLib}
+import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack, ItemQueue, PRLib}
 import mrtjp.projectred.core.{Configurator, CoreSPH}
-import mrtjp.projectred.transportation.SendPriority.SendPriority
+import mrtjp.projectred.transportation.SendPriorities.SendPriority
+import mrtjp.projectred.transportation.TNetworkPipe.TransitComparator
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.{IInventory, ISidedInventory}
+import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.{IIcon, MovingObjectPosition}
+import net.minecraft.world.World
 import net.minecraftforge.common.util.ForgeDirection
 
 import scala.collection.JavaConversions._
 import scala.collection.immutable.BitSet
 
-object RoutedJunctionPipePart
+
+trait IWorldRouter
 {
-    var pipes = 0
+    def getRouter:Router
+
+    def needsWork:Boolean
+
+    def refreshState:Boolean
+
+    def getContainer:TNetworkPipe
+    def getWorld:World
+    def getCoords:BlockCoord
+
+    /** Item Syncing **/
+    def itemEnroute(r:RoutedPayload)
+    def itemArrived(r:RoutedPayload)
+    def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse
+
+    /** Item Requesting **/
+    // Handled via subclasses.
+
+    /** Item Broadcasting **/
+    // Handled via subclasses.
+
+    /** Item Crafting **/
+    // Handled via subclasses.
 }
 
-class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRouteLayer with IWorldRequester with IInventoryProvider
+trait IWorldRequester extends IWorldRouter
+{
+    def trackedItemLost(s:ItemKeyStack)
+
+    def trackedItemReceived(s:ItemKeyStack)
+
+    def getActiveFreeSpace(item:ItemKey):Int
+}
+
+trait IWorldBroadcaster extends IWorldRouter
+{
+    def requestPromises(request:RequestBranchNode, existingPromises:Int)
+
+    def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester)
+
+    def operate(req:RequestMain){}//TODO
+    def act(action:SupplyAction){}//TODO
+
+    def getBroadcasts(col:ItemQueue){}
+
+    def getBroadcastPriority:Int
+
+    def getWorkLoad:Double
+}
+
+trait IWorldCrafter extends IWorldRequester with IWorldBroadcaster
+{
+    def buildCraftPromises(item:ItemKey):Vector[CraftingPromise]
+
+    def registerExcess(promise:DeliveryPromise)
+
+    def actOnExcess(action:SupplyAction){}//TODO
+
+    def getCraftedItems:Vector[ItemKeyStack]
+
+    def itemsToProcess:Int
+}
+
+trait TRouteLayer
+{
+    def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, path:SyncResponse)
+    {
+        queueStackToSend(stack, dirOfExtraction, path.priority, path.responder)
+    }
+    def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:SendPriority, destination:Int)
+    def getLogisticPath(stack:ItemKey, exclusions:BitSet, excludeStart:Boolean):SyncResponse
+
+    def getRouter:Router
+    def getWorldRouter:IWorldRouter
+    def getBroadcaster:IWorldBroadcaster
+    def getRequester:IWorldRequester
+
+    def getWorld:World
+    def getCoords:BlockCoord
+}
+
+trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter with TRouteLayer with IWorldRequester
 {
     var searchDelay =
     {
-        RoutedJunctionPipePart.pipes += 1
-        RoutedJunctionPipePart.pipes%Configurator.detectionFrequency
+        TNetworkPipe.delayDelta += 1
+        TNetworkPipe.delayDelta%Configurator.detectionFrequency
     }
 
-    var linkMap = 0
+    var linkMap:Byte = 0
 
     var router:Router = null
     var routerId:UUID = null
 
     val routerIDLock = new AnyRef
-    var inOutSide = 0
+
     var needsWork = true
-    var firstTick = true
 
     var sendQueue = Vector[RoutedPayload]()
     var transitQueue = new PriorityBlockingQueue[Pair2[RoutedPayload, Int]](10, TransitComparator)
@@ -55,6 +134,48 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
     var statsSent = 0
     var statsRelayed = 0
 
+    override def save(tag:NBTTagCompound)
+    {
+        super.save(tag)
+        tag.setString("rid", getRouterId.toString)
+        tag.setInteger("sent", statsSent)
+        tag.setInteger("rec", statsReceived)
+        tag.setInteger("relay", statsRelayed)
+    }
+
+    override def load(tag:NBTTagCompound)
+    {
+        super.load(tag)
+        routerIDLock synchronized
+            {
+                routerId = UUID.fromString(tag.getString("rid"))
+            }
+
+        statsSent = tag.getInteger("sent")
+        statsReceived = tag.getInteger("rec")
+        statsRelayed = tag.getInteger("relay")
+    }
+
+    override def writeDesc(packet:MCDataOutput)
+    {
+        super.writeDesc(packet)
+        packet.writeByte(linkMap)
+        packet.writeLong(getRouterId.getMostSignificantBits)
+        packet.writeLong(getRouterId.getLeastSignificantBits)
+    }
+
+    override def readDesc(packet:MCDataInput)
+    {
+        super.readDesc(packet)
+        linkMap = packet.readByte
+        val mostSigBits = packet.readLong
+        val leastSigBits = packet.readLong
+        routerIDLock synchronized
+            {
+                routerId = new UUID(mostSigBits, leastSigBits)
+            }
+    }
+
     private def getRouterId =
     {
         if (routerId == null) routerIDLock synchronized
@@ -62,29 +183,6 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
                 routerId = if (router != null) router.getID else UUID.randomUUID
             }
         routerId
-    }
-
-    def getRouter:Router =
-    {
-        if (needsWork) return null
-        if (router == null) routerIDLock synchronized
-            {
-                router = RouterServices.getOrCreateRouter(getRouterId, this)
-            }
-        router
-    }
-
-    def itemEnroute(r:RoutedPayload)
-    {
-        transitQueue.add(new Pair2(r, 200))
-    }
-
-    def itemArrived(r:RoutedPayload)
-    {
-        removeFromTransitQueue(r)
-        trackedItemReceived(r.payload)
-
-        statsReceived+=1
     }
 
     private def removeFromTransitQueue(r:RoutedPayload)
@@ -104,20 +202,6 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
     protected def countInTransit(key:ItemKey) =
     {
         transitQueue.filter(p => p.get1.payload.key == key).foldLeft(0)((b,a) => b+a.get2)
-    }
-
-    def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:SendPriority, destination:Int)
-    {
-        val stack2 = ItemKeyStack.get(stack)
-        var r = pollFromSwapQueue(stack2)
-        if (r == null)
-        {
-            r = RoutedPayload(stack2)
-            r.input = ForgeDirection.getOrientation(dirOfExtraction)
-            r.setPriority(priority)
-            r.setDestination(destination)
-        }
-        sendQueue :+= r
     }
 
     private def dispatchQueuedPayload(r:RoutedPayload)
@@ -152,17 +236,7 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         }
     }
 
-    def getLogisticPath(stack:ItemKey, exclusions:BitSet, excludeStart:Boolean) =
-    {
-        val p = new LogisticPathFinder(getRouter, stack)
-        if (exclusions != null) p.setExclusions(exclusions)
-        p.setExcludeSource(excludeStart).findBestResult
-        p.getResult
-    }
-
-    def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse = null
-
-    final override def update()
+    final abstract override def update()
     {
         if (needsWork)
         {
@@ -170,9 +244,9 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
             if (!world.isRemote) getRouter
             return
         }
-        if (!world.isRemote) getRouter.update(world.getTotalWorldTime%Configurator.detectionFrequency == searchDelay || firstTick)
+        if (!world.isRemote) getRouter.update(world.getTotalWorldTime%Configurator.detectionFrequency == searchDelay)
         super.update()
-        firstTick = false
+        //firstTick = false TODO
 
         // Dispatch queued items
         while (sendQueue.nonEmpty) dispatchQueuedPayload(sendPoll())
@@ -190,30 +264,30 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         }
     }
 
-    protected def updateServer() {}
+    protected def updateServer(){}
 
     protected def updateClient()
     {
-        if (world.getTotalWorldTime%(Configurator.detectionFrequency*20) == searchDelay || firstTick)
+        if (world.getTotalWorldTime%(Configurator.detectionFrequency*20) == searchDelay)
             for (i <- 0 until 6) if ((linkMap&1<<i) != 0)
                 RouteFX.spawnType3(RouteFX.color_blink, 1, i, getCoords, world)
     }
 
-    def refreshState:Boolean =
+    override def refreshState:Boolean =
     {
         if (world.isRemote) return false
         var link = 0
         for (s <- 0 until 6) if (getRouter.LSAConnectionExists(s)) link |= 1<<s
         if (linkMap != link)
         {
-            linkMap = link
+            linkMap = link.asInstanceOf[Byte]
             sendLinkMapUpdate()
             return true
         }
         false
     }
 
-    def getContainer = this
+    override def getContainer = this
 
     override def endReached(r:RoutedPayload)
     {
@@ -230,9 +304,9 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
                 if (dest.isInstanceOf[TileMultipart])
                 {
                     val part = (dest.asInstanceOf[TileMultipart]).partMap(6)
-                    if (part.isInstanceOf[RoutedJunctionPipePart])
+                    if (part.isInstanceOf[TNetworkPipe])
                     {
-                        val pipe = part.asInstanceOf[RoutedJunctionPipePart]
+                        val pipe = part.asInstanceOf[TNetworkPipe]
                         val w = InvWrapper.wrap(inv).setSlotsFromSide(r.output.getOpposite.ordinal)
                         val room = w.getSpaceForItem(r.payload.key)
                         if (room >= r.payload.stackSize)
@@ -262,9 +336,6 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
     override def read(packet:MCDataInput, key:Int) = key match
     {
         case 5 => handleLinkMap(packet)
-        case 6 =>
-            inOutSide = packet.readUByte
-            tile.markRender()
         case _ => super.read(packet, key)
     }
 
@@ -273,15 +344,10 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         getWriteStreamOf(5).writeByte(linkMap)
     }
 
-    def sendOrientUpdate()
-    {
-        getWriteStreamOf(6).writeByte(inOutSide)
-    }
-
     private def handleLinkMap(packet:MCDataInput)
     {
         val old = linkMap
-        linkMap = packet.readUByte
+        linkMap = packet.readByte
         val high = ~old&linkMap
         val low = ~linkMap&old
         val bc = getCoords
@@ -298,83 +364,9 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
     override def onRemoved()
     {
         super.onRemoved()
-        RoutedJunctionPipePart.pipes = Math.max(RoutedJunctionPipePart.pipes-1, 0)
+        TNetworkPipe.delayDelta = Math.max(TNetworkPipe.delayDelta-1, 0)
         val r = getRouter
         if (r != null) r.decommission()
-    }
-
-    override def save(tag:NBTTagCompound)
-    {
-        super.save(tag)
-        tag.setString("rid", getRouterId.toString)
-        tag.setByte("io", inOutSide.asInstanceOf[Byte])
-        tag.setInteger("sent", statsSent)
-        tag.setInteger("rec", statsReceived)
-        tag.setInteger("relay", statsRelayed)
-    }
-
-    override def load(tag:NBTTagCompound)
-    {
-        super.load(tag)
-        routerIDLock synchronized
-            {
-                routerId = UUID.fromString(tag.getString("rid"))
-            }
-        inOutSide = tag.getByte("io")
-
-        statsSent = tag.getInteger("sent")
-        statsReceived = tag.getInteger("rec")
-        statsRelayed = tag.getInteger("relay")
-    }
-
-    override def writeDesc(packet:MCDataOutput)
-    {
-        super.writeDesc(packet)
-        packet.writeByte(linkMap)
-        packet.writeByte(inOutSide)
-        packet.writeLong(getRouterId.getMostSignificantBits)
-        packet.writeLong(getRouterId.getLeastSignificantBits)
-    }
-
-    override def readDesc(packet:MCDataInput)
-    {
-        super.readDesc(packet)
-        linkMap = packet.readUByte
-        inOutSide = packet.readUByte
-        val mostSigBits = packet.readLong
-        val leastSigBits = packet.readLong
-        routerIDLock synchronized
-            {
-                routerId = new UUID(mostSigBits, leastSigBits)
-            }
-    }
-
-    override def onNeighborChanged()
-    {
-        super.onNeighborChanged()
-        shiftOrientation(false)
-    }
-
-    override def onPartChanged(p:TMultiPart)
-    {
-        super.onPartChanged(p)
-        shiftOrientation(false)
-    }
-
-    override def onAdded()
-    {
-        super.onAdded()
-        shiftOrientation(false)
-    }
-
-    override def discoverStraightOverride(s:Int):Boolean =
-    {
-        PRLib.getTileEntity(world, posOfStraight(s), classOf[TileEntity]) match
-        {
-            case sinv:ISidedInventory => !sinv.getAccessibleSlotsFromSide(s^1).isEmpty
-            case inv:IInventory => true
-            case _ => false
-        }
     }
 
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
@@ -400,56 +392,8 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
             return true
         }
 
-        if (item != null && item.getItem.isInstanceOf[IScrewdriver])
-        {
-            if (!world.isRemote)
-            {
-                shiftOrientation(true)
-                item.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
-            }
-            return true
-        }
         false
     }
-
-    def shiftOrientation(force:Boolean)
-    {
-        if (world.isRemote) return
-        val invalid = force || !maskConnects(inOutSide) ||
-            PRLib.getTileEntity(world, new BlockCoord(tile).offset(inOutSide), classOf[IInventory]) == null
-        if (!invalid) return
-        var found = false
-        val oldSide = inOutSide
-
-        import scala.util.control.Breaks._
-        breakable {
-            for (i <- 0 until 6)
-            {
-                inOutSide = (inOutSide+1)%6
-                if (maskConnects(inOutSide))
-                {
-                    val bc = new BlockCoord(tile).offset(inOutSide)
-                    val t = PRLib.getTileEntity(world, bc, classOf[TileEntity])
-                    if (t.isInstanceOf[IInventory])
-                    {
-                        found = true
-                        break()
-                    }
-                }
-            }
-        }
-
-        if (!found) inOutSide = -1
-        if (oldSide != inOutSide) sendOrientUpdate()
-    }
-
-    def getInventory =
-    {
-        if (0 until 6 contains inOutSide) InvWrapper.getInventory(world, new BlockCoord(tile).offset(inOutSide))
-        else null
-    }
-
-    def getInterfacedSide = if (inOutSide < 0 || inOutSide > 5) -1 else inOutSide^1
 
     override def getIcon(side:Int):IIcon =
     {
@@ -523,34 +467,88 @@ class RoutedJunctionPipePart extends BasicPipePart with IWorldRouter with TRoute
         r.speed = r.priority.boost
     }
 
-    def trackedItemLost(s:ItemKeyStack) {}
-    def trackedItemReceived(s:ItemKeyStack) {}
+    override def getRouter:Router =
+    {
+        if (needsWork) return null
+        if (router == null) routerIDLock synchronized
+            {
+                router = RouterServices.getOrCreateRouter(getRouterId, this)
+            }
+        router
+    }
 
-    def getActiveFreeSpace(item:ItemKey) =
+    override def itemEnroute(r:RoutedPayload)
+    {
+        transitQueue.add(new Pair2(r, 200))
+    }
+
+    override def itemArrived(r:RoutedPayload)
+    {
+        removeFromTransitQueue(r)
+        trackedItemReceived(r.payload)
+        statsReceived+=1
+    }
+
+    override def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse = null
+
+    override def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:SendPriority, destination:Int)
+    {
+        val stack2 = ItemKeyStack.get(stack)
+        var r = pollFromSwapQueue(stack2)
+        if (r == null)
+        {
+            r = RoutedPayload(stack2)
+            r.input = ForgeDirection.getOrientation(dirOfExtraction)
+            r.setPriority(priority)
+            r.setDestination(destination)
+        }
+        sendQueue :+= r
+    }
+
+    override def getLogisticPath(stack:ItemKey, exclusions:BitSet, excludeStart:Boolean) =
+    {
+        val p = new LogisticPathFinder(getRouter, stack)
+        if (exclusions != null) p.setExclusions(exclusions)
+        p.setExcludeSource(excludeStart).findBestResult
+        p.getResult
+    }
+
+    override def getWorldRouter = this
+    override def getBroadcaster = this match
+    {
+        case b:IWorldBroadcaster => b
+        case _ => null
+    }
+    override def getRequester = this
+
+    override def getWorld = world
+    override def getCoords = new BlockCoord(tile)
+
+    override def trackedItemLost(s:ItemKeyStack){}
+    override def trackedItemReceived(s:ItemKeyStack){}
+
+    override def getActiveFreeSpace(item:ItemKey) =
     {
         val real = getInventory
         if (real == null) 0
         else InvWrapper.wrap(real).setSlotsFromSide(getInterfacedSide).getSpaceForItem(item)
     }
-
-    def getWorldRouter = this
-    def getBroadcaster = this match
-    {
-        case b:IWorldBroadcaster => b
-        case _ => null
-    }
-    def getRequester = this
-
-    override def getWorld = world
-    override def getCoords = new BlockCoord(tile)
 }
 
-object TransitComparator extends Ordering[Pair2[RoutedPayload, Int]]
+object TNetworkPipe
 {
-    def compare(a:Pair2[RoutedPayload, Int], b:Pair2[RoutedPayload, Int]) =
+    var delayDelta = 0
+
+    object TransitComparator extends Ordering[Pair2[RoutedPayload, Int]]
     {
-        var c = b.get2-a.get2
-        if (c == 0) c = b.get1.payload.compareTo(a.get1.payload)
-        c
+        def compare(a:Pair2[RoutedPayload, Int], b:Pair2[RoutedPayload, Int]) =
+        {
+            var c = b.get2-a.get2
+            if (c == 0) c = b.get1.payload.compareTo(a.get1.payload)
+            c
+        }
     }
 }
+
+//Basic network pipe implementation by mixin
+class RoutedJunctionPipePart extends BasicPipeAbstraction with TNetworkPipe

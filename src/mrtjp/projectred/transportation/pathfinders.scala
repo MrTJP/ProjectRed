@@ -3,7 +3,7 @@ package mrtjp.projectred.transportation
 import codechicken.lib.vec.BlockCoord
 import mrtjp.projectred.api.ISpecialLinkState
 import mrtjp.projectred.core.libmc.{ItemKey, ItemQueue, PRLib}
-import mrtjp.projectred.transportation.SendPriority.SendPriority
+import mrtjp.projectred.transportation.SendPriorities.SendPriority
 import net.minecraft.tileentity.TileEntity
 
 import scala.annotation.tailrec
@@ -51,11 +51,12 @@ class LSPathFinder3(start:IWorldRouter, max:Int)
         {
             case iwr:IWorldRouter if {val r = iwr.getRouter; r != null && r.isLoaded} =>
                 iterate(rest, closed+next, coll += new StartEndPath(start.getRouter,
-                    iwr.getRouter, next.hop, next.dist, iwr.routeFilter(next.dir^1)))
-            case p:FlowingPipePart =>
+                    iwr.getRouter, next.hop, next.dist, iwr.networkFilter))
+            case p:PayloadPipePart =>
                 val upNext = Vector.newBuilder[Node]
                 for (s <- 0 until 6) if (s != (next.dir^1) && p.maskConnects(s))
                 {
+                    //val route = next --> (s, p.routeWeight, p.routeFilter(next.dir^1, s))
                     val route = next --> (s, p.routeWeight)
                     if (!closed(route)) upNext += route
                 }
@@ -84,7 +85,7 @@ class LSPathFinder3(start:IWorldRouter, max:Int)
 
     private def getPipe(bc:BlockCoord) = PRLib.getMultiPart(world, bc, 6) match
     {
-        case p:FlowingPipePart => p
+        case p:PayloadPipePart => p
         case _ => null
     }
 
@@ -94,14 +95,16 @@ class LSPathFinder3(start:IWorldRouter, max:Int)
     {
         def apply(bc:BlockCoord, dir:Int):Node = Node(bc.copy().offset(dir), 1, dir, dir)
     }
-    private case class Node(bc:BlockCoord, dist:Int, dir:Int, hop:Int) extends Ordered[Node]
+    private case class Node(bc:BlockCoord, dist:Int, dir:Int, hop:Int, filters:Set[PathFilter] = Set.empty) extends Ordered[Node]
     {
-        def -->(to:Node, toDir:Int):Node = Node(to.bc, dist + to.dist, toDir, hop)
+        def -->(to:Node, toDir:Int):Node = Node(to.bc, dist+to.dist, toDir, hop)
 
-        def -->(toDir:Int, distAway:Int):Node = Node(bc.copy().offset(toDir), dist+distAway, toDir, hop)
+        def -->(toDir:Int, distAway:Int, filter:PathFilter):Node = Node(bc.copy.offset(toDir), dist+distAway, toDir, hop, filters+filter)
+        def -->(toDir:Int, distAway:Int):Node = Node(bc.copy().offset(toDir), dist+distAway, toDir, hop, filters)
         def -->(toDir:Int):Node = this -->(toDir, 1)
 
-        def -->(to:BlockCoord, distAway:Int):Node = Node(to, dist+distAway, dir, hop)
+        def -->(to:BlockCoord, distAway:Int, filter:PathFilter):Node = Node(to, dist+distAway, dir, hop, filters+filter)
+        def -->(to:BlockCoord, distAway:Int):Node = Node(to, dist+distAway, dir, hop, filters)
         def -->(to:BlockCoord):Node = this -->(to, 1)
 
         override def compare(that:Node) = dist-that.dist
@@ -170,7 +173,7 @@ class CollectionPathFinder
 
 object LogisticPathFinder
 {
-    def sharesInventory(pipe1:RoutedJunctionPipePart, pipe2:RoutedJunctionPipePart):Boolean =
+    def sharesInventory(pipe1:TInventoryPipe, pipe2:TInventoryPipe):Boolean =
     {
         if (pipe1 == null || pipe2 == null) return false
         if (pipe1.tile.getWorldObj != pipe2.tile.getWorldObj) return false
@@ -236,7 +239,7 @@ class LogisticPathFinder(source:Router, payload:ItemKey)
 
 class SyncResponse
 {
-    var priority = SendPriority.WANDERING
+    var priority = SendPriorities.WANDERING
     var customPriority = 0
     var itemCount = 0
     var responder = -1

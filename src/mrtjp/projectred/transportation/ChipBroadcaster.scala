@@ -54,7 +54,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
 
                 val inv = applyFilter(InvWrapper.wrap(real)).setSlotsFromSide(side)
 
-                if (!routeLayer.getRouter.canRouteTo(requester.getRouter.getIPAddress, reqKeyStack.key, SendPriority.ACTIVEB))
+                if (!routeLayer.getRouter.canRouteTo(requester.getRouter.getIPAddress, reqKeyStack.key, SendPriorities.ACTIVEB))
                 {
                     manager.dispatchFailed()
                     cont.break()
@@ -86,7 +86,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                 }
 
                 val toSend = reqKeyStack.key.makeStack(removed)
-                routeLayer.queueStackToSend(toSend, invProvider.getInterfacedSide, SendPriority.ACTIVEB, requester.getRouter.getIPAddress)
+                routeLayer.queueStackToSend(toSend, invProvider.getInterfacedSide, SendPriorities.ACTIVEB, requester.getRouter.getIPAddress)
                 manager.dispatchSuccessful(removed, restack)
 
                 stacksRemaining -= 1

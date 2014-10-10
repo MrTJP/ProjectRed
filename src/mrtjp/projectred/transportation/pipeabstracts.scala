@@ -1,37 +1,26 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.packet.PacketCustom
 import codechicken.lib.raytracer.IndexedCuboid6
 import codechicken.lib.render.{CCRenderState, TextureUtils}
-import codechicken.lib.vec.{Rotation, Cuboid6, BlockCoord, Vector3}
-import codechicken.microblock.handler.MicroblockProxy
-import codechicken.microblock.{ISidedHollowConnect, BlockMicroMaterial, ItemMicroPart}
+import codechicken.lib.vec.{BlockCoord, Cuboid6, Rotation, Vector3}
+import codechicken.microblock.ISidedHollowConnect
 import codechicken.multipart._
-import cpw.mods.fml.relauncher.{SideOnly, Side}
-import mrtjp.projectred.ProjectRedCore
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
-import mrtjp.projectred.transmission.IWirePart._
-import mrtjp.projectred.transmission._
-import mrtjp.projectred.transportation.SendPriority.SendPriority
-import net.minecraft.block.Block
+import mrtjp.projectred.core.libmc.inventory.InvWrapper
 import net.minecraft.client.renderer.RenderBlocks
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.{NBTTagList, NBTTagCompound}
-import net.minecraft.util.{IIcon, ChatComponentText, MovingObjectPosition}
-import scala.collection.JavaConversions._
-import mrtjp.projectred.core.libmc.inventory.InvWrapper
-import net.minecraft.init.Blocks
-import mrtjp.projectred.core.libmc.PRLib
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+import net.minecraft.util.MovingObjectPosition
 import net.minecraftforge.common.util.ForgeDirection
 
-abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion with ISidedHollowConnect
+import scala.collection.JavaConversions._
+
+abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TSwitchPacket with TNormalOcclusion with ISidedHollowConnect
 {
     var meta:Byte = 0
-    var signal:Byte = 0
-    var material = false
 
     def preparePlacement(side:Int, meta:Int)
     {
@@ -41,32 +30,24 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
     override def save(tag:NBTTagCompound)
     {
         tag.setInteger("connMap", connMap)
-        tag.setBoolean("mat", material)
-        tag.setByte("signal", signal)
         tag.setByte("meta", meta)
     }
 
     override def load(tag:NBTTagCompound)
     {
         connMap = tag.getInteger("connMap")
-        material = tag.getBoolean("mat")
-        signal = tag.getByte("signal")
         meta = tag.getByte("meta")
     }
 
     override def writeDesc(packet:MCDataOutput)
     {
         packet.writeByte(clientConnMap)
-        packet.writeBoolean(material)
-        packet.writeByte(signal)
         packet.writeByte(meta)
     }
 
     override def readDesc(packet:MCDataInput)
     {
         connMap = packet.readUByte()
-        material = packet.readBoolean()
-        signal = packet.readByte()
         meta = packet.readByte()
     }
 
@@ -74,12 +55,6 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
     {
         case 1 =>
             connMap = packet.readUByte()
-            tile.markRender()
-        case 2 =>
-            material = packet.readBoolean()
-            tile.markRender()
-        case 3 =>
-            signal = packet.readByte
             tile.markRender()
         case _ =>
     }
@@ -91,59 +66,32 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
         getWriteStreamOf(1).writeByte(clientConnMap)
     }
 
-    def sendMatUpdate()
+    override def discoverOpen(s:Int) = getInternal(s) match
     {
-        if (!world.isRemote)
-        {
-            if (updateInward()) sendConnUpdate()
-            WirePropagator.propagateTo(this, FORCE)
-        }
-        getWriteStreamOf(2).writeBoolean(material)
+        case null => true
+        case _ =>
+            PipeBoxes.expandBounds = s
+            val fits = tile.canReplacePart(this, this)
+            PipeBoxes.expandBounds = -1
+            fits
     }
 
-    override def onSignalUpdate()
-    {
-        tile.markDirty()
-        getWriteStreamOf(3).writeByte(signal)
-    }
+    override def discoverInternal(s:Int) = false
 
     override def onPartChanged(part:TMultiPart)
     {
-        if (!world.isRemote)
-        {
-            WirePropagator.logCalculation()
-
-            if (updateOutward())
-            {
-                sendConnUpdate()
-                WirePropagator.propagateTo(this, FORCE)
-            }
-            else WirePropagator.propagateTo(this, RISING)
-        }
+        if (!world.isRemote) if (updateOutward()) sendConnUpdate()
     }
 
     override def onNeighborChanged()
     {
-        if (!world.isRemote)
-        {
-            WirePropagator.logCalculation()
-            if (updateExternalConns())
-            {
-                sendConnUpdate()
-                WirePropagator.propagateTo(this, FORCE)
-            }
-            else WirePropagator.propagateTo(this, RISING)
-        }
+        if (!world.isRemote) if (updateExternalConns()) sendConnUpdate()
     }
 
     override def onAdded()
     {
         super.onAdded()
-        if (!world.isRemote)
-        {
-            if (updateInward()) sendConnUpdate()
-            WirePropagator.propagateTo(this, RISING)
-        }
+        if (!world.isRemote) if (updateInward()) sendConnUpdate()
     }
 
     override def onRemoved()
@@ -174,68 +122,33 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
 
     override def getStrength(hit:MovingObjectPosition, player:EntityPlayer)  = 2
 
-    override def getDrops =
-    {
-        var drops = Seq(getItem)
-        if (material) drops :+= createMaterialStack
-        drops
-    }
-
-    def createMaterialStack = ItemMicroPart.create(769, Blocks.redstone_block.getUnlocalizedName)
+    override def getDrops = Seq(getItem)
 
     override def pickItem(hit:MovingObjectPosition) = getItem
 
     override def getHollowSize(side:Int) = 8
 
-    override def diminishOnSide(side:Int) = true
-
-    def debug(player:EntityPlayer) = false
-
-    def test(player:EntityPlayer) = false
-
-    override def activate(player:EntityPlayer, hit:MovingObjectPosition, held:ItemStack) =
+    override def getSubParts =
     {
-        def dropMaterial()
-        {
-            if (material && !player.capabilities.isCreativeMode)
-                PRLib.dropTowardsPlayer(world, x, y, z, createMaterialStack, player)
-        }
+        val b = getCollisionBoxes
+        var i = Seq[IndexedCuboid6]()
+        for (c <- b) i :+= new IndexedCuboid6(0, c)
+        i
+    }
 
-        if (CommandDebug.WIRE_READING) debug(player)
-        else if (held != null && held.getItem == ProjectRedCore.itemWireDebugger)
-        {
-            held.damageItem(1, player)
-            player.swingItem()
-            test(player)
-        }
-        else if (held == null)
-        {
-            if (!world.isRemote && player.isSneaking && material)
-            {
-                dropMaterial()
-                material = false
-                sendMatUpdate()
-            }
-            false
-        }
-        else if (!material && held.getItem == MicroblockProxy.itemMicro && held.getItemDamage == 769)
-        {
-            ItemMicroPart.getMaterial(held) match
-            {
-                case bm:BlockMicroMaterial if bm.block == Blocks.redstone_block =>
-                    if (!world.isRemote)
-                    {
-                        material = true
-                        world.playSoundEffect(x+0.5, y+0.5, z+0.5, Block.soundTypeGlass.func_150496_b(),
-                            Block.soundTypeGlass.getVolume*5.0F, Block.soundTypeGlass.getPitch*.9F)
-                        sendMatUpdate()
-                        if (!player.capabilities.isCreativeMode) held.stackSize-=1
-                    }
-                    true
-                case _ => false
-            }
-        }
-        else false
+    override def getOcclusionBoxes =
+    {
+        import mrtjp.projectred.transportation.PipeBoxes._
+        if (expandBounds >= 0) Seq(oBounds(expandBounds))
+        else Seq(oBounds(6))
+    }
+
+    override def getCollisionBoxes =
+    {
+        import mrtjp.projectred.transportation.PipeBoxes._
+        var boxes = Seq(oBounds(6))
+        for (s <- 0 until 6) if (maskConnects(s)) boxes :+= oBounds(s)
+        boxes
     }
 }
 
@@ -253,183 +166,30 @@ object PipeBoxes
     var expandBounds = -1
 }
 
-abstract class CorePipePart extends SubcorePipePart with TCenterRSAcquisitions with IRedwirePart with IMaskedRedstonePart
+trait TPipeTravelConditions
 {
-    override def strongPowerLevel(side:Int) = 0
+    /**
+     * Filter used only on network pipes for their network flags
+     * and item filters.
+     */
+    def networkFilter = PathFilter.default
 
-    override def weakPowerLevel(side:Int) =
-    {
-        if (!maskConnects(side) || !material) 0
-        else rsLevel
-    }
+    /**
+     * Filter used on every pipe.  Specifies the path flags, color filters,
+     * and item filters.
+     * @param inputDir Direction of input on pipe
+     * @param outputDir Direction of output on pipe
+     * @return The path filter
+     */
+    def routeFilter(inputDir:Int, outputDir:Int) = PathFilter.default
 
-    override def canConnectRedstone(side:Int) = material
-
-    override def getConnectionMask(side:Int) = 0x10
-
-    override def canConnectPart(part:IConnectable, s:Int) = part match
-    {
-        case fr:FramedRedwirePart if material => true
-        case _ => false
-    }
-
-    override def discoverOpen(s:Int) = getInternal(s) match
-    {
-        case null => true
-        case _ =>
-            PipeBoxes.expandBounds = s
-            val fits = tile.canReplacePart(this, this)
-            PipeBoxes.expandBounds = -1
-            fits
-    }
-
-    override def discoverInternal(s:Int) = false
-
-    override def discoverStraightOverride(absDir:Int) =
-    {
-        if (material)
-        {
-            WirePropagator.setRedwiresConnectable(false)
-            val b = (RedstoneInteractions.otherConnectionMask(world, x, y, z, absDir, false)&RedstoneInteractions.connectionMask(this, absDir)) != 0
-            WirePropagator.setRedwiresConnectable(true)
-            b
-        }
-        else false
-    }
-
-    def rsLevel =
-    {
-        if (WirePropagator.redwiresProvidePower) ((signal&0xFF)+16)/17
-        else 0
-    }
-
-    def getRedwireSignal = signal&0xFF
-
-    override def getRedwireSignal(side:Int) = getRedwireSignal
-
-    override def updateAndPropagate(prev:TMultiPart, mode:Int)
-    {
-        if (mode == DROPPING && signal == 0) return
-        val newSignal = calculateSignal
-        if (newSignal < getRedwireSignal)
-        {
-            if (newSignal > 0) WirePropagator.propagateAnalogDrop(this)
-            signal = 0
-            propagate(prev, DROPPING)
-        }
-        else if (newSignal > getRedwireSignal)
-        {
-            signal = newSignal.asInstanceOf[Byte]
-            if (mode == DROPPING) propagate(null, RISING)
-            else propagate(prev, RISING)
-        }
-        else if (mode == DROPPING) propagateTo(prev, RISING)
-        else if (mode == FORCE) propagate(prev, FORCED)
-    }
-
-    def propagate(from:TMultiPart, mode:Int)
-    {
-        if (mode != FORCED) WirePropagator.addPartChange(this)
-        for (s <- 0 until 6) if (maskConnectsOut(s))
-            propagateExternal(getStraight(s), posOfStraight(s), from, mode)
-
-        propagateOther(mode)
-    }
-
-    def propagateOther(mode:Int)
-    {
-        for (s <- 0 until 6) if (!maskConnects(s))
-            WirePropagator.addNeighborChange(new BlockCoord(tile).offset(s))
-    }
-
-    def calculateSignal:Int =
-    {
-        if (!material) return 0
-        WirePropagator.setDustProvidePower(false)
-        WirePropagator.redwiresProvidePower = false
-        var s = 0
-        def raise(sig:Int) {if (sig > s) s = sig}
-
-        for (s <- 0 until 6) if (maskConnectsOut(s))
-            raise(calcStraightSignal(s))
-
-        WirePropagator.setDustProvidePower(true)
-        WirePropagator.redwiresProvidePower = true
-        s
-    }
-
-    override def calcStraightSignal(s:Int) = getStraight(s) match
-    {
-        case p:TMultiPart => resolveSignal(p, s^1)
-        case _ => calcStrongSignal(s)
-    }
-
-    override def resolveSignal(part:Any, s:Int) = part match
-    {
-        case rw:IRedwirePart if rw.diminishOnSide(s) => rw.getRedwireSignal(s)-1
-        case re:IRedwireEmitter => re.getRedwireSignal(s)
-        case _ => 0
-    }
-
-    override def getSubParts =
-    {
-        val b = getCollisionBoxes
-        var i = Seq[IndexedCuboid6]()
-        for (c <- b) i :+= new IndexedCuboid6(0, c)
-        i
-    }
-
-    override def getOcclusionBoxes =
-    {
-        import PipeBoxes._
-        if (expandBounds >= 0) Seq(oBounds(expandBounds))
-        else Seq(oBounds(6))
-    }
-
-    override def getCollisionBoxes =
-    {
-        import PipeBoxes._
-        var boxes = Seq(oBounds(6))
-        for (s <- 0 until 6) if (maskConnects(s)) boxes :+= oBounds(s)
-        boxes
-    }
-
-    override def debug(player:EntityPlayer) =
-    {
-        player.addChatComponentMessage(new ChatComponentText(
-            (if (world.isRemote) "Client" else "Server")+" signal strength: "+getRedwireSignal))
-        true
-    }
-
-    override def test(player:EntityPlayer) =
-    {
-        if (world.isRemote) Messenger.addMessage(x, y+.5f, z, "/#f/#c[c] = "+getRedwireSignal)
-        else
-        {
-            val packet = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)
-            packet.writeDouble(x+0.0D)
-            packet.writeDouble(y+0.5D)
-            packet.writeDouble(z+0.0D)
-            packet.writeString("/#c[s] = "+getRedwireSignal)
-            packet.sendToPlayer(player)
-        }
-        true
-    }
+    def routeWeight = 1
 }
 
-class FlowingPipePart extends CorePipePart
+class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
 {
     val itemFlow = new PayloadMovement
-    var logic:PipeLogic = null
     var initialized = false
-
-    override def preparePlacement(side:Int, meta:Int)
-    {
-        super.preparePlacement(side, meta)
-        logic = PipeLogic.createPipeLogic(this, meta)
-    }
-
-    def getLogic = logic
 
     override def save(tag:NBTTagCompound)
     {
@@ -442,7 +202,6 @@ class FlowingPipePart extends CorePipePart
             r.save(payloadData)
         }
         tag.setTag("itemFlow", nbttaglist)
-        getLogic.save(tag)
     }
 
     override def load(tag:NBTTagCompound)
@@ -462,28 +221,11 @@ class FlowingPipePart extends CorePipePart
             }
             catch {case t:Throwable =>}
         }
-
-        logic = PipeLogic.createPipeLogic(this, meta)
-        getLogic.load(tag)
-    }
-
-    override def writeDesc(packet:MCDataOutput)
-    {
-        super.writeDesc(packet)
-        getLogic.writeDesc(packet)
-    }
-
-    override def readDesc(packet:MCDataInput)
-    {
-        super.readDesc(packet)
-        if (getLogic == null) logic = PipeLogic.createPipeLogic(this, meta)
-        getLogic.readDesc(packet)
     }
 
     override def read(packet:MCDataInput, key:Int) = key match
     {
         case 4 => handleItemUpdatePacket(packet)
-        case k if k >= 50 => logic.read(packet, key)
         case _ => super.read(packet, key)
     }
 
@@ -492,7 +234,6 @@ class FlowingPipePart extends CorePipePart
         super.update()
         if (!initialized) initialized = true
         pushItemFlow()
-        getLogic.tick()
     }
 
     def pushItemFlow()
@@ -516,7 +257,6 @@ class FlowingPipePart extends CorePipePart
 
     def handleDrop(r:RoutedPayload)
     {
-        if (getLogic.handleDrop(r)) return
         if (itemFlow.scheduleRemoval(r)) if (!world.isRemote)
         {
             r.resetTrip
@@ -526,7 +266,6 @@ class FlowingPipePart extends CorePipePart
 
     def resolveDestination(r:RoutedPayload)
     {
-        if (getLogic.resolveDestination(r)) return
         chooseRandomDestination(r)
     }
 
@@ -536,7 +275,7 @@ class FlowingPipePart extends CorePipePart
         for (i <- 0 until 6) if((connMap&1<<i) != 0 && i != r.input.getOpposite.ordinal)
         {
             val t = getStraight(i)
-            if (t.isInstanceOf[FlowingPipePart]) moves :+= ForgeDirection.getOrientation(i)
+            if (t.isInstanceOf[PayloadPipePart]) moves :+= ForgeDirection.getOrientation(i)
         }
 
         if (moves.isEmpty) r.output = r.input.getOpposite
@@ -545,7 +284,6 @@ class FlowingPipePart extends CorePipePart
 
     def endReached(r:RoutedPayload)
     {
-        if (getLogic.endReached(r)) return
         if (!world.isRemote) if (!maskConnects(r.output.ordinal) || !passToNextPipe(r))
         {
             val inv = InvWrapper.getInventory(world, new BlockCoord(tile).offset(r.output.ordinal))
@@ -570,7 +308,6 @@ class FlowingPipePart extends CorePipePart
 
     def centerReached(r:RoutedPayload)
     {
-        if (getLogic.centerReached(r)) return
         if (!maskConnects(r.output.ordinal)) resolveDestination(r)
     }
 
@@ -578,7 +315,7 @@ class FlowingPipePart extends CorePipePart
     {
         getStraight(r.output.ordinal()) match
         {
-            case pipe:FlowingPipePart =>
+            case pipe:PayloadPipePart =>
                 pipe.injectPayload(r, r.output)
                 true
             case _ => false
@@ -662,17 +399,8 @@ class FlowingPipePart extends CorePipePart
         r.input = ForgeDirection.getOrientation(packet.readByte)
         r.output = ForgeDirection.getOrientation(packet.readByte)
         r.speed = packet.readFloat
-        r.setPriority(SendPriority(packet.readUByte).asInstanceOf[SendPriority])
+        r.setPriority(SendPriorities(packet.readUByte))
     }
-
-    /**
-     * Filter for items this pipe will except on the dir
-     * @param inputDir Input dir
-     * @return The path filter for this input dir
-     */
-    def routeFilter(inputDir:Int) = PathFilter.default
-
-    def routeWeight = 1
 
     @SideOnly(Side.CLIENT)
     override def drawBreaking(r:RenderBlocks)
@@ -706,72 +434,11 @@ class FlowingPipePart extends CorePipePart
     }
 
     @SideOnly(Side.CLIENT)
-    def getIcon(side:Int) =
-    {
-        val i = getLogic.getIcon(side)
-        if (i != null) i
-        else getPipeType.sprites(0)
-    }
+    def getIcon(side:Int) = getPipeType.sprites(0)
 
     override def canConnectPart(part:IConnectable, s:Int) = part match
     {
-        case p:FlowingPipePart => true
-        case _ => super.canConnectPart(part, s)
+        case p:PayloadPipePart => true
+        case _ => false
     }
-
-    override def activate(player:EntityPlayer, hit:MovingObjectPosition, held:ItemStack) =
-    {
-        if (super.activate(player, hit, held)) true
-        else false
-    }
-}
-
-object PipeLogic
-{
-    def createPipeLogic(p:FlowingPipePart, meta:Int) = meta match
-    {
-        case 0 => new NullPipeLogic(p)
-        case _ => new NullPipeLogic(p)
-    }
-
-    def apply(p:FlowingPipePart, meta:Int) = createPipeLogic(p, meta)
-
-    class NullPipeLogic(p:FlowingPipePart) extends PipeLogic(p)
-    {
-        def endReached(r:RoutedPayload) = false
-        def centerReached(r:RoutedPayload) = false
-        def handleDrop(r:RoutedPayload) = false
-        def resolveDestination(r:RoutedPayload) = false
-        def getIcon(i:Int) = null
-    }
-}
-
-abstract class PipeLogic(p:FlowingPipePart)
-{
-    def save(tag:NBTTagCompound) {}
-
-    def load(tag:NBTTagCompound) {}
-
-    def readDesc(packet:MCDataInput) {}
-
-    def writeDesc(packet:MCDataOutput) {}
-
-    /**
-     *
-     * @param packet
-     * @param key allocated >= 50
-     */
-    def read(packet:MCDataInput, key:Int) {}
-
-    def tick() {}
-
-    def endReached(r:RoutedPayload):Boolean
-
-    def centerReached(r:RoutedPayload):Boolean
-
-    def handleDrop(r:RoutedPayload):Boolean
-
-    def resolveDestination(r:RoutedPayload):Boolean
-
-    def getIcon(i:Int):IIcon
 }

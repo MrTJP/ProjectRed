@@ -29,7 +29,7 @@ class ItemPartPipe extends ItemCore("projectred.transportation.pipe") with TItem
     def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3) =
     {
         val pdef = PipeDefs.values(item.getItemDamage)
-        val p = MultiPartRegistry.createPart(pdef.partname, false).asInstanceOf[FlowingPipePart]
+        val p = MultiPartRegistry.createPart(pdef.partname, false).asInstanceOf[PayloadPipePart]
         if (p != null) p.preparePlacement(side, item.getItemDamage)
         p
     }
@@ -63,6 +63,7 @@ object PipeDefs extends ItemDefinition
     val ROUTEDREQUEST = new PipeVal("pr_rrequest", "routedrequest")
     val ROUTEDEXTENSION = new PipeVal("pr_rextension", "routedextension")
     val ROUTEDFIREWALL = new PipeVal("pr_rfire", "routedfire")
+    val PRESSURETUBE = new PipeVal("pr_pt", "pressuretube")
 
     class PipeVal(val partname:String, val textures:String*) extends ItemDef
     {

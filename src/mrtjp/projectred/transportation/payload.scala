@@ -1,16 +1,17 @@
 package mrtjp.projectred.transportation
 
 import java.util.UUID
+
+import mrtjp.projectred.core.lib.Enum
+import mrtjp.projectred.core.libmc.{ItemKeyStack, PRColors}
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraftforge.common.util.ForgeDirection
+
 import scala.collection.convert.WrapAsJava
 import scala.collection.immutable
 import scala.collection.immutable.BitSet
-import mrtjp.projectred.core.libmc.{PRColors, ItemKeyStack}
-import net.minecraftforge.common.util.ForgeDirection
-import mrtjp.projectred.core.lib.Enum
-import mrtjp.projectred.transportation.SendPriority.SendPriority
 
 object RoutedPayload
 {
@@ -44,10 +45,10 @@ object RoutedPayload
     }
 }
 
-object SendPriority extends Enum
+object SendPriorities extends Enum
 {
-    type SendPriority = EnumVal
     type EnumVal = PriorityVal
+    type SendPriority = EnumVal
 
     val passiveDef = {path:StartEndPath => path.allowRouting}
     val activeDef = {path:StartEndPath => path.allowBroadcast || path.allowCrafting}
@@ -58,6 +59,7 @@ object SendPriority extends Enum
     val PASSIVE = new PriorityVal("Passive", 0.10f, 0.20f, PRColors.BLUE.ordinal())
     val ACTIVEB = new PriorityVal("Active Broadcast", 0.20f, 0.30f, PRColors.GREEN.ordinal(), _.allowBroadcast)
     val ACTIVEC = new PriorityVal("Active Craft", 0.20f, 0.30f, PRColors.GREEN.ordinal(), _.allowCrafting)
+
 
     class PriorityVal(val ident:String, val speed:Float, val boost:Float, val color:Int, f:StartEndPath => Boolean) extends Value
     {
@@ -85,9 +87,9 @@ class RoutedPayload(val payloadID:Int)
     var input = ForgeDirection.UNKNOWN
     var output = ForgeDirection.UNKNOWN
     var isEntering = true
-    var parent:FlowingPipePart = null
+    var parent:PayloadPipePart = null
 
-    def bind(p:FlowingPipePart)
+    def bind(p:PayloadPipePart)
     {
         parent = p
     }
@@ -154,7 +156,7 @@ class RoutedPayload(val payloadID:Int)
         var deltaX = x + 0.5D
         var deltaY = y + 0.25D
         var deltaZ = z + 0.5D
-        import ForgeDirection._
+        import net.minecraftforge.common.util.ForgeDirection._
         dir match
         {
             case UP => deltaY = (y-0.25D)+prog
@@ -192,7 +194,7 @@ class RoutedPayload(val payloadID:Int)
     var destinationUUID:UUID = null
     var hasArrived = false
     var travelLog = BitSet()
-    var priority = SendPriority.WANDERING
+    var priority = SendPriorities.WANDERING
 
     def setDestination(ip:Int) =
     {
@@ -203,7 +205,7 @@ class RoutedPayload(val payloadID:Int)
         this
     }
 
-    def setPriority(p:SendPriority) =
+    def setPriority(p:SendPriorities.SendPriority) =
     {
         priority = p
         this
@@ -223,7 +225,7 @@ class RoutedPayload(val payloadID:Int)
         destinationIP = -1
         destinationUUID = null
         hasArrived = false
-        priority = SendPriority.WANDERING
+        priority = SendPriorities.WANDERING
         this
     }
 
