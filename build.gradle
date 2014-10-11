@@ -18,13 +18,6 @@ buildscript {
     }
 }
 
-repositories {
-    maven {
-        name "chickenbones"
-        url "http://chickenbones.net/maven/"
-    }
-}
-
 // Apply the forge plugin - this adds all the magic for automatically obfuscating, deobfuscating etc
 apply plugin: 'scala'
 apply plugin: 'forge'
@@ -44,12 +37,42 @@ configFile.withReader {
     project.ext.config = new ConfigSlurper().parse prop
 }
 
+// Must be after config to access config.*
+repositories {
+    maven {
+        name "chickenbones"
+        url "http://chickenbones.net/maven/"
+    }
+
+    maven {
+        name "dvs1"
+        url "http://dvs1.progwml6.com/files/maven/"
+    }
+    ivy {
+        name 'ThermalExpansion'
+        artifactPattern "http://addons.cursecdn.com/files/${config.texpan.cf}/[module]-[revision].[ext]"
+    }
+    ivy {
+        name 'CoFHCore'
+        artifactPattern "http://addons.cursecdn.com/files/${config.cofh.cf}/[module]-[revision].[ext]"
+    }
+}
+
+configurations {
+	buildOnly
+}
+
 dependencies {
     compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
     compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
     compile "codechicken:CodeChickenCore:${config.mc.version}-${config.ccc.version}:dev"
     compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
+    buildOnly "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
+    buildOnly name: 'ThermalExpansion', version: config.texpan.version, ext: 'jar'
+    buildOnly name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
 }
+
+sourceSets.main.compileClasspath += [ configurations.buildOnly ]
 
 def build_number = (System.getenv("BUILD_NUMBER") ?: "1")
 version =  "${project.config.mod.version}." + build_number
