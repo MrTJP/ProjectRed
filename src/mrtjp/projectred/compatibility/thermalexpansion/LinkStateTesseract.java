@@ -1,14 +1,14 @@
 package mrtjp.projectred.compatibility.thermalexpansion;
 
-/*
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
-import cofh.api.transport.IEnderAttuned;
+import cofh.api.transport.IEnderItemHandler;
+import cofh.api.transport.RegistryEnderAttuned;
 import mrtjp.projectred.api.ISpecialLinkState;
 import mrtjp.projectred.core.libmc.PRLib;
 import mrtjp.projectred.transportation.RoutedJunctionPipePart;
 import net.minecraft.tileentity.TileEntity;
-import thermalexpansion.block.tesseract.TileTesseract;
+import thermalexpansion.block.ender.TileTesseract;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -40,10 +40,13 @@ public class LinkStateTesseract implements ISpecialLinkState
     private List<TileTesseract> getConnectedTesseracts(TileTesseract tess)
     {
         List<TileTesseract> links = new LinkedList<TileTesseract>();
+        List<IEnderItemHandler> conns = RegistryEnderAttuned.getLinkedItemOutputs(tess);
 
-        List<IEnderAttuned> conns = tess.getValidItemOutputs();
-        for (IEnderAttuned obj : conns)
-            if (obj instanceof TileTesseract)
+        if (conns == null)
+            return links;
+
+        for (IEnderItemHandler obj : conns)
+            if (obj.canReceiveItems() && obj instanceof TileTesseract)
                 links.add((TileTesseract) obj);
 
         return links;
@@ -56,7 +59,7 @@ public class LinkStateTesseract implements ISpecialLinkState
 
         for (int i = 0; i < 6; i++)
         {
-            TMultiPart part = PRLib.getMultiPart(tess.worldObj, bc.copy().offset(i), 6);
+            TMultiPart part = PRLib.getMultiPart(tess.getWorldObj(), bc.copy().offset(i), 6);
             if (part instanceof RoutedJunctionPipePart)
             {
                 RoutedJunctionPipePart pipe = (RoutedJunctionPipePart) part;
@@ -75,7 +78,7 @@ public class LinkStateTesseract implements ISpecialLinkState
 
         for (int i = 0; i < 6; i++)
         {
-            TMultiPart part = PRLib.getMultiPart(tess.worldObj, bc.copy().offset(i), 6);
+            TMultiPart part = PRLib.getMultiPart(tess.getWorldObj(), bc.copy().offset(i), 6);
             if (part instanceof RoutedJunctionPipePart)
             {
                 RoutedJunctionPipePart pipe = (RoutedJunctionPipePart) part;
@@ -93,4 +96,3 @@ public class LinkStateTesseract implements ISpecialLinkState
         return tile instanceof TileTesseract;
     }
 }
-*/
