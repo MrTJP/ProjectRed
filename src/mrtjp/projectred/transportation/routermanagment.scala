@@ -5,11 +5,11 @@ import java.util.{UUID, PriorityQueue => JPriorityQueue}
 
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.libmc.ItemKey
-import mrtjp.projectred.transportation.SendPriorities.SendPriority
+import mrtjp.projectred.transportation.Priorities.SendPriority
 import net.minecraftforge.common.util.ForgeDirection
 
 import scala.collection.immutable.{BitSet, HashMap}
-import scala.collection.mutable
+import scala.collection.mutable.{BitSet => MBitSet}
 
 object RouterServices
 {
@@ -189,6 +189,8 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
 
         if (adjacentChanged)
         {
+            println("NETWORK CHANGED!! ")
+
             adjacentLinks = newAdjacent
             routedExits = newAdjacent.foldLeft(0)((b, p) => (b|1<<p.hopDir)&0x3F)
 
@@ -201,7 +203,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
 
     private def startLSAFloodfill()
     {
-        val prev = mutable.BitSet(Router.getEndOfIPPool)
+        val prev = MBitSet(Router.getEndOfIPPool)
         prev += IPAddress
         for (p <- adjacentLinks) p.end.LSAUpdateFloodfill(prev)
         prev.clear()
@@ -211,7 +213,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         for (p <- adjacentLinks) p.end.adjacentUpdateFloodfill(prev)
     }
 
-    def LSAUpdateFloodfill(prev:mutable.BitSet)
+    def LSAUpdateFloodfill(prev:MBitSet)
     {
         if (prev(IPAddress)) return
         prev += IPAddress
@@ -219,7 +221,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         for (p <- adjacentLinks) p.end.LSAUpdateFloodfill(prev)
     }
 
-    def adjacentUpdateFloodfill(prev:mutable.BitSet)
+    def adjacentUpdateFloodfill(prev:MBitSet)
     {
         if (prev(IPAddress)) return
         prev += IPAddress
@@ -328,7 +330,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         def ensureClosed(size:Int){while (closedFilters.length <= size) closedFilters :+= null}
 
         // Start by adding our info.
-        for (p <- adjacentLinks) candidates2.add(new StartEndPath(p.end, p.end, p.hopDir, p.distance, p.filters))
+        for (p <- adjacentLinks) candidates2.add(p.createStartPoint)
         closedFilters(getIPAddress) = Vector(Set[PathFilter](PathFilter.default))
 
         val a, b = new scala.util.control.Breaks

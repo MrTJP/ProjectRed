@@ -489,25 +489,25 @@ trait TSimpleLogicPipe extends PayloadPipePart
         getLogic.tick()
     }
 
-    override def handleDrop(r:RoutedPayload)
+    override def handleDrop(r:PipePayload)
     {
         if (getLogic.handleDrop(r)) return
         super.handleDrop(r)
     }
 
-    override def resolveDestination(r:RoutedPayload)
+    override def resolveDestination(r:PipePayload)
     {
         if (getLogic.resolveDestination(r)) return
         super.handleDrop(r)
     }
 
-    override def endReached(r:RoutedPayload)
+    override def endReached(r:PipePayload)
     {
         if (getLogic.endReached(r)) return
         super.endReached(r)
     }
 
-    override def centerReached(r:RoutedPayload)
+    override def centerReached(r:PipePayload)
     {
         if (getLogic.centerReached(r)) return
         super.centerReached(r)
@@ -534,10 +534,10 @@ object PipeLogic
 
     class NullPipeLogic(p:PayloadPipePart) extends PipeLogic(p)
     {
-        def endReached(r:RoutedPayload) = false
-        def centerReached(r:RoutedPayload) = false
-        def handleDrop(r:RoutedPayload) = false
-        def resolveDestination(r:RoutedPayload) = false
+        def endReached(r:PipePayload) = false
+        def centerReached(r:PipePayload) = false
+        def handleDrop(r:PipePayload) = false
+        def resolveDestination(r:PipePayload) = false
         def getIcon(i:Int) = null
     }
 }
@@ -557,13 +557,13 @@ abstract class PipeLogic(p:PayloadPipePart)
 
     def tick(){}
 
-    def endReached(r:RoutedPayload):Boolean
+    def endReached(r:PipePayload):Boolean
 
-    def centerReached(r:RoutedPayload):Boolean
+    def centerReached(r:PipePayload):Boolean
 
-    def handleDrop(r:RoutedPayload):Boolean
+    def handleDrop(r:PipePayload):Boolean
 
-    def resolveDestination(r:RoutedPayload):Boolean
+    def resolveDestination(r:PipePayload):Boolean
 
     def getIcon(i:Int):IIcon
 }

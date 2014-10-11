@@ -9,7 +9,7 @@ import net.minecraftforge.common.util.ForgeDirection
 
 class RoutedRequestPipePart extends BasicPipeAbstraction with TNetworkPipe
 {
-    override def centerReached(r:RoutedPayload)
+    override def centerReached(r:PipePayload)
     {
         if (!maskConnects(r.output.ordinal) && !world.isRemote) if (itemFlow.scheduleRemoval(r))
         {
@@ -40,7 +40,7 @@ class RoutedRequestPipePart extends BasicPipeAbstraction with TNetworkPipe
         packet.writeCoord(x, y, z).sendToPlayer(player)
     }
 
-    override def getDirForIncomingItem(r:RoutedPayload):ForgeDirection =
+    override def getDirForIncomingItem(r:PipePayload):ForgeDirection =
     {
         val dir = ForgeDirection.getOrientation(inOutSide)
         if (dir == ForgeDirection.UNKNOWN)

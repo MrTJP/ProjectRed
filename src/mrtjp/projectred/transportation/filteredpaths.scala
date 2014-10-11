@@ -3,21 +3,28 @@ package mrtjp.projectred.transportation
 import mrtjp.projectred.core.libmc.ItemKey
 
 
-class StartEndPath(var start:Router, var end:Router, var hopDir:Int, var distance:Int, filters:Set[PathFilter]) extends Path(filters) with Ordered[StartEndPath]
+class StartEndPath(var start:Router, var end:Router, var hopDir:Int, var distance:Int,
+                   filters:Set[PathFilter] = Set.empty, val netFlags:Int = 0x7) extends Path(filters) with Ordered[StartEndPath]
 {
-    def this(start:Router, end:Router, dirToFirstHop:Int, distance:Int, filter:PathFilter) = this(start, end, dirToFirstHop, distance, Set(filter))
-    def this(start:Router, end:Router, dirToFirstHop:Int, distance:Int) = this(start, end, dirToFirstHop, distance, PathFilter.default)
+    def this(start:Router, end:Router, dirToFirstHop:Int, distance:Int, filter:PathFilter) =
+        this(start, end, dirToFirstHop, distance, Set(filter))
+
+    val allowRouting = (netFlags&0x1) != 0
+    val allowBroadcast = (netFlags&0x2) != 0
+    val allowCrafting = (netFlags&0x4) != 0
 
     override def equals(other:Any) = other match
     {
         case that:StartEndPath =>
                 hopDir == that.hopDir &&
                 distance == that.distance &&
+                netFlags == that.netFlags &&
                 super.equals(that)
         case _ => false
     }
 
-    def -->(to:StartEndPath) = new StartEndPath(start, to.end, hopDir, distance+to.distance, filters ++ to.filters)
+    def -->(to:StartEndPath) = new StartEndPath(start, to.end, hopDir, distance+to.distance, filters++to.filters, netFlags&to.netFlags)
+    def createStartPoint = new StartEndPath(end, end, hopDir, distance, filters, netFlags)
 
     override def compare(that:StartEndPath) =
     {
@@ -32,18 +39,12 @@ class Path(val filters:Set[PathFilter])
     override def equals(other:Any) = other match
     {
         case that:Path =>
-            networkFlags == that.networkFlags &&
-                pathFlags == that.pathFlags &&
+            pathFlags == that.pathFlags &&
                 filters == that.filters
         case _ => false
     }
 
     val emptyFilter = filters.forall(_ == PathFilter.default)
-
-    val networkFlags = filters.foldLeft(0x7)((b, f) => f.networkFlags&b)
-    val allowRouting = (networkFlags&0x1) != 0
-    val allowBroadcast = (networkFlags&0x2) != 0
-    val allowCrafting = (networkFlags&0x4) != 0
 
     def allowItem(item:ItemKey):Boolean = filters.forall(_.allowItem(item))
     def allowColor(c:Int) = filters.forall(_.allowColor(c))
@@ -60,14 +61,6 @@ object PathFilter
 
 class PathFilter
 {
-    /**
-     * 0CBR
-     * R - allow Routing
-     * B - allow Broadcastint
-     * C - allow Crafting
-     */
-    var networkFlags = 0x7
-
     /**
      * 00FT
      * T - can travel to
@@ -90,8 +83,7 @@ class PathFilter
     override def equals(other:Any) = other match
     {
         case that:PathFilter =>
-            networkFlags == that.networkFlags &&
-                pathFlags == that.pathFlags
+            pathFlags == that.pathFlags
                 filterExclude == that.filterExclude &&
                 itemFilter == that.itemFilter &&
                 colorExclude == that.colorExclude &&
