@@ -1,5 +1,4 @@
 package mrtjp.projectred.transportation
-
 import java.util.UUID
 import java.util.concurrent.PriorityBlockingQueue
 
@@ -11,7 +10,7 @@ import mrtjp.projectred.core.lib.Pair2
 import mrtjp.projectred.core.libmc.inventory.InvWrapper
 import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack, ItemQueue, PRLib}
 import mrtjp.projectred.core.{Configurator, CoreSPH}
-import mrtjp.projectred.transportation.SendPriorities.SendPriority
+import mrtjp.projectred.transportation.Priorities.SendPriority
 import mrtjp.projectred.transportation.TNetworkPipe.TransitComparator
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
@@ -39,8 +38,8 @@ trait IWorldRouter
     def getCoords:BlockCoord
 
     /** Item Syncing **/
-    def itemEnroute(r:RoutedPayload)
-    def itemArrived(r:RoutedPayload)
+    def itemEnroute(r:PipePayload)
+    def itemArrived(r:PipePayload)
     def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse
 
     /** Item Requesting **/
@@ -109,7 +108,18 @@ trait TRouteLayer
     def getCoords:BlockCoord
 }
 
-trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter with TRouteLayer with IWorldRequester
+trait TNetworkTravelConditions extends TPipeTravelConditions
+{
+    /**
+     * 0CBR
+     * R - allow Routing
+     * B - allow Broadcastint
+     * C - allow Crafting
+     */
+    def networkFilter = 0x7
+}
+
+trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter with TRouteLayer with IWorldRequester with TNetworkTravelConditions
 {
     var searchDelay =
     {
@@ -126,9 +136,9 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
 
     var needsWork = true
 
-    var sendQueue = Vector[RoutedPayload]()
-    var transitQueue = new PriorityBlockingQueue[Pair2[RoutedPayload, Int]](10, TransitComparator)
-    var swapQueue = Vector[RoutedPayload]()
+    var sendQueue = Vector[PipePayload]()
+    var transitQueue = new PriorityBlockingQueue[Pair2[PipePayload, Int]](10, TransitComparator)
+    var swapQueue = Vector[PipePayload]()
 
     var statsReceived = 0
     var statsSent = 0
@@ -185,7 +195,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         routerId
     }
 
-    private def removeFromTransitQueue(r:RoutedPayload)
+    private def removeFromTransitQueue(r:PipePayload)
     {
         transitQueue.removeAll(transitQueue.filter(p => p.get1 == r))
     }
@@ -204,7 +214,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         transitQueue.filter(p => p.get1.payload.key == key).foldLeft(0)((b,a) => b+a.get2)
     }
 
-    private def dispatchQueuedPayload(r:RoutedPayload)
+    private def dispatchQueuedPayload(r:PipePayload)
     {
         injectPayload(r, r.input)
         val dest = RouterServices.getRouter(r.destinationIP)
@@ -219,7 +229,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         statsSent += 1
     }
 
-    def queueSwapSendItem(r:RoutedPayload)
+    def queueSwapSendItem(r:PipePayload)
     {
         swapQueue :+= r
     }
@@ -246,7 +256,6 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         }
         if (!world.isRemote) getRouter.update(world.getTotalWorldTime%Configurator.detectionFrequency == searchDelay)
         super.update()
-        //firstTick = false TODO
 
         // Dispatch queued items
         while (sendQueue.nonEmpty) dispatchQueuedPayload(sendPoll())
@@ -289,7 +298,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
 
     override def getContainer = this
 
-    override def endReached(r:RoutedPayload)
+    override def endReached(r:PipePayload)
     {
         if (!world.isRemote) if (!maskConnects(r.output.ordinal) || !passToNextPipe(r))
         {
@@ -403,13 +412,13 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         else array(2+ind)
     }
 
-    override def resolveDestination(r:RoutedPayload)
+    override def resolveDestination(r:PipePayload)
     {
         if (needsWork) return
         var color = -1
         r.output = ForgeDirection.UNKNOWN
 
-        def reRoute(r:RoutedPayload)
+        def reRoute(r:PipePayload)
         {
             r.resetTrip
             val f = new LogisticPathFinder(getRouter, r.payload.key).setExclusions(r.travelLog).findBestResult
@@ -460,9 +469,9 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         adjustSpeed(r)
     }
 
-    def getDirForIncomingItem(r:RoutedPayload) = ForgeDirection.getOrientation(inOutSide)
+    def getDirForIncomingItem(r:PipePayload) = ForgeDirection.getOrientation(inOutSide)
 
-    override def adjustSpeed(r:RoutedPayload)
+    override def adjustSpeed(r:PipePayload)
     {
         r.speed = r.priority.boost
     }
@@ -477,12 +486,12 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         router
     }
 
-    override def itemEnroute(r:RoutedPayload)
+    override def itemEnroute(r:PipePayload)
     {
         transitQueue.add(new Pair2(r, 200))
     }
 
-    override def itemArrived(r:RoutedPayload)
+    override def itemArrived(r:PipePayload)
     {
         removeFromTransitQueue(r)
         trackedItemReceived(r.payload)
@@ -497,7 +506,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         var r = pollFromSwapQueue(stack2)
         if (r == null)
         {
-            r = RoutedPayload(stack2)
+            r = PipePayload(stack2)
             r.input = ForgeDirection.getOrientation(dirOfExtraction)
             r.setPriority(priority)
             r.setDestination(destination)
@@ -539,9 +548,9 @@ object TNetworkPipe
 {
     var delayDelta = 0
 
-    object TransitComparator extends Ordering[Pair2[RoutedPayload, Int]]
+    object TransitComparator extends Ordering[Pair2[PipePayload, Int]]
     {
-        def compare(a:Pair2[RoutedPayload, Int], b:Pair2[RoutedPayload, Int]) =
+        def compare(a:Pair2[PipePayload, Int], b:Pair2[PipePayload, Int]) =
         {
             var c = b.get2-a.get2
             if (c == 0) c = b.get1.payload.compareTo(a.get1.payload)

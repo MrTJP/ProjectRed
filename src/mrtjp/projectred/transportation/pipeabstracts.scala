@@ -9,6 +9,7 @@ import codechicken.multipart._
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
+import mrtjp.projectred.core.libmc.ItemKey
 import mrtjp.projectred.core.libmc.inventory.InvWrapper
 import net.minecraft.client.renderer.RenderBlocks
 import net.minecraft.entity.player.EntityPlayer
@@ -168,22 +169,30 @@ object PipeBoxes
 
 trait TPipeTravelConditions
 {
-    /**
-     * Filter used only on network pipes for their network flags
-     * and item filters.
-     */
-    def networkFilter = PathFilter.default
+    def getPathFlags(input:Int, output:Int) = 0x3
 
-    /**
-     * Filter used on every pipe.  Specifies the path flags, color filters,
-     * and item filters.
-     * @param inputDir Direction of input on pipe
-     * @param outputDir Direction of output on pipe
-     * @return The path filter
-     */
-    def routeFilter(inputDir:Int, outputDir:Int) = PathFilter.default
+    def itemsExclude = true
+    def filteredItems:Set[ItemKey] = Set.empty
 
-    def routeWeight = 1
+    def colorExclude = true
+    def filteredColors = 0
+
+    def pathFilter:PathFilter = pathFilter(-1, -1)
+    def pathFilter(inputDir:Int, outputDir:Int):PathFilter =
+    {
+        val f = new PathFilter
+        if (inputDir != -1 && outputDir != -1)
+            f.pathFlags = getPathFlags(inputDir, outputDir)
+
+        f.filterExclude = itemsExclude
+        f.itemFilter = filteredItems
+
+        f.colorExclude = colorExclude
+        f.colors = filteredColors
+        f
+    }
+
+    def pathWeight = 1
 }
 
 class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
@@ -214,7 +223,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
             try
             {
                 val payloadData = nbttaglist.getCompoundTagAt(j)
-                val r = RoutedPayload()
+                val r = PipePayload()
                 r.bind(this)
                 r.load(payloadData)
                 if (!r.isCorrupted) itemFlow.scheduleLoad(r)
@@ -255,7 +264,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         itemFlow.exececuteRemove()
     }
 
-    def handleDrop(r:RoutedPayload)
+    def handleDrop(r:PipePayload)
     {
         if (itemFlow.scheduleRemoval(r)) if (!world.isRemote)
         {
@@ -264,12 +273,12 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         }
     }
 
-    def resolveDestination(r:RoutedPayload)
+    def resolveDestination(r:PipePayload)
     {
         chooseRandomDestination(r)
     }
 
-    def chooseRandomDestination(r:RoutedPayload)
+    def chooseRandomDestination(r:PipePayload)
     {
         var moves = Seq[ForgeDirection]()
         for (i <- 0 until 6) if((connMap&1<<i) != 0 && i != r.input.getOpposite.ordinal)
@@ -282,7 +291,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         else r.output = moves(world.rand.nextInt(moves.size))
     }
 
-    def endReached(r:RoutedPayload)
+    def endReached(r:PipePayload)
     {
         if (!world.isRemote) if (!maskConnects(r.output.ordinal) || !passToNextPipe(r))
         {
@@ -296,7 +305,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         }
     }
 
-    def bounceStack(r:RoutedPayload)
+    def bounceStack(r:PipePayload)
     {
         itemFlow.unscheduleRemoval(r)
         r.isEntering = true
@@ -306,12 +315,12 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         sendItemUpdate(r)
     }
 
-    def centerReached(r:RoutedPayload)
+    def centerReached(r:PipePayload)
     {
         if (!maskConnects(r.output.ordinal)) resolveDestination(r)
     }
 
-    def passToNextPipe(r:RoutedPayload) =
+    def passToNextPipe(r:PipePayload) =
     {
         getStraight(r.output.ordinal()) match
         {
@@ -322,16 +331,16 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         }
     }
 
-    def adjustSpeed(r:RoutedPayload)
+    def adjustSpeed(r:PipePayload)
     {
         r.speed = Math.max(r.speed-0.01f, r.priority.speed)
     }
 
-    protected def hasReachedMiddle(r:RoutedPayload) = r.progress >= 0.5F
+    protected def hasReachedMiddle(r:PipePayload) = r.progress >= 0.5F
 
-    protected def hasReachedEnd(r:RoutedPayload) = r.progress >= 1.0F
+    protected def hasReachedEnd(r:PipePayload) = r.progress >= 1.0F
 
-    def injectPayload(r:RoutedPayload, in:ForgeDirection)
+    def injectPayload(r:PipePayload, in:ForgeDirection)
     {
         if (r.isCorrupted) return
         if (itemFlow.delegate.contains(r)) return
@@ -372,7 +381,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         }
     }
 
-    def sendItemUpdate(r:RoutedPayload)
+    def sendItemUpdate(r:PipePayload)
     {
         val out = getWriteStreamOf(4)
         out.writeShort(r.payloadID)
@@ -391,7 +400,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         var r = itemFlow.get(id)
         if (r == null)
         {
-            r = RoutedPayload(id)
+            r = PipePayload(id)
             r.progress = progress
             itemFlow.add(r)
         }
@@ -399,7 +408,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         r.input = ForgeDirection.getOrientation(packet.readByte)
         r.output = ForgeDirection.getOrientation(packet.readByte)
         r.speed = packet.readFloat
-        r.setPriority(SendPriorities(packet.readUByte))
+        r.setPriority(TravelPriorities(packet.readUByte))
     }
 
     @SideOnly(Side.CLIENT)

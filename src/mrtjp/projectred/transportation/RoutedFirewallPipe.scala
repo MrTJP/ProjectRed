@@ -102,18 +102,11 @@ class RoutedFirewallPipe extends BasicPipeAbstraction with TNetworkPipe
     }
 
     override def networkFilter =
-    {
-        val f = new PathFilter
-        f.networkFlags = 0
+        (if (allowRoute) 0x1 else 0)|(if (allowBroadcast) 0x2 else 0)|(if (allowCrafting) 0x4 else 0)
 
-        if (allowRoute) f.networkFlags |= 0x1
-        if (allowBroadcast) f.networkFlags |= 0x2
-        if (allowCrafting) f.networkFlags |= 0x4
+    override def filteredItems = itemset
 
-        f.filterExclude = filtExclude
-        f.itemFilter = itemset
-        f
-    }
+    override def itemsExclude = filtExclude
 
     var itemset = Set[ItemKey]()
     def buildItemSet()

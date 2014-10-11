@@ -193,7 +193,7 @@ class RoutedCraftingPipePart extends BasicPipeAbstraction with TNetworkPipe with
 
                     if (processingOrder)
                     {
-                        queueStackToSend(toSend, side, SendPriorities.ACTIVEC, nextOrder.get2.getRouter.getIPAddress)
+                        queueStackToSend(toSend, side, TravelPriorities.ACTIVEC, nextOrder.get2.getRouter.getIPAddress)
                         manager.dispatchSuccessful(numToSend, false)
 
                         if (manager.hasOrders) nextOrder = manager.peek
@@ -206,7 +206,7 @@ class RoutedCraftingPipePart extends BasicPipeAbstraction with TNetworkPipe with
                     else
                     {
                         removeExcess(key, numToSend)
-                        queueStackToSend(toSend, side, SendPriorities.WANDERING, -1)
+                        queueStackToSend(toSend, side, TravelPriorities.WANDERING, -1)
                     }
                 }
             }

@@ -131,7 +131,7 @@ object RenderPipe
         GL11.glPopMatrix()
     }
 
-    private def doRenderItem(r:RoutedPayload, x:Double, y:Double, z:Double)
+    private def doRenderItem(r:PipePayload, x:Double, y:Double, z:Double)
     {
         if (r == null || r.getItemStack == null) return
         val renderScale = 0.7f
