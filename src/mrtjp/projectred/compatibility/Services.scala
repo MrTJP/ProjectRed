@@ -12,9 +12,9 @@ object Services
     //Hardcoded list of all possible plugins
     val rootPlugins = Seq[IPRPlugin](
         PluginTreecapitator,
-        PluginCC_BundledCable,
         PluginTConstruct,
-        PluginThermalExpansion
+        PluginThermalExpansion,
+        PluginCC_BundledCable
     )
 
     //List of all loaded plugins
