@@ -148,12 +148,13 @@ object PartDefs extends ItemDefinition
     val ILLUMARS = WHITEILLUMAR to BLACKILLUMAR
 
     val oreDictDefinitionIllumar = "projredIllumar"
+    val oreDictDefinitionRedIngot = "ingotRedAlloy"
 
     def initOreDict()
     {
         for (i <- ILLUMARS) OreDictionary.registerOre(oreDictDefinitionIllumar, i.makeStack)
 
-        OreDictionary.registerOre("ingotRedAlloy", REDINGOT.makeStack);
+        OreDictionary.registerOre(oreDictDefinitionRedIngot, REDINGOT.makeStack);
     }
 
     class PartVal(iconName:String) extends ItemDef

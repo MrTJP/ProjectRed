@@ -19,15 +19,15 @@ object TransmissionRecipes
 
     private def initWireRecipes()
     {
-        GameRegistry.addRecipe(WireDef.RED_ALLOY.makeStack(12),
+        GameRegistry.addRecipe(new ShapedOreRecipe(WireDef.RED_ALLOY.makeStack(12),
             " r ", " r ", " r ",
-            'r':Character, PartDefs.REDINGOT.makeStack)
+            'r':Character, PartDefs.oreDictDefinitionRedIngot))
 
         for (w <- WireDef.INSULATED_WIRES)
-            GameRegistry.addRecipe(w.makeStack(12),
+            GameRegistry.addRecipe(new ShapedOreRecipe(w.makeStack(12),
                 "WrW", "WrW", "WrW",
                 'W':Character, new ItemStack(Blocks.wool, 1, PRColors.get(w.meta-WireDef.INSULATED_0.meta).woolId),
-                'r':Character, PartDefs.REDINGOT.makeStack)
+                'r':Character, PartDefs.oreDictDefinitionRedIngot))
 
         for (w <- WireDef.INSULATED_WIRES)
             GameRegistry.addRecipe(new ShapelessOreRecipe(
