@@ -8,7 +8,7 @@ import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import scala.collection.immutable.HashMap
 import scala.collection.mutable.{ListBuffer, Builder => MBuilder}
 
-class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientation with TChipPriority
+class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation with TChipPriority
 {
     filterExclude = true
 
@@ -54,7 +54,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
 
                 val inv = applyFilter(InvWrapper.wrap(real)).setSlotsFromSide(side)
 
-                if (!routeLayer.getRouter.canRouteTo(requester.getRouter.getIPAddress, reqKeyStack.key, SendPriority.ACTIVEB))
+                if (!routeLayer.getRouter.canRouteTo(requester.getRouter.getIPAddress, reqKeyStack.key, Priorities.ACTIVEB))
                 {
                     manager.dispatchFailed()
                     cont.break()
@@ -86,7 +86,7 @@ class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientat
                 }
 
                 val toSend = reqKeyStack.key.makeStack(removed)
-                routeLayer.queueStackToSend(toSend, invProvider.getInterfacedSide, SendPriority.ACTIVEB, requester.getRouter.getIPAddress)
+                routeLayer.queueStackToSend(toSend, invProvider.getInterfacedSide, Priorities.ACTIVEB, requester.getRouter.getIPAddress)
                 manager.dispatchSuccessful(removed, restack)
 
                 stacksRemaining -= 1

@@ -12,7 +12,7 @@ import net.minecraft.util.MovingObjectPosition
 import scala.collection.immutable.HashMap
 import scala.collection.mutable.{Builder => MBuilder}
 
-class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcaster with INeighborTileChange
+class RoutedInterfacePipePart extends BasicPipeAbstraction with TNetworkPipe with IWorldBroadcaster with INeighborTileChange
 {
     val chipSlots = new SimpleInventory(4, "chips", 1)
     {
@@ -28,7 +28,7 @@ class RoutedInterfacePipePart extends RoutedJunctionPipePart with IWorldBroadcas
                 stack.getTagCompound.hasKey("chipROM") &&
                 RoutingChipDefs.getForStack(stack).isInterfaceChip
     }
-    val chips = new Array[RoutingChipset](4)
+    val chips = new Array[RoutingChip](4)
 
     private var chipsNeedRefresh = true
 

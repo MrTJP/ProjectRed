@@ -1,18 +1,18 @@
 package mrtjp.projectred.transportation
 
 import java.util.UUID
+
+import mrtjp.projectred.core.libmc.ItemKeyStack
+import mrtjp.projectred.transportation.Priorities.NetPriority
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import scala.collection.convert.WrapAsJava
-import scala.collection.immutable
-import scala.collection.immutable.BitSet
-import mrtjp.projectred.core.libmc.{PRColors, ItemKeyStack}
 import net.minecraftforge.common.util.ForgeDirection
-import mrtjp.projectred.core.lib.Enum
-import mrtjp.projectred.transportation.SendPriority.SendPriority
 
-object RoutedPayload
+import scala.collection.convert.WrapAsJava
+import scala.collection.immutable.{BitSet, HashSet}
+
+object PipePayload
 {
     private var maxID = 0
 
@@ -21,62 +21,30 @@ object RoutedPayload
         if (maxID < Short.MaxValue)
         {
             maxID += 1
-            new RoutedPayload(maxID-1)
+            new PipePayload(maxID-1)
         }
         else
         {
             maxID = Short.MinValue
-            new RoutedPayload(maxID)
+            new PipePayload(maxID)
         }
     }
 
-    def apply(id:Int) = new RoutedPayload(id)
+    def apply(id:Int) = new PipePayload(id)
 
     def apply(stack:ItemStack) = make(ItemKeyStack.get(stack))
 
     def apply(stack:ItemKeyStack) = make(stack)
 
-    private def make(stack:ItemKeyStack):RoutedPayload =
+    private def make(stack:ItemKeyStack):PipePayload =
     {
-        val r = RoutedPayload()
+        val r = PipePayload()
         r.payload = stack
         r
     }
 }
 
-object SendPriority extends Enum
-{
-    type SendPriority = EnumVal
-    type EnumVal = PriorityVal
-
-    val passiveDef = {path:StartEndPath => path.allowRouting}
-    val activeDef = {path:StartEndPath => path.allowBroadcast || path.allowCrafting}
-
-    val WANDERING = new PriorityVal("Wandering", 0.02f, 0.05f, PRColors.RED.ordinal)
-    val DEFAULT = new PriorityVal("Default", 0.05f, 0.10f, PRColors.ORANGE.ordinal())
-    val TERMINATED = new PriorityVal("Terminated", 0.02f, 0.05f, PRColors.PURPLE.ordinal())
-    val PASSIVE = new PriorityVal("Passive", 0.10f, 0.20f, PRColors.BLUE.ordinal())
-    val ACTIVEB = new PriorityVal("Active Broadcast", 0.20f, 0.30f, PRColors.GREEN.ordinal(), _.allowBroadcast)
-    val ACTIVEC = new PriorityVal("Active Craft", 0.20f, 0.30f, PRColors.GREEN.ordinal(), _.allowCrafting)
-
-    class PriorityVal(val ident:String, val speed:Float, val boost:Float, val color:Int, f:StartEndPath => Boolean) extends Value
-    {
-        def this(ident:String, speed:Float, boost:Float, color:Int) = this(ident, speed, boost, color, passiveDef)
-
-        override def name = ident
-
-        /**
-         * Used to check if a particular router can route to another on this priority
-         * with the given path. This should see if said path does not restrict this
-         * priority. (Item checks are done on the fly, ignore them)
-         * @param path The path to check routing for
-         * @return True if this priority can route using given path.
-         */
-        def isPathUsable(path:StartEndPath) = f(path)
-    }
-}
-
-class RoutedPayload(val payloadID:Int)
+class PipePayload(val payloadID:Int)
 {
     var payload:ItemKeyStack = null
 
@@ -85,9 +53,10 @@ class RoutedPayload(val payloadID:Int)
     var input = ForgeDirection.UNKNOWN
     var output = ForgeDirection.UNKNOWN
     var isEntering = true
-    var parent:FlowingPipePart = null
+    var parent:PayloadPipePart = null
+    var priorityIndex = 0
 
-    def bind(p:FlowingPipePart)
+    def bind(p:PayloadPipePart)
     {
         parent = p
     }
@@ -113,11 +82,11 @@ class RoutedPayload(val payloadID:Int)
 
     def isCorrupted = getItemStack == null || getItemStack.stackSize <= 0
 
-    def canEqual(other: Any) = other.isInstanceOf[RoutedPayload]
+    def canEqual(other: Any) = other.isInstanceOf[PipePayload]
 
     override def equals(other:Any) = other match
     {
-        case that:RoutedPayload => (that canEqual this) && payloadID == that.payloadID
+        case that:PipePayload => (that canEqual this) && payloadID == that.payloadID
         case _ => false
     }
 
@@ -154,7 +123,7 @@ class RoutedPayload(val payloadID:Int)
         var deltaX = x + 0.5D
         var deltaY = y + 0.25D
         var deltaZ = z + 0.5D
-        import ForgeDirection._
+        import net.minecraftforge.common.util.ForgeDirection._
         dir match
         {
             case UP => deltaY = (y-0.25D)+prog
@@ -187,29 +156,26 @@ class RoutedPayload(val payloadID:Int)
         item
     }
 
-    /** Server-side Routing **/
+    /** Server-side Routing, used if moving through network pipes **/
     var destinationIP = -1
     var destinationUUID:UUID = null
     var hasArrived = false
     var travelLog = BitSet()
-    var priority = SendPriority.WANDERING
 
-    def setDestination(ip:Int) =
+    def netPriority = Priorities(priorityIndex)
+
+    def setDestination(ip:Int, p:NetPriority) =
     {
         destinationIP = ip
+        priorityIndex = p.ordinal
         val router = RouterServices.getRouter(ip)
         if (router != null) destinationUUID = router.getID
         else destinationIP = -1
+
         this
     }
 
-    def setPriority(p:SendPriority) =
-    {
-        priority = p
-        this
-    }
-
-    def resetTrip =
+    def resetTrip()
     {
         if (destinationIP > -1)
         {
@@ -223,8 +189,7 @@ class RoutedPayload(val payloadID:Int)
         destinationIP = -1
         destinationUUID = null
         hasArrived = false
-        priority = SendPriority.WANDERING
-        this
+        priorityIndex = Priorities.WANDERING.ordinal
     }
 
     def refreshIP()
@@ -240,14 +205,14 @@ class RoutedPayload(val payloadID:Int)
 
 class PayloadMovement
 {
-    var delegate = immutable.HashSet[RoutedPayload]()
-    var inputQueue = immutable.HashSet[RoutedPayload]()
-    var outputQueue = immutable.HashSet[RoutedPayload]()
+    var delegate = HashSet[PipePayload]()
+    var inputQueue = HashSet[PipePayload]()
+    var outputQueue = HashSet[PipePayload]()
     private var delay = 0
 
     def get(id:Int) = delegate.find(_.payloadID == id).orNull
 
-    def scheduleLoad(item:RoutedPayload)
+    def scheduleLoad(item:PipePayload)
     {
         delay = 10
         inputQueue += item
@@ -259,16 +224,16 @@ class PayloadMovement
         if (delay > 0) return
 
         delegate ++= inputQueue
-        inputQueue = immutable.HashSet[RoutedPayload]()
+        inputQueue = HashSet[PipePayload]()
     }
 
     def exececuteRemove()
     {
         delegate --= outputQueue
-        outputQueue = immutable.HashSet[RoutedPayload]()
+        outputQueue = HashSet[PipePayload]()
     }
 
-    def scheduleRemoval(item:RoutedPayload) =
+    def scheduleRemoval(item:PipePayload) =
     {
         if (outputQueue.contains(item)) false
         else
@@ -278,7 +243,7 @@ class PayloadMovement
         }
     }
 
-    def unscheduleRemoval(item:RoutedPayload) =
+    def unscheduleRemoval(item:PipePayload) =
     {
         if (outputQueue.contains(item))
         {
@@ -288,7 +253,7 @@ class PayloadMovement
         else false
     }
 
-    def add(e:RoutedPayload)
+    def add(e:PipePayload)
     {
         delegate += e
     }

@@ -11,7 +11,7 @@ import org.lwjgl.input.Keyboard
 import scala.collection.immutable.HashMap
 import scala.collection.mutable.{ListBuffer, Builder => MBuilder}
 
-abstract class RoutingChipset
+abstract class RoutingChip
 {
     private var invProv:IInventoryProvider = null
     private var rl:TRouteLayer = null
@@ -216,7 +216,7 @@ class UpgradeBus(val maxL:Int, val maxR:Int)
     }
 }
 
-trait TChipFilter extends RoutingChipset
+trait TChipFilter extends RoutingChip
 {
     val filter = new SimpleInventory(9, "filter", 1)
     var filterExclude = false
@@ -345,7 +345,7 @@ trait TChipFilter extends RoutingChipset
     }
 }
 
-trait TChipPriority extends RoutingChipset
+trait TChipPriority extends RoutingChip
 {
     var preference = 0
     var priorityFlag = false
@@ -384,7 +384,7 @@ trait TChipPriority extends RoutingChipset
     }
 }
 
-trait TChipOrientation extends RoutingChipset
+trait TChipOrientation extends RoutingChip
 {
     var extractOrient = -1
 
@@ -410,7 +410,7 @@ trait TChipOrientation extends RoutingChipset
     }
 }
 
-trait TChipStock extends RoutingChipset
+trait TChipStock extends RoutingChip
 {
     val stock = new SimpleInventory(9, "stock", 127)
     var requestWhenEmpty = false
@@ -452,7 +452,7 @@ trait TChipStock extends RoutingChipset
     }
 }
 
-trait TChipCrafter extends RoutingChipset
+trait TChipCrafter extends RoutingChip
 {
     var matrix = new SimpleInventory(10, "matrix", 127)
     var extIndex = Array[Int](-1, -1, -1, -1, -1, -1, -1, -1, -1)
@@ -535,4 +535,3 @@ trait TChipCrafter extends RoutingChipset
         }
     }
 }
-

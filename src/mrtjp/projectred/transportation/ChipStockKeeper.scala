@@ -5,7 +5,7 @@ import scala.collection.mutable.ListBuffer
 import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
 import mrtjp.projectred.core.libmc.inventory.InvWrapper
 
-class ChipStockKeeper extends RoutingChipset with TChipStock
+class ChipStockKeeper extends RoutingChip with TChipStock
 {
     private var remainingDelay = operationDelay
     private def operationDelay = 100

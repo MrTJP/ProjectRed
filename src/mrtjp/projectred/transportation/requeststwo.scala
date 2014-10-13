@@ -2,11 +2,6 @@ package mrtjp.projectred.transportation
 
 import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack}
 
-/**
- * Copyright (c) 2014 MrTJP inc.
- * All rights reserved.
- */
-
 class RequestMain(destination:IWorldRequester, opt:RequestFlags.ValueSet)
 {
     private var operations = Vector[RequestOperation]()

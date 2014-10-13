@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 
-class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
+class RoutedCraftingPipePart extends BasicPipeAbstraction with TNetworkPipe with IWorldCrafter
 {
     private val chipSlots = new SimpleInventory(8, "chips", 1)
     {
@@ -193,7 +193,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
 
                     if (processingOrder)
                     {
-                        queueStackToSend(toSend, side, SendPriority.ACTIVEC, nextOrder.get2.getRouter.getIPAddress)
+                        queueStackToSend(toSend, side, Priorities.ACTIVEC, nextOrder.get2.getRouter.getIPAddress)
                         manager.dispatchSuccessful(numToSend, false)
 
                         if (manager.hasOrders) nextOrder = manager.peek
@@ -206,7 +206,7 @@ class RoutedCraftingPipePart extends RoutedJunctionPipePart with IWorldCrafter
                     else
                     {
                         removeExcess(key, numToSend)
-                        queueStackToSend(toSend, side, SendPriority.WANDERING, -1)
+                        queueStackToSend(toSend, side, Priorities.WANDERING, -1)
                     }
                 }
             }

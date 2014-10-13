@@ -2,7 +2,7 @@ package mrtjp.projectred.transportation
 
 import scala.collection.mutable.ListBuffer
 
-class ChipCrafting extends RoutingChipset with TChipCrafter with TChipPriority
+class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority
 {
     def maxExtensions = upgradeBus.RLatency
 
