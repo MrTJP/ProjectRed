@@ -1,14 +1,15 @@
 package mrtjp.projectred.compatibility.thermalexpansion
 
-/*
 import mrtjp.projectred.compatibility.IPRPlugin
 import mrtjp.projectred.core.PartDefs
-import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.init.Items
+import net.minecraft.item.ItemStack
 import thermalexpansion.util.crafting.SmelterManager
 
-class PluginTermalExpansion extends IPRPlugin
+object PluginThermalExpansion extends IPRPlugin
 {
-    override def getModID = "ThermalExpansion"
+
+    override def getModIDs = Array("ThermalExpansion")
 
     override def preInit() {}
 
@@ -18,10 +19,11 @@ class PluginTermalExpansion extends IPRPlugin
 //        if (ProjectRedAPI.transportationAPI != null)
 //            ProjectRedAPI.transportationAPI.registerSpecialLinkState(new LinkStateTesseract());
 
-        SmelterManager.addAlloyRecipe(4000, new ItemStack(Item.ingotIron),
-            new ItemStack(Item.redstone, 4), PartDefs.REDINGOT.makeStack)
+        SmelterManager.addAlloyRecipe(4000, new ItemStack(Items.iron_ingot),
+            new ItemStack(Items.redstone, 4), PartDefs.REDINGOT.makeStack)
     }
 
     override def postInit() {}
+
+    override def desc() = "Thermal Expansion smelter recipe"
 }
-*/
