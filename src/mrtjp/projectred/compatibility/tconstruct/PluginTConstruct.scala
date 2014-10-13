@@ -1,17 +1,17 @@
 package mrtjp.projectred.compatibility.tconstruct
 
 import cpw.mods.fml.common.registry.GameRegistry
+import mrtjp.projectred.compatibility.IPRPlugin
+import mrtjp.projectred.core.PartDefs
 import net.minecraft.block.Block
-import net.minecraft.block.material.{MapColor, MaterialLiquid, Material}
-import net.minecraft.item.ItemStack
+import net.minecraft.block.material.{MapColor, Material, MaterialLiquid}
 import net.minecraft.init.{Blocks, Items}
-import net.minecraftforge.fluids.{FluidStack, FluidRegistry, Fluid}
+import net.minecraft.item.ItemStack
+import net.minecraftforge.fluids.{Fluid, FluidRegistry, FluidStack}
+import tconstruct.TConstruct
 import tconstruct.library.TConstructRegistry
 import tconstruct.library.crafting.Smeltery
 import tconstruct.smeltery.TinkerSmeltery._
-import mrtjp.projectred.compatibility.IPRPlugin
-import tconstruct.TConstruct
-import mrtjp.projectred.core.PartDefs
 
 object PluginTConstruct extends IPRPlugin
 {
