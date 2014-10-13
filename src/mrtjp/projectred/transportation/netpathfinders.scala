@@ -3,7 +3,7 @@ package mrtjp.projectred.transportation
 import codechicken.lib.vec.BlockCoord
 import mrtjp.projectred.api.ISpecialLinkState
 import mrtjp.projectred.core.libmc.{ItemKey, ItemQueue, PRLib}
-import mrtjp.projectred.transportation.Priorities.SendPriority
+import mrtjp.projectred.transportation.Priorities.NetPriority
 import net.minecraft.tileentity.TileEntity
 
 import scala.annotation.tailrec
@@ -52,12 +52,12 @@ class LSPathFinder3(start:IWorldRouter, max:Int)
             case iwr:IWorldRouter with TNetworkPipe if {val r = iwr.getRouter; r != null && r.isLoaded} =>
                 iterate(rest, closed+next, coll += new StartEndPath(start.getRouter,
                     iwr.getRouter, next.hop, next.dist, next.filters+iwr.pathFilter, iwr.networkFilter))
-            case p:PayloadPipePart =>
+            case p:TNetworkSubsystem =>
                 val upNext = Vector.newBuilder[Node]
                 for (s <- 0 until 6) if (s != (next.dir^1) && p.maskConnects(s))
                 {
                     val route = next --> (s, p.pathWeight, p.pathFilter(next.dir^1, s))
-                    if (!closed(route)) upNext += route
+                    if (route.path.pathFlags != 0 && !closed(route)) upNext += route
                 }
                 iterate(rest++upNext.result(), closed+next, coll)
             case _ =>
@@ -84,7 +84,7 @@ class LSPathFinder3(start:IWorldRouter, max:Int)
 
     private def getPipe(bc:BlockCoord) = PRLib.getMultiPart(world, bc, 6) match
     {
-        case p:PayloadPipePart => p
+        case p:TNetworkSubsystem => p
         case _ => null
     }
 
@@ -96,6 +96,8 @@ class LSPathFinder3(start:IWorldRouter, max:Int)
     }
     private case class Node(bc:BlockCoord, dist:Int, dir:Int, hop:Int, filters:Set[PathFilter] = Set.empty) extends Ordered[Node]
     {
+        val path = new Path(filters)
+
         def -->(to:Node, toDir:Int):Node = Node(to.bc, dist+to.dist, toDir, hop)
 
         def -->(toDir:Int, distAway:Int, filter:PathFilter):Node = Node(bc.copy.offset(toDir), dist+distAway, toDir, hop, filters+filter)
@@ -224,7 +226,6 @@ class LogisticPathFinder(source:Router, payload:ItemKey)
             val parent = r.getParent
             if (parent == null) break()
 
-            println("Path for "+payload+" found with flags "+l.netFlags)
             val sync = parent.getSyncResponse(payload, bestResponse)
             if (sync != null) if (sync.isPreferredOver(bestResponse))
             {
@@ -244,7 +245,7 @@ class SyncResponse
     var itemCount = 0
     var responder = -1
 
-    def setPriority(p:SendPriority) =
+    def setPriority(p:NetPriority) =
     {
         priority = p
         this

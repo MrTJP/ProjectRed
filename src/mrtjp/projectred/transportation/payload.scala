@@ -2,16 +2,15 @@ package mrtjp.projectred.transportation
 
 import java.util.UUID
 
-import mrtjp.projectred.core.lib.Enum
-import mrtjp.projectred.core.libmc.{ItemKeyStack, PRColors}
+import mrtjp.projectred.core.libmc.ItemKeyStack
+import mrtjp.projectred.transportation.Priorities.NetPriority
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.common.util.ForgeDirection
 
 import scala.collection.convert.WrapAsJava
-import scala.collection.immutable
-import scala.collection.immutable.BitSet
+import scala.collection.immutable.{BitSet, HashSet}
 
 object PipePayload
 {
@@ -55,6 +54,7 @@ class PipePayload(val payloadID:Int)
     var output = ForgeDirection.UNKNOWN
     var isEntering = true
     var parent:PayloadPipePart = null
+    var priorityIndex = 0
 
     def bind(p:PayloadPipePart)
     {
@@ -156,29 +156,26 @@ class PipePayload(val payloadID:Int)
         item
     }
 
-    /** Server-side Routing **/
+    /** Server-side Routing, used if moving through network pipes **/
     var destinationIP = -1
     var destinationUUID:UUID = null
     var hasArrived = false
     var travelLog = BitSet()
-    var priority = Priorities.WANDERING
 
-    def setDestination(ip:Int) =
+    def netPriority = Priorities(priorityIndex)
+
+    def setDestination(ip:Int, p:NetPriority) =
     {
         destinationIP = ip
+        priorityIndex = p.ordinal
         val router = RouterServices.getRouter(ip)
         if (router != null) destinationUUID = router.getID
         else destinationIP = -1
+
         this
     }
 
-    def setPriority(p:Priorities.SendPriority) =
-    {
-        priority = p
-        this
-    }
-
-    def resetTrip =
+    def resetTrip()
     {
         if (destinationIP > -1)
         {
@@ -192,8 +189,7 @@ class PipePayload(val payloadID:Int)
         destinationIP = -1
         destinationUUID = null
         hasArrived = false
-        priority = Priorities.WANDERING
-        this
+        priorityIndex = Priorities.WANDERING.ordinal
     }
 
     def refreshIP()
@@ -209,9 +205,9 @@ class PipePayload(val payloadID:Int)
 
 class PayloadMovement
 {
-    var delegate = immutable.HashSet[PipePayload]()
-    var inputQueue = immutable.HashSet[PipePayload]()
-    var outputQueue = immutable.HashSet[PipePayload]()
+    var delegate = HashSet[PipePayload]()
+    var inputQueue = HashSet[PipePayload]()
+    var outputQueue = HashSet[PipePayload]()
     private var delay = 0
 
     def get(id:Int) = delegate.find(_.payloadID == id).orNull
@@ -228,13 +224,13 @@ class PayloadMovement
         if (delay > 0) return
 
         delegate ++= inputQueue
-        inputQueue = immutable.HashSet[PipePayload]()
+        inputQueue = HashSet[PipePayload]()
     }
 
     def exececuteRemove()
     {
         delegate --= outputQueue
-        outputQueue = immutable.HashSet[PipePayload]()
+        outputQueue = HashSet[PipePayload]()
     }
 
     def scheduleRemoval(item:PipePayload) =
@@ -264,36 +260,4 @@ class PayloadMovement
 
     def it = delegate.iterator
     def Jdel = WrapAsJava.asJavaCollection(delegate)
-}
-
-object Priorities extends Enum
-{
-    type EnumVal = SendPriority
-
-    val passiveDef = {path:StartEndPath => path.allowRouting}
-    val activeDef = {path:StartEndPath => path.allowBroadcast || path.allowCrafting}
-
-    val WANDERING = new SendPriority("Wandering", 0.02f, 0.05f, PRColors.RED.ordinal)
-    val DEFAULT = new SendPriority("Default", 0.05f, 0.10f, PRColors.ORANGE.ordinal())
-    val TERMINATED = new SendPriority("Terminated", 0.02f, 0.05f, PRColors.PURPLE.ordinal())
-    val PASSIVE = new SendPriority("Passive", 0.10f, 0.20f, PRColors.BLUE.ordinal())
-    val ACTIVEB = new SendPriority("Active Broadcast", 0.20f, 0.30f, PRColors.GREEN.ordinal(), _.allowBroadcast)
-    val ACTIVEC = new SendPriority("Active Craft", 0.20f, 0.30f, PRColors.GREEN.ordinal(), _.allowCrafting)
-
-
-    class SendPriority(val ident:String, val speed:Float, val boost:Float, val color:Int, f:StartEndPath => Boolean) extends this.Value
-    {
-        def this(ident:String, speed:Float, boost:Float, color:Int) = this(ident, speed, boost, color, passiveDef)
-
-        override def name = ident
-
-        /**
-         * Used to check if a particular router can route to another on this priority
-         * with the given path. This should see if said path does not restrict this
-         * priority. (Item checks are done on the fly, ignore them)
-         * @param path The path to check routing for
-         * @return True if this priority can route using given path.
-         */
-        def isPathUsable(path:StartEndPath) = f(path)
-    }
 }

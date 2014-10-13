@@ -21,8 +21,11 @@ class TransportationProxy_server extends IProxy with IPartFactory
         MultiPartRegistry.registerParts(this, Array[String](
             "pr_pipe", "pr_rbasic", "pr_rinterface",
             "pr_rcrafting", "pr_rrequest", "pr_rextension",
-            "pr_rfire", "pr_pt"
+            "pr_rfire"
         ))
+
+        if (Configurator.version.contains("@"))
+            MultiPartRegistry.registerParts((_, _) => new PressureTube, "pr_pt")
 
         itemPartPipe = new ItemPartPipe
         itemRoutingChip = new ItemRoutingChip

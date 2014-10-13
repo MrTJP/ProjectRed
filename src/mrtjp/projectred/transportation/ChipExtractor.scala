@@ -4,7 +4,7 @@ import scala.collection.immutable.BitSet
 import scala.collection.mutable.ListBuffer
 import mrtjp.projectred.core.libmc.inventory.InvWrapper
 
-class ChipExtractor extends RoutingChipset with TChipFilter with TChipOrientation
+class ChipExtractor extends RoutingChip with TChipFilter with TChipOrientation
 {
     private var remainingDelay = operationDelay
 

@@ -151,7 +151,7 @@ object RenderPipe
 
         CCRenderState.setPipeline(new Translation(-0.5, -0.5, -0.5))
         CCRenderState.alphaOverride = 32
-        CCRenderState.baseColour = PRColors.get(r.priority.color).rgba
+        CCRenderState.baseColour = PRColors.get(r.netPriority.color).rgba
         BlockRenderer.renderCuboid(Cuboid6.full, 0)
 
         restoreRenderState()

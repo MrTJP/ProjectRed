@@ -6,11 +6,12 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.TileMultipart
+import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core.lib.Pair2
 import mrtjp.projectred.core.libmc.inventory.InvWrapper
 import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack, ItemQueue, PRLib}
 import mrtjp.projectred.core.{Configurator, CoreSPH}
-import mrtjp.projectred.transportation.Priorities.SendPriority
+import mrtjp.projectred.transportation.Priorities.NetPriority
 import mrtjp.projectred.transportation.TNetworkPipe.TransitComparator
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
@@ -96,7 +97,7 @@ trait TRouteLayer
     {
         queueStackToSend(stack, dirOfExtraction, path.priority, path.responder)
     }
-    def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:SendPriority, destination:Int)
+    def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:NetPriority, destination:Int)
     def getLogisticPath(stack:ItemKey, exclusions:BitSet, excludeStart:Boolean):SyncResponse
 
     def getRouter:Router
@@ -119,7 +120,13 @@ trait TNetworkTravelConditions extends TPipeTravelConditions
     def networkFilter = 0x7
 }
 
-trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter with TRouteLayer with IWorldRequester with TNetworkTravelConditions
+trait TNetworkSubsystem extends PayloadPipePart
+{
+    override def canConnectPart(part:IConnectable, s:Int) =
+        part.isInstanceOf[TNetworkSubsystem]
+}
+
+trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter with TRouteLayer with IWorldRequester with TNetworkTravelConditions with TNetworkSubsystem
 {
     var searchDelay =
     {
@@ -312,7 +319,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
                 val inv = t.asInstanceOf[IInventory]
                 if (dest.isInstanceOf[TileMultipart])
                 {
-                    val part = (dest.asInstanceOf[TileMultipart]).partMap(6)
+                    val part = dest.asInstanceOf[TileMultipart].partMap(6)
                     if (part.isInstanceOf[TNetworkPipe])
                     {
                         val pipe = part.asInstanceOf[TNetworkPipe]
@@ -420,11 +427,11 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
 
         def reRoute(r:PipePayload)
         {
-            r.resetTrip
+            r.resetTrip()
             val f = new LogisticPathFinder(getRouter, r.payload.key).setExclusions(r.travelLog).findBestResult
             if (f.getResult != null)
             {
-                r.setDestination(f.getResult.responder).setPriority(f.getResult.priority)
+                r.setDestination(f.getResult.responder, f.getResult.priority)
                 color = RouteFX.color_route
             }
         }
@@ -451,7 +458,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         // Relay item
         if (r.output == ForgeDirection.UNKNOWN)
         {
-            r.output = getRouter.getDirection(r.destinationIP, r.payload.key, r.priority)
+            r.output = getRouter.getDirection(r.destinationIP, r.payload.key, r.netPriority)
             color = RouteFX.color_relay
         }
 
@@ -459,7 +466,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         if (r.output == ForgeDirection.UNKNOWN)
         {
             super.resolveDestination(r)
-            r.resetTrip
+            r.resetTrip()
             r.travelLog = BitSet()
             color = RouteFX.color_routeLost
         }
@@ -473,7 +480,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
 
     override def adjustSpeed(r:PipePayload)
     {
-        r.speed = r.priority.boost
+        r.speed = r.netPriority.boost
     }
 
     override def getRouter:Router =
@@ -500,7 +507,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
 
     override def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse = null
 
-    override def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:SendPriority, destination:Int)
+    override def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:NetPriority, destination:Int)
     {
         val stack2 = ItemKeyStack.get(stack)
         var r = pollFromSwapQueue(stack2)
@@ -508,8 +515,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         {
             r = PipePayload(stack2)
             r.input = ForgeDirection.getOrientation(dirOfExtraction)
-            r.setPriority(priority)
-            r.setDestination(destination)
+            r.setDestination(destination, priority)
         }
         sendQueue :+= r
     }
@@ -559,5 +565,5 @@ object TNetworkPipe
     }
 }
 
-//Basic network pipe implementation by mixin
+class BasicPipePart extends BasicPipeAbstraction with TNetworkSubsystem
 class RoutedJunctionPipePart extends BasicPipeAbstraction with TNetworkPipe
