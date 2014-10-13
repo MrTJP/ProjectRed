@@ -38,7 +38,7 @@ object ChipGuiFactory extends TGuiBuilder
     def apply(c:ChipContainer) = new GuiChipRoot(c)
 }
 
-class ChipContainer(player:EntityPlayer, var chip:RoutingChipset) extends WidgetContainer
+class ChipContainer(player:EntityPlayer, var chip:RoutingChip) extends WidgetContainer
 {
     def this(player:EntityPlayer) = this(player, ItemRoutingChip.loadChipFromItemStack(player.getHeldItem))
 
@@ -67,7 +67,7 @@ class ChipContainer(player:EntityPlayer, var chip:RoutingChipset) extends Widget
     }
 }
 
-abstract class GuiChipContainer[T <: RoutingChipset](cont:ChipContainer, prev:GuiScreen) extends WidgetGui(cont)
+abstract class GuiChipContainer[T <: RoutingChip](cont:ChipContainer, prev:GuiScreen) extends WidgetGui(cont)
 {
     setJumpBack(prev)
 
@@ -106,7 +106,7 @@ abstract class GuiChipContainer[T <: RoutingChipset](cont:ChipContainer, prev:Gu
     }
 }
 
-class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChipset](cont, null)
+class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont, null)
 {
     override def receiveMessage_Impl(message:String)
     {

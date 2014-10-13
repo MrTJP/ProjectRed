@@ -8,7 +8,7 @@ import net.minecraft.util.MovingObjectPosition
 import mrtjp.projectred.core.libmc.ItemKeyStack
 import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory}
 
-class RoutedExtensionPipePart extends RoutedJunctionPipePart
+class RoutedExtensionPipePart extends BasicPipeAbstraction with TNetworkPipe
 {
     var cardslot = new SimpleInventory(2, "card", 1)
     {

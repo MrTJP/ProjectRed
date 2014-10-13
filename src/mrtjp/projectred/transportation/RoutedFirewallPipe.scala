@@ -9,7 +9,7 @@ import mrtjp.projectred.core.libmc.ItemKey
 import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory}
 import mrtjp.projectred.core.libmc.gui.GuiLib
 
-class RoutedFirewallPipe extends RoutedJunctionPipePart
+class RoutedFirewallPipe extends BasicPipeAbstraction with TNetworkPipe
 {
     var filt = new SimpleInventory(7*5, "filt", 1)
     {
@@ -101,8 +101,12 @@ class RoutedFirewallPipe extends RoutedJunctionPipePart
         cont.addPlayerInv(player, 8, 120).setShift(false)
     }
 
-    override def routeFilter(inputDir:Int) =
-        new PathFilter(filtExclude, itemset, allowRoute, allowBroadcast, allowCrafting, allowController, 0x7)
+    override def networkFilter =
+        (if (allowRoute) 0x1 else 0)|(if (allowBroadcast) 0x2 else 0)|(if (allowCrafting) 0x4 else 0)
+
+    override def filteredItems = itemset
+
+    override def itemsExclude = filtExclude
 
     var itemset = Set[ItemKey]()
     def buildItemSet()

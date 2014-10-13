@@ -195,6 +195,14 @@ abstract class InvWrapper(val inv:IInventory)
     def getSpaceForItem(item:ItemKey):Int
 
     /**
+     * Check if at least one of this item can fit. Failfast for
+     * getSpaceForItem
+     * @param item The item to count free space for. Not manipulated in any way.
+     * @return True if one of these items can fit
+     */
+    def hasSpaceForItem(item:ItemKey):Boolean
+
+    /**
      * Counts how many of those items this inventory contains.
      *
      * @param item The item to count. Not manipulated in any way.
@@ -307,6 +315,22 @@ trait TDefWrapHandler extends InvWrapper
             }
         }
         space
+    }
+
+    override def hasSpaceForItem(item:ItemKey):Boolean =
+    {
+        val item2 = item.makeStack(0)
+        val slotStackLimit = Math.min(inv.getInventoryStackLimit, item2.getMaxStackSize)
+        for (slot <- slots)
+        {
+            val s = inv.getStackInSlot(slot)
+            if (canInsertItem(slot, item2))
+            {
+                if (s == null) return true
+                else if (InvWrapper.areItemsStackable(s, item2) && slotStackLimit-s.stackSize > 0) return true
+            }
+        }
+        false
     }
 
     override def getItemCount(item:ItemKey) =

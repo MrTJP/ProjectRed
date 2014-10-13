@@ -7,13 +7,13 @@ import net.minecraft.util.MovingObjectPosition
 import mrtjp.projectred.core.libmc.ItemKey
 import net.minecraftforge.common.util.ForgeDirection
 
-class RoutedRequestPipePart extends RoutedJunctionPipePart
+class RoutedRequestPipePart extends BasicPipeAbstraction with TNetworkPipe
 {
-    override def centerReached(r:RoutedPayload)
+    override def centerReached(r:PipePayload)
     {
         if (!maskConnects(r.output.ordinal) && !world.isRemote) if (itemFlow.scheduleRemoval(r))
         {
-            r.resetTrip
+            r.resetTrip()
             r.moveProgress(0.375F)
             r.speed = 0.075F
             val ent = r.getEntityForDrop(x, y, z)
@@ -40,7 +40,7 @@ class RoutedRequestPipePart extends RoutedJunctionPipePart
         packet.writeCoord(x, y, z).sendToPlayer(player)
     }
 
-    override def getDirForIncomingItem(r:RoutedPayload):ForgeDirection =
+    override def getDirForIncomingItem(r:PipePayload):ForgeDirection =
     {
         val dir = ForgeDirection.getOrientation(inOutSide)
         if (dir == ForgeDirection.UNKNOWN)
