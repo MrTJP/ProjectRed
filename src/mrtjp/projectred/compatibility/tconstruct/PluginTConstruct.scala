@@ -1,20 +1,19 @@
 package mrtjp.projectred.compatibility.tconstruct
 
-/*
 import cpw.mods.fml.common.registry.GameRegistry
 import net.minecraft.block.Block
 import net.minecraft.block.material.{MapColor, MaterialLiquid, Material}
 import net.minecraft.item.ItemStack
 import net.minecraft.init.{Blocks, Items}
 import net.minecraftforge.fluids.{FluidStack, FluidRegistry, Fluid}
-import tconstruct.common.TRepo._
 import tconstruct.library.TConstructRegistry
 import tconstruct.library.crafting.Smeltery
+import tconstruct.smeltery.TinkerSmeltery._
 import mrtjp.projectred.compatibility.IPRPlugin
 import tconstruct.TConstruct
 import mrtjp.projectred.core.PartDefs
 
-class PluginTConstruct extends IPRPlugin
+object PluginTConstruct extends IPRPlugin
 {
     var liquidMetal:Material = null
     var moltenRedstoneFluid:Fluid = null
@@ -22,7 +21,7 @@ class PluginTConstruct extends IPRPlugin
     var moltenConductiveRedmetalFluid:Fluid = null
     var moltenConductiveRedmetal:LiquidFiniteSubstance = null
 
-    override def getModID = "TConstruct"
+    override def getModIDs = Array("TConstruct")
 
     def addSmeltingRecipe(input:ItemStack, block:Block, metadata:Int, temperature:Int, liquid:FluidStack)
     {
@@ -80,5 +79,6 @@ class PluginTConstruct extends IPRPlugin
     }
 
     override def postInit() {}
+
+    override def desc() = "Red Alloy Ingot recipe for Tinker's Construct"
 }
-*/

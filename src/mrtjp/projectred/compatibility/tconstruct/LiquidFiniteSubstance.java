@@ -1,6 +1,5 @@
 package mrtjp.projectred.compatibility.tconstruct;
 
-/*
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -59,4 +58,3 @@ public class LiquidFiniteSubstance extends BlockFluidFinite
         }
     }
 }
-*/
