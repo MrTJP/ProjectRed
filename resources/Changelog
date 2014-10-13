@@ -1,3 +1,9 @@
+v4.5.1
+- ADDED: ColoredLights compatability.
+- CHANGE: Lights can now sit on hollow frames
+- CHANGE: Framed wires can now connect behind things like lights
+- FIX: Ore dictionary recipes for red alloy
+
 v4.5.0
 - CHANGE: Removed power requirement for pipe networks
 - CHANGE: Removed router controller and CPU
