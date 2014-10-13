@@ -67,9 +67,9 @@ dependencies {
     compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
     compile "codechicken:CodeChickenCore:${config.mc.version}-${config.ccc.version}:dev"
     compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
-    buildOnly "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
-    buildOnly name: 'ThermalExpansion', version: config.texpan.version, ext: 'jar'
-    buildOnly name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
+    compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
+    compile name: 'ThermalExpansion', version: config.texpan.version, ext: 'jar'
+    compile name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
 }
 
 sourceSets.main.compileClasspath += [ configurations.buildOnly ]
