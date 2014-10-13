@@ -569,6 +569,3 @@ abstract class PipeLogic(p:PayloadPipePart)
 }
 
 abstract class BasicPipeAbstraction extends PayloadPipePart with TRedstonePipe
-
-//Basic pipe implementation
-class BasicPipePart extends BasicPipeAbstraction

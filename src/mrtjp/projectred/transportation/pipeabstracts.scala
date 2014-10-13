@@ -235,6 +235,9 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
     override def read(packet:MCDataInput, key:Int) = key match
     {
         case 4 => handleItemUpdatePacket(packet)
+        case 10 =>
+            val p = itemFlow.get(packet.readUShort())
+            if (p != null) itemFlow.scheduleRemoval(p)
         case _ => super.read(packet, key)
     }
 
@@ -268,7 +271,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
     {
         if (itemFlow.scheduleRemoval(r)) if (!world.isRemote)
         {
-            r.resetTrip
+            r.resetTrip()
             world.spawnEntityInWorld(r.getEntityForDrop(x, y, z))
         }
     }
@@ -317,7 +320,11 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
 
     def centerReached(r:PipePayload)
     {
-        if (!maskConnects(r.output.ordinal)) resolveDestination(r)
+        if (!maskConnects(r.output.ordinal))
+        {
+            resolveDestination(r)
+            sendItemUpdate(r)
+        }
     }
 
     def passToNextPipe(r:PipePayload) =
@@ -326,6 +333,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         {
             case pipe:PayloadPipePart =>
                 pipe.injectPayload(r, r.output)
+                sendItemRemoval(r)
                 true
             case _ => false
         }
@@ -333,7 +341,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
 
     def adjustSpeed(r:PipePayload)
     {
-        r.speed = Math.max(r.speed-0.01f, r.priority.speed)
+        r.speed = Math.max(r.speed-0.01f, r.netPriority.speed)
     }
 
     protected def hasReachedMiddle(r:PipePayload) = r.progress >= 0.5F
@@ -366,7 +374,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
 
         if (connCount == 0) if (!world.isRemote) for (r <- itemFlow.it) if (itemFlow.scheduleRemoval(r))
         {
-            r.resetTrip
+            r.resetTrip()
             world.spawnEntityInWorld(r.getEntityForDrop(x, y, z))
         }
     }
@@ -376,7 +384,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         super.onRemoved()
         if (!world.isRemote) for (r <- itemFlow.it)
         {
-            r.resetTrip
+            r.resetTrip()
             world.spawnEntityInWorld(r.getEntityForDrop(x, y, z))
         }
     }
@@ -390,7 +398,12 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         out.writeByte(r.input.ordinal.asInstanceOf[Byte])
         out.writeByte(r.output.ordinal.asInstanceOf[Byte])
         out.writeFloat(r.speed)
-        out.writeByte(r.priority.ordinal)
+        out.writeByte(r.priorityIndex)
+    }
+
+    def sendItemRemoval(r:PipePayload)
+    {
+        //if (!world.isRemote) getWriteStreamOf(10).writeShort(r.payloadID)
     }
 
     def handleItemUpdatePacket(packet:MCDataInput)
@@ -408,7 +421,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         r.input = ForgeDirection.getOrientation(packet.readByte)
         r.output = ForgeDirection.getOrientation(packet.readByte)
         r.speed = packet.readFloat
-        r.setPriority(TravelPriorities(packet.readUByte))
+        r.priorityIndex = packet.readUByte()
     }
 
     @SideOnly(Side.CLIENT)

@@ -13,7 +13,7 @@ class RoutedRequestPipePart extends BasicPipeAbstraction with TNetworkPipe
     {
         if (!maskConnects(r.output.ordinal) && !world.isRemote) if (itemFlow.scheduleRemoval(r))
         {
-            r.resetTrip
+            r.resetTrip()
             r.moveProgress(0.375F)
             r.speed = 0.075F
             val ent = r.getEntityForDrop(x, y, z)

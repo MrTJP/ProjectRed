@@ -5,7 +5,7 @@ import mrtjp.projectred.core.libmc.inventory.InvWrapper
 
 import scala.collection.mutable.ListBuffer
 
-class ChipItemResponder extends RoutingChipset with TChipFilter with TChipPriority
+class ChipItemResponder extends RoutingChip with TChipFilter with TChipPriority
 {
     def sendPriority = Priorities.PASSIVE
 

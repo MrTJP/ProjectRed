@@ -5,7 +5,7 @@ import java.util.{UUID, PriorityQueue => JPriorityQueue}
 
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.libmc.ItemKey
-import mrtjp.projectred.transportation.Priorities.SendPriority
+import mrtjp.projectred.transportation.Priorities.NetPriority
 import net.minecraftforge.common.util.ForgeDirection
 
 import scala.collection.immutable.{BitSet, HashMap}
@@ -189,8 +189,6 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
 
         if (adjacentChanged)
         {
-            println("NETWORK CHANGED!! ")
-
             adjacentLinks = newAdjacent
             routedExits = newAdjacent.foldLeft(0)((b, p) => (b|1<<p.hopDir)&0x3F)
 
@@ -281,14 +279,14 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         false
     }
 
-    def canRouteTo(destination:Int, item:ItemKey, priority:SendPriority) = pathTo(destination, item, priority) != null
-    def getDirection(destination:Int, item:ItemKey, priority:SendPriority) = pathTo(destination, item, priority) match
+    def canRouteTo(destination:Int, item:ItemKey, priority:NetPriority) = pathTo(destination, item, priority) != null
+    def getDirection(destination:Int, item:ItemKey, priority:NetPriority) = pathTo(destination, item, priority) match
     {
         case path:StartEndPath => ForgeDirection.getOrientation(path.hopDir)
         case _ => ForgeDirection.UNKNOWN
     }
 
-    private def pathTo(destination:Int, item:ItemKey, priority:SendPriority):StartEndPath =
+    private def pathTo(destination:Int, item:ItemKey, priority:NetPriority):StartEndPath =
     {
         val rt = getRouteTable
         if (rt.isDefinedAt(destination) && RouterServices.routerExists(destination))

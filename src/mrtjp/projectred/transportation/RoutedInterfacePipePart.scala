@@ -28,7 +28,7 @@ class RoutedInterfacePipePart extends BasicPipeAbstraction with TNetworkPipe wit
                 stack.getTagCompound.hasKey("chipROM") &&
                 RoutingChipDefs.getForStack(stack).isInterfaceChip
     }
-    val chips = new Array[RoutingChipset](4)
+    val chips = new Array[RoutingChip](4)
 
     private var chipsNeedRefresh = true
 

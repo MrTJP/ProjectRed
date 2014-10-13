@@ -143,7 +143,7 @@ class ItemRoutingChip extends ItemCore("projectred.transportation.routingchip")
 
 object ItemRoutingChip
 {
-    def saveChipToItemStack(stack:ItemStack, chipset:RoutingChipset)
+    def saveChipToItemStack(stack:ItemStack, chipset:RoutingChip)
     {
         if (stack == null || chipset == null || !stack.getItem.isInstanceOf[ItemRoutingChip]) return
         val mainTag = new NBTTagCompound
@@ -188,9 +188,9 @@ object RoutingChipDefs extends ItemDefinition
         else null
     }
 
-    class ChipVal(iconPath:String, f: => RoutingChipset, cType:ChipType) extends ItemDef
+    class ChipVal(iconPath:String, f: => RoutingChip, cType:ChipType) extends ItemDef
     {
-        def this(icon:String, f: => RoutingChipset) = this(icon, f, ChipType.INTERFACE)
+        def this(icon:String, f: => RoutingChip) = this(icon, f, ChipType.INTERFACE)
 
         var icon:IIcon = null
         def registerIcons(reg:IIconRegister)
@@ -297,7 +297,7 @@ class ChipUpgradeContainer(player:EntityPlayer) extends WidgetContainer
         super.+(s)
     }
 
-    private var chip:RoutingChipset = null
+    private var chip:RoutingChip = null
     private def refreshChips()
     {
         val stack = upgradeInv.getStackInSlot(6)

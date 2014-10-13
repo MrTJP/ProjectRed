@@ -8,7 +8,7 @@ import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import scala.collection.immutable.HashMap
 import scala.collection.mutable.{ListBuffer, Builder => MBuilder}
 
-class ChipBroadcaster extends RoutingChipset with TChipFilter with TChipOrientation with TChipPriority
+class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation with TChipPriority
 {
     filterExclude = true
 
