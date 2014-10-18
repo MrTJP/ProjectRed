@@ -42,7 +42,6 @@ item.projectred.core.part.partsail.name=Парус
 item.projectred.core.part.gemruby.name=Рубин
 item.projectred.core.part.gemsapphire.name=Сапфир
 item.projectred.core.part.gemperidot.name=Перидот
-
 item.projectred.core.part.partredironcomp.name=Красное железное соединение
 item.projectred.core.part.partsandcoalcomp.name=Песчаное угольное соединение
 item.projectred.core.part.partredsiliconcomp.name=Красное силиконовое соединение
@@ -71,7 +70,6 @@ itemGroup.expansion=Project Red: Расширение
 tile.projectred.expansion.machine2|0.name=Сетевой контроллер маршрутизации
 
 
-
 itemGroup.transport=Project Red: Транспортировка
 
 item.projectred.transportation.routingchip|0.name=Чип "Получатель предметов"
@@ -84,6 +82,7 @@ item.projectred.transportation.routingchip|6.name=Чип "Хранитель с�
 item.projectred.transportation.routingchip|7.name=Чип "Крафт"
 
 item.projectred.transportation.cpu|0.name=ЦПУ сетевого маршрутизатора
+item.projectred.transportation.creativecpu.name=Творческий ЦПУ сетевого маршрутизатора
 
 item.projectred.transportation.routerutil.name=Устройство маршрутизации
 
@@ -169,34 +168,34 @@ tile.projectred.exploration.dyeleaf|0.name=Белая окрашенная ли�
 tile.projectred.exploration.dyeleaf|1.name=Оранжевая окрашенная листва
 tile.projectred.exploration.dyeleaf|2.name=Пурпурная окрашенная листва
 tile.projectred.exploration.dyeleaf|3.name=Светло-синяя окрашенная листва
-tile.projectred.exploration.dyeleaf|4.name=Желтая окрашенная листва
+tile.projectred.exploration.dyeleaf|4.name=Жёлтая окрашенная листва
 tile.projectred.exploration.dyeleaf|5.name=Лаймовая окрашенная листва
 tile.projectred.exploration.dyeleaf|6.name=Розовая окрашенная листва
 tile.projectred.exploration.dyeleaf|7.name=Серая окрашенная листва
 tile.projectred.exploration.dyeleaf|8.name=Светло-серая окрашенная листва
-tile.projectred.exploration.dyeleaf|9.name=Голубая окрашенная листва
+tile.projectred.exploration.dyeleaf|9.name=Бирюзовая окрашенная листва
 tile.projectred.exploration.dyeleaf|10.name=Фиолетовая окрашенная листва
 tile.projectred.exploration.dyeleaf|11.name=Синяя окрашенная листва
 tile.projectred.exploration.dyeleaf|12.name=Коричневая окрашенная листва
-tile.projectred.exploration.dyeleaf|13.name=Зеленая окрашенная листва
+tile.projectred.exploration.dyeleaf|13.name=Зелёная окрашенная листва
 tile.projectred.exploration.dyeleaf|14.name=Красная окрашенная листва
-tile.projectred.exploration.dyeleaf|15.name=Черная окрашенная листва
+tile.projectred.exploration.dyeleaf|15.name=Чёрная окрашенная листва
 tile.projectred.exploration.dyesapling|0.name=Белый окрашенный саженец
 tile.projectred.exploration.dyesapling|1.name=Оранжевый окрашенный саженец
 tile.projectred.exploration.dyesapling|2.name=Пурпурный окрашенный саженец
 tile.projectred.exploration.dyesapling|3.name=Светло-синий окрашенный саженец
-tile.projectred.exploration.dyesapling|4.name=Желтый окрашенный саженец
+tile.projectred.exploration.dyesapling|4.name=Жёлтый окрашенный саженец
 tile.projectred.exploration.dyesapling|5.name=Лаймовый окрашенный саженец
 tile.projectred.exploration.dyesapling|6.name=Розовый окрашенный саженец
 tile.projectred.exploration.dyesapling|7.name=Серый окрашенный саженец
 tile.projectred.exploration.dyesapling|8.name=Светло-серый окрашенный саженец
-tile.projectred.exploration.dyesapling|9.name=Голубой окрашенный саженец
+tile.projectred.exploration.dyesapling|9.name=Бирюзовый окрашенный саженец
 tile.projectred.exploration.dyesapling|10.name=Фиолетовый окрашенный саженец
 tile.projectred.exploration.dyesapling|11.name=Синий окрашенный саженец
 tile.projectred.exploration.dyesapling|12.name=Коричневый окрашенный саженец
-tile.projectred.exploration.dyesapling|13.name=Зеленый окрашенный саженец
+tile.projectred.exploration.dyesapling|13.name=Зелёный окрашенный саженец
 tile.projectred.exploration.dyesapling|14.name=Красный окрашенный саженец
-tile.projectred.exploration.dyesapling|15.name=Черный окрашенный саженец
+tile.projectred.exploration.dyesapling|15.name=Чёрный окрашенный саженец
 
 
 
@@ -288,18 +287,18 @@ item.projectred.illumination.flightbutton|0.name=Белая ламповая к�
 item.projectred.illumination.flightbutton|1.name=Оранжевая ламповая кнопка обратной связи
 item.projectred.illumination.flightbutton|2.name=Пурпурная ламповая кнопка обратной связи
 item.projectred.illumination.flightbutton|3.name=Светло-синяя ламповая кнопка обратной связи
-item.projectred.illumination.flightbutton|4.name=Желтая ламповая кнопка обратной связи
+item.projectred.illumination.flightbutton|4.name=Жёлтая ламповая кнопка обратной связи
 item.projectred.illumination.flightbutton|5.name=Лаймовая ламповая кнопка обратной связи
 item.projectred.illumination.flightbutton|6.name=Розовая ламповая кнопка обратной связи
 item.projectred.illumination.flightbutton|7.name=Серая ламповая кнопка обратной связи
 item.projectred.illumination.flightbutton|8.name=Светло-серая ламповая кнопка обратной связи
-item.projectred.illumination.flightbutton|9.name=Голубая ламповая кнопка обратной связи
+item.projectred.illumination.flightbutton|9.name=Бирюзовая ламповая кнопка обратной связи
 item.projectred.illumination.flightbutton|10.name=Фиолетовая ламповая кнопка обратной связи
 item.projectred.illumination.flightbutton|11.name=Синяя ламповая кнопка обратной связи
 item.projectred.illumination.flightbutton|12.name=Коричневая ламповая кнопка обратной связи
-item.projectred.illumination.flightbutton|13.name=Зеленая ламповая кнопка обратной связи
+item.projectred.illumination.flightbutton|13.name=Зелёная ламповая кнопка обратной связи
 item.projectred.illumination.flightbutton|14.name=Красная ламповая кнопка обратной связи
-item.projectred.illumination.flightbutton|15.name=Черная ламповая кнопка обратной связи
+item.projectred.illumination.flightbutton|15.name=Чёрная ламповая кнопка обратной связи
 item.projectred.illumination.cagelamp|0.name=Белая защищённая лампа
 item.projectred.illumination.cagelamp|1.name=Оранжевая защищённая лампа
 item.projectred.illumination.cagelamp|2.name=Сиреневая защищённая лампа
@@ -336,35 +335,66 @@ item.projectred.illumination.fixture|0.name=Белый светильник
 item.projectred.illumination.fixture|1.name=Оранжевый
 item.projectred.illumination.fixture|2.name=Пурпурный светильник
 item.projectred.illumination.fixture|3.name=Светло-синий светильник
-item.projectred.illumination.fixture|4.name=Желтый светильник
+item.projectred.illumination.fixture|4.name=Жёлтый светильник
 item.projectred.illumination.fixture|5.name=Лаймовый светильник
 item.projectred.illumination.fixture|6.name=Розовый светильник
 item.projectred.illumination.fixture|7.name=Серый светильник
 item.projectred.illumination.fixture|8.name=Светло-серый светильник
-item.projectred.illumination.fixture|9.name=Голубой светильник
+item.projectred.illumination.fixture|9.name=Бирюзовый светильник
 item.projectred.illumination.fixture|10.name=Фиолетовый светильник
 item.projectred.illumination.fixture|11.name=Синий светильник
 item.projectred.illumination.fixture|12.name=Коричневый светильник
-item.projectred.illumination.fixture|13.name=Зеленый светильник
+item.projectred.illumination.fixture|13.name=Зелёный светильник
 item.projectred.illumination.fixture|14.name=Красный светильник
-item.projectred.illumination.fixture|15.name=Черный светильник
+item.projectred.illumination.fixture|15.name=Чёрный светильник
 item.projectred.illumination.fixture.inv|0.name=Белый светильник с инвертором
 item.projectred.illumination.fixture.inv|1.name=Оранжевый с инвертором
 item.projectred.illumination.fixture.inv|2.name=Пурпурный светильник с инвертором
 item.projectred.illumination.fixture.inv|3.name=Светло-синий светильник с инвертором
-item.projectred.illumination.fixture.inv|4.name=Желтый светильник с инвертором
+item.projectred.illumination.fixture.inv|4.name=Жёлтый светильник с инвертором
 item.projectred.illumination.fixture.inv|5.name=Лаймовый светильник с инвертором
 item.projectred.illumination.fixture.inv|6.name=Розовый светильник с инвертором
 item.projectred.illumination.fixture.inv|7.name=Серый светильник с инвертором
 item.projectred.illumination.fixture.inv|8.name=Светло-серый светильник с инвертором
-item.projectred.illumination.fixture.inv|9.name=Голубой светильник с инвертором
+item.projectred.illumination.fixture.inv|9.name=Бирюзовый светильник с инвертором
 item.projectred.illumination.fixture.inv|10.name=Фиолетовый светильник с инвертором
 item.projectred.illumination.fixture.inv|11.name=Синий светильник с инвертором
 item.projectred.illumination.fixture.inv|12.name=Коричневый светильник с инвертором
-item.projectred.illumination.fixture.inv|13.name=Зеленый светильник с инвертором
+item.projectred.illumination.fixture.inv|13.name=Зелёный светильник с инвертором
 item.projectred.illumination.fixture.inv|14.name=Красный светильник с инвертором
-item.projectred.illumination.fixture.inv|15.name=Черный светильник с инвертором
-
+item.projectred.illumination.fixture.inv|15.name=Чёрный светильник с инвертором
+item.projectred.illumination.cagelamp2|0.name=Белая лампа в клетке
+item.projectred.illumination.cagelamp2|1.name=Оранжевая лампа в клетке
+item.projectred.illumination.cagelamp2|2.name=Пурпурная лампа в клетке
+item.projectred.illumination.cagelamp2|3.name=Светло-синяя лампа в клетке
+item.projectred.illumination.cagelamp2|4.name=Жёлтая лампа в клетке
+item.projectred.illumination.cagelamp2|5.name=Лаймовая лампа в клетке
+item.projectred.illumination.cagelamp2|6.name=Розовая лампа в клетке
+item.projectred.illumination.cagelamp2|7.name=Серая лампа в клетке
+item.projectred.illumination.cagelamp2|8.name=Светло-серая лампа в клетке
+item.projectred.illumination.cagelamp2|9.name=Бирюзовая лампа в клетке
+item.projectred.illumination.cagelamp2|10.name=Фиолетовая лампа в клетке
+item.projectred.illumination.cagelamp2|11.name=Синяя лампа в клетке
+item.projectred.illumination.cagelamp2|12.name=Коричневая лампа в клетке
+item.projectred.illumination.cagelamp2|13.name=Зелёная лампа в клетке
+item.projectred.illumination.cagelamp2|14.name=Красная лампа в клетке
+item.projectred.illumination.cagelamp2|15.name=Чёрная лампа в клетке
+item.projectred.illumination.cagelamp2.inv|0.name=Белая лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|1.name=Оранжевая лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|2.name=Пурпурная лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|3.name=Светло-синяя лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|4.name=Жёлтая лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|5.name=Лаймовая лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|6.name=Розовая лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|7.name=Серая лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|8.name=Светло-серая лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|9.name=Бирюзовая лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|10.name=Фиолетовая лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|11.name=Синяя лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|12.name=Коричневая лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|13.name=Зелёная лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|14.name=Красная лампа в клетке с инвертором
+item.projectred.illumination.cagelamp2.inv|15.name=Чёрная лампа в клетке с инвертором
 
 
 
@@ -400,7 +430,7 @@ item.projectred.integration.gate|25.name=Буферный элемент
 item.projectred.integration.gate|26.name=Компаратор
 item.projectred.integration.gate|27.name=И элемент
 item.projectred.integration.gate|28.name=Bus Randomizer
-
+item.projectred.integration.gate|30.name=Bus Input Panel
 
 
 
@@ -416,7 +446,7 @@ item.projectred.transmission.wire|6.name=Лаймовый изолированн
 item.projectred.transmission.wire|7.name=Розовый изолированный провод
 item.projectred.transmission.wire|8.name=Серый изолированный провод
 item.projectred.transmission.wire|9.name=Светло-серый изолированный провод
-item.projectred.transmission.wire|10.name=Бирюзовой изолированный провод
+item.projectred.transmission.wire|10.name=Бирюзовый изолированный провод
 item.projectred.transmission.wire|11.name=Фиолетовый изолированный провод
 item.projectred.transmission.wire|12.name=Синий изолированный провод
 item.projectred.transmission.wire|13.name=Коричневый изолированный провод
