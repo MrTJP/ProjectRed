@@ -68,6 +68,7 @@ item.projectred.core.datacard.name=Scheda dati
 
 itemGroup.expansion=Project Red: Expansion
 
+tile.projectred.expansion.machine2|0.name=Controllore rounting di rete
 
 
 itemGroup.transport=Project Red: Transportation
@@ -82,6 +83,7 @@ item.projectred.transportation.routingchip|6.name=Chip Mantenimento Stock
 item.projectred.transportation.routingchip|7.name=Chip di Crafting
 
 item.projectred.transportation.cpu|0.name=CPU routing di rete
+item.projectred.transportation.creativecpu.name=CPU routing di rete Creativa
 
 item.projectred.transportation.routerutil.name=Utilità di routing
 
@@ -91,6 +93,7 @@ item.projectred.transportation.pipe|2.name=Tubo di interfaccia
 item.projectred.transportation.pipe|3.name=Tubo di crafting
 item.projectred.transportation.pipe|4.name=Tubi di richiesta
 item.projectred.transportation.pipe|5.name=Tubo di estensione
+item.projectred.transportation.pipe|6.name=Tubo firewall
 
 
 itemGroup.exploration=Project Red: Exploration
@@ -281,6 +284,22 @@ item.projectred.illumination.lightbutton|12.name=Bottone Illumar Marrone
 item.projectred.illumination.lightbutton|13.name=Bottone Illumar Verde
 item.projectred.illumination.lightbutton|14.name=Bottone Illumar Rosso
 item.projectred.illumination.lightbutton|15.name=Bottone Illumar Nero
+item.projectred.illumination.flightbutton|0.name=Bottone Illumar con feedback Bianco
+item.projectred.illumination.flightbutton|1.name=Bottone Illumar con feedback Arancio
+item.projectred.illumination.flightbutton|2.name=Bottone Illumar con feedback Magenta
+item.projectred.illumination.flightbutton|3.name=Bottone Illumar con feedback Azzurro
+item.projectred.illumination.flightbutton|4.name=Bottone Illumar con feedback Giallo
+item.projectred.illumination.flightbutton|5.name=Lime Bottone Illumar con feedback Lime
+item.projectred.illumination.flightbutton|6.name=Bottone Illumar con feedback Rosa
+item.projectred.illumination.flightbutton|7.name=Bottone Illumar con feedback Grigio
+item.projectred.illumination.flightbutton|8.name=Bottone Illumar con feedback Grigio chiaro
+item.projectred.illumination.flightbutton|9.name=Bottone Illumar con feedback Ciano
+item.projectred.illumination.flightbutton|10.name=Bottone Illumar con feedback Viola
+item.projectred.illumination.flightbutton|11.name=Bottone Illumar con feedback Blu
+item.projectred.illumination.flightbutton|12.name=Bottone Illumar con feedback Marrone
+item.projectred.illumination.flightbutton|13.name=Bottone Illumar con feedback Verde
+item.projectred.illumination.flightbutton|14.name=Bottone Illumar con feedback Rosso
+item.projectred.illumination.flightbutton|15.name=Bottone Illumar con feedback Nero
 item.projectred.illumination.cagelamp|0.name=Lanterna Ingabbiata Bianca
 item.projectred.illumination.cagelamp|1.name=Lanterna Ingabbiata Arancio
 item.projectred.illumination.cagelamp|2.name=Lanterna Ingabbiata Magenta
@@ -346,6 +365,38 @@ item.projectred.illumination.fixture.inv|13.name=Infisso Verde Invertito
 item.projectred.illumination.fixture.inv|14.name=Infisso Rosso Invertito
 item.projectred.illumination.fixture.inv|15.name=Infisso Nero Invertito
 
+item.projectred.illumination.cagelamp2|0.name=Lanterna Ingabbiata Bianca
+item.projectred.illumination.cagelamp2|1.name=Lanterna Ingabbiata Arancio
+item.projectred.illumination.cagelamp2|2.name=Lanterna Ingabbiata Magenta
+item.projectred.illumination.cagelamp2|3.name=Lanterna Ingabbiata Azzurra
+item.projectred.illumination.cagelamp2|4.name=Lanterna Ingabbiata Gialla
+item.projectred.illumination.cagelamp2|5.name=Lanterna Ingabbiata Lime
+item.projectred.illumination.cagelamp2|6.name=Lanterna Ingabbiata Rosa
+item.projectred.illumination.cagelamp2|7.name=Lanterna Ingabbiata Grigia
+item.projectred.illumination.cagelamp2|8.name=Lanterna Ingabbiata Grigio Chiaro
+item.projectred.illumination.cagelamp2|9.name=Lanterna Ingabbiata Ciano
+item.projectred.illumination.cagelamp2|10.name=Lanterna Ingabbiata Viola
+item.projectred.illumination.cagelamp2|11.name=Lanterna Ingabbiata Blu
+item.projectred.illumination.cagelamp2|12.name=Lanterna Ingabbiata Marrone
+item.projectred.illumination.cagelamp2|13.name=Lanterna Ingabbiata Verde
+item.projectred.illumination.cagelamp2|14.name=Lanterna Ingabbiata Rossa
+item.projectred.illumination.cagelamp2|15.name=Lanterna Ingabbiata Nera
+item.projectred.illumination.cagelamp2.inv|0.name=Lanterna Ingabbiata Bianca Invertita
+item.projectred.illumination.cagelamp2.inv|1.name=Lanterna Ingabbiata Arancio Invertita
+item.projectred.illumination.cagelamp2.inv|2.name=Lanterna Ingabbiata Magenta Invertita
+item.projectred.illumination.cagelamp2.inv|3.name=Lanterna Ingabbiata Azzurra Invertita
+item.projectred.illumination.cagelamp2.inv|4.name=Lanterna Ingabbiata Gialla Invertita
+item.projectred.illumination.cagelamp2.inv|5.name=Lanterna Ingabbiata Lime Invertita
+item.projectred.illumination.cagelamp2.inv|6.name=Lanterna Ingabbiata Rosa Invertita
+item.projectred.illumination.cagelamp2.inv|7.name=Lanterna Ingabbiata Grigia Invertita
+item.projectred.illumination.cagelamp2.inv|8.name=Lanterna Ingabbiata Grigio Chiaro Invertita
+item.projectred.illumination.cagelamp2.inv|9.name=Lanterna Ingabbiata Ciano Invertita
+item.projectred.illumination.cagelamp2.inv|10.name=Lanterna Ingabbiata Viola Invertita
+item.projectred.illumination.cagelamp2.inv|11.name=Lanterna Ingabbiata Blu Invertita
+item.projectred.illumination.cagelamp2.inv|12.name=Lanterna Ingabbiata Marrone Invertita
+item.projectred.illumination.cagelamp2.inv|13.name=Lanterna Ingabbiata Verde Invertita
+item.projectred.illumination.cagelamp2.inv|14.name=Lanterna Ingabbiata Rossa Invertita
+item.projectred.illumination.cagelamp2.inv|15.name=Lanterna Ingabbiata Nera Invertita
 
 
 
@@ -381,6 +432,9 @@ item.projectred.integration.gate|25.name=Cella buffer
 item.projectred.integration.gate|26.name=Comparatore
 item.projectred.integration.gate|27.name=Cella AND
 
+item.projectred.integration.gate|28.name=Bus Randomizzato
+item.projectred.integration.gate|29.name=Convertitore
+item.projectred.integration.gate|30.name=Pannello input multiplo
 
 
 
