@@ -1,7 +1,7 @@
 package mrtjp.projectred.core.libmc.fx;
 
-import mrtjp.projectred.core.libmc.MathLib;
 import codechicken.lib.vec.Vector3;
+import mrtjp.core.math.MathLib;
 
 public class ParticleLogicArcToPoint extends ParticleLogic
 {

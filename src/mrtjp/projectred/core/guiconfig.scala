@@ -12,7 +12,7 @@ import net.minecraftforge.common.config.ConfigElement
 
 class GuiConfigFactory extends IModGuiFactory
 {
-    override def initialize(minecraftInstance: Minecraft) {}
+    override def initialize(minecraftInstance: Minecraft){}
 
     override def mainConfigGuiClass() = classOf[ProjectRedConfigGUI]
 

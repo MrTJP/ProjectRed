@@ -1,9 +1,10 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.vec.BlockCoord
+import mrtjp.core.item.{ItemQueue, ItemKey}
 import mrtjp.projectred.api.ISpecialLinkState
-import mrtjp.projectred.core.libmc.{ItemKey, ItemQueue, PRLib}
-import mrtjp.projectred.transportation.Priorities.NetPriority
+import mrtjp.projectred.core.libmc.PRLib
+import mrtjp.projectred.transportation.Priorities.NetworkPriority
 import net.minecraft.tileentity.TileEntity
 
 import scala.annotation.tailrec
@@ -245,7 +246,7 @@ class SyncResponse
     var itemCount = 0
     var responder = -1
 
-    def setPriority(p:NetPriority) =
+    def setPriority(p:NetworkPriority) =
     {
         priority = p
         this

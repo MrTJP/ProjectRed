@@ -9,11 +9,11 @@ import codechicken.lib.render.*;
 import codechicken.lib.render.CCRenderState.IVertexOperation;
 import codechicken.lib.render.uv.*;
 import codechicken.lib.vec.*;
+import mrtjp.core.color.Colors;
+import mrtjp.core.vec.InvertX$;
+import mrtjp.core.vec.VecLib;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.InvertX;
 import mrtjp.projectred.core.RenderHalo;
-import mrtjp.projectred.core.libmc.PRColors;
-import mrtjp.projectred.core.libmc.VecLib;
 import mrtjp.projectred.transmission.UVT;
 import mrtjp.projectred.transmission.WireModelGen;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -72,7 +72,7 @@ public class ComponentStore
 
     public static Map<String, CCModel> loadModels(String name)
     {
-        return CCModel.parseObjModels(new ResourceLocation("projectred:textures/obj/gateparts/"+name+".obj"), 7, new InvertX());
+        return CCModel.parseObjModels(new ResourceLocation("projectred:textures/obj/gateparts/"+name+".obj"), 7, InvertX$.MODULE$);
     }
 
     public static CCModel loadModel(String name)
@@ -893,7 +893,7 @@ public class ComponentStore
 
         public int offColour = 0x420000FF;
         public int onColour = 0xEC0000FF;
-        public int disableColour = PRColors.GREY.rgba;
+        public int disableColour = Colors.GREY.rgba;
 
         public SigLightPanelModel(double x, double z, boolean flip)
         {
@@ -1151,7 +1151,7 @@ public class ComponentStore
             for (int i = 0; i < 16; i++)
             {
                 CCRenderState.setPipeline(CCRenderState.lightMatrix, orientT(orient).with(t),
-                        icon, ColourMultiplier.instance(PRColors.get(i).rgba));
+                        icon, ColourMultiplier.instance(Colors.get(i).rgba));
                 BlockRenderer.renderCuboid((pressMask&1<<i) != 0 ? pressed[i] : unpressed[i], 1);
             }
         }

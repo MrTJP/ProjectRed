@@ -5,9 +5,12 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.lib.render.FontUtils
 import codechicken.lib.vec.BlockCoord
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.color.Colors
+import mrtjp.core.gui._
+import mrtjp.core.item.{ItemKey, ItemKeyStack}
+import mrtjp.core.resource.ResourceLib
+import mrtjp.core.vec.Point
 import mrtjp.projectred.core.libmc._
-import mrtjp.projectred.core.libmc.gui._
-import mrtjp.projectred.core.{GuiIDs, TGuiBuilder}
 import net.minecraft.client.gui.Gui
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Container
@@ -35,9 +38,9 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
 
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        ResourceLib.guiPipeCrafting.bind()
+        PRResources.guiPipeCrafting.bind()
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
-        FontUtils.drawCenteredString(""+pipe.priority, 126, 15, PRColors.BLACK.rgb)
+        FontUtils.drawCenteredString(""+pipe.priority, 126, 15, Colors.BLACK.rgb)
         GuiLib.drawPlayerInvBackground(8, 138)
 
         var color = 0
@@ -47,14 +50,14 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
         {
             GL11.glColor4f(1, 1, 1, 1)
             drawTexturedModalRect(x, y, 1, 11, 16, 16)
-            Gui.drawRect(x+4, y-2, x+4+8, y, PRColors.get(color).argb)
+            Gui.drawRect(x+4, y-2, x+4+8, y, Colors.get(color).argb)
             color += 1
         }
     }
 
     override def drawFront_Impl(mouse:Point, frame:Float)
     {
-        ResourceLib.guiPipeCrafting.bind()
+        PRResources.guiPipeCrafting.bind()
         val oldZ = zLevel
         zLevel = 300
         var i = 0
@@ -71,7 +74,7 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
 
 object GuiCraftingPipe extends TGuiBuilder
 {
-    override def getID = GuiIDs.craftingPipe
+    override def getID = TransportationProxy.guiIDCraftingPipe
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
@@ -110,7 +113,7 @@ class GuiExtensionPipe(container:Container, id:String) extends WidgetGui(contain
 
 object GuiExtensionPipe extends TGuiBuilder
 {
-    override def getID = GuiIDs.extensionPipe
+    override def getID = TransportationProxy.guiIDExtensionPipe
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
@@ -130,14 +133,14 @@ class GuiInterfacePipe(container:Container, pipe:RoutedInterfacePipePart) extend
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        ResourceLib.guiPipeInterface.bind()
+        PRResources.guiPipeInterface.bind()
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
         GuiLib.drawPlayerInvBackground(8, 118)
     }
 
     override def drawFront_Impl(mouse:Point, frame:Float)
     {
-        ResourceLib.guiPipeInterface.bind()
+        PRResources.guiPipeInterface.bind()
         val oldZ = zLevel
         zLevel = 300
 
@@ -155,7 +158,7 @@ class GuiInterfacePipe(container:Container, pipe:RoutedInterfacePipePart) extend
 
 object GuiInterfacePipe extends TGuiBuilder
 {
-    override def getID = GuiIDs.interfacePipe
+    override def getID = TransportationProxy.guiIDInterfacePipe
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
@@ -211,9 +214,9 @@ class GuiRequester(pipe:IWorldRequester) extends WidgetGui(280, 230)
 
     override def drawFront_Impl(mouse:Point, frame:Float)
     {
-        fontRenderer.drawStringWithShadow("Pull", 240, 166, PRColors.WHITE.rgb)
-        fontRenderer.drawStringWithShadow("Craft", 240, 186, PRColors.WHITE.rgb)
-        fontRenderer.drawStringWithShadow("Parials", 240, 206, PRColors.WHITE.rgb)
+        fontRenderer.drawStringWithShadow("Pull", 240, 166, Colors.WHITE.rgb)
+        fontRenderer.drawStringWithShadow("Craft", 240, 186, Colors.WHITE.rgb)
+        fontRenderer.drawStringWithShadow("Parials", 240, 206, Colors.WHITE.rgb)
     }
 
     override def runInit_Impl()
@@ -395,10 +398,10 @@ class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends WidgetGu
             val dx3 = dx2
             val dy3 = dy-flowY
             if (flags(i)) GuiLib.drawLine(dx2, dy2, dx3, dy3)
-            else GuiLib.drawLine(dx2, dy2, dx3, dy3, PRColors.GREY.rgb)
+            else GuiLib.drawLine(dx2, dy2, dx3, dy3, Colors.GREY.rgb)
 
             if (flags(i)) GuiLib.drawLine(dx3, dy3, outX, outY)
-            else GuiLib.drawLine(dx3, dy3, outX, outY, PRColors.GREY.rgb)
+            else GuiLib.drawLine(dx3, dy3, outX, outY, Colors.GREY.rgb)
         }
 
         GuiLib.drawLine(inX, inY, inX, inY+inOut)
@@ -409,7 +412,7 @@ class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends WidgetGu
 
 object GuiFirewallPipe extends TGuiBuilder
 {
-    override def getID = GuiIDs.firewallPipe
+    override def getID = TransportationProxy.guiIDFirewallPipe
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =

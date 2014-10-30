@@ -1,12 +1,13 @@
 package mrtjp.projectred.transportation
 
+import mrtjp.core.gui.{Slot2, WidgetContainer}
+import mrtjp.core.item.ItemKeyStack
 import mrtjp.projectred.core.ItemDataCard
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
-import mrtjp.projectred.core.libmc.ItemKeyStack
-import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory}
+import mrtjp.core.inventory.SimpleInventory
 
 class RoutedExtensionPipePart extends BasicPipeAbstraction with TNetworkPipe
 {

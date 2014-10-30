@@ -1,15 +1,14 @@
 package mrtjp.projectred.transportation
 
 import codechicken.multipart.INeighborTileChange
-import mrtjp.projectred.core.libmc.gui.GuiLib
-import mrtjp.projectred.core.libmc.inventory.{SimpleInventory, Slot2, WidgetContainer}
-import mrtjp.projectred.core.libmc.{ItemQueue, ItemKey, ItemKeyStack}
+import mrtjp.core.gui.{GuiLib, Slot2, WidgetContainer}
+import mrtjp.core.inventory.SimpleInventory
+import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 
-import scala.collection.immutable.HashMap
 import scala.collection.mutable.{Builder => MBuilder}
 
 class RoutedInterfacePipePart extends BasicPipeAbstraction with TNetworkPipe with IWorldBroadcaster with INeighborTileChange

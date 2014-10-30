@@ -1,7 +1,7 @@
 package mrtjp.projectred.core.libmc.fx
 
 import codechicken.lib.vec.{BlockCoord, Vector3}
-import mrtjp.projectred.core.libmc.PRColors
+import mrtjp.core.color.Colors
 import net.minecraft.client.particle.EntityFX
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.world.World
@@ -52,7 +52,7 @@ class CoreParticle(w:World, px:Double, py:Double, pz:Double) extends EntityFX(w,
         this.b = b
     }
 
-    def setPRColor(color:PRColors)
+    def setPRColor(color:Colors)
     {
         setRGBColorF((color.c.r&0xFF)/255F, (color.c.g&0xFF)/255F, (color.c.b&0xFF)/255F)
     }

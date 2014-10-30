@@ -2,7 +2,7 @@ package mrtjp.projectred.transportation
 
 import scala.collection.immutable.BitSet
 import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.core.libmc.inventory.InvWrapper
+import mrtjp.core.inventory.InvWrapper
 
 class ChipExtractor extends RoutingChip with TChipFilter with TChipOrientation
 {

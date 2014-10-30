@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.libmc.recipe
 
-import mrtjp.projectred.core.libmc.ItemKeyStack
+import mrtjp.core.item.ItemKeyStack
 import net.minecraft.block.Block
 import net.minecraft.item.{Item, ItemStack}
 

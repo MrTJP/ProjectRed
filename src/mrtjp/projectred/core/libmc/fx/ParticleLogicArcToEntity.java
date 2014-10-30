@@ -1,8 +1,8 @@
 package mrtjp.projectred.core.libmc.fx;
 
-import mrtjp.projectred.core.libmc.MathLib;
-import net.minecraft.entity.Entity;
 import codechicken.lib.vec.Vector3;
+import mrtjp.core.math.MathLib;
+import net.minecraft.entity.Entity;
 
 public class ParticleLogicArcToEntity extends ParticleLogic
 {

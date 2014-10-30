@@ -7,10 +7,10 @@ import codechicken.lib.vec.{BlockCoord, Cuboid6, Rotation, Vector3}
 import codechicken.microblock.ISidedHollowConnect
 import codechicken.multipart._
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.item.ItemKey
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
-import mrtjp.projectred.core.libmc.ItemKey
-import mrtjp.projectred.core.libmc.inventory.InvWrapper
+import mrtjp.core.inventory.InvWrapper
 import net.minecraft.client.renderer.RenderBlocks
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
@@ -259,7 +259,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
             if (r.isEntering && hasReachedMiddle(r))
             {
                 r.isEntering = false
-                if (r.output == ForgeDirection.UNKNOWN) handleDrop(r)
+                if (r.output == 6) handleDrop(r)
                 else centerReached(r)
             }
             else if (!r.isEntering && hasReachedEnd(r) && itemFlow.scheduleRemoval(r)) endReached(r)
@@ -283,25 +283,25 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
 
     def chooseRandomDestination(r:PipePayload)
     {
-        var moves = Seq[ForgeDirection]()
-        for (i <- 0 until 6) if((connMap&1<<i) != 0 && i != r.input.getOpposite.ordinal)
+        var moves = Seq[Int]()
+        for (i <- 0 until 6) if((connMap&1<<i) != 0 && i != (r.input^1))
         {
             val t = getStraight(i)
-            if (t.isInstanceOf[PayloadPipePart]) moves :+= ForgeDirection.getOrientation(i)
+            if (t.isInstanceOf[PayloadPipePart]) moves :+= i
         }
 
-        if (moves.isEmpty) r.output = r.input.getOpposite
+        if (moves.isEmpty) r.output = r.input^1
         else r.output = moves(world.rand.nextInt(moves.size))
     }
 
     def endReached(r:PipePayload)
     {
-        if (!world.isRemote) if (!maskConnects(r.output.ordinal) || !passToNextPipe(r))
+        if (!world.isRemote) if (!maskConnects(r.output) || !passToNextPipe(r))
         {
-            val inv = InvWrapper.getInventory(world, new BlockCoord(tile).offset(r.output.ordinal))
+            val inv = InvWrapper.getInventory(world, new BlockCoord(tile).offset(r.output))
             if (inv != null)
             {
-                val w = InvWrapper.wrap(inv).setSlotsFromSide(r.output.getOpposite.ordinal)
+                val w = InvWrapper.wrap(inv).setSlotsFromSide(r.output^1)
                 r.payload.stackSize -= w.injectItem(r.payload.makeStack, true)
             }
             if (r.payload.stackSize > 0) bounceStack(r)
@@ -312,7 +312,8 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
     {
         itemFlow.unscheduleRemoval(r)
         r.isEntering = true
-        r.input = r.output.getOpposite
+        r.input = r.output^1
+        r.progress = 0
         resolveDestination(r)
         adjustSpeed(r)
         sendItemUpdate(r)
@@ -320,7 +321,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
 
     def centerReached(r:PipePayload)
     {
-        if (!maskConnects(r.output.ordinal))
+        if (!maskConnects(r.output) && !world.isRemote)
         {
             resolveDestination(r)
             sendItemUpdate(r)
@@ -329,7 +330,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
 
     def passToNextPipe(r:PipePayload) =
     {
-        getStraight(r.output.ordinal()) match
+        getStraight(r.output) match
         {
             case pipe:PayloadPipePart =>
                 pipe.injectPayload(r, r.output)
@@ -348,7 +349,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
 
     protected def hasReachedEnd(r:PipePayload) = r.progress >= 1.0F
 
-    def injectPayload(r:PipePayload, in:ForgeDirection)
+    def injectPayload(r:PipePayload, in:Int)
     {
         if (r.isCorrupted) return
         if (itemFlow.delegate.contains(r)) return
@@ -395,8 +396,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         out.writeShort(r.payloadID)
         out.writeFloat(r.progress)
         out.writeItemStack(r.getItemStack)
-        out.writeByte(r.input.ordinal.asInstanceOf[Byte])
-        out.writeByte(r.output.ordinal.asInstanceOf[Byte])
+        out.writeByte(r.output&0xF|((r.input&0xF)<<4))
         out.writeFloat(r.speed)
         out.writeByte(r.priorityIndex)
     }
@@ -418,8 +418,9 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
             itemFlow.add(r)
         }
         r.setItemStack(packet.readItemStack)
-        r.input = ForgeDirection.getOrientation(packet.readByte)
-        r.output = ForgeDirection.getOrientation(packet.readByte)
+        val io = packet.readUByte()
+        r.input = (io>>4)&0xF
+        r.output = io&0xF
         r.speed = packet.readFloat
         r.priorityIndex = packet.readUByte()
     }
@@ -458,9 +459,5 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
     @SideOnly(Side.CLIENT)
     def getIcon(side:Int) = getPipeType.sprites(0)
 
-    override def canConnectPart(part:IConnectable, s:Int) = part match
-    {
-        case p:PayloadPipePart => true
-        case _ => false
-    }
+    override def canConnectPart(part:IConnectable, s:Int) = false
 }

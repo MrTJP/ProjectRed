@@ -6,7 +6,7 @@ import java.util.{List => JList}
 import codechicken.nei.recipe.TemplateRecipeHandler
 import codechicken.nei.{NEIClientUtils, NEIServerUtils, PositionedStack}
 import cpw.mods.fml.common.registry.GameRegistry
-import mrtjp.projectred.core.libmc.ItemKeyStack
+import mrtjp.core.item.ItemKeyStack
 import net.minecraft.client.gui.inventory.GuiCrafting
 import net.minecraft.inventory.InventoryCrafting
 import net.minecraft.item.ItemStack

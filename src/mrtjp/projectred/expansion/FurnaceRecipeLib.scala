@@ -1,11 +1,12 @@
 package mrtjp.projectred.expansion
 
-import net.minecraft.item.crafting.FurnaceRecipes
-import net.minecraft.item.ItemStack
-import net.minecraftforge.oredict.OreDictionary
-import mrtjp.projectred.core.libmc.{ItemKeyStack, ItemKey}
-import net.minecraft.init.{Items, Blocks}
 import java.util.{Map => JMap}
+
+import mrtjp.core.item.{ItemKey, ItemKeyStack}
+import net.minecraft.init.{Blocks, Items}
+import net.minecraft.item.ItemStack
+import net.minecraft.item.crafting.FurnaceRecipes
+import net.minecraftforge.oredict.OreDictionary
 
 object FurnaceRecipeLib
 {

@@ -1,22 +1,24 @@
 package mrtjp.projectred.exploration
 
-import mrtjp.projectred.core.{ItemBlockCore, PartDefs, BlockDefinition, BlockCore}
-import net.minecraft.block.material.Material
-import mrtjp.projectred.ProjectRedExploration
-import net.minecraft.util.IIcon
-import net.minecraft.client.renderer.texture.IIconRegister
-import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.world.{IBlockAccess, World}
 import java.util
-import mrtjp.projectred.core.libmc.MathLib
-import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.block.{BlockWall, Block}
 import java.util.Random
+
 import codechicken.lib.vec.BlockCoord
-import net.minecraft.init.Blocks
-import cpw.mods.fml.relauncher.{SideOnly, Side}
-import net.minecraft.entity.Entity
 import cpw.mods.fml.common.registry.GameRegistry
+import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.block.{BlockCore, BlockDefinition, ItemBlockCore}
+import mrtjp.core.math.MathLib
+import mrtjp.projectred.ProjectRedExploration
+import mrtjp.projectred.core.PartDefs
+import net.minecraft.block.material.Material
+import net.minecraft.block.{Block, BlockWall}
+import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.entity.Entity
+import net.minecraft.init.Blocks
+import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.util.IIcon
+import net.minecraft.world.{IBlockAccess, World}
 
 class BlockOre extends BlockCore("projectred.exploration.ore", Material.rock)
 {
@@ -227,7 +229,6 @@ class BlockDynamicStoneBrick extends Block(Material.rock) with TMossSpread
             w.setBlock(x, y, z, Block.getBlockFromName("stonebrick"), 2, 3)
     }
 
-    //private val blockInst = new BlockStoneBrick //TODO remove
     override def registerBlockIcons(reg:IIconRegister) =
     {
         Blocks.stonebrick.registerBlockIcons(reg)

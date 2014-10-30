@@ -1,13 +1,11 @@
 package mrtjp.projectred.expansion
 
-import codechicken.core.ClientUtils
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.packet.PacketCustom.{IServerPacketHandler, IClientPacketHandler}
+import codechicken.lib.packet.PacketCustom.{IClientPacketHandler, IServerPacketHandler}
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayerMP
-import mrtjp.projectred.core.libmc.PRLib
-import net.minecraft.network.play.{INetHandlerPlayServer, INetHandlerPlayClient}
+import net.minecraft.network.play.{INetHandlerPlayClient, INetHandlerPlayServer}
 
 class ExpansionPH
 {
@@ -27,9 +25,9 @@ object ExpansionCPH extends ExpansionPH with IClientPacketHandler
 
     def openMachineGui(packet:PacketCustom, mc:Minecraft)
     {
-        val machine = PRLib.getTileEntity(mc.theWorld, packet.readCoord(), classOf[TileGuiMachine])
-        if (machine != null)
-            ClientUtils.openSMPGui(packet.readUByte(), MachineGuiFactory(packet.readUByte(), machine))
+//        val machine = WorldLib.getTileEntity(mc.theWorld, packet.readCoord(), classOf[TileGuiMachine])
+//        if (machine != null)
+//            ClientUtils.openSMPGui(packet.readUByte(), MachineGuiFactory(packet.readUByte(), machine))
     }
 }
 

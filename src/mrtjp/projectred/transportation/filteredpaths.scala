@@ -1,6 +1,6 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.libmc.ItemKey
+import mrtjp.core.item.ItemKey
 
 
 class StartEndPath(var start:Router, var end:Router, var hopDir:Int, var distance:Int,

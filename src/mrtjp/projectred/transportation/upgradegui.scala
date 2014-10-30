@@ -4,9 +4,10 @@ import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.render.FontUtils
 import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.projectred.core.libmc.gui._
-import mrtjp.projectred.core.libmc.{PRColors, ResourceLib}
-import mrtjp.projectred.core.{GuiIDs, TGuiBuilder}
+import mrtjp.core.color.Colors
+import mrtjp.core.gui._
+import mrtjp.core.vec.Point
+import mrtjp.projectred.core.libmc.PRResources
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.EnumChatFormatting
 
@@ -64,17 +65,17 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends WidgetGui(container
 
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        ResourceLib.guiChipUpgrade.bind()
+        PRResources.guiChipUpgrade.bind()
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
         if (container.getChip != null)
         {
             val b = container.getChip.upgradeBus
-            fontRenderer.drawString(String.valueOf(if (b.LXLatency > 0) b.LXLatency else "-"), 29, 23, PRColors.GREY.rgb)
-            fontRenderer.drawString(String.valueOf(if (b.LYLatency > 0) b.LYLatency else "-"), 29, 43, PRColors.GREY.rgb)
-            fontRenderer.drawString(String.valueOf(if (b.LZLatency > 0) b.LZLatency else "-"), 29, 63, PRColors.GREY.rgb)
-            FontUtils.drawRightString(String.valueOf(if (b.RXLatency > 0) b.RXLatency else "-"), 148, 23, PRColors.GREY.rgb)
-            FontUtils.drawRightString(String.valueOf(if (b.RYLatency > 0) b.RYLatency else "-"), 148, 43, PRColors.GREY.rgb)
-            FontUtils.drawRightString(String.valueOf(if (b.RZLatency > 0) b.RZLatency else "-"), 148, 63, PRColors.GREY.rgb)
+            fontRenderer.drawString(String.valueOf(if (b.LXLatency > 0) b.LXLatency else "-"), 29, 23, Colors.GREY.rgb)
+            fontRenderer.drawString(String.valueOf(if (b.LYLatency > 0) b.LYLatency else "-"), 29, 43, Colors.GREY.rgb)
+            fontRenderer.drawString(String.valueOf(if (b.LZLatency > 0) b.LZLatency else "-"), 29, 63, Colors.GREY.rgb)
+            FontUtils.drawRightString(String.valueOf(if (b.RXLatency > 0) b.RXLatency else "-"), 148, 23, Colors.GREY.rgb)
+            FontUtils.drawRightString(String.valueOf(if (b.RYLatency > 0) b.RYLatency else "-"), 148, 43, Colors.GREY.rgb)
+            FontUtils.drawRightString(String.valueOf(if (b.RZLatency > 0) b.RZLatency else "-"), 148, 63, Colors.GREY.rgb)
         }
         var s = 0
         for ((x, y) <- GuiLib.createSlotGrid(8, 18, 1, 3, 2, 2))
@@ -124,7 +125,7 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends WidgetGui(container
 
 object GuiChipUpgrade extends TGuiBuilder
 {
-    override def getID = GuiIDs.chipUpgrade
+    override def getID = TransportationProxy.guiIDChipUpgrade
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =

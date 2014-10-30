@@ -4,10 +4,10 @@ import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.MultiPartRegistry.IPartFactory
 import cpw.mods.fml.client.registry.ClientRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.color.Colors
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.ProjectRedIllumination._
 import mrtjp.projectred.core.{Configurator, IProxy}
-import mrtjp.projectred.core.libmc.PRColors
 import net.minecraft.item.Item
 import net.minecraftforge.client.MinecraftForgeClient
 
@@ -110,7 +110,7 @@ class IlluminationProxy_client extends IlluminationProxy_server
         val b = Vector.newBuilder[Int]
         for (i <- 0 until 15)
         {
-            val c = PRColors.get(i)
+            val c = Colors.get(i)
             b += makeRGBLightValue(c.rF, c.gF, c.bF, 1.0F)
         }
         b.result()
@@ -119,7 +119,7 @@ class IlluminationProxy_client extends IlluminationProxy_server
     {
         if (!Configurator.coloredLightsCompat) return lValue
         if (lValue >= 15) return cache(meta)
-        val color = PRColors.get(meta)
+        val color = Colors.get(meta)
         import color.{bF, gF, rF}
         makeRGBLightValue(rF, gF, bF, lValue/15.0F)
     }

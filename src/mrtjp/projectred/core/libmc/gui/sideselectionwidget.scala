@@ -1,24 +1,29 @@
 package mrtjp.projectred.core.libmc.gui
 
-import org.lwjgl.input.Mouse
-import org.lwjgl.opengl.GL11
-import mrtjp.projectred.core.libmc.{OpenGLLib, PRColors, MathLib, DirectionalRayTracer}
-import net.minecraftforge.common.util.ForgeDirection
-import scala.collection.JavaConversions
-import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.core.libmc.DirectionalRayTracer.HitCoord
-import net.minecraft.client.renderer.{RenderBlocks, Tessellator}
-import codechicken.lib.render.{ColourMultiplier, CCRenderState, Vertex5, CCModel}
+import codechicken.lib.gui.GuiDraw
+import codechicken.lib.math.MathHelper
+import codechicken.lib.render.{CCModel, CCRenderState, ColourMultiplier, Vertex5}
 import codechicken.lib.vec.Rotation
+import com.google.common.base.Preconditions
+import mrtjp.core.color.Colors
+import mrtjp.core.gui.TWidget
+import mrtjp.core.math.MathLib
+import mrtjp.core.vec.{Point, Rect}
+import mrtjp.projectred.core.libmc.DirectionalRayTracer.HitCoord
+import mrtjp.projectred.core.libmc.{DirectionalRayTracer, OpenGLLib}
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.texture.TextureMap
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
+import net.minecraft.client.renderer.{RenderBlocks, Tessellator}
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
-import org.lwjgl.util.vector.{Vector3f, Matrix4f}
-import codechicken.lib.math.MathHelper
-import com.google.common.base.Preconditions
-import codechicken.lib.gui.GuiDraw
+import net.minecraftforge.common.util.ForgeDirection
+import org.lwjgl.input.Mouse
+import org.lwjgl.opengl.GL11
+import org.lwjgl.util.vector.{Matrix4f, Vector3f}
+
+import scala.collection.JavaConversions
+import scala.collection.mutable.ListBuffer
 
 class WidgetSideSelect(x:Int, y:Int, w:Int, h:Int, scale:Double) extends TWidget
 {
@@ -125,7 +130,7 @@ trait TWidgetSidePicker extends WidgetSideSelect
 
 trait TWidgetSideHighlight extends WidgetSideSelect
 {
-    private var color = PRColors.LIME.rgba
+    private var color = Colors.LIME.rgba
     private var activeHighlight = false
 
     def setColor(c:Int):this.type = {color = c; this}

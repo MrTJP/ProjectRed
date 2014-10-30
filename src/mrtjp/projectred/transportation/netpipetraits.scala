@@ -3,24 +3,22 @@ import java.util.UUID
 import java.util.concurrent.PriorityBlockingQueue
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.TileMultipart
+import mrtjp.core.inventory.InvWrapper
+import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
+import mrtjp.core.util.Pair2
+import mrtjp.core.world.{Messenger, WorldLib}
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.lib.Pair2
-import mrtjp.projectred.core.libmc.inventory.InvWrapper
-import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack, ItemQueue, PRLib}
-import mrtjp.projectred.core.{Configurator, CoreSPH}
-import mrtjp.projectred.transportation.Priorities.NetPriority
+import mrtjp.projectred.core.Configurator
+import mrtjp.projectred.transportation.Priorities.NetworkPriority
 import mrtjp.projectred.transportation.TNetworkPipe.TransitComparator
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.{IIcon, MovingObjectPosition}
 import net.minecraft.world.World
-import net.minecraftforge.common.util.ForgeDirection
 
 import scala.collection.JavaConversions._
 import scala.collection.immutable.BitSet
@@ -97,7 +95,7 @@ trait TRouteLayer
     {
         queueStackToSend(stack, dirOfExtraction, path.priority, path.responder)
     }
-    def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:NetPriority, destination:Int)
+    def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:NetworkPriority, destination:Int)
     def getLogisticPath(stack:ItemKey, exclusions:BitSet, excludeStart:Boolean):SyncResponse
 
     def getRouter:Router
@@ -122,8 +120,11 @@ trait TNetworkTravelConditions extends TPipeTravelConditions
 
 trait TNetworkSubsystem extends PayloadPipePart
 {
-    override def canConnectPart(part:IConnectable, s:Int) =
-        part.isInstanceOf[TNetworkSubsystem]
+    override def canConnectPart(part:IConnectable, s:Int) = part match
+    {
+        case p:TNetworkSubsystem => true
+        case _ => super.canConnectPart(part, s)
+    }
 }
 
 trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter with TRouteLayer with IWorldRequester with TNetworkTravelConditions with TNetworkSubsystem
@@ -307,10 +308,10 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
 
     override def endReached(r:PipePayload)
     {
-        if (!world.isRemote) if (!maskConnects(r.output.ordinal) || !passToNextPipe(r))
+        if (!world.isRemote) if (!maskConnects(r.output) || !passToNextPipe(r))
         {
-            val bc = new BlockCoord(tile).offset(r.output.ordinal)
-            val t = PRLib.getTileEntity(world, bc, classOf[TileEntity])
+            val bc = new BlockCoord(tile).offset(r.output)
+            val t = WorldLib.getTileEntity(world, bc)
             val state = LSPathFinder.getLinkState(t)
 
             if (state != null && t.isInstanceOf[IInventory])
@@ -323,7 +324,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
                     if (part.isInstanceOf[TNetworkPipe])
                     {
                         val pipe = part.asInstanceOf[TNetworkPipe]
-                        val w = InvWrapper.wrap(inv).setSlotsFromSide(r.output.getOpposite.ordinal)
+                        val w = InvWrapper.wrap(inv).setSlotsFromSide(r.output^1)
                         val room = w.getSpaceForItem(r.payload.key)
                         if (room >= r.payload.stackSize)
                         {
@@ -342,7 +343,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
             val inv = InvWrapper.getInventory(world, bc)
             if (inv != null)
             {
-                val w = InvWrapper.wrap(inv).setSlotsFromSide(r.output.getOpposite.ordinal)
+                val w = InvWrapper.wrap(inv).setSlotsFromSide(r.output^1)
                 r.payload.stackSize -= w.injectItem(r.payload.makeStack, true)
             }
             if (r.payload.stackSize > 0) bounceStack(r)
@@ -398,7 +399,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
                         "\nsent: "+statsSent+
                         "\nrelayed: "+statsRelayed+
                         "\n\nroute table size: "+getRouter.getRouteTable.foldLeft(0)((b, v) => if (v != null) b+1 else b)
-                val packet = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)
+                val packet = Messenger.createPacket
                 packet.writeDouble(x+0.0D)
                 packet.writeDouble(y+0.5D)
                 packet.writeDouble(z+0.0D)
@@ -423,7 +424,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
     {
         if (needsWork) return
         var color = -1
-        r.output = ForgeDirection.UNKNOWN
+        r.output = 6
 
         def reRoute(r:PipePayload)
         {
@@ -445,7 +446,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         if (r.destinationIP > 0 && r.destinationUUID == getRouter.getID)
         {
             r.output = getDirForIncomingItem(r)
-            if (r.output == ForgeDirection.UNKNOWN) reRoute(r)
+            if (r.output == 6) reRoute(r)
             else
             {
                 color = RouteFX.color_receive
@@ -456,14 +457,14 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         }
 
         // Relay item
-        if (r.output == ForgeDirection.UNKNOWN)
+        if (r.output == 6)
         {
             r.output = getRouter.getDirection(r.destinationIP, r.payload.key, r.netPriority)
             color = RouteFX.color_relay
         }
 
         // Set to wander, clear log for re-push
-        if (r.output == ForgeDirection.UNKNOWN)
+        if (r.output == 6)
         {
             super.resolveDestination(r)
             r.resetTrip()
@@ -476,7 +477,7 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
         adjustSpeed(r)
     }
 
-    def getDirForIncomingItem(r:PipePayload) = ForgeDirection.getOrientation(inOutSide)
+    def getDirForIncomingItem(r:PipePayload):Int = inOutSide
 
     override def adjustSpeed(r:PipePayload)
     {
@@ -507,14 +508,14 @@ trait TNetworkPipe extends PayloadPipePart with TInventoryPipe with IWorldRouter
 
     override def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse = null
 
-    override def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:NetPriority, destination:Int)
+    override def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:NetworkPriority, destination:Int)
     {
         val stack2 = ItemKeyStack.get(stack)
         var r = pollFromSwapQueue(stack2)
         if (r == null)
         {
             r = PipePayload(stack2)
-            r.input = ForgeDirection.getOrientation(dirOfExtraction)
+            r.input = dirOfExtraction
             r.setDestination(destination, priority)
         }
         sendQueue :+= r

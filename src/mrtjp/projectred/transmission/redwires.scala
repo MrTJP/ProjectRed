@@ -1,11 +1,11 @@
 package mrtjp.projectred.transmission
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.{BlockCoord, Rotation}
 import codechicken.multipart._
 import codechicken.multipart.scalatraits.TRedstoneTile
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
 import mrtjp.projectred.transmission.IWirePart._
@@ -125,7 +125,7 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with IRed
         if (world.isRemote) Messenger.addMessage(x, y+0.5, z, "/#f/#c[c] = "+getRedwireSignal)
         else
         {
-            val packet = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)
+            val packet = Messenger.createPacket
             packet.writeDouble(x+0.0D)
             packet.writeDouble(y+0.5D)
             packet.writeDouble(z+0.0D)

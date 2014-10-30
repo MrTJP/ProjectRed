@@ -5,11 +5,11 @@ import java.util.concurrent.DelayQueue
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.BlockCoord
+import mrtjp.core.gui.{GuiLib, Slot2, WidgetContainer}
+import mrtjp.core.inventory.{InvWrapper, SimpleInventory}
+import mrtjp.core.item.{ItemKey, ItemKeyStack}
+import mrtjp.core.util.{Pair2, PostponedWorkItem}
 import mrtjp.projectred.core.ItemDataCard
-import mrtjp.projectred.core.lib.{Pair2, PostponedWorkItem}
-import mrtjp.projectred.core.libmc.gui.GuiLib
-import mrtjp.projectred.core.libmc.inventory.{InvWrapper, SimpleInventory, Slot2, WidgetContainer}
-import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Container
 import net.minecraft.item.ItemStack

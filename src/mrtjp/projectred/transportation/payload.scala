@@ -1,9 +1,8 @@
 package mrtjp.projectred.transportation
 
 import java.util.UUID
-
-import mrtjp.projectred.core.libmc.ItemKeyStack
-import mrtjp.projectred.transportation.Priorities.NetPriority
+import mrtjp.core.item.ItemKeyStack
+import mrtjp.projectred.transportation.Priorities.NetworkPriority
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
@@ -50,8 +49,8 @@ class PipePayload(val payloadID:Int)
 
     var speed = 0.01F
     var progress = 0.00F
-    var input = ForgeDirection.UNKNOWN
-    var output = ForgeDirection.UNKNOWN
+    var input = 6
+    var output = 6
     var isEntering = true
     var parent:PayloadPipePart = null
     var priorityIndex = 0
@@ -64,8 +63,8 @@ class PipePayload(val payloadID:Int)
     def reset()
     {
         isEntering = true
-        input = ForgeDirection.UNKNOWN
-        output = ForgeDirection.UNKNOWN
+        input = 6
+        output = 6
     }
 
     def moveProgress(prog:Float)
@@ -98,8 +97,8 @@ class PipePayload(val payloadID:Int)
         speed = tag.getFloat("speed")
         setItemStack(ItemStack.loadItemStackFromNBT(tag.getCompoundTag("Item")))
         isEntering = tag.getBoolean("isEnt")
-        input = ForgeDirection.getOrientation(tag.getInteger("input"))
-        output = ForgeDirection.getOrientation(tag.getInteger("output"))
+        input = tag.getByte("input")
+        output = tag.getByte("output")
         loadRouting(tag)
     }
 
@@ -111,8 +110,8 @@ class PipePayload(val payloadID:Int)
         getItemStack.writeToNBT(tag2)
         tag.setTag("Item", tag2)
         tag.setBoolean("isEnt", isEntering)
-        tag.setInteger("input", input.ordinal)
-        tag.setInteger("output", output.ordinal)
+        tag.setByte("input", input.asInstanceOf[Byte])
+        tag.setByte("output", output.asInstanceOf[Byte])
         saveRouting(tag)
     }
 
@@ -123,15 +122,14 @@ class PipePayload(val payloadID:Int)
         var deltaX = x + 0.5D
         var deltaY = y + 0.25D
         var deltaZ = z + 0.5D
-        import net.minecraftforge.common.util.ForgeDirection._
         dir match
         {
-            case UP => deltaY = (y-0.25D)+prog
-            case DOWN => deltaY = (y-0.25D)+(1.0D-prog)
-            case SOUTH => deltaZ = z+prog
-            case NORTH => deltaZ = z+(1.0D-prog)
-            case EAST => deltaX = x+prog
-            case WEST => deltaX = x+(1.0D-prog)
+            case 0 => deltaY = (y-0.25D)+(1.0D-prog)
+            case 1 => deltaY = (y-0.25D)+prog
+            case 2 => deltaZ = z+(1.0D-prog)
+            case 3 => deltaZ = z+prog
+            case 4 => deltaX = x+(1.0D-prog)
+            case 5 => deltaX = x+prog
             case _ =>
         }
 
@@ -143,12 +141,12 @@ class PipePayload(val payloadID:Int)
 
         dir match
         {
-            case UP => item.motionY = +speed
-            case DOWN => item.motionY = -speed
-            case SOUTH => item.motionZ = +speed
-            case NORTH => item.motionZ = -speed
-            case EAST => item.motionX = +speed
-            case WEST => item.motionX = -speed
+            case 0 => item.motionY = -speed
+            case 1 => item.motionY = +speed
+            case 2 => item.motionZ = -speed
+            case 3 => item.motionZ = +speed
+            case 4 => item.motionX = -speed
+            case 5 => item.motionX = +speed
             case _ =>
         }
         item.delayBeforeCanPickup = 10
@@ -164,7 +162,7 @@ class PipePayload(val payloadID:Int)
 
     def netPriority = Priorities(priorityIndex)
 
-    def setDestination(ip:Int, p:NetPriority) =
+    def setDestination(ip:Int, p:NetworkPriority) =
     {
         destinationIP = ip
         priorityIndex = p.ordinal

@@ -2,12 +2,11 @@ package mrtjp.projectred.transmission
 
 import java.text.DecimalFormat
 
-import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.Rotation
 import codechicken.multipart.TMultiPart
+import mrtjp.core.world.{Messenger, WorldLib}
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
-import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 
@@ -21,7 +20,7 @@ trait TPowerWireCommons extends TWireCommons with IPowerConnectable
     {
         if (world.isRemote) return true
 
-        val p = new PacketCustom(CoreCPH.channel, CoreCPH.messagePacket)
+        val p = Messenger.createPacket
         p.writeDouble(x).writeDouble(y).writeDouble(z)
         var s = "/#f"+"#VV\n"+"#IA\n"+"#PW"
         val d = new DecimalFormat("00.00")
@@ -76,7 +75,7 @@ abstract class PowerWire extends WirePart with TPowerWireCommons
             if ((connMap&1<<id) != 0) getCorner(id) match //corner
             {
                 case p:IPowerConnectable => return p.conductor(rotFromCorner(id))
-                case _ => PRLib.getTileEntity(world, posOfCorner(id), classOf[IPowerConnectable]) match
+                case _ => WorldLib.getTileEntity(world, posOfCorner(id), classOf[IPowerConnectable]) match
                 {
                     case p:IPowerConnectable if outsideCornerEdgeOpen(id) => return p.conductor(absoluteDir(rotFromCorner(id)))
                     case _ =>
@@ -85,7 +84,7 @@ abstract class PowerWire extends WirePart with TPowerWireCommons
             else if ((connMap&0x10<<id) != 0) getStraight(id) match //straight
             {
                 case p:IPowerConnectable => return p.conductor(rotFromStraight(id))
-                case _ => PRLib.getTileEntity(world, posOfStraight(id), classOf[IPowerConnectable]) match
+                case _ => WorldLib.getTileEntity(world, posOfStraight(id), classOf[IPowerConnectable]) match
                 {
                     case p:IPowerConnectable => return p.conductor(absoluteDir(rotFromStraight(id)))
                     case _ =>
@@ -106,13 +105,13 @@ abstract class PowerWire extends WirePart with TPowerWireCommons
         null
     }
 
-    override def discoverStraightOverride(absDir:Int) = PRLib.getTileEntity(world, posOfStraight(absDir), classOf[IPowerConnectable]) match
+    override def discoverStraightOverride(absDir:Int) = WorldLib.getTileEntity(world, posOfStraight(absDir), classOf[IPowerConnectable]) match
     {
         case p:IPowerConnectable => p.connectStraight(this, absDir^1, Rotation.rotationTo(absDir, side))
         case _ => false
     }
 
-    override def discoverCornerOverride(absDir:Int) = PRLib.getTileEntity(world, posOfCorner(absoluteRot(absDir)), classOf[IPowerConnectable]) match
+    override def discoverCornerOverride(absDir:Int) = WorldLib.getTileEntity(world, posOfCorner(absoluteRot(absDir)), classOf[IPowerConnectable]) match
     {
         case p:IPowerConnectable => p.connectCorner(this, side^1, Rotation.rotationTo(side, absDir^1))
         case _ => false
@@ -128,7 +127,7 @@ abstract class FramedPowerWire extends FramedWirePart with TPowerWireCommons
             if ((connMap&1<<id) != 0) getStraight(id) match //straight
             {
                 case p:IPowerConnectable => return p.conductor(id^1)
-                case _ => PRLib.getTileEntity(world, posOfStraight(id), classOf[IPowerConnectable]) match
+                case _ => WorldLib.getTileEntity(world, posOfStraight(id), classOf[IPowerConnectable]) match
                 {
                     case p:IPowerConnectable => return p.conductor(id^1)
                     case _ =>
@@ -143,7 +142,7 @@ abstract class FramedPowerWire extends FramedWirePart with TPowerWireCommons
         null
     }
 
-    override def discoverStraightOverride(s:Int) = PRLib.getTileEntity(world, posOfStraight(s), classOf[IPowerConnectable]) match
+    override def discoverStraightOverride(s:Int) = WorldLib.getTileEntity(world, posOfStraight(s), classOf[IPowerConnectable]) match
     {
         case p:IPowerConnectable => p.connectStraight(this, s^1, -1)
         case _ => false

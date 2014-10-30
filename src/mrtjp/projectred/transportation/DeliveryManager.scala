@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.lib.Pair2
-import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack}
+import mrtjp.core.item.{ItemKey, ItemKeyStack}
+import mrtjp.core.util.Pair2
 
 class DeliveryManager
 {

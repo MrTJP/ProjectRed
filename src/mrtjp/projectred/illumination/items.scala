@@ -6,9 +6,8 @@ import codechicken.lib.vec.{BlockCoord, Vector3}
 import codechicken.multipart.minecraft.ButtonPart
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart, TMultiPart}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.item.{ItemCore, TItemGlassSound}
 import mrtjp.projectred.ProjectRedIllumination
-import mrtjp.projectred.core.libmc.WireLib
-import mrtjp.projectred.core.{ItemCore, TItemGlassSound}
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
@@ -25,7 +24,7 @@ class ItemBaseLight(obj:LightObject, val inverted:Boolean) extends ItemCore(obj.
     override def newPart(stack:ItemStack, player:EntityPlayer, w:World, pos:BlockCoord, side:Int, vhit:Vector3):TMultiPart =
     {
         val bc = pos.copy.offset(side^1)
-        if (!WireLib.canPlaceLight(w, bc.x, bc.y, bc.z, side, obj.canFloat)) return null
+        if (!obj.canFloat && !BaseLightPart.canPlaceLight(w, bc.x, bc.y, bc.z, side)) return null
 
         val light = MultiPartRegistry.createPart(obj.getType, false).asInstanceOf[BaseLightPart]
         if (light != null) light.preparePlacement(side^1, stack.getItemDamage, inverted)

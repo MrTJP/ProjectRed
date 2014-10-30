@@ -5,7 +5,7 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.TMultiPart;
-import mrtjp.projectred.core.libmc.PRColors;
+import mrtjp.core.color.Colors;
 import mrtjp.projectred.core.libmc.PRLib;
 import mrtjp.projectred.core.libmc.fx.*;
 import mrtjp.projectred.core.libmc.fx.ParticleLogicTrail.IParticleBuilder;
@@ -18,22 +18,22 @@ public class RouteFX
 {
     private static final Random rand = new Random();
 
-    public static final int color_receive = PRColors.ORANGE.ordinal();
-    public static final int color_send = PRColors.PURPLE.ordinal();
+    public static final int color_receive = Colors.ORANGE.ordinal();
+    public static final int color_send = Colors.PURPLE.ordinal();
 
-    public static final int color_relay = PRColors.CYAN.ordinal();
-    public static final int color_routeLost = PRColors.MAGENTA.ordinal();
+    public static final int color_relay = Colors.CYAN.ordinal();
+    public static final int color_routeLost = Colors.MAGENTA.ordinal();
 
-    public static final int color_route = PRColors.RED.ordinal();
-    public static final int color_sync = PRColors.LIGHT_BLUE.ordinal();
+    public static final int color_route = Colors.RED.ordinal();
+    public static final int color_sync = Colors.LIGHT_BLUE.ordinal();
 
-    public static final int color_request = PRColors.PINK.ordinal();
+    public static final int color_request = Colors.PINK.ordinal();
 
-    public static final int color_checkInv = PRColors.WHITE.ordinal();
+    public static final int color_checkInv = Colors.WHITE.ordinal();
 
-    public static final int color_linked = PRColors.LIME.ordinal();
-    public static final int color_unlinked = PRColors.RED.ordinal();
-    public static final int color_blink = PRColors.LIGHT_GREY.ordinal();
+    public static final int color_linked = Colors.LIME.ordinal();
+    public static final int color_unlinked = Colors.RED.ordinal();
+    public static final int color_blink = Colors.LIGHT_GREY.ordinal();
 
     public static void spawnType1(int color, int count, BlockCoord bc, World world)
     {
@@ -43,7 +43,7 @@ public class RouteFX
             return;
         }
 
-        PRColors c = PRColors.get(color);
+        Colors c = Colors.get(color);
         for (int i = 0; i < count; i++)
             doSpawnType1(c, bc, world);
     }
@@ -56,7 +56,7 @@ public class RouteFX
             return;
         }
 
-        PRColors c = PRColors.get(color);
+        Colors c = Colors.get(color);
         for (int i = 0; i < count; i++)
             doSpawnType2(c, dir, bc, world);
     }
@@ -69,12 +69,12 @@ public class RouteFX
             return;
         }
 
-        PRColors c = PRColors.get(color);
+        Colors c = Colors.get(color);
         for (int i = 0; i < count; i++)
             doSpawnType3(c, dir, bc, world);
     }
 
-    private static void doSpawnType3(final PRColors color, int dir, BlockCoord bc, World world)
+    private static void doSpawnType3(final Colors color, int dir, BlockCoord bc, World world)
     {
         double x = bc.x+0.5;
         double y = bc.y+0.5;
@@ -121,7 +121,7 @@ public class RouteFX
         }
     }
 
-    private static void doSpawnType2(final PRColors color, int dir, BlockCoord bc, World world)
+    private static void doSpawnType2(final Colors color, int dir, BlockCoord bc, World world)
     {
         double x = bc.x+0.5;
         double y = bc.y+0.5;
@@ -183,7 +183,7 @@ public class RouteFX
         }
     }
 
-    private static void doSpawnType1(PRColors color, BlockCoord bc, World world)
+    private static void doSpawnType1(Colors color, BlockCoord bc, World world)
     {
         double x = bc.x+0.5+MathHelper.getRandomDoubleInRange(rand, -1/4d, 1/4d);
         double y = bc.y+0.5+MathHelper.getRandomDoubleInRange(rand, -1/8d, 1/8d);
