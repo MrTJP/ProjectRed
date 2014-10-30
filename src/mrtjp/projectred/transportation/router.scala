@@ -3,9 +3,9 @@ package mrtjp.projectred.transportation
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import java.util.{UUID, PriorityQueue => JPriorityQueue}
 
+import mrtjp.core.item.ItemKey
 import mrtjp.projectred.core.Configurator
-import mrtjp.projectred.core.libmc.ItemKey
-import mrtjp.projectred.transportation.Priorities.NetPriority
+import mrtjp.projectred.transportation.Priorities.NetworkPriority
 import net.minecraftforge.common.util.ForgeDirection
 
 import scala.collection.immutable.{BitSet, HashMap}
@@ -279,14 +279,14 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         false
     }
 
-    def canRouteTo(destination:Int, item:ItemKey, priority:NetPriority) = pathTo(destination, item, priority) != null
-    def getDirection(destination:Int, item:ItemKey, priority:NetPriority) = pathTo(destination, item, priority) match
+    def canRouteTo(destination:Int, item:ItemKey, priority:NetworkPriority) = pathTo(destination, item, priority) != null
+    def getDirection(destination:Int, item:ItemKey, priority:NetworkPriority) = pathTo(destination, item, priority) match
     {
-        case path:StartEndPath => ForgeDirection.getOrientation(path.hopDir)
-        case _ => ForgeDirection.UNKNOWN
+        case path:StartEndPath => path.hopDir
+        case _ => 6
     }
 
-    private def pathTo(destination:Int, item:ItemKey, priority:NetPriority):StartEndPath =
+    private def pathTo(destination:Int, item:ItemKey, priority:NetworkPriority):StartEndPath =
     {
         val rt = getRouteTable
         if (rt.isDefinedAt(destination) && RouterServices.routerExists(destination))

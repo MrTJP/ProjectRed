@@ -3,14 +3,17 @@ package mrtjp.projectred.exploration
 import codechicken.microblock.BlockMicroMaterial
 import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.ProjectRedExploration._
-import mrtjp.projectred.core.{Configurator, GuiIDs, GuiManager, IProxy}
+import mrtjp.projectred.core.{Configurator, IProxy}
 import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.common.util.EnumHelper
 
 class ExplorationProxy_server extends IProxy
 {
+    val guiIDBackpack = 1
+
     override def preinit() {}
 
     override def init()
@@ -27,13 +30,6 @@ class ExplorationProxy_server extends IProxy
         blockDecoratives = new BlockDecoratives
 
         blockDecorativeWalls = new BlockDecorativeWalls
-
-//        blockStainedLeaf = new BlockStainedLeaf(Configurator.block_stainedLeafID.getInt)//TODO replace
-//        GameRegistry.registerBlock(blockStainedLeaf, classOf[ItemBlockMetaHandler], "projectred.exploration.dyeleaf")
-//
-//        blockStainedSapling = new BlockStainedSapling(Configurator.block_stainedSaplingID.getInt)
-//        GameRegistry.registerBlock(blockStainedSapling, classOf[ItemBlockStainedSapling], "projectred.exploration.dyesapling")
-//        for (i <- 0 until 16) OreDictionary.registerOre(PRColors.get(i).getOreDict, EnumDyeTrees.VALID_FOLIAGE(i).getSappling)
 
 //        if (Configurator.gen_SpreadingMoss.getBoolean(true)) //TODO fix
 //        {
@@ -107,7 +103,7 @@ class ExplorationProxy_client extends ExplorationProxy_server
         MinecraftForgeClient.registerItemRenderer(itemSapphireSaw, GemSawRenderer)
         MinecraftForgeClient.registerItemRenderer(itemPeridotSaw, GemSawRenderer)
 
-        GuiManager.register(GuiBackpack, GuiIDs.backpacks)
+        GuiHandler.register(GuiBackpack, guiIDBackpack)
     }
 }
 

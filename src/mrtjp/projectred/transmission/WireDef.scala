@@ -1,12 +1,12 @@
 package mrtjp.projectred.transmission
 
 import cpw.mods.fml.relauncher.{SideOnly, Side}
+import mrtjp.core.item.ItemDefinition
 import mrtjp.projectred.ProjectRedTransmission
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.item.ItemStack
 import net.minecraft.util.IIcon
 import net.minecraftforge.oredict.OreDictionary
-import mrtjp.projectred.core.ItemDefinition
 
 object WireDef extends ItemDefinition
 {

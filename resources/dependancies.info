@@ -1,12 +1,6 @@
 [{
-	"repo": "http://files.minecraftforge.net/maven/codechicken/ForgeMultipart/@MC_VERSION@-@FMP_VERSION@/",
-	"file": "ForgeMultipart-@MC_VERSION@-@FMP_VERSION@-universal.jar",
-	"dev": "ForgeMultipart-@MC_VERSION@-@FMP_VERSION@-dev.jar",
-	"class": "codechicken.multipart.MultipartMod"
-},
-{
-	"repo": "http://files.minecraftforge.net/maven/codechicken/CodeChickenLib/@MC_VERSION@-@CCL_VERSION@/",
-	"file": "CodeChickenLib-@MC_VERSION@-@CCL_VERSION@-universal.jar",
-	"dev": "CodeChickenLib-@MC_VERSION@-@CCL_VERSION@-dev.jar",
-	"class": "codechicken.lib.asm.ASMHelper"
+	"repo": "http://projectredwiki.com/maven/mrtjp/MrTJPCore/@MC_VERSION@-@MRTJP_VERSION@/",
+	"file": "MrTJPCore-@MC_VERSION@-@MRTJP_VERSION@-universal.jar",
+	"dev": "MrTJPCore-@MC_VERSION@-@MRTJP_VERSION@-dev.jar",
+	"class": "mrtjp.core.handler.MrTJPCoreMod"
 }]

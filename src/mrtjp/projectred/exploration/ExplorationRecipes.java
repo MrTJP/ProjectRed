@@ -4,7 +4,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import mrtjp.projectred.ProjectRedExploration;
 import mrtjp.projectred.core.PartDefs;
 import mrtjp.projectred.core.ShapelessOreNBTRecipe;
-import mrtjp.projectred.core.libmc.PRColors;
+import mrtjp.core.color.Colors;
 import mrtjp.projectred.exploration.DecorativeStoneDefs.StoneVal;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -181,11 +181,11 @@ public class ExplorationRecipes
                     "cdc",
                     "ccc",
                     'c', PartDefs.WOVENCLOTH().makeStack(),
-                    'd', PRColors.get(i).getOreDict()
+                    'd', Colors.get(i).getOreDict()
                     ));
             GameRegistry.addRecipe(new ShapelessOreNBTRecipe(new ItemStack(ProjectRedExploration.itemBackpack(), 1, i),
                     ItemBackpack.oreDictionaryVal(),
-                    PRColors.get(i).getOreDict()
+                    Colors.get(i).getOreDict()
                     ).setKeepNBT());
         }
     }

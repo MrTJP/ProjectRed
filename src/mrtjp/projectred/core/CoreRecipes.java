@@ -3,7 +3,7 @@ package mrtjp.projectred.core;
 import codechicken.microblock.handler.MicroblockProxy;
 import cpw.mods.fml.common.registry.GameRegistry;
 import mrtjp.projectred.ProjectRedCore;
-import mrtjp.projectred.core.libmc.PRColors;
+import mrtjp.core.color.Colors;
 import mrtjp.projectred.core.libmc.recipe.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -40,7 +40,7 @@ public class CoreRecipes
                 " ib",
                 " bi",
                 'i', Items.iron_ingot,
-                'b', PRColors.BLUE.getOreDict()
+                'b', Colors.BLUE.getOreDict()
         ));
 
         /** Wire debugger **/
@@ -49,9 +49,9 @@ public class CoreRecipes
                 "ber",
                 "bgr",
                 'a', REDINGOT().makeStack(),
-                'b', PRColors.BLACK.getOreDict(),
+                'b', Colors.BLACK.getOreDict(),
                 'e', Items.emerald,
-                'r', PRColors.RED.getOreDict(),
+                'r', Colors.RED.getOreDict(),
                 'g', Items.glowstone_dust
                 ));
 
@@ -193,8 +193,8 @@ public class CoreRecipes
             GameRegistry.addRecipe(new ShapelessOreRecipe(p.makeStack(),
                     new ItemStack(Items.glowstone_dust),
                     new ItemStack(Items.glowstone_dust),
-                    PRColors.get(i).getOreDict(),
-                    PRColors.get(i).getOreDict()
+                    Colors.get(i).getOreDict(),
+                    Colors.get(i).getOreDict()
                     ));
         }
 

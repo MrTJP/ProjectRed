@@ -1,27 +1,28 @@
 package mrtjp.projectred.transmission
 
-import IWirePart._
-import codechicken.lib.data.{MCDataOutput, MCDataInput}
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.raytracer.IndexedCuboid6
-import codechicken.lib.render.{TextureUtils, CCRenderState}
-import codechicken.lib.vec.{Rotation, Cuboid6, Vector3, BlockCoord}
+import codechicken.lib.render.{CCRenderState, TextureUtils}
+import codechicken.lib.vec.{BlockCoord, Cuboid6, Rotation, Vector3}
 import codechicken.microblock.handler.MicroblockProxy
 import codechicken.microblock.{ISidedHollowConnect, ItemMicroPart, MicroMaterialRegistry}
-import codechicken.multipart.{PartMap, TileMultipart, TMultiPart, TNormalOcclusion}
-import cpw.mods.fml.relauncher.{SideOnly, Side}
+import codechicken.multipart.{PartMap, TMultiPart, TNormalOcclusion, TileMultipart}
+import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.world.PlacementLib
 import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
+import mrtjp.projectred.core.libmc.PRLib
+import mrtjp.projectred.transmission.IWirePart._
+import mrtjp.projectred.transmission.WireDef.WireDef
 import net.minecraft.client.renderer.RenderBlocks
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 import org.lwjgl.opengl.GL11
+
 import scala.collection.JavaConversions._
-import mrtjp.projectred.core.libmc.{PRLib, WireLib}
-import net.minecraftforge.common.util.ForgeDirection
-import mrtjp.projectred.transmission.WireDef.WireDef
 
 trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion
 {
@@ -249,7 +250,7 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
     def canStay =
     {
         val pos = new BlockCoord(tile).offset(side)
-        WireLib.canPlaceWireOnSide(world, pos.x, pos.y, pos.z, side^1, false)
+        PlacementLib.canPlaceWireOnSide(world, pos.x, pos.y, pos.z, side^1)
     }
 
     def getItem = getWireType.makeStack
@@ -408,14 +409,14 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
 
     override def getOcclusionBoxes =
     {
-        import WireBoxes._
+        import mrtjp.projectred.transmission.WireBoxes._
         if (expandBounds >= 0) Seq(fOBounds(expandBounds))
         else Seq(fOBounds(6))
     }
 
     override def getCollisionBoxes =
     {
-        import WireBoxes._
+        import mrtjp.projectred.transmission.WireBoxes._
         var b = Seq.newBuilder[Cuboid6].+=(fOBounds(6))
         for (s <- 0 until 6) if (maskConnects(s)) b += fOBounds(s)
         b.result()

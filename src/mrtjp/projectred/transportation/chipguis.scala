@@ -1,25 +1,28 @@
 package mrtjp.projectred.transportation
 
+import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.render.{TextureUtils, FontUtils, CCRenderState}
+import codechicken.lib.render.{CCRenderState, FontUtils, TextureUtils}
+import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.color.Colors
+import mrtjp.core.gui._
+import mrtjp.core.resource.ResourceLib
+import mrtjp.core.vec.Point
+import mrtjp.projectred.core.libmc.PRResources
+import mrtjp.projectred.core.libmc.gui._
+import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import net.minecraft.client.gui.{Gui, GuiScreen}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Slot
 import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.{EnumChatFormatting, ResourceLocation}
 import org.lwjgl.opengl.GL11
+
 import scala.collection.mutable.ListBuffer
-import mrtjp.projectred.core.libmc.{ResourceLib, PRColors}
-import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer}
-import mrtjp.projectred.core.libmc.gui._
-import mrtjp.projectred.core.{GuiIDs, TGuiBuilder}
-import codechicken.lib.data.MCDataInput
-import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
-import cpw.mods.fml.relauncher.{Side, SideOnly}
 
 object ChipGuiFactory extends TGuiBuilder
 {
-    override def getID = GuiIDs.routingChips
+    override def getID = TransportationProxy.guiIDRoutingChips
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
@@ -90,7 +93,7 @@ abstract class GuiChipContainer[T <: RoutingChip](cont:ChipContainer, prev:GuiSc
     /** Utils **/
     def drawChipContainerBackground()
     {
-        ResourceLib.guiChipContainer.bind()
+        PRResources.guiChipContainer.bind()
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
     }
 
@@ -361,12 +364,12 @@ class GuiChipOrient(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
     override def drawBackExtra(mouse:Point, frame:Float)
     {
         val xOff = 90
-        fontRenderer.drawString("Extraction is", xOff, 20, PRColors.WHITE.rgb, true)
-        if (chip.extractOrient == -1) fontRenderer.drawString("not simulated", xOff, 30, PRColors.WHITE.rgb, true)
+        fontRenderer.drawString("Extraction is", xOff, 20, Colors.WHITE.rgb, true)
+        if (chip.extractOrient == -1) fontRenderer.drawString("not simulated", xOff, 30, Colors.WHITE.rgb, true)
         else
         {
-            fontRenderer.drawString("simulated from", xOff, 30, PRColors.WHITE.rgb, true)
-            fontRenderer.drawString("the " + names(chip.extractOrient), xOff, 40, PRColors.WHITE.rgb, true)
+            fontRenderer.drawString("simulated from", xOff, 30, Colors.WHITE.rgb, true)
+            fontRenderer.drawString("the " + names(chip.extractOrient), xOff, 40, Colors.WHITE.rgb, true)
         }
     }
 
@@ -380,8 +383,8 @@ class GuiChipPriority(cont:ChipContainer, prev:GuiScreen) extends GuiChipContain
 {
     override def drawBackExtra(mouse:Point, frame:Float)
     {
-        FontUtils.drawCenteredString(chip.preference.toString, 88, 38, PRColors.WHITE.rgb)
-        if (chip.enablePriorityFlag) fontRenderer.drawStringWithShadow("Enabled", 98, 68, PRColors.WHITE.rgb)
+        FontUtils.drawCenteredString(chip.preference.toString, 88, 38, Colors.WHITE.rgb)
+        if (chip.enablePriorityFlag) fontRenderer.drawStringWithShadow("Enabled", 98, 68, Colors.WHITE.rgb)
     }
 
     val check = new WidgetCheckBox(88, 72, chip.priorityFlag).setAction("p")
@@ -454,10 +457,10 @@ class GuiChipCraftExt(cont:ChipContainer, prev:GuiScreen) extends GuiChipContain
             {
                 val ext = chip.extIndex(index)
                 if (ext >= 0)
-                    Gui.drawRect(x+2, y, x+2+20, y+18, PRColors.get(ext).argb)
-                else drawCenteredString(fontRenderer, "off", x+12, y+8, PRColors.WHITE.rgba)
+                    Gui.drawRect(x+2, y, x+2+20, y+18, Colors.get(ext).argb)
+                else drawCenteredString(fontRenderer, "off", x+12, y+8, Colors.WHITE.rgba)
             }
-            else drawCenteredString(fontRenderer, "-", x+12, y+8, PRColors.GREY.rgba)
+            else drawCenteredString(fontRenderer, "-", x+12, y+8, Colors.GREY.rgba)
             index += 1
         }
     }

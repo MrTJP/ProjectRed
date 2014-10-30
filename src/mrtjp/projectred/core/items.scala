@@ -1,5 +1,6 @@
 package mrtjp.projectred.core
 
+import mrtjp.core.item.{ItemDefinition, ItemCore}
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.item.{Item, ItemStack}
 import mrtjp.projectred.ProjectRedCore

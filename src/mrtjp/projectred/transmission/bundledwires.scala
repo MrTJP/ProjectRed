@@ -1,17 +1,15 @@
 package mrtjp.projectred.transmission
 
-import codechicken.lib.data.{MCDataOutput, MCDataInput}
-import codechicken.lib.packet.PacketCustom
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.TMultiPart
-import mrtjp.projectred.api.{IBundledTile, IConnectable, IBundledEmitter}
-import mrtjp.projectred.core.{Configurator, CoreSPH}
+import mrtjp.core.world.{Messenger, WorldLib}
+import mrtjp.projectred.api.{IBundledEmitter, IBundledTile, IConnectable}
 import mrtjp.projectred.transmission.IWirePart._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ChatComponentText
-import mrtjp.projectred.core.libmc.PRLib
 
 trait IBundledCablePart extends IWirePart with IBundledEmitter
 {
@@ -84,7 +82,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
     protected var propogatingMask = 0xFFFF
     override def updateAndPropagate(from:TMultiPart, mode:Int)
     {
-        import BundledCommons._
+        import mrtjp.projectred.transmission.BundledCommons._
         val mask = getUpdateMask(from, mode)
         if (mode == DROPPING && isSignalZero(getBundledSignal, mask)) return
 
@@ -197,7 +195,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
             for (i <- 0 until 16) if (getBundledSignal.apply(i) != 0) s = s+"["+i+"]"
 
             if (s == "") s = "off"
-            val packet = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)
+            val packet = Messenger.createPacket
             packet.writeDouble(x + 0.0D)
             packet.writeDouble(y + 0.5D)
             packet.writeDouble(z + 0.0D)
@@ -230,7 +228,7 @@ class BundledCablePart extends WirePart with TFaceBundledAquisitions with TBundl
 
     override def calcStraightArray(r:Int) =
     {
-        PRLib.getTileEntity(world, posOfStraight(r), classOf[TileEntity]) match
+        WorldLib.getTileEntity(world, posOfStraight(r)) match
         {
             case ibe:IBundledEmitter => resolveArray(ibe, absoluteDir(rotFromStraight(r)))
             case t if APIImpl_Transmission.isValidInteractionFor(world, t.xCoord, t.yCoord, t.zCoord) =>
@@ -254,7 +252,7 @@ class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitio
 
     override def calcStraightArray(s:Int) =
     {
-        PRLib.getTileEntity(world, posOfStraight(s), classOf[TileEntity]) match
+        WorldLib.getTileEntity(world, posOfStraight(s)) match
         {
             case ibe:IBundledEmitter => resolveArray(ibe, s^1)
             case t if APIImpl_Transmission.isValidInteractionFor(world, t.xCoord, t.yCoord, t.zCoord) =>

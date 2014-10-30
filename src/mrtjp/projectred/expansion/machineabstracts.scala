@@ -1,26 +1,23 @@
 package mrtjp.projectred.expansion
 
-import codechicken.core.{IGuiPacketSender, ServerUtils}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.{Rotation, Vector3}
+import mrtjp.core.block.{InstancedBlock, InstancedBlockTile, TTileOrient}
+import mrtjp.core.gui.WidgetContainer
+import mrtjp.core.inventory.TPortableInventory
+import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api._
 import mrtjp.projectred.core._
-import mrtjp.projectred.core.libmc.inventory.WidgetContainer
-import mrtjp.projectred.core.libmc.{MultiTileBlock, MultiTileTile, PRLib, TPortableInventory}
 import net.minecraft.block.material.Material
-import net.minecraft.client.renderer.texture.IIconRegister
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{Container, ICrafting, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.util.ForgeDirection
 
-class BlockMachine(name:String) extends MultiTileBlock(name, Material.rock)
+class BlockMachine(name:String) extends InstancedBlock(name, Material.rock)
 {
     setHardness(2)
     setCreativeTab(ProjectRedExpansion.tabExpansion)
@@ -32,16 +29,12 @@ class BlockMachine(name:String) extends MultiTileBlock(name, Material.rock)
     override def isSideSolid(w:IBlockAccess, x:Int, y:Int, z:Int, side:ForgeDirection) = true
 }
 
-abstract class TileMachine extends MultiTileTile with TTileOrient
+abstract class TileMachine extends InstancedBlockTile with TTileOrient
 {
-    override def onBlockPlaced(s:Int, meta:Int, player:EntityLivingBase, stack:ItemStack, hit:Vector3)
+    override def onBlockPlaced(s:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
     {
         setSide(if (doesOrient) s^1 else 0)
-        player match
-        {
-            case p:EntityPlayer => setRotation(Rotation.getSidedRotation(p, side^1))
-            case _ =>
-        }
+        setRotation(Rotation.getSidedRotation(player, side^1))
     }
 
     override def writeDesc(out:MCDataOutput)
@@ -114,7 +107,7 @@ abstract class TileMachine extends MultiTileTile with TTileOrient
 
     def sendOrientUpdate()
     {
-        writeStreamSend(writeStream(1).writeByte(orientation))
+        writeStream(1).writeByte(orientation).sendToChunk()
     }
 
     def onBlockRotated() {}
@@ -161,7 +154,7 @@ trait TileGuiMachine extends TileMachine
     def createContainer(player:EntityPlayer):Container
 }
 
-trait TMachinePowerable extends TileMachine with TConnectableTileMulti with IPowerConnectable
+trait TMachinePowerable extends TileMachine with TConnectableInstTile with IPowerConnectable
 {
     val cond:PowerConductor
     def condIds = (0 until 30) ++ (32 until 56)
@@ -194,7 +187,7 @@ trait TMachinePowerable extends TileMachine with TConnectableTileMulti with IPow
             if (maskConnectsStraightCenter(s)) getStraightCenter(s) match
             {
                 case tp:IPowerConnectable => return tp.conductor(s^1)
-                case _ => PRLib.getTileEntity(world, posOfInternal.offset(s), classOf[IPowerConnectable]) match
+                case _ => WorldLib.getTileEntity(world, posOfInternal.offset(s), classOf[IPowerConnectable]) match
                 {
                     case tp:IPowerConnectable => return tp.conductor(s^1)
                     case _ =>
@@ -279,7 +272,7 @@ trait TileMachineSideConfig extends TileMachine
     def sendSideChange()
     {
         val ws = writeStream(18).writeByteArray(toByteArray)
-        writeStreamSend(ws)
+        ws.sendToChunk()
     }
 
     override def read(in:MCDataInput, switchkey:Int) = switchkey match
@@ -453,7 +446,7 @@ with TMachinePowerable with TileMachineIO with TileGuiMachine with TileMachineSi
 
     def sendWorkUpdate()
     {
-        writeStreamSend(writeStream(14).writeBoolean(isWorking))
+        writeStream(14).writeBoolean(isWorking).sendToChunk()
     }
 
     override def read(in:MCDataInput, switchkey:Int) = switchkey match

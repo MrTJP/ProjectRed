@@ -1,22 +1,21 @@
 package mrtjp.projectred.integration
 
-import mrtjp.projectred.core.{TItemGlassSound, ItemCore}
-import codechicken.multipart.{MultiPartRegistry, TMultiPart, TItemMultiPart}
-import mrtjp.projectred.ProjectRedIntegration
-import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.world.World
-import codechicken.lib.vec.{Translation, Scale, Vector3, BlockCoord}
-import mrtjp.projectred.core.libmc.WireLib
-import net.minecraftforge.common.util.ForgeDirection
-import net.minecraft.creativetab.CreativeTabs
 import java.util.{List => JList}
 
-import cpw.mods.fml.relauncher.{SideOnly, Side}
-import net.minecraftforge.client.IItemRenderer
-import net.minecraftforge.client.IItemRenderer.{ItemRendererHelper, ItemRenderType}
 import codechicken.lib.render.{CCRenderState, TextureUtils}
+import codechicken.lib.vec.{BlockCoord, Scale, Translation, Vector3}
+import codechicken.multipart.{MultiPartRegistry, TItemMultiPart, TMultiPart}
+import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.item.{ItemCore, TItemGlassSound}
+import mrtjp.core.world.PlacementLib
+import mrtjp.projectred.ProjectRedIntegration
 import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.world.World
+import net.minecraftforge.client.IItemRenderer
+import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
 
 class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMultiPart with TItemGlassSound
 {
@@ -26,7 +25,7 @@ class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMul
     def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3):TMultiPart =
     {
         val onPos = pos.copy.offset(side^1)
-        if (!WireLib.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, side, false)) return null
+        if (!PlacementLib.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, side)) return null
 
         val gtype = EnumGate.VALID_GATES(item.getItemDamage)
         if (!gtype.implemented) return null
@@ -61,7 +60,7 @@ object GateItemRenderer extends IItemRenderer
     override def renderItem(t:ItemRenderType, item:ItemStack, data:AnyRef*) =
     {
         val damage = item.getItemDamage
-        import ItemRenderType._
+        import net.minecraftforge.client.IItemRenderer.ItemRenderType._
         t match
         {
             case ENTITY => renderGateInv(damage, -0.3F, 0F, -0.3F, 0.6F)

@@ -1,7 +1,9 @@
 package mrtjp.projectred.expansion
 
-import mrtjp.projectred.core.libmc.ResourceLib
-import mrtjp.projectred.core.libmc.gui._
+import mrtjp.core.gui.{WidgetGui, WidgetTabControl}
+import mrtjp.core.resource.ResourceLib
+import mrtjp.core.vec.Point
+import mrtjp.projectred.core.libmc.PRResources
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.Container
@@ -53,7 +55,7 @@ class GuiFurnace(tile:TileFurnace, cont:Container) extends GuiMachineWorking(til
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        ResourceLib.guiFurnace.bind()
+        PRResources.guiFurnace.bind()
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
 
         val s = tile.progressScaled(24)

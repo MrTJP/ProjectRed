@@ -6,22 +6,25 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.{BlockCoord, Vector3}
 import codechicken.multipart.IRedstoneConnectorBlock
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.block.{BlockCore, InstancedBlock, InstancedBlockTile}
+import mrtjp.core.color.Colors
+import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedIllumination
-import mrtjp.projectred.core.BlockCore
+import mrtjp.projectred.core.libmc.PRLib
 import mrtjp.projectred.core.libmc.fx._
-import mrtjp.projectred.core.libmc.{MultiTileBlock, MultiTileTile, PRColors, PRLib}
 import net.minecraft.block.Block
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.entity.{EntityLivingBase, EnumCreatureType}
+import net.minecraft.entity.EnumCreatureType
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.IIcon
 import net.minecraft.world.{IBlockAccess, World}
 
-class BlockLamp extends MultiTileBlock("projectred.illumination.lamp", new Material(Material.circuits.getMaterialMapColor)) with IRedstoneConnectorBlock
+class BlockLamp extends InstancedBlock("projectred.illumination.lamp", new Material(Material.circuits.getMaterialMapColor)) with IRedstoneConnectorBlock
 {
     setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F)
     setHardness(0.5F)
@@ -63,7 +66,7 @@ class BlockLamp extends MultiTileBlock("projectred.illumination.lamp", new Mater
 
     override def getIcon(w:IBlockAccess, x:Int, y:Int, z:Int, side:Int) =
     {
-        val t = PRLib.getTileEntity(w, x, y, z, classOf[TileLamp])
+        val t = WorldLib.getTileEntity(w, x, y, z, classOf[TileLamp])
         if (t != null) if (t.isOn) BlockLamp.on(t.getColor) else BlockLamp.off(t.getColor)
         else super.getIcon(w, x, y, z, side)
     }
@@ -80,7 +83,7 @@ object BlockLamp
     var off:Vector[IIcon] = null
 }
 
-class TileLamp extends MultiTileTile with ILight
+class TileLamp extends InstancedBlockTile with ILight
 {
     var inverted = false
     var powered = false
@@ -88,7 +91,7 @@ class TileLamp extends MultiTileTile with ILight
     override def getBlock = ProjectRedIllumination.blockLamp
     override def getMetaData = getColor+(if (inverted) 16 else 0)
 
-    override def onBlockPlaced(side:Int, meta:Int, player:EntityLivingBase, stack:ItemStack, hit:Vector3)
+    override def onBlockPlaced(side:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
     {
         inverted = meta > 15
     }
@@ -185,7 +188,7 @@ class BlockAirousLight extends BlockCore("projectred.illumination.airousLight", 
 
             c.setIgnoreMaxAge(true)
             c.setScale(0.05f+0.02f*rand.nextFloat)
-            c.setPRColor(PRColors.get(color))
+            c.setPRColor(Colors.get(color))
             c += orbit
             c += scale
             c += iconshift
@@ -195,7 +198,7 @@ class BlockAirousLight extends BlockCore("projectred.illumination.airousLight", 
 
     override def getLightValue(world:IBlockAccess, x:Int, y:Int, z:Int) =
     {
-        val te = PRLib.getTileEntity(world, x, y, z, classOf[TileAirousLight])
+        val te = WorldLib.getTileEntity(world, x, y, z, classOf[TileAirousLight])
         if (te != null) te.lightVal else 0
     }
 }
@@ -229,7 +232,7 @@ class TileAirousLight extends TileEntity
                 case _ =>
             }
         }
-        PRLib.getTileEntity(worldObj, source, classOf[ILight])
+        WorldLib.getTileEntity(worldObj, source, classOf[ILight])
     }
 
     def setSource(x:Int, y:Int, z:Int, color:Int, partID:Int) =

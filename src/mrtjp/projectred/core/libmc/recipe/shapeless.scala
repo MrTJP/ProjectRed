@@ -4,7 +4,7 @@ import java.util.{List => JList}
 
 import codechicken.nei.{NEIServerUtils, NEIClientUtils, PositionedStack}
 import cpw.mods.fml.common.registry.GameRegistry
-import mrtjp.projectred.core.libmc.ItemKeyStack
+import mrtjp.core.item.ItemKeyStack
 import net.minecraft.inventory.InventoryCrafting
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.{CraftingManager, IRecipe}

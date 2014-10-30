@@ -2,7 +2,8 @@ package mrtjp.projectred.transportation
 
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.packet.PacketCustom.{IClientPacketHandler, IServerPacketHandler}
-import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack, PRLib}
+import mrtjp.core.item.{ItemKeyStack, ItemKey}
+import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.network.play.{INetHandlerPlayClient, INetHandlerPlayServer}

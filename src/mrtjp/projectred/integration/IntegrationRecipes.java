@@ -2,7 +2,7 @@ package mrtjp.projectred.integration;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import mrtjp.projectred.core.PartDefs;
-import mrtjp.projectred.core.libmc.PRColors;
+import mrtjp.core.color.Colors;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -243,7 +243,7 @@ public class IntegrationRecipes
                 "LLL",
                 "PWP",
                 'P', PartDefs.PLATE().makeStack(),
-                'L', new ItemStack(Items.dye, 1, PRColors.BLUE.dyeId()),
+                'L', new ItemStack(Items.dye, 1, Colors.BLUE.dyeId()),
                 'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 

@@ -5,10 +5,11 @@ import java.util.{List => JList}
 import codechicken.lib.vec.{BlockCoord, Vector3}
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.gui.{GuiHandler, GuiLib, Slot2, WidgetContainer}
+import mrtjp.core.item.{ItemDefinition, TItemGlassSound, ItemCore}
 import mrtjp.projectred.ProjectRedTransportation
 import mrtjp.projectred.core._
-import mrtjp.projectred.core.libmc.gui.GuiLib
-import mrtjp.projectred.core.libmc.inventory.{SimpleInventory, Slot2, WidgetContainer}
+import mrtjp.core.inventory.SimpleInventory
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipType.ChipType
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
@@ -64,6 +65,7 @@ object PipeDefs extends ItemDefinition
     val ROUTEDEXTENSION = new PipeVal("pr_rextension", "routedextension")
     val ROUTEDFIREWALL = new PipeVal("pr_rfire", "routedfire")
     val PRESSURETUBE = new PipeVal("pr_pt", "pressuretube")
+    val RESISTANCETUBE = new PipeVal("pr_rpt", "resistancetube")
 
     class PipeVal(val partname:String, val textures:String*) extends ItemDef
     {
@@ -231,9 +233,8 @@ class ItemRouterUtility extends ItemCore("projectred.transportation.routerutil")
 
     private def openGui(player:EntityPlayer)
     {
-        //TODO Temporary fix
-        //GuiChipUpgrade.open(player, new ChipUpgradeContainer(player))
-        GuiManager.openSMPContainer(player, new ChipUpgradeContainer(player), 2, {_=>})
+        GuiChipUpgrade.open(player, new ChipUpgradeContainer(player))
+        //GuiHandler.openSMPContainer(player, new ChipUpgradeContainer(player), 2, {_=>})
     }
 }
 

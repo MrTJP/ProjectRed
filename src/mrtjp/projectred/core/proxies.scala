@@ -1,14 +1,12 @@
 package mrtjp.projectred.core
 
-import cpw.mods.fml.relauncher.{SideOnly, Side}
+import codechicken.lib.packet.PacketCustom
+import cpw.mods.fml.common.FMLCommonHandler
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedCore._
+import mrtjp.projectred.core.libmc.fx.{ParticleIconRegistry, ParticleManagement}
 import mrtjp.projectred.core.libmc.recipe.RecipeLib
 import net.minecraftforge.common.MinecraftForge
-import mrtjp.projectred.core.libmc.fx.{ParticleIconRegistry, ParticleManagement}
-import codechicken.lib.packet.PacketCustom
-import cpw.mods.fml.client.registry.RenderingRegistry
-import cpw.mods.fml.common.FMLCommonHandler
-import mrtjp.projectred.core.libmc.{MultiRenderHandler, RenderLib}
 
 class CoreProxy_server extends IProxy
 {
@@ -43,7 +41,6 @@ class CoreProxy_client extends CoreProxy_server
     override def postinit()
     {
         super.postinit()
-        MinecraftForge.EVENT_BUS.register(Messenger)
         MinecraftForge.EVENT_BUS.register(ParticleManagement.instance)
         FMLCommonHandler.instance().bus().register(ParticleManagement.instance)
         MinecraftForge.EVENT_BUS.register(ParticleIconRegistry.instance)
@@ -57,9 +54,6 @@ class CoreProxy_client extends CoreProxy_server
     {
         super.init()
         PacketCustom.assignHandler(CoreCPH.channel, CoreCPH)
-
-        RenderLib.multiRenderID = RenderingRegistry.getNextAvailableRenderId
-        RenderingRegistry.registerBlockHandler(MultiRenderHandler)
     }
 }
 

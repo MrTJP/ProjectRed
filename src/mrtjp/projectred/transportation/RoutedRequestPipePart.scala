@@ -1,17 +1,17 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.packet.PacketCustom
+import mrtjp.core.item.ItemKey
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.MovingObjectPosition
-import mrtjp.projectred.core.libmc.ItemKey
 import net.minecraftforge.common.util.ForgeDirection
 
 class RoutedRequestPipePart extends BasicPipeAbstraction with TNetworkPipe
 {
     override def centerReached(r:PipePayload)
     {
-        if (!maskConnects(r.output.ordinal) && !world.isRemote) if (itemFlow.scheduleRemoval(r))
+        if (!maskConnects(r.output) && !world.isRemote) if (itemFlow.scheduleRemoval(r))
         {
             r.resetTrip()
             r.moveProgress(0.375F)
@@ -40,18 +40,18 @@ class RoutedRequestPipePart extends BasicPipeAbstraction with TNetworkPipe
         packet.writeCoord(x, y, z).sendToPlayer(player)
     }
 
-    override def getDirForIncomingItem(r:PipePayload):ForgeDirection =
+    override def getDirForIncomingItem(r:PipePayload):Int =
     {
-        val dir = ForgeDirection.getOrientation(inOutSide)
-        if (dir == ForgeDirection.UNKNOWN)
+        val dir = inOutSide
+        if (dir == 6)
         {
             val count = Integer.bitCount(connMap&0x3F)
 
             if (count <= 1) return r.input
             else if (count == 2)
             {
-                for (i <- 0 until 6) if (i != r.input.getOpposite.ordinal)
-                    if ((connMap&1<<i) != 0) return ForgeDirection.getOrientation(i)
+                for (i <- 0 until 6) if (i != (r.input^1))
+                    if ((connMap&1<<i) != 0) return i
             }
         }
         dir

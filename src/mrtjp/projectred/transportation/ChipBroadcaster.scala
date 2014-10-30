@@ -1,12 +1,11 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.lib.Pair2
-import mrtjp.projectred.core.libmc.inventory.InvWrapper
-import mrtjp.projectred.core.libmc.{ItemQueue, ItemKey, ItemKeyStack}
+import mrtjp.core.inventory.InvWrapper
+import mrtjp.core.item.{ItemKeyStack, ItemQueue}
+import mrtjp.core.util.Pair2
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 
-import scala.collection.immutable.HashMap
-import scala.collection.mutable.{ListBuffer, Builder => MBuilder}
+import scala.collection.mutable.ListBuffer
 
 class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation with TChipPriority
 {
@@ -37,7 +36,7 @@ class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation
 
         def assign(n:Pair2[ItemKeyStack, IWorldRequester]) = {next=n; next}
 
-        var wh, cont = new scala.util.control.Breaks
+        val wh, cont = new scala.util.control.Breaks
         wh.breakable
         {
             while (manager.hasOrders && assign(manager.peek)!=null && stacksRemaining>0 && itemsRemaining>0) cont.breakable

@@ -1,26 +1,30 @@
 package mrtjp.projectred.illumination
 
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.lighting.LightModel
-import codechicken.lib.render.{CCRenderState, ColourMultiplier, TextureUtils, CCModel}
 import codechicken.lib.render.uv.IconTransformation
-import codechicken.multipart._
-import codechicken.lib.data.{MCDataOutput, MCDataInput}
-import mrtjp.projectred.core.{InvertX, RenderHalo}
-import net.minecraft.nbt.NBTTagCompound
+import codechicken.lib.render.{CCModel, CCRenderState, ColourMultiplier, TextureUtils}
 import codechicken.lib.vec._
-import mrtjp.projectred.core.libmc.{PRColors, PRLib, WireLib}
-import net.minecraftforge.common.util.ForgeDirection
-import net.minecraft.world.EnumSkyBlock
-import cpw.mods.fml.relauncher.{SideOnly, Side}
-import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.util.{ResourceLocation, IIcon, MovingObjectPosition}
-import net.minecraft.entity.player.EntityPlayer
-import org.lwjgl.opengl.GL11
-import scala.collection.JavaConversions._
-import net.minecraft.client.renderer.texture.IIconRegister
-import net.minecraftforge.client.{MinecraftForgeClient, IItemRenderer}
-import net.minecraftforge.client.IItemRenderer.{ItemRendererHelper, ItemRenderType}
+import codechicken.microblock.HollowMicroblock
+import codechicken.multipart._
+import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.color.Colors
+import mrtjp.core.vec.InvertX
+import mrtjp.core.world.{PlacementLib, WorldLib}
 import mrtjp.projectred.ProjectRedIllumination
+import mrtjp.projectred.core.RenderHalo
+import mrtjp.projectred.core.libmc.PRLib
+import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.{IIcon, MovingObjectPosition, ResourceLocation}
+import net.minecraft.world.{EnumSkyBlock, World}
+import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
+import net.minecraftforge.client.{IItemRenderer, MinecraftForgeClient}
+import org.lwjgl.opengl.GL11
+
+import scala.collection.JavaConversions._
 
 class BaseLightPart(obj:LightObject) extends TMultiPart with TCuboidPart with TSlottedPart with TNormalOcclusion with IRedstonePart with ILight
 {
@@ -78,9 +82,9 @@ class BaseLightPart(obj:LightObject) extends TMultiPart with TCuboidPart with TS
         if (obj.canFloat) return false
         val bc = new BlockCoord(tile).offset(side)
 
-        if (!WireLib.canPlaceLight(world, bc.x, bc.y, bc.z, side^1, obj.canFloat))
+        if (!obj.canFloat && !BaseLightPart.canPlaceLight(world, bc.x, bc.y, bc.z, side^1))
         {
-            PRLib.dropItem(world, x, y, z, getItem)
+            WorldLib.dropItem(world, x, y, z, getItem)
             tile.remPart(this)
             return true
         }
@@ -168,6 +172,19 @@ class BaseLightPart(obj:LightObject) extends TMultiPart with TCuboidPart with TS
     override def getColor = meta
 }
 
+object BaseLightPart
+{
+    def canPlaceLight(w:World, x:Int, y:Int, z:Int, side:Int):Boolean =
+    {
+        if (PlacementLib.canPlaceLight(w, x, y, z, side)) return true
+
+        val part = PRLib.getMultiPart(w, x, y, z, side)
+        if (part.isInstanceOf[HollowMicroblock]) return true
+
+        false
+    }
+}
+
 class BaseLightFacePart(obj:LightObject) extends BaseLightPart(obj) with TFacePart with IMaskedRedstonePart
 {
     override def solid(side:Int) = false
@@ -198,7 +215,7 @@ trait TAirousLight extends BaseLightPart
             if (world.isAirBlock(x1, y1, z1) && world.getBlockLightValue(x1, y1, z1) < 8)
             {
                 world.setBlock(x1, y1, z1, ProjectRedIllumination.blockAirousLight, getColor, 3)
-                val t = PRLib.getTileEntity(world, x1, y1, z1, classOf[TileAirousLight])
+                val t = WorldLib.getTileEntity(world, x1, y1, z1, classOf[TileAirousLight])
                 if (t != null) t.setSource(x, y, z, getColor, side)
             }
         }
@@ -275,7 +292,7 @@ abstract class LightObject
     def parseModel(name:String) =
     {
         val models = CCModel.parseObjModels(
-            new ResourceLocation("projectred", "textures/obj/lights/"+name+".obj"), 7, new InvertX)
+            new ResourceLocation("projectred", "textures/obj/lights/"+name+".obj"), 7, InvertX)
         for (m <- models.values()) m.apply(new Translation(0.5, 0, 0.5))
         models
     }
@@ -363,8 +380,8 @@ abstract class LightObject
 
     def cMult(color:Int, on:Boolean):ColourMultiplier =
     {
-        val c = PRColors.get(color).c.copy
-        if (!on) c.multiply(PRColors.LIGHT_GREY.c)
+        val c = Colors.get(color).c.copy
+        if (!on) c.multiply(Colors.LIGHT_GREY.c)
         ColourMultiplier.instance(c.rgba)
     }
 }

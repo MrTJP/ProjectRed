@@ -1,13 +1,13 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.data.{MCDataOutput, MCDataInput}
+import mrtjp.core.gui.{GuiLib, Slot2, WidgetContainer}
+import mrtjp.core.item.ItemKey
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
-import mrtjp.projectred.core.libmc.ItemKey
-import mrtjp.projectred.core.libmc.inventory.{Slot2, WidgetContainer, SimpleInventory}
-import mrtjp.projectred.core.libmc.gui.GuiLib
+import mrtjp.core.inventory.SimpleInventory
 
 class RoutedFirewallPipe extends BasicPipeAbstraction with TNetworkPipe
 {

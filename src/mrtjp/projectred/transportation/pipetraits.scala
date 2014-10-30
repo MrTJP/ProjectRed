@@ -1,17 +1,17 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.BlockCoord
 import codechicken.microblock.handler.MicroblockProxy
 import codechicken.microblock.{BlockMicroMaterial, ItemMicroPart}
 import codechicken.multipart.{IMaskedRedstonePart, RedstoneInteractions, TMultiPart}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.inventory.InvWrapper
+import mrtjp.core.world.{Messenger, WorldLib}
 import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.api.{IConnectable, IScrewdriver}
+import mrtjp.projectred.core.CommandDebug
 import mrtjp.projectred.core.libmc.PRLib
-import mrtjp.projectred.core.libmc.inventory.InvWrapper
-import mrtjp.projectred.core.{CommandDebug, CoreSPH, Messenger}
 import mrtjp.projectred.transmission.IWirePart._
 import mrtjp.projectred.transmission._
 import net.minecraft.block.Block
@@ -20,7 +20,6 @@ import net.minecraft.init.Blocks
 import net.minecraft.inventory.{IInventory, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.{ChatComponentText, IIcon, MovingObjectPosition}
 
 import scala.collection.JavaConversions._
@@ -296,7 +295,7 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TPro
         if (world.isRemote) Messenger.addMessage(x, y+.5f, z, "/#f/#c[c] = "+getRedwireSignal)
         else
         {
-            val packet = new PacketCustom(CoreSPH.channel, CoreSPH.messagePacket)
+            val packet = Messenger.createPacket
             packet.writeDouble(x+0.0D)
             packet.writeDouble(y+0.5D)
             packet.writeDouble(z+0.0D)
@@ -374,7 +373,7 @@ trait TInventoryPipe extends PayloadPipePart with IInventoryProvider
 
     abstract override def discoverStraightOverride(s:Int):Boolean =
     {
-        PRLib.getTileEntity(world, posOfStraight(s), classOf[TileEntity]) match
+        WorldLib.getTileEntity(world, posOfStraight(s)) match
         {
             case sinv:ISidedInventory => sinv.getAccessibleSlotsFromSide(s^1).nonEmpty
             case inv:IInventory => true
@@ -386,7 +385,7 @@ trait TInventoryPipe extends PayloadPipePart with IInventoryProvider
     {
         if (world.isRemote) return
         val invalid = force || !maskConnects(inOutSide) ||
-            PRLib.getTileEntity(world, new BlockCoord(tile).offset(inOutSide), classOf[IInventory]) == null
+            WorldLib.getTileEntity(world, new BlockCoord(tile).offset(inOutSide), classOf[IInventory]) == null
         if (!invalid) return
         var found = false
         val oldSide = inOutSide
@@ -399,7 +398,7 @@ trait TInventoryPipe extends PayloadPipePart with IInventoryProvider
                 if (maskConnects(inOutSide))
                 {
                     val bc = new BlockCoord(tile).offset(inOutSide)
-                    val t = PRLib.getTileEntity(world, bc, classOf[TileEntity])
+                    val t = WorldLib.getTileEntity(world, bc)
                     if (t.isInstanceOf[IInventory])
                     {
                         found = true

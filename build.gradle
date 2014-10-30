@@ -1,6 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-// This sets us up for building a forge project - you need all of these
+import java.text.SimpleDateFormat
+
 buildscript {
     repositories {
         mavenCentral()
@@ -18,18 +19,13 @@ buildscript {
     }
 }
 
-// Apply the forge plugin - this adds all the magic for automatically obfuscating, deobfuscating etc
 apply plugin: 'scala'
 apply plugin: 'forge'
 
-// This is our group
-group = "mrtjp" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-// This is our actual project within the group.
+group = "mrtjp"
 archivesBaseName = "ProjectRed"
 
-// Define properties file
 ext.configFile = file "build.properties"
-
 configFile.withReader {
     // Load config.  It shall from now be referenced as simply config or project.config
     def prop = new Properties()
@@ -37,11 +33,15 @@ configFile.withReader {
     project.ext.config = new ConfigSlurper().parse prop
 }
 
-// Must be after config to access config.*
 repositories {
     maven {
         name "chickenbones"
         url "http://chickenbones.net/maven/"
+    }
+
+    maven {
+        name "mvnmrtjp"
+        url "http://projectredwiki.com/maven"
     }
 
     maven {
@@ -59,26 +59,25 @@ repositories {
 }
 
 configurations {
-	buildOnly
+	deployerJars
 }
 
 dependencies {
+    deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
+
+    compile "mrtjp:MrTJPCore:${config.mc.version}-${config.mrtjp.version}:dev"
     compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
     compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
-    compile "codechicken:CodeChickenCore:${config.mc.version}-${config.ccc.version}:dev"
     compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
     compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
     compile name: 'ThermalExpansion', version: config.texpan.version, ext: 'jar'
     compile name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
 }
 
-sourceSets.main.compileClasspath += [ configurations.buildOnly ]
-
 def build_number = (System.getenv("BUILD_NUMBER") ?: "1")
 version =  "${project.config.mod.version}." + build_number
+println "Building ${project.archivesBaseName} of version ${config.mc.version}-${config.forge.version}."
 
-println config.mc.version + "-" + config.forge.version
-// Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
 minecraft {
     version = config.mc.version + "-" + config.forge.version
     if (file('../run').exists()) {
@@ -105,12 +104,15 @@ task updateVersion(type: Copy) {
     from(sourceSets.main.scala.srcDirs)
     into 'build/sources/scala'
     filter(ReplaceTokens, tokens: [
-        'VERSION': config.mod.version,
-        'BUILD_NUMBER': build_number
+            'VERSION': config.mod.version,
+            'BUILD_NUMBER': build_number,
+            'MC_VERSION': config.mc.version,
+            'FORGE_VERSION': config.forge.version,
+            'FMP_VERSION': config.fmp.version,
+            'CCL_VERSION': config.ccl.version,
+            'MRTJP_VERSION': config.mrtjp.version
     ])
 }
-
-compileScala.dependsOn updateVersion
 
 processResources {
     //redo task if any of these properties change
@@ -118,6 +120,7 @@ processResources {
     inputs.property "mc.version", config.mc.version
     inputs.property "fmp.version", config.fmp.version
     inputs.property "ccl.version", config.ccl.version
+    inputs.property "mrtjp.version", config.mrtjp.version
 
     // Replace properties in all files
     from(sourceSets.main.resources.srcDirs) {
@@ -128,7 +131,8 @@ processResources {
             'MC_VERSION': config.mc.version,
             'FORGE_VERSION': config.forge.version,
             'FMP_VERSION': config.fmp.version,
-            'CCL_VERSION': config.ccl.version
+            'CCL_VERSION': config.ccl.version,
+            'MRTJP_VERSION': config.mrtjp.version
         ])
     }
     // Copy everything else
@@ -137,12 +141,10 @@ processResources {
     }
 }
 
-// Short-hand variable
+compileScala.dependsOn updateVersion
 ext.jarVer = "${project.minecraft.version}-${project.version}"
-// Output of reobf task
 ext.jarFile = zipTree(jar.archivePath)
-// Files to not include in baseJar
-ext.baseExcludes = []
+ext.baseExcludes = ["**/thermalexpansion/**"]
 
 task integrationJar(type: Jar, dependsOn: reobf) {
     from (project.ext.jarFile) {
@@ -259,32 +261,61 @@ task baseJar(type: Jar, dependsOn: reobf) {
 // baseJar pulls all files not in any other jar. Therefore must run last
 baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && !task.name.equals('baseJar')) } }
 
-gradle.taskGraph.afterTask { task, TaskState state ->
-    if (task == baseJar) {
-        // Delete original jar now it has been split into separate jars.
-        delete jar.archivePath
+jar {
+    manifest {
+        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
+        attributes 'FMLCorePluginContainsFMLMod': 'true'
+    }
+    classifier = 'universal'
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'src'
+    version = "${project.minecraft.version}-${project.version}"
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'dev'
+    version = "${project.minecraft.version}-${project.version}"
+    manifest {
+        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
+        attributes 'FMLCorePluginContainsFMLMod': 'true'
     }
 }
 
-// Add in a source jar for people, should they desire to download such a thing
-//task sourceJar(type: Jar) {
-//    from sourceSets.main.allSource
-//    classifier = 'src'
-//    version = "${project.minecraft.version}-${project.version}"
-//}
+def deployMeta()
+{
+    def writer = new StringWriter()
+    def xml = new MarkupBuilder(writer)
 
-// Add in an mcp named jar, for those who wish to run in a development environment (assuming mcp naming matches)
-//task deobfJar(type: Jar) {
-//    from sourceSets.main.output
-//    classifier = 'dev'
-//    version = "${project.minecraft.version}-${project.version}"
-//    manifest {
-//        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
-//        attributes 'FMLCorePluginContainsFMLMod': 'true'
-//    }
-//}
+    def today = new SimpleDateFormat('dd-MM-yyyy').format(new Date())
 
-// Tell the artifact system about our extra jars
+    xml.deployMeta() {
+
+        date(today)
+
+        deps {
+            Minecraft(project.minecraft.version)
+            Forge(config.forge.version)
+            MrTJPCore(config.mrtjp.version)
+            CCL(config.ccl.version)
+            FML(config.fml.version)
+        }
+
+        isPublic(true)
+
+        isRecommended(false)
+    }
+    def file = new File(project.projectDir, "build/libs/deploymeta-${project.minecraft.version}-${project.version}.xml")
+    def stream = new FileOutputStream(file)
+    stream.write(writer.toString().bytes)
+    stream.close()
+
+    return file
+}
+
 artifacts {
     archives integrationJar
     archives lightingJar
@@ -292,8 +323,61 @@ artifacts {
     archives worldJar
     archives compatJar
     archives baseJar
+
+    archives sourceJar
+    archives deobfJar
+
+    archives deployMeta()
 }
 
-// Configure an upload task. this is setup for uploading to files.minecraftforge.net. There are other examples around
-//uploadArchives {
-//}
+uploadArchives {
+    dependsOn 'reobf'
+    repositories {
+        mavenDeployer {
+            configuration = configurations.deployerJars
+
+            repository(url: project.mavenurl) {
+                authentication(userName: project.mavenusername, password: project.mavenpassword)
+            }
+
+            pom {
+                groupId = project.group
+                version = "${project.minecraft.version}-${project.version}"
+                artifactId = project.archivesBaseName
+                project {
+                    name project.archivesBaseName
+                    packaging 'jar'
+                    description project.archivesBaseName
+                    url 'https://github.com/MrTJP/'+project.archivesBaseName
+
+                    scm {
+                        url 'https://github.com/MrTJP/'+project.archivesBaseName
+                        connection 'scm:git:git://github.com/MrTJP/'+project.archivesBaseName+'.git'
+                        developerConnection 'scm:git:git@github.com:MrTJP/'+project.archivesBaseName+'.git'
+                    }
+
+                    issueManagement {
+                        system 'github'
+                        url 'https://github.com/MrTJP/'+project.archivesBaseName+'/issues'
+                    }
+
+                    licenses {
+                        license {
+                            name 'Restricted Public Software License (RPSL) v1.3.1'
+                            url 'https://raw.githubusercontent.com/MrTJP/ProjectRed/master/LICENSE.md'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'mrtjp'
+                            name 'mrtjp'
+                            roles { role 'developer' }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -5,11 +5,13 @@ import java.util.{List => JList}
 import codechicken.microblock.Saw
 import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.gui.{GuiLib, Slot2, WidgetContainer}
+import mrtjp.core.inventory.SimpleInventory
+import mrtjp.core.item.ItemCore
+import mrtjp.core.util.Enum
+import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExploration
-import mrtjp.projectred.core.lib.Enum
-import mrtjp.projectred.core.libmc.gui.GuiLib
-import mrtjp.projectred.core.libmc.inventory.{SimpleInventory, Slot2, WidgetContainer}
-import mrtjp.projectred.core.{ItemCore, ItemCraftingDamage, PartDefs}
+import mrtjp.projectred.core.{ItemCraftingDamage, PartDefs}
 import mrtjp.projectred.exploration.ToolDefs.ToolVal
 import net.minecraft.block.{Block, BlockFlower, BlockLeaves}
 import net.minecraft.client.renderer.texture.IIconRegister
@@ -22,7 +24,6 @@ import net.minecraft.item._
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
 import net.minecraft.world.World
-import net.minecraftforge.common.IPlantable
 
 class ItemBackpack extends ItemCore("projectred.exploration.backpack")
 {
@@ -221,7 +222,7 @@ trait TGemTool extends Item
     setCreativeTab(ProjectRedExploration.tabExploration)
     GameRegistry.registerItem(this, "projectred.exploration."+tool.unlocal)
 
-    val tool:ToolVal
+    def tool:ToolVal
 
     override def getIsRepairable(ist1:ItemStack, ist2:ItemStack) =
     {
@@ -231,10 +232,10 @@ trait TGemTool extends Item
 }
 
 // Weird scala compiler issue. These classes are implemented in java.
-//class ItemGemAxe(override val tool:ToolVal) extends ItemAxe(tool.mat) with TGemTool
-//class ItemGemPickaxe(override val tool:ToolVal) extends ItemPickaxe(tool.mat) with TGemTool
-//class ItemGemShovel(override val tool:ToolVal) extends ItemSpade(tool.mat) with TGemTool
-//class ItemGemSword(override val tool:ToolVal) extends ItemSword(tool.mat) with TGemTool
+class ItemGemAxe(override val tool:ToolVal) extends ItemAxe(tool.mat) with TGemTool
+class ItemGemPickaxe(override val tool:ToolVal) extends ItemPickaxe(tool.mat) with TGemTool
+class ItemGemShovel(override val tool:ToolVal) extends ItemSpade(tool.mat) with TGemTool
+class ItemGemSword(override val tool:ToolVal) extends ItemSword(tool.mat) with TGemTool
 class ItemGemHoe(override val tool:ToolVal) extends ItemHoe(tool.mat) with TGemTool
 
 class ItemGemSaw(val tool:ToolVal) extends ItemCraftingDamage("projectred.exploration."+tool.unlocal) with Saw
@@ -246,7 +247,7 @@ class ItemGemSaw(val tool:ToolVal) extends ItemCraftingDamage("projectred.explor
     override def registerIcons(reg:IIconRegister){}
 }
 
-class  ItemGemSickle(override val tool:ToolVal) extends ItemTool(3, tool.mat, new java.util.HashSet) with TGemTool
+class ItemGemSickle(override val tool:ToolVal) extends ItemTool(3, tool.mat, new java.util.HashSet) with TGemTool
 {
     private val radiusLeaves = 1
     private val radiusCrops = 2
@@ -283,7 +284,7 @@ class  ItemGemSickle(override val tool:ToolVal) extends ItemTool(3, tool.mat, ne
             val lz = z+k
             val b = w.getBlock(lx, ly, lz)
             val meta = w.getBlockMetadata(lx, ly, lz)
-            if (b != null && (b.isLeaves(w, lx, ly, lz) || b.isInstanceOf[BlockLeaves]))
+            if (b != null && WorldLib.isLeafType(w, x, y, z, b))
             {
                 if (b.canHarvestBlock(player, meta)) b.harvestBlock(w, player, lx, ly, lz, meta)
                 w.setBlockToAir(lx, ly, lz)
@@ -305,7 +306,7 @@ class  ItemGemSickle(override val tool:ToolVal) extends ItemTool(3, tool.mat, ne
             val lz = z+j
             val b = w.getBlock(lx, ly, lz)
             val meta = w.getBlockMetadata(lx, ly, lz)
-            if (b != null && (b.isInstanceOf[BlockFlower] || b.isInstanceOf[IPlantable]))
+            if (b != null && WorldLib.isPlantType(w, x, y, z, b))
             {
                 if (b.canHarvestBlock(player, meta)) b.harvestBlock(w, player, lx, ly, lz, meta)
                 w.setBlockToAir(lx, ly, lz)

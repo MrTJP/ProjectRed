@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.libmc.recipe
 
-import mrtjp.projectred.core.libmc.ItemKeyStack
+import mrtjp.core.item.ItemKeyStack
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.IRecipe
 import net.minecraftforge.oredict.RecipeSorter

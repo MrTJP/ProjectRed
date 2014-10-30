@@ -3,9 +3,9 @@ package mrtjp.projectred.transportation
 import java.lang.{Character => JC}
 
 import cpw.mods.fml.common.registry.GameRegistry
+import mrtjp.core.color.Colors
 import mrtjp.projectred.ProjectRedTransportation
 import mrtjp.projectred.core.PartDefs
-import mrtjp.projectred.core.libmc.PRColors
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.inventory.InventoryCrafting
@@ -196,13 +196,13 @@ object TransportationRecipes
         /** LY **/
         GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_LY.makeStack,
             "l l", " n ", " l ",
-            'l':JC, PRColors.BLUE.getDye,
+            'l':JC, Colors.BLUE.getDye,
             'n':JC, PartDefs.CHIPUPGRADE_LX.makeStack)
 
         /** RY **/
         GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_RY.makeStack,
             "l l", " n ", " l ",
-            'l':JC, PRColors.BLUE.getDye,
+            'l':JC, Colors.BLUE.getDye,
             'n':JC, PartDefs.CHIPUPGRADE_RX.makeStack)
 
         /** LZ **/

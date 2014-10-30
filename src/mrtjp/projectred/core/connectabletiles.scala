@@ -3,14 +3,15 @@ package mrtjp.projectred.core
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.vec.{BlockCoord, Rotation, Vector3}
 import codechicken.multipart.PartMap
+import mrtjp.core.block.InstancedBlockTile
+import mrtjp.core.world.WorldLib
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.libmc.{MultiTileTile, PRLib}
+import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.block.Block
-import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
-import net.minecraft.tileentity.TileEntity
 
-trait TTileAcquisitions extends MultiTileTile
+trait TTileAcquisitions extends InstancedBlockTile
 {
     def getStraightCenter(s:Int) =
     {
@@ -56,7 +57,7 @@ trait TTileAcquisitions extends MultiTileTile
     }
 }
 
-trait TTileConnectable extends MultiTileTile with TTileAcquisitions with IConnectable
+trait TTileConnectable extends InstancedBlockTile with TTileAcquisitions with IConnectable
 {
     /**
      * -> full block connection mask
@@ -155,7 +156,7 @@ trait TTileConnectable extends MultiTileTile with TTileAcquisitions with IConnec
     def discoverStraightOverride(s:Int) =
     {
         val pos = posOfInternal.offset(s)
-        val t = PRLib.getTileEntity(getWorldObj, pos, classOf[TTileConnectable])
+        val t = WorldLib.getTileEntity(getWorldObj, pos, classOf[TTileConnectable])
         if (t != null && canConnect(t)) t.connectStraight(this, s^1, -1)
         else false
     }
@@ -190,11 +191,11 @@ trait TTileConnectable extends MultiTileTile with TTileAcquisitions with IConnec
     def maskConnectsCorner(s:Int, edgeRot:Int) = (connMap&((0x100000000L<<s*4)<<edgeRot)) != 0
 }
 
-trait TConnectableTileMulti extends MultiTileTile with TTileConnectable
+trait TConnectableInstTile extends InstancedBlockTile with TTileConnectable
 {
     def clientNeedsMap = false
 
-    def sendConnUpdate() = if (clientNeedsMap) writeStreamSend(writeStream(31).writeLong(connMap))
+    def sendConnUpdate() = if (clientNeedsMap) writeStream(31).writeLong(connMap).sendToChunk()
 
     override def onMaskChanged(){sendConnUpdate()}
 
@@ -210,7 +211,7 @@ trait TConnectableTileMulti extends MultiTileTile with TTileConnectable
         if (!getWorldObj.isRemote) if (updateExternals()) sendConnUpdate()
     }
 
-    abstract override def onBlockPlaced(side:Int, meta:Int, player:EntityLivingBase, stack:ItemStack, hit:Vector3)
+    abstract override def onBlockPlaced(side:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
     {
         super.onBlockPlaced(side, meta, player, stack, hit)
         if (!getWorldObj.isRemote) if (updateExternals()) sendConnUpdate()
@@ -219,6 +220,6 @@ trait TConnectableTileMulti extends MultiTileTile with TTileConnectable
     abstract override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        PRLib.bulkBlockUpdate(getWorldObj, xCoord, yCoord, zCoord, getBlock)
+        WorldLib.bulkBlockUpdate(getWorldObj, xCoord, yCoord, zCoord, getBlock)
     }
 }

@@ -2,23 +2,23 @@ package mrtjp.projectred.transportation
 
 import codechicken.lib.lighting.LightModel
 import codechicken.lib.raytracer.ExtendedMOP
+import codechicken.lib.render.CCRenderState.IVertexOperation
 import codechicken.lib.render._
+import codechicken.lib.render.uv.{IconTransformation, UV, UVScale, UVTransformation}
 import codechicken.lib.vec._
 import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
 import codechicken.microblock.{BlockMicroMaterial, MicroMaterialRegistry, MicroblockClass}
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.entity.{RenderManager, RenderItem}
+import mrtjp.core.color.Colors
+import mrtjp.projectred.core.libmc.PRLib
+import net.minecraft.client.renderer.entity.{RenderItem, RenderManager}
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.{IIcon, MovingObjectPosition}
-import org.lwjgl.opengl.GL11
-import mrtjp.projectred.core.libmc.{PRLib, PRColors}
-import codechicken.lib.render.uv.{UVTransformation, UV, UVScale, IconTransformation}
 import net.minecraft.init.Blocks
-import net.minecraftforge.client.IItemRenderer
 import net.minecraft.item.ItemStack
-import net.minecraftforge.client.IItemRenderer.{ItemRendererHelper, ItemRenderType}
-import codechicken.lib.render.CCRenderState.IVertexOperation
+import net.minecraft.util.{IIcon, MovingObjectPosition}
+import net.minecraftforge.client.IItemRenderer
+import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
+import org.lwjgl.opengl.GL11
 
 object RenderPipe
 {
@@ -115,7 +115,7 @@ object RenderPipe
             var frameX = pos.x+0.5D
             var frameY = pos.y+0.25D
             var frameZ = pos.z+0.5D
-            dir.ordinal match
+            dir match
             {
                 case 0 => frameY = (pos.y-0.25D)+(1.0D-prog)
                 case 1 => frameY = (pos.y-0.25D)+prog
@@ -139,20 +139,24 @@ object RenderPipe
 
         GL11.glPushMatrix()
         GL11.glTranslatef(x.asInstanceOf[Float], y.asInstanceOf[Float], z.asInstanceOf[Float])
-        GL11.glTranslatef(0, 0.25F, 0)
+        GL11.glTranslatef(0, 0.125f, 0)
         GL11.glScalef(renderScale, renderScale, renderScale)
 
         dummyEntityItem.setEntityItemStack(itemstack)
         customRenderItem.doRender(dummyEntityItem, 0, 0, 0, 0, 0)
 
+        GL11.glPopMatrix()
+
+        GL11.glPushMatrix()
         prepareRenderState()
         GL11.glEnable(GL11.GL_LIGHTING)
-        GL11.glScalef(0.5f, 0.5f, 0.5f)
 
-        CCRenderState.setPipeline(new Translation(-0.5, -0.5, -0.5))
+        val t = new Vector3(x, y, z).add(-4/16D, 0, -4/16D)
+
+        CCRenderState.setPipeline(new Translation(t))
         CCRenderState.alphaOverride = 32
-        CCRenderState.baseColour = PRColors.get(r.netPriority.color).rgba
-        BlockRenderer.renderCuboid(Cuboid6.full, 0)
+        CCRenderState.baseColour = Colors.get(r.netPriority.color).rgba
+        BlockRenderer.renderCuboid(new Cuboid6(1/16D, 1/16D, 1/16D, 7/16D, 7/16D, 7/16D), 0)
 
         restoreRenderState()
         GL11.glPopMatrix()
@@ -388,7 +392,7 @@ object PipeItemRenderer extends IItemRenderer
     def renderItem(rtype:ItemRenderType, item:ItemStack, data:AnyRef*)
     {
         val damage = item.getItemDamage
-        import ItemRenderType._
+        import net.minecraftforge.client.IItemRenderer.ItemRenderType._
         rtype match
         {
             case ENTITY => renderWireInventory(damage, -.5f, 0f, -.5f, 1f)

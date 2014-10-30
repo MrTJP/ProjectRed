@@ -10,10 +10,10 @@ import codechicken.microblock.FaceMicroClass;
 import codechicken.multipart.*;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mrtjp.core.world.PlacementLib;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.core.Configurator;
-import mrtjp.projectred.core.libmc.WireLib;
 import mrtjp.projectred.core.libmc.PRLib;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,10 +21,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, IConnectable, TFacePart, JIconHitEffects
@@ -229,7 +230,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
     public boolean canStay()
     {
         BlockCoord pos = new BlockCoord(tile()).offset(side());
-        return WireLib.canPlaceWireOnSide(world(), pos.x, pos.y, pos.z, side()^1, false);
+        return PlacementLib.canPlaceGateOnSide(world(), pos.x, pos.y, pos.z, side()^1);
     }
 
     public boolean dropIfCantStay()

@@ -2,8 +2,8 @@ package mrtjp.projectred.transportation
 
 import java.util.{PriorityQueue => JPriorityQueue}
 
-import mrtjp.projectred.core.lib.{HashPair2, Pair2}
-import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack}
+import mrtjp.core.item.{ItemKey, ItemKeyStack}
+import mrtjp.core.util.{HashPair2, Pair2}
 import net.minecraft.item.ItemStack
 
 import scala.collection.immutable.{HashMap, TreeSet}

@@ -1,15 +1,15 @@
 package mrtjp.projectred.integration
 
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.packet.PacketCustom.{IServerPacketHandler, IClientPacketHandler}
+import codechicken.lib.packet.PacketCustom.{IClientPacketHandler, IServerPacketHandler}
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.TMultiPart
 import mrtjp.projectred.ProjectRedIntegration
+import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
-import net.minecraft.world.World
-import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.network.play.{INetHandlerPlayClient, INetHandlerPlayServer}
+import net.minecraft.world.World
 
 class IntegrationPH
 {
@@ -20,7 +20,7 @@ class IntegrationPH
         out.writeCoord(new BlockCoord(part.tile)).writeByte(part.tile.partList.indexOf(part))
     }
 
-    def readPartIndex(world:World, in:PacketCustom):TMultiPart =
+    def readPartIndex(world:World, in:PacketCustom) =
     {
         val tile = PRLib.getMultipartTile(world, in.readCoord)
         try
@@ -29,8 +29,8 @@ class IntegrationPH
         }
         catch
         {
-            case e:NullPointerException => return null
-            case e:IndexOutOfBoundsException => return null
+            case e:NullPointerException => null
+            case e:IndexOutOfBoundsException => null
         }
     }
 

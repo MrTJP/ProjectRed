@@ -1,6 +1,6 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.libmc.{ItemKey, ItemKeyStack}
+import mrtjp.core.item.{ItemKey, ItemKeyStack}
 
 class RequestMain(destination:IWorldRequester, opt:RequestFlags.ValueSet)
 {

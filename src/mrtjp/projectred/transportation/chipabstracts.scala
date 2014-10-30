@@ -1,14 +1,13 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.projectred.core.libmc.inventory.{InvWrapper, SimpleInventory}
-import mrtjp.projectred.core.libmc.{ItemQueue, ItemKey, ItemKeyStack}
+import mrtjp.core.inventory.{InvWrapper, SimpleInventory}
+import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.Keyboard
 
-import scala.collection.immutable.HashMap
 import scala.collection.mutable.{ListBuffer, Builder => MBuilder}
 
 abstract class RoutingChip

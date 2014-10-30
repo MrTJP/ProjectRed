@@ -1,11 +1,11 @@
 package mrtjp.projectred.exploration
 
+import mrtjp.core.color.Colors
 import net.minecraftforge.client.IItemRenderer
 import net.minecraftforge.client.IItemRenderer.{ItemRendererHelper, ItemRenderType}
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Item.ToolMaterial
 import mrtjp.projectred.ProjectRedExploration
-import mrtjp.projectred.core.libmc.PRColors
 import codechicken.lib.vec.{SwapYZ, Rotation, Translation, Scale}
 import codechicken.lib.math.MathHelper
 import codechicken.lib.render.{CCModel, CCRenderState}
@@ -24,7 +24,7 @@ object GemSawRenderer extends IItemRenderer
 
     override def shouldUseRenderHelper(t:ItemRenderType, item:ItemStack, helper:ItemRendererHelper) = true
 
-    import PRColors._
+    import Colors._
     import ProjectRedExploration.{toolMaterialPeridot, toolMaterialRuby, toolMaterialSapphire}
     private def colour(stack:ItemStack) = stack.getItem.asInstanceOf[ItemGemSaw].tool.mat match
     {

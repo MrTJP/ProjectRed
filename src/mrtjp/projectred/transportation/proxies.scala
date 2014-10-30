@@ -5,12 +5,20 @@ import codechicken.microblock.MicroMaterialRegistry
 import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.MultiPartRegistry.IPartFactory
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedTransportation._
-import mrtjp.projectred.core.{Configurator, GuiManager, IProxy}
+import mrtjp.projectred.core.{Configurator, IProxy}
 import net.minecraftforge.client.MinecraftForgeClient
 
 class TransportationProxy_server extends IProxy with IPartFactory
 {
+    val guiIDChipUpgrade = 2
+    val guiIDCraftingPipe = 3
+    val guiIDExtensionPipe = 4
+    val guiIDInterfacePipe = 5
+    val guiIDFirewallPipe = 6
+    val guiIDRoutingChips = 7
+
     override def preinit()
     {
         PacketCustom.assignHandler(TransportationSPH.channel, TransportationSPH)
@@ -25,7 +33,10 @@ class TransportationProxy_server extends IProxy with IPartFactory
         ))
 
         if (Configurator.version.contains("@"))
+        {
             MultiPartRegistry.registerParts((_, _) => new PressureTube, "pr_pt")
+            MultiPartRegistry.registerParts((_, _) => new ResistanceTube, "pr_rpt")
+        }
 
         itemPartPipe = new ItemPartPipe
         itemRoutingChip = new ItemRoutingChip
@@ -72,13 +83,12 @@ class TransportationProxy_client extends TransportationProxy_server
         MinecraftForgeClient.registerItemRenderer(itemPartPipe, PipeItemRenderer)
         MicroMaterialRegistry.registerHighlightRenderer(PipeRSHighlightRenderer)
 
-        import mrtjp.projectred.core.GuiIDs._
-        GuiManager.register(GuiChipUpgrade, chipUpgrade)
-        GuiManager.register(GuiCraftingPipe, craftingPipe)
-        GuiManager.register(GuiExtensionPipe, extensionPipe)
-        GuiManager.register(GuiInterfacePipe, interfacePipe)
-        GuiManager.register(GuiFirewallPipe, firewallPipe)
-        GuiManager.register(ChipGuiFactory, routingChips)
+        GuiHandler.register(GuiChipUpgrade, guiIDChipUpgrade)
+        GuiHandler.register(GuiCraftingPipe, guiIDCraftingPipe)
+        GuiHandler.register(GuiExtensionPipe, guiIDExtensionPipe)
+        GuiHandler.register(GuiInterfacePipe, guiIDInterfacePipe)
+        GuiHandler.register(GuiFirewallPipe, guiIDFirewallPipe)
+        GuiHandler.register(ChipGuiFactory, guiIDRoutingChips)
     }
 }
 
