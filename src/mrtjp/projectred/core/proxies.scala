@@ -44,9 +44,9 @@ class CoreProxy_client extends CoreProxy_server
         MinecraftForge.EVENT_BUS.register(ParticleManagement.instance)
         FMLCommonHandler.instance().bus().register(ParticleManagement.instance)
         MinecraftForge.EVENT_BUS.register(ParticleIconRegistry.instance)
-        FMLCommonHandler.instance().bus().register(new PRVersioningThread)
-
         MinecraftForge.EVENT_BUS.register(RenderHalo)
+
+        new PRUpdateChecker
     }
 
     @SideOnly(Side.CLIENT)

@@ -1,3 +1,4 @@
+import groovy.xml.MarkupBuilder
 import org.apache.tools.ant.filters.ReplaceTokens
 
 import java.text.SimpleDateFormat
@@ -59,7 +60,7 @@ repositories {
 }
 
 configurations {
-	deployerJars
+    deployerJars
 }
 
 dependencies {
@@ -75,14 +76,17 @@ dependencies {
 }
 
 def build_number = (System.getenv("BUILD_NUMBER") ?: "1")
-version =  "${project.config.mod.version}." + build_number
+version = "${project.config.mod.version}."+build_number
 println "Building ${project.archivesBaseName} of version ${config.mc.version}-${config.forge.version}."
 
 minecraft {
-    version = config.mc.version + "-" + config.forge.version
-    if (file('../run').exists()) {
+    version = config.mc.version+"-"+config.forge.version
+    if (file('../run').exists())
+    {
         runDir = "../run"
-    } else {
+    }
+    else
+    {
         runDir = "run"
     }
 }
@@ -104,12 +108,12 @@ task updateVersion(type: Copy) {
     from(sourceSets.main.scala.srcDirs)
     into 'build/sources/scala'
     filter(ReplaceTokens, tokens: [
-            'VERSION': config.mod.version,
-            'BUILD_NUMBER': build_number,
-            'MC_VERSION': config.mc.version,
+            'VERSION'      : config.mod.version,
+            'BUILD_NUMBER' : build_number,
+            'MC_VERSION'   : config.mc.version,
             'FORGE_VERSION': config.forge.version,
-            'FMP_VERSION': config.fmp.version,
-            'CCL_VERSION': config.ccl.version,
+            'FMP_VERSION'  : config.fmp.version,
+            'CCL_VERSION'  : config.ccl.version,
             'MRTJP_VERSION': config.mrtjp.version
     ])
 }
@@ -126,13 +130,13 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**.info'
         filter(ReplaceTokens, tokens: [
-            'VERSION': config.mod.version,
-            'BUILD_NUMBER': build_number,
-            'MC_VERSION': config.mc.version,
-            'FORGE_VERSION': config.forge.version,
-            'FMP_VERSION': config.fmp.version,
-            'CCL_VERSION': config.ccl.version,
-            'MRTJP_VERSION': config.mrtjp.version
+                'VERSION'      : config.mod.version,
+                'BUILD_NUMBER' : build_number,
+                'MC_VERSION'   : config.mc.version,
+                'FORGE_VERSION': config.forge.version,
+                'FMP_VERSION'  : config.fmp.version,
+                'CCL_VERSION'  : config.ccl.version,
+                'MRTJP_VERSION': config.mrtjp.version
         ])
     }
     // Copy everything else
@@ -147,7 +151,7 @@ ext.jarFile = zipTree(jar.archivePath)
 ext.baseExcludes = ["**/thermalexpansion/**"]
 
 task integrationJar(type: Jar, dependsOn: reobf) {
-    from (project.ext.jarFile) {
+    from(project.ext.jarFile) {
         include "**/ProjectRedIntegration*.class"
         include "**/ProjectRedTransmission*.class"
         include "**/mrtjp/projectred/integration/**"
@@ -158,7 +162,7 @@ task integrationJar(type: Jar, dependsOn: reobf) {
         include "**/assets/projectred/textures/obj/gateparts/**"
 
         include "integration_mod.info"
-        rename ("integration_mod.info", 'mcmod.info')
+        rename("integration_mod.info", 'mcmod.info')
 
         project.ext.baseExcludes.addAll(includes)
     }
@@ -167,7 +171,7 @@ task integrationJar(type: Jar, dependsOn: reobf) {
 }
 
 task lightingJar(type: Jar, dependsOn: reobf) {
-    from (project.ext.jarFile) {
+    from(project.ext.jarFile) {
         include "**/ProjectRedIllumination*.class"
         include "**/mrtjp/projectred/illumination/**"
 
@@ -175,7 +179,7 @@ task lightingJar(type: Jar, dependsOn: reobf) {
         include "**/assets/projectred/textures/obj/lights/**"
 
         include "lighting_mod.info"
-        rename ("lighting_mod.info", 'mcmod.info')
+        rename("lighting_mod.info", 'mcmod.info')
 
         project.ext.baseExcludes.addAll(includes)
     }
@@ -184,7 +188,7 @@ task lightingJar(type: Jar, dependsOn: reobf) {
 }
 
 task mechanicalJar(type: Jar, dependsOn: reobf) {
-    from (project.ext.jarFile) {
+    from(project.ext.jarFile) {
         include "**/ProjectRedExpansion*.class"
         include "**/mrtjp/projectred/expansion/**"
         include "**/ProjectRedTransportation*.class"
@@ -195,7 +199,7 @@ task mechanicalJar(type: Jar, dependsOn: reobf) {
         include "**/assets/projectred/textures/obj/machines/**"
 
         include "mechanical_mod.info"
-        rename ("mechanical_mod.info", 'mcmod.info')
+        rename("mechanical_mod.info", 'mcmod.info')
 
         project.ext.baseExcludes.addAll(includes)
     }
@@ -204,14 +208,14 @@ task mechanicalJar(type: Jar, dependsOn: reobf) {
 }
 
 task worldJar(type: Jar, dependsOn: reobf) {
-    from (project.ext.jarFile) {
+    from(project.ext.jarFile) {
         include "**/ProjectRedExploration*.class"
         include "**/mrtjp/projectred/exploration/**"
 
         include "**/assets/projectred/textures/blocks/ore/**"
 
         include "world_mod.info"
-        rename ("world_mod.info", 'mcmod.info')
+        rename("world_mod.info", 'mcmod.info')
 
         project.ext.baseExcludes.addAll(includes)
     }
@@ -220,7 +224,7 @@ task worldJar(type: Jar, dependsOn: reobf) {
 }
 
 task compatJar(type: Jar, dependsOn: reobf) {
-    from (project.ext.jarFile) {
+    from(project.ext.jarFile) {
         include "**/ProjectRedCompatibility*.class"
         include "**/mrtjp/projectred/compatibility/**"
 
@@ -231,7 +235,7 @@ task compatJar(type: Jar, dependsOn: reobf) {
         include "**/assets/projectred/textures/blocks/compat/**"
 
         include "compat_mod.info"
-        rename ("compat_mod.info", 'mcmod.info')
+        rename("compat_mod.info", 'mcmod.info')
 
         project.ext.baseExcludes.addAll(includes)
     }
@@ -244,10 +248,10 @@ task compatJar(type: Jar, dependsOn: reobf) {
 }
 
 task baseJar(type: Jar, dependsOn: reobf) {
-    from (project.ext.jarFile) {
+    from(project.ext.jarFile) {
         exclude project.ext.baseExcludes
 
-        rename ("base_mod.info", 'mcmod.info')
+        rename("base_mod.info", 'mcmod.info')
     }
     manifest {
         attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
@@ -309,6 +313,7 @@ def deployMeta()
         isRecommended(false)
     }
     def file = new File(project.projectDir, "build/libs/deploymeta-${project.minecraft.version}-${project.version}.xml")
+    file.mkdirs()
     def stream = new FileOutputStream(file)
     stream.write(writer.toString().bytes)
     stream.close()
@@ -333,47 +338,50 @@ artifacts {
 uploadArchives {
     dependsOn 'reobf'
     repositories {
-        mavenDeployer {
-            configuration = configurations.deployerJars
+        if (project.hasProperty("mavenurl"))
+        {
+            mavenDeployer {
+                configuration = configurations.deployerJars
 
-            repository(url: project.mavenurl) {
-                authentication(userName: project.mavenusername, password: project.mavenpassword)
-            }
+                repository(url: project.mavenurl) {
+                    authentication(userName: project.mavenusername, password: project.mavenpassword)
+                }
 
-            pom {
-                groupId = project.group
-                version = "${project.minecraft.version}-${project.version}"
-                artifactId = project.archivesBaseName
-                project {
-                    name project.archivesBaseName
-                    packaging 'jar'
-                    description project.archivesBaseName
-                    url 'https://github.com/MrTJP/'+project.archivesBaseName
-
-                    scm {
+                pom {
+                    groupId = project.group
+                    version = "${project.minecraft.version}-${project.version}"
+                    artifactId = project.archivesBaseName
+                    project {
+                        name project.archivesBaseName
+                        packaging 'jar'
+                        description project.archivesBaseName
                         url 'https://github.com/MrTJP/'+project.archivesBaseName
-                        connection 'scm:git:git://github.com/MrTJP/'+project.archivesBaseName+'.git'
-                        developerConnection 'scm:git:git@github.com:MrTJP/'+project.archivesBaseName+'.git'
-                    }
 
-                    issueManagement {
-                        system 'github'
-                        url 'https://github.com/MrTJP/'+project.archivesBaseName+'/issues'
-                    }
-
-                    licenses {
-                        license {
-                            name 'Restricted Public Software License (RPSL) v1.3.1'
-                            url 'https://raw.githubusercontent.com/MrTJP/ProjectRed/master/LICENSE.md'
-                            distribution 'repo'
+                        scm {
+                            url 'https://github.com/MrTJP/'+project.archivesBaseName
+                            connection 'scm:git:git://github.com/MrTJP/'+project.archivesBaseName+'.git'
+                            developerConnection 'scm:git:git@github.com:MrTJP/'+project.archivesBaseName+'.git'
                         }
-                    }
 
-                    developers {
-                        developer {
-                            id 'mrtjp'
-                            name 'mrtjp'
-                            roles { role 'developer' }
+                        issueManagement {
+                            system 'github'
+                            url 'https://github.com/MrTJP/'+project.archivesBaseName+'/issues'
+                        }
+
+                        licenses {
+                            license {
+                                name 'Restricted Public Software License (RPSL) v1.3.1'
+                                url 'https://raw.githubusercontent.com/MrTJP/ProjectRed/master/LICENSE.md'
+                                distribution 'repo'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id 'mrtjp'
+                                name 'mrtjp'
+                                roles { role 'developer' }
+                            }
                         }
                     }
                 }

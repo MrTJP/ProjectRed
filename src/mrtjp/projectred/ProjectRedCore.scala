@@ -1,7 +1,6 @@
 package mrtjp.projectred
 
-import cpw.mods.fml.common.FMLCommonHandler
-import cpw.mods.fml.common.Mod
+import cpw.mods.fml.common.{FMLCommonHandler, Mod}
 import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStartingEvent}
 import mrtjp.projectred.core._
 import net.minecraft.creativetab.CreativeTabs
@@ -47,6 +46,5 @@ object ProjectRedCore
     @Mod.EventHandler
     def onServerStarting(event:FMLServerStartingEvent)
     {
-        event.registerServerCommand(new CommandDebug)
     }
 }
