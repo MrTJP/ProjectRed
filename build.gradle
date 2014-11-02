@@ -297,6 +297,7 @@ def deployMeta()
     def today = new SimpleDateFormat('dd-MM-yyyy').format(new Date())
 
     xml.deployMeta() {
+        version(version)
 
         date(today)
 
@@ -312,8 +313,9 @@ def deployMeta()
 
         isRecommended(false)
     }
-    def file = new File(project.projectDir, "build/libs/deploymeta-${project.minecraft.version}-${project.version}.xml")
-    file.mkdirs()
+    def dir = new File(project.projectDir, "build/libs/")
+    dir.mkdirs()
+    def file = new File(dir, "deploymeta-${project.minecraft.version}-${project.version}.xml")
     def stream = new FileOutputStream(file)
     stream.write(writer.toString().bytes)
     stream.close()
