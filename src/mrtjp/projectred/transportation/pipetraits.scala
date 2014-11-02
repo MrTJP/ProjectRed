@@ -10,7 +10,6 @@ import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.world.{Messenger, WorldLib}
 import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.api.{IConnectable, IScrewdriver}
-import mrtjp.projectred.core.CommandDebug
 import mrtjp.projectred.core.libmc.PRLib
 import mrtjp.projectred.transmission.IWirePart._
 import mrtjp.projectred.transmission._
@@ -246,8 +245,8 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TPro
                 PRLib.dropTowardsPlayer(world, x, y, z, getMaterialStack, player)
         }
 
-        if (CommandDebug.WIRE_READING) debug(player)
-        else if (held != null && held.getItem == ProjectRedCore.itemWireDebugger)
+        //if (CommandDebug.WIRE_READING) debug(player) else
+        if (held != null && held.getItem == ProjectRedCore.itemWireDebugger)
         {
             held.damageItem(1, player)
             player.swingItem()

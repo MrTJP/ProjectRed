@@ -136,8 +136,8 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
 
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, held:ItemStack) =
     {
-        if (CommandDebug.WIRE_READING) debug(player)
-        else if (held != null && held.getItem == ProjectRedCore.itemWireDebugger)
+        //if (CommandDebug.WIRE_READING) debug(player) else
+        if (held != null && held.getItem == ProjectRedCore.itemWireDebugger)
         {
             held.damageItem(1, player)
             player.swingItem()

@@ -6,7 +6,6 @@ import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.handler.MultipartProxy
 import codechicken.multipart.{TMultiPart, TileMultipart}
 import com.google.common.collect.HashMultimap
-import mrtjp.projectred.core.CommandDebug
 import net.minecraft.block.BlockRedstoneWire
 import net.minecraft.init.Blocks
 import net.minecraft.world.World
@@ -127,8 +126,8 @@ class PropagationRun
         }
 
         WirePropagator.finishing = this
-        if (CommandDebug.WIRE_READING)
-            println(count+" propogations, "+partChanges.size+" part changes, "+res_NeighborChanges.size+" block updates")
+//        if (CommandDebug.WIRE_READING)
+//            println(count+" propogations, "+partChanges.size+" part changes, "+res_NeighborChanges.size+" block updates")
 
         import scala.collection.JavaConversions._
         for (entry <- partChanges.asMap.entrySet)
@@ -143,7 +142,7 @@ class PropagationRun
 
         WirePropagator.finishing = parent
 
-        if (CommandDebug.WIRE_READING) println(recalcs+" recalculations")
+//        if (CommandDebug.WIRE_READING) println(recalcs+" recalculations")
 
         clear()
     }
