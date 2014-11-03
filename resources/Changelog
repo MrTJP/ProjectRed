@@ -1,5 +1,6 @@
 v4.5.2
 - FIX: Sickles not harvesting correctly
+- CHANGE: Various performance optimizations and such
 
 v4.5.1
 - ADDED: ColoredLights compatability.

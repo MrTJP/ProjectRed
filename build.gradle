@@ -289,7 +289,13 @@ task deobfJar(type: Jar) {
     }
 }
 
-def deployMeta()
+def deployMetaFile()
+{
+    new File(new File(project.projectDir, "build/libs/"),
+            "deploymeta-${project.minecraft.version}-${project.version}.xml")
+}
+
+def createDeployMeta()
 {
     def writer = new StringWriter()
     def xml = new MarkupBuilder(writer)
@@ -297,30 +303,27 @@ def deployMeta()
     def today = new SimpleDateFormat('dd-MM-yyyy').format(new Date())
 
     xml.deployMeta() {
-        version(version)
+        modversion(version)
 
         date(today)
 
         deps {
             Minecraft(project.minecraft.version)
             Forge(config.forge.version)
-            MrTJPCore(config.mrtjp.version)
             CCL(config.ccl.version)
-            FML(config.fml.version)
         }
 
         isPublic(true)
 
         isRecommended(false)
     }
-    def dir = new File(project.projectDir, "build/libs/")
-    dir.mkdirs()
-    def file = new File(dir, "deploymeta-${project.minecraft.version}-${project.version}.xml")
-    def stream = new FileOutputStream(file)
-    stream.write(writer.toString().bytes)
-    stream.close()
 
-    return file
+    def file = deployMetaFile()
+
+    def stream = new FileOutputStream(file)
+    stream.write(writer.toString().getBytes())
+    stream.flush()
+    stream.close()
 }
 
 artifacts {
@@ -334,11 +337,12 @@ artifacts {
     archives sourceJar
     archives deobfJar
 
-    archives deployMeta()
+    archives deployMetaFile()
 }
 
 uploadArchives {
     dependsOn 'reobf'
+    doFirst {createDeployMeta()}
     repositories {
         if (project.hasProperty("mavenurl"))
         {
