@@ -26,7 +26,7 @@ object GemSawRenderer extends IItemRenderer
 
     import Colors._
     import ProjectRedExploration.{toolMaterialPeridot, toolMaterialRuby, toolMaterialSapphire}
-    private def colour(stack:ItemStack) = stack.getItem.asInstanceOf[ItemGemSaw].tool.mat match
+    private def colour(stack:ItemStack) = stack.getItem.asInstanceOf[ItemGemSaw].toolDef.mat match
     {
         case ToolMaterial.WOOD => BROWN.rgba
         case ToolMaterial.STONE => LIGHT_GREY.rgba
