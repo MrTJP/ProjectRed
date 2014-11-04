@@ -12,7 +12,7 @@ import mrtjp.core.util.Enum
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.core.{ItemCraftingDamage, PartDefs}
-import mrtjp.projectred.exploration.ToolDefs.ToolVal
+import mrtjp.projectred.exploration.ToolDefs.ToolDef
 import net.minecraft.block.{Block, BlockFlower, BlockLeaves}
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
@@ -156,7 +156,7 @@ class BagInventory(player:EntityPlayer, bag:ItemStack) extends SimpleInventory(2
 
 object ToolDefs extends Enum
 {
-    type EnumVal = ToolVal
+    type EnumVal = ToolDef
 
     private val wood = new ItemStack(Blocks.planks)
     private val flint = new ItemStack(Items.flint)
@@ -208,8 +208,8 @@ object ToolDefs extends Enum
     val PERIDOTSICKLE = ToolDefs("sickleperidot", toolMaterialPeridot, peridot)
     val DIAMONDSICKLE = ToolDefs("sicklediamond", toolMaterialEmerald, diamond)
 
-    def apply(s:String, m:ToolMaterial, r:ItemStack) = new ToolVal(s, m, r)
-    class ToolVal(val unlocal:String, val mat:ToolMaterial, val repair:ItemStack) extends Value
+    def apply(s:String, m:ToolMaterial, r:ItemStack) = new ToolDef(s, m, r)
+    class ToolDef(val unlocal:String, val mat:ToolMaterial, val repair:ItemStack) extends Value
     {
         override def name = unlocal
     }
@@ -217,28 +217,27 @@ object ToolDefs extends Enum
 
 trait TGemTool extends Item
 {
-    setUnlocalizedName("projectred.exploration."+tool.unlocal)
-    setTextureName("projectred:gemtools/"+tool.unlocal)
+    setUnlocalizedName("projectred.exploration."+toolDef.unlocal)
+    setTextureName("projectred:gemtools/"+toolDef.unlocal)
     setCreativeTab(ProjectRedExploration.tabExploration)
-    GameRegistry.registerItem(this, "projectred.exploration."+tool.unlocal)
+    GameRegistry.registerItem(this, "projectred.exploration."+toolDef.unlocal)
 
-    def tool:ToolVal
+    def toolDef:ToolDef
 
     override def getIsRepairable(ist1:ItemStack, ist2:ItemStack) =
     {
-        if (tool.repair.isItemEqual(ist2)) true
+        if (toolDef.repair.isItemEqual(ist2)) true
         else super.getIsRepairable(ist1, ist2)
     }
 }
 
-// Weird scala compiler issue. These classes are implemented in java.
-class ItemGemAxe(override val tool:ToolVal) extends ItemAxe(tool.mat) with TGemTool
-class ItemGemPickaxe(override val tool:ToolVal) extends ItemPickaxe(tool.mat) with TGemTool
-class ItemGemShovel(override val tool:ToolVal) extends ItemSpade(tool.mat) with TGemTool
-class ItemGemSword(override val tool:ToolVal) extends ItemSword(tool.mat) with TGemTool
-class ItemGemHoe(override val tool:ToolVal) extends ItemHoe(tool.mat) with TGemTool
+class ItemGemAxe(val toolDef:ToolDef) extends ItemAxe(toolDef.mat) with TGemTool
+class ItemGemPickaxe(val toolDef:ToolDef) extends ItemPickaxe(toolDef.mat) with TGemTool
+class ItemGemShovel(val toolDef:ToolDef) extends ItemSpade(toolDef.mat) with TGemTool
+class ItemGemSword(val toolDef:ToolDef) extends ItemSword(toolDef.mat) with TGemTool
+class ItemGemHoe(val toolDef:ToolDef) extends ItemHoe(toolDef.mat) with TGemTool
 
-class ItemGemSaw(val tool:ToolVal) extends ItemCraftingDamage("projectred.exploration."+tool.unlocal) with Saw
+class ItemGemSaw(val tool:ToolDef) extends ItemCraftingDamage("projectred.exploration."+tool.unlocal) with Saw
 {
     setMaxDamage(tool.mat.getMaxUses)
     setCreativeTab(ProjectRedExploration.tabExploration)
@@ -247,7 +246,7 @@ class ItemGemSaw(val tool:ToolVal) extends ItemCraftingDamage("projectred.explor
     override def registerIcons(reg:IIconRegister){}
 }
 
-class ItemGemSickle(override val tool:ToolVal) extends ItemTool(3, tool.mat, new java.util.HashSet) with TGemTool
+class ItemGemSickle(override val toolDef:ToolDef) extends ItemTool(3, toolDef.mat, new java.util.HashSet) with TGemTool
 {
     private val radiusLeaves = 1
     private val radiusCrops = 2
