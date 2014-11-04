@@ -167,7 +167,7 @@ task integrationJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    appendix = 'Integration'
+    classifier = 'Integration'
 }
 
 task lightingJar(type: Jar, dependsOn: reobf) {
@@ -184,7 +184,7 @@ task lightingJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    appendix = 'Lighting'
+    classifier = 'Lighting'
 }
 
 task mechanicalJar(type: Jar, dependsOn: reobf) {
@@ -204,7 +204,7 @@ task mechanicalJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    appendix = 'Mechanical_beta'
+    classifier = 'Mechanical_beta'
 }
 
 task worldJar(type: Jar, dependsOn: reobf) {
@@ -220,7 +220,7 @@ task worldJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    appendix = 'World'
+    classifier = 'World'
 }
 
 task compatJar(type: Jar, dependsOn: reobf) {
@@ -244,7 +244,7 @@ task compatJar(type: Jar, dependsOn: reobf) {
         attributes 'FMLCorePluginContainsFMLMod': 'true'
     }
     version = project.ext.jarVer
-    appendix = 'Compat'
+    classifier = 'Compat'
 }
 
 task baseJar(type: Jar, dependsOn: reobf) {
@@ -258,7 +258,7 @@ task baseJar(type: Jar, dependsOn: reobf) {
         attributes 'FMLCorePluginContainsFMLMod': 'true'
     }
     version = project.ext.jarVer
-    appendix = 'Base'
+    classifier = 'Base'
 
 }
 
@@ -270,7 +270,6 @@ jar {
         attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
         attributes 'FMLCorePluginContainsFMLMod': 'true'
     }
-    classifier = 'universal'
 }
 
 task sourceJar(type: Jar) {
