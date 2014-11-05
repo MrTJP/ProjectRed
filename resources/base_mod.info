@@ -13,11 +13,13 @@
   "requiredMods": [
       "Forge",
       "ForgeMultipart",
-      "CodeChickenCore"
+      "CodeChickenCore",
+      "MrTJPCoreMod"
   ],
   "dependencies": [
       "ForgeMultipart",
-      "CodeChickenCore"
+      "CodeChickenCore",
+      "MrTJPCoreMod"
   ],
   "dependants" : [
       "ProjRed|Transmission",
