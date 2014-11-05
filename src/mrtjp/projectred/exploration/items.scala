@@ -224,14 +224,11 @@ trait TGemTool extends Item
     }
 }
 
-class ItemGemAxe(t:ToolDef) extends ItemAxe(t.mat) with TGemTool
-{
-    override def toolDef = t
-}
-
-class ItemGemPickaxe(override val toolDef:ToolDef) extends ItemPickaxe(toolDef.mat) with TGemTool
-class ItemGemShovel(override val toolDef:ToolDef) extends ItemSpade(toolDef.mat) with TGemTool
-class ItemGemSword(override val toolDef:ToolDef) extends ItemSword(toolDef.mat) with TGemTool
+import mrtjp.projectred.exploration.ItemToolProxies._
+class ItemGemAxe(override val toolDef:ToolDef) extends Axe(toolDef.mat) with TGemTool
+class ItemGemPickaxe(override val toolDef:ToolDef) extends Pickaxe(toolDef.mat) with TGemTool
+class ItemGemShovel(override val toolDef:ToolDef) extends Shovel(toolDef.mat) with TGemTool
+class ItemGemSword(override val toolDef:ToolDef) extends Sword(toolDef.mat) with TGemTool
 class ItemGemHoe(override val toolDef:ToolDef) extends ItemHoe(toolDef.mat) with TGemTool
 
 class ItemGemSaw(val toolDef:ToolDef) extends ItemCraftingDamage("projectred.exploration."+toolDef.unlocal) with Saw
