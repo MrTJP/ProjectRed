@@ -75,9 +75,8 @@ dependencies {
     compile name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
 }
 
-def build_number = (System.getenv("BUILD_NUMBER") ?: "1")
+def build_number = (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")+51).toString()
 version = "${project.config.mod.version}."+build_number
-println "Building ${project.archivesBaseName} of version ${config.mc.version}-${config.forge.version}."
 
 minecraft {
     version = config.mc.version+"-"+config.forge.version
