@@ -308,6 +308,8 @@ def createDeployMeta()
         deps {
             Minecraft(project.minecraft.version)
             Forge(config.forge.version)
+            MrTJPCore(config.mrtjp.version)
+            FMP(config.fmp.version)
             CCL(config.ccl.version)
         }
 

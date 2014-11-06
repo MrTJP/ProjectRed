@@ -25,7 +25,7 @@ class RoutedFirewallPipe extends BasicPipeAbstraction with TNetworkPipe
     override def save(tag:NBTTagCompound)
     {
         super.save(tag)
-        filt.save(tag)
+        filt.saveInv(tag)
         tag.setBoolean("excl", filtExclude)
         tag.setBoolean("route", allowRoute)
         tag.setBoolean("broad", allowBroadcast)
@@ -36,7 +36,7 @@ class RoutedFirewallPipe extends BasicPipeAbstraction with TNetworkPipe
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        filt.load(tag)
+        filt.loadInv(tag)
         buildItemSet()
         filtExclude = tag.getBoolean("excl")
         allowRoute = tag.getBoolean("route")

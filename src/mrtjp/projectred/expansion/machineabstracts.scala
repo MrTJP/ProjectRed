@@ -4,7 +4,7 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.{Rotation, Vector3}
 import mrtjp.core.block.{InstancedBlock, InstancedBlockTile, TTileOrient}
 import mrtjp.core.gui.WidgetContainer
-import mrtjp.core.inventory.TPortableInventory
+import mrtjp.core.inventory.TInventory
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api._
@@ -113,27 +113,25 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
     def onBlockRotated() {}
 }
 
-trait TileMachineIO extends TileMachine with TPortableInventory with ISidedInventory
+trait TileMachineIO extends TileMachine with TInventory with ISidedInventory
 {
-    abstract override def save(tag:NBTTagCompound)
+    abstract override def saveInv(tag:NBTTagCompound)
     {
         super.save(tag)
-        inv.save(tag)
+        saveInv(tag)
     }
 
-    abstract override def load(tag:NBTTagCompound)
+    abstract override def loadInv(tag:NBTTagCompound)
     {
         super.load(tag)
-        inv.load(tag)
+        loadInv(tag)
     }
 
     abstract override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        inv.dropContents(getWorldObj, xCoord, yCoord, zCoord)
+        dropInvContents(getWorldObj, xCoord, yCoord, zCoord)
     }
-
-    override def markDirty() = super.markDirty()
 }
 
 trait TileGuiMachine extends TileMachine
@@ -415,7 +413,7 @@ with TMachinePowerable with TileMachineIO with TileGuiMachine with TileMachineSi
         scale*(workMax-workRemaining)/workMax
     }
 
-    override def save(tag:NBTTagCompound)
+    override def saveInv(tag:NBTTagCompound)
     {
         super.save(tag)
         tag.setBoolean("werk", isWorking)
@@ -423,7 +421,7 @@ with TMachinePowerable with TileMachineIO with TileGuiMachine with TileMachineSi
         tag.setInteger("max", workMax)
     }
 
-    override def load(tag:NBTTagCompound)
+    override def loadInv(tag:NBTTagCompound)
     {
         super.load(tag)
         isWorking = tag.getBoolean("werk")

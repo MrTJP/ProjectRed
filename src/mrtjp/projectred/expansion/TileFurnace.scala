@@ -1,13 +1,17 @@
 package mrtjp.projectred.expansion
 
 import mrtjp.core.gui.Slot2
-import mrtjp.core.inventory.{InvWrapper, SimpleInventory}
+import mrtjp.core.inventory.InvWrapper
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 
 class TileFurnace extends TileMachineWorking
 {
+    override def size = 2
+    override def stackLimit = 64
+    override def name = "furnace"
+
     def getBlock = ProjectRedExpansion.machine1
 
     override def openGui(player:EntityPlayer){}
@@ -52,10 +56,6 @@ class TileFurnace extends TileMachineWorking
 
     override def createSideConfig = Array(3, 3, 3, 3, 3, 3)
     override def sideInfo = Array("closed", "input", "output", "input + output")
-
-    //0 input
-    //1 output
-    def createInv = new SimpleInventory(2, "smelt", 64)
 
     override def transfer() {}
 
