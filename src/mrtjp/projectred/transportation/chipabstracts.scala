@@ -285,7 +285,7 @@ trait TChipFilter extends RoutingChip
 
     abstract override def save(tag:NBTTagCompound)
     {
-        filter.save(tag)
+        filter.saveInv(tag)
         tag.setBoolean("mode", filterExclude)
         tag.setBoolean("mm", metaMatch)
         tag.setBoolean("nbtm", nbtMatch)
@@ -297,7 +297,7 @@ trait TChipFilter extends RoutingChip
 
     abstract override def load(tag:NBTTagCompound)
     {
-        filter.load(tag)
+        filter.loadInv(tag)
         filterExclude = tag.getBoolean("mode")
         metaMatch = tag.getBoolean("mm")
         nbtMatch = tag.getBoolean("nbtm")
@@ -421,14 +421,14 @@ trait TChipStock extends RoutingChip
 
     abstract override def save(tag:NBTTagCompound)
     {
-        stock.save(tag)
+        stock.saveInv(tag)
         tag.setBoolean("mode", requestWhenEmpty)
         super.save(tag)
     }
 
     abstract override def load(tag:NBTTagCompound)
     {
-        stock.load(tag)
+        stock.loadInv(tag)
         requestWhenEmpty = tag.getBoolean("mode")
         super.load(tag)
     }
@@ -470,14 +470,14 @@ trait TChipCrafter extends RoutingChip
 
     abstract override def save(tag:NBTTagCompound)
     {
-        matrix.save(tag)
+        matrix.saveInv(tag)
         tag.setIntArray("ext", extIndex)
         super.save(tag)
     }
 
     abstract override def load(tag:NBTTagCompound)
     {
-        matrix.load(tag)
+        matrix.loadInv(tag)
         extIndex = tag.getIntArray("ext")
         super.load(tag)
     }

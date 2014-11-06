@@ -86,18 +86,18 @@ class RoutedExtensionPipePart extends BasicPipeAbstraction with TNetworkPipe
     override def save(tag:NBTTagCompound)
     {
         super.save(tag)
-        cardslot.save(tag)
+        cardslot.saveInv(tag)
     }
 
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        cardslot.load(tag)
+        cardslot.loadInv(tag)
     }
 
     override def onRemoved()
     {
-        if (!world.isRemote) cardslot.dropContents(world, x, y, z)
+        if (!world.isRemote) cardslot.dropInvContents(world, x, y, z)
     }
 
     override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =

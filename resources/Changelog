@@ -1,3 +1,6 @@
+v4.5.3
+- FIX: Startup crash due to dependencies
+
 v4.5.2
 - FIX: Sickles not harvesting correctly
 - CHANGE: Various performance optimizations and such

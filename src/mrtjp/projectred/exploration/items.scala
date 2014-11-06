@@ -110,13 +110,13 @@ class BagInventory(player:EntityPlayer, bag:ItemStack) extends SimpleInventory(2
     private def loadInventory()
     {
         assertNBT(bag)
-        load(bag.getTagCompound.getCompoundTag("baginv"))
+        loadInv(bag.getTagCompound.getCompoundTag("baginv"))
     }
 
     private def saveInventory()
     {
         val nbt = new NBTTagCompound
-        save(nbt)
+        saveInv(nbt)
         assertNBT(bag)
         bag.getTagCompound.setTag("baginv", nbt)
         refreshNBT()

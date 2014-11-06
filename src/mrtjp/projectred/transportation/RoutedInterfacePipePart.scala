@@ -34,13 +34,13 @@ class RoutedInterfacePipePart extends BasicPipeAbstraction with TNetworkPipe wit
     override def save(tag:NBTTagCompound)
     {
         super.save(tag)
-        chipSlots.save(tag)
+        chipSlots.saveInv(tag)
     }
 
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        chipSlots.load(tag)
+        chipSlots.loadInv(tag)
     }
 
     override def onRemoved()
@@ -49,7 +49,7 @@ class RoutedInterfacePipePart extends BasicPipeAbstraction with TNetworkPipe wit
         if (!world.isRemote)
         {
             for (r <- chips) if (r != null) r.onPipeBroken()
-            chipSlots.dropContents(world, x, y, z)
+            chipSlots.dropInvContents(world, x, y, z)
         }
     }
 

@@ -347,8 +347,8 @@ class RoutedCraftingPipePart extends BasicPipeAbstraction with TNetworkPipe with
         super.onRemoved()
         if (!world.isRemote)
         {
-            chipSlots.dropContents(world, x, y, z)
-            cardSlots.dropContents(world, x, y, z)
+            chipSlots.dropInvContents(world, x, y, z)
+            cardSlots.dropInvContents(world, x, y, z)
         }
     }
 
@@ -380,16 +380,16 @@ class RoutedCraftingPipePart extends BasicPipeAbstraction with TNetworkPipe with
     override def save(tag:NBTTagCompound)
     {
         super.save(tag)
-        chipSlots.save(tag, "c")
-        cardSlots.save(tag, "l")
+        chipSlots.saveInv(tag, "c")
+        cardSlots.saveInv(tag, "l")
         tag.setInteger("pri", priority)
     }
 
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        chipSlots.load(tag, "c")
-        cardSlots.load(tag, "l")
+        chipSlots.loadInv(tag, "c")
+        cardSlots.loadInv(tag, "l")
         priority = tag.getInteger("pri")
     }
 
