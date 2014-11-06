@@ -13,12 +13,10 @@
   "requiredMods": [
       "Forge",
       "ForgeMultipart",
-      "CodeChickenCore",
       "MrTJPCoreMod"
   ],
   "dependencies": [
       "ForgeMultipart",
-      "CodeChickenCore",
       "MrTJPCoreMod"
   ],
   "dependants" : [
