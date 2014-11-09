@@ -129,7 +129,7 @@ public class CoreRecipes
                 "sps",
                 "prp",
                 'r', WIREDPLATE().makeStack(),
-                's', Items.stick,
+                's', "stickWood",
                 'p', PLATE().makeStack()
                 );
 
@@ -204,7 +204,7 @@ public class CoreRecipes
                 "sws",
                 "sss",
                 's', Items.string,
-                'w', Items.stick
+                'w', "stickWood"
                 );
 
         /** Sail **/
