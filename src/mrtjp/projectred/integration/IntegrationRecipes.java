@@ -243,7 +243,7 @@ public class IntegrationRecipes
                 "LLL",
                 "PWP",
                 'P', PartDefs.PLATE().makeStack(),
-                'L', new ItemStack(Items.dye, 1, Colors.BLUE.dyeId()),
+                'L', "dyeBlue",
                 'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
@@ -253,7 +253,7 @@ public class IntegrationRecipes
                 "SSS",
                 "PWP",
                 'P', PartDefs.PLATE().makeStack(),
-                'S', Items.slime_ball,
+                'S', "slimeball",
                 'W', PartDefs.CONDUCTIVEPLATE().makeStack()
                 );
 
@@ -306,7 +306,7 @@ public class IntegrationRecipes
                 "PWP",
                 'W', PartDefs.CONDUCTIVEPLATE().makeStack(),
                 'C', PartDefs.CATHODE().makeStack(),
-                'Q', Items.quartz,
+                'Q', "gemQuartz",
                 'P', PartDefs.PLATE().makeStack()
                 );
 

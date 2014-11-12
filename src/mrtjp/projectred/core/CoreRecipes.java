@@ -34,25 +34,25 @@ public class CoreRecipes
                 .$plus$eq((Output)new ItemOut(ProjectRedCore.itemDrawPlate()));
         b.registerResult();
 
-        /** Screw Driver **/
+        /** Screwdriver **/
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemScrewdriver()),
                 "i  ",
                 " ib",
                 " bi",
-                'i', Items.iron_ingot,
-                'b', Colors.BLUE.getOreDict()
+                'i', "ingotIron",
+                'b', "dyeBlue"
         ));
 
-        /** Wire debugger **/
+        /** Wire Debugger **/
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemWireDebugger()),
                 "a a",
                 "ber",
                 "bgr",
-                'a', REDINGOT().makeStack(),
-                'b', Colors.BLACK.getOreDict(),
-                'e', Items.emerald,
-                'r', Colors.RED.getOreDict(),
-                'g', Items.glowstone_dust
+                'a', "ingotRedAlloy",
+                'b', "dyeBlack",
+                'e', "gemEmerald",
+                'r', "dyeRed",
+                'g', "dustGlowstone"
                 ));
 
         /** Data Card **/
@@ -61,7 +61,7 @@ public class CoreRecipes
                 "prp",
                 "prp",
                 'p', Items.paper,
-                'r', Items.redstone
+                'r', "dustRedstone"
                 );
 
 
@@ -70,13 +70,13 @@ public class CoreRecipes
     private static void initPartRecipes()
     {
         /** Circuit Plate **/
-        GameRegistry.addSmelting(Blocks.stone, PLATE().makeStack(2), 0f);
+        GameRegistry.addSmelting("stone", PLATE().makeStack(2), 0f);
 
         /** Conductive Plate **/
         GameRegistry.addRecipe(CONDUCTIVEPLATE().makeStack(),
                 "r",
                 "p",
-                'r', Items.redstone,
+                'r', "dustRedstone",
                 'p', PLATE().makeStack()
                 );
 
@@ -85,7 +85,7 @@ public class CoreRecipes
                 " r ",
                 "rrr",
                 "ppp",
-                'r', Items.redstone,
+                'r', "dustRedstone",
                 'p', PLATE().makeStack()
                 );
 
@@ -102,7 +102,7 @@ public class CoreRecipes
                 "b",
                 "m",
                 "c",
-                'b', Blocks.stone,
+                'b', "stone",
                 'm', Blocks.redstone_torch,
                 'c', PLATE().makeStack()
                 );
@@ -156,10 +156,10 @@ public class CoreRecipes
                 " i ",
                 "scs",
                 "rcr",
-                'i', Items.iron_ingot,
-                's', Blocks.stone,
+                'i', "ingotIron",
+                's', "stone",
                 'c', COPPERCOIL().makeStack(),
-                'r', Items.redstone
+                'r', "dustRedstone"
                 );
 
         /** Copper Coil **/
@@ -172,14 +172,14 @@ public class CoreRecipes
         /** Iron Coil **/
         GameRegistry.addRecipe(IRONCOIL().makeStack(),
                 "cd",
-                'c', Items.iron_ingot,
+                'c', "ingotIron",
                 'd', new ItemStack(ProjectRedCore.itemDrawPlate(), 1, OreDictionary.WILDCARD_VALUE)
                 );
 
         /** Gold Coil **/
         GameRegistry.addRecipe(GOLDCOIL().makeStack(),
                 "cd",
-                'c', Items.gold_ingot,
+                'c', "ingotGold",
                 'd', new ItemStack(ProjectRedCore.itemDrawPlate(), 1, OreDictionary.WILDCARD_VALUE)
                 );
 
@@ -191,8 +191,8 @@ public class CoreRecipes
         for (int i = 0; i < ILLUMARS().size(); i++) {
             PartVal p = (PartVal)it.next();
             GameRegistry.addRecipe(new ShapelessOreRecipe(p.makeStack(),
-                    new ItemStack(Items.glowstone_dust),
-                    new ItemStack(Items.glowstone_dust),
+                    "dustGlowstone",
+                    "dustGlowstone",
                     Colors.get(i).getOreDict(),
                     Colors.get(i).getOreDict()
                     ));
@@ -220,8 +220,8 @@ public class CoreRecipes
                 "rrr",
                 "rir",
                 "rrr",
-                'r', Items.redstone,
-                'i', Items.iron_ingot
+                'r', "dustRedstone",
+                'i', "ingotIron"
                 );
 
         /** Sandy Coal Compound **/
@@ -229,7 +229,7 @@ public class CoreRecipes
                 "sss",
                 "scs",
                 "sss",
-                'c', Blocks.coal_block,
+                'c', "blockCoal",
                 's', Blocks.sand
                 );
 
@@ -238,7 +238,7 @@ public class CoreRecipes
                 "rrr",
                 "rsr",
                 "rrr",
-                'r', Items.redstone,
+                'r', "dustRedstone",
                 's', SILICON().makeStack()
                 );
 
@@ -247,7 +247,7 @@ public class CoreRecipes
                 "ggg",
                 "gsg",
                 "ggg",
-                'g', Items.glowstone_dust,
+                'g', "dustGlowstone",
                 's', SILICON().makeStack()
                 );
     }
