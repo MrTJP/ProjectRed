@@ -23,16 +23,16 @@ object IlluminationRecipes
                 "gIg",
                 "gIg",
                 "gtg",
-                'g':JC, Blocks.glass_pane,
+                'g':JC, "paneGlassColorless",
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
-                't':JC, Items.redstone
+                't':JC, "dustRedstone"
             )
 
             GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.blockLamp, 1, i+16),
                 "gIg",
                 "gIg",
                 "gtg",
-                'g':JC, Blocks.glass_pane,
+                'g':JC, "paneGlassColorless",
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 't':JC, Blocks.redstone_torch
             )
@@ -46,18 +46,18 @@ object IlluminationRecipes
                 "GIG",
                 "PRP",
                 'P':JC, PartDefs.PLATE.makeStack,
-                'N':JC, Items.gold_nugget,
-                'G':JC, Blocks.glass_pane,
+                'N':JC, "nuggetGold",
+                'G':JC, "paneGlassColorless",
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
-                'R':JC, Items.redstone
+                'R':JC, "dustRedstone"
             )
             GameRegistry.addRecipe(LightObjLantern.makeInvStack(i),
                 "PNP",
                 "GIG",
                 "PRP",
                 'P':JC, PartDefs.PLATE.makeStack,
-                'N':JC, Items.gold_nugget,
-                'G':JC, Blocks.glass_pane,
+                'N':JC, "nuggetGold",
+                'G':JC, "paneGlassColorless",
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 'R':JC, Blocks.redstone_torch
             )
@@ -84,7 +84,7 @@ object IlluminationRecipes
                 "CCC", "CIC", "NPN",
                 'C':JC, Blocks.iron_bars,
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
-                'N':JC, Items.gold_nugget,
+                'N':JC, "nuggetGold",
                 'P':JC, PartDefs.CONDUCTIVEPLATE.makeStack
             )
 
@@ -92,7 +92,7 @@ object IlluminationRecipes
                 "CCC", "CIC", "NPN",
                 'C':JC, Blocks.iron_bars,
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
-                'N':JC, Items.gold_nugget,
+                'N':JC, "nuggetGold",
                 'P':JC, PartDefs.CATHODE.makeStack
             )
         }
@@ -122,14 +122,14 @@ object IlluminationRecipes
         {
             GameRegistry.addRecipe(LightObjFixture.makeStack(i),
                 "ggg", "gIg", "pPp",
-                'g':JC, Blocks.glass_pane,
+                'g':JC, "paneGlassColorless",
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 'p':JC, PartDefs.PLATE.makeStack,
                 'P':JC, PartDefs.CONDUCTIVEPLATE.makeStack
             )
             GameRegistry.addRecipe(LightObjFixture.makeInvStack(i),
                 "ggg", "gIg", "pPp",
-                'g':JC, Blocks.glass_pane,
+                'g':JC, "paneGlassColorless",
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 'p':JC, PartDefs.PLATE.makeStack,
                 'P':JC, PartDefs.CATHODE.makeStack
