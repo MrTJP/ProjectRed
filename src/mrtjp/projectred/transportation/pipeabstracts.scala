@@ -223,7 +223,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
             try
             {
                 val payloadData = nbttaglist.getCompoundTagAt(j)
-                val r = PipePayload()
+                val r = PipePayload.create()
                 r.bind(this)
                 r.load(payloadData)
                 if (!r.isCorrupted) itemFlow.scheduleLoad(r)
@@ -236,8 +236,6 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
     {
         case 4 => handleItemUpdatePacket(packet)
         case 10 =>
-            val p = itemFlow.get(packet.readUShort())
-            if (p != null) itemFlow.scheduleRemoval(p)
         case _ => super.read(packet, key)
     }
 
@@ -334,7 +332,6 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         {
             case pipe:PayloadPipePart =>
                 pipe.injectPayload(r, r.output)
-                sendItemRemoval(r)
                 true
             case _ => false
         }
@@ -392,37 +389,19 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
 
     def sendItemUpdate(r:PipePayload)
     {
+        if (world.isRemote) return
         val out = getWriteStreamOf(4)
         out.writeShort(r.payloadID)
-        out.writeFloat(r.progress)
         out.writeItemStack(r.getItemStack)
-        out.writeByte(r.output&0xF|((r.input&0xF)<<4))
-        out.writeFloat(r.speed)
-        out.writeByte(r.priorityIndex)
-    }
-
-    def sendItemRemoval(r:PipePayload)
-    {
-        //if (!world.isRemote) getWriteStreamOf(10).writeShort(r.payloadID)
+        out.writeInt(r.data)
     }
 
     def handleItemUpdatePacket(packet:MCDataInput)
     {
         val id = packet.readShort
-        val progress = packet.readFloat
-        var r = itemFlow.get(id)
-        if (r == null)
-        {
-            r = PipePayload(id)
-            r.progress = progress
-            itemFlow.add(r)
-        }
-        r.setItemStack(packet.readItemStack)
-        val io = packet.readUByte()
-        r.input = (io>>4)&0xF
-        r.output = io&0xF
-        r.speed = packet.readFloat
-        r.priorityIndex = packet.readUByte()
+        val stack = packet.readItemStack
+        val r = itemFlow.getOrElseUpdate(id, _ => PipePayload(id, stack))
+        r.data = packet.readInt()
     }
 
     @SideOnly(Side.CLIENT)

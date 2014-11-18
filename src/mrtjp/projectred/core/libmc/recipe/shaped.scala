@@ -39,7 +39,7 @@ class ShapedBuilderRecipe(override val builder:ShapedRecipeBuilder) extends Buil
         for (i <- 0 until inv.getSizeInventory)
         {
             val in = builder.inputMap.getOrElse(i, null)
-            val slot = ItemKeyStack(inv.getStackInSlot(i))
+            val slot = ItemKeyStack.get(inv.getStackInSlot(i))
             if ((in == null && slot != null) ||
                 (slot == null && in != null) ||
                 (slot != null && in != null && !in.matches(slot))) return false
