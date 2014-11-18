@@ -6,7 +6,7 @@ import net.minecraft.item.{Item, ItemStack}
 
 class ItemOut(val key:ItemKeyStack) extends Output
 {
-    def this(s:ItemStack) = this(ItemKeyStack(s))
+    def this(s:ItemStack) = this(ItemKeyStack.get(s))
     def this(b:Block) = this(new ItemStack(b))
     def this(i:Item) = this(new ItemStack(i))
 

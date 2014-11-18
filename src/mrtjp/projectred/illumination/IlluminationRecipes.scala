@@ -1,12 +1,12 @@
 package mrtjp.projectred.illumination
 
-import cpw.mods.fml.common.registry.GameRegistry
-import net.minecraft.init
-import net.minecraft.item.ItemStack
-import mrtjp.projectred.ProjectRedIllumination
-import net.minecraft.init.{Blocks, Items}
-import mrtjp.projectred.core.PartDefs
 import java.lang.{Character => JC}
+
+import cpw.mods.fml.common.registry.GameRegistry
+import mrtjp.projectred.ProjectRedIllumination
+import mrtjp.projectred.core.PartDefs
+import net.minecraft.init.{Blocks, Items}
+import net.minecraft.item.ItemStack
 object IlluminationRecipes
 {
     def initRecipes()
@@ -100,7 +100,7 @@ object IlluminationRecipes
         /** Cage Lamps **/
         for (i <- 0 until 16)
         {
-            GameRegistry.addRecipe(LightObjFallout.makeStack(i),
+            GameRegistry.addRecipe(LightObjCage.makeStack(i),
                 " C ", "CIC", "pPp",
                 'C':JC, Blocks.iron_bars,
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
@@ -108,7 +108,7 @@ object IlluminationRecipes
                 'P':JC, PartDefs.CONDUCTIVEPLATE.makeStack
             )
 
-            GameRegistry.addRecipe(LightObjFallout.makeInvStack(i),
+            GameRegistry.addRecipe(LightObjCage.makeInvStack(i),
                 " C ", "CIC", "pPp",
                 'C':JC, Blocks.iron_bars,
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,

@@ -8,7 +8,7 @@ import net.minecraftforge.oredict.OreDictionary
 
 class ItemIn(val key:ItemKeyStack) extends Input
 {
-    def this(s:ItemStack) = this(ItemKeyStack(s))
+    def this(s:ItemStack) = this(ItemKeyStack.get(s))
     def this(b:Block) = this(new ItemStack(b))
     def this(i:Item) = this(new ItemStack(i))
 
@@ -66,7 +66,7 @@ class MicroIn(classID:Int, size:Int, material:String) extends Input
     def this(c:Int, s:Int, b:Block) = this(c, s, b.getUnlocalizedName)
 
     private val damage = classID<<8|size&0xFF
-    private val sample = ItemKeyStack(ItemMicroPart.create(damage, material))
+    private val sample = ItemKeyStack.get(ItemMicroPart.create(damage, material))
 
     override def matches(that:ItemKeyStack) = that.key == sample.key
 

@@ -273,7 +273,7 @@ jar {
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
-    classifier = 'src'
+    classifier = 'sources'
     version = "${project.minecraft.version}-${project.version}"
 }
 

@@ -319,7 +319,7 @@ class GuiRequester(pipe:IWorldRequester) extends WidgetGui(280, 230)
 
     def receiveContentList(content:Map[ItemKey, Int])
     {
-        itemList.setDisplayList(content.map(p => ItemKeyStack(p._1, p._2)).toVector.sorted)
+        itemList.setDisplayList(content.map(p => ItemKeyStack.get(p._1, p._2)).toVector.sorted)
     }
 }
 

@@ -233,8 +233,10 @@ class ItemRouterUtility extends ItemCore("projectred.transportation.routerutil")
 
     private def openGui(player:EntityPlayer)
     {
-        GuiChipUpgrade.open(player, new ChipUpgradeContainer(player))
-        //GuiHandler.openSMPContainer(player, new ChipUpgradeContainer(player), 2, {_=>})
+        //Some Scala wierdness is causing Server to reference Client only things
+
+        //GuiChipUpgrade.open(player, new ChipUpgradeContainer(player))
+        GuiHandler.openSMPContainer(player, new ChipUpgradeContainer(player), TransportationProxy.guiIDChipUpgrade, {_=>})
     }
 }
 

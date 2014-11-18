@@ -1,3 +1,10 @@
+v4.5.4
+- FIX: Cage lamp recipes creating Fallout lights
+- FIX: Router Utility server crash
+- FIX: Very rare pipe client crash
+- FIX: ForgeMultipart auto download
+- CHANGE: Drastically reduced network packet size for pipes
+
 v4.5.3
 - FIX: Startup crash due to dependencies
 
