@@ -34,6 +34,8 @@ public class ExplorationRecipes
         OreDictionary.registerOre("oreRuby", OreDefs.ORERUBY().makeStack());
         OreDictionary.registerOre("oreSapphire", OreDefs.ORESAPPHIRE().makeStack());
         OreDictionary.registerOre("orePeridot", OreDefs.OREPERIDOT().makeStack());
+
+        OreDictionary.registerOre("blockMarble", DecorativeStoneDefs.MARBLE().makeStack());
     }
 
     private static void initGemToolRecipes()
@@ -193,11 +195,11 @@ public class ExplorationRecipes
     private static void initWorldRecipes()
     {
         /** Marble brick **/
-        GameRegistry.addRecipe(DecorativeStoneDefs.MARBLEBRICK().makeStack(4),
+        GameRegistry.addRecipe(new ShapedOreRecipe(DecorativeStoneDefs.MARBLEBRICK().makeStack(4),
                 "bb",
                 "bb",
-                'b', DecorativeStoneDefs.MARBLE().makeStack()
-                );
+                'b', "blockMarble"
+                ));
         /** Basalt brick **/
         GameRegistry.addRecipe(DecorativeStoneDefs.BASALTBRICK().makeStack(4),
                 "bb",
