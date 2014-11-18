@@ -90,7 +90,7 @@ public class ExplorationRecipes
                 "ms",
                 " s",
                 'm', m,
-                's', Items.stick
+                's', "stickWood"
                 ));
     }
     private static void addHoeRecipe(ItemStack o, Object m)
@@ -100,7 +100,7 @@ public class ExplorationRecipes
                 " s",
                 " s",
                 'm', m,
-                's', Items.stick
+                's', "stickWood"
                 ));
     }
     private static void addPickaxeRecipe(ItemStack o, Object m)
@@ -110,7 +110,7 @@ public class ExplorationRecipes
                 " s ",
                 " s ",
                 'm', m,
-                's', Items.stick
+                's', "stickWood"
                 ));
     }
     private static void addShovelRecipe(ItemStack o, Object m)
@@ -120,7 +120,7 @@ public class ExplorationRecipes
                 "s",
                 "s",
                 'm', m,
-                's', Items.stick
+                's', "stickWood"
                 ));
     }
     private static void addSwordRecipe(ItemStack o, Object m)
@@ -130,7 +130,7 @@ public class ExplorationRecipes
                 "m",
                 "s",
                 'm', m,
-                's', Items.stick
+                's', "stickWood"
                 ));
     }
     private static void addSawRecipe(ItemStack o, Object m)
@@ -138,7 +138,7 @@ public class ExplorationRecipes
         GameRegistry.addRecipe(new ShapedOreRecipe(o,
                 "srr",
                 "sbb",
-                's', Items.stick,
+                's', "stickWood",
                 'r', "rodStone",
                 'b', m
                 ));
@@ -149,7 +149,7 @@ public class ExplorationRecipes
                 " m ",
                 "  m",
                 "sm ",
-                's', Items.stick,
+                's', "stickWood",
                 'm', m
                 ));
     }
@@ -172,7 +172,7 @@ public class ExplorationRecipes
                 "sis",
                 "sss",
                 " s ",
-                's', Items.stick,
+                's', "stickWood",
                 'i', PartDefs.IRONCOIL().makeStack()
                 );
 
