@@ -30,8 +30,8 @@ object TransportationRecipes
         /** Item Transport pipe **/
         GameRegistry.addRecipe(PipeDefs.BASIC.makeStack(16),
             "sgs",
-            'g':JC, Blocks.glass_pane,
-            's':JC, Blocks.stone
+            'g':JC, "paneGlassColorless",
+            's':JC, "stone"
         )
 
         /** Routed Junction pipe **/
@@ -42,8 +42,8 @@ object TransportationRecipes
             'R':JC, PartDefs.REDILLUMAR.makeStack,
             'r':JC, PartDefs.INFUSEDSILICON.makeStack,
             'G':JC, PartDefs.GREENILLUMAR.makeStack,
-            'd':JC, Items.diamond,
-            'g':JC, Blocks.glass_pane
+            'd':JC, "gemDiamond",
+            'g':JC, "paneGlassColorless"
         )
 
         /** Routed Interface Pipe **/
@@ -51,31 +51,31 @@ object TransportationRecipes
             "rgr",
             "gjg",
             "rgr",
-            'g':JC, Items.gold_nugget,
+            'g':JC, "nuggetGold",
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack,
-            'r':JC, Items.redstone
+            'r':JC, "dustRedstone"
         )
 
         /** Routed Crafting Pipe **/
         GameRegistry.addRecipe(PipeDefs.ROUTEDCRAFTING.makeStack,
             "rgr", "rjr", "rgr",
-            'r':JC, Items.redstone,
-            'g':JC, Items.glowstone_dust,
+            'r':JC, "dustRedstone",
+            'g':JC, "dustGlowstone",
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
         )
 
         /** Routed Request Pipe **/
         GameRegistry.addRecipe(PipeDefs.ROUTEDREQUEST.makeStack,
             "rdr", "rjr", "rdr",
-            'r':JC, Items.redstone,
-            'd':JC, Items.diamond,
+            'r':JC, "dustRedstone",
+            'd':JC, "gemDiamond",
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
         )
 
         /** Routed Extension Pipe **/
         GameRegistry.addRecipe(PipeDefs.ROUTEDEXTENSION.makeStack,
             " r ", "rjr", " r ",
-            'r':JC, Items.redstone,
+            'r':JC, "dustRedstone",
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
         )
 
@@ -98,57 +98,57 @@ object TransportationRecipes
         /** Null chip **/
         GameRegistry.addRecipe(PartDefs.NULLROUTINGCHIP.makeStack,
             "gpp", "grr", "g  ",
-            'g':JC, Items.gold_nugget,
+            'g':JC, "nuggetGold",
             'p':JC, Items.paper,
-            'r':JC, Items.redstone
+            'r':JC, "dustRedstone"
         )
 
         /** Item Responder **/
         addChipRecipe(RoutingChipDefs.ITEMRESPONDER.makeStack,
-            Items.iron_ingot, Items.redstone, Items.redstone,
+            "ingotIron", "dustRedstone", "dustRedstone",
             PartDefs.ORANGEILLUMAR.makeStack,
             PartDefs.ORANGEILLUMAR.makeStack)
 
         /** Dynamic Item Responder **/
         addChipRecipe(RoutingChipDefs.DYNAMICITEMRESPONDER.makeStack,
-            Items.iron_ingot, Items.redstone,
+            "ingotIron", "dustRedstone",
             PartDefs.CYANILLUMAR.makeStack,
             PartDefs.ORANGEILLUMAR.makeStack,
             PartDefs.ORANGEILLUMAR.makeStack)
 
         /** Item Overflow Responder **/
         addChipRecipe(RoutingChipDefs.ITEMOVERFLOWRESPONDER.makeStack,
-            Items.iron_ingot, Items.redstone, Items.redstone,
+            "ingotIron", "dustRedstone", "dustRedstone",
             PartDefs.GREENILLUMAR.makeStack,
             PartDefs.GREENILLUMAR.makeStack)
 
         /** Item Terminator **/
         addChipRecipe(RoutingChipDefs.ITEMTERMINATOR.makeStack,
-            Items.iron_ingot, Items.redstone, Items.redstone,
+            "ingotIron", "dustRedstone", "dustRedstone",
             PartDefs.PURPLEILLUMAR.makeStack,
             PartDefs.GREYILLUMAR.makeStack)
 
         /** Item Extractor **/
         addChipRecipe(RoutingChipDefs.ITEMEXTRACTOR.makeStack,
-            Items.iron_ingot, Items.redstone, Items.redstone,
+            "ingotIron", "dustRedstone", "dustRedstone",
             PartDefs.CYANILLUMAR.makeStack,
             PartDefs.CYANILLUMAR.makeStack)
 
         /** Item Broadcaster **/
         addChipRecipe(RoutingChipDefs.ITEMBROADCASTER.makeStack,
-            Items.gold_ingot, Items.redstone, Items.redstone,
+            "ingotGold", "dustRedstone", "dustRedstone",
             PartDefs.MAGENTAILLUMAR.makeStack,
             PartDefs.MAGENTAILLUMAR.makeStack)
 
         /** Item Stock Keeper **/
         addChipRecipe(RoutingChipDefs.ITEMSTOCKKEEPER.makeStack,
-            Items.diamond, Items.redstone, Items.redstone,
+            "gemDiamond", "dustRedstone", "dustRedstone",
             PartDefs.BLUEILLUMAR.makeStack,
             PartDefs.BLUEILLUMAR.makeStack)
 
         /** Item Crafting **/
         addChipRecipe(RoutingChipDefs.ITEMCRAFTING.makeStack,
-            Items.glowstone_dust, Items.redstone, Items.glowstone_dust,
+            "dustGlowstone", "dustRedstone", "dustGlowstone",
             PartDefs.LIMEILLUMAR.makeStack,
             PartDefs.LIMEILLUMAR.makeStack)
 
@@ -170,28 +170,28 @@ object TransportationRecipes
         /** Router Utility **/
         GameRegistry.addRecipe(new ItemStack(ProjectRedTransportation.itemRouterUtility),
             "  r", "iei", "iii",
-            'r':JC, Items.redstone,
-            'i':JC, Items.iron_ingot,
-            'e':JC, Items.emerald)
+            'r':JC, "dustRedstone",
+            'i':JC, "ingotIron",
+            'e':JC, "gemEmerald")
 
         /** Null Upgrade **/
         GameRegistry.addRecipe(PartDefs.NULLUPGRADECHIP.makeStack,
             "prp", "rrr", "prp",
-            'p':JC, Items.paper, 'r':JC, Items.redstone)
+            'p':JC, Items.paper, 'r':JC, "dustRedstone")
 
         /** LX **/
         GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_LX.makeStack,
             "rrr", " ng", "r r",
-            'r':JC, Items.redstone,
+            'r':JC, "dustRedstone",
             'n':JC, PartDefs.NULLUPGRADECHIP.makeStack,
-            'g':JC, Items.gold_nugget)
+            'g':JC, "nuggetGold")
 
         /** RX **/
         GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_RX.makeStack,
             "r r", "gn ", "rrr",
-            'r':JC, Items.redstone,
+            'r':JC, "dustRedstone",
             'n':JC, PartDefs.NULLUPGRADECHIP.makeStack,
-            'g':JC, Items.gold_nugget)
+            'g':JC, "nuggetGold")
 
         /** LY **/
         GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_LY.makeStack,
@@ -208,16 +208,16 @@ object TransportationRecipes
         /** LZ **/
         GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_LZ.makeStack,
             "r r", " n ", "rer",
-            'r':JC, Items.redstone,
+            'r':JC, "dustRedstone",
             'n':JC, PartDefs.CHIPUPGRADE_LY.makeStack,
-            'e':JC, Items.emerald)
+            'e':JC, "gemEmerald")
 
         /** RZ **/
         GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_RZ.makeStack,
             "r r", " n ", "rer",
-            'r':JC, Items.redstone,
+            'r':JC, "dustRedstone",
             'n':JC, PartDefs.CHIPUPGRADE_RY.makeStack,
-            'e':JC, Items.emerald)
+            'e':JC, "gemEmerald")
     }
 
     def initMiscRecipes()
