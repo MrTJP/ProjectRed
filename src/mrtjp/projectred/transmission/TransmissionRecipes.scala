@@ -53,7 +53,7 @@ object TransmissionRecipes
         for (w <- WireDef.values) if (w.hasFramedForm)
             (RecipeLib.newShapedBuilder <-> "sss"+"sis"+"sss"
                 += new ItemIn(w.makeStack) to "i"
-                += (if (Configurator.simpleFramedWireRecipe) new ItemIn(Items.stick) to "s"
+                += (if (Configurator.simpleFramedWireRecipe) new OreIn("stickWood") to "s"
                     else new MicroIn(MicroIn.edge, MicroIn.eight, Blocks.log) to "s")
                 += new ItemOut(w.makeFramedStack)).registerResult()
     }
