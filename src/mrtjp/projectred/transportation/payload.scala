@@ -67,7 +67,7 @@ class PipePayload(val payloadID:Int)
     def output_=(o:Int){ data = (data& ~0x38)|(o&0x7)<<3 }
 
     def priorityIndex = (data>>24)&0xF
-    def priorityIndex_=(i:Int){ data |= (i&0xF)<<24 }
+    def priorityIndex_=(i:Int){ data = (data& ~0xF000000)|(i&0xF)<<24 }
 
     def bind(p:PayloadPipePart){ parent = p }
 
