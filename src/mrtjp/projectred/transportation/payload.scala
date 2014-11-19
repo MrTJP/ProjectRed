@@ -61,10 +61,10 @@ class PipePayload(val payloadID:Int)
     def progress_=(f:Float){ data = data&0xFF00FFFF|((f*100).toInt&0xFF)<<16 }
 
     def input = data&0x7
-    def input_=(i:Int){ data |= i&0x7 }
+    def input_=(i:Int){ data = (data& ~0x7)|(i&0x7) }
 
     def output = (data>>3)&0x7
-    def output_=(o:Int){ data |= (o&0x7)<<3 }
+    def output_=(o:Int){ data = (data& ~0x38)|(o&0x7)<<3 }
 
     def priorityIndex = (data>>24)&0xF
     def priorityIndex_=(i:Int){ data |= (i&0xF)<<24 }
