@@ -102,35 +102,41 @@ class PipePayload(val payloadID:Int)
 
     def load(tag:NBTTagCompound)
     {
-        progress = tag.getFloat("prog")
-        speed = tag.getFloat("speed")
-        setItemStack(ItemStack.loadItemStackFromNBT(tag.getCompoundTag("Item")))
-        isEntering = tag.getBoolean("isEnt")
-        input = tag.getByte("input")
-        output = tag.getByte("output")
-        loadRouting(tag)
+        if (tag.getBoolean("NoLegacy")) //TODO Legacy
+        {
+            data = tag.getInteger("idata")
+            setItemStack(ItemStack.loadItemStackFromNBT(tag.getCompoundTag("Item")))
+            loadRouting(tag)
+        }
+        else
+        {
+            progress = tag.getFloat("prog")
+            speed = tag.getFloat("speed")
+            setItemStack(ItemStack.loadItemStackFromNBT(tag.getCompoundTag("Item")))
+            isEntering = tag.getBoolean("isEnt")
+            input = tag.getByte("input")
+            output = tag.getByte("output")
+            loadRouting(tag)
+        }
     }
 
     def save(tag:NBTTagCompound)
     {
-        tag.setFloat("prog", progress)
-        tag.setFloat("speed", speed)
+        tag.setBoolean("NoLegacy", true) //TODO Legacy
+        tag.setInteger("idata", data)
         val tag2 = new NBTTagCompound
         getItemStack.writeToNBT(tag2)
         tag.setTag("Item", tag2)
-        tag.setBoolean("isEnt", isEntering)
-        tag.setByte("input", input.asInstanceOf[Byte])
-        tag.setByte("output", output.asInstanceOf[Byte])
         saveRouting(tag)
     }
 
     def getEntityForDrop(x:Int, y:Int, z:Int):EntityItem =
     {
         val dir = if (isEntering) input else output
-        val prog:Double = progress
-        var deltaX = x + 0.5D
-        var deltaY = y + 0.25D
-        var deltaZ = z + 0.5D
+        val prog = progress
+        var deltaX = x+0.5D
+        var deltaY = y+0.25D
+        var deltaZ = z+0.5D
         dir match
         {
             case 0 => deltaY = (y-0.25D)+(1.0D-prog)

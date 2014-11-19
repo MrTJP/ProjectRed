@@ -7,6 +7,8 @@ import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.PartDefs
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.ItemStack
+import net.minecraftforge.oredict.ShapedOreRecipe
+
 object IlluminationRecipes
 {
     def initRecipes()
@@ -19,29 +21,29 @@ object IlluminationRecipes
         /** Lamps **/
         for (i <- 0 until 16)
         {
-            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.blockLamp, 1, i),
+            GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedIllumination.blockLamp, 1, i),
                 "gIg",
                 "gIg",
                 "gtg",
                 'g':JC, "paneGlassColorless",
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 't':JC, "dustRedstone"
-            )
+            ))
 
-            GameRegistry.addRecipe(new ItemStack(ProjectRedIllumination.blockLamp, 1, i+16),
+            GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedIllumination.blockLamp, 1, i+16),
                 "gIg",
                 "gIg",
                 "gtg",
                 'g':JC, "paneGlassColorless",
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 't':JC, Blocks.redstone_torch
-            )
+            ))
         }
 
         /** Lanterns **/
         for (i <- 0 until 16)
         {
-            GameRegistry.addRecipe(LightObjLantern.makeStack(i),
+            GameRegistry.addRecipe(new ShapedOreRecipe(LightObjLantern.makeStack(i),
                 "PNP",
                 "GIG",
                 "PRP",
@@ -50,8 +52,8 @@ object IlluminationRecipes
                 'G':JC, "paneGlassColorless",
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 'R':JC, "dustRedstone"
-            )
-            GameRegistry.addRecipe(LightObjLantern.makeInvStack(i),
+            ))
+            GameRegistry.addRecipe(new ShapedOreRecipe(LightObjLantern.makeInvStack(i),
                 "PNP",
                 "GIG",
                 "PRP",
@@ -60,7 +62,7 @@ object IlluminationRecipes
                 'G':JC, "paneGlassColorless",
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 'R':JC, Blocks.redstone_torch
-            )
+            ))
         }
 
         /** Buttons **/
@@ -80,21 +82,21 @@ object IlluminationRecipes
         /** Fallout Lights **/
         for (i <- 0 until 16)
         {
-            GameRegistry.addRecipe(LightObjFallout.makeStack(i),
+            GameRegistry.addRecipe(new ShapedOreRecipe(LightObjFallout.makeStack(i),
                 "CCC", "CIC", "NPN",
                 'C':JC, Blocks.iron_bars,
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 'N':JC, "nuggetGold",
                 'P':JC, PartDefs.CONDUCTIVEPLATE.makeStack
-            )
+            ))
 
-            GameRegistry.addRecipe(LightObjFallout.makeInvStack(i),
+            GameRegistry.addRecipe(new ShapedOreRecipe(LightObjFallout.makeInvStack(i),
                 "CCC", "CIC", "NPN",
                 'C':JC, Blocks.iron_bars,
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 'N':JC, "nuggetGold",
                 'P':JC, PartDefs.CATHODE.makeStack
-            )
+            ))
         }
 
         /** Cage Lamps **/
@@ -120,20 +122,20 @@ object IlluminationRecipes
         /** Fixtures **/
         for (i <- 0 until 16)
         {
-            GameRegistry.addRecipe(LightObjFixture.makeStack(i),
+            GameRegistry.addRecipe(new ShapedOreRecipe(LightObjFixture.makeStack(i),
                 "ggg", "gIg", "pPp",
                 'g':JC, "paneGlassColorless",
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 'p':JC, PartDefs.PLATE.makeStack,
                 'P':JC, PartDefs.CONDUCTIVEPLATE.makeStack
-            )
-            GameRegistry.addRecipe(LightObjFixture.makeInvStack(i),
+            ))
+            GameRegistry.addRecipe(new ShapedOreRecipe(LightObjFixture.makeInvStack(i),
                 "ggg", "gIg", "pPp",
                 'g':JC, "paneGlassColorless",
                 'I':JC, PartDefs.ILLUMARS.toSeq(i).makeStack,
                 'p':JC, PartDefs.PLATE.makeStack,
                 'P':JC, PartDefs.CATHODE.makeStack
-            )
+            ))
         }
     }
 }

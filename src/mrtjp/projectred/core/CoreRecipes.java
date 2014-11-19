@@ -56,13 +56,13 @@ public class CoreRecipes
                 ));
 
         /** Data Card **/
-        GameRegistry.addRecipe(new ItemStack(ProjectRedCore.itemDataCard()),
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemDataCard()),
                 "pp ",
                 "prp",
                 "prp",
                 'p', Items.paper,
                 'r', "dustRedstone"
-                );
+                ));
 
 
     }
@@ -70,24 +70,24 @@ public class CoreRecipes
     private static void initPartRecipes()
     {
         /** Circuit Plate **/
-        GameRegistry.addSmelting("stone", PLATE().makeStack(2), 0f);
+        GameRegistry.addSmelting(Blocks.stone, PLATE().makeStack(2), 0f);
 
         /** Conductive Plate **/
-        GameRegistry.addRecipe(CONDUCTIVEPLATE().makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(CONDUCTIVEPLATE().makeStack(),
                 "r",
                 "p",
                 'r', "dustRedstone",
                 'p', PLATE().makeStack()
-                );
+                ));
 
         /** Anode **/
-        GameRegistry.addRecipe(ANODE().makeStack(3),
+        GameRegistry.addRecipe(new ShapedOreRecipe(ANODE().makeStack(3),
                 " r ",
                 "rrr",
                 "ppp",
                 'r', "dustRedstone",
                 'p', PLATE().makeStack()
-                );
+                ));
 
         /** Cathode **/
         GameRegistry.addRecipe(CATHODE().makeStack(),
@@ -98,14 +98,14 @@ public class CoreRecipes
                 );
 
         /** Pointer **/
-        GameRegistry.addRecipe(POINTER().makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(POINTER().makeStack(),
                 "b",
                 "m",
                 "c",
                 'b', "stone",
                 'm', Blocks.redstone_torch,
                 'c', PLATE().makeStack()
-                );
+                ));
 
         /** Silicon Chip **/
         GameRegistry.addRecipe(SILICONCHIP().makeStack(),
@@ -124,14 +124,14 @@ public class CoreRecipes
                 );
 
         /** Platformed Plate **/
-        GameRegistry.addRecipe(PLATFORMEDPLATE().makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(PLATFORMEDPLATE().makeStack(),
                 " r ",
                 "sps",
                 "prp",
                 'r', WIREDPLATE().makeStack(),
                 's', "stickWood",
                 'p', PLATE().makeStack()
-                );
+                ));
 
 
         /** Silicon Boule **/
@@ -152,7 +152,7 @@ public class CoreRecipes
         GameRegistry.addSmelting(GLOWINGSILICONCOMPOUND().makeStack(), ENERGIZEDSILICON().makeStack(), 0);
 
         /** Motor **/
-        GameRegistry.addRecipe(MOTOR().makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(MOTOR().makeStack(),
                 " i ",
                 "scs",
                 "rcr",
@@ -160,7 +160,7 @@ public class CoreRecipes
                 's', "stone",
                 'c', COPPERCOIL().makeStack(),
                 'r', "dustRedstone"
-                );
+                ));
 
         /** Copper Coil **/
         GameRegistry.addRecipe(new ShapedOreRecipe(COPPERCOIL().makeStack(),
@@ -170,18 +170,18 @@ public class CoreRecipes
                 ));
 
         /** Iron Coil **/
-        GameRegistry.addRecipe(IRONCOIL().makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(IRONCOIL().makeStack(),
                 "cd",
                 'c', "ingotIron",
                 'd', new ItemStack(ProjectRedCore.itemDrawPlate(), 1, OreDictionary.WILDCARD_VALUE)
-                );
+                ));
 
         /** Gold Coil **/
-        GameRegistry.addRecipe(GOLDCOIL().makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(GOLDCOIL().makeStack(),
                 "cd",
                 'c', "ingotGold",
                 'd', new ItemStack(ProjectRedCore.itemDrawPlate(), 1, OreDictionary.WILDCARD_VALUE)
-                );
+                ));
 
         /** Red Alloy Ingot **/
         GameRegistry.addSmelting(REDIRONCOMPOUND().makeStack(), REDINGOT().makeStack(), 0);
@@ -199,13 +199,13 @@ public class CoreRecipes
         }
 
         /** Woven Cloth **/
-        GameRegistry.addRecipe(WOVENCLOTH().makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(WOVENCLOTH().makeStack(),
                 "sss",
                 "sws",
                 "sss",
                 's', Items.string,
                 'w', "stickWood"
-                );
+                ));
 
         /** Sail **/
         GameRegistry.addRecipe(SAIL().makeStack(),
@@ -216,40 +216,40 @@ public class CoreRecipes
                 );
 
         /** Red Iron Compound **/
-        GameRegistry.addRecipe(REDIRONCOMPOUND().makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(REDIRONCOMPOUND().makeStack(),
                 "rrr",
                 "rir",
                 "rrr",
                 'r', "dustRedstone",
                 'i', "ingotIron"
-                );
+                ));
 
         /** Sandy Coal Compound **/
-        GameRegistry.addRecipe(SANDYCOALCOMPOUND().makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(SANDYCOALCOMPOUND().makeStack(),
                 "sss",
                 "scs",
                 "sss",
                 'c', "blockCoal",
                 's', Blocks.sand
-                );
+                ));
 
         /** Red Silicon Compound **/
-        GameRegistry.addRecipe(REDSILICONCOMPOUND().makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(REDSILICONCOMPOUND().makeStack(),
                 "rrr",
                 "rsr",
                 "rrr",
                 'r', "dustRedstone",
                 's', SILICON().makeStack()
-                );
+                ));
 
         /** Glowing Silicon Compound **/
-        GameRegistry.addRecipe(GLOWINGSILICONCOMPOUND().makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(GLOWINGSILICONCOMPOUND().makeStack(),
                 "ggg",
                 "gsg",
                 "ggg",
                 'g', "dustGlowstone",
                 's', SILICON().makeStack()
-                );
+                ));
     }
 
 }

@@ -1,3 +1,6 @@
+v4.5.5
+- FIX: Pipe crash with corrupt item
+
 v4.5.4
 - FIX: Cage lamp recipes creating Fallout lights
 - FIX: Router Utility server crash
