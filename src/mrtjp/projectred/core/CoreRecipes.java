@@ -70,7 +70,7 @@ public class CoreRecipes
     private static void initPartRecipes()
     {
         /** Circuit Plate **/
-        GameRegistry.addSmelting("stone", PLATE().makeStack(2), 0f);
+        GameRegistry.addSmelting(Blocks.stone, PLATE().makeStack(2), 0f);
 
         /** Conductive Plate **/
         GameRegistry.addRecipe(CONDUCTIVEPLATE().makeStack(),
