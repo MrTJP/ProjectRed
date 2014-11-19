@@ -1,5 +1,6 @@
 v4.5.5
-- FIX: Pipe crash with corrupt item
+- FIX: Pipes corrupting item data
+- CHANGE: Many recipes now use Ore Dictionary
 
 v4.5.4
 - FIX: Cage lamp recipes creating Fallout lights
