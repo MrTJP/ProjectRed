@@ -257,10 +257,14 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
             if (r.isEntering && hasReachedMiddle(r))
             {
                 r.isEntering = false
-                if (r.output == 6) handleDrop(r)
+                if (!(0 to 5 contains r.output)) handleDrop(r)
                 else centerReached(r)
             }
-            else if (!r.isEntering && hasReachedEnd(r) && itemFlow.scheduleRemoval(r)) endReached(r)
+            else if (!r.isEntering && hasReachedEnd(r))
+            {
+                if (!(0 to 5 contains r.output)) handleDrop(r)
+                else if (itemFlow.scheduleRemoval(r)) endReached(r)
+            }
         }
         itemFlow.exececuteRemove()
     }
@@ -398,8 +402,8 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
 
     def handleItemUpdatePacket(packet:MCDataInput)
     {
-        val id = packet.readShort
-        val stack = packet.readItemStack
+        val id = packet.readShort()
+        val stack = packet.readItemStack()
         val r = itemFlow.getOrElseUpdate(id, _ => PipePayload(id, stack))
         r.data = packet.readInt()
     }

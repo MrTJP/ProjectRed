@@ -28,14 +28,14 @@ object TransportationRecipes
     private def initPipeRecipes()
     {
         /** Item Transport pipe **/
-        GameRegistry.addRecipe(PipeDefs.BASIC.makeStack(16),
+        GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.BASIC.makeStack(16),
             "sgs",
             'g':JC, "paneGlassColorless",
             's':JC, "stone"
-        )
+        ))
 
         /** Routed Junction pipe **/
-        GameRegistry.addRecipe(PipeDefs.ROUTEDJUNCTION.makeStack(16),
+        GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.ROUTEDJUNCTION.makeStack(16),
             "RrG",
             "dgd",
             "GrR",
@@ -44,40 +44,40 @@ object TransportationRecipes
             'G':JC, PartDefs.GREENILLUMAR.makeStack,
             'd':JC, "gemDiamond",
             'g':JC, "paneGlassColorless"
-        )
+        ))
 
         /** Routed Interface Pipe **/
-        GameRegistry.addRecipe(PipeDefs.ROUTEDINTERFACE.makeStack,
+        GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.ROUTEDINTERFACE.makeStack,
             "rgr",
             "gjg",
             "rgr",
             'g':JC, "nuggetGold",
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack,
             'r':JC, "dustRedstone"
-        )
+        ))
 
         /** Routed Crafting Pipe **/
-        GameRegistry.addRecipe(PipeDefs.ROUTEDCRAFTING.makeStack,
+        GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.ROUTEDCRAFTING.makeStack,
             "rgr", "rjr", "rgr",
             'r':JC, "dustRedstone",
             'g':JC, "dustGlowstone",
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
-        )
+        ))
 
         /** Routed Request Pipe **/
-        GameRegistry.addRecipe(PipeDefs.ROUTEDREQUEST.makeStack,
+        GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.ROUTEDREQUEST.makeStack,
             "rdr", "rjr", "rdr",
             'r':JC, "dustRedstone",
             'd':JC, "gemDiamond",
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
-        )
+        ))
 
         /** Routed Extension Pipe **/
-        GameRegistry.addRecipe(PipeDefs.ROUTEDEXTENSION.makeStack,
+        GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.ROUTEDEXTENSION.makeStack,
             " r ", "rjr", " r ",
             'r':JC, "dustRedstone",
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
-        )
+        ))
 
         /** Routed Firewall Pipe **/
         GameRegistry.addRecipe(PipeDefs.ROUTEDFIREWALL.makeStack,
@@ -96,12 +96,12 @@ object TransportationRecipes
         GameRegistry.addRecipe(new ChipResetRecipe)
 
         /** Null chip **/
-        GameRegistry.addRecipe(PartDefs.NULLROUTINGCHIP.makeStack,
+        GameRegistry.addRecipe(new ShapedOreRecipe(PartDefs.NULLROUTINGCHIP.makeStack,
             "gpp", "grr", "g  ",
             'g':JC, "nuggetGold",
             'p':JC, Items.paper,
             'r':JC, "dustRedstone"
-        )
+        ))
 
         /** Item Responder **/
         addChipRecipe(RoutingChipDefs.ITEMRESPONDER.makeStack,
@@ -168,30 +168,30 @@ object TransportationRecipes
     private def initUpgradeRecipes()
     {
         /** Router Utility **/
-        GameRegistry.addRecipe(new ItemStack(ProjectRedTransportation.itemRouterUtility),
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedTransportation.itemRouterUtility),
             "  r", "iei", "iii",
             'r':JC, "dustRedstone",
             'i':JC, "ingotIron",
-            'e':JC, "gemEmerald")
+            'e':JC, "gemEmerald"))
 
         /** Null Upgrade **/
-        GameRegistry.addRecipe(PartDefs.NULLUPGRADECHIP.makeStack,
+        GameRegistry.addRecipe(new ShapedOreRecipe(PartDefs.NULLUPGRADECHIP.makeStack,
             "prp", "rrr", "prp",
-            'p':JC, Items.paper, 'r':JC, "dustRedstone")
+            'p':JC, Items.paper, 'r':JC, "dustRedstone"))
 
         /** LX **/
-        GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_LX.makeStack,
+        GameRegistry.addRecipe(new ShapedOreRecipe(PartDefs.CHIPUPGRADE_LX.makeStack,
             "rrr", " ng", "r r",
             'r':JC, "dustRedstone",
             'n':JC, PartDefs.NULLUPGRADECHIP.makeStack,
-            'g':JC, "nuggetGold")
+            'g':JC, "nuggetGold"))
 
         /** RX **/
-        GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_RX.makeStack,
+        GameRegistry.addRecipe(new ShapedOreRecipe(PartDefs.CHIPUPGRADE_RX.makeStack,
             "r r", "gn ", "rrr",
             'r':JC, "dustRedstone",
             'n':JC, PartDefs.NULLUPGRADECHIP.makeStack,
-            'g':JC, "nuggetGold")
+            'g':JC, "nuggetGold"))
 
         /** LY **/
         GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_LY.makeStack,
@@ -206,18 +206,18 @@ object TransportationRecipes
             'n':JC, PartDefs.CHIPUPGRADE_RX.makeStack)
 
         /** LZ **/
-        GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_LZ.makeStack,
+        GameRegistry.addRecipe(new ShapedOreRecipe(PartDefs.CHIPUPGRADE_LZ.makeStack,
             "r r", " n ", "rer",
             'r':JC, "dustRedstone",
             'n':JC, PartDefs.CHIPUPGRADE_LY.makeStack,
-            'e':JC, "gemEmerald")
+            'e':JC, "gemEmerald"))
 
         /** RZ **/
-        GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_RZ.makeStack,
+        GameRegistry.addRecipe(new ShapedOreRecipe(PartDefs.CHIPUPGRADE_RZ.makeStack,
             "r r", " n ", "rer",
             'r':JC, "dustRedstone",
             'n':JC, PartDefs.CHIPUPGRADE_RY.makeStack,
-            'e':JC, "gemEmerald")
+            'e':JC, "gemEmerald"))
     }
 
     def initMiscRecipes()

@@ -238,24 +238,24 @@ public class IntegrationRecipes
                 );
 
         /** Light Sensor **/
-        GameRegistry.addRecipe(EnumGate.LightSensor.makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(EnumGate.LightSensor.makeStack(),
                 "PPP",
                 "LLL",
                 "PWP",
                 'P', PartDefs.PLATE().makeStack(),
                 'L', "dyeBlue",
                 'W', PartDefs.CONDUCTIVEPLATE().makeStack()
-                );
+                ));
 
         /** Rain Sensor **/
-        GameRegistry.addRecipe(EnumGate.RainSensor.makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(EnumGate.RainSensor.makeStack(),
                 "PPP",
                 "SSS",
                 "PWP",
                 'P', PartDefs.PLATE().makeStack(),
                 'S', "slimeball",
                 'W', PartDefs.CONDUCTIVEPLATE().makeStack()
-                );
+                ));
 
         /** Bus Transceiver **/
         GameRegistry.addRecipe(EnumGate.BusTransceiver.makeStack(),
@@ -300,7 +300,7 @@ public class IntegrationRecipes
                 );
 
         /** Comparator **/
-        GameRegistry.addRecipe(EnumGate.Comparator.makeStack(),
+        GameRegistry.addRecipe(new ShapedOreRecipe(EnumGate.Comparator.makeStack(),
                 "WCW",
                 "QWQ",
                 "PWP",
@@ -308,7 +308,7 @@ public class IntegrationRecipes
                 'C', PartDefs.CATHODE().makeStack(),
                 'Q', "gemQuartz",
                 'P', PartDefs.PLATE().makeStack()
-                );
+                ));
 
         /** AND Cell **/
         GameRegistry.addRecipe(EnumGate.ANDCell.makeStack(),
