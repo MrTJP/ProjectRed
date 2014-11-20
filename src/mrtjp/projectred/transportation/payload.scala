@@ -51,7 +51,7 @@ class PipePayload(val payloadID:Int)
     // N = priority index
     var data = 0
 
-    def isEntering = ((data>>7)&1) != 0
+    def isEntering = ((data>>6)&1) != 0
     def isEntering_=(b:Boolean){ if (b) data |= 0x40 else data &= ~0x40 }
 
     def speed = ((data>>8)&0xFF)/100.0F
@@ -64,7 +64,7 @@ class PipePayload(val payloadID:Int)
     def input_=(i:Int){ data = (data& ~0x7)|(i&0x7) }
 
     def output = (data>>3)&0x7
-    def output_=(o:Int){ data = (data& ~0x38)|(o&0x7)<<3 }
+    def output_=(i:Int){ data = (data& ~0x38)|(i&0x7)<<3 }
 
     def priorityIndex = (data>>24)&0xF
     def priorityIndex_=(i:Int){ data = (data& ~0xF000000)|(i&0xF)<<24 }
