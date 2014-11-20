@@ -383,7 +383,7 @@ trait TInventoryPipe extends PayloadPipePart with IInventoryProvider
     def shiftOrientation(force:Boolean)
     {
         if (world.isRemote) return
-        val invalid = force || !maskConnects(inOutSide) ||
+        val invalid = force || inOutSide == 6 || !maskConnects(inOutSide) ||
             WorldLib.getTileEntity(world, new BlockCoord(tile).offset(inOutSide), classOf[IInventory]) == null
         if (!invalid) return
         var found = false
@@ -393,7 +393,7 @@ trait TInventoryPipe extends PayloadPipePart with IInventoryProvider
         breakable {
             for (i <- 0 until 6)
             {
-                inOutSide = ((inOutSide+1)%6).asInstanceOf[Byte]
+                inOutSide = ((inOutSide+1)%6).toByte
                 if (maskConnects(inOutSide))
                 {
                     val bc = new BlockCoord(tile).offset(inOutSide)
@@ -407,7 +407,7 @@ trait TInventoryPipe extends PayloadPipePart with IInventoryProvider
             }
         }
 
-        if (!found) inOutSide = -1
+        if (!found) inOutSide = 6
         if (oldSide != inOutSide) sendOrientUpdate()
     }
 
@@ -417,7 +417,7 @@ trait TInventoryPipe extends PayloadPipePart with IInventoryProvider
         else null
     }
 
-    override def getInterfacedSide = if (inOutSide < 0 || inOutSide > 5) -1 else inOutSide^1
+    override def getInterfacedSide = if (!(0 to 5 contains inOutSide)) -1 else inOutSide^1
 
     abstract override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
     {

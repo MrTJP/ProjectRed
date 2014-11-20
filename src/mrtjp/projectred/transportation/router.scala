@@ -319,7 +319,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         }
 
         /** Vector of all paths in this network ordered by cost **/
-        var routersByCost2 = Vector[StartEndPath](new StartEndPath(this, this, -1, 0))
+        var routersByCost2 = Vector[StartEndPath](new StartEndPath(this, this, 6, 0))
         /** Queue of all candidates that need checking **/
         val candidates2 = new JPriorityQueue[StartEndPath](Math.sqrt(sizeEstimate).asInstanceOf[Int])//scala PQ is not working ?!
 
@@ -367,7 +367,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         def ensureRT2(size:Int) {while (routeTable2.length <= size) routeTable2 :+= null}
 
         ensureRT2(getIPAddress)
-        routeTable2(getIPAddress) = Vector(new StartEndPath(this, this, -1, 0)) //consider ourselves for logistic path
+        routeTable2(getIPAddress) = Vector(new StartEndPath(this, this, 6, 0)) //consider ourselves for logistic path
 
         for (p <- routersByCost2) if (p != null) b.breakable
         {
