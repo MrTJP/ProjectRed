@@ -257,14 +257,11 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
             if (r.isEntering && hasReachedMiddle(r))
             {
                 r.isEntering = false
-                if (!(0 to 5 contains r.output)) handleDrop(r)
+                if (r.output == 6) handleDrop(r)
                 else centerReached(r)
             }
             else if (!r.isEntering && hasReachedEnd(r))
-            {
-                if (!(0 to 5 contains r.output)) handleDrop(r)
-                else if (itemFlow.scheduleRemoval(r)) endReached(r)
-            }
+                if (itemFlow.scheduleRemoval(r)) endReached(r)
         }
         itemFlow.exececuteRemove()
     }
