@@ -228,14 +228,14 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
 
     override def readDesc(packet:MCDataInput)
     {
-        connMap = packet.readInt
+        connMap = packet.readInt()
         orientation = packet.readByte
     }
 
     override def read(packet:MCDataInput, key:Int) = key match
     {
         case 1 =>
-            connMap = packet.readInt
+            connMap = packet.readInt()
             if (useStaticRenderer) tile.markRender()
         case _ => super.read(packet, key)
     }
