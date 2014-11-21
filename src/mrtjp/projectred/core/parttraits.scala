@@ -31,7 +31,7 @@ trait TFaceOrient extends TMultiPart with TFacePart
     def setSide(s:Int)
     {
         val oldOrient = orientation
-        orientation = (orientation&0x3|s<<2).asInstanceOf[Byte]
+        orientation = (orientation&0x3|s<<2).toByte
         if (oldOrient != orientation) onOrientationChanged(oldOrient)
     }
 
@@ -40,7 +40,7 @@ trait TFaceOrient extends TMultiPart with TFacePart
     def setRotation(r:Int)
     {
         val oldOrient = orientation
-        orientation = (orientation&0xFC|r).asInstanceOf[Byte]
+        orientation = (orientation&0xFC|r).toByte
         if (oldOrient != orientation) onOrientationChanged(oldOrient)
     }
 
