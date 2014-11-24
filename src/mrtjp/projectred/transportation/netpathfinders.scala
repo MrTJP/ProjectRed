@@ -116,6 +116,8 @@ class LSPathFinder3(start:IWorldRouter, max:Int)
             case that:Node => bc == that.bc && hop == that.hop
             case _ => false
         }
+
+        override def hashCode = bc.hashCode*7+hop
     }
 }
 
