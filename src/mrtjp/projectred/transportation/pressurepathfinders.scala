@@ -1,6 +1,7 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.vec.BlockCoord
+import codechicken.multipart.TileMultipart
 import mrtjp.core.item.ItemKey
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.projectred.core.libmc.PRLib
@@ -47,7 +48,7 @@ class PressurePathfinder(item:ItemKey, pipe:TPressureSubsystem, dim:Int, color:I
         val bc = new BlockCoord(pipe.tile)
         val q = Queue.newBuilder[Node]
         for (s <- 0 until 6 if (dim&1<<s) != 0 && pipe.maskConnects(s)) q += Node(bc, s)
-        iterate(q.result())
+        iterate(q.result(), Set(Node(bc)))
     }
 
     @tailrec
@@ -57,43 +58,39 @@ class PressurePathfinder(item:ItemKey, pipe:TPressureSubsystem, dim:Int, color:I
         case Seq(next, rest@_*) => getTile(next.bc) match
         {
             case dev:TPressureDevice =>
-                if (dev.acceptInput(item, next.dir^1)) setInvPath(next)
-                else if (dev.acceptBacklog(item, next.dir^1)) setBacklog(next)
+                if (dev.canAcceptInput(item, next.dir^1)) setInvPath(next)
+                else if (dev.canAcceptBacklog(item, next.dir^1)) setBacklog(next)
                 iterate(rest, closed+next)
 
             case inv:IInventory =>
                 if (InvWrapper.wrap(inv).hasSpaceForItem(item)) setInvPath(next)
                 iterate(rest, closed+next)
 
-            case _ => getCenterPart(next.bc) match
+            case tmp:TileMultipart => tmp.partMap(6) match
             {
-                case dev:TPressureDevice =>
-                    if (dev.acceptInput(item, next.dir^1)) setInvPath(next)
-                    else if (dev.acceptBacklog(item, next.dir^1)) setBacklog(next)
-                    iterate(rest, closed+next)
-
                 case p:TPressureTube =>
                     val upNext = Vector.newBuilder[Node]
                     for (s <- 0 until 6) if (s != (next.dir^1) && p.maskConnects(s))
                     {
                         val route = next --> (s, p.pathWeight, p.pathFilter(next.dir^1, s))
                         if (route.flagRouteTo && route.allowColor(color) && route.allowItem(item))
-                            if (!closed(route)) upNext += route
+                            if (!closed(route) && !open.contains(route)) upNext += route
                     }
                     iterate(rest++upNext.result(), closed+next)
 
                 case _ => iterate(rest, closed+next)
             }
+            case _ => iterate(rest, closed+next)
         }
         case _ =>
     }
 
-    private def getCenterPart(bc:BlockCoord) = PRLib.getMultiPart(pipe.world, bc, 6)
     private def getTile(bc:BlockCoord) = pipe.world.getTileEntity(bc.x, bc.y, bc.z)
 
     private object Node
     {
-        def apply(bc:BlockCoord, dir:Int):Node = new Node(bc.copy().offset(dir), 1, dir, dir)
+        def apply(bc:BlockCoord):Node = new Node(bc.copy, 0, 6, 6)
+        def apply(bc:BlockCoord, dir:Int):Node = new Node(bc.copy.offset(dir), 1, dir, dir)
     }
     private class Node(val bc:BlockCoord, val dist:Int, val dir:Int, val hop:Int, filters:Set[PathFilter] = Set.empty) extends Path(filters) with Ordered[Node]
     {
@@ -105,8 +102,12 @@ class PressurePathfinder(item:ItemKey, pipe:TPressureSubsystem, dim:Int, color:I
 
         override def equals(other:Any) = other match
         {
-            case that:Node => bc == that.bc && hop == that.hop
+            case that:Node => bc == that.bc
             case _ => false
         }
+
+        override def hashCode = bc.hashCode
+
+        override def toString = "@"+bc.toString+": delta("+dir+") hop("+hop+")"
     }
 }

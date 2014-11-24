@@ -15,7 +15,8 @@ trait TPressureSubsystem extends PayloadPipePart
 {
     override def canConnectPart(part:IConnectable, s:Int) = part match
     {
-        case p:TPressureSubsystem => true
+        case ps:TPressureSubsystem => true
+        case pd:TPressureDevice if pd.canConnectSide(s^1) => true
         case _ => super.canConnectPart(part, s)
     }
 }
@@ -108,9 +109,12 @@ trait TPressureTube extends TPressureSubsystem
 
 trait TPressureDevice
 {
-    def acceptInput(item:ItemKey, side:Int):Boolean
+    def canAcceptInput(item:ItemKey, side:Int):Boolean
+    def canAcceptBacklog(item:ItemKey, side:Int):Boolean
 
-    def acceptBacklog(item:ItemKey, side:Int):Boolean
+    def canConnectSide(side:Int):Boolean
+
+    def acceptItem(item:PipePayload, side:Int)
 }
 
 class PressureTube extends BasicPipeAbstraction with TPressureTube
