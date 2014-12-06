@@ -231,7 +231,7 @@ class BundledCablePart extends WirePart with TFaceBundledAquisitions with TBundl
         WorldLib.getTileEntity(world, posOfStraight(r)) match
         {
             case ibe:IBundledEmitter => resolveArray(ibe, absoluteDir(rotFromStraight(r)))
-            case t if APIImpl_Transmission.isValidInteractionFor(world, t.xCoord, t.yCoord, t.zCoord) =>
+            case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.xCoord, t.yCoord, t.zCoord) =>
                 resolveArray(t, absoluteDir(rotFromStraight(r)))
             case _ => super.calcStraightArray(r)
         }
@@ -255,7 +255,7 @@ class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitio
         WorldLib.getTileEntity(world, posOfStraight(s)) match
         {
             case ibe:IBundledEmitter => resolveArray(ibe, s^1)
-            case t if APIImpl_Transmission.isValidInteractionFor(world, t.xCoord, t.yCoord, t.zCoord) =>
+            case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.xCoord, t.yCoord, t.zCoord) =>
                 resolveArray(t, s^1)
             case _ => super.calcStraightArray(s)
         }
