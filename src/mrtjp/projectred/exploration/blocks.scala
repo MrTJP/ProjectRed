@@ -157,16 +157,16 @@ object DecorativeStoneDefs extends BlockDefinition
     override type EnumVal = StoneVal
     override def getBlock = ProjectRedExploration.blockDecoratives
 
-    val MARBLE = new StoneVal("stonemarble", 1.0F, 14.0F, null)
-    val MARBLEBRICK = new StoneVal("brickmarble", 1.0F, 14.0F, null)
-    val BASALTCOBBLE = new StoneVal("cobblebasalt", 2.5F, 14.0F, null)
-    val BASALT = new StoneVal("stonebasalt", 2.5F, 16, BASALTCOBBLE.makeStack)
-    val BASALTBRICK = new StoneVal("brickbasalt", 2.5F, 20, null)
-    val RUBYBLOCK = new StoneVal("storageruby", 5.0F, 10.0F, null)
-    val SAPPHIREBLOCK = new StoneVal("storagesapphire", 5.0F, 10.0F, null)
-    val PERIDOTBLOCK = new StoneVal("storageperidot", 5.0F, 10.0F, null)
+    val MARBLE = new StoneVal("stonemarble", 2, 1.0F, 14.0F, null)
+    val MARBLEBRICK = new StoneVal("brickmarble", 2, 1.0F, 14.0F, null)
+    val BASALTCOBBLE = new StoneVal("cobblebasalt", 2, 2.5F, 14.0F, null)
+    val BASALT = new StoneVal("stonebasalt", 2, 2.5F, 16, BASALTCOBBLE.makeStack)
+    val BASALTBRICK = new StoneVal("brickbasalt", 2, 2.5F, 20, null)
+    val RUBYBLOCK = new StoneVal("storageruby", 2, 5.0F, 10.0F, null)
+    val SAPPHIREBLOCK = new StoneVal("storagesapphire", 2, 5.0F, 10.0F, null)
+    val PERIDOTBLOCK = new StoneVal("storageperidot", 2, 5.0F, 10.0F, null)
 
-    class StoneVal(iconName:String, val hardness:Float, val explosion:Float, val drop:ItemStack) extends BlockDef
+    class StoneVal(iconName:String, val harvest:Int, val hardness:Float, val explosion:Float, val drop:ItemStack) extends BlockDef
     {
         var icon:IIcon = null
         def registerIcon(reg:IIconRegister)
