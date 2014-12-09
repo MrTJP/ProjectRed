@@ -28,6 +28,7 @@ class ExplorationProxy_server extends IProxy
         for (o <- OreDefs.values) blockOres.setHarvestLevel("pickaxe", o.harvest, o.meta)
 
         blockDecoratives = new BlockDecoratives
+        for (b <- DecorativeStoneDefs.values) blockDecoratives.setHarvestLevel("pickaxe", b.harvest, b.meta)
 
         blockDecorativeWalls = new BlockDecorativeWalls
 

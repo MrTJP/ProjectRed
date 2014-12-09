@@ -12,7 +12,7 @@ import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.core.{ItemCraftingDamage, PartDefs}
 import mrtjp.projectred.exploration.ToolDefs.ToolDef
-import net.minecraft.block.{Block, BlockFlower, BlockLeaves}
+import net.minecraft.block._
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.EntityLivingBase
@@ -299,7 +299,7 @@ class ItemGemSickle(override val toolDef:ToolDef) extends ItemTool(3, toolDef.ma
             val lz = z+j
             val b = w.getBlock(lx, ly, lz)
             val meta = w.getBlockMetadata(lx, ly, lz)
-            if (b != null && WorldLib.isPlantType(w, x, y, z, b))
+            if (b != null && WorldLib.isPlantType(w, x, y, z, b) && !b.isInstanceOf[BlockGrass])
             {
                 if (b.canHarvestBlock(player, meta)) b.harvestBlock(w, player, lx, ly, lz, meta)
                 w.setBlockToAir(lx, ly, lz)
