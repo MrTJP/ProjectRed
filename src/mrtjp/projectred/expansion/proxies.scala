@@ -4,7 +4,7 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.multipart.MultiPartRegistry
 import cpw.mods.fml.common.Loader
 import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.projectred.core.IProxy
+import mrtjp.projectred.core.{Configurator, IProxy}
 
 class ExpansionProxy_server extends IProxy
 {
@@ -17,7 +17,7 @@ class ExpansionProxy_server extends IProxy
 
     def init()
     {
-        if (Loader.isModLoaded("ProjRed|Transmission"))
+        if (Loader.isModLoaded("ProjRed|Transmission") && Configurator.version.contains("@"))
         {
             loadPowerTest = true
             import mrtjp.projectred.transmission._
@@ -26,7 +26,6 @@ class ExpansionProxy_server extends IProxy
                 case "pr_100v" => new PowerWire100v
                 case "pr_f100v" => new FramedPowerWire100v
             })
-
         }
 
 //        //Machine1 (processing)
