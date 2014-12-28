@@ -13,11 +13,33 @@ import net.minecraft.util.MovingObjectPosition
 
 trait TPressureSubsystem extends PayloadPipePart
 {
-    override def canConnectPart(part:IConnectable, s:Int) = part match
+    abstract override def canConnectPart(part:IConnectable, s:Int) = part match
     {
         case ps:TPressureSubsystem => true
         case pd:TPressureDevice if pd.canConnectSide(s^1) => true
         case _ => super.canConnectPart(part, s)
+    }
+
+    abstract override def discoverStraightOverride(s:Int) =
+    {
+        WorldLib.getTileEntity(world, posOfStraight(s)) match
+        {
+            case pd:TPressureDevice if pd.canConnectSide(s^1) => true
+            case _ => super.discoverStraightOverride(s)
+        }
+    }
+
+    override def passPayload(r:PipePayload):Boolean =
+    {
+        if (passToPressureDevice(r)) return true
+
+        super.passPayload(r)
+    }
+
+    def passToPressureDevice(r:PipePayload) = WorldLib.getTileEntity(world, posOfStraight(r.output)) match
+    {
+        case pd:TPressureDevice => pd.acceptItem(r, r.output^1)
+        case _ => false
     }
 }
 
@@ -28,7 +50,7 @@ trait TPressureTube extends TPressureSubsystem
     override def save(tag:NBTTagCompound)
     {
         super.save(tag)
-        tag.setByte("flow", lastFlow.asInstanceOf[Byte])
+        tag.setByte("flow", lastFlow.toByte)
     }
 
     override def load(tag:NBTTagCompound)
@@ -65,13 +87,23 @@ trait TPressureTube extends TPressureSubsystem
         trail(lastFlow)
     }
 
+    def hasDestination(r:PipePayload, from:Int):Boolean =
+    {
+        val dim = (~(1<<from))&openOuts
+        if (dim == 0) return false
+
+        val pf = new PressurePathfinder(r.payload.key, this, dim) //TODO incorporate color
+        pf.start()
+        pf.invDirs != 0
+    }
+
     override def resolveDestination(r:PipePayload)
     {
         if (Integer.bitCount(openOuts) > 2 || r.priorityIndex == 0)
         {
             val dim = (~(1<<(r.input^1)))&openOuts
 
-            val pf = new PressurePathfinder(r.payload.key, this, dim)
+            val pf = new PressurePathfinder(r.payload.key, this, dim) //TODO incorporate color
             pf.start()
 
             if (pf.invDirs != 0)
@@ -81,7 +113,7 @@ trait TPressureTube extends TPressureSubsystem
             }
             else if (pf.backlogDirs != 0)
             {
-                r.output = resolveOutputConflict(pf.invDirs)
+                r.output = resolveOutputConflict(pf.backlogDirs)
                 r.priorityIndex == PressurePriority.backlog
             }
             else chooseRandomDestination(r)
@@ -114,7 +146,7 @@ trait TPressureDevice
 
     def canConnectSide(side:Int):Boolean
 
-    def acceptItem(item:PipePayload, side:Int)
+    def acceptItem(item:PipePayload, side:Int):Boolean
 }
 
 class PressureTube extends BasicPipeAbstraction with TPressureTube

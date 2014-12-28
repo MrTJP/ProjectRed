@@ -59,12 +59,12 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
         orientation = tag.getByte("rot")
     }
 
-    override def read(in:MCDataInput, switchkey:Int) = switchkey match
+    override def read(in:MCDataInput, key:Int) = key match
     {
         case 1 =>
             orientation = in.readByte()
             markRender()
-        case _ => super.read(in, switchkey)
+        case _ => super.read(in, key)
     }
 
     override def onBlockActivated(player:EntityPlayer, side:Int):Boolean =
