@@ -49,14 +49,14 @@ repositories {
         name "dvs1"
         url "http://dvs1.progwml6.com/files/maven/"
     }
-    ivy {
-        name 'ThermalExpansion'
-        artifactPattern "http://addons.cursecdn.com/files/${config.texpan.cf}/[module]-[revision].[ext]"
-    }
-    ivy {
-        name 'CoFHCore'
-        artifactPattern "http://addons.cursecdn.com/files/${config.cofh.cf}/[module]-[revision].[ext]"
-    }
+//    ivy {
+//        name 'ThermalExpansion'
+//        artifactPattern "http://addons.cursecdn.com/files/${config.texpan.cf}/[module]-[revision].[ext]"
+//    }
+//    ivy {
+//        name 'CoFHCore'
+//        artifactPattern "http://addons.cursecdn.com/files/${config.cofh.cf}/[module]-[revision].[ext]"
+//    }
 }
 
 configurations {

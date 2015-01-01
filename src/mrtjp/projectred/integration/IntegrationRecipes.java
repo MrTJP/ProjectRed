@@ -2,10 +2,7 @@ package mrtjp.projectred.integration;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import mrtjp.projectred.core.PartDefs;
-import mrtjp.core.color.Colors;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class IntegrationRecipes
