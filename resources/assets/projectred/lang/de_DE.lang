@@ -24,7 +24,7 @@ item.projectred.core.part.illumar0.name=Weißes Illumar
 item.projectred.core.part.illumar1.name=Oranges Illumar
 item.projectred.core.part.illumar2.name=Magentafarbenes Illumar
 item.projectred.core.part.illumar3.name=Hellblaues Illumar
-item.projectred.core.part.illumar4.name=GelbesIllumar
+item.projectred.core.part.illumar4.name=Gelbes Illumar
 item.projectred.core.part.illumar5.name=Hellgrünes Illumar
 item.projectred.core.part.illumar6.name=Pinkes Illumar
 item.projectred.core.part.illumar7.name=Graues Illumar
@@ -67,7 +67,7 @@ item.projectred.core.datacard.name=Datenkarte
 
 
 itemGroup.expansion=Project Red: Expansion
-
+tile.projectred.expansion.machine2|0.name=Routen-Netzwerk-Controller
 
 
 itemGroup.transport=Project Red: Transport
@@ -82,6 +82,7 @@ item.projectred.transportation.routingchip|6.name=Item-Vorrats-Bewahrungs-Chip
 item.projectred.transportation.routingchip|7.name=Item-Herstellungs-Chip
 
 item.projectred.transportation.cpu|0.name=Routen-Netzwerk-CPU
+item.projectred.transportation.creativecpu.name=Kreativ-Routen-Netzwerk-CPU
 
 item.projectred.transportation.routerutil.name=Router-Werkzeug
 
@@ -298,38 +299,38 @@ item.projectred.illumination.flightbutton|12.name=Brauner Feedback-Illumarknopf
 item.projectred.illumination.flightbutton|13.name=Grüner Feedback-Illumarknopf
 item.projectred.illumination.flightbutton|14.name=Roter Feedback-Illumarknopf
 item.projectred.illumination.flightbutton|15.name=Schwarzer Feedback-Illumarknopf
-item.projectred.illumination.cagelamp|0.name=Weiße Gitterlampe
-item.projectred.illumination.cagelamp|1.name=Orange Gitterlampe
-item.projectred.illumination.cagelamp|2.name=Magentafarbene Gitterlampe
-item.projectred.illumination.cagelamp|3.name=Hellblaue Gitterlampe
-item.projectred.illumination.cagelamp|4.name=Gelbe Gitterlampe
-item.projectred.illumination.cagelamp|5.name=Hellgrüne Gitterlampe
-item.projectred.illumination.cagelamp|6.name=Pinke Gitterlampe
-item.projectred.illumination.cagelamp|7.name=Graue Gitterlampe
-item.projectred.illumination.cagelamp|8.name=Hellgraue Gitterlampe
-item.projectred.illumination.cagelamp|9.name=Türkise Gitterlampe
-item.projectred.illumination.cagelamp|10.name=Violette Gitterlampe
-item.projectred.illumination.cagelamp|11.name=Blaue Gitterlampe
-item.projectred.illumination.cagelamp|12.name=Braune Gitterlampe
-item.projectred.illumination.cagelamp|13.name=Grüne Gitterlampe
-item.projectred.illumination.cagelamp|14.name=Rote Gitterlampe
-item.projectred.illumination.cagelamp|15.name=Schwarze Gitterlampe
-item.projectred.illumination.cagelamp.inv|0.name=Invertierte Weiße Gitterlampe
-item.projectred.illumination.cagelamp.inv|1.name=Invertierte Orange Gitterlampe
-item.projectred.illumination.cagelamp.inv|2.name=Invertierte Magentafarbene Gitterlampe
-item.projectred.illumination.cagelamp.inv|3.name=Invertierte Hellblaue Gitterlampe
-item.projectred.illumination.cagelamp.inv|4.name=Invertierte Gelbe Gitterlampe
-item.projectred.illumination.cagelamp.inv|5.name=Invertierte Hellgrüne Gitterlampe
-item.projectred.illumination.cagelamp.inv|6.name=Invertierte Pinke Gitterlampe
-item.projectred.illumination.cagelamp.inv|7.name=Invertierte Graue Gitterlampe
-item.projectred.illumination.cagelamp.inv|8.name=Invertierte Hellgraue Gitterlampe
-item.projectred.illumination.cagelamp.inv|9.name=Invertierte Türkise Gitterlampe
-item.projectred.illumination.cagelamp.inv|10.name=Invertierte Violette Gitterlampe
-item.projectred.illumination.cagelamp.inv|11.name=Invertierte Blaue Gitterlampe
-item.projectred.illumination.cagelamp.inv|12.name=Invertierte Braune Gitterlampe
-item.projectred.illumination.cagelamp.inv|13.name=Invertierte Grüne Gitterlampe
-item.projectred.illumination.cagelamp.inv|14.name=Invertierte Rote Gitterlampe
-item.projectred.illumination.cagelamp.inv|15.name=Invertierte Schwarze Gitterlampe
+item.projectred.illumination.cagelamp|0.name=Weiße Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|1.name=Orange Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|2.name=Magentafarbene Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|3.name=Hellblaue Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|4.name=Gelbe Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|5.name=Hellgrüne Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|6.name=Pinke Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|7.name=Graue Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|8.name=Hellgraue Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|9.name=Türkise Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|10.name=Violette Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|11.name=Blaue Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|12.name=Braune Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|13.name=Grüne Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|14.name=Rote Lichtausfall-Lampe
+item.projectred.illumination.cagelamp|15.name=Schwarze Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|0.name=Invertierte Weiße Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|1.name=Invertierte Orange Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|2.name=Invertierte Magentafarbene Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|3.name=Invertierte Hellblaue Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|4.name=Invertierte Gelbe Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|5.name=Invertierte Hellgrüne Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|6.name=Invertierte Pinke Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|7.name=Invertierte Graue Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|8.name=Invertierte Hellgraue Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|9.name=Invertierte Türkise Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|10.name=Invertierte Violette Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|11.name=Invertierte Blaue Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|12.name=Invertierte Braune Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|13.name=Invertierte Grüne Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|14.name=Invertierte Rote Lichtausfall-Lampe
+item.projectred.illumination.cagelamp.inv|15.name=Invertierte Schwarze Lichtausfall-Lampe
 item.projectred.illumination.fixture|0.name=Weiße Leuchte
 item.projectred.illumination.fixture|1.name=Orange Leuchte
 item.projectred.illumination.fixture|2.name=Magentafarbene Leuchte
@@ -362,7 +363,38 @@ item.projectred.illumination.fixture.inv|12.name=Invertierte Braune Leuchte
 item.projectred.illumination.fixture.inv|13.name=Invertierte Grüne Leuchte
 item.projectred.illumination.fixture.inv|14.name=Invertierte Rote Leuchte
 item.projectred.illumination.fixture.inv|15.name=Invertierte Schwarze Leuchte
-
+item.projectred.illumination.cagelamp2|0.name=Weiße Gitterlampe
+item.projectred.illumination.cagelamp2|1.name=Orange Gitterlampe
+item.projectred.illumination.cagelamp2|2.name=Magentafarbene Gitterlampe
+item.projectred.illumination.cagelamp2|3.name=Hellblaue Gitterlampe
+item.projectred.illumination.cagelamp2|4.name=Gelbe Gitterlampe
+item.projectred.illumination.cagelamp2|5.name=Hellgrüne Gitterlampe
+item.projectred.illumination.cagelamp2|6.name=Pinke Gitterlampe
+item.projectred.illumination.cagelamp2|7.name=Graue Gitterlampe
+item.projectred.illumination.cagelamp2|8.name=Hellgraue Gitterlampe
+item.projectred.illumination.cagelamp2|9.name=Türkise Gitterlampe
+item.projectred.illumination.cagelamp2|10.name=Violette Gitterlampe
+item.projectred.illumination.cagelamp2|11.name=Blaue Gitterlampe
+item.projectred.illumination.cagelamp2|12.name=Braune Gitterlampe
+item.projectred.illumination.cagelamp2|13.name=Grüne Gitterlampe
+item.projectred.illumination.cagelamp2|14.name=Rote Gitterlampe
+item.projectred.illumination.cagelamp2|15.name=Schwarze Gitterlampe
+item.projectred.illumination.cagelamp2.inv|0.name=Invertierte Weiße Gitterlampe
+item.projectred.illumination.cagelamp2.inv|1.name=Invertierte Orange Gitterlampe
+item.projectred.illumination.cagelamp2.inv|2.name=Invertierte Magentafarbene Gitterlampe
+item.projectred.illumination.cagelamp2.inv|3.name=Invertierte Hellblaue Gitterlampe
+item.projectred.illumination.cagelamp2.inv|4.name=Invertierte Gelbe Gitterlampe
+item.projectred.illumination.cagelamp2.inv|5.name=Invertierte Hellgrüne Gitterlampe
+item.projectred.illumination.cagelamp2.inv|6.name=Invertierte Pinke Gitterlampe
+item.projectred.illumination.cagelamp2.inv|7.name=Invertierte Graue Gitterlampe
+item.projectred.illumination.cagelamp2.inv|8.name=Invertierte Hellgraue Gitterlampe
+item.projectred.illumination.cagelamp2.inv|9.name=Invertierte Türkise Gitterlampe
+item.projectred.illumination.cagelamp2.inv|10.name=Invertierte Violette Gitterlampe
+item.projectred.illumination.cagelamp2.inv|11.name=Invertierte Blaue Gitterlampe
+item.projectred.illumination.cagelamp2.inv|12.name=Invertierte Braune Gitterlampe
+item.projectred.illumination.cagelamp2.inv|13.name=Invertierte Grüne Gitterlampe
+item.projectred.illumination.cagelamp2.inv|14.name=Invertierte Rote Gitterlampe
+item.projectred.illumination.cagelamp2.inv|15.name=Invertierte Schwarze Gitterlampe
 
 
 
@@ -398,7 +430,8 @@ item.projectred.integration.gate|25.name=Buffer-Zelle
 item.projectred.integration.gate|26.name=Komparator
 item.projectred.integration.gate|27.name=AND-Zelle
 item.projectred.integration.gate|28.name=Bus-Randomizer
-
+item.projectred.integration.gate|29.name=Bus-Converter
+item.projectred.integration.gate|30.name=Bus-Eingabefeld
 
 
 
@@ -466,4 +499,3 @@ itemGroup.compat=Project Red: Kompatibilität
 
 tile.projectred.compatibility.liqredstone.name=Flüssiges Redstone
 tile.projectred.compatibility.liqcondredmetal.name=Geschmolzenes Konduktivrotmetall
-
