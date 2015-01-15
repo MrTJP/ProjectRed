@@ -95,7 +95,7 @@ class PressurePathfinder(item:ItemKey, pipe:TPressureSubsystem, dim:Int, color:I
     private class Node(val bc:BlockCoord, val dist:Int, val dir:Int, val hop:Int, filters:Set[PathFilter] = Set.empty) extends Path(filters) with Ordered[Node]
     {
         def -->(toDir:Int, distAway:Int, filter:PathFilter):Node = new Node(bc.copy.offset(toDir), dist+distAway, toDir, hop, filters+filter)
-        def -->(toDir:Int, distAway:Int):Node = new Node(bc.copy().offset(toDir), dist+distAway, toDir, hop, filters)
+        def -->(toDir:Int, distAway:Int):Node = new Node(bc.copy.offset(toDir), dist+distAway, toDir, hop, filters)
         def -->(toDir:Int):Node = this -->(toDir, 1)
 
         override def compare(that:Node) = dist-that.dist

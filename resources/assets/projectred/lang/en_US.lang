@@ -67,7 +67,9 @@ item.projectred.core.datacard.name=Data Card
 
 
 itemGroup.expansion=Project Red: Expansion
-tile.projectred.expansion.machine2|0.name=Routing Network Controller
+tile.projectred.expansion.machine2|0.name=Block Breaker
+tile.projectred.expansion.machine2|1.name=Item Importer
+tile.projectred.expansion.machine2|2.name=Deployer
 
 
 itemGroup.transport=Project Red: Transportation
@@ -81,9 +83,6 @@ item.projectred.transportation.routingchip|5.name=Item Broadcaster chip
 item.projectred.transportation.routingchip|6.name=Item Stock Keeper chip
 item.projectred.transportation.routingchip|7.name=Item Crafting chip
 
-item.projectred.transportation.cpu|0.name=Routing Network CPU
-item.projectred.transportation.creativecpu.name=Creative Routing Network CPU
-
 item.projectred.transportation.routerutil.name=Router Utility
 
 item.projectred.transportation.pipe|0.name=Item Transport pipe
@@ -93,6 +92,8 @@ item.projectred.transportation.pipe|3.name=Routed Crafting pipe
 item.projectred.transportation.pipe|4.name=Routed Request pipe
 item.projectred.transportation.pipe|5.name=Routed Extension pipe
 item.projectred.transportation.pipe|6.name=Routed Firewall pipe
+item.projectred.transportation.pipe|7.name=Pressure tube
+item.projectred.transportation.pipe|8.name=Pressure Resistance tube
 
 
 itemGroup.exploration=Project Red: Exploration
@@ -164,39 +165,6 @@ tile.projectred.exploration.stonewalls|4.name=Basalt Brick Wall
 tile.projectred.exploration.stonewalls|5.name=Ruby Wall
 tile.projectred.exploration.stonewalls|6.name=Sapphire Wall
 tile.projectred.exploration.stonewalls|7.name=Peridot Wall
-tile.projectred.exploration.dyeleaf|0.name=White Stained Leaf
-tile.projectred.exploration.dyeleaf|1.name=Orange Stained Leaf
-tile.projectred.exploration.dyeleaf|2.name=Magenta Stained Leaf
-tile.projectred.exploration.dyeleaf|3.name=Light Blue Stained Leaf
-tile.projectred.exploration.dyeleaf|4.name=Yellow Stained Leaf
-tile.projectred.exploration.dyeleaf|5.name=Lime Stained Leaf
-tile.projectred.exploration.dyeleaf|6.name=Pink Stained Leaf
-tile.projectred.exploration.dyeleaf|7.name=Grey Stained Leaf
-tile.projectred.exploration.dyeleaf|8.name=Light Grey Stained Leaf
-tile.projectred.exploration.dyeleaf|9.name=Cyan Stained Leaf
-tile.projectred.exploration.dyeleaf|10.name=Purple Stained Leaf
-tile.projectred.exploration.dyeleaf|11.name=Blue Stained Leaf
-tile.projectred.exploration.dyeleaf|12.name=Brown Stained Leaf
-tile.projectred.exploration.dyeleaf|13.name=Green Stained Leaf
-tile.projectred.exploration.dyeleaf|14.name=Red Stained Leaf
-tile.projectred.exploration.dyeleaf|15.name=Black Stained Leaf
-tile.projectred.exploration.dyesapling|0.name=White Stained Sapling
-tile.projectred.exploration.dyesapling|1.name=Orange Stained Sapling
-tile.projectred.exploration.dyesapling|2.name=Magenta Stained Sapling
-tile.projectred.exploration.dyesapling|3.name=Light Blue Stained Sapling
-tile.projectred.exploration.dyesapling|4.name=Yellow Stained Sapling
-tile.projectred.exploration.dyesapling|5.name=Lime Stained Sapling
-tile.projectred.exploration.dyesapling|6.name=Pink Stained Sapling
-tile.projectred.exploration.dyesapling|7.name=Grey Stained Sapling
-tile.projectred.exploration.dyesapling|8.name=Light Grey Stained Sapling
-tile.projectred.exploration.dyesapling|9.name=Cyan Stained Sapling
-tile.projectred.exploration.dyesapling|10.name=Purple Stained Sapling
-tile.projectred.exploration.dyesapling|11.name=Blue Stained Sapling
-tile.projectred.exploration.dyesapling|12.name=Brown Stained Sapling
-tile.projectred.exploration.dyesapling|13.name=Green Stained Sapling
-tile.projectred.exploration.dyesapling|14.name=Red Stained Sapling
-tile.projectred.exploration.dyesapling|15.name=Black Stained Sapling
-
 
 
 
