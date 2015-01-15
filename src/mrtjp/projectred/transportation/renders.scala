@@ -126,6 +126,7 @@ object RenderPipe
                 case _ =>
             }
             doRenderItem(r, frameX, frameY, frameZ)
+            if (p.isInstanceOf[TNetworkPipe]) doPriorityRender(r, frameX, frameY, frameZ)
         }
         GL11.glEnable(GL11.GL_LIGHTING)
         GL11.glPopMatrix()
@@ -146,7 +147,10 @@ object RenderPipe
         customRenderItem.doRender(dummyEntityItem, 0, 0, 0, 0, 0)
 
         GL11.glPopMatrix()
+    }
 
+    private def doPriorityRender(r:PipePayload, x:Double, y:Double, z:Double)
+    {
         GL11.glPushMatrix()
         prepareRenderState()
         GL11.glEnable(GL11.GL_LIGHTING)

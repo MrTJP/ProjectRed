@@ -36,7 +36,7 @@ object TransmissionRecipes
 
         for (w <- WireDef.INSULATED_WIRES)
             (RecipeLib.newShapelessBuilder
-                += new OreIn(Colors.get(w.meta - WireDef.INSULATED_0.meta).getOreDict)
+                += new OreIn(Colors.get(w.meta-WireDef.INSULATED_0.meta).getOreDict)
                 += new OreIn(WireDef.oreDictDefinitionInsFramed)
                 += new MicroIn(MicroIn.edge, MicroIn.eight, Blocks.log)
                 += new ItemOut(w.makeFramedStack)).registerResult()

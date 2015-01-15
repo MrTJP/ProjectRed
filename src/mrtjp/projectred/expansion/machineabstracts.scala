@@ -67,7 +67,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
         case _ => super.read(in, key)
     }
 
-    override def onBlockActivated(player:EntityPlayer, side:Int):Boolean =
+    override def onBlockActivated(player:EntityPlayer, actside:Int):Boolean =
     {
         val held = player.getHeldItem
         if (held != null && held.getItem.isInstanceOf[IScrewdriver])
