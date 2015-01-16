@@ -24,9 +24,9 @@ import org.lwjgl.opengl.GL11
 
 import scala.collection.JavaConversions._
 
-trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationAcquisitions with TSwitchPacket with TNormalOcclusion
+trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationCommons with TSwitchPacket with TNormalOcclusion
 {
-    def preparePlacement(side:Int, meta:Int) {}
+    def preparePlacement(side:Int, meta:Int){}
 
     override def onPartChanged(part:TMultiPart)
     {
@@ -57,9 +57,6 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
             else WirePropagator.propagateTo(this, RISING)
         }
     }
-
-    def propagate(from:TMultiPart, mode:Int)
-    def propagateOther(mode:Int) {}
 
     override def onAdded()
     {
@@ -201,7 +198,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     def useStaticRenderer = Configurator.staticWires
 }
 
-abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectable
+abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectable with TFacePropagation
 {
     override def preparePlacement(side:Int, meta:Int)
     {
@@ -247,15 +244,15 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
 
     override def canConnectCorner(r:Int) = true
 
-    def canStay =
+    override def canStay =
     {
         val pos = new BlockCoord(tile).offset(side)
         PlacementLib.canPlaceWireOnSide(world, pos.x, pos.y, pos.z, side^1)
     }
 
-    def getItem = getWireType.makeStack
+    override def getItem = getWireType.makeStack
 
-    def setRenderFlag(part:IConnectable) = part match
+    override def setRenderFlag(part:IConnectable) = part match
     {
         case w:WirePart =>
             if (w.getThickness == getThickness) side < w.side else w.getThickness > getThickness
@@ -271,19 +268,6 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
             case t:TMultiPart => false
             case null => true
         }
-    }
-
-    def propagate(from:TMultiPart, mode:Int)
-    {
-        if (mode != FORCED) WirePropagator.addPartChange(this)
-        for (r <- 0 until 4)
-        {
-            if (maskConnectsCorner(r)) propagateExternal(getCorner(r), posOfCorner(r), from, mode)
-            else if (maskConnectsStraight(r)) propagateExternal(getStraight(r), posOfStraight(r), from, mode)
-            else if (maskConnectsInside(r)) propagateInternal(getInternal(r), from, mode)
-        }
-        if (maskConnectsCenter) propagateInternal(getCenter, from, mode)
-        propagateOther(mode)
     }
 
     override def getType = getWireType.wireType
@@ -315,7 +299,7 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
     }
 }
 
-abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterConnectable with ISidedHollowConnect
+abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterConnectable with TCenterPropagation with ISidedHollowConnect
 {
     var material = 0
 
@@ -356,7 +340,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
 
     def clientConnMap = connMap&0x3F|connMap>>6&0x3F
 
-    def sendConnUpdate()
+    override def sendConnUpdate()
     {
         getWriteStreamOf(1).writeByte(clientConnMap)
     }
@@ -366,7 +350,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
         MicroMaterialRegistry.writeMaterialID(getWriteStreamOf(2), material)
     }
 
-    def discoverOpen(s:Int) = getInternal(s) match
+    override def discoverOpen(s:Int) = getInternal(s) match
     {
         case null => true
         case w:WirePart if canConnectPart(w, s) => true
@@ -377,19 +361,9 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
             fits
     }
 
-    def propagate(from:TMultiPart, mode:Int)
-    {
-        if (mode != FORCED) WirePropagator.addPartChange(this)
-        for (s <- 0 until 6)
-            if (maskConnectsOut(s)) propagateExternal(getStraight(s), posOfStraight(s), from, mode)
-            else if (maskConnectsIn(s)) propagateInternal(getInternal(s), from, mode)
+    override def getType = getWireType.framedType
 
-        propagateOther(mode)
-    }
-
-    def getType = getWireType.framedType
-
-    def canStay = true
+    override def canStay = true
 
     override def getStrength(hit:MovingObjectPosition, player:EntityPlayer) =
     {
@@ -397,7 +371,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
         else 4
     }
 
-    def getItem = getWireType.makeFramedStack
+    override def getItem = getWireType.makeFramedStack
 
     override def getDrops =
     {

@@ -1,9 +1,17 @@
+/*
+ * Copyright (c) 2014.
+ * Created by MrTJP.
+ * All rights reserved.
+ */
 package mrtjp.projectred.integration
 
+import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
-import mrtjp.core.gui.{GuiLib, WidgetButtonMC, WidgetGui}
+import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.gui.{GuiLib, TGuiBuilder, WidgetButtonMC, WidgetGui}
 import mrtjp.core.vec.Point
-import mrtjp.projectred.integration.GateLogic.{ITimerGuiLogic, ICounterGuiLogic}
+import net.minecraft.client.Minecraft
+import net.minecraft.entity.player.EntityPlayer
 
 
 class GuiTimer(part:GatePart) extends WidgetGui(256, 55)
@@ -38,6 +46,27 @@ class GuiTimer(part:GatePart) extends WidgetGui(256, 55)
         IntegrationCPH.writePartIndex(packet, part)
         packet.writeShort(value)
         packet.sendToServer()
+    }
+}
+
+object GuiTimer extends TGuiBuilder
+{
+    override def getID = IntegrationProxy.timerGui
+
+    def open(player:EntityPlayer, gate:GatePart)
+    {
+        open(player, null, IntegrationCPH.writePartIndex(_, gate))
+    }
+
+    @SideOnly(Side.CLIENT)
+    override def buildGui(player:EntityPlayer, data:MCDataInput) =
+    {
+        val world = Minecraft.getMinecraft.theWorld
+        IntegrationCPH.readPartIndex(world, data) match
+        {
+            case gate:GatePart if gate.getLogic.isInstanceOf[ITimerGuiLogic] => new GuiTimer(gate)
+            case _ => null
+        }
     }
 }
 
@@ -90,5 +119,26 @@ class GuiCounter(part:GatePart) extends WidgetGui(256, 145)
         packet.writeByte(id)
         packet.writeShort(value)
         packet.sendToServer()
+    }
+}
+
+object GuiCounter extends TGuiBuilder
+{
+    override def getID = IntegrationProxy.counterGui
+
+    def open(player:EntityPlayer, gate:GatePart)
+    {
+        open(player, null, IntegrationCPH.writePartIndex(_, gate))
+    }
+
+    @SideOnly(Side.CLIENT)
+    override def buildGui(player:EntityPlayer, data:MCDataInput) =
+    {
+        val world = Minecraft.getMinecraft.theWorld
+        IntegrationCPH.readPartIndex(world, data) match
+        {
+            case gate:GatePart if gate.getLogic.isInstanceOf[ICounterGuiLogic] => new GuiCounter(gate)
+            case _ => null
+        }
     }
 }

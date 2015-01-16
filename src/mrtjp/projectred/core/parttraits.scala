@@ -58,7 +58,16 @@ trait TFaceOrient extends TMultiPart with TFacePart
     // absRot from absDir
     def absoluteRot(absDir:Int) = Rotation.rotationTo(side, absDir)
 
+    def toInternalMask(mask:Int) = TFaceOrient.shiftMask(mask, toInternal(0))
+    def toAbsoluteMask(mask:Int) = TFaceOrient.shiftMask(mask, toAbsolute(0))
+
     override def getSlotMask = 1<<side
+}
+
+object TFaceOrient
+{
+    def shiftMask(mask:Int, r:Int) = (mask& ~0xF)|(mask<<r|mask>>4-r)&0xF
+    def flipMaskZ(mask:Int) = mask&5|mask<<2&8|mask>>2&2
 }
 
 trait TCenterOrient extends TMultiPart with TSlottedPart

@@ -143,7 +143,7 @@ class UVT(t:Transformation) extends UVTransformation
  * 2 = side 2 = -Z = NORTH
  * 3 = side 5 = +X = EAST
  */
-private object WireModelGen
+object WireModelGen
 {
     var side = 0
     var tw = 0

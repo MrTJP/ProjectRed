@@ -24,7 +24,7 @@ import net.minecraft.util.{ChatComponentText, IIcon, MovingObjectPosition}
 import scala.collection.JavaConversions._
 
 
-trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TPropagationAcquisitions with IRedwirePart with IMaskedRedstonePart
+trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCenterRSPropagation with IRedwirePart with IMaskedRedstonePart
 {
     var signal:Byte = 0
     var material = false
@@ -168,46 +168,18 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TPro
         else 0
     }
 
-    def getRedwireSignal = signal&0xFF
+    override def getRedwireSignal(side:Int) = getSignal
 
-    override def getRedwireSignal(side:Int) = getRedwireSignal
+    override def getSignal = signal&0xFF
+    override def setSignal(sig:Int){ signal = sig.toByte }
 
-    override def updateAndPropagate(prev:TMultiPart, mode:Int)
-    {
-        if (mode == DROPPING && signal == 0) return
-        val newSignal = calculateSignal
-        if (newSignal < getRedwireSignal)
-        {
-            if (newSignal > 0) WirePropagator.propagateAnalogDrop(this)
-            signal = 0
-            propagate(prev, DROPPING)
-        }
-        else if (newSignal > getRedwireSignal)
-        {
-            signal = newSignal.asInstanceOf[Byte]
-            if (mode == DROPPING) propagate(null, RISING)
-            else propagate(prev, RISING)
-        }
-        else if (mode == DROPPING) propagateTo(prev, RISING)
-        else if (mode == FORCE) propagate(prev, FORCED)
-    }
-
-    def propagate(from:TMultiPart, mode:Int)
-    {
-        if (mode != FORCED) WirePropagator.addPartChange(this)
-        for (s <- 0 until 6) if (maskConnectsOut(s))
-            propagateExternal(getStraight(s), posOfStraight(s), from, mode)
-
-        propagateOther(mode)
-    }
-
-    def propagateOther(mode:Int)
+    override def propagateOther(mode:Int)
     {
         for (s <- 0 until 6) if (!maskConnects(s))
             WirePropagator.addNeighborChange(new BlockCoord(tile).offset(s))
     }
 
-    def calculateSignal:Int =
+    override def calculateSignal:Int =
     {
         if (!material) return 0
         WirePropagator.setDustProvidePower(false)
@@ -285,20 +257,20 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TPro
     def debug(player:EntityPlayer) =
     {
         player.addChatComponentMessage(new ChatComponentText(
-            (if (world.isRemote) "Client" else "Server")+" signal strength: "+getRedwireSignal))
+            (if (world.isRemote) "Client" else "Server")+" signal strength: "+getSignal))
         true
     }
 
     def test(player:EntityPlayer) =
     {
-        if (world.isRemote) Messenger.addMessage(x, y+.5f, z, "/#f/#c[c] = "+getRedwireSignal)
+        if (world.isRemote) Messenger.addMessage(x, y+.5f, z, "/#f/#c[c] = "+getSignal)
         else
         {
             val packet = Messenger.createPacket
             packet.writeDouble(x+0.0D)
             packet.writeDouble(y+0.5D)
             packet.writeDouble(z+0.0D)
-            packet.writeString("/#c[s] = "+getRedwireSignal)
+            packet.writeString("/#c[s] = "+getSignal)
             packet.sendToPlayer(player)
         }
         true

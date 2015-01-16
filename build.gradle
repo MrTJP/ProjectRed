@@ -71,8 +71,8 @@ dependencies {
     compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
     compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
     compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
-    //compile group: 'thermalexpansion', name: 'ThermalExpansion', version: config.texpan.version, ext: 'jar'
-    //compile group: 'cofh', name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
+//    compile group: 'thermalexpansion', name: 'ThermalExpansion', version: config.texpan.version, ext: 'jar'
+//    compile group: 'cofh', name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
 }
 
 def build_number = (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")+51).toString()
