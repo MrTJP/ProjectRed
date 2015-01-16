@@ -37,6 +37,7 @@ public class Configurator
 
     public static boolean debugMode;
     public static boolean logicGateSounds;
+    public static int minTimerTicks;
 
     public static boolean simpleFramedWireRecipe;
 
@@ -83,6 +84,7 @@ public class Configurator
 
         debugMode = config.get("general", "Enable Debugging", false, "Enable advanced debugging, should ALWAYS be false.").getBoolean(false);
         logicGateSounds = config.get("general", "Logic Sounds", true, "If set to false, logic gates will not make sounds.").getBoolean(true);
+        minTimerTicks = config.get("general", "Mininum Timer Ticks", 4, "Minimum amount of ticks the timer gates can be set to. (Cannot be lower than 4)").getInt();
         logicwires3D = config.get("general", "3Dlogicwires", true, "If set to false, flat wire textures will be used for logic gates. Significant performance improvement").getBoolean(true);
         staticWires = config.get("general", "renderStaticWires", true, "If set to false, wires will be rendered in the TESR rather than the WorldRenderer").getBoolean(true);
         staticGates = config.get("general", "renderStaticGates", true, "If set to false, gates will be rendered in the TESR rather than the WorldRenderer").getBoolean(true);
