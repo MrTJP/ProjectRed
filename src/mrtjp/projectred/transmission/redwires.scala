@@ -22,12 +22,12 @@ trait IRedwirePart extends IWirePart with IRedwireEmitter
 trait IRedwireEmitter
 {
     /**
-     * For face parts, side is a rotation. For center parts, it is a forge
+     * For face parts, dir is a rotation. For center parts, it is a forge
      * direction.
      *
      * @return Signal strength from 0 to 255.
      */
-    def getRedwireSignal(side:Int):Int
+    def getRedwireSignal(dir:Int):Int
 }
 
 trait IInsulatedRedwirePart extends IRedwirePart
@@ -35,7 +35,7 @@ trait IInsulatedRedwirePart extends IRedwirePart
     def getInsulatedColour:Int
 }
 
-trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with IRedwirePart
+trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with TRSPropagationCommons with IRedwirePart
 {
     var signal:Byte = 0
 
@@ -81,29 +81,10 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with IRed
         else 0
     }
 
-    def getRedwireSignal = signal&0xFF
+    override def getRedwireSignal(side:Int) = getSignal
 
-    override def getRedwireSignal(side:Int) = getRedwireSignal
-
-    override def updateAndPropagate(prev:TMultiPart, mode:Int)
-    {
-        if (mode == DROPPING && signal == 0) return
-        val newSignal = calculateSignal
-        if (newSignal < getRedwireSignal)
-        {
-            if (newSignal > 0) WirePropagator.propagateAnalogDrop(this)
-            signal = 0
-            propagate(prev, DROPPING)
-        }
-        else if (newSignal > getRedwireSignal)
-        {
-            signal = newSignal.asInstanceOf[Byte]
-            if (mode == DROPPING) propagate(null, RISING)
-            else propagate(prev, RISING)
-        }
-        else if (mode == DROPPING) propagateTo(prev, RISING)
-        else if (mode == FORCE) propagate(prev, FORCED)
-    }
+    override def getSignal = signal&0xFF
+    override def setSignal(sig:Int){ signal = sig.toByte }
 
     override def onSignalUpdate()
     {
@@ -111,32 +92,30 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with IRed
         getWriteStreamOf(10).writeByte(signal)
     }
 
-    def calculateSignal:Int
-
     override def debug(player:EntityPlayer) =
     {
         player.addChatComponentMessage(new ChatComponentText(
-            (if (world.isRemote) "Client" else "Server")+" signal strength: "+getRedwireSignal))
+            (if (world.isRemote) "Client" else "Server")+" signal strength: "+getSignal))
         true
     }
 
     override def test(player:EntityPlayer) =
     {
-        if (world.isRemote) Messenger.addMessage(x, y+0.5, z, "/#f/#c[c] = "+getRedwireSignal)
+        if (world.isRemote) Messenger.addMessage(x, y+0.5, z, "/#f/#c[c] = "+getSignal)
         else
         {
             val packet = Messenger.createPacket
             packet.writeDouble(x+0.0D)
             packet.writeDouble(y+0.5D)
             packet.writeDouble(z+0.0D)
-            packet.writeString("/#c[s] = "+getRedwireSignal)
+            packet.writeString("/#c[s] = "+getSignal)
             packet.sendToPlayer(player)
         }
         true
     }
 }
 
-abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcquisitions
+abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcquisitions with TFaceRSPropagation
 {
     override def weakPowerLevel(side:Int) =
     {
@@ -195,12 +174,12 @@ abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcq
         case _ => 0
     }
 
-    def calculateSignal =
+    override def calculateSignal =
     {
         WirePropagator.setDustProvidePower(false)
         WirePropagator.redwiresProvidePower = false
         var s = 0
-        def raise(sig:Int) {if (sig > s) s = sig}
+        def raise(sig:Int){ if (sig > s) s = sig }
 
         for (r <- 0 until 4) if (maskConnects(r))
             if (maskConnectsCorner(r)) raise(calcCornerSignal(r))
@@ -219,7 +198,7 @@ abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcq
     }
 }
 
-abstract class FramedRedwirePart extends FramedWirePart with TRedwireCommons with TCenterRSAcquisitions with IMaskedRedstonePart
+abstract class FramedRedwirePart extends FramedWirePart with TRedwireCommons with TCenterRSAcquisitions with TCenterRSPropagation with IMaskedRedstonePart
 {
     override def weakPowerLevel(side:Int) = rsLevel
 

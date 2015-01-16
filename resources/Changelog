@@ -1,3 +1,10 @@
+v4.5.9
+- ADDED: Stacking Latch gate
+- ADDED: Segment Display gate
+- CHANGE: Total gate rewrite
+- FIX: SR Latch stuck state bug
+- FIX: Infinite update loop on Bus Input Panel
+
 v4.5.8
 - FIX: Sickles harvesting grass blocks
 - FIX: Bundled cable crash when moved by frame

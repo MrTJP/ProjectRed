@@ -16,18 +16,18 @@ trait TFaceBundledAquisitions extends TBundledAquisitionsCommons with TFaceAcqui
 {
     def calcCornerArray(r:Int) = resolveArray(getCorner(r), rotFromCorner(r))
 
-    def calcStraightArray(r:Int) = resolveArray(getStraight(r), rotFromStraight(r))
+    override def calcStraightArray(r:Int) = resolveArray(getStraight(r), rotFromStraight(r))
 
-    def calcInternalArray(r:Int) = resolveArray(getInternal(r), rotFromInternal(r))
+    override def calcInternalArray(r:Int) = resolveArray(getInternal(r), rotFromInternal(r))
 
     def calcCenterArray = resolveArray(getCenter, side)
 }
 
 trait TCenterBundledAquisitions extends TBundledAquisitionsCommons with TCenterAcquisitions
 {
-    def calcStraightArray(s:Int) = resolveArray(getStraight(s), s^1)
+    override def calcStraightArray(s:Int) = resolveArray(getStraight(s), s^1)
 
-    def calcInternalArray(s:Int) = resolveArray(getInternal(s), s^1)
+    override def calcInternalArray(s:Int) = resolveArray(getInternal(s), s^1)
 }
 
 object BundledCommons
