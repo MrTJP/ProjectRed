@@ -336,7 +336,8 @@ trait TTimerGateLogic extends SequentialGateLogic with ITimerGuiLogic
     override def setTimerMax(gate:GatePart, time:Int)
     {
         var t = time
-        if (t < 4) t = 4
+        val minTime = math.max(4, Configurator.minTimerTicks)
+        if (t < minTime) t = minTime
         if (t != pointer_max)
         {
             pointer_max = t-2
@@ -443,7 +444,8 @@ class Sequencer(gate:SequentialGatePart) extends SequentialGateLogic(gate) with 
     override def setTimerMax(gate:GatePart, time:Int)
     {
         var t = time
-        if (t < 4) t = 4
+        val minTime = math.max(4, Configurator.minTimerTicks)
+        if (t < minTime) t = minTime
         if (t != pointer_max)
         {
             pointer_max = t
