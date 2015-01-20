@@ -108,7 +108,7 @@ class IlluminationProxy_client extends IlluminationProxy_server
     val cache =
     {
         val b = Vector.newBuilder[Int]
-        for (i <- 0 until 15)
+        for (i <- 0 until 16)
         {
             val c = Colors.get(i)
             b += makeRGBLightValue(c.rF, c.gF, c.bF, 1.0F)
