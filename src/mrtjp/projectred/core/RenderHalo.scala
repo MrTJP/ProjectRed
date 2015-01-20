@@ -3,7 +3,7 @@ package mrtjp.projectred.core
 import codechicken.lib.render.{BlockRenderer, CCRenderState, RenderUtils}
 import codechicken.lib.vec._
 import cpw.mods.fml.common.eventhandler.SubscribeEvent
-import mrtjp.core.color.Colors
+import mrtjp.core.color.Colors_old
 import net.minecraft.client.Minecraft
 import net.minecraft.world.World
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -98,7 +98,7 @@ object RenderHalo
     {
         CCRenderState.reset()
         CCRenderState.setPipeline(t)
-        CCRenderState.baseColour = Colors.VALID_COLORS(colour).rgba
+        CCRenderState.baseColour = Colors_old.VALID_COLORS(colour).rgba
         CCRenderState.alphaOverride = 128
         BlockRenderer.renderCuboid(cuboid, 0)
     }

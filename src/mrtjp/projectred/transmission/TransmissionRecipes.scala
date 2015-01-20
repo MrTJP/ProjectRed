@@ -1,7 +1,7 @@
 package mrtjp.projectred.transmission
 
 import cpw.mods.fml.common.registry.GameRegistry
-import mrtjp.core.color.Colors
+import mrtjp.core.color.Colors_old
 import mrtjp.projectred.core.libmc.recipe._
 import mrtjp.projectred.core.{Configurator, PartDefs}
 import net.minecraft.init.{Blocks, Items}
@@ -26,17 +26,17 @@ object TransmissionRecipes
         for (w <- WireDef.INSULATED_WIRES)
             GameRegistry.addRecipe(new ShapedOreRecipe(w.makeStack(12),
                 "WrW", "WrW", "WrW",
-                'W':Character, new ItemStack(Blocks.wool, 1, Colors.get(w.meta-WireDef.INSULATED_0.meta).woolId),
+                'W':Character, new ItemStack(Blocks.wool, 1, Colors_old.get(w.meta-WireDef.INSULATED_0.meta).woolId),
                 'r':Character, PartDefs.oreDictDefinitionRedIngot))
 
         for (w <- WireDef.INSULATED_WIRES)
             GameRegistry.addRecipe(new ShapelessOreRecipe(
-                w.makeStack, Colors.get(w.meta-WireDef.INSULATED_0.meta).getOreDict,
+                w.makeStack, Colors_old.get(w.meta-WireDef.INSULATED_0.meta).getOreDict,
                 WireDef.oreDictDefinitionInsulated, Items.string))
 
         for (w <- WireDef.INSULATED_WIRES)
             (RecipeLib.newShapelessBuilder
-                += new OreIn(Colors.get(w.meta - WireDef.INSULATED_0.meta).getOreDict)
+                += new OreIn(Colors_old.get(w.meta-WireDef.INSULATED_0.meta).getOreDict)
                 += new OreIn(WireDef.oreDictDefinitionInsFramed)
                 += new MicroIn(MicroIn.edge, MicroIn.eight, Blocks.log)
                 += new ItemOut(w.makeFramedStack)).registerResult()
@@ -47,7 +47,7 @@ object TransmissionRecipes
             'W':Character, WireDef.oreDictDefinitionInsulated))
 
         for (w <- WireDef.BUNDLED_WIRES) if (w != WireDef.BUNDLED_N)
-            GameRegistry.addRecipe(new ShapelessOreRecipe(w.makeStack, Colors.get(w.meta-WireDef.BUNDLED_0.meta).getOreDict,
+            GameRegistry.addRecipe(new ShapelessOreRecipe(w.makeStack, Colors_old.get(w.meta-WireDef.BUNDLED_0.meta).getOreDict,
                 WireDef.oreDictDefinitionBundled, Items.string))
 
         for (w <- WireDef.values) if (w.hasFramedForm)

@@ -3,7 +3,7 @@ package mrtjp.projectred.transportation
 import java.lang.{Character => JC}
 
 import cpw.mods.fml.common.registry.GameRegistry
-import mrtjp.core.color.Colors
+import mrtjp.core.color.Colors_old
 import mrtjp.projectred.ProjectRedTransportation
 import mrtjp.projectred.core.PartDefs
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
@@ -85,6 +85,20 @@ object TransportationRecipes
             'b':JC, Blocks.nether_brick,
             'c':JC, Items.magma_cream,
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
+        )
+
+        /** Pressure Tube **/
+        GameRegistry.addRecipe(PipeDefs.PRESSURETUBE.makeStack,
+            "bgb", " b ",
+            'b':JC, Items.iron_ingot,
+            'g':JC, Blocks.glass
+        )
+
+        /** Pressure Resistance Tube **/
+        GameRegistry.addRecipe(PipeDefs.RESISTANCETUBE.makeStack,
+            "i", "t",
+            'i':JC, Items.iron_ingot,
+            't':JC, PipeDefs.PRESSURETUBE.makeStack
         )
     }
 
@@ -196,13 +210,13 @@ object TransportationRecipes
         /** LY **/
         GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_LY.makeStack,
             "l l", " n ", " l ",
-            'l':JC, Colors.BLUE.getDye,
+            'l':JC, Colors_old.BLUE.getDye,
             'n':JC, PartDefs.CHIPUPGRADE_LX.makeStack)
 
         /** RY **/
         GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_RY.makeStack,
             "l l", " n ", " l ",
-            'l':JC, Colors.BLUE.getDye,
+            'l':JC, Colors_old.BLUE.getDye,
             'n':JC, PartDefs.CHIPUPGRADE_RX.makeStack)
 
         /** LZ **/

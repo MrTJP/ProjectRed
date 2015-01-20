@@ -2,7 +2,7 @@ package mrtjp.projectred
 
 import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
-import mrtjp.core.color.Colors
+import mrtjp.core.color.Colors_old
 import mrtjp.projectred.illumination._
 import net.minecraft.creativetab.CreativeTabs
 
@@ -19,7 +19,7 @@ object ProjectRedIllumination
 
     var tabLighting = new CreativeTabs("ill")
     {
-        override def getIconItemStack = LightObjCage.makeInvStack(Colors.RED.ordinal())
+        override def getIconItemStack = LightObjCage.makeInvStack(Colors_old.RED.ordinal())
         override def getTabIconItem = getIconItemStack.getItem
     }
 

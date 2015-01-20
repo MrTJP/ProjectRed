@@ -33,7 +33,7 @@ object ProjectRedCore
     @Mod.EventHandler
     def init(event:FMLInitializationEvent)
     {
-        FMLCommonHandler.instance().bus().register(new Configurator)
+        FMLCommonHandler.instance.bus.register(new Configurator)
         CoreProxy.init()
     }
 
@@ -44,7 +44,5 @@ object ProjectRedCore
     }
 
     @Mod.EventHandler
-    def onServerStarting(event:FMLServerStartingEvent)
-    {
-    }
+    def onServerStarting(event:FMLServerStartingEvent){}
 }

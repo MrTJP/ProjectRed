@@ -8,7 +8,7 @@ import codechicken.lib.vec._
 import codechicken.microblock.HollowMicroblock
 import codechicken.multipart._
 import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
+import mrtjp.core.color.Colors_old
 import mrtjp.core.vec.InvertX
 import mrtjp.core.world.{PlacementLib, WorldLib}
 import mrtjp.projectred.ProjectRedIllumination
@@ -380,8 +380,8 @@ abstract class LightObject
 
     def cMult(color:Int, on:Boolean):ColourMultiplier =
     {
-        val c = Colors.get(color).c.copy
-        if (!on) c.multiply(Colors.LIGHT_GREY.c)
+        val c = Colors_old.get(color).c.copy
+        if (!on) c.multiply(Colors_old.LIGHT_GREY.c)
         ColourMultiplier.instance(c.rgba)
     }
 }
