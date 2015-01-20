@@ -1,17 +1,22 @@
 package mrtjp.projectred.exploration
 
-import mrtjp.core.color.Colors
-import net.minecraftforge.client.IItemRenderer
-import net.minecraftforge.client.IItemRenderer.{ItemRendererHelper, ItemRenderType}
-import net.minecraft.item.ItemStack
-import net.minecraft.item.Item.ToolMaterial
-import mrtjp.projectred.ProjectRedExploration
-import codechicken.lib.vec.{SwapYZ, Rotation, Translation, Scale}
 import codechicken.lib.math.MathHelper
-import codechicken.lib.render.{CCModel, CCRenderState}
-import org.lwjgl.opengl.GL11
-import net.minecraft.util.ResourceLocation
 import codechicken.lib.render.uv.UVTranslation
+import codechicken.lib.render.{CCModel, CCRenderState, TextureDataHolder, TextureUtils}
+import codechicken.lib.vec._
+import mrtjp.core.block.TInstancedBlockRender
+import mrtjp.core.color.Colors
+import mrtjp.core.world.WorldLib
+import net.minecraft.client.renderer.RenderBlocks
+import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.init.Blocks
+import net.minecraft.item.Item.ToolMaterial
+import net.minecraft.item.ItemStack
+import net.minecraft.util.{IIcon, ResourceLocation}
+import net.minecraft.world.IBlockAccess
+import net.minecraftforge.client.IItemRenderer
+import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
+import org.lwjgl.opengl.GL11
 
 object GemSawRenderer extends IItemRenderer
 {
@@ -24,8 +29,8 @@ object GemSawRenderer extends IItemRenderer
 
     override def shouldUseRenderHelper(t:ItemRenderType, item:ItemStack, helper:ItemRendererHelper) = true
 
-    import Colors._
-    import ProjectRedExploration.{toolMaterialPeridot, toolMaterialRuby, toolMaterialSapphire}
+    import mrtjp.core.color.Colors_old._
+    import mrtjp.projectred.ProjectRedExploration.{toolMaterialPeridot, toolMaterialRuby, toolMaterialSapphire}
     private def colour(stack:ItemStack) = stack.getItem.asInstanceOf[ItemGemSaw].toolDef.mat match
     {
         case ToolMaterial.WOOD => BROWN.rgba
@@ -41,8 +46,8 @@ object GemSawRenderer extends IItemRenderer
 
     override def renderItem(rtype:ItemRenderType, item:ItemStack, data:AnyRef*)
     {
-        import ItemRenderType._
         import codechicken.lib.vec.{TransformationList => TList}
+        import net.minecraftforge.client.IItemRenderer.ItemRenderType._
         val t = rtype match
         {
             case INVENTORY => new TList(new Scale(1.8), new Translation(0, 0, -0.6), new Rotation(-MathHelper.pi/4, 1, 0, 0), new Rotation(MathHelper.pi*3/4, 0, 1, 0))
@@ -74,5 +79,61 @@ object GemSawRenderer extends IItemRenderer
 
         GL11.glEnable(GL11.GL_CULL_FACE)
         if (rtype != EQUIPPED_FIRST_PERSON) GL11.glEnable(GL11.GL_LIGHTING)
+    }
+}
+
+object RenderLily extends TInstancedBlockRender
+{
+    val icons = new Array[IIcon](8)
+    val iconsC = new Array[IIcon](16)
+
+    override def renderWorldBlock(r:RenderBlocks, w:IBlockAccess, x:Int, y:Int, z:Int, meta:Int) =
+    {
+        val te = WorldLib.getTileEntity(w, x, y, z, classOf[TileLily])
+        if (te != null)
+        {
+            CCRenderState.reset()
+            val icon = if (te.growth == 7) iconsC(te.meta) else icons(te.growth)
+            r.drawCrossedSquares(icon, x, y, z, 1.0f)
+        }
+    }
+
+    override def getIcon(side:Int, meta:Int) = icons(7)
+
+    override def renderInvBlock(r:RenderBlocks, meta:Int)
+    {
+        CCRenderState.reset()
+        CCRenderState.setDynamic()
+        CCRenderState.pullLightmap()
+        CCRenderState.setNormal(0, -1, 0)
+        CCRenderState.startDrawing()
+        r.drawCrossedSquares(icons(7), -0.5D, -0.95D, -0.5D, 1.65f)
+        CCRenderState.draw()
+    }
+
+    override def registerIcons(reg:IIconRegister)
+    {
+        for (i <- 0 until 8) icons(i) = reg.registerIcon("projectred:ore/lily/lily "+i)
+
+        val res = new ResourceLocation(Blocks.wool.getIcon(0, 0).getIconName)
+        val noise = TextureUtils.loadTextureColours(new ResourceLocation(res.getResourceDomain, "textures/blocks/"+res.getResourcePath+".png"))
+
+        val res2 = new ResourceLocation(icons(7).getIconName)
+        val flower = TextureUtils.loadTextureColours(new ResourceLocation(res2.getResourceDomain, "textures/blocks/"+res2.getResourcePath+".png"))
+
+        val size = 16
+
+        val rectMask = new Rectangle4i(6, 9, 3, 2)
+
+        for (i <- 0 until 16)
+        {
+            val imageData = flower.map(_.argb())
+            val shade = Colors(i).c
+            for (x <- rectMask.x until rectMask.x+rectMask.w)
+                for (y <- rectMask.y until rectMask.y+rectMask.h)
+                    imageData(y*16+x) = noise(y*16+x).copy.multiply(shade).argb()
+
+            iconsC(i) = TextureUtils.getTextureSpecial(reg, "projectred:ore/lily/lily_special_"+i).addTexture(new TextureDataHolder(imageData, size))
+        }
     }
 }

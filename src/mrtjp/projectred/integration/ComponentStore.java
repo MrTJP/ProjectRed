@@ -9,7 +9,7 @@ import codechicken.lib.render.*;
 import codechicken.lib.render.CCRenderState.IVertexOperation;
 import codechicken.lib.render.uv.*;
 import codechicken.lib.vec.*;
-import mrtjp.core.color.Colors;
+import mrtjp.core.color.Colors_old;
 import mrtjp.core.vec.InvertX$;
 import mrtjp.core.vec.VecLib;
 import mrtjp.projectred.core.Configurator;
@@ -893,7 +893,7 @@ public class ComponentStore
 
         public int offColour = 0x420000FF;
         public int onColour = 0xEC0000FF;
-        public int disableColour = Colors.GREY.rgba;
+        public int disableColour = Colors_old.GREY.rgba;
 
         public SigLightPanelModel(double x, double z, boolean flip)
         {
@@ -1151,7 +1151,7 @@ public class ComponentStore
             for (int i = 0; i < 16; i++)
             {
                 CCRenderState.setPipeline(CCRenderState.lightMatrix, orientT(orient).with(t),
-                        icon, ColourMultiplier.instance(Colors.get(i).rgba));
+                        icon, ColourMultiplier.instance(Colors_old.get(i).rgba));
                 BlockRenderer.renderCuboid((pressMask&1<<i) != 0 ? pressed[i] : unpressed[i], 1);
             }
         }
