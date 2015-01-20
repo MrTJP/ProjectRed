@@ -17,6 +17,7 @@ object ProjectRedExploration
     var blockDecorativeWalls:BlockDecorativeWalls = null
 //    var blockStainedLeaf:BlockStainedLeaf = null //TODO replace
 //    var blockStainedSapling:BlockStainedSapling = null
+    var blockLily:BlockLily = null
 
     /** Items **/
     var itemWoolGin:ItemWoolGin = null
@@ -51,6 +52,7 @@ object ProjectRedExploration
     var itemSapphireSickle:ItemGemSickle = null
     var itemPeridotSickle:ItemGemSickle = null
     var itemDiamondSickle:ItemGemSickle = null
+    var itemLilySeed:ItemLilySeeds = null
 
     var tabExploration:CreativeTabs = new CreativeTabs("exploration")
     {

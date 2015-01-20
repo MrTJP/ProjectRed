@@ -5,7 +5,7 @@ import codechicken.lib.math.MathHelper
 import codechicken.lib.render.{CCModel, CCRenderState, ColourMultiplier, Vertex5}
 import codechicken.lib.vec.Rotation
 import com.google.common.base.Preconditions
-import mrtjp.core.color.Colors
+import mrtjp.core.color.Colors_old
 import mrtjp.core.gui.TWidget
 import mrtjp.core.math.MathLib
 import mrtjp.core.vec.{Point, Rect}
@@ -25,6 +25,7 @@ import org.lwjgl.util.vector.{Matrix4f, Vector3f}
 import scala.collection.JavaConversions
 import scala.collection.mutable.ListBuffer
 
+//TODO obsolete, change to simple 6 button selector and move on >:(
 class WidgetSideSelect(x:Int, y:Int, w:Int, h:Int, scale:Double) extends TWidget
 {
     override val bounds = new Rect().setMin(x, y).setWH(w, h)
@@ -130,7 +131,7 @@ trait TWidgetSidePicker extends WidgetSideSelect
 
 trait TWidgetSideHighlight extends WidgetSideSelect
 {
-    private var color = Colors.LIME.rgba
+    private var color = Colors_old.LIME.rgba
     private var activeHighlight = false
 
     def setColor(c:Int):this.type = {color = c; this}

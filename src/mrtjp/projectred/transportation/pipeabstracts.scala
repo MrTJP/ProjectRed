@@ -217,7 +217,6 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
     {
         super.load(tag)
         val nbttaglist = tag.getTagList("itemFlow", 0)
-
         for (j <- 0 until nbttaglist.tagCount)
         {
             try

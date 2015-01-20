@@ -1,15 +1,10 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.core.color.Colors
 import mrtjp.core.item.ItemKey
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.illumination.LightObjCage
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{IInventory, ISidedInventory}
-import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.MovingObjectPosition
 
 trait TPressureSubsystem extends PayloadPipePart
 {
@@ -119,13 +114,6 @@ trait TPressureTube extends TPressureSubsystem
             else chooseRandomDestination(r)
         }
         else chooseRandomDestination(r)
-    }
-
-    abstract override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
-    {
-        if (super.activate(player, hit, item)) return true
-        injectPayload(PipePayload(LightObjCage.makeStack(Colors.RED.ordinal())), 1)
-        true
     }
 
     abstract override def discoverStraightOverride(s:Int):Boolean =

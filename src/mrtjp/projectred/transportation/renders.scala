@@ -8,7 +8,7 @@ import codechicken.lib.render.uv.{IconTransformation, UV, UVScale, UVTransformat
 import codechicken.lib.vec._
 import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
 import codechicken.microblock.{BlockMicroMaterial, MicroMaterialRegistry, MicroblockClass}
-import mrtjp.core.color.Colors
+import mrtjp.core.color.Colors_old
 import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.client.renderer.entity.{RenderItem, RenderManager}
 import net.minecraft.entity.item.EntityItem
@@ -126,6 +126,7 @@ object RenderPipe
                 case _ =>
             }
             doRenderItem(r, frameX, frameY, frameZ)
+            if (p.isInstanceOf[TNetworkPipe]) doPriorityRender(r, frameX, frameY, frameZ)
         }
         GL11.glEnable(GL11.GL_LIGHTING)
         GL11.glPopMatrix()
@@ -146,7 +147,10 @@ object RenderPipe
         customRenderItem.doRender(dummyEntityItem, 0, 0, 0, 0, 0)
 
         GL11.glPopMatrix()
+    }
 
+    private def doPriorityRender(r:PipePayload, x:Double, y:Double, z:Double)
+    {
         GL11.glPushMatrix()
         prepareRenderState()
         GL11.glEnable(GL11.GL_LIGHTING)
@@ -155,7 +159,7 @@ object RenderPipe
 
         CCRenderState.setPipeline(new Translation(t))
         CCRenderState.alphaOverride = 32
-        CCRenderState.baseColour = Colors.get(r.netPriority.color).rgba
+        CCRenderState.baseColour = Colors_old.get(r.netPriority.color).rgba
         BlockRenderer.renderCuboid(new Cuboid6(1/16D, 1/16D, 1/16D, 7/16D, 7/16D, 7/16D), 0)
 
         restoreRenderState()

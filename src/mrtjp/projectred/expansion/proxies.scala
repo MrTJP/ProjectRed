@@ -4,7 +4,10 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.multipart.MultiPartRegistry
 import cpw.mods.fml.common.Loader
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.block.TileRenderRegistry
+import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.core.{Configurator, IProxy}
+import ProjectRedExpansion._
 
 class ExpansionProxy_server extends IProxy
 {
@@ -33,9 +36,11 @@ class ExpansionProxy_server extends IProxy
 //        //Machine1 tiles
 //        ProjectRedExpansion.machine1.addTile(classOf[TileFurnace], 0)
 
-//        //Machine2 (devices)
-//        ProjectRedExpansion.machine2 = new BlockMachine("projectred.expansion.machine2")
-//        //Machine2 tiles
+        //Machine2 (devices)
+        machine2 = new BlockMachine("projectred.expansion.machine2")
+        //Machine2 tiles
+        machine2.addTile(classOf[TileBlockBreaker], 0)
+        machine2.addTile(classOf[TileItemImporter], 1)
 
         ExpansionRecipes.initRecipes()
     }
@@ -74,7 +79,8 @@ class ExpansionProxy_client extends ExpansionProxy_server
     override def postinit()
     {
         super.postinit()
-//        RenderLib.setRenderer(ProjectRedExpansion.machine1, 0, RenderFurnace)
+        TileRenderRegistry.setRenderer(ProjectRedExpansion.machine2, 0, RenderBlockBreaker)
+        TileRenderRegistry.setRenderer(ProjectRedExpansion.machine2, 1, RenderItemRemover)
     }
 }
 

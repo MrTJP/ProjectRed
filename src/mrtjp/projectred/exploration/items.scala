@@ -5,6 +5,8 @@ import java.util.{List => JList}
 import codechicken.microblock.Saw
 import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.block.TItemSeed
+import mrtjp.core.color.Colors
 import mrtjp.core.gui.{GuiLib, Slot2, WidgetContainer}
 import mrtjp.core.inventory.SimpleInventory
 import mrtjp.core.item.ItemCore
@@ -22,7 +24,8 @@ import net.minecraft.item.Item.ToolMaterial
 import net.minecraft.item._
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
-import net.minecraft.world.World
+import net.minecraft.world.{IBlockAccess, World}
+import net.minecraftforge.common.EnumPlantType
 
 class ItemBackpack extends ItemCore("projectred.exploration.backpack")
 {
@@ -320,5 +323,32 @@ class ItemWoolGin extends ItemCraftingDamage("projectred.exploration.woolgin")
     override def registerIcons(reg:IIconRegister)
     {
         itemIcon = reg.registerIcon("projectred:woolgin")
+    }
+}
+
+class ItemLilySeeds extends ItemCore("projectred.exploration.lilyseed") with TItemSeed
+{
+    setHasSubtypes(true)
+    setTextureName("projectred:lilyseed")
+    setCreativeTab(ProjectRedExploration.tabExploration)
+
+    override def getPlantBlock = (ProjectRedExploration.blockLily, 0)
+    override def getPlantType(w:IBlockAccess, x:Int, y:Int, z:Int) = EnumPlantType.Plains
+
+    override def getSubItems(item:Item, tab:CreativeTabs, list:JList[_])
+    {
+        for (i <- 0 until 16)
+            list.asInstanceOf[JList[ItemStack]].add(new ItemStack(this, 1, i))
+    }
+
+    override def getColorFromItemStack(item:ItemStack, meta:Int) = Colors(item.getItemDamage).rgb
+
+    override def onPlanted(item:ItemStack, w:World, x:Int, y:Int, z:Int)
+    {
+        if (!w.isRemote) w.getTileEntity(x, y, z) match
+        {
+            case te:TileLily => te.setupPlanted(item.getItemDamage)
+            case _ =>
+        }
     }
 }

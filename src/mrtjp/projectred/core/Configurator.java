@@ -21,15 +21,23 @@ public class Configurator
     /** Generation **/
     public static boolean gen_MarbleCave;
     public static int gen_MarbleCave_resistance;
+    public static boolean gen_MarbleCave_retro;
     public static boolean gen_Volcano;
     public static int gen_Volcano_resistance;
+    public static boolean gen_Volcano_retro;
     public static boolean gen_Ruby;
     public static int gen_Ruby_resistance;
+    public static boolean gen_Ruby_retro;
     public static boolean gen_Sapphire;
     public static int gen_Sapphire_resistance;
+    public static boolean gen_Sapphire_retro;
     public static boolean gen_Peridot;
     public static int gen_Peridot_resistance;
+    public static boolean gen_Peridot_retro;
     public static boolean gen_SpreadingMoss;
+    public static boolean gen_Lily;
+    public static int gen_Lily_resistance;
+    public static boolean gen_Lily_retro;
 
     /** Settings **/
     public static boolean versionChecking;
@@ -69,14 +77,28 @@ public class Configurator
         config.addCustomCategoryComment("World Generation", "Toggle generation of structures, or increase resistance to lessen chances for generation.");
         gen_Ruby = config.get("World Generation", "Ruby Ore", true).getBoolean(true);
         gen_Ruby_resistance = config.get("World Generation", "Ruby Ore resistance", 0).getInt();
+        gen_Ruby_retro = config.get("World Generation", "Ruby Ore retrogen", false).getBoolean(false);
+
         gen_Sapphire = config.get("World Generation", "Sapphire Ore", true).getBoolean(true);
         gen_Sapphire_resistance = config.get("World Generation", "Sapphire Ore resistance", 0).getInt();
+        gen_Sapphire_retro = config.get("World Generation", "Sapphire Ore retrogen", false).getBoolean(false);
+
         gen_Peridot = config.get("World Generation", "Peridot Ore", true).getBoolean(true);
         gen_Peridot_resistance = config.get("World Generation", "Peridot Ore resistance", 0).getInt();
+        gen_Peridot_retro = config.get("World Generation", "Peridot Ore retrogen", false).getBoolean(false);
+
         gen_MarbleCave = config.get("World Generation", "Marble Caves", true).getBoolean(true);
-        gen_MarbleCave_resistance = config.get("World Generation", "Marble Caves resistance", 4).getInt();
+        gen_MarbleCave_resistance = config.get("World Generation", "Marble Caves resistance", 0).getInt();
+        gen_MarbleCave_retro = config.get("World Generation", "Marble Caves retrogen", false).getBoolean(false);
+
         gen_Volcano = config.get("World Generation", "Volcanos", true).getBoolean(true);
-        gen_Volcano_resistance = config.get("World Generation", "Volcano resistance", 16).getInt();
+        gen_Volcano_resistance = config.get("World Generation", "Volcano resistance", 0).getInt();
+        gen_Volcano_retro = config.get("World Generation", "Volcano retrogen", false).getBoolean(false);
+
+        gen_Lily = config.get("World Generation", "Deviating Lily", true).getBoolean(true);
+        gen_Lily_resistance = config.get("World Generation", "Deviating Lily resistance", 0).getInt();
+        gen_Lily_retro = config.get("World Generation", "Deviating Lily retrogen", false).getBoolean(false);
+
         gen_SpreadingMoss = config.get("World Generation", "Spreading Moss", true).getBoolean(true);
 
         versionChecking = config.get("general", "Enable Version checking", true, "If enabled, the player will be alerted if a newer version of PR is available").getBoolean(true);
