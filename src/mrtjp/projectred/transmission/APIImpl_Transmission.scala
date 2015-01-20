@@ -56,6 +56,13 @@ class APIImpl_Transmission extends ITransmissionAPI
             case f:FramedWirePart => f.clientConnMap
             case _ => -1
         }
+
+    override def containsBundledCable(world:World, x:Int, y:Int, z:Int, side:Int) =
+        PRLib.getMultiPart(world, x, y, z, side) match
+        {
+            case be:IBundledCablePart => true
+            case _ => false
+        }
 }
 
 object APIImpl_Transmission

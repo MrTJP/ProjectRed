@@ -18,6 +18,18 @@ public interface ITransmissionAPI
     public byte[] getBundledInput(World world, int x, int y, int z, int side);
 
     /**
+     * Checks to see if the position specified contains a bundled cable.
+     *
+     * @param world The world containing the block
+     * @param x The x coordinate of the block to check
+     * @param y The y coordinate of the block to check
+     * @param z The z coordinate of the block to check
+     * @param side The side to check
+     * @return If the given position contains a bundled cable on the given side.
+     */
+    public boolean containsBundledCable(World world, int x, int y, int z, int side);
+
+    /**
      * Used to register a IBundledTileInteraction to allow PR wiring to use
      * your block's signals without having to implement an interface on your
      * tile entity.
