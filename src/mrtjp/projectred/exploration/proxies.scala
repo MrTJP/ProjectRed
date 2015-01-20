@@ -1,14 +1,21 @@
 package mrtjp.projectred.exploration
 
+import java.util.Random
+
 import codechicken.microblock.BlockMicroMaterial
-import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.block.TileRenderRegistry
+import mrtjp.core.color.Colors
 import mrtjp.core.gui.GuiHandler
-import mrtjp.projectred.ProjectRedExploration
+import mrtjp.core.world._
 import mrtjp.projectred.ProjectRedExploration._
-import mrtjp.projectred.core.{Configurator, IProxy}
+import mrtjp.projectred.core.{PRLogger, Configurator, IProxy}
+import net.minecraft.init.Blocks
+import net.minecraft.item.ItemStack
+import net.minecraft.world.World
 import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.common.util.EnumHelper
+import net.minecraftforge.oredict.OreDictionary
 
 class ExplorationProxy_server extends IProxy
 {
@@ -18,9 +25,6 @@ class ExplorationProxy_server extends IProxy
 
     override def init()
     {
-        if (Configurator.retroGeneration) RetroGenerationManager.registerRetroGenerators()
-        else GameRegistry.registerWorldGenerator(GenerationManager.instance, 0)
-
         itemWoolGin = new ItemWoolGin
         itemBackpack = new ItemBackpack
 
@@ -32,14 +36,22 @@ class ExplorationProxy_server extends IProxy
 
         blockDecorativeWalls = new BlockDecorativeWalls
 
-//        if (Configurator.gen_SpreadingMoss.getBoolean(true)) //TODO fix
+        blockLily = new BlockLily
+        blockLily.addSingleTile(classOf[TileLily])
+        itemLilySeed = new ItemLilySeeds
+        for (i <- 0 until 16) OreDictionary.registerOre(Colors(i).oreDict, new ItemStack(itemLilySeed, 1, i))
+
+//        if (Configurator.gen_SpreadingMoss) //TODO fix
 //        {
-//            val mc = Block.cobblestoneMossy.blockID
-//            Block.blocksList(mc) = null
-//            new BlockPhotosyntheticCobblestone(mc)
-//            val sb = Block.stoneBrick.blockID
-//            Block.blocksList(sb) = null
-//            new BlockPhotosyntheticStoneBrick(sb)
+////            val mc = Block.cobblestoneMossy.blockID
+////            Block.blocksList(mc) = null
+////            new BlockPhotosyntheticCobblestone(mc)
+////            val sb = Block.stoneBrick.blockID
+////            Block.blocksList(sb) = null
+////            new BlockPhotosyntheticStoneBrick(sb)
+//
+//            dynMossyCobble = new BlockDynamicMossyCobble
+//            GameRegistry.addSubstitutionAlias("mossy_cobblestone", GameRegistry.Type.BLOCK, dynMossyCobble)
 //        }
 
         toolMaterialRuby = EnumHelper.addToolMaterial("RUBY", 2, 512, 8.0F, 4, 12)
@@ -81,10 +93,120 @@ class ExplorationProxy_server extends IProxy
         itemDiamondSickle = new ItemGemSickle(ToolDefs.DIAMONDSICKLE)
 
         for (s <- DecorativeStoneDefs.values)
-            BlockMicroMaterial.createAndRegister(ProjectRedExploration.blockDecoratives, s.meta)
+            BlockMicroMaterial.createAndRegister(blockDecoratives, s.meta)
 
         ExplorationRecipes.initOreDict()
         ExplorationRecipes.initRecipes()
+
+        //World Gen
+
+        //Ruby
+        if (Configurator.gen_Ruby)
+        {
+            val logic = new GenLogicUniform
+            logic.name = "pr_ruby"
+            logic.resistance = Configurator.gen_Ruby_resistance
+            logic.allowRetroGen = Configurator.gen_Ruby_retro
+            logic.minY = 12
+            logic.maxY = 20
+            logic.attempts = 2
+            val gen = new WorldGenClusterizer
+            gen.cluster = Set(((blockOres, OreDefs.ORERUBY.meta), 1))
+            gen.clusterSize = 5
+            gen.material = Set((Blocks.stone, 0))
+            logic.gen = gen
+            SimpleGenHandler.registerStructure(logic)
+        }
+
+        //Sapphire
+        if (Configurator.gen_Sapphire)
+        {
+            val logic = new GenLogicUniform
+            logic.name = "pr_sapphire"
+            logic.resistance = Configurator.gen_Sapphire_resistance
+            logic.allowRetroGen = Configurator.gen_Sapphire_retro
+            logic.minY = 12
+            logic.maxY = 20
+            logic.attempts = 2
+            val gen = new WorldGenClusterizer
+            gen.cluster = Set(((blockOres, OreDefs.ORESAPPHIRE.meta), 1))
+            gen.clusterSize = 5
+            gen.material = Set((Blocks.stone, 0))
+            logic.gen = gen
+            SimpleGenHandler.registerStructure(logic)
+        }
+
+        //Peridot
+        if (Configurator.gen_Peridot)
+        {
+            val logic = new GenLogicUniform
+            logic.name = "pr_peridot"
+            logic.resistance = Configurator.gen_Peridot_resistance
+            logic.allowRetroGen = Configurator.gen_Peridot_retro
+            logic.minY = 12
+            logic.maxY = 20
+            logic.attempts = 2
+            val gen = new WorldGenClusterizer
+            gen.cluster = Set(((blockOres, OreDefs.OREPERIDOT.meta), 1))
+            gen.clusterSize = 5
+            gen.material = Set((Blocks.stone, 0))
+            logic.gen = gen
+            SimpleGenHandler.registerStructure(logic)
+        }
+
+        //Marble
+        if (Configurator.gen_MarbleCave)
+        {
+            val logic = new GenLogicUniform
+            logic.name = "pr_marblecave"
+            logic.resistance = 4+Configurator.gen_MarbleCave_resistance
+            logic.allowRetroGen = Configurator.gen_MarbleCave_retro
+            logic.dimensionBlacklist = false
+            logic.dimensions = Set(0)
+            logic.minY = 32
+            logic.maxY = 64
+            val gen = new WorldGenCaveReformer
+            gen.cluster = Set(((blockDecoratives, DecorativeStoneDefs.MARBLE.meta), 1))
+            gen.clusterSize = 1024
+            gen.material = Set((Blocks.stone, 0))
+            logic.gen = gen
+            SimpleGenHandler.registerStructure(logic)
+        }
+
+        //Volcano
+        if (Configurator.gen_Volcano)
+        {
+            val logic = new GenLogicUniform
+            logic.name = "pr_volcano"
+            logic.resistance = 16+Configurator.gen_Volcano_resistance
+            logic.allowRetroGen = Configurator.gen_Volcano_retro
+            logic.dimensionBlacklist = false
+            logic.dimensions = Set(0)
+            logic.minY = 0
+            logic.maxY = 64
+            val gen = new WorldGenVolcanic
+            gen.ashCluster = Set(((blockDecoratives, DecorativeStoneDefs.BASALT.meta), 1))
+            gen.conduitCluster = gen.ashCluster
+            gen.liq = (Blocks.lava, 0)
+            gen.materialStart = Set(gen.liq)
+            logic.gen = gen
+            SimpleGenHandler.registerStructure(logic)
+        }
+
+        //Lily
+        if (Configurator.gen_Lily)
+        {
+            val logic = new GenLogicSurface
+            logic.name = "pr_lily"
+            logic.resistance = 8+Configurator.gen_Lily_resistance //TODO add more
+            logic.allowRetroGen = Configurator.gen_Lily_retro
+            val gen = new WorldGenDecorator
+            gen.cluster = Set(((blockLily, 0), 1))
+            gen.material = Set((Blocks.air, 0))
+            gen.soil = Set((Blocks.grass, 0), (Blocks.dirt, 0))
+            logic.gen = gen
+            SimpleGenHandler.registerStructure(logic)
+        }
     }
 
     override def postinit(){}
@@ -105,6 +227,8 @@ class ExplorationProxy_client extends ExplorationProxy_server
         MinecraftForgeClient.registerItemRenderer(itemPeridotSaw, GemSawRenderer)
 
         GuiHandler.register(GuiBackpack, guiIDBackpack)
+
+        TileRenderRegistry.setRenderer(blockLily, 0, RenderLily)
     }
 }
 

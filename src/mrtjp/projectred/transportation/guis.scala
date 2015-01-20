@@ -5,7 +5,7 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.lib.render.FontUtils
 import codechicken.lib.vec.BlockCoord
 import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
+import mrtjp.core.color.Colors_old
 import mrtjp.core.gui._
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
 import mrtjp.core.resource.ResourceLib
@@ -40,7 +40,7 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
     {
         PRResources.guiPipeCrafting.bind()
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
-        FontUtils.drawCenteredString(""+pipe.priority, 126, 15, Colors.BLACK.rgb)
+        FontUtils.drawCenteredString(""+pipe.priority, 126, 15, Colors_old.BLACK.rgb)
         GuiLib.drawPlayerInvBackground(8, 138)
 
         var color = 0
@@ -50,7 +50,7 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
         {
             GL11.glColor4f(1, 1, 1, 1)
             drawTexturedModalRect(x, y, 1, 11, 16, 16)
-            Gui.drawRect(x+4, y-2, x+4+8, y, Colors.get(color).argb)
+            Gui.drawRect(x+4, y-2, x+4+8, y, Colors_old.get(color).argb)
             color += 1
         }
     }
@@ -214,9 +214,9 @@ class GuiRequester(pipe:IWorldRequester) extends WidgetGui(280, 230)
 
     override def drawFront_Impl(mouse:Point, frame:Float)
     {
-        fontRenderer.drawStringWithShadow("Pull", 240, 166, Colors.WHITE.rgb)
-        fontRenderer.drawStringWithShadow("Craft", 240, 186, Colors.WHITE.rgb)
-        fontRenderer.drawStringWithShadow("Parials", 240, 206, Colors.WHITE.rgb)
+        fontRenderer.drawStringWithShadow("Pull", 240, 166, Colors_old.WHITE.rgb)
+        fontRenderer.drawStringWithShadow("Craft", 240, 186, Colors_old.WHITE.rgb)
+        fontRenderer.drawStringWithShadow("Parials", 240, 206, Colors_old.WHITE.rgb)
     }
 
     override def runInit_Impl()
@@ -398,10 +398,10 @@ class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends WidgetGu
             val dx3 = dx2
             val dy3 = dy-flowY
             if (flags(i)) GuiLib.drawLine(dx2, dy2, dx3, dy3)
-            else GuiLib.drawLine(dx2, dy2, dx3, dy3, Colors.GREY.rgb)
+            else GuiLib.drawLine(dx2, dy2, dx3, dy3, Colors_old.GREY.rgb)
 
             if (flags(i)) GuiLib.drawLine(dx3, dy3, outX, outY)
-            else GuiLib.drawLine(dx3, dy3, outX, outY, Colors.GREY.rgb)
+            else GuiLib.drawLine(dx3, dy3, outX, outY, Colors_old.GREY.rgb)
         }
 
         GuiLib.drawLine(inX, inY, inX, inY+inOut)

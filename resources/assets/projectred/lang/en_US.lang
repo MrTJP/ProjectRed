@@ -165,6 +165,9 @@ tile.projectred.exploration.stonewalls|4.name=Basalt Brick Wall
 tile.projectred.exploration.stonewalls|5.name=Ruby Wall
 tile.projectred.exploration.stonewalls|6.name=Sapphire Wall
 tile.projectred.exploration.stonewalls|7.name=Peridot Wall
+tile.projectred.exploration.lily.name = Deviating Lily
+item.projectred.exploration.lilyseed.name=Deviating Lily seed
+
 
 
 

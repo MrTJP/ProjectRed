@@ -3,7 +3,7 @@ package mrtjp.projectred.core;
 import codechicken.microblock.handler.MicroblockProxy;
 import cpw.mods.fml.common.registry.GameRegistry;
 import mrtjp.projectred.ProjectRedCore;
-import mrtjp.core.color.Colors;
+import mrtjp.core.color.Colors_old;
 import mrtjp.projectred.core.libmc.recipe.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -193,8 +193,8 @@ public class CoreRecipes
             GameRegistry.addRecipe(new ShapelessOreRecipe(p.makeStack(),
                     "dustGlowstone",
                     "dustGlowstone",
-                    Colors.get(i).getOreDict(),
-                    Colors.get(i).getOreDict()
+                    Colors_old.get(i).getOreDict(),
+                    Colors_old.get(i).getOreDict()
                     ));
         }
 

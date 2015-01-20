@@ -4,7 +4,7 @@ import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.render.{CCRenderState, FontUtils, TextureUtils}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
+import mrtjp.core.color.Colors_old
 import mrtjp.core.gui._
 import mrtjp.core.resource.ResourceLib
 import mrtjp.core.vec.Point
@@ -364,12 +364,12 @@ class GuiChipOrient(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
     override def drawBackExtra(mouse:Point, frame:Float)
     {
         val xOff = 90
-        fontRenderer.drawString("Extraction is", xOff, 20, Colors.WHITE.rgb, true)
-        if (chip.extractOrient == -1) fontRenderer.drawString("not simulated", xOff, 30, Colors.WHITE.rgb, true)
+        fontRenderer.drawString("Extraction is", xOff, 20, Colors_old.WHITE.rgb, true)
+        if (chip.extractOrient == -1) fontRenderer.drawString("not simulated", xOff, 30, Colors_old.WHITE.rgb, true)
         else
         {
-            fontRenderer.drawString("simulated from", xOff, 30, Colors.WHITE.rgb, true)
-            fontRenderer.drawString("the " + names(chip.extractOrient), xOff, 40, Colors.WHITE.rgb, true)
+            fontRenderer.drawString("simulated from", xOff, 30, Colors_old.WHITE.rgb, true)
+            fontRenderer.drawString("the " + names(chip.extractOrient), xOff, 40, Colors_old.WHITE.rgb, true)
         }
     }
 
@@ -383,8 +383,8 @@ class GuiChipPriority(cont:ChipContainer, prev:GuiScreen) extends GuiChipContain
 {
     override def drawBackExtra(mouse:Point, frame:Float)
     {
-        FontUtils.drawCenteredString(chip.preference.toString, 88, 38, Colors.WHITE.rgb)
-        if (chip.enablePriorityFlag) fontRenderer.drawStringWithShadow("Enabled", 98, 68, Colors.WHITE.rgb)
+        FontUtils.drawCenteredString(chip.preference.toString, 88, 38, Colors_old.WHITE.rgb)
+        if (chip.enablePriorityFlag) fontRenderer.drawStringWithShadow("Enabled", 98, 68, Colors_old.WHITE.rgb)
     }
 
     val check = new WidgetCheckBox(88, 72, chip.priorityFlag).setAction("p")
@@ -457,10 +457,10 @@ class GuiChipCraftExt(cont:ChipContainer, prev:GuiScreen) extends GuiChipContain
             {
                 val ext = chip.extIndex(index)
                 if (ext >= 0)
-                    Gui.drawRect(x+2, y, x+2+20, y+18, Colors.get(ext).argb)
-                else drawCenteredString(fontRenderer, "off", x+12, y+8, Colors.WHITE.rgba)
+                    Gui.drawRect(x+2, y, x+2+20, y+18, Colors_old.get(ext).argb)
+                else drawCenteredString(fontRenderer, "off", x+12, y+8, Colors_old.WHITE.rgba)
             }
-            else drawCenteredString(fontRenderer, "-", x+12, y+8, Colors.GREY.rgba)
+            else drawCenteredString(fontRenderer, "-", x+12, y+8, Colors_old.GREY.rgba)
             index += 1
         }
     }

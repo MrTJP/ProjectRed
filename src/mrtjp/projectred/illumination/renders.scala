@@ -4,7 +4,7 @@ import codechicken.lib.render._
 import codechicken.lib.render.uv.IconTransformation
 import codechicken.lib.vec._
 import cpw.mods.fml.common.eventhandler.SubscribeEvent
-import mrtjp.core.color.Colors
+import mrtjp.core.color.Colors_old
 import mrtjp.projectred.core.{RenderHalo, Configurator}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
