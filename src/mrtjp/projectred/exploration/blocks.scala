@@ -1,6 +1,5 @@
 package mrtjp.projectred.exploration
 
-import java.text.DecimalFormat
 import java.util
 import java.util.Random
 
@@ -11,7 +10,7 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block._
 import mrtjp.core.color.Colors
 import mrtjp.core.math.MathLib
-import mrtjp.core.world.{Messenger, WorldLib}
+import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.core.PartDefs
 import net.minecraft.block.material.Material
@@ -19,7 +18,6 @@ import net.minecraft.block.{Block, BlockWall}
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.Entity
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
@@ -411,17 +409,6 @@ class TileLily extends InstancedBlockTile with TPlantTile
         dropIfCantStay
     }
 
-    override def update()
-    {//TODO remove
-        var message = "/#f"
-        message += '\n'+"growth: "+growth
-        message += "\n"+"light: "+getPlantLight
-        message += "\n"+"soil: "+getSoilSaturation
-        val d = new DecimalFormat("0.000").format(WorldLib.getWindSpeed(world, x, y, z))
-        message += "\n"+"wind: "+d
-        Messenger.addMessage(x, y+0.75D, z, message)
-    }
-
     override def getBlockBounds = TileLily.bounds(growth)
 
     override def addHarvestContents(ist:ListBuffer[ItemStack])
@@ -460,9 +447,6 @@ class TileLily extends InstancedBlockTile with TPlantTile
         val dx = MathLib.randomFromIntRange(-delta to delta, rand)
         val dy = MathLib.randomFromIntRange(-delta to delta, rand)
         val dz = MathLib.randomFromIntRange(-delta to delta, rand)
-
-        //TODO remove
-        Messenger.addMessage(x+dx, y+dy, z+dz, "pollinated")
 
         world.getTileEntity(x+dx, y+dy, z+dz) match
         {
@@ -538,24 +522,6 @@ class TileLily extends InstancedBlockTile with TPlantTile
         else if (world.prevRainingStrength > 0) sat += 0.20D*world.prevRainingStrength
 
         math.min(1.0D, math.max(sat, 0.0D))
-    }
-
-    //TODO debug growth: remove
-    override def onBlockActivated(player:EntityPlayer, side:Int):Boolean =
-    {
-        if (world.isRemote) return true
-
-        if (!player.isSneaking && growth < 7)
-            setGrowth(growth+1)
-
-        if (player.isSneaking)
-        {
-            setMeta((meta+1)%16)
-        }
-
-        sendPhaseUpdate()
-
-        true
     }
 }
 

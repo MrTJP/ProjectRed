@@ -9,12 +9,10 @@ import mrtjp.core.gui._
 import mrtjp.core.resource.ResourceLib
 import mrtjp.core.vec.Point
 import mrtjp.projectred.core.libmc.PRResources
-import mrtjp.projectred.core.libmc.gui._
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import net.minecraft.client.gui.{Gui, GuiScreen}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Slot
-import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.{EnumChatFormatting, ResourceLocation}
 import org.lwjgl.opengl.GL11
 
@@ -343,21 +341,16 @@ class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
 
 class GuiChipOrient(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer[TChipOrientation](cont, prev)
 {
-    val sideWidget = new JWidgetSideSelect(20 ,20, 50, 50, 40)
+    val sideWidget = new SideSelect(20, 15, 50, 50)
     {
-        override def onSideChanged(s:Int)
+        override def onSideChanged(oldside:Int)
         {
-            val mask = sideMask
-            for (i <- 0 until 6) if ((mask&1<<i) != 0)
-            {
-                chip.extractOrient = i
-                return
-            }
-            chip.extractOrient = -1
+            chip.extractOrient = if (sides != 0) Integer.numberOfTrailingZeros(sides) else -1
         }
-    }.setSideHighlighting(true).setTile(new TileEntityChest).setExclusive(true)
+    }
 
-    if (chip.extractOrient >= 0) sideWidget.setSideMask(1<<chip.extractOrient)
+    sideWidget.exclusiveSides = true
+    if (chip.extractOrient >= 0) sideWidget.sides = 1<<chip.extractOrient
 
     private val names = Seq("bottom", "top", "North", "South", "West", "East")
 

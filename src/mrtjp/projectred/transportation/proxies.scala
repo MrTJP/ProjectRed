@@ -29,14 +29,8 @@ class TransportationProxy_server extends IProxy with IPartFactory
         MultiPartRegistry.registerParts(this, Array[String](
             "pr_pipe", "pr_rbasic", "pr_rinterface",
             "pr_rcrafting", "pr_rrequest", "pr_rextension",
-            "pr_rfire"
+            "pr_rfire", "pr_pt", "pr_rpt"
         ))
-
-        if (Configurator.version.contains("@"))
-        {
-            MultiPartRegistry.registerParts((_, _) => new PressureTube, "pr_pt")
-            MultiPartRegistry.registerParts((_, _) => new ResistanceTube, "pr_rpt")
-        }
 
         itemPartPipe = new ItemPartPipe
         itemRoutingChip = new ItemRoutingChip
@@ -60,6 +54,7 @@ class TransportationProxy_server extends IProxy with IPartFactory
         case ROUTEDEXTENSION.partname => new RoutedExtensionPipePart
         case ROUTEDFIREWALL.partname => new RoutedFirewallPipe
         case PRESSURETUBE.partname => new PressureTube
+        case RESISTANCETUBE.partname => new ResistanceTube
         case _ => null
     }
 

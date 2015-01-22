@@ -2,6 +2,7 @@ package mrtjp.projectred.compatibility
 
 import cpw.mods.fml.common.Loader
 import mrtjp.projectred.compatibility.computercraft.PluginCC_BundledCable
+import mrtjp.projectred.compatibility.cptcoloredlights.PluginColoredLights
 import mrtjp.projectred.compatibility.treecapitator.PluginTreecapitator
 import mrtjp.projectred.compatibility.tconstruct.PluginTConstruct
 import mrtjp.projectred.compatibility.thermalexpansion.PluginThermalExpansion
@@ -14,7 +15,8 @@ object Services
         PluginTreecapitator,
         PluginTConstruct,
         PluginThermalExpansion,
-        PluginCC_BundledCable
+        PluginCC_BundledCable,
+        PluginColoredLights
     )
 
     //List of all loaded plugins

@@ -97,7 +97,7 @@ class TileLamp extends InstancedBlockTile with ILight
     }
 
     override def getLightValue = if (inverted != powered)
-        IlluminationProxy.makeRGBLightValue(getColor, 15) else 0
+        IlluminationProxy.getLightValue(getColor, 15) else 0
 
     override def onNeighborChange(b:Block)
     {
@@ -263,5 +263,5 @@ class TileAirousLight extends TileEntity
         tag.setByte("col", color.asInstanceOf[Byte])
     }
 
-    def lightVal = IlluminationProxy.makeRGBLightValue(color, 15)
+    def lightVal = IlluminationProxy.getLightValue(color, 15)
 }

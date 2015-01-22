@@ -110,7 +110,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
         writeStream(1).writeByte(orientation).sendToChunk()
     }
 
-    def onBlockRotated() {}
+    def onBlockRotated(){}
 }
 
 trait TileMachineIO extends TileMachine with TInventory with ISidedInventory
