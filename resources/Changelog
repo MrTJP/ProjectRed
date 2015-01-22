@@ -1,9 +1,17 @@
 v4.5.9
 - ADDED: Stacking Latch gate
 - ADDED: Segment Display gate
-- CHANGE: Total gate rewrite
+- ADDED: Deviating Lily
+- ADDED: Config option for minimum timer gate settings
+- ADDED: Pressure tubes + Importer machine
+- ADDED: Block Breaker
+- CHANGE: Complete gate rewrite
+- CHANGE: Simplified Extractor chip's glitchy side selection
 - FIX: SR Latch stuck state bug
 - FIX: Infinite update loop on Bus Input Panel
+- FIX: Colored Lights crash
+- FIX: Many incorrect/weird gate models
+- FIX: Some awkward volcano generation
 
 v4.5.8
 - FIX: Sickles harvesting grass blocks

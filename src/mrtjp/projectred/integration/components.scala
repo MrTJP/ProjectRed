@@ -735,7 +735,7 @@ class InputPanelButtonsModel extends ComponentModel
         for (i <- 0 until 16)
         {
             CCRenderState.setPipeline(CCRenderState.lightMatrix, orientT(orient).`with`(t), icon,
-                ColourMultiplier.instance(Colors.get(i).rgba))
+                ColourMultiplier.instance(Colors(i).rgba))
             BlockRenderer.renderCuboid(if ((pressMask&1<<i) != 0) pressed(i) else unpressed(i), 1)
         }
     }

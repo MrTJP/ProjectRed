@@ -11,7 +11,7 @@ import mrtjp.projectred.core.libmc.PRLib
 import mrtjp.projectred.transportation.{PipePayload, TPressureDevice, TPressureTube}
 import net.minecraft.block.Block
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.{NBTTagList, NBTTagCompound}
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 
 import scala.collection.mutable.ListBuffer
 
