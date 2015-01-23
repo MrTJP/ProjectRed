@@ -67,7 +67,9 @@ item.projectred.core.datacard.name=Cartão de Dados
 
 
 itemGroup.expansion=Project Red: Expansão
-tile.projectred.expansion.machine2|0.name=Controlador de Roteamento de Rede
+tile.projectred.expansion.machine2|0.name=Quebrador de Blocos
+tile.projectred.expansion.machine2|1.name=Importador de item
+tile.projectred.expansion.machine2|2.name=Implantador
 
 
 itemGroup.transport=Project Red: Transporte
@@ -81,9 +83,6 @@ item.projectred.transportation.routingchip|5.name=Chip de Disperção de Itens
 item.projectred.transportation.routingchip|6.name=Chip de Estoque de Itens
 item.projectred.transportation.routingchip|7.name=Chip de Criação de Itens
 
-item.projectred.transportation.cpu|0.name=CPU de Roteamento de Rede
-item.projectred.transportation.creativecpu.name=CPU Criativa de Roteamento de Rede 
-
 item.projectred.transportation.routerutil.name=Utilitário do Roteador
 
 item.projectred.transportation.pipe|0.name=Tubo de Transporte de Itens
@@ -93,6 +92,8 @@ item.projectred.transportation.pipe|3.name=Tubo de Fabricação Roteado
 item.projectred.transportation.pipe|4.name=Tubo de Pedido Roteado
 item.projectred.transportation.pipe|5.name=Tubo de Extensão Roteado
 item.projectred.transportation.pipe|6.name=Tubo de Firewall Roteado
+item.projectred.transportation.pipe|7.name=Tubo de Pressão
+item.projectred.transportation.pipe|8.name=Tubo de Resistência a Pressão
 
 
 itemGroup.exploration=Project Red: Exploração
@@ -164,38 +165,8 @@ tile.projectred.exploration.stonewalls|4.name=Parede de Tijolo de Bassalto
 tile.projectred.exploration.stonewalls|5.name=Parede de Rubi
 tile.projectred.exploration.stonewalls|6.name=Parede de Safira
 tile.projectred.exploration.stonewalls|7.name=Parede de Peridoto
-tile.projectred.exploration.dyeleaf|0.name=Folha Tingida de Branco
-tile.projectred.exploration.dyeleaf|1.name=Folha Tingida de Laranja
-tile.projectred.exploration.dyeleaf|2.name=Folha Tingida de Magenta
-tile.projectred.exploration.dyeleaf|3.name=Folha Tingida de Azul Claro
-tile.projectred.exploration.dyeleaf|4.name=Folha Tingida de Amarelo
-tile.projectred.exploration.dyeleaf|5.name=Folha Tingida de Verde Claro
-tile.projectred.exploration.dyeleaf|6.name=Folha Tingida de Rosa
-tile.projectred.exploration.dyeleaf|7.name=Folha Tingida de Cinza
-tile.projectred.exploration.dyeleaf|8.name=Folha Tingida de Cinza Claro
-tile.projectred.exploration.dyeleaf|9.name=Folha Tingida de Ciano
-tile.projectred.exploration.dyeleaf|10.name=Folha Tingida de Lilás
-tile.projectred.exploration.dyeleaf|11.name=Folha Tingida de Azul
-tile.projectred.exploration.dyeleaf|12.name=Folha Tingida de Marrom
-tile.projectred.exploration.dyeleaf|13.name=Folha Tingida de Verde
-tile.projectred.exploration.dyeleaf|14.name=Folha Tingida de Vermelho
-tile.projectred.exploration.dyeleaf|15.name=Folha Tingida de Preto
-tile.projectred.exploration.dyesapling|0.name=Muda Tingida de Branco
-tile.projectred.exploration.dyesapling|1.name=Muda Tingida de Laranja
-tile.projectred.exploration.dyesapling|2.name=Muda Tingida de Magenta
-tile.projectred.exploration.dyesapling|3.name=Muda Tingida de Azul Claro
-tile.projectred.exploration.dyesapling|4.name=Muda Tingida de Amarelo
-tile.projectred.exploration.dyesapling|5.name=Muda Tingida de Verde Claro
-tile.projectred.exploration.dyesapling|6.name=Muda Tingida de Rosa
-tile.projectred.exploration.dyesapling|7.name=Muda Tingida de Cinza
-tile.projectred.exploration.dyesapling|8.name=Muda Tingida de Cinza Claro
-tile.projectred.exploration.dyesapling|9.name=Muda Tingida de Ciano
-tile.projectred.exploration.dyesapling|10.name=Muda Tingida de Lilás
-tile.projectred.exploration.dyesapling|11.name=Muda Tingida de Azul
-tile.projectred.exploration.dyesapling|12.name=Muda Tingida de Marrom
-tile.projectred.exploration.dyesapling|13.name=Muda Tingida de Verde
-tile.projectred.exploration.dyesapling|14.name=Muda Tingida de Vermelho
-tile.projectred.exploration.dyesapling|15.name=Muda Tingida de Preto
+tile.projectred.exploration.lily.name =Lírio Desviado
+item.projectred.exploration.lilyseed.name=Sementes de Lírio Desviado
 
 
 
@@ -432,6 +403,7 @@ item.projectred.integration.gate|27.name=Célula ´AND´
 item.projectred.integration.gate|28.name=Barramento do Randomizador
 item.projectred.integration.gate|29.name=Barramento do Contador
 item.projectred.integration.gate|30.name=Barramento do Painel de Entrada
+item.projectred.integration.gate|31.name=Trava de Empilhamento
 
 
 
@@ -499,4 +471,3 @@ itemGroup.compat=Project Red: Compatibilidade
 
 tile.projectred.compatibility.liqredstone.name=Redstone Líquida
 tile.projectred.compatibility.liqcondredmetal.name=Redmetal Condutivo Fundido
-
