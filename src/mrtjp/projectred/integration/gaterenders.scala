@@ -770,7 +770,7 @@ class RenderSequencer extends GateRenderer[SequentialGatePart]
 
     override def prepareDynamic(gate:SequentialGatePart, frame:Float)
     {
-        val max = gate.getLogic[Sequencer].pointer_max
+        val max = gate.getLogic[Sequencer].pointer_max*4
         pointer.angle = (gate.world.getWorldTime%max+frame)/max*2*MathHelper.pi
         if (gate.shape == 1) pointer.angle = -pointer.angle
     }

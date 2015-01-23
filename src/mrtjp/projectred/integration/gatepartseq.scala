@@ -435,7 +435,6 @@ class Sequencer(gate:SequentialGatePart) extends SequentialGateLogic(gate) with 
     var pointer_max = 40
 
     override def outputMask(shape:Int) = 0xF
-    override def inputMask(shape:Int) = 0
 
     override def onChange(gate:SequentialGatePart){}
     override def scheduledTick(gate:SequentialGatePart){}
@@ -472,7 +471,7 @@ class Sequencer(gate:SequentialGatePart) extends SequentialGateLogic(gate) with 
         if (!gate.world.isRemote)
         {
             val oldOut = gate.state>>4
-            var out = 1<<gate.world.getWorldTime%pointer_max/(pointer_max/4)
+            var out = 1<<gate.world.getWorldTime%(pointer_max*4)/pointer_max
             if (gate.shape == 1) out = flipMaskZ(out)
             if (oldOut != out)
             {
@@ -485,7 +484,7 @@ class Sequencer(gate:SequentialGatePart) extends SequentialGateLogic(gate) with 
 
     override def cycleShape(gate:SequentialGatePart) =
     {
-        gate.setShape(if (gate.shape == 1) 0 else 1)
+        gate.setShape(gate.shape^1)
         true
     }
 
