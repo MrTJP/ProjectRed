@@ -264,8 +264,8 @@ class ItemGemSickle(override val toolDef:ToolDef) extends ItemTool(3, toolDef.ma
 
         if (player != null && b != null)
         {
-            if (b.isLeaves(w, x, y, z)) return runLeaves(stack, w, x, y, z, player)
-            else if (b.isInstanceOf[BlockFlower]) return runCrops(stack, w, x, y, z, player)
+            if (WorldLib.isLeafType(w, x, y, z, b)) return runLeaves(stack, w, x, y, z, player)
+            else if (WorldLib.isPlantType(w, x, y, z, b)) return runCrops(stack, w, x, y, z, player)
         }
         super.onBlockDestroyed(stack, w, b, x, y, z, ent)
     }
@@ -302,7 +302,7 @@ class ItemGemSickle(override val toolDef:ToolDef) extends ItemTool(3, toolDef.ma
             val lz = z+j
             val b = w.getBlock(lx, ly, lz)
             val meta = w.getBlockMetadata(lx, ly, lz)
-            if (b != null && WorldLib.isPlantType(w, x, y, z, b) && !b.isInstanceOf[BlockGrass])
+            if (b != null && WorldLib.isPlantType(w, x, y, z, b))
             {
                 if (b.canHarvestBlock(player, meta)) b.harvestBlock(w, player, lx, ly, lz, meta)
                 w.setBlockToAir(lx, ly, lz)
