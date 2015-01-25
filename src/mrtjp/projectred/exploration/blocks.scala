@@ -334,6 +334,8 @@ class BlockLily extends InstancedBlock("projectred.exploration.lily", Material.p
 
     override def initialCanStay(w:World, x:Int, y:Int, z:Int) = soil.contains(w.getBlock(x, y-1, z))
 
+    override def canBlockStay(w:World, x:Int, y:Int, z:Int) = initialCanStay(w, x, y, z)
+
     override def getPlantType(w:IBlockAccess, x:Int, y:Int, z:Int) = EnumPlantType.Plains
 }
 

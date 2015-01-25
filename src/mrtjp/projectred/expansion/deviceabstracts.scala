@@ -6,6 +6,7 @@
 package mrtjp.projectred.expansion
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.core.libmc.PRLib
 import mrtjp.projectred.transportation.{PipePayload, TPressureDevice, TPressureTube}
@@ -204,7 +205,17 @@ trait TActiveDevice extends TileMachine with TPressureDevice
         }
     }
 
-    def exportInv(r:PipePayload) = false
+    def exportInv(r:PipePayload) =
+    {
+        val inv = InvWrapper.getInventory(world, position.offset(side))
+        if (inv != null)
+        {
+            val w = InvWrapper.wrap(inv).setSlotsFromSide(side^1)
+            r.payload.stackSize -= w.injectItem(r.payload.makeStack, true)
+            r.payload.stackSize <= 0
+        }
+        else false
+    }
 
     def exportEject(r:PipePayload):Boolean =
     {

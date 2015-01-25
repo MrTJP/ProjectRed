@@ -1,3 +1,9 @@
+v4.5.10
+- FIX: Crash on world generation
+- FIX: Time set on sequencers
+- FIX: Sickles not harvesting tall grass
+- CHANGE: Enabled tube device inventory export
+
 v4.5.9
 - ADDED: Stacking Latch gate
 - ADDED: Segment Display gate

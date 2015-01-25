@@ -328,8 +328,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
             r.payload.stackSize -= w.injectItem(r.payload.makeStack, true)
             true
         }
-
-        false
+        else false
     }
 
     def bounceStack(r:PipePayload)
