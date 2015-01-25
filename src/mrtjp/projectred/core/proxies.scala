@@ -12,7 +12,6 @@ class CoreProxy_server extends IProxy
 {
     def preinit()
     {
-        MinecraftForge.EVENT_BUS.register(RetroactiveWorldGenerator.instance)
     }
 
     def init()

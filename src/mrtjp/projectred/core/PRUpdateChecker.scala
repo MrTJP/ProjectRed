@@ -10,9 +10,7 @@ class PRUpdateChecker extends UpdateChecker
     override def group = "mrtjp"
     override def project = "ProjectRed"
 
-    override def shouldRun = Configurator.versionChecking
-
+    override def shouldRun = Configurator.versionChecking && !Configurator.version.contains("@")
     override def checkUnstable = Configurator.versionCheckDevBuilds
-
     override def currentVersion = Configurator.version+"."+Configurator.buildnumber
 }

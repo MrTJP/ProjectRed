@@ -111,7 +111,6 @@ public class Configurator
         staticWires = config.get("general", "renderStaticWires", true, "If set to false, wires will be rendered in the TESR rather than the WorldRenderer").getBoolean(true);
         staticGates = config.get("general", "renderStaticGates", true, "If set to false, gates will be rendered in the TESR rather than the WorldRenderer").getBoolean(true);
         retroGeneration = config.get("general", "Retro Ore Generation", false, "If set to true, world generation for ProjectRed will attempt to run even in previously generated chunks.").getBoolean(false);
-        retroGenID = config.get("general", "Retro Ore Gen ID", "prRG", "This ID is used to check if retro gen has been performed on a chunk. Changing it will reset retro gen status.").getString();
         lightHaloMax = config.get("general", "Light Halo Render Count", -1, "Number of lights to render, -1 for unlimited").getInt();
         coloredLightsCompat = config.get("general", "coloredLightsCompat", false, "Enable compatability with ColoredLightsCore. CLC is in beta state and is known to cause many glitches.").getBoolean(false);
 
