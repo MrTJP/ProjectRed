@@ -95,6 +95,7 @@ object PartDefs extends ItemDefinition
     val POINTER = new PartVal("partpointer")
     val SILICONCHIP = new PartVal("partsiliconchip")
     val ENERGIZEDSILICONCHIP = new PartVal("partenergizedsiliconchip")
+    val SILICONMEMORYCHIP = new PartVal("partsiliconmemorychip")
     val PLATFORMEDPLATE = new PartVal("partplatformedplate")
 
     val REDINGOT = new PartVal("partredingot")

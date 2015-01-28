@@ -9,6 +9,7 @@ item.projectred.core.part.partcathode.name=Cathode
 item.projectred.core.part.partpointer.name=Pointer
 item.projectred.core.part.partsiliconchip.name=Silicon Chip
 item.projectred.core.part.partenergizedsiliconchip.name=Energized Silicon Chip
+item.projectred.core.part.partsiliconmemorychip.name=Silicon Memory Chip
 item.projectred.core.part.partplatformedplate.name=Platformed Plate
 item.projectred.core.part.partredingot.name=Red Alloy Ingot
 item.projectred.core.part.partboule.name=Silicon Boule

@@ -123,6 +123,16 @@ public class CoreRecipes
                 'p', PLATE().makeStack()
                 );
 
+        /** Silicon Memory Chip **/
+        GameRegistry.addRecipe(SILICONMEMORYCHIP().makeStack(),
+                " e ",
+                " s ",
+                "ppp",
+                'e', ENERGIZEDSILICON().makeStack(),
+                's', INFUSEDSILICON().makeStack(),
+                'p', PLATE().makeStack()
+                );
+
         /** Platformed Plate **/
         GameRegistry.addRecipe(new ShapedOreRecipe(PLATFORMEDPLATE().makeStack(),
                 " r ",
