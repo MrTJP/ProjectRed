@@ -69,6 +69,7 @@ dependencies {
     compile "mrtjp:MrTJPCore:${config.mc.version}-${config.mrtjp.version}:dev"
     compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
     compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
+    compile "codechicken:CodeChickenCore:${config.mc.version}-${config.ccc.version}:dev"
     compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
     compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
 //    compile group: 'thermalexpansion', name: 'ThermalExpansion', version: config.texpan.version, ext: 'jar'

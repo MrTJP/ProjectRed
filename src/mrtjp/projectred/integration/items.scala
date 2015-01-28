@@ -94,6 +94,7 @@ object GateDefinition extends ItemDefinition
     val BusInputPanel = new GateDef("pr_bgate")
     val StackingLatch = new GateDef("pr_agate")
     val SegmentDisplay = new GateDef("pr_bgate")
+    val TransparentBusLatch = new GateDef("pr_bgate")
 
     class GateDef(val partname:String) extends ItemDef
     {
