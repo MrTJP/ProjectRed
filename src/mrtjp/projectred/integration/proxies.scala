@@ -446,5 +446,16 @@ object IntegrationRecipes
             'Q':JChar, "gemQuartz",
             'S':JChar, PartDefs.SILICONCHIP.makeStack
         ))
+
+      /** Transparent Bus Latch **/
+      GameRegistry.addRecipe(new ShapedOreRecipe(GateDefinition.TransparentBusLatch.makeStack,
+        "PBP",
+        "RMR",
+        "PBP",
+        'P':JChar, PartDefs.PLATE.makeStack,
+        'B':JChar, PartDefs.BUNDLEDPLATE.makeStack,
+        'R':JChar, PartDefs.CONDUCTIVEPLATE.makeStack,
+        'M':JChar, PartDefs.SILICONMEMORYCHIP.makeStack
+      ))
     }
 }

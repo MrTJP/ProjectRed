@@ -78,6 +78,7 @@ object BundledGateLogic
         case BusConverter.ordinal => new BusConverter(gate)
         case GateDefinition.BusInputPanel.ordinal => new BusInputPanel(gate)
         case SegmentDisplay.ordinal => new SegmentDisplay(gate)
+        case TransparentBusLatch.ordinal => new TransparentBusLatch(gate)
         case _ => throw new IllegalArgumentException("Invalid gate subID: "+subID)
     }
 }
@@ -649,4 +650,102 @@ class SegmentDisplay(gate:BundledGatePart) extends BundledGateLogic(gate)
             sendClientUpdate()
         }
     }
+}
+
+class TransparentBusLatch(gate:BundledGatePart) extends BundledGateLogic(gate)
+{
+  var input, output, savedInput:Array[Byte] = null
+
+  override def bundledOutputMask(shape:Int) = 5
+  override def bundledInputMask(shape:Int) = 5
+  override def outputMask(shape:Int) = 0
+  override def inputMask(shape:Int) = 10
+
+  override def save(tag:NBTTagCompound)
+  {
+    saveSignal(tag, "in", input)
+    saveSignal(tag, "out", output)
+    saveSignal(tag, "save", savedInput)
+  }
+
+  override def load(tag:NBTTagCompound)
+  {
+    input = loadSignal(tag, "in")
+    output = loadSignal(tag, "out")
+    savedInput = loadSignal(tag, "save")
+  }
+
+  override def writeDesc(packet:MCDataOutput)
+  {
+    packet.writeInt(packClientData)
+  }
+
+  override def readDesc(packet:MCDataInput)
+  {
+    unpackClientData(packet.readInt)
+  }
+
+  override def read(packet:MCDataInput, key:Int) = key match
+  {
+    case 11 => readDesc(packet)
+    case _ =>
+  }
+
+  def sendClientUpdate()
+  {
+    writeDesc(gate.getWriteStreamOf(11))
+  }
+
+  def packClientData = packDigital(output)|packDigital(savedInput)<<16
+
+  def unpackClientData(packed:Int)
+  {
+    output = unpackDigital(output, packed&0xFFFF)
+    savedInput = unpackDigital(savedInput, packed>>>16)
+  }
+
+  override def getBundledOutput(gate:BundledGatePart, r:Int): Array[Byte] = if (r == 0) output else null
+
+  def getBundledInput = {
+    raiseSignal(copySignal(gate.getBundledInput(2)), getBundledOutput(gate, 2)) //OR'd w/ output
+  }
+
+  override def onChange(gate:BundledGatePart)
+  {
+    var inputChanged = false
+
+    val oldState = gate.state&0xF
+    val newState = getInput(gate, 0xA)
+    if (oldState != newState)
+    {
+      gate.setState(gate.state&0xF0|newState)
+      inputChanged = true
+    }
+
+    val newInput = getBundledInput
+    if (!signalsEqual(input, newInput))
+    {
+      input = newInput
+      inputChanged = true
+    }
+
+    if (inputChanged)
+    {
+      if ((gate.state&0xA) != 0) savedInput = input
+      gate.onInputChange()
+    }
+    if (!signalsEqual(output, getBundledOutput)) gate.scheduleTick(2)
+  }
+
+  def getBundledOutput = copySignal(savedInput)
+
+  override def scheduledTick(gate:BundledGatePart)
+  {
+    output = getBundledOutput
+    onChange(gate)
+    gate.onOutputChange(5)
+    sendClientUpdate()
+  }
+
+  override def lightLevel = 0
 }

@@ -52,7 +52,8 @@ object RenderGate
         new RenderBusConverter,
         new RenderBusInputPanel,
         new RenderStackingLatch,
-        new RenderSegmentDisplay
+        new RenderSegmentDisplay,
+        new RenderTransparentBusLatch
     )
 
     def registerIcons(reg:IIconRegister)
@@ -1307,4 +1308,34 @@ class RenderSegmentDisplay extends GateRenderer[BundledGatePart]
         sevenSeg0.signal = sig0
         sixteenSeg.signal = sig1<<8|sig0
     }
+}
+
+class RenderTransparentBusLatch extends GateRenderer[BundledGatePart]
+{
+  val cable = new BusRandCableModel
+  val panel = new SigLightPanelModel(8, 8, true)
+  val wires = generateWireModels("BUSRAND1", 2)
+
+  override val coreModels = wires++Seq(panel, cable, new BaseComponentModel)
+
+  // panel color: orange
+  panel.offColour = 0x6D2C00FF
+  panel.onColour = 0xE66B00FF
+
+  override def prepareInv()
+  {
+    panel.signal = 0
+
+    wires(0).on = false
+    wires(1).on = false
+  }
+
+  override def prepare(gate:BundledGatePart)
+  {
+    wires(0).on = (gate.state&2) != 0
+    wires(1).on = (gate.state&8) != 0
+    val logic = gate.getLogic[TransparentBusLatch]
+    val packed = logic.packClientData
+    panel.signal = packed&0xFFFF
+  }
 }
