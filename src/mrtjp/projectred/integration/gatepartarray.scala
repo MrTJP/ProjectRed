@@ -117,6 +117,7 @@ trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSProp
     abstract override def canConnectRedstone(side:Int):Boolean =
     {
         if (super.canConnectRedstone(side)) return true
+        if ((side&6) == (this.side&6)) return false
         getLogicArray.canConnectRedwire(this, toInternal(absoluteRot(side)))
     }
 
