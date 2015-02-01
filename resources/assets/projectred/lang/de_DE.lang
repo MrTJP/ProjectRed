@@ -67,7 +67,9 @@ item.projectred.core.datacard.name=Datenkarte
 
 
 itemGroup.expansion=Project Red: Expansion
-tile.projectred.expansion.machine2|0.name=Routen-Netzwerk-Controller
+tile.projectred.expansion.machine2|0.name=Block-Brecher
+tile.projectred.expansion.machine2|1.name=Item-Importierer
+tile.projectred.expansion.machine2|2.name=Deployer
 
 
 itemGroup.transport=Project Red: Transport
@@ -81,9 +83,6 @@ item.projectred.transportation.routingchip|5.name=Item-Sendungs-Chip
 item.projectred.transportation.routingchip|6.name=Item-Vorrats-Bewahrungs-Chip
 item.projectred.transportation.routingchip|7.name=Item-Herstellungs-Chip
 
-item.projectred.transportation.cpu|0.name=Routen-Netzwerk-CPU
-item.projectred.transportation.creativecpu.name=Kreativ-Routen-Netzwerk-CPU
-
 item.projectred.transportation.routerutil.name=Router-Werkzeug
 
 item.projectred.transportation.pipe|0.name=Item-Transportrohr
@@ -93,6 +92,8 @@ item.projectred.transportation.pipe|3.name=Routen-Herstellungsrohr
 item.projectred.transportation.pipe|4.name=Routen-Bestellrohr
 item.projectred.transportation.pipe|5.name=Routen-Erweiterungsrohr
 item.projectred.transportation.pipe|6.name=Routen-Firewall-Rohr
+item.projectred.transportation.pipe|7.name=Druckrohr
+item.projectred.transportation.pipe|8.name=Widerständiges Druckrohr
 
 
 itemGroup.exploration=Project Red: Erkundung
@@ -164,38 +165,8 @@ tile.projectred.exploration.stonewalls|4.name=Basaltziegelwand
 tile.projectred.exploration.stonewalls|5.name=Rubinwand
 tile.projectred.exploration.stonewalls|6.name=Saphirwand
 tile.projectred.exploration.stonewalls|7.name=Olivinwand
-tile.projectred.exploration.dyeleaf|0.name=Weiß Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|1.name=Orange Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|2.name=Magentafarben Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|3.name=Hellblau Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|4.name=Gelb Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|5.name=Hellgrün Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|6.name=Pink Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|7.name=Grau Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|8.name=Hellgrau Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|9.name=Türkis Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|10.name=Violett Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|11.name=Blau Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|12.name=Braun Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|13.name=Grün Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|14.name=Rot Gefärbte Blätter
-tile.projectred.exploration.dyeleaf|15.name=Schwarz Gefärbte Blätter
-tile.projectred.exploration.dyesapling|0.name=Weiß Gefärbter Setzling
-tile.projectred.exploration.dyesapling|1.name=Orange Gefärbter Setzling
-tile.projectred.exploration.dyesapling|2.name=Magentafarben Gefärbter Setzling
-tile.projectred.exploration.dyesapling|3.name=Hellblau Gefärbter Setzling
-tile.projectred.exploration.dyesapling|4.name=Gelb Gefärbter Setzling
-tile.projectred.exploration.dyesapling|5.name=Hellgrün Gefärbter Setzling
-tile.projectred.exploration.dyesapling|6.name=Pink Gefärbter Setzling
-tile.projectred.exploration.dyesapling|7.name=Grau Gefärbter Setzling
-tile.projectred.exploration.dyesapling|8.name=Hellgrau Gefärbter Setzling
-tile.projectred.exploration.dyesapling|9.name=Türkis Gefärbter Setzling
-tile.projectred.exploration.dyesapling|10.name=Violett Gefärbter Setzling
-tile.projectred.exploration.dyesapling|11.name=Blau Gefärbter Setzling
-tile.projectred.exploration.dyesapling|12.name=Braun Gefärbter Setzling
-tile.projectred.exploration.dyesapling|13.name=Grün Gefärbter Setzling
-tile.projectred.exploration.dyesapling|14.name=Rot Gefärbter Setzling
-tile.projectred.exploration.dyesapling|15.name=Schwarz Gefärbter Setzling
+tile.projectred.exploration.lily.name=Abweichende Lilie
+item.projectred.exploration.lilyseed.name=Samen der abweichenden Lilie
 
 
 
@@ -432,6 +403,7 @@ item.projectred.integration.gate|27.name=AND-Zelle
 item.projectred.integration.gate|28.name=Bus-Randomizer
 item.projectred.integration.gate|29.name=Bus-Converter
 item.projectred.integration.gate|30.name=Bus-Eingabefeld
+item.projectred.integration.gate|31.name=Stacking-Flipflop
 
 
 
