@@ -165,8 +165,8 @@ tile.projectred.exploration.stonewalls|4.name=Basaltziegelwand
 tile.projectred.exploration.stonewalls|5.name=Rubinwand
 tile.projectred.exploration.stonewalls|6.name=Saphirwand
 tile.projectred.exploration.stonewalls|7.name=Olivinwand
-tile.projectred.exploration.lily.name=Abweichende Lilie
-item.projectred.exploration.lilyseed.name=Samen der abweichenden Lilie
+tile.projectred.exploration.lily.name=Fernlilie
+item.projectred.exploration.lilyseed.name=Samen der Fernlilie
 
 
 
