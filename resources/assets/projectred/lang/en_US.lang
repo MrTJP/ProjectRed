@@ -404,6 +404,8 @@ item.projectred.integration.gate|28.name=Bus Randomizer
 item.projectred.integration.gate|29.name=Bus Converter
 item.projectred.integration.gate|30.name=Bus Input Panel
 item.projectred.integration.gate|31.name=Stacking Latch
+item.projectred.integration.gate|32.name=Segment Display Gate
+item.projectred.integration.gate|33.name=Decoding Randomizer
 
 
 

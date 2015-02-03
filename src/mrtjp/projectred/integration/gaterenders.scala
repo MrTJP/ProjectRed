@@ -52,7 +52,8 @@ object RenderGate
         new RenderBusConverter,
         new RenderBusInputPanel,
         new RenderStackingLatch,
-        new RenderSegmentDisplay
+        new RenderSegmentDisplay,
+        new RenderDecodingRand
     )
 
     def registerIcons(reg:IIconRegister)
@@ -387,7 +388,7 @@ class RenderXNOR extends GateRenderer[ComboGatePart]
 class RenderBuffer extends GateRenderer[ComboGatePart]
 {
     val wires = generateWireModels("BUFFER", 4)
-    val torches = Seq(new RedstoneTorchModel(8, 2, 8), new RedstoneTorchModel(8, 9, 6))
+    val torches = Seq(new RedstoneTorchModel(8, 3.5, 8), new RedstoneTorchModel(8, 9, 6))
 
     override val coreModels = wires++torches:+new BaseComponentModel
 
@@ -519,8 +520,8 @@ class RenderRepeater extends GateRenderer[ComboGatePart]
 
 class RenderRandomizer extends GateRenderer[ComboGatePart]
 {
-    val wires = generateWireModels("RANDOM", 4)
-    val chips = Seq(new YellowChipModel(8, 5.5), new YellowChipModel(11.5, 12), new YellowChipModel(4.5, 12))
+    val wires = generateWireModels("RAND", 7)
+    val chips = Seq(new YellowChipModel(8, 5.5), new YellowChipModel(11.5, 11.5), new YellowChipModel(4.5, 11.5))
 
     override val coreModels = wires++chips:+new BaseComponentModel
 
@@ -530,6 +531,15 @@ class RenderRandomizer extends GateRenderer[ComboGatePart]
         wires(1).on = false
         wires(2).on = false
         wires(3).on = false
+        wires(4).on = false
+        wires(5).on = false
+        wires(6).on = false
+        wires(0).disabled = false
+        wires(1).disabled = false
+        wires(3).disabled = false
+        wires(4).disabled = false
+        wires(5).disabled = false
+        wires(6).disabled = false
         chips(0).on = false
         chips(1).on = false
         chips(2).on = false
@@ -537,10 +547,19 @@ class RenderRandomizer extends GateRenderer[ComboGatePart]
 
     override def prepare(gate:ComboGatePart)
     {
-        wires(1).on = (gate.state&4) != 0
+        wires(2).on = (gate.state&4) != 0
         wires(0).on = (gate.state&0x11) != 0
-        wires(3).on = (gate.state&0x22) != 0
-        wires(2).on = (gate.state&0x88) != 0
+        wires(1).on = (gate.state&0x22) != 0
+        wires(3).on = (gate.state&0x88) != 0
+        wires(4).on = wires(2).on
+        wires(5).on = wires(2).on
+        wires(6).on = wires(2).on
+        wires(1).disabled = (gate.shape&1) != 0
+        wires(0).disabled = (gate.shape&2) != 0
+        wires(3).disabled = (gate.shape&4) != 0
+        wires(5).disabled = wires(1).disabled
+        wires(4).disabled = wires(0).disabled
+        wires(6).disabled = wires(3).disabled
         chips(0).on = (gate.state&0x10) != 0
         chips(1).on = (gate.state&0x20) != 0
         chips(2).on = (gate.state&0x80) != 0
@@ -1306,5 +1325,53 @@ class RenderSegmentDisplay extends GateRenderer[BundledGatePart]
         sevenSeg1.signal = sig1
         sevenSeg0.signal = sig0
         sixteenSeg.signal = sig1<<8|sig0
+    }
+}
+
+class RenderDecodingRand extends GateRenderer[ComboGatePart]
+{
+    val wires = generateWireModels("DECRAND", 6)
+    val chips = Seq(new YellowChipModel(5, 13), new YellowChipModel(11, 13), new RedChipModel(5.5, 8))
+    val torches = Seq(new RedstoneTorchModel(8, 2.5, 8), new RedstoneTorchModel(14, 8, 8), new RedstoneTorchModel(2, 8, 8), new RedstoneTorchModel(9, 8, 6))
+
+    override val coreModels = wires++chips++torches:+new BaseComponentModel
+
+    override def prepareInv()
+    {
+        wires(0).on = false
+        wires(1).on = false
+        wires(2).on = false
+        wires(3).on = false
+        wires(4).on = true
+        wires(5).on = true
+        wires(0).disabled = false
+        wires(3).disabled = false
+        torches(0).on = true
+        torches(1).on = false
+        torches(2).on = false
+        torches(3).on = false
+        chips(0).on = false
+        chips(1).on = true
+        chips(2).on = true
+    }
+
+    override def prepare(gate:ComboGatePart)
+    {
+        val state = gate.state
+        wires(0).on = (state>>4) == 2
+        wires(1).on = (state>>4) == 8
+        wires(2).on = (state&4) != 0
+        wires(3).on = (state&4) != 0
+        wires(4).on = (state>>4) == 1 || (state>>4) == 2
+        wires(5).on = (state>>4) == 1
+        wires(0).disabled = gate.shape != 0
+        wires(3).disabled = gate.shape != 0
+        torches(0).on = (state>>4) == 1
+        torches(1).on = (state>>4) == 2
+        torches(2).on = (state>>4) == 8
+        torches(3).on = !wires(4).on
+        chips(0).on = (state>>4) == 2
+        chips(1).on = (state>>4) == 1 || (state>>4) == 2
+        chips(2).on = true
     }
 }

@@ -24,7 +24,7 @@ class ComboGatePart extends RedstoneGatePart
 
 object ComboGateLogic
 {
-    val advanceDead = Array(1, 2, 4, 0, 5, 6, 3)
+    val advanceDead = Seq(1, 2, 4, 0, 5, 6, 3)
 
     val instances = new Array[ComboGateLogic](GateDefinition.values.length)
     initialize()
@@ -49,6 +49,8 @@ object ComboGateLogic
         instances(defs.TransparentLatch.ordinal) = TransparentLatch
         instances(defs.LightSensor.ordinal) = LightSensor
         instances(defs.RainSensor.ordinal) = RainSensor
+
+        instances(defs.DecRandomizer.ordinal) = DecodingRand
     }
 }
 
@@ -284,11 +286,17 @@ object Randomizer extends ComboGateLogic
 {
     val rand = new Random
 
-    override def outputMask(shape:Int) = 0xB
+    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)>>1|(shape&4)<<1)&0xB
     override def inputMask(shape:Int) = 4
+    override def feedbackMask(shape:Int) = outputMask(shape)
+
+    override def deadSides = 3
 
     override def calcOutput(gate:ComboGatePart, input:Int) =
-        if (input == 0) gate.state>>4 else TFaceOrient.shiftMask(rand.nextInt(8), 3)
+    {
+        if (input == 0) gate.state>>4 else
+            outputMask(gate.shape)&TFaceOrient.shiftMask(rand.nextInt(8), 3)
+    }
 
     override def onChange(gate:ComboGatePart)
     {
@@ -379,4 +387,27 @@ object RainSensor extends ComboGateLogic
     }
 
     override def lightLevel = 0
+}
+
+object DecodingRand extends ComboGateLogic
+{
+    val rand = new Random
+
+    override def cycleShape(shape:Int) = shape^1
+
+    override def outputMask(shape:Int) = if (shape == 0) 11 else 9
+    override def inputMask(shape:Int) = 4
+    override def feedbackMask(shape:Int) = 2
+
+    override def calcOutput(gate:ComboGatePart, input:Int) =
+    {
+        if (input == 0) if ((gate.state>>4) == 0) 1 else gate.state>>4
+        else Seq(1, 8, 2)(rand.nextInt((~gate.shape|2)&3))
+    }
+
+    override def onChange(gate:ComboGatePart)
+    {
+        super.onChange(gate)
+        if ((gate.state&4) != 0) gate.scheduleTick(2)
+    }
 }
