@@ -16,7 +16,7 @@ import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedIntegration
 import mrtjp.projectred.ProjectRedIntegration._
 import mrtjp.projectred.core.{IProxy, PartDefs}
-import net.minecraft.init.Blocks
+import net.minecraft.init.{Items, Blocks}
 import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.oredict.ShapedOreRecipe
 
@@ -446,5 +446,17 @@ object IntegrationRecipes
             'Q':JChar, "gemQuartz",
             'S':JChar, PartDefs.SILICONCHIP.makeStack
         ))
+
+        /** Decoding Randomizer Gate **/
+        GameRegistry.addRecipe(GateDefinition.DecRandomizer.makeStack,
+            "RCA",
+            "CCC",
+            "EWE",
+            'R':JChar, PartDefs.CONDUCTIVEPLATE.makeStack,
+            'C':JChar, PartDefs.SILICONCHIP.makeStack,
+            'A':JChar, PartDefs.ANODE.makeStack,
+            'E':JChar, PartDefs.ENERGIZEDSILICONCHIP.makeStack,
+            'W':JChar, PartDefs.CONDUCTIVEPLATE.makeStack
+        )
     }
 }
