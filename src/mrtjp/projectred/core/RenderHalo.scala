@@ -45,7 +45,27 @@ object RenderHalo
         renderList = renderList.sorted
 
         GL11.glPushMatrix()
-        RenderUtils.translateToWorldCoords(Minecraft.getMinecraft.renderViewEntity, event.partialTicks)
+
+        // Removed: To minimize floating point errors we need to minimize calculations (especially 
+        // multiplications) involving absolute world coordinates, which have lesser precision the
+        // larger they get. The idea here is to do calculations which translate the halo box in
+        // local camera coordinates instead of world coordinates: The box is rendered with
+        // (entity.posX, entity.posY, entity.posZ) as the origin instead of (0, 0, 0) as before.
+        //
+        //RenderUtils.translateToWorldCoords(Minecraft.getMinecraft.renderViewEntity, event.partialTicks)
+               
+        // Adjust translation for camera movement (linear interpolation of movement between frames).
+        // This is the same calculation as in RenderUtils.translateToWorldCoords except that the 
+        // interpolated value is translated back to local camera coordinates (entity pos as origin).
+        // Note:   Although this calculation could be simplified to (1 - partial) * (lastPos - pos) this 
+        //         form is numerically more stable than the simplified version (which will cause judder).
+        // MC 1.8: CodeChickenLib uses GlStateManager.translate() instead of GL11.glTranslated() in its
+        //         1.8 branch (arguments stay the same).
+        GL11.glTranslated(
+             entity.posX - (entity.posX - entity.lastTickPosX) * event.partialTicks - entity.lastTickPosX, 
+             entity.posY - (entity.posY - entity.lastTickPosY) * event.partialTicks - entity.lastTickPosY,
+             entity.posZ - (entity.posZ - entity.lastTickPosZ) * event.partialTicks - entity.lastTickPosZ)        
+        
         prepareRenderState()
         val it = renderList.iterator
         val max = if (Configurator.lightHaloMax < 0) renderList.size else Configurator.lightHaloMax
@@ -91,7 +111,18 @@ object RenderHalo
     private def renderHalo(world:World, cc:LightCache)
     {
         CCRenderState.setBrightness(world, cc.pos.x, cc.pos.y, cc.pos.z)
-        renderHalo(cc.cube, cc.color, new Translation(cc.pos.x, cc.pos.y, cc.pos.z))
+        
+        // Removed: We have to take into account that the current transformation
+        //          matrix transforms to camera coordinates, since we changed it in
+        //          onRenderWorldLast(), which is also the only function calling this method.
+        //          
+        //renderHalo(cc.cube, cc.color, new Translation(cc.pos.x, cc.pos.y, cc.pos.z))
+        
+        // cc.pos is in world coordinates, but we need camera coordinates instead to render the 
+        // halo box. We get those by simply subtracting the camera position from cc.pos.
+        val entity = Minecraft.getMinecraft.renderViewEntity;
+        renderHalo(cc.cube, cc.color, 
+            new Translation(cc.pos.x - entity.posX, cc.pos.y - entity.posY, cc.pos.z - entity.posZ))
     }
 
     def renderHalo(cuboid:Cuboid6, colour:Int, t:Transformation)
