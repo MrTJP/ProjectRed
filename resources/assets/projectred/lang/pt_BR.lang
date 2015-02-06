@@ -37,8 +37,8 @@ item.projectred.core.part.illumar13.name=Illumar Verde
 item.projectred.core.part.illumar14.name=Illumar Vermelho
 item.projectred.core.part.illumar15.name=Illumar Preto
 
-item.projectred.core.part.partcloth.name=Tecido
-item.projectred.core.part.partsail.name=Vela
+item.projectred.core.part.partcloth.name=Carretel de Linha
+item.projectred.core.part.partsail.name=Pano
 item.projectred.core.part.gemruby.name=Rubi
 item.projectred.core.part.gemsapphire.name=Safira
 item.projectred.core.part.gemperidot.name=Peridoto
@@ -115,7 +115,7 @@ item.projectred.exploration.backpack|1.name=Bolsa Laranja
 item.projectred.exploration.backpack|2.name=Bolsa Magenta
 item.projectred.exploration.backpack|3.name=Bolsa Azul Claro
 item.projectred.exploration.backpack|4.name=Bolsa Amarela
-item.projectred.exploration.backpack|5.name=Bolsa Verde Claro
+item.projectred.exploration.backpack|5.name=Bolsa Verde Limão
 item.projectred.exploration.backpack|6.name=Bolsa Rosa
 item.projectred.exploration.backpack|7.name=Bolsa Cinza
 item.projectred.exploration.backpack|8.name=Bolsa Cinza Claro
@@ -404,6 +404,8 @@ item.projectred.integration.gate|28.name=Barramento do Randomizador
 item.projectred.integration.gate|29.name=Barramento do Contador
 item.projectred.integration.gate|30.name=Barramento do Painel de Entrada
 item.projectred.integration.gate|31.name=Trava de Empilhamento
+item.projectred.integration.gate|32.name=Display Segmentado
+item.projectred.integration.gate|33.name=Decodificação Aleatória
 
 
 
