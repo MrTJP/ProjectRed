@@ -45,7 +45,14 @@ object RenderHalo
         renderList = renderList.sorted
 
         GL11.glPushMatrix()
-        RenderUtils.translateToWorldCoords(Minecraft.getMinecraft.renderViewEntity, event.partialTicks)
+        
+        // Adjust translation for camera movement between frames (using camra coordinates for numeric stability).
+        // Note: When porting to MC 1.8, might want to use GlStateManager.translate() here instead.
+        GL11.glTranslated(
+             entity.posX - (entity.posX - entity.lastTickPosX) * event.partialTicks - entity.lastTickPosX, 
+             entity.posY - (entity.posY - entity.lastTickPosY) * event.partialTicks - entity.lastTickPosY,
+             entity.posZ - (entity.posZ - entity.lastTickPosZ) * event.partialTicks - entity.lastTickPosZ)        
+        
         prepareRenderState()
         val it = renderList.iterator
         val max = if (Configurator.lightHaloMax < 0) renderList.size else Configurator.lightHaloMax
@@ -91,7 +98,10 @@ object RenderHalo
     private def renderHalo(world:World, cc:LightCache)
     {
         CCRenderState.setBrightness(world, cc.pos.x, cc.pos.y, cc.pos.z)
-        renderHalo(cc.cube, cc.color, new Translation(cc.pos.x, cc.pos.y, cc.pos.z))
+        // Make sure to use camera coordinates for the halo transformation.
+        val entity = Minecraft.getMinecraft.renderViewEntity
+        renderHalo(cc.cube, cc.color, 
+            new Translation(cc.pos.x - entity.posX, cc.pos.y - entity.posY, cc.pos.z - entity.posZ))
     }
 
     def renderHalo(cuboid:Cuboid6, colour:Int, t:Transformation)
