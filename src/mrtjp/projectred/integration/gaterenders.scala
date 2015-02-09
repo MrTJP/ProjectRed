@@ -10,7 +10,6 @@ import java.util.Random
 import codechicken.lib.math.MathHelper
 import codechicken.lib.render.{CCRenderState, TextureUtils}
 import codechicken.lib.vec.{RedundantTransformation, Transformation, Vector3}
-import mrtjp.core.color.Colors
 import mrtjp.projectred.core.TFaceOrient.flipMaskZ
 import mrtjp.projectred.integration.ComponentStore._
 import net.minecraft.client.renderer.texture.IIconRegister
