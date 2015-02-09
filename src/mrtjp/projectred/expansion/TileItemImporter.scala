@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
 
-class TileItemImporter extends TileMachine with TActiveDevice
+class TileItemImporter extends TileMachine with TPressureActiveDevice
 {
     override def getBlock = ProjectRedExpansion.machine2
 

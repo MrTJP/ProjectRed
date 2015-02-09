@@ -1,9 +1,9 @@
 package mrtjp.projectred.core
 
-import codechicken.lib.render.{BlockRenderer, CCRenderState, RenderUtils}
+import codechicken.lib.render.{BlockRenderer, CCRenderState}
 import codechicken.lib.vec._
 import cpw.mods.fml.common.eventhandler.SubscribeEvent
-import mrtjp.core.color.Colors_old
+import mrtjp.core.color.Colors
 import net.minecraft.client.Minecraft
 import net.minecraft.world.World
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -45,14 +45,14 @@ object RenderHalo
         renderList = renderList.sorted
 
         GL11.glPushMatrix()
-        
+
         // Adjust translation for camera movement between frames (using camra coordinates for numeric stability).
         // Note: When porting to MC 1.8, might want to use GlStateManager.translate() here instead.
         GL11.glTranslated(
-             entity.posX - (entity.posX - entity.lastTickPosX) * event.partialTicks - entity.lastTickPosX, 
-             entity.posY - (entity.posY - entity.lastTickPosY) * event.partialTicks - entity.lastTickPosY,
-             entity.posZ - (entity.posZ - entity.lastTickPosZ) * event.partialTicks - entity.lastTickPosZ)        
-        
+             entity.posX-(entity.posX-entity.lastTickPosX)*event.partialTicks-entity.lastTickPosX,
+             entity.posY-(entity.posY-entity.lastTickPosY)*event.partialTicks-entity.lastTickPosY,
+             entity.posZ-(entity.posZ-entity.lastTickPosZ)*event.partialTicks-entity.lastTickPosZ)
+
         prepareRenderState()
         val it = renderList.iterator
         val max = if (Configurator.lightHaloMax < 0) renderList.size else Configurator.lightHaloMax
@@ -100,15 +100,15 @@ object RenderHalo
         CCRenderState.setBrightness(world, cc.pos.x, cc.pos.y, cc.pos.z)
         // Make sure to use camera coordinates for the halo transformation.
         val entity = Minecraft.getMinecraft.renderViewEntity
-        renderHalo(cc.cube, cc.color, 
-            new Translation(cc.pos.x - entity.posX, cc.pos.y - entity.posY, cc.pos.z - entity.posZ))
+        renderHalo(cc.cube, cc.color,
+            new Translation(cc.pos.x-entity.posX, cc.pos.y-entity.posY, cc.pos.z-entity.posZ))
     }
 
     def renderHalo(cuboid:Cuboid6, colour:Int, t:Transformation)
     {
         CCRenderState.reset()
         CCRenderState.setPipeline(t)
-        CCRenderState.baseColour = Colors_old.VALID_COLORS(colour).rgba
+        CCRenderState.baseColour = Colors(colour).rgba
         CCRenderState.alphaOverride = 128
         BlockRenderer.renderCuboid(cuboid, 0)
     }

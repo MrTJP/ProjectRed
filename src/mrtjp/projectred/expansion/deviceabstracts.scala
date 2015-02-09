@@ -67,7 +67,7 @@ class ItemStorage
     }
 }
 
-trait TActiveDevice extends TileMachine with TPressureDevice
+trait TActiveDevice extends TileMachine
 {
     val storage = new ItemStorage
     var powered = false
@@ -114,30 +114,6 @@ trait TActiveDevice extends TileMachine with TPressureDevice
     def sendStateUpdate()
     {
         writeStream(4).writeBoolean(powered).writeBoolean(active).sendToChunk()
-    }
-
-    override def acceptItem(item:PipePayload, side:Int):Boolean =
-    {
-        if (!canConnectSide(side)) return false
-
-        if (canAcceptInput(item.payload.key, side) && shouldAcceptInput)
-        {
-            storage.add(item)
-            active = true
-            sendStateUpdate()
-            scheduleTick(4)
-            exportBuffer()
-            true
-        }
-        else if (canAcceptBacklog(item.payload.key, side) && shouldAcceptBacklog)
-        {
-            storage.addBacklog(item)
-            active = true
-            sendStateUpdate()
-            scheduleTick(4)
-            true
-        }
-        else false
     }
 
     def shouldAcceptBacklog = true
@@ -225,5 +201,32 @@ trait TActiveDevice extends TileMachine with TPressureDevice
 
         WorldLib.centerEject(world, position, r.payload.makeStack, side, 0.25D)
         true
+    }
+}
+
+trait TPressureActiveDevice extends TActiveDevice with TPressureDevice
+{
+    override def acceptItem(item:PipePayload, side:Int):Boolean =
+    {
+        if (!canConnectSide(side)) return false
+
+        if (canAcceptInput(item.payload.key, side) && shouldAcceptInput)
+        {
+            storage.add(item)
+            active = true
+            sendStateUpdate()
+            scheduleTick(4)
+            exportBuffer()
+            true
+        }
+        else if (canAcceptBacklog(item.payload.key, side) && shouldAcceptBacklog)
+        {
+            storage.addBacklog(item)
+            active = true
+            sendStateUpdate()
+            scheduleTick(4)
+            true
+        }
+        else false
     }
 }

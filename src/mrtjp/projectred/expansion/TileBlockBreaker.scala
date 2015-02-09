@@ -18,7 +18,7 @@ import net.minecraft.world.IBlockAccess
 
 import scala.collection.JavaConversions._
 
-class TileBlockBreaker extends TileMachine with TActiveDevice
+class TileBlockBreaker extends TileMachine with TPressureActiveDevice
 {
     override def getBlock = ProjectRedExpansion.machine2
     override def doesRotate = false

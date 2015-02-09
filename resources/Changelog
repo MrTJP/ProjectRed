@@ -1,3 +1,8 @@
+v4.5.11
+- ADDED: Decoding Randomizer gate
+- FIX: Light halos breaking at large world coordinates
+- FIX: Rare crash with array gate placement
+
 v4.5.10
 - FIX: Crash on world generation
 - FIX: Time set on sequencers

@@ -449,11 +449,11 @@ object IntegrationRecipes
 
         /** Decoding Randomizer Gate **/
         GameRegistry.addRecipe(GateDefinition.DecRandomizer.makeStack,
-            "RCA",
+            "SCA",
             "CCC",
             "EWE",
-            'R':JChar, PartDefs.CONDUCTIVEPLATE.makeStack,
-            'C':JChar, PartDefs.SILICONCHIP.makeStack,
+            'S':JChar, PartDefs.SILICONCHIP.makeStack,
+            'C':JChar, PartDefs.CATHODE.makeStack,
             'A':JChar, PartDefs.ANODE.makeStack,
             'E':JChar, PartDefs.ENERGIZEDSILICONCHIP.makeStack,
             'W':JChar, PartDefs.CONDUCTIVEPLATE.makeStack
