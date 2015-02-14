@@ -52,13 +52,13 @@ object PluginTConstruct extends IPRPlugin
     {
         liquidMetal = new MaterialLiquid(MapColor.tntColor)
 
-        moltenRedstoneFluid = new Fluid("Molten Redstone")
+        moltenRedstoneFluid = new Fluid("redstone.molten")
         FluidRegistry.registerFluid(moltenRedstoneFluid)
         moltenRedstone = new LiquidFiniteSubstance(moltenRedstoneFluid, "liqredstone", liquidMetal).setBlockName("projectred.compatibility.liqredstone").asInstanceOf[LiquidFiniteSubstance]
         GameRegistry.registerBlock(moltenRedstone, "projectred.compatibility.liqredstone")
         moltenRedstoneFluid.setBlock(moltenRedstone).setLuminosity(12).setDensity(1000).setViscosity(3000)
 
-        moltenConductiveRedmetalFluid = new Fluid("Molten Conductive Redmetal")
+        moltenConductiveRedmetalFluid = new Fluid("redmetal.molten")
         FluidRegistry.registerFluid(moltenConductiveRedmetalFluid)
         moltenConductiveRedmetal = new LiquidFiniteSubstance(moltenConductiveRedmetalFluid, "liqcondredmetal", liquidMetal).setBlockName("projectred.compatibility.liqcondredmetal").asInstanceOf[LiquidFiniteSubstance]
         GameRegistry.registerBlock(moltenConductiveRedmetal, "projectred.compatibility.liqcondredmetal")
