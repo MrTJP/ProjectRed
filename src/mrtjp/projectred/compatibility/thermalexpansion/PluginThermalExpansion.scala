@@ -1,10 +1,10 @@
 package mrtjp.projectred.compatibility.thermalexpansion
 
+import cofh.api.modhelpers.ThermalExpansionHelper
 import mrtjp.projectred.compatibility.IPRPlugin
 import mrtjp.projectred.core.PartDefs
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
-import thermalexpansion.util.crafting.SmelterManager
 
 object PluginThermalExpansion extends IPRPlugin
 {
@@ -19,8 +19,12 @@ object PluginThermalExpansion extends IPRPlugin
 //        if (ProjectRedAPI.transportationAPI != null)
 //            ProjectRedAPI.transportationAPI.registerSpecialLinkState(new LinkStateTesseract());
 
-        SmelterManager.addAlloyRecipe(4000, new ItemStack(Items.iron_ingot),
-            new ItemStack(Items.redstone, 4), PartDefs.REDINGOT.makeStack)
+//        SmelterManager.addAlloyRecipe(4000, new ItemStack(Items.iron_ingot),
+//            new ItemStack(Items.redstone, 4), PartDefs.REDINGOT.makeStack)
+
+        ThermalExpansionHelper.addSmelterRecipe(4000, new ItemStack(Items.iron_ingot), new ItemStack(Items.redstone, 4),
+            PartDefs.REDINGOT.makeStack)
+
     }
 
     override def postInit() {}

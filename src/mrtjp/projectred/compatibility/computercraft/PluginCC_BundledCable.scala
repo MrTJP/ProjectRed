@@ -11,10 +11,7 @@ import cpw.mods.fml.common.Optional._
 
 object PluginCC_BundledCable extends IPRPlugin
 {
-    final val CC_modID = "ComputerCraft"
-    final val PRTrans_modID = "ProjRed|Transmission"
-
-    override def getModIDs = Array(CC_modID, PRTrans_modID)
+    override def getModIDs = Array("ComputerCraft", "ProjRed|Transmission")
 
     override def preInit(){}
 
@@ -28,12 +25,11 @@ object PluginCC_BundledCable extends IPRPlugin
 
     override def desc() = "Computercraft bundled cable connections"
 }
-import PluginCC_BundledCable._
 
-@Interface(modid = CC_modID, iface = "dan200.computercraft.api.redstone.IBundledRedstoneProvider", striprefs = true)
+@Interface(modid = "ComputerCraft", iface = "dan200.computercraft.api.redstone.IBundledRedstoneProvider", striprefs = true)
 class CCPRBundledRedstoneProvider extends IBundledRedstoneProvider
 {
-    @Method(modid = CC_modID)
+    @Method(modid = "ComputerCraft")
     override def getBundledRedstoneOutput(world:World, x:Int, y:Int, z:Int, side:Int) =
     {
         val pos = new BlockCoord(x, y, z).offset(side)
@@ -42,17 +38,17 @@ class CCPRBundledRedstoneProvider extends IBundledRedstoneProvider
     }
 }
 
-@Interface(modid = PRTrans_modID, iface = "mrtjp.projectred.api.IBundledTileInteraction", striprefs = true)
+@Interface(modid = "ProjRed|Transmission", iface = "mrtjp.projectred.api.IBundledTileInteraction", striprefs = true)
 class PRCCBundledTileInteraction extends IBundledTileInteraction
 {
-    @Method(modid = PRTrans_modID)
+    @Method(modid = "ProjRed|Transmission")
     override def isValidInteractionFor(world:World, x:Int, y:Int, z:Int) =
         CCAPI.getBundledRedstoneOutput(world, x, y, z, 0) > -1
 
-    @Method(modid = PRTrans_modID)
+    @Method(modid = "ProjRed|Transmission")
     override def canConnectBundled(world:World, x:Int, y:Int, z:Int, side:Int) = true
 
-    @Method(modid = PRTrans_modID)
+    @Method(modid = "ProjRed|Transmission")
     override def getBundledSignal(world:World, x:Int, y:Int, z:Int, side:Int) =
     {
         val sig = CCAPI.getBundledRedstoneOutput(world, x, y, z, side)

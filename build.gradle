@@ -53,10 +53,10 @@ repositories {
 //        name 'ThermalExpansion'
 //        artifactPattern "http://addons.cursecdn.com/files/${config.texpan.cf}/[module]-[revision].[ext]"
 //    }
-//    ivy {
-//        name 'CoFHCore'
-//        artifactPattern "http://addons.cursecdn.com/files/${config.cofh.cf}/[module]-[revision].[ext]"
-//    }
+    ivy {
+        name 'CoFHCore'
+        artifactPattern "http://addons.cursecdn.com/files/${config.cofh.cf}/[module]-[revision].[ext]"
+    }
 }
 
 configurations {
@@ -72,7 +72,7 @@ dependencies {
     compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
     compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
 //    compile group: 'thermalexpansion', name: 'ThermalExpansion', version: config.texpan.version, ext: 'jar'
-//    compile group: 'cofh', name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
+    compile group: 'cofh', name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
 }
 
 def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")+51).toString()
@@ -147,7 +147,7 @@ processResources {
 compileScala.dependsOn updateVersion
 ext.jarVer = "${project.minecraft.version}-${project.version}"
 ext.jarFile = zipTree(jar.archivePath)
-ext.baseExcludes = ["**/thermalexpansion/**"]
+ext.baseExcludes = ["**/dan200/**"]
 
 task integrationJar(type: Jar, dependsOn: reobf) {
     from(project.ext.jarFile) {
@@ -227,8 +227,8 @@ task compatJar(type: Jar, dependsOn: reobf) {
         include "**/ProjectRedCompatibility*.class"
         include "**/mrtjp/projectred/compatibility/**"
 
-//        //APIs
-//        include "**/dan200/**"
+        //APIs
+        include "**/dan200/**"
 
         include "**/assets/asm/**"
         include "**/assets/projectred/textures/blocks/compat/**"
