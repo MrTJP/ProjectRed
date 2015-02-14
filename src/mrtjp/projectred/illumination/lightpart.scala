@@ -256,7 +256,7 @@ abstract class LightObject
     def makeInvStack(color:Int, i:Int):ItemStack = new ItemStack(itemInv, i, color)
     def makeInvStack(color:Int):ItemStack = makeInvStack(color, 1)
 
-    def createItem(inverted:Boolean):ItemBaseLight = new ItemBaseLight(this, inverted)
+    def createItem(inverted:Boolean):ItemBaseLight = new ItemBaseLight(this, inverted, false)
     def createPart:BaseLightPart = new BaseLightFacePart(this)
 
     def canFloat = false

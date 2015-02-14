@@ -27,7 +27,10 @@ class ItemBaseLight(obj:LightObject, val inverted:Boolean) extends ItemCore(obj.
         if (!obj.canFloat && !BaseLightPart.canPlaceLight(w, bc.x, bc.y, bc.z, side)) return null
 
         val light = MultiPartRegistry.createPart(obj.getType, false).asInstanceOf[BaseLightPart]
-        if (light != null) light.preparePlacement(side^1, stack.getItemDamage, inverted)
+        if (light != null)
+        {
+            light.preparePlacement(side ^ 1, stack.getItemDamage, inverted)
+        }
         light
     }
 
