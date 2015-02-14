@@ -165,8 +165,23 @@ tile.projectred.exploration.stonewalls|4.name=Basalt Brick Wall
 tile.projectred.exploration.stonewalls|5.name=Ruby Wall
 tile.projectred.exploration.stonewalls|6.name=Sapphire Wall
 tile.projectred.exploration.stonewalls|7.name=Peridot Wall
-tile.projectred.exploration.lily.name = Deviating Lily
-item.projectred.exploration.lilyseed.name=Deviating Lily seed
+tile.projectred.exploration.lily|0.name=Deviating Lily
+item.projectred.exploration.lilyseed|0.name=White Deviating Lily seed
+item.projectred.exploration.lilyseed|1.name=Orange Deviating Lily seed
+item.projectred.exploration.lilyseed|2.name=Magenta Deviating Lily seed
+item.projectred.exploration.lilyseed|3.name=Light Blue Deviating Lily seed
+item.projectred.exploration.lilyseed|4.name=Yellow Deviating Lily seed
+item.projectred.exploration.lilyseed|5.name=Lime Deviating Lily seed
+item.projectred.exploration.lilyseed|6.name=Pink Deviating Lily seed
+item.projectred.exploration.lilyseed|7.name=Grey Deviating Lily seed
+item.projectred.exploration.lilyseed|8.name=Light Grey Deviating Lily seed
+item.projectred.exploration.lilyseed|9.name=Cyan Deviating Lily seed
+item.projectred.exploration.lilyseed|10.name=Purple Deviating Lily seed
+item.projectred.exploration.lilyseed|11.name=Blue Deviating Lily seed
+item.projectred.exploration.lilyseed|12.name=Brown Deviating Lily seed
+item.projectred.exploration.lilyseed|13.name=Green Deviating Lily seed
+item.projectred.exploration.lilyseed|14.name=Red Deviating Lily seed
+item.projectred.exploration.lilyseed|15.name=Black Deviating Lily seed
 
 
 

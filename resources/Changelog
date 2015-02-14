@@ -1,3 +1,7 @@
+v4.5.12
+- FIX: Thermal Expansion compatibility
+- FIX: Lily maturing fully after world reload
+
 v4.5.11
 - ADDED: Decoding Randomizer gate
 - FIX: Light halos breaking at large world coordinates

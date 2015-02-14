@@ -358,10 +358,12 @@ class TileLily extends InstancedBlockTile with TPlantTile
         tag.setByte("phase", phase)
     }
 
+    private var isNewWorldgen = true
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
         phase = tag.getByte("phase")
+        isNewWorldgen = false
     }
 
     override def writeDesc(out:MCDataOutput)
@@ -398,7 +400,7 @@ class TileLily extends InstancedBlockTile with TPlantTile
     override def validate()
     {
         super.validate()
-        if (!world.isRemote)
+        if (!world.isRemote && isNewWorldgen)
         {
             setGrowth(7)
             setMeta(MathLib.weightedRandom(TileLily.rarity))
