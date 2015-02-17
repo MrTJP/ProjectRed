@@ -216,7 +216,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        val nbttaglist = tag.getTagList("itemFlow", 0)
+        val nbttaglist = tag.getTagList("itemFlow", 10)
         for (j <- 0 until nbttaglist.tagCount)
         {
             try
