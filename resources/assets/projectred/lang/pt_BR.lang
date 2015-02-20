@@ -165,8 +165,23 @@ tile.projectred.exploration.stonewalls|4.name=Parede de Tijolo de Bassalto
 tile.projectred.exploration.stonewalls|5.name=Parede de Rubi
 tile.projectred.exploration.stonewalls|6.name=Parede de Safira
 tile.projectred.exploration.stonewalls|7.name=Parede de Peridoto
-tile.projectred.exploration.lily.name =Lírio Desviado
-item.projectred.exploration.lilyseed.name=Sementes de Lírio Desviado
+tile.projectred.exploration.lily|0.name=Lírio Desviado
+item.projectred.exploration.lilyseed|0.name=Sementes de Lírio Desviado Branco
+item.projectred.exploration.lilyseed|1.name=Sementes de Lírio Desviado Laranja
+item.projectred.exploration.lilyseed|2.name=Sementes de Lírio Desviado Magenta
+item.projectred.exploration.lilyseed|3.name=Sementes de Lírio Desviado Azul Claro
+item.projectred.exploration.lilyseed|4.name=Sementes de Lírio Desviado Amarelo
+item.projectred.exploration.lilyseed|5.name=Sementes de Lírio Desviado Verde Limão
+item.projectred.exploration.lilyseed|6.name=Sementes de Lírio Desviado Rosa
+item.projectred.exploration.lilyseed|7.name=Sementes de Lírio Desviado Cinza
+item.projectred.exploration.lilyseed|8.name=Sementes de Lírio Desviado Cinza Claro
+item.projectred.exploration.lilyseed|9.name=Sementes de Lírio Desviado Ciano
+item.projectred.exploration.lilyseed|10.name=Sementes de Lírio Desviado Lilás
+item.projectred.exploration.lilyseed|11.name=Sementes de Lírio Desviado Azul
+item.projectred.exploration.lilyseed|12.name=Sementes de Lírio Desviado Marrom
+item.projectred.exploration.lilyseed|13.name=Sementes de Lírio Desviado Verde
+item.projectred.exploration.lilyseed|14.name=Sementes de Lírio Desviado Vermelho
+item.projectred.exploration.lilyseed|15.name=Sementes de Lírio Desviado Preto
 
 
 
@@ -463,7 +478,7 @@ item.projectred.transmission.framewire|13.name=Fio Isolado Marrom Emoldurado
 item.projectred.transmission.framewire|14.name=Fio Isolado Verde Emoldurado
 item.projectred.transmission.framewire|15.name=Fio Isolado Vermelho Emoldurado
 item.projectred.transmission.framewire|16.name=Fio Isolado Preto Emoldurado
-item.projectred.transmission.framewire|17.name=Cabo
+item.projectred.transmission.framewire|17.name=Cabo Emoldurado Embutido
 item.projectred.transmission.framewire|34.name=Linha de Energia 100V Emoldurada
 
 
@@ -473,3 +488,5 @@ itemGroup.compat=Project Red: Compatibilidade
 
 tile.projectred.compatibility.liqredstone.name=Redstone Líquida
 tile.projectred.compatibility.liqcondredmetal.name=Redmetal Condutivo Fundido
+
+# Localization File: Português Brasileiro (pt_BR) / Last Update: 20/2/2015 – por: Al-Myr
