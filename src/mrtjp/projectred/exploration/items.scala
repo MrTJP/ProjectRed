@@ -223,7 +223,7 @@ trait TGemTool extends Item
     override def getIsRepairable(ist1:ItemStack, ist2:ItemStack) =
     {
         if (toolDef.repair.isItemEqual(ist2)) true
-        else super.getIsRepairable(ist1, ist2)
+        else false//super.getIsRepairable(ist1, ist2)
     }
 }
 
