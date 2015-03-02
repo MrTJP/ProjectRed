@@ -2,6 +2,8 @@ package mrtjp.projectred.api;
 
 /**
  * Interface for tile entities that emit/receive bundled signal.
+ *
+ * See {@link IMaskedBundledTile} for more control on side connections.
  */
 public interface IBundledTile extends IBundledEmitter
 {
