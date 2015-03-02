@@ -411,7 +411,7 @@ class WireModel2D(data:Array[Colour]) extends ComponentModel with TWireModel
         icons = new Array[TextureSpecial](wireData.length)
         for (tex <- 0 until icons.length)
         {
-            val texMap = Array[Int](1024)
+            val texMap = new Array[Int](1024)
             for (rect <- wireRectangles)
             {
                 fillMask(texMap, rect, 2)
