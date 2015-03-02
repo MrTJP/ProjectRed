@@ -238,10 +238,6 @@ task compatJar(type: Jar, dependsOn: reobf) {
 
         project.ext.baseExcludes.addAll(includes)
     }
-    manifest {
-        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
     version = project.ext.jarVer
     classifier = 'Compat'
 }

@@ -46,6 +46,7 @@ class PRCCBundledTileInteraction extends IBundledTileInteraction
         CCAPI.getBundledRedstoneOutput(world, x, y, z, 0) > -1
 
     @Method(modid = "ProjRed|Transmission")
+    //would like to exclude the face of the computer, but no way to check as of now...
     override def canConnectBundled(world:World, x:Int, y:Int, z:Int, side:Int) = true
 
     @Method(modid = "ProjRed|Transmission")

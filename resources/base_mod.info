@@ -4,7 +4,10 @@
   "name": "ProjectRed",
   "description":"Redstone. The way it was meant to be. Built against Forge @FORGE_VERSION@.
 
-  Supporters: whiteknightz28",
+  Supporters:
+  whiteknightz28
+  Jacob M
+  ",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",
   "url": "http://projectredwiki.com",
