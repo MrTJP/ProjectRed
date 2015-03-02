@@ -1,10 +1,10 @@
 package mrtjp.projectred.transmission
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.vec.BlockCoord
+import codechicken.lib.vec.{Rotation, BlockCoord}
 import codechicken.multipart.TMultiPart
 import mrtjp.core.world.{Messenger, WorldLib}
-import mrtjp.projectred.api.{IBundledEmitter, IBundledTile, IConnectable}
+import mrtjp.projectred.api.{IMaskedBundledTile, IBundledEmitter, IBundledTile, IConnectable}
 import mrtjp.projectred.transmission.IWirePart._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
@@ -74,6 +74,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
         val pos = new BlockCoord(tile).offset(absDir)
         world.getTileEntity(pos.x, pos.y, pos.z) match
         {
+            //following 2 cases copied to subclasses for performance
             case b:IBundledTile => b.canConnectBundled(absDir^1)
             case _ => APIImpl_Transmission.canConnectBundled(world, pos, absDir^1)
         }
@@ -236,6 +237,20 @@ class BundledCablePart extends WirePart with TFaceBundledAquisitions with TBundl
             case _ => super.calcStraightArray(r)
         }
     }
+
+    override def discoverStraightOverride(absDir:Int) =
+    {
+        val pos = new BlockCoord(tile).offset(absDir)
+        world.getTileEntity(pos.x, pos.y, pos.z) match
+        {
+            case b:IMaskedBundledTile => b.canConnectBundled(absDir^1) &&
+                    (b.getConnectionMask(absDir^1)&1<<Rotation.rotationTo(absDir, side)) != 0
+
+            //Following two cases copied from super.discoverStraightOverride for performance
+            case b:IBundledTile => b.canConnectBundled(absDir^1)
+            case _ => APIImpl_Transmission.canConnectBundled(world, pos, absDir^1)
+        }
+    }
 }
 
 class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitions with TBundledCableCommons
@@ -258,6 +273,20 @@ class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitio
             case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.xCoord, t.yCoord, t.zCoord) =>
                 resolveArray(t, s^1)
             case _ => super.calcStraightArray(s)
+        }
+    }
+
+    override def discoverStraightOverride(absDir:Int) =
+    {
+        val pos = new BlockCoord(tile).offset(absDir)
+        world.getTileEntity(pos.x, pos.y, pos.z) match
+        {
+            case b:IMaskedBundledTile => b.canConnectBundled(absDir^1) &&
+                    (b.getConnectionMask(absDir^1)&0x10) != 0
+
+            //Following two cases copied from super.discoverStraightOverride for performance
+            case b:IBundledTile => b.canConnectBundled(absDir^1)
+            case _ => APIImpl_Transmission.canConnectBundled(world, pos, absDir^1)
         }
     }
 }

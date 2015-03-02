@@ -1,7 +1,7 @@
 package mrtjp.projectred.api;
 
 /**
- * Implemented by entities that can emit bundled cable signals. If you are a
+ * Implemented by parts that can emit bundled cable signals. If you are a
  * tile entity, see {@link IBundledTile}
  */
 public interface IBundledEmitter
