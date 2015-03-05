@@ -12,7 +12,7 @@ import codechicken.lib.raytracer.{ExtendedMOP, IndexedCuboid6}
 import codechicken.lib.vec.{Cuboid6, Vector3}
 import mrtjp.core.vec.VecLib
 import mrtjp.core.world.WorldLib
-import mrtjp.projectred.api.{IScrewdriver, IBundledEmitter, IBundledTile, IConnectable}
+import mrtjp.projectred.api.{IBundledEmitter, IBundledTile, IConnectable, IScrewdriver}
 import mrtjp.projectred.core.TFaceOrient._
 import mrtjp.projectred.transmission.BundledCommons._
 import mrtjp.projectred.transmission.{APIImpl_Transmission, TFaceBundledAquisitions}
@@ -575,7 +575,7 @@ class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
         onChange(gate)
     }
 
-    import BusInputPanel._
+    import mrtjp.projectred.integration.BusInputPanel._
     override def getSubParts(gate:BundledGatePart) = (0 until 16).map(i => new IndexedCuboid6(i,
         (if ((pressMask&1<<i) != 0) pressed else unpressed)(i).copy.apply(VecLib.orientT(gate.orientation))))
 

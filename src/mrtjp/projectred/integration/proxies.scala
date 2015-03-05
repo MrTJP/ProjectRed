@@ -16,7 +16,7 @@ import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedIntegration
 import mrtjp.projectred.ProjectRedIntegration._
 import mrtjp.projectred.core.{IProxy, PartDefs}
-import net.minecraft.init.{Items, Blocks}
+import net.minecraft.init.Blocks
 import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.oredict.ShapedOreRecipe
 

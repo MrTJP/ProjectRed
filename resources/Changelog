@@ -1,6 +1,7 @@
 v4.5.14
 - FIX: Flat gate texture crash
 - FIX: Attempted fix for crash with tools inside crafting benches
+- FIX: Array gates not passing signal to other gates
 
 v4.5.13
 - FIX: Updated ComputerCraft compatibility

@@ -8,7 +8,7 @@ package mrtjp.projectred.integration
 import java.util.{List => JList}
 
 import codechicken.lib.render.{CCRenderState, TextureUtils}
-import codechicken.lib.vec.{Translation, Scale, BlockCoord, Vector3}
+import codechicken.lib.vec.{BlockCoord, Scale, Translation, Vector3}
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart, TMultiPart}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.item.{ItemCore, ItemDefinition, TItemGlassSound}
