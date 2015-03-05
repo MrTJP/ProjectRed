@@ -6,20 +6,20 @@
 package mrtjp.projectred.integration
 
 import codechicken.lib.colour.Colour
-import codechicken.lib.lighting.{PlanarLightModel, PlanarLightMatrix, LightModel}
+import codechicken.lib.lighting.{LightModel, PlanarLightModel}
 import codechicken.lib.math.MathHelper
 import codechicken.lib.render.CCRenderState.IVertexOperation
-import codechicken.lib.render.uv._
 import codechicken.lib.render._
+import codechicken.lib.render.uv._
 import codechicken.lib.vec._
 import mrtjp.core.color.Colors
-import mrtjp.core.vec.{VecLib, InvertX}
-import mrtjp.projectred.core.{RenderHalo, Configurator}
+import mrtjp.core.vec.{InvertX, VecLib}
+import mrtjp.projectred.core.{Configurator, RenderHalo}
 import mrtjp.projectred.transmission.{UVT, WireModelGen}
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.util.{IIcon, ResourceLocation}
-import scala.collection.JavaConversions._
 
+import scala.collection.JavaConversions._
 import scala.util.control.Breaks
 
 object ComponentStore
@@ -207,7 +207,7 @@ object ComponentStore
     }
 }
 
-import ComponentStore._
+import mrtjp.projectred.integration.ComponentStore._
 
 abstract class ComponentModel
 {
@@ -784,7 +784,7 @@ class CellTopWireModel(wireTop:CCModel) extends CellWireModel
     {
         val icont = new IconTransformation(cellIcon)
         top(orient).render(t, icont, colourMult)
-        import CellTopWireModel._
+        import mrtjp.projectred.integration.CellTopWireModel._
         if ((conn&2) == 0) right(orient).render(t, icont, colourMult)
         if ((conn&8) == 0) left(orient).render(t, icont, colourMult)
     }

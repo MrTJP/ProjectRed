@@ -8,7 +8,6 @@ package mrtjp.projectred.integration
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec._
 import codechicken.multipart.TMultiPart
-import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core.libmc.PRLib
 import mrtjp.projectred.core.{Configurator, TFaceOrient}
@@ -39,6 +38,12 @@ trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSProp
         }
         if (uMask == 0) WirePropagator.addNeighborChange(new BlockCoord(tile))
         propagationMask = 0xF
+    }
+
+    override def propagateOther(mode:Int)
+    {
+        val nonConn = ~(connMap|connMap>>4|connMap>>8)&0xF
+        notifyExternals(nonConn&propagationMask)
     }
 
     def sideDiff(p:TMultiPart):Int =
@@ -388,7 +393,7 @@ class BufferCell(gate:ArrayGatePart) extends ArrayGateLogicCrossing(gate)
     override def powerUp = (gate.state&2) == 0
 }
 
-trait TArrayCellBottomOnly extends ArrayGateLogic
+trait TArrayCellTopOnly extends ArrayGateLogic
 {
     var signal:Byte = 0
 
@@ -435,7 +440,7 @@ trait TArrayCellBottomOnly extends ArrayGateLogic
     override def onSignalUpdate(){ sendSignalUpdate() }
 }
 
-class ANDCell(gate:ArrayGatePart) extends ArrayGateLogic(gate) with TArrayCellBottomOnly with TSimpleRSGateLogic[ArrayGatePart] with IGateWireRenderConnect
+class ANDCell(gate:ArrayGatePart) extends ArrayGateLogic(gate) with TArrayCellTopOnly with TSimpleRSGateLogic[ArrayGatePart] with IGateWireRenderConnect
 {
     override def inputMask(shape:Int) = 4
     override def outputMask(shape:Int) = 1
@@ -449,7 +454,7 @@ class ANDCell(gate:ArrayGatePart) extends ArrayGateLogic(gate) with TArrayCellBo
     override def getBounds(gate:ArrayGatePart) = ArrayGatePart.cBoxes(gate.side)
 }
 
-class StackingLatch(gate:ArrayGatePart) extends ArrayGateLogic(gate) with TArrayCellBottomOnly with TSimpleRSGateLogic[ArrayGatePart]
+class StackingLatch(gate:ArrayGatePart) extends ArrayGateLogic(gate) with TArrayCellTopOnly with TSimpleRSGateLogic[ArrayGatePart]
 {
     override def inputMask(shape:Int) = 4
     override def outputMask(shape:Int) = 1
