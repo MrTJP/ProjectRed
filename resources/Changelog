@@ -1,3 +1,9 @@
+v4.5.15
+- FIX: Segment display textures
+- FIX: Lamps not updating on placement
+- FIX: Array gates not reading dust signal
+- CHANGE: Tweaked bus converter algorithm
+
 v4.5.14
 - FIX: Flat gate texture crash
 - FIX: Attempted fix for crash with tools inside crafting benches
@@ -12,6 +18,7 @@ v4.5.12
 
 v4.5.11
 - ADDED: Decoding Randomizer gate
+- CHANGE: Randomizer outputs can now be configured
 - FIX: Light halos breaking at large world coordinates
 - FIX: Rare crash with array gate placement
 

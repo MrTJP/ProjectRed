@@ -434,7 +434,7 @@ class BusConverter(gate:BundledGatePart) extends BundledGateLogic(gate)
         var changeMask = 0
 
         val oldBOut = bOut
-        setBOut(if (gate.shape == 0) if (rsIn > 0) 1<<rsIn else 0 else 0)
+        setBOut(if (gate.shape == 0) 1<<rsIn else 0)
         if (oldBOut != bOut) changeMask |= 1
 
         val oldRSOut = rsOut

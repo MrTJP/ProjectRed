@@ -54,7 +54,7 @@ trait TFaceRSAcquisitions extends TRSAcquisitionsCommons with TFaceAcquisitions 
     {
         val pos = posOfStraight(r)
         val b = world.getBlock(pos.x, pos.y, pos.z)
-        if (b == Blocks.redstone_wire) Math.min(world.getBlockMetadata(pos.x, pos.y, pos.z)-1, 0)
+        if (b == Blocks.redstone_wire) Math.max(world.getBlockMetadata(pos.x, pos.y, pos.z)-1, 0)
         else -1
     }
 
