@@ -154,14 +154,7 @@ abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcq
     {
         val partsig = super.calcStraightSignal(r)
         if (partsig > 0) partsig
-        else
-        {
-            val absDir = absoluteDir(r)
-            val pos = new BlockCoord(tile).offset(absDir)
-            val block = world.getBlock(pos.x, pos.y, pos.z)
-            if (block == Blocks.redstone_wire) world.getBlockMetadata(pos.x, pos.y, pos.z)-1
-            else RedstoneInteractions.getPowerTo(this, absDir)*17
-        }
+        else calcMaxSignal(r, true, true)
     }
 
     override def resolveSignal(part:Any, r:Int) = part match

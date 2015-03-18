@@ -113,7 +113,7 @@ object ComponentStore
         busConvIcon = register("busconv")
         busInputIcon = register("businput")
         segment = register("segment")
-        segmentDisp = register("segmentDisp")
+        segmentDisp = register("segmentdisp")
 
         RenderGate.registerIcons(reg)
     }

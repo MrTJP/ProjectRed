@@ -1,6 +1,6 @@
 package mrtjp.projectred.illumination
 
-import java.util.{Random, List => JList}
+import java.util.{List => JList, Random}
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.{BlockCoord, Vector3}
@@ -79,8 +79,8 @@ class BlockLamp extends InstancedBlock("projectred.illumination.lamp", new Mater
 
 object BlockLamp
 {
-    var on:Vector[IIcon] = null
-    var off:Vector[IIcon] = null
+    var on:Seq[IIcon] = null
+    var off:Seq[IIcon] = null
 }
 
 class TileLamp extends InstancedBlockTile with ILight
@@ -94,8 +94,8 @@ class TileLamp extends InstancedBlockTile with ILight
     override def onBlockPlaced(side:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
     {
         inverted = meta > 15
+        scheduleTick(2)
     }
-
     override def getLightValue = if (inverted != powered)
         IlluminationProxy.getLightValue(getColor, 15) else 0
 
@@ -106,8 +106,8 @@ class TileLamp extends InstancedBlockTile with ILight
 
     def checkPower =
     {
-        worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord) ||
-            worldObj.getBlockPowerInput(xCoord, yCoord, zCoord) != 0
+        world.isBlockIndirectlyGettingPowered(x, y, z) ||
+            world.getBlockPowerInput(x, y, z) != 0
     }
 
     override def onScheduledTick()
