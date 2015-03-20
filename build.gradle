@@ -55,7 +55,7 @@ repositories {
 //    }
     ivy {
         name 'CoFHCore'
-        artifactPattern "http://addons.cursecdn.com/files/${config.cofh.cf}/[module]-[revision].[ext]"
+        artifactPattern "http://addons-origin.cursecdn.com/files/${config.cofh.cf}/[module]-[revision].[ext]"
     }
 }
 
