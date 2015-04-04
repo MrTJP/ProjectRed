@@ -63,6 +63,12 @@ configurations {
     deployerJars
 }
 
+configurations.all {
+    resolutionStrategy {
+        force "codechicken:CodeChickenCore:${config.mc.version}-${config.ccc.version}:dev"
+    }
+}
+
 dependencies {
     deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
 
