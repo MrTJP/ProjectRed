@@ -1,13 +1,13 @@
 package mrtjp.projectred.compatibility.computercraft
 
 import codechicken.lib.vec.BlockCoord
+import cpw.mods.fml.common.Optional._
 import dan200.computercraft.api.redstone.IBundledRedstoneProvider
 import dan200.computercraft.api.{ComputerCraftAPI => CCAPI}
 import mrtjp.projectred.api.{IBundledTileInteraction, ProjectRedAPI => PRAPI}
 import mrtjp.projectred.compatibility.IPRPlugin
 import mrtjp.projectred.transmission.BundledCommons
 import net.minecraft.world.World
-import cpw.mods.fml.common.Optional._
 
 object PluginCC_BundledCable extends IPRPlugin
 {
@@ -17,8 +17,8 @@ object PluginCC_BundledCable extends IPRPlugin
 
     override def init()
     {
-        CCAPI.registerBundledRedstoneProvider(new CCPRBundledRedstoneProvider)
-        PRAPI.transmissionAPI.registerBundledTileInteraction(new PRCCBundledTileInteraction)
+        CCPRBundledRedstoneProvider.register()
+        PRCCBundledTileInteraction.register()
     }
 
     override def postInit(){}
@@ -27,8 +27,14 @@ object PluginCC_BundledCable extends IPRPlugin
 }
 
 @Interface(modid = "ComputerCraft", iface = "dan200.computercraft.api.redstone.IBundledRedstoneProvider", striprefs = true)
-class CCPRBundledRedstoneProvider extends IBundledRedstoneProvider
+object CCPRBundledRedstoneProvider extends IBundledRedstoneProvider
 {
+    @Method(modid = "ComputerCraft")
+    def register()
+    {
+        CCAPI.registerBundledRedstoneProvider(this)
+    }
+
     @Method(modid = "ComputerCraft")
     override def getBundledRedstoneOutput(world:World, x:Int, y:Int, z:Int, side:Int) =
     {
@@ -39,8 +45,14 @@ class CCPRBundledRedstoneProvider extends IBundledRedstoneProvider
 }
 
 @Interface(modid = "ProjRed|Transmission", iface = "mrtjp.projectred.api.IBundledTileInteraction", striprefs = true)
-class PRCCBundledTileInteraction extends IBundledTileInteraction
+object PRCCBundledTileInteraction extends IBundledTileInteraction
 {
+    @Method(modid = "ProjRed|Transmission")
+    def register()
+    {
+        PRAPI.transmissionAPI.registerBundledTileInteraction(this)
+    }
+
     @Method(modid = "ProjRed|Transmission")
     override def isValidInteractionFor(world:World, x:Int, y:Int, z:Int) =
         CCAPI.getBundledRedstoneOutput(world, x, y, z, 0) > -1
