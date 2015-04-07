@@ -119,9 +119,9 @@ trait TFacePropagation extends TPropagationCommons with TFaceConnectable
         if (mode != FORCED) WirePropagator.addPartChange(this)
         for (r <- 0 until 4) if ((propagationMask&1<<r) != 0)
         {
-            if (maskConnectsCorner(r)) propagateExternal(getCorner(r), posOfCorner(r), prev, mode)
+            if (maskConnectsInside(r)) propagateInternal(getInternal(r), prev, mode)
+            else if (maskConnectsCorner(r)) propagateExternal(getCorner(r), posOfCorner(r), prev, mode)
             else if (maskConnectsStraight(r)) propagateExternal(getStraight(r), posOfStraight(r), prev, mode)
-            else if (maskConnectsInside(r)) propagateInternal(getInternal(r), prev, mode)
         }
 
         if (maskConnectsCenter) propagateInternal(getCenter, prev, mode)
@@ -138,8 +138,8 @@ trait TCenterPropagation extends TPropagationCommons with TCenterConnectable
         if (mode != FORCED) WirePropagator.addPartChange(this)
         for (s <- 0 until 6) if ((propagationMask&1<<s) != 0)
         {
-            if (maskConnectsOut(s)) propagateExternal(getStraight(s), posOfStraight(s), prev, mode)
-            else if (maskConnectsIn(s)) propagateInternal(getInternal(s), prev, mode)
+            if (maskConnectsIn(s)) propagateInternal(getInternal(s), prev, mode)
+            else if (maskConnectsOut(s)) propagateExternal(getStraight(s), posOfStraight(s), prev, mode)
         }
         propagateOther(mode)
     }
