@@ -120,8 +120,8 @@ trait TFacePropagation extends TPropagationCommons with TFaceConnectable
         for (r <- 0 until 4) if ((propagationMask&1<<r) != 0)
         {
             if (maskConnectsInside(r)) propagateInternal(getInternal(r), prev, mode)
-            else if (maskConnectsCorner(r)) propagateExternal(getCorner(r), posOfCorner(r), prev, mode)
             else if (maskConnectsStraight(r)) propagateExternal(getStraight(r), posOfStraight(r), prev, mode)
+            else if (maskConnectsCorner(r)) propagateExternal(getCorner(r), posOfCorner(r), prev, mode)
         }
 
         if (maskConnectsCenter) propagateInternal(getCenter, prev, mode)
