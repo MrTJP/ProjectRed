@@ -105,8 +105,9 @@ object BundledCommons
         sig
     }
 
-    def mostSignificantBit(mask:Int) =
+    def mostSignificantBit(mask:Int):Int =
     {
+        if (mask <= 0) return 0
         var idx = 0
         var m2 = mask>>1
         while (m2 != 0){m2 >>= 1; idx += 1}
