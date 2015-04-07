@@ -22,6 +22,8 @@ buildscript {
 
 apply plugin: 'scala'
 apply plugin: 'forge'
+apply plugin: 'curseforge'
+
 
 group = "mrtjp"
 archivesBaseName = "ProjectRed"
@@ -228,7 +230,7 @@ task compatJar(type: Jar, dependsOn: reobf) {
         include "**/mrtjp/projectred/compatibility/**"
 
         //APIs
-        include "**/dan200/**"
+        //include "**/dan200/**"
 
         include "**/assets/asm/**"
         include "**/assets/projectred/textures/blocks/compat/**"
@@ -389,5 +391,61 @@ uploadArchives {
                 }
             }
         }
+    }
+}
+
+import net.minecraftforge.gradle.curseforge.CurseUploadTask
+if (project.hasProperty('curseapi'))
+{
+    curse {
+        doLast {
+            curseIntegration.execute()
+            curseLighting.execute()
+            curseMechanical.execute()
+            curseWorld.execute()
+            curseCompat.execute()
+        }
+        projectId = '228702'
+        artifact = baseJar
+
+        additionalArtifact deobfJar
+        additionalArtifact sourceJar
+    }
+
+    task curseIntegration(dependsOn: 'curse', type: CurseUploadTask) {
+        projectId = '229045'
+        artifact = integrationJar
+    }
+
+    task curseLighting(dependsOn: 'curse', type: CurseUploadTask) {
+        projectId = '229046'
+        artifact = lightingJar
+    }
+
+    task curseMechanical(dependsOn: 'curse', type: CurseUploadTask) {
+        projectId = '229048'
+        artifact = mechanicalJar
+        relatedProject 'project-red-integration': 'requiredLibrary'
+    }
+
+    task curseWorld(dependsOn: 'curse', type: CurseUploadTask) {
+        projectId = '229049'
+        artifact = worldJar
+    }
+
+    task curseCompat(dependsOn: 'curse', type: CurseUploadTask) {
+        projectId = '229050'
+        artifact = compatJar
+    }
+
+    configure([curse, curseIntegration, curseLighting, curseMechanical, curseWorld, curseCompat]) {
+        apiKey = project.curseapi
+        releaseType = 'release'
+        relatedProject 'mrtjpcore': 'requiredLibrary'
+        addGameVersion project.minecraft.version
+    }
+
+    configure([curseIntegration, curseLighting, curseMechanical, curseWorld, curseCompat]) {
+        relatedProject 'project-red-base': 'requiredLibrary'
     }
 }
