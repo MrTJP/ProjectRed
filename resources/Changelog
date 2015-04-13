@@ -1,3 +1,9 @@
+v4.6.16
+- FIX: Requirement of packaged CC API
+- FIX: Infinite loop when using bus converter
+- FIX: Red alloy wire crash
+- FIX: Gameplay exploit
+
 v4.5.15
 - FIX: Segment display textures
 - FIX: Lamps not updating on placement
