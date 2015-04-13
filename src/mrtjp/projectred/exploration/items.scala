@@ -8,7 +8,7 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TItemSeed
 import mrtjp.core.color.Colors
 import mrtjp.core.gui.{GuiLib, Slot2, WidgetContainer}
-import mrtjp.core.inventory.SimpleInventory
+import mrtjp.core.inventory.TInventory
 import mrtjp.core.item.ItemCore
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExploration
@@ -71,14 +71,6 @@ object ItemBackpack
 {
     val oreDictionaryVal = "prbackpack"
 
-    def getInv(player:EntityPlayer) =
-    {
-        val held = player.getHeldItem
-        if (held != null && held.getItem == ProjectRedExploration.itemBackpack)
-            new BagInventory(player, held)
-        else new BagInventory(player, new ItemStack(ProjectRedExploration.itemBackpack))
-    }
-
     def createContainer(player:EntityPlayer) =
     {
         val cont = new WidgetContainer
@@ -91,7 +83,7 @@ object ItemBackpack
             }
         }
 
-        val inv = getInv(player)
+        val inv = new BagInventory(player)
 
         var slot = 0
         for ((x, y) <- GuiLib.createSlotGrid(8, 18, 9, 3, 0, 0))
@@ -101,41 +93,44 @@ object ItemBackpack
         }
 
         cont.addPlayerInv(player, 8, 86)
-
         cont
     }
 }
 
-class BagInventory(player:EntityPlayer, bag:ItemStack) extends SimpleInventory(27, 64)
+class BagInventory(player:EntityPlayer) extends TInventory
 {
+    override def size = 27
+    override def stackLimit = 64
+    override def name = ""
+
     loadInventory()
 
     private def loadInventory()
     {
-        assertNBT(bag)
-        loadInv(bag.getTagCompound.getCompoundTag("baginv"))
+        if (closeIfNoBag()) return
+        loadInv(player.getHeldItem.getTagCompound.getCompoundTag("baginv"))
     }
 
     private def saveInventory()
     {
+        if (closeIfNoBag()) return
         val nbt = new NBTTagCompound
         saveInv(nbt)
-        assertNBT(bag)
-        bag.getTagCompound.setTag("baginv", nbt)
-        refreshNBT()
-    }
-
-    private def refreshNBT()
-    {
-        val currentBag = player.getHeldItem
-        if (currentBag != null && currentBag.getItem == ProjectRedExploration.itemBackpack)
-            currentBag.setTagCompound(bag.getTagCompound)
+        player.getHeldItem.getTagCompound.setTag("baginv", nbt)
     }
 
     override def markDirty()
     {
-        super.markDirty()
         saveInventory()
+    }
+
+    private def closeIfNoBag() =
+    {
+        val bag = player.getHeldItem
+        val hasBag = bag != null && bag.getItem == ProjectRedExploration.itemBackpack
+        if (hasBag) { if (!bag.hasTagCompound) bag.setTagCompound(new NBTTagCompound) }
+        else player.closeScreen()
+        !hasBag
     }
 
     override def isItemValidForSlot(i:Int, stack:ItemStack):Boolean =
@@ -150,9 +145,22 @@ class BagInventory(player:EntityPlayer, bag:ItemStack) extends SimpleInventory(2
         false
     }
 
-    private def assertNBT(s:ItemStack)
+    override def getStackInSlotOnClosing(slot:Int) =
+        if (closeIfNoBag()) null
+        else super.getStackInSlotOnClosing(slot)
+
+    override def decrStackSize(slot:Int, count:Int) =
+        if (closeIfNoBag()) null
+        else super.decrStackSize(slot, count)
+
+    override def setInventorySlotContents(slot:Int, item:ItemStack)
     {
-        if (!s.hasTagCompound) s.setTagCompound(new NBTTagCompound)
+        if (!closeIfNoBag()) super.setInventorySlotContents(slot, item)
+    }
+
+    override def dropInvContents(w:World, x:Int, y:Int, z:Int)
+    {
+        if (!closeIfNoBag()) super.dropInvContents(w, x, y, z)
     }
 }
 
