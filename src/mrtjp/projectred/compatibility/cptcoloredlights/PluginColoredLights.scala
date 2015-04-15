@@ -25,8 +25,8 @@ object PluginColoredLights extends IPRPlugin
                 if (!(0 until 16 contains m)) b
                 else
                 {
-                    val c = Colors(m).c
-                    CLCAPIProxy.makeRGBLightValue(c.r, c.g, c.b, b)
+                    val c = Colors(m)
+                    CLCAPIProxy.makeRGBLightValue((c.rF*15).toInt, (c.gF*15).toInt, (c.bF*15).toInt, b)
                 }
             }
     }
