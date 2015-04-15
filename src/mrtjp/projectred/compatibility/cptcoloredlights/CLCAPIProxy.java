@@ -42,11 +42,6 @@ public class CLCAPIProxy
 
         brightness &= 0xf;
 
-//        if (brightness != Math.max(r, Math.max(g, b))) {
-//            CLLog.warn("One of the color value should be equal to Current Light Brightness, but not exceed it");
-//            CLLog.warn("r: " + r + "  g: " + g + "  b: " + b + "  l: " + brightness);
-//        }
-
         return brightness | ((b << 15) + (g << 10) + (r << 5));
     }
 }
