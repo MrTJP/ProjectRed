@@ -84,11 +84,7 @@ abstract class RoutingChip
         cont
     }
 
-    def createUpgradeBus =
-    {
-        val bus = new UpgradeBus(0, 0)
-        bus
-    }
+    def createUpgradeBus = new UpgradeBus(0, 0)
 
     def upgradeBus = upgrdBus
 
@@ -120,8 +116,8 @@ abstract class RoutingChip
 
 class UpgradeBus(val maxL:Int, val maxR:Int)
 {
-    var Lset = new Array[Boolean](3)
-    var Rset = new Array[Boolean](3)
+    val Lset = new Array[Boolean](3)
+    val Rset = new Array[Boolean](3)
 
     var LXLatency = 0
     var LYLatency = 0

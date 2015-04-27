@@ -6,10 +6,10 @@ import codechicken.lib.vec.{BlockCoord, Vector3}
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.gui.{GuiHandler, GuiLib, Slot2, WidgetContainer}
-import mrtjp.core.item.{ItemDefinition, TItemGlassSound, ItemCore}
+import mrtjp.core.inventory.SimpleInventory
+import mrtjp.core.item.{ItemCore, ItemDefinition, TItemGlassSound}
 import mrtjp.projectred.ProjectRedTransportation
 import mrtjp.projectred.core._
-import mrtjp.core.inventory.SimpleInventory
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipType.ChipType
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
@@ -300,39 +300,40 @@ class ChipUpgradeContainer(player:EntityPlayer) extends WidgetContainer
         super.+(s)
     }
 
-    private var chip:RoutingChip = null
+    //TODO better way to handle this cached chip (currently only used for gui's rendering to avoid creating one every frame)
+    var chachedChip:RoutingChip = null
     private def refreshChips()
     {
         val stack = upgradeInv.getStackInSlot(6)
-        val c = ItemRoutingChip.loadChipFromItemStack(stack)
-        if (chip != c) chip = c
+        chachedChip = ItemRoutingChip.loadChipFromItemStack(stack)
     }
+
+
+    def containsChipStack() = upgradeInv.getStackInSlot(6) != null
 
     def install()
     {
-        if (chip != null)
+        val chipstack = upgradeInv.getStackInSlot(6)
+        if (chipstack == null) return
+        val chip = ItemRoutingChip.loadChipFromItemStack(chipstack)
+        if (chip == null) return
+
+        for (i <- 0 until 6) if (upgradeInv.getStackInSlot(i) != null)
         {
-            val bus = chip.upgradeBus
-            for (i <- 0 until 6) if (upgradeInv.getStackInSlot(i) != null)
+            if (i < 3)
             {
-                if (i < 3)
-                {
-                    if (bus.installL(i, true))
-                        upgradeInv.setInventorySlotContents(i, null)
-                }
-                else
-                {
-                    if (bus.installR(i-3, true))
-                        upgradeInv.setInventorySlotContents(i, null)
-                }
+                if (chip.upgradeBus.installL(i, true))
+                    upgradeInv.setInventorySlotContents(i, null)
+            }
+            else
+            {
+                if (chip.upgradeBus.installR(i-3, true))
+                    upgradeInv.setInventorySlotContents(i, null)
             }
         }
 
-        val chipStack = upgradeInv.getStackInSlot(6)
-        ItemRoutingChip.saveChipToItemStack(chipStack, chip)
-        upgradeInv.setInventorySlotContents(6, chipStack)
+        ItemRoutingChip.saveChipToItemStack(chipstack, chip)
+        upgradeInv.setInventorySlotContents(6, chipstack)
         detectAndSendChanges()
     }
-
-    def getChip = chip
 }
