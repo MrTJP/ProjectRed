@@ -22,9 +22,9 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends WidgetGui(container
         {
             override def buildTooltip(list:ListBuffer[String])
             {
-                if (container.getChip != null)
+                if (container.chachedChip != null)
                 {
-                    val b = container.getChip.upgradeBus
+                    val b = container.chachedChip.upgradeBus
                     if (b.maxL > 0)
                     {
                         list += "L slot"
@@ -41,9 +41,9 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends WidgetGui(container
         {
             override def buildTooltip(list:ListBuffer[String])
             {
-                if (container.getChip != null)
+                if (container.chachedChip != null)
                 {
-                    val b = container.getChip.upgradeBus
+                    val b = container.chachedChip.upgradeBus
                     if (b.maxR > 0)
                     {
                         list += "R slot"
@@ -67,9 +67,9 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends WidgetGui(container
     {
         PRResources.guiChipUpgrade.bind()
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
-        if (container.getChip != null)
+        if (container.chachedChip != null)
         {
-            val b = container.getChip.upgradeBus
+            val b = container.chachedChip.upgradeBus
             fontRenderer.drawString(String.valueOf(if (b.LXLatency > 0) b.LXLatency else "-"), 29, 23, Colors_old.GREY.rgb)
             fontRenderer.drawString(String.valueOf(if (b.LYLatency > 0) b.LYLatency else "-"), 29, 43, Colors_old.GREY.rgb)
             fontRenderer.drawString(String.valueOf(if (b.LZLatency > 0) b.LZLatency else "-"), 29, 63, Colors_old.GREY.rgb)
@@ -94,9 +94,9 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends WidgetGui(container
 
     private def getColorForSlot(slot:Int):Int =
     {
-        if (container.getChip != null)
+        if (container.chachedChip != null)
         {
-            val b = container.getChip.upgradeBus
+            val b = container.chachedChip.upgradeBus
             var hasChip = false
             var canInstall = false
             var canHandle = false
