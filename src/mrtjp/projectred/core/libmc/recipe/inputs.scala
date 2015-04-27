@@ -63,13 +63,12 @@ object MicroIn
 
 class MicroIn(classID:Int, size:Int, material:String) extends Input
 {
-    def this(c:Int, s:Int, b:Block) = this(c, s, b.getUnlocalizedName)
+    def this(c:Int, s:Int, b:Block) = this(c, s, Block.blockRegistry.getNameForObject(b))
 
     private val damage = classID<<8|size&0xFF
     private val sample = ItemKeyStack.get(ItemMicroPart.create(damage, material))
+    private val ins = Seq(sample.makeStack)
 
     override def matches(that:ItemKeyStack) = that.key == sample.key
-
-    val ins = Seq(sample.makeStack)
     override def matchingInputs = ins
 }
