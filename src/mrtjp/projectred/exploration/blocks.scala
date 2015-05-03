@@ -419,7 +419,12 @@ class TileLily extends InstancedBlockTile with TPlantTile
     {
         if (growth == 7)
         {
-            val count = world.rand.nextInt(3)
+            val count = MathLib.weightedRandom(Seq(
+                (0, 10),
+                (1, 55),
+                (2, 30),
+                (3, 5)
+            ))
             if (count > 0) ist += new ItemStack(ProjectRedExploration.itemLilySeed, count, meta)
         }
         else

@@ -1,3 +1,9 @@
+v4.6.0
+- FIX: Coloured Lights compatibility
+- FIX: Recipes with microblocks
+- FIX: Chip upgrades not installing
+- FIX: Deviating lily farming overall loss
+
 v4.5.16
 - FIX: Requirement of packaged CC API
 - FIX: Infinite loop when using bus converter
