@@ -1,9 +1,6 @@
 package mrtjp.projectred.exploration;
 
-import net.minecraft.item.ItemAxe;
-import net.minecraft.item.ItemPickaxe;
-import net.minecraft.item.ItemSpade;
-import net.minecraft.item.ItemSword;
+import net.minecraft.item.*;
 
 /**
  * Proxy scala constructor calls to Java. Fixes weird compiler issue
@@ -39,6 +36,14 @@ class ItemToolProxies
         protected Sword(net.minecraft.item.Item.ToolMaterial material)
         {
             super(material);
+        }
+    }
+
+    static class Armor extends ItemArmor
+    {
+        protected Armor(net.minecraft.item.ItemArmor.ArmorMaterial material, int type)
+        {
+            super(material, 0, type);
         }
     }
 }

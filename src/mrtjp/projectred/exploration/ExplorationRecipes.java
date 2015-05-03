@@ -85,6 +85,57 @@ public class ExplorationRecipes
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemPeridotSickle()), "gemPeridot");
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemDiamondSickle()), "gemDiamond");
 
+        /** Armor **/
+        addHelmetRecipe(new ItemStack(ProjectRedExploration.itemRubyHelmet()), "gemRuby");
+        addChestplateRecipe(new ItemStack(ProjectRedExploration.itemRubyChestplate()), "gemRuby");
+        addLeggingsRecipe(new ItemStack(ProjectRedExploration.itemRubyLeggings()), "gemRuby");
+        addBootsRecipe(new ItemStack(ProjectRedExploration.itemRubyBoots()), "gemRuby");
+        addHelmetRecipe(new ItemStack(ProjectRedExploration.itemSapphireHelmet()), "gemSapphire");
+        addChestplateRecipe(new ItemStack(ProjectRedExploration.itemSapphireChestplate()), "gemSapphire");
+        addLeggingsRecipe(new ItemStack(ProjectRedExploration.itemSapphireLeggings()), "gemSapphire");
+        addBootsRecipe(new ItemStack(ProjectRedExploration.itemSapphireBoots()), "gemSapphire");
+        addHelmetRecipe(new ItemStack(ProjectRedExploration.itemPeridotHelmet()), "gemPeridot");
+        addChestplateRecipe(new ItemStack(ProjectRedExploration.itemPeridotChestplate()), "gemPeridot");
+        addLeggingsRecipe(new ItemStack(ProjectRedExploration.itemPeridotLeggings()), "gemPeridot");
+        addBootsRecipe(new ItemStack(ProjectRedExploration.itemPeridotBoots()), "gemPeridot");
+    }
+
+    private static void addHelmetRecipe(ItemStack o, Object m)
+    {
+        GameRegistry.addRecipe(new ShapedOreRecipe(o,
+                "mmm",
+                "m m",
+                'm', m
+                ));
+    }
+
+    private static void addChestplateRecipe(ItemStack o, Object m)
+    {
+        GameRegistry.addRecipe(new ShapedOreRecipe(o,
+                "m m",
+                "mmm",
+                "mmm",
+                'm', m
+        ));
+    }
+
+    private static void addLeggingsRecipe(ItemStack o, Object m)
+    {
+        GameRegistry.addRecipe(new ShapedOreRecipe(o,
+                "mmm",
+                "m m",
+                "m m",
+                'm', m
+        ));
+    }
+
+    private static void addBootsRecipe(ItemStack o, Object m)
+    {
+        GameRegistry.addRecipe(new ShapedOreRecipe(o,
+                "m m",
+                "m m",
+                'm', m
+        ));
     }
 
     private static void addAxeRecipe(ItemStack o, Object m)
