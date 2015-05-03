@@ -13,14 +13,16 @@ import mrtjp.core.item.ItemCore
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.core.{ItemCraftingDamage, PartDefs}
+import mrtjp.projectred.exploration.ArmorDefs.ArmorDef
 import mrtjp.projectred.exploration.ToolDefs.ToolDef
 import net.minecraft.block._
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.Item.ToolMaterial
+import net.minecraft.item.ItemArmor.ArmorMaterial
 import net.minecraft.item._
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
@@ -219,6 +221,7 @@ object ToolDefs
     case class ToolDef(unlocal:String, mat:ToolMaterial, repair:ItemStack)
 }
 
+
 trait TGemTool extends Item
 {
     setUnlocalizedName("projectred.exploration."+toolDef.unlocal)
@@ -320,6 +323,52 @@ class ItemGemSickle(override val toolDef:ToolDef) extends ItemTool(3, toolDef.ma
 
         if (used) stack.damageItem(1, player)
         used
+    }
+}
+
+
+object ArmorDefs
+{
+    import mrtjp.projectred.ProjectRedExploration.{armorMatrialPeridot, armorMatrialRuby, armorMatrialSapphire}
+    private val ruby = PartDefs.RUBY.makeStack
+    private val sapphire = PartDefs.SAPPHIRE.makeStack
+    private val peridot = PartDefs.PERIDOT.makeStack
+
+    val RUBYHELMET = ArmorDef("rubyhelmet", "ruby", armorMatrialRuby, ruby)
+    val RUBYCHESTPLATE = ArmorDef("rubychestplate","ruby",  armorMatrialRuby, ruby)
+    val RUBYLEGGINGS = ArmorDef("rubyleggings","ruby",  armorMatrialRuby, ruby)
+    val RUBYBOOTS = ArmorDef("rubyboots","ruby",  armorMatrialRuby, ruby)
+
+    val SAPPHIREHELMET = ArmorDef("sapphirehelmet","sapphire", armorMatrialSapphire, sapphire)
+    val SAPPHIRECHESTPLATE = ArmorDef("sapphirechestplate","sapphire", armorMatrialSapphire, sapphire)
+    val SAPPHIRELEGGINGS = ArmorDef("sapphireleggings","sapphire", armorMatrialSapphire, sapphire)
+    val SAPPHIREBOOTS = ArmorDef("sapphireboots","sapphire", armorMatrialSapphire, sapphire)
+
+    val PERIDOTHELMET = ArmorDef("peridothelmet","peridot", armorMatrialPeridot, peridot)
+    val PERIDOTCHESTPLATE = ArmorDef("peridotchestplate","peridot", armorMatrialPeridot, peridot)
+    val PERIDOTLEGGINGS = ArmorDef("peridotleggings","peridot", armorMatrialPeridot, peridot)
+    val PERIDOTBOOTS = ArmorDef("peridotboots","peridot", armorMatrialPeridot, peridot)
+
+    case class ArmorDef(unlocal:String, tex:String, mat:ArmorMaterial, repair:ItemStack)
+}
+
+class ItemGemArmor(adef:ArmorDef, atype:Int) extends ItemToolProxies.Armor(adef.mat, atype)
+{
+    setUnlocalizedName("projectred.exploration."+adef.unlocal)
+    setTextureName("projectred:gemarmor/"+adef.unlocal)
+    setCreativeTab(ProjectRedExploration.tabExploration)
+    GameRegistry.registerItem(this, "projectred.exploration."+adef.unlocal)
+
+    override def getIsRepairable(ist1:ItemStack, ist2:ItemStack) =
+    {
+        if (adef.repair.isItemEqual(ist2)) true
+        else false
+    }
+
+    override def getArmorTexture(stack:ItemStack, entity:Entity, slot:Int, `type`:String) =
+    {
+        val suffix = if(armorType == 2) 2 else 1
+        "projectred:textures/items/gemarmor/"+adef.tex + "_"+suffix+".png"
     }
 }
 
