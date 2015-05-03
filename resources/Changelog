@@ -3,6 +3,7 @@ v4.6.0
 - FIX: Recipes with microblocks
 - FIX: Chip upgrades not installing
 - FIX: Deviating lily farming overall loss
+- FIX: Lamps letting sky light through
 
 v4.5.16
 - FIX: Requirement of packaged CC API
