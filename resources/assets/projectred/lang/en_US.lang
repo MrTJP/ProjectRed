@@ -488,4 +488,5 @@ itemGroup.compat=Project Red: Compatibility
 
 tile.projectred.compatibility.liqredstone.name=Liquid Redstone
 tile.projectred.compatibility.liqcondredmetal.name=Molten Conductive Redmetal
-
+fluid.redstone.molten=Liquid Redstone
+fluid.redmetal.molten=Molten Conductive Redmetal
