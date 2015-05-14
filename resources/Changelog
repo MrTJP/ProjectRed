@@ -1,3 +1,9 @@
+v4.6.1
+- FIX: Block Breaker dropping wrong metadata for some blocks
+- FIX: Block Breaker not playing sound effects
+- FIX: Block Breaker break particles
+- ADDED: Item Importers can suck up items in front of them
+
 v4.6.0
 - ADDED: Gem Armor
 - FIX: Coloured Lights compatibility
