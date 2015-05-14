@@ -1,7 +1,8 @@
 package mrtjp.projectred.exploration
 
+import codechicken.lib.lighting.LightModel
 import codechicken.lib.math.MathHelper
-import codechicken.lib.render.uv.UVTranslation
+import codechicken.lib.render.uv.{IconTransformation, UVTranslation}
 import codechicken.lib.render.{CCModel, CCRenderState, TextureDataHolder, TextureUtils}
 import codechicken.lib.vec._
 import mrtjp.core.block.TInstancedBlockRender
@@ -17,6 +18,8 @@ import net.minecraft.world.IBlockAccess
 import net.minecraftforge.client.IItemRenderer
 import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
 import org.lwjgl.opengl.GL11
+
+import scala.collection.JavaConversions._
 
 object GemSawRenderer extends IItemRenderer
 {
@@ -84,6 +87,18 @@ object GemSawRenderer extends IItemRenderer
 
 object RenderLily extends TInstancedBlockRender
 {
+    val model =
+    {
+        val m = CCModel.quadModel(8)
+        m.generateBlock(0, new Cuboid6(0, 0, 0.5, 1, 1, 0.5), ~0xC)
+        val m2 = m.copy.apply(Rotation.quarterRotations(1).at(Vector3.center))
+        val m3 = CCModel.combine(Seq(m, m2))
+        m3.apply(new Rotation(45*MathHelper.torad, 0, 1, 0).at(Vector3.center))
+        m3.computeNormals()
+        m3.shrinkUVs(0.0001)
+        m3.computeLighting(LightModel.standardLightModel)
+    }
+
     val icons = new Array[IIcon](8)
     val iconsC = new Array[IIcon](16)
 
@@ -93,8 +108,9 @@ object RenderLily extends TInstancedBlockRender
         if (te != null)
         {
             CCRenderState.reset()
+            CCRenderState.lightMatrix.locate(w, x, y, z)
             val icon = if (te.growth == 7) iconsC(te.meta) else icons(te.growth)
-            r.drawCrossedSquares(icon, x, y, z, 1.0f)
+            model.render(new Translation(x, y, z), new IconTransformation(icon))
         }
     }
 
