@@ -72,22 +72,24 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
         val held = player.getHeldItem
         if (held != null && held.getItem.isInstanceOf[IScrewdriver])
         {
-            if (worldObj.isRemote) return true
+            if (world.isRemote) return true
             def rotate() = if (doesRotate)
             {
                 val old = rotation
                 do setRotation((rotation+1)%4) while (old != rotation && !isRotationAllowed(rotation))
                 if (old != rotation) sendOrientUpdate()
+                world.notifyBlocksOfNeighborChange(x, y, z, getBlock)
                 onBlockRotated()
-                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(worldObj, player)
+                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
             }
             def orient() = if (doesOrient)
             {
                 val old = side
                 do setSide((side+1)%6) while (old != side && !isSideAllowed(side))
                 if (old != side) sendOrientUpdate()
+                world.notifyBlocksOfNeighborChange(x, y, z, getBlock)
                 onBlockRotated()
-                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(worldObj, player)
+                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
             }
 
             if (player.isSneaking || !doesOrient) rotate() else orient()
@@ -130,7 +132,7 @@ trait TileMachineIO extends TileMachine with TInventory with ISidedInventory
     abstract override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        dropInvContents(getWorldObj, xCoord, yCoord, zCoord)
+        dropInvContents(world, x, y, z)
     }
 }
 

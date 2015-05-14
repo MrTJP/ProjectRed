@@ -5,21 +5,29 @@
  */
 package mrtjp.projectred.expansion
 
+import java.util.{List => JList}
+
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
+import codechicken.lib.vec.{Cuboid6, Vector3}
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.item.ItemKey
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.transportation.PipePayload
 import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.entity.Entity
+import net.minecraft.entity.item.EntityItem
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
+
+import scala.collection.JavaConversions._
 
 class TileItemImporter extends TileMachine with TPressureActiveDevice
 {
     override def getBlock = ProjectRedExpansion.machine2
+
+    override def getCollisionBounds = new Cuboid6(0, 0, 0, 1, 0.99, 1).apply(rotationT)
 
     override def doesRotate = false
     override def doesOrient = true
@@ -32,7 +40,8 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice
 
     override def onActivate()
     {
-        importInv()
+        if (importInv() || importEntities())
+            return
     }
 
     def importInv():Boolean =
@@ -47,7 +56,7 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice
             val stack = k.makeStack(w.extractItem(k, 1))
             if (stack.stackSize > 0)
             {
-                storage.add(PipePayload(stack))
+                storage.add(stack)
                 active = true
                 sendStateUpdate()
                 scheduleTick(4)
@@ -57,6 +66,40 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice
             return false
         }
         false
+    }
+
+    def importEntities():Boolean =
+    {
+        val box = new Cuboid6(0, 1, 0, 1, 2, 1)
+        box.expand(new Vector3(0.51, 0, 0.51))
+        suckEntities(box)
+    }
+
+    override def onEntityCollision(ent:Entity)
+    {
+        if (!world.isRemote)
+            suckEntities(new Cuboid6(0, 1, 0, 1, 1.25, 1))
+    }
+
+    def suckEntities(box:Cuboid6):Boolean =
+    {
+        box.apply(rotationT).add(new Vector3(x, y, z))
+        val elist = world.getEntitiesWithinAABB(classOf[EntityItem], box.toAABB).asInstanceOf[JList[EntityItem]]
+        var added = false
+        for (ei <- elist) if (!ei.isDead && ei.getEntityItem.stackSize > 0)
+        {
+            storage.add(ei.getEntityItem)
+            world.removeEntity(ei)
+            added = true
+        }
+        if (added)
+        {
+            active = true
+            sendStateUpdate()
+            scheduleTick(4)
+            exportBuffer()
+        }
+        added
     }
 }
 

@@ -5,13 +5,17 @@
  */
 package mrtjp.projectred.expansion
 
+import java.util.{List => JList}
+
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.item.ItemKey
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
+import net.minecraft.block.Block
 import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
@@ -38,8 +42,9 @@ class TileBlockBreaker extends TileMachine with TPressureActiveDevice
         if (b.getBlockHardness(world, bc.x, bc.y, bc.z) < 0) return
         if (b.getHarvestLevel(meta) > 2) return
 
-        world.setBlockToAir(bc.x, bc.y, bc.z)
         b.getDrops(world, bc.x, bc.y, bc.z, meta, 0).foreach(storage.add)
+        world.playAuxSFXAtEntity(null, 2001, x, y, z, Block.getIdFromBlock(b)+(meta<<12))
+        world.setBlockToAir(bc.x, bc.y, bc.z)
         exportBuffer()
     }
 }
