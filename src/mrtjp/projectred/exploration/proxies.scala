@@ -124,7 +124,7 @@ class ExplorationProxy_server extends IProxy
         {
             val logic = new GenLogicUniform
             logic.name = "pr_ruby"
-            logic.resistance = Configurator.gen_Ruby_resistance
+            logic.resistance = 8+Configurator.gen_Ruby_resistance
             logic.allowRetroGen = Configurator.gen_Ruby_retro
             logic.minY = 12
             logic.maxY = 20
@@ -142,7 +142,7 @@ class ExplorationProxy_server extends IProxy
         {
             val logic = new GenLogicUniform
             logic.name = "pr_sapphire"
-            logic.resistance = Configurator.gen_Sapphire_resistance
+            logic.resistance = 8+Configurator.gen_Sapphire_resistance
             logic.allowRetroGen = Configurator.gen_Sapphire_retro
             logic.minY = 12
             logic.maxY = 20
@@ -160,11 +160,11 @@ class ExplorationProxy_server extends IProxy
         {
             val logic = new GenLogicUniform
             logic.name = "pr_peridot"
-            logic.resistance = Configurator.gen_Peridot_resistance
+            logic.resistance = 8+Configurator.gen_Peridot_resistance
             logic.allowRetroGen = Configurator.gen_Peridot_retro
             logic.minY = 16
             logic.maxY = 28
-            logic.attempts = 3
+            logic.attempts = 2
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.OREPERIDOT.meta), 1))
             gen.clusterSize = 5
