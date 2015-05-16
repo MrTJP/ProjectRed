@@ -5,6 +5,7 @@ import codechicken.multipart.MultiPartRegistry
 import cpw.mods.fml.common.Loader
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TileRenderRegistry
+import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.core.{Configurator, IProxy}
 import ProjectRedExpansion._
@@ -31,16 +32,15 @@ class ExpansionProxy_server extends IProxy
             })
         }
 
-//        //Machine1 (processing)
+//        //Machine1 (machines)
 //        ProjectRedExpansion.machine1 = new BlockMachine("projectred.expansion.machine1")
-//        //Machine1 tiles
 //        ProjectRedExpansion.machine1.addTile(classOf[TileFurnace], 0)
 
         //Machine2 (devices)
         machine2 = new BlockMachine("projectred.expansion.machine2")
-        //Machine2 tiles
         machine2.addTile(classOf[TileBlockBreaker], 0)
         machine2.addTile(classOf[TileItemImporter], 1)
+        machine2.addTile(classOf[TileBlockPlacer], 2)
 
         ExpansionRecipes.initRecipes()
     }
@@ -62,6 +62,8 @@ class ExpansionProxy_server extends IProxy
 
 class ExpansionProxy_client extends ExpansionProxy_server
 {
+    val blockPlacerGui = 20
+
     @SideOnly(Side.CLIENT)
     override def preinit()
     {
@@ -79,8 +81,11 @@ class ExpansionProxy_client extends ExpansionProxy_server
     override def postinit()
     {
         super.postinit()
-        TileRenderRegistry.setRenderer(ProjectRedExpansion.machine2, 0, RenderBlockBreaker)
-        TileRenderRegistry.setRenderer(ProjectRedExpansion.machine2, 1, RenderItemRemover)
+        TileRenderRegistry.setRenderer(machine2, 0, RenderBlockBreaker)
+        TileRenderRegistry.setRenderer(machine2, 1, RenderItemRemover)
+        TileRenderRegistry.setRenderer(machine2, 2, RenderBlockPlacer)
+
+        GuiHandler.register(GuiBlockPlacer, blockPlacerGui)
     }
 }
 

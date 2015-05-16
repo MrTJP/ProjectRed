@@ -11,9 +11,8 @@ import net.minecraft.item.ItemStack
 object ProjectRedExpansion
 {
     /** Blocks **/
-    var machine1:BlockMachine = null
-
-    var machine2:BlockMachine = null
+    var machine1:BlockMachine = null //machines
+    var machine2:BlockMachine = null //devices
 
     val tabExpansion = new CreativeTabs("expansion")
     {
