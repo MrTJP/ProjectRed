@@ -58,7 +58,7 @@ trait TPressureTube extends TPressureSubsystem
 
     override def adjustSpeed(r:PipePayload)
     {
-        r.speed = 0.045f
+        r.speed = 0.05f
     }
 
     def resolveOutputConflict(outs:Int):Int =

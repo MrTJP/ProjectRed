@@ -1,7 +1,5 @@
 package mrtjp.projectred.exploration
 
-import java.util.Random
-
 import codechicken.microblock.BlockMicroMaterial
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TileRenderRegistry
@@ -9,10 +7,9 @@ import mrtjp.core.color.Colors
 import mrtjp.core.gui.GuiHandler
 import mrtjp.core.world._
 import mrtjp.projectred.ProjectRedExploration._
-import mrtjp.projectred.core.{PartDefs, PRLogger, Configurator, IProxy}
+import mrtjp.projectred.core.{Configurator, IProxy}
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
-import net.minecraft.world.World
 import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.common.util.EnumHelper
 import net.minecraftforge.oredict.OreDictionary

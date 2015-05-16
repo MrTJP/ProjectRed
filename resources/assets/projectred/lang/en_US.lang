@@ -69,7 +69,7 @@ item.projectred.core.datacard.name=Data Card
 itemGroup.expansion=Project Red: Expansion
 tile.projectred.expansion.machine2|0.name=Block Breaker
 tile.projectred.expansion.machine2|1.name=Item Importer
-tile.projectred.expansion.machine2|2.name=Deployer
+tile.projectred.expansion.machine2|2.name=Block Placer
 
 
 itemGroup.transport=Project Red: Transportation

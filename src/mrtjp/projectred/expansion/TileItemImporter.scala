@@ -8,7 +8,7 @@ package mrtjp.projectred.expansion
 import java.util.{List => JList}
 
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
-import codechicken.lib.vec.{Cuboid6, Vector3}
+import codechicken.lib.vec.{Rotation, Cuboid6, Vector3}
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.item.ItemKey
@@ -20,6 +20,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
+import net.minecraftforge.common.util.ForgeDirection
 
 import scala.collection.JavaConversions._
 
@@ -27,7 +28,7 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice
 {
     override def getBlock = ProjectRedExpansion.machine2
 
-    override def getCollisionBounds = new Cuboid6(0, 0, 0, 1, 0.99, 1).apply(rotationT)
+    override def getCollisionBounds = TileItemImporter.bounds(side)
 
     override def doesRotate = false
     override def doesOrient = true
@@ -83,6 +84,8 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice
 
     def suckEntities(box:Cuboid6):Boolean =
     {
+        if (!canSuckEntities) return false
+
         box.apply(rotationT).add(new Vector3(x, y, z))
         val elist = world.getEntitiesWithinAABB(classOf[EntityItem], box.toAABB).asInstanceOf[JList[EntityItem]]
         var added = false
@@ -100,6 +103,25 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice
             exportBuffer()
         }
         added
+    }
+
+    def canSuckEntities:Boolean =
+    {
+        val bc = position.offset(side^1)
+        world.isAirBlock(bc.x, bc.y, bc.z) || !world.getBlock(bc.x, bc.y, bc.z)
+                .isSideSolid(world, bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side))
+    }
+}
+
+object TileItemImporter
+{
+    val bounds =
+    {
+        val b = new Array[Cuboid6](6)
+        b(0) = new Cuboid6(0, 0, 0, 1, 0.99, 1)
+        for (s <- 1 until 6)
+            b(s) = b(0).copy.apply(Rotation.sideRotations(s).at(Vector3.center))
+        b
     }
 }
 
