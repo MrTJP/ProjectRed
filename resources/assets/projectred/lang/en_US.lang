@@ -70,6 +70,7 @@ itemGroup.expansion=Project Red: Expansion
 tile.projectred.expansion.machine2|0.name=Block Breaker
 tile.projectred.expansion.machine2|1.name=Item Importer
 tile.projectred.expansion.machine2|2.name=Block Placer
+tile.projectred.expansion.machine2|3.name=Filtered Importer
 
 
 itemGroup.transport=Project Red: Transportation

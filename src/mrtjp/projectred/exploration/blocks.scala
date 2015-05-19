@@ -472,6 +472,20 @@ class TileLily extends InstancedBlockTile with TPlantTile
         false
     }
 
+    override def applyBonemeal() =
+    {
+        if (growth < 7)
+        {
+            if (!world.isRemote)
+            {
+                setGrowth(growth+1)
+                sendPhaseUpdate()
+            }
+            true
+        }
+        else false
+    }
+
     def tickGrowth(rand:Random):Boolean =
     {
         if (growth == 7) return false
@@ -539,7 +553,7 @@ object TileLily
     val bounds =
     {
         val b = Seq.newBuilder[Cuboid6]
-        val gains = Seq(2/16D, 2/16D, 2/16D, 2/16D, 2/16D, 0.0D, 2/16D, 1/16D)
+        val gains = Seq(2/16D, 2/16D, 2/16D, 2/16D, 2/16D, 0.0D, 2/16D, 2/16D)
         for (i <- 0 until 8) b += new Cuboid6(0.5f-0.2f, 0.0f, 0.5f-0.2f, 0.5f+0.2f, gains.take(i+1).sum, 0.5f+0.2f)
         b.result()
     }

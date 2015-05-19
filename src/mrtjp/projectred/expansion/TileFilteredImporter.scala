@@ -12,7 +12,8 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.color.Colors
 import mrtjp.core.gui._
-import mrtjp.core.inventory.{SimpleInventory, TPortableInventory}
+import mrtjp.core.inventory.{InvWrapper, SimpleInventory, TPortableInventory}
+import mrtjp.core.item.ItemKey
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.resource.ResourceLib
 import mrtjp.core.vec.Point
@@ -38,6 +39,15 @@ class TileFilteredImporter extends TileItemImporter with TPortableInventory with
     override def getAccessibleSlotsFromSide(s:Int) = if ((s&6) != (side&6)) (0 to 9).toArray else Array.empty[Int]
 
     override def extractCount = 64
+
+    //side = out, side^1 = in
+    override def canAcceptInput(item:ItemKey, side:Int):Boolean =
+    {
+        if (!super.canAcceptInput(item, side)) return false
+        val w = InvWrapper.wrap(this)
+        val map = w.getAllItemStacks
+        map.isEmpty || map.contains(item)
+    }
 
     override def save(tag:NBTTagCompound)
     {

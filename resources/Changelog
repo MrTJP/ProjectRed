@@ -1,8 +1,16 @@
 v4.6.1
+- ADDED: Block Placer
+- ADDED: Filtered Importers
+- ADDED: Ability to add colour filters to pressure tubes with wool strips
 - FIX: Block Breaker dropping wrong metadata for some blocks
 - FIX: Block Breaker not playing sound effects
 - FIX: Block Breaker break particles
-- ADDED: Item Importers can suck up items in front of them
+- FIX: Deviating Lilies rendering dark in world
+- CHANGE: World gen rates tweaked slightly
+- CHANGE: Tube and machine recipes tweaked slightly
+- CHANGE: Item Importers can suck up items that collide on front
+- CHANGE: Item Importers can suck up items in 3x3 grid on redstone pulse
+- CHANGE: Bonemeal now works on liles
 
 v4.6.0
 - ADDED: Gem Armor
