@@ -9,7 +9,7 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 import mrtjp.core.inventory.SimpleInventory
 
-class RoutedExtensionPipePart extends BasicPipeAbstraction with TNetworkPipe
+class RoutedExtensionPipePart extends AbstractNetPipe with TNetworkPipe
 {
     var cardslot = new SimpleInventory(2, "card", 1)
     {

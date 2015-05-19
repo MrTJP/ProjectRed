@@ -7,9 +7,9 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.MovingObjectPosition
 import net.minecraftforge.common.util.ForgeDirection
 
-class RoutedRequestPipePart extends BasicPipeAbstraction with TNetworkPipe
+class RoutedRequestPipePart extends AbstractNetPipe with TNetworkPipe
 {
-    override def centerReached(r:PipePayload)
+    override def centerReached(r:NetworkPayload)
     {
         if (!maskConnects(r.output) && !world.isRemote) if (itemFlow.scheduleRemoval(r))
         {
@@ -40,7 +40,7 @@ class RoutedRequestPipePart extends BasicPipeAbstraction with TNetworkPipe
         packet.writeCoord(x, y, z).sendToPlayer(player)
     }
 
-    override def getDirForIncomingItem(r:PipePayload):Int =
+    override def getDirForIncomingItem(r:NetworkPayload):Int =
     {
         val dir = inOutSide
         if (dir == 6)

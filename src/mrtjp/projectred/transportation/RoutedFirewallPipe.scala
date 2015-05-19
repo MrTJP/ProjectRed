@@ -9,7 +9,7 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 import mrtjp.core.inventory.SimpleInventory
 
-class RoutedFirewallPipe extends BasicPipeAbstraction with TNetworkPipe
+class RoutedFirewallPipe extends AbstractNetPipe with TNetworkPipe
 {
     var filt = new SimpleInventory(7*5, "filt", 1)
     {

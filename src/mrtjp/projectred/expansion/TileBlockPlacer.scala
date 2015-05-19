@@ -265,7 +265,8 @@ class GuiBlockPlacer(c:Container) extends WidgetGui(c, 176, 168)
     {
         PRResources.guiBlockPlacer.bind()
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, 176, 168)
-        GuiDraw.drawString("Block Placer", 4, 4, Colors.GREY.argb, false)
+        GuiDraw.drawString("Block Placer", 8, 6, Colors.GREY.argb, false)
+        GuiDraw.drawString("Inventory", 8, 75, Colors.GREY.argb, false)
     }
 }
 

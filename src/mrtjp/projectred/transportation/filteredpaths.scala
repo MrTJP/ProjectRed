@@ -2,7 +2,6 @@ package mrtjp.projectred.transportation
 
 import mrtjp.core.item.ItemKey
 
-
 class StartEndPath(var start:Router, var end:Router, var hopDir:Int, var distance:Int,
                    filters:Set[PathFilter] = Set.empty, val netFlags:Int = 0x7) extends Path(filters) with Ordered[StartEndPath]
 {

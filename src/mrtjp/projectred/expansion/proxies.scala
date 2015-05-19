@@ -7,8 +7,8 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TileRenderRegistry
 import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedExpansion
+import mrtjp.projectred.ProjectRedExpansion._
 import mrtjp.projectred.core.{Configurator, IProxy}
-import ProjectRedExpansion._
 
 class ExpansionProxy_server extends IProxy
 {
@@ -41,6 +41,7 @@ class ExpansionProxy_server extends IProxy
         machine2.addTile(classOf[TileBlockBreaker], 0)
         machine2.addTile(classOf[TileItemImporter], 1)
         machine2.addTile(classOf[TileBlockPlacer], 2)
+        machine2.addTile(classOf[TileFilteredImporter], 3)
 
         ExpansionRecipes.initRecipes()
     }
@@ -63,6 +64,7 @@ class ExpansionProxy_server extends IProxy
 class ExpansionProxy_client extends ExpansionProxy_server
 {
     val blockPlacerGui = 20
+    val filteredImporterGui = 21
 
     @SideOnly(Side.CLIENT)
     override def preinit()
@@ -82,10 +84,12 @@ class ExpansionProxy_client extends ExpansionProxy_server
     {
         super.postinit()
         TileRenderRegistry.setRenderer(machine2, 0, RenderBlockBreaker)
-        TileRenderRegistry.setRenderer(machine2, 1, RenderItemRemover)
+        TileRenderRegistry.setRenderer(machine2, 1, RenderItemImporter)
         TileRenderRegistry.setRenderer(machine2, 2, RenderBlockPlacer)
+        TileRenderRegistry.setRenderer(machine2, 3, RenderFilteredImporter)
 
         GuiHandler.register(GuiBlockPlacer, blockPlacerGui)
+        GuiHandler.register(GuiFilteredImporter, filteredImporterGui)
     }
 }
 

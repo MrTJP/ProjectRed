@@ -14,7 +14,6 @@ object PressurePriority
 {
     val backlog = 1<<0
     val inventory = 1<<1
-    val setDestination = 1<<2 //TODO
 }
 
 class PressurePathfinder(item:ItemKey, pipe:TPressureSubsystem, dim:Int, color:Int = -1)
