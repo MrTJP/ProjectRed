@@ -8,7 +8,7 @@ import codechicken.lib.render.uv.{IconTransformation, UV, UVScale, UVTransformat
 import codechicken.lib.vec._
 import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
 import codechicken.microblock.{BlockMicroMaterial, MicroMaterialRegistry, MicroblockClass}
-import mrtjp.core.color.Colors_old
+import mrtjp.core.color.Colors
 import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.client.renderer.entity.{RenderItem, RenderManager}
 import net.minecraft.entity.item.EntityItem
@@ -30,11 +30,14 @@ object RenderPipe
     }
     customRenderItem.setRenderManager(RenderManager.instance)
 
-    var sideModels = new Array[CCModel](6)
-    var centerModels = new Array[CCModel](4)
+    var sideModels:Array[CCModel] = null
+    var centerModels:Array[CCModel] = null
 
-    var sideModelsRS = new Array[CCModel](6)
-    var centerModelsRS = new Array[CCModel](4)
+    var sideModelsRS:Array[CCModel] = null
+    var centerModelsRS:Array[CCModel] = null
+
+    var sideModelsWool:Array[CCModel] = null
+    var centerModelsWool:Array[CCModel] = null
 
     {
         val gen = new PipeModelGenerator
@@ -42,12 +45,17 @@ object RenderPipe
         centerModels = gen.centerModels
 
         val rsgen = new PipeModelGenerator
-        rsgen.applyScale(0.90D)
+        rsgen.applyScale(0.90)
         sideModelsRS = rsgen.sideModels
         centerModelsRS = rsgen.centerModels
+
+        val woolgen = new PipeModelGenerator
+        woolgen.applyScale(0.80)
+        sideModelsWool = woolgen.sideModels
+        centerModelsWool = woolgen.centerModels
     }
 
-    def render(p:PayloadPipePart, pos:Vector3)
+    def renderPipe(p:SubcorePipePart, pos:Vector3)
     {
         val t = pos.translation()
         var uvt = new IconTransformation(p.getPipeType.sprites(0))
@@ -65,16 +73,25 @@ object RenderPipe
             sideModels(s).render(t, uvt)
         }
 
-        p match
-        {
-            case rsp:TRedstonePipe =>
-                if (rsp.material) renderRSWiring(rsp, t, rsp.signal)
-            case _ =>
-        }
+        val gen = new PipeModelGenerator
+        sideModels = gen.sideModels
+        centerModels = gen.centerModels
+
+        val rsgen = new PipeModelGenerator
+        rsgen.applyScale(0.90)
+        sideModelsRS = rsgen.sideModels
+        centerModelsRS = rsgen.centerModels
+
+        val woolgen = new PipeModelGenerator
+        woolgen.applyScale(0.85)
+        sideModelsWool = woolgen.sideModels
+        centerModelsWool = woolgen.centerModels
+
     }
 
-    private def renderRSWiring(p:TRedstonePipe, t:Translation, signal:Int)
+    def renderRSWiring(p:TRedstonePipe, pos:Vector3, signal:Byte)
     {
+        val t = pos.translation()
         val colour = ColourMultiplier.instance((signal&0xFF)/2+60<<24|0xFF)
         val uvt2 = new IconTransformation(PipeDefs.BASIC.sprites(1))
         val connMap = p.connMap&0x3F
@@ -89,7 +106,23 @@ object RenderPipe
             sideModelsRS(s).render(t, uvt2, colour)
     }
 
-    def renderBreakingOverlay(icon:IIcon, pipe:PayloadPipePart)
+    def renderColourWool(p:TColourFilterPipe, pos:Vector3, colour:Byte)
+    {
+        val t = pos.translation()
+        val uvt2 = new IconTransformation(PipeDefs.PRESSURETUBE.sprites(1+colour))
+        val connMap = p.connMap&0x3F
+
+        if (connMap == 0x3 || connMap == 0xC || connMap == 0x30) for (a <- 0 until 3)
+        {
+            if ((connMap>>a*2) == 3) centerModelsWool(a).render(t, uvt2)
+        }
+        else centerModelsWool(3).render(t, uvt2)
+
+        for (s <- 0 until 6) if ((connMap&1<<s) != 0)
+            sideModelsWool(s).render(t, uvt2)
+    }
+
+    def renderBreakingOverlay(icon:IIcon, pipe:SubcorePipePart)
     {
         CCRenderState.setPipeline(new Translation(pipe.x, pipe.y, pipe.z), new IconTransformation(icon))
         import scala.collection.JavaConversions._
@@ -103,7 +136,7 @@ object RenderPipe
         for (s <- 0 to 1) sideModels(s).render(ops:_*)
     }
 
-    def renderItemFlow(p:PayloadPipePart, pos:Vector3, frame:Float)
+    def renderItemFlow[T <: AbstractPipePayload](p:PayloadPipePart[T], pos:Vector3, frame:Float)
     {
         GL11.glPushMatrix()
         GL11.glDisable(GL11.GL_LIGHTING)
@@ -126,13 +159,20 @@ object RenderPipe
                 case _ =>
             }
             doRenderItem(r, frameX, frameY, frameZ)
-            if (p.isInstanceOf[TNetworkPipe]) doPriorityRender(r, frameX, frameY, frameZ)
+            r match
+            {
+                case net:NetworkPayload =>
+                    renderPayloadColour(net.netPriority.color, frameX, frameY, frameZ)
+                case pa:PressurePayload if pa.colour > -1 =>
+                    renderPayloadColour(pa.colour, frameX, frameY, frameZ)
+                case _ =>
+            }
         }
         GL11.glEnable(GL11.GL_LIGHTING)
         GL11.glPopMatrix()
     }
 
-    private def doRenderItem(r:PipePayload, x:Double, y:Double, z:Double)
+    private def doRenderItem(r:AbstractPipePayload, x:Double, y:Double, z:Double)
     {
         if (r == null || r.getItemStack == null) return
         val renderScale = 0.7f
@@ -149,7 +189,7 @@ object RenderPipe
         GL11.glPopMatrix()
     }
 
-    private def doPriorityRender(r:PipePayload, x:Double, y:Double, z:Double)
+    private def renderPayloadColour(colour:Int, x:Double, y:Double, z:Double)
     {
         GL11.glPushMatrix()
         prepareRenderState()
@@ -159,7 +199,7 @@ object RenderPipe
 
         CCRenderState.setPipeline(new Translation(t))
         CCRenderState.alphaOverride = 32
-        CCRenderState.baseColour = Colors_old.get(r.netPriority.color).rgba
+        CCRenderState.baseColour = Colors(colour).rgba
         BlockRenderer.renderCuboid(new Cuboid6(1/16D, 1/16D, 1/16D, 7/16D, 7/16D, 7/16D), 0)
 
         restoreRenderState()
@@ -174,9 +214,9 @@ object RenderPipe
         GL11.glDisable(GL11.GL_LIGHTING)
         GL11.glDisable(GL11.GL_CULL_FACE)
         GL11.glDepthMask(false)
-        CCRenderState.reset()
-        CCRenderState.setDynamic()
         CCRenderState.startDrawing()
+        CCRenderState.pullLightmap()
+        CCRenderState.setDynamic()
     }
 
     private def restoreRenderState()
@@ -191,7 +231,7 @@ object RenderPipe
         GL11.glDisable(GL11.GL_BLEND)
     }
 
-    def renderMircoHighlight(part:TRedstonePipe)
+    private def renderMicroHighlight(part:SubcorePipePart, tFunc:() => _)
     {
         val pos = new BlockCoord(part.tile)
         GL11.glPushMatrix()
@@ -208,12 +248,22 @@ object RenderPipe
         CCRenderState.alphaOverride = 127
         CCRenderState.startDrawing()
 
-        renderRSWiring(part, Vector3.zero.translation, 255)
+        tFunc()
 
         CCRenderState.draw()
         GL11.glDisable(GL11.GL_BLEND)
         GL11.glDepthMask(true)
         GL11.glPopMatrix()
+    }
+
+    def renderRSMicroHighlight(part:TRedstonePipe)
+    {
+        renderMicroHighlight(part, {() => renderRSWiring(part, Vector3.zero, 255.toByte)})
+    }
+
+    def renderWoolMicroHighlight(part:TColourFilterPipe, colour:Byte)
+    {
+        renderMicroHighlight(part, {() => renderColourWool(part, Vector3.zero, colour)})
     }
 }
 
@@ -309,7 +359,7 @@ private class PipeModelGenerator(val w:Double = 2/8D, val d:Double = 1/16D-0.002
 
     def applyScale(scale:Double)
     {
-        val nscale = 2.0002D-scale
+        val nscale = 2.0-scale-(1.0-scale)*0.001
         val tscale = (1-scale)/2D
         val trans = Seq(
             new Translation(0, tscale, 0),
@@ -356,34 +406,48 @@ private class UVT(t:Transformation) extends UVTransformation
 
 object PipeRSHighlightRenderer extends IMicroHighlightRenderer
 {
-    def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:MicroblockClass, size:Int, material:Int) =
+    def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:MicroblockClass, size:Int, material:Int):Boolean =
     {
+        if (mcrClass.classID != 3 || size != 1 || player.isSneaking) return false
         val tile = PRLib.getMultipartTile(player.worldObj, hit.blockX, hit.blockY, hit.blockZ)
-        if (tile == null || mcrClass.classID != 3 || size != 1 || player.isSneaking) false
-        else
-        {
-            val failed = MicroMaterialRegistry.getMaterial(material) match
-            {
-                case b:BlockMicroMaterial if b.block == Blocks.redstone_block => false
-                case _ => true
-            }
+        if (tile == null) return false
 
-            if (failed) false
-            else
-            {
-                val hitData:(Integer, Any) = ExtendedMOP.getData(hit)
+        MicroMaterialRegistry.getMaterial(material) match
+        {
+            case b:BlockMicroMaterial if b.block == Blocks.redstone_block =>
+                val hitData:(Integer, _) = ExtendedMOP.getData(hit)
                 tile.partList(hitData._1) match
                 {
-                    case p:TRedstonePipe =>
-                        if (p.material) false
-                        else
-                        {
-                            RenderPipe.renderMircoHighlight(p)
-                            true
-                        }
+                    case p:TRedstonePipe if !p.material =>
+                        RenderPipe.renderRSMicroHighlight(p)
+                        true
                     case _ => false
                 }
-            }
+            case _ => false
+        }
+    }
+}
+
+object PipeColourHighlightRenderer extends IMicroHighlightRenderer
+{
+    def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:MicroblockClass, size:Int, material:Int):Boolean =
+    {
+        if (mcrClass.classID != 3 || size != 1 || player.isSneaking) return false
+        val tile = PRLib.getMultipartTile(player.worldObj, hit.blockX, hit.blockY, hit.blockZ)
+        if (tile == null) return false
+
+        MicroMaterialRegistry.getMaterial(material) match
+        {
+            case b:BlockMicroMaterial if b.block == Blocks.wool =>
+                val hitData:(Integer, _) = ExtendedMOP.getData(hit)
+                tile.partList(hitData._1) match
+                {
+                    case p:TColourFilterPipe if p.colour != b.meta =>
+                        RenderPipe.renderWoolMicroHighlight(p, b.meta.toByte)
+                        true
+                    case _ => false
+                }
+            case _ => false
         }
     }
 }

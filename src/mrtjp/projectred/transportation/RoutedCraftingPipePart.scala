@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 
-class RoutedCraftingPipePart extends BasicPipeAbstraction with TNetworkPipe with IWorldCrafter
+class RoutedCraftingPipePart extends AbstractNetPipe with TNetworkPipe with IWorldCrafter
 {
     private val chipSlots = new SimpleInventory(8, "chips", 1)
     {

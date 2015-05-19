@@ -6,7 +6,7 @@ import codechicken.lib.render.{CCRenderState, TextureUtils}
 import codechicken.lib.vec.{BlockCoord, Cuboid6, Rotation, Vector3}
 import codechicken.microblock.ISidedHollowConnect
 import codechicken.multipart._
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.core.item.ItemKey
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
@@ -151,6 +151,47 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
         for (s <- 0 until 6) if (maskConnects(s)) boxes :+= oBounds(s)
         boxes
     }
+
+    @SideOnly(Side.CLIENT)
+    override def drawBreaking(r:RenderBlocks)
+    {
+        RenderPipe.renderBreakingOverlay(r.overrideBlockTexture, this)
+    }
+
+    @SideOnly(Side.CLIENT)
+    override def renderStatic(pos:Vector3, pass:Int) =
+    {
+        if (pass == 0)
+        {
+            TextureUtils.bindAtlas(0)
+            CCRenderState.setBrightness(world, x, y, z)
+            doStaticTessellation(pos)
+            true
+        }
+        else false
+    }
+
+    @SideOnly(Side.CLIENT)
+    override def renderDynamic(pos:Vector3, frame:Float, pass:Int)
+    {
+        if (pass == 0)
+        {
+            TextureUtils.bindAtlas(0)
+            doDynamicTessellation(pos, frame)
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    def getIcon(side:Int) = getPipeType.sprites(0)
+
+    @SideOnly(Side.CLIENT)
+    def doStaticTessellation(pos:Vector3)
+    {
+        RenderPipe.renderPipe(this, pos)
+    }
+
+    @SideOnly(Side.CLIENT)
+    def doDynamicTessellation(pos:Vector3, frame:Float){}
 }
 
 object PipeBoxes
@@ -195,10 +236,12 @@ trait TPipeTravelConditions
     def pathWeight = 1
 }
 
-class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
+abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart with TPipeTravelConditions
 {
-    val itemFlow = new PayloadMovement
+    val itemFlow = new PayloadMovement[T]
     var initialized = false
+
+    private implicit def payloadToT(p:AbstractPipePayload):T = p.asInstanceOf[T]
 
     override def save(tag:NBTTagCompound)
     {
@@ -222,7 +265,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
             try
             {
                 val payloadData = nbttaglist.getCompoundTagAt(j)
-                val r = PipePayload.create()
+                val r = createNewPayload(AbstractPipePayload.claimID())
                 r.bind(this)
                 r.load(payloadData)
                 if (!r.isCorrupted) itemFlow.scheduleLoad(r)
@@ -234,7 +277,6 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
     override def read(packet:MCDataInput, key:Int) = key match
     {
         case 4 => handleItemUpdatePacket(packet)
-        case 10 =>
         case _ => super.read(packet, key)
     }
 
@@ -265,73 +307,77 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         itemFlow.exececuteRemove()
     }
 
-    def handleDrop(r:PipePayload)
+    def handleDrop(r:T)
     {
         if (itemFlow.scheduleRemoval(r)) if (!world.isRemote)
         {
-            r.resetTrip()
+            //r.resetTrip()
+            r.preItemRemove()
             world.spawnEntityInWorld(r.getEntityForDrop(x, y, z))
         }
     }
 
-    def resolveDestination(r:PipePayload)
+    def resolveDestination(r:T)
     {
         chooseRandomDestination(r)
     }
 
-    def chooseRandomDestination(r:PipePayload)
+    def chooseRandomDestination(r:T)
+    {
+        chooseRandomDestination(r, 0)
+    }
+
+    def chooseRandomDestination(r:T, mask:Int)
     {
         var moves = Seq[Int]()
-        for (i <- 0 until 6) if((connMap&1<<i) != 0 && i != (r.input^1))
-        {
-            val t = getStraight(i)
-            if (t.isInstanceOf[PayloadPipePart]) moves :+= i
-        }
-
+        for (i <- 0 until 6)
+            if((connMap&1<<i) != 0 && i != (r.input^1) && (mask&1<<i) == 0) moves :+= i
         if (moves.isEmpty) r.output = r.input^1
         else r.output = moves(world.rand.nextInt(moves.size))
     }
 
-    def endReached(r:PipePayload)
+    def endReached(r:T)
     {
         if (!world.isRemote)
+        {
             if(!(maskConnects(r.output) && passPayload(r)))
                 if (r.payload.stackSize > 0) bounceStack(r)
+        }
     }
 
-    def passPayload(r:PipePayload):Boolean =
+    def passPayload(r:T):Boolean =
     {
-        if (passToInventory(r)) return r.payload.stackSize > 0
+        if (passToInventory(r)) return true
 
         if (passToNextPipe(r)) return true
 
         false
     }
 
-    def passToNextPipe(r:PipePayload) =
+    def passToNextPipe(r:T) =
     {
         getStraight(r.output) match
         {
-            case pipe:PayloadPipePart =>
+            case pipe:PayloadPipePart[T] =>
                 pipe.injectPayload(r, r.output)
                 true
             case _ => false
         }
     }
 
-    def passToInventory(r:PipePayload) =
+    def passToInventory(r:T) =
     {
         val inv = InvWrapper.getInventory(world, posOfStraight(r.output))
         if (inv != null)
         {
             val w = InvWrapper.wrap(inv).setSlotsFromSide(r.output^1)
             r.payload.stackSize -= w.injectItem(r.payload.makeStack, true)
-            true
+            r.payload.stackSize == 0
         }
         else false
     }
 
-    def bounceStack(r:PipePayload)
+    def bounceStack(r:T)
     {
         itemFlow.unscheduleRemoval(r)
         r.isEntering = true
@@ -339,10 +385,10 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         r.progress = 0
         resolveDestination(r)
         adjustSpeed(r)
-        sendItemUpdate(r)
+        if (!world.isRemote) sendItemUpdate(r)
     }
 
-    def centerReached(r:PipePayload)
+    def centerReached(r:T)
     {
         if (!maskConnects(r.output) && !world.isRemote)
         {
@@ -351,16 +397,16 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         }
     }
 
-    def adjustSpeed(r:PipePayload)
+    def adjustSpeed(r:T)
     {
-        r.speed = Math.max(r.speed-0.01f, r.netPriority.speed)
+        //r.speed = Math.max(r.speed-0.01f, r.netPriority.speed)
     }
 
-    protected def hasReachedMiddle(r:PipePayload) = r.progress >= 0.5F
+    protected def hasReachedMiddle(r:T) = r.progress >= 0.5F
 
-    protected def hasReachedEnd(r:PipePayload) = r.progress >= 1.0F
+    protected def hasReachedEnd(r:T) = r.progress >= 1.0F
 
-    def injectPayload(r:PipePayload, in:Int)
+    def injectPayload(r:T, in:Int)
     {
         if (r.isCorrupted) return
         if (itemFlow.delegate.contains(r)) return
@@ -386,7 +432,7 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
 
         if (connCount == 0) if (!world.isRemote) for (r <- itemFlow.it) if (itemFlow.scheduleRemoval(r))
         {
-            r.resetTrip()
+            r.preItemRemove()
             world.spawnEntityInWorld(r.getEntityForDrop(x, y, z))
         }
     }
@@ -396,61 +442,33 @@ class PayloadPipePart extends SubcorePipePart with TPipeTravelConditions
         super.onRemoved()
         if (!world.isRemote) for (r <- itemFlow.it)
         {
-            r.resetTrip()
+            r.preItemRemove()
             world.spawnEntityInWorld(r.getEntityForDrop(x, y, z))
         }
     }
 
-    def sendItemUpdate(r:PipePayload)
+    def sendItemUpdate(r:T)
     {
-        if (world.isRemote) return
         val out = getWriteStreamOf(4)
         out.writeShort(r.payloadID)
-        out.writeItemStack(r.getItemStack)
-        out.writeInt(r.data)
+        r.writeDesc(out)
     }
 
     def handleItemUpdatePacket(packet:MCDataInput)
     {
         val id = packet.readShort()
-        val stack = packet.readItemStack()
-        val r = itemFlow.getOrElseUpdate(id, _ => PipePayload(id, stack))
-        r.data = packet.readInt()
+        val r = itemFlow.getOrElseUpdate(id, _ => createNewPayload(id))
+        r.readDesc(packet)
     }
 
+    def createNewPayload(id:Int):T
+
     @SideOnly(Side.CLIENT)
-    override def drawBreaking(r:RenderBlocks)
+    override def doDynamicTessellation(pos:Vector3, frame:Float)
     {
-        RenderPipe.renderBreakingOverlay(r.overrideBlockTexture, this)
+        super.doDynamicTessellation(pos, frame)
+        RenderPipe.renderItemFlow(this, pos, frame)
     }
-
-    @SideOnly(Side.CLIENT)
-    override def renderStatic(pos:Vector3, pass:Int) =
-    {
-        if (pass == 0)
-        {
-            TextureUtils.bindAtlas(0)
-            CCRenderState.setBrightness(world, x, y, z)
-            RenderPipe.render(this, pos)
-            true
-        }
-        else false
-    }
-
-    @SideOnly(Side.CLIENT)
-    override def renderDynamic(pos:Vector3, frame:Float, pass:Int)
-    {
-        if (pass == 0)
-        {
-            TextureUtils.bindAtlas(0)
-            CCRenderState.reset()
-            CCRenderState.setBrightness(world, x, y, z)
-            RenderPipe.renderItemFlow(this, pos, frame)
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    def getIcon(side:Int) = getPipeType.sprites(0)
 
     override def canConnectPart(part:IConnectable, s:Int) = false
 }

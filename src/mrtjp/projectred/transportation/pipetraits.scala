@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.vec.BlockCoord
+import codechicken.lib.vec.{Vector3, BlockCoord}
 import codechicken.microblock.handler.MicroblockProxy
 import codechicken.microblock.{BlockMicroMaterial, ItemMicroPart}
 import codechicken.multipart.{IMaskedRedstonePart, RedstoneInteractions, TMultiPart}
@@ -211,30 +211,28 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
     abstract override def activate(player:EntityPlayer, hit:MovingObjectPosition, held:ItemStack):Boolean =
     {
         if (super.activate(player, hit, held)) return true
-        def dropMaterial()
-        {
-            if (material && !player.capabilities.isCreativeMode)
-                PRLib.dropTowardsPlayer(world, x, y, z, getMaterialStack, player)
-        }
 
         //if (CommandDebug.WIRE_READING) debug(player) else
         if (held != null && held.getItem == ProjectRedCore.itemWireDebugger)
         {
             held.damageItem(1, player)
-            player.swingItem()
             test(player)
+            return true
         }
-        else if (held == null)
+
+        if (held == null && player.isSneaking && material)
         {
-            if (!world.isRemote && player.isSneaking && material)
+            if (!world.isRemote)
             {
-                dropMaterial()
+                if (material && !player.capabilities.isCreativeMode)
+                    PRLib.dropTowardsPlayer(world, x, y, z, getMaterialStack, player)
                 material = false
                 sendMatUpdate()
             }
-            false
+            return true
         }
-        else if (!material && held.getItem == MicroblockProxy.itemMicro && held.getItemDamage == 769)
+
+        if (held != null && !material && held.getItem == MicroblockProxy.itemMicro && held.getItemDamage == 769)
         {
             ItemMicroPart.getMaterial(held) match
             {
@@ -243,15 +241,16 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
                     {
                         material = true
                         world.playSoundEffect(x+0.5, y+0.5, z+0.5, Block.soundTypeGlass.func_150496_b(),
-                            Block.soundTypeGlass.getVolume*5.0F, Block.soundTypeGlass.getPitch*.9F)
+                            Block.soundTypeGlass.getVolume*5.0F, Block.soundTypeGlass.getPitch*0.9F)
                         sendMatUpdate()
                         if (!player.capabilities.isCreativeMode) held.stackSize-=1
                     }
-                    true
-                case _ => false
+                    return true
+                case _ =>
             }
         }
-        else false
+
+        false
     }
 
     def debug(player:EntityPlayer) =
@@ -275,6 +274,113 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
         }
         true
     }
+
+    @SideOnly(Side.CLIENT)
+    override def doStaticTessellation(pos:Vector3)
+    {
+        super.doStaticTessellation(pos)
+        if (material) RenderPipe.renderRSWiring(this, pos, signal)
+    }
+}
+
+trait TColourFilterPipe extends SubcorePipePart
+{
+    var colour:Byte = -1
+
+    abstract override def save(tag:NBTTagCompound)
+    {
+        super.save(tag)
+        tag.setByte("colour", colour)
+    }
+
+    abstract override def load(tag:NBTTagCompound)
+    {
+        super.load(tag)
+        colour = if (tag.hasKey("colour")) tag.getByte("colour") else -1
+    }
+
+    abstract override def writeDesc(packet:MCDataOutput)
+    {
+        super.writeDesc(packet)
+        packet.writeByte(colour)
+    }
+
+    abstract override def readDesc(packet:MCDataInput)
+    {
+        super.readDesc(packet)
+        colour = packet.readByte()
+    }
+
+    abstract override def read(packet:MCDataInput, key:Int) = key match
+    {
+        case 12 =>
+            colour = packet.readByte()
+            tile.markRender()
+        case _ => super.read(packet, key)
+    }
+
+    def sendColourUpdate()
+    {
+        getWriteStreamOf(12).writeByte(colour)
+    }
+
+    abstract override def getDrops =
+        if (colour > -1) super.getDrops:+getColourStack
+        else super.getDrops
+
+    def getColourStack =
+        if (colour == -1) null
+        else ItemMicroPart.create(769, BlockMicroMaterial.materialKey(Blocks.wool, colour))
+
+    abstract override def activate(player:EntityPlayer, hit:MovingObjectPosition, held:ItemStack):Boolean =
+    {
+        if (super.activate(player, hit, held)) return true
+
+        def dropMaterial()
+        {
+            if (colour > -1 && !player.capabilities.isCreativeMode)
+                PRLib.dropTowardsPlayer(world, x, y, z, getColourStack, player)
+        }
+
+        if (held == null && player.isSneaking && colour > -1)
+        {
+            if (!world.isRemote)
+            {
+                dropMaterial()
+                colour = -1
+                sendColourUpdate()
+            }
+            return true
+        }
+
+        if (held != null && held.getItem == MicroblockProxy.itemMicro && held.getItemDamage == 769)
+        {
+            ItemMicroPart.getMaterial(held) match
+            {
+                case bm:BlockMicroMaterial if bm.block == Blocks.wool && bm.meta != colour =>
+                    if (!world.isRemote)
+                    {
+                        dropMaterial()
+                        colour = bm.meta.toByte
+                        world.playSoundEffect(x+0.5, y+0.5, z+0.5, bm.getSound.func_150496_b(),
+                            bm.getSound.getVolume*5.0F, bm.getSound.getPitch*0.9F)
+                        sendColourUpdate()
+                        if (!player.capabilities.isCreativeMode) held.stackSize-=1
+                    }
+                    return true
+                case _ =>
+            }
+        }
+
+        false
+    }
+
+    @SideOnly(Side.CLIENT)
+    override def doStaticTessellation(pos:Vector3)
+    {
+        super.doStaticTessellation(pos)
+        if (colour > -1) RenderPipe.renderColourWool(this, pos, colour)
+    }
 }
 
 trait IInventoryProvider
@@ -283,7 +389,7 @@ trait IInventoryProvider
     def getInterfacedSide:Int
 }
 
-trait TInventoryPipe extends PayloadPipePart with IInventoryProvider
+trait TInventoryPipe[T <: AbstractPipePayload] extends PayloadPipePart[T] with IInventoryProvider
 {
     var inOutSide:Byte = 0
 
@@ -408,134 +514,3 @@ trait TInventoryPipe extends PayloadPipePart with IInventoryProvider
         false
     }
 }
-
-trait TSimpleLogicPipe extends PayloadPipePart
-{
-    var logic:PipeLogic = null
-
-    override def preparePlacement(side:Int, meta:Int)
-    {
-        super.preparePlacement(side, meta)
-        logic = PipeLogic.createPipeLogic(this, meta)
-    }
-
-    def getLogic = logic
-
-    override def save(tag:NBTTagCompound)
-    {
-        super.save(tag)
-        getLogic.save(tag)
-    }
-
-    override def load(tag:NBTTagCompound)
-    {
-        super.load(tag)
-        logic = PipeLogic.createPipeLogic(this, meta)
-        getLogic.load(tag)
-    }
-
-    override def writeDesc(packet:MCDataOutput)
-    {
-        super.writeDesc(packet)
-        getLogic.writeDesc(packet)
-    }
-
-    override def readDesc(packet:MCDataInput)
-    {
-        super.readDesc(packet)
-        if (getLogic == null) logic = PipeLogic.createPipeLogic(this, meta)
-        getLogic.readDesc(packet)
-    }
-
-    override def read(packet:MCDataInput, key:Int) = key match
-    {
-        case k if k >= 50 => logic.read(packet, k)
-        case _ => super.read(packet, key)
-    }
-
-    override def update()
-    {
-        super.update()
-        getLogic.tick()
-    }
-
-    override def handleDrop(r:PipePayload)
-    {
-        if (getLogic.handleDrop(r)) return
-        super.handleDrop(r)
-    }
-
-    override def resolveDestination(r:PipePayload)
-    {
-        if (getLogic.resolveDestination(r)) return
-        super.handleDrop(r)
-    }
-
-    override def endReached(r:PipePayload)
-    {
-        if (getLogic.endReached(r)) return
-        super.endReached(r)
-    }
-
-    override def centerReached(r:PipePayload)
-    {
-        if (getLogic.centerReached(r)) return
-        super.centerReached(r)
-    }
-
-    @SideOnly(Side.CLIENT)
-    override def getIcon(side:Int) =
-    {
-        val i = getLogic.getIcon(side)
-        if (i != null) i
-        else super.getIcon(side)
-    }
-}
-
-object PipeLogic
-{
-    def createPipeLogic(p:PayloadPipePart, meta:Int) = meta match
-    {
-        case 0 => new NullPipeLogic(p)
-        case _ => new NullPipeLogic(p)
-    }
-
-    def apply(p:PayloadPipePart, meta:Int) = createPipeLogic(p, meta)
-
-    class NullPipeLogic(p:PayloadPipePart) extends PipeLogic(p)
-    {
-        def endReached(r:PipePayload) = false
-        def centerReached(r:PipePayload) = false
-        def handleDrop(r:PipePayload) = false
-        def resolveDestination(r:PipePayload) = false
-        def getIcon(i:Int) = null
-    }
-}
-
-abstract class PipeLogic(p:PayloadPipePart)
-{
-    def save(tag:NBTTagCompound){}
-
-    def load(tag:NBTTagCompound){}
-
-    def readDesc(packet:MCDataInput){}
-
-    def writeDesc(packet:MCDataOutput){}
-
-    //key allocated >= 50
-    def read(packet:MCDataInput, key:Int){}
-
-    def tick(){}
-
-    def endReached(r:PipePayload):Boolean
-
-    def centerReached(r:PipePayload):Boolean
-
-    def handleDrop(r:PipePayload):Boolean
-
-    def resolveDestination(r:PipePayload):Boolean
-
-    def getIcon(i:Int):IIcon
-}
-
-abstract class BasicPipeAbstraction extends PayloadPipePart with TRedstonePipe

@@ -13,7 +13,7 @@ object PRResources
     val guiFurnace = registerPR("textures/gui/furnace.png")
     val guiRouterControl = registerPR("textures/gui/rcontr.png")
     val guiBlockPlacer = registerPR("textures/gui/guiplacer.png")
-
+    val guiFilteredImporter = registerPR("textures/gui/guifimporter.png")
 
     def register(path:String) = new ResourceAction(new ResourceLocation(path))
     def registerPR(path:String) = new ResourceAction(new ResourceLocation("projectred", path))
