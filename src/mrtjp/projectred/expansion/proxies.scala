@@ -1,14 +1,19 @@
 package mrtjp.projectred.expansion
 
+import java.lang.{Character => JC}
+
 import codechicken.lib.packet.PacketCustom
 import codechicken.multipart.MultiPartRegistry
 import cpw.mods.fml.common.Loader
+import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TileRenderRegistry
 import mrtjp.core.gui.GuiHandler
-import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.ProjectRedExpansion._
 import mrtjp.projectred.core.{Configurator, IProxy}
+import net.minecraft.init.{Blocks, Items}
+import net.minecraft.item.ItemStack
+import net.minecraftforge.oredict.ShapedOreRecipe
 
 class ExpansionProxy_server extends IProxy
 {
@@ -94,3 +99,58 @@ class ExpansionProxy_client extends ExpansionProxy_server
 }
 
 object ExpansionProxy extends ExpansionProxy_client
+
+object ExpansionRecipes
+{
+    def initRecipes()
+    {
+        //FurnaceRecipeLib.init()
+        initMachineRecipes()
+        initMiscRecipes()
+    }
+
+    private def initMiscRecipes()
+    {
+    }
+
+    private def initMachineRecipes()
+    {
+        //Block Breaker
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 0),
+            "sas", "sps", "srs",
+            's':JC, Blocks.cobblestone,
+            'a':JC, Items.iron_pickaxe,
+            'p':JC, Blocks.piston,
+            'r':JC, Items.redstone
+        ))
+
+        //Item Importer
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 1),
+            "www", "sps", "srs",
+            'w':JC, "slabWood",
+            's':JC, Blocks.cobblestone,
+            'p':JC, Blocks.piston,
+            'r':JC, Items.redstone
+        ))
+
+        //Block Placer
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 2),
+            "ihi","cpc", "crc",
+            'i':JC, "ingotIron",
+            'h':JC, Blocks.chest,
+            'c':JC, Blocks.cobblestone,
+            'p':JC, Blocks.piston,
+            'r':JC, Items.redstone
+        ))
+
+        //Filtered Importer
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 3),
+            "tct", "gig", "sgs",
+            't':JC, new ItemStack(Blocks.stone_slab,1, 0),
+            'c':JC, Blocks.chest,
+            'g':JC, "ingotGold",
+            'i':JC, new ItemStack(machine2, 1, 1),
+            's':JC, Blocks.cobblestone
+        ))
+    }
+}
