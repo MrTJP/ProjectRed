@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.data.{MCDataOutput, MCDataInput}
-import mrtjp.core.gui.{GuiLib, Slot2, WidgetContainer}
+import mrtjp.core.gui.{GuiLib, Slot2, NodeContainer}
 import mrtjp.core.item.ItemKey
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
@@ -90,7 +90,7 @@ class RoutedFirewallPipe extends BasicPipeAbstraction with TNetworkPipe
 
     def createContainer(player:EntityPlayer) =
     {
-        val cont = new WidgetContainer
+        val cont = new NodeContainer
 
         var s = 0
         for ((x, y) <- GuiLib.createSlotGrid(8, 8, 7, 5, 0, 0))

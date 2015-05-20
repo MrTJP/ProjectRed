@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion
 
-import mrtjp.core.gui.{WidgetGui, WidgetTabControl}
+import mrtjp.core.gui.{NodeGui, NodeTabControl}
 import mrtjp.core.resource.ResourceLib
 import mrtjp.core.vec.Point
 import mrtjp.projectred.core.libmc.PRResources
@@ -23,12 +23,12 @@ object MachineGuiFactory
     def apply(id:Int, tile:TileGuiMachine) = createGui(id, tile)
 }
 
-abstract class GuiMachineWorking(tile:TileMachineWorking, cont:Container) extends WidgetGui(cont)
+abstract class GuiMachineWorking(tile:TileMachineWorking, cont:Container) extends NodeGui(cont)
 {
-    val controller = new WidgetTabControl(xSize, 0)
-    override def runInit_Impl()
+    val controller = new NodeTabControl(xSize, 0)
+    override def onAddedToParent_Impl()
     {
-        add(controller)
+        addChild(controller)
     }
 
     def drawChargeTank()

@@ -7,7 +7,7 @@ import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TItemSeed
 import mrtjp.core.color.Colors
-import mrtjp.core.gui.{GuiLib, Slot2, WidgetContainer}
+import mrtjp.core.gui.{GuiLib, Slot2, NodeContainer}
 import mrtjp.core.inventory.SimpleInventory
 import mrtjp.core.item.ItemCore
 import mrtjp.core.world.WorldLib
@@ -81,7 +81,7 @@ object ItemBackpack
 
     def createContainer(player:EntityPlayer) =
     {
-        val cont = new WidgetContainer
+        val cont = new NodeContainer
         {
             override def +(s:Slot2):this.type =
             {
@@ -319,11 +319,7 @@ class ItemWoolGin extends ItemCraftingDamage("projectred.exploration.woolgin")
 {
     setMaxDamage(128)
     setCreativeTab(ProjectRedExploration.tabExploration)
-
-    override def registerIcons(reg:IIconRegister)
-    {
-        itemIcon = reg.registerIcon("projectred:woolgin")
-    }
+    setTextureName("projectred:woolgin")
 }
 
 class ItemLilySeeds extends ItemCore("projectred.exploration.lilyseed") with TItemSeed

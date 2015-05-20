@@ -19,7 +19,6 @@ item.projectred.core.part.partmotor.name=Motor
 item.projectred.core.part.partcoppercoil.name=Copper Coil
 item.projectred.core.part.partironcoil.name=Iron Coil
 item.projectred.core.part.partgoldcoil.name=Golden Coil
-
 item.projectred.core.part.illumar0.name=White Illumar
 item.projectred.core.part.illumar1.name=Orange Illumar
 item.projectred.core.part.illumar2.name=Magenta Illumar
@@ -36,7 +35,6 @@ item.projectred.core.part.illumar12.name=Brown Illumar
 item.projectred.core.part.illumar13.name=Green Illumar
 item.projectred.core.part.illumar14.name=Red Illumar
 item.projectred.core.part.illumar15.name=Black Illumar
-
 item.projectred.core.part.partcloth.name=Woven Cloth
 item.projectred.core.part.partsail.name=Sail
 item.projectred.core.part.gemruby.name=Ruby
@@ -46,7 +44,6 @@ item.projectred.core.part.partredironcomp.name=Red Iron Compound
 item.projectred.core.part.partsandcoalcomp.name=Sandy Coal Compound
 item.projectred.core.part.partredsiliconcomp.name=Red Silicon Compound
 item.projectred.core.part.partglowsiliconcomp.name=Glowing Silicon Compound
-
 item.projectred.core.part.nullchip.name=Null-Logic Routing Chip
 item.projectred.core.part.nullupgrd.name=Null-Logic Upgrade Chip
 item.projectred.core.part.upgrd_lx.name=LX Upgrade
@@ -55,8 +52,6 @@ item.projectred.core.part.upgrd_lz.name=LZ Upgrade
 item.projectred.core.part.upgrd_rx.name=RX Upgrade
 item.projectred.core.part.upgrd_ry.name=RY Upgrade
 item.projectred.core.part.upgrd_rz.name=RZ Upgrade
-
-
 item.projectred.core.drawplate.name=Draw Plate
 item.projectred.core.wiredebugger.name=Wire Debugger
 item.projectred.core.screwdriver.name=Screwdriver
@@ -67,9 +62,12 @@ item.projectred.core.datacard.name=Data Card
 
 
 itemGroup.expansion=Project Red: Expansion
+
 tile.projectred.expansion.machine2|0.name=Block Breaker
 tile.projectred.expansion.machine2|1.name=Item Importer
 tile.projectred.expansion.machine2|2.name=Deployer
+
+
 
 
 itemGroup.transport=Project Red: Transportation
@@ -82,9 +80,7 @@ item.projectred.transportation.routingchip|4.name=Item Extractor chip
 item.projectred.transportation.routingchip|5.name=Item Broadcaster chip
 item.projectred.transportation.routingchip|6.name=Item Stock Keeper chip
 item.projectred.transportation.routingchip|7.name=Item Crafting chip
-
 item.projectred.transportation.routerutil.name=Router Utility
-
 item.projectred.transportation.pipe|0.name=Item Transport pipe
 item.projectred.transportation.pipe|1.name=Routed Junction pipe
 item.projectred.transportation.pipe|2.name=Routed Interface pipe
@@ -94,6 +90,8 @@ item.projectred.transportation.pipe|5.name=Routed Extension pipe
 item.projectred.transportation.pipe|6.name=Routed Firewall pipe
 item.projectred.transportation.pipe|7.name=Pressure tube
 item.projectred.transportation.pipe|8.name=Pressure Resistance tube
+
+
 
 
 itemGroup.exploration=Project Red: Exploration
@@ -424,6 +422,7 @@ item.projectred.integration.gate|33.name=Decoding Randomizer
 
 
 
+
 itemGroup.trans=Project Red: Transmission
 
 item.projectred.transmission.wire|0.name=Red Alloy Wire
@@ -489,3 +488,9 @@ itemGroup.compat=Project Red: Compatibility
 tile.projectred.compatibility.liqredstone.name=Liquid Redstone
 tile.projectred.compatibility.liqcondredmetal.name=Molten Conductive Redmetal
 
+
+
+
+itemGroup.fab=Project Red: Fabrication
+
+item.projectred.fabrication.icblueprint.name=IC Blueprint

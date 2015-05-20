@@ -13,7 +13,6 @@ import codechicken.multipart.MultiPartRegistry.IPartFactory
 import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.gui.GuiHandler
-import mrtjp.projectred.ProjectRedIntegration
 import mrtjp.projectred.ProjectRedIntegration._
 import mrtjp.projectred.core.{IProxy, PartDefs}
 import net.minecraft.init.Blocks
@@ -72,7 +71,7 @@ class IntegrationProxy_client extends IntegrationProxy_server
     override def init()
     {
         super.init()
-        MinecraftForgeClient.registerItemRenderer(ProjectRedIntegration.itemPartGate2, GateItemRenderer)
+        MinecraftForgeClient.registerItemRenderer(itemPartGate2, GateItemRenderer)
 
         GuiHandler.register(GuiTimer, timerGui)
         GuiHandler.register(GuiCounter, counterGui)

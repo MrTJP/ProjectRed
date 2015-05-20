@@ -5,7 +5,7 @@ import java.util.concurrent.DelayQueue
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.BlockCoord
-import mrtjp.core.gui.{GuiLib, Slot2, WidgetContainer}
+import mrtjp.core.gui.{GuiLib, Slot2, NodeContainer}
 import mrtjp.core.inventory.{InvWrapper, SimpleInventory}
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
 import mrtjp.core.util.{Pair2, PostponedWorkItem}
@@ -360,7 +360,7 @@ class RoutedCraftingPipePart extends BasicPipeAbstraction with TNetworkPipe with
 
     def createContainer(player:EntityPlayer):Container =
     {
-        val container = new WidgetContainer
+        val container = new NodeContainer
         var s = 0
         for ((x, y) <- GuiLib.createSlotGrid(20, 12, 2, 4, 20, 0))
         {
