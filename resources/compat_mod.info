@@ -1,7 +1,7 @@
 [
 {
   "modid": "ProjRed|Compatibility",
-  "name": "ProjectRed-Compatibility",
+  "name": "ProjectRed Compatibility",
   "parent":"ProjRed|Core",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",

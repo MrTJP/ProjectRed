@@ -6,59 +6,59 @@ import codechicken.lib.render.FontUtils
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors_old
 import mrtjp.core.gui._
-import mrtjp.core.vec.Point
+import mrtjp.core.vec.{Point, Size}
 import mrtjp.projectred.core.libmc.PRResources
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.EnumChatFormatting
 
-import scala.collection.mutable.ListBuffer
-
-class GuiChipUpgrade(container:ChipUpgradeContainer) extends WidgetGui(container, 176, 200)
+class GuiChipUpgrade(container:ChipUpgradeContainer) extends NodeGui(container, 176, 200)
 {
-    override def runInit_Impl()
+    override def onAddedToParent_Impl()
     {
-        add(new WidgetButtonMC(xSize / 2 - 20, 56, 40, 15).setText("Install").setAction("inst"))
-        add(new WidgetDotSelect(67, 45)
-        {
-            override def buildTooltip(list:ListBuffer[String])
+        val inst = new NodeButtonMC
+        inst.position = Point(size.width/2-20, 56)
+        inst.size = Size(40, 15)
+        inst.clickDelegate = {() => sendMessage("inst")}
+        addChild(inst)
+
+        val linfo = NodeDotSelect.centered(67, 45)
+        linfo.tooltipBuilder = { list =>
+            if (container.getChip != null)
             {
-                if (container.getChip != null)
+                val b = container.getChip.upgradeBus
+                if (b.maxL > 0)
                 {
-                    val b = container.getChip.upgradeBus
-                    if (b.maxL > 0)
-                    {
-                        list += "L slot"
-                        list += (EnumChatFormatting.GRAY.toString+"Latency: "+b.LLatency)
-                        list += ""
-                        list += (EnumChatFormatting.GRAY.toString+b.Linfo)
-                        list += (EnumChatFormatting.YELLOW.toString+b.Lformula)
-                    }
-                    else list += "not upgradable"
+                    list += "L slot"
+                    list += (EnumChatFormatting.GRAY.toString+"Latency: "+b.LLatency)
+                    list += ""
+                    list += (EnumChatFormatting.GRAY.toString+b.Linfo)
+                    list += (EnumChatFormatting.YELLOW.toString+b.Lformula)
                 }
+                else list += "not upgradable"
             }
-        })
-        add(new WidgetDotSelect(110, 45)
-        {
-            override def buildTooltip(list:ListBuffer[String])
+        }
+        addChild(linfo)
+
+        val rinfo = NodeDotSelect.centered(110, 45)
+        rinfo.tooltipBuilder = { list =>
+            if (container.getChip != null)
             {
-                if (container.getChip != null)
+                val b = container.getChip.upgradeBus
+                if (b.maxR > 0)
                 {
-                    val b = container.getChip.upgradeBus
-                    if (b.maxR > 0)
-                    {
-                        list += "R slot"
-                        list += (EnumChatFormatting.GRAY+"Latency: "+b.RLatency)
-                        list += ""
-                        list += (EnumChatFormatting.GRAY+b.Rinfo)
-                        list += (EnumChatFormatting.YELLOW+b.Rformula)
-                    }
-                    else list += "not upgradable"
+                    list += "R slot"
+                    list += (EnumChatFormatting.GRAY+"Latency: "+b.RLatency)
+                    list += ""
+                    list += (EnumChatFormatting.GRAY+b.Rinfo)
+                    list += (EnumChatFormatting.YELLOW+b.Rformula)
                 }
+                else list += "not upgradable"
             }
-        })
+        }
+        addChild(rinfo)
     }
 
-    override def receiveMessage_Impl(message:String)
+    def sendMessage(message:String)
     {
         new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_RouterUtil_action).writeString(message).sendToServer()
     }

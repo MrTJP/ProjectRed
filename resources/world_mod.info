@@ -1,7 +1,7 @@
 [
 {
   "modid": "ProjRed|Exploration",
-  "name": "ProjectRed-Exploration",
+  "name": "ProjectRed Exploration",
   "parent":"ProjRed|Core",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",

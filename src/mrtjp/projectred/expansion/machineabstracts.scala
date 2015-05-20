@@ -3,7 +3,7 @@ package mrtjp.projectred.expansion
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.{Rotation, Vector3}
 import mrtjp.core.block.{InstancedBlock, InstancedBlockTile, TTileOrient}
-import mrtjp.core.gui.WidgetContainer
+import mrtjp.core.gui.NodeContainer
 import mrtjp.core.inventory.TInventory
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
@@ -79,7 +79,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
                 do setRotation((rotation+1)%4) while (old != rotation && !isRotationAllowed(rotation))
                 if (old != rotation) sendOrientUpdate()
                 onBlockRotated()
-                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(worldObj, player)
+                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
             }
             def orient() = if (doesOrient)
             {
@@ -87,7 +87,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
                 do setSide((side+1)%6) while (old != side && !isSideAllowed(side))
                 if (old != side) sendOrientUpdate()
                 onBlockRotated()
-                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(worldObj, player)
+                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
             }
 
             if (player.isSneaking || !doesOrient) rotate() else orient()
@@ -471,7 +471,7 @@ with TMachinePowerable with TileMachineIO with TileGuiMachine with TileMachineSi
     override def getLightValue = if (isWorking) 13 else 0
 }
 
-class WorkingMachineContainer(player:EntityPlayer, tile:TileMachineWorking) extends WidgetContainer
+class WorkingMachineContainer(player:EntityPlayer, tile:TileMachineWorking) extends NodeContainer
 {
     var ch = 0
     var work = 0

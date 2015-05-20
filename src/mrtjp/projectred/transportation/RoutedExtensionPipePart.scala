@@ -1,6 +1,6 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.core.gui.{Slot2, WidgetContainer}
+import mrtjp.core.gui.{Slot2, NodeContainer}
 import mrtjp.core.item.ItemKeyStack
 import mrtjp.projectred.core.ItemDataCard
 import net.minecraft.entity.player.EntityPlayer
@@ -121,7 +121,7 @@ class RoutedExtensionPipePart extends BasicPipeAbstraction with TNetworkPipe
 
     def createContainer(player:EntityPlayer) =
     {
-        val container = new WidgetContainer
+        val container = new NodeContainer
         container + new Slot2(cardslot, 0, 134, 20)
         container + new Slot2(cardslot, 1, 134, 50).setPlace(false)
         container.addPlayerInv(player, 8, 84)

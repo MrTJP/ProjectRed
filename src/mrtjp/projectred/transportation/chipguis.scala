@@ -4,10 +4,10 @@ import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.render.{CCRenderState, FontUtils, TextureUtils}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors_old
+import mrtjp.core.color.Colors
 import mrtjp.core.gui._
 import mrtjp.core.resource.ResourceLib
-import mrtjp.core.vec.Point
+import mrtjp.core.vec.{Point, Size}
 import mrtjp.projectred.core.libmc.PRResources
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import net.minecraft.client.gui.{Gui, GuiScreen}
@@ -15,8 +15,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Slot
 import net.minecraft.util.{EnumChatFormatting, ResourceLocation}
 import org.lwjgl.opengl.GL11
-
-import scala.collection.mutable.ListBuffer
 
 object ChipGuiFactory extends TGuiBuilder
 {
@@ -39,7 +37,7 @@ object ChipGuiFactory extends TGuiBuilder
     def apply(c:ChipContainer) = new GuiChipRoot(c)
 }
 
-class ChipContainer(player:EntityPlayer, var chip:RoutingChip) extends WidgetContainer
+class ChipContainer(player:EntityPlayer, var chip:RoutingChip) extends NodeContainer
 {
     def this(player:EntityPlayer) = this(player, ItemRoutingChip.loadChipFromItemStack(player.getHeldItem))
 
@@ -68,14 +66,17 @@ class ChipContainer(player:EntityPlayer, var chip:RoutingChip) extends WidgetCon
     }
 }
 
-abstract class GuiChipContainer[T <: RoutingChip](cont:ChipContainer, prev:GuiScreen) extends WidgetGui(cont)
+abstract class GuiChipContainer[T <: RoutingChip](cont:ChipContainer, prev:GuiScreen) extends NodeGui(cont)
 {
     setJumpBack(prev)
 
     def chip:T = cont.chip.asInstanceOf[T]
     def cleanContainer = cont.getNewInstance
 
-    override def blockedHotkeyNumbers = Set(mcInst.thePlayer.inventory.currentItem+1)
+    override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) =
+    {
+        keycode == mcInst.thePlayer.inventory.currentItem+2
+    }
 
     override final def drawBack_Impl(mouse:Point, frame:Float)
     {
@@ -109,14 +110,17 @@ abstract class GuiChipContainer[T <: RoutingChip](cont:ChipContainer, prev:GuiSc
 
 class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont, null)
 {
-    override def receiveMessage_Impl(message:String)
+    override def onAddedToParent_Impl()
     {
-        val c = cleanContainer
-        c.addPlayerInv(8, 86)
-
-        message match
+        if (chip.isInstanceOf[TChipFilter] && chip.asInstanceOf[TChipFilter].enableFilter)
         {
-            case "filt" if chip.isInstanceOf[TChipFilter] =>
+            val dot = NodeDotSelect.centered(85, 34)
+            dot.tooltipBuilder = { list =>
+                list += "Filter"; chip.asInstanceOf[TChipFilter].addFilterInfo(list)
+            }
+            dot.clickDelegate = {() =>
+                val c = cleanContainer
+                c.addPlayerInv(8, 86)
                 val c2 = chip.asInstanceOf[TChipFilter]
                 var s = 0
                 for ((x, y) <- GuiLib.createSlotGrid(20, 15, 3, 3, 0, 0))
@@ -125,10 +129,50 @@ class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont
                     s += 1
                 }
                 jumpTo(new GuiChipFilter(c, this), true)
+            }
+            addChild(dot)
+        }
 
-            case "orient" if chip.isInstanceOf[TChipOrientation] => jumpTo(new GuiChipOrient(c, this), true)
-            case "prior" if chip.isInstanceOf[TChipPriority] => jumpTo(new GuiChipPriority(c, this), true)
-            case "stock" if chip.isInstanceOf[TChipStock] =>
+        if (chip.isInstanceOf[TChipOrientation])
+        {
+            val dot = NodeDotSelect.centered(100, 50)
+            dot.tooltipBuilder = { list =>
+                list += "Orientation"
+                chip.asInstanceOf[TChipOrientation].addOrientInfo(list)
+            }
+            dot.clickDelegate = { () =>
+                val c = cleanContainer
+                c.addPlayerInv(8, 86)
+                jumpTo(new GuiChipOrient(c, this), true)
+            }
+            addChild(dot)
+        }
+
+        if (chip.isInstanceOf[TChipPriority] && chip.asInstanceOf[TChipPriority].prefScale > 0)
+        {
+            val dot = NodeDotSelect.centered(76, 51)
+            dot.tooltipBuilder = { list =>
+                list += "Priority"
+                chip.asInstanceOf[TChipPriority].addPriorityInfo(list)
+            }
+            dot.clickDelegate = { () =>
+                val c = cleanContainer
+                c.addPlayerInv(8, 86)
+                jumpTo(new GuiChipPriority(c, this), true)
+            }
+            addChild(dot)
+        }
+
+        if (chip.isInstanceOf[TChipStock])
+        {
+            val dot = NodeDotSelect.centered(90, 50)
+            dot.tooltipBuilder = { list =>
+                list += "Stock"
+                chip.asInstanceOf[TChipStock].addStockInfo(list)
+            }
+            dot.clickDelegate = {() =>
+                val c = cleanContainer
+                c.addPlayerInv(8, 86)
                 val c2 = chip.asInstanceOf[TChipStock]
                 var s = 0
                 for ((x, y) <- GuiLib.createSlotGrid(20, 15, 3, 3, 0, 0))
@@ -137,88 +181,52 @@ class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont
                     s += 1
                 }
                 jumpTo(new GuiChipStock(c, this), true)
-            case "craftmatrix" if chip.isInstanceOf[TChipCrafter] =>
-                val c2 = chip.asInstanceOf[TChipCrafter]
-                var s = 0
-                for ((x, y) <- GuiLib.createSlotGrid(25, 15, 3, 3, 0, 0))
-                {
-                    c + new Slot2(c2.matrix, s, x, y).setGhosting(true)
-                    s += 1
-                }
-                c + new Slot2(c2.matrix, s, 119, 33).setGhosting(true)
-                jumpTo(new GuiChipCraftMatrix(c, this), true)
-            case "craftext" if chip.isInstanceOf[TChipCrafter] => jumpTo(new GuiChipCraftExt(c, this), true)
-
+            }
+            addChild(dot)
         }
-    }
-    override def runInit_Impl()
-    {
-        if (chip.isInstanceOf[TChipFilter] && chip.asInstanceOf[TChipFilter].enableFilter)
-            add(new WidgetDotSelect(85, 34)
-            {
-                override def buildTooltip(list:ListBuffer[String])
-                {
-                    list+="Filter"
-                    chip.asInstanceOf[TChipFilter].addFilterInfo(list)
-                }
-            }.setAction("filt"))
 
-        if (chip.isInstanceOf[TChipOrientation])
-            add(new WidgetDotSelect(100, 50)
-            {
-                override def buildTooltip(list:ListBuffer[String])
-                {
-                    list+="Orientation"
-                    chip.asInstanceOf[TChipOrientation].addOrientInfo(list)
-                }
-            }.setAction("orient"))
-
-        if (chip.isInstanceOf[TChipPriority] && chip.asInstanceOf[TChipPriority].prefScale > 0)
-            add(new WidgetDotSelect(76, 51)
-            {
-                override def buildTooltip(list:ListBuffer[String])
-                {
-                    list+="Priority"
-                    chip.asInstanceOf[TChipPriority].addPriorityInfo(list)
-                }
-            }.setAction("prior"))
-
-        if (chip.isInstanceOf[TChipStock])
-            add(new WidgetDotSelect(90, 50)
-            {
-                override def buildTooltip(list:ListBuffer[String])
-                {
-                    list+="Stock"
-                    chip.asInstanceOf[TChipStock].addStockInfo(list)
-                }
-            }.setAction("stock"))
         if (chip.isInstanceOf[TChipCrafter])
         {
             val chip2 = chip.asInstanceOf[TChipCrafter]
-            add(new WidgetDotSelect(105, 42)
-            {
-                override def buildTooltip(list:ListBuffer[String])
+            def dot1 = NodeDotSelect.centered(105, 42)
+            dot1.tooltipBuilder = { list =>
+                list += "Matrix"
+                chip2.addMatrixInfo(list)
+            }
+            dot1.clickDelegate = {() =>
+                val c = cleanContainer
+                c.addPlayerInv(8, 86)
+                var s = 0
+                for ((x, y) <- GuiLib.createSlotGrid(25, 15, 3, 3, 0, 0))
                 {
-                    list+="Matrix"
-                    chip2.addMatrixInfo(list)
+                    c + new Slot2(chip2.matrix, s, x, y).setGhosting(true)
+                    s += 1
                 }
-            }.setAction("craftmatrix"))
+                c + new Slot2(chip2.matrix, s, 119, 33).setGhosting(true)
+                jumpTo(new GuiChipCraftMatrix(c, this), true)
+            }
+            addChild(dot1)
 
-            if (chip2.maxExtensions>0) add(new WidgetDotSelect(90, 32)
+            if (chip2.maxExtensions > 0)
             {
-                override def buildTooltip(list:ListBuffer[String])
-                {
-                    list+="Extensions"
+                val dot2 = NodeDotSelect.centered(90, 32)
+                dot2.tooltipBuilder = { list =>
+                    list += "Extensions"
                     chip2.addExtInfo(list)
                 }
-            }.setAction("craftext"))
+                dot2.clickDelegate = {() =>
+                    val c = cleanContainer
+                    c.addPlayerInv(8, 86)
+                    jumpTo(new GuiChipCraftExt(c, this), true)
+                }
+                addChild(dot2)
+            }
         }
     }
 }
 
 class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer[TChipFilter](cont, prev)
 {
-
     override def drawBackExtra(mouse:Point, frame:Float)
     {
         if (chip.enableFilter)
@@ -226,116 +234,125 @@ class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
                 GuiLib.drawSlotBackground(x-1, y-1)
     }
 
-    override def runInit_Impl()
+    override def onAddedToParent_Impl()
     {
-        if (chip.enableFilter) add(new WidgetButtonIcon(130, 16, 14, 14)
+        if (chip.enableFilter)
         {
-            override def drawButton(mouseover:Boolean)
+            val b = new NodeButtonIcon
             {
-                ResourceLib.guiExtras.bind()
-                drawTexturedModalRect(x, y, if (chip.filterExclude) 1 else 17, 102, 14, 14)
+                override def drawButton(mouseover:Boolean)
+                {
+                    ResourceLib.guiExtras.bind()
+                    drawTexturedModalRect(position.x, position.y, if(chip.filterExclude) 1 else 17, 102, 14, 14)
+                }
             }
-
-            override def buildTooltip(list:ListBuffer[String])
-            {
-                list+="Filter mode"
-                list+=(EnumChatFormatting.GRAY+"Items are "+(if (chip.filterExclude) "blacklisted" else "whitelisted"))
+            b.position = Point(130, 16)
+            b.size = Size(14, 14)
+            b.tooltipBuilder = { list =>
+                list += "Filter mode"
+                list += (EnumChatFormatting.GRAY + "Items are " + (if(chip.filterExclude) "blacklisted" else "whitelisted"))
             }
-        }.setAction("filtmode"))
+            b.clickDelegate = { () => chip.toggleExcludeMode() }
+            addChild(b)
+        }
 
         if (chip.enablePatterns)
         {
-            add(new WidgetButtonIcon(150, 16, 14, 14)
+            var b = new NodeButtonIcon
             {
                 override def drawButton(mouseover:Boolean)
                 {
                     ResourceLib.guiExtras.bind()
-                    drawTexturedModalRect(x, y, if (chip.metaMatch) 49 else 65, 118, 14, 14)
+                    drawTexturedModalRect(position.x, position.y, if (chip.metaMatch) 49 else 65, 118, 14, 14)
                 }
+            }
+            b.position = Point(150, 16)
+            b.size = Size(14, 14)
+            b.tooltipBuilder = { list =>
+                list += "Metadata matching"
+                list += (EnumChatFormatting.GRAY+"Meta is "+(if (chip.metaMatch) "checked" else "ignored"))
+            }
+            b.clickDelegate = {() => chip.toggleMetaMode()}
+            addChild(b)
 
-                override def buildTooltip(list:ListBuffer[String])
-                {
-                    list+="Metadata matching"
-                    list+=(EnumChatFormatting.GRAY+"Meta is "+(if (chip.metaMatch) "checked" else "ignored"))
-                }
-            }.setAction("md"))
-
-            add(new WidgetButtonIcon(150, 32, 14, 14)
+            b = new NodeButtonIcon
             {
                 override def drawButton(mouseover:Boolean)
                 {
                     ResourceLib.guiExtras.bind()
-                    drawTexturedModalRect(x, y, if (chip.nbtMatch) 33 else 49, 102, 14, 14)
+                    drawTexturedModalRect(position.x, position.y, if (chip.nbtMatch) 33 else 49, 102, 14, 14)
                 }
+            }
+            b.position = Point(150, 32)
+            b.size = Size(14, 14)
+            b.tooltipBuilder = { list =>
+                list += "NBT matching"
+                list += (EnumChatFormatting.GRAY+"NBT is "+(if (chip.nbtMatch) "checked" else "ignored"))
+            }
+            b.clickDelegate = {() => chip.toggleNBTMode()}
+            addChild(b)
 
-                override def buildTooltip(list:ListBuffer[String])
-                {
-                    list+="NBT matching"
-                    list+=(EnumChatFormatting.GRAY+"NBT is "+(if (chip.nbtMatch) "checked" else "ignored"))
-                }
-            }.setAction("nbt"))
-
-            add(new WidgetButtonIcon(150, 48, 14, 14)
+            b = new NodeButtonIcon
             {
                 override def drawButton(mouseover:Boolean)
                 {
                     ResourceLib.guiExtras.bind()
-                    drawTexturedModalRect(x, y, if (chip.oreMatch) 81 else 97, 118, 14, 14)
+                    drawTexturedModalRect(position.x, position.y, if (chip.oreMatch) 81 else 97, 118, 14, 14)
                 }
+            }
+            b.position = Point(150, 48)
+            b.size = Size(14, 14)
+            b.tooltipBuilder = { list =>
+                list += "Ore Dictionary matching"
+                list += (EnumChatFormatting.GRAY+"Ore Dictionary is "+(if (chip.oreMatch) "checked" else "ignored"))
+            }
+            b.clickDelegate = {() => chip.toggleOreMode()}
+            addChild(b)
 
-                override def buildTooltip(list:ListBuffer[String])
-                {
-                    list+="Ore Dictionary matching"
-                    list+=(EnumChatFormatting.GRAY+"Ore Dictionary is "+(if (chip.oreMatch) "checked" else "ignored"))
-                }
-            }.setAction("ore"))
-
-            add(new WidgetButtonIcon(125, 35, 20, 20)
+            b = new NodeButtonIcon
             {
                 override def drawButton(mouseover:Boolean)
                 {
                     ResourceLib.guiExtras.bind()
                     val u = chip.damageGroupMode*22+1
-                    drawTexturedModalRect(x, y, u, 80, 20, 20)
+                    drawTexturedModalRect(position.x, position.y, u, 80, 20, 20)
                 }
-                override def buildTooltip(list:ListBuffer[String])
+            }
+            b.position = Point(125, 35)
+            b.size = Size(20, 20)
+            b.tooltipBuilder = { list =>
+                list += "Damage groups"
+                val percent = chip.grpPerc(chip.damageGroupMode)
+                list += (EnumChatFormatting.GRAY+(percent match
                 {
-                    list+="Damage groups"
-                    val percent = chip.grpPerc(chip.damageGroupMode)
-                    list+=(EnumChatFormatting.GRAY+(percent match
-                    {
-                        case -1 => "Tools are not grouped by damage."
-                        case _ => "Tools grouped at "+percent+"%"
-                    }))
-                }
-            }.setAction("grp"))
+                    case -1 => "Tools are not grouped by damage."
+                    case _ => "Tools grouped at "+percent+"%"
+                }))
+            }
+            b.clickDelegate = {() => chip.shiftDamageGroup()}
+            addChild(b)
         }
 
-        if (chip.enableHiding) add(new WidgetButtonIcon(114, 16, 14, 14)
+        if (chip.enableHiding)
         {
-            override def drawButton(mouseover:Boolean)
+            val b = new NodeButtonIcon
             {
-                ResourceLib.guiExtras.bind()
-                val u = chip.hideMode*16+1
-                drawTexturedModalRect(x, y, u, 118, 14, 14)
+                override def drawButton(mouseover:Boolean)
+                {
+                    ResourceLib.guiExtras.bind()
+                    val u = chip.hideMode*16+1
+                    drawTexturedModalRect(position.x, position.y, u, 118, 14, 14)
+                }
             }
-
-            override def buildTooltip(list:ListBuffer[String])
-            {
-                list+="Item hiding"
-                list+=(EnumChatFormatting.GRAY+"Hide "+(if (chip.hideMode == 0) "nothing" else chip.hide(chip.hideMode)))
+            b.position = Point(114, 16)
+            b.size = Size(14, 14)
+            b.tooltipBuilder = { list =>
+                list += "Item hiding"
+                list += (EnumChatFormatting.GRAY+"Hide "+(if (chip.hideMode == 0) "nothing" else chip.hide(chip.hideMode)))
             }
-        }.setAction("hide"))
-    }
-
-    override def receiveMessage_Impl(message:String) = message match
-    {
-        case "filtmode" => chip.toggleExcludeMode()
-        case "md" => chip.toggleMetaMode()
-        case "nbt" => chip.toggleNBTMode()
-        case "ore" => chip.toggleOreMode()
-        case "grp" => chip.shiftDamageGroup()
-        case "hide" => chip.shiftHiding()
+            b.clickDelegate = {() => chip.shiftHiding()}
+            addChild(b)
+        }
     }
 }
 
@@ -357,18 +374,18 @@ class GuiChipOrient(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
     override def drawBackExtra(mouse:Point, frame:Float)
     {
         val xOff = 90
-        fontRenderer.drawString("Extraction is", xOff, 20, Colors_old.WHITE.rgb, true)
-        if (chip.extractOrient == -1) fontRenderer.drawString("not simulated", xOff, 30, Colors_old.WHITE.rgb, true)
+        fontRenderer.drawString("Extraction is", xOff, 20, Colors.WHITE.rgb, true)
+        if (chip.extractOrient == -1) fontRenderer.drawString("not simulated", xOff, 30, Colors.WHITE.rgb, true)
         else
         {
-            fontRenderer.drawString("simulated from", xOff, 30, Colors_old.WHITE.rgb, true)
-            fontRenderer.drawString("the " + names(chip.extractOrient), xOff, 40, Colors_old.WHITE.rgb, true)
+            fontRenderer.drawString("simulated from", xOff, 30, Colors.WHITE.rgb, true)
+            fontRenderer.drawString("the " + names(chip.extractOrient), xOff, 40, Colors.WHITE.rgb, true)
         }
     }
 
-    override def runInit_Impl()
+    override def onAddedToParent_Impl()
     {
-        add(sideWidget)
+        addChild(sideWidget)
     }
 }
 
@@ -376,23 +393,33 @@ class GuiChipPriority(cont:ChipContainer, prev:GuiScreen) extends GuiChipContain
 {
     override def drawBackExtra(mouse:Point, frame:Float)
     {
-        FontUtils.drawCenteredString(chip.preference.toString, 88, 38, Colors_old.WHITE.rgb)
-        if (chip.enablePriorityFlag) fontRenderer.drawStringWithShadow("Enabled", 98, 68, Colors_old.WHITE.rgb)
+        FontUtils.drawCenteredString(chip.preference.toString, 88, 38, Colors.WHITE.rgb)
+        if (chip.enablePriorityFlag) fontRenderer.drawStringWithShadow("Enabled", 98, 68, Colors.WHITE.rgb)
     }
 
-    val check = new WidgetCheckBox(88, 72, chip.priorityFlag).setAction("p")
-    override def runInit_Impl()
+    override def onAddedToParent_Impl()
     {
-        add(new WidgetButtonMC(82, 22, 12, 12).setText("+").setAction("u"))
-        add(new WidgetButtonMC(82, 50, 12, 12).setText("-").setAction("d"))
-        if (chip.enablePriorityFlag) add(new WidgetCheckBox(88, 72, chip.priorityFlag).setAction("p"))
-    }
+        val plus = new NodeButtonMC
+        plus.position = Point(82, 22)
+        plus.size = Size(12, 12)
+        plus.text = "+"
+        plus.clickDelegate = {() => chip.prefUp()}
+        addChild(plus)
 
-    override def receiveMessage_Impl(message:String) = message match
-    {
-        case "u" => chip.prefUp()
-        case "d" => chip.prefDown()
-        case "p" => chip.priorityFlag = check.state
+        val minus = new NodeButtonMC
+        minus.position = Point(82, 50)
+        minus.size = Size(12, 12)
+        minus.text = "-"
+        minus.clickDelegate = {() => chip.prefDown()}
+        addChild(minus)
+
+        if (chip.enablePriorityFlag)
+        {
+            val check = NodeCheckBox.centered(88, 72)
+            check.state = chip.priorityFlag
+            check.clickDelegate = {() => chip.priorityFlag = check.state}
+            addChild(check)
+        }
     }
 }
 
@@ -404,27 +431,24 @@ class GuiChipStock(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer[
             GuiLib.drawSlotBackground(x-1, y-1)
     }
 
-    override def runInit_Impl()
+    override def onAddedToParent_Impl()
     {
-        add(new WidgetButtonIcon(150, 16, 14, 14)
+        val b = new NodeButtonIcon
         {
             override def drawButton(mouseover:Boolean)
             {
                 ResourceLib.guiExtras.bind()
-                drawTexturedModalRect(x, y, if (chip.requestWhenEmpty) 97 else 81, 102, 14, 14)
+                drawTexturedModalRect(position.x, position.y, if (chip.requestWhenEmpty) 97 else 81, 102, 14, 14)
             }
-
-            override def buildTooltip(list:ListBuffer[String])
-            {
-                list+="Fill mode"
-                list+=(EnumChatFormatting.GRAY+"refill when items "+(if (chip.requestWhenEmpty) "empty" else "missing"))
-            }
-        }.setAction("fillmode"))
-    }
-
-    override def receiveMessage_Impl(message:String) = message match
-    {
-        case "fillmode" => chip.shiftRequestMode()
+        }
+        b.position = Point(150, 16)
+        b.size = Size(14, 14)
+        b.tooltipBuilder = {list =>
+            list += "Fill mode"
+            list += (EnumChatFormatting.GRAY+"refill when items "+(if (chip.requestWhenEmpty) "empty" else "missing"))
+        }
+        b.clickDelegate = {() => chip.shiftRequestMode()}
+        addChild(b)
     }
 }
 
@@ -450,15 +474,15 @@ class GuiChipCraftExt(cont:ChipContainer, prev:GuiScreen) extends GuiChipContain
             {
                 val ext = chip.extIndex(index)
                 if (ext >= 0)
-                    Gui.drawRect(x+2, y, x+2+20, y+18, Colors_old.get(ext).argb)
-                else drawCenteredString(fontRenderer, "off", x+12, y+8, Colors_old.WHITE.rgba)
+                    Gui.drawRect(x+2, y, x+2+20, y+18, Colors(ext).argb)
+                else drawCenteredString(fontRenderer, "off", x+12, y+8, Colors.WHITE.rgba)
             }
-            else drawCenteredString(fontRenderer, "-", x+12, y+8, Colors_old.GREY.rgba)
+            else drawCenteredString(fontRenderer, "-", x+12, y+8, Colors.GREY.rgba)
             index += 1
         }
     }
 
-    override def runInit_Impl()
+    override def onAddedToParent_Impl()
     {
         var index = 0
         import scala.util.control.Breaks._
@@ -466,19 +490,20 @@ class GuiChipCraftExt(cont:ChipContainer, prev:GuiScreen) extends GuiChipContain
         {
             if (chip.maxExtensions >= index)
             {
-                add(new WidgetButtonMC(x, y, 24, 6).setAction(index+"u"))
-                add(new WidgetButtonMC(x, y+18, 24, 6).setAction(index+"d"))
+                val up = new NodeButtonMC
+                up.position = Point(x, y)
+                up.size = Size(24, 6)
+                up.clickDelegate = {() => chip.extUp(index)}
+                addChild(up)
+
+                val down = new NodeButtonMC
+                down.position = Point(x, y+18)
+                down.size = Size(24, 6)
+                down.clickDelegate = {() => chip.extDown(index)}
+                addChild(down)
             }
             else break()
             index += 1
         }
-    }
-
-    override def receiveMessage_Impl(message:String)
-    {
-        val index = Integer.parseInt(message.substring(0, 1))
-
-        if (message.substring(1) == "u") chip.extUp(index)
-        else chip.extDown(index)
     }
 }

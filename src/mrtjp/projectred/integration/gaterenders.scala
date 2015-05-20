@@ -13,12 +13,13 @@ import codechicken.lib.vec.{RedundantTransformation, Transformation, Vector3}
 import mrtjp.projectred.core.TFaceOrient.flipMaskZ
 import mrtjp.projectred.integration.ComponentStore._
 import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.item.ItemStack
 
 object RenderGate
 {
-    var renderers = initRenderers()
+    var renderers = buildRenders()
 
-    def initRenderers() = Seq(
+    def buildRenders() = Seq[GateRenderer[_]](
         new RenderOR,
         new RenderNOR,
         new RenderNOT,
@@ -52,7 +53,8 @@ object RenderGate
         new RenderBusInputPanel,
         new RenderStackingLatch,
         new RenderSegmentDisplay,
-        new RenderDecodingRand
+        new RenderDecodingRand,
+        GateRenderer.blank//ic gate renderer will be injected.
     )
 
     def registerIcons(reg:IIconRegister)
@@ -62,14 +64,14 @@ object RenderGate
 
     def renderStatic(gate:GatePart, pos:Vector3)
     {
-        val r = renderers(gate.subID&0xFF).asInstanceOf[GateRenderer[GatePart]]
+        val r = renderers(gate.subID).asInstanceOf[GateRenderer[GatePart]]
         r.prepare(gate)
         r.renderStatic(pos.translation(), gate.orientation&0xFF)
     }
 
     def renderDynamic(gate:GatePart, pos:Vector3, frame:Float)
     {
-        val r = renderers(gate.subID&0xFF).asInstanceOf[GateRenderer[GatePart]]
+        val r = renderers(gate.subID).asInstanceOf[GateRenderer[GatePart]]
         if (r.hasSpecials)
         {
             r.prepareDynamic(gate, frame)
@@ -77,11 +79,11 @@ object RenderGate
         }
     }
 
-    def renderInv(t:Transformation, id:Int)
+    def renderInv(stack:ItemStack, t:Transformation, id:Int)
     {
         val r = renderers(id)
         TextureUtils.bindAtlas(0)
-        r.prepareInv()
+        r.prepareInv(stack)
         CCRenderState.startDrawing()
         r.renderStatic(t, 0)
         CCRenderState.draw()
@@ -90,7 +92,14 @@ object RenderGate
 
     def spawnParticles(gate:GatePart, rand:Random)
     {
-        renderers(gate.subID&0xFF).asInstanceOf[GateRenderer[GatePart]].spawnParticles(gate, rand)
+        renderers(gate.subID).asInstanceOf[GateRenderer[GatePart]].spawnParticles(gate, rand)
+    }
+
+    def hotswap(r:GateRenderer[_], meta:Int)
+    {
+        val ar = renderers.toArray
+        ar(meta) = r
+        renderers = ar.toSeq
     }
 }
 
@@ -123,6 +132,7 @@ abstract class GateRenderer[T <: GatePart]
     def hasSpecials = false
     def renderDynamic(t:Transformation){}
 
+    def prepareInv(stack:ItemStack){prepareInv()}
     def prepareInv(){}
     def prepare(gate:T){}
     def prepareDynamic(gate:T, frame:Float){}
@@ -142,6 +152,13 @@ abstract class GateRenderer[T <: GatePart]
             pos.apply(gate.rotationT).add(gate.x, gate.y, gate.z)
             gate.world.spawnParticle("reddust", pos.x, pos.y, pos.z, 0, 0, 0)
         }
+    }
+}
+
+object GateRenderer
+{
+    val blank = new GateRenderer[GatePart]{
+        override def coreModels = Seq()
     }
 }
 
@@ -839,7 +856,7 @@ class RenderCounter extends GateRenderer[SequentialGatePart]
     {
         val max = gate.getLogic[Counter].max
         val value = gate.getLogic[Counter].value
-        pointer.angle = (value/max.asInstanceOf[Double]*(340-220)+210)*MathHelper.torad
+        pointer.angle = (value/max.toDouble*(340-220)+210)*MathHelper.torad
         if (gate.shape == 1) reflect = true
     }
 

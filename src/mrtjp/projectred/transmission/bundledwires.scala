@@ -32,7 +32,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
     override def preparePlacement(side:Int, meta:Int)
     {
         super.preparePlacement(side, meta)
-        colour = (meta-WireDef.BUNDLED_0.meta).asInstanceOf[Byte]
+        colour = (meta-WireDef.BUNDLED_0.meta).toByte
     }
 
     override def save(tag:NBTTagCompound)
@@ -58,7 +58,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
     override def readDesc(packet:MCDataInput)
     {
         super.readDesc(packet)
-        colour = packet.readByte
+        colour = packet.readByte()
     }
 
     override def canConnectPart(part:IConnectable, r:Int) = part match
@@ -80,7 +80,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
         }
     }
 
-    protected var propogatingMask = 0xFFFF
+    protected var propagatingMask = 0xFFFF
     override def updateAndPropagate(from:TMultiPart, mode:Int)
     {
         import mrtjp.projectred.transmission.BundledCommons._
@@ -90,7 +90,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
         val newSignal = calculateSignal
         applyChangeMask(getBundledSignal, newSignal, mask)
 
-        propogatingMask = mask
+        propagatingMask = mask
 
         if (dropSignalsLessThan(getBundledSignal, newSignal))
         {
@@ -106,10 +106,10 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
         else if (mode == DROPPING) propagateTo(from, RISING)
         else if (mode == FORCE) propagate(from, FORCED)
 
-        propogatingMask = 0xFFFF
+        propagatingMask = 0xFFFF
     }
 
-    def getUpdateMask(from:TMultiPart, mode:Int) = from match
+    private def getUpdateMask(from:TMultiPart, mode:Int) = from match
     {
         case ins:IInsulatedRedwirePart => 1<<ins.getInsulatedColour
         case b:IBundledCablePart if mode == DROPPING =>
@@ -132,11 +132,11 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
             case b:IBundledCablePart =>
                 val osig = b.getBundledSignal
                 for (i <- 0 until 16) if ((osig(i)&0xFF)-1 > (tmpSignal(i)&0xFF))
-                    tmpSignal(i) = (osig(i)-1).asInstanceOf[Byte]
+                    tmpSignal(i) = (osig(i)-1).toByte
             case i:IInsulatedRedwirePart =>
                 val s = i.getRedwireSignal(r)-1
                 if (s > (tmpSignal(i.getInsulatedColour)&0xFF))
-                    tmpSignal(i.getInsulatedColour) = s.asInstanceOf[Byte]
+                    tmpSignal(i.getInsulatedColour) = s.toByte
             case b:IBundledEmitter => BundledCommons.raiseSignal(tmpSignal, b.getBundledSignal(r))
             case t:TileEntity => BundledCommons.raiseSignal(tmpSignal,
                 APIImpl_Transmission.getBundledSignal(t.getWorldObj, t.xCoord, t.yCoord, t.zCoord, r))
@@ -145,17 +145,17 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
         tmpSignal
     }
 
-    var tmpSignal = new Array[Byte](16)
-    def tmpSignalClear()
+    protected val tmpSignal = new Array[Byte](16)
+    protected def tmpSignalClear()
     {
-        for (i <- 0 until 16) tmpSignal(i) = 0.asInstanceOf[Byte]
+        for (i <- 0 until 16) tmpSignal(i) = 0.toByte
     }
 
     override def propagateTo(part:TMultiPart, mode:Int) =
     {
         def shouldPropogate(part:TMultiPart, mode:Int) = part match
         {
-            case ins:IInsulatedRedwirePart => (propogatingMask&1<<ins.getInsulatedColour) != 0
+            case ins:IInsulatedRedwirePart => (propagatingMask&1<<ins.getInsulatedColour) != 0
             case _ => true
         }
 
@@ -165,7 +165,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
 
     override def setSignal(newSignal:Array[Byte])
     {
-        if (newSignal == null) signal.transform(_ => 0.asInstanceOf[Byte])
+        if (newSignal == null) signal.transform(_ => 0.toByte)
         else for (i <- 0 until 16) signal(i) = newSignal(i)
     }
 

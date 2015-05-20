@@ -59,7 +59,7 @@ object SequentialGateLogic
     }
 }
 
-abstract class SequentialGateLogic(val gate:SequentialGatePart) extends RedstoneGateLogic[SequentialGatePart] with TComlexGateLogic[SequentialGatePart]
+abstract class SequentialGateLogic(val gate:SequentialGatePart) extends RedstoneGateLogic[SequentialGatePart] with TComplexGateLogic[SequentialGatePart]
 {
     override def getOutput(gate:SequentialGatePart, r:Int) = if ((gate.state&0x10<<r) != 0) 15 else 0
 
