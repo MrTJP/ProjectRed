@@ -998,12 +998,6 @@ class RenderBusXcvr extends GateRenderer[BundledGatePart]
     }
 }
 
-//class RenderArrayCell
-//
-//class RenderNullCell extends RenderArrayCell
-//class RenderInvertCell extends RenderArrayCell
-//class RenderBufferCell extends RenderArrayCell
-
 class RenderComparator extends GateRenderer[SequentialGatePart]
 {
     val wires = generateWireModels("COMPARATOR", 4)

@@ -65,7 +65,8 @@ itemGroup.expansion=Project Red: Expansion
 
 tile.projectred.expansion.machine2|0.name=Block Breaker
 tile.projectred.expansion.machine2|1.name=Item Importer
-tile.projectred.expansion.machine2|2.name=Deployer
+tile.projectred.expansion.machine2|2.name=Block Placer
+tile.projectred.expansion.machine2|3.name=Filtered Importer
 
 
 
@@ -155,6 +156,18 @@ item.projectred.exploration.sickleruby.name=Ruby Sickle
 item.projectred.exploration.sicklesapphire.name=Sapphire Sickle
 item.projectred.exploration.sickleperidot.name=Peridot Sickle
 item.projectred.exploration.sicklediamond.name=Diamond Sickle
+item.projectred.exploration.rubyhelmet.name=Ruby Helmet
+item.projectred.exploration.rubychestplate.name=Ruby Chestplate
+item.projectred.exploration.rubyleggings.name=Ruby Leggings
+item.projectred.exploration.rubyboots.name=Ruby Boots
+item.projectred.exploration.sapphirehelmet.name=Sapphire Helmet
+item.projectred.exploration.sapphirechestplate.name=Sapphire Chestplate
+item.projectred.exploration.sapphireleggings.name=Sapphire Leggings
+item.projectred.exploration.sapphireboots.name=Sapphire Boots
+item.projectred.exploration.peridothelmet.name=Peridot Helmet
+item.projectred.exploration.peridotchestplate.name=Peridot Chestplate
+item.projectred.exploration.peridotleggings.name=Peridot Leggings
+item.projectred.exploration.peridotboots.name=Peridot Boots
 tile.projectred.exploration.stonewalls|0.name=Marble Wall
 tile.projectred.exploration.stonewalls|1.name=Marble Brick Wall
 tile.projectred.exploration.stonewalls|2.name=Basalt Cobblestone Wall
@@ -487,6 +500,8 @@ itemGroup.compat=Project Red: Compatibility
 
 tile.projectred.compatibility.liqredstone.name=Liquid Redstone
 tile.projectred.compatibility.liqcondredmetal.name=Molten Conductive Redmetal
+fluid.redstone.molten=Liquid Redstone
+fluid.redmetal.molten=Molten Conductive Redmetal
 
 
 

@@ -77,6 +77,7 @@ class TransportationProxy_client extends TransportationProxy_server
         super.init()
         MinecraftForgeClient.registerItemRenderer(itemPartPipe, PipeItemRenderer)
         MicroMaterialRegistry.registerHighlightRenderer(PipeRSHighlightRenderer)
+        MicroMaterialRegistry.registerHighlightRenderer(PipeColourHighlightRenderer)
 
         GuiHandler.register(GuiChipUpgrade, guiIDChipUpgrade)
         GuiHandler.register(GuiCraftingPipe, guiIDCraftingPipe)

@@ -1,13 +1,19 @@
 package mrtjp.projectred.expansion
 
+import java.lang.{Character => JC}
+
 import codechicken.lib.packet.PacketCustom
 import codechicken.multipart.MultiPartRegistry
 import cpw.mods.fml.common.Loader
+import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TileRenderRegistry
-import mrtjp.projectred.ProjectRedExpansion
+import mrtjp.core.gui.GuiHandler
+import mrtjp.projectred.ProjectRedExpansion._
 import mrtjp.projectred.core.{Configurator, IProxy}
-import ProjectRedExpansion._
+import net.minecraft.init.{Blocks, Items}
+import net.minecraft.item.ItemStack
+import net.minecraftforge.oredict.ShapedOreRecipe
 
 class ExpansionProxy_server extends IProxy
 {
@@ -31,16 +37,16 @@ class ExpansionProxy_server extends IProxy
             })
         }
 
-//        //Machine1 (processing)
+//        //Machine1 (machines)
 //        ProjectRedExpansion.machine1 = new BlockMachine("projectred.expansion.machine1")
-//        //Machine1 tiles
 //        ProjectRedExpansion.machine1.addTile(classOf[TileFurnace], 0)
 
         //Machine2 (devices)
         machine2 = new BlockMachine("projectred.expansion.machine2")
-        //Machine2 tiles
         machine2.addTile(classOf[TileBlockBreaker], 0)
         machine2.addTile(classOf[TileItemImporter], 1)
+        machine2.addTile(classOf[TileBlockPlacer], 2)
+        machine2.addTile(classOf[TileFilteredImporter], 3)
 
         ExpansionRecipes.initRecipes()
     }
@@ -62,6 +68,9 @@ class ExpansionProxy_server extends IProxy
 
 class ExpansionProxy_client extends ExpansionProxy_server
 {
+    val blockPlacerGui = 20
+    val filteredImporterGui = 21
+
     @SideOnly(Side.CLIENT)
     override def preinit()
     {
@@ -79,9 +88,69 @@ class ExpansionProxy_client extends ExpansionProxy_server
     override def postinit()
     {
         super.postinit()
-        TileRenderRegistry.setRenderer(ProjectRedExpansion.machine2, 0, RenderBlockBreaker)
-        TileRenderRegistry.setRenderer(ProjectRedExpansion.machine2, 1, RenderItemRemover)
+        TileRenderRegistry.setRenderer(machine2, 0, RenderBlockBreaker)
+        TileRenderRegistry.setRenderer(machine2, 1, RenderItemImporter)
+        TileRenderRegistry.setRenderer(machine2, 2, RenderBlockPlacer)
+        TileRenderRegistry.setRenderer(machine2, 3, RenderFilteredImporter)
+
+        GuiHandler.register(GuiBlockPlacer, blockPlacerGui)
+        GuiHandler.register(GuiFilteredImporter, filteredImporterGui)
     }
 }
 
 object ExpansionProxy extends ExpansionProxy_client
+
+object ExpansionRecipes
+{
+    def initRecipes()
+    {
+        //FurnaceRecipeLib.init()
+        initMachineRecipes()
+        initMiscRecipes()
+    }
+
+    private def initMiscRecipes()
+    {
+    }
+
+    private def initMachineRecipes()
+    {
+        //Block Breaker
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 0),
+            "sas", "sps", "srs",
+            's':JC, Blocks.cobblestone,
+            'a':JC, Items.iron_pickaxe,
+            'p':JC, Blocks.piston,
+            'r':JC, Items.redstone
+        ))
+
+        //Item Importer
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 1),
+            "www", "sps", "srs",
+            'w':JC, "slabWood",
+            's':JC, Blocks.cobblestone,
+            'p':JC, Blocks.piston,
+            'r':JC, Items.redstone
+        ))
+
+        //Block Placer
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 2),
+            "ihi","cpc", "crc",
+            'i':JC, "ingotIron",
+            'h':JC, Blocks.chest,
+            'c':JC, Blocks.cobblestone,
+            'p':JC, Blocks.piston,
+            'r':JC, Items.redstone
+        ))
+
+        //Filtered Importer
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 3),
+            "tct", "gig", "sgs",
+            't':JC, new ItemStack(Blocks.stone_slab,1, 0),
+            'c':JC, Blocks.chest,
+            'g':JC, "ingotGold",
+            'i':JC, new ItemStack(machine2, 1, 1),
+            's':JC, Blocks.cobblestone
+        ))
+    }
+}

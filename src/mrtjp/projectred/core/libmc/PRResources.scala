@@ -15,6 +15,8 @@ object PRResources
     val guiPrototyper = registerPR("textures/gui/guiprototyper.png")
 
     val icmaptex = registerPR("textures/blocks/circuits/map_background.png")
+    val guiBlockPlacer = registerPR("textures/gui/guiplacer.png")
+    val guiFilteredImporter = registerPR("textures/gui/guifimporter.png")
 
     def register(path:String) = new ResourceAction(new ResourceLocation(path))
     def registerPR(path:String) = new ResourceAction(new ResourceLocation("projectred", path))

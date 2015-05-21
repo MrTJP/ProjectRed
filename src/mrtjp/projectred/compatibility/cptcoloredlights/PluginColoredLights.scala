@@ -5,6 +5,7 @@
  */
 package mrtjp.projectred.compatibility.cptcoloredlights
 
+import coloredlightscore.src.api.CLApi
 import mrtjp.core.color.Colors
 import mrtjp.projectred.compatibility.IPRPlugin
 import mrtjp.projectred.core.Configurator
@@ -25,8 +26,8 @@ object PluginColoredLights extends IPRPlugin
                 if (!(0 until 16 contains m)) b
                 else
                 {
-                    val c = Colors(m).c
-                    CLCAPIProxy.makeRGBLightValue(c.r, c.g, c.b, b)
+                    val c = Colors(m)
+                    CLApi.makeRGBLightValue(c.rF, c.gF, c.bF)
                 }
             }
     }
