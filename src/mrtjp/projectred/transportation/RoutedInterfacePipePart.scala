@@ -11,7 +11,7 @@ import net.minecraft.util.MovingObjectPosition
 
 import scala.collection.mutable.{Builder => MBuilder}
 
-class RoutedInterfacePipePart extends BasicPipeAbstraction with TNetworkPipe with IWorldBroadcaster with INeighborTileChange
+class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWorldBroadcaster with INeighborTileChange
 {
     val chipSlots = new SimpleInventory(4, "chips", 1)
     {

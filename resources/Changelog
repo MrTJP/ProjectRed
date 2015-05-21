@@ -1,3 +1,33 @@
+v4.6.1
+- ADDED: Block Placer
+- ADDED: Filtered Importers
+- ADDED: Ability to add colour filters to pressure tubes with wool strips
+- FIX: Block Breaker dropping wrong metadata for some blocks
+- FIX: Block Breaker not playing sound effects
+- FIX: Block Breaker break particles
+- FIX: Deviating Lilies rendering dark in world
+- CHANGE: World gen rates tweaked slightly
+- CHANGE: Tube and machine recipes tweaked slightly
+- CHANGE: Item Importers can suck up items that collide on front
+- CHANGE: Item Importers can suck up items in 3x3 grid on redstone pulse
+- CHANGE: Bonemeal now works on liles
+
+v4.6.0
+- ADDED: Gem Armor
+- FIX: Coloured Lights compatibility
+- FIX: Recipes with microblocks
+- FIX: Chip upgrades not installing
+- FIX: Deviating lily farming overall loss
+- FIX: Lamps letting sky light through
+- FIX: Volcanos with large missing chunks
+- FIX: Volcanos' lava not flowing
+
+v4.5.16
+- FIX: Requirement of packaged CC API
+- FIX: Infinite loop when using bus converter
+- FIX: Red alloy wire crash
+- FIX: Gameplay exploit
+
 v4.5.15
 - FIX: Segment display textures
 - FIX: Lamps not updating on placement

@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation
 
 import java.util.UUID
-import codechicken.lib.data.MCDataInput
+import codechicken.lib.data.{MCDataOutput, MCDataInput}
 import mrtjp.core.item.ItemKeyStack
 import mrtjp.projectred.transportation.Priorities.NetworkPriority
 import net.minecraft.entity.item.EntityItem
@@ -12,43 +12,42 @@ import net.minecraftforge.common.util.ForgeDirection
 import scala.collection.convert.WrapAsJava
 import scala.collection.immutable.{BitSet, HashSet}
 
-object PipePayload
+object AbstractPipePayload
 {
     private var maxID = 0
 
-    private def claimID() =
+    def claimID() =
     {
         if (maxID < Short.MaxValue) maxID += 1
         else maxID = 0
         maxID
     }
 
-    def create():PipePayload = new PipePayload(claimID())
+    def create():NetworkPayload = new NetworkPayload(claimID())
 
-    def apply(stack:ItemStack):PipePayload = apply(ItemKeyStack.get(stack))
-    def apply(stack:ItemKeyStack):PipePayload = apply(claimID(), stack)
-
-    def apply(id:Int, stack:ItemStack):PipePayload = apply(id, ItemKeyStack.get(stack))
-    def apply(id:Int, stack:ItemKeyStack):PipePayload =
-    {
-        val r = new PipePayload(id)
-        r.payload = stack.copy
-        r
-    }
+//    def apply(stack:ItemStack):NetworkPayload = apply(ItemKeyStack.get(stack))
+//    def apply(stack:ItemKeyStack):NetworkPayload = apply(claimID(), stack)
+//
+//    def apply(id:Int, stack:ItemStack):NetworkPayload = apply(id, ItemKeyStack.get(stack))
+//    def apply(id:Int, stack:ItemKeyStack):NetworkPayload =
+//    {
+//        val r = new NetworkPayload(id)
+//        r.payload = stack.copy
+//        r
+//    }
 }
 
-class PipePayload(val payloadID:Int)
+class AbstractPipePayload(val payloadID:Int)
 {
     var payload:ItemKeyStack = null
-    var parent:PayloadPipePart = null
+    var parent:PayloadPipePart[_] = null
 
-    // 0000 NNNN PPPP PPPP SSSS SSSS 0EOO OIII
+    // 0000 0000 PPPP PPPP SSSS SSSS 0EOO OIII
     // I = input
     // O = output
     // E = isEntering
     // S = speed
     // P = progress
-    // N = priority index
     var data = 0
 
     def isEntering = ((data>>6)&1) != 0
@@ -66,10 +65,7 @@ class PipePayload(val payloadID:Int)
     def output = (data>>3)&0x7
     def output_=(i:Int){ data = (data& ~0x38)|(i&0x7)<<3 }
 
-    def priorityIndex = (data>>24)&0xF
-    def priorityIndex_=(i:Int){ data = (data& ~0xF000000)|(i&0xF)<<24 }
-
-    def bind(p:PayloadPipePart){ parent = p }
+    def bind(p:PayloadPipePart[_]){ parent = p }
 
     def reset()
     {
@@ -77,6 +73,8 @@ class PipePayload(val payloadID:Int)
         input = 6
         output = 6
     }
+
+    def preItemRemove(){}
 
     def moveProgress(prog:Float)
     {
@@ -94,11 +92,20 @@ class PipePayload(val payloadID:Int)
 
     override def equals(other:Any) = other match
     {
-        case that:PipePayload => payloadID == that.payloadID
+        case that:AbstractPipePayload => payloadID == that.payloadID
         case _ => false
     }
 
     override def hashCode() = payloadID
+
+    def save(tag:NBTTagCompound)
+    {
+        tag.setBoolean("NoLegacy", true) //TODO Legacy
+        tag.setInteger("idata", data)
+        val tag2 = new NBTTagCompound
+        getItemStack.writeToNBT(tag2)
+        tag.setTag("Item", tag2)
+    }
 
     def load(tag:NBTTagCompound)
     {
@@ -106,7 +113,6 @@ class PipePayload(val payloadID:Int)
         {
             data = tag.getInteger("idata")
             setItemStack(ItemStack.loadItemStackFromNBT(tag.getCompoundTag("Item")))
-            loadRouting(tag)
         }
         else
         {
@@ -116,18 +122,19 @@ class PipePayload(val payloadID:Int)
             isEntering = tag.getBoolean("isEnt")
             input = tag.getByte("input")
             output = tag.getByte("output")
-            loadRouting(tag)
         }
     }
 
-    def save(tag:NBTTagCompound)
+    def writeDesc(packet:MCDataOutput)
     {
-        tag.setBoolean("NoLegacy", true) //TODO Legacy
-        tag.setInteger("idata", data)
-        val tag2 = new NBTTagCompound
-        getItemStack.writeToNBT(tag2)
-        tag.setTag("Item", tag2)
-        saveRouting(tag)
+        packet.writeItemStack(getItemStack)
+        packet.writeInt(data)
+    }
+
+    def readDesc(packet:MCDataInput)
+    {
+        setItemStack(packet.readItemStack())
+        data = packet.readInt()
     }
 
     def getEntityForDrop(x:Int, y:Int, z:Int):EntityItem =
@@ -166,6 +173,65 @@ class PipePayload(val payloadID:Int)
         item.delayBeforeCanPickup = 10
         item.lifespan = 1600
         item
+    }
+}
+
+class PressurePayload(payloadID:Int) extends AbstractPipePayload(payloadID)
+{
+    // Extended Data
+    // CCCC CCCC PPPP PPPP SSSS SSSS 0EOO OIII
+    // I = input
+    // O = output
+    // E = isEntering
+    // S = speed
+    // P = progress
+    // C = colour ******
+    def travelData = data>>>24
+    def travelData_=(i:Int){ data = (data& ~0xFF000000)|i<<24 }
+
+    var colour:Byte = -1
+
+    override def save(tag:NBTTagCompound)
+    {
+        super.save(tag)
+        tag.setByte("col", colour)
+    }
+
+    override def load(tag:NBTTagCompound)
+    {
+        super.load(tag)
+        colour = tag.getByte("col")
+    }
+
+    override def writeDesc(packet:MCDataOutput)
+    {
+        super.writeDesc(packet)
+        packet.writeByte(colour)
+    }
+
+    override def readDesc(packet:MCDataInput)
+    {
+        super.readDesc(packet)
+        colour = packet.readByte()
+    }
+}
+
+class NetworkPayload(payloadID:Int) extends AbstractPipePayload(payloadID)
+{
+    // Extended Data
+    // 0000 NNNN PPPP PPPP SSSS SSSS 0EOO OIII
+    // I = input
+    // O = output
+    // E = isEntering
+    // S = speed
+    // P = progress
+    // N = priority index ******
+    def priorityIndex = (data>>24)&0xF
+    def priorityIndex_=(i:Int){ data = (data& ~0xF000000)|(i&0xF)<<24 }
+
+    override def preItemRemove()
+    {
+        resetTrip()
     }
 
     /** Server-side Routing, used if moving through network pipes **/
@@ -209,22 +275,20 @@ class PipePayload(val payloadID:Int)
         val router = RouterServices.getRouter(destinationIP)
         if (router == null || router.getID != destinationUUID) destinationIP = RouterServices.getIPforUUID(destinationUUID)
     }
-
-    def saveRouting(tag:NBTTagCompound) {}
-
-    def loadRouting(tag:NBTTagCompound) {}
 }
 
-class PayloadMovement
+class PayloadMovement[T <: AbstractPipePayload]
 {
-    var delegate = HashSet[PipePayload]()
-    var inputQueue = HashSet[PipePayload]()
-    var outputQueue = HashSet[PipePayload]()
+    var delegate = HashSet[T]()
+    var inputQueue = HashSet[T]()
+    var outputQueue = HashSet[T]()
     private var delay = 0
 
-    def get(id:Int) = delegate.find(_.payloadID == id).orNull
+    private implicit def payloadToT(p:AbstractPipePayload):T = p.asInstanceOf[T]
 
-    def getOrElseUpdate(id:Int, f:Unit => PipePayload) =
+    def get(id:Int):T = delegate.find(_.payloadID == id).getOrElse(null.asInstanceOf[T])
+
+    def getOrElseUpdate(id:Int, f:Unit => T):T =
     {
         val payload = get(id)
         if (payload == null)
@@ -236,7 +300,7 @@ class PayloadMovement
         else payload
     }
 
-    def scheduleLoad(item:PipePayload)
+    def scheduleLoad(item:T)
     {
         delay = 10
         inputQueue += item
@@ -248,16 +312,16 @@ class PayloadMovement
         if (delay > 0) return
 
         delegate ++= inputQueue
-        inputQueue = HashSet[PipePayload]()
+        inputQueue = HashSet[T]()
     }
 
     def exececuteRemove()
     {
         delegate --= outputQueue
-        outputQueue = HashSet[PipePayload]()
+        outputQueue = HashSet[T]()
     }
 
-    def scheduleRemoval(item:PipePayload) =
+    def scheduleRemoval(item:T) =
     {
         if (outputQueue.contains(item)) false
         else
@@ -267,7 +331,7 @@ class PayloadMovement
         }
     }
 
-    def unscheduleRemoval(item:PipePayload) =
+    def unscheduleRemoval(item:T) =
     {
         if (outputQueue.contains(item))
         {
@@ -277,7 +341,7 @@ class PayloadMovement
         else false
     }
 
-    def add(e:PipePayload)
+    def add(e:T)
     {
         delegate += e
     }

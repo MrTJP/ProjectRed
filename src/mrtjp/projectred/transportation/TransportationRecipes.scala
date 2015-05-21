@@ -19,13 +19,14 @@ object TransportationRecipes
 {
     def initRecipes()
     {
-        initPipeRecipes()
+        initNetPipeRecipes()
+        initPressureTubeRecipes()
         initChipRecipes()
         initUpgradeRecipes()
         initMiscRecipes()
     }
 
-    private def initPipeRecipes()
+    private def initNetPipeRecipes()
     {
         /** Item Transport pipe **/
         GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.BASIC.makeStack(16),
@@ -86,20 +87,23 @@ object TransportationRecipes
             'c':JC, Items.magma_cream,
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
         )
+    }
 
+    private def initPressureTubeRecipes()
+    {
         /** Pressure Tube **/
-        GameRegistry.addRecipe(PipeDefs.PRESSURETUBE.makeStack,
-            "bgb", " b ",
-            'b':JC, Items.iron_ingot,
-            'g':JC, Blocks.glass
-        )
+        GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.PRESSURETUBE.makeStack(8),
+            "gpg", "p p", "gpg",
+            'g':JC, "nuggetGold",
+            'p':JC, Blocks.glass_pane
+        ))
 
         /** Pressure Resistance Tube **/
-        GameRegistry.addRecipe(PipeDefs.RESISTANCETUBE.makeStack,
+        GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.RESISTANCETUBE.makeStack,
             "i", "t",
-            'i':JC, Items.iron_ingot,
+            'i':JC, "ingotIron",
             't':JC, PipeDefs.PRESSURETUBE.makeStack
-        )
+        ))
     }
 
     private def initChipRecipes()

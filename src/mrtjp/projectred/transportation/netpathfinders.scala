@@ -177,7 +177,7 @@ class CollectionPathFinder
 
 object LogisticPathFinder
 {
-    def sharesInventory(pipe1:TInventoryPipe, pipe2:TInventoryPipe):Boolean =
+    def sharesInventory(pipe1:TInventoryPipe[_], pipe2:TInventoryPipe[_]):Boolean =
     {
         if (pipe1 == null || pipe2 == null) return false
         if (pipe1.tile.getWorldObj != pipe2.tile.getWorldObj) return false

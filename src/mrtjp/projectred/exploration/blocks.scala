@@ -419,7 +419,12 @@ class TileLily extends InstancedBlockTile with TPlantTile
     {
         if (growth == 7)
         {
-            val count = world.rand.nextInt(3)
+            val count = MathLib.weightedRandom(Seq(
+                (0, 10),
+                (1, 55),
+                (2, 30),
+                (3, 5)
+            ))
             if (count > 0) ist += new ItemStack(ProjectRedExploration.itemLilySeed, count, meta)
         }
         else
@@ -465,6 +470,20 @@ class TileLily extends InstancedBlockTile with TPlantTile
             case _ =>
         }
         false
+    }
+
+    override def applyBonemeal() =
+    {
+        if (growth < 7)
+        {
+            if (!world.isRemote)
+            {
+                setGrowth(growth+1)
+                sendPhaseUpdate()
+            }
+            true
+        }
+        else false
     }
 
     def tickGrowth(rand:Random):Boolean =
@@ -534,7 +553,7 @@ object TileLily
     val bounds =
     {
         val b = Seq.newBuilder[Cuboid6]
-        val gains = Seq(2/16D, 2/16D, 2/16D, 2/16D, 2/16D, 0.0D, 2/16D, 1/16D)
+        val gains = Seq(2/16D, 2/16D, 2/16D, 2/16D, 2/16D, 0.0D, 2/16D, 2/16D)
         for (i <- 0 until 8) b += new Cuboid6(0.5f-0.2f, 0.0f, 0.5f-0.2f, 0.5f+0.2f, gains.take(i+1).sum, 0.5f+0.2f)
         b.result()
     }

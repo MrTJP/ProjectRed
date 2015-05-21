@@ -403,26 +403,23 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
         def dropMaterial()
         {
             if (material > 0 && !player.capabilities.isCreativeMode)
-            {
-                val drop = ItemMicroPart.create(1, material)
-                PRLib.dropTowardsPlayer(world, x, y, z, drop, player)
-            }
+                PRLib.dropTowardsPlayer(world, x, y, z, ItemMicroPart.create(1, material), player)
         }
 
         if (super.activate(player, hit, held)) return true
 
-        if (held == null)
+        if (held == null && player.isSneaking && material > 0)
         {
-            if (!world.isRemote && player.isSneaking && material > 0)
+            if (!world.isRemote)
             {
                 dropMaterial()
                 material = 0
                 sendMatUpdate()
             }
-            return false
+            return true
         }
 
-        if (held.getItem == MicroblockProxy.itemMicro && held.getItemDamage == 1)
+        if (held != null && held.getItem == MicroblockProxy.itemMicro && held.getItemDamage == 1)
         {
             val newmatid = ItemMicroPart.getMaterialID(held)
             if (newmatid != material)

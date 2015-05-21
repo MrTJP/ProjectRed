@@ -7,20 +7,22 @@ import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TItemSeed
 import mrtjp.core.color.Colors
-import mrtjp.core.gui.{GuiLib, Slot2, NodeContainer}
-import mrtjp.core.inventory.SimpleInventory
+import mrtjp.core.gui.{GuiLib, NodeContainer, Slot2}
+import mrtjp.core.inventory.TInventory
 import mrtjp.core.item.ItemCore
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.core.{ItemCraftingDamage, PartDefs}
+import mrtjp.projectred.exploration.ArmorDefs.ArmorDef
 import mrtjp.projectred.exploration.ToolDefs.ToolDef
 import net.minecraft.block._
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.Item.ToolMaterial
+import net.minecraft.item.ItemArmor.ArmorMaterial
 import net.minecraft.item._
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
@@ -71,14 +73,6 @@ object ItemBackpack
 {
     val oreDictionaryVal = "prbackpack"
 
-    def getInv(player:EntityPlayer) =
-    {
-        val held = player.getHeldItem
-        if (held != null && held.getItem == ProjectRedExploration.itemBackpack)
-            new BagInventory(player, held)
-        else new BagInventory(player, new ItemStack(ProjectRedExploration.itemBackpack))
-    }
-
     def createContainer(player:EntityPlayer) =
     {
         val cont = new NodeContainer
@@ -91,7 +85,7 @@ object ItemBackpack
             }
         }
 
-        val inv = getInv(player)
+        val inv = new BagInventory(player)
 
         var slot = 0
         for ((x, y) <- GuiLib.createSlotGrid(8, 18, 9, 3, 0, 0))
@@ -101,41 +95,44 @@ object ItemBackpack
         }
 
         cont.addPlayerInv(player, 8, 86)
-
         cont
     }
 }
 
-class BagInventory(player:EntityPlayer, bag:ItemStack) extends SimpleInventory(27, 64)
+class BagInventory(player:EntityPlayer) extends TInventory
 {
+    override def size = 27
+    override def stackLimit = 64
+    override def name = ""
+
     loadInventory()
 
     private def loadInventory()
     {
-        assertNBT(bag)
-        loadInv(bag.getTagCompound.getCompoundTag("baginv"))
+        if (closeIfNoBag()) return
+        loadInv(player.getHeldItem.getTagCompound.getCompoundTag("baginv"))
     }
 
     private def saveInventory()
     {
+        if (closeIfNoBag()) return
         val nbt = new NBTTagCompound
         saveInv(nbt)
-        assertNBT(bag)
-        bag.getTagCompound.setTag("baginv", nbt)
-        refreshNBT()
-    }
-
-    private def refreshNBT()
-    {
-        val currentBag = player.getHeldItem
-        if (currentBag != null && currentBag.getItem == ProjectRedExploration.itemBackpack)
-            currentBag.setTagCompound(bag.getTagCompound)
+        player.getHeldItem.getTagCompound.setTag("baginv", nbt)
     }
 
     override def markDirty()
     {
-        super.markDirty()
         saveInventory()
+    }
+
+    private def closeIfNoBag() =
+    {
+        val bag = player.getHeldItem
+        val hasBag = bag != null && bag.getItem == ProjectRedExploration.itemBackpack
+        if (hasBag) { if (!bag.hasTagCompound) bag.setTagCompound(new NBTTagCompound) }
+        else player.closeScreen()
+        !hasBag
     }
 
     override def isItemValidForSlot(i:Int, stack:ItemStack):Boolean =
@@ -150,9 +147,22 @@ class BagInventory(player:EntityPlayer, bag:ItemStack) extends SimpleInventory(2
         false
     }
 
-    private def assertNBT(s:ItemStack)
+    override def getStackInSlotOnClosing(slot:Int) =
+        if (closeIfNoBag()) null
+        else super.getStackInSlotOnClosing(slot)
+
+    override def decrStackSize(slot:Int, count:Int) =
+        if (closeIfNoBag()) null
+        else super.decrStackSize(slot, count)
+
+    override def setInventorySlotContents(slot:Int, item:ItemStack)
     {
-        if (!s.hasTagCompound) s.setTagCompound(new NBTTagCompound)
+        if (!closeIfNoBag()) super.setInventorySlotContents(slot, item)
+    }
+
+    override def dropInvContents(w:World, x:Int, y:Int, z:Int)
+    {
+        if (!closeIfNoBag()) super.dropInvContents(w, x, y, z)
     }
 }
 
@@ -210,6 +220,7 @@ object ToolDefs
 
     case class ToolDef(unlocal:String, mat:ToolMaterial, repair:ItemStack)
 }
+
 
 trait TGemTool extends Item
 {
@@ -312,6 +323,52 @@ class ItemGemSickle(override val toolDef:ToolDef) extends ItemTool(3, toolDef.ma
 
         if (used) stack.damageItem(1, player)
         used
+    }
+}
+
+
+object ArmorDefs
+{
+    import mrtjp.projectred.ProjectRedExploration.{armorMatrialPeridot, armorMatrialRuby, armorMatrialSapphire}
+    private val ruby = PartDefs.RUBY.makeStack
+    private val sapphire = PartDefs.SAPPHIRE.makeStack
+    private val peridot = PartDefs.PERIDOT.makeStack
+
+    val RUBYHELMET = ArmorDef("rubyhelmet", "ruby", armorMatrialRuby, ruby)
+    val RUBYCHESTPLATE = ArmorDef("rubychestplate","ruby",  armorMatrialRuby, ruby)
+    val RUBYLEGGINGS = ArmorDef("rubyleggings","ruby",  armorMatrialRuby, ruby)
+    val RUBYBOOTS = ArmorDef("rubyboots","ruby",  armorMatrialRuby, ruby)
+
+    val SAPPHIREHELMET = ArmorDef("sapphirehelmet","sapphire", armorMatrialSapphire, sapphire)
+    val SAPPHIRECHESTPLATE = ArmorDef("sapphirechestplate","sapphire", armorMatrialSapphire, sapphire)
+    val SAPPHIRELEGGINGS = ArmorDef("sapphireleggings","sapphire", armorMatrialSapphire, sapphire)
+    val SAPPHIREBOOTS = ArmorDef("sapphireboots","sapphire", armorMatrialSapphire, sapphire)
+
+    val PERIDOTHELMET = ArmorDef("peridothelmet","peridot", armorMatrialPeridot, peridot)
+    val PERIDOTCHESTPLATE = ArmorDef("peridotchestplate","peridot", armorMatrialPeridot, peridot)
+    val PERIDOTLEGGINGS = ArmorDef("peridotleggings","peridot", armorMatrialPeridot, peridot)
+    val PERIDOTBOOTS = ArmorDef("peridotboots","peridot", armorMatrialPeridot, peridot)
+
+    case class ArmorDef(unlocal:String, tex:String, mat:ArmorMaterial, repair:ItemStack)
+}
+
+class ItemGemArmor(adef:ArmorDef, atype:Int) extends ItemToolProxies.Armor(adef.mat, atype)
+{
+    setUnlocalizedName("projectred.exploration."+adef.unlocal)
+    setTextureName("projectred:gemarmor/"+adef.unlocal)
+    setCreativeTab(ProjectRedExploration.tabExploration)
+    GameRegistry.registerItem(this, "projectred.exploration."+adef.unlocal)
+
+    override def getIsRepairable(ist1:ItemStack, ist2:ItemStack) =
+    {
+        if (adef.repair.isItemEqual(ist2)) true
+        else false
+    }
+
+    override def getArmorTexture(stack:ItemStack, entity:Entity, slot:Int, `type`:String) =
+    {
+        val suffix = if(armorType == 2) 2 else 1
+        "projectred:textures/items/gemarmor/"+adef.tex + "_"+suffix+".png"
     }
 }
 

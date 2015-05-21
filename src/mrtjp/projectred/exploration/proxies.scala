@@ -1,7 +1,5 @@
 package mrtjp.projectred.exploration
 
-import java.util.Random
-
 import codechicken.microblock.BlockMicroMaterial
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TileRenderRegistry
@@ -9,10 +7,9 @@ import mrtjp.core.color.Colors
 import mrtjp.core.gui.GuiHandler
 import mrtjp.core.world._
 import mrtjp.projectred.ProjectRedExploration._
-import mrtjp.projectred.core.{PRLogger, Configurator, IProxy}
+import mrtjp.projectred.core.{Configurator, IProxy}
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
-import net.minecraft.world.World
 import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.common.util.EnumHelper
 import net.minecraftforge.oredict.OreDictionary
@@ -54,9 +51,13 @@ class ExplorationProxy_server extends IProxy
 //            GameRegistry.addSubstitutionAlias("mossy_cobblestone", GameRegistry.Type.BLOCK, dynMossyCobble)
 //        }
 
-        toolMaterialRuby = EnumHelper.addToolMaterial("RUBY", 2, 512, 8.0F, 4, 12)
-        toolMaterialSapphire = EnumHelper.addToolMaterial("SAPPHIRE", 2, 512, 8.0F, 3, 16)
-        toolMaterialPeridot = EnumHelper.addToolMaterial("PERIDOT", 2, 512, 8.75F, 3.25F, 12)
+        toolMaterialRuby =      EnumHelper.addToolMaterial("RUBY",      2, 512, 8.00F, 3.00F, 10)
+        toolMaterialSapphire =  EnumHelper.addToolMaterial("SAPPHIRE",  2, 512, 8.00F, 3.00F, 10)
+        toolMaterialPeridot =   EnumHelper.addToolMaterial("PERIDOT",   2, 512, 7.75F, 2.75F, 14)
+
+        armorMatrialRuby =      EnumHelper.addArmorMaterial("RUBY",     16, Array(3, 8, 6, 3),  8)
+        armorMatrialSapphire =  EnumHelper.addArmorMaterial("SAPPHIRE", 16, Array(3, 8, 6, 3),  8)
+        armorMatrialPeridot =   EnumHelper.addArmorMaterial("PERIDOT",  14, Array(3, 8, 6, 3), 10)
 
         itemRubyAxe = new ItemGemAxe(ToolDefs.RUBYAXE)
         itemSapphireAxe = new ItemGemAxe(ToolDefs.SAPPHIREAXE)
@@ -92,6 +93,21 @@ class ExplorationProxy_server extends IProxy
         itemPeridotSickle = new ItemGemSickle(ToolDefs.PERIDOTSICKLE)
         itemDiamondSickle = new ItemGemSickle(ToolDefs.DIAMONDSICKLE)
 
+        itemRubyHelmet = new ItemGemArmor(ArmorDefs.RUBYHELMET, 0)
+        itemRubyChestplate = new ItemGemArmor(ArmorDefs.RUBYCHESTPLATE, 1)
+        itemRubyLeggings = new ItemGemArmor(ArmorDefs.RUBYLEGGINGS, 2)
+        itemRubyBoots = new ItemGemArmor(ArmorDefs.RUBYBOOTS, 3)
+
+        itemSapphireHelmet = new ItemGemArmor(ArmorDefs.SAPPHIREHELMET, 0)
+        itemSapphireChestplate = new ItemGemArmor(ArmorDefs.SAPPHIRECHESTPLATE, 1)
+        itemSapphireLeggings = new ItemGemArmor(ArmorDefs.SAPPHIRELEGGINGS, 2)
+        itemSapphireBoots = new ItemGemArmor(ArmorDefs.SAPPHIREBOOTS, 3)
+
+        itemPeridotHelmet = new ItemGemArmor(ArmorDefs.PERIDOTHELMET, 0)
+        itemPeridotChestplate = new ItemGemArmor(ArmorDefs.PERIDOTCHESTPLATE, 1)
+        itemPeridotLeggings = new ItemGemArmor(ArmorDefs.PERIDOTLEGGINGS, 2)
+        itemPeridotBoots = new ItemGemArmor(ArmorDefs.PERIDOTBOOTS, 3)
+
         for (s <- DecorativeStoneDefs.values)
             BlockMicroMaterial.createAndRegister(blockDecoratives, s.meta)
 
@@ -105,11 +121,11 @@ class ExplorationProxy_server extends IProxy
         {
             val logic = new GenLogicUniform
             logic.name = "pr_ruby"
-            logic.resistance = Configurator.gen_Ruby_resistance
+            logic.resistance = 8+Configurator.gen_Ruby_resistance
             logic.allowRetroGen = Configurator.gen_Ruby_retro
             logic.minY = 12
             logic.maxY = 20
-            logic.attempts = 2
+            logic.attempts = 1
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.ORERUBY.meta), 1))
             gen.clusterSize = 5
@@ -123,11 +139,11 @@ class ExplorationProxy_server extends IProxy
         {
             val logic = new GenLogicUniform
             logic.name = "pr_sapphire"
-            logic.resistance = Configurator.gen_Sapphire_resistance
+            logic.resistance = 8+Configurator.gen_Sapphire_resistance
             logic.allowRetroGen = Configurator.gen_Sapphire_retro
             logic.minY = 12
             logic.maxY = 20
-            logic.attempts = 2
+            logic.attempts = 1
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.ORESAPPHIRE.meta), 1))
             gen.clusterSize = 5
@@ -141,10 +157,10 @@ class ExplorationProxy_server extends IProxy
         {
             val logic = new GenLogicUniform
             logic.name = "pr_peridot"
-            logic.resistance = Configurator.gen_Peridot_resistance
+            logic.resistance = 8+Configurator.gen_Peridot_resistance
             logic.allowRetroGen = Configurator.gen_Peridot_retro
-            logic.minY = 12
-            logic.maxY = 20
+            logic.minY = 16
+            logic.maxY = 28
             logic.attempts = 2
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.OREPERIDOT.meta), 1))

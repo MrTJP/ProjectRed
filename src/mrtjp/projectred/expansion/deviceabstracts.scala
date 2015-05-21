@@ -9,7 +9,7 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.core.libmc.PRLib
-import mrtjp.projectred.transportation.{PipePayload, TPressureDevice, TPressureTube}
+import mrtjp.projectred.transportation._
 import net.minecraft.block.Block
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
@@ -18,16 +18,21 @@ import scala.collection.mutable.ListBuffer
 
 class ItemStorage
 {
-    private val storage = ListBuffer[PipePayload]()
+    private val storage = ListBuffer[PressurePayload]()
     var backlogged = false
 
     def isEmpty = storage.isEmpty
 
-    def add(item:PipePayload){ storage.prepend(item) }
+    def add(item:PressurePayload){ storage.prepend(item) }
 
-    def add(item:ItemStack){ add(PipePayload(item)) }
+    def add(item:ItemStack)
+    {
+        val p = new PressurePayload(AbstractPipePayload.claimID())
+        p.setItemStack(item)
+        add(p)
+    }
 
-    def addBacklog(item:PipePayload){ storage.append(item); backlogged = true }
+    def addBacklog(item:PressurePayload){ storage.append(item); backlogged = true }
 
     def poll() =
     {
@@ -58,7 +63,7 @@ class ItemStorage
             try
             {
                 val payloadData = nbttaglist.getCompoundTagAt(j)
-                val r = PipePayload.create()
+                val r = new PressurePayload(AbstractPipePayload.claimID())
                 r.load(payloadData)
                 if (!r.isCorrupted) add(r)
             }
@@ -170,7 +175,7 @@ trait TActiveDevice extends TileMachine
         }
     }
 
-    def exportPipe(r:PipePayload) =
+    def exportPipe(r:PressurePayload) =
     {
         PRLib.getMultiPart(world, position.offset(side), 6) match
         {
@@ -181,7 +186,7 @@ trait TActiveDevice extends TileMachine
         }
     }
 
-    def exportInv(r:PipePayload) =
+    def exportInv(r:PressurePayload) =
     {
         val inv = InvWrapper.getInventory(world, position.offset(side))
         if (inv != null)
@@ -193,7 +198,7 @@ trait TActiveDevice extends TileMachine
         else false
     }
 
-    def exportEject(r:PipePayload):Boolean =
+    def exportEject(r:PressurePayload):Boolean =
     {
         val pos = position.offset(side)
         if (world.blockExists(pos.x, pos.y, pos.z) &&
@@ -206,7 +211,7 @@ trait TActiveDevice extends TileMachine
 
 trait TPressureActiveDevice extends TActiveDevice with TPressureDevice
 {
-    override def acceptItem(item:PipePayload, side:Int):Boolean =
+    override def acceptItem(item:PressurePayload, side:Int):Boolean =
     {
         if (!canConnectSide(side)) return false
 

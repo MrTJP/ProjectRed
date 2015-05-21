@@ -6,6 +6,7 @@ import mrtjp.projectred.exploration._
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item.ToolMaterial
+import net.minecraft.item.ItemArmor.ArmorMaterial
 import net.minecraft.item.ItemStack
 
 @Mod(modid = "ProjRed|Exploration", useMetadata = true, modLanguage = "scala")
@@ -19,12 +20,17 @@ object ProjectRedExploration
 //    var blockStainedSapling:BlockStainedSapling = null
     var blockLily:BlockLily = null
 
-    /** Items **/
-    var itemWoolGin:ItemWoolGin = null
-    var itemBackpack:ItemBackpack = null
+    /** Materials **/
     var toolMaterialRuby:ToolMaterial = null
     var toolMaterialSapphire:ToolMaterial = null
     var toolMaterialPeridot:ToolMaterial = null
+    var armorMatrialRuby:ArmorMaterial = null
+    var armorMatrialSapphire:ArmorMaterial = null
+    var armorMatrialPeridot:ArmorMaterial = null
+
+    /** Items **/
+    var itemWoolGin:ItemWoolGin = null
+    var itemBackpack:ItemBackpack = null
     var itemRubyAxe:ItemGemAxe = null
     var itemSapphireAxe:ItemGemAxe = null
     var itemPeridotAxe:ItemGemAxe = null
@@ -53,6 +59,18 @@ object ProjectRedExploration
     var itemPeridotSickle:ItemGemSickle = null
     var itemDiamondSickle:ItemGemSickle = null
     var itemLilySeed:ItemLilySeeds = null
+    var itemRubyHelmet:ItemGemArmor = null
+    var itemRubyChestplate:ItemGemArmor = null
+    var itemRubyLeggings:ItemGemArmor = null
+    var itemRubyBoots:ItemGemArmor = null
+    var itemSapphireHelmet:ItemGemArmor = null
+    var itemSapphireChestplate:ItemGemArmor = null
+    var itemSapphireLeggings:ItemGemArmor = null
+    var itemSapphireBoots:ItemGemArmor = null
+    var itemPeridotHelmet:ItemGemArmor = null
+    var itemPeridotChestplate:ItemGemArmor = null
+    var itemPeridotLeggings:ItemGemArmor = null
+    var itemPeridotBoots:ItemGemArmor = null
 
     var tabExploration:CreativeTabs = new CreativeTabs("exploration")
     {

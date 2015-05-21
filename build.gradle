@@ -149,7 +149,7 @@ processResources {
 compileScala.dependsOn updateVersion
 ext.jarVer = "${project.minecraft.version}-${project.version}"
 ext.jarFile = zipTree(jar.archivePath)
-ext.baseExcludes = ["**/dan200/**"]
+ext.baseExcludes = ["**/dan200/**", "**/coloredlightscore/**"]
 
 task integrationJar(type: Jar, dependsOn: reobf) {
     from(project.ext.jarFile) {
