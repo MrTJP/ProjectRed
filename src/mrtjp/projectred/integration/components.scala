@@ -6,6 +6,7 @@
 package mrtjp.projectred.integration
 
 import codechicken.lib.colour.Colour
+import codechicken.lib.lighting.LightModel.Light
 import codechicken.lib.lighting.{LightModel, PlanarLightModel}
 import codechicken.lib.math.MathHelper
 import codechicken.lib.render.CCRenderState.IVertexOperation
@@ -834,8 +835,8 @@ class SevenSegModel(x:Double, z:Double) extends SingleComponentModel(sevenSeg("b
 
     var signal = 0
 
-    var colour_on = Colors.RED.rgba
-    var colour_off = Colors.GREY.rgba
+    var colour_on = Colors.LIME.rgba
+    var colour_off = Colors.BLACK.rgba
 
     override def getUVT = new IconTransformation(segment)
 
@@ -845,6 +846,7 @@ class SevenSegModel(x:Double, z:Double) extends SingleComponentModel(sevenSeg("b
 
         val iconT = new IconTransformation(segmentDisp)
         val dispT = dPos.translation.`with`(orientT(orient%24)).`with`(t)
+
 
         for (i <- 0 until 8)
             segModels(i).render(dispT, iconT, PlanarLightModel.standardLightModel, ColourMultiplier.instance(
@@ -859,8 +861,8 @@ class SixteenSegModel(x:Double, z:Double) extends SingleComponentModel(sixteenSe
 
     var signal = 0
 
-    var colour_on = Colors.RED.rgba
-    var colour_off = Colors.GREY.rgba
+    var colour_on = Colors.LIME.rgba
+    var colour_off = Colors.BLACK.rgba
 
     override def getUVT = new IconTransformation(segment)
 
