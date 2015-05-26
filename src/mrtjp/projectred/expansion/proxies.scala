@@ -47,6 +47,7 @@ class ExpansionProxy_server extends IProxy
         machine2.addTile(classOf[TileItemImporter], 1)
         machine2.addTile(classOf[TileBlockPlacer], 2)
         machine2.addTile(classOf[TileFilteredImporter], 3)
+        machine2.addTile(classOf[TileFireStarter], 4)
 
         ExpansionRecipes.initRecipes()
     }
@@ -92,6 +93,7 @@ class ExpansionProxy_client extends ExpansionProxy_server
         TileRenderRegistry.setRenderer(machine2, 1, RenderItemImporter)
         TileRenderRegistry.setRenderer(machine2, 2, RenderBlockPlacer)
         TileRenderRegistry.setRenderer(machine2, 3, RenderFilteredImporter)
+        TileRenderRegistry.setRenderer(machine2, 4, RenderFireStarter)
 
         GuiHandler.register(GuiBlockPlacer, blockPlacerGui)
         GuiHandler.register(GuiFilteredImporter, filteredImporterGui)

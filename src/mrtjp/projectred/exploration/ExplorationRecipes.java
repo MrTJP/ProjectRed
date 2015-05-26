@@ -235,7 +235,7 @@ public class ExplorationRecipes
         for (int i = 0; i < 16; i++) {
             GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedExploration.itemBackpack(), 1, i),
                     "ccc",
-                    "cdc",
+                    i == 0 ? "c c" : "cdc",
                     "ccc",
                     'c', PartDefs.WOVENCLOTH().makeStack(),
                     'd', Colors_old.get(i).getOreDict()
@@ -245,6 +245,13 @@ public class ExplorationRecipes
                     Colors_old.get(i).getOreDict()
                     ).setKeepNBT());
         }
+
+//        GameRegistry.addRecipe(new ItemStack(ProjectRedExploration.itemBackpack(), 1, 0),
+//                "www",
+//                "w w",
+//                "www",
+//                'w', PartDefs.WOVENCLOTH().makeStack()
+//        );
     }
 
     private static void initWorldRecipes()

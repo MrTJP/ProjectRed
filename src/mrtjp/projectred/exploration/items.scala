@@ -7,7 +7,7 @@ import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TItemSeed
 import mrtjp.core.color.Colors
-import mrtjp.core.gui.{GuiLib, Slot2, WidgetContainer}
+import mrtjp.core.gui.{GuiLib, Slot3, WidgetContainer}
 import mrtjp.core.inventory.TInventory
 import mrtjp.core.item.ItemCore
 import mrtjp.core.world.WorldLib
@@ -18,8 +18,8 @@ import mrtjp.projectred.exploration.ToolDefs.ToolDef
 import net.minecraft.block._
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.Item.ToolMaterial
 import net.minecraft.item.ItemArmor.ArmorMaterial
@@ -74,28 +74,20 @@ object ItemBackpack
     val oreDictionaryVal = "prbackpack"
 
     def createContainer(player:EntityPlayer) =
+        new ContainerBackpack(new BagInventory(player), player)
+}
+
+class ContainerBackpack(inv:BagInventory, player:EntityPlayer) extends WidgetContainer
+{
     {
-        val cont = new WidgetContainer
+        for (((x, y), i) <- GuiLib.createSlotGrid(8, 18, 9, 3, 0, 0).zipWithIndex)
         {
-            override def +(s:Slot2):this.type =
-            {
-                if (s.getSlotIndex == player.inventory.currentItem && s.inventory == player.inventory)
-                    s.setRemove(false)
-                super.+(s)
-            }
+            val s = new Slot3(inv, i, x, y)
+            addSlotToContainer(s)
         }
+        addPlayerInv(player, 8, 86)
 
-        val inv = new BagInventory(player)
-
-        var slot = 0
-        for ((x, y) <- GuiLib.createSlotGrid(8, 18, 9, 3, 0, 0))
-        {
-            cont + new Slot2(inv, slot, x, y)
-            slot += 1
-        }
-
-        cont.addPlayerInv(player, 8, 86)
-        cont
+        slots(player.inventory.currentItem+27).canRemoveDelegate = {() => false}
     }
 }
 

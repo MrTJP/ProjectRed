@@ -1,13 +1,13 @@
 package mrtjp.projectred.transportation
 
-import codechicken.lib.data.{MCDataOutput, MCDataInput}
-import mrtjp.core.gui.{GuiLib, Slot2, WidgetContainer}
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import mrtjp.core.gui.{GuiLib, Slot3, WidgetContainer}
+import mrtjp.core.inventory.SimpleInventory
 import mrtjp.core.item.ItemKey
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
-import mrtjp.core.inventory.SimpleInventory
 
 class RoutedFirewallPipe extends AbstractNetPipe with TNetworkPipe
 {
@@ -92,13 +92,16 @@ class RoutedFirewallPipe extends AbstractNetPipe with TNetworkPipe
     {
         val cont = new WidgetContainer
 
-        var s = 0
+        var i = 0
         for ((x, y) <- GuiLib.createSlotGrid(8, 8, 7, 5, 0, 0))
         {
-            cont + new Slot2(filt, s, x, y).setGhosting(true)
-            s += 1
+            val s = new Slot3(filt, i, x, y)
+            s.phantomSlot = true
+            cont.addSlotToContainer(s)
+            i += 1
         }
-        cont.addPlayerInv(player, 8, 120).setShift(false)
+        cont.addPlayerInv(player, 8, 120)
+        cont
     }
 
     override def networkFilter =

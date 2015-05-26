@@ -480,6 +480,13 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         adjustSpeed(r)
     }
 
+    override def injectPayload(r:NetworkPayload, in:Int) =
+    {
+        super.injectPayload(r, in)
+        if (r.netPriority == Priorities.WANDERING)
+            r.tickPayloadWander()
+    }
+
     def getDirForIncomingItem(r:NetworkPayload):Int = inOutSide
 
     override def adjustSpeed(r:NetworkPayload)

@@ -26,13 +26,19 @@ public class CoreRecipes
 
     private static void initToolRecipes()
     {
-        ShapedRecipeBuilder b = RecipeLib.newShapedBuilder();
         /** Draw Plate **/
+        ShapedRecipeBuilder b = RecipeLib.newShapedBuilder();
         b.$less$minus$greater(" i "+"idi"+" i ")
                 .$plus$eq((Input)new MicroIn(MicroIn.edge(), MicroIn.fourth(), Blocks.iron_block).to("i"))
                 .$plus$eq((Input)new MicroIn(MicroIn.face(), MicroIn.fourth(), Blocks.diamond_block).to("d"))
                 .$plus$eq((Output)new ItemOut(ProjectRedCore.itemDrawPlate()));
         b.registerResult();
+        /** Panel Reset recipe **/
+        ShapelessRecipeBuilder s = RecipeLib.newShapelessBuilder();
+        s.$less$minus$greater("i")
+                .$plus$eq((Input) new MicroIn(MicroIn.face(), MicroIn.fourth(), Blocks.diamond_block))
+                .$plus$eq((Output) new ItemOut(new ItemStack(Items.diamond, 2)));
+        s.registerResult();
 
         /** Screwdriver **/
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemScrewdriver()),
