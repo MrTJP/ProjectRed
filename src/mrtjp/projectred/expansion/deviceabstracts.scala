@@ -136,6 +136,7 @@ trait TActiveDevice extends TileMachine
             else if (!powered)
             {
                 active = false
+                onDeactivate()
                 sendStateUpdate()
             }
         }
@@ -162,6 +163,7 @@ trait TActiveDevice extends TileMachine
     }
 
     def onActivate()
+    def onDeactivate(){}
 
     def exportBuffer()
     {
@@ -206,6 +208,13 @@ trait TActiveDevice extends TileMachine
 
         WorldLib.centerEject(world, position, r.payload.makeStack, side, 0.25D)
         true
+    }
+
+    override def onBlockRemoval()
+    {
+        super.onBlockRemoval()
+        while(!storage.isEmpty)
+            WorldLib.dropItem(world, x, y, z, storage.poll().payload.makeStack)
     }
 }
 

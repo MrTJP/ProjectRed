@@ -3,6 +3,7 @@ package mrtjp.projectred.transportation
 import java.util.UUID
 import codechicken.lib.data.{MCDataOutput, MCDataInput}
 import mrtjp.core.item.ItemKeyStack
+import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.transportation.Priorities.NetworkPriority
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemStack
@@ -50,6 +51,12 @@ class AbstractPipePayload(val payloadID:Int)
     // P = progress
     var data = 0
 
+    private var wanderThroughs = 0
+    def tickPayloadWander(){
+        if (Configurator.maxPipesWandered > 0)
+            wanderThroughs += 1
+    }
+
     def isEntering = ((data>>6)&1) != 0
     def isEntering_=(b:Boolean){ if (b) data |= 0x40 else data &= ~0x40 }
 
@@ -88,7 +95,8 @@ class AbstractPipePayload(val payloadID:Int)
         payload = ItemKeyStack.get(item)
     }
 
-    def isCorrupted = getItemStack == null || getItemStack.stackSize <= 0
+    def isCorrupted = getItemStack == null || getItemStack.stackSize <= 0 ||
+            (Configurator.maxPipesWandered > 0 && wanderThroughs > Configurator.maxPipesWandered)
 
     override def equals(other:Any) = other match
     {

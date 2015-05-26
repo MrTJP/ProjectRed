@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation
 
 import codechicken.multipart.INeighborTileChange
-import mrtjp.core.gui.{GuiLib, Slot2, WidgetContainer}
+import mrtjp.core.gui.{GuiLib, Slot3, WidgetContainer}
 import mrtjp.core.inventory.SimpleInventory
 import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
 import net.minecraft.entity.player.EntityPlayer
@@ -98,12 +98,11 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
     def createContainer(player:EntityPlayer) =
     {
         val container = new WidgetContainer
-        var slot = 0
-
+        var i = 0
         for ((x, y) <- GuiLib.createSlotGrid(24, 12, 1, 4, 0, 8))
         {
-            container + new Slot2(chipSlots, slot, x, y)
-            slot += 1
+            container.addSlotToContainer(new Slot3(chipSlots, i, x, y))
+            i += 1
         }
 
         container.addPlayerInv(player, 8, 118)

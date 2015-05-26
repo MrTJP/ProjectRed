@@ -1,3 +1,12 @@
+v4.6.2
+- ADDED: Fire Starter
+- ADDED: Diamond panel to diamond reset recipe
+- ADDED: Config option to erase pipe payload after wandering through a certain number of pipes.
+- FIX: Machines not dropping their contents on break
+- FIX: Backpacks require white dye on initial craft
+- FIX: Signal propagation issues from wires to framed wires
+- FIX: Unresponsive and glitchy containers and inventories
+
 v4.6.1
 - ADDED: Block Placer
 - ADDED: Filtered Importers
@@ -10,7 +19,7 @@ v4.6.1
 - CHANGE: Tube and machine recipes tweaked slightly
 - CHANGE: Item Importers can suck up items that collide on front
 - CHANGE: Item Importers can suck up items in 3x3 grid on redstone pulse
-- CHANGE: Bonemeal now works on liles
+- CHANGE: Bonemeal now works on lilies
 
 v4.6.0
 - ADDED: Gem Armor

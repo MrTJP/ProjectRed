@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion
 
-import mrtjp.core.gui.Slot2
+import mrtjp.core.gui.Slot3
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.entity.player.EntityPlayer
@@ -19,8 +19,11 @@ class TileFurnace extends TileMachineWorking
     def createContainer(player:EntityPlayer) = new WorkingMachineContainer(player, this)
     {
         addPlayerInv(player, 8, 84)
-        this + new Slot2(TileFurnace.this, 0, 44, 37)
-        this + new Slot2(TileFurnace.this, 1, 104, 37).setPlace(false)
+        addSlotToContainer(new Slot3(TileFurnace.this, 0, 44, 37))
+
+        val outslot = new Slot3(TileFurnace.this, 1, 104, 37)
+        outslot.canPlaceDelegate = {_ => false}
+        addSlotToContainer(outslot)
     }
 
     def getAccessibleSlotsFromSide(var1:Int) = var1 match

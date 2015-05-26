@@ -53,6 +53,8 @@ public class Configurator
     public static int detectionFrequency;
     public static int routerUpdateThreadCount;
 
+    public static int maxPipesWandered;
+
     /** Retro Generation **/
     public static boolean retroGeneration;
     public static String retroGenID;
@@ -117,6 +119,8 @@ public class Configurator
         maxDetectionCount = config.get("general", "Max Detection Count", 100, "Max number of links to explore when discovering new routers.").getInt();
         detectionFrequency = config.get("general", "Detection Frequency", 20, "Ticks between router searches.").getInt();
         routerUpdateThreadCount = config.get("general", "Router Update Thread Count", 4, "Number of active threads that update routing tables.").getInt();
+
+        maxPipesWandered = config.get("general", "Max Pipes Wandered", 0, "Maximum number of pipes an object can wander through before being erased. 0 for unlimited.").getInt();
 
         simpleFramedWireRecipe = config.get("general", "Simple Framed Wire recipe", false, "Use sticks instead of wood strips in framed wire recipes.").getBoolean();
 
