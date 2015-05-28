@@ -828,15 +828,22 @@ class StackLatchStandModel(x:Double, z:Double) extends SingleComponentModel(stac
     override def getUVT = new IconTransformation(cellIcon)
 }
 
-class SevenSegModel(x:Double, z:Double) extends SingleComponentModel(sevenSeg("base"), new Vector3(x, 0, z))
+trait SegModel
+{
+    var signal = 0
+    var colour_on = Colors.RED.rgba
+    var colour_off = Colors.BLACK.rgba
+
+    def setColourOn(colour:Byte)
+    {
+        colour_on = Colors(colour&0xFF).rgba
+    }
+}
+
+class SevenSegModel(x:Double, z:Double) extends SingleComponentModel(sevenSeg("base"), new Vector3(x, 0, z)) with SegModel
 {
     val segModels = (0 until 8).map(i => sevenSeg(i.toString))
-    val dPos = new Vector3(x, 0, z).multiply(1/16D)
-
-    var signal = 0
-
-    var colour_on = Colors.LIME.rgba
-    var colour_off = Colors.BLACK.rgba
+    val dPos = new Vector3(x, 0, z).multiply(1/16D).translation
 
     override def getUVT = new IconTransformation(segment)
 
@@ -845,7 +852,7 @@ class SevenSegModel(x:Double, z:Double) extends SingleComponentModel(sevenSeg("b
         super.renderModel(t, orient)
 
         val iconT = new IconTransformation(segmentDisp)
-        val dispT = dPos.translation.`with`(orientT(orient%24)).`with`(t)
+        val dispT = dPos.`with`(orientT(orient%24)).`with`(t)
 
 
         for (i <- 0 until 8)
@@ -854,15 +861,10 @@ class SevenSegModel(x:Double, z:Double) extends SingleComponentModel(sevenSeg("b
     }
 }
 
-class SixteenSegModel(x:Double, z:Double) extends SingleComponentModel(sixteenSeg("base"), new Vector3(x, 0, z))
+class SixteenSegModel(x:Double, z:Double) extends SingleComponentModel(sixteenSeg("base"), new Vector3(x, 0, z)) with SegModel
 {
     val segModels = (0 until 16).map(i => sixteenSeg(i.toString))
-    val dPos = new Vector3(x, 0, z).multiply(1/16D)
-
-    var signal = 0
-
-    var colour_on = Colors.LIME.rgba
-    var colour_off = Colors.BLACK.rgba
+    val dPos = new Vector3(x, 0, z).multiply(1/16D).translation
 
     override def getUVT = new IconTransformation(segment)
 
@@ -871,7 +873,7 @@ class SixteenSegModel(x:Double, z:Double) extends SingleComponentModel(sixteenSe
         super.renderModel(t, orient)
 
         val iconT = new IconTransformation(segmentDisp)
-        val dispT = dPos.translation.`with`(orientT(orient%24)).`with`(t)
+        val dispT = dPos.`with`(orientT(orient%24)).`with`(t)
 
         for (i <- 0 until 16)
             segModels(i).render(dispT, iconT, PlanarLightModel.standardLightModel, ColourMultiplier.instance(

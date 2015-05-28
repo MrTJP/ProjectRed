@@ -208,18 +208,18 @@ trait TConnectableInstTile extends InstancedBlockTile with TTileConnectable
     abstract override def onNeighborChange(b:Block)
     {
         super.onNeighborChange(b)
-        if (!getWorldObj.isRemote) if (updateExternals()) sendConnUpdate()
+        if (!world.isRemote) if (updateExternals()) sendConnUpdate()
     }
 
     abstract override def onBlockPlaced(side:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
     {
         super.onBlockPlaced(side, meta, player, stack, hit)
-        if (!getWorldObj.isRemote) if (updateExternals()) sendConnUpdate()
+        if (!world.isRemote) if (updateExternals()) sendConnUpdate()
     }
 
     abstract override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        WorldLib.bulkBlockUpdate(getWorldObj, xCoord, yCoord, zCoord, getBlock)
+        WorldLib.bulkBlockUpdate(world, x, y, z, getBlock)
     }
 }

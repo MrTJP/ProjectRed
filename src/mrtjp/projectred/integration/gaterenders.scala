@@ -10,6 +10,7 @@ import java.util.Random
 import codechicken.lib.math.MathHelper
 import codechicken.lib.render.{CCRenderState, TextureUtils}
 import codechicken.lib.vec.{RedundantTransformation, Transformation, Vector3}
+import mrtjp.core.color.Colors
 import mrtjp.projectred.core.TFaceOrient.flipMaskZ
 import mrtjp.projectred.integration.ComponentStore._
 import net.minecraft.client.renderer.texture.IIconRegister
@@ -1308,16 +1309,19 @@ class RenderSegmentDisplay extends GateRenderer[BundledGatePart]
         sevenSeg1.signal = 64
         sevenSeg0.signal = 64
         sixteenSeg.signal = 0
+        Seq(sevenSeg0, sevenSeg1, sixteenSeg).foreach(_.setColourOn(Colors.RED.ordinal.toByte))
     }
 
     override def prepare(gate:BundledGatePart)
     {
         shape = gate.shape
-        val sig1 = gate.getLogic[SegmentDisplay].bInH
+        val logic = gate.getLogic[SegmentDisplay]
+        val sig1 = logic.bInH
         val sig0 = gate.state
         sevenSeg1.signal = sig1
         sevenSeg0.signal = sig0
         sixteenSeg.signal = sig1<<8|sig0
+        Seq(sevenSeg0, sevenSeg1, sixteenSeg).foreach(_.setColourOn(logic.colour))
     }
 }
 
