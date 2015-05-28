@@ -118,6 +118,13 @@ trait TPressureTube extends TPressureSubsystem with TColourFilterPipe
         else chooseRandomDestination(r)
     }
 
+    override def injectPayload(r:PressurePayload, in:Int)
+    {
+        super.injectPayload(r, in)
+        if (r.travelData == 0)
+            r.tickPayloadWander()
+    }
+
     abstract override def discoverStraightOverride(s:Int):Boolean =
     {
         if (super.discoverStraightOverride(s)) return true

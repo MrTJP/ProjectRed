@@ -10,9 +10,11 @@ import java.util.Random
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.raytracer.{ExtendedMOP, IndexedCuboid6}
 import codechicken.lib.vec.{Cuboid6, Vector3}
+import mrtjp.core.color.Colors
 import mrtjp.core.vec.VecLib
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.api.{IBundledEmitter, IBundledTile, IConnectable, IScrewdriver}
+import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.TFaceOrient._
 import mrtjp.projectred.transmission.BundledCommons._
 import mrtjp.projectred.transmission.{APIImpl_Transmission, TFaceBundledAquisitions}
@@ -600,38 +602,51 @@ class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
 class SegmentDisplay(gate:BundledGatePart) extends BundledGateLogic(gate)
 {
     var bInH = 0
+    var colour:Byte = Colors.RED.ordinal.toByte
 
     override def bundledInputMask(shape:Int) = 1
 
     override def save(tag:NBTTagCompound)
     {
         tag.setByte("in", bInH.toByte)
+        tag.setByte("col", colour)
     }
 
     override def load(tag:NBTTagCompound)
     {
         bInH = tag.getByte("in")
+        colour = tag.getByte("col")
     }
 
     override def writeDesc(packet:MCDataOutput)
     {
         packet.writeByte(bInH)
+        packet.writeByte(colour)
     }
 
     override def readDesc(packet:MCDataInput)
     {
         bInH = packet.readByte()
+        colour = packet.readByte()
     }
 
     override def read(packet:MCDataInput, key:Int) = key match
     {
         case 11 => bInH = packet.readByte()
+        case 12 =>
+            colour = packet.readByte()
+            if (Configurator.staticGates) gate.tile.markRender()
         case _ =>
     }
 
     def sendClientUpdate()
     {
         gate.getWriteStreamOf(11).writeByte(bInH)
+    }
+
+    def sendColourUpdate()
+    {
+        gate.getWriteStreamOf(12).writeByte(colour)
     }
 
     override def cycleShape(gate:BundledGatePart) =
@@ -656,5 +671,23 @@ class SegmentDisplay(gate:BundledGatePart) extends BundledGateLogic(gate)
     override def scheduledTick(gate:BundledGatePart)
     {
         onChange(gate)
+    }
+
+    override def activate(gate:BundledGatePart, player:EntityPlayer, held:ItemStack, hit:MovingObjectPosition):Boolean =
+    {
+        if (held != null)
+        {
+            val c = Colors.fromStack(held)
+            if (c != null && c.ordinal != (colour&0xFF) && c != Colors.BLACK)
+            {
+                if (!gate.world.isRemote)
+                {
+                    colour = c.ordinal.toByte
+                    sendColourUpdate()
+                }
+                return true
+            }
+        }
+        false
     }
 }

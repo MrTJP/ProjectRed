@@ -5,7 +5,7 @@ import java.util.concurrent.DelayQueue
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.BlockCoord
-import mrtjp.core.gui.{GuiLib, Slot2, NodeContainer}
+import mrtjp.core.gui.{GuiLib, NodeContainer, Slot3}
 import mrtjp.core.inventory.{InvWrapper, SimpleInventory}
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
 import mrtjp.core.util.{Pair2, PostponedWorkItem}
@@ -364,13 +364,13 @@ class RoutedCraftingPipePart extends AbstractNetPipe with TNetworkPipe with IWor
         var s = 0
         for ((x, y) <- GuiLib.createSlotGrid(20, 12, 2, 4, 20, 0))
         {
-            container + new Slot2(chipSlots, s, x, y)
+            container.addSlotToContainer(new Slot3(chipSlots, s, x, y))
             s += 1
         }
         var s2 = 0
         for ((x, y) <- GuiLib.createSlotGrid(8, 108, 9, 1, 0, 0))
         {
-            container + new Slot2(cardSlots, s2, x, y)
+            container.addSlotToContainer(new Slot3(cardSlots, s2, x, y))
             s2 += 1
         }
         container.addPlayerInv(player, 8, 138)

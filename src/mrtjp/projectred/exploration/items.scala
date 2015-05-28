@@ -7,7 +7,7 @@ import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TItemSeed
 import mrtjp.core.color.Colors
-import mrtjp.core.gui.{GuiLib, NodeContainer, Slot2}
+import mrtjp.core.gui.{GuiLib, NodeContainer, Slot3}
 import mrtjp.core.inventory.TInventory
 import mrtjp.core.item.ItemCore
 import mrtjp.core.world.WorldLib
@@ -25,9 +25,10 @@ import net.minecraft.item.Item.ToolMaterial
 import net.minecraft.item.ItemArmor.ArmorMaterial
 import net.minecraft.item._
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.IIcon
+import net.minecraft.util.{EnumChatFormatting, IIcon}
 import net.minecraft.world.{IBlockAccess, World}
 import net.minecraftforge.common.EnumPlantType
+import org.lwjgl.input.Keyboard
 
 class ItemBackpack extends ItemCore("projectred.exploration.backpack")
 {
@@ -67,6 +68,14 @@ class ItemBackpack extends ItemCore("projectred.exploration.backpack")
     }
 
     override def getIconFromDamage(meta:Int) = icons(meta)
+
+    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], flag:Boolean)
+    {
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+            list.asInstanceOf[JList[String]].add(
+                EnumChatFormatting.GRAY.toString+(if (ItemBackpack.hasBagInv(stack))
+                    ItemBackpack.getNumberOfItems(stack) else 0)+"/27 slots used")
+    }
 }
 
 object ItemBackpack
@@ -74,28 +83,40 @@ object ItemBackpack
     val oreDictionaryVal = "prbackpack"
 
     def createContainer(player:EntityPlayer) =
+        new ContainerBackpack(new BagInventory(player), player)
+
+    def hasBagInv(stack:ItemStack) =
     {
-        val cont = new NodeContainer
+        stack.hasTagCompound && stack.getTagCompound.hasKey("baginv")
+    }
+
+    def getBagTag(stack:ItemStack) =
+    {
+        stack.getTagCompound.getCompoundTag("baginv")
+    }
+
+    def saveBagTag(stack:ItemStack, tag:NBTTagCompound)
+    {
+        stack.getTagCompound.setTag("baginv", tag)
+    }
+
+    def getNumberOfItems(stack:ItemStack) =
+    {
+        getBagTag(stack).getTagList("items", 10).tagCount()
+    }
+}
+
+class ContainerBackpack(inv:BagInventory, player:EntityPlayer) extends NodeContainer
+{
+    {
+        for (((x, y), i) <- GuiLib.createSlotGrid(8, 18, 9, 3, 0, 0).zipWithIndex)
         {
-            override def +(s:Slot2):this.type =
-            {
-                if (s.getSlotIndex == player.inventory.currentItem && s.inventory == player.inventory)
-                    s.setRemove(false)
-                super.+(s)
-            }
+            val s = new Slot3(inv, i, x, y)
+            addSlotToContainer(s)
         }
+        addPlayerInv(player, 8, 86)
 
-        val inv = new BagInventory(player)
-
-        var slot = 0
-        for ((x, y) <- GuiLib.createSlotGrid(8, 18, 9, 3, 0, 0))
-        {
-            cont + new Slot2(inv, slot, x, y)
-            slot += 1
-        }
-
-        cont.addPlayerInv(player, 8, 86)
-        cont
+        slots(player.inventory.currentItem+27).canRemoveDelegate = {() => false}
     }
 }
 
@@ -110,15 +131,15 @@ class BagInventory(player:EntityPlayer) extends TInventory
     private def loadInventory()
     {
         if (closeIfNoBag()) return
-        loadInv(player.getHeldItem.getTagCompound.getCompoundTag("baginv"))
+        loadInv(ItemBackpack.getBagTag(player.getHeldItem))
     }
 
     private def saveInventory()
     {
         if (closeIfNoBag()) return
-        val nbt = new NBTTagCompound
-        saveInv(nbt)
-        player.getHeldItem.getTagCompound.setTag("baginv", nbt)
+        val tag = new NBTTagCompound
+        saveInv(tag)
+        ItemBackpack.saveBagTag(player.getHeldItem, tag)
     }
 
     override def markDirty()

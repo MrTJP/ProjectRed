@@ -397,10 +397,7 @@ abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart
         }
     }
 
-    def adjustSpeed(r:T)
-    {
-        //r.speed = Math.max(r.speed-0.01f, r.netPriority.speed)
-    }
+    def adjustSpeed(r:T){}
 
     protected def hasReachedMiddle(r:T) = r.progress >= 0.5F
 

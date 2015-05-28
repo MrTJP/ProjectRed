@@ -1,6 +1,6 @@
 package mrtjp.projectred.expansion
 
-import mrtjp.core.gui.Slot2
+import mrtjp.core.gui.Slot3
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.entity.player.EntityPlayer
@@ -18,44 +18,22 @@ class TileFurnace extends TileMachineWorking
 
     def createContainer(player:EntityPlayer) = new WorkingMachineContainer(player, this)
     {
+        addSlotToContainer(new Slot3(TileFurnace.this, 0, 44, 37))
+        val outslot = new Slot3(TileFurnace.this, 1, 104, 37)
+        outslot.canPlaceDelegate = {_ => false}
+        addSlotToContainer(outslot)
+
         addPlayerInv(player, 8, 84)
-        this + new Slot2(TileFurnace.this, 0, 44, 37)
-        this + new Slot2(TileFurnace.this, 1, 104, 37).setPlace(false)
     }
 
-    def getAccessibleSlotsFromSide(var1:Int) = var1 match
+    def getAccessibleSlotsFromSide(s:Int) = s match
     {
-        case _ if inputSeq contains var1 => Array(0) // input
-        case _ if outputSeq contains var1 => Array(1) // output
+        case 1 => Array(0) // input
+        case 2|3|4|5 => Array(1) // output
         case _ => Array()
     }
     def canInsertItem(i:Int, itemstack:ItemStack, j:Int) = i == 0
     def canExtractItem(i:Int, itemstack:ItemStack, j:Int) = i == 1
-
-    def inputSeq =
-    {
-        var seq = Seq[Int]()
-        for (i <- 0 until 6)
-        {
-            val mode = sideConfig(i)
-            if (Seq(1, 3) contains mode) seq :+= i
-        }
-        seq
-    }
-
-    def outputSeq =
-    {
-        var seq = Seq[Int]()
-        for (i <- 0 until 6)
-        {
-            val mode = sideConfig(i)
-            if (Seq(2, 3) contains mode) seq :+= i
-        }
-        seq
-    }
-
-    override def createSideConfig = Array(3, 3, 3, 3, 3, 3)
-    override def sideInfo = Array("closed", "input", "output", "input + output")
 
     override def transfer() {}
 

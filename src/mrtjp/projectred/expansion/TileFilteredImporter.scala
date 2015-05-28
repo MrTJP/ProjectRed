@@ -12,7 +12,7 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.color.Colors
 import mrtjp.core.gui._
-import mrtjp.core.inventory.{InvWrapper, SimpleInventory, TPortableInventory}
+import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.item.ItemKey
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.resource.ResourceLib
@@ -28,11 +28,13 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
 
-class TileFilteredImporter extends TileItemImporter with TPortableInventory with ISidedInventory
+class TileFilteredImporter extends TileItemImporter with TInventory with ISidedInventory
 {
     var colour:Byte = -1
 
-    override def createInv = new SimpleInventory(9)
+    override def size = 9
+    override def stackLimit = 64
+    override def name = "filtered importer"
 
     override def canExtractItem(slot:Int, item:ItemStack, s:Int) = (s&6) != (side&6)
     override def canInsertItem(slot:Int, item:ItemStack, s:Int) = (s&6) != (side&6)
@@ -114,15 +116,22 @@ class TileFilteredImporter extends TileItemImporter with TPortableInventory with
         var s = 0
         for ((x, y) <- GuiLib.createSlotGrid(62, 18, 3, 3, 0, 0))
         {
-            cont + new Slot2(inv, s, x, y)
+            cont.addSlotToContainer(new Slot3(this, s, x, y))
             s += 1
         }
         cont.addPlayerInv(player, 8, 86)
+        cont
     }
 
     override def markDirty()
     {
         super.markDirty()
+    }
+
+    override def onBlockRemoval()
+    {
+        super.onBlockRemoval()
+        dropInvContents(world, x, y, z)
     }
 }
 

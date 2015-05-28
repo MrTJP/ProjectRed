@@ -13,9 +13,9 @@ import codechicken.lib.vec._
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.gui._
-import mrtjp.core.inventory.{TInventory, SimpleInventory, TPortableInventory}
+import mrtjp.core.inventory.TInventory
 import mrtjp.core.vec.Point
-import mrtjp.core.world.WorldLib
+import mrtjp.core.world.{Messenger, WorldLib}
 import mrtjp.projectred.core.libmc.PRResources
 import mrtjp.projectred.integration.ComponentStore
 import net.minecraft.client.renderer.RenderBlocks
@@ -206,14 +206,13 @@ class TileICPrinter extends TileICMachine with TInventory
         var i = 0
         for ((x, y) <- GuiLib.createSlotGrid(8, 75, 9, 2, 0, 0))
         {
-            val s = new Slot2(this, i, x, y)
-            c.+(s)
+            c.addSlotToContainer(new Slot3(this, i, x, y))
             i += 1
         }
 
-        c.+(new Slot2(this, 18, 63, 20))
-        c.+(new Slot2(this, 19, 63, 46))
-        c.+(new Slot2(this, 20, 134, 33))
+        c.addSlotToContainer(new Slot3(this, 18, 63, 20))
+        c.addSlotToContainer(new Slot3(this, 19, 63, 46))
+        c.addSlotToContainer(new Slot3(this, 20, 134, 33))
         c
     }
 
@@ -455,8 +454,8 @@ object RenderICPrinterDynamic extends TileEntitySpecialRenderer
 
     def renderShaft(t:Transformation, iconT:UVTransformation)
     {
-        val min = 4.5/16D
-        val max = -4.5/16D
+        val min = -4.5/16D
+        val max = 4.5/16D
         val p = progress+speed*frame
         val subT = new Translation(0, 0, min+(max-min)*p) `with` t
 
@@ -469,7 +468,7 @@ object RenderICPrinterDynamic extends TileEntitySpecialRenderer
         val amp = 3.5/16D
         val freq = 900
         val p = progress+speed*frame
-        val trans = if (rasterMode) math.cos(p*freq)*amp else amp-amp*2*p
+        val trans = if (rasterMode) math.cos(p*freq)*amp else amp*2*p-amp
         val subT = new Translation(trans, 0, 0) `with` t
         models("head").render(subT, iconT)
     }

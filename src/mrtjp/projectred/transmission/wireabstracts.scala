@@ -301,30 +301,38 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
 
 abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterConnectable with TCenterPropagation with ISidedHollowConnect
 {
+    var hasMaterial = false
     var material = 0
 
     override def save(tag:NBTTagCompound)
     {
         tag.setInteger("connMap", connMap)
         tag.setString("mat", MicroMaterialRegistry.materialName(material))
+        tag.setBoolean("hasmat", hasMaterial);tag.setBoolean("nolegacy", true) //TODO Legacy
     }
 
     override def load(tag:NBTTagCompound)
     {
         connMap = tag.getInteger("connMap")
+        hasMaterial = tag.getBoolean("hasmat")
         material = MicroMaterialRegistry.materialID(tag.getString("mat"))
+        if (!tag.getBoolean("nolegacy") && material == 0) hasMaterial = false //TODO Legacy
     }
 
     override def writeDesc(packet:MCDataOutput)
     {
         packet.writeByte(clientConnMap)
-        MicroMaterialRegistry.writeMaterialID(packet, material)
+        packet.writeBoolean(hasMaterial)
+        if (hasMaterial)
+            MicroMaterialRegistry.writeMaterialID(packet, material)
     }
 
     override def readDesc(packet:MCDataInput)
     {
         connMap = packet.readUByte()
-        material = MicroMaterialRegistry.readMaterialID(packet)
+        hasMaterial = packet.readBoolean()
+        if (hasMaterial)
+            material = MicroMaterialRegistry.readMaterialID(packet)
     }
 
     override def read(packet:MCDataInput, key:Int) = key match
@@ -333,7 +341,12 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
             connMap = packet.readUByte()
             if (useStaticRenderer) tile.markRender()
         case 2 =>
+            hasMaterial = true
             material = MicroMaterialRegistry.readMaterialID(packet)
+            if (useStaticRenderer) tile.markRender()
+        case 3 =>
+            hasMaterial = false
+            material = 0
             if (useStaticRenderer) tile.markRender()
         case _ =>
     }
@@ -347,7 +360,8 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
 
     def sendMatUpdate()
     {
-        MicroMaterialRegistry.writeMaterialID(getWriteStreamOf(2), material)
+        if (hasMaterial) MicroMaterialRegistry.writeMaterialID(getWriteStreamOf(2), material)
+        else getWriteStreamOf(3)
     }
 
     override def discoverOpen(s:Int) = getInternal(s) match
@@ -367,7 +381,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
 
     override def getStrength(hit:MovingObjectPosition, player:EntityPlayer) =
     {
-        if (material > 0) Math.min(4, MicroMaterialRegistry.getMaterial(material).getStrength(player))
+        if (hasMaterial) Math.min(4, MicroMaterialRegistry.getMaterial(material).getStrength(player))
         else 4
     }
 
@@ -375,7 +389,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
 
     override def getDrops =
     {
-        if (material != 0) super.getDrops :+ ItemMicroPart.create(1, material)
+        if (hasMaterial) super.getDrops :+ ItemMicroPart.create(1, material)
         else super.getDrops
     }
 
@@ -402,17 +416,18 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
     {
         def dropMaterial()
         {
-            if (material > 0 && !player.capabilities.isCreativeMode)
+            if (hasMaterial && !player.capabilities.isCreativeMode)
                 PRLib.dropTowardsPlayer(world, x, y, z, ItemMicroPart.create(1, material), player)
         }
 
         if (super.activate(player, hit, held)) return true
 
-        if (held == null && player.isSneaking && material > 0)
+        if (held == null && player.isSneaking && hasMaterial)
         {
             if (!world.isRemote)
             {
                 dropMaterial()
+                hasMaterial = false
                 material = 0
                 sendMatUpdate()
             }
@@ -422,7 +437,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
         if (held != null && held.getItem == MicroblockProxy.itemMicro && held.getItemDamage == 1)
         {
             val newmatid = ItemMicroPart.getMaterialID(held)
-            if (newmatid != material)
+            if (!hasMaterial || newmatid != material)
             {
                 if(!world.isRemote)
                 {
@@ -431,6 +446,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
                     else
                     {
                         dropMaterial()
+                        hasMaterial = true
                         material = newmatid
                         world.playSoundEffect(x+0.5D, y+0.5D, z+0.5D, newmat.getSound.func_150496_b(),
                             (newmat.getSound.getVolume+1.0F)/2.0F, newmat.getSound.getPitch*0.8F)

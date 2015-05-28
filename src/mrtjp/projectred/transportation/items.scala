@@ -5,7 +5,7 @@ import java.util.{List => JList}
 import codechicken.lib.vec.{BlockCoord, Vector3}
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.gui.{GuiHandler, GuiLib, NodeContainer, Slot2}
+import mrtjp.core.gui.{GuiHandler, GuiLib, NodeContainer, Slot3}
 import mrtjp.core.inventory.SimpleInventory
 import mrtjp.core.item.{ItemCore, ItemDefinition, TItemGlassSound}
 import mrtjp.projectred.ProjectRedTransportation
@@ -14,6 +14,7 @@ import mrtjp.projectred.transportation.RoutingChipDefs.ChipType.ChipType
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.inventory.Slot
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.{EnumChatFormatting, IIcon}
@@ -269,16 +270,17 @@ class ChipUpgradeContainer(player:EntityPlayer) extends NodeContainer
     val slot = player.inventory.currentItem
 
     {
-        addPlayerInv(player, 8, 86)
         var s = 0
         def next = {s += 1; s-1}
 
         for ((x, y) <- GuiLib.createSlotGrid(8, 18, 1, 3, 2, 2))
-            this + new Slot2(upgradeInv, next, x, y)
+            addSlotToContainer(new Slot3(upgradeInv, next, x, y))
         for ((x, y) <- GuiLib.createSlotGrid(152, 18, 1, 3, 2, 2))
-            this + new Slot2(upgradeInv, next, x, y)
+            addSlotToContainer(new Slot3(upgradeInv, next, x, y))
 
-        this + new Slot2(upgradeInv, next, 80, 38)
+        addSlotToContainer(new Slot3(upgradeInv, next, 80, 38))
+
+        addPlayerInv(player, 8, 86)
     }
 
     override def onContainerClosed(p:EntityPlayer)
@@ -293,11 +295,12 @@ class ChipUpgradeContainer(player:EntityPlayer) extends NodeContainer
         upgradeInv.markDirty()
     }
 
-    override def +(s:Slot2):this.type =
+    override def addSlotToContainer(slot:Slot) =
     {
-        if (s.getSlotIndex == slot && s.inventory == player.inventory)
-            s.setRemove(false)
-        super.+(s)
+        super.addSlotToContainer(slot)
+        if (slot.getSlotIndex == this.slot && slot.inventory == player.inventory)
+            slot.asInstanceOf[Slot3].canRemoveDelegate = {() => false}
+        slot
     }
 
     //TODO better way to handle this cached chip (currently only used for gui's rendering to avoid creating one every frame)
