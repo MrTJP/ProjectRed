@@ -7,7 +7,7 @@ package mrtjp.projectred
 
 import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
-import mrtjp.projectred.fabrication.{ItemICBlueprint, BlockICMachine, FabricationProxy}
+import mrtjp.projectred.fabrication.{ItemICChip, ItemICBlueprint, BlockICMachine, FabricationProxy}
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
@@ -20,6 +20,7 @@ object ProjectRedFabrication
 
     /** Items **/
     var itemICBlueprint:ItemICBlueprint = null
+    var itemICChip:ItemICChip = null
 
     var tabFabrication = new CreativeTabs("fab")
     {

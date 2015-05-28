@@ -10,15 +10,17 @@ import java.util.{List => JList}
 import codechicken.lib.gui.GuiDraw
 import cpw.mods.fml.common.registry.GameRegistry
 import mrtjp.core.color.Colors
+import mrtjp.core.item.ItemCore
 import mrtjp.core.vec.{Point, Size}
 
 import mrtjp.projectred.{ProjectRedIntegration, ProjectRedFabrication}
 import mrtjp.projectred.core.libmc.PRResources
+import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{ItemMap, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumChatFormatting
+import net.minecraft.util.{IIcon, EnumChatFormatting}
 import net.minecraft.world.World
 import net.minecraftforge.client.IItemRenderer
 import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
@@ -40,19 +42,16 @@ class ItemICBlueprint extends ItemMap //extend ItemMap so minecraft will handle 
 
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
     {
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
-        {
-            import EnumChatFormatting._
-            val slist = list.asInstanceOf[JList[String]]
+        import EnumChatFormatting._
+        val slist = list.asInstanceOf[JList[String]]
 
-            if (ItemICBlueprint.hasICInside(stack))
-            {
-                val size = ItemICBlueprint.getICSize(stack)
-                slist.add(GRAY+ItemICBlueprint.getICName(stack))
-                slist.add(GRAY+s"${size.width} x ${size.height}")
-            }
-            else slist.add(GRAY+"empty blueprint")
+        if (ItemICBlueprint.hasICInside(stack))
+        {
+            val size = ItemICBlueprint.getICSize(stack)
+            slist.add(GRAY+ItemICBlueprint.getICName(stack))
+            slist.add(GRAY+s"${size.width} x ${size.height}")
         }
+        else slist.add(GRAY+"empty blueprint")
     }
 }
 
@@ -244,5 +243,33 @@ object ItemRenderICBlueprint extends IItemRenderer
         GuiDraw.drawString(name, 2, 2, Colors.WHITE.argb, false)
 
         glPopMatrix()
+    }
+}
+
+class ItemICChip extends ItemCore("projectred.fabrication.icchip")
+{
+    setMaxStackSize(1)
+    setCreativeTab(ProjectRedFabrication.tabFabrication)
+    setTextureName("projectred:icblueprint")
+
+    var icons = new Array[IIcon](2)
+
+    override def registerIcons(reg:IIconRegister)
+    {
+        icons(0) = reg.registerIcon("projectred:ic_inert")
+        icons(1) = reg.registerIcon("projectred:ic")
+    }
+
+    override def getIcon(stack:ItemStack, pass:Int) = getIconIndex(stack)
+
+    override def getIconIndex(stack:ItemStack) =
+        icons(if (ItemICBlueprint.hasICInside(stack)) 1 else 0)
+
+    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
+    {
+        import EnumChatFormatting._
+        val slist = list.asInstanceOf[JList[String]]
+
+        if (ItemICBlueprint.hasICInside(stack)) slist.add(GRAY+ItemICBlueprint.getICName(stack))
     }
 }
