@@ -154,5 +154,15 @@ object ExpansionRecipes
             'i':JC, new ItemStack(machine2, 1, 1),
             's':JC, Blocks.cobblestone
         ))
+
+        //Fire starter
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 4),
+            "nfn", "cpc", "crc",
+            'n':JC, Blocks.netherrack,
+            'f':JC, Items.flint_and_steel,
+            'c':JC, Blocks.cobblestone,
+            'p':JC, new ItemStack(machine2, 1, 2),
+            'r':JC, Items.redstone
+        ))
     }
 }

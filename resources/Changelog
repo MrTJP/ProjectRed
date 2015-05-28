@@ -2,6 +2,7 @@ v4.6.2
 - ADDED: Fire Starter
 - ADDED: Diamond panel to diamond reset recipe
 - ADDED: Config option to erase pipe payload after wandering through a certain number of pipes.
+- ADDED: Backpack tooltip for number of used slots
 - FIX: Machines not dropping their contents on break
 - FIX: Backpacks require white dye on initial craft
 - FIX: Signal propagation issues from wires to framed wires
