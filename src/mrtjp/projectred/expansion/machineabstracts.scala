@@ -33,8 +33,26 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
 {
     override def onBlockPlaced(s:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
     {
-        setSide(if (doesOrient) s^1 else 0)
-        setRotation(Rotation.getSidedRotation(player, side^1))
+        setSide(if (doesOrient) calcFacing(player) else 0)
+        setRotation(if (doesRotate) Rotation.getSidedRotation(player, side^1) else 0)
+    }
+
+    def calcFacing(ent:EntityPlayer):Int =
+    {
+        val yawrx = Math.floor(ent.rotationYaw*4.0F/360.0F+0.5D).toInt&0x3
+        if ((Math.abs(ent.posX-x) < 2.0D) && (Math.abs(ent.posZ-z) < 2.0D))
+        {
+            val p = ent.posY+1.82D-ent.yOffset-y
+            if (p > 2.0D) return 0
+            if (p < 0.0D) return 1
+        }
+        yawrx match
+        {
+            case 0 => 3
+            case 1 => 4
+            case 2 => 2
+            case _ => 5
+        }
     }
 
     override def writeDesc(out:MCDataOutput)
@@ -226,109 +244,8 @@ trait TMachinePowerable extends TileMachine with TConnectableInstTile with IPowe
     }
 }
 
-trait TileMachineSideConfig extends TileMachine
-{
-    var sideConfig = new Array[Int](6)
-    var maxConfig = createSideConfig
-
-    def createSideConfig:Array[Int]
-    def sideInfo:Array[String]
-
-    def toByteArray =
-    {
-        val b = new Array[Byte](6)
-        for (i <- 0 until 6)
-            b(i) = sideConfig(i).asInstanceOf[Byte]
-        b
-    }
-
-    def sideUp(side:Int) = if (side != Rotation.rotateSide(this.side, rotation))
-    {
-        writeStream(15).writeByte(side).sendToServer()
-    }
-
-    def sideDown(side:Int) = if (side != Rotation.rotateSide(this.side, rotation))
-    {
-        writeStream(16).writeByte(side).sendToServer()
-    }
-
-    def resetAll()
-    {
-        writeStream(17).sendToServer()
-    }
-
-    abstract override def save(tag:NBTTagCompound)
-    {
-        super.save(tag)
-        tag.setIntArray("sides", sideConfig)
-    }
-
-    abstract override def load(tag:NBTTagCompound)
-    {
-        super.load(tag)
-        sideConfig = tag.getIntArray("sides")
-    }
-
-    def sendSideChange()
-    {
-        val ws = writeStream(18).writeByteArray(toByteArray)
-        ws.sendToChunk()
-    }
-
-    override def read(in:MCDataInput, switchkey:Int) = switchkey match
-    {
-        case 15 => serverSideUp(in.readUByte())
-        case 16 => serverSideDown(in.readUByte())
-        case 17 => serverSideReset()
-        case 18 =>
-            val b = in.readByteArray(6)
-            for (i <- 0 until 6) sideConfig(i) = b(i)
-            markRender()
-        case _  => super.read(in, switchkey)
-    }
-
-    private def serverSideUp(side:Int)
-    {
-        sideConfig(side) = sideConfig(side)+1
-        if (sideConfig(side)>maxConfig(side)) sideConfig(side) = 0
-        sendSideChange()
-    }
-
-    private def serverSideDown(side:Int)
-    {
-        sideConfig(side) = sideConfig(side)-1
-        if (sideConfig(side)<0) sideConfig(side) = maxConfig(side)
-        sendSideChange()
-    }
-
-    private def serverSideReset()
-    {
-        sideConfig = new Array[Int](6)
-        sendSideChange()
-    }
-
-    abstract override def writeDesc(out:MCDataOutput)
-    {
-        super.writeDesc(out)
-        out.writeByteArray(toByteArray)
-    }
-
-    abstract override def readDesc(in:MCDataInput)
-    {
-        super.readDesc(in)
-        val b = in.readByteArray(6)
-        for (i <- 0 until 6) sideConfig(i) = b(i)
-    }
-
-    abstract override def onBlockRotated()
-    {
-        super.onBlockRotated()
-        serverSideReset()
-    }
-}
-
 abstract class TileMachineWorking extends TileMachine
-with TMachinePowerable with TileMachineIO with TileGuiMachine with TileMachineSideConfig
+with TMachinePowerable with TileMachineIO with TileGuiMachine// with TileMachineSideConfig
 {
     val cond = new PowerConductor(this, condIds) with TPowerFlow
 

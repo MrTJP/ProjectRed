@@ -60,9 +60,10 @@ class ChipContainer(player:EntityPlayer, var chip:RoutingChip) extends NodeConta
 
     override def addSlotToContainer(slot:Slot):Slot =
     {
-        if (slot.getSlotIndex == this.slot && slot.inventory == player.inventory) if (slot.isInstanceOf[Slot2])
-            return super.addSlotToContainer(slot.asInstanceOf[Slot2].setRemove(false))
         super.addSlotToContainer(slot)
+        if (slot.getSlotIndex == this.slot && slot.inventory == player.inventory)
+            slot.asInstanceOf[Slot3].canRemoveDelegate = {() => false}
+        slot
     }
 }
 
@@ -125,7 +126,9 @@ class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont
                 var s = 0
                 for ((x, y) <- GuiLib.createSlotGrid(20, 15, 3, 3, 0, 0))
                 {
-                    c + new Slot2(c2.filter, s, x, y).setGhosting(true)
+                    val slot = new Slot3(c2.filter, s, x, y)
+                    slot.phantomSlot = true
+                    c.addSlotToContainer(slot)
                     s += 1
                 }
                 jumpTo(new GuiChipFilter(c, this), true)
@@ -177,7 +180,9 @@ class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont
                 var s = 0
                 for ((x, y) <- GuiLib.createSlotGrid(20, 15, 3, 3, 0, 0))
                 {
-                    c + new Slot2(c2.stock, s, x, y).setGhosting(true)
+                    val slot = new Slot3(c2.stock, s, x, y)
+                    slot.phantomSlot = true
+                    c.addSlotToContainer(slot)
                     s += 1
                 }
                 jumpTo(new GuiChipStock(c, this), true)
@@ -199,10 +204,14 @@ class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont
                 var s = 0
                 for ((x, y) <- GuiLib.createSlotGrid(25, 15, 3, 3, 0, 0))
                 {
-                    c + new Slot2(chip2.matrix, s, x, y).setGhosting(true)
+                    val slot = new Slot3(chip2.matrix, s, x, y)
+                    slot.phantomSlot = true
+                    c.addSlotToContainer(slot)
                     s += 1
                 }
-                c + new Slot2(chip2.matrix, s, 119, 33).setGhosting(true)
+                val slot = new Slot3(chip2.matrix, s, 119, 33)
+                slot.phantomSlot = true
+                c.addSlotToContainer(slot)
                 jumpTo(new GuiChipCraftMatrix(c, this), true)
             }
             addChild(dot1)

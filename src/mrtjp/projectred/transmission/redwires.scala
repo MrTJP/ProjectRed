@@ -228,10 +228,10 @@ abstract class FramedRedwirePart extends FramedWirePart with TRedwireCommons wit
         var s = 0
         def raise(sig:Int) {if (sig > s) s = sig}
 
-        for (s <- 0 until 6) if (maskConnects(s))
+        for (s <- 0 until 6)
         {
-            if (maskConnectsOut(s)) raise(calcStraightSignal(s))
-            else raise(calcInternalSignal(s))
+            if (maskConnectsIn(s)) raise(calcInternalSignal(s))
+            else if (maskConnectsOut(s)) raise(calcStraightSignal(s))
         }
 
         WirePropagator.setDustProvidePower(true)

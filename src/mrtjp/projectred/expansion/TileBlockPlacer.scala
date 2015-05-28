@@ -99,10 +99,11 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TPortableInven
         var s = 0
         for ((x, y) <- GuiLib.createSlotGrid(62, 18, 3, 3, 0, 0))
         {
-            cont + new Slot2(inv, s, x, y)
+            cont.addSlotToContainer(new Slot3(inv, s, x, y))
             s += 1
         }
         cont.addPlayerInv(player, 8, 86)
+        cont
     }
 
     override def onActivate()

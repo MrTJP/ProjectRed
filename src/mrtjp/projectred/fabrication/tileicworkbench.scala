@@ -37,7 +37,7 @@ abstract class TileICMachine extends InstancedBlockTile with TTileOrient
     override def onBlockPlaced(s:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
     {
         setSide(0)
-        setRotation(Rotation.getSidedRotation(player, side^1))
+        setRotation((Rotation.getSidedRotation(player, 1)+2)%4)
     }
 
     override def writeDesc(out:MCDataOutput)
