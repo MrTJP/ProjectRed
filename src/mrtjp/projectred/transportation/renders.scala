@@ -7,7 +7,7 @@ import codechicken.lib.render._
 import codechicken.lib.render.uv.{IconTransformation, UV, UVScale, UVTransformation}
 import codechicken.lib.vec._
 import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
-import codechicken.microblock.{BlockMicroMaterial, MicroMaterialRegistry, MicroblockClass}
+import codechicken.microblock.{CommonMicroClass, BlockMicroMaterial, MicroMaterialRegistry, MicroblockClass}
 import mrtjp.core.color.Colors
 import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.client.renderer.entity.{RenderItem, RenderManager}
@@ -406,9 +406,9 @@ private class UVT(t:Transformation) extends UVTransformation
 
 object PipeRSHighlightRenderer extends IMicroHighlightRenderer
 {
-    def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:MicroblockClass, size:Int, material:Int):Boolean =
+    override def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:CommonMicroClass, size:Int, material:Int):Boolean =
     {
-        if (mcrClass.classID != 3 || size != 1 || player.isSneaking) return false
+        if (mcrClass.getClassId != 3 || size != 1 || player.isSneaking) return false
         val tile = PRLib.getMultipartTile(player.worldObj, hit.blockX, hit.blockY, hit.blockZ)
         if (tile == null) return false
 
@@ -430,9 +430,9 @@ object PipeRSHighlightRenderer extends IMicroHighlightRenderer
 
 object PipeColourHighlightRenderer extends IMicroHighlightRenderer
 {
-    def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:MicroblockClass, size:Int, material:Int):Boolean =
+    override def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:CommonMicroClass, size:Int, material:Int):Boolean =
     {
-        if (mcrClass.classID != 3 || size != 1 || player.isSneaking) return false
+        if (mcrClass.getClassId != 3 || size != 1 || player.isSneaking) return false
         val tile = PRLib.getMultipartTile(player.worldObj, hit.blockX, hit.blockY, hit.blockZ)
         if (tile == null) return false
 

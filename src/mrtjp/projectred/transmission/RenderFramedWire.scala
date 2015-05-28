@@ -1,17 +1,17 @@
 package mrtjp.projectred.transmission
 
-import codechicken.lib.render._
-import codechicken.lib.vec._
-import codechicken.lib.render.uv.{IconTransformation, UVTranslation, UVScale}
 import codechicken.lib.lighting.LightModel
 import codechicken.lib.raytracer.{ExtendedMOP, IndexedCuboid6}
-import codechicken.microblock.{MicroblockClass, MicroblockRender, MicroMaterialRegistry}
 import codechicken.lib.render.CCRenderState.IVertexOperation
-import net.minecraft.util.{MovingObjectPosition, IIcon}
-import org.lwjgl.opengl.GL11
+import codechicken.lib.render._
+import codechicken.lib.render.uv.{IconTransformation, UVScale, UVTranslation}
+import codechicken.lib.vec._
 import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
-import net.minecraft.entity.player.EntityPlayer
+import codechicken.microblock.{CommonMicroClass, MicroMaterialRegistry, MicroblockRender}
 import mrtjp.projectred.core.libmc.PRLib
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.{IIcon, MovingObjectPosition}
+import org.lwjgl.opengl.GL11
 
 object RenderFramedWire
 {
@@ -45,14 +45,17 @@ object RenderFramedWire
         val uvt = new IconTransformation(w.getIcon)
         val m = ColourMultiplier.instance(w.renderHue)
 
-        if (w.material == 0)
+        if (w.hasMaterial)
+        {
+            val jm = getOrGenerateJacketedModel(key)
+            jm.renderWire(t, uvt, m)
+            jm.renderMaterial(pos, w.material)
+        }
+        else
         {
             getOrGenerateWireModel(key).render(t, uvt, m)
             renderWireFrame(key, t, uvt)
         }
-        else getOrGenerateJacketedModel(key)
-            .renderWire(t, uvt, m)
-            .renderMaterial(pos, w.material)
     }
 
     private def renderWireFrame(key:Int, ops:IVertexOperation*)
@@ -438,26 +441,24 @@ private object FWireModelGen
 
 class FWireJacketModel(wire:CCModel, boxes:Array[IndexedCuboid6])
 {
-    def renderWire(ops:IVertexOperation*) =
+    def renderWire(ops:IVertexOperation*)
     {
         wire.render(ops:_*)
-        this
     }
 
-    def renderMaterial(vec:Vector3, mat:Int) =
+    def renderMaterial(vec:Vector3, mat:Int)
     {
         val material = MicroMaterialRegistry.getMaterial(mat)
         for (b <- boxes) MicroblockRender.renderCuboid(vec, material, 0, b, b.data.asInstanceOf[Int])
-        this
     }
 }
 
 object JacketedHighlightRenderer extends IMicroHighlightRenderer
 {
-    def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:MicroblockClass, size:Int, material:Int) =
+    override def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:CommonMicroClass, size:Int, material:Int) =
     {
         val tile = PRLib.getMultipartTile(player.worldObj, new BlockCoord(hit.blockX, hit.blockY, hit.blockZ))
-        if (tile == null || mcrClass.classID != 0 || size != 1 || player.isSneaking ||
+        if (tile == null || mcrClass.getClassId != 0 || size != 1 || player.isSneaking ||
             MicroMaterialRegistry.getMaterial(material).isTransparent) false
         else
         {
@@ -467,7 +468,7 @@ object JacketedHighlightRenderer extends IMicroHighlightRenderer
             part match
             {
                 case fpart:FramedWirePart =>
-                    if (fpart.material == material) false
+                    if (fpart.hasMaterial && fpart.material == material) false
                     else
                     {
                         RenderFramedWire.renderCoverHighlight(fpart, material)
