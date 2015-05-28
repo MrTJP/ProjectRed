@@ -13,6 +13,7 @@ import mrtjp.core.block.{InstancedBlock, InstancedBlockTile, TInstancedBlockRend
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.api.IScrewdriver
+import mrtjp.projectred.fabrication.ItemICBlueprint._
 import mrtjp.projectred.{ProjectRedFabrication, ProjectRedIntegration}
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.texture.IIconRegister
@@ -27,12 +28,6 @@ class BlockICMachine extends InstancedBlock("projectred.integration.icblock", Ma
 {
     setHardness(2)
     setCreativeTab(ProjectRedIntegration.tabIntegration2)
-
-    override def isOpaqueCube = true
-
-    override def renderAsNormalBlock = true
-
-    override def isSideSolid(w:IBlockAccess, x:Int, y:Int, z:Int, side:ForgeDirection) = true
 }
 
 abstract class TileICMachine extends InstancedBlockTile with TTileOrient
@@ -233,6 +228,17 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
             }
         }
         true
+    }
+
+    override def onBlockRemoval()
+    {
+        super.onBlockRemoval()
+        if (hasBP)
+        {
+            val stack = new ItemStack(ProjectRedFabrication.itemICBlueprint)
+            if (circuit.nonEmpty) saveIC(circuit, stack)
+            WorldLib.dropItem(world, x, y, z, stack)
+        }
     }
 
     override def doesRotate = false

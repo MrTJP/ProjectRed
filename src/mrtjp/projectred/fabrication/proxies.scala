@@ -10,6 +10,7 @@ import java.lang.{Character => JChar}
 import codechicken.lib.data.MCDataInput
 import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.MultiPartRegistry.IPartFactory2
+import cpw.mods.fml.client.registry.ClientRegistry
 import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TileRenderRegistry
@@ -34,8 +35,10 @@ class FabricationProxy_server extends IProxy with IPartFactory2
     {
         icBlock = new BlockICMachine
         icBlock.addTile(classOf[TileICWorkbench], 0)
+        icBlock.addTile(classOf[TileICPrinter], 1)
 
         itemICBlueprint = new ItemICBlueprint
+        itemICChip = new ItemICChip
 
         MultiPartRegistry.registerParts(this, "pr_icgate")
 
@@ -60,6 +63,7 @@ class FabricationProxy_server extends IProxy with IPartFactory2
 class FabricationProxy_client extends FabricationProxy_server
 {
     val icWorkbenchGui = 12
+    val icPrinterGui = 13
 
     @SideOnly(Side.CLIENT)
     override def preinit()
@@ -73,8 +77,14 @@ class FabricationProxy_client extends FabricationProxy_server
         super.init()
 
         TileRenderRegistry.setRenderer(icBlock, 0, RenderICWorkbench)
+        TileRenderRegistry.setRenderer(icBlock, 1, RenderICPrinter)
+
         MinecraftForgeClient.registerItemRenderer(itemICBlueprint, ItemRenderICBlueprint)
+
+        ClientRegistry.bindTileEntitySpecialRenderer(classOf[TileICPrinter], RenderICPrinterDynamic)
+
         GuiHandler.register(GuiICWorkbench, icWorkbenchGui)
+        GuiHandler.register(GuiICPrinter, icPrinterGui)
 
         RenderGate.hotswap(new RenderCircuitGate, GateDefinition.ICGate.ordinal)
     }

@@ -237,7 +237,7 @@ class ItemDataCard extends ItemCore("projectred.core.datacard")
 
     import ItemDataCard._
 
-    override def getIcon(stack:ItemStack, pass:Int) = if (hasData(stack)) icons(1) else icons(0)
+    //override def getIcon(stack:ItemStack, pass:Int) = if (hasData(stack)) icons(1) else icons(0)
 
     override def getIcon(stack:ItemStack, renderPass:Int, player:EntityPlayer, usingItem:ItemStack, useRemaining:Int) =
         if (hasData(stack)) icons(1) else icons(0)
