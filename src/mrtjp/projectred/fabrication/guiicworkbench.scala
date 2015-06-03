@@ -427,7 +427,6 @@ class GuiICWorkbench(tile:TileICWorkbench) extends NodeGui(330, 256)
         addChild(clip)
 
         val pan = new NodePan
-        pan.position = Point(0, 0)
         pan.size = Size(252, 197)
         pan.clampSize = Size(252, 197)-195
         pan.dragTestFunction = {() => Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)}
