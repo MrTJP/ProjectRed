@@ -82,6 +82,7 @@ object ComponentStore
     var segment:IIcon = null
     var segmentDisp:IIcon = null
     var icChipIcon:IIcon = null
+    var icChipIconOff:IIcon = null
     var icHousingIcon:IIcon = null
 
     def registerIcons(reg:IIconRegister)
@@ -123,6 +124,7 @@ object ComponentStore
         segment = register("segment")
         segmentDisp = register("segmentdisp")
         icChipIcon = register("ic")
+        icChipIconOff = register("ic_objicon")
         icHousingIcon = register("ichousing")
         RenderGate.registerIcons(reg)
     }
