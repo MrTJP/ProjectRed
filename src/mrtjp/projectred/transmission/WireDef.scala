@@ -50,7 +50,7 @@ object WireDef extends ItemDefinition
     val BUNDLED_14 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/red")
     val BUNDLED_15 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/black")
 
-    val POWER_100v = WireDef("pr_100v", "pr_f100v", 1, 0xFFFFFF, "power/100v")
+    val POWER_LOWLOAD = WireDef("pr_pwrlow", "pr_fpwrlow", 1, 0xFFFFFF, "power/lowload")
 
     //Groups
     val INSULATED_WIRES = INSULATED_0 to INSULATED_15 toArray

@@ -2,8 +2,8 @@ package mrtjp.projectred.core;
 
 import codechicken.microblock.handler.MicroblockProxy;
 import cpw.mods.fml.common.registry.GameRegistry;
-import mrtjp.projectred.ProjectRedCore;
 import mrtjp.core.color.Colors_old;
+import mrtjp.projectred.ProjectRedCore;
 import mrtjp.projectred.core.libmc.recipe.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import scala.collection.Iterator;
 
 import static mrtjp.projectred.core.PartDefs.*;
 
@@ -19,9 +18,27 @@ public class CoreRecipes
 {
     public static void initCoreRecipes()
     {
-        PartDefs.initOreDict();
+        initOreDict();
         initPartRecipes();
         initToolRecipes();
+    }
+
+    private static void initOreDict()
+    {
+        for (int i = 0; i < 16; i++)
+            OreDictionary.registerOre(PartDefs.oreDictDefinitionIllumar(), PartDefs.ILLUMARS()[i].makeStack());
+
+        OreDictionary.registerOre("gemRuby", PartDefs.RUBY().makeStack());
+        OreDictionary.registerOre("gemSapphire", PartDefs.SAPPHIRE().makeStack());
+        OreDictionary.registerOre("gemPeridot", PartDefs.PERIDOT().makeStack());
+
+        OreDictionary.registerOre("ingotRedAlloy", PartDefs.REDINGOT().makeStack());
+        OreDictionary.registerOre("ingotCopper", PartDefs.COPPERINGOT().makeStack());
+        OreDictionary.registerOre("ingotTin", PartDefs.TININGOT().makeStack());
+        OreDictionary.registerOre("ingotSilver", PartDefs.SILVERINGOT().makeStack());
+        OreDictionary.registerOre("ingotElectrotine", PartDefs.ELECTROTINEINGOT().makeStack());
+
+        OreDictionary.registerOre("dustElectrotine", PartDefs.ELECTROTINE().makeStack());
     }
 
     private static void initToolRecipes()
@@ -35,8 +52,7 @@ public class CoreRecipes
         b.registerResult();
         /** Panel Reset recipe **/
         ShapelessRecipeBuilder s = RecipeLib.newShapelessBuilder();
-        s.$less$minus$greater("i")
-                .$plus$eq((Input) new MicroIn(MicroIn.face(), MicroIn.fourth(), Blocks.diamond_block))
+        s.$plus$eq((Input) new MicroIn(MicroIn.face(), MicroIn.fourth(), Blocks.diamond_block))
                 .$plus$eq((Output) new ItemOut(new ItemStack(Items.diamond, 2)));
         s.registerResult();
 
@@ -193,9 +209,8 @@ public class CoreRecipes
         GameRegistry.addSmelting(REDIRONCOMPOUND().makeStack(), REDINGOT().makeStack(), 0);
 
         /** Illumar **/
-        Iterator it = ILLUMARS().iterator();
-        for (int i = 0; i < ILLUMARS().size(); i++) {
-            PartVal p = (PartVal)it.next();
+        for (int i = 0; i < 16; i++) {
+            PartVal p = PartDefs.ILLUMARS()[i];
             GameRegistry.addRecipe(new ShapelessOreRecipe(p.makeStack(),
                     "dustGlowstone",
                     "dustGlowstone",
@@ -256,6 +271,29 @@ public class CoreRecipes
                 'g', "dustGlowstone",
                 's', SILICON().makeStack()
                 ));
-    }
 
+        /** Electrotine Ingot **/
+        GameRegistry.addSmelting(ELECTROTINEIRONCOMPOUND().makeStack(), ELECTROTINEINGOT().makeStack(), 0);
+
+        /** Electrotine Iron Compound **/
+        GameRegistry.addRecipe(new ShapedOreRecipe(ELECTROTINEIRONCOMPOUND().makeStack(),
+                "bbb",
+                "bib",
+                "bbb",
+                'b', "dustElectrotine",
+                'i', "ingotIron"
+        ));
+
+        /** Electrotine Silicon Compound **/
+        GameRegistry.addRecipe(new ShapedOreRecipe(ELECTROTINESILICONCOMPOUND().makeStack(),
+                "bbb",
+                "bsb",
+                "bbb",
+                'b', "dustElectrotine",
+                's', SILICON().makeStack()
+        ));
+
+        /** Electrosilicon **/
+        GameRegistry.addSmelting(ELECTROTINESILICONCOMPOUND().makeStack(), ELECTROSILICON().makeStack(), 0);
+    }
 }

@@ -2,7 +2,7 @@ package mrtjp.projectred
 
 import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
-import mrtjp.projectred.expansion.{BlockMachine, ExpansionProxy}
+import mrtjp.projectred.expansion._
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
@@ -13,6 +13,13 @@ object ProjectRedExpansion
     /** Blocks **/
     var machine1:BlockMachine = null //machines
     var machine2:BlockMachine = null //devices
+
+    /** Items **/
+    var emptybattery:ItemBatteryEmpty = null
+    var battery:ItemBattery = null
+
+    /** Parts **/
+    var itemSolar:ItemSolarPanel = null
 
     val tabExpansion = new CreativeTabs("expansion")
     {

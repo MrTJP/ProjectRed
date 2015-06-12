@@ -1,14 +1,16 @@
 package mrtjp.projectred.transmission
 
-import codechicken.multipart.MultiPartRegistry
-import codechicken.multipart.MultiPartRegistry.IPartFactory
+import codechicken.lib.data.MCDataInput
+import codechicken.microblock.MicroMaterialRegistry
+import codechicken.multipart.MultiPartRegistry.IPartFactory2
+import codechicken.multipart.{MultiPartRegistry, TMultiPart}
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedTransmission._
 import mrtjp.projectred.core.IProxy
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.client.MinecraftForgeClient
-import codechicken.microblock.MicroMaterialRegistry
-import cpw.mods.fml.relauncher.{Side, SideOnly}
 
-class TransmissionProxy_server extends IProxy with IPartFactory
+class TransmissionProxy_server extends IProxy with IPartFactory2
 {
     override def preinit() {}
 
@@ -16,7 +18,8 @@ class TransmissionProxy_server extends IProxy with IPartFactory
     {
         MultiPartRegistry.registerParts(this, Array[String](
             "pr_redwire", "pr_insulated", "pr_bundled",
-            "pr_fredwire", "pr_finsulated", "pr_fbundled"
+            "pr_fredwire", "pr_finsulated", "pr_fbundled",
+            "pr_pwrlow", "pr_fpwrlow"
 //            "pr_sredwire", "pr_sinsulated", "pr_sbundled" //legacy
         ))
         itemPartWire = new ItemPartWire
@@ -27,7 +30,10 @@ class TransmissionProxy_server extends IProxy with IPartFactory
 
     override def postinit(){}
 
-    override def createPart(name:String, client:Boolean) = name match
+    override def createPart(name:String, nbt:NBTTagCompound) = createPart(name)
+    override def createPart(name:String, packet:MCDataInput) = createPart(name)
+
+    def createPart(name:String):TMultiPart = name match
     {
         case "pr_redwire" => new RedAlloyWirePart
         case "pr_insulated" => new InsulatedRedAlloyPart
@@ -35,6 +41,8 @@ class TransmissionProxy_server extends IProxy with IPartFactory
         case "pr_fredwire" => new FramedRedAlloyWirePart
         case "pr_finsulated" => new FramedInsulatedRedAlloyPart
         case "pr_fbundled" => new FramedBundledCablePart
+        case "pr_pwrlow" => new LowLoadPowerLine
+        case "pr_fpwrlow" => new FramedLowLoadPowerLine
 //        //legacy
 //        case "pr_sredwire" => new FramedRedAlloyWirePart
 //        case "pr_sinsulated" => new FramedInsulatedRedAlloyPart

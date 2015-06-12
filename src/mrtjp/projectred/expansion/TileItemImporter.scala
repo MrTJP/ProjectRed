@@ -18,6 +18,7 @@ import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
+import net.minecraft.item.ItemStack
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.util.ForgeDirection
@@ -56,7 +57,7 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice
         for ((k, v) <- list)
         {
             val stack = k.makeStack(w.extractItem(k, extractCount))
-            if (stack.stackSize > 0)
+            if (stack.stackSize > 0 && canImport(k))
             {
                 storage.add(stack)
                 active = true
@@ -88,7 +89,7 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice
         val elist = world.getEntitiesWithinAABB(classOf[EntityItem],
             box.copy.add(new Vector3(x, y, z)).toAABB).asInstanceOf[JList[EntityItem]]
         var added = false
-        for (ei <- elist) if (!ei.isDead && ei.getEntityItem.stackSize > 0)
+        for (ei <- elist) if (!ei.isDead && ei.getEntityItem.stackSize > 0 && canImport(ItemKey.get(ei.getEntityItem)))
         {
             storage.add(ei.getEntityItem)
             world.removeEntity(ei)
@@ -110,6 +111,8 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice
         world.isAirBlock(bc.x, bc.y, bc.z) || !world.getBlock(bc.x, bc.y, bc.z)
                 .isSideSolid(world, bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side))
     }
+
+    def canImport(key:ItemKey) = true
 }
 
 object TileItemImporter
