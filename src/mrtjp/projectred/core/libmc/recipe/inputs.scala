@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.libmc.recipe
 
-import codechicken.microblock.ItemMicroPart
+import codechicken.microblock._
 import mrtjp.core.item.ItemKeyStack
 import net.minecraft.block.Block
 import net.minecraft.item.{Item, ItemStack}
@@ -24,38 +24,35 @@ class ItemIn(val key:ItemKeyStack) extends Input
     override def matchingInputs = ins
 }
 
-object OreIn
+import scala.collection.JavaConversions._
+import OreDictionary._
+class OreIn(val oreIDs:Seq[Int]) extends Input
 {
-    private def getOreName(stack:ItemStack) =
-    {
-        val IDs = OreDictionary.getOreIDs(stack)
-        if (IDs.length == 0) "Unknown" else OreDictionary.getOreName(IDs(0))
-    }
-}
-
-class OreIn(val oreID:String) extends Input
-{
-    def this(stack:ItemKeyStack) =
-        this(OreIn.getOreName(stack.makeStack))
+    def this(id:Int) = this(Seq(id))
+    def this(name:String) = this(getOreID(name))
+    def this(stack:ItemStack) = this(getOreIDs(stack))
+    def this(b:Block) = this(new ItemStack(b))
+    def this(i:Item) = this(new ItemStack(i))
+    def this(stack:ItemKeyStack) = this(stack.makeStack)
 
     def matches(that:ItemKeyStack) =
     {
-        val thatID = OreIn.getOreName(that.makeStack)
-        thatID != "Unknown" && oreID == thatID
+        getOreIDs(that.makeStack).exists(oreIDs contains _)
     }
 
-    import scala.collection.JavaConversions._
-    val ins:Seq[ItemStack] = OreDictionary.getOres(oreID)
+    val ins = oreIDs.map(getOreName).map(getOres).flatten
     override def matchingInputs = ins
 }
 
 object MicroIn
 {
-    val face = 0
-    val hollowFace = 1
-    val corner = 2
-    val edge = 3
+    //class ids
+    def face = FaceMicroClass.getClassId
+    def hollowFace = HollowMicroClass.getClassId
+    def corner = CornerMicroClass.getClassId
+    def edge = EdgeMicroClass.getClassId
 
+    //sizes
     val eight = 1
     val fourth = 2
     val half = 4

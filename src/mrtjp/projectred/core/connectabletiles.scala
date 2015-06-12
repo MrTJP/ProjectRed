@@ -10,6 +10,7 @@ import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.block.Block
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
 
 trait TTileAcquisitions extends InstancedBlockTile
 {
@@ -88,35 +89,35 @@ trait TTileConnectable extends InstancedBlockTile with TTileAcquisitions with IC
 
     override def connectStraight(part:IConnectable, s:Int, edgeRot:Int) =
     {
-        if (canConnect(part))
+        if (canConnectPart(part, s, edgeRot))
         {
             val old = connMap
 
-            if (edgeRot > -1) connMap |= (0x1<<edgeRot)<<s
-            else connMap |= 0x1000000<<s
+            if (edgeRot > -1) connMap |= (0x1<<edgeRot)<<s*4
+            else connMap |= 0x1000000<<s*4
 
             if (old != connMap) onMaskChanged()
             true
         }
-        false
+        else false
     }
 
     override def connectCorner(part:IConnectable, s:Int, edgeRot:Int) =
     {
-        if (canConnect(part))
+        if (canConnectPart(part, s, edgeRot))
         {
             val old = connMap
-            connMap |= (0x100000000L<<edgeRot)<<s
+            connMap |= (0x100000000L<<edgeRot)<<s*4
             if (old != connMap) onMaskChanged()
             true
         }
-        false
+        else false
     }
 
     override def connectInternal(part:IConnectable, r:Int) = false
     override def canConnectCorner(r:Int) = false
 
-    def canConnect(part:IConnectable):Boolean
+    def canConnectPart(part:IConnectable, s:Int, edgeRot:Int):Boolean
     def onMaskChanged(){}
 
     def outsideCornerEdgeOpen(s:Int, edgeRot:Int) =
@@ -136,28 +137,28 @@ trait TTileConnectable extends InstancedBlockTile with TTileAcquisitions with IC
 
     def discoverStraightCenter(s:Int) = getStraightCenter(s) match
     {
-        case ic:IConnectable => canConnect(ic) && ic.connectStraight(this, s^1, -1)
-        case _ => false
+        case ic:IConnectable => canConnectPart(ic, s, -1) && ic.connectStraight(this, s^1, -1)
+        case _ => discoverStraightOverride(s)
     }
 
     def discoverStraight(s:Int, edgeRot:Int) = getStraight(s, edgeRot) match
     {
-        case ic:IConnectable => canConnect(ic) && ic.connectStraight(this, rotFromStraight(s, edgeRot), -1)
-        case _ => discoverStraightOverride(s)
+        case ic:IConnectable => canConnectPart(ic, s, edgeRot) && ic.connectStraight(this, rotFromStraight(s, edgeRot), -1)
+        case _ => false
     }
 
     def discoverCorner(s:Int, edgeRot:Int) = getCorner(s, edgeRot) match
     {
-        case ic:IConnectable => canConnect(ic) && outsideCornerEdgeOpen(s, edgeRot) &&
-            ic.connectCorner(this, rotFromCorner(s, edgeRot), -1)
+        case ic:IConnectable => canConnectPart(ic, s, edgeRot) && outsideCornerEdgeOpen(s, edgeRot) &&
+            ic.canConnectCorner(rotFromCorner(s, edgeRot)) && ic.connectCorner(this, rotFromCorner(s, edgeRot), -1)
         case _ => false
     }
 
-    def discoverStraightOverride(s:Int) =
+    def discoverStraightOverride(s:Int) = //TODO remove to discoverStraightCenterOVerride
     {
         val pos = posOfInternal.offset(s)
         val t = WorldLib.getTileEntity(getWorldObj, pos, classOf[TTileConnectable])
-        if (t != null && canConnect(t)) t.connectStraight(this, s^1, -1)
+        if (t != null && canConnectPart(t, s, -1)) t.connectStraight(this, s^1, -1)
         else false
     }
 
@@ -170,10 +171,10 @@ trait TTileConnectable extends InstancedBlockTile with TTileAcquisitions with IC
             if (discoverStraightCenter(s)) connMap2 |= 0x1000000<<s
 
             for (edgeRot <- 0 until 4) if (discoverStraight(s, edgeRot))
-                connMap2 |= (0x1<<edgeRot)<<s
+                connMap2 |= (0x1<<edgeRot)<<s*4
 
             for (edgeRot <- 0 until 4) if (discoverCorner(s, edgeRot))
-                connMap2 |= (0x100000000L<<edgeRot)<<s
+                connMap2 |= (0x100000000L<<edgeRot)<<s*4
         }
 
         if (connMap != connMap2)
@@ -187,7 +188,7 @@ trait TTileConnectable extends InstancedBlockTile with TTileAcquisitions with IC
 
     def maskConnects(s:Int) = (connMap&(0xF0000000FL<<(s*4)|0x1000000L<<s)) != 0
     def maskConnectsStraightCenter(s:Int) = (connMap&0x1000000L<<s) != 0
-    def maskConnectsStraight(s:Int, edgeRot:Int) = (connMap&((1<<s*4)<<edgeRot)) != 0
+    def maskConnectsStraight(s:Int, edgeRot:Int) = (connMap&((1<<edgeRot)<<s*4)) != 0
     def maskConnectsCorner(s:Int, edgeRot:Int) = (connMap&((0x100000000L<<s*4)<<edgeRot)) != 0
 }
 
@@ -195,14 +196,30 @@ trait TConnectableInstTile extends InstancedBlockTile with TTileConnectable
 {
     def clientNeedsMap = false
 
-    def sendConnUpdate() = if (clientNeedsMap) writeStream(31).writeLong(connMap).sendToChunk()
+    abstract override def save(tag:NBTTagCompound)
+    {
+        super.save(tag)
+        tag.setLong("connMap", connMap)
+    }
 
-    override def onMaskChanged(){sendConnUpdate()}
+    abstract override def load(tag:NBTTagCompound)
+    {
+        super.load(tag)
+        connMap = tag.getLong("connMap")
+    }
 
-    abstract override def read(in:MCDataInput, switchkey:Int) = switchkey match
+    abstract override def read(in:MCDataInput, key:Int) = key match
     {
         case 31 => connMap = in.readLong()
-        case _ => super.read(in, switchkey)
+        case _ => super.read(in, key)
+    }
+
+    def sendConnUpdate() = if (clientNeedsMap) writeStream(31).writeLong(connMap).sendToChunk()
+
+    abstract override def onMaskChanged()
+    {
+        super.onMaskChanged()
+        sendConnUpdate()
     }
 
     abstract override def onNeighborChange(b:Block)
@@ -221,5 +238,49 @@ trait TConnectableInstTile extends InstancedBlockTile with TTileConnectable
     {
         super.onBlockRemoval()
         WorldLib.bulkBlockUpdate(world, x, y, z, getBlock)
+    }
+}
+
+trait TPowerTile extends InstancedBlockTile with TConnectableInstTile with TCachedPowerConductor
+{
+    override def idRange = 0 until 30
+
+    def getExternalCond(id:Int):PowerConductor =
+    {
+        if (0 until 24 contains id) //side edge conns
+        {
+            val s = id/4
+            val edgeRot = id%4
+            if (maskConnectsStraight(s, edgeRot)) getStraight(s, edgeRot) match
+            {
+                case tp:IPowerConnectable => return tp.conductor(rotFromStraight(s, edgeRot))
+                case _ =>
+            }
+            else if (maskConnectsCorner(s, edgeRot)) getCorner(s, edgeRot) match
+            {
+                case tp:IPowerConnectable => return tp.conductor(rotFromCorner(s, edgeRot))
+                case _ =>
+            }
+        }
+        else if (24 until 30 contains id) //straight face conns
+        {
+            val s = id-24
+            if (maskConnectsStraightCenter(s)) getStraightCenter(s) match
+            {
+                case tp:IPowerConnectable => return tp.conductor(s^1)
+                case _ => WorldLib.getTileEntity(world, posOfInternal.offset(s), classOf[IPowerConnectable]) match
+                {
+                    case tp:IPowerConnectable => return tp.conductor(s^1)
+                    case _ =>
+                }
+            }
+        }
+        null
+    }
+
+    abstract override def onMaskChanged()
+    {
+        super.onMaskChanged()
+        needsCache = true
     }
 }

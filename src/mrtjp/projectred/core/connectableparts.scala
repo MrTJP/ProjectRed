@@ -249,18 +249,21 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
         }
     }
 
-    def discoverCorner(r:Int) =
+    def discoverCorner(r:Int):Int =
     {
-        if (outsideCornerEdgeOpen(r)) getCorner(r) match
+        if (outsideCornerEdgeOpen(r))
         {
-            case c:IConnectable =>
-                if ((c.canConnectCorner(rotFromCorner(r)) || canConnectCorner(r)) &&
-                    canConnectPart(c, r) && c.connectCorner(this, rotFromCorner(r), -1))
-                    if (setRenderFlag(c)) 2 else 1
-                else 0
-            case _ => 0
+            getCorner(r) match
+            {
+                case c:IConnectable =>
+                    if ((c.canConnectCorner(rotFromCorner(r)) || canConnectCorner(r)) &&
+                            canConnectPart(c, r) && c.connectCorner(this, rotFromCorner(r), -1))
+                        return if (setRenderFlag(c)) 2 else 1
+                case _ =>
+            }
+            return if (discoverCornerOverride(absoluteDir(r))) 2 else 0
         }
-        else if (discoverCornerOverride(absoluteDir(r))) 2 else 0
+        0
     }
 
     override def discoverStraight(r:Int) = getStraight(r) match
@@ -302,6 +305,7 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
         if (newConn != (connMap&0xF000))
         {
             connMap = connMap& ~0xF000|newConn
+            onMaskChanged()
             true
         }
         else false
@@ -332,6 +336,7 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
         {
             val diff = connMap^newConn //corners need to be notified, because normal block updates wont touch them
             connMap = connMap& ~0xF000FF|newConn
+            onMaskChanged()
             for (r <- 0 until 4) if ((diff&1<<r)!=0) notifyCorner(r)
             true
         }
@@ -351,6 +356,7 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
         if (newConn != (connMap&0x10F00))
         {
             connMap = connMap& ~0x10F00|newConn
+            onMaskChanged()
             true
         }
         else false
@@ -383,7 +389,7 @@ trait TCenterConnectable extends TConnectableCommons with TCenterAcquisitions
 
     override def canConnectCorner(r:Int) = false
 
-    override def connectStraight(part:IConnectable, s:Int, edgeSide:Int) =
+    override def connectStraight(part:IConnectable, s:Int, edgeRot:Int) =
     {
         if (canConnectPart(part, s) && maskOpen(s))
         {
@@ -407,7 +413,7 @@ trait TCenterConnectable extends TConnectableCommons with TCenterAcquisitions
         else false
     }
 
-    override def connectCorner(wire:IConnectable, r:Int, edgeSide:Int) = false
+    override def connectCorner(wire:IConnectable, r:Int, edgeRot:Int) = false
 
     override def maskOpen(s:Int) = (connMap&0x1000<<s) != 0
     override def maskConnects(s:Int) = (connMap&0x41<<s) != 0
@@ -436,6 +442,7 @@ trait TCenterConnectable extends TConnectableCommons with TCenterAcquisitions
         if (newConn != (connMap&0x3F000))
         {
             connMap = connMap& ~0x3F000|newConn
+            onMaskChanged()
             true
         }
         else false
@@ -449,6 +456,7 @@ trait TCenterConnectable extends TConnectableCommons with TCenterAcquisitions
         if (newConn != (connMap&0x3f))
         {
             connMap = connMap& ~0x3F|newConn
+            onMaskChanged()
             true
         }
         else false
@@ -462,6 +470,7 @@ trait TCenterConnectable extends TConnectableCommons with TCenterAcquisitions
         if (newConn != (connMap&0xFC0))
         {
             connMap = connMap& ~0xFC0|newConn
+            onMaskChanged()
             true
         }
         else false

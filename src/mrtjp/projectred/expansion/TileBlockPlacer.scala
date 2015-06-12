@@ -7,7 +7,7 @@ package mrtjp.projectred.expansion
 
 import java.util.UUID
 
-import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
 import codechicken.lib.raytracer.RayTracer
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
@@ -17,7 +17,7 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.color.Colors
 import mrtjp.core.gui._
-import mrtjp.core.inventory.{SimpleInventory, TPortableInventory}
+import mrtjp.core.inventory.TInventory
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.vec.Point
 import mrtjp.core.world.WorldLib
@@ -27,7 +27,6 @@ import mrtjp.projectred.expansion.TileBlockPlacer._
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLivingBase}
-import net.minecraft.inventory.Container
 import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
@@ -38,40 +37,31 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent
 
 import scala.ref.WeakReference
 
-class TileBlockPlacer extends TileMachine with TActiveDevice with TPortableInventory
+class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory
 {
-    override def getBlock = ProjectRedExpansion.machine2
-    override def doesRotate = false
-    override def doesOrient = true
-
-    override def createInv = new SimpleInventory(9)
-
     override def save(tag:NBTTagCompound)
     {
         super.save(tag)
-        inv.saveInv(tag)
+        saveInv(tag)
     }
 
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        inv.loadInv(tag)
-    }
-
-    override def writeDesc(out:MCDataOutput)
-    {
-        super.writeDesc(out)
-    }
-
-    override def readDesc(in:MCDataInput)
-    {
-        super.readDesc(in)
+        loadInv(tag)
     }
 
     override def markDirty()
     {
         super.markDirty()
     }
+
+    override def getBlock = ProjectRedExpansion.machine2
+    override def doesRotate = false
+    override def doesOrient = true
+
+    override def size = 9
+    override def name = "block_placer"
 
     def reloadPlayer()
     {
@@ -80,8 +70,15 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TPortableInven
                 new GameProfile(UUID.randomUUID(), "[PR_FAKE]")))
 
         val pos = new Vector3(x, y, z).add(positions(side))
+
         val (pitch, yaw) = angles(side)
-        fakePlayer.setLocationAndAngles(pos.x, pos.y, pos.z, pitch, yaw)
+        fakePlayer.setLocationAndAngles(pos.x, pos.y, pos.z, yaw, pitch)
+    }
+
+    override def onBlockRemoval()
+    {
+        super.onBlockRemoval()
+        dropInvContents(world, x, y, z)
     }
 
     override def onBlockActivated(player:EntityPlayer, actside:Int):Boolean =
@@ -93,18 +90,8 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TPortableInven
         true
     }
 
-    def createContainer(player:EntityPlayer):Container =
-    {
-        val cont = new NodeContainer
-        var s = 0
-        for ((x, y) <- GuiLib.createSlotGrid(62, 18, 3, 3, 0, 0))
-        {
-            cont.addSlotToContainer(new Slot3(inv, s, x, y))
-            s += 1
-        }
-        cont.addPlayerInv(player, 8, 86)
-        cont
-    }
+    def createContainer(player:EntityPlayer) =
+        new ContainerBlockPlacer(player, this)
 
     override def onActivate()
     {
@@ -204,7 +191,7 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TPortableInven
         val elist = world.getEntitiesWithinAABBExcludingEntity(fakePlayer, box.toAABB)
 
         var eHit:Entity = null
-        var edis = 0.0D
+        var edis = Double.MaxValue
 
         for (i <- 0 until elist.size())
         {
@@ -219,11 +206,11 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TPortableInven
                 }
                 else
                 {
-                    val mop = RayTracer.instance.rayTraceCuboid(start, end, box)
+                    val mop = RayTracer.instance.rayTraceCuboid(start, end, a2)
                     if (mop != null)
                     {
                         val d = new Vector3(mop.hitVec).subtract(start).mag
-                        if (d < edis || edis == 0.0D)
+                        if (d < edis)
                         {
                             eHit = e
                             edis = d
@@ -241,7 +228,7 @@ object TileBlockPlacer
     var fake = WeakReference[EntityPlayer](null)
     def fakePlayer = fake.get.orNull
 
-    var angles = Seq(
+    val angles = Seq(
         (-90F, 0F),
         (90F, 0F),
         (0F, 0F),
@@ -251,16 +238,29 @@ object TileBlockPlacer
     )
 
     val positions = Seq(
-        new Vector3(0.5D, -1.1D+0.51D, 0.5D),
-        new Vector3(0.5D, -1.1D-0.51D, 0.5D),
-        new Vector3(0.5D, -1.1D, 0.5D+0.51D),
-        new Vector3(0.5D, -1.1D, 0.5D-0.51D),
-        new Vector3(0.5D+0.51D, -1.1D, 0.5D),
-        new Vector3(0.5D-0.51D, -1.1D, 0.5D)
+        new Vector3(0.5D,       -1.12D+0.60D, 0.5D),
+        new Vector3(0.5D,       -1.12D-0.52D, 0.5D),
+        new Vector3(0.5D,       -1.12D,       0.5D+0.52D),
+        new Vector3(0.5D,       -1.12D,       0.5D-0.52D),
+        new Vector3(0.5D+0.52D, -1.12D,       0.5D),
+        new Vector3(0.5D-0.52D, -1.12D,       0.5D)
     )
 }
 
-class GuiBlockPlacer(c:Container) extends NodeGui(c, 176, 168)
+class ContainerBlockPlacer(p:EntityPlayer, tile:TileBlockPlacer) extends NodeContainer
+{
+    {
+        var s = 0
+        for ((x, y) <- GuiLib.createSlotGrid(62, 18, 3, 3, 0, 0))
+        {
+            addSlotToContainer(new Slot3(tile, s, x, y))
+            s += 1
+        }
+        addPlayerInv(p, 8, 86)
+    }
+}
+
+class GuiBlockPlacer(c:ContainerBlockPlacer) extends NodeGui(c, 176, 168)
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {

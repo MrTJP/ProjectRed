@@ -16,9 +16,8 @@ object ProjectRedExploration
     var blockOres:BlockOre = null
     var blockDecoratives:BlockDecoratives = null
     var blockDecorativeWalls:BlockDecorativeWalls = null
-//    var blockStainedLeaf:BlockStainedLeaf = null //TODO replace
-//    var blockStainedSapling:BlockStainedSapling = null
     var blockLily:BlockLily = null
+    var blockBarrel:BlockBarrel = null
 
     /** Materials **/
     var toolMaterialRuby:ToolMaterial = null

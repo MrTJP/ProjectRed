@@ -4,6 +4,8 @@ import mrtjp.projectred.api.IConnectable
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.World
 
+import scala.collection.mutable.{Set => MSet}
+
 /**
  * Interface for things that wish to conduct/use electricity.
  */
@@ -52,7 +54,7 @@ class PowerConductor(val parent:IPowerConnectable, ids:Seq[Int])
     val flows = new Array[Double](ids.max+1)
 
     var Vloc = 0.0D //local electric potential
-    var Iloc = 0.0D //local intensity of electric current
+    var Iloc = 0.0D //local electric current
 
     var Vflow = 0.0D //aquired uncalculated voltage
     var Iflow = 0.0D //aquired uncalculated current
@@ -86,7 +88,7 @@ class PowerConductor(val parent:IPowerConnectable, ids:Seq[Int])
     /**
      * @return The current(I), in Amps (A)
      */
-    def amperage =
+    def current =
     {
         voltage()
         Iloc
@@ -95,26 +97,26 @@ class PowerConductor(val parent:IPowerConnectable, ids:Seq[Int])
     /**
      * @return The power(P), in Watts (W)
      */
-    def wattage = voltage()*Iloc
+    def power = voltage()*Iloc
 
     def applyCurrent(I:Double)
     {
         voltage()
         Vflow += I
-        Iflow += Math.abs(I)
+        Iflow += math.abs(I)
     }
 
     def applyPower(P:Double)
     {
         val Ptot = voltage()*Vloc + 0.1D*P*capacitance
-        val dP = Math.sqrt(Ptot)-Vloc
+        val dP = math.sqrt(Ptot)-Vloc
         applyCurrent(20.0D*dP/capacitance)
     }
 
     def drawPower(P:Double)
     {
         val Ptot = voltage()*Vloc - 0.1D*P*capacitance
-        val dP = if (Ptot < 0.0D) 0.0D else Math.sqrt(Ptot)-Vloc
+        val dP = if (Ptot < 0.0D) 0.0D else math.sqrt(Ptot)-Vloc
         applyCurrent(20.0D*dP/capacitance)
     }
 
@@ -123,18 +125,10 @@ class PowerConductor(val parent:IPowerConnectable, ids:Seq[Int])
     def update()
     {
         voltage()
-        val index = (parent.world.getTotalWorldTime%ids.length).asInstanceOf[Int]
-        for (id <- idsFrom(index))
+        for (id <- ids)
             if (!surge(parent.conductorOut(id), id)) flows(id) = 0.0D
 
-        surgeIn = Set[PowerConductor]()
-
-        def idsFrom(index:Int) =
-        {
-            var id2 = Seq[Int]()
-            for (i <- 0 until ids.length) id2 :+= ids((index+i)%ids.length)
-            id2
-        }
+        surgeIn.clear()
     }
 
     def surge(cond:PowerConductor, id:Int) =
@@ -157,7 +151,7 @@ class PowerConductor(val parent:IPowerConnectable, ids:Seq[Int])
         }
     }
 
-    var surgeIn = Set[PowerConductor]()
+    var surgeIn = MSet[PowerConductor]()
     def applySurge(from:PowerConductor, Iin:Double)
     {
         surgeIn += from
@@ -189,14 +183,14 @@ class PowerConductor(val parent:IPowerConnectable, ids:Seq[Int])
     }
 }
 
-trait TPowerFlow extends PowerConductor
+trait TPowerDrawPoint extends PowerConductor
 {
     var charge = 0
     var flow = 0
 
     override def capacitance = 0.25D
 
-    def getChargeScaled(scale:Int) = Math.min(scale, scale*charge/1000)
+    def getChargeScaled(scale:Int) = math.min(scale, scale*charge/1000)
     def getFlowScaled(scale:Int) = Integer.bitCount(flow)*scale/32
 
     def canWork = charge > 600
@@ -223,3 +217,9 @@ trait TPowerFlow extends PowerConductor
         flow = tag.getInteger("flow")
     }
 }
+
+/**
+ * Interfaces used by low-load power wires and machines
+ */
+trait ILowLoadPowerLine
+trait ILowLoadMachine

@@ -15,18 +15,25 @@ import net.minecraft.world.World
 
 import scala.collection.JavaConversions._
 
-class ShapedRecipeBuilder extends RecipeBuilder with BuildResult[ShapedBuilderRecipe]
+class ShapedRecipeBuilder extends RecipeBuilder with TMappedRecipeBuilder
 {
-    override def result =
+    var size = 3
+    def warp(s:Int):this.type = {size = s; this}
+
+    def result() =
     {
         compute()
         new ShapedBuilderRecipe(this)
     }
 
-    override def registerResult():this.type = {GameRegistry.addRecipe(result); this}
+    def registerResult():this.type =
+    {
+        GameRegistry.addRecipe(result())
+        this
+    }
 }
 
-class ShapedBuilderRecipe(override val builder:ShapedRecipeBuilder) extends BuilderRecipe(builder)
+class ShapedBuilderRecipe(val builder:ShapedRecipeBuilder) extends IRecipe
 {
     override def getRecipeSize = builder.size
 

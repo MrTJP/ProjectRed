@@ -1,3 +1,23 @@
+v4.7.0pre1
+- ADDED: Electrotine power system
+- ADDED: Battery
+- ADDED: Inductive Furnace
+- ADDED: Solar Panel
+- ADDED: Low Load Power Cable
+- ADDED: Item Barrel
+- ADDED: Copper, Tin, Silver, and Electrotine ores
+- FIX: Dynamic cracking stone bricks
+- FIX: Dynamic Spreading mossy blocks
+- FIX: Wire corner connection bug
+- FIX: Block placer deploy angles
+- FIX: Block placer entity tracing
+- FIX: Block placer drops
+- FIX: Filtered importer ignoring filter on inventory pull
+- FIX: Container shift clicking to single item slot
+- FIX: ISidedInventory pathfinding bug for pressure tubes
+- FIX: Non-stackable redstone block strips being dropped from redstone pipes
+- CHANGE: Made marble caves larger
+
 v4.6.2
 - ADDED: Fire Starter
 - ADDED: Diamond panel to diamond reset recipe
