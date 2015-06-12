@@ -33,7 +33,6 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
     var colour:Byte = -1
 
     override def size = 9
-    override def stackLimit = 64
     override def name = "filtered importer"
 
     override def canExtractItem(slot:Int, item:ItemStack, s:Int) = (s&6) != (side&6)
@@ -46,8 +45,12 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
     override def canAcceptInput(item:ItemKey, side:Int):Boolean =
     {
         if (!super.canAcceptInput(item, side)) return false
-        val w = InvWrapper.wrap(this)
-        val map = w.getAllItemStacks
+        canImport(item)
+    }
+
+    override def canImport(item:ItemKey) =
+    {
+        val map = InvWrapper.wrap(this).getAllItemStacks
         map.isEmpty || map.contains(item)
     }
 

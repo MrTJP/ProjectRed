@@ -10,6 +10,7 @@ object RecipeLib
 {
     def newShapedBuilder = new ShapedRecipeBuilder
     def newShapelessBuilder = new ShapelessRecipeBuilder
+    def newSmeltingBuilder = new SmeltingRecipeBuilder
 
     def loadLib()
     {
@@ -20,27 +21,35 @@ object RecipeLib
 
 trait RecipeBuilder
 {
-    protected var inputs = Vector.newBuilder[Input]
-    protected var outputs = Vector.newBuilder[Output]
+    protected var inputs = Seq.newBuilder[Input]
+    protected var outputs = Seq.newBuilder[Output]
 
     def +=(elem:Input):this.type = {inputs += elem; this}
     def +=(elem:Output):this.type = {outputs += elem; this}
 
-    var map = ""
-    def <->(m:String):this.type = {map = m; this}
-
-    var size = 3
-    def warp(s:Int):this.type = {size = s; this}
-
-    var inResult:Vector[Input] = _
-    var outResult:Vector[Output] = _
-    var inputMap:Map[Int, Input] = _
-    var outputMap:Map[Int, Output] = _
+    var inResult:Seq[Input] = _
+    var outResult:Seq[Output] = _
 
     protected def compute():this.type =
     {
         inResult = inputs.result()
         outResult = outputs.result()
+        this
+    }
+
+}
+
+trait TMappedRecipeBuilder extends RecipeBuilder
+{
+    var map = ""
+    def <->(m:String):this.type = {map = m; this}
+
+    var inputMap:Map[Int, Input] = _
+    var outputMap:Map[Int, Output] = _
+
+    override protected def compute():this.type =
+    {
+        super.compute()
 
         val inMB = Map.newBuilder[Int, Input]
         val outMB = Map.newBuilder[Int, Output]
@@ -61,12 +70,6 @@ trait RecipeBuilder
 
 }
 
-trait BuildResult[Result <: BuilderRecipe]
-{
-    def result:Result
-    def registerResult():this.type
-}
-
 trait TRecipeObject
 {
     var id = ""
@@ -84,5 +87,3 @@ trait Output extends TRecipeObject
 {
     def createOutput:ItemStack
 }
-
-abstract class BuilderRecipe(val builder:RecipeBuilder) extends IRecipe

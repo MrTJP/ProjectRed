@@ -10,11 +10,11 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block._
 import mrtjp.core.color.Colors
 import mrtjp.core.math.MathLib
-import mrtjp.core.world.WorldLib
+import mrtjp.core.world.{Messenger, WorldLib}
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.core.PartDefs
 import net.minecraft.block.material.Material
-import net.minecraft.block.{Block, BlockWall}
+import net.minecraft.block.{BlockStoneBrick, Block, BlockWall}
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.Entity
@@ -86,9 +86,14 @@ object OreDefs extends BlockDefinition
     override type EnumVal = OreVal
     override def getBlock = ProjectRedExploration.blockOres
 
-    val ORERUBY = new OreVal("oreruby", 2, PartDefs.RUBY.makeStack, 1, 4, 1, 8)
-    val ORESAPPHIRE = new OreVal("oresapphire", 2, PartDefs.SAPPHIRE.makeStack, 1, 4, 1, 8)
-    val OREPERIDOT = new OreVal("oreperidot", 2, PartDefs.PERIDOT.makeStack, 1, 4, 1, 8)
+    val ORERUBY = new OreVal("ruby_ore", 2, PartDefs.RUBY.makeStack, 1, 4, 1, 8)
+    val ORESAPPHIRE = new OreVal("sapphire_ore", 2, PartDefs.SAPPHIRE.makeStack, 1, 4, 1, 8)
+    val OREPERIDOT = new OreVal("peridot_ore", 2, PartDefs.PERIDOT.makeStack, 1, 4, 1, 8)
+
+    val ORECOPPER = new OreVal("copper_ore", 2, null, 1, 1, 0, 0)
+    val ORETIN = new OreVal("tin_ore", 2, null, 1, 1, 0, 0)
+    val ORESILVER = new OreVal("silver_ore", 2, null, 1, 1, 0, 0)
+    val OREELECTROTINE = new OreVal("electrotine_ore", 2, PartDefs.ELECTROTINE.makeStack, 1, 8, 1, 8)
 
     class OreVal(iconName:String, val harvest:Int, val drop:ItemStack, val min:Int, val max:Int, val minXP:Int, val maxXP:Int) extends BlockDef
     {
@@ -164,14 +169,18 @@ object DecorativeStoneDefs extends BlockDefinition
     override type EnumVal = StoneVal
     override def getBlock = ProjectRedExploration.blockDecoratives
 
-    val MARBLE = new StoneVal("stonemarble", 2, 1.0F, 14.0F, null)
-    val MARBLEBRICK = new StoneVal("brickmarble", 2, 1.0F, 14.0F, null)
-    val BASALTCOBBLE = new StoneVal("cobblebasalt", 2, 2.5F, 14.0F, null)
-    val BASALT = new StoneVal("stonebasalt", 2, 2.5F, 16, BASALTCOBBLE.makeStack)
-    val BASALTBRICK = new StoneVal("brickbasalt", 2, 2.5F, 20, null)
-    val RUBYBLOCK = new StoneVal("storageruby", 2, 5.0F, 10.0F, null)
-    val SAPPHIREBLOCK = new StoneVal("storagesapphire", 2, 5.0F, 10.0F, null)
-    val PERIDOTBLOCK = new StoneVal("storageperidot", 2, 5.0F, 10.0F, null)
+    val MARBLE = new StoneVal("marble", 2, 1.0F, 14.0F, null)
+    val MARBLEBRICK = new StoneVal("marble_brick", 2, 1.0F, 14.0F, null)
+    val BASALTCOBBLE = new StoneVal("basalt_cobble", 2, 2.5F, 14.0F, null)
+    val BASALT = new StoneVal("basalt", 2, 2.5F, 16, BASALTCOBBLE.makeStack)
+    val BASALTBRICK = new StoneVal("basalt_brick", 2, 2.5F, 20, null)
+    val RUBYBLOCK = new StoneVal("ruby_block", 2, 5.0F, 10.0F, null)
+    val SAPPHIREBLOCK = new StoneVal("sapphire_block", 2, 5.0F, 10.0F, null)
+    val PERIDOTBLOCK = new StoneVal("peridot_block", 2, 5.0F, 10.0F, null)
+    val COPPERBLOCK = new StoneVal("copper_block", 2, 5.0F, 10.0F, null)
+    val TINBLOCK = new StoneVal("tin_block", 2, 5.0F, 10.0F, null)
+    val SILVERBLOCK = new StoneVal("silver_block", 2, 5.0F, 10.0F, null)
+    val ELECTROTINEBLOCK = new StoneVal("electrotine_block", 2, 5.0F, 10.0F, null)
 
     class StoneVal(iconName:String, val harvest:Int, val hardness:Float, val explosion:Float, val drop:ItemStack) extends BlockDef
     {
@@ -194,7 +203,6 @@ class BlockDynamicMossyCobble extends Block(Material.rock) with TMossSpread
     setResistance(10.0F)
     setStepSound(Block.soundTypePiston)
     setBlockName("stoneMoss")
-    setCreativeTab(CreativeTabs.tabBlock)
     setBlockTextureName("cobblestone_mossy")
     setTickRandomly(true)
 
@@ -202,15 +210,9 @@ class BlockDynamicMossyCobble extends Block(Material.rock) with TMossSpread
     {
         doMossSpread(w, x, y, z, r)
     }
-
-    override def registerBlockIcons(reg:IIconRegister)
-    {
-        super.registerBlockIcons(reg)
-        Blocks.mossy_cobblestone.registerBlockIcons(reg)
-    }
 }
 
-class BlockDynamicStoneBrick extends Block(Material.rock) with TMossSpread
+class BlockDynamicStoneBrick extends BlockStoneBrick with TMossSpread
 {
     setHardness(1.5F)
     setResistance(10.0F)
@@ -218,6 +220,7 @@ class BlockDynamicStoneBrick extends Block(Material.rock) with TMossSpread
     setBlockName("stonebricksmooth")
     setBlockTextureName("stonebrick")
     setTickRandomly(true)
+    setCreativeTab(null)
 
     override def updateTick(w:World, x:Int, y:Int, z:Int, r:Random)
     {
@@ -233,18 +236,7 @@ class BlockDynamicStoneBrick extends Block(Material.rock) with TMossSpread
     {
         val bc = new BlockCoord(x, y, z)
         if (isBlockWet(w, bc) && isBlockHot(w, bc)) if (r.nextInt(3) == 0)
-            w.setBlock(x, y, z, Block.getBlockFromName("stonebrick"), 2, 3)
-    }
-
-    override def registerBlockIcons(reg:IIconRegister) =
-    {
-        Blocks.stonebrick.registerBlockIcons(reg)
-    }
-
-    @SideOnly(Side.CLIENT)
-    override def getIcon(side:Int, meta:Int) =
-    {
-        Blocks.stonebrick.getIcon(side, meta)
+            w.setBlock(x, y, z, Blocks.stonebrick, 2, 3)
     }
 }
 
@@ -260,22 +252,17 @@ sealed trait TMossSpread //for redundant code
             val b = w.getBlock(bc.x, bc.y, bc.z)
             val meta = w.getBlockMetadata(bc.x, bc.y, bc.z)
 
-            val cobble = Block.getBlockFromName("cobblestone")
-            val mcobble = Block.getBlockFromName("mossy_cobblestone")
-
-            val brick = Block.getBlockFromName("stonebrick")
-
             if (w.isAirBlock(bc.x, bc.y, bc.z) && !w.canBlockSeeTheSky(bc.x, bc.y, bc.z))
             {
-                if (b == cobble)
+                if (b == Blocks.cobblestone)
                 {
                     if (isBlockWet(w, bc)) if (r.nextInt(3) == 0)
-                        w.setBlock(bc.x, bc.y, bc.z, mcobble, 0, 3)
+                        w.setBlock(bc.x, bc.y, bc.z, Blocks.mossy_cobblestone, 0, 3)
                 }
-                else if (b == brick && meta == 2)
+                else if (b == Blocks.stonebrick && meta == 2)
                 {
                     if (isBlockWet(w, bc)) if (r.nextInt(3) == 0)
-                        w.setBlock(bc.x, bc.y, bc.z, brick, 1, 3)
+                        w.setBlock(bc.x, bc.y, bc.z, Blocks.stonebrick, 1, 3)
                 }
             }
         }

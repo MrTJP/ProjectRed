@@ -86,26 +86,26 @@ object PartDefs extends ItemDefinition
     override type EnumVal = PartVal
     override def getItem = ProjectRedCore.itemPart
 
-    val PLATE = new PartVal("partplate")
-    val CONDUCTIVEPLATE = new PartVal("partconductiveplate")
-    val WIREDPLATE = new PartVal("partwiredplate")
-    val BUNDLEDPLATE = new PartVal("partbundledplate")
-    val ANODE = new PartVal("partanode")
-    val CATHODE = new PartVal("partcathode")
-    val POINTER = new PartVal("partpointer")
-    val SILICONCHIP = new PartVal("partsiliconchip")
-    val ENERGIZEDSILICONCHIP = new PartVal("partenergizedsiliconchip")
-    val PLATFORMEDPLATE = new PartVal("partplatformedplate")
+    val PLATE = new PartVal("plate")
+    val CONDUCTIVEPLATE = new PartVal("conductive_plate")
+    val WIREDPLATE = new PartVal("wired_plate")
+    val BUNDLEDPLATE = new PartVal("bundled_plate")
+    val ANODE = new PartVal("anode")
+    val CATHODE = new PartVal("cathode")
+    val POINTER = new PartVal("pointer")
+    val SILICONCHIP = new PartVal("silicon_chip")
+    val ENERGIZEDSILICONCHIP = new PartVal("energized_silicon_chip")
+    val PLATFORMEDPLATE = new PartVal("platformed_plate")
 
-    val REDINGOT = new PartVal("partredingot")
-    val SILICONBOULE = new PartVal("partboule")
-    val SILICON = new PartVal("partsilicon")
-    val INFUSEDSILICON = new PartVal("partinfusedsilicon")
-    val ENERGIZEDSILICON = new PartVal("partenergizedsilicon")
-    val MOTOR = new PartVal("partmotor")
-    val COPPERCOIL = new PartVal("partcoppercoil")
-    val IRONCOIL = new PartVal("partironcoil")
-    val GOLDCOIL = new PartVal("partgoldcoil")
+    val REDINGOT = new PartVal("red_ingot")
+    val SILICONBOULE = new PartVal("boule")
+    val SILICON = new PartVal("silicon")
+    val INFUSEDSILICON = new PartVal("infused_silicon")
+    val ENERGIZEDSILICON = new PartVal("energized_silicon")
+    val MOTOR = new PartVal("motor")
+    val COPPERCOIL = new PartVal("copper_coil")
+    val IRONCOIL = new PartVal("iron_coil")
+    val GOLDCOIL = new PartVal("gold_coil")
 
     val WHITEILLUMAR = new PartVal("illumar0")
     val ORANGEILLUMAR = new PartVal("illumar1")
@@ -124,20 +124,20 @@ object PartDefs extends ItemDefinition
     val REDILLUMAR = new PartVal("illumar14")
     val BLACKILLUMAR = new PartVal("illumar15")
 
-    val WOVENCLOTH = new PartVal("partcloth")
-    val SAIL = new PartVal("partsail")
+    val WOVENCLOTH = new PartVal("cloth")
+    val SAIL = new PartVal("sail")
 
     val RUBY = new PartVal("gemruby")
     val SAPPHIRE = new PartVal("gemsapphire")
     val PERIDOT = new PartVal("gemperidot")
 
-    val REDIRONCOMPOUND = new PartVal("partredironcomp")
-    val SANDYCOALCOMPOUND = new PartVal("partsandcoalcomp")
-    val REDSILICONCOMPOUND = new PartVal("partredsiliconcomp")
-    val GLOWINGSILICONCOMPOUND = new PartVal("partglowsiliconcomp")
+    val REDIRONCOMPOUND = new PartVal("red_iron_comp")
+    val SANDYCOALCOMPOUND = new PartVal("sand_coal_comp")
+    val REDSILICONCOMPOUND = new PartVal("red_silicon_comp")
+    val GLOWINGSILICONCOMPOUND = new PartVal("glow_silicon_comp")
 
-    val NULLROUTINGCHIP = new PartVal("nullchip")
-    val NULLUPGRADECHIP = new PartVal("nullupgrd")
+    val NULLROUTINGCHIP = new PartVal("null_chip")
+    val NULLUPGRADECHIP = new PartVal("null_upgrd")
     val CHIPUPGRADE_LX = new PartVal("upgrd_lx")
     val CHIPUPGRADE_LY = new PartVal("upgrd_ly")
     val CHIPUPGRADE_LZ = new PartVal("upgrd_lz")
@@ -145,18 +145,21 @@ object PartDefs extends ItemDefinition
     val CHIPUPGRADE_RY = new PartVal("upgrd_ry")
     val CHIPUPGRADE_RZ = new PartVal("upgrd_rz")
 
+    val COPPERINGOT = new PartVal("copper_ingot")
+    val TININGOT = new PartVal("tin_ingot")
+    val SILVERINGOT = new PartVal("silver_ingot")
+    val ELECTROTINEINGOT = new PartVal("electrotine_ingot")
+
+    val ELECTROTINE = new PartVal("electrotine_dust")
+    val ELECTROTINEIRONCOMPOUND = new PartVal("electrotine_iron_comp")
+    val ELECTROTINESILICONCOMPOUND = new PartVal("electrotine_silicon_comp")
+    val ELECTROSILICON = new PartVal("electro_silicon")
+
     //Groups
-    val ILLUMARS = WHITEILLUMAR to BLACKILLUMAR
+    val ILLUMARS = WHITEILLUMAR to BLACKILLUMAR toArray
 
     val oreDictDefinitionIllumar = "projredIllumar"
     val oreDictDefinitionRedIngot = "ingotRedAlloy"
-
-    def initOreDict()
-    {
-        for (i <- ILLUMARS) OreDictionary.registerOre(oreDictDefinitionIllumar, i.makeStack)
-
-        OreDictionary.registerOre(oreDictDefinitionRedIngot, REDINGOT.makeStack);
-    }
 
     class PartVal(iconName:String) extends ItemDef
     {

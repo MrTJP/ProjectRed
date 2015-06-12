@@ -127,7 +127,7 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
         super.getDrops :+ getMaterialStack else super.getDrops
 
     def getMaterialStack =
-        ItemMicroPart.create(769, Blocks.redstone_block.getUnlocalizedName)
+        ItemMicroPart.create(769, BlockMicroMaterial.materialKey(Blocks.redstone_block, 0))
 
     override def diminishOnSide(side:Int) = true
 
