@@ -105,11 +105,9 @@ trait ButtonRenderCommons extends IItemRenderer
             if (0 until 16 contains color)
             {
                 val icon = new IconTransformation(ItemPartButton.icons(color))
-                val t = new Translation(x, y, z)
+                val t = new Scale(s) `with` new Translation(x, y, z)
 
                 GL11.glPushMatrix()
-                GL11.glTranslated(x, y, z)
-                GL11.glScaled(s, s, s)
 
                 TextureUtils.bindAtlas(0)
                 CCRenderState.reset()

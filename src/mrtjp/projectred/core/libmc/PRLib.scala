@@ -18,14 +18,16 @@ object PRLib
     {
         if (!w.isRemote && w.getGameRules.getGameRuleBooleanValue("doTileDrops"))
         {
-            val vel = ~new Vector3(p.posX-x, p.posY-y, p.posZ-z)
-            val pos = new Vector3(x+0.5, y+0.5, z+0.5)+(vel.copy*0.25)
+            val bpos = new Vector3(x, y, z)
+            val d = new Vector3(p.posX, p.posY, p.posZ).subtract(bpos).normalize()
+            val vel = d.copy.multiply(8.0)
+            val pos = bpos.add(Vector3.center).add(d.copy.multiply(1.25))
 
             val item = new EntityItem(w, pos.x, pos.y, pos.z, stack)
             item.motionX = vel.x*0.02
             item.motionY = vel.y*0.02
             item.motionZ = vel.z*0.02
-            item.delayBeforeCanPickup = 10
+            item.delayBeforeCanPickup = 0
             w.spawnEntityInWorld(item)
         }
     }

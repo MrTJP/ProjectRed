@@ -1,15 +1,17 @@
 package mrtjp.projectred.expansion
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.gui.GuiDraw
 import codechicken.lib.vec.{Rotation, Vector3}
 import mrtjp.core.block.{InstancedBlock, InstancedBlockTile, TTileOrient}
-import mrtjp.core.gui.WidgetContainer
+import mrtjp.core.gui.{WidgetContainer, WidgetGui}
 import mrtjp.core.inventory.TInventory
-import mrtjp.core.world.WorldLib
+import mrtjp.core.render.TCubeMapRender
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api._
 import mrtjp.projectred.core._
 import net.minecraft.block.material.Material
+import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{Container, ICrafting, ISidedInventory}
 import net.minecraft.item.ItemStack
@@ -34,7 +36,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
     override def onBlockPlaced(s:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
     {
         setSide(if (doesOrient) calcFacing(player) else 0)
-        setRotation(if (doesRotate) Rotation.getSidedRotation(player, side^1) else 0)
+        setRotation(if (doesRotate) (Rotation.getSidedRotation(player, side^1)+2)%4 else 0)
     }
 
     def calcFacing(ent:EntityPlayer):Int =
@@ -133,35 +135,14 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
     def onBlockRotated(){}
 }
 
-trait TileMachineIO extends TileMachine with TInventory with ISidedInventory
-{
-    abstract override def saveInv(tag:NBTTagCompound)
-    {
-        super.save(tag)
-        saveInv(tag)
-    }
-
-    abstract override def loadInv(tag:NBTTagCompound)
-    {
-        super.load(tag)
-        loadInv(tag)
-    }
-
-    abstract override def onBlockRemoval()
-    {
-        super.onBlockRemoval()
-        dropInvContents(world, x, y, z)
-    }
-}
-
-trait TileGuiMachine extends TileMachine
+trait TGuiMachine extends TileMachine
 {
     abstract override def onBlockActivated(player:EntityPlayer, side:Int) =
     {
         if (super.onBlockActivated(player, side)) true
-        else if (!world.isRemote && !player.isSneaking)
+        else if (!player.isSneaking)
         {
-            openGui(player)
+            if (!world.isRemote) openGui(player)
             true
         }
         else false
@@ -172,57 +153,17 @@ trait TileGuiMachine extends TileMachine
     def createContainer(player:EntityPlayer):Container
 }
 
-trait TMachinePowerable extends TileMachine with TConnectableInstTile with IPowerConnectable
+trait TPoweredMachine extends TileMachine with TPowerTile with ILowLoadMachine
 {
-    val cond:PowerConductor
-    def condIds = (0 until 30) ++ (32 until 56)
+    val cond = new PowerConductor(this, idRange) with TPowerDrawPoint
 
-    override def canConnect(part:IConnectable) = part match
+    override def conductor(dir:Int) = cond
+
+    override def canConnectPart(part:IConnectable, s:Int, edgeRot:Int) = part match
     {
-        case w:IPowerConnectable => true
+        case t:ILowLoadPowerLine => true
+        case t:ILowLoadMachine => true
         case _ => false
-    }
-
-    override def world = getWorldObj
-
-    override def conductor(side:Int) = cond
-
-    override def conductorOut(id:Int):PowerConductor =
-    {
-        if (0 until 24 contains id) //straight conns w/ edge rot
-        {
-            val s = id/4
-            val edgeRot = id%4
-            if (maskConnectsStraight(s, edgeRot)) getStraight(s, edgeRot) match
-            {
-                case tp:IPowerConnectable => return tp.conductor(s^1)
-                case _ =>
-            }
-        }
-        else if (24 until 30 contains id) //straight face
-        {
-            val s = id-24
-            if (maskConnectsStraightCenter(s)) getStraightCenter(s) match
-            {
-                case tp:IPowerConnectable => return tp.conductor(s^1)
-                case _ => WorldLib.getTileEntity(world, posOfInternal.offset(s), classOf[IPowerConnectable]) match
-                {
-                    case tp:IPowerConnectable => return tp.conductor(s^1)
-                    case _ =>
-                }
-            }
-        }
-        else if (32 until 56 contains id) //corner
-        {
-            val s = (id-32)/4
-            val edgeRot = (id-32)/4
-            if (maskConnectsCorner(s, edgeRot)) getCorner(s, edgeRot) match
-            {
-                case tp:IPowerConnectable => return tp.conductor(Rotation.rotateSide(s^1, edgeRot)^1)
-                case _ =>
-            }
-        }
-        null
     }
 
     abstract override def update()
@@ -244,87 +185,116 @@ trait TMachinePowerable extends TileMachine with TConnectableInstTile with IPowe
     }
 }
 
-abstract class TileMachineWorking extends TileMachine
-with TMachinePowerable with TileMachineIO with TileGuiMachine// with TileMachineSideConfig
+abstract class TileProcessingMachine extends TileMachine
+with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
 {
-    val cond = new PowerConductor(this, condIds) with TPowerFlow
-
+    var isCharged = false
     var isWorking = false
-    var unpergedWork = false
-
     var workRemaining = 0
     var workMax = 0
 
-    def canStart = false
-    def canFinish = workRemaining <= 0 && canStart
+    override def save(tag:NBTTagCompound)
+    {
+        super.save(tag)
+        tag.setBoolean("ch", isCharged)
+        tag.setBoolean("work", isWorking)
+        tag.setInteger("rem", workRemaining)
+        tag.setInteger("max", workMax)
+        saveInv(tag)
+    }
 
-    def startWork() {}
-    def endWork() {}
-    def transfer() {}
+    override def load(tag:NBTTagCompound)
+    {
+        super.load(tag)
+        isCharged = tag.getBoolean("ch")
+        isWorking = tag.getBoolean("work")
+        workRemaining = tag.getInteger("rem")
+        workMax = tag.getInteger("max")
+        loadInv(tag)
+    }
+
+    override def writeDesc(out:MCDataOutput)
+    {
+        super.writeDesc(out)
+        out.writeBoolean(isCharged)
+        out.writeBoolean(isWorking)
+    }
+
+    override def readDesc(in:MCDataInput)
+    {
+        super.readDesc(in)
+        isCharged = in.readBoolean()
+        isWorking = in.readBoolean()
+    }
+
+    override def read(in:MCDataInput, switchkey:Int) = switchkey match
+    {
+        case 14 =>
+            isCharged = in.readBoolean()
+            isWorking = in.readBoolean()
+            markRender()
+            markLight()
+        case _ => super.read(in, switchkey)
+    }
+
+    def sendWorkUpdate()
+    {
+        writeStream(14).writeBoolean(isCharged).writeBoolean(isWorking).sendToChunk()
+    }
+
+    def canStart = false
+
+    def startWork()
+    def endWork()
+    {
+        isWorking = false
+        workRemaining = 0
+        workMax = 0
+    }
+
+    def produceResults()
 
     def calcDoableWork = if (cond.canWork) 1 else 0
-    def drainPower(work:Int) = cond.drawPower(work*1000.0D)
-
-    def enabled = true
+    def drainPower(work:Int) = cond.drawPower(work*1100.0D)
 
     override def update()
     {
         super.update()
-        val old = isWorking
 
         if (isWorking)
         {
-            if (workRemaining>0)
+            if (workRemaining > 0)
             {
                 val pow = calcDoableWork
                 drainPower(pow)
                 workRemaining -= pow
             }
-            if (canFinish)
+            else
             {
                 endWork()
-                transfer()
-                drainPower(workRemaining)
-                workMax = 0
-
-                if (canStart && enabled) startWork()
-                else
-                {
-                    isWorking = false
-                    unpergedWork = true
-                    if (!isTickScheduled) scheduleTick(100)
-                }
-            }
-        }
-        else if (enabled)
-        {
-            if (transferTime) transfer()
-            val pow = calcDoableWork
-            if (startWorkTime && pow>0 && canStart)
-            {
-                startWork()
-                drainPower(pow)
-                workRemaining -= pow
-                isWorking = true
+                produceResults()
             }
         }
 
-        if (old != isWorking && isWorking)
+        if (!isWorking && calcDoableWork > 0 && canStart)
         {
-            sendWorkUpdate()
-            unpergedWork = false
+            startWork()
         }
+
+        if (world.getTotalWorldTime%10 == 0) updateRendersIfNeeded()
     }
 
-    override def onScheduledTick()
+    override def markDirty()
     {
-        super.onScheduledTick()
-        if (unpergedWork) sendWorkUpdate()
-        unpergedWork = false
+        super.markDirty()
+        if (isWorking && !canStart) endWork()
     }
 
-    def transferTime = worldObj.getTotalWorldTime%32 == 0
-    def startWorkTime = worldObj.getTotalWorldTime%4 == 0
+    override def onBlockRemoval()
+    {
+        super.onBlockRemoval()
+        dropInvContents(world, x, y, z)
+    }
 
     def progressScaled(scale:Int):Int =
     {
@@ -332,73 +302,26 @@ with TMachinePowerable with TileMachineIO with TileGuiMachine// with TileMachine
         scale*(workMax-workRemaining)/workMax
     }
 
-    override def saveInv(tag:NBTTagCompound)
+    private var oldW = isWorking
+    private var oldCh = isCharged
+    def updateRendersIfNeeded()
     {
-        super.save(tag)
-        tag.setBoolean("werk", isWorking)
-        tag.setInteger("rem", workRemaining)
-        tag.setInteger("max", workMax)
-    }
-
-    override def loadInv(tag:NBTTagCompound)
-    {
-        super.load(tag)
-        isWorking = tag.getBoolean("werk")
-        workRemaining = tag.getInteger("rem")
-        workMax = tag.getInteger("max")
-    }
-
-    override def markDirty()
-    {
-        super.markDirty()
-        if (isWorking && !canStart)
+        isCharged = cond.canWork
+        if (isWorking != oldW || isCharged != oldCh)
         {
-            isWorking = false
-            unpergedWork = true
-            workRemaining = 0
-            workMax = 0
-            if (!isTickScheduled) scheduleTick(100)
+            sendWorkUpdate()
+            oldW = isWorking
+            oldCh = isCharged
         }
     }
 
-    def sendWorkUpdate()
-    {
-        writeStream(14).writeBoolean(isWorking).sendToChunk()
-    }
-
-    override def read(in:MCDataInput, switchkey:Int) = switchkey match
-    {
-        case 14 =>
-            isWorking = in.readBoolean()
-            markRender()
-            markLight()
-        case _ => super.read(in, switchkey)
-    }
-
-    override def writeDesc(out:MCDataOutput)
-    {
-        super.writeDesc(out)
-        out.writeBoolean(isWorking)
-    }
-
-    override def readDesc(in:MCDataInput)
-    {
-        super.readDesc(in)
-        isWorking = in.readBoolean()
-    }
-
-    override def getLightValue = if (isWorking) 13 else 0
+    override def getLightValue = if (isWorking && isCharged) 13 else 0
 }
 
-class WorkingMachineContainer(player:EntityPlayer, tile:TileMachineWorking) extends WidgetContainer
+class ContainerPoweredMachine(player:EntityPlayer, tile:TPoweredMachine) extends WidgetContainer
 {
-    var ch = 0
-    var work = 0
-    var workMax = 0
-    var fl = 0
-
-    def sendPower = true
-    def sendWork = true
+    private var ch = -1
+    private var fl = -1
 
     override def detectAndSendChanges()
     {
@@ -408,20 +331,15 @@ class WorkingMachineContainer(player:EntityPlayer, tile:TileMachineWorking) exte
         {
             val ic = i.asInstanceOf[ICrafting]
 
-            if (sendPower && ch != tile.cond.charge) ic.sendProgressBarUpdate(this, 0, tile.cond.charge)
-            if (sendPower && fl != tile.cond.flow)
+            if (ch != tile.cond.charge) ic.sendProgressBarUpdate(this, 0, tile.cond.charge)
+            if (fl != tile.cond.flow)
             {
                 ic.sendProgressBarUpdate(this, 1, tile.cond.flow&0xFFFF)
                 ic.sendProgressBarUpdate(this, 2, tile.cond.flow>>16&0xFFFF)
             }
-
-            if (sendWork && work != tile.workRemaining) ic.sendProgressBarUpdate(this, 3, tile.workRemaining)
-            if (sendWork && workMax != tile.workMax) ic.sendProgressBarUpdate(this, 4, tile.workMax)
+            ch = tile.cond.charge
+            fl = tile.cond.flow
         }
-        ch = tile.cond.charge
-        fl = tile.cond.flow
-        work = tile.workRemaining
-        workMax = tile.workMax
     }
 
     override def updateProgressBar(id:Int, bar:Int) = id match
@@ -429,7 +347,34 @@ class WorkingMachineContainer(player:EntityPlayer, tile:TileMachineWorking) exte
         case 0 => tile.cond.charge = bar
         case 1 => tile.cond.flow = tile.cond.flow&0xFFFF0000|bar&0xFFFF
         case 2 => tile.cond.flow = tile.cond.flow&0xFFFF|(bar&0xFFFF)<<16
+        case _ => super.updateProgressBar(id, bar)
+    }
+}
+
+class ContainerProcessingMachine(player:EntityPlayer, tile:TileProcessingMachine) extends ContainerPoweredMachine(player, tile)
+{
+    private var wr = 0
+    private var wm = 0
+
+    override def detectAndSendChanges()
+    {
+        super.detectAndSendChanges()
+        import scala.collection.JavaConversions._
+        for (i <- crafters)
+        {
+            val ic = i.asInstanceOf[ICrafting]
+
+            if (wr != tile.workRemaining) ic.sendProgressBarUpdate(this, 3, tile.workRemaining)
+            if (wm != tile.workMax) ic.sendProgressBarUpdate(this, 4, tile.workMax)
+        }
+        wr = tile.workRemaining
+        wm = tile.workMax
+    }
+
+    override def updateProgressBar(id:Int, bar:Int) = id match
+    {
         case 3 => tile.workRemaining = bar
         case 4 => tile.workMax = bar
+        case _ => super.updateProgressBar(id, bar)
     }
 }

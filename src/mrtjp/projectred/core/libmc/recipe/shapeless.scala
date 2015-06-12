@@ -12,20 +12,24 @@ import net.minecraft.world.World
 
 import scala.collection.JavaConversions._
 
-class ShapelessRecipeBuilder extends RecipeBuilder with BuildResult[ShapelessBuilderRecipe]
+class ShapelessRecipeBuilder extends RecipeBuilder// with TMappedRecipeBuilder
 {
-    override def result =
+    def result() =
     {
         compute()
         new ShapelessBuilderRecipe(this)
     }
 
-    override def registerResult():this.type = {GameRegistry.addRecipe(result); this}
+    def registerResult():this.type =
+    {
+        GameRegistry.addRecipe(result())
+        this
+    }
 }
 
-class ShapelessBuilderRecipe(override val builder:ShapelessRecipeBuilder) extends BuilderRecipe(builder)
+class ShapelessBuilderRecipe(val builder:ShapelessRecipeBuilder) extends IRecipe
 {
-    override def getRecipeSize = builder.size
+    override def getRecipeSize = if (builder.inResult.size > 4) 3 else 2
 
     override def getRecipeOutput = builder.outResult.head.createOutput
 

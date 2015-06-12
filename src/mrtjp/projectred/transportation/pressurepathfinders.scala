@@ -62,7 +62,7 @@ class PressurePathfinder(item:ItemKey, pipe:TPressureSubsystem, dim:Int, color:I
                 iterate(rest, closed+next)
 
             case inv:IInventory =>
-                if (InvWrapper.wrap(inv).hasSpaceForItem(item)) setInvPath(next)
+                if (InvWrapper.wrap(inv).setSlotsFromSide(next.dir^1).hasSpaceForItem(item)) setInvPath(next)
                 iterate(rest, closed+next)
 
             case tmp:TileMultipart => tmp.partMap(6) match
@@ -101,7 +101,8 @@ class PressurePathfinder(item:ItemKey, pipe:TPressureSubsystem, dim:Int, color:I
 
         override def equals(other:Any) = other match
         {
-            case that:Node => bc == that.bc
+            case that:Node =>
+                bc == that.bc && dir == that.dir
             case _ => false
         }
 

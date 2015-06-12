@@ -38,12 +38,23 @@ public class Configurator
     public static boolean gen_Lily;
     public static int gen_Lily_resistance;
     public static boolean gen_Lily_retro;
+    public static boolean gen_Copper;
+    public static int gen_Copper_resistance;
+    public static boolean gen_Copper_retro;
+    public static boolean gen_Tin;
+    public static int gen_Tin_resistance;
+    public static boolean gen_Tin_retro;
+    public static boolean gen_Silver;
+    public static int gen_Silver_resistance;
+    public static boolean gen_Silver_retro;
+    public static boolean gen_Electrotine;
+    public static int gen_Electrotine_resistance;
+    public static boolean gen_Electrotine_retro;
 
     /** Settings **/
     public static boolean versionChecking;
     public static boolean versionCheckDevBuilds;
 
-    public static boolean debugMode;
     public static boolean logicGateSounds;
     public static int minTimerTicks;
 
@@ -54,10 +65,6 @@ public class Configurator
     public static int routerUpdateThreadCount;
 
     public static int maxPipesWandered;
-
-    /** Retro Generation **/
-    public static boolean retroGeneration;
-    public static String retroGenID;
 
     /** Render **/
     public static boolean logicwires3D;
@@ -101,18 +108,32 @@ public class Configurator
         gen_Lily_resistance = config.get("World Generation", "Deviating Lily resistance", 0).getInt();
         gen_Lily_retro = config.get("World Generation", "Deviating Lily retrogen", false).getBoolean(false);
 
+        gen_Copper = config.get("World Generation", "Copper Ore", true).getBoolean(true);
+        gen_Copper_resistance = config.get("World Generation", "Copper Ore resistance", 0).getInt();
+        gen_Copper_retro = config.get("World Generation", "Copper Ore retrogen", false).getBoolean(false);
+
+        gen_Tin = config.get("World Generation", "Tin Ore", true).getBoolean(true);
+        gen_Tin_resistance = config.get("World Generation", "Tin Ore resistance", 0).getInt();
+        gen_Tin_retro = config.get("World Generation", "Tin Ore retrogen", false).getBoolean(false);
+
+        gen_Silver = config.get("World Generation", "Silver Ore", true).getBoolean(true);
+        gen_Silver_resistance = config.get("World Generation", "Silver Ore resistance", 0).getInt();
+        gen_Silver_retro = config.get("World Generation", "Silver Ore retrogen", false).getBoolean(false);
+
+        gen_Electrotine = config.get("World Generation", "Electrotine Ore", true).getBoolean(true);
+        gen_Electrotine_resistance = config.get("World Generation", "Electrotine Ore resistance", 0).getInt();
+        gen_Electrotine_retro = config.get("World Generation", "Electrotine Ore retrogen", false).getBoolean(false);
+
         gen_SpreadingMoss = config.get("World Generation", "Spreading Moss", true).getBoolean(true);
 
         versionChecking = config.get("general", "Enable Version checking", true, "If enabled, the player will be alerted if a newer version of PR is available").getBoolean(true);
         versionCheckDevBuilds = config.get("general", "Dev Version checking", false, "Include dev builds in version checks").getBoolean(false);
 
-        debugMode = config.get("general", "Enable Debugging", false, "Enable advanced debugging, should ALWAYS be false.").getBoolean(false);
         logicGateSounds = config.get("general", "Logic Sounds", true, "If set to false, logic gates will not make sounds.").getBoolean(true);
         minTimerTicks = config.get("general", "Mininum Timer Ticks", 4, "Minimum amount of ticks the timer gates can be set to. (Cannot be lower than 4)").getInt();
         logicwires3D = config.get("general", "3Dlogicwires", true, "If set to false, flat wire textures will be used for logic gates. Significant performance improvement").getBoolean(true);
         staticWires = config.get("general", "renderStaticWires", true, "If set to false, wires will be rendered in the TESR rather than the WorldRenderer").getBoolean(true);
         staticGates = config.get("general", "renderStaticGates", true, "If set to false, gates will be rendered in the TESR rather than the WorldRenderer").getBoolean(true);
-        retroGeneration = config.get("general", "Retro Ore Generation", false, "If set to true, world generation for ProjectRed will attempt to run even in previously generated chunks.").getBoolean(false);
         lightHaloMax = config.get("general", "Light Halo Render Count", -1, "Number of lights to render, -1 for unlimited").getInt();
         coloredLightsCompat = config.get("general", "coloredLightsCompat", false, "Enable compatability with ColoredLightsCore. CLC is in beta state and is known to cause many glitches.").getBoolean(false);
 

@@ -1,7 +1,9 @@
 package mrtjp.projectred.transmission
 
+import java.lang.{Character => JC}
+
 import cpw.mods.fml.common.registry.GameRegistry
-import mrtjp.core.color.Colors_old
+import mrtjp.core.color.Colors
 import mrtjp.projectred.core.libmc.recipe._
 import mrtjp.projectred.core.{Configurator, PartDefs}
 import net.minecraft.init.{Blocks, Items}
@@ -26,17 +28,17 @@ object TransmissionRecipes
         for (w <- WireDef.INSULATED_WIRES)
             GameRegistry.addRecipe(new ShapedOreRecipe(w.makeStack(12),
                 "WrW", "WrW", "WrW",
-                'W':Character, new ItemStack(Blocks.wool, 1, Colors_old.get(w.meta-WireDef.INSULATED_0.meta).woolId),
+                'W':Character, new ItemStack(Blocks.wool, 1, Colors(w.meta-WireDef.INSULATED_0.meta).woolID),
                 'r':Character, PartDefs.oreDictDefinitionRedIngot))
 
         for (w <- WireDef.INSULATED_WIRES)
             GameRegistry.addRecipe(new ShapelessOreRecipe(
-                w.makeStack, Colors_old.get(w.meta-WireDef.INSULATED_0.meta).getOreDict,
+                w.makeStack, Colors(w.meta-WireDef.INSULATED_0.meta).oreDict,
                 WireDef.oreDictDefinitionInsulated, Items.string))
 
         for (w <- WireDef.INSULATED_WIRES)
             (RecipeLib.newShapelessBuilder
-                += new OreIn(Colors_old.get(w.meta-WireDef.INSULATED_0.meta).getOreDict)
+                += new OreIn(Colors(w.meta-WireDef.INSULATED_0.meta).oreDict)
                 += new OreIn(WireDef.oreDictDefinitionInsFramed)
                 += new MicroIn(MicroIn.edge, MicroIn.eight, Blocks.log)
                 += new ItemOut(w.makeFramedStack)).registerResult()
@@ -47,7 +49,7 @@ object TransmissionRecipes
             'W':Character, WireDef.oreDictDefinitionInsulated))
 
         for (w <- WireDef.BUNDLED_WIRES) if (w != WireDef.BUNDLED_N)
-            GameRegistry.addRecipe(new ShapelessOreRecipe(w.makeStack, Colors_old.get(w.meta-WireDef.BUNDLED_0.meta).getOreDict,
+            GameRegistry.addRecipe(new ShapelessOreRecipe(w.makeStack, Colors(w.meta-WireDef.BUNDLED_0.meta).oreDict,
                 WireDef.oreDictDefinitionBundled, Items.string))
 
         for (w <- WireDef.values) if (w.hasFramedForm)
@@ -56,6 +58,13 @@ object TransmissionRecipes
                 += (if (Configurator.simpleFramedWireRecipe) new OreIn("stickWood") to "s"
                     else new MicroIn(MicroIn.edge, MicroIn.eight, Blocks.log) to "s")
                 += new ItemOut(w.makeFramedStack)).registerResult()
+
+        GameRegistry.addRecipe(new ShapedOreRecipe(WireDef.POWER_LOWLOAD.makeStack(12),
+            "bib","yiy", "bib",
+            'b':JC, new ItemStack(Blocks.wool, 1, Colors.BLUE.woolID),
+            'i':JC, "ingotElectrotine",
+            'y':JC, new ItemStack(Blocks.wool, 1, Colors.YELLOW.woolID)
+        ))
     }
 
     private def initPartRecipes()
