@@ -183,7 +183,7 @@ class ExplorationProxy_server extends IProxy
             logic.maxY = 64
             val gen = new WorldGenCaveReformer
             gen.cluster = Set(((blockDecoratives, DecorativeStoneDefs.MARBLE.meta), 1))
-            gen.clusterSize = 1024
+            gen.clusterSize = 4096
             gen.material = Set((Blocks.stone, 0))
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)
