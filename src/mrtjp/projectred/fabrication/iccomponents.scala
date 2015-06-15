@@ -85,7 +85,7 @@ object ICComponentStore
     {
         val xs = Seq.newBuilder[WireModel]
         for (i <- 0 until count)
-            xs += new WireModel(name+"/wiresurface-"+i)
+            xs += new WireModel(name+"/"+name+"-"+i)
         xs.result()
     }
 

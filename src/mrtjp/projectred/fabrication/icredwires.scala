@@ -131,13 +131,14 @@ class AlloyWireICPart extends RedwireICPart
 
     @SideOnly(Side.CLIENT)
     override def getPartName = "Alloy wire"
+
+    @SideOnly(Side.CLIENT)
+    override def getPickOp = CircuitOpDefs.AlloyWire.getOp
 }
 
 class InsulatedWireICPart extends RedwireICPart with IInsulatedRedwireICPart
 {
     var colour:Byte = 0
-
-    override def getPartType = CircuitPartDefs.InsulatedWire
 
     override def save(tag:NBTTagCompound)
     {
@@ -163,6 +164,8 @@ class InsulatedWireICPart extends RedwireICPart with IInsulatedRedwireICPart
         colour = in.readByte()
     }
 
+    override def getPartType = CircuitPartDefs.InsulatedWire
+
     override def resolveSignal(part:Any, r:Int) = part match
     {
         case b:IBundledCableICPart => (b.getBundledSignal.apply(colour)&0xFF)-1
@@ -187,4 +190,7 @@ class InsulatedWireICPart extends RedwireICPart with IInsulatedRedwireICPart
 
     @SideOnly(Side.CLIENT)
     override def getPartName = Colors(colour&0xFF).name+" Insulated wire"
+
+    @SideOnly(Side.CLIENT)
+    override def getPickOp = CircuitOpDefs.INSULATED(colour).getOp
 }

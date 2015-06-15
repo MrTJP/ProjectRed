@@ -17,6 +17,7 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
     private var gateShape:Byte = 0
 
     var schedTime = 0L
+    var schedDigital = false
 
     def getLogic[T]:T
     def getLogicPrimitive = getLogic[ICGateLogic[GateICPart]]
@@ -94,7 +95,8 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
 
     override def scheduleTick(ticks:Int)
     {
-        if (schedTime < 0) schedTime = world.network.getWorld.getTotalWorldTime+ticks
+        if (ticks == 0) scheduleDigitalTick()
+        else if (schedTime < 0) schedTime = world.network.getWorld.getTotalWorldTime+ticks
     }
 
     def processScheduled()
@@ -106,15 +108,37 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
         }
     }
 
+    def scheduleDigitalTick()
+    {
+        schedDigital = true
+    }
+
+    var iter = 0
+    def processScheduledDigital()
+    {
+        while(schedDigital && iter < 3) //recursion control
+        {
+            schedDigital = false
+            iter += 1
+            scheduledTick()
+        }
+    }
+
     def onChange()
     {
         processScheduled()
         getLogicPrimitive.onChange(this)
+        processScheduledDigital()
     }
 
     override def update()
     {
-        if (!world.network.isRemote) processScheduled()
+        if (!world.network.isRemote)
+        {
+            processScheduled()
+            iter = 0
+            processScheduledDigital()
+        }
         getLogicPrimitive.onTick(this)
     }
 
@@ -203,6 +227,9 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
     {
         sendClientPacket(_.writeByte(2))
     }
+
+    @SideOnly(Side.CLIENT)
+    override def getPickOp = CircuitOpDefs.GATES(subID).getOp
 }
 
 abstract class ICGateLogic[T <: GateICPart]
@@ -289,6 +316,13 @@ object ICGateDefinition extends Enum
     val IOBundled = ICGateDef("Bundled IO", CircuitPartDefs.IOGate.id)
 
     val OR = ICGateDef("OR gate", CircuitPartDefs.SimpleGate.id)
+    val NOR = ICGateDef("NOR gate", CircuitPartDefs.SimpleGate.id)
+    val NOT = ICGateDef("NOT gate", CircuitPartDefs.SimpleGate.id)
+    val AND = ICGateDef("AND gate", CircuitPartDefs.SimpleGate.id)
+    val NAND = ICGateDef("NAND gate", CircuitPartDefs.SimpleGate.id)
+    val XOR = ICGateDef("XOR gate", CircuitPartDefs.SimpleGate.id)
+    val XNOR = ICGateDef("XNOR gate", CircuitPartDefs.SimpleGate.id)
+    val Buffer = ICGateDef("Buffer gate", CircuitPartDefs.SimpleGate.id)
 
     case class ICGateDef(unlocal:String, gateType:Int) extends Value
     {

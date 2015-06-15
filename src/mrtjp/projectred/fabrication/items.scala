@@ -12,6 +12,7 @@ import cpw.mods.fml.common.registry.GameRegistry
 import mrtjp.core.color.Colors
 import mrtjp.core.item.ItemCore
 import mrtjp.core.vec.{Point, Size}
+import mrtjp.projectred.fabrication.IIOCircuitPart._
 
 import mrtjp.projectred.{ProjectRedIntegration, ProjectRedFabrication}
 import mrtjp.projectred.core.libmc.PRResources
@@ -128,14 +129,11 @@ object ItemICBlueprint
         Seq("icdata", "icname", "icw", "ich").foreach(tag.removeTag)
     }
 
-    def copyToGate(bp:ItemStack, gate:ItemStack)
+    def saveICToGate(ic:IntegratedCircuit, gate:ItemStack)
     {
-        import mrtjp.projectred.fabrication.IIOCircuitPart._
         assertStackTag(gate)
-        val ic = loadIC(bp)
 
         val ioparts = ic.parts.values.collect{case io:IIOCircuitPart => io}.toSeq
-
         var (ri, ro, bi, bo) = (0, 0, 0, 0)
         val connmodes = new Array[Int](4)
 
@@ -178,9 +176,16 @@ object ItemICBlueprint
         }
 
         val tag = gate.getTagCompound
-        copyIC(bp, gate)
+        saveIC(ic, gate)
         tag.setShort("masks", CircuitGateLogic.packIO(ri, ro, bi, bo).toShort)
         tag.setShort("cmode", CircuitGateLogic.packConnModes(connmodes).toShort)
+    }
+
+    def copyToGate(bp:ItemStack, gate:ItemStack)
+    {
+        assertStackTag(gate)
+        val ic = loadIC(bp)
+        saveICToGate(ic, gate)
     }
 
     def getGateMasks(stack:ItemStack) =

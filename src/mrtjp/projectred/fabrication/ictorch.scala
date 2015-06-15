@@ -6,9 +6,12 @@
 package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.vec.Transformation
+import codechicken.lib.vec.{Translation, Transformation}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.vec.Point
+import mrtjp.projectred.fabrication.CircuitOp._
+import mrtjp.projectred.fabrication.ICComponentStore._
+
 
 class CircuitPartTorch extends CircuitPart with TICAcquisitions with IPoweredCircuitPart
 {
@@ -29,6 +32,9 @@ class CircuitPartTorch extends CircuitPart with TICAcquisitions with IPoweredCir
 
     @SideOnly(Side.CLIENT)
     override def getPartName = "Torch"
+
+    @SideOnly(Side.CLIENT)
+    override def getPickOp = CircuitOpDefs.Torch.getOp
 
     @SideOnly(Side.CLIENT)
     override def renderDynamic(t:Transformation, ortho:Boolean, frame:Float) =
@@ -54,10 +60,34 @@ class CircuitOpTorch extends CircuitOp
             circuit.setPart(point.x, point.y, CircuitPartDefs.Torch.createPart)
     }
 
-
     @SideOnly(Side.CLIENT)
     override def getOpName = "Torch"
-    override def renderImage(x:Double, y:Double, width:Double, height:Double){}
-    override def renderHover(circuit:IntegratedCircuit, point:Point, x:Double, y:Double, xSize:Double, ySize:Double){}
-    override def renderDrag(circuit:IntegratedCircuit, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double){}
+    override def renderImage(x:Double, y:Double, width:Double, height:Double)
+    {
+        val t = orthoGridT(width, height) `with` new Translation(x, y, 0)
+        RenderCircuitTorch.render(t, true)
+    }
+
+    override def renderHover(circuit:IntegratedCircuit, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    {
+        if (circuit.getPart(point) != null) return
+
+        renderHolo(x, y, xSize,  ySize, circuit.size, point,
+            if (!isOnBorder(circuit.size, point)) 0x33FFFFFF else 0x33FF0000)
+
+        val t = orthoPartT(x, y, xSize, ySize, circuit.size, point.x, point.y)
+        RenderCircuitTorch.render(t, true)
+
+    }
+
+    override def renderDrag(circuit:IntegratedCircuit, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    {
+        if (circuit.getPart(end) != null) return
+
+        renderHolo(x, y, xSize,  ySize, circuit.size, end,
+            if (!isOnBorder(circuit.size, end)) 0x44FFFFFF else 0x44FF0000)
+
+        val t = orthoPartT(x, y, xSize, ySize, circuit.size, end.x, end.y)
+        RenderCircuitTorch.render(t, true)
+    }
 }

@@ -24,12 +24,19 @@ object ComboICGateLogic
     {
         import mrtjp.projectred.fabrication.{ICGateDefinition => defs}
         instances(defs.OR.ordinal) = OR
+        instances(defs.NOR.ordinal) = NOR
+        instances(defs.NOT.ordinal) = NOT
+        instances(defs.AND.ordinal) = AND
+        instances(defs.NAND.ordinal) = NAND
+        instances(defs.XOR.ordinal) = XOR
+        instances(defs.XNOR.ordinal) = XNOR
+        instances(defs.Buffer.ordinal) = Buffer
     }
 }
 
 trait TSimpleRSICGateLogic[T <: RedstoneGateICPart] extends RedstoneICGateLogic[T]
 {
-    def getDelay(shape:Int) = 1
+    def getDelay(shape:Int) = 0
 
     def feedbackMask(shape:Int) = 0
 
@@ -124,4 +131,83 @@ object OR extends ComboICGateLogic
     override def deadSides = 3
 
     override def calcOutput(gate:ComboGateICPart, input:Int) = if (input != 0) 1 else 0
+}
+
+object NOR extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = 1
+    override def inputMask(shape:Int) = ~shape<<1&0xE
+    override def feedbackMask(shape:Int) = 1
+
+    override def deadSides = 3
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == 0) 1 else 0
+}
+
+object NOT extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)>>1|(shape&4)<<1)&0xB
+    override def inputMask(shape:Int) = 4
+    override def feedbackMask(shape:Int) = outputMask(shape)
+
+    override def deadSides = 3
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == 0) 0xB else 0
+}
+
+object AND extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = 1
+    override def inputMask(shape:Int) = ~shape<<1&0xE
+
+    override def deadSides = 3
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == inputMask(gate.shape)) 1 else 0
+}
+
+object NAND extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = 1
+    override def inputMask(shape:Int) = ~shape<<1&0xE
+
+    override def deadSides = 3
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == inputMask(gate.shape)) 0 else 1
+}
+
+object XOR extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = 1
+    override def inputMask(shape:Int) = 10
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) =
+    {
+        val side1 = (input&1<<1) != 0
+        val side2 = (input&1<<3) != 0
+        if (side1 != side2) 1 else 0
+    }
+}
+
+object XNOR extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = 1
+    override def inputMask(shape:Int) = 10
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) =
+    {
+        val side1 = (input&1<<1) != 0
+        val side2 = (input&1<<3) != 0
+        if (side1 == side2) 1 else 0
+    }
+}
+
+object Buffer extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)<<2|(shape&8)<<4)&0xB
+    override def inputMask(shape:Int) = 4
+    override def feedbackMask(shape:Int) = outputMask(shape)
+
+    override def deadSides = 2
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input != 0) 0xB else 0
 }
