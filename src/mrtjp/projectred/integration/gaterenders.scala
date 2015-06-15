@@ -55,7 +55,7 @@ object RenderGate
         new RenderStackingLatch,
         new RenderSegmentDisplay,
         new RenderDecodingRand,
-        GateRenderer.blank//ic gate renderer will be injected.
+        GateRenderer.blank//circuit gate renderer will be injected.
     )
 
     def registerIcons(reg:IIconRegister)
@@ -199,7 +199,7 @@ class RenderOR extends GateRenderer[ComboGatePart]
 
 class RenderNOR extends GateRenderer[ComboGatePart]
 {
-    var wires = generateWireModels("OR", 4)
+    var wires = generateWireModels("NOR", 4)
     var torch = new RedstoneTorchModel(8, 9, 6)
 
     override val coreModels = wires:+torch:+new BaseComponentModel
@@ -240,23 +240,23 @@ class RenderNOT extends GateRenderer[ComboGatePart]
     {
         wires(0).on = true
         wires(1).on = true
-        wires(2).on = true
-        wires(3).on = false
-        wires(3).disabled = false
+        wires(2).on = false
+        wires(3).on = true
         wires(0).disabled = false
-        wires(2).disabled = false
+        wires(1).disabled = false
+        wires(3).disabled = false
         torch.on = true
     }
 
     override def prepare(gate:ComboGatePart)
     {
         wires(0).on = (gate.state&0x11) != 0
-        wires(3).on = (gate.state&0x22) != 0
-        wires(1).on = (gate.state&4) != 0
-        wires(2).on = (gate.state&0x88) != 0
-        wires(3).disabled = (gate.shape&1) != 0
+        wires(1).on = (gate.state&0x22) != 0
+        wires(2).on = (gate.state&4) != 0
+        wires(3).on = (gate.state&0x88) != 0
         wires(0).disabled = (gate.shape&2) != 0
-        wires(2).disabled = (gate.shape&4) != 0
+        wires(1).disabled = (gate.shape&1) != 0
+        wires(3).disabled = (gate.shape&4) != 0
         torch.on = (gate.state&0xF0) != 0
     }
 }

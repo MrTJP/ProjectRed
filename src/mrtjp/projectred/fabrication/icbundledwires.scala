@@ -175,4 +175,7 @@ class BundledCableICPart extends WireICPart with TICBundledAcquisitions with IBu
 
     @SideOnly(Side.CLIENT)
     override def getPartName = (if (colour != -1) Colors(colour&0xFF).name+" " else "")+"Bundled cable"
+
+    @SideOnly(Side.CLIENT)
+    override def getPickOp = CircuitOpDefs.BUNDLED(colour+1).getOp
 }

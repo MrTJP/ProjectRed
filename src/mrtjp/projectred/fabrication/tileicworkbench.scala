@@ -17,6 +17,7 @@ import mrtjp.projectred.fabrication.ItemICBlueprint._
 import mrtjp.projectred.{ProjectRedFabrication, ProjectRedIntegration}
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
@@ -92,22 +93,8 @@ abstract class TileICMachine extends InstancedBlockTile with TTileOrient
     }
 }
 
-object TileICWorkbench
-{
-    //Server -> Client
-    val ICDESC = 2
-    val PARTSTREAM = 3
-    val ICSTREAM = 6
-    val HASBP = 1
-
-    //Client -> Server
-    val ICNEW = 5
-}
-
 class TileICWorkbench extends TileICMachine with NetWorldCircuit
 {
-    import TileICWorkbench._
-
     val circuit = new IntegratedCircuit
     circuit.network = this
 
@@ -116,9 +103,9 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
     override def getIC = circuit
     override def getWorld = world
     override def isRemote = world.isRemote
-    override def createPartStream() = writeStream(PARTSTREAM)
+    override def createPartStream() = writeStream(3)
     override def sendPartStream(out:PacketCustom){out.sendToChunk()} //TODO send only to watchers
-    override def createICStream() = writeStream(ICSTREAM)
+    override def createICStream() = writeStream(4)
     override def sendICStream(out:PacketCustom){if (world.isRemote) out.sendToServer() else out.sendToChunk()} //TODO send only to watchers
 
     override def save(tag:NBTTagCompound)
@@ -151,13 +138,13 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
 
     override def read(in:MCDataInput, key:Int) = key match
     {
-        case ICDESC => circuit.readDesc(in)
-        case PARTSTREAM => readPartStream(in)
-        case ICSTREAM => readICStream(in)
-        case HASBP =>
+        case 1 =>
             hasBP = in.readBoolean()
             markRender()
-        case ICNEW =>
+        case 2 => circuit.readDesc(in)
+        case 3 => readPartStream(in)
+        case 4 => readICStream(in)
+        case 5 =>
             if (!hasBP) new IntegratedCircuit().readDesc(in)
             else {circuit.readDesc(in); sendICDesc()}
         case _ => super.read(in, key)
@@ -165,14 +152,22 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
 
     private def sendICDesc()
     {
-        val out = writeStream(ICDESC)
+        val out = writeStream(2)
         circuit.writeDesc(out)
         out.sendToChunk() //TODO send only to gui open players
     }
 
+    private def sendICDesc(players:EntityPlayer*)
+    {
+        val out = writeStream(2)
+        circuit.writeDesc(out)
+        for (p <- players)
+            out.sendToPlayer(p)
+    }
+
     private def sendHasBPUpdate()
     {
-        writeStream(HASBP).writeBoolean(hasBP).sendToChunk()
+        writeStream(1).writeBoolean(hasBP).sendToChunk()
     }
 
     override def update()
@@ -215,16 +210,21 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
                     circuit.clear()
                     sendICDesc()
                 }
-                WorldLib.dropItem(world, position.offset(1), stack)
+                //WorldLib.dropItem(world, position.offset(1), stack)
+                val p = position.offset(1)
+                val item = new EntityItem(world, p.x+0.5, p.y+0.20, p.z+0.5, stack)
+                item.delayBeforeCanPickup = 10
+                item.motionX = 0
+                item.motionY = 0.15
+                item.motionZ = 0
+                world.spawnEntityInWorld(item)
                 hasBP = false
                 sendHasBPUpdate()
             }
             else
             {
                 GuiICWorkbench.open(player, null, _.writeCoord(x, y, z))
-                val out = writeStream(ICDESC)
-                circuit.writeDesc(out)
-                out.sendToPlayer(player)
+                sendICDesc(player)
             }
         }
         true

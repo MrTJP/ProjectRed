@@ -5,6 +5,8 @@
  */
 package mrtjp.projectred.fabrication
 
+import java.math.MathContext
+
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
 import cpw.mods.fml.relauncher.{Side, SideOnly}
@@ -16,14 +18,14 @@ import mrtjp.projectred.core.libmc.PRResources
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.entity.player.EntityPlayer
-import org.lwjgl.input.Keyboard
+import org.lwjgl.input.{Mouse, Keyboard}
 import org.lwjgl.opengl.GL11
 
 import scala.collection.convert.WrapAsJava
 
 class PrefboardNode(circuit:IntegratedCircuit) extends TNode
 {
-    var currentOp = CircuitOp.getOperation(0)
+    var currentOp:CircuitOp = null
 
     /**
      * 0 - off
@@ -36,6 +38,8 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
     var sizeMult = 8
     def size = circuit.size*sizeMult
     override def frame = Rect(position, Size((size.width*scale).toInt, (size.height*scale).toInt))
+
+    var opPickDelegate = {_:CircuitOp => ()}
 
     private var leftMouseDown = false
     private var rightMouseDown = false
@@ -64,10 +68,13 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
             val f = frame
             RenderCircuit.renderOrtho(circuit, f.x, f.y, size.width*scale, size.height*scale, rframe)
 
-            if (rayTest(mouse) && !leftMouseDown)
-                currentOp.renderHover(circuit, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
-            else if (leftMouseDown)
-                currentOp.renderDrag(circuit, mouseStart, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
+            if (currentOp != null)
+            {
+                if (rayTest(mouse) && !leftMouseDown)
+                    currentOp.renderHover(circuit, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
+                else if (leftMouseDown)
+                    currentOp.renderDrag(circuit, mouseStart, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
+            }
         }
     }
 
@@ -92,7 +99,7 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
         }
     }
 
-    override def mouseClicked_Impl(p:Point, button:Int, consumed:Boolean) =
+    override def mouseClicked_Impl(p:Point, button:Int, consumed:Boolean):Boolean =
     {
         if (isCircuitValid && !consumed && rayTest(p))
         {
@@ -100,6 +107,7 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
             {
                 leftMouseDown = true
                 mouseStart = toGridPoint(p)
+                return true
             }
             else if (button == 1)
             {
@@ -121,10 +129,15 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
 
                     case _ =>
                 }
+                return true
             }
-            true
+            else if (button == mcInst.gameSettings.keyBindPickBlock.getKeyCode)
+            {
+                opPickDelegate(getPickOp)
+                return true
+            }
         }
-        else false
+        false
     }
 
     override def mouseReleased_Impl(p:Point, button:Int, consumed:Boolean) =
@@ -133,7 +146,7 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
         {
             leftMouseDown = false
             val mouseEnd = toGridPoint(p)
-            val opUsed = circuit.sendOpUse(currentOp, mouseStart, mouseEnd)
+            val opUsed = currentOp != null && circuit.sendOpUse(currentOp, mouseStart, mouseEnd)
             if (!opUsed && mouseEnd == mouseStart)
             {
                 val part = circuit.getPart(mouseEnd)
@@ -153,21 +166,66 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
         false
     }
 
-    override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) =
+    override def mouseScrolled_Impl(p:Point, dir:Int, consumed:Boolean) =
     {
-        if (!consumed && leftMouseDown && keycode == Keyboard.KEY_ESCAPE)
+        if (!consumed && rayTest(p))
         {
-            leftMouseDown = false
+            if (dir > 0)
+                rescaleAt(p, math.min(scale+0.2, 3.0))
+            else if (dir < 0)
+                rescaleAt(p, math.max(scale-0.2, 0.5))
             true
         }
         else false
     }
 
+    override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) =
+    {
+        import Keyboard._
+        if (!consumed) keycode match
+        {
+            case KEY_ESCAPE if leftMouseDown =>
+                leftMouseDown = false
+                true
+            case KEY_ESCAPE if currentOp != null =>
+                opPickDelegate(null)
+                true
+            case _ if keycode == Minecraft.getMinecraft.gameSettings.keyBindPickBlock.getKeyCode =>
+                opPickDelegate(getPickOp)
+                true
+            case _ => false
+        }
+        else false
+    }
+
+    def getPickOp:CircuitOp =
+    {
+        val root = getRoot
+        val i = Mouse.getX*root.width/root.mc.displayWidth
+        val j = root.height-Mouse.getY*root.height/root.mc.displayHeight-1
+        val absPos = Point(i, j)
+
+        val pos = parent.convertPointFromScreen(absPos)
+        val part = circuit.getPart(toGridPoint(pos))
+
+        if (part != null) part.getPickOp
+        else null
+    }
+
     def incDetail(){detailLevel = math.min(detailLevel+1, 3)}
     def decDetail(){detailLevel = math.max(detailLevel-1, 0)}
 
-    def incScale(){scale = math.min(scale+0.2, 3.0)}
-    def decScale(){scale = math.max(scale-0.2, 0.5)}
+    def incScale(){rescaleAt(frame.midPoint, math.min(scale+0.2, 3.0))}
+    def decScale(){rescaleAt(frame.midPoint, math.max(scale-0.2, 0.5))}
+
+    def rescaleAt(point:Point, newScale:Double)
+    {
+        val p = parent.convertPointTo(point, this).vectorize
+        val newP = (p/scale)*newScale
+        val dp = newP-p
+        scale = newScale
+        position -= Point(dp)
+    }
 }
 
 class ICToolsetNode extends TNode
@@ -272,6 +330,18 @@ class ICToolsetNode extends TNode
         b.clickDelegate = {() => buttonClicked(op, b)}
         b
     }
+
+    def pickOp(op:CircuitOp)
+    {
+        setUnfocused()
+        if (op != null)
+        {
+            val id = opSet.indexOf(op)
+            if (id > -1)
+                toolButtons(id).clickDelegate()
+        }
+        else opSelectDelegate(null)
+    }
 }
 
 class NewICNode extends TNode
@@ -356,6 +426,12 @@ class NewICNode extends TNode
         addChild(textbox)
     }
 
+    override def frameUpdate_Impl(mouse:Point, rframe:Float)
+    {
+        if (!parent.asInstanceOf[GuiICWorkbench].tile.hasBP)
+            removeFromParent()
+    }
+
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
         GuiDraw.drawGradientRect(0, 0, parent.frame.width, parent.frame.height, -1072689136, -804253680)
@@ -406,18 +482,58 @@ class NewICNode extends TNode
 
     override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) =
     {
-        if (!consumed && keycode == Keyboard.KEY_ESCAPE)
+        if (!consumed) keycode match
         {
-            removeFromParent()
-            true
+            case Keyboard.KEY_ESCAPE =>
+                removeFromParent()
+                true
+            case Keyboard.KEY_RETURN =>
+                removeFromParent()
+                completionDelegate()
+                true
+            case _ => false
         }
         else false
     }
 }
 
-class GuiICWorkbench(tile:TileICWorkbench) extends NodeGui(330, 256)
+class InfoNode extends TNode
+{
+    val size = Size(18, 18)
+    override def frame = Rect(position, size)
+
+    private def getTile = parent.asInstanceOf[GuiICWorkbench].tile
+
+    override def drawBack_Impl(mouse:Point, rframe:Float)
+    {
+        PRResources.guiPrototyper.bind()
+        if (!getTile.hasBP || getTile.getIC.isEmpty)
+            Gui.func_146110_a(position.x, position.y, 330, 0, size.width, size.height, 512, 512)
+    }
+
+    override def drawFront_Impl(mouse:Point, rframe:Float)
+    {
+        val text =
+            if (!getTile.hasBP)
+                "Lay down a blueprint on the workbench."
+            else if (getTile.getIC.isEmpty)
+                "Blueprint is empty. Redraw it."
+            else ""
+        if (text.nonEmpty && rayTest(mouse))
+        {
+            translateToScreen()
+            val Point(mx, my) = parent.convertPointToScreen(mouse)
+            import scala.collection.JavaConversions._
+            GuiDraw.drawMultilineTip(mx+12, my-12, Seq(text))
+            translateFromScreen()
+        }
+    }
+}
+
+class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
 {
     var pref:PrefboardNode = null
+    var toolSets = Seq[ICToolsetNode]()
 
     override def onAddedToParent_Impl()
     {
@@ -435,6 +551,7 @@ class GuiICWorkbench(tile:TileICWorkbench) extends NodeGui(330, 256)
         pref = new PrefboardNode(tile.circuit)
         pref.position = Point(pan.size/2-pref.size/2)
         pref.zPosition = -0.01//Must be below pan/clip nodes
+        pref.opPickDelegate = {op => toolSets.foreach(_.pickOp(op))}
         pan.addChild(pref)
 
         val toolbar = new TNode {}
@@ -453,6 +570,7 @@ class GuiICWorkbench(tile:TileICWorkbench) extends NodeGui(330, 256)
                 toolset.setup()
                 toolset.opSelectDelegate = {op => pref.currentOp = op }
                 toolbar.addChild(toolset)
+                toolSets :+= toolset
             }
 
             addToolset(Seq(Erase))
@@ -461,7 +579,7 @@ class GuiICWorkbench(tile:TileICWorkbench) extends NodeGui(330, 256)
             addToolsetRange(WhiteInsulatedWire, BlackInsulatedWire)
             addToolsetRange(NeutralBundledCable, BlackBundledCable)
             addToolsetRange(SimpleIO, BundledIO)
-            addToolset(Seq(ORGate))
+            addToolset(Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate))
         }
 
         addChild(toolbar)
@@ -496,24 +614,32 @@ class GuiICWorkbench(tile:TileICWorkbench) extends NodeGui(330, 256)
         addChild(splus)
 
         val reqNew = new NodeButtonMC
-        reqNew.position = Point(277, 133)
-        reqNew.size = Size(34, 12)
-        reqNew.text = "new"
+        reqNew.position = Point(272, 133)
+        reqNew.size = Size(44, 12)
+        reqNew.text = "redraw"
         reqNew.clickDelegate = {() =>
-            val nic = new NewICNode
-            nic.position = Point(size/2)-Point(nic.size/2)
-            nic.completionDelegate = {() =>
-                val ic = new IntegratedCircuit
-                ic.name = nic.getName
-                ic.size = nic.selectedBoardSize*16
-                val stream = tile.writeStream(TileICWorkbench.ICNEW)
-                ic.writeDesc(stream)
-                stream.sendToServer()
+            if (tile.hasBP)
+            {
+                val nic = new NewICNode
+                nic.position = Point(size/2)-Point(nic.size/2)
+                nic.completionDelegate = {() =>
+                    val ic = new IntegratedCircuit
+                    ic.name = nic.getName
+                    ic.size = nic.selectedBoardSize*16
+                    val stream = tile.writeStream(5) //TODO create tile func
+                    ic.writeDesc(stream)
+                    stream.sendToServer()
+                }
+                addChild(nic)
+                nic.pushZTo(5)
             }
-            addChild(nic)
-            nic.pushZTo(5)
         }
         addChild(reqNew)
+
+        val info = new InfoNode
+        info.position = Point(241, 18)
+        info.zPosition = 1
+        addChild(info)
     }
 
     override def drawBack_Impl(mouse:Point, frame:Float)
@@ -528,7 +654,7 @@ class GuiICWorkbench(tile:TileICWorkbench) extends NodeGui(330, 256)
         GuiDraw.drawStringC(pref.detailLevel+"", 279, 175, 30, 10, Colors.GREY.argb, false)
 
         GuiDraw.drawStringC("scale", 273, 193, 42, 14, Colors.GREY.argb, false)
-        GuiDraw.drawStringC(pref.scale+"", 279, 207, 30, 10, Colors.GREY.argb, false)
+        GuiDraw.drawStringC(BigDecimal(pref.scale, new MathContext(2))+"", 279, 207, 30, 10, Colors.GREY.argb, false)
     }
 }
 

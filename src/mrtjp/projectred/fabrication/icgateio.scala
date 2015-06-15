@@ -132,7 +132,7 @@ abstract class IOICGateLogic(val gate:IOGateICPart) extends RedstoneICGateLogic[
         true
     }
 
-    def extInputChange(gate:IOGateICPart){onChange(gate)}
+    def extInputChange(gate:IOGateICPart){gate.onChange()}
     def extOutputChange(gate:IOGateICPart){}
     def getIOMode(gate:IOGateICPart):Int = gate.shape match
     {
@@ -155,7 +155,7 @@ abstract class IOICGateLogic(val gate:IOGateICPart) extends RedstoneICGateLogic[
         {
             gate.setState(gate.state&0xF0|newInput)
             gate.onInputChange()
-            gate.scheduleTick(1)
+            gate.scheduleTick(0)
         }
     }
 
@@ -232,11 +232,11 @@ class SimpleIOICGateLogic(gate:IOGateICPart) extends IOICGateLogic(gate) with TR
     override def getConnMode(gate:IOGateICPart) = IIOCircuitPart.Simple
 
     override def resolveInputFromWorld =
-        if ((gate.world.iostate(gate.rotation)&0x8000) != 0) 255
+        if ((gate.world.iostate(gate.rotation)&0xFFFE) != 0) 255
         else 0
 
     override def resolveOutputToWorld =
-        if (((gate.world.iostate(gate.rotation)>>16)&0x8000) != 0) 255 else 0
+        if (((gate.world.iostate(gate.rotation)>>16)&0xFFFE) != 0) 255 else 0
 
     override def setWorldOutput(state:Boolean)
     {
@@ -294,7 +294,7 @@ trait TFreqIOICGateLogic extends IOICGateLogic
         {
             freq += 1
             sendFreqUpdate()
-            onChange(gate)
+            gate.onChange()
         }
     }
 
@@ -304,7 +304,7 @@ trait TFreqIOICGateLogic extends IOICGateLogic
         {
             freq -= 1
             sendFreqUpdate()
-            onChange(gate)
+            gate.onChange()
         }
     }
 

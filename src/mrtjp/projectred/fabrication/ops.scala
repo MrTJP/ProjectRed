@@ -68,6 +68,17 @@ object CircuitOpDefs extends Enum
 
     //gates
     val ORGate = OpDef(new OpGate(ICGateDefinition.OR.ordinal))
+    val NORGate = OpDef(new OpGate(ICGateDefinition.NOR.ordinal))
+    val NOTGate = OpDef(new OpGate(ICGateDefinition.NOT.ordinal))
+    val ANDGate = OpDef(new OpGate(ICGateDefinition.AND.ordinal))
+    val NANDGate = OpDef(new OpGate(ICGateDefinition.NAND.ordinal))
+    val XORGate = OpDef(new OpGate(ICGateDefinition.XOR.ordinal))
+    val XNORGate = OpDef(new OpGate(ICGateDefinition.XNOR.ordinal))
+    val BufferGate = OpDef(new OpGate(ICGateDefinition.Buffer.ordinal))
+
+    val INSULATED = WhiteInsulatedWire to BlackInsulatedWire toArray
+    val BUNDLED = NeutralBundledCable to BlackBundledCable toArray
+    val GATES = SimpleIO to BufferGate toArray
 
     case class OpDef(op:CircuitOp) extends Value
     {

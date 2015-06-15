@@ -7,7 +7,7 @@ package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.render.{TextureUtils, CCRenderState}
+import codechicken.lib.render.{CCRenderState, TextureUtils}
 import codechicken.lib.vec._
 import mrtjp.core.math.MathLib
 import mrtjp.projectred.fabrication.IIOCircuitPart._
@@ -26,10 +26,44 @@ class CircuitGatePart extends RedstoneGatePart with TBundledGatePart with TCompl
     override def getLogic[T] = logic.asInstanceOf[T]
     def getLogicIC = getLogic[CircuitGateLogic]
 
+    private var itemTag:NBTTagCompound = null
+
+    override def save(tag:NBTTagCompound)
+    {
+        super.save(tag)
+        tag.setTag("itemTag", itemTag)
+    }
+
+    override def load(tag:NBTTagCompound)
+    {
+        super.load(tag)
+        itemTag = tag.getCompoundTag("itemTag")
+    }
+
+    override def writeDesc(packet:MCDataOutput)
+    {
+        super.writeDesc(packet)
+        packet.writeNBTTagCompound(itemTag)
+    }
+
+    override def readDesc(packet:MCDataInput)
+    {
+        super.readDesc(packet)
+        itemTag = packet.readNBTTagCompound()
+    }
+
     override def preparePlacement(player:EntityPlayer, pos:BlockCoord, side:Int, meta:Int)
     {
         super.preparePlacement(player, pos, side, meta)
+        itemTag = player.getHeldItem.getTagCompound
         CircuitGateLogic.constructICLogic(logic, player.getHeldItem)
+    }
+
+    override def getItem =
+    {
+        val stack = getGateDef.makeStack
+        stack.setTagCompound(itemTag)
+        stack
     }
 
     override def assertLogic()
