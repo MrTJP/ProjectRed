@@ -15,8 +15,10 @@ object ProjectRedExpansion
     var machine2:BlockMachine = null //devices
 
     /** Items **/
-    var emptybattery:ItemBatteryEmpty = null
-    var battery:ItemBattery = null
+    var itemEmptybattery:ItemBatteryEmpty = null
+    var itemBattery:ItemBattery = null
+    var itemJetpack:ItemElectronicJetpack = null
+    var itemScrewdriver:ItemElectronicScrewdriver = null
 
     /** Parts **/
     var itemSolar:ItemSolarPanel = null

@@ -90,7 +90,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
     override def onBlockActivated(player:EntityPlayer, actside:Int):Boolean =
     {
         val held = player.getHeldItem
-        if (held != null && held.getItem.isInstanceOf[IScrewdriver])
+        if (held != null && held.getItem.isInstanceOf[IScrewdriver] && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
         {
             if (world.isRemote) return true
             def rotate() = if (doesRotate)
@@ -100,7 +100,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
                 if (old != rotation) sendOrientUpdate()
                 world.notifyBlocksOfNeighborChange(x, y, z, getBlock)
                 onBlockRotated()
-                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
+                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
             def orient() = if (doesOrient)
             {
@@ -109,7 +109,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
                 if (old != side) sendOrientUpdate()
                 world.notifyBlocksOfNeighborChange(x, y, z, getBlock)
                 onBlockRotated()
-                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
+                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
 
             if (player.isSneaking || !doesOrient) rotate() else orient()

@@ -1,7 +1,8 @@
 package mrtjp.projectred.core.libmc.fx
 
 import codechicken.lib.vec.{BlockCoord, Vector3}
-import mrtjp.core.color.Colors_old
+import mrtjp.core.color.Colors.Color
+import mrtjp.core.color.{Colors, Colors_old}
 import net.minecraft.client.particle.EntityFX
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.world.World
@@ -27,18 +28,14 @@ class CoreParticle(w:World, px:Double, py:Double, pz:Double) extends EntityFX(w,
     var scaleY = 0.2F
     var scaleZ = 0.2F
 
-    //var particleMaxAge = 0
-    //var particleAge = 0
     private var ignoreMaxAge = false
 
     var ignoreNoLogics = false
     var ignoreVelocity = false
 
     override def isBurning = false
-    override def canTriggerWalking = false
-    override def canAttackWithItem = false
 
-    var logics = Vector[ParticleLogic]()
+    var logics = Seq[ParticleLogic]()
 
     def setTextureByName(name:String)
     {
@@ -52,9 +49,14 @@ class CoreParticle(w:World, px:Double, py:Double, pz:Double) extends EntityFX(w,
         this.b = b
     }
 
-    def setPRColor(color:Colors_old)
+    def setPRColor(color:Color)
     {
         setRGBColorF((color.c.r&0xFF)/255F, (color.c.g&0xFF)/255F, (color.c.b&0xFF)/255F)
+    }
+
+    def setPRColor(color:Colors_old)
+    {
+        setPRColor(Colors.apply(color.ordinal()))
     }
 
     def setScale(scale:Float)
@@ -173,4 +175,3 @@ object LogicComparator extends Ordering[ParticleLogic]
     def compare(o1:ParticleLogic, o2:ParticleLogic) =
         if (o1 eq o2) 0 else if (o1.getPriority > o2.getPriority) 1 else -1
 }
-

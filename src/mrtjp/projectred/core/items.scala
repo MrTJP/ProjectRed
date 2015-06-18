@@ -1,19 +1,20 @@
 package mrtjp.projectred.core
 
-import mrtjp.core.item.{ItemDefinition, ItemCore}
-import net.minecraft.client.renderer.texture.IIconRegister
-import net.minecraft.item.{Item, ItemStack}
-import mrtjp.projectred.ProjectRedCore
-import net.minecraft.util.{EnumChatFormatting, IIcon}
-import net.minecraft.creativetab.CreativeTabs
 import java.util.{List => JList, Set => JSet}
-import cpw.mods.fml.relauncher.{SideOnly, Side}
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.world.World
+
+import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.item.{ItemCore, ItemDefinition}
+import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.api.IScrewdriver
+import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraftforge.oredict.OreDictionary
+import net.minecraft.util.{EnumChatFormatting, IIcon}
+import net.minecraft.world.World
 import org.lwjgl.input.Keyboard
+
 import scala.collection.JavaConversions
 
 abstract class ItemCraftingDamage(name:String) extends ItemCore(name)
@@ -180,6 +181,7 @@ class ItemScrewdriver extends ItemCore("projectred.core.screwdriver") with IScre
     setMaxDamage(128)
     setNoRepair()
     setCreativeTab(ProjectRedCore.tabCore)
+    setTextureName("projectred:screwdriver")
 
     override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World,
                            x:Int, y:Int, z:Int, side:Int,
@@ -188,15 +190,11 @@ class ItemScrewdriver extends ItemCore("projectred.core.screwdriver") with IScre
     override def doesSneakBypassUse(world:World, x:Int, y:Int, z:Int,
                                     player:EntityPlayer) = true
 
-    @SideOnly(Side.CLIENT)
-    override def registerIcons(reg:IIconRegister)
-    {
-        itemIcon = reg.registerIcon("projectred:screwdriver")
-    }
+    override def canUse(player:EntityPlayer, stack:ItemStack) = true
 
-    def damageScrewdriver(world:World, player:EntityPlayer)
+    override def damageScrewdriver(player:EntityPlayer, stack:ItemStack)
     {
-        player.getHeldItem.damageItem(1, player)
+        stack.damageItem(1, player)
     }
 }
 

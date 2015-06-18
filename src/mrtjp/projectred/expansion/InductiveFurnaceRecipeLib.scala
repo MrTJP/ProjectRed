@@ -3,6 +3,7 @@ package mrtjp.projectred.expansion
 import java.util.{Map => JMap}
 
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
+import mrtjp.projectred.core.PRLogger
 import mrtjp.projectred.core.libmc.recipe._
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.{ItemFood, ItemStack}
@@ -71,12 +72,17 @@ object InductiveFurnaceRecipeLib
         }
 
         val sl = FurnaceRecipes.smelting.getSmeltingList.asInstanceOf[JMap[ItemStack, ItemStack]]
-        for ((in, out) <- sl) if (getRecipeFor(in) == null)
+        for ((in, out) <- sl)
         {
-            if (in.getItem.isInstanceOf[ItemFood]) addRecipe(in, out, 40)
-            else if (isDust(in) && isIngot(out)) addOreRecipe(in, out, 80*10/16)
-            else if (OreDictionary.getOreIDs(in).nonEmpty) addOreRecipe(in, out, 80)
-            else addRecipe(in, out, 80)
+            if (in == null) PRLogger.error("Some mod added a furnace recipe with a null input. " +
+                    "Recipe's output is "+(if (out != null) out.getDisplayName else null)+".")
+            else if (getRecipeFor(in) == null)
+            {
+                if (in.getItem.isInstanceOf[ItemFood]) addRecipe(in, out, 40)
+                else if (isDust(in) && isIngot(out)) addOreRecipe(in, out, 80*10/16)
+                else if (OreDictionary.getOreIDs(in).nonEmpty) addOreRecipe(in, out, 80)
+                else addRecipe(in, out, 80)
+            }
         }
     }
 }

@@ -14,12 +14,12 @@ import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.ProjectRedExploration._
 import mrtjp.projectred.core.libmc.recipe._
 import mrtjp.projectred.core.{Configurator, IProxy, PartDefs, ShapelessOreNBTRecipe}
-import net.minecraft.block.BlockStoneBrick
 import net.minecraft.init.{Blocks, Items}
-import net.minecraft.item.{ItemBlock, ItemMultiTexture, ItemStack}
+import net.minecraft.item.ItemStack
 import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.common.util.EnumHelper
 import net.minecraftforge.oredict.{OreDictionary, ShapedOreRecipe}
+
 class ExplorationProxy_server extends IProxy
 {
     val guiIDBackpack = 1
@@ -43,20 +43,6 @@ class ExplorationProxy_server extends IProxy
         blockLily.addSingleTile(classOf[TileLily])
         itemLilySeed = new ItemLilySeeds
         for (i <- 0 until 16) OreDictionary.registerOre(Colors(i).oreDict, new ItemStack(itemLilySeed, 1, i))
-
-        if (Configurator.gen_SpreadingMoss)
-        {
-            val dynCobble = new BlockDynamicMossyCobble
-            val dynBrick = new BlockDynamicStoneBrick
-
-            GameRegistry.addSubstitutionAlias("minecraft:mossy_cobblestone", GameRegistry.Type.BLOCK, dynCobble)
-            GameRegistry.addSubstitutionAlias("minecraft:mossy_cobblestone", GameRegistry.Type.ITEM, new ItemBlock(dynCobble))
-
-            GameRegistry.addSubstitutionAlias("minecraft:stonebrick", GameRegistry.Type.BLOCK, dynBrick)
-            GameRegistry.addSubstitutionAlias("minecraft:stonebrick", GameRegistry.Type.ITEM,
-                new ItemMultiTexture(dynBrick, dynBrick, BlockStoneBrick.field_150142_a)
-                        .setUnlocalizedName("stonebricksmooth"))
-        }
 
         blockBarrel = new BlockBarrel
         blockBarrel.addTile(classOf[TileBarrel], 0)
@@ -308,7 +294,11 @@ class ExplorationProxy_server extends IProxy
         }
     }
 
-    override def postinit(){}
+    override def postinit()
+    {
+        if (Configurator.gen_SpreadingMoss)
+            BlockUpdateHandler.register(MossSpreadHandler)
+    }
 
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"
