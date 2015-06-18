@@ -7,7 +7,7 @@ import codechicken.lib.vec.{BlockCoord, Vector3}
 import codechicken.multipart.IRedstoneConnectorBlock
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.{BlockCore, InstancedBlock, InstancedBlockTile}
-import mrtjp.core.color.Colors_old
+import mrtjp.core.color.{Colors, Colors_old}
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.libmc.PRLib
@@ -188,7 +188,7 @@ class BlockAirousLight extends BlockCore("projectred.illumination.airousLight", 
 
             c.setIgnoreMaxAge(true)
             c.setScale(0.05f+0.02f*rand.nextFloat)
-            c.setPRColor(Colors_old.get(color))
+            c.setPRColor(Colors.apply(color))
             c += orbit
             c += scale
             c += iconshift

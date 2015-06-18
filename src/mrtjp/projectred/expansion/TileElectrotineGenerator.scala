@@ -99,7 +99,7 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
     def getBurnTimeScaled(i:Int) = math.min(i, i*burnTimeRemaining/getBurnTimePerDust)
 
     def getMaxStorage = 800
-    def getBurnTimePerDust = 350
+    def getBurnTimePerDust = 2750
     def getBurnUseOnCharge = 10
     def getBurnUseOnIdle = 1
     def getDrawSpeed = 100
