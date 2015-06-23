@@ -79,6 +79,7 @@ item.projectred.expansion.emptybattery.name=Battery
 item.projectred.expansion.battery.name=Battery
 item.projectred.expansion.electric_screwdriver.name=Electric Screwdriver
 item.projectred.expansion.jetpack.name=Jetpack
+item.projectred.expansion.infused_ender_pearl.name=Infused Ender Pearl
 tile.projectred.expansion.machine1|0.name=Inductive Furnace
 tile.projectred.expansion.machine1|1.name=Electrotine Generator
 tile.projectred.expansion.machine2|0.name=Block Breaker
@@ -88,6 +89,7 @@ tile.projectred.expansion.machine2|3.name=Filtered Importer
 tile.projectred.expansion.machine2|4.name=Fire Starter
 tile.projectred.expansion.machine2|5.name=Battery Box
 tile.projectred.expansion.machine2|6.name=Charging Bench
+tile.projectred.expansion.machine2|7.name=Teleposer
 item.projectred.expansion.solar_panel.name=Solar Panel
 
 

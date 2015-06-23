@@ -5,6 +5,9 @@
  */
 package mrtjp.projectred.expansion
 
+import java.util.{List => JList}
+
+import codechicken.lib.vec.BlockCoord
 import cpw.mods.fml.common.registry.GameRegistry
 import mrtjp.core.item.ItemCore
 import mrtjp.projectred.ProjectRedExpansion
@@ -13,6 +16,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemArmor.ArmorMaterial
 import net.minecraft.item.{Item, ItemArmor, ItemStack}
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.World
 
 trait TItemBattery extends IChargable
@@ -137,7 +141,7 @@ class ItemElectronicScrewdriver extends ItemCore("projectred.expansion.electric_
 class ItemElectronicJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable
 {
     setMaxStackSize(1)
-    setMaxDamage(3200)
+    setMaxDamage(6400)
     setNoRepair()
     setCreativeTab(ProjectRedExpansion.tabExpansion)
     setTextureName("projectred:jetpack")
@@ -149,7 +153,7 @@ class ItemElectronicJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with 
         if (SpacebarServerTracker.isKeyDown(player) && stack.getItemDamage < stack.getMaxDamage)
         {
             propellPlayer(player, stack)
-            stack.setItemDamage(stack.getItemDamage+8)
+            stack.setItemDamage(stack.getItemDamage+16)
         }
     }
 
@@ -158,32 +162,80 @@ class ItemElectronicJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with 
 
     def propellPlayer(player:EntityPlayer, stack:ItemStack)
     {
-        var power = 1.0
-        val maxHeight = 256.0/1.45
-        val thrust = 0.15
-        val maxUpSpeed = 0.70
+        val maxHeight = 256.0*0.6
+        val thrust = 0.1
+        val maxUpSpeed = 0.55
         val stabalizeSpeed = 0.16
+        val heightFalloff = 25.0
+        val damageFalloff = 200.0
 
-        var y = player.posY
-        if (y > maxHeight-25)
-        {
-            if (y > maxHeight) y = maxHeight
-            power = power*((maxHeight-y)/25.0D)
-        }
+        var power = 1.0
 
-        if (stack.getItemDamage > 3100)
-            power *= (3200-stack.getItemDamage)/100.0
+        val y = player.posY
+        if (y > maxHeight-heightFalloff)
+            power *= math.max(0, maxHeight-y)/heightFalloff
+
+        val damage = stack.getItemDamage
+        if (damage > getMaxDamage-damageFalloff)
+            power *= math.max(0, getMaxDamage-damage)/heightFalloff
 
         val velY = player.motionY
-        val accelY = if (player.isSneaking) math.min(-velY*stabalizeSpeed, thrust) else thrust
+        val accelY = if (player.isSneaking) math.min(-velY*stabalizeSpeed, thrust*power) else thrust*power
         player.motionY = math.min(velY+accelY, maxUpSpeed)
 
         if (ForwardServerTracker.isKeyDown(player))
-            player.moveFlying(0, power*0.6 toFloat, 0.055f)
+            player.moveFlying(0, (power*0.6).toFloat, 0.055f)
 
         player.distanceWalkedModified = 0
         player.fallDistance =
-                if (player.motionY < 0) (player.motionY*player.motionY)/0.065 toFloat
+                if (player.motionY < 0) ((player.motionY*player.motionY)/0.065).toFloat
                 else 0
     }
+}
+
+class ItemInfusedEnderPearl extends ItemCore("projectred.expansion.infused_ender_pearl")
+{
+    setMaxStackSize(1)
+    setTextureName("projectred:infused_ender_pearl")
+    setCreativeTab(ProjectRedExpansion.tabExpansion)
+
+    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], flag:Boolean)
+    {
+        import ItemInfusedEnderPearl._
+        import net.minecraft.util.EnumChatFormatting._
+        val slist = list.asInstanceOf[JList[String]]
+        if (hasLocation(stack))
+        {
+            val bc = getLocation(stack)
+            slist.add(GRAY+s"Tied to [${bc.x}, ${bc.y}, ${bc.z}]")
+        }
+    }
+}
+
+object ItemInfusedEnderPearl
+{
+    private def assertNBT(stack:ItemStack)
+    {
+        if (!stack.hasTagCompound)
+            stack.setTagCompound(new NBTTagCompound)
+    }
+
+    def setLocation(stack:ItemStack, x:Int, y:Int, z:Int)
+    {
+        assertNBT(stack)
+        val tag = stack.getTagCompound
+        tag.setInteger("locX", x)
+        tag.setInteger("locY", y)
+        tag.setInteger("locZ", z)
+    }
+
+    def getLocation(stack:ItemStack) =
+    {
+        assertNBT(stack)
+        val tag = stack.getTagCompound
+        new BlockCoord(tag.getInteger("locX"), tag.getInteger("locY"), tag.getInteger("locZ"))
+    }
+
+    def hasLocation(stack:ItemStack) =
+        stack.hasTagCompound && stack.getTagCompound.hasKey("locX")
 }
