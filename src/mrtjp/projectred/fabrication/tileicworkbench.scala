@@ -23,7 +23,6 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
-import net.minecraftforge.common.util.ForgeDirection
 
 class BlockICMachine extends InstancedBlock("projectred.integration.icblock", Material.iron)
 {
@@ -74,12 +73,12 @@ abstract class TileICMachine extends InstancedBlockTile with TTileOrient
     override def onBlockActivated(player:EntityPlayer, side:Int):Boolean =
     {
         val held = player.getHeldItem
-        if (doesRotate && held != null && held.getItem.isInstanceOf[IScrewdriver])
+        if (doesRotate && held != null && held.getItem.isInstanceOf[IScrewdriver] && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
         {
             if (world.isRemote) return true
             setRotation((rotation+1)%4)
             sendOrientUpdate()
-            held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
+            held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             true
         }
         else false

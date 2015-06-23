@@ -132,6 +132,8 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
 
     override def getBlock = ProjectRedExpansion.machine2
 
+    override def doesRotate = false
+
     override def onBlockPlaced(side:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
     {
         super.onBlockPlaced(side, meta, player, stack, hit)
@@ -168,11 +170,11 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
         tryChargeBattery()
         tryDischargeBattery()
 
-        checkRenderUpdate()
+        updateRendersIfNeeded()
     }
 
     private var s = 0
-    def checkRenderUpdate()
+    def updateRendersIfNeeded()
     {
         val s2 = getStorageScaled(8)
         if (s != s2) sendStorage()
@@ -188,24 +190,28 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
     def tryDischargeBattery()
     {
         val stack = getStackInSlot(1)
-        if (stack != null)
+        if (stack != null) stack.getItem match
         {
-            val toDraw = math.min(getMaxStorage-storage, getChargeSpeed)
-            val (newStack, drawn) = TItemBattery.drawPower(stack, toDraw)
-            setInventorySlotContents(1, newStack)
-            storage += drawn
+            case b:TItemBattery =>
+                val toDraw = math.min(getMaxStorage-storage, getChargeSpeed)
+                val (newStack, drawn) = b.drawPower(stack, toDraw)
+                setInventorySlotContents(1, newStack)
+                storage += drawn
+            case _ =>
         }
     }
 
     def tryChargeBattery()
     {
         val stack = getStackInSlot(0)
-        if (stack != null)
+        if (stack != null) stack.getItem match
         {
-            val toAdd = math.min(storage, getChargeSpeed)
-            val (newStack, added) = TItemBattery.addPower(stack, toAdd)
-            setInventorySlotContents(0, newStack)
-            storage -= added
+            case b:TItemBattery =>
+                val toAdd = math.min(storage, getChargeSpeed)
+                val (newStack, added) = b.addPower(stack, toAdd)
+                setInventorySlotContents(0, newStack)
+                storage -= added
+            case _ =>
         }
     }
 
@@ -226,7 +232,7 @@ class ContainerBatteryBox(p:EntityPlayer, tile:TileBatteryBox) extends Container
         addPlayerInv(p, 8, 89)
     }
 
-    private var st = 0
+    private var st = -1
     override def detectAndSendChanges()
     {
         super.detectAndSendChanges()

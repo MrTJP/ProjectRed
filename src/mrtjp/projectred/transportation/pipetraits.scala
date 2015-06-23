@@ -497,16 +497,16 @@ trait TInventoryPipe[T <: AbstractPipePayload] extends PayloadPipePart[T] with I
 
     override def getInterfacedSide = if (!(0 to 5 contains inOutSide)) -1 else inOutSide^1
 
-    abstract override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
+    abstract override def activate(player:EntityPlayer, hit:MovingObjectPosition, held:ItemStack):Boolean =
     {
-        if (super.activate(player, hit, item)) return true
+        if (super.activate(player, hit, held)) return true
 
-        if (item != null && item.getItem.isInstanceOf[IScrewdriver])
+        if (held != null && held.getItem.isInstanceOf[IScrewdriver] && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
         {
             if (!world.isRemote)
             {
                 shiftOrientation(true)
-                item.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(world, player)
+                held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
             return true
         }

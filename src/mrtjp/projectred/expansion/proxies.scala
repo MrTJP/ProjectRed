@@ -4,20 +4,21 @@ import java.lang.{Character => JC}
 
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
-import codechicken.multipart.{TMultiPart, MultiPartRegistry}
 import codechicken.multipart.MultiPartRegistry.IPartFactory2
+import codechicken.multipart.{MultiPartRegistry, TMultiPart}
 import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TileRenderRegistry
-import mrtjp.core.color.Colors
+import mrtjp.core.data.{TClientKeyTracker, TServerKeyTracker}
 import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedExpansion._
-import mrtjp.projectred.core.{PartDefs, IProxy}
-import mrtjp.projectred.transmission.WireDef
+import mrtjp.projectred.core.{IProxy, PartDefs}
+import net.minecraft.client.Minecraft
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.client.MinecraftForgeClient
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.oredict.ShapedOreRecipe
 
 class ExpansionProxy_server extends IProxy with IPartFactory2
@@ -37,8 +38,11 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
         itemSolar = new ItemSolarPanel
 
         //Items
-        emptybattery = new ItemBatteryEmpty
-        battery = new ItemBattery
+        itemEmptybattery = new ItemBatteryEmpty
+        itemBattery = new ItemBattery
+        itemJetpack = new ItemElectronicJetpack
+        itemScrewdriver = new ItemElectronicScrewdriver
+        itemInfusedEnderPearl = new ItemInfusedEnderPearl
 
         //Machine1 (machines)
         machine1 = new BlockMachine("projectred.expansion.machine1")
@@ -53,11 +57,19 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
         machine2.addTile(classOf[TileFilteredImporter], 3)
         machine2.addTile(classOf[TileFireStarter], 4)
         machine2.addTile(classOf[TileBatteryBox], 5)
+        machine2.addTile(classOf[TileChargingBench], 6)
+        machine2.addTile(classOf[TileTeleposer], 7)
 
         ExpansionRecipes.initRecipes()
     }
 
-    def postinit(){}
+    def postinit()
+    {
+        SpacebarServerTracker.register()
+        ForwardServerTracker.register()
+
+        MinecraftForge.EVENT_BUS.register(TeleposedEnderPearlProperty)
+    }
 
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"
@@ -79,6 +91,7 @@ class ExpansionProxy_client extends ExpansionProxy_server
     val blockPlacerGui = 22
     val filteredImporterGui = 23
     val batteryBoxGui = 24
+    val chargingBenchBui = 25
 
     @SideOnly(Side.CLIENT)
     override def preinit()
@@ -105,6 +118,8 @@ class ExpansionProxy_client extends ExpansionProxy_server
         TileRenderRegistry.setRenderer(machine2, 3, RenderFilteredImporter)
         TileRenderRegistry.setRenderer(machine2, 4, RenderFireStarter)
         TileRenderRegistry.setRenderer(machine2, 5, RenderBatteryBox)
+        TileRenderRegistry.setRenderer(machine2, 6, RenderChargingBench)
+        TileRenderRegistry.setRenderer(machine2, 7, RenderTeleposer)
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(machine2), RenderBatteryBox)
         MinecraftForgeClient.registerItemRenderer(itemSolar, RenderSolarPanel)
@@ -114,10 +129,28 @@ class ExpansionProxy_client extends ExpansionProxy_server
         GuiHandler.register(GuiFilteredImporter, filteredImporterGui)
         GuiHandler.register(GuiBatteryBox, batteryBoxGui)
         GuiHandler.register(GuiElectrotineGenerator, generatorGui)
+        GuiHandler.register(GuiChargingBench, chargingBenchBui)
+
+        SpacebarClientTracker.register()
+        ForwardClientTracker.register()
     }
 }
 
 object ExpansionProxy extends ExpansionProxy_client
+
+object SpacebarServerTracker extends TServerKeyTracker
+object SpacebarClientTracker extends TClientKeyTracker
+{
+    override def getTracker = SpacebarServerTracker
+    override def getIsKeyPressed = Minecraft.getMinecraft.gameSettings.keyBindJump.getIsKeyPressed
+}
+
+object ForwardServerTracker extends TServerKeyTracker
+object ForwardClientTracker extends TClientKeyTracker
+{
+    override def getTracker = ForwardServerTracker
+    override def getIsKeyPressed = Minecraft.getMinecraft.gameSettings.keyBindForward.getIsKeyPressed
+}
 
 object ExpansionRecipes
 {
@@ -133,11 +166,28 @@ object ExpansionRecipes
     private def initItemRecipes()
     {
         //Battery
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(battery),
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemBattery),
             "ete","ece", "ete",
             'e':JC, PartDefs.ELECTROTINE.makeStack,
             't':JC, "ingotTin",
             'c':JC, "ingotCopper"
+        ))
+
+        //Electric Screwdriver
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemScrewdriver),
+            "i  ", " s ", "  b",
+            'i':JC, "ingotIron",
+            's':JC, "gemSapphire",
+            'b':JC, itemBattery
+        ))
+
+        //Jetpack
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemJetpack),
+            "b b","bcb","eae",
+            'b':JC, itemBattery,
+            'c':JC, Items.diamond_chestplate,
+            'e':JC, Items.emerald,
+            'a':JC, new ItemStack(machine2, 1, 5)
         ))
     }
 
@@ -155,7 +205,7 @@ object ExpansionRecipes
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine1, 1, 1),
             "bbb", "a a", "cec",
             'b':JC, Blocks.brick_block,
-            'a':JC, new ItemStack(battery),
+            'a':JC, new ItemStack(itemBattery),
             'c':JC, Blocks.clay,
             'e':JC, "ingotElectrotine"
         ))
@@ -214,7 +264,7 @@ object ExpansionRecipes
         //Battery box
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 5),
             "bwb","bbb","iei",
-            'b':JC, new ItemStack(battery),
+            'b':JC, new ItemStack(itemBattery),
             'w':JC, "plankWood",
             'i':JC, "ingotIron",
             'e':JC, "ingotElectrotine"
@@ -227,6 +277,28 @@ object ExpansionRecipes
             'i':JC, "ingotIron",
             'e':JC, "ingotElectrotine",
             'w':JC, "slabWood"
+        ))
+
+        //Teleposer
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 6),
+            "scs","wbw","iei",
+            's':JC, Blocks.stone,
+            'c':JC, PartDefs.COPPERCOIL.makeStack,
+            'w':JC, "plankWood",
+            'b':JC, new ItemStack(itemBattery),
+            'i':JC, "ingotIron",
+            'e':JC, "ingotElectrotine"
+        ))
+
+        //Teleposer
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 7),
+            "odo","wbw","iei",
+            'o':JC, Blocks.obsidian,
+            'd':JC, Items.diamond,
+            'w':JC, "plankWood",
+            'b':JC, new ItemStack(itemBattery),
+            'i':JC, "ingotIron",
+            'e':JC, "ingotElectrotine"
         ))
     }
 
