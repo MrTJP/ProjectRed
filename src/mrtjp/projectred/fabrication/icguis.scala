@@ -66,7 +66,7 @@ class CircuitGui(val part:IGuiCircuitPart) extends Gui with TNode
             case Some(gui) if gui == this =>
                 val guis = parent.childrenByZ.collect{case g:CircuitGui => g}
                 val otherGuis = guis.filter(_ != this)
-                for (i <- 0 until otherGuis.size)
+                for (i <- otherGuis.indices)
                     otherGuis(i).pushZTo(0.1*i)
                 pushZTo(0.1*otherGuis.size)
 

@@ -7,10 +7,7 @@ package mrtjp.projectred.fabrication
 
 import codechicken.lib.vec.Transformation
 import mrtjp.core.color.Colors
-import mrtjp.projectred.fabrication.ICComponentStore.generateWireModels
 import mrtjp.projectred.fabrication.ICComponentStore.{generateWireModels, _}
-import mrtjp.projectred.integration.ComponentStore._
-import mrtjp.projectred.integration.{BaseComponentModel, RedstoneTorchModel, ComboGatePart}
 import net.minecraft.client.renderer.texture.IIconRegister
 
 object RenderICGate
@@ -28,7 +25,10 @@ object RenderICGate
         new RenderNAND,
         new RenderXOR,
         new RenderXNOR,
-        new RenderBuffer
+        new RenderBuffer,
+        new RenderMultiplexer,
+        new RenderPulse,
+        new RenderRepeater
     )
 
     def registerIcons(reg:IIconRegister){}
@@ -383,5 +383,105 @@ class RenderBuffer extends ICGateRenderer[ComboGateICPart]
         wires(3).disabled = (gate.shape&2) != 0
         torches(0).on = (gate.state&4) != 0
         torches(1).on = (gate.state&4) == 0
+    }
+}
+
+class RenderMultiplexer extends ICGateRenderer[ComboGateICPart]
+{
+    val wires = generateWireModels("MULTIPLEXER", 6)
+    val torches = Seq(new RedstoneTorchModel(8, 2), new RedstoneTorchModel(9, 10.5),
+        new RedstoneTorchModel(4.5, 8), new RedstoneTorchModel(11.5, 8))
+
+    override val coreModels = Seq(new BaseComponentModel("MULTIPLEXER"))++wires++torches
+
+    override def prepareInv()
+    {
+        wires(0).on = false
+        wires(1).on = true
+        wires(2).on = true
+        wires(3).on = false
+        wires(4).on = false
+        wires(5).on = false
+        torches(0).on = false
+        torches(1).on = true
+        torches(2).on = false
+        torches(3).on = true
+    }
+
+    override def prepareDynamic(gate:ComboGateICPart, frame:Float)
+    {
+        wires(2).on = (gate.state&4) == 0
+        wires(3).on = (gate.state&4) != 0
+        wires(4).on = (gate.state&8) != 0
+        wires(5).on = (gate.state&2) != 0
+        torches(0).on = (gate.state&0x10) != 0
+        torches(1).on = !wires(3).on
+        torches(2).on = (gate.state&8) == 0 && wires(3).on
+        torches(3).on = (gate.state&4) == 0 && !wires(5).on
+        wires(0).on = torches(2).on
+        wires(1).on = torches(1).on
+    }
+}
+
+class RenderPulse extends ICGateRenderer[ComboGateICPart]
+{
+    val wires = generateWireModels("PULSE", 3)
+    val torches = Seq(new RedstoneTorchModel(4, 9.5), new RedstoneTorchModel(11, 9.5),
+        new RedstoneTorchModel(8, 3.5))
+
+    override val coreModels = Seq(new BaseComponentModel("PULSE"))++wires++torches
+
+    override def prepareInv()
+    {
+        wires(0).on = true
+        wires(1).on = false
+        wires(2).on = false
+        torches(0).on = true
+        torches(1).on = false
+        torches(2).on = false
+    }
+
+    override def prepareDynamic(gate:ComboGateICPart, frame:Float)
+    {
+        wires(0).on = (gate.state&4) == 0
+        wires(1).on = (gate.state&4) != 0
+        wires(2).on = (gate.state&0x14) == 4
+        torches(0).on = wires(0).on
+        torches(1).on = wires(1).on
+        torches(2).on = (gate.state&0x10) != 0
+    }
+}
+
+class RenderRepeater extends ICGateRenderer[ComboGateICPart]
+{
+    val wires = generateWireModels("REPEATER", 2)
+    val endTorch = new RedstoneTorchModel(8, 2)
+    val varTorches = Seq(new RedstoneTorchModel(12.5, 12), new RedstoneTorchModel(12.5, 11),
+        new RedstoneTorchModel(12.5, 10), new RedstoneTorchModel(12.5, 9), new RedstoneTorchModel(12.5, 8),
+        new RedstoneTorchModel(12.5, 7), new RedstoneTorchModel(12.5, 6), new RedstoneTorchModel(12.5, 5),
+        new RedstoneTorchModel(12.5, 4))
+
+    var shape = 0
+
+    override val coreModels = Seq(new BaseComponentModel("REPEATER"))++wires:+endTorch
+
+    override def switchModels = Seq(varTorches(shape))
+
+    override def prepareInv()
+    {
+        wires(0).on = true
+        wires(1).on = false
+        endTorch.on = true
+        shape = 0
+        varTorches(0).on = false
+    }
+
+    override def prepareDynamic(gate:ComboGateICPart, frame:Float)
+    {
+        wires(0).on = (gate.state&0x10) == 0
+        wires(1).on = (gate.state&4) != 0
+        endTorch.on = (gate.state&0x10) != 0
+        shape = gate.shape
+        varTorches(shape).on = (gate.state&4) == 0
     }
 }

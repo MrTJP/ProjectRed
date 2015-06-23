@@ -92,9 +92,6 @@ class IOGateICPart extends RedstoneGateICPart with IIOCircuitPart with TComplexG
             if (oldOutput != newOutput) world.onOutputChanged(1<<rotation)
         }
     }
-
-    @SideOnly(Side.CLIENT)
-    override def createGui:CircuitGui = getLogicIO.createGui(this)
 }
 
 object IOICGateLogic
@@ -172,7 +169,7 @@ abstract class IOICGateLogic(val gate:IOGateICPart) extends RedstoneICGateLogic[
     }
 
     @SideOnly(Side.CLIENT)
-    def createGui(gate:IOGateICPart):CircuitGui = new ICIOGateGui(gate)
+    override def createGui(gate:IOGateICPart):CircuitGui = new ICIOGateGui(gate)
 
     override def getRolloverData(gate:IOGateICPart, detailLevel:Int) =
     {

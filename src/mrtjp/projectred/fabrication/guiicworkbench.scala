@@ -579,7 +579,8 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
             addToolsetRange(WhiteInsulatedWire, BlackInsulatedWire)
             addToolsetRange(NeutralBundledCable, BlackBundledCable)
             addToolsetRange(SimpleIO, BundledIO)
-            addToolset(Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate))
+            addToolset(Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate, MultiplexerGate))
+            addToolset(Seq(PulseFormerGate, RepeaterGate))
         }
 
         addChild(toolbar)
