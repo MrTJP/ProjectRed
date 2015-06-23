@@ -90,8 +90,8 @@ object OreDefs extends BlockDefinition
     val ORESAPPHIRE = new OreVal("sapphire_ore", 2, PartDefs.SAPPHIRE.makeStack, 1, 4, 1, 8)
     val OREPERIDOT = new OreVal("peridot_ore", 2, PartDefs.PERIDOT.makeStack, 1, 4, 1, 8)
 
-    val ORECOPPER = new OreVal("copper_ore", 2, null, 1, 1, 0, 0)
-    val ORETIN = new OreVal("tin_ore", 2, null, 1, 1, 0, 0)
+    val ORECOPPER = new OreVal("copper_ore", 1, null, 1, 1, 0, 0)
+    val ORETIN = new OreVal("tin_ore", 1, null, 1, 1, 0, 0)
     val ORESILVER = new OreVal("silver_ore", 2, null, 1, 1, 0, 0)
     val OREELECTROTINE = new OreVal("electrotine_ore", 2, PartDefs.ELECTROTINE.makeStack, 1, 8, 1, 8)
 

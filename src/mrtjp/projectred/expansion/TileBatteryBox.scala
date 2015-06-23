@@ -170,11 +170,11 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
         tryChargeBattery()
         tryDischargeBattery()
 
-        checkRenderUpdate()
+        updateRendersIfNeeded()
     }
 
     private var s = 0
-    def checkRenderUpdate()
+    def updateRendersIfNeeded()
     {
         val s2 = getStorageScaled(8)
         if (s != s2) sendStorage()

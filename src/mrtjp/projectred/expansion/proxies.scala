@@ -18,6 +18,7 @@ import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.client.MinecraftForgeClient
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.oredict.ShapedOreRecipe
 
 class ExpansionProxy_server extends IProxy with IPartFactory2
@@ -41,6 +42,7 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
         itemBattery = new ItemBattery
         itemJetpack = new ItemElectronicJetpack
         itemScrewdriver = new ItemElectronicScrewdriver
+        itemInfusedEnderPearl = new ItemInfusedEnderPearl
 
         //Machine1 (machines)
         machine1 = new BlockMachine("projectred.expansion.machine1")
@@ -56,6 +58,7 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
         machine2.addTile(classOf[TileFireStarter], 4)
         machine2.addTile(classOf[TileBatteryBox], 5)
         machine2.addTile(classOf[TileChargingBench], 6)
+        machine2.addTile(classOf[TileTeleposer], 7)
 
         ExpansionRecipes.initRecipes()
     }
@@ -64,6 +67,8 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
     {
         SpacebarServerTracker.register()
         ForwardServerTracker.register()
+
+        MinecraftForge.EVENT_BUS.register(TeleposedEnderPearlProperty)
     }
 
     override def version = "@VERSION@"
@@ -114,6 +119,7 @@ class ExpansionProxy_client extends ExpansionProxy_server
         TileRenderRegistry.setRenderer(machine2, 4, RenderFireStarter)
         TileRenderRegistry.setRenderer(machine2, 5, RenderBatteryBox)
         TileRenderRegistry.setRenderer(machine2, 6, RenderChargingBench)
+        TileRenderRegistry.setRenderer(machine2, 7, RenderTeleposer)
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(machine2), RenderBatteryBox)
         MinecraftForgeClient.registerItemRenderer(itemSolar, RenderSolarPanel)
@@ -271,6 +277,28 @@ object ExpansionRecipes
             'i':JC, "ingotIron",
             'e':JC, "ingotElectrotine",
             'w':JC, "slabWood"
+        ))
+
+        //Teleposer
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 6),
+            "scs","wbw","iei",
+            's':JC, Blocks.stone,
+            'c':JC, PartDefs.COPPERCOIL.makeStack,
+            'w':JC, "plankWood",
+            'b':JC, new ItemStack(itemBattery),
+            'i':JC, "ingotIron",
+            'e':JC, "ingotElectrotine"
+        ))
+
+        //Teleposer
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 7),
+            "odo","wbw","iei",
+            'o':JC, Blocks.obsidian,
+            'd':JC, Items.diamond,
+            'w':JC, "plankWood",
+            'b':JC, new ItemStack(itemBattery),
+            'i':JC, "ingotIron",
+            'e':JC, "ingotElectrotine"
         ))
     }
 
