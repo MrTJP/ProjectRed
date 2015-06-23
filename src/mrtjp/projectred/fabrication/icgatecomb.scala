@@ -5,6 +5,11 @@
  */
 package mrtjp.projectred.fabrication
 
+import mrtjp.projectred.api.IScrewdriver
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.ItemStack
+import net.minecraft.util.MovingObjectPosition
+
 class ComboGateICPart extends RedstoneGateICPart
 {
     override def getLogic[T] = ComboICGateLogic.instances(subID).asInstanceOf[T]
@@ -31,6 +36,9 @@ object ComboICGateLogic
         instances(defs.XOR.ordinal) = XOR
         instances(defs.XNOR.ordinal) = XNOR
         instances(defs.Buffer.ordinal) = Buffer
+        instances(defs.Multiplexer.ordinal) = Multiplexer
+        instances(defs.Pulse.ordinal) = Pulse
+        instances(defs.Repeater.ordinal) = Repeater
     }
 }
 
@@ -210,4 +218,54 @@ object Buffer extends ComboICGateLogic
     override def deadSides = 2
 
     override def calcOutput(gate:ComboGateICPart, input:Int) = if (input != 0) 0xB else 0
+}
+
+object Multiplexer extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = 1
+    override def inputMask(shape:Int) = 0xE
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) = if ((input&1<<2) != 0) (input>>3)&1 else (input>>1)&1
+}
+
+object Pulse extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = 1
+    override def inputMask(shape:Int) = 4
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) = 0
+
+    override def onChange(gate:ComboGateICPart) =
+    {
+        val oldInput = gate.state&0xF
+        val newInput = getInput(gate, 4)
+
+        if (oldInput != newInput)
+        {
+            gate.setState(gate.state&0xF0|newInput)
+            gate.onInputChange()
+            if (newInput != 0 && (gate.state&0xF0) == 0)
+            {
+                gate.setState(gate.state&0xF|0x10)
+                gate.scheduleTick(2)
+                gate.onOutputChange(1)
+            }
+        }
+    }
+}
+
+object Repeater extends ComboICGateLogic
+{
+    val delays = Array(2, 4, 6, 8, 16, 32, 64, 128, 256)
+
+    override def outputMask(shape:Int) = 1
+    override def inputMask(shape:Int) = 4
+
+    override def getDelay(shape:Int) = delays(shape)
+
+    override def cycleShape(shape:Int) = (shape+1)%delays.length
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == 0) 0 else 1
+
+    override def onChange(gate:ComboGateICPart){ if (gate.schedTime < 0) super.onChange(gate) }
 }

@@ -220,7 +220,7 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
     }
 
     @SideOnly(Side.CLIENT)
-    override def createGui:CircuitGui = new ICGateGui(this)
+    override def createGui = getLogicPrimitive.createGui(this)
 
     @SideOnly(Side.CLIENT)
     override def onClicked()
@@ -229,7 +229,8 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
     }
 
     @SideOnly(Side.CLIENT)
-    override def getPickOp = CircuitOpDefs.GATES(subID).getOp
+    override def getPickOp =
+        CircuitOpDefs.values(CircuitOpDefs.SimpleIO.ordinal+subID).getOp
 }
 
 abstract class ICGateLogic[T <: GateICPart]
@@ -249,6 +250,8 @@ abstract class ICGateLogic[T <: GateICPart]
     def activate(gate:T){}
 
     def getRolloverData(gate:T, detailLevel:Int):Seq[String] = Seq.empty
+
+    def createGui(gate:T):CircuitGui = new ICGateGui(gate)
 }
 
 trait TComplexGateICPart extends GateICPart
@@ -323,6 +326,9 @@ object ICGateDefinition extends Enum
     val XOR = ICGateDef("XOR gate", CircuitPartDefs.SimpleGate.id)
     val XNOR = ICGateDef("XNOR gate", CircuitPartDefs.SimpleGate.id)
     val Buffer = ICGateDef("Buffer gate", CircuitPartDefs.SimpleGate.id)
+    val Multiplexer = ICGateDef("Multiplexer", CircuitPartDefs.SimpleGate.id)
+    val Pulse = ICGateDef("Pulse Former", CircuitPartDefs.SimpleGate.id)
+    val Repeater = ICGateDef("Repeater", CircuitPartDefs.SimpleGate.id)
 
     case class ICGateDef(unlocal:String, gateType:Int) extends Value
     {

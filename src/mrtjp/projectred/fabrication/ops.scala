@@ -75,10 +75,12 @@ object CircuitOpDefs extends Enum
     val XORGate = OpDef(new OpGate(ICGateDefinition.XOR.ordinal))
     val XNORGate = OpDef(new OpGate(ICGateDefinition.XNOR.ordinal))
     val BufferGate = OpDef(new OpGate(ICGateDefinition.Buffer.ordinal))
+    val MultiplexerGate = OpDef(new OpGate(ICGateDefinition.Multiplexer.ordinal))
+    val PulseFormerGate = OpDef(new OpGate(ICGateDefinition.Pulse.ordinal))
+    val RepeaterGate = OpDef(new OpGate(ICGateDefinition.Repeater.ordinal))
 
     val INSULATED = WhiteInsulatedWire to BlackInsulatedWire toArray
     val BUNDLED = NeutralBundledCable to BlackBundledCable toArray
-    val GATES = SimpleIO to BufferGate toArray
 
     case class OpDef(op:CircuitOp) extends Value
     {
