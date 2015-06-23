@@ -23,7 +23,6 @@ import net.minecraft.world.IBlockAccess
 class TileInductiveFurnace extends TileProcessingMachine
 {
     override def size = 2
-    override def stackLimit = 64
     override def name = "furnace"
 
     def getBlock = ProjectRedExpansion.machine1
@@ -36,14 +35,14 @@ class TileInductiveFurnace extends TileProcessingMachine
     def createContainer(player:EntityPlayer) =
         new ContainerFurnace(player, this)
 
+    def canExtractItem(slot:Int, itemstack:ItemStack, side:Int) = true
+    def canInsertItem(slot:Int, itemstack:ItemStack, side:Int) = side == 1
     def getAccessibleSlotsFromSide(s:Int) = s match
     {
         case 1 => Array(0) // input
         case 2|3|4|5 => Array(1) // output
-        case _ => Array()
+        case _ => Array.emptyIntArray
     }
-    def canInsertItem(slot:Int, itemstack:ItemStack, side:Int) = slot == 0
-    def canExtractItem(slot:Int, itemstack:ItemStack, side:Int) = true
 
     override def canStart:Boolean =
     {

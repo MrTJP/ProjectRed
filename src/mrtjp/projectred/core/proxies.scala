@@ -3,6 +3,7 @@ package mrtjp.projectred.core
 import codechicken.lib.packet.PacketCustom
 import cpw.mods.fml.common.FMLCommonHandler
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.core.fx.FXEngine
 import mrtjp.projectred.ProjectRedCore._
 import mrtjp.projectred.core.libmc.fx.{ParticleIconRegistry, ParticleManagement}
 import mrtjp.projectred.core.libmc.recipe.RecipeLib
@@ -44,6 +45,8 @@ class CoreProxy_client extends CoreProxy_server
         FMLCommonHandler.instance().bus().register(ParticleManagement.instance)
         MinecraftForge.EVENT_BUS.register(ParticleIconRegistry.instance)
         MinecraftForge.EVENT_BUS.register(RenderHalo)
+
+        FXEngine.register()
 
         new PRUpdateChecker
     }

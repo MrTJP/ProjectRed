@@ -487,29 +487,32 @@ object GuiICPrinter extends TGuiBuilder
 
 object RenderICPrinter extends TInstancedBlockRender
 {
-    val lowerBox =
+    def lowerBoxes = //TODO
     {
-        val m = CCModel.quadModel(24)
-        m.generateBlock(0, new Cuboid6(0, 0, 0, 1, 10/16D, 1))
-        m.computeNormals()
-        m.shrinkUVs(0.0005)
-        m
+        val array = new Array[CCModel](4)
+        val box = CCModel.quadModel(24).generateBlock(0, new Cuboid6(0, 0, 0, 1, 10/16D, 1))
+        for (r <- 0 until 4)
+        {
+            val m = box.copy.apply(Rotation.quarterRotations(r).at(Vector3.center))
+            m.computeNormals()
+            array(r) = m
+        }
+        array
     }
 
     var headIcon:IIcon = null
-
     var bottom:IIcon = null
     var side1:IIcon = null
     var side2:IIcon = null
     var top:IIcon = null
+    var iconT:UVTransformation = null
 
     override def renderWorldBlock(r:RenderBlocks, w:IBlockAccess, x:Int, y:Int, z:Int, meta:Int)
     {
         val tile = WorldLib.getTileEntity(w, x, y, z, classOf[TileICPrinter])
         CCRenderState.reset()
         CCRenderState.lightMatrix.locate(w, x, y, z)
-        lowerBox.render(tile.rotationT `with` new Translation(x, y, z),
-            new MultiIconTransformation(bottom, top, side2, side1, side2, side2), CCRenderState.lightMatrix)
+        lowerBoxes(tile.rotation).render(new Translation(x, y, z), iconT, CCRenderState.lightMatrix)
     }
 
     override def getIcon(side:Int, meta:Int) = side match
@@ -530,7 +533,7 @@ object RenderICPrinter extends TInstancedBlockRender
         CCRenderState.setDynamic()
         CCRenderState.pullLightmap()
         CCRenderState.startDrawing()
-        lowerBox.render(invT, new MultiIconTransformation(bottom, top, side2, side1, side2, side2))
+        lowerBoxes(0).render(invT, iconT)
         CCRenderState.draw()
 
         RenderICPrinterDynamic.progress = 0
@@ -549,6 +552,8 @@ object RenderICPrinter extends TInstancedBlockRender
         side1 = register("side1")
         side2 = register("side2")
         top = register("top")
+
+        iconT = new MultiIconTransformation(bottom, top, side2, side1, side2, side2)
     }
 }
 
