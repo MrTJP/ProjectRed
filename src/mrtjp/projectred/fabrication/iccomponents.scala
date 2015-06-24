@@ -40,6 +40,13 @@ object ICComponentStore
 
     var ioBorder:IIcon = null
     var ioSig:IIcon = null
+    var leverOnIcon:IIcon = null
+    var leverOffIcon:IIcon = null
+    var redChipOnIcon:IIcon = null
+    var redChipOffIcon:IIcon = null
+    var yellowChipOnIcon:IIcon = null
+    var yellowChipOffIcon:IIcon = null
+    var pointerIcon:IIcon = null
 
     def registerIcons(reg:IIconRegister)
     {
@@ -65,6 +72,13 @@ object ICComponentStore
 
         ioBorder = register("IOSIMP/border")
         ioSig = register("IOSIMP/signal")
+        leverOffIcon = register("TOGLATCH/lever_off")
+        leverOnIcon = register("TOGLATCH/lever_on")
+        redChipOnIcon = register("redchip_on")
+        redChipOffIcon = register("redchip_off")
+        yellowChipOnIcon = register("yellowchip_on")
+        yellowChipOffIcon = register("yellowchip_off")
+        pointerIcon = register("pointer")
     }
 
     def prepairRender()
@@ -118,7 +132,7 @@ abstract class ICComponentModel
 
 abstract class SingleComponentModel(pos:Vector3 = Vector3.zero) extends ICComponentModel
 {
-    val models = faceModels.map(_.copy.apply(new Translation(-0.5, 0, -0.5)).apply(pos.copy.multiply(1/16D).translation()))
+    val models = faceModels.map(_.copy.apply(new Translation(-0.5, 0, -0.5)).apply(pos.copy.multiply(1/16D).translation))
 
     def getUVT:UVTransformation
 
@@ -191,5 +205,34 @@ class IOSigModel extends ICComponentModel
         val t0 = dynamicT(orient) `with` t
         m.render(t0, new IconTransformation(ioBorder), ColourMultiplier.instance(colour))
         m.render(t0, new IconTransformation(ioSig), ColourMultiplier.instance(signalColour(if (on) 255.toByte else 0.toByte)))
+    }
+}
+
+class LeverModel(x:Double, z:Double) extends OnOffModel(new Vector3(x, 0, z))
+{
+    override def getIcons = Seq(leverOffIcon, leverOnIcon)
+}
+
+class RedChipModel(x:Double, z:Double) extends OnOffModel(new Vector3(x, 0, z))
+{
+    override def getIcons = Seq(redChipOffIcon, redChipOnIcon)
+}
+
+class YellowChipModel(x:Double, z:Double) extends OnOffModel(new Vector3(x, 0, z))
+{
+    override def getIcons = Seq(yellowChipOffIcon, yellowChipOnIcon)
+}
+
+class PointerModel(x:Double, z:Double, scale:Double = 1) extends ICComponentModel
+{
+    val pos = new Vector3(x, 0, z).multiply(1/16D)
+    val models = faceModels.map(_.copy.apply(new Translation(-0.5, 0, -0.5)).apply(new Scale(scale, 1, scale)))
+
+    var angle = 0.0
+
+    override def renderModel(t:Transformation, orient:Int, ortho:Boolean)
+    {
+        models(dynamicIdx(orient, ortho)).render(new Rotation(-angle, 0, 1, 0) `with` pos.translation
+                `with` dynamicT(orient) `with` t, new IconTransformation(pointerIcon))
     }
 }

@@ -78,6 +78,16 @@ object CircuitOpDefs extends Enum
     val MultiplexerGate = OpDef(new OpGate(ICGateDefinition.Multiplexer.ordinal))
     val PulseFormerGate = OpDef(new OpGate(ICGateDefinition.Pulse.ordinal))
     val RepeaterGate = OpDef(new OpGate(ICGateDefinition.Repeater.ordinal))
+    val RandomizerGate = OpDef(new OpGate(ICGateDefinition.Randomizer.ordinal))
+    val SRLatchGate = OpDef(new OpGate(ICGateDefinition.SRLatch.ordinal))
+    val ToggleLatchGate = OpDef(new OpGate(ICGateDefinition.ToggleLatch.ordinal))
+    val TransparentLatchGate = OpDef(new OpGate(ICGateDefinition.TransparentLatch.ordinal))
+    val TimerGate = OpDef(new OpGate(ICGateDefinition.Timer.ordinal))
+    val SequencerGate = OpDef(new OpGate(ICGateDefinition.Sequencer.ordinal))
+    val CounterGate = OpDef(new OpGate(ICGateDefinition.Counter.ordinal))
+    val StateCellGate = OpDef(new OpGate(ICGateDefinition.StateCell.ordinal))
+    val SynchronizerGate = OpDef(new OpGate(ICGateDefinition.Synchronizer.ordinal))
+    val DecRandomizerGate = OpDef(new OpGate(ICGateDefinition.DecRandomizer.ordinal))
 
     val INSULATED = WhiteInsulatedWire to BlackInsulatedWire toArray
     val BUNDLED = NeutralBundledCable to BlackBundledCable toArray

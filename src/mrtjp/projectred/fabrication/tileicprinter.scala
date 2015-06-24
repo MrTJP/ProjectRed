@@ -487,7 +487,7 @@ object GuiICPrinter extends TGuiBuilder
 
 object RenderICPrinter extends TInstancedBlockRender
 {
-    def lowerBoxes = //TODO
+    val lowerBoxes =
     {
         val array = new Array[CCModel](4)
         val box = CCModel.quadModel(24).generateBlock(0, new Cuboid6(0, 0, 0, 1, 10/16D, 1))

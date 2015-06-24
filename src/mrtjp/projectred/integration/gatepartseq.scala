@@ -61,8 +61,6 @@ object SequentialGateLogic
 
 abstract class SequentialGateLogic(val gate:SequentialGatePart) extends RedstoneGateLogic[SequentialGatePart] with TComplexGateLogic[SequentialGatePart]
 {
-    override def getOutput(gate:SequentialGatePart, r:Int) = if ((gate.state&0x10<<r) != 0) 15 else 0
-
     def tickSound()
     {
         if (Configurator.logicGateSounds)
@@ -121,7 +119,6 @@ class SRLatch(gate:SequentialGatePart) extends SequentialGateLogic(gate) with TE
     {
         gate.setShape((gate.shape+1)%4)
         setState2(flipMaskZ(state2))
-        //gate.setState(flipMaskZ(gate.state>>4)|flipMaskZ(gate.state&0xF))
         gate.setState(flipMaskZ(gate.state))
         gate.onOutputChange(0xF)
         gate.scheduleTick(2)
@@ -577,7 +574,7 @@ class Counter(gate:SequentialGatePart) extends SequentialGateLogic(gate) with IC
             tickSound()
             sendMaxUpdate()
             val oldVal = value
-            value = Math.min(max, Math.max(0, i))
+            value = Math.min(value, Math.max(0, i))
             if (value != oldVal)
             {
                 sendValueUpdate()

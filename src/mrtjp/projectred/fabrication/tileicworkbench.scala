@@ -10,6 +10,7 @@ import codechicken.lib.packet.PacketCustom
 import codechicken.lib.render.uv.MultiIconTransformation
 import codechicken.lib.vec.{Rotation, Vector3}
 import mrtjp.core.block.{InstancedBlock, InstancedBlockTile, TInstancedBlockRender, TTileOrient}
+import mrtjp.core.gui.NodeContainer
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.api.IScrewdriver
@@ -23,6 +24,8 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
+
+import scala.collection.mutable.{Set => MSet}
 
 class BlockICMachine extends InstancedBlock("projectred.integration.icblock", Material.iron)
 {
@@ -98,14 +101,7 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
     circuit.network = this
 
     var hasBP = false
-
-    override def getIC = circuit
-    override def getWorld = world
-    override def isRemote = world.isRemote
-    override def createPartStream() = writeStream(3)
-    override def sendPartStream(out:PacketCustom){out.sendToChunk()} //TODO send only to watchers
-    override def createICStream() = writeStream(4)
-    override def sendICStream(out:PacketCustom){if (world.isRemote) out.sendToServer() else out.sendToChunk()} //TODO send only to watchers
+    var watchers = MSet[EntityPlayer]()
 
     override def save(tag:NBTTagCompound)
     {
@@ -149,24 +145,38 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
         case _ => super.read(in, key)
     }
 
-    private def sendICDesc()
-    {
-        val out = writeStream(2)
-        circuit.writeDesc(out)
-        out.sendToChunk() //TODO send only to gui open players
-    }
+    private def sendICDesc(){ sendICDesc(watchers.toSeq:_*) }
 
     private def sendICDesc(players:EntityPlayer*)
     {
-        val out = writeStream(2)
-        circuit.writeDesc(out)
-        for (p <- players)
-            out.sendToPlayer(p)
+        if (players.nonEmpty)
+        {
+            val out = writeStream(2)
+            circuit.writeDesc(out)
+            for (p <- players)
+                out.sendToPlayer(p)
+        }
     }
 
     private def sendHasBPUpdate()
     {
         writeStream(1).writeBoolean(hasBP).sendToChunk()
+    }
+
+    override def getIC = circuit
+    override def getWorld = world
+    override def isRemote = world.isRemote
+
+    override def createPartStream() = writeStream(3)
+    override def createICStream() = writeStream(4)
+    override def sendPartStream(out:PacketCustom)
+    {
+        watchers.foreach(out.sendToPlayer)
+    }
+    override def sendICStream(out:PacketCustom)
+    {
+        if (world.isRemote) out.sendToServer()
+        else watchers.foreach(out.sendToPlayer)
     }
 
     override def update()
@@ -209,7 +219,6 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
                     circuit.clear()
                     sendICDesc()
                 }
-                //WorldLib.dropItem(world, position.offset(1), stack)
                 val p = position.offset(1)
                 val item = new EntityItem(world, p.x+0.5, p.y+0.20, p.z+0.5, stack)
                 item.delayBeforeCanPickup = 10
@@ -222,8 +231,10 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
             }
             else
             {
-                GuiICWorkbench.open(player, null, _.writeCoord(x, y, z))
-                sendICDesc(player)
+                val nc = new NodeContainer
+                nc.startWatchDelegate = playerStartWatch
+                nc.stopWatchDelegate = playerStopWatch
+                GuiICWorkbench.open(player, nc, _.writeCoord(x, y, z))
             }
         }
         true
@@ -241,6 +252,20 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
     }
 
     override def doesRotate = false
+
+    def playerStartWatch(p:EntityPlayer)
+    {
+        if (!watchers.contains(p))
+        {
+            watchers += p
+            sendICDesc(p)
+        }
+    }
+
+    def playerStopWatch(p:EntityPlayer)
+    {
+        watchers -= p
+    }
 }
 
 object RenderICWorkbench extends TInstancedBlockRender with TCubeMapRender

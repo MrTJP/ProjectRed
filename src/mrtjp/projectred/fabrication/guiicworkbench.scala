@@ -133,7 +133,7 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
             }
             else if (button == mcInst.gameSettings.keyBindPickBlock.getKeyCode)
             {
-                opPickDelegate(getPickOp)
+                doPickOp()
                 return true
             }
         }
@@ -191,14 +191,14 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
                 opPickDelegate(null)
                 true
             case _ if keycode == Minecraft.getMinecraft.gameSettings.keyBindPickBlock.getKeyCode =>
-                opPickDelegate(getPickOp)
+                doPickOp()
                 true
             case _ => false
         }
         else false
     }
 
-    def getPickOp:CircuitOp =
+    def doPickOp()
     {
         val root = getRoot
         val i = Mouse.getX*root.width/root.mc.displayWidth
@@ -206,10 +206,11 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
         val absPos = Point(i, j)
 
         val pos = parent.convertPointFromScreen(absPos)
-        val part = circuit.getPart(toGridPoint(pos))
-
-        if (part != null) part.getPickOp
-        else null
+        if (rayTest(pos))
+        {
+            val part = circuit.getPart(toGridPoint(pos))
+            opPickDelegate(if (part != null) part.getPickOp else null)
+        }
     }
 
     def incDetail(){detailLevel = math.min(detailLevel+1, 3)}
@@ -266,7 +267,7 @@ class ICToolsetNode extends TNode
         val delta = (opSet.size-1)*(buttonSize.width+buttonGap)
         val firstPoint = Point(-delta/2+buttonSize.width/2, -buttonSize.height-buttonGap)
         val subOps = toolButtons.filterNot(_ == leadingButton)
-        for (i <- 0 until subOps.size)
+        for (i <- subOps.indices)
         {
             val b = subOps(i)
             b.position = firstPoint.add(i*(buttonSize.width+buttonGap), 0)
@@ -580,7 +581,9 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
             addToolsetRange(NeutralBundledCable, BlackBundledCable)
             addToolsetRange(SimpleIO, BundledIO)
             addToolset(Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate, MultiplexerGate))
-            addToolset(Seq(PulseFormerGate, RepeaterGate))
+            addToolset(Seq(PulseFormerGate, RepeaterGate, TimerGate, SequencerGate, StateCellGate))
+            addToolset(Seq(SRLatchGate, ToggleLatchGate, TransparentLatchGate))
+            addToolset(Seq(RandomizerGate, CounterGate, SynchronizerGate, DecRandomizerGate))
         }
 
         addChild(toolbar)

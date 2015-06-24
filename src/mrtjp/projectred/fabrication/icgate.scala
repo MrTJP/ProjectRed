@@ -288,7 +288,9 @@ trait TComplexGateICPart extends GateICPart
 
     abstract override def read(packet:MCDataInput, key:Int) = key match
     {
-        case k if k > 10 => getLogicComplex.read(packet, k)
+        case k if k > 10 =>
+            assertLogic() //this may be a net dump part
+            getLogicComplex.read(packet, k)
         case _ => super.read(packet, key)
     }
 
@@ -307,6 +309,9 @@ trait TComplexICGateLogic[T <: TComplexGateICPart] extends ICGateLogic[T]
     def readDesc(packet:MCDataInput){}
     def writeDesc(packet:MCDataOutput){}
 
+    /**
+     * Allocated keys > 10
+     */
     def read(packet:MCDataInput, key:Int){}
 }
 
@@ -329,6 +334,16 @@ object ICGateDefinition extends Enum
     val Multiplexer = ICGateDef("Multiplexer", CircuitPartDefs.SimpleGate.id)
     val Pulse = ICGateDef("Pulse Former", CircuitPartDefs.SimpleGate.id)
     val Repeater = ICGateDef("Repeater", CircuitPartDefs.SimpleGate.id)
+    val Randomizer = ICGateDef("Randomizer", CircuitPartDefs.SimpleGate.id)
+    val SRLatch = ICGateDef("SR Latch", CircuitPartDefs.ComplexGate.id)
+    val ToggleLatch = ICGateDef("Toggle Latch", CircuitPartDefs.ComplexGate.id)
+    val TransparentLatch = ICGateDef("Transparent Latch", CircuitPartDefs.SimpleGate.id)
+    val Timer = ICGateDef("Timer", CircuitPartDefs.ComplexGate.id)
+    val Sequencer = ICGateDef("Sequencer", CircuitPartDefs.ComplexGate.id)
+    val Counter = ICGateDef("Counter", CircuitPartDefs.ComplexGate.id)
+    val StateCell = ICGateDef("State Cell", CircuitPartDefs.ComplexGate.id)
+    val Synchronizer = ICGateDef("Synchronizer", CircuitPartDefs.ComplexGate.id)
+    val DecRandomizer = ICGateDef("Dec Randomizer", CircuitPartDefs.SimpleGate.id)
 
     case class ICGateDef(unlocal:String, gateType:Int) extends Value
     {
