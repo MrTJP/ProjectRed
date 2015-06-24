@@ -83,7 +83,7 @@ class GuiCounter(part:GatePart) extends NodeGui(256, 145)
             val b = new NodeButtonMC
             b.position = Point(x, y)
             b.size = Size(w, h)
-            b.text = (if (delta < 0) "-" else "+")+delta
+            b.text = (if (delta < 0) "" else "+")+delta
             b.clickDelegate = {() =>
                 val packet = new PacketCustom(IntegrationCPH.channel, 2)
                 IntegrationCPH.writePartIndex(packet, part)

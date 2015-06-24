@@ -5,10 +5,9 @@
  */
 package mrtjp.projectred.fabrication
 
-import mrtjp.projectred.api.IScrewdriver
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemStack
-import net.minecraft.util.MovingObjectPosition
+import java.util.Random
+
+import mrtjp.projectred.core.TFaceOrient
 
 class ComboGateICPart extends RedstoneGateICPart
 {
@@ -39,6 +38,9 @@ object ComboICGateLogic
         instances(defs.Multiplexer.ordinal) = Multiplexer
         instances(defs.Pulse.ordinal) = Pulse
         instances(defs.Repeater.ordinal) = Repeater
+        instances(defs.Randomizer.ordinal) = Randomizer
+        instances(defs.TransparentLatch.ordinal) = TransparentLatch
+        instances(defs.DecRandomizer.ordinal) = DecRandomizer
     }
 }
 
@@ -268,4 +270,73 @@ object Repeater extends ComboICGateLogic
     override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == 0) 0 else 1
 
     override def onChange(gate:ComboGateICPart){ if (gate.schedTime < 0) super.onChange(gate) }
+
+    override def activate(gate:ComboGateICPart)
+    {
+        gate.configure()
+    }
+}
+
+object Randomizer extends ComboICGateLogic
+{
+    val rand = new Random
+
+    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)>>1|(shape&4)<<1)&0xB
+    override def inputMask(shape:Int) = 4
+    override def feedbackMask(shape:Int) = outputMask(shape)
+
+    override def deadSides = 3
+
+    override def getDelay(shape:Int) = 2
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) =
+    {
+        if (input == 0) gate.state>>4 else
+            outputMask(gate.shape)&TFaceOrient.shiftMask(rand.nextInt(8), 3)
+    }
+
+    override def onChange(gate:ComboGateICPart)
+    {
+        super.onChange(gate)
+        if ((gate.state&4) != 0) gate.scheduleTick(2)
+    }
+}
+
+object TransparentLatch extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = if (shape == 0) 3 else 9
+    override def inputMask(shape:Int) = if (shape == 0) 0xC else 6
+
+    override def cycleShape(shape:Int) = shape^1
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) =
+    {
+        if ((input&4) == 0) gate.state>>4
+        else if ((input&0xA) == 0) 0 else 0xF
+    }
+}
+
+object DecRandomizer extends ComboICGateLogic
+{
+    val rand = new Random
+
+    override def cycleShape(shape:Int) = shape^1
+
+    override def outputMask(shape:Int) = if (shape == 0) 11 else 9
+    override def inputMask(shape:Int) = 4
+    override def feedbackMask(shape:Int) = 2
+
+    override def getDelay(shape:Int) = 2
+
+    override def calcOutput(gate:ComboGateICPart, input:Int) =
+    {
+        if (input == 0) if ((gate.state>>4) == 0) 1 else gate.state>>4
+        else Seq(1, 8, 2)(rand.nextInt((~gate.shape|2)&3))
+    }
+
+    override def onChange(gate:ComboGateICPart)
+    {
+        super.onChange(gate)
+        if ((gate.state&4) != 0) gate.scheduleTick(2)
+    }
 }
