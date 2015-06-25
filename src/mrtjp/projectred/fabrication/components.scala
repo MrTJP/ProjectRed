@@ -32,6 +32,10 @@ object ICComponentStore
 
     var torchOffIcon:IIcon = null
     var torchOnIcon:IIcon = null
+    var leverOffIcon:IIcon = null
+    var leverOnIcon:IIcon = null
+    var buttonOffIcon:IIcon = null
+    var buttonOnIcon:IIcon = null
 
     val redwireIcons = new Array[IIcon](16)
     val insulatedwireIcons = new Array[IIcon](16)
@@ -40,8 +44,8 @@ object ICComponentStore
 
     var ioBorder:IIcon = null
     var ioSig:IIcon = null
-    var leverOnIcon:IIcon = null
-    var leverOffIcon:IIcon = null
+    var tLeverOnIcon:IIcon = null
+    var tLeverOffIcon:IIcon = null
     var redChipOnIcon:IIcon = null
     var redChipOffIcon:IIcon = null
     var yellowChipOnIcon:IIcon = null
@@ -62,8 +66,12 @@ object ICComponentStore
         for (i <- 0 until 16) bundledwireIcons(i) = register("bundledcable/conn"+i)
         bundledColourIcon = register("bundledcable/col")
 
-        torchOffIcon = register("torchoff")
-        torchOnIcon = register("torchon")
+        torchOffIcon = register("torch_off")
+        torchOnIcon = register("torch_on")
+        leverOffIcon = register("lever_off")
+        leverOnIcon = register("lever_on")
+        buttonOffIcon = register("button_off")
+        buttonOnIcon = register("button_on")
 
         RenderICGate.registerIcons(reg)
 
@@ -72,8 +80,8 @@ object ICComponentStore
 
         ioBorder = register("IOSIMP/border")
         ioSig = register("IOSIMP/signal")
-        leverOffIcon = register("TOGLATCH/lever_off")
-        leverOnIcon = register("TOGLATCH/lever_on")
+        tLeverOffIcon = register("TOGLATCH/lever_off")
+        tLeverOnIcon = register("TOGLATCH/lever_on")
         redChipOnIcon = register("redchip_on")
         redChipOffIcon = register("redchip_off")
         yellowChipOnIcon = register("yellowchip_on")
@@ -210,7 +218,7 @@ class IOSigModel extends ICComponentModel
 
 class LeverModel(x:Double, z:Double) extends OnOffModel(new Vector3(x, 0, z))
 {
-    override def getIcons = Seq(leverOffIcon, leverOnIcon)
+    override def getIcons = Seq(tLeverOffIcon, tLeverOnIcon)
 }
 
 class RedChipModel(x:Double, z:Double) extends OnOffModel(new Vector3(x, 0, z))

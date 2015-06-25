@@ -13,9 +13,9 @@ import mrtjp.core.block.{InstancedBlock, InstancedBlockTile, TInstancedBlockRend
 import mrtjp.core.gui.NodeContainer
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.world.WorldLib
+import mrtjp.projectred.ProjectRedFabrication
 import mrtjp.projectred.api.IScrewdriver
 import mrtjp.projectred.fabrication.ItemICBlueprint._
-import mrtjp.projectred.{ProjectRedFabrication, ProjectRedIntegration}
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.entity.item.EntityItem
@@ -30,7 +30,7 @@ import scala.collection.mutable.{Set => MSet}
 class BlockICMachine extends InstancedBlock("projectred.integration.icblock", Material.iron)
 {
     setHardness(2)
-    setCreativeTab(ProjectRedIntegration.tabIntegration2)
+    setCreativeTab(ProjectRedFabrication.tabFabrication)
 }
 
 abstract class TileICMachine extends InstancedBlockTile with TTileOrient
@@ -145,6 +145,11 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
         case _ => super.read(in, key)
     }
 
+    private def sendHasBPUpdate()
+    {
+        writeStream(1).writeBoolean(hasBP).sendToChunk()
+    }
+
     private def sendICDesc(){ sendICDesc(watchers.toSeq:_*) }
 
     private def sendICDesc(players:EntityPlayer*)
@@ -158,9 +163,11 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
         }
     }
 
-    private def sendHasBPUpdate()
+    def sendNewICToServer(ic:IntegratedCircuit)
     {
-        writeStream(1).writeBoolean(hasBP).sendToChunk()
+        val stream = writeStream(5)
+        ic.writeDesc(stream)
+        stream.sendToServer()
     }
 
     override def getIC = circuit
@@ -306,5 +313,7 @@ object RenderICWorkbench extends TInstancedBlockRender with TCubeMapRender
 
         iconT = new MultiIconTransformation(bottom, top, side1, side1, side2, side2)
         iconTBP = new MultiIconTransformation(bottom, topBP, sidebp1, sidebp1, sidebp2, sidebp2)
+
+        RenderCircuit.registerIcons(reg)
     }
 }

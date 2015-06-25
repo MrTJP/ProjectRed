@@ -30,14 +30,14 @@ class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends 
             packet.sendToServer()
         }
 
-        val up = new NodeButtonMC
+        val up = new MCButtonNode
         up.position = Point(138, 12)
         up.size = Size(20, 14)
         up.text = "up"
         up.clickDelegate = {() => sendClick("up")}
         addChild(up)
 
-        val down = new NodeButtonMC
+        val down = new MCButtonNode
         down.position = Point(92, 12)
         down.size = Size(20, 14)
         down.text = "down"
@@ -190,9 +190,9 @@ class GuiRequester(pipe:IWorldRequester) extends NodeGui(280, 230)
 
     var itemCount:SimpleTextboxNode = null
 
-    var pull:NodeCheckBox = null//new NodeCheckBox(230, 170, true).setAction("refrsh")
-    var craft:NodeCheckBox = null// = new NodeCheckBox(230, 190, true).setAction("refrsh")
-    var partials:NodeCheckBox = null// = new NodeCheckBox(230, 210, false)
+    var pull:CheckBoxNode = null//new NodeCheckBox(230, 170, true).setAction("refrsh")
+    var craft:CheckBoxNode = null// = new NodeCheckBox(230, 190, true).setAction("refrsh")
+    var partials:CheckBoxNode = null// = new NodeCheckBox(230, 210, false)
 
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
@@ -242,62 +242,62 @@ class GuiRequester(pipe:IWorldRequester) extends NodeGui(280, 230)
         }
         addChild(itemCount)
 
-        pull = NodeCheckBox.centered(230, 170)
+        pull = CheckBoxNode.centered(230, 170)
         pull.state = true
         pull.clickDelegate = {() => itemList.resetDownloadStats(); askForListRefresh()}
         addChild(pull)
 
-        craft = NodeCheckBox.centered(230, 190)
+        craft = CheckBoxNode.centered(230, 190)
         craft.state = true
         craft.clickDelegate = {() => itemList.resetDownloadStats(); askForListRefresh()}
         addChild(craft)
 
-        partials = NodeCheckBox.centered(230, 210)
+        partials = CheckBoxNode.centered(230, 210)
         addChild(partials)
 
-        val ref = new NodeButtonMC
+        val ref = new MCButtonNode
         ref.position = Point(10, 185)
         ref.size = Size(50, 16)
         ref.text = "Refresh"
         ref.clickDelegate = {() => itemList.resetDownloadStats(); askForListRefresh()}
         addChild(ref)
 
-        val req = new NodeButtonMC
+        val req = new MCButtonNode
         req.position = Point(10, 205)
         req.size = Size(50, 16)
         req.text = "Submit"
         req.clickDelegate = {() => sendItemRequest()}
         addChild(req)
 
-        val down = new NodeButtonMC
+        val down = new MCButtonNode
         down.position = Point(95, 205)
         down.size = Size(16, 16)
         down.text = "-"
         down.clickDelegate = {() => countDown()}
         addChild(down)
 
-        val up = new NodeButtonMC
+        val up = new MCButtonNode
         up.position = Point(170, 205)
         up.size = Size(16, 16)
         up.text = "+"
         up.clickDelegate = {() => countUp()}
         addChild(up)
 
-        val pageup = new NodeButtonMC
+        val pageup = new MCButtonNode
         pageup.position = Point(85, 152)
         pageup.size = Size(16, 16)
         pageup.text = "-"
         pageup.clickDelegate = {() => itemList.pageUp()}
         addChild(pageup)
 
-        val pagedown = new NodeButtonMC
+        val pagedown = new MCButtonNode
         pagedown.position = Point(180, 152)
         pagedown.size = Size(16, 16)
         pagedown.text = "+"
         pagedown.clickDelegate = {() => itemList.pageDown()}
         addChild(pagedown)
 
-        val all = new NodeButtonMC
+        val all = new MCButtonNode
         all.position = Point(190, 205)
         all.size = Size(24, 16)
         all.text = "All"
@@ -370,7 +370,7 @@ class GuiRequester(pipe:IWorldRequester) extends NodeGui(280, 230)
 
 class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends NodeGui(slots, 276, 200)
 {
-    private[this] class SelectButton(x:Int, y:Int, f: => Boolean, desc:String) extends NodeButtonIcon
+    private[this] class SelectButton(x:Int, y:Int, f: => Boolean, desc:String) extends IconButtonNode
     {
         position = Point(x, y)
         size = Size(14, 14)
@@ -385,7 +385,7 @@ class GuiFirewallPipe(slots:Container, pipe:RoutedFirewallPipe) extends NodeGui(
 
     override def onAddedToParent_Impl()
     {
-        val excl = new NodeButtonIcon
+        val excl = new IconButtonNode
         {
             override def drawButton(mouseover:Boolean)
             {

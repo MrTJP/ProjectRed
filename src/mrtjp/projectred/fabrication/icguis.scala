@@ -9,7 +9,7 @@ import codechicken.lib.gui.GuiDraw
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.Translation
 import mrtjp.core.color.Colors
-import mrtjp.core.gui.{GuiLib, NodeButtonMC, TNode}
+import mrtjp.core.gui.{GuiLib, MCButtonNode, TNode}
 import mrtjp.core.vec.{Point, Rect, Size}
 import mrtjp.projectred.integration.{ITimerGuiLogic, IntegrationCPH}
 import net.minecraft.client.gui.Gui
@@ -29,7 +29,7 @@ class CircuitGui(val part:IGuiCircuitPart) extends Gui with TNode
     private var mouseInit = Point.zeroPoint
 
     {
-        val close = new NodeButtonMC
+        val close = new MCButtonNode
         close.position = Point(4, 4)
         close.size = Size(5, 5)
         close.clickDelegate = {() => removeFromParent()}
@@ -118,18 +118,18 @@ trait TGateGui extends CircuitGui
 
 class ICGateGui(override val gate:GateICPart) extends CircuitGui(gate) with TGateGui
 {
-    size = Size(138, 55)
-
     {
-        val rotate = new NodeButtonMC
-        rotate.position = Point(68, 12)
+        size = Size(120, 55)
+
+        val rotate = new MCButtonNode
+        rotate.position = Point(58, 12)
         rotate.size = Size(50, 15)
         rotate.text = "rotate"
         rotate.clickDelegate = {() => gate.sendClientPacket(_.writeByte(0))}
         addChild(rotate)
 
-        val conf = new NodeButtonMC
-        conf.position = Point(68, 28)
+        val conf = new MCButtonNode
+        conf.position = Point(58, 28)
         conf.size = Size(50, 15)
         conf.text = "configure"
         conf.clickDelegate = {() => gate.sendClientPacket(_.writeByte(1))}
@@ -146,14 +146,14 @@ class ICTimerGateGui(override val gate:GateICPart) extends CircuitGui(gate) with
         val aw = 50
         val ah = 15
 
-        val rotate = new NodeButtonMC
+        val rotate = new MCButtonNode
         rotate.position = Point(ax, 5)
         rotate.size = Size(aw, ah)
         rotate.text = "rotate"
         rotate.clickDelegate = {() => gate.sendClientPacket(_.writeByte(0))}
         addChild(rotate)
 
-        val conf = new NodeButtonMC
+        val conf = new MCButtonNode
         conf.position = Point(ax+aw+1, 5)
         conf.size = Size(aw, ah)
         conf.text = "configure"
@@ -162,7 +162,7 @@ class ICTimerGateGui(override val gate:GateICPart) extends CircuitGui(gate) with
 
         def createButton(x:Int, y:Int, w:Int, h:Int, text:String, delta:Int)
         {
-            val b = new NodeButtonMC
+            val b = new MCButtonNode
             b.position = Point(x, y)
             b.size = Size(w, h)
             b.text = text
@@ -207,21 +207,21 @@ class ICCounterGateGui(override val gate:GateICPart) extends CircuitGui(gate) wi
         val aw = 50
         val ah = 15
 
-        val rotate = new NodeButtonMC
+        val rotate = new MCButtonNode
         rotate.position = Point(ax, 5)
         rotate.size = Size(aw, ah)
         rotate.text = "rotate"
         rotate.clickDelegate = {() => gate.sendClientPacket(_.writeByte(0))}
         addChild(rotate)
 
-        val conf = new NodeButtonMC
+        val conf = new MCButtonNode
         conf.position = Point(ax+aw+1, 5)
         conf.size = Size(aw, ah)
         conf.text = "configure"
         conf.clickDelegate = {() => gate.sendClientPacket(_.writeByte(1))}
         addChild(conf)
 
-        val sw = new NodeButtonMC
+        val sw = new MCButtonNode
         sw.position = Point(54, 28)
         sw.size = Size(20, 12)
         sw.text = "var"
@@ -230,7 +230,7 @@ class ICCounterGateGui(override val gate:GateICPart) extends CircuitGui(gate) wi
 
         def createButton(x:Int, y:Int, w:Int, h:Int, delta:Int)
         {
-            val b = new NodeButtonMC
+            val b = new MCButtonNode
             b.position = Point(x, y)
             b.size = Size(w, h)
             b.text = (if (delta < 0) "" else "+")+delta
@@ -271,51 +271,71 @@ class ICCounterGateGui(override val gate:GateICPart) extends CircuitGui(gate) wi
     }
 }
 
-
 class ICIOGateGui(override val gate:IOGateICPart) extends CircuitGui(gate) with TGateGui
 {
-    size = Size(138, 55)
-
     {
-        val conf = new NodeButtonMC
-        conf.position = Point(52, 33)
+        size = Size(124, 55)
+
+        val conf = new MCButtonNode
+        conf.position = Point(62, 33)
         conf.size = Size(46, 15)
         conf.text = "io mode"
         conf.clickDelegate = {() => gate.sendClientPacket(_.writeByte(1))}
         addChild(conf)
-
-        if (gate.getLogicIO.isInstanceOf[TFreqIOICGateLogic])
-        {
-            val minus = new NodeButtonMC
-            minus.position = Point(52, 15)
-            minus.size = Size(14, 14)
-            minus.text = "-"
-            minus.clickDelegate = {() => gate.sendClientPacket(_.writeByte(6))}
-            addChild(minus)
-
-            val plus = new NodeButtonMC
-            plus.position = Point(117, 15)
-            plus.size = Size(14, 14)
-            plus.text = "+"
-            plus.clickDelegate = {() => gate.sendClientPacket(_.writeByte(5))}
-            addChild(plus)
-        }
     }
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
         super.drawBack_Impl(mouse, rframe)
-        fontRenderer.drawString(gate.shape match
+
+        GuiDraw.drawStringC(gate.shape match
         {
             case 0 => "input"
             case 1 => "output"
             case 2 => "inout"
-        }, position.x+100, position.y+36, 0xFFFFFFFF, true)
+        }, position.x+85, position.y+16, Colors.GREY.argb, false)
+    }
+}
 
-        if (gate.getLogicIO.isInstanceOf[TFreqIOICGateLogic])
+class ICIOFreqGateGui(override val gate:IOGateICPart) extends CircuitGui(gate) with TGateGui
+{
+    {
+        size = Size(138, 55)
+
+        val conf = new MCButtonNode
+        conf.position = Point(52, 7)
+        conf.size = Size(46, 15)
+        conf.text = "io mode"
+        conf.clickDelegate = {() => gate.sendClientPacket(_.writeByte(1))}
+        addChild(conf)
+
+        val minus = new MCButtonNode
+        minus.position = Point(52, 33)
+        minus.size = Size(14, 14)
+        minus.text = "-"
+        minus.clickDelegate = {() => gate.sendClientPacket(_.writeByte(6))}
+        addChild(minus)
+
+        val plus = new MCButtonNode
+        plus.position = Point(117, 33)
+        plus.size = Size(14, 14)
+        plus.text = "+"
+        plus.clickDelegate = {() => gate.sendClientPacket(_.writeByte(5))}
+        addChild(plus)
+    }
+
+    override def drawBack_Impl(mouse:Point, rframe:Float)
+    {
+        super.drawBack_Impl(mouse, rframe)
+
+        GuiDraw.drawStringC(gate.shape match
         {
-            GuiDraw.drawStringC("freq", position.x+66, position.y+4, 50, 14, 0xFFFFFFFF, true)
-            GuiDraw.drawStringC(gate.getLogic[TFreqIOICGateLogic].getFreqName, position.x+66, position.y+15, 50, 14, 0xFFFFFFFF, true)
-        }
+            case 0 => "input"
+            case 1 => "output"
+            case 2 => "inout"
+        }, position.x+117, position.y+11, Colors.GREY.argb, false)
+
+        GuiDraw.drawStringC("freq", position.x+66, position.y+22, 50, 14, Colors.GREY.argb, false)
+        GuiDraw.drawStringC(gate.getLogic[TFreqIOICGateLogic].getFreqName, position.x+66, position.y+33, 50, 14, Colors.GREY.argb, false)
     }
 }

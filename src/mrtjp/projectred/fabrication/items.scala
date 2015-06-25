@@ -12,20 +12,19 @@ import cpw.mods.fml.common.registry.GameRegistry
 import mrtjp.core.color.Colors
 import mrtjp.core.item.ItemCore
 import mrtjp.core.vec.{Point, Size}
-import mrtjp.projectred.fabrication.IIOCircuitPart._
-
-import mrtjp.projectred.{ProjectRedIntegration, ProjectRedFabrication}
 import mrtjp.projectred.core.libmc.PRResources
+import mrtjp.projectred.fabrication.IIOCircuitPart._
+import mrtjp.projectred.{ProjectRedFabrication, ProjectRedIntegration}
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{ItemMap, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.{IIcon, EnumChatFormatting}
+import net.minecraft.util.EnumChatFormatting._
+import net.minecraft.util.{EnumChatFormatting, IIcon}
 import net.minecraft.world.World
 import net.minecraftforge.client.IItemRenderer
 import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
-import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11._
 
 class ItemICBlueprint extends ItemMap //extend ItemMap so minecraft will handle the FP render for us
@@ -272,9 +271,15 @@ class ItemICChip extends ItemCore("projectred.fabrication.icchip")
 
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
     {
-        import EnumChatFormatting._
-        val slist = list.asInstanceOf[JList[String]]
+        ItemICChip.addInfo(stack, list.asInstanceOf[JList[String]])
+    }
+}
 
-        if (ItemICBlueprint.hasICInside(stack)) slist.add(GRAY+ItemICBlueprint.getICName(stack))
+object ItemICChip
+{
+    def addInfo(stack:ItemStack, list:JList[String])
+    {
+        if (ItemICBlueprint.hasICInside(stack))
+            list.add(GRAY+ItemICBlueprint.getICName(stack))
     }
 }

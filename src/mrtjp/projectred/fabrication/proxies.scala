@@ -5,8 +5,6 @@
  */
 package mrtjp.projectred.fabrication
 
-import java.lang.{Character => JChar}
-
 import codechicken.lib.data.MCDataInput
 import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.MultiPartRegistry.IPartFactory2
@@ -15,8 +13,9 @@ import cpw.mods.fml.common.registry.GameRegistry
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TileRenderRegistry
 import mrtjp.core.gui.GuiHandler
+import mrtjp.projectred.{ProjectRedIntegration, ProjectRedFabrication}
 import mrtjp.projectred.ProjectRedFabrication._
-import mrtjp.projectred.core.IProxy
+import mrtjp.projectred.core.{IProxy, PartDefs}
 import mrtjp.projectred.integration.{GateDefinition, RenderGate}
 import net.minecraft.inventory.InventoryCrafting
 import net.minecraft.item.ItemStack
@@ -27,9 +26,7 @@ import net.minecraftforge.client.MinecraftForgeClient
 
 class FabricationProxy_server extends IProxy with IPartFactory2
 {
-    override def preinit()
-    {
-    }
+    override def preinit(){}
 
     override def init()
     {
@@ -45,7 +42,14 @@ class FabricationProxy_server extends IProxy with IPartFactory2
         FabricationRecipes.initRecipes()
     }
 
-    override def postinit(){}
+    override def postinit()
+    {
+        //hook into gate part to add tooltip info
+        ProjectRedIntegration.itemPartGate2.infoBuilderFunc = {(stack, list) =>
+            if (stack.getItemDamage == GateDefinition.ICGate.meta)
+                ItemICChip.addInfo(stack, list)
+        }
+    }
 
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"
@@ -97,35 +101,28 @@ object FabricationRecipes
     def initRecipes()
     {
         GameRegistry.addRecipe(new IRecipe {
-
-            override def matches(inv:InventoryCrafting, w :World) =
-                getCraftingResult(inv) != null
+            override def matches(inv:InventoryCrafting, w:World) = getCraftingResult(inv) != null
 
             override def getRecipeOutput = GateDefinition.ICGate.makeStack
 
-            override def getRecipeSize = 2
+            override def getRecipeSize = 9
 
-            override def getCraftingResult(inv:InventoryCrafting) =
+            override def getCraftingResult(inv:InventoryCrafting):ItemStack =
             {
-                val bp = findBP(inv)
-                if (bp != null && ItemICBlueprint.hasICInside(bp))
-                {
-                    val out = getRecipeOutput
-                    ItemICBlueprint.copyToGate(bp, out)
-                    out
-                }
-                else null
-            }
-
-            def findBP(inv:InventoryCrafting):ItemStack =
-            {
-                for (i <- 0 until inv.getSizeInventory)
+                for (i <- 0 until 9)
                 {
                     val stack = inv.getStackInSlot(i)
-                    if (stack != null && stack.getItem.isInstanceOf[ItemICBlueprint])
-                        return stack
+                    if (stack == null) return null
+                    i match
+                    {
+                        case 4 => if (stack.getItem != ProjectRedFabrication.itemICChip ||
+                                !ItemICBlueprint.hasICInside(stack)) return null
+                        case _ => if (!stack.isItemEqual(PartDefs.PLATE.makeStack)) return null
+                    }
                 }
-                null
+                val out = GateDefinition.ICGate.makeStack
+                ItemICBlueprint.copyToGate(inv.getStackInSlot(4), out)
+                out
             }
         })
     }

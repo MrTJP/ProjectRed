@@ -6,8 +6,13 @@
 package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.gui.GuiDraw
+import codechicken.lib.render.uv.{UVScale, UVTranslation, IconTransformation}
+import codechicken.lib.vec.Translation
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.vec.Point
+import mrtjp.projectred.core.libmc.PRResources
+import mrtjp.projectred.fabrication.ICComponentStore._
 
 class CircuitOpErase extends CircuitOp
 {
@@ -30,7 +35,15 @@ class CircuitOpErase extends CircuitOp
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderImage(x:Double, y:Double, width:Double, height:Double){}
+    override def renderImage(x:Double, y:Double, width:Double, height:Double)
+    {
+        val t = orthoGridT(width, height) `with` new Translation(x, y, 0)
+
+        prepairRender()
+        PRResources.guiPrototyper.bind()
+        faceModels(dynamicIdx(0, true)).render(t, new UVScale(16) `with` new UVTranslation(330, 18) `with` new UVScale(1/512D))
+        finishRender()
+    }
 
     @SideOnly(Side.CLIENT)
     override def renderHover(circuit:IntegratedCircuit, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)

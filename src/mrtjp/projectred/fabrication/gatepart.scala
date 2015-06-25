@@ -9,6 +9,7 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.Transformation
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.util.Enum
+import mrtjp.projectred.integration.GateDefinition.GateDef
 import net.minecraft.nbt.NBTTagCompound
 
 abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOrient with IGuiCircuitPart
@@ -212,9 +213,8 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
     @SideOnly(Side.CLIENT)
     override def getRolloverData(detailLevel:Int) =
     {
-        import net.minecraft.util.EnumChatFormatting._
         val s = Seq.newBuilder[String]
-        if (detailLevel >= 2) s += "rotation: "+rotation
+        import net.minecraft.util.EnumChatFormatting._
         s ++= getLogicPrimitive.getRolloverData(this, detailLevel)
         super.getRolloverData(detailLevel)++s.result().map(GRAY+_)
     }
@@ -249,8 +249,10 @@ abstract class ICGateLogic[T <: GateICPart]
 
     def activate(gate:T){}
 
+    @SideOnly(Side.CLIENT)
     def getRolloverData(gate:T, detailLevel:Int):Seq[String] = Seq.empty
 
+    @SideOnly(Side.CLIENT)
     def createGui(gate:T):CircuitGui = new ICGateGui(gate)
 }
 
@@ -319,33 +321,35 @@ object ICGateDefinition extends Enum
 {
     type EnumVal = ICGateDef
 
+    import mrtjp.projectred.integration.{GateDefinition => gd}
+
     val IOSimple = ICGateDef("Simple IO", CircuitPartDefs.IOGate.id)
     val IOAnalog = ICGateDef("Analog IO", CircuitPartDefs.IOGate.id)
     val IOBundled = ICGateDef("Bundled IO", CircuitPartDefs.IOGate.id)
 
-    val OR = ICGateDef("OR gate", CircuitPartDefs.SimpleGate.id)
-    val NOR = ICGateDef("NOR gate", CircuitPartDefs.SimpleGate.id)
-    val NOT = ICGateDef("NOT gate", CircuitPartDefs.SimpleGate.id)
-    val AND = ICGateDef("AND gate", CircuitPartDefs.SimpleGate.id)
-    val NAND = ICGateDef("NAND gate", CircuitPartDefs.SimpleGate.id)
-    val XOR = ICGateDef("XOR gate", CircuitPartDefs.SimpleGate.id)
-    val XNOR = ICGateDef("XNOR gate", CircuitPartDefs.SimpleGate.id)
-    val Buffer = ICGateDef("Buffer gate", CircuitPartDefs.SimpleGate.id)
-    val Multiplexer = ICGateDef("Multiplexer", CircuitPartDefs.SimpleGate.id)
-    val Pulse = ICGateDef("Pulse Former", CircuitPartDefs.SimpleGate.id)
-    val Repeater = ICGateDef("Repeater", CircuitPartDefs.SimpleGate.id)
-    val Randomizer = ICGateDef("Randomizer", CircuitPartDefs.SimpleGate.id)
-    val SRLatch = ICGateDef("SR Latch", CircuitPartDefs.ComplexGate.id)
-    val ToggleLatch = ICGateDef("Toggle Latch", CircuitPartDefs.ComplexGate.id)
-    val TransparentLatch = ICGateDef("Transparent Latch", CircuitPartDefs.SimpleGate.id)
-    val Timer = ICGateDef("Timer", CircuitPartDefs.ComplexGate.id)
-    val Sequencer = ICGateDef("Sequencer", CircuitPartDefs.ComplexGate.id)
-    val Counter = ICGateDef("Counter", CircuitPartDefs.ComplexGate.id)
-    val StateCell = ICGateDef("State Cell", CircuitPartDefs.ComplexGate.id)
-    val Synchronizer = ICGateDef("Synchronizer", CircuitPartDefs.ComplexGate.id)
-    val DecRandomizer = ICGateDef("Dec Randomizer", CircuitPartDefs.SimpleGate.id)
+    val OR = ICGateDef("OR gate", CircuitPartDefs.SimpleGate.id, gd.OR)
+    val NOR = ICGateDef("NOR gate", CircuitPartDefs.SimpleGate.id, gd.NOR)
+    val NOT = ICGateDef("NOT gate", CircuitPartDefs.SimpleGate.id, gd.NOT)
+    val AND = ICGateDef("AND gate", CircuitPartDefs.SimpleGate.id, gd.AND)
+    val NAND = ICGateDef("NAND gate", CircuitPartDefs.SimpleGate.id, gd.NAND)
+    val XOR = ICGateDef("XOR gate", CircuitPartDefs.SimpleGate.id, gd.XOR)
+    val XNOR = ICGateDef("XNOR gate", CircuitPartDefs.SimpleGate.id, gd.XNOR)
+    val Buffer = ICGateDef("Buffer gate", CircuitPartDefs.SimpleGate.id, gd.Buffer)
+    val Multiplexer = ICGateDef("Multiplexer", CircuitPartDefs.SimpleGate.id, gd.Multiplexer)
+    val Pulse = ICGateDef("Pulse Former", CircuitPartDefs.SimpleGate.id, gd.Pulse)
+    val Repeater = ICGateDef("Repeater", CircuitPartDefs.SimpleGate.id, gd.Repeater)
+    val Randomizer = ICGateDef("Randomizer", CircuitPartDefs.SimpleGate.id, gd.Randomizer)
+    val SRLatch = ICGateDef("SR Latch", CircuitPartDefs.ComplexGate.id, gd.SRLatch)
+    val ToggleLatch = ICGateDef("Toggle Latch", CircuitPartDefs.ComplexGate.id, gd.ToggleLatch)
+    val TransparentLatch = ICGateDef("Transparent Latch", CircuitPartDefs.SimpleGate.id, gd.TransparentLatch)
+    val Timer = ICGateDef("Timer", CircuitPartDefs.ComplexGate.id, gd.Timer)
+    val Sequencer = ICGateDef("Sequencer", CircuitPartDefs.ComplexGate.id, gd.Sequencer)
+    val Counter = ICGateDef("Counter", CircuitPartDefs.ComplexGate.id, gd.Counter)
+    val StateCell = ICGateDef("State Cell", CircuitPartDefs.ComplexGate.id, gd.StateCell)
+    val Synchronizer = ICGateDef("Synchronizer", CircuitPartDefs.ComplexGate.id, gd.Synchronizer)
+    val DecRandomizer = ICGateDef("Dec Randomizer", CircuitPartDefs.SimpleGate.id, gd.DecRandomizer)
 
-    case class ICGateDef(unlocal:String, gateType:Int) extends Value
+    case class ICGateDef(unlocal:String, gateType:Int, intDef:GateDef = null) extends Value
     {
         override def name = unlocal
     }

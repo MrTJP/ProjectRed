@@ -45,7 +45,7 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
     private var rightMouseDown = false
     private var mouseStart = Point(0, 0)
 
-    private def isCircuitValid = circuit.size != Size.zeroSize
+    private def isCircuitValid = circuit.nonEmpty
 
     private def toGridPoint(p:Point) =
     {
@@ -101,18 +101,14 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
 
     override def mouseClicked_Impl(p:Point, button:Int, consumed:Boolean):Boolean =
     {
-        if (isCircuitValid && !consumed && rayTest(p))
+        if (isCircuitValid && !consumed && rayTest(p)) button match
         {
-            if (button == 0)
-            {
+            case 0 =>
                 leftMouseDown = true
                 mouseStart = toGridPoint(p)
                 return true
-            }
-            else if (button == 1)
-            {
+            case 1 =>
                 rightMouseDown = true
-
                 val gridP = toGridPoint(p)
                 circuit.getPart(gridP) match
                 {
@@ -126,16 +122,13 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
                             addChild(gui)
                             gui.pushZTo(currentlyOpen.size*0.1)
                         }
-
                     case _ =>
                 }
                 return true
-            }
-            else if (button == mcInst.gameSettings.keyBindPickBlock.getKeyCode)
-            {
+            case _ if button == mcInst.gameSettings.keyBindPickBlock.getKeyCode =>
                 doPickOp()
                 return true
-            }
+            case _ =>
         }
         false
     }
@@ -170,10 +163,8 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
     {
         if (!consumed && rayTest(p))
         {
-            if (dir > 0)
-                rescaleAt(p, math.min(scale+0.2, 3.0))
-            else if (dir < 0)
-                rescaleAt(p, math.max(scale-0.2, 0.5))
+            if (dir > 0) rescaleAt(p, math.min(scale+0.1, 3.0))
+            else if (dir < 0) rescaleAt(p, math.max(scale-0.1, 0.5))
             true
         }
         else false
@@ -238,9 +229,9 @@ class ICToolsetNode extends TNode
     var opSelectDelegate = {_:CircuitOp => ()}
 
     private var focused = false
-    private var toolButtons = Seq[NodeButton]()
-    private var leadingButton:NodeButton = null
-    private var nextLeadingButton:NodeButton = null
+    private var toolButtons = Seq[ButtonNode]()
+    private var leadingButton:ButtonNode = null
+    private var nextLeadingButton:ButtonNode = null
 
     def setup()
     {
@@ -258,7 +249,7 @@ class ICToolsetNode extends TNode
         rotateButtons(toolButtons.head)
     }
 
-    private def rotateButtons(nextLead:NodeButton)
+    private def rotateButtons(nextLead:ButtonNode)
     {
         if (nextLead == leadingButton) return
         leadingButton = nextLead
@@ -280,7 +271,7 @@ class ICToolsetNode extends TNode
             rotateButtons(nextLeadingButton)
     }
 
-    private def buttonClicked(op:CircuitOp, button:NodeButton)
+    private def buttonClicked(op:CircuitOp, button:ButtonNode)
     {
         setFocused()
         opSelectDelegate(op)
@@ -320,7 +311,7 @@ class ICToolsetNode extends TNode
 
     private def createButtonFor(op:CircuitOp) =
     {
-        val b = new NodeButtonIcon
+        val b = new IconButtonNode
         {
             override def drawButton(mouseover:Boolean)
             {
@@ -404,13 +395,13 @@ class NewICNode extends TNode
     {
         sizerMap = calcSizerRects
 
-        val close = new NodeButtonMC
+        val close = new MCButtonNode
         close.size = Size(8, 8)
         close.position = Point(4, 4)
         close.clickDelegate = {() => removeFromParent()}
         addChild(close)
 
-        val fin = new NodeButtonMC
+        val fin = new MCButtonNode
         fin.size = Size(40, 15)
         fin.position = Point(size.width/2-fin.size.width/2, size.height-fin.size.height-4)
         fin.clickDelegate = {() =>
@@ -543,9 +534,9 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
         clip.size = Size(252, 197)
         addChild(clip)
 
-        val pan = new NodePan
+        val pan = new PanNode
         pan.size = Size(252, 197)
-        pan.clampSize = Size(252, 197)-195
+        pan.clampSlack = 35
         pan.dragTestFunction = {() => Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)}
         clip.addChild(pan)
 
@@ -575,7 +566,7 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
             }
 
             addToolset(Seq(Erase))
-            addToolset(Seq(Torch))
+            addToolset(Seq(Torch, Lever, Button))
             addToolset(Seq(AlloyWire))
             addToolsetRange(WhiteInsulatedWire, BlackInsulatedWire)
             addToolsetRange(NeutralBundledCable, BlackBundledCable)
@@ -589,35 +580,35 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
         addChild(toolbar)
         toolbar.position = Point(size.width/2-toolbar.calculateAccumulatedFrame.width/2, 235)
 
-        val dminus = new NodeButtonMC
+        val dminus = new MCButtonNode
         dminus.position = Point(269, 175)
         dminus.size = Size(10, 10)
         dminus.text = "-"
         dminus.clickDelegate = {() => pref.decDetail()}
         addChild(dminus)
 
-        val dplus = new NodeButtonMC
+        val dplus = new MCButtonNode
         dplus.position = Point(309, 175)
         dplus.size = Size(10, 10)
         dplus.text = "+"
         dplus.clickDelegate = {() => pref.incDetail()}
         addChild(dplus)
 
-        val sminus = new NodeButtonMC
+        val sminus = new MCButtonNode
         sminus.position = Point(269, 207)
         sminus.size = Size(10, 10)
         sminus.text = "-"
         sminus.clickDelegate = {() => pref.decScale()}
         addChild(sminus)
 
-        val splus = new NodeButtonMC
+        val splus = new MCButtonNode
         splus.position = Point(309, 207)
         splus.size = Size(10, 10)
         splus.text = "+"
         splus.clickDelegate = {() => pref.incScale()}
         addChild(splus)
 
-        val reqNew = new NodeButtonMC
+        val reqNew = new MCButtonNode
         reqNew.position = Point(272, 133)
         reqNew.size = Size(44, 12)
         reqNew.text = "redraw"
@@ -630,9 +621,7 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
                     val ic = new IntegratedCircuit
                     ic.name = nic.getName
                     ic.size = nic.selectedBoardSize*16
-                    val stream = tile.writeStream(5) //TODO create tile func
-                    ic.writeDesc(stream)
-                    stream.sendToServer()
+                    tile.sendNewICToServer(ic)
                 }
                 addChild(nic)
                 nic.pushZTo(5)

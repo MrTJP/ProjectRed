@@ -238,12 +238,56 @@ object RenderICBundledCable
     }
 }
 
-object RenderCircuitTorch
+object RenderICTorch
 {
     def render(t:Transformation, ortho:Boolean)
     {
         prepairRender()
         faceModels(dynamicIdx(0, ortho)).render(t, new IconTransformation(torchOnIcon))
+        finishRender()
+    }
+}
+
+object RenderICLever
+{
+    var on = false
+
+    def prepairInv()
+    {
+        on = false
+    }
+
+    def prepairDynamic(part:LeverICPart)
+    {
+        on = part.on
+    }
+
+    def render(t:Transformation, ortho:Boolean)
+    {
+        prepairRender()
+        faceModels(dynamicIdx(0, ortho)).render(t, new IconTransformation(if (on) leverOnIcon else leverOffIcon))
+        finishRender()
+    }
+}
+
+object RenderICButton
+{
+    var on = false
+
+    def prepairInv()
+    {
+        on = false
+    }
+
+    def prepairDynamic(part:ButtonICPart)
+    {
+        on = part.on
+    }
+
+    def render(t:Transformation, ortho:Boolean)
+    {
+        prepairRender()
+        faceModels(dynamicIdx(0, ortho)).render(t, new IconTransformation(if (on) buttonOnIcon else buttonOffIcon))
         finishRender()
     }
 }

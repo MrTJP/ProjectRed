@@ -470,6 +470,7 @@ item.projectred.integration.gate|30.name=Bus Input Panel
 item.projectred.integration.gate|31.name=Stacking Latch
 item.projectred.integration.gate|32.name=Segment Display Gate
 item.projectred.integration.gate|33.name=Decoding Randomizer
+item.projectred.integration.gate|34.name=IC Gate
 
 
 
@@ -547,3 +548,6 @@ fluid.redmetal.molten=Molten Conductive Redmetal
 itemGroup.fab=Project Red: Fabrication
 
 item.projectred.fabrication.icblueprint.name=IC Blueprint
+item.projectred.fabrication.icchip.name=IC Chip
+tile.projectred.integration.icblock|0.name=IC Workbench
+tile.projectred.integration.icblock|1.name=IC Printer

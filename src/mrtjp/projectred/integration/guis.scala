@@ -8,7 +8,7 @@ package mrtjp.projectred.integration
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
 import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.gui.{GuiLib, NodeButtonMC, NodeGui, TGuiBuilder}
+import mrtjp.core.gui.{GuiLib, MCButtonNode, NodeGui, TGuiBuilder}
 import mrtjp.core.vec.{Point, Size}
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
@@ -21,7 +21,7 @@ class GuiTimer(part:GatePart) extends NodeGui(256, 55)
     {
         def createButton(x:Int, y:Int, w:Int, h:Int, text:String, delta:Int) =
         {
-            val b = new NodeButtonMC
+            val b = new MCButtonNode
             b.position = Point(x, y)
             b.size = Size(w, h)
             b.text = text
@@ -80,7 +80,7 @@ class GuiCounter(part:GatePart) extends NodeGui(256, 145)
     {
         def createButton(x:Int, y:Int, w:Int, h:Int, id:Int, delta:Int) =
         {
-            val b = new NodeButtonMC
+            val b = new MCButtonNode
             b.position = Point(x, y)
             b.size = Size(w, h)
             b.text = (if (delta < 0) "" else "+")+delta
