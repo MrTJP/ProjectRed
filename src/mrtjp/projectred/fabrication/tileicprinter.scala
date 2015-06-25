@@ -208,12 +208,13 @@ class TileICPrinter extends TileICMachine with TInventory
         for (i <- 0 until 18)
         {
             val s = getStackInSlot(i)
-            if (s != null)
+            if (s != null && stack.key == ItemKey.get(s))
             {
                 val toEat = math.min(left, s.stackSize)
                 left -= toEat
                 s.stackSize -= toEat
                 if (s.stackSize <= 0) setInventorySlotContents(i, null)
+                else setInventorySlotContents(i, s)
                 if (left <= 0) return
             }
         }
