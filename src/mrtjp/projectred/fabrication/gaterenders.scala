@@ -688,7 +688,8 @@ class RenderTimer extends ICGateRenderer[SequentialGateICPart]
         wires(0).on = (gate.state&0x88) != 0
         wires(1).on = (gate.state&0x22) != 0
         wires(2).on = (gate.state&4) != 0
-        pointer.angle = gate.getLogic[TTimerGateLogic].interpPointer(frame)*MathHelper.pi*2
+        val ang = gate.getLogic[TTimerGateLogic].interpPointer(frame)*MathHelper.pi*2
+        pointer.angle = ang
     }
 }
 

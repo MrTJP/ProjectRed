@@ -291,7 +291,7 @@ trait TTimerGateLogic extends SequentialICGateLogic with ITimerGuiLogic
         pointer_max = tag.getInteger("pmax")
         pointer_start = tag.getLong("pelapsed")
         saveTime = tag.getLong("tsave")
-        if (pointer_start >= 0) pointer_start = MultipartSaveLoad.loadingWorld.getTotalWorldTime-pointer_start
+        if (pointer_start >= 0) pointer_start = getTotalTime-pointer_start
     }
 
     abstract override def writeDesc(packet:MCDataOutput)
@@ -319,8 +319,9 @@ trait TTimerGateLogic extends SequentialICGateLogic with ITimerGuiLogic
 
     def getTotalTime = //client-side safe version of getTotalWorldTime (workaround for no client world)
     {
-        if (gate.world.network != null) gate.world.network.getWorld.getTotalWorldTime
-        else saveTime
+        if (gate.world.network == null) saveTime //ic was loaded directly from stack, possibly for in-hand render
+        else if (gate.world.network.getWorld == null) MultipartSaveLoad.loadingWorld.getTotalWorldTime //ic is being loaded with a workbench tile or gate
+        else gate.world.network.getWorld.getTotalWorldTime //normal access during operation
     }
 
     def pointerValue = if (pointer_start < 0) 0 else (getTotalTime-pointer_start).toInt
