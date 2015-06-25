@@ -15,13 +15,13 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends NodeGui(container, 
 {
     override def onAddedToParent_Impl()
     {
-        val inst = new NodeButtonMC
+        val inst = new MCButtonNode
         inst.position = Point(size.width/2-20, 56)
         inst.size = Size(40, 15)
         inst.clickDelegate = {() => sendMessage("inst")}
         addChild(inst)
 
-        val linfo = NodeDotSelect.centered(67, 45)
+        val linfo = DotSelectNode.centered(67, 45)
         linfo.tooltipBuilder = { list =>
             if (container.chachedChip != null)
             {
@@ -40,7 +40,7 @@ class GuiChipUpgrade(container:ChipUpgradeContainer) extends NodeGui(container, 
         }
         addChild(linfo)
 
-        val rinfo = NodeDotSelect.centered(110, 45)
+        val rinfo = DotSelectNode.centered(110, 45)
         rinfo.tooltipBuilder = { list =>
             if (container.chachedChip != null)
             {

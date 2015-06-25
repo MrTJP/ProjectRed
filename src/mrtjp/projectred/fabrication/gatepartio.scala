@@ -9,7 +9,6 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumChatFormatting
 
 trait IIOCircuitPart
 {
@@ -169,8 +168,6 @@ abstract class IOICGateLogic(val gate:IOGateICPart) extends RedstoneICGateLogic[
     }
 
     @SideOnly(Side.CLIENT)
-    override def createGui(gate:IOGateICPart):CircuitGui = new ICIOGateGui(gate)
-
     override def getRolloverData(gate:IOGateICPart, detailLevel:Int) =
     {
         val s = Seq.newBuilder[String]
@@ -190,7 +187,7 @@ abstract class IOICGateLogic(val gate:IOGateICPart) extends RedstoneICGateLogic[
             s += "I: "+(if (resolveInputFromWorld != 0) "high" else "low")
             s += "O: "+(if (resolveOutputToWorld != 0) "high" else "low")
         }
-        super.getRolloverData(gate, detailLevel) ++ s.result().map(EnumChatFormatting.GRAY+_)
+        super.getRolloverData(gate, detailLevel) ++ s.result()
     }
 
     def getFreqName = ""
@@ -244,6 +241,9 @@ class SimpleIOICGateLogic(gate:IOGateICPart) extends IOICGateLogic(gate) with TR
     {
         gate.world.setInput(gate.rotation, if ((gate.world.iostate(gate.rotation)&0x8000) != 0) 1 else 0x8000)
     }
+
+    @SideOnly(Side.CLIENT)
+    override def createGui(gate:IOGateICPart):CircuitGui = new ICIOGateGui(gate)
 }
 
 trait TFreqIOICGateLogic extends IOICGateLogic
@@ -318,6 +318,9 @@ trait TFreqIOICGateLogic extends IOICGateLogic
         val s = ((gate.world.iostate(gate.rotation)>>>16)& ~(1<<freq))|(if (state) 1 else 0)<<freq
         gate.world.setOutput(gate.rotation, s)
     }
+
+    @SideOnly(Side.CLIENT)
+    override def createGui(gate:IOGateICPart):CircuitGui = new ICIOFreqGateGui(gate)
 }
 
 class AnalogIOICGateLogic(gate:IOGateICPart) extends IOICGateLogic(gate) with TFreqIOICGateLogic with TRSIOICGateLogic

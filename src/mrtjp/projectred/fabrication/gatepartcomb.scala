@@ -7,6 +7,7 @@ package mrtjp.projectred.fabrication
 
 import java.util.Random
 
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.core.TFaceOrient
 
 class ComboGateICPart extends RedstoneGateICPart
@@ -95,12 +96,12 @@ trait TSimpleRSICGateLogic[T <: RedstoneGateICPart] extends RedstoneICGateLogic[
         }
     }
 
+    @SideOnly(Side.CLIENT)
     override def getRolloverData(gate:T, detailLevel:Int) =
     {
-        import net.minecraft.util.EnumChatFormatting._
         val s = Seq.newBuilder[String]
         if (detailLevel > 2) s += "I: "+rolloverInput(gate) += "O: "+rolloverOutput(gate)
-        super.getRolloverData(gate, detailLevel) ++ s.result().map(GRAY+_)
+        super.getRolloverData(gate, detailLevel) ++ s.result()
     }
     def rolloverInput(gate:T) = "0x"+Integer.toHexString(gate.state&0xF)
     def rolloverOutput(gate:T) = "0x"+Integer.toHexString(gate.state>>4)
@@ -274,6 +275,14 @@ object Repeater extends ComboICGateLogic
     override def activate(gate:ComboGateICPart)
     {
         gate.configure()
+    }
+
+    @SideOnly(Side.CLIENT)
+    override def getRolloverData(gate:ComboGateICPart, detailLevel:Int) =
+    {
+        val data = Seq.newBuilder[String]
+        if (detailLevel > 1) data += "delay: "+delays(gate.shape)
+        super.getRolloverData(gate, detailLevel)++data.result()
     }
 }
 

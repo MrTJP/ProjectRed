@@ -367,7 +367,7 @@ class IntegratedCircuit
         for (i <- 0 until 4) iostate(i) = 0
     }
 
-    def isEmpty = size == Size.zeroSize && parts.isEmpty
+    def isEmpty = size == Size.zeroSize
     def nonEmpty = !isEmpty
 
     private def assertCoords(x:Int, y:Int)
@@ -447,19 +447,21 @@ class IntegratedCircuit
 
 object CircuitPartDefs extends Enum
 {
-    type EnumVal = CircuitDef
+    type EnumVal = CircuitPartDef
 
-    val Torch = CircuitDef(() => new CircuitPartTorch)
+    val Torch = CircuitPartDef(() => new TorchICPart)
+    val Lever = CircuitPartDef(() => new LeverICPart)
+    val Button = CircuitPartDef(() => new ButtonICPart)
 
-    val AlloyWire = CircuitDef(() => new AlloyWireICPart)
-    val InsulatedWire = CircuitDef(() => new InsulatedWireICPart)
-    val BundledCable = CircuitDef(() => new BundledCableICPart)
+    val AlloyWire = CircuitPartDef(() => new AlloyWireICPart)
+    val InsulatedWire = CircuitPartDef(() => new InsulatedWireICPart)
+    val BundledCable = CircuitPartDef(() => new BundledCableICPart)
 
-    val IOGate = CircuitDef(() => new IOGateICPart)
-    val SimpleGate = CircuitDef(() => new ComboGateICPart)
-    val ComplexGate = CircuitDef(() => new SequentialGateICPart)
+    val IOGate = CircuitPartDef(() => new IOGateICPart)
+    val SimpleGate = CircuitPartDef(() => new ComboGateICPart)
+    val ComplexGate = CircuitPartDef(() => new SequentialGateICPart)
 
-    case class CircuitDef(factory:() => CircuitPart) extends Value
+    case class CircuitPartDef(factory:() => CircuitPart) extends Value
     {
         def id = ordinal
         override def name = s"$id"
@@ -494,7 +496,7 @@ abstract class CircuitPart
     def y = loc._2&0xFF
     def id = getPartType.id
 
-    def getPartType:CircuitPartDefs.CircuitDef
+    def getPartType:CircuitPartDefs.CircuitPartDef
 
     def save(tag:NBTTagCompound){}
     def load(tag:NBTTagCompound){}
@@ -543,7 +545,7 @@ trait TClientNetCircuitPart extends CircuitPart
     def readClientPacket(in:MCDataInput)
 
     @SideOnly(Side.CLIENT)
-    def sendClientPacket(writer:MCDataOutput => Unit)
+    def sendClientPacket(writer:MCDataOutput => Unit = {_ => })
     {
         world.sendClientPacket(this, writer)
     }

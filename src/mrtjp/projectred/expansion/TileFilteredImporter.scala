@@ -141,7 +141,7 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
 class GuiFilteredImporter(c:Container, tile:TileFilteredImporter) extends NodeGui(c, 176, 168)
 {
     {
-        val color = new NodeButtonIcon
+        val color = new IconButtonNode
         {
             override def drawButton(mouseover:Boolean)
             {

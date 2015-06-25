@@ -115,7 +115,7 @@ class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont
     {
         if (chip.isInstanceOf[TChipFilter] && chip.asInstanceOf[TChipFilter].enableFilter)
         {
-            val dot = NodeDotSelect.centered(85, 34)
+            val dot = DotSelectNode.centered(85, 34)
             dot.tooltipBuilder = { list =>
                 list += "Filter"; chip.asInstanceOf[TChipFilter].addFilterInfo(list)
             }
@@ -138,7 +138,7 @@ class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont
 
         if (chip.isInstanceOf[TChipOrientation])
         {
-            val dot = NodeDotSelect.centered(100, 50)
+            val dot = DotSelectNode.centered(100, 50)
             dot.tooltipBuilder = { list =>
                 list += "Orientation"
                 chip.asInstanceOf[TChipOrientation].addOrientInfo(list)
@@ -153,7 +153,7 @@ class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont
 
         if (chip.isInstanceOf[TChipPriority] && chip.asInstanceOf[TChipPriority].prefScale > 0)
         {
-            val dot = NodeDotSelect.centered(76, 51)
+            val dot = DotSelectNode.centered(76, 51)
             dot.tooltipBuilder = { list =>
                 list += "Priority"
                 chip.asInstanceOf[TChipPriority].addPriorityInfo(list)
@@ -168,7 +168,7 @@ class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont
 
         if (chip.isInstanceOf[TChipStock])
         {
-            val dot = NodeDotSelect.centered(90, 50)
+            val dot = DotSelectNode.centered(90, 50)
             dot.tooltipBuilder = { list =>
                 list += "Stock"
                 chip.asInstanceOf[TChipStock].addStockInfo(list)
@@ -193,7 +193,7 @@ class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont
         if (chip.isInstanceOf[TChipCrafter])
         {
             val chip2 = chip.asInstanceOf[TChipCrafter]
-            def dot1 = NodeDotSelect.centered(105, 42)
+            def dot1 = DotSelectNode.centered(105, 42)
             dot1.tooltipBuilder = { list =>
                 list += "Matrix"
                 chip2.addMatrixInfo(list)
@@ -218,7 +218,7 @@ class GuiChipRoot(cont:ChipContainer) extends GuiChipContainer[RoutingChip](cont
 
             if (chip2.maxExtensions > 0)
             {
-                val dot2 = NodeDotSelect.centered(90, 32)
+                val dot2 = DotSelectNode.centered(90, 32)
                 dot2.tooltipBuilder = { list =>
                     list += "Extensions"
                     chip2.addExtInfo(list)
@@ -247,7 +247,7 @@ class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
     {
         if (chip.enableFilter)
         {
-            val b = new NodeButtonIcon
+            val b = new IconButtonNode
             {
                 override def drawButton(mouseover:Boolean)
                 {
@@ -267,7 +267,7 @@ class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
 
         if (chip.enablePatterns)
         {
-            var b = new NodeButtonIcon
+            var b = new IconButtonNode
             {
                 override def drawButton(mouseover:Boolean)
                 {
@@ -284,7 +284,7 @@ class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
             b.clickDelegate = {() => chip.toggleMetaMode()}
             addChild(b)
 
-            b = new NodeButtonIcon
+            b = new IconButtonNode
             {
                 override def drawButton(mouseover:Boolean)
                 {
@@ -301,7 +301,7 @@ class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
             b.clickDelegate = {() => chip.toggleNBTMode()}
             addChild(b)
 
-            b = new NodeButtonIcon
+            b = new IconButtonNode
             {
                 override def drawButton(mouseover:Boolean)
                 {
@@ -318,7 +318,7 @@ class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
             b.clickDelegate = {() => chip.toggleOreMode()}
             addChild(b)
 
-            b = new NodeButtonIcon
+            b = new IconButtonNode
             {
                 override def drawButton(mouseover:Boolean)
                 {
@@ -344,7 +344,7 @@ class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
 
         if (chip.enableHiding)
         {
-            val b = new NodeButtonIcon
+            val b = new IconButtonNode
             {
                 override def drawButton(mouseover:Boolean)
                 {
@@ -367,7 +367,7 @@ class GuiChipFilter(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer
 
 class GuiChipOrient(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer[TChipOrientation](cont, prev)
 {
-    val sideWidget = new SideSelect(20, 15, 50, 50)
+    val sideWidget = new SideSelectNode(20, 15, 50, 50)
     {
         override def onSideChanged(oldside:Int)
         {
@@ -408,14 +408,14 @@ class GuiChipPriority(cont:ChipContainer, prev:GuiScreen) extends GuiChipContain
 
     override def onAddedToParent_Impl()
     {
-        val plus = new NodeButtonMC
+        val plus = new MCButtonNode
         plus.position = Point(82, 22)
         plus.size = Size(12, 12)
         plus.text = "+"
         plus.clickDelegate = {() => chip.prefUp()}
         addChild(plus)
 
-        val minus = new NodeButtonMC
+        val minus = new MCButtonNode
         minus.position = Point(82, 50)
         minus.size = Size(12, 12)
         minus.text = "-"
@@ -424,7 +424,7 @@ class GuiChipPriority(cont:ChipContainer, prev:GuiScreen) extends GuiChipContain
 
         if (chip.enablePriorityFlag)
         {
-            val check = NodeCheckBox.centered(88, 72)
+            val check = CheckBoxNode.centered(88, 72)
             check.state = chip.priorityFlag
             check.clickDelegate = {() => chip.priorityFlag = check.state}
             addChild(check)
@@ -442,7 +442,7 @@ class GuiChipStock(cont:ChipContainer, prev:GuiScreen) extends GuiChipContainer[
 
     override def onAddedToParent_Impl()
     {
-        val b = new NodeButtonIcon
+        val b = new IconButtonNode
         {
             override def drawButton(mouseover:Boolean)
             {
@@ -499,13 +499,13 @@ class GuiChipCraftExt(cont:ChipContainer, prev:GuiScreen) extends GuiChipContain
         {
             if (chip.maxExtensions >= index)
             {
-                val up = new NodeButtonMC
+                val up = new MCButtonNode
                 up.position = Point(x, y)
                 up.size = Size(24, 6)
                 up.clickDelegate = {() => chip.extUp(index)}
                 addChild(up)
 
-                val down = new NodeButtonMC
+                val down = new MCButtonNode
                 down.position = Point(x, y+18)
                 down.size = Size(24, 6)
                 down.clickDelegate = {() => chip.extDown(index)}

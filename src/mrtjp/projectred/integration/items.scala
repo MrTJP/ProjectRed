@@ -14,7 +14,6 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.item.{ItemCore, ItemDefinition, TItemGlassSound}
 import mrtjp.core.world.PlacementLib
 import mrtjp.projectred.ProjectRedIntegration
-import mrtjp.projectred.fabrication.RenderCircuit
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
@@ -27,6 +26,7 @@ class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMul
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedIntegration.tabIntegration2)
+    var infoBuilderFunc = {(stack:ItemStack, l:JList[String]) => }
 
     def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3):TMultiPart =
     {
@@ -51,11 +51,15 @@ class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMul
     override def registerIcons(reg:IIconRegister)
     {
         ComponentStore.registerIcons(reg)
-        RenderCircuit.registerIcons(reg) //TODO remove dep
     }
 
     @SideOnly(Side.CLIENT)
     override def getSpriteNumber = 0
+
+    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], flag:Boolean)
+    {
+        infoBuilderFunc(stack, list.asInstanceOf[JList[String]])
+    }
 }
 
 object GateDefinition extends ItemDefinition

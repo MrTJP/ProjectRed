@@ -58,6 +58,18 @@ class BundledCableICPart extends WireICPart with TICBundledAcquisitions with IBu
         colour = in.readByte()
     }
 
+    override def read(in:MCDataInput, key:Int) = key match
+    {
+        case 10 => BundledCommons.unpackDigital(signal, in.readUShort())
+        case _ => super.read(in, key)
+    }
+
+    override def onSignalUpdate()
+    {
+        super.onSignalUpdate()
+        writeStreamOf(10).writeShort(BundledCommons.packDigital(signal))
+    }
+
     override def getPartType = CircuitPartDefs.BundledCable
 
     override def canConnectPart(part:CircuitPart, r:Int) = part match
@@ -178,4 +190,17 @@ class BundledCableICPart extends WireICPart with TICBundledAcquisitions with IBu
 
     @SideOnly(Side.CLIENT)
     override def getPickOp = CircuitOpDefs.values(CircuitOpDefs.NeutralBundledCable.ordinal+colour+1).getOp
+
+    @SideOnly(Side.CLIENT)
+    override def getRolloverData(detailLevel:Int) =
+    {
+        val data = Seq.newBuilder[String]
+
+        import net.minecraft.util.EnumChatFormatting._
+        val sig = BundledCommons.packDigital(signal)
+        if (detailLevel >= 3) data += GRAY+"signal: 0x"+Integer.toHexString(sig)
+        else if (detailLevel >= 2) data += GRAY+"state: "+(if (sig != 0) "active" else "inactive")
+
+        super.getRolloverData(detailLevel)++data.result()
+    }
 }

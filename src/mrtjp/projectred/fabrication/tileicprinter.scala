@@ -5,6 +5,8 @@
  */
 package mrtjp.projectred.fabrication
 
+import java.util.{ArrayList => JAList, List => JList}
+
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
 import codechicken.lib.render.uv.{IconTransformation, MultiIconTransformation, UVTransformation}
@@ -18,6 +20,7 @@ import mrtjp.core.inventory.TInventory
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
 import mrtjp.core.vec.{Point, Size, Vec2}
 import mrtjp.core.world.WorldLib
+import mrtjp.projectred.core.PartDefs
 import mrtjp.projectred.core.libmc.PRResources
 import mrtjp.projectred.integration.ComponentStore
 import mrtjp.projectred.transmission.WireDef
@@ -25,15 +28,19 @@ import net.minecraft.client.renderer.RenderBlocks
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.ItemStack
+import net.minecraft.item.crafting.{CraftingManager, IRecipe, ShapedRecipes, ShapelessRecipes}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.{IIcon, ResourceLocation}
 import net.minecraft.world.IBlockAccess
+import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 import org.lwjgl.opengl.GL11._
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.{Map => MMap}
+import scala.util.control.Breaks._
 
 class TileICPrinter extends TileICMachine with TInventory
 {
@@ -347,24 +354,102 @@ object TileICPrinter
     val REALTIME = 3
     val FIN = 4
 
+    private var gRec = Map[(ItemKey), Seq[ItemKey]]()
+
+    def cacheRecipe(key:ItemKey)
+    {
+        val recipes = CraftingManager.getInstance().getRecipeList.asInstanceOf[JList[IRecipe]]
+        for (r <- recipes)
+        {
+            val out = ItemKey.get(r.getRecipeOutput)
+            if (out == key)
+            {
+                val inputs = r match
+                {
+                    case s:ShapedRecipes => s.recipeItems.toSeq.filterNot(_ == null).map(ItemKey.get)
+
+                    case s:ShapelessRecipes => s.recipeItems.asInstanceOf[JList[ItemStack]].toSeq.filterNot(_ == null).map(ItemKey.get)
+
+                    case s:ShapedOreRecipe => s.getInput.toSeq.flatMap {
+                        case s:ItemStack => Seq(s)
+                        case a:JAList[ItemStack] => a.toSeq
+                        case _ => Seq.empty
+                    }.map(ItemKey.get)
+
+                    case s:ShapelessOreRecipe => s.getInput.toSeq.flatMap {
+                        case s:ItemStack => Seq(s)
+                        case a:JAList[ItemStack] => a.toSeq
+                        case _ => Seq.empty
+                    }.map(ItemKey.get)
+
+                    case _ => Seq.empty
+                }
+                if (inputs.nonEmpty)
+                {
+                    gRec += key -> inputs
+                    return
+                }
+            }
+        }
+        gRec += key -> Seq.empty
+    }
+
+    def getOrCacheComponents(in:ItemStack):Seq[ItemKey] =
+    {
+        val key = ItemKey.get(in)
+        if (!gRec.contains(key)) cacheRecipe(key)
+        gRec(key)
+    }
+
     def resolveResources(ic:IntegratedCircuit) =
     {
         val map = MMap[ItemKey, Double]()
+
+        import mrtjp.core.item.ItemKeyConversions._
         def add(key:ItemKey, amount:Double)
         {
             val c = map.getOrElse(key, 0.0)
             map(key) = c+amount
         }
 
+        def addComponents(stack:ItemStack)
+        {
+            getOrCacheComponents(stack).foreach(add(_, 0.25))
+        }
+
+        import mrtjp.projectred.fabrication.{ICGateDefinition => gd}
+
         for (part <- ic.parts.values) part match
         {
-            case p:AlloyWireICPart => add(ItemKey.get(WireDef.RED_ALLOY.makeStack), 0.25)
-            case p:InsulatedWireICPart => add(ItemKey.get(WireDef.INSULATED_WIRES(p.colour&0xFF).makeStack), 0.25)
-            case p:BundledCableICPart => add(ItemKey.get(WireDef.BUNDLED_WIRES((p.colour+1)&0xFF).makeStack), 0.25)
+            case p:TorchICPart => add(new ItemStack(Blocks.redstone_torch), 0.25)
+            case p:LeverICPart => add(new ItemStack(Blocks.lever), 0.25)
+            case p:ButtonICPart => add(new ItemStack(Blocks.stone_button), 0.25)
+            case p:AlloyWireICPart => add(WireDef.RED_ALLOY.makeStack, 0.25)
+            case p:InsulatedWireICPart => add(WireDef.INSULATED_WIRES(p.colour&0xFF).makeStack, 0.25)
+            case p:BundledCableICPart => add(WireDef.BUNDLED_WIRES((p.colour+1)&0xFF).makeStack, 0.25)
+            case p:GateICPart => gd.apply(p.subID) match
+            {
+                case gd.IOSimple =>
+                    add(new ItemStack(Items.gold_nugget), 1)
+                    add(PartDefs.PLATE.makeStack, 1.50)
+                    add(PartDefs.CONDUCTIVEPLATE.makeStack, 0.50)
+                case gd.IOAnalog =>
+                    add(new ItemStack(Items.gold_nugget), 1)
+                    add(PartDefs.PLATE.makeStack, 1.50)
+                    add(new ItemStack(Items.redstone), 0.25)
+                    add(PartDefs.CONDUCTIVEPLATE.makeStack, 0.25)
+                case gd.IOBundled =>
+                    add(new ItemStack(Items.gold_nugget), 1)
+                    add(PartDefs.PLATE.makeStack, 1.50)
+                    add(PartDefs.BUNDLEDPLATE.makeStack, 0.25)
+                    add(PartDefs.CONDUCTIVEPLATE.makeStack, 0.25)
+                case d if d.intDef != null => addComponents(d.intDef.makeStack)
+                case _ =>
+            }
             case _ =>
         }
 
-        map.map(e => ItemKeyStack.get(e._1, e._2.ceil.toInt)).toSeq
+        map.map(e => ItemKeyStack.get(e._1, e._2.ceil.toInt)).toSeq.sorted
     }
 }
 
@@ -432,7 +517,7 @@ class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 17
         clip.size = Size(48, 48)
         addChild(clip)
 
-        val pan = new NodePan
+        val pan = new PanNode
         pan.size = Size(48, 48)
         pan.scrollModifier = Vec2(0, 1)
         pan.scrollBarHorizontal = false
@@ -463,12 +548,12 @@ class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 17
     {
         PRResources.guiICPrinter.bind()
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, 176, 201)
-        GuiDraw.drawString("IC Printer", 8, 6, Colors.GREY.argb, false)
         if (tile.isWorking)
         {
             val dx = 37*tile.progress
             GuiDraw.drawTexturedModalRect(86, 32, 176, 0, dx.toInt, 18)
         }
+        GuiDraw.drawString("IC Printer", 8, 6, Colors.GREY.argb, false)
     }
 }
 

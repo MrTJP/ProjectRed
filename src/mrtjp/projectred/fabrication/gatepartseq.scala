@@ -7,9 +7,11 @@ package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.multipart.handler.MultipartSaveLoad
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.core.TFaceOrient._
 import mrtjp.projectred.core.{Configurator, PRLogger}
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.EnumChatFormatting
 
 class SequentialGateICPart extends RedstoneGateICPart with TComplexGateICPart
 {
@@ -371,7 +373,16 @@ trait TTimerGateLogic extends SequentialICGateLogic with ITimerGuiLogic
 
     def interpPointer(f:Float) = if (pointer_start < 0) 0f else (pointerValue+f)/pointer_max
 
+    @SideOnly(Side.CLIENT)
     override def createGui(gate:SequentialGateICPart) = new ICTimerGateGui(gate)
+
+    @SideOnly(Side.CLIENT)
+    override def getRolloverData(gate:SequentialGateICPart, detailLevel:Int) =
+    {
+        val data = Seq.newBuilder[String]
+        if (detailLevel > 1) data += "interval: "+"%.2f".format(getTimerMax*0.05)+"s"
+        super.getRolloverData(gate, detailLevel)++data.result()
+    }
 }
 
 class Timer(gate:SequentialGateICPart) extends SequentialICGateLogic(gate) with TTimerGateLogic
@@ -485,7 +496,16 @@ class Sequencer(gate:SequentialGateICPart) extends SequentialICGateLogic(gate) w
         true
     }
 
+    @SideOnly(Side.CLIENT)
     override def createGui(gate:SequentialGateICPart) = new ICTimerGateGui(gate)
+
+    @SideOnly(Side.CLIENT)
+    override def getRolloverData(gate:SequentialGateICPart, detailLevel:Int) =
+    {
+        val data = Seq.newBuilder[String]
+        if (detailLevel > 1) data += "interval: "+"%.2f".format(getTimerMax*0.05)+"s"
+        super.getRolloverData(gate, detailLevel)++data.result()
+    }
 }
 
 class Counter(gate:SequentialGateICPart) extends SequentialICGateLogic(gate) with ICounterGuiLogic
@@ -620,7 +640,25 @@ class Counter(gate:SequentialGateICPart) extends SequentialICGateLogic(gate) wit
         if (newOutput != oldOutput) gate.onOutputChange(5)
     }
 
+    @SideOnly(Side.CLIENT)
     override def createGui(gate:SequentialGateICPart) = new ICCounterGateGui(gate)
+
+    @SideOnly(Side.CLIENT)
+    override def getRolloverData(gate:SequentialGateICPart, detailLevel:Int) =
+    {
+        val data = Seq.newBuilder[String]
+        if (detailLevel > 1)
+        {
+            data += "state: "+getCounterValue
+            if (detailLevel > 2)
+            {
+                data += "max: "+getCounterMax
+                data += "incr: "+getCounterIncr
+                data += "decr: "+getCounterDecr
+            }
+        }
+        super.getRolloverData(gate, detailLevel)++data.result()
+    }
 }
 
 class StateCell(gate:SequentialGateICPart) extends SequentialICGateLogic(gate) with TTimerGateLogic with TExtraStateLogic
@@ -741,4 +779,16 @@ class Synchronizer(gate:SequentialGateICPart) extends SequentialICGateLogic(gate
     def right = (state2&1) != 0
     def left = (state2&2) != 0
     def pulsing = (state2&4) != 0
+
+    @SideOnly(Side.CLIENT)
+    override def getRolloverData(gate:SequentialGateICPart, detailLevel:Int) =
+    {
+        val data = Seq.newBuilder[String]
+        if (detailLevel > 1)
+        {
+            data += "0: "+(if (right) "high" else "low")
+            data += "1: "+(if (left) "high" else "low")
+        }
+        super.getRolloverData(gate, detailLevel)++data.result()
+    }
 }
