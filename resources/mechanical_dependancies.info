@@ -1,0 +1,12 @@
+[{
+	"repo": "http://projectredwiki.com/maven/mrtjp/ForgeRelocation/@MC_VERSION@-@FR_VERSION@/",
+	"file": "ForgeRelocation-@MC_VERSION@-@FR_VERSION@-universal.jar",
+	"dev": "ForgeRelocation-@MC_VERSION@-@FR_VERSION@-dev.jar",
+	"class": "mrtjp.relocation.handler.RelocationMod"
+},
+{
+	"repo": "http://projectredwiki.com/maven/mrtjp/ForgeRelocationFMP/@MC_VERSION@-@FRFMP_VERSION@/",
+	"file": "ForgeRelocationFMP-@MC_VERSION@-@FRFMP_VERSION@-universal.jar",
+	"dev": "ForgeRelocationFMP-@MC_VERSION@-@FRFMP_VERSION@-dev.jar",
+	"class": "mrtjp.relocation.handler.RelocationMod"
+}]

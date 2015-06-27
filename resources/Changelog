@@ -1,5 +1,7 @@
 v4.7.0pre3
 - ADDED: Teleposer
+- ADDED: Frame Motor
+- ADDED: Frame Linear Actuator
 - FIX: Copper and tin harvest levels
 - CHANGE: Rebalanced Jetpack
 

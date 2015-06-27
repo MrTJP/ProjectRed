@@ -17,7 +17,7 @@ object ProjectRedExpansion
     /** Items **/
     var itemEmptybattery:ItemBatteryEmpty = null
     var itemBattery:ItemBattery = null
-    var itemJetpack:ItemElectronicJetpack = null
+    var itemJetpack:ItemJetpack = null
     var itemScrewdriver:ItemElectronicScrewdriver = null
     var itemInfusedEnderPearl:ItemInfusedEnderPearl = null
 

@@ -69,16 +69,17 @@ dependencies {
     deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
 
     compile "mrtjp:MrTJPCore:${config.mc.version}-${config.mrtjp.version}:dev"
+    compile "mrtjp:ForgeRelocation:${config.mc.version}-${config.fr.version}:dev"
     compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
     compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
     compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
     compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
-//    compile group: 'thermalexpansion', name: 'ThermalExpansion', version: config.texpan.version, ext: 'jar'
     compile group: 'cofh', name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
 }
 
 def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")+51).toString()
 version = "${project.config.mod.version}."+build_number
+println "Starting build for $archivesBaseName $version for MC $config.mc.version-$config.forge.version"
 
 minecraft {
     version = config.mc.version+"-"+config.forge.version
@@ -115,7 +116,9 @@ task updateVersion(type: Copy) {
             'FORGE_VERSION': config.forge.version,
             'FMP_VERSION'  : config.fmp.version,
             'CCL_VERSION'  : config.ccl.version,
-            'MRTJP_VERSION': config.mrtjp.version
+            'MRTJP_VERSION': config.mrtjp.version,
+            'FR_VERSION': config.fr.version,
+            'FRFMP_VERSION': config.frfmp.version
     ])
 }
 
@@ -126,6 +129,8 @@ processResources {
     inputs.property "fmp.version", config.fmp.version
     inputs.property "ccl.version", config.ccl.version
     inputs.property "mrtjp.version", config.mrtjp.version
+    inputs.property "fr.version", config.fr.version
+    inputs.property "frfmp.version", config.frfmp.version
 
     // Replace properties in all files
     from(sourceSets.main.resources.srcDirs) {
@@ -137,7 +142,9 @@ processResources {
                 'FORGE_VERSION': config.forge.version,
                 'FMP_VERSION'  : config.fmp.version,
                 'CCL_VERSION'  : config.ccl.version,
-                'MRTJP_VERSION': config.mrtjp.version
+                'MRTJP_VERSION': config.mrtjp.version,
+                'FR_VERSION': config.fr.version,
+                'FRFMP_VERSION': config.frfmp.version
         ])
     }
     // Copy everything else
@@ -202,6 +209,9 @@ task mechanicalJar(type: Jar, dependsOn: reobf) {
         include "mechanical_mod.info"
         rename("mechanical_mod.info", 'mcmod.info')
 
+        include("mechanical_dependancies.info")
+        rename("mechanical_dependancies.info", "dependancies.info")
+
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
@@ -229,9 +239,6 @@ task compatJar(type: Jar, dependsOn: reobf) {
         include "**/ProjectRedCompatibility*.class"
         include "**/mrtjp/projectred/compatibility/**"
 
-        //APIs
-        //include "**/dan200/**"
-
         include "**/assets/asm/**"
         include "**/assets/projectred/textures/blocks/compat/**"
 
@@ -249,6 +256,7 @@ task baseJar(type: Jar, dependsOn: reobf) {
         exclude project.ext.baseExcludes
 
         rename("base_mod.info", 'mcmod.info')
+        rename("base_dependancies.info", "dependancies.info")
     }
     manifest {
         attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
@@ -426,6 +434,8 @@ if (project.hasProperty('curseapi'))
         projectId = '229048'
         artifact = mechanicalJar
         relatedProject 'project-red-integration': 'requiredLibrary'
+        relatedProject 'forge-relocation': 'requiredLibrary'
+        relatedProject 'forge-relocation-fmp-plugin': 'requiredLibrary'
     }
 
     task curseWorld(dependsOn: 'curse', type: CurseUploadTask) {
@@ -442,6 +452,7 @@ if (project.hasProperty('curseapi'))
         apiKey = project.curseapi
         releaseType = 'release'
         relatedProject 'mrtjpcore': 'requiredLibrary'
+        relatedProject 'forge-multi-part': 'requiredLibrary'
         addGameVersion project.minecraft.version
     }
 
