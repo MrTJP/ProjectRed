@@ -10,7 +10,7 @@ import codechicken.lib.gui.GuiDraw
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors
-import mrtjp.core.gui._
+import mrtjp.core.gui.{GuiLib, Slot3, TGuiBuilder, _}
 import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.vec.Point

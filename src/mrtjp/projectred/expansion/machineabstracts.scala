@@ -305,11 +305,10 @@ with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
     {
         isCharged = cond.canWork
         if (isWorking != oldW || isCharged != oldCh)
-        {
             sendWorkUpdate()
-            oldW = isWorking
-            oldCh = isCharged
-        }
+
+        oldW = isWorking
+        oldCh = isCharged
     }
 
     override def getLightValue = if (isWorking && isCharged) 13 else 0
