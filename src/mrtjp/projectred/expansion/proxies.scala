@@ -40,7 +40,7 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
         //Items
         itemEmptybattery = new ItemBatteryEmpty
         itemBattery = new ItemBattery
-        itemJetpack = new ItemElectronicJetpack
+        itemJetpack = new ItemJetpack
         itemScrewdriver = new ItemElectronicScrewdriver
         itemInfusedEnderPearl = new ItemInfusedEnderPearl
 
@@ -59,6 +59,8 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
         machine2.addTile(classOf[TileBatteryBox], 5)
         machine2.addTile(classOf[TileChargingBench], 6)
         machine2.addTile(classOf[TileTeleposer], 7)
+        machine2.addTile(classOf[TileFrameMotor], 8)
+        machine2.addTile(classOf[TileFrameActuator], 9)
 
         ExpansionRecipes.initRecipes()
     }
@@ -120,6 +122,8 @@ class ExpansionProxy_client extends ExpansionProxy_server
         TileRenderRegistry.setRenderer(machine2, 5, RenderBatteryBox)
         TileRenderRegistry.setRenderer(machine2, 6, RenderChargingBench)
         TileRenderRegistry.setRenderer(machine2, 7, RenderTeleposer)
+        TileRenderRegistry.setRenderer(machine2, 8, RenderFrameMotor)
+        TileRenderRegistry.setRenderer(machine2, 9, RenderFrameActuator)
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(machine2), RenderBatteryBox)
         MinecraftForgeClient.registerItemRenderer(itemSolar, RenderSolarPanel)
@@ -251,7 +255,7 @@ object ExpansionRecipes
             's':JC, Blocks.cobblestone
         ))
 
-        //Fire starter
+        //Fire Starter
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 4),
             "nfn", "cpc", "crc",
             'n':JC, Blocks.netherrack,
@@ -261,7 +265,7 @@ object ExpansionRecipes
             'r':JC, Items.redstone
         ))
 
-        //Battery box
+        //Battery Box
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 5),
             "bwb","bbb","iei",
             'b':JC, new ItemStack(itemBattery),
@@ -270,7 +274,7 @@ object ExpansionRecipes
             'e':JC, "ingotElectrotine"
         ))
 
-        //Solar panel
+        //Solar Panel
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemSolar),
             "sss","iwi","wew",
             's':JC, PartDefs.ELECTROSILICON.makeStack,
@@ -279,7 +283,7 @@ object ExpansionRecipes
             'w':JC, "slabWood"
         ))
 
-        //Teleposer
+        //Charging Bench
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 6),
             "scs","wbw","iei",
             's':JC, Blocks.stone,
@@ -298,6 +302,25 @@ object ExpansionRecipes
             'w':JC, "plankWood",
             'b':JC, new ItemStack(itemBattery),
             'i':JC, "ingotIron",
+            'e':JC, "ingotElectrotine"
+        ))
+
+        //Frame Motor
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 8),
+            "wiw","cmc","iei",
+            'w':JC, "plankWood",
+            'i':JC, "ingotIron",
+            'c':JC, PartDefs.COPPERCOIL.makeStack,
+            'm':JC, PartDefs.MOTOR.makeStack,
+            'e':JC, "ingotElectrotine"
+        ))
+
+        //Frame Linear Actuator
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 9),
+            "wiw","cic","cec",
+            'w':JC, "plankWood",
+            'i':JC, "ingotIron",
+            'c':JC, PartDefs.COPPERCOIL.makeStack,
             'e':JC, "ingotElectrotine"
         ))
     }

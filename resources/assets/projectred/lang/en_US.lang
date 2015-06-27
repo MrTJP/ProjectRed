@@ -90,6 +90,8 @@ tile.projectred.expansion.machine2|4.name=Fire Starter
 tile.projectred.expansion.machine2|5.name=Battery Box
 tile.projectred.expansion.machine2|6.name=Charging Bench
 tile.projectred.expansion.machine2|7.name=Teleposer
+tile.projectred.expansion.machine2|8.name=Frame Motor
+tile.projectred.expansion.machine2|9.name=Frame Linear Actuator
 item.projectred.expansion.solar_panel.name=Solar Panel
 
 

@@ -49,6 +49,8 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
         burnTimeRemaining = tag.getShort("btime")
         isBurning = burnTimeRemaining > 0
         isCharged = cond.canWork
+        ib = isBurning
+        ic = isCharged
     }
 
     override def writeDesc(out:MCDataOutput)
