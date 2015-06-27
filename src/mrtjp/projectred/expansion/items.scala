@@ -138,7 +138,7 @@ class ItemElectronicScrewdriver extends ItemCore("projectred.expansion.electric_
     }
 }
 
-class ItemElectronicJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable
+class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable
 {
     setMaxStackSize(1)
     setMaxDamage(6400)
