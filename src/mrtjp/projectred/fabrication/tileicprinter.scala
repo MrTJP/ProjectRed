@@ -145,10 +145,9 @@ class TileICPrinter extends TileICMachine with TInventory
                 onFinished()
             }
         }
-        else if (canStart)
-        {
+
+        if (!isWorking && world.getTotalWorldTime%10 == 0 && canStart) //delay check, can be expensive
             doStart()
-        }
     }
 
     def canStart =
@@ -497,20 +496,13 @@ class ContainerPrinter(player:EntityPlayer, tile:TileICPrinter) extends NodeCont
         }
         false
     }
-
-    var slotChangeDelegate = {() =>}
-
-    override def slotClick(id:Int, mouse:Int, shift:Int, player:EntityPlayer) =
-    {
-        val i = super.slotClick(id, mouse, shift, player)
-        slotChangeDelegate()
-        i
-    }
 }
 
 class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 176, 201)
 {
     var list:ItemListNode = null
+
+    var listNeedsRefresh = true
 
     {
         val clip = new ClipNode
@@ -534,15 +526,23 @@ class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 17
             d
         }
         pan.addChild(list)
-        resetList()
-
-        c.slotChangeDelegate = {() => resetList()}
-    }
-
-    def resetList()
-    {
         list.items = tile.getRequiredResources
         list.reset()
+
+        c.slotChangeDelegate = { slot =>
+            if (0 until 21 contains slot)
+                listNeedsRefresh = true
+        }
+    }
+
+    override def update_Impl()
+    {
+        if (listNeedsRefresh && mcInst.theWorld.getTotalWorldTime%5 == 0) //delayed check, it is expensive
+        {
+            list.items = tile.getRequiredResources
+            list.reset()
+            listNeedsRefresh = false
+        }
     }
 
     override def drawBack_Impl(mouse:Point, rframe:Float)

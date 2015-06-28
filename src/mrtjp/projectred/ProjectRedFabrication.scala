@@ -7,9 +7,8 @@ package mrtjp.projectred
 
 import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
-import mrtjp.projectred.fabrication.{ItemICChip, ItemICBlueprint, BlockICMachine, FabricationProxy}
+import mrtjp.projectred.fabrication.{BlockICMachine, FabricationProxy, ItemICBlueprint, ItemICChip}
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 
 @Mod(modid = "ProjRed|Fabrication", useMetadata = true, modLanguage = "scala")
@@ -24,7 +23,7 @@ object ProjectRedFabrication
 
     var tabFabrication = new CreativeTabs("fab")
     {
-        override def getIconItemStack = new ItemStack(Items.nether_star)
+        override def getIconItemStack = new ItemStack(icBlock, 1, 1)
         override def getTabIconItem = getIconItemStack.getItem
     }
 
