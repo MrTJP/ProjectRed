@@ -173,12 +173,12 @@ object RenderInductiveFurnace extends TCubeMapRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        bottom = reg.registerIcon("projectred:machines/indfurnace/bottom")
-        top = reg.registerIcon("projectred:machines/indfurnace/top")
-        side1 = reg.registerIcon("projectred:machines/indfurnace/side1")
-        side2a = reg.registerIcon("projectred:machines/indfurnace/side2a")
-        side2b = reg.registerIcon("projectred:machines/indfurnace/side2b")
-        side2c = reg.registerIcon("projectred:machines/indfurnace/side2c")
+        bottom = reg.registerIcon("projectred:mechanical/indfurnace/bottom")
+        top = reg.registerIcon("projectred:mechanical/indfurnace/top")
+        side1 = reg.registerIcon("projectred:mechanical/indfurnace/side1")
+        side2a = reg.registerIcon("projectred:mechanical/indfurnace/side2a")
+        side2b = reg.registerIcon("projectred:mechanical/indfurnace/side2b")
+        side2c = reg.registerIcon("projectred:mechanical/indfurnace/side2c")
 
         iconT1 = new MultiIconTransformation(bottom, top, side1, side2a, side1, side1)
         iconT2 = new MultiIconTransformation(bottom, top, side1, side2b, side1, side1)

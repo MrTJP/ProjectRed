@@ -78,7 +78,7 @@ object RenderFireStarter extends TInstancedBlockRender with TCubeMapRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        def register(s:String) = reg.registerIcon(s"projectred:machines/fire/$s")
+        def register(s:String) = reg.registerIcon(s"projectred:mechanical/fire/$s")
         bottom = register("bottom")
 
         side1A = register("side1A")

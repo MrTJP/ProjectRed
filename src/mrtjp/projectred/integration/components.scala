@@ -87,7 +87,7 @@ object ComponentStore
 
     def registerIcons(reg:IIconRegister)
     {
-        val baseTex = "projectred:gates/"
+        val baseTex = "projectred:integration/"
         def register(path:String) = reg.registerIcon(baseTex+path)
         baseIcon = register("base")
         wireIcons(0) = register("surface/bordermatte")
@@ -123,9 +123,9 @@ object ComponentStore
         busInputIcon = register("businput")
         segment = register("segment")
         segmentDisp = register("segmentdisp")
-        icChipIcon = register("ic")
-        icChipIconOff = register("ic_objicon")
-        icHousingIcon = register("ichousing")
+        icChipIcon = register("ic_active")
+        icChipIconOff = register("ic_inert")
+        icHousingIcon = register("ic_housing")
         RenderGate.registerIcons(reg)
     }
 
@@ -140,7 +140,7 @@ object ComponentStore
         CCModel.combine(loadCorrectedModels(name).values)
 
     def parseModels(name:String) =
-        CCModel.parseObjModels(new ResourceLocation("projectred:textures/obj/gateparts/"+name+".obj"), 7, InvertX)
+        CCModel.parseObjModels(new ResourceLocation("projectred:textures/obj/integration/"+name+".obj"), 7, InvertX)
 
     def loadModels(name:String) =
     {
@@ -213,7 +213,7 @@ object ComponentStore
     def generateWireModel(name:String) =
     {
         val data = TextureUtils.loadTextureColours(new ResourceLocation(
-            "projectred:textures/blocks/gates/surface/"+name+".png"))
+            "projectred:textures/blocks/integration/surface/"+name+".png"))
 
         if (Configurator.logicwires3D) new WireModel3D(data)
         else new WireModel2D(data)
@@ -253,7 +253,7 @@ abstract class MultiComponentModel(m:Seq[CCModel], pos:Vector3 = Vector3.zero) e
     {
         val xs = Array.ofDim[CCModel](m.length, 48)
         val t = pos.copy.multiply(1/16D).translation
-        for (i <- 0 until m.length) for (j <- 0 until 48)
+        for (i <- m.indices) for (j <- 0 until 48)
             xs(i)(j) = bakeCopy(m.apply(i).copy.apply(t), j)
         xs
     }
@@ -446,7 +446,7 @@ class WireModel2D(data:Array[Colour]) extends ComponentModel with TWireModel
             }
 
             icons(tex) = TextureUtils.getTextureSpecial(reg,
-                "projectred:gates/wire2d_"+iconIndex+"_"+tex).addTexture(new TextureDataHolder(imageData, size))
+                "projectred:integration/wire2d_"+iconIndex+"_"+tex).addTexture(new TextureDataHolder(imageData, size))
         }
     }
 

@@ -62,7 +62,7 @@ trait TItemBattery extends IChargable
 class ItemBatteryEmpty extends ItemCore("projectred.expansion.emptybattery") with TItemBattery
 {
     setCreativeTab(ProjectRedExpansion.tabExpansion)
-    setTextureName("projectred:emptybattery")
+    setTextureName("projectred:mechanical/empty_battery")
 
     override def isEmpty = true
 
@@ -75,7 +75,7 @@ class ItemBattery extends ItemCore("projectred.expansion.battery") with TItemBat
     setMaxDamage(1600)
     setNoRepair()
     setMaxStackSize(1)
-    setTextureName("projectred:battery")
+    setTextureName("projectred:mechanical/battery")
     setCreativeTab(ProjectRedExpansion.tabExpansion)
 
     override def isEmpty = false
@@ -121,7 +121,7 @@ class ItemElectronicScrewdriver extends ItemCore("projectred.expansion.electric_
     setMaxDamage(400)
     setNoRepair()
     setCreativeTab(ProjectRedExpansion.tabExpansion)
-    setTextureName("projectred:electric_screwdriver")
+    setTextureName("projectred:mechanical/electric_screwdriver")
 
     override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World,
                            x:Int, y:Int, z:Int, side:Int,
@@ -144,7 +144,7 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable
     setMaxDamage(6400)
     setNoRepair()
     setCreativeTab(ProjectRedExpansion.tabExpansion)
-    setTextureName("projectred:jetpack")
+    setTextureName("projectred:mechanical/jetpack")
     setUnlocalizedName("projectred.expansion.jetpack")
     GameRegistry.registerItem(this, "projectred.expansion.jetpack")
 
@@ -158,7 +158,7 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable
     }
 
     override def getArmorTexture(stack:ItemStack, entity:Entity, slot:Int, t:String) =
-        "projectred:textures/items/jetpack_1.png"
+        "projectred:textures/items/mechanical/jetpack_1.png"
 
     def propellPlayer(player:EntityPlayer, stack:ItemStack)
     {
@@ -196,7 +196,7 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable
 class ItemInfusedEnderPearl extends ItemCore("projectred.expansion.infused_ender_pearl")
 {
     setMaxStackSize(1)
-    setTextureName("projectred:infused_ender_pearl")
+    setTextureName("projectred:mechanical/infused_ender_pearl")
     setCreativeTab(ProjectRedExpansion.tabExpansion)
 
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], flag:Boolean)

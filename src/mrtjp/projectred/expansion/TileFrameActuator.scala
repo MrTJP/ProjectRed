@@ -60,11 +60,11 @@ object RenderFrameActuator extends TCubeMapRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        bottom = reg.registerIcon("projectred:machines/actuator/bottom")
-        top = reg.registerIcon("projectred:machines/actuator/top")
-        sidea = reg.registerIcon("projectred:machines/actuator/sidea")
-        sideb = reg.registerIcon("projectred:machines/actuator/sideb")
-        sidec = reg.registerIcon("projectred:machines/actuator/sidec")
+        bottom = reg.registerIcon("projectred:mechanical/actuator/bottom")
+        top = reg.registerIcon("projectred:mechanical/actuator/top")
+        sidea = reg.registerIcon("projectred:mechanical/actuator/sidea")
+        sideb = reg.registerIcon("projectred:mechanical/actuator/sideb")
+        sidec = reg.registerIcon("projectred:mechanical/actuator/sidec")
 
         iconT1 = new MultiIconTransformation(bottom, top, sidea, sidea, sidea, sidea)
         iconT2 = new MultiIconTransformation(bottom, top, sideb, sideb, sideb, sideb)

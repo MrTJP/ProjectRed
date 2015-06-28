@@ -83,8 +83,8 @@ object WireDef extends ItemDefinition
         @SideOnly(Side.CLIENT)
         def loadTextures(reg:IIconRegister)
         {
-            for (i <- 0 until textures.length)
-                wireSprites(i) = reg.registerIcon("projectred:wires/"+textures(i))
+            for (i <- textures.indices)
+                wireSprites(i) = reg.registerIcon("projectred:integration/"+textures(i))
         }
 
         def makeFramedStack:ItemStack = makeFramedStack(1)

@@ -57,8 +57,8 @@ class BlockLamp extends InstancedBlock("projectred.illumination.lamp", new Mater
         val offIcons = Vector.newBuilder[IIcon]
         for (i <- 0 until 16)
         {
-            onIcons += reg.registerIcon("projectred:lights/lampon/"+i)
-            offIcons += reg.registerIcon("projectred:lights/lampoff/"+i)
+            onIcons += reg.registerIcon("projectred:lighting/lampon/"+i)
+            offIcons += reg.registerIcon("projectred:lighting/lampoff/"+i)
         }
         BlockLamp.on = onIcons.result()
         BlockLamp.off = offIcons.result()

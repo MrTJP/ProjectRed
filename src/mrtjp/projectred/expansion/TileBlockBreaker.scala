@@ -78,11 +78,11 @@ object RenderBlockBreaker extends TInstancedBlockRender with TCubeMapRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        bottom = reg.registerIcon("projectred:machines/breaker/bottom")
-        top1 = reg.registerIcon("projectred:machines/breaker/top1")
-        side1 = reg.registerIcon("projectred:machines/breaker/side1")
-        top2 = reg.registerIcon("projectred:machines/breaker/top2")
-        side2 = reg.registerIcon("projectred:machines/breaker/side2")
+        bottom = reg.registerIcon("projectred:mechanical/breaker/bottom")
+        top1 = reg.registerIcon("projectred:mechanical/breaker/top1")
+        side1 = reg.registerIcon("projectred:mechanical/breaker/side1")
+        top2 = reg.registerIcon("projectred:mechanical/breaker/top2")
+        side2 = reg.registerIcon("projectred:mechanical/breaker/side2")
 
         iconT1 = new MultiIconTransformation(bottom, top1, side1, side1, side1, side1)
         iconT2 = new MultiIconTransformation(bottom, top2, side2, side2, side2, side2)

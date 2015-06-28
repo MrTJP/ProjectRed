@@ -300,7 +300,7 @@ object RenderICWorkbench extends TInstancedBlockRender with TCubeMapRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        def register(s:String) = reg.registerIcon("projectred:circuits/icprojectbench/"+s)
+        def register(s:String) = reg.registerIcon("projectred:fabrication/icworkbench/"+s)
 
         bottom = register("bottom")
         top = register("top")

@@ -135,7 +135,7 @@ object PrefboardRenderer
 
         def bind(s:String)
         {
-            val r = new ResourceLocation("projectred", "textures/blocks/circuits/"+s+".png")
+            val r = new ResourceLocation("projectred", "textures/blocks/fabrication/"+s+".png")
             Minecraft.getMinecraft.getTextureManager.bindTexture(r)
         }
 
@@ -144,7 +144,7 @@ object PrefboardRenderer
         CCRenderState.setDynamic()
 
         for ((tex, models) <- Seq(("prefboard", getBoardModel(w, h)),
-            ("prefboardedge", getEdgeModel(w, h)), ("prefboardcorner", getCornerModel(w, h))))
+            ("prefboard_edge", getEdgeModel(w, h)), ("prefboard_corner", getCornerModel(w, h))))
         {
             bind(tex)
             CCRenderState.startDrawing()

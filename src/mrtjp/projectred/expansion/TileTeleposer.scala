@@ -87,18 +87,21 @@ class TileTeleposer extends TileMachine with TPoweredMachine
     def getMaxStorage = 16000
     def getDrawSpeed = 100
     def getDrawCeil = 600
-    def getTransportDraw = 10000
+    def getTransportDraw = 8000
 
     override def update()
     {
         super.update()
 
-        updateHeldItems()
-        updateOrbits()
-        if (world.getTotalWorldTime%20 == 0)
+        if (storage >= getTransportDraw)
         {
-            tryInfusePearlItem()
-            tryTransportEnderProjectile()
+            updateHeldItems()
+            updateOrbits()
+            if (world.getTotalWorldTime%20 == 0)
+            {
+                tryInfusePearlItem()
+                tryTransportEnderProjectile()
+            }
         }
 
         if (cond.charge > getDrawCeil && storage < getMaxStorage)
@@ -110,11 +113,6 @@ class TileTeleposer extends TileMachine with TPoweredMachine
         }
 
         if (world.getTotalWorldTime%10 == 0) updateRendersIfNeeded()
-
-        if (!world.isRemote && world.getTotalWorldTime%20 == 0)
-        {
-            Messenger.createPacket.writeDouble(x).writeDouble(y).writeDouble(z).writeString(s"/#fcharge: ${cond.charge} \nstorage: $storage").sendToChunk()
-        }
     }
 
     override def updateClient()
@@ -469,11 +467,11 @@ object RenderTeleposer extends TCubeMapRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        bottom = reg.registerIcon("projectred:machines/teleposer/bottom")
-        top1 = reg.registerIcon("projectred:machines/teleposer/top1")
-        top2 = reg.registerIcon("projectred:machines/teleposer/top2")
-        side1 = reg.registerIcon("projectred:machines/teleposer/side1")
-        side2 = reg.registerIcon("projectred:machines/teleposer/side2")
+        bottom = reg.registerIcon("projectred:mechanical/teleposer/bottom")
+        top1 = reg.registerIcon("projectred:mechanical/teleposer/top1")
+        top2 = reg.registerIcon("projectred:mechanical/teleposer/top2")
+        side1 = reg.registerIcon("projectred:mechanical/teleposer/side1")
+        side2 = reg.registerIcon("projectred:mechanical/teleposer/side2")
 
         iconT1 = new MultiIconTransformation(bottom, top1, side1, side1, side1, side1)
         iconT2 = new MultiIconTransformation(bottom, top2, side2, side2, side2, side2)

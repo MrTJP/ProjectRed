@@ -296,13 +296,13 @@ object RenderElectrotineGenerator extends TCubeMapRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        bottom = reg.registerIcon("projectred:machines/elecgen/bottom")
-        top = reg.registerIcon("projectred:machines/elecgen/top")
-        side1 = reg.registerIcon("projectred:machines/elecgen/side1")
-        side2a = reg.registerIcon("projectred:machines/elecgen/side2a")
-        side2b = reg.registerIcon("projectred:machines/elecgen/side2b")
-        side2c = reg.registerIcon("projectred:machines/elecgen/side2c")
-        side2d = reg.registerIcon("projectred:machines/elecgen/side2d")
+        bottom = reg.registerIcon("projectred:mechanical/elecgen/bottom")
+        top = reg.registerIcon("projectred:mechanical/elecgen/top")
+        side1 = reg.registerIcon("projectred:mechanical/elecgen/side1")
+        side2a = reg.registerIcon("projectred:mechanical/elecgen/side2a")
+        side2b = reg.registerIcon("projectred:mechanical/elecgen/side2b")
+        side2c = reg.registerIcon("projectred:mechanical/elecgen/side2c")
+        side2d = reg.registerIcon("projectred:mechanical/elecgen/side2d")
 
         iconT1 = new MultiIconTransformation(bottom, top, side1, side2a, side1, side1)
         iconT2 = new MultiIconTransformation(bottom, top, side1, side2b, side1, side1)

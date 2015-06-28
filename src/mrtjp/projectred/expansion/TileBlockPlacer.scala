@@ -319,16 +319,16 @@ object RenderBlockPlacer extends TInstancedBlockRender with TCubeMapRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        def register(s:String) = reg.registerIcon(s"projectred:machines/placer/$s")
+        def register(s:String) = reg.registerIcon(s"projectred:mechanical/placer/$s")
         bottom = register("bottom")
 
-        side1A = register("side1A")
-        side2A = register("side2A")
-        topA = register("topA")
+        side1A = register("side1a")
+        side2A = register("side2a")
+        topA = register("topa")
 
-        side1B = register("side1B")
-        side2B = register("side2B")
-        topB = register("topB")
+        side1B = register("side1b")
+        side2B = register("side2b")
+        topB = register("topb")
 
         iconT1 = new MultiIconTransformation(bottom, topA, side1A, side1A, side2A, side2A)
         iconT2 = new MultiIconTransformation(bottom, topB, side1B, side1B, side2B, side2B)

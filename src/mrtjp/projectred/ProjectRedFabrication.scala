@@ -23,7 +23,7 @@ object ProjectRedFabrication
 
     var tabFabrication = new CreativeTabs("fab")
     {
-        override def getIconItemStack = new ItemStack(icBlock, 1, 1)
+        override def getIconItemStack = new ItemStack(itemICChip)
         override def getTabIconItem = getIconItemStack.getItem
     }
 

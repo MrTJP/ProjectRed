@@ -631,7 +631,7 @@ object RenderICPrinter extends TInstancedBlockRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        def register(t:String) = reg.registerIcon("projectred:circuits/printer/"+t)
+        def register(t:String) = reg.registerIcon("projectred:fabrication/printer/"+t)
 
         headIcon = register("printerhead")
         bottom = register("bottom")
@@ -649,7 +649,7 @@ object RenderICPrinterDynamic extends TileEntitySpecialRenderer
 
     def getMods =
     {
-        val map = CCModel.parseObjModels(new ResourceLocation("projectred:textures/obj/circuits/printer.obj"), 7, null).toMap
+        val map = CCModel.parseObjModels(new ResourceLocation("projectred:textures/obj/fabrication/printer.obj"), 7, null).toMap
         map.values.foreach
         { m =>
             m.verts = m.backfacedCopy.verts

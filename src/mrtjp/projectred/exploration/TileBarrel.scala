@@ -338,8 +338,8 @@ object RenderBarrel extends TileEntitySpecialRenderer with TCubeMapRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        top = reg.registerIcon("projectred:ore/barrel/top")
-        side = reg.registerIcon("projectred:ore/barrel/side")
+        top = reg.registerIcon("projectred:world/barrel/top")
+        side = reg.registerIcon("projectred:world/barrel/side")
         iconT = new MultiIconTransformation(top, top, side, side, side, side)
     }
 

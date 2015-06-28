@@ -327,10 +327,10 @@ object RenderBatteryBox extends TCubeMapRender with IItemRenderer
 
     override def registerIcons(reg:IIconRegister)
     {
-        bottom = reg.registerIcon("projectred:machines/batterybox/bottom")
-        top = reg.registerIcon("projectred:machines/batterybox/top")
+        bottom = reg.registerIcon("projectred:mechanical/batterybox/bottom")
+        top = reg.registerIcon("projectred:mechanical/batterybox/top")
         for (i <- 0 until 9)
-            sides(i) = reg.registerIcon("projectred:machines/batterybox/side"+i)
+            sides(i) = reg.registerIcon("projectred:mechanical/batterybox/side"+i)
     }
 
     override def shouldUseRenderHelper(t:ItemRenderType, item:ItemStack, helper:ItemRendererHelper) = true

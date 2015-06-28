@@ -184,13 +184,13 @@ object RenderFrameMotor extends TCubeMapRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        bottom = reg.registerIcon("projectred:machines/motor/bottom")
-        top = reg.registerIcon("projectred:machines/motor/top")
-        side2a = reg.registerIcon("projectred:machines/motor/side2a")
-        side2b = reg.registerIcon("projectred:machines/motor/side2b")
-        side2c = reg.registerIcon("projectred:machines/motor/side2c")
-        side4 = reg.registerIcon("projectred:machines/motor/side4")
-        side5 = reg.registerIcon("projectred:machines/motor/side5")
+        bottom = reg.registerIcon("projectred:mechanical/motor/bottom")
+        top = reg.registerIcon("projectred:mechanical/motor/top")
+        side2a = reg.registerIcon("projectred:mechanical/motor/side2a")
+        side2b = reg.registerIcon("projectred:mechanical/motor/side2b")
+        side2c = reg.registerIcon("projectred:mechanical/motor/side2c")
+        side4 = reg.registerIcon("projectred:mechanical/motor/side4")
+        side5 = reg.registerIcon("projectred:mechanical/motor/side5")
 
         iconT1 = new MultiIconTransformation(bottom, top, side2a, side2a, side4, side5)
         iconT2 = new MultiIconTransformation(bottom, top, side2b, side2b, side4, side5)

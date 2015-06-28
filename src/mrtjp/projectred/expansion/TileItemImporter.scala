@@ -160,11 +160,11 @@ object RenderItemImporter extends TInstancedBlockRender with TCubeMapRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        bottom = reg.registerIcon("projectred:machines/importer/bottom")
-        top1 = reg.registerIcon("projectred:machines/importer/top1")
-        side1 = reg.registerIcon("projectred:machines/importer/side1")
-        top2 = reg.registerIcon("projectred:machines/importer/top2")
-        side2 = reg.registerIcon("projectred:machines/importer/side2")
+        bottom = reg.registerIcon("projectred:mechanical/importer/bottom")
+        top1 = reg.registerIcon("projectred:mechanical/importer/top1")
+        side1 = reg.registerIcon("projectred:mechanical/importer/side1")
+        top2 = reg.registerIcon("projectred:mechanical/importer/top2")
+        side2 = reg.registerIcon("projectred:mechanical/importer/side2")
 
         iconT1 = new MultiIconTransformation(bottom, top1, side1, side1, side1, side1)
         iconT2 = new MultiIconTransformation(bottom, top2, side2, side2, side2, side2)
