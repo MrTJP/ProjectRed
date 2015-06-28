@@ -290,11 +290,11 @@ object RenderChargingBench extends TCubeMapRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        bottom = reg.registerIcon("projectred:machines/charger/bottom")
-        top1 = reg.registerIcon("projectred:machines/charger/top1")
-        top2 = reg.registerIcon("projectred:machines/charger/top2")
-        side1 = reg.registerIcon("projectred:machines/charger/side1")
-        side2 = reg.registerIcon("projectred:machines/charger/side2")
+        bottom = reg.registerIcon("projectred:mechanical/charger/bottom")
+        top1 = reg.registerIcon("projectred:mechanical/charger/top1")
+        top2 = reg.registerIcon("projectred:mechanical/charger/top2")
+        side1 = reg.registerIcon("projectred:mechanical/charger/side1")
+        side2 = reg.registerIcon("projectred:mechanical/charger/side2")
 
         iconT1 = new MultiIconTransformation(bottom, top1, side1, side1, side1, side1)
         iconT2 = new MultiIconTransformation(bottom, top2, side2, side2, side2, side2)

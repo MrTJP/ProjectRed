@@ -1,8 +1,12 @@
 package mrtjp.projectred.illumination
 
+import codechicken.lib.render.uv.IconTransformation
+import codechicken.lib.render.{ColourMultiplier, BlockRenderer, CCRenderState}
 import codechicken.multipart.minecraft.{PartMetaAccess, ButtonPart}
+import mrtjp.core.color.Colors
 import mrtjp.projectred.core.{RenderHalo, TSwitchPacket}
 import net.minecraft.entity.projectile.EntityArrow
+import net.minecraft.init.Blocks
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.{IIcon, MovingObjectPosition}
@@ -11,7 +15,7 @@ import net.minecraft.nbt.NBTTagCompound
 import mrtjp.projectred.ProjectRedIllumination
 import scala.collection.JavaConversions._
 import codechicken.multipart.{RedstoneInteractions, TileMultipart}
-import codechicken.lib.vec.{BlockCoord, Vector3}
+import codechicken.lib.vec.{Translation, BlockCoord, Vector3}
 import cpw.mods.fml.relauncher.{SideOnly, Side}
 import net.minecraft.client.renderer.RenderBlocks
 
@@ -109,8 +113,10 @@ class LightButtonPart(m:Int) extends ButtonPart(m) with ILight with TSwitchPacke
     {
         if (pass == 0)
         {
-            val r = new RenderBlocks(new PartMetaAccess(this))
-            r.renderBlockUsingTexture(getBlock, x, y, z, ItemPartButton.icons(colorMeta))
+            CCRenderState.setBrightness(world, x, y, z)
+            CCRenderState.setPipeline(new Translation(x, y, z), new IconTransformation(ItemPartButton.icon),
+                new ColourMultiplier(Colors(colorMeta).rgba), CCRenderState.lightMatrix)
+            BlockRenderer.renderCuboid(getBounds, 0)
             true
         }
         else false
@@ -127,7 +133,8 @@ class LightButtonPart(m:Int) extends ButtonPart(m) with ILight with TSwitchPacke
     }
 
     @SideOnly(Side.CLIENT)
-    override def getBrokenIcon(side:Int):IIcon = ItemPartButton.icons(colorMeta)
+    override def getBrokenIcon(side:Int):IIcon =
+        Blocks.stained_hardened_clay.getIcon(0, colorMeta)//provides broken particles of matching color
 
     @SideOnly(Side.CLIENT)
     override def getBreakingIcon(subPart:scala.Any, side:Int) = getBrokenIcon(side)

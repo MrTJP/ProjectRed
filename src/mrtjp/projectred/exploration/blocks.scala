@@ -4,17 +4,16 @@ import java.util
 import java.util.Random
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.vec.{BlockCoord, Cuboid6, Vector3}
+import codechicken.lib.vec.{Cuboid6, Vector3}
 import cpw.mods.fml.common.registry.GameRegistry
-import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block._
 import mrtjp.core.color.Colors
 import mrtjp.core.math.MathLib
-import mrtjp.core.world.{Messenger, WorldLib}
+import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.core.PartDefs
 import net.minecraft.block.material.Material
-import net.minecraft.block.{BlockStoneBrick, Block, BlockWall}
+import net.minecraft.block.{Block, BlockWall}
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.Entity
@@ -100,7 +99,7 @@ object OreDefs extends BlockDefinition
         var icon:IIcon = null
         def registerIcon(reg:IIconRegister)
         {
-            icon = reg.registerIcon("projectred:ore/"+iconName)
+            icon = reg.registerIcon("projectred:world/"+iconName)
         }
 
         def hasDrop = drop != null
@@ -187,7 +186,7 @@ object DecorativeStoneDefs extends BlockDefinition
         var icon:IIcon = null
         def registerIcon(reg:IIconRegister)
         {
-            icon = reg.registerIcon("projectred:ore/"+iconName)
+            icon = reg.registerIcon("projectred:world/"+iconName)
         }
 
         def hasDrop = drop != null

@@ -292,7 +292,7 @@ abstract class LightObject
     def parseModel(name:String) =
     {
         val models = CCModel.parseObjModels(
-            new ResourceLocation("projectred", "textures/obj/lights/"+name+".obj"), 7, InvertX)
+            new ResourceLocation("projectred", "textures/obj/lighting/"+name+".obj"), 7, InvertX)
         for (m <- models.values()) m.apply(new Translation(0.5, 0, 0.5))
         models
     }

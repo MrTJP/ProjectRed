@@ -175,9 +175,9 @@ object RenderSolarPanel extends IItemRenderer
 
     def registerIcons(reg:IIconRegister)
     {
-        side = reg.registerIcon("projectred:machines/solar/side")
-        top = reg.registerIcon("projectred:machines/solar/top")
-        bottom = reg.registerIcon("projectred:machines/solar/bottom")
+        side = reg.registerIcon("projectred:mechanical/solar/side")
+        top = reg.registerIcon("projectred:mechanical/solar/top")
+        bottom = reg.registerIcon("projectred:mechanical/solar/bottom")
         iconT = new MultiIconTransformation(bottom, top, side, side, side, side)
     }
 

@@ -47,7 +47,7 @@ class ItemDrawPlate extends ItemCraftingDamage("projectred.core.drawplate")
 
     override def registerIcons(par1IconRegister:IIconRegister)
     {
-        itemIcon = par1IconRegister.registerIcon("projectred:drawplate")
+        itemIcon = par1IconRegister.registerIcon("projectred:base/draw_plate")
     }
 }
 
@@ -168,7 +168,7 @@ object PartDefs extends ItemDefinition
 
         def registerIcon(reg:IIconRegister)
         {
-            icon = reg.registerIcon("projectred:parts/"+iconName)
+            icon = reg.registerIcon("projectred:base/"+iconName)
         }
 
         override def name = iconName
@@ -181,7 +181,7 @@ class ItemScrewdriver extends ItemCore("projectred.core.screwdriver") with IScre
     setMaxDamage(128)
     setNoRepair()
     setCreativeTab(ProjectRedCore.tabCore)
-    setTextureName("projectred:screwdriver")
+    setTextureName("projectred:base/screwdriver")
 
     override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World,
                            x:Int, y:Int, z:Int, side:Int,
@@ -219,7 +219,7 @@ class ItemWireDebugger extends ItemCore("projectred.core.wiredebugger")
     @SideOnly(Side.CLIENT)
     override def registerIcons(reg:IIconRegister)
     {
-        itemIcon = reg.registerIcon("projectred:debugger")
+        itemIcon = reg.registerIcon("projectred:base/multimeter")
     }
 }
 
@@ -233,7 +233,7 @@ class ItemDataCard extends ItemCore("projectred.core.datacard")
     @SideOnly(Side.CLIENT)
     override def registerIcons(reg:IIconRegister)
     {
-        for (i <- Seq(0, 1)) icons(i) = reg.registerIcon("projectred:datacard"+i)
+        for (i <- Seq(0, 1)) icons(i) = reg.registerIcon("projectred:base/data_card_"+i)
     }
 
     import ItemDataCard._

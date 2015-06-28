@@ -33,7 +33,7 @@ object LightObjFixture extends LightObject
     @SideOnly(Side.CLIENT)
     override def registerIcons(reg:IIconRegister)
     {
-        icon = reg.registerIcon("projectred:lights/fixture")
+        icon = reg.registerIcon("projectred:lighting/fixture")
     }
 
     override def loadModels()
@@ -73,7 +73,7 @@ object LightObjFallout extends LightObject
     @SideOnly(Side.CLIENT)
     override def registerIcons(reg:IIconRegister)
     {
-        icon = reg.registerIcon("projectred:lights/fallout")
+        icon = reg.registerIcon("projectred:lighting/fallout")
     }
 
     override def loadModels()
@@ -113,7 +113,7 @@ object LightObjCage extends LightObject
     @SideOnly(Side.CLIENT)
     override def registerIcons(reg:IIconRegister)
     {
-        icon = reg.registerIcon("projectred:lights/cagelamp")
+        icon = reg.registerIcon("projectred:lighting/cage_lamp")
     }
 
     override def loadModels()
@@ -156,7 +156,7 @@ object LightObjLantern extends LightObject
     @SideOnly(Side.CLIENT)
     override def registerIcons(reg:IIconRegister)
     {
-        icon = reg.registerIcon("projectred:lights/lantern")
+        icon = reg.registerIcon("projectred:lighting/lantern")
     }
 
     override def getInvT(t:ItemRenderType):(Vector3, Double) = t match

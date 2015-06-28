@@ -165,9 +165,8 @@ task integrationJar(type: Jar, dependsOn: reobf) {
         include "**/mrtjp/projectred/integration/**"
         include "**/mrtjp/projectred/transmission/**"
 
-        include "**/assets/projectred/textures/blocks/gates/**"
-        include "**/assets/projectred/textures/blocks/wires/**"
-        include "**/assets/projectred/textures/obj/gateparts/**"
+        include "**/assets/projectred/textures/blocks/integration/**"
+        include "**/assets/projectred/textures/obj/integration/**"
 
         include "integration_mod.info"
         rename("integration_mod.info", 'mcmod.info')
@@ -183,7 +182,7 @@ task fabricationJar(type: Jar, dependsOn: reobf) {
         include "**/ProjectRedFabrication*.class"
         include "**/mrtjp/projectred/fabrication/**"
 
-        include "**/assets/projectred/textures/blocks/circuits/**"
+        include "**/assets/projectred/textures/blocks/fabrication/**"
 
         include "fabrication_mod.info"
         rename("fabrication_mod.info", 'mcmod.info')
@@ -194,14 +193,13 @@ task fabricationJar(type: Jar, dependsOn: reobf) {
     classifier = 'Integration'
 }
 
-
 task lightingJar(type: Jar, dependsOn: reobf) {
     from(project.ext.jarFile) {
         include "**/ProjectRedIllumination*.class"
         include "**/mrtjp/projectred/illumination/**"
 
-        include "**/assets/projectred/textures/blocks/lights/**"
-        include "**/assets/projectred/textures/obj/lights/**"
+        include "**/assets/projectred/textures/blocks/lighting/**"
+        include "**/assets/projectred/textures/obj/lighting/**"
 
         include "lighting_mod.info"
         rename("lighting_mod.info", 'mcmod.info')
@@ -219,9 +217,8 @@ task mechanicalJar(type: Jar, dependsOn: reobf) {
         include "**/ProjectRedTransportation*.class"
         include "**/mrtjp/projectred/transportation/**"
 
-        include "**/assets/projectred/textures/blocks/machines/**"
-        include "**/assets/projectred/textures/blocks/pipes/**"
-        include "**/assets/projectred/textures/obj/machines/**"
+        include "**/assets/projectred/textures/blocks/mechanical/**"
+        include "**/assets/projectred/textures/obj/mechanical/**"
 
         include "mechanical_mod.info"
         rename("mechanical_mod.info", 'mcmod.info')
@@ -240,7 +237,7 @@ task worldJar(type: Jar, dependsOn: reobf) {
         include "**/ProjectRedExploration*.class"
         include "**/mrtjp/projectred/exploration/**"
 
-        include "**/assets/projectred/textures/blocks/ore/**"
+        include "**/assets/projectred/textures/blocks/world/**"
 
         include "world_mod.info"
         rename("world_mod.info", 'mcmod.info')

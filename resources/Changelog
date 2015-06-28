@@ -2,8 +2,12 @@ v4.7.0pre3
 - ADDED: Teleposer
 - ADDED: Frame Motor
 - ADDED: Frame Linear Actuator
+- ADDED: IC Workbench
+- ADDED: IC Printer
+- ADDED: Integrated circuit simulation engine
 - FIX: Copper and tin harvest levels
 - CHANGE: Rebalanced Jetpack
+- CHANGE: Rebalanced Copper, Tin, Silver and Electrotine ores
 
 v4.7.0pre2
 - ADDED: Charging Bench

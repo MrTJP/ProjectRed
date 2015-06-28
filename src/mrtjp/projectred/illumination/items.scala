@@ -84,8 +84,7 @@ class ItemPartButton extends ItemPartButtonCommons("projectred.illumination.ligh
     @SideOnly(Side.CLIENT)
     override def registerIcons(reg:IIconRegister)
     {
-        for (i <- 0 until 16)
-            ItemPartButton.icons(i) = reg.registerIcon("projectred:lights/button/"+i)
+        ItemPartButton.icon = reg.registerIcon("projectred:lighting/button")
     }
 
     override def getNewInst(sMask:Int) = new LightButtonPart(sMask)
@@ -93,7 +92,7 @@ class ItemPartButton extends ItemPartButtonCommons("projectred.illumination.ligh
 
 object ItemPartButton
 {
-    val icons = new Array[IIcon](16)
+    var icon:IIcon = null
 }
 
 class ItemPartFButton extends ItemPartButtonCommons("projectred.illumination.flightbutton")

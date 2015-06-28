@@ -228,7 +228,7 @@ class ExplorationProxy_server extends IProxy
             logic.allowRetroGen = Configurator.gen_Copper_retro
             logic.minY = 0
             logic.maxY = 64
-            logic.attempts = 20
+            logic.attempts = 16
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.ORECOPPER.meta), 1))
             gen.clusterSize = 8
@@ -247,7 +247,7 @@ class ExplorationProxy_server extends IProxy
             logic.allowRetroGen = Configurator.gen_Tin_retro
             logic.minY = 0
             logic.maxY = 48
-            logic.attempts = 10
+            logic.attempts = 8
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.ORETIN.meta), 1))
             gen.clusterSize = 8
@@ -269,7 +269,7 @@ class ExplorationProxy_server extends IProxy
             logic.attempts = 4
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.ORESILVER.meta), 1))
-            gen.clusterSize = 8
+            gen.clusterSize = 4
             gen.material = Set((Blocks.stone, 0))
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)
@@ -287,7 +287,7 @@ class ExplorationProxy_server extends IProxy
             logic.attempts = 4
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.OREELECTROTINE.meta), 1))
-            gen.clusterSize = 4
+            gen.clusterSize = 8
             gen.material = Set((Blocks.stone, 0))
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)

@@ -64,7 +64,7 @@ class ItemBackpack extends ItemCore("projectred.exploration.backpack")
     override def registerIcons(reg:IIconRegister)
     {
         for (i <- 0 until 16)
-            icons(i) = reg.registerIcon("projectred:backpacks/"+i)
+            icons(i) = reg.registerIcon("projectred:world/backpack_"+i)
     }
 
     override def getIconFromDamage(meta:Int) = icons(meta)
@@ -246,7 +246,7 @@ object ToolDefs
 trait TGemTool extends Item
 {
     setUnlocalizedName("projectred.exploration."+toolDef.unlocal)
-    setTextureName("projectred:gemtools/"+toolDef.unlocal)
+    setTextureName("projectred:world/"+toolDef.unlocal)
     setCreativeTab(ProjectRedExploration.tabExploration)
     GameRegistry.registerItem(this, "projectred.exploration."+toolDef.unlocal)
 
@@ -376,7 +376,7 @@ object ArmorDefs
 class ItemGemArmor(adef:ArmorDef, atype:Int) extends ItemToolProxies.Armor(adef.mat, atype)
 {
     setUnlocalizedName("projectred.exploration."+adef.unlocal)
-    setTextureName("projectred:gemarmor/"+adef.unlocal)
+    setTextureName("projectred:world/"+adef.unlocal)
     setCreativeTab(ProjectRedExploration.tabExploration)
     GameRegistry.registerItem(this, "projectred.exploration."+adef.unlocal)
 
@@ -389,7 +389,7 @@ class ItemGemArmor(adef:ArmorDef, atype:Int) extends ItemToolProxies.Armor(adef.
     override def getArmorTexture(stack:ItemStack, entity:Entity, slot:Int, `type`:String) =
     {
         val suffix = if(armorType == 2) 2 else 1
-        "projectred:textures/items/gemarmor/"+adef.tex + "_"+suffix+".png"
+        "projectred:textures/items/world/"+adef.tex + "_"+suffix+".png"
     }
 }
 
@@ -397,13 +397,13 @@ class ItemWoolGin extends ItemCraftingDamage("projectred.exploration.woolgin")
 {
     setMaxDamage(128)
     setCreativeTab(ProjectRedExploration.tabExploration)
-    setTextureName("projectred:woolgin")
+    setTextureName("projectred:world/wool_gin")
 }
 
 class ItemLilySeeds extends ItemCore("projectred.exploration.lilyseed") with TItemSeed
 {
     setHasSubtypes(true)
-    setTextureName("projectred:lilyseed")
+    setTextureName("projectred:world/lily_seed")
     setCreativeTab(ProjectRedExploration.tabExploration)
 
     override def getPlantBlock = (ProjectRedExploration.blockLily, 0)

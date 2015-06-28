@@ -129,7 +129,7 @@ object RenderLily extends TInstancedBlockRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        for (i <- 0 until 8) icons(i) = reg.registerIcon("projectred:ore/lily/lily "+i)
+        for (i <- 0 until 8) icons(i) = reg.registerIcon("projectred:world/lily/lily "+i)
 
         val res = new ResourceLocation(Blocks.wool.getIcon(0, 0).getIconName)
         val noise = TextureUtils.loadTextureColours(new ResourceLocation(res.getResourceDomain, "textures/blocks/"+res.getResourcePath+".png"))

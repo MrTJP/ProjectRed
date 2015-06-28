@@ -4,7 +4,7 @@ import codechicken.lib.render._
 import codechicken.lib.render.uv.IconTransformation
 import codechicken.lib.vec._
 import cpw.mods.fml.common.eventhandler.SubscribeEvent
-import mrtjp.core.color.Colors_old
+import mrtjp.core.color.{Colors, Colors_old}
 import mrtjp.projectred.core.{RenderHalo, Configurator}
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
@@ -104,7 +104,7 @@ trait ButtonRenderCommons extends IItemRenderer
             val color = item.getItemDamage
             if (0 until 16 contains color)
             {
-                val icon = new IconTransformation(ItemPartButton.icons(color))
+                val icon = new IconTransformation(ItemPartButton.icon)
                 val t = new Scale(s) `with` new Translation(x, y, z)
 
                 GL11.glPushMatrix()
@@ -115,7 +115,7 @@ trait ButtonRenderCommons extends IItemRenderer
                 CCRenderState.pullLightmap()
                 CCRenderState.startDrawing()
 
-                CCRenderState.setPipeline(t, icon)
+                CCRenderState.setPipeline(t, icon, new ColourMultiplier(Colors(color).rgba))
                 BlockRenderer.renderCuboid(invRenderBox, 0)
                 drawExtras(t)
 

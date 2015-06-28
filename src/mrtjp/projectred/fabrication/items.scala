@@ -33,7 +33,7 @@ class ItemICBlueprint extends ItemMap //extend ItemMap so minecraft will handle 
     setCreativeTab(ProjectRedFabrication.tabFabrication)
     setUnlocalizedName("projectred.fabrication.icblueprint")
     GameRegistry.registerItem(this, "projectred.fabrication.icblueprint")
-    setTextureName("projectred:icblueprint")
+    setTextureName("projectred:fabrication/ic_blueprint")
 
     //no need for standard map code to run.
     override def onUpdate(stack:ItemStack, world:World, player:Entity, a:Int, b:Boolean){}
@@ -254,14 +254,13 @@ class ItemICChip extends ItemCore("projectred.fabrication.icchip")
 {
     setMaxStackSize(1)
     setCreativeTab(ProjectRedFabrication.tabFabrication)
-    setTextureName("projectred:icblueprint")
 
     var icons = new Array[IIcon](2)
 
     override def registerIcons(reg:IIconRegister)
     {
-        icons(0) = reg.registerIcon("projectred:ic_inert")
-        icons(1) = reg.registerIcon("projectred:ic")
+        icons(0) = reg.registerIcon("projectred:fabrication/ic_inert")
+        icons(1) = reg.registerIcon("projectred:fabrication/ic_active")
     }
 
     override def getIcon(stack:ItemStack, pass:Int) = getIconIndex(stack)

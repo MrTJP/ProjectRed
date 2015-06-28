@@ -300,7 +300,7 @@ object ExpansionRecipes
             'o':JC, Blocks.obsidian,
             'd':JC, Items.diamond,
             'w':JC, "plankWood",
-            'b':JC, new ItemStack(itemBattery),
+            'b':JC, Items.ender_pearl,
             'i':JC, "ingotIron",
             'e':JC, "ingotElectrotine"
         ))

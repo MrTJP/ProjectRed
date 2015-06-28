@@ -54,12 +54,12 @@ object ICComponentStore
 
     def registerIcons(reg:IIconRegister)
     {
-        val baseTex = "projectred:circuits/"
+        val baseTex = "projectred:fabrication/"
         def register(path:String) = reg.registerIcon(baseTex+path)
 
         pref = register("prefboard")
-        prefCorner = register("prefboardcorner")
-        prefEdge = register("prefboardedge")
+        prefCorner = register("prefboard_corner")
+        prefEdge = register("prefboard_edge")
 
         for (i <- 0 until 16) redwireIcons(i) = register("alloywire/conn"+i)
         for (i <- 0 until 16) insulatedwireIcons(i) = register("insulatedwire/conn"+i)
@@ -75,13 +75,13 @@ object ICComponentStore
 
         RenderICGate.registerIcons(reg)
 
-        for (m <- WireModel.wireModels) m.icon = register(m.iconPath)
-        for (m <- BaseComponentModel.baseModels) m.icon = register(m.iconPath+"/base")
+        for (m <- WireModel.wireModels) m.icon = register("surface/"+m.iconPath)
+        for (m <- BaseComponentModel.baseModels) m.icon = register("surface/"+m.iconPath+"/base")
 
-        ioBorder = register("IOSIMP/border")
-        ioSig = register("IOSIMP/signal")
-        tLeverOffIcon = register("TOGLATCH/lever_off")
-        tLeverOnIcon = register("TOGLATCH/lever_on")
+        ioBorder = register("io_freq")
+        ioSig = register("io_sig")
+        tLeverOffIcon = register("small_lever_off")
+        tLeverOnIcon = register("small_lever_on")
         redChipOnIcon = register("redchip_on")
         redChipOffIcon = register("redchip_off")
         yellowChipOnIcon = register("yellowchip_on")

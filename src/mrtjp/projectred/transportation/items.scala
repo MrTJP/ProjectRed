@@ -74,8 +74,8 @@ object PipeDefs extends ItemDefinition
 
         def registerIcon(reg:IIconRegister)
         {
-            if (textures.length > 0) for (i <- 0 until textures.length)
-                sprites(i) = reg.registerIcon("projectred:pipes/"+textures(i))
+            if (textures.nonEmpty) for (i <- 0 until textures.length)
+                sprites(i) = reg.registerIcon("projectred:mechanical/pipes/"+textures(i))
         }
     }
 }
@@ -176,12 +176,12 @@ object RoutingChipDefs extends ItemDefinition
     override def getItem = ProjectRedTransportation.itemRoutingChip
 
     val ITEMRESPONDER = new ChipVal("responder", new ChipItemResponder)
-    val DYNAMICITEMRESPONDER = new ChipVal("responder_dyn", new ChipDynamicItemResponder)
+    val DYNAMICITEMRESPONDER = new ChipVal("dyn_responder", new ChipDynamicItemResponder)
     val ITEMOVERFLOWRESPONDER = new ChipVal("overflow", new ChipItemOverflowResponder)
     val ITEMTERMINATOR = new ChipVal("terminator", new ChipItemTerminator)
     val ITEMEXTRACTOR = new ChipVal("extractor", new ChipExtractor)
     val ITEMBROADCASTER = new ChipVal("broadcaster", new ChipBroadcaster)
-    val ITEMSTOCKKEEPER = new ChipVal("stockkeeper", new ChipStockKeeper)
+    val ITEMSTOCKKEEPER = new ChipVal("stock_keeper", new ChipStockKeeper)
     val ITEMCRAFTING = new ChipVal("crafting", new ChipCrafting, ChipType.CRAFTING)
 
     def getForStack(stack:ItemStack) =
@@ -198,7 +198,7 @@ object RoutingChipDefs extends ItemDefinition
         var icon:IIcon = null
         def registerIcons(reg:IIconRegister)
         {
-            icon = reg.registerIcon("projectred:chips/"+iconPath)
+            icon = reg.registerIcon("projectred:mechanical/"+iconPath)
         }
 
         def isInterfaceChip = cType == ChipType.INTERFACE
@@ -217,7 +217,7 @@ object RoutingChipDefs extends ItemDefinition
 class ItemRouterUtility extends ItemCore("projectred.transportation.routerutil")
 {
     setMaxStackSize(1)
-    setTextureName("projectred:routerutil")
+    setTextureName("projectred:mechanical/router_util")
     setCreativeTab(ProjectRedTransportation.tabTransportation)
 
     override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer) =
