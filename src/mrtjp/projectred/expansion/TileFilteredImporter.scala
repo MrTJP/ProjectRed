@@ -16,7 +16,7 @@ import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.item.ItemKey
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.resource.ResourceLib
-import mrtjp.core.vec.Point
+import mrtjp.core.vec.{Point, Size}
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.core.libmc.PRResources
 import mrtjp.projectred.transportation.PressurePayload
@@ -115,7 +115,7 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
 
     def createContainer(player:EntityPlayer):Container =
     {
-        val cont = new WidgetContainer
+        val cont = new NodeContainer
         var s = 0
         for ((x, y) <- GuiLib.createSlotGrid(62, 18, 3, 3, 0, 0))
         {
@@ -138,19 +138,19 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
     }
 }
 
-class GuiFilteredImporter(c:Container, tile:TileFilteredImporter) extends WidgetGui(c, 176, 168)
+class GuiFilteredImporter(c:Container, tile:TileFilteredImporter) extends NodeGui(c, 176, 168)
 {
     {
-        val color = new WidgetButtonIcon(133, 37, 13, 13)
+        val color = new IconButtonNode
         {
             override def drawButton(mouseover:Boolean)
             {
                 if (tile.colour == -1)
                 {
                     ResourceLib.guiExtras.bind()
-                    GuiDraw.drawTexturedModalRect(x, y, 40, 2, 11, 11)
+                    GuiDraw.drawTexturedModalRect(position.x, position.y, 40, 2, 11, 11)
                 }
-                else GuiDraw.drawRect(x+2, y+2, 8, 8, Colors(tile.colour).argb)
+                else GuiDraw.drawRect(position.x+2, position.y+2, 8, 8, Colors(tile.colour).argb)
             }
 
             override def onButtonClicked()
@@ -158,7 +158,9 @@ class GuiFilteredImporter(c:Container, tile:TileFilteredImporter) extends Widget
                 tile.clientCycleColourUp()
             }
         }
-        add(color)
+        color.position = Point(133, 37)
+        color.size = Size(13, 13)
+        addChild(color)
     }
 
     override def drawBack_Impl(mouse:Point, frame:Float)

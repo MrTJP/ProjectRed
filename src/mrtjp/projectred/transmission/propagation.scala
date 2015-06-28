@@ -263,9 +263,8 @@ trait IWirePart
 
     /**
      * @param side The side of this part to test for wire connection. For face
-     *             parts, a rotation, or -1 for center. For center parts, a
-     *             forgedirection. The special value Integer.MAX_VALUE should
-     *             always return true and is used for return signals
+     *             parts, a rotation, or -1 for center (up). For center parts, a
+     *             forgedirection.
      * @return true if the specified side of this block is connected to, for
      *         example, a 'wire' where signal should decrease by one.
      */

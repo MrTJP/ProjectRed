@@ -1,7 +1,7 @@
 [
 {
   "modid": "ProjRed|Core",
-  "name": "ProjectRed",
+  "name": "ProjectRed Core",
   "description":"Redstone. The way it was meant to be. Built against Forge @FORGE_VERSION@.
 
   Supporters:
@@ -26,6 +26,7 @@
   "dependants" : [
       "ProjRed|Transmission",
       "ProjRed|Integration",
+      "ProjRed|Fabrication",
       "ProjRed|Illumination",
       "ProjRed|Expansion",
       "ProjRed|Transportation",

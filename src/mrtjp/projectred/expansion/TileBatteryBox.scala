@@ -12,7 +12,7 @@ import codechicken.lib.render.{CCRenderState, TextureUtils}
 import codechicken.lib.vec.{Scale, Translation, Vector3}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors
-import mrtjp.core.gui.{GuiLib, Slot3, TGuiBuilder, WidgetGui}
+import mrtjp.core.gui._
 import mrtjp.core.inventory.TInventory
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.vec.Point
@@ -262,12 +262,12 @@ class ContainerBatteryBox(p:EntityPlayer, tile:TileBatteryBox) extends Container
     }
 }
 
-class GuiBatteryBox(tile:TileBatteryBox, c:ContainerBatteryBox) extends WidgetGui(c, 176, 171)
+class GuiBatteryBox(tile:TileBatteryBox, c:ContainerBatteryBox) extends NodeGui(c, 176, 171)
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
         PRResources.guiBatteryBox.bind()
-        GuiDraw.drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
+        GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 
         if (tile.cond.canWork)
             GuiDraw.drawTexturedModalRect(57, 16, 176, 1, 7, 9)

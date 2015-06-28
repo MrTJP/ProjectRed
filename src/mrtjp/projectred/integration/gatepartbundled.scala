@@ -23,33 +23,25 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.MovingObjectPosition
 
-class BundledGatePart extends RedstoneGatePart with TComplexGatePart with TFaceBundledAquisitions with IBundledEmitter
+trait TBundledGatePart extends GatePart with TFaceBundledAquisitions with IBundledEmitter
 {
-    private var logic:BundledGateLogic = null
+    def getLogicBundled = getLogic[TBundledGateLogic[TBundledGatePart]]
 
-    override def getLogic[T]:T = logic.asInstanceOf[T]
-    def getLogicBundled = getLogic[BundledGateLogic]
-
-    override def assertLogic()
-    {
-        if (logic == null) logic = BundledGateLogic.create(this, subID)
-    }
-
-    override def getType = "pr_bgate"
-
-    override def discoverStraightOverride(absDir:Int) =
+    abstract override def discoverStraightOverride(absDir:Int) =
     {
         val pos = posOfStraight(absDir)
         WorldLib.getTileEntity(world, pos) match
         {
             case t:IBundledTile => t.canConnectBundled(absDir^1)
-            case _ => APIImpl_Transmission.canConnectBundled(world, pos, absDir^1)
+            case _ if APIImpl_Transmission.canConnectBundled(world, pos, absDir^1) => true
+            case _ => super.discoverStraightOverride(absDir)
         }
     }
 
     override def getBundledSignal(r:Int) =
     {
         val ir = toInternal(r)
+        val logic = getLogicBundled
         if ((logic.bundledOutputMask(shape)&1<<ir) != 0) logic.getBundledOutput(this, ir)
         else null
     }
@@ -70,6 +62,37 @@ class BundledGatePart extends RedstoneGatePart with TComplexGatePart with TFaceB
     }
 }
 
+trait TBundledGateLogic[T <: TBundledGatePart] extends GateLogic[T]
+{
+    abstract override def canConnectTo(gate:T, part:IConnectable, r:Int) = part match
+    {
+        case be:IBundledEmitter => canConnectBundled(gate, r)
+        case _ => super.canConnectTo(gate, part, r)
+    }
+
+    def canConnectBundled(gate:T, r:Int):Boolean = canConnectBundled(gate.shape, r)
+    def canConnectBundled(shape:Int, r:Int):Boolean = ((bundledInputMask(shape)|bundledOutputMask(shape))&1<<r) != 0
+
+    def bundledInputMask(shape:Int) = 0
+    def bundledOutputMask(shape:Int) = 0
+
+    def getBundledOutput(gate:T, r:Int):Array[Byte] = null
+}
+
+class BundledGatePart extends RedstoneGatePart with TBundledGatePart with TComplexGatePart
+{
+    private var logic:BundledGateLogic = null
+
+    override def getLogic[T]:T = logic.asInstanceOf[T]
+
+    override def assertLogic()
+    {
+        if (logic == null) logic = BundledGateLogic.create(this, subID)
+    }
+
+    override def getType = "pr_bgate"
+}
+
 object BundledGateLogic
 {
     import mrtjp.projectred.integration.GateDefinition._
@@ -84,28 +107,7 @@ object BundledGateLogic
     }
 }
 
-abstract class BundledGateLogic(val gate:BundledGatePart) extends RedstoneGateLogic[BundledGatePart] with TComlexGateLogic[BundledGatePart]
-{
-    override def canConnecetTo(gate:BundledGatePart, part:IConnectable, r:Int) = part match
-    {
-        case be:IBundledEmitter => canConnectBundled(gate, r)
-        case _ => super.canConnecetTo(gate, part, r)
-    }
-
-    def canConnectBundled(gate:BundledGatePart, r:Int):Boolean = canConnectBundled(gate.shape, r)
-    def canConnectBundled(shape:Int, r:Int):Boolean = ((bundledInputMask(shape)|bundledOutputMask(shape))&1<<r) != 0
-
-    def bundledInputMask(shape:Int) = 0
-    def bundledOutputMask(shape:Int) = 0
-
-    override def getOutput(gate:BundledGatePart, r:Int) = if ((gate.state&0x10<<r) != 0) 15 else 0
-
-    def getBundledOutput(gate:BundledGatePart, r:Int):Array[Byte] = null
-
-    override def onChange(gate:BundledGatePart){}
-
-    override def scheduledTick(gate:BundledGatePart){}
-}
+abstract class BundledGateLogic(val gate:BundledGatePart) extends RedstoneGateLogic[BundledGatePart] with TBundledGateLogic[BundledGatePart] with TComplexGateLogic[BundledGatePart]
 
 class BusTransceiver(gate:BundledGatePart) extends BundledGateLogic(gate)
 {
@@ -662,7 +664,13 @@ class SegmentDisplay(gate:BundledGatePart) extends BundledGateLogic(gate)
             bInH = newBIn>>8
             gate.onInputChange()
             sendClientUpdate()
+            gate.scheduleTick(2)
         }
+    }
+
+    override def scheduledTick(gate:BundledGatePart)
+    {
+        onChange(gate)
     }
 
     override def activate(gate:BundledGatePart, player:EntityPlayer, held:ItemStack, hit:MovingObjectPosition):Boolean =

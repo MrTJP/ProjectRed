@@ -4,7 +4,7 @@ import net.minecraftforge.client.IItemRenderer
 import net.minecraft.item.ItemStack
 import net.minecraftforge.client.IItemRenderer.{ItemRendererHelper, ItemRenderType}
 import codechicken.lib.render.{ColourMultiplier, CCRenderState, TextureUtils}
-import codechicken.lib.vec.{Transformation, Translation, Scale}
+import codechicken.lib.vec.{Vector3, Transformation, Translation, Scale}
 import net.minecraft.util.IIcon
 import codechicken.lib.render.CCRenderState.IVertexOperation
 import codechicken.lib.render.uv.IconTransformation
@@ -25,7 +25,7 @@ trait TWireItemRenderCommon extends IItemRenderer
         CCRenderState.pullLightmap()
         CCRenderState.startDrawing()
 
-        doRender(wdef.thickness, wdef.itemColour<<8|0xFF, new Scale(scale).`with`(new Translation(x, y, z)),
+        doRender(wdef.thickness, wdef.itemColour<<8|0xFF, new Scale(scale).at(Vector3.center).`with`(new Translation(x, y, z)),
             new IconTransformation(wdef.wireSprites(0)))
 
         CCRenderState.draw()
@@ -42,10 +42,10 @@ object WireItemRenderer extends TWireItemRenderCommon
         import ItemRenderType._
         rtype match
         {
-            case ENTITY => renderWireInventory(damage, -0.3f, 0f, -0.3f, 0.6f)
-            case EQUIPPED => renderWireInventory(damage, 0f, .0f, 0f, 1f)
-            case EQUIPPED_FIRST_PERSON => renderWireInventory(damage, 1f, -0.6f, -0.4f, 2f)
-            case INVENTORY => renderWireInventory(damage, 0f, -0.1f, 0f, 1f)
+            case ENTITY => renderWireInventory(damage, -0.5f, 0f, -0.5f, 0.6f)
+            case EQUIPPED => renderWireInventory(damage, 0f, 0.45f, 0f, 1f)
+            case EQUIPPED_FIRST_PERSON => renderWireInventory(damage, 0.0f, 0.5f, 0.0f, 1f)
+            case INVENTORY => renderWireInventory(damage, -0.5f, -0.2f, -0.5f, 1f)
             case _ =>
         }
     }
@@ -66,8 +66,8 @@ object FramedWireItemRenderer extends TWireItemRenderCommon
         {
             case ENTITY => renderWireInventory(damage, -0.5f, 0f, -0.5f, 1f)
             case EQUIPPED => renderWireInventory(damage, 0f, 0f, 0f, 1f)
-            case EQUIPPED_FIRST_PERSON => renderWireInventory(damage, 1f, -0.6f, -0.4f, 2f)
-            case INVENTORY => renderWireInventory(damage, 0f, -0.1f, 0f, 1f)
+            case EQUIPPED_FIRST_PERSON => renderWireInventory(damage, 0f, 0f, 0f, 1f)
+            case INVENTORY => renderWireInventory(damage, -0.5f, -0.5f, -0.5f, 1f)
             case _ =>
         }
     }

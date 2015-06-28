@@ -14,12 +14,13 @@ import mrtjp.core.color.Colors
 import mrtjp.projectred.core.TFaceOrient.flipMaskZ
 import mrtjp.projectred.integration.ComponentStore._
 import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.item.ItemStack
 
 object RenderGate
 {
-    var renderers = initRenderers()
+    var renderers = buildRenders()
 
-    def initRenderers() = Seq(
+    def buildRenders() = Seq[GateRenderer[_]](
         new RenderOR,
         new RenderNOR,
         new RenderNOT,
@@ -53,7 +54,8 @@ object RenderGate
         new RenderBusInputPanel,
         new RenderStackingLatch,
         new RenderSegmentDisplay,
-        new RenderDecodingRand
+        new RenderDecodingRand,
+        GateRenderer.blank//circuit gate renderer will be injected.
     )
 
     def registerIcons(reg:IIconRegister)
@@ -63,14 +65,14 @@ object RenderGate
 
     def renderStatic(gate:GatePart, pos:Vector3)
     {
-        val r = renderers(gate.subID&0xFF).asInstanceOf[GateRenderer[GatePart]]
+        val r = renderers(gate.subID).asInstanceOf[GateRenderer[GatePart]]
         r.prepare(gate)
         r.renderStatic(pos.translation(), gate.orientation&0xFF)
     }
 
     def renderDynamic(gate:GatePart, pos:Vector3, frame:Float)
     {
-        val r = renderers(gate.subID&0xFF).asInstanceOf[GateRenderer[GatePart]]
+        val r = renderers(gate.subID).asInstanceOf[GateRenderer[GatePart]]
         if (r.hasSpecials)
         {
             r.prepareDynamic(gate, frame)
@@ -78,11 +80,11 @@ object RenderGate
         }
     }
 
-    def renderInv(t:Transformation, id:Int)
+    def renderInv(stack:ItemStack, t:Transformation, id:Int)
     {
         val r = renderers(id)
         TextureUtils.bindAtlas(0)
-        r.prepareInv()
+        r.prepareInv(stack)
         CCRenderState.startDrawing()
         r.renderStatic(t, 0)
         CCRenderState.draw()
@@ -91,7 +93,14 @@ object RenderGate
 
     def spawnParticles(gate:GatePart, rand:Random)
     {
-        renderers(gate.subID&0xFF).asInstanceOf[GateRenderer[GatePart]].spawnParticles(gate, rand)
+        renderers(gate.subID).asInstanceOf[GateRenderer[GatePart]].spawnParticles(gate, rand)
+    }
+
+    def hotswap(r:GateRenderer[_], meta:Int)
+    {
+        val ar = renderers.toArray
+        ar(meta) = r
+        renderers = ar.toSeq
     }
 }
 
@@ -124,6 +133,7 @@ abstract class GateRenderer[T <: GatePart]
     def hasSpecials = false
     def renderDynamic(t:Transformation){}
 
+    def prepareInv(stack:ItemStack){prepareInv()}
     def prepareInv(){}
     def prepare(gate:T){}
     def prepareDynamic(gate:T, frame:Float){}
@@ -143,6 +153,13 @@ abstract class GateRenderer[T <: GatePart]
             pos.apply(gate.rotationT).add(gate.x, gate.y, gate.z)
             gate.world.spawnParticle("reddust", pos.x, pos.y, pos.z, 0, 0, 0)
         }
+    }
+}
+
+object GateRenderer
+{
+    val blank = new GateRenderer[GatePart]{
+        override def coreModels = Seq()
     }
 }
 
@@ -182,7 +199,7 @@ class RenderOR extends GateRenderer[ComboGatePart]
 
 class RenderNOR extends GateRenderer[ComboGatePart]
 {
-    var wires = generateWireModels("OR", 4)
+    var wires = generateWireModels("NOR", 4)
     var torch = new RedstoneTorchModel(8, 9, 6)
 
     override val coreModels = wires:+torch:+new BaseComponentModel
@@ -223,23 +240,23 @@ class RenderNOT extends GateRenderer[ComboGatePart]
     {
         wires(0).on = true
         wires(1).on = true
-        wires(2).on = true
-        wires(3).on = false
-        wires(3).disabled = false
+        wires(2).on = false
+        wires(3).on = true
         wires(0).disabled = false
-        wires(2).disabled = false
+        wires(1).disabled = false
+        wires(3).disabled = false
         torch.on = true
     }
 
     override def prepare(gate:ComboGatePart)
     {
         wires(0).on = (gate.state&0x11) != 0
-        wires(3).on = (gate.state&0x22) != 0
-        wires(1).on = (gate.state&4) != 0
-        wires(2).on = (gate.state&0x88) != 0
-        wires(3).disabled = (gate.shape&1) != 0
+        wires(1).on = (gate.state&0x22) != 0
+        wires(2).on = (gate.state&4) != 0
+        wires(3).on = (gate.state&0x88) != 0
         wires(0).disabled = (gate.shape&2) != 0
-        wires(2).disabled = (gate.shape&4) != 0
+        wires(1).disabled = (gate.shape&1) != 0
+        wires(3).disabled = (gate.shape&4) != 0
         torch.on = (gate.state&0xF0) != 0
     }
 }
@@ -840,7 +857,7 @@ class RenderCounter extends GateRenderer[SequentialGatePart]
     {
         val max = gate.getLogic[Counter].max
         val value = gate.getLogic[Counter].value
-        pointer.angle = (value/max.asInstanceOf[Double]*(340-220)+210)*MathHelper.torad
+        pointer.angle = (value/max.toDouble*(340-220)+210)*MathHelper.torad
         if (gate.shape == 1) reflect = true
     }
 

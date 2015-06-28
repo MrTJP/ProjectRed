@@ -178,6 +178,23 @@ task integrationJar(type: Jar, dependsOn: reobf) {
     classifier = 'Integration'
 }
 
+task fabricationJar(type: Jar, dependsOn: reobf) {
+    from(project.ext.jarFile) {
+        include "**/ProjectRedFabrication*.class"
+        include "**/mrtjp/projectred/fabrication/**"
+
+        include "**/assets/projectred/textures/blocks/circuits/**"
+
+        include "fabrication_mod.info"
+        rename("fabrication_mod.info", 'mcmod.info')
+
+        project.ext.baseExcludes.addAll(includes)
+    }
+    version = project.ext.jarVer
+    classifier = 'Integration'
+}
+
+
 task lightingJar(type: Jar, dependsOn: reobf) {
     from(project.ext.jarFile) {
         include "**/ProjectRedIllumination*.class"
@@ -334,6 +351,7 @@ def createDeployMeta()
 
 artifacts {
     archives integrationJar
+    archives fabricationJar
     archives lightingJar
     archives mechanicalJar
     archives worldJar
@@ -408,6 +426,7 @@ if (project.hasProperty('curseapi'))
     curse {
         doLast {
             curseIntegration.execute()
+            curseFabrication.execute()
             curseLighting.execute()
             curseMechanical.execute()
             curseWorld.execute()
@@ -423,6 +442,12 @@ if (project.hasProperty('curseapi'))
     task curseIntegration(dependsOn: 'curse', type: CurseUploadTask) {
         projectId = '229045'
         artifact = integrationJar
+    }
+
+    task curseFabrication(dependsOn: 'curse', type: CurseUploadTask) {
+        projectId = '230111'
+        artifact = fabricationJar
+        relatedProject 'project-red-integration': 'requiredLibrary'
     }
 
     task curseLighting(dependsOn: 'curse', type: CurseUploadTask) {
@@ -448,7 +473,7 @@ if (project.hasProperty('curseapi'))
         artifact = compatJar
     }
 
-    configure([curse, curseIntegration, curseLighting, curseMechanical, curseWorld, curseCompat]) {
+    configure([curse, curseIntegration, curseFabrication, curseLighting, curseMechanical, curseWorld, curseCompat]) {
         apiKey = project.curseapi
         releaseType = 'release'
         relatedProject 'mrtjpcore': 'requiredLibrary'
@@ -456,7 +481,7 @@ if (project.hasProperty('curseapi'))
         addGameVersion project.minecraft.version
     }
 
-    configure([curseIntegration, curseLighting, curseMechanical, curseWorld, curseCompat]) {
+    configure([curseIntegration, curseFabrication, curseLighting, curseMechanical, curseWorld, curseCompat]) {
         relatedProject 'project-red-base': 'requiredLibrary'
     }
 }

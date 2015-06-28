@@ -5,7 +5,7 @@ import codechicken.lib.gui.GuiDraw
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors
-import mrtjp.core.gui.{GuiLib, Slot3, TGuiBuilder, WidgetGui}
+import mrtjp.core.gui._
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.item.ItemKey
 import mrtjp.core.render.TCubeMapRender
@@ -101,12 +101,12 @@ class ContainerFurnace(p:EntityPlayer, tile:TileInductiveFurnace) extends Contai
     }
 }
 
-class GuiInductiveFurnace(tile:TileInductiveFurnace, c:Container) extends WidgetGui(c, 176, 171)
+class GuiInductiveFurnace(tile:TileInductiveFurnace, c:Container) extends NodeGui(c, 176, 171)
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
         PRResources.guiFurnace.bind()
-        GuiDraw.drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
+        GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 
         val s = tile.progressScaled(24)
         drawTexturedModalRect(80, 40, 176, 0, s+1, 16)

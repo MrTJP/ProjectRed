@@ -7,7 +7,7 @@ package mrtjp.projectred.expansion
 
 import java.util.UUID
 
-import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
 import codechicken.lib.raytracer.RayTracer
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
@@ -247,7 +247,7 @@ object TileBlockPlacer
     )
 }
 
-class ContainerBlockPlacer(p:EntityPlayer, tile:TileBlockPlacer) extends WidgetContainer
+class ContainerBlockPlacer(p:EntityPlayer, tile:TileBlockPlacer) extends NodeContainer
 {
     {
         var s = 0
@@ -260,7 +260,7 @@ class ContainerBlockPlacer(p:EntityPlayer, tile:TileBlockPlacer) extends WidgetC
     }
 }
 
-class GuiBlockPlacer(c:ContainerBlockPlacer) extends WidgetGui(c, 176, 168)
+class GuiBlockPlacer(c:ContainerBlockPlacer) extends NodeGui(c, 176, 168)
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {

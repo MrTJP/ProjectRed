@@ -39,6 +39,7 @@ object ComponentStore
     val busConv = loadModel("array/busconv")
     val signalPanel = loadModel("array/signalpanel")
     val busInput = loadModel("array/businput")
+    val icBundled = loadModel("array/icbundled")
 
     val nullCellWireBottom = loadModel("array/nullcellbottomwire").apply(new Translation(0.5, 0, 0.5))
     val nullCellWireTop = loadModel("array/nullcelltopwire").apply(new Translation(0.5, 0, 0.5))
@@ -56,6 +57,10 @@ object ComponentStore
     val sevenSeg = loadCorrectedModels("array/7seg")
     val sixteenSeg = loadCorrectedModels("array/16seg")
     val segbus = loadModel("array/segbus")
+
+    val icChip = loadCorrectedModel("icchip")
+    val icGlass = loadCorrectedModel("icglass")
+    val icHousing = loadCorrectedModel("ichousing")
 
     var baseIcon:IIcon = null
     var wireIcons:Array[IIcon] = new Array[IIcon](3)
@@ -76,6 +81,9 @@ object ComponentStore
     var busInputIcon:IIcon = null
     var segment:IIcon = null
     var segmentDisp:IIcon = null
+    var icChipIcon:IIcon = null
+    var icChipIconOff:IIcon = null
+    var icHousingIcon:IIcon = null
 
     def registerIcons(reg:IIconRegister)
     {
@@ -115,7 +123,9 @@ object ComponentStore
         busInputIcon = register("businput")
         segment = register("segment")
         segmentDisp = register("segmentdisp")
-
+        icChipIcon = register("ic")
+        icChipIconOff = register("ic_objicon")
+        icHousingIcon = register("ichousing")
         RenderGate.registerIcons(reg)
     }
 
@@ -125,6 +135,9 @@ object ComponentStore
         models.values.foreach(_.apply(new Scale(-1, 1, 1)).computeNormals.shrinkUVs(0.0005))
         models
     }
+
+    def loadCorrectedModel(name:String) =
+        CCModel.combine(loadCorrectedModels(name).values)
 
     def parseModels(name:String) =
         CCModel.parseObjModels(new ResourceLocation("projectred:textures/obj/gateparts/"+name+".obj"), 7, InvertX)
@@ -170,14 +183,13 @@ object ComponentStore
     {
         val m = base.copy
         if (orient >= 24) reverseFacing(m)
-
         m.apply(orientT(orient)).computeLighting(LightModel.standardLightModel)
         m
     }
 
     def bakeDynamic(base:CCModel) = Array(base.copy, reverseFacing(base.copy))
 
-    def reverseFacing(m:CCModel) =
+    private def reverseFacing(m:CCModel) =
     {
         for (i <- 0 until m.verts.length by 4)
         {
@@ -884,4 +896,45 @@ class SixteenSegModel(x:Double, z:Double) extends SingleComponentModel(sixteenSe
 class SegmentBusCableModel extends BundledCableModel(segbus, new Vector3(8, 0, 8), 9/32D, 16.5/32D)
 {
     override def getUVT = new IconTransformation(segment)
+}
+
+class SidedICBundledCableModel extends BundledCableModel(icBundled, new Vector3(8, 0, 8), 7/32D, 12/32D)
+{
+    var sidemask = 0
+
+    override def getUVT = new IconTransformation(busConvIcon)
+
+    override def renderModel(t:Transformation, orient:Int)
+    {
+        for (r <- 0 until 4) if ((sidemask&1<<r) != 0)
+            super.renderModel(t, orient&0xFC|((orient&3)+r)%4)
+    }
+}
+
+class SidedWireModel(val wires:Seq[TWireModel]) extends ComponentModel
+{
+    var sidemask = 0
+
+    override def renderModel(t:Transformation, orient:Int)
+    {
+        for (r <- 0 until 4) if ((sidemask&1<<r) != 0)
+            wires(r).renderModel(t, orient)
+    }
+}
+
+class ICChipModel extends SingleComponentModel(icChip, new Vector3(8, 2, 8))
+{
+    override def getUVT = new IconTransformation(icChipIcon)
+}
+
+class ICChipHousingModel extends SingleComponentModel(icHousing, new Vector3(8, 0, 8))
+{
+    val glass = icGlass.copy.apply(new Vector3(8/16D, 0, 8/16D).translation())
+
+    override def getUVT = new IconTransformation(icHousingIcon)
+
+    def renderDynamic(t:Transformation)
+    {
+        glass.render(t, getUVT)
+    }
 }

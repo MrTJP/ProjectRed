@@ -4,7 +4,6 @@ import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import mrtjp.projectred.expansion._
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 
 @Mod(modid = "ProjRed|Expansion", useMetadata = true, modLanguage = "scala")

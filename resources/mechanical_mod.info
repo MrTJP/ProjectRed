@@ -1,7 +1,7 @@
 [
 {
   "modid": "ProjRed|Expansion",
-  "name": "ProjectRed-Expansion",
+  "name": "ProjectRed Expansion",
   "parent":"ProjRed|Core",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",
@@ -17,7 +17,7 @@
 },
 {
   "modid": "ProjRed|Transportation",
-  "name": "ProjectRed-Transportation",
+  "name": "ProjectRed Transportation",
   "parent":"ProjRed|Core",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",

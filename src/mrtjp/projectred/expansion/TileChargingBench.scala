@@ -8,9 +8,9 @@ package mrtjp.projectred.expansion
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
-import cpw.mods.fml.relauncher.{SideOnly, Side}
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors
-import mrtjp.core.gui.{TGuiBuilder, WidgetGui, Slot3, GuiLib}
+import mrtjp.core.gui.{GuiLib, Slot3, TGuiBuilder, _}
 import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.vec.Point
@@ -220,12 +220,12 @@ class ContainerChargingBench(p:EntityPlayer, tile:TileChargingBench) extends Con
     }
 }
 
-class GuiChargingBench(tile:TileChargingBench, c:ContainerChargingBench) extends WidgetGui(c, 176, 183)
+class GuiChargingBench(tile:TileChargingBench, c:ContainerChargingBench) extends NodeGui(c, 176, 183)
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
         PRResources.guiCharger.bind()
-        GuiDraw.drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
+        GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 
         if (tile.cond.canWork)
             GuiDraw.drawTexturedModalRect(14, 17, 176, 1, 7, 9)

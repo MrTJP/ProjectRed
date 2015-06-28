@@ -66,7 +66,7 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with TRSP
     abstract override def read(packet:MCDataInput, key:Int) = key match
     {
         case 10 =>
-            signal = packet.readByte
+            signal = packet.readByte()
             if (Configurator.staticWires) tile.markRender()
         case _ => super.read(packet, key)
     }
@@ -308,7 +308,7 @@ trait TInsulatedCommons extends TRedwireCommons with IInsulatedRedwirePart
     override def preparePlacement(side:Int, meta:Int)
     {
         super.preparePlacement(side, meta)
-        colour = (meta-WireDef.INSULATED_0.meta).asInstanceOf[Byte]
+        colour = (meta-WireDef.INSULATED_0.meta).toByte
     }
 
     override def save(tag:NBTTagCompound)
@@ -332,13 +332,13 @@ trait TInsulatedCommons extends TRedwireCommons with IInsulatedRedwirePart
     override def readDesc(packet:MCDataInput)
     {
         super.readDesc(packet)
-        colour = packet.readByte
+        colour = packet.readByte()
     }
 
     abstract override def resolveSignal(part:Any, dir:Int) = part match
     {
         case b:IBundledCablePart => (b.getBundledSignal.apply(colour)&0xFF)-1
-        case p => super.resolveSignal(p, dir)
+        case _ => super.resolveSignal(part, dir)
     }
 
     abstract override def canConnectPart(part:IConnectable, r:Int) = part match
