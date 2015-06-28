@@ -10,7 +10,7 @@ import codechicken.lib.gui.GuiDraw
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors
-import mrtjp.core.gui.{GuiLib, Slot3, TGuiBuilder, WidgetGui}
+import mrtjp.core.gui._
 import mrtjp.core.inventory.TInventory
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.vec.Point
@@ -207,12 +207,12 @@ class ContainerElectrotineGenerator(p:EntityPlayer, tile:TileElectrotineGenerato
     }
 }
 
-class GuiElectrotineGenerator(tile:TileElectrotineGenerator, c:ContainerElectrotineGenerator) extends WidgetGui(c, 176, 171)
+class GuiElectrotineGenerator(tile:TileElectrotineGenerator, c:ContainerElectrotineGenerator) extends NodeGui(c, 176, 171)
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
         PRResources.guiElectrotineGenerator.bind()
-        GuiDraw.drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
+        GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 
         if (tile.cond.canWork)
             GuiDraw.drawTexturedModalRect(22, 16, 176, 1, 7, 9)

@@ -5,7 +5,7 @@ import java.util.{List => JList}
 import codechicken.lib.vec.{BlockCoord, Vector3}
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.gui._
+import mrtjp.core.gui.{GuiHandler, GuiLib, NodeContainer, Slot3}
 import mrtjp.core.inventory.SimpleInventory
 import mrtjp.core.item.{ItemCore, ItemDefinition, TItemGlassSound}
 import mrtjp.projectred.ProjectRedTransportation
@@ -241,7 +241,7 @@ class ItemRouterUtility extends ItemCore("projectred.transportation.routerutil")
     }
 }
 
-class ChipUpgradeContainer(player:EntityPlayer) extends WidgetContainer
+class ChipUpgradeContainer(player:EntityPlayer) extends NodeContainer
 {
     val upgradeInv = new SimpleInventory(7, "upBus", 1)
     {

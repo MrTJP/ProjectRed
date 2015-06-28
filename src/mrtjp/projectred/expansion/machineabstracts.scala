@@ -1,17 +1,14 @@
 package mrtjp.projectred.expansion
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.gui.GuiDraw
 import codechicken.lib.vec.{Rotation, Vector3}
 import mrtjp.core.block.{InstancedBlock, InstancedBlockTile, TTileOrient}
-import mrtjp.core.gui.{WidgetContainer, WidgetGui}
+import mrtjp.core.gui.NodeContainer
 import mrtjp.core.inventory.TInventory
-import mrtjp.core.render.TCubeMapRender
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api._
 import mrtjp.projectred.core._
 import net.minecraft.block.material.Material
-import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{Container, ICrafting, ISidedInventory}
 import net.minecraft.item.ItemStack
@@ -317,7 +314,7 @@ with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
     override def getLightValue = if (isWorking && isCharged) 13 else 0
 }
 
-class ContainerPoweredMachine(player:EntityPlayer, tile:TPoweredMachine) extends WidgetContainer
+class ContainerPoweredMachine(player:EntityPlayer, tile:TPoweredMachine) extends NodeContainer
 {
     private var ch = -1
     private var fl = -1

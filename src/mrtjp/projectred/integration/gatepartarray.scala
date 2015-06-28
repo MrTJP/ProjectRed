@@ -205,10 +205,10 @@ trait IGateWireRenderConnect
 
 trait TArrayGateLogic[T <: TArrayGatePart] extends RedstoneGateLogic[T]
 {
-    abstract override def canConnecetTo(gate:T, part:IConnectable, r:Int) = part match
+    abstract override def canConnectTo(gate:T, part:IConnectable, r:Int) = part match
     {
         case re:IRedwirePart if canConnectRedwire(gate, r) => true
-        case _ => super.canConnecetTo(gate, part, r)
+        case _ => super.canConnectTo(gate, part, r)
     }
 
     def canConnectRedwire(gate:T, r:Int):Boolean = canConnectRedwire(gate.shape, r)
@@ -275,7 +275,7 @@ object ArrayGateLogic
 
 }
 
-abstract class ArrayGateLogic(val gate:ArrayGatePart) extends RedstoneGateLogic[ArrayGatePart] with TArrayGateLogic[ArrayGatePart] with TComlexGateLogic[ArrayGatePart]
+abstract class ArrayGateLogic(val gate:ArrayGatePart) extends RedstoneGateLogic[ArrayGatePart] with TArrayGateLogic[ArrayGatePart] with TComplexGateLogic[ArrayGatePart]
 
 abstract class ArrayGateLogicCrossing(gate:ArrayGatePart) extends ArrayGateLogic(gate) with IGateWireRenderConnect
 {

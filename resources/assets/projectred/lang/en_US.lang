@@ -55,6 +55,7 @@ item.projectred.core.part.upgrd_lz.name=LZ Upgrade
 item.projectred.core.part.upgrd_rx.name=RX Upgrade
 item.projectred.core.part.upgrd_ry.name=RY Upgrade
 item.projectred.core.part.upgrd_rz.name=RZ Upgrade
+
 item.projectred.core.part.copper_ingot.name=Copper Ingot
 item.projectred.core.part.tin_ingot.name=Tin Ingot
 item.projectred.core.part.silver_ingot.name=Silver Ingot
@@ -63,7 +64,6 @@ item.projectred.core.part.electrotine_dust.name=Electrotine
 item.projectred.core.part.electrotine_iron_comp.name=Electrotine Iron Compound
 item.projectred.core.part.electrotine_silicon_comp.name=Electrotine Silicon Compound
 item.projectred.core.part.electro_silicon.name=Electro Silicon
-
 
 item.projectred.core.drawplate.name=Draw Plate
 item.projectred.core.wiredebugger.name=Multimeter
@@ -75,6 +75,7 @@ item.projectred.core.datacard.name=Data Card
 
 
 itemGroup.expansion=Project Red: Expansion
+
 item.projectred.expansion.emptybattery.name=Battery
 item.projectred.expansion.battery.name=Battery
 item.projectred.expansion.electric_screwdriver.name=Electric Screwdriver
@@ -95,6 +96,8 @@ tile.projectred.expansion.machine2|9.name=Frame Linear Actuator
 item.projectred.expansion.solar_panel.name=Solar Panel
 
 
+
+
 itemGroup.transport=Project Red: Transportation
 
 item.projectred.transportation.routingchip|0.name=Item Responder chip
@@ -105,9 +108,7 @@ item.projectred.transportation.routingchip|4.name=Item Extractor chip
 item.projectred.transportation.routingchip|5.name=Item Broadcaster chip
 item.projectred.transportation.routingchip|6.name=Item Stock Keeper chip
 item.projectred.transportation.routingchip|7.name=Item Crafting chip
-
 item.projectred.transportation.routerutil.name=Router Utility
-
 item.projectred.transportation.pipe|0.name=Item Transport pipe
 item.projectred.transportation.pipe|1.name=Routed Junction pipe
 item.projectred.transportation.pipe|2.name=Routed Interface pipe
@@ -117,6 +118,8 @@ item.projectred.transportation.pipe|5.name=Routed Extension pipe
 item.projectred.transportation.pipe|6.name=Routed Firewall pipe
 item.projectred.transportation.pipe|7.name=Pressure tube
 item.projectred.transportation.pipe|8.name=Pressure Resistance tube
+
+
 
 
 itemGroup.exploration=Project Red: Exploration
@@ -469,6 +472,8 @@ item.projectred.integration.gate|30.name=Bus Input Panel
 item.projectred.integration.gate|31.name=Stacking Latch
 item.projectred.integration.gate|32.name=Segment Display Gate
 item.projectred.integration.gate|33.name=Decoding Randomizer
+item.projectred.integration.gate|34.name=IC Gate
+
 
 
 
@@ -538,3 +543,13 @@ tile.projectred.compatibility.liqredstone.name=Liquid Redstone
 tile.projectred.compatibility.liqcondredmetal.name=Molten Conductive Redmetal
 fluid.redstone.molten=Liquid Redstone
 fluid.redmetal.molten=Molten Conductive Redmetal
+
+
+
+
+itemGroup.fab=Project Red: Fabrication
+
+item.projectred.fabrication.icblueprint.name=IC Blueprint
+item.projectred.fabrication.icchip.name=IC Chip
+tile.projectred.integration.icblock|0.name=IC Workbench
+tile.projectred.integration.icblock|1.name=IC Printer

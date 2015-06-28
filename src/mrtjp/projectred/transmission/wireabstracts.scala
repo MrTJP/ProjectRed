@@ -208,7 +208,7 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
     override def save(tag:NBTTagCompound)
     {
         tag.setInteger("connMap", connMap)
-        tag.setByte("side", side.asInstanceOf[Byte])
+        tag.setByte("side", side.toByte)
     }
 
     override def load(tag:NBTTagCompound)
@@ -226,7 +226,7 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
     override def readDesc(packet:MCDataInput)
     {
         connMap = packet.readInt()
-        orientation = packet.readByte
+        orientation = packet.readByte()
     }
 
     override def read(packet:MCDataInput, key:Int) = key match

@@ -1,6 +1,6 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.core.gui.{Slot3, WidgetContainer}
+import mrtjp.core.gui.{NodeContainer, Slot3}
 import mrtjp.core.inventory.SimpleInventory
 import mrtjp.core.item.ItemKeyStack
 import mrtjp.projectred.core.ItemDataCard
@@ -121,7 +121,7 @@ class RoutedExtensionPipePart extends AbstractNetPipe with TNetworkPipe
 
     def createContainer(player:EntityPlayer) =
     {
-        val container = new WidgetContainer
+        val container = new NodeContainer
         container.addSlotToContainer(new Slot3(cardslot, 0, 134, 20))
         val out = new Slot3(cardslot, 1, 134, 50)
         out.canPlaceDelegate = {_ => false}

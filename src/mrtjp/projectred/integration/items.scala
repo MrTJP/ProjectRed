@@ -26,6 +26,7 @@ class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMul
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedIntegration.tabIntegration2)
+    var infoBuilderFunc = {(stack:ItemStack, l:JList[String]) => }
 
     def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3):TMultiPart =
     {
@@ -44,7 +45,7 @@ class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMul
     override def getSubItems(id:Item, tab:CreativeTabs, list:JList[_])
     {
         val l2 = list.asInstanceOf[JList[ItemStack]]
-        for (g <- GateDefinition.values) l2.add(g.makeStack)
+        for (g <- GateDefinition.values) if (g.implemented && !g.hidden) l2.add(g.makeStack)
     }
 
     override def registerIcons(reg:IIconRegister)
@@ -54,6 +55,11 @@ class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMul
 
     @SideOnly(Side.CLIENT)
     override def getSpriteNumber = 0
+
+    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], flag:Boolean)
+    {
+        infoBuilderFunc(stack, list.asInstanceOf[JList[String]])
+    }
 }
 
 object GateDefinition extends ItemDefinition
@@ -95,8 +101,9 @@ object GateDefinition extends ItemDefinition
     val StackingLatch = new GateDef("pr_agate")
     val SegmentDisplay = new GateDef("pr_bgate")
     val DecRandomizer = new GateDef("pr_sgate")
+    val ICGate = new GateDef("pr_icgate", true)
 
-    class GateDef(val partname:String) extends ItemDef
+    class GateDef(val partname:String, val hidden:Boolean = false) extends ItemDef
     {
         def implemented = partname != null
     }
@@ -120,16 +127,16 @@ object GateItemRenderer extends IItemRenderer
             case INVENTORY => renderGateInv(damage, 0.0F, 0.2F, 0.0F, 1.0F)
             case _ =>
         }
-    }
 
-    def renderGateInv(meta:Int, x:Float, y:Float, z:Float, scale:Float)
-    {
-        if (!GateDefinition(meta).implemented) return
-        TextureUtils.bindAtlas(0)
-        CCRenderState.reset()
-        CCRenderState.setDynamic()
-        CCRenderState.pullLightmap()
+        def renderGateInv(meta:Int, x:Float, y:Float, z:Float, scale:Float)
+        {
+            if (!GateDefinition(meta).implemented) return
+            TextureUtils.bindAtlas(0)
+            CCRenderState.reset()
+            CCRenderState.setDynamic()
+            CCRenderState.pullLightmap()
 
-        RenderGate.renderInv(new Scale(scale).`with`(new Translation(x, y, z)), meta)
+            RenderGate.renderInv(item, new Scale(scale).`with`(new Translation(x, y, z)), meta)
+        }
     }
 }

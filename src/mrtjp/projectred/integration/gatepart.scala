@@ -40,7 +40,7 @@ abstract class GatePart extends TMultiPart with TCuboidPart with TNormalOcclusio
 
     def preparePlacement(player:EntityPlayer, pos:BlockCoord, side:Int, meta:Int)
     {
-        gateSubID = meta.asInstanceOf[Byte]
+        gateSubID = meta.toByte
         setSide(side^1)
         setRotation((Rotation.getSidedRotation(player, side)+2)%4)
     }
@@ -94,7 +94,7 @@ abstract class GatePart extends TMultiPart with TCuboidPart with TNormalOcclusio
     override def discoverOpen(dir:Int) = true
 
     override def canConnectPart(part:IConnectable, r:Int) =
-        getLogicPrimitive.canConnecetTo(this, part, toInternal(r))
+        getLogicPrimitive.canConnectTo(this, part, toInternal(r))
 
     override def canConnectCorner(r:Int) = false
 
@@ -317,7 +317,7 @@ object GatePart
 
 abstract class GateLogic[T <: GatePart]
 {
-    def canConnecetTo(gate:T, part:IConnectable, r:Int):Boolean
+    def canConnectTo(gate:T, part:IConnectable, r:Int):Boolean
 
     def cycleShape(gate:T) = false
 
@@ -340,7 +340,7 @@ abstract class GateLogic[T <: GatePart]
 
 trait TComplexGatePart extends GatePart
 {
-    def getLogicComplex = getLogic[TComlexGateLogic[TComplexGatePart]]
+    def getLogicComplex = getLogic[TComplexGateLogic[TComplexGatePart]]
 
     def assertLogic()
 
@@ -383,7 +383,7 @@ trait TComplexGatePart extends GatePart
     }
 }
 
-trait TComlexGateLogic[T <: TComplexGatePart] extends GateLogic[T]
+trait TComplexGateLogic[T <: TComplexGatePart] extends GateLogic[T]
 {
     def save(tag:NBTTagCompound){}
     def load(tag:NBTTagCompound){}

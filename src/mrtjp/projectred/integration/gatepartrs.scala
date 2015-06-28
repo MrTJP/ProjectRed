@@ -52,7 +52,7 @@ abstract class RedstoneGatePart extends GatePart with TFaceRSAcquisitions with I
     override def readDesc(packet:MCDataInput)
     {
         super.readDesc(packet)
-        gateState = packet.readByte
+        gateState = packet.readByte()
     }
 
     override def read(packet:MCDataInput, key:Int) = key match
@@ -142,7 +142,7 @@ abstract class RedstoneGatePart extends GatePart with TFaceRSAcquisitions with I
 
 abstract class RedstoneGateLogic[T <: RedstoneGatePart] extends GateLogic[T]
 {
-    override def canConnecetTo(gate:T, part:IConnectable, r:Int) = part match
+    override def canConnectTo(gate:T, part:IConnectable, r:Int) = part match
     {
         case re:IRedwireEmitter => canConnect(gate, r)
         case _ => false
