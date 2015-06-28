@@ -18,9 +18,10 @@ import mrtjp.projectred.core.libmc.PRResources
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.entity.player.EntityPlayer
-import org.lwjgl.input.{Mouse, Keyboard}
+import org.lwjgl.input.{Keyboard, Mouse}
 import org.lwjgl.opengl.GL11
 
+import scala.collection.JavaConversions._
 import scala.collection.convert.WrapAsJava
 
 class PrefboardNode(circuit:IntegratedCircuit) extends TNode
@@ -223,6 +224,7 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
 class ICToolsetNode extends TNode
 {
     var opSet = Seq[CircuitOp]()
+    var title = ""
     var buttonSize = Size(16, 16)
     var buttonGap = 1
 
@@ -333,6 +335,19 @@ class ICToolsetNode extends TNode
                 toolButtons(id).clickDelegate()
         }
         else opSelectDelegate(null)
+    }
+
+    override def drawFront_Impl(mouse:Point, rframe:Float)
+    {
+        if (title.nonEmpty && leadingButton.rayTest(parent.convertPointTo(mouse, this)))
+        {
+            import net.minecraft.util.EnumChatFormatting._
+
+            translateToScreen()
+            val Point(mx, my) = parent.convertPointToScreen(mouse)
+            GuiDraw.drawMultilineTip(mx+12, my-32, Seq(AQUA.toString+ITALIC.toString+title))
+            translateFromScreen()
+        }
     }
 }
 
@@ -550,14 +565,15 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
 
         {
             import CircuitOpDefs._
-            def addToolsetRange(from:OpDef, to:OpDef)
+            def addToolsetRange(name:String, from:OpDef, to:OpDef)
             {
-                addToolset((from.getID to to.getID).map(CircuitOpDefs(_)))
+                addToolset(name, (from.getID to to.getID).map(CircuitOpDefs(_)))
             }
-            def addToolset(opset:Seq[OpDef])
+            def addToolset(name:String, opset:Seq[OpDef])
             {
                 val toolset = new ICToolsetNode
                 toolset.position = Point(17, 0)*toolbar.children.size
+                toolset.title = name
                 toolset.opSet = opset.map(_.getOp)
                 toolset.setup()
                 toolset.opSelectDelegate = {op => pref.currentOp = op }
@@ -565,16 +581,16 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
                 toolSets :+= toolset
             }
 
-            addToolset(Seq(Erase))
-            addToolset(Seq(Torch, Lever, Button))
-            addToolset(Seq(AlloyWire))
-            addToolsetRange(WhiteInsulatedWire, BlackInsulatedWire)
-            addToolsetRange(NeutralBundledCable, BlackBundledCable)
-            addToolsetRange(SimpleIO, BundledIO)
-            addToolset(Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate, MultiplexerGate))
-            addToolset(Seq(PulseFormerGate, RepeaterGate, TimerGate, SequencerGate, StateCellGate))
-            addToolset(Seq(SRLatchGate, ToggleLatchGate, TransparentLatchGate))
-            addToolset(Seq(RandomizerGate, CounterGate, SynchronizerGate, DecRandomizerGate))
+            addToolset("", Seq(Erase))
+            addToolset("Debug", Seq(Torch, Lever, Button))
+            addToolset("", Seq(AlloyWire))
+            addToolsetRange("Insulated wires", WhiteInsulatedWire, BlackInsulatedWire)
+            addToolsetRange("Bundled cables", NeutralBundledCable, BlackBundledCable)
+            addToolsetRange("IOs", SimpleIO, BundledIO)
+            addToolset("Primatives", Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate, MultiplexerGate))
+            addToolset("Timing and Clocks", Seq(PulseFormerGate, RepeaterGate, TimerGate, SequencerGate, StateCellGate))
+            addToolset("Latches", Seq(SRLatchGate, ToggleLatchGate, TransparentLatchGate))
+            addToolset("Misc", Seq(RandomizerGate, CounterGate, SynchronizerGate, DecRandomizerGate))
         }
 
         addChild(toolbar)
@@ -660,7 +676,9 @@ object GuiICWorkbench extends TGuiBuilder
     {
         WorldLib.getTileEntity(Minecraft.getMinecraft.theWorld, data.readCoord()) match
         {
-            case t:TileICWorkbench => new GuiICWorkbench(t)
+            case t:TileICWorkbench =>
+                t.circuit.readDesc(data)
+                new GuiICWorkbench(t)
             case _ => null
         }
     }

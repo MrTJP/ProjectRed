@@ -241,7 +241,10 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
                 val nc = new NodeContainer
                 nc.startWatchDelegate = playerStartWatch
                 nc.stopWatchDelegate = playerStopWatch
-                GuiICWorkbench.open(player, nc, _.writeCoord(x, y, z))
+                GuiICWorkbench.open(player, nc, {p =>
+                    p.writeCoord(x, y, z)
+                    circuit.writeDesc(p)
+                })
             }
         }
         true
@@ -262,11 +265,7 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
 
     def playerStartWatch(p:EntityPlayer)
     {
-        if (!watchers.contains(p))
-        {
-            watchers += p
-            sendICDesc(p)
-        }
+        watchers += p
     }
 
     def playerStopWatch(p:EntityPlayer)

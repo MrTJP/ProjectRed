@@ -10,7 +10,7 @@ import codechicken.lib.vec.Transformation
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors
 import mrtjp.projectred.fabrication.IWireICPart._
-import mrtjp.projectred.transmission.BundledCommons
+import mrtjp.projectred.transmission.BundledCommons._
 import net.minecraft.nbt.NBTTagCompound
 
 trait IBundledCableICPart extends IWireICPart with IICBundledEmitter
@@ -50,24 +50,26 @@ class BundledCableICPart extends WireICPart with TICBundledAcquisitions with IBu
     {
         super.writeDesc(out)
         out.writeByte(colour)
+        out.writeShort(packDigital(signal))
     }
 
     override def readDesc(in:MCDataInput)
     {
         super.readDesc(in)
         colour = in.readByte()
+        signal = unpackDigital(signal, in.readShort())
     }
 
     override def read(in:MCDataInput, key:Int) = key match
     {
-        case 10 => BundledCommons.unpackDigital(signal, in.readUShort())
+        case 10 => signal = unpackDigital(signal, in.readUShort())
         case _ => super.read(in, key)
     }
 
     override def onSignalUpdate()
     {
         super.onSignalUpdate()
-        writeStreamOf(10).writeShort(BundledCommons.packDigital(signal))
+        writeStreamOf(10).writeShort(packDigital(signal))
     }
 
     override def getPartType = CircuitPartDefs.BundledCable
@@ -135,7 +137,7 @@ class BundledCableICPart extends WireICPart with TICBundledAcquisitions with IBu
                 val s = i.getRedwireSignal(r)-1
                 if (s > (tmpSignal(i.getInsulatedColour)&0xFF))
                     tmpSignal(i.getInsulatedColour) = s.toByte
-            case b:IICBundledEmitter => BundledCommons.raiseSignal(tmpSignal, b.getBundledSignal(r))
+            case b:IICBundledEmitter => raiseSignal(tmpSignal, b.getBundledSignal(r))
             case _ =>
         }
         tmpSignal
@@ -197,7 +199,7 @@ class BundledCableICPart extends WireICPart with TICBundledAcquisitions with IBu
         val data = Seq.newBuilder[String]
 
         import net.minecraft.util.EnumChatFormatting._
-        val sig = BundledCommons.packDigital(signal)
+        val sig = packDigital(signal)
         if (detailLevel >= 3) data += GRAY+"signal: 0x"+Integer.toHexString(sig)
         else if (detailLevel >= 2) data += GRAY+"state: "+(if (sig != 0) "active" else "inactive")
 
