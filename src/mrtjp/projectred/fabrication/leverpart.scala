@@ -101,7 +101,7 @@ class LeverICPart extends CircuitPart with TICAcquisitions with IPoweredCircuitP
     }
 }
 
-class CircuitOpLever extends SinglePlacementOp
+class CircuitOpLever extends SimplePlacementOp
 {
     override def doPartRender(t:Transformation)
     {

@@ -12,17 +12,20 @@ import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.world.WorldLib
 import mrtjp.mcframes.api.{IFrame, MCFramesAPI}
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.relocation.api.{BlockPos, RelocationAPI}
+import mrtjp.relocation.api.{IMovementDescriptor, IMovementCallback, BlockPos, RelocationAPI}
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
 import net.minecraft.world.{IBlockAccess, World}
 
-trait TMotorTile extends TileMachine with TPoweredMachine with IFrame with IRedstoneConnector
+trait TMotorTile extends TileMachine with TPoweredMachine with IFrame with IRedstoneConnector with IMovementCallback
 {
     var isCharged = false
     var isPowered = false
+    var isMoving = false
+
+    private var moveDesc:IMovementDescriptor = null
 
     abstract override def save(tag:NBTTagCompound)
     {
@@ -37,35 +40,46 @@ trait TMotorTile extends TileMachine with TPoweredMachine with IFrame with IReds
         isCharged = tag.getBoolean("ch")
         isPowered = tag.getBoolean("pow")
         oldC = isCharged
-        oldP = isPowered
     }
 
     abstract override def writeDesc(out:MCDataOutput)
     {
         super.writeDesc(out)
         out.writeBoolean(isCharged)
-        out.writeBoolean(isPowered)
     }
 
     abstract override def readDesc(in:MCDataInput)
     {
         super.readDesc(in)
         isCharged = in.readBoolean()
-        isPowered = in.readBoolean()
     }
 
     abstract override def read(in:MCDataInput, key:Int) =  key match
     {
         case 2 =>
             isCharged = in.readBoolean()
-            isPowered = in.readBoolean()
+            isMoving = in.readBoolean()
             markRender()
         case _ => super.read(in, key)
     }
 
     def sendStateUpdate()
     {
-        writeStream(2).writeBoolean(isCharged).writeBoolean(isPowered).sendToChunk()
+        writeStream(2).writeBoolean(isCharged).writeBoolean(isMoving).sendToChunk()
+    }
+
+    override def setDescriptor(desc:IMovementDescriptor){ moveDesc = desc }
+
+    override def onMovementStarted()
+    {
+        isMoving = true
+        sendStateUpdate()
+    }
+
+    override def onMovementFinished()
+    {
+        isMoving = false
+        sendStateUpdate()
     }
 
     abstract override def onNeighborChange(b:Block)
@@ -91,41 +105,44 @@ trait TMotorTile extends TileMachine with TPoweredMachine with IFrame with IReds
 
         if (isPowered && cond.canWork)
         {
-            val pos = position.offset(side^1)
-            if (!world.isAirBlock(pos.x, pos.y, pos.z))
+            if (!isMoving)
             {
-                if (!RelocationAPI.instance.isMoving(world, pos.x, pos.y, pos.z) &&
-                        !RelocationAPI.instance.isMoving(world, x, y, z))
+                val pos = position.offset(side^1)
+                if (!world.isAirBlock(pos.x, pos.y, pos.z))
                 {
-                    val blocks = MCFramesAPI.instance.getStickResolver
-                            .getStructure(world, pos.x, pos.y, pos.z, new BlockPos(x, y, z))
+                    if (!RelocationAPI.instance.isMoving(world, pos.x, pos.y, pos.z) &&
+                            !RelocationAPI.instance.isMoving(world, x, y, z))
+                    {
+                        val blocks = MCFramesAPI.instance.getStickResolver
+                                .getStructure(world, pos.x, pos.y, pos.z, new BlockPos(x, y, z))
 
-                    drawPower(blocks.size)
-
-                    val r = RelocationAPI.instance.getRelocator
-                    r.push()
-                    r.setWorld(world)
-                    r.setDirection(getMoveDir)
-                    r.addBlocks(blocks)
-                    r.execute()
-                    r.pop()
+                        val r = RelocationAPI.instance.getRelocator
+                        r.push()
+                        r.setWorld(world)
+                        r.setDirection(getMoveDir)
+                        r.setSpeed(1/16D)
+                        r.setCallback(this)
+                        r.addBlocks(blocks)
+                        r.execute()
+                        r.pop()
+                    }
                 }
             }
+
+            if (isMoving) drawPower(moveDesc.getSize)
         }
 
         if (world.getTotalWorldTime%10 == 0) updateRendersIfNeeded()
     }
 
     private var oldC = false
-    private var oldP = false
     def updateRendersIfNeeded()
     {
         isCharged = cond.canWork
-        if (oldC != isCharged || oldP != isPowered)
+        if (oldC != isCharged)
             sendStateUpdate()
 
         oldC = isCharged
-        oldP = isPowered
     }
 
     override def getConnectionMask(side:Int) = 0x1F
@@ -164,7 +181,7 @@ object RenderFrameMotor extends TCubeMapRender
     {
         val te = WorldLib.getTileEntity(w, x, y, z, classOf[TileFrameMotor])
         if (te != null) (te.side, te.rotation,
-                if (te.isCharged && te.isPowered) iconT3
+                if (te.isCharged && te.isMoving) iconT3
                 else if (te.isCharged) iconT2
                 else iconT1)
         else getInvData
