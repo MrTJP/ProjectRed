@@ -148,7 +148,7 @@ trait CircuitOp
     def renderImage(x:Double, y:Double, width:Double, height:Double)
 }
 
-abstract class SinglePlacementOp extends CircuitOp
+abstract class SimplePlacementOp extends CircuitOp
 {
     override def checkOp(circuit:IntegratedCircuit, start:Point, end:Point) =
         circuit.getPart(end.x, end.y) == null

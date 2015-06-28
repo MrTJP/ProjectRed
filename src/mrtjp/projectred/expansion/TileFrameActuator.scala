@@ -43,7 +43,7 @@ object RenderFrameActuator extends TCubeMapRender
     {
         val te = WorldLib.getTileEntity(w, x, y, z, classOf[TileFrameActuator])
         if (te != null) (te.side, te.rotation,
-                if (te.isCharged && te.isPowered) iconT3
+                if (te.isCharged && te.isMoving) iconT3
                 else if (te.isCharged) iconT2
                 else iconT1)
         else getInvData

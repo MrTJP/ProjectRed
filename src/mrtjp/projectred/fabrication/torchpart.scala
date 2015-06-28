@@ -38,7 +38,7 @@ class TorchICPart extends CircuitPart with TICAcquisitions with IPoweredCircuitP
     }
 }
 
-class CircuitOpTorch extends SinglePlacementOp
+class CircuitOpTorch extends SimplePlacementOp
 {
     override def doPartRender(t:Transformation) = RenderICTorch.render(t, true)
 

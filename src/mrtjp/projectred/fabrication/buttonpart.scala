@@ -132,7 +132,7 @@ class ButtonICPart extends CircuitPart with TICAcquisitions with IPoweredCircuit
     }
 }
 
-class CircuitOpButton extends SinglePlacementOp
+class CircuitOpButton extends SimplePlacementOp
 {
     override def doPartRender(t:Transformation)
     {
