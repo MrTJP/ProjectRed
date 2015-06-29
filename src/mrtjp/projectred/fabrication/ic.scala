@@ -28,7 +28,7 @@ trait WorldCircuit
     def getPartStream(x:Int, y:Int):MCDataOutput
 
     def isRemote:Boolean
-    def markDirty()
+    def markSave()
 }
 
 object DummyMCIO extends MCDataInput with MCDataOutput

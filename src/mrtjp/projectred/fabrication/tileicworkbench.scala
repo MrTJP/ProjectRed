@@ -173,6 +173,7 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
     override def getIC = circuit
     override def getWorld = world
     override def isRemote = world.isRemote
+    override def markSave(){markDirty()}
 
     override def createPartStream() = writeStream(3)
     override def createICStream() = writeStream(4)
