@@ -183,6 +183,8 @@ task fabricationJar(type: Jar, dependsOn: reobf) {
         include "**/mrtjp/projectred/fabrication/**"
 
         include "**/assets/projectred/textures/blocks/fabrication/**"
+        include "**/assets/projectred/textures/items/fabrication/**"
+        include "**/assets/projectred/textures/obj/fabrication/**"
 
         include "fabrication_mod.info"
         rename("fabrication_mod.info", 'mcmod.info')
@@ -190,7 +192,7 @@ task fabricationJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    classifier = 'Integration'
+    classifier = 'Fabrication'
 }
 
 task lightingJar(type: Jar, dependsOn: reobf) {
@@ -218,6 +220,7 @@ task mechanicalJar(type: Jar, dependsOn: reobf) {
         include "**/mrtjp/projectred/transportation/**"
 
         include "**/assets/projectred/textures/blocks/mechanical/**"
+        include "**/assets/projectred/textures/items/mechanical/**"
         include "**/assets/projectred/textures/obj/mechanical/**"
 
         include "mechanical_mod.info"
@@ -229,7 +232,7 @@ task mechanicalJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    classifier = 'Mechanical_beta'
+    classifier = 'Mechanical'
 }
 
 task worldJar(type: Jar, dependsOn: reobf) {
@@ -238,6 +241,7 @@ task worldJar(type: Jar, dependsOn: reobf) {
         include "**/mrtjp/projectred/exploration/**"
 
         include "**/assets/projectred/textures/blocks/world/**"
+        include "**/assets/projectred/textures/items/world/**"
 
         include "world_mod.info"
         rename("world_mod.info", 'mcmod.info')

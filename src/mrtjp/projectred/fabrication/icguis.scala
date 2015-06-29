@@ -6,12 +6,10 @@
 package mrtjp.projectred.fabrication
 
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.Translation
 import mrtjp.core.color.Colors
 import mrtjp.core.gui.{GuiLib, MCButtonNode, TNode}
 import mrtjp.core.vec.{Point, Rect, Size}
-import mrtjp.projectred.integration.{ITimerGuiLogic, IntegrationCPH}
 import net.minecraft.client.gui.Gui
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11

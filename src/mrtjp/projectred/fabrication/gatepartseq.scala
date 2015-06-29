@@ -11,7 +11,6 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.core.TFaceOrient._
 import mrtjp.projectred.core.{Configurator, PRLogger}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumChatFormatting
 
 class SequentialGateICPart extends RedstoneGateICPart with TComplexGateICPart
 {
