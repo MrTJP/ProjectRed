@@ -135,7 +135,7 @@ class ICGateGui(override val gate:GateICPart) extends CircuitGui(gate) with TGat
     }
 }
 
-class ICTimerGateGui(override val gate:GateICPart) extends CircuitGui(gate) with TGateGui
+class ICTimerGateGui(override val gate:SequentialGateICPart) extends CircuitGui(gate) with TGateGui
 {
     {
         size = Size(160, 80)
@@ -194,7 +194,7 @@ class ICTimerGateGui(override val gate:GateICPart) extends CircuitGui(gate) with
     }
 }
 
-class ICCounterGateGui(override val gate:GateICPart) extends CircuitGui(gate) with TGateGui
+class ICCounterGateGui(override val gate:SequentialGateICPart) extends CircuitGui(gate) with TGateGui
 {
     var valID = 0
 
