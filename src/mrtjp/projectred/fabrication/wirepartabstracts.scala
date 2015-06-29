@@ -77,5 +77,5 @@ abstract class WireICPart extends CircuitPart with TConnectableICPart with TProp
     override def diminishOnSide(r:Int) = true
 
     override def onSignalUpdate() =
-        world.network.markDirty()
+        world.network.markSave()
 }

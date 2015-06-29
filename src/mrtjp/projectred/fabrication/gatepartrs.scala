@@ -65,7 +65,7 @@ abstract class RedstoneGateICPart extends GateICPart with TICRSAcquisitions with
 
     def onOutputChange(mask:Int)
     {
-        world.network.markDirty()
+        world.network.markSave()
         sendStateUpdate()
         notify(toAbsoluteMask(mask))
     }

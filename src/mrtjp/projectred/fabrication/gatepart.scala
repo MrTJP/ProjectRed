@@ -174,7 +174,7 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
         if (getLogicPrimitive.cycleShape(this))
         {
             updateConns()
-            world.network.markDirty()
+            world.network.markSave()
             sendShapeUpdate()
             notify(0xF)
             onChange()
@@ -185,7 +185,7 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
     {
         setRotation((rotation+1)%4)
         updateConns()
-        world.network.markDirty()
+        world.network.markSave()
         sendOrientUpdate()
         notify(0xF)
         onChange()

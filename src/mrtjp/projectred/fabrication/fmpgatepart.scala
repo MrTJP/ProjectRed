@@ -126,7 +126,7 @@ class CircuitGateLogic(gate:CircuitGatePart) extends RedstoneGateLogic[CircuitGa
 
     override def getIC = ic
     override def getWorld = gate.world
-    override def markDirty(){ if (!getWorld.isRemote) gate.tile.markDirty() }
+    override def markSave(){ if (!getWorld.isRemote) gate.tile.markDirty() }
 
     override def inputMask(shape:Int) = ri
     override def outputMask(shape:Int) = ro

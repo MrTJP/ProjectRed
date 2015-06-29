@@ -356,7 +356,7 @@ trait TTimerGateLogic extends SequentialICGateLogic with ITimerGuiLogic
         if (pointer_start >= 0)
         {
             pointer_start = -1
-            gate.world.network.markDirty()
+            gate.world.network.markSave()
             if (!gate.world.network.isRemote) sendPointerUpdate()
         }
     }
@@ -366,7 +366,7 @@ trait TTimerGateLogic extends SequentialICGateLogic with ITimerGuiLogic
         if (pointer_start < 0)
         {
             pointer_start = getTotalTime
-            gate.world.network.markDirty()
+            gate.world.network.markSave()
             if (!gate.world.network.isRemote) sendPointerUpdate()
         }
     }
