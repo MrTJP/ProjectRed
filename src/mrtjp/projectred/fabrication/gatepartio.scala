@@ -96,12 +96,13 @@ class IOGateICPart extends RedstoneGateICPart with IIOCircuitPart with TComplexG
 object IOICGateLogic
 {
     import mrtjp.projectred.fabrication.{ICGateDefinition => defs}
+
     def create(gate:IOGateICPart, subID:Int) = subID match
     {
         case defs.IOSimple.ordinal => new SimpleIOICGateLogic(gate)
         case defs.IOAnalog.ordinal => new AnalogIOICGateLogic(gate)
         case defs.IOBundled.ordinal => new BundledIOICGateLogic(gate)
-        case _ => null
+        case _ => throw new IllegalArgumentException("Invalid gate subID: "+subID)
     }
 }
 

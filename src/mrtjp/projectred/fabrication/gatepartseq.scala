@@ -374,7 +374,7 @@ trait TTimerGateLogic extends SequentialICGateLogic with ITimerGuiLogic
     def interpPointer(f:Float) = if (pointer_start < 0) 0f else (pointerValue+f)/pointer_max
 
     @SideOnly(Side.CLIENT)
-    override def createGui(gate:SequentialGateICPart) = new ICTimerGateGui(gate)
+    override def createGui(gate:SequentialGateICPart):CircuitGui = new ICTimerGateGui(gate)
 
     @SideOnly(Side.CLIENT)
     override def getRolloverData(gate:SequentialGateICPart, detailLevel:Int) =
@@ -497,7 +497,7 @@ class Sequencer(gate:SequentialGateICPart) extends SequentialICGateLogic(gate) w
     }
 
     @SideOnly(Side.CLIENT)
-    override def createGui(gate:SequentialGateICPart) = new ICTimerGateGui(gate)
+    override def createGui(gate:SequentialGateICPart):CircuitGui = new ICTimerGateGui(gate)
 
     @SideOnly(Side.CLIENT)
     override def getRolloverData(gate:SequentialGateICPart, detailLevel:Int) =
@@ -641,7 +641,7 @@ class Counter(gate:SequentialGateICPart) extends SequentialICGateLogic(gate) wit
     }
 
     @SideOnly(Side.CLIENT)
-    override def createGui(gate:SequentialGateICPart) = new ICCounterGateGui(gate)
+    override def createGui(gate:SequentialGateICPart):CircuitGui = new ICCounterGateGui(gate)
 
     @SideOnly(Side.CLIENT)
     override def getRolloverData(gate:SequentialGateICPart, detailLevel:Int) =
