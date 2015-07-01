@@ -10,7 +10,7 @@ import mrtjp.core.inventory.SimpleInventory
 import mrtjp.core.item.{ItemCore, ItemDefinition, TItemGlassSound}
 import mrtjp.projectred.ProjectRedTransportation
 import mrtjp.projectred.core._
-import mrtjp.projectred.transportation.RoutingChipDefs.ChipType.ChipType
+import mrtjp.projectred.transportation.ChipType.ChipType
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
@@ -107,36 +107,33 @@ class ItemRoutingChip extends ItemCore("projectred.transportation.routingchip")
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
     {
         val list2 = list.asInstanceOf[JList[String]]
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) if (stack.hasTagCompound)
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) if (ItemRoutingChip.hasChipInside(stack))
         {
             import scala.collection.JavaConversions._
             val r = ItemRoutingChip.loadChipFromItemStack(stack)
-            if (r != null)
-            {
-                val s = new ListBuffer[String]
-                r.infoCollection(s)
-                list2.addAll(s)
-            }
+            val s = new ListBuffer[String]
+            r.infoCollection(s)
+            list2.addAll(s)
         }
         else list2.add(EnumChatFormatting.GRAY+"not configured")
     }
 
     override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer):ItemStack =
     {
-        if (!w.isRemote && stack != null && stack.getItem.isInstanceOf[ItemRoutingChip])
+        if (!w.isRemote && ItemRoutingChip.isValidChip(stack))
         {
             val r = ItemRoutingChip.loadChipFromItemStack(stack)
-            if (r != null) r.openGui(player)
+            r.openGui(player)
         }
         super.onItemRightClick(stack, w, player)
     }
 
     override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World, par4:Int, par5:Int, par6:Int, par7:Int, par8:Float, par9:Float, par10:Float):Boolean =
     {
-        if (!w.isRemote && stack != null && stack.getItem.isInstanceOf[ItemRoutingChip])
+        if (!w.isRemote && ItemRoutingChip.isValidChip(stack))
         {
             val r = ItemRoutingChip.loadChipFromItemStack(stack)
-            if (r != null) r.openGui(player)
+            r.openGui(player)
         }
         true
     }
@@ -146,27 +143,38 @@ class ItemRoutingChip extends ItemCore("projectred.transportation.routingchip")
 
 object ItemRoutingChip
 {
+    def assertStackTag(stack:ItemStack)
+    {
+        if (!stack.hasTagCompound) stack.setTagCompound(new NBTTagCompound)
+    }
+
+    def isValidChip(stack:ItemStack) =
+    {
+        stack != null && stack.getItem.isInstanceOf[ItemRoutingChip] &&
+            RoutingChipDefs.getForStack(stack) != null
+    }
+
+    def hasChipInside(stack:ItemStack) =
+    {
+        isValidChip(stack) && stack.hasTagCompound && stack.getTagCompound.hasKey("chipROM")
+    }
+
     def saveChipToItemStack(stack:ItemStack, chipset:RoutingChip)
     {
-        if (stack == null || chipset == null || !stack.getItem.isInstanceOf[ItemRoutingChip]) return
-        val mainTag = new NBTTagCompound
-        val chipTag = new NBTTagCompound
-        chipset.save(chipTag)
-        mainTag.setTag("chipROM", chipTag)
-        stack.setTagCompound(mainTag)
+        assertStackTag(stack)
+        val tag1 = stack.getTagCompound
+        val tag2 = new NBTTagCompound
+        chipset.save(tag2)
+        tag1.setTag("chipROM", tag2)
     }
 
     def loadChipFromItemStack(stack:ItemStack) =
     {
         val e = RoutingChipDefs.getForStack(stack)
-        if (e != null)
-        {
-            val chip = e.createChipset
-            val mainTag = stack.getTagCompound
-            if (mainTag != null && mainTag.hasKey("chipROM")) chip.load(mainTag.getCompoundTag("chipROM"))
-            chip
-        }
-        else null
+        val chip = e.createChipset
+        if (stack.hasTagCompound && stack.getTagCompound.hasKey("chipROM"))
+            chip.load(stack.getTagCompound.getCompoundTag("chipROM"))
+        chip
     }
 }
 
@@ -207,11 +215,12 @@ object RoutingChipDefs extends ItemDefinition
         def createChipset = f
     }
 
-    object ChipType extends Enumeration
-    {
-        type ChipType = Value
-        val INTERFACE, CRAFTING = Value
-    }
+}
+
+object ChipType extends Enumeration
+{
+    type ChipType = Value
+    val INTERFACE, CRAFTING = Value
 }
 
 class ItemRouterUtility extends ItemCore("projectred.transportation.routerutil")
@@ -304,13 +313,15 @@ class ChipUpgradeContainer(player:EntityPlayer) extends NodeContainer
     }
 
     //TODO better way to handle this cached chip (currently only used for gui's rendering to avoid creating one every frame)
-    var chachedChip:RoutingChip = null
+    var cachedChip:RoutingChip = null
     private def refreshChips()
     {
         val stack = upgradeInv.getStackInSlot(6)
-        chachedChip = ItemRoutingChip.loadChipFromItemStack(stack)
+        cachedChip =
+                if (stack != null && ItemRoutingChip.isValidChip(stack))
+                    ItemRoutingChip.loadChipFromItemStack(stack)
+                else null
     }
-
 
     def containsChipStack() = upgradeInv.getStackInSlot(6) != null
 

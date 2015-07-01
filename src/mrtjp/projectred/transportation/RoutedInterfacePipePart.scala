@@ -114,9 +114,12 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         for (i <- 0 until chipSlots.getSizeInventory)
         {
             val stack = chipSlots.getStackInSlot(i)
-            val c = ItemRoutingChip.loadChipFromItemStack(stack)
-            if (c != null) c.setEnvironment(this, this, i)
-            if (chips(i) != c) chips(i) = c
+            if (stack != null && ItemRoutingChip.isValidChip(stack))
+            {
+                val c = ItemRoutingChip.loadChipFromItemStack(stack)
+                c.setEnvironment(this, this, i)
+                if (chips(i) != c) chips(i) = c
+            }
         }
     }
 

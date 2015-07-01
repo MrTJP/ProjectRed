@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.core.item.ItemKey
 import mrtjp.core.inventory.InvWrapper
+import mrtjp.core.item.ItemKey
 
 import scala.collection.mutable.ListBuffer
 

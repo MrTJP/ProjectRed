@@ -1,7 +1,5 @@
-import groovy.xml.MarkupBuilder
+import net.minecraftforge.gradle.curseforge.CurseUploadTask
 import org.apache.tools.ant.filters.ReplaceTokens
-
-import java.text.SimpleDateFormat
 
 buildscript {
     repositories {
@@ -83,12 +81,10 @@ println "Starting build for $archivesBaseName $version for MC $config.mc.version
 
 minecraft {
     version = config.mc.version+"-"+config.forge.version
-    if (file('../run').exists())
-    {
+    if (file('../run').exists()) {
         runDir = "../run"
     }
-    else
-    {
+    else {
         runDir = "run"
     }
 }
@@ -126,11 +122,6 @@ processResources {
     //redo task if any of these properties change
     inputs.property "version", project.version
     inputs.property "mc.version", config.mc.version
-    inputs.property "fmp.version", config.fmp.version
-    inputs.property "ccl.version", config.ccl.version
-    inputs.property "mrtjp.version", config.mrtjp.version
-    inputs.property "fr.version", config.fr.version
-    inputs.property "frfmp.version", config.frfmp.version
 
     // Replace properties in all files
     from(sourceSets.main.resources.srcDirs) {
@@ -311,45 +302,6 @@ task deobfJar(type: Jar) {
     }
 }
 
-def deployMetaFile()
-{
-    new File(new File(project.projectDir, "build/libs/"),
-            "deploymeta-${project.minecraft.version}-${project.version}.xml")
-}
-
-def createDeployMeta()
-{
-    def writer = new StringWriter()
-    def xml = new MarkupBuilder(writer)
-
-    def today = new SimpleDateFormat('dd-MM-yyyy').format(new Date())
-
-    xml.deployMeta() {
-        modversion(version)
-
-        date(today)
-
-        deps {
-            Minecraft(project.minecraft.version)
-            Forge(config.forge.version)
-            MrTJPCore(config.mrtjp.version)
-            FMP(config.fmp.version)
-            CCL(config.ccl.version)
-        }
-
-        isPublic(true)
-
-        isRecommended(false)
-    }
-
-    def file = deployMetaFile()
-
-    def stream = new FileOutputStream(file)
-    stream.write(writer.toString().getBytes())
-    stream.flush()
-    stream.close()
-}
-
 artifacts {
     archives integrationJar
     archives fabricationJar
@@ -361,16 +313,12 @@ artifacts {
 
     archives sourceJar
     archives deobfJar
-
-    archives deployMetaFile()
 }
 
 uploadArchives {
     dependsOn 'reobf'
-    doFirst {createDeployMeta()}
     repositories {
-        if (project.hasProperty("mavenurl"))
-        {
+        if (project.hasProperty("mavenurl")) {
             mavenDeployer {
                 configuration = configurations.deployerJars
 
@@ -421,9 +369,7 @@ uploadArchives {
     }
 }
 
-import net.minecraftforge.gradle.curseforge.CurseUploadTask
-if (project.hasProperty('curseapi'))
-{
+if (project.hasProperty('curseapi')) {
     curse {
         doLast {
             curseIntegration.execute()

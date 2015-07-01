@@ -84,7 +84,7 @@ class TransportationProxy_client extends TransportationProxy_server
         GuiHandler.register(GuiExtensionPipe, guiIDExtensionPipe)
         GuiHandler.register(GuiInterfacePipe, guiIDInterfacePipe)
         GuiHandler.register(GuiFirewallPipe, guiIDFirewallPipe)
-        GuiHandler.register(ChipGuiFactory, guiIDRoutingChips)
+        GuiHandler.register(GuiChipConfig, guiIDRoutingChips)
     }
 }
 

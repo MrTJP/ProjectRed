@@ -1,4 +1,8 @@
 v4.7.0pre3
+- FIX: Server crash when using some IC gates
+- CHANGE: Reworked Routing Chip guis
+
+v4.7.0pre3
 - ADDED: Teleposer
 - ADDED: Frame Motor
 - ADDED: Frame Linear Actuator

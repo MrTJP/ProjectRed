@@ -293,12 +293,11 @@ class RoutedCraftingPipePart extends AbstractNetPipe with TNetworkPipe with IWor
         for (i <- 0 until 8)
         {
             val stack = chipSlots.getStackInSlot(i)
-            ItemRoutingChip.loadChipFromItemStack(stack) match
+            if (stack != null && ItemRoutingChip.isValidChip(stack))
             {
-                case c2:ChipCrafting =>
-                    c2.setEnvironment(this, this, i)
-                    if (chips(i) != c2) chips(i) = c2
-                case _ =>
+                val c2 = ItemRoutingChip.loadChipFromItemStack(stack).asInstanceOf[ChipCrafting]
+                c2.setEnvironment(this, this, i)
+                if (chips(i) != c2) chips(i) = c2
             }
         }
     }
