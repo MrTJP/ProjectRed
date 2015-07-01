@@ -19,8 +19,8 @@ class CircuitGui(val part:IGuiCircuitPart) extends Gui with TNode
     var size = Size.zeroSize
     override def frame = Rect(position, size)
 
-    var lineColor = Colors.LIME.rgb|0xAA000000
-    var linePointerCalc:() => Point = Point.zeroPoint _
+    var lineColor = Colors.LIME.argb(0xAA)
+    var linePointerCalc = {() => Point.zeroPoint}
 
     private def moverFrame = Rect(position+Point(4, 9), Size(4, 6))
     private var mouseDown = false

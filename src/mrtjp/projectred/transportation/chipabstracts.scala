@@ -4,6 +4,7 @@ import mrtjp.core.inventory.{InvWrapper, SimpleInventory}
 import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.inventory.Container
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.Keyboard
@@ -74,15 +75,10 @@ abstract class RoutingChip
     def openGui(player:EntityPlayer)
     {
         if (player.worldObj.isRemote) return
-        ChipGuiFactory.open(player, createContainer(player), _.writeByte(player.inventory.currentItem))
+        GuiChipConfig.open(player, createContainer(player), _.writeByte(player.inventory.currentItem))
     }
 
-    def createContainer(player:EntityPlayer) =
-    {
-        val cont = new ChipContainer(player)
-        cont.addPlayerInv(player, 8, 86)
-        cont
-    }
+    def createContainer(player:EntityPlayer) = new ContainerChipConfig(player, this)
 
     def createUpgradeBus = new UpgradeBus(0, 0)
 
