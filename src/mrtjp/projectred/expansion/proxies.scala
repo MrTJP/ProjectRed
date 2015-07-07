@@ -202,7 +202,7 @@ object ExpansionRecipes
             "bbb", "b b", "iei",
             'b':JC, Blocks.brick_block,
             'i':JC, "ingotIron",
-            'e':JC, "ingotElectrotine"
+            'e':JC, "ingotElectrotineAlloy"
         ))
 
         //Electrotine generator
@@ -211,7 +211,7 @@ object ExpansionRecipes
             'b':JC, Blocks.brick_block,
             'a':JC, new ItemStack(itemBattery),
             'c':JC, Blocks.clay,
-            'e':JC, "ingotElectrotine"
+            'e':JC, "ingotElectrotineAlloy"
         ))
     }
 
@@ -267,11 +267,11 @@ object ExpansionRecipes
 
         //Battery Box
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 5),
-            "bwb","bbb","iei",
+            "bwb","bib","iei",
             'b':JC, new ItemStack(itemBattery),
             'w':JC, "plankWood",
             'i':JC, "ingotIron",
-            'e':JC, "ingotElectrotine"
+            'e':JC, "ingotElectrotineAlloy"
         ))
 
         //Solar Panel
@@ -279,7 +279,7 @@ object ExpansionRecipes
             "sss","iwi","wew",
             's':JC, PartDefs.ELECTROSILICON.makeStack,
             'i':JC, "ingotIron",
-            'e':JC, "ingotElectrotine",
+            'e':JC, "ingotElectrotineAlloy",
             'w':JC, "slabWood"
         ))
 
@@ -291,7 +291,7 @@ object ExpansionRecipes
             'w':JC, "plankWood",
             'b':JC, new ItemStack(itemBattery),
             'i':JC, "ingotIron",
-            'e':JC, "ingotElectrotine"
+            'e':JC, "ingotElectrotineAlloy"
         ))
 
         //Teleposer
@@ -302,7 +302,7 @@ object ExpansionRecipes
             'w':JC, "plankWood",
             'b':JC, Items.ender_pearl,
             'i':JC, "ingotIron",
-            'e':JC, "ingotElectrotine"
+            'e':JC, "ingotElectrotineAlloy"
         ))
 
         //Frame Motor
@@ -312,7 +312,7 @@ object ExpansionRecipes
             'i':JC, "ingotIron",
             'c':JC, PartDefs.COPPERCOIL.makeStack,
             'm':JC, PartDefs.MOTOR.makeStack,
-            'e':JC, "ingotElectrotine"
+            'e':JC, "ingotElectrotineAlloy"
         ))
 
         //Frame Linear Actuator
@@ -321,7 +321,7 @@ object ExpansionRecipes
             'w':JC, "plankWood",
             'i':JC, "ingotIron",
             'c':JC, PartDefs.COPPERCOIL.makeStack,
-            'e':JC, "ingotElectrotine"
+            'e':JC, "ingotElectrotineAlloy"
         ))
     }
 

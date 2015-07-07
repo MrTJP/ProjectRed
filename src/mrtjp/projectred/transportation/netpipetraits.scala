@@ -1,26 +1,20 @@
 package mrtjp.projectred.transportation
 import java.util.UUID
-import java.util.concurrent.PriorityBlockingQueue
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.BlockCoord
-import codechicken.multipart.TileMultipart
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
-import mrtjp.core.util.Pair2
-import mrtjp.core.world.{Messenger, WorldLib}
+import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.transportation.Priorities.NetworkPriority
-import mrtjp.projectred.transportation.TNetworkPipe.TransitComparator
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.{IIcon, MovingObjectPosition}
 import net.minecraft.world.World
 
-import scala.collection.JavaConversions._
 import scala.collection.immutable.BitSet
 
 trait IWorldRouter
@@ -36,8 +30,10 @@ trait IWorldRouter
     def getCoords:BlockCoord
 
     /** Item Syncing **/
-    def itemEnroute(r:NetworkPayload)
-    def itemArrived(r:NetworkPayload)
+    def itemExpected(stack:ItemKeyStack)
+    def itemLost(stack:ItemKeyStack)
+    def itemReceived(stack:ItemKeyStack)
+
     def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse
 
     /** Item Requesting **/
@@ -52,10 +48,6 @@ trait IWorldRouter
 
 trait IWorldRequester extends IWorldRouter
 {
-    def trackedItemLost(s:ItemKeyStack)
-
-    def trackedItemReceived(s:ItemKeyStack)
-
     def getActiveFreeSpace(item:ItemKey):Int
 }
 
@@ -64,9 +56,6 @@ trait IWorldBroadcaster extends IWorldRouter
     def requestPromises(request:RequestBranchNode, existingPromises:Int)
 
     def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester)
-
-    def operate(req:RequestMain){}//TODO
-    def act(action:SupplyAction){}//TODO
 
     def getBroadcasts(col:ItemQueue){}
 
@@ -80,8 +69,6 @@ trait IWorldCrafter extends IWorldRequester with IWorldBroadcaster
     def buildCraftPromises(item:ItemKey):Vector[CraftingPromise]
 
     def registerExcess(promise:DeliveryPromise)
-
-    def actOnExcess(action:SupplyAction){}//TODO
 
     def getCraftedItems:Vector[ItemKeyStack]
 
@@ -145,9 +132,8 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
     var needsWork = true
 
-    var sendQueue = Vector[NetworkPayload]()
-    var transitQueue = new PriorityBlockingQueue[Pair2[NetworkPayload, Int]](10, TransitComparator)
-    var swapQueue = Vector[NetworkPayload]()
+    var sendQueue = Seq[NetworkPayload]()
+    var transitQueue = new ItemQueue
 
     var statsReceived = 0
     var statsSent = 0
@@ -195,162 +181,6 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
             }
     }
 
-    private def getRouterId =
-    {
-        if (routerId == null) routerIDLock synchronized
-            {
-                routerId = if (router != null) router.getID else UUID.randomUUID
-            }
-        routerId
-    }
-
-    private def removeFromTransitQueue(r:NetworkPayload)
-    {
-        transitQueue.removeAll(transitQueue.filter(p => p.get1 == r))
-    }
-
-    private def tickTransitQueue()
-    {
-        transitQueue.removeAll(transitQueue.filterNot(p =>
-        {
-            p.set2(p.get2-1)
-            p.get2 >= 0
-        }))
-    }
-
-    protected def countInTransit(key:ItemKey) =
-    {
-        transitQueue.filter(p => p.get1.payload.key == key).foldLeft(0)((b,a) => b+a.get2)
-    }
-
-    private def dispatchQueuedPayload(r:NetworkPayload)
-    {
-        injectPayload(r, r.input)
-        val dest = RouterServices.getRouter(r.destinationIP)
-        if (dest != null)
-        {
-            val wr = dest.getParent
-            wr.itemEnroute(r)
-            RouteFX.spawnType1(RouteFX.color_sync, 8, new BlockCoord(wr.getContainer.tile), world)
-        }
-        RouteFX.spawnType1(RouteFX.color_send, 8, new BlockCoord(tile), world)
-
-        statsSent += 1
-    }
-
-    def queueSwapSendItem(r:NetworkPayload)
-    {
-        swapQueue :+= r
-    }
-
-    private def pollFromSwapQueue(stack:ItemKeyStack) =
-    {
-        swapQueue.find(_.payload == stack) match
-        {
-            case Some(r) =>
-                val idx = swapQueue.indexOf(r)
-                swapQueue = swapQueue.take(idx) ++ swapQueue.drop(idx+1)
-                r
-            case None => null
-        }
-    }
-
-    final abstract override def update()
-    {
-        if (needsWork)
-        {
-            needsWork = false
-            if (!world.isRemote) getRouter
-            return
-        }
-        if (!world.isRemote) getRouter.update(world.getTotalWorldTime%Configurator.detectionFrequency == searchDelay)
-        super.update()
-
-        // Dispatch queued items
-        while (sendQueue.nonEmpty) dispatchQueuedPayload(sendPoll())
-
-        tickTransitQueue()
-
-        if (world.isRemote) updateClient()
-        else updateServer()
-
-        def sendPoll() =
-        {
-            val first = sendQueue.head
-            sendQueue = sendQueue.tail
-            first
-        }
-    }
-
-    protected def updateServer(){}
-
-    protected def updateClient()
-    {
-        if (world.getTotalWorldTime%(Configurator.detectionFrequency*20) == searchDelay)
-            for (i <- 0 until 6) if ((linkMap&1<<i) != 0)
-                RouteFX.spawnType3(RouteFX.color_blink, 1, i, getCoords, world)
-    }
-
-    override def refreshState:Boolean =
-    {
-        if (world.isRemote) return false
-        var link = 0
-        for (s <- 0 until 6) if (getRouter.LSAConnectionExists(s)) link |= 1<<s
-        if (linkMap != link)
-        {
-            linkMap = link.asInstanceOf[Byte]
-            sendLinkMapUpdate()
-            return true
-        }
-        false
-    }
-
-    override def getContainer = this
-
-    override def endReached(r:NetworkPayload)
-    {
-        if (!world.isRemote) if (!maskConnects(r.output) || !passToNextPipe(r))
-        {
-            val bc = new BlockCoord(tile).offset(r.output)
-            val t = WorldLib.getTileEntity(world, bc)
-            val state = LSPathFinder.getLinkState(t)
-
-            if (state != null && t.isInstanceOf[IInventory])
-            {
-                val dest = state.getLink(t)
-                val inv = t.asInstanceOf[IInventory]
-                if (dest.isInstanceOf[TileMultipart])
-                {
-                    val part = dest.asInstanceOf[TileMultipart].partMap(6)
-                    if (part.isInstanceOf[TNetworkPipe])
-                    {
-                        val pipe = part.asInstanceOf[TNetworkPipe]
-                        val w = InvWrapper.wrap(inv).setSlotsFromSide(r.output^1)
-                        val room = w.getSpaceForItem(r.payload.key)
-                        if (room >= r.payload.stackSize)
-                        {
-                            w.injectItem(r.payload.makeStack, true)
-                            pipe.queueSwapSendItem(r)
-                            return
-                        }
-                        else
-                        {
-                            bounceStack(r)
-                            return
-                        }
-                    }
-                }
-            }
-            val inv = InvWrapper.getInventory(world, bc)
-            if (inv != null)
-            {
-                val w = InvWrapper.wrap(inv).setSlotsFromSide(r.output^1)
-                r.payload.stackSize -= w.injectItem(r.payload.makeStack, true)
-            }
-            if (r.payload.stackSize > 0) bounceStack(r)
-        }
-    }
-
     override def read(packet:MCDataInput, key:Int) = key match
     {
         case 5 => handleLinkMap(packet)
@@ -378,6 +208,89 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
         tile.markRender()
     }
+
+    private def getRouterId =
+    {
+        if (routerId == null) routerIDLock synchronized
+            {
+                routerId = if (router != null) router.getID else UUID.randomUUID
+            }
+        routerId
+    }
+
+    override def getRouter:Router =
+    {
+        if (needsWork) return null
+        if (router == null) routerIDLock synchronized {
+            router = RouterServices.getOrCreateRouter(getRouterId, this)
+        }
+        router
+    }
+
+    protected def countInTransit(key:ItemKey) = transitQueue(key)
+
+    private def dispatchQueuedPayload(r:NetworkPayload)
+    {
+        injectPayload(r, r.input)
+        val dest = RouterServices.getRouter(r.destinationIP)
+        if (dest != null)
+        {
+            val wr = dest.getParent
+            wr.itemExpected(r.payload)
+            RouteFX.spawnType1(RouteFX.color_sync, 8, new BlockCoord(wr.getContainer.tile), world)
+        }
+        RouteFX.spawnType1(RouteFX.color_send, 8, new BlockCoord(tile), world)
+
+        statsSent += 1
+    }
+
+    final abstract override def update()
+    {
+        if (needsWork)
+        {
+            needsWork = false
+            if (!world.isRemote) getRouter
+            return
+        }
+        if (!world.isRemote) getRouter.update(world.getTotalWorldTime%Configurator.detectionFrequency == searchDelay)
+        super.update()
+
+        // Dispatch queued items
+        if (sendQueue.nonEmpty)
+        {
+            val out = sendQueue.head
+            sendQueue = sendQueue.tail
+            dispatchQueuedPayload(out)
+        }
+
+        if (world.isRemote) updateClient()
+        else updateServer()
+    }
+
+    protected def updateServer(){}
+
+    protected def updateClient()
+    {
+        if (world.getTotalWorldTime%(Configurator.detectionFrequency*20) == searchDelay)
+            for (i <- 0 until 6) if ((linkMap&1<<i) != 0)
+                RouteFX.spawnType3(RouteFX.color_blink, 1, i, getCoords, world)
+    }
+
+    override def refreshState:Boolean =
+    {
+        if (world.isRemote) return false
+        var link = 0
+        for (s <- 0 until 6) if (getRouter.LSAConnectionExists(s)) link |= 1<<s
+        if (linkMap != link)
+        {
+            linkMap = link.asInstanceOf[Byte]
+            sendLinkMapUpdate()
+            return true
+        }
+        false
+    }
+
+    override def getContainer = this
 
     override def onRemoved()
     {
@@ -425,9 +338,8 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
     {
         if (needsWork) return
         var color = -1
-        r.output = 6
 
-        def reRoute(r:NetworkPayload)
+        def reRoute()
         {
             r.resetTrip()
             val f = new LogisticPathFinder(getRouter, r.payload.key).setExclusions(r.travelLog).findBestResult
@@ -440,44 +352,45 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
         // Reroute if needed
         r.refreshIP()
-        if (r.destinationIP <= 0 || (r.destinationIP > 0 && r.hasArrived)) reRoute(r)
-        r.refreshIP()
+        if (r.destinationIP <= 0 || r.hasArrived) reRoute()
 
         // Deliver item, or reroute
         if (r.destinationIP > 0 && r.destinationUUID == getRouter.getID)
         {
             r.output = getDirForIncomingItem(r)
-            if (r.output == 6) reRoute(r)
+            r.travelLog += getRouter.getIPAddress
+
+            if (r.output == 6)
+            {
+                reRoute()
+            }
             else
             {
                 color = RouteFX.color_receive
                 r.hasArrived = true
-                itemArrived(r)
+                itemReceived(r.payload)
             }
-            r.travelLog += getRouter.getIPAddress
         }
 
-        // Relay item
-        if (r.output == 6)
+        if (r.destinationUUID != getRouter.getID)
         {
             r.output = getRouter.getDirection(r.destinationIP, r.payload.key, r.netPriority)
             color = RouteFX.color_relay
+            if (r.output == 6)
+            {
+                var m = 0
+                for (i <- 0 until 6) if (getStraight(i).isInstanceOf[TNetworkSubsystem]) m |= 1<<i
+                chooseRandomDestination(r, ~m)
+                r.resetTrip()
+                r.travelLog = BitSet.empty
+                color = RouteFX.color_routeLost
+            }
         }
 
-        // Set to wander, clear log for re-push
-        if (r.output == 6)
-        {
-            var m = 0
-            for (i <- 0 until 6) if (getStraight(i).isInstanceOf[TNetworkSubsystem]) m |= 1<<i
-            chooseRandomDestination(r, ~m)
-            r.resetTrip()
-            r.travelLog = BitSet()
-            color = RouteFX.color_routeLost
-        }
+        adjustSpeed(r)
 
         if (color == RouteFX.color_relay) statsRelayed += 1
         RouteFX.spawnType1(color, 8, new BlockCoord(tile), world)
-        adjustSpeed(r)
     }
 
     override def injectPayload(r:NetworkPayload, in:Int) =
@@ -494,26 +407,19 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         r.speed = r.netPriority.boost
     }
 
-    override def getRouter:Router =
+    override def itemExpected(stack:ItemKeyStack)
     {
-        if (needsWork) return null
-        if (router == null) routerIDLock synchronized
-            {
-                router = RouterServices.getOrCreateRouter(getRouterId, this)
-            }
-        router
+        transitQueue += stack.key -> stack.stackSize
     }
 
-    override def itemEnroute(r:NetworkPayload)
+    override def itemReceived(stack:ItemKeyStack)
     {
-        transitQueue.add(new Pair2(r, 200))
+        transitQueue.remove(stack.key, stack.stackSize)
     }
 
-    override def itemArrived(r:NetworkPayload)
+    override def itemLost(stack:ItemKeyStack)
     {
-        removeFromTransitQueue(r)
-        trackedItemReceived(r.payload)
-        statsReceived+=1
+        transitQueue.remove(stack.key, stack.stackSize)
     }
 
     override def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse = null
@@ -521,14 +427,10 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
     override def queueStackToSend(stack:ItemStack, dirOfExtraction:Int, priority:NetworkPriority, destination:Int)
     {
         val stack2 = ItemKeyStack.get(stack)
-        var r = pollFromSwapQueue(stack2)
-        if (r == null)
-        {
-            r = new NetworkPayload(AbstractPipePayload.claimID())
-            r.payload = stack2
-            r.input = dirOfExtraction
-            r.setDestination(destination, priority)
-        }
+        var r = new NetworkPayload(AbstractPipePayload.claimID())
+        r.payload = stack2
+        r.input = dirOfExtraction
+        r.setDestination(destination, priority)
         sendQueue :+= r
     }
 
@@ -551,9 +453,6 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
     override def getWorld = world
     override def getCoords = new BlockCoord(tile)
 
-    override def trackedItemLost(s:ItemKeyStack){}
-    override def trackedItemReceived(s:ItemKeyStack){}
-
     override def getActiveFreeSpace(item:ItemKey) =
     {
         val real = getInventory
@@ -565,16 +464,6 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 object TNetworkPipe
 {
     var delayDelta = 0
-
-    object TransitComparator extends Ordering[Pair2[NetworkPayload, Int]]
-    {
-        def compare(a:Pair2[NetworkPayload, Int], b:Pair2[NetworkPayload, Int]) =
-        {
-            var c = b.get2-a.get2
-            if (c == 0) c = b.get1.payload.compareTo(a.get1.payload)
-            c
-        }
-    }
 }
 
 abstract class AbstractNetPipe extends PayloadPipePart[NetworkPayload] with TRedstonePipe

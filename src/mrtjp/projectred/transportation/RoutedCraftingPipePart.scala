@@ -241,9 +241,10 @@ class RoutedCraftingPipePart extends AbstractNetPipe with TNetworkPipe with IWor
         }
     }
 
-    override def trackedItemLost(s:ItemKeyStack)
+    override def itemLost(stack:ItemKeyStack)
     {
-        lost.add(new PostponedWorkItem[ItemKeyStack](s, 5000))
+        super.itemLost(stack)
+        lost.add(new PostponedWorkItem[ItemKeyStack](stack, 5000))
     }
 
     private def removeExcess(item:ItemKey, amount:Int)

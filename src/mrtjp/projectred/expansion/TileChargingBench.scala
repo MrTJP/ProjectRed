@@ -210,8 +210,8 @@ class ContainerChargingBench(p:EntityPlayer, tile:TileChargingBench) extends Con
 
     override def doMerge(stack:ItemStack, from:Int) =
     {
-        if (0 until 8 contains from) tryMergeItemStack(stack, 16, 38, false)
-        else if (8 until 16 contains from) tryMergeItemStack(stack, 16, 38, true)
+        if (0 until 8 contains from) tryMergeItemStack(stack, 16, 52, false)
+        else if (8 until 16 contains from) tryMergeItemStack(stack, 16, 52, true)
         else stack.getItem match
         {
             case ic:IChargable => tryMergeItemStack(stack, 0, 8, false)

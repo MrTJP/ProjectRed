@@ -81,10 +81,10 @@ class CircuitGateLogic(gate:CircuitGatePart) extends RedstoneGateLogic[CircuitGa
     ic.network = this
     ic.outputChangedDelegate = {() => if (!gate.world.isRemote) scheduledTick(gate)}
 
-    var ri = 0
-    var ro = 0
-    var bi = 0
-    var bo = 0
+    var (ri, ro, bi, bo) = (0, 0, 0, 0)
+
+    var out = new Array[Int](4)
+    var outUnpacked = Array.ofDim[Byte](4, 16)
 
     var connmodes = Array(NoConn, NoConn, NoConn, NoConn)
     var name = "untitled"
@@ -94,14 +94,20 @@ class CircuitGateLogic(gate:CircuitGatePart) extends RedstoneGateLogic[CircuitGa
         ic.save(tag)
         tag.setShort("masks", CircuitGateLogic.packIO(ri, ro, bi, bo).toShort)
         tag.setShort("cmode", CircuitGateLogic.packConnModes(connmodes).toShort)
+        tag.setIntArray("bout", out)
     }
 
     override def load(tag:NBTTagCompound)
     {
         ic.load(tag)
+
         val (ri0, ro0, bi0, bo0) = CircuitGateLogic.unpackIO(tag.getShort("masks"))
         ri = ri0; ro = ro0; bi = bi0; bo = bo0
+
         connmodes = CircuitGateLogic.unpackConnModes(tag.getShort("cmode"))
+
+        val b = tag.getIntArray("bout")
+        for (r <- 0 until b.length) setOut(r, b(r))
     }
 
     override def writeDesc(packet:MCDataOutput)
@@ -119,9 +125,11 @@ class CircuitGateLogic(gate:CircuitGatePart) extends RedstoneGateLogic[CircuitGa
         name = packet.readString()
     }
 
-    override def read(packet:MCDataInput, key:Int) = key match
+    def setOut(r:Int, output:Int)
     {
-        case _ => super.read(packet, key)
+        out(r) = output
+        if (((bi|bo)&1<<r) != 0) //only unpack if needed
+            outUnpacked(r) = unpackDigital(outUnpacked(r), out(r))
     }
 
     override def getIC = ic
@@ -155,12 +163,15 @@ class CircuitGateLogic(gate:CircuitGatePart) extends RedstoneGateLogic[CircuitGa
 
     override def scheduledTick(gate:CircuitGatePart)
     {
-        val oldOutput = gate.state>>4
-        val newOutput = getRSOutputs
-        if (oldOutput != newOutput)
+        var cmask = 0
+        for (r <- 0 until 4)
+            if ((outputMask(gate.shape)&1<<r) != 0 && checkRSOutputChange(r)) cmask |= 1<<r
+            else if ((bundledOutputMask(gate.shape)&1<<r) != 0 && checkBundledOutputChange(r)) cmask |= 1<<r
+
+        if (cmask != 0)
         {
-            gate.setState(newOutput<<4|gate.state&0xF)
-            gate.onOutputChange(oldOutput^newOutput)
+            gate.setState(gate.state&0xF|getRSOutputs<<4)
+            gate.onOutputChange(cmask)
         }
         onChange(gate)
     }
@@ -191,6 +202,32 @@ class CircuitGateLogic(gate:CircuitGatePart) extends RedstoneGateLogic[CircuitGa
         else false
     }
 
+    def checkRSOutputChange(r:Int):Boolean =
+    {
+        if ((ro&1<<r) == 0) return false
+        val oldOutput = out(r)
+        val newOutput = ic.iostate(r)>>>16
+        if (newOutput != oldOutput)
+        {
+            setOut(r, newOutput)
+            true
+        }
+        else false
+    }
+
+    def checkBundledOutputChange(r:Int):Boolean =
+    {
+        if ((bo&1<<r) == 0) return false
+        val oldOutput = out(r)
+        val newOutput = ic.iostate(r)>>>16
+        if (newOutput != oldOutput)
+        {
+            setOut(r, newOutput)
+            true
+        }
+        else false
+    }
+
     def getRSInputs =
     {
         var m = 0
@@ -201,22 +238,23 @@ class CircuitGateLogic(gate:CircuitGatePart) extends RedstoneGateLogic[CircuitGa
     def getRSOutputs =
     {
         var m = 0
-        for (r <- 0 until 4) if (((ic.iostate(r)>>16)&0xFFFE) != 0) m |= 1<<r
+        for (r <- 0 until 4) if (getOutput(gate, r) != 0) m |= 1<<r
         m
     }
 
     override def getOutput(gate:CircuitGatePart, r:Int) =
     {
-        val msb = MathLib.mostSignificant(ic.iostate(r)>>>16)
-        if ((outputMask(gate.shape)&1<<r) != 0) msb else 0
+        if ((outputMask(gate.shape)&1<<r) != 0) MathLib.mostSignificant(out(r))
+        else 0
     }
 
-    private val bout = new Array[Byte](16)
     override def getBundledOutput(gate:CircuitGatePart, r:Int) =
     {
-        if ((bundledOutputMask(gate.shape)&1<<r) != 0) unpackDigital(bout, ic.iostate(r)>>16)
+        if ((bundledOutputMask(gate.shape)&1<<r) != 0) outUnpacked(r)
         else null
     }
+
+    override def lightLevel = 0
 }
 
 object CircuitGateLogic
@@ -255,7 +293,7 @@ class RenderCircuitGate extends GateRenderer[CircuitGatePart]
 
     var name = "untitled"
 
-    override def coreModels = Seq(new integration.BaseComponentModel, simp, analog, bundled, new ICChipModel, housing)
+    override val coreModels = Seq(new integration.BaseComponentModel, simp, analog, bundled, new ICChipModel, housing)
 
     override def prepareInv(stack:ItemStack)
     {

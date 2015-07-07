@@ -589,7 +589,8 @@ class BusRandCableModel extends BundledCableModel(busRand, new Vector3(8, 0, 8),
     override def getUVT = new IconTransformation(busRandIcon)
 }
 
-class BusConvCableModel extends BundledCableModel(busConv, new Vector3(8, 0, 8), 7/32D, 12/32D)
+class
+BusConvCableModel extends BundledCableModel(busConv, new Vector3(8, 0, 8), 7/32D, 12/32D)
 {
     override def getUVT = new IconTransformation(busConvIcon)
 }

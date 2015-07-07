@@ -42,7 +42,7 @@ repositories {
 
     maven {
         name "mvnmrtjp"
-        url "http://projectredwiki.com/maven"
+        url "http://files.projectredwiki.com/maven"
     }
 
     maven {

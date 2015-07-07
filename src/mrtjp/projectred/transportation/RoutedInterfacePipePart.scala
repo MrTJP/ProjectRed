@@ -95,19 +95,7 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         GuiInterfacePipe.open(player, createContainer(player), _.writeCoord(x, y, z))
     }
 
-    def createContainer(player:EntityPlayer) =
-    {
-        val container = new NodeContainer
-        var i = 0
-        for ((x, y) <- GuiLib.createSlotGrid(24, 12, 1, 4, 0, 8))
-        {
-            container.addSlotToContainer(new Slot3(chipSlots, i, x, y))
-            i += 1
-        }
-
-        container.addPlayerInv(player, 8, 118)
-        container
-    }
+    def createContainer(player:EntityPlayer) = new ContainerInterfacePipe(this, player)
 
     def refreshChips()
     {
@@ -154,14 +142,16 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         for (r <- chips) if (r != null) r.deliverPromises(promise, requestor)
     }
 
-    override def trackedItemLost(s:ItemKeyStack)
+    override def itemReceived(stack:ItemKeyStack)
     {
-        for (r <- chips) if (r != null) r.trackedItemLost(s)
+        super.itemReceived(stack)
+        for (r <- chips) if (r != null) r.trackedItemReceived(stack)
     }
 
-    override def trackedItemReceived(s:ItemKeyStack)
+    override def itemLost(stack:ItemKeyStack)
     {
-        for (r <- chips) if (r != null) r.trackedItemReceived(s)
+        super.itemLost(stack)
+        for (r <- chips) if (r != null) r.trackedItemLost(stack)
     }
 
     override def getBroadcasts(col:ItemQueue)
@@ -200,5 +190,15 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
     {
         for (r <- chips) if (r != null) if (r.weakTileChanges) return true
         false
+    }
+}
+
+class ContainerInterfacePipe(pipe:RoutedInterfacePipePart, p:EntityPlayer) extends NodeContainer
+{
+    {
+        for (((x, y), i) <- GuiLib.createSlotGrid(24, 12, 1, 4, 0, 8).zipWithIndex)
+            addSlotToContainer(new Slot3(pipe.chipSlots, i, x, y))
+
+        addPlayerInv(p, 8, 118)
     }
 }

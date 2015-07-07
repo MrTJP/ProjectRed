@@ -93,7 +93,7 @@ class ContainerFurnace(p:EntityPlayer, tile:TileInductiveFurnace) extends Contai
         addPlayerInv(p, 8, 89)
     }
 
-    override def doMerge(stack:ItemStack, from:Int) =
+    override def doMerge(stack:ItemStack, from:Int):Boolean =
     {
         if (from == 0) tryMergeItemStack(stack, 2, 38, false)
         else if (from == 1) tryMergeItemStack(stack, 2, 38, true)

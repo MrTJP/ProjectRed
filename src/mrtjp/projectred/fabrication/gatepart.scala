@@ -348,6 +348,9 @@ object ICGateDefinition extends Enum
     val StateCell = ICGateDef("State Cell", CircuitPartDefs.ComplexGate.id, gd.StateCell)
     val Synchronizer = ICGateDef("Synchronizer", CircuitPartDefs.ComplexGate.id, gd.Synchronizer)
     val DecRandomizer = ICGateDef("Dec Randomizer", CircuitPartDefs.SimpleGate.id, gd.DecRandomizer)
+    val NullCell = ICGateDef("Null Cell", CircuitPartDefs.ArrayGate.id, gd.NullCell)
+    val InvertCell = ICGateDef("Invert Cell", CircuitPartDefs.ArrayGate.id, gd.InvertCell)
+    val BufferCell = ICGateDef("Buffer Cell", CircuitPartDefs.ArrayGate.id, gd.BufferCell)
 
     case class ICGateDef(unlocal:String, gateType:Int, intDef:GateDef = null) extends Value
     {

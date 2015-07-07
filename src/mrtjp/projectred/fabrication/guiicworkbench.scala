@@ -182,8 +182,11 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
             case KEY_ESCAPE if currentOp != null =>
                 opPickDelegate(null)
                 true
-            case _ if keycode == Minecraft.getMinecraft.gameSettings.keyBindPickBlock.getKeyCode =>
+            case _ if keycode == mcInst.gameSettings.keyBindPickBlock.getKeyCode =>
                 doPickOp()
+                true
+            case _ if keycode == mcInst.gameSettings.keyBindInventory.getKeyCode =>
+                opPickDelegate(CircuitOpDefs.Erase.getOp)
                 true
             case _ => false
         }
@@ -590,6 +593,7 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
             addToolset("Primatives", Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate, MultiplexerGate))
             addToolset("Timing and Clocks", Seq(PulseFormerGate, RepeaterGate, TimerGate, SequencerGate, StateCellGate))
             addToolset("Latches", Seq(SRLatchGate, ToggleLatchGate, TransparentLatchGate))
+            addToolset("Cells", Seq(NullCellGate, InvertCellGate, BufferCellGate))
             addToolset("Misc", Seq(RandomizerGate, CounterGate, SynchronizerGate, DecRandomizerGate))
         }
 

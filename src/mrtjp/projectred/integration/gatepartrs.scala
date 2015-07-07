@@ -11,6 +11,7 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.IRandomDisplayTick
 import codechicken.multipart.handler.MultipartProxy
+import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.transmission.{IRedwireEmitter, TFaceRSAcquisitions}

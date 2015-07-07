@@ -62,7 +62,7 @@ object TransmissionRecipes
         GameRegistry.addRecipe(new ShapedOreRecipe(WireDef.POWER_LOWLOAD.makeStack(12),
             "bib","yiy", "bib",
             'b':JC, new ItemStack(Blocks.wool, 1, Colors.BLUE.woolID),
-            'i':JC, "ingotElectrotine",
+            'i':JC, "ingotElectrotineAlloy",
             'y':JC, new ItemStack(Blocks.wool, 1, Colors.YELLOW.woolID)
         ))
     }

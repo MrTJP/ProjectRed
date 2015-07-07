@@ -6,12 +6,12 @@
 package mrtjp.projectred.fabrication
 
 import codechicken.lib.math.MathHelper
+import codechicken.lib.render.CCRenderState.IVertexOperation
 import codechicken.lib.render.uv.{IconTransformation, UVTransformation}
 import codechicken.lib.render.{CCModel, CCRenderState, ColourMultiplier, TextureUtils}
 import codechicken.lib.vec._
 import mrtjp.core.color.Colors
 import mrtjp.core.vec.Size
-import mrtjp.projectred.integration.ComponentStore
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.util.IIcon
 
@@ -52,6 +52,11 @@ object ICComponentStore
     var yellowChipOffIcon:IIcon = null
     var pointerIcon:IIcon = null
 
+    var cellStandIcon:IIcon = null
+    var nullCellWireBottomIcon:IIcon = null
+    var nullCellWireTopIcon:IIcon = null
+    var invertCellWireBottomIcon:IIcon = null
+
     def registerIcons(reg:IIconRegister)
     {
         val baseTex = "projectred:fabrication/"
@@ -87,6 +92,11 @@ object ICComponentStore
         yellowChipOnIcon = register("yellowchip_on")
         yellowChipOffIcon = register("yellowchip_off")
         pointerIcon = register("pointer")
+
+        cellStandIcon = register("cell_stand")
+        nullCellWireBottomIcon = register("bottom_null_cell_wire")
+        nullCellWireTopIcon = register("top_null_cell_wire")
+        invertCellWireBottomIcon = register("bottom_invert_cell_wire")
     }
 
     def prepairRender()
@@ -150,6 +160,16 @@ abstract class SingleComponentModel(pos:Vector3 = Vector3.zero) extends ICCompon
     }
 }
 
+abstract class CenteredSingleComponentModel extends ICComponentModel
+{
+    def getUVT:UVTransformation
+
+    override def renderModel(t:Transformation, orient:Int, ortho:Boolean)
+    {
+        faceModels(dynamicIdx(orient, ortho)).render(dynamicT(orient) `with` t, getUVT)
+    }
+}
+
 abstract class OnOffModel(pos:Vector3 = Vector3.zero) extends SingleComponentModel(pos)
 {
     var on = false
@@ -164,7 +184,7 @@ object BaseComponentModel
     var baseModels = Seq[BaseComponentModel]()
 }
 
-class BaseComponentModel(val iconPath:String) extends SingleComponentModel(new Vector3(8, 0, 8))
+class BaseComponentModel(val iconPath:String) extends CenteredSingleComponentModel
 {
     BaseComponentModel.baseModels :+= this
 
@@ -243,4 +263,41 @@ class PointerModel(x:Double, z:Double, scale:Double = 1) extends ICComponentMode
         models(dynamicIdx(orient, ortho)).render(new Rotation(-angle, 0, 1, 0) `with` pos.translation
                 `with` dynamicT(orient) `with` t, new IconTransformation(pointerIcon))
     }
+}
+
+class CellStandModel extends CenteredSingleComponentModel
+{
+    override def getUVT = new IconTransformation(cellStandIcon)
+}
+
+abstract class CellWireModel extends ICComponentModel
+{
+    var signal:Byte = 0
+
+    def signalColour(signal:Byte) = (signal&0xFF)/2+60<<24|0xFF
+
+    def colourMult:IVertexOperation = ColourMultiplier.instance(signalColour(signal))
+
+    def getUVT:UVTransformation
+
+    override def renderModel(t:Transformation, orient:Int, ortho:Boolean)
+    {
+        faceModels(dynamicIdx(orient, ortho)).render(dynamicT(orient)
+                `with` t, getUVT, colourMult)
+    }
+}
+
+class CellTopWireModel extends CellWireModel
+{
+    override def getUVT = new IconTransformation(nullCellWireTopIcon)
+}
+
+class NullCellBottomWireModel extends CellWireModel
+{
+    override def getUVT = new IconTransformation(nullCellWireBottomIcon)
+}
+
+class InvertCellBottomWireModel extends CellWireModel
+{
+    override def getUVT = new IconTransformation(invertCellWireBottomIcon)
 }

@@ -14,11 +14,13 @@ import mrtjp.core.item.ItemCore
 import mrtjp.core.vec.{Point, Size}
 import mrtjp.projectred.core.libmc.PRResources
 import mrtjp.projectred.fabrication.IIOCircuitPart._
+import mrtjp.projectred.integration.GateDefinition
 import mrtjp.projectred.{ProjectRedFabrication, ProjectRedIntegration}
 import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.{ItemMap, ItemStack}
+import net.minecraft.item.{Item, ItemMap, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumChatFormatting._
 import net.minecraft.util.{EnumChatFormatting, IIcon}
@@ -117,8 +119,8 @@ object ItemICBlueprint
         val fromtag = from.getTagCompound
         totag.setTag("icdata", fromtag.getCompoundTag("icdata"))
         totag.setString("icname", fromtag.getString("icname"))
-        totag.setByte("icw", totag.getByte("icw"))
-        totag.setByte("ich", totag.getByte("ich"))
+        totag.setByte("icw", fromtag.getByte("icw"))
+        totag.setByte("ich", fromtag.getByte("ich"))
     }
 
     def removeIC(stack:ItemStack)
@@ -253,6 +255,7 @@ object ItemRenderICBlueprint extends IItemRenderer
 class ItemICChip extends ItemCore("projectred.fabrication.icchip")
 {
     setMaxStackSize(1)
+    setHasSubtypes(true)
     setCreativeTab(ProjectRedFabrication.tabFabrication)
 
     var icons = new Array[IIcon](2)
@@ -270,7 +273,33 @@ class ItemICChip extends ItemCore("projectred.fabrication.icchip")
 
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
     {
-        ItemICChip.addInfo(stack, list.asInstanceOf[JList[String]])
+        val jlist = list.asInstanceOf[JList[String]]
+        ItemICChip.addInfo(stack, jlist)
+        if (stack.getItemDamage == 1)
+        {
+            jlist.add("Creative-mode only chip.")
+            jlist.add("Instant and free prints.")
+            jlist.add("Rightclick to add IC Gate to inventory.")
+        }
+    }
+
+    override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer) =
+    {
+        if (stack.getItemDamage == 1 && ItemICBlueprint.hasICInside(stack))
+        {
+            val gate = GateDefinition.ICGate.makeStack
+            ItemICBlueprint.copyToGate(stack, gate)
+            if (!player.inventory.addItemStackToInventory(gate))
+                player.entityDropItem(gate, player.getEyeHeight)
+        }
+        stack
+    }
+
+    override def getSubItems(item:Item, tab:CreativeTabs, list:JList[_])
+    {
+        val jlist = list.asInstanceOf[JList[ItemStack]]
+        jlist.add(new ItemStack(this, 1, 0))
+        jlist.add(new ItemStack(this, 1, 1))
     }
 }
 

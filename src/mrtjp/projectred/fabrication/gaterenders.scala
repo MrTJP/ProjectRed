@@ -10,6 +10,7 @@ import codechicken.lib.vec.Transformation
 import mrtjp.core.color.Colors
 import mrtjp.projectred.core.TFaceOrient._
 import mrtjp.projectred.fabrication.ICComponentStore._
+import mrtjp.projectred.integration.RedstoneTorchModel
 import net.minecraft.client.renderer.texture.IIconRegister
 
 object RenderICGate
@@ -40,7 +41,10 @@ object RenderICGate
         new RenderCounter,
         new RenderStateCell,
         new RenderSynchronizer,
-        new RenderDecRandomizer
+        new RenderDecRandomizer,
+        new RenderNullCell,
+        new RenderInvertCell,
+        new RenderBufferCell
     )
 
     def registerIcons(reg:IIconRegister){}
@@ -890,3 +894,82 @@ class RenderDecRandomizer extends ICGateRenderer[ComboGateICPart]
         chips(2).on = true
     }
 }
+
+class RenderNullCell extends ICGateRenderer[ArrayGateICPart]
+{
+    val top = new CellTopWireModel
+    val bottom = new NullCellBottomWireModel
+
+    override val coreModels = Seq(new BaseComponentModel("NULLCELL"), bottom, new CellStandModel, top)
+
+    override def prepareInv()
+    {
+        bottom.signal = 0
+        top.signal = 0
+    }
+
+    override def prepareDynamic(gate:ArrayGateICPart, frame:Float)
+    {
+        bottom.signal = gate.getLogic[NullCell].signal1
+        top.signal = gate.getLogic[NullCell].signal2
+    }
+}
+
+class RenderInvertCell extends ICGateRenderer[ArrayGateICPart]
+{
+    val wires = generateWireModels("INVCELL", 1)
+    val torch = new RedstoneTorchModel(8, 8)
+    val top = new CellTopWireModel
+    val bottom = new InvertCellBottomWireModel
+
+    override val coreModels = Seq(new BaseComponentModel("INVCELL"))++wires++Seq(bottom, torch, new CellStandModel, top)
+
+    override def prepareInv()
+    {
+        bottom.signal = 0
+        top.signal = 255.toByte
+        wires(0).on = false
+        torch.on = true
+    }
+
+    override def prepareDynamic(gate:ArrayGateICPart, frame:Float)
+    {
+        val logic = gate.getLogic[InvertCell]
+        bottom.signal = logic.signal1
+        top.signal = logic.signal2
+        wires(0).on = logic.signal1 != 0
+        torch.on = logic.signal1 == 0
+    }
+}
+
+class RenderBufferCell extends ICGateRenderer[ArrayGateICPart]
+{
+    val wires = generateWireModels("BUFFCELL", 2)
+    val torches = Seq(new RedstoneTorchModel(11, 13), new RedstoneTorchModel(8, 8))
+    val top = new CellTopWireModel
+    val bottom = new InvertCellBottomWireModel
+
+    override val coreModels = Seq(new BaseComponentModel("BUFFCELL"))++wires++Seq(bottom)++torches++Seq(new CellStandModel, top)
+
+    override def prepareInv()
+    {
+        bottom.signal = 0
+        top.signal = 0
+        wires(0).on = false
+        wires(1).on = true
+        torches(0).on = true
+        torches(1).on = false
+    }
+
+    override def prepareDynamic(gate:ArrayGateICPart, frame:Float)
+    {
+        val logic = gate.getLogic[BufferCell]
+        bottom.signal = logic.signal1
+        top.signal = logic.signal2
+        torches(0).on = logic.signal1 == 0
+        torches(1).on = logic.signal1 != 0
+        wires(0).on = logic.signal1 != 0
+        wires(1).on = logic.signal1 == 0
+    }
+}
+

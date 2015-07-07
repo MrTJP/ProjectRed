@@ -37,7 +37,7 @@ class DeliveryManager
     def dispatchFailed()
     {
         val first = orders.head
-        first.get2.trackedItemLost(first.get1)
+        first.get2.itemLost(first.get1)
         if (orders.nonEmpty) orders = orders.tail
     }
 

@@ -316,8 +316,8 @@ with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
 
 class ContainerPoweredMachine(player:EntityPlayer, tile:TPoweredMachine) extends NodeContainer
 {
-    private var ch = -1
-    private var fl = -1
+    private var ch = -2
+    private var fl = -2
 
     override def detectAndSendChanges()
     {
