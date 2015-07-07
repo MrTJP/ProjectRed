@@ -31,7 +31,7 @@ trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSProp
             val pMask = getLogicArray.propogationMask(toInternal(r))
             if (pMask > 0 && (pMask&uMask) != pMask)
             {
-                propagationMask = toAbsoluteMask(getLogicArray.propogationMask(toInternal(r)))
+                propagationMask = toAbsoluteMask(pMask)
                 super.updateAndPropagate(prev, mode)
                 uMask |= pMask
             }
@@ -73,8 +73,9 @@ trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSProp
 
     override def calculateSignal:Int =
     {
-        if (getLogicArray.overrideSignal(toInternalMask(propagationMask)))
-            return getLogicArray.calculateSignal(toInternalMask(propagationMask))
+        val ipmask = toInternalMask(propagationMask)
+        if (getLogicArray.overrideSignal(ipmask))
+            return getLogicArray.calculateSignal(ipmask)
 
         WirePropagator.setDustProvidePower(false)
         WirePropagator.redwiresProvidePower = false
@@ -270,9 +271,8 @@ object ArrayGateLogic
         case BufferCell.ordinal => new BufferCell(gate)
         case ANDCell.ordinal => new ANDCell(gate)
         case StackingLatch.ordinal => new StackingLatch(gate)
-        case _ => null
+        case _ => throw new IllegalArgumentException("Invalid gate subID: "+subID)
     }
-
 }
 
 abstract class ArrayGateLogic(val gate:ArrayGatePart) extends RedstoneGateLogic[ArrayGatePart] with TArrayGateLogic[ArrayGatePart] with TComplexGateLogic[ArrayGatePart]

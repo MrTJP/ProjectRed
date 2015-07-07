@@ -16,12 +16,12 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.color.Colors
 import mrtjp.core.gui._
-import mrtjp.core.inventory.TInventory
+import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
 import mrtjp.core.vec.{Point, Size, Vec2}
-import mrtjp.core.world.WorldLib
-import mrtjp.projectred.core.PartDefs
+import mrtjp.core.world.{Messenger, WorldLib}
 import mrtjp.projectred.core.libmc.PRResources
+import mrtjp.projectred.core.{PRLogger, PartDefs}
 import mrtjp.projectred.integration.ComponentStore
 import mrtjp.projectred.transmission.WireDef
 import net.minecraft.client.renderer.RenderBlocks
@@ -39,8 +39,7 @@ import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 import org.lwjgl.opengl.GL11._
 
 import scala.collection.JavaConversions._
-import scala.collection.mutable.{Map => MMap}
-import scala.util.control.Breaks._
+import scala.collection.mutable.{Map => MMap, Set => MSet}
 
 class TileICPrinter extends TileICMachine with TInventory
 {
@@ -48,6 +47,12 @@ class TileICPrinter extends TileICMachine with TInventory
     var speed = 0.0
     var isWorking = false
     var inputICState = 0 // 0 - none, 1 - blank, 2 - written
+
+    var externalItems = Set[ItemKey]()
+    var watchers = MSet[EntityPlayer]()
+
+    var requirementsDirty = true
+    var requirements = Seq[ItemKeyStack]()
 
     override def save(tag:NBTTagCompound)
     {
@@ -95,6 +100,10 @@ class TileICPrinter extends TileICMachine with TInventory
             progress = in.readFloat()
             speed = in.readFloat()
         case 6 => inputICState = in.readByte()
+        case 7 =>
+            externalItems = Set.empty
+            for (i <- 0 until in.readInt())
+                externalItems += ItemKey.get(in.readItemStack())
         case _ => super.read(in, key)
     }
 
@@ -114,6 +123,14 @@ class TileICPrinter extends TileICMachine with TInventory
     def sendInputICStateUpdate()
     {
         writeStream(6).writeByte(inputICState).sendToChunk()
+    }
+
+    def sendExternalItemMap(players:Iterable[EntityPlayer])
+    {
+        val out = writeStream(7).writeInt(externalItems.size)
+        for (item <- externalItems)
+            out.writeItemStack(item.makeStack(0))
+        out.sendToChunk()
     }
 
     //0 - 17 = ingredients
@@ -138,11 +155,18 @@ class TileICPrinter extends TileICMachine with TInventory
     {
         if (isWorking)
         {
-            progress += speed
-            if (progress >= 1.0)
+            if (world.getTotalWorldTime%10 == 0 && !canStart)
             {
                 doStop()
-                onFinished()
+            }
+            else
+            {
+                progress += speed
+                if (progress >= 1.0)
+                {
+                    doStop()
+                    if (canStart) onFinished()
+                }
             }
         }
 
@@ -152,7 +176,9 @@ class TileICPrinter extends TileICMachine with TInventory
 
     def canStart =
     {
-        checkOutputClear && checkInputIC && checkBlueprint && checkIngredients
+        if (world.getTotalWorldTime%20 == 0)
+            checkIngredients() && checkOutputClear && checkInputIC && checkBlueprint
+        else checkOutputClear && checkInputIC && checkBlueprint && checkIngredients() //use cheaper checks as fail-fast
     }
 
     private def checkBlueprint =
@@ -170,20 +196,31 @@ class TileICPrinter extends TileICMachine with TInventory
 
     private def checkOutputClear = getStackInSlot(20) == null
 
-    private def checkIngredients =
+    private def checkIngredients():Boolean =
     {
-        getRequiredResources.forall(containsEnoughOf)
+        val ic = getStackInSlot(19)
+        if (ic != null && ic.getItemDamage == 1) return true
+
+        val oldMap = externalItems
+        val hasEnough = getRequiredResources.forall(containsEnoughOf)
+        if (externalItems != oldMap) sendExternalItemMap(watchers)
+        hasEnough
     }
 
     def getRequiredResources =
     {
-        val stack = getStackInSlot(18)
-        if (stack != null && ItemICBlueprint.hasICInside(stack))
+        if (requirementsDirty)
         {
-            val ic = ItemICBlueprint.loadIC(stack)
-            TileICPrinter.resolveResources(ic)
+            val stack = getStackInSlot(18)
+            requirements = if (stack != null && ItemICBlueprint.hasICInside(stack))
+            {
+                val ic = ItemICBlueprint.loadIC(stack)
+                TileICPrinter.resolveResources(ic)
+            }
+            else Seq()
+            requirementsDirty = false
         }
-        else Seq()
+        requirements
     }
 
     def containsEnoughOf(stack:ItemKeyStack):Boolean =
@@ -198,6 +235,31 @@ class TileICPrinter extends TileICMachine with TInventory
                 if (a >= stack.stackSize) return true
             }
         }
+
+        if (!world.isRemote)
+        {
+            externalItems -= stack.key
+            for (s <- 0 until 6 if s != 1)
+            {
+                val inv = InvWrapper.getInventory(world, position.offset(s))
+                if (inv != null)
+                {
+                    val w = InvWrapper.wrap(inv).setSlotsFromSide(s^1)
+                    val in = w.getItemCount(stack.key)
+                    if (in > 0)
+                    {
+                        a += in
+                        if (a >= stack.stackSize)
+                        {
+                            externalItems += stack.key
+                            return true
+                        }
+                    }
+                }
+            }
+        }
+        else return externalItems.contains(stack.key)
+
         false
     }
 
@@ -217,13 +279,24 @@ class TileICPrinter extends TileICMachine with TInventory
                 if (left <= 0) return
             }
         }
+
+        for (s <- 0 until 6 if s != 1)
+        {
+            val inv = InvWrapper.getInventory(world, position.offset(s))
+            if (inv != null)
+            {
+                val w = InvWrapper.wrap(inv).setSlotsFromSide(s^1)
+                left -= w.extractItem(stack.key, left)
+                if (left <= 0) return
+            }
+        }
     }
 
     def doStart()
     {
         isWorking = true
         progress = 0.0
-        speed = 0.0005
+        speed = if (getStackInSlot(19).getItemDamage == 1) 0.05 else 0.0005
         sendStartWorking()
     }
 
@@ -237,9 +310,11 @@ class TileICPrinter extends TileICMachine with TInventory
 
     def onFinished()
     {
-        getRequiredResources.foreach(eatResource)
+
         val bp = getStackInSlot(18)
         val chip = getStackInSlot(19)
+
+        if (chip.getItemDamage != 1) getRequiredResources.foreach(eatResource)
 
         ItemICBlueprint.copyIC(bp, chip)
         setInventorySlotContents(19, null)
@@ -249,6 +324,7 @@ class TileICPrinter extends TileICMachine with TInventory
     override def markDirty()
     {
         super.markDirty()
+        requirementsDirty = true
         if (!world.isRemote)
         {
             if (!canStart && isWorking) doStop()
@@ -279,7 +355,15 @@ class TileICPrinter extends TileICMachine with TInventory
     }
 
     def createContainer(player:EntityPlayer) =
-        new ContainerPrinter(player, this)
+    {
+        val c = new ContainerPrinter(player, this)
+        c.startWatchDelegate = {p =>
+            watchers += p
+            sendExternalItemMap(MSet(p))
+        }
+        c.stopWatchDelegate = {watchers -= _}
+        c
+    }
 
     override def onBlockRemoval()
     {
@@ -359,7 +443,7 @@ object TileICPrinter
     def cacheRecipe(key:ItemKey)
     {
         val recipes = CraftingManager.getInstance().getRecipeList.asInstanceOf[JList[IRecipe]]
-        for (r <- recipes)
+        for (r <- recipes) try
         {
             val out = ItemKey.get(r.getRecipeOutput)
             if (out == key)
@@ -390,6 +474,10 @@ object TileICPrinter
                     return
                 }
             }
+        }
+        catch {
+            case e:Exception =>
+                PRLogger.error(s"Some mod messed up. The recipe $r has a null output.")
         }
         gRec += key -> Seq.empty
     }
@@ -462,9 +550,9 @@ class ContainerPrinter(player:EntityPlayer, tile:TileICPrinter) extends NodeCont
             addSlotToContainer(new Slot3(tile, i, x, y))
             i += 1
         }
-        addSlotToContainer(new Slot3(tile, 18, 63, 20))
-        addSlotToContainer(new Slot3(tile, 19, 63, 46))
-        addSlotToContainer(new Slot3(tile, 20, 134, 33))
+        addSlotToContainer({val s = new Slot3(tile, 18, 63, 20); s.slotLimitCalculator = {() => 1}; s})
+        addSlotToContainer({val s = new Slot3(tile, 19, 63, 46); s.slotLimitCalculator = {() => 1}; s})
+        addSlotToContainer({val s = new Slot3(tile, 20, 134, 33); s.slotLimitCalculator = {() => 1}; s})
 
         addPlayerInv(player, 8, 119)
     }
@@ -477,11 +565,11 @@ class ContainerPrinter(player:EntityPlayer, tile:TileICPrinter) extends NodeCont
     {
         if (from == 20)
         {
-            if (tryMergeItemStack(stack, 21, 56, true)) return true
+            if (tryMergeItemStack(stack, 21, 57, true)) return true
         }
-        else if (0 to 20 contains from)
+        else if (0 until 20 contains from)
         {
-            if (tryMergeItemStack(stack, 21, 56, false)) return true
+            if (tryMergeItemStack(stack, 21, 57, false)) return true
         }
         else
         {
@@ -502,8 +590,6 @@ class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 17
 {
     var list:ItemListNode = null
 
-    var listNeedsRefresh = true
-
     {
         val clip = new ClipNode
         clip.position = Point(8, 17)
@@ -521,6 +607,7 @@ class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 17
         list.itemSize = Size(14, 14)
         list.displayNodeFactory = {stack =>
             val d = new ItemDisplayNode
+            d.zPosition = -0.01
             d.backgroundColour = if (tile.containsEnoughOf(stack))
                 Colors.LIME.rgb|0x44000000 else Colors.RED.rgb|0x44000000
             d
@@ -528,20 +615,14 @@ class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 17
         pan.addChild(list)
         list.items = tile.getRequiredResources
         list.reset()
-
-        c.slotChangeDelegate = { slot =>
-            if (0 until 21 contains slot)
-                listNeedsRefresh = true
-        }
     }
 
     override def update_Impl()
     {
-        if (listNeedsRefresh && mcInst.theWorld.getTotalWorldTime%5 == 0) //delayed check, it is expensive
+        if (mcInst.theWorld.getTotalWorldTime%10 == 0)
         {
             list.items = tile.getRequiredResources
             list.reset()
-            listNeedsRefresh = false
         }
     }
 
@@ -598,7 +679,20 @@ object RenderICPrinter extends TInstancedBlockRender
         val tile = WorldLib.getTileEntity(w, x, y, z, classOf[TileICPrinter])
         CCRenderState.reset()
         CCRenderState.lightMatrix.locate(w, x, y, z)
+
+        /**
+         * Here is a test case fo the rotations being wierd.  The array 'lowerBoxes' contains 4
+         * generted blocks that have been prerotated, indexed by r.  This produces the correct results.
+         */
         lowerBoxes(tile.rotation).render(new Translation(x, y, z), iconT, CCRenderState.lightMatrix)
+
+        /**
+         * However, using only the first model (with a 0 rotation, so no rotation at all) and rendering
+         * it with the rotation in line, the model does not shade properly.  The light shading rotates
+         * WITH the model. Comment the other one and uncomment this, place a IC Printer block,
+         * and rotate it with screwdriver to see the issue.
+         */
+        //lowerBoxes(0).render(Rotation.quarterRotations(tile.rotation) at Vector3.center `with` new Translation(x, y, z), iconT, CCRenderState.lightMatrix)
     }
 
     override def getIcon(side:Int, meta:Int) = side match

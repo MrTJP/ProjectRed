@@ -16,6 +16,7 @@ import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedIntegration._
 import mrtjp.projectred.core.{IProxy, PartDefs}
 import net.minecraft.init.Blocks
+import net.minecraft.item.ItemStack
 import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.oredict.ShapedOreRecipe
 
@@ -141,7 +142,7 @@ object IntegrationRecipes
                 'C':JChar, PartDefs.CATHODE.makeStack,
                 'P':JChar, PartDefs.PLATE.makeStack,
                 'W':JChar, PartDefs.CONDUCTIVEPLATE.makeStack,
-                'L':JChar, Blocks.lever
+                'L':JChar, new ItemStack(Blocks.lever)
         )
 
         /** Transparent Latch **/

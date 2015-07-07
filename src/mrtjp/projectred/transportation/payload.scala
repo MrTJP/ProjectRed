@@ -266,11 +266,7 @@ class NetworkPayload(payloadID:Int) extends AbstractPipePayload(payloadID)
         if (destinationIP > -1)
         {
             val r = RouterServices.getRouter(destinationIP)
-            if (r != null) r.getParent match
-            {
-                case wr:IWorldRequester => wr.trackedItemLost(payload)
-                case _ =>
-            }
+            if (r != null) r.getParent.itemLost(payload)
         }
         destinationIP = -1
         destinationUUID = null

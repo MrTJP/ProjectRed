@@ -25,7 +25,7 @@ import net.minecraft.item.crafting.IRecipe
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.World
 import net.minecraftforge.client.MinecraftForgeClient
-import net.minecraftforge.oredict.ShapedOreRecipe
+import net.minecraftforge.oredict.{ShapelessOreRecipe, ShapedOreRecipe}
 
 class FabricationProxy_server extends IProxy with IPartFactory2
 {
@@ -103,6 +103,7 @@ object FabricationRecipes
 {
     def initRecipes()
     {
+        //IC Gate recipe
         GameRegistry.addRecipe(new IRecipe {
             override def matches(inv:InventoryCrafting, w:World) = getCraftingResult(inv) != null
 
@@ -153,6 +154,81 @@ object FabricationRecipes
             'b':JC, "dyeBlue",
             'r':JC, Items.redstone
         ))
+
+        //IC Blueprint - reset
+        GameRegistry.addRecipe(new IRecipe {
+            override def matches(inv:InventoryCrafting, w:World) = getCraftingResult(inv) != null
+
+            override def getRecipeOutput = new ItemStack(itemICBlueprint)
+
+            override def getRecipeSize = 2
+
+            override def getCraftingResult(inv:InventoryCrafting):ItemStack =
+            {
+                var bp:ItemStack = null
+                for (i <- 0 until inv.getSizeInventory)
+                {
+                    val s = inv.getStackInSlot(i)
+                    if (s != null)
+                        if (bp != null) return null
+                        else bp = s
+                }
+
+                if (bp != null && bp.getItem == itemICBlueprint && ItemICBlueprint.hasICInside(bp))
+                    new ItemStack(itemICBlueprint)
+                else null
+            }
+        })
+
+        //IC Blueprint - copy
+        GameRegistry.addRecipe(new IRecipe {
+            override def matches(inv:InventoryCrafting, w:World) = getCraftingResult(inv) != null
+
+            override def getRecipeOutput = new ItemStack(itemICBlueprint, 2)
+
+            override def getRecipeSize = 2
+
+            override def getCraftingResult(inv:InventoryCrafting):ItemStack =
+            {
+                var bp:ItemStack = null
+                var empty:ItemStack = null
+                for (i <- 0 until inv.getSizeInventory)
+                {
+                    val s = inv.getStackInSlot(i)
+                    if (s != null)
+                    {
+                        if (s.getItem != itemICBlueprint) return null
+                        if (ItemICBlueprint.hasICInside(s))
+                            if (bp != null) return null
+                            else bp = s
+                        else
+                            if (empty != null) return null
+                            else empty = s
+                    }
+                }
+                if (bp != null && empty != null)
+                {
+                    val out = new ItemStack(itemICBlueprint)
+                    out.stackSize = 2
+                    ItemICBlueprint.copyIC(bp, out)
+                    out
+                }
+                else null
+            }
+
+            def countEmptyBlueprints(inv:InventoryCrafting) =
+            {
+                var count = 0
+                for (i <- 0 until inv.getSizeInventory)
+                {
+                    val s = inv.getStackInSlot(i)
+                    if (s != null && s.getItem.isInstanceOf[ItemICBlueprint] &&
+                            !ItemICBlueprint.hasICInside(s))
+                            count += 1
+                }
+                count
+            }
+        })
 
         //IC Chip
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemICChip),

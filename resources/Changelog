@@ -1,4 +1,24 @@
-v4.7.0pre3
+v4.7.0pre5
+- ADDED: Cell gate IC parts
+- ADDED: Creative mode IC Chip with instant and free prints
+- ADDED: IC Blueprint reset recipe
+- ADDED: IC Blueprint copy recipe
+- FIX: IC Gates not updating neighbors properly
+- FIX: IC Gates not recognizing white signal changes
+- FIX: Crash when resource packs change lily textures
+- FIX: Container item duplication exploit
+- FIX: Rebalanced frame motor electricity use
+- FIX: Thermal expansion auto-adding incorrect recipes for electrotine ingots and dusts
+- FIX: Solar panels no longer working after 1 day cycle
+- FIX: IC Printer not recognizing lever
+- FIX: IC Printer crashing because some mod added an invalid recipe
+- FIX: IC Printer container shift clicking
+- FIX: Dependency auto-downloader trying to use outdated links
+- CHANGE: Rewrote Firewall pipe gui
+- CHANGE: Rewrote Request pipe gui
+- CHANGE: IC Printer can now pull items from adjacent inventories
+
+v4.7.0pre4
 - FIX: Server crash when using some IC gates
 - CHANGE: Reworked Routing Chip guis
 

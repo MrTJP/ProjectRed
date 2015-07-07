@@ -460,6 +460,7 @@ object CircuitPartDefs extends Enum
     val IOGate = CircuitPartDef(() => new IOGateICPart)
     val SimpleGate = CircuitPartDef(() => new ComboGateICPart)
     val ComplexGate = CircuitPartDef(() => new SequentialGateICPart)
+    val ArrayGate = CircuitPartDef(() => new ArrayGateICPart)
 
     case class CircuitPartDef(factory:() => CircuitPart) extends Value
     {

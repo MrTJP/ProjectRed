@@ -3,7 +3,7 @@ package mrtjp.projectred.exploration
 import codechicken.lib.lighting.LightModel
 import codechicken.lib.math.MathHelper
 import codechicken.lib.render.uv.{IconTransformation, UVTranslation}
-import codechicken.lib.render.{CCModel, CCRenderState, TextureDataHolder, TextureUtils}
+import codechicken.lib.render._
 import codechicken.lib.vec._
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.color.Colors
@@ -100,7 +100,7 @@ object RenderLily extends TInstancedBlockRender
     }
 
     val icons = new Array[IIcon](8)
-    val iconsC = new Array[IIcon](16)
+    var iconC:IIcon = null
 
     override def renderWorldBlock(r:RenderBlocks, w:IBlockAccess, x:Int, y:Int, z:Int, meta:Int) =
     {
@@ -109,8 +109,10 @@ object RenderLily extends TInstancedBlockRender
         {
             CCRenderState.reset()
             CCRenderState.lightMatrix.locate(w, x, y, z)
-            val icon = if (te.growth == 7) iconsC(te.meta) else icons(te.growth)
-            model.render(new Translation(x, y, z), new IconTransformation(icon))
+            CCRenderState.setBrightness(w, x, y, z)
+            model.render(new Translation(x, y, z), new IconTransformation(icons(te.growth)))
+            if (te.growth == 7)
+                model.render(new Translation(x, y, z), new IconTransformation(iconC), new ColourMultiplier(Colors(te.meta).rgba))
         }
     }
 
@@ -129,27 +131,7 @@ object RenderLily extends TInstancedBlockRender
 
     override def registerIcons(reg:IIconRegister)
     {
-        for (i <- 0 until 8) icons(i) = reg.registerIcon("projectred:world/lily/lily "+i)
-
-        val res = new ResourceLocation(Blocks.wool.getIcon(0, 0).getIconName)
-        val noise = TextureUtils.loadTextureColours(new ResourceLocation(res.getResourceDomain, "textures/blocks/"+res.getResourcePath+".png"))
-
-        val res2 = new ResourceLocation(icons(7).getIconName)
-        val flower = TextureUtils.loadTextureColours(new ResourceLocation(res2.getResourceDomain, "textures/blocks/"+res2.getResourcePath+".png"))
-
-        val size = 16
-
-        val rectMask = new Rectangle4i(6, 9, 3, 2)
-
-        for (i <- 0 until 16)
-        {
-            val imageData = flower.map(_.argb())
-            val shade = Colors(i).c
-            for (x <- rectMask.x until rectMask.x+rectMask.w)
-                for (y <- rectMask.y until rectMask.y+rectMask.h)
-                    imageData(y*16+x) = noise(y*16+x).copy.multiply(shade).argb()
-
-            iconsC(i) = TextureUtils.getTextureSpecial(reg, "projectred:ore/lily/lily_special_"+i).addTexture(new TextureDataHolder(imageData, size))
-        }
+        for (i <- 0 until 8) icons(i) = reg.registerIcon("projectred:world/lily/lily_"+i)
+        iconC = reg.registerIcon("projectred:world/lily/lily_colour")
     }
 }

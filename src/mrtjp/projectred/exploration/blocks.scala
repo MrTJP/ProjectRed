@@ -358,7 +358,7 @@ class TileLily extends InstancedBlockTile with TPlantTile
 
         world.getTileEntity(x+dx, y+dy, z+dz) match
         {
-            case p:TileLily if p.pollinated =>
+            case p:TileLily if p.growth == 7 =>
                 val mix = Colors(meta).mcMix(Colors(p.meta))
                 if (mix != null)
                 {

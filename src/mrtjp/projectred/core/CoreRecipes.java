@@ -36,7 +36,7 @@ public class CoreRecipes
         OreDictionary.registerOre("ingotCopper", PartDefs.COPPERINGOT().makeStack());
         OreDictionary.registerOre("ingotTin", PartDefs.TININGOT().makeStack());
         OreDictionary.registerOre("ingotSilver", PartDefs.SILVERINGOT().makeStack());
-        OreDictionary.registerOre("ingotElectrotine", PartDefs.ELECTROTINEINGOT().makeStack());
+        OreDictionary.registerOre("ingotElectrotineAlloy", PartDefs.ELECTROTINEINGOT().makeStack());
 
         OreDictionary.registerOre("dustElectrotine", PartDefs.ELECTROTINE().makeStack());
     }

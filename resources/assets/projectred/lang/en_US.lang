@@ -59,7 +59,7 @@ item.projectred.core.part.upgrd_rz.name=RZ Upgrade
 item.projectred.core.part.copper_ingot.name=Copper Ingot
 item.projectred.core.part.tin_ingot.name=Tin Ingot
 item.projectred.core.part.silver_ingot.name=Silver Ingot
-item.projectred.core.part.electrotine_ingot.name=Electrotine Ingot
+item.projectred.core.part.electrotine_ingot.name=Electrotine Alloy Ingot
 item.projectred.core.part.electrotine_dust.name=Electrotine
 item.projectred.core.part.electrotine_iron_comp.name=Electrotine Iron Compound
 item.projectred.core.part.electrotine_silicon_comp.name=Electrotine Silicon Compound
@@ -550,6 +550,7 @@ fluid.redmetal.molten=Molten Conductive Redmetal
 itemGroup.fab=Project Red: Fabrication
 
 item.projectred.fabrication.icblueprint.name=IC Blueprint
-item.projectred.fabrication.icchip.name=IC Chip
+item.projectred.fabrication.icchip|0.name=IC Chip
+item.projectred.fabrication.icchip|1.name=Creative Mode IC Chip
 tile.projectred.integration.icblock|0.name=IC Workbench
 tile.projectred.integration.icblock|1.name=IC Printer

@@ -12,8 +12,7 @@ import net.minecraft.world.World
 
 class TransportationPH
 {
-    //val channel = ProjectRedTransportation
-    val channel = "PR|Transp" //temporary, until PacketCustom is fixed
+    val channel = "PR|Transp"
 
     val gui_CraftingPipe_action = 3
 
@@ -84,18 +83,17 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
     private def handleFirewallAction(packet:PacketCustom, sender:EntityPlayerMP)
     {
         val bc = packet.readCoord()
-        val action = packet.readString()
+        val action = packet.readByte()
         val t = PRLib.getMultiPart(sender.worldObj, bc, 6)
         if (t.isInstanceOf[RoutedFirewallPipe])
         {
             val p = t.asInstanceOf[RoutedFirewallPipe]
             action match
             {
-                case "excl" => p.filtExclude = !p.filtExclude
-                case "route" => p.allowRoute = !p.allowRoute
-                case "broad" => p.allowBroadcast = !p.allowBroadcast
-                case "craft" => p.allowCrafting = !p.allowCrafting
-                case "cont" => p.allowController = !p.allowController
+                case 0 => p.filtExclude = !p.filtExclude
+                case 1 => p.allowRoute = !p.allowRoute
+                case 2 => p.allowBroadcast = !p.allowBroadcast
+                case 3 => p.allowCrafting = !p.allowCrafting
             }
             p.sendOptUpdate()
         }

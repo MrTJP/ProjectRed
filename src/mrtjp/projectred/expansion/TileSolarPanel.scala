@@ -13,7 +13,7 @@ import codechicken.microblock.FaceMicroClass
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart, TMultiPart}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.item.{ItemCore, TItemGlassSound}
-import mrtjp.core.world.PlacementLib
+import mrtjp.core.world.{Messenger, PlacementLib}
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core.{ILowLoadMachine, ILowLoadPowerLine, PowerConductor}
@@ -69,8 +69,11 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
     def heightMultiplier = 0.90+0.10*y/256.0
 
     def timeOfDayMultiplier =
-        if (world.getWorldTime > 12000) 0.0
-        else 0.50+0.50*math.sin(math.Pi*world.getWorldTime/12000.0)
+    {
+        val t = world.getWorldTime%24000
+        if (t > 12000) 0.0
+        else 0.50+0.50*math.sin(math.Pi*t/12000.0)
+    }
 
     def sideMultiplier = side match
     {

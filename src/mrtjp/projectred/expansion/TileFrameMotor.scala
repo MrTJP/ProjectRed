@@ -160,7 +160,7 @@ class TileFrameMotor extends TileMachine with TMotorTile
 
     override def getMoveDir = absoluteDir((rotation+2)%4)
 
-    override def drawPower(size:Int) = cond.drawPower(100+10*size)
+    override def drawPower(size:Int) = cond.drawPower(1000+100*size)
 }
 
 object RenderFrameMotor extends TCubeMapRender

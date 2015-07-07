@@ -78,9 +78,10 @@ class RoutedExtensionPipePart extends AbstractNetPipe with TNetworkPipe
         }
     }
 
-    override def trackedItemLost(s:ItemKeyStack)
+    override def itemLost(stack:ItemKeyStack)
     {
-        lost :+= s
+        super.itemLost(stack)
+        lost :+= stack
     }
 
     override def save(tag:NBTTagCompound)
