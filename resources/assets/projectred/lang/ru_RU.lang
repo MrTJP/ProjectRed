@@ -502,3 +502,14 @@ tile.projectred.compatibility.liqredstone.name=Жидкий красный ка�
 tile.projectred.compatibility.liqcondredmetal.name=Расплавленный проводящий красный металл
 fluid.redstone.molten=Жидкий красный камень
 fluid.redmetal.molten=Расплавленный проводящий красный металл
+
+
+
+
+itemGroup.fab=Project Red: Производство
+
+item.projectred.fabrication.icblueprint.name=Чертеж микросхемы
+item.projectred.fabrication.icchip|0.name=Микросхема
+item.projectred.fabrication.icchip|1.name=Микросхема (творческий режим)
+tile.projectred.integration.icblock|0.name=Микросхемный верстак
+tile.projectred.integration.icblock|1.name=Принтер микросхем
