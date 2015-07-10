@@ -186,7 +186,7 @@ object FabricationRecipes
 
             override def getRecipeOutput = new ItemStack(itemICBlueprint, 2)
 
-            override def getRecipeSize = 2
+            override def getRecipeSize = 9
 
             override def getCraftingResult(inv:InventoryCrafting):ItemStack =
             {
@@ -202,14 +202,13 @@ object FabricationRecipes
                             if (bp != null) return null
                             else bp = s
                         else
-                            if (empty != null) return null
-                            else empty = s
+                            empty = s
                     }
                 }
                 if (bp != null && empty != null)
                 {
                     val out = new ItemStack(itemICBlueprint)
-                    out.stackSize = 2
+                    out.stackSize = countEmptyBlueprints(inv) + 1
                     ItemICBlueprint.copyIC(bp, out)
                     out
                 }
