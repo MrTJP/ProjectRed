@@ -384,12 +384,11 @@ class TileTeleposer extends TileMachine with TPoweredMachine
             val a1 = sequence(
                 group(
                     scaleTo(0.025+s, 0.025+s, 0.025+s, 5),
-                    moveTo(start.x+world.rand.nextDouble()-0.5, start.y+world.rand.nextDouble()-0.5, start.z+world.rand.nextDouble()-0.5, 20),
-                    sequence(
-                        delay(15),
-                        changeTexture("projectred:textures/particles/bubble_pop.png"),
-                        scaleTo(0, 0, 0, 5)
-                    )
+                    moveTo(start.x+world.rand.nextDouble()-0.5, start.y+world.rand.nextDouble()-0.5, start.z+world.rand.nextDouble()-0.5, 10)
+                ),
+                sequence(
+                    changeTexture("projectred:textures/particles/bubble_pop.png"),
+                    scaleTo(0, 0, 0, 3)
                 ),
                 kill()
             )

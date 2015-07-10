@@ -591,8 +591,11 @@ class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
         val hitdata = hit1.data.asInstanceOf[Int]
         if (hitdata != -1)
         {
-            pressMask ^= (1<<hitdata)
-            if (!part.world.isRemote) onChange(part)
+            if (!part.world.isRemote)
+            {
+                pressMask ^= (1<<hitdata)
+                onChange(part)
+            }
             return true
         }
         false

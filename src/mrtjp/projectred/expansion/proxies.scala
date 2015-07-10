@@ -137,6 +137,8 @@ class ExpansionProxy_client extends ExpansionProxy_server
 
         SpacebarClientTracker.register()
         ForwardClientTracker.register()
+
+        ItemJetpack.register()
     }
 }
 

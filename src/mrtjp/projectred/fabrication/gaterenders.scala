@@ -487,9 +487,9 @@ class RenderRepeater extends ICGateRenderer[ComboGateICPart]
     {
         wires(0).on = true
         wires(1).on = false
-        endTorch.on = true
+        endTorch.on = false
         shape = 0
-        varTorches(0).on = false
+        varTorches(0).on = true
     }
 
     override def prepareDynamic(gate:ComboGateICPart, frame:Float)
