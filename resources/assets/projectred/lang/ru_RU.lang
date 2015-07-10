@@ -281,22 +281,22 @@ item.projectred.illumination.lightbutton|12.name=Коричневая светя
 item.projectred.illumination.lightbutton|13.name=Зелёная светящаяся кнопка
 item.projectred.illumination.lightbutton|14.name=Красная светящаяся кнопка
 item.projectred.illumination.lightbutton|15.name=Чёрная светящаяся кнопка
-item.projectred.illumination.flightbutton|0.name=Белая светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|1.name=Оранжевая светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|2.name=Сиреневая светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|3.name=Светло-синяя светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|4.name=Жёлтая светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|5.name=Лаймовая светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|6.name=Розовая светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|7.name=Серая светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|8.name=Светло-серая светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|9.name=Бирюзовая светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|10.name=Фиолетовая светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|11.name=Синяя светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|12.name=Коричневая светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|13.name=Зелёная светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|14.name=Красная светящаяся кнопка обратной связи
-item.projectred.illumination.flightbutton|15.name=Чёрная светящаяся кнопка обратной связи
+item.projectred.illumination.flightbutton|0.name=Белая светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|1.name=Оранжевая светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|2.name=Сиреневая светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|3.name=Светло-синяя светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|4.name=Жёлтая светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|5.name=Лаймовая светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|6.name=Розовая светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|7.name=Серая светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|8.name=Светло-серая светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|9.name=Бирюзовая светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|10.name=Фиолетовая светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|11.name=Синяя светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|12.name=Коричневая светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|13.name=Зелёная светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|14.name=Красная светящаяся кнопка с обратной связью
+item.projectred.illumination.flightbutton|15.name=Чёрная светящаяся кнопка с обратной связью
 item.projectred.illumination.cagelamp|0.name=Белая защищённая лампа
 item.projectred.illumination.cagelamp|1.name=Оранжевая защищённая лампа
 item.projectred.illumination.cagelamp|2.name=Сиреневая защищённая лампа
@@ -429,9 +429,9 @@ item.projectred.integration.gate|26.name=Компаратор
 item.projectred.integration.gate|27.name=И элемент
 item.projectred.integration.gate|28.name=Рандомизатор шины
 item.projectred.integration.gate|29.name=Конвертер шины
-item.projectred.integration.gate|30.name=Панель входа шины
-item.projectred.integration.gate|31.name=Триггер укладки
-item.projectred.integration.gate|32.name=Гейт сегментного дисплея
+item.projectred.integration.gate|30.name=Панель ввода шины
+item.projectred.integration.gate|31.name=Регистр
+item.projectred.integration.gate|32.name=Гейт сегментного индикатора
 item.projectred.integration.gate|33.name=Декодирующий рандомизатор
 
 
@@ -502,3 +502,14 @@ tile.projectred.compatibility.liqredstone.name=Жидкий красный ка�
 tile.projectred.compatibility.liqcondredmetal.name=Расплавленный проводящий красный металл
 fluid.redstone.molten=Жидкий красный камень
 fluid.redmetal.molten=Расплавленный проводящий красный металл
+
+
+
+
+itemGroup.fab=Project Red: Производство
+
+item.projectred.fabrication.icblueprint.name=Чертеж микросхемы
+item.projectred.fabrication.icchip|0.name=Микросхема
+item.projectred.fabrication.icchip|1.name=Микросхема (творческий режим)
+tile.projectred.integration.icblock|0.name=Микросхемный верстак
+tile.projectred.integration.icblock|1.name=Принтер микросхем
