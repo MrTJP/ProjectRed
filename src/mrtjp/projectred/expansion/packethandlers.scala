@@ -10,7 +10,7 @@ import net.minecraft.network.play.{INetHandlerPlayClient, INetHandlerPlayServer}
 class ExpansionPH
 {
     val channel = ProjectRedExpansion
-    val machine_gui_open = 1
+    val jetpack_state = 1
 }
 
 object ExpansionCPH extends ExpansionPH with IClientPacketHandler
@@ -19,15 +19,13 @@ object ExpansionCPH extends ExpansionPH with IClientPacketHandler
     {
         packet.getType match
         {
-            case this.machine_gui_open => openMachineGui(packet, mc)
+            case `jetpack_state` =>
+                ItemJetpack.setStateOfEntity(packet.readInt(), packet.readBoolean(), false)
         }
     }
 
     def openMachineGui(packet:PacketCustom, mc:Minecraft)
     {
-//        val machine = WorldLib.getTileEntity(mc.theWorld, packet.readCoord(), classOf[TileGuiMachine])
-//        if (machine != null)
-//            ClientUtils.openSMPGui(packet.readUByte(), MachineGuiFactory(packet.readUByte(), machine))
     }
 }
 

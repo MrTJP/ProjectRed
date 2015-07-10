@@ -21,6 +21,7 @@ import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.world.World
 import net.minecraftforge.client.IItemRenderer
 import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
+import org.lwjgl.opengl.GL11
 
 class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMultiPart with TItemGlassSound
 {
@@ -45,7 +46,7 @@ class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMul
     override def getSubItems(id:Item, tab:CreativeTabs, list:JList[_])
     {
         val l2 = list.asInstanceOf[JList[ItemStack]]
-        for (g <- GateDefinition.values) if (g.implemented && !g.hidden) l2.add(g.makeStack)
+        for (g <- GateDefinition.values) if (g.implemented) l2.add(g.makeStack)
     }
 
     override def registerIcons(reg:IIconRegister)
@@ -131,6 +132,8 @@ object GateItemRenderer extends IItemRenderer
         def renderGateInv(meta:Int, x:Float, y:Float, z:Float, scale:Float)
         {
             if (!GateDefinition(meta).implemented) return
+            GL11.glEnable(GL11.GL_BLEND)
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             TextureUtils.bindAtlas(0)
             CCRenderState.reset()
             CCRenderState.setDynamic()
