@@ -1,33 +1,275 @@
 package mrtjp.projectred.transportation
 
+import mrtjp.core.inventory.InvWrapper
+import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
+
 import scala.collection.mutable.ListBuffer
 
-class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority
+case class LostObj(key:ItemKey, var amount:Int)
 {
-    def maxExtensions = upgradeBus.RLatency
+    var requestAttempts = 0
+}
 
-    def prefScale = upgradeBus.LLatency
+trait TActiveLostStack extends RoutingChip
+{
+    private var lost = Seq[LostObj]()
 
-    override def enablePriorityFlag = true
+    def getMaxRequestAttempts:Int
 
-    override def createUpgradeBus =
+    def addLostItem(stack:ItemKeyStack)
     {
-        val bus = new UpgradeBus(3, 3)
-        bus.setLatency(2, 6, 8, 1, 3, 5)
-        bus.Linfo = "raise max priority value"
-        bus.Lformula = "priority value = Latency"
-        bus.Rinfo = "number of extensions"
-        bus.Rformula = "extensions = Latency"
-
-        bus
+        lost :+= LostObj(stack.key, stack.stackSize)
     }
+
+    def requestLostItems()
+    {
+        if (lost.isEmpty) return
+
+        val obj = lost.head
+        val LostObj(key, amount) = obj
+
+        val toRequest = math.min(amount, routeLayer.getRequester.getActiveFreeSpace(key))
+
+        val requested = if (toRequest <= 0) 0 else
+        {
+            val req = new RequestConsole(RequestFlags.full).setDestination(routeLayer.getRequester)
+            req.makeRequest(ItemKeyStack.get(key, toRequest)).requested
+        }
+
+        if (requested <= 0 && toRequest > 0)
+        {
+            obj.requestAttempts += 1
+            if (obj.requestAttempts > getMaxRequestAttempts)
+            {
+                lost = lost.tail
+                itemLostUnrecoverable(key, toRequest)
+            }
+            else lost = lost.tail :+ obj
+        }
+        else
+        {
+            obj.amount -= requested
+            if (obj.amount <= 0)
+                lost = lost.tail
+        }
+    }
+
+    def itemLostUnrecoverable(item:ItemKey, amount:Int)
+}
+
+class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with TActiveBroadcastStack with TActiveLostStack
+{
+    var excess = new ItemQueue
+
+    private var remainingDelay = operationDelay
+    private var remainingDelay2 = operationDelay2
+
+    def maxExtensions = 9
+
+    private def operationDelay = 10
+    private def operationDelay2 = 40
+
+    override def getStacksToExtract = 1
+    override def getItemsToExtract = 1
+
+    override def timeOutOnFailedExtract = false
+
+    override def getMaxRequestAttempts = 8
+
+    override def extractItem(item:ItemKey, amount:Int) =
+    {
+        val real = invProvider.getInventory
+        if (real != null)
+            InvWrapper.wrap(real).setSlotsFromSide(invProvider.getInterfacedSide)
+                    .extractItem(item, amount)
+        else 0
+    }
+
+    override def itemLostUnrecoverable(item:ItemKey, amount:Int)
+    {
+        val required = getAmountForIngredient(item).toDouble
+        if (required > 0)
+        {
+            val failed = (amount/required).ceil.toInt
+            var i = 0
+            while (i < failed && hasOrders)
+            {
+                val BroadcastObject(s, r) = popAll()
+                r.itemLost(s)
+                i += 1
+            }
+        }
+    }
+
+    override def onEventReceived(event:NetworkEvent) = event match
+    {
+        case e:ItemLostEvent if isIngredient(e.item) =>
+            addLostItem(ItemKeyStack.get(e.item, e.remaining))
+            e.remaining = 0
+            e.setCanceled()
+        case _ =>
+    }
+
+    override def update()
+    {
+        remainingDelay -= 1
+        if (remainingDelay <= 0)
+        {
+            remainingDelay = operationDelay
+            if (hasOrders)
+            {
+                RouteFX2.spawnType1(RouteFX2.color_checkInv, routeLayer.getWorldRouter.getContainer)
+                doExtractOperation()
+            }
+            else doExcessExtractOperation()
+        }
+
+        remainingDelay2 -= 1
+        if (remainingDelay2 <= 0)
+        {
+            remainingDelay2 = operationDelay2
+            requestLostItems()
+        }
+    }
+
+    def doExcessExtractOperation()
+    {
+        if (hasOrders) return
+
+        var stacksRemaining = getStacksToExtract
+        var itemsRemaining = getItemsToExtract
+
+        val it = excess.result.iterator
+
+        import scala.util.control.Breaks._
+        while (it.hasNext && stacksRemaining > 0 && itemsRemaining > 0) breakable
+        {
+            val (item, amount) = it.next()
+
+            val real = invProvider.getInventory
+            if (real == null)
+            {
+                excess.remove(item, amount)
+                break()
+            }
+
+            var toExtract = amount
+            toExtract = math.min(toExtract, itemsRemaining)
+            toExtract = math.min(toExtract, item.getMaxStackSize)
+
+            val removed = extractItem(item, toExtract)
+            if (removed <= 0 && timeOutOnFailedExtract)
+            {
+                excess.remove(item, amount)
+                break()
+            }
+
+            if (removed > 0)
+            {
+                val toSend = item.makeStack(removed)
+                routeLayer.queueStackToSend(toSend, invProvider.getInterfacedSide, Priorities.WANDERING, -1)
+                excess.remove(item, removed)
+            }
+
+            stacksRemaining -= 1
+            itemsRemaining -= removed
+        }
+    }
+
+    override def getBroadcastPriority = preference
+
+    override def onRemoved()
+    {
+        while (hasOrders)
+        {
+            val BroadcastObject(s, r) = popAll()
+            r.itemLost(s)
+        }
+    }
+
+    override def requestPromise(request:RequestBranchNode, existingPromises:Int)
+    {
+        if (excess.isEmpty) return
+        val item = request.getRequestedPackage
+
+        val craftedItem = getCraftedItem
+        if (craftedItem == null || item != craftedItem.key) return
+
+        val remaining = excess(item)-existingPromises
+        if (remaining <= 0) return
+
+        request.addPromise(new DeliveryPromise(item,
+            math.min(remaining, request.getMissingCount), routeLayer.getBroadcaster, true, true))
+    }
+
+    override def deliverPromise(promise:DeliveryPromise, requester:IWorldRequester)
+    {
+        val craft = getCraftedItem
+        if (craft != null && craft.key == promise.item)
+        {
+            if (promise.isExcess) excess.remove(promise.item, promise.size)
+            addOrder(ItemKeyStack.get(promise.item, promise.size), requester, Priorities.ACTIVEC)
+        }
+    }
+
+    override def requestCraftPromise(item:ItemKey) =
+    {
+        val result = getCraftedItem
+        if (result != null && result.key == item)
+        {
+            val promise = new CraftingPromise(result, routeLayer.getCrafter, preference)
+            for (i <- 0 until 9)
+            {
+                val stack = matrix.getStackInSlot(i)
+                if (stack != null && stack.stackSize > 0)
+                    promise.addIngredient(ItemKeyStack.get(stack), getCrafterForSlot(i))
+            }
+            promise
+        }
+        else null
+    }
+
+    def getCrafterForSlot(i:Int):IWorldRequester =
+    {
+        val s = extMatrix.getStackInSlot(i)
+        if (s != null && ItemRoutingChip.hasChipInside(s))
+        {
+            val c = ItemRoutingChip.loadChipFromItemStack(s).asInstanceOf[TChipCrafterExtension]
+
+            val routers = ChipCraftingExtension.getRoutersForExtension(c.id)
+            if (routers.size == 1)
+            {
+                val r = RouterServices.getRouter(RouterServices.getIPforUUID(routers.head))
+                if (r != null && r.isLoaded && r.isInNetwork(routeLayer.getRouter.getIPAddress)) r.getParent match
+                {
+                    case p:IWorldRequester => return p
+                    case _ =>
+                }
+            }
+        }
+        routeLayer.getRequester
+    }
+
+    override def registerExcess(promise:DeliveryPromise)
+    {
+        excess += promise.item -> promise.size
+    }
+
+    override def getCraftedItem =
+    {
+        val s = matrix.getStackInSlot(9)
+        if (s != null) ItemKeyStack.get(s)
+        else null
+    }
+
+    override def getProcessingItems = getTotalDeliveryCount
 
     override def infoCollection(list:ListBuffer[String])
     {
         super.infoCollection(list)
         addMatrixInfo(list)
-        if (prefScale > 0) addPriorityInfo(list)
-        if (maxExtensions > 0) addExtInfo(list)
+        addPriorityInfo(list)
+        addExtInfo(list)
     }
 
     def getChipType = RoutingChipDefs.ITEMCRAFTING

@@ -108,6 +108,7 @@ item.projectred.transportation.routingchip|4.name=Item Extractor chip
 item.projectred.transportation.routingchip|5.name=Item Broadcaster chip
 item.projectred.transportation.routingchip|6.name=Item Stock Keeper chip
 item.projectred.transportation.routingchip|7.name=Item Crafting chip
+item.projectred.transportation.routingchip|8.name=Item Crafting Extension chip
 item.projectred.transportation.routerutil.name=Router Utility
 item.projectred.transportation.pipe|0.name=Item Transport pipe
 item.projectred.transportation.pipe|1.name=Routed Junction pipe

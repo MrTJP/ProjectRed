@@ -145,7 +145,7 @@ trait TMotorTile extends TileMachine with TPoweredMachine with IFrame with IReds
         oldC = isCharged
     }
 
-    override def getConnectionMask(side:Int) = 0x1F
+    override def getConnectionMask(side:Int) = if ((side^1) == this.side) 0 else 0x1F
     override def weakPowerLevel(side:Int, mask:Int) = 0
 }
 

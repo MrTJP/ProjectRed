@@ -1,23 +1,23 @@
 package mrtjp.projectred.transportation
 
+import java.util.UUID
+
 import mrtjp.core.inventory.{InvWrapper, SimpleInventory}
 import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.Container
+import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.Keyboard
 
-import scala.collection.mutable.{ListBuffer, Builder => MBuilder}
+import scala.collection.mutable.ListBuffer
 
 abstract class RoutingChip
 {
     private var invProv:IInventoryProvider = null
     private var rl:TRouteLayer = null
     private var s = -1
-
-    private val upgrdBus = createUpgradeBus
 
     def setEnvironment(inventoryProvider:IInventoryProvider, routeLayer:TRouteLayer, slot:Int)
     {
@@ -32,43 +32,36 @@ abstract class RoutingChip
 
     def update(){}
 
+    def onEventReceived(event:NetworkEvent){}
+
     /** Syncing **/
     def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse = null
 
     /** Broadcasting **/
-    def requestPromises(request:RequestBranchNode, existingPromises:Int){}
-    def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester){}
-    def getProvidedItems(col:ItemQueue){}
+    def requestPromise(request:RequestBranchNode, existingPromises:Int){}
+    def deliverPromise(promise:DeliveryPromise, requester:IWorldRequester){}
+    def getBroadcasts(col:ItemQueue){}
 
     def getBroadcastPriority = Integer.MAX_VALUE
     def getWorkLoad = 0.0D
 
-    /** Requesting **/
-    def trackedItemLost(s:ItemKeyStack){}
-    def trackedItemReceived(s:ItemKeyStack){}
+    /** Crafting **/
+    def requestCraftPromise(item:ItemKey):CraftingPromise = null
+    def registerExcess(promise:DeliveryPromise){}
+    def getCraftedItem:ItemKeyStack = null
+    def getProcessingItems = 0
 
     /** World interactions **/
-    def onPipeBroken(){}
+    def onAdded(){}
+    def onRemoved(){}
     def onNeighborTileChanged(side:Int, weak:Boolean){}
     def weakTileChanges = false
 
-    def save(tag:NBTTagCompound)
-    {
-        val tag2 = new NBTTagCompound
-        upgradeBus.save(tag2)
-        tag.setTag("upgrd", tag2)
-    }
+    def save(tag:NBTTagCompound){}
 
-    def load(tag:NBTTagCompound)
-    {
-        val tag2 = tag.getCompoundTag("upgrd")
-        upgradeBus.load(tag2)
-    }
+    def load(tag:NBTTagCompound){}
 
-    def infoCollection(list:ListBuffer[String])
-    {
-        addUpgradeBusInfo(list)
-    }
+    def infoCollection(list:ListBuffer[String]){}
 
     def getChipType:ChipVal
 
@@ -79,132 +72,36 @@ abstract class RoutingChip
     }
 
     def createContainer(player:EntityPlayer) = new ContainerChipConfig(player, this)
-
-    def createUpgradeBus = new UpgradeBus(0, 0)
-
-    def upgradeBus = upgrdBus
-
-    def addUpgradeBusInfo(list:ListBuffer[String])
-    {
-        val list2 = new ListBuffer[String]()
-        val b = upgradeBus
-        if (b.containsUpgrades)
-        {
-            list2 += "--- upgrades ---"
-            var s:String = ""
-            if (b.Lset(0)) s = s + "LX"
-            if (b.Lset(1)) s = s + " - LY"
-            if (b.Lset(2)) s = s + " - LZ"
-            if (!s.isEmpty) list2 += s
-            var s2:String = ""
-            if (b.Rset(0)) s2 = s2 + "RX"
-            if (b.Rset(1)) s2 = s2 + " - RY"
-            if (b.Rset(2)) s2 = s2 + " - RZ"
-            if (!s2.isEmpty) list2 += s2
-            list2 += "----------------"
-
-            list2.transform(s => EnumChatFormatting.GRAY+s)
-
-            list ++= list2
-        }
-    }
 }
 
-class UpgradeBus(val maxL:Int, val maxR:Int)
+abstract class NetworkEvent
 {
-    val Lset = new Array[Boolean](3)
-    val Rset = new Array[Boolean](3)
+    private var canceled = false
 
-    var LXLatency = 0
-    var LYLatency = 0
-    var LZLatency = 0
-    var RXLatency = 0
-    var RYLatency = 0
-    var RZLatency = 0
+    def isCanceled = canceled
 
-    var Linfo:String = null
-    var Lformula:String = null
-    var Rinfo:String = null
-    var Rformula:String = null
-
-    def LLatency:Int =
+    def setCanceled()
     {
-        var count = 0
-        if (Lset(0)) count += LXLatency
-        if (Lset(1)) count += LYLatency
-        if (Lset(2)) count += LZLatency
-        count
+        if (!isCancelable) throw new Exception(s"Network event ${this.getClass.getSimpleName} cannot be canceled")
+        if (canceled) throw new Exception(s"Network event ${this.getClass.getSimpleName} is already canceled")
+        canceled = true
     }
 
-    def RLatency:Int =
-    {
-        var count = 0
-        if (Rset(0)) count += RXLatency
-        if (Rset(1)) count += RYLatency
-        if (Rset(2)) count += RZLatency
-        count
-    }
+    def isCancelable:Boolean
+}
 
-    def setLatency(lx:Int, ly:Int, lz:Int, rx:Int, ry:Int, rz:Int) =
-    {
-        LXLatency = lx
-        LYLatency = ly
-        LZLatency = lz
-        RXLatency = rx
-        RYLatency = ry
-        RZLatency = rz
-        this
-    }
+class ItemLostEvent(val item:ItemKey, val amount:Int) extends NetworkEvent
+{
+    var remaining = amount
 
-    def installL(i:Int, doInstall:Boolean):Boolean =
-    {
-        if (i >= maxL) return false
-        if (i - 1 >= 0 && !Lset(i - 1)) return false
-        if (!Lset(i))
-        {
-            if (doInstall) Lset(i) = true
-            return true
-        }
-        false
-    }
+    override def isCancelable = true
+}
 
-    def installR(i:Int, doInstall:Boolean):Boolean =
-    {
-        if (i >= maxR) return false
-        if (i - 1 >= 0 && !Rset(i - 1)) return false
-        if (!Rset(i))
-        {
-            if (doInstall) Rset(i) = true
-            return true
-        }
-        false
-    }
+class ItemReceivedEvent(val item:ItemKey, val amount:Int) extends NetworkEvent
+{
+    var remaining = amount
 
-    def containsUpgrades:Boolean =
-    {
-        for (i <- 0 until 3)
-            if (Lset(i) || Rset(i)) return true
-
-        false
-    }
-
-    def save(tag:NBTTagCompound)
-    {
-        for (i <- 0 until 3)
-        {
-            tag.setBoolean("L"+i, Lset(i))
-            tag.setBoolean("R"+i, Rset(i))
-        }
-    }
-
-    def load(tag:NBTTagCompound)
-    {
-        for (i <- 0 until 3)
-        {
-            Lset(i) = tag.getBoolean("L"+i)
-            Rset(i) = tag.getBoolean("R"+i)
-        }
-    }
+    override def isCancelable = true
 }
 
 trait TChipFilter extends RoutingChip
@@ -339,7 +236,6 @@ trait TChipFilter extends RoutingChip
 trait TChipPriority extends RoutingChip
 {
     var preference = 0
-    var priorityFlag = false
 
     private def shift = if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) 10 else 1
     def prefUp()
@@ -352,9 +248,7 @@ trait TChipPriority extends RoutingChip
         preference = Math.max(-prefScale, preference-shift)
     }
 
-    def prefScale:Int
-
-    def enablePriorityFlag = false
+    def prefScale = 32
 
     abstract override def save(tag:NBTTagCompound)
     {
@@ -371,7 +265,6 @@ trait TChipPriority extends RoutingChip
     def addPriorityInfo(list:ListBuffer[String])
     {
         list+=(EnumChatFormatting.GRAY.toString+"Preference: "+preference)
-        if (enablePriorityFlag) list+=(EnumChatFormatting.GRAY.toString+"Preference enabled: "+(if (priorityFlag) "yes" else "no"))
     }
 }
 
@@ -446,51 +339,50 @@ trait TChipStock extends RoutingChip
 trait TChipCrafter extends RoutingChip
 {
     var matrix = new SimpleInventory(10, "matrix", 127)
-    var extIndex = Array[Int](-1, -1, -1, -1, -1, -1, -1, -1, -1)
+    var extMatrix = new SimpleInventory(9, "ext_matrix", 1)
+    {
+        override def isItemValidForSlot(slot:Int, stack:ItemStack) =
+            stack != null && ItemRoutingChip.hasChipInside(stack) &&
+                    RoutingChipDefs.getForStack(stack) == RoutingChipDefs.ITEMEXTENSION
+    }
 
     def maxExtensions:Int
 
-    def extUp(index:Int)
-    {
-        if (0 until 9 contains index) extIndex(index) = Math.min(extIndex(index)+1, 8)
-    }
-
-    def extDown(index:Int)
-    {
-        if (0 until 9 contains index) extIndex(index) = Math.max(extIndex(index)-1, -1)
-    }
-
     abstract override def save(tag:NBTTagCompound)
     {
-        matrix.saveInv(tag)
-        tag.setIntArray("ext", extIndex)
         super.save(tag)
+        matrix.saveInv(tag)
+        extMatrix.saveInv(tag)
     }
 
     abstract override def load(tag:NBTTagCompound)
     {
-        matrix.loadInv(tag)
-        extIndex = tag.getIntArray("ext")
         super.load(tag)
+        matrix.loadInv(tag)
+        extMatrix.loadInv(tag)
     }
 
-    def getCraftedItem = ItemKeyStack.get(matrix.getStackInSlot(9))
-
-    def buildCraftPromise(item:ItemKey, pipe:RoutedCraftingPipePart) =
+    def getAmountForIngredient(item:ItemKey) =
     {
-        val result = ItemKeyStack.get(matrix.getStackInSlot(9))
-        if (result != null && result.key == item)
+        var amount = 0
+        for (i <- 0 until 9)
         {
-            val promise = new CraftingPromise(result, pipe, pipe.priority)
-            for (i <- 0 until 9)
-            {
-                val keystack = ItemKeyStack.get(matrix.getStackInSlot(i))
-                if (keystack != null && keystack.stackSize > 0)
-                    promise.addIngredient(keystack, pipe.getExtensionFor(extIndex(i)))
-            }
-            promise
+            val s = matrix.getStackInSlot(i)
+            if (s != null && ItemKey.get(s) == item)
+                amount += s.stackSize
         }
-        else null
+        amount
+    }
+
+    def isIngredient(item:ItemKey):Boolean =
+    {
+        for (i <- 0 until 9)
+        {
+            val s = matrix.getStackInSlot(i)
+            if (s != null && ItemKey.get(s) == item)
+                return true
+        }
+        false
     }
 
     def addMatrixInfo(list:ListBuffer[String])
@@ -516,13 +408,32 @@ trait TChipCrafter extends RoutingChip
 
     def addExtInfo(list:ListBuffer[String])
     {
-        list += (EnumChatFormatting.GRAY.toString+"Extensions:")
-        for (i <- 0 until 3)
-        {
-            var s = EnumChatFormatting.GRAY.toString+" - "
-            for (j <- 0 until 3)
-                s += "["+(if (extIndex(j+(i*3)) >= 0) "+" else "-")+"]"
-            list += s
-        }
+        list += (EnumChatFormatting.GRAY.toString+"Extensions: "+
+                EnumChatFormatting.GRAY.toString+(0 until 9).count{extMatrix.getStackInSlot(_) != null})
+    }
+}
+
+trait TChipCrafterExtension extends RoutingChip
+{
+    var id = UUID.randomUUID()
+
+    override def save(tag:NBTTagCompound)
+    {
+        tag.setString("extid", id.toString)
+    }
+
+    override def load(tag:NBTTagCompound)
+    {
+        id = UUID.fromString(tag.getString("extid"))
+    }
+
+    def randomizeUUID()
+    {
+        id = UUID.randomUUID()
+    }
+
+    def addExtIDInfo(list:ListBuffer[String])
+    {
+        list += EnumChatFormatting.GRAY.toString+"Extension ID: "+id.toString.split("-")(0)+" ..."
     }
 }

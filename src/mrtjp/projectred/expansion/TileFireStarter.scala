@@ -7,6 +7,7 @@ package mrtjp.projectred.expansion
 
 import codechicken.lib.render.uv.MultiIconTransformation
 import codechicken.lib.vec.BlockCoord
+import codechicken.multipart.IRedstoneConnector
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.world.WorldLib
@@ -16,7 +17,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
 
-class TileFireStarter extends TileMachine with TActiveDevice
+class TileFireStarter extends TileMachine with TActiveDevice with IRedstoneConnector
 {
     override def getBlock = ProjectRedExpansion.machine2
 
@@ -42,6 +43,9 @@ class TileFireStarter extends TileMachine with TActiveDevice
     }
 
     override def isFireSource(s:Int) = side == 0 && s == 1 && active
+
+    override def getConnectionMask(side:Int) = if ((side^1) == this.side) 0 else 0x1F
+    override def weakPowerLevel(side:Int, mask:Int) = 0
 }
 
 object RenderFireStarter extends TInstancedBlockRender with TCubeMapRender

@@ -8,24 +8,25 @@ package mrtjp.projectred.expansion
 import java.util.{List => JList}
 
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
-import codechicken.lib.vec.{Rotation, Cuboid6, Vector3}
+import codechicken.lib.vec.{Cuboid6, Rotation, Vector3}
+import codechicken.multipart.IRedstoneConnector
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.item.ItemKey
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
+import mrtjp.projectred.expansion.TileItemImporter._
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
-import net.minecraft.item.ItemStack
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.util.ForgeDirection
-import TileItemImporter._
+
 import scala.collection.JavaConversions._
 
-class TileItemImporter extends TileMachine with TPressureActiveDevice
+class TileItemImporter extends TileMachine with TPressureActiveDevice with IRedstoneConnector
 {
     override def getBlock = ProjectRedExpansion.machine2
 
@@ -54,10 +55,10 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice
         val w = InvWrapper.wrap(inv)
         w.setSlotsFromSide(side)
         val list = w.getAllItemStacks
-        for ((k, v) <- list)
+        for ((k, v) <- list) if (canImport(k))
         {
             val stack = k.makeStack(w.extractItem(k, extractCount))
-            if (stack.stackSize > 0 && canImport(k))
+            if (stack.stackSize > 0)
             {
                 storage.add(stack)
                 active = true
@@ -113,6 +114,9 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice
     }
 
     def canImport(key:ItemKey) = true
+
+    override def getConnectionMask(side:Int) = if ((side^1) == this.side) 0 else 0x1F
+    override def weakPowerLevel(side:Int, mask:Int) = 0
 }
 
 object TileItemImporter

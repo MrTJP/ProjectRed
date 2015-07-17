@@ -89,7 +89,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                     if (!LogisticPathFinder.sharesInventory(requester.getContainer, member.getContainer))
                     {
                         val prev = root.getExistingPromisesFor(member, getRequestedPackage)
-                        member.requestPromises(this, prev)
+                        member.requestPromise(this, prev)
                     }
                 case _ =>
             }
@@ -134,7 +134,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                 val item = recurse_GetCrafterItem(wc)
                 if (item == null || item == getRequestedPackage) //dont use a crafter that has been used for a different item in this request tree
                 {
-                    val cpl = wc.buildCraftPromises(getRequestedPackage)
+                    val cpl = wc.requestCraftPromise(getRequestedPackage)
                     for (cp <- cpl) jobs += cp
                 }
             case _ =>
@@ -191,7 +191,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
                         var cap = if (!balanced.isEmpty) balanced.peek.toDo else Int.MaxValue
 
                         val floor = unbalanced(0).toDo
-                        cap = Math.min(cap, floor+(itemsNeeded+unbalanced.size-1)/unbalanced.size)
+                        cap = math.min(cap, floor+(itemsNeeded+unbalanced.size-1)/unbalanced.size)
 
                         for (crafter <- unbalanced)
                         {
@@ -292,7 +292,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, thePackage:ItemKeyStack, 
     def recurse_StartDelivery()
     {
         subRequests.foreach(_.recurse_StartDelivery())
-        for (p <- promises) p.from.deliverPromises(p, requester)
+        for (p <- promises) p.from.deliverPromise(p, requester)
         for (p <- excessPromises) p.from match
         {
             case wc:IWorldCrafter => wc.registerExcess(p)
@@ -434,8 +434,8 @@ class PathOrdering(distanceWeight:Double) extends Ordering[StartEndPath]
         c += (x.distance-y.distance)*distanceWeight
 
         if (c == 0) -switchKey //if same distance lower id is preferred
-        else if (c > 0) (c+0.5D).asInstanceOf[Int]*switchKey //round up
-        else (c-0.5D).asInstanceOf[Int]*switchKey //round down
+        else if (c > 0) (c+0.5D).toInt*switchKey //round up
+        else (c-0.5D).toInt*switchKey //round down
     }
 }
 

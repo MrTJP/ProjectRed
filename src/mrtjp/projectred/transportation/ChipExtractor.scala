@@ -8,16 +8,16 @@ class ChipExtractor extends RoutingChip with TChipFilter with TChipOrientation
 {
     private var remainingDelay = operationDelay
 
-    private def operationDelay = 100-upgradeBus.LLatency
+    private def operationDelay = 10
 
-    private def itemsToExtract = 8+upgradeBus.RLatency
+    private def itemsToExtract = 64
 
     override def update()
     {
         super.update()
 
-        remainingDelay-=1
-        if (remainingDelay>0) return
+        remainingDelay -= 1
+        if (remainingDelay > 0) return
         remainingDelay = operationDelay
 
         val real = invProvider.getInventory
@@ -71,19 +71,6 @@ class ChipExtractor extends RoutingChip with TChipFilter with TChipOrientation
     }
 
     def getChipType = RoutingChipDefs.ITEMEXTRACTOR
-
-
-    override def createUpgradeBus =
-    {
-        val bus = new UpgradeBus(3, 3)
-        bus.setLatency(25, 34, 40, 8, 16, 32)
-        bus.Linfo = "delay between extractions"
-        bus.Lformula = "delay = 100 - Latency"
-        bus.Rinfo = "items to extract in one operation"
-        bus.Rformula = "items = 8 + Latency"
-
-        bus
-    }
 
     override def enableHiding = false
 }

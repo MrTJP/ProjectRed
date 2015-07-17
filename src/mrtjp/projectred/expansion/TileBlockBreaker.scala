@@ -8,6 +8,7 @@ package mrtjp.projectred.expansion
 import java.util.{List => JList}
 
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
+import codechicken.multipart.IRedstoneConnector
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.item.ItemKey
 import mrtjp.core.render.TCubeMapRender
@@ -22,7 +23,7 @@ import net.minecraft.world.IBlockAccess
 
 import scala.collection.JavaConversions._
 
-class TileBlockBreaker extends TileMachine with TPressureActiveDevice
+class TileBlockBreaker extends TileMachine with TPressureActiveDevice with IRedstoneConnector
 {
     override def getBlock = ProjectRedExpansion.machine2
     override def doesRotate = false
@@ -47,6 +48,9 @@ class TileBlockBreaker extends TileMachine with TPressureActiveDevice
         world.setBlockToAir(bc.x, bc.y, bc.z)
         exportBuffer()
     }
+
+    override def getConnectionMask(side:Int) = if ((side^1) == this.side) 0 else 0x1F
+    override def weakPowerLevel(side:Int, mask:Int) = 0
 }
 
 object RenderBlockBreaker extends TInstancedBlockRender with TCubeMapRender

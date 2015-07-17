@@ -14,6 +14,7 @@ object PRResources
     val guiPipeFirewall = registerPR("textures/gui/firewall_pipe.png")
     val guiFurnace = registerPR("textures/gui/furnace.png")
     val guiPrototyper = registerPR("textures/gui/ic_workbench.png")
+    val panelCraftExtension = registerPR("textures/gui/craft_chip_ext_panel.png")
 
     val icmaptex = registerPR("textures/gui/map_background.png")
     val guiBlockPlacer = registerPR("textures/gui/placer.png")

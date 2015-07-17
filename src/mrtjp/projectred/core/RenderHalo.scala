@@ -7,7 +7,7 @@ import mrtjp.core.color.Colors
 import net.minecraft.client.Minecraft
 import net.minecraft.world.World
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11._
 
 object RenderHalo
 {
@@ -37,18 +37,18 @@ object RenderHalo
     @SubscribeEvent
     def onRenderWorldLast(event:RenderWorldLastEvent)
     {
-        if (renderList.size == 0) return
+        if (renderList.isEmpty) return
         val w = Minecraft.getMinecraft.theWorld
         val entity = Minecraft.getMinecraft.renderViewEntity
         renderEntityPos.set(entity.posX, entity.posY+entity.getEyeHeight, entity.posZ)
 
         renderList = renderList.sorted
 
-        GL11.glPushMatrix()
+        glPushMatrix()
 
         // Adjust translation for camera movement between frames (using camra coordinates for numeric stability).
         // Note: When porting to MC 1.8, might want to use GlStateManager.translate() here instead.
-        GL11.glTranslated(
+        glTranslated(
              entity.posX-(entity.posX-entity.lastTickPosX)*event.partialTicks-entity.lastTickPosX,
              entity.posY-(entity.posY-entity.lastTickPosY)*event.partialTicks-entity.lastTickPosY,
              entity.posZ-(entity.posZ-entity.lastTickPosZ)*event.partialTicks-entity.lastTickPosZ)
@@ -67,17 +67,17 @@ object RenderHalo
 
         renderList = Vector()
         restoreRenderState()
-        GL11.glPopMatrix()
+        glPopMatrix()
     }
 
     def prepareRenderState()
     {
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_LIGHTING)
-        GL11.glDisable(GL11.GL_CULL_FACE)
-        GL11.glDepthMask(false)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+        glDisable(GL_TEXTURE_2D)
+        glDisable(GL_LIGHTING)
+        glDisable(GL_CULL_FACE)
+        glDepthMask(false)
         CCRenderState.reset()
         CCRenderState.setDynamic()
         CCRenderState.startDrawing()
@@ -86,13 +86,13 @@ object RenderHalo
     def restoreRenderState()
     {
         CCRenderState.draw()
-        GL11.glDepthMask(true)
-        GL11.glColor3f(1, 1, 1)
-        GL11.glEnable(GL11.GL_CULL_FACE)
-        GL11.glEnable(GL11.GL_LIGHTING)
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GL11.glDisable(GL11.GL_BLEND)
+        glDepthMask(true)
+        glColor3f(1, 1, 1)
+        glEnable(GL_CULL_FACE)
+        glEnable(GL_LIGHTING)
+        glEnable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glDisable(GL_BLEND)
     }
 
     private def renderHalo(world:World, cc:LightCache)

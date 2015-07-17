@@ -23,8 +23,6 @@ import net.minecraftforge.oredict.ShapedOreRecipe
 
 class ExpansionProxy_server extends IProxy with IPartFactory2
 {
-    var loadPowerTest = false
-
     def preinit()
     {
         PacketCustom.assignHandler(ExpansionSPH.channel, ExpansionSPH)
@@ -61,12 +59,12 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
         machine2.addTile(classOf[TileTeleposer], 7)
         machine2.addTile(classOf[TileFrameMotor], 8)
         machine2.addTile(classOf[TileFrameActuator], 9)
-
-        ExpansionRecipes.initRecipes()
     }
 
     def postinit()
     {
+        ExpansionRecipes.initRecipes()
+
         SpacebarServerTracker.register()
         ForwardServerTracker.register()
 

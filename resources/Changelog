@@ -1,5 +1,18 @@
 v4.7.0pre6
 - ADDED: Jetpack particles and models
+- ADDED: Crafting Extension chip
+- REMOVED: Routing chip upgrade system
+- REMOVED: Routed Crafting pipe
+- REMOVED: Routed Extension pipe
+- FIX: Furnace recipe crash
+- FIX: Inteface pipe keeping logic after removing chip
+- FIX: Filtered importer destroying items
+- FIX: Redstone not connecting to machines properly
+- FIX: Analog IC IOs showing incorrect frequency in their guis
+- FIX: Teleposer server crash
+- CHANGE: Moved crafting logic from crafting pipe to chip
+- CHANGE: Crafting chip can now be installed in any Interface pipe
+- CHANGE: New routing fx
 
 v4.7.0pre5
 - ADDED: Cell gate IC parts

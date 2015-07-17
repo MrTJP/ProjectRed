@@ -5,7 +5,7 @@ import java.util.{List => JList}
 import codechicken.lib.vec.{BlockCoord, Vector3}
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.gui.{GuiHandler, GuiLib, NodeContainer, Slot3}
+import mrtjp.core.gui.{GuiLib, NodeContainer, Slot3}
 import mrtjp.core.inventory.SimpleInventory
 import mrtjp.core.item.{ItemCore, ItemDefinition, TItemGlassSound}
 import mrtjp.projectred.ProjectRedTransportation
@@ -61,9 +61,9 @@ object PipeDefs extends ItemDefinition
     val ROUTEDJUNCTION = new PipeVal("pr_rbasic", "routedjunc",
         "routed", "unrouted", "routedconn", "unroutedconn")
     val ROUTEDINTERFACE = new PipeVal("pr_rinterface", "routedint")
-    val ROUTEDCRAFTING = new PipeVal("pr_rcrafting", "routedcrafting")
+    val ROUTEDCRAFTING = new PipeVal("pr_rcrafting", "routedcrafting") /** deprecated **/
     val ROUTEDREQUEST = new PipeVal("pr_rrequest", "routedrequest")
-    val ROUTEDEXTENSION = new PipeVal("pr_rextension", "routedextension")
+    val ROUTEDEXTENSION = new PipeVal("pr_rextension", "routedextension") /** deprecated **/
     val ROUTEDFIREWALL = new PipeVal("pr_rfire", "routedfire")
     val PRESSURETUBE = new PipeVal("pr_pt", Seq("pressuretube")++(0 to 15 map{"colour/colour_"+_}):_*)
     val RESISTANCETUBE = new PipeVal("pr_rpt", "resistancetube")
@@ -191,6 +191,7 @@ object RoutingChipDefs extends ItemDefinition
     val ITEMBROADCASTER = new ChipVal("broadcaster", new ChipBroadcaster)
     val ITEMSTOCKKEEPER = new ChipVal("stock_keeper", new ChipStockKeeper)
     val ITEMCRAFTING = new ChipVal("crafting", new ChipCrafting, ChipType.CRAFTING)
+    val ITEMEXTENSION = new ChipVal("extension", new ChipCraftingExtension)
 
     def getForStack(stack:ItemStack) =
     {
@@ -231,22 +232,12 @@ class ItemRouterUtility extends ItemCore("projectred.transportation.routerutil")
 
     override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer) =
     {
-        if (!w.isRemote && stack != null && stack.getItem.isInstanceOf[ItemRouterUtility]) openGui(player)
         super.onItemRightClick(stack, w, player)
     }
 
     override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World, par4:Int, par5:Int, par6:Int, par7:Int, par8:Float, par9:Float, par10:Float) =
     {
-        if (!w.isRemote && stack != null && stack.getItem.isInstanceOf[ItemRouterUtility]) openGui(player)
         true
-    }
-
-    private def openGui(player:EntityPlayer)
-    {
-        //Some Scala wierdness is causing Server to reference Client only things
-
-        //GuiChipUpgrade.open(player, new ChipUpgradeContainer(player))
-        GuiHandler.openSMPContainer(player, new ChipUpgradeContainer(player), TransportationProxy.guiIDChipUpgrade, {_=>})
     }
 }
 
@@ -327,27 +318,6 @@ class ChipUpgradeContainer(player:EntityPlayer) extends NodeContainer
 
     def install()
     {
-        val chipstack = upgradeInv.getStackInSlot(6)
-        if (chipstack == null) return
-        val chip = ItemRoutingChip.loadChipFromItemStack(chipstack)
-        if (chip == null) return
-
-        for (i <- 0 until 6) if (upgradeInv.getStackInSlot(i) != null)
-        {
-            if (i < 3)
-            {
-                if (chip.upgradeBus.installL(i, true))
-                    upgradeInv.setInventorySlotContents(i, null)
-            }
-            else
-            {
-                if (chip.upgradeBus.installR(i-3, true))
-                    upgradeInv.setInventorySlotContents(i, null)
-            }
-        }
-
-        ItemRoutingChip.saveChipToItemStack(chipstack, chip)
-        upgradeInv.setInventorySlotContents(6, chipstack)
         detectAndSendChanges()
     }
 }

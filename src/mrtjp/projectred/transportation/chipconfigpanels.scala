@@ -11,6 +11,7 @@ import mrtjp.core.color.Colors
 import mrtjp.core.gui._
 import mrtjp.core.resource.ResourceLib
 import mrtjp.core.vec.{Point, Size}
+import mrtjp.projectred.core.libmc.PRResources
 import net.minecraft.client.gui.Gui
 import net.minecraft.util.EnumChatFormatting
 
@@ -232,7 +233,7 @@ class OrientChipPanel(chip:TChipOrientation) extends ChipPanelNode(chip)
 
 class PriorityChipPanel(chip:TChipPriority) extends ChipPanelNode(chip)
 {
-    size = Size(64, 72)
+    size = Size(64, 68)
 
     {
         val plus = new MCButtonNode
@@ -254,15 +255,6 @@ class PriorityChipPanel(chip:TChipPriority) extends ChipPanelNode(chip)
             getContainer.saveChip()
         }
         addChild(minus)
-
-        if (chip.enablePriorityFlag)
-        {
-            val check = CheckBoxNode.centered(52, 60)
-            check.state = chip.priorityFlag
-            check.clickDelegate = {() => chip.priorityFlag = check.state}
-            addChild(check)
-        }
-
     }
 
     override def getDotPosition = Point(76, 51)
@@ -279,7 +271,6 @@ class PriorityChipPanel(chip:TChipPriority) extends ChipPanelNode(chip)
     {
         super.drawBack_Impl(mouse, rframe)
         GuiDraw.drawStringC(chip.preference.toString, position.x+32, position.y+28, Colors.GREY.argb, false)
-        if (chip.enablePriorityFlag) GuiDraw.drawString("Enabled", position.x+4, position.y+56, Colors.GREY.rgb, false)
     }
 }
 
@@ -380,32 +371,19 @@ class CraftChipPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
 
 class CraftExtPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
 {
+    size = Size(72, 72)
+
+    override def onAddedToParent_Impl()
     {
-        size = Size(120, 86)
 
-        import scala.util.control.Breaks._
-        breakable { for (((x, y), i) <- GuiLib.createGrid(size.width/2-40, 6, 3, 3, 24+4, 24+1).zipWithIndex)
-            if (chip.maxExtensions >= i)
-            {
-                val up = new MCButtonNode
-                up.position = Point(x, y)
-                up.size = Size(24, 6)
-                up.clickDelegate = {() =>
-                    chip.extUp(i)
-                    getContainer.saveChip()
-                }
-                addChild(up)
-
-                val down = new MCButtonNode
-                down.position = Point(x, y+18)
-                down.size = Size(24, 6)
-                down.clickDelegate = {() =>
-                    chip.extDown(i)
-                    getContainer.saveChip()
-                }
-                addChild(down)
-            }
-            else break()
+        var s = getContainer.indexMap(classOf[TChipCrafter])+10
+        for ((x, y) <- GuiLib.createSlotGrid(10, 10, 3, 3, 0, 0))
+        {
+            val slot = new InventorySlotNode
+            slot.position = Point(x, y)
+            slot.slotIdx = s
+            addChild(slot)
+            s += 1
         }
     }
 
@@ -419,23 +397,54 @@ class CraftExtPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
         chip.addExtInfo(list)
     }
 
+    override def drawBack_Impl(mouse:Point, rframe:Float)
+    {
+        super.drawBack_Impl(mouse, rframe)
+    }
+
+    override def drawBackgroundBox()
+    {
+        PRResources.panelCraftExtension.bind()
+        GuiDraw.drawTexturedModalRect(position.x, position.y, 0, 0, size.width, size.height)
+    }
+}
+
+class ExtensionIDPanel(chip:TChipCrafterExtension) extends ChipPanelNode(chip)
+{
+    size = Size(120, 55)
+
+    {
+        val ref = new MCButtonNode
+        ref.position = Point(57, 38)
+        ref.size = Size(58, 12)
+        ref.text = "randomize"
+        ref.clickDelegate = {() =>
+            chip.randomizeUUID()
+            getContainer.saveChip()
+        }
+        addChild(ref)
+    }
+
+    override def getDotPosition = Point(80, 42)
+
+    override def isPanelVisible = true
+
+    override def buildDotTooltip(list:ListBuffer[String])
+    {
+        list += "Extension ID"
+        chip.addExtIDInfo(list)
+    }
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
         super.drawBack_Impl(mouse, rframe)
+        val sec = chip.id.toString.split("-")
+        val groups = Seq(sec(0)+"-"+sec(1)+"-"+sec(2)+"-"+sec(3)+"-", sec(4))
 
-        var index = 0
-        for ((x, y) <- GuiLib.createGrid(position.x+size.width/2-40, position.y+6, 3, 3, 28, 25))
-        {
-            if (chip.maxExtensions >= index)
-            {
-                val ext = chip.extIndex(index)
-                if (ext >= 0)
-                    Gui.drawRect(x+2, y, x+2+20, y+18, Colors(ext).argb)
-                else GuiDraw.drawStringC("off", x+12, y+8, Colors.GREY.rgba, false)
-            }
-            else GuiDraw.drawStringC("-", x+12, y+8, Colors.GREY.rgba, false)
-            index += 1
-        }
+        val prev = GuiDraw.fontRenderer.getUnicodeFlag
+        GuiDraw.fontRenderer.setUnicodeFlag(true)
+        for (i <- groups.indices)
+            GuiDraw.drawString(groups(i), position.x+14, position.y+12+i*12, Colors.GREY.argb, false)
+        GuiDraw.fontRenderer.setUnicodeFlag(prev)
     }
 }

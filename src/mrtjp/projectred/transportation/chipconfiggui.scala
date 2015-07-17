@@ -70,7 +70,7 @@ object ContainerChipConfig
 {
     val panelSlotsMap = Map[Class[_ <: RoutingChip], ContainerChipConfig => Unit](
         classOf[TChipFilter] -> {c =>
-            for (s <- c.slotCount until c.slotCount+9)
+            for (s <- 0 until 9)
             {
                 val slot = new Slot3(c.chip.asInstanceOf[TChipFilter].filter, s, 9999, 9999)
                 slot.phantomSlot = true
@@ -82,7 +82,7 @@ object ContainerChipConfig
         classOf[TChipPriority] -> {c =>
         },
         classOf[TChipStock] -> {c =>
-            for (s <- c.slotCount until c.slotCount+9)
+            for (s <- 0 until 9)
             {
                 val slot = new Slot3(c.chip.asInstanceOf[TChipStock].stock, s, 9999, 9999)
                 slot.phantomSlot = true
@@ -90,24 +90,34 @@ object ContainerChipConfig
             }
         },
         classOf[TChipCrafter] -> {c =>
-            for (s <- c.slotCount until c.slotCount+10)
+            for (s <- 0 until 10)
             {
                 val slot = new Slot3(c.chip.asInstanceOf[TChipCrafter].matrix, s, 9999, 9999)
                 slot.phantomSlot = true
                 c.addSlotToContainer(slot)
             }
+
+            for (s <- 0 until 9)
+            {
+                val slot = new Slot3(c.chip.asInstanceOf[TChipCrafter].extMatrix, s, 9999, 9999)
+                slot.phantomSlot = true
+                c.addSlotToContainer(slot)
+            }
+        },
+        classOf[TChipCrafterExtension] -> {c =>
         }
     )
 
     val panelFactories = Map[Class[_ <: RoutingChip], RoutingChip => Seq[ChipPanelNode]](
-        classOf[TChipFilter] -> { c => Seq(new FilterChipPanel(c.asInstanceOf[TChipFilter])) },
-        classOf[TChipOrientation] -> { c => Seq(new OrientChipPanel(c.asInstanceOf[TChipOrientation])) },
-        classOf[TChipPriority] -> { c => Seq(new PriorityChipPanel(c.asInstanceOf[TChipPriority])) },
-        classOf[TChipStock] -> { c => Seq(new StockChipPanel(c.asInstanceOf[TChipStock])) },
-        classOf[TChipCrafter] -> { c => Seq(
+        classOf[TChipFilter] -> {c => Seq(new FilterChipPanel(c.asInstanceOf[TChipFilter]))},
+        classOf[TChipOrientation] -> {c => Seq(new OrientChipPanel(c.asInstanceOf[TChipOrientation]))},
+        classOf[TChipPriority] -> {c => Seq(new PriorityChipPanel(c.asInstanceOf[TChipPriority]))},
+        classOf[TChipStock] -> {c => Seq(new StockChipPanel(c.asInstanceOf[TChipStock]))},
+        classOf[TChipCrafter] -> {c => Seq(
             new CraftChipPanel(c.asInstanceOf[TChipCrafter]),
             new CraftExtPanel(c.asInstanceOf[TChipCrafter])
-        )}
+        )},
+        classOf[TChipCrafterExtension] -> {c => Seq(new ExtensionIDPanel(c.asInstanceOf[TChipCrafterExtension]))}
     )
 }
 
@@ -241,8 +251,13 @@ abstract class ChipPanelNode(chip:RoutingChip) extends TNode
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
-        GuiLib.drawGuiBox(position.x, position.y, size.width, size.height, 0)
+        drawBackgroundBox()
         GuiDraw.drawRect(moverFrame.x, moverFrame.y, moverFrame.width, moverFrame.height, Colors.LIGHT_GREY.argb)
+    }
+
+    def drawBackgroundBox()
+    {
+        GuiLib.drawGuiBox(position.x, position.y, size.width, size.height, 0)
     }
 
     override def drawFront_Impl(mouse:Point, rframe:Float)
