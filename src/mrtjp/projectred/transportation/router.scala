@@ -172,7 +172,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             if (updateLSAIfNeeded()) startLSAFloodfill()
             refreshRouteTableIfNeeded(false)
             val r = getParent
-            if (r != null) r.refreshState
+            if (r != null) r.refreshState()
             return
         }
         if (Configurator.routerUpdateThreadCount > 0) refreshRouteTableIfNeeded(false)

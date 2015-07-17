@@ -23,7 +23,7 @@ trait IWorldRouter
 
     def needsWork:Boolean
 
-    def refreshState:Boolean
+    def refreshState()
 
     def getContainer:TNetworkPipe
     def getWorld:World
@@ -53,9 +53,9 @@ trait IWorldRequester extends IWorldRouter
 
 trait IWorldBroadcaster extends IWorldRouter
 {
-    def requestPromises(request:RequestBranchNode, existingPromises:Int)
+    def requestPromise(request:RequestBranchNode, existingPromises:Int)
 
-    def deliverPromises(promise:DeliveryPromise, requester:IWorldRequester)
+    def deliverPromise(promise:DeliveryPromise, requester:IWorldRequester)
 
     def getBroadcasts(col:ItemQueue){}
 
@@ -66,11 +66,11 @@ trait IWorldBroadcaster extends IWorldRouter
 
 trait IWorldCrafter extends IWorldRequester with IWorldBroadcaster
 {
-    def buildCraftPromises(item:ItemKey):Vector[CraftingPromise]
+    def requestCraftPromise(item:ItemKey):Seq[CraftingPromise]
 
     def registerExcess(promise:DeliveryPromise)
 
-    def getCraftedItems:Vector[ItemKeyStack]
+    def getCraftedItems:Seq[ItemKeyStack]
 
     def itemsToProcess:Int
 }
@@ -88,6 +88,7 @@ trait TRouteLayer
     def getWorldRouter:IWorldRouter
     def getBroadcaster:IWorldBroadcaster
     def getRequester:IWorldRequester
+    def getCrafter:IWorldCrafter
 
     def getWorld:World
     def getCoords:BlockCoord
@@ -202,8 +203,8 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
         for (i <- 0 until 6)
         {
-            if ((high&1<<i) != 0) RouteFX.spawnType3(RouteFX.color_linked, 1, i, bc, world)
-            if ((low&1<<i) != 0) RouteFX.spawnType3(RouteFX.color_unlinked, 1, i, bc, world)
+            if ((high&1<<i) != 0) RouteFX2.spawnType3(RouteFX2.color_linked, i, this)
+            if ((low&1<<i) != 0) RouteFX2.spawnType2(RouteFX2.color_unlinked, i, this)
         }
 
         tile.markRender()
@@ -237,9 +238,9 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         {
             val wr = dest.getParent
             wr.itemExpected(r.payload)
-            RouteFX.spawnType1(RouteFX.color_sync, 8, new BlockCoord(wr.getContainer.tile), world)
+            RouteFX2.spawnType1(RouteFX2.color_sync, this)
         }
-        RouteFX.spawnType1(RouteFX.color_send, 8, new BlockCoord(tile), world)
+        RouteFX2.spawnType1(RouteFX2.color_send, this)
 
         statsSent += 1
     }
@@ -271,23 +272,21 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
     protected def updateClient()
     {
-        if (world.getTotalWorldTime%(Configurator.detectionFrequency*20) == searchDelay)
+        if (world.getTotalWorldTime%(Configurator.detectionFrequency*10) == searchDelay)
             for (i <- 0 until 6) if ((linkMap&1<<i) != 0)
-                RouteFX.spawnType3(RouteFX.color_blink, 1, i, getCoords, world)
+                RouteFX2.spawnType3(RouteFX2.color_blink, i, this)
     }
 
-    override def refreshState:Boolean =
+    override def refreshState()
     {
-        if (world.isRemote) return false
+        if (world.isRemote) return
         var link = 0
         for (s <- 0 until 6) if (getRouter.LSAConnectionExists(s)) link |= 1<<s
         if (linkMap != link)
         {
-            linkMap = link.asInstanceOf[Byte]
+            linkMap = link.toByte
             sendLinkMapUpdate()
-            return true
         }
-        false
     }
 
     override def getContainer = this
@@ -295,7 +294,7 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
     override def onRemoved()
     {
         super.onRemoved()
-        TNetworkPipe.delayDelta = Math.max(TNetworkPipe.delayDelta-1, 0)
+        TNetworkPipe.delayDelta = math.max(TNetworkPipe.delayDelta-1, 0)
         val r = getRouter
         if (r != null) r.decommission()
     }
@@ -346,7 +345,7 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
             if (f.getResult != null)
             {
                 r.setDestination(f.getResult.responder, f.getResult.priority)
-                color = RouteFX.color_route
+                color = RouteFX2.color_route
             }
         }
 
@@ -366,7 +365,7 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
             }
             else
             {
-                color = RouteFX.color_receive
+                color = RouteFX2.color_receive
                 r.hasArrived = true
                 itemReceived(r.payload)
             }
@@ -375,7 +374,7 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         if (r.destinationUUID != getRouter.getID)
         {
             r.output = getRouter.getDirection(r.destinationIP, r.payload.key, r.netPriority)
-            color = RouteFX.color_relay
+            color = RouteFX2.color_relay
             if (r.output == 6)
             {
                 var m = 0
@@ -383,14 +382,14 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
                 chooseRandomDestination(r, ~m)
                 r.resetTrip()
                 r.travelLog = BitSet.empty
-                color = RouteFX.color_routeLost
+                color = RouteFX2.color_routeLost
             }
         }
 
         adjustSpeed(r)
 
-        if (color == RouteFX.color_relay) statsRelayed += 1
-        RouteFX.spawnType1(color, 8, new BlockCoord(tile), world)
+        if (color == RouteFX2.color_relay) statsRelayed += 1
+        RouteFX2.spawnType1(color, this)
     }
 
     override def injectPayload(r:NetworkPayload, in:Int) =
@@ -449,6 +448,12 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         case _ => null
     }
     override def getRequester = this
+
+    override def getCrafter = this match
+    {
+        case c:IWorldCrafter => c
+        case _ => null
+    }
 
     override def getWorld = world
     override def getCoords = new BlockCoord(tile)

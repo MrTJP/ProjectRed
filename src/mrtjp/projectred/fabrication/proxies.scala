@@ -5,6 +5,7 @@
  */
 package mrtjp.projectred.fabrication
 import java.lang.{Character => JC}
+
 import codechicken.lib.data.MCDataInput
 import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.MultiPartRegistry.IPartFactory2
@@ -14,18 +15,18 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TileRenderRegistry
 import mrtjp.core.color.Colors
 import mrtjp.core.gui.GuiHandler
-import mrtjp.projectred.{ProjectRedIntegration, ProjectRedFabrication}
 import mrtjp.projectred.ProjectRedFabrication._
 import mrtjp.projectred.core.{IProxy, PartDefs}
 import mrtjp.projectred.integration.{GateDefinition, RenderGate}
-import net.minecraft.init.{Items, Blocks}
+import mrtjp.projectred.{ProjectRedFabrication, ProjectRedIntegration}
+import net.minecraft.init.{Blocks, Items}
 import net.minecraft.inventory.InventoryCrafting
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.IRecipe
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.World
 import net.minecraftforge.client.MinecraftForgeClient
-import net.minecraftforge.oredict.{ShapelessOreRecipe, ShapedOreRecipe}
+import net.minecraftforge.oredict.ShapedOreRecipe
 
 class FabricationProxy_server extends IProxy with IPartFactory2
 {
@@ -191,7 +192,7 @@ object FabricationRecipes
             override def getCraftingResult(inv:InventoryCrafting):ItemStack =
             {
                 var bp:ItemStack = null
-                var empty:ItemStack = null
+                var emptyCount = 0
                 for (i <- 0 until inv.getSizeInventory)
                 {
                     val s = inv.getStackInSlot(i)
@@ -202,30 +203,17 @@ object FabricationRecipes
                             if (bp != null) return null
                             else bp = s
                         else
-                            empty = s
+                            emptyCount += 1
                     }
                 }
-                if (bp != null && empty != null)
+                if (bp != null && emptyCount > 0)
                 {
                     val out = new ItemStack(itemICBlueprint)
-                    out.stackSize = countEmptyBlueprints(inv) + 1
+                    out.stackSize = emptyCount+1
                     ItemICBlueprint.copyIC(bp, out)
                     out
                 }
                 else null
-            }
-
-            def countEmptyBlueprints(inv:InventoryCrafting) =
-            {
-                var count = 0
-                for (i <- 0 until inv.getSizeInventory)
-                {
-                    val s = inv.getStackInSlot(i)
-                    if (s != null && s.getItem.isInstanceOf[ItemICBlueprint] &&
-                            !ItemICBlueprint.hasICInside(s))
-                            count += 1
-                }
-                count
             }
         })
 

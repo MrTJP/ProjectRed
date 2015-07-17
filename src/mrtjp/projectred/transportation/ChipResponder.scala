@@ -9,8 +9,6 @@ class ChipItemResponder extends RoutingChip with TChipFilter with TChipPriority
 {
     def sendPriority = Priorities.PASSIVE
 
-    def prefScale = 2+upgradeBus.LLatency
-
     override def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse =
     {
         val real = invProvider.getInventory
@@ -38,15 +36,6 @@ class ChipItemResponder extends RoutingChip with TChipFilter with TChipPriority
     }
 
     def getChipType = RoutingChipDefs.ITEMRESPONDER
-
-    override def createUpgradeBus =
-    {
-        val bus = new UpgradeBus(3, 0)
-        bus.setLatency(3, 5, 54, 0, 0, 0)
-        bus.Linfo = "raise maximum preference value"
-        bus.Lformula = "preference value = 2 + Latency"
-        bus
-    }
 
     override def enableHiding = false
 }

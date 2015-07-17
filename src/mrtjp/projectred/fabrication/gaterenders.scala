@@ -10,7 +10,6 @@ import codechicken.lib.vec.Transformation
 import mrtjp.core.color.Colors
 import mrtjp.projectred.core.TFaceOrient._
 import mrtjp.projectred.fabrication.ICComponentStore._
-import mrtjp.projectred.integration.RedstoneTorchModel
 import net.minecraft.client.renderer.texture.IIconRegister
 
 object RenderICGate

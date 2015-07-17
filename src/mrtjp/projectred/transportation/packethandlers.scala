@@ -2,19 +2,16 @@ package mrtjp.projectred.transportation
 
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.packet.PacketCustom.{IClientPacketHandler, IServerPacketHandler}
-import mrtjp.core.item.{ItemKeyStack, ItemKey}
+import mrtjp.core.item.{ItemKey, ItemKeyStack}
 import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.network.play.{INetHandlerPlayClient, INetHandlerPlayServer}
 import net.minecraft.util.ChatComponentText
-import net.minecraft.world.World
 
 class TransportationPH
 {
     val channel = "PR|Transp"
-
-    val gui_CraftingPipe_action = 3
 
     val gui_ChipNBTSet = 4
 
@@ -37,7 +34,7 @@ object TransportationCPH extends TransportationPH with IClientPacketHandler
     {
         case this.gui_Request_open => openRequestGui(packet, mc)
         case this.gui_Request_list => receiveRequestList(packet, mc)
-        case this.particle_Spawn => RouteFX.handleClientPacket(packet, mc.theWorld)
+        case this.particle_Spawn => RouteFX2.handleClientPacket(packet, mc.theWorld)
         case _ =>
     }
 
@@ -71,7 +68,6 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
     def handlePacket(packet:PacketCustom, sender:EntityPlayerMP, handler:INetHandlerPlayServer) = packet.getType match
     {
         case this.gui_ChipNBTSet => setChipNBT(packet, sender)
-        case this.gui_CraftingPipe_action => handleCraftingPipeAction(packet, sender.worldObj)
         case this.gui_Request_action => handleRequestAction(packet, sender)
         case this.gui_Request_submit => handleRequestSubmit(packet, sender)
         case this.gui_Request_listRefresh => handleRequestListRefresh(packet, sender)
@@ -168,7 +164,7 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
             if (r.requested > 0)
             {
                 sender.addChatMessage(new ChatComponentText("Successfully requested "+r.requested+" of "+s.key.getName+"."))
-                RouteFX.spawnType1(RouteFX.color_request, 8, bc, sender.worldObj)
+                RouteFX2.spawnType1(RouteFX2.color_request, t.asInstanceOf[IWorldRouter].getContainer)
             }
             else
             {
@@ -186,17 +182,5 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
         val stack = packet.readItemStack()
         player.inventory.setInventorySlotContents(slot, stack)
         player.inventory.markDirty()
-    }
-
-    private def handleCraftingPipeAction(packet:PacketCustom, w:World)
-    {
-        val t = PRLib.getMultiPart(w, packet.readCoord, 6)
-        if (t.isInstanceOf[RoutedCraftingPipePart])
-        {
-            val pipe = t.asInstanceOf[RoutedCraftingPipePart]
-            val action = packet.readString
-            if (action == "up") pipe.priorityUp()
-            else if (action == "down") pipe.priorityDown()
-        }
     }
 }

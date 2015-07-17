@@ -328,7 +328,7 @@ class AnalogIOICGateLogic(gate:IOGateICPart) extends IOICGateLogic(gate) with TF
 {
     override def getConnMode(gate:IOGateICPart) = IIOCircuitPart.Analog
 
-    override def getFreqName = "0x"+freq
+    override def getFreqName = "0x"+Integer.toHexString(freq)
 
     override def toggleWorldInput()
     {

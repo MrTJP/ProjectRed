@@ -13,7 +13,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
-import GL11._
+import org.lwjgl.opengl.GL11._
 
 import scala.collection.JavaConversions._
 

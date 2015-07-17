@@ -3,100 +3,17 @@ package mrtjp.projectred.transportation
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.render.FontUtils
 import codechicken.lib.vec.BlockCoord
 import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.{Colors, Colors_old}
+import mrtjp.core.color.Colors
 import mrtjp.core.gui._
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
 import mrtjp.core.resource.ResourceLib
 import mrtjp.core.vec.{Point, Rect, Size, Vec2}
 import mrtjp.projectred.core.libmc._
-import net.minecraft.client.gui.Gui
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Container
-import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.Keyboard
-import org.lwjgl.opengl.GL11
-
-class GuiCraftingPipe(container:Container, pipe:RoutedCraftingPipePart) extends NodeGui(container, 176, 220)
-{
-    override def onAddedToParent_Impl()
-    {
-        def sendClick(message:String)
-        {
-            val packet = new PacketCustom(TransportationCPH.channel, TransportationCPH.gui_CraftingPipe_action)
-            packet.writeCoord(new BlockCoord(pipe.tile))
-            packet.writeString(message)
-            packet.sendToServer()
-        }
-
-        val up = new MCButtonNode
-        up.position = Point(138, 12)
-        up.size = Size(20, 14)
-        up.text = "up"
-        up.clickDelegate = {() => sendClick("up")}
-        addChild(up)
-
-        val down = new MCButtonNode
-        down.position = Point(92, 12)
-        down.size = Size(20, 14)
-        down.text = "down"
-        down.clickDelegate = {() => sendClick("down")}
-        addChild(down)
-    }
-
-    override def drawBack_Impl(mouse:Point, frame:Float)
-    {
-        PRResources.guiPipeCrafting.bind()
-        drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
-        FontUtils.drawCenteredString(""+pipe.priority, 126, 15, Colors_old.BLACK.rgb)
-        GuiLib.drawPlayerInvBackground(8, 138)
-
-        var color = 0
-        ResourceLib.guiExtras.bind()
-
-        for ((x, y) <- GuiLib.createSlotGrid(8, 108, 9, 1, 0, 0))
-        {
-            GL11.glColor4f(1, 1, 1, 1)
-            drawTexturedModalRect(x, y, 1, 11, 16, 16)
-            Gui.drawRect(x+4, y-2, x+4+8, y, Colors_old.get(color).argb)
-            color += 1
-        }
-    }
-
-    override def drawFront_Impl(mouse:Point, frame:Float)
-    {
-        PRResources.guiPipeCrafting.bind()
-        val oldZ = zLevel
-        zLevel = 300
-        var i = 0
-        for ((x, y) <- GuiLib.createSlotGrid(20, 12, 2, 4, 20, 0))
-        {
-            val u = 178
-            val v = if (inventorySlots.getSlot(i).getStack == null) 107 else 85
-            i += 1
-            drawTexturedModalRect(x-5, y-2, u, v, 25, 20)
-        }
-        zLevel = oldZ
-    }
-}
-
-object GuiCraftingPipe extends TGuiBuilder
-{
-    override def getID = TransportationProxy.guiIDCraftingPipe
-
-    @SideOnly(Side.CLIENT)
-    override def buildGui(player:EntityPlayer, data:MCDataInput) =
-    {
-        PRLib.getMultiPart(player.worldObj, data.readCoord(), 6) match
-        {
-            case pipe:RoutedCraftingPipePart =>
-                new GuiCraftingPipe(pipe.createContainer(player), pipe)
-            case _ => null
-        }
-    }
-}
 
 class GuiExtensionPipe(container:Container, id:String) extends NodeGui(container)
 {

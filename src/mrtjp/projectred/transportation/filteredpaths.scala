@@ -82,7 +82,7 @@ class PathFilter
     override def equals(other:Any) = other match
     {
         case that:PathFilter =>
-            pathFlags == that.pathFlags
+            pathFlags == that.pathFlags &&
                 filterExclude == that.filterExclude &&
                 itemFilter == that.itemFilter &&
                 colorExclude == that.colorExclude &&

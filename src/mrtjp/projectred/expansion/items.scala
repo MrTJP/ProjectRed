@@ -178,7 +178,8 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable
     override def getArmorTexture(stack:ItemStack, entity:Entity, slot:Int, t:String) =
         "projectred:textures/items/mechanical/jetpack_1.png"
 
-    override def getArmorModel(entityLiving:EntityLivingBase, stack:ItemStack, slot:Int) = ModelJetpack
+    @SideOnly(Side.CLIENT)
+    override def getArmorModel(entityLiving:EntityLivingBase, stack:ItemStack, slot:Int):ModelBiped = ModelJetpack
 
     override def damageArmor(entity:EntityLivingBase, stack:ItemStack, source:DamageSource, damage:Int, slot:Int){}
 
@@ -298,7 +299,7 @@ object ItemJetpack
         for (pos <- positions) for (i <- 0 until 2)
         {
             val p = new SpriteParticle(player.worldObj)
-            FXEngine.addEffect(player.worldObj, p)
+            FXEngine.addEffect(p)
             val r = player.worldObj.rand
             p.setPos(pos.copy.add(new Vector3(r.nextDouble(), r.nextDouble(), r.nextDouble())
                     .subtract(Vector3.center).multiply(4/16D)))
@@ -316,7 +317,6 @@ class ItemInfusedEnderPearl extends ItemCore("projectred.expansion.infused_ender
 {
     setMaxStackSize(1)
     setTextureName("projectred:mechanical/infused_ender_pearl")
-    setCreativeTab(ProjectRedExpansion.tabExpansion)
 
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], flag:Boolean)
     {

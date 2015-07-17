@@ -3,7 +3,6 @@ package mrtjp.projectred.transportation
 import java.lang.{Character => JC}
 
 import cpw.mods.fml.common.registry.GameRegistry
-import mrtjp.core.color.Colors_old
 import mrtjp.projectred.ProjectRedTransportation
 import mrtjp.projectred.core.PartDefs
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
@@ -57,26 +56,11 @@ object TransportationRecipes
             'r':JC, "dustRedstone"
         ))
 
-        /** Routed Crafting Pipe **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.ROUTEDCRAFTING.makeStack,
-            "rgr", "rjr", "rgr",
-            'r':JC, "dustRedstone",
-            'g':JC, "dustGlowstone",
-            'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
-        ))
-
         /** Routed Request Pipe **/
         GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.ROUTEDREQUEST.makeStack,
             "rdr", "rjr", "rdr",
             'r':JC, "dustRedstone",
             'd':JC, "gemDiamond",
-            'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
-        ))
-
-        /** Routed Extension Pipe **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.ROUTEDEXTENSION.makeStack,
-            " r ", "rjr", " r ",
-            'r':JC, "dustRedstone",
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
         ))
 
@@ -170,6 +154,13 @@ object TransportationRecipes
             PartDefs.LIMEILLUMAR.makeStack,
             PartDefs.LIMEILLUMAR.makeStack)
 
+        /** Item Crafting Extension **/
+        addChipRecipe(RoutingChipDefs.ITEMEXTENSION.makeStack,
+            "dustGlowstone", "dustRedstone", "dustRedstone",
+            PartDefs.REDILLUMAR.makeStack,
+            PartDefs.REDILLUMAR.makeStack)
+
+
         def addChipRecipe(result:ItemStack, bus:AnyRef, material2:AnyRef, material1:AnyRef, dyeLeft:AnyRef, dyeRight:AnyRef)
         {
             GameRegistry.addRecipe(new ShapedOreRecipe(result,
@@ -190,51 +181,6 @@ object TransportationRecipes
             "  r", "iei", "iii",
             'r':JC, "dustRedstone",
             'i':JC, "ingotIron",
-            'e':JC, "gemEmerald"))
-
-        /** Null Upgrade **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(PartDefs.NULLUPGRADECHIP.makeStack,
-            "prp", "rrr", "prp",
-            'p':JC, Items.paper, 'r':JC, "dustRedstone"))
-
-        /** LX **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(PartDefs.CHIPUPGRADE_LX.makeStack,
-            "rrr", " ng", "r r",
-            'r':JC, "dustRedstone",
-            'n':JC, PartDefs.NULLUPGRADECHIP.makeStack,
-            'g':JC, "nuggetGold"))
-
-        /** RX **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(PartDefs.CHIPUPGRADE_RX.makeStack,
-            "r r", "gn ", "rrr",
-            'r':JC, "dustRedstone",
-            'n':JC, PartDefs.NULLUPGRADECHIP.makeStack,
-            'g':JC, "nuggetGold"))
-
-        /** LY **/
-        GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_LY.makeStack,
-            "l l", " n ", " l ",
-            'l':JC, Colors_old.BLUE.getDye,
-            'n':JC, PartDefs.CHIPUPGRADE_LX.makeStack)
-
-        /** RY **/
-        GameRegistry.addRecipe(PartDefs.CHIPUPGRADE_RY.makeStack,
-            "l l", " n ", " l ",
-            'l':JC, Colors_old.BLUE.getDye,
-            'n':JC, PartDefs.CHIPUPGRADE_RX.makeStack)
-
-        /** LZ **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(PartDefs.CHIPUPGRADE_LZ.makeStack,
-            "r r", " n ", "rer",
-            'r':JC, "dustRedstone",
-            'n':JC, PartDefs.CHIPUPGRADE_LY.makeStack,
-            'e':JC, "gemEmerald"))
-
-        /** RZ **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(PartDefs.CHIPUPGRADE_RZ.makeStack,
-            "r r", " n ", "rer",
-            'r':JC, "dustRedstone",
-            'n':JC, PartDefs.CHIPUPGRADE_RY.makeStack,
             'e':JC, "gemEmerald"))
     }
 

@@ -11,7 +11,7 @@ import net.minecraft.util.MovingObjectPosition
 
 import scala.collection.mutable.{Builder => MBuilder}
 
-class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWorldBroadcaster with INeighborTileChange
+class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWorldBroadcaster with IWorldCrafter with INeighborTileChange
 {
     val chipSlots = new SimpleInventory(4, "chips", 1)
     {
@@ -24,10 +24,11 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
             stack != null &&
                 stack.getItem.isInstanceOf[ItemRoutingChip] &&
                 stack.hasTagCompound &&
-                stack.getTagCompound.hasKey("chipROM") &&
-                RoutingChipDefs.getForStack(stack).isInterfaceChip
+                stack.getTagCompound.hasKey("chipROM")
     }
+
     val chips = new Array[RoutingChip](4)
+    val chipStacks = new Array[ItemKey](4)
 
     private var chipsNeedRefresh = true
 
@@ -48,7 +49,7 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         super.onRemoved()
         if (!world.isRemote)
         {
-            for (r <- chips) if (r != null) r.onPipeBroken()
+            for (r <- chips) if (r != null) r.onRemoved()
             chipSlots.dropInvContents(world, x, y, z)
         }
     }
@@ -76,7 +77,6 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
                 {
                     val chip = item.splitStack(1)
                     chipSlots.setInventorySlotContents(i, chip)
-                    chipSlots.markDirty()
                     return true
                 }
         }
@@ -101,13 +101,35 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
     {
         for (i <- 0 until chipSlots.getSizeInventory)
         {
-            val stack = chipSlots.getStackInSlot(i)
-            if (stack != null && ItemRoutingChip.isValidChip(stack))
+            val oldKey = chipStacks(i)
+            val newStack = chipSlots.getStackInSlot(i)
+            val newKey = if (newStack != null) ItemKey.get(newStack) else null
+
+            if (newKey != oldKey)
             {
-                val c = ItemRoutingChip.loadChipFromItemStack(stack)
-                c.setEnvironment(this, this, i)
-                if (chips(i) != c) chips(i) = c
+                val oldChip = chips(i)
+                val newChip = if (newStack != null && ItemRoutingChip.isValidChip(newStack))
+                    ItemRoutingChip.loadChipFromItemStack(newStack) else null
+
+                if (oldChip != null)
+                {
+                    oldChip.onRemoved()
+                    chips(i) = null
+                }
+
+                if (newChip != null)
+                {
+                    newChip.setEnvironment(this, this, i)
+                    chips(i) = newChip
+                    newChip.onAdded()
+                }
             }
+        }
+
+        for (i <- 0 until chipSlots.getSizeInventory)
+        {
+            val s = chipSlots.getStackInSlot(i)
+            chipStacks(i) = if (s != null) ItemKey.get(s) else null
         }
     }
 
@@ -132,53 +154,50 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         null
     }
 
-    override def requestPromises(request:RequestBranchNode, existingPromises:Int)
+    override def requestPromise(request:RequestBranchNode, existingPromises:Int)
     {
-        for (r <- chips) if (r != null) r.requestPromises(request, existingPromises)
+        for (r <- chips) if (r != null) r.requestPromise(request, existingPromises)
     }
 
-    override def deliverPromises(promise:DeliveryPromise, requestor:IWorldRequester)
+    override def deliverPromise(promise:DeliveryPromise, requestor:IWorldRequester)
     {
-        for (r <- chips) if (r != null) r.deliverPromises(promise, requestor)
+        for (r <- chips) if (r != null) r.deliverPromise(promise, requestor)
+    }
+
+    def postEvent(event:NetworkEvent)
+    {
+        val it = chips.filter(_ != null).iterator
+        while (it.hasNext && !event.isCanceled)
+            it.next().onEventReceived(event)
     }
 
     override def itemReceived(stack:ItemKeyStack)
     {
         super.itemReceived(stack)
-        for (r <- chips) if (r != null) r.trackedItemReceived(stack)
+        postEvent(new ItemReceivedEvent(stack.key, stack.stackSize))
     }
 
     override def itemLost(stack:ItemKeyStack)
     {
         super.itemLost(stack)
-        for (r <- chips) if (r != null) r.trackedItemLost(stack)
+        postEvent(new ItemLostEvent(stack.key, stack.stackSize))
     }
 
     override def getBroadcasts(col:ItemQueue)
     {
-        for (r <- chips) if (r != null) r.getProvidedItems(col)
+        for (r <- chips) if (r != null) r.getBroadcasts(col)
     }
 
     override def getBroadcastPriority =
     {
-        var high = Integer.MIN_VALUE
-        for (r <- chips) if (r != null)
-        {
-            val priority = r.getBroadcastPriority
-            if (priority > high) high = priority
-        }
-        high
+        val all = chips.filter(_ != null).map(_.getBroadcastPriority)
+        if (all.isEmpty) Integer.MIN_VALUE else all.max
     }
 
     override def getWorkLoad =
     {
-        var high = 0.0D
-        for (r <- chips) if (r != null)
-        {
-            val load = r.getWorkLoad
-            if (load > high) high = load
-        }
-        high
+        val all = chips.filter(_ != null).map(_.getWorkLoad)
+        if (all.isEmpty) 0 else all.max
     }
 
     override def onNeighborTileChanged(side:Int, weak:Boolean)
@@ -191,6 +210,37 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         for (r <- chips) if (r != null) if (r.weakTileChanges) return true
         false
     }
+
+    override def requestCraftPromise(item:ItemKey) =
+    {
+        val b = Seq.newBuilder[CraftingPromise]
+        for (r <- chips) if (r != null)
+        {
+            val p = r.requestCraftPromise(item)
+            if (p != null) b += p
+        }
+        b.result()
+    }
+
+    override def registerExcess(promise:DeliveryPromise)
+    {
+        for (r <- chips) if (r != null)
+            r.registerExcess(promise)
+    }
+
+    override def getCraftedItems =
+    {
+        var b = Seq.newBuilder[ItemKeyStack]
+        for (r <- chips) if (r != null)
+        {
+            val s = r.getCraftedItem
+            if (s != null) b += s
+        }
+        b.result()
+    }
+
+    override def itemsToProcess =
+        chips.filterNot(_ == null).foldLeft(0){(count, r) => r.getProcessingItems+count}
 }
 
 class ContainerInterfacePipe(pipe:RoutedInterfacePipePart, p:EntityPlayer) extends NodeContainer

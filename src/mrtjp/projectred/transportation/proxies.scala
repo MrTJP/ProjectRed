@@ -12,8 +12,6 @@ import net.minecraftforge.client.MinecraftForgeClient
 
 class TransportationProxy_server extends IProxy with IPartFactory
 {
-    val guiIDChipUpgrade = 2
-    val guiIDCraftingPipe = 3
     val guiIDExtensionPipe = 4
     val guiIDInterfacePipe = 5
     val guiIDFirewallPipe = 6
@@ -28,8 +26,8 @@ class TransportationProxy_server extends IProxy with IPartFactory
     {
         MultiPartRegistry.registerParts(this, Array[String](
             "pr_pipe", "pr_rbasic", "pr_rinterface",
-            "pr_rcrafting", "pr_rrequest", "pr_rextension",
-            "pr_rfire", "pr_pt", "pr_rpt"
+            "pr_rrequest", "pr_rfire",
+            "pr_pt", "pr_rpt"
         ))
 
         itemPartPipe = new ItemPartPipe
@@ -49,9 +47,9 @@ class TransportationProxy_server extends IProxy with IPartFactory
         case BASIC.partname => new BasicPipePart
         case ROUTEDJUNCTION.partname => new RoutedJunctionPipePart
         case ROUTEDINTERFACE.partname => new RoutedInterfacePipePart
-        case ROUTEDCRAFTING.partname => new RoutedCraftingPipePart
+        //case ROUTEDCRAFTING.partname => new RoutedCraftingPipePartø
         case ROUTEDREQUEST.partname => new RoutedRequestPipePart
-        case ROUTEDEXTENSION.partname => new RoutedExtensionPipePart
+        //case ROUTEDEXTENSION.partname => new RoutedExtensionPipePart
         case ROUTEDFIREWALL.partname => new RoutedFirewallPipe
         case PRESSURETUBE.partname => new PressureTube
         case RESISTANCETUBE.partname => new ResistanceTube
@@ -79,8 +77,6 @@ class TransportationProxy_client extends TransportationProxy_server
         MicroMaterialRegistry.registerHighlightRenderer(PipeRSHighlightRenderer)
         MicroMaterialRegistry.registerHighlightRenderer(PipeColourHighlightRenderer)
 
-        GuiHandler.register(GuiChipUpgrade, guiIDChipUpgrade)
-        GuiHandler.register(GuiCraftingPipe, guiIDCraftingPipe)
         GuiHandler.register(GuiExtensionPipe, guiIDExtensionPipe)
         GuiHandler.register(GuiInterfacePipe, guiIDInterfacePipe)
         GuiHandler.register(GuiFirewallPipe, guiIDFirewallPipe)

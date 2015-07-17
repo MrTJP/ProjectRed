@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation
 
 import mrtjp.core.inventory.InvWrapper
-import mrtjp.core.item.{ItemKey, ItemKeyStack}
+import mrtjp.core.item.{ItemQueue, ItemKey, ItemKeyStack}
 
 import scala.collection.immutable.HashMap
 import scala.collection.mutable.ListBuffer
@@ -19,7 +19,7 @@ class ChipStockKeeper extends RoutingChip with TChipStock
         throttle
     }
 
-    var enrouteItems = HashMap[ItemKey, Int]().withDefaultValue(0)
+    var enrouteItems = new ItemQueue
 
     override def update()
     {
@@ -65,7 +65,7 @@ class ChipStockKeeper extends RoutingChip with TChipStock
             }
         }
 
-        if (requestAttempted) RouteFX.spawnType1(RouteFX.color_request, 8, routeLayer.getCoords, routeLayer.getWorld)
+        if (requestAttempted) RouteFX2.spawnType1(RouteFX2.color_request, routeLayer.getWorldRouter.getContainer)
         if (requestAttempted && requestedSomething) operationsWithoutRequest = 0
         else operationsWithoutRequest += 1
 
@@ -77,27 +77,22 @@ class ChipStockKeeper extends RoutingChip with TChipStock
         enrouteItems += item -> (enrouteItems(item)+amount)
     }
 
-    def removeFromRequestList(item:ItemKey, amount:Int)
-    {
-        var current = enrouteItems(item)
-        if (current != 0)
-        {
-            current-=amount
-            if (current <= 0) enrouteItems -= item
-            else enrouteItems += item -> current
-        }
-    }
-
     def getEnroute(item:ItemKey) = enrouteItems(item)
 
-    override def trackedItemLost(s:ItemKeyStack)
-    {
-        removeFromRequestList(s.key, s.stackSize)
-    }
 
-    override def trackedItemReceived(s:ItemKeyStack)
+    override def onEventReceived(event:NetworkEvent) = event match
     {
-        removeFromRequestList(s.key, s.stackSize)
+        case e:ItemLostEvent =>
+            val toRem = math.min(enrouteItems(e.item), e.remaining)
+            enrouteItems.remove(e.item, toRem)
+            e.remaining -= toRem
+            if (e.remaining <= 0) e.setCanceled()
+        case e:ItemReceivedEvent =>
+            val toRem = math.min(enrouteItems(e.item), e.remaining)
+            enrouteItems.remove(e.item, toRem)
+            e.remaining -= toRem
+            if (e.remaining <= 0) e.setCanceled()
+        case _ =>
     }
 
     override def weakTileChanges = true

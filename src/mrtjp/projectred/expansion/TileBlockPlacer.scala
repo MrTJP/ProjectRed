@@ -12,6 +12,7 @@ import codechicken.lib.gui.GuiDraw
 import codechicken.lib.raytracer.RayTracer
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
 import codechicken.lib.vec.{BlockCoord, Cuboid6, Vector3}
+import codechicken.multipart.IRedstoneConnector
 import com.mojang.authlib.GameProfile
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TInstancedBlockRender
@@ -37,7 +38,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent
 
 import scala.ref.WeakReference
 
-class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory
+class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory with IRedstoneConnector
 {
     override def save(tag:NBTTagCompound)
     {
@@ -221,6 +222,9 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory
         }
         eHit
     }
+
+    override def getConnectionMask(side:Int) = if ((side^1) == this.side) 0 else 0x1F
+    override def weakPowerLevel(side:Int, mask:Int) = 0
 }
 
 object TileBlockPlacer

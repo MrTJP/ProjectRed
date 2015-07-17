@@ -7,25 +7,25 @@ package mrtjp.projectred.expansion
 
 import java.util.{List => JList}
 
-import codechicken.lib.data.{MCDataOutput, MCDataInput}
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
 import codechicken.lib.vec.{BlockCoord, Cuboid6, Vector3}
 import cpw.mods.fml.common.eventhandler.SubscribeEvent
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors
-import mrtjp.core.fx.particles.{BeamPulse2, SpriteParticle, BeamPulse}
-import mrtjp.core.fx.{ParticleAction, FXEngine}
+import mrtjp.core.fx.particles.{BeamPulse2, SpriteParticle}
+import mrtjp.core.fx.{FXEngine, ParticleAction}
 import mrtjp.core.render.TCubeMapRender
-import mrtjp.core.world.{Messenger, WorldLib}
+import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.client.renderer.texture.IIconRegister
-import net.minecraft.entity.{Entity, EntityLivingBase}
-import net.minecraft.entity.item.{EntityItem, EntityEnderPearl}
+import net.minecraft.entity.Entity
+import net.minecraft.entity.item.{EntityEnderPearl, EntityItem}
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
-import net.minecraft.world.{World, IBlockAccess}
+import net.minecraft.world.{IBlockAccess, World}
 import net.minecraftforge.common.IExtendedEntityProperties
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing
 
@@ -293,28 +293,31 @@ class TileTeleposer extends TileMachine with TPoweredMachine
         e.setPosition(targetPos.x, targetPos.y, targetPos.z)
     }
 
-    @SideOnly(Side.CLIENT)
-    private var beams = new Array[BeamPulse2](8)
+    private var beams:AnyRef = null
 
     @SideOnly(Side.CLIENT)
     def doPearlBeamFX()
     {
+        if (beams == null) beams = Array[BeamPulse2]()
+        var beams2 = beams.asInstanceOf[Array[BeamPulse2]]
+
         val elist = getProjectilesToOrbit
-        while (beams.length < elist.size) beams :+= null
+        while (beams2.length < elist.size) beams2 :+= null
+        beams = beams2
 
         val source = Vector3.center.copy.add(x, y+1, z)
 
         for (i <- elist.indices)
         {
-            var beam = beams(i)
+            var beam = beams2(i)
             if (beam == null || beam.isDead)
             {
                 beam = new BeamPulse2(world)
                 beam.setMaxAge(20)
                 beam.alpha = 0.3
                 beam.setRGB(0.5, 0.5, 0.5)
-                beams(i) = beam
-                FXEngine.addEffect(world, beam)
+                beams2(i) = beam
+                FXEngine.addEffect(beam)
             }
             val ent = elist(i)
 
@@ -324,6 +327,7 @@ class TileTeleposer extends TileMachine with TPoweredMachine
             if (source.copy.subtract(new Vector3(ent.posX, ent.posY, ent.posZ)).mag() < 0.75)
                 beam.doPulse(Colors.GREEN.rF, Colors.GREEN.gF, Colors.GREEN.bF)
         }
+
     }
 
     @SideOnly(Side.CLIENT)
@@ -360,7 +364,7 @@ class TileTeleposer extends TileMachine with TPoweredMachine
                     kill()
                 )
             )
-            FXEngine.addEffect(world, p)
+            FXEngine.addEffect(p)
             p.runAction(a)
         }
     }
@@ -372,7 +376,7 @@ class TileTeleposer extends TileMachine with TPoweredMachine
         {
             val start = new Vector3(x, y+1, z).add(Vector3.center)
             val p = new SpriteParticle(world)
-            FXEngine.addEffect(world, p)
+            FXEngine.addEffect(p)
             p.setPos(start)
             p.isImmortal = true
             p.texture = "projectred:textures/particles/bubble.png"

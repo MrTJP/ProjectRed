@@ -23,6 +23,7 @@ import org.lwjgl.opengl.GL11
 
 import scala.collection.JavaConversions._
 import scala.collection.convert.WrapAsJava
+import scala.collection.immutable.ListMap
 
 class PrefboardNode(circuit:IntegratedCircuit) extends TNode
 {
@@ -226,7 +227,7 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
 
 class ICToolsetNode extends TNode
 {
-    var opSet = Seq[CircuitOp]()
+    var opSet = Seq.empty[CircuitOp]
     var title = ""
     var buttonSize = Size(16, 16)
     var buttonGap = 1
@@ -234,9 +235,10 @@ class ICToolsetNode extends TNode
     var opSelectDelegate = {_:CircuitOp => ()}
 
     private var focused = false
-    private var toolButtons = Seq[ButtonNode]()
+    private var buttonOpMap = ListMap.empty[ButtonNode, CircuitOp]
+
     private var leadingButton:ButtonNode = null
-    private var nextLeadingButton:ButtonNode = null
+    private var groupButton:ButtonNode = null
 
     def setup()
     {
@@ -244,36 +246,29 @@ class ICToolsetNode extends TNode
         {
             val b = createButtonFor(op)
             b.size = buttonSize
+            b.hidden = true
             addChild(b)
-            toolButtons :+= b
+            buttonOpMap += b -> op
         }
 
-        for (op <- toolButtons.drop(1))
-            op.hidden = true
-
-        rotateButtons(toolButtons.head)
-    }
-
-    private def rotateButtons(nextLead:ButtonNode)
-    {
-        if (nextLead == leadingButton) return
-        leadingButton = nextLead
-        leadingButton.position = Point.zeroPoint
-
-        val delta = (opSet.size-1)*(buttonSize.width+buttonGap)
+        val delta = opSet.size*(buttonSize.width+buttonGap)
         val firstPoint = Point(-delta/2+buttonSize.width/2, -buttonSize.height-buttonGap)
-        val subOps = toolButtons.filterNot(_ == leadingButton)
-        for (i <- subOps.indices)
-        {
-            val b = subOps(i)
+        for ((b, i) <- buttonOpMap.keys.zipWithIndex)
             b.position = firstPoint.add(i*(buttonSize.width+buttonGap), 0)
-        }
-    }
 
-    override def frameUpdate_Impl(mouse:Point, rframe:Float)
-    {
-        if (nextLeadingButton != null)
-            rotateButtons(nextLeadingButton)
+        leadingButton = buttonOpMap.head._1
+
+        groupButton = new IconButtonNode {
+            override def drawButton(mouseover:Boolean) =
+            {
+                val op = buttonOpMap(leadingButton)
+                op.renderImage(position.x+2, position.y+2, size.width-4, size.height-4)
+            }
+        }
+        groupButton.size = buttonSize
+        groupButton.tooltipBuilder = {_ += buttonOpMap(leadingButton).getOpName}
+        groupButton.clickDelegate = {() => leadingButton.clickDelegate() }
+        addChild(groupButton)
     }
 
     private def buttonClicked(op:CircuitOp, button:ButtonNode)
@@ -284,33 +279,34 @@ class ICToolsetNode extends TNode
         {
             case t:ICToolsetNode if t != this => t
         }.foreach(_.setUnfocused())
-        nextLeadingButton = button
         leadingButton.mouseoverLock = false
-        button.mouseoverLock = true
+        leadingButton = button
+        leadingButton.mouseoverLock = true
     }
 
     def setUnfocused()
     {
         if (focused) hideSubTools()
         focused = false
-        leadingButton.mouseoverLock = false
+        groupButton.mouseoverLock = false
     }
 
     def setFocused()
     {
         if (!focused) unhideSubTools()
         focused = true
+        groupButton.mouseoverLock = true
     }
 
     private def unhideSubTools()
     {
-        for (b <- toolButtons)
+        if (buttonOpMap.size > 1) for (b <- buttonOpMap.keys)
             b.hidden = false
     }
 
     private def hideSubTools()
     {
-        for (b <- toolButtons) if (b != leadingButton)
+        if (buttonOpMap.size > 1) for (b <- buttonOpMap.keys)
             b.hidden = true
     }
 
@@ -331,21 +327,18 @@ class ICToolsetNode extends TNode
     def pickOp(op:CircuitOp)
     {
         setUnfocused()
-        if (op != null)
+        buttonOpMap.find(_._2 == op) match
         {
-            val id = opSet.indexOf(op)
-            if (id > -1)
-                toolButtons(id).clickDelegate()
+            case Some((b, _)) => b.clickDelegate()
+            case _ =>
         }
-        else opSelectDelegate(null)
     }
 
     override def drawFront_Impl(mouse:Point, rframe:Float)
     {
-        if (title.nonEmpty && leadingButton.rayTest(parent.convertPointTo(mouse, this)))
+        if (title.nonEmpty && groupButton.rayTest(parent.convertPointTo(mouse, this)))
         {
             import net.minecraft.util.EnumChatFormatting._
-
             translateToScreen()
             val Point(mx, my) = parent.convertPointToScreen(mouse)
             GuiDraw.drawMultilineTip(mx+12, my-32, Seq(AQUA.toString+ITALIC.toString+title))
@@ -561,7 +554,10 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
         pref = new PrefboardNode(tile.circuit)
         pref.position = Point(pan.size/2-pref.size/2)
         pref.zPosition = -0.01//Must be below pan/clip nodes
-        pref.opPickDelegate = {op => toolSets.foreach(_.pickOp(op))}
+        pref.opPickDelegate = {op =>
+            if (op == null) pref.currentOp = null
+            toolSets.foreach(_.pickOp(op))
+        }
         pan.addChild(pref)
 
         val toolbar = new TNode {}
@@ -589,7 +585,7 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
             addToolset("", Seq(AlloyWire))
             addToolsetRange("Insulated wires", WhiteInsulatedWire, BlackInsulatedWire)
             addToolsetRange("Bundled cables", NeutralBundledCable, BlackBundledCable)
-            addToolsetRange("IOs", SimpleIO, BundledIO)
+            addToolset("IOs", Seq(SimpleIO, BundledIO, AnalogIO))
             addToolset("Primatives", Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate, MultiplexerGate))
             addToolset("Timing and Clocks", Seq(PulseFormerGate, RepeaterGate, TimerGate, SequencerGate, StateCellGate))
             addToolset("Latches", Seq(SRLatchGate, ToggleLatchGate, TransparentLatchGate))
