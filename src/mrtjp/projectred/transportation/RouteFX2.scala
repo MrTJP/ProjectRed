@@ -8,10 +8,11 @@ package mrtjp.projectred.transportation
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.{BlockCoord, Vector3}
+import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors
 import mrtjp.core.fx.FXEngine
 import mrtjp.core.fx.ParticleAction._
-import mrtjp.core.fx.particles.{SpriteParticle, BeamMulti}
+import mrtjp.core.fx.particles.{BeamMulti, SpriteParticle}
 import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.world.World
 
@@ -35,12 +36,13 @@ object RouteFX2
 
     def spawnType1(colour:Int, pipe:TNetworkPipe)
     {
-        if (!pipe.world.isRemote)
-        {
-            sendPacket(pipe.world, pipe.posOfInternal, 1, colour, -1)
-            return
-        }
+        if (!pipe.world.isRemote) sendPacket(pipe.world, pipe.posOfInternal, 1, colour, -1)
+        else spawnType1_do(colour, pipe)
+    }
 
+    @SideOnly(Side.CLIENT)
+    private def spawnType1_do(colour:Int, pipe:TNetworkPipe)
+    {
         val c1 = Colors.BLACK
         val c2 = Colors(colour)
 
@@ -72,12 +74,13 @@ object RouteFX2
 
     def spawnType2(colour:Int, dir:Int, pipe:TNetworkPipe)
     {
-        if (!pipe.world.isRemote)
-        {
-            sendPacket(pipe.world, pipe.posOfInternal, 2, colour, dir)
-            return
-        }
+        if (!pipe.world.isRemote) sendPacket(pipe.world, pipe.posOfInternal, 2, colour, dir)
+        else spawnType2_do(colour, dir, pipe)
+    }
 
+    @SideOnly(Side.CLIENT)
+    private def spawnType2_do(colour:Int, dir:Int, pipe:TNetworkPipe)
+    {
         val c1 = Colors.BLACK
         val c2 = Colors(colour)
         val beam = new BeamMulti(pipe.world)
@@ -109,12 +112,13 @@ object RouteFX2
     //type 3 - router to router path finding beam
     def spawnType3(colour:Int, dir:Int, pipe:TNetworkPipe)
     {
-        if (!pipe.world.isRemote)
-        {
-            sendPacket(pipe.world, pipe.posOfInternal, 3, colour, dir)
-            return
-        }
+        if (!pipe.world.isRemote) sendPacket(pipe.world, pipe.posOfInternal, 3, colour, dir)
+        else spawnType3_do(colour, dir, pipe)
+    }
 
+    @SideOnly(Side.CLIENT)
+    private def spawnType3_do(colour:Int, dir:Int, pipe:TNetworkPipe)
+    {
         val paths = BeamPathFinder.findPaths(pipe, dir)
         val c1 = Colors.BLACK
         val c2 = Colors(colour)
@@ -171,7 +175,6 @@ object RouteFX2
             case _ =>
         }
     }
-
 }
 
 object BeamPathFinder
