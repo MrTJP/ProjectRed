@@ -167,9 +167,9 @@ object RouteFX2
         {
             case pipe:TNetworkPipe => id match
             {
-                case 1 => spawnType1(colour, pipe.asInstanceOf[TNetworkPipe])
-                case 2 => spawnType2(colour, in.readUByte(), pipe.asInstanceOf[TNetworkPipe])
-                case 3 => spawnType3(colour, in.readUByte(), pipe.asInstanceOf[TNetworkPipe])
+                case 1 => spawnType1_do(colour, pipe.asInstanceOf[TNetworkPipe])
+                case 2 => spawnType2_do(colour, in.readUByte(), pipe.asInstanceOf[TNetworkPipe])
+                case 3 => spawnType3_do(colour, in.readUByte(), pipe.asInstanceOf[TNetworkPipe])
                 case _ =>
             }
             case _ =>
