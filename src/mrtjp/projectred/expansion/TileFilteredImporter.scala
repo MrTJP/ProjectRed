@@ -39,7 +39,7 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
     override def canInsertItem(slot:Int, item:ItemStack, s:Int) = (s&6) != (side&6)
     override def getAccessibleSlotsFromSide(s:Int) = if ((s&6) != (side&6)) (0 to 9).toArray else Array.empty[Int]
 
-    override def extractCount = 64
+    override def getExtractAmount = 64
 
     //side = out, side^1 = in
     override def canAcceptInput(item:ItemKey, side:Int):Boolean =

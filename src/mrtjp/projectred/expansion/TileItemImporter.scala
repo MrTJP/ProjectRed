@@ -46,7 +46,7 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
             return
     }
 
-    def extractCount = 1
+    def getExtractAmount = 1
 
     def importInv():Boolean =
     {
@@ -57,10 +57,12 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
         val list = w.getAllItemStacks
         for ((k, v) <- list) if (canImport(k))
         {
-            val stack = k.makeStack(w.extractItem(k, extractCount))
-            if (stack.stackSize > 0)
+            val toExtract = math.min(k.getMaxStackSize, getExtractAmount)
+            val extracted = w.extractItem(k, toExtract)
+
+            if (extracted > 0)
             {
-                storage.add(stack)
+                storage.add(k.makeStack(extracted))
                 active = true
                 sendStateUpdate()
                 scheduleTick(4)

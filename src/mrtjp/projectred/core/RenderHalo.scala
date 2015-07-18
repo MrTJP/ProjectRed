@@ -4,6 +4,7 @@ import codechicken.lib.render.{BlockRenderer, CCRenderState}
 import codechicken.lib.vec._
 import cpw.mods.fml.common.eventhandler.SubscribeEvent
 import mrtjp.core.color.Colors
+import mrtjp.core.render.RenderLib
 import net.minecraft.client.Minecraft
 import net.minecraft.world.World
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -87,7 +88,7 @@ object RenderHalo
     {
         CCRenderState.draw()
         glDepthMask(true)
-        glColor3f(1, 1, 1)
+        glColor4d(1, 1, 1, 1)
         glEnable(GL_CULL_FACE)
         glEnable(GL_LIGHTING)
         glEnable(GL_TEXTURE_2D)
