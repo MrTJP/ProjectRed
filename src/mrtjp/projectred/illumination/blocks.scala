@@ -114,7 +114,11 @@ class TileLamp extends InstancedBlockTile with ILight
     {
         val old = powered
         powered = checkPower
-        if (old != powered) markDescUpdate()
+        if (old != powered)
+        {
+            markDescUpdate()
+            markLight()
+        }
     }
 
     override def readDesc(in:MCDataInput)
