@@ -123,9 +123,9 @@ abstract class ComboGateLogic extends RedstoneGateLogic[ComboGatePart] with TSim
     def cycleShape(shape:Int) =
     {
         var shape1 = shape
-        import java.lang.Integer.{bitCount, numberOfTrailingZeros => trail}
+        import java.lang.Integer.{bitCount, numberOfLeadingZeros => lead}
         do shape1 = ComboGateLogic.advanceDead(shape1)
-        while (bitCount(shape1) > maxDeadSides && 32-trail(shape1) <= maxDeadSides)
+        while (bitCount(shape1) > maxDeadSides || 32-lead(shape1) > deadSides)
         shape1
     }
 
@@ -213,11 +213,12 @@ object XNOR extends ComboGateLogic
 
 object Buffer extends ComboGateLogic
 {
-    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)<<2|(shape&8)<<4)&0xB
+    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)<<2)&0xB
     override def inputMask(shape:Int) = 4
     override def feedbackMask(shape:Int) = outputMask(shape)
 
     override def deadSides = 2
+    override def maxDeadSides = 2
 
     override def calcOutput(gate:ComboGatePart, input:Int) = if (input != 0) 0xB else 0
 }
