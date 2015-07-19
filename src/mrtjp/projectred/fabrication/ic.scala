@@ -31,27 +31,8 @@ trait WorldCircuit
     def markSave()
 }
 
-object DummyMCIO extends MCDataInput with MCDataOutput
+object DummyMCIO extends MCDataOutput
 {
-    override def readCoord() = null
-    override def readChar() = 'a'
-    override def readLong() = 0L
-    override def readUByte() = 0
-    override def readVarShort() = 0
-    override def readItemStack() = null
-    override def readFloat() = 0F
-    override def readByte() = 0
-    override def readByteArray(length:Int) = Array()
-    override def readNBTTagCompound() = null
-    override def readShort() = 0
-    override def readInt() = 0
-    override def readVarInt() = 0
-    override def readUShort() = 0
-    override def readFluidStack() = null
-    override def readString() = null
-    override def readBoolean() = false
-    override def readDouble() = 0.0
-
     override def writeVarInt(i:Int) = this
     override def writeCoord(x:Int, y:Int, z:Int) = this
     override def writeCoord(coord:BlockCoord) = this

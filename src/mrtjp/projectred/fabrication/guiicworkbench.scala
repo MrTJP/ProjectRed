@@ -645,6 +645,16 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
         }
         addChild(reqNew)
 
+        val fastLogic = new CheckBoxNode
+        fastLogic.position = Point(272, 81)
+        fastLogic.clickDelegate = {() =>
+            //this is run when check state changes.
+            //use fastLogic.state to get state
+            //use tile.circuit.getICStreamOf(key) to write data
+            //read the data server-side from circuit's read(packet, key) method
+        }
+        addChild(fastLogic)
+
         val info = new InfoNode
         info.position = Point(241, 18)
         info.zPosition = 1

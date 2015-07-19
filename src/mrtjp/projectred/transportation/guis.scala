@@ -15,47 +15,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Container
 import org.lwjgl.input.Keyboard
 
-class GuiExtensionPipe(container:Container, id:String) extends NodeGui(container)
-{
-    override def drawBack_Impl(mouse:Point, frame:Float)
-    {
-        GuiLib.drawGuiBox(0, 0, size.width, size.height, zLevel)
-        GuiLib.drawPlayerInvBackground(8, 84)
-
-        fontRenderer.drawString("Extension ID:", 10, 10, 0xff000000)
-
-        var i = 0
-        for (s <- id.split("-"))
-        {
-            fontRenderer.drawString(s, 10, 25+10*i, 0xff000000)
-            i+=1
-        }
-
-        GuiLib.drawSlotBackground(133, 19)
-        GuiLib.drawSlotBackground(133, 49)
-        ResourceLib.guiExtras.bind()
-        drawTexturedModalRect(134, 20, 1, 11, 16, 16)
-    }
-}
-
-object GuiExtensionPipe extends TGuiBuilder
-{
-    override def getID = TransportationProxy.guiIDExtensionPipe
-
-    @SideOnly(Side.CLIENT)
-    override def buildGui(player:EntityPlayer, data:MCDataInput) =
-    {
-        val coord = data.readCoord()
-        val id = data.readString()
-        PRLib.getMultiPart(player.worldObj, coord, 6) match
-        {
-            case pipe:RoutedExtensionPipePart =>
-                new GuiExtensionPipe(pipe.createContainer(player), id)
-            case _ => null
-        }
-    }
-}
-
 class GuiInterfacePipe(container:Container, pipe:RoutedInterfacePipePart) extends NodeGui(container, 176, 200)
 {
     override def drawBack_Impl(mouse:Point, frame:Float)

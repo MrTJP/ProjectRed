@@ -1,6 +1,6 @@
 v4.7.0pre7
 - FIX: Filtered Importer merging unstackable items
-- FIX: Lamps blocking mob spawnwing even when off
+- FIX: Lamps blocking mob spawning even when off
 
 v4.7.0pre6
 - ADDED: Jetpack particles and models
