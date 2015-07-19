@@ -12,7 +12,6 @@ import net.minecraftforge.client.MinecraftForgeClient
 
 class TransportationProxy_server extends IProxy with IPartFactory
 {
-    val guiIDExtensionPipe = 4
     val guiIDInterfacePipe = 5
     val guiIDFirewallPipe = 6
     val guiIDRoutingChips = 7
@@ -77,7 +76,6 @@ class TransportationProxy_client extends TransportationProxy_server
         MicroMaterialRegistry.registerHighlightRenderer(PipeRSHighlightRenderer)
         MicroMaterialRegistry.registerHighlightRenderer(PipeColourHighlightRenderer)
 
-        GuiHandler.register(GuiExtensionPipe, guiIDExtensionPipe)
         GuiHandler.register(GuiInterfacePipe, guiIDInterfacePipe)
         GuiHandler.register(GuiFirewallPipe, guiIDFirewallPipe)
         GuiHandler.register(GuiChipConfig, guiIDRoutingChips)
