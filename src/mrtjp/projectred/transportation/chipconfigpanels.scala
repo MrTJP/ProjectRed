@@ -12,7 +12,6 @@ import mrtjp.core.gui._
 import mrtjp.core.resource.ResourceLib
 import mrtjp.core.vec.{Point, Size}
 import mrtjp.projectred.core.libmc.PRResources
-import net.minecraft.client.gui.Gui
 import net.minecraft.util.EnumChatFormatting
 
 import scala.collection.mutable.ListBuffer
@@ -389,12 +388,146 @@ class CraftExtPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
 
     override def getDotPosition = Point(90, 32)
 
-    override def isPanelVisible = chip.maxExtensions > 0
+    override def isPanelVisible = true
 
     override def buildDotTooltip(list:ListBuffer[String])
     {
         list += "Extensions"
         chip.addExtInfo(list)
+    }
+
+    override def drawBackgroundBox()
+    {
+        PRResources.panelCraftExtension.bind()
+        GuiDraw.drawTexturedModalRect(position.x, position.y, 0, 0, size.width, size.height)
+    }
+}
+
+class CraftMatchingPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
+{
+    var idx = -1
+
+    private var idxButtons = Seq.empty[ButtonNode]
+    private var settingsButtons = Seq.empty[ButtonNode]
+
+    {
+        size = Size(123, 68)
+
+        var b = new IconButtonNode
+        {
+            override def drawButton(mouseover:Boolean)
+            {
+                ResourceLib.guiExtras.bind()
+                drawTexturedModalRect(position.x, position.y, if (chip.matchMeta(idx)) 49 else 65, 118, 14, 14)
+            }
+        }
+        b.position = Point(70, 12)
+        b.size = Size(14, 14)
+        b.tooltipBuilder = { list =>
+            list += "Metadata matching"
+            list += (EnumChatFormatting.GRAY+"Meta is "+(if (chip.matchMeta(idx)) "checked" else "ignored"))
+        }
+        b.clickDelegate = {() =>
+            chip.toggleMatchMeta(idx)
+            getContainer.saveChip()
+        }
+        addChild(b)
+        settingsButtons :+= b
+
+        b = new IconButtonNode
+        {
+            override def drawButton(mouseover:Boolean)
+            {
+                ResourceLib.guiExtras.bind()
+                drawTexturedModalRect(position.x, position.y, if (chip.matchNBT(idx)) 33 else 49, 102, 14, 14)
+            }
+        }
+        b.position = Point(70, 28)
+        b.size = Size(14, 14)
+        b.tooltipBuilder = { list =>
+            list += "NBT matching"
+            list += (EnumChatFormatting.GRAY+"NBT is "+(if (chip.matchNBT(idx)) "checked" else "ignored"))
+        }
+        b.clickDelegate = {() =>
+            chip.toggleMatchNBT(idx)
+            getContainer.saveChip()
+        }
+        addChild(b)
+        settingsButtons :+= b
+
+        b = new IconButtonNode
+        {
+            override def drawButton(mouseover:Boolean)
+            {
+                ResourceLib.guiExtras.bind()
+                drawTexturedModalRect(position.x, position.y, if (chip.matchOre(idx)) 81 else 97, 118, 14, 14)
+            }
+        }
+        b.position = Point(70, 44)
+        b.size = Size(14, 14)
+        b.tooltipBuilder = { list =>
+            list += "Ore Dictionary matching"
+            list += (EnumChatFormatting.GRAY+"Ore Dictionary is "+(if (chip.matchOre(idx)) "checked" else "ignored"))
+        }
+        b.clickDelegate = {() =>
+            chip.toggleMatchOre(idx)
+            getContainer.saveChip()
+        }
+        addChild(b)
+        settingsButtons :+= b
+
+        b = new IconButtonNode
+        {
+            override def drawButton(mouseover:Boolean)
+            {
+                ResourceLib.guiExtras.bind()
+                val u = chip.matchGroup(idx)*22+1
+                drawTexturedModalRect(position.x, position.y, u, 80, 20, 20)
+            }
+        }
+        b.position = Point(88, 26)
+        b.size = Size(20, 20)
+        b.tooltipBuilder = { list =>
+            list += "Damage groups"
+            val percent = chip.grpPerc(chip.matchGroup(idx))
+            list += (EnumChatFormatting.GRAY+(percent match
+            {
+                case -1 => "Tools are not grouped by damage."
+                case _ => "Tools grouped at "+percent+"%"
+            }))
+        }
+        b.clickDelegate = {() =>
+            chip.toggleMatchGroup(idx)
+            getContainer.saveChip()
+        }
+        addChild(b)
+        settingsButtons :+= b
+
+        for (((x, y), i) <- GuiLib.createGrid(10, 10, 3, 3, 18, 18).zipWithIndex)
+        {
+            val button = new MCButtonNode
+            button.position = Point(x, y)
+            button.size = Size(13, 13)
+            button.clickDelegate = {() =>
+                idx = i
+                idxButtons.foreach(_.mouseoverLock = false)
+                button.mouseoverLock = true
+                settingsButtons.foreach(_.hidden = false)
+            }
+            addChild(button)
+            idxButtons :+= button
+        }
+
+        settingsButtons.foreach(_.hidden = true)
+    }
+
+    override def getDotPosition = Point(96, 50)
+
+    override def isPanelVisible = true
+
+    override def buildDotTooltip(list:ListBuffer[String])
+    {
+        list += "Match options"
     }
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
@@ -405,7 +538,7 @@ class CraftExtPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
     override def drawBackgroundBox()
     {
         PRResources.panelCraftExtension.bind()
-        GuiDraw.drawTexturedModalRect(position.x, position.y, 0, 0, size.width, size.height)
+        GuiDraw.drawTexturedModalRect(position.x, position.y, 0, 72, size.width, size.height)
     }
 }
 

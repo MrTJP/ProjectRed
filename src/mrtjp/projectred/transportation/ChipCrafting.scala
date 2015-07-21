@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation
 
 import mrtjp.core.inventory.InvWrapper
-import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
+import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack, ItemQueue}
 
 import scala.collection.mutable.ListBuffer
 
@@ -63,8 +63,6 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
 
     private var remainingDelay = operationDelay
     private var remainingDelay2 = operationDelay2
-
-    def maxExtensions = 9
 
     private def operationDelay = 10
     private def operationDelay2 = 40
@@ -190,15 +188,15 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
     override def requestPromise(request:RequestBranchNode, existingPromises:Int)
     {
         if (excess.isEmpty) return
-        val item = request.getRequestedPackage
+        val itemEq = request.getRequestedPackage
 
         val craftedItem = getCraftedItem
-        if (craftedItem == null || item != craftedItem.key) return
+        if (craftedItem == null || !itemEq.matches(craftedItem.key)) return
 
-        val remaining = excess(item)-existingPromises
+        val remaining = excess(itemEq.key)-existingPromises
         if (remaining <= 0) return
 
-        request.addPromise(new DeliveryPromise(item,
+        request.addPromise(new DeliveryPromise(itemEq.key,
             math.min(remaining, request.getMissingCount), routeLayer.getBroadcaster, true, true))
     }
 
@@ -222,7 +220,9 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
             {
                 val stack = matrix.getStackInSlot(i)
                 if (stack != null && stack.stackSize > 0)
-                    promise.addIngredient(ItemKeyStack.get(stack), getCrafterForSlot(i))
+                {
+                    promise.addIngredient(ItemKeyStack.get(stack), createEqualityFor(i), getCrafterForSlot(i))
+                }
             }
             promise
         }

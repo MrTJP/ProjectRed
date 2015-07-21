@@ -3,7 +3,7 @@ package mrtjp.projectred.transportation
 import java.util.UUID
 
 import mrtjp.core.inventory.{InvWrapper, SimpleInventory}
-import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
+import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack, ItemQueue}
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
@@ -346,13 +346,61 @@ trait TChipCrafter extends RoutingChip
                     RoutingChipDefs.getForStack(stack) == RoutingChipDefs.ITEMEXTENSION
     }
 
-    def maxExtensions:Int
+    var matchData = Array.fill[Int](9)(packMatchData(true, true, false, 0))
+
+    val grpPerc = Seq(-1, 25, 50, 75, 99)
+
+    def setData(i:Int, meta:Boolean, nbt:Boolean, ore:Boolean, group:Int)
+    {
+        matchData(i) = packMatchData(meta, nbt, ore, group)
+    }
+
+    def getData(i:Int) = unpackMatchData(matchData(i))
+
+    def packMatchData(meta:Boolean, nbt:Boolean, ore:Boolean, group:Int) =
+    {
+        var data = 0
+        if (meta) data |= 1<<0
+        if (nbt) data |= 1<<1
+        if (ore) data |= 1<<2
+        data |= group<<3
+        data
+    }
+
+    def unpackMatchData(data:Int) = ((data&1) != 0, (data&2) != 0, (data&4) != 0, data>>3)
+
+    def matchMeta(i:Int) = getData(i)._1
+    def matchNBT(i:Int) = getData(i)._2
+    def matchOre(i:Int) = getData(i)._3
+    def matchGroup(i:Int) = getData(i)._4
+
+    def toggleMatchMeta(i:Int) =
+    {
+        val (meta, nbt, ore, group) = getData(i)
+        setData(i, !meta, nbt, ore, group)
+    }
+    def toggleMatchNBT(i:Int) =
+    {
+        val (meta, nbt, ore, group) = getData(i)
+        setData(i, meta, !nbt, ore, group)
+    }
+    def toggleMatchOre(i:Int) =
+    {
+        val (meta, nbt, ore, group) = getData(i)
+        setData(i, meta, nbt, !ore, group)
+    }
+    def toggleMatchGroup(i:Int) =
+    {
+        val (meta, nbt, ore, group) = getData(i)
+        setData(i, meta, nbt, ore, (group+1)%5)
+    }
 
     abstract override def save(tag:NBTTagCompound)
     {
         super.save(tag)
         matrix.saveInv(tag)
         extMatrix.saveInv(tag)
+        tag.setIntArray("matchData", matchData)
     }
 
     abstract override def load(tag:NBTTagCompound)
@@ -360,6 +408,8 @@ trait TChipCrafter extends RoutingChip
         super.load(tag)
         matrix.loadInv(tag)
         extMatrix.loadInv(tag)
+        if (tag.hasKey("matchData"))//TODO Legacy
+            matchData = tag.getIntArray("matchData")
     }
 
     def getAmountForIngredient(item:ItemKey) =
@@ -383,6 +433,14 @@ trait TChipCrafter extends RoutingChip
                 return true
         }
         false
+    }
+
+    def createEqualityFor(i:Int) =
+    {
+        val eq = new ItemEquality
+        val (meta, nbt, ore, group) = getData(i)
+        eq.setFlags(meta, nbt, ore, group)
+        eq
     }
 
     def addMatrixInfo(list:ListBuffer[String])

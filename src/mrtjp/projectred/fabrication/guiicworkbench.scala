@@ -9,15 +9,19 @@ import java.math.MathContext
 
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
+import codechicken.lib.render.ColourMultiplier
+import codechicken.lib.render.uv.{UVScale, UVTranslation}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors
 import mrtjp.core.gui._
 import mrtjp.core.vec.{Point, Rect, Size}
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.core.libmc.PRResources
+import mrtjp.projectred.fabrication.ICComponentStore._
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.{Keyboard, Mouse}
 import org.lwjgl.opengl.GL11
 
@@ -63,6 +67,12 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
         Point(gridP.vectorize*dp+dp/2)
     }
 
+    override def update_Impl()
+    {
+        if (mcInst.theWorld.getTotalWorldTime%20 == 0)
+            circuit.refreshErrors()
+    }
+
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
         if (isCircuitValid)
@@ -72,19 +82,35 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
 
             if (currentOp != null)
             {
-                if (rayTest(mouse) && !leftMouseDown)
+                if (frame.contains(mouse) && rayTest(mouse) && !leftMouseDown)
                     currentOp.renderHover(circuit, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
                 else if (leftMouseDown)
                     currentOp.renderDrag(circuit, mouseStart, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
+            }
+
+            if (mcInst.theWorld.getTotalWorldTime%100 > 5 && circuit.errors.nonEmpty)
+            {
+                prepairRender()
+                PRResources.guiPrototyper.bind()
+                for ((Point(x, y), (_, c)) <- circuit.errors)
+                {
+                    val t = orthoPartT(f.x, f.y, size.width*scale, size.height*scale, circuit.size, x, y)
+                    faceModels(dynamicIdx(0, true)).render(
+                        t, new UVScale(64) `with` new UVTranslation(330, 37) `with` new UVScale(1/512D),
+                        ColourMultiplier.instance(Colors(c).rgba)
+                    )
+                }
+                finishRender()
             }
         }
     }
 
     override def drawFront_Impl(mouse:Point, rframe:Float)
     {
-        if (isCircuitValid && !leftMouseDown && rayTest(mouse))
+        if (isCircuitValid && !leftMouseDown && frame.contains(mouse) && rayTest(mouse))
         {
-            val part = circuit.getPart(toGridPoint(mouse))
+            val point = toGridPoint(mouse)
+            val part = circuit.getPart(point)
             if (part != null)
             {
                 val data = part.getRolloverData(detailLevel)
@@ -94,6 +120,8 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
                     translateToScreen()
                     val Point(mx, my) = parent.convertPointToScreen(mouse)
                     GuiDraw.drawMultilineTip(mx+12, my-12, WrapAsJava.seqAsJavaList(data))
+                    if (circuit.errors.contains(point))
+                        GuiDraw.drawMultilineTip(mx+12, my-32, Seq(EnumChatFormatting.RED.toString+circuit.errors(point)._1))
                     translateFromScreen()
                     ClipNode.tempEnableScissoring()
                 }

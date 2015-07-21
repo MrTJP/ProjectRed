@@ -190,13 +190,12 @@ class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation
 
         val requested = request.getRequestedPackage
 
-        if (filt.hasItem(requested) != filterExclude)
+        for ((key, amount) <- inv.getAllItemStacks.filter{p => requested.matches(p._1) && filt.hasItem(p._1) != filterExclude})
         {
-            var numberAvailable = inv.getItemCount(requested)
-            numberAvailable -= existingPromises
-            if (numberAvailable > 0) request.addPromise(
-                new DeliveryPromise(requested, math.min(
-                    request.getMissingCount, numberAvailable), routeLayer.getBroadcaster)
+            val available = amount-request.root.getExistingPromisesFor(routeLayer.getBroadcaster, key)
+            val toAdd = math.min(request.getMissingCount, available)
+            if (toAdd > 0) request.addPromise(
+                new DeliveryPromise(key, toAdd, routeLayer.getBroadcaster)
             )
         }
     }
