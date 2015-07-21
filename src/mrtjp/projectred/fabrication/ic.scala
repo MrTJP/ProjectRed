@@ -17,7 +17,7 @@ import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.world.World
 import net.minecraftforge.fluids.FluidStack
 
-import scala.collection.mutable.{Map => MMap, Seq => MSeq}
+import scala.collection.mutable.{Map => MMap, Seq => MSeq, ListBuffer}
 
 trait WorldCircuit
 {
@@ -155,6 +155,8 @@ class IntegratedCircuit
     var size = Size.zeroSize
 
     var parts = MMap[(Int, Int), CircuitPart]()
+    var errors = Map.empty[Point, (String, Int)]
+
     private var scheduledTicks = MMap[(Int, Int), Long]()
 
     /**
@@ -371,6 +373,21 @@ class IntegratedCircuit
         for(part <- parts.values) part.update()
     }
 
+    def refreshErrors()
+    {
+        val eparts = parts.values.collect {case p:IErrorCircuitPart => p}
+        val elist = Map.newBuilder[Point, (String, Int)]
+
+        for (part <- eparts)
+        {
+            val error = part.postErrors
+            if (error != null)
+                elist += Point(part.x, part.y) -> error
+        }
+
+        errors = elist.result()
+    }
+
     def setPart(x:Int, y:Int, part:CircuitPart)
     {
         setPart_do(x, y, part)
@@ -531,6 +548,11 @@ trait TClientNetCircuitPart extends CircuitPart
     {
         world.sendClientPacket(this, writer)
     }
+}
+
+trait IErrorCircuitPart extends CircuitPart
+{
+    def postErrors:(String, Int)//(message, colour)
 }
 
 trait IGuiCircuitPart extends TClientNetCircuitPart

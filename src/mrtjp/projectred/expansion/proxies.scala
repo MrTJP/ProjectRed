@@ -41,6 +41,7 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
         itemJetpack = new ItemJetpack
         itemScrewdriver = new ItemElectronicScrewdriver
         itemInfusedEnderPearl = new ItemInfusedEnderPearl
+        itemPlan = new ItemPlan
 
         //Machine1 (machines)
         machine1 = new BlockMachine("projectred.expansion.machine1")
@@ -59,6 +60,7 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
         machine2.addTile(classOf[TileTeleposer], 7)
         machine2.addTile(classOf[TileFrameMotor], 8)
         machine2.addTile(classOf[TileFrameActuator], 9)
+        machine2.addTile(classOf[TileProjectBench], 10)
     }
 
     def postinit()
@@ -92,6 +94,7 @@ class ExpansionProxy_client extends ExpansionProxy_server
     val filteredImporterGui = 23
     val batteryBoxGui = 24
     val chargingBenchBui = 25
+    val projectbenchGui = 26
 
     @SideOnly(Side.CLIENT)
     override def preinit()
@@ -122,6 +125,7 @@ class ExpansionProxy_client extends ExpansionProxy_server
         TileRenderRegistry.setRenderer(machine2, 7, RenderTeleposer)
         TileRenderRegistry.setRenderer(machine2, 8, RenderFrameMotor)
         TileRenderRegistry.setRenderer(machine2, 9, RenderFrameActuator)
+        TileRenderRegistry.setRenderer(machine2, 10, RenderProjectBench)
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(machine2), RenderBatteryBox)
         MinecraftForgeClient.registerItemRenderer(itemSolar, RenderSolarPanel)
@@ -132,6 +136,7 @@ class ExpansionProxy_client extends ExpansionProxy_server
         GuiHandler.register(GuiBatteryBox, batteryBoxGui)
         GuiHandler.register(GuiElectrotineGenerator, generatorGui)
         GuiHandler.register(GuiChargingBench, chargingBenchBui)
+        GuiHandler.register(GuiProjectBench, projectbenchGui)
 
         SpacebarClientTracker.register()
         ForwardClientTracker.register()

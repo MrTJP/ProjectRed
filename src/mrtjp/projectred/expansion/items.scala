@@ -21,15 +21,17 @@ import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api.IScrewdriver
 import net.minecraft.client.Minecraft
 import net.minecraft.client.model.{ModelBiped, ModelRenderer}
+import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.item.ItemArmor.ArmorMaterial
 import net.minecraft.item.{Item, ItemArmor, ItemStack}
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.DamageSource
+import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+import net.minecraft.util.{EnumChatFormatting, DamageSource, IIcon}
 import net.minecraft.world.World
 import net.minecraftforge.common.ISpecialArmor
 import net.minecraftforge.common.ISpecialArmor.ArmorProperties
+import org.lwjgl.input.Keyboard
 
 import scala.collection.mutable.{Set => MSet}
 
@@ -149,6 +151,84 @@ class ItemElectronicScrewdriver extends ItemCore("projectred.expansion.electric_
     override def damageScrewdriver(player:EntityPlayer, stack:ItemStack)
     {
         stack.damageItem(1, player)
+    }
+}
+
+class ItemPlan extends ItemCore("projectred.expansion.plan")
+{
+    setCreativeTab(ProjectRedExpansion.tabExpansion)
+
+    var iconBlank:IIcon = null
+    var iconWritten:IIcon = null
+
+    override def getIconIndex(stack:ItemStack) =
+        if (ItemPlan.hasRecipeInside(stack)) iconWritten else iconBlank
+
+    override def registerIcons(reg:IIconRegister)
+    {
+        iconBlank = reg.registerIcon("projectred:mechanical/blank_plan")
+        iconWritten = reg.registerIcon("projectred:mechanical/written_plan")
+    }
+
+    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], flag:Boolean)
+    {
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+            if (ItemPlan.hasRecipeInside(stack))
+            {
+                val s = s"${EnumChatFormatting.BLUE}Output: ${EnumChatFormatting.GRAY+ItemPlan.loadPlanOutput(stack).getDisplayName}"
+                list.asInstanceOf[JList[String]].add(s)
+            }
+    }
+}
+
+object ItemPlan
+{
+    private def assertStackTag(stack:ItemStack)
+    {
+        if (!stack.hasTagCompound)
+            stack.setTagCompound(new NBTTagCompound)
+    }
+
+    def hasRecipeInside(stack:ItemStack) =
+    {
+        stack.hasTagCompound && stack.getTagCompound.hasKey("recipe")
+    }
+
+    def savePlan(stack:ItemStack, inputs:Array[ItemStack], out:ItemStack)
+    {
+        assertStackTag(stack)
+        val tag0 = new NBTTagList
+        for (i <- 0 until 9)
+        {
+            val tag1 = new NBTTagCompound
+            val slotStack = inputs(i)
+            if (slotStack != null)
+                slotStack.writeToNBT(tag1)
+            tag0.appendTag(tag1)
+        }
+        val tag1 = new NBTTagCompound
+        out.writeToNBT(tag1)
+        tag0.appendTag(tag1)
+        stack.getTagCompound.setTag("recipe", tag0)
+    }
+
+    def loadPlanInputs(stack:ItemStack) =
+    {
+        val out = new Array[ItemStack](9)
+        val tag0 = stack.getTagCompound.getTagList("recipe", 10)
+        for (i <- 0 until 9)
+        {
+            val tag1 = tag0.getCompoundTagAt(i)
+            if (tag1.hasKey("id"))
+                out(i) = ItemStack.loadItemStackFromNBT(tag1)
+        }
+        out
+    }
+
+    def loadPlanOutput(stack:ItemStack) =
+    {
+        val tag0 = stack.getTagCompound.getTagList("recipe", 10)
+        ItemStack.loadItemStackFromNBT(tag0.getCompoundTagAt(9))
     }
 }
 

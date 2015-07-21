@@ -115,7 +115,8 @@ object ContainerChipConfig
         classOf[TChipStock] -> {c => Seq(new StockChipPanel(c.asInstanceOf[TChipStock]))},
         classOf[TChipCrafter] -> {c => Seq(
             new CraftChipPanel(c.asInstanceOf[TChipCrafter]),
-            new CraftExtPanel(c.asInstanceOf[TChipCrafter])
+            new CraftExtPanel(c.asInstanceOf[TChipCrafter]),
+            new CraftMatchingPanel(c.asInstanceOf[TChipCrafter])
         )},
         classOf[TChipCrafterExtension] -> {c => Seq(new ExtensionIDPanel(c.asInstanceOf[TChipCrafterExtension]))}
     )

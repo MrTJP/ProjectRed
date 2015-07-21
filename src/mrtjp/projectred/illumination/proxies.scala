@@ -32,6 +32,8 @@ class IlluminationProxy_server extends IProxy with IPartFactory
         blockAirousLight.bindTile(classOf[TileAirousLight])
 
         IlluminationRecipes.initRecipes()
+
+        LightMicroMaterial.register()
     }
 
     override def postinit(){}

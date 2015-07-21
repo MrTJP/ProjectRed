@@ -53,7 +53,6 @@ public class Configurator
 
     /** Settings **/
     public static boolean versionChecking;
-    public static boolean versionCheckDevBuilds;
 
     public static boolean logicGateSounds;
     public static int minTimerTicks;
@@ -127,7 +126,6 @@ public class Configurator
         gen_SpreadingMoss = config.get("World Generation", "Spreading Moss", true).getBoolean(true);
 
         versionChecking = config.get("general", "Enable Version checking", true, "If enabled, the player will be alerted if a newer version of PR is available").getBoolean(true);
-        versionCheckDevBuilds = config.get("general", "Dev Version checking", false, "Include dev builds in version checks").getBoolean(false);
 
         logicGateSounds = config.get("general", "Logic Sounds", true, "If set to false, logic gates will not make sounds.").getBoolean(true);
         minTimerTicks = config.get("general", "Mininum Timer Ticks", 4, "Minimum amount of ticks the timer gates can be set to. (Cannot be lower than 4)").getInt();
