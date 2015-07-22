@@ -81,7 +81,7 @@ class TileInductiveFurnace extends TileProcessingMachine
     }
 }
 
-class ContainerFurnace(p:EntityPlayer, tile:TileInductiveFurnace) extends ContainerProcessingMachine(p, tile)
+class ContainerFurnace(p:EntityPlayer, tile:TileInductiveFurnace) extends ContainerProcessingMachine(tile)
 {
     {
         addSlotToContainer(new Slot3(tile, 0, 56, 40))

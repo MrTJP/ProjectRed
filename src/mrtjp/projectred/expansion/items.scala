@@ -164,6 +164,8 @@ class ItemPlan extends ItemCore("projectred.expansion.plan")
     override def getIconIndex(stack:ItemStack) =
         if (ItemPlan.hasRecipeInside(stack)) iconWritten else iconBlank
 
+    override def getIcon(stack:ItemStack, pass:Int) = getIconIndex(stack)
+
     override def registerIcons(reg:IIconRegister)
     {
         iconBlank = reg.registerIcon("projectred:mechanical/blank_plan")
@@ -172,12 +174,11 @@ class ItemPlan extends ItemCore("projectred.expansion.plan")
 
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], flag:Boolean)
     {
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
-            if (ItemPlan.hasRecipeInside(stack))
-            {
-                val s = s"${EnumChatFormatting.BLUE}Output: ${EnumChatFormatting.GRAY+ItemPlan.loadPlanOutput(stack).getDisplayName}"
-                list.asInstanceOf[JList[String]].add(s)
-            }
+        if (ItemPlan.hasRecipeInside(stack))
+        {
+            val s = s"${EnumChatFormatting.BLUE}Output: ${EnumChatFormatting.GRAY+ItemPlan.loadPlanOutput(stack).getDisplayName}"
+            list.asInstanceOf[JList[String]].add(s)
+        }
     }
 }
 

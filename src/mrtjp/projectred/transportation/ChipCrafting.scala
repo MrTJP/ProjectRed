@@ -68,7 +68,7 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
     private def operationDelay2 = 40
 
     override def getStacksToExtract = 1
-    override def getItemsToExtract = 1
+    override def getItemsToExtract = 64
 
     override def timeOutOnFailedExtract = false
 
@@ -210,10 +210,10 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
         }
     }
 
-    override def requestCraftPromise(item:ItemKey) =
+    override def requestCraftPromise(request:RequestBranchNode) =
     {
         val result = getCraftedItem
-        if (result != null && result.key == item)
+        if (result != null && request.getRequestedPackage.matches(result.key))
         {
             val promise = new CraftingPromise(result, routeLayer.getCrafter, preference)
             for (i <- 0 until 9)

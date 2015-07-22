@@ -33,7 +33,7 @@ object LightMicroMaterial
         traitID = MicroblockGenerator.registerTrait(classOf[LightMicroblock])
 
         for (i <- 16 until 32)
-            MicroMaterialRegistry.replaceMaterial(
+            MicroMaterialRegistry.registerMaterial(
                 new LightMicroMaterial(i),
                 BlockMicroMaterial.materialKey(ProjectRedIllumination.blockLamp, i)
             )

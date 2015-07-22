@@ -218,7 +218,7 @@ class GuiRequester(pipe:IWorldRequester) extends NodeGui(256, 192)
     {
         GuiDraw.drawString("Pull", 218, 144, Colors.GREY.rgb, false)
         GuiDraw.drawString("Craft", 218, 159, Colors.GREY.rgb, false)
-        GuiDraw.drawString("Parials", 218, 174, Colors.GREY.rgb, false)
+        GuiDraw.drawString("Partial", 218, 174, Colors.GREY.rgb, false)
     }
 
     override def onAddedToParent_Impl()

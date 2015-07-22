@@ -139,10 +139,8 @@ class GuiChipConfig(player:EntityPlayer, c:ContainerChipConfig) extends NodeGui(
                 dot.clickDelegate = {() =>
                     if (panel.hidden)
                     {
-                        val currentlyOpen = children.collect {case c:ChipPanelNode if !c.hidden => c}
-                        panel.position = convertPointFromScreen(Point(8, 8)*(currentlyOpen.size+1))
+                        children.collect {case c:ChipPanelNode => c}.foreach(_.hidePanel())
                         panel.unhidePanel()
-                        panel.pushZTo(0.1*(currentlyOpen.size+1))
                     }
                 }
                 addChild(dot)
@@ -205,13 +203,10 @@ object GuiChipConfig extends TGuiBuilder
 abstract class ChipPanelNode(chip:RoutingChip) extends TNode
 {
     var size = Size.zeroSize
+    position = getPanelPosition
     override def frame = Rect(position, size)
 
     var lineColor = Colors.WHITE.argb(0xAA)
-
-    private def moverFrame = Rect(position+Point(4, 9), Size(4, 6))
-    private var mouseDown = false
-    private var mouseInit = Point.zeroPoint
 
     {
         val close = new MCButtonNode
@@ -227,6 +222,8 @@ abstract class ChipPanelNode(chip:RoutingChip) extends TNode
 
     def getDotPosition:Point
 
+    def getPanelPosition:Point
+
     def isPanelVisible:Boolean
 
     def buildDotTooltip(list:ListBuffer[String])
@@ -241,19 +238,9 @@ abstract class ChipPanelNode(chip:RoutingChip) extends TNode
         hidden = false
     }
 
-    override def frameUpdate_Impl(mouse:Point, rframe:Float)
-    {
-        if (mouseDown)
-        {
-            position += mouse-mouseInit
-            mouseInit = mouse
-        }
-    }
-
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
         drawBackgroundBox()
-        GuiDraw.drawRect(moverFrame.x, moverFrame.y, moverFrame.width, moverFrame.height, Colors.LIGHT_GREY.argb)
     }
 
     def drawBackgroundBox()
@@ -268,32 +255,6 @@ abstract class ChipPanelNode(chip:RoutingChip) extends TNode
         GL11.glColor4d(1, 1, 1, 1)
         GuiLib.drawLine(from.x, from.y, to.x, to.y, lineColor)
         GuiDraw.drawRect(to.x-3, to.y-3, 6, 6, lineColor)
-    }
-
-    override def mouseClicked_Impl(p:Point, button:Int, consumed:Boolean):Boolean =
-    {
-        hitTest(p).find(_.isInstanceOf[ChipPanelNode]) match
-        {
-            case Some(gui) if gui == this =>
-                val guis = parent.childrenByZ.collect{case c:ChipPanelNode if !c.hidden => c}
-                val otherGuis = guis.filter(_ != this)
-                for (i <- otherGuis.indices) otherGuis(i).pushZTo(0.1*(i+1))
-                pushZTo(0.1*(otherGuis.size+1))
-
-                if (moverFrame.contains(p))
-                {
-                    mouseDown = true
-                    mouseInit = p
-                }
-                true
-            case _ => false
-        }
-    }
-
-    override def mouseReleased_Impl(p:Point, button:Int, consumed:Boolean) =
-    {
-        mouseDown = false
-        false
     }
 
     override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) =

@@ -211,12 +211,12 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         false
     }
 
-    override def requestCraftPromise(item:ItemKey) =
+    override def requestCraftPromise(request:RequestBranchNode) =
     {
         val b = Seq.newBuilder[CraftingPromise]
         for (r <- chips) if (r != null)
         {
-            val p = r.requestCraftPromise(item)
+            val p = r.requestCraftPromise(request)
             if (p != null) b += p
         }
         b.result()

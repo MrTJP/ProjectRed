@@ -2,12 +2,12 @@ package mrtjp.projectred.transportation
 
 import java.util.{PriorityQueue => JPriorityQueue}
 
-import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack}
+import mrtjp.core.item.{ItemQueue, ItemEquality, ItemKey, ItemKeyStack}
 import mrtjp.core.util.HashPair2
 import net.minecraft.item.ItemStack
 
 import scala.collection.immutable.{HashMap, TreeSet}
-import scala.collection.mutable.{HashMap => MHashMap}
+import scala.collection.mutable.{HashMap => MHashMap, MultiMap => MMultiMap, Set => MSet, Map => MMap}
 
 object RequestFlags extends Enumeration
 {
@@ -106,12 +106,12 @@ class RequestBranchNode(parentCrafter:CraftingPromise, stack:ItemKeyStack, equal
             import scala.util.control.Breaks._
             for (excess <- all) if (isDone) return else if (excess.size > 0) breakable
             {
-                val pathsToThis = requester.getRouter.getRouteTable(excess.from.getRouter.getIPAddress)
+                val pathsToThat = requester.getRouter.getRouteTable(excess.from.getRouter.getIPAddress)
                 val pathsFromThat = excess.from.getRouter.getRouteTable(requester.getRouter.getIPAddress)
                 for (from <- pathsFromThat) if (from != null && from.flagRouteTo)
-                    for (to <- pathsToThis) if (to != null && to.flagRouteFrom)
+                    for (to <- pathsToThat) if (to != null && to.flagRouteFrom)
                     {
-                        excess.size = Math.min(excess.size, getMissingCount)
+                        excess.size = math.min(excess.size, getMissingCount)
                         addPromise(excess)
                         break()
                     }
@@ -134,7 +134,7 @@ class RequestBranchNode(parentCrafter:CraftingPromise, stack:ItemKeyStack, equal
                 val item = recurse_GetCrafterItem(wc)
                 if (item == null || item == stack.key) //dont use a crafter that has been used for a different item in this request tree
                 {
-                    val cpl = wc.requestCraftPromise(stack.key)
+                    val cpl = wc.requestCraftPromise(this)
                     for (cp <- cpl) jobs += cp
                 }
             case _ =>
@@ -342,20 +342,20 @@ class RequestBranchNode(parentCrafter:CraftingPromise, stack:ItemKeyStack, equal
 
 class RequestRoot(thePackage:ItemKeyStack, equality:ItemEquality, requester:IWorldRequester, opt:RequestFlags.ValueSet) extends RequestBranchNode(null, thePackage, equality:ItemEquality, requester, null, opt)
 {
-    var tableOfPromises = new HashMap[HashPair2[IWorldBroadcaster, ItemKey], Int]()
+    var tableOfPromises:MMap[IWorldBroadcaster, ItemQueue] = _
 
-    def getExistingPromisesFor(b:IWorldBroadcaster, item:ItemKey):Int = getExistingPromisesFor(new HashPair2(b, item))
-    def getExistingPromisesFor(pair:HashPair2[IWorldBroadcaster, ItemKey]) =
+    def getExistingPromisesFor(b:IWorldBroadcaster, item:ItemKey) =
     {
-        //This may not be constucted yet, because this is called from code before the constructor
-        if (tableOfPromises == null) tableOfPromises = new HashMap[HashPair2[IWorldBroadcaster, ItemKey], Int]()
-        tableOfPromises.getOrElse(pair, 0)
+        if (tableOfPromises == null) tableOfPromises = MMap[IWorldBroadcaster, ItemQueue]()
+        tableOfPromises.get(b) match {
+            case Some(queue) => queue(item)
+            case _ => 0
+        }
     }
 
     def promiseAdded(p:DeliveryPromise)
     {
-        val key = new HashPair2(p.from, p.item)
-        tableOfPromises += key -> (getExistingPromisesFor(key)+p.size)
+        tableOfPromises.getOrElseUpdate(p.from, new ItemQueue).add(p.item, p.size)
     }
 
     def gatherExcessFor(item:ItemKey) =
@@ -370,12 +370,9 @@ class RequestRoot(thePackage:ItemKeyStack, equality:ItemEquality, requester:IWor
         all.result()
     }
 
-    def promiseRemoved(promise:DeliveryPromise)
+    def promiseRemoved(p:DeliveryPromise)
     {
-        val key = new HashPair2(promise.from, promise.item)
-        val newCount = getExistingPromisesFor(key)-promise.size
-        if (newCount <= 0) tableOfPromises = tableOfPromises.filterNot(_._1 == key)
-        else tableOfPromises += key -> newCount
+        tableOfPromises.getOrElseUpdate(p.from, new ItemQueue).remove(p.item, p.size)
     }
 }
 
@@ -513,7 +510,7 @@ class CraftingInitializer(crafter:CraftingPromise, maxToCraft:Int, branch:Reques
 
     def finalizeInteraction():Boolean =
     {
-        val setsToCraft = Math.min(setsRequested, maxSetsAvailable)
+        val setsToCraft = math.min(setsRequested, maxSetsAvailable)
         val setsAbleToCraft = calculateMaxPotentialSets(setsToCraft)
         if (setsAbleToCraft > 0)
         {
@@ -549,7 +546,7 @@ class CraftingInitializer(crafter:CraftingPromise, maxToCraft:Int, branch:Reques
 
             branch.parityBranch = crafter
             for (i <- ingredients.indices)
-                potentialSets = Math.min(potentialSets,
+                potentialSets = math.min(potentialSets,
                     children(i).getPromisedCount/(ingredients(i)._1.stackSize/numberOfSets))
 
             getAbsoluteSubPromises(potentialSets, crafter)

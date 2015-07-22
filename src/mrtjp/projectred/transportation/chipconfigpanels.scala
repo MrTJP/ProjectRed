@@ -169,6 +169,8 @@ class FilterChipPanel(chip:TChipFilter) extends ChipPanelNode(chip)
 
     override def getDotPosition = Point(85, 34)
 
+    override def getPanelPosition = Point(-60, -16)
+
     override def isPanelVisible = chip.enableFilter
 
     override def buildDotTooltip(list:ListBuffer[String])
@@ -204,6 +206,8 @@ class OrientChipPanel(chip:TChipOrientation) extends ChipPanelNode(chip)
     }
 
     override def getDotPosition = Point(100, 50)
+
+    override def getPanelPosition = Point(-52, -18)
 
     override def isPanelVisible = true
 
@@ -257,6 +261,8 @@ class PriorityChipPanel(chip:TChipPriority) extends ChipPanelNode(chip)
     }
 
     override def getDotPosition = Point(76, 51)
+
+    override def getPanelPosition = Point(-25, 15)
 
     override def isPanelVisible = chip.prefScale > 0
 
@@ -312,6 +318,8 @@ class StockChipPanel(chip:TChipStock) extends ChipPanelNode(chip)
 
     override def getDotPosition = Point(90, 50)
 
+    override def getPanelPosition = Point(-30, -35)
+
     override def isPanelVisible = true
 
     override def buildDotTooltip(list:ListBuffer[String])
@@ -352,6 +360,8 @@ class CraftChipPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
 
     override def getDotPosition = Point(105, 42)
 
+    override def getPanelPosition = Point(-55, -32)
+
     override def isPanelVisible = true
 
     override def buildDotTooltip(list:ListBuffer[String])
@@ -388,6 +398,8 @@ class CraftExtPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
 
     override def getDotPosition = Point(90, 32)
 
+    override def getPanelPosition = Point(110, -25)
+
     override def isPanelVisible = true
 
     override def buildDotTooltip(list:ListBuffer[String])
@@ -418,7 +430,7 @@ class CraftMatchingPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
             override def drawButton(mouseover:Boolean)
             {
                 ResourceLib.guiExtras.bind()
-                drawTexturedModalRect(position.x, position.y, if (chip.matchMeta(idx)) 49 else 65, 118, 14, 14)
+                GuiDraw.drawTexturedModalRect(position.x, position.y, if (chip.matchMeta(idx)) 49 else 65, 118, 14, 14)
             }
         }
         b.position = Point(70, 12)
@@ -439,7 +451,7 @@ class CraftMatchingPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
             override def drawButton(mouseover:Boolean)
             {
                 ResourceLib.guiExtras.bind()
-                drawTexturedModalRect(position.x, position.y, if (chip.matchNBT(idx)) 33 else 49, 102, 14, 14)
+                GuiDraw.drawTexturedModalRect(position.x, position.y, if (chip.matchNBT(idx)) 33 else 49, 102, 14, 14)
             }
         }
         b.position = Point(70, 28)
@@ -460,7 +472,7 @@ class CraftMatchingPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
             override def drawButton(mouseover:Boolean)
             {
                 ResourceLib.guiExtras.bind()
-                drawTexturedModalRect(position.x, position.y, if (chip.matchOre(idx)) 81 else 97, 118, 14, 14)
+                GuiDraw.drawTexturedModalRect(position.x, position.y, if (chip.matchOre(idx)) 81 else 97, 118, 14, 14)
             }
         }
         b.position = Point(70, 44)
@@ -482,7 +494,7 @@ class CraftMatchingPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
             {
                 ResourceLib.guiExtras.bind()
                 val u = chip.matchGroup(idx)*22+1
-                drawTexturedModalRect(position.x, position.y, u, 80, 20, 20)
+                GuiDraw.drawTexturedModalRect(position.x, position.y, u, 80, 20, 20)
             }
         }
         b.position = Point(88, 26)
@@ -505,7 +517,13 @@ class CraftMatchingPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
 
         for (((x, y), i) <- GuiLib.createGrid(10, 10, 3, 3, 18, 18).zipWithIndex)
         {
-            val button = new MCButtonNode
+            val button = new IconButtonNode {
+                override def drawButton(mouseover:Boolean) {
+                    val stack = chip.matrix.getStackInSlot(i)
+                    if (stack != null)
+                        ItemDisplayNode.renderItem(position, size, 0, false, stack)
+                }
+            }
             button.position = Point(x, y)
             button.size = Size(13, 13)
             button.clickDelegate = {() =>
@@ -522,6 +540,8 @@ class CraftMatchingPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
     }
 
     override def getDotPosition = Point(96, 50)
+
+    override def getPanelPosition = Point(-40, -25)
 
     override def isPanelVisible = true
 
@@ -559,6 +579,8 @@ class ExtensionIDPanel(chip:TChipCrafterExtension) extends ChipPanelNode(chip)
     }
 
     override def getDotPosition = Point(80, 42)
+
+    override def getPanelPosition = Point(-50, -20)
 
     override def isPanelVisible = true
 
