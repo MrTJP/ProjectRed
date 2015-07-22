@@ -7,6 +7,7 @@ v4.7.0pre7
 - FIX: Chip settings panels opening in inconvienient places
 - CHANGE: Microblocks of inverted lamps will light up
 - CHANGE: Crafting chip now extracts up to a stack
+- CHANGE: Motors no longer continuously move blocks
 
 v4.7.0pre6
 - ADDED: Jetpack particles and models
