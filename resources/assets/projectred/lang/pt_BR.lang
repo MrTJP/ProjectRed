@@ -8,13 +8,13 @@ item.projectred.core.part.partanode.name=Anodo
 item.projectred.core.part.partcathode.name=Cátodo
 item.projectred.core.part.partpointer.name=Indicador
 item.projectred.core.part.partsiliconchip.name=Chip de Silício
-item.projectred.core.part.partenergizedsiliconchip.name=Chip de Silício Estabilizado
+item.projectred.core.part.partenergizedsiliconchip.name=Chip de Silício Energizado
 item.projectred.core.part.partplatformedplate.name=Placa Plataformada
-item.projectred.core.part.partredingot.name=Lingote de Liga Vermelha
+item.projectred.core.part.partredingot.name=Barra de Liga Vermelha
 item.projectred.core.part.partboule.name=Boule de Silício
-item.projectred.core.part.partsilicon.name=Pastilha Silício
-item.projectred.core.part.partinfusedsilicon.name=Pastilha Silício Infundido
-item.projectred.core.part.partenergizedsilicon.name=Pastilha Silício Energizado
+item.projectred.core.part.partsilicon.name=Silício
+item.projectred.core.part.partinfusedsilicon.name=Silício Infundido
+item.projectred.core.part.partenergizedsilicon.name=Silício Energizado
 item.projectred.core.part.partmotor.name=Motor
 item.projectred.core.part.partcoppercoil.name=Bobina de Cobre
 item.projectred.core.part.partironcoil.name=Bobina de Ferro
@@ -37,18 +37,18 @@ item.projectred.core.part.illumar13.name=Illumar Verde
 item.projectred.core.part.illumar14.name=Illumar Vermelho
 item.projectred.core.part.illumar15.name=Illumar Preto
 
-item.projectred.core.part.partcloth.name=Carretel de Linha
-item.projectred.core.part.partsail.name=Pano
+item.projectred.core.part.partcloth.name=Pano de tecido
+item.projectred.core.part.partsail.name=Vela de Pano
 item.projectred.core.part.gemruby.name=Rubi
 item.projectred.core.part.gemsapphire.name=Safira
 item.projectred.core.part.gemperidot.name=Peridoto
-item.projectred.core.part.partredironcomp.name=Ferro Composto Vermelho
-item.projectred.core.part.partsandcoalcomp.name=Carvão Aerado Composto
-item.projectred.core.part.partredsiliconcomp.name=Pastilha Silício de Composto Vermelho
-item.projectred.core.part.partglowsiliconcomp.name=Pastilha Silício de Composto Brilhante
+item.projectred.core.part.partredironcomp.name=Composto de Ferro Vermelho
+item.projectred.core.part.partsandcoalcomp.name=Composto de Carvão Arenoso
+item.projectred.core.part.partredsiliconcomp.name=Composto de Silício Vermelho
+item.projectred.core.part.partglowsiliconcomp.name=Composto de Silício Brilhante
 
-item.projectred.core.part.nullchip.name=Chip de Roteamento
-item.projectred.core.part.nullupgrd.name=Atualização de Chip
+item.projectred.core.part.nullchip.name=Nulo-Chip Lógico de Roteamento
+item.projectred.core.part.nullupgrd.name=Nulo-Chip de Atualização Lógico
 item.projectred.core.part.upgrd_lx.name=Atualização ´LX´
 item.projectred.core.part.upgrd_ly.name=Atualização ´LY´
 item.projectred.core.part.upgrd_lz.name=Atualização ´LZ´
@@ -56,20 +56,44 @@ item.projectred.core.part.upgrd_rx.name=Atualização ´RX´
 item.projectred.core.part.upgrd_ry.name=Atualização ´RY´
 item.projectred.core.part.upgrd_rz.name=Atualização ´RZ´
 
+item.projectred.core.part.copper_ingot.name=Barra de Cobre
+item.projectred.core.part.tin_ingot.name=Barra de Estanho
+item.projectred.core.part.silver_ingot.name=Barra de Prata
+item.projectred.core.part.electrotine_ingot.name=Barra de Liga Eletrotine
+item.projectred.core.part.electrotine_dust.name=Eletrotine
+item.projectred.core.part.electrotine_iron_comp.name=Composto de Ferro Eletrotine
+item.projectred.core.part.electrotine_silicon_comp.name=Composto de Silício Eletrotine
+item.projectred.core.part.electro_silicon.name=Silício electro
 
 item.projectred.core.drawplate.name=Molde de Placa
 item.projectred.core.wiredebugger.name=Multimetro
 item.projectred.core.screwdriver.name=Chave de Fenda
-item.projectred.core.routerutil.name=Utilitário do Roteador
+item.projectred.core.routerutil.name=Utilitário de Roteador
 item.projectred.core.datacard.name=Cartão de Dados
 
 
 
 
 itemGroup.expansion=Project Red: Expansão
+item.projectred.expansion.emptybattery.name=Bateria
+item.projectred.expansion.battery.name=Bateria
+item.projectred.expansion.electric_screwdriver.name=Chave de Fenda Elétrica
+item.projectred.expansion.jetpack.name=Jetpack
+item.projectred.expansion.infused_ender_pearl.name=Pérola do Fim infundida
+tile.projectred.expansion.machine1|0.name=Fornalha Indutiva
+tile.projectred.expansion.machine1|1.name=Gerador por Electrotine
 tile.projectred.expansion.machine2|0.name=Quebrador de Blocos
-tile.projectred.expansion.machine2|1.name=Importador de item
-tile.projectred.expansion.machine2|2.name=Implantador
+tile.projectred.expansion.machine2|1.name=Importador de Items
+tile.projectred.expansion.machine2|2.name=Colocador de Blocos
+tile.projectred.expansion.machine2|3.name=Importador Filtrado
+tile.projectred.expansion.machine2|4.name=Iniciador de Fogo
+tile.projectred.expansion.machine2|5.name=Caixa de Baterias
+tile.projectred.expansion.machine2|6.name=Banco de Carregamento
+tile.projectred.expansion.machine2|7.name=Teleposer
+tile.projectred.expansion.machine2|8.name=Motor de Frame
+tile.projectred.expansion.machine2|9.name=Atuador Linear de Frames
+item.projectred.expansion.solar_panel.name=Painel Solar
+
 
 
 itemGroup.transport=Project Red: Transporte
@@ -101,6 +125,10 @@ itemGroup.exploration=Project Red: Exploração
 tile.projectred.exploration.ore|0.name=Minério de Rubi
 tile.projectred.exploration.ore|1.name=Minério de Safira
 tile.projectred.exploration.ore|2.name=Minério de Peridoto
+tile.projectred.exploration.ore|3.name=Minério de Cobre
+tile.projectred.exploration.ore|4.name=Minério de Estanho
+tile.projectred.exploration.ore|5.name=Minério de Prata
+tile.projectred.exploration.ore|6.name=Minério de Eletrotine
 tile.projectred.exploration.stone|0.name=Mármore
 tile.projectred.exploration.stone|1.name=Tijolo de Mármore
 tile.projectred.exploration.stone|2.name=Pedregulho de Basalto
@@ -109,6 +137,11 @@ tile.projectred.exploration.stone|4.name=Tijolo de Basalto
 tile.projectred.exploration.stone|5.name=Bloco de Rubi
 tile.projectred.exploration.stone|6.name=Bloco de Safira
 tile.projectred.exploration.stone|7.name=Bloco de Peridoto
+tile.projectred.exploration.stone|8.name=Bloco de Cobre
+tile.projectred.exploration.stone|9.name=Bloco de Estanho
+tile.projectred.exploration.stone|10.name=Bloco de Prata
+tile.projectred.exploration.stone|11.name=Bloco de Eletrotine
+tile.projectred.exploration.barrel|0.name=barril Items
 item.projectred.exploration.woolgin.name=Desfiador de Lã
 item.projectred.exploration.backpack|0.name=Bolsa Branca
 item.projectred.exploration.backpack|1.name=Bolsa Laranja
@@ -159,12 +192,28 @@ item.projectred.exploration.sickleperidot.name=Foice de Peridoto
 item.projectred.exploration.sicklediamond.name=Foice de Diamante
 tile.projectred.exploration.stonewalls|0.name=Parede de Mármore
 tile.projectred.exploration.stonewalls|1.name=Parede de Tijolo de Mármore
-tile.projectred.exploration.stonewalls|2.name=Parede de Pedregulho de Bassalto
-tile.projectred.exploration.stonewalls|3.name=Parede de Bassalto
-tile.projectred.exploration.stonewalls|4.name=Parede de Tijolo de Bassalto
+tile.projectred.exploration.stonewalls|2.name=Parede de Pedregulho de Basalto
+tile.projectred.exploration.stonewalls|3.name=Parede de Basalto
+tile.projectred.exploration.stonewalls|4.name=Parede de Tijolo de Basalto
 tile.projectred.exploration.stonewalls|5.name=Parede de Rubi
 tile.projectred.exploration.stonewalls|6.name=Parede de Safira
 tile.projectred.exploration.stonewalls|7.name=Parede de Peridoto
+tile.projectred.exploration.stonewalls|8.name=Parede de Cobre
+tile.projectred.exploration.stonewalls|9.name=Parede de Estanho
+tile.projectred.exploration.stonewalls|10.name=Parece de Prata
+tile.projectred.exploration.stonewalls|11.name=Parede de Eletrotine
+item.projectred.exploration.rubyhelmet.name=Elmo de Rubi
+item.projectred.exploration.rubychestplate.name=Peitoral de Rubi
+item.projectred.exploration.rubyleggings.name=Calça de Rubi
+item.projectred.exploration.rubyboots.name=Botas de Ruby
+item.projectred.exploration.sapphirehelmet.name=Elmo de Safira
+item.projectred.exploration.sapphirechestplate.name=Peitoral de Safira
+item.projectred.exploration.sapphireleggings.name=Calça de Safira
+item.projectred.exploration.sapphireboots.name=Botas de Safira
+item.projectred.exploration.peridothelmet.name=Elmo de Peridoto
+item.projectred.exploration.peridotchestplate.name=Peitoral de Peridoto
+item.projectred.exploration.peridotleggings.name=Calça de Peridoto
+item.projectred.exploration.peridotboots.name=Botas de Peridoto
 tile.projectred.exploration.lily|0.name=Lírio Desviado
 item.projectred.exploration.lilyseed|0.name=Sementes de Lírio Desviado Branco
 item.projectred.exploration.lilyseed|1.name=Sementes de Lírio Desviado Laranja
@@ -421,6 +470,7 @@ item.projectred.integration.gate|30.name=Barramento do Painel de Entrada
 item.projectred.integration.gate|31.name=Trava de Empilhamento
 item.projectred.integration.gate|32.name=Display Segmentado
 item.projectred.integration.gate|33.name=Decodificação Aleatória
+item.projectred.integration.gate|34.name=Gate de IC
 
 
 
@@ -443,7 +493,7 @@ item.projectred.transmission.wire|13.name=Fio Isolado Marrom
 item.projectred.transmission.wire|14.name=Fio Isolado Verde
 item.projectred.transmission.wire|15.name=Fio Isolado Vermelho
 item.projectred.transmission.wire|16.name=Fio Isolado Preto
-item.projectred.transmission.wire|17.name=Cabo
+item.projectred.transmission.wire|17.name=Cabo 
 item.projectred.transmission.wire|18.name=Cabo Branco
 item.projectred.transmission.wire|19.name=Cabo Laranja
 item.projectred.transmission.wire|20.name=Cabo Magenta
@@ -460,7 +510,7 @@ item.projectred.transmission.wire|30.name=Cabo Marromn
 item.projectred.transmission.wire|31.name=Cabo Verde
 item.projectred.transmission.wire|32.name=Cabo Vermelho
 item.projectred.transmission.wire|33.name=Cabo Preto
-item.projectred.transmission.wire|34.name=Linha de Energia 100V
+item.projectred.transmission.wire|34.name=Fio de Baixa Carga
 item.projectred.transmission.framewire|0.name=Fio Emoldurado de Liga Vermelha
 item.projectred.transmission.framewire|1.name=Fio Isolado Branco Emoldurado
 item.projectred.transmission.framewire|2.name=Fio Isolado Laranja Emoldurado
@@ -479,7 +529,7 @@ item.projectred.transmission.framewire|14.name=Fio Isolado Verde Emoldurado
 item.projectred.transmission.framewire|15.name=Fio Isolado Vermelho Emoldurado
 item.projectred.transmission.framewire|16.name=Fio Isolado Preto Emoldurado
 item.projectred.transmission.framewire|17.name=Cabo Emoldurado Embutido
-item.projectred.transmission.framewire|34.name=Linha de Energia 100V Emoldurada
+item.projectred.transmission.framewire|34.name=Fio de Baixa Carga Emoldurado
 
 
 
@@ -487,6 +537,16 @@ item.projectred.transmission.framewire|34.name=Linha de Energia 100V Emoldurada
 itemGroup.compat=Project Red: Compatibilidade
 
 tile.projectred.compatibility.liqredstone.name=Redstone Líquida
-tile.projectred.compatibility.liqcondredmetal.name=Redmetal Condutivo Fundido
+tile.projectred.compatibility.liqcondredmetal.name=Metal Vermelho Condutivo Derretido
+fluid.redstone.molten=Redstone Líquida
+fluid.redmetal.molten=Metal Vermelho Condutivo Derretivo
 
-# Localization File: Português Brasileiro (pt_BR) / Last Update: 20/2/2015 – por: Al-Myr
+itemGroup.fab=Project Red: Fabrication
+
+item.projectred.fabrication.icblueprint.name=Diagrama de IC
+item.projectred.fabrication.icchip|0.name=Chip de IC
+item.projectred.fabrication.icchip|1.name=Chip de IC(Modo Criativo)
+tile.projectred.integration.icblock|0.name=Bancada de IC
+tile.projectred.integration.icblock|1.name=Impressora de IC
+
+# Localization File: Português Brasileiro (pt_BR) / Last Update: 22/07/2015 por NarigudoBR
