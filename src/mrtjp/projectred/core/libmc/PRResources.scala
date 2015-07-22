@@ -13,6 +13,7 @@ object PRResources
     val guiFurnace = registerPR("textures/gui/furnace.png")
     val guiPrototyper = registerPR("textures/gui/ic_workbench.png")
     val guiProjectbench = registerPR("textures/gui/project_bench.png")
+    val guiAutoCrafter = registerPR("textures/gui/auto_bench.png")
     val panelCraftExtension = registerPR("textures/gui/craft_chip_ext_panel.png")
 
     val icmaptex = registerPR("textures/gui/map_background.png")

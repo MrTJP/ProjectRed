@@ -15,12 +15,13 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors
 import mrtjp.core.gui._
 import mrtjp.core.inventory.TInventory
-import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack}
+import mrtjp.core.item.{ItemEquality, ItemKey}
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.vec.{Point, Size}
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.core.libmc.PRResources
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{ISidedInventory, InventoryCraftResult, InventoryCrafting, SlotCrafting}
@@ -30,6 +31,7 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
 import net.minecraft.world.{IBlockAccess, World}
 import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
+import org.lwjgl.input.Keyboard
 
 import scala.collection.JavaConversions._
 
@@ -42,7 +44,7 @@ class TileProjectBench extends TileMachine with TInventory with ISidedInventory 
     var currentRecipe:IRecipe = null
     var currentInputs = new Array[ItemStack](9)
 
-    private var recipeNeedsUpdate = false
+    private var recipeNeedsUpdate = true
 
     override def save(tag:NBTTagCompound)
     {
@@ -59,12 +61,18 @@ class TileProjectBench extends TileMachine with TInventory with ISidedInventory 
     override def read(in:MCDataInput, key:Int) = key match
     {
         case 1 => writePlan()
+        case 2 => clearGrid(in.readInt())
         case _ => super.read(in, key)
     }
 
     def sendWriteButtonAction()
     {
         writeStream(1).sendToServer()
+    }
+
+    def sendClearGridAction(id:Int)
+    {
+        writeStream(2).writeInt(id).sendToServer()
     }
 
     override def getBlock = ProjectRedExpansion.machine2
@@ -93,7 +101,7 @@ class TileProjectBench extends TileMachine with TInventory with ISidedInventory 
     {
         isPlanRecipe = false
         currentRecipe = null
-        currentInputs.transform(null)
+        currentInputs.transform(_ => null)
         invResult.setInventorySlotContents(0, null)
 
         if ((0 until 9).exists(getStackInSlot(_) != null))
@@ -143,10 +151,29 @@ class TileProjectBench extends TileMachine with TInventory with ISidedInventory 
         }
     }
 
+    def clearGrid(id:Int)
+    {
+        world.getEntityByID(id) match
+        {
+            case p:EntityPlayer => p.openContainer match {
+                case c:ContainerProjectBench =>
+                    c.transferAllFromGrid()
+                case _ =>
+            }
+            case _ =>
+        }
+    }
+
     override def markDirty()
     {
         super.markDirty()
         recipeNeedsUpdate = true
+    }
+
+    override def onBlockRemoval()
+    {
+        super.onBlockRemoval()
+        dropInvContents(world, x, y, z)
     }
 
     override def openGui(player:EntityPlayer)
@@ -271,7 +298,14 @@ class ContainerProjectBench(player:EntityPlayer, tile:TileProjectBench) extends 
         output.canPlaceDelegate = {_ => false}
         addSlotToContainer(output)
 
-        addPlayerInv(player, 8, 120)
+        addPlayerInv(player, 8, 126)
+    }
+
+    def transferAllFromGrid()
+    {
+        for (i <- 0 until 9) if (getSlot(i).getHasStack)
+            transferStackInSlot(player, i)
+        detectAndSendChanges()
     }
 
     override def slotClick(id:Int, mouse:Int, shift:Int, player:EntityPlayer) =
@@ -285,39 +319,53 @@ class ContainerProjectBench(player:EntityPlayer, tile:TileProjectBench) extends 
     {
         if (0 until 9 contains from) //crafting grid
         {
-            tryMergeItemStack(stack, 9, 27, false) //merge to storage
+            if (tryMergeItemStack(stack, 9, 27, false)) return true //merge to storage
+            if (tryMergeItemStack(stack, 29, 65, false)) return true //merge to inventory)
         }
         else if (9 until 27 contains from) //storage
         {
-            if (stack.getItem.isInstanceOf[ItemPlan]) tryMergeItemStack(stack, 27, 28, false) //merge to plan
-            else tryMergeItemStack(stack, 29, 65, false) //merge to inventory
+            if (stack.getItem.isInstanceOf[ItemPlan])
+            {
+                if (getSlot(27).getStack != null && ItemKey.get(getSlot(27).getStack) != ItemKey.get(stack))
+                    transferStackInSlot(player, 27) //transfer existing stack
+
+                if (tryMergeItemStack(stack, 27, 28, false)) return true //merge to plan
+            }
+            if (tryMergeItemStack(stack, 29, 65, false)) return true //merge to inventory
         }
         else if (from == 27) //plan slot
         {
-            tryMergeItemStack(stack, 9, 27, false) //merge to storage
+            if (tryMergeItemStack(stack, 9, 27, true)) return true //merge to storage
+            if (tryMergeItemStack(stack, 29, 65, false)) return true //merge to inventory)
         }
         else if (from == 28) //output slot
         {
-            tryMergeItemStack(stack, 29, 65, true) //merge to inventory
+            if (tryMergeItemStack(stack, 29, 65, true)) return true //merge to inventory
+            if (tryMergeItemStack(stack, 9, 27, true)) return true //merge to storage
         }
         else if (29 until 65 contains from) //player inventory
         {
-            if (stack.getItem.isInstanceOf[ItemPlan]) tryMergeItemStack(stack, 27, 28, false) //merge to plan
-            else tryMergeItemStack(stack, 9, 27, false) //merge to storage
+            if (stack.getItem.isInstanceOf[ItemPlan])
+            {
+                if (getSlot(27).getStack != null && ItemKey.get(getSlot(27).getStack) != ItemKey.get(stack))
+                    transferStackInSlot(player, 27) //transfer existing stack
+
+                if (tryMergeItemStack(stack, 27, 28, false)) return true //merge to plan
+            }
+            if (tryMergeItemStack(stack, 9, 27, false)) return true //merge to storage
         }
-        else false
+
+        false
     }
 }
 
-class GuiProjectBench(tile:TileProjectBench, c:ContainerProjectBench) extends NodeGui(c, 176, 202)
+class GuiProjectBench(tile:TileProjectBench, c:ContainerProjectBench) extends NodeGui(c, 176, 208)
 {
-    var displayStacks = Seq.empty[ItemDisplayNode]
-
     {
         val write = new IconButtonNode {
             override def drawButton(mouseover:Boolean) {
                 PRResources.guiProjectbench.bind()
-                drawTexturedModalRect(position.x, position.y, 176, 0, 14, 14)
+                GuiDraw.drawTexturedModalRect(position.x, position.y, 176, 0, 14, 14)
             }
         }
         write.position = Point(18, 56)
@@ -325,47 +373,41 @@ class GuiProjectBench(tile:TileProjectBench, c:ContainerProjectBench) extends No
         write.clickDelegate = {() => tile.sendWriteButtonAction()}
         addChild(write)
 
-        for ((x, y) <- GuiLib.createSlotGrid(48, 18, 3, 3, 0, 0))
-        {
-            val d = new ItemDisplayNode
-            d.position = Point(x, y)
-            d.size = Size(16, 16)
-            d.hidden = true
-            d.backgroundColour = Colors.GREY.argb
-            d.drawNumber = false
-            d.drawTooltip = false
-            addChild(d)
-            displayStacks :+= d
-        }
-    }
-
-    override def frameUpdate_Impl(mouse:Point, rframe:Float)
-    {
-        val inputs = if (tile.isPlanRecipe) tile.currentInputs
-        else null
-
-        for (i <- 0 until 9)
-        {
-            val disp = displayStacks(i)
-            val stack = if (inputs == null) null else inputs(i)
-            if (stack == null)
-            {
-                disp.hidden = true
-                disp.stack = null
-            }
-            else
-            {
-                disp.hidden = false
-                disp.stack = ItemKeyStack.get(stack)
+        val clear = new IconButtonNode {
+            override def drawButton(mouseover:Boolean) {
+                PRResources.guiProjectbench.bind()
+                GuiDraw.drawTexturedModalRect(position.x, position.y, 176, 15, 8, 8)
             }
         }
+        clear.position = Point(37, 17)
+        clear.size = Size(8, 8)
+        clear.clickDelegate = {() => tile.sendClearGridAction(Minecraft.getMinecraft.thePlayer.getEntityId)}
+        addChild(clear)
     }
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
         PRResources.guiProjectbench.bind()
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
+
+        if (tile.isPlanRecipe) for (((x, y), i) <- GuiLib.createSlotGrid(48, 18, 3, 3, 0, 0).zipWithIndex)
+        {
+            val stack = tile.currentInputs(i)
+            if (stack != null)
+            {
+                GuiDraw.drawRect(x, y, 16, 16, Colors.GREY.argb)
+                ItemDisplayNode.renderItem(Point(x, y), Size(16, 16), zPosition, false, stack)
+            }
+        }
+
         GuiDraw.drawString("Project Bench", 8, 6, Colors.GREY.argb, false)
+        GuiDraw.drawString("Inventory", 8, 116, Colors.GREY.argb, false)
+    }
+
+    override def drawFront_Impl(mouse:Point, rframe:Float)
+    {
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+            GuiProjectBench.drawPlanOutputOverlay(c.slots)
     }
 }
 
@@ -380,6 +422,20 @@ object GuiProjectBench extends TGuiBuilder
         {
             case t:TileProjectBench => new GuiProjectBench(t, t.createContainer(player))
             case _ => null
+        }
+    }
+
+    def drawPlanOutputOverlay(slots:Iterable[TSlot3])
+    {
+        for (slot <- slots) if (slot.getHasStack)
+        {
+            val stack = slot.getStack
+            if (ItemPlan.hasRecipeInside(stack))
+            {
+                val output = ItemPlan.loadPlanOutput(stack)
+                GuiDraw.drawRect(slot.xDisplayPosition, slot.yDisplayPosition, 16, 16, Colors.LIGHT_BLUE.argb(0xCC))
+                ItemDisplayNode.renderItem(Point(slot.xDisplayPosition+1, slot.yDisplayPosition+1), Size(14, 14),  0, true, output)
+            }
         }
     }
 }

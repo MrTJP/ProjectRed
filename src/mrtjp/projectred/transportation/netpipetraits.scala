@@ -66,7 +66,7 @@ trait IWorldBroadcaster extends IWorldRouter
 
 trait IWorldCrafter extends IWorldRequester with IWorldBroadcaster
 {
-    def requestCraftPromise(item:ItemKey):Seq[CraftingPromise]
+    def requestCraftPromise(request:RequestBranchNode):Seq[CraftingPromise]
 
     def registerExcess(promise:DeliveryPromise)
 

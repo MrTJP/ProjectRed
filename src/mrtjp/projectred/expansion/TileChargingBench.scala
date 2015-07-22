@@ -172,7 +172,7 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
     }
 }
 
-class ContainerChargingBench(p:EntityPlayer, tile:TileChargingBench) extends ContainerPoweredMachine(p, tile)
+class ContainerChargingBench(p:EntityPlayer, tile:TileChargingBench) extends ContainerPoweredMachine(tile)
 {
     {
         var id = 0

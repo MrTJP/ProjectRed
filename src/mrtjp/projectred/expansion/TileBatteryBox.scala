@@ -224,7 +224,7 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
         new ContainerBatteryBox(player, this)
 }
 
-class ContainerBatteryBox(p:EntityPlayer, tile:TileBatteryBox) extends ContainerPoweredMachine(p, tile)
+class ContainerBatteryBox(p:EntityPlayer, tile:TileBatteryBox) extends ContainerPoweredMachine(tile)
 {
     {
         addSlotToContainer(new Slot3(tile, 0, 80, 31))

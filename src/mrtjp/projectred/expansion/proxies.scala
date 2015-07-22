@@ -19,7 +19,7 @@ import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.oredict.ShapedOreRecipe
+import net.minecraftforge.oredict.{ShapelessOreRecipe, ShapedOreRecipe}
 
 class ExpansionProxy_server extends IProxy with IPartFactory2
 {
@@ -61,6 +61,7 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
         machine2.addTile(classOf[TileFrameMotor], 8)
         machine2.addTile(classOf[TileFrameActuator], 9)
         machine2.addTile(classOf[TileProjectBench], 10)
+        machine2.addTile(classOf[TileAutoCrafter], 11)
     }
 
     def postinit()
@@ -95,6 +96,7 @@ class ExpansionProxy_client extends ExpansionProxy_server
     val batteryBoxGui = 24
     val chargingBenchBui = 25
     val projectbenchGui = 26
+    val autoCrafterGui = 27
 
     @SideOnly(Side.CLIENT)
     override def preinit()
@@ -126,6 +128,7 @@ class ExpansionProxy_client extends ExpansionProxy_server
         TileRenderRegistry.setRenderer(machine2, 8, RenderFrameMotor)
         TileRenderRegistry.setRenderer(machine2, 9, RenderFrameActuator)
         TileRenderRegistry.setRenderer(machine2, 10, RenderProjectBench)
+        TileRenderRegistry.setRenderer(machine2, 11, RenderAutoCrafter)
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(machine2), RenderBatteryBox)
         MinecraftForgeClient.registerItemRenderer(itemSolar, RenderSolarPanel)
@@ -137,6 +140,7 @@ class ExpansionProxy_client extends ExpansionProxy_server
         GuiHandler.register(GuiElectrotineGenerator, generatorGui)
         GuiHandler.register(GuiChargingBench, chargingBenchBui)
         GuiHandler.register(GuiProjectBench, projectbenchGui)
+        GuiHandler.register(GuiAutoCrafter, autoCrafterGui)
 
         SpacebarClientTracker.register()
         ForwardClientTracker.register()
@@ -198,6 +202,9 @@ object ExpansionRecipes
             'e':JC, Items.emerald,
             'a':JC, new ItemStack(machine2, 1, 5)
         ))
+
+        //Recipe Plan
+        GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(itemPlan), "dyeBlue", Items.paper))
     }
 
     private def initMachineRecipes()
@@ -326,6 +333,26 @@ object ExpansionRecipes
             'w':JC, "plankWood",
             'i':JC, "ingotIron",
             'c':JC, PartDefs.COPPERCOIL.makeStack,
+            'e':JC, "ingotElectrotineAlloy"
+        ))
+
+        //Project Bench
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 10),
+            "sss","wbw","wcw",
+            's':JC, Blocks.stone,
+            'w':JC, "plankWood",
+            'b':JC, Blocks.crafting_table,
+            'c':JC, Blocks.chest
+        ))
+
+        //Auto Crafting Bench
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 11),
+            "sbs","ici","wew",
+            's':JC, Blocks.stone,
+            'b':JC, Blocks.crafting_table,
+            'w':JC, "plankWood",
+            'i':JC, "ingotIron",
+            'c':JC, Blocks.chest,
             'e':JC, "ingotElectrotineAlloy"
         ))
     }

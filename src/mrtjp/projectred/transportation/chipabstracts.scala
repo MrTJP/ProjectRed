@@ -46,7 +46,7 @@ abstract class RoutingChip
     def getWorkLoad = 0.0D
 
     /** Crafting **/
-    def requestCraftPromise(item:ItemKey):CraftingPromise = null
+    def requestCraftPromise(requeset:RequestBranchNode):CraftingPromise = null
     def registerExcess(promise:DeliveryPromise){}
     def getCraftedItem:ItemKeyStack = null
     def getProcessingItems = 0

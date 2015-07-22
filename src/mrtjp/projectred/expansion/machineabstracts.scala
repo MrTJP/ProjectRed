@@ -229,8 +229,11 @@ with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
         case 14 =>
             isCharged = in.readBoolean()
             isWorking = in.readBoolean()
-            markRender()
-            markLight()
+            if (hasLight)
+            {
+                markRender()
+                markLight()
+            }
         case _ => super.read(in, switchkey)
     }
 
@@ -311,10 +314,12 @@ with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
         oldCh = isCharged
     }
 
+    def hasLight = true
+
     override def getLightValue = if (isWorking && isCharged) 13 else 0
 }
 
-class ContainerPoweredMachine(player:EntityPlayer, tile:TPoweredMachine) extends NodeContainer
+class ContainerPoweredMachine(tile:TPoweredMachine) extends NodeContainer
 {
     private var ch = -2
     private var fl = -2
@@ -347,7 +352,7 @@ class ContainerPoweredMachine(player:EntityPlayer, tile:TPoweredMachine) extends
     }
 }
 
-class ContainerProcessingMachine(player:EntityPlayer, tile:TileProcessingMachine) extends ContainerPoweredMachine(player, tile)
+class ContainerProcessingMachine(tile:TileProcessingMachine) extends ContainerPoweredMachine(tile)
 {
     private var wr = 0
     private var wm = 0
