@@ -7,12 +7,12 @@ package mrtjp.projectred.expansion
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
-import codechicken.multipart.{RedstoneInteractions, IRedstoneConnector}
+import codechicken.multipart.{IRedstoneConnector, RedstoneInteractions}
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.world.WorldLib
 import mrtjp.mcframes.api.{IFrame, MCFramesAPI}
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.relocation.api.{IMovementDescriptor, IMovementCallback, BlockPos, RelocationAPI}
+import mrtjp.relocation.api.{BlockPos, IMovementCallback, IMovementDescriptor, RelocationAPI}
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.nbt.NBTTagCompound
@@ -85,6 +85,9 @@ trait TMotorTile extends TileMachine with TPoweredMachine with IFrame with IReds
     abstract override def onNeighborChange(b:Block)
     {
         super.onNeighborChange(b)
+
+        val oldPow = isPowered
+
         isPowered = false
         import scala.util.control.Breaks._
         breakable { for (s <- 0 until 6) {
@@ -93,6 +96,30 @@ trait TMotorTile extends TileMachine with TPoweredMachine with IFrame with IReds
                 break()
             }
         }}
+
+        if (!oldPow && isPowered && !isMoving && cond.canWork)
+        {
+            val pos = position.offset(side^1)
+            if (!world.isAirBlock(pos.x, pos.y, pos.z))
+            {
+                if (!RelocationAPI.instance.isMoving(world, pos.x, pos.y, pos.z) &&
+                        !RelocationAPI.instance.isMoving(world, x, y, z))
+                {
+                    val blocks = MCFramesAPI.instance.getStickResolver
+                            .getStructure(world, pos.x, pos.y, pos.z, new BlockPos(x, y, z))
+
+                    val r = RelocationAPI.instance.getRelocator
+                    r.push()
+                    r.setWorld(world)
+                    r.setDirection(getMoveDir)
+                    r.setSpeed(1/16D)
+                    r.setCallback(this)
+                    r.addBlocks(blocks)
+                    r.execute()
+                    r.pop()
+                }
+            }
+        }
     }
 
     def getMoveDir:Int
@@ -102,36 +129,7 @@ trait TMotorTile extends TileMachine with TPoweredMachine with IFrame with IReds
     abstract override def update()
     {
         super.update()
-
-        if (isPowered && cond.canWork)
-        {
-            if (!isMoving)
-            {
-                val pos = position.offset(side^1)
-                if (!world.isAirBlock(pos.x, pos.y, pos.z))
-                {
-                    if (!RelocationAPI.instance.isMoving(world, pos.x, pos.y, pos.z) &&
-                            !RelocationAPI.instance.isMoving(world, x, y, z))
-                    {
-                        val blocks = MCFramesAPI.instance.getStickResolver
-                                .getStructure(world, pos.x, pos.y, pos.z, new BlockPos(x, y, z))
-
-                        val r = RelocationAPI.instance.getRelocator
-                        r.push()
-                        r.setWorld(world)
-                        r.setDirection(getMoveDir)
-                        r.setSpeed(1/16D)
-                        r.setCallback(this)
-                        r.addBlocks(blocks)
-                        r.execute()
-                        r.pop()
-                    }
-                }
-            }
-
-            if (isMoving) drawPower(moveDesc.getSize)
-        }
-
+        if (isMoving) drawPower(moveDesc.getSize)
         if (world.getTotalWorldTime%10 == 0) updateRendersIfNeeded()
     }
 
