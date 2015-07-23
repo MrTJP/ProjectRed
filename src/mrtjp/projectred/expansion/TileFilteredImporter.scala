@@ -57,12 +57,14 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
     override def save(tag:NBTTagCompound)
     {
         super.save(tag)
+        saveInv(tag)
         tag.setByte("col", colour)
     }
 
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
+        loadInv(tag)
         colour = tag.getByte("col")
     }
 

@@ -1,3 +1,6 @@
+-v4.7.0pre8
+- FIX: Filtered Importer not saving filter
+
 v4.7.0pre7
 - ADDED: Project Bench
 - ADDED: Auto Crafting Bench
