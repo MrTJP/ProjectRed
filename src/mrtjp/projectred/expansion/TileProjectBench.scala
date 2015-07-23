@@ -198,7 +198,9 @@ class SlotProjectCrafting(player:EntityPlayer, tile:TileProjectBench, idx:Int, x
 
             return RecipeSearch.searchFor(player.worldObj, tile.currentRecipe, tile.currentInputs, storage)
         }
-        super.canTakeStack(player)
+
+        //copied from super for obfuscation bug
+        canRemoveDelegate()
     }
 
     override def onPickupFromSlot(player:EntityPlayer, stack:ItemStack)
@@ -228,6 +230,16 @@ class SlotProjectCrafting(player:EntityPlayer, tile:TileProjectBench, idx:Int, x
         FMLCommonHandler.instance().firePlayerCraftingEvent(player, stack, invCrafting)
 
         tile.updateRecipe()
+    }
+
+    //Following 3 methods copy-pasted from TSlot3 for obfuscation issues
+    override def getSlotStackLimit:Int = slotLimitCalculator()
+    override def isItemValid(stack:ItemStack):Boolean = canPlaceDelegate(stack)
+    override def onSlotChanged()
+    {
+        super.onSlotChanged()
+        slotChangeDelegate()
+        slotChangeDelegate2()
     }
 }
 
