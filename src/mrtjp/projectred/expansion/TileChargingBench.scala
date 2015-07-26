@@ -24,6 +24,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
+import org.lwjgl.opengl.GL11
 
 class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
 {
@@ -224,6 +225,7 @@ class GuiChargingBench(tile:TileChargingBench, c:ContainerChargingBench) extends
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
         PRResources.guiCharger.bind()
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 

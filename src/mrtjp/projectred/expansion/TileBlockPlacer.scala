@@ -35,6 +35,7 @@ import net.minecraft.world.{IBlockAccess, WorldServer}
 import net.minecraftforge.common.util.FakePlayerFactory
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
+import org.lwjgl.opengl.GL11
 
 import scala.ref.WeakReference
 
@@ -268,6 +269,7 @@ class GuiBlockPlacer(c:ContainerBlockPlacer) extends NodeGui(c, 176, 168)
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
         PRResources.guiBlockPlacer.bind()
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, 176, 168)
         GuiDraw.drawString("Block Placer", 8, 6, Colors.GREY.argb, false)

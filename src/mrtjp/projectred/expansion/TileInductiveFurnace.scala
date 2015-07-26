@@ -19,6 +19,7 @@ import net.minecraft.inventory.Container
 import net.minecraft.item.ItemStack
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
+import org.lwjgl.opengl.GL11
 
 class TileInductiveFurnace extends TileProcessingMachine
 {
@@ -105,6 +106,7 @@ class GuiInductiveFurnace(tile:TileInductiveFurnace, c:Container) extends NodeGu
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
         PRResources.guiFurnace.bind()
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 

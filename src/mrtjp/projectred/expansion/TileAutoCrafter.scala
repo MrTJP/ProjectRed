@@ -30,6 +30,7 @@ import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
 
 import scala.collection.JavaConversions._
 
@@ -318,6 +319,7 @@ class GuiAutoCrafter(tile:TileAutoCrafter, c:ContainerAutoCrafter) extends NodeG
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
         PRResources.guiAutoCrafter.bind()
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 

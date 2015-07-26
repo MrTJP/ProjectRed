@@ -27,6 +27,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
+import org.lwjgl.opengl.GL11
 
 class TileFilteredImporter extends TileItemImporter with TInventory with ISidedInventory
 {
@@ -167,6 +168,7 @@ class GuiFilteredImporter(c:Container, tile:TileFilteredImporter) extends NodeGu
 
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
         PRResources.guiFilteredImporter.bind()
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, 176, 168)
         GuiDraw.drawString("Filtered Importer", 8, 6, Colors.GREY.argb, false)
