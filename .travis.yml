@@ -16,3 +16,8 @@ script: ./gradlew build -S
 env:
   global:
     TERM=dumb
+
+sudo: false
+cache:
+  directories:
+  - $HOME/.gradle/caches
