@@ -12,14 +12,14 @@ import mrtjp.core.block.TileRenderRegistry
 import mrtjp.core.data.{TClientKeyTracker, TServerKeyTracker}
 import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedExpansion._
-import mrtjp.projectred.core.{IProxy, PartDefs}
+import mrtjp.projectred.core.{Configurator, IProxy, PartDefs}
 import net.minecraft.client.Minecraft
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.oredict.{ShapelessOreRecipe, ShapedOreRecipe}
+import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 
 class ExpansionProxy_server extends IProxy with IPartFactory2
 {
@@ -62,6 +62,9 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
         machine2.addTile(classOf[TileFrameActuator], 9)
         machine2.addTile(classOf[TileProjectBench], 10)
         machine2.addTile(classOf[TileAutoCrafter], 11)
+
+        //Enchantments
+        enchantmentFuelEfficiency = new EnchantmentFuelEfficiency(Configurator.enchantment_fuel_efficiencty_id)
     }
 
     def postinit()

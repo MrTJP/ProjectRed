@@ -22,16 +22,17 @@ import mrtjp.projectred.api.IScrewdriver
 import net.minecraft.client.Minecraft
 import net.minecraft.client.model.{ModelBiped, ModelRenderer}
 import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.enchantment.{EnchantmentHelper, Enchantment, EnumEnchantmentType}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLivingBase}
+import net.minecraft.init.Blocks
 import net.minecraft.item.ItemArmor.ArmorMaterial
 import net.minecraft.item.{Item, ItemArmor, ItemStack}
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
-import net.minecraft.util.{EnumChatFormatting, DamageSource, IIcon}
+import net.minecraft.util.{DamageSource, EnumChatFormatting, IIcon}
 import net.minecraft.world.World
 import net.minecraftforge.common.ISpecialArmor
 import net.minecraftforge.common.ISpecialArmor.ArmorProperties
-import org.lwjgl.input.Keyboard
 
 import scala.collection.mutable.{Set => MSet}
 
@@ -229,7 +230,8 @@ object ItemPlan
     def loadPlanOutput(stack:ItemStack) =
     {
         val tag0 = stack.getTagCompound.getTagList("recipe", 10)
-        ItemStack.loadItemStackFromNBT(tag0.getCompoundTagAt(9))
+        val out = ItemStack.loadItemStackFromNBT(tag0.getCompoundTagAt(9))
+        if (out != null) out else new ItemStack(Blocks.fire)
     }
 }
 
@@ -249,11 +251,18 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable
         {
             propellPlayer(player, stack)
             if (!player.capabilities.isCreativeMode)
-                stack.setItemDamage(stack.getItemDamage+16)
+                stack.setItemDamage(stack.getItemDamage+getPowerDraw(stack))
             ItemJetpack.setStateOfEntity(player.getEntityId, true, !world.isRemote)
         }
         else
             ItemJetpack.setStateOfEntity(player.getEntityId, false, !world.isRemote)
+    }
+
+    def getPowerDraw(stack:ItemStack):Int =
+    {
+        if (!stack.isItemEnchanted) return 16
+        val i = EnchantmentHelper.getEnchantmentLevel(ProjectRedExpansion.enchantmentFuelEfficiency.effectId, stack)
+        math.max(1, 16-i*3)
     }
 
     override def getArmorTexture(stack:ItemStack, entity:Entity, slot:Int, t:String) =
@@ -300,6 +309,17 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable
                 if (player.motionY < 0) ((player.motionY*player.motionY)/0.065).toFloat
                 else 0
     }
+
+}
+
+class EnchantmentFuelEfficiency(id:Int) extends Enchantment(id, 1, EnumEnchantmentType.armor_torso)
+{
+    setName("projectred.expansion.fuel_efficiency")
+
+    override def getMinLevel = 1
+    override def getMaxLevel = 4
+
+    override def canApply(stack:ItemStack) = stack.getItem.isInstanceOf[ItemJetpack]
 }
 
 object ItemJetpack
@@ -325,16 +345,12 @@ object ItemJetpack
     def onRenderTick(event:ClientTickEvent)
     {
         if (event.phase == Phase.END)
-        {
             for (id <- entitiesUsingJetpack)
-            {
                 Minecraft.getMinecraft.theWorld.getEntityByID(id) match
                 {
                     case e:EntityPlayer => renderParticlesForPlayer(e)
                     case _ =>
                 }
-            }
-        }
     }
 
     @SideOnly(Side.CLIENT)

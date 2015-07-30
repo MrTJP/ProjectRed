@@ -65,6 +65,9 @@ public class Configurator
 
     public static int maxPipesWandered;
 
+    /** Enchantments **/
+    public static int enchantment_fuel_efficiencty_id;
+
     /** Render **/
     public static boolean logicwires3D;
     public static boolean staticWires;
@@ -140,6 +143,8 @@ public class Configurator
         routerUpdateThreadCount = config.get("general", "Router Update Thread Count", 4, "Number of active threads that update routing tables.").getInt();
 
         maxPipesWandered = config.get("general", "Max Pipes Wandered", 0, "Maximum number of pipes an object can wander through before being erased. 0 for unlimited.").getInt();
+
+        enchantment_fuel_efficiencty_id = config.get("enchantments", "Fuel Efficiency ID", 80, "Maximum number of pipes an object can wander through before being erased. 0 for unlimited.").getInt();
 
         simpleFramedWireRecipe = config.get("general", "Simple Framed Wire recipe", false, "Use sticks instead of wood strips in framed wire recipes.").getBoolean();
 

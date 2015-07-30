@@ -248,6 +248,8 @@ task compatJar(type: Jar, dependsOn: reobf) {
         include "**/ProjectRedCompatibility*.class"
         include "**/mrtjp/projectred/compatibility/**"
 
+        include "**/powercrystals/**"
+
         include "**/assets/asm/**"
         include "**/assets/projectred/textures/blocks/compat/**"
 

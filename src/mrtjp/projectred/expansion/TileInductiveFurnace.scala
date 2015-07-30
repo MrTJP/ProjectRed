@@ -76,7 +76,8 @@ class TileInductiveFurnace extends TileProcessingMachine
         {
             val wrap = InvWrapper.wrap(this).setInternalMode(true).setSlotSingle(0)
             wrap.extractItem(ItemKey.get(in), 1)
-            wrap.setSlotSingle(1).injectItem(r.createOutput, true)
+            val out = r.createOutput
+            wrap.setSlotSingle(1).injectItem(ItemKey.get(out), out.stackSize)
         }
     }
 }

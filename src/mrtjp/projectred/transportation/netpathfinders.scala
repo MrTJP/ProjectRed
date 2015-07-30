@@ -245,7 +245,7 @@ class SyncResponse
 {
     var priority = Priorities.WANDERING
     var customPriority = 0
-    var itemCount = 0
+    var itemCount = Int.MaxValue
     var responder = -1
 
     def setPriority(p:NetworkPriority) =

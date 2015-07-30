@@ -921,6 +921,11 @@ class SidedWireModel(val wires:Seq[TWireModel]) extends ComponentModel
         for (r <- 0 until 4) if ((sidemask&1<<r) != 0)
             wires(r).renderModel(t, orient)
     }
+
+    override def registerIcons(reg:IIconRegister)
+    {
+        wires.foreach(_.registerIcons(reg))
+    }
 }
 
 class ICChipModel extends SingleComponentModel(icChip, new Vector3(8, 2, 8))

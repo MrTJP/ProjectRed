@@ -149,7 +149,7 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         if (found)
         {
             best.itemCount -= countInTransit(item)
-            return best
+            if (best.itemCount > 0) return best
         }
         null
     }

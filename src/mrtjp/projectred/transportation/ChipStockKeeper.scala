@@ -1,12 +1,11 @@
 package mrtjp.projectred.transportation
 
 import mrtjp.core.inventory.InvWrapper
-import mrtjp.core.item.{ItemQueue, ItemKey, ItemKeyStack}
+import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack}
 
-import scala.collection.immutable.HashMap
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ListBuffer, Set => MSet}
 
-class ChipStockKeeper extends RoutingChip with TChipStock
+class ChipStockKeeper extends RoutingChip with TChipStock with TChipMatchMatrix
 {
     private var remainingDelay = operationDelay
     private def operationDelay = 100
@@ -19,7 +18,9 @@ class ChipStockKeeper extends RoutingChip with TChipStock
         throttle
     }
 
-    var enrouteItems = new ItemQueue
+    private val maxRequestSize = 128
+
+    override def getMatchInventory = stock
 
     override def update()
     {
@@ -35,7 +36,7 @@ class ChipStockKeeper extends RoutingChip with TChipStock
         val inv = InvWrapper.wrap(real).setSlotsFromSide(side)
         val filt = InvWrapper.wrap(stock).setSlotsAll()
 
-        var checked = Set[ItemKey]()
+        val checked = MSet[ItemKey]()
         var requestAttempted = false
         var requestedSomething = false
 
@@ -46,23 +47,22 @@ class ChipStockKeeper extends RoutingChip with TChipStock
             if (keyStack == null || checked.contains(keyStack.key)) break()
             checked += keyStack.key
 
-            val toRequest = filt.getItemCount(keyStack.key)
-            val inInventory = inv.getItemCount(keyStack.key)+getEnroute(keyStack.key)
-            val spaceInInventory = routeLayer.getRequester.getActiveFreeSpace(keyStack.key)
-            val missing = math.min(toRequest-inInventory, spaceInInventory)
-            if (missing <= 0 || (requestWhenEmpty && inInventory > 0)) break()
+            val eq = createEqualityFor(i)
+            inv.eq = eq
 
-            val req = new RequestConsole(RequestFlags.full).setDestination(routeLayer.getRequester)
-            val request = ItemKeyStack.get(keyStack.key, missing)
+            val stockToKeep = if (requestMode == 2) Int.MaxValue else filt.getItemCount(keyStack.key)
+            val inInventory = inv.getItemCount(keyStack.key)+getEnroute(eq, keyStack.key)
+            val spaceInInventory = routeLayer.getRequester.getActiveFreeSpace(keyStack.key)
+            var toRequest = math.min(stockToKeep-inInventory, spaceInInventory)
+            toRequest = math.min(toRequest, maxRequestSize)
+            if (toRequest <= 0 || (requestMode == 1 && inInventory > 0)) break()
+
+            val req = new RequestConsole(RequestFlags.full).setDestination(routeLayer.getRequester).setEquality(eq)
+            val request = ItemKeyStack.get(keyStack.key, toRequest)
             req.makeRequest(request)
 
             requestAttempted = true
-
-            if (req.requested > 0)
-            {
-                addToRequestList(request.key, req.requested)
-                requestedSomething = true
-            }
+            if (req.requested > 0) requestedSomething = true
         }
 
         if (requestAttempted) RouteFX2.spawnType1(RouteFX2.color_request, routeLayer.getWorldRouter.getContainer)
@@ -72,28 +72,8 @@ class ChipStockKeeper extends RoutingChip with TChipStock
         remainingDelay = operationDelay+throttleDelay
     }
 
-    def addToRequestList(item:ItemKey, amount:Int)
-    {
-        enrouteItems += item -> (enrouteItems(item)+amount)
-    }
-
-    def getEnroute(item:ItemKey) = enrouteItems(item)
-
-
-    override def onEventReceived(event:NetworkEvent) = event match
-    {
-        case e:ItemLostEvent =>
-            val toRem = math.min(enrouteItems(e.item), e.remaining)
-            enrouteItems.remove(e.item, toRem)
-            e.remaining -= toRem
-            if (e.remaining <= 0) e.setCanceled()
-        case e:ItemReceivedEvent =>
-            val toRem = math.min(enrouteItems(e.item), e.remaining)
-            enrouteItems.remove(e.item, toRem)
-            e.remaining -= toRem
-            if (e.remaining <= 0) e.setCanceled()
-        case _ =>
-    }
+    def getEnroute(eq:ItemEquality, item:ItemKey) = routeLayer.getWorldRouter.getContainer
+            .transitQueue.count(eq.matches(item, _))
 
     override def weakTileChanges = true
 

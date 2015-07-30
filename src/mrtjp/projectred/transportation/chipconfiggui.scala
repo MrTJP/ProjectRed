@@ -113,10 +113,10 @@ object ContainerChipConfig
         classOf[TChipOrientation] -> {c => Seq(new OrientChipPanel(c.asInstanceOf[TChipOrientation]))},
         classOf[TChipPriority] -> {c => Seq(new PriorityChipPanel(c.asInstanceOf[TChipPriority]))},
         classOf[TChipStock] -> {c => Seq(new StockChipPanel(c.asInstanceOf[TChipStock]))},
+        classOf[TChipMatchMatrix] -> {c => Seq(new MatrixMatchingPanel(c.asInstanceOf[TChipMatchMatrix]))},
         classOf[TChipCrafter] -> {c => Seq(
             new CraftChipPanel(c.asInstanceOf[TChipCrafter]),
-            new CraftExtPanel(c.asInstanceOf[TChipCrafter]),
-            new CraftMatchingPanel(c.asInstanceOf[TChipCrafter])
+            new CraftExtPanel(c.asInstanceOf[TChipCrafter])
         )},
         classOf[TChipCrafterExtension] -> {c => Seq(new ExtensionIDPanel(c.asInstanceOf[TChipCrafterExtension]))}
     )

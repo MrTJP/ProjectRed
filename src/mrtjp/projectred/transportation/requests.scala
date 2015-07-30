@@ -581,7 +581,9 @@ class CraftingInitializer(crafter:CraftingPromise, maxToCraft:Int, branch:Reques
 
 class RequestConsole(opt:RequestFlags.ValueSet)
 {
-    private var destination:IWorldRequester = null
+    var destination:IWorldRequester = null
+    var eq = ItemEquality.standard
+
     private var branch:RequestRoot = null
     private var used:Map[ItemKey, Int] = null
     private var missing:Map[ItemKey, Int] = null
@@ -591,6 +593,12 @@ class RequestConsole(opt:RequestFlags.ValueSet)
     def setDestination(destination:IWorldRequester) =
     {
         this.destination = destination
+        this
+    }
+
+    def setEquality(eq:ItemEquality) =
+    {
+        this.eq = eq
         this
     }
 
@@ -609,7 +617,7 @@ class RequestConsole(opt:RequestFlags.ValueSet)
         used = null
         missing = null
         requested = 0
-        branch = new RequestRoot(request.copy, ItemEquality.standard, destination, opt) //TODO non-standard equality intial request?
+        branch = new RequestRoot(request.copy, eq, destination, opt)
 
         this
     }

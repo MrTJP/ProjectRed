@@ -300,14 +300,19 @@ class StockChipPanel(chip:TChipStock) extends ChipPanelNode(chip)
             override def drawButton(mouseover:Boolean)
             {
                 ResourceLib.guiExtras.bind()
-                drawTexturedModalRect(position.x, position.y, if (chip.requestWhenEmpty) 97 else 81, 102, 14, 14)
+                drawTexturedModalRect(position.x, position.y, 81+16*chip.requestMode, 102, 14, 14)
             }
         }
         b.position = Point(75, 32)
         b.size = Size(14, 14)
         b.tooltipBuilder = {list =>
             list += "Fill mode"
-            list += (EnumChatFormatting.GRAY+"refill when items "+(if (chip.requestWhenEmpty) "empty" else "missing"))
+            list += EnumChatFormatting.GRAY+(chip.requestMode match
+            {
+                case 0 => "refill when items missing"
+                case 1 => "refill when items empty"
+                case 2 => "refill infinitely"
+            })
         }
         b.clickDelegate = {() =>
             chip.shiftRequestMode()
@@ -316,7 +321,7 @@ class StockChipPanel(chip:TChipStock) extends ChipPanelNode(chip)
         addChild(b)
     }
 
-    override def getDotPosition = Point(90, 50)
+    override def getDotPosition = Point(90, 35)
 
     override def getPanelPosition = Point(-30, -35)
 
@@ -415,7 +420,7 @@ class CraftExtPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
     }
 }
 
-class CraftMatchingPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
+class MatrixMatchingPanel(chip:TChipMatchMatrix) extends ChipPanelNode(chip)
 {
     var idx = -1
 
@@ -519,7 +524,7 @@ class CraftMatchingPanel(chip:TChipCrafter) extends ChipPanelNode(chip)
         {
             val button = new IconButtonNode {
                 override def drawButton(mouseover:Boolean) {
-                    val stack = chip.matrix.getStackInSlot(i)
+                    val stack = chip.getMatchInventory.getStackInSlot(i)
                     if (stack != null)
                         ItemDisplayNode.renderItem(position, size, 0, false, stack)
                 }
