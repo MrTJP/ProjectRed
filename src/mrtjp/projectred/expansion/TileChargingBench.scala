@@ -12,6 +12,7 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.color.Colors
 import mrtjp.core.gui.{GuiLib, Slot3, TGuiBuilder, _}
 import mrtjp.core.inventory.{InvWrapper, TInventory}
+import mrtjp.core.item.ItemKey
 import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.vec.Point
 import mrtjp.core.world.WorldLib
@@ -145,7 +146,7 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
     def dropStackDown(stack:ItemStack) =
     {
         val wr = InvWrapper.wrap(this).setSlotsFromRange(8 until 16).setInternalMode(true)
-        val i = wr.injectItem(stack, true)
+        val i = wr.injectItem(ItemKey.get(stack), stack.stackSize)
         i > 0
     }
 

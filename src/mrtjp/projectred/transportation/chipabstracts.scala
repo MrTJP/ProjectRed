@@ -6,6 +6,7 @@ import mrtjp.core.inventory.{InvWrapper, SimpleInventory}
 import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack, ItemQueue}
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumChatFormatting
@@ -297,58 +298,59 @@ trait TChipOrientation extends RoutingChip
 trait TChipStock extends RoutingChip
 {
     val stock = new SimpleInventory(9, "stock", 127)
-    var requestWhenEmpty = false
+    var requestMode = 0 //0 - stock continuous, 1 - stock empty, 2 - stock infinite
 
     def shiftRequestMode()
     {
-        requestWhenEmpty = !requestWhenEmpty
+        requestMode = (requestMode+1)%3
     }
 
     abstract override def save(tag:NBTTagCompound)
     {
         stock.saveInv(tag)
-        tag.setBoolean("mode", requestWhenEmpty)
+        tag.setByte("rmode", requestMode.toByte)
         super.save(tag)
     }
 
     abstract override def load(tag:NBTTagCompound)
     {
         stock.loadInv(tag)
-        requestWhenEmpty = tag.getBoolean("mode")
+        requestMode =
+                if (tag.getBoolean("mode")) 1 //TODO Legacy
+                else tag.getByte("rmode")
         super.load(tag)
     }
 
     def addStockInfo(list:ListBuffer[String])
     {
-        list+=(EnumChatFormatting.GRAY+"Fill mode: when "+(if(requestWhenEmpty) "empty" else "missing"))
-        list+=(EnumChatFormatting.GRAY.toString+"Stock: ")
+        list += (EnumChatFormatting.GRAY+"Fill mode: "+(requestMode match
+        {
+            case 0 => "when missing"
+            case 1 => "when empty"
+            case 2 => "infinite"
+        }))
+        list += (EnumChatFormatting.GRAY.toString+"Stock: ")
         var added = false
         for (i <- 0 until stock.getSizeInventory)
         {
             val stack = stock.getStackInSlot(i)
             if (stack != null)
             {
-                list+=(EnumChatFormatting.GRAY.toString+" - "+stack.getDisplayName+" (" + stack.stackSize + ")")
+                list += (EnumChatFormatting.GRAY.toString+" - "+stack.getDisplayName+" ("+stack.stackSize+")")
                 added = true
             }
         }
-        if (!added) list+=(EnumChatFormatting.GRAY.toString+" - empty")
+        if (!added) list += (EnumChatFormatting.GRAY.toString+" - empty")
     }
 }
 
-trait TChipCrafter extends RoutingChip
+trait TChipMatchMatrix extends RoutingChip
 {
-    var matrix = new SimpleInventory(10, "matrix", 127)
-    var extMatrix = new SimpleInventory(9, "ext_matrix", 1)
-    {
-        override def isItemValidForSlot(slot:Int, stack:ItemStack) =
-            stack != null && ItemRoutingChip.hasChipInside(stack) &&
-                    RoutingChipDefs.getForStack(stack) == RoutingChipDefs.ITEMEXTENSION
-    }
-
     var matchData = Array.fill[Int](9)(packMatchData(true, true, false, 0))
 
     val grpPerc = Seq(-1, 25, 50, 75, 99)
+
+    def getMatchInventory:IInventory
 
     def setData(i:Int, meta:Boolean, nbt:Boolean, ore:Boolean, group:Int)
     {
@@ -398,9 +400,40 @@ trait TChipCrafter extends RoutingChip
     abstract override def save(tag:NBTTagCompound)
     {
         super.save(tag)
+        tag.setIntArray("matchData", matchData)
+    }
+
+    abstract override def load(tag:NBTTagCompound)
+    {
+        super.load(tag)
+        if (tag.hasKey("matchData"))//TODO Legacy
+            matchData = tag.getIntArray("matchData")
+    }
+
+    def createEqualityFor(i:Int) =
+    {
+        val eq = new ItemEquality
+        val (meta, nbt, ore, group) = getData(i)
+        eq.setFlags(meta, nbt, ore, group)
+        eq
+    }
+}
+
+trait TChipCrafter extends RoutingChip
+{
+    var matrix = new SimpleInventory(10, "matrix", 127)
+    var extMatrix = new SimpleInventory(9, "ext_matrix", 1)
+    {
+        override def isItemValidForSlot(slot:Int, stack:ItemStack) =
+            stack != null && ItemRoutingChip.hasChipInside(stack) &&
+                    RoutingChipDefs.getForStack(stack) == RoutingChipDefs.ITEMEXTENSION
+    }
+
+    abstract override def save(tag:NBTTagCompound)
+    {
+        super.save(tag)
         matrix.saveInv(tag)
         extMatrix.saveInv(tag)
-        tag.setIntArray("matchData", matchData)
     }
 
     abstract override def load(tag:NBTTagCompound)
@@ -408,8 +441,6 @@ trait TChipCrafter extends RoutingChip
         super.load(tag)
         matrix.loadInv(tag)
         extMatrix.loadInv(tag)
-        if (tag.hasKey("matchData"))//TODO Legacy
-            matchData = tag.getIntArray("matchData")
     }
 
     def getAmountForIngredient(item:ItemKey) =
@@ -433,14 +464,6 @@ trait TChipCrafter extends RoutingChip
                 return true
         }
         false
-    }
-
-    def createEqualityFor(i:Int) =
-    {
-        val eq = new ItemEquality
-        val (meta, nbt, ore, group) = getData(i)
-        eq.setFlags(meta, nbt, ore, group)
-        eq
     }
 
     def addMatrixInfo(list:ListBuffer[String])

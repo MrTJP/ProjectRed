@@ -194,7 +194,7 @@ trait TActiveDevice extends TileMachine
         if (inv != null)
         {
             val w = InvWrapper.wrap(inv).setSlotsFromSide(side^1)
-            r.payload.stackSize -= w.injectItem(r.payload.makeStack, true)
+            r.payload.stackSize -= w.injectItem(r.payload.key, r.payload.stackSize)
             r.payload.stackSize <= 0
         }
         else false

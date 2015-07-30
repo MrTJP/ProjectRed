@@ -21,6 +21,9 @@ object ProjectRedExpansion
     var itemInfusedEnderPearl:ItemInfusedEnderPearl = null
     var itemPlan:ItemPlan = null
 
+    /** Enchantments **/
+    var enchantmentFuelEfficiency:EnchantmentFuelEfficiency = null
+
     /** Parts **/
     var itemSolar:ItemSolarPanel = null
 

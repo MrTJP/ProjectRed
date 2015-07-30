@@ -41,9 +41,9 @@ class ChipExtractor extends RoutingChip with TChipFilter with TChipOrientation
                     var leftInRun = itemsToExtract
                     while (s != null)
                     {
-                        var toExtract = Math.min(leftInRun, stackSize)
-                        toExtract = Math.min(toExtract, stackKey.getMaxStackSize)
-                        if (s.itemCount > 0) toExtract = Math.min(toExtract, s.itemCount)
+                        var toExtract = math.min(leftInRun, stackSize)
+                        toExtract = math.min(toExtract, stackKey.getMaxStackSize)
+                        toExtract = math.min(toExtract, s.itemCount)
 
                         if (toExtract <= 0) return
 

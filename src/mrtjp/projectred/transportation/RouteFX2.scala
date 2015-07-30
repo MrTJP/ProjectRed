@@ -34,6 +34,7 @@ object RouteFX2
     val color_unlinked = Colors.RED.ordinal
     val color_blink = Colors.LIGHT_GREY.ordinal
 
+    //type 1 - expanding bubble
     def spawnType1(colour:Int, pipe:TNetworkPipe)
     {
         if (!pipe.world.isRemote) sendPacket(pipe.world, pipe.posOfInternal, 1, colour, -1)
@@ -72,6 +73,7 @@ object RouteFX2
         particle.runAction(act)
     }
 
+    //type 2 - 1 meter exit beam
     def spawnType2(colour:Int, dir:Int, pipe:TNetworkPipe)
     {
         if (!pipe.world.isRemote) sendPacket(pipe.world, pipe.posOfInternal, 2, colour, dir)

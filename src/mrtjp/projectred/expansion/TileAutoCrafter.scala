@@ -203,7 +203,7 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
     def produceOutput()
     {
         val w = InvWrapper.wrap(this).setInternalMode(true).setSlotsFromRange(9 until 27)
-        w.injectItem(currentOutput.makeStack, true)
+        w.injectItem(currentOutput.key, currentOutput.stackSize)
     }
 
     def eatResource(item:ItemKey, amount:Int)

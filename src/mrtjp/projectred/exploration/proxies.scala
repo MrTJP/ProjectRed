@@ -9,6 +9,7 @@ import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TileRenderRegistry
 import mrtjp.core.color.Colors
 import mrtjp.core.gui.GuiHandler
+import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.world._
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.ProjectRedExploration._
@@ -298,6 +299,8 @@ class ExplorationProxy_server extends IProxy
     {
         if (Configurator.gen_SpreadingMoss)
             BlockUpdateHandler.register(MossSpreadHandler)
+
+        InvWrapper.register(BarrelInvWrapper)
     }
 
     override def version = "@VERSION@"

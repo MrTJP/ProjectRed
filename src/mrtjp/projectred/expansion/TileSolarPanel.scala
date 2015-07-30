@@ -13,7 +13,7 @@ import codechicken.microblock.FaceMicroClass
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart, TMultiPart}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.item.{ItemCore, TItemGlassSound}
-import mrtjp.core.world.{Messenger, PlacementLib}
+import mrtjp.core.world.PlacementLib
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core.{ILowLoadMachine, ILowLoadPowerLine, PowerConductor}
@@ -60,7 +60,7 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
             cond.update()
             if (cond.voltage() < 100.0)
             {
-                val I = 4.0*heightMultiplier*timeOfDayMultiplier*sideMultiplier*rainMultiplier*visibilityMultiplier
+                val I = 2.5*heightMultiplier*timeOfDayMultiplier*sideMultiplier*rainMultiplier*visibilityMultiplier
                 cond.applyCurrent(I)
             }
         }
@@ -79,8 +79,8 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
     {
         case 0 => 1.0
         case 1 => 0.0
-        case 2|3 => 0.9
-        case 4|5 => 0.8
+        case 2|3 => 0.4
+        case 4|5 => 0.3
     }
 
     def rainMultiplier = 1.0-world.rainingStrength

@@ -97,6 +97,7 @@ tile.projectred.expansion.machine2|9.name=Frame Linear Actuator
 tile.projectred.expansion.machine2|10.name=Project Bench
 tile.projectred.expansion.machine2|11.name=Auto Crafting Bench
 item.projectred.expansion.solar_panel.name=Solar Panel
+enchantment.projectred.expansion.fuel_efficiency=Fuel Efficiency
 
 
 
@@ -473,7 +474,7 @@ item.projectred.integration.gate|27.name=AND Cell
 item.projectred.integration.gate|28.name=Bus Randomizer
 item.projectred.integration.gate|29.name=Bus Converter
 item.projectred.integration.gate|30.name=Bus Input Panel
-item.projectred.integration.gate|31.name=Stacking Latch
+item.projectred.integration.gate|31.name=Data Cell
 item.projectred.integration.gate|32.name=Segment Display Gate
 item.projectred.integration.gate|33.name=Dec Randomizer
 item.projectred.integration.gate|34.name=IC Gate

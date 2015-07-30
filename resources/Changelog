@@ -1,5 +1,15 @@
--v4.7.0pre8
+v4.7.0pre8
+- ADDED: Fuel Efficiency enchantment for jetpacks
+- ADDED: Stock Keeper infinite stock option
+- ADDED: Stock Keeper matching options
 - FIX: Filtered Importer not saving filter
+- FIX: Project Bench not pulling evenly from crafting slots
+- FIX: Routed pipes only seeing top stack for barrels and deep storage units
+- FIX: Items being routed to full inventories
+- FIX: IC Gate crash when using 2D wire renderer
+- FIX: IC NOT gates not cycling dead sides correctly
+- CHANGE: Rebalanced motor power usage
+- CHANGE: Rebalanced solar panel power generation
 
 v4.7.0pre7
 - ADDED: Project Bench

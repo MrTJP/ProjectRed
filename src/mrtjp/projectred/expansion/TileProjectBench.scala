@@ -196,7 +196,7 @@ class SlotProjectCrafting(player:EntityPlayer, tile:TileProjectBench, idx:Int, x
                 if (s != null) s.copy else null
             }.toArray
 
-            return RecipeSearch.searchFor(player.worldObj, tile.currentRecipe, tile.currentInputs, storage)
+            return searchFor(player.worldObj, tile.currentRecipe, tile.currentInputs, storage)
         }
 
         //copied from super for obfuscation bug
@@ -212,7 +212,7 @@ class SlotProjectCrafting(player:EntityPlayer, tile:TileProjectBench, idx:Int, x
             if (s != null) s.copy else null
         }.toArray
 
-        if (RecipeSearch.searchFor(player.worldObj, tile.currentRecipe, tile.currentInputs, storage))
+        if (searchFor(player.worldObj, tile.currentRecipe, tile.currentInputs, storage))
         {
             val orderedStorage = storage.drop(18)++storage.take(18)
             for (i <- orderedStorage.indices)
@@ -232,21 +232,9 @@ class SlotProjectCrafting(player:EntityPlayer, tile:TileProjectBench, idx:Int, x
         tile.updateRecipe()
     }
 
-    //Following 3 methods copy-pasted from TSlot3 for obfuscation issues
-    override def getSlotStackLimit:Int = slotLimitCalculator()
-    override def isItemValid(stack:ItemStack):Boolean = canPlaceDelegate(stack)
-    override def onSlotChanged()
-    {
-        super.onSlotChanged()
-        slotChangeDelegate()
-        slotChangeDelegate2()
-    }
-}
-
-object RecipeSearch
-{
     def searchFor(world:World, recipe:IRecipe, inputs:Array[ItemStack], storage:Array[ItemStack]):Boolean =
     {
+        i = 0
         val invCrafting = new InventoryCrafting(new NodeContainer, 3, 3)
         for (i <- 0 until 9)
         {
@@ -260,9 +248,13 @@ object RecipeSearch
         recipe.matches(invCrafting, world)
     }
 
-    def eatResource(recipe:IRecipe, stack1:ItemStack, storage:Array[ItemStack]):Boolean =
+    private var i = 0
+    private def eatResource(recipe:IRecipe, stack1:ItemStack, storage:Array[ItemStack]):Boolean =
     {
-        for (i <- storage.indices)
+        def increment() = {i = (i+1)%storage.length; i}
+        if (i < 18) i = 0 else increment()
+        val start = i
+        do
         {
             val stack2 = storage(i)
             if (stack2 != null && ingredientMatch(recipe, stack1, stack2))
@@ -279,16 +271,27 @@ object RecipeSearch
                 }
             }
         }
+        while (increment() != start)
         false
     }
 
-    def ingredientMatch(recipe:IRecipe, stack1:ItemStack, stack2:ItemStack) =
+    private def ingredientMatch(recipe:IRecipe, stack1:ItemStack, stack2:ItemStack) =
     {
         val eq = new ItemEquality
         eq.matchMeta = !stack1.isItemStackDamageable
         eq.matchNBT = false
         eq.matchOre = recipe.isInstanceOf[ShapedOreRecipe] || recipe.isInstanceOf[ShapelessOreRecipe]
         eq.matches(ItemKey.get(stack1), ItemKey.get(stack2))
+    }
+
+    //Following 3 methods copy-pasted from TSlot3 for obfuscation issues
+    override def getSlotStackLimit:Int = slotLimitCalculator()
+    override def isItemValid(stack:ItemStack):Boolean = canPlaceDelegate(stack)
+    override def onSlotChanged()
+    {
+        super.onSlotChanged()
+        slotChangeDelegate()
+        slotChangeDelegate2()
     }
 }
 

@@ -10,7 +10,7 @@ import codechicken.lib.gui.GuiDraw
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
 import codechicken.lib.vec._
 import mrtjp.core.block.{InstancedBlock, InstancedBlockTile}
-import mrtjp.core.inventory.{InvWrapper, TInventory}
+import mrtjp.core.inventory.{IInvWrapperRegister, InvWrapper, TInventory}
 import mrtjp.core.item.ItemKey
 import mrtjp.core.render.{RenderLib, TCubeMapRender}
 import mrtjp.core.world.WorldLib
@@ -24,7 +24,7 @@ import net.minecraft.client.renderer.entity.RenderItem
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.ISidedInventory
+import net.minecraft.inventory.{IInventory, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
@@ -428,4 +428,70 @@ object RenderBarrel extends TileEntitySpecialRenderer with TCubeMapRender
             RenderLib.popBits()
         }
     }
+}
+
+object BarrelInvWrapper extends IInvWrapperRegister
+{
+    override def wrapperID = "pr_barrel"
+
+    override def matches(inv:IInventory) = inv.isInstanceOf[TileBarrel]
+
+    override def create(inv:IInventory) = new BarrelInvWrapper(inv)
+}
+
+class BarrelInvWrapper(inv:IInventory) extends InvWrapper(inv)
+{
+    def getBarrel = inv.asInstanceOf[TileBarrel]
+
+    override def getSpaceForItem(item:ItemKey) =
+        if (slots.contains(0) && (getBarrel.isEmpty || item == getBarrel.item)) getBarrel.getFreeSpace else 0
+
+    override def hasSpaceForItem(item:ItemKey) = getSpaceForItem(item) > 0
+
+    override def getItemCount(item:ItemKey) =
+        if (slots.contains(1) && eq.matches(item, getBarrel.item)) getBarrel.getStoredAmount else 0
+
+    override def hasItem(item:ItemKey) =
+        if (slots.contains(1)) eq.matches(item, getBarrel.item) else false
+
+    override def injectItem(item:ItemKey, toAdd:Int) =
+    {
+        var itemsLeft = toAdd
+        if (slots.contains(0) && (getBarrel.isEmpty ||item == getBarrel.item))
+        {
+            import scala.util.control.Breaks._
+            breakable { while (itemsLeft > 0 && getBarrel.getFreeSpace > 0)
+            {
+                val toAdd = math.min(item.getMaxStackSize, itemsLeft)
+                val added = getBarrel.importStack(item.makeStack(toAdd))
+                itemsLeft -= added
+            }}
+        }
+        toAdd-itemsLeft
+    }
+
+    override def extractItem(item:ItemKey, toExtract:Int) =
+    {
+        var itemsLeft = toExtract
+        if (slots.contains(1) && eq.matches(item, getBarrel.item))
+        {
+            while(itemsLeft > 0 && getBarrel.getStoredAmount > 0)
+            {
+                var toRem = math.min(itemsLeft, getBarrel.getStoredAmount)
+                toRem = math.min(toRem, item.getMaxStackSize)
+
+                val bottomStack = getBarrel.getStackInSlot(1)
+                bottomStack.stackSize -= toRem
+                itemsLeft -= toRem
+
+                if (bottomStack.stackSize <= 0) getBarrel.setInventorySlotContents(1, null)
+                else getBarrel.markDirty()
+            }
+        }
+        toExtract-itemsLeft
+    }
+
+    override def getAllItemStacks =
+        if (slots.contains(1) && getBarrel.nonEmpty) Map(getBarrel.item -> getBarrel.getStoredAmount)
+        else Map.empty
 }

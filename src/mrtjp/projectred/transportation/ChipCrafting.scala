@@ -57,7 +57,7 @@ trait TActiveLostStack extends RoutingChip
     def itemLostUnrecoverable(item:ItemKey, amount:Int)
 }
 
-class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with TActiveBroadcastStack with TActiveLostStack
+class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with TChipMatchMatrix with TActiveBroadcastStack with TActiveLostStack
 {
     var excess = new ItemQueue
 
@@ -66,6 +66,8 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
 
     private def operationDelay = 10
     private def operationDelay2 = 40
+
+    override def getMatchInventory = matrix
 
     override def getStacksToExtract = 1
     override def getItemsToExtract = 64

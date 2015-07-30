@@ -408,7 +408,7 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
     override def itemExpected(stack:ItemKeyStack)
     {
-        transitQueue += stack.key -> stack.stackSize
+        transitQueue.add(stack.key, stack.stackSize)
     }
 
     override def itemReceived(stack:ItemKeyStack)

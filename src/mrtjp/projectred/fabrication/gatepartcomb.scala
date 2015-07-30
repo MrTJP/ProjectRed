@@ -157,7 +157,7 @@ object NOR extends ComboICGateLogic
 
 object NOT extends ComboICGateLogic
 {
-    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)<<2)&0xB
+    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)>>1|(shape&4)<<1)&0xB
     override def inputMask(shape:Int) = 4
     override def feedbackMask(shape:Int) = outputMask(shape)
 
