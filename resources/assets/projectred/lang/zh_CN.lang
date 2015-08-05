@@ -1,24 +1,24 @@
 itemGroup.core=红石计划:核心
 
-item.projectred.core.part.partplate.name=电路板
-item.projectred.core.part.partconductiveplate.name=导电板
-item.projectred.core.part.partwiredplate.name=线路板
-item.projectred.core.part.partbundledplate.name=集束板
-item.projectred.core.part.partanode.name=阳极
-item.projectred.core.part.partcathode.name=阴极
-item.projectred.core.part.partpointer.name=指针
-item.projectred.core.part.partsiliconchip.name=硅芯片
-item.projectred.core.part.partenergizedsiliconchip.name=充能硅芯片
-item.projectred.core.part.partplatformedplate.name=底板
-item.projectred.core.part.partredingot.name=红石合金锭
-item.projectred.core.part.partboule.name=硅晶锭
-item.projectred.core.part.partsilicon.name=硅
-item.projectred.core.part.partinfusedsilicon.name=浸渍硅
-item.projectred.core.part.partenergizedsilicon.name=充能硅
-item.projectred.core.part.partmotor.name=马达
-item.projectred.core.part.partcoppercoil.name=铜制线圈
-item.projectred.core.part.partironcoil.name=铁制线圈
-item.projectred.core.part.partgoldcoil.name=金制线圈
+item.projectred.core.part.plate.name=电路板
+item.projectred.core.part.conductive_plate.name=导电板
+item.projectred.core.part.wired_plate.name=线路板
+item.projectred.core.part.bundled_plate.name=集束板
+item.projectred.core.part.anode.name=阳极
+item.projectred.core.part.cathode.name=阴极
+item.projectred.core.part.pointer.name=指针
+item.projectred.core.part.silicon_chip.name=硅芯片
+item.projectred.core.part.energized_silicon_chip.name=充能硅芯片
+item.projectred.core.part.platformed_plate.name=底板
+item.projectred.core.part.red_ingot.name=红石合金锭
+item.projectred.core.part.boule.name=硅晶锭
+item.projectred.core.part.silicon.name=硅
+item.projectred.core.part.infused_silicon.name=浸渍硅
+item.projectred.core.part.energized_silicon.name=充能硅
+item.projectred.core.part.motor.name=马达
+item.projectred.core.part.copper_coil.name=铜制线圈
+item.projectred.core.part.iron_coil.name=铁制线圈
+item.projectred.core.part.gold_coil.name=金制线圈
 
 item.projectred.core.part.illumar0.name=白色荧光粉
 item.projectred.core.part.illumar1.name=橙色荧光粉
@@ -37,18 +37,18 @@ item.projectred.core.part.illumar13.name=绿色荧光粉
 item.projectred.core.part.illumar14.name=红色荧光粉
 item.projectred.core.part.illumar15.name=黑色荧光粉
 
-item.projectred.core.part.partcloth.name=布匹
-item.projectred.core.part.partsail.name=帆布
+item.projectred.core.part.cloth.name=布匹
+item.projectred.core.part.sail.name=帆布
 item.projectred.core.part.gemruby.name=红宝石
 item.projectred.core.part.gemsapphire.name=蓝宝石
 item.projectred.core.part.gemperidot.name=橄榄石
-item.projectred.core.part.partredironcomp.name=红铁混合物
-item.projectred.core.part.partsandcoalcomp.name=沙煤混合物
-item.projectred.core.part.partredsiliconcomp.name=红硅混合物
-item.projectred.core.part.partglowsiliconcomp.name=荧硅混合物
+item.projectred.core.part.red_iron_comp.name=红铁混合物
+item.projectred.core.part.sand_coal_comp.name=沙煤混合物
+item.projectred.core.part.red_silicon_comp.name=红硅混合物
+item.projectred.core.part.glow_silicon_comp.name=荧硅混合物
 
-item.projectred.core.part.nullchip.name=空逻辑路由芯片
-item.projectred.core.part.nullupgrd.name=空逻辑升级芯片
+item.projectred.core.part.null_chip.name=空逻辑路由芯片
+item.projectred.core.part.null_upgrd.name=空逻辑升级芯片
 item.projectred.core.part.upgrd_lx.name=左型X升级
 item.projectred.core.part.upgrd_ly.name=左型Y升级
 item.projectred.core.part.upgrd_lz.name=左型Z升级
@@ -56,6 +56,14 @@ item.projectred.core.part.upgrd_rx.name=右型X升级
 item.projectred.core.part.upgrd_ry.name=右型Y升级
 item.projectred.core.part.upgrd_rz.name=右型Z升级
 
+item.projectred.core.part.copper_ingot.name=铜锭
+item.projectred.core.part.tin_ingot.name=锡锭
+item.projectred.core.part.silver_ingot.name=银锭
+item.projectred.core.part.electrotine_ingot.name=电子合金锭
+item.projectred.core.part.electrotine_dust.name=电子合金粉
+item.projectred.core.part.electrotine_iron_comp.name=电铁化合物
+item.projectred.core.part.electrotine_silicon_comp.name=电硅化合物
+item.projectred.core.part.electro_silicon.name=电子硅
 
 item.projectred.core.drawplate.name=起模板
 item.projectred.core.wiredebugger.name=调线工具
@@ -67,7 +75,31 @@ item.projectred.core.datacard.name=数据卡
 
 
 itemGroup.expansion=红石计划:扩展
-tile.projectred.expansion.machine2|0.name=路由网络控制器
+
+item.projectred.expansion.emptybattery.name=空电池
+item.projectred.expansion.battery.name=电池
+item.projectred.expansion.electric_screwdriver.name=电动螺丝刀
+item.projectred.expansion.jetpack.name=喷气发动机组件
+item.projectred.expansion.infused_ender_pearl.name=浸渍末影珍珠
+item.projectred.expansion.plan.name=计划合成表
+tile.projectred.expansion.machine1|0.name=感应炉
+tile.projectred.expansion.machine1|1.name=发电机
+tile.projectred.expansion.machine2|0.name=方块破坏机
+tile.projectred.expansion.machine2|1.name=物品输入机
+tile.projectred.expansion.machine2|2.name=方块放置机
+tile.projectred.expansion.machine2|3.name=过滤物品输入机
+tile.projectred.expansion.machine2|4.name=点火机
+tile.projectred.expansion.machine2|5.name=电池盒
+tile.projectred.expansion.machine2|6.name=充电台
+tile.projectred.expansion.machine2|7.name=传输机
+tile.projectred.expansion.machine2|8.name=框架电机
+tile.projectred.expansion.machine2|9.name=框架线形执行机
+tile.projectred.expansion.machine2|10.name=工程台
+tile.projectred.expansion.machine2|11.name=自动工作台
+item.projectred.expansion.solar_panel.name=太阳能电池板
+enchantment.projectred.expansion.fuel_efficiency=燃烧效率
+
+
 
 
 itemGroup.transport=红石计划:运输
@@ -80,12 +112,8 @@ item.projectred.transportation.routingchip|4.name=物品抽取芯片
 item.projectred.transportation.routingchip|5.name=物品广播芯片
 item.projectred.transportation.routingchip|6.name=物品堆栈维护芯片
 item.projectred.transportation.routingchip|7.name=物品合成芯片
-
-item.projectred.transportation.cpu|0.name=路由网络CPU
-item.projectred.transportation.creativecpu.name=创造路由网络CPU
-
+item.projectred.transportation.routingchip|8.name=物品合成扩展芯片
 item.projectred.transportation.routerutil.name=路由器工具
-
 item.projectred.transportation.pipe|0.name=物品运输管道
 item.projectred.transportation.pipe|1.name=路由交错管道
 item.projectred.transportation.pipe|2.name=路由接口管道
@@ -93,6 +121,10 @@ item.projectred.transportation.pipe|3.name=路由合成管道
 item.projectred.transportation.pipe|4.name=路由需求管道
 item.projectred.transportation.pipe|5.name=路由扩展管道
 item.projectred.transportation.pipe|6.name=路由防火墙管道
+item.projectred.transportation.pipe|7.name=压力管道
+item.projectred.transportation.pipe|8.name=抗压管道
+
+
 
 
 itemGroup.exploration=红石计划:勘矿
@@ -100,6 +132,10 @@ itemGroup.exploration=红石计划:勘矿
 tile.projectred.exploration.ore|0.name=红宝石矿石
 tile.projectred.exploration.ore|1.name=蓝宝石矿石
 tile.projectred.exploration.ore|2.name=橄榄石矿石
+tile.projectred.exploration.ore|3.name=铜矿石
+tile.projectred.exploration.ore|4.name=锡矿石
+tile.projectred.exploration.ore|5.name=银矿石
+tile.projectred.exploration.ore|6.name=电子合金矿石
 tile.projectred.exploration.stone|0.name=大理石
 tile.projectred.exploration.stone|1.name=大理石砖
 tile.projectred.exploration.stone|2.name=玄武岩圆石
@@ -108,6 +144,11 @@ tile.projectred.exploration.stone|4.name=玄武岩砖
 tile.projectred.exploration.stone|5.name=红宝石块
 tile.projectred.exploration.stone|6.name=蓝宝石块
 tile.projectred.exploration.stone|7.name=橄榄石块
+tile.projectred.exploration.stone|8.name=铜块
+tile.projectred.exploration.stone|9.name=锡块
+tile.projectred.exploration.stone|10.name=银块
+tile.projectred.exploration.stone|11.name=电子合金块
+tile.projectred.exploration.barrel|0.name=物品储存桶
 item.projectred.exploration.woolgin.name=轧线器
 item.projectred.exploration.backpack|0.name=白色背包
 item.projectred.exploration.backpack|1.name=橙色背包
@@ -156,6 +197,18 @@ item.projectred.exploration.sickleruby.name=红宝石镰刀
 item.projectred.exploration.sicklesapphire.name=蓝宝石镰刀
 item.projectred.exploration.sickleperidot.name=橄榄石镰刀
 item.projectred.exploration.sicklediamond.name=钻石镰刀
+item.projectred.exploration.rubyhelmet.name=红宝石帽
+item.projectred.exploration.rubychestplate.name=红宝石胸甲
+item.projectred.exploration.rubyleggings.name=红宝石护腿
+item.projectred.exploration.rubyboots.name=红宝石靴
+item.projectred.exploration.sapphirehelmet.name=蓝宝石帽
+item.projectred.exploration.sapphirechestplate.name=蓝宝石胸甲
+item.projectred.exploration.sapphireleggings.name=蓝宝石护腿
+item.projectred.exploration.sapphireboots.name=蓝宝石靴
+item.projectred.exploration.peridothelmet.name=橄榄石帽
+item.projectred.exploration.peridotchestplate.name=橄榄石胸甲
+item.projectred.exploration.peridotleggings.name=橄榄石护腿
+item.projectred.exploration.peridotboots.name=橄榄石靴
 tile.projectred.exploration.stonewalls|0.name=大理石墙壁
 tile.projectred.exploration.stonewalls|1.name=大理石砖墙
 tile.projectred.exploration.stonewalls|2.name=玄武岩圆石墙壁
@@ -164,38 +217,27 @@ tile.projectred.exploration.stonewalls|4.name=玄武岩砖墙
 tile.projectred.exploration.stonewalls|5.name=红宝石墙壁
 tile.projectred.exploration.stonewalls|6.name=蓝宝石墙壁
 tile.projectred.exploration.stonewalls|7.name=橄榄石墙壁
-tile.projectred.exploration.dyeleaf|0.name=白色浸染树叶
-tile.projectred.exploration.dyeleaf|1.name=橙色浸染树叶
-tile.projectred.exploration.dyeleaf|2.name=品红色浸染树叶
-tile.projectred.exploration.dyeleaf|3.name=淡蓝色浸染树叶
-tile.projectred.exploration.dyeleaf|4.name=黄色浸染树叶
-tile.projectred.exploration.dyeleaf|5.name=黄绿色浸染树叶
-tile.projectred.exploration.dyeleaf|6.name=粉色浸染树叶
-tile.projectred.exploration.dyeleaf|7.name=灰色浸染树叶
-tile.projectred.exploration.dyeleaf|8.name=淡灰色浸染树叶
-tile.projectred.exploration.dyeleaf|9.name=青色浸染树叶
-tile.projectred.exploration.dyeleaf|10.name=紫色浸染树叶
-tile.projectred.exploration.dyeleaf|11.name=蓝色浸染树叶
-tile.projectred.exploration.dyeleaf|12.name=棕色浸染树叶
-tile.projectred.exploration.dyeleaf|13.name=绿色浸染树叶
-tile.projectred.exploration.dyeleaf|14.name=红色浸染树叶
-tile.projectred.exploration.dyeleaf|15.name=黑色浸染树叶
-tile.projectred.exploration.dyesapling|0.name=白色浸染树苗
-tile.projectred.exploration.dyesapling|1.name=橙色浸染树苗
-tile.projectred.exploration.dyesapling|2.name=品红色浸染树苗
-tile.projectred.exploration.dyesapling|3.name=淡蓝色浸染树苗
-tile.projectred.exploration.dyesapling|4.name=黄色浸染树苗
-tile.projectred.exploration.dyesapling|5.name=黄绿色浸染树苗
-tile.projectred.exploration.dyesapling|6.name=粉色浸染树苗
-tile.projectred.exploration.dyesapling|7.name=灰色浸染树苗
-tile.projectred.exploration.dyesapling|8.name=淡灰色浸染树苗
-tile.projectred.exploration.dyesapling|9.name=青色浸染树苗
-tile.projectred.exploration.dyesapling|10.name=紫色浸染树苗
-tile.projectred.exploration.dyesapling|11.name=蓝色浸染树苗
-tile.projectred.exploration.dyesapling|12.name=棕色浸染树苗
-tile.projectred.exploration.dyesapling|13.name=绿色浸染树苗
-tile.projectred.exploration.dyesapling|14.name=红色浸染树苗
-tile.projectred.exploration.dyesapling|15.name=黑色浸染树苗
+tile.projectred.exploration.stonewalls|8.name=铜墙壁
+tile.projectred.exploration.stonewalls|9.name=锡墙壁
+tile.projectred.exploration.stonewalls|10.name=银墙壁
+tile.projectred.exploration.stonewalls|11.name=电子合金墙壁
+tile.projectred.exploration.lily|0.name=百合花
+item.projectred.exploration.lilyseed|0.name=白百合花种子
+item.projectred.exploration.lilyseed|1.name=橙百合花种子
+item.projectred.exploration.lilyseed|2.name=品红百合花种子
+item.projectred.exploration.lilyseed|3.name=浅蓝百合花种子
+item.projectred.exploration.lilyseed|4.name=黄百合花种子
+item.projectred.exploration.lilyseed|5.name=黄绿百合花种子
+item.projectred.exploration.lilyseed|6.name=粉色百合花种子
+item.projectred.exploration.lilyseed|7.name=灰色百合花种子
+item.projectred.exploration.lilyseed|8.name=浅灰百合花种子
+item.projectred.exploration.lilyseed|9.name=青百合花种子
+item.projectred.exploration.lilyseed|10.name=紫百合花种子
+item.projectred.exploration.lilyseed|11.name=蓝百合花种子
+item.projectred.exploration.lilyseed|12.name=棕百合花种子
+item.projectred.exploration.lilyseed|13.name=绿百合花种子
+item.projectred.exploration.lilyseed|14.name=红百合花种子
+item.projectred.exploration.lilyseed|15.name=黑百合花种子
 
 
 
@@ -363,7 +405,38 @@ item.projectred.illumination.fixture.inv|12.name=反相棕色灯具
 item.projectred.illumination.fixture.inv|13.name=反相绿色灯具
 item.projectred.illumination.fixture.inv|14.name=反相红色灯具
 item.projectred.illumination.fixture.inv|15.name=反相黑色灯具
-
+item.projectred.illumination.cagelamp2|0.name=白色笼灯
+item.projectred.illumination.cagelamp2|1.name=橙色笼灯
+item.projectred.illumination.cagelamp2|2.name=品红色笼灯
+item.projectred.illumination.cagelamp2|3.name=浅蓝色笼灯
+item.projectred.illumination.cagelamp2|4.name=黄色笼灯
+item.projectred.illumination.cagelamp2|5.name=黄绿色笼灯
+item.projectred.illumination.cagelamp2|6.name=粉色笼灯
+item.projectred.illumination.cagelamp2|7.name=灰色笼灯
+item.projectred.illumination.cagelamp2|8.name=浅灰色笼灯
+item.projectred.illumination.cagelamp2|9.name=青色笼灯
+item.projectred.illumination.cagelamp2|10.name=紫色笼灯
+item.projectred.illumination.cagelamp2|11.name=蓝色笼灯
+item.projectred.illumination.cagelamp2|12.name=棕色笼灯
+item.projectred.illumination.cagelamp2|13.name=绿色笼灯
+item.projectred.illumination.cagelamp2|14.name=红色笼灯
+item.projectred.illumination.cagelamp2|15.name=黑色笼灯
+item.projectred.illumination.cagelamp2.inv|0.name=反相白色笼灯
+item.projectred.illumination.cagelamp2.inv|1.name=反相橙色笼灯
+item.projectred.illumination.cagelamp2.inv|2.name=反相品红色笼灯
+item.projectred.illumination.cagelamp2.inv|3.name=反相浅蓝色笼灯
+item.projectred.illumination.cagelamp2.inv|4.name=反相黄色笼灯
+item.projectred.illumination.cagelamp2.inv|5.name=反相黄绿色笼灯
+item.projectred.illumination.cagelamp2.inv|6.name=反相粉色笼灯
+item.projectred.illumination.cagelamp2.inv|7.name=反相灰色笼灯
+item.projectred.illumination.cagelamp2.inv|8.name=反相浅灰色笼灯
+item.projectred.illumination.cagelamp2.inv|9.name=反相青色笼灯
+item.projectred.illumination.cagelamp2.inv|10.name=反相紫色笼灯
+item.projectred.illumination.cagelamp2.inv|11.name=反相蓝色笼灯
+item.projectred.illumination.cagelamp2.inv|12.name=反相棕色笼灯
+item.projectred.illumination.cagelamp2.inv|13.name=反相绿色笼灯
+item.projectred.illumination.cagelamp2.inv|14.name=反相红色笼灯
+item.projectred.illumination.cagelamp2.inv|15.name=反相黑色笼灯
 
 
 
@@ -401,6 +474,11 @@ item.projectred.integration.gate|27.name=与单元
 item.projectred.integration.gate|28.name=总线随机发生器
 item.projectred.integration.gate|29.name=总线转换器
 item.projectred.integration.gate|30.name=总线输入板
+item.projectred.integration.gate|31.name=数据储存器
+item.projectred.integration.gate|32.name=分段显示门
+item.projectred.integration.gate|33.name=减速随机发生器
+item.projectred.integration.gate|34.name=IC门
+
 
 
 
@@ -440,7 +518,7 @@ item.projectred.transmission.wire|30.name=棕色集束线缆
 item.projectred.transmission.wire|31.name=绿色集束线缆
 item.projectred.transmission.wire|32.name=红色集束线缆
 item.projectred.transmission.wire|33.name=黑色集束线缆
-item.projectred.transmission.wire|34.name=100V电力线缆
+item.projectred.transmission.wire|34.name=低负载功率线缆
 item.projectred.transmission.framewire|0.name=框架红色合金丝
 item.projectred.transmission.framewire|1.name=框架白色绝缘线缆
 item.projectred.transmission.framewire|2.name=框架橙色绝缘线缆
@@ -459,12 +537,24 @@ item.projectred.transmission.framewire|14.name=框架绿色绝缘线缆
 item.projectred.transmission.framewire|15.name=框架红色绝缘线缆
 item.projectred.transmission.framewire|16.name=框架黑色绝缘线缆
 item.projectred.transmission.framewire|17.name=框架集束线缆
-item.projectred.transmission.framewire|34.name=框架100V电力线缆
-
+item.projectred.transmission.framewire|34.name=框架低负载功率线缆
 
 
 
 itemGroup.compat=红石计划:兼容
 
-tile.projectred.compatibility.liqredstone.name=液态红石
+tile.projectred.compatibility.liqredstone.name=熔融红石
 tile.projectred.compatibility.liqcondredmetal.name=熔融红石合金
+fluid.redstone.molten=熔融红石
+fluid.redmetal.molten=熔融红石合金
+
+
+
+
+itemGroup.fab=红石计划:制造
+
+item.projectred.fabrication.icblueprint.name=IC蓝图
+item.projectred.fabrication.icchip|0.name=IC芯片
+item.projectred.fabrication.icchip|1.name=创造模式IC芯片
+tile.projectred.integration.icblock|0.name=IC工作台
+tile.projectred.integration.icblock|1.name=IC印刷机
