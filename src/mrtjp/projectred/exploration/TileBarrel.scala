@@ -449,10 +449,10 @@ class BarrelInvWrapper(inv:IInventory) extends InvWrapper(inv)
     override def hasSpaceForItem(item:ItemKey) = getSpaceForItem(item) > 0
 
     override def getItemCount(item:ItemKey) =
-        if (slots.contains(1) && eq.matches(item, getBarrel.item)) getBarrel.getStoredAmount else 0
+        if (slots.contains(1) && getBarrel.nonEmpty && eq.matches(item, getBarrel.item)) getBarrel.getStoredAmount else 0
 
     override def hasItem(item:ItemKey) =
-        if (slots.contains(1)) eq.matches(item, getBarrel.item) else false
+        if (slots.contains(1) && getBarrel.nonEmpty) eq.matches(item, getBarrel.item) else false
 
     override def injectItem(item:ItemKey, toAdd:Int) =
     {

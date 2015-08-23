@@ -1,3 +1,6 @@
+v4.7.0pre9
+- FIX: Barrel crash when attaching routed pipes
+
 v4.7.0pre8
 - ADDED: Fuel Efficiency enchantment for jetpacks
 - ADDED: Stock Keeper infinite stock option
