@@ -144,7 +144,7 @@ public class Configurator
 
         maxPipesWandered = config.get("general", "Max Pipes Wandered", 0, "Maximum number of pipes an object can wander through before being erased. 0 for unlimited.").getInt();
 
-        enchantment_fuel_efficiencty_id = config.get("enchantments", "Fuel Efficiency ID", 80, "Maximum number of pipes an object can wander through before being erased. 0 for unlimited.").getInt();
+        enchantment_fuel_efficiencty_id = config.get("enchantments", "Fuel Efficiency ID", 80, "ID for the Jetpack Fuel Efficiency enchantment.").getInt();
 
         simpleFramedWireRecipe = config.get("general", "Simple Framed Wire recipe", false, "Use sticks instead of wood strips in framed wire recipes.").getBoolean();
 
