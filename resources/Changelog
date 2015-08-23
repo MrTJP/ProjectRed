@@ -1,5 +1,7 @@
 v4.7.0pre9
 - FIX: Barrel crash when attaching routed pipes
+- FIX: Item duplication exploit
+- FIX: Bugged Framed Red Alloy Wire recipe
 
 v4.7.0pre8
 - ADDED: Fuel Efficiency enchantment for jetpacks

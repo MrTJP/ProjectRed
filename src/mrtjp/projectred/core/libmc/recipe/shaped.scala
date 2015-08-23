@@ -35,7 +35,7 @@ class ShapedRecipeBuilder extends RecipeBuilder with TMappedRecipeBuilder
 
 class ShapedBuilderRecipe(val builder:ShapedRecipeBuilder) extends IRecipe
 {
-    override def getRecipeSize = builder.size
+    override def getRecipeSize = builder.map.length
 
     override def getCraftingResult(var1:InventoryCrafting) = getRecipeOutput
 
@@ -43,6 +43,8 @@ class ShapedBuilderRecipe(val builder:ShapedRecipeBuilder) extends IRecipe
 
     override def matches(inv:InventoryCrafting, world:World):Boolean =
     {
+        if (inv.getSizeInventory < getRecipeSize) return false
+
         for (i <- 0 until inv.getSizeInventory)
         {
             val in = builder.inputMap.getOrElse(i, null)

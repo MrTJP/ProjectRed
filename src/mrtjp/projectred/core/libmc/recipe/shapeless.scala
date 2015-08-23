@@ -29,7 +29,7 @@ class ShapelessRecipeBuilder extends RecipeBuilder// with TMappedRecipeBuilder
 
 class ShapelessBuilderRecipe(val builder:ShapelessRecipeBuilder) extends IRecipe
 {
-    override def getRecipeSize = if (builder.inResult.size > 4) 3 else 2
+    override def getRecipeSize = builder.inResult.size
 
     override def getRecipeOutput = builder.outResult.head.createOutput
 
@@ -37,6 +37,8 @@ class ShapelessBuilderRecipe(val builder:ShapelessRecipeBuilder) extends IRecipe
 
     override def matches(inv:InventoryCrafting, var2:World):Boolean =
     {
+        if (inv.getSizeInventory < getRecipeSize) return false
+
         var required = builder.inResult
         for (i <- 0 until inv.getSizeInventory)
         {
