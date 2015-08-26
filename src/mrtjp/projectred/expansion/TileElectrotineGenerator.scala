@@ -173,6 +173,12 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
     }
 
     override def getLightValue = if (isBurning) 13 else 0
+
+    override def onBlockRemoval()
+    {
+        super.onBlockRemoval()
+        dropInvContents(world, x, y, z)
+    }
 }
 
 class ContainerElectrotineGenerator(p:EntityPlayer, tile:TileElectrotineGenerator) extends ContainerPoweredMachine(tile)

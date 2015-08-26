@@ -3,6 +3,7 @@
 - FIX: Item duplication exploit
 - FIX: Bugged Framed Red Alloy Wire recipe
 - FIX: Server hang when configuring some gates
+- FIX: Electrotine Generator and Charging Bench not dropping items when broken
 
 v4.7.0pre8
 - ADDED: Fuel Efficiency enchantment for jetpacks
