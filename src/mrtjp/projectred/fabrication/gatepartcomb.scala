@@ -121,8 +121,10 @@ abstract class ComboICGateLogic extends RedstoneICGateLogic[ComboGateICPart] wit
         else false
     }
 
-    def cycleShape(shape:Int) =
+    def cycleShape(shape:Int):Int =
     {
+        if (deadSides == 0) return shape
+
         var shape1 = shape
         import java.lang.Integer.{bitCount, numberOfLeadingZeros => lead}
         do shape1 = ComboICGateLogic.advanceDead(shape1)
