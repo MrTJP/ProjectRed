@@ -171,6 +171,12 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
         if (oldIC != isCharged) sendIsCharged()
         oldIC = isCharged
     }
+
+    override def onBlockRemoval()
+    {
+        super.onBlockRemoval()
+        dropInvContents(world, x, y, z)
+    }
 }
 
 class ContainerChargingBench(p:EntityPlayer, tile:TileChargingBench) extends ContainerPoweredMachine(tile)
