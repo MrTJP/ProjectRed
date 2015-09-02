@@ -449,10 +449,13 @@ class BarrelInvWrapper(inv:IInventory) extends InvWrapper(inv)
     override def hasSpaceForItem(item:ItemKey) = getSpaceForItem(item) > 0
 
     override def getItemCount(item:ItemKey) =
-        if (slots.contains(1) && getBarrel.nonEmpty && eq.matches(item, getBarrel.item)) getBarrel.getStoredAmount else 0
+    {
+        var count = if (slots.contains(1) && getBarrel.nonEmpty && eq.matches(item, getBarrel.item)) getBarrel.getStoredAmount else 0
+        if (hidePerSlot || hidePerType) count -= 1
+        math.max(count, 0)
+    }
 
-    override def hasItem(item:ItemKey) =
-        if (slots.contains(1) && getBarrel.nonEmpty) eq.matches(item, getBarrel.item) else false
+    override def hasItem(item:ItemKey) = getItemCount(item) > 0
 
     override def injectItem(item:ItemKey, toAdd:Int) =
     {
@@ -473,9 +476,11 @@ class BarrelInvWrapper(inv:IInventory) extends InvWrapper(inv)
     override def extractItem(item:ItemKey, toExtract:Int) =
     {
         var itemsLeft = toExtract
+        val hidden = if (hidePerSlot || hidePerType) 1 else 0
+
         if (slots.contains(1) && eq.matches(item, getBarrel.item))
         {
-            while(itemsLeft > 0 && getBarrel.getStoredAmount > 0)
+            while(itemsLeft > 0 && getBarrel.getStoredAmount-hidden > 0)
             {
                 var toRem = math.min(itemsLeft, getBarrel.getStoredAmount)
                 toRem = math.min(toRem, item.getMaxStackSize)
@@ -491,7 +496,13 @@ class BarrelInvWrapper(inv:IInventory) extends InvWrapper(inv)
         toExtract-itemsLeft
     }
 
-    override def getAllItemStacks =
-        if (slots.contains(1) && getBarrel.nonEmpty) Map(getBarrel.item -> getBarrel.getStoredAmount)
-        else Map.empty
+    override def getAllItemStacks:Map[ItemKey, Int] =
+    {
+        if (slots.contains(1) && getBarrel.nonEmpty)
+        {
+            val count = getBarrel.getStoredAmount-(if (hidePerSlot || hidePerType) 1 else 0)
+            if (count > 0) return Map(getBarrel.item -> count)
+        }
+        Map.empty
+    }
 }

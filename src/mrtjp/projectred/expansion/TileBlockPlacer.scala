@@ -132,8 +132,15 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
     {
         fakePlayer.inventory.currentItem = slot
 
-        tryRightClick(stack, x, y, z, slot) ||
-            tryEntityClick(stack, x, y, z)
+        try
+        {
+            tryRightClick(stack, x, y, z, slot) ||
+                    tryEntityClick(stack, x, y, z)
+        }
+        catch
+        {
+            case e:Throwable => false
+        }
     }
 
     def tryRightClick(stack:ItemStack, x:Int, y:Int, z:Int, slot:Int):Boolean =
