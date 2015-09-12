@@ -31,6 +31,7 @@ class ExplorationProxy_server extends IProxy
     {
         itemWoolGin = new ItemWoolGin
         itemBackpack = new ItemBackpack
+        itemAthame = new ItemAthame
 
         blockOres = new BlockOre
         for (o <- OreDefs.values) blockOres.setHarvestLevel("pickaxe", o.harvest, o.meta)
@@ -535,6 +536,11 @@ object ExplorationRecipes
             GameRegistry.addRecipe(new ShapelessOreNBTRecipe(new ItemStack(ProjectRedExploration.itemBackpack, 1, i),
                 ItemBackpack.oreDictionaryVal, Colors.apply(i).oreDict).setKeepNBT())
         }
+        
+       GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedExploration.itemAthame),
+           "s", "w",
+           's':JChar, "ingotSilver",
+           'w':JChar, "stickWood"))
     }
 
     private def initWorldRecipes()

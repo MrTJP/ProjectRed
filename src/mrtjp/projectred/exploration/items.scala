@@ -426,3 +426,35 @@ class ItemLilySeeds extends ItemCore("projectred.exploration.lilyseed") with TIt
         }
     }
 }
+
+import net.minecraft.entity.boss.EntityDragon
+import net.minecraft.entity.monster.EntityEnderman
+import net.minecraft.util.DamageSource
+class ItemAthame() extends ItemSword(ToolMaterial.EMERALD)
+{
+    setUnlocalizedName("projectred.exploration.athame")
+    setMaxDamage(100)
+    setTextureName("projectred:world/athame")
+    setCreativeTab(ProjectRedExploration.tabExploration)
+    GameRegistry.registerItem(this, "projectred.exploration.athame")
+
+    override def func_150893_a(stack:ItemStack, block:Block):Float = 1.0F
+  
+    override def hitEntity(stack:ItemStack, entity:EntityLivingBase, player:EntityLivingBase):Boolean =
+    {
+        var damage = 0.0F
+        if (!(entity.isInstanceOf[EntityEnderman]) && !(entity.isInstanceOf[EntityDragon])) damage = 1.0F else damage = 25.0F
+        
+        val damageSource = DamageSource.causePlayerDamage(player.asInstanceOf[EntityPlayer])
+        entity.attackEntityFrom(damageSource, damage)
+        
+        super.hitEntity(stack, entity, player)
+    }
+  
+    override def getIsRepairable(stack:ItemStack, stack1:ItemStack):Boolean =
+    {
+        stack1.isItemEqual(PartDefs.SILVERINGOT.makeStack)
+    }
+
+    override def getItemEnchantability():Int = 30
+}
