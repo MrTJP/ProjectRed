@@ -30,6 +30,7 @@ object ProjectRedExploration
     /** Items **/
     var itemWoolGin:ItemWoolGin = null
     var itemBackpack:ItemBackpack = null
+    var itemAthame:ItemAthame = null
     var itemRubyAxe:ItemGemAxe = null
     var itemSapphireAxe:ItemGemAxe = null
     var itemPeridotAxe:ItemGemAxe = null
