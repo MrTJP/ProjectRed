@@ -166,6 +166,7 @@ item.projectred.exploration.backpack|12.name=Brown Backpack
 item.projectred.exploration.backpack|13.name=Green Backpack
 item.projectred.exploration.backpack|14.name=Red Backpack
 item.projectred.exploration.backpack|15.name=Black Backpack
+item.projectred.exploration.athame.name=Athame
 item.projectred.exploration.axeruby.name=Ruby Axe
 item.projectred.exploration.axesapphire.name=Sapphire Axe
 item.projectred.exploration.axeperidot.name=Peridot Axe
@@ -238,7 +239,6 @@ item.projectred.exploration.lilyseed|12.name=Brown Deviating Lily seed
 item.projectred.exploration.lilyseed|13.name=Green Deviating Lily seed
 item.projectred.exploration.lilyseed|14.name=Red Deviating Lily seed
 item.projectred.exploration.lilyseed|15.name=Black Deviating Lily seed
-item.projectred.exploration.athame.name=Athame
 
 
 
