@@ -1,34 +1,70 @@
 package mrtjp.projectred.exploration
 
-import java.util.{List => JList}
-
+import java.util.{ List => JList }
+import org.lwjgl.input.Keyboard
+import com.google.common.collect.HashMultimap
+import com.google.common.collect.Multimap
 import codechicken.microblock.Saw
+import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.registry.GameRegistry
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import cpw.mods.fml.relauncher.SideOnly
 import mrtjp.core.block.TItemSeed
 import mrtjp.core.color.Colors
-import mrtjp.core.gui.{GuiLib, NodeContainer, Slot3}
+import mrtjp.core.gui.GuiLib
+import mrtjp.core.gui.NodeContainer
+import mrtjp.core.gui.Slot3
 import mrtjp.core.inventory.TInventory
 import mrtjp.core.item.ItemCore
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExploration
-import mrtjp.projectred.core.{ItemCraftingDamage, PartDefs}
+import mrtjp.projectred.ProjectRedExploration.armorMatrialPeridot
+import mrtjp.projectred.ProjectRedExploration.armorMatrialRuby
+import mrtjp.projectred.ProjectRedExploration.armorMatrialSapphire
+import mrtjp.projectred.ProjectRedExploration.toolMaterialAthame
+import mrtjp.projectred.ProjectRedExploration.toolMaterialPeridot
+import mrtjp.projectred.ProjectRedExploration.toolMaterialRuby
+import mrtjp.projectred.ProjectRedExploration.toolMaterialSapphire
+import mrtjp.projectred.core.ItemCraftingDamage
+import mrtjp.projectred.core.PartDefs
 import mrtjp.projectred.exploration.ArmorDefs.ArmorDef
+import mrtjp.projectred.exploration.ItemToolProxies.Axe
+import mrtjp.projectred.exploration.ItemToolProxies.Pickaxe
+import mrtjp.projectred.exploration.ItemToolProxies.Shovel
+import mrtjp.projectred.exploration.ItemToolProxies.Sword
 import mrtjp.projectred.exploration.ToolDefs.ToolDef
-import net.minecraft.block._
+import net.minecraft.block.Block
+import net.minecraft.block.BlockLeaves
 import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.SharedMonsterAttributes
+import net.minecraft.entity.ai.attributes.AttributeModifier
+import net.minecraft.entity.monster.EntityEnderman
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.{Entity, EntityLivingBase}
-import net.minecraft.init.{Blocks, Items}
+import net.minecraft.init.Blocks
+import net.minecraft.init.Items
+import net.minecraft.item.Item
 import net.minecraft.item.Item.ToolMaterial
+import net.minecraft.item.Item.ToolMaterial.{ EMERALD => toolMaterialEmerald }
+import net.minecraft.item.Item.ToolMaterial.{ GOLD => toolMaterialGold }
+import net.minecraft.item.Item.ToolMaterial.{ IRON => toolMaterialIron }
+import net.minecraft.item.Item.ToolMaterial.{ STONE => toolMaterialStone }
+import net.minecraft.item.Item.ToolMaterial.{ WOOD => toolMaterialWood }
 import net.minecraft.item.ItemArmor.ArmorMaterial
-import net.minecraft.item._
+import net.minecraft.item.ItemHoe
+import net.minecraft.item.ItemStack
+import net.minecraft.item.ItemTool
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.{EnumChatFormatting, IIcon}
-import net.minecraft.world.{IBlockAccess, World}
+import net.minecraft.util.EnumChatFormatting
+import net.minecraft.util.IIcon
+import net.minecraft.world.IBlockAccess
+import net.minecraft.world.World
 import net.minecraftforge.common.EnumPlantType
-import org.lwjgl.input.Keyboard
+import net.minecraftforge.common.util.EnumHelper
+import cpw.mods.fml.relauncher.Side
+import net.minecraft.util.DamageSource
+import net.minecraft.item.ItemSword
 
 class ItemBackpack extends ItemCore("projectred.exploration.backpack")
 {
@@ -258,8 +294,6 @@ trait TGemTool extends Item
         else false//super.getIsRepairable(ist1, ist2)
     }
 }
-
-import mrtjp.projectred.exploration.ItemToolProxies._
 class ItemGemAxe(override val toolDef:ToolDef) extends Axe(toolDef.mat) with TGemTool
 class ItemGemPickaxe(override val toolDef:ToolDef) extends Pickaxe(toolDef.mat) with TGemTool
 class ItemGemShovel(override val toolDef:ToolDef) extends Shovel(toolDef.mat) with TGemTool
@@ -427,23 +461,25 @@ class ItemLilySeeds extends ItemCore("projectred.exploration.lilyseed") with TIt
     }
 }
 
-import net.minecraft.entity.boss.EntityDragon
-import net.minecraft.entity.monster.EntityEnderman
-import net.minecraft.util.DamageSource
-class ItemAthame() extends ItemSword(ToolMaterial.EMERALD)
+class ItemAthame() extends ItemSword(toolMaterialEmerald)
 {
+    private var damage:Float = _
+  
     setUnlocalizedName("projectred.exploration.athame")
     setMaxDamage(100)
     setTextureName("projectred:world/athame")
     setCreativeTab(ProjectRedExploration.tabExploration)
     GameRegistry.registerItem(this, "projectred.exploration.athame")
-
+    
     override def func_150893_a(stack:ItemStack, block:Block):Float = 1.0F
-  
+    
+    override def func_150931_i():Float = damage
+    
     override def hitEntity(stack:ItemStack, entity:EntityLivingBase, player:EntityLivingBase):Boolean =
     {
-        var damage = 0.0F
-        if (!(entity.isInstanceOf[EntityEnderman]) && !(entity.isInstanceOf[EntityDragon])) damage = 1.0F else damage = 25.0F
+        damage = toolMaterialEmerald.getDamageVsEntity
+      
+        if ((entity.isInstanceOf[EntityEnderman])) damage = 25.0F else damage = 1.0F
         
         val damageSource = DamageSource.causePlayerDamage(player.asInstanceOf[EntityPlayer])
         entity.attackEntityFrom(damageSource, damage)
@@ -457,4 +493,11 @@ class ItemAthame() extends ItemSword(ToolMaterial.EMERALD)
     }
 
     override def getItemEnchantability():Int = 30
+    
+    override def getItemAttributeModifiers() =
+    {
+        val damageModifier = HashMultimap.create().asInstanceOf[Multimap[String, AttributeModifier]]
+        damageModifier.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName, new AttributeModifier(Item.field_111210_e, "Weapon modifier", 0, 0))
+        damageModifier
+    }
 }
