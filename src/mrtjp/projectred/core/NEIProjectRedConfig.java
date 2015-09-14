@@ -31,7 +31,7 @@ public class NEIProjectRedConfig implements IConfigureNEI
     {
         API.registerUsageHandler((IUsageHandler)h);
         API.registerRecipeHandler((ICraftingHandler)h);
-        if(Loader.isModLoaded("ProjRed|Exploration"))
+        if(Loader.isModLoaded("ProjRed|Expansion"))
         {
         	API.registerGuiOverlay(GuiProjectBench.class, "crafting", 5, 12);
             API.registerGuiOverlayHandler(GuiProjectBench.class, new DefaultOverlayHandler(23, 12), "crafting");
