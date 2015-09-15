@@ -22,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.Item.ToolMaterial
+import net.minecraft.item.Item.ToolMaterial.{EMERALD => toolMaterialEmerald, GOLD => toolMaterialGold, IRON => toolMaterialIron, STONE => toolMaterialStone, WOOD => toolMaterialWood}
 import net.minecraft.item.ItemArmor.ArmorMaterial
 import net.minecraft.item._
 import net.minecraft.nbt.NBTTagCompound
@@ -199,7 +200,6 @@ object ToolDefs
     private val diamond = new ItemStack(Items.diamond)
 
     import mrtjp.projectred.ProjectRedExploration.{toolMaterialPeridot, toolMaterialRuby, toolMaterialSapphire}
-    import net.minecraft.item.Item.ToolMaterial.{EMERALD => toolMaterialEmerald, GOLD => toolMaterialGold, IRON => toolMaterialIron, STONE => toolMaterialStone, WOOD => toolMaterialWood}
 
     val RUBYAXE = ToolDef("axeruby", toolMaterialRuby, ruby)
     val SAPPHIREAXE = ToolDef("axesapphire", toolMaterialSapphire, sapphire)
@@ -427,23 +427,32 @@ class ItemLilySeeds extends ItemCore("projectred.exploration.lilyseed") with TIt
     }
 }
 
+import com.google.common.collect.HashMultimap
+import com.google.common.collect.Multimap
+import net.minecraft.entity.SharedMonsterAttributes
+import net.minecraft.entity.ai.attributes.AttributeModifier
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.monster.EntityEnderman
 import net.minecraft.util.DamageSource
-class ItemAthame() extends ItemSword(ToolMaterial.EMERALD)
+class ItemAthame() extends ItemSword(toolMaterialEmerald)
 {
+    private var damage:Float = _
+  
     setUnlocalizedName("projectred.exploration.athame")
     setMaxDamage(100)
     setTextureName("projectred:world/athame")
     setCreativeTab(ProjectRedExploration.tabExploration)
     GameRegistry.registerItem(this, "projectred.exploration.athame")
-
+    
     override def func_150893_a(stack:ItemStack, block:Block):Float = 1.0F
-  
+    
+    override def func_150931_i():Float = damage
+    
     override def hitEntity(stack:ItemStack, entity:EntityLivingBase, player:EntityLivingBase):Boolean =
     {
-        var damage = 0.0F
-        if (!(entity.isInstanceOf[EntityEnderman]) && !(entity.isInstanceOf[EntityDragon])) damage = 1.0F else damage = 25.0F
+        damage = toolMaterialEmerald.getDamageVsEntity
+      
+        if ((entity.isInstanceOf[EntityEnderman])) damage = 25.0F else damage = 1.0F
         
         val damageSource = DamageSource.causePlayerDamage(player.asInstanceOf[EntityPlayer])
         entity.attackEntityFrom(damageSource, damage)
@@ -457,4 +466,11 @@ class ItemAthame() extends ItemSword(ToolMaterial.EMERALD)
     }
 
     override def getItemEnchantability():Int = 30
+    
+    override def getItemAttributeModifiers() =
+    {
+        val damageModifier = HashMultimap.create().asInstanceOf[Multimap[String, AttributeModifier]]
+        damageModifier.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName, new AttributeModifier(Item.field_111210_e, "Weapon modifier", 0, 0))
+        damageModifier
+    }
 }
