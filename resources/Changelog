@@ -1,5 +1,6 @@
 -v4.7.0pre10
 - FIX: Multipart lights incorrectly sensing redstone
+- FIX: Crash when cutting Inverted Lamp blocks
 
 v4.7.0pre9
 - FIX: Barrel crash when attaching routed pipes

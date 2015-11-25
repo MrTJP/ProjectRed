@@ -22,6 +22,8 @@ class LightMicroMaterial(meta:Int) extends BlockMicroMaterial(ProjectRedIllumina
     {
         traits.set(LightMicroMaterial.traitID)
     }
+
+    override def getCutterStrength = block.getHarvestLevel(meta%16)
 }
 
 object LightMicroMaterial
