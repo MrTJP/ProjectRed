@@ -1,3 +1,6 @@
+-v4.7.0pre10
+- FIX: Multipart lights incorrectly sensing redstone
+
 v4.7.0pre9
 - FIX: Barrel crash when attaching routed pipes
 - FIX: Item duplication exploit
