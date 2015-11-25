@@ -103,7 +103,13 @@ class BaseLightPart(obj:LightObject) extends TMultiPart with TCuboidPart with TS
         updateState(true)
     }
 
-    private def checkPower = world.isBlockIndirectlyGettingPowered(x, y, z)
+    private def checkPower:Boolean =
+    {
+        for (s <- 0 until 6) if (s != (side^1))
+            if (RedstoneInteractions.getPowerTo(this, s) > 0)
+                return true
+        false
+    }
 
     private def updateState(forceRender:Boolean)
     {
