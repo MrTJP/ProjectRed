@@ -219,10 +219,20 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
             val s = getStackInSlot(i)
             if (s != null && eq.matches(item, ItemKey.get(s)))
             {
-                val toRem = math.min(s.stackSize, left)
-                s.stackSize -= toRem
-                left -= toRem
-                if (s.stackSize <= 0) setInventorySlotContents(i, null) else markDirty()
+                if (s.getItem.hasContainerItem(s))
+                {
+                    val cStack = s.getItem.getContainerItem(s)
+                    setInventorySlotContents(i, if (cStack.getItemDamage < cStack.getMaxDamage) cStack else null)
+                    left -= 1
+                }
+                else
+                {
+                    val toRem = math.min(s.stackSize, left)
+                    s.stackSize -= toRem
+                    left -= toRem
+                    if (s.stackSize <= 0) setInventorySlotContents(i, null) else markDirty()
+                }
+
                 if (left <= 0) return
             }
         }
