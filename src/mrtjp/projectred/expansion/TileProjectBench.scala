@@ -261,7 +261,8 @@ class SlotProjectCrafting(player:EntityPlayer, tile:TileProjectBench, idx:Int, x
             {
                 if (stack2.getItem.hasContainerItem(stack2))
                 {
-                    storage(i) = stack2.getItem.getContainerItem(stack2)
+                    val cStack = stack2.getItem.getContainerItem(stack2)
+                    storage(i) = if (cStack.getItemDamage < cStack.getMaxDamage) cStack else null
                     return true
                 }
                 else if (stack2.stackSize >= 1)
