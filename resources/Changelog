@@ -1,9 +1,10 @@
--v4.7.0pre10
+v4.7.0pre10
 - ADDED: Config option for particle effects on routed pipes
 - FIX: Multipart lights incorrectly sensing redstone
 - FIX: Crash when cutting Inverted Lamp blocks
 - FIX: Auto Crafter eating up multi-use items
 - FIX: Project Bench keeping multi-use items passed max damage
+- FIX: Changing configs in-game does not save correctly
 
 v4.7.0pre9
 - FIX: Barrel crash when attaching routed pipes

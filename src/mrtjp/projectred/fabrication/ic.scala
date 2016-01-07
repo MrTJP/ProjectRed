@@ -11,13 +11,13 @@ import codechicken.lib.vec.{BlockCoord, Transformation}
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.util.Enum
 import mrtjp.core.vec.{Point, Size}
-import mrtjp.projectred.core.PRLogger
+import mrtjp.projectred.ProjectRedCore.log
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.world.World
 import net.minecraftforge.fluids.FluidStack
 
-import scala.collection.mutable.{Map => MMap, Seq => MSeq, ListBuffer}
+import scala.collection.mutable.{Map => MMap, Seq => MSeq}
 
 trait WorldCircuit
 {
@@ -96,7 +96,7 @@ trait NetWorldCircuit extends WorldCircuit
                 var part = getIC.getPart(x, y)
                 if (part == null || part.id != id)
                 {
-                    PRLogger.error("client part stream couldnt find part "+Point(x, y))
+                    log.error("client part stream couldnt find part "+Point(x, y))
                     part = CircuitPart.createPart(id)
                 }
                 part.read(in)
@@ -106,7 +106,7 @@ trait NetWorldCircuit extends WorldCircuit
         catch
             {
                 case ex:IndexOutOfBoundsException =>
-                    PRLogger.error("Circuit part stream failed to be read.")
+                    log.error("Circuit part stream failed to be read.")
                     ex.printStackTrace()
             }
     }
@@ -142,7 +142,7 @@ trait NetWorldCircuit extends WorldCircuit
         catch
             {
                 case ex:IndexOutOfBoundsException =>
-                    PRLogger.error("Circuit IC stream failed to be read")
+                    log.error("Circuit IC stream failed to be read")
             }
     }
 }
@@ -288,7 +288,7 @@ class IntegratedCircuit
         case 4 => getPart(in.readUByte(), in.readUByte()) match
         {
             case g:TClientNetCircuitPart => g.readClientPacket(in)
-            case _ => PRLogger.error("Server IC stream received invalid client packet")
+            case _ => log.error("Server IC stream received invalid client packet")
         }
         case 5 => iostate(in.readUByte()) = in.readInt()
         case 6 => setInput(in.readUByte(), in.readShort())
