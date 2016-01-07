@@ -74,6 +74,7 @@ public class Configurator
     public static boolean staticGates;
     public static int lightHaloMax;
     public static boolean coloredLightsCompat;
+    public static boolean pipeRoutingFX;
 
     public static void initConfig(FMLPreInitializationEvent event)
     {
@@ -137,6 +138,7 @@ public class Configurator
         staticGates = config.get("general", "renderStaticGates", true, "If set to false, gates will be rendered in the TESR rather than the WorldRenderer").getBoolean(true);
         lightHaloMax = config.get("general", "Light Halo Render Count", -1, "Number of lights to render, -1 for unlimited").getInt();
         coloredLightsCompat = config.get("general", "coloredLightsCompat", false, "Enable compatability with ColoredLightsCore. CLC is in beta state and is known to cause many glitches.").getBoolean(false);
+        pipeRoutingFX = config.get("general", "renderPipeFX", true, "If set to false, routed pipes will not render routing fx such as bubbles and lasers.").getBoolean(true);
 
         maxDetectionCount = config.get("general", "Max Detection Count", 100, "Max number of links to explore when discovering new routers.").getInt();
         detectionFrequency = config.get("general", "Detection Frequency", 20, "Ticks between router searches.").getInt();

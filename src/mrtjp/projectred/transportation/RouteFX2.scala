@@ -13,6 +13,7 @@ import mrtjp.core.color.Colors
 import mrtjp.core.fx.FXEngine
 import mrtjp.core.fx.ParticleAction._
 import mrtjp.core.fx.particles.{BeamMulti, SpriteParticle}
+import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.world.World
 
@@ -34,6 +35,8 @@ object RouteFX2
     val color_unlinked = Colors.RED.ordinal
     val color_blink = Colors.LIGHT_GREY.ordinal
 
+    def isFXDisabled = !Configurator.pipeRoutingFX
+
     //type 1 - expanding bubble
     def spawnType1(colour:Int, pipe:TNetworkPipe)
     {
@@ -44,6 +47,8 @@ object RouteFX2
     @SideOnly(Side.CLIENT)
     private def spawnType1_do(colour:Int, pipe:TNetworkPipe)
     {
+        if (isFXDisabled) return
+
         val c1 = Colors.BLACK
         val c2 = Colors(colour)
 
@@ -83,6 +88,8 @@ object RouteFX2
     @SideOnly(Side.CLIENT)
     private def spawnType2_do(colour:Int, dir:Int, pipe:TNetworkPipe)
     {
+        if (isFXDisabled) return
+
         val c1 = Colors.BLACK
         val c2 = Colors(colour)
         val beam = new BeamMulti(pipe.world)
@@ -121,6 +128,8 @@ object RouteFX2
     @SideOnly(Side.CLIENT)
     private def spawnType3_do(colour:Int, dir:Int, pipe:TNetworkPipe)
     {
+        if (isFXDisabled) return
+
         val paths = BeamPathFinder.findPaths(pipe, dir)
         val c1 = Colors.BLACK
         val c2 = Colors(colour)
