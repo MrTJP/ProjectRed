@@ -18,22 +18,23 @@ object PluginColoredLights extends IPRPlugin
 
     override def getModIDs = Array(CL_modID, PRIll_modID)
 
+    override def isEnabled = Configurator.compat_ColoredLights
+
     override def preInit()
     {
-        if (Configurator.coloredLightsCompat)
-            IlluminationProxy.getLightValue = (m, b) =>
+        IlluminationProxy.getLightValue = (m, b) =>
+        {
+            if (!(0 until 16 contains m)) b
+            else
             {
-                if (!(0 until 16 contains m)) b
-                else
-                {
-                    val c = Colors(m)
-                    CLApi.makeRGBLightValue(c.rF, c.gF, c.bF)
-                }
+                val c = Colors(m)
+                CLApi.makeRGBLightValue(c.rF, c.gF, c.bF)
             }
+        }
     }
 
     override def init(){}
     override def postInit(){}
 
-    override def desc() = "CPT Colored Lights Compat for Illumination lighting"
+    override def desc() = "Colored Lights: Illumination lighting"
 }

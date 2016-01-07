@@ -6,12 +6,15 @@ import dan200.computercraft.api.redstone.IBundledRedstoneProvider
 import dan200.computercraft.api.{ComputerCraftAPI => CCAPI}
 import mrtjp.projectred.api.{IBundledTileInteraction, ProjectRedAPI => PRAPI}
 import mrtjp.projectred.compatibility.IPRPlugin
+import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.transmission.BundledCommons
 import net.minecraft.world.World
 
 object PluginCC_BundledCable extends IPRPlugin
 {
     override def getModIDs = Array("ComputerCraft", "ProjRed|Transmission")
+
+    override def isEnabled = Configurator.compat_CCBundledCalbe
 
     override def preInit(){}
 
@@ -23,7 +26,7 @@ object PluginCC_BundledCable extends IPRPlugin
 
     override def postInit(){}
 
-    override def desc() = "Computercraft bundled cable connections"
+    override def desc() = "ComputerCraft: bundled cable connections"
 }
 
 @Interface(modid = "ComputerCraft", iface = "dan200.computercraft.api.redstone.IBundledRedstoneProvider", striprefs = true)

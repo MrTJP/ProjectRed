@@ -8,8 +8,9 @@ package mrtjp.projectred.fabrication
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.multipart.handler.MultipartSaveLoad
 import cpw.mods.fml.relauncher.{Side, SideOnly}
+import mrtjp.projectred.ProjectRedCore.log
+import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.TFaceOrient._
-import mrtjp.projectred.core.{Configurator, PRLogger}
 import net.minecraft.nbt.NBTTagCompound
 
 class SequentialGateICPart extends RedstoneGateICPart with TComplexGateICPart
@@ -29,7 +30,7 @@ class SequentialGateICPart extends RedstoneGateICPart with TComplexGateICPart
     {
         case 3 => getLogicPrimitive match {
             case t:ITimerGuiLogic => t.setTimerMax(this, t.getTimerMax+in.readShort())
-            case _ => PRLogger.error("Server IC stream received client packet for incorrect gate type")
+            case _ => log.error("Server IC stream received client packet for incorrect gate type")
         }
         case 4 => getLogicPrimitive match {
             case t:ICounterGuiLogic =>
@@ -38,9 +39,9 @@ class SequentialGateICPart extends RedstoneGateICPart with TComplexGateICPart
                     case 0 => t.setCounterMax(this, t.getCounterMax+in.readShort())
                     case 1 => t.setCounterIncr(this, t.getCounterIncr+in.readShort())
                     case 2 => t.setCounterDecr(this, t.getCounterDecr+in.readShort())
-                    case _ => PRLogger.error("Server IC stream received client packet for incorrect gate type")
+                    case _ => log.error("Server IC stream received client packet for incorrect gate type")
                 }
-            case _ => PRLogger.error("Server IC stream received client packet for incorrect gate type")
+            case _ => log.error("Server IC stream received client packet for incorrect gate type")
         }
         case _ => super.readClientPacket(in, key)
     }

@@ -1,14 +1,17 @@
 package mrtjp.projectred
 
-import cpw.mods.fml.common.{FMLCommonHandler, Mod}
+import cpw.mods.fml.common.Mod
 import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStartingEvent}
 import mrtjp.projectred.core._
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.ItemStack
+import org.apache.logging.log4j.LogManager
 
 @Mod(modid = "ProjRed|Core", useMetadata = true, modLanguage = "scala", guiFactory = "mrtjp.projectred.core.GuiConfigFactory")
 object ProjectRedCore
 {
+    val log = LogManager.getFormatterLogger("ProjRed|Core")
+
     /** Items **/
     var itemPart:ItemPart = null
     var itemDrawPlate:ItemDrawPlate = null
@@ -25,7 +28,7 @@ object ProjectRedCore
     @Mod.EventHandler
     def preInit(event:FMLPreInitializationEvent)
     {
-        Configurator.initConfig(event)
+        Configurator.loadConfig()
         CoreProxy.versionCheck()
         CoreProxy.preinit()
     }
@@ -33,7 +36,6 @@ object ProjectRedCore
     @Mod.EventHandler
     def init(event:FMLInitializationEvent)
     {
-        FMLCommonHandler.instance.bus.register(new Configurator)
         CoreProxy.init()
     }
 

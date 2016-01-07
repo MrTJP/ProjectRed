@@ -4,6 +4,8 @@ trait IPRPlugin
 {
     def getModIDs:Array[String]
 
+    def isEnabled:Boolean
+
     def preInit()
     def init()
     def postInit()

@@ -8,12 +8,15 @@ package mrtjp.projectred.compatibility.mfr
 import mrtjp.core.inventory.{IInvWrapperRegister, InvWrapper}
 import mrtjp.core.item.ItemKey
 import mrtjp.projectred.compatibility.IPRPlugin
+import mrtjp.projectred.core.Configurator
 import net.minecraft.inventory.IInventory
 import powercrystals.minefactoryreloaded.api.IDeepStorageUnit
 
 object PluginMFRDeepStorage extends IPRPlugin
 {
     override def getModIDs = Array("ProjRed|Transportation")
+
+    override def isEnabled = Configurator.compat_MFRDeepStorage
 
     override def preInit(){}
 
@@ -24,7 +27,7 @@ object PluginMFRDeepStorage extends IPRPlugin
         InvWrapper.register(DSUInvWrapperRegister)
     }
 
-    override def desc() = "Deep Storage Unit pipe interactions"
+    override def desc() = "MFR: Deep Storage Unit pipe interactions"
 }
 
 object DSUInvWrapperRegister extends IInvWrapperRegister

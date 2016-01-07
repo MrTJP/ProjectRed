@@ -39,6 +39,6 @@ public class NEIProjectRedConfig implements IConfigureNEI
     @Override
     public String getVersion()
     {
-        return Configurator.version + "." + Configurator.buildnumber;
+        return Configurator.version() + "." + Configurator.buildnumber();
     }
 }

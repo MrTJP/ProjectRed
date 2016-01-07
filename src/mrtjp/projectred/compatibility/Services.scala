@@ -1,13 +1,13 @@
 package mrtjp.projectred.compatibility
 
 import cpw.mods.fml.common.Loader
+import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.compatibility.computercraft.PluginCC_BundledCable
 import mrtjp.projectred.compatibility.cptcoloredlights.PluginColoredLights
 import mrtjp.projectred.compatibility.mfr.PluginMFRDeepStorage
 import mrtjp.projectred.compatibility.tconstruct.PluginTConstruct
 import mrtjp.projectred.compatibility.thermalexpansion.PluginThermalExpansion
 import mrtjp.projectred.compatibility.treecapitator.PluginTreecapitator
-import mrtjp.projectred.core.PRLogger
 
 object Services
 {
@@ -29,11 +29,11 @@ object Services
         try
         {
             for (p <- rootPlugins)
-                if (p.getModIDs.forall(Loader.isModLoaded))
+                if (p.isEnabled && p.getModIDs.forall(Loader.isModLoaded))
                 {
                     plugins :+= p
                 }
-                else PRLogger.warn(p.loadFailedDesc())
+                else ProjectRedCore.log.warn(p.loadFailedDesc())
         }
         catch {case e:Exception =>}
     }

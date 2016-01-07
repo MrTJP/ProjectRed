@@ -3,6 +3,7 @@ package mrtjp.projectred.compatibility.treecapitator
 import cpw.mods.fml.common.event.FMLInterModComms
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.compatibility.IPRPlugin
+import mrtjp.projectred.core.Configurator
 import net.minecraft.item.Item
 import net.minecraft.nbt.NBTTagCompound
 
@@ -25,6 +26,8 @@ object PluginTreecapitator extends IPRPlugin
 {
     override def getModIDs = Array("TreeCapitator", "ProjRed|Exploration")
 
+    override def isEnabled = Configurator.compat_Treecapitator
+
     override def preInit(){}
 
     override def init()
@@ -34,5 +37,5 @@ object PluginTreecapitator extends IPRPlugin
 
     override def postInit(){}
 
-    override def desc() = "Treecapitator gem axe compatibility"
+    override def desc() = "Treecapitator: gem axe compat"
 }

@@ -2,14 +2,15 @@ package mrtjp.projectred.compatibility.thermalexpansion
 
 import cofh.api.modhelpers.ThermalExpansionHelper
 import mrtjp.projectred.compatibility.IPRPlugin
-import mrtjp.projectred.core.PartDefs
+import mrtjp.projectred.core.{Configurator, PartDefs}
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 
 object PluginThermalExpansion extends IPRPlugin
 {
-
     override def getModIDs = Array("ThermalExpansion")
+
+    override def isEnabled = Configurator.compat_TExpansion
 
     override def preInit() {}
 
@@ -29,5 +30,5 @@ object PluginThermalExpansion extends IPRPlugin
 
     override def postInit() {}
 
-    override def desc() = "Thermal Expansion smelter recipe"
+    override def desc() = "Thermal Expansion: machine recipes"
 }

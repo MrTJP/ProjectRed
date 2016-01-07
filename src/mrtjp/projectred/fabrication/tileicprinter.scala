@@ -19,9 +19,10 @@ import mrtjp.core.gui._
 import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
 import mrtjp.core.vec.{Point, Size, Vec2}
-import mrtjp.core.world.{Messenger, WorldLib}
+import mrtjp.core.world.WorldLib
+import mrtjp.projectred.ProjectRedCore.log
+import mrtjp.projectred.core.PartDefs
 import mrtjp.projectred.core.libmc.PRResources
-import mrtjp.projectred.core.{PRLogger, PartDefs}
 import mrtjp.projectred.integration.ComponentStore
 import mrtjp.projectred.transmission.WireDef
 import net.minecraft.client.renderer.RenderBlocks
@@ -477,7 +478,7 @@ object TileICPrinter
         }
         catch {
             case e:Exception =>
-                PRLogger.error(s"Some mod messed up. The recipe $r has a null output.")
+                log.error(s"Some mod messed up. The recipe $r has a null output.")
         }
         gRec += key -> Seq.empty
     }
