@@ -1,24 +1,24 @@
 itemGroup.core=Project Red: Core
 
-item.projectred.core.part.partplate.name=Schaltkreisplatte
-item.projectred.core.part.partconductiveplate.name=Leitende Platte
-item.projectred.core.part.partwiredplate.name=Verdrahtete Platte
-item.projectred.core.part.partbundledplate.name=Gebündelte Platte
-item.projectred.core.part.partanode.name=Anode
-item.projectred.core.part.partcathode.name=Kathode
-item.projectred.core.part.partpointer.name=Zeiger
-item.projectred.core.part.partsiliconchip.name=Siliziumchip
-item.projectred.core.part.partenergizedsiliconchip.name=Energetisierter Siliziumchip
-item.projectred.core.part.partplatformedplate.name=Plattgeformte Platte
-item.projectred.core.part.partredingot.name=Rotlegierungsbarren
-item.projectred.core.part.partboule.name=Kristallines Silizium
-item.projectred.core.part.partsilicon.name=Silizium
-item.projectred.core.part.partinfusedsilicon.name=Infundiertes Silizium
-item.projectred.core.part.partenergizedsilicon.name=Energetisiertes Silizium
-item.projectred.core.part.partmotor.name=Motor
-item.projectred.core.part.partcoppercoil.name=Kupferspule
-item.projectred.core.part.partironcoil.name=Eisenspule
-item.projectred.core.part.partgoldcoil.name=Goldene Spule
+item.projectred.core.part.plate.name=Schaltkreisplatte
+item.projectred.core.part.conductive_plate.name=Leitende Platte
+item.projectred.core.part.wired_plate.name=Verdrahtete Platte
+item.projectred.core.part.bundled_plate.name=Gebündelte Platte
+item.projectred.core.part.anode.name=Anode
+item.projectred.core.part.cathode.name=Kathode
+item.projectred.core.part.pointer.name=Zeiger
+item.projectred.core.part.silicon_chip.name=Siliziumchip
+item.projectred.core.part.energized_silicon_chip.name=Energetisierter Siliziumchip
+item.projectred.core.part.platformed_plate.name=Plattgeformte Platte
+item.projectred.core.part.red_ingot.name=Rotlegierungsbarren
+item.projectred.core.part.boule.name=Kristallines Silizium
+item.projectred.core.part.silicon.name=Silizium
+item.projectred.core.part.infused_silicon.name=Infundiertes Silizium
+item.projectred.core.part.energized_silicon.name=Energetisiertes Silizium
+item.projectred.core.part.motor.name=Motor
+item.projectred.core.part.copper_coil.name=Kupferspule
+item.projectred.core.part.iron_coil.name=Eisenspule
+item.projectred.core.part.gold_coil.name=Goldene Spule
 
 item.projectred.core.part.illumar0.name=Weißes Illumar
 item.projectred.core.part.illumar1.name=Oranges Illumar
@@ -37,18 +37,18 @@ item.projectred.core.part.illumar13.name=Grünes Illumar
 item.projectred.core.part.illumar14.name=Rotes Illumar
 item.projectred.core.part.illumar15.name=Schwarzes Illumar
 
-item.projectred.core.part.partcloth.name=Gewobener Stoff
-item.projectred.core.part.partsail.name=Segel
+item.projectred.core.part.cloth.name=Gewobener Stoff
+item.projectred.core.part.sail.name=Segel
 item.projectred.core.part.gemruby.name=Rubin
 item.projectred.core.part.gemsapphire.name=Saphir
 item.projectred.core.part.gemperidot.name=Olivin
-item.projectred.core.part.partredironcomp.name=Rot-Eisenverbindng
-item.projectred.core.part.partsandcoalcomp.name=Sandige Kohleverbindung
-item.projectred.core.part.partredsiliconcomp.name=Rot-Siliziumverbindung
-item.projectred.core.part.partglowsiliconcomp.name=Scheinende Siliziumverbindung
+item.projectred.core.part.red_iron_comp.name=Rot-Eisenverbindng
+item.projectred.core.part.sand_coal_comp.name=Sandige Kohleverbindung
+item.projectred.core.part.red_silicon_comp.name=Rot-Siliziumverbindung
+item.projectred.core.part.glow_silicon_comp.name=Scheinende Siliziumverbindung
 
-item.projectred.core.part.nullchip.name=Null-Logik-Routen-Chip
-item.projectred.core.part.nullupgrd.name=Null-Logik-Upgrade-Chip
+item.projectred.core.part.null_chip.name=Null-Logik-Routen-Chip
+item.projectred.core.part.null_upgrd.name=Null-Logik-Upgrade-Chip
 item.projectred.core.part.upgrd_lx.name=LX-Upgrade
 item.projectred.core.part.upgrd_ly.name=LY-Upgrade
 item.projectred.core.part.upgrd_lz.name=LZ-Upgrade
@@ -56,6 +56,14 @@ item.projectred.core.part.upgrd_rx.name=RX-Upgrade
 item.projectred.core.part.upgrd_ry.name=RY-Upgrade
 item.projectred.core.part.upgrd_rz.name=RZ-Upgrade
 
+item.projectred.core.part.copper_ingot.name=Kupferbarren
+item.projectred.core.part.tin_ingot.name=Zinnbarren
+item.projectred.core.part.silver_ingot.name=Silberbarren
+item.projectred.core.part.electrotine_ingot.name=Electrotinlegierungsbarren
+item.projectred.core.part.electrotine_dust.name=Electrotin
+item.projectred.core.part.electrotine_iron_comp.name=Electrotin-Eisenverbindung
+item.projectred.core.part.electrotine_silicon_comp.name=Electrotin-Siliziumverbindung
+item.projectred.core.part.electro_silicon.name=Electro-Silizium
 
 item.projectred.core.drawplate.name=Ziehstein
 item.projectred.core.wiredebugger.name=Kabel-Debugger
@@ -67,9 +75,31 @@ item.projectred.core.datacard.name=Datenkarte
 
 
 itemGroup.expansion=Project Red: Expansion
-tile.projectred.expansion.machine2|0.name=Block-Brecher
+
+item.projectred.expansion.emptybattery.name=Batterie
+item.projectred.expansion.battery.name=Batterie
+item.projectred.expansion.electric_screwdriver.name=Elektrischer Schraubendreher
+item.projectred.expansion.jetpack.name=Jetpack
+item.projectred.expansion.infused_ender_pearl.name=Infundierte Enderperle
+item.projectred.expansion.plan.name=Rezeptplan
+tile.projectred.expansion.machine1|0.name=Induktionsofen
+tile.projectred.expansion.machine1|1.name=Electrotin-Generator
+tile.projectred.expansion.machine2|0.name=Blockbrecher
 tile.projectred.expansion.machine2|1.name=Item-Importierer
-tile.projectred.expansion.machine2|2.name=Deployer
+tile.projectred.expansion.machine2|2.name=Blockplatzierer
+tile.projectred.expansion.machine2|3.name=Gefilterter Importierer
+tile.projectred.expansion.machine2|4.name=Feuerentzünder
+tile.projectred.expansion.machine2|5.name=Batteriebox
+tile.projectred.expansion.machine2|6.name=Aufladestation
+tile.projectred.expansion.machine2|7.name=Teleposer
+tile.projectred.expansion.machine2|8.name=Frame-Motor
+tile.projectred.expansion.machine2|9.name=Frame-Linearantrieb
+tile.projectred.expansion.machine2|10.name=Projektbank
+tile.projectred.expansion.machine2|11.name=Automatische Werkbank
+item.projectred.expansion.solar_panel.name=Solarpanel
+enchantment.projectred.expansion.fuel_efficiency=Treibstoffeffizienz
+
+
 
 
 itemGroup.transport=Project Red: Transport
@@ -82,9 +112,8 @@ item.projectred.transportation.routingchip|4.name=Item-Extraktor-Chip
 item.projectred.transportation.routingchip|5.name=Item-Sendungs-Chip
 item.projectred.transportation.routingchip|6.name=Item-Vorrats-Bewahrungs-Chip
 item.projectred.transportation.routingchip|7.name=Item-Herstellungs-Chip
-
+item.projectred.transportation.routingchip|8.name=Item-Herstellungs-Erweiterungschip
 item.projectred.transportation.routerutil.name=Router-Werkzeug
-
 item.projectred.transportation.pipe|0.name=Item-Transportrohr
 item.projectred.transportation.pipe|1.name=Routen-Kreuzungsrohr
 item.projectred.transportation.pipe|2.name=Routen-Schnittstellenrohr
@@ -96,19 +125,30 @@ item.projectred.transportation.pipe|7.name=Druckrohr
 item.projectred.transportation.pipe|8.name=Widerständiges Druckrohr
 
 
+
+
 itemGroup.exploration=Project Red: Erkundung
 
 tile.projectred.exploration.ore|0.name=Rubinerz
 tile.projectred.exploration.ore|1.name=Saphirerz
 tile.projectred.exploration.ore|2.name=Olivinerz
+tile.projectred.exploration.ore|3.name=Kupfererz
+tile.projectred.exploration.ore|4.name=Zinnerz
+tile.projectred.exploration.ore|5.name=Silbererz
+tile.projectred.exploration.ore|6.name=Electrotin-Erz
 tile.projectred.exploration.stone|0.name=Marmor
 tile.projectred.exploration.stone|1.name=Marmorziegel
-tile.projectred.exploration.stone|2.name=Basalt-Pflasterstein
+tile.projectred.exploration.stone|2.name=Basalt-Bruchstein
 tile.projectred.exploration.stone|3.name=Basalt
 tile.projectred.exploration.stone|4.name=Basaltziegel
 tile.projectred.exploration.stone|5.name=Rubinblock
 tile.projectred.exploration.stone|6.name=Saphirblock
 tile.projectred.exploration.stone|7.name=Olivinblock
+tile.projectred.exploration.stone|8.name=Kupferblock
+tile.projectred.exploration.stone|9.name=Zinnblock
+tile.projectred.exploration.stone|10.name=Silberblock
+tile.projectred.exploration.stone|11.name=Electrotin-Block
+tile.projectred.exploration.barrel|0.name=Item-Fass
 item.projectred.exploration.woolgin.name=Wollkarde
 item.projectred.exploration.backpack|0.name=Weißer Rucksack
 item.projectred.exploration.backpack|1.name=Oranger Rucksack
@@ -126,6 +166,7 @@ item.projectred.exploration.backpack|12.name=Brauner Rucksack
 item.projectred.exploration.backpack|13.name=Grüner Rucksack
 item.projectred.exploration.backpack|14.name=Roter Rucksack
 item.projectred.exploration.backpack|15.name=Schwarzer Rucksack
+item.projectred.exploration.athame.name=Athame
 item.projectred.exploration.axeruby.name=Rubinaxt
 item.projectred.exploration.axesapphire.name=Saphiraxt
 item.projectred.exploration.axeperidot.name=Olivinaxt
@@ -152,21 +193,52 @@ item.projectred.exploration.sawdiamond.name=Diamantsäge
 item.projectred.exploration.sicklewood.name=Hölzerne Sichel
 item.projectred.exploration.sicklestone.name=Steinsichel
 item.projectred.exploration.sickleiron.name=Eisensichel
-item.projectred.exploration.sicklegold.name=Goldene sichel
+item.projectred.exploration.sicklegold.name=Goldene Sichel
 item.projectred.exploration.sickleruby.name=Rubinsichel
 item.projectred.exploration.sicklesapphire.name=Saphirsichel
 item.projectred.exploration.sickleperidot.name=Olivinsichel
 item.projectred.exploration.sicklediamond.name=Diamantsichel
+item.projectred.exploration.rubyhelmet.name=Rubinhelm
+item.projectred.exploration.rubychestplate.name=Rubinbrustpanzer
+item.projectred.exploration.rubyleggings.name=Rubinbeinschutz
+item.projectred.exploration.rubyboots.name=Rubinstiefel
+item.projectred.exploration.sapphirehelmet.name=Saphirhelm
+item.projectred.exploration.sapphirechestplate.name=Saphirbrustpanzer
+item.projectred.exploration.sapphireleggings.name=Saphirbeinschutz
+item.projectred.exploration.sapphireboots.name=Saphirstiefel
+item.projectred.exploration.peridothelmet.name=Olivinhelm
+item.projectred.exploration.peridotchestplate.name=Olivinbrustpanzer
+item.projectred.exploration.peridotleggings.name=Olivinbeinschutz
+item.projectred.exploration.peridotboots.name=Olivinstiefel
 tile.projectred.exploration.stonewalls|0.name=Marmorwand
 tile.projectred.exploration.stonewalls|1.name=Marmorziegelwand
-tile.projectred.exploration.stonewalls|2.name=Basalt-Pflastersteinwand
+tile.projectred.exploration.stonewalls|2.name=Basalt-Bruchsteinwand
 tile.projectred.exploration.stonewalls|3.name=Basaltwand
 tile.projectred.exploration.stonewalls|4.name=Basaltziegelwand
 tile.projectred.exploration.stonewalls|5.name=Rubinwand
 tile.projectred.exploration.stonewalls|6.name=Saphirwand
 tile.projectred.exploration.stonewalls|7.name=Olivinwand
+tile.projectred.exploration.stonewalls|8.name=Kupferwand
+tile.projectred.exploration.stonewalls|9.name=Zinnwand
+tile.projectred.exploration.stonewalls|10.name=Siberwand
+tile.projectred.exploration.stonewalls|11.name=Electrotin-Wand
 tile.projectred.exploration.lily.name=Fernlilie
-item.projectred.exploration.lilyseed.name=Samen der Fernlilie
+item.projectred.exploration.lilyseed|0.name=Samen der Weißen Fernlilie
+item.projectred.exploration.lilyseed|1.name=Samen der Orangen Fernlilie
+item.projectred.exploration.lilyseed|2.name=Samen der Magentafarbenen Fernlilie
+item.projectred.exploration.lilyseed|3.name=Samen der Hellblauen Fernlilie
+item.projectred.exploration.lilyseed|4.name=Samen der Gelben Fernlilie
+item.projectred.exploration.lilyseed|5.name=Samen der Hellgrünen Fernlilie
+item.projectred.exploration.lilyseed|6.name=Samen der Pinken Fernlilie
+item.projectred.exploration.lilyseed|7.name=Samen der Grauen Fernlilie
+item.projectred.exploration.lilyseed|8.name=Samen der Hellgrauen Fernlilie
+item.projectred.exploration.lilyseed|9.name=Samen der Türkisen Fernlilie
+item.projectred.exploration.lilyseed|10.name=Samen der Violetten Fernlilie
+item.projectred.exploration.lilyseed|11.name=Samen der Blauen Fernlilie
+item.projectred.exploration.lilyseed|12.name=Samen der Braunen Fernlilie
+item.projectred.exploration.lilyseed|13.name=Samen der Grünen Fernlilie
+item.projectred.exploration.lilyseed|14.name=Samen der Roten Fernlilie
+item.projectred.exploration.lilyseed|15.name=Samen der Schwarzen Fernlilie
 
 
 
@@ -403,7 +475,10 @@ item.projectred.integration.gate|27.name=AND-Zelle
 item.projectred.integration.gate|28.name=Bus-Randomizer
 item.projectred.integration.gate|29.name=Bus-Converter
 item.projectred.integration.gate|30.name=Bus-Eingabefeld
-item.projectred.integration.gate|31.name=Stacking-Flipflop
+item.projectred.integration.gate|31.name=Datenzelle
+item.projectred.integration.gate|32.name=Segmentdisplay-Gatter
+item.projectred.integration.gate|33.name=Dec-Randomizer
+item.projectred.integration.gate|34.name=IC-Gatter
 
 
 
@@ -471,3 +546,16 @@ itemGroup.compat=Project Red: Kompatibilität
 
 tile.projectred.compatibility.liqredstone.name=Flüssiges Redstone
 tile.projectred.compatibility.liqcondredmetal.name=Geschmolzenes Konduktivrotmetall
+fluid.redstone.molten=Flüssiges Redstone
+fluid.redmetal.molten=Geschmolzenes Konduktivrotmetall
+
+
+
+
+itemGroup.fab=Project Red: Fabrikation
+
+item.projectred.fabrication.icblueprint.name=IC-Plan
+item.projectred.fabrication.icchip|0.name=IC-Chip
+item.projectred.fabrication.icchip|1.name=Kreativmodus-IC-Chip
+tile.projectred.integration.icblock|0.name=IC-Werkbank
+tile.projectred.integration.icblock|1.name=IC-Drucker
