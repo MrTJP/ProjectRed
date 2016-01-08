@@ -2,12 +2,10 @@ package mrtjp.projectred.expansion
 
 import java.util.{Map => JMap}
 
-import mrtjp.core.item.{ItemKey, ItemKeyStack}
-import mrtjp.projectred.core.PRLogger
+import mrtjp.core.item.ItemKeyStack
 import mrtjp.projectred.core.libmc.recipe._
-import net.minecraft.init.{Blocks, Items}
-import net.minecraft.item.{ItemFood, ItemStack}
 import net.minecraft.item.crafting.FurnaceRecipes
+import net.minecraft.item.{ItemFood, ItemStack}
 import net.minecraftforge.oredict.OreDictionary
 
 object InductiveFurnaceRecipeLib
