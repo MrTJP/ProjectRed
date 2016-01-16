@@ -1,8 +1,9 @@
 package mrtjp.projectred.transportation
 
+import mrtjp.core.inventory.InvWrapper
+
 import scala.collection.immutable.BitSet
 import scala.collection.mutable.ListBuffer
-import mrtjp.core.inventory.InvWrapper
 
 class ChipExtractor extends RoutingChip with TChipFilter with TChipOrientation
 {
@@ -34,7 +35,7 @@ class ChipExtractor extends RoutingChip with TChipFilter with TChipOrientation
 
             if (stackKey != null && filt.hasItem(stackKey) != filterExclude)
             {
-                var exclusions = BitSet()
+                var exclusions = BitSet.empty
                 var s = routeLayer.getLogisticPath(stackKey, exclusions, true)
                 if (s != null)
                 {

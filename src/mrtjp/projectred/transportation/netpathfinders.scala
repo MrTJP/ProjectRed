@@ -3,6 +3,7 @@ package mrtjp.projectred.transportation
 import codechicken.lib.vec.BlockCoord
 import mrtjp.core.item.{ItemQueue, ItemKey}
 import mrtjp.projectred.api.ISpecialLinkState
+import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.libmc.PRLib
 import mrtjp.projectred.transportation.Priorities.NetworkPriority
 import net.minecraft.tileentity.TileEntity
@@ -13,6 +14,8 @@ import scala.collection.mutable.{Builder => MBuilder}
 
 object LSPathFinder
 {
+    var start:IWorldRouter = null
+
     private var registeredLSTypes = List[ISpecialLinkState]()
 
     def register(link:ISpecialLinkState)
@@ -26,10 +29,12 @@ object LSPathFinder
         for (l <- registeredLSTypes) if (l.matches(tile)) return l
         null
     }
-}
 
-class LSPathFinder3(start:IWorldRouter, max:Int)
-{
+    def clear()
+    {
+        start = null
+    }
+
     def result() =
     {
         val pipe = start.getContainer
@@ -39,14 +44,12 @@ class LSPathFinder3(start:IWorldRouter, max:Int)
         iterate(q.result())
     }
 
-    def world = start.getWorld
-
     @tailrec
     private def iterate(open:Seq[Node], closed:Set[Node] = Set.empty,
                         coll:MBuilder[StartEndPath, Vector[StartEndPath]] =
                         Vector.newBuilder[StartEndPath]):Vector[StartEndPath] = open match
     {
-        case _ if closed.size > max => coll.result()
+        case _ if closed.size > Configurator.maxDetectionCount => coll.result()
         case Seq() => coll.result()
         case Seq(next, rest@_*) => getPipe(next.bc) match
         {
@@ -82,6 +85,8 @@ class LSPathFinder3(start:IWorldRouter, max:Int)
                 iterate(rest++upNext.result(), closed+next, coll) //Pipe connected to nothing?
         }
     }
+
+    private def world = start.getWorld
 
     private def getPipe(bc:BlockCoord) = PRLib.getMultiPart(world, bc, 6) match
     {
@@ -121,108 +126,74 @@ class LSPathFinder3(start:IWorldRouter, max:Int)
     }
 }
 
-class CollectionPathFinder
+object CollectionPathFinder
 {
-    private var collectBroadcasts:Boolean = false
-    private var collectCrafts:Boolean = false
-    private var requester:IWorldRequester = null
-    private var collected:Map[ItemKey, Int] = null
+    var start:IWorldRequester = null
+    var collectBroadcasts:Boolean = false
+    var collectCrafts:Boolean = false
 
-    def setCollectBroadcasts(flag:Boolean) =
+    def clear()
     {
-        collectBroadcasts = flag
-        this
+        start = null
+        collectBroadcasts = false
+        collectCrafts = false
     }
 
-    def setCollectCrafts(flag:Boolean) =
-    {
-        collectCrafts = flag
-        this
-    }
-
-    def setRequester(requester:IWorldRequester) =
-    {
-        this.requester = requester
-        this
-    }
-
-    def collect =
+    def result():Map[ItemKey, Int] =
     {
         var pool = new ItemQueue
         val builder = new ItemQueue
 
-        for (p <- requester.getRouter.getRoutesByCost)
+        for (p <- start.getRouter.getRoutesByCost)
         {
             builder.clear()
-            p.end.getParent match
+            val parent = p.end.getParent
+
+            if (parent.isInstanceOf[IWorldCrafter] && collectCrafts && p.flagRouteFrom && p.allowCrafting)
             {
-                case c:IWorldCrafter if collectCrafts && p.flagRouteFrom && p.allowCrafting =>
-                    c.getBroadcasts(builder)
-                    val list = c.getCraftedItems
-                    if (list != null) for (stack <- list) builder += stack.key -> 0
-
-                case b:IWorldBroadcaster if collectBroadcasts && p.flagRouteFrom && p.allowBroadcast =>
-                    b.getBroadcasts(builder)
-
-                case _ =>
+                val list = parent.asInstanceOf[IWorldCrafter].getCraftedItems
+                if (list != null) for (stack <- list) builder += stack.key -> 0
             }
+
+            if (parent.isInstanceOf[IWorldBroadcaster] && collectBroadcasts && p.flagRouteFrom && p.allowBroadcast)
+                parent.asInstanceOf[IWorldBroadcaster].getBroadcasts(builder)
+
             pool ++= builder.result.filter(i => p.allowItem(i._1))
         }
-        collected = pool.result
-        this
+        pool.result
     }
-
-    def getCollection = collected
 }
 
 object LogisticPathFinder
 {
-    def sharesInventory(pipe1:TInventoryPipe[_], pipe2:TInventoryPipe[_]):Boolean =
+    var start:Router = null
+    var payload:ItemKey = null
+
+    var exclusions = BitSet.empty
+    var excludeSource = false
+
+    private var visited = BitSet.empty
+
+    def clear()
     {
-        if (pipe1 == null || pipe2 == null) return false
-        if (pipe1.tile.getWorldObj != pipe2.tile.getWorldObj) return false
-
-        val adjacent1 = pipe1.getInventory
-        val adjacent2 = pipe2.getInventory
-        if (adjacent1 == null || adjacent2 == null) return false
-
-        adjacent1 == adjacent2
-    }
-}
-
-class LogisticPathFinder(source:Router, payload:ItemKey)
-{
-    private var result:SyncResponse = null
-    private var exclusions = BitSet()
-    private var excludeSource = false
-
-    private var visited = BitSet()
-
-    def setExclusions(exc:BitSet) =
-    {
-        exclusions = exc
-        this
+        start = null
+        payload = null
+        exclusions = BitSet.empty
+        excludeSource = false
+        visited = BitSet.empty
     }
 
-    def setExcludeSource(flag:Boolean) =
-    {
-        excludeSource = flag
-        this
-    }
-
-    def getResult = result
-
-    def findBestResult =
+    def result():SyncResponse =
     {
         var bestResponse = new SyncResponse
         var bestIP = -1
         import scala.util.control.Breaks._
 
-        for (l <- source.getFilteredRoutesByCost(p => p.flagRouteTo && p.allowRouting && p.allowItem(payload))) breakable
+        for (l <- start.getFilteredRoutesByCost(p => p.flagRouteTo && p.allowRouting && p.allowItem(payload))) breakable
         {
             val r = l.end
-            if (excludeSource && r.getIPAddress == source.getIPAddress) break()
-            if (excludeSource && LogisticPathFinder.sharesInventory(source.getParent.getContainer, r.getParent.getContainer)) break()
+            if (excludeSource && r.getIPAddress == start.getIPAddress) break()
+            if (excludeSource && LogisticPathFinder.sharesInventory(start.getParent.getContainer, r.getParent.getContainer)) break()
             if (exclusions(r.getIPAddress) || visited(r.getIPAddress)) break()
 
             visited += r.getIPAddress
@@ -236,8 +207,19 @@ class LogisticPathFinder(source:Router, payload:ItemKey)
                 bestIP = r.getIPAddress
             }
         }
-        if (bestIP > -1) result = bestResponse.setResponder(bestIP)
-        this
+        if (bestIP > -1) bestResponse.setResponder(bestIP) else null
+    }
+
+    def sharesInventory(pipe1:TInventoryPipe[_], pipe2:TInventoryPipe[_]):Boolean =
+    {
+        if (pipe1 == null || pipe2 == null) return false
+        if (pipe1.tile.getWorldObj != pipe2.tile.getWorldObj) return false
+
+        val adjacent1 = pipe1.getInventory
+        val adjacent2 = pipe2.getInventory
+        if (adjacent1 == null || adjacent2 == null) return false
+
+        adjacent1 == adjacent2
     }
 }
 

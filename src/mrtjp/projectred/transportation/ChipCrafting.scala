@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation
 
 import mrtjp.core.inventory.InvWrapper
-import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack, ItemQueue}
+import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
 
 import scala.collection.mutable.ListBuffer
 
@@ -103,7 +103,7 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
 
     override def onEventReceived(event:NetworkEvent) = event match
     {
-        case e:ItemLostEvent if isIngredient(e.item) =>
+        case e:ItemLostEvent if hasOrders && isIngredient(e.item) =>
             addLostItem(ItemKeyStack.get(e.item, e.remaining))
             e.remaining = 0
             e.setCanceled()
@@ -198,18 +198,17 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
         val remaining = excess(itemEq.key)-existingPromises
         if (remaining <= 0) return
 
-        request.addPromise(new DeliveryPromise(itemEq.key,
+        request.addPromise(new DeliveryPromise(craftedItem.key,
             math.min(remaining, request.getMissingCount), routeLayer.getBroadcaster, true, true))
     }
 
     override def deliverPromise(promise:DeliveryPromise, requester:IWorldRequester)
     {
-        val craft = getCraftedItem
-        if (craft != null && craft.key == promise.item)
-        {
-            if (promise.isExcess) excess.remove(promise.item, promise.size)
-            addOrder(ItemKeyStack.get(promise.item, promise.size), requester, Priorities.ACTIVEC)
-        }
+        val craftedItem = getCraftedItem
+        if (craftedItem == null || craftedItem.key != promise.item) return
+
+        if (promise.isExcess) excess.remove(promise.item, promise.size)
+        addOrder(ItemKeyStack.get(promise.item, promise.size), requester, Priorities.ACTIVEC)
     }
 
     override def requestCraftPromise(request:RequestBranchNode) =
@@ -222,9 +221,7 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
             {
                 val stack = matrix.getStackInSlot(i)
                 if (stack != null && stack.stackSize > 0)
-                {
                     promise.addIngredient(ItemKeyStack.get(stack), createEqualityFor(i), getCrafterForSlot(i))
-                }
             }
             promise
         }
@@ -254,7 +251,8 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
 
     override def registerExcess(promise:DeliveryPromise)
     {
-        excess += promise.item -> promise.size
+        if (getCraftedItem.key == promise.item)
+            excess += promise.item -> promise.size
     }
 
     override def getCraftedItem =

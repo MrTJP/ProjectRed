@@ -127,10 +127,13 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
 
     private def sendRequestList(requester:IWorldRequester, player:EntityPlayerMP, collectBroadcast:Boolean, collectCrafts:Boolean)
     {
-        val cpf = new CollectionPathFinder().setRequester(requester)
-        cpf.setCollectBroadcasts(collectBroadcast).setCollectCrafts(collectCrafts)
+        CollectionPathFinder.clear()
+        CollectionPathFinder.start = requester
+        CollectionPathFinder.collectBroadcasts = collectBroadcast
+        CollectionPathFinder.collectCrafts = collectCrafts
+        val map = CollectionPathFinder.result()
+        CollectionPathFinder.clear()
 
-        val map = cpf.collect.getCollection
         val packet2 = new PacketCustom(channel, gui_Request_list)
         packet2.writeInt(map.size)
 

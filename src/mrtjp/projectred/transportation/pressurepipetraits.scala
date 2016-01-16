@@ -89,9 +89,15 @@ trait TPressureTube extends TPressureSubsystem with TColourFilterPipe
         val dim = (~(1<<from))&openOuts
         if (dim == 0) return false
 
-        val pf = new PressurePathfinder(r.payload.key, this, dim, r.colour)
-        pf.start()
-        pf.invDirs != 0
+        PressurePathFinder.clear()
+        PressurePathFinder.pipe = this
+        PressurePathFinder.item = r.payload.key
+        PressurePathFinder.searchDirs = dim
+        PressurePathFinder.colour = r.colour
+        PressurePathFinder.start()
+        val result = PressurePathFinder.invDirs
+        PressurePathFinder.clear()
+        result != 0
     }
 
     override def resolveDestination(r:PressurePayload)
@@ -100,17 +106,24 @@ trait TPressureTube extends TPressureSubsystem with TColourFilterPipe
         {
             val dim = (~(1<<(r.input^1)))&openOuts
 
-            val pf = new PressurePathfinder(r.payload.key, this, dim, r.colour)
-            pf.start()
+            PressurePathFinder.clear()
+            PressurePathFinder.pipe = this
+            PressurePathFinder.item = r.payload.key
+            PressurePathFinder.searchDirs = dim
+            PressurePathFinder.colour = r.colour
+            PressurePathFinder.start()
+            val invDirs = PressurePathFinder.invDirs
+            val backlogDirs = PressurePathFinder.backlogDirs
+            PressurePathFinder.clear()
 
-            if (pf.invDirs != 0)
+            if (invDirs != 0)
             {
-                r.output = resolveOutputConflict(pf.invDirs)
+                r.output = resolveOutputConflict(invDirs)
                 r.travelData = PressurePriority.inventory
             }
-            else if (pf.backlogDirs != 0)
+            else if (backlogDirs != 0)
             {
-                r.output = resolveOutputConflict(pf.backlogDirs)
+                r.output = resolveOutputConflict(backlogDirs)
                 r.travelData = PressurePriority.backlog
             }
             else chooseRandomDestination(r)

@@ -1,5 +1,6 @@
 -v4.7.0pre11
 - FIX: Major routed pipe bug breaking auto-crafting
+- FIX: Craft/pull filters on request pipe
 
 v4.7.0pre10
 - ADDED: Config option for particle effects on routed pipes

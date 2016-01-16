@@ -2,9 +2,8 @@ package mrtjp.projectred.transportation
 
 import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.TileMultipart
-import mrtjp.core.item.ItemKey
 import mrtjp.core.inventory.InvWrapper
-import mrtjp.projectred.core.libmc.PRLib
+import mrtjp.core.item.ItemKey
 import net.minecraft.inventory.IInventory
 
 import scala.annotation.tailrec
@@ -16,37 +15,36 @@ object PressurePriority
     val inventory = 1<<1
 }
 
-class PressurePathfinder(item:ItemKey, pipe:TPressureSubsystem, dim:Int, color:Int = -1)
+object PressurePathFinder
 {
-    private var shortestDist = Integer.MAX_VALUE
-    var invDirs = 0
-    def setInvPath(n:Node)
-    {
-        if (n.dist < shortestDist)
-        {
-            shortestDist = n.dist
-            invDirs = 0
-        }
-        if (n.dist == shortestDist) invDirs |= 1<<n.hop
-    }
+    var pipe:TPressureSubsystem = null
+    var item:ItemKey = null
+    var searchDirs = 0
+    var colour = -1
 
-    private var shortestBDist = Integer.MAX_VALUE
+    var invDirs = 0
     var backlogDirs = 0
-    def setBacklog(n:Node)
+
+    private var shortestDist = Integer.MAX_VALUE
+    private var shortestBDist = Integer.MAX_VALUE
+
+    def clear()
     {
-        if (n.dist < shortestBDist)
-        {
-            shortestBDist = n.dist
-            backlogDirs = 0
-        }
-        if (n.dist == shortestBDist) backlogDirs |= 1<<n.hop
+        pipe = null
+        item = null
+        searchDirs = 0
+        colour = -1
+        invDirs = 0
+        backlogDirs = 0
+        shortestDist = Integer.MAX_VALUE
+        shortestBDist = Integer.MAX_VALUE
     }
 
     def start()
     {
         val bc = new BlockCoord(pipe.tile)
         val q = Queue.newBuilder[Node]
-        for (s <- 0 until 6 if (dim&1<<s) != 0 && pipe.maskConnects(s)) q += Node(bc, s)
+        for (s <- 0 until 6 if (searchDirs&1<<s) != 0 && pipe.maskConnects(s)) q += Node(bc, s)
         iterate(q.result(), Set(Node(bc)))
     }
 
@@ -72,7 +70,7 @@ class PressurePathfinder(item:ItemKey, pipe:TPressureSubsystem, dim:Int, color:I
                     for (s <- 0 until 6) if (s != (next.dir^1) && p.maskConnects(s))
                     {
                         val route = next --> (s, p.pathWeight, p.pathFilter(next.dir^1, s))
-                        if (route.flagRouteTo && route.allowColor(color) && route.allowItem(item))
+                        if (route.flagRouteTo && route.allowColor(colour) && route.allowItem(item))
                             if (!closed(route) && !open.contains(route)) upNext += route
                     }
                     iterate(rest++upNext.result(), closed+next)
@@ -82,6 +80,26 @@ class PressurePathfinder(item:ItemKey, pipe:TPressureSubsystem, dim:Int, color:I
             case _ => iterate(rest, closed+next)
         }
         case _ =>
+    }
+
+    private def setInvPath(n:Node)
+    {
+        if (n.dist < shortestDist)
+        {
+            shortestDist = n.dist
+            invDirs = 0
+        }
+        if (n.dist == shortestDist) invDirs |= 1<<n.hop
+    }
+
+    private def setBacklog(n:Node)
+    {
+        if (n.dist < shortestBDist)
+        {
+            shortestBDist = n.dist
+            backlogDirs = 0
+        }
+        if (n.dist == shortestBDist) backlogDirs |= 1<<n.hop
     }
 
     private def getTile(bc:BlockCoord) = pipe.world.getTileEntity(bc.x, bc.y, bc.z)
