@@ -152,10 +152,9 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        routerIDLock synchronized
-            {
-                routerId = UUID.fromString(tag.getString("rid"))
-            }
+        routerIDLock synchronized{
+            routerId = UUID.fromString(tag.getString("rid"))
+        }
 
         statsSent = tag.getInteger("sent")
         statsReceived = tag.getInteger("rec")
@@ -176,10 +175,9 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         linkMap = packet.readByte
         val mostSigBits = packet.readLong
         val leastSigBits = packet.readLong
-        routerIDLock synchronized
-            {
-                routerId = new UUID(mostSigBits, leastSigBits)
-            }
+        routerIDLock synchronized {
+            routerId = new UUID(mostSigBits, leastSigBits)
+        }
     }
 
     override def read(packet:MCDataInput, key:Int) = key match
@@ -199,7 +197,6 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         linkMap = packet.readByte
         val high = ~old&linkMap
         val low = ~linkMap&old
-        val bc = getCoords
 
         for (i <- 0 until 6)
         {
@@ -212,10 +209,9 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
     private def getRouterId =
     {
-        if (routerId == null) routerIDLock synchronized
-            {
-                routerId = if (router != null) router.getID else UUID.randomUUID
-            }
+        if (routerId == null) routerIDLock synchronized {
+            routerId = if (router != null) router.getID else UUID.randomUUID
+        }
         routerId
     }
 
@@ -341,10 +337,17 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         def reRoute()
         {
             r.resetTrip()
-            val f = new LogisticPathFinder(getRouter, r.payload.key).setExclusions(r.travelLog).findBestResult
-            if (f.getResult != null)
+
+            LogisticPathFinder.clear()
+            LogisticPathFinder.start = getRouter
+            LogisticPathFinder.payload = r.payload.key
+            LogisticPathFinder.exclusions = r.travelLog
+            val result = LogisticPathFinder.result()
+            LogisticPathFinder.clear()
+
+            if (result != null)
             {
-                r.setDestination(f.getResult.responder, f.getResult.priority)
+                r.setDestination(result.responder, result.priority)
                 color = RouteFX2.color_route
             }
         }
@@ -435,10 +438,14 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
     override def getLogisticPath(stack:ItemKey, exclusions:BitSet, excludeStart:Boolean) =
     {
-        val p = new LogisticPathFinder(getRouter, stack)
-        if (exclusions != null) p.setExclusions(exclusions)
-        p.setExcludeSource(excludeStart).findBestResult
-        p.getResult
+        LogisticPathFinder.clear()
+        LogisticPathFinder.start = getRouter
+        LogisticPathFinder.payload = stack
+        LogisticPathFinder.exclusions = exclusions
+        LogisticPathFinder.excludeSource = excludeStart
+        val result = LogisticPathFinder.result()
+        LogisticPathFinder.clear()
+        result
     }
 
     override def getWorldRouter = this

@@ -1,12 +1,11 @@
 package mrtjp.projectred.transportation
 
 import java.util.concurrent.locks.ReentrantReadWriteLock
-import java.util.{UUID, PriorityQueue => JPriorityQueue}
+import java.util.{PriorityQueue => JPriorityQueue, UUID}
 
 import mrtjp.core.item.ItemKey
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.transportation.Priorities.NetworkPriority
-import net.minecraftforge.common.util.ForgeDirection
 
 import scala.collection.immutable.{BitSet, HashMap}
 import scala.collection.mutable.{BitSet => MBitSet}
@@ -183,7 +182,10 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         var adjacentChanged = false
         if (!isLoaded) return false
 
-        val newAdjacent = new LSPathFinder3(parent, Configurator.maxDetectionCount).result().filter(_.end.isLoaded)
+        LSPathFinder.clear()
+        LSPathFinder.start = parent
+        val newAdjacent = LSPathFinder.result().filter(_.end.isLoaded)
+        LSPathFinder.clear()
 
         adjacentChanged = adjacentLinks != newAdjacent
 
