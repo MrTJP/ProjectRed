@@ -46,6 +46,7 @@ class RoutedFirewallPipe extends AbstractNetPipe with TNetworkPipe
     {
         writeInfo(getWriteStreamOf(7))
     }
+
     private def writeInfo(out:MCDataOutput)
     {
         out.writeBoolean(filtExclude).writeBoolean(allowRoute)
@@ -89,9 +90,9 @@ class RoutedFirewallPipe extends AbstractNetPipe with TNetworkPipe
     override def networkFilter =
         (if (allowRoute) 0x1 else 0)|(if (allowBroadcast) 0x2 else 0)|(if (allowCrafting) 0x4 else 0)
 
-    override def filteredItems = itemset
-
     override def itemsExclude = filtExclude
+
+    override def filteredItems = itemset
 
     var itemset = Set[ItemKey]()
     def buildItemSet()
@@ -127,7 +128,6 @@ class ContainerFirewallPipe(pipe:RoutedFirewallPipe, player:EntityPlayer) extend
         {
             if (tryMergeItemStack(stack, 25, 53, false)) return true
         }
-
         false
     }
 }

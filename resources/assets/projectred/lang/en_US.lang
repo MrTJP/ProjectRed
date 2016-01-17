@@ -123,7 +123,8 @@ item.projectred.transportation.pipe|5.name=Routed Extension pipe
 item.projectred.transportation.pipe|6.name=Routed Firewall pipe
 item.projectred.transportation.pipe|7.name=Pressure tube
 item.projectred.transportation.pipe|8.name=Pressure Resistance tube
-
+item.projectred.transportation.pipe|9.name=Network Valve pipe
+item.projectred.transportation.pipe|10.name=Network Latency pipe
 
 
 

@@ -41,7 +41,7 @@ object LSPathFinder
         val bc = start.getCoords
         val q = Queue.newBuilder[Node]
         for (s <- 0 until 6 if pipe.maskConnects(s)) q += Node(bc, s)
-        iterate(q.result())
+        iterate(q.result()).sorted
     }
 
     @tailrec
@@ -60,7 +60,7 @@ object LSPathFinder
                 val upNext = Vector.newBuilder[Node]
                 for (s <- 0 until 6) if (s != (next.dir^1) && p.maskConnects(s))
                 {
-                    val route = next --> (s, p.pathWeight, p.pathFilter(next.dir^1, s))
+                    val route = next --> (s, p.getPathWeight, p.pathFilter(next.dir^1, s))
                     if (route.path.pathFlags != 0 && !closed(route)) upNext += route
                 }
                 iterate(rest++upNext.result(), closed+next, coll)
@@ -77,7 +77,7 @@ object LSPathFinder
                         val linkedPipe = getPipe(bc)
                         if (linkedPipe != null)
                         {
-                            val route = next -->(bc, linkedPipe.pathWeight)
+                            val route = next -->(bc, linkedPipe.getPathWeight)
                             if (!closed(route)) upNext += route
                         }
                     }

@@ -71,6 +71,21 @@ object TransportationRecipes
             'c':JC, Items.magma_cream,
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
         )
+
+        /** Network Valve pipe **/
+        GameRegistry.addRecipe(PipeDefs.NETWORKVALVE.makeStack,
+            " g ", "gbg", " l ",
+            'g':JC, Blocks.glass_pane,
+            'b':JC, PipeDefs.BASIC.makeStack,
+            'l':JC, Blocks.lever
+        )
+
+        /** Network Latency pipe **/
+        GameRegistry.addRecipe(PipeDefs.NETWORKLATENCY.makeStack,
+            " c ", "cbc", " c ",
+            'c':JC, Blocks.cobblestone,
+            'b':JC, PipeDefs.BASIC.makeStack
+        )
     }
 
     private def initPressureTubeRecipes()

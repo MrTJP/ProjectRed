@@ -167,5 +167,5 @@ class PressureTube extends PayloadPipePart[PressurePayload] with TRedstonePipe w
 
 class ResistanceTube extends PayloadPipePart[PressurePayload] with TRedstonePipe with TPressureTube
 {
-    override def pathWeight = 256
+    override def getPathWeight = 256
 }
