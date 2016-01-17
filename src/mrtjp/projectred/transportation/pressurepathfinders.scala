@@ -69,7 +69,7 @@ object PressurePathFinder
                     val upNext = Vector.newBuilder[Node]
                     for (s <- 0 until 6) if (s != (next.dir^1) && p.maskConnects(s))
                     {
-                        val route = next --> (s, p.pathWeight, p.pathFilter(next.dir^1, s))
+                        val route = next --> (s, p.getPathWeight, p.pathFilter(next.dir^1, s))
                         if (route.flagRouteTo && route.allowColor(colour) && route.allowItem(item))
                             if (!closed(route) && !open.contains(route)) upNext += route
                     }

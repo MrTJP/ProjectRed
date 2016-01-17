@@ -222,7 +222,7 @@ object BeamPathFinder
                 val upNext = Seq.newBuilder[Node]
                 for (s <- 0 until 6) if (s != (next.dir^1) && p.maskConnects(s))
                 {
-                    val route = next --> (s, p.pathWeight)
+                    val route = next --> (s, p.getPathWeight)
                     if (!closed(route) && !open.contains(route)) upNext += route
                 }
                 iterate(rest++upNext.result(), closed+next)

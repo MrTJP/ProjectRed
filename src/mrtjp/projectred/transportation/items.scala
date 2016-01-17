@@ -67,6 +67,8 @@ object PipeDefs extends ItemDefinition
     val ROUTEDFIREWALL = new PipeVal("pr_rfire", "routedfire")
     val PRESSURETUBE = new PipeVal("pr_pt", Seq("pressuretube")++(0 to 15 map{"colour/colour_"+_}):_*)
     val RESISTANCETUBE = new PipeVal("pr_rpt", "resistancetube")
+    val NETWORKVALVE = new PipeVal("pr_netvalve", "netvalve_blocked", "netvalve_in", "netvalve_out", "netvalve_inout")
+    val NETWORKLATENCY = new PipeVal("pr_netlatency", "netlatency")
 
     class PipeVal(val partname:String, val textures:String*) extends ItemDef
     {

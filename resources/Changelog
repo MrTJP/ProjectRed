@@ -1,6 +1,10 @@
 -v4.7.0pre11
+- ADDED: Network Valve pipe
+- ADDED: Network Latency pipe
 - FIX: Major routed pipe bug breaking auto-crafting
 - FIX: Craft/pull filters on request pipe
+- FIX: Routed pipe pathfinding bugs
+- CHANGE: Slight performance improvement for routed pipes
 
 v4.7.0pre10
 - ADDED: Config option for particle effects on routed pipes

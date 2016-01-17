@@ -195,7 +195,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
             routedExits = newAdjacent.foldLeft(0)((b, p) => (b|1<<p.hopDir)&0x3F)
 
             Router.LSADatabasewriteLock.lock()
-            LSA.neighbors = adjacentLinks.toVector //add to database so another thread can make the route table.
+            LSA.neighbors = adjacentLinks //add to database so another thread can make the route table.
             Router.LSADatabasewriteLock.unlock()
         }
         adjacentChanged
@@ -322,32 +322,32 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
 
         /** Vector of all paths in this network ordered by cost **/
         var routersByCost2 = Vector[StartEndPath](new StartEndPath(this, this, 6, 0))
-        /** Queue of all candidates that need checking **/
-        val candidates2 = new JPriorityQueue[StartEndPath](Math.sqrt(sizeEstimate).asInstanceOf[Int])//scala PQ is not working ?!
+        /** Queue of all paths that need checking **/
+        val openPaths = new JPriorityQueue[StartEndPath](Math.sqrt(sizeEstimate).toInt)//scala PQ is not working ?!
 
-        /** Previously found properties that are checked before adding a new path **/
+        /** Filters of previously found paths **/
         var closedFilters = new Array[Vector[Set[PathFilter]]](Router.getEndOfIPPool+1)
         def ensureClosed(size:Int){while (closedFilters.length <= size) closedFilters :+= null}
 
-        // Start by adding our info.
-        for (p <- adjacentLinks) candidates2.add(p.createStartPoint)
+        //Start by adding our info.
+        for (p <- adjacentLinks) openPaths.add(p)
         closedFilters(getIPAddress) = Vector(Set[PathFilter](PathFilter.default))
 
-        val a, b = new scala.util.control.Breaks
         Router.LSADatabasereadLock.lock()
-        while (!candidates2.isEmpty) a.breakable
+        import scala.util.control.Breaks._
+        while (!openPaths.isEmpty) breakable
         {
-            val dequeue = candidates2.poll()
+            val dequeue = openPaths.poll()
             val deqIP = dequeue.end.getIPAddress
             ensureClosed(deqIP)
             val pflags = dequeue.pathFlags
 
-            //Skip if we have found path with identical filters
+            //Skip if we have already found a path with identical filters
             val filtSetsClosed = closedFilters(deqIP)
             if (filtSetsClosed != null) for (filtsClosed <- filtSetsClosed)
-                if (filtsClosed.subsetOf(dequeue.filters)) a.break() //dequeue's filters contain all closed filters
+                if (filtsClosed.subsetOf(dequeue.filters)) break() //dequeue's filters contain all closed filters
 
-            // Add all of the lowest's neighbors so they are checked later.
+            //Queue all of the neighbors of the end of this path for searching
             val lsa = deqIP match
             {
                 case ip if Router.LSADatabase.isDefinedAt(ip) => Router.LSADatabase(ip)
@@ -356,11 +356,11 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
 
             if (lsa != null)
             {
-                for (p <- lsa.neighbors) if ((pflags&p.pathFlags) != 0) candidates2.add(dequeue --> p)
+                for (p <- lsa.neighbors) if ((pflags&p.pathFlags) != 0) openPaths.add(dequeue --> p)
             }
 
             //Approve this candidate
-            if ((pflags&0x3) != 0) routersByCost2 :+= dequeue //if can route to or request from its a possibe routeByCost
+            if ((pflags&0x3) != 0) routersByCost2 :+= dequeue //if we can get to or come from using this path its a possibe route
             closedFilters(deqIP) = if (filtSetsClosed != null) filtSetsClosed :+ dequeue.filters else Vector(dequeue.filters)
         }
         Router.LSADatabasereadLock.unlock()
@@ -368,19 +368,8 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
         var routeTable2 = new Array[Vector[StartEndPath]](Router.getEndOfIPPool+1)
         def ensureRT2(size:Int) {while (routeTable2.length <= size) routeTable2 :+= null}
 
-        ensureRT2(getIPAddress)
-        routeTable2(getIPAddress) = Vector(new StartEndPath(this, this, 6, 0)) //consider ourselves for logistic path
-
-        for (p <- routersByCost2) if (p != null) b.breakable
+        for (p <- routersByCost2)
         {
-            val firstHop = p.start
-            val rootHop = adjacentLinks.find(_.end == firstHop).orNull
-
-            if (rootHop == null) b.break()
-
-            p.start = this
-            p.hopDir = rootHop.hopDir
-
             val endIP = p.end.getIPAddress
             ensureRT2(endIP)
             val prev = routeTable2(endIP)

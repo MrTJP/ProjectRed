@@ -2,7 +2,7 @@ package mrtjp.projectred.transportation
 
 import mrtjp.core.item.ItemKey
 
-class StartEndPath(var start:Router, var end:Router, var hopDir:Int, var distance:Int,
+class StartEndPath(val start:Router, val end:Router, val hopDir:Int, val distance:Int,
                    filters:Set[PathFilter] = Set.empty, val netFlags:Int = 0x7) extends Path(filters) with Ordered[StartEndPath]
 {
     def this(start:Router, end:Router, dirToFirstHop:Int, distance:Int, filter:PathFilter) =
@@ -23,7 +23,6 @@ class StartEndPath(var start:Router, var end:Router, var hopDir:Int, var distanc
     }
 
     def -->(to:StartEndPath) = new StartEndPath(start, to.end, hopDir, distance+to.distance, filters++to.filters, netFlags&to.netFlags)
-    def createStartPoint = new StartEndPath(end, end, hopDir, distance, filters, netFlags)
 
     override def compare(that:StartEndPath) =
     {
@@ -31,6 +30,8 @@ class StartEndPath(var start:Router, var end:Router, var hopDir:Int, var distanc
         if (c == 0) c = end.getIPAddress-that.end.getIPAddress
         c
     }
+
+    override def toString = s"[${start.getIPAddress} -> ($distance) -> ${end.getIPAddress}] f:$pathFlags"
 }
 
 class Path(val filters:Set[PathFilter])

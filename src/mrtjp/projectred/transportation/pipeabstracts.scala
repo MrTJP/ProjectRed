@@ -131,10 +131,10 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
 
     override def getSubParts =
     {
-        val b = getCollisionBoxes
-        var i = Seq[IndexedCuboid6]()
-        for (c <- b) i :+= new IndexedCuboid6(0, c)
-        i
+        import mrtjp.projectred.transportation.PipeBoxes._
+        var boxes = Seq(new IndexedCuboid6(-1, oBounds(6)))
+        for (s <- 0 until 6) if (maskConnects(s)) boxes :+= new IndexedCuboid6(s, oBounds(s))
+        boxes
     }
 
     override def getOcclusionBoxes =
@@ -210,7 +210,14 @@ object PipeBoxes
 
 trait TPipeTravelConditions
 {
+    /**
+     * 00FT
+     * T - can travel to
+     * F - can come from
+     */
     def getPathFlags(input:Int, output:Int) = 0x3
+
+    def getPathWeight = 1
 
     def itemsExclude = true
     def filteredItems:Set[ItemKey] = Set.empty
@@ -232,8 +239,6 @@ trait TPipeTravelConditions
         f.colors = filteredColors
         f
     }
-
-    def pathWeight = 1
 }
 
 abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart with TPipeTravelConditions
@@ -311,7 +316,6 @@ abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart
     {
         if (itemFlow.scheduleRemoval(r)) if (!world.isRemote)
         {
-            //r.resetTrip()
             r.preItemRemove()
             world.spawnEntityInWorld(r.getEntityForDrop(x, y, z))
         }
