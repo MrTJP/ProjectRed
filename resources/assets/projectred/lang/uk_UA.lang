@@ -1,0 +1,21 @@
+itemGroup.core=Project Red: Ядро
+
+item.projectred.core.part.plate.name=Друкована Плата
+item.projectred.core.part.conductive_plate.name=Провідна Плата
+item.projectred.core.part.wired_plate.name=Дротова Плата
+item.projectred.core.part.bundled_plate.name=Магістральна Плата
+item.projectred.core.part.anode.name=Анод
+item.projectred.core.part.cathode.name=Катод
+item.projectred.core.part.pointer.name=Вказівник
+item.projectred.core.part.silicon_chip.name=Кремнієва Мікросхема
+item.projectred.core.part.energized_silicon_chip.name=Кремнієва Мікросхема Під Напругою
+item.projectred.core.part.platformed_plate.name=Платформова Плата
+item.projectred.core.part.red_ingot.name=Злиток Червоного Сплаву
+item.projectred.core.part.boule.name=Монокристал Кремнію
+item.projectred.core.part.silicon.name=Кремній
+item.projectred.core.part.infused_silicon.name=Заряджений Кремній
+item.projectred.core.part.energized_silicon.name=Кремній Під Напругою
+item.projectred.core.part.motor.name=Двигун
+item.projectred.core.part.copper_coil.name=Мідна Котушка
+item.projectred.core.part.iron_coil.name=Залізна Котушка
+item.projectred.core.part.gold_coil.name=Золота Котушка
