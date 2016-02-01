@@ -84,7 +84,7 @@ class NetworkValvePipePart extends AbstractNetPipe with TNetworkSubsystem with T
             {
                 val side = hit.asInstanceOf[ExtendedMOP].data.asInstanceOf[Int]
                 val mode = (pathMatrix>>(side*2))&3
-                val newMode = (mode+1)%4
+                val newMode = (mode+1)%3+1 //cycle 1,2,3
                 pathMatrix = pathMatrix& ~(3<<(side*2))|(newMode<<(side*2))
                 sendIOFlagsUpdate()
             }
