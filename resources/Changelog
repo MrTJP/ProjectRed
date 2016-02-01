@@ -1,4 +1,4 @@
--v4.7.0pre11
+v4.7.0pre11
 - ADDED: Network Valve pipe
 - ADDED: Network Latency pipe
 - FIX: Major routed pipe bug breaking auto-crafting
