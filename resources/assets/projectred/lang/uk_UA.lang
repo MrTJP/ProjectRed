@@ -452,34 +452,34 @@ item.projectred.integration.gate|3.name=Вентиль ТА
 item.projectred.integration.gate|4.name=Вентиль НІ-ТА
 item.projectred.integration.gate|5.name=Вентиль виключної диз'юнкції
 item.projectred.integration.gate|6.name=Вентиль еквіваленції
-item.projectred.integration.gate|7.name=Buffer Gate
-item.projectred.integration.gate|8.name=Multiplexer
-item.projectred.integration.gate|9.name=Pulse Former
-item.projectred.integration.gate|10.name=Repeater
-item.projectred.integration.gate|11.name=Randomizer
-item.projectred.integration.gate|12.name=RS Latch
-item.projectred.integration.gate|13.name=Toggle Latch
-item.projectred.integration.gate|14.name=Transparent Latch
-item.projectred.integration.gate|15.name=Light Sensor
-item.projectred.integration.gate|16.name=Rain Sensor
-item.projectred.integration.gate|17.name=Timer
-item.projectred.integration.gate|18.name=Sequencer
-item.projectred.integration.gate|19.name=Counter
+item.projectred.integration.gate|7.name=Буферний вентиль
+item.projectred.integration.gate|8.name=Мультиплексор
+item.projectred.integration.gate|9.name=Генератор імпульсів
+item.projectred.integration.gate|10.name=Повторювач
+item.projectred.integration.gate|11.name=Генератор випадкових чисел
+item.projectred.integration.gate|12.name=RS-тригер
+item.projectred.integration.gate|13.name=T-тригер
+item.projectred.integration.gate|14.name=D-тригер
+item.projectred.integration.gate|15.name=Датчик освітлення
+item.projectred.integration.gate|16.name=Датчик дощу
+item.projectred.integration.gate|17.name=Таймер
+item.projectred.integration.gate|18.name=Секвесор
+item.projectred.integration.gate|19.name=Лічильник
 item.projectred.integration.gate|20.name=State Cell
-item.projectred.integration.gate|21.name=Synchronizer
-item.projectred.integration.gate|22.name=Bus Transceiver
-item.projectred.integration.gate|23.name=Null Cell
-item.projectred.integration.gate|24.name=Invert Cell
-item.projectred.integration.gate|25.name=Buffer Cell
-item.projectred.integration.gate|26.name=Comparator
-item.projectred.integration.gate|27.name=AND Cell
-item.projectred.integration.gate|28.name=Bus Randomizer
-item.projectred.integration.gate|29.name=Bus Converter
-item.projectred.integration.gate|30.name=Bus Input Panel
-item.projectred.integration.gate|31.name=Data Cell
-item.projectred.integration.gate|32.name=Segment Display Gate
-item.projectred.integration.gate|33.name=Dec Randomizer
-item.projectred.integration.gate|34.name=IC Gate
+item.projectred.integration.gate|21.name=Синхронізатор
+item.projectred.integration.gate|22.name=Шинний передавач
+item.projectred.integration.gate|23.name=Нульова секція
+item.projectred.integration.gate|24.name=Інверторна секція
+item.projectred.integration.gate|25.name=Буферна секція
+item.projectred.integration.gate|26.name=Компаратор
+item.projectred.integration.gate|27.name=ТА секція
+item.projectred.integration.gate|28.name=Шинний генератор випадкових чисел
+item.projectred.integration.gate|29.name=Шинний перетворювач
+item.projectred.integration.gate|30.name=Шинна панель вводу
+item.projectred.integration.gate|31.name=Секція данних
+item.projectred.integration.gate|32.name=Вентиль сегментного індикатора
+item.projectred.integration.gate|33.name=Декодуючий генератор випадкових чисел
+item.projectred.integration.gate|34.name=Мікросхемний вентиль
 
 
 
@@ -520,44 +520,44 @@ item.projectred.transmission.wire|30.name=Коричнева шина
 item.projectred.transmission.wire|31.name=Зелена шина
 item.projectred.transmission.wire|32.name=Червона шина
 item.projectred.transmission.wire|33.name=Чорна шина
-item.projectred.transmission.wire|34.name=Low Load Power Line
-item.projectred.transmission.framewire|0.name=Framed Red Alloy Wire
-item.projectred.transmission.framewire|1.name=Framed White Insulated Wire
-item.projectred.transmission.framewire|2.name=Framed Orange Insulated Wire
-item.projectred.transmission.framewire|3.name=Framed Magenta Insulated Wire
-item.projectred.transmission.framewire|4.name=Framed Light Blue Insulated Wire
-item.projectred.transmission.framewire|5.name=Framed Yellow Insulated Wire
-item.projectred.transmission.framewire|6.name=Framed Lime Insulated Wire
-item.projectred.transmission.framewire|7.name=Framed Pink Insulated Wire
-item.projectred.transmission.framewire|8.name=Framed Grey Insulated Wire
-item.projectred.transmission.framewire|9.name=Framed Light Grey Insulated Wire
-item.projectred.transmission.framewire|10.name=Framed Cyan Insulated Wire
-item.projectred.transmission.framewire|11.name=Framed Purple Insulated Wire
-item.projectred.transmission.framewire|12.name=Framed Blue Insulated Wire
-item.projectred.transmission.framewire|13.name=Framed Brown Insulated Wire
-item.projectred.transmission.framewire|14.name=Framed Green Insulated Wire
-item.projectred.transmission.framewire|15.name=Framed Red Insulated Wire
-item.projectred.transmission.framewire|16.name=Framed Black Insulated Wire
-item.projectred.transmission.framewire|17.name=Framed Bundled Cable
-item.projectred.transmission.framewire|34.name=Framed Low Load Power Line
+item.projectred.transmission.wire|34.name=Cиловий провід
+item.projectred.transmission.framewire|0.name=Дріт з червоного сплаву у каркасі
+item.projectred.transmission.framewire|1.name=Білий ізольований дріт 
+item.projectred.transmission.framewire|2.name=Помаранчевий ізольований дріт у каркасі
+item.projectred.transmission.framewire|3.name=Пурпурний ізольований дріт у каркасі
+item.projectred.transmission.framewire|4.name=Блакитний ізольований дріт у каркасі
+item.projectred.transmission.framewire|5.name=Жовтий ізольований дріт у каркасі
+item.projectred.transmission.framewire|6.name=Лаймовий ізольований дріт у каркасі
+item.projectred.transmission.framewire|7.name=Рожевий ізольований дріт у каркасі
+item.projectred.transmission.framewire|8.name=Сірий ізольований дріт у каркасі
+item.projectred.transmission.framewire|9.name=Світло-сірий ізольований дріт у каркасі
+item.projectred.transmission.framewire|10.name=Ціановий ізольований дріт у каркасі
+item.projectred.transmission.framewire|11.name=Фіолетовий ізольований дріт у каркасі
+item.projectred.transmission.framewire|12.name=Синій ізольований дріт у каркасі
+item.projectred.transmission.framewire|13.name=Коричневий ізольований дріт у каркасі
+item.projectred.transmission.framewire|14.name=Зелений ізольований дріт у каркасі
+item.projectred.transmission.framewire|15.name=Червоний ізольований дріт у каркасі
+item.projectred.transmission.framewire|16.name=Чорний ізольований дріт у каркасі
+item.projectred.transmission.framewire|17.name=Шина у каркасі
+item.projectred.transmission.framewire|34.name=Cиловий провід у каркасі
 
 
 
 
-itemGroup.compat=Project Red: Compatibility
+itemGroup.compat=Project Red: Сумісність
 
-tile.projectred.compatibility.liqredstone.name=Liquid Redstone
-tile.projectred.compatibility.liqcondredmetal.name=Molten Conductive Redmetal
-fluid.redstone.molten=Liquid Redstone
-fluid.redmetal.molten=Molten Conductive Redmetal
-
-
+tile.projectred.compatibility.liqredstone.name=Рідкий редстоун
+tile.projectred.compatibility.liqcondredmetal.name=Рідкий провідний червоний метал
+fluid.redstone.molten=Рідкий редстоун
+fluid.redmetal.molten=Рідкий провідний червоний метал
 
 
-itemGroup.fab=Project Red: Fabrication
 
-item.projectred.fabrication.icblueprint.name=IC Blueprint
-item.projectred.fabrication.icchip|0.name=IC Chip
-item.projectred.fabrication.icchip|1.name=Creative Mode IC Chip
-tile.projectred.integration.icblock|0.name=IC Workbench
-tile.projectred.integration.icblock|1.name=IC Printer
+
+itemGroup.fab=Project Red: Виробництво
+
+item.projectred.fabrication.icblueprint.name=Проект мікросхеми
+item.projectred.fabrication.icchip|0.name=Мікросхема
+item.projectred.fabrication.icchip|1.name=Мікросхема творчого режиму
+tile.projectred.integration.icblock|0.name=Верстак мікросхем
+tile.projectred.integration.icblock|1.name=Принтер мікросхем
