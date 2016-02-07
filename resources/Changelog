@@ -1,3 +1,6 @@
+-v4.7.0pre12
+- FIX: Wires not propagating signals properly
+
 v4.7.0pre11
 - ADDED: Network Valve pipe
 - ADDED: Network Latency pipe
