@@ -181,7 +181,7 @@ class PropagationRun
             if (ptmp.isEmpty && atmp.nonEmpty)
             {
                 propagationList = analogDrops; ptmp = atmp; pChange = false //atmp is already up to date, so now ptmp is too.
-                analogDrops.clear(); aChange = true //atmp was nonempty, now it is
+                analogDrops = Vector.newBuilder; aChange = true //atmp was nonempty, now it is
             }
         }
         while (ptmp.nonEmpty)
