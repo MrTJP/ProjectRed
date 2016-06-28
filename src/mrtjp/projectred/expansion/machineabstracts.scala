@@ -8,13 +8,16 @@ import mrtjp.core.inventory.TInventory
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api._
 import mrtjp.projectred.core._
+import mrtjp.projectred.expansion.TileMachine._
 import net.minecraft.block.material.Material
-import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
 import net.minecraft.inventory.{Container, ICrafting, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.util.ForgeDirection
+
+import scala.ref.WeakReference
 
 class BlockMachine(name:String) extends InstancedBlock(name, Material.rock)
 {
@@ -30,6 +33,13 @@ class BlockMachine(name:String) extends InstancedBlock(name, Material.rock)
 
 abstract class TileMachine extends InstancedBlockTile with TTileOrient
 {
+    def fakePlayer = fake.get.orNull
+
+    def reloadFakePlayer() {
+        if (fakePlayer == null)
+            fake = FakePlayerUtils.getFakePlayerPR(world)
+    }
+
     override def onBlockPlaced(s:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
     {
         setSide(if (doesOrient) calcFacing(player) else 0)
@@ -130,6 +140,10 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
     }
 
     def onBlockRotated(){}
+}
+
+object TileMachine {
+    var fake = WeakReference[EntityPlayerMP](null)
 }
 
 trait TGuiMachine extends TileMachine

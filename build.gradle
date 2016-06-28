@@ -69,10 +69,13 @@ dependencies {
     compile "mrtjp:MrTJPCore:${config.mc.version}-${config.mrtjp.version}:dev"
     compile "mrtjp:ForgeRelocation:${config.mc.version}-${config.fr.version}:dev"
     compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
+    compile "codechicken:CodeChickenCore:${config.mc.version}-${config.ccc.version}:dev"
     compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
     compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
     compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
     compile group: 'cofh', name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
+
+    compile fileTree(dir: 'libs', include: '*.jar')
 }
 
 def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")+51).toString()
@@ -112,6 +115,7 @@ task updateVersion(type: Copy) {
             'FORGE_VERSION': config.forge.version,
             'FMP_VERSION'  : config.fmp.version,
             'CCL_VERSION'  : config.ccl.version,
+            'CCC_VERSION': config.ccc.version,
             'MRTJP_VERSION': config.mrtjp.version,
             'FR_VERSION': config.fr.version,
             'FRFMP_VERSION': config.frfmp.version
@@ -133,6 +137,7 @@ processResources {
                 'FORGE_VERSION': config.forge.version,
                 'FMP_VERSION'  : config.fmp.version,
                 'CCL_VERSION'  : config.ccl.version,
+                'CCC_VERSION': config.ccc.version,
                 'MRTJP_VERSION': config.mrtjp.version,
                 'FR_VERSION': config.fr.version,
                 'FRFMP_VERSION': config.frfmp.version

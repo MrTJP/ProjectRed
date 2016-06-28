@@ -5,15 +5,12 @@
  */
 package mrtjp.projectred.expansion
 
-import java.util.UUID
-
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
 import codechicken.lib.raytracer.RayTracer
 import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
 import codechicken.lib.vec.{BlockCoord, Cuboid6, Vector3}
 import codechicken.multipart.IRedstoneConnector
-import com.mojang.authlib.GameProfile
 import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.color.Colors
@@ -31,8 +28,7 @@ import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
-import net.minecraft.world.{IBlockAccess, WorldServer}
-import net.minecraftforge.common.util.FakePlayerFactory
+import net.minecraft.world.IBlockAccess
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 
@@ -64,12 +60,9 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
     override def size = 9
     override def name = "block_placer"
 
-    def reloadPlayer()
+    override def reloadFakePlayer()
     {
-        if (fakePlayer == null)
-            fake = WeakReference(FakePlayerFactory.get(world.asInstanceOf[WorldServer],
-                new GameProfile(UUID.randomUUID(), "[PR_FAKE]")))
-
+        super.reloadFakePlayer()
         val pos = new Vector3(x, y, z).add(positions(side))
 
         val (pitch, yaw) = angles(side)
@@ -97,7 +90,7 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
     override def onActivate()
     {
         if (world.isRemote) return
-        reloadPlayer()
+        reloadFakePlayer()
         val upos = position.offset(side^1)
         copyInvToPlayer()
         for (i <- 0 until 9)

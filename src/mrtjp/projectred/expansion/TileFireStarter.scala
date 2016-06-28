@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.init.Blocks
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
+import org.bukkit.craftbukkit.v1_7_R4.event.CraftEventFactory
 
 class TileFireStarter extends TileMachine with TActiveDevice with IRedstoneConnector
 {
@@ -26,9 +27,14 @@ class TileFireStarter extends TileMachine with TActiveDevice with IRedstoneConne
 
     override def onActivate()
     {
+        reloadFakePlayer()
         val pos = new BlockCoord(x, y, z).offset(side^1)
         if (world.isAirBlock(pos.x, pos.y, pos.z))
         {
+            if (CraftEventFactory.callBlockBreakEvent(world, pos.x, pos.y, pos.z, null, 0, fakePlayer).isCancelled) {
+                return
+            }
+
             world.setBlock(pos.x, pos.y, pos.z, Blocks.fire, 0, 3)
             world.playSoundEffect(pos.x+0.5D, pos.y+0.5D, pos.z+0.5D, "fire.ignite", 1.0F, world.rand.nextFloat*0.4F+0.8F)
         }

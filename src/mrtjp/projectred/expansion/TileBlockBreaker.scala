@@ -16,10 +16,10 @@ import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.texture.IIconRegister
-import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
+import org.bukkit.craftbukkit.v1_7_R4.event.CraftEventFactory
 
 import scala.collection.JavaConversions._
 
@@ -35,8 +35,13 @@ class TileBlockBreaker extends TileMachine with TPressureActiveDevice with IReds
 
     override def onActivate()
     {
+        reloadFakePlayer()
         val bc = position.offset(side^1)
         val (b, meta, _) = WorldLib.getBlockInfo(world, bc.x, bc.y, bc.z)
+
+        if (CraftEventFactory.callBlockBreakEvent(world, bc.x, bc.y, bc.z, b, meta, fakePlayer).isCancelled) {
+            return
+        }
 
         if (b == null || b == Blocks.bedrock) return
         if (b.isAir(world, bc.x, bc.y, bc.z)) return
@@ -52,6 +57,7 @@ class TileBlockBreaker extends TileMachine with TPressureActiveDevice with IReds
     override def getConnectionMask(side:Int) = if ((side^1) == this.side) 0 else 0x1F
     override def weakPowerLevel(side:Int, mask:Int) = 0
 }
+
 
 object RenderBlockBreaker extends TInstancedBlockRender with TCubeMapRender
 {
