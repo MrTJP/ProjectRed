@@ -243,14 +243,6 @@ object ExpansionRecipes
             'r':JC, Items.redstone
         ))
         
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 12),
-            "sas", "sps", "srs",
-            's':JC, Blocks.cobblestone,
-            'a':JC, Items.diamond_pickaxe,
-            'p':JC, Blocks.piston,
-            'r':JC, Items.redstone
-        ))
-
         //Item Importer
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 1),
             "www", "sps", "srs",
@@ -368,6 +360,18 @@ object ExpansionRecipes
             'c':JC, Blocks.chest,
             'e':JC, "ingotElectrotineAlloy"
         ))
+        
+        //Diamond Block Breaker
+        if (Configurator.enableDiamondBlockBreaker) {
+            GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 12),
+                "sas", "sps", "srs",
+                's':JC, Blocks.cobblestone,
+                'a':JC, Items.diamond_pickaxe,
+                'p':JC, Blocks.piston,
+                'r':JC, Items.redstone
+            ))
+        }
+
     }
 
     private def initMiscRecipes()
