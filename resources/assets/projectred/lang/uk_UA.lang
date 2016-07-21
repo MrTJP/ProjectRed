@@ -96,7 +96,7 @@ tile.projectred.expansion.machine2|8.name=Двигун каркасу
 tile.projectred.expansion.machine2|9.name=Лінійний привод каркасу
 tile.projectred.expansion.machine2|10.name=Проектний верстак
 tile.projectred.expansion.machine2|11.name=Верстак автозбірки
-tile.projectred.expansion.machine2|12.name=бриллиант Зломщик блоків
+tile.projectred.expansion.machine2|12.name=Алмазний зломщик блоків
 item.projectred.expansion.solar_panel.name=Сонячна панель
 enchantment.projectred.expansion.fuel_efficiency=Паливна ефективність
 
