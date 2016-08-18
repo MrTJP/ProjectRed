@@ -96,6 +96,7 @@ tile.projectred.expansion.machine2|8.name=Frame-Motor
 tile.projectred.expansion.machine2|9.name=Frame-Linearantrieb
 tile.projectred.expansion.machine2|10.name=Projektbank
 tile.projectred.expansion.machine2|11.name=Automatische Werkbank
+tile.projectred.expansion.machine2|12.name=Diamant Blockbrecher
 item.projectred.expansion.solar_panel.name=Solarpanel
 enchantment.projectred.expansion.fuel_efficiency=Treibstoffeffizienz
 

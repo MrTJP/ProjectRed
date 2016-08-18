@@ -62,6 +62,7 @@ class ExpansionProxy_server extends IProxy with IPartFactory2
         machine2.addTile(classOf[TileFrameActuator], 9)
         machine2.addTile(classOf[TileProjectBench], 10)
         machine2.addTile(classOf[TileAutoCrafter], 11)
+        machine2.addTile(classOf[TileDiamondBlockBreaker], 12)
 
         //Enchantments
         enchantmentFuelEfficiency = new EnchantmentFuelEfficiency(Configurator.enchantment_fuel_efficiencty_id)
@@ -132,6 +133,7 @@ class ExpansionProxy_client extends ExpansionProxy_server
         TileRenderRegistry.setRenderer(machine2, 9, RenderFrameActuator)
         TileRenderRegistry.setRenderer(machine2, 10, RenderProjectBench)
         TileRenderRegistry.setRenderer(machine2, 11, RenderAutoCrafter)
+        TileRenderRegistry.setRenderer(machine2, 12, RenderDiamondBlockBreaker)
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(machine2), RenderBatteryBox)
         MinecraftForgeClient.registerItemRenderer(itemSolar, RenderSolarPanel)
@@ -240,7 +242,7 @@ object ExpansionRecipes
             'p':JC, Blocks.piston,
             'r':JC, Items.redstone
         ))
-
+        
         //Item Importer
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 1),
             "www", "sps", "srs",
@@ -358,6 +360,18 @@ object ExpansionRecipes
             'c':JC, Blocks.chest,
             'e':JC, "ingotElectrotineAlloy"
         ))
+        
+        //Diamond Block Breaker
+        if (Configurator.enableDiamondBlockBreaker) {
+            GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 12),
+                "sas", "sps", "srs",
+                's':JC, Blocks.cobblestone,
+                'a':JC, Items.diamond_pickaxe,
+                'p':JC, Blocks.piston,
+                'r':JC, Items.redstone
+            ))
+        }
+
     }
 
     private def initMiscRecipes()
