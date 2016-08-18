@@ -44,7 +44,7 @@ trait IPowerConnectable extends IConnectable
 /**
  * Object held by conducting power tiles, self managed through
  * TPowerConnectable. This model of electrical flow loosely emulates
- * phisics of real world electrical flow in a series circuit.
+ * physics of real world electrical flow in a series circuit.
  * @param parent The "actual" conductor (as in, the tile).
  * @param ids The possible connections to other conductors
  *            this can make.
