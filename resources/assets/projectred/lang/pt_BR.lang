@@ -92,6 +92,7 @@ tile.projectred.expansion.machine2|6.name=Banco de Carregamento
 tile.projectred.expansion.machine2|7.name=Teleposer
 tile.projectred.expansion.machine2|8.name=Motor de Frame
 tile.projectred.expansion.machine2|9.name=Atuador Linear de Frames
+tile.projectred.expansion.machine2|12.name=Quebrador Diamante de Blocos
 item.projectred.expansion.solar_panel.name=Painel Solar
 
 

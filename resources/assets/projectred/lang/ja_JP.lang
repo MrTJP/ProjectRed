@@ -97,6 +97,7 @@ tile.projectred.expansion.machine2|8.name=青電力モーター
 tile.projectred.expansion.machine2|9.name=Frame Linear Actuator
 tile.projectred.expansion.machine2|10.name=プロジェクトテーブル
 tile.projectred.expansion.machine2|11.name=自動作業台
+tile.projectred.expansion.machine1|0.name=Diamond 青電力かまど
 item.projectred.expansion.solar_panel.name=Solar Panel
 enchantment.projectred.expansion.fuel_efficiency=Fuel Efficiency
 

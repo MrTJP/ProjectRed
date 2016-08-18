@@ -96,6 +96,7 @@ tile.projectred.expansion.machine2|8.name=框架电机
 tile.projectred.expansion.machine2|9.name=框架线形执行机
 tile.projectred.expansion.machine2|10.name=工程台
 tile.projectred.expansion.machine2|11.name=自动工作台
+tile.projectred.expansion.machine2|12.name=盒子破坏机
 item.projectred.expansion.solar_panel.name=太阳能电池板
 enchantment.projectred.expansion.fuel_efficiency=燃油效率
 
