@@ -39,6 +39,10 @@ object RouterServices
         routers synchronized
             {
                 for (r <- routers) if (r != null && r.getParent == holder) return r
+                
+                val r0 = getRouter(getIPforUUID(uu))
+                if(r0!=null ) return r0
+                
                 val r = Router(uu, holder)
 
                 val newLease = r.getIPAddress
