@@ -23,6 +23,7 @@ import net.minecraft.entity.item.EntityItem
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.util.ForgeDirection
+import org.bukkit.craftbukkit.v1_7_R4.event.CraftEventFactory
 
 import scala.collection.JavaConversions._
 
@@ -42,6 +43,7 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
 
     override def onActivate()
     {
+        reloadFakePlayer()
         if (importInv() || importEntities())
             return
     }
@@ -50,7 +52,13 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
 
     def importInv():Boolean =
     {
-        val inv = InvWrapper.getInventory(world, position.offset(side^1))
+        val bc = position.offset(side ^ 1)
+
+        if (CraftEventFactory.callBlockBreakEvent(world, bc.x, bc.y, bc.z, null, 0, fakePlayer).isCancelled) {
+            return false
+        }
+
+        val inv = InvWrapper.getInventory(world, bc)
         if (inv == null) return false
         val w = InvWrapper.wrap(inv)
         w.setSlotsFromSide(side)

@@ -118,6 +118,15 @@ class ContainerFirewallPipe(pipe:RoutedFirewallPipe, player:EntityPlayer) extend
         addPlayerInv(player, 8, 102)
     }
 
+    override def slotClick(id:Int, mouse:Int, shift:Int, player:EntityPlayer):ItemStack =
+    {
+        if (shift == 0 || shift == 5)
+        {
+            return super.slotClick(id, mouse, shift, player)
+        }
+        null
+    }
+
     override def doMerge(stack:ItemStack, from:Int):Boolean =
     {
         if (16 to 24 contains from) //hotbar
