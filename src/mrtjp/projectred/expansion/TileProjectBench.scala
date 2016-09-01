@@ -32,6 +32,7 @@ import net.minecraft.util.IIcon
 import net.minecraft.world.{IBlockAccess, World}
 import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
 
 import scala.collection.JavaConversions._
 
@@ -403,6 +404,7 @@ class GuiProjectBench(tile:TileProjectBench, c:ContainerProjectBench) extends No
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
         PRResources.guiProjectbench.bind()
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 

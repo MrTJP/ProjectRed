@@ -29,6 +29,7 @@ import net.minecraft.world.IBlockAccess
 import net.minecraftforge.client.IItemRenderer
 import net.minecraftforge.client.IItemRenderer.ItemRenderType._
 import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
+import org.lwjgl.opengl.GL11
 
 import scala.collection.mutable.ListBuffer
 
@@ -266,6 +267,7 @@ class GuiBatteryBox(tile:TileBatteryBox, c:ContainerBatteryBox) extends NodeGui(
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
         PRResources.guiBatteryBox.bind()
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 

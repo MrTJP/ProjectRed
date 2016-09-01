@@ -25,6 +25,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.IIcon
 import net.minecraft.world.IBlockAccess
+import org.lwjgl.opengl.GL11
 
 class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TInventory
 {
@@ -217,6 +218,7 @@ class GuiElectrotineGenerator(tile:TileElectrotineGenerator, c:ContainerElectrot
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
         PRResources.guiElectrotineGenerator.bind()
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 
