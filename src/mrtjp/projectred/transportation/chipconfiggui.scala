@@ -16,6 +16,7 @@ import mrtjp.core.vec.{Point, Rect, Size}
 import mrtjp.projectred.core.libmc.PRResources
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Slot
+import net.minecraft.item.ItemStack
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 
@@ -44,6 +45,15 @@ class ContainerChipConfig(player:EntityPlayer, var chip:RoutingChip) extends Nod
         if (slot.getSlotIndex == player.inventory.currentItem && slot.inventory == player.inventory)
             slot.asInstanceOf[Slot3].canRemoveDelegate = {() => false}
         slot
+    }
+
+    override def slotClick(id:Int, mouse:Int, shift:Int, player:EntityPlayer):ItemStack =
+    {
+        if (shift == 0 || shift == 5)
+        {
+            return super.slotClick(id, mouse, shift, player)
+        }
+        null
     }
 
     override def onContainerClosed(p:EntityPlayer)
