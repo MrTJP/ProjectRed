@@ -22,5 +22,5 @@ public interface IBundledEmitter
      * The return value will be used immediately, so the returned array may be
      * overwritten by the next call to getBundledSignal.
      */
-    public byte[] getBundledSignal(int dir);
+    byte[] getBundledSignal(int dir);
 }

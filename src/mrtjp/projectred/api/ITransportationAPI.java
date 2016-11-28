@@ -8,5 +8,5 @@ public interface ITransportationAPI
      *
      * @param link The link-state logic to register
      */
-    public void registerSpecialLinkState(ISpecialLinkState link);
+    void registerSpecialLinkState(ISpecialLinkState link);
 }

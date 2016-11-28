@@ -1,5 +1,6 @@
 package mrtjp.projectred.api;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -20,34 +21,28 @@ public interface IBundledTileInteraction
      * (ie, if the position contains the tile this interaction is meant for)
      *
      * @param world The World
-     * @param x The x coordinate
-     * @param y The y coordinate
-     * @param z The z coordinate
+     * @param pos The coordinates of the block being checked
      * @return True if this interaction should be run at the given location
      */
-    public boolean isValidInteractionFor(World world, int x, int y, int z);
+    boolean isValidInteractionFor(World world, BlockPos pos);
 
     /**
      * Checks if the block at the given position can be connected to.
      *
      * @param world The World
-     * @param x The x coordinate
-     * @param y The y coordinate
-     * @param z The z coordinate
+     * @param pos The coordinates of the block being checked
      * @param side The side the wire is trying to connect to.
      * @return True if the wire should be allowed to connect to the side.
      */
-    public boolean canConnectBundled(World world, int x, int y, int z, int side);
+    boolean canConnectBundled(World world, BlockPos pos, int side);
 
     /**
      * Gets the bundled signal from the tile on the specified side.
      *
      * @param world The World
-     * @param x The x coordinate
-     * @param y The y coordinate
-     * @param z The z coordinate
+     * @param pos The coordinates of the block being checked
      * @param side The side we want the signal for.
      * @return The byte array of all the signals.
      */
-    public byte[] getBundledSignal(World world, int x, int y, int z, int side);
+    byte[] getBundledSignal(World world, BlockPos pos, int side);
 }

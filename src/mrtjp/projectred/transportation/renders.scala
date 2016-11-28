@@ -1,34 +1,37 @@
 package mrtjp.projectred.transportation
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.lighting.LightModel
-import codechicken.lib.raytracer.ExtendedMOP
-import codechicken.lib.render.CCRenderState.IVertexOperation
 import codechicken.lib.render._
-import codechicken.lib.render.uv.{IconTransformation, UV, UVScale, UVTransformation}
+import codechicken.lib.render.item.IItemRenderer
+import codechicken.lib.render.pipeline.{ColourMultiplier, IVertexOperation}
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.texture.TextureUtils.IIconRegister
+import codechicken.lib.util.TransformUtils
 import codechicken.lib.vec._
-import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
-import codechicken.microblock.{CommonMicroClass, BlockMicroMaterial, MicroMaterialRegistry, MicroblockClass}
-import mrtjp.core.color.Colors
-import mrtjp.projectred.core.libmc.PRLib
-import net.minecraft.client.renderer.entity.{RenderItem, RenderManager}
-import net.minecraft.entity.item.EntityItem
+import codechicken.lib.vec.uv.{IconTransformation, UV, UVScale, UVTransformation}
+import codechicken.microblock.{BlockMicroMaterial, CommonMicroFactory, IMicroHighlightRenderer, MicroMaterialRegistry}
+import codechicken.multipart.{BlockMultipart, PartRayTraceResult}
+import com.google.common.collect.ImmutableList
+import net.minecraft.block.state.IBlockState
+import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager._
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
+import net.minecraft.client.renderer.block.model.{ItemCameraTransforms, ItemOverrideList}
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
-import net.minecraft.util.{IIcon, MovingObjectPosition}
-import net.minecraftforge.client.IItemRenderer
-import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.RayTraceResult
+import net.minecraftforge.client.model.IPerspectiveAwareModel
+import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
 import org.lwjgl.opengl.GL11
 
-object RenderPipe
+object RenderPipe extends IIconRegister
 {
-    private final val dummyEntityItem = new EntityItem(null)
-    private final val customRenderItem = new RenderItem
-    {
-        override def shouldBob = false
-        override def shouldSpreadItems = false
-    }
-    customRenderItem.setRenderManager(RenderManager.instance)
+    private final val customRenderItem = Minecraft.getMinecraft.getRenderItem
 
     var sideModels:Array[CCModel] = null
     var centerModels:Array[CCModel] = null
@@ -55,7 +58,13 @@ object RenderPipe
         centerModelsWool = woolgen.centerModels
     }
 
-    def renderPipe(p:SubcorePipePart, pos:Vector3)
+    override def registerIcons(textureMap:TextureMap)
+    {
+        for (p <- PipeDefs.values) p.registerIcon(textureMap)
+        for (c <- RoutingChipDefs.values) c.registerIcons(textureMap)
+    }
+
+    def renderPipe(p:SubcorePipePart, pos:Vector3, ccrs:CCRenderState)
     {
         val t = pos.translation()
         var uvt = new IconTransformation(p.getPipeType.sprites(0))
@@ -63,14 +72,14 @@ object RenderPipe
 
         if (connMap == 0x3 || connMap == 0xC || connMap == 0x30) for (a <- 0 until 3)
         {
-            if ((connMap>>a*2) == 3) centerModels(a).render(t, uvt)
+            if ((connMap>>a*2) == 3) centerModels(a).render(ccrs, t, uvt)
         }
-        else centerModels(3).render(t, uvt)
+        else centerModels(3).render(ccrs, t, uvt)
 
         for (s <- 0 until 6) if ((connMap&1<<s) != 0)
         {
             uvt = new IconTransformation(p.getIcon(s))
-            sideModels(s).render(t, uvt)
+            sideModels(s).render(ccrs, t, uvt)
         }
 
         val gen = new PipeModelGenerator
@@ -89,7 +98,7 @@ object RenderPipe
 
     }
 
-    def renderRSWiring(p:TRedstonePipe, pos:Vector3, signal:Byte)
+    def renderRSWiring(p:TRedstonePipe, pos:Vector3, signal:Byte, ccrs:CCRenderState)
     {
         val t = pos.translation()
         val colour = ColourMultiplier.instance((signal&0xFF)/2+60<<24|0xFF)
@@ -98,15 +107,15 @@ object RenderPipe
 
         if (connMap == 0x3 || connMap == 0xC || connMap == 0x30) for (a <- 0 until 3)
         {
-            if ((connMap>>a*2) == 3) centerModelsRS(a).render(t, uvt2, colour)
+            if ((connMap>>a*2) == 3) centerModelsRS(a).render(ccrs, t, uvt2, colour)
         }
-        else centerModelsRS(3).render(t, uvt2, colour)
+        else centerModelsRS(3).render(ccrs, t, uvt2, colour)
 
         for (s <- 0 until 6) if ((connMap&1<<s) != 0)
-            sideModelsRS(s).render(t, uvt2, colour)
+            sideModelsRS(s).render(ccrs, t, uvt2, colour)
     }
 
-    def renderColourWool(p:TColourFilterPipe, pos:Vector3, colour:Byte)
+    def renderColourWool(p:TColourFilterPipe, pos:Vector3, colour:Byte, ccrs:CCRenderState)
     {
         val t = pos.translation()
         val uvt2 = new IconTransformation(PipeDefs.PRESSURETUBE.sprites(1+colour))
@@ -114,32 +123,32 @@ object RenderPipe
 
         if (connMap == 0x3 || connMap == 0xC || connMap == 0x30) for (a <- 0 until 3)
         {
-            if ((connMap>>a*2) == 3) centerModelsWool(a).render(t, uvt2)
+            if ((connMap>>a*2) == 3) centerModelsWool(a).render(ccrs, t, uvt2)
         }
-        else centerModelsWool(3).render(t, uvt2)
+        else centerModelsWool(3).render(ccrs, t, uvt2)
 
         for (s <- 0 until 6) if ((connMap&1<<s) != 0)
-            sideModelsWool(s).render(t, uvt2)
+            sideModelsWool(s).render(ccrs, t, uvt2)
     }
 
-    def renderBreakingOverlay(icon:IIcon, pipe:SubcorePipePart)
+    def renderBreakingOverlay(icon:TextureAtlasSprite, pipe:SubcorePipePart, ccrs:CCRenderState)
     {
-        CCRenderState.setPipeline(new Translation(pipe.x, pipe.y, pipe.z), new IconTransformation(icon))
+        ccrs.setPipeline(new Translation(pipe.x, pipe.y, pipe.z), new IconTransformation(icon))
         import scala.collection.JavaConversions._
         for (box <- pipe.getCollisionBoxes)
-            BlockRenderer.renderCuboid(box, 0)
+            BlockRenderer.renderCuboid(ccrs, box, 0)
     }
 
-    def renderInv(ops:IVertexOperation*)
+    def renderInv(ccrs:CCRenderState, ops:IVertexOperation*)
     {
-        centerModels(3).render(ops:_*)
-        for (s <- 0 to 1) sideModels(s).render(ops:_*)
+        centerModels(3).render(ccrs, ops:_*)
+        for (s <- 0 to 1) sideModels(s).render(ccrs, ops:_*)
     }
 
-    def renderItemFlow[T <: AbstractPipePayload](p:PayloadPipePart[T], pos:Vector3, frame:Float)
+    def renderItemFlow[T <: AbstractPipePayload](p:PayloadPipePart[T], pos:Vector3, frame:Float, ccrs:CCRenderState)
     {
-        GL11.glPushMatrix()
-        GL11.glDisable(GL11.GL_LIGHTING)
+        pushMatrix()
+        disableLighting()
         for (r <- p.itemFlow.delegate) if (!p.itemFlow.outputQueue.contains(r))
         {
             val dir = if (r.isEntering) r.input else r.output
@@ -162,14 +171,14 @@ object RenderPipe
             r match
             {
                 case net:NetworkPayload =>
-                    renderPayloadColour(net.netPriority.color, frameX, frameY, frameZ)
+                    renderPayloadColour(net.netPriority.color, frameX, frameY, frameZ, ccrs)
                 case pa:PressurePayload if pa.colour > -1 =>
-                    renderPayloadColour(pa.colour, frameX, frameY, frameZ)
+                    renderPayloadColour(pa.colour, frameX, frameY, frameZ, ccrs)
                 case _ =>
             }
         }
-        GL11.glEnable(GL11.GL_LIGHTING)
-        GL11.glPopMatrix()
+        enableLighting()
+        popMatrix()
     }
 
     private def doRenderItem(r:AbstractPipePayload, x:Double, y:Double, z:Double)
@@ -178,92 +187,89 @@ object RenderPipe
         val renderScale = 0.7f
         val itemstack = r.getItemStack
 
-        GL11.glPushMatrix()
-        GL11.glTranslatef(x.asInstanceOf[Float], y.asInstanceOf[Float], z.asInstanceOf[Float])
-        GL11.glTranslatef(0, 0.125f, 0)
-        GL11.glScalef(renderScale, renderScale, renderScale)
+        pushMatrix()
+        translate(x, y, z)
+        translate(0, 0.125f, 0)
+        scale(renderScale, renderScale, renderScale)
 
-        dummyEntityItem.setEntityItemStack(itemstack)
-        customRenderItem.doRender(dummyEntityItem, 0, 0, 0, 0, 0)
+        customRenderItem.renderItem(itemstack, TransformType.FIXED)
 
-        GL11.glPopMatrix()
+        popMatrix()
     }
 
-    private def renderPayloadColour(colour:Int, x:Double, y:Double, z:Double)
+    private def renderPayloadColour(colour:Int, x:Double, y:Double, z:Double, ccrs:CCRenderState)
     {
-        GL11.glPushMatrix()
-        prepareRenderState()
-        GL11.glEnable(GL11.GL_LIGHTING)
+        pushMatrix()
+        prepareRenderState(ccrs)
+        enableLighting()
 
         val t = new Vector3(x, y, z).add(-4/16D, 0, -4/16D)
 
-        CCRenderState.setPipeline(new Translation(t))
-        CCRenderState.alphaOverride = 32
-        CCRenderState.baseColour = Colors(colour).rgba
-        BlockRenderer.renderCuboid(new Cuboid6(1/16D, 1/16D, 1/16D, 7/16D, 7/16D, 7/16D), 0)
+        ccrs.setPipeline(new Translation(t))
+        ccrs.alphaOverride = 32
+        ccrs.baseColour = EnumColour.values()(colour).rgba
+        BlockRenderer.renderCuboid(ccrs, new Cuboid6(1/16D, 1/16D, 1/16D, 7/16D, 7/16D, 7/16D), 0)
 
-        restoreRenderState()
-        GL11.glPopMatrix()
+        restoreRenderState(ccrs)
+        popMatrix()
     }
 
-    private def prepareRenderState()
+    private def prepareRenderState(ccrs:CCRenderState)
     {
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_LIGHTING)
-        GL11.glDisable(GL11.GL_CULL_FACE)
-        GL11.glDepthMask(false)
-        CCRenderState.startDrawing()
-        CCRenderState.pullLightmap()
-        CCRenderState.setDynamic()
+        enableBlend()
+        blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE)
+        disableTexture2D()
+        disableLighting()
+        disableCull()
+        depthMask(false)
+        ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
+        ccrs.pullLightmap()
     }
 
-    private def restoreRenderState()
+    private def restoreRenderState(ccrs:CCRenderState)
     {
-        CCRenderState.draw()
-        GL11.glDepthMask(true)
-        GL11.glColor3f(1, 1, 1)
-        GL11.glEnable(GL11.GL_CULL_FACE)
-        GL11.glEnable(GL11.GL_LIGHTING)
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GL11.glDisable(GL11.GL_BLEND)
+        ccrs.draw()
+        depthMask(true)
+        color(1, 1, 1)
+        enableCull()
+        enableLighting()
+        enableTexture2D()
+        blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        disableBlend()
     }
 
-    private def renderMicroHighlight(part:SubcorePipePart, tFunc:() => _)
+    private def renderMicroHighlight(part:SubcorePipePart, ccrs:CCRenderState, tFunc:() => _)
     {
-        val pos = new BlockCoord(part.tile)
-        GL11.glPushMatrix()
-        GL11.glTranslated(pos.x+0.5, pos.y+0.5, pos.z+0.5)
-        GL11.glScaled(1.002, 1.002, 1.002)
-        GL11.glTranslated(-0.5, -0.5, -0.5)
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glDepthMask(false)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        CCRenderState.reset()
-        TextureUtils.bindAtlas(0)
-        CCRenderState.setDynamic()
-        CCRenderState.setBrightness(part.world, pos.x, pos.y, pos.z)
-        CCRenderState.alphaOverride = 127
-        CCRenderState.startDrawing()
+        val pos = part.pos
+        pushMatrix()
+        translate(pos.getX+0.5, pos.getY+0.5, pos.getZ+0.5)
+        scale(1.002, 1.002, 1.002)
+        translate(-0.5, -0.5, -0.5)
+        enableBlend()
+        depthMask(false)
+        blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        ccrs.reset()
+        TextureUtils.bindBlockTexture()
+        ccrs.setBrightness(part.world, pos)
+        ccrs.alphaOverride = 127
+        ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
 
         tFunc()
 
-        CCRenderState.draw()
-        GL11.glDisable(GL11.GL_BLEND)
-        GL11.glDepthMask(true)
-        GL11.glPopMatrix()
+        ccrs.draw()
+        disableBlend()
+        depthMask(true)
+        popMatrix()
     }
 
-    def renderRSMicroHighlight(part:TRedstonePipe)
+    def renderRSMicroHighlight(part:TRedstonePipe, ccrs:CCRenderState)
     {
-        renderMicroHighlight(part, {() => renderRSWiring(part, Vector3.zero, 255.toByte)})
+        renderMicroHighlight(part, ccrs, {() => renderRSWiring(part, Vector3.zero, 255.toByte, ccrs)})
     }
 
-    def renderWoolMicroHighlight(part:TColourFilterPipe, colour:Byte)
+    def renderWoolMicroHighlight(part:TColourFilterPipe, colour:Byte, ccrs:CCRenderState)
     {
-        renderMicroHighlight(part, {() => renderColourWool(part, Vector3.zero, colour)})
+        renderMicroHighlight(part, ccrs, {() => renderColourWool(part, Vector3.zero, colour, ccrs)})
     }
 }
 
@@ -406,20 +412,18 @@ private class UVT(t:Transformation) extends UVTransformation
 
 object PipeRSHighlightRenderer extends IMicroHighlightRenderer
 {
-    override def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:CommonMicroClass, size:Int, material:Int):Boolean =
+    override def renderHighlight(player:EntityPlayer, hit:RayTraceResult, mcrFactory:CommonMicroFactory, size:Int, material:Int):Boolean =
     {
-        if (mcrClass.getClassId != 3 || size != 1 || player.isSneaking) return false
-        val tile = PRLib.getMultipartTile(player.worldObj, hit.blockX, hit.blockY, hit.blockZ)
+        if (mcrFactory.getFactoryID != 3 || size != 1 || player.isSneaking) return false
+        val tile = BlockMultipart.getTile(player.worldObj, hit.blockPos)
         if (tile == null) return false
 
         MicroMaterialRegistry.getMaterial(material) match
         {
-            case b:BlockMicroMaterial if b.block == Blocks.redstone_block =>
-                val hitData:(Integer, _) = ExtendedMOP.getData(hit)
-                tile.partList(hitData._1) match
-                {
+            case b:BlockMicroMaterial if b.state.getBlock == Blocks.REDSTONE_BLOCK =>
+                tile.partList(hit.asInstanceOf[PartRayTraceResult].partIndex) match {
                     case p:TRedstonePipe if !p.material =>
-                        RenderPipe.renderRSMicroHighlight(p)
+                        RenderPipe.renderRSMicroHighlight(p, CCRenderState.instance())
                         true
                     case _ => false
                 }
@@ -430,20 +434,19 @@ object PipeRSHighlightRenderer extends IMicroHighlightRenderer
 
 object PipeColourHighlightRenderer extends IMicroHighlightRenderer
 {
-    override def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:CommonMicroClass, size:Int, material:Int):Boolean =
+    override def renderHighlight(player:EntityPlayer, hit:RayTraceResult, mcrFactory:CommonMicroFactory, size:Int, material:Int):Boolean =
     {
-        if (mcrClass.getClassId != 3 || size != 1 || player.isSneaking) return false
-        val tile = PRLib.getMultipartTile(player.worldObj, hit.blockX, hit.blockY, hit.blockZ)
+        if (mcrFactory.getFactoryID != 3 || size != 1 || player.isSneaking) return false
+        val tile = BlockMultipart.getTile(player.worldObj, hit.getBlockPos)
         if (tile == null) return false
 
         MicroMaterialRegistry.getMaterial(material) match
         {
-            case b:BlockMicroMaterial if b.block == Blocks.wool =>
-                val hitData:(Integer, _) = ExtendedMOP.getData(hit)
-                tile.partList(hitData._1) match
+            case b:BlockMicroMaterial if b.state.getBlock == Blocks.WOOL =>
+                tile.partList(hit.asInstanceOf[PartRayTraceResult].partIndex) match
                 {
-                    case p:TColourFilterPipe if p.colour != b.meta =>
-                        RenderPipe.renderWoolMicroHighlight(p, b.meta.toByte)
+                    case p:TColourFilterPipe if p.colour != b.state.getBlock.getMetaFromState(b.state) =>
+                        RenderPipe.renderWoolMicroHighlight(p, b.state.getBlock.getMetaFromState(b.state).toByte, CCRenderState.instance())
                         true
                     case _ => false
                 }
@@ -452,37 +455,37 @@ object PipeColourHighlightRenderer extends IMicroHighlightRenderer
     }
 }
 
-object PipeItemRenderer extends IItemRenderer
+object PipeItemRenderer extends IItemRenderer with IPerspectiveAwareModel
 {
-    def handleRenderType(item:ItemStack, r:ItemRenderType) = true
-    def shouldUseRenderHelper(r:ItemRenderType, item:ItemStack, helper:ItemRendererHelper) = true
 
-    def renderItem(rtype:ItemRenderType, item:ItemStack, data:AnyRef*)
+    override def getParticleTexture = null
+    override def isBuiltInRenderer = true
+    override def getItemCameraTransforms = ItemCameraTransforms.DEFAULT
+    override def isAmbientOcclusion = true
+    override def isGui3d = true
+    override def getOverrides = ItemOverrideList.NONE
+    override def getQuads(state:IBlockState, side:EnumFacing, rand:Long) = ImmutableList.of()
+
+    override def handlePerspective(t:TransformType) =
+        MapWrapper.handlePerspective(this, TransformUtils.DEFAULT_BLOCK.getTransforms, t)
+
+    override def renderItem(item:ItemStack) =
     {
         val damage = item.getItemDamage
-        import net.minecraftforge.client.IItemRenderer.ItemRenderType._
-        rtype match
-        {
-            case ENTITY => renderWireInventory(damage, -.5f, 0f, -.5f, 1f)
-            case EQUIPPED => renderWireInventory(damage, 0f, .0f, 0f, 1f)
-            case EQUIPPED_FIRST_PERSON => renderWireInventory(damage, 1f, -.6f, -.4f, 2f)
-            case INVENTORY => renderWireInventory(damage, 0f, -.1f, 0f, 1f)
-            case _ =>
-        }
+        renderWireInventory(damage, 0, 0, 0, 1, CCRenderState.instance())
     }
 
-    def renderWireInventory(meta:Int, x:Float, y:Float, z:Float, scale:Float)
+    def renderWireInventory(meta:Int, x:Float, y:Float, z:Float, scale:Float, ccrs:CCRenderState)
     {
         val pdef = PipeDefs.values(meta)
         if (pdef == null) return
-        TextureUtils.bindAtlas(0)
-        CCRenderState.reset()
-        CCRenderState.setDynamic()
-        CCRenderState.pullLightmap()
-        CCRenderState.startDrawing()
+        TextureUtils.bindBlockTexture()
+        ccrs.reset()
+        ccrs.pullLightmap()
+        ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
 
-        RenderPipe.renderInv(new Scale(scale).`with`(new Translation(x, y, z)), new IconTransformation(pdef.sprites(0)))
+        RenderPipe.renderInv(ccrs, new Scale(scale).`with`(new Translation(x, y, z)), new IconTransformation(pdef.sprites(0)))
 
-        CCRenderState.draw()
+        ccrs.draw()
     }
 }

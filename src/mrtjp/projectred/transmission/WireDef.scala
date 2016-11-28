@@ -1,11 +1,11 @@
 package mrtjp.projectred.transmission
 
-import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.core.item.ItemDefinition
 import mrtjp.projectred.ProjectRedTransmission
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.item.ItemStack
-import net.minecraft.util.IIcon
+import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.OreDictionary
 
 object WireDef extends ItemDefinition
@@ -13,42 +13,49 @@ object WireDef extends ItemDefinition
     override type EnumVal = WireDef
     override def getItem = ProjectRedTransmission.itemPartWire
 
-    val RED_ALLOY = WireDef("pr_redwire", "pr_fredwire", 0, 0xC80000, "redalloy")
+    val typeRedAlloy = "projectred:wireRedAlloy"
+    val typeInsulated = "projectred:wireInsulated"
+    val typeBundled = "projectred:wireBundled"
+    val typeFramedRedAlloy = "projectred:framedWireRedAlloy"
+    val typeFramedInsulated = "projectred:framedWireInsulated"
+    val typeFramedBundled = "projectred:framedWireBundled"
 
-    val INSULATED_0 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/whiteoff", "insulated/whiteon")
-    val INSULATED_1 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/orangeoff", "insulated/orangeon")
-    val INSULATED_2 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/magentaoff", "insulated/magentaon")
-    val INSULATED_3 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/lightblueoff", "insulated/lightblueon")
-    val INSULATED_4 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/yellowoff", "insulated/yellowon")
-    val INSULATED_5 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/limeoff", "insulated/limeon")
-    val INSULATED_6 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/pinkoff", "insulated/pinkon")
-    val INSULATED_7 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/greyoff", "insulated/greyon")
-    val INSULATED_8 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/lightgreyoff", "insulated/lightgreyon")
-    val INSULATED_9 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/cyanoff", "insulated/cyanon")
-    val INSULATED_10 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/purpleoff", "insulated/purpleon")
-    val INSULATED_11 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/blueoff", "insulated/blueon")
-    val INSULATED_12 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/brownoff", "insulated/brownon")
-    val INSULATED_13 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/greenoff", "insulated/greenon")
-    val INSULATED_14 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/redoff", "insulated/redon")
-    val INSULATED_15 = WireDef("pr_insulated", "pr_finsulated", 1, 0xFFFFFF, "insulated/blackoff", "insulated/blackon")
+    val RED_ALLOY = WireDef(typeRedAlloy, typeFramedRedAlloy, 0, 0xC80000, "redalloy")
 
-    val BUNDLED_N = WireDef("pr_bundled", "pr_fbundled", 2, 0xFFFFFF, "bundled/neutral")
-    val BUNDLED_0 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/white")
-    val BUNDLED_1 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/orange")
-    val BUNDLED_2 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/magenta")
-    val BUNDLED_3 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/lightblue")
-    val BUNDLED_4 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/yellow")
-    val BUNDLED_5 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/lime")
-    val BUNDLED_6 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/pink")
-    val BUNDLED_7 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/grey")
-    val BUNDLED_8 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/lightgrey")
-    val BUNDLED_9 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/cyan")
-    val BUNDLED_10 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/purple")
-    val BUNDLED_11 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/blue")
-    val BUNDLED_12 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/brown")
-    val BUNDLED_13 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/green")
-    val BUNDLED_14 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/red")
-    val BUNDLED_15 = WireDef("pr_bundled", null, 2, 0xFFFFFF, "bundled/black")
+    val INSULATED_0  = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/whiteoff", "insulated/whiteon")
+    val INSULATED_1  = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/orangeoff", "insulated/orangeon")
+    val INSULATED_2  = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/magentaoff", "insulated/magentaon")
+    val INSULATED_3  = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/lightblueoff", "insulated/lightblueon")
+    val INSULATED_4  = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/yellowoff", "insulated/yellowon")
+    val INSULATED_5  = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/limeoff", "insulated/limeon")
+    val INSULATED_6  = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/pinkoff", "insulated/pinkon")
+    val INSULATED_7  = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/greyoff", "insulated/greyon")
+    val INSULATED_8  = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/lightgreyoff", "insulated/lightgreyon")
+    val INSULATED_9  = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/cyanoff", "insulated/cyanon")
+    val INSULATED_10 = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/purpleoff", "insulated/purpleon")
+    val INSULATED_11 = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/blueoff", "insulated/blueon")
+    val INSULATED_12 = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/brownoff", "insulated/brownon")
+    val INSULATED_13 = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/greenoff", "insulated/greenon")
+    val INSULATED_14 = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/redoff", "insulated/redon")
+    val INSULATED_15 = WireDef(typeInsulated, typeFramedInsulated, 1, 0xFFFFFF, "insulated/blackoff", "insulated/blackon")
+
+    val BUNDLED_N  = WireDef(typeBundled, typeFramedBundled, 2, 0xFFFFFF, "bundled/neutral")
+    val BUNDLED_0  = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/white")
+    val BUNDLED_1  = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/orange")
+    val BUNDLED_2  = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/magenta")
+    val BUNDLED_3  = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/lightblue")
+    val BUNDLED_4  = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/yellow")
+    val BUNDLED_5  = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/lime")
+    val BUNDLED_6  = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/pink")
+    val BUNDLED_7  = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/grey")
+    val BUNDLED_8  = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/lightgrey")
+    val BUNDLED_9  = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/cyan")
+    val BUNDLED_10 = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/purple")
+    val BUNDLED_11 = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/blue")
+    val BUNDLED_12 = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/brown")
+    val BUNDLED_13 = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/green")
+    val BUNDLED_14 = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/red")
+    val BUNDLED_15 = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/black")
 
     val POWER_LOWLOAD = WireDef("pr_pwrlow", "pr_fpwrlow", 1, 0xFFFFFF, "power/lowload")
 
@@ -62,8 +69,7 @@ object WireDef extends ItemDefinition
 
     def initOreDict()
     {
-        for (w <- INSULATED_WIRES)
-        {
+        for (w <- INSULATED_WIRES) {
             if (w.hasFramedForm) OreDictionary.registerOre(oreDictDefinitionInsFramed, w.makeFramedStack)
             OreDictionary.registerOre(oreDictDefinitionInsulated, w.makeStack)
         }
@@ -75,16 +81,18 @@ object WireDef extends ItemDefinition
 
     class WireDef(val wireType:String, val framedType:String, val thickness:Int, val itemColour:Int, textures:Seq[String]) extends ItemDef
     {
+        var wireSprites:Array[TextureAtlasSprite] = _
+
         def hasWireForm = wireType != null
         def hasFramedForm = framedType != null
 
-        val wireSprites = new Array[IIcon](textures.length)
-
         @SideOnly(Side.CLIENT)
-        def loadTextures(reg:IIconRegister)
+        def loadTextures(map:TextureMap)
         {
+            wireSprites = new Array[TextureAtlasSprite](textures.length)
             for (i <- textures.indices)
-                wireSprites(i) = reg.registerIcon("projectred:integration/"+textures(i))
+                wireSprites(i) = map.registerSprite(
+                    new ResourceLocation("projectred:blocks/integration/"+textures(i)))
         }
 
         def makeFramedStack:ItemStack = makeFramedStack(1)

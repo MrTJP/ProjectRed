@@ -1,11 +1,12 @@
 package mrtjp.projectred.transmission
 
-import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.{IFaceRedstonePart, IRedstonePart, RedstoneInteractions, TMultiPart}
-import mrtjp.core.world.WorldLib
 import mrtjp.projectred.core._
 import mrtjp.projectred.transmission.IWirePart._
+import net.minecraft.block.BlockRedstoneWire
 import net.minecraft.init.Blocks
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
 
 trait TRSAcquisitionsCommons extends TAcquisitionsCommons with IRedstonePart
 {
@@ -30,8 +31,9 @@ trait TFaceRSAcquisitions extends TRSAcquisitionsCommons with TFaceAcquisitions 
 
     def calcWeakSignal(r:Int) =
     {
-        val pos = new BlockCoord(tile).offset(absoluteDir(r))
-        if (world.isBlockNormalCubeDefault(pos.x, pos.y, pos.z, false)) world.getBlockPowerInput(pos.x, pos.y, pos.z)*17
+        val pos = posOfStraight(r)
+        if (world.isBlockNormalCube(pos, false))
+            world.isBlockIndirectlyGettingPowered(pos)*17
         else 0
     }
 
@@ -46,15 +48,16 @@ trait TFaceRSAcquisitions extends TRSAcquisitionsCommons with TFaceAcquisitions 
 
     def calcUndersideSignal =
     {
-        val pos = new BlockCoord(tile).offset(side)
-        world.getIndirectPowerLevelTo(pos.x, pos.y, pos.z, side)*17
+        val face = EnumFacing.getFront(side)
+        world.getRedstonePower(pos.offset(face), face)*17
     }
 
     def calcDustRedwireSignal(r:Int) =
     {
         val pos = posOfStraight(r)
-        val b = world.getBlock(pos.x, pos.y, pos.z)
-        if (b == Blocks.redstone_wire) Math.max(world.getBlockMetadata(pos.x, pos.y, pos.z)-1, 0)
+        val b = world.getBlockState(pos)
+        if (b.getBlock == Blocks.REDSTONE_WIRE)
+            Math.max(b.getValue(BlockRedstoneWire.POWER)-1, 0)
         else -1
     }
 
@@ -71,8 +74,9 @@ trait TCenterRSAcquisitions extends TRSAcquisitionsCommons with TCenterAcquisiti
 
     def calcWeakSignal(s:Int) =
     {
-        val pos = new BlockCoord(tile).offset(s)
-        if (world.isBlockNormalCubeDefault(pos.x, pos.y, pos.z, false)) world.getBlockPowerInput(pos.x, pos.y, pos.z)*17
+        val pos = this.pos.offset(EnumFacing.getFront(s))
+        if (world.isBlockNormalCube(pos, false))
+            world.isBlockIndirectlyGettingPowered(pos)*17
         else 0
     }
 }
@@ -85,10 +89,9 @@ trait TPropagationCommons extends TMultiPart with IWirePart
 
     def propagateOther(mode:Int){}
 
-    def propagateExternal(to:TMultiPart, at:BlockCoord, from:TMultiPart, mode:Int)
+    def propagateExternal(to:TMultiPart, at:BlockPos, from:TMultiPart, mode:Int)
     {
-        if (to != null)
-        {
+        if (to != null) {
             if (to == from) return
             if (propagateTo(to, mode)) return
         }
@@ -117,8 +120,7 @@ trait TFacePropagation extends TPropagationCommons with TFaceConnectable
     override def propagate(prev:TMultiPart, mode:Int)
     {
         if (mode != FORCED) WirePropagator.addPartChange(this)
-        for (r <- 0 until 4) if ((propagationMask&1<<r) != 0)
-        {
+        for (r <- 0 until 4) if ((propagationMask&1<<r) != 0) {
             if (maskConnectsInside(r)) propagateInternal(getInternal(r), prev, mode)
             else if (maskConnectsStraight(r)) propagateExternal(getStraight(r), posOfStraight(r), prev, mode)
             else if (maskConnectsCorner(r)) propagateExternal(getCorner(r), posOfCorner(r), prev, mode)
@@ -136,8 +138,7 @@ trait TCenterPropagation extends TPropagationCommons with TCenterConnectable
     override def propagate(prev:TMultiPart, mode:Int)
     {
         if (mode != FORCED) WirePropagator.addPartChange(this)
-        for (s <- 0 until 6) if ((propagationMask&1<<s) != 0)
-        {
+        for (s <- 0 until 6) if ((propagationMask&1<<s) != 0) {
             if (maskConnectsIn(s)) propagateInternal(getInternal(s), prev, mode)
             else if (maskConnectsOut(s)) propagateExternal(getStraight(s), posOfStraight(s), prev, mode)
         }

@@ -1,32 +1,32 @@
 package mrtjp.projectred.transportation
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.vec.BlockCoord
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
+import codechicken.lib.texture.TextureUtils
+import codechicken.multipart.BlockMultipart
 import mrtjp.core.gui._
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
-import mrtjp.core.resource.ResourceLib
 import mrtjp.core.vec.{Point, Rect, Size, Vec2}
-import mrtjp.projectred.core.libmc._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Container
+import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.input.Keyboard
 
 class GuiInterfacePipe(container:Container, pipe:RoutedInterfacePipePart) extends NodeGui(container, 176, 200)
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        PRResources.guiPipeInterface.bind()
+        TextureUtils.changeTexture(GuiInterfacePipe.backgroundImage)
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize)
         GuiLib.drawPlayerInvBackground(8, 118)
     }
 
     override def drawFront_Impl(mouse:Point, frame:Float)
     {
-        PRResources.guiPipeInterface.bind()
+        TextureUtils.changeTexture(GuiInterfacePipe.backgroundImage)
         val oldZ = zLevel
         zLevel = 300
 
@@ -44,14 +44,14 @@ class GuiInterfacePipe(container:Container, pipe:RoutedInterfacePipePart) extend
 
 object GuiInterfacePipe extends TGuiBuilder
 {
+    val backgroundImage = new ResourceLocation("projectred", "textures/gui/interface_pipe.png")
+
     override def getID = TransportationProxy.guiIDInterfacePipe
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        val coord = data.readCoord()
-        PRLib.getMultiPart(player.worldObj, coord, 6) match
-        {
+        BlockMultipart.getPart(player.worldObj, data.readPos(), 6) match {
             case pipe:RoutedInterfacePipePart =>
                 new GuiInterfacePipe(pipe.createContainer(player), pipe)
             case _ => null
@@ -97,7 +97,7 @@ class GuiRequester(pipe:IWorldRequester) extends NodeGui(256, 192)
             val d = new ItemDisplayNode
             d.zPosition = -0.01
             d.backgroundColour = if (stack.key == selectedItem)
-                Colors.LIME.argb(0x44) else 0
+                EnumColour.LIME.argb(0x44) else 0
             d.clickDelegate = {() =>
                 selectedItem = stack.key
                 refreshList()
@@ -210,15 +210,15 @@ class GuiRequester(pipe:IWorldRequester) extends NodeGui(256, 192)
 
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        PRResources.guiPipeRequest.bind()
+        TextureUtils.changeTexture(GuiRequester.backgroundImage)
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
     }
 
     override def drawFront_Impl(mouse:Point, frame:Float)
     {
-        GuiDraw.drawString("Pull", 218, 144, Colors.GREY.rgb, false)
-        GuiDraw.drawString("Craft", 218, 159, Colors.GREY.rgb, false)
-        GuiDraw.drawString("Partial", 218, 174, Colors.GREY.rgb, false)
+        GuiDraw.drawString("Pull", 218, 144, EnumColour.GRAY.rgb, false)
+        GuiDraw.drawString("Craft", 218, 159, EnumColour.GRAY.rgb, false)
+        GuiDraw.drawString("Partial", 218, 174, EnumColour.GRAY.rgb, false)
     }
 
     override def onAddedToParent_Impl()
@@ -239,11 +239,11 @@ class GuiRequester(pipe:IWorldRequester) extends NodeGui(256, 192)
         if (request != null)
         {
             val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Request_submit)
-            packet.writeCoord(new BlockCoord(pipe.getContainer.tile))
+            packet.writePos(pipe.getContainer.pos)
             packet.writeBoolean(pull.state)
             packet.writeBoolean(craft.state)
             packet.writeBoolean(partials.state)
-            packet.writeItemStack(request.makeStack(amount), true)
+            packet.writeItemStack(request.makeStack(amount))
             packet.sendToServer()
         }
     }
@@ -251,7 +251,7 @@ class GuiRequester(pipe:IWorldRequester) extends NodeGui(256, 192)
     private def askForListRefresh()
     {
         val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Request_listRefresh)
-        packet.writeCoord(new BlockCoord(pipe.getContainer.tile))
+        packet.writePos(pipe.getContainer.pos)
         packet.writeBoolean(pull.state)
         packet.writeBoolean(craft.state)
         packet.sendToServer()
@@ -312,6 +312,11 @@ class GuiRequester(pipe:IWorldRequester) extends NodeGui(256, 192)
     }
 }
 
+object GuiRequester
+{
+    val backgroundImage = new ResourceLocation("projectred", "textures/gui/request_pipe.png")
+}
+
 class GuiFirewallPipe(pipe:RoutedFirewallPipe, c:Container) extends NodeGui(c, 176, 184)
 {
     {
@@ -319,7 +324,7 @@ class GuiFirewallPipe(pipe:RoutedFirewallPipe, c:Container) extends NodeGui(c, 1
         {
             override def drawButton(mouseover:Boolean)
             {
-                ResourceLib.guiExtras.bind()
+                TextureUtils.changeTexture(GuiLib.guiExtras)
                 GuiDraw.drawTexturedModalRect(position.x, position.y, if (pipe.filtExclude) 1 else 17, 102, 14, 14)
             }
         }
@@ -336,7 +341,7 @@ class GuiFirewallPipe(pipe:RoutedFirewallPipe, c:Container) extends NodeGui(c, 1
             {
                 override def drawButton(mouseover:Boolean)
                 {
-                    ResourceLib.guiExtras.bind()
+                    TextureUtils.changeTexture(GuiLib.guiExtras)
                     GuiDraw.drawTexturedModalRect(x, y, if (f) 33 else 49, 134, 14, 14)
                 }
             }
@@ -355,26 +360,27 @@ class GuiFirewallPipe(pipe:RoutedFirewallPipe, c:Container) extends NodeGui(c, 1
     def sendMessage(id:Int)
     {
         new PacketCustom(TransportationCPH.channel, TransportationCPH.gui_FirewallPipe_action)
-            .writeCoord(new BlockCoord(pipe.tile)).writeByte(id).sendToServer()
+            .writePos(pipe.pos).writeByte(id).sendToServer()
     }
 
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        PRResources.guiPipeFirewall.bind()
+        TextureUtils.changeTexture(GuiFirewallPipe.backgroundImage)
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
-        GuiDraw.drawString("Firewall Pipe", 8, 6, Colors.GREY.argb, false)
+        GuiDraw.drawString("Firewall Pipe", 8, 6, EnumColour.GRAY.argb, false)
     }
 }
 
 object GuiFirewallPipe extends TGuiBuilder
 {
+    val backgroundImage = new ResourceLocation("projectred", "textures/gui/firewall_pipe.png")
+
     override def getID = TransportationProxy.guiIDFirewallPipe
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        PRLib.getMultiPart(player.worldObj, data.readCoord(), 6) match
-        {
+        BlockMultipart.getPart(player.worldObj, data.readPos(), 6) match {
             case pipe:RoutedFirewallPipe =>
                 pipe.filtExclude = data.readBoolean()
                 pipe.allowRoute = data.readBoolean()

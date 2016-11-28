@@ -4,13 +4,14 @@ import java.text.DecimalFormat
 
 import codechicken.lib.vec.Rotation
 import codechicken.multipart.TMultiPart
-import mrtjp.core.world.{Messenger, WorldLib}
+import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.ITickable
 
-trait TPowerWireCommons extends TWireCommons with TPowerPartCommons
+trait TPowerWireCommons extends TWireCommons with TPowerPartCommons with ITickable
 {
     val cond:PowerConductor
 
@@ -32,11 +33,9 @@ trait TPowerWireCommons extends TWireCommons with TPowerPartCommons
 
     override def updateAndPropagate(prev:TMultiPart, mode:Int) {}
 
-    override def doesTick = true
-
     override def update()
     {
-        super.update()
+        //super.update()
         if (!world.isRemote) cond.update()
     }
 
@@ -64,15 +63,15 @@ trait TPowerWireCommons extends TWireCommons with TPowerPartCommons
     }
 }
 
-abstract class PowerWire extends WirePart with TPowerWireCommons with TFacePowerPart
+trait PowerWire extends WirePart with TPowerWireCommons with TFacePowerPart
 {
-    override def discoverStraightOverride(absDir:Int) = WorldLib.getTileEntity(world, posOfStraight(absoluteRot(absDir))) match
+    override def discoverStraightOverride(absDir:Int) = world.getTileEntity(posOfStraight(absoluteRot(absDir))) match
     {
         case p:IPowerConnectable => p.connectStraight(this, absDir^1, Rotation.rotationTo(absDir, side))
         case _ => false
     }
 
-    override def discoverCornerOverride(absDir:Int) = WorldLib.getTileEntity(world, posOfCorner(absoluteRot(absDir))) match
+    override def discoverCornerOverride(absDir:Int) = world.getTileEntity(posOfCorner(absoluteRot(absDir))) match
     {
         case p:IPowerConnectable =>
             p.connectCorner(this, side^1, Rotation.rotationTo(side, absDir^1))
@@ -80,9 +79,9 @@ abstract class PowerWire extends WirePart with TPowerWireCommons with TFacePower
     }
 }
 
-abstract class FramedPowerWire extends FramedWirePart with TPowerWireCommons with TCenterPowerPart
+trait FramedPowerWire extends FramedWirePart with TPowerWireCommons with TCenterPowerPart
 {
-    override def discoverStraightOverride(s:Int) = WorldLib.getTileEntity(world, posOfStraight(s)) match
+    override def discoverStraightOverride(s:Int) = world.getTileEntity(posOfStraight(s)) match
     {
         case p:IPowerConnectable =>
             p.connectStraight(this, s^1, -1)

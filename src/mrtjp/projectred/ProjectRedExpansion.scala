@@ -1,54 +1,55 @@
-package mrtjp.projectred
-
-import cpw.mods.fml.common.Mod
-import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
-import mrtjp.projectred.expansion._
-import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.item.ItemStack
-
-@Mod(modid = "ProjRed|Expansion", useMetadata = true, modLanguage = "scala")
-object ProjectRedExpansion
-{
-    /** Blocks **/
-    var machine1:BlockMachine = null //machines
-    var machine2:BlockMachine = null //devices
-
-    /** Items **/
-    var itemEmptybattery:ItemBatteryEmpty = null
-    var itemBattery:ItemBattery = null
-    var itemJetpack:ItemJetpack = null
-    var itemScrewdriver:ItemElectronicScrewdriver = null
-    var itemInfusedEnderPearl:ItemInfusedEnderPearl = null
-    var itemPlan:ItemPlan = null
-
-    /** Enchantments **/
-    var enchantmentFuelEfficiency:EnchantmentFuelEfficiency = null
-
-    /** Parts **/
-    var itemSolar:ItemSolarPanel = null
-
-    val tabExpansion = new CreativeTabs("expansion")
-    {
-        override def getIconItemStack = new ItemStack(machine2, 1, 0)
-        override def getTabIconItem = getIconItemStack.getItem
-    }
-
-    @Mod.EventHandler
-    def preInit(event:FMLPreInitializationEvent)
-    {
-        ExpansionProxy.versionCheck()
-        ExpansionProxy.preinit()
-    }
-
-    @Mod.EventHandler
-    def init(event:FMLInitializationEvent)
-    {
-        ExpansionProxy.init()
-    }
-
-    @Mod.EventHandler
-    def postInit(event:FMLPostInitializationEvent)
-    {
-        ExpansionProxy.postinit()
-    }
-}
+//package mrtjp.projectred
+//
+//import mrtjp.projectred.expansion._
+//import net.minecraft.creativetab.CreativeTabs
+//import net.minecraft.item.Item
+//import net.minecraftforge.fml.common.Mod
+//import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
+//
+//@Mod(modid = "ProjRed|Expansion", useMetadata = true, modLanguage = "scala")
+//object ProjectRedExpansion
+//{
+//    /** Blocks **/
+//    var machine1:BlockMachine = _ //machines
+//    var machine2:BlockMachine = _ //devices
+//
+//    /** Items **/
+//    var itemEmptybattery:ItemBatteryEmpty = _
+//    var itemBattery:ItemBattery = _
+//    var itemJetpack:ItemJetpack = _
+//    var itemScrewdriver:ItemElectronicScrewdriver = _
+//    var itemInfusedEnderPearl:ItemInfusedEnderPearl = _
+//    var itemPlan:ItemPlan = _
+//
+//    /** Enchantments **/
+//    var enchantmentFuelEfficiency:EnchantmentFuelEfficiency = _
+//
+//    /** Parts **/
+//    var itemSolar:ItemSolarPanel = _
+//
+//    val tabExpansion = new CreativeTabs("expansion")
+//    {
+////        override def getIconItemStack = new ItemStack(machine2, 1, 0)
+////        override def getTabIconItem = getIconItemStack.getItem
+//        override def getTabIconItem = Item.getItemFromBlock(machine2)
+//    }
+//
+//    @Mod.EventHandler
+//    def preInit(event:FMLPreInitializationEvent)
+//    {
+//        ExpansionProxy.versionCheck()
+//        ExpansionProxy.preinit()
+//    }
+//
+//    @Mod.EventHandler
+//    def init(event:FMLInitializationEvent)
+//    {
+//        ExpansionProxy.init()
+//    }
+//
+//    @Mod.EventHandler
+//    def postInit(event:FMLPostInitializationEvent)
+//    {
+//        ExpansionProxy.postinit()
+//    }
+//}

@@ -5,17 +5,17 @@
  */
 package mrtjp.projectred.transportation
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.render.TextureUtils
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
+import codechicken.lib.texture.TextureUtils
 import mrtjp.core.gui._
 import mrtjp.core.vec.{Point, Rect, Size}
-import mrtjp.projectred.core.libmc.PRResources
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Slot
+import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 
@@ -169,10 +169,10 @@ class GuiChipConfig(player:EntityPlayer, c:ContainerChipConfig) extends NodeGui(
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
-        PRResources.guiChipContainer.bind()
+        TextureUtils.changeTexture(GuiChipConfig.backgroundImage)
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
-        TextureUtils.bindAtlas(1)
-        drawTexturedModelRectFromIcon(55, 14, c.chip.getChipType.icon, 64, 64)
+        TextureUtils.bindBlockTexture()
+        drawTexturedModalRect(55, 14, c.chip.getChipType.icon, 64, 64)
     }
 
     override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) =
@@ -183,6 +183,8 @@ class GuiChipConfig(player:EntityPlayer, c:ContainerChipConfig) extends NodeGui(
 
 object GuiChipConfig extends TGuiBuilder
 {
+    val backgroundImage = new ResourceLocation("projectred", "textures/gui/chip_settings.png")
+
     override def getID = TransportationProxy.guiIDRoutingChips
 
     @SideOnly(Side.CLIENT)
@@ -206,7 +208,7 @@ abstract class ChipPanelNode(chip:RoutingChip) extends TNode
     position = getPanelPosition
     override def frame = Rect(position, size)
 
-    var lineColor = Colors.WHITE.argb(0xAA)
+    var lineColor = EnumColour.WHITE.argb(0xAA)
 
     {
         val close = new MCButtonNode
@@ -253,7 +255,7 @@ abstract class ChipPanelNode(chip:RoutingChip) extends TNode
         val from = getDotPosition
         val to = from.clamp(frame)
         GL11.glColor4d(1, 1, 1, 1)
-        GuiLib.drawLine(from.x, from.y, to.x, to.y, lineColor)
+        GuiDraw.drawLine(from.x, from.y, to.x, to.y, lineColor) //TODO this isnt working
         GuiDraw.drawRect(to.x-3, to.y-3, 6, 6, lineColor)
     }
 

@@ -7,13 +7,15 @@ package mrtjp.projectred.integration
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec._
-import codechicken.multipart.TMultiPart
+import codechicken.multipart.{BlockMultipart, TMultiPart}
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.libmc.PRLib
 import mrtjp.projectred.core.{Configurator, TFaceOrient}
 import mrtjp.projectred.transmission._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.BlockPos.MutableBlockPos
 
 trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSPropagation
 {
@@ -36,7 +38,7 @@ trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSProp
                 uMask |= pMask
             }
         }
-        if (uMask == 0) WirePropagator.addNeighborChange(new BlockCoord(tile))
+        if (uMask == 0) WirePropagator.addNeighborChange(pos)
         propagationMask = 0xF
     }
 
@@ -50,16 +52,15 @@ trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSProp
     {
         if (!p.isInstanceOf[TFaceOrient] || p.tile == null) return 0xF
         val part = p.asInstanceOf[TFaceOrient]
-        val here = new BlockCoord(tile)
-        val there = new BlockCoord(part.tile)
+        val here = pos
+        val there = new MutableBlockPos(part.pos)
 
         if (here == there && (side&6) != (part.side&6)) return 1<<Rotation.rotationTo(side, part.side)
 
-        if (side != part.side) there.offset(side^1) //bring corner up to same plane
-        here.sub(there)
+        if (side != part.side) there.move(EnumFacing.getFront(side^1)) //bring corner up to same plane
 
         import codechicken.lib.vec.Rotation._
-        (here.x, here.y, here.z) match
+        (here.getX-there.getX, here.getY-there.getY, here.getZ-there.getZ) match
         {
             case ( 0, 1, 0) => 1<<rotationTo(side, 0)
             case ( 0,-1, 0) => 1<<rotationTo(side, 1)
@@ -151,14 +152,12 @@ trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSProp
         if (b) super.rotate()
     }
 
-    abstract override def preparePlacement(player:EntityPlayer, pos:BlockCoord, side:Int, meta:Int)
+    abstract override def preparePlacement(player:EntityPlayer, pos:BlockPos, side:Int, meta:Int)
     {
         super.preparePlacement(player, pos, side, meta)
-        if (getLogicArray.canCross)
-        {
-            val npart = PRLib.getMultiPart(player.worldObj, pos, this.side^1)
-            npart match
-            {
+        if (getLogicArray.canCross) {
+            val npart = BlockMultipart.getPart(player.worldObj, pos, this.side^1)
+            npart match {
                 case apart:TArrayGatePart => if (apart.subID == subID && (apart.rotation&1) == (rotation&1))
                     setRotation((rotation+1)%4)
                 case _ =>
@@ -241,7 +240,7 @@ class ArrayGatePart extends RedstoneGatePart with TComplexGatePart with TArrayGa
         if (logic == null) logic = ArrayGateLogic.create(this, subID)
     }
 
-    override def getType = "pr_agate"
+    override def getType = GateDefinition.typeArrayGate
 }
 
 object ArrayGatePart

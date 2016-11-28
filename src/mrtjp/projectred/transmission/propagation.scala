@@ -2,12 +2,12 @@ package mrtjp.projectred.transmission
 
 import java.util.{Stack => JStack}
 
-import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.handler.MultipartProxy
 import codechicken.multipart.{TMultiPart, TileMultipart}
 import com.google.common.collect.HashMultimap
 import net.minecraft.block.BlockRedstoneWire
 import net.minecraft.init.Blocks
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
 import scala.collection.immutable.HashSet
@@ -16,8 +16,7 @@ object WirePropagator
 {
     private val wiresProvidePower =
     {
-        try
-        {
+        try {
             val c = classOf[BlockRedstoneWire].getDeclaredFields.apply(0)
             c.setAccessible(true)
             c
@@ -26,7 +25,7 @@ object WirePropagator
     }
     def setDustProvidePower(b:Boolean)
     {
-        try {wiresProvidePower.setBoolean(Blocks.redstone_wire, b)}
+        try {wiresProvidePower.setBoolean(Blocks.REDSTONE_WIRE, b)}
         catch {case t:Throwable =>}
     }
 
@@ -52,7 +51,7 @@ object WirePropagator
         def getType = null
     }
 
-    def addNeighborChange(pos:BlockCoord)
+    def addNeighborChange(pos:BlockPos)
     {
         currentRun.neighborChanges += pos
     }
@@ -72,8 +71,7 @@ object WirePropagator
         var p = currentRun
         if (p == null) p = if (reusableRuns.isEmpty) new PropagationRun else reusableRuns.pop
         p.add(part, from, mode)
-        if (currentRun != p)
-        {
+        if (currentRun != p) {
             if (currentRun != null) throw new RuntimeException("Report this to ProjectRed developers")
             p.start(finishing, part.world)
         }
@@ -99,9 +97,9 @@ class PropagationRun
     var recalcs = 0
 
     var partChanges = HashMultimap.create[TileMultipart, TMultiPart]
-    var neighborChanges = HashSet.newBuilder[BlockCoord]
-    var propagationList = Vector.newBuilder[Propagation]
-    var analogDrops = Vector.newBuilder[Propagation]
+    var neighborChanges = HashSet.newBuilder[BlockPos]
+    var propagationList = Seq.newBuilder[Propagation]
+    var analogDrops = Seq.newBuilder[Propagation]
 
     def clear()
     {
@@ -118,8 +116,7 @@ class PropagationRun
         WirePropagator.currentRun = null
         val res_NeighborChanges = neighborChanges.result()
 
-        if (partChanges.isEmpty && res_NeighborChanges.isEmpty)
-        {
+        if (partChanges.isEmpty && res_NeighborChanges.isEmpty) {
             WirePropagator.finishing = parent
             clear()
             return
@@ -130,15 +127,14 @@ class PropagationRun
 //            println(count+" propogations, "+partChanges.size+" part changes, "+res_NeighborChanges.size+" block updates")
 
         import scala.collection.JavaConversions._
-        for (entry <- partChanges.asMap.entrySet)
-        {
+        for (entry <- partChanges.asMap.entrySet) {
             val parts = entry.getValue
 
             for (part <- parts) part.asInstanceOf[IWirePart].onSignalUpdate()
             entry.getKey.multiPartChange(parts)
         }
 
-        res_NeighborChanges.foreach(b => world.notifyBlockOfNeighborChange(b.x, b.y, b.z, MultipartProxy.block))
+        res_NeighborChanges.foreach(b => world.notifyBlockOfStateChange(b, MultipartProxy.block))
 
         WirePropagator.finishing = parent
 
@@ -159,8 +155,8 @@ class PropagationRun
     private var aChange = false
     private def runLoop()
     {
-        var ptmp:Vector[Propagation] = null
-        var atmp:Vector[Propagation] = null
+        var ptmp:Seq[Propagation] = null
+        var atmp:Seq[Propagation] = null
 
         def fetch()
         {
@@ -171,15 +167,13 @@ class PropagationRun
         }
         fetch()
 
-        do
-        {
+        do {
             propagationList.clear(); pChange = true //we emptied it, probably changed it, but if we didnt, the loop will break anyway.
             ptmp.foreach(_.go())
 
             fetch() //Update results
 
-            if (ptmp.isEmpty && atmp.nonEmpty)
-            {
+            if (ptmp.isEmpty && atmp.nonEmpty) {
                 propagationList = analogDrops; ptmp = atmp; pChange = false //atmp is already up to date, so now ptmp is too.
                 analogDrops = Vector.newBuilder; aChange = true //atmp was nonempty, now it is
             }
@@ -190,8 +184,7 @@ class PropagationRun
 
     def add(part:IWirePart, from:TMultiPart, mode:Int)
     {
-        if (from != lastCaller)
-        {
+        if (from != lastCaller) {
             lastCaller = from
             count += 1
         }

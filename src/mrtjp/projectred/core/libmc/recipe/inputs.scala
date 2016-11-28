@@ -1,6 +1,6 @@
 package mrtjp.projectred.core.libmc.recipe
 
-import codechicken.microblock._
+import codechicken.microblock.{BlockMicroMaterial, ItemMicroPart, FaceMicroFactory}
 import mrtjp.core.item.ItemKeyStack
 import net.minecraft.block.Block
 import net.minecraft.item.{Item, ItemStack}
@@ -24,8 +24,9 @@ class ItemIn(val key:ItemKeyStack) extends Input
     override def matchingInputs = ins
 }
 
+import net.minecraftforge.oredict.OreDictionary._
+
 import scala.collection.JavaConversions._
-import OreDictionary._
 class OreIn(val oreIDs:Seq[Int]) extends Input
 {
     def this(id:Int) = this(Seq(id))
@@ -47,10 +48,10 @@ class OreIn(val oreIDs:Seq[Int]) extends Input
 object MicroIn
 {
     //class ids
-    def face = FaceMicroClass.getClassId
-    def hollowFace = HollowMicroClass.getClassId
-    def corner = CornerMicroClass.getClassId
-    def edge = EdgeMicroClass.getClassId
+    def face = FaceMicroFactory.getFactoryID
+    def hollowFace = FaceMicroFactory.getFactoryID
+    def corner = FaceMicroFactory.getFactoryID
+    def edge = FaceMicroFactory.getFactoryID
 
     //sizes
     val eight = 1
@@ -58,12 +59,11 @@ object MicroIn
     val half = 4
 }
 
-class MicroIn(classID:Int, size:Int, material:String) extends Input
+class MicroIn(factoryID:Int, size:Int, material:String) extends Input
 {
-    def this(c:Int, s:Int, b:Block) = this(c, s, Block.blockRegistry.getNameForObject(b))
+    def this(c:Int, s:Int, b:Block) = this(c, s, BlockMicroMaterial.materialKey(b))
 
-    private val damage = classID<<8|size&0xFF
-    private val sample = ItemKeyStack.get(ItemMicroPart.create(damage, material))
+    private val sample = ItemKeyStack.get(ItemMicroPart.create(factoryID, size, material))
     private val ins = Seq(sample.makeStack)
 
     override def matches(that:ItemKeyStack) = that.key == sample.key

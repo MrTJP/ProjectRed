@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation
 
 import java.util.concurrent.locks.ReentrantReadWriteLock
-import java.util.{PriorityQueue => JPriorityQueue, UUID}
+import java.util.{UUID, PriorityQueue => JPriorityQueue}
 
 import mrtjp.core.item.ItemKey
 import mrtjp.projectred.core.Configurator
@@ -122,10 +122,9 @@ object Router
     {
         /*** Construct ***/
         val ID2 = if (ID == null) UUID.randomUUID else ID
-        val r = new Router(ID2, parent)
-        LSADatabasewriteLock.lock()
         val ip = Router.claimIPAddress()
-        r.IPAddress = ip
+        val r = new Router(ID2, ip, parent)
+        LSADatabasewriteLock.lock()
         if (LSADatabase.length <= ip)
         {
             val newLength = (ip*1.5).asInstanceOf[Int]+1
@@ -139,7 +138,7 @@ object Router
     }
 }
 
-class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
+class Router(ID:UUID, IPAddress:Int, parent:IWorldRouter) extends Ordered[Router]
 {
     /** Vector, indexed by IP, of Vector of all paths to said IP ordered by distance **/
     private var routeTable = Vector[Vector[StartEndPath]]()
@@ -161,7 +160,7 @@ class Router(ID:UUID, parent:IWorldRouter) extends Ordered[Router]
     private var linkStateID = 0
 
     /*** Identification ***/
-    private var IPAddress = 0
+//    private var IPAddress = 0
     private var decommissioned = false
 
     def update(force:Boolean)

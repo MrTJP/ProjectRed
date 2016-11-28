@@ -6,13 +6,13 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.raytracer.ExtendedMOP
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import codechicken.lib.raytracer.CuboidRayTraceResult
 import mrtjp.projectred.api.IScrewdriver
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.EnumHand
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class NetworkValvePipePart extends AbstractNetPipe with TNetworkSubsystem with TPipeTravelConditions
 {
@@ -74,15 +74,14 @@ class NetworkValvePipePart extends AbstractNetPipe with TNetworkSubsystem with T
         else r.output = moves(world.rand.nextInt(moves.size))
     }
 
-    override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
+
+    override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, item:ItemStack, hand:EnumHand):Boolean =
     {
         if (item != null && item.getItem.isInstanceOf[IScrewdriver] &&
                 item.getItem.asInstanceOf[IScrewdriver].canUse(player, item) &&
-                ((0 until 6) contains hit.asInstanceOf[ExtendedMOP].data.asInstanceOf[Int]) && !player.isSneaking)
-        {
-            if (!world.isRemote)
-            {
-                val side = hit.asInstanceOf[ExtendedMOP].data.asInstanceOf[Int]
+                ((0 until 6) contains hit.cuboid6.data.asInstanceOf[Int]) && !player.isSneaking) {
+            if (!world.isRemote) {
+                val side = hit.cuboid6.data.asInstanceOf[Int]
                 val mode = (pathMatrix>>(side*2))&3
                 val newMode = (mode+1)%3+1 //cycle 1,2,3
                 pathMatrix = pathMatrix& ~(3<<(side*2))|(newMode<<(side*2))
@@ -91,7 +90,7 @@ class NetworkValvePipePart extends AbstractNetPipe with TNetworkSubsystem with T
             return true
         }
 
-        super.activate(player, hit, item)
+        super.activate(player, hit, item, hand)
     }
 
     /**

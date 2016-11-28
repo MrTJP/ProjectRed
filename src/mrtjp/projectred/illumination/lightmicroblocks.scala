@@ -1,29 +1,29 @@
-/*
- * Copyright (c) 2015.
- * Created by MrTJP.
- * All rights reserved.
- */
 package mrtjp.projectred.illumination
 
 import java.util
 
 import codechicken.lib.vec.Rotation._
 import codechicken.lib.vec.Vector3._
+import codechicken.lib.vec.uv.{IconTransformation, MultiIconTransformation}
 import codechicken.lib.vec.{Cuboid6, Vector3}
-import codechicken.microblock.MicroblockGenerator.IGeneratedMaterial
 import codechicken.microblock._
-import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.RenderHalo
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class LightMicroMaterial(meta:Int) extends BlockMicroMaterial(ProjectRedIllumination.blockLamp, meta) with IGeneratedMaterial
+class LightMicroMaterial(val colour:Int) extends BlockMicroMaterial(ProjectRedIllumination.blockLamp.getDefaultState) with IGeneratedMaterial
 {
-    override def addTraits(traits:util.BitSet, mcrClass:MicroblockClass, client:Boolean)
+    override def addTraits(traits:util.BitSet, mcrFactory:MicroblockFactory, client:Boolean)
     {
         traits.set(LightMicroMaterial.traitID)
     }
 
-    override def getCutterStrength = block.getHarvestLevel(meta%16)
+    @SideOnly(Side.CLIENT) override
+    def loadIcons()
+    {
+        icont = new MultiIconTransformation(LampRenderer.iconsOn(colour))
+        pIconT = new IconTransformation(LampRenderer.iconsOn(colour))
+    }
 }
 
 object LightMicroMaterial
@@ -34,10 +34,10 @@ object LightMicroMaterial
     {
         traitID = MicroblockGenerator.registerTrait(classOf[LightMicroblock])
 
-        for (i <- 16 until 32)
+        for (i <- 0 until 16)
             MicroMaterialRegistry.registerMaterial(
                 new LightMicroMaterial(i),
-                BlockMicroMaterial.materialKey(ProjectRedIllumination.blockLamp, i)
+                BlockMicroMaterial.materialKey(ProjectRedIllumination.blockLamp.getDefaultState)+"[colour:"+i+"]"
             )
     }
 }
@@ -45,12 +45,10 @@ object LightMicroMaterial
 trait LightMicroblock extends Microblock
 {
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(pos:Vector3, frame:Float, pass:Int)
+    override def renderDynamic(pos:Vector3, pass:Int, frame:Float)
     {
-        if (pass == 0)
-        {
-            val boxes = this match
-            {
+        if (pass == 0) {
+            val boxes = this match {
                 case h:HollowMicroblock =>
                     val size = h.getHollowSize
                     val d1 = 0.5-size/32D
@@ -72,7 +70,7 @@ trait LightMicroblock extends Microblock
                     bb.result().map(_.copy.expand(0.025))
             }
 
-            val colour = getIMaterial.asInstanceOf[LightMicroMaterial].meta-16
+            val colour = getIMaterial.asInstanceOf[LightMicroMaterial].colour
 
             for (box <- boxes) RenderHalo.addLight(x, y, z, colour, box)
         }

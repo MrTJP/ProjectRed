@@ -5,20 +5,21 @@
  */
 package mrtjp.projectred.integration
 
-import codechicken.lib.colour.Colour
-import codechicken.lib.lighting.LightModel.Light
+import codechicken.lib.colour.{Colour, EnumColour}
 import codechicken.lib.lighting.{LightModel, PlanarLightModel}
 import codechicken.lib.math.MathHelper
-import codechicken.lib.render.CCRenderState.IVertexOperation
 import codechicken.lib.render._
-import codechicken.lib.render.uv._
+import codechicken.lib.render.pipeline.{ColourMultiplier, IVertexOperation}
+import codechicken.lib.texture.{TextureDataHolder, TextureSpecial, TextureUtils}
 import codechicken.lib.vec._
-import mrtjp.core.color.Colors
+import codechicken.lib.vec.uv._
 import mrtjp.core.vec.{InvertX, VecLib}
 import mrtjp.projectred.core.{Configurator, RenderHalo}
 import mrtjp.projectred.transmission.{UVT, WireModelGen}
-import net.minecraft.client.renderer.texture.IIconRegister
-import net.minecraft.util.{IIcon, ResourceLocation}
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
+import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.BlockPos.MutableBlockPos
+import org.lwjgl.opengl.GL11
 
 import scala.collection.JavaConversions._
 import scala.util.control.Breaks
@@ -62,33 +63,33 @@ object ComponentStore
     val icGlass = loadCorrectedModel("icglass")
     val icHousing = loadCorrectedModel("ichousing")
 
-    var baseIcon:IIcon = null
-    var wireIcons:Array[IIcon] = new Array[IIcon](3)
+    var baseIcon:TextureAtlasSprite = null
+    var wireIcons:Array[TextureAtlasSprite] = new Array[TextureAtlasSprite](3)
     var wireData:Array[Array[Colour]] = new Array[Array[Colour]](3)
-    var redstoneTorchIcons:Array[IIcon] = new Array[IIcon](2)
-    var yellowChipIcons:Array[IIcon] = new Array[IIcon](2)
-    var redChipIcons:Array[IIcon] = new Array[IIcon](2)
-    var minusChipIcons:Array[IIcon] = new Array[IIcon](2)
-    var plusChipIcons:Array[IIcon] = new Array[IIcon](2)
-    var leverIcon:IIcon = null
-    var solarIcons:Array[IIcon] = new Array[IIcon](3)
-    var rainIcon:IIcon = null
-    var pointerIcon:IIcon = null
-    var busXcvrIcon:IIcon = null
-    var cellIcon:IIcon = null
-    var busRandIcon:IIcon = null
-    var busConvIcon:IIcon = null
-    var busInputIcon:IIcon = null
-    var segment:IIcon = null
-    var segmentDisp:IIcon = null
-    var icChipIcon:IIcon = null
-    var icChipIconOff:IIcon = null
-    var icHousingIcon:IIcon = null
+    var redstoneTorchIcons:Array[TextureAtlasSprite] = new Array[TextureAtlasSprite](2)
+    var yellowChipIcons:Array[TextureAtlasSprite] = new Array[TextureAtlasSprite](2)
+    var redChipIcons:Array[TextureAtlasSprite] = new Array[TextureAtlasSprite](2)
+    var minusChipIcons:Array[TextureAtlasSprite] = new Array[TextureAtlasSprite](2)
+    var plusChipIcons:Array[TextureAtlasSprite] = new Array[TextureAtlasSprite](2)
+    var leverIcon:TextureAtlasSprite = null
+    var solarIcons:Array[TextureAtlasSprite] = new Array[TextureAtlasSprite](3)
+    var rainIcon:TextureAtlasSprite = null
+    var pointerIcon:TextureAtlasSprite = null
+    var busXcvrIcon:TextureAtlasSprite = null
+    var cellIcon:TextureAtlasSprite = null
+    var busRandIcon:TextureAtlasSprite = null
+    var busConvIcon:TextureAtlasSprite = null
+    var busInputIcon:TextureAtlasSprite = null
+    var segment:TextureAtlasSprite = null
+    var segmentDisp:TextureAtlasSprite = null
+    var icChipIcon:TextureAtlasSprite = null
+    var icChipIconOff:TextureAtlasSprite = null
+    var icHousingIcon:TextureAtlasSprite = null
 
-    def registerIcons(reg:IIconRegister)
+    def registerIcons(map:TextureMap)
     {
-        val baseTex = "projectred:integration/"
-        def register(path:String) = reg.registerIcon(baseTex+path)
+        val baseTex = "projectred:blocks/integration/"
+        def register(path:String) = map.registerSprite(new ResourceLocation(baseTex+path))
         baseIcon = register("base")
         wireIcons(0) = register("surface/bordermatte")
         wireIcons(1) = register("surface/wirematte-OFF")
@@ -97,11 +98,11 @@ object ComponentStore
         {
             val res = new ResourceLocation(wireIcons(i).getIconName)
             wireData(i) = TextureUtils.loadTextureColours(new ResourceLocation(res.getResourceDomain,
-                "textures/blocks/"+res.getResourcePath+".png"))
+                "textures/"+res.getResourcePath+".png"))
         }
 
-        redstoneTorchIcons(0) = reg.registerIcon("redstone_torch_off")
-        redstoneTorchIcons(1) = reg.registerIcon("redstone_torch_on")
+        redstoneTorchIcons(0) = map.registerSprite(new ResourceLocation("minecraft:blocks/redstone_torch_off"))
+        redstoneTorchIcons(1) = map.registerSprite(new ResourceLocation("minecraft:blocks/redstone_torch_on"))
         yellowChipIcons(0) = register("yellowchipoff")
         yellowChipIcons(1) = register("yellowchipon")
         redChipIcons(0) = register("redchipoff")
@@ -126,22 +127,24 @@ object ComponentStore
         icChipIcon = register("ic_active")
         icChipIconOff = register("ic_inert")
         icHousingIcon = register("ic_housing")
-        RenderGate.registerIcons(reg)
     }
 
     def loadCorrectedModels(name:String) =
     {
-        val models = parseModels(name).map(m => m._1 -> m._2.backfacedCopy())
-        models.values.foreach(_.apply(new Scale(-1, 1, 1)).computeNormals.shrinkUVs(0.0005))
+        val m = CCOBJParser.parseObjModels(new ResourceLocation("projectred:textures/obj/integration/"+name+".obj"), GL11.GL_QUADS, null)
+        val models = m.map(m => m._1 -> m._2.backfacedCopy())
+        models.values.foreach(_.computeNormals.shrinkUVs(0.0005))
         models
     }
 
     def loadCorrectedModel(name:String) =
         CCModel.combine(loadCorrectedModels(name).values)
 
+    @deprecated
     def parseModels(name:String) =
-        CCModel.parseObjModels(new ResourceLocation("projectred:textures/obj/integration/"+name+".obj"), 7, InvertX)
+        CCOBJParser.parseObjModels(new ResourceLocation("projectred:textures/obj/integration/"+name+".obj"), 7, InvertX)
 
+    @deprecated("use loadCorrectedModels instead")
     def loadModels(name:String) =
     {
         val models = mapAsScalaMap(parseModels(name))
@@ -149,6 +152,7 @@ object ComponentStore
         models
     }
 
+    @deprecated("use loadCorrectedModel instead")
     def loadModel(name:String):CCModel =
     {
         val models = parseModels(name)
@@ -224,9 +228,9 @@ import mrtjp.projectred.integration.ComponentStore._
 
 abstract class ComponentModel
 {
-    def renderModel(t:Transformation, orient:Int)
+    def renderModel(t: Transformation, orient: Int, ccrs: CCRenderState)
 
-    def registerIcons(reg:IIconRegister){}
+    def registerIcons(reg:TextureMap){}
 }
 
 abstract class SingleComponentModel(m:CCModel, pos:Vector3 = Vector3.zero) extends ComponentModel
@@ -241,9 +245,9 @@ abstract class SingleComponentModel(m:CCModel, pos:Vector3 = Vector3.zero) exten
 
     def getUVT:UVTransformation
 
-    override def renderModel(t:Transformation, orient:Int)
+    override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
-        models(orient).render(t, getUVT)
+        models(orient).render(ccrs, t, getUVT)
     }
 }
 
@@ -262,9 +266,9 @@ abstract class MultiComponentModel(m:Seq[CCModel], pos:Vector3 = Vector3.zero) e
 
     def getUVT:UVTransformation
 
-    override def renderModel(t:Transformation, orient:Int)
+    override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
-        models(state)(orient).render(t, getUVT)
+        models(state)(orient).render(ccrs, t, getUVT)
     }
 }
 
@@ -272,7 +276,7 @@ abstract class OnOffModel(m:CCModel, pos:Vector3 = Vector3.zero) extends SingleC
 {
     var on = false
 
-    def getIcons:Array[IIcon]
+    def getIcons:Array[TextureAtlasSprite]
 
     override def getUVT = new IconTransformation(getIcons(if (on) 1 else 0))
 }
@@ -281,7 +285,7 @@ abstract class StateIconModel(m:CCModel, pos:Vector3 = Vector3.zero) extends Sin
 {
     var state = 0
 
-    def getIcons:Array[IIcon]
+    def getIcons:Array[TextureAtlasSprite]
 
     override def getUVT = new IconTransformation(getIcons(state))
 }
@@ -413,12 +417,12 @@ class WireModel2D(data:Array[Colour]) extends ComponentModel with TWireModel
     var icons:Array[TextureSpecial] = _
     private val iconIndex = WireModel2D.claimIdx()
 
-    override def renderModel(t:Transformation, orient:Int)
+    override def renderModel(t: Transformation, orient: Int, ccrs: CCRenderState)
     {
-        WireModel2D.models(orient).render(t, new IconTransformation(icons(if (disabled) 0 else if (on) 2 else 1)))
+        WireModel2D.models(orient).render(ccrs, t, new IconTransformation(icons(if (disabled) 0 else if (on) 2 else 1)))
     }
 
-    override def registerIcons(reg:IIconRegister)
+    override def registerIcons(map:TextureMap)
     {
         val wireRectangles = TWireModel.rectangulate(data)
         icons = new Array[TextureSpecial](wireData.length)
@@ -445,7 +449,7 @@ class WireModel2D(data:Array[Colour]) extends ComponentModel with TWireModel
                 if (t != 0) imageData(i) = wireData(if (t == 1) 0 else tex)(y/relP*pSize+x/relP).argb()
             }
 
-            icons(tex) = TextureUtils.getTextureSpecial(reg,
+            icons(tex) = TextureUtils.getTextureSpecial(map,
                 "projectred:integration/wire2d_"+iconIndex+"_"+tex).addTexture(new TextureDataHolder(imageData, size))
         }
     }
@@ -554,9 +558,9 @@ class PointerModel(x:Double, y:Double, z:Double, scale:Double = 1) extends Compo
 
     var angle = 0D
 
-    override def renderModel(t:Transformation, orient:Int)
+    override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
-        models(orient).render(new Rotation(-angle+MathHelper.pi, 0, 1, 0).`with`(pos.translation()).
+        models(orient).render(ccrs, new Rotation(-angle+MathHelper.pi, 0, 1, 0).`with`(pos.translation()).
                 `with`(dynamicT(orient)).`with`(t), new IconTransformation(pointerIcon))
     }
 }
@@ -615,7 +619,7 @@ class SigLightPanelModel(pos:Vector3, rotY:Boolean) extends ComponentModel
 
     var offColour = 0x420000FF
     var onColour = 0xEC0000FF
-    var disableColour = Colors.GREY.rgba
+    var disableColour = EnumColour.GRAY.rgba
 
     {
         for (i <- 0 until 16)
@@ -657,10 +661,10 @@ class SigLightPanelModel(pos:Vector3, rotY:Boolean) extends ComponentModel
         }
     }
 
-    override def renderModel(t:Transformation, orient:Int)
+    override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
         val icont = new IconTransformation(busXcvrIcon)
-        (if (sideInd) modelsSI else models)(orient).render(t, icont)
+        (if (sideInd) modelsSI else models)(orient).render(ccrs, t, icont)
 
         val dPos = pos.copy
         if (orient >= 24) dPos.x = 1-dPos.x
@@ -669,7 +673,7 @@ class SigLightPanelModel(pos:Vector3, rotY:Boolean) extends ComponentModel
                 `with`(dPos.translation()).`with`(orientT(orient%24)).`with`(t)
 
         for (i <- 0 until 16)
-            displayModels(i).render(dispT, icont, PlanarLightModel.standardLightModel, ColourMultiplier.instance(
+            displayModels(i).render(ccrs, dispT, icont, PlanarLightModel.standardLightModel, ColourMultiplier.instance(
                 if ((signal&1<<i) != 0) onColour else if ((disableMask&1<<i) != 0) disableColour else offColour))
     }
 }
@@ -721,14 +725,14 @@ class SignalBarModel(x:Double, z:Double) extends ComponentModel
         for (i <- 0 until 48) models(i) = bakeCopy(base, i)
     }
 
-    def renderModel(t:Transformation, orient:Int)
+    def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
         val iconT = new IconTransformation(busConvIcon)
-        models(orient%24).render(t, iconT)
+        models(orient%24).render(ccrs, t, iconT)
         val position = new TransformationList(pos.translation).`with`(orientT(orient%24)).`with`(t)
-        (if (inverted) barsBgInv else barsBg).render(position, iconT, PlanarLightModel.standardLightModel,
+        (if (inverted) barsBgInv else barsBg).render(ccrs, position, iconT, PlanarLightModel.standardLightModel,
             ColourMultiplier.instance(0x535353FF))
-        (if (inverted) barsInv else bars)(Math.min(signal, 15)).render(position, iconT,
+        (if (inverted) barsInv else bars)(Math.min(signal, 15)).render(ccrs, position, iconT,
             PlanarLightModel.standardLightModel, ColourMultiplier.instance(0xEC0000FF))
     }
 }
@@ -740,24 +744,24 @@ class InputPanelButtonsModel extends ComponentModel
     val lights = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25).add(0.2))
 
     var pressMask = 0
-    val pos = new BlockCoord
+    val pos = new MutableBlockPos()
     var orientationT:Transformation = null
 
-    override def renderModel(t:Transformation, orient:Int)
+    override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
         val icon = new IconTransformation(baseIcon)
         for (i <- 0 until 16)
         {
-            CCRenderState.setPipeline(CCRenderState.lightMatrix, orientT(orient).`with`(t), icon,
-                ColourMultiplier.instance(Colors(i).rgba))
-            BlockRenderer.renderCuboid(if ((pressMask&1<<i) != 0) pressed(i) else unpressed(i), 1)
+            ccrs.setPipeline(PlanarLightModel.standardLightModel, orientT(orient).`with`(t), icon,
+                ColourMultiplier.instance(EnumColour.values()(i).rgba))
+            BlockRenderer.renderCuboid(ccrs, if ((pressMask&1<<i) != 0) pressed(i) else unpressed(i), 1)
         }
     }
 
     def renderLights()
     {
         for (i <- 0 until 16) if ((pressMask&1<<i) != 0)
-            RenderHalo.addLight(pos.x, pos.y, pos.z, i, lights(i).copy.apply(orientationT))
+            RenderHalo.addLight(pos.getX, pos.getY, pos.getZ, i, lights(i).copy.apply(orientationT))
     }
 }
 
@@ -794,13 +798,13 @@ class CellTopWireModel(wireTop:CCModel) extends CellWireModel
 
     for (i <- 0 until 24) top(i) = bakeCopy(wireTop, i)
 
-    override def renderModel(t:Transformation, orient:Int)
+    override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
         val icont = new IconTransformation(cellIcon)
-        top(orient).render(t, icont, colourMult)
+        top(orient).render(ccrs, t, icont, colourMult)
         import mrtjp.projectred.integration.CellTopWireModel._
-        if ((conn&2) == 0) right(orient).render(t, icont, colourMult)
-        if ((conn&8) == 0) left(orient).render(t, icont, colourMult)
+        if ((conn&2) == 0) right(orient).render(ccrs, t, icont, colourMult)
+        if ((conn&8) == 0) left(orient).render(ccrs, t, icont, colourMult)
     }
 }
 
@@ -810,9 +814,9 @@ class CellBottomWireModel(wireBottom:CCModel) extends CellWireModel
 
     for (i <- 0 until 24) bottom(i) = bakeCopy(wireBottom, i)
 
-    override def renderModel(t:Transformation, orient:Int)
+    override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
-        bottom(orient).render(t, new IconTransformation(cellIcon), colourMult)
+        bottom(orient).render(ccrs, t, new IconTransformation(cellIcon), colourMult)
     }
 }
 
@@ -844,12 +848,12 @@ class StackLatchStandModel(x:Double, z:Double) extends SingleComponentModel(stac
 trait SegModel
 {
     var signal = 0
-    var colour_on = Colors.RED.rgba
-    var colour_off = Colors.BLACK.rgba
+    var colour_on = EnumColour.RED.rgba
+    var colour_off = EnumColour.BLACK.rgba
 
     def setColourOn(colour:Byte)
     {
-        colour_on = Colors(colour&0xFF).rgba
+        colour_on = EnumColour.values()(colour&0xFF).rgba
     }
 }
 
@@ -860,16 +864,16 @@ class SevenSegModel(x:Double, z:Double) extends SingleComponentModel(sevenSeg("b
 
     override def getUVT = new IconTransformation(segment)
 
-    override def renderModel(t:Transformation, orient:Int)
+    override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
-        super.renderModel(t, orient)
+        super.renderModel(t, orient, ccrs)
 
         val iconT = new IconTransformation(segmentDisp)
         val dispT = dPos.`with`(orientT(orient%24)).`with`(t)
 
 
         for (i <- 0 until 8)
-            segModels(i).render(dispT, iconT, PlanarLightModel.standardLightModel, ColourMultiplier.instance(
+            segModels(i).render(ccrs, dispT, iconT, PlanarLightModel.standardLightModel, ColourMultiplier.instance(
                 if ((signal&1<<i) != 0) colour_on else colour_off))
     }
 }
@@ -881,15 +885,15 @@ class SixteenSegModel(x:Double, z:Double) extends SingleComponentModel(sixteenSe
 
     override def getUVT = new IconTransformation(segment)
 
-    override def renderModel(t:Transformation, orient:Int)
+    override def renderModel(t: Transformation, orient: Int, ccrs: CCRenderState)
     {
-        super.renderModel(t, orient)
+        super.renderModel(t, orient, ccrs)
 
         val iconT = new IconTransformation(segmentDisp)
         val dispT = dPos.`with`(orientT(orient%24)).`with`(t)
 
         for (i <- 0 until 16)
-            segModels(i).render(dispT, iconT, PlanarLightModel.standardLightModel, ColourMultiplier.instance(
+            segModels(i).render(ccrs, dispT, iconT, PlanarLightModel.standardLightModel, ColourMultiplier.instance(
                 if ((signal&1<<i) != 0) colour_on else colour_off))
     }
 }
@@ -905,10 +909,10 @@ class SidedICBundledCableModel extends BundledCableModel(icBundled, new Vector3(
 
     override def getUVT = new IconTransformation(busConvIcon)
 
-    override def renderModel(t:Transformation, orient:Int)
+    override def renderModel(t: Transformation, orient: Int, ccrs: CCRenderState)
     {
         for (r <- 0 until 4) if ((sidemask&1<<r) != 0)
-            super.renderModel(t, orient&0xFC|((orient&3)+r)%4)
+            super.renderModel(t, orient&0xFC|((orient&3)+r)%4, ccrs)
     }
 }
 
@@ -916,15 +920,15 @@ class SidedWireModel(val wires:Seq[TWireModel]) extends ComponentModel
 {
     var sidemask = 0
 
-    override def renderModel(t:Transformation, orient:Int)
+    override def renderModel(t: Transformation, orient: Int, ccrs: CCRenderState)
     {
         for (r <- 0 until 4) if ((sidemask&1<<r) != 0)
-            wires(r).renderModel(t, orient)
+            wires(r).renderModel(t, orient, ccrs)
     }
 
-    override def registerIcons(reg:IIconRegister)
+    override def registerIcons(map:TextureMap)
     {
-        wires.foreach(_.registerIcons(reg))
+        wires.foreach(_.registerIcons(map))
     }
 }
 
@@ -939,8 +943,8 @@ class ICChipHousingModel extends SingleComponentModel(icHousing, new Vector3(8, 
 
     override def getUVT = new IconTransformation(icHousingIcon)
 
-    def renderDynamic(t:Transformation)
+    def renderDynamic(t:Transformation, ccrs:CCRenderState)
     {
-        glass.render(t, getUVT)
+        glass.render(ccrs, t, getUVT)
     }
 }

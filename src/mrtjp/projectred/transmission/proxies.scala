@@ -1,52 +1,45 @@
 package mrtjp.projectred.transmission
 
-import codechicken.lib.data.MCDataInput
+import codechicken.lib.model.ModelRegistryHelper
+import codechicken.lib.texture.TextureUtils
 import codechicken.microblock.MicroMaterialRegistry
-import codechicken.multipart.MultiPartRegistry.IPartFactory2
-import codechicken.multipart.{MultiPartRegistry, TMultiPart}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import codechicken.multipart.{IPartFactory, MultiPartRegistry, TMultiPart}
 import mrtjp.projectred.ProjectRedTransmission._
 import mrtjp.projectred.core.IProxy
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraftforge.client.MinecraftForgeClient
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class TransmissionProxy_server extends IProxy with IPartFactory2
+class TransmissionProxy_server extends IProxy with IPartFactory
 {
-    override def preinit() {}
-
-    override def init()
+    override def preinit()
     {
-        MultiPartRegistry.registerParts(this, Array[String](
-            "pr_redwire", "pr_insulated", "pr_bundled",
-            "pr_fredwire", "pr_finsulated", "pr_fbundled",
-            "pr_pwrlow", "pr_fpwrlow"
-//            "pr_sredwire", "pr_sinsulated", "pr_sbundled" //legacy
-        ))
         itemPartWire = new ItemPartWire
         itemPartFramedWire = new ItemPartFramedWire
 
+        import WireDef._
+        MultiPartRegistry.registerParts(this, Array[String](
+            typeRedAlloy, typeInsulated, typeBundled,
+            typeFramedRedAlloy, typeFramedInsulated, typeFramedBundled,
+            "pr_pwrlow", "pr_fpwrlow"
+        ))
+    }
+
+    override def init()
+    {
         TransmissionRecipes.initTransmissionRecipes()
     }
 
     override def postinit(){}
 
-    override def createPart(name:String, nbt:NBTTagCompound) = createPart(name)
-    override def createPart(name:String, packet:MCDataInput) = createPart(name)
-
-    def createPart(name:String):TMultiPart = name match
+    override def createPart(name:String, client:Boolean):TMultiPart = name match
     {
-        case "pr_redwire" => new RedAlloyWirePart
-        case "pr_insulated" => new InsulatedRedAlloyPart
-        case "pr_bundled" => new BundledCablePart
-        case "pr_fredwire" => new FramedRedAlloyWirePart
-        case "pr_finsulated" => new FramedInsulatedRedAlloyPart
-        case "pr_fbundled" => new FramedBundledCablePart
+        case WireDef.typeRedAlloy => new RedAlloyWirePart
+        case WireDef.typeInsulated => new InsulatedRedAlloyPart
+        case WireDef.typeBundled => new BundledCablePart
+        case WireDef.typeFramedRedAlloy=> new FramedRedAlloyWirePart
+        case WireDef.typeFramedInsulated => new FramedInsulatedRedAlloyPart
+        case WireDef.typeFramedBundled => new FramedBundledCablePart
         case "pr_pwrlow" => new LowLoadPowerLine
         case "pr_fpwrlow" => new FramedLowLoadPowerLine
-//        //legacy
-//        case "pr_sredwire" => new FramedRedAlloyWirePart
-//        case "pr_sinsulated" => new FramedInsulatedRedAlloyPart
-//        case "pr_sbundled" => new FramedBundledCablePart
         case _ => null
     }
 
@@ -57,12 +50,19 @@ class TransmissionProxy_server extends IProxy with IPartFactory2
 class TransmissionProxy_client extends TransmissionProxy_server
 {
     @SideOnly(Side.CLIENT)
+    override def preinit()
+    {
+        super.preinit()
+        ModelRegistryHelper.registerItemRenderer(itemPartWire, WireItemRenderer)
+        ModelRegistryHelper.registerItemRenderer(itemPartFramedWire, FramedWireItemRenderer)
+    }
+
+    @SideOnly(Side.CLIENT)
     override def init()
     {
         super.init()
-        MinecraftForgeClient.registerItemRenderer(itemPartWire, WireItemRenderer)
-        MinecraftForgeClient.registerItemRenderer(itemPartFramedWire, FramedWireItemRenderer)
-        MicroMaterialRegistry.registerHighlightRenderer(JacketedHighlightRenderer)
+        TextureUtils.addIconRegister(RenderWire)
+        MicroMaterialRegistry.registerHighlightRenderer(RenderFramedWire)
     }
 }
 

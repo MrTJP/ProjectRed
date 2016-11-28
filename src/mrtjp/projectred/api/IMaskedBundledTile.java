@@ -27,5 +27,5 @@ public interface IMaskedBundledTile extends IBundledTile
      * @param side A side of this block.
      * @return The connection mask for the given side.
      */
-    public int getConnectionMask(int side);
+    int getConnectionMask(int side);
 }

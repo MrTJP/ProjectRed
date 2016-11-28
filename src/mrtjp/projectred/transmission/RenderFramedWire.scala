@@ -1,19 +1,22 @@
 package mrtjp.projectred.transmission
 
 import codechicken.lib.lighting.LightModel
-import codechicken.lib.raytracer.{ExtendedMOP, IndexedCuboid6}
-import codechicken.lib.render.CCRenderState.IVertexOperation
+import codechicken.lib.raytracer.IndexedCuboid6
 import codechicken.lib.render._
-import codechicken.lib.render.uv.{IconTransformation, UVScale, UVTranslation}
+import codechicken.lib.render.pipeline.{ColourMultiplier, IVertexOperation}
+import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec._
-import codechicken.microblock.MicroMaterialRegistry.IMicroHighlightRenderer
-import codechicken.microblock.{CommonMicroClass, MicroMaterialRegistry, MicroblockRender}
-import mrtjp.projectred.core.libmc.PRLib
+import codechicken.lib.vec.uv.{IconTransformation, UVScale, UVTranslation}
+import codechicken.microblock.{CommonMicroFactory, IMicroHighlightRenderer, MicroMaterialRegistry, MicroblockRender}
+import codechicken.multipart.{BlockMultipart, PartRayTraceResult}
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.{IIcon, MovingObjectPosition}
+import net.minecraft.util.BlockRenderLayer
+import net.minecraft.util.math.RayTraceResult
 import org.lwjgl.opengl.GL11
 
-object RenderFramedWire
+object RenderFramedWire extends IMicroHighlightRenderer
 {
     private val frameModels = FWireFrameModelGen.generateModels
     private val wireModels = new Array[CCModel](64*3)
@@ -38,7 +41,7 @@ object RenderFramedWire
         m
     }
 
-    def render(w:FramedWirePart, pos:Vector3)
+    def render(w:FramedWirePart, pos:Vector3, ccrs:CCRenderState)
     {
         val key = modelKey(w)
         val t = pos.translation()
@@ -48,62 +51,79 @@ object RenderFramedWire
         if (w.hasMaterial)
         {
             val jm = getOrGenerateJacketedModel(key)
-            jm.renderWire(t, uvt, m)
-            jm.renderMaterial(pos, w.material)
+            jm.renderWire(ccrs, t, uvt, m)
+            jm.renderMaterial(pos, w.material, ccrs)
         }
         else
         {
-            getOrGenerateWireModel(key).render(t, uvt, m)
-            renderWireFrame(key, t, uvt)
+            getOrGenerateWireModel(key).render(ccrs, t, uvt, m)
+            renderWireFrame(key, ccrs, t, uvt)
         }
     }
 
-    private def renderWireFrame(key:Int, ops:IVertexOperation*)
+    private def renderWireFrame(key:Int, ccrs:CCRenderState, ops:IVertexOperation*)
     {
-        frameModels(6).render(ops:_*)
-        for (s <- 0 until 6) if ((key&1<<s) != 0) frameModels(s).render(ops:_*)
+        frameModels(6).render(ccrs, ops:_*)
+        for (s <- 0 until 6) if ((key&1<<s) != 0) frameModels(s).render(ccrs, ops:_*)
     }
 
-    def renderBreakingOverlay(icon:IIcon, wire:FramedWirePart)
+    def renderBreakingOverlay(icon:TextureAtlasSprite, wire:FramedWirePart, ccrs: CCRenderState)
     {
-        CCRenderState.setPipeline(new Translation(wire.x, wire.y, wire.z), new IconTransformation(icon))
+        ccrs.setPipeline(new Translation(wire.x, wire.y, wire.z), new IconTransformation(icon))
         import scala.collection.JavaConversions._
-        for (box <- wire.getCollisionBoxes) BlockRenderer.renderCuboid(box, 0)
+        for (box <- wire.getCollisionBoxes) BlockRenderer.renderCuboid(ccrs, box, 0)
     }
 
-    def renderInv(thickness:Int, hue:Int, ops:IVertexOperation*)
+    def renderInv(thickness:Int, hue:Int, ccrs:CCRenderState, ops:IVertexOperation*)
     {
-        getOrGenerateWireModel(modelKey(thickness, 0x3F)).render(ops :+ ColourMultiplier.instance(hue):_*)
-        renderWireFrame(modelKey(thickness, 0), ops:_*)
+        getOrGenerateWireModel(modelKey(thickness, 0x3F)).render(ccrs, ops :+ ColourMultiplier.instance(hue):_*)
+        renderWireFrame(modelKey(thickness, 0), ccrs, ops:_*)
     }
 
-    def renderCoverHighlight(part:FramedWirePart, material:Int)
+    def renderCoverHighlight(part:FramedWirePart, material:Int, ccrs:CCRenderState)
     {
-        val pos = new BlockCoord(part.tile)
+        val pos = part.pos
 
-        GL11.glPushMatrix()
-        GL11.glTranslated(pos.x+0.5, pos.y+0.5, pos.z+0.5)
-        GL11.glScaled(1.002, 1.002, 1.002)
-        GL11.glTranslated(-0.5, -0.5, -0.5)
+        import net.minecraft.client.renderer.GlStateManager._
 
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glDepthMask(false)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        pushMatrix()
+        translate(pos.getX+0.5, pos.getY+0.5, pos.getZ+0.5)
+        scale(1.002, 1.002, 1.002)
+        translate(-0.5, -0.5, -0.5)
 
-        CCRenderState.reset()
-        TextureUtils.bindAtlas(0)
-        CCRenderState.setDynamic()
-        CCRenderState.setBrightness(part.world, pos.x, pos.y, pos.z)
-        CCRenderState.alphaOverride = 127
-        CCRenderState.startDrawing()
+        enableBlend()
+        depthMask(false)
+        blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
-        getOrGenerateJacketedModel(modelKey(part)).renderMaterial(Vector3.zero, material)
+        ccrs.reset()
+        TextureUtils.bindBlockTexture()
+        ccrs.setBrightness(part.world, pos)
+        ccrs.alphaOverride = 127
+        ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
 
-        CCRenderState.draw()
+        getOrGenerateJacketedModel(modelKey(part)).renderMaterial(Vector3.zero, material, ccrs)
 
-        GL11.glDisable(GL11.GL_BLEND)
-        GL11.glDepthMask(true)
-        GL11.glPopMatrix()
+        ccrs.draw()
+
+        disableBlend()
+        depthMask(true)
+        popMatrix()
+    }
+
+    override def renderHighlight(player:EntityPlayer, hit:RayTraceResult, mcrFactory:CommonMicroFactory, size:Int, material:Int) =
+    {
+        val tile = BlockMultipart.getTile(player.worldObj, hit.getBlockPos)
+        if (tile == null || mcrFactory.getFactoryID != 0 || size != 1 || player.isSneaking ||
+                MicroMaterialRegistry.getMaterial(material).isTransparent) false
+        else hit match {
+            case prt:PartRayTraceResult => tile.partList(prt.partIndex) match {
+                case fpart:FramedWirePart if !fpart.hasMaterial || fpart.material != material =>
+                    RenderFramedWire.renderCoverHighlight(fpart, material, CCRenderState.instance())
+                    true
+                case _ => false
+            }
+            case _ => false
+        }
     }
 }
 
@@ -441,41 +461,14 @@ private object FWireModelGen
 
 class FWireJacketModel(wire:CCModel, boxes:Array[IndexedCuboid6])
 {
-    def renderWire(ops:IVertexOperation*)
+    def renderWire(ccrs:CCRenderState, ops:IVertexOperation*)
     {
-        wire.render(ops:_*)
+        wire.render(ccrs, ops:_*)
     }
 
-    def renderMaterial(vec:Vector3, mat:Int)
+    def renderMaterial(vec:Vector3, mat:Int, ccrs:CCRenderState)
     {
         val material = MicroMaterialRegistry.getMaterial(mat)
-        for (b <- boxes) MicroblockRender.renderCuboid(vec, material, 0, b, b.data.asInstanceOf[Int])
-    }
-}
-
-object JacketedHighlightRenderer extends IMicroHighlightRenderer
-{
-    override def renderHighlight(player:EntityPlayer, hit:MovingObjectPosition, mcrClass:CommonMicroClass, size:Int, material:Int) =
-    {
-        val tile = PRLib.getMultipartTile(player.worldObj, new BlockCoord(hit.blockX, hit.blockY, hit.blockZ))
-        if (tile == null || mcrClass.getClassId != 0 || size != 1 || player.isSneaking ||
-            MicroMaterialRegistry.getMaterial(material).isTransparent) false
-        else
-        {
-            val hitData:(Integer, Any) = ExtendedMOP.getData(hit)
-            val part = tile.partList(hitData._1)
-
-            part match
-            {
-                case fpart:FramedWirePart =>
-                    if (fpart.hasMaterial && fpart.material == material) false
-                    else
-                    {
-                        RenderFramedWire.renderCoverHighlight(fpart, material)
-                        true
-                    }
-                case _ => false
-            }
-        }
+        for (b <- boxes) MicroblockRender.renderCuboid(vec, ccrs, material, BlockRenderLayer.SOLID, b, b.data.asInstanceOf[Int])
     }
 }

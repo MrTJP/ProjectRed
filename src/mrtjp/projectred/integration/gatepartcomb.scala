@@ -7,11 +7,11 @@ package mrtjp.projectred.integration
 
 import java.util.Random
 
+import codechicken.lib.raytracer.CuboidRayTraceResult
 import mrtjp.projectred.api.IScrewdriver
 import mrtjp.projectred.core.TFaceOrient
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
-import net.minecraft.util.MovingObjectPosition
 import net.minecraft.world.EnumSkyBlock
 
 class ComboGatePart extends RedstoneGatePart
@@ -19,7 +19,7 @@ class ComboGatePart extends RedstoneGatePart
     override def getLogic[T] = ComboGateLogic.instances(subID).asInstanceOf[T]
     def getLogicCombo = getLogic[ComboGateLogic]
 
-    override def getType = "pr_sgate"
+    override def getType = GateDefinition.typeSimpleGate
 }
 
 object ComboGateLogic
@@ -274,7 +274,7 @@ object Repeater extends ComboGateLogic
 
     override def onChange(gate:ComboGatePart){ if (gate.schedTime < 0) super.onChange(gate) }
 
-    override def activate(gate:ComboGatePart, player:EntityPlayer, held:ItemStack, hit:MovingObjectPosition)=
+    override def activate(gate:ComboGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult)=
     {
         if (held == null || !held.getItem.isInstanceOf[IScrewdriver])
         {
@@ -338,8 +338,8 @@ object LightSensor extends ComboGateLogic
     {
         if (gate.world.isRemote) return
 
-        def sky = gate.world.getSavedLightValue(EnumSkyBlock.Sky, gate.x, gate.y, gate.z)-gate.world.skylightSubtracted
-        def block = gate.world.getSavedLightValue(EnumSkyBlock.Block, gate.x, gate.y, gate.z)
+        def sky = gate.world.getLightFor(EnumSkyBlock.SKY, gate.pos)-gate.world.getSkylightSubtracted
+        def block = gate.world.getLightFor(EnumSkyBlock.BLOCK, gate.pos)
 
         val shape = gate.shape
         val newOutput = shape match
@@ -380,7 +380,7 @@ object RainSensor extends ComboGateLogic
     {
         if (gate.world.isRemote) return
 
-        val newOutput = if (gate.world.isRaining && gate.world.canBlockSeeTheSky(gate.x, gate.y+1, gate.z)) 4 else 0
+        val newOutput = if (gate.world.isRaining && gate.world.canBlockSeeSky(gate.pos)) 4 else 0
         val oldOutput = gate.state>>4
         if (newOutput != oldOutput)
         {

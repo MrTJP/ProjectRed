@@ -1,34 +1,10 @@
 package mrtjp.projectred.api;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public interface ITransmissionAPI
 {
-    /**
-     * Queries the block on side of this block for the bundled signal being
-     * emitted to this block.
-     *
-     * @param world The world containing the block
-     * @param x The x coordinate of the block/tile querying signal
-     * @param y The y coordinate of the block/tile querying signal
-     * @param z The z coordinate of the block/tile querying signal
-     * @param side The side of the block
-     * @return A bundled signal {@link IBundledEmitter}
-     */
-    public byte[] getBundledInput(World world, int x, int y, int z, int side);
-
-    /**
-     * Checks to see if the position specified contains a bundled cable.
-     *
-     * @param world The world containing the block
-     * @param x The x coordinate of the block to check
-     * @param y The y coordinate of the block to check
-     * @param z The z coordinate of the block to check
-     * @param side The side to check
-     * @return If the given position contains a bundled cable on the given side.
-     */
-    public boolean containsBundledCable(World world, int x, int y, int z, int side);
-
     /**
      * Used to register a IBundledTileInteraction to allow PR wiring to use
      * your block's signals without having to implement an interface on your
@@ -36,28 +12,45 @@ public interface ITransmissionAPI
      *
      * @param interaction The interaction class you want to register
      */
-    public void registerBundledTileInteraction(IBundledTileInteraction interaction);
+    void registerBundledTileInteraction(IBundledTileInteraction interaction);
+
+    /**
+     * Queries the block on side of this block for the bundled signal being
+     * emitted to this block.
+     *
+     * @param world The world containing the block
+     * @param pos The coordinates of the block/tile querying signal
+     * @param side The side of the block
+     * @return A bundled signal {@link IBundledEmitter}
+     */
+    byte[] getBundledInput(World world, BlockPos pos, int side);
+
+    /**
+     * Checks to see if the position specified contains a bundled cable.
+     *
+     * @param world The world containing the block
+     * @param pos The coordinates of the block to check
+     * @param side The side to check
+     * @return If the given position contains a bundled cable on the given side.
+     */
+    boolean containsBundledCable(World world, BlockPos pos, int side);
 
     /**
      * Checks to see if there is a framed wire at this coordinate.
      *
      * @param world The world containing the block
-     * @param x The x coordinate of the block/tile querying signal
-     * @param y The y coordinate of the block/tile querying signal
-     * @param z The z coordinate of the block/tile querying signal
+     * @param pos The coordinates of the block/tile querying signal
      * @return True if there is a framed wire within the block
      */
-    public boolean containsFramedWire(World world, int x, int y, int z);
+    boolean containsFramedWire(World world, BlockPos pos);
 
     /**
      * Retreives the connection mask of the framed wire at the blockspace
      * if there is one or -1 if there isnt.
      *
      * @param world The world containing the block
-     * @param x The x coordinate of the block/tile querying signal
-     * @param y The y coordinate of the block/tile querying signal
-     * @param z The z coordinate of the block/tile querying signal
+     * @param pos The coordinates of the block/tile querying signal
      * @return The connmask within 0x3F for the wire if exists, else -1
      */
-    public int getFramedWireConnectionMask(World world, int x, int y, int z);
+    int getFramedWireConnectionMask(World world, BlockPos pos);
 }

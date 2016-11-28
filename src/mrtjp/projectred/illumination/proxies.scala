@@ -1,55 +1,49 @@
 package mrtjp.projectred.illumination
 
-import codechicken.multipart.MultiPartRegistry
-import codechicken.multipart.MultiPartRegistry.IPartFactory
-import cpw.mods.fml.client.registry.ClientRegistry
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors_old
-import mrtjp.projectred.ProjectRedIllumination
+import codechicken.lib.model.ModelRegistryHelper
+import mrtjp.core.block.MultiTileRenderRegistry
 import mrtjp.projectred.ProjectRedIllumination._
-import mrtjp.projectred.core.{Configurator, IProxy}
-import net.minecraft.item.Item
-import net.minecraftforge.client.MinecraftForgeClient
+import mrtjp.projectred.core.IProxy
+import net.minecraftforge.fml.client.registry.ClientRegistry
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class IlluminationProxy_server extends IProxy with IPartFactory
+class IlluminationProxy_server extends IProxy
 {
-    val lights = Seq(LightObjLantern, LightObjFixture, LightObjFallout, LightObjCage)
+    val lights = Seq(LightFactoryLantern, LightFactoryFixture, LightFactoryFallout, LightFactoryCage)
 
-    override def preinit(){}
-
-    override def init()
+    override def preinit()
     {
-        MultiPartRegistry.registerParts(this, (lights.map(_.getType) :+ "pr_lightbutton" :+ "pr_flightbutton").toArray)
-        for (l <- lights) l.initServer()
-
-        itemPartIllumarButton = new ItemPartButton
-        itemPartIllumarFButton = new ItemPartFButton
-
         blockLamp = new BlockLamp
-        blockLamp.addSingleTile(classOf[TileLamp])
+        blockLamp.addTile(classOf[TileLamp], 0)
+        itemBlockLamp = new ItemBlockLamp
 
         blockAirousLight = new BlockAirousLight
         blockAirousLight.bindTile(classOf[TileAirousLight])
 
-        IlluminationRecipes.initRecipes()
+        lights.foreach(_.register())
+    }
 
+    override def init()
+    {
+//        MultiPartRegistry.registerParts(this, (lights.map(_.getType) :+ "pr_lightbutton" :+ "pr_flightbutton").toArray)
+//        for (l <- lights) l.initServer()
+
+//        itemPartIllumarButton = new ItemPartButton
+//        itemPartIllumarFButton = new ItemPartFButton
+
+
+//        IlluminationRecipes.initRecipes()
+//
         LightMicroMaterial.register()
     }
 
     override def postinit(){}
 
-    override def createPart(name:String, client:Boolean) = name match
-    {
-        case "pr_lightbutton" => new LightButtonPart
-        case "pr_flightbutton" => new FLightButtonPart
-        case _ => getLight(name)
-    }
-
-    private def getLight(name:String) = lights.find(_.getType == name) match
-    {
-        case Some(e) => e.createPart
-        case None => null
-    }
+//    private def getLight(name:String) = lights.find(_.getType == name) match
+//    {
+//        case Some(e) => e.createPart
+//        case None => null
+//    }
 
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"
@@ -57,18 +51,31 @@ class IlluminationProxy_server extends IProxy with IPartFactory
 
 class IlluminationProxy_client extends IlluminationProxy_server
 {
+
+    @SideOnly(Side.CLIENT)
+    override def preinit()
+    {
+        super.preinit()
+
+        ModelRegistryHelper.registerItemRenderer(itemBlockLamp, LampRenderer)
+
+        lights.foreach(_.registerClient())
+    }
+
     @SideOnly(Side.CLIENT)
     override def init()
     {
         super.init()
 
-        for (l <- lights) l.initClient()
+//        for (l <- lights) l.initClient()
 
-        MinecraftForgeClient.registerItemRenderer(itemPartIllumarButton, RenderButton)
-        MinecraftForgeClient.registerItemRenderer(itemPartIllumarFButton, RenderFButton)
+//        MinecraftForgeClient.registerItemRenderer(itemPartIllumarButton, RenderButton)
+//        MinecraftForgeClient.registerItemRenderer(itemPartIllumarFButton, RenderFButton)
 
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ProjectRedIllumination.blockLamp), LampTESR)
-        ClientRegistry.bindTileEntitySpecialRenderer(classOf[TileLamp], LampTESR)
+//        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ProjectRedIllumination.blockLamp), LampTESR)
+        ClientRegistry.bindTileEntitySpecialRenderer(classOf[TileLamp], LampRenderer)
+
+        MultiTileRenderRegistry.setRenderer(blockLamp, 0, LampRenderer)
     }
 
     var getLightValue = (meta:Int, brightness:Int) => brightness

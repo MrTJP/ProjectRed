@@ -1,14 +1,14 @@
 package mrtjp.projectred.transportation
 
 import java.util.UUID
-import codechicken.lib.data.{MCDataOutput, MCDataInput}
+
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import mrtjp.core.item.ItemKeyStack
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.transportation.Priorities.NetworkPriority
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraftforge.common.util.ForgeDirection
 
 import scala.collection.convert.WrapAsJava
 import scala.collection.immutable.{BitSet, HashSet}
@@ -108,7 +108,6 @@ class AbstractPipePayload(val payloadID:Int)
 
     def save(tag:NBTTagCompound)
     {
-        tag.setBoolean("NoLegacy", true) //TODO Legacy
         tag.setInteger("idata", data)
         val tag2 = new NBTTagCompound
         getItemStack.writeToNBT(tag2)
@@ -117,20 +116,8 @@ class AbstractPipePayload(val payloadID:Int)
 
     def load(tag:NBTTagCompound)
     {
-        if (tag.getBoolean("NoLegacy")) //TODO Legacy
-        {
-            data = tag.getInteger("idata")
-            setItemStack(ItemStack.loadItemStackFromNBT(tag.getCompoundTag("Item")))
-        }
-        else
-        {
-            progress = tag.getFloat("prog")
-            speed = tag.getFloat("speed")
-            setItemStack(ItemStack.loadItemStackFromNBT(tag.getCompoundTag("Item")))
-            isEntering = tag.getBoolean("isEnt")
-            input = tag.getByte("input")
-            output = tag.getByte("output")
-        }
+        data = tag.getInteger("idata")
+        setItemStack(ItemStack.loadItemStackFromNBT(tag.getCompoundTag("Item")))
     }
 
     def writeDesc(packet:MCDataOutput)
@@ -178,7 +165,7 @@ class AbstractPipePayload(val payloadID:Int)
             case 5 => item.motionX = +speed
             case _ =>
         }
-        item.delayBeforeCanPickup = 10
+        item.setPickupDelay(10)
         item.lifespan = 1600
         item
     }

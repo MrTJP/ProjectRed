@@ -1,11 +1,11 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.packet.PacketCustom
+import codechicken.lib.raytracer.CuboidRayTraceResult
 import mrtjp.core.item.ItemKey
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
-import net.minecraft.util.MovingObjectPosition
-import net.minecraftforge.common.util.ForgeDirection
+import net.minecraft.util.EnumHand
 
 class RoutedRequestPipePart extends AbstractNetPipe with TNetworkPipe
 {
@@ -22,11 +22,11 @@ class RoutedRequestPipePart extends AbstractNetPipe with TNetworkPipe
         }
     }
 
-    override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
+
+    override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, item:ItemStack, hand:EnumHand):Boolean =
     {
-        if (super.activate(player, hit, item)) return true
-        if (!player.isSneaking)
-        {
+        if (super.activate(player, hit, item, hand)) return true
+        if (!player.isSneaking) {
             openGui(player)
             true
         }
@@ -37,7 +37,7 @@ class RoutedRequestPipePart extends AbstractNetPipe with TNetworkPipe
     {
         if (world.isRemote) return
         val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Request_open)
-        packet.writeCoord(x, y, z).sendToPlayer(player)
+        packet.writePos(pos).sendToPlayer(player)
     }
 
     override def getDirForIncomingItem(r:NetworkPayload):Int =

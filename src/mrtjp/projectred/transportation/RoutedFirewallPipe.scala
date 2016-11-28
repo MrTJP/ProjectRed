@@ -1,13 +1,14 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.raytracer.CuboidRayTraceResult
 import mrtjp.core.gui.{GuiLib, NodeContainer, Slot3}
 import mrtjp.core.inventory.SimpleInventory
 import mrtjp.core.item.ItemKey
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.EnumHand
 
 class RoutedFirewallPipe extends AbstractNetPipe with TNetworkPipe
 {
@@ -63,11 +64,11 @@ class RoutedFirewallPipe extends AbstractNetPipe with TNetworkPipe
         case _ => super.read(packet, key)
     }
 
-    override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
+
+    override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, item:ItemStack, hand:EnumHand):Boolean =
     {
-        if (super.activate(player, hit, item)) return true
-        if (!player.isSneaking)
-        {
+        if (super.activate(player, hit, item, hand)) return true
+        if (!player.isSneaking) {
             openGui(player)
             true
         }
@@ -79,7 +80,7 @@ class RoutedFirewallPipe extends AbstractNetPipe with TNetworkPipe
         if (world.isRemote) return
         GuiFirewallPipe.open(player, createContainer(player), p =>
         {
-            p.writeCoord(x, y, z)
+            p.writePos(pos)
             writeInfo(p)
         })
     }

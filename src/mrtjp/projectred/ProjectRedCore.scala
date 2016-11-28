@@ -1,10 +1,9 @@
 package mrtjp.projectred
 
-import cpw.mods.fml.common.Mod
-import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStartingEvent}
 import mrtjp.projectred.core._
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.item.ItemStack
+import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStartingEvent}
 import org.apache.logging.log4j.LogManager
 
 @Mod(modid = "ProjRed|Core", useMetadata = true, modLanguage = "scala", guiFactory = "mrtjp.projectred.core.GuiConfigFactory")
@@ -13,16 +12,14 @@ object ProjectRedCore
     val log = LogManager.getFormatterLogger("ProjRed|Core")
 
     /** Items **/
-    var itemPart:ItemPart = null
-    var itemDrawPlate:ItemDrawPlate = null
-    var itemScrewdriver:ItemScrewdriver = null
-    var itemWireDebugger:ItemWireDebugger = null
-    var itemDataCard:ItemDataCard = null
+    var itemPart:ItemPart = _
+    var itemDrawPlate:ItemDrawPlate = _
+    var itemScrewdriver:ItemScrewdriver = _
+    var itemWireDebugger:ItemWireDebugger = _
 
     var tabCore = new CreativeTabs("core")
     {
-        override def getIconItemStack = new ItemStack(ProjectRedCore.itemScrewdriver)
-        override def getTabIconItem = getIconItemStack.getItem
+        override def getTabIconItem = itemScrewdriver
     }
 
     @Mod.EventHandler

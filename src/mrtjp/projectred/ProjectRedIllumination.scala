@@ -1,26 +1,27 @@
 package mrtjp.projectred
 
-import cpw.mods.fml.common.Mod
-import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
-import mrtjp.core.color.Colors_old
 import mrtjp.projectred.illumination._
 import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.item.ItemBlock
+import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 
 @Mod(modid = "ProjRed|Illumination", useMetadata = true, modLanguage = "scala")
 object ProjectRedIllumination
 {
     /** Blocks **/
     var blockLamp:BlockLamp = null
+    var itemBlockLamp:ItemBlock = null
     var blockAirousLight:BlockAirousLight = null
 
-    /** Multipart items **/
-    var itemPartIllumarButton:ItemPartButton = null
-    var itemPartIllumarFButton:ItemPartFButton = null
+//    /** Multipart items **/
+//    var itemPartIllumarButton:ItemPartButton = null
+//    var itemPartIllumarFButton:ItemPartFButton = null
 
-    var tabLighting = new CreativeTabs("ill")
+    var tabLighting = new CreativeTabs("PR|illumination")
     {
-        override def getIconItemStack = LightObjCage.makeInvStack(Colors_old.RED.ordinal())
-        override def getTabIconItem = getIconItemStack.getItem
+        //override def getTabIconItem = //LightObjCage.getItem(true)
+        override def getTabIconItem = itemBlockLamp
     }
 
     @Mod.EventHandler

@@ -2,26 +2,25 @@ package mrtjp.projectred.illumination
 
 import codechicken.lib.render.CCModel
 import codechicken.lib.vec._
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import net.minecraft.client.renderer.texture.IIconRegister
-import net.minecraft.util.IIcon
-import net.minecraftforge.client.IItemRenderer.ItemRenderType
-import net.minecraftforge.client.IItemRenderer.ItemRenderType._
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
+import net.minecraft.util.{BlockRenderLayer, ResourceLocation}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConversions._
 
-object LightObjFixture extends LightObject
+object LightFactoryFixture extends LightFactory
 {
     val bounds = bakedBoxes(new Cuboid6(3.5/16D, 0, 3.5/16D, 12.5/16D, 6.5/16D, 12.5/16D))
     val lBounds = bakedBoxes(new Cuboid6(4/16D, 1.5/16, 4/16D, 12/16D, 6.5/16D, 12/16D))
 
-    var icon:IIcon = _
+    var icon:TextureAtlasSprite = _
 
     val bulbModels = new Array[CCModel](6)
     val chassiModels = new Array[CCModel](6)
 
-    override def getItemName = "projectred.illumination.fixture"
-    override def getType = "pr_fixture"
+    override def getItemRegistryName(inv:Boolean) = if (inv) "projectred:lightFixtureInv" else "projectred:lightFixture"
+    override def getType = "projectred:lightFixture"
 
     override def getBounds(side:Int) = bounds(side)
     override def getLBounds(side:Int) = lBounds(side)
@@ -30,10 +29,11 @@ object LightObjFixture extends LightObject
     override def getModelChassi(side:Int) = chassiModels(side)
 
     override def getIcon = icon
+
     @SideOnly(Side.CLIENT)
-    override def registerIcons(reg:IIconRegister)
+    override def registerTextures(map:TextureMap)
     {
-        icon = reg.registerIcon("projectred:lighting/fixture")
+        icon = map.registerSprite(new ResourceLocation("projectred:blocks/lighting/fixture"))
     }
 
     override def loadModels()
@@ -42,26 +42,25 @@ object LightObjFixture extends LightObject
         val chassi = models.get("chassi")
         val bulb = models.get("bulb")
 
-        for (s <- 0 until 6)
-        {
+        for (s <- 0 until 6) {
             bulbModels(s) = bakeCopy(s, bulb)
             chassiModels(s) = bakeCopy(s, chassi)
         }
     }
 }
 
-object LightObjFallout extends LightObject
+object LightFactoryFallout extends LightFactory
 {
     val bounds = bakedBoxes(new Cuboid6(2/16D, 0, 2/16D, 14/16D, 11/16D, 14/16D))
     val lBounds = bakedBoxes(new Cuboid6(4/16D, 1.5/16, 4/16D, 12/16D, 10/16D, 12/16D).expand(-0.002))
 
-    var icon:IIcon = _
+    var icon:TextureAtlasSprite = _
 
     val bulbModels = new Array[CCModel](6)
     val chassiModels = new Array[CCModel](6)
 
-    override def getItemName = "projectred.illumination.cagelamp"
-    override def getType = "pr_cagelamp"
+    override def getItemRegistryName(inv:Boolean) = if (inv) "projectred:lightFalloutInv" else "projectred:lightFallout"
+    override def getType = "projectred:lightFallout"
 
     override def getBounds(side:Int) = bounds(side)
     override def getLBounds(side:Int) = lBounds(side)
@@ -71,9 +70,9 @@ object LightObjFallout extends LightObject
 
     override def getIcon = icon
     @SideOnly(Side.CLIENT)
-    override def registerIcons(reg:IIconRegister)
+    override def registerTextures(map:TextureMap)
     {
-        icon = reg.registerIcon("projectred:lighting/fallout")
+        icon = map.registerSprite(new ResourceLocation("projectred:blocks/lighting/fallout"))
     }
 
     override def loadModels()
@@ -82,26 +81,25 @@ object LightObjFallout extends LightObject
         val chassi = models.get("chassi")
         val bulb = models.get("bulb")
 
-        for (s <- 0 until 6)
-        {
+        for (s <- 0 until 6) {
             bulbModels(s) = bakeCopy(s, bulb)
             chassiModels(s) = bakeCopy(s, chassi)
         }
     }
 }
 
-object LightObjCage extends LightObject
+object LightFactoryCage extends LightFactory
 {
     val bounds = bakedBoxes(new Cuboid6(3.5/16D, 0, 3.5/16D, 12.5/16D, 12/16D, 12.5/16D))
     val lBounds = bakedBoxes(new Cuboid6(4.5/16D, 1.5/16, 4.5/16D, 11.5/16D, 11.5/16D, 11.5/16D))
 
-    var icon:IIcon = _
+    var icon:TextureAtlasSprite = _
 
     val bulbModels = new Array[CCModel](6)
     val chassiModels = new Array[CCModel](6)
 
-    override def getItemName = "projectred.illumination.cagelamp2"
-    override def getType = "pr_cagelamp2"
+    override def getItemRegistryName(inv:Boolean) = if (inv) "projectred:lightCageInv" else "projectred:lightCage"
+    override def getType = "projectred:lightCage"
 
     override def getBounds(side:Int) = bounds(side)
     override def getLBounds(side:Int) = lBounds(side)
@@ -109,11 +107,14 @@ object LightObjCage extends LightObject
     override def getModelBulb(side:Int) = bulbModels(side)
     override def getModelChassi(side:Int) = chassiModels(side)
 
+    @SideOnly(Side.CLIENT)
+    override def getRenderLayer = BlockRenderLayer.CUTOUT
+
     override def getIcon = icon
     @SideOnly(Side.CLIENT)
-    override def registerIcons(reg:IIconRegister)
+    override def registerTextures(map:TextureMap)
     {
-        icon = reg.registerIcon("projectred:lighting/cage_lamp")
+        icon = map.registerSprite(new ResourceLocation("projectred:blocks/lighting/cage_lamp"))
     }
 
     override def loadModels()
@@ -122,26 +123,25 @@ object LightObjCage extends LightObject
         val chassi = models.get("chassi")
         val bulb = models.get("bulb")
 
-        for (s <- 0 until 6)
-        {
+        for (s <- 0 until 6) {
             bulbModels(s) = bakeCopy(s, bulb)
             chassiModels(s) = bakeCopy(s, chassi)
         }
     }
 }
 
-object LightObjLantern extends LightObject
+object LightFactoryLantern extends LightFactory
 {
     private val bounds = new Cuboid6(0.35D, 0.25D, 0.35D, 0.65D, 0.75D, 0.65D)
     private val lBounds = bounds.copy.expand(-1/64D)
 
-    var icon:IIcon = _
+    var icon:TextureAtlasSprite = _
 
     var bulbModel:CCModel = _
     val chassiModels = new Array[CCModel](7)
 
-    override def getItemName = "projectred.illumination.lantern"
-    override def getType = "pr_lantern"
+    override def getItemRegistryName(inv:Boolean) = if (inv) "projectred:lightLanternInv" else "projectred:lightLantern"
+    override def getType = "projectred:lightLantern"
 
     override def getBounds(side:Int) = bounds
     override def getLBounds(side:Int) = lBounds
@@ -154,15 +154,16 @@ object LightObjLantern extends LightObject
 
     override def getIcon = icon
     @SideOnly(Side.CLIENT)
-    override def registerIcons(reg:IIconRegister)
+    override def registerTextures(map:TextureMap)
     {
-        icon = reg.registerIcon("projectred:lighting/lantern")
+        icon = map.registerSprite(new ResourceLocation("projectred:blocks/lighting/lantern"))
     }
 
-    override def getInvT(t:ItemRenderType):(Vector3, Double) = t match
-    {
-        case INVENTORY => (new Vector3(0D, -0.05D, 0D), 1.5D)
-        case _ => super.getInvT(t)
+    override def getItemRenderTransform(t:TransformType) = t match {
+        case TransformType.GUI =>
+            val (_, rot, _) = super.getItemRenderTransform(t)
+            (new Vector3(0, -1/16D, 0), rot, 1.25)
+        case _ => super.getItemRenderTransform(t)
     }
 
     override def loadModels()
@@ -182,8 +183,7 @@ object LightObjLantern extends LightObject
         chassiModels(1) = CCModel.combine(Seq(body, top, topRing))
         chassiModels(6) = CCModel.combine(Seq(body, topRing)) //Inv model
 
-        for (s <- 2 until 6)
-        {
+        for (s <- 2 until 6) {
             val mSide = side.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s)).at(Vector3.center))
             val mRing = topRing.copy.apply(Rotation.sideOrientation(0, Rotation.rotationTo(0, s)).at(Vector3.center))
             chassiModels(s) = CCModel.combine(Seq(body, mSide, mRing))
