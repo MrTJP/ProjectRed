@@ -18,21 +18,21 @@ public interface IConnectable
      *                connecting face. -1 unless this is a non-part.
      * @return True to allow the wire connection.
      */
-    public boolean connectStraight(IConnectable part, int r, int edgeRot);
+    boolean connectStraight(IConnectable part, int r, int edgeRot);
 
     /**
      * Connect for internals. If r is -1 for a face part, return true for a
      * connection to the center part of the block.
      */
-    public boolean connectInternal(IConnectable part, int r);
+    boolean connectInternal(IConnectable part, int r);
 
     /**
      * Connect for corners
      */
-    public boolean connectCorner(IConnectable part, int r, int edgeRot);
+    boolean connectCorner(IConnectable part, int r, int edgeRot);
 
     /**
      * @return True if this part can reach around a corner to another part.
      */
-    public boolean canConnectCorner(int r);
+    boolean canConnectCorner(int r);
 }

@@ -7,11 +7,11 @@ package mrtjp.projectred.integration
 
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
-import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.gui.{GuiLib, MCButtonNode, NodeGui, TGuiBuilder}
 import mrtjp.core.vec.{Point, Size}
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 
 class GuiTimer(part:GatePart) extends NodeGui(256, 55)

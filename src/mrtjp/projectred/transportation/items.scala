@@ -2,54 +2,52 @@ package mrtjp.projectred.transportation
 
 import java.util.{List => JList}
 
-import codechicken.lib.vec.{BlockCoord, Vector3}
+import codechicken.lib.vec.Vector3
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.gui.{GuiLib, NodeContainer, Slot3}
-import mrtjp.core.inventory.SimpleInventory
-import mrtjp.core.item.{ItemCore, ItemDefinition, TItemGlassSound}
+import com.mojang.realmsclient.gui.ChatFormatting
+import mrtjp.core.item.{ItemCore, ItemDefinition}
+import mrtjp.projectred.ProjectRedCore._
 import mrtjp.projectred.ProjectRedTransportation
-import mrtjp.projectred.core._
 import mrtjp.projectred.transportation.ChipType.ChipType
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.block.SoundType
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.Slot
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.{EnumChatFormatting, IIcon}
-import net.minecraft.world.World
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, ResourceLocation}
+import net.minecraft.world.{IBlockAccess, World}
+import net.minecraftforge.client.model.ModelLoader
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.input.Keyboard
 
 import scala.collection.mutable.ListBuffer
 
-class ItemPartPipe extends ItemCore("projectred.transportation.pipe") with TItemMultiPart with TItemGlassSound
+class ItemPartPipe extends ItemCore("projectred.transportation.pipe") with TItemMultiPart
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedTransportation.tabTransportation)
 
-    def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3) =
+    /**
+      * Create a new part based on the placement information parameters.
+      */
+    override def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, side:Int, vhit:Vector3) =
     {
         val pdef = PipeDefs.values(item.getItemDamage)
-        val p = MultiPartRegistry.createPart(pdef.partname, false).asInstanceOf[PayloadPipePart[_]]
+        val p = MultiPartRegistry.loadPart(pdef.partname, null:NBTTagCompound).asInstanceOf[PayloadPipePart[_]]
         if (p != null) p.preparePlacement(side, item.getItemDamage)
         p
     }
 
     @SideOnly(Side.CLIENT)
-    override def getSubItems(item:Item, tab:CreativeTabs, list:JList[_])
+    override def getSubItems(item:Item, tab:CreativeTabs, list:JList[ItemStack])
     {
-        val l2 = list.asInstanceOf[JList[ItemStack]]
-        for (t <- PipeDefs.values) l2.add(t.makeStack)
+        for (t <- PipeDefs.values) list.add(t.makeStack)
     }
 
-    override def registerIcons(reg:IIconRegister)
-    {
-        for (p <- PipeDefs.values) p.registerIcon(reg)
-    }
-
-    @SideOnly(Side.CLIENT)
-    override def getSpriteNumber = 0
+    override def getPlacementSound(item:ItemStack) = SoundType.GLASS
 }
 
 object PipeDefs extends ItemDefinition
@@ -72,12 +70,13 @@ object PipeDefs extends ItemDefinition
 
     class PipeVal(val partname:String, val textures:String*) extends ItemDef
     {
-        val sprites = new Array[IIcon](textures.length)
+        var sprites:Array[TextureAtlasSprite] = _
 
-        def registerIcon(reg:IIconRegister)
+        def registerIcon(map:TextureMap)
         {
+            sprites = new Array[TextureAtlasSprite](textures.length)
             if (textures.nonEmpty) for (i <- 0 until textures.length)
-                sprites(i) = reg.registerIcon("projectred:mechanical/pipes/"+textures(i))
+                sprites(i) = map.registerSprite(new ResourceLocation("projectred:blocks/mechanical/pipes/"+textures(i)))
         }
     }
 }
@@ -87,60 +86,46 @@ class ItemRoutingChip extends ItemCore("projectred.transportation.routingchip")
     setHasSubtypes(true)
     setCreativeTab(ProjectRedTransportation.tabTransportation)
 
-    override def getSubItems(i:Item, tab:CreativeTabs, list:JList[_])
+    override def getSubItems(i:Item, tab:CreativeTabs, list:JList[ItemStack])
     {
-        val list2 = list.asInstanceOf[JList[ItemStack]]
-        for (c <- RoutingChipDefs.values) list2.add(c.makeStack)
+        for (c <- RoutingChipDefs.values) list.add(c.makeStack)
     }
 
-    @SideOnly(Side.CLIENT)
-    override def registerIcons(reg:IIconRegister)
+    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[String], par4:Boolean)
     {
-        for (c <- RoutingChipDefs.values) c.registerIcons(reg)
-    }
-
-    override def getIconFromDamage(meta:Int) =
-    {
-        val c = RoutingChipDefs.values(meta)
-        if (c != null) c.icon
-        else null
-    }
-
-    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
-    {
-        val list2 = list.asInstanceOf[JList[String]]
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) if (ItemRoutingChip.hasChipInside(stack))
         {
             import scala.collection.JavaConversions._
             val r = ItemRoutingChip.loadChipFromItemStack(stack)
             val s = new ListBuffer[String]
             r.infoCollection(s)
-            list2.addAll(s)
+            list.addAll(s)
         }
-        else list2.add(EnumChatFormatting.GRAY+"not configured")
+        else list.add(ChatFormatting.GRAY+"not configured")
     }
 
-    override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer):ItemStack =
+    override def onItemRightClick(stack:ItemStack, world:World, player:EntityPlayer, hand:EnumHand) =
     {
-        if (!w.isRemote && ItemRoutingChip.isValidChip(stack))
+        if (!world.isRemote && ItemRoutingChip.isValidChip(stack))
         {
             val r = ItemRoutingChip.loadChipFromItemStack(stack)
             r.openGui(player)
         }
-        super.onItemRightClick(stack, w, player)
+        super.onItemRightClick(stack, world, player, hand)
     }
 
-    override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World, par4:Int, par5:Int, par6:Int, par7:Int, par8:Float, par9:Float, par10:Float):Boolean =
+
+    override def onItemUse(stack:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, hand:EnumHand, facing:EnumFacing, hitX:Float, hitY:Float, hitZ:Float) =
     {
-        if (!w.isRemote && ItemRoutingChip.isValidChip(stack))
+        if (!world.isRemote && ItemRoutingChip.isValidChip(stack))
         {
             val r = ItemRoutingChip.loadChipFromItemStack(stack)
             r.openGui(player)
         }
-        true
+        EnumActionResult.SUCCESS
     }
 
-    override def doesSneakBypassUse(world:World, x:Int, y:Int, z:Int, player:EntityPlayer) = true
+    override def doesSneakBypassUse(stack:ItemStack, world:IBlockAccess, pos:BlockPos, player:EntityPlayer) = true
 }
 
 object ItemRoutingChip
@@ -206,10 +191,16 @@ object RoutingChipDefs extends ItemDefinition
     {
         def this(icon:String, f: => RoutingChip) = this(icon, f, ChipType.INTERFACE)
 
-        var icon:IIcon = null
-        def registerIcons(reg:IIconRegister)
+        var icon:TextureAtlasSprite = _
+
+        def registerIcons(map:TextureMap)
         {
-            icon = reg.registerIcon("projectred:mechanical/"+iconPath)
+            icon = map.registerSprite(new ResourceLocation("projectred:items/mechanical/"+iconPath))
+        }
+
+        def setCustomModelResourceLocations()
+        {
+            ModelLoader.setCustomModelResourceLocation(getItem, meta, new ModelResourceLocation("projectred:mechanical/"+iconPath))
         }
 
         def isInterfaceChip = cType == ChipType.INTERFACE
@@ -217,7 +208,6 @@ object RoutingChipDefs extends ItemDefinition
 
         def createChipset = f
     }
-
 }
 
 object ChipType extends Enumeration
@@ -226,100 +216,20 @@ object ChipType extends Enumeration
     val INTERFACE, CRAFTING = Value
 }
 
-class ItemRouterUtility extends ItemCore("projectred.transportation.routerutil")
+class ItemRouterUtility extends ItemCore("projectred:routerUtility")
 {
     setMaxStackSize(1)
-    setTextureName("projectred:mechanical/router_util")
     setCreativeTab(ProjectRedTransportation.tabTransportation)
 
-    override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer) =
-    {
-        super.onItemRightClick(stack, w, player)
-    }
-
-    override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World, par4:Int, par5:Int, par6:Int, par7:Int, par8:Float, par9:Float, par10:Float) =
-    {
-        true
-    }
-}
-
-class ChipUpgradeContainer(player:EntityPlayer) extends NodeContainer
-{
-    val upgradeInv = new SimpleInventory(7, "upBus", 1)
-    {
-        override def isItemValidForSlot(i:Int, stack:ItemStack) =
-        {
-            if (i == 6)
-                stack != null &&
-                    stack.getItem.isInstanceOf[ItemRoutingChip] &&
-                    stack.hasTagCompound && stack.getTagCompound.hasKey("chipROM")
-
-            else if (stack.getItem.isInstanceOf[ItemPart])
-            {
-                val slotForMeta = stack.getItemDamage-PartDefs.CHIPUPGRADE_LX.meta
-                slotForMeta == i
-            }
-            else false
-        }
-
-        override def markDirty()
-        {
-            super.markDirty()
-            refreshChips()
-        }
-    }
-
-    val slot = player.inventory.currentItem
-
-    {
-        var s = 0
-        def next = {s += 1; s-1}
-
-        for ((x, y) <- GuiLib.createSlotGrid(8, 18, 1, 3, 2, 2))
-            addSlotToContainer(new Slot3(upgradeInv, next, x, y))
-        for ((x, y) <- GuiLib.createSlotGrid(152, 18, 1, 3, 2, 2))
-            addSlotToContainer(new Slot3(upgradeInv, next, x, y))
-
-        addSlotToContainer(new Slot3(upgradeInv, next, 80, 38))
-
-        addPlayerInv(player, 8, 86)
-    }
-
-    override def onContainerClosed(p:EntityPlayer)
-    {
-        super.onContainerClosed(p)
-        for (i <- 0 until upgradeInv.getSizeInventory)
-            if (upgradeInv.getStackInSlot(i) != null)
-            {
-                p.dropPlayerItemWithRandomChoice(upgradeInv.getStackInSlot(i), false)
-                upgradeInv.setInventorySlotContents(i, null)
-            }
-        upgradeInv.markDirty()
-    }
-
-    override def addSlotToContainer(slot:Slot) =
-    {
-        super.addSlotToContainer(slot)
-        if (slot.getSlotIndex == this.slot && slot.inventory == player.inventory)
-            slot.asInstanceOf[Slot3].canRemoveDelegate = {() => false}
-        slot
-    }
-
-    //TODO better way to handle this cached chip (currently only used for gui's rendering to avoid creating one every frame)
-    var cachedChip:RoutingChip = null
-    private def refreshChips()
-    {
-        val stack = upgradeInv.getStackInSlot(6)
-        cachedChip =
-                if (stack != null && ItemRoutingChip.isValidChip(stack))
-                    ItemRoutingChip.loadChipFromItemStack(stack)
-                else null
-    }
-
-    def containsChipStack() = upgradeInv.getStackInSlot(6) != null
-
-    def install()
-    {
-        detectAndSendChanges()
-    }
+//    override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer) =
+//    {
+//        super.onItemRightClick(stack, w, player)
+//    }
+//
+//    override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World, par4:Int, par5:Int, par6:Int, par7:Int, par8:Float, par9:Float, par10:Float) =
+//    {
+//        true
+//    }
+//
+//    override def onItemUse(stack:ItemStack, playerIn:EntityPlayer, worldIn:World, pos:BlockPos, hand:EnumHand, facing:EnumFacing, hitX:Float, hitY:Float, hitZ:Float) = super.onItemUse(stack, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ)
 }

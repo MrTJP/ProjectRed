@@ -1,8 +1,8 @@
 package mrtjp.projectred.core
 
-import codechicken.lib.data.{MCDataOutput, MCDataInput}
-import codechicken.lib.vec.{Vector3, Rotation}
-import codechicken.multipart.{TSlottedPart, TFacePart, TMultiPart}
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.vec.{Rotation, Vector3}
+import codechicken.multipart.{TFacePart, TMultiPart, TSlottedPart}
 
 trait TSwitchPacket extends TMultiPart
 {

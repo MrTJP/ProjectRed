@@ -1,17 +1,22 @@
 package mrtjp.projectred.transmission
 
-import codechicken.lib.vec.{BlockCoord, Rotation}
-import codechicken.multipart.TileMultipart
+import codechicken.lib.vec.Rotation
+import codechicken.multipart.{BlockMultipart, TileMultipart}
 import mrtjp.projectred.api.{IBundledEmitter, IBundledTile, IBundledTileInteraction, ITransmissionAPI}
-import mrtjp.projectred.core.libmc.PRLib
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
 class APIImpl_Transmission extends ITransmissionAPI
 {
-    override def getBundledInput(world:World, x:Int, y:Int, z:Int, side:Int):Array[Byte] =
+    override def registerBundledTileInteraction(interaction:IBundledTileInteraction)
     {
-        val pos = new BlockCoord(x, y, z).offset(side)
-        world.getTileEntity(pos.x, pos.y, pos.z) match
+        APIImpl_Transmission.interactions :+= interaction
+    }
+
+    override def getBundledInput(world:World, pos:BlockPos, side:Int):Array[Byte] =
+    {
+        world.getTileEntity(pos.offset(EnumFacing.values()(side))) match
         {
             case ibt:IBundledTile => ibt.getBundledSignal(side^1)
 
@@ -22,17 +27,14 @@ class APIImpl_Transmission extends ITransmissionAPI
                     signal = BundledCommons.raiseSignal(signal, ibe.getBundledSignal(r))
                 }
 
-                for (r <- 0 until 4)
-                {
+                for (r <- 0 until 4) {
                     val pside = Rotation.rotateSide(side, r)
-                    tmp.partMap(pside) match
-                    {
+                    tmp.partMap(pside) match {
                         case ibe:IBundledEmitter => raise(ibe, Rotation.rotationTo(pside, side^1))
                         case _ =>
                     }
                 }
-                tmp.partMap(6) match
-                {
+                tmp.partMap(6) match {
                     case ibe:IBundledEmitter => raise(ibe, side^1)
                     case _ =>
                 }
@@ -42,26 +44,20 @@ class APIImpl_Transmission extends ITransmissionAPI
         }
     }
 
-    override def registerBundledTileInteraction(interaction:IBundledTileInteraction)
-    {
-        APIImpl_Transmission.interactions :+= interaction
-    }
-
-    override def containsFramedWire(world:World, x:Int, y:Int, z:Int) =
-        PRLib.getMultiPart(world, x, y, z, 6).isInstanceOf[FramedWirePart]
-
-    override def getFramedWireConnectionMask(world:World, x:Int, y:Int, z:Int) =
-        PRLib.getMultiPart(world, x, y, z, 6) match
-        {
-            case f:FramedWirePart => f.clientConnMap
-            case _ => -1
-        }
-
-    override def containsBundledCable(world:World, x:Int, y:Int, z:Int, side:Int) =
-        PRLib.getMultiPart(world, x, y, z, side) match
+    override def containsBundledCable(world:World, pos:BlockPos, side:Int) =
+        BlockMultipart.getPart(world, pos, side) match
         {
             case be:IBundledCablePart => true
             case _ => false
+        }
+
+    override def containsFramedWire(world:World, pos:BlockPos) =
+        BlockMultipart.getPart(world, pos, 6).isInstanceOf[FramedWirePart]
+
+    override def getFramedWireConnectionMask(world:World, pos:BlockPos) =
+        BlockMultipart.getPart(world, pos, 6) match {
+            case f:FramedWirePart => f.clientConnMap
+            case _ => -1
         }
 }
 
@@ -69,29 +65,21 @@ object APIImpl_Transmission
 {
     var interactions = Vector[IBundledTileInteraction]()
 
-    def isValidInteractionFor(world:World, x:Int, y:Int, z:Int) =
-        interactions.exists(_.isValidInteractionFor(world, x, y, z))
+    def isValidInteractionFor(world:World, pos:BlockPos) =
+        interactions.exists(_.isValidInteractionFor(world, pos))
 
-    def canConnectBundled(world:World, pos:BlockCoord, side:Int):Boolean =
-        canConnectBundled(world, pos.x, pos.y, pos.z, side)
-
-    def canConnectBundled(world:World, x:Int, y:Int, z:Int, side:Int):Boolean =
+    def canConnectBundled(world:World, pos:BlockPos, side:Int):Boolean =
     {
-        interactions.find(_.isValidInteractionFor(world, x, y, z)) match
-        {
-            case Some(e) => e.canConnectBundled(world, x, y, z, side)
+        interactions.find(_.isValidInteractionFor(world, pos)) match {
+            case Some(e) => e.canConnectBundled(world, pos, side)
             case None => false
         }
     }
 
-    def getBundledSignal(world:World, pos:BlockCoord, side:Int):Array[Byte] =
-        getBundledSignal(world, pos.x, pos.y, pos.z, side)
-
-    def getBundledSignal(world:World, x:Int, y:Int, z:Int, side:Int):Array[Byte] =
+    def getBundledSignal(world:World, pos:BlockPos, side:Int):Array[Byte] =
     {
-        interactions.find(_.isValidInteractionFor(world, x, y, z)) match
-        {
-            case Some(e) => e.getBundledSignal(world, x, y, z, side)
+        interactions.find(_.isValidInteractionFor(world, pos)) match {
+            case Some(e) => e.getBundledSignal(world, pos, side)
             case None => null
         }
     }

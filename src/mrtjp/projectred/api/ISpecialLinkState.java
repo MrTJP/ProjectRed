@@ -19,7 +19,7 @@ public interface ISpecialLinkState
      * @param tile The tile in question
      * @return True if this special link state applies to the tile.
      */
-    public boolean matches(TileEntity tile);
+    boolean matches(TileEntity tile);
 
     /**
      * This method should utilize the given tile to find all other tiles that
@@ -33,5 +33,5 @@ public interface ISpecialLinkState
      * @param tile The tile in question.
      * @return The connected pipe (as a TileMultipart).
      */
-    public TileEntity getLink(TileEntity tile);
+    TileEntity getLink(TileEntity tile);
 }

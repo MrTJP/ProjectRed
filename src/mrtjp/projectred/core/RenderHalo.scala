@@ -1,13 +1,15 @@
 package mrtjp.projectred.core
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.render.{BlockRenderer, CCRenderState}
 import codechicken.lib.vec._
-import cpw.mods.fml.common.eventhandler.SubscribeEvent
-import mrtjp.core.color.Colors
-import mrtjp.core.render.RenderLib
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager._
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11._
 
 object RenderHalo
@@ -16,11 +18,11 @@ object RenderHalo
     private val renderEntityPos = new Vector3
     private val vec = new Vector3
 
-    private class LightCache(val pos:BlockCoord, val color:Int, val cube:Cuboid6) extends Ordered[LightCache]
+    private class LightCache(val pos:BlockPos, val color:Int, val cube:Cuboid6) extends Ordered[LightCache]
     {
-        def this(x:Int, y:Int, z:Int, c:Int, cube:Cuboid6) = this(new BlockCoord(x, y, z), c, cube)
+        def this(x:Int, y:Int, z:Int, c:Int, cube:Cuboid6) = this(new BlockPos(x, y, z), c, cube)
 
-        private def renderDist = vec.set(pos.x, pos.y, pos.z).sub(renderEntityPos).magSquared
+        private def renderDist = vec.set(pos.getX, pos.getY, pos.getZ).subtract(renderEntityPos).magSquared
 
         override def compare(o:LightCache) =
         {
@@ -40,77 +42,77 @@ object RenderHalo
     {
         if (renderList.isEmpty) return
         val w = Minecraft.getMinecraft.theWorld
-        val entity = Minecraft.getMinecraft.renderViewEntity
+        val entity = Minecraft.getMinecraft.getRenderViewEntity
         renderEntityPos.set(entity.posX, entity.posY+entity.getEyeHeight, entity.posZ)
 
         renderList = renderList.sorted
 
-        glPushMatrix()
-
+        pushMatrix()
         // Adjust translation for camera movement between frames (using camra coordinates for numeric stability).
-        // Note: When porting to MC 1.8, might want to use GlStateManager.translate() here instead.
-        glTranslated(
-             entity.posX-(entity.posX-entity.lastTickPosX)*event.partialTicks-entity.lastTickPosX,
-             entity.posY-(entity.posY-entity.lastTickPosY)*event.partialTicks-entity.lastTickPosY,
-             entity.posZ-(entity.posZ-entity.lastTickPosZ)*event.partialTicks-entity.lastTickPosZ)
-
+        translate(
+             entity.posX-(entity.posX-entity.lastTickPosX)*event.getPartialTicks-entity.lastTickPosX,
+             entity.posY-(entity.posY-entity.lastTickPosY)*event.getPartialTicks-entity.lastTickPosY,
+             entity.posZ-(entity.posZ-entity.lastTickPosZ)*event.getPartialTicks-entity.lastTickPosZ
+        )
         prepareRenderState()
+
         val it = renderList.iterator
         val max = if (Configurator.lightHaloMax < 0) renderList.size else Configurator.lightHaloMax
 
         var i = 0
-        while (i < max && it.hasNext)
-        {
+        while (i < max && it.hasNext) {
             val cc = it.next()
             renderHalo(w, cc)
             i += 1
         }
-
         renderList = Vector()
+
         restoreRenderState()
-        glPopMatrix()
+        popMatrix()
     }
 
     def prepareRenderState()
     {
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
-        glDisable(GL_TEXTURE_2D)
-        glDisable(GL_LIGHTING)
-        glDisable(GL_CULL_FACE)
-        glDepthMask(false)
-        CCRenderState.reset()
-        CCRenderState.setDynamic()
-        CCRenderState.startDrawing()
+        enableBlend()
+        blendFunc(GL_SRC_ALPHA, GL_ONE)
+        disableTexture2D()
+        disableLighting()
+        disableCull()
+        depthMask(false)
+
+        val rs = CCRenderState.instance()
+        rs.reset()
+        rs.startDrawing(GL_QUADS, DefaultVertexFormats.ITEM)
     }
 
     def restoreRenderState()
     {
-        CCRenderState.draw()
-        glDepthMask(true)
-        glColor4d(1, 1, 1, 1)
-        glEnable(GL_CULL_FACE)
-        glEnable(GL_LIGHTING)
-        glEnable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glDisable(GL_BLEND)
+        CCRenderState.instance().draw()
+        depthMask(true)
+        color(1, 1, 1, 1)
+        enableCull()
+        enableLighting()
+        enableTexture2D()
+        blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        disableBlend()
     }
 
     private def renderHalo(world:World, cc:LightCache)
     {
-        CCRenderState.setBrightness(world, cc.pos.x, cc.pos.y, cc.pos.z)
+        CCRenderState.instance().setBrightness(world, cc.pos)
         // Make sure to use camera coordinates for the halo transformation.
-        val entity = Minecraft.getMinecraft.renderViewEntity
+        val entity = Minecraft.getMinecraft.getRenderViewEntity
         renderHalo(cc.cube, cc.color,
-            new Translation(cc.pos.x-entity.posX, cc.pos.y-entity.posY, cc.pos.z-entity.posZ))
+            new Translation(cc.pos.getX-entity.posX, cc.pos.getY-entity.posY, cc.pos.getZ-entity.posZ))
     }
 
     def renderHalo(cuboid:Cuboid6, colour:Int, t:Transformation)
     {
-        CCRenderState.reset()
-        CCRenderState.setPipeline(t)
-        CCRenderState.baseColour = Colors(colour).rgba
-        CCRenderState.alphaOverride = 128
-        BlockRenderer.renderCuboid(cuboid, 0)
+        val rs = CCRenderState.instance()
+        rs.reset()
+        rs.setPipeline(t)
+        rs.baseColour = EnumColour.values()(colour).rgba
+        rs.alphaOverride = 128
+        BlockRenderer.renderCuboid(rs, cuboid, 0)
     }
 }

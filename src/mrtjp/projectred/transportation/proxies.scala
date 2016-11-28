@@ -1,14 +1,14 @@
 package mrtjp.projectred.transportation
 
+import codechicken.lib.model.ModelRegistryHelper
 import codechicken.lib.packet.PacketCustom
+import codechicken.lib.texture.TextureUtils
 import codechicken.microblock.MicroMaterialRegistry
-import codechicken.multipart.MultiPartRegistry
-import codechicken.multipart.MultiPartRegistry.IPartFactory
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import codechicken.multipart.{IPartFactory, MultiPartRegistry}
 import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedTransportation._
 import mrtjp.projectred.core.{Configurator, IProxy}
-import net.minecraftforge.client.MinecraftForgeClient
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class TransportationProxy_server extends IProxy with IPartFactory
 {
@@ -18,27 +18,28 @@ class TransportationProxy_server extends IProxy with IPartFactory
 
     override def preinit()
     {
-        PacketCustom.assignHandler(TransportationSPH.channel, TransportationSPH)
-    }
+        itemPartPipe = new ItemPartPipe
+        itemRoutingChip = new ItemRoutingChip
+        itemRouterUtility = new ItemRouterUtility
 
-    override def init()
-    {
         MultiPartRegistry.registerParts(this, Array[String](
             "pr_pipe", "pr_rbasic", "pr_rinterface",
             "pr_rrequest", "pr_rfire",
             "pr_pt", "pr_rpt", "pr_netvalve", "pr_netlatency"
         ))
+    }
 
-        itemPartPipe = new ItemPartPipe
-        itemRoutingChip = new ItemRoutingChip
-        itemRouterUtility = new ItemRouterUtility
-
-        for (i <- 0 until Configurator.routerUpdateThreadCount) new TableUpdateThread(i)
-
+    override def init()
+    {
         TransportationRecipes.initRecipes()
     }
 
-    override def postinit(){}
+    override def postinit()
+    {
+        PacketCustom.assignHandler(TransportationSPH.channel, TransportationSPH)
+
+        for (i <- 0 until Configurator.routerUpdateThreadCount) new TableUpdateThread(i)
+    }
 
     import mrtjp.projectred.transportation.PipeDefs._
     override def createPart(name:String, client:Boolean) = name match
@@ -67,16 +68,28 @@ class TransportationProxy_client extends TransportationProxy_server
     override def preinit()
     {
         super.preinit()
-        PacketCustom.assignHandler(TransportationCPH.channel, TransportationCPH)
+
+        ModelRegistryHelper.registerItemRenderer(itemPartPipe, PipeItemRenderer)
+
+        for (i <- RoutingChipDefs.values)
+            i.setCustomModelResourceLocations()
     }
 
     @SideOnly(Side.CLIENT)
     override def init()
     {
         super.init()
-        MinecraftForgeClient.registerItemRenderer(itemPartPipe, PipeItemRenderer)
         MicroMaterialRegistry.registerHighlightRenderer(PipeRSHighlightRenderer)
         MicroMaterialRegistry.registerHighlightRenderer(PipeColourHighlightRenderer)
+
+        TextureUtils.addIconRegister(RenderPipe)
+    }
+
+    @SideOnly(Side.CLIENT)
+    override def postinit()
+    {
+        super.postinit()
+        PacketCustom.assignHandler(TransportationCPH.channel, TransportationCPH)
 
         GuiHandler.register(GuiInterfacePipe, guiIDInterfacePipe)
         GuiHandler.register(GuiFirewallPipe, guiIDFirewallPipe)

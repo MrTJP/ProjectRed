@@ -2,12 +2,11 @@ package mrtjp.projectred.transportation
 
 import java.util.{PriorityQueue => JPriorityQueue}
 
-import mrtjp.core.item.{ItemQueue, ItemEquality, ItemKey, ItemKeyStack}
-import mrtjp.core.util.HashPair2
+import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack, ItemQueue}
 import net.minecraft.item.ItemStack
 
-import scala.collection.immutable.{HashMap, TreeSet}
-import scala.collection.mutable.{HashMap => MHashMap, MultiMap => MMultiMap, Set => MSet, Map => MMap}
+import scala.collection.immutable.TreeSet
+import scala.collection.mutable.{HashMap => MHashMap, Map => MMap, MultiMap => MMultiMap, Set => MSet}
 
 object RequestFlags extends Enumeration
 {

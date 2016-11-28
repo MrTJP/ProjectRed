@@ -4,74 +4,62 @@ import java.util.{List => JList}
 
 import codechicken.lib.vec._
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.item.{ItemCore, TItemGlassSound}
-import mrtjp.core.world.PlacementLib
+import mrtjp.core.item.ItemCore
 import mrtjp.projectred.ProjectRedTransmission
-import net.minecraft.client.renderer.texture.IIconRegister
+import mrtjp.projectred.core.libmc.PRLib
+import net.minecraft.block.SoundType
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-abstract class ItemWireCommon(name:String) extends ItemCore(name) with TItemMultiPart with TItemGlassSound
+class ItemPartWire extends ItemCore("projectred:wire") with TItemMultiPart
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedTransmission.tabTransmission)
 
-    @SideOnly(Side.CLIENT)
-    override def getSpriteNumber = 0
-
-    override def registerIcons(reg:IIconRegister){}
-}
-
-class ItemPartWire extends ItemWireCommon("projectred.transmission.wire")
-{
-    def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3) =
+    def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, side:Int, vhit:Vector3) =
     {
-        val onPos = pos.copy.offset(side^1)
-        if (!PlacementLib.canPlaceWireOnSide(world, onPos.x, onPos.y, onPos.z, side)) null
-        else
-        {
+        val onPos = pos.offset(EnumFacing.values()(side^1))
+        if (!PRLib.canPlaceWireOnSide(world, onPos, side)) null
+        else {
             val wiredef = WireDef.values(item.getItemDamage)
-            val w = MultiPartRegistry.createPart(wiredef.wireType, false).asInstanceOf[WirePart]
+            val w = MultiPartRegistry.loadPart(wiredef.wireType, null).asInstanceOf[WirePart]
             if (w != null) w.preparePlacement(side, item.getItemDamage)
             w
         }
     }
 
     @SideOnly(Side.CLIENT)
-    override def getSubItems(i:Item, tab:CreativeTabs, list:JList[_])
+    override def getSubItems(i:Item, tab:CreativeTabs, list:JList[ItemStack])
     {
-        val l2 = list.asInstanceOf[JList[ItemStack]]
-
         for (w <- WireDef.values)
-            if (w.hasWireForm) l2.add(w.makeStack)
+            if (w.hasWireForm) list.add(w.makeStack)
     }
 
-    @SideOnly(Side.CLIENT)
-    override def registerIcons(reg:IIconRegister)
-    {
-        for (w <- WireDef.values) w.loadTextures(reg)
-    }
+    override def getPlacementSound(item:ItemStack) = SoundType.GLASS
 }
 
-class ItemPartFramedWire extends ItemWireCommon("projectred.transmission.framewire")
+class ItemPartFramedWire extends ItemCore("projectred:wireFramed") with TItemMultiPart
 {
-    def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3) =
+    setHasSubtypes(true)
+    setCreativeTab(ProjectRedTransmission.tabTransmission)
+
+    def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, side:Int, vhit:Vector3) =
     {
         val wiredef = WireDef.values(item.getItemDamage)
-        val w = MultiPartRegistry.createPart(wiredef.framedType, false).asInstanceOf[FramedWirePart]
+        val w = MultiPartRegistry.loadPart(wiredef.framedType, null).asInstanceOf[FramedWirePart]
         if (w != null) w.preparePlacement(side, item.getItemDamage)
         w
     }
 
     @SideOnly(Side.CLIENT)
-    override def getSubItems(i:Item, tab:CreativeTabs, list:JList[_])
+    override def getSubItems(i:Item, tab:CreativeTabs, list:JList[ItemStack])
     {
-        val l2 = list.asInstanceOf[JList[ItemStack]]
-
         for (w <- WireDef.values)
-            if (w.hasFramedForm) l2.add(w.makeFramedStack)
+            if (w.hasFramedForm) list.add(w.makeFramedStack)
     }
 }

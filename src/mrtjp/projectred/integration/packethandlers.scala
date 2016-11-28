@@ -8,10 +8,8 @@ package mrtjp.projectred.integration
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.packet.PacketCustom.{IClientPacketHandler, IServerPacketHandler}
-import codechicken.lib.vec.BlockCoord
-import codechicken.multipart.TMultiPart
+import codechicken.multipart.{BlockMultipart, TMultiPart}
 import mrtjp.projectred.ProjectRedIntegration
-import mrtjp.projectred.core.libmc.PRLib
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.network.play.{INetHandlerPlayClient, INetHandlerPlayServer}
@@ -23,36 +21,33 @@ class IntegrationPH
 
     def writePartIndex(out:MCDataOutput, part:TMultiPart) =
     {
-        out.writeCoord(new BlockCoord(part.tile)).writeByte(part.tile.partList.indexOf(part))
+        out.writePos(part.pos).writeByte(part.tile.partList.indexOf(part))
     }
 
     def readPartIndex(world:World, in:MCDataInput) =
     {
-        val tile = PRLib.getMultipartTile(world, in.readCoord)
-        try
-        {
+        val tile = BlockMultipart.getTile(world, in.readPos())//PRLib.getMultipartTile(world, in.readCoord)
+        try {
             tile.partList(in.readUByte)
         }
-        catch
-            {
-                case e:NullPointerException => null
-                case e:IndexOutOfBoundsException => null
-            }
+        catch {
+            case e:NullPointerException => null
+            case e:IndexOutOfBoundsException => null
+        }
     }
 }
 
 object IntegrationSPH extends IntegrationPH with IServerPacketHandler
 {
-    override def handlePacket(packet:PacketCustom, sender:EntityPlayerMP, handler:INetHandlerPlayServer) = packet.getType match
-    {
-        case 1 => incrTimer(sender.worldObj, packet)
-        case 2 => incCounter(sender.worldObj, packet)
-    }
+    override def handlePacket(packet:PacketCustom, sender:EntityPlayerMP, handler:INetHandlerPlayServer) =
+        packet.getType match {
+            case 1 => incrTimer(sender.worldObj, packet)
+            case 2 => incCounter(sender.worldObj, packet)
+        }
 
     private def incCounter(world:World, packet:PacketCustom)
     {
-        readPartIndex(world, packet) match
-        {
+        readPartIndex(world, packet) match {
             case gate:GatePart if gate.getLogic.isInstanceOf[ICounterGuiLogic] =>
                 val t = gate.getLogic[ICounterGuiLogic]
                 val actionID = packet.readByte()
@@ -65,8 +60,7 @@ object IntegrationSPH extends IntegrationPH with IServerPacketHandler
 
     private def incrTimer(world:World, packet:PacketCustom)
     {
-        readPartIndex(world, packet) match
-        {
+        readPartIndex(world, packet) match {
             case gate:GatePart if gate.getLogic.isInstanceOf[ITimerGuiLogic] =>
                 val t = gate.getLogic[ITimerGuiLogic]
                 t.setTimerMax(gate, t.getTimerMax+packet.readShort())
@@ -78,8 +72,8 @@ object IntegrationSPH extends IntegrationPH with IServerPacketHandler
 
 object IntegrationCPH extends IntegrationPH with IClientPacketHandler
 {
-    override def handlePacket(packet:PacketCustom, mc:Minecraft, handler:INetHandlerPlayClient) = packet.getType match
-    {
-        case _ =>
-    }
+    override def handlePacket(packet:PacketCustom, mc:Minecraft, handler:INetHandlerPlayClient) =
+        packet.getType match {
+            case _ =>
+        }
 }

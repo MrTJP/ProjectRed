@@ -5,17 +5,20 @@
  */
 package mrtjp.projectred.transportation
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.vec.{BlockCoord, Vector3}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
-import mrtjp.core.fx.FXEngine
+import codechicken.lib.vec.Vector3
+import codechicken.multipart.BlockMultipart
 import mrtjp.core.fx.ParticleAction._
 import mrtjp.core.fx.particles.{BeamMulti, SpriteParticle}
 import mrtjp.projectred.core.Configurator
-import mrtjp.projectred.core.libmc.PRLib
+import net.minecraft.client.Minecraft
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.BlockPos.MutableBlockPos
 import net.minecraft.world.World
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
@@ -23,17 +26,17 @@ import scala.collection.mutable.{Set => MSet}
 
 object RouteFX2
 {
-    val color_receive = Colors.ORANGE.ordinal
-    val color_send = Colors.PURPLE.ordinal
-    val color_relay = Colors.CYAN.ordinal
-    val color_routeLost = Colors.MAGENTA.ordinal
-    val color_route = Colors.RED.ordinal
-    val color_sync = Colors.LIGHT_BLUE.ordinal
-    val color_request = Colors.PINK.ordinal
-    val color_checkInv = Colors.WHITE.ordinal
-    val color_linked = Colors.LIME.ordinal
-    val color_unlinked = Colors.RED.ordinal
-    val color_blink = Colors.LIGHT_GREY.ordinal
+    val color_receive = EnumColour.ORANGE.ordinal
+    val color_send = EnumColour.PURPLE.ordinal
+    val color_relay = EnumColour.CYAN.ordinal
+    val color_routeLost = EnumColour.MAGENTA.ordinal
+    val color_route = EnumColour.RED.ordinal
+    val color_sync = EnumColour.LIGHT_BLUE.ordinal
+    val color_request = EnumColour.PINK.ordinal
+    val color_checkInv = EnumColour.WHITE.ordinal
+    val color_linked = EnumColour.LIME.ordinal
+    val color_unlinked = EnumColour.RED.ordinal
+    val color_blink = EnumColour.LIGHT_GRAY.ordinal
 
     def isFXDisabled = !Configurator.pipeRoutingFX
 
@@ -49,12 +52,12 @@ object RouteFX2
     {
         if (isFXDisabled) return
 
-        val c1 = Colors.BLACK
-        val c2 = Colors(colour)
+        val c1 = EnumColour.BLACK
+        val c2 = EnumColour.values()(colour)
 
         val particle = new SpriteParticle(pipe.world)
-        FXEngine.addEffect(particle)
-        particle.setPos(pipe.posOfInternal.toVector3Centered)
+        Minecraft.getMinecraft.effectRenderer.addEffect(particle)
+        particle.setPos(Vector3.fromBlockPosCenter(pipe.posOfInternal))
         particle.setMaxAge(15)
         particle.texture = "projectred:textures/particles/large_colourless_bubble.png"
         particle.alpha = 0
@@ -90,15 +93,15 @@ object RouteFX2
     {
         if (isFXDisabled) return
 
-        val c1 = Colors.BLACK
-        val c2 = Colors(colour)
+        val c1 = EnumColour.BLACK
+        val c2 = EnumColour.values()(colour)
         val beam = new BeamMulti(pipe.world)
-        FXEngine.addEffect(beam)
+        Minecraft.getMinecraft.effectRenderer.addEffect(beam)
         beam.setMaxAge(15)
         beam.texture = "projectred:textures/particles/beam4.png"
         beam.points = Seq(
-            pipe.posOfInternal.toVector3Centered,
-            pipe.posOfInternal.offset(dir).toVector3Centered
+            Vector3.fromBlockPosCenter(pipe.posOfInternal),
+            Vector3.fromBlockPosCenter(pipe.posOfStraight(dir))
         )
         beam.alpha = 0
         beam.setRGB(c1.rF, c1.gF, c1.bF)
@@ -131,8 +134,8 @@ object RouteFX2
         if (isFXDisabled) return
 
         val paths = BeamPathFinder.findPaths(pipe, dir)
-        val c1 = Colors.BLACK
-        val c2 = Colors(colour)
+        val c1 = EnumColour.BLACK
+        val c2 = EnumColour.values()(colour)
 
         import mrtjp.core.fx.ParticleAction._
         val act = sequence(
@@ -148,10 +151,9 @@ object RouteFX2
             kill()
         )
 
-        for (path <- paths) if (path.size > 1)
-        {
+        for (path <- paths) if (path.size > 1) {
             val beam = new BeamMulti(pipe.world)
-            FXEngine.addEffect(beam)
+            Minecraft.getMinecraft.effectRenderer.addEffect(beam)
             beam.setMaxAge(20)
             beam.texture = "projectred:textures/particles/beam4.png"
             beam.points = path
@@ -161,23 +163,21 @@ object RouteFX2
         }
     }
 
-    def sendPacket(w:World, bc:BlockCoord, id:Int, colour:Int, dir:Int)
+    def sendPacket(w:World, pos:BlockPos, id:Int, colour:Int, dir:Int)
     {
         val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.particle_Spawn)
         packet.writeByte(id)
-        packet.writeByte(colour).writeCoord(bc)
+        packet.writeByte(colour).writePos(pos)
         if (dir != -1) packet.writeByte(dir)
-        packet.sendPacketToAllAround(bc.x, bc.y, bc.z, 64, w.provider.dimensionId)
+        packet.sendPacketToAllAround(pos, 64, w.provider.getDimension)
     }
 
     def handleClientPacket(in:MCDataInput, w:World)
     {
         val id = in.readUByte()
         val colour = in.readUByte()
-        PRLib.getMultiPart(w, in.readCoord(), 6) match
-        {
-            case pipe:TNetworkPipe => id match
-            {
+        BlockMultipart.getPart(w, in.readPos(), 6) match {
+            case pipe:TNetworkPipe => id match {
                 case 1 => spawnType1_do(colour, pipe.asInstanceOf[TNetworkPipe])
                 case 2 => spawnType2_do(colour, in.readUByte(), pipe.asInstanceOf[TNetworkPipe])
                 case 3 => spawnType3_do(colour, in.readUByte(), pipe.asInstanceOf[TNetworkPipe])
@@ -197,26 +197,25 @@ object BeamPathFinder
     {
         pipe = p
 
-        val bc = new BlockCoord(pipe.tile)
-
+        val pos = pipe.pos
         val q = Queue.newBuilder[Node]
-        q += Node(bc, dir)
-        iterate(Queue(Node(bc, dir)), Set(Node(bc)))
+        q += Node(pos, dir)
+        iterate(Queue(Node(pos, dir)), Set(Node(pos)))
 
         val result = paths.toSet
         pipe = null
         paths.clear()
-        result.map(traceAndVectorize(bc, _))
+        result.map(traceAndVectorize(pos, _))
     }
 
     @tailrec
     private def iterate(open:Seq[Node], closed:Set[Node] = Set.empty):Unit = open match
     {
         case Seq() =>
-        case Seq(next, rest@_*) => getMultiPart(next.bc) match
+        case Seq(next, rest@_*) => getMultiPart(next.pos) match
         {
             case iwr:IWorldRouter with TNetworkPipe if !iwr.needsWork =>
-                if (!closed.exists(_.bc == next.bc)) paths += next.path
+                if (!closed.exists(_.pos == next.pos)) paths += next.path
                 iterate(rest, closed+next)
             case p:TNetworkSubsystem =>
                 val upNext = Seq.newBuilder[Node]
@@ -230,43 +229,42 @@ object BeamPathFinder
         }
     }
 
-    private def getMultiPart(bc:BlockCoord) = PRLib.getMultiPart(pipe.world, bc, 6)
+    private def getMultiPart(pos:BlockPos) = BlockMultipart.getPart(pipe.world, pos, 6)
 
-    private def traceAndVectorize(start:BlockCoord, path:Seq[Int]):Seq[Vector3] =
+    private def traceAndVectorize(start:BlockPos, path:Seq[Int]):Seq[Vector3] =
     {
-        val newList = Seq.newBuilder[BlockCoord]
+        val newList = Seq.newBuilder[BlockPos]
         val iterator = path.iterator
 
         var prev = -1
-        var bc = start.copy
+        var pos = new MutableBlockPos(start)
 
         while(iterator.hasNext)
         {
             val dir = iterator.next()
-            if (dir == prev) bc.offset(dir)
-            else
-            {
-                newList += bc
-                bc = bc.copy.offset(dir)
+            if (dir == prev) pos.move(EnumFacing.values()(dir))
+            else {
+                newList += pos.toImmutable
+                pos.move(EnumFacing.values()(dir))
                 prev = dir
             }
         }
 
-        newList += bc
-        newList.result().map(_.toVector3Centered)
+        newList += pos
+        newList.result().map(Vector3.fromBlockPosCenter)
     }
 }
 
 private object Node
 {
-    def apply(bc:BlockCoord):Node = new Node(bc.copy, 0, 6)
-    def apply(bc:BlockCoord, dir:Int):Node = new Node(bc.copy.offset(dir), 1, dir, Seq(dir))
+    def apply(pos:BlockPos):Node = new Node(pos, 0, 6)
+    def apply(pos:BlockPos, dir:Int):Node = new Node(pos.offset(EnumFacing.values()(dir)), 1, dir, Seq(dir))
 }
-private class Node(val bc:BlockCoord, val dist:Int, val dir:Int, val path:Seq[Int] = Seq.empty) extends Ordered[Node]
+private class Node(val pos:BlockPos, val dist:Int, val dir:Int, val path:Seq[Int] = Seq.empty) extends Ordered[Node]
 {
     def -->(toDir:Int, distAway:Int):Node =
     {
-        val bc2 = bc.copy.offset(toDir)
+        val bc2 = pos.offset(EnumFacing.values()(toDir))
         new Node(bc2, dist+distAway, toDir, path :+ toDir)
     }
     def -->(toDir:Int):Node = this -->(toDir, 1)
@@ -276,11 +274,11 @@ private class Node(val bc:BlockCoord, val dist:Int, val dir:Int, val path:Seq[In
     override def equals(other:Any) = other match
     {
         case that:Node =>
-            bc == that.bc && dir == that.dir
+            pos == that.pos && dir == that.dir
         case _ => false
     }
 
-    override def hashCode = bc.hashCode
+    override def hashCode = pos.hashCode
 
-    override def toString = "@"+bc.toString+": delta("+dir+")"
+    override def toString = "@"+pos.toString+": delta("+dir+")"
 }

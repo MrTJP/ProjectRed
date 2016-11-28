@@ -7,12 +7,11 @@ package mrtjp.projectred.integration
 
 import java.util.Random
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.raytracer.{ExtendedMOP, IndexedCuboid6}
+import codechicken.lib.raytracer.{CuboidRayTraceResult, IndexedCuboid6}
 import codechicken.lib.vec.{Cuboid6, Vector3}
-import mrtjp.core.color.Colors
 import mrtjp.core.vec.VecLib
-import mrtjp.core.world.WorldLib
 import mrtjp.projectred.api.{IBundledEmitter, IBundledTile, IConnectable, IScrewdriver}
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.TFaceOrient._
@@ -21,7 +20,6 @@ import mrtjp.projectred.transmission.{APIImpl_Transmission, TFaceBundledAquisiti
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.MovingObjectPosition
 
 trait TBundledGatePart extends GatePart with TFaceBundledAquisitions with IBundledEmitter
 {
@@ -30,8 +28,7 @@ trait TBundledGatePart extends GatePart with TFaceBundledAquisitions with IBundl
     abstract override def discoverStraightOverride(absDir:Int) =
     {
         val pos = posOfStraight(absDir)
-        WorldLib.getTileEntity(world, pos) match
-        {
+        world.getTileEntity(pos) match {
             case t:IBundledTile => t.canConnectBundled(absDir^1)
             case _ if APIImpl_Transmission.canConnectBundled(world, pos, absDir^1) => true
             case _ => super.discoverStraightOverride(absDir)
@@ -90,7 +87,7 @@ class BundledGatePart extends RedstoneGatePart with TBundledGatePart with TCompl
         if (logic == null) logic = BundledGateLogic.create(this, subID)
     }
 
-    override def getType = "pr_bgate"
+    override def getType = GateDefinition.typeBundledGate
 }
 
 object BundledGateLogic
@@ -543,8 +540,7 @@ class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
 
         val oldInput = gate.state&0xF
         val newInput = getInput(gate, 1)
-        if (oldInput != newInput)
-        {
+        if (oldInput != newInput) {
             gate.setState(gate.state&0xF0|newInput)
             inputChanged = true
         }
@@ -555,8 +551,7 @@ class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
         val newBInput = pressMask
         if (oldBInput != newBInput) inputChanged = true
 
-        if (inputChanged)
-        {
+        if (inputChanged) {
             gate.onInputChange()
             gate.scheduleTick(2)
         }
@@ -568,8 +563,7 @@ class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
 
         val oldBOut = bOut
         val newBOut = pressMask
-        if (oldBOut != newBOut)
-        {
+        if (oldBOut != newBOut) {
             setBOut(pressMask)
             outputChanged = true
             sendClientUpdate()
@@ -583,16 +577,13 @@ class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
     override def getSubParts(gate:BundledGatePart) = (0 until 16).map(i => new IndexedCuboid6(i,
         (if ((pressMask&1<<i) != 0) pressed else unpressed)(i).copy.apply(VecLib.orientT(gate.orientation))))
 
-    override def activate(part:BundledGatePart, player:EntityPlayer, held:ItemStack, hit:MovingObjectPosition):Boolean =
+    override def activate(part:BundledGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult):Boolean =
     {
         if (held != null && held.getItem.isInstanceOf[IScrewdriver]) return false
 
-        val hit1 = hit.asInstanceOf[ExtendedMOP]
-        val hitdata = hit1.data.asInstanceOf[Int]
-        if (hitdata != -1)
-        {
-            if (!part.world.isRemote)
-            {
+        val hitdata = hit.cuboid6.data.asInstanceOf[Int]
+        if (hitdata != -1) {
+            if (!part.world.isRemote) {
                 pressMask ^= (1<<hitdata)
                 onChange(part)
             }
@@ -605,7 +596,7 @@ class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
 class SegmentDisplay(gate:BundledGatePart) extends BundledGateLogic(gate)
 {
     var bInH = 0
-    var colour:Byte = Colors.RED.ordinal.toByte
+    var colour:Byte = EnumColour.RED.ordinal.toByte
 
     override def bundledInputMask(shape:Int) = 1
 
@@ -661,8 +652,7 @@ class SegmentDisplay(gate:BundledGatePart) extends BundledGateLogic(gate)
     override def onChange(gate:BundledGatePart)
     {
         val newBIn = packDigital(gate.getBundledInput(0))
-        if ((bInH<<8|gate.state) != newBIn)
-        {
+        if ((bInH<<8|gate.state) != newBIn) {
             gate.setState(newBIn&0xFF)
             bInH = newBIn>>8
             gate.onInputChange()
@@ -676,15 +666,12 @@ class SegmentDisplay(gate:BundledGatePart) extends BundledGateLogic(gate)
         onChange(gate)
     }
 
-    override def activate(gate:BundledGatePart, player:EntityPlayer, held:ItemStack, hit:MovingObjectPosition):Boolean =
+    override def activate(gate:BundledGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult):Boolean =
     {
-        if (held != null)
-        {
-            val c = Colors.fromStack(held)
-            if (c != null && c.ordinal != (colour&0xFF) && c != Colors.BLACK)
-            {
-                if (!gate.world.isRemote)
-                {
+        if (held != null) {
+            val c = EnumColour.fromStack(held)
+            if (c != null && c.ordinal != (colour&0xFF) && c != EnumColour.BLACK) {
+                if (!gate.world.isRemote) {
                     colour = c.ordinal.toByte
                     sendColourUpdate()
                 }

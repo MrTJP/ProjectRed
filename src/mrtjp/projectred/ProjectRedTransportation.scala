@@ -1,10 +1,10 @@
 package mrtjp.projectred
 
-import cpw.mods.fml.common.Mod
-import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStoppingEvent}
 import mrtjp.projectred.api.ProjectRedAPI
 import mrtjp.projectred.transportation._
 import net.minecraft.creativetab.CreativeTabs
+import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStoppingEvent}
 
 @Mod(modid = "ProjRed|Transportation", useMetadata = true, modLanguage = "scala")
 object ProjectRedTransportation

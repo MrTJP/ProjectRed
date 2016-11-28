@@ -1,12 +1,13 @@
 package mrtjp.projectred.transportation
 
-import codechicken.lib.vec.BlockCoord
-import mrtjp.core.item.{ItemQueue, ItemKey}
+import codechicken.multipart.BlockMultipart
+import mrtjp.core.item.{ItemKey, ItemQueue}
 import mrtjp.projectred.api.ISpecialLinkState
 import mrtjp.projectred.core.Configurator
-import mrtjp.projectred.core.libmc.PRLib
 import mrtjp.projectred.transportation.Priorities.NetworkPriority
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
 
 import scala.annotation.tailrec
 import scala.collection.immutable.{BitSet, Queue}
@@ -14,7 +15,7 @@ import scala.collection.mutable.{Builder => MBuilder}
 
 object LSPathFinder
 {
-    var start:IWorldRouter = null
+    var start:IWorldRouter = _
 
     private var registeredLSTypes = List[ISpecialLinkState]()
 
@@ -38,9 +39,9 @@ object LSPathFinder
     def result() =
     {
         val pipe = start.getContainer
-        val bc = start.getCoords
+        val pos = pipe.pos
         val q = Queue.newBuilder[Node]
-        for (s <- 0 until 6 if pipe.maskConnects(s)) q += Node(bc, s)
+        for (s <- 0 until 6 if pipe.maskConnects(s)) q += Node(pos, s)
         iterate(q.result()).sorted
     }
 
@@ -51,7 +52,7 @@ object LSPathFinder
     {
         case _ if closed.size > Configurator.maxDetectionCount => coll.result()
         case Seq() => coll.result()
-        case Seq(next, rest@_*) => getPipe(next.bc) match
+        case Seq(next, rest@_*) => getPipe(next.pos) match
         {
             case iwr:IWorldRouter with TNetworkPipe if {val r = iwr.getRouter; r != null && r.isLoaded} =>
                 iterate(rest, closed+next, coll += new StartEndPath(start.getRouter,
@@ -66,18 +67,17 @@ object LSPathFinder
                 iterate(rest++upNext.result(), closed+next, coll)
             case _ =>
                 val upNext = Vector.newBuilder[Node]
-                val tile = getTile(next.bc)
+                val tile = getTile(next.pos)
                 val link = LSPathFinder.getLinkState(tile)
                 if (link != null) //Special LS
                 {
                     val te = link.getLink(tile)
                     if (te != null)
                     {
-                        val bc = new BlockCoord(te)
-                        val linkedPipe = getPipe(bc)
+                        val linkedPipe = getPipe(te.getPos)
                         if (linkedPipe != null)
                         {
-                            val route = next -->(bc, linkedPipe.getPathWeight)
+                            val route = next --> (te.getPos, linkedPipe.getPathWeight)
                             if (!closed(route)) upNext += route
                         }
                     }
@@ -88,41 +88,41 @@ object LSPathFinder
 
     private def world = start.getWorld
 
-    private def getPipe(bc:BlockCoord) = PRLib.getMultiPart(world, bc, 6) match
+    private def getPipe(pos:BlockPos) = BlockMultipart.getPart(world, pos, 6) match
     {
         case p:TNetworkSubsystem => p
         case _ => null
     }
 
-    private def getTile(bc:BlockCoord) = world.getTileEntity(bc.x, bc.y, bc.z)
+    private def getTile(pos:BlockPos) = world.getTileEntity(pos)
 
     private object Node
     {
-        def apply(bc:BlockCoord, dir:Int):Node = Node(bc.copy().offset(dir), 1, dir, dir)
+        def apply(pos:BlockPos, dir:Int):Node = Node(pos.offset(EnumFacing.values()(dir)), 1, dir, dir)
     }
-    private case class Node(bc:BlockCoord, dist:Int, dir:Int, hop:Int, filters:Set[PathFilter] = Set.empty) extends Ordered[Node]
+    private case class Node(pos:BlockPos, dist:Int, dir:Int, hop:Int, filters:Set[PathFilter] = Set.empty) extends Ordered[Node]
     {
         val path = new Path(filters)
 
-        def -->(to:Node, toDir:Int):Node = Node(to.bc, dist+to.dist, toDir, hop)
+        def -->(to:Node, toDir:Int):Node = Node(to.pos, dist+to.dist, toDir, hop)
 
-        def -->(toDir:Int, distAway:Int, filter:PathFilter):Node = Node(bc.copy.offset(toDir), dist+distAway, toDir, hop, filters+filter)
-        def -->(toDir:Int, distAway:Int):Node = Node(bc.copy().offset(toDir), dist+distAway, toDir, hop, filters)
+        def -->(toDir:Int, distAway:Int, filter:PathFilter):Node = Node(pos.offset(EnumFacing.values()(toDir)), dist+distAway, toDir, hop, filters+filter)
+        def -->(toDir:Int, distAway:Int):Node = Node(pos.offset(EnumFacing.values()(toDir)), dist+distAway, toDir, hop, filters)
         def -->(toDir:Int):Node = this -->(toDir, 1)
 
-        def -->(to:BlockCoord, distAway:Int, filter:PathFilter):Node = Node(to, dist+distAway, dir, hop, filters+filter)
-        def -->(to:BlockCoord, distAway:Int):Node = Node(to, dist+distAway, dir, hop, filters)
-        def -->(to:BlockCoord):Node = this -->(to, 1)
+        def -->(to:BlockPos, distAway:Int, filter:PathFilter):Node = Node(to, dist+distAway, dir, hop, filters+filter)
+        def -->(to:BlockPos, distAway:Int):Node = Node(to, dist+distAway, dir, hop, filters)
+        def -->(to:BlockPos):Node = this -->(to, 1)
 
         override def compare(that:Node) = dist-that.dist
 
         override def equals(other:Any) = other match
         {
-            case that:Node => bc == that.bc && hop == that.hop
+            case that:Node => pos == that.pos && hop == that.hop
             case _ => false
         }
 
-        override def hashCode = bc.hashCode*7+hop
+        override def hashCode = pos.hashCode*7+hop
     }
 }
 
@@ -166,8 +166,8 @@ object CollectionPathFinder
 
 object LogisticPathFinder
 {
-    var start:Router = null
-    var payload:ItemKey = null
+    var start:Router = _
+    var payload:ItemKey = _
 
     var exclusions = BitSet.empty
     var excludeSource = false
@@ -213,7 +213,7 @@ object LogisticPathFinder
     def sharesInventory(pipe1:TInventoryPipe[_], pipe2:TInventoryPipe[_]):Boolean =
     {
         if (pipe1 == null || pipe2 == null) return false
-        if (pipe1.tile.getWorldObj != pipe2.tile.getWorldObj) return false
+        if (pipe1.tile.getWorld != pipe2.tile.getWorld) return false
 
         val adjacent1 = pipe1.getInventory
         val adjacent2 = pipe2.getInventory

@@ -1,15 +1,18 @@
 package mrtjp.projectred.transmission
 
-import codechicken.lib.render._
-import codechicken.lib.vec._
-import codechicken.lib.render.uv._
-import codechicken.lib.math.MathHelper
 import java.util
-import codechicken.lib.lighting.{LightMatrix, LightModel}
-import net.minecraft.util.IIcon
-import codechicken.lib.render.CCRenderState.IVertexOperation
 
-object RenderWire
+import codechicken.lib.lighting.LightModel
+import codechicken.lib.math.MathHelper
+import codechicken.lib.render._
+import codechicken.lib.render.pipeline.{ColourMultiplier, IVertexOperation}
+import codechicken.lib.texture.TextureUtils.IIconRegister
+import codechicken.lib.vec._
+import codechicken.lib.vec.uv._
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+
+object RenderWire extends IIconRegister
 {
     /**
      * Array of all built models. Generated on demand.
@@ -64,19 +67,19 @@ object RenderWire
         m
     }
 
-    def render(w:WirePart, pos:Vector3)
+    def render(w:WirePart, pos:Vector3, ccrs:CCRenderState)
     {
-        getOrGenerateModel(modelKey(w)).render(
+        getOrGenerateModel(modelKey(w)).render(ccrs,
             pos.translation(), new IconTransformation(w.getIcon),
             ColourMultiplier.instance(w.renderHue))
     }
 
-    def renderInv(thickness:Int, hue:Int, ops:IVertexOperation*)
+    def renderInv(thickness:Int, hue:Int, ccrs:CCRenderState, ops:IVertexOperation*)
     {
-        getOrGenerateInvModel(thickness).render(ops :+ ColourMultiplier.instance(hue):_*)
+        getOrGenerateInvModel(thickness).render(ccrs, ops :+ ColourMultiplier.instance(hue):_*)
     }
 
-    def renderBreakingOverlay(icon:IIcon, wire:WirePart)
+    def renderBreakingOverlay(icon:TextureAtlasSprite, wire:WirePart, ccrs:CCRenderState)
     {
         val key = modelKey(wire)
         val side = (key>>8)%6
@@ -112,8 +115,14 @@ object RenderWire
             }
         }
 
-        CCRenderState.setPipeline(new Translation(wire.x, wire.y, wire.z), new IconTransformation(icon))
-        for (box <- boxes.result()) BlockRenderer.renderCuboid(box, 0)
+        ccrs.setPipeline(new Translation(wire.x, wire.y, wire.z), new IconTransformation(icon))
+        for (box <- boxes.result()) BlockRenderer.renderCuboid(ccrs, box, 0)
+    }
+
+    @SideOnly(Side.CLIENT)
+    override def registerIcons(map:TextureMap)
+    {
+        for (w <- WireDef.values) w.loadTextures(map)
     }
 }
 

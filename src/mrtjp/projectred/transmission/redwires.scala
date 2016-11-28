@@ -1,18 +1,18 @@
 package mrtjp.projectred.transmission
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.vec.{BlockCoord, Rotation}
+import codechicken.lib.vec.Rotation
 import codechicken.multipart._
 import codechicken.multipart.scalatraits.TRedstoneTile
-import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
-import mrtjp.projectred.transmission.IWirePart._
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.Blocks
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.ChatComponentText
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos.MutableBlockPos
+import net.minecraft.util.text.TextComponentString
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 trait IRedwirePart extends IWirePart with IRedwireEmitter
 
@@ -94,7 +94,7 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with TRSP
 
     override def debug(player:EntityPlayer) =
     {
-        player.addChatComponentMessage(new ChatComponentText(
+        player.addChatComponentMessage(new TextComponentString(
             (if (world.isRemote) "Client" else "Server")+" signal strength: "+getSignal))
         true
     }
@@ -102,8 +102,7 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with TRSP
     override def test(player:EntityPlayer) =
     {
         if (world.isRemote) Messenger.addMessage(x, y+0.5, z, "/#f/#c[c] = "+getSignal)
-        else
-        {
+        else {
             val packet = Messenger.createPacket
             packet.writeDouble(x+0.0D)
             packet.writeDouble(y+0.5D)
@@ -138,7 +137,7 @@ abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcq
     {
         val conn = WirePropagator.redwiresConnectable
         WirePropagator.setRedwiresConnectable(true)
-        val disc = (RedstoneInteractions.otherConnectionMask(world, x, y, z, absDir, false)&
+        val disc = (RedstoneInteractions.otherConnectionMask(world, pos, absDir, false)&
             RedstoneInteractions.connectionMask(this, absDir)) != 0
         WirePropagator.setRedwiresConnectable(conn)
         disc
@@ -179,7 +178,7 @@ abstract class RedwirePart extends WirePart with TRedwireCommons with TFaceRSAcq
             else
             {
                 if (maskConnectsStraight(r)) raise(calcStraightSignal(r))
-                raise(calcInternalSignal(r)) //todo else?
+                raise(calcInternalSignal(r)) //TODO else?
             }
 
         raise(calcUndersideSignal)
@@ -204,7 +203,8 @@ abstract class FramedRedwirePart extends FramedWirePart with TRedwireCommons wit
     override def discoverStraightOverride(absDir:Int) =
     {
         WirePropagator.setRedwiresConnectable(false)
-        val b = (RedstoneInteractions.otherConnectionMask(world, x, y, z, absDir, false)&RedstoneInteractions.connectionMask(this, absDir)) != 0
+        val b = (RedstoneInteractions.otherConnectionMask(world, pos, absDir, false) &
+                RedstoneInteractions.connectionMask(this, absDir)) != 0
         WirePropagator.setRedwiresConnectable(true)
         b
     }
@@ -218,7 +218,7 @@ abstract class FramedRedwirePart extends FramedWirePart with TRedwireCommons wit
     override def propagateOther(mode:Int)
     {
         for (s <- 0 until 6) if (!maskConnects(s))
-            WirePropagator.addNeighborChange(new BlockCoord(tile).offset(s))
+            WirePropagator.addNeighborChange(pos.offset(EnumFacing.getFront(s)))
     }
 
     def calculateSignal =
@@ -286,14 +286,15 @@ class RedAlloyWirePart extends RedwirePart with TRedAlloyCommons
 
     override def propagateOther(mode:Int)
     {
-        WirePropagator.addNeighborChange(new BlockCoord(tile).offset(side))
-        WirePropagator.addNeighborChange(new BlockCoord(tile).offset(side^1))
+        WirePropagator.addNeighborChange(pos.offset(EnumFacing.getFront(side)))
+        WirePropagator.addNeighborChange(pos.offset(EnumFacing.getFront(side^1)))
 
         for (r <- 0 until 4) if (!maskConnects(r))
-            WirePropagator.addNeighborChange(new BlockCoord(tile).offset(Rotation.rotateSide(side, r)))
+            WirePropagator.addNeighborChange(pos.offset(EnumFacing.getFront(Rotation.rotateSide(side, r))))
 
         for (s <- 0 until 6) if (s != (side^1))
-            WirePropagator.addNeighborChange(new BlockCoord(tile).offset(side).offset(s))
+            WirePropagator.addNeighborChange(new MutableBlockPos(pos)
+                    .move(EnumFacing.getFront(side)).move(EnumFacing.getFront(s)))
     }
 }
 

@@ -1,17 +1,16 @@
 package mrtjp.projectred.transportation
 
-import codechicken.multipart.INeighborTileChange
+import codechicken.lib.raytracer.CuboidRayTraceResult
+import codechicken.multipart.INeighborTileChangePart
 import mrtjp.core.gui.{GuiLib, NodeContainer, Slot3}
 import mrtjp.core.inventory.SimpleInventory
 import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.EnumHand
 
-import scala.collection.mutable.{Builder => MBuilder}
-
-class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWorldBroadcaster with IWorldCrafter with INeighborTileChange
+class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWorldBroadcaster with IWorldCrafter with INeighborTileChangePart
 {
     val chipSlots = new SimpleInventory(4, "chips", 1)
     {
@@ -50,7 +49,7 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         if (!world.isRemote)
         {
             for (r <- chips) if (r != null) r.onRemoved()
-            chipSlots.dropInvContents(world, x, y, z)
+            chipSlots.dropInvContents(world, pos)
         }
     }
 
@@ -67,9 +66,10 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         for (s <- chips) if (s != null) s.update()
     }
 
-    override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
+
+    override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, item:ItemStack, hand:EnumHand):Boolean =
     {
-        if (super.activate(player, hit, item)) return true
+        if (super.activate(player, hit, item, hand)) return true
         if (item != null && item.getItem.isInstanceOf[ItemRoutingChip])
         {
             for (i <- 0 until chipSlots.getSizeInventory)
@@ -92,7 +92,7 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
     def openGui(player:EntityPlayer)
     {
         if (world.isRemote) return
-        GuiInterfacePipe.open(player, createContainer(player), _.writeCoord(x, y, z))
+        GuiInterfacePipe.open(player, createContainer(player), _.writePos(pos))
     }
 
     def createContainer(player:EntityPlayer) = new ContainerInterfacePipe(this, player)
@@ -199,6 +199,7 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         val all = chips.filter(_ != null).map(_.getWorkLoad)
         if (all.isEmpty) 0 else all.max
     }
+
 
     override def onNeighborTileChanged(side:Int, weak:Boolean)
     {

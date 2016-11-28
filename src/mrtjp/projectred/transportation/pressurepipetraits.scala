@@ -5,6 +5,7 @@ import mrtjp.core.world.WorldLib
 import mrtjp.projectred.api.IConnectable
 import net.minecraft.inventory.{IInventory, ISidedInventory}
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.EnumFacing
 
 trait TPressureSubsystem extends PayloadPipePart[PressurePayload]
 {
@@ -17,7 +18,7 @@ trait TPressureSubsystem extends PayloadPipePart[PressurePayload]
 
     abstract override def discoverStraightOverride(s:Int) =
     {
-        WorldLib.getTileEntity(world, posOfStraight(s)) match
+        world.getTileEntity(posOfStraight(s)) match
         {
             case pd:TPressureDevice if pd.canConnectSide(s^1) => true
             case _ => super.discoverStraightOverride(s)
@@ -31,7 +32,7 @@ trait TPressureSubsystem extends PayloadPipePart[PressurePayload]
         super.passPayload(r)
     }
 
-    def passToPressureDevice(r:PressurePayload) = WorldLib.getTileEntity(world, posOfStraight(r.output)) match
+    def passToPressureDevice(r:PressurePayload) = world.getTileEntity(posOfStraight(r.output)) match
     {
         case pd:TPressureDevice => pd.acceptItem(r, r.output^1)
         case _ => false
@@ -141,9 +142,8 @@ trait TPressureTube extends TPressureSubsystem with TColourFilterPipe
     abstract override def discoverStraightOverride(s:Int):Boolean =
     {
         if (super.discoverStraightOverride(s)) return true
-        WorldLib.getTileEntity(world, posOfStraight(s)) match
-        {
-            case sinv:ISidedInventory => sinv.getAccessibleSlotsFromSide(s^1).nonEmpty
+        world.getTileEntity(posOfStraight(s)) match {
+            case sinv:ISidedInventory => sinv.getSlotsForFace(EnumFacing.values()(s^1)).nonEmpty
             case inv:IInventory => true
             case _ => false
         }

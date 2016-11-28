@@ -2,6 +2,7 @@ package mrtjp.projectred.transportation
 import java.util.UUID
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.raytracer.CuboidRayTraceResult
 import codechicken.lib.vec.BlockCoord
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
@@ -9,10 +10,11 @@ import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.transportation.Priorities.NetworkPriority
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.{IIcon, MovingObjectPosition}
+import net.minecraft.util.EnumHand
 import net.minecraft.world.World
 
 import scala.collection.immutable.BitSet
@@ -295,14 +297,13 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         if (r != null) r.decommission()
     }
 
-    override def activate(player:EntityPlayer, hit:MovingObjectPosition, item:ItemStack):Boolean =
-    {
-        if (super.activate(player, hit, item)) return true
 
-        if (item != null && item.getItem.isInstanceOf[ItemRouterUtility])
-        {
-            if (!world.isRemote)
-            {
+    override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, item:ItemStack, hand:EnumHand):Boolean =
+    {
+        if (super.activate(player, hit, item, hand)) return true
+
+        if (item != null && item.getItem.isInstanceOf[ItemRouterUtility]) {
+            if (!world.isRemote) {
                 val s = "/#f"+"R"+getRouter.getIPAddress+" route statistics: "+
                         "\nreceived: "+statsReceived+
                         "\nsent: "+statsSent+
@@ -321,7 +322,7 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         false
     }
 
-    override def getIcon(side:Int):IIcon =
+    override def getIcon(side:Int):TextureAtlasSprite =
     {
         val array = PipeDefs.ROUTEDJUNCTION.sprites
         val ind = if (side == inOutSide) 2 else 0

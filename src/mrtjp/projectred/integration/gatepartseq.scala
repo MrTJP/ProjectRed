@@ -6,22 +6,25 @@
 package mrtjp.projectred.integration
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.vec.{BlockCoord, Rotation}
-import codechicken.multipart.INeighborTileChange
+import codechicken.lib.raytracer.CuboidRayTraceResult
+import codechicken.lib.vec.Rotation
+import codechicken.multipart.INeighborTileChangePart
 import codechicken.multipart.handler.MultipartSaveLoad
 import mrtjp.projectred.api.IScrewdriver
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.TFaceOrient._
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.SoundEvents
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.math.BlockPos.MutableBlockPos
+import net.minecraft.util.{EnumFacing, SoundCategory}
 
 class SequentialGatePart extends RedstoneGatePart with TComplexGatePart
 {
     private var logic:SequentialGateLogic = null
 
-    override def getType = "pr_igate"
+    override def getType = GateDefinition.typeComplexGate
 
     override def getLogic[T]:T = logic.asInstanceOf[T]
     def getLogicSequential = getLogic[SequentialGateLogic]
@@ -32,21 +35,20 @@ class SequentialGatePart extends RedstoneGatePart with TComplexGatePart
     }
 }
 
-class SequentialGatePartT extends SequentialGatePart with INeighborTileChange
+class SequentialGatePartT extends SequentialGatePart with INeighborTileChangePart
 {
-    override def getType = "pr_tgate"
+    override def getType = GateDefinition.typeNeighborGate
 
-    override def weakTileChanges() = getLogic[INeighborTileChange].weakTileChanges()
+    override def weakTileChanges() = getLogic[INeighborTileChangePart].weakTileChanges()
 
     override def onNeighborTileChanged(side:Int, weak:Boolean) =
-        getLogic[INeighborTileChange].onNeighborTileChanged(side, weak)
+        getLogic[INeighborTileChangePart].onNeighborTileChanged(side, weak)
 }
 
 object SequentialGateLogic
 {
     import mrtjp.projectred.integration.GateDefinition._
-    def create(gate:SequentialGatePart, subID:Int) = subID match
-    {
+    def create(gate:SequentialGatePart, subID:Int) = subID match {
         case SRLatch.ordinal => new SRLatch(gate)
         case ToggleLatch.ordinal => new ToggleLatch(gate)
         case Timer.ordinal => new Timer(gate)
@@ -64,7 +66,7 @@ abstract class SequentialGateLogic(val gate:SequentialGatePart) extends Redstone
     def tickSound()
     {
         if (Configurator.logicGateSounds)
-            gate.world.playSoundEffect(gate.x+0.5, gate.y+0.5, gate.z+0.5, "random.click", 0.3f, 0.5f)
+            gate.world.playSound(null, gate.pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.15F, 0.5f)
     }
 }
 
@@ -240,7 +242,7 @@ class ToggleLatch(gate:SequentialGatePart) extends SequentialGateLogic(gate) wit
         onChange(gate)
     }
 
-    override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:MovingObjectPosition) =
+    override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult) =
     {
         if (held == null || !held.getItem.isInstanceOf[IScrewdriver])
         {
@@ -374,7 +376,7 @@ trait TTimerGateLogic extends SequentialGateLogic with ITimerGuiLogic
 
     def interpPointer(f:Float) = if (pointer_start < 0) 0f else (pointerValue+f)/pointer_max
 
-    override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:MovingObjectPosition) =
+    override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult) =
     {
         if (held == null || !held.getItem.isInstanceOf[IScrewdriver])
         {
@@ -485,7 +487,7 @@ class Sequencer(gate:SequentialGatePart) extends SequentialGateLogic(gate) with 
         true
     }
 
-    override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:MovingObjectPosition) =
+    override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult) =
     {
         if (held == null || !held.getItem.isInstanceOf[IScrewdriver])
         {
@@ -638,7 +640,7 @@ class Counter(gate:SequentialGatePart) extends SequentialGateLogic(gate) with IC
         if (newOutput != oldOutput) gate.onOutputChange(5)
     }
 
-    override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:MovingObjectPosition) =
+    override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult) =
     {
         if (held == null || !held.getItem.isInstanceOf[IScrewdriver])
         {
@@ -770,7 +772,7 @@ class Synchronizer(gate:SequentialGatePart) extends SequentialGateLogic(gate) wi
     def pulsing = (state2&4) != 0
 }
 
-class Comparator(gate:SequentialGatePart) extends SequentialGateLogic(gate) with INeighborTileChange
+class Comparator(gate:SequentialGatePart) extends SequentialGateLogic(gate) with INeighborTileChangePart
 {
     var lState2:Short = 0
 
@@ -801,19 +803,20 @@ class Comparator(gate:SequentialGatePart) extends SequentialGateLogic(gate) with
 
     def calcInputA:Int =
     {
-        val absDir = Rotation.rotateSide(gate.side, gate.toAbsolute(2))
-        val pos = new BlockCoord(gate.tile).offset(absDir)
-        var block = gate.world.getBlock(pos.x, pos.y, pos.z)
-        if (block != null)
-        {
-            if (block.hasComparatorInputOverride)
-                return block.getComparatorInputOverride(gate.world, pos.x, pos.y, pos.z, absDir^1)
-            if (block.isNormalCube(gate.world, pos.x, pos.y, pos.z))
-            {
-                pos.offset(absDir)
-                block = gate.world.getBlock(pos.x, pos.y, pos.z)
-                if (block != null && block.hasComparatorInputOverride)
-                    return block.getComparatorInputOverride(gate.world, pos.x, pos.y, pos.z, absDir^1)
+        //TODO comparator calculations may not be accurate anymore
+        val absDir = EnumFacing.getFront(Rotation.rotateSide(gate.side, gate.toAbsolute(2)))
+        val pos = new MutableBlockPos(gate.tile.getPos).move(absDir)
+        var state = gate.world.getBlockState(pos)
+        var block = state.getBlock
+        if (block != null) {
+            if (block.hasComparatorInputOverride(state))
+                return block.getComparatorInputOverride(state, gate.world, pos)
+            if (block.isNormalCube(state, gate.world, pos)) {
+                pos.move(absDir)
+                state = gate.world.getBlockState(pos)
+                block = state.getBlock
+                if (block != null && block.hasComparatorInputOverride(state))
+                    return block.getComparatorInputOverride(state, gate.world, pos)
             }
         }
         getAnalogInput(2)

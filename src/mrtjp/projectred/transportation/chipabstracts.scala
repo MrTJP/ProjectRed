@@ -2,6 +2,7 @@ package mrtjp.projectred.transportation
 
 import java.util.UUID
 
+import com.mojang.realmsclient.gui.ChatFormatting
 import mrtjp.core.inventory.{InvWrapper, SimpleInventory}
 import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack, ItemQueue}
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
@@ -9,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.input.Keyboard
 
 import scala.collection.mutable.ListBuffer
@@ -200,7 +200,7 @@ trait TChipFilter extends RoutingChip
     val hide = Seq("off", "one per type", "one per stack")
     def addFilterInfo(list:ListBuffer[String])
     {
-        if (enableHiding) list+=(EnumChatFormatting.GRAY.toString+"Hide mode: "+hide(hideMode))
+        if (enableHiding) list+=(ChatFormatting.GRAY.toString+"Hide mode: "+hide(hideMode))
 
         if (enablePatterns)
         {
@@ -209,14 +209,14 @@ trait TChipFilter extends RoutingChip
             if (metaMatch) s += "Meta"
             if (nbtMatch) s += sep+"NBT"
             if (oreMatch) s += sep+"Ore Dictionary"
-            list+=(EnumChatFormatting.GRAY.toString+"Matching: "+(if (s.isEmpty) "ignore all" else s))
-            if (damageGroupMode!=0)list+=(EnumChatFormatting.GRAY.toString+"Damage group: "+grpPerc(damageGroupMode)+"%")
+            list+=(ChatFormatting.GRAY.toString+"Matching: "+(if (s.isEmpty) "ignore all" else s))
+            if (damageGroupMode!=0)list+=(ChatFormatting.GRAY.toString+"Damage group: "+grpPerc(damageGroupMode)+"%")
         }
 
         if (enableFilter)
         {
-            list+=(EnumChatFormatting.GRAY.toString+"Filter mode: "+(if (filterExclude) "blacklist" else "whitelist"))
-            list+=(EnumChatFormatting.GRAY.toString+"Filter: ")
+            list+=(ChatFormatting.GRAY.toString+"Filter mode: "+(if (filterExclude) "blacklist" else "whitelist"))
+            list+=(ChatFormatting.GRAY.toString+"Filter: ")
             var added = false
 
             for (i <- 0 until filter.getSizeInventory)
@@ -224,12 +224,12 @@ trait TChipFilter extends RoutingChip
                 val stack = filter.getStackInSlot(i)
                 if (stack != null)
                 {
-                    list+=(EnumChatFormatting.GRAY.toString+" - "+stack.getDisplayName)
+                    list+=(ChatFormatting.GRAY.toString+" - "+stack.getDisplayName)
                     added = true
                 }
             }
 
-            if (!added) list+=(EnumChatFormatting.GRAY.toString+" - empty")
+            if (!added) list+=(ChatFormatting.GRAY.toString+" - empty")
         }
     }
 }
@@ -265,7 +265,7 @@ trait TChipPriority extends RoutingChip
 
     def addPriorityInfo(list:ListBuffer[String])
     {
-        list+=(EnumChatFormatting.GRAY.toString+"Preference: "+preference)
+        list+=(ChatFormatting.GRAY.toString+"Preference: "+preference)
     }
 }
 
@@ -291,7 +291,7 @@ trait TChipOrientation extends RoutingChip
 
     def addOrientInfo(list:ListBuffer[String])
     {
-        list+=(EnumChatFormatting.GRAY.toString+"Extract orientation: "+(if (extractOrient == -1) "Default" else dirs(extractOrient)))
+        list+=(ChatFormatting.GRAY.toString+"Extract orientation: "+(if (extractOrient == -1) "Default" else dirs(extractOrient)))
     }
 }
 
@@ -315,32 +315,30 @@ trait TChipStock extends RoutingChip
     abstract override def load(tag:NBTTagCompound)
     {
         stock.loadInv(tag)
-        requestMode =
-                if (tag.getBoolean("mode")) 1 //TODO Legacy
-                else tag.getByte("rmode")
+        requestMode = tag.getByte("rmode")
         super.load(tag)
     }
 
     def addStockInfo(list:ListBuffer[String])
     {
-        list += (EnumChatFormatting.GRAY+"Fill mode: "+(requestMode match
+        list += (ChatFormatting.GRAY+"Fill mode: "+(requestMode match
         {
             case 0 => "when missing"
             case 1 => "when empty"
             case 2 => "infinite"
         }))
-        list += (EnumChatFormatting.GRAY.toString+"Stock: ")
+        list += (ChatFormatting.GRAY.toString+"Stock: ")
         var added = false
         for (i <- 0 until stock.getSizeInventory)
         {
             val stack = stock.getStackInSlot(i)
             if (stack != null)
             {
-                list += (EnumChatFormatting.GRAY.toString+" - "+stack.getDisplayName+" ("+stack.stackSize+")")
+                list += (ChatFormatting.GRAY.toString+" - "+stack.getDisplayName+" ("+stack.stackSize+")")
                 added = true
             }
         }
-        if (!added) list += (EnumChatFormatting.GRAY.toString+" - empty")
+        if (!added) list += (ChatFormatting.GRAY.toString+" - empty")
     }
 }
 
@@ -406,8 +404,7 @@ trait TChipMatchMatrix extends RoutingChip
     abstract override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        if (tag.hasKey("matchData"))//TODO Legacy
-            matchData = tag.getIntArray("matchData")
+        matchData = tag.getIntArray("matchData")
     }
 
     def createEqualityFor(i:Int) =
@@ -468,7 +465,7 @@ trait TChipCrafter extends RoutingChip
 
     def addMatrixInfo(list:ListBuffer[String])
     {
-        list += (EnumChatFormatting.GRAY.toString+"Matrix: ")
+        list += (ChatFormatting.GRAY.toString+"Matrix: ")
         var added = false
 
         for (i <- 0 until 9)
@@ -477,20 +474,20 @@ trait TChipCrafter extends RoutingChip
 
             if (stack != null)
             {
-                list += (EnumChatFormatting.GRAY.toString+" - "+stack.getDisplayName+" (" + stack.stackSize + ")")
+                list += (ChatFormatting.GRAY.toString+" - "+stack.getDisplayName+" (" + stack.stackSize + ")")
                 added = true
             }
         }
-        if (!added) list += (EnumChatFormatting.GRAY.toString+" - empty")
+        if (!added) list += (ChatFormatting.GRAY.toString+" - empty")
 
         val stack = matrix.getStackInSlot(9)
-        if (stack != null) list += (EnumChatFormatting.GRAY.toString+" - Yields: "+stack.getDisplayName+" (" + stack.stackSize + ")")
+        if (stack != null) list += (ChatFormatting.GRAY.toString+" - Yields: "+stack.getDisplayName+" (" + stack.stackSize + ")")
     }
 
     def addExtInfo(list:ListBuffer[String])
     {
-        list += (EnumChatFormatting.GRAY.toString+"Extensions: "+
-                EnumChatFormatting.GRAY.toString+(0 until 9).count{extMatrix.getStackInSlot(_) != null})
+        list += (ChatFormatting.GRAY.toString+"Extensions: "+
+                ChatFormatting.GRAY.toString+(0 until 9).count{extMatrix.getStackInSlot(_) != null})
     }
 }
 
@@ -515,6 +512,6 @@ trait TChipCrafterExtension extends RoutingChip
 
     def addExtIDInfo(list:ListBuffer[String])
     {
-        list += EnumChatFormatting.GRAY.toString+"Extension ID: "+id.toString.split("-")(0)+" ..."
+        list += ChatFormatting.GRAY.toString+"Extension ID: "+id.toString.split("-")(0)+" ..."
     }
 }

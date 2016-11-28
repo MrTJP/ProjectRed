@@ -9,7 +9,7 @@ import java.util.UUID
 
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
 
-import scala.collection.mutable.{HashMap => MHashMap, MultiMap => MMultiMap, Set => MSet, ListBuffer}
+import scala.collection.mutable.{ListBuffer, HashMap => MHashMap, MultiMap => MMultiMap, Set => MSet}
 
 object ChipCraftingExtension
 {

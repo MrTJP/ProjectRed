@@ -2,7 +2,6 @@ package mrtjp.projectred.transportation
 
 import java.lang.{Character => JC}
 
-import cpw.mods.fml.common.registry.GameRegistry
 import mrtjp.projectred.ProjectRedTransportation
 import mrtjp.projectred.core.PartDefs
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
@@ -11,6 +10,8 @@ import net.minecraft.inventory.InventoryCrafting
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.IRecipe
 import net.minecraft.world.World
+import net.minecraftforge.common.ForgeHooks
+import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.oredict.RecipeSorter.Category._
 import net.minecraftforge.oredict.{RecipeSorter, ShapedOreRecipe}
 
@@ -67,23 +68,23 @@ object TransportationRecipes
         /** Routed Firewall Pipe **/
         GameRegistry.addRecipe(PipeDefs.ROUTEDFIREWALL.makeStack,
             "bcb", "cjc", "bcb",
-            'b':JC, Blocks.nether_brick,
-            'c':JC, Items.magma_cream,
+            'b':JC, Blocks.NETHER_BRICK,
+            'c':JC, Items.MAGMA_CREAM,
             'j':JC, PipeDefs.ROUTEDJUNCTION.makeStack
         )
 
         /** Network Valve pipe **/
         GameRegistry.addRecipe(PipeDefs.NETWORKVALVE.makeStack,
             " g ", "gbg", " l ",
-            'g':JC, Blocks.glass_pane,
+            'g':JC, Blocks.GLASS_PANE,
             'b':JC, PipeDefs.BASIC.makeStack,
-            'l':JC, Blocks.lever
+            'l':JC, Blocks.LEVER
         )
 
         /** Network Latency pipe **/
         GameRegistry.addRecipe(PipeDefs.NETWORKLATENCY.makeStack,
             " c ", "cbc", " c ",
-            'c':JC, Blocks.cobblestone,
+            'c':JC, Blocks.COBBLESTONE,
             'b':JC, PipeDefs.BASIC.makeStack
         )
     }
@@ -94,7 +95,7 @@ object TransportationRecipes
         GameRegistry.addRecipe(new ShapedOreRecipe(PipeDefs.PRESSURETUBE.makeStack(8),
             "gpg", "p p", "gpg",
             'g':JC, "nuggetGold",
-            'p':JC, Blocks.glass_pane
+            'p':JC, Blocks.GLASS_PANE
         ))
 
         /** Pressure Resistance Tube **/
@@ -116,7 +117,7 @@ object TransportationRecipes
         GameRegistry.addRecipe(new ShapedOreRecipe(PartDefs.NULLROUTINGCHIP.makeStack,
             "gpp", "grr", "g  ",
             'g':JC, "nuggetGold",
-            'p':JC, Items.paper,
+            'p':JC, Items.PAPER,
             'r':JC, "dustRedstone"
         ))
 
@@ -206,6 +207,16 @@ object TransportationRecipes
 
 class ChipResetRecipe extends IRecipe
 {
+    override def getRemainingItems(inv:InventoryCrafting) =
+    {
+        val stacks = new Array[ItemStack](inv.getSizeInventory)
+        for (i <- 0 until stacks.length) {
+            val stack = inv.getStackInSlot(i)
+            stacks(i) = ForgeHooks.getContainerItem(stack)
+        }
+        stacks
+    }
+
     def matches(inv:InventoryCrafting, world:World) = getCraftingResult(inv) != null
 
     def getCraftingResult(inv:InventoryCrafting):ItemStack =

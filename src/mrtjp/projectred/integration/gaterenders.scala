@@ -7,16 +7,21 @@ package mrtjp.projectred.integration
 
 import java.util.Random
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.math.MathHelper
-import codechicken.lib.render.{CCRenderState, TextureUtils}
+import codechicken.lib.render.CCRenderState
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.texture.TextureUtils.IIconRegister
 import codechicken.lib.vec.{RedundantTransformation, Transformation, Vector3}
-import mrtjp.core.color.Colors
 import mrtjp.projectred.core.TFaceOrient.flipMaskZ
 import mrtjp.projectred.integration.ComponentStore._
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.texture.TextureMap
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.item.ItemStack
+import net.minecraft.util.EnumParticleTypes
+import org.lwjgl.opengl.GL11
 
-object RenderGate
+object RenderGate extends IIconRegister
 {
     var renderers = buildRenders()
 
@@ -58,37 +63,39 @@ object RenderGate
         GateRenderer.blank//circuit gate renderer will be injected.
     )
 
-    def registerIcons(reg:IIconRegister)
+
+    override def registerIcons(map:TextureMap)
     {
-        for (r <- renderers) r.registerIcons(reg)
+        for (r <- renderers) r.registerIcons(map)
+        ComponentStore.registerIcons(map)
     }
 
-    def renderStatic(gate:GatePart, pos:Vector3)
+    def renderStatic(gate:GatePart, pos:Vector3, ccrs:CCRenderState)
     {
         val r = renderers(gate.subID).asInstanceOf[GateRenderer[GatePart]]
         r.prepare(gate)
-        r.renderStatic(pos.translation(), gate.orientation&0xFF)
+        r.renderStatic(pos.translation(), gate.orientation&0xFF, ccrs)
     }
 
-    def renderDynamic(gate:GatePart, pos:Vector3, frame:Float)
+    def renderDynamic(gate:GatePart, pos:Vector3, frame:Float, ccrs:CCRenderState)
     {
         val r = renderers(gate.subID).asInstanceOf[GateRenderer[GatePart]]
         if (r.hasSpecials)
         {
             r.prepareDynamic(gate, frame)
-            r.renderDynamic(gate.rotationT.`with`(pos.translation()))
+            r.renderDynamic(gate.rotationT.`with`(pos.translation()), ccrs)
         }
     }
 
-    def renderInv(stack:ItemStack, t:Transformation, id:Int)
+    def renderInv(stack:ItemStack, t:Transformation, id:Int, ccrs:CCRenderState)
     {
         val r = renderers(id)
-        TextureUtils.bindAtlas(0)
+        TextureUtils.bindBlockTexture()
         r.prepareInv(stack)
-        CCRenderState.startDrawing()
-        r.renderStatic(t, 0)
-        CCRenderState.draw()
-        if (r.hasSpecials) r.renderDynamic(t)
+        ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
+        r.renderStatic(t, 0, ccrs)
+        ccrs.draw()
+        if (r.hasSpecials) r.renderDynamic(t, ccrs)
     }
 
     def spawnParticles(gate:GatePart, rand:Random)
@@ -115,23 +122,23 @@ abstract class GateRenderer[T <: GatePart]
     private def enabledModels = coreModels++switchModels
     private def allModels = coreModels++allSwitchModels
 
-    def registerIcons(reg:IIconRegister)
+    def registerIcons(map:TextureMap)
     {
-        for (m <- allModels) if (m != null) m.registerIcons(reg)
+        for (m <- allModels) if (m != null) m.registerIcons(map)
     }
 
-    def renderModels(t:Transformation, orient:Int)
+    def renderModels(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
-        for (m <- enabledModels) m.renderModel(t, orient)
+        for (m <- enabledModels) m.renderModel(t, orient, ccrs)
     }
 
-    def renderStatic(t:Transformation, orient:Int)
+    def renderStatic(t:Transformation, orient:Int, ccrs:CCRenderState)
     {
-        renderModels(t, if (reflect) orient+24 else orient)
+        renderModels(t, if (reflect) orient+24 else orient, ccrs)
     }
 
     def hasSpecials = false
-    def renderDynamic(t:Transformation){}
+    def renderDynamic(t: Transformation, ccrs: CCRenderState){}
 
     def prepareInv(stack:ItemStack){prepareInv()}
     def prepareInv(){}
@@ -151,7 +158,7 @@ abstract class GateRenderer[T <: GatePart]
             val pos = new Vector3(rand.nextFloat, rand.nextFloat, rand.nextFloat).add(-0.5).multiply(0.05, 0.1, 0.05)
             pos.add(t.getLightPos)
             pos.apply(gate.rotationT).add(gate.x, gate.y, gate.z)
-            gate.world.spawnParticle("reddust", pos.x, pos.y, pos.z, 0, 0, 0)
+            gate.world.spawnParticle(EnumParticleTypes.REDSTONE, pos.x, pos.y, pos.z, 0, 0, 0)
         }
     }
 }
@@ -767,13 +774,12 @@ class RenderTimer extends GateRenderer[SequentialGatePart]
         pointer.angle = part.getLogic[TTimerGateLogic].interpPointer(frame)*MathHelper.pi*2
     }
 
-    override def renderDynamic(t:Transformation)
+    override def renderDynamic(t:Transformation, ccrs:CCRenderState)
     {
-        CCRenderState.startDrawing()
-        CCRenderState.pullLightmap()
-        CCRenderState.setDynamic()
-        pointer.renderModel(t, 0)
-        CCRenderState.draw()
+        ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
+        ccrs.pullLightmap()
+        pointer.renderModel(t, 0, ccrs)
+        ccrs.draw()
     }
 }
 
@@ -813,13 +819,12 @@ class RenderSequencer extends GateRenderer[SequentialGatePart]
 
     override def hasSpecials = true
 
-    override def renderDynamic(t:Transformation)
+    override def renderDynamic(t:Transformation, ccrs:CCRenderState)
     {
-        CCRenderState.startDrawing()
-        CCRenderState.pullLightmap()
-        CCRenderState.setDynamic()
-        pointer.renderModel(t, 0)
-        CCRenderState.draw()
+        ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
+        ccrs.pullLightmap()
+        pointer.renderModel(t, 0, ccrs)
+        ccrs.draw()
     }
 }
 
@@ -863,13 +868,12 @@ class RenderCounter extends GateRenderer[SequentialGatePart]
 
     override def hasSpecials = true
 
-    override def renderDynamic(t:Transformation)
+    override def renderDynamic(t:Transformation, ccrs:CCRenderState)
     {
-        CCRenderState.startDrawing()
-        CCRenderState.pullLightmap()
-        CCRenderState.setDynamic()
-        pointer.renderModel(t, if (reflect) 1 else 0)
-        CCRenderState.draw()
+        ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
+        ccrs.pullLightmap()
+        pointer.renderModel(t, if (reflect) 1 else 0, ccrs)
+        ccrs.draw()
     }
 }
 
@@ -921,13 +925,12 @@ class RenderStateCell extends GateRenderer[SequentialGatePart]
         pointer.angle = part.getLogic[StateCell].interpPointer(frame)-MathHelper.pi/2
     }
 
-    override def renderDynamic(t:Transformation)
+    override def renderDynamic(t:Transformation, ccrs:CCRenderState)
     {
-        CCRenderState.startDrawing()
-        CCRenderState.pullLightmap()
-        CCRenderState.setDynamic()
-        pointer.renderModel(t, if (reflect) 1 else 0)
-        CCRenderState.draw()
+        ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
+        ccrs.pullLightmap()
+        pointer.renderModel(t, if (reflect) 1 else 0, ccrs)
+        ccrs.draw()
     }
 }
 
@@ -1038,10 +1041,10 @@ class RenderComparator extends GateRenderer[SequentialGatePart]
         }
     }
 
-    override def renderModels(t:Transformation, orient:Int)
+    override def renderModels(t: Transformation, orient:Int, ccrs:CCRenderState)
     {
-        super.renderModels(t, orient)
-        chips.foreach(_.renderModel(t, orient%24))
+        super.renderModels(t, orient, ccrs)
+        chips.foreach(_.renderModel(t, orient%24, ccrs))
     }
 }
 
@@ -1128,7 +1131,7 @@ class RenderBusInputPanel extends GateRenderer[BundledGatePart]
     {
         wires(0).on = false
         buttons.pressMask = 0
-        buttons.pos.set(0, 0, 0)
+        buttons.pos.setPos(0, 0, 0)
         buttons.orientationT = new RedundantTransformation
     }
 
@@ -1143,11 +1146,11 @@ class RenderBusInputPanel extends GateRenderer[BundledGatePart]
     override def prepareDynamic(gate:BundledGatePart, frame:Float)
     {
         buttons.pressMask = gate.getLogic[BusInputPanel].pressMask
-        buttons.pos.set(gate.x, gate.y, gate.z)
+        buttons.pos.setPos(gate.x, gate.y, gate.z)
         buttons.orientationT = gate.rotationT
     }
 
-    override def renderDynamic(t:Transformation)
+    override def renderDynamic(t: Transformation, ccrs: CCRenderState)
     {
         buttons.renderLights()
     }
@@ -1326,7 +1329,7 @@ class RenderSegmentDisplay extends GateRenderer[BundledGatePart]
         sevenSeg1.signal = 64
         sevenSeg0.signal = 64
         sixteenSeg.signal = 0
-        Seq(sevenSeg0, sevenSeg1, sixteenSeg).foreach(_.setColourOn(Colors.RED.ordinal.toByte))
+        Seq(sevenSeg0, sevenSeg1, sixteenSeg).foreach(_.setColourOn(EnumColour.RED.ordinal.toByte))
     }
 
     override def prepare(gate:BundledGatePart)

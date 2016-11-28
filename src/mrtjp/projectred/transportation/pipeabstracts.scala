@@ -1,25 +1,25 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.raytracer.IndexedCuboid6
-import codechicken.lib.render.{CCRenderState, TextureUtils}
-import codechicken.lib.vec.{BlockCoord, Cuboid6, Rotation, Vector3}
+import codechicken.lib.raytracer.{CuboidRayTraceResult, IndexedCuboid6}
+import codechicken.lib.render.CCRenderState
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.vec.{Cuboid6, Rotation, Vector3}
 import codechicken.microblock.ISidedHollowConnect
 import codechicken.multipart._
-import cpw.mods.fml.relauncher.{SideOnly, Side}
+import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.item.ItemKey
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
-import mrtjp.core.inventory.InvWrapper
-import net.minecraft.client.renderer.RenderBlocks
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
-import net.minecraft.util.MovingObjectPosition
-import net.minecraftforge.common.util.ForgeDirection
+import net.minecraft.util.{BlockRenderLayer, ITickable}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConversions._
 
-abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TSwitchPacket with TNormalOcclusion with ISidedHollowConnect
+abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TSwitchPacket with TNormalOcclusionPart with ISidedHollowConnect
 {
     var meta:Byte = 0
 
@@ -121,11 +121,11 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
 
     def getType = getPipeType.partname
 
-    override def getStrength(hit:MovingObjectPosition, player:EntityPlayer)  = 2
+    override def getStrength(player:EntityPlayer, hit:CuboidRayTraceResult)  = 2
 
     override def getDrops = Seq(getItem)
 
-    override def pickItem(hit:MovingObjectPosition) = getItem
+    override def pickItem(hit:CuboidRayTraceResult) = getItem
 
     override def getHollowSize(side:Int) = 8
 
@@ -153,31 +153,28 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
     }
 
     @SideOnly(Side.CLIENT)
-    override def drawBreaking(r:RenderBlocks)
+    override def renderBreaking(pos:Vector3, texture:TextureAtlasSprite, ccrs:CCRenderState)
     {
-        RenderPipe.renderBreakingOverlay(r.overrideBlockTexture, this)
+        RenderPipe.renderBreakingOverlay(texture, this, ccrs)
     }
 
-    @SideOnly(Side.CLIENT)
-    override def renderStatic(pos:Vector3, pass:Int) =
+    override def renderStatic(pos:Vector3, layer:BlockRenderLayer, ccrs:CCRenderState) =
     {
-        if (pass == 0)
-        {
-            TextureUtils.bindAtlas(0)
-            CCRenderState.setBrightness(world, x, y, z)
-            doStaticTessellation(pos)
+        if (layer == BlockRenderLayer.CUTOUT) {
+            TextureUtils.bindBlockTexture()
+            ccrs.setBrightness(world, this.pos)
+            doStaticTessellation(pos, ccrs)
             true
         }
         else false
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(pos:Vector3, frame:Float, pass:Int)
+    override def renderDynamic(pos:Vector3, pass:Int, frame:Float)
     {
-        if (pass == 0)
-        {
-            TextureUtils.bindAtlas(0)
-            doDynamicTessellation(pos, frame)
+        if (pass == 0) {
+            TextureUtils.bindBlockTexture()
+            doDynamicTessellation(pos, frame, CCRenderState.instance())
         }
     }
 
@@ -185,13 +182,13 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
     def getIcon(side:Int) = getPipeType.sprites(0)
 
     @SideOnly(Side.CLIENT)
-    def doStaticTessellation(pos:Vector3)
+    def doStaticTessellation(pos:Vector3, ccrs:CCRenderState)
     {
-        RenderPipe.renderPipe(this, pos)
+        RenderPipe.renderPipe(this, pos, ccrs)
     }
 
     @SideOnly(Side.CLIENT)
-    def doDynamicTessellation(pos:Vector3, frame:Float){}
+    def doDynamicTessellation(pos:Vector3, frame:Float, ccrs:CCRenderState){}
 }
 
 object PipeBoxes
@@ -241,7 +238,7 @@ trait TPipeTravelConditions
     }
 }
 
-abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart with TPipeTravelConditions
+abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart with TPipeTravelConditions with ITickable
 {
     val itemFlow = new PayloadMovement[T]
     var initialized = false
@@ -287,7 +284,6 @@ abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart
 
     override def update()
     {
-        super.update()
         if (!initialized) initialized = true
         pushItemFlow()
     }
@@ -297,8 +293,7 @@ abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart
         itemFlow.executeLoad()
         itemFlow.exececuteRemove()
         for (r <- itemFlow.it) if (r.isCorrupted) itemFlow.scheduleRemoval(r)
-        else
-        {
+        else {
             r.moveProgress(r.speed)
             if (r.isEntering && hasReachedMiddle(r))
             {
@@ -465,10 +460,10 @@ abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart
     def createNewPayload(id:Int):T
 
     @SideOnly(Side.CLIENT)
-    override def doDynamicTessellation(pos:Vector3, frame:Float)
+    override def doDynamicTessellation(pos:Vector3, frame:Float, ccrs:CCRenderState)
     {
-        super.doDynamicTessellation(pos, frame)
-        RenderPipe.renderItemFlow(this, pos, frame)
+        super.doDynamicTessellation(pos, frame, ccrs)
+        RenderPipe.renderItemFlow(this, pos, frame, ccrs)
     }
 
     override def canConnectPart(part:IConnectable, s:Int) = false

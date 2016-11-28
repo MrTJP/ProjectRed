@@ -1,15 +1,17 @@
 package mrtjp.projectred.transmission
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.vec.{Rotation, BlockCoord}
+import codechicken.lib.vec.Rotation
 import codechicken.multipart.TMultiPart
-import mrtjp.core.world.{Messenger, WorldLib}
-import mrtjp.projectred.api.{IMaskedBundledTile, IBundledEmitter, IBundledTile, IConnectable}
+import mrtjp.core.world.Messenger
+import mrtjp.projectred.api.{IBundledEmitter, IBundledTile, IConnectable, IMaskedBundledTile}
 import mrtjp.projectred.transmission.IWirePart._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.ChatComponentText
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos.MutableBlockPos
+import net.minecraft.util.text.TextComponentString
 
 trait IBundledCablePart extends IWirePart with IBundledEmitter
 {
@@ -61,23 +63,12 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
         colour = packet.readByte()
     }
 
-    override def canConnectPart(part:IConnectable, r:Int) = part match
+    override def canConnectPart(part:IConnectable, dir:Int) = part match
     {
         case b:IBundledCablePart => b.getBundledColour == -1 || colour == -1 || b.getBundledColour == colour
         case ins:IInsulatedRedwirePart => true
         case be:IBundledEmitter => true
         case _ => false
-    }
-
-    override def discoverStraightOverride(absDir:Int) =
-    {
-        val pos = new BlockCoord(tile).offset(absDir)
-        world.getTileEntity(pos.x, pos.y, pos.z) match
-        {
-            //following 2 cases copied to subclasses for performance
-            case b:IBundledTile => b.canConnectBundled(absDir^1)
-            case _ => APIImpl_Transmission.canConnectBundled(world, pos, absDir^1)
-        }
     }
 
     protected var propagatingMask = 0xFFFF
@@ -139,7 +130,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
                     tmpSignal(i.getInsulatedColour) = s.toByte
             case b:IBundledEmitter => BundledCommons.raiseSignal(tmpSignal, b.getBundledSignal(r))
             case t:TileEntity => BundledCommons.raiseSignal(tmpSignal,
-                APIImpl_Transmission.getBundledSignal(t.getWorldObj, t.xCoord, t.yCoord, t.zCoord, r))
+                APIImpl_Transmission.getBundledSignal(t.getWorld, t.getPos, r))
             case _ =>
         }
         tmpSignal
@@ -171,7 +162,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
 
     override def getBundledSignal = signal
 
-    override def getBundledSignal(side:Int) = if (maskConnects(side)) getBundledSignal else null
+    override def getBundledSignal(dir:Int) = if (maskConnects(dir)) getBundledSignal else null
 
     override def getBundledColour = colour
 
@@ -184,14 +175,13 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
             if (s.length == 1) sb.append('0')
             sb.append(s)
         }
-        player.addChatComponentMessage(new ChatComponentText(sb.toString()))
+        player.addChatComponentMessage(new TextComponentString(sb.toString()))
         true
     }
 
     override def test(player:EntityPlayer) =
     {
-        if (!world.isRemote)
-        {
+        if (!world.isRemote) {
             var s = ""
             for (i <- 0 until 16) if (getBundledSignal.apply(i) != 0) s = s+"["+i+"]"
 
@@ -214,11 +204,9 @@ class BundledCablePart extends WirePart with TFaceBundledAquisitions with TBundl
     override def calculateSignal =
     {
         tmpSignalClear()
-        for (r <- 0 until 4) if (maskConnects(r))
-        {
+        for (r <- 0 until 4) if (maskConnects(r)) {
             if (maskConnectsCorner(r)) calcCornerArray(r)
-            else
-            {
+            else {
                 if (maskConnectsStraight(r)) calcStraightArray(r)
                 calcInternalArray(r)
             }
@@ -229,10 +217,9 @@ class BundledCablePart extends WirePart with TFaceBundledAquisitions with TBundl
 
     override def calcStraightArray(r:Int) =
     {
-        WorldLib.getTileEntity(world, posOfStraight(r)) match
-        {
+        world.getTileEntity(posOfStraight(r)) match {
             case ibe:IBundledEmitter => resolveArray(ibe, absoluteDir(rotFromStraight(r)))
-            case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.xCoord, t.yCoord, t.zCoord) =>
+            case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.getPos) =>
                 resolveArray(t, absoluteDir(rotFromStraight(r)))
             case _ => super.calcStraightArray(r)
         }
@@ -240,13 +227,10 @@ class BundledCablePart extends WirePart with TFaceBundledAquisitions with TBundl
 
     override def discoverStraightOverride(absDir:Int) =
     {
-        val pos = new BlockCoord(tile).offset(absDir)
-        world.getTileEntity(pos.x, pos.y, pos.z) match
-        {
+        val pos = new MutableBlockPos(this.pos).move(EnumFacing.values()(absDir))
+        world.getTileEntity(pos) match {
             case b:IMaskedBundledTile => b.canConnectBundled(absDir^1) &&
                     (b.getConnectionMask(absDir^1)&1<<Rotation.rotationTo(absDir, side)) != 0
-
-            //Following two cases copied from super.discoverStraightOverride for performance
             case b:IBundledTile => b.canConnectBundled(absDir^1)
             case _ => APIImpl_Transmission.canConnectBundled(world, pos, absDir^1)
         }
@@ -267,10 +251,9 @@ class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitio
 
     override def calcStraightArray(s:Int) =
     {
-        WorldLib.getTileEntity(world, posOfStraight(s)) match
-        {
+        world.getTileEntity(posOfStraight(s)) match {
             case ibe:IBundledEmitter => resolveArray(ibe, s^1)
-            case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.xCoord, t.yCoord, t.zCoord) =>
+            case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.getPos) =>
                 resolveArray(t, s^1)
             case _ => super.calcStraightArray(s)
         }
@@ -278,13 +261,10 @@ class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitio
 
     override def discoverStraightOverride(absDir:Int) =
     {
-        val pos = new BlockCoord(tile).offset(absDir)
-        world.getTileEntity(pos.x, pos.y, pos.z) match
-        {
+        val pos = new MutableBlockPos(this.pos).move(EnumFacing.getFront(absDir))
+        world.getTileEntity(pos) match {
             case b:IMaskedBundledTile => b.canConnectBundled(absDir^1) &&
                     (b.getConnectionMask(absDir^1)&0x10) != 0
-
-            //Following two cases copied from super.discoverStraightOverride for performance
             case b:IBundledTile => b.canConnectBundled(absDir^1)
             case _ => APIImpl_Transmission.canConnectBundled(world, pos, absDir^1)
         }

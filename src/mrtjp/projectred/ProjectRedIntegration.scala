@@ -1,17 +1,17 @@
 package mrtjp.projectred
 
-import cpw.mods.fml.common.Mod
-import cpw.mods.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 import mrtjp.projectred.integration.{GateDefinition, IntegrationProxy, ItemPartGate}
 import net.minecraft.creativetab.CreativeTabs
+import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 
 @Mod(modid = "ProjRed|Integration", useMetadata = true, modLanguage = "scala")
 object ProjectRedIntegration
 {
     /** Multipart items **/
-    var itemPartGate2:ItemPartGate = null
+    var itemPartGate:ItemPartGate = null
 
-    var tabIntegration2 = new CreativeTabs("int")
+    var tabIntegration = new CreativeTabs("int")
     {
         override def getIconItemStack = GateDefinition.OR.makeStack
         override def getTabIconItem = getIconItemStack.getItem

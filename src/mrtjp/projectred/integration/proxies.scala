@@ -7,34 +7,35 @@ package mrtjp.projectred.integration
 
 import java.lang.{Character => JChar}
 
+import codechicken.lib.model.ModelRegistryHelper
 import codechicken.lib.packet.PacketCustom
-import codechicken.multipart.MultiPartRegistry
-import codechicken.multipart.MultiPartRegistry.IPartFactory
-import cpw.mods.fml.common.registry.GameRegistry
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import codechicken.lib.texture.TextureUtils
+import codechicken.multipart.{IPartFactory, MultiPartRegistry}
 import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedIntegration._
 import mrtjp.projectred.core.{IProxy, PartDefs}
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
-import net.minecraftforge.client.MinecraftForgeClient
+import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.ShapedOreRecipe
 
 class IntegrationProxy_server extends IProxy with IPartFactory
 {
     override def preinit()
     {
-        PacketCustom.assignHandler(IntegrationSPH.channel, IntegrationSPH) //TODO
+        itemPartGate = new ItemPartGate
+
+        import GateDefinition._
+        MultiPartRegistry.registerParts(this, Array[String](
+            typeSimpleGate, typeComplexGate, typeArrayGate,
+            typeBundledGate, typeNeighborGate
+        ))
     }
 
     override def init()
     {
-        MultiPartRegistry.registerParts(this, Array[String](
-            "pr_sgate", "pr_igate", "pr_agate",
-            "pr_bgate", "pr_tgate", "pr_rgate"
-        ))
-
-        itemPartGate2 = new ItemPartGate
+        PacketCustom.assignHandler(IntegrationSPH.channel, IntegrationSPH)
 
         IntegrationRecipes.initRecipes()
     }
@@ -43,12 +44,11 @@ class IntegrationProxy_server extends IProxy with IPartFactory
 
     override def createPart(name:String, client:Boolean) = name match
     {
-        case "pr_sgate" => new ComboGatePart
-        case "pr_igate" => new SequentialGatePart
-        case "pr_agate" => new ArrayGatePart
-        case "pr_bgate" => new BundledGatePart
-        case "pr_tgate" => new SequentialGatePartT
-        case "pr_rgate" => new ArrayGatePart //TODO Legacy
+        case GateDefinition.typeSimpleGate => new ComboGatePart
+        case GateDefinition.typeComplexGate => new SequentialGatePart
+        case GateDefinition.typeArrayGate => new ArrayGatePart
+        case GateDefinition.typeBundledGate => new BundledGatePart
+        case GateDefinition.typeNeighborGate => new SequentialGatePartT
         case _ => null
     }
 
@@ -65,14 +65,18 @@ class IntegrationProxy_client extends IntegrationProxy_server
     override def preinit()
     {
         super.preinit()
-        PacketCustom.assignHandler(IntegrationCPH.channel, IntegrationCPH)
+
+        ModelRegistryHelper.registerItemRenderer(itemPartGate, GateItemRenderer)
     }
 
     @SideOnly(Side.CLIENT)
     override def init()
     {
         super.init()
-        MinecraftForgeClient.registerItemRenderer(itemPartGate2, GateItemRenderer)
+
+        PacketCustom.assignHandler(IntegrationCPH.channel, IntegrationCPH)
+
+        TextureUtils.addIconRegister(RenderGate)
 
         GuiHandler.register(GuiTimer, timerGui)
         GuiHandler.register(GuiCounter, counterGui)
@@ -142,7 +146,7 @@ object IntegrationRecipes
                 'C':JChar, PartDefs.CATHODE.makeStack,
                 'P':JChar, PartDefs.PLATE.makeStack,
                 'W':JChar, PartDefs.CONDUCTIVEPLATE.makeStack,
-                'L':JChar, new ItemStack(Blocks.lever)
+                'L':JChar, new ItemStack(Blocks.LEVER)
         )
 
         /** Transparent Latch **/

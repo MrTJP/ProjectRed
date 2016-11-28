@@ -1,10 +1,11 @@
 package mrtjp.projectred.transportation
 
-import codechicken.lib.vec.BlockCoord
 import codechicken.multipart.TileMultipart
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.item.ItemKey
 import net.minecraft.inventory.IInventory
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
@@ -42,17 +43,16 @@ object PressurePathFinder
 
     def start()
     {
-        val bc = new BlockCoord(pipe.tile)
         val q = Queue.newBuilder[Node]
-        for (s <- 0 until 6 if (searchDirs&1<<s) != 0 && pipe.maskConnects(s)) q += Node(bc, s)
-        iterate(q.result(), Set(Node(bc)))
+        for (s <- 0 until 6 if (searchDirs&1<<s) != 0 && pipe.maskConnects(s)) q += Node(pipe.pos, s)
+        iterate(q.result(), Set(Node(pipe.pos)))
     }
 
     @tailrec
     private def iterate(open:Seq[Node], closed:Set[Node] = Set.empty):Unit = open match
     {
         case Seq() =>
-        case Seq(next, rest@_*) => getTile(next.bc) match
+        case Seq(next, rest@_*) => getTile(next.pos) match
         {
             case dev:TPressureDevice =>
                 if (dev.canAcceptInput(item, next.dir^1)) setInvPath(next)
@@ -102,17 +102,17 @@ object PressurePathFinder
         if (n.dist == shortestBDist) backlogDirs |= 1<<n.hop
     }
 
-    private def getTile(bc:BlockCoord) = pipe.world.getTileEntity(bc.x, bc.y, bc.z)
+    private def getTile(pos:BlockPos) = pipe.world.getTileEntity(pos)
 
     private object Node
     {
-        def apply(bc:BlockCoord):Node = new Node(bc.copy, 0, 6, 6)
-        def apply(bc:BlockCoord, dir:Int):Node = new Node(bc.copy.offset(dir), 1, dir, dir)
+        def apply(pos:BlockPos):Node = new Node(pos, 0, 6, 6)
+        def apply(pos:BlockPos, dir:Int):Node = new Node(pos.offset(EnumFacing.values()(dir)), 1, dir, dir)
     }
-    private class Node(val bc:BlockCoord, val dist:Int, val dir:Int, val hop:Int, filters:Set[PathFilter] = Set.empty) extends Path(filters) with Ordered[Node]
+    private class Node(val pos:BlockPos, val dist:Int, val dir:Int, val hop:Int, filters:Set[PathFilter] = Set.empty) extends Path(filters) with Ordered[Node]
     {
-        def -->(toDir:Int, distAway:Int, filter:PathFilter):Node = new Node(bc.copy.offset(toDir), dist+distAway, toDir, hop, filters+filter)
-        def -->(toDir:Int, distAway:Int):Node = new Node(bc.copy.offset(toDir), dist+distAway, toDir, hop, filters)
+        def -->(toDir:Int, distAway:Int, filter:PathFilter):Node = new Node(pos.offset(EnumFacing.values()(toDir)), dist+distAway, toDir, hop, filters+filter)
+        def -->(toDir:Int, distAway:Int):Node = new Node(pos.offset(EnumFacing.values()(toDir)), dist+distAway, toDir, hop, filters)
         def -->(toDir:Int):Node = this -->(toDir, 1)
 
         override def compare(that:Node) = dist-that.dist
@@ -120,12 +120,12 @@ object PressurePathFinder
         override def equals(other:Any) = other match
         {
             case that:Node =>
-                bc == that.bc && dir == that.dir
+                pos == that.pos && dir == that.dir
             case _ => false
         }
 
-        override def hashCode = bc.hashCode
+        override def hashCode = pos.hashCode
 
-        override def toString = "@"+bc.toString+": delta("+dir+") hop("+hop+")"
+        override def toString = "@"+pos.toString+": delta("+dir+") hop("+hop+")"
     }
 }
