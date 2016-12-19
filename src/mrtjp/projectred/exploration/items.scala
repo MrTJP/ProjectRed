@@ -2,11 +2,8 @@ package mrtjp.projectred.exploration
 
 import java.util.{List => JList}
 
+import codechicken.lib.util.ItemUtils
 import codechicken.microblock.Saw
-import cpw.mods.fml.common.registry.GameRegistry
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.block.TItemSeed
-import mrtjp.core.color.Colors
 import mrtjp.core.gui.{GuiLib, NodeContainer, Slot3}
 import mrtjp.core.inventory.TInventory
 import mrtjp.core.item.ItemCore
@@ -16,37 +13,40 @@ import mrtjp.projectred.core.{ItemCraftingDamage, PartDefs}
 import mrtjp.projectred.exploration.ArmorDefs.ArmorDef
 import mrtjp.projectred.exploration.ToolDefs.ToolDef
 import net.minecraft.block._
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.block.state.IBlockState
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.init.{Blocks, Items}
+import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.item.Item.ToolMaterial
-import net.minecraft.item.Item.ToolMaterial.{EMERALD => toolMaterialEmerald, GOLD => toolMaterialGold, IRON => toolMaterialIron, STONE => toolMaterialStone, WOOD => toolMaterialWood}
+import net.minecraft.item.Item.ToolMaterial.{DIAMOND => toolMaterialDiamond, GOLD => toolMaterialGold, IRON => toolMaterialIron, STONE => toolMaterialStone, WOOD => toolMaterialWood}
 import net.minecraft.item.ItemArmor.ArmorMaterial
 import net.minecraft.item._
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.{EnumChatFormatting, IIcon}
-import net.minecraft.world.{IBlockAccess, World}
-import net.minecraftforge.common.EnumPlantType
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.TextFormatting
+import net.minecraft.util.{ActionResult, EnumActionResult, EnumFacing, EnumHand}
+import net.minecraft.world.World
+import net.minecraftforge.fml.common.registry.GameRegistry
 import org.lwjgl.input.Keyboard
 
-class ItemBackpack extends ItemCore("projectred.exploration.backpack")
+class ItemBackpack extends ItemCore("backpack")
 {
     setHasSubtypes(true)
     setMaxStackSize(1)
     setCreativeTab(ProjectRedExploration.tabExploration)
 
-    override def onItemUse(stack:ItemStack, player:EntityPlayer, world:World, x:Int, y:Int, z:Int, par7:Int, par8:Float, par9:Float, par10:Float) =
+    override def onItemUse(stack:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, hand:EnumHand, facing:EnumFacing, hitX:Float, hitY:Float, hitZ:Float) =
     {
         openGui(player)
-        true
+        EnumActionResult.SUCCESS
     }
 
-    override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer) =
+    override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer, hand:EnumHand) =
     {
         openGui(player)
-        super.onItemRightClick(stack, w, player)
+        ActionResult.newResult(EnumActionResult.SUCCESS, stack)
     }
 
     def openGui(player:EntityPlayer)
@@ -54,27 +54,27 @@ class ItemBackpack extends ItemCore("projectred.exploration.backpack")
         GuiBackpack.open(player, ItemBackpack.createContainer(player))
     }
 
-    override def getSubItems(item:Item, tab:CreativeTabs, list:JList[_])
+    override def getSubItems(item:Item, tab:CreativeTabs, list:JList[ItemStack])
     {
         for (i <- 0 until 16)
             list.asInstanceOf[JList[ItemStack]].add(new ItemStack(this, 1, i))
     }
 
-    private val icons = new Array[IIcon](16)
-    @SideOnly(Side.CLIENT)
-    override def registerIcons(reg:IIconRegister)
-    {
-        for (i <- 0 until 16)
-            icons(i) = reg.registerIcon("projectred:world/backpack_"+i)
-    }
+    //private val icons = new Array[IIcon](16)
+    //@SideOnly(Side.CLIENT)
+    //override def registerIcons(reg:IIconRegister)
+    //{
+    //    for (i <- 0 until 16)
+   //         icons(i) = reg.registerIcon("projectred:world/backpack_"+i)
+   // }
 
-    override def getIconFromDamage(meta:Int) = icons(meta)
+    //override def getIconFromDamage(meta:Int) = icons(meta)
 
-    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], flag:Boolean)
+    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[String], flag:Boolean)
     {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             list.asInstanceOf[JList[String]].add(
-                EnumChatFormatting.GRAY.toString+(if (ItemBackpack.hasBagInv(stack))
+                TextFormatting.GRAY.toString+(if (ItemBackpack.hasBagInv(stack))
                     ItemBackpack.getNumberOfItems(stack) else 0)+"/27 slots used")
     }
 }
@@ -132,7 +132,7 @@ class BagInventory(player:EntityPlayer) extends TInventory
     private def loadInventory()
     {
         if (closeIfNoBag()) return
-        loadInv(ItemBackpack.getBagTag(player.getHeldItem))
+        loadInv(ItemBackpack.getBagTag(ItemUtils.getHeldStack(player)))
     }
 
     private def saveInventory()
@@ -140,7 +140,7 @@ class BagInventory(player:EntityPlayer) extends TInventory
         if (closeIfNoBag()) return
         val tag = new NBTTagCompound
         saveInv(tag)
-        ItemBackpack.saveBagTag(player.getHeldItem, tag)
+        ItemBackpack.saveBagTag(ItemUtils.getHeldStack(player), tag)
     }
 
     override def markDirty()
@@ -149,8 +149,8 @@ class BagInventory(player:EntityPlayer) extends TInventory
     }
 
     private def closeIfNoBag() =
-    {
-        val bag = player.getHeldItem
+    {//TODO, Check hands ourself so we can dual wield, this should work for now tho.
+        val bag = ItemUtils.getHeldStack(player)
         val hasBag = bag != null && bag.getItem == ProjectRedExploration.itemBackpack
         if (hasBag) { if (!bag.hasTagCompound) bag.setTagCompound(new NBTTagCompound) }
         else player.closeScreen()
@@ -169,9 +169,9 @@ class BagInventory(player:EntityPlayer) extends TInventory
         false
     }
 
-    override def getStackInSlotOnClosing(slot:Int) =
+    override def removeStackFromSlot(slot:Int) =
         if (closeIfNoBag()) null
-        else super.getStackInSlotOnClosing(slot)
+        else super.removeStackFromSlot(slot)
 
     override def decrStackSize(slot:Int, count:Int) =
         if (closeIfNoBag()) null
@@ -182,22 +182,22 @@ class BagInventory(player:EntityPlayer) extends TInventory
         if (!closeIfNoBag()) super.setInventorySlotContents(slot, item)
     }
 
-    override def dropInvContents(w:World, x:Int, y:Int, z:Int)
+    override def dropInvContents(w:World, pos:BlockPos)
     {
-        if (!closeIfNoBag()) super.dropInvContents(w, x, y, z)
+        if (!closeIfNoBag()) super.dropInvContents(w, pos)
     }
 }
 
 object ToolDefs
 {
-    private val wood = new ItemStack(Blocks.planks)
-    private val flint = new ItemStack(Items.flint)
-    private val iron = new ItemStack(Items.iron_ingot)
-    private val gold = new ItemStack(Items.gold_ingot)
+    private val wood = new ItemStack(Blocks.PLANKS)
+    private val flint = new ItemStack(Items.FLINT)
+    private val iron = new ItemStack(Items.IRON_INGOT)
+    private val gold = new ItemStack(Items.GOLD_INGOT)
     private val ruby = PartDefs.RUBY.makeStack
     private val sapphire = PartDefs.SAPPHIRE.makeStack
     private val peridot = PartDefs.PERIDOT.makeStack
-    private val diamond = new ItemStack(Items.diamond)
+    private val diamond = new ItemStack(Items.DIAMOND)
 
     import mrtjp.projectred.ProjectRedExploration.{toolMaterialPeridot, toolMaterialRuby, toolMaterialSapphire}
 
@@ -228,7 +228,7 @@ object ToolDefs
     val RUBYSAW = ToolDef("sawruby", toolMaterialRuby, ruby)
     val SAPPHIRESAW = ToolDef("sawsapphire", toolMaterialSapphire, sapphire)
     val PERIDOTSAW = ToolDef("sawperidot", toolMaterialPeridot, peridot)
-    val DIAMONDSAW = ToolDef("sawdiamond", toolMaterialEmerald, diamond)
+    val DIAMONDSAW = ToolDef("sawdiamond", toolMaterialDiamond, diamond)
 
     val WOODSICKLE = ToolDef("sicklewood", toolMaterialWood, wood)
     val STONESICKLE = ToolDef("sicklestone", toolMaterialStone, flint)
@@ -237,7 +237,7 @@ object ToolDefs
     val RUBYSICKLE = ToolDef("sickleruby", toolMaterialRuby, ruby)
     val SAPPHIRESICKLE = ToolDef("sicklesapphire", toolMaterialSapphire, sapphire)
     val PERIDOTSICKLE = ToolDef("sickleperidot", toolMaterialPeridot, peridot)
-    val DIAMONDSICKLE = ToolDef("sicklediamond", toolMaterialEmerald, diamond)
+    val DIAMONDSICKLE = ToolDef("sicklediamond", toolMaterialDiamond, diamond)
 
     case class ToolDef(unlocal:String, mat:ToolMaterial, repair:ItemStack)
 }
@@ -246,7 +246,7 @@ object ToolDefs
 trait TGemTool extends Item
 {
     setUnlocalizedName("projectred.exploration."+toolDef.unlocal)
-    setTextureName("projectred:world/"+toolDef.unlocal)
+    //setTextureName("projectred:world/"+toolDef.unlocal)
     setCreativeTab(ProjectRedExploration.tabExploration)
     GameRegistry.registerItem(this, "projectred.exploration."+toolDef.unlocal)
 
@@ -260,7 +260,7 @@ trait TGemTool extends Item
 }
 
 import mrtjp.projectred.exploration.ItemToolProxies._
-class ItemGemAxe(override val toolDef:ToolDef) extends Axe(toolDef.mat) with TGemTool
+class ItemGemAxe(override val toolDef:ToolDef, damage:Float, speed:Float) extends Axe(toolDef.mat, damage, speed) with TGemTool
 class ItemGemPickaxe(override val toolDef:ToolDef) extends Pickaxe(toolDef.mat) with TGemTool
 class ItemGemShovel(override val toolDef:ToolDef) extends Shovel(toolDef.mat) with TGemTool
 class ItemGemSword(override val toolDef:ToolDef) extends Sword(toolDef.mat) with TGemTool
@@ -272,21 +272,21 @@ class ItemGemSaw(val toolDef:ToolDef) extends ItemCraftingDamage("projectred.exp
     setCreativeTab(ProjectRedExploration.tabExploration)
 
     override def getCuttingStrength(item:ItemStack) = toolDef.mat.getHarvestLevel
-    override def registerIcons(reg:IIconRegister){}
+    //override def registerIcons(reg:IIconRegister){}
 }
 
-class ItemGemSickle(override val toolDef:ToolDef) extends ItemTool(3, toolDef.mat, new java.util.HashSet) with TGemTool
+class ItemGemSickle(override val toolDef:ToolDef) extends ItemTool(3, 0/*TODO This needs the correct values thrown in from the ToolDef*/,toolDef.mat, new java.util.HashSet) with TGemTool
 {
     private val radiusLeaves = 1
     private val radiusCrops = 2
 
-    override def func_150893_a(stack:ItemStack, b:Block) =
+    override def getStrVsBlock(stack:ItemStack, state:IBlockState) =
     {
-        if (b.isInstanceOf[BlockLeaves]) efficiencyOnProperMaterial
-        else super.func_150893_a(stack, b)
+        if (state.getBlock.isInstanceOf[BlockLeaves]) efficiencyOnProperMaterial
+        else super.getStrVsBlock(stack, state)
     }
 
-    override def onBlockDestroyed(stack:ItemStack, w:World, b:Block, x:Int, y:Int, z:Int, ent:EntityLivingBase):Boolean =
+    override def onBlockDestroyed(stack:ItemStack, w:World, state:IBlockState, pos:BlockPos, ent:EntityLivingBase):Boolean =
     {
         val player = ent match
         {
@@ -294,28 +294,25 @@ class ItemGemSickle(override val toolDef:ToolDef) extends ItemTool(3, toolDef.ma
             case _ => null
         }
 
-        if (player != null && b != null)
+        if (player != null && state != null)
         {
-            if (WorldLib.isLeafType(w, x, y, z, b)) return runLeaves(stack, w, x, y, z, player)
-            else if (WorldLib.isPlantType(w, x, y, z, b)) return runCrops(stack, w, x, y, z, player)
+            if (WorldLib.isLeafType(w, pos, state)) return runLeaves(stack, w, pos, player)
+            else if (WorldLib.isPlantType(w, pos, state)) return runCrops(stack, w, pos, player)
         }
-        super.onBlockDestroyed(stack, w, b, x, y, z, ent)
+        super.onBlockDestroyed(stack, w, state, pos, ent)
     }
 
-    private def runLeaves(stack:ItemStack, w:World, x:Int, y:Int, z:Int, player:EntityPlayer) =
+    private def runLeaves(stack:ItemStack, w:World, pos:BlockPos, player:EntityPlayer) =
     {
         var used = false
         for (i <- -radiusLeaves to radiusLeaves) for (j <- -radiusLeaves to radiusLeaves) for (k <- -radiusLeaves to radiusLeaves)
         {
-            val lx = x+i
-            val ly = y+j
-            val lz = z+k
-            val b = w.getBlock(lx, ly, lz)
-            val meta = w.getBlockMetadata(lx, ly, lz)
-            if (b != null && WorldLib.isLeafType(w, x, y, z, b))
+            val p = pos.add(i, j, k)
+            val b = w.getBlockState(p)
+            if (b != null && WorldLib.isLeafType(w, pos, b))
             {
-                if (b.canHarvestBlock(player, meta)) b.harvestBlock(w, player, lx, ly, lz, meta)
-                w.setBlockToAir(lx, ly, lz)
+                if (b.getBlock.canHarvestBlock(w, p, player)) b.getBlock.harvestBlock(w, player, p, b, w.getTileEntity(p), stack)
+                w.setBlockToAir(p)
                 used = true
             }
         }
@@ -324,20 +321,17 @@ class ItemGemSickle(override val toolDef:ToolDef) extends ItemTool(3, toolDef.ma
         used
     }
 
-    private def runCrops(stack:ItemStack, w:World, x:Int, y:Int, z:Int, player:EntityPlayer) =
+    private def runCrops(stack:ItemStack, w:World, pos:BlockPos, player:EntityPlayer) =
     {
         var used = false
         for (i <- -radiusCrops to radiusCrops) for (j <- -radiusCrops to radiusCrops)
         {
-            val lx = x+i
-            val ly = y
-            val lz = z+j
-            val b = w.getBlock(lx, ly, lz)
-            val meta = w.getBlockMetadata(lx, ly, lz)
-            if (b != null && WorldLib.isPlantType(w, x, y, z, b))
+            val p = pos.add(i, 0, j)
+            val b = w.getBlockState(p)
+            if (b != null && WorldLib.isPlantType(w, pos, b))
             {
-                if (b.canHarvestBlock(player, meta)) b.harvestBlock(w, player, lx, ly, lz, meta)
-                w.setBlockToAir(lx, ly, lz)
+                if (b.getBlock.canHarvestBlock(w, p, player)) b.getBlock.harvestBlock(w, player, p, b, w.getTileEntity(p), stack)
+                w.setBlockToAir(p)
                 used = true
             }
         }
@@ -373,10 +367,10 @@ object ArmorDefs
     case class ArmorDef(unlocal:String, tex:String, mat:ArmorMaterial, repair:ItemStack)
 }
 
-class ItemGemArmor(adef:ArmorDef, atype:Int) extends ItemToolProxies.Armor(adef.mat, atype)
+class ItemGemArmor(adef:ArmorDef, slot:EntityEquipmentSlot) extends ItemToolProxies.Armor(adef.mat, slot)
 {
     setUnlocalizedName("projectred.exploration."+adef.unlocal)
-    setTextureName("projectred:world/"+adef.unlocal)
+    //setTextureName("projectred:world/"+adef.unlocal)
     setCreativeTab(ProjectRedExploration.tabExploration)
     GameRegistry.registerItem(this, "projectred.exploration."+adef.unlocal)
 
@@ -386,21 +380,30 @@ class ItemGemArmor(adef:ArmorDef, atype:Int) extends ItemToolProxies.Armor(adef.
         else false
     }
 
-    override def getArmorTexture(stack:ItemStack, entity:Entity, slot:Int, `type`:String) =
-    {
-        val suffix = if(armorType == 2) 2 else 1
-        "projectred:textures/items/world/"+adef.tex + "_"+suffix+".png"
+    override def getArmorTexture(stack: ItemStack, entity: Entity, slot: EntityEquipmentSlot, `type`: String): String = {
+        import net.minecraft.inventory.EntityEquipmentSlot._
+        if (slot.getSlotType == EntityEquipmentSlot.Type.ARMOR) {
+            val suffix = if (slot == HEAD || slot == CHEST) 1 else 2
+            return s"projectred:textures/items/world/${adef.tex}_$suffix.png"
+        }
+        null
     }
+
+    //override def getArmorTexture(stack:ItemStack, entity:Entity, slot:Int, `type`:String) =
+    //{
+    //    val suffix = if(armorType == 2) 2 else 1
+    //    "projectred:textures/items/world/"+adef.tex + "_"+suffix+".png"
+    //}
 }
 
-class ItemWoolGin extends ItemCraftingDamage("projectred.exploration.woolgin")
+class ItemWoolGin extends ItemCraftingDamage("woolgin")
 {
     setMaxDamage(128)
     setCreativeTab(ProjectRedExploration.tabExploration)
-    setTextureName("projectred:world/wool_gin")
+    //setTextureName("projectred:world/wool_gin")
 }
 
-class ItemLilySeeds extends ItemCore("projectred.exploration.lilyseed") with TItemSeed
+/*class ItemLilySeeds extends ItemCore("projectred.exploration.lilyseed") with TItemSeed
 {
     setHasSubtypes(true)
     setTextureName("projectred:world/lily_seed")
@@ -425,32 +428,30 @@ class ItemLilySeeds extends ItemCore("projectred.exploration.lilyseed") with TIt
             case _ =>
         }
     }
-}
+}*/
 
-import com.google.common.collect.HashMultimap
-import com.google.common.collect.Multimap
+import com.google.common.collect.{HashMultimap, Multimap}
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.ai.attributes.AttributeModifier
-import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.monster.EntityEnderman
 import net.minecraft.util.DamageSource
-class ItemAthame() extends ItemSword(toolMaterialEmerald)
+class ItemAthame() extends ItemSword(toolMaterialDiamond)
 {
     private var damage:Float = _
   
     setUnlocalizedName("projectred.exploration.athame")
     setMaxDamage(100)
-    setTextureName("projectred:world/athame")
+    //setTextureName("projectred:world/athame")
     setCreativeTab(ProjectRedExploration.tabExploration)
-    GameRegistry.registerItem(this, "projectred.exploration.athame")
+    GameRegistry.registerItem(this, "athame")
     
-    override def func_150893_a(stack:ItemStack, block:Block):Float = 1.0F
+    override def getStrVsBlock(stack:ItemStack, block:IBlockState):Float = 1.0F
     
-    override def func_150931_i():Float = damage
+    override def getDamageVsEntity():Float = damage
     
     override def hitEntity(stack:ItemStack, entity:EntityLivingBase, player:EntityLivingBase):Boolean =
     {
-        damage = toolMaterialEmerald.getDamageVsEntity
+        damage = toolMaterialDiamond.getDamageVsEntity
       
         if ((entity.isInstanceOf[EntityEnderman])) damage = 25.0F else damage = 1.0F
         
@@ -467,10 +468,12 @@ class ItemAthame() extends ItemSword(toolMaterialEmerald)
 
     override def getItemEnchantability():Int = 30
     
-    override def getItemAttributeModifiers() =
+    override def getItemAttributeModifiers(slot:EntityEquipmentSlot) =
     {
         val damageModifier = HashMultimap.create().asInstanceOf[Multimap[String, AttributeModifier]]
-        damageModifier.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName, new AttributeModifier(Item.field_111210_e, "Weapon modifier", 0, 0))
+        if (slot == EntityEquipmentSlot.MAINHAND) {
+            damageModifier.put(SharedMonsterAttributes.ATTACK_DAMAGE.getAttributeUnlocalizedName, new AttributeModifier(Item.ATTACK_DAMAGE_MODIFIER, "Weapon modifier", 0, 0))
+        }
         damageModifier
     }
 }

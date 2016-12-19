@@ -1,0 +1,24 @@
+{
+  "ccl_marker": 1,
+  "variant_sets" : [
+    "type"
+  ],
+  "texture_domain" : "projectred",
+  "defaults": {
+    "model": "minecraft:cube_column",
+    "textures": {
+      "all": "minecraft:blocks/dirt"
+    },
+    "transform": "ccl:default-block"
+  },
+  "variants": {
+    "type": {
+      "barrel": {
+        "textures": {
+          "side": "blocks/world/barrel/side",
+          "end": "blocks/world/barrel/top"
+        }
+      }
+    }
+  }
+}

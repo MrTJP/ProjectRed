@@ -2,49 +2,55 @@ package mrtjp.projectred.exploration
 
 import java.lang.{Character => JChar}
 
+import codechicken.lib.colour.EnumColour
+import codechicken.lib.model.ModelRegistryHelper
+import codechicken.lib.texture.IBlockTextureProvider
 import codechicken.microblock.BlockMicroMaterial
-import cpw.mods.fml.client.registry.ClientRegistry
-import cpw.mods.fml.common.registry.GameRegistry
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.block.TileRenderRegistry
-import mrtjp.core.color.Colors
 import mrtjp.core.gui.GuiHandler
 import mrtjp.core.inventory.InvWrapper
+import mrtjp.core.item.ItemDefinition
 import mrtjp.core.world._
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.ProjectRedExploration._
 import mrtjp.projectred.core.libmc.recipe._
 import mrtjp.projectred.core.{Configurator, IProxy, PartDefs, ShapelessOreNBTRecipe}
-import net.minecraft.init.{Blocks, Items}
-import net.minecraft.item.ItemStack
-import net.minecraftforge.client.MinecraftForgeClient
+import net.minecraft.block.state.IBlockState
+import net.minecraft.client.renderer.ItemMeshDefinition
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
+import net.minecraft.client.renderer.block.statemap.StateMapperBase
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
+import net.minecraft.init.{Blocks, Items, SoundEvents}
+import net.minecraft.inventory.EntityEquipmentSlot
+import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.util.EnumFacing
+import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.common.util.EnumHelper
+import net.minecraftforge.fml.client.registry.ClientRegistry
+import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.{OreDictionary, ShapedOreRecipe}
 
 class ExplorationProxy_server extends IProxy
 {
     val guiIDBackpack = 1
 
-    override def preinit() {}
-
-    override def init()
-    {
+    override def preinit() {
         itemWoolGin = new ItemWoolGin
         itemBackpack = new ItemBackpack
         itemAthame = new ItemAthame
 
         blockOres = new BlockOre
-        for (o <- OreDefs.values) blockOres.setHarvestLevel("pickaxe", o.harvest, o.meta)
+        for (o <- OreDefs.values) blockOres.setHarvestLevel("pickaxe", o.harvest, blockOres.getStateFromMeta(o.meta))
 
         blockDecoratives = new BlockDecoratives
-        for (b <- DecorativeStoneDefs.values) blockDecoratives.setHarvestLevel("pickaxe", b.harvest, b.meta)
+        for (b <- DecorativeStoneDefs.values) blockDecoratives.setHarvestLevel("pickaxe", b.harvest, blockDecoratives.getStateFromMeta(b.meta))
 
         blockDecorativeWalls = new BlockDecorativeWalls
 
-        blockLily = new BlockLily
-        blockLily.addSingleTile(classOf[TileLily])
-        itemLilySeed = new ItemLilySeeds
-        for (i <- 0 until 16) OreDictionary.registerOre(Colors(i).oreDict, new ItemStack(itemLilySeed, 1, i))
+        //blockLily = new BlockLily
+        //blockLily.addSingleTile(classOf[TileLily])
+        //itemLilySeed = new ItemLilySeeds
+        //for (i <- 0 until 16) OreDictionary.registerOre(EnumColour.apply(i).getOreDictionaryName, new ItemStack(itemLilySeed, 1, i))
 
         blockBarrel = new BlockBarrel
         blockBarrel.addTile(classOf[TileBarrel], 0)
@@ -53,13 +59,13 @@ class ExplorationProxy_server extends IProxy
         toolMaterialSapphire =  EnumHelper.addToolMaterial("SAPPHIRE",  2, 512, 8.00F, 3.00F, 10)
         toolMaterialPeridot =   EnumHelper.addToolMaterial("PERIDOT",   2, 512, 7.75F, 2.75F, 14)
 
-        armorMatrialRuby =      EnumHelper.addArmorMaterial("RUBY",     16, Array(3, 8, 6, 3),  8)
-        armorMatrialSapphire =  EnumHelper.addArmorMaterial("SAPPHIRE", 16, Array(3, 8, 6, 3),  8)
-        armorMatrialPeridot =   EnumHelper.addArmorMaterial("PERIDOT",  14, Array(3, 8, 6, 3), 10)
+        armorMatrialRuby =      EnumHelper.addArmorMaterial("RUBY",     "ruby",     16, Array(3, 8, 6, 3), 10, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND,  8)
+        armorMatrialSapphire =  EnumHelper.addArmorMaterial("SAPPHIRE", "sapphire", 16, Array(3, 8, 6, 3), 10, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND,  8)
+        armorMatrialPeridot =   EnumHelper.addArmorMaterial("PERIDOT",  "peridot",  14, Array(3, 8, 6, 3), 14, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, 10)
 
-        itemRubyAxe = new ItemGemAxe(ToolDefs.RUBYAXE)
-        itemSapphireAxe = new ItemGemAxe(ToolDefs.SAPPHIREAXE)
-        itemPeridotAxe = new ItemGemAxe(ToolDefs.PERIDOTAXE)
+        itemRubyAxe = new ItemGemAxe(ToolDefs.RUBYAXE, 8f, -3.0F)
+        itemSapphireAxe = new ItemGemAxe(ToolDefs.SAPPHIREAXE, 8f, -3.0F)
+        itemPeridotAxe = new ItemGemAxe(ToolDefs.PERIDOTAXE, 8f, -3.0F)
 
         itemRubyHoe = new ItemGemHoe(ToolDefs.RUBYHOE)
         itemSapphireHoe = new ItemGemHoe(ToolDefs.SAPPHIREHOE)
@@ -91,23 +97,28 @@ class ExplorationProxy_server extends IProxy
         itemPeridotSickle = new ItemGemSickle(ToolDefs.PERIDOTSICKLE)
         itemDiamondSickle = new ItemGemSickle(ToolDefs.DIAMONDSICKLE)
 
-        itemRubyHelmet = new ItemGemArmor(ArmorDefs.RUBYHELMET, 0)
-        itemRubyChestplate = new ItemGemArmor(ArmorDefs.RUBYCHESTPLATE, 1)
-        itemRubyLeggings = new ItemGemArmor(ArmorDefs.RUBYLEGGINGS, 2)
-        itemRubyBoots = new ItemGemArmor(ArmorDefs.RUBYBOOTS, 3)
+        itemRubyHelmet = new ItemGemArmor(ArmorDefs.RUBYHELMET, EntityEquipmentSlot.HEAD)
+        itemRubyChestplate = new ItemGemArmor(ArmorDefs.RUBYCHESTPLATE, EntityEquipmentSlot.CHEST)
+        itemRubyLeggings = new ItemGemArmor(ArmorDefs.RUBYLEGGINGS, EntityEquipmentSlot.LEGS)
+        itemRubyBoots = new ItemGemArmor(ArmorDefs.RUBYBOOTS, EntityEquipmentSlot.FEET)
 
-        itemSapphireHelmet = new ItemGemArmor(ArmorDefs.SAPPHIREHELMET, 0)
-        itemSapphireChestplate = new ItemGemArmor(ArmorDefs.SAPPHIRECHESTPLATE, 1)
-        itemSapphireLeggings = new ItemGemArmor(ArmorDefs.SAPPHIRELEGGINGS, 2)
-        itemSapphireBoots = new ItemGemArmor(ArmorDefs.SAPPHIREBOOTS, 3)
+        itemSapphireHelmet = new ItemGemArmor(ArmorDefs.SAPPHIREHELMET, EntityEquipmentSlot.HEAD)
+        itemSapphireChestplate = new ItemGemArmor(ArmorDefs.SAPPHIRECHESTPLATE, EntityEquipmentSlot.CHEST)
+        itemSapphireLeggings = new ItemGemArmor(ArmorDefs.SAPPHIRELEGGINGS, EntityEquipmentSlot.LEGS)
+        itemSapphireBoots = new ItemGemArmor(ArmorDefs.SAPPHIREBOOTS, EntityEquipmentSlot.FEET)
 
-        itemPeridotHelmet = new ItemGemArmor(ArmorDefs.PERIDOTHELMET, 0)
-        itemPeridotChestplate = new ItemGemArmor(ArmorDefs.PERIDOTCHESTPLATE, 1)
-        itemPeridotLeggings = new ItemGemArmor(ArmorDefs.PERIDOTLEGGINGS, 2)
-        itemPeridotBoots = new ItemGemArmor(ArmorDefs.PERIDOTBOOTS, 3)
+        itemPeridotHelmet = new ItemGemArmor(ArmorDefs.PERIDOTHELMET, EntityEquipmentSlot.HEAD)
+        itemPeridotChestplate = new ItemGemArmor(ArmorDefs.PERIDOTCHESTPLATE, EntityEquipmentSlot.CHEST)
+        itemPeridotLeggings = new ItemGemArmor(ArmorDefs.PERIDOTLEGGINGS, EntityEquipmentSlot.LEGS)
+        itemPeridotBoots = new ItemGemArmor(ArmorDefs.PERIDOTBOOTS, EntityEquipmentSlot.FEET)
 
         for (s <- DecorativeStoneDefs.values)
-            BlockMicroMaterial.createAndRegister(blockDecoratives, s.meta)
+            BlockMicroMaterial.createAndRegister(blockDecoratives.getStateFromMeta(s.meta))
+    }
+
+    override def init()
+    {
+
 
         ExplorationRecipes.initRecipes()
 
@@ -126,7 +137,7 @@ class ExplorationProxy_server extends IProxy
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.ORERUBY.meta), 1))
             gen.clusterSize = 5
-            gen.material = Set((Blocks.stone, 0))
+            gen.material = Set((Blocks.STONE, 0))
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)
         }
@@ -144,7 +155,7 @@ class ExplorationProxy_server extends IProxy
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.ORESAPPHIRE.meta), 1))
             gen.clusterSize = 5
-            gen.material = Set((Blocks.stone, 0))
+            gen.material = Set((Blocks.STONE, 0))
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)
         }
@@ -162,7 +173,7 @@ class ExplorationProxy_server extends IProxy
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.OREPERIDOT.meta), 1))
             gen.clusterSize = 5
-            gen.material = Set((Blocks.stone, 0))
+            gen.material = Set((Blocks.STONE, 0))
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)
         }
@@ -181,7 +192,7 @@ class ExplorationProxy_server extends IProxy
             val gen = new WorldGenCaveReformer
             gen.cluster = Set(((blockDecoratives, DecorativeStoneDefs.MARBLE.meta), 1))
             gen.clusterSize = 4096
-            gen.material = Set((Blocks.stone, 0))
+            gen.material = Set((Blocks.STONE, 0))
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)
         }
@@ -200,7 +211,7 @@ class ExplorationProxy_server extends IProxy
             val gen = new WorldGenVolcanic
             gen.ashCluster = Set(((blockDecoratives, DecorativeStoneDefs.BASALT.meta), 1))
             gen.conduitCluster = gen.ashCluster
-            gen.liq = (Blocks.lava, 0)
+            gen.liq = (Blocks.LAVA, 0)
             gen.materialStart = Set(gen.liq)
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)
@@ -209,16 +220,16 @@ class ExplorationProxy_server extends IProxy
         //Lily
         if (Configurator.gen_Lily)
         {
-            val logic = new GenLogicSurface
-            logic.name = "pr_lily"
-            logic.resistance = 8+Configurator.gen_Lily_resistance
-            logic.allowRetroGen = Configurator.gen_Lily_retro
-            val gen = new WorldGenDecorator
-            gen.cluster = Set(((blockLily, 0), 1))
-            gen.material = Set((Blocks.air, 0))
-            gen.soil = Set((Blocks.grass, 0), (Blocks.dirt, 0))
-            logic.gen = gen
-            SimpleGenHandler.registerStructure(logic)
+            //val logic = new GenLogicSurface
+            //logic.name = "pr_lily"
+            //logic.resistance = 8+Configurator.gen_Lily_resistance
+            //logic.allowRetroGen = Configurator.gen_Lily_retro
+            //val gen = new WorldGenDecorator
+            //gen.cluster = Set(((blockLily, 0), 1))
+            //gen.material = Set((Blocks.air, 0))
+            //gen.soil = Set((Blocks.grass, 0), (Blocks.dirt, 0))
+            //logic.gen = gen
+            //SimpleGenHandler.registerStructure(logic)
         }
 
         //Copper
@@ -234,7 +245,7 @@ class ExplorationProxy_server extends IProxy
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.ORECOPPER.meta), 1))
             gen.clusterSize = 8
-            gen.material = Set((Blocks.stone, 0))
+            gen.material = Set((Blocks.STONE, 0))
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)
 
@@ -253,7 +264,7 @@ class ExplorationProxy_server extends IProxy
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.ORETIN.meta), 1))
             gen.clusterSize = 8
-            gen.material = Set((Blocks.stone, 0))
+            gen.material = Set((Blocks.STONE, 0))
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)
 
@@ -272,7 +283,7 @@ class ExplorationProxy_server extends IProxy
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.ORESILVER.meta), 1))
             gen.clusterSize = 4
-            gen.material = Set((Blocks.stone, 0))
+            gen.material = Set((Blocks.STONE, 0))
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)
         }
@@ -290,7 +301,7 @@ class ExplorationProxy_server extends IProxy
             val gen = new WorldGenClusterizer
             gen.cluster = Set(((blockOres, OreDefs.OREELECTROTINE.meta), 1))
             gen.clusterSize = 8
-            gen.material = Set((Blocks.stone, 0))
+            gen.material = Set((Blocks.STONE, 0))
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)
         }
@@ -310,21 +321,150 @@ class ExplorationProxy_server extends IProxy
 
 class ExplorationProxy_client extends ExplorationProxy_server
 {
+
+    @SideOnly(Side.CLIENT)
+    override def preinit() {
+        super.preinit()
+        ModelLoader.setCustomStateMapper(blockOres, new StateMapperBase {
+            override protected def getModelResourceLocation(state: IBlockState): ModelResourceLocation = {
+                new ModelResourceLocation("projectred:exploration/ore", "type=" + state.getValue(BlockProperties.ORE_TYPES))
+            }
+        })
+        ModelLoader.setCustomStateMapper(blockDecoratives, new StateMapperBase {
+            override protected def getModelResourceLocation(state: IBlockState): ModelResourceLocation = {
+                new ModelResourceLocation("projectred:exploration/deceratives", "type=" + state.getValue(BlockProperties.ORE_TYPES))
+            }
+        })
+        registerItemModelTypes(Item.getItemFromBlock(blockOres), "projectred:exploration/ore", OreDefs)
+        registerItemModelTypes(Item.getItemFromBlock(blockDecoratives), "projectred:exploration/deceratives", DecorativeStoneDefs)
+        for (v <- DecorativeStoneDefs.values) {
+            val modelloc = new ModelResourceLocation("projectred:exploration/wall", "type=" + v.getVariantName + ",up=true,east=true,west=true")
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(blockDecorativeWalls), v.meta, modelloc)
+        }
+        ModelLoader.setCustomStateMapper(blockDecorativeWalls, new StateMapperBase {
+            override protected def getModelResourceLocation(state: IBlockState): ModelResourceLocation = {
+                import java.lang.{Boolean => JBool}
+
+                import mrtjp.projectred.exploration.BlockProperties._
+                import net.minecraft.block.BlockWall._
+                def parseLocation(state :IBlockState):String = {
+                    val t = "type=" + state.getValue(STONE_TYPES)
+                    val u = "up=" + JBool.toString(state.getValue(UP))
+                    val n = "north=" + JBool.toString(state.getValue(NORTH))
+                    val s = "south=" + JBool.toString(state.getValue(SOUTH))
+                    val e = "east=" + JBool.toString(state.getValue(EAST))
+                    val w = "west=" + JBool.toString(state.getValue(WEST))
+                    t + "," + u + "," + n + "," + s + "," + e + "," + w
+                }
+                new ModelResourceLocation("projectred:exploration/wall", parseLocation(state))
+            }
+        })
+        ModelLoader.setCustomStateMapper(blockBarrel, new StateMapperBase {
+            override protected def getModelResourceLocation(state: IBlockState): ModelResourceLocation = {
+                new ModelResourceLocation("projectred:exploration/barrel", "type=barrel")
+            }
+        })
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(blockBarrel), 0, new ModelResourceLocation("projectred:exploration/barrel", "type=barrel"))
+
+        registerModelType(itemWoolGin, "projectred:exploration/items", "wool_gin")
+        registerModelType(itemAthame, "projectred:exploration/items", "athame")
+        for (i <- 0 until 16) {
+            registerModelType(itemBackpack, i, "projectred:exploration/items", "backpack_" + i)
+        }
+
+        registerToolModel(itemRubyAxe, "ruby_axe")
+        registerToolModel(itemSapphireAxe, "sapphire_axe")
+        registerToolModel(itemPeridotAxe, "peridot_axe")
+
+        registerToolModel(itemRubyHoe, "ruby_hoe")
+        registerToolModel(itemSapphireHoe, "sapphire_hoe")
+        registerToolModel(itemPeridotHoe, "peridot_hoe")
+
+        registerToolModel(itemRubyPickaxe, "ruby_pickaxe")
+        registerToolModel(itemSapphirePickaxe, "sapphire_pickaxe")
+        registerToolModel(itemPeridotPickaxe, "peridot_pickaxe")
+
+        registerToolModel(itemRubyShovel, "ruby_shovel")
+        registerToolModel(itemSapphireShovel, "sapphire_shovel")
+        registerToolModel(itemPeridotShovel, "peridot_shovel")
+
+        registerToolModel(itemRubySword, "ruby_sword")
+        registerToolModel(itemSapphireSword, "sapphire_sword")
+        registerToolModel(itemPeridotSword, "peridot_sword")
+
+        ModelRegistryHelper.registerItemRenderer(itemGoldSaw, GemSawRenderer)
+        ModelRegistryHelper.registerItemRenderer(itemRubySaw, GemSawRenderer)
+        ModelRegistryHelper.registerItemRenderer(itemSapphireSaw, GemSawRenderer)
+        ModelRegistryHelper.registerItemRenderer(itemPeridotSaw, GemSawRenderer)
+
+        registerToolModel(itemWoodSickle, "wood_sickle")
+        registerToolModel(itemStoneSickle, "stone_sickle")
+        registerToolModel(itemIronSickle, "iron_sickle")
+        registerToolModel(itemGoldSickle, "gold_sickle")
+        registerToolModel(itemRubySickle, "ruby_sickle")
+        registerToolModel(itemSapphireSickle, "sapphire_sickle")
+        registerToolModel(itemPeridotSickle, "peridot_sickle")
+        registerToolModel(itemDiamondSickle, "diamond_sickle")
+
+        registerArmorModel(itemRubyHelmet, "ruby_helmet")
+        registerArmorModel(itemRubyChestplate, "ruby_chestplate")
+        registerArmorModel(itemRubyLeggings, "ruby_leggings")
+        registerArmorModel(itemRubyBoots, "ruby_boots")
+
+        registerArmorModel(itemSapphireHelmet, "sapphire_helmet")
+        registerArmorModel(itemSapphireChestplate, "sapphire_chestplate")
+        registerArmorModel(itemSapphireLeggings, "sapphire_leggings")
+        registerArmorModel(itemSapphireBoots, "sapphire_boots")
+
+        registerArmorModel(itemPeridotHelmet, "peridot_helmet")
+        registerArmorModel(itemPeridotChestplate, "peridot_chestplate")
+        registerArmorModel(itemPeridotLeggings, "peridot_leggings")
+        registerArmorModel(itemPeridotBoots, "peridot_boots")
+    }
+
     @SideOnly(Side.CLIENT)
     override def init()
     {
         super.init()
-        MinecraftForgeClient.registerItemRenderer(itemGoldSaw, GemSawRenderer)
-        MinecraftForgeClient.registerItemRenderer(itemRubySaw, GemSawRenderer)
-        MinecraftForgeClient.registerItemRenderer(itemSapphireSaw, GemSawRenderer)
-        MinecraftForgeClient.registerItemRenderer(itemPeridotSaw, GemSawRenderer)
 
         GuiHandler.register(GuiBackpack, guiIDBackpack)
 
-        TileRenderRegistry.setRenderer(blockLily, 0, RenderLily)
-        TileRenderRegistry.setRenderer(blockBarrel, 0, RenderBarrel)
+        //TileRenderRegistry.setRenderer(blockLily, 0, RenderLily)
+        //MultiTileRenderRegistry.setRenderer(blockBarrel, 0, RenderBarrel)
 
         ClientRegistry.bindTileEntitySpecialRenderer(classOf[TileBarrel], RenderBarrel)
+        //import scala.collection.JavaConversions._
+        //for (s <- Minecraft.getMinecraft.modelManager.getBlockModelShapes.getBlockStateMapper.getVariants(blockDecorativeWalls).values) {
+        //    FMLLog.info(s.toString)
+        //}
+    }
+
+    def registerItemModelTypes(item:Item, regName:String, itemDef:ItemDefinition) {
+        for (v <- itemDef.values) {
+            val modelloc = new ModelResourceLocation(regName, "type=" + v.getVariantName)
+            ModelLoader.setCustomModelResourceLocation(item, v.meta, modelloc)
+        }
+    }
+    def registerModelType(item:Item, jsonLocation:String, typeValue:String){
+        registerModelType(item, 0, jsonLocation, typeValue)
+    }
+
+    def registerModelType(item:Item, meta:Int, jsonLocation:String, typeValue:String) {
+        val modelLoc = new ModelResourceLocation(jsonLocation, "type=" + typeValue)
+        ModelLoader.setCustomModelResourceLocation(item, meta, modelLoc)
+    }
+
+    def registerToolModel(item: Item, variant:String) {
+        val modelLoc = new ModelResourceLocation("projectred:exploration/tools", "type=" + variant)
+        ModelLoader.setCustomModelResourceLocation(item, 0, modelLoc)
+        ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition {
+            override def getModelLocation(stack: ItemStack): ModelResourceLocation = modelLoc
+        })
+    }
+
+    def registerArmorModel(item: Item, variant:String) = {
+        val modelLoc = new ModelResourceLocation("projectred:exploration/armor", s"type=$variant")
+        ModelLoader.setCustomModelResourceLocation(item, 0, modelLoc)
     }
 }
 
@@ -399,7 +539,7 @@ object ExplorationRecipes
 
         /** Sickle **/
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemWoodSickle), "plankWood")
-        addSickleRecipe(new ItemStack(ProjectRedExploration.itemStoneSickle), new ItemStack(Items.flint))
+        addSickleRecipe(new ItemStack(ProjectRedExploration.itemStoneSickle), new ItemStack(Items.FLINT))
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemIronSickle), "ingotIron")
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemGoldSickle), "ingotGold")
         addSickleRecipe(new ItemStack(ProjectRedExploration.itemRubySickle), "gemRuby")
@@ -502,10 +642,10 @@ object ExplorationRecipes
     private def initEtcRecipes()
     {
         /** Wool Gin to string recipe **/
-        GameRegistry.addRecipe(new ItemStack(Items.string, 4),
+        GameRegistry.addRecipe(new ItemStack(Items.STRING, 4),
             "gw",
             'g':JChar, new ItemStack(ProjectRedExploration.itemWoolGin, 1, OreDictionary.WILDCARD_VALUE),
-            'w':JChar, Blocks.wool)
+            'w':JChar, Blocks.WOOL)
 
         /** Item Barrel  **/
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedExploration.blockBarrel),
@@ -531,10 +671,10 @@ object ExplorationRecipes
                 if(i == 0) "c c" else "cdc",
                 "ccc",
                 'c':JChar, PartDefs.WOVENCLOTH.makeStack,
-                'd':JChar, Colors.apply(i).oreDict))
+                'd':JChar, EnumColour.fromWoolID(i).getOreDictionaryName))
 
             GameRegistry.addRecipe(new ShapelessOreNBTRecipe(new ItemStack(ProjectRedExploration.itemBackpack, 1, i),
-                ItemBackpack.oreDictionaryVal, Colors.apply(i).oreDict).setKeepNBT())
+                ItemBackpack.oreDictionaryVal, EnumColour.fromWoolID(i).getOreDictionaryName).setKeepNBT())
         }
         
        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedExploration.itemAthame),

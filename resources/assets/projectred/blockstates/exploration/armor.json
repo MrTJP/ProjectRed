@@ -1,0 +1,78 @@
+{
+  "ccl_marker": 1,
+  "variant_sets" : [
+    "type"
+  ],
+  "texture_domain" : "projectred",
+  "defaults": {
+    "model": "builtin/generated",
+    "textures": {
+      "layer0": "minecraft:blocks/dirt"
+    },
+    "transform": "ccl:default-item"
+  },
+  "variants": {
+    "type": {
+      "ruby_helmet": {
+        "textures": {
+          "layer0": "items/world/rubyhelmet"
+        }
+      },
+      "ruby_chestplate": {
+        "textures": {
+          "layer0": "items/world/rubychestplate"
+        }
+      },
+      "ruby_leggings": {
+        "textures": {
+          "layer0": "items/world/rubyleggings"
+        }
+      },
+      "ruby_boots": {
+        "textures": {
+          "layer0": "items/world/rubyboots"
+        }
+      },
+      "sapphire_helmet": {
+        "textures": {
+          "layer0": "items/world/sapphirehelmet"
+        }
+      },
+      "sapphire_chestplate": {
+        "textures": {
+          "layer0": "items/world/sapphirechestplate"
+        }
+      },
+      "sapphire_leggings": {
+        "textures": {
+          "layer0": "items/world/sapphireleggings"
+        }
+      },
+      "sapphire_boots": {
+        "textures": {
+          "layer0": "items/world/sapphireboots"
+        }
+      },
+      "peridot_helmet": {
+        "textures": {
+          "layer0": "items/world/peridothelmet"
+        }
+      },
+      "peridot_chestplate": {
+        "textures": {
+          "layer0": "items/world/peridotchestplate"
+        }
+      },
+      "peridot_leggings": {
+        "textures": {
+          "layer0": "items/world/peridotleggings"
+        }
+      },
+      "peridot_boots": {
+        "textures": {
+          "layer0": "items/world/peridotboots"
+        }
+      }
+    }
+  }
+}

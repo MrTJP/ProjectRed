@@ -1,5 +1,6 @@
 package mrtjp.projectred.exploration;
 
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.*;
 
 /**
@@ -9,9 +10,9 @@ class ItemToolProxies
 {
     static class Axe extends ItemAxe
     {
-        protected Axe(net.minecraft.item.Item.ToolMaterial material)
+        protected Axe(net.minecraft.item.Item.ToolMaterial material, float attackDamage, float attackSpeed)
         {
-            super(material);
+            super(material, attackDamage, attackSpeed);
         }
     }
 
@@ -41,9 +42,9 @@ class ItemToolProxies
 
     static class Armor extends ItemArmor
     {
-        protected Armor(net.minecraft.item.ItemArmor.ArmorMaterial material, int type)
+        protected Armor(net.minecraft.item.ItemArmor.ArmorMaterial material, EntityEquipmentSlot slot)
         {
-            super(material, 0, type);
+            super(material, 0, slot);
         }
     }
 }

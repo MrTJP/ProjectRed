@@ -68,7 +68,7 @@ object PipeDefs extends ItemDefinition
     val NETWORKVALVE = new PipeVal("pr_netvalve", "netvalve_blocked", "netvalve_in", "netvalve_out", "netvalve_inout")
     val NETWORKLATENCY = new PipeVal("pr_netlatency", "netlatency")
 
-    class PipeVal(val partname:String, val textures:String*) extends ItemDef
+    class PipeVal(val partname:String, val textures:String*) extends ItemDef(partname)
     {
         var sprites:Array[TextureAtlasSprite] = _
 
@@ -187,7 +187,7 @@ object RoutingChipDefs extends ItemDefinition
         else null
     }
 
-    class ChipVal(iconPath:String, f: => RoutingChip, cType:ChipType) extends ItemDef
+    class ChipVal(iconPath:String, f: => RoutingChip, cType:ChipType) extends ItemDef(iconPath)
     {
         def this(icon:String, f: => RoutingChip) = this(icon, f, ChipType.INTERFACE)
 

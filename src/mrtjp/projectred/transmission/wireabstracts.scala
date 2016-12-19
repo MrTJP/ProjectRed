@@ -145,7 +145,6 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     override def renderStatic(pos:Vector3, layer:BlockRenderLayer, ccrs:CCRenderState) =
     {
         if (layer == getRenderLayer && useStaticRenderer) {
-            TextureUtils.bindBlockTexture()
             ccrs.setBrightness(world, this.pos)
             doStaticTessellation(pos, layer, ccrs)
             true
