@@ -265,7 +265,6 @@ abstract class GatePart extends TMultiPart with TCuboidPart with TNormalOcclusio
     override def renderStatic(pos:Vector3, layer:BlockRenderLayer, ccrs:CCRenderState) =
     {
         if (layer == BlockRenderLayer.CUTOUT && Configurator.staticGates) {
-            TextureUtils.bindBlockTexture()
             ccrs.setBrightness(world, this.pos)
             RenderGate.renderStatic(this, pos, ccrs)
             true

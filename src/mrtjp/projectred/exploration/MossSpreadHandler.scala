@@ -7,79 +7,78 @@ package mrtjp.projectred.exploration
 
 import java.util.Random
 
-import codechicken.lib.vec.BlockCoord
 import mrtjp.core.world.IBlockEventHandler
-import net.minecraft.block.Block
+import net.minecraft.block.BlockStoneBrick.EnumType
+import net.minecraft.block.BlockStoneBrick
+import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
 object MossSpreadHandler extends IBlockEventHandler
 {
-    override def onBlockUpdate(w:World, x:Int, y:Int, z:Int, b:Block) =
+    override def onBlockUpdate(w:World, pos:BlockPos, state:IBlockState) =
     {
-        b match
+        state.getBlock match
         {
-            case Blocks.mossy_cobblestone => doMossSpread(w, x, y, z, w.rand)
-            case Blocks.stonebrick => w.getBlockMetadata(x, y, z) match
+            case Blocks.MOSSY_COBBLESTONE => doMossSpread(w, pos, w.rand)
+            case Blocks.STONEBRICK => state.getValue(BlockStoneBrick.VARIANT) match
             {
-                case 0 => crackFromHeat(w, x, y, z, w.rand)
-                case 1 => doMossSpread(w, x, y, z, w.rand)
+                case EnumType.DEFAULT => crackFromHeat(w, pos, w.rand)
+                case EnumType.MOSSY => doMossSpread(w, pos, w.rand)
                 case _ =>
             }
             case _ =>
         }
     }
 
-    private def crackFromHeat(w:World, x:Int, y:Int, z:Int, r:Random)
+    private def crackFromHeat(w:World, pos:BlockPos, r:Random)
     {
-        val bc = new BlockCoord(x, y, z)
-        if (isBlockWet(w, bc) && isBlockHot(w, bc))
-            if (r.nextInt(3) == 0) w.setBlock(x, y, z, Blocks.stonebrick, 2, 3)
+        if (isBlockWet(w, pos) && isBlockHot(w, pos))
+            if (r.nextInt(3) == 0) w.setBlockState(pos, Blocks.STONEBRICK.getDefaultState.withProperty(BlockStoneBrick.VARIANT, EnumType.CRACKED), 3)
     }
 
-    private def doMossSpread(w:World, x:Int, y:Int, z:Int, r:Random)
+    private def doMossSpread(w:World, pos:BlockPos, r:Random)
     {
-        val bc1 = new BlockCoord(x, y, z)
-        if (!isBlockTouchingAir(w, bc1) || w.canBlockSeeTheSky(x, y+1, z)) return
+        if (!isBlockTouchingAir(w, pos) || w.canSeeSky(pos.up())) return
 
         for (i <- 0 until 6)
         {
-            val bc = bc1.copy.offset(i)
-            val b = w.getBlock(bc.x, bc.y, bc.z)
-            val meta = w.getBlockMetadata(bc.x, bc.y, bc.z)
+            val p = pos.offset(EnumFacing.values()(i))
+            val b = w.getBlockState(p)
 
-            if (!w.canBlockSeeTheSky(bc.x, bc.y, bc.z))
+            if (!w.canSeeSky(p))
             {
-                if (b == Blocks.cobblestone)
+                if (b.getBlock == Blocks.COBBLESTONE)
                 {
-                    if (isBlockWet(w, bc) && isBlockTouchingAir(w, bc))
-                        if (r.nextInt(3) == 0) w.setBlock(bc.x, bc.y, bc.z, Blocks.mossy_cobblestone, 0, 3)
+                    if (isBlockWet(w, p) && isBlockTouchingAir(w, p))
+                        if (r.nextInt(3) == 0) w.setBlockState(p, Blocks.MOSSY_COBBLESTONE.getDefaultState, 3)
                 }
-                else if (b == Blocks.stonebrick && meta == 2)
+                else if (b == Blocks.STONEBRICK && b.getValue(BlockStoneBrick.VARIANT) == EnumType.CRACKED)
                 {
-                    if (isBlockWet(w, bc) && isBlockTouchingAir(w, bc))
-                        if (r.nextInt(3) == 0) w.setBlock(bc.x, bc.y, bc.z, Blocks.stonebrick, 1, 3)
+                    if (isBlockWet(w, p) && isBlockTouchingAir(w, p))
+                        if (r.nextInt(3) == 0) w.setBlockState(p, Blocks.STONEBRICK.getDefaultState.withProperty(BlockStoneBrick.VARIANT, EnumType.MOSSY), 3)
                 }
             }
         }
     }
 
-    private def isBlockTouchingAir(w:World, b:BlockCoord) = ncheck(w, b){_ == Blocks.air}
+    private def isBlockTouchingAir(w:World, b:BlockPos) = ncheck(w, b){_.getBlock == Blocks.AIR}
 
-    private def isBlockWet(w:World, b:BlockCoord) = ncheck(w, b){b => b == Blocks.flowing_water || b == Blocks.water}
+    private def isBlockWet(w:World, b:BlockPos) = ncheck(w, b){state => state.getBlock == Blocks.FLOWING_WATER || state.getBlock == Blocks.WATER}
 
-    private def isBlockHot(w:World, b:BlockCoord) = ncheck(w, b){b => b == Blocks.flowing_lava || b == Blocks.lava}
+    private def isBlockHot(w:World, b:BlockPos) = ncheck(w, b){state => state.getBlock == Blocks.FLOWING_LAVA || state.getBlock == Blocks.LAVA}
 
-    val wetSources = Set(Blocks.flowing_water, Blocks.water)
-    val heatSources = Set(Blocks.flowing_lava, Blocks.lava)
+    val wetSources = Set(Blocks.FLOWING_WATER, Blocks.WATER)
+    val heatSources = Set(Blocks.FLOWING_LAVA, Blocks.LAVA)
     val wetAndHot = wetSources++heatSources
 
-    private def ncheck(w:World, b:BlockCoord)(f:Block => Boolean):Boolean =
+    private def ncheck(w:World, b:BlockPos)(f:IBlockState => Boolean):Boolean =
     {
         for (i <- 0 until 6)
         {
-            val bc = b.copy.offset(i)
-            val block = w.getBlock(bc.x, bc.y, bc.z)
+            val block = w.getBlockState(b)
             if (f(block)) return true
         }
         false

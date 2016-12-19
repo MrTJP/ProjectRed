@@ -122,7 +122,7 @@ object GateDefinition extends ItemDefinition
     val DecRandomizer = new GateDef(typeSimpleGate)
     val ICGate = new GateDef("pr_icgate", true)
 
-    class GateDef(val partname:String, val hidden:Boolean = false) extends ItemDef
+    class GateDef(val partname:String, val hidden:Boolean = false) extends ItemDef(partname)
     {
         def implemented = partname != null
     }

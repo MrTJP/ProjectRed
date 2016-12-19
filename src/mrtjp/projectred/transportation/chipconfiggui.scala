@@ -255,7 +255,7 @@ abstract class ChipPanelNode(chip:RoutingChip) extends TNode
         val from = getDotPosition
         val to = from.clamp(frame)
         GL11.glColor4d(1, 1, 1, 1)
-        GuiDraw.drawLine(from.x, from.y, to.x, to.y, lineColor) //TODO this isnt working
+        //GuiDraw.drawLine(from.x, from.y, to.x, to.y, lineColor) //TODO this isnt working
         GuiDraw.drawRect(to.x-3, to.y-3, 6, 6, lineColor)
     }
 

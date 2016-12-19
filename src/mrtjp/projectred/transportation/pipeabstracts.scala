@@ -161,7 +161,6 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
     override def renderStatic(pos:Vector3, layer:BlockRenderLayer, ccrs:CCRenderState) =
     {
         if (layer == BlockRenderLayer.CUTOUT) {
-            TextureUtils.bindBlockTexture()
             ccrs.setBrightness(world, this.pos)
             doStaticTessellation(pos, ccrs)
             true

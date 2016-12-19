@@ -7,40 +7,41 @@ package mrtjp.projectred.exploration
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
+import codechicken.lib.render.state.GlStateManagerHelper
+import codechicken.lib.render.state.GlStateManagerHelper.State
+import codechicken.lib.util.ItemUtils
 import codechicken.lib.vec._
-import mrtjp.core.block.{InstancedBlock, InstancedBlockTile}
+import mrtjp.core.block.{ItemBlockCore, MTBlockTile, MultiTileBlock}
 import mrtjp.core.inventory.{IInvWrapperRegister, InvWrapper, TInventory}
 import mrtjp.core.item.ItemKey
-import mrtjp.core.render.{RenderLib, TCubeMapRender}
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.core.libmc.PRLib
-import net.minecraft.block.Block
+import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
+import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.RenderBlocks
-import net.minecraft.client.renderer.entity.RenderItem
-import net.minecraft.client.renderer.texture.IIconRegister
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{IInventory, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.IIcon
-import net.minecraft.world.IBlockAccess
-import net.minecraftforge.client.ForgeHooksClient
+import net.minecraft.util.{BlockRenderLayer, EnumBlockRenderType, EnumFacing}
 import org.lwjgl.opengl.GL11._
 
-class BlockBarrel extends InstancedBlock("projectred.exploration.barrel", Material.wood)
+class BlockBarrel extends MultiTileBlock("projectred.exploration.barrel", "barrel", Material.WOOD)
 {
     setHardness(2.0F)
-    setStepSound(Block.soundTypeWood)
+    setSoundType(SoundType.WOOD)
     setCreativeTab(ProjectRedExploration.tabExploration)
+    new ItemBlockCore(this)
+    //TODO Remove on MultiTile rewrite
+    override def getRenderType(state: IBlockState) = EnumBlockRenderType.MODEL
+
+    override def canRenderInLayer(state: IBlockState, layer: BlockRenderLayer) = layer == BlockRenderLayer.SOLID
 }
 
-class TileBarrel extends InstancedBlockTile with TInventory with ISidedInventory
+class TileBarrel extends MTBlockTile with TInventory with ISidedInventory
 {
     var storage = 0
     var item:ItemKey = null
@@ -94,12 +95,14 @@ class TileBarrel extends InstancedBlockTile with TInventory with ISidedInventory
         case _ => super.read(in, key)
     }
 
+    override def getDisplayName = super.getDisplayName
+
     def sendItemUpdate()
     {
         if (isEmpty)
-            writeStream(1).sendToChunk()
+            writeStream(1).sendToChunk(this)
         else
-            writeStream(2).writeItemStack(item.makeStack(0)).writeInt(getStoredAmount).sendToChunk()
+            writeStream(2).writeItemStack(item.makeStack(0)).writeInt(getStoredAmount).sendToChunk(this)
     }
 
     override def getBlock = ProjectRedExploration.blockBarrel
@@ -107,13 +110,13 @@ class TileBarrel extends InstancedBlockTile with TInventory with ISidedInventory
     override def size = 2
     override def name = "barrel"
 
-    override def canInsertItem(slot:Int, stack:ItemStack, side:Int) =
-        slot == 0 && side == 1 && (isEmpty || ItemKey.get(stack) == item)
-    override def canExtractItem(slot:Int, stack:ItemStack, side:Int) =
-        slot == 1 && side == 0 && (isEmpty || ItemKey.get(stack) == item)
+    override def canInsertItem(slot:Int, stack:ItemStack, side:EnumFacing) =
+        slot == 0 && side == EnumFacing.UP && (isEmpty || ItemKey.get(stack) == item)
+    override def canExtractItem(slot:Int, stack:ItemStack, side:EnumFacing) =
+        slot == 1 && side == EnumFacing.DOWN && (isEmpty || ItemKey.get(stack) == item)
 
-    override def getAccessibleSlotsFromSide(side:Int) =
-        if (side == 0) Array(1) else if (side == 1) Array(0) else Array.empty
+    override def getSlotsForFace(side:EnumFacing) =
+        if (side == EnumFacing.DOWN) Array(1) else if (side == EnumFacing.UP) Array(0) else Array.empty
 
     def getStackSpace = 128
 
@@ -150,9 +153,9 @@ class TileBarrel extends InstancedBlockTile with TInventory with ISidedInventory
     {
         if (super.onBlockActivated(player, side)) return true
         if (world.isRemote) return true
-
+        //TODO Hand passthrough
         if ((checkDoubleClick() && importAll(player) > 0) ||
-                importStack(player.getHeldItem) > 0) needsUpdate = true
+                importStack(ItemUtils.getHeldStack(player)) > 0) needsUpdate = true
 
         true
     }
@@ -174,7 +177,7 @@ class TileBarrel extends InstancedBlockTile with TInventory with ISidedInventory
 
         setInventorySlotContents(1, if (inslot.stackSize <= 0) null else inslot)
 
-        PRLib.dropTowardsPlayer(world, x, y, z, out, player)
+        PRLib.dropTowardsPlayer(world, getPos, out, player)
         needsUpdate = true
         true
     }
@@ -189,7 +192,7 @@ class TileBarrel extends InstancedBlockTile with TInventory with ISidedInventory
             var stack = getStackInSlot(1)
             while(stack != null && nonEmpty)
             {
-                WorldLib.dropItem(world, x, y, z, stack)
+                WorldLib.dropItem(world, getPos, stack)
                 setInventorySlotContents(1, null)
                 stack = getStackInSlot(1)
             }
@@ -197,7 +200,7 @@ class TileBarrel extends InstancedBlockTile with TInventory with ISidedInventory
     }
 
     private var needsUpdate = false
-    override def update()
+    override def updateServer()
     {
         if (needsUpdate) sendItemUpdate()
         needsUpdate = false
@@ -324,41 +327,40 @@ class TileBarrel extends InstancedBlockTile with TInventory with ISidedInventory
     }
 }
 
-object RenderBarrel extends TileEntitySpecialRenderer with TCubeMapRender
+object RenderBarrel extends TileEntitySpecialRenderer[TileBarrel] //with TCubeMapRender
 {
-    var top:IIcon = null
-    var side:IIcon = null
-    var iconT:UVTransformation = null
+    //var top:IIcon = null
+    //var side:IIcon = null
+    //var iconT:UVTransformation = null
 
-    override def getData(w:IBlockAccess, x:Int, y:Int, z:Int) = (0, 0, iconT)
+    //override def getData(w:IBlockAccess, x:Int, y:Int, z:Int) = (0, 0, iconT)
 
-    override def getInvData = (0, 0, iconT)
+    //override def getInvData = (0, 0, iconT)
 
-    override def getIcon(s:Int, meta:Int) = if (s == 0 || s == 1) top else side
+    //override def getIcon(s:Int, meta:Int) = if (s == 0 || s == 1) top else side
 
-    override def registerIcons(reg:IIconRegister)
+    //override def registerIcons(reg:IIconRegister)
+    //{
+    //    top = reg.registerIcon("projectred:world/barrel/top")
+    //    side = reg.registerIcon("projectred:world/barrel/side")
+    //    iconT = new MultiIconTransformation(top, top, side, side, side, side)
+    //}
+
+    //private val renderItem = new RenderItem
+    //private val renderBlocks = new RenderBlocks
+
+    override def renderTileEntityAt(tile:TileBarrel, x:Double, y:Double, z:Double, frame:Float, destroyProgress:Int)
     {
-        top = reg.registerIcon("projectred:world/barrel/top")
-        side = reg.registerIcon("projectred:world/barrel/side")
-        iconT = new MultiIconTransformation(top, top, side, side, side, side)
-    }
+        if (tile.item == null) return
 
-    private val renderItem = new RenderItem
-    private val renderBlocks = new RenderBlocks
-
-    override def renderTileEntityAt(tile:TileEntity, x:Double, y:Double, z:Double, frame:Float)
-    {
-        val tb = tile.asInstanceOf[TileBarrel]
-        if (tb.item == null) return
-
-        val stack = tb.item.makeStack(1)
-        val fr = Minecraft.getMinecraft.fontRenderer
+        val stack = tile.item.makeStack(1)
+        val fr = Minecraft.getMinecraft.fontRendererObj
         val tm = Minecraft.getMinecraft.getTextureManager
 
-        val stackSize = tb.item.getMaxStackSize
-        val stacks = tb.getStoredFullStacks
-        val extra = tb.getRemainderStacks
-        val total = tb.getStoredAmount
+        val stackSize = tile.item.getMaxStackSize
+        val stacks = tile.getStoredFullStacks
+        val extra = tile.getRemainderStacks
+        val total = tile.getStoredAmount
 
         val text =
             if (total > 0)
@@ -372,7 +374,7 @@ object RenderBarrel extends TileEntitySpecialRenderer with TCubeMapRender
         val tw = GuiDraw.getStringWidth(text)
         val tsc = 0.875/math.max(85, tw)
 
-        val label = tb.item.getName
+        val label = tile.item.getName
         val lw = GuiDraw.getStringWidth(label)
         val lsc = 0.875/math.max(128, lw)
 
@@ -384,7 +386,7 @@ object RenderBarrel extends TileEntitySpecialRenderer with TCubeMapRender
         val itemT = new TransformationList(
             new Scale(1/16D, 1/16D, -1.0E-04F) at new Vector3(0, 1, 1),
             new Scale(1/2D, 1/2D, 1) at Vector3.center,
-            new Translation(0, 0, 0.0005)
+            new Translation(0, 0.05, 0.0005)
         )
 
         val textT = new TransformationList(
@@ -404,15 +406,14 @@ object RenderBarrel extends TileEntitySpecialRenderer with TCubeMapRender
                 new Translation(x, y, z)
             )
 
-            RenderLib.pushBits(GL_ALPHA_TEST, GL_BLEND, GL_LIGHTING)
+            GlStateManagerHelper.pushStates(State.GL_ALPHA_TEST, State.GL_BLEND, State.GL_LIGHTING)
             glDisable(GL_BLEND)
             glDisable(GL_LIGHTING)
             glColor4d(1, 1, 1, 1)
 
             glPushMatrix()
             new TransformationList(faceT, itemT, finalT).glApply()
-            if (!ForgeHooksClient.renderInventoryItem(renderBlocks, tm, stack, true, 0, 0, 0))
-                renderItem.renderItemIntoGUI(fr, tm, stack, 0, 0)
+            Minecraft.getMinecraft.getRenderItem.renderItemAndEffectIntoGUI(stack, 0,0)
             glPopMatrix()
 
             glPushMatrix()
@@ -425,7 +426,7 @@ object RenderBarrel extends TileEntitySpecialRenderer with TCubeMapRender
             GuiDraw.drawString(label, 0, 0, 0xFFFFFFFF, false)
             glPopMatrix()
 
-            RenderLib.popBits()
+            GlStateManagerHelper.popState()
         }
     }
 }

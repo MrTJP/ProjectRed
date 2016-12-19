@@ -149,7 +149,7 @@ object PartDefs extends ItemDefinition
     val oreDictDefinitionIllumar = "projredIllumar"
     val oreDictDefinitionRedIngot = "ingotRedAlloy"
 
-    class PartVal(override val meta:Int, iconName:String) extends ItemDef
+    class PartVal(override val meta:Int, iconName:String) extends ItemDef(iconName)
     {
         def setCustomModelResourceLocations()
         {

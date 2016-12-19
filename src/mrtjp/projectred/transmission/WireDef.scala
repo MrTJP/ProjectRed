@@ -79,7 +79,7 @@ object WireDef extends ItemDefinition
     def apply(wireType:String, framedType:String, thickness:Int, itemColour:Int, textures:String*) =
         new WireDef(wireType, framedType, thickness, itemColour, textures)
 
-    class WireDef(val wireType:String, val framedType:String, val thickness:Int, val itemColour:Int, textures:Seq[String]) extends ItemDef
+    class WireDef(val wireType:String, val framedType:String, val thickness:Int, val itemColour:Int, textures:Seq[String]) extends ItemDef(wireType)
     {
         var wireSprites:Array[TextureAtlasSprite] = _
 
