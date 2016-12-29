@@ -70,6 +70,7 @@ itemGroup.expansion=紅石計劃:擴展
 tile.projectred.expansion.machine2|0.name=方塊破壞機
 tile.projectred.expansion.machine2|1.name=物品輸入機
 tile.projectred.expansion.machine2|2.name=放置機
+tile.projectred.expansion.machine2|12.name=盒子破壞機
 
 
 itemGroup.transport=紅石計劃:運輸

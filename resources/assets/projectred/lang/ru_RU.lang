@@ -78,6 +78,7 @@ itemGroup.expansion=Project Red: Расширение
 tile.projectred.expansion.machine2|0.name=Разрушитель блоков
 tile.projectred.expansion.machine2|1.name=Импортер предметов
 tile.projectred.expansion.machine2|2.name=Установщик
+tile.projectred.expansion.machine2|12.name=Алмазный разрушитель блоков
 
 
 itemGroup.transport=Project Red: Транспортировка
