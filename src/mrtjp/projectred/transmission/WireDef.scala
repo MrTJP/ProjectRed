@@ -13,12 +13,15 @@ object WireDef extends ItemDefinition
     override type EnumVal = WireDef
     override def getItem = ProjectRedTransmission.itemPartWire
 
-    val typeRedAlloy = "projectred:wireRedAlloy"
-    val typeInsulated = "projectred:wireInsulated"
-    val typeBundled = "projectred:wireBundled"
-    val typeFramedRedAlloy = "projectred:framedWireRedAlloy"
-    val typeFramedInsulated = "projectred:framedWireInsulated"
-    val typeFramedBundled = "projectred:framedWireBundled"
+    val typeRedAlloy = "projectred-transmission:wireRedAlloy"
+    val typeInsulated = "projectred-transmission:wireInsulated"
+    val typeBundled = "projectred-transmission:wireBundled"
+    val typeFramedRedAlloy = "projectred-transmission:framedWireRedAlloy"
+    val typeFramedInsulated = "projectred-transmission:framedWireInsulated"
+    val typeFramedBundled = "projectred-transmission:framedWireBundled"
+
+    val typeLowLoad = "projectred-transmission:low_power"
+    val typeFramedLowLoad = "projectred-transmission:framed_low_power"
 
     val RED_ALLOY = WireDef(typeRedAlloy, typeFramedRedAlloy, 0, 0xC80000, "redalloy")
 
@@ -57,7 +60,7 @@ object WireDef extends ItemDefinition
     val BUNDLED_14 = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/red")
     val BUNDLED_15 = WireDef(typeBundled, null, 2, 0xFFFFFF, "bundled/black")
 
-    val POWER_LOWLOAD = WireDef("pr_pwrlow", "pr_fpwrlow", 1, 0xFFFFFF, "power/lowload")
+    val POWER_LOWLOAD = WireDef(typeLowLoad, typeFramedLowLoad, 1, 0xFFFFFF, "power/lowload")
 
     //Groups
     val INSULATED_WIRES = INSULATED_0 to INSULATED_15 toArray

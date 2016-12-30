@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class ItemPartWire extends ItemCore("projectred:wire") with TItemMultiPart
+class ItemPartWire extends ItemCore with TItemMultiPart
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedTransmission.tabTransmission)
@@ -43,7 +43,7 @@ class ItemPartWire extends ItemCore("projectred:wire") with TItemMultiPart
     override def getPlacementSound(item:ItemStack) = SoundType.GLASS
 }
 
-class ItemPartFramedWire extends ItemCore("projectred:wireFramed") with TItemMultiPart
+class ItemPartFramedWire extends ItemCore with TItemMultiPart
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedTransmission.tabTransmission)

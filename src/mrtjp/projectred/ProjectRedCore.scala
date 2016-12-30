@@ -6,18 +6,18 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStartingEvent}
 import org.apache.logging.log4j.LogManager
 
-@Mod(modid = "ProjRed|Core", useMetadata = true, modLanguage = "scala", guiFactory = "mrtjp.projectred.core.GuiConfigFactory")
+@Mod(modid = "projectred-core", useMetadata = true, modLanguage = "scala", guiFactory = "mrtjp.projectred.core.GuiConfigFactory")
 object ProjectRedCore
 {
-    val log = LogManager.getFormatterLogger("ProjRed|Core")
+    val log = LogManager.getFormatterLogger("ProjectRed")
 
     /** Items **/
     var itemPart:ItemPart = _
     var itemDrawPlate:ItemDrawPlate = _
     var itemScrewdriver:ItemScrewdriver = _
-    var itemWireDebugger:ItemWireDebugger = _
+    var itemMultimeter:ItemMultimeter = _
 
-    var tabCore = new CreativeTabs("core")
+    var tabCore = new CreativeTabs("projectred.core")
     {
         override def getTabIconItem = itemScrewdriver
     }

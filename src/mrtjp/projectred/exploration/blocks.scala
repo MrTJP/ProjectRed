@@ -28,12 +28,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry
 
 import scala.collection.mutable.ListBuffer
 
-class BlockOre extends BlockCore("projectred.exploration.ore", "ore", Material.ROCK) with TSimplePropertyString
+class BlockOre extends BlockCore(Material.ROCK) with TSimplePropertyString
 {
     setHardness(3.0F)
     setResistance(5.0F)
     setCreativeTab(ProjectRedExploration.tabExploration)
-    new ItemBlockCore(this)
 
     override def getDrops(world:IBlockAccess, pos:BlockPos, state:IBlockState, fortune:Int) =
     {
@@ -69,18 +68,7 @@ class BlockOre extends BlockCore("projectred.exploration.ore", "ore", Material.R
         else 0
     }
 
-    //override def getIcon(side:Int, meta:Int) =
-    //{
-    //    if (OreDefs.isDefinedAt(meta)) OreDefs(meta).icon
-    //    else null
-    //}
-
     override def damageDropped(state:IBlockState) = state.getBlock.getMetaFromState(state)
-
-    //override def registerBlockIcons(reg:IIconRegister)
-    //{
-    //    for (o <- OreDefs.values) o.registerIcon(reg)
-    //}
 
     override def getSubBlocks(item:Item, tab:CreativeTabs, list:util.List[ItemStack])
     {
@@ -112,12 +100,6 @@ object OreDefs extends BlockDefinition
 
     class OreVal(variantName:String, val harvest:Int, val drop:ItemStack, val min:Int, val max:Int, val minXP:Int, val maxXP:Int) extends BlockDef(variantName)
     {
-        //var icon:IIcon = null
-        //def registerIcon(reg:IIconRegister)
-        //{
-        //    icon = reg.registerIcon("projectred:world/"+iconName)
-        //}
-
         def hasDrop = drop != null
 
         def makeDropStack:ItemStack = makeDropStack(1)
@@ -125,12 +107,11 @@ object OreDefs extends BlockDefinition
     }
 }
 
-class BlockDecoratives extends BlockCore("projectred.exploration.stone", "stone", Material.ROCK) with TSimplePropertyString
+class BlockDecorativeStone extends BlockCore(Material.ROCK) with TSimplePropertyString
 {
     setHardness(3.0F)
     setResistance(10.0F)
     setCreativeTab(ProjectRedExploration.tabExploration)
-    new ItemBlockCore(this)
 
     override def getBlockHardness(state:IBlockState, w:World, pos:BlockPos) =
     {
@@ -147,12 +128,6 @@ class BlockDecoratives extends BlockCore("projectred.exploration.stone", "stone"
         else super.getExplosionResistance(w, pos, exploder, explosion)
     }
 
-    //override def getIcon(side:Int, meta:Int) =
-    //{
-    //    if (DecorativeStoneDefs.isDefinedAt(meta)) DecorativeStoneDefs(meta).icon
-    //    else super.getIcon(side, meta)
-    //}
-
     override def getDrops(world:IBlockAccess, pos:BlockPos, state:IBlockState, fortune:Int) =
     {
         val meta = state.getBlock.getMetaFromState(state)
@@ -166,12 +141,6 @@ class BlockDecoratives extends BlockCore("projectred.exploration.stone", "stone"
         }
         else new util.ArrayList[ItemStack]()
     }
-
-    //override def registerBlockIcons(reg:IIconRegister) =
-    //{
-    //    for (s <- DecorativeStoneDefs.values)
-    //        s.registerIcon(reg)
-    //}
 
     override def damageDropped(state:IBlockState) = state.getBlock.getMetaFromState(state)
 
@@ -189,7 +158,7 @@ class BlockDecoratives extends BlockCore("projectred.exploration.stone", "stone"
 object DecorativeStoneDefs extends BlockDefinition
 {
     override type EnumVal = StoneVal
-    override def getBlock = ProjectRedExploration.blockDecoratives
+    override def getBlock = ProjectRedExploration.blockDecorativeStone
 
     val MARBLE = new StoneVal("marble", 2, 1.0F, 14.0F, null)
     val MARBLEBRICK = new StoneVal("marble_brick", 2, 1.0F, 14.0F, null)
@@ -206,12 +175,6 @@ object DecorativeStoneDefs extends BlockDefinition
 
     class StoneVal(iconName:String, val harvest:Int, val hardness:Float, val explosion:Float, val drop:ItemStack) extends BlockDef(iconName)
     {
-        //var icon:IIcon = null
-        //def registerIcon(reg:IIconRegister)
-        //{
-        //    icon = reg.registerIcon("projectred:world/"+iconName)
-        //}
-
         def hasDrop = drop != null
 
         def makeDropStack:ItemStack = makeDropStack(1)
@@ -220,27 +183,18 @@ object DecorativeStoneDefs extends BlockDefinition
 }
 
 //Sadly we cant subclass BlockWall anymore, there is too much hardcoded in to the constructor we cant override.. notibly setDefaultState..
-class BlockDecorativeWalls extends BlockCore("projectred.exploration.stonewalls", "stonewalls" , Material.ROCK) with TSimplePropertyString
+class BlockDecorativeWall extends BlockCore(Material.ROCK) with TSimplePropertyString
 {
     import net.minecraft.block.BlockWall._
     import java.lang.{Boolean =>JBool}
 
-
     setCreativeTab(ProjectRedExploration.tabExploration)
     setDefaultState(getDefaultState.withProperty(UP, JBool.FALSE).withProperty(NORTH, JBool.FALSE).withProperty(SOUTH, JBool.FALSE).withProperty(EAST, JBool.FALSE).withProperty(WEST, JBool.FALSE).withProperty(getTypeProperty, "marble"))
-    //block registration
-    new ItemBlockCore(this)
-
-    //override def getIcon(side:Int, meta:Int) =
-    //{
-    //    if (DecorativeStoneDefs.isDefinedAt(meta)) DecorativeStoneDefs(meta).icon
-    //    else super.getIcon(side, meta)
-    //}
 
     override def getSubBlocks(item:Item, tab:CreativeTabs, list:util.List[ItemStack])
     {
         for (s <- DecorativeStoneDefs.values)
-            list.asInstanceOf[util.List[ItemStack]].add(new ItemStack(ProjectRedExploration.blockDecorativeWalls, 1, s.meta))
+            list.asInstanceOf[util.List[ItemStack]].add(new ItemStack(ProjectRedExploration.blockDecorativeWall, 1, s.meta))
     }
 
     override def getBoundingBox(state: IBlockState, source: IBlockAccess, pos: BlockPos): AxisAlignedBB = WALL_AABB_BY_INDEX(getAABBIndex(getActualState(state, source, pos)))

@@ -8,10 +8,21 @@ package mrtjp.projectred.api;
  */
 public final class ProjectRedAPI
 {
-    //public static ProjectRedAPI instance;
+    /**
+     * The mod IDs used for all modules of ProjectRed.
+     */
+    public static final String modIDCompatibility = "projectred-compatibility";
+    public static final String modIDCore = "projectred-core";
+    public static final String modIDExpansion = "projectred-expansion";
+    public static final String modIDExploration = "projectred-exploration";
+    public static final String modIDFabrication = "projectred-fabrication";
+    public static final String modIDIllumination = "projectred-illumination";
+    public static final String modIDIntegration = "projectred-integration";
+    public static final String modIDTransmission = "projectred-transmission";
+    public static final String modIDTransportation = "projectred-transportation";
 
     /**
-     * API used for interacting with wires
+     * API used for interacting with wires.
      */
     public static ITransmissionAPI transmissionAPI;
 

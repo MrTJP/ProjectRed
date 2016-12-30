@@ -1,18 +1,18 @@
 [
 {
-  "modid": "ProjRed|Compatibility",
+  "modid": "projectred-compatibility",
   "name": "ProjectRed Compatibility",
-  "parent":"ProjRed|Core",
+  "parent":"projectred-core",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",
   "requiredMods": [
       "ProjRed|Core"
   ],
   "dependencies": [
-      "ProjRed|Core",
-      "ProjRed|Transmission",
-      "ProjRed|Exploration",
-      "ProjRed|Transportation",
+      "projectred-core",
+      "projectred-transmission",
+      "projectred-exploration",
+      "projectred-transportation",
       "TConstruct",
       "ThermalExpansion",
       "ComputerCraft"
