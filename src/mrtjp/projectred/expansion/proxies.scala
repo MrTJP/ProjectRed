@@ -294,23 +294,6 @@ class ExpansionProxy_client extends ExpansionProxy_server
     override def postinit()
     {
         super.postinit()
-        //MultiTileRenderRegistry.setRenderer(machine1, 0, RenderInductiveFurnace)
-        //MultiTileRenderRegistry.setRenderer(machine1, 1, RenderElectrotineGenerator)
-        //MultiTileRenderRegistry.setRenderer(machine2, 0, RenderBlockBreaker)
-        //MultiTileRenderRegistry.setRenderer(machine2, 1, RenderItemImporter)
-        //MultiTileRenderRegistry.setRenderer(machine2, 2, RenderBlockPlacer)
-        //MultiTileRenderRegistry.setRenderer(machine2, 3, RenderFilteredImporter)
-        //MultiTileRenderRegistry.setRenderer(machine2, 4, RenderFireStarter)
-        //MultiTileRenderRegistry.setRenderer(machine2, 5, RenderBatteryBox)
-        //MultiTileRenderRegistry.setRenderer(machine2, 6, RenderChargingBench)
-        //MultiTileRenderRegistry.setRenderer(machine2, 7, RenderTeleposer)
-        //MultiTileRenderRegistry.setRenderer(machine2, 8, RenderFrameMotor)
-        //MultiTileRenderRegistry.setRenderer(machine2, 9, RenderFrameActuator)
-        //MultiTileRenderRegistry.setRenderer(machine2, 10, RenderProjectBench)
-        //MultiTileRenderRegistry.setRenderer(machine2, 11, RenderAutoCrafter)
-
-        //MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(machine2), RenderBatteryBox)
-        //MinecraftForgeClient.registerItemRenderer(itemSolar, RenderSolarPanel)
 
         GuiHandler.register(GuiInductiveFurnace, furnaceGui)
         GuiHandler.register(GuiBlockPlacer, blockPlacerGui)
