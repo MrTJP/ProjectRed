@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.client.model.ModelLoader
 
-abstract class ItemCraftingDamage(registryName:String) extends ItemCore(registryName)
+abstract class ItemCraftingDamage extends ItemCore
 {
     setMaxStackSize(1)
     setNoRepair()
@@ -34,13 +34,13 @@ abstract class ItemCraftingDamage(registryName:String) extends ItemCore(registry
         }
 }
 
-class ItemDrawPlate extends ItemCraftingDamage("projectred:drawPlate")
+class ItemDrawPlate extends ItemCraftingDamage
 {
     setMaxDamage(512)
     setCreativeTab(ProjectRedCore.tabCore)
 }
 
-class ItemPart extends ItemCore("projectred:itemResource")
+class ItemPart extends ItemCore
 {
     setCreativeTab(ProjectRedCore.tabCore)
     setHasSubtypes(true)
@@ -161,7 +161,7 @@ object PartDefs extends ItemDefinition
     }
 }
 
-class ItemScrewdriver extends ItemCore("projectred:screwdriver") with IScrewdriver
+class ItemScrewdriver extends ItemCore with IScrewdriver
 {
     setMaxStackSize(1)
     setMaxDamage(128)
@@ -178,7 +178,7 @@ class ItemScrewdriver extends ItemCore("projectred:screwdriver") with IScrewdriv
     }
 }
 
-class ItemWireDebugger extends ItemCore("projectred:multimeter")
+class ItemMultimeter extends ItemCore
 {
     setMaxStackSize(1)
     setMaxDamage(256)

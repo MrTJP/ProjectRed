@@ -126,7 +126,7 @@ class GuiInductiveFurnace(tile:TileInductiveFurnace, c:Container) extends NodeGu
     }
 }
 
-object GuiInductiveFurnace extends TGuiBuilder
+object GuiInductiveFurnace extends TGuiFactory
 {
     val background = new ResourceLocation("projectred", "textures/gui/furnace.png")
     override def getID = ExpansionProxy.furnaceGui

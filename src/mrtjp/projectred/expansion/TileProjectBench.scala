@@ -399,7 +399,7 @@ class GuiProjectBench(tile: TileProjectBench, c: ContainerProjectBench) extends 
     }
 }
 
-object GuiProjectBench extends TGuiBuilder {
+object GuiProjectBench extends TGuiFactory {
     val background = new ResourceLocation("projectred", "textures/gui/project_bench.png")
 
     override def getID = ExpansionProxy.projectbenchGui

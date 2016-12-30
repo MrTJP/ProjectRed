@@ -11,7 +11,7 @@ import codechicken.lib.gui.GuiDraw
 import codechicken.lib.model.blockbakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
-import mrtjp.core.gui.{GuiLib, Slot3, TGuiBuilder, _}
+import mrtjp.core.gui.{GuiLib, Slot3,_}
 import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.item.ItemKey
 import mrtjp.core.vec.Point
@@ -256,7 +256,7 @@ class GuiChargingBench(tile:TileChargingBench, c:ContainerChargingBench) extends
     }
 }
 
-object GuiChargingBench extends TGuiBuilder
+object GuiChargingBench extends TGuiFactory
 {
     val background = new ResourceLocation("projectred", "textures/gui/charger.png")
     override def getID = ExpansionProxy.chargingBenchBui

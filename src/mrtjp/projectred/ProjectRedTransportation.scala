@@ -6,19 +6,19 @@ import net.minecraft.creativetab.CreativeTabs
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStoppingEvent}
 
-@Mod(modid = "ProjRed|Transportation", useMetadata = true, modLanguage = "scala")
+@Mod(modid = "projectred-tansportation", useMetadata = true, modLanguage = "scala")
 object ProjectRedTransportation
 {
     ProjectRedAPI.transportationAPI = new APIImpl_Transportation
 
     /** Items **/
-    var itemRoutingChip:ItemRoutingChip = null
-    var itemRouterUtility:ItemRouterUtility = null
+    var itemRoutingChip:ItemRoutingChip = _
+    var itemRouterUtility:ItemRouterUtility = _
 
     /** Multipart items **/
-    var itemPartPipe:ItemPartPipe = null
+    var itemPartPipe:ItemPartPipe = _
 
-    var tabTransportation = new CreativeTabs("transport")
+    var tabTransportation = new CreativeTabs("projectred.transportation")
     {
         override def getIconItemStack = RoutingChipDefs.ITEMSTOCKKEEPER.makeStack
         override def getTabIconItem = getIconItemStack.getItem

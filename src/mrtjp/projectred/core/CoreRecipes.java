@@ -64,7 +64,7 @@ public class CoreRecipes
         ));
 
         /** Wire Debugger **/
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemWireDebugger()),
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemMultimeter()),
                 "a a",
                 "ber",
                 "bgr",

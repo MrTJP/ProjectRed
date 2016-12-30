@@ -1,19 +1,19 @@
 [
 {
-  "modid": "ProjRed|Fabrication",
+  "modid": "projectred-fabrication",
   "name": "ProjectRed Fabrication",
-  "parent":"ProjRed|Core",
+  "parent":"projectred-core",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",
   "requiredMods": [
-      "ProjRed|Core",
-      "ProjRed|Integration",
-      "ProjRed|Transmission"
+      "projectred-core",
+      "projectred-integration",
+      "projectred-transmission"
   ],
   "dependencies": [
-      "ProjRed|Core",
-      "ProjRed|Integration",
-      "ProjRed|Transmission"
+      "projectred-core",
+      "projectred-integration",
+      "projectred-transmission"
   ],
   "dependants" : [],
   "useDependencyInformation": true

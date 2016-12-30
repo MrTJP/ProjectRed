@@ -5,13 +5,13 @@ import net.minecraft.creativetab.CreativeTabs
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 
-@Mod(modid = "ProjRed|Integration", useMetadata = true, modLanguage = "scala")
+@Mod(modid = "projectred-integration", useMetadata = true, modLanguage = "scala")
 object ProjectRedIntegration
 {
     /** Multipart items **/
-    var itemPartGate:ItemPartGate = null
+    var itemPartGate:ItemPartGate = _
 
-    var tabIntegration = new CreativeTabs("int")
+    var tabIntegration = new CreativeTabs("projectred.integration")
     {
         override def getIconItemStack = GateDefinition.OR.makeStack
         override def getTabIconItem = getIconItemStack.getItem

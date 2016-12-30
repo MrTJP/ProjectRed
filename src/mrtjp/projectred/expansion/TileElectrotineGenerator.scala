@@ -245,7 +245,7 @@ class GuiElectrotineGenerator(tile:TileElectrotineGenerator, c:ContainerElectrot
     }
 }
 
-object GuiElectrotineGenerator extends TGuiBuilder
+object GuiElectrotineGenerator extends TGuiFactory
 {
     val background = new ResourceLocation("projectred", "textures/gui/electrotine_generator.png")
     override def getID = ExpansionProxy.generatorGui

@@ -4,7 +4,7 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.util.ItemUtils
-import mrtjp.core.gui.{NodeGui, TGuiBuilder}
+import mrtjp.core.gui.{NodeGui, TGuiFactory}
 import mrtjp.core.vec.Point
 import mrtjp.projectred.ProjectRedExploration
 import net.minecraft.entity.player.EntityPlayer
@@ -34,7 +34,7 @@ class GuiBackpack(player:EntityPlayer, bag:ItemStack) extends NodeGui(ItemBackpa
     }
 }
 
-object GuiBackpack extends TGuiBuilder
+object GuiBackpack extends TGuiFactory
 {
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =

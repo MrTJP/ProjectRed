@@ -61,14 +61,14 @@ class ExpansionProxy_server extends IProxy with IDynamicPartFactory
 
         //Machine1 (machines)
         machine1 = new BlockMachine("machine1", machine1Bakery)
-        GameRegistry.register(machine1.setRegistryName("machine1"))
+        GameRegistry.register(machine1)
         GameRegistry.register(new ItemBlockCore(machine1).setRegistryName("machine1"))
         machine1.addTile(classOf[TileInductiveFurnace], 0)
         machine1.addTile(classOf[TileElectrotineGenerator], 1)
 
         //Machine2 (devices)
         machine2 = new BlockMachine("machine2", machine2Bakery)
-        GameRegistry.register(machine2.setRegistryName("machine2"))
+        GameRegistry.register(machine2)
         GameRegistry.register(new ItemBlockCore(machine2).setRegistryName("machine2"))
         machine2.addTile(classOf[TileBlockBreaker], 0)
         machine2.addTile(classOf[TileItemImporter], 1)
@@ -82,6 +82,7 @@ class ExpansionProxy_server extends IProxy with IDynamicPartFactory
         //machine2.addTile(classOf[TileFrameActuator], 9)
         machine2.addTile(classOf[TileProjectBench], 10)
         machine2.addTile(classOf[TileAutoCrafter], 11)
+        machine2.addTile(classOf[TileDiamondBlockBreaker], 12)
 
         //Enchantments
         enchantmentFuelEfficiency = new EnchantmentFuelEfficiency(Configurator.enchantment_fuel_efficiencty_id)
@@ -251,6 +252,16 @@ class ExpansionProxy_client extends ExpansionProxy_server
 
         machine2Bakery.registerSubBakery(10, RenderProjectBench)
         machine2Bakery.registerSubBakery(11, RenderAutoCrafter)
+        machine2Bakery.registerSubBakery(12, RenderDiamondBlockBreaker, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+                val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+                val active = state.getValue(UNLISTED_ACTIVE_PROPERTY)
+                val powered = state.getValue(UNLISTED_POWERED_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,s=$side,r=$rotation,a=$active,p=$powered"
+            }
+        })
 
         registerBlockToBakery(machine1, machine1Bakery.registerKeyGens(machine1), new Builder().ignore(MultiTileBlock.TILE_INDEX).build())
         registerBlockToBakery(machine2, machine2Bakery.registerKeyGens(machine2), new Builder().ignore(MultiTileBlock.TILE_INDEX).build())
@@ -405,7 +416,7 @@ object ExpansionRecipes
             'p':JC, Blocks.PISTON,
             'r':JC, Items.REDSTONE
         ))
-
+        
         //Item Importer
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 1),
             "www", "sps", "srs",
@@ -523,6 +534,18 @@ object ExpansionRecipes
             'c':JC, Blocks.CHEST,
             'e':JC, "ingotElectrotineAlloy"
         ))
+        
+        //Diamond Block Breaker
+        if (Configurator.enableDiamondBlockBreaker) {
+            GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 12),
+                "sas", "sps", "srs",
+                's':JC, Blocks.COBBLESTONE,
+                'a':JC, Items.DIAMOND_PICKAXE,
+                'p':JC, Blocks.PISTON,
+                'r':JC, Items.REDSTONE
+            ))
+        }
+
     }
 
     private def initMiscRecipes()

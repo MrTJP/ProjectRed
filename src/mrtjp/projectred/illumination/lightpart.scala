@@ -34,6 +34,7 @@ import net.minecraft.world.{EnumSkyBlock, World}
 import net.minecraftforge.client.model.IPerspectiveAwareModel
 import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
 import net.minecraftforge.common.model.TRSRTransformation
+import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
@@ -252,9 +253,10 @@ trait TAirousLight extends BaseLightPart with ITickable
 
 abstract class LightFactory extends IPartFactory
 {
-    private var item:ItemBaseLight = null
-    private var itemInv:ItemBaseLight = null
+    private var item:ItemBaseLight = _
+    private var itemInv:ItemBaseLight = _
 
+    def getUnlocalizedName(inv:Boolean):String
     def getItemRegistryName(inv:Boolean):String
     def getType:String
 
@@ -279,7 +281,12 @@ abstract class LightFactory extends IPartFactory
     final def register()
     {
         item = createItem(false)
+        item.setUnlocalizedName(getUnlocalizedName(false))
+        GameRegistry.register(item.setRegistryName(getItemRegistryName(false)))
+
         itemInv = createItem(true)
+        itemInv.setUnlocalizedName(getUnlocalizedName(true))
+        GameRegistry.register(itemInv.setRegistryName(getItemRegistryName(true)))
 
         MultiPartRegistry.registerParts(this, Array(getType))
     }

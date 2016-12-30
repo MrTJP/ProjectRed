@@ -174,7 +174,7 @@ class GuiFilteredImporter(c:Container, tile:TileFilteredImporter) extends NodeGu
     }
 }
 
-object GuiFilteredImporter extends TGuiBuilder
+object GuiFilteredImporter extends TGuiFactory
 {
     val background = new ResourceLocation("projectred", "textures/gui/filtered_importer.png")
     override def getID = ExpansionProxy.filteredImporterGui

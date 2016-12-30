@@ -14,7 +14,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
-class ItemBaseLight(factory:LightFactory, val inverted:Boolean) extends ItemCore(factory.getItemRegistryName(inverted)) with TItemMultiPart
+class ItemBaseLight(factory:LightFactory, val inverted:Boolean) extends ItemCore with TItemMultiPart
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedIllumination.tabLighting)
