@@ -7,27 +7,27 @@ package mrtjp.projectred.expansion
 
 import java.util.{List => JList}
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
+import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui._
 import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack, ItemQueue}
-import mrtjp.core.render.TCubeMapRender
+import mrtjp.core.util.CCLConversions
 import mrtjp.core.vec.{Point, Size}
-import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.core.libmc.PRResources
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.{ICrafting, ISidedInventory, InventoryCrafting}
+import net.minecraft.inventory.{IContainerListener, ISidedInventory, InventoryCrafting}
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.{CraftingManager, IRecipe}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.IIcon
-import net.minecraft.world.IBlockAccess
+import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraftforge.common.property.IExtendedBlockState
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 import org.lwjgl.input.Keyboard
 
@@ -89,13 +89,14 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
     override def size = 27
     override def name = "auto_bench"
 
-    override def canExtractItem(slot:Int, item:ItemStack, side:Int) = 9 until 27 contains slot
-    override def canInsertItem(slot:Int, item:ItemStack, side:Int) = 9 until 27 contains slot
-    override def getAccessibleSlotsFromSide(side:Int) = (9 until 27).toArray
+    override def getDisplayName = super.getDisplayName
+    override def canExtractItem(slot:Int, item:ItemStack, side:EnumFacing) = 9 until 27 contains slot
+    override def canInsertItem(slot:Int, item:ItemStack, side:EnumFacing) = 9 until 27 contains slot
+    override def getSlotsForFace(side:EnumFacing) = (9 until 27).toArray
 
-    override def update()
+    override def updateServer()
     {
-        super.update()
+        super.updateServer()
 
         if (recipeNeedsRefresh)
         {
@@ -241,12 +242,12 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
     override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        dropInvContents(world, x, y, z)
+        dropInvContents(world, getPos)
     }
 
     override def openGui(player:EntityPlayer)
     {
-        GuiAutoCrafter.open(player, createContainer(player), _.writeCoord(x, y, z))
+        GuiAutoCrafter.open(player, createContainer(player), _.writePos(getPos))
     }
 
     override def createContainer(player:EntityPlayer) = new ContainerAutoCrafter(player, this)
@@ -276,9 +277,9 @@ class ContainerAutoCrafter(player:EntityPlayer, tile:TileAutoCrafter) extends Co
     {
         super.detectAndSendChanges()
         import scala.collection.JavaConversions._
-        for (i <- crafters)
+        for (i <- listeners)
         {
-            val ic = i.asInstanceOf[ICrafting]
+            val ic = i.asInstanceOf[IContainerListener]
 
             if (slot != tile.planSlot) ic.sendProgressBarUpdate(this, 3, tile.planSlot)
             slot = tile.planSlot
@@ -316,7 +317,7 @@ class GuiAutoCrafter(tile:TileAutoCrafter, c:ContainerAutoCrafter) extends NodeG
     {
         val cycle = new IconButtonNode {
             override def drawButton(mouseover:Boolean) {
-                PRResources.guiAutoCrafter.bind()
+                TextureUtils.changeTexture(GuiAutoCrafter.background)
                 drawTexturedModalRect(position.x, position.y, 176, 0, 14, 14)
             }
         }
@@ -328,7 +329,7 @@ class GuiAutoCrafter(tile:TileAutoCrafter, c:ContainerAutoCrafter) extends NodeG
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
-        PRResources.guiAutoCrafter.bind()
+        TextureUtils.changeTexture(GuiAutoCrafter.background)
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 
         val Point(sx, sy) = Point(18, 18).multiply(tile.planSlot%3, tile.planSlot/3).add(98, 22).subtract(3)
@@ -346,8 +347,8 @@ class GuiAutoCrafter(tile:TileAutoCrafter, c:ContainerAutoCrafter) extends NodeG
         if (plan != null && ItemPlan.hasRecipeInside(plan))
             ItemDisplayNode.renderItem(Point(152, 58), Size(16, 16), zPosition, true, ItemPlan.loadPlanOutput(plan))
 
-        GuiDraw.drawString("Auto Crafting Bench", 8, 6, Colors.GREY.argb, false)
-        GuiDraw.drawString("Inventory", 8, 120, Colors.GREY.argb, false)
+        GuiDraw.drawString("Auto Crafting Bench", 8, 6, EnumColour.GRAY.argb, false)
+        GuiDraw.drawString("Inventory", 8, 120, EnumColour.GRAY.argb, false)
     }
 
     override def drawFront_Impl(mouse:Point, rframe:Float)
@@ -359,12 +360,14 @@ class GuiAutoCrafter(tile:TileAutoCrafter, c:ContainerAutoCrafter) extends NodeG
 
 object GuiAutoCrafter extends TGuiBuilder
 {
+    val background = new ResourceLocation("projectred", "textures/gui/auto_bench.png")
+
     override def getID = ExpansionProxy.autoCrafterGui
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        WorldLib.getTileEntity(player.worldObj, data.readCoord()) match
+        player.worldObj.getTileEntity(data.readPos()) match
         {
             case t:TileAutoCrafter => new GuiAutoCrafter(t, t.createContainer(player))
             case _ => null
@@ -372,31 +375,32 @@ object GuiAutoCrafter extends TGuiBuilder
     }
 }
 
-object RenderAutoCrafter extends TCubeMapRender
+object RenderAutoCrafter extends SimpleBlockRenderer
 {
-    var bottom:IIcon = _
-    var top:IIcon = _
-    var side1:IIcon = _
-    var side2:IIcon = _
+    var bottom:TextureAtlasSprite = _
+    var top:TextureAtlasSprite = _
+    var side1:TextureAtlasSprite = _
+    var side2:TextureAtlasSprite = _
 
     var iconT:UVTransformation = _
 
-    override def getData(w:IBlockAccess, x:Int, y:Int, z:Int) = (0, 0, iconT)
-    override def getInvData = (0, 0, iconT)
+    override def getWorldTransforms(state: IExtendedBlockState) = CCLConversions.createTriple(0, 0, iconT)
+    override def getItemTransforms(stack: ItemStack) = CCLConversions.createTriple(0, 0, iconT)
+    override def shouldCull() = true
 
-    override def getIcon(side:Int, meta:Int) = side match
+    def getIcon(side:Int, meta:Int) = side match
     {
         case 0 => bottom
         case 1 => top
         case _ => side1
     }
 
-    override def registerIcons(reg:IIconRegister)
+    override def registerIcons(reg:TextureMap)
     {
-        bottom = reg.registerIcon("projectred:mechanical/autobench/bottom")
-        top = reg.registerIcon("projectred:mechanical/autobench/top")
-        side1 = reg.registerIcon("projectred:mechanical/autobench/side1")
-        side2 = reg.registerIcon("projectred:mechanical/autobench/side2")
+        bottom = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/autobench/bottom"))
+        top = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/autobench/top"))
+        side1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/autobench/side1"))
+        side2 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/autobench/side2"))
 
         iconT = new MultiIconTransformation(bottom, top, side1, side1, side2, side2)
     }

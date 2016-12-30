@@ -7,32 +7,34 @@ package mrtjp.projectred.expansion
 
 import java.util.{List => JList}
 
+import codechicken.lib.math.MathHelper
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.vec.{BlockCoord, Rotation, Translation, Vector3}
-import cpw.mods.fml.common.FMLCommonHandler
-import cpw.mods.fml.common.eventhandler.SubscribeEvent
-import cpw.mods.fml.common.gameevent.TickEvent.{ClientTickEvent, Phase}
-import cpw.mods.fml.common.registry.GameRegistry
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.fx.FXEngine
+import codechicken.lib.vec.{Rotation, Translation, Vector3}
 import mrtjp.core.fx.particles.SpriteParticle
 import mrtjp.core.item.ItemCore
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api.IScrewdriver
 import net.minecraft.client.Minecraft
 import net.minecraft.client.model.{ModelBiped, ModelRenderer}
-import net.minecraft.client.renderer.texture.IIconRegister
-import net.minecraft.enchantment.{EnchantmentHelper, Enchantment, EnumEnchantmentType}
+import net.minecraft.enchantment.Enchantment.Rarity
+import net.minecraft.enchantment.{Enchantment, EnchantmentHelper, EnumEnchantmentType}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.init.Blocks
+import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.item.ItemArmor.ArmorMaterial
 import net.minecraft.item.{Item, ItemArmor, ItemStack}
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
-import net.minecraft.util.{DamageSource, EnumChatFormatting, IIcon}
-import net.minecraft.world.World
-import net.minecraftforge.common.ISpecialArmor
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.TextFormatting
+import net.minecraft.util._
+import net.minecraft.world.{IBlockAccess, World}
+import net.minecraftforge.common.{ISpecialArmor, MinecraftForge}
 import net.minecraftforge.common.ISpecialArmor.ArmorProperties
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.{ClientTickEvent, Phase}
+import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.{Set => MSet}
 
@@ -51,7 +53,7 @@ trait TItemBattery extends IChargable
             case b:TItemBattery if pow > 0 =>
                 val newStack = if (b.isEmpty) new ItemStack(b.getChargedVariant, 1, b.getChargedVariant.getMaxDamage) else stack
                 val spaceLeft = newStack.getItemDamage
-                val toAdd = math.min(spaceLeft, pow)
+                val toAdd = Math.min(spaceLeft, pow)
                 newStack.setItemDamage(newStack.getItemDamage-toAdd)
                 (newStack, toAdd)
             case _ => (stack, 0)
@@ -64,7 +66,7 @@ trait TItemBattery extends IChargable
         {
             case b:TItemBattery if b.nonEmpty =>
                 val powerLeft = stack.getMaxDamage-stack.getItemDamage
-                val toDraw = math.min(powerLeft, pow)
+                val toDraw = Math.min(powerLeft, pow)
                 stack.setItemDamage(stack.getItemDamage+toDraw)
                 val newStack = if (stack.getItemDamage >= stack.getMaxDamage) new ItemStack(b.getEmptyVariant) else stack
                 (newStack, toDraw)
@@ -76,10 +78,11 @@ trait TItemBattery extends IChargable
         stack.getItemDamage == 0 && stack.getItem == getChargedVariant
 }
 
-class ItemBatteryEmpty extends ItemCore("projectred.expansion.emptybattery") with TItemBattery
+class ItemBatteryEmpty extends ItemCore with TItemBattery
 {
+    setUnlocalizedName("projectred.expansion.emptybattery")
     setCreativeTab(ProjectRedExpansion.tabExpansion)
-    setTextureName("projectred:mechanical/empty_battery")
+    //setTextureName("projectred:mechanical/empty_battery")
 
     override def isEmpty = true
 
@@ -87,12 +90,13 @@ class ItemBatteryEmpty extends ItemCore("projectred.expansion.emptybattery") wit
     override def getChargedVariant = ProjectRedExpansion.itemBattery
 }
 
-class ItemBattery extends ItemCore("projectred.expansion.battery") with TItemBattery
+class ItemBattery extends ItemCore with TItemBattery
 {
+    setUnlocalizedName("projectred.expansion.battery")
     setMaxDamage(1600)
     setNoRepair()
     setMaxStackSize(1)
-    setTextureName("projectred:mechanical/battery")
+    //setTextureName("projectred:mechanical/battery")
     setCreativeTab(ProjectRedExpansion.tabExpansion)
 
     override def isEmpty = false
@@ -109,7 +113,7 @@ trait IChargable
         {
             case b:IChargable if pow > 0 =>
                 val spaceLeft = stack.getItemDamage
-                val toAdd = math.min(spaceLeft, pow)
+                val toAdd = Math.min(spaceLeft, pow)
                 stack.setItemDamage(stack.getItemDamage-toAdd)
                 (stack, toAdd)
             case _ => (stack, 0)
@@ -122,7 +126,7 @@ trait IChargable
         {
             case b:IChargable =>
                 val powerLeft = stack.getMaxDamage-stack.getItemDamage
-                val toDraw = math.min(powerLeft, pow)
+                val toDraw = Math.min(powerLeft, pow)
                 stack.setItemDamage(stack.getItemDamage+toDraw)
                 (stack, toDraw)
             case _ => (stack, 0)
@@ -132,20 +136,20 @@ trait IChargable
     def isFullyCharged(stack:ItemStack) = stack.getItemDamage == 0
 }
 
-class ItemElectronicScrewdriver extends ItemCore("projectred.expansion.electric_screwdriver") with IScrewdriver with IChargable
+class ItemElectronicScrewdriver extends ItemCore with IScrewdriver with IChargable
 {
+    setUnlocalizedName("projectred.expansion.electric_screwdriver")
     setMaxStackSize(1)
     setMaxDamage(400)
     setNoRepair()
     setCreativeTab(ProjectRedExpansion.tabExpansion)
-    setTextureName("projectred:mechanical/electric_screwdriver")
+    //setTextureName("projectred:mechanical/electric_screwdriver")
 
-    override def onItemUse(stack:ItemStack, player:EntityPlayer, w:World,
-                           x:Int, y:Int, z:Int, side:Int,
-                           par8:Float, par9:Float, par10:Float) = false
+    override def onItemUse(stack: ItemStack, playerIn: EntityPlayer, worldIn: World,
+                           pos: BlockPos, hand: EnumHand, facing: EnumFacing,
+                           hitX: Float, hitY: Float, hitZ: Float): EnumActionResult = EnumActionResult.PASS
 
-    override def doesSneakBypassUse(world:World, x:Int, y:Int, z:Int,
-                                    player:EntityPlayer) = true
+    override def doesSneakBypassUse(stack: ItemStack, world: IBlockAccess, pos: BlockPos, player: EntityPlayer) = true
 
     override def canUse(player:EntityPlayer, stack:ItemStack) = stack.getItemDamage < stack.getMaxDamage
 
@@ -155,11 +159,12 @@ class ItemElectronicScrewdriver extends ItemCore("projectred.expansion.electric_
     }
 }
 
-class ItemPlan extends ItemCore("projectred.expansion.plan")
+class ItemPlan extends ItemCore
 {
+    setUnlocalizedName("projectred.expansion.plan")
     setCreativeTab(ProjectRedExpansion.tabExpansion)
 
-    var iconBlank:IIcon = null
+    /*var iconBlank:IIcon = null
     var iconWritten:IIcon = null
 
     override def getIconIndex(stack:ItemStack) =
@@ -171,14 +176,14 @@ class ItemPlan extends ItemCore("projectred.expansion.plan")
     {
         iconBlank = reg.registerIcon("projectred:mechanical/blank_plan")
         iconWritten = reg.registerIcon("projectred:mechanical/written_plan")
-    }
+    }*/
 
-    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], flag:Boolean)
+    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[String], flag:Boolean)
     {
         if (ItemPlan.hasRecipeInside(stack))
         {
-            val s = s"${EnumChatFormatting.BLUE}Output: ${EnumChatFormatting.GRAY+ItemPlan.loadPlanOutput(stack).getDisplayName}"
-            list.asInstanceOf[JList[String]].add(s)
+            val s = s"${TextFormatting.BLUE}Output: ${TextFormatting.GRAY+ItemPlan.loadPlanOutput(stack).getDisplayName}"
+            list.add(s)
         }
     }
 }
@@ -231,19 +236,18 @@ object ItemPlan
     {
         val tag0 = stack.getTagCompound.getTagList("recipe", 10)
         val out = ItemStack.loadItemStackFromNBT(tag0.getCompoundTagAt(9))
-        if (out != null) out else new ItemStack(Blocks.fire)
+        if (out != null) out else new ItemStack(Blocks.FIRE)//TODO Fire isnt an item anymore..
     }
 }
 
-class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable with ISpecialArmor
+class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, EntityEquipmentSlot.CHEST) with IChargable with ISpecialArmor
 {
     setMaxStackSize(1)
     setMaxDamage(6400)
     setNoRepair()
     setCreativeTab(ProjectRedExpansion.tabExpansion)
-    setTextureName("projectred:mechanical/jetpack")
+    //setTextureName("projectred:mechanical/jetpack")
     setUnlocalizedName("projectred.expansion.jetpack")
-    GameRegistry.registerItem(this, "projectred.expansion.jetpack")
 
     override def onArmorTick(world:World, player:EntityPlayer, stack:ItemStack)
     {
@@ -261,15 +265,15 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable
     def getPowerDraw(stack:ItemStack):Int =
     {
         if (!stack.isItemEnchanted) return 16
-        val i = EnchantmentHelper.getEnchantmentLevel(ProjectRedExpansion.enchantmentFuelEfficiency.effectId, stack)
-        math.max(1, 16-i*3)
+        val i = EnchantmentHelper.getEnchantmentLevel(ProjectRedExpansion.enchantmentFuelEfficiency, stack)
+        Math.max(1, 16-i*3)
     }
 
-    override def getArmorTexture(stack:ItemStack, entity:Entity, slot:Int, t:String) =
+    override def getArmorTexture(stack:ItemStack, entity:Entity, slot:EntityEquipmentSlot, t:String) =
         "projectred:textures/items/mechanical/jetpack_1.png"
 
     @SideOnly(Side.CLIENT)
-    override def getArmorModel(entityLiving:EntityLivingBase, stack:ItemStack, slot:Int):ModelBiped = ModelJetpack
+    override def getArmorModel(entityLiving: EntityLivingBase, itemStack: ItemStack, armorSlot: EntityEquipmentSlot, _default: ModelBiped):ModelBiped = ModelJetpack
 
     override def damageArmor(entity:EntityLivingBase, stack:ItemStack, source:DamageSource, damage:Int, slot:Int){}
 
@@ -291,18 +295,18 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable
 
         val y = player.posY
         if (y > maxHeight-heightFalloff)
-            power *= math.max(0, maxHeight-y)/heightFalloff
+            power *= Math.max(0, maxHeight-y)/heightFalloff
 
         val damage = stack.getItemDamage
         if (damage > getMaxDamage-damageFalloff)
-            power *= math.max(0, getMaxDamage-damage)/heightFalloff
+            power *= Math.max(0, getMaxDamage-damage)/heightFalloff
 
         val velY = player.motionY
-        val accelY = if (player.isSneaking) math.min(-velY*stabalizeSpeed, thrust*power) else thrust*power
-        player.motionY = math.min(velY+accelY, maxUpSpeed)
+        val accelY = if (player.isSneaking) Math.min(-velY*stabalizeSpeed, thrust*power) else thrust*power
+        player.motionY = Math.min(velY+accelY, maxUpSpeed)
 
         if (ForwardServerTracker.isKeyDown(player))
-            player.moveFlying(0, (power*0.6).toFloat, 0.055f)
+            player.moveRelative(0, (power*0.6).toFloat, 0.055f)
 
         player.distanceWalkedModified = 0
         player.fallDistance =
@@ -312,7 +316,7 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, 1) with IChargable
 
 }
 
-class EnchantmentFuelEfficiency(id:Int) extends Enchantment(id, 1, EnumEnchantmentType.armor_torso)
+class EnchantmentFuelEfficiency(id:Int) extends Enchantment(Rarity.UNCOMMON, EnumEnchantmentType.ARMOR_CHEST, Array(EntityEquipmentSlot.CHEST))
 {
     setName("projectred.expansion.fuel_efficiency")
 
@@ -356,20 +360,20 @@ object ItemJetpack
     @SideOnly(Side.CLIENT)
     def register()
     {
-        FMLCommonHandler.instance().bus().register(this)
+        MinecraftForge.EVENT_BUS.register(this)
     }
 
     @SideOnly(Side.CLIENT)
     def renderParticlesForPlayer(player:EntityPlayer)
     {
-        val pos1 = new Vector3(-2.5/16D, -15/16D, -4/16D).apply(new Rotation(math.toRadians(-player.renderYawOffset), 0, 1, 0) `with`
+        val pos1 = new Vector3(-2.5/16D, -15/16D, -4/16D).apply(new Rotation(-player.renderYawOffset * MathHelper.torad, 0, 1, 0) `with`
                 new Translation(player.posX, player.posY, player.posZ))
-        val pos2 = new Vector3(2.5/16D, -15/16D, -4/16D).apply(new Rotation(math.toRadians(-player.renderYawOffset), 0, 1, 0) `with`
+        val pos2 = new Vector3(2.5/16D, -15/16D, -4/16D).apply(new Rotation(-player.renderYawOffset * MathHelper.torad, 0, 1, 0) `with`
                 new Translation(player.posX, player.posY, player.posZ))
 
         val positions = Seq(pos1, pos2)
 
-        val s = -player.worldObj.rand.nextDouble()*0.2+math.min(0, player.motionY)
+        val s = -player.worldObj.rand.nextDouble()*0.2+Math.min(0, player.motionY)
 
         import mrtjp.core.fx.ParticleAction._
         val a1 = group(
@@ -396,12 +400,12 @@ object ItemJetpack
         for (pos <- positions) for (i <- 0 until 2)
         {
             val p = new SpriteParticle(player.worldObj)
-            FXEngine.addEffect(p)
+            Minecraft.getMinecraft.effectRenderer.addEffect(p)
             val r = player.worldObj.rand
             p.setPos(pos.copy.add(new Vector3(r.nextDouble(), r.nextDouble(), r.nextDouble())
                     .subtract(Vector3.center).multiply(4/16D)))
             p.setMaxAge(50)
-            p.noClip = false
+            //p.noClip = false
             p.texture = "projectred:textures/particles/box.png"
             p.rgb = new Vector3(0, 198/256D, 210/256D)
             p.scale = new Vector3(0.05, 0.05, 0.05)
@@ -410,20 +414,20 @@ object ItemJetpack
     }
 }
 
-class ItemInfusedEnderPearl extends ItemCore("projectred.expansion.infused_ender_pearl")
+class ItemInfusedEnderPearl extends ItemCore
 {
+    setUnlocalizedName("projectred.expansion.infused_ender_pearl")
     setMaxStackSize(1)
-    setTextureName("projectred:mechanical/infused_ender_pearl")
+    //setTextureName("projectred:mechanical/infused_ender_pearl")
 
-    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], flag:Boolean)
+    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[String], flag:Boolean)
     {
         import ItemInfusedEnderPearl._
-        import net.minecraft.util.EnumChatFormatting._
         val slist = list.asInstanceOf[JList[String]]
         if (hasLocation(stack))
         {
             val bc = getLocation(stack)
-            slist.add(GRAY+s"Tied to [${bc.x}, ${bc.y}, ${bc.z}]")
+            slist.add(TextFormatting.GRAY+s"Tied to [${bc.getX}, ${bc.getY}, ${bc.getZ}]")
         }
     }
 }
@@ -449,7 +453,7 @@ object ItemInfusedEnderPearl
     {
         assertNBT(stack)
         val tag = stack.getTagCompound
-        new BlockCoord(tag.getInteger("locX"), tag.getInteger("locY"), tag.getInteger("locZ"))
+        new BlockPos(tag.getInteger("locX"), tag.getInteger("locY"), tag.getInteger("locZ"))
     }
 
     def hasLocation(stack:ItemStack) =

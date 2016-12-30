@@ -5,26 +5,28 @@
  */
 package mrtjp.projectred.expansion
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
+import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui.{GuiLib, Slot3, TGuiBuilder, _}
 import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.item.ItemKey
-import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.vec.Point
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.core.libmc.PRResources
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.{ICrafting, ISidedInventory}
+import net.minecraft.inventory.{IContainerListener, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.IIcon
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.IBlockAccess
+import net.minecraftforge.common.property.IExtendedBlockState
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
 {
@@ -73,19 +75,20 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
 
     def sendIsCharged()
     {
-        writeStream(5).writeBoolean(isCharged).sendToChunk()
+        writeStream(5).writeBoolean(isCharged).sendToChunk(this)
     }
 
     override def size = 16
     override def name = "charging_bench"
     override def stackLimit = 1
-
-    override def canExtractItem(slot:Int, stack:ItemStack, side:Int) = true
-    override def canInsertItem(slot:Int, stack:ItemStack, side:Int) = side == 1
-    override def getAccessibleSlotsFromSide(side:Int) = side match
+    override def getDisplayName = super.getDisplayName
+    import net.minecraft.util.EnumFacing._
+    override def canExtractItem(slot:Int, stack:ItemStack, side:EnumFacing) = true
+    override def canInsertItem(slot:Int, stack:ItemStack, side:EnumFacing) = side == UP
+    override def getSlotsForFace(side:EnumFacing) = side match
     {
-        case 1 => 0 until 8 toArray
-        case 2|3|4|5 => 8 until 16 toArray
+        case UP => 0 until 8 toArray
+        case NORTH|SOUTH|WEST|EAST => 8 until 16 toArray
         case _ => Array.emptyIntArray
     }
 
@@ -93,7 +96,7 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
         slot < 8 && item.getItem.isInstanceOf[IChargable]
 
     override def openGui(player:EntityPlayer) =
-        GuiChargingBench.open(player, createContainer(player), _.writeCoord(x, y, z))
+        GuiChargingBench.open(player, createContainer(player), _.writePos(getPos))
 
     override def createContainer(player:EntityPlayer) = new ContainerChargingBench(player, this)
 
@@ -108,9 +111,9 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
     def getDrawCeil = 600
     def getChargeSpeed = 15
 
-    override def update()
+    override def updateServer()
     {
-        super.update()
+        super.updateServer()
 
         if (cond.charge > getDrawCeil && storage < getMaxStorage)
         {
@@ -175,7 +178,7 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
     override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        dropInvContents(world, x, y, z)
+        dropInvContents(world, getPos)
     }
 }
 
@@ -201,9 +204,9 @@ class ContainerChargingBench(p:EntityPlayer, tile:TileChargingBench) extends Con
     {
         super.detectAndSendChanges()
         import scala.collection.JavaConversions._
-        for (i <- crafters)
+        for (i <- listeners)
         {
-            if (st != tile.storage) i.asInstanceOf[ICrafting]
+            if (st != tile.storage) i.asInstanceOf[IContainerListener]
                     .sendProgressBarUpdate(this, 3, tile.storage)
         }
         st = tile.storage
@@ -231,7 +234,7 @@ class GuiChargingBench(tile:TileChargingBench, c:ContainerChargingBench) extends
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        PRResources.guiCharger.bind()
+        TextureUtils.changeTexture(GuiChargingBench.background)
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 
         if (tile.cond.canWork)
@@ -248,19 +251,20 @@ class GuiChargingBench(tile:TileChargingBench, c:ContainerChargingBench) extends
         if (tile.containsUncharged && tile.storage > 0)
             GuiDraw.drawTexturedModalRect(63, 29, 210, 0, 17, 10)
 
-        GuiDraw.drawString("Charging Bench", 8, 6, Colors.GREY.argb, false)
-        GuiDraw.drawString("Inventory", 8, 91, Colors.GREY.argb, false)
+        GuiDraw.drawString("Charging Bench", 8, 6, EnumColour.GRAY.argb, false)
+        GuiDraw.drawString("Inventory", 8, 91, EnumColour.GRAY.argb, false)
     }
 }
 
 object GuiChargingBench extends TGuiBuilder
 {
+    val background = new ResourceLocation("projectred", "textures/gui/charger.png")
     override def getID = ExpansionProxy.chargingBenchBui
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        WorldLib.getTileEntity(player.worldObj, data.readCoord()) match
+        player.worldObj.getTileEntity(data.readPos()) match
         {
             case t:TileChargingBench => new GuiChargingBench(t, t.createContainer(player))
             case _ => null
@@ -268,40 +272,50 @@ object GuiChargingBench extends TGuiBuilder
     }
 }
 
-object RenderChargingBench extends TCubeMapRender
+object RenderChargingBench extends SimpleBlockRenderer
 {
-    var bottom:IIcon = null
-    var top1:IIcon = null
-    var top2:IIcon = null
-    var side1:IIcon = null
-    var side2:IIcon = null
+
+    import java.lang.{Boolean => JBool, Integer => JInt}
+
+    import mrtjp.core.util.CCLConversions._
+    import mrtjp.projectred.expansion.BlockProperties._
+    var bottom:TextureAtlasSprite = null
+    var top1:TextureAtlasSprite = null
+    var top2:TextureAtlasSprite = null
+    var side1:TextureAtlasSprite = null
+    var side2:TextureAtlasSprite = null
 
     var iconT1:UVTransformation = null
     var iconT2:UVTransformation = null
 
-    override def getData(w:IBlockAccess, x:Int, y:Int, z:Int) =
-    {
-        val te = WorldLib.getTileEntity(w, x, y, z, classOf[TileChargingBench])
-        if (te != null) (0, 0, if (te.isCharged) iconT2 else iconT1)
-        else (0, 0, iconT1)
+    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+        case t:TileChargingBench => state.withProperty(UNLISTED_CHARGED_PROPERTY, t.isCharged.asInstanceOf[JBool])
+        case _ => state
     }
 
-    override def getInvData = (0, 0, iconT1)
+    override def getWorldTransforms(state: IExtendedBlockState) = {
+        val charged:JBool = state.getValue(UNLISTED_CHARGED_PROPERTY)
+        createTriple(0, 0, if(charged) iconT2 else iconT1)
+    }
 
-    override def getIcon(side:Int, meta:Int) = side match
+    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT1)
+
+    override def shouldCull() = true
+
+    def getIcon(side:Int, meta:Int) = side match
     {
         case 0 => bottom
         case 1 => top1
         case _ => side1
     }
 
-    override def registerIcons(reg:IIconRegister)
+    override def registerIcons(reg:TextureMap)
     {
-        bottom = reg.registerIcon("projectred:mechanical/charger/bottom")
-        top1 = reg.registerIcon("projectred:mechanical/charger/top1")
-        top2 = reg.registerIcon("projectred:mechanical/charger/top2")
-        side1 = reg.registerIcon("projectred:mechanical/charger/side1")
-        side2 = reg.registerIcon("projectred:mechanical/charger/side2")
+        bottom = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/charger/bottom"))
+        top1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/charger/top1"))
+        top2 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/charger/top2"))
+        side1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/charger/side1"))
+        side2 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/charger/side2"))
 
         iconT1 = new MultiIconTransformation(bottom, top1, side1, side1, side1, side1)
         iconT2 = new MultiIconTransformation(bottom, top2, side2, side2, side2, side2)

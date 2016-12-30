@@ -5,28 +5,27 @@
  */
 package mrtjp.projectred.expansion
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.block.TInstancedBlockRender
-import mrtjp.core.color.Colors
+import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui._
 import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.item.ItemKey
-import mrtjp.core.render.TCubeMapRender
-import mrtjp.core.resource.ResourceLib
 import mrtjp.core.vec.{Point, Size}
-import mrtjp.core.world.WorldLib
-import mrtjp.projectred.core.libmc.PRResources
 import mrtjp.projectred.transportation.PressurePayload
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{Container, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.IIcon
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.IBlockAccess
+import net.minecraftforge.common.property.IExtendedBlockState
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class TileFilteredImporter extends TileItemImporter with TInventory with ISidedInventory
 {
@@ -34,10 +33,11 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
 
     override def size = 9
     override def name = "filtered importer"
+    override def getDisplayName = super.getDisplayName
 
-    override def canExtractItem(slot:Int, item:ItemStack, s:Int) = (s&6) != (side&6)
-    override def canInsertItem(slot:Int, item:ItemStack, s:Int) = (s&6) != (side&6)
-    override def getAccessibleSlotsFromSide(s:Int) = if ((s&6) != (side&6)) (0 to 9).toArray else Array.empty[Int]
+    override def canExtractItem(slot:Int, item:ItemStack, s:EnumFacing) = (if(s == null) 6 else s.ordinal()&6) != (side&6)
+    override def canInsertItem(slot:Int, item:ItemStack, s:EnumFacing) = (if(s == null) 6 else s.ordinal()&6) != (side&6)
+    override def getSlotsForFace(s:EnumFacing) = if ((if(s == null) 6 else s.ordinal()&6) != (side&6)) (0 to 9).toArray else Array.empty[Int]
 
     override def getExtractAmount = 64
 
@@ -92,7 +92,7 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
 
     def sendColourUpdate()
     {
-        writeStream(6).writeByte(colour).sendToChunk()
+        writeStream(6).writeByte(colour).sendToChunk(this)
     }
 
     def clientCycleColourUp()
@@ -111,7 +111,7 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
         if (super.onBlockActivated(player, actside)) return true
 
         if (!world.isRemote)
-            GuiFilteredImporter.open(player, createContainer(player), _.writeCoord(x, y, z))
+            GuiFilteredImporter.open(player, createContainer(player), _.writePos(getPos))
         true
     }
 
@@ -136,7 +136,7 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
     override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        dropInvContents(world, x, y, z)
+        dropInvContents(world, getPos)
     }
 }
 
@@ -149,10 +149,10 @@ class GuiFilteredImporter(c:Container, tile:TileFilteredImporter) extends NodeGu
             {
                 if (tile.colour == -1)
                 {
-                    ResourceLib.guiExtras.bind()
+                    TextureUtils.changeTexture(GuiLib.guiExtras)
                     GuiDraw.drawTexturedModalRect(position.x, position.y, 40, 2, 11, 11)
                 }
-                else GuiDraw.drawRect(position.x+2, position.y+2, 8, 8, Colors(tile.colour).argb)
+                else GuiDraw.drawRect(position.x+2, position.y+2, 8, 8, EnumColour.fromWoolID(tile.colour).argb)//TODO Maybe from dye id.
             }
 
             override def onButtonClicked()
@@ -167,61 +167,83 @@ class GuiFilteredImporter(c:Container, tile:TileFilteredImporter) extends NodeGu
 
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        PRResources.guiFilteredImporter.bind()
+        TextureUtils.changeTexture(GuiFilteredImporter.background)
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, 176, 168)
-        GuiDraw.drawString("Filtered Importer", 8, 6, Colors.GREY.argb, false)
-        GuiDraw.drawString("Inventory", 8, 75, Colors.GREY.argb, false)
+        GuiDraw.drawString("Filtered Importer", 8, 6, EnumColour.GRAY.argb, false)
+        GuiDraw.drawString("Inventory", 8, 75, EnumColour.GRAY.argb, false)
     }
 }
 
 object GuiFilteredImporter extends TGuiBuilder
 {
+    val background = new ResourceLocation("projectred", "textures/gui/filtered_importer.png")
     override def getID = ExpansionProxy.filteredImporterGui
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        val t = WorldLib.getTileEntity(player.worldObj, data.readCoord(), classOf[TileFilteredImporter])
+        val t = player.worldObj.getTileEntity(data.readPos()) match {
+            case tile: TileFilteredImporter => tile
+            case _ => null
+        }
         if (t != null) new GuiFilteredImporter(t.createContainer(player), t)
         else null
     }
 }
 
 
-object RenderFilteredImporter extends TInstancedBlockRender with TCubeMapRender
+object RenderFilteredImporter extends SimpleBlockRenderer
 {
-    var bottom:IIcon = _
-    var side1:IIcon = _
-    var top1:IIcon = _
-    var side2:IIcon = _
-    var top2:IIcon = _
+    import java.lang.{Boolean => JBool, Integer => JInt}
+
+    import mrtjp.core.util.CCLConversions._
+    import mrtjp.projectred.expansion.BlockProperties._
+    var bottom:TextureAtlasSprite = _
+    var side1:TextureAtlasSprite = _
+    var top1:TextureAtlasSprite = _
+    var side2:TextureAtlasSprite = _
+    var top2:TextureAtlasSprite = _
 
     var iconT1:UVTransformation = _
     var iconT2:UVTransformation = _
 
-    override def getData(w:IBlockAccess, x:Int, y:Int, z:Int) =
-    {
-        val te = WorldLib.getTileEntity(w, x, y, z, classOf[TActiveDevice])
-        if (te != null) (te.side, te.rotation, if (te.active || te.powered) iconT2 else iconT1)
-        else (0, 0, iconT1)
+    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+        case t:TActiveDevice => {
+            var s = state
+            s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[JInt])
+            s = s.withProperty(UNLISTED_ROTATION_PROPERTY, t.rotation.asInstanceOf[JInt])
+            s = s.withProperty(UNLISTED_ACTIVE_PROPERTY, t.active.asInstanceOf[JBool])
+            s.withProperty(UNLISTED_POWERED_PROPERTY, t.powered.asInstanceOf[JBool])
+        }
+        case _ => state
     }
 
-    override def getInvData = (0, 0, iconT1)
+    override def getWorldTransforms(state: IExtendedBlockState) = {
+        val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+        val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+        val active = state.getValue(UNLISTED_ACTIVE_PROPERTY).asInstanceOf[Boolean]
+        val powered = state.getValue(UNLISTED_POWERED_PROPERTY).asInstanceOf[Boolean]
+        createTriple(side, rotation, if (active || powered) iconT2 else iconT1)
+    }
 
-    override def getIcon(s:Int, meta:Int) = s match
+    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT1)
+
+    override def shouldCull() = true
+
+    def getIcon(s:Int, meta:Int) = s match
     {
         case 0 => bottom
         case 1 => top1
         case _ => side1
     }
 
-    override def registerIcons(reg:IIconRegister)
+    override def registerIcons(reg:TextureMap)
     {
-        bottom = reg.registerIcon("projectred:mechanical/fimporter/bottom")
-        top1 = reg.registerIcon("projectred:mechanical/fimporter/top1")
-        side1 = reg.registerIcon("projectred:mechanical/fimporter/side1")
-        top2 = reg.registerIcon("projectred:mechanical/fimporter/top2")
-        side2 = reg.registerIcon("projectred:mechanical/fimporter/side2")
+        bottom = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/fimporter/bottom"))
+        top1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/fimporter/top1"))
+        side1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/fimporter/side1"))
+        top2 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/fimporter/top2"))
+        side2 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/fimporter/side2"))
 
         iconT1 = new MultiIconTransformation(bottom, top1, side1, side1, side1, side1)
         iconT2 = new MultiIconTransformation(bottom, top2, side2, side2, side2, side2)

@@ -5,30 +5,25 @@
  */
 package mrtjp.projectred.expansion
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.render.uv.MultiIconTransformation
-import codechicken.lib.render.{CCRenderState, TextureUtils}
-import codechicken.lib.vec.{Scale, Translation, Vector3}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
+import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.vec.uv.MultiIconTransformation
 import mrtjp.core.gui._
 import mrtjp.core.inventory.TInventory
-import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.vec.Point
-import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.core.libmc.PRResources
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.{ICrafting, ISidedInventory}
+import net.minecraft.inventory.{IContainerListener, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.IIcon
-import net.minecraft.world.IBlockAccess
-import net.minecraftforge.client.IItemRenderer
-import net.minecraftforge.client.IItemRenderer.ItemRenderType._
-import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraftforge.common.property.IExtendedBlockState
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.ListBuffer
 
@@ -70,7 +65,7 @@ trait TPowerStorage extends TileMachine with TPoweredMachine
 
     def sendStorage()
     {
-        writeStream(5).writeInt(storage).sendToChunk()
+        writeStream(5).writeInt(storage).sendToChunk(this)
     }
 
     def getStorageScaled(i:Int) = math.min(i, i*storage/getMaxStorage)
@@ -80,9 +75,9 @@ trait TPowerStorage extends TileMachine with TPoweredMachine
     def getDrawCeil:Int
     def getDrawFloor:Int
 
-    abstract override def update()
+    abstract override def updateServer()
     {
-        super.update()
+        super.updateServer()
 
         if (cond.charge > getDrawCeil && storage < getMaxStorage)
         {
@@ -119,13 +114,14 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
     override def size = 2
     override def stackLimit = 1
     override def name = "battery_box"
-    def getAccessibleSlotsFromSide(s:Int) = s match
+    override def getDisplayName = super.getDisplayName
+    def getSlotsForFace(s:EnumFacing) = s match
     {
-        case 1 => Array(0) // input
+        case EnumFacing.UP => Array(0) // input
         case _ => Array(1) // output
     }
-    def canInsertItem(slot:Int, itemstack:ItemStack, side:Int) = true
-    def canExtractItem(slot:Int, itemstack:ItemStack, side:Int) = true
+    def canInsertItem(slot:Int, itemstack:ItemStack, side:EnumFacing) = true
+    def canExtractItem(slot:Int, itemstack:ItemStack, side:EnumFacing) = true
 
     override def isItemValidForSlot(slot:Int, item:ItemStack) =
         item != null && item.getItem.isInstanceOf[TItemBattery]
@@ -134,9 +130,9 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
 
     override def doesRotate = false
 
-    override def onBlockPlaced(side:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
+    override def onBlockPlaced(side:Int, player:EntityPlayer, stack:ItemStack)
     {
-        super.onBlockPlaced(side, meta, player, stack, hit)
+        super.onBlockPlaced(side, player, stack)
         if (stack.hasTagCompound)
         {
             val tag = stack.getTagCompound
@@ -147,12 +143,12 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
     override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        dropInvContents(world, x, y, z)
+        dropInvContents(world, getPos)
     }
 
     override def addHarvestContents(ist:ListBuffer[ItemStack])
     {
-        val stack = new ItemStack(getBlock, 1, getMetaData)
+        val stack = new ItemStack(getBlock, 1, getBlockMetadata)
         if (storage > 0)
         {
             val tag = new NBTTagCompound
@@ -163,9 +159,9 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
         ist += stack
     }
 
-    override def update()
+    override def updateServer()
     {
-        super.update()
+        super.updateServer()
 
         tryChargeBattery()
         tryDischargeBattery()
@@ -217,7 +213,7 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
 
     override def openGui(player:EntityPlayer)
     {
-        GuiBatteryBox.open(player, createContainer(player), _.writeCoord(x, y, z))
+        GuiBatteryBox.open(player, createContainer(player), _.writePos(getPos))
     }
 
     override def createContainer(player:EntityPlayer) =
@@ -237,9 +233,9 @@ class ContainerBatteryBox(p:EntityPlayer, tile:TileBatteryBox) extends Container
     {
         super.detectAndSendChanges()
         import scala.collection.JavaConversions._
-        for (i <- crafters)
+        for (i <- listeners)
         {
-            if (st != tile.storage) i.asInstanceOf[ICrafting]
+            if (st != tile.storage) i.asInstanceOf[IContainerListener]
                     .sendProgressBarUpdate(this, 3, tile.storage)
         }
         st = tile.storage
@@ -266,7 +262,7 @@ class GuiBatteryBox(tile:TileBatteryBox, c:ContainerBatteryBox) extends NodeGui(
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        PRResources.guiBatteryBox.bind()
+        TextureUtils.changeTexture(GuiBatteryBox.background)
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 
         if (tile.cond.canWork)
@@ -282,19 +278,20 @@ class GuiBatteryBox(tile:TileBatteryBox, c:ContainerBatteryBox) extends NodeGui(
         else if (tile.cond.charge < tile.getDrawFloor && tile.storage > 0)
             GuiDraw.drawTexturedModalRect(65, 30, 199, 0, 48, 18)
 
-        GuiDraw.drawString("Battery Box", 8, 6, Colors.GREY.argb, false)
-        GuiDraw.drawString("Inventory", 8, 79, Colors.GREY.argb, false)
+        GuiDraw.drawString("Battery Box", 8, 6, EnumColour.GRAY.argb, false)
+        GuiDraw.drawString("Inventory", 8, 79, EnumColour.GRAY.argb, false)
     }
 }
 
 object GuiBatteryBox extends TGuiBuilder
 {
+    val background = new ResourceLocation("projectred", "textures/gui/battery_box.png")
     override def getID = ExpansionProxy.batteryBoxGui
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        WorldLib.getTileEntity(player.worldObj, data.readCoord()) match
+        player.worldObj.getTileEntity(data.readPos) match
         {
             case t:TileBatteryBox => new GuiBatteryBox(t, t.createContainer(player))
             case _ => null
@@ -302,69 +299,52 @@ object GuiBatteryBox extends TGuiBuilder
     }
 }
 
-object RenderBatteryBox extends TCubeMapRender with IItemRenderer
+object RenderBatteryBox extends SimpleBlockRenderer
 {
-    var bottom:IIcon = _
-    var top:IIcon = _
-    val sides = new Array[IIcon](9)
 
-    override def getData(w:IBlockAccess, x:Int, y:Int, z:Int) =
-    {
-        val te = WorldLib.getTileEntity(w, x, y, z, classOf[TileBatteryBox])
-        val i = if (te != null) sides(te.getStorageScaled(8))
-        else sides(0)
-        (0, 0, new MultiIconTransformation(bottom, top, i, i, i, i))
+    import java.lang.{Integer => JInt}
+
+    import mrtjp.core.util.CCLConversions._
+    import mrtjp.projectred.expansion.BlockProperties._
+
+    var bottom:TextureAtlasSprite = _
+    var top:TextureAtlasSprite = _
+    val sides = new Array[TextureAtlasSprite](9)
+
+    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+        case t:TileBatteryBox =>
+            state.withProperty(UNLISTED_CHARGE_PROPERTY, t.getStorageScaled(8).asInstanceOf[JInt])
+        case _ => state
     }
 
-    override def getInvData = (0, 0, new MultiIconTransformation(bottom, top, sides(0), sides(0), sides(0), sides(0)))
+    override def getWorldTransforms(state: IExtendedBlockState) = {
+        val c = state.getValue(UNLISTED_CHARGE_PROPERTY).asInstanceOf[Int]
+        val i = sides(c)
+        createTriple(0, 0, new MultiIconTransformation(bottom, top, i, i, i, i))
+    }
 
-    override def getIcon(side:Int, meta:Int) = side match
+    override def getItemTransforms(stack: ItemStack) = {
+        val sideIcon:TextureAtlasSprite =
+            if(stack.hasTagCompound && stack.getTagCompound.hasKey("rstorage"))
+            sides(stack.getTagCompound.getInteger("rstorage")) else sides(0)
+
+        createTriple(0,0, new MultiIconTransformation(bottom, top, sideIcon, sideIcon, sideIcon, sideIcon))
+    }
+
+    override def shouldCull() = true
+
+    def getIcon(side:Int, meta:Int) = side match
     {
         case 0 => bottom
         case 1 => top
         case _ => sides(0)
     }
 
-    override def registerIcons(reg:IIconRegister)
+    override def registerIcons(reg:TextureMap)
     {
-        bottom = reg.registerIcon("projectred:mechanical/batterybox/bottom")
-        top = reg.registerIcon("projectred:mechanical/batterybox/top")
+        bottom = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/batterybox/bottom"))
+        top = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/batterybox/top"))
         for (i <- 0 until 9)
-            sides(i) = reg.registerIcon("projectred:mechanical/batterybox/side"+i)
-    }
-
-    override def shouldUseRenderHelper(t:ItemRenderType, item:ItemStack, helper:ItemRendererHelper) = true
-    override def handleRenderType(stack:ItemStack, t:ItemRenderType) =
-    {
-        stack.getItemDamage == 5 && stack.hasTagCompound
-    }
-
-    override def renderItem(t:ItemRenderType, item:ItemStack, data:AnyRef*)
-    {
-        val rst = item.getTagCompound.getInteger("rstorage")
-        val icon = sides(rst)
-        val iconT = new MultiIconTransformation(bottom, top, icon, icon, icon, icon)
-
-        t match
-        {
-            case ENTITY => render(-0.5, -0.5, -0.5, 1)
-            case EQUIPPED => render(0, 0, 0, 1)
-            case EQUIPPED_FIRST_PERSON => render(0, 0, 0, 1)
-            case INVENTORY => render(-0.5, -0.5, -0.5, 1)
-            case _ =>
-        }
-
-        def render(x:Double, y:Double, z:Double, s:Double)
-        {
-            val t = new Scale(s) `with` new Translation(x, y, z)
-
-            TextureUtils.bindAtlas(0)
-            CCRenderState.reset()
-            CCRenderState.setDynamic()
-            CCRenderState.pullLightmap()
-            CCRenderState.startDrawing()
-            TCubeMapRender.models(0)(0).render(t, iconT)
-            CCRenderState.draw()
-        }
+            sides(i) = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/batterybox/side"+i))
     }
 }

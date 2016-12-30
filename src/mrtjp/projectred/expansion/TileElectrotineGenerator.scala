@@ -5,26 +5,27 @@
  */
 package mrtjp.projectred.expansion
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
+import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui._
 import mrtjp.core.inventory.TInventory
-import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.vec.Point
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.core.PartDefs
-import mrtjp.projectred.core.libmc.PRResources
 import mrtjp.projectred.{ProjectRedCore, ProjectRedExpansion}
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.ICrafting
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.IIcon
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.ResourceLocation
 import net.minecraft.world.IBlockAccess
+import net.minecraftforge.common.property.IExtendedBlockState
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TInventory
 {
@@ -79,13 +80,13 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
 
     def sendRenderUpdate()
     {
-        writeStream(5).writeBoolean(isCharged).writeBoolean(isBurning).sendToChunk()
+        writeStream(5).writeBoolean(isCharged).writeBoolean(isBurning).sendToChunk(this)
     }
 
     override def getBlock = ProjectRedExpansion.machine1
 
     override def openGui(player:EntityPlayer) =
-        GuiElectrotineGenerator.open(player, createContainer(player), _.writeCoord(x, y, z))
+        GuiElectrotineGenerator.open(player, createContainer(player), _.writePos(getPos))
 
     override def createContainer(player:EntityPlayer) =
         new ContainerElectrotineGenerator(player, this)
@@ -93,6 +94,7 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
     override def size = 1
     override def name = "electrotine_generator"
 
+    override def getDisplayName = super.getDisplayName
     override def isItemValidForSlot(slot:Int, stack:ItemStack) =
         stack != null && stack.getItem == ProjectRedCore.itemPart &&
             stack.getItemDamage == PartDefs.ELECTROTINE.meta
@@ -107,9 +109,9 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
     def getDrawSpeed = 100
     def getDrawFloor = 1000
 
-    override def update()
+    override def updateServer()
     {
-        super.update()
+        super.updateServer()
 
         tryBurnDust()
         tryChargeStorage()
@@ -177,7 +179,7 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
     override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        dropInvContents(world, x, y, z)
+        dropInvContents(world, getPos)
     }
 }
 
@@ -194,11 +196,11 @@ class ContainerElectrotineGenerator(p:EntityPlayer, tile:TileElectrotineGenerato
     {
         super.detectAndSendChanges()
         import scala.collection.JavaConversions._
-        for (i <- crafters)
+        for (i <- listeners)
         {
-            if (st != tile.storage) i.asInstanceOf[ICrafting]
+            if (st != tile.storage) i
                     .sendProgressBarUpdate(this, 3, tile.storage)
-            if (bt != tile.burnTimeRemaining) i.asInstanceOf[ICrafting]
+            if (bt != tile.burnTimeRemaining) i
                     .sendProgressBarUpdate(this, 4, tile.burnTimeRemaining)
         }
         st = tile.storage
@@ -217,7 +219,7 @@ class GuiElectrotineGenerator(tile:TileElectrotineGenerator, c:ContainerElectrot
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        PRResources.guiElectrotineGenerator.bind()
+        TextureUtils.changeTexture(GuiElectrotineGenerator.background)
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 
         if (tile.cond.canWork)
@@ -238,19 +240,20 @@ class GuiElectrotineGenerator(tile:TileElectrotineGenerator, c:ContainerElectrot
         if (tile.burnTimeRemaining > tile.getBurnUseOnCharge && tile.storage < tile.getMaxStorage)
             GuiDraw.drawTexturedModalRect(69, 45, 211, 10, 23, 9)
 
-        GuiDraw.drawString("Electrotine Generator", 8, 6, Colors.GREY.argb, false)
-        GuiDraw.drawString("Inventory", 8, 79, Colors.GREY.argb, false)
+        GuiDraw.drawString("Electrotine Generator", 8, 6, EnumColour.GRAY.argb, false)
+        GuiDraw.drawString("Inventory", 8, 79, EnumColour.GRAY.argb, false)
     }
 }
 
 object GuiElectrotineGenerator extends TGuiBuilder
 {
+    val background = new ResourceLocation("projectred", "textures/gui/electrotine_generator.png")
     override def getID = ExpansionProxy.generatorGui
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        WorldLib.getTileEntity(player.worldObj, data.readCoord()) match
+        player.worldObj.getTileEntity(data.readPos()) match
         {
             case t:TileElectrotineGenerator => new GuiElectrotineGenerator(t, t.createContainer(player))
             case _ => null
@@ -258,57 +261,67 @@ object GuiElectrotineGenerator extends TGuiBuilder
     }
 }
 
-object RenderElectrotineGenerator extends TCubeMapRender
+object RenderElectrotineGenerator extends SimpleBlockRenderer
 {
-    var bottom:IIcon = _
-    var top:IIcon = _
-    var side1:IIcon = _
-    var side2a:IIcon = _
-    var side2b:IIcon = _
-    var side2c:IIcon = _
-    var side2d:IIcon = _
+
+    import mrtjp.core.util.CCLConversions._
+    import mrtjp.projectred.expansion.BlockProperties._
+    import java.lang.{Boolean => JBool, Integer => JInt}
+
+    var bottom:TextureAtlasSprite = _
+    var top:TextureAtlasSprite = _
+    var side1:TextureAtlasSprite = _
+    var side2a:TextureAtlasSprite = _
+    var side2b:TextureAtlasSprite = _
+    var side2c:TextureAtlasSprite = _
+    var side2d:TextureAtlasSprite = _
 
     var iconT1:UVTransformation = _
     var iconT2:UVTransformation = _
     var iconT3:UVTransformation = _
     var iconT4:UVTransformation = _
 
-    override def getData(w:IBlockAccess, x:Int, y:Int, z:Int) =
-    {
-        val te = WorldLib.getTileEntity(w, x, y, z, classOf[TileElectrotineGenerator])
 
-        if (te != null)
-        {
-            val iconT = (te.isCharged, te.isBurning) match
-            {
-                case (false, false) => iconT1
-                case (true, false)  => iconT2
-                case (false, true)  => iconT3
-                case (true, true)   => iconT4
-            }
-            (te.side, te.rotation, iconT)
+    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+        case t:TileElectrotineGenerator => {
+            var s = state
+            s = s.withProperty(UNLISTED_CHARGED_PROPERTY, t.isCharged.asInstanceOf[JBool])
+            s = s.withProperty(UNLISTED_BURNING_PROPERTY, t.isBurning.asInstanceOf[JBool])
+            s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[JInt])
+            s.withProperty(UNLISTED_ROTATION_PROPERTY, t.rotation.asInstanceOf[JInt])
         }
-        else (0, 0, iconT1)
+        case _ => state
     }
 
-    override def getInvData = (0, 0, iconT1)
+    override def getWorldTransforms(state: IExtendedBlockState) = {
+        val isCharged = state.getValue(UNLISTED_CHARGED_PROPERTY).asInstanceOf[Boolean]
+        val isBurning = state.getValue(UNLISTED_BURNING_PROPERTY).asInstanceOf[Boolean]
+        val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+        val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
 
-    override def getIcon(side:Int, meta:Int) = side match
-    {
-        case 0 => bottom
-        case 1 => top
-        case _ => side1
+        val iconT = (isCharged, isBurning) match
+        {
+            case (false, false) => iconT1
+            case (true, false)  => iconT2
+            case (false, true)  => iconT3
+            case (true, true)   => iconT4
+        }
+        createTriple(side, rotation, iconT)
     }
 
-    override def registerIcons(reg:IIconRegister)
+    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT1)
+
+    override def shouldCull() = true
+
+    override def registerIcons(reg:TextureMap)
     {
-        bottom = reg.registerIcon("projectred:mechanical/elecgen/bottom")
-        top = reg.registerIcon("projectred:mechanical/elecgen/top")
-        side1 = reg.registerIcon("projectred:mechanical/elecgen/side1")
-        side2a = reg.registerIcon("projectred:mechanical/elecgen/side2a")
-        side2b = reg.registerIcon("projectred:mechanical/elecgen/side2b")
-        side2c = reg.registerIcon("projectred:mechanical/elecgen/side2c")
-        side2d = reg.registerIcon("projectred:mechanical/elecgen/side2d")
+        bottom = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/elecgen/bottom"))
+        top = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/elecgen/top"))
+        side1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/elecgen/side1"))
+        side2a = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/elecgen/side2a"))
+        side2b = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/elecgen/side2b"))
+        side2c = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/elecgen/side2c"))
+        side2d = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/elecgen/side2d"))
 
         iconT1 = new MultiIconTransformation(bottom, top, side1, side2a, side1, side1)
         iconT2 = new MultiIconTransformation(bottom, top, side1, side2b, side1, side1)

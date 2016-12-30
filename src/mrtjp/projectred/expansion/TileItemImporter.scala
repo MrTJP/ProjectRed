@@ -7,22 +7,21 @@ package mrtjp.projectred.expansion
 
 import java.util.{List => JList}
 
-import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
+import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import codechicken.lib.vec.{Cuboid6, Rotation, Vector3}
 import codechicken.multipart.IRedstoneConnector
-import mrtjp.core.block.TInstancedBlockRender
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.item.ItemKey
-import mrtjp.core.render.TCubeMapRender
-import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.expansion.TileItemImporter._
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
-import net.minecraft.util.IIcon
-import net.minecraft.world.IBlockAccess
-import net.minecraftforge.common.util.ForgeDirection
+import net.minecraft.item.ItemStack
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraftforge.common.property.IExtendedBlockState
 
 import scala.collection.JavaConversions._
 
@@ -50,7 +49,7 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
 
     def importInv():Boolean =
     {
-        val inv = InvWrapper.getInventory(world, position.offset(side^1))
+        val inv = InvWrapper.getInventory(world, getPos.offset(EnumFacing.VALUES(side^1)))
         if (inv == null) return false
         val w = InvWrapper.wrap(inv)
         w.setSlotsFromSide(side)
@@ -90,7 +89,7 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
         if (!canSuckEntities) return false
 
         val elist = world.getEntitiesWithinAABB(classOf[EntityItem],
-            box.copy.add(new Vector3(x, y, z)).toAABB).asInstanceOf[JList[EntityItem]]
+            box.copy.add(new Vector3(x, y, z)).aabb).asInstanceOf[JList[EntityItem]]
         var added = false
         for (ei <- elist) if (!ei.isDead && ei.getEntityItem.stackSize > 0 && canImport(ItemKey.get(ei.getEntityItem)))
         {
@@ -110,9 +109,10 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
 
     def canSuckEntities:Boolean =
     {
-        val bc = position.offset(side^1)
-        world.isAirBlock(bc.x, bc.y, bc.z) || !world.getBlock(bc.x, bc.y, bc.z)
-                .isSideSolid(world, bc.x, bc.y, bc.z, ForgeDirection.getOrientation(side))
+        val bc = getPos.offset(EnumFacing.VALUES(side^1))
+        val s = world.getBlockState(bc)
+        world.isAirBlock(bc) || !s.getBlock
+                .isSideSolid(s, world, bc, EnumFacing.VALUES(side))
     }
 
     def canImport(key:ItemKey) = true
@@ -137,40 +137,52 @@ object TileItemImporter
     }
 }
 
-object RenderItemImporter extends TInstancedBlockRender with TCubeMapRender
+object RenderItemImporter extends SimpleBlockRenderer
 {
-    var bottom:IIcon = _
-    var side1:IIcon = _
-    var top1:IIcon = _
-    var side2:IIcon = _
-    var top2:IIcon = _
+    import java.lang.{Boolean => JBool, Integer => JInt}
+
+    import mrtjp.core.util.CCLConversions._
+    import mrtjp.projectred.expansion.BlockProperties._
+
+    var bottom:TextureAtlasSprite = _
+    var side1:TextureAtlasSprite = _
+    var top1:TextureAtlasSprite = _
+    var side2:TextureAtlasSprite = _
+    var top2:TextureAtlasSprite = _
 
     var iconT1:UVTransformation = _
     var iconT2:UVTransformation = _
 
-    override def getData(w:IBlockAccess, x:Int, y:Int, z:Int) =
-    {
-        val te = WorldLib.getTileEntity(w, x, y, z, classOf[TActiveDevice])
-        if (te != null) (te.side, te.rotation, if (te.active || te.powered) iconT2 else iconT1)
-        else (0, 0, iconT1)
+    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+        case t: TActiveDevice => {
+            var s = state
+            s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[JInt])
+            s = s.withProperty(UNLISTED_ROTATION_PROPERTY, t.rotation.asInstanceOf[JInt])
+            s = s.withProperty(UNLISTED_ACTIVE_PROPERTY, t.active.asInstanceOf[JBool])
+            s.withProperty(UNLISTED_POWERED_PROPERTY, t.powered.asInstanceOf[JBool])
+        }
+        case _ => state
     }
 
-    override def getInvData = (0, 0, iconT1)
-
-    override def getIcon(s:Int, meta:Int) = s match
-    {
-        case 0 => bottom
-        case 1 => top1
-        case _ => side1
+    override def getWorldTransforms(state: IExtendedBlockState) = {
+        val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+        val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+        val active = state.getValue(UNLISTED_ACTIVE_PROPERTY).asInstanceOf[Boolean]
+        val powered = state.getValue(UNLISTED_POWERED_PROPERTY).asInstanceOf[Boolean]
+        createTriple(side, rotation, if (active || powered) iconT2 else iconT1)
     }
 
-    override def registerIcons(reg:IIconRegister)
+    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT1)
+
+    override def shouldCull() = false
+
+    override def registerIcons(reg:TextureMap)
     {
-        bottom = reg.registerIcon("projectred:mechanical/importer/bottom")
-        top1 = reg.registerIcon("projectred:mechanical/importer/top1")
-        side1 = reg.registerIcon("projectred:mechanical/importer/side1")
-        top2 = reg.registerIcon("projectred:mechanical/importer/top2")
-        side2 = reg.registerIcon("projectred:mechanical/importer/side2")
+        bottom = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/importer/bottom"))
+        top1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/importer/top1"))
+        side1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/importer/side1"))
+        top2 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/importer/top2"))
+        side2 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/importer/side2"))
 
         iconT1 = new MultiIconTransformation(bottom, top1, side1, side1, side1, side1)
         iconT2 = new MultiIconTransformation(bottom, top2, side2, side2, side2, side2)

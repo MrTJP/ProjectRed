@@ -7,34 +7,34 @@ package mrtjp.projectred.expansion
 
 import java.util.UUID
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.raytracer.RayTracer
-import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
+import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import codechicken.lib.vec.{BlockCoord, Cuboid6, Vector3}
 import codechicken.multipart.IRedstoneConnector
 import com.mojang.authlib.GameProfile
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.block.TInstancedBlockRender
-import mrtjp.core.color.Colors
 import mrtjp.core.gui._
 import mrtjp.core.inventory.TInventory
-import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.vec.Point
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.core.libmc.PRResources
 import mrtjp.projectred.expansion.TileBlockPlacer._
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLivingBase}
 import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.IIcon
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.ResourceLocation
 import net.minecraft.world.{IBlockAccess, WorldServer}
+import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.common.util.FakePlayerFactory
 import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.ref.WeakReference
 
@@ -57,6 +57,7 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
         super.markDirty()
     }
 
+    override def getDisplayName = super.getDisplayName
     override def getBlock = ProjectRedExpansion.machine2
     override def doesRotate = false
     override def doesOrient = true
@@ -79,7 +80,7 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
     override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        dropInvContents(world, x, y, z)
+        dropInvContents(world, getPos)
     }
 
     override def onBlockActivated(player:EntityPlayer, actside:Int):Boolean =
@@ -87,7 +88,7 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
         if (super.onBlockActivated(player, actside)) return true
 
         if (!world.isRemote)
-            GuiBlockPlacer.open(player, createContainer(player), _.writeCoord(x, y, z))
+            GuiBlockPlacer.open(player, createContainer(player), _.writePos(getPos))
         true
     }
 
@@ -96,9 +97,9 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
 
     override def onActivate()
     {
-        if (world.isRemote) return
+        /*if (world.isRemote) return
         reloadPlayer()
-        val upos = position.offset(side^1)
+        val upos = getPos.offset(EnumFacing.VALUES(side^1))
         copyInvToPlayer()
         for (i <- 0 until 9)
         {
@@ -113,7 +114,7 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
                 return
             }
         }
-        copyInvFromPlayer()
+        copyInvFromPlayer()*/
     }
 
     def copyInvToPlayer()
@@ -127,8 +128,9 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
         for (i <- 0 until 9)
             setInventorySlotContents(i, fakePlayer.inventory.getStackInSlot(i))
     }
-
-    def tryUseItem(stack:ItemStack, x:Int, y:Int, z:Int, slot:Int) =
+    //TODO
+    //FIXME This all need a complete rewrite due to the new interaction system.
+    /*def tryUseItem(stack:ItemStack, x:Int, y:Int, z:Int, slot:Int) =
     {
         fakePlayer.inventory.currentItem = slot
 
@@ -207,7 +209,7 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
             if (e.canBeCollidedWith)
             {
                 val a2 = new Cuboid6(e.boundingBox).expand(e.getCollisionBorderSize)
-                if (a2.toAABB.isVecInside(start.toVec3D))//Why doesnt Cuboid6 have this method!?
+                if (a2.contains(start))//Why doesnt Cuboid6 have this method!?
                 {
                     eHit = e
                     edis = 0.0D
@@ -228,7 +230,7 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
             }
         }
         eHit
-    }
+    }*/
 
     override def getConnectionMask(side:Int) = if ((side^1) == this.side) 0 else 0x1F
     override def weakPowerLevel(side:Int, mask:Int) = 0
@@ -275,49 +277,72 @@ class GuiBlockPlacer(c:ContainerBlockPlacer) extends NodeGui(c, 176, 168)
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        PRResources.guiBlockPlacer.bind()
+        TextureUtils.changeTexture(GuiBlockPlacer.background)
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, 176, 168)
-        GuiDraw.drawString("Block Placer", 8, 6, Colors.GREY.argb, false)
-        GuiDraw.drawString("Inventory", 8, 75, Colors.GREY.argb, false)
+        GuiDraw.drawString("Block Placer", 8, 6, EnumColour.GRAY.argb, false)
+        GuiDraw.drawString("Inventory", 8, 75, EnumColour.GRAY.argb, false)
     }
 }
 
 object GuiBlockPlacer extends TGuiBuilder
 {
+    val background = new ResourceLocation("projectred", "textures/gui/placer.png")
+
     override def getID = ExpansionProxy.blockPlacerGui
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        val t = WorldLib.getTileEntity(player.worldObj, data.readCoord(), classOf[TileBlockPlacer])
+        val t = player.worldObj.getTileEntity(data.readPos()) match {
+            case tile:TileBlockPlacer => tile
+            case _ => null
+        }
         if (t != null) new GuiBlockPlacer(t.createContainer(player))
         else null
     }
 }
 
-object RenderBlockPlacer extends TInstancedBlockRender with TCubeMapRender
+object RenderBlockPlacer extends SimpleBlockRenderer
 {
-    var bottom:IIcon = _
-    var side1A:IIcon = _
-    var side2A:IIcon = _
-    var topA:IIcon = _
-    var side1B:IIcon = _
-    var side2B:IIcon = _
-    var topB:IIcon = _
+    import java.lang.{Boolean => JBool, Integer => JInt}
+
+    import mrtjp.core.util.CCLConversions._
+    import mrtjp.projectred.expansion.BlockProperties._
+
+    var bottom:TextureAtlasSprite = _
+    var side1A:TextureAtlasSprite = _
+    var side2A:TextureAtlasSprite = _
+    var topA:TextureAtlasSprite = _
+    var side1B:TextureAtlasSprite = _
+    var side2B:TextureAtlasSprite = _
+    var topB:TextureAtlasSprite = _
 
     var iconT1:UVTransformation = _
     var iconT2:UVTransformation = _
 
-    override def getData(w:IBlockAccess, x:Int, y:Int, z:Int) =
-    {
-        val te = WorldLib.getTileEntity(w, x, y, z, classOf[TActiveDevice])
-        if (te != null) (te.side, te.rotation, if (te.active || te.powered) iconT2 else iconT1)
-        else (0, 0, iconT1)
+    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+        case t: TActiveDevice => {
+            var s = state
+            s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[JInt])
+            s = s.withProperty(UNLISTED_ROTATION_PROPERTY, t.rotation.asInstanceOf[JInt])
+            s = s.withProperty(UNLISTED_ACTIVE_PROPERTY, t.active.asInstanceOf[JBool])
+            s.withProperty(UNLISTED_POWERED_PROPERTY, t.powered.asInstanceOf[JBool])
+        }
+        case _ => state
     }
 
-    override def getInvData = (0, 0, iconT1)
+    override def getWorldTransforms(state: IExtendedBlockState) = {
+        val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+        val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+        val active = state.getValue(UNLISTED_ACTIVE_PROPERTY).asInstanceOf[Boolean]
+        val powered = state.getValue(UNLISTED_POWERED_PROPERTY).asInstanceOf[Boolean]
+        createTriple(side, rotation, if (active || powered) iconT2 else iconT1)
+    }
 
-    override def getIcon(s:Int, meta:Int) = s match
+    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT1)
+    override def shouldCull() = true
+
+    def getIcon(s:Int, meta:Int) = s match
     {
         case 0 => bottom
         case 1 => topA
@@ -328,9 +353,9 @@ object RenderBlockPlacer extends TInstancedBlockRender with TCubeMapRender
         case _ => bottom
     }
 
-    override def registerIcons(reg:IIconRegister)
+    override def registerIcons(reg:TextureMap)
     {
-        def register(s:String) = reg.registerIcon(s"projectred:mechanical/placer/$s")
+        def register(s:String) = reg.registerSprite(new ResourceLocation(s"projectred:blocks/mechanical/placer/$s"))
         bottom = register("bottom")
 
         side1A = register("side1a")
