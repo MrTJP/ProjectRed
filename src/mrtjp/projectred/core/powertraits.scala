@@ -72,15 +72,16 @@ class PowerConductor(val parent:IPowerConnectable, ids:Seq[Int])
      */
     def voltage() =
     {
-        val tick = parent.world.getTotalWorldTime
-        if ((tick&0xFFFF) != time)
-        {
-            time = (tick&0xFFFF).asInstanceOf[Int]
-            //calculate voltage
-            Iloc = 0.5D*Iflow
-            Iflow = 0.0D
-            Vloc += 0.05D*Vflow*capacitance
-            Vflow = 0.0D
+        if(parent.world != null) {//TODO TJ, The parents tile seems to be null on breaking, not sure how to fix.
+            val tick = parent.world.getTotalWorldTime
+            if ((tick & 0xFFFF) != time) {
+                time = (tick & 0xFFFF).asInstanceOf[Int]
+                //calculate voltage
+                Iloc = 0.5D * Iflow
+                Iflow = 0.0D
+                Vloc += 0.05D * Vflow * capacitance
+                Vflow = 0.0D
+            }
         }
         Vloc
     }

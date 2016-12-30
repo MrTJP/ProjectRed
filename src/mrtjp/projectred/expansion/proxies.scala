@@ -3,68 +3,93 @@ package mrtjp.projectred.expansion
 import java.lang.{Character => JC}
 
 import codechicken.lib.data.MCDataInput
+import codechicken.lib.model.ModelRegistryHelper
+import codechicken.lib.model.blockbakery.{CCBakeryModel, IBlockStateKeyGenerator, IItemStackKeyGenerator}
 import codechicken.lib.packet.PacketCustom
-import codechicken.multipart.MultiPartRegistry.IPartFactory2
-import codechicken.multipart.{MultiPartRegistry, TMultiPart}
-import cpw.mods.fml.common.registry.GameRegistry
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.block.TileRenderRegistry
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.texture.TextureUtils.IIconRegister
+import codechicken.multipart.{IDynamicPartFactory, MultiPartRegistry, TMultiPart}
+import mrtjp.core.block.{ItemBlockCore, MultiTileBlock}
 import mrtjp.core.data.{TClientKeyTracker, TServerKeyTracker}
 import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedExpansion._
 import mrtjp.projectred.core.{Configurator, IProxy, PartDefs}
+import mrtjp.projectred.expansion.BlockProperties._
+import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.ItemMeshDefinition
+import net.minecraft.client.renderer.block.model.{ModelBakery, ModelResourceLocation}
+import net.minecraft.client.renderer.block.statemap.IStateMapper
+import net.minecraft.client.renderer.block.statemap.StateMap.Builder
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraftforge.client.MinecraftForgeClient
+import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.common.property.IExtendedBlockState
+import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 
-class ExpansionProxy_server extends IProxy with IPartFactory2
+class ExpansionProxy_server extends IProxy with IDynamicPartFactory
 {
     def preinit()
     {
         PacketCustom.assignHandler(ExpansionSPH.channel, ExpansionSPH)
-    }
 
-    def init()
-    {
         MultiPartRegistry.registerParts(this, Array("pr_solar"))
 
         //Parts
         itemSolar = new ItemSolarPanel
 
         //Items
-        itemEmptybattery = new ItemBatteryEmpty
+        itemEmptybattery = new ItemBatteryEmpty()
         itemBattery = new ItemBattery
         itemJetpack = new ItemJetpack
         itemScrewdriver = new ItemElectronicScrewdriver
         itemInfusedEnderPearl = new ItemInfusedEnderPearl
         itemPlan = new ItemPlan
 
+        GameRegistry.register(itemSolar.setRegistryName("solar_panel"))
+
+        GameRegistry.register(itemEmptybattery.setRegistryName("empty_battery"))
+        GameRegistry.register(itemBattery.setRegistryName("charged_battery"))
+        GameRegistry.register(itemJetpack.setRegistryName("jetpack"))
+        GameRegistry.register(itemScrewdriver.setRegistryName("electric_screwdriver"))
+        GameRegistry.register(itemInfusedEnderPearl.setRegistryName("infused_ender_pearl"))
+        GameRegistry.register(itemPlan.setRegistryName("plan"))
+
         //Machine1 (machines)
-        machine1 = new BlockMachine("projectred.expansion.machine1")
+        machine1 = new BlockMachine("machine1", machine1Bakery)
+        GameRegistry.register(machine1.setRegistryName("machine1"))
+        GameRegistry.register(new ItemBlockCore(machine1).setRegistryName("machine1"))
         machine1.addTile(classOf[TileInductiveFurnace], 0)
         machine1.addTile(classOf[TileElectrotineGenerator], 1)
 
         //Machine2 (devices)
-        machine2 = new BlockMachine("projectred.expansion.machine2")
+        machine2 = new BlockMachine("machine2", machine2Bakery)
+        GameRegistry.register(machine2.setRegistryName("machine2"))
+        GameRegistry.register(new ItemBlockCore(machine2).setRegistryName("machine2"))
         machine2.addTile(classOf[TileBlockBreaker], 0)
         machine2.addTile(classOf[TileItemImporter], 1)
-        machine2.addTile(classOf[TileBlockPlacer], 2)
+        //machine2.addTile(classOf[TileBlockPlacer], 2)
         machine2.addTile(classOf[TileFilteredImporter], 3)
         machine2.addTile(classOf[TileFireStarter], 4)
         machine2.addTile(classOf[TileBatteryBox], 5)
         machine2.addTile(classOf[TileChargingBench], 6)
-        machine2.addTile(classOf[TileTeleposer], 7)
-        machine2.addTile(classOf[TileFrameMotor], 8)
-        machine2.addTile(classOf[TileFrameActuator], 9)
+        //machine2.addTile(classOf[TileTeleposer], 7)
+        //machine2.addTile(classOf[TileFrameMotor], 8)
+        //machine2.addTile(classOf[TileFrameActuator], 9)
         machine2.addTile(classOf[TileProjectBench], 10)
         machine2.addTile(classOf[TileAutoCrafter], 11)
 
         //Enchantments
         enchantmentFuelEfficiency = new EnchantmentFuelEfficiency(Configurator.enchantment_fuel_efficiencty_id)
+    }
+
+    def init()
+    {
+
     }
 
     def postinit()
@@ -106,6 +131,146 @@ class ExpansionProxy_client extends ExpansionProxy_server
     {
         super.preinit()
         PacketCustom.assignHandler(ExpansionCPH.channel, ExpansionCPH)
+
+        TextureUtils.addIconRegister(RenderSolarPanel)
+        ModelRegistryHelper.registerItemRenderer(itemSolar, RenderSolarPanel)
+
+        ModelLoader.setCustomMeshDefinition(itemEmptybattery, new ItemMeshDefinition {
+            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:expansion/items", "type=empty_battery")
+        })
+        ModelLoader.setCustomMeshDefinition(itemBattery, new ItemMeshDefinition {
+            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:expansion/items", "type=charged_battery")
+        })
+        ModelBakery.registerItemVariants(itemBattery, new ModelResourceLocation("projectred:expansion/items", "type=charged_battery"))
+        ModelBakery.registerItemVariants(itemEmptybattery, new ModelResourceLocation("projectred:expansion/items", "type=empty_battery"))
+        ModelLoader.setCustomMeshDefinition(itemJetpack, new ItemMeshDefinition {
+            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:expansion/items", "type=jetpack")
+        })
+        ModelBakery.registerItemVariants(itemJetpack, new ModelResourceLocation("projectred:expansion/items", "type=jetpack"))
+        ModelLoader.setCustomMeshDefinition(itemScrewdriver, new ItemMeshDefinition {
+            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:expansion/items", "type=screwdriver")
+        })
+        ModelBakery.registerItemVariants(itemScrewdriver, new ModelResourceLocation("projectred:expansion/items", "type=screwdriver"))
+        ModelLoader.setCustomModelResourceLocation(itemInfusedEnderPearl, 0, new ModelResourceLocation("projectred:expansion/items", "type=infused_pearl"))
+        ModelLoader.setCustomMeshDefinition(itemPlan, new ItemMeshDefinition {
+            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:expansion/items", s"type=${if (ItemPlan.hasRecipeInside(stack)) "written" else "blank"}_plan")
+        })
+        for (t <- Array[String]("written", "blank"))
+            ModelBakery.registerItemVariants(itemPlan, new ModelResourceLocation("projectred:expansion/items", s"type=${t}_plan"))
+
+        machine1Bakery.registerSubBakery(0, RenderInductiveFurnace, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+                val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+                val isWorking = state.getValue(UNLISTED_WORKING_PROPERTY)
+                val isCharged = state.getValue(UNLISTED_CHARGED_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,s=$side,r=$rotation,w=$isWorking,c=$isCharged"
+            }
+        })
+        machine1Bakery.registerSubBakery(1, RenderElectrotineGenerator, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val isCharged = state.getValue(UNLISTED_CHARGED_PROPERTY).asInstanceOf[Boolean]
+                val isBurning = state.getValue(UNLISTED_BURNING_PROPERTY).asInstanceOf[Boolean]
+                val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+                val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,c=$isCharged,b=$isBurning,s=$side,r=$rotation"
+            }
+        })
+
+        machine2Bakery.registerSubBakery(0, RenderBlockBreaker, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+                val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+                val active = state.getValue(UNLISTED_ACTIVE_PROPERTY)
+                val powered = state.getValue(UNLISTED_POWERED_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,s=$side,r=$rotation,a=$active,p=$powered"
+            }
+        })
+        machine2Bakery.registerSubBakery(1, RenderItemImporter, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+                val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+                val active = state.getValue(UNLISTED_ACTIVE_PROPERTY)
+                val powered = state.getValue(UNLISTED_POWERED_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,s=$side,r=$rotation,a=$active,p=$powered"
+            }
+        })
+        machine2Bakery.registerSubBakery(2, RenderBlockPlacer, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+                val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+                val active = state.getValue(UNLISTED_ACTIVE_PROPERTY)
+                val powered = state.getValue(UNLISTED_POWERED_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,s=$side,r=$rotation,a=$active,p=$powered"
+            }
+        })
+        machine2Bakery.registerSubBakery(3, RenderFilteredImporter, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+                val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+                val active = state.getValue(UNLISTED_ACTIVE_PROPERTY)
+                val powered = state.getValue(UNLISTED_POWERED_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,s=$side,r=$rotation,a=$active,p=$powered"
+            }
+        })
+        machine2Bakery.registerSubBakery(4, RenderFireStarter, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+                val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+                val active = state.getValue(UNLISTED_ACTIVE_PROPERTY)
+                val powered = state.getValue(UNLISTED_POWERED_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,s=$side,r=$rotation,a=$active,p=$powered"
+            }
+        })
+        machine2Bakery.registerSubBakery(5, RenderBatteryBox, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val charge = state.getValue(UNLISTED_CHARGE_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,c=$charge"
+            }
+        }, new IItemStackKeyGenerator {
+            override def generateKey(stack: ItemStack):String = {
+                val charge = if(stack.hasTagCompound) stack.getTagCompound.getInteger("rstorage") else 0
+                stack.getItem.getRegistryName.toString + "|" + stack.getItemDamage + s",c=$charge"
+            }
+        })
+        machine2Bakery.registerSubBakery(6, RenderChargingBench, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val isCharged = state.getValue(UNLISTED_CHARGED_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,c=$isCharged"
+            }
+        })
+
+        machine2Bakery.registerSubBakery(10, RenderProjectBench)
+        machine2Bakery.registerSubBakery(11, RenderAutoCrafter)
+
+        registerBlockToBakery(machine1, machine1Bakery.registerKeyGens(machine1), new Builder().ignore(MultiTileBlock.TILE_INDEX).build())
+        registerBlockToBakery(machine2, machine2Bakery.registerKeyGens(machine2), new Builder().ignore(MultiTileBlock.TILE_INDEX).build())
+
+
+
+    }
+
+    @SideOnly(Side.CLIENT)
+    def registerBlockToBakery(block:Block, iconRegister:IIconRegister, stateMap:IStateMapper) = {
+        val model = new CCBakeryModel("")
+        val regLoc = block.getRegistryName
+        ModelLoader.setCustomStateMapper(block, stateMap)
+        ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(block), new ItemMeshDefinition {
+            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation(regLoc, "normal")
+        })
+        ModelRegistryHelper.register(new ModelResourceLocation(regLoc, "normal"), model)
+        if (iconRegister != null) {
+            TextureUtils.addIconRegister(iconRegister)
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -118,23 +283,23 @@ class ExpansionProxy_client extends ExpansionProxy_server
     override def postinit()
     {
         super.postinit()
-        TileRenderRegistry.setRenderer(machine1, 0, RenderInductiveFurnace)
-        TileRenderRegistry.setRenderer(machine1, 1, RenderElectrotineGenerator)
-        TileRenderRegistry.setRenderer(machine2, 0, RenderBlockBreaker)
-        TileRenderRegistry.setRenderer(machine2, 1, RenderItemImporter)
-        TileRenderRegistry.setRenderer(machine2, 2, RenderBlockPlacer)
-        TileRenderRegistry.setRenderer(machine2, 3, RenderFilteredImporter)
-        TileRenderRegistry.setRenderer(machine2, 4, RenderFireStarter)
-        TileRenderRegistry.setRenderer(machine2, 5, RenderBatteryBox)
-        TileRenderRegistry.setRenderer(machine2, 6, RenderChargingBench)
-        TileRenderRegistry.setRenderer(machine2, 7, RenderTeleposer)
-        TileRenderRegistry.setRenderer(machine2, 8, RenderFrameMotor)
-        TileRenderRegistry.setRenderer(machine2, 9, RenderFrameActuator)
-        TileRenderRegistry.setRenderer(machine2, 10, RenderProjectBench)
-        TileRenderRegistry.setRenderer(machine2, 11, RenderAutoCrafter)
+        //MultiTileRenderRegistry.setRenderer(machine1, 0, RenderInductiveFurnace)
+        //MultiTileRenderRegistry.setRenderer(machine1, 1, RenderElectrotineGenerator)
+        //MultiTileRenderRegistry.setRenderer(machine2, 0, RenderBlockBreaker)
+        //MultiTileRenderRegistry.setRenderer(machine2, 1, RenderItemImporter)
+        //MultiTileRenderRegistry.setRenderer(machine2, 2, RenderBlockPlacer)
+        //MultiTileRenderRegistry.setRenderer(machine2, 3, RenderFilteredImporter)
+        //MultiTileRenderRegistry.setRenderer(machine2, 4, RenderFireStarter)
+        //MultiTileRenderRegistry.setRenderer(machine2, 5, RenderBatteryBox)
+        //MultiTileRenderRegistry.setRenderer(machine2, 6, RenderChargingBench)
+        //MultiTileRenderRegistry.setRenderer(machine2, 7, RenderTeleposer)
+        //MultiTileRenderRegistry.setRenderer(machine2, 8, RenderFrameMotor)
+        //MultiTileRenderRegistry.setRenderer(machine2, 9, RenderFrameActuator)
+        //MultiTileRenderRegistry.setRenderer(machine2, 10, RenderProjectBench)
+        //MultiTileRenderRegistry.setRenderer(machine2, 11, RenderAutoCrafter)
 
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(machine2), RenderBatteryBox)
-        MinecraftForgeClient.registerItemRenderer(itemSolar, RenderSolarPanel)
+        //MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(machine2), RenderBatteryBox)
+        //MinecraftForgeClient.registerItemRenderer(itemSolar, RenderSolarPanel)
 
         GuiHandler.register(GuiInductiveFurnace, furnaceGui)
         GuiHandler.register(GuiBlockPlacer, blockPlacerGui)
@@ -158,14 +323,14 @@ object SpacebarServerTracker extends TServerKeyTracker
 object SpacebarClientTracker extends TClientKeyTracker
 {
     override def getTracker = SpacebarServerTracker
-    override def getIsKeyPressed = Minecraft.getMinecraft.gameSettings.keyBindJump.getIsKeyPressed
+    override def getIsKeyPressed = Minecraft.getMinecraft.gameSettings.keyBindJump.isPressed
 }
 
 object ForwardServerTracker extends TServerKeyTracker
 object ForwardClientTracker extends TClientKeyTracker
 {
     override def getTracker = ForwardServerTracker
-    override def getIsKeyPressed = Minecraft.getMinecraft.gameSettings.keyBindForward.getIsKeyPressed
+    override def getIsKeyPressed = Minecraft.getMinecraft.gameSettings.keyBindForward.isPressed
 }
 
 object ExpansionRecipes
@@ -201,13 +366,13 @@ object ExpansionRecipes
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemJetpack),
             "b b","bcb","eae",
             'b':JC, itemBattery,
-            'c':JC, Items.diamond_chestplate,
-            'e':JC, Items.emerald,
+            'c':JC, Items.DIAMOND_CHESTPLATE,
+            'e':JC, Items.EMERALD,
             'a':JC, new ItemStack(machine2, 1, 5)
         ))
 
         //Recipe Plan
-        GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(itemPlan), "dyeBlue", Items.paper))
+        GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(itemPlan), "dyeBlue", Items.PAPER))
     }
 
     private def initMachineRecipes()
@@ -215,7 +380,7 @@ object ExpansionRecipes
         //Inductive Furnace
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine1, 1, 0),
             "bbb", "b b", "iei",
-            'b':JC, Blocks.brick_block,
+            'b':JC, Blocks.BRICK_BLOCK,
             'i':JC, "ingotIron",
             'e':JC, "ingotElectrotineAlloy"
         ))
@@ -223,9 +388,9 @@ object ExpansionRecipes
         //Electrotine generator
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine1, 1, 1),
             "bbb", "a a", "cec",
-            'b':JC, Blocks.brick_block,
+            'b':JC, Blocks.BRICK_BLOCK,
             'a':JC, new ItemStack(itemBattery),
-            'c':JC, Blocks.clay,
+            'c':JC, Blocks.CLAY,
             'e':JC, "ingotElectrotineAlloy"
         ))
     }
@@ -235,49 +400,49 @@ object ExpansionRecipes
         //Block Breaker
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 0),
             "sas", "sps", "srs",
-            's':JC, Blocks.cobblestone,
-            'a':JC, Items.iron_pickaxe,
-            'p':JC, Blocks.piston,
-            'r':JC, Items.redstone
+            's':JC, Blocks.COBBLESTONE,
+            'a':JC, Items.IRON_PICKAXE,
+            'p':JC, Blocks.PISTON,
+            'r':JC, Items.REDSTONE
         ))
 
         //Item Importer
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 1),
             "www", "sps", "srs",
             'w':JC, "slabWood",
-            's':JC, Blocks.cobblestone,
-            'p':JC, Blocks.piston,
-            'r':JC, Items.redstone
+            's':JC, Blocks.COBBLESTONE,
+            'p':JC, Blocks.PISTON,
+            'r':JC, Items.REDSTONE
         ))
 
         //Block Placer
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 2),
             "ihi","cpc", "crc",
             'i':JC, "ingotIron",
-            'h':JC, Blocks.chest,
-            'c':JC, Blocks.cobblestone,
-            'p':JC, Blocks.piston,
-            'r':JC, Items.redstone
+            'h':JC, Blocks.CHEST,
+            'c':JC, Blocks.COBBLESTONE,
+            'p':JC, Blocks.PISTON,
+            'r':JC, Items.REDSTONE
         ))
 
         //Filtered Importer
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 3),
             "tct", "gig", "sgs",
-            't':JC, new ItemStack(Blocks.stone_slab,1, 0),
-            'c':JC, Blocks.chest,
+            't':JC, new ItemStack(Blocks.STONE_SLAB,1, 0),
+            'c':JC, Blocks.CHEST,
             'g':JC, "ingotGold",
             'i':JC, new ItemStack(machine2, 1, 1),
-            's':JC, Blocks.cobblestone
+            's':JC, Blocks.COBBLESTONE
         ))
 
         //Fire Starter
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 4),
             "nfn", "cpc", "crc",
-            'n':JC, Blocks.netherrack,
-            'f':JC, Items.flint_and_steel,
-            'c':JC, Blocks.cobblestone,
+            'n':JC, Blocks.NETHERRACK,
+            'f':JC, Items.FLINT_AND_STEEL,
+            'c':JC, Blocks.COBBLESTONE,
             'p':JC, new ItemStack(machine2, 1, 2),
-            'r':JC, Items.redstone
+            'r':JC, Items.REDSTONE
         ))
 
         //Battery Box
@@ -301,7 +466,7 @@ object ExpansionRecipes
         //Charging Bench
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 6),
             "scs","wbw","iei",
-            's':JC, Blocks.stone,
+            's':JC, Blocks.STONE,
             'c':JC, PartDefs.COPPERCOIL.makeStack,
             'w':JC, "plankWood",
             'b':JC, new ItemStack(itemBattery),
@@ -312,10 +477,10 @@ object ExpansionRecipes
         //Teleposer
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 7),
             "odo","wbw","iei",
-            'o':JC, Blocks.obsidian,
-            'd':JC, Items.diamond,
+            'o':JC, Blocks.OBSIDIAN,
+            'd':JC, Items.DIAMOND,
             'w':JC, "plankWood",
-            'b':JC, Items.ender_pearl,
+            'b':JC, Items.ENDER_PEARL,
             'i':JC, "ingotIron",
             'e':JC, "ingotElectrotineAlloy"
         ))
@@ -342,20 +507,20 @@ object ExpansionRecipes
         //Project Bench
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 10),
             "sss","wbw","wcw",
-            's':JC, Blocks.stone,
+            's':JC, Blocks.STONE,
             'w':JC, "plankWood",
-            'b':JC, Blocks.crafting_table,
-            'c':JC, Blocks.chest
+            'b':JC, Blocks.CRAFTING_TABLE,
+            'c':JC, Blocks.CHEST
         ))
 
         //Auto Crafting Bench
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 11),
             "sbs","ici","wew",
-            's':JC, Blocks.stone,
-            'b':JC, Blocks.crafting_table,
+            's':JC, Blocks.STONE,
+            'b':JC, Blocks.CRAFTING_TABLE,
             'w':JC, "plankWood",
             'i':JC, "ingotIron",
-            'c':JC, Blocks.chest,
+            'c':JC, Blocks.CHEST,
             'e':JC, "ingotElectrotineAlloy"
         ))
     }

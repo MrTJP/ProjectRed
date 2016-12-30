@@ -5,29 +5,40 @@
  */
 package mrtjp.projectred.expansion
 
+import java.util
+
 import codechicken.lib.lighting.LightModel
-import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
-import codechicken.lib.render.{CCModel, CCRenderState, TextureUtils}
+import codechicken.lib.raytracer.CuboidRayTraceResult
+import codechicken.lib.render.item.IItemRenderer
+import codechicken.lib.render.{CCModel, CCRenderState}
+import codechicken.lib.texture.TextureUtils.IIconRegister
+import codechicken.lib.util.TransformUtils
 import codechicken.lib.vec._
-import codechicken.microblock.FaceMicroClass
+import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
+import codechicken.microblock.FaceMicroFactory
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart, TMultiPart}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.item.{ItemCore, TItemGlassSound}
-import mrtjp.core.world.PlacementLib
+import mrtjp.core.item.ItemCore
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api.IConnectable
+import mrtjp.projectred.core.libmc.PRLib
 import mrtjp.projectred.core.{ILowLoadMachine, ILowLoadPowerLine, PowerConductor}
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.block.state.IBlockState
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
+import net.minecraft.client.renderer.block.model.{BakedQuad, ItemCameraTransforms, ItemOverrideList}
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
-import net.minecraft.util.IIcon
+import net.minecraft.util.{BlockRenderLayer, EnumFacing, ITickable, ResourceLocation}
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
-import net.minecraftforge.client.IItemRenderer
-import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
+import net.minecraftforge.client.model.IPerspectiveAwareModel
+import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConversions._
 
-class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoadMachine
+class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoadMachine with ITickable
 {
     val cond = new PowerConductor(this, 0 until 4)
     {
@@ -40,7 +51,7 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
 
     override def conductor(dir:Int) = cond
 
-    override def getBounds = FaceMicroClass.aBounds(0x10|side)
+    override def getBounds = FaceMicroFactory.aBounds(0x10|side)
     override def getOcclusionBoxes = SolarPanelPart.oBoxes(side).toSeq
 
     override def doesRotate = false
@@ -54,7 +65,6 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
 
     override def update()
     {
-        super.update()
         if (!world.isRemote)
         {
             cond.update()
@@ -87,18 +97,17 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
 
     def visibilityMultiplier =
         if (tile.partMap(1) != null) 0.0
-        else if (world.canBlockSeeTheSky(x, y, z)) 1.0
-        else if (world.canBlockSeeTheSky(x, y+1, z) && !world.getBlock(x, y+1, z).getMaterial.isOpaque) 0.7
+        else if (world.canSeeSky(pos)) 1.0
+        else if (world.canSeeSky(pos.up()) && !world.getBlockState(pos.up).getMaterial.isOpaque) 0.7
         else 0.0
 
     @SideOnly(Side.CLIENT)
-    override def renderStatic(pos:Vector3, pass:Int) =
+    override def renderStatic(position:Vector3, layer:BlockRenderLayer, ccrs: CCRenderState) =
     {
-        if (pass == 0)
+        if (layer == BlockRenderLayer.SOLID)
         {
-            TextureUtils.bindAtlas(0)
-            CCRenderState.setBrightness(world, x, y, z)
-            RenderSolarPanel.render(side, pos)
+            ccrs.setBrightness(world, pos)
+            RenderSolarPanel.render(ccrs, side, position)
             true
         }
         else false
@@ -107,6 +116,9 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
     @SideOnly(Side.CLIENT)
     override def getBrokenIcon(side:Int) =
         if (side == 1) RenderSolarPanel.top else RenderSolarPanel.side
+
+    @SideOnly(Side.CLIENT)
+    override def getBreakingIcon(hit: CuboidRayTraceResult): TextureAtlasSprite = null
 }
 
 object SolarPanelPart
@@ -123,35 +135,28 @@ object SolarPanelPart
     }
 }
 
-class ItemSolarPanel extends ItemCore("projectred.expansion.solar_panel") with TItemMultiPart with TItemGlassSound
+class ItemSolarPanel extends ItemCore with TItemMultiPart //with TItemGlassSound
 {
+    setUnlocalizedName("projectred.expansion.solar_panel")
     setCreativeTab(ProjectRedExpansion.tabExpansion)
 
-    override def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockCoord, side:Int, vhit:Vector3):TMultiPart =
+    override def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, side:Int, vhit:Vector3):TMultiPart =
     {
-        val onPos = pos.copy.offset(side^1)
-        if (!PlacementLib.canPlaceGateOnSide(world, onPos.x, onPos.y, onPos.z, side)) return null
+        val onPos = pos.offset(EnumFacing.VALUES(side^1))
+        if (!PRLib.canPlaceGateOnSide(world, onPos, side)) return null
 
-        val solar = MultiPartRegistry.createPart("pr_solar", false).asInstanceOf[SolarPanelPart]
+        val solar = MultiPartRegistry.loadPart("pr_solar", null).asInstanceOf[SolarPanelPart]
         if (solar != null) solar.preparePlacement(player, pos, side, item.getItemDamage)
         solar
 
     }
-
-    override def registerIcons(reg:IIconRegister)
-    {
-        RenderSolarPanel.registerIcons(reg)
-    }
-
-    @SideOnly(Side.CLIENT)
-    override def getSpriteNumber = 0
 }
 
-object RenderSolarPanel extends IItemRenderer
+object RenderSolarPanel extends IItemRenderer with IIconRegister with IPerspectiveAwareModel
 {
-    var side:IIcon = null
-    var top:IIcon = null
-    var bottom:IIcon = null
+    var side:TextureAtlasSprite = null
+    var top:TextureAtlasSprite = null
+    var bottom:TextureAtlasSprite = null
 
     var iconT:UVTransformation = null
 
@@ -171,42 +176,41 @@ object RenderSolarPanel extends IItemRenderer
         array
     }
 
-    def render(side:Int, pos:Vector3)
+    def render(ccrs:CCRenderState, side:Int, pos:Vector3)
     {
-        models(side).render(iconT, pos.translation)
+        models(side).render(ccrs, iconT, pos.translation)
     }
 
-    def registerIcons(reg:IIconRegister)
+    override def registerIcons(reg:TextureMap)
     {
-        side = reg.registerIcon("projectred:mechanical/solar/side")
-        top = reg.registerIcon("projectred:mechanical/solar/top")
-        bottom = reg.registerIcon("projectred:mechanical/solar/bottom")
+        side = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/solar/side"))
+        top = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/solar/top"))
+        bottom = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/solar/bottom"))
         iconT = new MultiIconTransformation(bottom, top, side, side, side, side)
     }
 
-    override def shouldUseRenderHelper(t:ItemRenderType, item:ItemStack, helper:ItemRendererHelper) = true
-    override def handleRenderType(item:ItemStack, t:ItemRenderType) = true
-
-    override def renderItem(t:ItemRenderType, item:ItemStack, data:AnyRef*)
-    {
-        TextureUtils.bindAtlas(0)
-        CCRenderState.reset()
-        CCRenderState.setDynamic()
-        CCRenderState.pullLightmap()
-        CCRenderState.startDrawing()
-        t match
-        {
-            case ItemRenderType.INVENTORY => render(-0.5, -0.5, -0.5, 1)
-            case ItemRenderType.ENTITY => render(-0.5, -0.5, -0.5, 0.5)
-            case ItemRenderType.EQUIPPED => render(0, 0.5, 0, 1)
-            case ItemRenderType.EQUIPPED_FIRST_PERSON => render(0, 0.5, 0, 1)
-            case _ =>
-        }
-        CCRenderState.draw()
-
-        def render(x:Double, y:Double, z:Double, scale:Double)
-        {
-            models(0).render(new Scale(scale) at Vector3.center `with` new Translation(x, y, z), iconT)
-        }
+    override def renderItem(item: ItemStack) = {
+        val ccrs = CCRenderState.instance()
+        ccrs.reset()
+        ccrs.pullLightmap()
+        ccrs.startDrawing(0x07, DefaultVertexFormats.ITEM)
+        models(0).render(ccrs, iconT)
+        ccrs.draw()
     }
+    //TODO Trait in CCL scala libs for this mundane stuff.
+    override def handlePerspective(cameraTransformType: TransformType) = MapWrapper.handlePerspective(this, TransformUtils.DEFAULT_BLOCK, cameraTransformType)
+
+    override def getQuads(state: IBlockState, side: EnumFacing, rand: Long): util.List[BakedQuad] = new util.ArrayList[BakedQuad]()
+
+    override def isAmbientOcclusion: Boolean = true
+
+    override def isGui3d: Boolean = true
+
+    override def isBuiltInRenderer: Boolean = true
+
+    override def getParticleTexture: TextureAtlasSprite = null
+
+    override def getItemCameraTransforms: ItemCameraTransforms = ItemCameraTransforms.DEFAULT
+
+    override def getOverrides: ItemOverrideList = ItemOverrideList.NONE
 }

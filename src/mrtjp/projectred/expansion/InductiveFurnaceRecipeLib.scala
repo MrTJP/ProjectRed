@@ -69,7 +69,7 @@ object InductiveFurnaceRecipeLib
             if(IDs.isEmpty) "Unknown" else OreDictionary.getOreName(IDs(0))
         }
 
-        val sl = FurnaceRecipes.smelting.getSmeltingList.asInstanceOf[JMap[ItemStack, ItemStack]]
+        val sl = FurnaceRecipes.instance.getSmeltingList.asInstanceOf[JMap[ItemStack, ItemStack]]
         for ((in, out) <- sl) try
         {
             if (getRecipeFor(in) == null)

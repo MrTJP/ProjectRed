@@ -1,36 +1,72 @@
 package mrtjp.projectred.expansion
 
+import codechicken.lib.block.property.unlisted.{UnlistedBooleanProperty, UnlistedIntegerProperty}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.vec.{Rotation, Vector3}
-import mrtjp.core.block.{InstancedBlock, InstancedBlockTile, TTileOrient}
+import codechicken.lib.model.blockbakery.{BlockBakery, IBakeryBlock, ICustomBlockBakery}
+import codechicken.lib.util.RotationUtils
+import codechicken.lib.vec.Rotation
+import mrtjp.core.block._
 import mrtjp.core.gui.NodeContainer
 import mrtjp.core.inventory.TInventory
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api._
 import mrtjp.projectred.core._
 import net.minecraft.block.material.Material
+import net.minecraft.block.state.BlockStateContainer.Builder
+import net.minecraft.block.state.{BlockStateContainer, IBlockState}
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.{Container, ICrafting, ISidedInventory}
+import net.minecraft.inventory.{Container, IContainerListener, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
-import net.minecraftforge.common.util.ForgeDirection
+import net.minecraftforge.common.property.{IExtendedBlockState, IUnlistedProperty}
+import net.minecraftforge.fml.common.FMLLog
 
-class BlockMachine(name:String) extends InstancedBlock(name, Material.rock)
+class BlockMachine(regName:String, bakery:ICustomBlockBakery) extends MultiTileBlock(Material.ROCK) with IBakeryBlock
 {
     setHardness(2)
     setCreativeTab(ProjectRedExpansion.tabExpansion)
+    setRegistryName(regName)
+    setUnlocalizedName("projectred.expansion." + regName)
 
-    override def isOpaqueCube = true
+    override def isOpaqueCube(blockState: IBlockState) = true
 
-    override def renderAsNormalBlock = true
+    override def isNormalCube(blockState: IBlockState) = true
 
-    override def isSideSolid(w:IBlockAccess, x:Int, y:Int, z:Int, side:ForgeDirection) = true
+    override def isSideSolid(state:IBlockState, world:IBlockAccess, pos:BlockPos, side:EnumFacing) = true
+
+    override def createBlockState(): BlockStateContainer = new Builder(this).add(MultiTileBlock.TILE_INDEX)
+        .add(BlockProperties.UNLISTED_ROTATION_PROPERTY)
+        .add(BlockProperties.UNLISTED_SIDE_PROPERTY)
+        .add(BlockProperties.UNLISTED_WORKING_PROPERTY)
+        .add(BlockProperties.UNLISTED_CHARGED_PROPERTY)
+        .add(BlockProperties.UNLISTED_BURNING_PROPERTY)
+        .add(BlockProperties.UNLISTED_POWERED_PROPERTY)
+        .add(BlockProperties.UNLISTED_ACTIVE_PROPERTY)
+        .add(BlockProperties.UNLISTED_CHARGE_PROPERTY)
+        .build()
+
+    override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos) = BlockBakery.handleExtendedState(state.asInstanceOf[IExtendedBlockState], world.getTileEntity(pos))
+
+    override def getCustomBakery:ICustomBlockBakery = bakery
 }
 
-abstract class TileMachine extends InstancedBlockTile with TTileOrient
+object BlockProperties {
+    val UNLISTED_ROTATION_PROPERTY:IUnlistedProperty[Integer] = new UnlistedIntegerProperty("rotation")
+    val UNLISTED_SIDE_PROPERTY = new UnlistedIntegerProperty("side")
+    val UNLISTED_WORKING_PROPERTY = new UnlistedBooleanProperty("working")
+    val UNLISTED_CHARGED_PROPERTY = new UnlistedBooleanProperty("charged")
+    val UNLISTED_BURNING_PROPERTY = new UnlistedBooleanProperty("burning")
+    val UNLISTED_POWERED_PROPERTY = new UnlistedBooleanProperty("powered")
+    val UNLISTED_ACTIVE_PROPERTY = new UnlistedBooleanProperty("active")
+    val UNLISTED_CHARGE_PROPERTY = new UnlistedIntegerProperty("charge")
+}
+
+abstract class TileMachine extends MTBlockTile with TTileOrient
 {
-    override def onBlockPlaced(s:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
+    override def onBlockPlaced(side:Int, player:EntityPlayer, stack:ItemStack)
     {
         setSide(if (doesOrient) calcFacing(player) else 0)
         setRotation(if (doesRotate) (Rotation.getSidedRotation(player, side^1)+2)%4 else 0)
@@ -41,7 +77,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
         val yawrx = Math.floor(ent.rotationYaw*4.0F/360.0F+0.5D).toInt&0x3
         if ((Math.abs(ent.posX-x) < 2.0D) && (Math.abs(ent.posZ-z) < 2.0D))
         {
-            val p = ent.posY+1.82D-ent.yOffset-y
+            val p = ent.posY+1.82D-y
             if (p > 2.0D) return 0
             if (p < 0.0D) return 1
         }
@@ -86,7 +122,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
 
     override def onBlockActivated(player:EntityPlayer, actside:Int):Boolean =
     {
-        val held = player.getHeldItem
+        val held = player.getHeldItemMainhand
         if ((doesRotate || doesOrient) && held != null && held.getItem.isInstanceOf[IScrewdriver]
                 && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
         {
@@ -96,7 +132,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
                 val old = rotation
                 do setRotation((rotation+1)%4) while (old != rotation && !isRotationAllowed(rotation))
                 if (old != rotation) sendOrientUpdate()
-                world.notifyBlocksOfNeighborChange(x, y, z, getBlock)
+                world.notifyNeighborsRespectDebug(getPos, getBlock)
                 onBlockRotated()
                 held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
@@ -105,7 +141,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
                 val old = side
                 do setSide((side+1)%6) while (old != side && !isSideAllowed(side))
                 if (old != side) sendOrientUpdate()
-                world.notifyBlocksOfNeighborChange(x, y, z, getBlock)
+                world.notifyNeighborsRespectDebug(getPos, getBlock)
                 onBlockRotated()
                 held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
@@ -126,7 +162,7 @@ abstract class TileMachine extends InstancedBlockTile with TTileOrient
 
     def sendOrientUpdate()
     {
-        writeStream(1).writeByte(orientation).sendToChunk()
+        writeStream(1).writeByte(orientation).sendToChunk(this)
     }
 
     def onBlockRotated(){}
@@ -163,9 +199,9 @@ trait TPoweredMachine extends TileMachine with TPowerTile with ILowLoadMachine
         case _ => false
     }
 
-    abstract override def update()
+    abstract override def updateServer()//TODO, maybe both client and server?
     {
-        super.update()
+        super.updateServer()
         cond.update()
     }
 
@@ -189,6 +225,7 @@ with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
     var isWorking = false
     var workRemaining = 0
     var workMax = 0
+    override def getDisplayName = super.getDisplayName
 
     override def save(tag:NBTTagCompound)
     {
@@ -239,7 +276,7 @@ with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
 
     def sendWorkUpdate()
     {
-        writeStream(14).writeBoolean(isCharged).writeBoolean(isWorking).sendToChunk()
+        writeStream(14).writeBoolean(isCharged).writeBoolean(isWorking).sendToChunk(this)
     }
 
     def canStart = false
@@ -257,9 +294,9 @@ with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
     def calcDoableWork = if (cond.canWork) 1 else 0
     def drainPower(work:Int) = cond.drawPower(work*1100.0D)
 
-    override def update()
+    override def updateServer()
     {
-        super.update()
+        super.updateServer()
 
         if (isWorking)
         {
@@ -293,7 +330,7 @@ with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
     override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        dropInvContents(world, x, y, z)
+        dropInvContents(world, getPos)
     }
 
     def progressScaled(scale:Int):Int =
@@ -328,9 +365,9 @@ class ContainerPoweredMachine(tile:TPoweredMachine) extends NodeContainer
     {
         super.detectAndSendChanges()
         import scala.collection.JavaConversions._
-        for (i <- crafters)
+        for (i <- listeners)
         {
-            val ic = i.asInstanceOf[ICrafting]
+            val ic = i.asInstanceOf[IContainerListener]
 
             if (ch != tile.cond.charge) ic.sendProgressBarUpdate(this, 0, tile.cond.charge)
             if (fl != tile.cond.flow)
@@ -361,9 +398,9 @@ class ContainerProcessingMachine(tile:TileProcessingMachine) extends ContainerPo
     {
         super.detectAndSendChanges()
         import scala.collection.JavaConversions._
-        for (i <- crafters)
+        for (i <- listeners)
         {
-            val ic = i.asInstanceOf[ICrafting]
+            val ic = i.asInstanceOf[IContainerListener]
 
             if (wr != tile.workRemaining) ic.sendProgressBarUpdate(this, 3, tile.workRemaining)
             if (wm != tile.workMax) ic.sendProgressBarUpdate(this, 4, tile.workMax)

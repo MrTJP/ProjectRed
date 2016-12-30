@@ -1,24 +1,24 @@
 package mrtjp.projectred.expansion
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.render.uv.{MultiIconTransformation, UVTransformation}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
+import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui._
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.item.ItemKey
-import mrtjp.core.render.TCubeMapRender
 import mrtjp.core.vec.Point
-import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.core.libmc.PRResources
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Container
 import net.minecraft.item.ItemStack
-import net.minecraft.util.IIcon
-import net.minecraft.world.IBlockAccess
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraftforge.common.property.IExtendedBlockState
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class TileInductiveFurnace extends TileProcessingMachine
 {
@@ -29,18 +29,19 @@ class TileInductiveFurnace extends TileProcessingMachine
 
     override def openGui(player:EntityPlayer)
     {
-        GuiInductiveFurnace.open(player, createContainer(player), _.writeCoord(x, y, z))
+        GuiInductiveFurnace.open(player, createContainer(player), _.writePos(getPos))
     }
 
     def createContainer(player:EntityPlayer) =
         new ContainerFurnace(player, this)
 
-    def canExtractItem(slot:Int, itemstack:ItemStack, side:Int) = true
-    def canInsertItem(slot:Int, itemstack:ItemStack, side:Int) = side == 1
-    def getAccessibleSlotsFromSide(s:Int) = s match
+    import net.minecraft.util.EnumFacing._
+    def canExtractItem(slot:Int, itemstack:ItemStack, side:EnumFacing) = true
+    def canInsertItem(slot:Int, itemstack:ItemStack, side:EnumFacing) = side == 1
+    def getSlotsForFace(s:EnumFacing) = s match
     {
-        case 1 => Array(0) // input
-        case 2|3|4|5 => Array(1) // output
+        case UP => Array(0) // input
+        case NORTH|SOUTH|WEST|EAST => Array(1) // output
         case _ => Array.emptyIntArray
     }
 
@@ -106,7 +107,7 @@ class GuiInductiveFurnace(tile:TileInductiveFurnace, c:Container) extends NodeGu
 {
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        PRResources.guiFurnace.bind()
+        TextureUtils.changeTexture(GuiInductiveFurnace.background)
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 
         val s = tile.progressScaled(24)
@@ -120,19 +121,20 @@ class GuiInductiveFurnace(tile:TileInductiveFurnace, c:Container) extends NodeGu
             GuiDraw.drawTexturedModalRect(27, 16, 185, 18, 7, 9)
         GuiLib.drawVerticalTank(27, 26, 185, 27, 7, 48, tile.cond.getFlowScaled(48))
 
-        GuiDraw.drawString("Inductive Furnace", 8, 6, Colors.GREY.argb, false)
-        GuiDraw.drawString("Inventory", 8, 79, Colors.GREY.argb, false)
+        GuiDraw.drawString("Inductive Furnace", 8, 6, EnumColour.GRAY.argb, false)
+        GuiDraw.drawString("Inventory", 8, 79, EnumColour.GRAY.argb, false)
     }
 }
 
 object GuiInductiveFurnace extends TGuiBuilder
 {
+    val background = new ResourceLocation("projectred", "textures/gui/furnace.png")
     override def getID = ExpansionProxy.furnaceGui
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        WorldLib.getTileEntity(player.worldObj, data.readCoord()) match
+        player.worldObj.getTileEntity(data.readPos()) match
         {
             case t:TileInductiveFurnace => new GuiInductiveFurnace(t, t.createContainer(player))
             case _ => null
@@ -140,46 +142,62 @@ object GuiInductiveFurnace extends TGuiBuilder
     }
 }
 
-object RenderInductiveFurnace extends TCubeMapRender
+object RenderInductiveFurnace extends SimpleBlockRenderer
 {
-    var bottom:IIcon = _
-    var top:IIcon = _
-    var side1:IIcon = _
-    var side2a:IIcon = _
-    var side2b:IIcon = _
-    var side2c:IIcon = _
+    import java.lang.{Boolean => JBool, Integer => JInt}
+
+    import mrtjp.core.util.CCLConversions._
+    import mrtjp.projectred.expansion.BlockProperties._
+
+    var bottom:TextureAtlasSprite = _
+    var top:TextureAtlasSprite = _
+    var side1:TextureAtlasSprite = _
+    var side2a:TextureAtlasSprite = _
+    var side2b:TextureAtlasSprite = _
+    var side2c:TextureAtlasSprite = _
 
     var iconT1:UVTransformation = _
     var iconT2:UVTransformation = _
     var iconT3:UVTransformation = _
 
-    override def getData(w:IBlockAccess, x:Int, y:Int, z:Int) =
-    {
-        val te = WorldLib.getTileEntity(w, x, y, z, classOf[TileInductiveFurnace])
-        if (te != null) (te.side, te.rotation,
-                if (te.isWorking && te.isCharged) iconT3
-                else if (te.isCharged) iconT2
-                else iconT1)
-        else (0, 0, iconT1)
+    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = {
+
+       tileEntity match {
+            case t:TileInductiveFurnace => {
+                var s = state
+                s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[Integer])
+                s = s.withProperty(UNLISTED_ROTATION_PROPERTY, t.rotation.asInstanceOf[JInt])
+                s = s.withProperty(UNLISTED_WORKING_PROPERTY, t.isWorking.asInstanceOf[JBool])
+                s = s.withProperty(UNLISTED_CHARGED_PROPERTY, t.isCharged.asInstanceOf[JBool])
+                s
+            }
+            case _ => state
+        }
     }
 
-    override def getInvData = (0, 0, iconT1)
-
-    override def getIcon(side:Int, meta:Int) = side match
-    {
-        case 0 => bottom
-        case 1 => top
-        case _ => side1
+    override def getWorldTransforms(state: IExtendedBlockState) = {
+        val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+        val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+        val isWorking = state.getValue(UNLISTED_WORKING_PROPERTY)
+        val isCharged = state.getValue(UNLISTED_CHARGED_PROPERTY)
+        createTriple(side, rotation,
+            if (isWorking && isCharged) iconT3
+            else if (isCharged) iconT2
+            else iconT1)
     }
 
-    override def registerIcons(reg:IIconRegister)
+    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT1)
+    override def shouldCull() = true;
+
+
+    override def registerIcons(reg:TextureMap)
     {
-        bottom = reg.registerIcon("projectred:mechanical/indfurnace/bottom")
-        top = reg.registerIcon("projectred:mechanical/indfurnace/top")
-        side1 = reg.registerIcon("projectred:mechanical/indfurnace/side1")
-        side2a = reg.registerIcon("projectred:mechanical/indfurnace/side2a")
-        side2b = reg.registerIcon("projectred:mechanical/indfurnace/side2b")
-        side2c = reg.registerIcon("projectred:mechanical/indfurnace/side2c")
+        bottom = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/bottom"))
+        top = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/top"))
+        side1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/side1"))
+        side2a = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/side2a"))
+        side2b = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/side2b"))
+        side2c = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/indfurnace/side2c"))
 
         iconT1 = new MultiIconTransformation(bottom, top, side1, side2a, side1, side1)
         iconT2 = new MultiIconTransformation(bottom, top, side1, side2b, side1, side1)

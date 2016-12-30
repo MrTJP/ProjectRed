@@ -1,0 +1,53 @@
+{
+  "ccl_marker": 1,
+  "variant_sets" : [
+    "type"
+  ],
+  "texture_domain" : "projectred",
+  "defaults": {
+    "model": "builtin/generated",
+    "textures": {
+      "layer0": "minecraft:blocks/dirt"
+    },
+    "transform": "ccl:default-item"
+  },
+  "variants": {
+    "type": {
+      "empty_battery": {
+        "textures": {
+          "layer0": "items/mechanical/empty_battery"
+        }
+      },
+      "charged_battery": {
+        "textures": {
+          "layer0": "items/mechanical/battery"
+        }
+      },
+      "jetpack": {
+        "textures": {
+          "layer0": "items/mechanical/jetpack"
+        }
+      },
+      "screwdriver": {
+        "textures": {
+          "layer0": "items/mechanical/electric_screwdriver"
+        }
+      },
+      "infused_pearl": {
+        "textures": {
+          "layer0": "items/mechanical/infused_ender_pearl"
+        }
+      },
+      "blank_plan": {
+        "textures": {
+          "layer0": "items/mechanical/blank_plan"
+        }
+      },
+      "written_plan": {
+        "textures": {
+          "layer0": "items/mechanical/written_plan"
+        }
+      }
+    }
+  }
+}

@@ -6,6 +6,7 @@
 package mrtjp.projectred.expansion
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.multipart.BlockMultipart
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.core.libmc.PRLib
@@ -13,6 +14,7 @@ import mrtjp.projectred.transportation._
 import net.minecraft.block.Block
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+import net.minecraft.util.EnumFacing
 
 import scala.collection.mutable.ListBuffer
 
@@ -118,7 +120,7 @@ trait TActiveDevice extends TileMachine
 
     def sendStateUpdate()
     {
-        writeStream(4).writeBoolean(powered).writeBoolean(active).sendToChunk()
+        writeStream(4).writeBoolean(powered).writeBoolean(active).sendToChunk(this)
     }
 
     def shouldAcceptBacklog = true
@@ -142,9 +144,9 @@ trait TActiveDevice extends TileMachine
         }
     }
 
-    override def onNeighborChange(b:Block)
+    override def onNeighborBlockChange()
     {
-        if (world.isBlockIndirectlyGettingPowered(x, y, z))
+        if (world.isBlockPowered(getPos))
         {
             if (powered) return
             powered = true
@@ -179,7 +181,7 @@ trait TActiveDevice extends TileMachine
 
     def exportPipe(r:PressurePayload) =
     {
-        PRLib.getMultiPart(world, position.offset(side), 6) match
+        BlockMultipart.getPart(world, getPos.offset(EnumFacing.VALUES(side)), 6) match
         {
             case pipe:TPressureTube if pipe.hasDestination(r, side^1) =>
                 pipe.injectPayload(r, side)
@@ -190,7 +192,7 @@ trait TActiveDevice extends TileMachine
 
     def exportInv(r:PressurePayload) =
     {
-        val inv = InvWrapper.getInventory(world, position.offset(side))
+        val inv = InvWrapper.getInventory(world, getPos.offset(EnumFacing.VALUES(side)))
         if (inv != null)
         {
             val w = InvWrapper.wrap(inv).setSlotsFromSide(side^1)
@@ -202,11 +204,11 @@ trait TActiveDevice extends TileMachine
 
     def exportEject(r:PressurePayload):Boolean =
     {
-        val pos = position.offset(side)
-        if (world.blockExists(pos.x, pos.y, pos.z) &&
-                !world.isAirBlock(pos.x, pos.y, pos.z)) return false
+        val pos = getPos.offset(EnumFacing.VALUES(side))
+        if (world.isBlockLoaded(pos) &&
+                !world.isAirBlock(pos)) return false
 
-        WorldLib.centerEject(world, position, r.payload.makeStack, side, 0.25D)
+        WorldLib.centerEject(world, getPos, r.payload.makeStack, side, 0.25D)
         true
     }
 
@@ -214,7 +216,7 @@ trait TActiveDevice extends TileMachine
     {
         super.onBlockRemoval()
         while(!storage.isEmpty)
-            WorldLib.dropItem(world, x, y, z, storage.poll().payload.makeStack)
+            WorldLib.dropItem(world, getPos, storage.poll().payload.makeStack)
     }
 }
 
