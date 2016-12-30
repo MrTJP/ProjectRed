@@ -294,7 +294,7 @@ class RedAlloyWirePart extends RedwirePart with TRedAlloyCommons
 
         for (s <- 0 until 6) if (s != (side^1))
             WirePropagator.addNeighborChange(new MutableBlockPos(pos)
-                    .move(EnumFacing.getFront(side)).move(EnumFacing.getFront(s)).toImmutable)
+                    .move(EnumFacing.getFront(side)).move(EnumFacing.getFront(s)))
     }
 }
 
