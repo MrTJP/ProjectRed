@@ -1,26 +1,23 @@
-import net.minecraftforge.gradle.curseforge.CurseUploadTask
+//import net.minecraftforge.gradle.curseforge.CurseUploadTask
 import org.apache.tools.ant.filters.ReplaceTokens
 
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
+apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'scala'
-apply plugin: 'forge'
-apply plugin: 'curseforge'
+apply plugin: 'maven'
+//apply plugin: 'curseforge'
 
 
 group = "mrtjp"
@@ -49,14 +46,6 @@ repositories {
         name "dvs1"
         url "http://dvs1.progwml6.com/files/maven/"
     }
-//    ivy {
-//        name 'ThermalExpansion'
-//        artifactPattern "http://addons.cursecdn.com/files/${config.texpan.cf}/[module]-[revision].[ext]"
-//    }
-    ivy {
-        name 'CoFHCore'
-        artifactPattern "http://addons-origin.cursecdn.com/files/${config.cofh.cf}/[module]-[revision].[ext]"
-    }
 }
 
 configurations {
@@ -66,27 +55,24 @@ configurations {
 dependencies {
     deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
 
-    compile "mrtjp:MrTJPCore:${config.mc.version}-${config.mrtjp.version}:dev"
-    compile "mrtjp:ForgeRelocation:${config.mc.version}-${config.fr.version}:dev"
-    compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
-    compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
-    compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
-    compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
-    compile group: 'cofh', name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
+    compile "mrtjp:MrTJPCore:${config.mc_version}-${config.tjpcore_version}:deobf"
+    //compile "mrtjp:ForgeRelocation:${config.mc_version}-${config.fr_version}:deobf"
+    compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
+    compile "codechicken:ForgeMultipart:${config.mc_version}-${config.fmp_version}:deobf"
+    compile "codechicken:NotEnoughItems:${config.mc_version}-${config.nei_version}:deobf"
+    //compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
+    //compile group: 'cofh', name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
 }
 
 def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")+51).toString()
-version = "${project.config.mod.version}."+build_number
-println "Starting build for $archivesBaseName $version for MC $config.mc.version-$config.forge.version"
+version = "${project.config.mod_version}."+build_number
+println "Starting build for $archivesBaseName $version for MC $config.mc_version-$config.forge_version"
 
 minecraft {
-    version = config.mc.version+"-"+config.forge.version
-    if (file('../run').exists()) {
-        runDir = "../run"
-    }
-    else {
-        runDir = "run"
-    }
+    version = config.mc_version+"-"+config.forge_version
+    mappings = config.mappings
+    runDir = "run"
+    makeObfSourceJar = false
 }
 
 sourceSets {
@@ -106,36 +92,36 @@ task updateVersion(type: Copy) {
     from(sourceSets.main.scala.srcDirs)
     into 'build/sources/scala'
     filter(ReplaceTokens, tokens: [
-            'VERSION'      : config.mod.version,
+            'VERSION'      : config.mod_version,
             'BUILD_NUMBER' : build_number,
-            'MC_VERSION'   : config.mc.version,
-            'FORGE_VERSION': config.forge.version,
-            'FMP_VERSION'  : config.fmp.version,
-            'CCL_VERSION'  : config.ccl.version,
-            'MRTJP_VERSION': config.mrtjp.version,
-            'FR_VERSION': config.fr.version,
-            'FRFMP_VERSION': config.frfmp.version
+            'MC_VERSION'   : config.mc_version,
+            'FORGE_VERSION': config.forge_version,
+            'FMP_VERSION'  : config.fmp_version,
+            'CCL_VERSION'  : config.ccl_version,
+            'MRTJP_VERSION': config.tjpcore_version,
+            'FR_VERSION': config.fr_version,
+            'FRFMP_VERSION': config.frfmp_version
     ])
 }
 
 processResources {
     //redo task if any of these properties change
     inputs.property "version", project.version
-    inputs.property "mc.version", config.mc.version
+    inputs.property "mc.version", config.mc_version
 
     // Replace properties in all files
     from(sourceSets.main.resources.srcDirs) {
         include '**.info'
         filter(ReplaceTokens, tokens: [
-                'VERSION'      : config.mod.version,
+                'VERSION'      : config.mod_version,
                 'BUILD_NUMBER' : build_number,
-                'MC_VERSION'   : config.mc.version,
-                'FORGE_VERSION': config.forge.version,
-                'FMP_VERSION'  : config.fmp.version,
-                'CCL_VERSION'  : config.ccl.version,
-                'MRTJP_VERSION': config.mrtjp.version,
-                'FR_VERSION': config.fr.version,
-                'FRFMP_VERSION': config.frfmp.version
+                'MC_VERSION'   : config.mc_version,
+                'FORGE_VERSION': config.forge_version,
+                'FMP_VERSION'  : config.fmp_version,
+                'CCL_VERSION'  : config.ccl_version,
+                'MRTJP_VERSION': config.tjpcore_version,
+                'FR_VERSION': config.fr_version,
+                'FRFMP_VERSION': config.frfmp_version
         ])
     }
     // Copy everything else
@@ -145,7 +131,7 @@ processResources {
 }
 
 compileScala.dependsOn updateVersion
-ext.jarVer = "${project.minecraft.version}-${project.version}"
+ext.jarVer = "${config.mc_version}-${project.version}"
 ext.jarFile = zipTree(jar.archivePath)
 ext.baseExcludes = ["**/dan200/**", "**/coloredlightscore/**"]
 
@@ -279,58 +265,46 @@ task baseJar(type: Jar, dependsOn: reobf) {
 }
 
 // baseJar pulls all files not in any other jar. Therefore must run last
-baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && !task.name.equals('baseJar')) } }
+//baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && !task.name.equals('baseJar')) } }
 
 jar {
-    manifest {
-        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
+    classifier = 'universal-all'
 }
 
-task sourceJar(type: Jar) {
+task srcJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
-    version = "${project.minecraft.version}-${project.version}"
+    version = "${config.mc_version}-${project.version}"
 }
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
-    classifier = 'dev'
-    version = "${project.minecraft.version}-${project.version}"
-    manifest {
-        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
+    classifier = 'deobf'
+    version = "${config.mc_version}-${project.version}"
 }
 
 artifacts {
-    archives integrationJar
-    archives fabricationJar
-    archives lightingJar
-    archives mechanicalJar
-    archives worldJar
-    archives compatJar
-    archives baseJar
+    //archives integrationJar
+    //archives fabricationJar
+    //archives lightingJar
+    //archives mechanicalJar
+    //archives worldJar
+    //archives compatJar
+    //archives baseJar
 
-    archives sourceJar
+    archives srcJar
     archives deobfJar
 }
 
 uploadArchives {
     dependsOn 'reobf'
     repositories {
-        if (project.hasProperty("mavenurl")) {
-            mavenDeployer {
-                configuration = configurations.deployerJars
-
-                repository(url: project.mavenurl) {
-                    authentication(userName: project.mavenusername, password: project.mavenpassword)
-                }
-
+        mavenDeployer {
+            if (project.hasProperty("local_maven")) {
+                repository(url: "file://${local_maven}")
                 pom {
                     groupId = project.group
-                    version = "${project.minecraft.version}-${project.version}"
+                    version = "${config.mc_version}-${project.version}"
                     artifactId = project.archivesBaseName
                     project {
                         name project.archivesBaseName
@@ -371,7 +345,7 @@ uploadArchives {
     }
 }
 
-if (project.hasProperty('curseapi')) {
+/*if (project.hasProperty('curseapi')) {
     curse {
         doLast {
             curseIntegration.execute()
@@ -433,4 +407,4 @@ if (project.hasProperty('curseapi')) {
     configure([curseIntegration, curseFabrication, curseLighting, curseMechanical, curseWorld, curseCompat]) {
         relatedProject 'project-red-base': 'requiredLibrary'
     }
-}
+}*/
