@@ -30,40 +30,40 @@ import scala.collection.JavaConversions._
 trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCenterRSPropagation with IRedwirePart with IMaskedRedstonePart
 {
     var signal:Byte = 0
-    var material = false
+    var hasRedstone = false
 
     abstract override def save(tag:NBTTagCompound)
     {
         super.save(tag)
-        tag.setBoolean("mat", material)
+        tag.setBoolean("mat", hasRedstone)
         tag.setByte("signal", signal)
     }
 
     abstract override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        material = tag.getBoolean("mat")
+        hasRedstone = tag.getBoolean("mat")
         signal = tag.getByte("signal")
     }
 
     abstract override def writeDesc(packet:MCDataOutput)
     {
         super.writeDesc(packet)
-        packet.writeBoolean(material)
+        packet.writeBoolean(hasRedstone)
         packet.writeByte(signal)
     }
 
     abstract override def readDesc(packet:MCDataInput)
     {
         super.readDesc(packet)
-        material = packet.readBoolean()
+        hasRedstone = packet.readBoolean()
         signal = packet.readByte()
     }
 
     abstract override def read(packet:MCDataInput, key:Int) = key match
     {
         case 2 =>
-            material = packet.readBoolean()
+            hasRedstone = packet.readBoolean()
             tile.markRender()
         case 3 =>
             signal = packet.readByte
@@ -78,7 +78,7 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
             if (updateInward()) sendConnUpdate()
             WirePropagator.propagateTo(this, FORCE)
         }
-        getWriteStreamOf(2).writeBoolean(material)
+        getWriteStreamOf(2).writeBoolean(hasRedstone)
     }
 
     override def onSignalUpdate()
@@ -126,7 +126,7 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
         }
     }
 
-    override def getDrops = if (material)
+    override def getDrops = if (hasRedstone)
         super.getDrops :+ getMaterialStack else super.getDrops
 
     def getMaterialStack =
@@ -138,23 +138,23 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
 
     override def weakPowerLevel(side:Int) =
     {
-        if (!maskConnects(side) || !material) 0
+        if (!maskConnects(side) || !hasRedstone) 0
         else rsLevel
     }
 
-    override def canConnectRedstone(side:Int) = material
+    override def canConnectRedstone(side:Int) = hasRedstone
 
     override def getConnectionMask(side:Int) = 0x10
 
     abstract override def canConnectPart(part:IConnectable, s:Int) = part match
     {
-        case fr:FramedRedwirePart if material => true
+        case fr:FramedRedwirePart if hasRedstone => true
         case _ => super.canConnectPart(part, s)
     }
 
     override def discoverStraightOverride(absDir:Int) =
     {
-        if (material)
+        if (hasRedstone)
         {
             WirePropagator.setRedwiresConnectable(false)
             val b = (RedstoneInteractions.otherConnectionMask(world, pos, absDir, false)&
@@ -184,7 +184,7 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
 
     override def calculateSignal:Int =
     {
-        if (!material) return 0
+        if (!hasRedstone) return 0
         WirePropagator.setDustProvidePower(false)
         WirePropagator.redwiresProvidePower = false
         var s = 0
@@ -216,33 +216,33 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
         if (super.activate(player, hit, item, hand)) return true
 
         //if (CommandDebug.WIRE_READING) debug(player) else
-        if (item != null && item.getItem == ProjectRedCore.itemWireDebugger)
+        if (item != null && item.getItem == ProjectRedCore.itemMultimeter)
         {
             item.damageItem(1, player)
             test(player)
             return true
         }
 
-        if (item == null && player.isSneaking && material)
+        if (item == null && player.isSneaking && hasRedstone)
         {
             if (!world.isRemote)
             {
-                if (material && !player.capabilities.isCreativeMode)
+                if (hasRedstone && !player.capabilities.isCreativeMode)
                     PRLib.dropTowardsPlayer(world, pos, getMaterialStack, player)
-                material = false
+                hasRedstone = false
                 sendMatUpdate()
             }
             return true
         }
 
-        if (item != null && !material && item.getItem == MicroblockProxy.itemMicro && item.getItemDamage == 769)
+        if (item != null && !hasRedstone && item.getItem == MicroblockProxy.itemMicro && item.getItemDamage == 769)
         {
             ItemMicroPart.getMaterial(item) match
             {
                 case bm:BlockMicroMaterial if bm.state.getBlock == Blocks.REDSTONE_BLOCK =>
                     if (!world.isRemote)
                     {
-                        material = true
+                        hasRedstone = true
                         world.playSound(null, pos, SoundType.GLASS.getPlaceSound, SoundCategory.BLOCKS, SoundType.GLASS.getVolume, SoundType.GLASS.getPitch)
                         sendMatUpdate()
                         if (!player.capabilities.isCreativeMode) item.stackSize-=1
@@ -281,7 +281,7 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
     override def doStaticTessellation(pos:Vector3, ccrs:CCRenderState)
     {
         super.doStaticTessellation(pos, ccrs)
-        if (material) RenderPipe.renderRSWiring(this, pos, signal, ccrs)
+        if (hasRedstone) RenderPipe.renderRSWiring(this, pos, signal, ccrs)
     }
 }
 

@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.{FMLServerAboutToStartEvent, FMLPostInitializationEvent, FMLInitializationEvent, FMLPreInitializationEvent}
 
-@Mod(modid = "ProjRed|Transmission", useMetadata = true, modLanguage = "scala")
+@Mod(modid = "projectred-transmission", useMetadata = true, modLanguage = "scala")
 object ProjectRedTransmission
 {
     ProjectRedAPI.transmissionAPI = new APIImpl_Transmission
@@ -16,7 +16,7 @@ object ProjectRedTransmission
     var itemPartWire:ItemPartWire = _
     var itemPartFramedWire:ItemPartFramedWire = _
 
-    var tabTransmission = new CreativeTabs("trans")
+    var tabTransmission = new CreativeTabs("projectred.transmission")
     {
         override def getIconItemStack = new ItemStack(ProjectRedTransmission.itemPartWire)
         override def getTabIconItem = getIconItemStack.getItem

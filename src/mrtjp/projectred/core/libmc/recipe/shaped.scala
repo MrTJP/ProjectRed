@@ -1,7 +1,6 @@
 package mrtjp.projectred.core.libmc.recipe
 
 import java.awt.Rectangle
-import java.util.{List => JList}
 
 import codechicken.nei.api.stack.PositionedStack
 import codechicken.nei.recipe.TemplateRecipeHandler

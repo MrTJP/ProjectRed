@@ -1,36 +1,36 @@
 [
 {
-  "modid": "ProjRed|Transmission",
+  "modid": "projectred-transmission",
   "name": "ProjectRed Transmission",
-  "parent":"ProjRed|Core",
+  "parent":"projectred-core",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",
   "requiredMods": [
-      "ProjRed|Core"
+      "projectred-core"
   ],
   "dependencies": [
-      "ProjRed|Core"
+      "projectred-core"
   ],
   "dependants" : [
-      "ProjRed|Expansion",
-      "ProjRed|Fabrication"
+      "projectred-expansion",
+      "projectred-fabrication"
   ],
   "useDependencyInformation": true
 },
 {
-  "modid": "ProjRed|Integration",
-  "name": "ProjectRed Integration",
-  "parent":"ProjRed|Core",
+  "modid": "projectred-integration",
+  "name": "ProjectRed integration",
+  "parent":"projectred-core",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",
   "requiredMods": [
-      "ProjRed|Core"
+      "projectred-core"
   ],
   "dependencies": [
-      "ProjRed|Core"
+      "projectred-core"
   ],
   "dependants" : [
-      "ProjRed|Fabrication"
+      "projectred-fabrication"
   ],
   "useDependencyInformation": true
 }

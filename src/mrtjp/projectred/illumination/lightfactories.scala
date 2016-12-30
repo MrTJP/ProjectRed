@@ -19,8 +19,9 @@ object LightFactoryFixture extends LightFactory
     val bulbModels = new Array[CCModel](6)
     val chassiModels = new Array[CCModel](6)
 
-    override def getItemRegistryName(inv:Boolean) = if (inv) "projectred:lightFixtureInv" else "projectred:lightFixture"
-    override def getType = "projectred:lightFixture"
+    override def getUnlocalizedName(inv:Boolean) = if (inv) "fixtureLightInverted" else "fixtureLight"
+    override def getItemRegistryName(inv:Boolean) = if (inv) "inverted_fixture_light" else "fixture_light"
+    override def getType = "projectred-illumination:fixture_light"
 
     override def getBounds(side:Int) = bounds(side)
     override def getLBounds(side:Int) = lBounds(side)
@@ -59,8 +60,10 @@ object LightFactoryFallout extends LightFactory
     val bulbModels = new Array[CCModel](6)
     val chassiModels = new Array[CCModel](6)
 
-    override def getItemRegistryName(inv:Boolean) = if (inv) "projectred:lightFalloutInv" else "projectred:lightFallout"
-    override def getType = "projectred:lightFallout"
+
+    override def getUnlocalizedName(inv:Boolean) = if (inv) "falloutLampInverted" else "falloutLamp"
+    override def getItemRegistryName(inv:Boolean) = if (inv) "inverted_fallout_lamp" else "fallout_lamp"
+    override def getType = "projectred-illumination:fallout_lamp"
 
     override def getBounds(side:Int) = bounds(side)
     override def getLBounds(side:Int) = lBounds(side)
@@ -98,8 +101,10 @@ object LightFactoryCage extends LightFactory
     val bulbModels = new Array[CCModel](6)
     val chassiModels = new Array[CCModel](6)
 
-    override def getItemRegistryName(inv:Boolean) = if (inv) "projectred:lightCageInv" else "projectred:lightCage"
-    override def getType = "projectred:lightCage"
+
+    override def getUnlocalizedName(inv:Boolean) = if (inv) "cageLampInverted" else "cageLamp"
+    override def getItemRegistryName(inv:Boolean) = if (inv) "inverted_cage_lamp" else "cage_lamp"
+    override def getType = "projectred-illumination:cage_lamp"
 
     override def getBounds(side:Int) = bounds(side)
     override def getLBounds(side:Int) = lBounds(side)
@@ -140,8 +145,9 @@ object LightFactoryLantern extends LightFactory
     var bulbModel:CCModel = _
     val chassiModels = new Array[CCModel](7)
 
-    override def getItemRegistryName(inv:Boolean) = if (inv) "projectred:lightLanternInv" else "projectred:lightLantern"
-    override def getType = "projectred:lightLantern"
+    override def getUnlocalizedName(inv:Boolean) = if (inv) "lanternInverted" else "lantern"
+    override def getItemRegistryName(inv:Boolean) = if (inv) "inverted_lantern" else "lantern"
+    override def getType = "projectred-illumination:lantern"
 
     override def getBounds(side:Int) = bounds
     override def getLBounds(side:Int) = lBounds

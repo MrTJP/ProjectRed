@@ -29,12 +29,12 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.{BlockRenderLayer, EnumBlockRenderType, EnumFacing}
 import org.lwjgl.opengl.GL11._
 
-class BlockBarrel extends MultiTileBlock("projectred.exploration.barrel", "barrel", Material.WOOD)
+class BlockBarrel extends MultiTileBlock(Material.WOOD)
 {
     setHardness(2.0F)
     setSoundType(SoundType.WOOD)
     setCreativeTab(ProjectRedExploration.tabExploration)
-    new ItemBlockCore(this)
+
     //TODO Remove on MultiTile rewrite
     override def getRenderType(state: IBlockState) = EnumBlockRenderType.MODEL
 

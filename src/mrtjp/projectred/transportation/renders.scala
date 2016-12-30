@@ -422,7 +422,7 @@ object PipeRSHighlightRenderer extends IMicroHighlightRenderer
         {
             case b:BlockMicroMaterial if b.state.getBlock == Blocks.REDSTONE_BLOCK =>
                 tile.partList(hit.asInstanceOf[PartRayTraceResult].partIndex) match {
-                    case p:TRedstonePipe if !p.material =>
+                    case p:TRedstonePipe if !p.hasRedstone =>
                         RenderPipe.renderRSMicroHighlight(p, CCRenderState.instance())
                         true
                     case _ => false

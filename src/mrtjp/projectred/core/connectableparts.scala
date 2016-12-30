@@ -155,6 +155,10 @@ trait TConnectableCommons extends TMultiPart with IConnectable
     def notifyAllExternals()
     def notifyExternals(mask:Int)
 
+    /**
+      * By default called when another part requests connection to this part
+      * and the request is approved. This is done internally in the traits.
+      */
     def onMaskChanged(){}
 }
 

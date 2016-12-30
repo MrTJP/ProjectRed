@@ -1,15 +1,15 @@
 [
 {
-  "modid": "ProjRed|Exploration",
+  "modid": "projectred-exploration",
   "name": "ProjectRed Exploration",
-  "parent":"ProjRed|Core",
+  "parent":"projectred-core",
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",
   "requiredMods": [
-      "ProjRed|Core"
+      "projectred-core"
   ],
   "dependencies": [
-      "ProjRed|Core"
+      "projectred-core"
   ],
   "dependants" : [],
   "useDependencyInformation": true

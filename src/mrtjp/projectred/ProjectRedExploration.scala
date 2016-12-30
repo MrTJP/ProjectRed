@@ -10,70 +10,70 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 
-@Mod(modid = "ProjRed|Exploration", useMetadata = true, modLanguage = "scala")
+@Mod(modid = "projectred-exploration", useMetadata = true, modLanguage = "scala")
 object ProjectRedExploration
 {
     /** Blocks **/
-    var blockOres:BlockOre = null
-    var blockDecoratives:BlockDecoratives = null
-    var blockDecorativeWalls:BlockDecorativeWalls = null
-    //var blockLily:BlockLily = null
-    var blockBarrel:BlockBarrel = null
+    var blockOres:BlockOre = _
+    var blockDecorativeStone:BlockDecorativeStone = _
+    var blockDecorativeWall:BlockDecorativeWall = _
+    //var blockLily:BlockLily = _
+    var blockBarrel:BlockBarrel = _
 
     /** Materials **/
-    var toolMaterialRuby:ToolMaterial = null
-    var toolMaterialSapphire:ToolMaterial = null
-    var toolMaterialPeridot:ToolMaterial = null
-    var armorMatrialRuby:ArmorMaterial = null
-    var armorMatrialSapphire:ArmorMaterial = null
-    var armorMatrialPeridot:ArmorMaterial = null
+    var toolMaterialRuby:ToolMaterial = _
+    var toolMaterialSapphire:ToolMaterial = _
+    var toolMaterialPeridot:ToolMaterial = _
+    var armorMatrialRuby:ArmorMaterial = _
+    var armorMatrialSapphire:ArmorMaterial = _
+    var armorMatrialPeridot:ArmorMaterial = _
 
     /** Items **/
-    var itemWoolGin:ItemWoolGin = null
-    var itemBackpack:ItemBackpack = null
-    var itemAthame:ItemAthame = null
-    var itemRubyAxe:ItemGemAxe = null
-    var itemSapphireAxe:ItemGemAxe = null
-    var itemPeridotAxe:ItemGemAxe = null
-    var itemRubyHoe:ItemGemHoe = null
-    var itemSapphireHoe:ItemGemHoe = null
-    var itemPeridotHoe:ItemGemHoe = null
-    var itemRubyPickaxe:ItemGemPickaxe = null
-    var itemSapphirePickaxe:ItemGemPickaxe = null
-    var itemPeridotPickaxe:ItemGemPickaxe = null
-    var itemRubyShovel:ItemGemShovel = null
-    var itemSapphireShovel:ItemGemShovel = null
-    var itemPeridotShovel:ItemGemShovel = null
-    var itemRubySword:ItemGemSword = null
-    var itemSapphireSword:ItemGemSword = null
-    var itemPeridotSword:ItemGemSword = null
-    var itemGoldSaw:ItemGemSaw = null
-    var itemRubySaw:ItemGemSaw = null
-    var itemSapphireSaw:ItemGemSaw = null
-    var itemPeridotSaw:ItemGemSaw = null
-    var itemWoodSickle:ItemGemSickle = null
-    var itemStoneSickle:ItemGemSickle = null
-    var itemIronSickle:ItemGemSickle = null
-    var itemGoldSickle:ItemGemSickle = null
-    var itemRubySickle:ItemGemSickle = null
-    var itemSapphireSickle:ItemGemSickle = null
-    var itemPeridotSickle:ItemGemSickle = null
-    var itemDiamondSickle:ItemGemSickle = null
-    //var itemLilySeed:ItemLilySeeds = null
-    var itemRubyHelmet:ItemGemArmor = null
-    var itemRubyChestplate:ItemGemArmor = null
-    var itemRubyLeggings:ItemGemArmor = null
-    var itemRubyBoots:ItemGemArmor = null
-    var itemSapphireHelmet:ItemGemArmor = null
-    var itemSapphireChestplate:ItemGemArmor = null
-    var itemSapphireLeggings:ItemGemArmor = null
-    var itemSapphireBoots:ItemGemArmor = null
-    var itemPeridotHelmet:ItemGemArmor = null
-    var itemPeridotChestplate:ItemGemArmor = null
-    var itemPeridotLeggings:ItemGemArmor = null
-    var itemPeridotBoots:ItemGemArmor = null
+    var itemWoolGin:ItemWoolGin = _
+    var itemBackpack:ItemBackpack = _
+    var itemAthame:ItemAthame = _
+    var itemRubyAxe:ItemGemAxe = _
+    var itemSapphireAxe:ItemGemAxe = _
+    var itemPeridotAxe:ItemGemAxe = _
+    var itemRubyHoe:ItemGemHoe = _
+    var itemSapphireHoe:ItemGemHoe = _
+    var itemPeridotHoe:ItemGemHoe = _
+    var itemRubyPickaxe:ItemGemPickaxe = _
+    var itemSapphirePickaxe:ItemGemPickaxe = _
+    var itemPeridotPickaxe:ItemGemPickaxe = _
+    var itemRubyShovel:ItemGemShovel = _
+    var itemSapphireShovel:ItemGemShovel = _
+    var itemPeridotShovel:ItemGemShovel = _
+    var itemRubySword:ItemGemSword = _
+    var itemSapphireSword:ItemGemSword = _
+    var itemPeridotSword:ItemGemSword = _
+    var itemGoldSaw:ItemGemSaw = _
+    var itemRubySaw:ItemGemSaw = _
+    var itemSapphireSaw:ItemGemSaw = _
+    var itemPeridotSaw:ItemGemSaw = _
+    var itemWoodSickle:ItemGemSickle = _
+    var itemStoneSickle:ItemGemSickle = _
+    var itemIronSickle:ItemGemSickle = _
+    var itemGoldSickle:ItemGemSickle = _
+    var itemRubySickle:ItemGemSickle = _
+    var itemSapphireSickle:ItemGemSickle = _
+    var itemPeridotSickle:ItemGemSickle = _
+    var itemDiamondSickle:ItemGemSickle = _
+    //var itemLilySeed:ItemLilySeeds = _
+    var itemRubyHelmet:ItemGemArmor = _
+    var itemRubyChestplate:ItemGemArmor = _
+    var itemRubyLeggings:ItemGemArmor = _
+    var itemRubyBoots:ItemGemArmor = _
+    var itemSapphireHelmet:ItemGemArmor = _
+    var itemSapphireChestplate:ItemGemArmor = _
+    var itemSapphireLeggings:ItemGemArmor = _
+    var itemSapphireBoots:ItemGemArmor = _
+    var itemPeridotHelmet:ItemGemArmor = _
+    var itemPeridotChestplate:ItemGemArmor = _
+    var itemPeridotLeggings:ItemGemArmor = _
+    var itemPeridotBoots:ItemGemArmor = _
 
-    var tabExploration:CreativeTabs = new CreativeTabs("exploration")
+    var tabExploration:CreativeTabs = new CreativeTabs("projectred.exploration")
     {
         override def getIconItemStack = new ItemStack(Blocks.GRASS)
         override def getTabIconItem = getIconItemStack.getItem

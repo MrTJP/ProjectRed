@@ -31,7 +31,7 @@ import net.minecraft.world.World
 import net.minecraftforge.fml.common.registry.GameRegistry
 import org.lwjgl.input.Keyboard
 
-class ItemBackpack extends ItemCore("backpack")
+class ItemBackpack extends ItemCore
 {
     setHasSubtypes(true)
     setMaxStackSize(1)
@@ -201,61 +201,60 @@ object ToolDefs
 
     import mrtjp.projectred.ProjectRedExploration.{toolMaterialPeridot, toolMaterialRuby, toolMaterialSapphire}
 
-    val RUBYAXE = ToolDef("axeruby", toolMaterialRuby, ruby)
-    val SAPPHIREAXE = ToolDef("axesapphire", toolMaterialSapphire, sapphire)
-    val PERIDOTAXE = ToolDef("axeperidot", toolMaterialPeridot, peridot)
+    val RUBYAXE         = ToolDef("axeRuby",        "ruby_axe",         toolMaterialRuby,       ruby)
+    val SAPPHIREAXE     = ToolDef("axeSapphire",    "sapphire_axe",     toolMaterialSapphire,   sapphire)
+    val PERIDOTAXE      = ToolDef("axePeridot",     "peridot_axe",      toolMaterialPeridot,    peridot)
 
-    val RUBYPICKAXE = ToolDef("pickaxeruby", toolMaterialRuby, ruby)
-    val SAPPHIREPICKAXE = ToolDef("pickaxesapphire", toolMaterialSapphire, sapphire)
-    val PERIDOTPICKAXE = ToolDef("pickaxeperidot", toolMaterialPeridot, peridot)
+    val RUBYPICKAXE     = ToolDef("pickaxeRuby",    "ruby_pickaxe",     toolMaterialRuby,       ruby)
+    val SAPPHIREPICKAXE = ToolDef("pickaxeSapphire","sapphire_pickaxe", toolMaterialSapphire,   sapphire)
+    val PERIDOTPICKAXE  = ToolDef("pickaxePeridot", "peridot_pickaxe",  toolMaterialPeridot,    peridot)
 
-    val RUBYSHOVEL = ToolDef("shovelruby", toolMaterialRuby, ruby)
-    val SAPPHIRESHOVEL = ToolDef("shovelsapphire", toolMaterialSapphire, sapphire)
-    val PERIDOTSHOVEL = ToolDef("shovelperidot", toolMaterialPeridot, peridot)
+    val RUBYSHOVEL      = ToolDef("shovelRuby",     "ruby_shovel",      toolMaterialRuby,       ruby)
+    val SAPPHIRESHOVEL  = ToolDef("shovelSapphire", "sapphire_shovel",  toolMaterialSapphire,   sapphire)
+    val PERIDOTSHOVEL   = ToolDef("shovelPeridot",  "peridot_shovel",   toolMaterialPeridot,    peridot)
 
-    val RUBYSWORD = ToolDef("swordruby", toolMaterialRuby, ruby)
-    val SAPPHIRESWORD = ToolDef("swordsapphire", toolMaterialSapphire, sapphire)
-    val PERIDOTSWORD = ToolDef("swordperidot", toolMaterialPeridot, peridot)
+    val RUBYSWORD       = ToolDef("swordRuby",      "ruby_sword",       toolMaterialRuby,       ruby)
+    val SAPPHIRESWORD   = ToolDef("swordSapphire",  "sapphire_sword",   toolMaterialSapphire,   sapphire)
+    val PERIDOTSWORD    = ToolDef("swordPeridot",   "peridot_sword",    toolMaterialPeridot,    peridot)
 
-    val RUBYHOE = ToolDef("hoeruby", toolMaterialRuby, ruby)
-    val SAPPHIREHOE = ToolDef("hoesapphire", toolMaterialSapphire, sapphire)
-    val PERIDOTHOE = ToolDef("hoeperidot", toolMaterialPeridot, peridot)
+    val RUBYHOE         = ToolDef("hoeRuby",        "ruby_hoe",         toolMaterialRuby,       ruby)
+    val SAPPHIREHOE     = ToolDef("hoeSapphire",    "sapphire_hoe",     toolMaterialSapphire,   sapphire)
+    val PERIDOTHOE      = ToolDef("hoePeridot",     "peridot_hoe",      toolMaterialPeridot,    peridot)
 
-    val WOODSAW = ToolDef("sawwood", toolMaterialWood, wood)
-    val STONESAW = ToolDef("sawstone", toolMaterialStone, flint)
-    val IRONSAW = ToolDef("sawiron", toolMaterialIron, iron)
-    val GOLDSAW = ToolDef("sawgold", toolMaterialGold, gold)
-    val RUBYSAW = ToolDef("sawruby", toolMaterialRuby, ruby)
-    val SAPPHIRESAW = ToolDef("sawsapphire", toolMaterialSapphire, sapphire)
-    val PERIDOTSAW = ToolDef("sawperidot", toolMaterialPeridot, peridot)
-    val DIAMONDSAW = ToolDef("sawdiamond", toolMaterialDiamond, diamond)
+    val WOODSAW         = ToolDef("sawWood",        "wooden_saw",       toolMaterialWood,       wood)
+    val STONESAW        = ToolDef("sawStone",       "stone_saw",        toolMaterialStone,      flint)
+    val IRONSAW         = ToolDef("sawIron",        "iron_saw",         toolMaterialIron,       iron)
+    val GOLDSAW         = ToolDef("sawGold",        "golden_saw",       toolMaterialGold,       gold)
+    val RUBYSAW         = ToolDef("sawRuby",        "ruby_saw",         toolMaterialRuby,       ruby)
+    val SAPPHIRESAW     = ToolDef("sawSapphire",    "sapphire_saw",     toolMaterialSapphire,   sapphire)
+    val PERIDOTSAW      = ToolDef("sawPeridot",     "peridot_saw",      toolMaterialPeridot,    peridot)
+    val DIAMONDSAW      = ToolDef("sawDiamond",     "diamond_saw",      toolMaterialDiamond,    diamond)
 
-    val WOODSICKLE = ToolDef("sicklewood", toolMaterialWood, wood)
-    val STONESICKLE = ToolDef("sicklestone", toolMaterialStone, flint)
-    val IRONSICKLE = ToolDef("sickleiron", toolMaterialIron, iron)
-    val GOLDSICKLE = ToolDef("sicklegold", toolMaterialGold, gold)
-    val RUBYSICKLE = ToolDef("sickleruby", toolMaterialRuby, ruby)
-    val SAPPHIRESICKLE = ToolDef("sicklesapphire", toolMaterialSapphire, sapphire)
-    val PERIDOTSICKLE = ToolDef("sickleperidot", toolMaterialPeridot, peridot)
-    val DIAMONDSICKLE = ToolDef("sicklediamond", toolMaterialDiamond, diamond)
+    val WOODSICKLE      = ToolDef("sickleWood",     "wooden_sickle",    toolMaterialWood,       wood)
+    val STONESICKLE     = ToolDef("sickleStone",    "stone_sickle",     toolMaterialStone,      flint)
+    val IRONSICKLE      = ToolDef("sickleIron",     "iron_sickle",      toolMaterialIron,       iron)
+    val GOLDSICKLE      = ToolDef("sickleGold",     "golden_sickle",    toolMaterialGold,       gold)
+    val RUBYSICKLE      = ToolDef("sickleRuby",     "ruby_sickle",      toolMaterialRuby,       ruby)
+    val SAPPHIRESICKLE  = ToolDef("sickleSapphire", "sapphire_sickle",  toolMaterialSapphire,   sapphire)
+    val PERIDOTSICKLE   = ToolDef("sicklePeridot",  "peridot_sickle",   toolMaterialPeridot,    peridot)
+    val DIAMONDSICKLE   = ToolDef("sickleDiamond",  "diamond_sickle",   toolMaterialDiamond,    diamond)
 
-    case class ToolDef(unlocal:String, mat:ToolMaterial, repair:ItemStack)
+    case class ToolDef(unlocal:String, registryName:String, mat:ToolMaterial, repair:ItemStack)
 }
 
 
 trait TGemTool extends Item
 {
-    setUnlocalizedName("projectred.exploration."+toolDef.unlocal)
-    //setTextureName("projectred:world/"+toolDef.unlocal)
     setCreativeTab(ProjectRedExploration.tabExploration)
-    GameRegistry.registerItem(this, "projectred.exploration."+toolDef.unlocal)
+    setUnlocalizedName("projectred.exploration."+toolDef.unlocal)
+    GameRegistry.register(setRegistryName(toolDef.registryName))
 
     def toolDef:ToolDef
 
     override def getIsRepairable(ist1:ItemStack, ist2:ItemStack) =
     {
         if (toolDef.repair.isItemEqual(ist2)) true
-        else false//super.getIsRepairable(ist1, ist2)
+        else false
     }
 }
 
@@ -266,13 +265,14 @@ class ItemGemShovel(override val toolDef:ToolDef) extends Shovel(toolDef.mat) wi
 class ItemGemSword(override val toolDef:ToolDef) extends Sword(toolDef.mat) with TGemTool
 class ItemGemHoe(override val toolDef:ToolDef) extends ItemHoe(toolDef.mat) with TGemTool
 
-class ItemGemSaw(val toolDef:ToolDef) extends ItemCraftingDamage("projectred.exploration."+toolDef.unlocal) with Saw
+class ItemGemSaw(val toolDef:ToolDef) extends ItemCraftingDamage with Saw
 {
-    setMaxDamage(toolDef.mat.getMaxUses)
     setCreativeTab(ProjectRedExploration.tabExploration)
+    setUnlocalizedName("projectred.exploration."+toolDef.unlocal)
+    GameRegistry.register(setRegistryName(toolDef.registryName))
+    setMaxDamage(toolDef.mat.getMaxUses)
 
     override def getCuttingStrength(item:ItemStack) = toolDef.mat.getHarvestLevel
-    //override def registerIcons(reg:IIconRegister){}
 }
 
 class ItemGemSickle(override val toolDef:ToolDef) extends ItemTool(3, 0/*TODO This needs the correct values thrown in from the ToolDef*/,toolDef.mat, new java.util.HashSet) with TGemTool
@@ -349,30 +349,29 @@ object ArmorDefs
     private val sapphire = PartDefs.SAPPHIRE.makeStack
     private val peridot = PartDefs.PERIDOT.makeStack
 
-    val RUBYHELMET = ArmorDef("rubyhelmet", "ruby", armorMatrialRuby, ruby)
-    val RUBYCHESTPLATE = ArmorDef("rubychestplate","ruby",  armorMatrialRuby, ruby)
-    val RUBYLEGGINGS = ArmorDef("rubyleggings","ruby",  armorMatrialRuby, ruby)
-    val RUBYBOOTS = ArmorDef("rubyboots","ruby",  armorMatrialRuby, ruby)
+    val RUBYHELMET          = ArmorDef("helmetRuby",        "ruby_helmet",          "ruby", armorMatrialRuby, ruby)
+    val RUBYCHESTPLATE      = ArmorDef("chestplateRuby",    "ruby_chestplate",      "ruby", armorMatrialRuby, ruby)
+    val RUBYLEGGINGS        = ArmorDef("leggingsRuby",      "ruby_leggings",        "ruby", armorMatrialRuby, ruby)
+    val RUBYBOOTS           = ArmorDef("bootsRuby",         "ruby_boots",           "ruby", armorMatrialRuby, ruby)
 
-    val SAPPHIREHELMET = ArmorDef("sapphirehelmet","sapphire", armorMatrialSapphire, sapphire)
-    val SAPPHIRECHESTPLATE = ArmorDef("sapphirechestplate","sapphire", armorMatrialSapphire, sapphire)
-    val SAPPHIRELEGGINGS = ArmorDef("sapphireleggings","sapphire", armorMatrialSapphire, sapphire)
-    val SAPPHIREBOOTS = ArmorDef("sapphireboots","sapphire", armorMatrialSapphire, sapphire)
+    val SAPPHIREHELMET      = ArmorDef("helmetSapphire",    "sapphire_helmet",      "sapphire", armorMatrialSapphire, sapphire)
+    val SAPPHIRECHESTPLATE  = ArmorDef("chestplateSapphire","sapphire_chestplate",  "sapphire", armorMatrialSapphire, sapphire)
+    val SAPPHIRELEGGINGS    = ArmorDef("leggingsSapphire",  "sapphire_leggings",    "sapphire", armorMatrialSapphire, sapphire)
+    val SAPPHIREBOOTS       = ArmorDef("bootsSapphire",     "sapphire_boots",       "sapphire", armorMatrialSapphire, sapphire)
 
-    val PERIDOTHELMET = ArmorDef("peridothelmet","peridot", armorMatrialPeridot, peridot)
-    val PERIDOTCHESTPLATE = ArmorDef("peridotchestplate","peridot", armorMatrialPeridot, peridot)
-    val PERIDOTLEGGINGS = ArmorDef("peridotleggings","peridot", armorMatrialPeridot, peridot)
-    val PERIDOTBOOTS = ArmorDef("peridotboots","peridot", armorMatrialPeridot, peridot)
+    val PERIDOTHELMET       = ArmorDef("helmetPeridot",     "peridot_helmet",       "peridot", armorMatrialPeridot, peridot)
+    val PERIDOTCHESTPLATE   = ArmorDef("chestplatePeridot", "peridot_chestplate",   "peridot", armorMatrialPeridot, peridot)
+    val PERIDOTLEGGINGS     = ArmorDef("leggingsPeridot",   "peridot_leggings",     "peridot", armorMatrialPeridot, peridot)
+    val PERIDOTBOOTS        = ArmorDef("bootsPeridot",      "peridot_boots",        "peridot", armorMatrialPeridot, peridot)
 
-    case class ArmorDef(unlocal:String, tex:String, mat:ArmorMaterial, repair:ItemStack)
+    case class ArmorDef(unlocal:String, registryName:String, tex:String, mat:ArmorMaterial, repair:ItemStack)
 }
 
 class ItemGemArmor(adef:ArmorDef, slot:EntityEquipmentSlot) extends ItemToolProxies.Armor(adef.mat, slot)
 {
-    setUnlocalizedName("projectred.exploration."+adef.unlocal)
-    //setTextureName("projectred:world/"+adef.unlocal)
     setCreativeTab(ProjectRedExploration.tabExploration)
-    GameRegistry.registerItem(this, "projectred.exploration."+adef.unlocal)
+    setUnlocalizedName("projectred.exploration."+adef.unlocal)
+    GameRegistry.register(setRegistryName(adef.registryName))
 
     override def getIsRepairable(ist1:ItemStack, ist2:ItemStack) =
     {
@@ -388,19 +387,12 @@ class ItemGemArmor(adef:ArmorDef, slot:EntityEquipmentSlot) extends ItemToolProx
         }
         null
     }
-
-    //override def getArmorTexture(stack:ItemStack, entity:Entity, slot:Int, `type`:String) =
-    //{
-    //    val suffix = if(armorType == 2) 2 else 1
-    //    "projectred:textures/items/world/"+adef.tex + "_"+suffix+".png"
-    //}
 }
 
-class ItemWoolGin extends ItemCraftingDamage("woolgin")
+class ItemWoolGin extends ItemCraftingDamage
 {
     setMaxDamage(128)
     setCreativeTab(ProjectRedExploration.tabExploration)
-    //setTextureName("projectred:world/wool_gin")
 }
 
 /*class ItemLilySeeds extends ItemCore("projectred.exploration.lilyseed") with TItemSeed
@@ -438,36 +430,33 @@ import net.minecraft.util.DamageSource
 class ItemAthame() extends ItemSword(toolMaterialDiamond)
 {
     private var damage:Float = _
-  
-    setUnlocalizedName("projectred.exploration.athame")
+
     setMaxDamage(100)
-    //setTextureName("projectred:world/athame")
     setCreativeTab(ProjectRedExploration.tabExploration)
-    GameRegistry.registerItem(this, "athame")
-    
+
     override def getStrVsBlock(stack:ItemStack, block:IBlockState):Float = 1.0F
-    
+
     override def getDamageVsEntity():Float = damage
-    
+
     override def hitEntity(stack:ItemStack, entity:EntityLivingBase, player:EntityLivingBase):Boolean =
     {
         damage = toolMaterialDiamond.getDamageVsEntity
-      
+
         if ((entity.isInstanceOf[EntityEnderman])) damage = 25.0F else damage = 1.0F
-        
+
         val damageSource = DamageSource.causePlayerDamage(player.asInstanceOf[EntityPlayer])
         entity.attackEntityFrom(damageSource, damage)
-        
+
         super.hitEntity(stack, entity, player)
     }
-  
+
     override def getIsRepairable(stack:ItemStack, stack1:ItemStack):Boolean =
     {
         stack1.isItemEqual(PartDefs.SILVERINGOT.makeStack)
     }
 
     override def getItemEnchantability():Int = 30
-    
+
     override def getItemAttributeModifiers(slot:EntityEquipmentSlot) =
     {
         val damageModifier = HashMultimap.create().asInstanceOf[Multimap[String, AttributeModifier]]
