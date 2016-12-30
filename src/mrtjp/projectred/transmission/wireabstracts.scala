@@ -33,7 +33,8 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
             WirePropagator.logCalculation()
 
             if (updateOutward()) {
-                sendConnUpdate()
+                //sendConnUpdate()
+                onMaskChanged()
                 WirePropagator.propagateTo(this, FORCE)
             }
             else WirePropagator.propagateTo(this, RISING)
@@ -46,7 +47,8 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
             if (dropIfCantStay()) return
             WirePropagator.logCalculation()
             if (updateExternalConns()) {
-                sendConnUpdate()
+                //sendConnUpdate()
+                onMaskChanged()
                 WirePropagator.propagateTo(this, FORCE)
             }
             else WirePropagator.propagateTo(this, RISING)
@@ -57,7 +59,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     {
         super.onAdded()
         if (!world.isRemote) {
-            if (updateInward()) sendConnUpdate()
+            if (updateInward()) onMaskChanged()//sendConnUpdate()
             WirePropagator.propagateTo(this, RISING)
         }
     }
@@ -125,10 +127,9 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     def test(player:EntityPlayer) = false
 
     override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, held:ItemStack, hand:EnumHand) =
-
     {
         //if (CommandDebug.WIRE_READING) debug(player) else
-        if (held != null && held.getItem == ProjectRedCore.itemWireDebugger) {
+        if (held != null && held.getItem == ProjectRedCore.itemMultimeter) {
             held.damageItem(1, player)
             player.swingArm(hand)
             test(player)

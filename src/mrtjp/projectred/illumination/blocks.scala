@@ -36,7 +36,7 @@ import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
-class BlockLamp extends MultiTileBlock("lamp", "lamp", Material.REDSTONE_LIGHT) with IRedstoneConnectorBlock
+class BlockLamp extends MultiTileBlock(Material.REDSTONE_LIGHT) with IRedstoneConnectorBlock
 {
     setHardness(0.5F)
     setCreativeTab(ProjectRedIllumination.tabLighting)
@@ -239,7 +239,7 @@ class TileLamp extends MTBlockTile with ILight
     }
 }
 
-class BlockAirousLight extends BlockCore("airous_light", "lightAirous", Material.AIR)
+class BlockAirousLight extends BlockCore(Material.AIR)
 {
     override def getRenderType(state:IBlockState) = EnumBlockRenderType.INVISIBLE
 

@@ -7,7 +7,7 @@ package mrtjp.projectred.integration
 
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.packet.PacketCustom
-import mrtjp.core.gui.{GuiLib, MCButtonNode, NodeGui, TGuiBuilder}
+import mrtjp.core.gui.{GuiLib, MCButtonNode, NodeGui, TGuiFactory}
 import mrtjp.core.vec.{Point, Size}
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
@@ -51,7 +51,7 @@ class GuiTimer(part:GatePart) extends NodeGui(256, 55)
     }
 }
 
-object GuiTimer extends TGuiBuilder
+object GuiTimer extends TGuiFactory
 {
     override def getID = IntegrationProxy.timerGui
 
@@ -125,7 +125,7 @@ class GuiCounter(part:GatePart) extends NodeGui(256, 145)
     }
 }
 
-object GuiCounter extends TGuiBuilder
+object GuiCounter extends TGuiFactory
 {
     override def getID = IntegrationProxy.counterGui
 

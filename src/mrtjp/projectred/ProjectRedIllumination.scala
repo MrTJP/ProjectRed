@@ -6,22 +6,21 @@ import net.minecraft.item.ItemBlock
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 
-@Mod(modid = "ProjRed|Illumination", useMetadata = true, modLanguage = "scala")
+@Mod(modid = "projectred-illumination", useMetadata = true, modLanguage = "scala")
 object ProjectRedIllumination
 {
     /** Blocks **/
-    var blockLamp:BlockLamp = null
-    var itemBlockLamp:ItemBlock = null
-    var blockAirousLight:BlockAirousLight = null
+    var blockLamp:BlockLamp = _
+    var itemBlockLamp:ItemBlock = _
+    var blockAirousLight:BlockAirousLight = _
 
 //    /** Multipart items **/
 //    var itemPartIllumarButton:ItemPartButton = null
 //    var itemPartIllumarFButton:ItemPartFButton = null
 
-    var tabLighting = new CreativeTabs("PR|illumination")
+    var tabLighting = new CreativeTabs("projectred.illumination")
     {
-        //override def getTabIconItem = //LightObjCage.getItem(true)
-        override def getTabIconItem = itemBlockLamp
+        override def getTabIconItem = LightFactoryCage.getItem(true)
     }
 
     @Mod.EventHandler

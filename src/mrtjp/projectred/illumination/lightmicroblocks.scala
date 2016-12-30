@@ -79,6 +79,6 @@ trait LightMicroblock extends Microblock
     override def getLightValue =
     {
         val totalSize = tile.partList.collect { case p:LightMicroblock => p }.map(_.getSize/8.0).sum
-        math.min(15, (15*totalSize).toInt)
+        math.min(15, (15*totalSize*1.33).toInt)
     }
 }

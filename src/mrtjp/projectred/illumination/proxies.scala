@@ -5,6 +5,7 @@ import mrtjp.core.block.MultiTileRenderRegistry
 import mrtjp.projectred.ProjectRedIllumination._
 import mrtjp.projectred.core.IProxy
 import net.minecraftforge.fml.client.registry.ClientRegistry
+import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class IlluminationProxy_server extends IProxy
@@ -14,11 +15,16 @@ class IlluminationProxy_server extends IProxy
     override def preinit()
     {
         blockLamp = new BlockLamp
-        blockLamp.addTile(classOf[TileLamp], 0)
+        blockLamp.setUnlocalizedName("projectred.illumination.lamp")
+        GameRegistry.register(blockLamp.setRegistryName("lamp"))
         itemBlockLamp = new ItemBlockLamp
+        GameRegistry.register(itemBlockLamp.setRegistryName(blockLamp.getRegistryName))
+        blockLamp.addTile(classOf[TileLamp], 0)
 
-        blockAirousLight = new BlockAirousLight
-        blockAirousLight.bindTile(classOf[TileAirousLight])
+
+        //TODO Add one of these lights!
+//        blockAirousLight = new BlockAirousLight
+//        blockAirousLight.bindTile(classOf[TileAirousLight])
 
         lights.foreach(_.register())
     }
@@ -31,9 +37,7 @@ class IlluminationProxy_server extends IProxy
 //        itemPartIllumarButton = new ItemPartButton
 //        itemPartIllumarFButton = new ItemPartFButton
 
-
-//        IlluminationRecipes.initRecipes()
-//
+        IlluminationRecipes.initRecipes()
         LightMicroMaterial.register()
     }
 
@@ -72,7 +76,6 @@ class IlluminationProxy_client extends IlluminationProxy_server
 //        MinecraftForgeClient.registerItemRenderer(itemPartIllumarButton, RenderButton)
 //        MinecraftForgeClient.registerItemRenderer(itemPartIllumarFButton, RenderFButton)
 
-//        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ProjectRedIllumination.blockLamp), LampTESR)
         ClientRegistry.bindTileEntitySpecialRenderer(classOf[TileLamp], LampRenderer)
 
         MultiTileRenderRegistry.setRenderer(blockLamp, 0, LampRenderer)

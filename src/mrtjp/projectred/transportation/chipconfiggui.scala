@@ -181,7 +181,7 @@ class GuiChipConfig(player:EntityPlayer, c:ContainerChipConfig) extends NodeGui(
     }
 }
 
-object GuiChipConfig extends TGuiBuilder
+object GuiChipConfig extends TGuiFactory
 {
     val backgroundImage = new ResourceLocation("projectred", "textures/gui/chip_settings.png")
 

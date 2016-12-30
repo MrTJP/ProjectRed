@@ -358,7 +358,7 @@ class GuiAutoCrafter(tile:TileAutoCrafter, c:ContainerAutoCrafter) extends NodeG
     }
 }
 
-object GuiAutoCrafter extends TGuiBuilder
+object GuiAutoCrafter extends TGuiFactory
 {
     val background = new ResourceLocation("projectred", "textures/gui/auto_bench.png")
 

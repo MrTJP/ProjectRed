@@ -32,7 +32,7 @@ import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
-class ItemPartGate extends ItemCore("projectred.integration.gate") with TItemMultiPart
+class ItemPartGate extends ItemCore with TItemMultiPart
 {
     setHasSubtypes(true)
     setCreativeTab(ProjectRedIntegration.tabIntegration)
@@ -80,11 +80,11 @@ object GateDefinition extends ItemDefinition
     override type EnumVal = GateDef
     override def getItem = ProjectRedIntegration.itemPartGate
 
-    val typeSimpleGate = "projectred:gateSimple"
-    val typeComplexGate = "projectred:gateComplex"
-    val typeArrayGate = "projectred:gateArray"
-    val typeBundledGate = "projectred:gateBundled"
-    val typeNeighborGate = "projectred:gateNeighbor"
+    val typeSimpleGate = "projectred-integration:simple_gate"
+    val typeComplexGate = "projectred-integration:complex_gate"
+    val typeArrayGate = "projectred-integration:array_gate"
+    val typeBundledGate = "projectred-integration:bundled_gate"
+    val typeNeighborGate = "projectred-integration:neighbor_gate"
 
     val OR = new GateDef(typeSimpleGate)
     val NOR = new GateDef(typeSimpleGate)

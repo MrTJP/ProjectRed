@@ -283,7 +283,7 @@ class GuiBatteryBox(tile:TileBatteryBox, c:ContainerBatteryBox) extends NodeGui(
     }
 }
 
-object GuiBatteryBox extends TGuiBuilder
+object GuiBatteryBox extends TGuiFactory
 {
     val background = new ResourceLocation("projectred", "textures/gui/battery_box.png")
     override def getID = ExpansionProxy.batteryBoxGui

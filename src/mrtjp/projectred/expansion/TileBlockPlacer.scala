@@ -284,7 +284,7 @@ class GuiBlockPlacer(c:ContainerBlockPlacer) extends NodeGui(c, 176, 168)
     }
 }
 
-object GuiBlockPlacer extends TGuiBuilder
+object GuiBlockPlacer extends TGuiFactory
 {
     val background = new ResourceLocation("projectred", "textures/gui/placer.png")
 

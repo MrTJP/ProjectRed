@@ -55,7 +55,7 @@ object MossSpreadHandler extends IBlockEventHandler
                     if (isBlockWet(w, p) && isBlockTouchingAir(w, p))
                         if (r.nextInt(3) == 0) w.setBlockState(p, Blocks.MOSSY_COBBLESTONE.getDefaultState, 3)
                 }
-                else if (b == Blocks.STONEBRICK && b.getValue(BlockStoneBrick.VARIANT) == EnumType.CRACKED)
+                else if (b.getBlock == Blocks.STONEBRICK && b.getValue(BlockStoneBrick.VARIANT) == EnumType.CRACKED)
                 {
                     if (isBlockWet(w, p) && isBlockTouchingAir(w, p))
                         if (r.nextInt(3) == 0) w.setBlockState(p, Blocks.STONEBRICK.getDefaultState.withProperty(BlockStoneBrick.VARIANT, EnumType.MOSSY), 3)

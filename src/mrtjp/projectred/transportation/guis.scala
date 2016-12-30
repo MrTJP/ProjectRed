@@ -42,7 +42,7 @@ class GuiInterfacePipe(container:Container, pipe:RoutedInterfacePipePart) extend
     }
 }
 
-object GuiInterfacePipe extends TGuiBuilder
+object GuiInterfacePipe extends TGuiFactory
 {
     val backgroundImage = new ResourceLocation("projectred", "textures/gui/interface_pipe.png")
 
@@ -371,7 +371,7 @@ class GuiFirewallPipe(pipe:RoutedFirewallPipe, c:Container) extends NodeGui(c, 1
     }
 }
 
-object GuiFirewallPipe extends TGuiBuilder
+object GuiFirewallPipe extends TGuiFactory
 {
     val backgroundImage = new ResourceLocation("projectred", "textures/gui/firewall_pipe.png")
 
