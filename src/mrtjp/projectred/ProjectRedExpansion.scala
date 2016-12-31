@@ -7,7 +7,7 @@ import net.minecraft.item.Item
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 
-@Mod(modid = "ProjRed|Expansion", useMetadata = true, modLanguage = "scala")
+@Mod(modid = "projectred-expansion", useMetadata = true, modLanguage = "scala")
 object ProjectRedExpansion
 {
     /** Blocks **/
