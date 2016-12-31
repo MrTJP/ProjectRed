@@ -1,9 +1,15 @@
 package mrtjp.projectred.illumination
 
 import codechicken.lib.model.ModelRegistryHelper
-import mrtjp.core.block.MultiTileRenderRegistry
+import codechicken.lib.model.blockbakery.{BlockBakery, CCBakeryModel, IBlockStateKeyGenerator}
+import codechicken.lib.texture.TextureUtils
+import mrtjp.core.block.{MultiTileBlock, MultiTileRenderRegistry}
 import mrtjp.projectred.ProjectRedIllumination._
 import mrtjp.projectred.core.IProxy
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
+import net.minecraft.client.renderer.block.statemap.StateMap
+import net.minecraftforge.client.model.ModelLoader
+import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.client.registry.ClientRegistry
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -61,7 +67,18 @@ class IlluminationProxy_client extends IlluminationProxy_server
     {
         super.preinit()
 
+        ModelLoader.setCustomStateMapper(blockLamp, new StateMap.Builder().ignore(MultiTileBlock.TILE_INDEX).build())
+        ModelRegistryHelper.register(new ModelResourceLocation(blockLamp.getRegistryName, "normal"), new CCBakeryModel(""))
         ModelRegistryHelper.registerItemRenderer(itemBlockLamp, LampRenderer)
+        TextureUtils.addIconRegister(LampBakery)
+        BlockBakery.registerBlockKeyGenerator(blockLamp, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val colour = state.getValue(BlockProperties.UNLISTED_COLOUR_PROPERTY)
+                val isOn = state.getValue(BlockProperties.UNLISTED_ON_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,c=$colour,o=$isOn"
+            }
+        })
 
         lights.foreach(_.registerClient())
     }
@@ -78,7 +95,7 @@ class IlluminationProxy_client extends IlluminationProxy_server
 
         ClientRegistry.bindTileEntitySpecialRenderer(classOf[TileLamp], LampRenderer)
 
-        MultiTileRenderRegistry.setRenderer(blockLamp, 0, LampRenderer)
+        //MultiTileRenderRegistry.setRenderer(blockLamp, 0, LampRenderer)
     }
 
     var getLightValue = (meta:Int, brightness:Int) => brightness

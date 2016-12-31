@@ -34,11 +34,6 @@ class BlockBarrel extends MultiTileBlock(Material.WOOD)
     setHardness(2.0F)
     setSoundType(SoundType.WOOD)
     setCreativeTab(ProjectRedExploration.tabExploration)
-
-    //TODO Remove on MultiTile rewrite
-    override def getRenderType(state: IBlockState) = EnumBlockRenderType.MODEL
-
-    override def canRenderInLayer(state: IBlockState, layer: BlockRenderLayer) = layer == BlockRenderLayer.SOLID
 }
 
 class TileBarrel extends MTBlockTile with TInventory with ISidedInventory
