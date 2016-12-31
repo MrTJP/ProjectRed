@@ -134,7 +134,7 @@ class PropagationRun
             entry.getKey.multiPartChange(parts)
         }
 
-        res_NeighborChanges.foreach(b => world.notifyBlockOfStateChange(b, MultipartProxy.block))
+        res_NeighborChanges.foreach(b => world.notifyBlockOfStateChange(b.toImmutable, MultipartProxy.block))
 
         WirePropagator.finishing = parent
 
