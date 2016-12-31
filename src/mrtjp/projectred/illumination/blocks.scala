@@ -1,24 +1,28 @@
 package mrtjp.projectred.illumination
 
+import java.lang.{Boolean => JBool, Integer => JInt}
 import java.util.{Random, List => JList}
 
+import codechicken.lib.block.property.unlisted.{UnlistedBooleanProperty, UnlistedIntegerProperty}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.model.blockbakery.{BlockBakery, IBakeryBlock, ICustomBlockBakery, SimpleBlockRenderer}
 import codechicken.lib.render.item.IItemRenderer
 import codechicken.lib.render.{BlockRenderer, CCRenderState}
 import codechicken.lib.texture.TextureUtils
-import codechicken.lib.util.TransformUtils
+import codechicken.lib.util.{TransformUtils, TripleABC}
 import codechicken.lib.vec.{Cuboid6, RedundantTransformation, Translation}
-import codechicken.lib.vec.uv.IconTransformation
+import codechicken.lib.vec.uv.{IconTransformation, UVTransformation}
 import codechicken.multipart.{BlockMultipart, IRedstoneConnectorBlock}
 import com.google.common.collect.ImmutableList
 import mrtjp.core.block._
+import mrtjp.core.util.CCLConversions._
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.RenderHalo
 import net.minecraft.block.material.Material
-import net.minecraft.block.state.IBlockState
+import net.minecraft.block.state.{BlockStateContainer, IBlockState}
 import net.minecraft.client.renderer.VertexBuffer
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
-import net.minecraft.client.renderer.block.model.{ItemCameraTransforms, ItemOverrideList}
+import net.minecraft.client.renderer.block.model.{BakedQuad, ItemCameraTransforms, ItemOverrideList}
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -33,10 +37,11 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.{IBlockAccess, World}
 import net.minecraftforge.client.model.IPerspectiveAwareModel
 import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
+import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
-class BlockLamp extends MultiTileBlock(Material.REDSTONE_LIGHT) with IRedstoneConnectorBlock
+class BlockLamp extends MultiTileBlock(Material.REDSTONE_LIGHT) with IRedstoneConnectorBlock with IBakeryBlock
 {
     setHardness(0.5F)
     setCreativeTab(ProjectRedIllumination.tabLighting)
@@ -65,6 +70,21 @@ class BlockLamp extends MultiTileBlock(Material.REDSTONE_LIGHT) with IRedstoneCo
     override def getConnectionMask(world:IBlockAccess, pos:BlockPos, side:Int) = 0x1F
 
     override def weakPowerLevel(world:IBlockAccess, pos:BlockPos, side:Int, mask:Int) = 0
+
+    override def createBlockState(): BlockStateContainer = new BlockStateContainer.Builder(this).add(MultiTileBlock.TILE_INDEX)
+        .add(BlockProperties.UNLISTED_ON_PROPERTY)
+        .add(BlockProperties.UNLISTED_COLOUR_PROPERTY)
+        .build()
+
+    override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos): IBlockState = BlockBakery.handleExtendedState(state.asInstanceOf[IExtendedBlockState], world.getTileEntity(pos))
+
+    @SideOnly(Side.CLIENT)
+    override def getCustomBakery: ICustomBlockBakery = LampBakery.INSTANCE
+}
+
+object BlockProperties {
+    val UNLISTED_ON_PROPERTY = new UnlistedBooleanProperty("on")
+    val UNLISTED_COLOUR_PROPERTY = new UnlistedIntegerProperty("on")
 }
 
 class ItemBlockLamp extends ItemBlockCore(ProjectRedIllumination.blockLamp)
@@ -72,12 +92,42 @@ class ItemBlockLamp extends ItemBlockCore(ProjectRedIllumination.blockLamp)
     override def getMetadata(meta:Int) = 0 //we want everything on meta 0, since tiles store the colour
 }
 
-object LampRenderer extends TileEntitySpecialRenderer[TileLamp] with IItemRenderer with IPerspectiveAwareModel with TMultiTileBlockRender
+object LampBakery extends SimpleBlockRenderer {
+    val INSTANCE = LampBakery
+
+    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+        case t:TileLamp => state.withProperty(BlockProperties.UNLISTED_ON_PROPERTY, t.isOn.asInstanceOf[JBool])
+                .withProperty(BlockProperties.UNLISTED_COLOUR_PROPERTY, t.getColor.asInstanceOf[JInt])
+        case _ => state
+    }
+
+
+    override def getWorldTransforms(state: IExtendedBlockState): TripleABC[Integer, Integer, UVTransformation] = {
+        val isOn = state.getValue(BlockProperties.UNLISTED_ON_PROPERTY)
+        val colour = state.getValue(BlockProperties.UNLISTED_COLOUR_PROPERTY)
+        val t = new IconTransformation((if (isOn) LampRenderer.iconsOn else LampRenderer.iconsOff)(colour))
+        createTriple(0, 0, t)
+    }
+
+    override def getItemTransforms(stack: ItemStack): TripleABC[Integer, Integer, UVTransformation] = createTriple(0, 0,
+        new IconTransformation(if (stack.getItemDamage > 15) LampRenderer.iconsOn(stack.getItemDamage%16) else LampRenderer.iconsOff(stack.getItemDamage)))
+
+    override def shouldCull(): Boolean = true
+
+    override def registerIcons(textureMap: TextureMap) {
+        for (i <- 0 until 16) {
+            LampRenderer.iconsOn(i) = textureMap.registerSprite(new ResourceLocation("projectred:blocks/lighting/lampon/"+i))
+            LampRenderer.iconsOff(i) = textureMap.registerSprite(new ResourceLocation("projectred:blocks/lighting/lampoff/"+i))
+        }
+    }
+}
+
+object LampRenderer extends TileEntitySpecialRenderer[TileLamp] with IItemRenderer with IPerspectiveAwareModel
 {
     val iconsOn = new Array[TextureAtlasSprite](16)
     val iconsOff = new Array[TextureAtlasSprite](16)
 
-    override def renderBlock(w:IBlockAccess, pos:BlockPos, buffer:VertexBuffer)
+    /*override def renderBlock(w:IBlockAccess, pos:BlockPos, buffer:VertexBuffer)
     {
         w.getTileEntity(pos) match {
             case t:TileLamp =>
@@ -90,19 +140,7 @@ object LampRenderer extends TileEntitySpecialRenderer[TileLamp] with IItemRender
                 BlockRenderer.renderFullBlock(rs, 0)
             case _ =>
         }
-    }
-
-    override def renderBreaking(w:IBlockAccess, pos:BlockPos, buffer:VertexBuffer, sprite:TextureAtlasSprite){}
-
-    override def randomDisplayTick(w:IBlockAccess, pos:BlockPos, r:Random){}
-
-    override def registerTextures(map:TextureMap)
-    {
-        for (i <- 0 until 16) {
-            iconsOn(i) = map.registerSprite(new ResourceLocation("projectred:blocks/lighting/lampon/"+i))
-            iconsOff(i) = map.registerSprite(new ResourceLocation("projectred:blocks/lighting/lampoff/"+i))
-        }
-    }
+    }*/
 
     override def isBuiltInRenderer = true
     override def getParticleTexture = null
@@ -117,18 +155,34 @@ object LampRenderer extends TileEntitySpecialRenderer[TileLamp] with IItemRender
 
     override def renderItem(item:ItemStack)
     {
+        import scala.collection.JavaConversions._
         val meta = item.getItemDamage
         val icon = new IconTransformation(if (meta > 15) LampRenderer.iconsOn(meta%16) else LampRenderer.iconsOff(meta))
 
-        TextureUtils.bindBlockTexture()
+        //This here is basically a hack as the item model is bound to this IIR.
         val ccrs = CCRenderState.instance()
+
         ccrs.reset()
         ccrs.pullLightmap()
         ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
 
-        ccrs.setPipeline(icon)
-        BlockRenderer.renderCuboid(ccrs, Cuboid6.full, 0)
+        val model = BlockBakery.getCachedItemModel(item)
+
+        renderQuads(model.getQuads(null, null, 0))
+        for (face <- EnumFacing.VALUES) {
+            renderQuads(model.getQuads(null, face, 0))
+        }
+
+        def renderQuads(quads: JList[BakedQuad]) ={
+
+            for (quad:BakedQuad <- quads ) {
+                ccrs.getBuffer.addVertexData(quad.getVertexData)
+            }
+        }
+
         ccrs.draw()
+
+
 
         if (meta > 15) {
             RenderHalo.prepareRenderState()
