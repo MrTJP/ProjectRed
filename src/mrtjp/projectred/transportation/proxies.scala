@@ -52,9 +52,7 @@ class TransportationProxy_server extends IProxy with IPartFactory
         case BASIC.partname => new BasicPipePart
         case ROUTEDJUNCTION.partname => new RoutedJunctionPipePart
         case ROUTEDINTERFACE.partname => new RoutedInterfacePipePart
-        //case ROUTEDCRAFTING.partname => new RoutedCraftingPipePartø
         case ROUTEDREQUEST.partname => new RoutedRequestPipePart
-        //case ROUTEDEXTENSION.partname => new RoutedExtensionPipePart
         case ROUTEDFIREWALL.partname => new RoutedFirewallPipe
         case PRESSURETUBE.partname => new PressureTube
         case RESISTANCETUBE.partname => new ResistanceTube

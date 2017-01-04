@@ -15,23 +15,21 @@ object ProjectRedExpansion
     var machine2:BlockMachine = _ //devices
 
     /** Items **/
-    var itemEmptybattery:ItemBatteryEmpty = _
+    var itemEmptybattery:ItemEmptyBattery = _
     var itemBattery:ItemBattery = _
     var itemJetpack:ItemJetpack = _
-    var itemScrewdriver:ItemElectronicScrewdriver = _
+    var itemScrewdriver:ItemElectricScrewdriver = _
     var itemInfusedEnderPearl:ItemInfusedEnderPearl = _
     var itemPlan:ItemPlan = _
 
     /** Enchantments **/
-    var enchantmentFuelEfficiency:EnchantmentFuelEfficiency = _
+    var enchantmentElectricEfficiency:EnchantmentElectricEfficiency = _
 
     /** Parts **/
     var itemSolar:ItemSolarPanel = _
 
-    val tabExpansion = new CreativeTabs("expansion")
+    val tabExpansion = new CreativeTabs("projectred.expansion")
     {
-//        override def getIconItemStack = new ItemStack(machine2, 1, 0)
-//        override def getTabIconItem = getIconItemStack.getItem
         override def getTabIconItem = Item.getItemFromBlock(machine2)
     }
 

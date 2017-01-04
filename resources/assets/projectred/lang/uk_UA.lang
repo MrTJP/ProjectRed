@@ -76,11 +76,11 @@ item.projectred.core.datacard.name=Картка даних
 
 itemGroup.projectred.expansion=Project Red: Експансія
 
-item.projectred.expansion.emptybattery.name=Акумулятор
+item.projectred.expansion.batteryEmpty.name=Акумулятор
 item.projectred.expansion.battery.name=Акумулятор
-item.projectred.expansion.electric_screwdriver.name=Електрична викрутка
+item.projectred.expansion.screwdriverElectric.name=Електрична викрутка
 item.projectred.expansion.jetpack.name=Реактивний ранець
-item.projectred.expansion.infused_ender_pearl.name=Заряджена перлина ендеру
+item.projectred.expansion.enderPearlInfused.name=Заряджена перлина ендеру
 item.projectred.expansion.plan.name=План збірки
 tile.projectred.expansion.machine1|0.name=Індукційна піч
 tile.projectred.expansion.machine1|1.name=Електротиновий генератор
@@ -97,8 +97,8 @@ tile.projectred.expansion.machine2|9.name=Лінійний привод карк
 tile.projectred.expansion.machine2|10.name=Проектний верстак
 tile.projectred.expansion.machine2|11.name=Верстак автозбірки
 tile.projectred.expansion.machine2|12.name=Алмазний зломщик блоків
-item.projectred.expansion.solar_panel.name=Сонячна панель
-enchantment.projectred.expansion.fuel_efficiency=Паливна ефективність
+item.projectred.expansion.solarPanel.name=Сонячна панель
+enchantment.projectred.expansion.fuelEfficiency=Паливна ефективність
 
 
 

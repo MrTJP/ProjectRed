@@ -76,11 +76,11 @@ item.projectred.core.datacard.name=数据卡
 
 itemGroup.projectred.expansion=红石计划:扩展
 
-item.projectred.expansion.emptybattery.name=空电池
+item.projectred.expansion.batteryEmpty.name=空电池
 item.projectred.expansion.battery.name=电池
-item.projectred.expansion.electric_screwdriver.name=电动螺丝刀
+item.projectred.expansion.screwdriverElectric.name=电动螺丝刀
 item.projectred.expansion.jetpack.name=喷气发动机组件
-item.projectred.expansion.infused_ender_pearl.name=浸渍末影珍珠
+item.projectred.expansion.enderPearlInfused.name=浸渍末影珍珠
 item.projectred.expansion.plan.name=计划合成表
 tile.projectred.expansion.machine1|0.name=感应炉
 tile.projectred.expansion.machine1|1.name=蓝石发电机
@@ -97,8 +97,8 @@ tile.projectred.expansion.machine2|9.name=框架线形执行机
 tile.projectred.expansion.machine2|10.name=工程台
 tile.projectred.expansion.machine2|11.name=自动工作台
 tile.projectred.expansion.machine2|12.name=盒子破坏机
-item.projectred.expansion.solar_panel.name=太阳能电池板
-enchantment.projectred.expansion.fuel_efficiency=燃油效率
+item.projectred.expansion.solarPanel.name=太阳能电池板
+enchantment.projectred.expansion.fuelEfficiency=燃油效率
 
 
 

@@ -5,13 +5,10 @@
  */
 package mrtjp.projectred.expansion
 
-import java.util.{List => JList}
-
 import codechicken.lib.model.blockbakery.SimpleBlockRenderer
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import codechicken.multipart.IRedstoneConnector
 import mrtjp.core.item.ItemKey
-import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
@@ -19,7 +16,6 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.{EnumFacing, ResourceLocation}
-import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.property.IExtendedBlockState
 
 import scala.collection.JavaConversions._
@@ -60,6 +56,7 @@ object RenderBlockBreaker extends SimpleBlockRenderer
 
     import mrtjp.core.util.CCLConversions._
     import mrtjp.projectred.expansion.BlockProperties._
+
     var bottom:TextureAtlasSprite = _
     var side1:TextureAtlasSprite = _
     var top1:TextureAtlasSprite = _
@@ -69,7 +66,7 @@ object RenderBlockBreaker extends SimpleBlockRenderer
     var iconT1:UVTransformation = _
     var iconT2:UVTransformation = _
 
-    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+    override def handleState(state:IExtendedBlockState, tileEntity:TileEntity):IExtendedBlockState = tileEntity match {
         case t:TActiveDevice => {
             var s = state
             s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[JInt])
@@ -80,7 +77,7 @@ object RenderBlockBreaker extends SimpleBlockRenderer
         case _ => state
     }
 
-    override def getWorldTransforms(state: IExtendedBlockState) = {
+    override def getWorldTransforms(state:IExtendedBlockState) = {
         val side = state.getValue(UNLISTED_SIDE_PROPERTY)
         val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
         val active = state.getValue(UNLISTED_ACTIVE_PROPERTY).asInstanceOf[Boolean]

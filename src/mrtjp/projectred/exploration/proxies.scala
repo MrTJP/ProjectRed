@@ -66,11 +66,6 @@ class ExplorationProxy_server extends IProxy
         GameRegistry.register(blockDecorativeWall.setRegistryName("stone_wall"))
         GameRegistry.register(new ItemBlockCore(blockDecorativeWall).setRegistryName(blockDecorativeWall.getRegistryName))
 
-        //blockLily = new BlockLily
-        //blockLily.addSingleTile(classOf[TileLily])
-        //itemLilySeed = new ItemLilySeeds
-        //for (i <- 0 until 16) OreDictionary.registerOre(EnumColour.apply(i).getOreDictionaryName, new ItemStack(itemLilySeed, 1, i))
-
         blockBarrel = new BlockBarrel
         blockBarrel.setUnlocalizedName("projectred.exploration.barrel")
         GameRegistry.register(blockBarrel.setRegistryName("barrel"))
@@ -139,8 +134,6 @@ class ExplorationProxy_server extends IProxy
 
     override def init()
     {
-
-
         ExplorationRecipes.initRecipes()
 
         //World Gen
@@ -330,8 +323,8 @@ class ExplorationProxy_server extends IProxy
 
     override def postinit()
     {
-        if (Configurator.gen_SpreadingMoss)
-            BlockUpdateHandler.register(MossSpreadHandler)
+//        if (Configurator.gen_SpreadingMoss)
+//            BlockUpdateHandler.register(MossSpreadHandler)
 
         InvWrapper.register(BarrelInvWrapper)
     }
@@ -342,9 +335,9 @@ class ExplorationProxy_server extends IProxy
 
 class ExplorationProxy_client extends ExplorationProxy_server
 {
-
     @SideOnly(Side.CLIENT)
-    override def preinit() {
+    override def preinit()
+    {
         super.preinit()
         ModelLoader.setCustomStateMapper(blockOres, new StateMapperBase {
             override protected def getModelResourceLocation(state: IBlockState): ModelResourceLocation = {

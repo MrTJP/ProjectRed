@@ -37,21 +37,38 @@ class ExpansionProxy_server extends IProxy with IDynamicPartFactory
     {
         PacketCustom.assignHandler(ExpansionSPH.channel, ExpansionSPH)
 
-        MultiPartRegistry.registerParts(this, Array("pr_solar"))
+        MultiPartRegistry.registerParts(this, Array("projectred-expansion:solar_panel"))
 
-        //Parts
+        /** Initialization **/
         itemSolar = new ItemSolarPanel
-
-        //Items
-        itemEmptybattery = new ItemBatteryEmpty()
+        itemEmptybattery = new ItemEmptyBattery
         itemBattery = new ItemBattery
         itemJetpack = new ItemJetpack
-        itemScrewdriver = new ItemElectronicScrewdriver
+        itemScrewdriver = new ItemElectricScrewdriver
         itemInfusedEnderPearl = new ItemInfusedEnderPearl
         itemPlan = new ItemPlan
 
-        GameRegistry.register(itemSolar.setRegistryName("solar_panel"))
+        machine1 = new BlockMachine("machine1", machine1Bakery) //machines
+        machine2 = new BlockMachine("machine2", machine2Bakery) //devices
 
+        enchantmentElectricEfficiency = new EnchantmentElectricEfficiency
+
+        /** Localization **/
+        itemSolar.setUnlocalizedName("projectred.expansion.solarPanel")
+        itemEmptybattery.setUnlocalizedName("projectred.expansion.batteryEmpty")
+        itemBattery.setUnlocalizedName("projectred.expansion.battery")
+        itemJetpack.setUnlocalizedName("projectred.expansion.jetpack")
+        itemScrewdriver.setUnlocalizedName("projectred.expansion.screwdriverElectric")
+        itemInfusedEnderPearl.setUnlocalizedName("projectred.expansion.enderPearlInfused")
+        itemPlan.setUnlocalizedName("projectred.expansion.plan")
+
+        machine1.setUnlocalizedName("projectred.expansion.machine1")
+        machine2.setRegistryName("projectred.expansion.machine2")
+
+        enchantmentElectricEfficiency.setName("projectred.expansion.fuelEfficiency")
+
+        /** Registration **/
+        GameRegistry.register(itemSolar.setRegistryName("solar_panel"))
         GameRegistry.register(itemEmptybattery.setRegistryName("empty_battery"))
         GameRegistry.register(itemBattery.setRegistryName("charged_battery"))
         GameRegistry.register(itemJetpack.setRegistryName("jetpack"))
@@ -59,17 +76,18 @@ class ExpansionProxy_server extends IProxy with IDynamicPartFactory
         GameRegistry.register(itemInfusedEnderPearl.setRegistryName("infused_ender_pearl"))
         GameRegistry.register(itemPlan.setRegistryName("plan"))
 
+        GameRegistry.register(machine1.setRegistryName("machine1"))
+        GameRegistry.register(new ItemBlockCore(machine1).setRegistryName(machine1.getRegistryName))
+        GameRegistry.register(machine2.setRegistryName("machine2"))
+        GameRegistry.register(new ItemBlockCore(machine2).setRegistryName(machine2.getRegistryName))
+
+        GameRegistry.register(enchantmentElectricEfficiency.setRegistryName("electric_efficiency"))
+
         //Machine1 (machines)
-        machine1 = new BlockMachine("machine1", machine1Bakery)
-        GameRegistry.register(machine1)
-        GameRegistry.register(new ItemBlockCore(machine1).setRegistryName("machine1"))
         machine1.addTile(classOf[TileInductiveFurnace], 0)
         machine1.addTile(classOf[TileElectrotineGenerator], 1)
 
         //Machine2 (devices)
-        machine2 = new BlockMachine("machine2", machine2Bakery)
-        GameRegistry.register(machine2)
-        GameRegistry.register(new ItemBlockCore(machine2).setRegistryName("machine2"))
         machine2.addTile(classOf[TileBlockBreaker], 0)
         machine2.addTile(classOf[TileItemImporter], 1)
         //machine2.addTile(classOf[TileBlockPlacer], 2)
@@ -83,9 +101,6 @@ class ExpansionProxy_server extends IProxy with IDynamicPartFactory
         machine2.addTile(classOf[TileProjectBench], 10)
         machine2.addTile(classOf[TileAutoCrafter], 11)
         machine2.addTile(classOf[TileDiamondBlockBreaker], 12)
-
-        //Enchantments
-        enchantmentFuelEfficiency = new EnchantmentFuelEfficiency(Configurator.enchantment_fuel_efficiencty_id)
     }
 
     def init()
@@ -100,7 +115,7 @@ class ExpansionProxy_server extends IProxy with IDynamicPartFactory
         SpacebarServerTracker.register()
         ForwardServerTracker.register()
 
-        MinecraftForge.EVENT_BUS.register(TeleposedEnderPearlProperty)
+        //MinecraftForge.EVENT_BUS.register(TeleposedEnderPearlProperty)
     }
 
     override def version = "@VERSION@"
@@ -265,13 +280,11 @@ class ExpansionProxy_client extends ExpansionProxy_server
 
         registerBlockToBakery(machine1, machine1Bakery.registerKeyGens(machine1), new Builder().ignore(MultiTileBlock.TILE_INDEX).build())
         registerBlockToBakery(machine2, machine2Bakery.registerKeyGens(machine2), new Builder().ignore(MultiTileBlock.TILE_INDEX).build())
-
-
-
     }
 
     @SideOnly(Side.CLIENT)
-    def registerBlockToBakery(block:Block, iconRegister:IIconRegister, stateMap:IStateMapper) = {
+    def registerBlockToBakery(block:Block, iconRegister:IIconRegister, stateMap:IStateMapper) =
+    {
         val model = new CCBakeryModel("")
         val regLoc = block.getRegistryName
         ModelLoader.setCustomStateMapper(block, stateMap)
@@ -317,14 +330,14 @@ object SpacebarServerTracker extends TServerKeyTracker
 object SpacebarClientTracker extends TClientKeyTracker
 {
     override def getTracker = SpacebarServerTracker
-    override def getIsKeyPressed = Minecraft.getMinecraft.gameSettings.keyBindJump.isPressed
+    override def getIsKeyDown = Minecraft.getMinecraft.gameSettings.keyBindJump.isKeyDown
 }
 
 object ForwardServerTracker extends TServerKeyTracker
 object ForwardClientTracker extends TClientKeyTracker
 {
     override def getTracker = ForwardServerTracker
-    override def getIsKeyPressed = Minecraft.getMinecraft.gameSettings.keyBindForward.isPressed
+    override def getIsKeyDown = Minecraft.getMinecraft.gameSettings.keyBindForward.isKeyDown
 }
 
 object ExpansionRecipes
@@ -399,7 +412,7 @@ object ExpansionRecipes
             'p':JC, Blocks.PISTON,
             'r':JC, Items.REDSTONE
         ))
-        
+
         //Item Importer
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 1),
             "www", "sps", "srs",
@@ -517,7 +530,7 @@ object ExpansionRecipes
             'c':JC, Blocks.CHEST,
             'e':JC, "ingotElectrotineAlloy"
         ))
-        
+
         //Diamond Block Breaker
         if (Configurator.enableDiamondBlockBreaker) {
             GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 12),
