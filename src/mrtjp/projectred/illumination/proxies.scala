@@ -3,7 +3,7 @@ package mrtjp.projectred.illumination
 import codechicken.lib.model.ModelRegistryHelper
 import codechicken.lib.model.blockbakery.{BlockBakery, CCBakeryModel, IBlockStateKeyGenerator}
 import codechicken.lib.texture.TextureUtils
-import mrtjp.core.block.{MultiTileBlock, MultiTileRenderRegistry}
+import mrtjp.core.block.MultiTileBlock
 import mrtjp.projectred.ProjectRedIllumination._
 import mrtjp.projectred.core.IProxy
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
