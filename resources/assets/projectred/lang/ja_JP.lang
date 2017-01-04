@@ -77,11 +77,11 @@ item.projectred.core.datacard.name=データカード
 
 itemGroup.projectred.expansion=Project Red: Expansion
 
-item.projectred.expansion.emptybattery.name=青電力電池(空)
+item.projectred.expansion.batteryEmpty.name=青電力電池(空)
 item.projectred.expansion.battery.name=青電力電池
-item.projectred.expansion.electric_screwdriver.name=Electric Screwdriver
+item.projectred.expansion.screwdriverElectric.name=Electric Screwdriver
 item.projectred.expansion.jetpack.name=ジェットパック
-item.projectred.expansion.infused_ender_pearl.name=Infused Ender Pearl
+item.projectred.expansion.enderPearlInfused.name=Infused Ender Pearl
 item.projectred.expansion.plan.name=Recipe Plan
 tile.projectred.expansion.machine1|0.name=青電力かまど
 tile.projectred.expansion.machine1|1.name=青電力発電機
@@ -98,8 +98,8 @@ tile.projectred.expansion.machine2|9.name=Frame Linear Actuator
 tile.projectred.expansion.machine2|10.name=プロジェクトテーブル
 tile.projectred.expansion.machine2|11.name=自動作業台
 tile.projectred.expansion.machine1|0.name=Diamond 青電力かまど
-item.projectred.expansion.solar_panel.name=Solar Panel
-enchantment.projectred.expansion.fuel_efficiency=Fuel Efficiency
+item.projectred.expansion.solarPanel.name=Solar Panel
+enchantment.projectred.expansion.fuelEfficiency=Fuel Efficiency
 
 
 

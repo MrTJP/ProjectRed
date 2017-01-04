@@ -49,12 +49,6 @@ class IlluminationProxy_server extends IProxy
 
     override def postinit(){}
 
-//    private def getLight(name:String) = lights.find(_.getType == name) match
-//    {
-//        case Some(e) => e.createPart
-//        case None => null
-//    }
-
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"
 }

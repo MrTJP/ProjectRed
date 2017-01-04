@@ -17,7 +17,6 @@ object ProjectRedExploration
     var blockOres:BlockOre = _
     var blockDecorativeStone:BlockDecorativeStone = _
     var blockDecorativeWall:BlockDecorativeWall = _
-    //var blockLily:BlockLily = _
     var blockBarrel:BlockBarrel = _
 
     /** Materials **/
@@ -59,7 +58,6 @@ object ProjectRedExploration
     var itemSapphireSickle:ItemGemSickle = _
     var itemPeridotSickle:ItemGemSickle = _
     var itemDiamondSickle:ItemGemSickle = _
-    //var itemLilySeed:ItemLilySeeds = _
     var itemRubyHelmet:ItemGemArmor = _
     var itemRubyChestplate:ItemGemArmor = _
     var itemRubyLeggings:ItemGemArmor = _

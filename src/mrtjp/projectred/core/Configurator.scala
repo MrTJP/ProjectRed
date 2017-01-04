@@ -27,8 +27,6 @@ object Configurator extends ModConfig("ProjRed|Core")
     var routerUpdateThreadCount = 4
     var maxPipesWandered = 0
 
-    var enchantment_fuel_efficiencty_id = 80
-    
     /** Machines **/
     var enableDiamondBlockBreaker = false
 
@@ -96,11 +94,9 @@ object Configurator extends ModConfig("ProjRed|Core")
         routerUpdateThreadCount = general.put("Routed Pipes: Update Threads", routerUpdateThreadCount, "Number of active route table update threads.")
         maxPipesWandered = general.put("Routed Pipes: Max Wander Distance", maxPipesWandered, "Maximum distance an item may aimlessly wander in a pipe before being erased. 0 for unlimited.")
 
-        enchantment_fuel_efficiencty_id = general.put("Enchantment: Fuel Efficiency", enchantment_fuel_efficiencty_id, "ID for the Jetpack Fuel Efficiency enchantment.")
-
         val machines = new BaseCategory("Machine Settings", "Contains settings related to machines and devices.")
         enableDiamondBlockBreaker = machines.put("Enable the Diamond Block Breaker", enableDiamondBlockBreaker, "Allow the Diamond Block Breaker to be crafted.")
-        
+
         val rendering = new BaseCategory("Render Settings", "Contains settings related to how things render in-game.")
         logicwires3D = rendering.put("3D Logic Wires", logicwires3D, "If set to false, flat wire textures will be used for logic gates. Significant performance improvement.")
         staticWires = rendering.put("Static Wires", staticWires, "If set to false, wires will be rendered in the TESR rather than the WorldRenderer.")

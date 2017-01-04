@@ -7,6 +7,7 @@ import codechicken.lib.vec.Vector3._
 import codechicken.lib.vec.uv.{IconTransformation, MultiIconTransformation}
 import codechicken.lib.vec.{Cuboid6, Vector3}
 import codechicken.microblock._
+import codechicken.multipart.TMultiPart
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.RenderHalo
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -78,7 +79,11 @@ trait LightMicroblock extends Microblock
 
     override def getLightValue =
     {
-        val totalSize = tile.partList.collect { case p:LightMicroblock => p }.map(_.getSize/8.0).sum
-        math.min(15, (15*totalSize*1.33).toInt)
+        val lightVolume = tile.partList.collect { case p:LightMicroblock => p }.map { light =>
+            val b = light.getBounds
+            math.abs(b.max.x-b.min.x)*math.abs(b.max.y-b.min.y)*math.abs(b.max.z-b.min.z)
+        }.sum
+
+        math.min(15, 10+5*lightVolume*8).toInt
     }
 }

@@ -281,11 +281,11 @@ abstract class LightFactory extends IPartFactory
     final def register()
     {
         item = createItem(false)
-        item.setUnlocalizedName(getUnlocalizedName(false))
+        item.setUnlocalizedName("projectred.illumination."+getUnlocalizedName(false))
         GameRegistry.register(item.setRegistryName(getItemRegistryName(false)))
 
         itemInv = createItem(true)
-        itemInv.setUnlocalizedName(getUnlocalizedName(true))
+        itemInv.setUnlocalizedName("projectred.illumination."+getUnlocalizedName(true))
         GameRegistry.register(itemInv.setRegistryName(getItemRegistryName(true)))
 
         MultiPartRegistry.registerParts(this, Array(getType))
@@ -305,8 +305,6 @@ abstract class LightFactory extends IPartFactory
     {
         val renderer = new IItemRenderer with IPerspectiveAwareModel with IIconRegister
         {
-            var transformMap:ImmutableMap[TransformType, TRSRTransformation] = null
-
             override def getParticleTexture = null
             override def isBuiltInRenderer = true
             override def getItemCameraTransforms = ItemCameraTransforms.DEFAULT
@@ -317,21 +315,18 @@ abstract class LightFactory extends IPartFactory
 
             override def handlePerspective(t:TransformType) =
             {
-                if (transformMap == null || true) {
-                    val builder = ImmutableMap.builder[TransformType, TRSRTransformation]()
-                    for (tt <- TransformType.values()) {
-                        val (pos, rot, scale) = getItemRenderTransform(t)
-                        val mat = ((new Rotation(rot.z.toRadians, 0, 0, 1) `with`
-                                new Rotation(rot.y.toRadians, 0, 1, 0) `with`
-                                new Rotation(rot.x.toRadians, 1, 0, 0) `with`
-                                new Scale(scale)) at Vector3.center `with`
-                                pos.translation()).compile()
-                        builder.put(tt, TransformUtils.fromMatrix4(mat))
-                    }
-                    transformMap = builder.build()
+                val builder = ImmutableMap.builder[TransformType, TRSRTransformation]()
+                for (tt <- TransformType.values()) {
+                    val (pos, rot, scale) = getItemRenderTransform(t)
+                    val mat = ((new Rotation(rot.z.toRadians, 0, 0, 1) `with`
+                            new Rotation(rot.y.toRadians, 0, 1, 0) `with`
+                            new Rotation(rot.x.toRadians, 1, 0, 0) `with`
+                            new Scale(scale)) at Vector3.center `with`
+                            pos.translation()).compile()
+                    builder.put(tt, TransformUtils.fromMatrix4(mat))
                 }
 
-                MapWrapper.handlePerspective(this, transformMap, t)
+                MapWrapper.handlePerspective(this, builder.build(), t)
             }
 
             override def renderItem(item:ItemStack)

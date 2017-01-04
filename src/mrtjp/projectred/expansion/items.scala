@@ -78,11 +78,9 @@ trait TItemBattery extends IChargable
         stack.getItemDamage == 0 && stack.getItem == getChargedVariant
 }
 
-class ItemBatteryEmpty extends ItemCore with TItemBattery
+class ItemEmptyBattery extends ItemCore with TItemBattery
 {
-    setUnlocalizedName("projectred.expansion.emptybattery")
     setCreativeTab(ProjectRedExpansion.tabExpansion)
-    //setTextureName("projectred:mechanical/empty_battery")
 
     override def isEmpty = true
 
@@ -92,12 +90,10 @@ class ItemBatteryEmpty extends ItemCore with TItemBattery
 
 class ItemBattery extends ItemCore with TItemBattery
 {
-    setUnlocalizedName("projectred.expansion.battery")
+    setCreativeTab(ProjectRedExpansion.tabExpansion)
+    setMaxStackSize(1)
     setMaxDamage(1600)
     setNoRepair()
-    setMaxStackSize(1)
-    //setTextureName("projectred:mechanical/battery")
-    setCreativeTab(ProjectRedExpansion.tabExpansion)
 
     override def isEmpty = false
 
@@ -134,16 +130,16 @@ trait IChargable
     }
 
     def isFullyCharged(stack:ItemStack) = stack.getItemDamage == 0
+
+    def canApplyElectricEnchantment(enchantment:Enchantment) = false
 }
 
-class ItemElectronicScrewdriver extends ItemCore with IScrewdriver with IChargable
+class ItemElectricScrewdriver extends ItemCore with IScrewdriver with IChargable
 {
-    setUnlocalizedName("projectred.expansion.electric_screwdriver")
+    setCreativeTab(ProjectRedExpansion.tabExpansion)
     setMaxStackSize(1)
     setMaxDamage(400)
     setNoRepair()
-    setCreativeTab(ProjectRedExpansion.tabExpansion)
-    //setTextureName("projectred:mechanical/electric_screwdriver")
 
     override def onItemUse(stack: ItemStack, playerIn: EntityPlayer, worldIn: World,
                            pos: BlockPos, hand: EnumHand, facing: EnumFacing,
@@ -161,22 +157,7 @@ class ItemElectronicScrewdriver extends ItemCore with IScrewdriver with IChargab
 
 class ItemPlan extends ItemCore
 {
-    setUnlocalizedName("projectred.expansion.plan")
     setCreativeTab(ProjectRedExpansion.tabExpansion)
-
-    /*var iconBlank:IIcon = null
-    var iconWritten:IIcon = null
-
-    override def getIconIndex(stack:ItemStack) =
-        if (ItemPlan.hasRecipeInside(stack)) iconWritten else iconBlank
-
-    override def getIcon(stack:ItemStack, pass:Int) = getIconIndex(stack)
-
-    override def registerIcons(reg:IIconRegister)
-    {
-        iconBlank = reg.registerIcon("projectred:mechanical/blank_plan")
-        iconWritten = reg.registerIcon("projectred:mechanical/written_plan")
-    }*/
 
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[String], flag:Boolean)
     {
@@ -242,12 +223,15 @@ object ItemPlan
 
 class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, EntityEquipmentSlot.CHEST) with IChargable with ISpecialArmor
 {
+    setCreativeTab(ProjectRedExpansion.tabExpansion)
     setMaxStackSize(1)
     setMaxDamage(6400)
     setNoRepair()
-    setCreativeTab(ProjectRedExpansion.tabExpansion)
-    //setTextureName("projectred:mechanical/jetpack")
-    setUnlocalizedName("projectred.expansion.jetpack")
+
+    override def canApplyElectricEnchantment(enchantment:Enchantment) = enchantment match {
+        case ench:EnchantmentElectricEfficiency => true
+        case _ => false
+    }
 
     override def onArmorTick(world:World, player:EntityPlayer, stack:ItemStack)
     {
@@ -265,7 +249,7 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, EntityEquipmentSlo
     def getPowerDraw(stack:ItemStack):Int =
     {
         if (!stack.isItemEnchanted) return 16
-        val i = EnchantmentHelper.getEnchantmentLevel(ProjectRedExpansion.enchantmentFuelEfficiency, stack)
+        val i = EnchantmentHelper.getEnchantmentLevel(ProjectRedExpansion.enchantmentElectricEfficiency, stack)
         Math.max(1, 16-i*3)
     }
 
@@ -309,21 +293,25 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, EntityEquipmentSlo
             player.moveRelative(0, (power*0.6).toFloat, 0.055f)
 
         player.distanceWalkedModified = 0
-        player.fallDistance =
-                if (player.motionY < 0) ((player.motionY*player.motionY)/0.065).toFloat
-                else 0
+        player.fallDistance = if (player.motionY < 0)
+            ((player.motionY*player.motionY)/0.065).toFloat else 0
     }
 
 }
 
-class EnchantmentFuelEfficiency(id:Int) extends Enchantment(Rarity.UNCOMMON, EnumEnchantmentType.ARMOR_CHEST, Array(EntityEquipmentSlot.CHEST))
+trait IElectricEnchantment extends Enchantment
 {
-    setName("projectred.expansion.fuel_efficiency")
+    override def canApply(stack:ItemStack) = stack.getItem match {
+        case ich:IChargable =>
+            super.canApply(stack) && ich.canApplyElectricEnchantment(this)
+        case _ => false
+    }
+}
 
+class EnchantmentElectricEfficiency extends Enchantment(Rarity.UNCOMMON, EnumEnchantmentType.ALL, Array(EntityEquipmentSlot.CHEST)) with IElectricEnchantment
+{
     override def getMinLevel = 1
     override def getMaxLevel = 4
-
-    override def canApply(stack:ItemStack) = stack.getItem.isInstanceOf[ItemJetpack]
 }
 
 object ItemJetpack
@@ -416,9 +404,7 @@ object ItemJetpack
 
 class ItemInfusedEnderPearl extends ItemCore
 {
-    setUnlocalizedName("projectred.expansion.infused_ender_pearl")
     setMaxStackSize(1)
-    //setTextureName("projectred:mechanical/infused_ender_pearl")
 
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[String], flag:Boolean)
     {

@@ -76,11 +76,11 @@ item.projectred.core.datacard.name=Datenkarte
 
 itemGroup.projectred.expansion=Project Red: Expansion
 
-item.projectred.expansion.emptybattery.name=Batterie
+item.projectred.expansion.batteryEmpty.name=Batterie
 item.projectred.expansion.battery.name=Batterie
-item.projectred.expansion.electric_screwdriver.name=Elektrischer Schraubendreher
+item.projectred.expansion.screwdriverElectric.name=Elektrischer Schraubendreher
 item.projectred.expansion.jetpack.name=Jetpack
-item.projectred.expansion.infused_ender_pearl.name=Infundierte Enderperle
+item.projectred.expansion.enderPearlInfused.name=Infundierte Enderperle
 item.projectred.expansion.plan.name=Rezeptplan
 tile.projectred.expansion.machine1|0.name=Induktionsofen
 tile.projectred.expansion.machine1|1.name=Electrotin-Generator
@@ -97,8 +97,8 @@ tile.projectred.expansion.machine2|9.name=Frame-Linearantrieb
 tile.projectred.expansion.machine2|10.name=Projektbank
 tile.projectred.expansion.machine2|11.name=Automatische Werkbank
 tile.projectred.expansion.machine2|12.name=Diamant Blockbrecher
-item.projectred.expansion.solar_panel.name=Solarpanel
-enchantment.projectred.expansion.fuel_efficiency=Treibstoffeffizienz
+item.projectred.expansion.solarPanel.name=Solarpanel
+enchantment.projectred.expansion.fuelEfficiency=Treibstoffeffizienz
 
 
 

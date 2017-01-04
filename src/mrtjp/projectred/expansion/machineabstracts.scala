@@ -28,8 +28,6 @@ class BlockMachine(regName:String, bakery:ICustomBlockBakery) extends MultiTileB
 {
     setHardness(2)
     setCreativeTab(ProjectRedExpansion.tabExpansion)
-    setRegistryName(regName)
-    setUnlocalizedName("projectred.expansion." + regName)
 
     override def isOpaqueCube(blockState: IBlockState) = true
 
@@ -53,7 +51,8 @@ class BlockMachine(regName:String, bakery:ICustomBlockBakery) extends MultiTileB
     override def getCustomBakery:ICustomBlockBakery = bakery
 }
 
-object BlockProperties {
+object BlockProperties
+{
     val UNLISTED_ROTATION_PROPERTY:IUnlistedProperty[Integer] = new UnlistedIntegerProperty("rotation")
     val UNLISTED_SIDE_PROPERTY = new UnlistedIntegerProperty("side")
     val UNLISTED_WORKING_PROPERTY = new UnlistedBooleanProperty("working")

@@ -137,7 +137,6 @@ object SolarPanelPart
 
 class ItemSolarPanel extends ItemCore with TItemMultiPart //with TItemGlassSound
 {
-    setUnlocalizedName("projectred.expansion.solar_panel")
     setCreativeTab(ProjectRedExpansion.tabExpansion)
 
     override def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, side:Int, vhit:Vector3):TMultiPart =

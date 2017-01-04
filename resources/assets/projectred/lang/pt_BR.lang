@@ -75,11 +75,11 @@ item.projectred.core.datacard.name=Cartão de Dados
 
 
 itemGroup.projectred.expansion=Project Red: Expansão
-item.projectred.expansion.emptybattery.name=Bateria
+item.projectred.expansion.batteryEmpty.name=Bateria
 item.projectred.expansion.battery.name=Bateria
-item.projectred.expansion.electric_screwdriver.name=Chave de Fenda Elétrica
+item.projectred.expansion.screwdriverElectric.name=Chave de Fenda Elétrica
 item.projectred.expansion.jetpack.name=Jetpack
-item.projectred.expansion.infused_ender_pearl.name=Pérola do Fim infundida
+item.projectred.expansion.enderPearlInfused.name=Pérola do Fim infundida
 tile.projectred.expansion.machine1|0.name=Fornalha Indutiva
 tile.projectred.expansion.machine1|1.name=Gerador por Electrotine
 tile.projectred.expansion.machine2|0.name=Quebrador de Blocos
@@ -93,7 +93,7 @@ tile.projectred.expansion.machine2|7.name=Teleposer
 tile.projectred.expansion.machine2|8.name=Motor de Frame
 tile.projectred.expansion.machine2|9.name=Atuador Linear de Frames
 tile.projectred.expansion.machine2|12.name=Quebrador Diamante de Blocos
-item.projectred.expansion.solar_panel.name=Painel Solar
+item.projectred.expansion.solarPanel.name=Painel Solar
 
 
 
