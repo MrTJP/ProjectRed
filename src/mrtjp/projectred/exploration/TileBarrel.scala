@@ -11,7 +11,7 @@ import codechicken.lib.render.state.GlStateManagerHelper
 import codechicken.lib.render.state.GlStateManagerHelper.State
 import codechicken.lib.util.ItemUtils
 import codechicken.lib.vec._
-import mrtjp.core.block.{ItemBlockCore, MTBlockTile, MultiTileBlock}
+import mrtjp.core.block.{MTBlockTile, MultiTileBlock}
 import mrtjp.core.inventory.{IInvWrapperRegister, InvWrapper, TInventory}
 import mrtjp.core.item.ItemKey
 import mrtjp.core.world.WorldLib
@@ -26,7 +26,9 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{IInventory, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.{BlockRenderLayer, EnumBlockRenderType, EnumFacing}
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
+import net.minecraft.world.World
 import org.lwjgl.opengl.GL11._
 
 class BlockBarrel extends MultiTileBlock(Material.WOOD)
@@ -34,6 +36,9 @@ class BlockBarrel extends MultiTileBlock(Material.WOOD)
     setHardness(2.0F)
     setSoundType(SoundType.WOOD)
     setCreativeTab(ProjectRedExploration.tabExploration)
+
+    override def getPlayerRelativeBlockHardness(state:IBlockState, player:EntityPlayer, world:World, pos:BlockPos) =
+        net.minecraftforge.common.ForgeHooks.blockStrength(state, player, world, pos)
 }
 
 class TileBarrel extends MTBlockTile with TInventory with ISidedInventory

@@ -8,6 +8,8 @@ import codechicken.multipart.{IPartFactory, MultiPartRegistry}
 import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedTransportation._
 import mrtjp.projectred.core.{Configurator, IProxy}
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
+import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -24,7 +26,7 @@ class TransportationProxy_server extends IProxy with IPartFactory
         GameRegistry.register(itemPartPipe.setRegistryName("pipe"))
 
         itemRoutingChip = new ItemRoutingChip
-        itemRoutingChip.setUnlocalizedName("projectred.transporation.routingChip")
+        itemRoutingChip.setUnlocalizedName("projectred.transportation.routingChip")
         GameRegistry.register(itemRoutingChip.setRegistryName("routing_chip"))
 
         itemRouterUtility = new ItemRouterUtility
@@ -76,6 +78,9 @@ class TransportationProxy_client extends TransportationProxy_server
 
         for (i <- RoutingChipDefs.values)
             i.setCustomModelResourceLocations()
+
+        ModelLoader.setCustomModelResourceLocation(itemRouterUtility, 0,
+            new ModelResourceLocation("projectred:mechanical/tools", "type=router_utility"))
     }
 
     @SideOnly(Side.CLIENT)

@@ -35,7 +35,7 @@ class ItemPartPipe extends ItemCore with TItemMultiPart
       */
     override def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, side:Int, vhit:Vector3) =
     {
-        val pdef = PipeDefs.values(item.getItemDamage)
+        val pdef = PipeDefs.fromMeta(item.getItemDamage)
         val p = MultiPartRegistry.loadPart(pdef.partname, null:NBTTagCompound).asInstanceOf[PayloadPipePart[_]]
         if (p != null) p.preparePlacement(side, item.getItemDamage)
         p
@@ -55,20 +55,24 @@ object PipeDefs extends ItemDefinition
     override type EnumVal = PipeVal
     override def getItem = ProjectRedTransportation.itemPartPipe
 
-    val BASIC = new PipeVal("projectred-transporation:pipe", "basic", "rs")
-    val ROUTEDJUNCTION = new PipeVal("projectred-transporation:routed_pipe", "routedjunc",
-        "routed", "unrouted", "routedconn", "unroutedconn")
-    val ROUTEDINTERFACE = new PipeVal("projectred-transporation:interface_pipe", "routedint")
-    //val ROUTEDCRAFTING = new PipeVal("pr_rcrafting", "routedcrafting") /** deprecated **/
-    val ROUTEDREQUEST = new PipeVal("projectred-transporation:request_pipe", "routedrequest")
-    //val ROUTEDEXTENSION = new PipeVal("pr_rextension", "routedextension") /** deprecated **/
-    val ROUTEDFIREWALL = new PipeVal("projectred-transporation:firewall_pipe", "routedfire")
-    val PRESSURETUBE = new PipeVal("projectred-transporation:pressure_tube", Seq("pressuretube")++(0 to 15 map{"colour/colour_"+_}):_*)
-    val RESISTANCETUBE = new PipeVal("projectred-transporation:resustance_tube", "resistancetube")
-    val NETWORKVALVE = new PipeVal("projectred-transporation:netvalve_pipe", "netvalve_blocked", "netvalve_in", "netvalve_out", "netvalve_inout")
-    val NETWORKLATENCY = new PipeVal("projectred-transporation:netlatency_pipe", "netlatency")
+    /** Routed Pipes 0 - 63 **/
 
-    class PipeVal(val partname:String, val textures:String*) extends ItemDef(partname)
+    val BASIC = new PipeVal(0, "projectred-transporation:pipe", "basic", "rs")
+    val ROUTEDJUNCTION = new PipeVal(1, "projectred-transporation:routed_pipe", "routedjunc",
+        "routed", "unrouted", "routedconn", "unroutedconn")
+    val ROUTEDINTERFACE = new PipeVal(2, "projectred-transporation:interface_pipe", "routedint")
+    val ROUTEDREQUEST = new PipeVal(3, "projectred-transporation:request_pipe", "routedrequest")
+    val ROUTEDFIREWALL = new PipeVal(4, "projectred-transporation:firewall_pipe", "routedfire")
+
+    val NETWORKVALVE = new PipeVal(32, "projectred-transporation:netvalve_pipe", "netvalve_blocked", "netvalve_in", "netvalve_out", "netvalve_inout")
+    val NETWORKLATENCY = new PipeVal(33, "projectred-transporation:netlatency_pipe", "netlatency")
+
+    /** Pressure Tubes 64+ **/
+
+    val PRESSURETUBE = new PipeVal(64, "projectred-transporation:pressure_tube", Seq("pressuretube")++(0 to 15 map{"colour/colour_"+_}):_*)
+    val RESISTANCETUBE = new PipeVal(65, "projectred-transporation:resustance_tube", "resistancetube")
+
+    class PipeVal(override val meta:Int, val partname:String, val textures:String*) extends ItemDef(partname)
     {
         var sprites:Array[TextureAtlasSprite] = _
 
@@ -182,8 +186,8 @@ object RoutingChipDefs extends ItemDefinition
 
     def getForStack(stack:ItemStack) =
     {
-        if (stack != null && stack.getItem.isInstanceOf[ItemRoutingChip] &&
-            values.isDefinedAt(stack.getItemDamage)) values(stack.getItemDamage)
+        if (stack != null && stack.getItem.isInstanceOf[ItemRoutingChip])
+            fromMeta(stack.getItemDamage)
         else null
     }
 
@@ -200,7 +204,8 @@ object RoutingChipDefs extends ItemDefinition
 
         def setCustomModelResourceLocations()
         {
-            ModelLoader.setCustomModelResourceLocation(getItem, meta, new ModelResourceLocation("projectred:mechanical/"+iconPath))
+            ModelLoader.setCustomModelResourceLocation(getItem, meta,
+                new ModelResourceLocation("projectred:mechanical/items", s"type=$iconPath"))
         }
 
         def isInterfaceChip = cType == ChipType.INTERFACE

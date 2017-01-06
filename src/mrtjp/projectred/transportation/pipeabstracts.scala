@@ -117,7 +117,7 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
     }
 
     def getItem = getPipeType.makeStack
-    def getPipeType = PipeDefs.values(meta)
+    def getPipeType = PipeDefs.fromMeta(meta)
 
     def getType = getPipeType.partname
 

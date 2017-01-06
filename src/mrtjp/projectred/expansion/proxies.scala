@@ -63,7 +63,7 @@ class ExpansionProxy_server extends IProxy with IDynamicPartFactory
         itemPlan.setUnlocalizedName("projectred.expansion.plan")
 
         machine1.setUnlocalizedName("projectred.expansion.machine1")
-        machine2.setRegistryName("projectred.expansion.machine2")
+        machine2.setUnlocalizedName("projectred.expansion.machine2")
 
         enchantmentElectricEfficiency.setName("projectred.expansion.fuelEfficiency")
 
@@ -152,27 +152,27 @@ class ExpansionProxy_client extends ExpansionProxy_server
         ModelRegistryHelper.registerItemRenderer(itemSolar, RenderSolarPanel)
 
         ModelLoader.setCustomMeshDefinition(itemEmptybattery, new ItemMeshDefinition {
-            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:expansion/items", "type=empty_battery")
+            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:mechanical/items", "type=empty_battery")
         })
         ModelLoader.setCustomMeshDefinition(itemBattery, new ItemMeshDefinition {
-            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:expansion/items", "type=charged_battery")
+            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:mechanical/items", "type=charged_battery")
         })
-        ModelBakery.registerItemVariants(itemBattery, new ModelResourceLocation("projectred:expansion/items", "type=charged_battery"))
-        ModelBakery.registerItemVariants(itemEmptybattery, new ModelResourceLocation("projectred:expansion/items", "type=empty_battery"))
+        ModelBakery.registerItemVariants(itemBattery, new ModelResourceLocation("projectred:mechanical/items", "type=charged_battery"))
+        ModelBakery.registerItemVariants(itemEmptybattery, new ModelResourceLocation("projectred:mechanical/items", "type=empty_battery"))
         ModelLoader.setCustomMeshDefinition(itemJetpack, new ItemMeshDefinition {
-            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:expansion/items", "type=jetpack")
+            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:mechanical/items", "type=jetpack")
         })
-        ModelBakery.registerItemVariants(itemJetpack, new ModelResourceLocation("projectred:expansion/items", "type=jetpack"))
+        ModelBakery.registerItemVariants(itemJetpack, new ModelResourceLocation("projectred:mechanical/items", "type=jetpack"))
         ModelLoader.setCustomMeshDefinition(itemScrewdriver, new ItemMeshDefinition {
-            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:expansion/items", "type=screwdriver")
+            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:mechanical/items", "type=screwdriver")
         })
-        ModelBakery.registerItemVariants(itemScrewdriver, new ModelResourceLocation("projectred:expansion/items", "type=screwdriver"))
-        ModelLoader.setCustomModelResourceLocation(itemInfusedEnderPearl, 0, new ModelResourceLocation("projectred:expansion/items", "type=infused_pearl"))
+        ModelBakery.registerItemVariants(itemScrewdriver, new ModelResourceLocation("projectred:mechanical/items", "type=screwdriver"))
+        ModelLoader.setCustomModelResourceLocation(itemInfusedEnderPearl, 0, new ModelResourceLocation("projectred:mechanical/items", "type=infused_pearl"))
         ModelLoader.setCustomMeshDefinition(itemPlan, new ItemMeshDefinition {
-            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:expansion/items", s"type=${if (ItemPlan.hasRecipeInside(stack)) "written" else "blank"}_plan")
+            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:mechanical/items", s"type=${if (ItemPlan.hasRecipeInside(stack)) "written" else "blank"}_plan")
         })
         for (t <- Array[String]("written", "blank"))
-            ModelBakery.registerItemVariants(itemPlan, new ModelResourceLocation("projectred:expansion/items", s"type=${t}_plan"))
+            ModelBakery.registerItemVariants(itemPlan, new ModelResourceLocation("projectred:mechanical/items", s"type=${t}_plan"))
 
         machine1Bakery.registerSubBakery(0, RenderInductiveFurnace, new IBlockStateKeyGenerator {
             override def generateKey(state: IExtendedBlockState):String = {

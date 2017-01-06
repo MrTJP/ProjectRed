@@ -52,7 +52,7 @@ class ItemPart extends ItemCore
     }
 
     override def getUnlocalizedName(stack: ItemStack):String = {
-        val col = PartDefs.getEnumFromMeta(stack.getItemDamage)
+        val col = PartDefs.fromMeta(stack.getItemDamage)
         if (col != null) getUnlocalizedName() + "." + col.name
         else super.getUnlocalizedName(stack)
     }
@@ -154,7 +154,7 @@ object PartDefs extends ItemDefinition
         def setCustomModelResourceLocations()
         {
             ModelLoader.setCustomModelResourceLocation(getItem, meta,
-                new ModelResourceLocation("projectred:base/itemResource", "type="+name))
+                new ModelResourceLocation("projectred:base/items", "type="+name))
         }
 
         override def name = iconName

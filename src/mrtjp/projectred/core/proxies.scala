@@ -52,9 +52,9 @@ class CoreProxy_client extends CoreProxy_server
         super.preinit()
 
         for (i <- PartDefs.values) i.setCustomModelResourceLocations()
-        ModelLoader.setCustomModelResourceLocation(itemDrawPlate, 0, new ModelResourceLocation("projectred:base/itemTools", "type=draw_plate"))
-        ModelLoader.setCustomModelResourceLocation(itemScrewdriver, 0, new ModelResourceLocation("projectred:base/itemTools", "type=screwdriver"))
-        ModelLoader.setCustomModelResourceLocation(itemMultimeter, 0, new ModelResourceLocation("projectred:base/itemTools", "type=multimeter"))
+        ModelLoader.setCustomModelResourceLocation(itemDrawPlate, 0, new ModelResourceLocation("projectred:base/tools", "type=draw_plate"))
+        ModelLoader.setCustomModelResourceLocation(itemScrewdriver, 0, new ModelResourceLocation("projectred:base/tools", "type=screwdriver"))
+        ModelLoader.setCustomModelResourceLocation(itemMultimeter, 0, new ModelResourceLocation("projectred:base/tools", "type=multimeter"))
     }
 
     @SideOnly(Side.CLIENT)
@@ -69,8 +69,6 @@ class CoreProxy_client extends CoreProxy_server
     {
         super.postinit()
         MinecraftForge.EVENT_BUS.register(RenderHalo)
-
-        new PRUpdateChecker
     }
 }
 
