@@ -37,7 +37,7 @@ class ExpansionProxy_server extends IProxy with IDynamicPartFactory
     {
         PacketCustom.assignHandler(ExpansionSPH.channel, ExpansionSPH)
 
-        MultiPartRegistry.registerParts(this, Array("projectred-expansion:solar_panel"))
+        MultiPartRegistry.registerParts(this, Array(SolarPanelPart.typeID))
 
         /** Initialization **/
         itemSolar = new ItemSolarPanel
@@ -126,7 +126,8 @@ class ExpansionProxy_server extends IProxy with IDynamicPartFactory
 
     def createPart(name:String):TMultiPart = name match
     {
-        case "pr_solar" => new SolarPanelPart
+        case SolarPanelPart.typeID => new SolarPanelPart
+        case _ => null
     }
 }
 

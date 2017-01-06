@@ -45,7 +45,7 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
         override def capacitance = 4.0
     }
 
-    override def getType = "pr_solar"
+    override def getType = SolarPanelPart.typeID
 
     override def getItem = new ItemStack(ProjectRedExpansion.itemSolar)
 
@@ -123,6 +123,8 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
 
 object SolarPanelPart
 {
+    val typeID = "projectred-expansion:solar_panel"
+
     var oBoxes = Array.ofDim[Cuboid6](6, 2)
 
     oBoxes(0)(0) = new Cuboid6(1 / 8D, 0, 0, 7 / 8D, 1 / 8D, 1)
@@ -144,7 +146,7 @@ class ItemSolarPanel extends ItemCore with TItemMultiPart //with TItemGlassSound
         val onPos = pos.offset(EnumFacing.VALUES(side^1))
         if (!PRLib.canPlaceGateOnSide(world, onPos, side)) return null
 
-        val solar = MultiPartRegistry.loadPart("pr_solar", null).asInstanceOf[SolarPanelPart]
+        val solar = MultiPartRegistry.loadPart(SolarPanelPart.typeID, null).asInstanceOf[SolarPanelPart]
         if (solar != null) solar.preparePlacement(player, pos, side, item.getItemDamage)
         solar
 
