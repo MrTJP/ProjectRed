@@ -47,6 +47,51 @@
         "textures": {
           "layer0": "items/mechanical/written_plan"
         }
+      },
+      "responder": {
+        "textures": {
+          "layer0": "items/mechanical/responder"
+        }
+      },
+      "dyn_responder": {
+        "textures": {
+          "layer0": "items/mechanical/dyn_responder"
+        }
+      },
+      "overflow": {
+        "textures": {
+          "layer0": "items/mechanical/overflow"
+        }
+      },
+      "terminator": {
+        "textures": {
+          "layer0": "items/mechanical/terminator"
+        }
+      },
+      "extractor": {
+        "textures": {
+          "layer0": "items/mechanical/extractor"
+        }
+      },
+      "broadcaster": {
+        "textures": {
+          "layer0": "items/mechanical/broadcaster"
+        }
+      },
+      "stock_keeper": {
+        "textures": {
+          "layer0": "items/mechanical/stock_keeper"
+        }
+      },
+      "crafting": {
+        "textures": {
+          "layer0": "items/mechanical/crafting"
+        }
+      },
+      "extension": {
+        "textures": {
+          "layer0": "items/mechanical/extension"
+        }
       }
     }
   }

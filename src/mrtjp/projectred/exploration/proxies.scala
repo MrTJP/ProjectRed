@@ -341,18 +341,18 @@ class ExplorationProxy_client extends ExplorationProxy_server
         super.preinit()
         ModelLoader.setCustomStateMapper(blockOres, new StateMapperBase {
             override protected def getModelResourceLocation(state: IBlockState): ModelResourceLocation = {
-                new ModelResourceLocation("projectred:exploration/ore", "type=" + state.getValue(BlockProperties.ORE_TYPES))
+                new ModelResourceLocation("projectred:world/ore", "type=" + state.getValue(BlockProperties.ORE_TYPES))
             }
         })
         ModelLoader.setCustomStateMapper(blockDecorativeStone, new StateMapperBase {
             override protected def getModelResourceLocation(state: IBlockState): ModelResourceLocation = {
-                new ModelResourceLocation("projectred:exploration/deceratives", "type=" + state.getValue(BlockProperties.ORE_TYPES))
+                new ModelResourceLocation("projectred:world/deceratives", "type=" + state.getValue(BlockProperties.ORE_TYPES))
             }
         })
-        registerItemModelTypes(Item.getItemFromBlock(blockOres), "projectred:exploration/ore", OreDefs)
-        registerItemModelTypes(Item.getItemFromBlock(blockDecorativeStone), "projectred:exploration/deceratives", DecorativeStoneDefs)
+        registerItemModelTypes(Item.getItemFromBlock(blockOres), "projectred:world/ore", OreDefs)
+        registerItemModelTypes(Item.getItemFromBlock(blockDecorativeStone), "projectred:world/deceratives", DecorativeStoneDefs)
         for (v <- DecorativeStoneDefs.values) {
-            val modelloc = new ModelResourceLocation("projectred:exploration/wall", "type=" + v.getVariantName + ",up=true,east=true,west=true")
+            val modelloc = new ModelResourceLocation("projectred:world/wall", "type=" + v.getVariantName + ",up=true,east=true,west=true")
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(blockDecorativeWall), v.meta, modelloc)
         }
         ModelLoader.setCustomStateMapper(blockDecorativeWall, new StateMapperBase {
@@ -370,20 +370,20 @@ class ExplorationProxy_client extends ExplorationProxy_server
                     val w = "west=" + JBool.toString(state.getValue(WEST))
                     t + "," + u + "," + n + "," + s + "," + e + "," + w
                 }
-                new ModelResourceLocation("projectred:exploration/wall", parseLocation(state))
+                new ModelResourceLocation("projectred:world/wall", parseLocation(state))
             }
         })
         ModelLoader.setCustomStateMapper(blockBarrel, new StateMapperBase {
             override protected def getModelResourceLocation(state: IBlockState): ModelResourceLocation = {
-                new ModelResourceLocation("projectred:exploration/barrel", "type=barrel")
+                new ModelResourceLocation("projectred:world/barrel", "type=barrel")
             }
         })
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(blockBarrel), 0, new ModelResourceLocation("projectred:exploration/barrel", "type=barrel"))
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(blockBarrel), 0, new ModelResourceLocation("projectred:world/barrel", "type=barrel"))
 
-        registerModelType(itemWoolGin, "projectred:exploration/items", "wool_gin")
-        registerModelType(itemAthame, "projectred:exploration/items", "athame")
+        registerModelType(itemWoolGin, "projectred:world/items", "wool_gin")
+        registerModelType(itemAthame, "projectred:world/items", "athame")
         for (i <- 0 until 16) {
-            registerModelType(itemBackpack, i, "projectred:exploration/items", "backpack_" + i)
+            registerModelType(itemBackpack, i, "projectred:world/items", "backpack_" + i)
         }
 
         registerToolModel(itemRubyAxe, "ruby_axe")
@@ -443,9 +443,6 @@ class ExplorationProxy_client extends ExplorationProxy_server
 
         GuiHandler.register(GuiBackpack, guiIDBackpack)
 
-        //TileRenderRegistry.setRenderer(blockLily, 0, RenderLily)
-        //MultiTileRenderRegistry.setRenderer(blockBarrel, 0, RenderBarrel)
-
         ClientRegistry.bindTileEntitySpecialRenderer(classOf[TileBarrel], RenderBarrel)
     }
 
@@ -470,7 +467,7 @@ class ExplorationProxy_client extends ExplorationProxy_server
 
     @SideOnly(Side.CLIENT)
     def registerToolModel(item: Item, variant:String) {
-        val modelLoc = new ModelResourceLocation("projectred:exploration/tools", "type=" + variant)
+        val modelLoc = new ModelResourceLocation("projectred:world/tools", "type=" + variant)
         ModelLoader.setCustomModelResourceLocation(item, 0, modelLoc)
         ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition {
             override def getModelLocation(stack: ItemStack): ModelResourceLocation = modelLoc
@@ -479,7 +476,7 @@ class ExplorationProxy_client extends ExplorationProxy_server
 
     @SideOnly(Side.CLIENT)
     def registerArmorModel(item: Item, variant:String) = {
-        val modelLoc = new ModelResourceLocation("projectred:exploration/armor", s"type=$variant")
+        val modelLoc = new ModelResourceLocation("projectred:world/armor", s"type=$variant")
         ModelLoader.setCustomModelResourceLocation(item, 0, modelLoc)
     }
 }

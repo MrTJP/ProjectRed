@@ -477,7 +477,7 @@ object PipeItemRenderer extends IItemRenderer with IPerspectiveAwareModel
 
     def renderWireInventory(meta:Int, x:Float, y:Float, z:Float, scale:Float, ccrs:CCRenderState)
     {
-        val pdef = PipeDefs.values(meta)
+        val pdef = PipeDefs.fromMeta(meta)
         if (pdef == null) return
         TextureUtils.bindBlockTexture()
         ccrs.reset()
