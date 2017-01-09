@@ -72,17 +72,16 @@ trait TFaceElectricalDevice extends TMultiPart with TCuboidPart with TNormalOccl
     override def onPartChanged(part:TMultiPart)
     {
         if (!world.isRemote)
-        {
-            updateOutward()
-        }
+            if (updateOutward())
+                onMaskChanged()
     }
 
     override def onNeighborChanged()
     {
-        if (!world.isRemote)
-        {
+        if (!world.isRemote) {
             if (dropIfCantStay()) return
-            updateExternalConns()
+            if (updateExternalConns())
+                onMaskChanged()
         }
     }
 
@@ -90,9 +89,8 @@ trait TFaceElectricalDevice extends TMultiPart with TCuboidPart with TNormalOccl
     {
         super.onAdded()
         if (!world.isRemote)
-        {
-            updateInward()
-        }
+            if (updateInward())
+                onMaskChanged()
     }
 
     override def onRemoved()
@@ -150,7 +148,8 @@ trait TFaceElectricalDevice extends TMultiPart with TCuboidPart with TNormalOccl
     def rotate()
     {
         setRotation((rotation+1)%4)
-        updateInward()
+        if (updateInward())
+            onMaskChanged()
         tile.markDirty()
         tile.notifyPartChange(this)
         sendOrientUpdate()

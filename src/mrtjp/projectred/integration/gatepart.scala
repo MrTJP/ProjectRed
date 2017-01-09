@@ -205,7 +205,7 @@ abstract class GatePart extends TMultiPart with TCuboidPart with TNormalOcclusio
 
     override def getOcclusionBoxes = getLogicPrimitive.getOcclusions(this)
 
-    override def getStrength(player:EntityPlayer, hit:CuboidRayTraceResult) = 1.75f
+    override def getStrength(player:EntityPlayer, hit:CuboidRayTraceResult) = 2/30f
 
     override def getSlotMask = 1<<side
 

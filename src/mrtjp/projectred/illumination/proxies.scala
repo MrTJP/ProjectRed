@@ -27,7 +27,6 @@ class IlluminationProxy_server extends IProxy
         GameRegistry.register(itemBlockLamp.setRegistryName(blockLamp.getRegistryName))
         blockLamp.addTile(classOf[TileLamp], 0)
 
-
         //TODO Add one of these lights!
 //        blockAirousLight = new BlockAirousLight
 //        blockAirousLight.bindTile(classOf[TileAirousLight])
