@@ -155,11 +155,11 @@ class ItemSolarPanel extends ItemCore with TItemMultiPart //with TItemGlassSound
 
 object RenderSolarPanel extends IItemRenderer with IIconRegister with IPerspectiveAwareModel
 {
-    var side:TextureAtlasSprite = null
-    var top:TextureAtlasSprite = null
-    var bottom:TextureAtlasSprite = null
+    var side:TextureAtlasSprite = _
+    var top:TextureAtlasSprite = _
+    var bottom:TextureAtlasSprite = _
 
-    var iconT:UVTransformation = null
+    var iconT:UVTransformation = _
 
     val models =
     {

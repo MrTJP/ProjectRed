@@ -184,7 +184,7 @@ class BaseLightPart(factory:LightFactory) extends TMultiPart with TCuboidPart wi
     override def getBounds = factory.getBounds(getSide)
     override def getType = factory.getType
 
-    override def getStrength(player:EntityPlayer, hit:CuboidRayTraceResult) = 2
+    override def getStrength(player:EntityPlayer, hit:CuboidRayTraceResult) = 2/30f
     override def getSlotMask = 1<<6
     override def getOcclusionBoxes = Seq(getBounds)
 

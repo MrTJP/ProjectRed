@@ -75,7 +75,7 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
     {
         if (!world.isRemote)
         {
-            if (updateInward()) sendConnUpdate()
+            if (updateInward()) onMaskChanged()
             WirePropagator.propagateTo(this, FORCE)
         }
         getWriteStreamOf(2).writeBoolean(hasRedstone)
@@ -95,7 +95,7 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
 
             if (updateOutward())
             {
-                sendConnUpdate()
+                onMaskChanged()
                 WirePropagator.propagateTo(this, FORCE)
             }
             else WirePropagator.propagateTo(this, RISING)
@@ -109,7 +109,7 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
             WirePropagator.logCalculation()
             if (updateExternalConns())
             {
-                sendConnUpdate()
+                onMaskChanged()
                 WirePropagator.propagateTo(this, FORCE)
             }
             else WirePropagator.propagateTo(this, RISING)
@@ -121,7 +121,7 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
         super.onAdded()
         if (!world.isRemote)
         {
-            if (updateInward()) sendConnUpdate()
+            if (updateInward()) onMaskChanged()
             WirePropagator.propagateTo(this, RISING)
         }
     }

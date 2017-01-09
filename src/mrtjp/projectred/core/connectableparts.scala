@@ -109,12 +109,18 @@ trait TConnectableCommons extends TMultiPart with IConnectable
       * Recalculates connections that can be made to other parts outside of this
       * space
       *
+      * When using this method be sure to call TConnectableCommons#onMaskChanged()
+      * as needed as it is not called for you.
+      *
       * @return true if external connections should be recalculated
       */
     def updateOpenConns():Boolean
 
     /**
-      * Recalculates connections to blocks outside this sapce
+      * Recalculates connections to blocks outside this space
+      *
+      * When using this method be sure to call TConnectableCommons#onMaskChanged()
+      * as needed as it is not called for you.
       *
       * @return true if a new connection was added or one was removed
       */
@@ -123,12 +129,18 @@ trait TConnectableCommons extends TMultiPart with IConnectable
     /**
       * Recalculates connections to other parts within this space
       *
+      * When using this method be sure to call TConnectableCommons#onMaskChanged()
+      * as needed as it is not called for you.
+      *
       * @return true if a new connection was added or one was removed
       */
     def updateInternalConns():Boolean
 
     /**
       * Start update chain starting from an internal change outward
+      *
+      * When using this method be sure to call TConnectableCommons#onMaskChanged()
+      * as needed as it is not called for you.
       *
       * @return true if a new connection was added or one was removed
       */
@@ -141,6 +153,9 @@ trait TConnectableCommons extends TMultiPart with IConnectable
 
     /**
       * Start update chain starting from an external change inward
+      *
+      * When using this method be sure to call TConnectableCommons#onMaskChanged()
+      * as needed as it is not called for you.
       *
       * @return true if a new connection was added or one was removed
       */
@@ -282,29 +297,17 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
     def discoverStraightOverride(absDir:Int) = false
     def discoverInternalOverride(p:TMultiPart, r:Int) = false
 
-    /**
-     * Recalculates connections that can be made to other parts outside of this
-     * space
-     *
-     * @return true if external connections should be recalculated
-     */
     override def updateOpenConns() =
     {
         var newConn = 0
         for (r <- 0 until 4) if (discoverOpen(r)) newConn |= 0x1000<<r
         if (newConn != (connMap&0xF000)) {
             connMap = connMap& ~0xF000|newConn
-            //onMaskChanged()
             true
         }
         else false
     }
 
-    /**
-     * Recalculates connections to blocks outside this sapce
-     *
-     * @return true if a new connection was added or one was removed
-     */
     override def updateExternalConns() =
     {
         var newConn = 0
@@ -321,18 +324,12 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
         if (newConn != (connMap&0xF000FF)) {
             val diff = connMap^newConn //corners need to be notified, because normal block updates wont touch them
             connMap = connMap& ~0xF000FF|newConn
-            //onMaskChanged()
             for (r <- 0 until 4) if ((diff&1<<r)!=0) notifyCorner(r)
             true
         }
         else false
     }
 
-    /**
-     * Recalculates connections to other parts within this space
-     *
-     * @return true if a new connection was added or one was removed
-     */
     override def updateInternalConns() =
     {
         var newConn = 0
@@ -340,7 +337,6 @@ trait TFaceConnectable extends TConnectableCommons with TFaceAcquisitions
         if (shouldDiscoverCenter && discoverCenter) newConn |= 0x10000
         if (newConn != (connMap&0x10F00)) {
             connMap = connMap& ~0x10F00|newConn
-            //onMaskChanged()
             true
         }
         else false
@@ -421,7 +417,6 @@ trait TCenterConnectable extends TConnectableCommons with TCenterAcquisitions
         for (s <- 0 until 6) if (discoverOpen(s)) newConn |= 1<<s+12
         if (newConn != (connMap&0x3F000)) {
             connMap = connMap& ~0x3F000|newConn
-            //onMaskChanged()
             true
         }
         else false
@@ -434,7 +429,6 @@ trait TCenterConnectable extends TConnectableCommons with TCenterAcquisitions
 
         if (newConn != (connMap&0x3f)) {
             connMap = connMap& ~0x3F|newConn
-            //onMaskChanged()
             true
         }
         else false

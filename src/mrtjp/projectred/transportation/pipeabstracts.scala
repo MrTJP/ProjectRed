@@ -81,18 +81,18 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
 
     override def onPartChanged(part:TMultiPart)
     {
-        if (!world.isRemote) if (updateOutward()) onMaskChanged()//sendConnUpdate()
+        if (!world.isRemote) if (updateOutward()) onMaskChanged()
     }
 
     override def onNeighborChanged()
     {
-        if (!world.isRemote) if (updateExternalConns()) onMaskChanged()//sendConnUpdate()
+        if (!world.isRemote) if (updateExternalConns()) onMaskChanged()
     }
 
     override def onAdded()
     {
         super.onAdded()
-        if (!world.isRemote) if (updateInward()) onMaskChanged()//sendConnUpdate()
+        if (!world.isRemote) if (updateInward()) onMaskChanged()
     }
 
     override def onRemoved()
@@ -121,7 +121,7 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
 
     def getType = getPipeType.partname
 
-    override def getStrength(player:EntityPlayer, hit:CuboidRayTraceResult)  = 2
+    override def getStrength(player:EntityPlayer, hit:CuboidRayTraceResult) = 2/30f
 
     override def getDrops = Seq(getItem)
 
