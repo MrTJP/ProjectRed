@@ -79,12 +79,12 @@ class BlockLamp extends MultiTileBlock(Material.REDSTONE_LIGHT) with IRedstoneCo
     override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos): IBlockState = BlockBakery.handleExtendedState(state.asInstanceOf[IExtendedBlockState], world.getTileEntity(pos))
 
     @SideOnly(Side.CLIENT)
-    override def getCustomBakery: ICustomBlockBakery = LampBakery.INSTANCE
+    override def getCustomBakery: ICustomBlockBakery = LampBakery
 }
 
 object BlockProperties {
     val UNLISTED_ON_PROPERTY = new UnlistedBooleanProperty("on")
-    val UNLISTED_COLOUR_PROPERTY = new UnlistedIntegerProperty("on")
+    val UNLISTED_COLOUR_PROPERTY = new UnlistedIntegerProperty("colour")
 }
 
 class ItemBlockLamp extends ItemBlockCore(ProjectRedIllumination.blockLamp)
@@ -92,9 +92,8 @@ class ItemBlockLamp extends ItemBlockCore(ProjectRedIllumination.blockLamp)
     override def getMetadata(meta:Int) = 0 //we want everything on meta 0, since tiles store the colour
 }
 
-object LampBakery extends SimpleBlockRenderer {
-    val INSTANCE = LampBakery
-
+object LampBakery extends SimpleBlockRenderer
+{
     override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
         case t:TileLamp => state.withProperty(BlockProperties.UNLISTED_ON_PROPERTY, t.isOn.asInstanceOf[JBool])
                 .withProperty(BlockProperties.UNLISTED_COLOUR_PROPERTY, t.getColor.asInstanceOf[JInt])
@@ -173,16 +172,13 @@ object LampRenderer extends TileEntitySpecialRenderer[TileLamp] with IItemRender
             renderQuads(model.getQuads(null, face, 0))
         }
 
-        def renderQuads(quads: JList[BakedQuad]) ={
-
+        def renderQuads(quads: JList[BakedQuad]) = {
             for (quad:BakedQuad <- quads ) {
                 ccrs.getBuffer.addVertexData(quad.getVertexData)
             }
         }
 
         ccrs.draw()
-
-
 
         if (meta > 15) {
             RenderHalo.prepareRenderState()

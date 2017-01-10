@@ -21,6 +21,7 @@ import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager._
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{IInventory, ISidedInventory}
@@ -29,7 +30,6 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
-import org.lwjgl.opengl.GL11._
 
 class BlockBarrel extends MultiTileBlock(Material.WOOD)
 {
@@ -407,24 +407,24 @@ object RenderBarrel extends TileEntitySpecialRenderer[TileBarrel] //with TCubeMa
             )
 
             GlStateManagerHelper.pushStates(State.GL_ALPHA_TEST, State.GL_BLEND, State.GL_LIGHTING)
-            glDisable(GL_BLEND)
-            glDisable(GL_LIGHTING)
-            glColor4d(1, 1, 1, 1)
+            disableBlend()
+            disableLighting()
+            color(1, 1, 1, 1)
 
-            glPushMatrix()
+            pushMatrix()
             new TransformationList(faceT, itemT, finalT).glApply()
             Minecraft.getMinecraft.getRenderItem.renderItemAndEffectIntoGUI(stack, 0,0)
-            glPopMatrix()
+            popMatrix()
 
-            glPushMatrix()
+            pushMatrix()
             new TransformationList(faceT, textT, finalT).glApply()
             GuiDraw.drawString(text, 0, 0, 0xFFFFFFFF, false)
-            glPopMatrix()
+            popMatrix()
 
-            glPushMatrix()
+            pushMatrix()
             new TransformationList(faceT, labelT, finalT).glApply()
             GuiDraw.drawString(label, 0, 0, 0xFFFFFFFF, false)
-            glPopMatrix()
+            popMatrix()
 
             GlStateManagerHelper.popState()
         }
