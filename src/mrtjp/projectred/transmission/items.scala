@@ -62,4 +62,6 @@ class ItemPartFramedWire extends ItemCore with TItemMultiPart
         for (w <- WireDef.values)
             if (w.hasFramedForm) list.add(w.makeFramedStack)
     }
+
+    override def getPlacementSound(item:ItemStack) = SoundType.GLASS
 }

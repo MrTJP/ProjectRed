@@ -10,7 +10,7 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
 import codechicken.lib.model.blockbakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
-import codechicken.lib.vec.uv.MultiIconTransformation
+import codechicken.lib.vec.uv.{IconVertexRangeUVTransform, MultiIconTransformation}
 import mrtjp.core.gui._
 import mrtjp.core.inventory.TInventory
 import mrtjp.core.vec.Point
@@ -301,7 +301,6 @@ object GuiBatteryBox extends TGuiFactory
 
 object RenderBatteryBox extends SimpleBlockRenderer
 {
-
     import java.lang.{Integer => JInt}
 
     import mrtjp.core.util.CCLConversions._
@@ -318,7 +317,7 @@ object RenderBatteryBox extends SimpleBlockRenderer
     }
 
     override def getWorldTransforms(state: IExtendedBlockState) = {
-        val c = state.getValue(UNLISTED_CHARGE_PROPERTY).asInstanceOf[Int]
+        val c = state.getValue(UNLISTED_CHARGE_PROPERTY)
         val i = sides(c)
         createTriple(0, 0, new MultiIconTransformation(bottom, top, i, i, i, i))
     }
@@ -326,7 +325,7 @@ object RenderBatteryBox extends SimpleBlockRenderer
     override def getItemTransforms(stack: ItemStack) = {
         val sideIcon:TextureAtlasSprite =
             if(stack.hasTagCompound && stack.getTagCompound.hasKey("rstorage"))
-            sides(stack.getTagCompound.getInteger("rstorage")) else sides(0)
+                sides(stack.getTagCompound.getInteger("rstorage")) else sides(0)
 
         createTriple(0,0, new MultiIconTransformation(bottom, top, sideIcon, sideIcon, sideIcon, sideIcon))
     }

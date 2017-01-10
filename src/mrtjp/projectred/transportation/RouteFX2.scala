@@ -66,13 +66,13 @@ object RouteFX2
 
         val act = sequence(
             group(
-                scaleFor(0.085, 0.085, 0.085, 5),
+                scaleFor(0.06, 0.06, 0.06, 5),
                 fadeIn(5),
                 changeColourTo(c2.rF, c2.gF, c2.bF, 5)
             ),
             delay(5),
             group(
-                scaleFor(0.085, 0.085, 0.085, 5),
+                scaleFor(0.05, 0.05, 0.05, 5),
                 fadeOut(5),
                 changeColourTo(c1.rF, c1.gF, c1.bF, 5)
             ),

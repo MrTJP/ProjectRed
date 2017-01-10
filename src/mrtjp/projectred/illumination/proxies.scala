@@ -80,15 +80,10 @@ class IlluminationProxy_client extends IlluminationProxy_server
     override def init()
     {
         super.init()
-
-//        for (l <- lights) l.initClient()
-
 //        MinecraftForgeClient.registerItemRenderer(itemPartIllumarButton, RenderButton)
 //        MinecraftForgeClient.registerItemRenderer(itemPartIllumarFButton, RenderFButton)
 
         ClientRegistry.bindTileEntitySpecialRenderer(classOf[TileLamp], LampRenderer)
-
-        //MultiTileRenderRegistry.setRenderer(blockLamp, 0, LampRenderer)
     }
 
     var getLightValue = (meta:Int, brightness:Int) => brightness
