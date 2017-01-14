@@ -297,7 +297,6 @@ artifacts {
 }
 
 uploadArchives {
-    dependsOn 'reobf'
     repositories {
         mavenDeployer {
             if (project.hasProperty("local_maven")) {
