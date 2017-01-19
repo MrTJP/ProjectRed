@@ -25,7 +25,7 @@ import scala.collection.JavaConversions._
 
 object GemSawRenderer extends IItemRenderer with IPerspectiveAwareModel
 {
-    private val models = CCOBJParser.parseObjModels(new ResourceLocation("microblock", "models/saw.obj"), 7, new SwapYZ)
+    private val models = CCOBJParser.parseObjModels(new ResourceLocation("microblockcbe", "models/saw.obj"), 7, new SwapYZ)
     private val handle = models.get("Handle")
     private val holder = models.get("BladeSupport")
     private val blade = models.get("Blade")
@@ -50,7 +50,7 @@ object GemSawRenderer extends IItemRenderer with IPerspectiveAwareModel
         val ccrs = CCRenderState.instance
         ccrs.reset()
         ccrs.pullLightmap()
-        TextureUtils.changeTexture("microblock:textures/items/saw.png")
+        TextureUtils.changeTexture("microblockcbe:textures/items/saw.png")
         ccrs.baseColour = 0xFFFFFFFF
 
         ccrs.startDrawing(7, DefaultVertexFormats.ITEM)
