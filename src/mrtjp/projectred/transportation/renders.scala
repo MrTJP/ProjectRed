@@ -415,7 +415,7 @@ object PipeRSHighlightRenderer extends IMicroHighlightRenderer
     override def renderHighlight(player:EntityPlayer, hit:RayTraceResult, mcrFactory:CommonMicroFactory, size:Int, material:Int):Boolean =
     {
         if (mcrFactory.getFactoryID != 3 || size != 1 || player.isSneaking) return false
-        val tile = BlockMultipart.getTile(player.worldObj, hit.blockPos)
+        val tile = BlockMultipart.getTile(player.worldObj, hit.getBlockPos)
         if (tile == null) return false
 
         MicroMaterialRegistry.getMaterial(material) match
