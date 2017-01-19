@@ -406,10 +406,14 @@ class ExplorationProxy_client extends ExplorationProxy_server
         registerToolModel(itemSapphireSword, "sapphire_sword")
         registerToolModel(itemPeridotSword, "peridot_sword")
 
-        ModelRegistryHelper.registerItemRenderer(itemGoldSaw, GemSawRenderer)
-        ModelRegistryHelper.registerItemRenderer(itemRubySaw, GemSawRenderer)
-        ModelRegistryHelper.registerItemRenderer(itemSapphireSaw, GemSawRenderer)
-        ModelRegistryHelper.registerItemRenderer(itemPeridotSaw, GemSawRenderer)
+        registerToolModel(itemGoldSaw, "gold_saw")
+        registerToolModel(itemRubySaw, "ruby_saw")
+        registerToolModel(itemSapphireSaw, "sapphire_saw")
+        registerToolModel(itemPeridotSaw, "peridot_saw")
+        //ModelRegistryHelper.registerItemRenderer(itemGoldSaw, GemSawRenderer)
+        //ModelRegistryHelper.registerItemRenderer(itemRubySaw, GemSawRenderer)
+        //ModelRegistryHelper.registerItemRenderer(itemSapphireSaw, GemSawRenderer)
+        //ModelRegistryHelper.registerItemRenderer(itemPeridotSaw, GemSawRenderer)
 
         registerToolModel(itemWoodSickle, "wood_sickle")
         registerToolModel(itemStoneSickle, "stone_sickle")
