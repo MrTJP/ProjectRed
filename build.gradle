@@ -130,12 +130,29 @@ processResources {
     }
 }
 
+jar {//Because groovy we need to define these first other wise our zipTree call will fail.
+    classifier = 'all'
+    version = "${config.mc_version}-${project.version}"
+}
+
+task srcJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+    version = "${config.mc_version}-${project.version}"
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'deobf'
+    version = "${config.mc_version}-${project.version}"
+}
+
 compileScala.dependsOn updateVersion
 ext.jarVer = "${config.mc_version}-${project.version}"
 ext.jarFile = zipTree(jar.archivePath)
 ext.baseExcludes = ["**/dan200/**", "**/coloredlightscore/**"]
 
-task integrationJar(type: Jar, dependsOn: reobf) {
+task integrationJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {
         include "**/ProjectRedIntegration*.class"
         include "**/ProjectRedTransmission*.class"
@@ -151,28 +168,28 @@ task integrationJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    classifier = 'Integration'
+    classifier = 'integration'
 }
 
-task fabricationJar(type: Jar, dependsOn: reobf) {
-    from(project.ext.jarFile) {
-        include "**/ProjectRedFabrication*.class"
-        include "**/mrtjp/projectred/fabrication/**"
+//task fabricationJar(type: Jar, dependsOn: reobfJar) {
+//    from(project.ext.jarFile) {
+//        include "**/ProjectRedFabrication*.class"
+//        include "**/mrtjp/projectred/fabrication/**"
+//
+//        include "**/assets/projectred/textures/blocks/fabrication/**"
+//        include "**/assets/projectred/textures/items/fabrication/**"
+//        include "**/assets/projectred/textures/obj/fabrication/**"
+//
+//        include "fabrication_mod.info"
+//        rename("fabrication_mod.info", 'mcmod.info')
+//
+//        project.ext.baseExcludes.addAll(includes)
+//    }
+//    version = project.ext.jarVer
+//    classifier = 'fabrication'
+//}
 
-        include "**/assets/projectred/textures/blocks/fabrication/**"
-        include "**/assets/projectred/textures/items/fabrication/**"
-        include "**/assets/projectred/textures/obj/fabrication/**"
-
-        include "fabrication_mod.info"
-        rename("fabrication_mod.info", 'mcmod.info')
-
-        project.ext.baseExcludes.addAll(includes)
-    }
-    version = project.ext.jarVer
-    classifier = 'Fabrication'
-}
-
-task lightingJar(type: Jar, dependsOn: reobf) {
+task lightingJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {
         include "**/ProjectRedIllumination*.class"
         include "**/mrtjp/projectred/illumination/**"
@@ -186,10 +203,10 @@ task lightingJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    classifier = 'Lighting'
+    classifier = 'lighting'
 }
 
-task mechanicalJar(type: Jar, dependsOn: reobf) {
+task mechanicalJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {
         include "**/ProjectRedExpansion*.class"
         include "**/mrtjp/projectred/expansion/**"
@@ -204,15 +221,14 @@ task mechanicalJar(type: Jar, dependsOn: reobf) {
         rename("mechanical_mod.info", 'mcmod.info')
 
         include("mechanical_dependancies.info")
-        rename("mechanical_dependancies.info", "dependancies.info")
 
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    classifier = 'Mechanical'
+    classifier = 'mechanical'
 }
 
-task worldJar(type: Jar, dependsOn: reobf) {
+task worldJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {
         include "**/ProjectRedExploration*.class"
         include "**/mrtjp/projectred/exploration/**"
@@ -226,38 +242,35 @@ task worldJar(type: Jar, dependsOn: reobf) {
         project.ext.baseExcludes.addAll(includes)
     }
     version = project.ext.jarVer
-    classifier = 'World'
+    classifier = 'world'
 }
 
-task compatJar(type: Jar, dependsOn: reobf) {
-    from(project.ext.jarFile) {
-        include "**/ProjectRedCompatibility*.class"
-        include "**/mrtjp/projectred/compatibility/**"
+//task compatJar(type: Jar, dependsOn: reobfJar) {
+//    from(project.ext.jarFile) {
+//        include "**/ProjectRedCompatibility*.class"
+//        include "**/mrtjp/projectred/compatibility/**"
+//
+//        include "**/powercrystals/**"
+//
+//        include "**/assets/asm/**"
+//        include "**/assets/projectred/textures/blocks/compat/**"
+//
+//        include "compat_mod.info"
+//        rename("compat_mod.info", 'mcmod.info')
+//
+//        project.ext.baseExcludes.addAll(includes)
+//    }
+//    version = project.ext.jarVer
+//    classifier = 'compat'
+//}
 
-        include "**/powercrystals/**"
-
-        include "**/assets/asm/**"
-        include "**/assets/projectred/textures/blocks/compat/**"
-
-        include "compat_mod.info"
-        rename("compat_mod.info", 'mcmod.info')
-
-        project.ext.baseExcludes.addAll(includes)
-    }
-    version = project.ext.jarVer
-    classifier = 'Compat'
-}
-
-task baseJar(type: Jar, dependsOn: reobf) {
+task baseJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {
         exclude project.ext.baseExcludes
+        exclude "fabrication_mod.info"
+        exclude "compat_mod.info"
 
         rename("base_mod.info", 'mcmod.info')
-        rename("base_dependancies.info", "dependancies.info")
-    }
-    manifest {
-        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
     }
     version = project.ext.jarVer
     classifier = 'Base'
@@ -265,35 +278,21 @@ task baseJar(type: Jar, dependsOn: reobf) {
 }
 
 // baseJar pulls all files not in any other jar. Therefore must run last
-//baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && !task.name.equals('baseJar')) } }
+baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && task.name != 'baseJar') } }
 
-jar {
-    classifier = 'universal-all'
-}
 
-task srcJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
-    version = "${config.mc_version}-${project.version}"
-}
-
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    classifier = 'deobf'
-    version = "${config.mc_version}-${project.version}"
-}
 
 artifacts {
-    //archives integrationJar
+    archives integrationJar
     //archives fabricationJar
-    //archives lightingJar
-    //archives mechanicalJar
-    //archives worldJar
+    archives lightingJar
+    archives mechanicalJar
+    archives worldJar
     //archives compatJar
-    //archives baseJar
+    archives baseJar
 
-    archives srcJar
     archives deobfJar
+    archives srcJar
 }
 
 uploadArchives {
