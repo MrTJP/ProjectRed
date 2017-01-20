@@ -230,7 +230,6 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
     override def sendConnUpdate()
     {
         getWriteStreamOf(1).writeInt(connMap)
-        println("update mapped")
     }
 
     override def canConnectCorner(r:Int) = true
@@ -342,7 +341,6 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
     override def sendConnUpdate()
     {
         getWriteStreamOf(1).writeByte(clientConnMap)
-        println("update mapped")
     }
 
     def sendMatUpdate()
