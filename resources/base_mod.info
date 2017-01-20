@@ -20,7 +20,7 @@
       "MrTJPCoreMod"
   ],
   "dependencies": [
-      "ForgeMultipart",
+      "forgemultipartcbe",
       "MrTJPCoreMod"
   ],
   "dependants" : [

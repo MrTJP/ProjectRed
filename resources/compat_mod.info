@@ -6,7 +6,7 @@
   "version": "@VERSION@.@BUILD_NUMBER@",
   "mcversion": "@MC_VERSION@",
   "requiredMods": [
-      "ProjRed|Core"
+      "projectred-core"
   ],
   "dependencies": [
       "projectred-core",
