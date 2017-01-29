@@ -146,7 +146,7 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
         {
             val inputs = ItemPlan.loadPlanInputs(plan)
             for (i <- 0 until 9) invCrafting.setInventorySlotContents(i, inputs(i))
-            val recipes = CraftingManager.getInstance().getRecipeList.asInstanceOf[JList[IRecipe]]
+            val recipes = CraftingManager.getInstance().getRecipeList
             currentRecipe = recipes.find(_.matches(invCrafting, world)).orNull
             if (currentRecipe != null)
             {
@@ -223,7 +223,7 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
                 if (s.getItem.hasContainerItem(s))
                 {
                     val cStack = s.getItem.getContainerItem(s)
-                    setInventorySlotContents(i, if (cStack.getItemDamage < cStack.getMaxDamage) cStack else null)
+                    setInventorySlotContents(i, if (cStack.isItemStackDamageable && cStack.getItemDamage >= cStack.getMaxDamage) null else cStack)
                     left -= 1
                 }
                 else
