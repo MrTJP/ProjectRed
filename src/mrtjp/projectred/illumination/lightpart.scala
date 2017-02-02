@@ -403,7 +403,6 @@ abstract class LightFactory extends IPartFactory
     {
         val icon = new IconTransformation(getIcon)
         val t = pos.translation()
-        TextureUtils.bindBlockTexture()
         getModelChassi(part.getSide).render(ccrs, t, icon)
         getModelBulb(part.getSide).render(ccrs, t, icon, cMult(color, isOn))
     }
