@@ -1,7 +1,9 @@
 package mrtjp.projectred.core;
 
 import codechicken.lib.colour.EnumColour;
+import codechicken.microblock.handler.MicroblockProxy;
 import mrtjp.projectred.ProjectRedCore;
+import mrtjp.projectred.core.libmc.recipe.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -42,17 +44,17 @@ public class CoreRecipes
     private static void initToolRecipes()
     {
 //        /** Draw Plate **/
-//        ShapedRecipeBuilder b = RecipeLib.newShapedBuilder();
-//        b.$less$minus$greater(" i "+"idi"+" i ")
-//                .$plus$eq((Input)new MicroIn(MicroIn.edge(), MicroIn.fourth(), Blocks.IRON_BLOCK).to("i"))
-//                .$plus$eq((Input)new MicroIn(MicroIn.face(), MicroIn.fourth(), Blocks.DIAMOND_BLOCK).to("d"))
-//                .$plus$eq((Output)new ItemOut(ProjectRedCore.itemDrawPlate()));
-//        b.registerResult();
-//        /** Panel Reset recipe **/
-//        ShapelessRecipeBuilder s = RecipeLib.newShapelessBuilder();
-//        s.$plus$eq((Input) new MicroIn(MicroIn.face(), MicroIn.fourth(), Blocks.DIAMOND_BLOCK))
-//                .$plus$eq((Output) new ItemOut(new ItemStack(Items.DIAMOND, 2)));
-//        s.registerResult();
+        ShapedRecipeBuilder b = RecipeLib.newShapedBuilder();
+        b.$less$minus$greater(" i "+"idi"+" i ")
+                .$plus$eq((Input) new MicroIn(MicroIn.edge(), MicroIn.fourth(), Blocks.IRON_BLOCK).to("i"))
+                .$plus$eq((Input) new MicroIn(MicroIn.face(), MicroIn.fourth(), Blocks.DIAMOND_BLOCK).to("d"))
+                .$plus$eq((Output)new ItemOut(ProjectRedCore.itemDrawPlate()));
+        b.registerResult();
+        /** Panel Reset recipe **/
+        ShapelessRecipeBuilder s = RecipeLib.newShapelessBuilder();
+        s.$plus$eq((Input) new MicroIn(MicroIn.face(), MicroIn.fourth(), Blocks.DIAMOND_BLOCK))
+                .$plus$eq((Output) new ItemOut(new ItemStack(Items.DIAMOND, 2)));
+        s.registerResult();
 
         /** Screwdriver **/
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedCore.itemScrewdriver()),
@@ -147,12 +149,12 @@ public class CoreRecipes
         GameRegistry.addSmelting(SANDYCOALCOMPOUND().makeStack(), SILICONBOULE().makeStack(), 0);
 
         /** Silicon **/
-//        GameRegistry.addRecipe(SILICON().makeStack(8),
-//                "s",
-//                "b",
-//                's', new ItemStack(MicroblockProxy.sawDiamond(), 1, OreDictionary.WILDCARD_VALUE),
-//                'b', SILICONBOULE().makeStack()
-//                );
+        GameRegistry.addRecipe(SILICON().makeStack(8),
+                "s",
+                "b",
+                's', new ItemStack(MicroblockProxy.sawDiamond(), 1, OreDictionary.WILDCARD_VALUE),
+                'b', SILICONBOULE().makeStack()
+                );
 
         /** Infused Silicon **/
         GameRegistry.addSmelting(REDSILICONCOMPOUND().makeStack(), INFUSEDSILICON().makeStack(), 0);

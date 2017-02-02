@@ -76,9 +76,9 @@ class ExplorationProxy_server extends IProxy
         toolMaterialSapphire    = EnumHelper.addToolMaterial("SAPPHIRE",  2, 512, 8.00F, 3.00F, 10)
         toolMaterialPeridot     = EnumHelper.addToolMaterial("PERIDOT",   2, 512, 7.75F, 2.75F, 14)
 
-        armorMatrialRuby        = EnumHelper.addArmorMaterial("RUBY",     "ruby",     16, Array(3, 8, 6, 3), 10, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND,  8)
-        armorMatrialSapphire    = EnumHelper.addArmorMaterial("SAPPHIRE", "sapphire", 16, Array(3, 8, 6, 3), 10, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND,  8)
-        armorMatrialPeridot     = EnumHelper.addArmorMaterial("PERIDOT",  "peridot",  14, Array(3, 8, 6, 3), 14, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, 10)
+        armorMatrialRuby        = EnumHelper.addArmorMaterial("RUBY",     "ruby",     16, Array(3, 6, 8, 3), 10, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, 1.25f)
+        armorMatrialSapphire    = EnumHelper.addArmorMaterial("SAPPHIRE", "sapphire", 16, Array(3, 6, 8, 3), 10, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, 1.25f)
+        armorMatrialPeridot     = EnumHelper.addArmorMaterial("PERIDOT",  "peridot",  14, Array(3, 6, 8, 3), 14, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, 1.25f)
 
         /** Following items are self-registering **/
 
