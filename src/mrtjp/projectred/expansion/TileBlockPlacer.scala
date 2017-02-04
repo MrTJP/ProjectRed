@@ -11,29 +11,30 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
 import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.raytracer.{IndexedCuboid6, RayTracer}
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
-import codechicken.lib.vec.{BlockCoord, Cuboid6, Vector3}
+import codechicken.lib.vec.{Cuboid6, Vector3}
 import codechicken.multipart.IRedstoneConnector
 import com.mojang.authlib.GameProfile
 import mrtjp.core.gui._
 import mrtjp.core.inventory.TInventory
 import mrtjp.core.vec.Point
-import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.expansion.TileBlockPlacer._
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLivingBase}
-import net.minecraft.item.{ItemBlock, ItemStack}
+import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.ResourceLocation
-import net.minecraft.world.{IBlockAccess, WorldServer}
+import net.minecraft.util.math.{BlockPos, Vec3d}
+import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, ResourceLocation}
+import net.minecraft.world.WorldServer
+import net.minecraftforge.common.ForgeHooks
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.common.util.FakePlayerFactory
-import net.minecraftforge.event.ForgeEventFactory
-import net.minecraftforge.event.entity.player.PlayerInteractEvent
+import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.ref.WeakReference
@@ -97,16 +98,16 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
 
     override def onActivate()
     {
-        /*if (world.isRemote) return
+        if (world.isRemote) return
         reloadPlayer()
         val upos = getPos.offset(EnumFacing.VALUES(side^1))
         copyInvToPlayer()
         for (i <- 0 until 9)
         {
             val stack = getStackInSlot(i)
-            if (stack != null && tryUseItem(stack, upos.x, upos.y, upos.z, i))
+            if (stack != null && tryUseItem(stack, upos, i))
             {
-                if (fakePlayer.isUsingItem) fakePlayer.stopUsingItem()
+                if (fakePlayer.isHandActive) fakePlayer.stopActiveHand()
                 copyInvFromPlayer()
                 val newStack = getStackInSlot(i)
                 if (newStack != null && newStack.stackSize == 0)
@@ -114,7 +115,7 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
                 return
             }
         }
-        copyInvFromPlayer()*/
+        copyInvFromPlayer()
     }
 
     def copyInvToPlayer()
@@ -130,107 +131,129 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
     }
     //TODO
     //FIXME This all need a complete rewrite due to the new interaction system.
-    /*def tryUseItem(stack:ItemStack, x:Int, y:Int, z:Int, slot:Int) =
+    def tryUseItem(stack:ItemStack, pos:BlockPos, slot:Int) =
     {
         fakePlayer.inventory.currentItem = slot
 
-        try
-        {
-            tryRightClick(stack, x, y, z, slot) ||
-                    tryEntityClick(stack, x, y, z)
-        }
-        catch
-        {
+        try {
+            tryRightClick(stack, pos, slot) || tryEntityClick(stack, pos)
+        } catch {
             case e:Throwable => false
         }
     }
 
-    def tryRightClick(stack:ItemStack, x:Int, y:Int, z:Int, slot:Int):Boolean =
+    def tryRightClick(stack:ItemStack, pos:BlockPos, slot:Int):Boolean =
     {
-        val event = ForgeEventFactory.onPlayerInteract(fakePlayer,
-            PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK, x, y, z, 1, world)
-        if (event.isCanceled) return false
-
-        if (stack.getItem.onItemUseFirst(stack, fakePlayer, world, x, y, z, 1, 0.5F, 0.5f, 0.5F)) return true
-
-        if (stack.getItem.isInstanceOf[ItemBlock])
+        def tryUse(pos:BlockPos):Boolean =
         {
-            if (stack.tryPlaceItemIntoWorld(fakePlayer, world, x, y, z, 1, 0.5F, 0.5F, 0.5F)) return true
-        }
-        else
-        {
-            if (stack.getItem.onItemUse(stack, fakePlayer, world, x, y, z, 1, 0.5F, 0.5F, 0.5F)) return true
-            if (stack.getItem.onItemUse(stack, fakePlayer, world, x, y-1, z, 1, 0.5F, 0.5F, 0.5F)) return true
+            val event = ForgeHooks.onRightClickBlock(fakePlayer, EnumHand.MAIN_HAND, stack, pos, EnumFacing.UP, new Vec3d(0.5, 0.5, 0.5))
+            if (event.isCanceled || event.getUseBlock == Event.Result.DENY) return false
+
+            import EnumActionResult._
+
+            stack.getItem.onItemUseFirst(stack, fakePlayer, world, pos,
+                EnumFacing.UP, 0.5F, 0.5f, 0.5F, EnumHand.MAIN_HAND) match {
+                case FAIL => return false
+                case SUCCESS => return true
+                case PASS =>
+            }
+
+            stack.onItemUse(fakePlayer, world, pos, EnumHand.MAIN_HAND,
+                EnumFacing.UP, 0.5f, 0.5f, 0.5f) match {
+                case FAIL => return false
+                case SUCCESS => return true
+                case PASS =>
+            }
+
+            false
         }
 
-        val size = stack.stackSize
-        val newStack = stack.useItemRightClick(world, fakePlayer)
-        if (stack != newStack || (newStack != null && newStack.stackSize != size))
-        {
-            fakePlayer.inventory.setInventorySlotContents(slot, newStack)
-            return true
-        }
+        if (tryUse(pos)) return true
+        if (tryUse(pos.down)) return true
+
+//        val size = stack.stackSize
+//        val newStack = stack.useItemRightClick(world, fakePlayer)
+//        if (stack != newStack || (newStack != null && newStack.stackSize != size))
+//        {
+//            fakePlayer.inventory.setInventorySlotContents(slot, newStack)
+//            return true
+//        }
 
         false
     }
 
-    def tryEntityClick(stack:ItemStack, x:Int, y:Int, z:Int):Boolean =
+    def tryEntityClick(stack:ItemStack, pos:BlockPos):Boolean =
     {
-        val start = position.toVector3Centered
-        val end = start.copy.add(new Vector3(BlockCoord.sideOffsets(side^1)).multiply(2.5))
+        val start = Vector3.fromBlockPosCenter(pos)
+        val end = Vector3.fromBlockPosCenter(pos.offset(EnumFacing.VALUES(side^1), 2))
         val e = traceEntityHits(start, end)
         e != null && useOnEntity(stack, e)
     }
 
     def useOnEntity(stack:ItemStack, e:Entity):Boolean =
     {
-        if (e.interactFirst(fakePlayer)) return true
+        import EnumActionResult._
+        e.applyPlayerInteraction(fakePlayer, new Vec3d(0, 0, 0), stack, EnumHand.MAIN_HAND) match {
+            case FAIL => return false
+            case SUCCESS => return true
+            case PASS =>
+        }
 
         if (e.isInstanceOf[EntityLivingBase])
-        {
-            val oldS = stack.stackSize
-            stack.interactWithEntity(fakePlayer, e.asInstanceOf[EntityLivingBase])
-            if(stack.stackSize != oldS) return true
-        }
+            if(stack.interactWithEntity(fakePlayer, e.asInstanceOf[EntityLivingBase], EnumHand.MAIN_HAND))
+                return true
         false
     }
 
     def traceEntityHits(start:Vector3, end:Vector3) =
     {
-        val box = new Cuboid6(0, 1, 0, 1, 3.5, 1).apply(rotationT).add(new Vector3(position))
-        val elist = world.getEntitiesWithinAABBExcludingEntity(fakePlayer, box.toAABB)
+        val box = new Cuboid6(0, 1, 0, 1, 3.5, 1).apply(rotationT).add(pos)
+        val elist = world.getEntitiesWithinAABBExcludingEntity(fakePlayer, box.aabb)
 
-        var eHit:Entity = null
-        var edis = Double.MaxValue
-
-        for (i <- 0 until elist.size())
-        {
-            val e = elist.get(i).asInstanceOf[Entity]
-            if (e.canBeCollidedWith)
-            {
-                val a2 = new Cuboid6(e.boundingBox).expand(e.getCollisionBorderSize)
-                if (a2.contains(start))//Why doesnt Cuboid6 have this method!?
-                {
-                    eHit = e
-                    edis = 0.0D
-                }
-                else
-                {
-                    val mop = RayTracer.instance.rayTraceCuboid(start, end, a2)
-                    if (mop != null)
-                    {
-                        val d = new Vector3(mop.hitVec).subtract(start).mag
-                        if (d < edis)
-                        {
-                            eHit = e
-                            edis = d
-                        }
-                    }
-                }
-            }
+        import scala.collection.JavaConversions._
+        val eBoxes = elist.zipWithIndex.filter(_._1.canBeCollidedWith).map { pair =>
+            new IndexedCuboid6(pair._2, new Cuboid6(pair._1.getEntityBoundingBox)
+                    .expand(pair._1.getCollisionBorderSize))
         }
-        eHit
-    }*/
+
+        val hit = RayTracer.rayTraceCuboidsClosest(start, end, eBoxes, pos)
+        if (hit != null)
+            elist(hit.cuboid6.data.asInstanceOf[Int])
+        else
+            null
+
+//        var eHit:Entity = null
+//        var edis = Double.MaxValue
+
+//        for (i <- 0 until elist.size())
+//        {
+//            val e = elist.get(i)
+//            if (e.canBeCollidedWith)
+//            {
+//                val a2 = new IndexedCuboid6(0, new Cuboid6(e.getEntityBoundingBox).expand(e.getCollisionBorderSize))
+//                if (a2.contains(start))//Why doesnt Cuboid6 have this method!?
+//                {
+//                    eHit = e
+//                    edis = 0.0D
+//                }
+//                else
+//                {
+//                    val mop = RayTracer.instance.rayTraceCuboid(start, end, a2)
+//                    RayTracer.rayTrace(pos, start, end, a2)
+//                    if (mop != null)
+//                    {
+//                        val d = new Vector3(mop.hitVec).subtract(start).mag
+//                        if (d < edis)
+//                        {
+//                            eHit = e
+//                            edis = d
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        eHit
+    }
 
     override def getConnectionMask(side:Int) = if ((side^1) == this.side) 0 else 0x1F
     override def weakPowerLevel(side:Int, mask:Int) = 0
