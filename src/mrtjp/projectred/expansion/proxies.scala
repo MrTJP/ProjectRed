@@ -482,35 +482,35 @@ object ExpansionRecipes
             'e':JC, "ingotElectrotineAlloy"
         ))
 
-        //Teleposer
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 7),
-            "odo","wbw","iei",
-            'o':JC, Blocks.OBSIDIAN,
-            'd':JC, Items.DIAMOND,
-            'w':JC, "plankWood",
-            'b':JC, Items.ENDER_PEARL,
-            'i':JC, "ingotIron",
-            'e':JC, "ingotElectrotineAlloy"
-        ))
+//        //Teleposer
+//        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 7),
+//            "odo","wbw","iei",
+//            'o':JC, Blocks.OBSIDIAN,
+//            'd':JC, Items.DIAMOND,
+//            'w':JC, "plankWood",
+//            'b':JC, Items.ENDER_PEARL,
+//            'i':JC, "ingotIron",
+//            'e':JC, "ingotElectrotineAlloy"
+//        ))
 
-        //Frame Motor
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 8),
-            "wiw","cmc","iei",
-            'w':JC, "plankWood",
-            'i':JC, "ingotIron",
-            'c':JC, PartDefs.COPPERCOIL.makeStack,
-            'm':JC, PartDefs.MOTOR.makeStack,
-            'e':JC, "ingotElectrotineAlloy"
-        ))
-
-        //Frame Linear Actuator
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 9),
-            "wiw","cic","cec",
-            'w':JC, "plankWood",
-            'i':JC, "ingotIron",
-            'c':JC, PartDefs.COPPERCOIL.makeStack,
-            'e':JC, "ingotElectrotineAlloy"
-        ))
+//        //Frame Motor
+//        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 8),
+//            "wiw","cmc","iei",
+//            'w':JC, "plankWood",
+//            'i':JC, "ingotIron",
+//            'c':JC, PartDefs.COPPERCOIL.makeStack,
+//            'm':JC, PartDefs.MOTOR.makeStack,
+//            'e':JC, "ingotElectrotineAlloy"
+//        ))
+//
+//        //Frame Linear Actuator
+//        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 9),
+//            "wiw","cic","cec",
+//            'w':JC, "plankWood",
+//            'i':JC, "ingotIron",
+//            'c':JC, PartDefs.COPPERCOIL.makeStack,
+//            'e':JC, "ingotElectrotineAlloy"
+//        ))
 
         //Project Bench
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 10),
@@ -542,7 +542,6 @@ object ExpansionRecipes
                 'r':JC, Items.REDSTONE
             ))
         }
-
     }
 
     private def initMiscRecipes()
