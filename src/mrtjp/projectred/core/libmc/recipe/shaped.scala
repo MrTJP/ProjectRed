@@ -11,6 +11,7 @@ import net.minecraft.inventory.InventoryCrafting
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.{CraftingManager, IRecipe}
 import net.minecraft.world.World
+import net.minecraftforge.common.ForgeHooks
 import net.minecraftforge.fml.common.registry.GameRegistry
 
 import scala.collection.JavaConversions._
@@ -56,7 +57,7 @@ class ShapedBuilderRecipe(val builder:ShapedRecipeBuilder) extends IRecipe
         true
     }
 
-    override def getRemainingItems(inv:InventoryCrafting) = null //TODO
+    override def getRemainingItems(inv:InventoryCrafting) = ForgeHooks.defaultRecipeGetRemainingItems(inv)
 }
 
 class PRShapedRecipeHandler extends TemplateRecipeHandler
