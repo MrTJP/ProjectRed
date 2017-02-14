@@ -17,7 +17,7 @@ import net.minecraft.world.World
 
 class IntegrationPH
 {
-    val channel = ProjectRedIntegration
+    val channel = "PR|Integr"
 
     def writePartIndex(out:MCDataOutput, part:TMultiPart) =
     {
