@@ -66,18 +66,18 @@ object IlluminationRecipes
         }
 
         /** Buttons **/
-//        for (i <- 0 until 16)
-//        {
-//            GameRegistry.addShapelessRecipe(new ItemStack(ProjectRedIllumination.itemPartIllumarButton, 1, i),
-//                Blocks.stone_button,
-//                PartDefs.ILLUMARS.toSeq(i).makeStack,
-//                PartDefs.ILLUMARS.toSeq(i).makeStack
-//            )
-//            GameRegistry.addShapelessRecipe(new ItemStack(ProjectRedIllumination.itemPartIllumarFButton, 1, i),
-//                new ItemStack(ProjectRedIllumination.itemPartIllumarButton, 1, i),
-//                Blocks.redstone_torch
-//            )
-//        }
+        for (i <- 0 until 16)
+        {
+            GameRegistry.addShapelessRecipe(new ItemStack(ProjectRedIllumination.itemPartIllumarButton, 1, i),
+                Blocks.STONE_BUTTON,
+                PartDefs.ILLUMARS.toSeq(i).makeStack,
+                PartDefs.ILLUMARS.toSeq(i).makeStack
+            )
+            GameRegistry.addShapelessRecipe(new ItemStack(ProjectRedIllumination.itemPartIllumarFButton, 1, i),
+                new ItemStack(ProjectRedIllumination.itemPartIllumarButton, 1, i),
+                Blocks.REDSTONE_TORCH
+            )
+        }
 
         /** Fallout Lights **/
         for (i <- 0 until 16)

@@ -126,21 +126,6 @@ object LampRenderer extends TileEntitySpecialRenderer[TileLamp] with IItemRender
     val iconsOn = new Array[TextureAtlasSprite](16)
     val iconsOff = new Array[TextureAtlasSprite](16)
 
-    /*override def renderBlock(w:IBlockAccess, pos:BlockPos, buffer:VertexBuffer)
-    {
-        w.getTileEntity(pos) match {
-            case t:TileLamp =>
-                val rs = CCRenderState.instance()
-                rs.reset()
-                rs.bind(buffer)
-                rs.lightMatrix.locate(w, pos)
-                rs.setPipeline(new Translation(pos.getX, pos.getY, pos.getZ), rs.lightMatrix,
-                    new IconTransformation((if (t.isOn) iconsOn else iconsOff)(t.getColor)))
-                BlockRenderer.renderFullBlock(rs, 0)
-            case _ =>
-        }
-    }*/
-
     override def isBuiltInRenderer = true
     override def getParticleTexture = null
     override def getItemCameraTransforms = ItemCameraTransforms.DEFAULT

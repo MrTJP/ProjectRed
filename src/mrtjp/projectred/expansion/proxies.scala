@@ -2,13 +2,12 @@ package mrtjp.projectred.expansion
 
 import java.lang.{Character => JC}
 
-import codechicken.lib.data.MCDataInput
 import codechicken.lib.model.ModelRegistryHelper
 import codechicken.lib.model.blockbakery.{CCBakeryModel, IBlockStateKeyGenerator, IItemStackKeyGenerator}
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.texture.TextureUtils.IIconRegister
-import codechicken.multipart.{IDynamicPartFactory, MultiPartRegistry, TMultiPart}
+import codechicken.multipart.{IPartFactory, MultiPartRegistry, TMultiPart}
 import mrtjp.core.block.{ItemBlockCore, MultiTileBlock}
 import mrtjp.core.data.{TClientKeyTracker, TServerKeyTracker}
 import mrtjp.core.gui.GuiHandler
@@ -23,15 +22,13 @@ import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.client.renderer.block.statemap.StateMap.Builder
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.client.model.ModelLoader
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 
-class ExpansionProxy_server extends IProxy with IDynamicPartFactory
+class ExpansionProxy_server extends IProxy with IPartFactory
 {
     def preinit()
     {
@@ -121,10 +118,7 @@ class ExpansionProxy_server extends IProxy with IDynamicPartFactory
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"
 
-    override def createPart(name:String, nbt:NBTTagCompound) = createPart(name)
-    override def createPart(name:String, packet:MCDataInput) = createPart(name)
-
-    def createPart(name:String):TMultiPart = name match
+    def createPart(name:String, client:Boolean):TMultiPart = name match
     {
         case SolarPanelPart.typeID => new SolarPanelPart
         case _ => null
