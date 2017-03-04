@@ -66,8 +66,8 @@ object RenderGate extends IIconRegister
 
     override def registerIcons(map:TextureMap)
     {
-        for (r <- renderers) r.registerIcons(map)
         ComponentStore.registerIcons(map)
+        for (r <- renderers) r.registerIcons(map)
     }
 
     def renderStatic(gate:GatePart, pos:Vector3, ccrs:CCRenderState)
