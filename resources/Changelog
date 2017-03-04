@@ -1,5 +1,11 @@
--v4.7.0pre13
-
+v4.8.1
+- ADDED: Light buttons now craftable
+- FIX: Crash when using 2D Gate wires
+- FIX: Crash when mining certain blocks
+- FIX: No drops when mining certain blocks
+- FIX: Crash when placing block placer
+- FIX: Various localization fixes
+- FIX: Client disconnect when configuring gates
 
 v4.7.0pre12
 - FIX: Wires not propagating signals properly
