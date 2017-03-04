@@ -89,21 +89,26 @@ object OreDefs extends BlockDefinition
     override type EnumVal = OreVal
     override def getBlock = ProjectRedExploration.blockOres
 
-    val ORERUBY = new OreVal("ruby_ore", 2, PartDefs.RUBY.makeStack, 1, 4, 1, 8)
-    val ORESAPPHIRE = new OreVal("sapphire_ore", 2, PartDefs.SAPPHIRE.makeStack, 1, 4, 1, 8)
-    val OREPERIDOT = new OreVal("peridot_ore", 2, PartDefs.PERIDOT.makeStack, 1, 4, 1, 8)
+    val ORERUBY = new OreVal("ruby_ore", 2, PartDefs.RUBY.makeStack _, 1, 4, 1, 8)
+    val ORESAPPHIRE = new OreVal("sapphire_ore", 2, PartDefs.SAPPHIRE.makeStack _, 1, 4, 1, 8)
+    val OREPERIDOT = new OreVal("peridot_ore", 2, PartDefs.PERIDOT.makeStack _, 1, 4, 1, 8)
 
     val ORECOPPER = new OreVal("copper_ore", 1, null, 1, 1, 0, 0)
     val ORETIN = new OreVal("tin_ore", 1, null, 1, 1, 0, 0)
     val ORESILVER = new OreVal("silver_ore", 2, null, 1, 1, 0, 0)
-    val OREELECTROTINE = new OreVal("electrotine_ore", 2, PartDefs.ELECTROTINE.makeStack, 1, 8, 1, 8)
+    val OREELECTROTINE = new OreVal("electrotine_ore", 2, PartDefs.ELECTROTINE.makeStack _, 1, 8, 1, 8)
 
-    class OreVal(variantName:String, val harvest:Int, val drop:ItemStack, val min:Int, val max:Int, val minXP:Int, val maxXP:Int) extends BlockDef(variantName)
+    class OreVal(variantName:String, val harvest:Int, val dropFactory:()=>ItemStack, val min:Int, val max:Int, val minXP:Int, val maxXP:Int) extends BlockDef(variantName)
     {
-        def hasDrop = drop != null
+        def hasDrop = dropFactory != null
 
         def makeDropStack:ItemStack = makeDropStack(1)
-        def makeDropStack(i:Int) = new ItemStack(drop.getItem, i, drop.getItemDamage)
+        def makeDropStack(i:Int) =
+        {
+            val d = dropFactory()
+            d.stackSize = i
+            d
+        }
     }
 }
 
@@ -163,7 +168,7 @@ object DecorativeStoneDefs extends BlockDefinition
     val MARBLE = new StoneVal("marble", 2, 1.0F, 14.0F, null)
     val MARBLEBRICK = new StoneVal("marble_brick", 2, 1.0F, 14.0F, null)
     val BASALTCOBBLE = new StoneVal("basalt_cobble", 2, 2.5F, 14.0F, null)
-    val BASALT = new StoneVal("basalt", 2, 2.5F, 16, BASALTCOBBLE.makeStack)
+    val BASALT = new StoneVal("basalt", 2, 2.5F, 16, BASALTCOBBLE.makeStack _)
     val BASALTBRICK = new StoneVal("basalt_brick", 2, 2.5F, 20, null)
     val RUBYBLOCK = new StoneVal("ruby_block", 2, 5.0F, 10.0F, null)
     val SAPPHIREBLOCK = new StoneVal("sapphire_block", 2, 5.0F, 10.0F, null)
@@ -173,12 +178,17 @@ object DecorativeStoneDefs extends BlockDefinition
     val SILVERBLOCK = new StoneVal("silver_block", 2, 5.0F, 10.0F, null)
     val ELECTROTINEBLOCK = new StoneVal("electrotine_block", 2, 5.0F, 10.0F, null)
 
-    class StoneVal(iconName:String, val harvest:Int, val hardness:Float, val explosion:Float, val drop:ItemStack) extends BlockDef(iconName)
+    class StoneVal(iconName:String, val harvest:Int, val hardness:Float, val explosion:Float, val dropFactory:()=>ItemStack) extends BlockDef(iconName)
     {
-        def hasDrop = drop != null
+        def hasDrop = dropFactory != null
 
         def makeDropStack:ItemStack = makeDropStack(1)
-        def makeDropStack(i:Int) = new ItemStack(drop.getItem, i, drop.getItemDamage)
+        def makeDropStack(i:Int) =
+        {
+            val d = dropFactory()
+            d.stackSize = i
+            d
+        }
     }
 }
 
