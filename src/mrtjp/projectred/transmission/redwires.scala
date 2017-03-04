@@ -10,7 +10,6 @@ import mrtjp.projectred.core._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.math.BlockPos.MutableBlockPos
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -293,8 +292,8 @@ class RedAlloyWirePart extends RedwirePart with TRedAlloyCommons
             WirePropagator.addNeighborChange(pos.offset(EnumFacing.getFront(Rotation.rotateSide(side, r))))
 
         for (s <- 0 until 6) if (s != (side^1))
-            WirePropagator.addNeighborChange(new MutableBlockPos(pos)
-                    .move(EnumFacing.getFront(side)).move(EnumFacing.getFront(s)))
+            WirePropagator.addNeighborChange(pos
+                    .offset(EnumFacing.getFront(side)).offset(EnumFacing.getFront(s)))
     }
 }
 

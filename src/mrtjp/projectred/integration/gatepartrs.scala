@@ -15,7 +15,6 @@ import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.transmission.{IRedwireEmitter, TFaceRSAcquisitions}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.math.BlockPos.MutableBlockPos
 
 abstract class RedstoneGatePart extends GatePart with TFaceRSAcquisitions with IRandomDisplayTickPart
 {
@@ -101,19 +100,15 @@ abstract class RedstoneGatePart extends GatePart with TFaceRSAcquisitions with I
     override def notifyExternals(mask:Int)
     {
         var smask = 0
-        val block = MultipartProxy.block
-        val pos = new MutableBlockPos()
-        val pos2 = new MutableBlockPos()
 
         for (r <- 0 until 4) if ((mask&1<<r) != 0) {
             val absSide = absoluteDir(r)
-            pos.setPos(x, y, z).move(EnumFacing.values()(absSide))
+            val pos = this.pos.offset(EnumFacing.values()(absSide))
 
-            world.notifyBlockOfStateChange(pos, block)
-            for (s <- 0 until 6) if (s != (absSide^1) && (smask&1<<s) == 0) {
-                pos2.setPos(pos).move(EnumFacing.values()(s))
-                world.notifyBlockOfStateChange(pos2, block)
-            }
+            world.notifyBlockOfStateChange(pos, MultipartProxy.block)
+            for (s <- 0 until 6) if (s != (absSide^1) && (smask&1<<s) == 0)
+                world.notifyBlockOfStateChange(pos.offset(EnumFacing.values()(s)), MultipartProxy.block)
+
             smask |= 1<<absSide
         }
     }

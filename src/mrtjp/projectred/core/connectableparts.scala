@@ -6,7 +6,6 @@ import codechicken.multipart.handler.MultipartProxy
 import mrtjp.projectred.api.IConnectable
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.BlockPos.MutableBlockPos
 
 trait TAcquisitionsCommons extends TMultiPart
 {
@@ -33,7 +32,7 @@ trait TFaceAcquisitions extends TAcquisitionsCommons with TFaceOrient
     def getCorner(r:Int) =
     {
         val absDir = absoluteDir(r)
-        val pos = new MutableBlockPos(this.pos).move(EnumFacing.getFront(absDir)).move(EnumFacing.getFront(side))
+        val pos = this.pos.offset(EnumFacing.getFront(absDir)).offset(EnumFacing.getFront(side))
 
         BlockMultipart.getPart(world, pos, absDir^1)
     }
@@ -48,8 +47,7 @@ trait TFaceAcquisitions extends TAcquisitionsCommons with TFaceOrient
 
     def getCenter = tile.partMap(6)
 
-    def posOfCorner(r:Int) = new MutableBlockPos(pos)
-            .move(EnumFacing.getFront(absoluteDir(r))).move(EnumFacing.getFront(side))
+    def posOfCorner(r:Int) = pos.offset(EnumFacing.getFront(absoluteDir(r))).offset(EnumFacing.getFront(side))
 
     override def posOfStraight(r:Int) = pos.offset(EnumFacing.getFront(absoluteDir(r)))
 
