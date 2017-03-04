@@ -15,8 +15,8 @@ object ProjectRedIllumination
     var blockAirousLight:BlockAirousLight = _
 
 //    /** Multipart items **/
-//    var itemPartIllumarButton:ItemPartButton = null
-//    var itemPartIllumarFButton:ItemPartFButton = null
+    var itemPartIllumarButton:ItemPartButton = _
+    var itemPartIllumarFButton:ItemPartFButton = _
 
     var tabLighting = new CreativeTabs("projectred.illumination")
     {

@@ -451,7 +451,7 @@ abstract class LightFactory extends IPartFactory
 
     def cMult(color:Int, on:Boolean):ColourMultiplier =
     {
-        val c = EnumColour.values()(color).getColour.copy
+        val c = EnumColour.values()(color).getColour
         if (!on) c.multiply(EnumColour.LIGHT_GRAY.getColour)
         ColourMultiplier.instance(c.rgba)
     }

@@ -22,6 +22,7 @@ import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core.libmc.PRLib
 import mrtjp.projectred.core.{ILowLoadMachine, ILowLoadPowerLine, PowerConductor}
+import net.minecraft.block.SoundType
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
 import net.minecraft.client.renderer.block.model.{BakedQuad, ItemCameraTransforms, ItemOverrideList}
@@ -137,7 +138,7 @@ object SolarPanelPart
     }
 }
 
-class ItemSolarPanel extends ItemCore with TItemMultiPart //with TItemGlassSound
+class ItemSolarPanel extends ItemCore with TItemMultiPart
 {
     setCreativeTab(ProjectRedExpansion.tabExpansion)
 
@@ -149,8 +150,9 @@ class ItemSolarPanel extends ItemCore with TItemMultiPart //with TItemGlassSound
         val solar = MultiPartRegistry.loadPart(SolarPanelPart.typeID, null).asInstanceOf[SolarPanelPart]
         if (solar != null) solar.preparePlacement(player, pos, side, item.getItemDamage)
         solar
-
     }
+
+    override def getPlacementSound(item:ItemStack) = SoundType.GLASS
 }
 
 object RenderSolarPanel extends IItemRenderer with IIconRegister with IPerspectiveAwareModel

@@ -9,6 +9,7 @@ import mrtjp.projectred.ProjectRedIllumination
 import net.minecraft.block.SoundType
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Blocks
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
@@ -40,53 +41,43 @@ class ItemBaseLight(factory:LightFactory, val inverted:Boolean) extends ItemCore
     }
 }
 
-//abstract class ItemPartButtonCommons(name:String) extends ItemCore(name) with TItemMultiPart with TItemGlassSound
-//{
-//    setHasSubtypes(true)
-//    setCreativeTab(ProjectRedIllumination.tabLighting)
-//
-//    override def newPart(item:ItemStack, player:EntityPlayer, w:World, pos1:BlockCoord, side:Int, vhit:Vector3):TMultiPart =
-//    {
-//        if (side == 0 || side == 1) return null
-//        val pos = pos1.copy.offset(side^1)
-//        if (!w.isSideSolid(pos.x, pos.y, pos.z, ForgeDirection.getOrientation(side))) return null
-//
-//        val b = getNewInst(ButtonPart.sideMetaMap(side^1))
-//        if (b != null) b.onPlaced(item)
-//        b
-//    }
-//
-//    def getNewInst(sMask:Int):LightButtonPart
-//
-//    override def getSubItems(item:Item, tab:CreativeTabs, list:JList[_])
-//    {
-//        for (i <- 0 until 16) list.asInstanceOf[JList[ItemStack]].add(new ItemStack(this, 1, i))
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    override def getSpriteNumber = 0
-//
-//    @SideOnly(Side.CLIENT)
-//    override def registerIcons(reg:IIconRegister) {}
-//}
-//
-//class ItemPartButton extends ItemPartButtonCommons("projectred.illumination.lightbutton") with TItemMultiPart with TItemGlassSound
-//{
-//    @SideOnly(Side.CLIENT)
-//    override def registerIcons(reg:IIconRegister)
-//    {
-//        ItemPartButton.icon = reg.registerIcon("projectred:lighting/button")
-//    }
-//
-//    override def getNewInst(sMask:Int) = new LightButtonPart(sMask)
-//}
-//
-//object ItemPartButton
-//{
-//    var icon:IIcon = null
-//}
-//
-//class ItemPartFButton extends ItemPartButtonCommons("projectred.illumination.flightbutton")
-//{
-//    override def getNewInst(sMask:Int) = new FLightButtonPart(sMask)
-//}
+abstract class ItemPartButtonCommons extends ItemCore with TItemMultiPart
+{
+    setHasSubtypes(true)
+    setCreativeTab(ProjectRedIllumination.tabLighting)
+
+    /**
+      * Create a new part based on the placement information parameters.
+      */
+    override def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, side:Int, vhit:Vector3):TMultiPart =
+    {
+        val pos2 = pos.offset(EnumFacing.values()(side^1))
+        if (!world.isSideSolid(pos2, EnumFacing.values()(side))) return null
+
+
+        val b = getNewInst
+        if (b != null)
+            b.setStateOnPlacement(world, pos, EnumFacing.values()(side), vhit.vec3(), player, item)
+        b
+    }
+
+    def getNewInst:LightButtonPart
+
+    override def getSubItems(itemIn:Item, tab:CreativeTabs, subItems:JList[ItemStack]) =
+    {
+        for (i <- 0 until 16) subItems.add(new ItemStack(this, 1, i))
+    }
+
+    override def getPlacementSound(item:ItemStack):SoundType = SoundType.GLASS
+
+}
+
+class ItemPartButton extends ItemPartButtonCommons
+{
+    override def getNewInst = new LightButtonPart
+}
+
+class ItemPartFButton extends ItemPartButtonCommons
+{
+    override def getNewInst = new FLightButtonPart
+}

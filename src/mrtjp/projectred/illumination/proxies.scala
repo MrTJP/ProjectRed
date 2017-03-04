@@ -3,6 +3,7 @@ package mrtjp.projectred.illumination
 import codechicken.lib.model.ModelRegistryHelper
 import codechicken.lib.model.blockbakery.{BlockBakery, CCBakeryModel, IBlockStateKeyGenerator}
 import codechicken.lib.texture.TextureUtils
+import codechicken.multipart.{IPartFactory, MultiPartRegistry}
 import mrtjp.core.block.MultiTileBlock
 import mrtjp.projectred.ProjectRedIllumination._
 import mrtjp.projectred.core.IProxy
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class IlluminationProxy_server extends IProxy
+class IlluminationProxy_server extends IProxy with IPartFactory
 {
     val lights = Seq(LightFactoryLantern, LightFactoryFixture, LightFactoryFallout, LightFactoryCage)
 
@@ -27,21 +28,25 @@ class IlluminationProxy_server extends IProxy
         GameRegistry.register(itemBlockLamp.setRegistryName(blockLamp.getRegistryName))
         blockLamp.addTile(classOf[TileLamp], 0)
 
+        itemPartIllumarButton = new ItemPartButton
+        itemPartIllumarButton.setUnlocalizedName("projectred.illumination.lightButton")
+        GameRegistry.register(itemPartIllumarButton.setRegistryName("light_button"))
+
+        itemPartIllumarFButton = new ItemPartFButton
+        itemPartIllumarFButton.setUnlocalizedName("projectred.illumination.lightButtonFeedback")
+        GameRegistry.register(itemPartIllumarFButton.setRegistryName("feedback_light_button"))
+
         //TODO Add one of these lights!
 //        blockAirousLight = new BlockAirousLight
 //        blockAirousLight.bindTile(classOf[TileAirousLight])
 
         lights.foreach(_.register())
+
+        MultiPartRegistry.registerParts(this, Array(LightButtonPart.typeID, FLightButtonPart.typeID))
     }
 
     override def init()
     {
-//        MultiPartRegistry.registerParts(this, (lights.map(_.getType) :+ "pr_lightbutton" :+ "pr_flightbutton").toArray)
-//        for (l <- lights) l.initServer()
-
-//        itemPartIllumarButton = new ItemPartButton
-//        itemPartIllumarFButton = new ItemPartFButton
-
         IlluminationRecipes.initRecipes()
         LightMicroMaterial.register()
     }
@@ -50,6 +55,13 @@ class IlluminationProxy_server extends IProxy
 
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"
+
+    override def createPart(name:String, client:Boolean) = name match
+    {
+        case LightButtonPart.typeID => new LightButtonPart
+        case FLightButtonPart.typeID => new FLightButtonPart
+        case _ => null
+    }
 }
 
 class IlluminationProxy_client extends IlluminationProxy_server
@@ -74,6 +86,9 @@ class IlluminationProxy_client extends IlluminationProxy_server
         })
 
         lights.foreach(_.registerClient())
+
+        ModelRegistryHelper.registerItemRenderer(itemPartIllumarButton, ButtonItemRenderer)
+        ModelRegistryHelper.registerItemRenderer(itemPartIllumarFButton, FButtonItemRenderer)
     }
 
     @SideOnly(Side.CLIENT)
