@@ -250,7 +250,7 @@ object BeamPathFinder
             }
         }
 
-        newList += pos
+        newList += pos.toImmutable
         newList.result().map(Vector3.fromBlockPosCenter)
     }
 }

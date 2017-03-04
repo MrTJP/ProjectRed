@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.math.BlockPos.MutableBlockPos
 import net.minecraft.util.text.TextComponentString
 
 trait IBundledCablePart extends IWirePart with IBundledEmitter
@@ -227,7 +226,7 @@ class BundledCablePart extends WirePart with TFaceBundledAquisitions with TBundl
 
     override def discoverStraightOverride(absDir:Int) =
     {
-        val pos = new MutableBlockPos(this.pos).move(EnumFacing.values()(absDir))
+        val pos = this.pos.offset(EnumFacing.values()(absDir))
         world.getTileEntity(pos) match {
             case b:IMaskedBundledTile => b.canConnectBundled(absDir^1) &&
                     (b.getConnectionMask(absDir^1)&1<<Rotation.rotationTo(absDir, side)) != 0
@@ -261,7 +260,7 @@ class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitio
 
     override def discoverStraightOverride(absDir:Int) =
     {
-        val pos = new MutableBlockPos(this.pos).move(EnumFacing.getFront(absDir))
+        val pos = this.pos.offset(EnumFacing.getFront(absDir))
         world.getTileEntity(pos) match {
             case b:IMaskedBundledTile => b.canConnectBundled(absDir^1) &&
                     (b.getConnectionMask(absDir^1)&0x10) != 0
