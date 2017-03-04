@@ -90,7 +90,7 @@ class ExpansionProxy_server extends IProxy with IDynamicPartFactory
         //Machine2 (devices)
         machine2.addTile(classOf[TileBlockBreaker], 0)
         machine2.addTile(classOf[TileItemImporter], 1)
-        //machine2.addTile(classOf[TileBlockPlacer], 2)
+        machine2.addTile(classOf[TileBlockPlacer], 2)
         machine2.addTile(classOf[TileFilteredImporter], 3)
         machine2.addTile(classOf[TileFireStarter], 4)
         machine2.addTile(classOf[TileBatteryBox], 5)
