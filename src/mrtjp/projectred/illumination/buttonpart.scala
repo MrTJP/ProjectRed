@@ -10,12 +10,11 @@ import codechicken.lib.texture.TextureUtils
 import codechicken.lib.util.TransformUtils
 import codechicken.lib.vec._
 import codechicken.lib.vec.uv.IconTransformation
-import codechicken.multipart.{RedstoneInteractions, TileMultipart}
 import codechicken.multipart.minecraft.ButtonPart
+import codechicken.multipart.{RedstoneInteractions, TileMultipart}
 import com.google.common.collect.ImmutableList
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.{RenderHalo, TSwitchPacket}
-import mrtjp.projectred.transmission.WireDef
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
@@ -253,9 +252,6 @@ trait TButtonItemRendererCommons extends IItemRenderer with IPerspectiveAwareMod
         val icon = new IconTransformation(TextureUtils.getParticleIconForBlock(
             Blocks.STAINED_HARDENED_CLAY.getStateFromMeta(colour)))
         val t = new Scale(scale) `with` new Translation(x, y, z)
-
-        val wdef = WireDef.values(colour)
-        if (wdef == null) return
 
         val ccrs = CCRenderState.instance()
         TextureUtils.bindBlockTexture()
