@@ -56,14 +56,14 @@ object RenderWire extends IIconRegister
     {
         var m = wireModels(key)
         if (m == null) wireModels(key) =
-            {m = WireModelGen.generateModel(key, false); m}
+            {m = WireModelGen.instance.generateModel(key, false); m}
         m
     }
     def getOrGenerateInvModel(thickness:Int) =
     {
         var m = invModels(thickness)
         if (m == null) invModels(thickness) =
-            {m = WireModelGen.generateInvModel(thickness); m}
+            {m = WireModelGen.instance.generateInvModel(thickness); m}
         m
     }
 
@@ -154,6 +154,24 @@ class UVT(t:Transformation) extends UVTransformation
  */
 object WireModelGen
 {
+    val instances = new ThreadLocal[WireModelGen] {
+        override def initialValue() = new WireModelGen
+    }
+
+    def instance = instances.get()
+
+    val reorientSide = Array(0, 3, 3, 0, 0, 3)
+
+    def countConnections(mask:Int) =
+    {
+        var n = 0
+        for (r <- 0 until 4) if ((mask&1<<r) != 0) n+=1
+        n
+    }
+}
+
+class WireModelGen
+{
     var side = 0
     var tw = 0
     var th = 0
@@ -165,13 +183,6 @@ object WireModelGen
     var model:CCModel = null
     var i = 0
     var inv = false
-
-    def countConnections(mask:Int) =
-    {
-        var n = 0
-        for (r <- 0 until 4) if ((mask&1<<r) != 0) n+=1
-        n
-    }
 
     private def numFaces:Int =
     {
@@ -194,7 +205,7 @@ object WireModelGen
         h = th/16D
         mask = key&0xFF
         connMask = (mask&0xF0)>>4|mask&0xF
-        connCount = countConnections(connMask)
+        connCount = WireModelGen.countConnections(connMask)
         model = CCModel.quadModel(numFaces*4)
         i = 0
 
@@ -223,8 +234,8 @@ object WireModelGen
             new Vertex5(0.5-w, h, 0.5-w, 8-tw, 16-tw)
         )
 
-        if (tex == 0 || tex == 1) tex = (tex+reorientSide(side))%2
-        var r = reorientSide(side)
+        if (tex == 0 || tex == 1) tex = (tex+WireModelGen.reorientSide(side))%2
+        var r = WireModelGen.reorientSide(side)
         if (tex == 1) r += 3
         if (r != 0)
         {
@@ -377,11 +388,10 @@ object WireModelGen
         i_verts
     }
 
-    val reorientSide = Array(0, 3, 3, 0, 0, 3)
     private val sideReflect = new UVT(Rotation.quarterRotations(2).at(new Vector3(8, 0, 16)))
     private def reflectSide(verts:Array[Vertex5], r:Int)
     {
-        if ((r+reorientSide(side))%4 >= 2) for (vert <- verts) vert.apply(sideReflect)
+        if ((r+WireModelGen.reorientSide(side))%4 >= 2) for (vert <- verts) vert.apply(sideReflect)
     }
 
     /**
