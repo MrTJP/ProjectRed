@@ -29,7 +29,7 @@ object RenderFramedWire extends IMicroHighlightRenderer
     {
         var m = wireModels(key)
         if (m == null) wireModels(key) =
-            {m = FWireModelGen.generateWireModel(key); m}
+            {m = FWireModelGen.instance.generateWireModel(key); m}
         m
     }
 
@@ -37,7 +37,7 @@ object RenderFramedWire extends IMicroHighlightRenderer
     {
         var m = jacketModels(key)
         if (m == null) jacketModels(key) =
-            {m = FWireModelGen.generateJacketedModel(key); m}
+            {m = FWireModelGen.instance.generateJacketedModel(key); m}
         m
     }
 
@@ -202,7 +202,16 @@ private object FWireFrameModelGen
     }
 }
 
-private object FWireModelGen
+object FWireModelGen
+{
+    val instances = new ThreadLocal[FWireModelGen] {
+        override def initialValue() = new FWireModelGen
+    }
+
+    def instance = instances.get()
+}
+
+class FWireModelGen
 {
     var connMap = 0
     var tw = 0
