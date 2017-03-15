@@ -7,11 +7,11 @@ package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.multipart.handler.MultipartSaveLoad
-import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.ProjectRedCore.log
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.TFaceOrient._
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class SequentialGateICPart extends RedstoneGateICPart with TComplexGateICPart
 {

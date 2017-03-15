@@ -5,8 +5,8 @@
  */
 package mrtjp.projectred.fabrication
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import mrtjp.core.color.Colors
 import mrtjp.projectred.fabrication.IWireICPart._
 import net.minecraft.nbt.NBTTagCompound
 
@@ -84,8 +84,8 @@ abstract class WireICPart extends CircuitPart with TConnectableICPart with TProp
     {
         Integer.bitCount(connMap&0xF) match
         {
-            case 0 => ("Unreachable wiring", Colors.RED.ordinal)
-            case 1 => ("Useless wiring", Colors.YELLOW.ordinal)
+            case 0 => ("Unreachable wiring", EnumColour.RED.ordinal)
+            case 1 => ("Useless wiring", EnumColour.YELLOW.ordinal)
             case _ => null
         }
     }

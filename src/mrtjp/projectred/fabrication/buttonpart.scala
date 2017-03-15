@@ -6,10 +6,11 @@
 package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import com.mojang.realmsclient.gui.ChatFormatting
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumChatFormatting
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class ButtonICPart extends CircuitPart with TICAcquisitions with IPoweredCircuitPart with TClientNetCircuitPart
 {
@@ -120,24 +121,24 @@ class ButtonICPart extends CircuitPart with TICAcquisitions with IPoweredCircuit
     override def getRolloverData(detailLevel:Int) =
     {
         val b = Seq.newBuilder[String]
-        if (detailLevel > 1) b += EnumChatFormatting.GRAY+"state: "+(if (on) "on" else "off")
+        if (detailLevel > 1) b += ChatFormatting.GRAY+"state: "+(if (on) "on" else "off")
         super.getRolloverData(detailLevel)++b.result()
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(t:Transformation, ortho:Boolean, frame:Float) =
+    override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float) =
     {
         RenderICButton.prepairDynamic(this)
-        RenderICButton.render(t, ortho)
+        RenderICButton.render(ccrs, t, ortho)
     }
 }
 
 class CircuitOpButton extends SimplePlacementOp
 {
-    override def doPartRender(t:Transformation)
+    override def doPartRender(ccrs:CCRenderState, t:Transformation)
     {
         RenderICButton.prepairInv()
-        RenderICButton.render(t, true)
+        RenderICButton.render(ccrs, t, true)
     }
 
     override def createPart = CircuitPartDefs.Button.createPart

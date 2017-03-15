@@ -502,8 +502,8 @@ fluid.redstone.molten=Liquid Redstone
 fluid.redmetal.molten=Molten Conductive Redmetal
 
 
-item.projectred.fabrication.icblueprint.name=IC Blueprint
-item.projectred.fabrication.icchip|0.name=IC Chip
-item.projectred.fabrication.icchip|1.name=Creative Mode IC Chip
-tile.projectred.integration.icblock|0.name=IC Workbench
-tile.projectred.integration.icblock|1.name=IC Printer
+item.projectred.fabrication.icBlueprint.name=IC Blueprint
+item.projectred.fabrication.icChip|0.name=IC Chip
+item.projectred.fabrication.icChip|1.name=Creative Mode IC Chip
+tile.projectred.integration.icBlock|0.name=IC Workbench
+tile.projectred.integration.icBlock|1.name=IC Printer

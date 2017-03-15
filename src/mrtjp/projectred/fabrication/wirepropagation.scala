@@ -7,8 +7,8 @@ package mrtjp.projectred.fabrication
 
 import java.util.{Stack => JStack}
 
-import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.core.vec.Point
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.immutable.HashSet
 

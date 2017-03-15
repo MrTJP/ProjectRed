@@ -5,9 +5,10 @@
  */
 package mrtjp.projectred.fabrication
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.gui.GuiDraw
+import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Translation
-import mrtjp.core.color.Colors
 import mrtjp.core.gui.{GuiLib, MCButtonNode, TNode}
 import mrtjp.core.vec.{Point, Rect, Size}
 import net.minecraft.client.gui.Gui
@@ -19,7 +20,7 @@ class CircuitGui(val part:IGuiCircuitPart) extends Gui with TNode
     var size = Size.zeroSize
     override def frame = Rect(position, size)
 
-    var lineColor = Colors.LIME.argb(0xAA)
+    var lineColor = EnumColour.LIME.argb(0xAA)
     var linePointerCalc = {() => Point.zeroPoint}
 
     private def moverFrame = Rect(position+Point(4, 9), Size(4, 6))
@@ -48,7 +49,7 @@ class CircuitGui(val part:IGuiCircuitPart) extends Gui with TNode
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
         GuiLib.drawGuiBox(position.x, position.y, size.width, size.height, 0)
-        GuiDraw.drawRect(moverFrame.x, moverFrame.y, moverFrame.width, moverFrame.height, Colors.LIGHT_GREY.argb)
+        GuiDraw.drawRect(moverFrame.x, moverFrame.y, moverFrame.width, moverFrame.height, EnumColour.LIGHT_GRAY.argb)
     }
 
     override def drawFront_Impl(mouse:Point, rframe:Float)
@@ -56,7 +57,7 @@ class CircuitGui(val part:IGuiCircuitPart) extends Gui with TNode
         val from = linePointerCalc()
         val to = from.clamp(frame)
         GL11.glColor4d(1, 1, 1, 1)
-        GuiLib.drawLine(from.x, from.y, to.x, to.y, lineColor)
+        GuiDraw.drawLine(from.x, from.y, to.x, to.y, 2, lineColor)
         GuiDraw.drawRect(to.x-3, to.y-3, 6, 6, lineColor)
     }
 
@@ -108,7 +109,7 @@ trait TGateGui extends CircuitGui
     {
         super.drawBack_Impl(mouse, rframe)
 
-        RenderICGate.renderDynamic(gate,
+        RenderICGate.renderDynamic(CCRenderState.instance(), gate,
             ICComponentStore.orthoGridT(gateRenderSize.width, gateRenderSize.height) `with`
                     new Translation(position.x+gateRenderX, position.y+(size/2-gateRenderSize/2).height, 0), true, rframe)
     }
@@ -190,7 +191,7 @@ class ICTimerGateGui(override val gate:SequentialGateICPart) extends CircuitGui(
     {
         super.drawBack_Impl(mouse, rframe)
         val s = "Interval: "+"%.2f".format(getLogic.getTimerMax*0.05)+"s"
-        GuiDraw.drawStringC(s, position.x+102, position.y+24, Colors.GREY.argb, false)
+        GuiDraw.drawStringC(s, position.x+102, position.y+24, EnumColour.GRAY.argb, false)
     }
 }
 
@@ -258,14 +259,14 @@ class ICCounterGateGui(override val gate:SequentialGateICPart) extends CircuitGu
     {
         super.drawBack_Impl(mouse, rframe)
         val s = "State: "+getLogic.getCounterValue
-        GuiDraw.drawStringC(s, position.x+102, position.y+24, Colors.GREY.argb, false)
+        GuiDraw.drawStringC(s, position.x+102, position.y+24, EnumColour.GRAY.argb, false)
 
         val m = valID match {
             case 0 => "Max: "+getLogic.getCounterMax
             case 1 => "Incr: "+getLogic.getCounterIncr
             case 2 => "Decr: "+getLogic.getCounterDecr
         }
-        GuiDraw.drawStringC(m, position.x+102, position.y+36, Colors.GREY.argb, false)
+        GuiDraw.drawStringC(m, position.x+102, position.y+36, EnumColour.GRAY.argb, false)
     }
 }
 
@@ -291,7 +292,7 @@ class ICIOGateGui(override val gate:IOGateICPart) extends CircuitGui(gate) with 
             case 0 => "input"
             case 1 => "output"
             case 2 => "inout"
-        }, position.x+85, position.y+16, Colors.GREY.argb, false)
+        }, position.x+85, position.y+16, EnumColour.GRAY.argb, false)
     }
 }
 
@@ -331,9 +332,9 @@ class ICIOFreqGateGui(override val gate:IOGateICPart) extends CircuitGui(gate) w
             case 0 => "input"
             case 1 => "output"
             case 2 => "inout"
-        }, position.x+117, position.y+11, Colors.GREY.argb, false)
+        }, position.x+117, position.y+11, EnumColour.GRAY.argb, false)
 
-        GuiDraw.drawStringC("freq", position.x+66, position.y+22, 50, 14, Colors.GREY.argb, false)
-        GuiDraw.drawStringC(gate.getLogic[TFreqIOICGateLogic].getFreqName, position.x+66, position.y+33, 50, 14, Colors.GREY.argb, false)
+        GuiDraw.drawStringC("freq", position.x+66, position.y+22, 50, 14, EnumColour.GRAY.argb, false)
+        GuiDraw.drawStringC(gate.getLogic[TFreqIOICGateLogic].getFreqName, position.x+66, position.y+33, 50, 14, EnumColour.GRAY.argb, false)
     }
 }

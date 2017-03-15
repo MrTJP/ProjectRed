@@ -7,35 +7,40 @@ package mrtjp.projectred.fabrication
 
 import java.util.{ArrayList => JAList, List => JList}
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.render.uv.{IconTransformation, MultiIconTransformation, UVTransformation}
-import codechicken.lib.render.{CCModel, CCRenderState, TextureUtils}
+import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.render.buffer.BakingVertexBuffer
+import codechicken.lib.render.{CCModel, CCOBJParser, CCRenderState}
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.util.VertexDataUtils
 import codechicken.lib.vec._
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.block.TInstancedBlockRender
-import mrtjp.core.color.Colors
+import codechicken.lib.vec.uv.{IconTransformation, MultiIconTransformation, UVTransformation}
+import com.google.common.collect.ImmutableList
 import mrtjp.core.gui._
 import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
+import mrtjp.core.util.CCLConversions.createTriple
 import mrtjp.core.vec.{Point, Size, Vec2}
-import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedCore.log
 import mrtjp.projectred.core.PartDefs
-import mrtjp.projectred.core.libmc.PRResources
 import mrtjp.projectred.integration.ComponentStore
 import mrtjp.projectred.transmission.WireDef
-import net.minecraft.client.renderer.RenderBlocks
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.GlStateManager._
+import net.minecraft.client.renderer.block.model.BakedQuad
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.{CraftingManager, IRecipe, ShapedRecipes, ShapelessRecipes}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.{IIcon, ResourceLocation}
-import net.minecraft.world.IBlockAccess
+import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraftforge.common.property.IExtendedBlockState
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 import org.lwjgl.opengl.GL11._
 
@@ -54,6 +59,8 @@ class TileICPrinter extends TileICMachine with TInventory
 
     var requirementsDirty = true
     var requirements = Seq[ItemKeyStack]()
+
+    override def getDisplayName = super.getDisplayName
 
     override def save(tag:NBTTagCompound)
     {
@@ -113,17 +120,17 @@ class TileICPrinter extends TileICMachine with TInventory
         val out = writeStream(5)
         out.writeFloat(progress.toFloat)
         out.writeFloat(speed.toFloat)
-        out.sendToChunk()
+        out.sendToChunk(this)
     }
 
     def sendStopWorking()
     {
-        writeStream(4).sendToChunk()
+        writeStream(4).sendToChunk(this)
     }
 
     def sendInputICStateUpdate()
     {
-        writeStream(6).writeByte(inputICState).sendToChunk()
+        writeStream(6).writeByte(inputICState).sendToChunk(this)
     }
 
     def sendExternalItemMap(players:Iterable[EntityPlayer])
@@ -131,7 +138,7 @@ class TileICPrinter extends TileICMachine with TInventory
         val out = writeStream(7).writeInt(externalItems.size)
         for (item <- externalItems)
             out.writeItemStack(item.makeStack(0))
-        out.sendToChunk()
+        out.sendToChunk(this)
     }
 
     //0 - 17 = ingredients
@@ -152,19 +159,14 @@ class TileICPrinter extends TileICMachine with TInventory
 
     override def isSolid(side:Int) = false
 
-    override def update()
+    override def updateServer()
     {
-        if (isWorking)
-        {
-            if (world.getTotalWorldTime%10 == 0 && !canStart)
-            {
+        if (isWorking) {
+            if (world.getTotalWorldTime%10 == 0 && !canStart) {
                 doStop()
-            }
-            else
-            {
+            } else {
                 progress += speed
-                if (progress >= 1.0)
-                {
+                if (progress >= 1.0) {
                     doStop()
                     if (canStart) onFinished()
                 }
@@ -242,7 +244,7 @@ class TileICPrinter extends TileICMachine with TInventory
             externalItems -= stack.key
             for (s <- 0 until 6 if s != 1)
             {
-                val inv = InvWrapper.getInventory(world, position.offset(s))
+                val inv = InvWrapper.getInventory(world, pos.offset(EnumFacing.values()(s)))
                 if (inv != null)
                 {
                     val w = InvWrapper.wrap(inv).setSlotsFromSide(s^1)
@@ -283,7 +285,7 @@ class TileICPrinter extends TileICMachine with TInventory
 
         for (s <- 0 until 6 if s != 1)
         {
-            val inv = InvWrapper.getInventory(world, position.offset(s))
+            val inv = InvWrapper.getInventory(world, pos.offset(EnumFacing.values()(s)))
             if (inv != null)
             {
                 val w = InvWrapper.wrap(inv).setSlotsFromSide(s^1)
@@ -351,7 +353,7 @@ class TileICPrinter extends TileICMachine with TInventory
     {
         if (super.onBlockActivated(player, side)) return true
         if (!world.isRemote)
-            GuiICPrinter.open(player, createContainer(player), _.writeCoord(x, y, z))
+            GuiICPrinter.open(player, createContainer(player), _.writePos(pos))
         true
     }
 
@@ -369,7 +371,7 @@ class TileICPrinter extends TileICMachine with TInventory
     override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        dropInvContents(world, x, y, z)
+        dropInvContents(world, pos)
     }
 
     //Client-side render things
@@ -381,15 +383,13 @@ class TileICPrinter extends TileICMachine with TInventory
 
     override def updateClient()
     {
-        if (isWorking)
-        {
+        if (isWorking) {
             progress += speed
             progress = math.min(progress, 1.0)
         }
 
-        lState match
-        {
-            case `REST` =>
+        lState match {
+            case REST =>
                 lProgress = 0
                 lSpeed = 0
                 if (isWorking) lState = `REALTIME`
@@ -399,30 +399,24 @@ class TileICPrinter extends TileICMachine with TInventory
                 if (lProgress <= 0) lState = REST
                 else if (isWorking) lState = LERPTOREALTIME
             case LERPTOREALTIME =>
-                if (lProgress > progress)
-                {
+                if (lProgress > progress) {
                     lSpeed = -0.16
                     lProgress += lSpeed
                     if (lProgress <= progress) lState = REALTIME
-                }
-                else
-                {
+                } else {
                     lSpeed = 0.16
                     lProgress += lSpeed
                     if (lProgress >= progress) lState = REALTIME
                 }
-            case `REALTIME` =>
-                if (progress >= 1.0 || !isWorking)
-                {
+            case REALTIME =>
+                if (progress >= 1.0 || !isWorking) {
                     lerpCount = 0
-                    lState = `FIN`
-                }
-                else
-                {
+                    lState = FIN
+                } else {
                     lProgress = progress
                     lSpeed = speed
                 }
-            case `FIN` =>
+            case FIN =>
                 lSpeed = 0
                 lerpCount += 1
                 if (lerpCount >= 25) lState = LERPTOREST
@@ -510,25 +504,25 @@ object TileICPrinter
 
         for (part <- ic.parts.values) part match
         {
-            case p:TorchICPart => add(new ItemStack(Blocks.redstone_torch), 0.25)
-            case p:LeverICPart => add(new ItemStack(Blocks.lever), 0.25)
-            case p:ButtonICPart => add(new ItemStack(Blocks.stone_button), 0.25)
+            case p:TorchICPart => add(new ItemStack(Blocks.REDSTONE_TORCH), 0.25)
+            case p:LeverICPart => add(new ItemStack(Blocks.LEVER), 0.25)
+            case p:ButtonICPart => add(new ItemStack(Blocks.STONE_BUTTON), 0.25)
             case p:AlloyWireICPart => add(WireDef.RED_ALLOY.makeStack, 0.25)
             case p:InsulatedWireICPart => add(WireDef.INSULATED_WIRES(p.colour&0xFF).makeStack, 0.25)
             case p:BundledCableICPart => add(WireDef.BUNDLED_WIRES((p.colour+1)&0xFF).makeStack, 0.25)
             case p:GateICPart => gd.apply(p.subID) match
             {
                 case gd.IOSimple =>
-                    add(new ItemStack(Items.gold_nugget), 1)
+                    add(new ItemStack(Items.GOLD_NUGGET), 1)
                     add(PartDefs.PLATE.makeStack, 1.50)
                     add(PartDefs.CONDUCTIVEPLATE.makeStack, 0.50)
                 case gd.IOAnalog =>
-                    add(new ItemStack(Items.gold_nugget), 1)
+                    add(new ItemStack(Items.GOLD_NUGGET), 1)
                     add(PartDefs.PLATE.makeStack, 1.50)
-                    add(new ItemStack(Items.redstone), 0.25)
+                    add(new ItemStack(Items.REDSTONE), 0.25)
                     add(PartDefs.CONDUCTIVEPLATE.makeStack, 0.25)
                 case gd.IOBundled =>
-                    add(new ItemStack(Items.gold_nugget), 1)
+                    add(new ItemStack(Items.GOLD_NUGGET), 1)
                     add(PartDefs.PLATE.makeStack, 1.50)
                     add(PartDefs.BUNDLEDPLATE.makeStack, 0.25)
                     add(PartDefs.CONDUCTIVEPLATE.makeStack, 0.25)
@@ -610,7 +604,7 @@ class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 17
             val d = new ItemDisplayNode
             d.zPosition = -0.01
             d.backgroundColour = if (tile.containsEnoughOf(stack))
-                Colors.LIME.rgb|0x44000000 else Colors.RED.rgb|0x44000000
+                EnumColour.LIME.argb(0x44) else EnumColour.RED.argb(0x44)
             d
         }
         pan.addChild(list)
@@ -629,104 +623,118 @@ class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 17
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
-        PRResources.guiICPrinter.bind()
+        TextureUtils.changeTexture(GuiICPrinter.background)
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, 176, 201)
-        if (tile.isWorking)
-        {
+        if (tile.isWorking) {
             val dx = 37*tile.progress
             GuiDraw.drawTexturedModalRect(86, 32, 176, 0, dx.toInt, 18)
         }
-        GuiDraw.drawString("IC Printer", 8, 6, Colors.GREY.argb, false)
+        GuiDraw.drawString("IC Printer", 8, 6, EnumColour.GRAY.argb, false)
     }
 }
 
-object GuiICPrinter extends TGuiBuilder
+object GuiICPrinter extends TGuiFactory
 {
+    val background = new ResourceLocation("projectred", "textures/gui/ic_printer.png")
+
     override def getID = FabricationProxy.icPrinterGui
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        val t = WorldLib.getTileEntity(player.worldObj, data.readCoord(), classOf[TileICPrinter])
-        if (t != null) new GuiICPrinter(t.createContainer(player), t)
-        else null
+        player.worldObj.getTileEntity(data.readPos()) match {
+            case t:TileICPrinter => new GuiICPrinter(t.createContainer(player), t)
+            case _ => null
+        }
     }
 }
 
-object RenderICPrinter extends TInstancedBlockRender
+object RenderICPrinter extends SimpleBlockRenderer
 {
+    import java.lang.{Integer => JInt}
+    import java.util.{List => JList}
+
+    import BlockICMachine._
+
     val lowerBoxes =
     {
         val array = new Array[CCModel](4)
         val box = CCModel.quadModel(24).generateBlock(0, new Cuboid6(0, 0, 0, 1, 10/16D, 1))
-        for (r <- 0 until 4)
-        {
+        for (r <- 0 until 4) {
             val m = box.copy.apply(Rotation.quarterRotations(r).at(Vector3.center))
             m.computeNormals()
+            m.shrinkUVs(0.0005)
             array(r) = m
         }
         array
     }
 
-    var headIcon:IIcon = null
-    var bottom:IIcon = null
-    var side1:IIcon = null
-    var side2:IIcon = null
-    var top:IIcon = null
-    var iconT:UVTransformation = null
+    var headIcon:TextureAtlasSprite = _
+    var bottom:TextureAtlasSprite = _
+    var side1:TextureAtlasSprite = _
+    var side2:TextureAtlasSprite = _
+    var top:TextureAtlasSprite = _
 
-    override def renderWorldBlock(r:RenderBlocks, w:IBlockAccess, x:Int, y:Int, z:Int, meta:Int)
-    {
-        val tile = WorldLib.getTileEntity(w, x, y, z, classOf[TileICPrinter])
-        CCRenderState.reset()
-        CCRenderState.lightMatrix.locate(w, x, y, z)
+    var iconT:UVTransformation = _
 
-        /**
-         * Here is a test case fo the rotations being wierd.  The array 'lowerBoxes' contains 4
-         * generted blocks that have been prerotated, indexed by r.  This produces the correct results.
-         */
-        lowerBoxes(tile.rotation).render(new Translation(x, y, z), iconT, CCRenderState.lightMatrix)
-
-        /**
-         * However, using only the first model (with a 0 rotation, so no rotation at all) and rendering
-         * it with the rotation in line, the model does not shade properly.  The light shading rotates
-         * WITH the model. Comment the other one and uncomment this, place a IC Printer block,
-         * and rotate it with screwdriver to see the issue.
-         */
-        //lowerBoxes(0).render(Rotation.quarterRotations(tile.rotation) at Vector3.center `with` new Translation(x, y, z), iconT, CCRenderState.lightMatrix)
+    override def handleState(state:IExtendedBlockState, tileEntity:TileEntity):IExtendedBlockState = tileEntity match {
+        case t:TileICPrinter =>
+            state.withProperty(UNLISTED_ROTATION_PROPERTY, t.rotation.asInstanceOf[JInt])
+        case _ => state
     }
 
-    override def getIcon(side:Int, meta:Int) = side match
+    override def getWorldTransforms(state:IExtendedBlockState) =
     {
-        case 0 => bottom
-        case 1 => top
-        case 2 => side1
-        case 3 => side1
-        case _ => side2
+        val rot = state.getValue(UNLISTED_ROTATION_PROPERTY)
+        createTriple(0, rot, iconT)
     }
 
-    override def renderInvBlock(r:RenderBlocks, meta:Int)
+    override def getItemTransforms(stack:ItemStack) = createTriple(0, 0, iconT)
+
+    override def shouldCull() = false
+
+    override def bakeQuads(face:EnumFacing, state:IExtendedBlockState):JList[BakedQuad] =
     {
-        val invT = new Translation(-0.5, -0.5, -0.5)
+        val buffer = BakingVertexBuffer.create
+        val worldData = getWorldTransforms(state)
+        val ccrs = CCRenderState.instance
 
-        TextureUtils.bindAtlas(0)
-        CCRenderState.reset()
-        CCRenderState.setDynamic()
-        CCRenderState.pullLightmap()
-        CCRenderState.startDrawing()
-        lowerBoxes(0).render(invT, iconT)
-        CCRenderState.draw()
+        ccrs.reset()
+        ccrs.startDrawing(0x7, DefaultVertexFormats.ITEM, buffer)
+        lowerBoxes(worldData.getB).render(ccrs, worldData.getC)
+        buffer.finishDrawing()
 
-        RenderICPrinterDynamic.progress = 0
-        RenderICPrinterDynamic.speed = 0
-        RenderICPrinterDynamic.frame = 0
-        RenderICPrinterDynamic.icState = 2
-        RenderICPrinterDynamic.renderPrinterTop(invT)
+        val quads = buffer.bake
+        if (face == null && !shouldCull)
+            return quads
+        else if (face != null)
+            return VertexDataUtils.sortFaceData(quads).get(face)
+
+        ImmutableList.of()
     }
 
-    override def registerIcons(reg:IIconRegister)
+    override def bakeItemQuads(face:EnumFacing, stack:ItemStack):JList[BakedQuad] =
     {
-        def register(t:String) = reg.registerIcon("projectred:fabrication/printer/"+t)
+        val buffer = BakingVertexBuffer.create
+        val worldData = getItemTransforms(stack)
+        val ccrs = CCRenderState.instance
+
+        ccrs.reset()
+        ccrs.startDrawing(0x7, DefaultVertexFormats.ITEM, buffer)
+        lowerBoxes(worldData.getB).render(ccrs, worldData.getC)
+        buffer.finishDrawing()
+
+        val quads = buffer.bake
+        if (face == null && !shouldCull)
+            return quads
+        else if (face != null)
+            return VertexDataUtils.sortFaceData(quads).get(face)
+        ImmutableList.of()
+    }
+
+    override def registerIcons(reg:TextureMap)
+    {
+        def register(t:String) = reg.registerSprite(new ResourceLocation("projectred:blocks/fabrication/printer/"+t))
 
         headIcon = register("printerhead")
         bottom = register("bottom")
@@ -738,15 +746,14 @@ object RenderICPrinter extends TInstancedBlockRender
     }
 }
 
-object RenderICPrinterDynamic extends TileEntitySpecialRenderer
+object RenderICPrinterDynamic extends TileEntitySpecialRenderer[TileICPrinter]
 {
     var models = getMods
 
     def getMods =
     {
-        val map = CCModel.parseObjModels(new ResourceLocation("projectred:textures/obj/fabrication/printer.obj"), 7, null).toMap
-        map.values.foreach
-        { m =>
+        val map = CCOBJParser.parseObjModels(new ResourceLocation("projectred:textures/obj/fabrication/printer.obj"), 7, null).toMap
+        map.values.foreach { m =>
             m.verts = m.backfacedCopy.verts
             m.apply(new Translation(8/16D, 10/16D, 8/16D))
             m.computeNormals()
@@ -761,79 +768,76 @@ object RenderICPrinterDynamic extends TileEntitySpecialRenderer
     var icState = 0
     var rasterMode = false
 
-    override def renderTileEntityAt(tile:TileEntity, x:Double, y:Double, z:Double, f:Float)
+    override def renderTileEntityAt(tile:TileICPrinter, x:Double, y:Double, z:Double, partialTicks:Float, destroyStage:Int)
     {
         val ptile = tile.asInstanceOf[TileICPrinter]
 
         progress = ptile.lProgress
         speed = ptile.lSpeed
-        frame = f
+        frame = partialTicks
         icState = ptile.inputICState
         rasterMode = ptile.lState == TileICPrinter.REALTIME
 
-        renderPrinterTop(ptile.rotationT `with` new Translation(x, y, z))
+        val t = ptile.rotationT `with` new Translation(x, y, z)
+        val iconT = new MultiIconTransformation(RenderICPrinter.headIcon)
+        val ccrs = CCRenderState.instance()
+        TextureUtils.bindBlockTexture()
+
+        enableBlend()
+        blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        ccrs.reset()
+        ccrs.pullLightmap()
+        ccrs.startDrawing(0x7, DefaultVertexFormats.ITEM)
+        renderPrinter(ccrs, t, iconT)
+        ccrs.draw()
+
+        disableBlend()
     }
 
-    def renderPrinterTop(t:Transformation)
+    def renderPrinter(ccrs:CCRenderState, t:Transformation, iconT:UVTransformation)
     {
-        TextureUtils.bindAtlas(0)
-        CCRenderState.reset()
-        CCRenderState.pullLightmap()
-        CCRenderState.setDynamic()
-        CCRenderState.startDrawing()
-
-        if (icState != 0) renderICChip(t)
-
-        val iconT = new IconTransformation(RenderICPrinter.headIcon)
-        renderFrame(t, iconT)
-        renderShaft(t, iconT)
-        CCRenderState.draw()
-
-        renderGlass(t, iconT)
+        if (icState != 0) renderICChip(ccrs, t)
+        renderFrame(ccrs, t, iconT)
+        renderShaft(ccrs, t, iconT)
+        renderGlass(ccrs, t, iconT)
     }
 
-    def renderICChip(t:Transformation)
+    def renderICChip(ccrs:CCRenderState, t:Transformation)
     {
         import ComponentStore._
-        icChip.render(Rotation.quarterRotations(2) `with` new Translation(0.5, 9.5/16D, 0.5) `with` t,
+        icChip.render(ccrs, Rotation.quarterRotations(2) `with` new Translation(0.5, 9.5/16D, 0.5) `with` t,
             new IconTransformation(if (icState == 1) icChipIconOff else icChipIcon))
     }
 
-    def renderFrame(t:Transformation, iconT:UVTransformation)
+    def renderFrame(ccrs:CCRenderState, t:Transformation, iconT:UVTransformation)
     {
-        models("frame").render(t, iconT)
+        models("frame").render(ccrs, t, iconT)
     }
 
-    def renderShaft(t:Transformation, iconT:UVTransformation)
+    def renderShaft(ccrs:CCRenderState, t:Transformation, iconT:UVTransformation)
     {
         val min = -4.5/16D
         val max = 4.5/16D
         val p = progress+speed*frame
         val subT = new Translation(0, 0, min+(max-min)*p) `with` t
 
-        models("shaft").render(subT, iconT)
-        renderHead(subT, iconT)
+        models("shaft").render(ccrs, subT, iconT)
+        renderHead(ccrs, subT, iconT)
     }
 
-    def renderHead(t:Transformation, iconT:UVTransformation)
+    def renderHead(ccrs:CCRenderState, t:Transformation, iconT:UVTransformation)
     {
         val amp = 3.5/16D
         val freq = 900
         val p = progress+speed*frame
         val trans = if (rasterMode) math.cos(p*freq)*amp else amp*2*p-amp
         val subT = new Translation(trans, 0, 0) `with` t
-        models("head").render(subT, iconT)
+        models("head").render(ccrs, subT, iconT)
     }
 
-    def renderGlass(t:Transformation, iconT:UVTransformation)
+    def renderGlass(ccrs:CCRenderState, t:Transformation, iconT:UVTransformation)
     {
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-        CCRenderState.startDrawing()
-        models("glass").render(t, iconT)
-        CCRenderState.draw()
-
-        glDisable(GL_BLEND)
+        models("glass").render(ccrs, t, iconT)
     }
 }

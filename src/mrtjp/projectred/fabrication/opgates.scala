@@ -6,11 +6,12 @@
 package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.vec.{Vector3, Rotation, Transformation, Translation}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import codechicken.lib.render.CCRenderState
+import codechicken.lib.vec.{Rotation, Transformation, Translation, Vector3}
 import mrtjp.core.vec.{Point, Vec2}
 import mrtjp.projectred.fabrication.CircuitOp._
 import mrtjp.projectred.fabrication.ICComponentStore._
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 abstract class OpGateCommons(meta:Int) extends CircuitOp
 {
@@ -40,40 +41,40 @@ abstract class OpGateCommons(meta:Int) extends CircuitOp
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderHover(circuit:IntegratedCircuit, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderHover(ccrs:CCRenderState, circuit:IntegratedCircuit, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
         if (circuit.getPart(point) != null) return
 
         val t = orthoPartT(x, y, xSize, ySize, circuit.size, point.x, point.y)
-        doRender(t, findRot(circuit, point, point))
+        doRender(ccrs, t, findRot(circuit, point, point))
 
         renderHolo(x, y, xSize,  ySize, circuit.size, point,
             if (canPlace(circuit, point)) 0x33FFFFFF else 0x33FF0000)
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDrag(circuit:IntegratedCircuit, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderDrag(ccrs:CCRenderState, circuit:IntegratedCircuit, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
         if (circuit.getPart(start) != null) return
 
         val t = orthoPartT(x, y, xSize, ySize, circuit.size, start.x, start.y)
-        doRender(t, findRot(circuit, start, end))
+        doRender(ccrs, t, findRot(circuit, start, end))
 
         renderHolo(x, y, xSize,  ySize, circuit.size, start,
             if (canPlace(circuit, start)) 0x44FFFFFF else 0x44FF0000)
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderImage(x:Double, y:Double, width:Double, height:Double)
+    override def renderImage(ccrs:CCRenderState, x:Double, y:Double, width:Double, height:Double)
     {
         val t = orthoGridT(width, height) `with` new Translation(x, y, 0)
-        doRender(t, 0)
+        doRender(ccrs, t, 0)
     }
 
     @SideOnly(Side.CLIENT)
-    def doRender(t:Transformation, rot:Int)
+    def doRender(ccrs:CCRenderState, t:Transformation, rot:Int)
     {
-        RenderICGate.renderInv(Rotation.quarterRotations(rot).at(Vector3.center) `with` t, meta)
+        RenderICGate.renderInv(ccrs, Rotation.quarterRotations(rot).at(Vector3.center) `with` t, meta)
     }
 
     @SideOnly(Side.CLIENT)

@@ -6,50 +6,67 @@
 package mrtjp.projectred.fabrication
 import java.lang.{Character => JC}
 
-import codechicken.lib.data.MCDataInput
-import codechicken.multipart.MultiPartRegistry
-import codechicken.multipart.MultiPartRegistry.IPartFactory2
-import cpw.mods.fml.client.registry.ClientRegistry
-import cpw.mods.fml.common.registry.GameRegistry
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.block.TileRenderRegistry
-import mrtjp.core.color.Colors
+import codechicken.lib.colour.EnumColour
+import codechicken.lib.model.ModelRegistryHelper
+import codechicken.lib.model.blockbakery.{CCBakeryModel, IBlockStateKeyGenerator}
+import codechicken.lib.render.item.map.MapRenderRegistry
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.texture.TextureUtils.IIconRegister
+import codechicken.multipart.{IPartFactory, MultiPartRegistry}
+import mrtjp.core.block.{ItemBlockCore, MultiTileBlock}
 import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedFabrication._
 import mrtjp.projectred.core.{IProxy, PartDefs}
 import mrtjp.projectred.integration.{GateDefinition, RenderGate}
 import mrtjp.projectred.{ProjectRedFabrication, ProjectRedIntegration}
+import net.minecraft.block.Block
+import net.minecraft.client.renderer.ItemMeshDefinition
+import net.minecraft.client.renderer.block.model.ModelResourceLocation
+import net.minecraft.client.renderer.block.statemap.IStateMapper
+import net.minecraft.client.renderer.block.statemap.StateMap.Builder
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.inventory.InventoryCrafting
-import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.IRecipe
-import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.world.World
-import net.minecraftforge.client.MinecraftForgeClient
+import net.minecraftforge.client.model.ModelLoader
+import net.minecraftforge.common.ForgeHooks
+import net.minecraftforge.common.property.IExtendedBlockState
+import net.minecraftforge.fml.client.registry.ClientRegistry
+import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.ShapedOreRecipe
 
-class FabricationProxy_server extends IProxy with IPartFactory2
+class FabricationProxy_server extends IProxy with IPartFactory
 {
-    override def preinit(){}
-
-    override def init()
+    override def preinit()
     {
-        icBlock = new BlockICMachine
+        icBlock = new BlockICMachine(icMachineBakery)
+        icBlock.setUnlocalizedName("projectred.fabrication.icMachine")
+        GameRegistry.register(icBlock.setRegistryName("ic_machine"))
+        GameRegistry.register(new ItemBlockCore(icBlock).setRegistryName(icBlock.getRegistryName))
         icBlock.addTile(classOf[TileICWorkbench], 0)
         icBlock.addTile(classOf[TileICPrinter], 1)
 
         itemICBlueprint = new ItemICBlueprint
-        itemICChip = new ItemICChip
+        itemICBlueprint.setUnlocalizedName("projectred.fabrication.icBlueprint")
+        GameRegistry.register(itemICBlueprint.setRegistryName("ic_blueprint"))
 
-        MultiPartRegistry.registerParts(this, "pr_icgate")
+        itemICChip = new ItemICChip
+        itemICChip.setUnlocalizedName("projectred.fabrication.icChip")
+        GameRegistry.register(itemICChip.setRegistryName("ic_chip"))
+
+        MultiPartRegistry.registerParts(this, Array("pr_icgate"))
 
         FabricationRecipes.initRecipes()
     }
 
+    override def init(){}
+
     override def postinit()
     {
         //hook into gate part to add tooltip info
-        ProjectRedIntegration.itemPartGate2.infoBuilderFunc = {(stack, list) =>
+        ProjectRedIntegration.itemPartGate.infoBuilderFunc = {(stack, list) =>
             if (stack.getItemDamage == GateDefinition.ICGate.meta)
                 ItemICChip.addInfo(stack, list)
         }
@@ -58,10 +75,12 @@ class FabricationProxy_server extends IProxy with IPartFactory2
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"
 
-    override def createPart(name:String, nbt:NBTTagCompound) = createPart(name)
-    override def createPart(name:String, packet:MCDataInput) = createPart(name)
-
-    def createPart(name:String) = name match
+    /**
+      * Create a new instance of the part with the specified type name identifier
+      *
+      * @param client If the part instance is for the client or the server
+      */
+    override def createPart(name:String, client:Boolean) = name match
     {
         case "pr_icgate" => new CircuitGatePart
         case _ => null
@@ -77,17 +96,31 @@ class FabricationProxy_client extends FabricationProxy_server
     override def preinit()
     {
         super.preinit()
-    }
 
-    @SideOnly(Side.CLIENT)
-    override def init()
-    {
-        super.init()
+        import BlockICMachine._
 
-        TileRenderRegistry.setRenderer(icBlock, 0, RenderICWorkbench)
-        TileRenderRegistry.setRenderer(icBlock, 1, RenderICPrinter)
+        icMachineBakery.registerSubBakery(0, RenderICWorkbench, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val hasBP = state.getValue(UNLISTED_HAS_BP_PROPERTY)
+                state.getBlock.getRegistryName.toString + s",bp=$hasBP"
+            }
+        })
 
-        MinecraftForgeClient.registerItemRenderer(itemICBlueprint, ItemRenderICBlueprint)
+        icMachineBakery.registerSubBakery(1, RenderICPrinter, new IBlockStateKeyGenerator {
+            override def generateKey(state:IExtendedBlockState) = {
+                val rot = state.getValue(UNLISTED_ROTATION_PROPERTY)
+                state.getBlock.getRegistryName.toString + s",rot=$rot"
+            }
+        })
+
+        registerBlockToBakery(icBlock, icMachineBakery.registerKeyGens(icBlock), new Builder().ignore(MultiTileBlock.TILE_INDEX).build())
+
+        MapRenderRegistry.registerMapRenderer(itemICBlueprint, ItemRenderICBlueprint)
+
+        registerModelType(itemICBlueprint, "projectred:fabrication/items", "ic_blueprint")
+
+        registerModelType(itemICChip, "projectred:fabrication/items", { stack =>
+            if (ItemICBlueprint.hasICInside(stack)) "ic_active" else "ic_inert" })
 
         ClientRegistry.bindTileEntitySpecialRenderer(classOf[TileICPrinter], RenderICPrinterDynamic)
 
@@ -95,6 +128,43 @@ class FabricationProxy_client extends FabricationProxy_server
         GuiHandler.register(GuiICPrinter, icPrinterGui)
 
         RenderGate.hotswap(new RenderCircuitGate, GateDefinition.ICGate.ordinal)
+    }
+
+    @SideOnly(Side.CLIENT)
+    def registerBlockToBakery(block:Block, iconRegister:IIconRegister, stateMap:IStateMapper) =
+    {
+        val model = new CCBakeryModel("")
+        val regLoc = block.getRegistryName
+        ModelLoader.setCustomStateMapper(block, stateMap)
+        ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(block), new ItemMeshDefinition {
+            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation(regLoc, "normal")
+        })
+        ModelRegistryHelper.register(new ModelResourceLocation(regLoc, "normal"), model)
+        if (iconRegister != null) {
+            TextureUtils.addIconRegister(iconRegister)
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    def registerModelType(item:Item, jsonLocation:String, typeValue:String)
+    {
+        registerModelType(item, 0, jsonLocation, typeValue)
+    }
+
+    @SideOnly(Side.CLIENT)
+    def registerModelType(item:Item, meta:Int, jsonLocation:String, typeValue:String)
+    {
+        val modelLoc = new ModelResourceLocation(jsonLocation, "type=" + typeValue)
+        ModelLoader.setCustomModelResourceLocation(item, meta, modelLoc)
+    }
+
+    @SideOnly(Side.CLIENT)
+    def registerModelType(item:Item, jsonLocation:String, typeValue:ItemStack => String)
+    {
+        ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition {
+            override def getModelLocation(s:ItemStack) =
+                new ModelResourceLocation(jsonLocation, "type=" + typeValue(s))
+        })
     }
 }
 
@@ -129,6 +199,8 @@ object FabricationRecipes
                 ItemICBlueprint.copyToGate(inv.getStackInSlot(4), out)
                 out
             }
+
+            override def getRemainingItems(inv:InventoryCrafting) = ForgeHooks.defaultRecipeGetRemainingItems(inv)
         })
 
         //IC Workbench
@@ -141,8 +213,8 @@ object FabricationRecipes
         //IC Printer
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(icBlock, 1, 1),
             "ggg","oeo","iwi",
-            'g':JC, new ItemStack(Blocks.stained_glass, 1, Colors.LIGHT_BLUE.woolID),
-            'o':JC, Blocks.obsidian,
+            'g':JC, new ItemStack(Blocks.STAINED_GLASS, 1, EnumColour.LIGHT_BLUE.getWoolDamage),
+            'o':JC, Blocks.OBSIDIAN,
             'e':JC, "gemEmerald",
             'i':JC, "ingotIron",
             'w':JC, "plankWood"
@@ -151,9 +223,9 @@ object FabricationRecipes
         //IC Blueprint
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemICBlueprint),
             "pbp","brb","pbp",
-            'p':JC, Items.paper,
+            'p':JC, Items.PAPER,
             'b':JC, "dyeBlue",
-            'r':JC, Items.redstone
+            'r':JC, Items.REDSTONE
         ))
 
         //IC Blueprint - reset
@@ -179,6 +251,8 @@ object FabricationRecipes
                     new ItemStack(itemICBlueprint)
                 else null
             }
+
+            override def getRemainingItems(inv:InventoryCrafting) = ForgeHooks.defaultRecipeGetRemainingItems(inv)
         })
 
         //IC Blueprint - copy
@@ -215,6 +289,8 @@ object FabricationRecipes
                 }
                 else null
             }
+
+            override def getRemainingItems(inv:InventoryCrafting) = ForgeHooks.defaultRecipeGetRemainingItems(inv)
         })
 
         //IC Chip

@@ -557,8 +557,8 @@ fluid.redmetal.molten=Рідкий провідний червоний мета�
 
 itemGroup.projectred.fabrication=Project Red: Виробництво
 
-item.projectred.fabrication.icblueprint.name=Проект мікросхеми
-item.projectred.fabrication.icchip|0.name=Мікросхема
-item.projectred.fabrication.icchip|1.name=Мікросхема творчого режиму
-tile.projectred.integration.icblock|0.name=Верстак мікросхем
-tile.projectred.integration.icblock|1.name=Принтер мікросхем
+item.projectred.fabrication.icBlueprint.name=Проект мікросхеми
+item.projectred.fabrication.icChip|0.name=Мікросхема
+item.projectred.fabrication.icChip|1.name=Мікросхема творчого режиму
+tile.projectred.integration.icBlock|0.name=Верстак мікросхем
+tile.projectred.integration.icBlock|1.name=Принтер мікросхем

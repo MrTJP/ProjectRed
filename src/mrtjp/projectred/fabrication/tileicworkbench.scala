@@ -5,42 +5,66 @@
  */
 package mrtjp.projectred.fabrication
 
+import codechicken.lib.block.property.unlisted.{UnlistedBooleanProperty, UnlistedIntegerProperty}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.model.blockbakery.{BlockBakery, IBakeryBlock, ICustomBlockBakery, SimpleBlockRenderer}
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.render.uv.MultiIconTransformation
-import codechicken.lib.vec.{Rotation, Vector3}
-import mrtjp.core.block.{InstancedBlock, InstancedBlockTile, TInstancedBlockRender, TTileOrient}
+import codechicken.lib.vec.Rotation
+import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
+import mrtjp.core.block._
 import mrtjp.core.gui.NodeContainer
-import mrtjp.core.render.TCubeMapRender
+import mrtjp.core.util.CCLConversions.createTriple
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedFabrication
 import mrtjp.projectred.api.IScrewdriver
 import mrtjp.projectred.fabrication.ItemICBlueprint._
 import net.minecraft.block.material.Material
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.block.state.BlockStateContainer.Builder
+import net.minecraft.block.state.{BlockStateContainer, IBlockState}
+import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.IIcon
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.IBlockAccess
+import net.minecraftforge.common.property.IExtendedBlockState
 
 import scala.collection.mutable.{Set => MSet}
 
-class BlockICMachine extends InstancedBlock("projectred.integration.icblock", Material.iron)
+class BlockICMachine(bakery:ICustomBlockBakery) extends MultiTileBlock(Material.ROCK) with IBakeryBlock
 {
     setHardness(2)
     setCreativeTab(ProjectRedFabrication.tabFabrication)
+
+    override def createBlockState(): BlockStateContainer = new Builder(this).add(MultiTileBlock.TILE_INDEX)
+            .add(BlockICMachine.UNLISTED_ROTATION_PROPERTY)
+            .add(BlockICMachine.UNLISTED_SIDE_PROPERTY)
+            .add(BlockICMachine.UNLISTED_HAS_BP_PROPERTY)
+            .build()
+
+    override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos) = BlockBakery.handleExtendedState(state.asInstanceOf[IExtendedBlockState], world.getTileEntity(pos))
+
+    override def getCustomBakery:ICustomBlockBakery = bakery
 }
 
-abstract class TileICMachine extends InstancedBlockTile with TTileOrient
+object BlockICMachine
+{
+    val UNLISTED_ROTATION_PROPERTY = new UnlistedIntegerProperty("rotation")
+    val UNLISTED_SIDE_PROPERTY = new UnlistedIntegerProperty("side")
+    val UNLISTED_HAS_BP_PROPERTY = new UnlistedBooleanProperty("hasBP")
+}
+
+abstract class TileICMachine extends MTBlockTile with TTileOrient
 {
     override def getBlock = ProjectRedFabrication.icBlock
 
-    override def onBlockPlaced(s:Int, meta:Int, player:EntityPlayer, stack:ItemStack, hit:Vector3)
+    override def onBlockPlaced(side:Int, player:EntityPlayer, stack:ItemStack)
     {
         setSide(0)
-        setRotation((Rotation.getSidedRotation(player, 1)+2)%4)
+        setRotation(if (doesRotate) (Rotation.getSidedRotation(player, side^1)+2)%4 else 0)
     }
 
     override def writeDesc(out:MCDataOutput)
@@ -73,25 +97,33 @@ abstract class TileICMachine extends InstancedBlockTile with TTileOrient
         case _ => super.read(in, key)
     }
 
-    override def onBlockActivated(player:EntityPlayer, side:Int):Boolean =
+    override def onBlockActivated(player:EntityPlayer, actside:Int):Boolean =
     {
-        val held = player.getHeldItem
-        if (doesRotate && held != null && held.getItem.isInstanceOf[IScrewdriver] && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
+        val held = player.getHeldItemMainhand
+        if (doesRotate && held != null && held.getItem.isInstanceOf[IScrewdriver]
+                && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
         {
             if (world.isRemote) return true
-            setRotation((rotation+1)%4)
-            sendOrientUpdate()
+            val old = rotation
+            do setRotation((rotation+1)%4) while (old != rotation && !isRotationAllowed(rotation))
+            if (old != rotation) sendOrientUpdate()
+            world.notifyNeighborsRespectDebug(getPos, getBlock)
+            onBlockRotated()
             held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
-            true
+            return true
         }
-        else false
+        false
     }
 
     def doesRotate = true
 
+    def isRotationAllowed(rot:Int) = true
+
+    def onBlockRotated(){}
+
     def sendOrientUpdate()
     {
-        writeStream(1).writeByte(orientation).sendToChunk()
+        writeStream(1).writeByte(orientation).sendToChunk(this)
     }
 }
 
@@ -147,7 +179,7 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
 
     private def sendHasBPUpdate()
     {
-        writeStream(1).writeBoolean(hasBP).sendToChunk()
+        writeStream(1).writeBoolean(hasBP).sendToChunk(this)
     }
 
     private def sendICDesc(){ sendICDesc(watchers.toSeq:_*) }
@@ -187,9 +219,9 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
         else watchers.foreach(out.sendToPlayer)
     }
 
-    override def update()
+    override def updateServer()
     {
-        super.update()
+        super.updateServer()
         flushICStream()
         flushPartStream()
         circuit.tick()
@@ -206,15 +238,15 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
         if (!world.isRemote)
         {
             import ItemICBlueprint._
-            if (!hasBP && player.getHeldItem != null && player.getHeldItem.getItem.isInstanceOf[ItemICBlueprint])
+            val held = player.getHeldItemMainhand
+            if (!hasBP && held != null && held.getItem.isInstanceOf[ItemICBlueprint])
             {
-                val stack = player.getHeldItem
-                if (hasICInside(stack))
+                if (hasICInside(held))
                 {
-                    loadIC(circuit, stack)
+                    loadIC(circuit, held)
                     sendICDesc()
                 }
-                stack.stackSize -= 1
+                held.stackSize -= 1
                 hasBP = true
                 sendHasBPUpdate()
             }
@@ -227,9 +259,9 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
                     circuit.clear()
                     sendICDesc()
                 }
-                val p = position.offset(1)
-                val item = new EntityItem(world, p.x+0.5, p.y+0.20, p.z+0.5, stack)
-                item.delayBeforeCanPickup = 10
+                val p = pos.offset(EnumFacing.values()(1))
+                val item = new EntityItem(world, p.getX+0.5, p.getY+0.20, p.getZ+0.5, stack)
+                item.setPickupDelay(10)
                 item.motionX = 0
                 item.motionY = 0.15
                 item.motionZ = 0
@@ -243,7 +275,7 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
                 nc.startWatchDelegate = playerStartWatch
                 nc.stopWatchDelegate = playerStopWatch
                 GuiICWorkbench.open(player, nc, {p =>
-                    p.writeCoord(x, y, z)
+                    p.writePos(pos)
                     circuit.writeDesc(p)
                 })
             }
@@ -254,11 +286,10 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
     override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        if (hasBP)
-        {
+        if (hasBP) {
             val stack = new ItemStack(ProjectRedFabrication.itemICBlueprint)
             if (circuit.nonEmpty) saveIC(circuit, stack)
-            WorldLib.dropItem(world, x, y, z, stack)
+            WorldLib.dropItem(world, pos, stack)
         }
     }
 
@@ -275,33 +306,43 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
     }
 }
 
-object RenderICWorkbench extends TInstancedBlockRender with TCubeMapRender
+object RenderICWorkbench extends SimpleBlockRenderer
 {
-    var bottom:IIcon = _
-    var side1:IIcon = _
-    var side2:IIcon = _
-    var sidebp1:IIcon = _
-    var sidebp2:IIcon = _
-    var top:IIcon = _
-    var topBP:IIcon = _
+    import java.lang.{Boolean => JBool}
 
-    var iconT:MultiIconTransformation = _
-    var iconTBP:MultiIconTransformation = _
+    import BlockICMachine._
 
-    override def getData(w:IBlockAccess, x:Int, y:Int, z:Int) =
-    {
-        val te = WorldLib.getTileEntity(w, x, y, z, classOf[TileICWorkbench])
+    var bottom:TextureAtlasSprite = _
+    var side1:TextureAtlasSprite = _
+    var side2:TextureAtlasSprite = _
+    var sidebp1:TextureAtlasSprite = _
+    var sidebp2:TextureAtlasSprite = _
+    var top:TextureAtlasSprite = _
+    var topBP:TextureAtlasSprite = _
 
-        (0, 0, if (te.hasBP) iconTBP else iconT)
+    var iconT:UVTransformation = _
+    var iconTBP:UVTransformation = _
+
+    override def handleState(state:IExtendedBlockState, tileEntity:TileEntity):IExtendedBlockState = tileEntity match {
+        case t:TileICWorkbench =>
+            state.withProperty(UNLISTED_HAS_BP_PROPERTY, t.hasBP.asInstanceOf[JBool])
+
+        case _ => state
     }
 
-    override def getInvData = (0, 0, iconTBP)
-
-    override def getIcon(s:Int, meta:Int) = iconTBP.icons(s)
-
-    override def registerIcons(reg:IIconRegister)
+    override def getWorldTransforms(state:IExtendedBlockState) =
     {
-        def register(s:String) = reg.registerIcon("projectred:fabrication/icworkbench/"+s)
+        val hasBP = state.getValue(UNLISTED_HAS_BP_PROPERTY)
+        createTriple(0, 0, if (hasBP) iconTBP else iconT)
+    }
+
+    override def getItemTransforms(stack:ItemStack) = createTriple(0, 0, iconT)
+
+    override def shouldCull() = true
+
+    override def registerIcons(reg:TextureMap)
+    {
+        def register(s:String) = reg.registerSprite(new ResourceLocation("projectred:blocks/fabrication/icworkbench/"+s))
 
         bottom = register("bottom")
         top = register("top")

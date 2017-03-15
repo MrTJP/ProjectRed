@@ -5,46 +5,48 @@
  */
 package mrtjp.projectred.fabrication
 
-import codechicken.lib.render.uv.{IconTransformation, UVScale}
-import codechicken.lib.render.{CCModel, CCRenderState, ColourMultiplier}
+import codechicken.lib.colour.EnumColour
+import codechicken.lib.render.pipeline.ColourMultiplier
+import codechicken.lib.render.{CCModel, CCRenderState}
 import codechicken.lib.vec._
-import mrtjp.core.color.Colors
+import codechicken.lib.vec.uv.{IconTransformation, UVScale}
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.GlStateManager._
+import net.minecraft.client.renderer.texture.TextureMap
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11._
 
 import scala.collection.JavaConversions._
 
 object RenderCircuit
 {
-    def registerIcons(reg:IIconRegister)
+    def registerIcons(reg:TextureMap)
     {
         ICComponentStore.registerIcons(reg)
     }
 
-    def renderOrtho(circuit:IntegratedCircuit, x:Double, y:Double, xSize:Double, ySize:Double, frame:Float)
+    def renderOrtho(ccrs:CCRenderState, circuit:IntegratedCircuit, x:Double, y:Double, xSize:Double, ySize:Double, frame:Float)
     {
         val t = ICComponentStore.orthoGridT(xSize, ySize) `with` new Translation(x, y, 0)
-        renderBoard(circuit, t, true)
-        renderCircuit(circuit, t, true, frame)
+        renderBoard(ccrs, circuit, t, true)
+        renderCircuit(ccrs, circuit, t, true, frame)
     }
 
-    def renderDynamic(circuit:IntegratedCircuit, t:Transformation, frame:Float)
+    def renderDynamic(ccrs:CCRenderState, circuit:IntegratedCircuit, t:Transformation, frame:Float)
     {
-        glDisable(GL_DEPTH_TEST)
-        renderBoard(circuit, t, true)
-        renderCircuit(circuit, t, true, frame)
-        glEnable(GL_DEPTH_TEST)
+        disableDepth()
+        renderBoard(ccrs, circuit, t, true)
+        renderCircuit(ccrs, circuit, t, true, frame)
+        enableDepth()
     }
 
-    def renderBoard(circuit:IntegratedCircuit, t:Transformation, ortho:Boolean)
+    def renderBoard(ccrs:CCRenderState, circuit:IntegratedCircuit, t:Transformation, ortho:Boolean)
     {
-        PrefboardRenderer.render(circuit, t, ortho)
+        PrefboardRenderer.render(ccrs, circuit, t, ortho)
     }
 
-    def renderCircuit(circuit:IntegratedCircuit, t:Transformation, ortho:Boolean, frame:Float)
+    def renderCircuit(ccrs:CCRenderState, circuit:IntegratedCircuit, t:Transformation, ortho:Boolean, frame:Float)
     {
         for (((x, y), part) <- circuit.parts)
         {
@@ -53,7 +55,7 @@ object RenderCircuit
                 new Translation(x*1.0/circuit.size.width, 0, y*1.0/circuit.size.height),
                 t
             )
-            part.renderDynamic(tlist, ortho, frame)
+            part.renderDynamic(ccrs, tlist, ortho, frame)
         }
     }
 }
@@ -128,7 +130,7 @@ object PrefboardRenderer
         edgeModels((w, h))
     }
 
-    def render(circuit:IntegratedCircuit, t:Transformation, ortho:Boolean)
+    def render(ccrs:CCRenderState, circuit:IntegratedCircuit, t:Transformation, ortho:Boolean)
     {
         val w = circuit.size.width
         val h = circuit.size.height
@@ -139,17 +141,17 @@ object PrefboardRenderer
             Minecraft.getMinecraft.getTextureManager.bindTexture(r)
         }
 
-        CCRenderState.reset()
-        CCRenderState.pullLightmap()
-        CCRenderState.setDynamic()
+        ccrs.reset()
+        ccrs.pullLightmap()
 
         for ((tex, models) <- Seq(("prefboard", getBoardModel(w, h)),
             ("prefboard_edge", getEdgeModel(w, h)), ("prefboard_corner", getCornerModel(w, h))))
         {
             bind(tex)
-            CCRenderState.startDrawing()
-            models(if (ortho) 1 else 0).render(t)
-            CCRenderState.draw()
+            ccrs.startDrawing(GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
+            models(if (ortho) 1 else 0).render(ccrs, t)
+
+            ccrs.draw()
         }
     }
 }
@@ -171,12 +173,12 @@ object RenderICAlloyWire
         signal = part.signal
     }
 
-    def render(t:Transformation, ortho:Boolean)
+    def render(ccrs:CCRenderState, t:Transformation, ortho:Boolean)
     {
-        prepairRender()
-        faceModels(dynamicIdx(0, ortho)).render(t, new IconTransformation(redwireIcons(connMap&0xFF)),
+        prepairRender(ccrs)
+        faceModels(dynamicIdx(0, ortho)).render(ccrs, t, new IconTransformation(redwireIcons(connMap&0xFF)),
             ColourMultiplier.instance((signal&0xFF)/2+60<<24|0xFF))
-        finishRender()
+        finishRender(ccrs)
     }
 }
 
@@ -200,14 +202,14 @@ object RenderICInsulatedWire
         colour = part.colour
     }
 
-    def render(t:Transformation, ortho:Boolean)
+    def render(ccrs:CCRenderState, t:Transformation, ortho:Boolean)
     {
-        prepairRender()
-        faceModels(dynamicIdx(0, ortho)).render(t, new IconTransformation(redwireIcons(connMap&0xFF)),
+        prepairRender(ccrs)
+        faceModels(dynamicIdx(0, ortho)).render(ccrs, t, new IconTransformation(redwireIcons(connMap&0xFF)),
             ColourMultiplier.instance((signal&0xFF)/2+60<<24|0xFF))
-        faceModels(dynamicIdx(0, ortho)).render(t, new IconTransformation(insulatedwireIcons(connMap&0xFF)),
-            ColourMultiplier.instance(Colors(colour&0xFF).rgba))
-        finishRender()
+        faceModels(dynamicIdx(0, ortho)).render(ccrs, t, new IconTransformation(insulatedwireIcons(connMap&0xFF)),
+            ColourMultiplier.instance(EnumColour.values()(colour&0xFF).rgba))
+        finishRender(ccrs)
     }
 }
 
@@ -228,23 +230,23 @@ object RenderICBundledCable
         colour = part.colour
     }
 
-    def render(t:Transformation, ortho:Boolean)
+    def render(ccrs:CCRenderState, t:Transformation, ortho:Boolean)
     {
-        prepairRender()
-        faceModels(dynamicIdx(0, ortho)).render(t, new IconTransformation(bundledwireIcons(connMap&0xFF)))
-        if (colour != -1) faceModels(dynamicIdx(0, ortho)).render(t, new IconTransformation(bundledColourIcon),
-            ColourMultiplier.instance(Colors(colour&0xFF).rgba))
-        finishRender()
+        prepairRender(ccrs)
+        faceModels(dynamicIdx(0, ortho)).render(ccrs, t, new IconTransformation(bundledwireIcons(connMap&0xFF)))
+        if (colour != -1) faceModels(dynamicIdx(0, ortho)).render(ccrs, t, new IconTransformation(bundledColourIcon),
+            ColourMultiplier.instance(EnumColour.values()(colour&0xFF).rgba))
+        finishRender(ccrs)
     }
 }
 
 object RenderICTorch
 {
-    def render(t:Transformation, ortho:Boolean)
+    def render(ccrs:CCRenderState, t:Transformation, ortho:Boolean)
     {
-        prepairRender()
-        faceModels(dynamicIdx(0, ortho)).render(t, new IconTransformation(torchOnIcon))
-        finishRender()
+        prepairRender(ccrs)
+        faceModels(dynamicIdx(0, ortho)).render(ccrs, t, new IconTransformation(torchOnIcon))
+        finishRender(ccrs)
     }
 }
 
@@ -262,11 +264,11 @@ object RenderICLever
         on = part.on
     }
 
-    def render(t:Transformation, ortho:Boolean)
+    def render(ccrs:CCRenderState, t:Transformation, ortho:Boolean)
     {
-        prepairRender()
-        faceModels(dynamicIdx(0, ortho)).render(t, new IconTransformation(if (on) leverOnIcon else leverOffIcon))
-        finishRender()
+        prepairRender(ccrs)
+        faceModels(dynamicIdx(0, ortho)).render(ccrs, new IconTransformation(if (on) leverOnIcon else leverOffIcon))
+        finishRender(ccrs)
     }
 }
 
@@ -284,10 +286,10 @@ object RenderICButton
         on = part.on
     }
 
-    def render(t:Transformation, ortho:Boolean)
+    def render(ccrs:CCRenderState, t:Transformation, ortho:Boolean)
     {
-        prepairRender()
-        faceModels(dynamicIdx(0, ortho)).render(t, new IconTransformation(if (on) buttonOnIcon else buttonOffIcon))
-        finishRender()
+        prepairRender(ccrs)
+        faceModels(dynamicIdx(0, ortho)).render(ccrs, t, new IconTransformation(if (on) buttonOnIcon else buttonOffIcon))
+        finishRender(ccrs)
     }
 }

@@ -7,15 +7,17 @@ package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.vec.{BlockCoord, Transformation}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import codechicken.lib.render.CCRenderState
+import codechicken.lib.vec.Transformation
 import mrtjp.core.util.Enum
 import mrtjp.core.vec.{Point, Size}
 import mrtjp.projectred.ProjectRedCore.log
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.fluids.FluidStack
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.{Map => MMap, Seq => MSeq}
 
@@ -34,8 +36,7 @@ trait WorldCircuit
 object DummyMCIO extends MCDataOutput
 {
     override def writeVarInt(i:Int) = this
-    override def writeCoord(x:Int, y:Int, z:Int) = this
-    override def writeCoord(coord:BlockCoord) = this
+    override def writePos(pos:BlockPos) = this
     override def writeString(s:String) = this
     override def writeFloat(f:Float) = this
     override def writeDouble(d:Double) = this
@@ -43,7 +44,7 @@ object DummyMCIO extends MCDataOutput
     override def writeVarShort(s:Int) = this
     override def writeInt(i:Int) = this
     override def writeFluidStack(liquid:FluidStack) = this
-    override def writeByteArray(array:Array[Byte]) = this
+    override def writeArray(array:Array[Byte]) = this
     override def writeBoolean(b:Boolean) = this
     override def writeItemStack(stack:ItemStack) = this
     override def writeNBTTagCompound(tag:NBTTagCompound) = this
@@ -536,7 +537,7 @@ abstract class CircuitPart
         if (detailLevel > 0) Seq(getPartName) else Seq.empty
 
     @SideOnly(Side.CLIENT)
-    def renderDynamic(t:Transformation, ortho:Boolean, frame:Float){}
+    def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float){}
 }
 
 trait TClientNetCircuitPart extends CircuitPart

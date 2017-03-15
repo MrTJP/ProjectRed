@@ -544,10 +544,10 @@ fluid.redmetal.molten=Metal Vermelho Condutivo Derretivo
 
 itemGroup.projectred.fabrication=Project Red: Fabrication
 
-item.projectred.fabrication.icblueprint.name=Diagrama de IC
-item.projectred.fabrication.icchip|0.name=Chip de IC
-item.projectred.fabrication.icchip|1.name=Chip de IC(Modo Criativo)
-tile.projectred.integration.icblock|0.name=Bancada de IC
-tile.projectred.integration.icblock|1.name=Impressora de IC
+item.projectred.fabrication.icBlueprint.name=Diagrama de IC
+item.projectred.fabrication.icChip|0.name=Chip de IC
+item.projectred.fabrication.icChip|1.name=Chip de IC(Modo Criativo)
+tile.projectred.integration.icBlock|0.name=Bancada de IC
+tile.projectred.integration.icBlock|1.name=Impressora de IC
 
 # Localization File: Português Brasileiro (pt_BR) / Last Update: 22/07/2015 por NarigudoBR

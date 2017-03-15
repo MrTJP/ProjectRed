@@ -7,53 +7,43 @@ package mrtjp.projectred.fabrication
 
 import java.util.{List => JList}
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.gui.GuiDraw
-import cpw.mods.fml.common.registry.GameRegistry
-import mrtjp.core.color.Colors
+import codechicken.lib.render.CCRenderState
+import codechicken.lib.render.item.map.IMapRenderer
+import codechicken.lib.texture.TextureUtils
+import com.mojang.realmsclient.gui.ChatFormatting
 import mrtjp.core.item.ItemCore
 import mrtjp.core.vec.{Point, Size}
-import mrtjp.projectred.core.libmc.PRResources
 import mrtjp.projectred.fabrication.IIOCircuitPart._
 import mrtjp.projectred.integration.GateDefinition
 import mrtjp.projectred.{ProjectRedFabrication, ProjectRedIntegration}
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.{Item, ItemMap, ItemStack}
+import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumChatFormatting._
-import net.minecraft.util.{EnumChatFormatting, IIcon}
+import net.minecraft.util._
 import net.minecraft.world.World
-import net.minecraftforge.client.IItemRenderer
-import net.minecraftforge.client.IItemRenderer.{ItemRenderType, ItemRendererHelper}
+import net.minecraft.world.storage.MapData
 import org.lwjgl.opengl.GL11._
 
-class ItemICBlueprint extends ItemMap //extend ItemMap so minecraft will handle the FP render for us
+class ItemICBlueprint extends Item
 {
     setMaxStackSize(1)
     setCreativeTab(ProjectRedFabrication.tabFabrication)
-    setUnlocalizedName("projectred.fabrication.icblueprint")
-    GameRegistry.registerItem(this, "projectred.fabrication.icblueprint")
-    setTextureName("projectred:fabrication/ic_blueprint")
 
-    //no need for standard map code to run.
-    override def onUpdate(stack:ItemStack, world:World, player:Entity, a:Int, b:Boolean){}
-    override def func_150911_c(stack:ItemStack, world:World, player:EntityPlayer) = null
-    override def onCreated(stack:ItemStack, world:World, player:EntityPlayer){}
-
-    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
+    override def addInformation(stack:ItemStack, playerIn:EntityPlayer, tooltip:JList[String], advanced:Boolean)
     {
-        import EnumChatFormatting._
-        val slist = list.asInstanceOf[JList[String]]
+        import ChatFormatting._
 
         if (ItemICBlueprint.hasICInside(stack))
         {
             val size = ItemICBlueprint.getICSize(stack)
-            slist.add(GRAY+ItemICBlueprint.getICName(stack))
-            slist.add(GRAY+s"${size.width} x ${size.height}")
+            tooltip.add(GRAY+ItemICBlueprint.getICName(stack))
+            tooltip.add(GRAY+s"${size.width} x ${size.height}")
         }
-        else slist.add(GRAY+"empty blueprint")
+        else tooltip.add(GRAY+"empty blueprint")
     }
 }
 
@@ -61,7 +51,7 @@ object ItemICBlueprint
 {
     var blueprintItems = Seq(
         ProjectRedFabrication.itemICBlueprint,
-        ProjectRedIntegration.itemPartGate2
+        ProjectRedIntegration.itemPartGate
     )
 
     def assertStackTag(stack:ItemStack)
@@ -196,48 +186,53 @@ object ItemICBlueprint
         CircuitGateLogic.unpackConnModes(stack.getTagCompound.getShort("cmode"))
 }
 
-object ItemRenderICBlueprint extends IItemRenderer
+object ItemRenderICBlueprint extends IMapRenderer
 {
-    override def handleRenderType(item:ItemStack, t:ItemRenderType) = t == ItemRenderType.FIRST_PERSON_MAP
-    override def shouldUseRenderHelper(t:ItemRenderType, item:ItemStack, helper:ItemRendererHelper) = true
+    val background = new ResourceLocation("projectred", "textures/gui/map_background.png")
 
-    override def renderItem(t:ItemRenderType, stack:ItemStack, data:AnyRef*)
+    override def shouldHandle(stack:ItemStack, data:MapData, inFrame:Boolean) = true
+
+    override def renderMap(stack:ItemStack, data:MapData, inFrame:Boolean)
     {
-        glDisable(GL_LIGHTING)
-        glDisable(GL_DEPTH_TEST)
+        import net.minecraft.client.renderer.GlStateManager._
+        disableLighting()
+        disableDepth()
 
-        overlayMapTexture()
+        val ccrs = CCRenderState.instance()
+        ccrs.startDrawing(GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+
+        overlayMapTexture(ccrs)
 
         if (ItemICBlueprint.hasICInside(stack))
         {
             val ic = ItemICBlueprint.loadIC(stack)
-            if (ic.nonEmpty) overlayIC(ic)
+            if (ic.nonEmpty) overlayIC(ccrs, ic)
         }
 
-        glEnable(GL_LIGHTING)
-        glEnable(GL_DEPTH_TEST)
+        enableLighting()
+        enableDepth()
     }
 
-    private def overlayMapTexture()
+    private def overlayMapTexture(ccrs:CCRenderState)
     {
-        import net.minecraft.client.renderer.Tessellator.{instance => tes}
-        PRResources.icmaptex.bind()
+        TextureUtils.changeTexture(background)
+        val buffer = ccrs.getBuffer
 
         val b0 = 7
-        tes.startDrawingQuads()
-        tes.addVertexWithUV(0 - b0, 128 + b0, 0.0D, 0.0D, 1.0D)
-        tes.addVertexWithUV(128 + b0, 128 + b0, 0.0D, 1.0D, 1.0D)
-        tes.addVertexWithUV(128 + b0, 0 - b0, 0.0D, 1.0D, 0.0D)
-        tes.addVertexWithUV(0 - b0, 0 - b0, 0.0D, 0.0D, 0.0D)
-        tes.draw()
+        buffer.pos(0 - b0, 128 + b0, 0.0D).tex(0, 1).endVertex()
+        buffer.pos(128 + b0, 128 + b0, 0.0D).tex(1, 1).endVertex()
+        buffer.pos(128 + b0, 0 - b0, 0.0D).tex(1, 0).endVertex()
+        buffer.pos(0 - b0, 0 - b0, 0.0D).tex(0, 0).endVertex()
+
+        ccrs.draw()
     }
 
-    private def overlayIC(ic:IntegratedCircuit)
+    private def overlayIC(ccrs:CCRenderState, ic:IntegratedCircuit)
     {
-        val sf = 128/math.max(ic.size.width, ic.size.height)
+        val sf = 128/scala.math.max(ic.size.width, ic.size.height)
         val rs = ic.size*sf
         val rp = Point(Size(128, 128)/2-rs/2)
-        RenderCircuit.renderOrtho(ic, rp.x, rp.y, rs.width, rs.height, 0)
+        RenderCircuit.renderOrtho(ccrs, ic, rp.x, rp.y, rs.width, rs.height, 0)
 
         val name = ic.name
 
@@ -246,60 +241,46 @@ object ItemRenderICBlueprint extends IItemRenderer
         glScaled(0.55, 0.55, 1)
 
         GuiDraw.drawRect(0, 0, GuiDraw.getStringWidth(name)+4, 11, 0x5F000000)
-        GuiDraw.drawString(name, 2, 2, Colors.WHITE.argb, false)
+        GuiDraw.drawString(name, 2, 2, EnumColour.WHITE.argb, false)
 
         glPopMatrix()
     }
 }
 
-class ItemICChip extends ItemCore("projectred.fabrication.icchip")
+class ItemICChip extends ItemCore
 {
     setMaxStackSize(1)
     setHasSubtypes(true)
     setCreativeTab(ProjectRedFabrication.tabFabrication)
 
-    var icons = new Array[IIcon](2)
-
-    override def registerIcons(reg:IIconRegister)
+    override def addInformation(stack:ItemStack, playerIn:EntityPlayer, tooltip:JList[String], advanced:Boolean)
     {
-        icons(0) = reg.registerIcon("projectred:fabrication/ic_inert")
-        icons(1) = reg.registerIcon("projectred:fabrication/ic_active")
-    }
-
-    override def getIcon(stack:ItemStack, pass:Int) = getIconIndex(stack)
-
-    override def getIconIndex(stack:ItemStack) =
-        icons(if (ItemICBlueprint.hasICInside(stack)) 1 else 0)
-
-    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[_], par4:Boolean)
-    {
-        val jlist = list.asInstanceOf[JList[String]]
-        ItemICChip.addInfo(stack, jlist)
+        ItemICChip.addInfo(stack, tooltip)
         if (stack.getItemDamage == 1)
         {
-            jlist.add("Creative-mode only chip.")
-            jlist.add("Instant and free prints.")
-            jlist.add("Rightclick to add IC Gate to inventory.")
+            tooltip.add("Creative-mode only chip.")
+            tooltip.add("Instant and free prints.")
+            tooltip.add("Rightclick to add IC Gate to inventory.")
         }
     }
 
-    override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer) =
+    override def onItemRightClick(stack:ItemStack, world:World, player:EntityPlayer, hand:EnumHand):ActionResult[ItemStack] =
     {
-        if (stack.getItemDamage == 1 && ItemICBlueprint.hasICInside(stack))
+        if (stack.getItemDamage == 1 && ItemICBlueprint.hasICInside(stack)) //creative chip
         {
             val gate = GateDefinition.ICGate.makeStack
             ItemICBlueprint.copyToGate(stack, gate)
             if (!player.inventory.addItemStackToInventory(gate))
                 player.entityDropItem(gate, player.getEyeHeight)
+            return new ActionResult(EnumActionResult.SUCCESS, stack)
         }
-        stack
+        super.onItemRightClick(stack, world, player, hand)
     }
 
-    override def getSubItems(item:Item, tab:CreativeTabs, list:JList[_])
+    override def getSubItems(itemIn:Item, tab:CreativeTabs, subItems:JList[ItemStack])
     {
-        val jlist = list.asInstanceOf[JList[ItemStack]]
-        jlist.add(new ItemStack(this, 1, 0))
-        jlist.add(new ItemStack(this, 1, 1))
+        subItems.add(new ItemStack(this, 1, 0))
+        subItems.add(new ItemStack(this, 1, 1))
     }
 }
 
@@ -308,6 +289,6 @@ object ItemICChip
     def addInfo(stack:ItemStack, list:JList[String])
     {
         if (ItemICBlueprint.hasICInside(stack))
-            list.add(GRAY+ItemICBlueprint.getICName(stack))
+            list.add(ChatFormatting.GRAY+ItemICBlueprint.getICName(stack))
     }
 }

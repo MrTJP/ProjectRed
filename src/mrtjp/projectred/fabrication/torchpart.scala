@@ -5,8 +5,9 @@
  */
 package mrtjp.projectred.fabrication
 
+import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class TorchICPart extends CircuitPart with TICAcquisitions with IPoweredCircuitPart
 {
@@ -32,15 +33,15 @@ class TorchICPart extends CircuitPart with TICAcquisitions with IPoweredCircuitP
     override def getPickOp = CircuitOpDefs.Torch.getOp
 
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(t:Transformation, ortho:Boolean, frame:Float) =
+    override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float) =
     {
-        RenderICTorch.render(t, ortho)
+        RenderICTorch.render(ccrs, t, ortho)
     }
 }
 
 class CircuitOpTorch extends SimplePlacementOp
 {
-    override def doPartRender(t:Transformation) = RenderICTorch.render(t, true)
+    override def doPartRender(ccrs:CCRenderState, t:Transformation) = RenderICTorch.render(ccrs, t, true)
 
     override def createPart = CircuitPartDefs.Torch.createPart
 

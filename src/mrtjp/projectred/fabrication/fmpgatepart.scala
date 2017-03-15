@@ -7,16 +7,19 @@ package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.render.{CCRenderState, TextureUtils}
+import codechicken.lib.render.CCRenderState
+import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec._
 import mrtjp.core.math.MathLib
 import mrtjp.projectred.fabrication.IIOCircuitPart._
 import mrtjp.projectred.integration
 import mrtjp.projectred.integration._
 import mrtjp.projectred.transmission.BundledCommons._
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.math.BlockPos
 import org.lwjgl.opengl.GL11
 
 class CircuitGatePart extends RedstoneGatePart with TBundledGatePart with TComplexGatePart
@@ -52,11 +55,12 @@ class CircuitGatePart extends RedstoneGatePart with TBundledGatePart with TCompl
         itemTag = packet.readNBTTagCompound()
     }
 
-    override def preparePlacement(player:EntityPlayer, pos:BlockCoord, side:Int, meta:Int)
+    override def preparePlacement(player:EntityPlayer, pos:BlockPos, side:Int, meta:Int)
     {
         super.preparePlacement(player, pos, side, meta)
-        itemTag = player.getHeldItem.getTagCompound
-        CircuitGateLogic.constructICLogic(logic, player.getHeldItem)
+        val stack = player.getHeldItemMainhand
+        itemTag = stack.getTagCompound
+        CircuitGateLogic.constructICLogic(logic, stack)
     }
 
     override def getItem =
@@ -345,14 +349,16 @@ class RenderCircuitGate extends GateRenderer[CircuitGatePart]
         name = gate.getLogicIC.name
     }
 
-    override def renderDynamic(t:Transformation)
+
+    override def renderDynamic(t:Transformation, ccrs:CCRenderState)
     {
         import GL11._
+        import net.minecraft.client.renderer.GlStateManager._
 
-        glDisable(GL_LIGHTING)
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glPushMatrix()
+        disableLighting()
+        enableBlend()
+        blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        pushMatrix()
 
         val s = GuiDraw.getStringWidth(name) max 93
         val f = 9/16D*1.0/s
@@ -360,19 +366,18 @@ class RenderCircuitGate extends GateRenderer[CircuitGatePart]
                 new Scale(f, 1, f) `with` t).glApply()
         GuiDraw.drawStringC(name, 0, 0, 0xFFFFFFFF, false)
 
-        glPopMatrix()
-        glEnable(GL_LIGHTING)
-        glDisable(GL_BLEND)
+        popMatrix()
+        enableLighting()
+        disableBlend()
 
         //glass
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        TextureUtils.bindAtlas(0)
-        CCRenderState.startDrawing()
-        CCRenderState.pullLightmap()
-        CCRenderState.setDynamic()
-        housing.renderDynamic(t)
-        CCRenderState.draw()
-        glDisable(GL_BLEND)
+        enableBlend()
+        blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        TextureUtils.bindBlockTexture()
+        ccrs.startDrawing(0x7, DefaultVertexFormats.ITEM)
+        ccrs.pullLightmap()
+        housing.renderDynamic(t, ccrs)
+        ccrs.draw()
+        disableBlend()
     }
 }

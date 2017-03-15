@@ -6,10 +6,10 @@
 package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import cpw.mods.fml.relauncher.{SideOnly, Side}
 import mrtjp.core.vec.Point
 import mrtjp.projectred.transmission.IWirePart
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 trait TArrayGateICPart extends RedstoneGateICPart with IRedwireICPart with TRSPropagatingICPart
 {

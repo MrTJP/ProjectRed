@@ -7,23 +7,24 @@ package mrtjp.projectred.fabrication
 
 import java.math.MathContext
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.render.ColourMultiplier
-import codechicken.lib.render.uv.{UVScale, UVTranslation}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
+import codechicken.lib.render.CCRenderState
+import codechicken.lib.render.pipeline.ColourMultiplier
+import codechicken.lib.texture.TextureUtils
+import codechicken.lib.vec.uv.{UVScale, UVTranslation}
+import com.mojang.realmsclient.gui.ChatFormatting
 import mrtjp.core.gui._
 import mrtjp.core.vec.{Point, Rect, Size}
-import mrtjp.core.world.WorldLib
-import mrtjp.projectred.core.libmc.PRResources
 import mrtjp.projectred.fabrication.ICComponentStore._
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
+import net.minecraft.client.renderer.{GlStateManager, RenderHelper}
+import net.minecraft.client.renderer.GlStateManager._
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.EnumChatFormatting
+import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.input.{Keyboard, Mouse}
-import org.lwjgl.opengl.GL11
 
 import scala.collection.JavaConversions._
 import scala.collection.convert.WrapAsJava
@@ -31,7 +32,7 @@ import scala.collection.immutable.ListMap
 
 class PrefboardNode(circuit:IntegratedCircuit) extends TNode
 {
-    var currentOp:CircuitOp = null
+    var currentOp:CircuitOp = _
 
     /**
      * 0 - off
@@ -75,33 +76,41 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
-        if (isCircuitValid)
-        {
+        if (isCircuitValid) {
             val f = frame
-            RenderCircuit.renderOrtho(circuit, f.x, f.y, size.width*scale, size.height*scale, rframe)
+            val ccrs = CCRenderState.instance()
+
+            color(1, 1, 1, 1)
+
+            RenderCircuit.renderOrtho(ccrs, circuit, f.x, f.y, size.width*scale, size.height*scale, rframe)
 
             if (currentOp != null)
             {
                 if (frame.contains(mouse) && rayTest(mouse) && !leftMouseDown)
-                    currentOp.renderHover(circuit, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
+                    currentOp.renderHover(ccrs, circuit, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
                 else if (leftMouseDown)
-                    currentOp.renderDrag(circuit, mouseStart, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
+                    currentOp.renderDrag(ccrs, circuit, mouseStart, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
             }
 
             if (mcInst.theWorld.getTotalWorldTime%100 > 5 && circuit.errors.nonEmpty)
             {
-                prepairRender()
-                PRResources.guiPrototyper.bind()
+                prepairRender(ccrs)
+                TextureUtils.changeTexture(GuiICWorkbench.background)
+
                 for ((Point(x, y), (_, c)) <- circuit.errors)
                 {
                     val t = orthoPartT(f.x, f.y, size.width*scale, size.height*scale, circuit.size, x, y)
-                    faceModels(dynamicIdx(0, true)).render(
+                    faceModels(dynamicIdx(0, true)).render(ccrs,
                         t, new UVScale(64) `with` new UVTranslation(330, 37) `with` new UVScale(1/512D),
-                        ColourMultiplier.instance(Colors(c).rgba)
+                        ColourMultiplier.instance(EnumColour.values()(c).rgba)
                     )
                 }
-                finishRender()
+                finishRender(ccrs)
             }
+
+//            enableRescaleNormal()
+//            enableLighting()
+//            enableDepth()
         }
     }
 
@@ -121,7 +130,7 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
                     val Point(mx, my) = parent.convertPointToScreen(mouse)
                     GuiDraw.drawMultilineTip(mx+12, my-12, WrapAsJava.seqAsJavaList(data))
                     if (circuit.errors.contains(point))
-                        GuiDraw.drawMultilineTip(mx+12, my-32, Seq(EnumChatFormatting.RED.toString+circuit.errors(point)._1))
+                        GuiDraw.drawMultilineTip(mx+12, my-32, Seq(ChatFormatting.RED.toString+circuit.errors(point)._1))
                     translateFromScreen()
                     ClipNode.tempEnableScissoring()
                 }
@@ -290,7 +299,7 @@ class ICToolsetNode extends TNode
             override def drawButton(mouseover:Boolean) =
             {
                 val op = buttonOpMap(leadingButton)
-                op.renderImage(position.x+2, position.y+2, size.width-4, size.height-4)
+                op.renderImage(CCRenderState.instance(), position.x+2, position.y+2, size.width-4, size.height-4)
             }
         }
         groupButton.size = buttonSize
@@ -303,8 +312,7 @@ class ICToolsetNode extends TNode
     {
         setFocused()
         opSelectDelegate(op)
-        parent.children.collect
-        {
+        parent.children.collect {
             case t:ICToolsetNode if t != this => t
         }.foreach(_.setUnfocused())
         leadingButton.mouseoverLock = false
@@ -344,7 +352,7 @@ class ICToolsetNode extends TNode
         {
             override def drawButton(mouseover:Boolean)
             {
-                op.renderImage(position.x+2, position.y+2, size.width-4, size.height-4)
+                op.renderImage(CCRenderState.instance(), position.x+2, position.y+2, size.width-4, size.height-4)
             }
         }
         b.tooltipBuilder = {_ += op.getOpName}
@@ -366,7 +374,7 @@ class ICToolsetNode extends TNode
     {
         if (title.nonEmpty && groupButton.rayTest(parent.convertPointTo(mouse, this)))
         {
-            import net.minecraft.util.EnumChatFormatting._
+            import ChatFormatting._
             translateToScreen()
             val Point(mx, my) = parent.convertPointToScreen(mouse)
             GuiDraw.drawMultilineTip(mx+12, my-32, Seq(AQUA.toString+ITALIC.toString+title))
@@ -389,9 +397,9 @@ class NewICNode extends TNode
 
     var completionDelegate = {() => ()}
 
-    var outsideColour = Colors.LIGHT_GREY.argb
-    var insideColour = Colors.CYAN.rgb|0x88000000
-    var hoverColour = Colors.BLUE.argb
+    var outsideColour = EnumColour.LIGHT_GRAY.argb
+    var insideColour = EnumColour.CYAN.argb(0x88)
+    var hoverColour = EnumColour.BLUE.argb
 
     def getName =
     {
@@ -399,8 +407,8 @@ class NewICNode extends TNode
         if (t.isEmpty) "untitled" else t
     }
 
-    private var textbox:SimpleTextboxNode = null
-    private var sizerMap:Map[(Int, Int), Rect] = null
+    private var textbox:SimpleTextboxNode = _
+    private var sizerMap:Map[(Int, Int), Rect] = _
 
     private def sizerPos = position+Point(size/2-sizerRenderSize/2)+sizerRenderOffset
 
@@ -537,9 +545,10 @@ class InfoNode extends TNode
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
-        PRResources.guiPrototyper.bind()
+        TextureUtils.changeTexture(GuiICWorkbench.background)
+
         if (!getTile.hasBP || getTile.getIC.isEmpty)
-            Gui.func_146110_a(position.x, position.y, 330, 0, size.width, size.height, 512, 512)
+            Gui.drawModalRectWithCustomSizedTexture(position.x, position.y, 330, 0, size.width, size.height, 512, 512)
     }
 
     override def drawFront_Impl(mouse:Point, rframe:Float)
@@ -657,8 +666,7 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
         reqNew.size = Size(44, 12)
         reqNew.text = "redraw"
         reqNew.clickDelegate = {() =>
-            if (tile.hasBP)
-            {
+            if (tile.hasBP) {
                 val nic = new NewICNode
                 nic.position = Point(size/2)-Point(nic.size/2)
                 nic.completionDelegate = {() =>
@@ -681,29 +689,31 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
 
     override def drawBack_Impl(mouse:Point, frame:Float)
     {
-        GL11.glColor4f(1, 1, 1, 1)
-        PRResources.guiPrototyper.bind()
-        Gui.func_146110_a(0, 0, 0, 0, size.width, size.height, 512, 512)
+        color(1, 1, 1, 1)
 
-        GuiDraw.drawString("IC Workbench", 8, 6, Colors.GREY.argb, false)
+        TextureUtils.changeTexture(GuiICWorkbench.background)
+        Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, size.width, size.height, 512, 512)
 
-        GuiDraw.drawStringC("detail", 273, 162, 42, 14, Colors.GREY.argb, false)
-        GuiDraw.drawStringC(pref.detailLevel+"", 279, 175, 30, 10, Colors.GREY.argb, false)
+        GuiDraw.drawString("IC Workbench", 8, 6, EnumColour.GRAY.argb, false)
 
-        GuiDraw.drawStringC("scale", 273, 193, 42, 14, Colors.GREY.argb, false)
-        GuiDraw.drawStringC(BigDecimal(pref.scale, new MathContext(2))+"", 279, 207, 30, 10, Colors.GREY.argb, false)
+        GuiDraw.drawStringC("detail", 273, 162, 42, 14, EnumColour.GRAY.argb, false)
+        GuiDraw.drawStringC(pref.detailLevel+"", 279, 175, 30, 10, EnumColour.GRAY.argb, false)
+
+        GuiDraw.drawStringC("scale", 273, 193, 42, 14, EnumColour.GRAY.argb, false)
+        GuiDraw.drawStringC(BigDecimal(pref.scale, new MathContext(2))+"", 279, 207, 30, 10, EnumColour.GRAY.argb, false)
     }
 }
 
-object GuiICWorkbench extends TGuiBuilder
+object GuiICWorkbench extends TGuiFactory
 {
+    val background = new ResourceLocation("projectred", "textures/gui/ic_workbench.png")
+
     override def getID = FabricationProxy.icWorkbenchGui
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        WorldLib.getTileEntity(Minecraft.getMinecraft.theWorld, data.readCoord()) match
-        {
+        player.worldObj.getTileEntity(data.readPos()) match {
             case t:TileICWorkbench =>
                 t.circuit.readDesc(data)
                 new GuiICWorkbench(t)

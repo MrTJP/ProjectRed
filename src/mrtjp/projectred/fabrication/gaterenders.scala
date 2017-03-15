@@ -5,12 +5,13 @@
  */
 package mrtjp.projectred.fabrication
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.math.MathHelper
+import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
-import mrtjp.core.color.Colors
 import mrtjp.projectred.core.TFaceOrient._
 import mrtjp.projectred.fabrication.ICComponentStore._
-import net.minecraft.client.renderer.texture.IIconRegister
+import net.minecraft.client.renderer.texture.TextureMap
 
 object RenderICGate
 {
@@ -46,20 +47,20 @@ object RenderICGate
         new RenderBufferCell
     )
 
-    def registerIcons(reg:IIconRegister){}
+    def registerIcons(reg:TextureMap){}
 
-    def renderDynamic(gate:GateICPart, t:Transformation, ortho:Boolean, frame:Float)
+    def renderDynamic(ccrs:CCRenderState, gate:GateICPart, t:Transformation, ortho:Boolean, frame:Float)
     {
         val r = renderers(gate.subID).asInstanceOf[ICGateRenderer[GateICPart]]
         r.prepareDynamic(gate, frame)
-        r.renderDynamic(gate.rotationT `with` t, ortho)
+        r.renderDynamic(ccrs, gate.rotationT `with` t, ortho)
     }
 
-    def renderInv(t:Transformation, id:Int)
+    def renderInv(ccrs:CCRenderState, t:Transformation, id:Int)
     {
         val r = renderers(id)
         r.prepareInv()
-        r.renderDynamic(t, true)
+        r.renderDynamic(ccrs, t, true)
     }
 }
 
@@ -73,16 +74,16 @@ abstract class ICGateRenderer[T <: GateICPart]
     def prepareInv(){}
     def prepareDynamic(gate:T, frame:Float){}
 
-    def renderDynamic(t:Transformation, ortho:Boolean)
+    def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean)
     {
-        renderModels(t, if (reflect) 1 else 0, ortho)
+        renderModels(ccrs, t, if (reflect) 1 else 0, ortho)
     }
 
-    def renderModels(t:Transformation, orient:Int, ortho:Boolean)
+    def renderModels(ccrs:CCRenderState, t:Transformation, orient:Int, ortho:Boolean)
     {
-        prepairRender()
-        for (m <- coreModels++switchModels) m.renderModel(t, orient, ortho)
-        finishRender()
+        prepairRender(ccrs)
+        for (m <- coreModels++switchModels) m.renderModel(ccrs, t, orient, ortho)
+        finishRender(ccrs)
     }
 }
 
@@ -126,8 +127,8 @@ class RenderAnalogIO extends RenderIO
 
 class RenderBundledIO extends RenderIO
 {
-    override def invColour = Colors(0).rgba
-    override def dynColour(gate:IOGateICPart) = Colors(gate.getLogic[AnalogIOICGateLogic].freq).rgba
+    override def invColour = EnumColour.WHITE.rgba
+    override def dynColour(gate:IOGateICPart) = EnumColour.values()(gate.getLogic[AnalogIOICGateLogic].freq).rgba
 }
 
 class RenderOR extends ICGateRenderer[ComboGateICPart]

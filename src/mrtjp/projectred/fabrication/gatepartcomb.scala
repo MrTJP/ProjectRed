@@ -7,8 +7,8 @@ package mrtjp.projectred.fabrication
 
 import java.util.Random
 
-import cpw.mods.fml.relauncher.{Side, SideOnly}
 import mrtjp.projectred.core.TFaceOrient
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class ComboGateICPart extends RedstoneGateICPart
 {

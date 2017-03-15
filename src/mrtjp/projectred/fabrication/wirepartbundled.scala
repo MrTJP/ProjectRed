@@ -5,13 +5,14 @@
  */
 package mrtjp.projectred.fabrication
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
 import mrtjp.projectred.fabrication.IWireICPart._
 import mrtjp.projectred.transmission.BundledCommons._
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 trait IBundledCableICPart extends IWireICPart with IICBundledEmitter
 {
@@ -181,14 +182,14 @@ class BundledCableICPart extends WireICPart with TICBundledAcquisitions with IBu
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(t:Transformation, ortho:Boolean, frame:Float)
+    override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
     {
         RenderICBundledCable.prepairDynamic(this)
-        RenderICBundledCable.render(t, ortho)
+        RenderICBundledCable.render(ccrs, t, ortho)
     }
 
     @SideOnly(Side.CLIENT)
-    override def getPartName = (if (colour != -1) Colors(colour&0xFF).name+" " else "")+"Bundled cable"
+    override def getPartName = (if (colour != -1) EnumColour.values()(colour&0xFF).name+" " else "")+"Bundled cable"
 
     @SideOnly(Side.CLIENT)
     override def getPickOp = CircuitOpDefs.values(CircuitOpDefs.NeutralBundledCable.ordinal+colour+1).getOp
@@ -198,7 +199,7 @@ class BundledCableICPart extends WireICPart with TICBundledAcquisitions with IBu
     {
         val data = Seq.newBuilder[String]
 
-        import net.minecraft.util.EnumChatFormatting._
+        import com.mojang.realmsclient.gui.ChatFormatting._
         val sig = packDigital(signal)
         if (detailLevel >= 3) data += GRAY+"signal: 0x"+Integer.toHexString(sig)
         else if (detailLevel >= 2) data += GRAY+"state: "+(if (sig != 0) "active" else "inactive")

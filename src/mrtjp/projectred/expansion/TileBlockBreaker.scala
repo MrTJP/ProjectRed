@@ -85,7 +85,7 @@ object RenderBlockBreaker extends SimpleBlockRenderer
         createTriple(side, rotation, if (active || powered) iconT2 else iconT1)
     }
 
-    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT1)
+    override def getItemTransforms(stack:ItemStack) = createTriple(0, 0, iconT1)
 
     override def shouldCull() = true
 

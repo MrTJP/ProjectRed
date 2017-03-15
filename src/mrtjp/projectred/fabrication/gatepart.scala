@@ -6,11 +6,13 @@
 package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import com.mojang.realmsclient.gui.ChatFormatting
 import mrtjp.core.util.Enum
 import mrtjp.projectred.integration.GateDefinition.GateDef
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOrient with IGuiCircuitPart
 {
@@ -202,9 +204,9 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(t:Transformation, ortho:Boolean, frame:Float)
+    override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
     {
-        RenderICGate.renderDynamic(this, t, ortho, frame)
+        RenderICGate.renderDynamic(ccrs, this, t, ortho, frame)
     }
 
     @SideOnly(Side.CLIENT)
@@ -214,9 +216,8 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
     override def getRolloverData(detailLevel:Int) =
     {
         val s = Seq.newBuilder[String]
-        import net.minecraft.util.EnumChatFormatting._
         s ++= getLogicPrimitive.getRolloverData(this, detailLevel)
-        super.getRolloverData(detailLevel)++s.result().map(GRAY+_)
+        super.getRolloverData(detailLevel) ++ s.result().map(ChatFormatting.GRAY + _)
     }
 
     @SideOnly(Side.CLIENT)

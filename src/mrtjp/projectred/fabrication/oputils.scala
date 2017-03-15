@@ -6,13 +6,13 @@
 package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.gui.GuiDraw
-import codechicken.lib.render.uv.{UVScale, UVTranslation, IconTransformation}
+import codechicken.lib.render.CCRenderState
+import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.Translation
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import codechicken.lib.vec.uv.{UVScale, UVTranslation}
 import mrtjp.core.vec.Point
-import mrtjp.projectred.core.libmc.PRResources
 import mrtjp.projectred.fabrication.ICComponentStore._
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class CircuitOpErase extends CircuitOp
 {
@@ -35,25 +35,25 @@ class CircuitOpErase extends CircuitOp
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderImage(x:Double, y:Double, width:Double, height:Double)
+    override def renderImage(ccrs:CCRenderState, x:Double, y:Double, width:Double, height:Double)
     {
         val t = orthoGridT(width, height) `with` new Translation(x, y, 0)
 
-        prepairRender()
-        PRResources.guiPrototyper.bind()
-        faceModels(dynamicIdx(0, true)).render(t, new UVScale(16) `with` new UVTranslation(330, 18) `with` new UVScale(1/512D))
-        finishRender()
+        prepairRender(ccrs)
+        TextureUtils.changeTexture(GuiICWorkbench.background)
+        faceModels(dynamicIdx(0, true)).render(ccrs, t, new UVScale(16) `with` new UVTranslation(330, 18) `with` new UVScale(1/512D))
+        finishRender(ccrs)
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderHover(circuit:IntegratedCircuit, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderHover(ccrs:CCRenderState, circuit:IntegratedCircuit, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
         if (circuit.getPart(point) != null)
             CircuitOp.renderHolo(x, y, xSize, ySize, circuit.size, point, 0x33FF0000)
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDrag(circuit:IntegratedCircuit, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderDrag(ccrs:CCRenderState, circuit:IntegratedCircuit, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
         for (px <- math.min(start.x, end.x) to math.max(start.x, end.x))
             for (py <- math.min(start.y, end.y) to math.max(start.y, end.y))

@@ -5,10 +5,10 @@
  */
 package mrtjp.projectred.fabrication
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 trait IIOCircuitPart
 {
@@ -341,7 +341,7 @@ class BundledIOICGateLogic(gate:IOGateICPart) extends IOICGateLogic(gate) with T
 {
     override def getConnMode(gate:IOGateICPart) = IIOCircuitPart.Bundled
 
-    override def getFreqName = Colors(freq).name.toLowerCase
+    override def getFreqName = EnumColour.values()(freq).name.toLowerCase
 
     override def toggleWorldInput()
     {

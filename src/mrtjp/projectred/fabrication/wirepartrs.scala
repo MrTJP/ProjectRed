@@ -5,11 +5,12 @@
  */
 package mrtjp.projectred.fabrication
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 trait IRedwireICPart extends IWireICPart with IICRedwireEmitter
 
@@ -110,7 +111,7 @@ abstract class RedwireICPart extends WireICPart with TICRSAcquisitions with TRSP
     {
         val data = Seq.newBuilder[String]
 
-        import net.minecraft.util.EnumChatFormatting._
+        import com.mojang.realmsclient.gui.ChatFormatting._
         if (detailLevel >= 3) data += GRAY+"signal: 0x"+Integer.toHexString(signal&0xFF)
         else if (detailLevel >= 2) data += GRAY+"state: "+(if (signal != 0) "high" else "low")
 
@@ -123,10 +124,10 @@ class AlloyWireICPart extends RedwireICPart
     override def getPartType = CircuitPartDefs.AlloyWire
 
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(t:Transformation, ortho:Boolean, frame:Float)
+    override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
     {
         RenderICAlloyWire.prepairDynamic(this)
-        RenderICAlloyWire.render(t, ortho)
+        RenderICAlloyWire.render(ccrs, t, ortho)
     }
 
     @SideOnly(Side.CLIENT)
@@ -182,14 +183,14 @@ class InsulatedWireICPart extends RedwireICPart with IInsulatedRedwireICPart
     override def getInsulatedColour = colour
 
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(t:Transformation, ortho:Boolean, frame:Float)
+    override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
     {
         RenderICInsulatedWire.prepairDynamic(this)
-        RenderICInsulatedWire.render(t, ortho)
+        RenderICInsulatedWire.render(ccrs, t, ortho)
     }
 
     @SideOnly(Side.CLIENT)
-    override def getPartName = Colors(colour&0xFF).name+" Insulated wire"
+    override def getPartName = EnumColour.values()(colour&0xFF).name+" Insulated wire"
 
     @SideOnly(Side.CLIENT)
     override def getPickOp =

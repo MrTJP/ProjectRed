@@ -5,13 +5,14 @@
  */
 package mrtjp.projectred.fabrication
 
+import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.{Transformation, Translation}
-import cpw.mods.fml.relauncher.{Side, SideOnly}
-import mrtjp.core.color.Colors
 import mrtjp.core.vec.Point
 import mrtjp.projectred.fabrication.CircuitOp._
 import mrtjp.projectred.fabrication.ICComponentStore._
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 
 abstract class OpWire extends CircuitOp
@@ -41,7 +42,7 @@ abstract class OpWire extends CircuitOp
     def createPart:CircuitPart
 
     @SideOnly(Side.CLIENT)
-    override def renderHover(circuit:IntegratedCircuit, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderHover(ccrs:CCRenderState, circuit:IntegratedCircuit, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
         if (circuit.getPart(point) != null) return
 
@@ -49,11 +50,11 @@ abstract class OpWire extends CircuitOp
             if (isOnBorder(circuit.size, point)) 0x33FF0000 else 0x33FFFFFF)
 
         val t = orthoPartT(x, y, xSize, ySize, circuit.size, point.x, point.y)
-        doRender(t, 0)
+        doRender(ccrs, t, 0)
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDrag(circuit:IntegratedCircuit, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderDrag(ccrs:CCRenderState, circuit:IntegratedCircuit, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
         if (circuit.getPart(start) != null) return
 
@@ -78,22 +79,22 @@ abstract class OpWire extends CircuitOp
                     if (px == start.x && end2.x < start.x) m |= 8
                     if (py == start.y && end2.y > start.y) m |= 4
                     if (py == start.y && end2.y < start.y) m |= 1
-                    doRender(t, m)
+                    doRender(ccrs, t, m)
                 }
             }
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderImage(x:Double, y:Double, width:Double, height:Double)
+    override def renderImage(ccrs:CCRenderState, x:Double, y:Double, width:Double, height:Double)
     {
         val t = orthoGridT(width, height) `with` new Translation(x, y, 0)
-        doInvRender(t)
+        doInvRender(ccrs, t)
     }
 
     @SideOnly(Side.CLIENT)
-    def doRender(t:Transformation, conn:Int)
+    def doRender(ccrs:CCRenderState, t:Transformation, conn:Int)
     @SideOnly(Side.CLIENT)
-    def doInvRender(t:Transformation)
+    def doInvRender(ccrs:CCRenderState, t:Transformation)
 }
 
 class OpAlloyWire extends OpWire
@@ -101,19 +102,19 @@ class OpAlloyWire extends OpWire
     override def createPart = CircuitPartDefs.AlloyWire.createPart
 
     @SideOnly(Side.CLIENT)
-    override def doRender(t:Transformation, conn:Int)
+    override def doRender(ccrs:CCRenderState, t:Transformation, conn:Int)
     {
         val r = RenderICAlloyWire
         r.connMap = conn.toByte
         r.signal = 255.toByte
-        r.render(t, true)
+        r.render(ccrs, t, true)
     }
 
     @SideOnly(Side.CLIENT)
-    override def doInvRender(t:Transformation)
+    override def doInvRender(ccrs:CCRenderState, t:Transformation)
     {
         RenderICAlloyWire.prepairInv()
-        RenderICAlloyWire.render(t, true)
+        RenderICAlloyWire.render(ccrs, t, true)
     }
 
     @SideOnly(Side.CLIENT)
@@ -130,24 +131,24 @@ class OpInsulatedWire(colour:Int) extends OpWire
     }
 
     @SideOnly(Side.CLIENT)
-    override def doRender(t:Transformation, conn:Int)
+    override def doRender(ccrs:CCRenderState, t:Transformation, conn:Int)
     {
         val r = RenderICInsulatedWire
         r.connMap = conn.toByte
         r.signal = 255.toByte
         r.colour = colour.toByte
-        r.render(t, true)
+        r.render(ccrs, t, true)
     }
 
     @SideOnly(Side.CLIENT)
-    override def doInvRender(t:Transformation)
+    override def doInvRender(ccrs:CCRenderState, t:Transformation)
     {
         RenderICInsulatedWire.prepairInv(colour)
-        RenderICInsulatedWire.render(t, true)
+        RenderICInsulatedWire.render(ccrs, t, true)
     }
 
     @SideOnly(Side.CLIENT)
-    override def getOpName = Colors(colour&0xFF).name+" Insulated wire"
+    override def getOpName = EnumColour.values()(colour&0xFF).name+" Insulated wire"
 }
 
 class OpBundledCable(colour:Int) extends OpWire
@@ -160,21 +161,21 @@ class OpBundledCable(colour:Int) extends OpWire
     }
 
     @SideOnly(Side.CLIENT)
-    override def doRender(t:Transformation, conn:Int)
+    override def doRender(ccrs:CCRenderState, t:Transformation, conn:Int)
     {
         val r = RenderICBundledCable
         r.connMap = conn.toByte
         r.colour = colour.toByte
-        r.render(t, true)
+        r.render(ccrs, t, true)
     }
 
     @SideOnly(Side.CLIENT)
-    override def doInvRender(t:Transformation)
+    override def doInvRender(ccrs:CCRenderState, t:Transformation)
     {
         RenderICBundledCable.prepairInv(colour)
-        RenderICBundledCable.render(t, true)
+        RenderICBundledCable.render(ccrs, t, true)
     }
 
     @SideOnly(Side.CLIENT)
-    override def getOpName = (if (colour != -1) Colors(colour&0xFF).name+" " else "")+"Bundled cable"
+    override def getOpName = (if (colour != -1) EnumColour.values()(colour&0xFF).name+" " else "")+"Bundled cable"
 }

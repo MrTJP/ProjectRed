@@ -5,11 +5,12 @@
  */
 package mrtjp.projectred.fabrication
 
-import codechicken.lib.data.{MCDataOutput, MCDataInput}
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
-import cpw.mods.fml.relauncher.{Side, SideOnly}
+import com.mojang.realmsclient.gui.ChatFormatting
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumChatFormatting
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class LeverICPart extends CircuitPart with TICAcquisitions with IPoweredCircuitPart with TClientNetCircuitPart
 {
@@ -89,24 +90,24 @@ class LeverICPart extends CircuitPart with TICAcquisitions with IPoweredCircuitP
     override def getRolloverData(detailLevel:Int) =
     {
         val b = Seq.newBuilder[String]
-        if (detailLevel > 1) b += EnumChatFormatting.GRAY+"state: "+(if (on) "on" else "off")
+        if (detailLevel > 1) b += ChatFormatting.GRAY+"state: "+(if (on) "on" else "off")
         super.getRolloverData(detailLevel)++b.result()
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(t:Transformation, ortho:Boolean, frame:Float) =
+    override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float) =
     {
         RenderICLever.prepairDynamic(this)
-        RenderICLever.render(t, ortho)
+        RenderICLever.render(ccrs, t, ortho)
     }
 }
 
 class CircuitOpLever extends SimplePlacementOp
 {
-    override def doPartRender(t:Transformation)
+    override def doPartRender(ccrs:CCRenderState, t:Transformation)
     {
         RenderICLever.prepairInv()
-        RenderICLever.render(t, true)
+        RenderICLever.render(ccrs, t, true)
     }
 
     override def createPart = CircuitPartDefs.Lever.createPart
