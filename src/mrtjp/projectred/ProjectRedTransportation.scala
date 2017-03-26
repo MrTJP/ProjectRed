@@ -6,7 +6,7 @@ import net.minecraft.creativetab.CreativeTabs
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStoppingEvent}
 
-@Mod(modid = "projectred-tansportation", useMetadata = true, modLanguage = "scala")
+@Mod(modid = "projectred-transportation", useMetadata = true, modLanguage = "scala")
 object ProjectRedTransportation
 {
     ProjectRedAPI.transportationAPI = new APIImpl_Transportation
