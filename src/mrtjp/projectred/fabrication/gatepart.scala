@@ -10,17 +10,18 @@ import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
 import com.mojang.realmsclient.gui.ChatFormatting
 import mrtjp.core.util.Enum
+import mrtjp.core.vec.Point
 import mrtjp.projectred.integration.GateDefinition.GateDef
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOrient with IGuiCircuitPart
+abstract class GateICPart extends ICTile with TConnectableICPart with TICOrient with IGuiICTile with ISEGateTile
 {
     private var gateSubID:Byte = 0
     private var gateShape:Byte = 0
 
-    var schedTime = 0L
-    var schedDigital = false
+//    var schedTime = 0L
+//    var schedDigital = false
 
     def getLogic[T]:T
     def getLogicPrimitive = getLogic[ICGateLogic[GateICPart]]
@@ -42,7 +43,7 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
         tag.setByte("subID", gateSubID)
         tag.setByte("shape", gateShape)
         tag.setByte("connMap", connMap)
-        tag.setLong("schedTime", schedTime)
+//        tag.setLong("schedTime", schedTime)
     }
 
     override def load(tag:NBTTagCompound)
@@ -51,7 +52,7 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
         gateSubID = tag.getByte("subID")
         gateShape = tag.getByte("shape")
         connMap = tag.getByte("connMap")
-        schedTime = tag.getLong("schedTime")
+//        schedTime = tag.getLong("schedTime")
     }
 
     override def writeDesc(out:MCDataOutput)
@@ -88,87 +89,87 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
         case _ =>
     }
 
-    override def canConnectPart(part:CircuitPart, r:Int) =
+    override def canConnectPart(part:ICTile, r:Int) =
         getLogicPrimitive.canConnectTo(this, part, toInternal(r))
 
-    override def scheduledTick()
-    {
-        getLogicPrimitive.scheduledTick(this)
-    }
+//    override def scheduledTick()
+//    {
+//        getLogicPrimitive.scheduledTick(this)
+//    }
 
-    override def scheduleTick(ticks:Int)
-    {
-        if (ticks == 0) scheduleDigitalTick()
-        else if (schedTime < 0) schedTime = world.network.getWorld.getTotalWorldTime+ticks
-    }
+//    override def scheduleTick(ticks:Int)
+//    {
+//        if (ticks == 0) scheduleDigitalTick()
+//        else if (schedTime < 0) schedTime = world.network.getWorld.getTotalWorldTime+ticks
+//    }
 
-    def processScheduled()
-    {
-        if (schedTime >= 0 && world.network.getWorld.getTotalWorldTime >= schedTime)
-        {
-            schedTime = -1
-            scheduledTick()
-        }
-    }
+//    def processScheduled()
+//    {
+//        if (schedTime >= 0 && world.network.getWorld.getTotalWorldTime >= schedTime)
+//        {
+//            schedTime = -1
+//            scheduledTick()
+//        }
+//    }
+//
+//    def scheduleDigitalTick()
+//    {
+//        schedDigital = true
+//    }
 
-    def scheduleDigitalTick()
-    {
-        schedDigital = true
-    }
+//    var iter = 0
+//    def processScheduledDigital()
+//    {
+//        while(schedDigital && iter < 3) //recursion control
+//        {
+//            schedDigital = false
+//            iter += 1
+//            scheduledTick()
+//        }
+//    }
 
-    var iter = 0
-    def processScheduledDigital()
+    def onSchematicChanged()
     {
-        while(schedDigital && iter < 3) //recursion control
-        {
-            schedDigital = false
-            iter += 1
-            scheduledTick()
-        }
-    }
-
-    def onChange()
-    {
-        processScheduled()
-        getLogicPrimitive.onChange(this)
-        processScheduledDigital()
+//        processScheduled()
+//        getLogicPrimitive.onChange(this)
+//        processScheduledDigital()
+        editor.markSchematicChanged()
     }
 
     override def update()
     {
-        if (!world.network.isRemote)
-        {
-            processScheduled()
-            iter = 0
-            processScheduledDigital()
-        }
+//        if (!world.network.isRemote)
+//        {
+//            processScheduled()
+//            iter = 0
+//            processScheduledDigital()
+//        }
         getLogicPrimitive.onTick(this)
     }
 
     override def onNeighborChanged()
     {
-        if (!world.network.isRemote)
-        {
-            updateConns()
-            onChange()
+        if (!editor.network.isRemote) {
+            if (updateConns())
+                onSchematicChanged()
         }
     }
 
     override def onAdded()
     {
         super.onAdded()
-        if (!world.network.isRemote)
-        {
-            getLogicPrimitive.setup(this)
+        if (!editor.network.isRemote) {
+//            getLogicPrimitive.setup(this)
             updateConns()
-            onChange()
         }
     }
 
     override def onRemoved()
     {
         super.onRemoved()
-        if (!world.network.isRemote) notify(0xF)
+        if (!editor.network.isRemote) {
+            notify(0xF)
+        }
     }
 
     def configure()
@@ -176,10 +177,10 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
         if (getLogicPrimitive.cycleShape(this))
         {
             updateConns()
-            world.network.markSave()
+            editor.network.markSave()
             sendShapeUpdate()
             notify(0xF)
-            onChange()
+            onSchematicChanged()
         }
     }
 
@@ -187,10 +188,10 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
     {
         setRotation((rotation+1)%4)
         updateConns()
-        world.network.markSave()
+        editor.network.markSave()
         sendOrientUpdate()
         notify(0xF)
-        onChange()
+        onSchematicChanged()
     }
 
     def sendShapeUpdate()
@@ -201,6 +202,27 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
     def sendOrientUpdate()
     {
         writeStreamOf(1).writeByte(orientation)
+    }
+
+    override def buildImplicitWireNet(r:Int) = null //TODO
+
+    override def allocateOrFindRegisters(linker:ISELinker)
+    {
+        getLogicPrimitive.allocateOrFindRegisters(this, linker)
+    }
+
+    def getInputRegister(r:Int, linker:ISELinker):Int =  linker.findInputRegister(Point(x, y), toAbsolute(r))
+
+    def getOutputRegister(r:Int, linker:ISELinker):Int =  linker.findOutputRegister(Point(x, y), toAbsolute(r))
+
+    override def declareOperations(linker:ISELinker)
+    {
+        getLogicPrimitive.declareOperations(this, linker)
+    }
+
+    override def onRegistersChanged(regIDs:Set[Int])
+    {
+        getLogicPrimitive.onRegistersChanged(this, regIDs)
     }
 
     @SideOnly(Side.CLIENT)
@@ -236,19 +258,25 @@ abstract class GateICPart extends CircuitPart with TConnectableICPart with TICOr
 
 abstract class ICGateLogic[T <: GateICPart]
 {
-    def canConnectTo(gate:T, part:CircuitPart, r:Int):Boolean
+    def canConnectTo(gate:T, part:ICTile, r:Int):Boolean
 
     def cycleShape(gate:T) = false
 
-    def onChange(gate:T)
+//    def onChange(gate:T)
 
-    def scheduledTick(gate:T)
+//    def scheduledTick(gate:T)
 
     def onTick(gate:T){}
 
-    def setup(gate:T){}
+//    def setup(gate:T){}
 
     def activate(gate:T){}
+
+    def allocateOrFindRegisters(gate:T, linker:ISELinker)
+
+    def declareOperations(gate:T, linker:ISELinker)
+
+    def onRegistersChanged(gate:T, regIDs:Set[Int]){}
 
     @SideOnly(Side.CLIENT)
     def getRolloverData(gate:T, detailLevel:Int):Seq[String] = Seq.empty
@@ -324,34 +352,34 @@ object ICGateDefinition extends Enum
 
     import mrtjp.projectred.integration.{GateDefinition => gd}
 
-    val IOSimple = ICGateDef("Simple IO", CircuitPartDefs.IOGate.id)
-    val IOAnalog = ICGateDef("Analog IO", CircuitPartDefs.IOGate.id)
-    val IOBundled = ICGateDef("Bundled IO", CircuitPartDefs.IOGate.id)
+    val IOSimple = ICGateDef("Simple IO", ICTileDefs.IOGate.id)
+    val IOAnalog = ICGateDef("Analog IO", ICTileDefs.IOGate.id)
+    val IOBundled = ICGateDef("Bundled IO", ICTileDefs.IOGate.id)
 
-    val OR = ICGateDef("OR gate", CircuitPartDefs.SimpleGate.id, gd.OR)
-    val NOR = ICGateDef("NOR gate", CircuitPartDefs.SimpleGate.id, gd.NOR)
-    val NOT = ICGateDef("NOT gate", CircuitPartDefs.SimpleGate.id, gd.NOT)
-    val AND = ICGateDef("AND gate", CircuitPartDefs.SimpleGate.id, gd.AND)
-    val NAND = ICGateDef("NAND gate", CircuitPartDefs.SimpleGate.id, gd.NAND)
-    val XOR = ICGateDef("XOR gate", CircuitPartDefs.SimpleGate.id, gd.XOR)
-    val XNOR = ICGateDef("XNOR gate", CircuitPartDefs.SimpleGate.id, gd.XNOR)
-    val Buffer = ICGateDef("Buffer gate", CircuitPartDefs.SimpleGate.id, gd.Buffer)
-    val Multiplexer = ICGateDef("Multiplexer", CircuitPartDefs.SimpleGate.id, gd.Multiplexer)
-    val Pulse = ICGateDef("Pulse Former", CircuitPartDefs.SimpleGate.id, gd.Pulse)
-    val Repeater = ICGateDef("Repeater", CircuitPartDefs.SimpleGate.id, gd.Repeater)
-    val Randomizer = ICGateDef("Randomizer", CircuitPartDefs.SimpleGate.id, gd.Randomizer)
-    val SRLatch = ICGateDef("SR Latch", CircuitPartDefs.ComplexGate.id, gd.SRLatch)
-    val ToggleLatch = ICGateDef("Toggle Latch", CircuitPartDefs.ComplexGate.id, gd.ToggleLatch)
-    val TransparentLatch = ICGateDef("Transparent Latch", CircuitPartDefs.SimpleGate.id, gd.TransparentLatch)
-    val Timer = ICGateDef("Timer", CircuitPartDefs.ComplexGate.id, gd.Timer)
-    val Sequencer = ICGateDef("Sequencer", CircuitPartDefs.ComplexGate.id, gd.Sequencer)
-    val Counter = ICGateDef("Counter", CircuitPartDefs.ComplexGate.id, gd.Counter)
-    val StateCell = ICGateDef("State Cell", CircuitPartDefs.ComplexGate.id, gd.StateCell)
-    val Synchronizer = ICGateDef("Synchronizer", CircuitPartDefs.ComplexGate.id, gd.Synchronizer)
-    val DecRandomizer = ICGateDef("Dec Randomizer", CircuitPartDefs.SimpleGate.id, gd.DecRandomizer)
-    val NullCell = ICGateDef("Null Cell", CircuitPartDefs.ArrayGate.id, gd.NullCell)
-    val InvertCell = ICGateDef("Invert Cell", CircuitPartDefs.ArrayGate.id, gd.InvertCell)
-    val BufferCell = ICGateDef("Buffer Cell", CircuitPartDefs.ArrayGate.id, gd.BufferCell)
+    val OR = ICGateDef("OR gate", ICTileDefs.SimpleGate.id, gd.OR)
+    val NOR = ICGateDef("NOR gate", ICTileDefs.SimpleGate.id, gd.NOR)
+    val NOT = ICGateDef("NOT gate", ICTileDefs.SimpleGate.id, gd.NOT)
+    val AND = ICGateDef("AND gate", ICTileDefs.SimpleGate.id, gd.AND)
+    val NAND = ICGateDef("NAND gate", ICTileDefs.SimpleGate.id, gd.NAND)
+//    val XOR = ICGateDef("XOR gate", CircuitPartDefs.SimpleGate.id, gd.XOR)
+//    val XNOR = ICGateDef("XNOR gate", CircuitPartDefs.SimpleGate.id, gd.XNOR)
+//    val Buffer = ICGateDef("Buffer gate", CircuitPartDefs.SimpleGate.id, gd.Buffer)
+//    val Multiplexer = ICGateDef("Multiplexer", CircuitPartDefs.SimpleGate.id, gd.Multiplexer)
+//    val Pulse = ICGateDef("Pulse Former", CircuitPartDefs.SimpleGate.id, gd.Pulse)
+//    val Repeater = ICGateDef("Repeater", CircuitPartDefs.SimpleGate.id, gd.Repeater)
+//    val Randomizer = ICGateDef("Randomizer", CircuitPartDefs.SimpleGate.id, gd.Randomizer)
+//    val SRLatch = ICGateDef("SR Latch", CircuitPartDefs.ComplexGate.id, gd.SRLatch)
+//    val ToggleLatch = ICGateDef("Toggle Latch", CircuitPartDefs.ComplexGate.id, gd.ToggleLatch)
+//    val TransparentLatch = ICGateDef("Transparent Latch", CircuitPartDefs.SimpleGate.id, gd.TransparentLatch)
+//    val Timer = ICGateDef("Timer", CircuitPartDefs.ComplexGate.id, gd.Timer)
+//    val Sequencer = ICGateDef("Sequencer", CircuitPartDefs.ComplexGate.id, gd.Sequencer)
+//    val Counter = ICGateDef("Counter", CircuitPartDefs.ComplexGate.id, gd.Counter)
+//    val StateCell = ICGateDef("State Cell", CircuitPartDefs.ComplexGate.id, gd.StateCell)
+//    val Synchronizer = ICGateDef("Synchronizer", CircuitPartDefs.ComplexGate.id, gd.Synchronizer)
+//    val DecRandomizer = ICGateDef("Dec Randomizer", CircuitPartDefs.SimpleGate.id, gd.DecRandomizer)
+//    val NullCell = ICGateDef("Null Cell", CircuitPartDefs.ArrayGate.id, gd.NullCell)
+//    val InvertCell = ICGateDef("Invert Cell", CircuitPartDefs.ArrayGate.id, gd.InvertCell)
+//    val BufferCell = ICGateDef("Buffer Cell", CircuitPartDefs.ArrayGate.id, gd.BufferCell)
 
     case class ICGateDef(unlocal:String, gateType:Int, intDef:GateDef = null) extends Value
     {

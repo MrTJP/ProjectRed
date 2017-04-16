@@ -9,11 +9,14 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
 import com.mojang.realmsclient.gui.ChatFormatting
+import mrtjp.core.vec.Point
+import mrtjp.projectred.fabrication.SEIntegratedCircuit.REG_ZERO
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class LeverICPart extends CircuitPart with TICAcquisitions with IPoweredCircuitPart with TClientNetCircuitPart
+class LeverICPart extends ICTile with TICAcquisitions with IRedwireICGate with ISEGateTile with TClientNetICTile
 {
+    val outputRegs = Array(REG_ZERO, REG_ZERO, REG_ZERO, REG_ZERO)
     var on = false
 
     override def save(tag:NBTTagCompound)
@@ -49,7 +52,8 @@ class LeverICPart extends CircuitPart with TICAcquisitions with IPoweredCircuitP
     override def readClientPacket(in:MCDataInput)
     {
         on = !on
-        notify(0xF)
+        pushToRegisters()
+//        notify(0xF) //we dont need to do this no mo
         sendStateUpdate()
     }
 
@@ -58,20 +62,44 @@ class LeverICPart extends CircuitPart with TICAcquisitions with IPoweredCircuitP
         writeStreamOf(1).writeBoolean(on)
     }
 
-    override def getPartType = CircuitPartDefs.Lever
+    override def getPartType = ICTileDefs.Lever
 
     override def onAdded()
     {
-        if (!world.network.isRemote) notify(0xF)
+        if (!editor.network.isRemote) notify(0xF)
     }
 
     override def onRemoved()
     {
-        if (!world.network.isRemote) notify(0xF)
+        if (!editor.network.isRemote) notify(0xF)
     }
 
-    override def rsOutputLevel(r:Int) = if (on) 255 else 0
-    override def canConnectRS(r:Int) = true
+//    override def rsOutputLevel(r:Int) = if (on) 255 else 0
+//    override def canConnectRS(r:Int) = true
+
+    def pushToRegisters()
+    {
+        for (r <- 0 until 4)
+            editor.simEngineContainer.simEngine.queueRegVal[Byte](outputRegs(r), if (on) 1 else 0)
+        editor.simEngineContainer.simEngine.repropagate()
+    }
+
+    override def onRegistersChanged(regIDs:Set[Int]){} //we dont care if other registers change
+
+    override def canOutputTo(r:Int) = true
+
+    override def canInputFrom(r:Int) = false //this is output only 'gate'
+
+    override def buildImplicitWireNet(r:Int):IWireNet = null //TODO
+
+    override def allocateOrFindRegisters(linker:ISELinker)
+    {
+        val pos = new Point(x, y)
+        for (r <- 0 until 4)
+            outputRegs(r) = linker.findOutputRegister(pos, r)
+    }
+
+    override def declareOperations(linker:ISELinker){} //no gate op, we simply write to output registers directly
 
     @SideOnly(Side.CLIENT)
     override def onClicked()
@@ -110,7 +138,7 @@ class CircuitOpLever extends SimplePlacementOp
         RenderICLever.render(ccrs, t, true)
     }
 
-    override def createPart = CircuitPartDefs.Lever.createPart
+    override def createPart = ICTileDefs.Lever.createPart
 
     @SideOnly(Side.CLIENT)
     override def getOpName = "Lever"

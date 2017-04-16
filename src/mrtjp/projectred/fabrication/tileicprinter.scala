@@ -451,13 +451,13 @@ object TileICPrinter
 
                     case s:ShapedOreRecipe => s.getInput.toSeq.flatMap {
                         case s:ItemStack => Seq(s)
-                        case a:JAList[ItemStack] => a.toSeq
+                        case a:JAList[_] => a.toSeq.asInstanceOf[Seq[ItemStack]]
                         case _ => Seq.empty
                     }.map(ItemKey.get)
 
                     case s:ShapelessOreRecipe => s.getInput.toSeq.flatMap {
                         case s:ItemStack => Seq(s)
-                        case a:JAList[ItemStack] => a.toSeq
+                        case a:JAList[_] => a.toSeq.asInstanceOf[Seq[ItemStack]]
                         case _ => Seq.empty
                     }.map(ItemKey.get)
 
@@ -484,7 +484,7 @@ object TileICPrinter
         gRec(key)
     }
 
-    def resolveResources(ic:IntegratedCircuit) =
+    def resolveResources(ic:ICTileMapEditor) =
     {
         val map = MMap[ItemKey, Double]()
 
@@ -502,9 +502,9 @@ object TileICPrinter
 
         import mrtjp.projectred.fabrication.{ICGateDefinition => gd}
 
-        for (part <- ic.parts.values) part match
+        for (part <- ic.tileMapContainer.tiles.values) part match
         {
-            case p:TorchICPart => add(new ItemStack(Blocks.REDSTONE_TORCH), 0.25)
+//            case p:TorchICPart => add(new ItemStack(Blocks.REDSTONE_TORCH), 0.25)
             case p:LeverICPart => add(new ItemStack(Blocks.LEVER), 0.25)
             case p:ButtonICPart => add(new ItemStack(Blocks.STONE_BUTTON), 0.25)
             case p:AlloyWireICPart => add(WireDef.RED_ALLOY.makeStack, 0.25)

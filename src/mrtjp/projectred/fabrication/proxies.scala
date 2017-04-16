@@ -82,7 +82,7 @@ class FabricationProxy_server extends IProxy with IPartFactory
       */
     override def createPart(name:String, client:Boolean) = name match
     {
-        case "pr_icgate" => new CircuitGatePart
+//        case "pr_icgate" => new CircuitGatePart
         case _ => null
     }
 }
@@ -127,7 +127,7 @@ class FabricationProxy_client extends FabricationProxy_server
         GuiHandler.register(GuiICWorkbench, icWorkbenchGui)
         GuiHandler.register(GuiICPrinter, icPrinterGui)
 
-        RenderGate.hotswap(new RenderCircuitGate, GateDefinition.ICGate.ordinal)
+//        RenderGate.hotswap(new RenderCircuitGate, GateDefinition.ICGate.ordinal) //TODO
     }
 
     @SideOnly(Side.CLIENT)

@@ -5,17 +5,19 @@
  */
 package mrtjp.projectred.fabrication
 
-import java.util.Random
-
-import mrtjp.projectred.core.TFaceOrient
+import mrtjp.projectred.fabrication.SEIntegratedCircuit._
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+
 
 class ComboGateICPart extends RedstoneGateICPart
 {
+    val inputRegs = Array(-1, -1, -1, -1)
+    val outputRegs = Array(-1, -1, -1, -1)
+
     override def getLogic[T] = ComboICGateLogic.instances(subID).asInstanceOf[T]
     def getLogicCombo = getLogic[ComboICGateLogic]
 
-    override def getPartType = CircuitPartDefs.SimpleGate
+    override def getPartType = ICTileDefs.SimpleGate
 }
 
 object ComboICGateLogic
@@ -33,15 +35,15 @@ object ComboICGateLogic
         instances(defs.NOT.ordinal) = NOT
         instances(defs.AND.ordinal) = AND
         instances(defs.NAND.ordinal) = NAND
-        instances(defs.XOR.ordinal) = XOR
-        instances(defs.XNOR.ordinal) = XNOR
-        instances(defs.Buffer.ordinal) = Buffer
-        instances(defs.Multiplexer.ordinal) = Multiplexer
-        instances(defs.Pulse.ordinal) = Pulse
-        instances(defs.Repeater.ordinal) = Repeater
-        instances(defs.Randomizer.ordinal) = Randomizer
-        instances(defs.TransparentLatch.ordinal) = TransparentLatch
-        instances(defs.DecRandomizer.ordinal) = DecRandomizer
+//        instances(defs.XOR.ordinal) = XOR
+//        instances(defs.XNOR.ordinal) = XNOR
+//        instances(defs.Buffer.ordinal) = Buffer
+//        instances(defs.Multiplexer.ordinal) = Multiplexer
+//        instances(defs.Pulse.ordinal) = Pulse
+//        instances(defs.Repeater.ordinal) = Repeater
+//        instances(defs.Randomizer.ordinal) = Randomizer
+//        instances(defs.TransparentLatch.ordinal) = TransparentLatch
+//        instances(defs.DecRandomizer.ordinal) = DecRandomizer
     }
 }
 
@@ -49,52 +51,51 @@ trait TSimpleRSICGateLogic[T <: RedstoneGateICPart] extends RedstoneICGateLogic[
 {
     def getDelay(shape:Int) = 0
 
-    def feedbackMask(shape:Int) = 0
+//    def feedbackMask(shape:Int) = 0
 
-    def calcOutput(gate:T, input:Int) = 0
 
-    override def onChange(gate:T)
-    {
-        val iMask = inputMask(gate.shape)
-        val oMask = outputMask(gate.shape)
-        val fMask = feedbackMask(gate.shape)
-        val oldInput = gate.state&0xF
-        val newInput = getInput(gate, iMask|fMask)
-        if (oldInput != newInput)
-        {
-            gate.setState(gate.state&0xF0|newInput)
-            gate.onInputChange()
-        }
+//    override def onChange(gate:T) //means gate has rotate or settings changed or neighbor changed
+//    {
+//        val iMask = inputMask(gate.shape)
+//        val oMask = outputMask(gate.shape)
+////        val fMask = feedbackMask(gate.shape)
+//        val oldInput = gate.state&0xF
+//        val newInput = getInput(gate, iMask)
+//        if (oldInput != newInput)
+//        {
+//            gate.setState(gate.state&0xF0|newInput)
+//            gate.onInputChange()
+//        }
+//
+//        val newOutput = calcOutput(gate, gate.state&iMask)&oMask
+//        if (newOutput != (gate.state>>4)) gate.scheduleTick(getDelay(gate.shape))
+//    }
 
-        val newOutput = calcOutput(gate, gate.state&iMask)&oMask
-        if (newOutput != (gate.state>>4)) gate.scheduleTick(getDelay(gate.shape))
-    }
+//    override def scheduledTick(gate:T)
+//    {
+//        val iMask = inputMask(gate.shape)
+//        val oMask = outputMask(gate.shape)
+//        val oldOutput = gate.state>>4
+//        val newOutput = calcOutput(gate, gate.state&iMask)&oMask
+//        if (oldOutput != newOutput)
+//        {
+//            gate.setState(gate.state&0xF|newOutput<<4)
+//            gate.onOutputChange(oMask)
+//        }
+//        onChange(gate)
+//    }
 
-    override def scheduledTick(gate:T)
-    {
-        val iMask = inputMask(gate.shape)
-        val oMask = outputMask(gate.shape)
-        val oldOutput = gate.state>>4
-        val newOutput = calcOutput(gate, gate.state&iMask)&oMask
-        if (oldOutput != newOutput)
-        {
-            gate.setState(gate.state&0xF|newOutput<<4)
-            gate.onOutputChange(oMask)
-        }
-        onChange(gate)
-    }
-
-    override def setup(gate:T)
-    {
-        val iMask = inputMask(gate.shape)
-        val oMask = outputMask(gate.shape)
-        val output = calcOutput(gate, getInput(gate, iMask))&oMask
-        if (output != 0)
-        {
-            gate.setState(output<<4)
-            gate.onOutputChange(output) //use output for change mask because nothing is going low
-        }
-    }
+//    override def setup(gate:T) //dont need. just wait for onRegistersChanged to update render
+//    {
+//        val iMask = inputMask(gate.shape)
+//        val oMask = outputMask(gate.shape)
+//        val output = calcOutput(gate, getInput(gate, iMask))&oMask
+//        if (output != 0)
+//        {
+//            gate.setState(output<<4)
+//            gate.onOutputChange(output) //use output for change mask because nothing is going low
+//        }
+//    }
 
     @SideOnly(Side.CLIENT)
     override def getRolloverData(gate:T, detailLevel:Int) =
@@ -134,6 +135,54 @@ abstract class ComboICGateLogic extends RedstoneICGateLogic[ComboGateICPart] wit
 
     def deadSides = 0
     def maxDeadSides = deadSides-1
+
+    def pullInput(gate:ComboGateICPart, mask:Int) = //Pull the input from the sim engine
+    {
+        var input = 0
+        for (r <- 0 until 4) if ((mask&1<<r) != 0) {
+            if (gate.editor.simEngineContainer.simEngine.getRegVal[Byte](gate.inputRegs(r)) > 0) input |= 1<<r
+        }
+        input
+    }
+
+    def pullOutput(gate:ComboGateICPart, mask:Int) = //Pull the output form the sim engine
+    {
+        var input = 0
+        for (r <- 0 until 4) if ((mask&1<<r) != 0) {
+            if (gate.editor.simEngineContainer.simEngine.getRegVal[Byte](gate.outputRegs(r)) > 0) input |= 1<<r
+        }
+        input
+    }
+
+    override def onRegistersChanged(gate:ComboGateICPart, regIDs:Set[Int]) //Use to set state on gates/update render
+    {
+        val oldState = gate.state
+        val newState = pullInput(gate, inputMask(gate.shape))&0xF | pullOutput(gate, outputMask(gate.shape))<<4
+        if (oldState != newState) {
+            gate.setState(newState)
+            gate.sendStateUpdate()
+        }
+    }
+
+    override def allocateOrFindRegisters(gate:ComboGateICPart, linker:ISELinker)
+    {
+        for (r <- 0 until 4) {
+            gate.inputRegs(r) =
+                    if (canInput(gate, r)) gate.getInputRegister(r, linker) else -1
+            gate.outputRegs(r) =
+                    if (canOutput(gate, r)) gate.getOutputRegister(r, linker) else -1
+        }
+    }
+
+    override def declareOperations(gate:ComboGateICPart, linker:ISELinker)
+    {
+        val comp = getOutputOp(gate.inputRegs, gate.outputRegs)
+        linker.addGate(linker.allocateGateID(), comp,
+            gate.inputRegs.filter(_ != -1).toSeq.distinct,
+            gate.outputRegs.filter(_ != -1).toSeq.distinct)
+    }
+
+    def getOutputOp(inputs:Array[Int], outputs:Array[Int]):ISEGate
 }
 
 object OR extends ComboICGateLogic
@@ -143,29 +192,64 @@ object OR extends ComboICGateLogic
 
     override def deadSides = 3
 
-    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input != 0) 1 else 0
+//    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input != 0) 1 else 0
+
+    override def getOutputOp(inputs:Array[Int], outputs:Array[Int]) =
+    {
+        val inIDs = inputs.filter(_ != -1).toSeq
+        val outID = outputs(0)
+
+        new ISEGate {
+            override def compute(ic:SEIntegratedCircuit) {
+                ic.queueRegVal[Byte](outID, if (inIDs.exists(ic.getRegVal(_) != 0)) 1 else 0)
+            }
+        }
+    }
 }
 
 object NOR extends ComboICGateLogic
 {
     override def outputMask(shape:Int) = 1
     override def inputMask(shape:Int) = ~shape<<1&0xE
-    override def feedbackMask(shape:Int) = 1
+//    override def feedbackMask(shape:Int) = 1
 
     override def deadSides = 3
 
-    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == 0) 1 else 0
+//    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == 0) 1 else 0
+
+    override def getOutputOp(inputs:Array[Int], outputs:Array[Int]) =
+    {
+        val inIDs = inputs.filter(_ != -1).toSeq
+        val outID = outputs(0)
+
+        new ISEGate {
+            override def compute(ic:SEIntegratedCircuit) {
+                ic.queueRegVal[Byte](outID, if (inIDs.exists(ic.getRegVal(_) != 0)) 0 else 1)
+            }
+        }
+    }
 }
 
 object NOT extends ComboICGateLogic
 {
     override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)>>1|(shape&4)<<1)&0xB
     override def inputMask(shape:Int) = 4
-    override def feedbackMask(shape:Int) = outputMask(shape)
+//    override def feedbackMask(shape:Int) = outputMask(shape)
 
     override def deadSides = 3
 
-    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == 0) 0xB else 0
+    override def getOutputOp(inputs:Array[Int], outputs:Array[Int]) =
+    {
+        val inID = inputs(2)
+        val outIDs = outputs.filter(_ != -1).toSeq
+
+        new ISEGate {
+            override def compute(ic:SEIntegratedCircuit) {
+                val outVal = (if (ic.getRegVal(inID) != 0) 0 else 1).toByte
+                outIDs.foreach(ic.queueRegVal[Byte](_, outVal))
+            }
+        }
+    }
 }
 
 object AND extends ComboICGateLogic
@@ -175,7 +259,19 @@ object AND extends ComboICGateLogic
 
     override def deadSides = 3
 
-    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == inputMask(gate.shape)) 1 else 0
+//    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == inputMask(gate.shape)) 1 else 0
+
+    override def getOutputOp(inputs:Array[Int], outputs:Array[Int]) =
+    {
+        val inIDs = inputs.filter(_ != -1).toSeq
+        val outID = outputs(0)
+
+        new ISEGate {
+            override def compute(ic:SEIntegratedCircuit) {
+                ic.queueRegVal[Byte](outID, if (inIDs.forall(ic.getRegVal(_) != 0)) 1 else 0)
+            }
+        }
+    }
 }
 
 object NAND extends ComboICGateLogic
@@ -185,170 +281,182 @@ object NAND extends ComboICGateLogic
 
     override def deadSides = 3
 
-    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == inputMask(gate.shape)) 0 else 1
-}
+//    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == inputMask(gate.shape)) 0 else 1
 
-object XOR extends ComboICGateLogic
-{
-    override def outputMask(shape:Int) = 1
-    override def inputMask(shape:Int) = 10
-
-    override def calcOutput(gate:ComboGateICPart, input:Int) =
+    override def getOutputOp(inputs:Array[Int], outputs:Array[Int]) =
     {
-        val side1 = (input&1<<1) != 0
-        val side2 = (input&1<<3) != 0
-        if (side1 != side2) 1 else 0
-    }
-}
+        val inIDs = inputs.filter(_ != -1).toSeq
+        val outID = outputs(0)
 
-object XNOR extends ComboICGateLogic
-{
-    override def outputMask(shape:Int) = 1
-    override def inputMask(shape:Int) = 10
-
-    override def calcOutput(gate:ComboGateICPart, input:Int) =
-    {
-        val side1 = (input&1<<1) != 0
-        val side2 = (input&1<<3) != 0
-        if (side1 == side2) 1 else 0
-    }
-}
-
-object Buffer extends ComboICGateLogic
-{
-    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)<<2)&0xB
-    override def inputMask(shape:Int) = 4
-    override def feedbackMask(shape:Int) = outputMask(shape)
-
-    override def deadSides = 2
-    override def maxDeadSides = 2
-
-    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input != 0) 0xB else 0
-}
-
-object Multiplexer extends ComboICGateLogic
-{
-    override def outputMask(shape:Int) = 1
-    override def inputMask(shape:Int) = 0xE
-
-    override def calcOutput(gate:ComboGateICPart, input:Int) = if ((input&1<<2) != 0) (input>>3)&1 else (input>>1)&1
-}
-
-object Pulse extends ComboICGateLogic
-{
-    override def outputMask(shape:Int) = 1
-    override def inputMask(shape:Int) = 4
-
-    override def calcOutput(gate:ComboGateICPart, input:Int) = 0
-
-    override def onChange(gate:ComboGateICPart) =
-    {
-        val oldInput = gate.state&0xF
-        val newInput = getInput(gate, 4)
-
-        if (oldInput != newInput)
-        {
-            gate.setState(gate.state&0xF0|newInput)
-            gate.onInputChange()
-            if (newInput != 0 && (gate.state&0xF0) == 0)
-            {
-                gate.setState(gate.state&0xF|0x10)
-                gate.scheduleTick(2)
-                gate.onOutputChange(1)
+        new ISEGate {
+            override def compute(ic:SEIntegratedCircuit) {
+                ic.queueRegVal[Byte](outID, if (inIDs.forall(ic.getRegVal(_) != 0)) 0 else 1)
             }
         }
     }
 }
-
-object Repeater extends ComboICGateLogic
-{
-    val delays = Array(2, 4, 6, 8, 16, 32, 64, 128, 256)
-
-    override def outputMask(shape:Int) = 1
-    override def inputMask(shape:Int) = 4
-
-    override def getDelay(shape:Int) = delays(shape)
-
-    override def cycleShape(shape:Int) = (shape+1)%delays.length
-
-    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == 0) 0 else 1
-
-    override def onChange(gate:ComboGateICPart){ if (gate.schedTime < 0) super.onChange(gate) }
-
-    override def activate(gate:ComboGateICPart)
-    {
-        gate.configure()
-    }
-
-    @SideOnly(Side.CLIENT)
-    override def getRolloverData(gate:ComboGateICPart, detailLevel:Int) =
-    {
-        val data = Seq.newBuilder[String]
-        if (detailLevel > 1) data += "delay: "+delays(gate.shape)
-        super.getRolloverData(gate, detailLevel)++data.result()
-    }
-}
-
-object Randomizer extends ComboICGateLogic
-{
-    val rand = new Random
-
-    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)>>1|(shape&4)<<1)&0xB
-    override def inputMask(shape:Int) = 4
-    override def feedbackMask(shape:Int) = outputMask(shape)
-
-    override def deadSides = 3
-
-    override def getDelay(shape:Int) = 2
-
-    override def calcOutput(gate:ComboGateICPart, input:Int) =
-    {
-        if (input == 0) gate.state>>4 else
-            outputMask(gate.shape)&TFaceOrient.shiftMask(rand.nextInt(8), 3)
-    }
-
-    override def onChange(gate:ComboGateICPart)
-    {
-        super.onChange(gate)
-        if ((gate.state&4) != 0) gate.scheduleTick(2)
-    }
-}
-
-object TransparentLatch extends ComboICGateLogic
-{
-    override def outputMask(shape:Int) = if (shape == 0) 3 else 9
-    override def inputMask(shape:Int) = if (shape == 0) 0xC else 6
-
-    override def cycleShape(shape:Int) = shape^1
-
-    override def calcOutput(gate:ComboGateICPart, input:Int) =
-    {
-        if ((input&4) == 0) gate.state>>4
-        else if ((input&0xA) == 0) 0 else 0xF
-    }
-}
-
-object DecRandomizer extends ComboICGateLogic
-{
-    val rand = new Random
-
-    override def cycleShape(shape:Int) = shape^1
-
-    override def outputMask(shape:Int) = if (shape == 0) 11 else 9
-    override def inputMask(shape:Int) = 4
-    override def feedbackMask(shape:Int) = 2
-
-    override def getDelay(shape:Int) = 2
-
-    override def calcOutput(gate:ComboGateICPart, input:Int) =
-    {
-        if (input == 0) if ((gate.state>>4) == 0) 1 else gate.state>>4
-        else Seq(1, 8, 2)(rand.nextInt((~gate.shape|2)&3))
-    }
-
-    override def onChange(gate:ComboGateICPart)
-    {
-        super.onChange(gate)
-        if ((gate.state&4) != 0) gate.scheduleTick(2)
-    }
-}
+//
+//object XOR extends ComboICGateLogic
+//{
+//    override def outputMask(shape:Int) = 1
+//    override def inputMask(shape:Int) = 10
+//
+//    override def calcOutput(gate:ComboGateICPart, input:Int) =
+//    {
+//        val side1 = (input&1<<1) != 0
+//        val side2 = (input&1<<3) != 0
+//        if (side1 != side2) 1 else 0
+//    }
+//}
+//
+//object XNOR extends ComboICGateLogic
+//{
+//    override def outputMask(shape:Int) = 1
+//    override def inputMask(shape:Int) = 10
+//
+//    override def calcOutput(gate:ComboGateICPart, input:Int) =
+//    {
+//        val side1 = (input&1<<1) != 0
+//        val side2 = (input&1<<3) != 0
+//        if (side1 == side2) 1 else 0
+//    }
+//}
+//
+//object Buffer extends ComboICGateLogic
+//{
+//    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)<<2)&0xB
+//    override def inputMask(shape:Int) = 4
+//    override def feedbackMask(shape:Int) = outputMask(shape)
+//
+//    override def deadSides = 2
+//    override def maxDeadSides = 2
+//
+//    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input != 0) 0xB else 0
+//}
+//
+//object Multiplexer extends ComboICGateLogic
+//{
+//    override def outputMask(shape:Int) = 1
+//    override def inputMask(shape:Int) = 0xE
+//
+//    override def calcOutput(gate:ComboGateICPart, input:Int) = if ((input&1<<2) != 0) (input>>3)&1 else (input>>1)&1
+//}
+//
+//object Pulse extends ComboICGateLogic
+//{
+//    override def outputMask(shape:Int) = 1
+//    override def inputMask(shape:Int) = 4
+//
+//    override def calcOutput(gate:ComboGateICPart, input:Int) = 0
+//
+//    override def onChange(gate:ComboGateICPart) =
+//    {
+//        val oldInput = gate.state&0xF
+//        val newInput = getInput(gate, 4)
+//
+//        if (oldInput != newInput)
+//        {
+//            gate.setState(gate.state&0xF0|newInput)
+//            gate.onInputChange()
+//            if (newInput != 0 && (gate.state&0xF0) == 0)
+//            {
+//                gate.setState(gate.state&0xF|0x10)
+//                gate.scheduleTick(2)
+//                gate.onOutputChange(1)
+//            }
+//        }
+//    }
+//}
+//
+//object Repeater extends ComboICGateLogic
+//{
+//    val delays = Array(2, 4, 6, 8, 16, 32, 64, 128, 256)
+//
+//    override def outputMask(shape:Int) = 1
+//    override def inputMask(shape:Int) = 4
+//
+//    override def getDelay(shape:Int) = delays(shape)
+//
+//    override def cycleShape(shape:Int) = (shape+1)%delays.length
+//
+//    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == 0) 0 else 1
+//
+//    override def onChange(gate:ComboGateICPart){ if (gate.schedTime < 0) super.onChange(gate) }
+//
+//    override def activate(gate:ComboGateICPart)
+//    {
+//        gate.configure()
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    override def getRolloverData(gate:ComboGateICPart, detailLevel:Int) =
+//    {
+//        val data = Seq.newBuilder[String]
+//        if (detailLevel > 1) data += "delay: "+delays(gate.shape)
+//        super.getRolloverData(gate, detailLevel)++data.result()
+//    }
+//}
+//
+//object Randomizer extends ComboICGateLogic
+//{
+//    val rand = new Random
+//
+//    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)>>1|(shape&4)<<1)&0xB
+//    override def inputMask(shape:Int) = 4
+//    override def feedbackMask(shape:Int) = outputMask(shape)
+//
+//    override def deadSides = 3
+//
+//    override def getDelay(shape:Int) = 2
+//
+//    override def calcOutput(gate:ComboGateICPart, input:Int) =
+//    {
+//        if (input == 0) gate.state>>4 else
+//            outputMask(gate.shape)&TFaceOrient.shiftMask(rand.nextInt(8), 3)
+//    }
+//
+//    override def onChange(gate:ComboGateICPart)
+//    {
+//        super.onChange(gate)
+//        if ((gate.state&4) != 0) gate.scheduleTick(2)
+//    }
+//}
+//
+//object TransparentLatch extends ComboICGateLogic
+//{
+//    override def outputMask(shape:Int) = if (shape == 0) 3 else 9
+//    override def inputMask(shape:Int) = if (shape == 0) 0xC else 6
+//
+//    override def cycleShape(shape:Int) = shape^1
+//
+//    override def calcOutput(gate:ComboGateICPart, input:Int) =
+//    {
+//        if ((input&4) == 0) gate.state>>4
+//        else if ((input&0xA) == 0) 0 else 0xF
+//    }
+//}
+//
+//object DecRandomizer extends ComboICGateLogic
+//{
+//    val rand = new Random
+//
+//    override def cycleShape(shape:Int) = shape^1
+//
+//    override def outputMask(shape:Int) = if (shape == 0) 11 else 9
+//    override def inputMask(shape:Int) = 4
+//    override def feedbackMask(shape:Int) = 2
+//
+//    override def getDelay(shape:Int) = 2
+//
+//    override def calcOutput(gate:ComboGateICPart, input:Int) =
+//    {
+//        if (input == 0) if ((gate.state>>4) == 0) 1 else gate.state>>4
+//        else Seq(1, 8, 2)(rand.nextInt((~gate.shape|2)&3))
+//    }
+//
+//    override def onChange(gate:ComboGateICPart)
+//    {
+//        super.onChange(gate)
+//        if ((gate.state&4) != 0) gate.scheduleTick(2)
+//    }
+//}

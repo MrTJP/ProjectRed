@@ -59,7 +59,7 @@ object ItemICBlueprint
         if (!stack.hasTagCompound) stack.setTagCompound(new NBTTagCompound)
     }
 
-    def saveIC(ic:IntegratedCircuit, stack:ItemStack)
+    def saveIC(ic:ICTileMapEditor, stack:ItemStack)
     {
         assertStackTag(stack)
         val tag1 = stack.getTagCompound
@@ -71,14 +71,14 @@ object ItemICBlueprint
         tag1.setByte("ich", ic.size.height.toByte)
     }
 
-    def loadIC(stack:ItemStack):IntegratedCircuit =
+    def loadIC(stack:ItemStack):ICTileMapEditor =
     {
-        val ic = new IntegratedCircuit
+        val ic = new ICTileMapEditor
         loadIC(ic, stack)
         ic
     }
 
-    def loadIC(ic:IntegratedCircuit, stack:ItemStack)
+    def loadIC(ic:ICTileMapEditor, stack:ItemStack)
     {
         val tag = stack.getTagCompound
         if (tag.hasKey("icdata"))
@@ -120,11 +120,11 @@ object ItemICBlueprint
         Seq("icdata", "icname", "icw", "ich").foreach(tag.removeTag)
     }
 
-    def saveICToGate(ic:IntegratedCircuit, gate:ItemStack)
+    def saveICToGate(ic:ICTileMapEditor, gate:ItemStack)
     {
         assertStackTag(gate)
 
-        val ioparts = ic.parts.values.collect{case io:IIOCircuitPart => io}.toSeq
+        val ioparts = ic.tileMapContainer.tiles.values.collect{case io:IIOCircuitPart => io}.toSeq
         var (ri, ro, bi, bo) = (0, 0, 0, 0)
         val connmodes = new Array[Int](4)
 
@@ -132,15 +132,15 @@ object ItemICBlueprint
         {
             val sparts = ioparts.filter(_.getIOSide == r)
 
-            val ioMode = if (sparts.exists(_.getIOMode == InOut)) InOut
-            else
+            val ioMode = //if (sparts.exists(_.getIOMode == InOut)) InOut
+//            else
             {
                 val in = sparts.exists(_.getIOMode == Input)
                 val out = sparts.exists(_.getIOMode == Output)
-                if (in && out) InOut
-                else if (in) Input
-                else if (out) Output
-                else Closed
+//                if (in && out) InOut
+                if (in && !out) Input
+                else if (out && !in) Output
+                else Closed //IO conflict???
             }
 
             val connMode = if (sparts.exists(_.getConnMode == Simple)) Simple
@@ -159,9 +159,9 @@ object ItemICBlueprint
                 case (Output, Analog)   => ro |= 1<<r
                 case (Output, Bundled)  => bo |= 1<<r
 
-                case (InOut, Simple)    => ri |= 1<<r; ro |= 1<<r
-                case (InOut, Analog)    => ri |= 1<<r; ro |= 1<<r
-                case (InOut, Bundled)   => bi |= 1<<r; bo |= 1<<r
+//                case (InOut, Simple)    => ri |= 1<<r; ro |= 1<<r
+//                case (InOut, Analog)    => ri |= 1<<r; ro |= 1<<r
+//                case (InOut, Bundled)   => bi |= 1<<r; bo |= 1<<r
                 case _ =>
             }
         }
@@ -227,7 +227,7 @@ object ItemRenderICBlueprint extends IMapRenderer
         ccrs.draw()
     }
 
-    private def overlayIC(ccrs:CCRenderState, ic:IntegratedCircuit)
+    private def overlayIC(ccrs:CCRenderState, ic:ICTileMapEditor)
     {
         val sf = 128/scala.math.max(ic.size.width, ic.size.height)
         val rs = ic.size*sf

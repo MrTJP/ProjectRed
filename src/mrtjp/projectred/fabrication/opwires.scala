@@ -17,16 +17,16 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 abstract class OpWire extends CircuitOp
 {
-    override def checkOp(circuit:IntegratedCircuit, start:Point, end:Point) =
+    override def checkOp(circuit:ICTileMapEditor, start:Point, end:Point) =
         circuit.getPart(start.x, start.y) == null
 
-    override def writeOp(circuit:IntegratedCircuit, start:Point, end:Point, out:MCDataOutput)
+    override def writeOp(circuit:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
     {
         out.writeByte(start.x).writeByte(start.y)
         out.writeByte(end.x).writeByte(end.y)
     }
 
-    override def readOp(circuit:IntegratedCircuit, in:MCDataInput)
+    override def readOp(circuit:ICTileMapEditor, in:MCDataInput)
     {
         val start = Point(in.readUByte(), in.readUByte())
         val end = Point(in.readUByte(), in.readUByte())
@@ -39,10 +39,10 @@ abstract class OpWire extends CircuitOp
                         circuit.setPart(px, py, createPart)
     }
 
-    def createPart:CircuitPart
+    def createPart:ICTile
 
     @SideOnly(Side.CLIENT)
-    override def renderHover(ccrs:CCRenderState, circuit:IntegratedCircuit, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderHover(ccrs:CCRenderState, circuit:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
         if (circuit.getPart(point) != null) return
 
@@ -54,7 +54,7 @@ abstract class OpWire extends CircuitOp
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDrag(ccrs:CCRenderState, circuit:IntegratedCircuit, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderDrag(ccrs:CCRenderState, circuit:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
         if (circuit.getPart(start) != null) return
 
@@ -99,7 +99,7 @@ abstract class OpWire extends CircuitOp
 
 class OpAlloyWire extends OpWire
 {
-    override def createPart = CircuitPartDefs.AlloyWire.createPart
+    override def createPart = ICTileDefs.AlloyWire.createPart
 
     @SideOnly(Side.CLIENT)
     override def doRender(ccrs:CCRenderState, t:Transformation, conn:Int)
@@ -125,7 +125,7 @@ class OpInsulatedWire(colour:Int) extends OpWire
 {
     override def createPart =
     {
-        val part = CircuitPartDefs.InsulatedWire.createPart.asInstanceOf[InsulatedWireICPart]
+        val part = ICTileDefs.InsulatedWire.createPart.asInstanceOf[InsulatedWireICPart]
         part.colour = colour.toByte
         part
     }
@@ -155,7 +155,7 @@ class OpBundledCable(colour:Int) extends OpWire
 {
     override def createPart =
     {
-        val part = CircuitPartDefs.BundledCable.createPart.asInstanceOf[BundledCableICPart]
+        val part = ICTileDefs.BundledCable.createPart.asInstanceOf[BundledCableICPart]
         part.colour = colour.toByte
         part
     }
