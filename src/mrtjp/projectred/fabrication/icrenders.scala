@@ -167,7 +167,7 @@ object RenderICAlloyWire
         signal = 0xFF.toByte
     }
 
-    def prepairDynamic(part:AlloyWireICPart)
+    def prepairDynamic(part:AlloyWireICTile)
     {
         connMap = part.connMap
         signal = part.signal
@@ -195,7 +195,7 @@ object RenderICInsulatedWire
         colour = c.toByte
     }
 
-    def prepairDynamic(part:InsulatedWireICPart)
+    def prepairDynamic(part:InsulatedWireICTile)
     {
         connMap = part.connMap
         signal = part.signal
@@ -224,7 +224,7 @@ object RenderICBundledCable
         colour = c.toByte
     }
 
-    def prepairDynamic(part:BundledCableICPart)
+    def prepairDynamic(part:BundledCableICTile)
     {
         connMap = part.connMap
         colour = part.colour

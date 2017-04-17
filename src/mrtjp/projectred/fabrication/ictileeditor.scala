@@ -230,8 +230,8 @@ class ICTileMapEditor
             case _ => log.error("Server IC stream received invalid client packet")
         }
         case 5 => simEngineContainer.iostate(in.readUByte()) = in.readInt()
-        case 6 => simEngineContainer.setInput(in.readUByte(), in.readShort())
-        case 7 => simEngineContainer.setOutput(in.readUByte(), in.readShort())
+        case 6 => simEngineContainer.setInput(in.readUByte(), in.readShort())//TODO remove? not used...
+        case 7 => simEngineContainer.setOutput(in.readUByte(), in.readShort()) //TODO remove? not used...
         case _ =>
     }
 
@@ -268,12 +268,12 @@ class ICTileMapEditor
         network.getICStreamOf(5).writeByte(r).writeInt(simEngineContainer.iostate(r))
     }
 
-    def sendInputUpdate(r:Int)
+    def sendInputUpdate(r:Int) //TODO Remove?
     {
         network.getICStreamOf(6).writeByte(r).writeShort(simEngineContainer.iostate(r)&0xFFFF)
     }
 
-    def sendOutputUpdate(r:Int)
+    def sendOutputUpdate(r:Int) //TODO Remove?
     {
         network.getICStreamOf(7).writeByte(r).writeShort(simEngineContainer.iostate(r)>>>16)
     }

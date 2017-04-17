@@ -103,7 +103,7 @@ trait TGateGui extends CircuitGui
     var gateRenderSize = Size(40, 40)
     var gateRenderX = 10
 
-    def gate:GateICPart
+    def gate:GateICTile
 
     abstract override def drawBack_Impl(mouse:Point, rframe:Float)
     {
@@ -115,7 +115,7 @@ trait TGateGui extends CircuitGui
     }
 }
 
-class ICGateGui(override val gate:GateICPart) extends CircuitGui(gate) with TGateGui
+class ICGateGui(override val gate:GateICTile) extends CircuitGui(gate) with TGateGui
 {
     {
         size = Size(120, 55)
@@ -270,7 +270,7 @@ class ICGateGui(override val gate:GateICPart) extends CircuitGui(gate) with TGat
 //    }
 //}
 
-class ICIOGateGui(override val gate:IOGateICPart) extends CircuitGui(gate) with TGateGui
+class ICIOGateGui(override val gate:IOGateICTile) extends CircuitGui(gate) with TGateGui
 {
     {
         size = Size(124, 55)
@@ -296,7 +296,7 @@ class ICIOGateGui(override val gate:IOGateICPart) extends CircuitGui(gate) with 
     }
 }
 
-class ICIOFreqGateGui(override val gate:IOGateICPart) extends CircuitGui(gate) with TGateGui
+class ICIOFreqGateGui(override val gate:IOGateICTile) extends CircuitGui(gate) with TGateGui
 {
     {
         size = Size(138, 55)

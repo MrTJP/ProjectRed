@@ -49,9 +49,9 @@ object RenderICGate
 
     def registerIcons(reg:TextureMap){}
 
-    def renderDynamic(ccrs:CCRenderState, gate:GateICPart, t:Transformation, ortho:Boolean, frame:Float)
+    def renderDynamic(ccrs:CCRenderState, gate:GateICTile, t:Transformation, ortho:Boolean, frame:Float)
     {
-        val r = renderers(gate.subID).asInstanceOf[ICGateRenderer[GateICPart]]
+        val r = renderers(gate.subID).asInstanceOf[ICGateRenderer[GateICTile]]
         r.prepareDynamic(gate, frame)
         r.renderDynamic(ccrs, gate.rotationT `with` t, ortho)
     }
@@ -64,7 +64,7 @@ object RenderICGate
     }
 }
 
-abstract class ICGateRenderer[T <: GateICPart]
+abstract class ICGateRenderer[T <: GateICTile]
 {
     var reflect = false
 
@@ -87,7 +87,7 @@ abstract class ICGateRenderer[T <: GateICPart]
     }
 }
 
-abstract class RenderIO extends ICGateRenderer[IOGateICPart]
+abstract class RenderIO extends ICGateRenderer[IOGateICTile]
 {
     val wires = generateWireModels("IOSIMP", 1)
     val iosig = new IOSigModel
@@ -101,7 +101,7 @@ abstract class RenderIO extends ICGateRenderer[IOGateICPart]
         iosig.colour = invColour
     }
 
-    override def prepareDynamic(gate:IOGateICPart, frame:Float)
+    override def prepareDynamic(gate:IOGateICTile, frame:Float)
     {
         wires(0).on = (gate.state&0x44) != 0
         iosig.on = wires(0).on
@@ -110,28 +110,28 @@ abstract class RenderIO extends ICGateRenderer[IOGateICPart]
 
 
     def invColour:Int
-    def dynColour(gate:IOGateICPart):Int
+    def dynColour(gate:IOGateICTile):Int
 }
 
 class RenderSimpleIO extends RenderIO
 {
     override def invColour = signalColour(0.toByte)
-    override def dynColour(gate:IOGateICPart) = signalColour((if (iosig.on) 255 else 0).toByte)
+    override def dynColour(gate:IOGateICTile) = signalColour((if (iosig.on) 255 else 0).toByte)
 }
 
 class RenderAnalogIO extends RenderIO
 {
     override def invColour = signalColour(0.toByte)
-    override def dynColour(gate:IOGateICPart) = signalColour((gate.getLogic[AnalogIOICGateLogic].freq*17).toByte)
+    override def dynColour(gate:IOGateICTile) = signalColour((gate.getLogic[AnalogIOICGateLogic].freq*17).toByte)
 }
 
 class RenderBundledIO extends RenderIO
 {
     override def invColour = EnumColour.WHITE.rgba
-    override def dynColour(gate:IOGateICPart) = EnumColour.values()(gate.getLogic[AnalogIOICGateLogic].freq).rgba
+    override def dynColour(gate:IOGateICTile) = EnumColour.values()(gate.getLogic[AnalogIOICGateLogic].freq).rgba
 }
 
-class RenderOR extends ICGateRenderer[ComboGateICPart]
+class RenderOR extends ICGateRenderer[ComboGateICTile]
 {
     val wires = generateWireModels("OR", 4)
     val torches = Seq(new RedstoneTorchModel(8, 9), new RedstoneTorchModel(8, 2.5))
@@ -151,7 +151,7 @@ class RenderOR extends ICGateRenderer[ComboGateICPart]
         torches(1).on = false
     }
 
-    override def prepareDynamic(gate:ComboGateICPart, frame:Float)
+    override def prepareDynamic(gate:ComboGateICTile, frame:Float)
     {
         wires(0).on = (gate.state&0x10) == 0
         wires(1).on = (gate.state&2) != 0
@@ -165,7 +165,7 @@ class RenderOR extends ICGateRenderer[ComboGateICPart]
     }
 }
 
-class RenderNOR extends ICGateRenderer[ComboGateICPart]
+class RenderNOR extends ICGateRenderer[ComboGateICTile]
 {
     var wires = generateWireModels("NOR", 4)
     var torch = new RedstoneTorchModel(8, 9)
@@ -184,7 +184,7 @@ class RenderNOR extends ICGateRenderer[ComboGateICPart]
         torch.on = true
     }
 
-    override def prepareDynamic(gate:ComboGateICPart, frame:Float)
+    override def prepareDynamic(gate:ComboGateICTile, frame:Float)
     {
         wires(0).on = (gate.state&0x11) != 0
         wires(1).on = (gate.state&2) != 0
@@ -197,7 +197,7 @@ class RenderNOR extends ICGateRenderer[ComboGateICPart]
     }
 }
 
-class RenderNOT extends ICGateRenderer[ComboGateICPart]
+class RenderNOT extends ICGateRenderer[ComboGateICTile]
 {
     val wires = generateWireModels("NOT", 4)
     val torch = new RedstoneTorchModel(8, 8)
@@ -216,7 +216,7 @@ class RenderNOT extends ICGateRenderer[ComboGateICPart]
         torch.on = true
     }
 
-    override def prepareDynamic(gate:ComboGateICPart, frame:Float)
+    override def prepareDynamic(gate:ComboGateICTile, frame:Float)
     {
         wires(0).on = (gate.state&0x11) != 0
         wires(1).on = (gate.state&0x22) != 0
@@ -229,7 +229,7 @@ class RenderNOT extends ICGateRenderer[ComboGateICPart]
     }
 }
 
-class RenderAND extends ICGateRenderer[ComboGateICPart]
+class RenderAND extends ICGateRenderer[ComboGateICTile]
 {
     val wires = generateWireModels("AND", 4)
     val torches = Seq(new RedstoneTorchModel(4, 8), new RedstoneTorchModel(12, 8),
@@ -252,7 +252,7 @@ class RenderAND extends ICGateRenderer[ComboGateICPart]
         torches(3).on = false
     }
 
-    override def prepareDynamic(gate:ComboGateICPart, frame:Float)
+    override def prepareDynamic(gate:ComboGateICTile, frame:Float)
     {
         wires(0).on = (gate.state&0x11) == 0
         wires(3).on = (gate.state&2) != 0

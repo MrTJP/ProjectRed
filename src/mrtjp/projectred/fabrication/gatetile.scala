@@ -15,16 +15,13 @@ import mrtjp.projectred.integration.GateDefinition.GateDef
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-abstract class GateICPart extends ICTile with TConnectableICPart with TICOrient with IGuiICTile with ISEGateTile
+abstract class GateICTile extends ICTile with TConnectableICTile with TICTileOrient with IGuiICTile with ISEGateTile
 {
     private var gateSubID:Byte = 0
     private var gateShape:Byte = 0
 
-//    var schedTime = 0L
-//    var schedDigital = false
-
     def getLogic[T]:T
-    def getLogicPrimitive = getLogic[ICGateLogic[GateICPart]]
+    def getLogicPrimitive = getLogic[ICGateLogic[GateICTile]]
 
     def subID = gateSubID&0xFF
 
@@ -43,7 +40,6 @@ abstract class GateICPart extends ICTile with TConnectableICPart with TICOrient 
         tag.setByte("subID", gateSubID)
         tag.setByte("shape", gateShape)
         tag.setByte("connMap", connMap)
-//        tag.setLong("schedTime", schedTime)
     }
 
     override def load(tag:NBTTagCompound)
@@ -52,7 +48,6 @@ abstract class GateICPart extends ICTile with TConnectableICPart with TICOrient 
         gateSubID = tag.getByte("subID")
         gateShape = tag.getByte("shape")
         connMap = tag.getByte("connMap")
-//        schedTime = tag.getLong("schedTime")
     }
 
     override def writeDesc(out:MCDataOutput)
@@ -89,61 +84,16 @@ abstract class GateICPart extends ICTile with TConnectableICPart with TICOrient 
         case _ =>
     }
 
-    override def canConnectPart(part:ICTile, r:Int) =
+    override def canConnectTile(part:ICTile, r:Int) =
         getLogicPrimitive.canConnectTo(this, part, toInternal(r))
-
-//    override def scheduledTick()
-//    {
-//        getLogicPrimitive.scheduledTick(this)
-//    }
-
-//    override def scheduleTick(ticks:Int)
-//    {
-//        if (ticks == 0) scheduleDigitalTick()
-//        else if (schedTime < 0) schedTime = world.network.getWorld.getTotalWorldTime+ticks
-//    }
-
-//    def processScheduled()
-//    {
-//        if (schedTime >= 0 && world.network.getWorld.getTotalWorldTime >= schedTime)
-//        {
-//            schedTime = -1
-//            scheduledTick()
-//        }
-//    }
-//
-//    def scheduleDigitalTick()
-//    {
-//        schedDigital = true
-//    }
-
-//    var iter = 0
-//    def processScheduledDigital()
-//    {
-//        while(schedDigital && iter < 3) //recursion control
-//        {
-//            schedDigital = false
-//            iter += 1
-//            scheduledTick()
-//        }
-//    }
 
     def onSchematicChanged()
     {
-//        processScheduled()
-//        getLogicPrimitive.onChange(this)
-//        processScheduledDigital()
         editor.markSchematicChanged()
     }
 
     override def update()
     {
-//        if (!world.network.isRemote)
-//        {
-//            processScheduled()
-//            iter = 0
-//            processScheduledDigital()
-//        }
         getLogicPrimitive.onTick(this)
     }
 
@@ -158,24 +108,20 @@ abstract class GateICPart extends ICTile with TConnectableICPart with TICOrient 
     override def onAdded()
     {
         super.onAdded()
-        if (!editor.network.isRemote) {
-//            getLogicPrimitive.setup(this)
+        if (!editor.network.isRemote)
             updateConns()
-        }
     }
 
     override def onRemoved()
     {
         super.onRemoved()
-        if (!editor.network.isRemote) {
+        if (!editor.network.isRemote)
             notify(0xF)
-        }
     }
 
     def configure()
     {
-        if (getLogicPrimitive.cycleShape(this))
-        {
+        if (getLogicPrimitive.cycleShape(this)) {
             updateConns()
             editor.network.markSave()
             sendShapeUpdate()
@@ -256,19 +202,13 @@ abstract class GateICPart extends ICTile with TConnectableICPart with TICOrient 
         CircuitOpDefs.values(CircuitOpDefs.SimpleIO.ordinal+subID).getOp
 }
 
-abstract class ICGateLogic[T <: GateICPart]
+abstract class ICGateLogic[T <: GateICTile]
 {
     def canConnectTo(gate:T, part:ICTile, r:Int):Boolean
 
     def cycleShape(gate:T) = false
 
-//    def onChange(gate:T)
-
-//    def scheduledTick(gate:T)
-
     def onTick(gate:T){}
-
-//    def setup(gate:T){}
 
     def activate(gate:T){}
 
@@ -285,9 +225,9 @@ abstract class ICGateLogic[T <: GateICPart]
     def createGui(gate:T):CircuitGui = new ICGateGui(gate)
 }
 
-trait TComplexGateICPart extends GateICPart
+trait TComplexGateICTile extends GateICTile
 {
-    def getLogicComplex = getLogic[TComplexICGateLogic[TComplexGateICPart]]
+    def getLogicComplex = getLogic[TComplexICGateLogic[TComplexGateICTile]]
 
     def assertLogic()
 
@@ -332,7 +272,7 @@ trait TComplexGateICPart extends GateICPart
     }
 }
 
-trait TComplexICGateLogic[T <: TComplexGateICPart] extends ICGateLogic[T]
+trait TComplexICGateLogic[T <: TComplexGateICTile] extends ICGateLogic[T]
 {
     def save(tag:NBTTagCompound){}
     def load(tag:NBTTagCompound){}

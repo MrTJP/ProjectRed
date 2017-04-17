@@ -125,7 +125,7 @@ class OpInsulatedWire(colour:Int) extends OpWire
 {
     override def createPart =
     {
-        val part = ICTileDefs.InsulatedWire.createPart.asInstanceOf[InsulatedWireICPart]
+        val part = ICTileDefs.InsulatedWire.createPart.asInstanceOf[InsulatedWireICTile]
         part.colour = colour.toByte
         part
     }
@@ -155,7 +155,7 @@ class OpBundledCable(colour:Int) extends OpWire
 {
     override def createPart =
     {
-        val part = ICTileDefs.BundledCable.createPart.asInstanceOf[BundledCableICPart]
+        val part = ICTileDefs.BundledCable.createPart.asInstanceOf[BundledCableICTile]
         part.colour = colour.toByte
         part
     }

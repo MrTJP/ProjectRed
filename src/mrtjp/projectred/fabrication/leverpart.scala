@@ -14,7 +14,7 @@ import mrtjp.projectred.fabrication.SEIntegratedCircuit.REG_ZERO
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class LeverICPart extends ICTile with TICAcquisitions with IRedwireICGate with ISEGateTile with TClientNetICTile
+class LeverICPart extends ICTile with TICTileAcquisitions with IRedwireICGate with ISEGateTile with TClientNetICTile
 {
     val outputRegs = Array(REG_ZERO, REG_ZERO, REG_ZERO, REG_ZERO)
     var on = false

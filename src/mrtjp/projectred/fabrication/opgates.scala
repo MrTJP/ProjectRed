@@ -34,7 +34,7 @@ abstract class OpGateCommons(meta:Int) extends CircuitOp
 
         if (circuit.getPart(point) == null && canPlace(circuit, point))
         {
-            val part = ICTile.createTile(ICGateDefinition(meta).gateType).asInstanceOf[GateICPart]
+            val part = ICTile.createTile(ICGateDefinition(meta).gateType).asInstanceOf[GateICTile]
             part.preparePlacement(r, meta)
             circuit.setPart(point, part)
         }

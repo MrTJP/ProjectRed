@@ -14,7 +14,7 @@ import mrtjp.projectred.fabrication.SEIntegratedCircuit.REG_ZERO
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class ButtonICPart extends ICTile with TICAcquisitions with IRedwireICGate with TClientNetICTile with ISEGateTile
+class ButtonICPart extends ICTile with TICTileAcquisitions with IRedwireICGate with TClientNetICTile with ISEGateTile
 {
     val outputRegs = Array(REG_ZERO, REG_ZERO, REG_ZERO, REG_ZERO)
     var on = false
@@ -61,10 +61,8 @@ class ButtonICPart extends ICTile with TICAcquisitions with IRedwireICGate with 
     {
         if (!on) {
             on = true
-//            notify(0xF)
             pushToRegisters()
             sendStateUpdate()
-
             sched = editor.network.getWorld.getTotalWorldTime+20 //schedule depress
         }
     }
@@ -73,10 +71,8 @@ class ButtonICPart extends ICTile with TICAcquisitions with IRedwireICGate with 
     {
         if (on) {
             on = false
-//            notify(0xF)
             pushToRegisters()
             sendStateUpdate()
-
             sched = -1 //clear depress schedule
         }
     }
@@ -103,9 +99,6 @@ class ButtonICPart extends ICTile with TICAcquisitions with IRedwireICGate with 
     {
         if (!editor.network.isRemote) notify(0xF)
     }
-
-//    override def rsOutputLevel(r:Int) = if (on) 255 else 0
-//    override def canConnectRS(r:Int) = true
 
     def pushToRegisters()
     {

@@ -22,7 +22,7 @@ trait IInsulatedRedwireICPart extends IRedwireICPart
     def getInsulatedColour:Int
 }
 
-abstract class RedwireICPart extends WireICPart with IRedwireICPart
+abstract class RedwireICTile extends WireICTile with IRedwireICPart
 {
     private var stateRegisters = Set.empty[Int]
     var signal:Byte = 0
@@ -62,30 +62,7 @@ abstract class RedwireICPart extends WireICPart with IRedwireICPart
         writeStreamOf(10).writeByte(signal)
     }
 
-//    override def onSignalUpdate()
-//    {
-//        super.onSignalUpdate()
-//        writeStreamOf(10).writeByte(signal)
-//    }
-
-//    override def discoverOverride(r:Int, part:CircuitPart) = part match
-//    {
-//        case pow:IPoweredCircuitPart => pow.canConnectRS(rotFromStraight(r))
-//        case _ => super.discoverOverride(r, part)
-//    }
-
-//    override def canConnectRS(r:Int) = true
-
-//    override def getRedwireSignal(r:Int) = getSignal
-//
-//    override def getSignal = signal&0xFF
-//    override def setSignal(sig:Int){signal = sig.toByte}
-
-//    override def rsOutputLevel(r:Int) =
-//        if (ICPropagator.redwiresProvidePower && maskConnects(r)) (signal&0xFF)+16
-//        else 0
-
-    override def canConnectPart(part:ICTile, r:Int) = part match {
+    override def canConnectTile(part:ICTile, r:Int) = part match {
         case re:IICRedwireEmitter => true
         case pc:IRedwireICGate => true
         case _ => false
@@ -95,24 +72,6 @@ abstract class RedwireICPart extends WireICPart with IRedwireICPart
         case gate:IRedwireICGate => gate.canConnectRS(rotFromStraight(r))
         case _ => false
     }
-
-//    override def resolveSignal(part:Any, r:Int) = part match
-//    {
-//        case t:IRedwireICPart if t.diminishOnSide(r) => t.getRedwireSignal(r)-1
-//        case t:IICRedwireEmitter => t.getRedwireSignal(r)
-//        case t:IPoweredCircuitPart => t.rsOutputLevel(r)
-//        case _ => 0
-//    }
-//
-//    override def calculateSignal =
-//    {
-//        var s = 0
-//        ICPropagator.redwiresProvidePower = false
-//        def raise(sig:Int){ if (sig > s) s = sig }
-//        for (r <- 0 until 4) if (maskConnects(r)) raise(calcSignal(r))
-//        ICPropagator.redwiresProvidePower = true
-//        s
-//    }
 
     override def isNetOutput:Boolean =
     {
@@ -170,9 +129,13 @@ abstract class RedwireICPart extends WireICPart with IRedwireICPart
     }
 }
 
-class AlloyWireICPart extends RedwireICPart
+class AlloyWireICTile extends RedwireICTile
 {
     override def getPartType = ICTileDefs.AlloyWire
+
+    override def getTravelMask = 0xFFFF
+
+    override def getMixerMask = 0xFFFF
 
     @SideOnly(Side.CLIENT)
     override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
@@ -188,7 +151,7 @@ class AlloyWireICPart extends RedwireICPart
     override def getPickOp = CircuitOpDefs.AlloyWire.getOp
 }
 
-class InsulatedWireICPart extends RedwireICPart with IInsulatedRedwireICPart
+class InsulatedWireICTile extends RedwireICTile with IInsulatedRedwireICPart
 {
     var colour:Byte = 0
 
@@ -218,18 +181,16 @@ class InsulatedWireICPart extends RedwireICPart with IInsulatedRedwireICPart
 
     override def getPartType = ICTileDefs.InsulatedWire
 
-//    override def resolveSignal(part:Any, r:Int) = part match
-//    {
-//        case b:IBundledCableICPart => (b.getBundledSignal.apply(colour)&0xFF)-1
-//        case _ => super.resolveSignal(part, r)
-//    }
-//
-    override def canConnectPart(part:ICTile, r:Int) = part match
+    override def canConnectTile(part:ICTile, r:Int) = part match
     {
         case b:IBundledCableICPart => true
-        case iw:InsulatedWireICPart => iw.colour == colour
-        case _ => super.canConnectPart(part, r)
+        case iw:InsulatedWireICTile => iw.colour == colour
+        case _ => super.canConnectTile(part, r)
     }
+
+    override def getTravelMask = 1<<getInsulatedColour
+
+    override def getMixerMask = 0
 
     override def getInsulatedColour = colour
 

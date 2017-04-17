@@ -106,10 +106,6 @@ class PrefboardNode(circuit:ICTileMapEditor) extends TNode
                 }
                 finishRender(ccrs)
             }
-
-//            enableRescaleNormal()
-//            enableLighting()
-//            enableDepth()
         }
     }
 

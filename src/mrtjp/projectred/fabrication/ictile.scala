@@ -20,12 +20,12 @@ object ICTileDefs extends Enum
     val Lever = ICTileDef(() => new LeverICPart)
     val Button = ICTileDef(() => new ButtonICPart)
 
-    val AlloyWire = ICTileDef(() => new AlloyWireICPart)
-    val InsulatedWire = ICTileDef(() => new InsulatedWireICPart)
-    val BundledCable = ICTileDef(() => new BundledCableICPart)
+    val AlloyWire = ICTileDef(() => new AlloyWireICTile)
+    val InsulatedWire = ICTileDef(() => new InsulatedWireICTile)
+    val BundledCable = ICTileDef(() => new BundledCableICTile)
 
-    val IOGate = ICTileDef(() => new IOGateICPart)
-    val SimpleGate = ICTileDef(() => new ComboGateICPart)
+    val IOGate = ICTileDef(() => new IOGateICTile)
+    val SimpleGate = ICTileDef(() => new ComboGateICTile)
 //    val ComplexGate = CircuitPartDef(() => new SequentialGateICPart)
 //    val ArrayGate = CircuitPartDef(() => new ArrayGateICPart)
 

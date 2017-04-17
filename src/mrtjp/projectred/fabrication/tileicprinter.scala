@@ -507,10 +507,10 @@ object TileICPrinter
 //            case p:TorchICPart => add(new ItemStack(Blocks.REDSTONE_TORCH), 0.25)
             case p:LeverICPart => add(new ItemStack(Blocks.LEVER), 0.25)
             case p:ButtonICPart => add(new ItemStack(Blocks.STONE_BUTTON), 0.25)
-            case p:AlloyWireICPart => add(WireDef.RED_ALLOY.makeStack, 0.25)
-            case p:InsulatedWireICPart => add(WireDef.INSULATED_WIRES(p.colour&0xFF).makeStack, 0.25)
-            case p:BundledCableICPart => add(WireDef.BUNDLED_WIRES((p.colour+1)&0xFF).makeStack, 0.25)
-            case p:GateICPart => gd.apply(p.subID) match
+            case p:AlloyWireICTile => add(WireDef.RED_ALLOY.makeStack, 0.25)
+            case p:InsulatedWireICTile => add(WireDef.INSULATED_WIRES(p.colour&0xFF).makeStack, 0.25)
+            case p:BundledCableICTile => add(WireDef.BUNDLED_WIRES((p.colour+1)&0xFF).makeStack, 0.25)
+            case p:GateICTile => gd.apply(p.subID) match
             {
                 case gd.IOSimple =>
                     add(new ItemStack(Items.GOLD_NUGGET), 1)
