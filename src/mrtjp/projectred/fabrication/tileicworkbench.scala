@@ -127,9 +127,9 @@ abstract class TileICMachine extends MTBlockTile with TTileOrient
     }
 }
 
-class TileICWorkbench extends TileICMachine with NetWorldCircuit
+class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
 {
-    val circuit = new IntegratedCircuit
+    val circuit = new ICTileMapEditor
     circuit.network = this
 
     var hasBP = false
@@ -172,7 +172,7 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
         case 3 => readPartStream(in)
         case 4 => readICStream(in)
         case 5 =>
-            if (!hasBP) new IntegratedCircuit().readDesc(in)
+            if (!hasBP) new ICTileMapEditor().readDesc(in)
             else {circuit.readDesc(in); sendICDesc()}
         case _ => super.read(in, key)
     }
@@ -195,7 +195,7 @@ class TileICWorkbench extends TileICMachine with NetWorldCircuit
         }
     }
 
-    def sendNewICToServer(ic:IntegratedCircuit)
+    def sendNewICToServer(ic:ICTileMapEditor)
     {
         val stream = writeStream(5)
         ic.writeDesc(stream)

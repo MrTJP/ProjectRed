@@ -9,23 +9,22 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
+import mrtjp.core.vec.Point
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-trait IRedwireICPart extends IWireICPart with IICRedwireEmitter
-
 trait IICRedwireEmitter
-{
-    def getRedwireSignal(r:Int):Int
-}
+
+trait IRedwireICPart extends IICRedwireEmitter
 
 trait IInsulatedRedwireICPart extends IRedwireICPart
 {
     def getInsulatedColour:Int
 }
 
-abstract class RedwireICPart extends WireICPart with TICRSAcquisitions with TRSPropagatingICPart with IRedwireICPart
+abstract class RedwireICTile extends WireICTile with IRedwireICPart
 {
+    private var stateRegisters = Set.empty[Int]
     var signal:Byte = 0
 
     override def save(tag:NBTTagCompound)
@@ -58,52 +57,62 @@ abstract class RedwireICPart extends WireICPart with TICRSAcquisitions with TRSP
         case _ => super.read(in, key)
     }
 
-    override def onSignalUpdate()
+    def sendSignalUpdate()
     {
-        super.onSignalUpdate()
         writeStreamOf(10).writeByte(signal)
     }
 
-    override def discoverOverride(r:Int, part:CircuitPart) = part match
-    {
-        case pow:IPoweredCircuitPart => pow.canConnectRS(rotFromStraight(r))
-        case _ => super.discoverOverride(r, part)
-    }
-
-    override def canConnectRS(r:Int) = ICPropagator.redwiresConnectable
-
-    override def getRedwireSignal(r:Int) = getSignal
-
-    override def getSignal = signal&0xFF
-    override def setSignal(sig:Int){signal = sig.toByte}
-
-    override def rsOutputLevel(r:Int) =
-        if (ICPropagator.redwiresProvidePower && maskConnects(r)) (signal&0xFF)+16
-        else 0
-
-    override def canConnectPart(part:CircuitPart, r:Int) = part match
-    {
+    override def canConnectTile(part:ICTile, r:Int) = part match {
         case re:IICRedwireEmitter => true
-        case pc:IPoweredCircuitPart => true
+        case pc:IRedwireICGate => true
         case _ => false
     }
 
-    override def resolveSignal(part:Any, r:Int) = part match
-    {
-        case t:IRedwireICPart if t.diminishOnSide(r) => t.getRedwireSignal(r)-1
-        case t:IICRedwireEmitter => t.getRedwireSignal(r)
-        case t:IPoweredCircuitPart => t.rsOutputLevel(r)
-        case _ => 0
+    override def discoverOverride(r:Int, part:ICTile) = part match {
+        case gate:IRedwireICGate => gate.canConnectRS(rotFromStraight(r))
+        case _ => false
     }
 
-    override def calculateSignal =
+    override def isNetOutput:Boolean =
     {
-        var s = 0
-        ICPropagator.redwiresProvidePower = false
-        def raise(sig:Int){ if (sig > s) s = sig }
-        for (r <- 0 until 4) if (maskConnects(r)) raise(calcSignal(r))
-        ICPropagator.redwiresProvidePower = true
-        s
+        for (r <- 0 until 4) if (maskConnects(r)) getStraight(r) match {
+            case gate:IRedwireICGate =>
+                if(gate.canInputFrom(rotFromStraight(r))) return true
+            case _ =>
+        }
+        false
+    }
+
+    override def isNetInput:Boolean =
+    {
+        for (r <- 0 until 4) if (maskConnects(r)) getStraight(r) match {
+            case gate:IRedwireICGate =>
+                if (gate.canOutputTo(rotFromStraight(r))) return true
+            case _ =>
+        }
+        false
+    }
+
+    override def cacheStateRegisters(linker:ISELinker)
+    {
+        stateRegisters = linker.getAllWireNetRegisters(new Point(x, y))
+    }
+
+    override def onRegistersChanged(regIDs:Set[Int])
+    {
+        try {
+            val oldSignal = signal
+            signal = if (stateRegisters.exists(reg =>
+                editor.simEngineContainer.simEngine.getRegVal[Byte](reg) != 0))
+                255.toByte else 0
+
+            if (oldSignal != signal)
+                sendSignalUpdate()
+        } catch {
+            case e:ClassCastException =>
+                print("ERROR")
+
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -112,16 +121,21 @@ abstract class RedwireICPart extends WireICPart with TICRSAcquisitions with TRSP
         val data = Seq.newBuilder[String]
 
         import com.mojang.realmsclient.gui.ChatFormatting._
-        if (detailLevel >= 3) data += GRAY+"signal: 0x"+Integer.toHexString(signal&0xFF)
-        else if (detailLevel >= 2) data += GRAY+"state: "+(if (signal != 0) "high" else "low")
+        data += GRAY+s"registers: $stateRegisters"
+//        if (detailLevel >= 3) data += GRAY+"signal: 0x"+Integer.toHexString(signal&0xFF)
+//        else if (detailLevel >= 2) data += GRAY+"state: "+(if (signal != 0) "high" else "low")
 
         super.getRolloverData(detailLevel)++data.result()
     }
 }
 
-class AlloyWireICPart extends RedwireICPart
+class AlloyWireICTile extends RedwireICTile
 {
-    override def getPartType = CircuitPartDefs.AlloyWire
+    override def getPartType = ICTileDefs.AlloyWire
+
+    override def getTravelMask = 0xFFFF
+
+    override def getMixerMask = 0xFFFF
 
     @SideOnly(Side.CLIENT)
     override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
@@ -137,7 +151,7 @@ class AlloyWireICPart extends RedwireICPart
     override def getPickOp = CircuitOpDefs.AlloyWire.getOp
 }
 
-class InsulatedWireICPart extends RedwireICPart with IInsulatedRedwireICPart
+class InsulatedWireICTile extends RedwireICTile with IInsulatedRedwireICPart
 {
     var colour:Byte = 0
 
@@ -165,20 +179,18 @@ class InsulatedWireICPart extends RedwireICPart with IInsulatedRedwireICPart
         colour = in.readByte()
     }
 
-    override def getPartType = CircuitPartDefs.InsulatedWire
+    override def getPartType = ICTileDefs.InsulatedWire
 
-    override def resolveSignal(part:Any, r:Int) = part match
-    {
-        case b:IBundledCableICPart => (b.getBundledSignal.apply(colour)&0xFF)-1
-        case _ => super.resolveSignal(part, r)
-    }
-
-    override def canConnectPart(part:CircuitPart, r:Int) = part match
+    override def canConnectTile(part:ICTile, r:Int) = part match
     {
         case b:IBundledCableICPart => true
-        case iw:InsulatedWireICPart => iw.colour == colour
-        case _ => super.canConnectPart(part, r)
+        case iw:InsulatedWireICTile => iw.colour == colour
+        case _ => super.canConnectTile(part, r)
     }
+
+    override def getTravelMask = 1<<getInsulatedColour
+
+    override def getMixerMask = 0
 
     override def getInsulatedColour = colour
 

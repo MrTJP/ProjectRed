@@ -26,14 +26,14 @@ object RenderCircuit
         ICComponentStore.registerIcons(reg)
     }
 
-    def renderOrtho(ccrs:CCRenderState, circuit:IntegratedCircuit, x:Double, y:Double, xSize:Double, ySize:Double, frame:Float)
+    def renderOrtho(ccrs:CCRenderState, circuit:ICTileMapEditor, x:Double, y:Double, xSize:Double, ySize:Double, frame:Float)
     {
         val t = ICComponentStore.orthoGridT(xSize, ySize) `with` new Translation(x, y, 0)
         renderBoard(ccrs, circuit, t, true)
         renderCircuit(ccrs, circuit, t, true, frame)
     }
 
-    def renderDynamic(ccrs:CCRenderState, circuit:IntegratedCircuit, t:Transformation, frame:Float)
+    def renderDynamic(ccrs:CCRenderState, circuit:ICTileMapEditor, t:Transformation, frame:Float)
     {
         disableDepth()
         renderBoard(ccrs, circuit, t, true)
@@ -41,14 +41,14 @@ object RenderCircuit
         enableDepth()
     }
 
-    def renderBoard(ccrs:CCRenderState, circuit:IntegratedCircuit, t:Transformation, ortho:Boolean)
+    def renderBoard(ccrs:CCRenderState, circuit:ICTileMapEditor, t:Transformation, ortho:Boolean)
     {
         PrefboardRenderer.render(ccrs, circuit, t, ortho)
     }
 
-    def renderCircuit(ccrs:CCRenderState, circuit:IntegratedCircuit, t:Transformation, ortho:Boolean, frame:Float)
+    def renderCircuit(ccrs:CCRenderState, circuit:ICTileMapEditor, t:Transformation, ortho:Boolean, frame:Float)
     {
-        for (((x, y), part) <- circuit.parts)
+        for (((x, y), part) <- circuit.tileMapContainer.tiles)
         {
             val tlist = new TransformationList(
                 new Scale(1.0/circuit.size.width, 1, 1.0/circuit.size.height),
@@ -130,7 +130,7 @@ object PrefboardRenderer
         edgeModels((w, h))
     }
 
-    def render(ccrs:CCRenderState, circuit:IntegratedCircuit, t:Transformation, ortho:Boolean)
+    def render(ccrs:CCRenderState, circuit:ICTileMapEditor, t:Transformation, ortho:Boolean)
     {
         val w = circuit.size.width
         val h = circuit.size.height
@@ -167,7 +167,7 @@ object RenderICAlloyWire
         signal = 0xFF.toByte
     }
 
-    def prepairDynamic(part:AlloyWireICPart)
+    def prepairDynamic(part:AlloyWireICTile)
     {
         connMap = part.connMap
         signal = part.signal
@@ -195,7 +195,7 @@ object RenderICInsulatedWire
         colour = c.toByte
     }
 
-    def prepairDynamic(part:InsulatedWireICPart)
+    def prepairDynamic(part:InsulatedWireICTile)
     {
         connMap = part.connMap
         signal = part.signal
@@ -224,7 +224,7 @@ object RenderICBundledCable
         colour = c.toByte
     }
 
-    def prepairDynamic(part:BundledCableICPart)
+    def prepairDynamic(part:BundledCableICTile)
     {
         connMap = part.connMap
         colour = part.colour

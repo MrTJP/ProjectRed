@@ -23,7 +23,7 @@ object CircuitOpDefs extends Enum
     val Erase = OpDef(new CircuitOpErase)
 
     //primitives
-    val Torch = OpDef(new CircuitOpTorch)
+//    val Torch = OpDef(new CircuitOpTorch)
     val Lever = OpDef(new CircuitOpLever)
     val Button = OpDef(new CircuitOpButton)
 
@@ -77,26 +77,26 @@ object CircuitOpDefs extends Enum
     val NORGate = OpDef(new OpGate(ICGateDefinition.NOR.ordinal))
     val NOTGate = OpDef(new OpGate(ICGateDefinition.NOT.ordinal))
     val ANDGate = OpDef(new OpGate(ICGateDefinition.AND.ordinal))
-    val NANDGate = OpDef(new OpGate(ICGateDefinition.NAND.ordinal))
-    val XORGate = OpDef(new OpGate(ICGateDefinition.XOR.ordinal))
-    val XNORGate = OpDef(new OpGate(ICGateDefinition.XNOR.ordinal))
-    val BufferGate = OpDef(new OpGate(ICGateDefinition.Buffer.ordinal))
-    val MultiplexerGate = OpDef(new OpGate(ICGateDefinition.Multiplexer.ordinal))
-    val PulseFormerGate = OpDef(new OpGate(ICGateDefinition.Pulse.ordinal))
-    val RepeaterGate = OpDef(new OpGate(ICGateDefinition.Repeater.ordinal))
-    val RandomizerGate = OpDef(new OpGate(ICGateDefinition.Randomizer.ordinal))
-    val SRLatchGate = OpDef(new OpGate(ICGateDefinition.SRLatch.ordinal))
-    val ToggleLatchGate = OpDef(new OpGate(ICGateDefinition.ToggleLatch.ordinal))
-    val TransparentLatchGate = OpDef(new OpGate(ICGateDefinition.TransparentLatch.ordinal))
-    val TimerGate = OpDef(new OpGate(ICGateDefinition.Timer.ordinal))
-    val SequencerGate = OpDef(new OpGate(ICGateDefinition.Sequencer.ordinal))
-    val CounterGate = OpDef(new OpGate(ICGateDefinition.Counter.ordinal))
-    val StateCellGate = OpDef(new OpGate(ICGateDefinition.StateCell.ordinal))
-    val SynchronizerGate = OpDef(new OpGate(ICGateDefinition.Synchronizer.ordinal))
-    val DecRandomizerGate = OpDef(new OpGate(ICGateDefinition.DecRandomizer.ordinal))
-    val NullCellGate = OpDef(new OpGate(ICGateDefinition.NullCell.ordinal))
-    val InvertCellGate = OpDef(new OpGate(ICGateDefinition.InvertCell.ordinal))
-    val BufferCellGate = OpDef(new OpGate(ICGateDefinition.BufferCell.ordinal))
+//    val NANDGate = OpDef(new OpGate(ICGateDefinition.NAND.ordinal))
+//    val XORGate = OpDef(new OpGate(ICGateDefinition.XOR.ordinal))
+//    val XNORGate = OpDef(new OpGate(ICGateDefinition.XNOR.ordinal))
+//    val BufferGate = OpDef(new OpGate(ICGateDefinition.Buffer.ordinal))
+//    val MultiplexerGate = OpDef(new OpGate(ICGateDefinition.Multiplexer.ordinal))
+//    val PulseFormerGate = OpDef(new OpGate(ICGateDefinition.Pulse.ordinal))
+//    val RepeaterGate = OpDef(new OpGate(ICGateDefinition.Repeater.ordinal))
+//    val RandomizerGate = OpDef(new OpGate(ICGateDefinition.Randomizer.ordinal))
+//    val SRLatchGate = OpDef(new OpGate(ICGateDefinition.SRLatch.ordinal))
+//    val ToggleLatchGate = OpDef(new OpGate(ICGateDefinition.ToggleLatch.ordinal))
+//    val TransparentLatchGate = OpDef(new OpGate(ICGateDefinition.TransparentLatch.ordinal))
+//    val TimerGate = OpDef(new OpGate(ICGateDefinition.Timer.ordinal))
+//    val SequencerGate = OpDef(new OpGate(ICGateDefinition.Sequencer.ordinal))
+//    val CounterGate = OpDef(new OpGate(ICGateDefinition.Counter.ordinal))
+//    val StateCellGate = OpDef(new OpGate(ICGateDefinition.StateCell.ordinal))
+//    val SynchronizerGate = OpDef(new OpGate(ICGateDefinition.Synchronizer.ordinal))
+//    val DecRandomizerGate = OpDef(new OpGate(ICGateDefinition.DecRandomizer.ordinal))
+//    val NullCellGate = OpDef(new OpGate(ICGateDefinition.NullCell.ordinal))
+//    val InvertCellGate = OpDef(new OpGate(ICGateDefinition.InvertCell.ordinal))
+//    val BufferCellGate = OpDef(new OpGate(ICGateDefinition.BufferCell.ordinal))
 
     val INSULATED = WhiteInsulatedWire to BlackInsulatedWire toArray
     val BUNDLED = NeutralBundledCable to BlackBundledCable toArray
@@ -137,35 +137,35 @@ trait CircuitOp
 {
     var id = -1
 
-    def checkOp(circuit:IntegratedCircuit, start:Point, end:Point):Boolean
+    def checkOp(circuit:ICTileMapEditor, start:Point, end:Point):Boolean
 
-    def writeOp(circuit:IntegratedCircuit, start:Point, end:Point, out:MCDataOutput)
-    def readOp(circuit:IntegratedCircuit, in:MCDataInput)
+    def writeOp(circuit:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
+    def readOp(circuit:ICTileMapEditor, in:MCDataInput)
 
     @SideOnly(Side.CLIENT)
     def getOpName:String
     @SideOnly(Side.CLIENT)
-    def renderHover(ccrs:CCRenderState, circuit:IntegratedCircuit, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    def renderHover(ccrs:CCRenderState, circuit:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     @SideOnly(Side.CLIENT)
-    def renderDrag(ccrs:CCRenderState, circuit:IntegratedCircuit, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    def renderDrag(ccrs:CCRenderState, circuit:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     @SideOnly(Side.CLIENT)
     def renderImage(ccrs:CCRenderState, x:Double, y:Double, width:Double, height:Double)
 }
 
 abstract class SimplePlacementOp extends CircuitOp
 {
-    def canPlace(circuit:IntegratedCircuit, point:Point):Boolean =
+    def canPlace(circuit:ICTileMapEditor, point:Point):Boolean =
         !isOnBorder(circuit.size, point)
 
-    override def checkOp(circuit:IntegratedCircuit, start:Point, end:Point) =
+    override def checkOp(circuit:ICTileMapEditor, start:Point, end:Point) =
         canPlace(circuit, end) && circuit.getPart(end.x, end.y) == null
 
-    override def writeOp(circuit:IntegratedCircuit, start:Point, end:Point, out:MCDataOutput)
+    override def writeOp(circuit:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
     {
         out.writeByte(end.x).writeByte(end.y)
     }
 
-    override def readOp(circuit:IntegratedCircuit, in:MCDataInput)
+    override def readOp(circuit:ICTileMapEditor, in:MCDataInput)
     {
         val point = Point(in.readUByte(), in.readUByte())
         if (canPlace(circuit, point) && circuit.getPart(point.x, point.y) == null)
@@ -180,7 +180,7 @@ abstract class SimplePlacementOp extends CircuitOp
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderHover(ccrs:CCRenderState, circuit:IntegratedCircuit, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderHover(ccrs:CCRenderState, circuit:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
         if (circuit.getPart(point) != null) return
 
@@ -193,7 +193,7 @@ abstract class SimplePlacementOp extends CircuitOp
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDrag(ccrs:CCRenderState, circuit:IntegratedCircuit, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderDrag(ccrs:CCRenderState, circuit:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
         if (circuit.getPart(end) != null) return
 
@@ -206,5 +206,5 @@ abstract class SimplePlacementOp extends CircuitOp
 
     def doPartRender(ccrs:CCRenderState, t:Transformation)
 
-    def createPart:CircuitPart
+    def createPart:ICTile
 }

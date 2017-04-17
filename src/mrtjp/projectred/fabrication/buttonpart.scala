@@ -9,11 +9,14 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
 import com.mojang.realmsclient.gui.ChatFormatting
+import mrtjp.core.vec.Point
+import mrtjp.projectred.fabrication.SEIntegratedCircuit.REG_ZERO
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class ButtonICPart extends CircuitPart with TICAcquisitions with IPoweredCircuitPart with TClientNetCircuitPart
+class ButtonICPart extends ICTile with TICTileAcquisitions with IRedwireICGate with TClientNetICTile with ISEGateTile
 {
+    val outputRegs = Array(REG_ZERO, REG_ZERO, REG_ZERO, REG_ZERO)
     var on = false
     var sched = -1L
 
@@ -56,31 +59,27 @@ class ButtonICPart extends CircuitPart with TICAcquisitions with IPoweredCircuit
 
     def press()
     {
-        if (!on)
-        {
+        if (!on) {
             on = true
-            notify(0xF)
+            pushToRegisters()
             sendStateUpdate()
-
-            sched = world.network.getWorld.getTotalWorldTime+20 //schedule depress
+            sched = editor.network.getWorld.getTotalWorldTime+20 //schedule depress
         }
     }
 
     def depress()
     {
-        if (on)
-        {
+        if (on) {
             on = false
-            notify(0xF)
+            pushToRegisters()
             sendStateUpdate()
-
             sched = -1 //clear depress schedule
         }
     }
 
     override def update()
     {
-        if (sched != -1 && world.network.getWorld.getTotalWorldTime >= sched)
+        if (sched != -1 && editor.network.getWorld.getTotalWorldTime >= sched)
             depress()
     }
 
@@ -89,20 +88,42 @@ class ButtonICPart extends CircuitPart with TICAcquisitions with IPoweredCircuit
         writeStreamOf(1).writeBoolean(on)
     }
 
-    override def getPartType = CircuitPartDefs.Button
+    override def getPartType = ICTileDefs.Button
 
     override def onAdded()
     {
-        if (!world.network.isRemote) notify(0xF)
+        if (!editor.network.isRemote) notify(0xF)
     }
 
     override def onRemoved()
     {
-        if (!world.network.isRemote) notify(0xF)
+        if (!editor.network.isRemote) notify(0xF)
     }
 
-    override def rsOutputLevel(r:Int) = if (on) 255 else 0
-    override def canConnectRS(r:Int) = true
+    def pushToRegisters()
+    {
+        for (r <- 0 until 4)
+            editor.simEngineContainer.simEngine.queueRegVal[Byte](outputRegs(r), if (on) 1 else 0)
+
+        editor.simEngineContainer.simEngine.repropagate()
+    }
+
+    override def onRegistersChanged(regIDs:Set[Int]){} //we dont care if other registers change
+
+    override def canOutputTo(r:Int) = true
+
+    override def canInputFrom(r:Int) = false //this is output only 'gate'
+
+    override def buildImplicitWireNet(r:Int):IWireNet = null //TODO
+
+    override def allocateOrFindRegisters(linker:ISELinker)
+    {
+        val pos = new Point(x, y)
+        for (r <- 0 until 4)
+            outputRegs(r) = linker.findOutputRegister(pos, r)
+    }
+
+    override def declareOperations(linker:ISELinker){} //no gate op, we simply write to output registers directly
 
     @SideOnly(Side.CLIENT)
     override def onClicked()
@@ -141,7 +162,7 @@ class CircuitOpButton extends SimplePlacementOp
         RenderICButton.render(ccrs, t, true)
     }
 
-    override def createPart = CircuitPartDefs.Button.createPart
+    override def createPart = ICTileDefs.Button.createPart
 
     @SideOnly(Side.CLIENT)
     override def getOpName = "Button"

@@ -19,7 +19,6 @@ import mrtjp.core.gui._
 import mrtjp.core.vec.{Point, Rect, Size}
 import mrtjp.projectred.fabrication.ICComponentStore._
 import net.minecraft.client.gui.Gui
-import net.minecraft.client.renderer.{GlStateManager, RenderHelper}
 import net.minecraft.client.renderer.GlStateManager._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
@@ -30,7 +29,7 @@ import scala.collection.JavaConversions._
 import scala.collection.convert.WrapAsJava
 import scala.collection.immutable.ListMap
 
-class PrefboardNode(circuit:IntegratedCircuit) extends TNode
+class PrefboardNode(circuit:ICTileMapEditor) extends TNode
 {
     var currentOp:CircuitOp = _
 
@@ -107,10 +106,6 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
                 }
                 finishRender(ccrs)
             }
-
-//            enableRescaleNormal()
-//            enableLighting()
-//            enableDepth()
         }
     }
 
@@ -151,7 +146,7 @@ class PrefboardNode(circuit:IntegratedCircuit) extends TNode
                 val gridP = toGridPoint(p)
                 circuit.getPart(gridP) match
                 {
-                    case gp:IGuiCircuitPart =>
+                    case gp:IGuiICTile =>
                         val currentlyOpen = children.collect{case cg:CircuitGui => cg}
                         if (!currentlyOpen.exists(_.part == gp))
                         {
@@ -618,16 +613,16 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
             }
 
             addToolset("", Seq(Erase))
-            addToolset("Debug", Seq(Torch, Lever, Button))
+            addToolset("Debug", Seq(/*Torch,*/ Lever, Button))
             addToolset("", Seq(AlloyWire))
             addToolsetRange("Insulated wires", WhiteInsulatedWire, BlackInsulatedWire)
             addToolsetRange("Bundled cables", NeutralBundledCable, BlackBundledCable)
             addToolset("IOs", Seq(SimpleIO, BundledIO, AnalogIO))
-            addToolset("Primatives", Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate, MultiplexerGate))
-            addToolset("Timing and Clocks", Seq(PulseFormerGate, RepeaterGate, TimerGate, SequencerGate, StateCellGate))
-            addToolset("Latches", Seq(SRLatchGate, ToggleLatchGate, TransparentLatchGate))
-            addToolset("Cells", Seq(NullCellGate, InvertCellGate, BufferCellGate))
-            addToolset("Misc", Seq(RandomizerGate, CounterGate, SynchronizerGate, DecRandomizerGate))
+            addToolset("Primatives", Seq(ORGate, NORGate, NOTGate, ANDGate))//, NANDGate, XORGate, XNORGate, BufferGate, MultiplexerGate))
+//            addToolset("Timing and Clocks", Seq(PulseFormerGate, RepeaterGate, TimerGate, SequencerGate, StateCellGate))
+//            addToolset("Latches", Seq(SRLatchGate, ToggleLatchGate, TransparentLatchGate))
+//            addToolset("Cells", Seq(NullCellGate, InvertCellGate, BufferCellGate))
+//            addToolset("Misc", Seq(RandomizerGate, CounterGate, SynchronizerGate, DecRandomizerGate))
         }
 
         addChild(toolbar)
@@ -670,9 +665,9 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
                 val nic = new NewICNode
                 nic.position = Point(size/2)-Point(nic.size/2)
                 nic.completionDelegate = {() =>
-                    val ic = new IntegratedCircuit
-                    ic.name = nic.getName
-                    ic.size = nic.selectedBoardSize*16
+                    val ic = new ICTileMapEditor
+                    ic.tileMapContainer.name = nic.getName
+                    ic.tileMapContainer.size = nic.selectedBoardSize*16
                     tile.sendNewICToServer(ic)
                 }
                 addChild(nic)
