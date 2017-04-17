@@ -86,8 +86,7 @@ abstract class WireICTile extends ICTile with TConnectableICTile with ISEWireTil
 
     override def postErrors =
     {
-        Integer.bitCount(connMap&0xF) match
-        {
+        Integer.bitCount(connMap&0xF) match {
             case 0 => ("Unreachable wiring", EnumColour.RED.ordinal)
             case 1 => ("Useless wiring", EnumColour.YELLOW.ordinal)
             case _ => null
@@ -154,13 +153,6 @@ class WireNet(ic:ICTileMapEditor, p:Point) extends IWireNet
     val points = MSet[Point]()
 
     private val channels = MSet[WireNetChannel]()
-    @deprecated
-    private val pointToColourMap = MMap[Point, Int]() //any non-bus point in net to colour
-    @deprecated
-    private val colourToChannelMap = MMap[Int, WireNetChannel]() //any colour 0-15 to its channel
-    @deprecated
-    private val ioPointToChannelMap = MMap[Point, WireNetChannel]() //io point to channel that it drives/is driven by
-
     private val pointToChannelMap = MMap[Point, WireNetChannel]()
 
     private val busWires = MSet[Point]()
@@ -192,57 +184,9 @@ class WireNet(ic:ICTileMapEditor, p:Point) extends IWireNet
                 points += next
                 searchForWireNet(rest ++ upNext.result())
             case _ =>
-                //points += next //dont add non-wires
                 searchForWireNet(rest)
         }
     }
-
-    @deprecated private def searchForClosestPortColour(open:Seq[Point], closed:Set[Point] = Set()):Int = open match {
-        case Seq() => 0 //default to white port if this is a red alloy only net
-        case Seq(next, rest@_*) => ic.getPart(next) match {
-            //TODO needs case for bundled
-            case w:WireICTile with IInsulatedRedwireICPart =>
-                w.getInsulatedColour
-            case w:WireICTile with IRedwireICPart =>
-                val upNext = Seq.newBuilder[Point]
-                for (r <- 0 until 4) if (w.maskConnects(r)) {
-                    val p = next.offset(r)
-                    if (!closed(p) && !open.contains(p)) upNext += p
-                }
-                searchForClosestPortColour(rest ++ upNext.result(), closed + next)
-            case _ =>
-                searchForClosestPortColour(rest, closed + next)
-        }
-    }
-
-    @deprecated private def searchForPortGroup(colour:Int):Set[Int] =
-    {
-        val wires = portWires.filter { ic.getPart(_) match {
-            case w:WireICTile with IInsulatedRedwireICPart => w.getInsulatedColour == colour
-            case _ => false
-        }
-        }.toSeq
-
-        def iterate(open:Seq[Point], closed:Set[Point] = Set(), ports:Set[Int] = Set(colour)):Set[Int] = open match {
-            case Seq() => ports
-            case Seq(next, rest@_*) => ic.getPart(next) match {
-                case w:WireICTile with IRedwireICPart =>
-                    val upNext = Seq.newBuilder[Point]
-                    for (r <- 0 until 4) if (w.maskConnects(r)) {
-                        val p = next.offset(r)
-                        if (!closed(p) && !open.contains(p)) upNext += p
-                    }
-                    iterate(rest ++ upNext.result(), closed + next, if (w.isInstanceOf[IInsulatedRedwireICPart])
-                        ports + w.asInstanceOf[IInsulatedRedwireICPart].getInsulatedColour else ports)
-                case _ =>
-                    iterate(rest, closed + next, ports)
-            }
-        }
-
-        iterate(wires)
-    }
-
-    @deprecated private def getMaskForPorts(ports:Set[Int]):Int = ports.foldLeft(0) { (p, mask) => mask|1<<p }
 
     def mapChannelForPoint(p:Point):Seq[Point] =
     {
@@ -258,7 +202,7 @@ class WireNet(ic:ICTileMapEditor, p:Point) extends IWireNet
                 case w:WireICTile =>
                     val upNext = Seq.newBuilder[Node]
                     for (r <- 0 until 4) if (w.maskConnects(r)) {
-                        ic.getPart(p.offset(r)) match {
+                        ic.getPart(next.pos.offset(r)) match {
                             case w2:WireICTile =>
                                 val newMask = (1<<next.colour & w2.getTravelMask) | w2.getMixerMask
                                 val routes = next --> (r, newMask)
@@ -270,7 +214,6 @@ class WireNet(ic:ICTileMapEditor, p:Point) extends IWireNet
                         }
                     }
                     iterate(rest ++ upNext.result(), closed + next, (points :+ next.pos).distinct)
-//                case _ => iterate(rest, closed + next, points) //should never happen
             }
         }
 
@@ -282,32 +225,20 @@ class WireNet(ic:ICTileMapEditor, p:Point) extends IWireNet
     {
         searchForWireNet(Seq(p))
 
-        //map every non-bus wire to a colour
-        for (p <- singleWires ++ portWires) {
-            val colour = searchForClosestPortColour(Seq(p))
-            pointToColourMap += p -> colour
-        }
-
         //create channels for all inputs and outputs
         def getOrCreateChannel(p:Point):WireNetChannel = {
-//            val colour = pointToColourMap(p)
-//            colourToChannelMap.get(colour) match {
-//                case Some(ch) => ch
-//                case _ =>
-//                    val colours = searchForPortGroup(colour)
-//                    val ch = new WireNetChannel(getMaskForPorts(colours))
-//                    channels += ch
-//                    for (c <- colours)
-//                        colourToChannelMap += c -> ch
-//                    ch
-//            }
-
             pointToChannelMap.get(p) match {
                 case Some(c) => c
                 case _ =>
                     val points = mapChannelForPoint(p)
                     val ch = new WireNetChannel
                     channels += ch
+
+                    /* TODO
+                       Potentially problematic, as points of bus wires can be shared between channels.
+                       Solution is to keep a pointToChannels map instead [point -> Seq(channel)]
+                       Not dangerous as buses are not currently ever used as io for the wire net
+                     */
                     for (p <- points)
                         pointToChannelMap += p -> ch
                     ch
@@ -322,10 +253,6 @@ class WireNet(ic:ICTileMapEditor, p:Point) extends IWireNet
             val channel = getOrCreateChannel(o)
             channel.outputs += o
         }
-
-        for (ch <- channels)
-            for (p <- ch.outputs ++ ch.inputs)
-                ioPointToChannelMap += p -> ch
     }
 
     override def allocateRegisters(linker:ISELinker)
@@ -340,20 +267,15 @@ class WireNet(ic:ICTileMapEditor, p:Point) extends IWireNet
             ch.declareOperations(linker)
     }
 
-    override def getInputRegister(p:Point) = ioPointToChannelMap(p).getInputRegID(p)
+    override def getInputRegister(p:Point) = pointToChannelMap(p).getInputRegID(p)
 
-    override def getOutputRegister(p:Point) = ioPointToChannelMap(p).getOutputRegID
+    override def getOutputRegister(p:Point) = pointToChannelMap(p).getOutputRegID
 
     override def getChannelStateRegisters(p:Point) = //get all registers for the channel at this point
-    {
-//        val colour = pointToColourMap(p)
-//        if (colourToChannelMap.contains(colour)) {
-//            val channel = colourToChannelMap(colour)
-//            channel.getAllRegisters
-//        } else
-//            Set(REG_ZERO)
-        pointToChannelMap(p).getAllRegisters
-    }
+        pointToChannelMap.get(p) match {
+            case Some(channel) => channel.getAllRegisters
+            case _ => Set(REG_ZERO)
+        }
 }
 
 private object Node
