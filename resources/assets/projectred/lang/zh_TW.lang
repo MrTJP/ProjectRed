@@ -1,25 +1,33 @@
-itemGroup.projectred.core=紅石計劃:核心
+itemGroup.projectred.core=紅石計劃：核心
+itemGroup.projectred.expansion=紅石計劃：擴展
+itemGroup.projectred.transportation=紅石計劃：運輸
+itemGroup.projectred.exploration=紅石計劃：探勘
+itemGroup.projectred.illumination=紅石計劃：照明
+itemGroup.projectred.integration=紅石計劃：集成
+itemGroup.projectred.transmission=紅石計劃：傳輸
+itemGroup.projectred.fabrication=紅石計劃：生產
+itemGroup.projectred.compatibility=紅石計劃：相容
 
-item.projectred.core.itemResource.partplate.name=電路板
-item.projectred.core.itemResource.partconductiveplate.name=導電板
-item.projectred.core.itemResource.partwiredplate.name=線路板
-item.projectred.core.itemResource.partbundledplate.name=集束板
-item.projectred.core.itemResource.partanode.name=陽極
-item.projectred.core.itemResource.partcathode.name=陰極
-item.projectred.core.itemResource.partpointer.name=指針
-item.projectred.core.itemResource.partsiliconchip.name=矽晶片
-item.projectred.core.itemResource.partenergizedsiliconchip.name=充能矽晶片
-item.projectred.core.itemResource.partplatformedplate.name=底板
-item.projectred.core.itemResource.partredingot.name=紅石合金錠
-item.projectred.core.itemResource.partboule.name=矽晶錠
-item.projectred.core.itemResource.partsilicon.name=矽
-item.projectred.core.itemResource.partinfusedsilicon.name=浸漬矽
-item.projectred.core.itemResource.partenergizedsilicon.name=充能矽
-item.projectred.core.itemResource.partmotor.name=馬達
-item.projectred.core.itemResource.partcoppercoil.name=銅質線圈
-item.projectred.core.itemResource.partironcoil.name=鐵質線圈
-item.projectred.core.itemResource.partgoldcoil.name=金質線圈
 
+item.projectred.core.itemResource.plate.name=電路板
+item.projectred.core.itemResource.conductive_plate.name=導電板
+item.projectred.core.itemResource.wired_plate.name=線路板
+item.projectred.core.itemResource.bundled_plate.name=集束板
+item.projectred.core.itemResource.anode.name=陽極
+item.projectred.core.itemResource.cathode.name=陰極
+item.projectred.core.itemResource.pointer.name=指針
+item.projectred.core.itemResource.silicon_chip.name=矽晶片
+item.projectred.core.itemResource.energized_silicon_chip.name=充能矽晶片
+item.projectred.core.itemResource.platformed_plate.name=底板
+item.projectred.core.itemResource.red_ingot.name=紅石合金錠
+item.projectred.core.itemResource.boule.name=矽晶錠
+item.projectred.core.itemResource.silicon.name=矽
+item.projectred.core.itemResource.infused_silicon.name=浸漬矽
+item.projectred.core.itemResource.energized_silicon.name=充能矽
+item.projectred.core.itemResource.motor.name=馬達
+item.projectred.core.itemResource.copper_coil.name=銅質線圈
+item.projectred.core.itemResource.iron_coil.name=鐵質線圈
+item.projectred.core.itemResource.gold_coil.name=金質線圈
 item.projectred.core.itemResource.illumar0.name=白色螢光粉
 item.projectred.core.itemResource.illumar1.name=橘色螢光粉
 item.projectred.core.itemResource.illumar2.name=桃紅色螢光粉
@@ -36,44 +44,54 @@ item.projectred.core.itemResource.illumar12.name=棕色螢光粉
 item.projectred.core.itemResource.illumar13.name=綠色螢光粉
 item.projectred.core.itemResource.illumar14.name=紅色螢光粉
 item.projectred.core.itemResource.illumar15.name=黑色螢光粉
-
-item.projectred.core.itemResource.partcloth.name=平織布
-item.projectred.core.itemResource.partsail.name=帆
+item.projectred.core.itemResource.cloth.name=平織布
+item.projectred.core.itemResource.sail.name=帆
 item.projectred.core.itemResource.ruby.name=紅寶石
 item.projectred.core.itemResource.sapphire.name=藍寶石
 item.projectred.core.itemResource.peridot.name=橄欖石
-item.projectred.core.itemResource.partredironcomp.name=紅鐵混合物
-item.projectred.core.itemResource.partsandcoalcomp.name=沙煤混合物
-item.projectred.core.itemResource.partredsiliconcomp.name=紅矽混合物
-item.projectred.core.itemResource.partglowsiliconcomp.name=螢矽混合物
-
-item.projectred.core.itemResource.nullchip.name=空邏輯路由晶片
-item.projectred.core.itemResource.nullupgrd.name=空邏輯升級晶片
-item.projectred.core.itemResource.upgrd_lx.name=左型X升級
-item.projectred.core.itemResource.upgrd_ly.name=左型Y升級
-item.projectred.core.itemResource.upgrd_lz.name=左型Z升級
-item.projectred.core.itemResource.upgrd_rx.name=右型X升級
-item.projectred.core.itemResource.upgrd_ry.name=右型Y升級
-item.projectred.core.itemResource.upgrd_rz.name=右型Z升級
-
-
+item.projectred.core.itemResource.red_iron_comp.name=紅鐵混合物
+item.projectred.core.itemResource.sand_coal_comp.name=沙煤混合物
+item.projectred.core.itemResource.red_silicon_comp.name=紅矽混合物
+item.projectred.core.itemResource.glow_silicon_comp.name=螢矽混合物
+item.projectred.core.itemResource.null_chip.name=空邏輯路由晶片
+item.projectred.core.itemResource.copper_ingot.name=銅錠
+item.projectred.core.itemResource.tin_ingot.name=錫錠
+item.projectred.core.itemResource.silver_ingot.name=銀錠
+item.projectred.core.itemResource.electrotine_ingot.name=電石合金錠
+item.projectred.core.itemResource.electrotine_dust.name=電石
+item.projectred.core.itemResource.electrotine_iron_comp.name=電石鐵混合物
+item.projectred.core.itemResource.electrotine_silicon_comp.name=電石矽混合物
+item.projectred.core.itemResource.electro_silicon.name=電矽
 item.projectred.core.drawplate.name=起模板
 item.projectred.core.multimeter.name=線路除錯器
 item.projectred.core.screwdriver.name=螺絲刀
 item.projectred.core.routerUtility.name=路由器工具
-item.projectred.core.datacard.name=資料卡
 
 
-
-
-itemGroup.projectred.expansion=紅石計劃:擴展
+item.projectred.expansion.batteryEmpty.name=電池
+item.projectred.expansion.battery.name=電池
+item.projectred.expansion.screwdriverElectric.name=電動螺絲起子
+item.projectred.expansion.jetpack.name=噴射背包
+item.projectred.expansion.enderPearlInfused.name=Infused Ender Pearl
+item.projectred.expansion.plan.name=Recipe Plan
+item.projectred.expansion.solarPanel.name=太陽能板
+tile.projectred.expansion.machine1|0.name=電磁熔爐
+tile.projectred.expansion.machine1|1.name=電石發電機
 tile.projectred.expansion.machine2|0.name=方塊破壞機
 tile.projectred.expansion.machine2|1.name=物品輸入機
 tile.projectred.expansion.machine2|2.name=放置機
-tile.projectred.expansion.machine2|12.name=盒子破壞機
+tile.projectred.expansion.machine2|3.name=Filtered Importer
+tile.projectred.expansion.machine2|4.name=Fire Starter
+tile.projectred.expansion.machine2|5.name=電池盒
+tile.projectred.expansion.machine2|6.name=Charging Bench
+tile.projectred.expansion.machine2|7.name=Teleposer
+tile.projectred.expansion.machine2|8.name=Frame Motor
+tile.projectred.expansion.machine2|9.name=Frame Linear Actuator
+tile.projectred.expansion.machine2|10.name=Project Bench
+tile.projectred.expansion.machine2|11.name=Auto Crafting Bench
+tile.projectred.expansion.machine2|12.name=鑽石方塊破壞機
+enchantment.projectred.expansion.fuelEfficiency=Fuel Efficiency
 
-
-itemGroup.projectred.transportation=紅石計劃:運輸
 
 item.projectred.transportation.routingChip|0.name=物品響應晶片
 item.projectred.transportation.routingChip|1.name=動態物品響應晶片
@@ -83,25 +101,26 @@ item.projectred.transportation.routingChip|4.name=物品抽取晶片
 item.projectred.transportation.routingChip|5.name=物品廣播晶片
 item.projectred.transportation.routingChip|6.name=物品組管理晶片
 item.projectred.transportation.routingChip|7.name=物品合成晶片
-
+item.projectred.transportation.routingChip|8.name=Item Crafting Extension chip
 item.projectred.transportation.routerUtility.name=路由器工具
-
 item.projectred.transportation.pipe|0.name=物品運輸管道
 item.projectred.transportation.pipe|1.name=路由交錯管道
 item.projectred.transportation.pipe|2.name=路由介面管道
 item.projectred.transportation.pipe|3.name=路由合成管道
 item.projectred.transportation.pipe|4.name=路由需求管道
-item.projectred.transportation.pipe|5.name=路由擴充管道
-item.projectred.transportation.pipe|6.name=路由防火牆管道
-item.projectred.transportation.pipe|7.name=壓力管
-item.projectred.transportation.pipe|8.name=抗壓管
+item.projectred.transportation.pipe|32.name=網路閥管道
+item.projectred.transportation.pipe|33.name=網路延遲管道
+item.projectred.transportation.pipe|64.name=壓力管
+item.projectred.transportation.pipe|65.name=抗壓管
 
-
-itemGroup.projectred.exploration=紅石計劃:探勘
 
 tile.projectred.exploration.ore|0.name=紅寶石礦
 tile.projectred.exploration.ore|1.name=藍寶石礦
 tile.projectred.exploration.ore|2.name=橄欖石礦
+tile.projectred.exploration.ore|3.name=銅礦
+tile.projectred.exploration.ore|4.name=錫礦
+tile.projectred.exploration.ore|5.name=銀礦
+tile.projectred.exploration.ore|6.name=電石礦
 tile.projectred.exploration.stone|0.name=大理石
 tile.projectred.exploration.stone|1.name=大理石磚
 tile.projectred.exploration.stone|2.name=玄武岩鵝卵石
@@ -110,6 +129,11 @@ tile.projectred.exploration.stone|4.name=玄武岩磚
 tile.projectred.exploration.stone|5.name=紅寶石磚
 tile.projectred.exploration.stone|6.name=藍寶石磚
 tile.projectred.exploration.stone|7.name=橄欖石磚
+tile.projectred.exploration.stone|8.name=銅磚
+tile.projectred.exploration.stone|9.name=錫磚
+tile.projectred.exploration.stone|10.name=銀磚
+tile.projectred.exploration.stone|11.name=電石磚
+tile.projectred.exploration.barrel|0.name=Item Barrel
 item.projectred.exploration.woolGin.name=軋線器
 item.projectred.exploration.backpack|0.name=白色背包
 item.projectred.exploration.backpack|1.name=橘色背包
@@ -127,6 +151,7 @@ item.projectred.exploration.backpack|12.name=棕色背包
 item.projectred.exploration.backpack|13.name=綠色背包
 item.projectred.exploration.backpack|14.name=紅色背包
 item.projectred.exploration.backpack|15.name=黑色背包
+item.projectred.exploration.athame.name=儀式匕首
 item.projectred.exploration.axeRuby.name=紅寶石斧
 item.projectred.exploration.axeSapphire.name=藍寶石斧
 item.projectred.exploration.axePeridot.name=橄欖石斧
@@ -178,29 +203,11 @@ tile.projectred.exploration.stoneWall|4.name=玄武岩磚牆
 tile.projectred.exploration.stoneWall|5.name=紅寶石牆
 tile.projectred.exploration.stoneWall|6.name=藍寶石牆
 tile.projectred.exploration.stoneWall|7.name=橄欖石牆
-tile.projectred.exploration.lily|0.name=突變百合
-item.projectred.exploration.lilyseed|0.name=白色突變百合種子
-item.projectred.exploration.lilyseed|1.name=橘色突變百合種子
-item.projectred.exploration.lilyseed|2.name=桃紅色突變百合種子
-item.projectred.exploration.lilyseed|3.name=淺藍色突變百合種子
-item.projectred.exploration.lilyseed|4.name=黃色突變百合種子
-item.projectred.exploration.lilyseed|5.name=淺綠色突變百合種子
-item.projectred.exploration.lilyseed|6.name=粉紅色突變百合種子
-item.projectred.exploration.lilyseed|7.name=灰色突變百合種子
-item.projectred.exploration.lilyseed|8.name=淺灰色突變百合種子
-item.projectred.exploration.lilyseed|9.name=青色突變百合種子
-item.projectred.exploration.lilyseed|10.name=紫色突變百合種子
-item.projectred.exploration.lilyseed|11.name=藍色突變百合種子
-item.projectred.exploration.lilyseed|12.name=棕色突變百合種子
-item.projectred.exploration.lilyseed|13.name=綠色突變百合種子
-item.projectred.exploration.lilyseed|14.name=紅色突變百合種子
-item.projectred.exploration.lilyseed|15.name=黑色突變百合種子
+tile.projectred.exploration.stoneWall|8.name=銅牆
+tile.projectred.exploration.stoneWall|9.name=錫牆
+tile.projectred.exploration.stoneWall|10.name=銀牆
+tile.projectred.exploration.stoneWall|11.name=電石牆
 
-
-
-
-
-itemGroup.projectred.illumination=紅石計劃:照明
 
 item.projectred.illumination.lantern|0.name=白色燈籠
 item.projectred.illumination.lantern|1.name=橘色燈籠
@@ -314,22 +321,22 @@ item.projectred.illumination.falloutLamp|12.name=棕色塵燈
 item.projectred.illumination.falloutLamp|13.name=綠色塵燈
 item.projectred.illumination.falloutLamp|14.name=紅色塵燈
 item.projectred.illumination.falloutLamp|15.name=黑色塵燈
-item.projectred.illumination.cageLampInverted|0.name=反相白色塵燈
-item.projectred.illumination.cageLampInverted|1.name=反相橘色塵燈
-item.projectred.illumination.cageLampInverted|2.name=反相桃紅色塵燈
-item.projectred.illumination.cageLampInverted|3.name=反相淺藍色塵燈
-item.projectred.illumination.cageLampInverted|4.name=反相黃色塵燈
-item.projectred.illumination.cageLampInverted|5.name=反相淺綠色塵燈
-item.projectred.illumination.cageLampInverted|6.name=反相粉紅色塵燈
-item.projectred.illumination.cageLampInverted|7.name=反相灰色塵燈
-item.projectred.illumination.cageLampInverted|8.name=反相淺灰色塵燈
-item.projectred.illumination.cageLampInverted|9.name=反相青色塵燈
-item.projectred.illumination.cageLampInverted|10.name=反相紫色塵燈
-item.projectred.illumination.cageLampInverted|11.name=反相藍色塵燈
-item.projectred.illumination.cageLampInverted|12.name=反相棕色塵燈
-item.projectred.illumination.cageLampInverted|13.name=反相綠色塵燈
-item.projectred.illumination.cageLampInverted|14.name=反相紅色塵燈
-item.projectred.illumination.cageLampInverted|15.name=反相黑色塵燈
+item.projectred.illumination.falloutLampInverted|0.name=反相白色塵燈
+item.projectred.illumination.falloutLampInverted|1.name=反相橘色塵燈
+item.projectred.illumination.falloutLampInverted|2.name=反相桃紅色塵燈
+item.projectred.illumination.falloutLampInverted|3.name=反相淺藍色塵燈
+item.projectred.illumination.falloutLampInverted|4.name=反相黃色塵燈
+item.projectred.illumination.falloutLampInverted|5.name=反相淺綠色塵燈
+item.projectred.illumination.falloutLampInverted|6.name=反相粉紅色塵燈
+item.projectred.illumination.falloutLampInverted|7.name=反相灰色塵燈
+item.projectred.illumination.falloutLampInverted|8.name=反相淺灰色塵燈
+item.projectred.illumination.falloutLampInverted|9.name=反相青色塵燈
+item.projectred.illumination.falloutLampInverted|10.name=反相紫色塵燈
+item.projectred.illumination.falloutLampInverted|11.name=反相藍色塵燈
+item.projectred.illumination.falloutLampInverted|12.name=反相棕色塵燈
+item.projectred.illumination.falloutLampInverted|13.name=反相綠色塵燈
+item.projectred.illumination.falloutLampInverted|14.name=反相紅色塵燈
+item.projectred.illumination.falloutLampInverted|15.name=反相黑色塵燈
 item.projectred.illumination.fixtureLight|0.name=白色燈具
 item.projectred.illumination.fixtureLight|1.name=橘色燈具
 item.projectred.illumination.fixtureLight|2.name=桃紅色燈具
@@ -396,10 +403,6 @@ item.projectred.illumination.cageLampInverted|14.name=反相紅色罩燈
 item.projectred.illumination.cageLampInverted|15.name=反相黑色罩燈
 
 
-
-
-itemGroup.int=紅石計劃:集成
-
 item.projectred.integration.gate|0.name=或邏輯閘
 item.projectred.integration.gate|1.name=反或邏輯閘
 item.projectred.integration.gate|2.name=反邏輯閘
@@ -412,9 +415,9 @@ item.projectred.integration.gate|8.name=多工器
 item.projectred.integration.gate|9.name=脈衝產生器
 item.projectred.integration.gate|10.name=中繼器
 item.projectred.integration.gate|11.name=隨機信號產生器
-item.projectred.integration.gate|12.name=RS正反器
-item.projectred.integration.gate|13.name=T正反器
-item.projectred.integration.gate|14.name=D閂鎖器
+item.projectred.integration.gate|12.name=RS 正反器
+item.projectred.integration.gate|13.name=T 正反器
+item.projectred.integration.gate|14.name=D 閂鎖器
 item.projectred.integration.gate|15.name=光照感測器
 item.projectred.integration.gate|16.name=雨雪感測器
 item.projectred.integration.gate|17.name=計時器
@@ -431,13 +434,11 @@ item.projectred.integration.gate|27.name=及單元
 item.projectred.integration.gate|28.name=匯流排隨機信號產生器
 item.projectred.integration.gate|29.name=匯流排轉換器
 item.projectred.integration.gate|30.name=匯流排輸入面板
-item.projectred.integration.gate|31.name=Stacking Latch
+item.projectred.integration.gate|31.name=Data Cell
 item.projectred.integration.gate|32.name=Segment Display Gate
 item.projectred.integration.gate|33.name=Decoding Randomizer
+item.projectred.integration.gate|34.name=積體電路閘
 
-
-
-itemGroup.projectred.transmission=紅石計劃:傳輸
 
 item.projectred.transmission.wire|0.name=紅色合金導線
 item.projectred.transmission.wire|1.name=白色絕緣導線
@@ -495,11 +496,14 @@ item.projectred.transmission.wireFramed|17.name=框架集束線纜
 item.projectred.transmission.wireFramed|34.name=框架100V電源線
 
 
-
-
-itemGroup.projectred.compatibility=紅石計劃:相容
-
 tile.projectred.compatibility.liqredStone.name=液態紅石
 tile.projectred.compatibility.liqcondredmetal.name=熔融紅石合金
 fluid.redstone.molten=液態紅石
 fluid.redmetal.molten=熔融紅石合金
+
+
+item.projectred.fabrication.icblueprint.name=積體電路藍圖
+item.projectred.fabrication.icchip|0.name=積體電路晶片
+item.projectred.fabrication.icchip|1.name=創造模式積體電路晶片
+tile.projectred.integration.icblock|0.name=積體電路工作台
+tile.projectred.integration.icblock|1.name=積體電路印刷機
