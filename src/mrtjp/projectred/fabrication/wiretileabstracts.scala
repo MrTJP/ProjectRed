@@ -94,7 +94,7 @@ abstract class WireICTile extends ICTile with TConnectableICTile with ISEWireTil
     }
 }
 
-class WireNetChannel//(mask:Int)
+class WireNetChannel
 {
     val inputs = MSet[Point]()
     val outputs = MSet[Point]()

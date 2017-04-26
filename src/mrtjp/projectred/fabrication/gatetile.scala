@@ -8,12 +8,13 @@ package mrtjp.projectred.fabrication
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
-import com.mojang.realmsclient.gui.ChatFormatting
 import mrtjp.core.util.Enum
 import mrtjp.core.vec.Point
 import mrtjp.projectred.integration.GateDefinition.GateDef
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+
+import scala.collection.mutable.ListBuffer
 
 abstract class GateICTile extends ICTile with TConnectableICTile with TICTileOrient with IGuiICTile with ISEGateTile
 {
@@ -181,11 +182,10 @@ abstract class GateICTile extends ICTile with TConnectableICTile with TICTileOri
     override def getPartName = ICGateDefinition(subID).name
 
     @SideOnly(Side.CLIENT)
-    override def getRolloverData(detailLevel:Int) =
+    override def buildRolloverData(buffer:ListBuffer[String])
     {
-        val s = Seq.newBuilder[String]
-        s ++= getLogicPrimitive.getRolloverData(this, detailLevel)
-        super.getRolloverData(detailLevel) ++ s.result().map(ChatFormatting.GRAY + _)
+        super.buildRolloverData(buffer)
+        getLogicPrimitive.buildRolloverData(this, buffer)
     }
 
     @SideOnly(Side.CLIENT)
@@ -199,7 +199,7 @@ abstract class GateICTile extends ICTile with TConnectableICTile with TICTileOri
 
     @SideOnly(Side.CLIENT)
     override def getPickOp =
-        CircuitOpDefs.values(CircuitOpDefs.SimpleIO.ordinal+subID).getOp
+        TileEditorOpDefs.values(TileEditorOpDefs.SimpleIO.ordinal+subID).getOp
 }
 
 abstract class ICGateLogic[T <: GateICTile]
@@ -219,10 +219,10 @@ abstract class ICGateLogic[T <: GateICTile]
     def onRegistersChanged(gate:T, regIDs:Set[Int]){}
 
     @SideOnly(Side.CLIENT)
-    def getRolloverData(gate:T, detailLevel:Int):Seq[String] = Seq.empty
+    def buildRolloverData(gate:T, buffer:ListBuffer[String]){}
 
     @SideOnly(Side.CLIENT)
-    def createGui(gate:T):CircuitGui = new ICGateGui(gate)
+    def createGui(gate:T):ICTileGui = new ICGateGui(gate)
 }
 
 trait TComplexGateICTile extends GateICTile
@@ -301,10 +301,10 @@ object ICGateDefinition extends Enum
     val NOT = ICGateDef("NOT gate", ICTileDefs.SimpleGate.id, gd.NOT)
     val AND = ICGateDef("AND gate", ICTileDefs.SimpleGate.id, gd.AND)
     val NAND = ICGateDef("NAND gate", ICTileDefs.SimpleGate.id, gd.NAND)
-//    val XOR = ICGateDef("XOR gate", CircuitPartDefs.SimpleGate.id, gd.XOR)
-//    val XNOR = ICGateDef("XNOR gate", CircuitPartDefs.SimpleGate.id, gd.XNOR)
-//    val Buffer = ICGateDef("Buffer gate", CircuitPartDefs.SimpleGate.id, gd.Buffer)
-//    val Multiplexer = ICGateDef("Multiplexer", CircuitPartDefs.SimpleGate.id, gd.Multiplexer)
+    val XOR = ICGateDef("XOR gate", ICTileDefs.SimpleGate.id, gd.XOR)
+    val XNOR = ICGateDef("XNOR gate", ICTileDefs.SimpleGate.id, gd.XNOR)
+    val Buffer = ICGateDef("Buffer gate", ICTileDefs.SimpleGate.id, gd.Buffer)
+    val Multiplexer = ICGateDef("Multiplexer", ICTileDefs.SimpleGate.id, gd.Multiplexer)
 //    val Pulse = ICGateDef("Pulse Former", CircuitPartDefs.SimpleGate.id, gd.Pulse)
 //    val Repeater = ICGateDef("Repeater", CircuitPartDefs.SimpleGate.id, gd.Repeater)
 //    val Randomizer = ICGateDef("Randomizer", CircuitPartDefs.SimpleGate.id, gd.Randomizer)

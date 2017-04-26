@@ -24,11 +24,11 @@ object RenderICGate
         new RenderOR,
         new RenderNOR,
         new RenderNOT,
-        new RenderAND
-//        new RenderNAND,
-//        new RenderXOR,
-//        new RenderXNOR,
-//        new RenderBuffer,
+        new RenderAND,
+        new RenderNAND,
+        new RenderXOR,
+        new RenderXNOR,
+        new RenderBuffer
 //        new RenderMultiplexer,
 //        new RenderPulse,
 //        new RenderRepeater,
@@ -267,140 +267,140 @@ class RenderAND extends ICGateRenderer[ComboGateICTile]
         torches(3).on = !wires(0).on
     }
 }
-//
-//class RenderNAND extends ICGateRenderer[ComboGateICPart]
-//{
-//    val wires = generateWireModels("NAND", 4)
-//    val torches = Seq(new RedstoneTorchModel(4, 8), new RedstoneTorchModel(12, 8),
-//        new RedstoneTorchModel(8, 8))
-//
-//    override val coreModels = Seq(new BaseComponentModel("NAND"))++wires++torches
-//
-//    override def prepareInv()
-//    {
-//        wires(0).on = true
-//        wires(1).on = false
-//        wires(2).on = false
-//        wires(3).on = false
-//        wires(1).disabled = false
-//        wires(2).disabled = false
-//        wires(3).disabled = false
-//        torches(0).on = true
-//        torches(1).on = true
-//        torches(2).on = true
-//    }
-//
-//    override def prepareDynamic(gate:ComboGateICPart, frame:Float)
-//    {
-//        wires(0).on = (gate.state&0x11) != 0
-//        wires(3).on = (gate.state&2) != 0
-//        wires(1).on = (gate.state&4) != 0
-//        wires(2).on = (gate.state&8) != 0
-//        wires(3).disabled = (gate.shape&1) != 0
-//        wires(1).disabled = (gate.shape&2) != 0
-//        wires(2).disabled = (gate.shape&4) != 0
-//        torches(0).on = !wires(2).on && !wires(2).disabled
-//        torches(1).on = !wires(3).on && !wires(3).disabled
-//        torches(2).on = !wires(1).on && !wires(1).disabled
-//    }
-//}
-//
-//class RenderXOR extends ICGateRenderer[ComboGateICPart]
-//{
-//    val wires = generateWireModels("XOR", 4)
-//    val torches = Seq(new RedstoneTorchModel(4.5, 8), new RedstoneTorchModel(11.5, 8),
-//        new RedstoneTorchModel(8, 12))
-//
-//    override val coreModels = Seq(new BaseComponentModel("XOR"))++wires++torches
-//
-//    override def prepareInv()
-//    {
-//        wires(0).on = false
-//        wires(3).on = false
-//        wires(2).on = false
-//        wires(1).on = true
-//        torches(0).on = false
-//        torches(1).on = false
-//        torches(2).on = true
-//    }
-//
-//    override def prepareDynamic(gate:ComboGateICPart, frame:Float)
-//    {
-//        wires(0).on = (gate.state&0x11) != 0
-//        wires(3).on = (gate.state&2) != 0
-//        wires(2).on = (gate.state&8) != 0
-//        wires(1).on = !wires(3).on && !wires(2).on
-//        torches(0).on = !wires(2).on && !wires(1).on
-//        torches(1).on = !wires(3).on && !wires(1).on
-//        torches(2).on = wires(1).on
-//    }
-//}
-//
-//class RenderXNOR extends ICGateRenderer[ComboGateICPart]
-//{
-//    val wires = generateWireModels("XNOR", 5)
-//    val torches = Seq(new RedstoneTorchModel(8, 2), new RedstoneTorchModel(4.5, 8),
-//        new RedstoneTorchModel(11.5, 8), new RedstoneTorchModel(8, 12))
-//
-//    override val coreModels = Seq(new BaseComponentModel("XNOR"))++wires++torches
-//
-//    override def prepareInv()
-//    {
-//        wires(0).on = false
-//        wires(3).on = false
-//        wires(2).on = false
-//        wires(1).on = false
-//        torches(0).on = true
-//        torches(1).on = false
-//        torches(2).on = false
-//        torches(3).on = true
-//    }
-//
-//    override def prepareDynamic(gate:ComboGateICPart, frame:Float)
-//    {
-//        wires(0).on = (gate.state&2) != 0 && (gate.state&8) == 0
-//        wires(1).on = (gate.state&8) != 0 && (gate.state&2) == 0
-//        wires(2).on = (gate.state&8) != 0
-//        wires(3).on = (gate.state&2) != 0
-//        wires(4).on = !wires(3).on && !wires(2).on
-//        torches(0).on = (gate.state&0x11) != 0
-//        torches(1).on = !wires(4).on && (gate.state&8) == 0
-//        torches(2).on = !wires(4).on && (gate.state&2) == 0
-//        torches(3).on = (gate.state&2) == 0 && (gate.state&8) == 0
-//    }
-//}
-//
-//class RenderBuffer extends ICGateRenderer[ComboGateICPart]
-//{
-//    val wires = generateWireModels("BUFFER", 4)
-//    val torches = Seq(new RedstoneTorchModel(8, 3.5), new RedstoneTorchModel(8, 9))
-//
-//    override val coreModels = Seq(new BaseComponentModel("BUFFER"))++wires++torches
-//
-//    override def prepareInv()
-//    {
-//        wires(0).on = true
-//        wires(1).on = false
-//        wires(2).on = false
-//        wires(3).on = false
-//        wires(1).disabled = false
-//        wires(3).disabled = false
-//        torches(0).on = false
-//        torches(1).on = true
-//    }
-//
-//    override def prepareDynamic(gate:ComboGateICPart, frame:Float)
-//    {
-//        wires(0).on = (gate.state&4) == 0
-//        wires(1).on = (gate.state&0x22) != 0
-//        wires(2).on = (gate.state&0x44) != 0
-//        wires(3).on = (gate.state&0x88) != 0
-//        wires(1).disabled = (gate.shape&1) != 0
-//        wires(3).disabled = (gate.shape&2) != 0
-//        torches(0).on = (gate.state&4) != 0
-//        torches(1).on = (gate.state&4) == 0
-//    }
-//}
+
+class RenderNAND extends ICGateRenderer[ComboGateICTile]
+{
+    val wires = generateWireModels("NAND", 4)
+    val torches = Seq(new RedstoneTorchModel(4, 8), new RedstoneTorchModel(12, 8),
+        new RedstoneTorchModel(8, 8))
+
+    override val coreModels = Seq(new BaseComponentModel("NAND"))++wires++torches
+
+    override def prepareInv()
+    {
+        wires(0).on = true
+        wires(1).on = false
+        wires(2).on = false
+        wires(3).on = false
+        wires(1).disabled = false
+        wires(2).disabled = false
+        wires(3).disabled = false
+        torches(0).on = true
+        torches(1).on = true
+        torches(2).on = true
+    }
+
+    override def prepareDynamic(gate:ComboGateICTile, frame:Float)
+    {
+        wires(0).on = (gate.state&0x11) != 0
+        wires(3).on = (gate.state&2) != 0
+        wires(1).on = (gate.state&4) != 0
+        wires(2).on = (gate.state&8) != 0
+        wires(3).disabled = (gate.shape&1) != 0
+        wires(1).disabled = (gate.shape&2) != 0
+        wires(2).disabled = (gate.shape&4) != 0
+        torches(0).on = !wires(2).on && !wires(2).disabled
+        torches(1).on = !wires(3).on && !wires(3).disabled
+        torches(2).on = !wires(1).on && !wires(1).disabled
+    }
+}
+
+class RenderXOR extends ICGateRenderer[ComboGateICTile]
+{
+    val wires = generateWireModels("XOR", 4)
+    val torches = Seq(new RedstoneTorchModel(4.5, 8), new RedstoneTorchModel(11.5, 8),
+        new RedstoneTorchModel(8, 12))
+
+    override val coreModels = Seq(new BaseComponentModel("XOR"))++wires++torches
+
+    override def prepareInv()
+    {
+        wires(0).on = false
+        wires(3).on = false
+        wires(2).on = false
+        wires(1).on = true
+        torches(0).on = false
+        torches(1).on = false
+        torches(2).on = true
+    }
+
+    override def prepareDynamic(gate:ComboGateICTile, frame:Float)
+    {
+        wires(0).on = (gate.state&0x11) != 0
+        wires(3).on = (gate.state&2) != 0
+        wires(2).on = (gate.state&8) != 0
+        wires(1).on = !wires(3).on && !wires(2).on
+        torches(0).on = !wires(2).on && !wires(1).on
+        torches(1).on = !wires(3).on && !wires(1).on
+        torches(2).on = wires(1).on
+    }
+}
+
+class RenderXNOR extends ICGateRenderer[ComboGateICTile]
+{
+    val wires = generateWireModels("XNOR", 5)
+    val torches = Seq(new RedstoneTorchModel(8, 2), new RedstoneTorchModel(4.5, 8),
+        new RedstoneTorchModel(11.5, 8), new RedstoneTorchModel(8, 12))
+
+    override val coreModels = Seq(new BaseComponentModel("XNOR"))++wires++torches
+
+    override def prepareInv()
+    {
+        wires(0).on = false
+        wires(3).on = false
+        wires(2).on = false
+        wires(1).on = false
+        torches(0).on = true
+        torches(1).on = false
+        torches(2).on = false
+        torches(3).on = true
+    }
+
+    override def prepareDynamic(gate:ComboGateICTile, frame:Float)
+    {
+        wires(0).on = (gate.state&2) != 0 && (gate.state&8) == 0
+        wires(1).on = (gate.state&8) != 0 && (gate.state&2) == 0
+        wires(2).on = (gate.state&8) != 0
+        wires(3).on = (gate.state&2) != 0
+        wires(4).on = !wires(3).on && !wires(2).on
+        torches(0).on = (gate.state&0x11) != 0
+        torches(1).on = !wires(4).on && (gate.state&8) == 0
+        torches(2).on = !wires(4).on && (gate.state&2) == 0
+        torches(3).on = (gate.state&2) == 0 && (gate.state&8) == 0
+    }
+}
+
+class RenderBuffer extends ICGateRenderer[ComboGateICTile]
+{
+    val wires = generateWireModels("BUFFER", 4)
+    val torches = Seq(new RedstoneTorchModel(8, 3.5), new RedstoneTorchModel(8, 9))
+
+    override val coreModels = Seq(new BaseComponentModel("BUFFER"))++wires++torches
+
+    override def prepareInv()
+    {
+        wires(0).on = true
+        wires(1).on = false
+        wires(2).on = false
+        wires(3).on = false
+        wires(1).disabled = false
+        wires(3).disabled = false
+        torches(0).on = false
+        torches(1).on = true
+    }
+
+    override def prepareDynamic(gate:ComboGateICTile, frame:Float)
+    {
+        wires(0).on = (gate.state&4) == 0
+        wires(1).on = (gate.state&0x22) != 0
+        wires(2).on = (gate.state&0x44) != 0
+        wires(3).on = (gate.state&0x88) != 0
+        wires(1).disabled = (gate.shape&1) != 0
+        wires(3).disabled = (gate.shape&2) != 0
+        torches(0).on = (gate.state&4) != 0
+        torches(1).on = (gate.state&4) == 0
+    }
+}
 //
 //class RenderMultiplexer extends ICGateRenderer[ComboGateICPart]
 //{

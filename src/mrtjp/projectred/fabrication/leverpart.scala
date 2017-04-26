@@ -14,6 +14,8 @@ import mrtjp.projectred.fabrication.SEIntegratedCircuit.REG_ZERO
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+import scala.collection.mutable.ListBuffer
+
 class LeverICPart extends ICTile with TICTileAcquisitions with IRedwireICGate with ISEGateTile with TClientNetICTile
 {
     val outputRegs = Array(REG_ZERO, REG_ZERO, REG_ZERO, REG_ZERO)
@@ -111,15 +113,13 @@ class LeverICPart extends ICTile with TICTileAcquisitions with IRedwireICGate wi
     override def getPartName = "Lever"
 
     @SideOnly(Side.CLIENT)
-    override def getPickOp = CircuitOpDefs.Lever.getOp
-
+    override def getPickOp = TileEditorOpDefs.Lever.getOp
 
     @SideOnly(Side.CLIENT)
-    override def getRolloverData(detailLevel:Int) =
+    override def buildRolloverData(buffer:ListBuffer[String])
     {
-        val b = Seq.newBuilder[String]
-        if (detailLevel > 1) b += ChatFormatting.GRAY+"state: "+(if (on) "on" else "off")
-        super.getRolloverData(detailLevel)++b.result()
+        super.buildRolloverData(buffer)
+        buffer += ChatFormatting.GRAY+"state: "+(if (on) "on" else "off")
     }
 
     @SideOnly(Side.CLIENT)
@@ -130,7 +130,7 @@ class LeverICPart extends ICTile with TICTileAcquisitions with IRedwireICGate wi
     }
 }
 
-class CircuitOpLever extends SimplePlacementOp
+class OpLever extends SimplePlacementOp
 {
     override def doPartRender(ccrs:CCRenderState, t:Transformation)
     {

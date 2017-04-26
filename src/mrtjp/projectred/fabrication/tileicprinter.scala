@@ -217,7 +217,7 @@ class TileICPrinter extends TileICMachine with TInventory
             val stack = getStackInSlot(18)
             requirements = if (stack != null && ItemICBlueprint.hasICInside(stack))
             {
-                val ic = ItemICBlueprint.loadIC(stack)
+                val ic = ItemICBlueprint.loadTileMap(stack)
                 TileICPrinter.resolveResources(ic)
             }
             else Seq()
@@ -484,7 +484,7 @@ object TileICPrinter
         gRec(key)
     }
 
-    def resolveResources(ic:ICTileMapEditor) =
+    def resolveResources(tmap:ICTileMapContainer) =
     {
         val map = MMap[ItemKey, Double]()
 
@@ -502,7 +502,7 @@ object TileICPrinter
 
         import mrtjp.projectred.fabrication.{ICGateDefinition => gd}
 
-        for (part <- ic.tileMapContainer.tiles.values) part match
+        for (part <- tmap.tiles.values) part match
         {
 //            case p:TorchICPart => add(new ItemStack(Blocks.REDSTONE_TORCH), 0.25)
             case p:LeverICPart => add(new ItemStack(Blocks.LEVER), 0.25)

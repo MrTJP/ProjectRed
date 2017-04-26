@@ -14,7 +14,7 @@ import mrtjp.core.vec.Point
 import mrtjp.projectred.fabrication.ICComponentStore._
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class CircuitOpErase extends CircuitOp
+class TileEditorOpErase extends TileEditorOp
 {
     override def checkOp(circuit:ICTileMapEditor, start:Point, end:Point) = true
 
@@ -49,7 +49,7 @@ class CircuitOpErase extends CircuitOp
     override def renderHover(ccrs:CCRenderState, circuit:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
         if (circuit.getPart(point) != null)
-            CircuitOp.renderHolo(x, y, xSize, ySize, circuit.size, point, 0x33FF0000)
+            TileEditorOp.renderHolo(x, y, xSize, ySize, circuit.size, point, 0x33FF0000)
     }
 
     @SideOnly(Side.CLIENT)
@@ -59,7 +59,7 @@ class CircuitOpErase extends CircuitOp
             for (py <- math.min(start.y, end.y) to math.max(start.y, end.y))
             {
                 val point = Point(px, py)
-                CircuitOp.renderHolo(x, y, xSize, ySize, circuit.size, point,
+                TileEditorOp.renderHolo(x, y, xSize, ySize, circuit.size, point,
                     if (circuit.getPart(point) != null) 0x44FF0000 else 0x44FFFFFF)
             }
     }

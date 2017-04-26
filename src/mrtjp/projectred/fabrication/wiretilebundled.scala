@@ -9,7 +9,6 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
-import mrtjp.projectred.transmission.BundledCommons._
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -82,12 +81,5 @@ class BundledCableICTile extends WireICTile with IBundledCableICPart
     override def getPartName = (if (colour != -1) EnumColour.values()(colour&0xFF).name+" " else "")+"Bundled cable"
 
     @SideOnly(Side.CLIENT)
-    override def getPickOp = CircuitOpDefs.values(CircuitOpDefs.NeutralBundledCable.ordinal+colour+1).getOp
-
-    @SideOnly(Side.CLIENT)
-    override def getRolloverData(detailLevel:Int) =
-    {
-        val data = Seq.newBuilder[String]
-        super.getRolloverData(detailLevel)++data.result()
-    }
+    override def getPickOp = TileEditorOpDefs.values(TileEditorOpDefs.NeutralBundledCable.ordinal+colour+1).getOp
 }

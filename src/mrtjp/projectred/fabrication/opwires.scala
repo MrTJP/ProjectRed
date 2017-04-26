@@ -10,12 +10,12 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.{Transformation, Translation}
 import mrtjp.core.vec.Point
-import mrtjp.projectred.fabrication.CircuitOp._
+import mrtjp.projectred.fabrication.TileEditorOp._
 import mrtjp.projectred.fabrication.ICComponentStore._
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 
-abstract class OpWire extends CircuitOp
+abstract class OpWire extends TileEditorOp
 {
     override def checkOp(circuit:ICTileMapEditor, start:Point, end:Point) =
         circuit.getPart(start.x, start.y) == null

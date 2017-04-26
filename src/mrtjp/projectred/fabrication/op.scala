@@ -11,21 +11,20 @@ import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.{Transformation, Translation}
 import mrtjp.core.util.Enum
 import mrtjp.core.vec.{Point, Size}
-import mrtjp.projectred.fabrication.CircuitOp._
+import mrtjp.projectred.fabrication.TileEditorOp._
 import mrtjp.projectred.fabrication.ICComponentStore._
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-object CircuitOpDefs extends Enum
+object TileEditorOpDefs extends Enum
 {
     type EnumVal = OpDef
 
     //tools
-    val Erase = OpDef(new CircuitOpErase)
+    val Erase = OpDef(new TileEditorOpErase)
 
     //primitives
-//    val Torch = OpDef(new CircuitOpTorch)
-    val Lever = OpDef(new CircuitOpLever)
-    val Button = OpDef(new CircuitOpButton)
+    val Lever = OpDef(new OpLever)
+    val Button = OpDef(new OpButton)
 
     //alloy wire
     val AlloyWire = OpDef(new OpAlloyWire)
@@ -77,11 +76,11 @@ object CircuitOpDefs extends Enum
     val NORGate = OpDef(new OpGate(ICGateDefinition.NOR.ordinal))
     val NOTGate = OpDef(new OpGate(ICGateDefinition.NOT.ordinal))
     val ANDGate = OpDef(new OpGate(ICGateDefinition.AND.ordinal))
-//    val NANDGate = OpDef(new OpGate(ICGateDefinition.NAND.ordinal))
-//    val XORGate = OpDef(new OpGate(ICGateDefinition.XOR.ordinal))
-//    val XNORGate = OpDef(new OpGate(ICGateDefinition.XNOR.ordinal))
-//    val BufferGate = OpDef(new OpGate(ICGateDefinition.Buffer.ordinal))
-//    val MultiplexerGate = OpDef(new OpGate(ICGateDefinition.Multiplexer.ordinal))
+    val NANDGate = OpDef(new OpGate(ICGateDefinition.NAND.ordinal))
+    val XORGate = OpDef(new OpGate(ICGateDefinition.XOR.ordinal))
+    val XNORGate = OpDef(new OpGate(ICGateDefinition.XNOR.ordinal))
+    val BufferGate = OpDef(new OpGate(ICGateDefinition.Buffer.ordinal))
+    val MultiplexerGate = OpDef(new OpGate(ICGateDefinition.Multiplexer.ordinal))
 //    val PulseFormerGate = OpDef(new OpGate(ICGateDefinition.Pulse.ordinal))
 //    val RepeaterGate = OpDef(new OpGate(ICGateDefinition.Repeater.ordinal))
 //    val RandomizerGate = OpDef(new OpGate(ICGateDefinition.Randomizer.ordinal))
@@ -101,7 +100,7 @@ object CircuitOpDefs extends Enum
     val INSULATED = WhiteInsulatedWire to BlackInsulatedWire toArray
     val BUNDLED = NeutralBundledCable to BlackBundledCable toArray
 
-    case class OpDef(op:CircuitOp) extends Value
+    case class OpDef(op:TileEditorOp) extends Value
     {
         op.id = ordinal
 
@@ -112,9 +111,9 @@ object CircuitOpDefs extends Enum
     }
 }
 
-object CircuitOp
+object TileEditorOp
 {
-    def getOperation(id:Int) = CircuitOpDefs(id).getOp
+    def getOperation(id:Int) = TileEditorOpDefs(id).getOp
 
     def renderHolo(x:Double, y:Double, xSize:Double, ySize:Double, csize:Size, point:Point, colour:Int)
     {
@@ -133,7 +132,7 @@ object CircuitOp
         point == Point(0, 0) || point == Point(0, cSize.height-1) || point == Point(cSize.width-1, 0) || point == Point(cSize.width-1, cSize.height-1)
 }
 
-trait CircuitOp
+trait TileEditorOp
 {
     var id = -1
 
@@ -152,7 +151,7 @@ trait CircuitOp
     def renderImage(ccrs:CCRenderState, x:Double, y:Double, width:Double, height:Double)
 }
 
-abstract class SimplePlacementOp extends CircuitOp
+abstract class SimplePlacementOp extends TileEditorOp
 {
     def canPlace(circuit:ICTileMapEditor, point:Point):Boolean =
         !isOnBorder(circuit.size, point)

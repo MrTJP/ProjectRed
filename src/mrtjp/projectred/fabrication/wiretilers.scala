@@ -13,6 +13,8 @@ import mrtjp.core.vec.Point
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+import scala.collection.mutable.ListBuffer
+
 trait IICRedwireEmitter
 
 trait IRedwireICPart extends IICRedwireEmitter
@@ -100,32 +102,22 @@ abstract class RedwireICTile extends WireICTile with IRedwireICPart
 
     override def onRegistersChanged(regIDs:Set[Int])
     {
-        try {
-            val oldSignal = signal
-            signal = if (stateRegisters.exists(reg =>
-                editor.simEngineContainer.simEngine.getRegVal[Byte](reg) != 0))
-                255.toByte else 0
+        val oldSignal = signal
+        signal = if (stateRegisters.exists(reg =>
+            editor.simEngineContainer.simEngine.getRegVal[Byte](reg) != 0))
+            255.toByte else 0
 
-            if (oldSignal != signal)
-                sendSignalUpdate()
-        } catch {
-            case e:ClassCastException =>
-                print("ERROR")
-
-        }
+        if (oldSignal != signal)
+            sendSignalUpdate()
     }
 
     @SideOnly(Side.CLIENT)
-    override def getRolloverData(detailLevel:Int) =
+    override def buildRolloverData(buffer:ListBuffer[String])
     {
-        val data = Seq.newBuilder[String]
+        super.buildRolloverData(buffer)
 
         import com.mojang.realmsclient.gui.ChatFormatting._
-        data += GRAY+s"registers: $stateRegisters"
-//        if (detailLevel >= 3) data += GRAY+"signal: 0x"+Integer.toHexString(signal&0xFF)
-//        else if (detailLevel >= 2) data += GRAY+"state: "+(if (signal != 0) "high" else "low")
-
-        super.getRolloverData(detailLevel)++data.result()
+        buffer += GRAY+"state: "+(if (signal != 0) "high" else "low")
     }
 }
 
@@ -148,7 +140,7 @@ class AlloyWireICTile extends RedwireICTile
     override def getPartName = "Alloy wire"
 
     @SideOnly(Side.CLIENT)
-    override def getPickOp = CircuitOpDefs.AlloyWire.getOp
+    override def getPickOp = TileEditorOpDefs.AlloyWire.getOp
 }
 
 class InsulatedWireICTile extends RedwireICTile with IInsulatedRedwireICPart
@@ -206,5 +198,5 @@ class InsulatedWireICTile extends RedwireICTile with IInsulatedRedwireICPart
 
     @SideOnly(Side.CLIENT)
     override def getPickOp =
-        CircuitOpDefs.values(CircuitOpDefs.WhiteInsulatedWire.ordinal+colour).getOp
+        TileEditorOpDefs.values(TileEditorOpDefs.WhiteInsulatedWire.ordinal+colour).getOp
 }

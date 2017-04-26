@@ -115,9 +115,8 @@ class FabricationProxy_client extends FabricationProxy_server
 
         registerBlockToBakery(icBlock, icMachineBakery.registerKeyGens(icBlock), new Builder().ignore(MultiTileBlock.TILE_INDEX).build())
 
-        MapRenderRegistry.registerMapRenderer(itemICBlueprint, ItemRenderICBlueprint)
-
         registerModelType(itemICBlueprint, "projectred:fabrication/items", "ic_blueprint")
+        MapRenderRegistry.registerMapRenderer(itemICBlueprint, ItemRenderICBlueprint)
 
         registerModelType(itemICChip, "projectred:fabrication/items", { stack =>
             if (ItemICBlueprint.hasICInside(stack)) "ic_active" else "ic_inert" })
@@ -196,7 +195,7 @@ object FabricationRecipes
                     }
                 }
                 val out = GateDefinition.ICGate.makeStack
-                ItemICBlueprint.copyToGate(inv.getStackInSlot(4), out)
+//                ItemICBlueprint.copyToGate(inv.getStackInSlot(4), out) todo
                 out
             }
 

@@ -9,11 +9,11 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.{Rotation, Transformation, Translation, Vector3}
 import mrtjp.core.vec.{Point, Vec2}
-import mrtjp.projectred.fabrication.CircuitOp._
+import mrtjp.projectred.fabrication.TileEditorOp._
 import mrtjp.projectred.fabrication.ICComponentStore._
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-abstract class OpGateCommons(meta:Int) extends CircuitOp
+abstract class OpGateCommons(meta:Int) extends TileEditorOp
 {
     def canPlace(circuit:ICTileMapEditor, point:Point):Boolean
     def findRot(circuit:ICTileMapEditor, start:Point, end:Point):Int

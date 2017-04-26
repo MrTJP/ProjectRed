@@ -11,6 +11,8 @@ import mrtjp.projectred.fabrication.SEIntegratedCircuit._
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+import scala.collection.mutable.ListBuffer
+
 trait IIOCircuitPart
 {
     def getIOSide:Int
@@ -111,17 +113,11 @@ abstract class IOICGateLogic(val gate:IOGateICTile) extends RedstoneICGateLogic[
 
     def getConnMode(gate:IOGateICTile):Int
 
-    def getFreq:Int
+    def getInputRegisterOffset:Int
 
     def getFreqName:String
 
-    def enforceBit = false
-
     def toggleWorldInput()
-    {
-        val newInput = (gate.editor.simEngineContainer.iostate(gate.rotation)&1<<getFreq)^1<<getFreq
-        gate.editor.simEngineContainer.setInput(gate.rotation, if (newInput == 0 && enforceBit) 1 else newInput)
-    }
 
     override def onRegistersChanged(gate:IOGateICTile, regIDs:Set[Int])
     {
@@ -149,11 +145,11 @@ abstract class IOICGateLogic(val gate:IOGateICTile) extends RedstoneICGateLogic[
     {
         getIOMode(gate) match {
             case Input => //From world to simulation
-                inputReg = gate.getSysInputRegister(getFreq)
+                inputReg = gate.getSysInputRegister(getInputRegisterOffset)
                 outputReg = gate.getOutputRegister(2, linker)
             case Output => //from simulation to world
                 inputReg = gate.getInputRegister(2, linker)
-                outputReg = gate.getSysOutputRegister(getFreq)
+                outputReg = gate.getSysOutputRegister(getInputRegisterOffset)
         }
     }
 
@@ -173,28 +169,27 @@ abstract class IOICGateLogic(val gate:IOGateICTile) extends RedstoneICGateLogic[
     }
 
     @SideOnly(Side.CLIENT)
-    override def getRolloverData(gate:IOGateICTile, detailLevel:Int) =
+    override def buildRolloverData(gate:IOGateICTile, buffer:ListBuffer[String]) =
     {
-        val s = Seq.newBuilder[String]
-        if (detailLevel >= 2) {
-            val f = getFreqName
-            if (f.nonEmpty) s += "freq: "+f
-            s += "mode: "+(gate.shape match {
-                case 0 => "I"
-                case 1 => "O"
-            })
-        }
-        if (detailLevel >= 3) {
-            s += "I: "+(if ((gate.state&0xF) != 0) "high" else "low")
-            s += "O: "+(if ((gate.state>>4) != 0) "high" else "low")
-        }
-        super.getRolloverData(gate, detailLevel) ++ s.result()
+        super.buildRolloverData(gate, buffer)
+        import com.mojang.realmsclient.gui.ChatFormatting._
+        buffer += GRAY + "freq: "+getFreqName
+        buffer += GRAY + "mode: "+(gate.shape match {
+            case 0 => "I"
+            case 1 => "O"
+        })
+
+        if (gate.getIOMode == Input)
+            buffer += GRAY + "I: "+(if ((gate.state&0xF) != 0) "high" else "low")
+        else
+            buffer += GRAY + "O: "+(if ((gate.state>>4) != 0) "high" else "low")
     }
 
     override def activate(gate:IOGateICTile)
     {
         toggleWorldInput()
         gate.editor.simEngineContainer.onInputChanged(1<<gate.rotation)
+        gate.editor.simEngineContainer.repropagate()
     }
 }
 
@@ -202,12 +197,18 @@ class SimpleIOICGateLogic(gate:IOGateICTile) extends IOICGateLogic(gate)
 {
     override def getConnMode(gate:IOGateICTile) = IIOCircuitPart.Simple
 
-    override def getFreq = 0
+    override def getInputRegisterOffset = 0
 
     override def getFreqName = "rs_gpio"
 
+    override def toggleWorldInput()
+    {
+        gate.editor.simEngineContainer.setInput(gate.rotation,
+            (gate.editor.simEngineContainer.iostate(gate.rotation)&0xFFFF)^1)
+    }
+
     @SideOnly(Side.CLIENT)
-    override def createGui(gate:IOGateICTile):CircuitGui = new ICIOGateGui(gate)
+    override def createGui(gate:IOGateICTile):ICTileGui = new ICIOGateGui(gate)
 }
 
 trait TFreqIOICGateLogic extends IOICGateLogic
@@ -267,10 +268,10 @@ trait TFreqIOICGateLogic extends IOICGateLogic
         }
     }
 
-    override def getFreq = freq
+    override def getInputRegisterOffset = freq
 
     @SideOnly(Side.CLIENT)
-    override def createGui(gate:IOGateICTile):CircuitGui = new ICIOFreqGateGui(gate)
+    override def createGui(gate:IOGateICTile):ICTileGui = new ICIOFreqGateGui(gate)
 }
 
 class AnalogIOICGateLogic(gate:IOGateICTile) extends IOICGateLogic(gate) with TFreqIOICGateLogic
@@ -279,7 +280,11 @@ class AnalogIOICGateLogic(gate:IOGateICTile) extends IOICGateLogic(gate) with TF
 
     override def getFreqName = "0x"+Integer.toHexString(freq)
 
-    override def enforceBit = true
+    override def toggleWorldInput()
+    {
+        val newInput = (gate.editor.simEngineContainer.iostate(gate.rotation)&1<<freq)^1<<freq
+        gate.editor.simEngineContainer.setInput(gate.rotation, if (newInput == 0) 1 else newInput)
+    }
 }
 
 class BundledIOICGateLogic(gate:IOGateICTile) extends IOICGateLogic(gate) with TFreqIOICGateLogic
@@ -287,4 +292,10 @@ class BundledIOICGateLogic(gate:IOGateICTile) extends IOICGateLogic(gate) with T
     override def getConnMode(gate:IOGateICTile) = IIOCircuitPart.Bundled
 
     override def getFreqName = EnumColour.values()(freq).name.toLowerCase
+
+    override def toggleWorldInput()
+    {
+        gate.editor.simEngineContainer.setInput(gate.rotation,
+            (gate.editor.simEngineContainer.iostate(gate.rotation)&0xFFFF)^1<<freq)
+    }
 }

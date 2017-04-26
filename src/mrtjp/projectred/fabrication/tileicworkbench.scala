@@ -129,8 +129,7 @@ abstract class TileICMachine extends MTBlockTile with TTileOrient
 
 class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
 {
-    val circuit = new ICTileMapEditor
-    circuit.network = this
+    val editor = new ICTileMapEditor(this)
 
     var hasBP = false
     var watchers = MSet[EntityPlayer]()
@@ -139,7 +138,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
     {
         super.save(tag)
         val ictag = new NBTTagCompound
-        circuit.save(ictag)
+        editor.save(ictag)
         tag.setTag("ictag", ictag)
         tag.setBoolean("bp", hasBP)
     }
@@ -147,7 +146,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        circuit.load(tag.getCompoundTag("ictag"))
+        editor.load(tag.getCompoundTag("ictag"))
         hasBP = tag.getBoolean("bp")
     }
 
@@ -168,12 +167,21 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
         case 1 =>
             hasBP = in.readBoolean()
             markRender()
-        case 2 => circuit.readDesc(in)
+        case 2 => editor.readDesc(in)
         case 3 => readPartStream(in)
         case 4 => readICStream(in)
         case 5 =>
-            if (!hasBP) new ICTileMapEditor().readDesc(in)
-            else {circuit.readDesc(in); sendICDesc()}
+            if (!hasBP) new ICTileMapEditor(null).readDesc(in)
+            else {
+                editor.readDesc(in)
+                sendICDesc()
+            }
+        case 6 =>
+            val name = in.readString()
+            if (hasBP) {
+                editor.tileMapContainer.name = name
+                sendICDesc()
+            }
         case _ => super.read(in, key)
     }
 
@@ -189,7 +197,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
         if (players.nonEmpty)
         {
             val out = writeStream(2)
-            circuit.writeDesc(out)
+            editor.writeDesc(out)
             for (p <- players)
                 out.sendToPlayer(p)
         }
@@ -202,7 +210,12 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
         stream.sendToServer()
     }
 
-    override def getIC = circuit
+    def sendICNameToServer()
+    {
+        writeStream(6).writeString(editor.tileMapContainer.name).sendToServer()
+    }
+
+    override def getIC = editor
     override def getWorld = world
     override def isRemote = world.isRemote
     override def markSave(){markDirty()}
@@ -224,7 +237,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
         super.updateServer()
         flushICStream()
         flushPartStream()
-        circuit.tick()
+        editor.tick()
     }
     override def updateClient()
     {
@@ -235,28 +248,24 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
     override def onBlockActivated(player:EntityPlayer, side:Int):Boolean =
     {
         if (super.onBlockActivated(player, side)) return true
-        if (!world.isRemote)
-        {
+        if (!world.isRemote) {
             import ItemICBlueprint._
             val held = player.getHeldItemMainhand
-            if (!hasBP && held != null && held.getItem.isInstanceOf[ItemICBlueprint])
-            {
-                if (hasICInside(held))
-                {
-                    loadIC(circuit, held)
+            if (!hasBP && held != null && held.getItem.isInstanceOf[ItemICBlueprint]) {
+                if (hasICInside(held)) {
+                    editor.clear()
+                    loadTileMap(editor.tileMapContainer, held)
                     sendICDesc()
                 }
                 held.stackSize -= 1
                 hasBP = true
                 sendHasBPUpdate()
             }
-            else if (hasBP && player.isSneaking)
-            {
+            else if (hasBP && player.isSneaking) {
                 val stack = new ItemStack(ProjectRedFabrication.itemICBlueprint)
-                if (circuit.nonEmpty)
-                {
-                    saveIC(circuit, stack)
-                    circuit.clear()
+                if (editor.nonEmpty) {
+                    saveTileMap(editor.tileMapContainer, stack)
+                    editor.clear()
                     sendICDesc()
                 }
                 val p = pos.offset(EnumFacing.values()(1))
@@ -276,7 +285,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
                 nc.stopWatchDelegate = playerStopWatch
                 GuiICWorkbench.open(player, nc, {p =>
                     p.writePos(pos)
-                    circuit.writeDesc(p)
+                    editor.writeDesc(p)
                 })
             }
         }
@@ -288,7 +297,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
         super.onBlockRemoval()
         if (hasBP) {
             val stack = new ItemStack(ProjectRedFabrication.itemICBlueprint)
-            if (circuit.nonEmpty) saveIC(circuit, stack)
+            if (editor.nonEmpty) saveTileMap(editor.tileMapContainer, stack)
             WorldLib.dropItem(world, pos, stack)
         }
     }
@@ -355,6 +364,6 @@ object RenderICWorkbench extends SimpleBlockRenderer
         iconT = new MultiIconTransformation(bottom, top, side1, side1, side2, side2)
         iconTBP = new MultiIconTransformation(bottom, topBP, sidebp1, sidebp1, sidebp2, sidebp2)
 
-        RenderCircuit.registerIcons(reg)
+        RenderICTileMap.registerIcons(reg)
     }
 }

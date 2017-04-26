@@ -17,9 +17,11 @@ class ICSimEngineContainer
       */
     val iostate = Array(0, 0, 0, 0)
 
-    var ioChangedDelegate = { () => ()}
+    var ioChangedDelegate = {() => ()}
 
     var registersChangedDelegate = {_:Set[Int] => ()}
+
+    var propagateSilently = false
 
     def setInput(r:Int, state:Int)
     {
@@ -29,19 +31,27 @@ class ICSimEngineContainer
     def onInputChanged(mask:Int)
     {
         pushInputRegisters(mask)
-        simEngine.repropagate()
     }
 
     def advanceTime(ticks:Long)
     {
         systemTime += ticks
         pushSystemTime()
-        simEngine.repropagate()
     }
 
     def setOutput(r:Int, state:Int)
     {
         iostate(r) = iostate(r)&0xFFFF|(state&0xFFFF)<<16
+    }
+
+    def propagateAll()
+    {
+        simEngine.propagateInitial()
+    }
+
+    def repropagate()
+    {
+        simEngine.repropagate()
     }
 
     private def pushInputRegisters(mask:Int)
@@ -70,6 +80,7 @@ class ICSimEngineContainer
 
     private def onRegistersChanged(changes:Set[Int])
     {
+        if (propagateSilently) return
         registersChangedDelegate(changes)
         val firstIOReg = REG_IN(0, 0)
         val lastIOReg = REG_OUT(3, 15)
@@ -84,8 +95,13 @@ class ICSimEngineContainer
         simEngine = ISELinker.linkFromMap(map, onRegistersChanged)
         pushInputRegisters(0xF)
         pushSystemTime()
+    }
 
-        simEngine.propagateInitial()
+    def resetSimState(map:ISETileMap)
+    {
+        for (i <- 0 until 4) iostate(i) = 0
+        systemTime = 0
+        recompileSimulation(map)
     }
 
     def saveSimState(tag:NBTTagCompound)

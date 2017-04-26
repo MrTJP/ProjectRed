@@ -4,6 +4,7 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.packet.PacketCustom
 import mrtjp.core.vec.{Point, Size}
 import mrtjp.projectred.ProjectRedCore.log
+import net.minecraft.item.ItemStack
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
 import net.minecraft.world.World
 
@@ -105,9 +106,15 @@ class ICTileMapContainer extends ISETileMap
 {
     override val tiles = MMap[(Int, Int), ICTile]()
 
+    var tilesLoadedDelegate = {() => ()}
+
     var name = "untitled"
 
     var size = Size.zeroSize
+
+    def isEmpty = size == Size.zeroSize
+
+    def nonEmpty = !isEmpty
 
     def assertCoords(x:Int, y:Int)
     {
@@ -148,13 +155,13 @@ class ICTileMapContainer extends ISETileMap
             tiles += (x, y) -> part
             part.load(partTag)
         }
+
+        tilesLoadedDelegate()
     }
 }
 
-class ICTileMapEditor
+class ICTileMapEditor(val network:IICTileEditorNetwork)
 {
-    var network:IICTileEditorNetwork = null
-
     val tileMapContainer = new ICTileMapContainer
 
     var simEngineContainer = new ICSimEngineContainer
@@ -165,6 +172,12 @@ class ICTileMapEditor
     var errors = Map.empty[Point, (String, Int)]
 
     private var scheduledTicks = MMap[(Int, Int), Long]()
+
+    tileMapContainer.tilesLoadedDelegate = {() =>
+        simNeedsRefresh = true
+        for (part <- tileMapContainer.tiles.values)
+            part.bindEditor(this)
+    }
 
     def size = tileMapContainer.size
     def name = tileMapContainer.name
@@ -179,11 +192,11 @@ class ICTileMapEditor
     {
         clear()
         tileMapContainer.loadTiles(tag)
-        for (part <- tileMapContainer.tiles.values)
-            part.bindEditor(this)
 
+        simEngineContainer.propagateSilently = true
         recompileSchematic()
         simEngineContainer.loadSimState(tag)
+        simEngineContainer.propagateSilently = false
     }
 
     def writeDesc(out:MCDataOutput)
@@ -224,12 +237,14 @@ class ICTileMapEditor
             setPart_do(in.readUByte(), in.readUByte(), part)
             part.readDesc(in)
         case 2 => removePart(in.readUByte(), in.readUByte())
-        case 3 => CircuitOp.getOperation(in.readUByte()).readOp(this, in)
+        case 3 => TileEditorOp.getOperation(in.readUByte()).readOp(this, in)
         case 4 => getPart(in.readUByte(), in.readUByte()) match {
             case g:TClientNetICTile => g.readClientPacket(in)
             case _ => log.error("Server IC stream received invalid client packet")
         }
-        case 5 => simEngineContainer.iostate(in.readUByte()) = in.readInt()
+        case 5 =>
+            for (r <- 0 until 4)
+                simEngineContainer.iostate(r) = in.readInt()
         case 6 => simEngineContainer.setInput(in.readUByte(), in.readShort())//TODO remove? not used...
         case 7 => simEngineContainer.setOutput(in.readUByte(), in.readShort()) //TODO remove? not used...
         case _ =>
@@ -248,7 +263,7 @@ class ICTileMapEditor
         network.getICStreamOf(2).writeByte(x).writeByte(y)
     }
 
-    def sendOpUse(op:CircuitOp, start:Point, end:Point) =
+    def sendOpUse(op:TileEditorOp, start:Point, end:Point) =
     {
         if (op.checkOp(this, start, end)) {
             op.writeOp(this, start, end, network.getICStreamOf(3).writeByte(op.id))
@@ -263,9 +278,11 @@ class ICTileMapEditor
         writer(s)
     }
 
-    def sendIOUpdate(r:Int)
+    def sendIOUpdate()
     {
-        network.getICStreamOf(5).writeByte(r).writeInt(simEngineContainer.iostate(r))
+        val stream = network.getICStreamOf(5)
+            for (r <- 0 until 4)
+                stream.writeInt(simEngineContainer.iostate(r))
     }
 
     def sendInputUpdate(r:Int) //TODO Remove?
@@ -289,8 +306,8 @@ class ICTileMapEditor
         simNeedsRefresh = true
     }
 
-    def isEmpty = tileMapContainer.size == Size.zeroSize
-    def nonEmpty = !isEmpty
+    def isEmpty = tileMapContainer.isEmpty
+    def nonEmpty = tileMapContainer.nonEmpty
 
     def tick()
     {
@@ -312,6 +329,7 @@ class ICTileMapEditor
 
         //Tick Simulation time
         simEngineContainer.advanceTime(if (lastWorldTime >= 0) t-lastWorldTime else 1) //if first tick, advance 1 tick only
+        simEngineContainer.repropagate()
         lastWorldTime = t
     }
 
@@ -389,20 +407,15 @@ class ICTileMapEditor
     {
         simNeedsRefresh = false
         simEngineContainer.registersChangedDelegate = onICSimFinished
-        simEngineContainer.ioChangedDelegate = onSimIOChanged
+        simEngineContainer.ioChangedDelegate = sendIOUpdate
         simEngineContainer.recompileSimulation(tileMapContainer)
+        simEngineContainer.propagateAll()
     }
 
     def onICSimFinished(changedRegs:Set[Int])
     {
         for (part <- tileMapContainer.tiles.values)
             part.onRegistersChanged(changedRegs)
-    }
-
-    def onSimIOChanged()
-    {
-        for (r <- 0 until 4)
-            sendIOUpdate(r)
     }
 
     //Convinience functions

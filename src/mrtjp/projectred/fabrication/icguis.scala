@@ -15,7 +15,7 @@ import net.minecraft.client.gui.Gui
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 
-class CircuitGui(val part:IGuiICTile) extends Gui with TNode
+class ICTileGui(val part:IGuiICTile) extends Gui with TNode
 {
     var size = Size.zeroSize
     override def frame = Rect(position, size)
@@ -64,10 +64,10 @@ class CircuitGui(val part:IGuiICTile) extends Gui with TNode
     override def mouseClicked_Impl(p:Point, button:Int, consumed:Boolean):Boolean =
     {
         if (parent == null) false //we cant check for consume here, so manually check if closed
-        else hitTest(p).find(_.isInstanceOf[CircuitGui]) match
+        else hitTest(p).find(_.isInstanceOf[ICTileGui]) match
         {
             case Some(gui) if gui == this =>
-                val guis = parent.childrenByZ.collect{case g:CircuitGui => g}
+                val guis = parent.childrenByZ.collect{case g:ICTileGui => g}
                 val otherGuis = guis.filter(_ != this)
                 for (i <- otherGuis.indices)
                     otherGuis(i).pushZTo(0.1*i)
@@ -98,7 +98,7 @@ class CircuitGui(val part:IGuiICTile) extends Gui with TNode
         else false
 }
 
-trait TGateGui extends CircuitGui
+trait TGateGui extends ICTileGui
 {
     var gateRenderSize = Size(40, 40)
     var gateRenderX = 10
@@ -115,7 +115,7 @@ trait TGateGui extends CircuitGui
     }
 }
 
-class ICGateGui(override val gate:GateICTile) extends CircuitGui(gate) with TGateGui
+class ICGateGui(override val gate:GateICTile) extends ICTileGui(gate) with TGateGui
 {
     {
         size = Size(120, 55)
@@ -270,7 +270,7 @@ class ICGateGui(override val gate:GateICTile) extends CircuitGui(gate) with TGat
 //    }
 //}
 
-class ICIOGateGui(override val gate:IOGateICTile) extends CircuitGui(gate) with TGateGui
+class ICIOGateGui(override val gate:IOGateICTile) extends ICTileGui(gate) with TGateGui
 {
     {
         size = Size(124, 55)
@@ -296,7 +296,7 @@ class ICIOGateGui(override val gate:IOGateICTile) extends CircuitGui(gate) with 
     }
 }
 
-class ICIOFreqGateGui(override val gate:IOGateICTile) extends CircuitGui(gate) with TGateGui
+class ICIOFreqGateGui(override val gate:IOGateICTile) extends ICTileGui(gate) with TGateGui
 {
     {
         size = Size(138, 55)

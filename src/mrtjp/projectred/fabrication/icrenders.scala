@@ -19,40 +19,40 @@ import org.lwjgl.opengl.GL11._
 
 import scala.collection.JavaConversions._
 
-object RenderCircuit
+object RenderICTileMap
 {
     def registerIcons(reg:TextureMap)
     {
         ICComponentStore.registerIcons(reg)
     }
 
-    def renderOrtho(ccrs:CCRenderState, circuit:ICTileMapEditor, x:Double, y:Double, xSize:Double, ySize:Double, frame:Float)
+    def renderOrtho(ccrs:CCRenderState, map:ICTileMapContainer, x:Double, y:Double, xSize:Double, ySize:Double, frame:Float)
     {
         val t = ICComponentStore.orthoGridT(xSize, ySize) `with` new Translation(x, y, 0)
-        renderBoard(ccrs, circuit, t, true)
-        renderCircuit(ccrs, circuit, t, true, frame)
+        renderBoard(ccrs, map, t, true)
+        renderTiles(ccrs, map, t, true, frame)
     }
 
-    def renderDynamic(ccrs:CCRenderState, circuit:ICTileMapEditor, t:Transformation, frame:Float)
+    def renderDynamic(ccrs:CCRenderState, map:ICTileMapContainer, t:Transformation, frame:Float)
     {
         disableDepth()
-        renderBoard(ccrs, circuit, t, true)
-        renderCircuit(ccrs, circuit, t, true, frame)
+        renderBoard(ccrs, map, t, true)
+        renderTiles(ccrs, map, t, true, frame)
         enableDepth()
     }
 
-    def renderBoard(ccrs:CCRenderState, circuit:ICTileMapEditor, t:Transformation, ortho:Boolean)
+    def renderBoard(ccrs:CCRenderState, map:ICTileMapContainer, t:Transformation, ortho:Boolean)
     {
-        PrefboardRenderer.render(ccrs, circuit, t, ortho)
+        PrefboardRenderer.render(ccrs, map, t, ortho)
     }
 
-    def renderCircuit(ccrs:CCRenderState, circuit:ICTileMapEditor, t:Transformation, ortho:Boolean, frame:Float)
+    def renderTiles(ccrs:CCRenderState, map:ICTileMapContainer, t:Transformation, ortho:Boolean, frame:Float)
     {
-        for (((x, y), part) <- circuit.tileMapContainer.tiles)
+        for (((x, y), part) <- map.tiles)
         {
             val tlist = new TransformationList(
-                new Scale(1.0/circuit.size.width, 1, 1.0/circuit.size.height),
-                new Translation(x*1.0/circuit.size.width, 0, y*1.0/circuit.size.height),
+                new Scale(1.0/map.size.width, 1, 1.0/map.size.height),
+                new Translation(x*1.0/map.size.width, 0, y*1.0/map.size.height),
                 t
             )
             part.renderDynamic(ccrs, tlist, ortho, frame)
@@ -130,10 +130,10 @@ object PrefboardRenderer
         edgeModels((w, h))
     }
 
-    def render(ccrs:CCRenderState, circuit:ICTileMapEditor, t:Transformation, ortho:Boolean)
+    def render(ccrs:CCRenderState, ic:ICTileMapContainer, t:Transformation, ortho:Boolean)
     {
-        val w = circuit.size.width
-        val h = circuit.size.height
+        val w = ic.size.width
+        val h = ic.size.height
 
         def bind(s:String)
         {

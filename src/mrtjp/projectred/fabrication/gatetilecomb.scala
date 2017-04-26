@@ -5,7 +5,10 @@
  */
 package mrtjp.projectred.fabrication
 
+import com.mojang.realmsclient.gui.ChatFormatting.GRAY
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
+
+import scala.collection.mutable.ListBuffer
 
 class ComboGateICTile extends RedstoneGateICTile
 {
@@ -33,9 +36,9 @@ object ComboICGateLogic
         instances(defs.NOT.ordinal) = NOT
         instances(defs.AND.ordinal) = AND
         instances(defs.NAND.ordinal) = NAND
-//        instances(defs.XOR.ordinal) = XOR
-//        instances(defs.XNOR.ordinal) = XNOR
-//        instances(defs.Buffer.ordinal) = Buffer
+        instances(defs.XOR.ordinal) = XOR
+        instances(defs.XNOR.ordinal) = XNOR
+        instances(defs.Buffer.ordinal) = Buffer
 //        instances(defs.Multiplexer.ordinal) = Multiplexer
 //        instances(defs.Pulse.ordinal) = Pulse
 //        instances(defs.Repeater.ordinal) = Repeater
@@ -50,12 +53,13 @@ trait TSimpleRSICGateLogic[T <: RedstoneGateICTile] extends RedstoneICGateLogic[
     def getDelay(shape:Int) = 0
 
     @SideOnly(Side.CLIENT)
-    override def getRolloverData(gate:T, detailLevel:Int) =
+    override def buildRolloverData(gate:T, buffer:ListBuffer[String])
     {
-        val s = Seq.newBuilder[String]
-        if (detailLevel > 2) s += "I: "+rolloverInput(gate) += "O: "+rolloverOutput(gate)
-        super.getRolloverData(gate, detailLevel) ++ s.result()
+        super.buildRolloverData(gate, buffer)
+        buffer += GRAY + "I: "+rolloverInput(gate)
+        buffer += GRAY + "O: "+rolloverOutput(gate)
     }
+
     def rolloverInput(gate:T) = "0x"+Integer.toHexString(gate.state&0xF)
     def rolloverOutput(gate:T) = "0x"+Integer.toHexString(gate.state>>4)
 }
@@ -66,8 +70,7 @@ abstract class ComboICGateLogic extends RedstoneICGateLogic[ComboGateICTile] wit
     {
         val oldShape = gate.shape
         val newShape = cycleShape(oldShape)
-        if (newShape != oldShape)
-        {
+        if (newShape != oldShape) {
             gate.setShape(newShape)
             true
         }
@@ -99,11 +102,11 @@ abstract class ComboICGateLogic extends RedstoneICGateLogic[ComboGateICTile] wit
 
     def pullOutput(gate:ComboGateICTile, mask:Int) = //Pull the output form the sim engine
     {
-        var input = 0
+        var output = 0
         for (r <- 0 until 4) if ((mask&1<<r) != 0) {
-            if (gate.editor.simEngineContainer.simEngine.getRegVal[Byte](gate.outputRegs(r)) > 0) input |= 1<<r
+            if (gate.editor.simEngineContainer.simEngine.getRegVal[Byte](gate.outputRegs(r)) > 0) output |= 1<<r
         }
-        input
+        output
     }
 
     override def onRegistersChanged(gate:ComboGateICTile, regIDs:Set[Int]) //Use to set state on gates/update render
@@ -237,45 +240,68 @@ object NAND extends ComboICGateLogic
         }
     }
 }
-//
-//object XOR extends ComboICGateLogic
-//{
-//    override def outputMask(shape:Int) = 1
-//    override def inputMask(shape:Int) = 10
-//
-//    override def calcOutput(gate:ComboGateICPart, input:Int) =
-//    {
-//        val side1 = (input&1<<1) != 0
-//        val side2 = (input&1<<3) != 0
-//        if (side1 != side2) 1 else 0
-//    }
-//}
-//
-//object XNOR extends ComboICGateLogic
-//{
-//    override def outputMask(shape:Int) = 1
-//    override def inputMask(shape:Int) = 10
-//
-//    override def calcOutput(gate:ComboGateICPart, input:Int) =
-//    {
-//        val side1 = (input&1<<1) != 0
-//        val side2 = (input&1<<3) != 0
-//        if (side1 == side2) 1 else 0
-//    }
-//}
-//
-//object Buffer extends ComboICGateLogic
-//{
-//    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)<<2)&0xB
-//    override def inputMask(shape:Int) = 4
-//    override def feedbackMask(shape:Int) = outputMask(shape)
-//
-//    override def deadSides = 2
-//    override def maxDeadSides = 2
-//
-//    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input != 0) 0xB else 0
-//}
-//
+
+object XOR extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = 1
+    override def inputMask(shape:Int) = 10
+
+    override def getOutputOp(inputs:Array[Int], outputs:Array[Int]) =
+    {
+        val in1 = inputs(1)
+        val in2 = inputs(3)
+        val outID = outputs(0)
+
+        new ISEGate {
+            override def compute(ic:SEIntegratedCircuit) {
+                ic.queueRegVal[Byte](outID, if (ic.getRegVal(in1) != ic.getRegVal(in2)) 1 else 0)
+            }
+        }
+    }
+
+}
+
+object XNOR extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = 1
+    override def inputMask(shape:Int) = 10
+
+    override def getOutputOp(inputs:Array[Int], outputs:Array[Int]) =
+    {
+        val in1 = inputs(1)
+        val in2 = inputs(3)
+        val outID = outputs(0)
+
+        new ISEGate {
+            override def compute(ic:SEIntegratedCircuit) {
+                ic.queueRegVal[Byte](outID, if (ic.getRegVal(in1) == ic.getRegVal(in2)) 1 else 0)
+            }
+        }
+    }
+}
+
+object Buffer extends ComboICGateLogic
+{
+    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)<<2)&0xB
+    override def inputMask(shape:Int) = 4
+
+    override def deadSides = 2
+    override def maxDeadSides = 2
+
+    override def getOutputOp(inputs:Array[Int], outputs:Array[Int]) =
+    {
+        val inID = inputs(2)
+        val outIDs = outputs.filter(_ != -1).toSeq
+
+        new ISEGate {
+            override def compute(ic:SEIntegratedCircuit) {
+                val in = ic.getRegVal[Byte](inID)
+                outIDs.foreach(ic.queueRegVal[Byte](_, in))
+            }
+        }
+    }
+}
+
 //object Multiplexer extends ComboICGateLogic
 //{
 //    override def outputMask(shape:Int) = 1

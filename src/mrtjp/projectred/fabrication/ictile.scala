@@ -12,6 +12,8 @@ import mrtjp.core.util.Enum
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+import scala.collection.mutable.ListBuffer
+
 object ICTileDefs extends Enum
 {
     type EnumVal = ICTileDef
@@ -78,8 +80,7 @@ abstract class ICTile extends ISETile
 
     def writeStreamOf(key:Int):MCDataOutput = editor.network.getPartStream(x, y).writeByte(key)
     def read(in:MCDataInput) { read(in, in.readUByte()) }
-    def read(in:MCDataInput, key:Int) = key match
-    {
+    def read(in:MCDataInput, key:Int) = key match {
         case 0 => readDesc(in)
         case _ =>
     }
@@ -105,10 +106,12 @@ abstract class ICTile extends ISETile
     @SideOnly(Side.CLIENT)
     def getPartName:String
     @SideOnly(Side.CLIENT)
-    def getPickOp:CircuitOp = null
+    def getPickOp:TileEditorOp = null
     @SideOnly(Side.CLIENT)
-    def getRolloverData(detailLevel:Int):Seq[String] =
-        if (detailLevel > 0) Seq(getPartName) else Seq.empty
+    def buildRolloverData(buffer:ListBuffer[String])
+    {
+        buffer += getPartName
+    }
 
     @SideOnly(Side.CLIENT)
     def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float){}
@@ -133,5 +136,5 @@ trait IErrorICTile extends ICTile
 trait IGuiICTile extends TClientNetICTile
 {
     @SideOnly(Side.CLIENT)
-    def createGui:CircuitGui
+    def createGui:ICTileGui
 }
