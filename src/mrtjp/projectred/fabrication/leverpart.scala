@@ -16,7 +16,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.ListBuffer
 
-class LeverICPart extends ICTile with TICTileAcquisitions with IRedwireICGate with ISEGateTile with TClientNetICTile
+class LeverICTile extends ICTile with TICTileAcquisitions with IRedwireICGate with ISEGateTile with TClientNetICTile
 {
     val outputRegs = Array(REG_ZERO, REG_ZERO, REG_ZERO, REG_ZERO)
     var on = false
@@ -55,7 +55,6 @@ class LeverICPart extends ICTile with TICTileAcquisitions with IRedwireICGate wi
     {
         on = !on
         pushToRegisters()
-//        notify(0xF) //we dont need to do this no mo
         sendStateUpdate()
     }
 
@@ -75,9 +74,6 @@ class LeverICPart extends ICTile with TICTileAcquisitions with IRedwireICGate wi
     {
         if (!editor.network.isRemote) notify(0xF)
     }
-
-//    override def rsOutputLevel(r:Int) = if (on) 255 else 0
-//    override def canConnectRS(r:Int) = true
 
     def pushToRegisters()
     {
@@ -125,8 +121,8 @@ class LeverICPart extends ICTile with TICTileAcquisitions with IRedwireICGate wi
     @SideOnly(Side.CLIENT)
     override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float) =
     {
-        RenderICLever.prepairDynamic(this)
-        RenderICLever.render(ccrs, t, ortho)
+        RenderTileLever.prepairDynamic(this)
+        RenderTileLever.render(ccrs, t, ortho)
     }
 }
 
@@ -134,8 +130,8 @@ class OpLever extends SimplePlacementOp
 {
     override def doPartRender(ccrs:CCRenderState, t:Transformation)
     {
-        RenderICLever.prepairInv()
-        RenderICLever.render(ccrs, t, true)
+        RenderTileLever.prepairInv()
+        RenderTileLever.render(ccrs, t, true)
     }
 
     override def createPart = ICTileDefs.Lever.createPart

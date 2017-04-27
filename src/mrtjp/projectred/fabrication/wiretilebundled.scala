@@ -73,8 +73,8 @@ class BundledCableICTile extends WireICTile with IBundledCableICPart
     @SideOnly(Side.CLIENT)
     override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
     {
-        RenderICBundledCable.prepairDynamic(this)
-        RenderICBundledCable.render(ccrs, t, ortho)
+        RenderTileBundledCable.prepairDynamic(this)
+        RenderTileBundledCable.render(ccrs, t, ortho)
     }
 
     @SideOnly(Side.CLIENT)

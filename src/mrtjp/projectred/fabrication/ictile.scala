@@ -19,8 +19,8 @@ object ICTileDefs extends Enum
     type EnumVal = ICTileDef
 
 //    val Torch = CircuitPartDef(() => new TorchICPart)
-    val Lever = ICTileDef(() => new LeverICPart)
-    val Button = ICTileDef(() => new ButtonICPart)
+    val Lever = ICTileDef(() => new LeverICTile)
+    val Button = ICTileDef(() => new ButtonICTile)
 
     val AlloyWire = ICTileDef(() => new AlloyWireICTile)
     val InsulatedWire = ICTileDef(() => new InsulatedWireICTile)

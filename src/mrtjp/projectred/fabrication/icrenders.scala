@@ -130,10 +130,10 @@ object PrefboardRenderer
         edgeModels((w, h))
     }
 
-    def render(ccrs:CCRenderState, ic:ICTileMapContainer, t:Transformation, ortho:Boolean)
+    def render(ccrs:CCRenderState, map:ICTileMapContainer, t:Transformation, ortho:Boolean)
     {
-        val w = ic.size.width
-        val h = ic.size.height
+        val w = map.size.width
+        val h = map.size.height
 
         def bind(s:String)
         {
@@ -156,7 +156,7 @@ object PrefboardRenderer
     }
 }
 
-object RenderICAlloyWire
+object RenderTileAlloyWire
 {
     var connMap:Byte = 0
     var signal:Byte = 0
@@ -182,7 +182,7 @@ object RenderICAlloyWire
     }
 }
 
-object RenderICInsulatedWire
+object RenderTileInsulatedWire
 {
     var connMap:Byte = 0
     var signal:Byte = 0
@@ -213,7 +213,7 @@ object RenderICInsulatedWire
     }
 }
 
-object RenderICBundledCable
+object RenderTileBundledCable
 {
     var connMap:Byte = 0
     var colour:Byte = 0
@@ -240,17 +240,7 @@ object RenderICBundledCable
     }
 }
 
-object RenderICTorch
-{
-    def render(ccrs:CCRenderState, t:Transformation, ortho:Boolean)
-    {
-        prepairRender(ccrs)
-        faceModels(dynamicIdx(0, ortho)).render(ccrs, t, new IconTransformation(torchOnIcon))
-        finishRender(ccrs)
-    }
-}
-
-object RenderICLever
+object RenderTileLever
 {
     var on = false
 
@@ -259,7 +249,7 @@ object RenderICLever
         on = false
     }
 
-    def prepairDynamic(part:LeverICPart)
+    def prepairDynamic(part:LeverICTile)
     {
         on = part.on
     }
@@ -267,12 +257,12 @@ object RenderICLever
     def render(ccrs:CCRenderState, t:Transformation, ortho:Boolean)
     {
         prepairRender(ccrs)
-        faceModels(dynamicIdx(0, ortho)).render(ccrs, new IconTransformation(if (on) leverOnIcon else leverOffIcon))
+        faceModels(dynamicIdx(0, ortho)).render(ccrs, t, new IconTransformation(if (on) leverOnIcon else leverOffIcon))
         finishRender(ccrs)
     }
 }
 
-object RenderICButton
+object RenderTileButton
 {
     var on = false
 
@@ -281,7 +271,7 @@ object RenderICButton
         on = false
     }
 
-    def prepairDynamic(part:ButtonICPart)
+    def prepairDynamic(part:ButtonICTile)
     {
         on = part.on
     }

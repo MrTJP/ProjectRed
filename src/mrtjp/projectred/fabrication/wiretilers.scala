@@ -132,8 +132,8 @@ class AlloyWireICTile extends RedwireICTile
     @SideOnly(Side.CLIENT)
     override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
     {
-        RenderICAlloyWire.prepairDynamic(this)
-        RenderICAlloyWire.render(ccrs, t, ortho)
+        RenderTileAlloyWire.prepairDynamic(this)
+        RenderTileAlloyWire.render(ccrs, t, ortho)
     }
 
     @SideOnly(Side.CLIENT)
@@ -189,8 +189,8 @@ class InsulatedWireICTile extends RedwireICTile with IInsulatedRedwireICPart
     @SideOnly(Side.CLIENT)
     override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
     {
-        RenderICInsulatedWire.prepairDynamic(this)
-        RenderICInsulatedWire.render(ccrs, t, ortho)
+        RenderTileInsulatedWire.prepairDynamic(this)
+        RenderTileInsulatedWire.render(ccrs, t, ortho)
     }
 
     @SideOnly(Side.CLIENT)

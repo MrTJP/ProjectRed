@@ -15,53 +15,52 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 abstract class OpGateCommons(meta:Int) extends TileEditorOp
 {
-    def canPlace(circuit:ICTileMapEditor, point:Point):Boolean
-    def findRot(circuit:ICTileMapEditor, start:Point, end:Point):Int
+    def canPlace(editor:ICTileMapEditor, point:Point):Boolean
+    def findRot(editor:ICTileMapEditor, start:Point, end:Point):Int
 
-    override def checkOp(circuit:ICTileMapEditor, start:Point, end:Point) =
-        canPlace(circuit, start) && circuit.getPart(start) == null
+    override def checkOp(editor:ICTileMapEditor, start:Point, end:Point) =
+        canPlace(editor, start) && editor.getPart(start) == null
 
-    override def writeOp(circuit:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
+    override def writeOp(editor:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
     {
         out.writeByte(start.x).writeByte(start.y)
-        out.writeByte(findRot(circuit, start, end))
+        out.writeByte(findRot(editor, start, end))
     }
 
-    override def readOp(circuit:ICTileMapEditor, in:MCDataInput)
+    override def readOp(editor:ICTileMapEditor, in:MCDataInput)
     {
         val point = Point(in.readByte(), in.readByte())
         val r = in.readUByte()
 
-        if (circuit.getPart(point) == null && canPlace(circuit, point))
-        {
+        if (editor.getPart(point) == null && canPlace(editor, point)) {
             val part = ICTile.createTile(ICGateDefinition(meta).gateType).asInstanceOf[GateICTile]
             part.preparePlacement(r, meta)
-            circuit.setPart(point, part)
+            editor.setPart(point, part)
         }
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderHover(ccrs:CCRenderState, circuit:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderHover(ccrs:CCRenderState, editor:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (circuit.getPart(point) != null) return
+        if (editor.getPart(point) != null) return
 
-        val t = orthoPartT(x, y, xSize, ySize, circuit.size, point.x, point.y)
-        doRender(ccrs, t, findRot(circuit, point, point))
+        val t = orthoPartT(x, y, xSize, ySize, editor.size, point.x, point.y)
+        doRender(ccrs, t, findRot(editor, point, point))
 
-        renderHolo(x, y, xSize,  ySize, circuit.size, point,
-            if (canPlace(circuit, point)) 0x33FFFFFF else 0x33FF0000)
+        renderHolo(x, y, xSize,  ySize, editor.size, point,
+            if (canPlace(editor, point)) 0x33FFFFFF else 0x33FF0000)
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDrag(ccrs:CCRenderState, circuit:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderDrag(ccrs:CCRenderState, editor:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (circuit.getPart(start) != null) return
+        if (editor.getPart(start) != null) return
 
-        val t = orthoPartT(x, y, xSize, ySize, circuit.size, start.x, start.y)
-        doRender(ccrs, t, findRot(circuit, start, end))
+        val t = orthoPartT(x, y, xSize, ySize, editor.size, start.x, start.y)
+        doRender(ccrs, t, findRot(editor, start, end))
 
-        renderHolo(x, y, xSize,  ySize, circuit.size, start,
-            if (canPlace(circuit, start)) 0x44FFFFFF else 0x44FF0000)
+        renderHolo(x, y, xSize,  ySize, editor.size, start,
+            if (canPlace(editor, start)) 0x44FFFFFF else 0x44FF0000)
     }
 
     @SideOnly(Side.CLIENT)
@@ -83,10 +82,9 @@ abstract class OpGateCommons(meta:Int) extends TileEditorOp
 
 class OpGate(meta:Int) extends OpGateCommons(meta)
 {
-    override def findRot(circuit:ICTileMapEditor, start:Point, end:Point) =
+    override def findRot(editor:ICTileMapEditor, start:Point, end:Point) =
     {
-        (end-start).vectorize.axialProject.normalize match
-        {
+        (end-start).vectorize.axialProject.normalize match {
             case Vec2( 0,-1) => 0
             case Vec2( 1, 0) => 1
             case Vec2( 0, 1) => 2
@@ -95,21 +93,20 @@ class OpGate(meta:Int) extends OpGateCommons(meta)
         }
     }
 
-    override def canPlace(circuit:ICTileMapEditor, point:Point) =
-        !isOnBorder(circuit.size, point)
+    override def canPlace(editor:ICTileMapEditor, point:Point) =
+        !isOnBorder(editor.size, point)
 }
 
 class OpIOGate(meta:Int) extends OpGateCommons(meta)
 {
-    override def canPlace(circuit:ICTileMapEditor, point:Point) =
-        isOnBorder(circuit.size, point) && !isOnEdge(circuit.size, point)
+    override def canPlace(editor:ICTileMapEditor, point:Point) =
+        isOnBorder(editor.size, point) && !isOnCorner(editor.size, point)
 
-    override def findRot(circuit:ICTileMapEditor, start:Point, end:Point) =
+    override def findRot(editor:ICTileMapEditor, start:Point, end:Point) =
     {
-        val wm = circuit.size.width-1
-        val hm = circuit.size.height-1
-        start match
-        {
+        val wm = editor.size.width-1
+        val hm = editor.size.height-1
+        start match {
             case Point(_, 0)    => 0
             case Point(`wm`, _) => 1
             case Point(_, `hm`) => 2

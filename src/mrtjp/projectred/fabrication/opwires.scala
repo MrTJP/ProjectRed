@@ -17,16 +17,16 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 abstract class OpWire extends TileEditorOp
 {
-    override def checkOp(circuit:ICTileMapEditor, start:Point, end:Point) =
-        circuit.getPart(start.x, start.y) == null
+    override def checkOp(editor:ICTileMapEditor, start:Point, end:Point) =
+        editor.getPart(start.x, start.y) == null
 
-    override def writeOp(circuit:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
+    override def writeOp(editor:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
     {
         out.writeByte(start.x).writeByte(start.y)
         out.writeByte(end.x).writeByte(end.y)
     }
 
-    override def readOp(circuit:ICTileMapEditor, in:MCDataInput)
+    override def readOp(editor:ICTileMapEditor, in:MCDataInput)
     {
         val start = Point(in.readUByte(), in.readUByte())
         val end = Point(in.readUByte(), in.readUByte())
@@ -34,29 +34,29 @@ abstract class OpWire extends TileEditorOp
 
         for (px <- math.min(start.x, end2.x) to math.max(start.x, end2.x))
             for (py <- math.min(start.y, end2.y) to math.max(start.y, end2.y))
-                if (!isOnBorder(circuit.size, Point(px, py)))
-                    if (circuit.getPart(px, py) == null)
-                        circuit.setPart(px, py, createPart)
+                if (!isOnBorder(editor.size, Point(px, py)))
+                    if (editor.getPart(px, py) == null)
+                        editor.setPart(px, py, createPart)
     }
 
     def createPart:ICTile
 
     @SideOnly(Side.CLIENT)
-    override def renderHover(ccrs:CCRenderState, circuit:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderHover(ccrs:CCRenderState, editor:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (circuit.getPart(point) != null) return
+        if (editor.getPart(point) != null) return
 
-        renderHolo(x, y, xSize, ySize, circuit.size, point,
-            if (isOnBorder(circuit.size, point)) 0x33FF0000 else 0x33FFFFFF)
+        renderHolo(x, y, xSize, ySize, editor.size, point,
+            if (isOnBorder(editor.size, point)) 0x33FF0000 else 0x33FFFFFF)
 
-        val t = orthoPartT(x, y, xSize, ySize, circuit.size, point.x, point.y)
+        val t = orthoPartT(x, y, xSize, ySize, editor.size, point.x, point.y)
         doRender(ccrs, t, 0)
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDrag(ccrs:CCRenderState, circuit:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderDrag(ccrs:CCRenderState, editor:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (circuit.getPart(start) != null) return
+        if (editor.getPart(start) != null) return
 
         val end2 = start+Point((end-start).vectorize.axialProject)
 
@@ -64,12 +64,12 @@ abstract class OpWire extends TileEditorOp
             for (py <- math.min(start.y, end2.y) to math.max(start.y, end2.y))
             {
                 val point = Point(px, py)
-                renderHolo(x, y, xSize, ySize, circuit.size, point,
-                    if (isOnBorder(circuit.size, point)) 0x44FF0000 else 0x44FFFFFF)
+                renderHolo(x, y, xSize, ySize, editor.size, point,
+                    if (isOnBorder(editor.size, point)) 0x44FF0000 else 0x44FFFFFF)
 
-                if (circuit.getPart(px, py) == null)
+                if (editor.getPart(px, py) == null)
                 {
-                    val t = orthoPartT(x, y, xSize, ySize, circuit.size, px, py)
+                    val t = orthoPartT(x, y, xSize, ySize, editor.size, px, py)
                     var m = 0
                     if (px > start.x) {m |= 8; if (px != end2.x) m |= 2}
                     if (px < start.x) {m |= 2; if (px != end2.x) m |= 8}
@@ -104,7 +104,7 @@ class OpAlloyWire extends OpWire
     @SideOnly(Side.CLIENT)
     override def doRender(ccrs:CCRenderState, t:Transformation, conn:Int)
     {
-        val r = RenderICAlloyWire
+        val r = RenderTileAlloyWire
         r.connMap = conn.toByte
         r.signal = 255.toByte
         r.render(ccrs, t, true)
@@ -113,8 +113,8 @@ class OpAlloyWire extends OpWire
     @SideOnly(Side.CLIENT)
     override def doInvRender(ccrs:CCRenderState, t:Transformation)
     {
-        RenderICAlloyWire.prepairInv()
-        RenderICAlloyWire.render(ccrs, t, true)
+        RenderTileAlloyWire.prepairInv()
+        RenderTileAlloyWire.render(ccrs, t, true)
     }
 
     @SideOnly(Side.CLIENT)
@@ -133,7 +133,7 @@ class OpInsulatedWire(colour:Int) extends OpWire
     @SideOnly(Side.CLIENT)
     override def doRender(ccrs:CCRenderState, t:Transformation, conn:Int)
     {
-        val r = RenderICInsulatedWire
+        val r = RenderTileInsulatedWire
         r.connMap = conn.toByte
         r.signal = 255.toByte
         r.colour = colour.toByte
@@ -143,8 +143,8 @@ class OpInsulatedWire(colour:Int) extends OpWire
     @SideOnly(Side.CLIENT)
     override def doInvRender(ccrs:CCRenderState, t:Transformation)
     {
-        RenderICInsulatedWire.prepairInv(colour)
-        RenderICInsulatedWire.render(ccrs, t, true)
+        RenderTileInsulatedWire.prepairInv(colour)
+        RenderTileInsulatedWire.render(ccrs, t, true)
     }
 
     @SideOnly(Side.CLIENT)
@@ -163,7 +163,7 @@ class OpBundledCable(colour:Int) extends OpWire
     @SideOnly(Side.CLIENT)
     override def doRender(ccrs:CCRenderState, t:Transformation, conn:Int)
     {
-        val r = RenderICBundledCable
+        val r = RenderTileBundledCable
         r.connMap = conn.toByte
         r.colour = colour.toByte
         r.render(ccrs, t, true)
@@ -172,8 +172,8 @@ class OpBundledCable(colour:Int) extends OpWire
     @SideOnly(Side.CLIENT)
     override def doInvRender(ccrs:CCRenderState, t:Transformation)
     {
-        RenderICBundledCable.prepairInv(colour)
-        RenderICBundledCable.render(ccrs, t, true)
+        RenderTileBundledCable.prepairInv(colour)
+        RenderTileBundledCable.render(ccrs, t, true)
     }
 
     @SideOnly(Side.CLIENT)

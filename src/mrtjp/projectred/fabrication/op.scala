@@ -128,7 +128,7 @@ object TileEditorOp
     def isOnBorder(cSize:Size, point:Point) =
         point.x == 0 || point.y == 0 || point.x == cSize.width-1 || point.y == cSize.height-1
 
-    def isOnEdge(cSize:Size, point:Point) =
+    def isOnCorner(cSize:Size, point:Point) =
         point == Point(0, 0) || point == Point(0, cSize.height-1) || point == Point(cSize.width-1, 0) || point == Point(cSize.width-1, cSize.height-1)
 }
 
@@ -136,39 +136,39 @@ trait TileEditorOp
 {
     var id = -1
 
-    def checkOp(circuit:ICTileMapEditor, start:Point, end:Point):Boolean
+    def checkOp(editor:ICTileMapEditor, start:Point, end:Point):Boolean
 
-    def writeOp(circuit:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
-    def readOp(circuit:ICTileMapEditor, in:MCDataInput)
+    def writeOp(editor:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
+    def readOp(editor:ICTileMapEditor, in:MCDataInput)
 
     @SideOnly(Side.CLIENT)
     def getOpName:String
     @SideOnly(Side.CLIENT)
-    def renderHover(ccrs:CCRenderState, circuit:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    def renderHover(ccrs:CCRenderState, editor:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     @SideOnly(Side.CLIENT)
-    def renderDrag(ccrs:CCRenderState, circuit:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    def renderDrag(ccrs:CCRenderState, editor:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     @SideOnly(Side.CLIENT)
     def renderImage(ccrs:CCRenderState, x:Double, y:Double, width:Double, height:Double)
 }
 
 abstract class SimplePlacementOp extends TileEditorOp
 {
-    def canPlace(circuit:ICTileMapEditor, point:Point):Boolean =
-        !isOnBorder(circuit.size, point)
+    def canPlace(editor:ICTileMapEditor, point:Point):Boolean =
+        !isOnBorder(editor.size, point)
 
-    override def checkOp(circuit:ICTileMapEditor, start:Point, end:Point) =
-        canPlace(circuit, end) && circuit.getPart(end.x, end.y) == null
+    override def checkOp(editor:ICTileMapEditor, start:Point, end:Point) =
+        canPlace(editor, end) && editor.getPart(end.x, end.y) == null
 
-    override def writeOp(circuit:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
+    override def writeOp(editor:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
     {
         out.writeByte(end.x).writeByte(end.y)
     }
 
-    override def readOp(circuit:ICTileMapEditor, in:MCDataInput)
+    override def readOp(editor: ICTileMapEditor, in: MCDataInput)
     {
         val point = Point(in.readUByte(), in.readUByte())
-        if (canPlace(circuit, point) && circuit.getPart(point.x, point.y) == null)
-            circuit.setPart(point.x, point.y, createPart)
+        if (canPlace(editor, point) && editor.getPart(point.x, point.y) == null)
+            editor.setPart(point.x, point.y, createPart)
     }
 
     @SideOnly(Side.CLIENT)
@@ -179,27 +179,27 @@ abstract class SimplePlacementOp extends TileEditorOp
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderHover(ccrs:CCRenderState, circuit:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderHover(ccrs:CCRenderState, editor:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (circuit.getPart(point) != null) return
+        if (editor.getPart(point) != null) return
 
-        renderHolo(x, y, xSize,  ySize, circuit.size, point,
-            if (!isOnBorder(circuit.size, point)) 0x33FFFFFF else 0x33FF0000)
+        renderHolo(x, y, xSize,  ySize, editor.size, point,
+            if (!isOnBorder(editor.size, point)) 0x33FFFFFF else 0x33FF0000)
 
-        val t = orthoPartT(x, y, xSize, ySize, circuit.size, point.x, point.y)
+        val t = orthoPartT(x, y, xSize, ySize, editor.size, point.x, point.y)
         doPartRender(ccrs, t)
 
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDrag(ccrs:CCRenderState, circuit:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
+    override def renderDrag(ccrs:CCRenderState, editor:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (circuit.getPart(end) != null) return
+        if (editor.getPart(end) != null) return
 
-        renderHolo(x, y, xSize,  ySize, circuit.size, end,
-            if (!isOnBorder(circuit.size, end)) 0x44FFFFFF else 0x44FF0000)
+        renderHolo(x, y, xSize,  ySize, editor.size, end,
+            if (!isOnBorder(editor.size, end)) 0x44FFFFFF else 0x44FF0000)
 
-        val t = orthoPartT(x, y, xSize, ySize, circuit.size, end.x, end.y)
+        val t = orthoPartT(x, y, xSize, ySize, editor.size, end.x, end.y)
         doPartRender(ccrs, t)
     }
 

@@ -16,7 +16,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.ListBuffer
 
-class ButtonICPart extends ICTile with TICTileAcquisitions with IRedwireICGate with TClientNetICTile with ISEGateTile
+class ButtonICTile extends ICTile with TICTileAcquisitions with IRedwireICGate with TClientNetICTile with ISEGateTile
 {
     val outputRegs = Array(REG_ZERO, REG_ZERO, REG_ZERO, REG_ZERO)
     var on = false
@@ -150,8 +150,8 @@ class ButtonICPart extends ICTile with TICTileAcquisitions with IRedwireICGate w
     @SideOnly(Side.CLIENT)
     override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float) =
     {
-        RenderICButton.prepairDynamic(this)
-        RenderICButton.render(ccrs, t, ortho)
+        RenderTileButton.prepairDynamic(this)
+        RenderTileButton.render(ccrs, t, ortho)
     }
 }
 
@@ -159,8 +159,8 @@ class OpButton extends SimplePlacementOp
 {
     override def doPartRender(ccrs:CCRenderState, t:Transformation)
     {
-        RenderICButton.prepairInv()
-        RenderICButton.render(ccrs, t, true)
+        RenderTileButton.prepairInv()
+        RenderTileButton.render(ccrs, t, true)
     }
 
     override def createPart = ICTileDefs.Button.createPart
