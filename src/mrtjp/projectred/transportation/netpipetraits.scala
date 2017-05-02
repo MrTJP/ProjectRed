@@ -369,8 +369,6 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
             else
             {
                 color = RouteFX2.color_receive
-                r.hasArrived = true
-                itemReceived(r.payload)
             }
         }
 
@@ -393,6 +391,16 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
 
         if (color == RouteFX2.color_relay) statsRelayed += 1
         RouteFX2.spawnType1(color, this)
+    }
+
+    override def passToInventory(r: NetworkPayload) : Boolean = {
+        val passResult = super.passToInventory(r)
+        if(passResult){
+            r.hasArrived = true
+            itemReceived(r.payload)
+        }
+
+        passResult
     }
 
     override def injectPayload(r:NetworkPayload, in:Int) =
