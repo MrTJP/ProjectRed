@@ -22,7 +22,7 @@ abstract class GateICTile extends ICTile with TConnectableICTile with TICTileOri
     private var gateShape:Byte = 0
 
     def getLogic[T]:T
-    def getLogicPrimitive = getLogic[ICGateLogic[GateICTile]]
+    def getLogicPrimitive = getLogic[GateTileLogic[GateICTile]]
 
     def subID = gateSubID&0xFF
 
@@ -175,7 +175,7 @@ abstract class GateICTile extends ICTile with TConnectableICTile with TICTileOri
     @SideOnly(Side.CLIENT)
     override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
     {
-        RenderICGate.renderDynamic(ccrs, this, t, ortho, frame)
+        RenderGateTile.renderDynamic(ccrs, this, t, ortho, frame)
     }
 
     @SideOnly(Side.CLIENT)
@@ -202,7 +202,7 @@ abstract class GateICTile extends ICTile with TConnectableICTile with TICTileOri
         TileEditorOpDefs.values(TileEditorOpDefs.SimpleIO.ordinal+subID).getOp
 }
 
-abstract class ICGateLogic[T <: GateICTile]
+abstract class GateTileLogic[T <: GateICTile]
 {
     def canConnectTo(gate:T, part:ICTile, r:Int):Boolean
 
@@ -227,7 +227,7 @@ abstract class ICGateLogic[T <: GateICTile]
 
 trait TComplexGateICTile extends GateICTile
 {
-    def getLogicComplex = getLogic[TComplexICGateLogic[TComplexGateICTile]]
+    def getLogicComplex = getLogic[TComplexGateTileLogic[TComplexGateICTile]]
 
     def assertLogic()
 
@@ -272,7 +272,7 @@ trait TComplexGateICTile extends GateICTile
     }
 }
 
-trait TComplexICGateLogic[T <: TComplexGateICTile] extends ICGateLogic[T]
+trait TComplexGateTileLogic[T <: TComplexGateICTile] extends GateTileLogic[T]
 {
     def save(tag:NBTTagCompound){}
     def load(tag:NBTTagCompound){}

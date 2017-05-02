@@ -13,14 +13,14 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.ListBuffer
 
-trait IIOCircuitPart
+trait IIOGateTile
 {
     def getIOSide:Int
     def getIOMode:Int
     def getConnMode:Int
 }
 
-object IIOCircuitPart
+object IIOGateTile
 {
     val Closed = 0
     val Input = 1
@@ -32,28 +32,26 @@ object IIOCircuitPart
     val Bundled = 3
 }
 
-class IOGateICTile extends RedstoneGateICTile with IIOCircuitPart with TComplexGateICTile
+class IOGateICTile extends RedstoneGateICTile with IIOGateTile with TComplexGateICTile
 {
-    private var logic:IOICGateLogic = null
+    private var logic:IOGateTileLogic = null
 
     override def getLogic[T] = logic.asInstanceOf[T]
-    def getLogicIO = getLogic[IOICGateLogic]
+    def getLogicIO = getLogic[IOGateTileLogic]
 
     override def assertLogic()
     {
-        if (logic == null) logic = IOICGateLogic.create(this, subID)
+        if (logic == null) logic = IOGateTileLogic.create(this, subID)
     }
 
     override def readClientPacket(in:MCDataInput, key:Int) = key match
     {
-        case 5 => getLogicIO match
-        {
-            case f:TFreqIOICGateLogic => f.freqUp()
+        case 5 => getLogicIO match {
+            case f:TFreqIOGateTileLogic => f.freqUp()
             case _ =>
         }
-        case 6 => getLogicIO match
-        {
-            case f:TFreqIOICGateLogic => f.freqDown()
+        case 6 => getLogicIO match {
+            case f:TFreqIOGateTileLogic => f.freqDown()
             case _ =>
         }
         case _ => super.readClientPacket(in, key)
@@ -69,22 +67,22 @@ class IOGateICTile extends RedstoneGateICTile with IIOCircuitPart with TComplexG
     def getSysOutputRegister(freq:Int):Int = REG_OUT(getIOSide, freq)
 }
 
-object IOICGateLogic
+object IOGateTileLogic
 {
     import mrtjp.projectred.fabrication.{ICGateDefinition => defs}
 
     def create(gate:IOGateICTile, subID:Int) = subID match
     {
-        case defs.IOSimple.ordinal => new SimpleIOICGateLogic(gate)
-        case defs.IOAnalog.ordinal => new AnalogIOICGateLogic(gate)
-        case defs.IOBundled.ordinal => new BundledIOICGateLogic(gate)
+        case defs.IOSimple.ordinal => new SimpleIOGateTileLogic(gate)
+        case defs.IOAnalog.ordinal => new AnalogIOGateTileLogic(gate)
+        case defs.IOBundled.ordinal => new BundledIOGateTileLogic(gate)
         case _ => throw new IllegalArgumentException("Invalid gate subID: "+subID)
     }
 }
 
-abstract class IOICGateLogic(val gate:IOGateICTile) extends RedstoneICGateLogic[IOGateICTile] with TComplexICGateLogic[IOGateICTile]
+abstract class IOGateTileLogic(val gate:IOGateICTile) extends RedstoneGateTileLogic[IOGateICTile] with TComplexGateTileLogic[IOGateICTile]
 {
-    import IIOCircuitPart._
+    import IIOGateTile._
 
     var inputReg = REG_ZERO
     var outputReg = REG_ZERO
@@ -193,9 +191,9 @@ abstract class IOICGateLogic(val gate:IOGateICTile) extends RedstoneICGateLogic[
     }
 }
 
-class SimpleIOICGateLogic(gate:IOGateICTile) extends IOICGateLogic(gate)
+class SimpleIOGateTileLogic(gate:IOGateICTile) extends IOGateTileLogic(gate)
 {
-    override def getConnMode(gate:IOGateICTile) = IIOCircuitPart.Simple
+    override def getConnMode(gate:IOGateICTile) = IIOGateTile.Simple
 
     override def getInputRegisterOffset = 0
 
@@ -211,7 +209,7 @@ class SimpleIOICGateLogic(gate:IOGateICTile) extends IOICGateLogic(gate)
     override def createGui(gate:IOGateICTile):ICTileGui = new ICIOGateGui(gate)
 }
 
-trait TFreqIOICGateLogic extends IOICGateLogic
+trait TFreqIOGateTileLogic extends IOGateTileLogic
 {
     var freq = 0
 
@@ -274,9 +272,9 @@ trait TFreqIOICGateLogic extends IOICGateLogic
     override def createGui(gate:IOGateICTile):ICTileGui = new ICIOFreqGateGui(gate)
 }
 
-class AnalogIOICGateLogic(gate:IOGateICTile) extends IOICGateLogic(gate) with TFreqIOICGateLogic
+class AnalogIOGateTileLogic(gate:IOGateICTile) extends IOGateTileLogic(gate) with TFreqIOGateTileLogic
 {
-    override def getConnMode(gate:IOGateICTile) = IIOCircuitPart.Analog
+    override def getConnMode(gate:IOGateICTile) = IIOGateTile.Analog
 
     override def getFreqName = "0x"+Integer.toHexString(freq)
 
@@ -287,9 +285,9 @@ class AnalogIOICGateLogic(gate:IOGateICTile) extends IOICGateLogic(gate) with TF
     }
 }
 
-class BundledIOICGateLogic(gate:IOGateICTile) extends IOICGateLogic(gate) with TFreqIOICGateLogic
+class BundledIOGateTileLogic(gate:IOGateICTile) extends IOGateTileLogic(gate) with TFreqIOGateTileLogic
 {
-    override def getConnMode(gate:IOGateICTile) = IIOCircuitPart.Bundled
+    override def getConnMode(gate:IOGateICTile) = IIOGateTile.Bundled
 
     override def getFreqName = EnumColour.values()(freq).name.toLowerCase
 

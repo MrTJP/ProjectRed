@@ -19,7 +19,7 @@ abstract class OpGateCommons(meta:Int) extends TileEditorOp
     def findRot(editor:ICTileMapEditor, start:Point, end:Point):Int
 
     override def checkOp(editor:ICTileMapEditor, start:Point, end:Point) =
-        canPlace(editor, start) && editor.getPart(start) == null
+        canPlace(editor, start) && editor.getTile(start) == null
 
     override def writeOp(editor:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
     {
@@ -32,17 +32,17 @@ abstract class OpGateCommons(meta:Int) extends TileEditorOp
         val point = Point(in.readByte(), in.readByte())
         val r = in.readUByte()
 
-        if (editor.getPart(point) == null && canPlace(editor, point)) {
+        if (editor.getTile(point) == null && canPlace(editor, point)) {
             val part = ICTile.createTile(ICGateDefinition(meta).gateType).asInstanceOf[GateICTile]
             part.preparePlacement(r, meta)
-            editor.setPart(point, part)
+            editor.setTile(point, part)
         }
     }
 
     @SideOnly(Side.CLIENT)
     override def renderHover(ccrs:CCRenderState, editor:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (editor.getPart(point) != null) return
+        if (editor.getTile(point) != null) return
 
         val t = orthoPartT(x, y, xSize, ySize, editor.size, point.x, point.y)
         doRender(ccrs, t, findRot(editor, point, point))
@@ -54,7 +54,7 @@ abstract class OpGateCommons(meta:Int) extends TileEditorOp
     @SideOnly(Side.CLIENT)
     override def renderDrag(ccrs:CCRenderState, editor:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (editor.getPart(start) != null) return
+        if (editor.getTile(start) != null) return
 
         val t = orthoPartT(x, y, xSize, ySize, editor.size, start.x, start.y)
         doRender(ccrs, t, findRot(editor, start, end))
@@ -73,7 +73,7 @@ abstract class OpGateCommons(meta:Int) extends TileEditorOp
     @SideOnly(Side.CLIENT)
     def doRender(ccrs:CCRenderState, t:Transformation, rot:Int)
     {
-        RenderICGate.renderInv(ccrs, Rotation.quarterRotations(rot).at(Vector3.center) `with` t, meta)
+        RenderGateTile.renderInv(ccrs, Rotation.quarterRotations(rot).at(Vector3.center) `with` t, meta)
     }
 
     @SideOnly(Side.CLIENT)

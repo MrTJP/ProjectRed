@@ -157,7 +157,7 @@ abstract class SimplePlacementOp extends TileEditorOp
         !isOnBorder(editor.size, point)
 
     override def checkOp(editor:ICTileMapEditor, start:Point, end:Point) =
-        canPlace(editor, end) && editor.getPart(end.x, end.y) == null
+        canPlace(editor, end) && editor.getTile(end.x, end.y) == null
 
     override def writeOp(editor:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
     {
@@ -167,8 +167,8 @@ abstract class SimplePlacementOp extends TileEditorOp
     override def readOp(editor: ICTileMapEditor, in: MCDataInput)
     {
         val point = Point(in.readUByte(), in.readUByte())
-        if (canPlace(editor, point) && editor.getPart(point.x, point.y) == null)
-            editor.setPart(point.x, point.y, createPart)
+        if (canPlace(editor, point) && editor.getTile(point.x, point.y) == null)
+            editor.setTile(point.x, point.y, createPart)
     }
 
     @SideOnly(Side.CLIENT)
@@ -181,7 +181,7 @@ abstract class SimplePlacementOp extends TileEditorOp
     @SideOnly(Side.CLIENT)
     override def renderHover(ccrs:CCRenderState, editor:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (editor.getPart(point) != null) return
+        if (editor.getTile(point) != null) return
 
         renderHolo(x, y, xSize,  ySize, editor.size, point,
             if (!isOnBorder(editor.size, point)) 0x33FFFFFF else 0x33FF0000)
@@ -194,7 +194,7 @@ abstract class SimplePlacementOp extends TileEditorOp
     @SideOnly(Side.CLIENT)
     override def renderDrag(ccrs:CCRenderState, editor:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (editor.getPart(end) != null) return
+        if (editor.getTile(end) != null) return
 
         renderHolo(x, y, xSize,  ySize, editor.size, end,
             if (!isOnBorder(editor.size, end)) 0x44FFFFFF else 0x44FF0000)

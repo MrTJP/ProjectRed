@@ -80,7 +80,7 @@ object ICComponentStore
         buttonOffIcon = register("button_off")
         buttonOnIcon = register("button_on")
 
-        RenderICGate.registerIcons(reg)
+        RenderGateTile.registerIcons(reg)
 
         for (m <- WireModel.wireModels) m.icon = register("surface/"+m.iconPath)
         for (m <- BaseComponentModel.baseModels) m.icon = register("surface/"+m.iconPath+"/base")

@@ -48,11 +48,17 @@ object ICTile
 abstract class ICTile extends ISETile
 {
     var editor:ICTileMapEditor = null
+    var tileMap:ICTileMapContainer = null
     var loc:(Byte, Byte) = null
 
     def bindEditor(ic:ICTileMapEditor)
     {
         editor = ic
+    }
+
+    def bindTileMap(tm:ICTileMapContainer)
+    {
+        tileMap = tm
     }
 
     def bindPos(x:Int, y:Int)
@@ -63,6 +69,7 @@ abstract class ICTile extends ISETile
     def unbind()
     {
         editor = null
+        tileMap = null
         loc = null
     }
 
@@ -78,7 +85,7 @@ abstract class ICTile extends ISETile
     def writeDesc(out:MCDataOutput){}
     def readDesc(in:MCDataInput){}
 
-    def writeStreamOf(key:Int):MCDataOutput = editor.network.getPartStream(x, y).writeByte(key)
+    def writeStreamOf(key:Int):MCDataOutput = editor.network.getTileStream(x, y).writeByte(key)
     def read(in:MCDataInput) { read(in, in.readUByte()) }
     def read(in:MCDataInput, key:Int) = key match {
         case 0 => readDesc(in)

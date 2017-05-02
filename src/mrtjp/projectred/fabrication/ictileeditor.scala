@@ -16,7 +16,7 @@ trait IICTileEditorNetwork
     def getWorld:World
 
     def getICStreamOf(key:Int):MCDataOutput
-    def getPartStream(x:Int, y:Int):MCDataOutput
+    def getTileStream(x:Int, y:Int):MCDataOutput
 
     def isRemote:Boolean
     def markSave()
@@ -24,67 +24,66 @@ trait IICTileEditorNetwork
 
 trait TICTileEditorNetwork extends IICTileEditorNetwork
 {
-    private var icStream:PacketCustom = null
-    private var partStream:PacketCustom = null
+    private var editorStream:PacketCustom = null
+    private var tileStream:PacketCustom = null
 
-    def createPartStream():PacketCustom
-    def sendPartStream(out:PacketCustom)
-    override def getPartStream(x:Int, y:Int):MCDataOutput =
+    def createTileStream():PacketCustom
+    def sendTileStream(out:PacketCustom)
+    override def getTileStream(x:Int, y:Int):MCDataOutput =
     {
-        if (partStream == null) partStream = createPartStream()
+        if (tileStream == null) tileStream = createTileStream()
 
-        val part = getIC.getPart(x, y)
-        partStream.writeByte(part.id)
-        partStream.writeByte(x).writeByte(y)
+        val tile = getIC.getTile(x, y)
+        tileStream.writeByte(tile.id)
+        tileStream.writeByte(x).writeByte(y)
 
-        partStream
+        tileStream
     }
-    def flushPartStream()
+    def flushTileStream()
     {
-        if (partStream != null)
-        {
-            partStream.writeByte(255)//terminator
-            sendPartStream(partStream.compress())
-            partStream = null
+        if (tileStream != null) {
+            tileStream.writeByte(255)//terminator
+            sendTileStream(tileStream.compress())
+            tileStream = null
         }
     }
-    def readPartStream(in:MCDataInput)
+    def readTileStream(in:MCDataInput)
     {
         try {
             var id = in.readUByte()
             while (id != 255) {
                 val (x, y) = (in.readUByte(), in.readUByte())
-                var part = getIC.getPart(x, y)
-                if (part == null || part.id != id) {
-                    log.error("client part stream couldnt find part "+Point(x, y))
-                    part = ICTile.createTile(id)
+                var tile = getIC.getTile(x, y)
+                if (tile == null || tile.id != id) {
+                    log.error("client tile stream couldnt find tile "+Point(x, y))
+                    tile = ICTile.createTile(id)
                 }
-                part.read(in)
+                tile.read(in)
                 id = in.readUByte()
             }
         }
         catch {
             case ex:IndexOutOfBoundsException =>
-                log.error("Circuit part stream failed to be read.")
+                log.error("tile stream failed to be read.")
                 ex.printStackTrace()
         }
     }
 
-    def createICStream():PacketCustom
-    def sendICStream(out:PacketCustom)
+    def createEditorStream():PacketCustom
+    def sendEditorStream(out:PacketCustom)
+
     override def getICStreamOf(key:Int):MCDataOutput =
     {
-        if (icStream == null) icStream = createICStream()
-        icStream.writeByte(key)
-        icStream
+        if (editorStream == null) editorStream = createEditorStream()
+        editorStream.writeByte(key)
+        editorStream
     }
     def flushICStream()
     {
-        if (icStream != null)
-        {
-            icStream.writeByte(255) //terminator
-            sendICStream(icStream.compress())
-            icStream = null
+        if (editorStream != null) {
+            editorStream.writeByte(255) //terminator
+            sendEditorStream(editorStream.compress())
+            editorStream = null
         }
     }
     def readICStream(in:MCDataInput)
@@ -129,15 +128,15 @@ class ICTileMapContainer extends ISETileMap
         tag.setByte("sh", size.height.toByte)
 
         val tagList = new NBTTagList
-        for (part <- tiles.values) {
-            val partTag = new NBTTagCompound
-            partTag.setByte("id", part.id.toByte)
-            partTag.setByte("xpos", part.x.toByte)
-            partTag.setByte("ypos", part.y.toByte)
-            part.save(partTag)
-            tagList.appendTag(partTag)
+        for (tile <- tiles.values) {
+            val tileTag = new NBTTagCompound
+            tileTag.setByte("id", tile.id.toByte)
+            tileTag.setByte("xpos", tile.x.toByte)
+            tileTag.setByte("ypos", tile.y.toByte)
+            tile.save(tileTag)
+            tagList.appendTag(tileTag)
         }
-        tag.setTag("parts", tagList)
+        tag.setTag("tiles", tagList)
     }
 
     def loadTiles(tag:NBTTagCompound)
@@ -145,19 +144,24 @@ class ICTileMapContainer extends ISETileMap
         name = tag.getString("name")
         size = Size(tag.getByte("sw")&0xFF, tag.getByte("sh")&0xFF)
 
-        val partList = tag.getTagList("parts", 10)
-        for(i <- 0 until partList.tagCount) {
-            val partTag = partList.getCompoundTagAt(i)
-            val part = ICTile.createTile(partTag.getByte("id")&0xFF)
-            val x = partTag.getByte("xpos")&0xFF
-            val y = partTag.getByte("ypos")&0xFF
-            part.bindPos(x, y)
-            tiles += (x, y) -> part
-            part.load(partTag)
+        val tileList = tag.getTagList("tiles", 10)
+        for(i <- 0 until tileList.tagCount) {
+            val tileTag = tileList.getCompoundTagAt(i)
+            val tile = ICTile.createTile(tileTag.getByte("id")&0xFF)
+            val x = tileTag.getByte("xpos")&0xFF
+            val y = tileTag.getByte("ypos")&0xFF
+            tile.bindTileMap(this)
+            tile.bindPos(x, y)
+            tiles += (x, y) -> tile
+            tile.load(tileTag)
         }
 
         tilesLoadedDelegate()
     }
+
+    def getTile(x:Int, y:Int):ICTile = tiles.getOrElse((x, y), null)
+
+    def getTile(p:Point):ICTile = getTile(p.x, p.y)
 }
 
 class ICTileMapEditor(val network:IICTileEditorNetwork)
@@ -175,8 +179,8 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
 
     tileMapContainer.tilesLoadedDelegate = {() =>
         simNeedsRefresh = true
-        for (part <- tileMapContainer.tiles.values)
-            part.bindEditor(this)
+        for (tile <- tileMapContainer.tiles.values)
+            tile.bindEditor(this)
     }
 
     def size = tileMapContainer.size
@@ -205,10 +209,10 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         out.writeByte(tileMapContainer.size.width).writeByte(tileMapContainer.size.height)
         for (i <- 0 until 4) out.writeInt(simEngineContainer.iostate(i))
 
-        for (((x, y), part) <- tileMapContainer.tiles) {
-            out.writeByte(part.id)
+        for (((x, y), tile) <- tileMapContainer.tiles) {
+            out.writeByte(tile.id)
             out.writeByte(x).writeByte(y)
-            part.writeDesc(out)
+            tile.writeDesc(out)
         }
         out.writeByte(255)
     }
@@ -222,9 +226,9 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
 
         var id = in.readUByte()
         while (id != 255) {
-            val part = ICTile.createTile(id)
-            setPart_do(in.readUByte(), in.readUByte(), part)
-            part.readDesc(in)
+            val tile = ICTile.createTile(id)
+            setTile_do(in.readUByte(), in.readUByte(), tile)
+            tile.readDesc(in)
             id = in.readUByte()
         }
     }
@@ -233,12 +237,12 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
     {
         case 0 => readDesc(in)
         case 1 =>
-            val part = ICTile.createTile(in.readUByte())
-            setPart_do(in.readUByte(), in.readUByte(), part)
-            part.readDesc(in)
-        case 2 => removePart(in.readUByte(), in.readUByte())
+            val tile = ICTile.createTile(in.readUByte())
+            setTile_do(in.readUByte(), in.readUByte(), tile)
+            tile.readDesc(in)
+        case 2 => removeTile(in.readUByte(), in.readUByte())
         case 3 => TileEditorOp.getOperation(in.readUByte()).readOp(this, in)
-        case 4 => getPart(in.readUByte(), in.readUByte()) match {
+        case 4 => getTile(in.readUByte(), in.readUByte()) match {
             case g:TClientNetICTile => g.readClientPacket(in)
             case _ => log.error("Server IC stream received invalid client packet")
         }
@@ -250,15 +254,15 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         case _ =>
     }
 
-    def sendPartAdded(part:ICTile)
+    def sendTileAdded(tile:ICTile)
     {
         val out = network.getICStreamOf(1)
-        out.writeByte(part.id)
-        out.writeByte(part.x).writeByte(part.y)
-        part.writeDesc(out)
+        out.writeByte(tile.id)
+        out.writeByte(tile.x).writeByte(tile.y)
+        tile.writeDesc(out)
     }
 
-    def sendRemovePart(x:Int, y:Int)
+    def sendRemoveTile(x:Int, y:Int)
     {
         network.getICStreamOf(2).writeByte(x).writeByte(y)
     }
@@ -272,9 +276,9 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         else false
     }
 
-    def sendClientPacket(part:TClientNetICTile, writer:MCDataOutput => Unit)
+    def sendClientPacket(tile:TClientNetICTile, writer:MCDataOutput => Unit)
     {
-        val s = network.getICStreamOf(4).writeByte(part.x).writeByte(part.y)
+        val s = network.getICStreamOf(4).writeByte(tile.x).writeByte(tile.y)
         writer(s)
     }
 
@@ -311,17 +315,17 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
 
     def tick()
     {
-        //Update parts as needed
+        //Update tiles as needed
         val t = network.getWorld.getTotalWorldTime
         var rem = Seq[(Int, Int)]()
         for((k, v) <- scheduledTicks) if(v >= t) {
-            getPart(k._1, k._2).scheduledTick()
+            getTile(k._1, k._2).scheduledTick()
             rem :+= k
         }
         rem.foreach(scheduledTicks.remove)
 
-        //Tick parts
-        for(part <- tileMapContainer.tiles.values) part.update()
+        //Tick tiles
+        for(tile <- tileMapContainer.tiles.values) tile.update()
 
         //Rebuild circuit if needed
         if (simNeedsRefresh)
@@ -335,64 +339,64 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
 
     def refreshErrors()
     {
-        val eparts = tileMapContainer.tiles.values.collect {case p:IErrorICTile => p}
+        val etiles = tileMapContainer.tiles.values.collect {case p:IErrorICTile => p}
         val elist = Map.newBuilder[Point, (String, Int)]
 
-        for (part <- eparts) {
-            val error = part.postErrors
+        for (tile <- etiles) {
+            val error = tile.postErrors
             if (error != null)
-                elist += Point(part.x, part.y) -> error
+                elist += Point(tile.x, tile.y) -> error
         }
 
         errors = elist.result()
     }
 
-    def setPart(x:Int, y:Int, part:ICTile)
+    def setTile(x:Int, y:Int, tile:ICTile)
     {
-        setPart_do(x, y, part)
-        part.onAdded()
+        setTile_do(x, y, tile)
+        tile.onAdded()
         if (!network.isRemote) {
-            sendPartAdded(part)
+            sendTileAdded(tile)
             markSchematicChanged()
         }
     }
-    private def setPart_do(x:Int, y:Int, part:ICTile)
+    private def setTile_do(x:Int, y:Int, tile:ICTile)
     {
         tileMapContainer.assertCoords(x, y)
-        part.bindEditor(this)
-        part.bindPos(x, y)
-        tileMapContainer.tiles += (x, y) -> part
+        tile.bindEditor(this)
+        tile.bindPos(x, y)
+        tileMapContainer.tiles += (x, y) -> tile
     }
 
-    def getPart(x:Int, y:Int):ICTile = tileMapContainer.tiles.getOrElse((x, y), null)
+    def getTile(x:Int, y:Int):ICTile = tileMapContainer.getTile(x, y)
 
-    def removePart(x:Int, y:Int)
+    def removeTile(x:Int, y:Int)
     {
         tileMapContainer.assertCoords(x, y)
-        val part = getPart(x, y)
-        if (part != null) {
+        val tile = getTile(x, y)
+        if (tile != null) {
             if (!network.isRemote) {
-                sendRemovePart(x, y)
+                sendRemoveTile(x, y)
                 markSchematicChanged()
             }
             tileMapContainer.tiles.remove((x, y))
-            part.onRemoved()
-            part.unbind()
+            tile.onRemoved()
+            tile.unbind()
         }
     }
 
     def notifyNeighbor(x:Int, y:Int)
     {
-        val part = getPart(x, y)
-        if (part != null) part.onNeighborChanged()
+        val tile = getTile(x, y)
+        if (tile != null) tile.onNeighborChanged()
     }
 
     def notifyNeighbors(x:Int, y:Int, mask:Int)
     {
         for(r <- 0 until 4) if ((mask&1<<r) != 0) {
             val point = Point(x, y).offset(r)
-            val part = getPart(point.x, point.y)
-            if (part != null) part.onNeighborChanged()
+            val tile = getTile(point.x, point.y)
+            if (tile != null) tile.onNeighborChanged()
         }
     }
 
@@ -414,14 +418,14 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
 
     def onICSimFinished(changedRegs:Set[Int])
     {
-        for (part <- tileMapContainer.tiles.values)
-            part.onRegistersChanged(changedRegs)
+        for (tile <- tileMapContainer.tiles.values)
+            tile.onRegistersChanged(changedRegs)
     }
 
     //Convinience functions
-    def setPart(p:Point, part:ICTile){setPart(p.x, p.y, part)}
-    def getPart(p:Point):ICTile = getPart(p.x, p.y)
-    def removePart(p:Point){removePart(p.x, p.y)}
+    def setTile(p:Point, tile:ICTile){setTile(p.x, p.y, tile)}
+    def getTile(p:Point):ICTile = getTile(p.x, p.y)
+    def removeTile(p:Point){removeTile(p.x, p.y)}
     def notifyNeighbor(p:Point){notifyNeighbor(p.x, p.y)}
     def notifyNeighbors(p:Point, mask:Int){notifyNeighbors(p.x, p.y, mask)}
     def scheduleTick(p:Point, ticks:Int){scheduleTick(p.x, p.y, ticks)}

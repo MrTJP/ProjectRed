@@ -15,17 +15,17 @@ class ComboGateICTile extends RedstoneGateICTile
     val inputRegs = Array(-1, -1, -1, -1)
     val outputRegs = Array(-1, -1, -1, -1)
 
-    override def getLogic[T] = ComboICGateLogic.instances(subID).asInstanceOf[T]
-    def getLogicCombo = getLogic[ComboICGateLogic]
+    override def getLogic[T] = ComboGateTileLogic.instances(subID).asInstanceOf[T]
+    def getLogicCombo = getLogic[ComboGateTileLogic]
 
     override def getPartType = ICTileDefs.SimpleGate
 }
 
-object ComboICGateLogic
+object ComboGateTileLogic
 {
     val advanceDead = Seq(1, 2, 4, 0, 5, 6, 3)
 
-    val instances = new Array[ComboICGateLogic](ICGateDefinition.values.length)
+    val instances = new Array[ComboGateTileLogic](ICGateDefinition.values.length)
     initialize()
 
     def initialize()
@@ -48,7 +48,7 @@ object ComboICGateLogic
     }
 }
 
-trait TSimpleRSICGateLogic[T <: RedstoneGateICTile] extends RedstoneICGateLogic[T]
+trait TSimpleRSGateTileLogic[T <: RedstoneGateICTile] extends RedstoneGateTileLogic[T]
 {
     def getDelay(shape:Int) = 0
 
@@ -64,7 +64,7 @@ trait TSimpleRSICGateLogic[T <: RedstoneGateICTile] extends RedstoneICGateLogic[
     def rolloverOutput(gate:T) = "0x"+Integer.toHexString(gate.state>>4)
 }
 
-abstract class ComboICGateLogic extends RedstoneICGateLogic[ComboGateICTile] with TSimpleRSICGateLogic[ComboGateICTile]
+abstract class ComboGateTileLogic extends RedstoneGateTileLogic[ComboGateICTile] with TSimpleRSGateTileLogic[ComboGateICTile]
 {
     override def cycleShape(gate:ComboGateICTile) =
     {
@@ -83,7 +83,7 @@ abstract class ComboICGateLogic extends RedstoneICGateLogic[ComboGateICTile] wit
 
         var shape1 = shape
         import java.lang.Integer.{bitCount, numberOfLeadingZeros => lead}
-        do shape1 = ComboICGateLogic.advanceDead(shape1)
+        do shape1 = ComboGateTileLogic.advanceDead(shape1)
         while (bitCount(shape1) > maxDeadSides || 32-lead(shape1) > deadSides)
         shape1
     }
@@ -140,7 +140,7 @@ abstract class ComboICGateLogic extends RedstoneICGateLogic[ComboGateICTile] wit
     def getOutputOp(inputs:Array[Int], outputs:Array[Int]):ISEGate
 }
 
-object OR extends ComboICGateLogic
+object OR extends ComboGateTileLogic
 {
     override def outputMask(shape:Int) = 1
     override def inputMask(shape:Int) = ~shape<<1&0xE
@@ -160,7 +160,7 @@ object OR extends ComboICGateLogic
     }
 }
 
-object NOR extends ComboICGateLogic
+object NOR extends ComboGateTileLogic
 {
     override def outputMask(shape:Int) = 1
     override def inputMask(shape:Int) = ~shape<<1&0xE
@@ -180,7 +180,7 @@ object NOR extends ComboICGateLogic
     }
 }
 
-object NOT extends ComboICGateLogic
+object NOT extends ComboGateTileLogic
 {
     override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)>>1|(shape&4)<<1)&0xB
     override def inputMask(shape:Int) = 4
@@ -201,7 +201,7 @@ object NOT extends ComboICGateLogic
     }
 }
 
-object AND extends ComboICGateLogic
+object AND extends ComboGateTileLogic
 {
     override def outputMask(shape:Int) = 1
     override def inputMask(shape:Int) = ~shape<<1&0xE
@@ -221,7 +221,7 @@ object AND extends ComboICGateLogic
     }
 }
 
-object NAND extends ComboICGateLogic
+object NAND extends ComboGateTileLogic
 {
     override def outputMask(shape:Int) = 1
     override def inputMask(shape:Int) = ~shape<<1&0xE
@@ -241,7 +241,7 @@ object NAND extends ComboICGateLogic
     }
 }
 
-object XOR extends ComboICGateLogic
+object XOR extends ComboGateTileLogic
 {
     override def outputMask(shape:Int) = 1
     override def inputMask(shape:Int) = 10
@@ -261,7 +261,7 @@ object XOR extends ComboICGateLogic
 
 }
 
-object XNOR extends ComboICGateLogic
+object XNOR extends ComboGateTileLogic
 {
     override def outputMask(shape:Int) = 1
     override def inputMask(shape:Int) = 10
@@ -280,7 +280,7 @@ object XNOR extends ComboICGateLogic
     }
 }
 
-object Buffer extends ComboICGateLogic
+object Buffer extends ComboGateTileLogic
 {
     override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)<<2)&0xB
     override def inputMask(shape:Int) = 4

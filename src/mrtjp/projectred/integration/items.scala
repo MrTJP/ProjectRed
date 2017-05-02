@@ -85,6 +85,7 @@ object GateDefinition extends ItemDefinition
     val typeArrayGate = "projectred-integration:array_gate"
     val typeBundledGate = "projectred-integration:bundled_gate"
     val typeNeighborGate = "projectred-integration:neighbor_gate"
+    val typeICGate = "projectred-fabrication:ic_gate" //used by fabrication module
 
     val OR = new GateDef(typeSimpleGate)
     val NOR = new GateDef(typeSimpleGate)
@@ -120,7 +121,7 @@ object GateDefinition extends ItemDefinition
     val StackingLatch = new GateDef(typeArrayGate)
     val SegmentDisplay = new GateDef(typeBundledGate)
     val DecRandomizer = new GateDef(typeSimpleGate)
-    val ICGate = new GateDef("pr_icgate", true)
+    val ICGate = new GateDef(typeICGate, true) //fabrication module
 
     class GateDef(val partname:String, val hidden:Boolean = false) extends ItemDef(partname)
     {

@@ -5,7 +5,7 @@
  */
 package mrtjp.projectred.fabrication
 
-import java.util.{ArrayList => JAList, List => JList}
+import java.util.{ArrayList => JAList}
 
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
@@ -437,7 +437,7 @@ object TileICPrinter
 
     def cacheRecipe(key:ItemKey)
     {
-        val recipes = CraftingManager.getInstance().getRecipeList.asInstanceOf[JList[IRecipe]]
+        val recipes = CraftingManager.getInstance().getRecipeList
         for (r <- recipes) try
         {
             val out = ItemKey.get(r.getRecipeOutput)
@@ -447,7 +447,7 @@ object TileICPrinter
                 {
                     case s:ShapedRecipes => s.recipeItems.toSeq.filterNot(_ == null).map(ItemKey.get)
 
-                    case s:ShapelessRecipes => s.recipeItems.asInstanceOf[JList[ItemStack]].toSeq.filterNot(_ == null).map(ItemKey.get)
+                    case s:ShapelessRecipes => s.recipeItems.toSeq.filterNot(_ == null).map(ItemKey.get)
 
                     case s:ShapedOreRecipe => s.getInput.toSeq.flatMap {
                         case s:ItemStack => Seq(s)

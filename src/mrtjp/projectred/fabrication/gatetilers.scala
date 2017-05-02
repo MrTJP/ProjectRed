@@ -31,7 +31,7 @@ abstract class RedstoneGateICTile extends GateICTile with IRedwireICGate
     def state = gateState&0xFF
     def setState(s:Int){ gateState = s.toByte }
 
-    def getLogicRS = getLogic[RedstoneICGateLogic[RedstoneGateICTile]]
+    def getLogicRS = getLogic[RedstoneGateTileLogic[RedstoneGateICTile]]
 
     override def save(tag:NBTTagCompound)
     {
@@ -73,7 +73,7 @@ abstract class RedstoneGateICTile extends GateICTile with IRedwireICGate
     override def canInputFrom(r:Int) = getLogicRS.canInput(this, toInternal(r))
 }
 
-abstract class RedstoneICGateLogic[T <: RedstoneGateICTile] extends ICGateLogic[T]
+abstract class RedstoneGateTileLogic[T <: RedstoneGateICTile] extends GateTileLogic[T]
 {
     override def canConnectTo(gate:T, part:ICTile, r:Int) = part match
     {

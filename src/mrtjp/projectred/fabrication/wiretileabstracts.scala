@@ -76,7 +76,7 @@ abstract class WireICTile extends ICTile with TConnectableICTile with ISEWireTil
 
     override def buildWireNet =
     {
-        val wireNet = new WireNet(editor, Point(x, y))
+        val wireNet = new WireNet(tileMap, Point(x, y))
         wireNet.calculateNetwork()
         wireNet
     }
@@ -148,7 +148,7 @@ class WireNetChannel
     def getAllRegisters = inputsToRegIDMap.values.toSet + outputRegID
 }
 
-class WireNet(ic:ICTileMapEditor, p:Point) extends IWireNet
+class WireNet(ic:ICTileMapContainer, p:Point) extends IWireNet
 {
     val points = MSet[Point]()
 
@@ -164,7 +164,7 @@ class WireNet(ic:ICTileMapEditor, p:Point) extends IWireNet
 
     private def searchForWireNet(open:Seq[Point]):Unit = open match {
         case Seq() =>
-        case Seq(next, rest@_*) => ic.getPart(next) match {
+        case Seq(next, rest@_*) => ic.getTile(next) match {
             case w:WireICTile =>
                 w match {
                     case _:IBundledCableICPart => busWires += next
@@ -190,7 +190,7 @@ class WireNet(ic:ICTileMapEditor, p:Point) extends IWireNet
 
     def mapChannelForPoint(p:Point):Seq[Point] =
     {
-        val mask = ic.getPart(p) match {
+        val mask = ic.getTile(p) match {
             case w:WireICTile => w.getTravelMask|w.getMixerMask
             case _ => 0
         }
@@ -198,11 +198,11 @@ class WireNet(ic:ICTileMapEditor, p:Point) extends IWireNet
 
         def iterate(open:Seq[Node], closed:Set[Node] = Set(), points:Seq[Point] = Seq()):Seq[Point] = open match {
             case Seq() => points
-            case Seq(next, rest@_*) => ic.getPart(next.pos) match {
+            case Seq(next, rest@_*) => ic.getTile(next.pos) match {
                 case w:WireICTile =>
                     val upNext = Seq.newBuilder[Node]
                     for (r <- 0 until 4) if (w.maskConnects(r)) {
-                        ic.getPart(next.pos.offset(r)) match {
+                        ic.getTile(next.pos.offset(r)) match {
                             case w2:WireICTile =>
                                 val newMask = (1<<next.colour & w2.getTravelMask) | w2.getMixerMask
                                 val routes = next --> (r, newMask)

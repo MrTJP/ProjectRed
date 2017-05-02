@@ -168,7 +168,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
             hasBP = in.readBoolean()
             markRender()
         case 2 => editor.readDesc(in)
-        case 3 => readPartStream(in)
+        case 3 => readTileStream(in)
         case 4 => readICStream(in)
         case 5 =>
             if (!hasBP) new ICTileMapEditor(null).readDesc(in)
@@ -220,13 +220,13 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
     override def isRemote = world.isRemote
     override def markSave(){markDirty()}
 
-    override def createPartStream() = writeStream(3)
-    override def createICStream() = writeStream(4)
-    override def sendPartStream(out:PacketCustom)
+    override def createTileStream() = writeStream(3)
+    override def createEditorStream() = writeStream(4)
+    override def sendTileStream(out:PacketCustom)
     {
         watchers.foreach(out.sendToPlayer)
     }
-    override def sendICStream(out:PacketCustom)
+    override def sendEditorStream(out:PacketCustom)
     {
         if (world.isRemote) out.sendToServer()
         else watchers.foreach(out.sendToPlayer)
@@ -236,7 +236,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
     {
         super.updateServer()
         flushICStream()
-        flushPartStream()
+        flushTileStream()
         editor.tick()
     }
     override def updateClient()
@@ -277,9 +277,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
                 world.spawnEntityInWorld(item)
                 hasBP = false
                 sendHasBPUpdate()
-            }
-            else
-            {
+            } else {
                 val nc = new NodeContainer
                 nc.startWatchDelegate = playerStartWatch
                 nc.stopWatchDelegate = playerStopWatch

@@ -56,7 +56,7 @@ class FabricationProxy_server extends IProxy with IPartFactory
         itemICChip.setUnlocalizedName("projectred.fabrication.icChip")
         GameRegistry.register(itemICChip.setRegistryName("ic_chip"))
 
-        MultiPartRegistry.registerParts(this, Array("pr_icgate"))
+        MultiPartRegistry.registerParts(this, Array(GateDefinition.typeICGate))
 
         FabricationRecipes.initRecipes()
     }
@@ -82,7 +82,7 @@ class FabricationProxy_server extends IProxy with IPartFactory
       */
     override def createPart(name:String, client:Boolean) = name match
     {
-//        case "pr_icgate" => new CircuitGatePart
+        case GateDefinition.typeICGate => new ICGatePart
         case _ => null
     }
 }
@@ -126,7 +126,7 @@ class FabricationProxy_client extends FabricationProxy_server
         GuiHandler.register(GuiICWorkbench, icWorkbenchGui)
         GuiHandler.register(GuiICPrinter, icPrinterGui)
 
-//        RenderGate.hotswap(new RenderCircuitGate, GateDefinition.ICGate.ordinal) //TODO
+        RenderGate.hotswap(new RenderICGate, GateDefinition.ICGate.ordinal)
     }
 
     @SideOnly(Side.CLIENT)
@@ -183,19 +183,17 @@ object FabricationRecipes
 
             override def getCraftingResult(inv:InventoryCrafting):ItemStack =
             {
-                for (i <- 0 until 9)
-                {
+                for (i <- 0 until 9) {
                     val stack = inv.getStackInSlot(i)
                     if (stack == null) return null
-                    i match
-                    {
+                    i match {
                         case 4 => if (stack.getItem != ProjectRedFabrication.itemICChip ||
                                 !ItemICBlueprint.hasICInside(stack)) return null
                         case _ => if (!stack.isItemEqual(PartDefs.PLATE.makeStack)) return null
                     }
                 }
                 val out = GateDefinition.ICGate.makeStack
-//                ItemICBlueprint.copyToGate(inv.getStackInSlot(4), out) todo
+                ItemICBlueprint.copyToGate(inv.getStackInSlot(4), out)
                 out
             }
 

@@ -39,7 +39,7 @@ class SEIntegratedCircuit(
         repropagate()
     }
 
-    def repropagate()
+    def repropagate():Boolean =
     {
         val allChanges = Set.newBuilder[Int]
         var changes:Seq[Int] = null
@@ -70,7 +70,11 @@ class SEIntegratedCircuit(
         while (changes.nonEmpty)
 
         val ch = allChanges.result()
-        if (ch.nonEmpty) registerChangeDelegate(ch)
+        if (ch.nonEmpty) {
+            registerChangeDelegate(ch)
+            true
+        } else
+            false
     }
 }
 

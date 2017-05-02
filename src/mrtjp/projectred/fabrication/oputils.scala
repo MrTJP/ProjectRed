@@ -31,7 +31,7 @@ class TileEditorOpErase extends TileEditorOp
 
         for (x <- math.min(start.x, end.x) to math.max(start.x, end.x))
             for (y <- math.min(start.y, end.y) to math.max(start.y, end.y))
-                editor.removePart(x, y)
+                editor.removeTile(x, y)
     }
 
     @SideOnly(Side.CLIENT)
@@ -48,7 +48,7 @@ class TileEditorOpErase extends TileEditorOp
     @SideOnly(Side.CLIENT)
     override def renderHover(ccrs:CCRenderState, editor:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (editor.getPart(point) != null)
+        if (editor.getTile(point) != null)
             TileEditorOp.renderHolo(x, y, xSize, ySize, editor.size, point, 0x33FF0000)
     }
 
@@ -60,7 +60,7 @@ class TileEditorOpErase extends TileEditorOp
             {
                 val point = Point(px, py)
                 TileEditorOp.renderHolo(x, y, xSize, ySize, editor.size, point,
-                    if (editor.getPart(point) != null) 0x44FF0000 else 0x44FFFFFF)
+                    if (editor.getTile(point) != null) 0x44FF0000 else 0x44FFFFFF)
             }
     }
 

@@ -16,6 +16,9 @@ import com.mojang.realmsclient.gui.ChatFormatting
 import mrtjp.core.item.ItemCore
 import mrtjp.core.vec.{Point, Size}
 import mrtjp.projectred.ProjectRedFabrication
+import mrtjp.projectred.fabrication.IIOGateTile._
+import mrtjp.projectred.integration.GateDefinition
+import net.minecraft.client.renderer.GlStateManager._
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.Entity
@@ -26,7 +29,6 @@ import net.minecraft.util._
 import net.minecraft.world.World
 import net.minecraft.world.storage.MapData
 import org.lwjgl.opengl.GL11
-import net.minecraft.client.renderer.GlStateManager._
 
 class ItemICBlueprint extends ItemMap //hack to allow first-person map rendering of blueprints
 {
@@ -123,70 +125,68 @@ object ItemICBlueprint
         Seq("tilemap", "icname", "icw", "ich").foreach(tag.removeTag)
     }
 
-//    def saveICToGate(ic:ICTileMapEditor, gate:ItemStack)
-//    {
-//        assertStackTag(gate)
-//
-//        val ioparts = ic.tileMapContainer.tiles.values.collect{case io:IIOCircuitPart => io}.toSeq
-//        var (ri, ro, bi, bo) = (0, 0, 0, 0)
-//        val connmodes = new Array[Int](4)
-//
-//        for (r <- 0 until 4)
-//        {
-//            val sparts = ioparts.filter(_.getIOSide == r)
-//
-//            val ioMode = //if (sparts.exists(_.getIOMode == InOut)) InOut
-////            else
-//            {
-//                val in = sparts.exists(_.getIOMode == Input)
-//                val out = sparts.exists(_.getIOMode == Output)
-////                if (in && out) InOut
-//                if (in && !out) Input
-//                else if (out && !in) Output
-//                else Closed //IO conflict???
-//            }
-//
-//            val connMode = if (sparts.exists(_.getConnMode == Simple)) Simple
-//            else if (sparts.exists(_.getConnMode == Analog)) Analog
-//            else if (sparts.exists(_.getConnMode == Bundled)) Bundled
-//            else NoConn
-//
-//            connmodes(r) = connMode
-//            (ioMode, connMode) match
-//            {
-//                case (Input, Simple)    => ri |= 1<<r
-//                case (Input, Analog)    => ri |= 1<<r
-//                case (Input, Bundled)   => bi |= 1<<r
-//
-//                case (Output, Simple)   => ro |= 1<<r
-//                case (Output, Analog)   => ro |= 1<<r
-//                case (Output, Bundled)  => bo |= 1<<r
-//
-////                case (InOut, Simple)    => ri |= 1<<r; ro |= 1<<r
-////                case (InOut, Analog)    => ri |= 1<<r; ro |= 1<<r
-////                case (InOut, Bundled)   => bi |= 1<<r; bo |= 1<<r
-//                case _ =>
-//            }
-//        }
-//
-//        val tag = gate.getTagCompound
-//        saveIC(ic, gate)
-//        tag.setShort("masks", CircuitGateLogic.packIO(ri, ro, bi, bo).toShort)
-//        tag.setShort("cmode", CircuitGateLogic.packConnModes(connmodes).toShort)
-//    }
+    def saveICToGate(tm:ICTileMapContainer, gate:ItemStack)
+    {
+        assertStackTag(gate)
 
-//    def copyToGate(bp:ItemStack, gate:ItemStack)
-//    {
-//        assertStackTag(gate)
-//        val ic = loadIC(bp)
-//        saveICToGate(ic, gate)
-//    }
+        val ioparts = tm.tiles.values.collect{case io:IIOGateTile => io}.toSeq
+        var (ri, ro, bi, bo) = (0, 0, 0, 0)
+        val connmodes = new Array[Int](4)
+
+        for (r <- 0 until 4) {
+            val sparts = ioparts.filter(_.getIOSide == r)
+
+            val ioMode = //if (sparts.exists(_.getIOMode == InOut)) InOut
+//            else
+            {
+                val in = sparts.exists(_.getIOMode == Input)
+                val out = sparts.exists(_.getIOMode == Output)
+//                if (in && out) InOut
+                if (in && !out) Input
+                else if (out && !in) Output
+                else Closed //IO conflict???
+            }
+
+            val connMode = if (sparts.exists(_.getConnMode == Simple)) Simple
+            else if (sparts.exists(_.getConnMode == Analog)) Analog
+            else if (sparts.exists(_.getConnMode == Bundled)) Bundled
+            else NoConn
+
+            connmodes(r) = connMode
+            (ioMode, connMode) match {
+                case (Input, Simple)    => ri |= 1<<r
+                case (Input, Analog)    => ri |= 1<<r
+                case (Input, Bundled)   => bi |= 1<<r
+
+                case (Output, Simple)   => ro |= 1<<r
+                case (Output, Analog)   => ro |= 1<<r
+                case (Output, Bundled)  => bo |= 1<<r
+
+//                case (InOut, Simple)    => ri |= 1<<r; ro |= 1<<r
+//                case (InOut, Analog)    => ri |= 1<<r; ro |= 1<<r
+//                case (InOut, Bundled)   => bi |= 1<<r; bo |= 1<<r
+                case _ =>
+            }
+        }
+
+        val tag = gate.getTagCompound
+        saveTileMap(tm, gate)
+        tag.setShort("masks", ICGateLogic.packIO(ri, ro, bi, bo).toShort)
+        tag.setShort("cmode", ICGateLogic.packConnModes(connmodes).toShort)
+    }
+
+    def copyToGate(bp:ItemStack, gate:ItemStack)
+    {
+        assertStackTag(gate)
+        val ic = loadTileMap(bp)
+        saveICToGate(ic, gate)
+    }
 
     def getGateMasks(stack:ItemStack) =
-        CircuitGateLogic.unpackIO(stack.getTagCompound.getShort("masks"))
+        ICGateLogic.unpackIO(stack.getTagCompound.getShort("masks"))
 
     def getConnModes(stack:ItemStack) =
-        CircuitGateLogic.unpackConnModes(stack.getTagCompound.getShort("cmode"))
+        ICGateLogic.unpackConnModes(stack.getTagCompound.getShort("cmode"))
 }
 
 object ItemRenderICBlueprint extends IMapRenderer
@@ -296,10 +296,10 @@ class ItemICChip extends ItemCore
     {
         if (stack.getItemDamage == 1 && ItemICBlueprint.hasICInside(stack)) //creative chip
         {
-//            val gate = GateDefinition.ICGate.makeStack
-//            ItemICBlueprint.copyToGate(stack, gate)
-//            if (!player.inventory.addItemStackToInventory(gate))
-//                player.entityDropItem(gate, player.getEyeHeight) TODO
+            val gate = GateDefinition.ICGate.makeStack
+            ItemICBlueprint.copyToGate(stack, gate)
+            if (!player.inventory.addItemStackToInventory(gate))
+                player.entityDropItem(gate, player.getEyeHeight)
             return new ActionResult(EnumActionResult.SUCCESS, stack)
         }
         super.onItemRightClick(stack, world, player, hand)

@@ -13,7 +13,7 @@ import mrtjp.projectred.core.TFaceOrient._
 import mrtjp.projectred.fabrication.ICComponentStore._
 import net.minecraft.client.renderer.texture.TextureMap
 
-object RenderICGate
+object RenderGateTile
 {
     var renderers = buildRenders()
 
@@ -122,13 +122,13 @@ class RenderSimpleIO extends RenderIO
 class RenderAnalogIO extends RenderIO
 {
     override def invColour = signalColour(0.toByte)
-    override def dynColour(gate:IOGateICTile) = signalColour((gate.getLogic[AnalogIOICGateLogic].freq*17).toByte)
+    override def dynColour(gate:IOGateICTile) = signalColour((gate.getLogic[AnalogIOGateTileLogic].freq*17).toByte)
 }
 
 class RenderBundledIO extends RenderIO
 {
     override def invColour = EnumColour.WHITE.rgba
-    override def dynColour(gate:IOGateICTile) = EnumColour.values()(gate.getLogic[AnalogIOICGateLogic].freq).rgba
+    override def dynColour(gate:IOGateICTile) = EnumColour.values()(gate.getLogic[AnalogIOGateTileLogic].freq).rgba
 }
 
 class RenderOR extends ICGateRenderer[ComboGateICTile]

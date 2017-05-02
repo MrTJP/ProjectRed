@@ -105,7 +105,7 @@ class PrefboardNode(editor:ICTileMapEditor) extends TNode
     {
         if (isCircuitValid && !leftMouseDown && frame.contains(mouse) && rayTest(mouse)) {
             val point = toGridPoint(mouse)
-            val part = editor.getPart(point)
+            val part = editor.getTile(point)
             if (part != null && showTooltips) {
                 val data = new MListBuffer[String]
                 part.buildRolloverData(data)
@@ -133,7 +133,7 @@ class PrefboardNode(editor:ICTileMapEditor) extends TNode
             case 1 =>
                 rightMouseDown = true
                 val gridP = toGridPoint(p)
-                editor.getPart(gridP) match {
+                editor.getTile(gridP) match {
                     case gp:IGuiICTile =>
                         val currentlyOpen = children.collect{case cg:ICTileGui => cg}
                         if (!currentlyOpen.exists(_.part == gp)) {
@@ -156,24 +156,20 @@ class PrefboardNode(editor:ICTileMapEditor) extends TNode
 
     override def mouseReleased_Impl(p:Point, button:Int, consumed:Boolean) =
     {
-        if (leftMouseDown)
-        {
+        if (leftMouseDown) {
             leftMouseDown = false
             val mouseEnd = toGridPoint(p)
             val opUsed = currentOp != null && editor.sendOpUse(currentOp, mouseStart, mouseEnd)
-            if (!opUsed && mouseEnd == mouseStart)
-            {
-                val part = editor.getPart(mouseEnd)
+            if (!opUsed && mouseEnd == mouseStart) {
+                val part = editor.getTile(mouseEnd)
                 if (part != null) part.onClicked()
             }
         }
-        if (rightMouseDown)
-        {
+        if (rightMouseDown) {
             rightMouseDown = false
             val mouseEnd = toGridPoint(p)
-            if (mouseEnd == mouseStart)
-            {
-                val part = editor.getPart(mouseEnd)
+            if (mouseEnd == mouseStart) {
+                val part = editor.getTile(mouseEnd)
                 if (part != null) part.onActivated()
             }
         }
@@ -182,8 +178,7 @@ class PrefboardNode(editor:ICTileMapEditor) extends TNode
 
     override def mouseScrolled_Impl(p:Point, dir:Int, consumed:Boolean) =
     {
-        if (!consumed && rayTest(p))
-        {
+        if (!consumed && rayTest(p)) {
             if (dir > 0) rescaleAt(p, math.min(scale+0.1, 3.0))
             else if (dir < 0) rescaleAt(p, math.max(scale-0.1, 0.5))
             true
@@ -194,8 +189,7 @@ class PrefboardNode(editor:ICTileMapEditor) extends TNode
     override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) =
     {
         import Keyboard._
-        if (!consumed) keycode match
-        {
+        if (!consumed) keycode match {
             case KEY_ESCAPE if leftMouseDown =>
                 leftMouseDown = false
                 true
@@ -223,7 +217,7 @@ class PrefboardNode(editor:ICTileMapEditor) extends TNode
         val pos = parent.convertPointFromScreen(absPos)
         if (rayTest(pos))
         {
-            val part = editor.getPart(toGridPoint(pos))
+            val part = editor.getTile(toGridPoint(pos))
             opPickDelegate(if (part != null) part.getPickOp else null)
         }
     }
@@ -258,8 +252,7 @@ class ICToolsetNode extends TNode
 
     def setup()
     {
-        for (op <- opSet)
-        {
+        for (op <- opSet) {
             val b = createButtonFor(op)
             b.size = buttonSize
             b.hidden = true
@@ -275,8 +268,7 @@ class ICToolsetNode extends TNode
         leadingButton = buttonOpMap.head._1
 
         groupButton = new IconButtonNode {
-            override def drawButton(mouseover:Boolean) =
-            {
+            override def drawButton(mouseover:Boolean) = {
                 val op = buttonOpMap(leadingButton)
                 op.renderImage(CCRenderState.instance(), position.x+2, position.y+2, size.width-4, size.height-4)
             }
@@ -327,10 +319,8 @@ class ICToolsetNode extends TNode
 
     private def createButtonFor(op:TileEditorOp) =
     {
-        val b = new IconButtonNode
-        {
-            override def drawButton(mouseover:Boolean)
-            {
+        val b = new IconButtonNode {
+            override def drawButton(mouseover:Boolean) {
                 op.renderImage(CCRenderState.instance(), position.x+2, position.y+2, size.width-4, size.height-4)
             }
         }
@@ -342,8 +332,7 @@ class ICToolsetNode extends TNode
     def pickOp(op:TileEditorOp)
     {
         setUnfocused()
-        buttonOpMap.find(_._2 == op) match
-        {
+        buttonOpMap.find(_._2 == op) match {
             case Some((b, _)) => b.clickDelegate()
             case _ =>
         }
@@ -351,8 +340,7 @@ class ICToolsetNode extends TNode
 
     override def drawFront_Impl(mouse:Point, rframe:Float)
     {
-        if (title.nonEmpty && groupButton.rayTest(parent.convertPointTo(mouse, this)))
-        {
+        if (title.nonEmpty && groupButton.rayTest(parent.convertPointTo(mouse, this))) {
             import ChatFormatting._
             translateToScreen()
             val Point(mx, my) = parent.convertPointToScreen(mouse)

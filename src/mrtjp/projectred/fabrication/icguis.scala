@@ -109,7 +109,7 @@ trait TGateGui extends ICTileGui
     {
         super.drawBack_Impl(mouse, rframe)
 
-        RenderICGate.renderDynamic(CCRenderState.instance(), gate,
+        RenderGateTile.renderDynamic(CCRenderState.instance(), gate,
             ICComponentStore.orthoGridT(gateRenderSize.width, gateRenderSize.height) `with`
                     new Translation(position.x+gateRenderX, position.y+(size/2-gateRenderSize/2).height, 0), true, rframe)
     }
@@ -335,6 +335,6 @@ class ICIOFreqGateGui(override val gate:IOGateICTile) extends ICTileGui(gate) wi
         }, position.x+117, position.y+11, EnumColour.GRAY.argb, false)
 
         GuiDraw.drawStringC("freq", position.x+66, position.y+22, 50, 14, EnumColour.GRAY.argb, false)
-        GuiDraw.drawStringC(gate.getLogic[TFreqIOICGateLogic].getFreqName, position.x+66, position.y+33, 50, 14, EnumColour.GRAY.argb, false)
+        GuiDraw.drawStringC(gate.getLogic[TFreqIOGateTileLogic].getFreqName, position.x+66, position.y+33, 50, 14, EnumColour.GRAY.argb, false)
     }
 }

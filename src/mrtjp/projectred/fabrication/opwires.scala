@@ -18,7 +18,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 abstract class OpWire extends TileEditorOp
 {
     override def checkOp(editor:ICTileMapEditor, start:Point, end:Point) =
-        editor.getPart(start.x, start.y) == null
+        editor.getTile(start.x, start.y) == null
 
     override def writeOp(editor:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
     {
@@ -35,8 +35,8 @@ abstract class OpWire extends TileEditorOp
         for (px <- math.min(start.x, end2.x) to math.max(start.x, end2.x))
             for (py <- math.min(start.y, end2.y) to math.max(start.y, end2.y))
                 if (!isOnBorder(editor.size, Point(px, py)))
-                    if (editor.getPart(px, py) == null)
-                        editor.setPart(px, py, createPart)
+                    if (editor.getTile(px, py) == null)
+                        editor.setTile(px, py, createPart)
     }
 
     def createPart:ICTile
@@ -44,7 +44,7 @@ abstract class OpWire extends TileEditorOp
     @SideOnly(Side.CLIENT)
     override def renderHover(ccrs:CCRenderState, editor:ICTileMapEditor, point:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (editor.getPart(point) != null) return
+        if (editor.getTile(point) != null) return
 
         renderHolo(x, y, xSize, ySize, editor.size, point,
             if (isOnBorder(editor.size, point)) 0x33FF0000 else 0x33FFFFFF)
@@ -56,7 +56,7 @@ abstract class OpWire extends TileEditorOp
     @SideOnly(Side.CLIENT)
     override def renderDrag(ccrs:CCRenderState, editor:ICTileMapEditor, start:Point, end:Point, x:Double, y:Double, xSize:Double, ySize:Double)
     {
-        if (editor.getPart(start) != null) return
+        if (editor.getTile(start) != null) return
 
         val end2 = start+Point((end-start).vectorize.axialProject)
 
@@ -67,7 +67,7 @@ abstract class OpWire extends TileEditorOp
                 renderHolo(x, y, xSize, ySize, editor.size, point,
                     if (isOnBorder(editor.size, point)) 0x44FF0000 else 0x44FFFFFF)
 
-                if (editor.getPart(px, py) == null)
+                if (editor.getTile(px, py) == null)
                 {
                     val t = orthoPartT(x, y, xSize, ySize, editor.size, px, py)
                     var m = 0

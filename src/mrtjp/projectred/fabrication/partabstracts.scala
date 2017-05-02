@@ -38,7 +38,7 @@ object TICTileOrient
 
 trait TICTileAcquisitions extends ICTile
 {
-    def getStraight(r:Int) = editor.getPart(posOfStraight(r))
+    def getStraight(r:Int) = tileMap.getTile(posOfStraight(r))
     def posOfStraight(r:Int) = Point(x, y).offset(r)
     def rotFromStraight(r:Int) = (r+2)%4
 
