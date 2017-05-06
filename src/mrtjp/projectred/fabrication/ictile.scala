@@ -54,6 +54,7 @@ abstract class ICTile extends ISETile
     def bindEditor(ic:ICTileMapEditor)
     {
         editor = ic
+        bindTileMap(ic.tileMapContainer)
     }
 
     def bindTileMap(tm:ICTileMapContainer)
