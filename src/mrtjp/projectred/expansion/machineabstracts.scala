@@ -68,7 +68,7 @@ abstract class TileMachine extends MTBlockTile with TTileOrient
     override def onBlockPlaced(side:Int, player:EntityPlayer, stack:ItemStack)
     {
         setSide(if (doesOrient) calcFacing(player) else 0)
-        setRotation(if (doesRotate) (Rotation.getSidedRotation(player, side^1)+2)%4 else 0)
+        setRotation(if (doesRotate) (Rotation.getSidedRotation(player, side)+2)%4 else 0)
     }
 
     def calcFacing(ent:EntityPlayer):Int =
