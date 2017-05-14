@@ -9,10 +9,11 @@ import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import mrtjp.core.vec.Point
 import net.minecraft.nbt.NBTTagCompound
-import scala.collection.mutable.{Map => MMap, Set => MSet}
+
+import scala.collection.mutable.{ListBuffer, Map => MMap, Set => MSet}
 import SEIntegratedCircuit._
 
-abstract class WireICTile extends ICTile with TConnectableICTile with ISEWireTile with IErrorICTile
+abstract class WireICTile extends ICTile with TConnectableICTile with ISEWireTile
 {
     override def save(tag:NBTTagCompound)
     {
@@ -83,19 +84,11 @@ abstract class WireICTile extends ICTile with TConnectableICTile with ISEWireTil
 
     def getTravelMask:Int
     def getMixerMask:Int
-
-    override def postErrors =
-    {
-        Integer.bitCount(connMap&0xF) match {
-            case 0 => ("Unreachable wiring", EnumColour.RED.ordinal)
-            case 1 => ("Useless wiring", EnumColour.YELLOW.ordinal)
-            case _ => null
-        }
-    }
 }
 
 class WireNetChannel
 {
+    val points = MSet[Point]()
     val inputs = MSet[Point]()
     val outputs = MSet[Point]()
 
@@ -104,24 +97,18 @@ class WireNetChannel
 
     def allocateRegisters(linker:ISELinker)
     {
-        if (false && (outputs.isEmpty || inputs.isEmpty)) { //invalid channel not being driven or used TODO for rendering, must have a register
-            for (s <- inputs)
-                inputsToRegIDMap += s -> REG_ZERO
-            outputRegID = REG_ZERO
-        } else {
-            outputRegID = linker.allocateRegisterID()
-            linker.addRegister(outputRegID, new StandardRegister[Byte](0))
+        outputRegID = linker.allocateRegisterID()
+        linker.addRegister(outputRegID, new StandardRegister[Byte](0))
 
-            if (inputs.size > 1) { //multiple drivers to this channel, will have to be OR'd together
-                for (s <- inputs) {
-                    val id = linker.allocateRegisterID()
-                    linker.addRegister(id, new StandardRegister[Byte](0))
-                    inputsToRegIDMap += s -> id
-                }
-            } else { //only one driver to this channel. input can write to output register directly
-                for (s <- inputs) //should only be 1 in here
-                    inputsToRegIDMap += s -> outputRegID
+        if (inputs.size > 1) { //multiple drivers to this channel, will have to be OR'd together
+            for (s <- inputs) {
+                val id = linker.allocateRegisterID()
+                linker.addRegister(id, new StandardRegister[Byte](0))
+                inputsToRegIDMap += s -> id
             }
+        } else { //only one driver to this channel. input can write to output register directly
+            for (s <- inputs) //should only be 1 in here
+                inputsToRegIDMap += s -> outputRegID
         }
     }
 
@@ -153,7 +140,8 @@ class WireNet(ic:ICTileMapContainer, p:Point) extends IWireNet
     val points = MSet[Point]()
 
     private val channels = MSet[WireNetChannel]()
-    private val pointToChannelMap = MMap[Point, WireNetChannel]()
+    private val pointToChannelMap = MMap[Point, WireNetChannel]() //non bus points to channel map
+    private val busPointToChannelsMap = MMap[Point, MSet[WireNetChannel]]() //bus points to passing channels map
 
     private val busWires = MSet[Point]()
     private val portWires = MSet[Point]()
@@ -232,6 +220,7 @@ class WireNet(ic:ICTileMapContainer, p:Point) extends IWireNet
                 case _ =>
                     val points = mapChannelForPoint(p)
                     val ch = new WireNetChannel
+                    ch.points ++= points
                     channels += ch
 
                     /* TODO
@@ -240,7 +229,11 @@ class WireNet(ic:ICTileMapContainer, p:Point) extends IWireNet
                        Not dangerous as buses are not currently ever used as io for the wire net
                      */
                     for (p <- points)
-                        pointToChannelMap += p -> ch
+                        if (busWires.contains(p)) {
+                            busPointToChannelsMap.getOrElseUpdate(p, MSet()) += ch
+                        } else {
+                            pointToChannelMap += p -> ch
+                        }
                     ch
             }
         }
@@ -257,8 +250,30 @@ class WireNet(ic:ICTileMapContainer, p:Point) extends IWireNet
 
     override def allocateRegisters(linker:ISELinker)
     {
-        for (ch <- channels)
+        val list = Seq.newBuilder[Point]
+        for (p <- points)
+            if (!pointToChannelMap.contains(p) && !busPointToChannelsMap.contains(p))
+                list += p
+        val res = list.result()
+        if (res.nonEmpty) {
+            linker.getLogger.logError(res, "wire has no associated channel")
+            linker.getLogger.logWarning(res, "test warning")
+        }
+
+
+        for (ch <- channels) {
+            if (ch.inputs.isEmpty || ch.outputs.isEmpty) {
+                val points = ch.points.filter(!busWires.contains(_))
+
+                if (ch.outputs.isEmpty)
+                    linker.getLogger.logWarning(points.toSeq, "wirenet channel has no outputs")
+
+                if (ch.inputs.isEmpty)
+                    linker.getLogger.logWarning(points.toSeq, "wirenet channel has no inputs")
+            }
             ch.allocateRegisters(linker)
+        }
+
     }
 
     override def declareOperations(linker:ISELinker)
@@ -267,13 +282,19 @@ class WireNet(ic:ICTileMapContainer, p:Point) extends IWireNet
             ch.declareOperations(linker)
     }
 
-    override def getInputRegister(p:Point) = pointToChannelMap(p).getInputRegID(p)
+    override def getInputRegister(p:Point) = pointToChannelMap.get(p) match {
+        case Some(ch) => ch.getInputRegID(p)
+        case _ => REG_ZERO
+    }
 
-    override def getOutputRegister(p:Point) = pointToChannelMap(p).getOutputRegID
+    override def getOutputRegister(p:Point) = pointToChannelMap.get(p) match {
+        case Some(ch) => ch.getOutputRegID
+        case _ => REG_ZERO
+    }
 
     override def getChannelStateRegisters(p:Point) = //get all registers for the channel at this point
         pointToChannelMap.get(p) match {
-            case Some(channel) => channel.getAllRegisters
+            case Some(ch) => ch.getAllRegisters
             case _ => Set(REG_ZERO)
         }
 }

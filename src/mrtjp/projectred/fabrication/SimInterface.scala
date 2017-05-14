@@ -1,12 +1,18 @@
 package mrtjp.projectred.fabrication
 
+import codechicken.lib.data.{MCDataInput, MCDataOutput}
+import mrtjp.core.vec.Point
 import net.minecraft.nbt.NBTTagCompound
+
+import scala.collection.mutable.ListBuffer
 
 class ICSimEngineContainer
 {
     import SEIntegratedCircuit._
 
     var simEngine:SEIntegratedCircuit = null
+
+    val logger = new SEStatLogger
 
     var systemTime = 0L
 
@@ -92,7 +98,8 @@ class ICSimEngineContainer
 
     def recompileSimulation(map:ISETileMap)
     {
-        simEngine = ISELinker.linkFromMap(map, onRegistersChanged)
+        logger.clear()
+        simEngine = ISELinker.linkFromMap(map, onRegistersChanged, logger)
         pushInputRegisters(0xF)
         pushSystemTime()
     }
@@ -161,4 +168,75 @@ class ConstantRegister[Type](c:Type) extends ISERegister
     override def getVal[T] = c.asInstanceOf[T]
     override def queueVal[T](newVal:T) = false
     override def pushVal(ic:SEIntegratedCircuit){}
+}
+
+class SEStatLogger extends ISEStatLogger
+{
+    val log = ListBuffer[String]()
+
+    val warnings = ListBuffer[(Seq[Point], String)]()
+    val errors = ListBuffer[(Seq[Point], String)]()
+
+    override def clear()
+    {
+        log.clear()
+        warnings.clear()
+        errors.clear()
+    }
+
+    override def logInfo(message:String)
+    {
+        log += message
+    }
+
+    override def logWarning(points:Seq[Point], message:String)
+    {
+        warnings += points -> message
+    }
+
+    override def logError(points:Seq[Point], message:String)
+    {
+        errors += points -> message
+    }
+
+    def getWarningsForPoint(p:Point):Seq[(Seq[Point], String)] = warnings.filter(_._1 contains p)
+
+    def getErrorsForPoint(p:Point):Seq[(Seq[Point], String)] = errors.filter(_._1 contains p)
+
+    def writeLog(out:MCDataOutput)
+    {
+        def writeList(list:ListBuffer[(Seq[Point], String)]) {
+            val s = list.size
+            out.writeShort(s)
+            for (i <- 0 until s) {
+                val (points, desc) = list(i)
+                val s2 = points.size
+                out.writeShort(s2)
+                for (p <- points)
+                    out.writeByte(p.x).writeByte(p.y)
+                out.writeString(desc)
+            }
+        }
+
+        writeList(warnings)
+        writeList(errors)
+    }
+
+    def readLog(in:MCDataInput)
+    {
+        def readList(list:ListBuffer[(Seq[Point], String)])
+        {
+            list.clear()
+            for (_ <- 0 until in.readUShort()) {
+                val points = Seq.newBuilder[Point]
+                for (_ <- 0 until in.readUShort())
+                    points += new Point(in.readUByte(), in.readUByte())
+
+                list += points.result() -> in.readString()
+            }
+        }
+
+        readList(warnings)
+        readList(errors)
+    }
 }

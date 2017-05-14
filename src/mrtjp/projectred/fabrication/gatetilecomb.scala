@@ -6,6 +6,7 @@
 package mrtjp.projectred.fabrication
 
 import com.mojang.realmsclient.gui.ChatFormatting.GRAY
+import mrtjp.core.vec.Point
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.ListBuffer
@@ -39,7 +40,7 @@ object ComboGateTileLogic
         instances(defs.XOR.ordinal) = XOR
         instances(defs.XNOR.ordinal) = XNOR
         instances(defs.Buffer.ordinal) = Buffer
-//        instances(defs.Multiplexer.ordinal) = Multiplexer
+        instances(defs.Multiplexer.ordinal) = Multiplexer
 //        instances(defs.Pulse.ordinal) = Pulse
 //        instances(defs.Repeater.ordinal) = Repeater
 //        instances(defs.Randomizer.ordinal) = Randomizer
@@ -127,6 +128,12 @@ abstract class ComboGateTileLogic extends RedstoneGateTileLogic[ComboGateICTile]
             gate.outputRegs(r) =
                     if (canOutput(gate, r)) gate.getOutputRegister(r, linker) else -1
         }
+
+        import SEIntegratedCircuit._
+        if (gate.inputRegs.forall(id => id == -1 || id == REG_ZERO))
+            linker.getLogger.logWarning(Seq(new Point(gate.x, gate.y)), "gate has no inputs")
+        if (gate.outputRegs.forall(id => id == -1 || id == REG_ZERO))
+            linker.getLogger.logWarning(Seq(new Point(gate.x, gate.y)), "gate has no outputs")
     }
 
     override def declareOperations(gate:ComboGateICTile, linker:ISELinker)
@@ -302,13 +309,29 @@ object Buffer extends ComboGateTileLogic
     }
 }
 
-//object Multiplexer extends ComboICGateLogic
-//{
-//    override def outputMask(shape:Int) = 1
-//    override def inputMask(shape:Int) = 0xE
-//
-//    override def calcOutput(gate:ComboGateICPart, input:Int) = if ((input&1<<2) != 0) (input>>3)&1 else (input>>1)&1
-//}
+object Multiplexer extends ComboGateTileLogic
+{
+    override def outputMask(shape:Int) = 1
+    override def inputMask(shape:Int) = 0xE
+
+    override def getOutputOp(inputs:Array[Int], outputs:Array[Int]) =
+    {
+        val inIDs = inputs.clone
+        val outID = outputs(0)
+
+        new ISEGate {
+            override def compute(ic:SEIntegratedCircuit) {
+                ic.queueRegVal[Byte](outID,
+                    if (ic.getRegVal[Byte](inIDs(2)) != 0)
+                        ic.getRegVal[Byte](inIDs(3))
+                    else
+                        ic.getRegVal[Byte](inIDs(1))
+                )
+            }
+        }
+    }
+}
+
 //
 //object Pulse extends ComboICGateLogic
 //{

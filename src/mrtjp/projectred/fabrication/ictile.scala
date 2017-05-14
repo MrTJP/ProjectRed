@@ -136,11 +136,6 @@ trait TClientNetICTile extends ICTile
     }
 }
 
-trait IErrorICTile extends ICTile
-{
-    def postErrors:(String, Int)//(message, colour)
-}
-
 trait IGuiICTile extends TClientNetICTile
 {
     @SideOnly(Side.CLIENT)

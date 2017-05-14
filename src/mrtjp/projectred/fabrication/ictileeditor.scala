@@ -173,8 +173,6 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
 
     var lastWorldTime = -1L
 
-    var errors = Map.empty[Point, (String, Int)]
-
     private var scheduledTicks = MMap[(Int, Int), Long]()
 
     tileMapContainer.tilesLoadedDelegate = {() =>
@@ -208,6 +206,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         out.writeString(tileMapContainer.name)
         out.writeByte(tileMapContainer.size.width).writeByte(tileMapContainer.size.height)
         for (i <- 0 until 4) out.writeInt(simEngineContainer.iostate(i))
+        simEngineContainer.logger.writeLog(out)
 
         for (((x, y), tile) <- tileMapContainer.tiles) {
             out.writeByte(tile.id)
@@ -223,6 +222,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         tileMapContainer.name = in.readString()
         tileMapContainer.size = Size(in.readUByte(), in.readUByte())
         for (i <- 0 until 4) simEngineContainer.iostate(i) = in.readInt()
+        simEngineContainer.logger.readLog(in)
 
         var id = in.readUByte()
         while (id != 255) {
@@ -251,6 +251,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
                 simEngineContainer.iostate(r) = in.readInt()
         case 6 => simEngineContainer.setInput(in.readUByte(), in.readShort())//TODO remove? not used...
         case 7 => simEngineContainer.setOutput(in.readUByte(), in.readShort()) //TODO remove? not used...
+        case 8 => simEngineContainer.logger.readLog(in)
         case _ =>
     }
 
@@ -299,6 +300,11 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         network.getICStreamOf(7).writeByte(r).writeShort(simEngineContainer.iostate(r)>>>16)
     }
 
+    def sendCompileLog()
+    {
+        simEngineContainer.logger.writeLog(network.getICStreamOf(8))
+    }
+
     def clear()
     {
         tileMapContainer.tiles.values.foreach{_.unbind()}//remove references
@@ -328,27 +334,15 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         for(tile <- tileMapContainer.tiles.values) tile.update()
 
         //Rebuild circuit if needed
-        if (simNeedsRefresh)
+        if (simNeedsRefresh) {
             recompileSchematic()
+            sendCompileLog()
+        }
 
         //Tick Simulation time
         simEngineContainer.advanceTime(if (lastWorldTime >= 0) t-lastWorldTime else 1) //if first tick, advance 1 tick only
         simEngineContainer.repropagate()
         lastWorldTime = t
-    }
-
-    def refreshErrors()
-    {
-        val etiles = tileMapContainer.tiles.values.collect {case p:IErrorICTile => p}
-        val elist = Map.newBuilder[Point, (String, Int)]
-
-        for (tile <- etiles) {
-            val error = tile.postErrors
-            if (error != null)
-                elist += Point(tile.x, tile.y) -> error
-        }
-
-        errors = elist.result()
     }
 
     def setTile(x:Int, y:Int, tile:ICTile)

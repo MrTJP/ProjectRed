@@ -90,6 +90,7 @@ object SEIntegratedCircuit
     val REG_SYSTIME = 128
 
     val REG_ZERO = 129
+    val REG_ONE = 130
 }
 
 trait ISERegister

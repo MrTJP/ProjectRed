@@ -24,12 +24,13 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.input.{Keyboard, Mouse}
+import org.lwjgl.opengl.GL11
 
 import scala.collection.JavaConversions._
 import scala.collection.immutable.ListMap
 import scala.collection.mutable.{ListBuffer => MListBuffer}
 
-class PrefboardNode(editor:ICTileMapEditor) extends TNode
+class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
 {
     var currentOp:TileEditorOp = _
 
@@ -62,12 +63,6 @@ class PrefboardNode(editor:ICTileMapEditor) extends TNode
         Point(gridP.vectorize*dp+dp/2)
     }
 
-    override def update_Impl()
-    {
-        if (mcInst.theWorld.getTotalWorldTime%20 == 0)
-            editor.refreshErrors()
-    }
-
     override def drawBack_Impl(mouse:Point, rframe:Float)
     {
         if (isCircuitValid) {
@@ -76,8 +71,10 @@ class PrefboardNode(editor:ICTileMapEditor) extends TNode
 
             color(1, 1, 1, 1)
 
+            //render the actial tiles first
             RenderICTileMap.renderOrtho(ccrs, editor.tileMapContainer, f.x, f.y, size.width*scale, size.height*scale, rframe)
 
+            //then the overlay for the current editing tool
             if (currentOp != null) {
                 if (frame.contains(mouse) && rayTest(mouse) && !leftMouseDown)
                     currentOp.renderHover(ccrs, editor, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
@@ -85,19 +82,53 @@ class PrefboardNode(editor:ICTileMapEditor) extends TNode
                     currentOp.renderDrag(ccrs, editor, mouseStart, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
             }
 
-            if (mcInst.theWorld.getTotalWorldTime%100 > 5 && editor.errors.nonEmpty) {
-                prepairRender(ccrs)
-                TextureUtils.changeTexture(GuiICWorkbench.background)
+            //draw compile warning/error symbols, and also highlight related errors of mouse targeted tile
+            def drawFlags(list:MListBuffer[(Seq[Point], String)], rgba:Int)
+            {
+                for ((points, _) <- list) {
+                    for (Point(x, y) <- points) {
+                        val t = orthoPartT(f.x, f.y, size.width*scale, size.height*scale, editor.size, x, y)
+                        faceModels(dynamicIdx(0, true)).render(ccrs,
+                            t, new UVScale(64) `with` new UVTranslation(330, 37) `with` new UVScale(1/512D),
+                            ColourMultiplier.instance(rgba)
+                        )
+                    }
+                }
+            }
 
-                for ((Point(x, y), (_, c)) <- editor.errors) {
+            def drawMouseOverlay(points:Seq[Point], rgba:Int)
+            {
+                for (Point(x, y) <- points) {
                     val t = orthoPartT(f.x, f.y, size.width*scale, size.height*scale, editor.size, x, y)
                     faceModels(dynamicIdx(0, true)).render(ccrs,
-                        t, new UVScale(64) `with` new UVTranslation(330, 37) `with` new UVScale(1/512D),
-                        ColourMultiplier.instance(EnumColour.values()(c).rgba)
+                        t, new UVScale(64) `with` new UVTranslation(395, 37) `with` new UVScale(1/512D),
+                        ColourMultiplier.instance(rgba)
                     )
                 }
-                finishRender(ccrs)
             }
+
+            enableBlend()
+            blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            prepairRender(ccrs)
+            TextureUtils.changeTexture(GuiICWorkbench.background)
+
+            val mousePoint = toGridPoint(mouse)
+            drawMouseOverlay(editor.simEngineContainer.logger.getWarningsForPoint(mousePoint).flatMap(_._1),
+                EnumColour.YELLOW.rgba(((0.25*(1+math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi)))*255).toInt))
+
+            drawMouseOverlay(editor.simEngineContainer.logger.getErrorsForPoint(mousePoint).flatMap(_._1),
+                EnumColour.RED.rgba(((0.25*(1+math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi/4)))*255).toInt))
+
+            drawFlags(editor.simEngineContainer.logger.warnings, EnumColour.YELLOW.rgba(
+                ((0.5*(1+math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi)))*255).toInt
+            ))
+
+            drawFlags(editor.simEngineContainer.logger.errors, EnumColour.RED.rgba(
+                ((0.5*(1+math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi/4)))*255).toInt
+            ))
+
+            finishRender(ccrs)
+            disableBlend()
         }
     }
 
@@ -114,8 +145,29 @@ class PrefboardNode(editor:ICTileMapEditor) extends TNode
                     translateToScreen()
                     val Point(mx, my) = parent.convertPointToScreen(mouse)
                     GuiDraw.drawMultilineTip(null, mx+12, my-12, data)
-                    if (editor.errors.contains(point))
-                        GuiDraw.drawMultilineTip(null, mx+12, my-32, Seq(ChatFormatting.RED.toString+editor.errors(point)._1))
+
+                    import ChatFormatting._
+                    val flags = new MListBuffer[String]
+                    val warnings = editor.simEngineContainer.logger.getWarningsForPoint(point)
+                    val errors = editor.simEngineContainer.logger.getErrorsForPoint(point)
+
+                    if (warnings.nonEmpty) {
+                        flags += s"$YELLOW$BOLD!" + s"$RESET warnings (${warnings.size})"
+                        for ((_, message) <- warnings) {
+                            flags += s"$GRAY" + " - " + message
+                        }
+                    }
+
+                    if (errors.nonEmpty) {
+                        flags += s"$RED$BOLD" + "X" + s"$RESET errors (${errors.size})"
+                        for ((_, message) <- errors) {
+                            flags += s"$GRAY" + " - " + message
+                        }
+                    }
+
+                    if (flags.nonEmpty)
+                        GuiDraw.drawMultilineTip(null, mx+12, my-32-(flags.size*(fontRenderer.FONT_HEIGHT+1)), flags)
+
                     translateFromScreen()
                     ClipNode.tempEnableScissoring()
                 }
@@ -604,7 +656,7 @@ class InfoNode extends TNode
 
 class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
 {
-    var pref:PrefboardNode = null
+    var pref:TileMapEditorNode = null
     var toolSets = Seq[ICToolsetNode]()
 
     override def onAddedToParent_Impl()
@@ -620,7 +672,7 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
         pan.dragTestFunction = {() => Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)}
         clip.addChild(pan)
 
-        pref = new PrefboardNode(tile.editor)
+        pref = new TileMapEditorNode(tile.editor)
         pref.position = Point(pan.size/2-pref.size/2)
         pref.zPosition = -0.01//Must be below pan/clip nodes
         pref.opPickDelegate = {op =>

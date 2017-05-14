@@ -57,7 +57,7 @@ class ICTileGui(val part:IGuiICTile) extends Gui with TNode
         val from = linePointerCalc()
         val to = from.clamp(frame)
         GL11.glColor4d(1, 1, 1, 1)
-        GuiDraw.drawLine(from.x, from.y, to.x, to.y, 2, lineColor)
+        GuiDraw.drawLine(from.x, from.y, to.x, to.y, 3, lineColor)
         GuiDraw.drawRect(to.x-3, to.y-3, 6, 6, lineColor)
     }
 
