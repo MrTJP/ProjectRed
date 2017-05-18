@@ -12,6 +12,9 @@ buildscript {
             name = "covers1624"
             url = "http://mavenmirror.covers1624.net/"
         }
+        maven {
+            url "http://files.minecraftforge.net/maven"
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
