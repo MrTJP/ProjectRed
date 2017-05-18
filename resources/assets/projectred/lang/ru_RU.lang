@@ -526,8 +526,8 @@ fluid.redmetal.molten=Расплавленный проводящий красн
 
 itemGroup.projectred.fabrication=Project Red: Производство
 
-item.projectred.fabrication.icblueprint.name=Чертеж микросхемы
-item.projectred.fabrication.icchip|0.name=Микросхема
-item.projectred.fabrication.icchip|1.name=Микросхема (творческий режим)
-tile.projectred.integration.icblock|0.name=Микросхемный верстак
-tile.projectred.integration.icblock|1.name=Принтер микросхем
+item.projectred.fabrication.icBlueprint.name=Чертеж микросхемы
+item.projectred.fabrication.icChip|0.name=Микросхема
+item.projectred.fabrication.icChip|1.name=Микросхема (творческий режим)
+tile.projectred.integration.icBlock|0.name=Микросхемный верстак
+tile.projectred.integration.icBlock|1.name=Принтер микросхем

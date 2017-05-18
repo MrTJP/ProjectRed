@@ -554,8 +554,8 @@ fluid.redmetal.molten=熔融红石合金
 
 itemGroup.projectred.fabrication=红石计划:制造
 
-item.projectred.fabrication.icblueprint.name=IC蓝图
-item.projectred.fabrication.icchip|0.name=IC芯片
-item.projectred.fabrication.icchip|1.name=创造模式IC芯片
-tile.projectred.integration.icblock|0.name=IC工作台
-tile.projectred.integration.icblock|1.name=IC印刷机
+item.projectred.fabrication.icBlueprint.name=IC蓝图
+item.projectred.fabrication.icChip|0.name=IC芯片
+item.projectred.fabrication.icChip|1.name=创造模式IC芯片
+tile.projectred.integration.icBlock|0.name=IC工作台
+tile.projectred.integration.icBlock|1.name=IC印刷机

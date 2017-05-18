@@ -556,8 +556,8 @@ fluid.redmetal.molten=溶融導電性赤合金
 
 itemGroup.projectred.fabrication=Project Red: Fabrication
 
-item.projectred.fabrication.icblueprint.name=ICブループリント
-item.projectred.fabrication.icchip|0.name=ICチップ
-item.projectred.fabrication.icchip|1.name=クリエイティブ用ICチップ
-tile.projectred.integration.icblock|0.name=IC作業台
-tile.projectred.integration.icblock|1.name=IC印刷機
+item.projectred.fabrication.icBlueprint.name=ICブループリント
+item.projectred.fabrication.icChip|0.name=ICチップ
+item.projectred.fabrication.icChip|1.name=クリエイティブ用ICチップ
+tile.projectred.integration.icBlock|0.name=IC作業台
+tile.projectred.integration.icBlock|1.name=IC印刷機
