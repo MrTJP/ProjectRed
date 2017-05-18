@@ -265,6 +265,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
                 val stack = new ItemStack(ProjectRedFabrication.itemICBlueprint)
                 if (editor.nonEmpty) {
                     saveTileMap(editor.tileMapContainer, stack)
+                    saveFlags(stack, editor.simEngineContainer.logger)
                     editor.clear()
                     sendICDesc()
                 }
@@ -295,7 +296,10 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
         super.onBlockRemoval()
         if (hasBP) {
             val stack = new ItemStack(ProjectRedFabrication.itemICBlueprint)
-            if (editor.nonEmpty) saveTileMap(editor.tileMapContainer, stack)
+            if (editor.nonEmpty) {
+                saveTileMap(editor.tileMapContainer, stack)
+                saveFlags(stack, editor.simEngineContainer.logger)
+            }
             WorldLib.dropItem(world, pos, stack)
         }
     }

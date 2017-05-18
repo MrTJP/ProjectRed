@@ -52,6 +52,14 @@ class ItemICBlueprint extends ItemMap //hack to allow first-person map rendering
             val size = ItemICBlueprint.getICSize(stack)
             tooltip.add(GRAY+ItemICBlueprint.getICName(stack))
             tooltip.add(GRAY+s"${size.width} x ${size.height}")
+
+            val (warnings, errors) = ItemICBlueprint.loadFlags(stack)
+
+            if (warnings != 0)
+                tooltip.add(s"$YELLOW$BOLD" + "!" + s"$RESET$GRAY contains $warnings " + (if (warnings > 1) "warnings" else "warning"))
+
+            if (errors != 0)
+                tooltip.add(s"$RED$BOLD" + "X" + s"$RESET$GRAY contains $errors " + (if (errors > 1) "errors" else "error"))
         }
         else tooltip.add(GRAY+"empty blueprint")
     }
@@ -76,11 +84,25 @@ object ItemICBlueprint
         tag1.setByte("ich", tm.size.height.toByte)
     }
 
+    def saveFlags(stack:ItemStack, logger:SEStatLogger)
+    {
+        assertStackTag(stack)
+        val tag = stack.getTagCompound
+        tag.setByte("log_warn", logger.warnings.size.toByte)
+        tag.setByte("log_err", logger.errors.size.toByte)
+    }
+
     def loadTileMap(tm:ICTileMapContainer, stack:ItemStack)
     {
         val tag = stack.getTagCompound
         if (tag.hasKey("tilemap"))
             tm.loadTiles(tag.getCompoundTag("tilemap"))
+    }
+
+    def loadFlags(stack:ItemStack):(Int, Int) =
+    {
+        val tag = stack.getTagCompound
+        (tag.getByte("log_warn")&0xFF, tag.getByte("log_err")&0xFF)
     }
 
     def loadTileMap(stack:ItemStack):ICTileMapContainer =
@@ -136,12 +158,10 @@ object ItemICBlueprint
         for (r <- 0 until 4) {
             val sparts = ioparts.filter(_.getIOSide == r)
 
-            val ioMode = //if (sparts.exists(_.getIOMode == InOut)) InOut
-//            else
+            val ioMode =
             {
                 val in = sparts.exists(_.getIOMode == Input)
                 val out = sparts.exists(_.getIOMode == Output)
-//                if (in && out) InOut
                 if (in && !out) Input
                 else if (out && !in) Output
                 else Closed //IO conflict???
@@ -161,10 +181,6 @@ object ItemICBlueprint
                 case (Output, Simple)   => ro |= 1<<r
                 case (Output, Analog)   => ro |= 1<<r
                 case (Output, Bundled)  => bo |= 1<<r
-
-//                case (InOut, Simple)    => ri |= 1<<r; ro |= 1<<r
-//                case (InOut, Analog)    => ri |= 1<<r; ro |= 1<<r
-//                case (InOut, Bundled)   => bi |= 1<<r; bo |= 1<<r
                 case _ =>
             }
         }

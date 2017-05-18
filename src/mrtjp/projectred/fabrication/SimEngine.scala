@@ -7,7 +7,8 @@ class SEIntegratedCircuit(
     $registers:Seq[ISERegister], //Registers in the circuit, indexed by regID
     $gates:Seq[ISEGate], //Gates in the circuit, indexed by gateID
     $regDependents:Map[Int, Seq[Int]], //Register deps [regID -> Seq(gateID)]
-    registerChangeDelegate:Set[Int] => Unit
+    registerChangeDelegate:Set[Int] => Unit,
+    errorFlagDelegate:Int => Unit
 )
 {
     val registers = $registers.toArray
@@ -42,9 +43,13 @@ class SEIntegratedCircuit(
     def repropagate():Boolean =
     {
         val allChanges = Set.newBuilder[Int]
-        var changes:Seq[Int] = null
+        var lastChanges:Seq[Int] = Seq.empty
+        var changes:Seq[Int] = Seq.empty
+
+        val computes = MSet[Int]()
 
         def fetch() {
+            lastChanges = changes
             changes = changeQueue.result()
             changeQueue.clear()
             allChanges ++= changes
@@ -55,7 +60,7 @@ class SEIntegratedCircuit(
             for (regID <- changes)
                 registers(regID).pushVal(this)
 
-            val computes = MSet[Int]()
+            computes.clear()
             for (regID <- changes) {
                 for (gateID <- regDependents(regID)) {
                     if (!computes(gateID)) {
@@ -91,6 +96,9 @@ object SEIntegratedCircuit
 
     val REG_ZERO = 129
     val REG_ONE = 130
+
+    //Flags
+    val COMPUTE_OVERFLOW = 1
 }
 
 trait ISERegister

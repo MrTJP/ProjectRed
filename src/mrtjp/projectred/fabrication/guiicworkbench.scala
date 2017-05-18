@@ -114,10 +114,10 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
 
             val mousePoint = toGridPoint(mouse)
             drawMouseOverlay(editor.simEngineContainer.logger.getWarningsForPoint(mousePoint).flatMap(_._1),
-                EnumColour.YELLOW.rgba(((0.25*(1+math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi)))*255).toInt))
+                EnumColour.YELLOW.rgba(((0.75*(0.75+0.25*math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi)))*255).toInt))
 
             drawMouseOverlay(editor.simEngineContainer.logger.getErrorsForPoint(mousePoint).flatMap(_._1),
-                EnumColour.RED.rgba(((0.25*(1+math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi/4)))*255).toInt))
+                EnumColour.RED.rgba(((0.75*(0.75+0.25*math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi/4 + math.Pi)))*255).toInt))
 
             drawFlags(editor.simEngineContainer.logger.warnings, EnumColour.YELLOW.rgba(
                 ((0.5*(1+math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi)))*255).toInt

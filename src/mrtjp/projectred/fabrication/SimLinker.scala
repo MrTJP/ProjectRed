@@ -309,7 +309,8 @@ private object SELinker
             registers.toSeq,
             gates.toSeq,
             regDependents.toMap,
-            delegate
+            delegate,
+            (_) => ()
         )
     }
 }

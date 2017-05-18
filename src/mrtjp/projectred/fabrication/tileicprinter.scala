@@ -18,11 +18,13 @@ import codechicken.lib.util.VertexDataUtils
 import codechicken.lib.vec._
 import codechicken.lib.vec.uv.{IconTransformation, MultiIconTransformation, UVTransformation}
 import com.google.common.collect.ImmutableList
+import com.mojang.realmsclient.gui.ChatFormatting
+import com.mojang.realmsclient.gui.ChatFormatting.{BOLD, RED, RESET}
 import mrtjp.core.gui._
 import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
 import mrtjp.core.util.CCLConversions.createTriple
-import mrtjp.core.vec.{Point, Size, Vec2}
+import mrtjp.core.vec.{Point, Rect, Size, Vec2}
 import mrtjp.projectred.ProjectRedCore.log
 import mrtjp.projectred.core.PartDefs
 import mrtjp.projectred.integration.ComponentStore
@@ -180,15 +182,21 @@ class TileICPrinter extends TileICMachine with TInventory
     def canStart =
     {
         if (world.getTotalWorldTime%20 == 0)
-            checkIngredients() && checkOutputClear && checkInputIC && checkBlueprint
-        else checkOutputClear && checkInputIC && checkBlueprint && checkIngredients() //use cheaper checks as fail-fast
+            checkIngredients() && checkOutputClear && checkInputIC && checkBlueprint && checkBlueprintFlags
+        else checkOutputClear && checkInputIC && checkBlueprint && checkBlueprintFlags && checkIngredients() //use cheaper checks as fail-fast
     }
 
-    private def checkBlueprint =
+    def checkBlueprint =
     {
         val stack = getStackInSlot(18)
         stack != null && stack.getItem.isInstanceOf[ItemICBlueprint] &&
                 ItemICBlueprint.hasICInside(stack)
+    }
+
+    def checkBlueprintFlags =
+    {
+        val (_, err) = ItemICBlueprint.loadFlags(getStackInSlot(18))
+        err == 0
     }
 
     private def checkInputIC =
@@ -584,6 +592,9 @@ class ContainerPrinter(player:EntityPlayer, tile:TileICPrinter) extends NodeCont
 class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 176, 201)
 {
     var list:ItemListNode = null
+    val flagBox = new Rect(86, 19, 8, 8)
+
+    var hasErrors = false
 
     {
         val clip = new ClipNode
@@ -614,11 +625,12 @@ class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 17
 
     override def update_Impl()
     {
-        if (mcInst.theWorld.getTotalWorldTime%10 == 0)
-        {
+        if (mcInst.theWorld.getTotalWorldTime%10 == 0) {
             list.items = tile.getRequiredResources
             list.reset()
         }
+
+        hasErrors = tile.checkBlueprint && !tile.checkBlueprintFlags
     }
 
     override def drawBack_Impl(mouse:Point, rframe:Float)
@@ -629,7 +641,20 @@ class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 17
             val dx = 37*tile.progress
             GuiDraw.drawTexturedModalRect(86, 32, 176, 0, dx.toInt, 18)
         }
+        if (hasErrors)
+            GuiDraw.drawTexturedModalRect(flagBox.x, flagBox.y, 176, 19, flagBox.width, flagBox.height) //draw the error symbol
+
         GuiDraw.drawString("IC Printer", 8, 6, EnumColour.GRAY.argb, false)
+    }
+
+    override def drawFront_Impl(mouse:Point, rframe:Float)
+    {
+        if (hasErrors) {
+            val m2 = convertPointFromScreen(mouse)
+            if (flagBox.contains(m2))
+                GuiDraw.drawMultilineTip(null, m2.x+12, m2.y-12,
+                    Seq(s"$RED$BOLD" + "X" + s"$RESET blueprint contains errors"))
+        }
     }
 }
 
