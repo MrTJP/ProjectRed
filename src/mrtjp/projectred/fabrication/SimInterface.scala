@@ -101,7 +101,8 @@ class ICSimEngineContainer
     private def onFlagRecieved(flag:Int)
     {
         logger.logRuntimeFlag(flag)
-        logChangedDelegate()
+        if (!propagateSilently)
+            logChangedDelegate()
     }
 
     def recompileSimulation(map:ISETileMap)
@@ -130,7 +131,8 @@ class ICSimEngineContainer
         pushInputRegisters(0xF)
         pushSystemTime()
 
-        logChangedDelegate()
+        if (!propagateSilently)
+            logChangedDelegate()
     }
 
     def resetSimState(map:ISETileMap)
@@ -283,7 +285,5 @@ class SEStatLogger extends ISEStatLogger
         runtimeFlags.clear()
         for (_ <- 0 until in.readUShort())
             runtimeFlags += in.readUByte()
-
-        println("RECIEVED")
     }
 }

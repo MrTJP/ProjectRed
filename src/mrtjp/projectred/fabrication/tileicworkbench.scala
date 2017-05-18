@@ -64,7 +64,7 @@ abstract class TileICMachine extends MTBlockTile with TTileOrient
     override def onBlockPlaced(side:Int, player:EntityPlayer, stack:ItemStack)
     {
         setSide(0)
-        setRotation(if (doesRotate) (Rotation.getSidedRotation(player, side^1)+2)%4 else 0)
+        setRotation(if (doesRotate) (Rotation.getSidedRotation(player, side)+2)%4 else 0)
     }
 
     override def writeDesc(out:MCDataOutput)
