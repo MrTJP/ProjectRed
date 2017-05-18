@@ -43,24 +43,37 @@ class SEIntegratedCircuit(
     def repropagate():Boolean =
     {
         val allChanges = Set.newBuilder[Int]
-        var lastChanges:Seq[Int] = Seq.empty
         var changes:Seq[Int] = Seq.empty
 
-        val computes = MSet[Int]()
+        val allComputes = Array.fill[Int](gates.length)(0)
+        var computes = MSet[Int]()
+
+        var hasOverflow = false
 
         def fetch() {
-            lastChanges = changes
             changes = changeQueue.result()
             changeQueue.clear()
             allChanges ++= changes
         }
+
+        def checkOverflow() {
+            for (i <- computes) {
+                allComputes(i) += 1
+                if (allComputes(i) > 32) {
+                    hasOverflow = true
+                    return
+                }
+            }
+
+            computes.clear()
+        }
+
         fetch()
 
         do {
             for (regID <- changes)
                 registers(regID).pushVal(this)
 
-            computes.clear()
             for (regID <- changes) {
                 for (gateID <- regDependents(regID)) {
                     if (!computes(gateID)) {
@@ -71,8 +84,12 @@ class SEIntegratedCircuit(
             }
 
             fetch()
+            checkOverflow()
         }
-        while (changes.nonEmpty)
+        while (changes.nonEmpty && !hasOverflow)
+
+        if (hasOverflow)
+            errorFlagDelegate(SEIntegratedCircuit.COMPUTE_OVERFLOW)
 
         val ch = allChanges.result()
         if (ch.nonEmpty) {

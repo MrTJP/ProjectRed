@@ -151,7 +151,12 @@ abstract class GateICTile extends ICTile with TConnectableICTile with TICTileOri
         writeStreamOf(1).writeByte(orientation)
     }
 
-    override def buildImplicitWireNet(r:Int) = null //TODO
+    override def buildImplicitWireNet(r:Int) =
+    {
+        val net = new ImplicitWireNet(tileMap, Point(x, y), r)
+        net.calculateNetwork()
+        if (net.isRedundant) null else net
+    }
 
     override def allocateOrFindRegisters(linker:ISELinker)
     {

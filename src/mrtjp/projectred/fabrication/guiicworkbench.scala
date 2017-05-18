@@ -631,7 +631,7 @@ class InfoNode extends TNode
     {
         TextureUtils.changeTexture(GuiICWorkbench.background)
 
-        if (!getTile.hasBP || getTile.getIC.isEmpty)
+        if (!getTile.hasBP || getTile.getIC.isEmpty || getTile.editor.simEngineContainer.logger.runtimeFlags.nonEmpty)
             Gui.drawModalRectWithCustomSizedTexture(position.x, position.y, 330, 0, size.width, size.height, 512, 512)
     }
 
@@ -642,9 +642,11 @@ class InfoNode extends TNode
                 "Lay down a blueprint on the workbench."
             else if (getTile.getIC.isEmpty)
                 "Blueprint is empty. Redraw it."
+            else if (getTile.editor.simEngineContainer.logger.runtimeFlags.nonEmpty) {
+                s"COMPUTE_OVERFLOW!! ${getTile.editor.simEngineContainer.logger.runtimeFlags.size}" //TODO find better way to show this error
+            }
             else ""
-        if (text.nonEmpty && rayTest(mouse))
-        {
+        if (text.nonEmpty && rayTest(mouse)) {
             translateToScreen()
             val Point(mx, my) = parent.convertPointToScreen(mouse)
             import scala.collection.JavaConversions._

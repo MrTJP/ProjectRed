@@ -334,10 +334,8 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         for(tile <- tileMapContainer.tiles.values) tile.update()
 
         //Rebuild circuit if needed
-        if (simNeedsRefresh) {
+        if (simNeedsRefresh)
             recompileSchematic()
-            sendCompileLog()
-        }
 
         //Tick Simulation time
         simEngineContainer.advanceTime(if (lastWorldTime >= 0) t-lastWorldTime else 1) //if first tick, advance 1 tick only
@@ -406,6 +404,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         simNeedsRefresh = false
         simEngineContainer.registersChangedDelegate = onICSimFinished
         simEngineContainer.ioChangedDelegate = sendIOUpdate
+        simEngineContainer.logChangedDelegate = onCompileLogChanged
         simEngineContainer.recompileSimulation(tileMapContainer)
         simEngineContainer.propagateAll()
     }
@@ -414,6 +413,11 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
     {
         for (tile <- tileMapContainer.tiles.values)
             tile.onRegistersChanged(changedRegs)
+    }
+
+    def onCompileLogChanged()
+    {
+        sendCompileLog()
     }
 
     //Convinience functions

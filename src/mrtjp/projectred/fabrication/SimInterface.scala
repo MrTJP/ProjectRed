@@ -25,6 +25,8 @@ class ICSimEngineContainer
 
     var ioChangedDelegate = {() => ()}
 
+    var logChangedDelegate = {() => ()}
+
     var registersChangedDelegate = {_:Set[Int] => ()}
 
     var propagateSilently = false
@@ -96,6 +98,12 @@ class ICSimEngineContainer
         }
     }
 
+    private def onFlagRecieved(flag:Int)
+    {
+        logger.logRuntimeFlag(flag)
+        logChangedDelegate()
+    }
+
     def recompileSimulation(map:ISETileMap)
     {
         logger.clear()
@@ -118,9 +126,11 @@ class ICSimEngineContainer
             }
         }
 
-        simEngine = ISELinker.linkFromMap(map, onRegistersChanged, logger)
+        simEngine = ISELinker.linkFromMap(map, onRegistersChanged, onFlagRecieved, logger)
         pushInputRegisters(0xF)
         pushSystemTime()
+
+        logChangedDelegate()
     }
 
     def resetSimState(map:ISETileMap)
@@ -196,11 +206,14 @@ class SEStatLogger extends ISEStatLogger
     val warnings = ListBuffer[(Seq[Point], String)]()
     val errors = ListBuffer[(Seq[Point], String)]()
 
+    val runtimeFlags = ListBuffer[Int]()
+
     override def clear()
     {
         log.clear()
         warnings.clear()
         errors.clear()
+        runtimeFlags.clear()
     }
 
     override def logInfo(message:String)
@@ -216,6 +229,11 @@ class SEStatLogger extends ISEStatLogger
     override def logError(points:Seq[Point], message:String)
     {
         errors += points -> message
+    }
+
+    override def logRuntimeFlag(flag:Int)
+    {
+        runtimeFlags += flag
     }
 
     def getWarningsForPoint(p:Point):Seq[(Seq[Point], String)] = warnings.filter(_._1 contains p)
@@ -239,6 +257,10 @@ class SEStatLogger extends ISEStatLogger
 
         writeList(warnings)
         writeList(errors)
+
+        out.writeShort(runtimeFlags.size)
+        for (i <- runtimeFlags)
+            out.writeByte(i)
     }
 
     def readLog(in:MCDataInput)
@@ -257,5 +279,11 @@ class SEStatLogger extends ISEStatLogger
 
         readList(warnings)
         readList(errors)
+
+        runtimeFlags.clear()
+        for (_ <- 0 until in.readUShort())
+            runtimeFlags += in.readUByte()
+
+        println("RECIEVED")
     }
 }

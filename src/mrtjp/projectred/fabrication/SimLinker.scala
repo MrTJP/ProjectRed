@@ -51,6 +51,8 @@ trait ISEStatLogger
     def logWarning(points:Seq[Point], message:String)
 
     def logError(points:Seq[Point], message:String)
+
+    def logRuntimeFlag(flag:Int)
 }
 
 trait ISELinker
@@ -121,8 +123,8 @@ trait ISELinker
 
 object ISELinker
 {
-    def linkFromMap(map:ISETileMap, delegate:Set[Int] => Unit, logger:ISEStatLogger):SEIntegratedCircuit =
-        SELinker.linkFromMap(map, delegate, logger)
+    def linkFromMap(map:ISETileMap, delegate:Set[Int] => Unit, flagDelegate:Int => Unit, logger:ISEStatLogger):SEIntegratedCircuit =
+        SELinker.linkFromMap(map, delegate, flagDelegate, logger)
 }
 
 private class SELinker(logger:ISEStatLogger) extends ISELinker
@@ -231,7 +233,7 @@ private class SELinker(logger:ISEStatLogger) extends ISELinker
 
 private object SELinker
 {
-    def linkFromMap(map:ISETileMap, delegate:(Set[Int]) => Unit, logger:ISEStatLogger):SEIntegratedCircuit =
+    def linkFromMap(map:ISETileMap, delegate:(Set[Int]) => Unit, flagDelegate:Int => Unit, logger:ISEStatLogger):SEIntegratedCircuit =
     {
         val linker = new SELinker(logger)
         import linker._
@@ -310,7 +312,7 @@ private object SELinker
             gates.toSeq,
             regDependents.toMap,
             delegate,
-            (_) => ()
+            flagDelegate
         )
     }
 }

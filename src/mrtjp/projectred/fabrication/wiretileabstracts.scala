@@ -134,9 +134,60 @@ class WireNetChannel
     def getAllRegisters = inputsToRegIDMap.values.toSet + outputRegID
 }
 
+class ImplicitWireNet(ic:ICTileMapContainer, p:Point, r:Int) extends IWireNet
+{
+    override val points = MSet[Point]()
+
+    private var regID = -1
+
+    private var hasInput = false
+    private var hasOutput = false
+
+    def calculateNetwork()
+    {
+        points += p
+        val p2 = p.offset(r)
+        points += p2
+
+        ic.getTile(p) match {
+            case g:IRedwireICGate =>
+                if (g.canInputFrom(r))
+                    hasOutput = true
+                if (g.canOutputTo(r))
+                    hasInput = true
+            case _ => return
+        }
+
+        ic.getTile(p2) match {
+            case g:IRedwireICGate with TConnectableICTile =>
+                if (g.canInputFrom(g.rotFromStraight(r)))
+                    hasOutput = true
+                if (g.canOutputTo(g.rotFromStraight(r)))
+                    hasInput = true
+            case _ => return
+        }
+    }
+
+    def isRedundant = !hasInput || !hasOutput
+
+    override def allocateRegisters(linker:ISELinker)
+    {
+        regID = linker.allocateRegisterID()
+        linker.addRegister(regID, new StandardRegister[Byte](0))
+    }
+
+    override def declareOperations(linker:ISELinker){}
+
+    override def getInputRegister(p:Point) = if (points.contains(p)) regID else REG_ZERO
+
+    override def getOutputRegister(p:Point) = if (points.contains(p)) regID else REG_ZERO
+
+    override def getChannelStateRegisters(p:Point) = Set(regID)
+}
+
 class WireNet(ic:ICTileMapContainer, p:Point) extends IWireNet
 {
-    val points = MSet[Point]()
+    override val points = MSet[Point]()
 
     private val channels = MSet[WireNetChannel]()
     private val pointToChannelMap = MMap[Point, WireNetChannel]() //non bus points to channel map
