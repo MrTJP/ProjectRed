@@ -99,6 +99,25 @@ class ICSimEngineContainer
     def recompileSimulation(map:ISETileMap)
     {
         logger.clear()
+
+        //temporary io check, non-issue once side io modes are stored map-level instead of tile-level
+        val ioParts = map.tiles.collect {
+            case (pos, io:IIOGateTile) => (pos, io)
+        }
+        for (s <- 0 until 4) {
+            val sio = ioParts.filter(_._2.getIOSide == s)
+            if (sio.size > 1) {
+                val m = sio.head._2.getIOMode
+                val c = sio.head._2.getConnMode
+                val p = sio.keys.map{p => Point(p._1, p._2)}.toSeq
+
+                if (sio.exists(_._2.getIOMode != m))
+                    logger.logError(p, "io direction conflict")
+                if (sio.exists(_._2.getConnMode != c))
+                    logger.logError(p, "io connection type conflict")
+            }
+        }
+
         simEngine = ISELinker.linkFromMap(map, onRegistersChanged, logger)
         pushInputRegisters(0xF)
         pushSystemTime()

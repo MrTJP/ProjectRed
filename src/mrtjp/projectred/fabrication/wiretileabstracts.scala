@@ -5,13 +5,12 @@
  */
 package mrtjp.projectred.fabrication
 
-import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import mrtjp.core.vec.Point
+import mrtjp.projectred.fabrication.SEIntegratedCircuit._
 import net.minecraft.nbt.NBTTagCompound
 
-import scala.collection.mutable.{ListBuffer, Map => MMap, Set => MSet}
-import SEIntegratedCircuit._
+import scala.collection.mutable.{Map => MMap, Set => MSet}
 
 abstract class WireICTile extends ICTile with TConnectableICTile with ISEWireTile
 {
@@ -255,10 +254,8 @@ class WireNet(ic:ICTileMapContainer, p:Point) extends IWireNet
             if (!pointToChannelMap.contains(p) && !busPointToChannelsMap.contains(p))
                 list += p
         val res = list.result()
-        if (res.nonEmpty) {
-            linker.getLogger.logError(res, "wire has no associated channel")
-            linker.getLogger.logWarning(res, "test warning")
-        }
+        if (res.nonEmpty)
+            linker.getLogger.logWarning(res, "wire has no associated channel")
 
 
         for (ch <- channels) {
@@ -273,7 +270,6 @@ class WireNet(ic:ICTileMapContainer, p:Point) extends IWireNet
             }
             ch.allocateRegisters(linker)
         }
-
     }
 
     override def declareOperations(linker:ISELinker)

@@ -21,7 +21,7 @@ import mrtjp.projectred.integration.{GateDefinition, RenderGate}
 import mrtjp.projectred.{ProjectRedFabrication, ProjectRedIntegration}
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.ItemMeshDefinition
-import net.minecraft.client.renderer.block.model.ModelResourceLocation
+import net.minecraft.client.renderer.block.model.{ModelBakery, ModelResourceLocation}
 import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.client.renderer.block.statemap.StateMap.Builder
 import net.minecraft.init.{Blocks, Items}
@@ -118,7 +118,7 @@ class FabricationProxy_client extends FabricationProxy_server
         registerModelType(itemICBlueprint, "projectred:fabrication/items", "ic_blueprint")
         MapRenderRegistry.registerMapRenderer(itemICBlueprint, ItemRenderICBlueprint)
 
-        registerModelType(itemICChip, "projectred:fabrication/items", { stack =>
+        registerModelType(itemICChip, "projectred:fabrication/items", Array("ic_active", "ic_inert"), { stack =>
             if (ItemICBlueprint.hasICInside(stack)) "ic_active" else "ic_inert" })
 
         ClientRegistry.bindTileEntitySpecialRenderer(classOf[TileICPrinter], RenderICPrinterDynamic)
@@ -158,8 +158,9 @@ class FabricationProxy_client extends FabricationProxy_server
     }
 
     @SideOnly(Side.CLIENT)
-    def registerModelType(item:Item, jsonLocation:String, typeValue:ItemStack => String)
+    def registerModelType(item:Item, jsonLocation:String, names:Array[String], typeValue:ItemStack => String)
     {
+        ModelBakery.registerItemVariants(item, names.map { n => new ModelResourceLocation(jsonLocation, s"type=$n") }:_*)
         ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition {
             override def getModelLocation(s:ItemStack) =
                 new ModelResourceLocation(jsonLocation, "type=" + typeValue(s))
@@ -212,7 +213,7 @@ object FabricationRecipes
             "ggg","oeo","iwi",
             'g':JC, new ItemStack(Blocks.STAINED_GLASS, 1, EnumColour.LIGHT_BLUE.getWoolDamage),
             'o':JC, Blocks.OBSIDIAN,
-            'e':JC, "gemEmerald",
+            'e':JC, "gemDiamond",
             'i':JC, "ingotIron",
             'w':JC, "plankWood"
         ))
@@ -236,8 +237,7 @@ object FabricationRecipes
             override def getCraftingResult(inv:InventoryCrafting):ItemStack =
             {
                 var bp:ItemStack = null
-                for (i <- 0 until inv.getSizeInventory)
-                {
+                for (i <- 0 until inv.getSizeInventory) {
                     val s = inv.getStackInSlot(i)
                     if (s != null)
                         if (bp != null) return null
@@ -264,11 +264,9 @@ object FabricationRecipes
             {
                 var bp:ItemStack = null
                 var emptyCount = 0
-                for (i <- 0 until inv.getSizeInventory)
-                {
+                for (i <- 0 until inv.getSizeInventory) {
                     val s = inv.getStackInSlot(i)
-                    if (s != null)
-                    {
+                    if (s != null) {
                         if (s.getItem != itemICBlueprint) return null
                         if (ItemICBlueprint.hasICInside(s))
                             if (bp != null) return null
@@ -277,8 +275,7 @@ object FabricationRecipes
                             emptyCount += 1
                     }
                 }
-                if (bp != null && emptyCount > 0)
-                {
+                if (bp != null && emptyCount > 0) {
                     val out = new ItemStack(itemICBlueprint)
                     out.stackSize = emptyCount+1
                     ItemICBlueprint.copyIC(bp, out)
@@ -294,8 +291,8 @@ object FabricationRecipes
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemICChip),
             "ggg","qdq", "ggg",
             'g':JC, "nuggetGold",
-            'q':JC, "gemQuartz",
-            'd':JC, "gemDiamond"
+            'q':JC, PartDefs.PLATE.makeStack,
+            'd':JC, PartDefs.SILICON.makeStack
         ))
     }
 }
