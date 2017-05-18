@@ -172,23 +172,23 @@ task integrationJar(type: Jar, dependsOn: reobfJar) {
     classifier = 'integration'
 }
 
-//task fabricationJar(type: Jar, dependsOn: reobfJar) {
-//    from(project.ext.jarFile) {
-//        include "**/ProjectRedFabrication*.class"
-//        include "**/mrtjp/projectred/fabrication/**"
-//
-//        include "**/assets/projectred/textures/blocks/fabrication/**"
-//        include "**/assets/projectred/textures/items/fabrication/**"
-//        include "**/assets/projectred/textures/obj/fabrication/**"
-//
-//        include "fabrication_mod.info"
-//        rename("fabrication_mod.info", 'mcmod.info')
-//
-//        project.ext.baseExcludes.addAll(includes)
-//    }
-//    version = project.ext.jarVer
-//    classifier = 'fabrication'
-//}
+task fabricationJar(type: Jar, dependsOn: reobfJar) {
+    from(project.ext.jarFile) {
+        include "**/ProjectRedFabrication*.class"
+        include "**/mrtjp/projectred/fabrication/**"
+
+        include "**/assets/projectred/textures/blocks/fabrication/**"
+        include "**/assets/projectred/textures/items/fabrication/**"
+        include "**/assets/projectred/textures/obj/fabrication/**"
+
+        include "fabrication_mod.info"
+        rename("fabrication_mod.info", 'mcmod.info')
+
+        project.ext.baseExcludes.addAll(includes)
+    }
+    version = project.ext.jarVer
+    classifier = 'fabrication'
+}
 
 task lightingJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {
