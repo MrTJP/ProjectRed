@@ -559,5 +559,5 @@ itemGroup.projectred.fabrication=Project Red: Fabrication
 item.projectred.fabrication.icBlueprint.name=ICブループリント
 item.projectred.fabrication.icChip|0.name=ICチップ
 item.projectred.fabrication.icChip|1.name=クリエイティブ用ICチップ
-tile.projectred.integration.icBlock|0.name=IC作業台
-tile.projectred.integration.icBlock|1.name=IC印刷機
+tile.projectred.fabrication.icMachine|0.name=IC作業台
+tile.projectred.fabrication.icMachine|1.name=IC印刷機

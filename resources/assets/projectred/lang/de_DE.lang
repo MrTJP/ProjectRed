@@ -558,5 +558,5 @@ itemGroup.projectred.fabrication=Project Red: Fabrikation
 item.projectred.fabrication.icBlueprint.name=IC-Plan
 item.projectred.fabrication.icChip|0.name=IC-Chip
 item.projectred.fabrication.icChip|1.name=Kreativmodus-IC-Chip
-tile.projectred.integration.icBlock|0.name=IC-Werkbank
-tile.projectred.integration.icBlock|1.name=IC-Drucker
+tile.projectred.fabrication.icMachine|0.name=IC-Werkbank
+tile.projectred.fabrication.icMachine|1.name=IC-Drucker

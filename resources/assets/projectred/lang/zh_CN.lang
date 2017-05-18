@@ -557,5 +557,5 @@ itemGroup.projectred.fabrication=红石计划:制造
 item.projectred.fabrication.icBlueprint.name=IC蓝图
 item.projectred.fabrication.icChip|0.name=IC芯片
 item.projectred.fabrication.icChip|1.name=创造模式IC芯片
-tile.projectred.integration.icBlock|0.name=IC工作台
-tile.projectred.integration.icBlock|1.name=IC印刷机
+tile.projectred.fabrication.icMachine|0.name=IC工作台
+tile.projectred.fabrication.icMachine|1.name=IC印刷机

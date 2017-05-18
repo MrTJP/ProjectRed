@@ -560,5 +560,5 @@ itemGroup.projectred.fabrication=Project Red: Виробництво
 item.projectred.fabrication.icBlueprint.name=Проект мікросхеми
 item.projectred.fabrication.icChip|0.name=Мікросхема
 item.projectred.fabrication.icChip|1.name=Мікросхема творчого режиму
-tile.projectred.integration.icBlock|0.name=Верстак мікросхем
-tile.projectred.integration.icBlock|1.name=Принтер мікросхем
+tile.projectred.fabrication.icMachine|0.name=Верстак мікросхем
+tile.projectred.fabrication.icMachine|1.name=Принтер мікросхем

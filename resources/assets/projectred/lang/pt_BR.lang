@@ -547,7 +547,7 @@ itemGroup.projectred.fabrication=Project Red: Fabrication
 item.projectred.fabrication.icBlueprint.name=Diagrama de IC
 item.projectred.fabrication.icChip|0.name=Chip de IC
 item.projectred.fabrication.icChip|1.name=Chip de IC(Modo Criativo)
-tile.projectred.integration.icBlock|0.name=Bancada de IC
-tile.projectred.integration.icBlock|1.name=Impressora de IC
+tile.projectred.fabrication.icMachine|0.name=Bancada de IC
+tile.projectred.fabrication.icMachine|1.name=Impressora de IC
 
 # Localization File: Português Brasileiro (pt_BR) / Last Update: 22/07/2015 por NarigudoBR

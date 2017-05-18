@@ -505,5 +505,5 @@ fluid.redmetal.molten=Molten Conductive Redmetal
 item.projectred.fabrication.icBlueprint.name=IC Blueprint
 item.projectred.fabrication.icChip|0.name=IC Chip
 item.projectred.fabrication.icChip|1.name=Creative Mode IC Chip
-tile.projectred.integration.icBlock|0.name=IC Workbench
-tile.projectred.integration.icBlock|1.name=IC Printer
+tile.projectred.fabrication.icMachine|0.name=IC Workbench
+tile.projectred.fabrication.icMachine|1.name=IC Printer
