@@ -216,7 +216,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
     }
 
     override def getIC = editor
-    override def getWorld = world
+    override def getEditorWorld = world
     override def isRemote = world.isRemote
     override def markSave(){markDirty()}
 

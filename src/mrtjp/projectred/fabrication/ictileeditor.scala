@@ -13,7 +13,7 @@ import scala.collection.mutable.{Map => MMap}
 trait IICTileEditorNetwork
 {
     def getIC:ICTileMapEditor
-    def getWorld:World
+    def getEditorWorld:World
 
     def getICStreamOf(key:Int):MCDataOutput
     def getTileStream(x:Int, y:Int):MCDataOutput
@@ -322,7 +322,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
     def tick()
     {
         //Update tiles as needed
-        val t = network.getWorld.getTotalWorldTime
+        val t = network.getEditorWorld.getTotalWorldTime
         var rem = Seq[(Int, Int)]()
         for((k, v) <- scheduledTicks) if(v >= t) {
             getTile(k._1, k._2).scheduledTick()
@@ -394,7 +394,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         }
     }
 
-    def scheduleTick(x:Int, y:Int, ticks:Int){scheduledTicks += (x, y) -> (network.getWorld.getTotalWorldTime+ticks)}
+    def scheduleTick(x:Int, y:Int, ticks:Int){scheduledTicks += (x, y) -> (network.getEditorWorld.getTotalWorldTime+ticks)}
 
     def markSchematicChanged()
     {

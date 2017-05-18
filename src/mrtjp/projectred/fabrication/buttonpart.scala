@@ -65,7 +65,7 @@ class ButtonICTile extends ICTile with TICTileAcquisitions with IRedwireICGate w
             on = true
             pushToRegisters()
             sendStateUpdate()
-            sched = editor.network.getWorld.getTotalWorldTime+20 //schedule depress
+            sched = editor.network.getEditorWorld.getTotalWorldTime+20 //schedule depress
         }
     }
 
@@ -81,7 +81,7 @@ class ButtonICTile extends ICTile with TICTileAcquisitions with IRedwireICGate w
 
     override def update()
     {
-        if (sched != -1 && editor.network.getWorld.getTotalWorldTime >= sched)
+        if (sched != -1 && editor.network.getEditorWorld.getTotalWorldTime >= sched)
             depress()
     }
 
