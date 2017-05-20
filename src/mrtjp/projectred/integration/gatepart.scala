@@ -13,8 +13,7 @@ import codechicken.lib.vec._
 import codechicken.microblock.FaceMicroFactory
 import codechicken.multipart._
 import mrtjp.projectred.api.{IConnectable, IScrewdriver}
-import mrtjp.projectred.core.libmc.PRLib
-import mrtjp.projectred.core.{Configurator, TFaceConnectable, TSwitchPacket}
+import mrtjp.projectred.core.{Configurator, PRLib, TFaceConnectable, TSwitchPacket}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack

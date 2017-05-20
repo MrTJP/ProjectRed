@@ -3,7 +3,6 @@ package mrtjp.projectred.exploration
 import java.lang.{Character => JChar}
 
 import codechicken.lib.colour.EnumColour
-import codechicken.lib.model.ModelRegistryHelper
 import codechicken.microblock.BlockMicroMaterial
 import mrtjp.core.block.ItemBlockCore
 import mrtjp.core.gui.GuiHandler
@@ -12,8 +11,7 @@ import mrtjp.core.item.ItemDefinition
 import mrtjp.core.world._
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.ProjectRedExploration._
-import mrtjp.projectred.core.libmc.recipe._
-import mrtjp.projectred.core.{Configurator, IProxy, PartDefs, ShapelessOreNBTRecipe}
+import mrtjp.projectred.core.{Configurator, IProxy, PartDefs, ShapelessOreNBTCopyRecipe}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.ItemMeshDefinition
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
@@ -26,7 +24,7 @@ import net.minecraftforge.common.util.EnumHelper
 import net.minecraftforge.fml.client.registry.ClientRegistry
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import net.minecraftforge.oredict.{OreDictionary, ShapedOreRecipe}
+import net.minecraftforge.oredict.{OreDictionary, ShapedOreRecipe, ShapelessOreRecipe}
 
 class ExplorationProxy_server extends IProxy
 {
@@ -232,8 +230,8 @@ class ExplorationProxy_server extends IProxy
         }
 
         //Lily
-        if (Configurator.gen_Lily)
-        {
+//        if (Configurator.gen_Lily)
+//        {
             //val logic = new GenLogicSurface
             //logic.name = "pr_lily"
             //logic.resistance = 8+Configurator.gen_Lily_resistance
@@ -244,7 +242,7 @@ class ExplorationProxy_server extends IProxy
             //gen.soil = Set((Blocks.grass, 0), (Blocks.dirt, 0))
             //logic.gen = gen
             //SimpleGenHandler.registerStructure(logic)
-        }
+//        }
 
         //Copper
         if (Configurator.gen_Copper)
@@ -323,9 +321,6 @@ class ExplorationProxy_server extends IProxy
 
     override def postinit()
     {
-//        if (Configurator.gen_SpreadingMoss)
-//            BlockUpdateHandler.register(MossSpreadHandler)
-
         InvWrapper.register(BarrelInvWrapper)
     }
 
@@ -690,8 +685,8 @@ object ExplorationRecipes
                 'c':JChar, PartDefs.WOVENCLOTH.makeStack,
                 'd':JChar, EnumColour.fromWoolID(i).getOreDictionaryName))
 
-            GameRegistry.addRecipe(new ShapelessOreNBTRecipe(new ItemStack(ProjectRedExploration.itemBackpack, 1, i),
-                ItemBackpack.oreDictionaryVal, EnumColour.fromWoolID(i).getOreDictionaryName).setKeepNBT())
+            GameRegistry.addRecipe(new ShapelessOreNBTCopyRecipe(new ItemStack(ProjectRedExploration.itemBackpack, 1, i),
+                ItemBackpack.oreDictionaryVal, EnumColour.fromWoolID(i).getOreDictionaryName))
         }
 
        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ProjectRedExploration.itemAthame),
@@ -713,16 +708,16 @@ object ExplorationRecipes
             'b':JChar, DecorativeStoneDefs.BASALT.makeStack)
 
         /** Basalt **/
-        addSmeltingRecipe(DecorativeStoneDefs.BASALTCOBBLE.makeStack, DecorativeStoneDefs.BASALT.makeStack)
+        GameRegistry.addSmelting(DecorativeStoneDefs.BASALTCOBBLE.makeStack, DecorativeStoneDefs.BASALT.makeStack, 0.1f)
 
         /** Ore Smelting**/
-        addSmeltingRecipe(OreDefs.ORERUBY.makeStack, PartDefs.RUBY.makeStack)
-        addSmeltingRecipe(OreDefs.ORESAPPHIRE.makeStack, PartDefs.SAPPHIRE.makeStack)
-        addSmeltingRecipe(OreDefs.OREPERIDOT.makeStack, PartDefs.PERIDOT.makeStack)
-        addSmeltingRecipe(OreDefs.ORECOPPER.makeStack, PartDefs.COPPERINGOT.makeStack)
-        addSmeltingRecipe(OreDefs.ORETIN.makeStack, PartDefs.TININGOT.makeStack)
-        addSmeltingRecipe(OreDefs.ORESILVER.makeStack, PartDefs.SILVERINGOT.makeStack)
-        addSmeltingRecipe(OreDefs.OREELECTROTINE.makeStack, PartDefs.ELECTROTINE.makeStack)
+        GameRegistry.addSmelting(OreDefs.ORERUBY.makeStack, PartDefs.RUBY.makeStack, 1)
+        GameRegistry.addSmelting(OreDefs.ORESAPPHIRE.makeStack, PartDefs.SAPPHIRE.makeStack, 1)
+        GameRegistry.addSmelting(OreDefs.OREPERIDOT.makeStack, PartDefs.PERIDOT.makeStack, 1)
+        GameRegistry.addSmelting(OreDefs.ORECOPPER.makeStack, PartDefs.COPPERINGOT.makeStack, 0.7f)
+        GameRegistry.addSmelting(OreDefs.ORETIN.makeStack, PartDefs.TININGOT.makeStack, 0.7f)
+        GameRegistry.addSmelting(OreDefs.ORESILVER.makeStack, PartDefs.SILVERINGOT.makeStack, 0.8f)
+        GameRegistry.addSmelting(OreDefs.OREELECTROTINE.makeStack, PartDefs.ELECTROTINE.makeStack, 0.7f)
 
         /** Storage blocks **/
         addStorageBlockRecipe("gemRuby", PartDefs.RUBY.makeStack(9), "blockRuby", DecorativeStoneDefs.RUBYBLOCK.makeStack)
@@ -740,21 +735,10 @@ object ExplorationRecipes
         }
     }
 
-    private def addSmeltingRecipe(in:ItemStack, out:ItemStack)
-    {
-        (RecipeLib.newSmeltingBuilder
-                += new ItemIn(in)
-                += new ItemOut(out)).registerResults()
-    }
-
     private def addStorageBlockRecipe(itemOre:String, item:ItemStack, blockOre:String, block:ItemStack)
     {
-        (RecipeLib.newShapedBuilder <-> "xxxxxxxxx"
-                += new OreIn(itemOre).to("x")
-                += new ItemOut(block)).registerResult()
-        (RecipeLib.newShapelessBuilder
-                += new OreIn(blockOre)
-                += new ItemOut(item)).registerResult()
+        GameRegistry.addRecipe(new ShapedOreRecipe(block, "xxx", "xxx", "xxx", 'x':JChar, itemOre))
+        GameRegistry.addRecipe(new ShapelessOreRecipe(item, blockOre))
     }
 
     private def addWallRecipe(o:ItemStack, m:ItemStack)

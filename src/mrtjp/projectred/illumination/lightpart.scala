@@ -18,8 +18,7 @@ import codechicken.multipart._
 import com.google.common.collect.{ImmutableList, ImmutableMap}
 import mrtjp.core.vec.InvertX
 import mrtjp.projectred.ProjectRedIllumination
-import mrtjp.projectred.core.RenderHalo
-import mrtjp.projectred.core.libmc.PRLib
+import mrtjp.projectred.core.{PRLib, RenderHalo}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
 import net.minecraft.client.renderer.block.model.{ItemCameraTransforms, ItemOverrideList}

@@ -1,33 +1,49 @@
-package mrtjp.projectred.core.libmc.recipe
+package mrtjp.projectred.core
 
-import codechicken.microblock.{BlockMicroMaterial, ItemMicroPart, FaceMicroFactory}
+import codechicken.microblock._
 import mrtjp.core.item.ItemKeyStack
 import net.minecraft.block.Block
+import net.minecraft.item
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraftforge.oredict.OreDictionary
+import net.minecraftforge.oredict.OreDictionary._
 
-class ItemIn(val key:ItemKeyStack) extends Input
+import scala.collection.JavaConversions._
+
+trait TRecipeObject
+{
+    def matches(that:ItemKeyStack):Boolean
+}
+
+trait RecipeInput extends TRecipeObject
+{
+    def matchingInputs:Seq[ItemStack]
+}
+
+trait RecipeOutput extends TRecipeObject
+{
+    def createOutput:ItemStack
+}
+
+class ItemIn(val key:ItemKeyStack) extends RecipeInput
 {
     def this(s:ItemStack) = this(ItemKeyStack.get(s))
     def this(b:Block) = this(new ItemStack(b))
-    def this(i:Item) = this(new ItemStack(i))
+    def this(i:item.Item) = this(new ItemStack(i))
 
     private var nbt = true
     def matchNBT(flag:Boolean):this.type = {nbt = flag; this}
 
     override def matches(that:ItemKeyStack) = key.key.item == that.key.item &&
-        (!nbt || key.key.tag == that.key.tag) &&
-        (key.key.itemDamage == OreDictionary.WILDCARD_VALUE || that.key.itemDamage == OreDictionary.WILDCARD_VALUE ||
-            key.key.itemDamage == that.key.itemDamage)
+            (!nbt || key.key.tag == that.key.tag) &&
+            (key.key.itemDamage == OreDictionary.WILDCARD_VALUE || that.key.itemDamage == OreDictionary.WILDCARD_VALUE ||
+                    key.key.itemDamage == that.key.itemDamage)
 
     val ins = Seq(key.makeStack)
     override def matchingInputs = ins
 }
 
-import net.minecraftforge.oredict.OreDictionary._
-
-import scala.collection.JavaConversions._
-class OreIn(val oreIDs:Seq[Int]) extends Input
+class OreIn(val oreIDs:Seq[Int]) extends RecipeInput
 {
     def this(id:Int) = this(Seq(id))
     def this(name:String) = this(getOreID(name))
@@ -45,13 +61,25 @@ class OreIn(val oreIDs:Seq[Int]) extends Input
     override def matchingInputs = ins
 }
 
+class ItemOut(val key:ItemKeyStack) extends RecipeOutput
+{
+    def this(s:ItemStack) = this(ItemKeyStack.get(s))
+    def this(b:Block) = this(new ItemStack(b))
+    def this(i:Item) = this(new ItemStack(i))
+
+    override def matches(that:ItemKeyStack) =
+        key == that
+
+    override def createOutput = key.makeStack
+}
+
 object MicroIn
 {
     //class ids
     def face = FaceMicroFactory.getFactoryID
-    def hollowFace = FaceMicroFactory.getFactoryID
-    def corner = FaceMicroFactory.getFactoryID
-    def edge = FaceMicroFactory.getFactoryID
+    def hollowFace = HollowMicroFactory.getFactoryID
+    def corner = CornerMicroFactory.getFactoryID
+    def edge = EdgeMicroFactory.getFactoryID
 
     //sizes
     val eight = 1
@@ -59,7 +87,7 @@ object MicroIn
     val half = 4
 }
 
-class MicroIn(factoryID:Int, size:Int, material:String) extends Input
+class MicroIn(factoryID:Int, size:Int, material:String) extends RecipeInput
 {
     def this(c:Int, s:Int, b:Block) = this(c, s, BlockMicroMaterial.materialKey(b))
 

@@ -10,8 +10,7 @@ import codechicken.lib.raytracer.CuboidRayTraceResult
 import codechicken.lib.vec.{Rotation, Vector3}
 import codechicken.multipart._
 import mrtjp.projectred.api.{IConnectable, IScrewdriver}
-import mrtjp.projectred.core.libmc.PRLib
-import mrtjp.projectred.core.{TFaceConnectable, TFacePowerPart, TSwitchPacket}
+import mrtjp.projectred.core.{PRLib, TFaceConnectable, TFacePowerPart, TSwitchPacket}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound

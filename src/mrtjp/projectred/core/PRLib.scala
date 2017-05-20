@@ -1,4 +1,4 @@
-package mrtjp.projectred.core.libmc
+package mrtjp.projectred.core
 
 import codechicken.lib.vec.Vector3
 import net.minecraft.entity.item.EntityItem

@@ -57,10 +57,16 @@ dependencies {
     deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
 
     compile "mrtjp:MrTJPCore:${config.mc_version}-${config.tjpcore_version}:deobf"
-    //compile "mrtjp:ForgeRelocation:${config.mc_version}-${config.fr_version}:deobf"
     compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
     compile "codechicken:ForgeMultipart:${config.mc_version}-${config.fmp_version}:deobf"
-    compile "codechicken:NotEnoughItems:${config.mc_version}-${config.nei_version}:deobf"
+    
+    // compile against the JEI API
+    deobfCompile "mezz.jei:jei_${config.mc_version}:${config.jei_version}:api"
+    // at runtime, use the full JEI jar
+    runtime "mezz.jei:jei_${config.mc_version}:${config.jei_version}"
+
+    //compile "mrtjp:ForgeRelocation:${config.mc_version}-${config.fr_version}:deobf"
+    //compile "codechicken:NotEnoughItems:${config.mc_version}-${config.nei_version}:deobf"
     //compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
     //compile group: 'cofh', name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
 }

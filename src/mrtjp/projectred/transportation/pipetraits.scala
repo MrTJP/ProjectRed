@@ -11,7 +11,7 @@ import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.world.Messenger
 import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.api.{IConnectable, IScrewdriver}
-import mrtjp.projectred.core.libmc.PRLib
+import mrtjp.projectred.core.PRLib
 import mrtjp.projectred.transmission.IWirePart._
 import mrtjp.projectred.transmission._
 import net.minecraft.block.SoundType

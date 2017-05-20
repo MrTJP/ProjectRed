@@ -16,7 +16,7 @@ import codechicken.multipart.{MultiPartRegistry, TItemMultiPart, TMultiPart}
 import com.google.common.collect.ImmutableList
 import mrtjp.core.item.{ItemCore, ItemDefinition}
 import mrtjp.projectred.ProjectRedIntegration
-import mrtjp.projectred.core.libmc.PRLib
+import mrtjp.projectred.core.PRLib
 import net.minecraft.block.SoundType
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType

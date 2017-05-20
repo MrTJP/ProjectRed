@@ -89,14 +89,14 @@ object OreDefs extends BlockDefinition
     override type EnumVal = OreVal
     override def getBlock = ProjectRedExploration.blockOres
 
-    val ORERUBY = new OreVal("ruby_ore", 2, PartDefs.RUBY.makeStack _, 1, 4, 1, 8)
-    val ORESAPPHIRE = new OreVal("sapphire_ore", 2, PartDefs.SAPPHIRE.makeStack _, 1, 4, 1, 8)
-    val OREPERIDOT = new OreVal("peridot_ore", 2, PartDefs.PERIDOT.makeStack _, 1, 4, 1, 8)
+    val ORERUBY = new OreVal("ruby_ore", 2, PartDefs.RUBY.makeStack _, 1, 4, 2, 7)
+    val ORESAPPHIRE = new OreVal("sapphire_ore", 2, PartDefs.SAPPHIRE.makeStack _, 1, 4, 2, 7)
+    val OREPERIDOT = new OreVal("peridot_ore", 2, PartDefs.PERIDOT.makeStack _, 1, 4, 2, 7)
 
     val ORECOPPER = new OreVal("copper_ore", 1, null, 1, 1, 0, 0)
     val ORETIN = new OreVal("tin_ore", 1, null, 1, 1, 0, 0)
     val ORESILVER = new OreVal("silver_ore", 2, null, 1, 1, 0, 0)
-    val OREELECTROTINE = new OreVal("electrotine_ore", 2, PartDefs.ELECTROTINE.makeStack _, 1, 8, 1, 8)
+    val OREELECTROTINE = new OreVal("electrotine_ore", 2, PartDefs.ELECTROTINE.makeStack _, 1, 8, 1, 5)
 
     class OreVal(variantName:String, val harvest:Int, val dropFactory:()=>ItemStack, val min:Int, val max:Int, val minXP:Int, val maxXP:Int) extends BlockDef(variantName)
     {

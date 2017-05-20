@@ -2,7 +2,6 @@ package mrtjp.projectred.core
 
 import codechicken.lib.packet.PacketCustom
 import mrtjp.projectred.ProjectRedCore._
-import mrtjp.projectred.core.libmc.recipe.RecipeLib
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.common.MinecraftForge
@@ -34,7 +33,6 @@ class CoreProxy_server extends IProxy
     {
         PacketCustom.assignHandler(CoreSPH.channel, CoreSPH)
 
-        RecipeLib.loadLib()
         CoreRecipes.initCoreRecipes()
     }
 

@@ -9,7 +9,7 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.multipart.BlockMultipart
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.world.WorldLib
-import mrtjp.projectred.core.libmc.PRLib
+import mrtjp.projectred.core.PRLib
 import mrtjp.projectred.transportation._
 import net.minecraft.block.Block
 import net.minecraft.item.ItemStack

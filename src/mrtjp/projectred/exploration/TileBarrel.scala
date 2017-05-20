@@ -16,7 +16,7 @@ import mrtjp.core.inventory.{IInvWrapperRegister, InvWrapper, TInventory}
 import mrtjp.core.item.ItemKey
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExploration
-import mrtjp.projectred.core.libmc.PRLib
+import mrtjp.projectred.core.PRLib
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState

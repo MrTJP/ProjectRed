@@ -8,7 +8,7 @@ package mrtjp.projectred.core
 import mrtjp.core.data.{ModConfig, SpecialConfigGui, TModGuiFactory}
 import net.minecraft.client.gui.GuiScreen
 
-object Configurator extends ModConfig("ProjRed|Core")
+object Configurator extends ModConfig("projectred-core")
 {
     /** Constants **/
     var modName = "Project Red"
@@ -53,9 +53,6 @@ object Configurator extends ModConfig("ProjRed|Core")
     var gen_Peridot = true
     var gen_Peridot_resistance = 0
     var gen_Peridot_retro = false
-    var gen_Lily = true
-    var gen_Lily_resistance = 0
-    var gen_Lily_retro = false
     var gen_Copper = true
     var gen_Copper_resistance = 0
     var gen_Copper_retro = false
@@ -68,7 +65,6 @@ object Configurator extends ModConfig("ProjRed|Core")
     var gen_Electrotine = true
     var gen_Electrotine_resistance = 0
     var gen_Electrotine_retro = false
-    var gen_SpreadingMoss = true
 
     /** Compatibility **/
     var compat_Treecapitator = true
@@ -125,10 +121,6 @@ object Configurator extends ModConfig("ProjRed|Core")
         gen_Volcano_resistance = gen.put("Volcano resistance", gen_Volcano_resistance)
         gen_Volcano_retro = gen.put("Volcano retrogen", gen_Volcano_retro)
 
-        gen_Lily = gen.put("Deviating Lily", gen_Lily)
-        gen_Lily_resistance = gen.put("Deviating Lily resistance", gen_Lily_resistance)
-        gen_Lily_retro = gen.put("Deviating Lily retrogen", gen_Lily_retro)
-
         gen_Copper = gen.put("Copper Ore", gen_Copper)
         gen_Copper_resistance = gen.put("Copper Ore resistance", gen_Copper_resistance)
         gen_Copper_retro = gen.put("Copper Ore retrogen", gen_Copper_retro)
@@ -144,8 +136,6 @@ object Configurator extends ModConfig("ProjRed|Core")
         gen_Electrotine = gen.put("Electrotine Ore", gen_Electrotine)
         gen_Electrotine_resistance = gen.put("Electrotine Ore resistance", gen_Electrotine_resistance)
         gen_Electrotine_retro = gen.put("Electrotine Ore retrogen", gen_Electrotine_retro)
-
-        gen_SpreadingMoss = gen.put("Spreading Moss", gen_SpreadingMoss)
 
         val compat = new BaseCategory("Compatibility", "Control the loading of various compatibility hooks. These settings are ignored unless the Compatibility module is installed.")
         compat_Treecapitator = compat.put("Treecapitator: Gem Axe", compat_Treecapitator, "This allows gem axes to work with treecapitator.")

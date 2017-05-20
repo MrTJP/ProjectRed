@@ -6,7 +6,7 @@ import codechicken.lib.vec._
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart}
 import mrtjp.core.item.ItemCore
 import mrtjp.projectred.ProjectRedTransmission
-import mrtjp.projectred.core.libmc.PRLib
+import mrtjp.projectred.core.PRLib
 import net.minecraft.block.SoundType
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer

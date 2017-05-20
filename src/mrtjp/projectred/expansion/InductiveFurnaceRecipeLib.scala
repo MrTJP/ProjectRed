@@ -1,9 +1,7 @@
 package mrtjp.projectred.expansion
 
-import java.util.{Map => JMap}
-
 import mrtjp.core.item.ItemKeyStack
-import mrtjp.projectred.core.libmc.recipe._
+import mrtjp.projectred.core._
 import net.minecraft.item.crafting.FurnaceRecipes
 import net.minecraft.item.{ItemFood, ItemStack}
 import net.minecraftforge.oredict.OreDictionary
@@ -26,36 +24,19 @@ object InductiveFurnaceRecipeLib
         null
     }
 
-    def addRecipe(r:InductiveFurnaceRecipe)
-    {
-        recipes :+= r
-    }
-
     def addRecipe(in:ItemStack, out:ItemStack, ticks:Int)
     {
-        val b = new InductiveFurnaceRecipeBuilder
-        b += new ItemIn(in)
-        b += new ItemOut(out)
-        b.setBurnTime(ticks)
-        b.registerResult()
+        recipes :+= InductiveFurnaceRecipe(new ItemIn(in), new ItemOut(out), ticks)
     }
 
     def addOreRecipe(in:ItemStack, out:ItemStack, ticks:Int)
     {
-        val b = new InductiveFurnaceRecipeBuilder
-        b += new OreIn(in)
-        b += new ItemOut(out)
-        b.setBurnTime(ticks)
-        b.registerResult()
+        recipes :+= InductiveFurnaceRecipe(new OreIn(in), new ItemOut(out), ticks)
     }
 
     def addOreRecipe(in:String, out:ItemStack, ticks:Int)
     {
-        val b = new InductiveFurnaceRecipeBuilder
-        b += new OreIn(in)
-        b += new ItemOut(out)
-        b.setBurnTime(ticks)
-        b.registerResult()
+        recipes :+= InductiveFurnaceRecipe(new OreIn(in), new ItemOut(out), ticks)
     }
 
     def init()
@@ -69,7 +50,7 @@ object InductiveFurnaceRecipeLib
             if(IDs.isEmpty) "Unknown" else OreDictionary.getOreName(IDs(0))
         }
 
-        val sl = FurnaceRecipes.instance.getSmeltingList.asInstanceOf[JMap[ItemStack, ItemStack]]
+        val sl = FurnaceRecipes.instance.getSmeltingList
         for ((in, out) <- sl) try
         {
             if (getRecipeFor(in) == null)
@@ -86,24 +67,7 @@ object InductiveFurnaceRecipeLib
     }
 }
 
-class InductiveFurnaceRecipeBuilder extends RecipeBuilder
-{
-    private var ticks = 0
-    def setBurnTime(t:Int):this.type = {ticks = t; this}
-
-    def result() =
-    {
-        compute()
-        new InductiveFurnaceRecipe(inResult.head, outResult.head, ticks)
-    }
-
-    def registerResult()
-    {
-        InductiveFurnaceRecipeLib.addRecipe(result())
-    }
-}
-
-case class InductiveFurnaceRecipe(in:Input, out:Output, burnTime:Int)
+case class InductiveFurnaceRecipe(in:RecipeInput, out:RecipeOutput, burnTime:Int)
 {
     def createOutput = out.createOutput
 }

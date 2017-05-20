@@ -20,8 +20,7 @@ import codechicken.multipart.{MultiPartRegistry, TItemMultiPart, TMultiPart}
 import mrtjp.core.item.ItemCore
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.libmc.PRLib
-import mrtjp.projectred.core.{ILowLoadMachine, ILowLoadPowerLine, PowerConductor}
+import mrtjp.projectred.core.{ILowLoadMachine, ILowLoadPowerLine, PRLib, PowerConductor}
 import net.minecraft.block.SoundType
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
