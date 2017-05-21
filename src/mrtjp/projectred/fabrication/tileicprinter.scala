@@ -155,9 +155,9 @@ class TileICPrinter extends TileICMachine with TInventory
         else true
     }
 
-    override def size = 21
-    override def stackLimit = 64
-    override def name = "icprinter"
+    override protected val storage = new Array[ItemStack](21)
+    override def getInventoryStackLimit = 64
+    override def getName = "icprinter"
 
     override def isSolid(side:Int) = false
 

@@ -43,20 +43,20 @@ class BlockBarrel extends MultiTileBlock(Material.WOOD)
 
 class TileBarrel extends MTBlockTile with TInventory with ISidedInventory
 {
-    var storage = 0
+    var amountStored = 0
     var item:ItemKey = null
 
     override def save(tag:NBTTagCompound)
     {
         super.save(tag)
-        tag.setInteger("storage", storage)
+        tag.setInteger("storage", amountStored)
         saveInv(tag)
     }
 
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        storage = tag.getInteger("storage")
+        amountStored = tag.getInteger("storage")
         loadInv(tag)
         refreshItemKey()
     }
@@ -65,8 +65,7 @@ class TileBarrel extends MTBlockTile with TInventory with ISidedInventory
     {
         super.writeDesc(out)
         out.writeBoolean(nonEmpty)
-        if (nonEmpty)
-        {
+        if (nonEmpty) {
             out.writeItemStack(item.makeStack(0))
             out.writeInt(getStoredAmount)
         }
@@ -79,7 +78,7 @@ class TileBarrel extends MTBlockTile with TInventory with ISidedInventory
         if (in.readBoolean())
         {
             item = ItemKey.get(in.readItemStack())
-            storage = in.readInt()
+            amountStored = in.readInt()
             compactItems()
         }
     }
@@ -90,7 +89,7 @@ class TileBarrel extends MTBlockTile with TInventory with ISidedInventory
         case 2 =>
             silentClear()
             item = ItemKey.get(in.readItemStack())
-            storage = in.readInt()
+            amountStored = in.readInt()
             compactItems()
         case _ => super.read(in, key)
     }
@@ -107,8 +106,9 @@ class TileBarrel extends MTBlockTile with TInventory with ISidedInventory
 
     override def getBlock = ProjectRedExploration.blockBarrel
 
-    override def size = 2
-    override def name = "barrel"
+    override protected val storage = new Array[ItemStack](2)
+    override def getInventoryStackLimit = 64
+    override def getName = "barrel"
 
     override def canInsertItem(slot:Int, stack:ItemStack, side:EnumFacing) =
         slot == 0 && side == EnumFacing.UP && (isEmpty || ItemKey.get(stack) == item)
@@ -126,11 +126,11 @@ class TileBarrel extends MTBlockTile with TInventory with ISidedInventory
 
     def getFreeStorageSpace =
         if (isEmpty) Int.MaxValue
-        else (getStackSpace-2)*item.getMaxStackSize-storage
+        else (getStackSpace-2)*item.getMaxStackSize-amountStored
 
     def getStoredAmount =
     {
-        var i = storage
+        var i = amountStored
         if (getStackInSlot(0) != null) i += getStackInSlot(0).stackSize
         if (getStackInSlot(1) != null) i += getStackInSlot(1).stackSize
         i
@@ -287,21 +287,21 @@ class TileBarrel extends MTBlockTile with TInventory with ISidedInventory
             if (sAdd > 0)
             {
                 in.stackSize -= sAdd
-                storage += sAdd
+                amountStored += sAdd
             }
 
             if (in.stackSize == 0) setInventorySlotContents(0, null)
         }
 
-        if (storage > 0)
+        if (amountStored > 0)
         {
             var out = getStackInSlot(1)
             if (out == null) out = item.makeStack(0)
-            val toAdd = math.min(storage, out.getMaxStackSize-out.stackSize)
+            val toAdd = math.min(amountStored, out.getMaxStackSize-out.stackSize)
             if (toAdd > 0)
             {
                 out.stackSize += toAdd
-                storage -= toAdd
+                amountStored -= toAdd
                 setInventorySlotContents(1, out)
             }
         }
@@ -319,7 +319,7 @@ class TileBarrel extends MTBlockTile with TInventory with ISidedInventory
     def silentClear()
     {
         item = null
-        storage = 0
+        amountStored = 0
         compacting = true //dont run compactItems
         setInventorySlotContents(0, null)
         setInventorySlotContents(1, null)

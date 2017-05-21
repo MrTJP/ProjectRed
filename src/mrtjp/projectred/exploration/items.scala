@@ -60,16 +60,6 @@ class ItemBackpack extends ItemCore
             list.asInstanceOf[JList[ItemStack]].add(new ItemStack(this, 1, i))
     }
 
-    //private val icons = new Array[IIcon](16)
-    //@SideOnly(Side.CLIENT)
-    //override def registerIcons(reg:IIconRegister)
-    //{
-    //    for (i <- 0 until 16)
-   //         icons(i) = reg.registerIcon("projectred:world/backpack_"+i)
-   // }
-
-    //override def getIconFromDamage(meta:Int) = icons(meta)
-
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[String], flag:Boolean)
     {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
@@ -123,11 +113,11 @@ class ContainerBackpack(inv:BagInventory, player:EntityPlayer) extends NodeConta
 
 class BagInventory(player:EntityPlayer) extends TInventory
 {
-    override def size = 27
-    override def stackLimit = 64
-    override def name = ""
-
     loadInventory()
+
+    override protected val storage = new Array[ItemStack](27)
+    override def getInventoryStackLimit = 64
+    override def getName = ""
 
     private def loadInventory()
     {

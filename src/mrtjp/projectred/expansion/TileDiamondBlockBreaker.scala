@@ -23,7 +23,7 @@ class TileDiamondBlockBreaker extends TileBlockBreaker {
         if (state.getBlockHardness(world, bc) < 0) return
         // if (b.getHarvestLevel(meta) > 2) return
 
-        state.getBlock.getDrops(world, bc, state, 0).foreach(storage.add)
+        state.getBlock.getDrops(world, bc, state, 0).foreach(itemStorage.add)
         world.playEvent(null, 2001, getPos, Block.getStateId(state))
         world.setBlockToAir(bc)
         exportBuffer()

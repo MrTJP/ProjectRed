@@ -5,8 +5,6 @@
  */
 package mrtjp.projectred.expansion
 
-import java.util.{List => JList}
-
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
@@ -14,35 +12,27 @@ import codechicken.lib.model.blockbakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui._
-import mrtjp.core.inventory.{InvWrapper, TInventory}
-import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack, ItemQueue}
+import mrtjp.core.inventory.TInventory
 import mrtjp.core.util.CCLConversions
 import mrtjp.core.vec.{Point, Size}
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.{IContainerListener, ISidedInventory, InventoryCrafting}
+import net.minecraft.inventory.{IContainerListener, ISidedInventory}
 import net.minecraft.item.ItemStack
-import net.minecraft.item.crafting.{CraftingManager, IRecipe}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 import org.lwjgl.input.Keyboard
-
-import scala.collection.JavaConversions._
 
 class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory with ISidedInventory with TGuiMachine
 {
     var planSlot = 0
 
-    var currentRecipe:IRecipe = null
-    var currentInputs = new ItemQueue
-    var currentOutput:ItemKeyStack = null
-
-    private val invCrafting = new InventoryCrafting(new NodeContainer, 3, 3)
     private var recipeNeedsRefresh = true
+    val craftHelper = new CraftingResultTestHelper
+
     private var cycleTimer1 = getUnpoweredCycleTimer
     private var cycleTimer2 = getPoweredCycleTimer
 
@@ -86,8 +76,11 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
      * 0 until 9 - Plans
      * 9 until 27 - Storage
      */
-    override def size = 27
-    override def name = "auto_bench"
+    override protected val storage = new Array[ItemStack](27)
+
+    override def getInventoryStackLimit = 64
+
+    override def getName = "auto_bench"
 
     override def getDisplayName = super.getDisplayName
     override def canExtractItem(slot:Int, item:ItemStack, side:EnumFacing) = 9 until 27 contains slot
@@ -98,29 +91,18 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
     {
         super.updateServer()
 
-        if (recipeNeedsRefresh)
-        {
-            refreshRecipe()
-            recipeNeedsRefresh = false
-        }
-
-        if (cond.canWork)
-        {
+        if (cond.canWork) {
             cycleTimer2 -= 1
             if (cycleTimer2%(getPoweredCycleTimer/getCraftsPerPowerCycle) == 0)
                 if (tryCraft()) cond.drawPower(1000)
-            if (cycleTimer2 <= 0)
-            {
+            if (cycleTimer2 <= 0) {
                 cycleTimer2 = getPoweredCycleTimer
                 cyclePlanSlot()
                 cond.drawPower(100)
             }
-        }
-        else
-        {
+        } else {
             cycleTimer1 -= 1
-            if (cycleTimer1 <= 0)
-            {
+            if (cycleTimer1 <= 0) {
                 cycleTimer1 = getUnpoweredCycleTimer
                 tryCraft()
             }
@@ -137,22 +119,14 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
 
     def refreshRecipe()
     {
-        currentRecipe = null
-        currentInputs.clear()
-        currentOutput = null
+        craftHelper.clear()
 
         val plan = getStackInSlot(planSlot)
-        if (plan != null && ItemPlan.hasRecipeInside(plan))
-        {
+        if (plan != null && ItemPlan.hasRecipeInside(plan)) {
             val inputs = ItemPlan.loadPlanInputs(plan)
-            for (i <- 0 until 9) invCrafting.setInventorySlotContents(i, inputs(i))
-            val recipes = CraftingManager.getInstance().getRecipeList
-            currentRecipe = recipes.find(_.matches(invCrafting, world)).orNull
-            if (currentRecipe != null)
-            {
-                inputs.map{ItemKey.getOrNull}.filter(_ != null).foreach(currentInputs.add(_, 1))
-                currentOutput = ItemKeyStack.getOrNull(currentRecipe.getCraftingResult(invCrafting))
-            }
+
+            craftHelper.loadInputs(inputs)
+            craftHelper.findRecipeFromInputs(world)
         }
     }
 
@@ -164,79 +138,19 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
 
     def tryCraft():Boolean =
     {
-        if (currentRecipe != null && checkSpaceForOutput)
-            if (currentInputs.result.forall(p => containsEnoughResource(p._1, p._2)))
-            {
-                for ((item, amount) <- currentInputs.result)
-                    eatResource(item, amount)
-                produceOutput()
-                return true
-            }
-        false
-    }
-
-    def containsEnoughResource(item:ItemKey, amount:Int):Boolean =
-    {
-        val eq = new ItemEquality
-        eq.matchMeta = !item.makeStack(0).isItemStackDamageable
-        eq.matchNBT = false
-        eq.matchOre = currentRecipe.isInstanceOf[ShapedOreRecipe] || currentRecipe.isInstanceOf[ShapelessOreRecipe]
-
-        var found = 0
-        for (i <- 9 until 27)
-        {
-            val s = getStackInSlot(i)
-            if (s != null && eq.matches(item, ItemKey.get(s)))
-            {
-                found += s.stackSize
-                if (found >= amount) return true
-            }
+        if (recipeNeedsRefresh) {
+            refreshRecipe()
+            recipeNeedsRefresh = false
         }
-        false
-    }
 
-    def checkSpaceForOutput =
-    {
-        val w = InvWrapper.wrap(this).setInternalMode(true).setSlotsFromRange(9 until 27)
-        w.getSpaceForItem(currentOutput.key) >= currentOutput.stackSize
-    }
-
-    def produceOutput()
-    {
-        val w = InvWrapper.wrap(this).setInternalMode(true).setSlotsFromRange(9 until 27)
-        w.injectItem(currentOutput.key, currentOutput.stackSize)
-    }
-
-    def eatResource(item:ItemKey, amount:Int)
-    {
-        val eq = new ItemEquality
-        eq.matchMeta = !item.makeStack(0).isItemStackDamageable
-        eq.matchNBT = false
-        eq.matchOre = currentRecipe.isInstanceOf[ShapedOreRecipe] || currentRecipe.isInstanceOf[ShapelessOreRecipe]
-
-        var left = amount
-        for (i <- 9 until 27)
-        {
-            val s = getStackInSlot(i)
-            if (s != null && eq.matches(item, ItemKey.get(s)))
-            {
-                if (s.getItem.hasContainerItem(s))
-                {
-                    val cStack = s.getItem.getContainerItem(s)
-                    setInventorySlotContents(i, if (cStack.isItemStackDamageable && cStack.getItemDamage >= cStack.getMaxDamage) null else cStack)
-                    left -= 1
-                }
-                else
-                {
-                    val toRem = math.min(s.stackSize, left)
-                    s.stackSize -= toRem
-                    left -= toRem
-                    if (s.stackSize <= 0) setInventorySlotContents(i, null) else markDirty()
-                }
-
-                if (left <= 0) return
-            }
+        if (craftHelper.recipe != null) {
+            craftHelper.loadStorage((9 until 27).map(getStackInSlot).toArray, true)
+            if (craftHelper.consumeAndCraftToStorage(world, 64))
+                craftHelper.unloadStorage(this, {_ + 9})
+            return true
         }
+
+        false
     }
 
     override def onBlockRemoval()
@@ -296,19 +210,26 @@ class ContainerAutoCrafter(player:EntityPlayer, tile:TileAutoCrafter) extends Co
     {
         if (0 until 9 contains from) //plan slots
         {
-            tryMergeItemStack(stack, 27, 63, false) //merge to inventory
+            if (tryMergeItemStack(stack, 36, 63, false)) return true //to player inv
+            if (tryMergeItemStack(stack, 27, 36, false)) return true //to hotbar
         }
         else if (9 until 27 contains from) //storage
         {
-            if (stack.getItem.isInstanceOf[ItemPlan]) tryMergeItemStack(stack, 0, 9, false) //merge to plan
-            else tryMergeItemStack(stack, 27, 63, false) //merge to inventory
+            if (stack.getItem.isInstanceOf[ItemPlan])
+                if (tryMergeItemStack(stack, 0, 9, false)) return true //merge to plan
+
+            if (tryMergeItemStack(stack, 27, 36, true)) return true //to hotbar reversed
+            if (tryMergeItemStack(stack, 36, 63, true)) return true //to player inv reversed
         }
         else if (27 until 63 contains from) //player inventory
         {
-            if (stack.getItem.isInstanceOf[ItemPlan]) tryMergeItemStack(stack, 0, 9, false) //merge to plan
-            else tryMergeItemStack(stack, 9, 27, false) //merge to storage
+            if (stack.getItem.isInstanceOf[ItemPlan]) {
+                if (tryMergeItemStack(stack, 0, 9, false)) return true //merge to plan
+            } else
+                if (tryMergeItemStack(stack, 9, 27, false)) return true //merge to storage
         }
-        else false
+
+        false
     }
 }
 
@@ -332,9 +253,6 @@ class GuiAutoCrafter(tile:TileAutoCrafter, c:ContainerAutoCrafter) extends NodeG
         TextureUtils.changeTexture(GuiAutoCrafter.background)
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 
-        val Point(sx, sy) = Point(18, 18).multiply(tile.planSlot%3, tile.planSlot/3).add(98, 22).subtract(3)
-        GuiDraw.drawTexturedModalRect(sx, sy, 193, 0, 22, 22)
-
         if (tile.cond.canWork)
             GuiDraw.drawTexturedModalRect(16, 16, 177, 18, 7, 9)
         GuiLib.drawVerticalTank(16, 26, 177, 27, 7, 48, tile.cond.getChargeScaled(48))
@@ -355,6 +273,11 @@ class GuiAutoCrafter(tile:TileAutoCrafter, c:ContainerAutoCrafter) extends NodeG
     {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             GuiProjectBench.drawPlanOutputOverlay(c.slots)
+
+        TextureUtils.changeTexture(GuiAutoCrafter.background)
+
+        val Point(sx, sy) = Point(18, 18).multiply(tile.planSlot%3, tile.planSlot/3).add(98, 22).subtract(3)
+        GuiDraw.drawTexturedModalRect(sx, sy, 193, 0, 22, 22)
     }
 }
 

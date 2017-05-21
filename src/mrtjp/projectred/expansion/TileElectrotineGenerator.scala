@@ -32,13 +32,13 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
     var isBurning = false
     var isCharged = false
     var burnTimeRemaining = 0
-    var storage = 0
+    var powerStorage = 0
 
     override def save(tag:NBTTagCompound)
     {
         super.save(tag)
         saveInv(tag)
-        tag.setInteger("storage", storage)
+        tag.setInteger("storage", powerStorage)
         tag.setShort("btime", burnTimeRemaining.toShort)
     }
 
@@ -46,7 +46,7 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
     {
         super.load(tag)
         loadInv(tag)
-        storage = tag.getInteger("storage")
+        powerStorage = tag.getInteger("storage")
         burnTimeRemaining = tag.getShort("btime")
         isBurning = burnTimeRemaining > 0
         isCharged = cond.canWork
@@ -91,15 +91,16 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
     override def createContainer(player:EntityPlayer) =
         new ContainerElectrotineGenerator(player, this)
 
-    override def size = 1
-    override def name = "electrotine_generator"
+    override protected val storage = new Array[ItemStack](1)
+    override def getInventoryStackLimit = 64
+    override def getName = "electrotine_generator"
 
     override def getDisplayName = super.getDisplayName
     override def isItemValidForSlot(slot:Int, stack:ItemStack) =
         stack != null && stack.getItem == ProjectRedCore.itemPart &&
             stack.getItemDamage == PartDefs.ELECTROTINE.meta
 
-    def getStorageScaled(i:Int) = math.min(i, i*storage/getMaxStorage)
+    def getStorageScaled(i:Int) = math.min(i, i*powerStorage/getMaxStorage)
     def getBurnTimeScaled(i:Int) = math.min(i, i*burnTimeRemaining/getBurnTimePerDust)
 
     def getMaxStorage = 800
@@ -123,7 +124,7 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
 
     def tryBurnDust()
     {
-        if (storage < getMaxStorage && burnTimeRemaining < getBurnUseOnCharge)
+        if (powerStorage < getMaxStorage && burnTimeRemaining < getBurnUseOnCharge)
         {
             val inslot = getStackInSlot(0)
             if (inslot != null)
@@ -140,9 +141,9 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
     {
         if (burnTimeRemaining > 0)
         {
-            if (storage < getMaxStorage && burnTimeRemaining >= getBurnUseOnCharge)
+            if (powerStorage < getMaxStorage && burnTimeRemaining >= getBurnUseOnCharge)
             {
-                storage += 1
+                powerStorage += 1
                 burnTimeRemaining -= getBurnUseOnCharge
             }
             else
@@ -154,12 +155,12 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
 
     def tryChargeConductor()
     {
-        if (cond.charge < getDrawFloor && storage > 0)
+        if (cond.charge < getDrawFloor && powerStorage > 0)
         {
             var n = math.min(getDrawFloor-cond.charge, getDrawSpeed)/10
-            n = math.min(n, storage)
+            n = math.min(n, powerStorage)
             cond.applyPower(n*1000)
-            storage -= n
+            powerStorage -= n
         }
     }
 
@@ -198,18 +199,18 @@ class ContainerElectrotineGenerator(p:EntityPlayer, tile:TileElectrotineGenerato
         import scala.collection.JavaConversions._
         for (i <- listeners)
         {
-            if (st != tile.storage) i
-                    .sendProgressBarUpdate(this, 3, tile.storage)
+            if (st != tile.powerStorage) i
+                    .sendProgressBarUpdate(this, 3, tile.powerStorage)
             if (bt != tile.burnTimeRemaining) i
                     .sendProgressBarUpdate(this, 4, tile.burnTimeRemaining)
         }
-        st = tile.storage
+        st = tile.powerStorage
         bt = tile.burnTimeRemaining
     }
 
     override def updateProgressBar(id:Int, bar:Int) = id match
     {
-        case 3 => tile.storage = bar
+        case 3 => tile.powerStorage = bar
         case 4 => tile.burnTimeRemaining = bar
         case _ => super.updateProgressBar(id, bar)
     }
@@ -226,7 +227,7 @@ class GuiElectrotineGenerator(tile:TileElectrotineGenerator, c:ContainerElectrot
             GuiDraw.drawTexturedModalRect(22, 16, 176, 1, 7, 9)
         GuiLib.drawVerticalTank(22, 26, 176, 10, 7, 48, tile.cond.getChargeScaled(48))
 
-        if (tile.storage == tile.getMaxStorage)
+        if (tile.powerStorage == tile.getMaxStorage)
             GuiDraw.drawTexturedModalRect(54, 16, 184, 1, 14, 9)
         GuiLib.drawVerticalTank(54, 26, 184, 10, 14, 48, tile.getStorageScaled(48))
 
@@ -234,10 +235,10 @@ class GuiElectrotineGenerator(tile:TileElectrotineGenerator, c:ContainerElectrot
             GuiDraw.drawTexturedModalRect(93, 16, 199, 1, 7, 9)
         GuiLib.drawVerticalTank(93, 26, 199, 10, 7, 48, tile.getBurnTimeScaled(48))
 
-        if (tile.cond.charge < tile.getDrawFloor && (tile.storage > 0 || tile.burnTimeRemaining > tile.getBurnUseOnCharge))
+        if (tile.cond.charge < tile.getDrawFloor && (tile.powerStorage > 0 || tile.burnTimeRemaining > tile.getBurnUseOnCharge))
             GuiDraw.drawTexturedModalRect(30, 46, 211, 0, 23, 9)
 
-        if (tile.burnTimeRemaining > tile.getBurnUseOnCharge && tile.storage < tile.getMaxStorage)
+        if (tile.burnTimeRemaining > tile.getBurnUseOnCharge && tile.powerStorage < tile.getMaxStorage)
             GuiDraw.drawTexturedModalRect(69, 45, 211, 10, 23, 9)
 
         GuiDraw.drawString("Electrotine Generator", 8, 6, EnumColour.GRAY.argb, false)

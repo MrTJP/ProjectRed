@@ -35,7 +35,7 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
     override def doesOrient = true
 
     //side = out, side^1 = in
-    override def canAcceptInput(item:ItemKey, side:Int) = (side^1) == this.side && !powered && storage.isEmpty
+    override def canAcceptInput(item:ItemKey, side:Int) = (side^1) == this.side && !powered && itemStorage.isEmpty
     override def canAcceptBacklog(item:ItemKey, side:Int) = side == this.side
     override def canConnectSide(side:Int) = (side&6) == (this.side&6)
 
@@ -61,7 +61,7 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
 
             if (extracted > 0)
             {
-                storage.add(k.makeStack(extracted))
+                itemStorage.add(k.makeStack(extracted))
                 active = true
                 sendStateUpdate()
                 scheduleTick(4)
@@ -80,7 +80,7 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
 
     override def onEntityCollision(ent:Entity)
     {
-        if (!world.isRemote && !powered && storage.isEmpty)
+        if (!world.isRemote && !powered && itemStorage.isEmpty)
             suckEntities(ibounds(side))
     }
 
@@ -93,7 +93,7 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
         var added = false
         for (ei <- elist) if (!ei.isDead && ei.getEntityItem.stackSize > 0 && canImport(ItemKey.get(ei.getEntityItem)))
         {
-            storage.add(ei.getEntityItem)
+            itemStorage.add(ei.getEntityItem)
             world.removeEntity(ei)
             added = true
         }

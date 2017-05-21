@@ -189,9 +189,14 @@ object ItemPlan
         for (i <- 0 until 9)
         {
             val tag1 = new NBTTagCompound
-            val slotStack = inputs(i)
-            if (slotStack != null)
+            var slotStack = inputs(i)
+            if (slotStack != null) {
+                if (slotStack.isItemStackDamageable) { //save without damage bar
+                    slotStack = slotStack.copy
+                    slotStack.setItemDamage(0)
+                }
                 slotStack.writeToNBT(tag1)
+            }
             tag0.appendTag(tag1)
         }
         val tag1 = new NBTTagCompound

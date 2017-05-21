@@ -63,8 +63,11 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
     override def doesRotate = false
     override def doesOrient = true
 
-    override def size = 9
-    override def name = "block_placer"
+    override protected val storage = new Array[ItemStack](9)
+
+    override def getInventoryStackLimit = 64
+
+    override def getName = "block_placer"
 
     def reloadPlayer()
     {
@@ -171,14 +174,6 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
         if (tryUse(pos)) return true
         if (tryUse(pos.down)) return true
 
-//        val size = stack.stackSize
-//        val newStack = stack.useItemRightClick(world, fakePlayer)
-//        if (stack != newStack || (newStack != null && newStack.stackSize != size))
-//        {
-//            fakePlayer.inventory.setInventorySlotContents(slot, newStack)
-//            return true
-//        }
-
         false
     }
 
@@ -222,37 +217,6 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
         else
             null
 
-//        var eHit:Entity = null
-//        var edis = Double.MaxValue
-
-//        for (i <- 0 until elist.size())
-//        {
-//            val e = elist.get(i)
-//            if (e.canBeCollidedWith)
-//            {
-//                val a2 = new IndexedCuboid6(0, new Cuboid6(e.getEntityBoundingBox).expand(e.getCollisionBorderSize))
-//                if (a2.contains(start))//Why doesnt Cuboid6 have this method!?
-//                {
-//                    eHit = e
-//                    edis = 0.0D
-//                }
-//                else
-//                {
-//                    val mop = RayTracer.instance.rayTraceCuboid(start, end, a2)
-//                    RayTracer.rayTrace(pos, start, end, a2)
-//                    if (mop != null)
-//                    {
-//                        val d = new Vector3(mop.hitVec).subtract(start).mag
-//                        if (d < edis)
-//                        {
-//                            eHit = e
-//                            edis = d
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        eHit
     }
 
     override def getConnectionMask(side:Int) = if ((side^1) == this.side) 0 else 0x1F

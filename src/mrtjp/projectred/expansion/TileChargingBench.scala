@@ -30,7 +30,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
 {
-    var storage = 0
+    var powerStorage = 0
     var isCharged = false
 
     private var slotRoundRobin = 0
@@ -38,7 +38,7 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
     override def save(tag:NBTTagCompound)
     {
         super.save(tag)
-        tag.setInteger("storage", storage)
+        tag.setInteger("storage", powerStorage)
         tag.setByte("srr", slotRoundRobin.toByte)
         saveInv(tag)
     }
@@ -46,7 +46,7 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
     override def load(tag:NBTTagCompound)
     {
         super.load(tag)
-        storage = tag.getInteger("storage")
+        powerStorage = tag.getInteger("storage")
         slotRoundRobin = tag.getByte("srr")
         isCharged = cond.canWork
         oldIC = isCharged
@@ -78,9 +78,10 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
         writeStream(5).writeBoolean(isCharged).sendToChunk(this)
     }
 
-    override def size = 16
-    override def name = "charging_bench"
-    override def stackLimit = 1
+    override protected val storage = new Array[ItemStack](16)
+    override def getInventoryStackLimit = 1
+    override def getName = "charging_bench"
+
     override def getDisplayName = super.getDisplayName
     import net.minecraft.util.EnumFacing._
     override def canExtractItem(slot:Int, stack:ItemStack, side:EnumFacing) = true
@@ -104,7 +105,7 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
 
     override def doesRotate = false
 
-    def getStorageScaled(i:Int) = math.min(i, i*storage/getMaxStorage)
+    def getStorageScaled(i:Int) = math.min(i, i*powerStorage/getMaxStorage)
 
     def getMaxStorage = 4000
     def getDrawSpeed = 150
@@ -115,15 +116,15 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
     {
         super.updateServer()
 
-        if (cond.charge > getDrawCeil && storage < getMaxStorage)
+        if (cond.charge > getDrawCeil && powerStorage < getMaxStorage)
         {
             var n = math.min(cond.charge-getDrawCeil, getDrawSpeed)/10
-            n = math.min(n, getMaxStorage-storage)
+            n = math.min(n, getMaxStorage-powerStorage)
             cond.drawPower(n*1000)
-            storage += n
+            powerStorage += n
         }
 
-        for (i <- 0 until 8) if (storage > 0)
+        for (i <- 0 until 8) if (powerStorage > 0)
             tryChargeSlot((slotRoundRobin+i)%8)
         slotRoundRobin = (slotRoundRobin+1)%8
 
@@ -136,12 +137,12 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
         if (stack != null) stack.getItem match
         {
             case ic:IChargable =>
-                val toAdd = math.min(storage, getChargeSpeed)
+                val toAdd = math.min(powerStorage, getChargeSpeed)
                 val (newStack, added) = ic.addPower(stack, toAdd)
                 if (ic.isFullyCharged(newStack) && dropStackDown(newStack))
                     setInventorySlotContents(i, null)
                 else setInventorySlotContents(i, newStack)
-                storage -= added
+                powerStorage -= added
             case _ =>
         }
     }
@@ -206,25 +207,31 @@ class ContainerChargingBench(p:EntityPlayer, tile:TileChargingBench) extends Con
         import scala.collection.JavaConversions._
         for (i <- listeners)
         {
-            if (st != tile.storage) i.asInstanceOf[IContainerListener]
-                    .sendProgressBarUpdate(this, 3, tile.storage)
+            if (st != tile.powerStorage) i.asInstanceOf[IContainerListener]
+                    .sendProgressBarUpdate(this, 3, tile.powerStorage)
         }
-        st = tile.storage
+        st = tile.powerStorage
     }
 
     override def updateProgressBar(id:Int, bar:Int) = id match
     {
-        case 3 => tile.storage = bar
+        case 3 => tile.powerStorage = bar
         case _ => super.updateProgressBar(id, bar)
     }
 
-    override def doMerge(stack:ItemStack, from:Int) =
+    override def doMerge(stack:ItemStack, from:Int):Boolean =
     {
-        if (0 until 8 contains from) tryMergeItemStack(stack, 16, 52, false)
-        else if (8 until 16 contains from) tryMergeItemStack(stack, 16, 52, true)
-        else stack.getItem match
-        {
-            case ic:IChargable => tryMergeItemStack(stack, 0, 8, false)
+        if (0 until 8 contains from) { //from input slots
+            if (tryMergeItemStack(stack, 25, 52, false)) return true //to player inv
+            if (tryMergeItemStack(stack, 16, 25, false)) return true //then to hotbar
+        }
+        else if (8 until 16 contains from) { //from output slots
+            if (tryMergeItemStack(stack, 16, 25, true)) return true //to hotbar inversed
+            if (tryMergeItemStack(stack, 25, 52, true)) return true //then to player inv inversed
+        }
+
+        stack.getItem match { //from player inv
+            case _:IChargable => tryMergeItemStack(stack, 0, 8, false)
             case _ => false
         }
     }
@@ -241,14 +248,14 @@ class GuiChargingBench(tile:TileChargingBench, c:ContainerChargingBench) extends
             GuiDraw.drawTexturedModalRect(14, 17, 176, 1, 7, 9)
         GuiLib.drawVerticalTank(14, 27, 176, 10, 7, 48, tile.cond.getChargeScaled(48))
 
-        if (tile.storage == tile.getMaxStorage)
+        if (tile.powerStorage == tile.getMaxStorage)
             GuiDraw.drawTexturedModalRect(41, 17, 184, 1, 14, 9)
         GuiLib.drawVerticalTank(41, 27, 184, 10, 14, 48, tile.getStorageScaled(48))
 
-        if (tile.cond.charge > tile.getDrawCeil && tile.storage < tile.getMaxStorage)
+        if (tile.cond.charge > tile.getDrawCeil && tile.powerStorage < tile.getMaxStorage)
             GuiDraw.drawTexturedModalRect(26, 48, 199, 0, 10, 8)
 
-        if (tile.containsUncharged && tile.storage > 0)
+        if (tile.containsUncharged && tile.powerStorage > 0)
             GuiDraw.drawTexturedModalRect(63, 29, 210, 0, 17, 10)
 
         GuiDraw.drawString("Charging Bench", 8, 6, EnumColour.GRAY.argb, false)

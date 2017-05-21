@@ -22,8 +22,9 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class TileInductiveFurnace extends TileProcessingMachine
 {
-    override def size = 2
-    override def name = "furnace"
+    override protected val storage = new Array[ItemStack](2)
+    override def getInventoryStackLimit = 64
+    override def getName = "furnace"
 
     def getBlock = ProjectRedExpansion.machine1
 
@@ -97,9 +98,14 @@ class ContainerFurnace(p:EntityPlayer, tile:TileInductiveFurnace) extends Contai
 
     override def doMerge(stack:ItemStack, from:Int):Boolean =
     {
-        if (from == 0) tryMergeItemStack(stack, 2, 38, false)
-        else if (from == 1) tryMergeItemStack(stack, 2, 38, true)
-        else tryMergeItemStack(stack, 0, 1, false)
+        if (from == 0) { //input slot
+            if (tryMergeItemStack(stack, 11, 38, false)) return true //to player inv
+            tryMergeItemStack(stack, 2, 11, false) //to hotbar
+        } else if (from == 1) { //output slot
+            if (tryMergeItemStack(stack, 2, 11, true)) return true //to hotbar reverse
+            tryMergeItemStack(stack, 11, 38, true) //to player inv reverse
+        } else //from player inventory
+            tryMergeItemStack(stack, 0, 1, false) //to furnace input
     }
 }
 

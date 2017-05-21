@@ -76,7 +76,7 @@ class ItemStorage
 
 trait TActiveDevice extends TileMachine
 {
-    val storage = new ItemStorage
+    val itemStorage = new ItemStorage
     var powered = false
     var active = false
 
@@ -85,7 +85,7 @@ trait TActiveDevice extends TileMachine
         super.save(tag)
         tag.setBoolean("pow", powered)
         tag.setBoolean("act", active)
-        storage.save(tag)
+        itemStorage.save(tag)
     }
 
     override def load(tag:NBTTagCompound)
@@ -93,7 +93,7 @@ trait TActiveDevice extends TileMachine
         super.load(tag)
         powered = tag.getBoolean("pow")
         active = tag.getBoolean("act")
-        storage.load(tag)
+        itemStorage.load(tag)
     }
 
     override def writeDesc(out:MCDataOutput)
@@ -124,16 +124,16 @@ trait TActiveDevice extends TileMachine
     }
 
     def shouldAcceptBacklog = true
-    def shouldAcceptInput = !powered && storage.isEmpty
+    def shouldAcceptInput = !powered && itemStorage.isEmpty
 
     override def onScheduledTick()
     {
         if (!world.isRemote)
         {
-            if (!storage.isEmpty)
+            if (!itemStorage.isEmpty)
             {
                 exportBuffer()
-                scheduleTick(if (storage.isEmpty) 4 else 16)
+                scheduleTick(if (itemStorage.isEmpty) 4 else 16)
             }
             else if (!powered)
             {
@@ -169,13 +169,13 @@ trait TActiveDevice extends TileMachine
 
     def exportBuffer()
     {
-        while (!storage.isEmpty)
+        while (!itemStorage.isEmpty)
         {
-            val r = storage.peek
-            if (exportPipe(r) || exportInv(r) || exportEject(r)) storage.poll()
-            else storage.backlogged = true
+            val r = itemStorage.peek
+            if (exportPipe(r) || exportInv(r) || exportEject(r)) itemStorage.poll()
+            else itemStorage.backlogged = true
 
-            if (storage.backlogged) return
+            if (itemStorage.backlogged) return
         }
     }
 
@@ -215,8 +215,8 @@ trait TActiveDevice extends TileMachine
     override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        while(!storage.isEmpty)
-            WorldLib.dropItem(world, getPos, storage.poll().payload.makeStack)
+        while(!itemStorage.isEmpty)
+            WorldLib.dropItem(world, getPos, itemStorage.poll().payload.makeStack)
     }
 }
 
@@ -228,7 +228,7 @@ trait TPressureActiveDevice extends TActiveDevice with TPressureDevice
 
         if (canAcceptInput(item.payload.key, side) && shouldAcceptInput)
         {
-            storage.add(item)
+            itemStorage.add(item)
             active = true
             sendStateUpdate()
             scheduleTick(4)
@@ -237,7 +237,7 @@ trait TPressureActiveDevice extends TActiveDevice with TPressureDevice
         }
         else if (canAcceptBacklog(item.payload.key, side) && shouldAcceptBacklog)
         {
-            storage.addBacklog(item)
+            itemStorage.addBacklog(item)
             active = true
             sendStateUpdate()
             scheduleTick(4)
