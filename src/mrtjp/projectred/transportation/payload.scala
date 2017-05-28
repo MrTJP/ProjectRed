@@ -263,10 +263,10 @@ class NetworkPayload(payloadID:Int) extends AbstractPipePayload(payloadID)
 
     def resetTrip()
     {
-        if (destinationIP > -1)
-        {
+        if (destinationIP > -1) {
             val r = RouterServices.getRouter(destinationIP)
-            if (r != null) r.getParent.itemLost(payload)
+            if (r != null) //r.getParent.itemLost(payload)
+                r.getParent.postNetworkEvent(PayloadLostEnrouteEvent(payload.key, payload.stackSize))
         }
         destinationIP = -1
         destinationUUID = null

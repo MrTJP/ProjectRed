@@ -164,24 +164,31 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         for (r <- chips) if (r != null) r.deliverPromise(promise, requestor)
     }
 
-    def postEvent(event:NetworkEvent)
+    def postEventToChips(event:NetworkEvent)
     {
         val it = chips.filter(_ != null).iterator
         while (it.hasNext && !event.isCanceled)
             it.next().onEventReceived(event)
     }
 
-    override def itemReceived(stack:ItemKeyStack)
+
+    override def postNetworkEvent(event:NetworkEvent)
     {
-        super.itemReceived(stack)
-        postEvent(new ItemReceivedEvent(stack.key, stack.stackSize))
+        super.postNetworkEvent(event:NetworkEvent)
+        postEventToChips(event)
     }
 
-    override def itemLost(stack:ItemKeyStack)
-    {
-        super.itemLost(stack)
-        postEvent(new ItemLostEvent(stack.key, stack.stackSize))
-    }
+//    override def itemReceived(stack:ItemKeyStack)
+//    {
+//        super.itemReceived(stack)
+//        postEventToChips(new ItemReceivedEvent(stack.key, stack.stackSize))
+//    }
+//
+//    override def itemLost(stack:ItemKeyStack)
+//    {
+//        super.itemLost(stack)
+//        postEventToChips(new ItemLostEvent(stack.key, stack.stackSize))
+//    }
 
     override def getBroadcasts(col:ItemQueue)
     {

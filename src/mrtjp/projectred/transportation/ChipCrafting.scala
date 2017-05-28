@@ -95,7 +95,8 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
             while (i < failed && hasOrders)
             {
                 val BroadcastObject(s, r) = popAll()
-                r.itemLost(s)
+//                r.itemLost(s)
+                r.postNetworkEvent(TrackedPayloadCancelledEvent(s.key, s.stackSize, routeLayer.getBroadcaster))
                 i += 1
             }
         }
@@ -103,7 +104,11 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
 
     override def onEventReceived(event:NetworkEvent) = event match
     {
-        case e:ItemLostEvent if hasOrders && isIngredient(e.item) =>
+        case e:PayloadLostEnrouteEvent if hasOrders && isIngredient(e.item) =>
+            addLostItem(ItemKeyStack.get(e.item, e.remaining))
+            e.remaining = 0
+            e.setCanceled()
+        case e:TrackedPayloadCancelledEvent if hasOrders && isIngredient(e.item) =>
             addLostItem(ItemKeyStack.get(e.item, e.remaining))
             e.remaining = 0
             e.setCanceled()
@@ -183,7 +188,8 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
         while (hasOrders)
         {
             val BroadcastObject(s, r) = popAll()
-            r.itemLost(s)
+//            r.itemLost(s)
+            r.postNetworkEvent(TrackedPayloadCancelledEvent(s.key, s.stackSize, routeLayer.getBroadcaster))
         }
     }
 

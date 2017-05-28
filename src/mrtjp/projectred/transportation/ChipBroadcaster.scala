@@ -94,14 +94,16 @@ trait TActiveBroadcastStack extends RoutingChip
                 if (real == null)
                 {
                     popAll()
-                    req.itemLost(stack)
+//                    req.itemLost(stack)
+                    req.postNetworkEvent(TrackedPayloadCancelledEvent(stack.key, stack.stackSize, routeLayer.getBroadcaster))
                     cont.break()
                 }
 
                 if (!routeLayer.getRouter.canRouteTo(req.getRouter.getIPAddress, stack.key, bObj.priority))
                 {
                     popAll()
-                    req.itemLost(stack)
+//                    req.itemLost(stack)
+                    req.postNetworkEvent(TrackedPayloadCancelledEvent(stack.key, stack.stackSize, routeLayer.getBroadcaster))
                     cont.break()
                 }
 
@@ -127,7 +129,8 @@ trait TActiveBroadcastStack extends RoutingChip
                 if (removed <= 0 && timeOutOnFailedExtract)
                 {
                     popAll()
-                    req.itemLost(stack)
+//                    req.itemLost(stack)
+                    req.postNetworkEvent(TrackedPayloadCancelledEvent(stack.key, stack.stackSize, routeLayer.getBroadcaster))
                     cont.break()
                 }
 
@@ -228,7 +231,8 @@ class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation
         while (hasOrders)
         {
             val BroadcastObject(s, r) = popAll()
-            r.itemLost(s)
+//            r.itemLost(s)
+            r.postNetworkEvent(TrackedPayloadCancelledEvent(s.key, s.stackSize, routeLayer.getBroadcaster))
         }
     }
 

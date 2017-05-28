@@ -54,7 +54,11 @@ class ChipCraftingExtension extends RoutingChip with TChipCrafterExtension with 
 
     override def onEventReceived(event:NetworkEvent) = event match
     {
-        case e:ItemLostEvent =>
+        case e:PayloadLostEnrouteEvent =>
+            addLostItem(ItemKeyStack.get(e.item, e.remaining))
+            e.remaining = 0
+            e.setCanceled()
+        case e:TrackedPayloadCancelledEvent =>
             addLostItem(ItemKeyStack.get(e.item, e.remaining))
             e.remaining = 0
             e.setCanceled()
