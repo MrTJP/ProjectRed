@@ -75,36 +75,6 @@ abstract class RoutingChip
     def createContainer(player:EntityPlayer) = new ContainerChipConfig(player, this)
 }
 
-abstract class NetworkEvent
-{
-    private var canceled = false
-
-    def isCanceled = canceled
-
-    def setCanceled()
-    {
-        if (!isCancelable) throw new Exception(s"Network event ${this.getClass.getSimpleName} cannot be canceled")
-        if (canceled) throw new Exception(s"Network event ${this.getClass.getSimpleName} is already canceled")
-        canceled = true
-    }
-
-    def isCancelable:Boolean
-}
-
-class ItemLostEvent(val item:ItemKey, val amount:Int) extends NetworkEvent
-{
-    var remaining = amount
-
-    override def isCancelable = true
-}
-
-class ItemReceivedEvent(val item:ItemKey, val amount:Int) extends NetworkEvent
-{
-    var remaining = amount
-
-    override def isCancelable = true
-}
-
 trait TChipFilter extends RoutingChip
 {
     val filter = new SimpleInventory(9, "filter", 1)

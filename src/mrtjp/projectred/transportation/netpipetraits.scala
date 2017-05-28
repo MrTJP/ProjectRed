@@ -32,9 +32,11 @@ trait IWorldRouter
     def getCoords:BlockCoord
 
     /** Item Syncing **/
-    def itemExpected(stack:ItemKeyStack)
-    def itemLost(stack:ItemKeyStack)
-    def itemReceived(stack:ItemKeyStack)
+//    @deprecated def itemExpected(stack:ItemKeyStack)
+//    @deprecated def itemLost(stack:ItemKeyStack)
+//    @deprecated def itemReceived(stack:ItemKeyStack)
+
+    def postNetworkEvent(e:NetworkEvent)
 
     def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse
 
@@ -94,6 +96,45 @@ trait TRouteLayer
 
     def getWorld:World
     def getCoords:BlockCoord
+}
+
+abstract class NetworkEvent(isCancelable:Boolean)
+{
+    private var canceled = false
+
+    def isCanceled = canceled
+
+    def setCanceled()
+    {
+        if (!isCancelable) throw new Exception(s"Network event ${this.getClass.getSimpleName} cannot be canceled")
+        if (canceled) throw new Exception(s"Network event ${this.getClass.getSimpleName} is already canceled")
+        canceled = true
+    }
+}
+
+case class PayloadDepartedEvent(item:ItemKey, amount:Int, from:IWorldRouter) extends NetworkEvent(true)
+{
+    var remaining = amount
+}
+
+case class PayloadArrivedEvent(item:ItemKey, amount:Int) extends NetworkEvent(true)
+{
+    var remaining = amount
+}
+
+case class PayloadLostEnrouteEvent(item:ItemKey, amount:Int) extends NetworkEvent(true)
+{
+    var remaining = amount
+}
+
+case class TrackedPayloadPendingEvent(item:ItemKey, amount:Int, from:IWorldBroadcaster) extends NetworkEvent(true)
+{
+    var remaining = amount
+}
+
+case class TrackedPayloadCancelledEvent(item:ItemKey, amount:Int, from:IWorldBroadcaster) extends NetworkEvent(true)
+{
+    var remaining = amount
 }
 
 trait TNetworkTravelConditions extends TPipeTravelConditions
@@ -235,7 +276,8 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         if (dest != null)
         {
             val wr = dest.getParent
-            wr.itemExpected(r.payload)
+//            wr.itemExpected(r.payload)
+            wr.postNetworkEvent(PayloadDepartedEvent(r.payload.key, r.payload.stackSize, this))
             RouteFX2.spawnType1(RouteFX2.color_sync, this)
         }
         RouteFX2.spawnType1(RouteFX2.color_send, this)
@@ -371,7 +413,8 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
             {
                 color = RouteFX2.color_receive
                 r.hasArrived = true
-                itemReceived(r.payload)
+//                itemReceived(r.payload)
+                postNetworkEvent(PayloadArrivedEvent(r.payload.key, r.payload.stackSize))
             }
         }
 
@@ -410,20 +453,31 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
         r.speed = r.netPriority.boost
     }
 
-    override def itemExpected(stack:ItemKeyStack)
+
+    override def postNetworkEvent(event:NetworkEvent)
     {
-        transitQueue.add(stack.key, stack.stackSize)
+        event match {
+            case e:PayloadDepartedEvent => transitQueue.add(e.item, e.amount)
+            case e:PayloadArrivedEvent => transitQueue.remove(e.item, e.amount)
+            case e:PayloadLostEnrouteEvent => transitQueue.remove(e.item, e.amount)
+            case _ =>
+        }
     }
 
-    override def itemReceived(stack:ItemKeyStack)
-    {
-        transitQueue.remove(stack.key, stack.stackSize)
-    }
-
-    override def itemLost(stack:ItemKeyStack)
-    {
-        transitQueue.remove(stack.key, stack.stackSize)
-    }
+//    override def itemExpected(stack:ItemKeyStack)
+//    {
+//        transitQueue.add(stack.key, stack.stackSize)
+//    }
+//
+//    override def itemReceived(stack:ItemKeyStack)
+//    {
+//        transitQueue.remove(stack.key, stack.stackSize)
+//    }
+//
+//    override def itemLost(stack:ItemKeyStack)
+//    {
+//        transitQueue.remove(stack.key, stack.stackSize)
+//    }
 
     override def getSyncResponse(item:ItemKey, rival:SyncResponse):SyncResponse = null
 
