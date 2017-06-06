@@ -214,7 +214,7 @@ object BeamPathFinder
         case Seq() =>
         case Seq(next, rest@_*) => getMultiPart(next.pos) match
         {
-            case iwr:IWorldRouter with TNetworkPipe if !iwr.needsWork =>
+            case iwr:IRouterContainer with TNetworkPipe =>
                 if (!closed.exists(_.pos == next.pos)) paths += next.path
                 iterate(rest, closed+next)
             case p:TNetworkSubsystem =>

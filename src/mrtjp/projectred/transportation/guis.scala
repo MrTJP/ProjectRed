@@ -59,7 +59,7 @@ object GuiInterfacePipe extends TGuiFactory
     }
 }
 
-class GuiRequester(pipe:IWorldRequester) extends NodeGui(256, 192)
+class GuiRequester(pipe:IRouterContainer) extends NodeGui(256, 192)
 {
     var clip:ClipNode = null
     var pan:PanNode = null
@@ -239,7 +239,7 @@ class GuiRequester(pipe:IWorldRequester) extends NodeGui(256, 192)
         if (request != null)
         {
             val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Request_submit)
-            packet.writePos(pipe.getContainer.pos)
+            packet.writePos(pipe.getPipe.pos)
             packet.writeBoolean(pull.state)
             packet.writeBoolean(craft.state)
             packet.writeBoolean(partials.state)
@@ -251,7 +251,7 @@ class GuiRequester(pipe:IWorldRequester) extends NodeGui(256, 192)
     private def askForListRefresh()
     {
         val packet = new PacketCustom(TransportationSPH.channel, TransportationSPH.gui_Request_listRefresh)
-        packet.writePos(pipe.getContainer.pos)
+        packet.writePos(pipe.getPipe.pos)
         packet.writeBoolean(pull.state)
         packet.writeBoolean(craft.state)
         packet.sendToServer()

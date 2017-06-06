@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumHand
 
-class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWorldBroadcaster with IWorldCrafter with INeighborTileChangePart
+class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with INeighborTileChangePart
 {
     val chipSlots = new SimpleInventory(4, "chips", 1)
     {
@@ -159,7 +159,7 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         for (r <- chips) if (r != null) r.requestPromise(request, existingPromises)
     }
 
-    override def deliverPromise(promise:DeliveryPromise, requestor:IWorldRequester)
+    override def deliverPromise(promise:DeliveryPromise, requestor:IRouterContainer)
     {
         for (r <- chips) if (r != null) r.deliverPromise(promise, requestor)
     }
@@ -177,18 +177,6 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with IWo
         super.postNetworkEvent(event:NetworkEvent)
         postEventToChips(event)
     }
-
-//    override def itemReceived(stack:ItemKeyStack)
-//    {
-//        super.itemReceived(stack)
-//        postEventToChips(new ItemReceivedEvent(stack.key, stack.stackSize))
-//    }
-//
-//    override def itemLost(stack:ItemKeyStack)
-//    {
-//        super.itemLost(stack)
-//        postEventToChips(new ItemLostEvent(stack.key, stack.stackSize))
-//    }
 
     override def getBroadcasts(col:ItemQueue)
     {

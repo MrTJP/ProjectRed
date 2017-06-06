@@ -55,7 +55,7 @@ object TransportationCPH extends TransportationPH with IClientPacketHandler
     private def openRequestGui(packet:PacketCustom, mc:Minecraft)
     {
         val p = BlockMultipart.getPart(mc.thePlayer.worldObj, packet.readPos(), 6)
-        if (p.isInstanceOf[IWorldRequester]) mc.displayGuiScreen(new GuiRequester(p.asInstanceOf[IWorldRequester]))
+        if (p.isInstanceOf[IRouterContainer]) mc.displayGuiScreen(new GuiRequester(p.asInstanceOf[IRouterContainer]))
     }
 }
 
@@ -104,20 +104,20 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
     private def handleRequestListRefresh(packet:PacketCustom, sender:EntityPlayerMP)
     {
         val t = BlockMultipart.getPart(sender.worldObj, packet.readPos(), 6)
-        if (t.isInstanceOf[IWorldRequester])
-            sendRequestList(t.asInstanceOf[IWorldRequester], sender, packet.readBoolean, packet.readBoolean)
+        if (t.isInstanceOf[IRouterContainer])
+            sendRequestList(t.asInstanceOf[IRouterContainer], sender, packet.readBoolean, packet.readBoolean)
     }
 
     private def handleRequestAction(packet:PacketCustom, sender:EntityPlayerMP)
     {
         val t = BlockMultipart.getPart(sender.worldObj, packet.readPos(), 6)
-        if (t.isInstanceOf[IWorldRequester]) {
+        if (t.isInstanceOf[IRouterContainer]) {
             val ident = packet.readString
             //do things
         }
     }
 
-    private def sendRequestList(requester:IWorldRequester, player:EntityPlayerMP, collectBroadcast:Boolean, collectCrafts:Boolean)
+    private def sendRequestList(requester:IRouterContainer, player:EntityPlayerMP, collectBroadcast:Boolean, collectCrafts:Boolean)
     {
         CollectionPathFinder.clear()
         CollectionPathFinder.start = requester
@@ -137,8 +137,7 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
     private def handleRequestSubmit(packet:PacketCustom, sender:EntityPlayerMP)
     {
         val t = BlockMultipart.getPart(sender.worldObj, packet.readPos(), 6)
-        if (t.isInstanceOf[IWorldRequester])
-        {
+        if (t.isInstanceOf[IRouterContainer]) {
             import mrtjp.projectred.transportation.RequestFlags._
             var opt = RequestFlags.ValueSet.newBuilder
             val pull = packet.readBoolean
@@ -148,7 +147,7 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
             if (craft) opt += CRAFT
             if (partial) opt += PARTIAL
 
-            val r = new RequestConsole(opt.result()).setDestination(t.asInstanceOf[IWorldRequester])
+            val r = new RequestConsole(opt.result()).setDestination(t.asInstanceOf[IRouterContainer])
             val s = ItemKeyStack.get(packet.readItemStack())
 
             r.buildRequestTree(s)
@@ -158,7 +157,7 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
             if (r.requested > 0)
             {
                 sender.addChatMessage(new TextComponentString("Successfully requested "+r.requested+" of "+s.key.getName+"."))
-                RouteFX2.spawnType1(RouteFX2.color_request, t.asInstanceOf[IWorldRouter].getContainer)
+                RouteFX2.spawnType1(RouteFX2.color_request, t.asInstanceOf[IRouterContainer].getPipe)
             }
             else
             {
@@ -166,7 +165,7 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
                 for ((k,v) <- r.getMissing) sender.addChatMessage(new TextComponentString(v+" of "+k.getName))
             }
 
-            sendRequestList(t.asInstanceOf[IWorldRequester], sender, pull, craft)
+            sendRequestList(t.asInstanceOf[IRouterContainer], sender, pull, craft)
         }
     }
 
