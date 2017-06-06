@@ -29,6 +29,7 @@ import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.{BlockRenderLayer, EnumFacing, ITickable, ResourceLocation}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
@@ -43,6 +44,18 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
     val cond = new PowerConductor(this, 0 until 4)
     {
         override def capacitance = 4.0
+    }
+
+    override def save(tag:NBTTagCompound)
+    {
+        super.save(tag)
+        cond.save(tag)
+    }
+
+    override def load(tag:NBTTagCompound)
+    {
+        super.load(tag)
+        cond.load(tag)
     }
 
     override def getType = SolarPanelPart.typeID

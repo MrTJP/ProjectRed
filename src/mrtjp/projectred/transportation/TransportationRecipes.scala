@@ -197,7 +197,7 @@ object TransportationRecipes
             "  r", "iei", "iii",
             'r':JC, "dustRedstone",
             'i':JC, "ingotIron",
-            'e':JC, "gemEmerald"))
+            'e':JC, "dyeGreen"))
     }
 
     def initMiscRecipes()
