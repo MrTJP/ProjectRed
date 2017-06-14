@@ -131,7 +131,7 @@ trait TActiveBroadcastStack extends RoutingChip
                 }
 
                 if (removed > 0)
-                    router.queueStackToSend(stack.key, stack.stackSize, bObj.priority, req.getRouter.getIPAddress)
+                    router.queueStackToSend(stack.key, removed, bObj.priority, req.getRouter.getIPAddress)
 
                 if (!pop(removed) && restack) restackOrders()
 
