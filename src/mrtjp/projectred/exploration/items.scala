@@ -113,9 +113,10 @@ class ContainerBackpack(inv:BagInventory, player:EntityPlayer) extends NodeConta
 
 class BagInventory(player:EntityPlayer) extends TInventory
 {
+    override protected val storage = new Array[ItemStack](27)
+
     loadInventory()
 
-    override protected val storage = new Array[ItemStack](27)
     override def getInventoryStackLimit = 64
     override def getName = ""
 
@@ -142,8 +143,11 @@ class BagInventory(player:EntityPlayer) extends TInventory
     {//TODO, Check hands ourself so we can dual wield, this should work for now tho.
         val bag = ItemUtils.getHeldStack(player)
         val hasBag = bag != null && bag.getItem == ProjectRedExploration.itemBackpack
-        if (hasBag) { if (!bag.hasTagCompound) bag.setTagCompound(new NBTTagCompound) }
-        else player.closeScreen()
+        if (hasBag) {
+            if (!bag.hasTagCompound)
+                bag.setTagCompound(new NBTTagCompound)
+        } else
+            player.closeScreen()
         !hasBag
     }
 
