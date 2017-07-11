@@ -9,6 +9,7 @@ import java.util.{List => JList}
 
 import codechicken.lib.math.MathHelper
 import codechicken.lib.packet.PacketCustom
+import codechicken.lib.util.ClientUtils
 import codechicken.lib.vec.{Rotation, Translation, Vector3}
 import mrtjp.core.fx.particles.SpriteParticle
 import mrtjp.core.item.ItemCore
@@ -341,10 +342,9 @@ object ItemJetpack
     @SideOnly(Side.CLIENT)
     def onRenderTick(event:ClientTickEvent)
     {
-        if (event.phase == Phase.END)
+        if (event.phase == Phase.END && Minecraft.getMinecraft.theWorld != null)
             for (id <- entitiesUsingJetpack)
-                Minecraft.getMinecraft.theWorld.getEntityByID(id) match
-                {
+                Minecraft.getMinecraft.theWorld.getEntityByID(id) match {
                     case e:EntityPlayer => renderParticlesForPlayer(e)
                     case _ =>
                 }
