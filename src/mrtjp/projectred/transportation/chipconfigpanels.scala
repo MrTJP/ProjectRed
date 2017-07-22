@@ -529,7 +529,7 @@ class MatrixMatchingPanel(chip:TChipMatchMatrix) extends ChipPanelNode(chip)
             val button = new IconButtonNode {
                 override def drawButton(mouseover:Boolean) {
                     val stack = chip.getMatchInventory.getStackInSlot(i)
-                    if (stack != null)
+                    if (!stack.isEmpty)
                         ItemDisplayNode.renderItem(position, size, 0, false, stack)
                 }
             }

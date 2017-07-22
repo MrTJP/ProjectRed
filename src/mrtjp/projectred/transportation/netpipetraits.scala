@@ -309,7 +309,7 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
     {
         if (super.activate(player, hit, item, hand)) return true
 
-        if (item != null && item.getItem.isInstanceOf[ItemRouterUtility]) {
+        if (!item.isEmpty && item.getItem.isInstanceOf[ItemRouterUtility]) {
             if (!world.isRemote) {
                 val s = "/#f"+"R"+getRouter.getIPAddress+" route statistics: "+
                         "\nreceived: "+statsReceived+

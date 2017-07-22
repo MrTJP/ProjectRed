@@ -143,7 +143,7 @@ object ItemRoutingChip
 
     def isValidChip(stack:ItemStack) =
     {
-        stack != null && stack.getItem.isInstanceOf[ItemRoutingChip] &&
+        !stack.isEmpty && stack.getItem.isInstanceOf[ItemRoutingChip] &&
             RoutingChipDefs.getForStack(stack) != null
     }
 
@@ -188,7 +188,7 @@ object RoutingChipDefs extends ItemDefinition
 
     def getForStack(stack:ItemStack) =
     {
-        if (stack != null && stack.getItem.isInstanceOf[ItemRoutingChip])
+        if (!stack.isEmpty && stack.getItem.isInstanceOf[ItemRoutingChip])
             fromMeta(stack.getItemDamage)
         else null
     }

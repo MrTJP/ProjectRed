@@ -190,7 +190,7 @@ class TileICPrinter extends TileICMachine with TInventory
     def checkBlueprint =
     {
         val stack = getStackInSlot(18)
-        stack != null && stack.getItem.isInstanceOf[ItemICBlueprint] &&
+        !stack.isEmpty && stack.getItem.isInstanceOf[ItemICBlueprint] &&
                 ItemICBlueprint.hasICInside(stack)
     }
 
@@ -203,10 +203,10 @@ class TileICPrinter extends TileICMachine with TInventory
     private def checkInputIC =
     {
         val stack = getStackInSlot(19)
-        stack != null && stack.getItem.isInstanceOf[ItemICChip]
+        !stack.isEmpty && stack.getItem.isInstanceOf[ItemICChip]
     }
 
-    private def checkOutputClear = getStackInSlot(20) == null
+    private def checkOutputClear = getStackInSlot(20).isEmpty
 
     private def checkIngredients():Boolean =
     {

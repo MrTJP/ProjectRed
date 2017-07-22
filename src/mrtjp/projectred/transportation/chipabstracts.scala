@@ -192,7 +192,7 @@ trait TChipFilter extends RoutingChip
             for (i <- 0 until filter.getSizeInventory)
             {
                 val stack = filter.getStackInSlot(i)
-                if (stack != null)
+                if (!stack.isEmpty)
                 {
                     list+=(ChatFormatting.GRAY.toString+" - "+stack.getDisplayName)
                     added = true
@@ -302,7 +302,7 @@ trait TChipStock extends RoutingChip
         for (i <- 0 until stock.getSizeInventory)
         {
             val stack = stock.getStackInSlot(i)
-            if (stack != null)
+            if (!stack.isEmpty)
             {
                 list += (ChatFormatting.GRAY.toString+" - "+stack.getDisplayName+" ("+stack.getCount+")")
                 added = true
@@ -392,7 +392,7 @@ trait TChipCrafter extends RoutingChip
     var extMatrix = new SimpleInventory(9, "ext_matrix", 1)
     {
         override def isItemValidForSlot(slot:Int, stack:ItemStack) =
-            stack != null && ItemRoutingChip.hasChipInside(stack) &&
+            !stack.isEmpty && ItemRoutingChip.hasChipInside(stack) &&
                     RoutingChipDefs.getForStack(stack) == RoutingChipDefs.ITEMEXTENSION
     }
 
@@ -427,7 +427,7 @@ trait TChipCrafter extends RoutingChip
         for (i <- 0 until 9)
         {
             val s = matrix.getStackInSlot(i)
-            if (s != null && ItemKey.get(s) == item)
+            if (!s.isEmpty && ItemKey.get(s) == item)
                 return true
         }
         false
@@ -442,7 +442,7 @@ trait TChipCrafter extends RoutingChip
         {
             val stack = matrix.getStackInSlot(i)
 
-            if (stack != null)
+            if (!stack.isEmpty)
             {
                 list += (ChatFormatting.GRAY.toString+" - "+stack.getDisplayName+" (" + stack.getCount + ")")
                 added = true
@@ -451,13 +451,13 @@ trait TChipCrafter extends RoutingChip
         if (!added) list += (ChatFormatting.GRAY.toString+" - empty")
 
         val stack = matrix.getStackInSlot(9)
-        if (stack != null) list += (ChatFormatting.GRAY.toString+" - Yields: "+stack.getDisplayName+" (" + stack.getCount + ")")
+        if (!stack.isEmpty) list += (ChatFormatting.GRAY.toString+" - Yields: "+stack.getDisplayName+" (" + stack.getCount + ")")
     }
 
     def addExtInfo(list:ListBuffer[String])
     {
         list += (ChatFormatting.GRAY.toString+"Extensions: "+
-                ChatFormatting.GRAY.toString+(0 until 9).count{extMatrix.getStackInSlot(_) != null})
+                ChatFormatting.GRAY.toString+(0 until 9).count{!extMatrix.getStackInSlot(_).isEmpty})
     }
 }
 

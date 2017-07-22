@@ -20,7 +20,7 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with INe
         }
 
         override def isItemValidForSlot(i:Int, stack:ItemStack) =
-            stack != null &&
+            !stack.isEmpty &&
                 stack.getItem.isInstanceOf[ItemRoutingChip] &&
                 stack.hasTagCompound &&
                 stack.getTagCompound.hasKey("chipROM")
@@ -70,10 +70,10 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with INe
     override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, item:ItemStack, hand:EnumHand):Boolean =
     {
         if (super.activate(player, hit, item, hand)) return true
-        if (item != null && item.getItem.isInstanceOf[ItemRoutingChip])
+        if (!item.isEmpty && item.getItem.isInstanceOf[ItemRoutingChip])
         {
             for (i <- 0 until chipSlots.getSizeInventory)
-                if (chipSlots.getStackInSlot(i) == null && chipSlots.isItemValidForSlot(i, item))
+                if (chipSlots.getStackInSlot(i).isEmpty && chipSlots.isItemValidForSlot(i, item))
                 {
                     val chip = item.splitStack(1)
                     chipSlots.setInventorySlotContents(i, chip)
@@ -103,12 +103,12 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with INe
         {
             val oldKey = chipStacks(i)
             val newStack = chipSlots.getStackInSlot(i)
-            val newKey = if (newStack != null) ItemKey.get(newStack) else null
+            val newKey = if (!newStack.isEmpty) ItemKey.get(newStack) else null
 
             if (newKey != oldKey)
             {
                 val oldChip = chips(i)
-                val newChip = if (newStack != null && ItemRoutingChip.isValidChip(newStack))
+                val newChip = if (!newStack.isEmpty && ItemRoutingChip.isValidChip(newStack))
                     ItemRoutingChip.loadChipFromItemStack(newStack) else null
 
                 if (oldChip != null)
@@ -129,7 +129,7 @@ class RoutedInterfacePipePart extends AbstractNetPipe with TNetworkPipe with INe
         for (i <- 0 until chipSlots.getSizeInventory)
         {
             val s = chipSlots.getStackInSlot(i)
-            chipStacks(i) = if (s != null) ItemKey.get(s) else null
+            chipStacks(i) = if (!s.isEmpty) ItemKey.get(s) else null
         }
     }
 

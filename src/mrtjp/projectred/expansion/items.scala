@@ -191,7 +191,7 @@ object ItemPlan
         {
             val tag1 = new NBTTagCompound
             var slotStack = inputs(i)
-            if (slotStack != null) {
+            if (!slotStack.isEmpty) {
                 if (slotStack.isItemStackDamageable) { //save without damage bar
                     slotStack = slotStack.copy
                     slotStack.setItemDamage(0)

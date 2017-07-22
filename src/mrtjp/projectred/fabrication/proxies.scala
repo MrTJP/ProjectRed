@@ -247,7 +247,7 @@ object FabricationRecipes
 
                 if (!bp.isEmpty && bp.getItem == itemICBlueprint && ItemICBlueprint.hasICInside(bp))
                     new ItemStack(itemICBlueprint)
-                else null
+                else ItemStack.EMPTY
             }
 
             override def getRemainingItems(inv:InventoryCrafting) = ForgeHooks.defaultRecipeGetRemainingItems(inv)
@@ -282,7 +282,7 @@ object FabricationRecipes
                     ItemICBlueprint.copyIC(bp, out)
                     out
                 }
-                else null
+                else ItemStack.EMPTY
             }
 
             override def getRemainingItems(inv:InventoryCrafting) = ForgeHooks.defaultRecipeGetRemainingItems(inv)

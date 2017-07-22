@@ -100,6 +100,6 @@ object WireDef extends ItemDefinition
 
         def makeFramedStack:ItemStack = makeFramedStack(1)
         def makeFramedStack(i:Int) =
-        if (hasFramedForm) new ItemStack(ProjectRedTransmission.itemPartFramedWire, i, meta) else null
+        if (hasFramedForm) new ItemStack(ProjectRedTransmission.itemPartFramedWire, i, meta) else ItemStack.EMPTY
     }
 }

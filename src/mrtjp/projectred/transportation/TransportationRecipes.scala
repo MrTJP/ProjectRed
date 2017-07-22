@@ -215,7 +215,7 @@ class ChipResetRecipe extends IRecipe
     {
         val cdef = getType(inv)
         if (cdef != null) if (isTypeExclusive(cdef, inv)) return cdef.makeStack(countUnits(inv))
-        null
+        ItemStack.EMPTY
     }
 
     def getType(inv:InventoryCrafting):ChipVal =
