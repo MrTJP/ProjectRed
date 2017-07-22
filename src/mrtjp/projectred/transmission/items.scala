@@ -11,8 +11,8 @@ import net.minecraft.block.SoundType
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.{EnumFacing, NonNullList}
 import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -34,7 +34,7 @@ class ItemPartWire extends ItemCore with TItemMultiPart
     }
 
     @SideOnly(Side.CLIENT)
-    override def getSubItems(i:Item, tab:CreativeTabs, list:JList[ItemStack])
+    override def getSubItems(i:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (w <- WireDef.values)
             if (w.hasWireForm) list.add(w.makeStack)
@@ -57,7 +57,7 @@ class ItemPartFramedWire extends ItemCore with TItemMultiPart
     }
 
     @SideOnly(Side.CLIENT)
-    override def getSubItems(i:Item, tab:CreativeTabs, list:JList[ItemStack])
+    override def getSubItems(i:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (w <- WireDef.values)
             if (w.hasFramedForm) list.add(w.makeFramedStack)

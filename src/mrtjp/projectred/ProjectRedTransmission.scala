@@ -18,8 +18,7 @@ object ProjectRedTransmission
 
     var tabTransmission = new CreativeTabs("projectred.transmission")
     {
-        override def getIconItemStack = new ItemStack(ProjectRedTransmission.itemPartWire)
-        override def getTabIconItem = getIconItemStack.getItem
+        override def getTabIconItem = new ItemStack(ProjectRedTransmission.itemPartWire)
     }
 
     @Mod.EventHandler

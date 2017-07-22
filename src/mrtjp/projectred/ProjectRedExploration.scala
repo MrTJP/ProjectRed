@@ -73,8 +73,7 @@ object ProjectRedExploration
 
     var tabExploration:CreativeTabs = new CreativeTabs("projectred.exploration")
     {
-        override def getIconItemStack = new ItemStack(Blocks.GRASS)
-        override def getTabIconItem = getIconItemStack.getItem
+        override def getTabIconItem = new ItemStack(Blocks.GRASS)
     }
 
     @Mod.EventHandler

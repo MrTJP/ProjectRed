@@ -1,6 +1,6 @@
 package mrtjp.projectred
 
-import codechicken.lib.model.blockbakery.sub.SubBlockBakery
+import codechicken.lib.model.bakery.sub.SubBlockBakery
 import mrtjp.projectred.expansion._
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.Item

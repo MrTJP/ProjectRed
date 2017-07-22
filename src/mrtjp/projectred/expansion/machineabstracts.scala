@@ -2,8 +2,8 @@ package mrtjp.projectred.expansion
 
 import codechicken.lib.block.property.unlisted.{UnlistedBooleanProperty, UnlistedIntegerProperty}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.model.blockbakery.{BlockBakery, IBakeryBlock, ICustomBlockBakery}
-import codechicken.lib.util.RotationUtils
+import codechicken.lib.model.bakery.generation.{IBakery, IBlockBakery}
+import codechicken.lib.model.bakery.{IBakeryProvider, ModelBakery}
 import codechicken.lib.vec.Rotation
 import mrtjp.core.block._
 import mrtjp.core.gui.NodeContainer
@@ -22,9 +22,8 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.property.{IExtendedBlockState, IUnlistedProperty}
-import net.minecraftforge.fml.common.FMLLog
 
-class BlockMachine(regName:String, bakery:ICustomBlockBakery) extends MultiTileBlock(Material.ROCK) with IBakeryBlock
+class BlockMachine(regName:String, bakery:IBlockBakery) extends MultiTileBlock(Material.ROCK) with IBakeryProvider
 {
     setHardness(2)
     setCreativeTab(ProjectRedExpansion.tabExpansion)
@@ -46,9 +45,9 @@ class BlockMachine(regName:String, bakery:ICustomBlockBakery) extends MultiTileB
         .add(BlockProperties.UNLISTED_CHARGE_PROPERTY)
         .build()
 
-    override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos) = BlockBakery.handleExtendedState(state.asInstanceOf[IExtendedBlockState], world.getTileEntity(pos))
+    override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos) = ModelBakery.handleExtendedState(state.asInstanceOf[IExtendedBlockState], world, pos)
 
-    override def getCustomBakery:ICustomBlockBakery = bakery
+    override def getBakery:IBakery = bakery
 }
 
 object BlockProperties
@@ -125,13 +124,13 @@ abstract class TileMachine extends MTBlockTile with TTileOrient
         if ((doesRotate || doesOrient) && held != null && held.getItem.isInstanceOf[IScrewdriver]
                 && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
         {
-            if (world.isRemote) return true
+            if (getWorld.isRemote) return true
             def rotate()
             {
                 val old = rotation
                 do setRotation((rotation+1)%4) while (old != rotation && !isRotationAllowed(rotation))
                 if (old != rotation) sendOrientUpdate()
-                world.notifyNeighborsRespectDebug(getPos, getBlock)
+                getWorld.notifyNeighborsRespectDebug(getPos, getBlock, false)
                 onBlockRotated()
                 held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
@@ -140,7 +139,7 @@ abstract class TileMachine extends MTBlockTile with TTileOrient
                 val old = side
                 do setSide((side+1)%6) while (old != side && !isSideAllowed(side))
                 if (old != side) sendOrientUpdate()
-                world.notifyNeighborsRespectDebug(getPos, getBlock)
+                getWorld.notifyNeighborsRespectDebug(getPos, getBlock, false)
                 onBlockRotated()
                 held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             }
@@ -317,7 +316,7 @@ with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
             startWork()
         }
 
-        if (world.getTotalWorldTime%10 == 0) updateRendersIfNeeded()
+        if (getWorld.getTotalWorldTime%10 == 0) updateRendersIfNeeded()
     }
 
     override def markDirty()
@@ -329,7 +328,7 @@ with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
     override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        dropInvContents(world, getPos)
+        dropInvContents(getWorld, getPos)
     }
 
     def progressScaled(scale:Int):Int =

@@ -2,6 +2,7 @@ package mrtjp.projectred
 
 import mrtjp.projectred.core._
 import net.minecraft.creativetab.CreativeTabs
+import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerStartingEvent}
 import org.apache.logging.log4j.LogManager
@@ -19,7 +20,7 @@ object ProjectRedCore
 
     var tabCore = new CreativeTabs("projectred.core")
     {
-        override def getTabIconItem = itemScrewdriver
+        override def getTabIconItem = new ItemStack(itemScrewdriver)
     }
 
     @Mod.EventHandler

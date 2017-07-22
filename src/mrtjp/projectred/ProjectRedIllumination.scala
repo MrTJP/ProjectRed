@@ -2,7 +2,7 @@ package mrtjp.projectred
 
 import mrtjp.projectred.illumination._
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.item.ItemBlock
+import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 
@@ -20,7 +20,7 @@ object ProjectRedIllumination
 
     var tabLighting = new CreativeTabs("projectred.illumination")
     {
-        override def getTabIconItem = LightFactoryCage.getItem(true)
+        override def getTabIconItem = new ItemStack(LightFactoryCage.getItem(true))
     }
 
     @Mod.EventHandler

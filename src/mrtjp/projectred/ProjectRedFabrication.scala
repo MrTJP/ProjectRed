@@ -5,7 +5,7 @@
  */
 package mrtjp.projectred
 
-import codechicken.lib.model.blockbakery.sub.SubBlockBakery
+import codechicken.lib.model.bakery.sub.SubBlockBakery
 import mrtjp.projectred.fabrication.{BlockICMachine, FabricationProxy, ItemICBlueprint, ItemICChip}
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.ItemStack
@@ -26,8 +26,7 @@ object ProjectRedFabrication
 
     var tabFabrication = new CreativeTabs("projectred.fabrication")
     {
-        override def getIconItemStack = new ItemStack(itemICChip)
-        override def getTabIconItem = getIconItemStack.getItem
+        override def getTabIconItem = new ItemStack(itemICChip)
     }
 
     @Mod.EventHandler

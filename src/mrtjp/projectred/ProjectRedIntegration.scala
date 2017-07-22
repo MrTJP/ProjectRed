@@ -13,8 +13,7 @@ object ProjectRedIntegration
 
     var tabIntegration = new CreativeTabs("projectred.integration")
     {
-        override def getIconItemStack = GateDefinition.OR.makeStack
-        override def getTabIconItem = getIconItemStack.getItem
+        override def getTabIconItem = GateDefinition.OR.makeStack
     }
 
     @Mod.EventHandler

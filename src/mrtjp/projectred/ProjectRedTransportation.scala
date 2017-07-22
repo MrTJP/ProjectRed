@@ -20,8 +20,7 @@ object ProjectRedTransportation
 
     var tabTransportation = new CreativeTabs("projectred.transportation")
     {
-        override def getIconItemStack = RoutingChipDefs.ITEMSTOCKKEEPER.makeStack
-        override def getTabIconItem = getIconItemStack.getItem
+        override def getTabIconItem = RoutingChipDefs.ITEMSTOCKKEEPER.makeStack
     }
 
     @Mod.EventHandler
