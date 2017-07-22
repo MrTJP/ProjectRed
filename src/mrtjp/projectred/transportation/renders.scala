@@ -133,7 +133,7 @@ object RenderPipe extends IIconRegister
 
     def renderBreakingOverlay(icon:TextureAtlasSprite, pipe:SubcorePipePart, ccrs:CCRenderState)
     {
-        ccrs.setPipeline(new Translation(pipe.x, pipe.y, pipe.z), new IconTransformation(icon))
+        ccrs.setPipeline(new Translation(pipe.pos), new IconTransformation(icon))
         import scala.collection.JavaConversions._
         for (box <- pipe.getCollisionBoxes)
             BlockRenderer.renderCuboid(ccrs, box, 0)
@@ -415,7 +415,7 @@ object PipeRSHighlightRenderer extends IMicroHighlightRenderer
     override def renderHighlight(player:EntityPlayer, hit:RayTraceResult, mcrFactory:CommonMicroFactory, size:Int, material:Int):Boolean =
     {
         if (mcrFactory.getFactoryID != 3 || size != 1 || player.isSneaking) return false
-        val tile = BlockMultipart.getTile(player.worldObj, hit.getBlockPos)
+        val tile = BlockMultipart.getTile(player.world, hit.getBlockPos)
         if (tile == null) return false
 
         MicroMaterialRegistry.getMaterial(material) match
@@ -437,7 +437,7 @@ object PipeColourHighlightRenderer extends IMicroHighlightRenderer
     override def renderHighlight(player:EntityPlayer, hit:RayTraceResult, mcrFactory:CommonMicroFactory, size:Int, material:Int):Boolean =
     {
         if (mcrFactory.getFactoryID != 3 || size != 1 || player.isSneaking) return false
-        val tile = BlockMultipart.getTile(player.worldObj, hit.getBlockPos)
+        val tile = BlockMultipart.getTile(player.world, hit.getBlockPos)
         if (tile == null) return false
 
         MicroMaterialRegistry.getMaterial(material) match
@@ -457,19 +457,11 @@ object PipeColourHighlightRenderer extends IMicroHighlightRenderer
 
 object PipeItemRenderer extends IItemRenderer with IPerspectiveAwareModel
 {
-
-    override def getParticleTexture = null
-    override def isBuiltInRenderer = true
-    override def getItemCameraTransforms = ItemCameraTransforms.DEFAULT
     override def isAmbientOcclusion = true
     override def isGui3d = true
-    override def getOverrides = ItemOverrideList.NONE
-    override def getQuads(state:IBlockState, side:EnumFacing, rand:Long) = ImmutableList.of()
+    override def getTransforms = TransformUtils.DEFAULT_BLOCK
 
-    override def handlePerspective(t:TransformType) =
-        MapWrapper.handlePerspective(this, TransformUtils.DEFAULT_BLOCK.getTransforms, t)
-
-    override def renderItem(item:ItemStack) =
+    override def renderItem(item:ItemStack, transformType: TransformType) =
     {
         val damage = item.getItemDamage
         renderWireInventory(damage, 0, 0, 0, 1, CCRenderState.instance())

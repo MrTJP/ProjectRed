@@ -309,7 +309,7 @@ abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart
         if (itemFlow.scheduleRemoval(r)) if (!world.isRemote)
         {
             r.preItemRemove()
-            world.spawnEntityInWorld(r.getEntityForDrop(x, y, z))
+            world.spawnEntity(r.getEntityForDrop(pos))
         }
     }
 
@@ -426,7 +426,7 @@ abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart
         if (connCount == 0) if (!world.isRemote) for (r <- itemFlow.it) if (itemFlow.scheduleRemoval(r))
         {
             r.preItemRemove()
-            world.spawnEntityInWorld(r.getEntityForDrop(x, y, z))
+            world.spawnEntity(r.getEntityForDrop(pos))
         }
     }
 
@@ -436,7 +436,7 @@ abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart
         if (!world.isRemote) for (r <- itemFlow.it)
         {
             r.preItemRemove()
-            world.spawnEntityInWorld(r.getEntityForDrop(x, y, z))
+            world.spawnEntity(r.getEntityForDrop(pos))
         }
     }
 

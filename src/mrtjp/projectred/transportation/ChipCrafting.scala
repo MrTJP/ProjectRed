@@ -224,7 +224,7 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
             for (i <- 0 until 9)
             {
                 val stack = matrix.getStackInSlot(i)
-                if (stack != null && stack.stackSize > 0)
+                if (!stack.isEmpty)
                     promise.addIngredient(ItemKeyStack.get(stack), createEqualityFor(i), getCrafterForSlot(i))
             }
             promise

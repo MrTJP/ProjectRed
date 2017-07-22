@@ -93,19 +93,19 @@ trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with TRSP
 
     override def debug(player:EntityPlayer) =
     {
-        player.addChatComponentMessage(new TextComponentString(
+        player.sendMessage(new TextComponentString(
             (if (world.isRemote) "Client" else "Server")+" signal strength: "+getSignal))
         true
     }
 
     override def test(player:EntityPlayer) =
     {
-        if (world.isRemote) Messenger.addMessage(x, y+0.5, z, "/#f/#c[c] = "+getSignal)
+        if (world.isRemote) Messenger.addMessage(pos.getX, pos.getY+0.5, pos.getZ, "/#f/#c[c] = "+getSignal)
         else {
             val packet = Messenger.createPacket
-            packet.writeDouble(x+0.0D)
-            packet.writeDouble(y+0.5D)
-            packet.writeDouble(z+0.0D)
+            packet.writeDouble(pos.getX+0.0D)
+            packet.writeDouble(pos.getY+0.5D)
+            packet.writeDouble(pos.getZ+0.0D)
             packet.writeString("/#c[s] = "+getSignal)
             packet.sendToPlayer(player)
         }

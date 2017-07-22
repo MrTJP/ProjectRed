@@ -1,7 +1,7 @@
 package mrtjp.projectred.expansion
 
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.packet.PacketCustom.{IClientPacketHandler, IServerPacketHandler}
+import codechicken.lib.packet.ICustomPacketHandler.{IClientPacketHandler, IServerPacketHandler}
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayerMP

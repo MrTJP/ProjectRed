@@ -15,7 +15,7 @@ object PRLib
     {
         if (!w.isRemote && w.getGameRules.getBoolean("doTileDrops"))
         {
-            val bpos = new Vector3(pos)
+            val bpos = Vector3.fromVec3i(pos)
             val d = new Vector3(p.posX, p.posY, p.posZ).subtract(bpos).normalize()
             val vel = d.copy.multiply(8.0)
             val tpos = bpos.add(Vector3.center).add(d.copy.multiply(1.25))
@@ -25,7 +25,7 @@ object PRLib
             item.motionY = vel.y*0.02
             item.motionZ = vel.z*0.02
             item.setPickupDelay(0)
-            w.spawnEntityInWorld(item)
+            w.spawnEntity(item)
         }
     }
 

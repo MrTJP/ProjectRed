@@ -30,6 +30,7 @@ import net.minecraft.util.{BlockRenderLayer, EnumFacing, EnumHand}
 import net.minecraft.world.World
 import net.minecraftforge.client.model.IPerspectiveAwareModel
 import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
+import net.minecraftforge.common.model.IModelState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
@@ -140,11 +141,11 @@ class LightButtonPart extends ButtonPart with ILight with TSwitchPacket
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(pos:Vector3, pass:Int, frame:Float)
+    override def renderDynamic(vec:Vector3, pass:Int, frame:Float)
     {
         if (pass == 0 && isOn) {
             val box = getBounds.expand(0.025D)
-            RenderHalo.addLight(x, y, z, colorMeta, box)
+            RenderHalo.addLight(pos, colorMeta, box)
         }
     }
 
@@ -230,22 +231,15 @@ trait TButtonItemRendererCommons extends IItemRenderer with IPerspectiveAwareMod
     val invRenderBox = new Cuboid6(5/16D, 6/16D, 6/16D, 11/16D, 10/16D, 10/16D)
     val invLightBox = invRenderBox.copy.expand(0.025D)
 
-    override def getParticleTexture = null
-    override def isBuiltInRenderer = true
-    override def getItemCameraTransforms = ItemCameraTransforms.DEFAULT
     override def isAmbientOcclusion = true
     override def isGui3d = true
-    override def getOverrides = ItemOverrideList.NONE
-    override def getQuads(state:IBlockState, side:EnumFacing, rand:Long) = ImmutableList.of()
+    override def getTransforms = TransformUtils.DEFAULT_BLOCK
 
-    override def renderItem(item:ItemStack)
+    override def renderItem(item:ItemStack, transformType: TransformType)
     {
         val colour = if (0 until 16 contains item.getItemDamage) item.getItemDamage else 0
         renderButtonInventory(colour, 0, 0, 0, 1)
     }
-
-    override def handlePerspective(t:TransformType) =
-        MapWrapper.handlePerspective(this, TransformUtils.DEFAULT_BLOCK, t)
 
     def renderButtonInventory(colour:Int, x:Float, y:Float, z:Float, scale:Float)
     {

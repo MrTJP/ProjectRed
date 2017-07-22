@@ -8,7 +8,7 @@ package mrtjp.projectred.expansion
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui._
@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -127,11 +128,11 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
         if (powerStorage < getMaxStorage && burnTimeRemaining < getBurnUseOnCharge)
         {
             val inslot = getStackInSlot(0)
-            if (inslot != null)
+            if (!inslot.isEmpty)
             {
-                inslot.stackSize -= 1
+                inslot.shrink(1)
                 burnTimeRemaining = getBurnTimePerDust
-                if (inslot.stackSize == 0) setInventorySlotContents(0, null)
+                if (inslot.isEmpty) setInventorySlotContents(0, ItemStack.EMPTY)
                 else setInventorySlotContents(0, inslot)
             }
         }
@@ -254,7 +255,7 @@ object GuiElectrotineGenerator extends TGuiFactory
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        player.worldObj.getTileEntity(data.readPos()) match
+        player.world.getTileEntity(data.readPos()) match
         {
             case t:TileElectrotineGenerator => new GuiElectrotineGenerator(t, t.createContainer(player))
             case _ => null
@@ -264,8 +265,7 @@ object GuiElectrotineGenerator extends TGuiFactory
 
 object RenderElectrotineGenerator extends SimpleBlockRenderer
 {
-
-    import mrtjp.core.util.CCLConversions._
+    import org.apache.commons.lang3.tuple.Triple
     import mrtjp.projectred.expansion.BlockProperties._
     import java.lang.{Boolean => JBool, Integer => JInt}
 
@@ -283,7 +283,7 @@ object RenderElectrotineGenerator extends SimpleBlockRenderer
     var iconT4:UVTransformation = _
 
 
-    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+    override def handleState(state: IExtendedBlockState, world:IBlockAccess, pos:BlockPos): IExtendedBlockState = world.getTileEntity(pos) match {
         case t:TileElectrotineGenerator => {
             var s = state
             s = s.withProperty(UNLISTED_CHARGED_PROPERTY, t.isCharged.asInstanceOf[JBool])
@@ -307,10 +307,10 @@ object RenderElectrotineGenerator extends SimpleBlockRenderer
             case (false, true)  => iconT3
             case (true, true)   => iconT4
         }
-        createTriple(side, rotation, iconT)
+        Triple.of(side, rotation, iconT)
     }
 
-    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT1)
+    override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0, iconT1)
 
     override def shouldCull() = true
 

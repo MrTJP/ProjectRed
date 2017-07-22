@@ -20,7 +20,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumFacing
+import net.minecraft.util.{EnumFacing, NonNullList}
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.world.{Explosion, IBlockAccess, World}
 import net.minecraftforge.common.EnumPlantType
@@ -70,10 +70,10 @@ class BlockOre extends BlockCore(Material.ROCK) with TSimplePropertyString
 
     override def damageDropped(state:IBlockState) = state.getBlock.getMetaFromState(state)
 
-    override def getSubBlocks(item:Item, tab:CreativeTabs, list:util.List[ItemStack])
+    override def getSubBlocks(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (o <- OreDefs.values)
-            list.asInstanceOf[util.List[ItemStack]].add(o.makeStack)
+            list.add(o.makeStack)
     }
 
 
@@ -106,7 +106,7 @@ object OreDefs extends BlockDefinition
         def makeDropStack(i:Int) =
         {
             val d = dropFactory()
-            d.stackSize = i
+            d.setCount(i)
             d
         }
     }
@@ -149,10 +149,10 @@ class BlockDecorativeStone extends BlockCore(Material.ROCK) with TSimpleProperty
 
     override def damageDropped(state:IBlockState) = state.getBlock.getMetaFromState(state)
 
-    override def getSubBlocks(item:Item, tab:CreativeTabs, list:util.List[ItemStack])
+    override def getSubBlocks(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (s <- DecorativeStoneDefs.values)
-            list.asInstanceOf[util.List[ItemStack]].add(s.makeStack)
+            list.add(s.makeStack)
     }
 
     override def createBlockState(): BlockStateContainer = new BlockStateContainer(this, getTypeProperty)
@@ -186,7 +186,7 @@ object DecorativeStoneDefs extends BlockDefinition
         def makeDropStack(i:Int) =
         {
             val d = dropFactory()
-            d.stackSize = i
+            d.setCount(i)
             d
         }
     }
@@ -201,15 +201,15 @@ class BlockDecorativeWall extends BlockCore(Material.ROCK) with TSimplePropertyS
     setCreativeTab(ProjectRedExploration.tabExploration)
     setDefaultState(getDefaultState.withProperty(UP, JBool.FALSE).withProperty(NORTH, JBool.FALSE).withProperty(SOUTH, JBool.FALSE).withProperty(EAST, JBool.FALSE).withProperty(WEST, JBool.FALSE).withProperty(getTypeProperty, "marble"))
 
-    override def getSubBlocks(item:Item, tab:CreativeTabs, list:util.List[ItemStack])
+    override def getSubBlocks(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (s <- DecorativeStoneDefs.values)
-            list.asInstanceOf[util.List[ItemStack]].add(new ItemStack(ProjectRedExploration.blockDecorativeWall, 1, s.meta))
+            list.add(new ItemStack(ProjectRedExploration.blockDecorativeWall, 1, s.meta))
     }
 
     override def getBoundingBox(state: IBlockState, source: IBlockAccess, pos: BlockPos): AxisAlignedBB = WALL_AABB_BY_INDEX(getAABBIndex(getActualState(state, source, pos)))
 
-    override def getCollisionBoundingBox(blockState: IBlockState, worldIn: World, pos: BlockPos): AxisAlignedBB = WALL_CLIP_AABB_BY_INDEX(getAABBIndex(getActualState(blockState, worldIn, pos)))
+    override def getCollisionBoundingBox(blockState: IBlockState, worldIn: IBlockAccess, pos: BlockPos): AxisAlignedBB = WALL_CLIP_AABB_BY_INDEX(getAABBIndex(getActualState(blockState, worldIn, pos)))
 
 
     private def getAABBIndex(state: IBlockState) = {

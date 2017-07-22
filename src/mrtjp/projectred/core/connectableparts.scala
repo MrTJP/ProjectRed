@@ -18,7 +18,7 @@ trait TAcquisitionsCommons extends TMultiPart
     def notifyStraight(dir:Int)
     {
         val pos = posOfStraight(dir)
-        world.notifyBlockOfStateChange(pos, MultipartProxy.block)
+        world.neighborChanged(pos, MultipartProxy.block, pos)
     }
 
     def notifyInternal(dir:Int)
@@ -59,7 +59,7 @@ trait TFaceAcquisitions extends TAcquisitionsCommons with TFaceOrient
     {
         val pos = posOfCorner(r)
 
-        world.notifyBlockOfStateChange(pos, MultipartProxy.block)
+        world.neighborChanged(pos, MultipartProxy.block, pos)
     }
 }
 

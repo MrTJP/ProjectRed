@@ -1,7 +1,7 @@
 package mrtjp.projectred.core
 
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.packet.PacketCustom.{IClientPacketHandler, IServerPacketHandler}
+import codechicken.lib.packet.ICustomPacketHandler.{IClientPacketHandler, IServerPacketHandler}
 import mrtjp.projectred.ProjectRedCore
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayerMP
@@ -16,7 +16,7 @@ object CoreCPH extends CorePH with IClientPacketHandler
 {
     def handlePacket(packet:PacketCustom, mc:Minecraft, nethandler:INetHandlerPlayClient)
     {
-        val world = mc.theWorld
+        val world = mc.world
         packet.getType match
         {
             case _ =>

@@ -54,7 +54,7 @@ class ContainerChipConfig(player:EntityPlayer, var chip:RoutingChip) extends Nod
 
     def saveChip()
     {
-        if (player.worldObj.isRemote)
+        if (player.world.isRemote)
         {
             val stack = player.inventory.getCurrentItem
             ItemRoutingChip.saveChipToItemStack(stack, chip)

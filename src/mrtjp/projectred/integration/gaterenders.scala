@@ -157,7 +157,7 @@ abstract class GateRenderer[T <: GatePart]
         {
             val pos = new Vector3(rand.nextFloat, rand.nextFloat, rand.nextFloat).add(-0.5).multiply(0.05, 0.1, 0.05)
             pos.add(t.getLightPos)
-            pos.apply(gate.rotationT).add(gate.x, gate.y, gate.z)
+            pos.apply(gate.rotationT).add(gate.pos)
             gate.world.spawnParticle(EnumParticleTypes.REDSTONE, pos.x, pos.y, pos.z, 0, 0, 0)
         }
     }
@@ -1146,7 +1146,7 @@ class RenderBusInputPanel extends GateRenderer[BundledGatePart]
     override def prepareDynamic(gate:BundledGatePart, frame:Float)
     {
         buttons.pressMask = gate.getLogic[BusInputPanel].pressMask
-        buttons.pos.setPos(gate.x, gate.y, gate.z)
+        buttons.pos.setPos(gate.pos)
         buttons.orientationT = gate.rotationT
     }
 

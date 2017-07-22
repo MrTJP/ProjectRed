@@ -32,16 +32,16 @@ object RenderHalo
         }
     }
 
-    def addLight(x:Int, y:Int, z:Int, color:Int, box:Cuboid6)
+    def addLight(pos:BlockPos, color:Int, box:Cuboid6)
     {
-        renderList :+= new LightCache(x, y, z, color, box)
+        renderList :+= new LightCache(pos, color, box)
     }
 
     @SubscribeEvent
     def onRenderWorldLast(event:RenderWorldLastEvent)
     {
         if (renderList.isEmpty) return
-        val w = Minecraft.getMinecraft.theWorld
+        val w = Minecraft.getMinecraft.world
         val entity = Minecraft.getMinecraft.getRenderViewEntity
         renderEntityPos.set(entity.posX, entity.posY+entity.getEyeHeight, entity.posZ)
 

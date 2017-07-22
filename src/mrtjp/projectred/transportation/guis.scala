@@ -51,7 +51,7 @@ object GuiInterfacePipe extends TGuiFactory
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        BlockMultipart.getPart(player.worldObj, data.readPos(), 6) match {
+        BlockMultipart.getPart(player.world, data.readPos(), 6) match {
             case pipe:RoutedInterfacePipePart =>
                 new GuiInterfacePipe(pipe.createContainer(player), pipe)
             case _ => null
@@ -380,7 +380,7 @@ object GuiFirewallPipe extends TGuiFactory
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        BlockMultipart.getPart(player.worldObj, data.readPos(), 6) match {
+        BlockMultipart.getPart(player.world, data.readPos(), 6) match {
             case pipe:RoutedFirewallPipe =>
                 pipe.filtExclude = data.readBoolean()
                 pipe.allowRoute = data.readBoolean()

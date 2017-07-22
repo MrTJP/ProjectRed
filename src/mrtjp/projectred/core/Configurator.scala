@@ -151,4 +151,5 @@ class ProjectRedConfigGui(parent:GuiScreen) extends SpecialConfigGui(parent, "Pr
 class GuiConfigFactory extends TModGuiFactory
 {
     override def mainConfigGuiClass() = classOf[ProjectRedConfigGui]
+    override def createConfigGui(parentScreen: GuiScreen) = new ProjectRedConfigGui(parentScreen)
 }

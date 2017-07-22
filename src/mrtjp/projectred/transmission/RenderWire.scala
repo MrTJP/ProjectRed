@@ -115,7 +115,7 @@ object RenderWire extends IIconRegister
             }
         }
 
-        ccrs.setPipeline(new Translation(wire.x, wire.y, wire.z), new IconTransformation(icon))
+        ccrs.setPipeline(new Translation(wire.pos), new IconTransformation(icon))
         for (box <- boxes.result()) BlockRenderer.renderCuboid(ccrs, box, 0)
     }
 

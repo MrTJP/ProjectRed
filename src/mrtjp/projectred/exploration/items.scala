@@ -26,7 +26,7 @@ import net.minecraft.item._
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextFormatting
-import net.minecraft.util.{ActionResult, EnumActionResult, EnumFacing, EnumHand}
+import net.minecraft.util._
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.registry.GameRegistry
 import org.lwjgl.input.Keyboard
@@ -37,16 +37,16 @@ class ItemBackpack extends ItemCore
     setMaxStackSize(1)
     setCreativeTab(ProjectRedExploration.tabExploration)
 
-    override def onItemUse(stack:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, hand:EnumHand, facing:EnumFacing, hitX:Float, hitY:Float, hitZ:Float) =
+    override def onItemUse(player:EntityPlayer, world:World, pos:BlockPos, hand:EnumHand, facing:EnumFacing, hitX:Float, hitY:Float, hitZ:Float) =
     {
         openGui(player)
         EnumActionResult.SUCCESS
     }
 
-    override def onItemRightClick(stack:ItemStack, w:World, player:EntityPlayer, hand:EnumHand) =
+    override def onItemRightClick(w:World, player:EntityPlayer, hand:EnumHand) =
     {
         openGui(player)
-        ActionResult.newResult(EnumActionResult.SUCCESS, stack)
+        ActionResult.newResult(EnumActionResult.SUCCESS, player.getHeldItem(hand))
     }
 
     def openGui(player:EntityPlayer)
@@ -54,10 +54,10 @@ class ItemBackpack extends ItemCore
         GuiBackpack.open(player, ItemBackpack.createContainer(player))
     }
 
-    override def getSubItems(item:Item, tab:CreativeTabs, list:JList[ItemStack])
+    override def getSubItems(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (i <- 0 until 16)
-            list.asInstanceOf[JList[ItemStack]].add(new ItemStack(this, 1, i))
+            list.add(new ItemStack(this, 1, i))
     }
 
     override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[String], flag:Boolean)
@@ -455,7 +455,7 @@ class ItemAthame() extends ItemSword(toolMaterialDiamond)
     {
         val damageModifier = HashMultimap.create().asInstanceOf[Multimap[String, AttributeModifier]]
         if (slot == EntityEquipmentSlot.MAINHAND) {
-            damageModifier.put(SharedMonsterAttributes.ATTACK_DAMAGE.getAttributeUnlocalizedName, new AttributeModifier(Item.ATTACK_DAMAGE_MODIFIER, "Weapon modifier", 0, 0))
+            damageModifier.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName, new AttributeModifier(Item.ATTACK_DAMAGE_MODIFIER, "Weapon modifier", 0, 0))
         }
         damageModifier
     }

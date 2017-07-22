@@ -8,12 +8,11 @@ package mrtjp.projectred.expansion
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui._
 import mrtjp.core.inventory.TInventory
-import mrtjp.core.util.CCLConversions
 import mrtjp.core.vec.{Point, Size}
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
@@ -290,7 +289,7 @@ object GuiAutoCrafter extends TGuiFactory
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        player.worldObj.getTileEntity(data.readPos()) match
+        player.world.getTileEntity(data.readPos()) match
         {
             case t:TileAutoCrafter => new GuiAutoCrafter(t, t.createContainer(player))
             case _ => null
@@ -300,6 +299,8 @@ object GuiAutoCrafter extends TGuiFactory
 
 object RenderAutoCrafter extends SimpleBlockRenderer
 {
+    import org.apache.commons.lang3.tuple.Triple
+
     var bottom:TextureAtlasSprite = _
     var top:TextureAtlasSprite = _
     var side1:TextureAtlasSprite = _
@@ -307,8 +308,8 @@ object RenderAutoCrafter extends SimpleBlockRenderer
 
     var iconT:UVTransformation = _
 
-    override def getWorldTransforms(state: IExtendedBlockState) = CCLConversions.createTriple(0, 0, iconT)
-    override def getItemTransforms(stack: ItemStack) = CCLConversions.createTriple(0, 0, iconT)
+    override def getWorldTransforms(state: IExtendedBlockState) = Triple.of(0, 0, iconT)
+    override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0, iconT)
     override def shouldCull() = true
 
     def getIcon(side:Int, meta:Int) = side match

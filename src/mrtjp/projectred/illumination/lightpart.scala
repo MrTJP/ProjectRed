@@ -15,13 +15,11 @@ import codechicken.lib.vec.uv.IconTransformation
 import codechicken.lib.vec.{Rotation, _}
 import codechicken.microblock.HollowMicroblock
 import codechicken.multipart._
-import com.google.common.collect.{ImmutableList, ImmutableMap}
+import com.google.common.collect.ImmutableMap
 import mrtjp.core.vec.InvertX
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.{PRLib, RenderHalo}
-import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
-import net.minecraft.client.renderer.block.model.{ItemCameraTransforms, ItemOverrideList}
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.EntityPlayer
@@ -30,8 +28,6 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util._
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.{EnumSkyBlock, World}
-import net.minecraftforge.client.model.IPerspectiveAwareModel
-import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
 import net.minecraftforge.common.model.TRSRTransformation
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -161,10 +157,10 @@ class BaseLightPart(factory:LightFactory) extends TMultiPart with TCuboidPart wi
         IlluminationProxy.getLightValue(getColor, 15) else 0
 
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(pos:Vector3, pass:Int, frame:Float)
+    override def renderDynamic(vec:Vector3, pass:Int, frame:Float)
     {
         if (pass == 0 && isOn)
-            RenderHalo.addLight(x, y, z, getColor, getLightBounds)
+            RenderHalo.addLight(pos, getColor, getLightBounds)
     }
 
     @SideOnly(Side.CLIENT)
@@ -233,7 +229,7 @@ trait TAirousLight extends BaseLightPart with ITickable
 
             val pos1 = pos.add(
                 world.rand.nextInt(rad)-world.rand.nextInt(rad),
-                Math.max(Math.min(y+world.rand.nextInt(rad)-world.rand.nextInt(rad), world.getHeight(pos).getY+4), 7),
+                Math.max(Math.min(pos.getY+world.rand.nextInt(rad)-world.rand.nextInt(rad), world.getHeight(pos).getY+4), 7),
                 world.rand.nextInt(rad)-world.rand.nextInt(rad)
             )
 
@@ -302,33 +298,27 @@ abstract class LightFactory extends IPartFactory
     @SideOnly(Side.CLIENT)
     final def registerClient()
     {
-        val renderer = new IItemRenderer with IPerspectiveAwareModel with IIconRegister
+        val lightState = new CCModelState({
+            val builder = ImmutableMap.builder[TransformType, TRSRTransformation]()
+            for (tt <- TransformType.values()) {
+                val (pos, rot, scale) = getItemRenderTransform(tt)
+                val mat = ((new Rotation(rot.z.toRadians, 0, 0, 1) `with`
+                    new Rotation(rot.y.toRadians, 0, 1, 0) `with`
+                    new Rotation(rot.x.toRadians, 1, 0, 0) `with`
+                    new Scale(scale)) at Vector3.center `with`
+                    pos.translation()).compile()
+                builder.put(tt, TransformUtils.fromMatrix4(mat))
+            }
+            builder.build()
+        })
+
+        val renderer = new IItemRenderer with IIconRegister
         {
-            override def getParticleTexture = null
-            override def isBuiltInRenderer = true
-            override def getItemCameraTransforms = ItemCameraTransforms.DEFAULT
             override def isAmbientOcclusion = true
             override def isGui3d = true
-            override def getOverrides = ItemOverrideList.NONE
-            override def getQuads(state:IBlockState, side:EnumFacing, rand:Long) = ImmutableList.of()
+            override def getTransforms = lightState
 
-            override def handlePerspective(t:TransformType) =
-            {
-                val builder = ImmutableMap.builder[TransformType, TRSRTransformation]()
-                for (tt <- TransformType.values()) {
-                    val (pos, rot, scale) = getItemRenderTransform(t)
-                    val mat = ((new Rotation(rot.z.toRadians, 0, 0, 1) `with`
-                            new Rotation(rot.y.toRadians, 0, 1, 0) `with`
-                            new Rotation(rot.x.toRadians, 1, 0, 0) `with`
-                            new Scale(scale)) at Vector3.center `with`
-                            pos.translation()).compile()
-                    builder.put(tt, TransformUtils.fromMatrix4(mat))
-                }
-
-                MapWrapper.handlePerspective(this, builder.build(), t)
-            }
-
-            override def renderItem(item:ItemStack)
+            override def renderItem(item:ItemStack, transformType: TransformType)
             {
                 val color = item.getItemDamage%16
                 val inv = item.getItem match {
@@ -358,7 +348,7 @@ abstract class LightFactory extends IPartFactory
     @SideOnly(Side.CLIENT)
     def parseModel(name:String) =
     {
-        val models = CCOBJParser.parseObjModels(
+        val models = OBJParser.parseModels(
             new ResourceLocation("projectred", "textures/obj/lighting/"+name+".obj"), 7, InvertX)
         for (m <- models.values()) m.apply(new Translation(0.5, 0, 0.5))
         models

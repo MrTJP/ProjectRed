@@ -8,10 +8,10 @@ package mrtjp.projectred.expansion
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
-import mrtjp.core.gui.{GuiLib, Slot3,_}
+import mrtjp.core.gui.{GuiLib, Slot3, _}
 import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.item.ItemKey
 import mrtjp.core.vec.Point
@@ -23,6 +23,7 @@ import net.minecraft.inventory.{IContainerListener, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.property.IExtendedBlockState
@@ -150,7 +151,7 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
     def dropStackDown(stack:ItemStack) =
     {
         val wr = InvWrapper.wrap(this).setSlotsFromRange(8 until 16).setInternalMode(true)
-        val i = wr.injectItem(ItemKey.get(stack), stack.stackSize)
+        val i = wr.injectItem(ItemKey.get(stack), stack.getCount)
         i > 0
     }
 
@@ -271,7 +272,7 @@ object GuiChargingBench extends TGuiFactory
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        player.worldObj.getTileEntity(data.readPos()) match
+        player.world.getTileEntity(data.readPos()) match
         {
             case t:TileChargingBench => new GuiChargingBench(t, t.createContainer(player))
             case _ => null
@@ -281,11 +282,11 @@ object GuiChargingBench extends TGuiFactory
 
 object RenderChargingBench extends SimpleBlockRenderer
 {
-
     import java.lang.{Boolean => JBool, Integer => JInt}
 
-    import mrtjp.core.util.CCLConversions._
+    import org.apache.commons.lang3.tuple.Triple
     import mrtjp.projectred.expansion.BlockProperties._
+
     var bottom:TextureAtlasSprite = null
     var top1:TextureAtlasSprite = null
     var top2:TextureAtlasSprite = null
@@ -295,17 +296,17 @@ object RenderChargingBench extends SimpleBlockRenderer
     var iconT1:UVTransformation = null
     var iconT2:UVTransformation = null
 
-    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+    override def handleState(state: IExtendedBlockState, world: IBlockAccess, pos: BlockPos): IExtendedBlockState = world.getTileEntity(pos) match {
         case t:TileChargingBench => state.withProperty(UNLISTED_CHARGED_PROPERTY, t.isCharged.asInstanceOf[JBool])
         case _ => state
     }
 
     override def getWorldTransforms(state: IExtendedBlockState) = {
         val charged:JBool = state.getValue(UNLISTED_CHARGED_PROPERTY)
-        createTriple(0, 0, if(charged) iconT2 else iconT1)
+        Triple.of(0, 0, if(charged) iconT2 else iconT1)
     }
 
-    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT1)
+    override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0, iconT1)
 
     override def shouldCull() = true
 

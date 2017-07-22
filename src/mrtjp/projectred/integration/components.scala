@@ -131,7 +131,7 @@ object ComponentStore
 
     def loadCorrectedModels(name:String) =
     {
-        val m = CCOBJParser.parseObjModels(new ResourceLocation("projectred:textures/obj/integration/"+name+".obj"), GL11.GL_QUADS, null)
+        val m = OBJParser.parseModels(new ResourceLocation("projectred:textures/obj/integration/"+name+".obj"), GL11.GL_QUADS, null)
         val models = m.map(m => m._1 -> m._2.backfacedCopy())
         models.values.foreach(_.computeNormals.shrinkUVs(0.0005))
         models
@@ -142,7 +142,7 @@ object ComponentStore
 
     @deprecated
     def parseModels(name:String) =
-        CCOBJParser.parseObjModels(new ResourceLocation("projectred:textures/obj/integration/"+name+".obj"), 7, InvertX)
+        OBJParser.parseModels(new ResourceLocation("projectred:textures/obj/integration/"+name+".obj"), 7, InvertX)
 
     @deprecated("use loadCorrectedModels instead")
     def loadModels(name:String) =
@@ -761,7 +761,7 @@ class InputPanelButtonsModel extends ComponentModel
     def renderLights()
     {
         for (i <- 0 until 16) if ((pressMask&1<<i) != 0)
-            RenderHalo.addLight(pos.getX, pos.getY, pos.getZ, i, lights(i).copy.apply(orientationT))
+            RenderHalo.addLight(pos, i, lights(i).copy.apply(orientationT))
     }
 }
 

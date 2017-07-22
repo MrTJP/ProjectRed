@@ -245,7 +245,7 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
                         hasRedstone = true
                         world.playSound(null, pos, SoundType.GLASS.getPlaceSound, SoundCategory.BLOCKS, SoundType.GLASS.getVolume, SoundType.GLASS.getPitch)
                         sendMatUpdate()
-                        if (!player.capabilities.isCreativeMode) item.stackSize-=1
+                        if (!player.capabilities.isCreativeMode) item.shrink(1)
                     }
                     return true
                 case _ =>
@@ -257,20 +257,20 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
 
     def debug(player:EntityPlayer) =
     {
-        player.addChatComponentMessage(new TextComponentString(
+        player.sendMessage(new TextComponentString(
             (if (world.isRemote) "Client" else "Server")+" signal strength: "+getSignal))
         true
     }
 
     def test(player:EntityPlayer) =
     {
-        if (world.isRemote) Messenger.addMessage(x, y+.5f, z, "/#f/#c[c] = "+getSignal)
+        if (world.isRemote) Messenger.addMessage(pos.getX, pos.getY+.5f, pos.getZ, "/#f/#c[c] = "+getSignal)
         else
         {
             val packet = Messenger.createPacket
-            packet.writeDouble(x+0.0D)
-            packet.writeDouble(y+0.5D)
-            packet.writeDouble(z+0.0D)
+            packet.writeDouble(pos.getX+0.0D)
+            packet.writeDouble(pos.getY+0.5D)
+            packet.writeDouble(pos.getZ+0.0D)
             packet.writeString("/#c[s] = "+getSignal)
             packet.sendToPlayer(player)
         }
@@ -365,7 +365,7 @@ trait TColourFilterPipe extends SubcorePipePart
                         colour = bm.state.getBlock.getMetaFromState(bm.state).toByte
                         world.playSound(null, pos, bm.getSound.getPlaceSound, SoundCategory.BLOCKS, bm.getSound.getVolume, bm.getSound.getPitch)
                         sendColourUpdate()
-                        if (!player.capabilities.isCreativeMode) item.stackSize-=1
+                        if (!player.capabilities.isCreativeMode) item.shrink(1)
                     }
                     return true
                 case _ =>

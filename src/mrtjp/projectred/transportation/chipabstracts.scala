@@ -68,7 +68,7 @@ abstract class RoutingChip
 
     def openGui(player:EntityPlayer)
     {
-        if (player.worldObj.isRemote) return
+        if (player.world.isRemote) return
         GuiChipConfig.open(player, createContainer(player), _.writeByte(player.inventory.currentItem))
     }
 
@@ -304,7 +304,7 @@ trait TChipStock extends RoutingChip
             val stack = stock.getStackInSlot(i)
             if (stack != null)
             {
-                list += (ChatFormatting.GRAY.toString+" - "+stack.getDisplayName+" ("+stack.stackSize+")")
+                list += (ChatFormatting.GRAY.toString+" - "+stack.getDisplayName+" ("+stack.getCount+")")
                 added = true
             }
         }
@@ -416,8 +416,8 @@ trait TChipCrafter extends RoutingChip
         for (i <- 0 until 9)
         {
             val s = matrix.getStackInSlot(i)
-            if (s != null && ItemKey.get(s) == item)
-                amount += s.stackSize
+            if (!s.isEmpty && ItemKey.get(s) == item)
+                amount += s.getCount
         }
         amount
     }
@@ -444,14 +444,14 @@ trait TChipCrafter extends RoutingChip
 
             if (stack != null)
             {
-                list += (ChatFormatting.GRAY.toString+" - "+stack.getDisplayName+" (" + stack.stackSize + ")")
+                list += (ChatFormatting.GRAY.toString+" - "+stack.getDisplayName+" (" + stack.getCount + ")")
                 added = true
             }
         }
         if (!added) list += (ChatFormatting.GRAY.toString+" - empty")
 
         val stack = matrix.getStackInSlot(9)
-        if (stack != null) list += (ChatFormatting.GRAY.toString+" - Yields: "+stack.getDisplayName+" (" + stack.stackSize + ")")
+        if (stack != null) list += (ChatFormatting.GRAY.toString+" - Yields: "+stack.getDisplayName+" (" + stack.getCount + ")")
     }
 
     def addExtInfo(list:ListBuffer[String])

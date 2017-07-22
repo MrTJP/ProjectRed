@@ -9,6 +9,7 @@ import mrtjp.projectred.transportation.Priorities.NetworkPriority
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.math.BlockPos
 
 import scala.collection.convert.WrapAsJava
 import scala.collection.immutable.{BitSet, HashSet}
@@ -95,7 +96,7 @@ class AbstractPipePayload(val payloadID:Int)
         payload = ItemKeyStack.get(item)
     }
 
-    def isCorrupted = getItemStack == null || getItemStack.stackSize <= 0 ||
+    def isCorrupted = getItemStack.isEmpty || getItemStack.getCount <= 0 ||
             (Configurator.maxPipesWandered > 0 && wanderThroughs > Configurator.maxPipesWandered)
 
     override def equals(other:Any) = other match
@@ -117,7 +118,7 @@ class AbstractPipePayload(val payloadID:Int)
     def load(tag:NBTTagCompound)
     {
         data = tag.getInteger("idata")
-        setItemStack(ItemStack.loadItemStackFromNBT(tag.getCompoundTag("Item")))
+        setItemStack(new ItemStack(tag.getCompoundTag("Item")))
     }
 
     def writeDesc(packet:MCDataOutput)
@@ -132,6 +133,8 @@ class AbstractPipePayload(val payloadID:Int)
         data = packet.readInt()
     }
 
+
+    def getEntityForDrop(pos: BlockPos):EntityItem = getEntityForDrop(pos.getX, pos.getY, pos.getZ)
     def getEntityForDrop(x:Int, y:Int, z:Int):EntityItem =
     {
         val dir = if (isEntering) input else output

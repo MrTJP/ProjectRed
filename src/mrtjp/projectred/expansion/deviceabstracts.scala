@@ -128,7 +128,7 @@ trait TActiveDevice extends TileMachine
 
     override def onScheduledTick()
     {
-        if (!world.isRemote)
+        if (!getWorld.isRemote)
         {
             if (!itemStorage.isEmpty)
             {
@@ -146,7 +146,7 @@ trait TActiveDevice extends TileMachine
 
     override def onNeighborBlockChange()
     {
-        if (world.isBlockPowered(getPos))
+        if (getWorld.isBlockPowered(getPos))
         {
             if (powered) return
             powered = true
@@ -181,7 +181,7 @@ trait TActiveDevice extends TileMachine
 
     def exportPipe(r:PressurePayload) =
     {
-        BlockMultipart.getPart(world, getPos.offset(EnumFacing.VALUES(side)), 6) match
+        BlockMultipart.getPart(getWorld, getPos.offset(EnumFacing.VALUES(side)), 6) match
         {
             case pipe:TPressureTube if pipe.hasDestination(r, side^1) =>
                 pipe.injectPayload(r, side)
@@ -192,7 +192,7 @@ trait TActiveDevice extends TileMachine
 
     def exportInv(r:PressurePayload) =
     {
-        val inv = InvWrapper.getInventory(world, getPos.offset(EnumFacing.VALUES(side)))
+        val inv = InvWrapper.getInventory(getWorld, getPos.offset(EnumFacing.VALUES(side)))
         if (inv != null)
         {
             val w = InvWrapper.wrap(inv).setSlotsFromSide(side^1)
@@ -205,10 +205,10 @@ trait TActiveDevice extends TileMachine
     def exportEject(r:PressurePayload):Boolean =
     {
         val pos = getPos.offset(EnumFacing.VALUES(side))
-        if (world.isBlockLoaded(pos) &&
-                !world.isAirBlock(pos)) return false
+        if (getWorld.isBlockLoaded(pos) &&
+                !getWorld.isAirBlock(pos)) return false
 
-        WorldLib.centerEject(world, getPos, r.payload.makeStack, side, 0.25D)
+        WorldLib.centerEject(getWorld, getPos, r.payload.makeStack, side, 0.25D)
         true
     }
 
@@ -216,7 +216,7 @@ trait TActiveDevice extends TileMachine
     {
         super.onBlockRemoval()
         while(!itemStorage.isEmpty)
-            WorldLib.dropItem(world, getPos, itemStorage.poll().payload.makeStack)
+            WorldLib.dropItem(getWorld, getPos, itemStorage.poll().payload.makeStack)
     }
 }
 

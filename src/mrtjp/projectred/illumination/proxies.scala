@@ -1,7 +1,8 @@
 package mrtjp.projectred.illumination
 
 import codechicken.lib.model.ModelRegistryHelper
-import codechicken.lib.model.blockbakery.{BlockBakery, CCBakeryModel, IBlockStateKeyGenerator}
+import codechicken.lib.model.bakery.key.IBlockStateKeyGenerator
+import codechicken.lib.model.bakery.{CCBakeryModel, ModelBakery}
 import codechicken.lib.texture.TextureUtils
 import codechicken.multipart.{IPartFactory, MultiPartRegistry}
 import mrtjp.core.block.MultiTileBlock
@@ -73,10 +74,10 @@ class IlluminationProxy_client extends IlluminationProxy_server
         super.preinit()
 
         ModelLoader.setCustomStateMapper(blockLamp, new StateMap.Builder().ignore(MultiTileBlock.TILE_INDEX).build())
-        ModelRegistryHelper.register(new ModelResourceLocation(blockLamp.getRegistryName, "normal"), new CCBakeryModel(""))
+        ModelRegistryHelper.register(new ModelResourceLocation(blockLamp.getRegistryName, "normal"), new CCBakeryModel())
         ModelRegistryHelper.registerItemRenderer(itemBlockLamp, LampRenderer)
         TextureUtils.addIconRegister(LampBakery)
-        BlockBakery.registerBlockKeyGenerator(blockLamp, new IBlockStateKeyGenerator {
+        ModelBakery.registerBlockKeyGenerator(blockLamp, new IBlockStateKeyGenerator {
             override def generateKey(state: IExtendedBlockState):String = {
                 val colour = state.getValue(BlockProperties.UNLISTED_COLOUR_PROPERTY)
                 val isOn = state.getValue(BlockProperties.UNLISTED_ON_PROPERTY)

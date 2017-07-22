@@ -16,9 +16,9 @@ class RoutedRequestPipePart extends AbstractNetPipe with TNetworkPipe
             r.resetTrip()
             r.moveProgress(0.375F)
             r.speed = 0.075F
-            val ent = r.getEntityForDrop(x, y, z)
+            val ent = r.getEntityForDrop(pos)
             ent.posY += 0.1F
-            world.spawnEntityInWorld(ent)
+            world.spawnEntity(ent)
         }
     }
 

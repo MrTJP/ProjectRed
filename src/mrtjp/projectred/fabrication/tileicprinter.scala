@@ -10,9 +10,9 @@ import java.util.{ArrayList => JAList}
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.render.buffer.BakingVertexBuffer
-import codechicken.lib.render.{CCModel, CCOBJParser, CCRenderState}
+import codechicken.lib.render.{CCModel, CCRenderState, OBJParser}
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.util.VertexDataUtils
 import codechicken.lib.vec._
@@ -23,7 +23,6 @@ import com.mojang.realmsclient.gui.ChatFormatting.{BOLD, RED, RESET}
 import mrtjp.core.gui._
 import mrtjp.core.inventory.{InvWrapper, TInventory}
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
-import mrtjp.core.util.CCLConversions.createTriple
 import mrtjp.core.vec.{Point, Rect, Size, Vec2}
 import mrtjp.projectred.ProjectRedCore.log
 import mrtjp.projectred.core.PartDefs
@@ -40,7 +39,9 @@ import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.{CraftingManager, IRecipe, ShapedRecipes, ShapelessRecipes}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
@@ -242,7 +243,7 @@ class TileICPrinter extends TileICMachine with TInventory
             val s = getStackInSlot(i)
             if (s != null && ItemKey.get(s) == stack.key)
             {
-                a += s.stackSize
+                a += s.getCount
                 if (a >= stack.stackSize) return true
             }
         }
@@ -282,10 +283,10 @@ class TileICPrinter extends TileICMachine with TInventory
             val s = getStackInSlot(i)
             if (s != null && stack.key == ItemKey.get(s))
             {
-                val toEat = math.min(left, s.stackSize)
+                val toEat = math.min(left, s.getCount)
                 left -= toEat
-                s.stackSize -= toEat
-                if (s.stackSize <= 0) setInventorySlotContents(i, null)
+                s.shrink(toEat)
+                if (s.getCount <= 0) setInventorySlotContents(i, ItemStack.EMPTY)
                 else setInventorySlotContents(i, s)
                 if (left <= 0) return
             }
@@ -328,7 +329,7 @@ class TileICPrinter extends TileICMachine with TInventory
         if (chip.getItemDamage != 1) getRequiredResources.foreach(eatResource)
 
         ItemICBlueprint.copyIC(bp, chip)
-        setInventorySlotContents(19, null)
+        setInventorySlotContents(19, ItemStack.EMPTY)
         setInventorySlotContents(20, chip)
     }
 
@@ -625,7 +626,7 @@ class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 17
 
     override def update_Impl()
     {
-        if (mcInst.theWorld.getTotalWorldTime%10 == 0) {
+        if (mcInst.world.getTotalWorldTime%10 == 0) {
             list.items = tile.getRequiredResources
             list.reset()
         }
@@ -652,7 +653,7 @@ class GuiICPrinter(c:ContainerPrinter, tile:TileICPrinter) extends NodeGui(c, 17
         if (hasErrors) {
             val m2 = convertPointFromScreen(mouse)
             if (flagBox.contains(m2))
-                GuiDraw.drawMultilineTip(null, m2.x+12, m2.y-12,
+                GuiDraw.drawMultiLineTip(ItemStack.EMPTY, m2.x+12, m2.y-12,
                     Seq(s"$RED$BOLD" + "X" + s"$RESET blueprint contains errors"))
         }
     }
@@ -667,7 +668,7 @@ object GuiICPrinter extends TGuiFactory
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        player.worldObj.getTileEntity(data.readPos()) match {
+        player.world.getTileEntity(data.readPos()) match {
             case t:TileICPrinter => new GuiICPrinter(t.createContainer(player), t)
             case _ => null
         }
@@ -679,6 +680,7 @@ object RenderICPrinter extends SimpleBlockRenderer
     import java.lang.{Integer => JInt}
     import java.util.{List => JList}
 
+    import org.apache.commons.lang3.tuple.Triple
     import BlockICMachine._
 
     val lowerBoxes =
@@ -702,7 +704,7 @@ object RenderICPrinter extends SimpleBlockRenderer
 
     var iconT:UVTransformation = _
 
-    override def handleState(state:IExtendedBlockState, tileEntity:TileEntity):IExtendedBlockState = tileEntity match {
+    override def handleState(state:IExtendedBlockState, world: IBlockAccess, pos: BlockPos):IExtendedBlockState = world.getTileEntity(pos) match {
         case t:TileICPrinter =>
             state.withProperty(UNLISTED_ROTATION_PROPERTY, t.rotation.asInstanceOf[JInt])
         case _ => state
@@ -711,10 +713,10 @@ object RenderICPrinter extends SimpleBlockRenderer
     override def getWorldTransforms(state:IExtendedBlockState) =
     {
         val rot = state.getValue(UNLISTED_ROTATION_PROPERTY)
-        createTriple(0, rot, iconT)
+        Triple.of(0, rot, iconT)
     }
 
-    override def getItemTransforms(stack:ItemStack) = createTriple(0, 0, iconT)
+    override def getItemTransforms(stack:ItemStack) = Triple.of(0, 0, iconT)
 
     override def shouldCull() = false
 
@@ -726,7 +728,7 @@ object RenderICPrinter extends SimpleBlockRenderer
 
         ccrs.reset()
         ccrs.startDrawing(0x7, DefaultVertexFormats.ITEM, buffer)
-        lowerBoxes(worldData.getB).render(ccrs, worldData.getC)
+        lowerBoxes(worldData.getMiddle).render(ccrs, worldData.getRight)
         buffer.finishDrawing()
 
         val quads = buffer.bake
@@ -746,7 +748,7 @@ object RenderICPrinter extends SimpleBlockRenderer
 
         ccrs.reset()
         ccrs.startDrawing(0x7, DefaultVertexFormats.ITEM, buffer)
-        lowerBoxes(worldData.getB).render(ccrs, worldData.getC)
+        lowerBoxes(worldData.getMiddle).render(ccrs, worldData.getRight)
         buffer.finishDrawing()
 
         val quads = buffer.bake
@@ -777,7 +779,7 @@ object RenderICPrinterDynamic extends TileEntitySpecialRenderer[TileICPrinter]
 
     def getMods =
     {
-        val map = CCOBJParser.parseObjModels(new ResourceLocation("projectred:textures/obj/fabrication/printer.obj"), 7, null).toMap
+        val map = OBJParser.parseModels(new ResourceLocation("projectred:textures/obj/fabrication/printer.obj"), 7, null).toMap
         map.values.foreach { m =>
             m.verts = m.backfacedCopy.verts
             m.apply(new Translation(8/16D, 10/16D, 8/16D))

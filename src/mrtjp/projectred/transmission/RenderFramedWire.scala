@@ -69,7 +69,7 @@ object RenderFramedWire extends IMicroHighlightRenderer
 
     def renderBreakingOverlay(icon:TextureAtlasSprite, wire:FramedWirePart, ccrs: CCRenderState)
     {
-        ccrs.setPipeline(new Translation(wire.x, wire.y, wire.z), new IconTransformation(icon))
+        ccrs.setPipeline(new Translation(wire.pos), new IconTransformation(icon))
         import scala.collection.JavaConversions._
         for (box <- wire.getCollisionBoxes) BlockRenderer.renderCuboid(ccrs, box, 0)
     }
@@ -112,7 +112,7 @@ object RenderFramedWire extends IMicroHighlightRenderer
 
     override def renderHighlight(player:EntityPlayer, hit:RayTraceResult, mcrFactory:CommonMicroFactory, size:Int, material:Int) =
     {
-        val tile = BlockMultipart.getTile(player.worldObj, hit.getBlockPos)
+        val tile = BlockMultipart.getTile(player.world, hit.getBlockPos)
         if (tile == null || mcrFactory.getFactoryID != 0 || size != 1 || player.isSneaking ||
                 MicroMaterialRegistry.getMaterial(material).isTransparent) false
         else hit match {

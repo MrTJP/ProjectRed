@@ -430,7 +430,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
                             SoundCategory.BLOCKS, newmat.getSound.getVolume+1.0F/2.0F,
                             newmat.getSound.getPitch*0.8F)
                         sendMatUpdate()
-                        if (!player.capabilities.isCreativeMode) held.stackSize-=1
+                        if (!player.capabilities.isCreativeMode) held.shrink(1)
                     }
                 }
                 return true

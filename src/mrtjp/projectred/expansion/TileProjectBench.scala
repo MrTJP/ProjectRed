@@ -8,7 +8,7 @@ package mrtjp.projectred.expansion
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui._
@@ -23,7 +23,7 @@ import net.minecraft.inventory._
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.{CraftingManager, IRecipe}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraft.util.{EnumFacing, NonNullList, ResourceLocation}
 import net.minecraft.world.World
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.common.FMLCommonHandler
@@ -178,14 +178,14 @@ class TileProjectBench extends TileMachine with TInventory with ISidedInventory 
         var w:InvWrapper = null
         for (i <- 0 until 9) {
             val s = getStackInSlot(i)
-            if (s != null && s.stackSize > 1) {
+            if (!s.isEmpty) {
                 if (w == null)
                     w = InvWrapper.wrap(this).setInternalMode(true).setSlotsFromRange(9 until 27)
 
-                val toMove = math.max(1, s.stackSize/8)
+                val toMove = math.max(1, s.getCount/8)
                 val ins = w.injectItem(ItemKey.get(s), toMove)
                 if (ins > 0) {
-                    s.stackSize -= ins
+                    s.shrink(ins)
                     setInventorySlotContents(i, s)
                 }
             }
@@ -259,7 +259,7 @@ class CraftingResultTestHelper
         }
     }
 
-    def consumeAndCraft(w:World):(ItemStack, Array[ItemStack]) =
+    def consumeAndCraft(w:World):(ItemStack, NonNullList[ItemStack]) =
     {
         if (!recipe.matches(invCrafting, w)) return (null, null)
 
@@ -291,11 +291,11 @@ class CraftingResultTestHelper
         }
         do {
             val stack2 = storage(i)
-            if (stack2 != null && matchFunc(stack2)) {
-                if (stack2.stackSize >= 1) {
-                    stack2.stackSize -= 1
-                    if (stack2.stackSize <= 0)
-                        storage(i) = null
+            if (!stack2.isEmpty && matchFunc(stack2)) {
+                if (stack2.getCount >= 1) {
+                    stack2.shrink(1)
+                    if (stack2.getCount <= 0)
+                        storage(i) = ItemStack.EMPTY
                     return true
                 }
             }
@@ -312,9 +312,9 @@ class CraftingResultTestHelper
 
         val wr = InvWrapper.wrap(new ArrayWrapInventory(storage, "", slotLimit)).setInternalMode(true)
 
-        for (stack <- Seq(result) ++ remaining.filter(_ != null)) {
-            val i = wr.injectItem(ItemKey.get(stack), stack.stackSize)
-            if (i < stack.stackSize)
+        for (stack <- Seq(result) ++ remaining.filter(!_.isEmpty)) {
+            val i = wr.injectItem(ItemKey.get(stack), stack.getCount)
+            if (i < stack.getCount)
                 return false
         }
 
@@ -342,7 +342,7 @@ class SlotProjectCrafting(player: EntityPlayer, tile: TileProjectBench, idx: Int
 //            craftHelper.loadInputs(tile.currentInputs)
             tile.craftHelper.loadStorage(storage, true)
 
-            val (res, _) = tile.craftHelper.consumeAndCraft(player.worldObj)
+            val (res, _) = tile.craftHelper.consumeAndCraft(player.world)
 
             return res != null
         }
@@ -351,7 +351,7 @@ class SlotProjectCrafting(player: EntityPlayer, tile: TileProjectBench, idx: Int
         canRemoveDelegate()
     }
 
-    override def onPickupFromSlot(player:EntityPlayer, stack:ItemStack)
+    override def onTake(player:EntityPlayer, stack:ItemStack): ItemStack =
     {
         val order = (9 until 27) ++ (0 until 9)
         val storage = order.map {tile.getStackInSlot}.toArray
@@ -359,7 +359,7 @@ class SlotProjectCrafting(player: EntityPlayer, tile: TileProjectBench, idx: Int
 //        craftHelper.setRecipe(tile.currentRecipe)
 //        craftHelper.loadInputs(tile.currentInputs)
         tile.craftHelper.loadStorage(storage, true)
-        val (_, rem) = tile.craftHelper.consumeAndCraft(player.worldObj)
+        val (_, rem) = tile.craftHelper.consumeAndCraft(player.world)
 
         tile.craftHelper.unloadStorage(tile, order.apply)
 //
@@ -386,11 +386,12 @@ class SlotProjectCrafting(player: EntityPlayer, tile: TileProjectBench, idx: Int
         def addToStorageSlots(stack:ItemStack):Boolean = {
             val w = InvWrapper.wrap(tile).setInternalMode(true).setSlotsFromRange(9 until 27)
             val item = ItemKey.get(stack)
-            stack.stackSize -= w.injectItem(item, stack.stackSize)
-            stack.stackSize == 0
+            stack.shrink(w.injectItem(item, stack.getCount))
+            stack.isEmpty
         }
 
         tile.updateRecipe()
+        stack
     }
 
     //Following 3 methods copy-pasted from TSlot3 for obfuscation issues
@@ -503,7 +504,7 @@ class GuiProjectBench(tile: TileProjectBench, c: ContainerProjectBench) extends 
         }
         clear.position = Point(37, 17)
         clear.size = Size(8, 8)
-        clear.clickDelegate = { () => tile.sendClearGridAction(Minecraft.getMinecraft.thePlayer.getEntityId) }
+        clear.clickDelegate = { () => tile.sendClearGridAction(Minecraft.getMinecraft.player.getEntityId) }
         addChild(clear)
     }
 
@@ -545,7 +546,7 @@ object GuiProjectBench extends TGuiFactory {
 
     @SideOnly(Side.CLIENT)
     override def buildGui(player: EntityPlayer, data: MCDataInput) = {
-        player.worldObj.getTileEntity(data.readPos) match {
+        player.world.getTileEntity(data.readPos) match {
             case t: TileProjectBench => new GuiProjectBench(t, t.createContainer(player))
             case _ => null
         }
@@ -556,17 +557,19 @@ object GuiProjectBench extends TGuiFactory {
             val stack = slot.getStack
             if (ItemPlan.hasRecipeInside(stack)) {
                 val output = ItemPlan.loadPlanOutput(stack)
-                GuiDraw.drawRect(slot.xDisplayPosition, slot.yDisplayPosition, 16, 16, EnumColour.LIGHT_BLUE.argb(0xCC))
-                ItemDisplayNode.renderItem(Point(slot.xDisplayPosition + 1, slot.yDisplayPosition + 1), Size(14, 14), 0, true, output)
+                GuiDraw.drawRect(slot.xPos, slot.yPos, 16, 16, EnumColour.LIGHT_BLUE.argb(0xCC))
+                ItemDisplayNode.renderItem(Point(slot.xPos + 1, slot.yPos + 1), Size(14, 14), 0, true, output)
             }
         }
     }
 }
 
-object RenderProjectBench extends SimpleBlockRenderer {
+object RenderProjectBench extends SimpleBlockRenderer
+{
+    import org.apache.commons.lang3.tuple.Triple
+
     val instance = RenderProjectBench
 
-    import mrtjp.core.util.CCLConversions._
     var bottom: TextureAtlasSprite = _
     var top: TextureAtlasSprite = _
     var side1: TextureAtlasSprite = _
@@ -576,8 +579,8 @@ object RenderProjectBench extends SimpleBlockRenderer {
 
 
 
-    override def getWorldTransforms(state: IExtendedBlockState) = createTriple(0, 0, iconT)
-    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT)
+    override def getWorldTransforms(state: IExtendedBlockState) = Triple.of(0, 0, iconT)
+    override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0, iconT)
     override def shouldCull() = true
 
     override def registerIcons(map: TextureMap) {

@@ -7,7 +7,7 @@ package mrtjp.projectred.expansion
 
 import java.util.{List => JList}
 
-import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import codechicken.lib.vec.{Cuboid6, Rotation, Vector3}
 import codechicken.multipart.IRedstoneConnector
@@ -20,7 +20,9 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.property.IExtendedBlockState
 
 import scala.collection.JavaConversions._
@@ -89,9 +91,9 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
         if (!canSuckEntities) return false
 
         val elist = world.getEntitiesWithinAABB(classOf[EntityItem],
-            box.copy.add(new Vector3(x, y, z)).aabb).asInstanceOf[JList[EntityItem]]
+            box.copy.add(new Vector3(x, y, z)).aabb)
         var added = false
-        for (ei <- elist) if (!ei.isDead && ei.getEntityItem.stackSize > 0 && canImport(ItemKey.get(ei.getEntityItem)))
+        for (ei <- elist) if (!ei.isDead && ei.getEntityItem.getCount > 0 && canImport(ItemKey.get(ei.getEntityItem)))
         {
             itemStorage.add(ei.getEntityItem)
             world.removeEntity(ei)
@@ -141,7 +143,7 @@ object RenderItemImporter extends SimpleBlockRenderer
 {
     import java.lang.{Boolean => JBool, Integer => JInt}
 
-    import mrtjp.core.util.CCLConversions._
+    import org.apache.commons.lang3.tuple.Triple
     import mrtjp.projectred.expansion.BlockProperties._
 
     var bottom:TextureAtlasSprite = _
@@ -153,7 +155,7 @@ object RenderItemImporter extends SimpleBlockRenderer
     var iconT1:UVTransformation = _
     var iconT2:UVTransformation = _
 
-    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+    override def handleState(state: IExtendedBlockState, world: IBlockAccess, pos: BlockPos): IExtendedBlockState = world.getTileEntity(pos) match {
         case t: TActiveDevice => {
             var s = state
             s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[JInt])
@@ -169,10 +171,10 @@ object RenderItemImporter extends SimpleBlockRenderer
         val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
         val active = state.getValue(UNLISTED_ACTIVE_PROPERTY).asInstanceOf[Boolean]
         val powered = state.getValue(UNLISTED_POWERED_PROPERTY).asInstanceOf[Boolean]
-        createTriple(side, rotation, if (active || powered) iconT2 else iconT1)
+        Triple.of(side, rotation, if (active || powered) iconT2 else iconT1)
     }
 
-    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT1)
+    override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0, iconT1)
 
     override def shouldCull() = false
 

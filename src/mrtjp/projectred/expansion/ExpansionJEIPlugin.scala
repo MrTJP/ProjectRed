@@ -10,12 +10,8 @@ import net.minecraft.item.ItemStack
 import scala.collection.JavaConversions._
 
 @JEIPlugin
-class ExpansionJEIPlugin extends IModPlugin
+class ExpansionJEIPlugin extends BlankModPlugin
 {
-    override def registerIngredients(registry:IModIngredientRegistration){}
-
-    override def registerItemSubtypes(subtypeRegistry:ISubtypeRegistry){}
-
     override def register(registry:IModRegistry)
     {
         //Inductive furnace
@@ -44,4 +40,6 @@ object ProjectBenchRecipeTransferInfo extends IRecipeTransferInfo[ContainerProje
     override def getRecipeSlots(container:ContainerProjectBench) = 0 until 9 map container.getSlot
 
     override def getInventorySlots(container:ContainerProjectBench) = (9 until 27) ++ (29 until 65) map container.getSlot
+
+    override def canHandle(container: ContainerProjectBench) = true//TODO??
 }

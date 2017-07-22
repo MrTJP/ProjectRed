@@ -3,7 +3,8 @@ package mrtjp.projectred.expansion
 import java.lang.{Character => JC}
 
 import codechicken.lib.model.ModelRegistryHelper
-import codechicken.lib.model.blockbakery.{CCBakeryModel, IBlockStateKeyGenerator, IItemStackKeyGenerator}
+import codechicken.lib.model.bakery.CCBakeryModel
+import codechicken.lib.model.bakery.key.{IBlockStateKeyGenerator, IItemStackKeyGenerator}
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.texture.TextureUtils.IIconRegister
@@ -17,7 +18,7 @@ import mrtjp.projectred.expansion.BlockProperties._
 import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.ItemMeshDefinition
-import net.minecraft.client.renderer.block.model.{ModelBakery, ModelResourceLocation}
+import net.minecraft.client.renderer.block.model.{ModelResourceLocation, ModelBakery => MCModelBakery}
 import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.client.renderer.block.statemap.StateMap.Builder
 import net.minecraft.init.{Blocks, Items}
@@ -152,22 +153,22 @@ class ExpansionProxy_client extends ExpansionProxy_server
         ModelLoader.setCustomMeshDefinition(itemBattery, new ItemMeshDefinition {
             override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:mechanical/items", "type=charged_battery")
         })
-        ModelBakery.registerItemVariants(itemBattery, new ModelResourceLocation("projectred:mechanical/items", "type=charged_battery"))
-        ModelBakery.registerItemVariants(itemEmptybattery, new ModelResourceLocation("projectred:mechanical/items", "type=empty_battery"))
+        MCModelBakery.registerItemVariants(itemBattery, new ModelResourceLocation("projectred:mechanical/items", "type=charged_battery"))
+        MCModelBakery.registerItemVariants(itemEmptybattery, new ModelResourceLocation("projectred:mechanical/items", "type=empty_battery"))
         ModelLoader.setCustomMeshDefinition(itemJetpack, new ItemMeshDefinition {
             override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:mechanical/items", "type=jetpack")
         })
-        ModelBakery.registerItemVariants(itemJetpack, new ModelResourceLocation("projectred:mechanical/items", "type=jetpack"))
+        MCModelBakery.registerItemVariants(itemJetpack, new ModelResourceLocation("projectred:mechanical/items", "type=jetpack"))
         ModelLoader.setCustomMeshDefinition(itemScrewdriver, new ItemMeshDefinition {
             override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:mechanical/items", "type=screwdriver")
         })
-        ModelBakery.registerItemVariants(itemScrewdriver, new ModelResourceLocation("projectred:mechanical/items", "type=screwdriver"))
+        MCModelBakery.registerItemVariants(itemScrewdriver, new ModelResourceLocation("projectred:mechanical/items", "type=screwdriver"))
         ModelLoader.setCustomModelResourceLocation(itemInfusedEnderPearl, 0, new ModelResourceLocation("projectred:mechanical/items", "type=infused_pearl"))
         ModelLoader.setCustomMeshDefinition(itemPlan, new ItemMeshDefinition {
             override def getModelLocation(stack: ItemStack) = new ModelResourceLocation("projectred:mechanical/items", s"type=${if (ItemPlan.hasRecipeInside(stack)) "written" else "blank"}_plan")
         })
         for (t <- Array[String]("written", "blank"))
-            ModelBakery.registerItemVariants(itemPlan, new ModelResourceLocation("projectred:mechanical/items", s"type=${t}_plan"))
+            MCModelBakery.registerItemVariants(itemPlan, new ModelResourceLocation("projectred:mechanical/items", s"type=${t}_plan"))
 
         machine1Bakery.registerSubBakery(0, RenderInductiveFurnace, new IBlockStateKeyGenerator {
             override def generateKey(state: IExtendedBlockState):String = {
@@ -280,7 +281,7 @@ class ExpansionProxy_client extends ExpansionProxy_server
     @SideOnly(Side.CLIENT)
     def registerBlockToBakery(block:Block, iconRegister:IIconRegister, stateMap:IStateMapper) =
     {
-        val model = new CCBakeryModel("")
+        val model = new CCBakeryModel()
         val regLoc = block.getRegistryName
         ModelLoader.setCustomStateMapper(block, stateMap)
         ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(block), new ItemMeshDefinition {

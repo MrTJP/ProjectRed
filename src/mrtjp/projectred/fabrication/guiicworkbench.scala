@@ -21,6 +21,7 @@ import mrtjp.projectred.fabrication.ICComponentStore._
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager._
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.input.{Keyboard, Mouse}
@@ -114,17 +115,17 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
 
             val mousePoint = toGridPoint(mouse)
             drawMouseOverlay(editor.simEngineContainer.logger.getWarningsForPoint(mousePoint).flatMap(_._1),
-                EnumColour.YELLOW.rgba(((0.75*(0.75+0.25*math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi)))*255).toInt))
+                EnumColour.YELLOW.rgba(((0.75*(0.75+0.25*math.sin(mcInst.world.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi)))*255).toInt))
 
             drawMouseOverlay(editor.simEngineContainer.logger.getErrorsForPoint(mousePoint).flatMap(_._1),
-                EnumColour.RED.rgba(((0.75*(0.75+0.25*math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi/4 + math.Pi)))*255).toInt))
+                EnumColour.RED.rgba(((0.75*(0.75+0.25*math.sin(mcInst.world.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi/4 + math.Pi)))*255).toInt))
 
             drawFlags(editor.simEngineContainer.logger.warnings, EnumColour.YELLOW.rgba(
-                ((0.5*(1+math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi)))*255).toInt
+                ((0.5*(1+math.sin(mcInst.world.getTotalWorldTime/20.0 * 2*math.Pi)))*255).toInt
             ))
 
             drawFlags(editor.simEngineContainer.logger.errors, EnumColour.RED.rgba(
-                ((0.5*(1+math.sin(mcInst.theWorld.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi/4)))*255).toInt
+                ((0.5*(1+math.sin(mcInst.world.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi/4)))*255).toInt
             ))
 
             finishRender(ccrs)
@@ -144,7 +145,7 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                     ClipNode.tempDisableScissoring()
                     translateToScreen()
                     val Point(mx, my) = parent.convertPointToScreen(mouse)
-                    GuiDraw.drawMultilineTip(null, mx+12, my-12, data)
+                    GuiDraw.drawMultiLineTip(ItemStack.EMPTY, mx+12, my-12, data)
 
                     import ChatFormatting._
                     val flags = new MListBuffer[String]
@@ -166,7 +167,7 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                     }
 
                     if (flags.nonEmpty)
-                        GuiDraw.drawMultilineTip(null, mx+12, my-32-(flags.size*(fontRenderer.FONT_HEIGHT+1)), flags)
+                        GuiDraw.drawMultiLineTip(ItemStack.EMPTY, mx+12, my-32-(flags.size*(fontRenderer.FONT_HEIGHT+1)), flags)
 
                     translateFromScreen()
                     ClipNode.tempEnableScissoring()
@@ -396,7 +397,7 @@ class ICToolsetNode extends TNode
             import ChatFormatting._
             translateToScreen()
             val Point(mx, my) = parent.convertPointToScreen(mouse)
-            GuiDraw.drawMultilineTip(mx+12, my-32, Seq(AQUA.toString+ITALIC.toString+title))
+            GuiDraw.drawMultiLineTip(mx+12, my-32, Seq(AQUA.toString+ITALIC.toString+title))
             translateFromScreen()
         }
     }
@@ -586,7 +587,7 @@ class NewICNode extends TNode
                 translateToScreen()
                 val Point(mx, my) = parent.convertPointToScreen(mouse)
                 import scala.collection.JavaConversions._
-                GuiDraw.drawMultilineTip(mx+12, my-12, Seq((mousePos.x+1)*16+" x "+(mousePos.y+1)*16))
+                GuiDraw.drawMultiLineTip(mx+12, my-12, Seq((mousePos.x+1)*16+" x "+(mousePos.y+1)*16))
                 translateFromScreen()
             }
         }
@@ -650,7 +651,7 @@ class InfoNode extends TNode
             translateToScreen()
             val Point(mx, my) = parent.convertPointToScreen(mouse)
             import scala.collection.JavaConversions._
-            GuiDraw.drawMultilineTip(mx+12, my-12, Seq(text))
+            GuiDraw.drawMultiLineTip(mx+12, my-12, Seq(text))
             translateFromScreen()
         }
     }
@@ -812,7 +813,7 @@ object GuiICWorkbench extends TGuiFactory
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        player.worldObj.getTileEntity(data.readPos()) match {
+        player.world.getTileEntity(data.readPos()) match {
             case t:TileICWorkbench =>
                 t.editor.readDesc(data)
                 new GuiICWorkbench(t)

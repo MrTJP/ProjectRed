@@ -35,6 +35,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.client.model.IPerspectiveAwareModel
 import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
+import net.minecraftforge.common.model.IModelState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConversions._
@@ -57,6 +58,7 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
         super.load(tag)
         cond.load(tag)
     }
+    override def connWorld = world
 
     override def getType = SolarPanelPart.typeID
 
@@ -89,7 +91,7 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
         }
     }
 
-    def heightMultiplier = 0.90+0.10*y/256.0
+    def heightMultiplier = 0.90+0.10*pos.getY/256.0
 
     def timeOfDayMultiplier =
     {
@@ -204,7 +206,7 @@ object RenderSolarPanel extends IItemRenderer with IIconRegister with IPerspecti
         iconT = new MultiIconTransformation(bottom, top, side, side, side, side)
     }
 
-    override def renderItem(item: ItemStack) = {
+    override def renderItem(item: ItemStack, transformType: TransformType) = {
         val ccrs = CCRenderState.instance()
         ccrs.reset()
         ccrs.pullLightmap()
@@ -212,20 +214,9 @@ object RenderSolarPanel extends IItemRenderer with IIconRegister with IPerspecti
         models(0).render(ccrs, iconT)
         ccrs.draw()
     }
-    //TODO Trait in CCL scala libs for this mundane stuff.
-    override def handlePerspective(cameraTransformType: TransformType) = MapWrapper.handlePerspective(this, TransformUtils.DEFAULT_BLOCK, cameraTransformType)
 
-    override def getQuads(state: IBlockState, side: EnumFacing, rand: Long): util.List[BakedQuad] = new util.ArrayList[BakedQuad]()
-
+    override def getTransforms = TransformUtils.DEFAULT_BLOCK
     override def isAmbientOcclusion: Boolean = true
 
     override def isGui3d: Boolean = true
-
-    override def isBuiltInRenderer: Boolean = true
-
-    override def getParticleTexture: TextureAtlasSprite = null
-
-    override def getItemCameraTransforms: ItemCameraTransforms = ItemCameraTransforms.DEFAULT
-
-    override def getOverrides: ItemOverrideList = ItemOverrideList.NONE
 }

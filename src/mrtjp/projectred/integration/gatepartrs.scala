@@ -105,9 +105,9 @@ abstract class RedstoneGatePart extends GatePart with TFaceRSAcquisitions with I
             val absSide = absoluteDir(r)
             val pos = this.pos.offset(EnumFacing.values()(absSide))
 
-            world.notifyBlockOfStateChange(pos, MultipartProxy.block)
+            world.neighborChanged(pos, MultipartProxy.block, pos)
             for (s <- 0 until 6) if (s != (absSide^1) && (smask&1<<s) == 0)
-                world.notifyBlockOfStateChange(pos.offset(EnumFacing.values()(s)), MultipartProxy.block)
+                world.neighborChanged(pos.offset(EnumFacing.values()(s)), MultipartProxy.block, pos)
 
             smask |= 1<<absSide
         }

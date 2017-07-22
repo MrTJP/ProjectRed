@@ -173,7 +173,7 @@ trait TGuiMachine extends TileMachine
         if (super.onBlockActivated(player, side)) true
         else if (!player.isSneaking)
         {
-            if (!world.isRemote) openGui(player)
+            if (!getWorld.isRemote) openGui(player)
             true
         }
         else false

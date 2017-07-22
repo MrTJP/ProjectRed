@@ -10,7 +10,7 @@ import java.util.UUID
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.raytracer.{IndexedCuboid6, RayTracer}
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
@@ -30,7 +30,7 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.{BlockPos, Vec3d}
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, ResourceLocation}
-import net.minecraft.world.WorldServer
+import net.minecraft.world.{IBlockAccess, WorldServer}
 import net.minecraftforge.common.ForgeHooks
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.common.util.FakePlayerFactory
@@ -113,7 +113,7 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
                 if (fakePlayer.isHandActive) fakePlayer.stopActiveHand()
                 copyInvFromPlayer()
                 val newStack = getStackInSlot(i)
-                if (newStack != null && newStack.stackSize == 0)
+                if (!newStack.isEmpty)
                     setInventorySlotContents(i, null)
                 return
             }
@@ -149,12 +149,13 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
     {
         def tryUse(pos:BlockPos):Boolean =
         {
-            val event = ForgeHooks.onRightClickBlock(fakePlayer, EnumHand.MAIN_HAND, stack, pos, EnumFacing.UP, new Vec3d(0.5, 0.5, 0.5))
+            //TODO, Ensure the fake players's inventory is setup properly. We can no longer pass a stack here, so the implementor gets it from the player with the given hand.
+            val event = ForgeHooks.onRightClickBlock(fakePlayer, EnumHand.MAIN_HAND, pos, EnumFacing.UP, new Vec3d(0.5, 0.5, 0.5))
             if (event.isCanceled || event.getUseBlock == Event.Result.DENY) return false
 
             import EnumActionResult._
 
-            stack.getItem.onItemUseFirst(stack, fakePlayer, world, pos,
+            stack.getItem.onItemUseFirst(fakePlayer, world, pos,
                 EnumFacing.UP, 0.5F, 0.5f, 0.5F, EnumHand.MAIN_HAND) match {
                 case FAIL => return false
                 case SUCCESS => return true
@@ -188,7 +189,8 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
     def useOnEntity(stack:ItemStack, e:Entity):Boolean =
     {
         import EnumActionResult._
-        e.applyPlayerInteraction(fakePlayer, new Vec3d(0, 0, 0), stack, EnumHand.MAIN_HAND) match {
+        //TODO Same here.
+        e.applyPlayerInteraction(fakePlayer, new Vec3d(0, 0, 0), EnumHand.MAIN_HAND) match {
             case FAIL => return false
             case SUCCESS => return true
             case PASS =>
@@ -211,7 +213,7 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
                     .expand(pair._1.getCollisionBorderSize))
         }
 
-        val hit = RayTracer.rayTraceCuboidsClosest(start, end, eBoxes, pos)
+        val hit = RayTracer.rayTraceCuboidsClosest(start, end, pos, eBoxes)
         if (hit != null)
             elist(hit.cuboid6.data.asInstanceOf[Int])
         else
@@ -280,7 +282,7 @@ object GuiBlockPlacer extends TGuiFactory
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        val t = player.worldObj.getTileEntity(data.readPos()) match {
+        val t = player.world.getTileEntity(data.readPos()) match {
             case tile:TileBlockPlacer => tile
             case _ => null
         }
@@ -293,7 +295,7 @@ object RenderBlockPlacer extends SimpleBlockRenderer
 {
     import java.lang.{Boolean => JBool, Integer => JInt}
 
-    import mrtjp.core.util.CCLConversions._
+    import org.apache.commons.lang3.tuple.Triple
     import mrtjp.projectred.expansion.BlockProperties._
 
     var bottom:TextureAtlasSprite = _
@@ -307,7 +309,7 @@ object RenderBlockPlacer extends SimpleBlockRenderer
     var iconT1:UVTransformation = _
     var iconT2:UVTransformation = _
 
-    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+    override def handleState(state: IExtendedBlockState, world:IBlockAccess, pos: BlockPos): IExtendedBlockState = world.getTileEntity(pos) match {
         case t: TActiveDevice => {
             var s = state
             s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[JInt])
@@ -323,10 +325,10 @@ object RenderBlockPlacer extends SimpleBlockRenderer
         val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
         val active = state.getValue(UNLISTED_ACTIVE_PROPERTY).asInstanceOf[Boolean]
         val powered = state.getValue(UNLISTED_POWERED_PROPERTY).asInstanceOf[Boolean]
-        createTriple(side, rotation, if (active || powered) iconT2 else iconT1)
+        Triple.of(side, rotation, if (active || powered) iconT2 else iconT1)
     }
 
-    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT1)
+    override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0, iconT1)
     override def shouldCull() = true
 
     def getIcon(s:Int, meta:Int) = s match

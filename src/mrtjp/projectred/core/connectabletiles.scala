@@ -11,13 +11,14 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
+import net.minecraft.world.World
 
 trait TTileAcquisitions extends MTBlockTile
 {
     def getStraightCenter(s:Int) =
     {
         val pos = posOfInternal.offset(EnumFacing.VALUES(s))
-        val t = BlockMultipart.getTile(world, pos)
+        val t = BlockMultipart.getTile(getWorld, pos)
         if (t != null) t.partMap(6)
         else null
     }
@@ -25,7 +26,7 @@ trait TTileAcquisitions extends MTBlockTile
     def getStraight(s:Int, edgeRot:Int) =
     {
         val pos = posOfStraight(s)
-        val t = BlockMultipart.getTile(world, pos)
+        val t = BlockMultipart.getTile(getWorld, pos)
         if (t != null) t.partMap(Rotation.rotateSide(s^1, edgeRot))
         else null
     }
@@ -33,7 +34,7 @@ trait TTileAcquisitions extends MTBlockTile
     def getCorner(s:Int, edgeRot:Int) =
     {
         val pos = posOfCorner(s, edgeRot)
-        val t = BlockMultipart.getTile(world, pos)
+        val t = BlockMultipart.getTile(getWorld, pos)
         if (t != null) t.partMap(s^1)
         else null
     }
@@ -48,13 +49,13 @@ trait TTileAcquisitions extends MTBlockTile
     def notifyStraight(s:Int)
     {
         val pos = posOfStraight(s)
-        world.notifyNeighborsRespectDebug(pos, getBlockType)
+        getWorld.notifyNeighborsRespectDebug(pos, getBlockType, false)
     }
 
     def notifyCorner(s:Int, edgeRot:Int)
     {
         val pos = posOfCorner(s, edgeRot)
-        world.notifyNeighborsRespectDebug(pos, getBlockType)
+        getWorld.notifyNeighborsRespectDebug(pos, getBlockType, false)
     }
 }
 
@@ -123,12 +124,12 @@ trait TTileConnectable extends MTBlockTile with TTileAcquisitions with IConnecta
     def outsideCornerEdgeOpen(s:Int, edgeRot:Int) =
     {
         val pos = posOfInternal.offset(EnumFacing.VALUES(s))
-        if (world.isAirBlock(pos)) true
+        if (getWorld.isAirBlock(pos)) true
         else
         {
             val side1 = s^1
             val side2 = Rotation.rotateSide(s^1, edgeRot)
-            val t = BlockMultipart.getTile(world, pos)
+            val t = BlockMultipart.getTile(getWorld, pos)
             if (t != null)
                 t.partMap(side1) == null && t.partMap(side2) == null && t.partMap(PartMap.edgeBetween(side1, side2)) == null
             else false
@@ -157,7 +158,7 @@ trait TTileConnectable extends MTBlockTile with TTileAcquisitions with IConnecta
     def discoverStraightOverride(s:Int) = //TODO remove to discoverStraightCenterOverride
     {
         val pos = posOfInternal.offset(EnumFacing.VALUES(s))
-        val t = world.getTileEntity(pos) match {
+        val t = getWorld.getTileEntity(pos) match {
             case t: TTileConnectable => t
             case _ => null
         }
@@ -228,19 +229,19 @@ trait TConnectableInstTile extends MTBlockTile with TTileConnectable
     abstract override def onNeighborBlockChange()
     {
         super.onNeighborBlockChange()
-        if (!world.isRemote) if (updateExternals()) sendConnUpdate()
+        if (!getWorld.isRemote) if (updateExternals()) sendConnUpdate()
     }
 
     abstract override def onBlockPlaced(side:Int, player:EntityPlayer, stack:ItemStack)
     {
         super.onBlockPlaced(side, player, stack)
-        if (!world.isRemote) if (updateExternals()) sendConnUpdate()
+        if (!getWorld.isRemote) if (updateExternals()) sendConnUpdate()
     }
 
     abstract override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        WorldLib.bulkBlockUpdate(world, getPos, getBlock)
+        WorldLib.bulkBlockUpdate(getWorld, getPos, getBlock)
     }
 }
 
@@ -271,7 +272,7 @@ trait TPowerTile extends MTBlockTile with TConnectableInstTile with TCachedPower
             if (maskConnectsStraightCenter(s)) getStraightCenter(s) match
             {
                 case tp:IPowerConnectable => return tp.conductor(s^1)
-                case _ => world.getTileEntity(posOfInternal.offset(EnumFacing.VALUES(s))) match
+                case _ => getWorld.getTileEntity(posOfInternal.offset(EnumFacing.VALUES(s))) match
                 {
                     case tp:IPowerConnectable => return tp.conductor(s^1)
                     case _ =>
@@ -286,4 +287,6 @@ trait TPowerTile extends MTBlockTile with TConnectableInstTile with TCachedPower
         super.onMaskChanged()
         needsCache = true
     }
+
+    override def connWorld: World = getWorld
 }

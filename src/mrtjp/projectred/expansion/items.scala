@@ -142,7 +142,7 @@ class ItemElectricScrewdriver extends ItemCore with IScrewdriver with IChargable
     setMaxDamage(400)
     setNoRepair()
 
-    override def onItemUse(stack: ItemStack, playerIn: EntityPlayer, worldIn: World,
+    override def onItemUse(playerIn: EntityPlayer, worldIn: World,
                            pos: BlockPos, hand: EnumHand, facing: EnumFacing,
                            hitX: Float, hitY: Float, hitZ: Float): EnumActionResult = EnumActionResult.PASS
 
@@ -214,7 +214,7 @@ object ItemPlan
         {
             val tag1 = tag0.getCompoundTagAt(i)
             if (tag1.hasKey("id"))
-                out(i) = ItemStack.loadItemStackFromNBT(tag1)
+                out(i) = new ItemStack(tag1)
         }
         out
     }
@@ -222,8 +222,8 @@ object ItemPlan
     def loadPlanOutput(stack:ItemStack) =
     {
         val tag0 = stack.getTagCompound.getTagList("recipe", 10)
-        val out = ItemStack.loadItemStackFromNBT(tag0.getCompoundTagAt(9))
-        if (out != null) out else new ItemStack(Blocks.FIRE)//TODO Fire isnt an item anymore..
+        val out = new ItemStack(tag0.getCompoundTagAt(9))
+        if (!out.isEmpty) out else new ItemStack(Blocks.STONE)
     }
 }
 
@@ -342,9 +342,9 @@ object ItemJetpack
     @SideOnly(Side.CLIENT)
     def onRenderTick(event:ClientTickEvent)
     {
-        if (event.phase == Phase.END && Minecraft.getMinecraft.theWorld != null)
+        if (event.phase == Phase.END && Minecraft.getMinecraft.world != null)
             for (id <- entitiesUsingJetpack)
-                Minecraft.getMinecraft.theWorld.getEntityByID(id) match {
+                Minecraft.getMinecraft.world.getEntityByID(id) match {
                     case e:EntityPlayer => renderParticlesForPlayer(e)
                     case _ =>
                 }
@@ -366,7 +366,7 @@ object ItemJetpack
 
         val positions = Seq(pos1, pos2)
 
-        val s = -player.worldObj.rand.nextDouble()*0.2+Math.min(0, player.motionY)
+        val s = -player.world.rand.nextDouble()*0.2+Math.min(0, player.motionY)
 
         import mrtjp.core.fx.ParticleAction._
         val a1 = group(
@@ -392,9 +392,9 @@ object ItemJetpack
 
         for (pos <- positions) for (i <- 0 until 2)
         {
-            val p = new SpriteParticle(player.worldObj)
+            val p = new SpriteParticle(player.world)
             Minecraft.getMinecraft.effectRenderer.addEffect(p)
-            val r = player.worldObj.rand
+            val r = player.world.rand
             p.setPos(pos.copy.add(new Vector3(r.nextDouble(), r.nextDouble(), r.nextDouble())
                     .subtract(Vector3.center).multiply(4/16D)))
             p.setMaxAge(50)

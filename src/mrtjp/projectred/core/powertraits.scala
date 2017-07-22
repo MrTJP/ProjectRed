@@ -38,7 +38,7 @@ trait IPowerConnectable extends IConnectable
      * to accurately calculate/distribute current.
      * @return The world this TPowerConnectable is in. Should be not null.
      */
-    def world:World
+    def connWorld:World
 }
 
 /**
@@ -72,7 +72,7 @@ class PowerConductor(val parent:IPowerConnectable, ids:Seq[Int])
      */
     def voltage() =
     {
-        val tick = parent.world.getTotalWorldTime
+        val tick = parent.connWorld.getTotalWorldTime
         if ((tick & 0xFFFF) != time) {
             time = (tick & 0xFFFF).asInstanceOf[Int]
             //calculate voltage

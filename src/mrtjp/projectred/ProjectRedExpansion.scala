@@ -3,7 +3,7 @@ package mrtjp.projectred
 import codechicken.lib.model.bakery.sub.SubBlockBakery
 import mrtjp.projectred.expansion._
 import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.item.Item
+import net.minecraft.item.{Item, ItemStack}
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent}
 
@@ -30,7 +30,7 @@ object ProjectRedExpansion
 
     val tabExpansion = new CreativeTabs("projectred.expansion")
     {
-        override def getTabIconItem = Item.getItemFromBlock(machine2)
+        override def getTabIconItem = new ItemStack(machine2)
     }
 
     val machine1Bakery:SubBlockBakery = new SubBlockBakery

@@ -46,7 +46,7 @@ object LightMicroMaterial
 trait LightMicroblock extends Microblock
 {
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(pos:Vector3, pass:Int, frame:Float)
+    override def renderDynamic(vec:Vector3, pass:Int, frame:Float)
     {
         if (pass == 0) {
             val boxes = this match {
@@ -73,7 +73,7 @@ trait LightMicroblock extends Microblock
 
             val colour = getIMaterial.asInstanceOf[LightMicroMaterial].colour
 
-            for (box <- boxes) RenderHalo.addLight(x, y, z, colour, box)
+            for (box <- boxes) RenderHalo.addLight(pos, colour, box)
         }
     }
 

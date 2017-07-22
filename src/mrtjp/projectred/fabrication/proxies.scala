@@ -8,7 +8,8 @@ import java.lang.{Character => JC}
 
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.model.ModelRegistryHelper
-import codechicken.lib.model.blockbakery.{CCBakeryModel, IBlockStateKeyGenerator}
+import codechicken.lib.model.bakery.CCBakeryModel
+import codechicken.lib.model.bakery.key.IBlockStateKeyGenerator
 import codechicken.lib.render.item.map.MapRenderRegistry
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.texture.TextureUtils.IIconRegister
@@ -21,7 +22,7 @@ import mrtjp.projectred.integration.{GateDefinition, RenderGate}
 import mrtjp.projectred.{ProjectRedFabrication, ProjectRedIntegration}
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.ItemMeshDefinition
-import net.minecraft.client.renderer.block.model.{ModelBakery, ModelResourceLocation}
+import net.minecraft.client.renderer.block.model.{ModelResourceLocation, ModelBakery => MCModelBakery}
 import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.client.renderer.block.statemap.StateMap.Builder
 import net.minecraft.init.{Blocks, Items}
@@ -132,7 +133,7 @@ class FabricationProxy_client extends FabricationProxy_server
     @SideOnly(Side.CLIENT)
     def registerBlockToBakery(block:Block, iconRegister:IIconRegister, stateMap:IStateMapper) =
     {
-        val model = new CCBakeryModel("")
+        val model = new CCBakeryModel()
         val regLoc = block.getRegistryName
         ModelLoader.setCustomStateMapper(block, stateMap)
         ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(block), new ItemMeshDefinition {
@@ -160,7 +161,7 @@ class FabricationProxy_client extends FabricationProxy_server
     @SideOnly(Side.CLIENT)
     def registerModelType(item:Item, jsonLocation:String, names:Array[String], typeValue:ItemStack => String)
     {
-        ModelBakery.registerItemVariants(item, names.map { n => new ModelResourceLocation(jsonLocation, s"type=$n") }:_*)
+        MCModelBakery.registerItemVariants(item, names.map { n => new ModelResourceLocation(jsonLocation, s"type=$n") }:_*)
         ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition {
             override def getModelLocation(s:ItemStack) =
                 new ModelResourceLocation(jsonLocation, "type=" + typeValue(s))
@@ -176,7 +177,7 @@ object FabricationRecipes
     {
         //IC Gate recipe
         GameRegistry.addRecipe(new IRecipe {
-            override def matches(inv:InventoryCrafting, w:World) = getCraftingResult(inv) != null
+            override def matches(inv:InventoryCrafting, w:World) = !getCraftingResult(inv).isEmpty
 
             override def getRecipeOutput = GateDefinition.ICGate.makeStack
 
@@ -186,11 +187,11 @@ object FabricationRecipes
             {
                 for (i <- 0 until 9) {
                     val stack = inv.getStackInSlot(i)
-                    if (stack == null) return null
+                    if (stack.isEmpty) return ItemStack.EMPTY
                     i match {
                         case 4 => if (stack.getItem != ProjectRedFabrication.itemICChip ||
-                                !ItemICBlueprint.hasICInside(stack)) return null
-                        case _ => if (!stack.isItemEqual(PartDefs.PLATE.makeStack)) return null
+                                !ItemICBlueprint.hasICInside(stack)) return ItemStack.EMPTY
+                        case _ => if (!stack.isItemEqual(PartDefs.PLATE.makeStack)) return ItemStack.EMPTY
                     }
                 }
                 val out = GateDefinition.ICGate.makeStack
@@ -228,7 +229,7 @@ object FabricationRecipes
 
         //IC Blueprint - reset
         GameRegistry.addRecipe(new IRecipe {
-            override def matches(inv:InventoryCrafting, w:World) = getCraftingResult(inv) != null
+            override def matches(inv:InventoryCrafting, w:World) = !getCraftingResult(inv).isEmpty
 
             override def getRecipeOutput = new ItemStack(itemICBlueprint)
 
@@ -236,15 +237,15 @@ object FabricationRecipes
 
             override def getCraftingResult(inv:InventoryCrafting):ItemStack =
             {
-                var bp:ItemStack = null
+                var bp:ItemStack = ItemStack.EMPTY
                 for (i <- 0 until inv.getSizeInventory) {
                     val s = inv.getStackInSlot(i)
-                    if (s != null)
-                        if (bp != null) return null
+                    if (!s.isEmpty)
+                        if (!bp.isEmpty) return ItemStack.EMPTY
                         else bp = s
                 }
 
-                if (bp != null && bp.getItem == itemICBlueprint && ItemICBlueprint.hasICInside(bp))
+                if (!bp.isEmpty && bp.getItem == itemICBlueprint && ItemICBlueprint.hasICInside(bp))
                     new ItemStack(itemICBlueprint)
                 else null
             }
@@ -254,7 +255,7 @@ object FabricationRecipes
 
         //IC Blueprint - copy
         GameRegistry.addRecipe(new IRecipe {
-            override def matches(inv:InventoryCrafting, w:World) = getCraftingResult(inv) != null
+            override def matches(inv:InventoryCrafting, w:World) = !getCraftingResult(inv).isEmpty
 
             override def getRecipeOutput = new ItemStack(itemICBlueprint, 2)
 
@@ -262,22 +263,22 @@ object FabricationRecipes
 
             override def getCraftingResult(inv:InventoryCrafting):ItemStack =
             {
-                var bp:ItemStack = null
+                var bp:ItemStack = ItemStack.EMPTY
                 var emptyCount = 0
                 for (i <- 0 until inv.getSizeInventory) {
                     val s = inv.getStackInSlot(i)
-                    if (s != null) {
-                        if (s.getItem != itemICBlueprint) return null
+                    if (!s.isEmpty) {
+                        if (s.getItem != itemICBlueprint) return ItemStack.EMPTY
                         if (ItemICBlueprint.hasICInside(s))
-                            if (bp != null) return null
+                            if (!bp.isEmpty) return ItemStack.EMPTY
                             else bp = s
                         else
                             emptyCount += 1
                     }
                 }
-                if (bp != null && emptyCount > 0) {
+                if (!bp.isEmpty && emptyCount > 0) {
                     val out = new ItemStack(itemICBlueprint)
-                    out.stackSize = emptyCount+1
+                    out.setCount(emptyCount+1)
                     ItemICBlueprint.copyIC(bp, out)
                     out
                 }

@@ -207,17 +207,9 @@ object TransportationRecipes
 
 class ChipResetRecipe extends IRecipe
 {
-    override def getRemainingItems(inv:InventoryCrafting) =
-    {
-        val stacks = new Array[ItemStack](inv.getSizeInventory)
-        for (i <- 0 until stacks.length) {
-            val stack = inv.getStackInSlot(i)
-            stacks(i) = ForgeHooks.getContainerItem(stack)
-        }
-        stacks
-    }
+    override def getRemainingItems(inv:InventoryCrafting) = ForgeHooks.defaultRecipeGetRemainingItems(inv)
 
-    def matches(inv:InventoryCrafting, world:World) = getCraftingResult(inv) != null
+    def matches(inv:InventoryCrafting, world:World) = !getCraftingResult(inv).isEmpty
 
     def getCraftingResult(inv:InventoryCrafting):ItemStack =
     {
@@ -241,7 +233,7 @@ class ChipResetRecipe extends IRecipe
         for (i <- 0 until inv.getSizeInventory)
         {
             val stack = inv.getStackInSlot(i)
-            if (stack != null && !stack.getItem.isInstanceOf[ItemRoutingChip]) return false
+            if (!stack.isEmpty && !stack.getItem.isInstanceOf[ItemRoutingChip]) return false
             val type2 = RoutingChipDefs.getForStack(stack)
             if (type2 != null && !(type2 == cdef)) return false
         }
@@ -252,10 +244,10 @@ class ChipResetRecipe extends IRecipe
     {
         var count = 0
         for (i <- 0 until inv.getSizeInventory)
-            if (inv.getStackInSlot(i) != null) count += 1
+            if (!inv.getStackInSlot(i).isEmpty) count += 1
         count
     }
 
     def getRecipeSize = 2
-    def getRecipeOutput = null
+    def getRecipeOutput = ItemStack.EMPTY
 }

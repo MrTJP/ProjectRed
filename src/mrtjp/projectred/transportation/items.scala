@@ -17,7 +17,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, ResourceLocation}
+import net.minecraft.util._
 import net.minecraft.world.{IBlockAccess, World}
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -42,7 +42,7 @@ class ItemPartPipe extends ItemCore with TItemMultiPart
     }
 
     @SideOnly(Side.CLIENT)
-    override def getSubItems(item:Item, tab:CreativeTabs, list:JList[ItemStack])
+    override def getSubItems(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (t <- PipeDefs.values) list.add(t.makeStack)
     }
@@ -90,7 +90,7 @@ class ItemRoutingChip extends ItemCore
     setHasSubtypes(true)
     setCreativeTab(ProjectRedTransportation.tabTransportation)
 
-    override def getSubItems(i:Item, tab:CreativeTabs, list:JList[ItemStack])
+    override def getSubItems(i:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (c <- RoutingChipDefs.values) list.add(c.makeStack)
     }
@@ -108,19 +108,21 @@ class ItemRoutingChip extends ItemCore
         else list.add(ChatFormatting.GRAY+"not configured")
     }
 
-    override def onItemRightClick(stack:ItemStack, world:World, player:EntityPlayer, hand:EnumHand) =
+    override def onItemRightClick(world:World, player:EntityPlayer, hand:EnumHand) =
     {
+        val stack = player.getHeldItem(hand)
         if (!world.isRemote && ItemRoutingChip.isValidChip(stack))
         {
             val r = ItemRoutingChip.loadChipFromItemStack(stack)
             r.openGui(player)
         }
-        super.onItemRightClick(stack, world, player, hand)
+        super.onItemRightClick(world, player, hand)
     }
 
 
-    override def onItemUse(stack:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, hand:EnumHand, facing:EnumFacing, hitX:Float, hitY:Float, hitZ:Float) =
+    override def onItemUse(player:EntityPlayer, world:World, pos:BlockPos, hand:EnumHand, facing:EnumFacing, hitX:Float, hitY:Float, hitZ:Float) =
     {
+        val stack = player.getHeldItem(hand)
         if (!world.isRemote && ItemRoutingChip.isValidChip(stack))
         {
             val r = ItemRoutingChip.loadChipFromItemStack(stack)

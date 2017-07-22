@@ -16,25 +16,19 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.client.model.IPerspectiveAwareModel
 import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
+import net.minecraftforge.common.model.IModelState
 import org.lwjgl.opengl.GL11
 
 trait TWireItemRenderCommon extends IItemRenderer with IPerspectiveAwareModel
 {
-    override def getParticleTexture = null
-    override def isBuiltInRenderer = true
-    override def getItemCameraTransforms = ItemCameraTransforms.DEFAULT
     override def isAmbientOcclusion = true
     override def isGui3d = true
-    override def getOverrides = ItemOverrideList.NONE
-    override def getQuads(state:IBlockState, side:EnumFacing, rand:Long) = ImmutableList.of()
+    override def getTransforms = TransformUtils.DEFAULT_BLOCK
 
-    override def renderItem(item:ItemStack)
+    override def renderItem(item:ItemStack, transformType: TransformType)
     {
         renderWireInventory(item.getItemDamage, 0, 0, 0, 1)
     }
-
-    override def handlePerspective(t:TransformType) =
-        MapWrapper.handlePerspective(this, TransformUtils.DEFAULT_BLOCK, t)
 
     def renderWireInventory(meta:Int, x:Float, y:Float, z:Float, scale:Float)
     {

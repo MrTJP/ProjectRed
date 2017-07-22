@@ -3,7 +3,7 @@ package mrtjp.projectred.expansion
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui._
@@ -16,7 +16,9 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Container
 import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -49,14 +51,14 @@ class TileInductiveFurnace extends TileProcessingMachine
     override def canStart:Boolean =
     {
         val inSlot = getStackInSlot(0)
-        if (inSlot == null) return false
+        if (inSlot.isEmpty) return false
 
         val r = InductiveFurnaceRecipeLib.getRecipeFor(inSlot)
         if (r == null) return false
 
         val stack = r.createOutput
         val room = InvWrapper.wrap(this).setSlotSingle(1).setInternalMode(true).getSpaceForItem(ItemKey.get(stack))
-        room >= stack.stackSize
+        room >= stack.getCount
     }
 
     override def startWork()
@@ -79,7 +81,7 @@ class TileInductiveFurnace extends TileProcessingMachine
             val wrap = InvWrapper.wrap(this).setInternalMode(true).setSlotSingle(0)
             wrap.extractItem(ItemKey.get(in), 1)
             val out = r.createOutput
-            wrap.setSlotSingle(1).injectItem(ItemKey.get(out), out.stackSize)
+            wrap.setSlotSingle(1).injectItem(ItemKey.get(out), out.getCount)
         }
     }
 }
@@ -140,7 +142,7 @@ object GuiInductiveFurnace extends TGuiFactory
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        player.worldObj.getTileEntity(data.readPos()) match
+        player.world.getTileEntity(data.readPos()) match
         {
             case t:TileInductiveFurnace => new GuiInductiveFurnace(t, t.createContainer(player))
             case _ => null
@@ -152,7 +154,7 @@ object RenderInductiveFurnace extends SimpleBlockRenderer
 {
     import java.lang.{Boolean => JBool, Integer => JInt}
 
-    import mrtjp.core.util.CCLConversions._
+    import org.apache.commons.lang3.tuple.Triple
     import mrtjp.projectred.expansion.BlockProperties._
 
     var bottom:TextureAtlasSprite = _
@@ -166,9 +168,9 @@ object RenderInductiveFurnace extends SimpleBlockRenderer
     var iconT2:UVTransformation = _
     var iconT3:UVTransformation = _
 
-    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = {
+    override def handleState(state: IExtendedBlockState, world: IBlockAccess, pos: BlockPos): IExtendedBlockState = {
 
-       tileEntity match {
+       world.getTileEntity(pos) match {
             case t:TileInductiveFurnace => {
                 var s = state
                 s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[Integer])
@@ -186,13 +188,13 @@ object RenderInductiveFurnace extends SimpleBlockRenderer
         val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
         val isWorking = state.getValue(UNLISTED_WORKING_PROPERTY)
         val isCharged = state.getValue(UNLISTED_CHARGED_PROPERTY)
-        createTriple(side, rotation,
+        Triple.of(side, rotation,
             if (isWorking && isCharged) iconT3
             else if (isCharged) iconT2
             else iconT1)
     }
 
-    override def getItemTransforms(stack: ItemStack) = createTriple(0, 0, iconT1)
+    override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0, iconT1)
     override def shouldCull() = true;
 
 

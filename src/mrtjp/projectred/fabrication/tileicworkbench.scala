@@ -7,13 +7,13 @@ package mrtjp.projectred.fabrication
 
 import codechicken.lib.block.property.unlisted.{UnlistedBooleanProperty, UnlistedIntegerProperty}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.model.blockbakery.{BlockBakery, IBakeryBlock, ICustomBlockBakery, SimpleBlockRenderer}
+import codechicken.lib.model.bakery.{IBakeryProvider, ModelBakery, SimpleBlockRenderer}
+import codechicken.lib.model.bakery.generation.IBakery
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.Rotation
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.block._
 import mrtjp.core.gui.NodeContainer
-import mrtjp.core.util.CCLConversions.createTriple
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedFabrication
 import mrtjp.projectred.api.IScrewdriver
@@ -34,7 +34,7 @@ import net.minecraftforge.common.property.IExtendedBlockState
 
 import scala.collection.mutable.{Set => MSet}
 
-class BlockICMachine(bakery:ICustomBlockBakery) extends MultiTileBlock(Material.ROCK) with IBakeryBlock
+class BlockICMachine(bakery:IBakery) extends MultiTileBlock(Material.ROCK) with IBakeryProvider
 {
     setHardness(2)
     setCreativeTab(ProjectRedFabrication.tabFabrication)
@@ -45,9 +45,9 @@ class BlockICMachine(bakery:ICustomBlockBakery) extends MultiTileBlock(Material.
             .add(BlockICMachine.UNLISTED_HAS_BP_PROPERTY)
             .build()
 
-    override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos) = BlockBakery.handleExtendedState(state.asInstanceOf[IExtendedBlockState], world.getTileEntity(pos))
+    override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos) = ModelBakery.handleExtendedState(state.asInstanceOf[IExtendedBlockState], world, pos)
 
-    override def getCustomBakery:ICustomBlockBakery = bakery
+    override def getBakery = bakery
 }
 
 object BlockICMachine
@@ -107,7 +107,7 @@ abstract class TileICMachine extends MTBlockTile with TTileOrient
             val old = rotation
             do setRotation((rotation+1)%4) while (old != rotation && !isRotationAllowed(rotation))
             if (old != rotation) sendOrientUpdate()
-            world.notifyNeighborsRespectDebug(getPos, getBlock)
+            world.notifyNeighborsRespectDebug(getPos, getBlock, false)
             onBlockRotated()
             held.getItem.asInstanceOf[IScrewdriver].damageScrewdriver(player, held)
             return true
@@ -257,7 +257,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
                     loadTileMap(editor.tileMapContainer, held)
                     sendICDesc()
                 }
-                held.stackSize -= 1
+                held.shrink(1)
                 hasBP = true
                 sendHasBPUpdate()
             }
@@ -275,7 +275,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
                 item.motionX = 0
                 item.motionY = 0.15
                 item.motionZ = 0
-                world.spawnEntityInWorld(item)
+                world.spawnEntity(item)
                 hasBP = false
                 sendHasBPUpdate()
             } else {
@@ -320,6 +320,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
 object RenderICWorkbench extends SimpleBlockRenderer
 {
     import java.lang.{Boolean => JBool}
+    import org.apache.commons.lang3.tuple.Triple
 
     import BlockICMachine._
 
@@ -334,7 +335,7 @@ object RenderICWorkbench extends SimpleBlockRenderer
     var iconT:UVTransformation = _
     var iconTBP:UVTransformation = _
 
-    override def handleState(state:IExtendedBlockState, tileEntity:TileEntity):IExtendedBlockState = tileEntity match {
+    override def handleState(state:IExtendedBlockState, world: IBlockAccess, pos:BlockPos):IExtendedBlockState = world.getTileEntity(pos) match {
         case t:TileICWorkbench =>
             state.withProperty(UNLISTED_HAS_BP_PROPERTY, t.hasBP.asInstanceOf[JBool])
 
@@ -344,10 +345,10 @@ object RenderICWorkbench extends SimpleBlockRenderer
     override def getWorldTransforms(state:IExtendedBlockState) =
     {
         val hasBP = state.getValue(UNLISTED_HAS_BP_PROPERTY)
-        createTriple(0, 0, if (hasBP) iconTBP else iconT)
+        Triple.of(0, 0, if (hasBP) iconTBP else iconT)
     }
 
-    override def getItemTransforms(stack:ItemStack) = createTriple(0, 0, iconT)
+    override def getItemTransforms(stack:ItemStack) = Triple.of(0, 0, iconT)
 
     override def shouldCull() = true
 

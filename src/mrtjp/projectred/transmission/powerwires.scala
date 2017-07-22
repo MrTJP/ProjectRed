@@ -44,7 +44,7 @@ trait TPowerWireCommons extends TWireCommons with TPowerPartCommons with ITickab
         if (world.isRemote) return true
 
         val p = Messenger.createPacket
-        p.writeDouble(x).writeDouble(y).writeDouble(z)
+        p.writeDouble(pos.getX).writeDouble(pos.getY).writeDouble(pos.getZ)
         var s = "/#f"+"#VV\n"+"#IA\n"+"#PW"
         val d = new DecimalFormat("00.00")
         s = s.replace("#V", d.format(cond.voltage()))
@@ -100,6 +100,8 @@ trait TLowLoadPowerLineCommons extends TPowerWireCommons with ILowLoadPowerLine
     }
 
     def getWireType = WireDef.POWER_LOWLOAD
+
+    override def connWorld = world
 }
 
 class LowLoadPowerLine extends PowerWire with TLowLoadPowerLineCommons

@@ -317,9 +317,9 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
                         "\nrelayed: "+statsRelayed+
                         "\n\nroute table size: "+getRouter.getRouteTable.foldLeft(0)((b, v) => if (v != null) b+1 else b)
                 val packet = Messenger.createPacket
-                packet.writeDouble(x+0.0D)
-                packet.writeDouble(y+0.5D)
-                packet.writeDouble(z+0.0D)
+                packet.writeDouble(pos.getX+0.0D)
+                packet.writeDouble(pos.getY+0.5D)
+                packet.writeDouble(pos.getZ+0.0D)
                 packet.writeString(s)
                 packet.sendToPlayer(player)
             }

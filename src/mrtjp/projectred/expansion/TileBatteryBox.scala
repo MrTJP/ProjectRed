@@ -8,9 +8,9 @@ package mrtjp.projectred.expansion
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
-import codechicken.lib.vec.uv.{IconVertexRangeUVTransform, MultiIconTransformation}
+import codechicken.lib.vec.uv.MultiIconTransformation
 import mrtjp.core.gui._
 import mrtjp.core.inventory.TInventory
 import mrtjp.core.vec.Point
@@ -21,7 +21,9 @@ import net.minecraft.inventory.{IContainerListener, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -295,7 +297,7 @@ object GuiBatteryBox extends TGuiFactory
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        player.worldObj.getTileEntity(data.readPos) match
+        player.world.getTileEntity(data.readPos) match
         {
             case t:TileBatteryBox => new GuiBatteryBox(t, t.createContainer(player))
             case _ => null
@@ -307,14 +309,14 @@ object RenderBatteryBox extends SimpleBlockRenderer
 {
     import java.lang.{Integer => JInt}
 
-    import mrtjp.core.util.CCLConversions._
+    import org.apache.commons.lang3.tuple.Triple
     import mrtjp.projectred.expansion.BlockProperties._
 
     var bottom:TextureAtlasSprite = _
     var top:TextureAtlasSprite = _
     val sides = new Array[TextureAtlasSprite](9)
 
-    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+    override def handleState(state: IExtendedBlockState, world:IBlockAccess, pos:BlockPos): IExtendedBlockState = world.getTileEntity(pos) match {
         case t:TileBatteryBox =>
             state.withProperty(UNLISTED_CHARGE_PROPERTY, t.getStorageScaled(8).asInstanceOf[JInt])
         case _ => state
@@ -323,7 +325,7 @@ object RenderBatteryBox extends SimpleBlockRenderer
     override def getWorldTransforms(state: IExtendedBlockState) = {
         val c = state.getValue(UNLISTED_CHARGE_PROPERTY)
         val i = sides(c)
-        createTriple(0, 0, new MultiIconTransformation(bottom, top, i, i, i, i))
+        Triple.of(0, 0, new MultiIconTransformation(bottom, top, i, i, i, i))
     }
 
     override def getItemTransforms(stack: ItemStack) = {
@@ -331,7 +333,7 @@ object RenderBatteryBox extends SimpleBlockRenderer
             if(stack.hasTagCompound && stack.getTagCompound.hasKey("rstorage"))
                 sides(stack.getTagCompound.getInteger("rstorage")) else sides(0)
 
-        createTriple(0,0, new MultiIconTransformation(bottom, top, sideIcon, sideIcon, sideIcon, sideIcon))
+        Triple.of(0,0, new MultiIconTransformation(bottom, top, sideIcon, sideIcon, sideIcon, sideIcon))
     }
 
     override def shouldCull() = true

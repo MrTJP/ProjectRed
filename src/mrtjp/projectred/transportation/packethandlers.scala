@@ -1,7 +1,7 @@
 package mrtjp.projectred.transportation
 
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.packet.PacketCustom.{IClientPacketHandler, IServerPacketHandler}
+import codechicken.lib.packet.ICustomPacketHandler.{IClientPacketHandler, IServerPacketHandler}
 import codechicken.multipart.BlockMultipart
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
 import net.minecraft.client.Minecraft
@@ -32,7 +32,7 @@ object TransportationCPH extends TransportationPH with IClientPacketHandler
     {
         case this.gui_Request_open => openRequestGui(packet, mc)
         case this.gui_Request_list => receiveRequestList(packet, mc)
-        case this.particle_Spawn => RouteFX2.handleClientPacket(packet, mc.theWorld)
+        case this.particle_Spawn => RouteFX2.handleClientPacket(packet, mc.world)
         case _ =>
     }
 
@@ -45,7 +45,7 @@ object TransportationCPH extends TransportationPH with IClientPacketHandler
 
             for (i <- 0 until size) {
                 val stack = packet.readItemStack()
-                map2 += ItemKey.get(stack) -> stack.stackSize
+                map2 += ItemKey.get(stack) -> stack.getCount
             }
 
             gui.receiveContentList(map2)
@@ -54,7 +54,7 @@ object TransportationCPH extends TransportationPH with IClientPacketHandler
 
     private def openRequestGui(packet:PacketCustom, mc:Minecraft)
     {
-        val p = BlockMultipart.getPart(mc.thePlayer.worldObj, packet.readPos(), 6)
+        val p = BlockMultipart.getPart(mc.player.world, packet.readPos(), 6)
         if (p.isInstanceOf[IRouterContainer]) mc.displayGuiScreen(new GuiRequester(p.asInstanceOf[IRouterContainer]))
     }
 }
@@ -75,7 +75,7 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
     {
         val bc = packet.readPos()
         val action = packet.readByte()
-        val t = BlockMultipart.getPart(sender.worldObj, bc, 6)
+        val t = BlockMultipart.getPart(sender.world, bc, 6)
         if (t.isInstanceOf[RoutedFirewallPipe])
         {
             val p = t.asInstanceOf[RoutedFirewallPipe]
@@ -103,14 +103,14 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
 
     private def handleRequestListRefresh(packet:PacketCustom, sender:EntityPlayerMP)
     {
-        val t = BlockMultipart.getPart(sender.worldObj, packet.readPos(), 6)
+        val t = BlockMultipart.getPart(sender.world, packet.readPos(), 6)
         if (t.isInstanceOf[IRouterContainer])
             sendRequestList(t.asInstanceOf[IRouterContainer], sender, packet.readBoolean, packet.readBoolean)
     }
 
     private def handleRequestAction(packet:PacketCustom, sender:EntityPlayerMP)
     {
-        val t = BlockMultipart.getPart(sender.worldObj, packet.readPos(), 6)
+        val t = BlockMultipart.getPart(sender.world, packet.readPos(), 6)
         if (t.isInstanceOf[IRouterContainer]) {
             val ident = packet.readString
             //do things
@@ -136,7 +136,7 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
 
     private def handleRequestSubmit(packet:PacketCustom, sender:EntityPlayerMP)
     {
-        val t = BlockMultipart.getPart(sender.worldObj, packet.readPos(), 6)
+        val t = BlockMultipart.getPart(sender.world, packet.readPos(), 6)
         if (t.isInstanceOf[IRouterContainer]) {
             import mrtjp.projectred.transportation.RequestFlags._
             var opt = RequestFlags.ValueSet.newBuilder
@@ -156,13 +156,13 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
 
             if (r.requested > 0)
             {
-                sender.addChatMessage(new TextComponentString("Successfully requested "+r.requested+" of "+s.key.getName+"."))
+                sender.sendMessage(new TextComponentString("Successfully requested "+r.requested+" of "+s.key.getName+"."))
                 RouteFX2.spawnType1(RouteFX2.color_request, t.asInstanceOf[IRouterContainer].getPipe)
             }
             else
             {
-                sender.addChatMessage(new TextComponentString("Could not request "+s.stackSize+" of "+s.key.getName+". Missing:"))
-                for ((k,v) <- r.getMissing) sender.addChatMessage(new TextComponentString(v+" of "+k.getName))
+                sender.sendMessage(new TextComponentString("Could not request "+s.stackSize+" of "+s.key.getName+". Missing:"))
+                for ((k,v) <- r.getMissing) sender.sendMessage(new TextComponentString(v+" of "+k.getName))
             }
 
             sendRequestList(t.asInstanceOf[IRouterContainer], sender, pull, craft)

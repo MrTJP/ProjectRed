@@ -156,7 +156,7 @@ trait TArrayGatePart extends RedstoneGatePart with IRedwirePart with TFaceRSProp
     {
         super.preparePlacement(player, pos, side, meta)
         if (getLogicArray.canCross) {
-            val npart = BlockMultipart.getPart(player.worldObj, pos, this.side^1)
+            val npart = BlockMultipart.getPart(player.world, pos, this.side^1)
             npart match {
                 case apart:TArrayGatePart => if (apart.subID == subID && (apart.rotation&1) == (rotation&1))
                     setRotation((rotation+1)%4)

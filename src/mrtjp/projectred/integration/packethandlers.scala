@@ -7,7 +7,7 @@ package mrtjp.projectred.integration
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.packet.PacketCustom
-import codechicken.lib.packet.PacketCustom.{IClientPacketHandler, IServerPacketHandler}
+import codechicken.lib.packet.ICustomPacketHandler.{IClientPacketHandler, IServerPacketHandler}
 import codechicken.multipart.{BlockMultipart, TMultiPart}
 import mrtjp.projectred.ProjectRedIntegration
 import net.minecraft.client.Minecraft
@@ -41,8 +41,8 @@ object IntegrationSPH extends IntegrationPH with IServerPacketHandler
 {
     override def handlePacket(packet:PacketCustom, sender:EntityPlayerMP, handler:INetHandlerPlayServer) =
         packet.getType match {
-            case 1 => incrTimer(sender.worldObj, packet)
-            case 2 => incCounter(sender.worldObj, packet)
+            case 1 => incrTimer(sender.world, packet)
+            case 2 => incCounter(sender.world, packet)
         }
 
     private def incCounter(world:World, packet:PacketCustom)

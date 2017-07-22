@@ -11,7 +11,7 @@ import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.util.EnumFacing
+import net.minecraft.util.{EnumFacing, NonNullList}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
@@ -35,7 +35,7 @@ class ItemBaseLight(factory:LightFactory, val inverted:Boolean) extends ItemCore
 
     override def getPlacementSound(item:ItemStack) = SoundType.GLASS
 
-    override def getSubItems(item:Item, tab:CreativeTabs, list:JList[ItemStack])
+    override def getSubItems(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (i <- 0 until 16) list.add(new ItemStack(this, 1, i))
     }
@@ -63,7 +63,7 @@ abstract class ItemPartButtonCommons extends ItemCore with TItemMultiPart
 
     def getNewInst:LightButtonPart
 
-    override def getSubItems(itemIn:Item, tab:CreativeTabs, subItems:JList[ItemStack]) =
+    override def getSubItems(itemIn:Item, tab:CreativeTabs, subItems:NonNullList[ItemStack]) =
     {
         for (i <- 0 until 16) subItems.add(new ItemStack(this, 1, i))
     }

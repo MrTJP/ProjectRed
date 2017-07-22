@@ -63,7 +63,7 @@ object GuiTimer extends TGuiFactory
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        val world = Minecraft.getMinecraft.theWorld
+        val world = Minecraft.getMinecraft.world
         IntegrationCPH.readPartIndex(world, data) match
         {
             case gate:GatePart if gate.getLogic.isInstanceOf[ITimerGuiLogic] => new GuiTimer(gate)
@@ -121,7 +121,7 @@ class GuiCounter(part:GatePart) extends NodeGui(256, 145)
 
     override def update_Impl()
     {
-        if (part.tile == null) mc.thePlayer.closeScreen()
+        if (part.tile == null) mc.player.closeScreen()
     }
 }
 
@@ -137,7 +137,7 @@ object GuiCounter extends TGuiFactory
     @SideOnly(Side.CLIENT)
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
-        val world = Minecraft.getMinecraft.theWorld
+        val world = Minecraft.getMinecraft.world
         IntegrationCPH.readPartIndex(world, data) match
         {
             case gate:GatePart if gate.getLogic.isInstanceOf[ICounterGuiLogic] => new GuiCounter(gate)

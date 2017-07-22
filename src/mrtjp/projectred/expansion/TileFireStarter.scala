@@ -5,7 +5,7 @@
  */
 package mrtjp.projectred.expansion
 
-import codechicken.lib.model.blockbakery.SimpleBlockRenderer
+import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import codechicken.multipart.IRedstoneConnector
 import mrtjp.core.world.WorldLib
@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.init.{Blocks, SoundEvents}
 import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation, SoundCategory}
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.property.IExtendedBlockState
@@ -53,8 +54,9 @@ object RenderFireStarter extends SimpleBlockRenderer
 {
     import java.lang.{Boolean => JBool, Integer => JInt}
 
-    import mrtjp.core.util.CCLConversions._
+    import org.apache.commons.lang3.tuple.Triple
     import mrtjp.projectred.expansion.BlockProperties._
+
     var bottom:TextureAtlasSprite = _
     var side1A:TextureAtlasSprite = _
     var side2A:TextureAtlasSprite = _
@@ -66,7 +68,7 @@ object RenderFireStarter extends SimpleBlockRenderer
     var iconT1: UVTransformation = _
     var iconT2: UVTransformation = _
 
-    override def handleState(state: IExtendedBlockState, tileEntity: TileEntity): IExtendedBlockState = tileEntity match {
+    override def handleState(state: IExtendedBlockState, world: IBlockAccess, pos: BlockPos): IExtendedBlockState = world.getTileEntity(pos) match {
         case t:TActiveDevice => {
             var s = state
             s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[JInt])
@@ -82,10 +84,10 @@ object RenderFireStarter extends SimpleBlockRenderer
         val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
         val active = state.getValue(UNLISTED_ACTIVE_PROPERTY).asInstanceOf[Boolean]
         val powered = state.getValue(UNLISTED_POWERED_PROPERTY).asInstanceOf[Boolean]
-        createTriple(side, rotation, if (active || powered) iconT2 else iconT1)
+        Triple.of(side, rotation, if (active || powered) iconT2 else iconT1)
     }
 
-    override def getItemTransforms(stack:ItemStack) = createTriple(0, 0, iconT1)
+    override def getItemTransforms(stack:ItemStack) = Triple.of(0, 0, iconT1)
 
     override def shouldCull() = true
 

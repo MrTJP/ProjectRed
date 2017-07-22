@@ -308,8 +308,9 @@ class ItemICChip extends ItemCore
         }
     }
 
-    override def onItemRightClick(stack:ItemStack, world:World, player:EntityPlayer, hand:EnumHand):ActionResult[ItemStack] =
+    override def onItemRightClick(world:World, player:EntityPlayer, hand:EnumHand):ActionResult[ItemStack] =
     {
+        val stack = player.getHeldItem(hand)
         if (stack.getItemDamage == 1 && ItemICBlueprint.hasICInside(stack)) //creative chip
         {
             val gate = GateDefinition.ICGate.makeStack
@@ -318,10 +319,10 @@ class ItemICChip extends ItemCore
                 player.entityDropItem(gate, player.getEyeHeight)
             return new ActionResult(EnumActionResult.SUCCESS, stack)
         }
-        super.onItemRightClick(stack, world, player, hand)
+        super.onItemRightClick(world, player, hand)
     }
 
-    override def getSubItems(itemIn:Item, tab:CreativeTabs, subItems:JList[ItemStack])
+    override def getSubItems(itemIn:Item, tab:CreativeTabs, subItems:NonNullList[ItemStack])
     {
         subItems.add(new ItemStack(this, 1, 0))
         subItems.add(new ItemStack(this, 1, 1))

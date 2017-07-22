@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.util.NonNullList
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.client.model.ModelLoader
@@ -45,10 +46,10 @@ class ItemPart extends ItemCore
     setCreativeTab(ProjectRedCore.tabCore)
     setHasSubtypes(true)
 
-    override def getSubItems(itemIn:Item, tab:CreativeTabs, subItems:JList[ItemStack])
+    override def getSubItems(itemIn:Item, tab:CreativeTabs, subItems:NonNullList[ItemStack])
     {
         for (i <- PartDefs.values)
-            subItems.asInstanceOf[JList[ItemStack]].add(i.makeStack)
+            subItems.add(i.makeStack)
     }
 
     override def getUnlocalizedName(stack: ItemStack):String = {

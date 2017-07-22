@@ -24,7 +24,7 @@ import net.minecraft.client.renderer.block.model.{ItemCameraTransforms, ItemOver
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.util.EnumFacing
+import net.minecraft.util.{EnumFacing, NonNullList}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.client.model.IPerspectiveAwareModel
@@ -54,7 +54,7 @@ class ItemPartGate extends ItemCore with TItemMultiPart
     override def getPlacementSound(item:ItemStack) = SoundType.GLASS
 
     @SideOnly(Side.CLIENT)
-    override def getSubItems(id:Item, tab:CreativeTabs, list:JList[ItemStack])
+    override def getSubItems(id:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (g <- GateDefinition.values)
             if (g.implemented) list.add(g.makeStack)
@@ -129,20 +129,13 @@ object GateDefinition extends ItemDefinition
     }
 }
 
-object GateItemRenderer extends IItemRenderer with IPerspectiveAwareModel
+object GateItemRenderer extends IItemRenderer
 {
-    override def isBuiltInRenderer = true
-    override def getParticleTexture = null
-    override def getItemCameraTransforms = ItemCameraTransforms.DEFAULT
     override def isAmbientOcclusion = true
     override def isGui3d = true
-    override def getOverrides = ItemOverrideList.NONE
-    override def getQuads(state:IBlockState, side:EnumFacing, rand:Long) = ImmutableList.of()
+    override def getTransforms = TransformUtils.DEFAULT_BLOCK
 
-    override def handlePerspective(t:TransformType) =
-        MapWrapper.handlePerspective(this, TransformUtils.DEFAULT_BLOCK, t)
-
-    override def renderItem(item:ItemStack)
+    override def renderItem(item:ItemStack, transformType: TransformType)
     {
         val meta = item.getItemDamage
         if (!GateDefinition.values.isDefinedAt(meta) ||

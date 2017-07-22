@@ -174,7 +174,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
             if (s.length == 1) sb.append('0')
             sb.append(s)
         }
-        player.addChatComponentMessage(new TextComponentString(sb.toString()))
+        player.sendMessage(new TextComponentString(sb.toString()))
         true
     }
 
@@ -186,9 +186,10 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
 
             if (s == "") s = "off"
             val packet = Messenger.createPacket
-            packet.writeDouble(x + 0.0D)
-            packet.writeDouble(y + 0.5D)
-            packet.writeDouble(z + 0.0D)
+            //TODO we have writeVector in 1.12.
+            packet.writeDouble(pos.getX + 0.0D)
+            packet.writeDouble(pos.getY + 0.5D)
+            packet.writeDouble(pos.getZ + 0.0D)
             packet.writeString("/#f"+s)
             packet.sendToPlayer(player)
         }
