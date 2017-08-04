@@ -288,8 +288,8 @@ class RenderICGate extends GateRenderer[ICGatePart]
 {
     import mrtjp.projectred.integration.ComponentStore._
 
-    var simp = new SidedWireModel(generateWireModels("IC1", 4))
-    var analog = new SidedWireModel(generateWireModels("IC2", 4))
+    var simp = new SidedWireModel(generateWireModels("ic1", 4))
+    var analog = new SidedWireModel(generateWireModels("ic2", 4))
     var bundled = new SidedICBundledCableModel
     var housing = new ICChipHousingModel
 
