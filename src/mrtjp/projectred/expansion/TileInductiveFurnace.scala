@@ -24,7 +24,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class TileInductiveFurnace extends TileProcessingMachine
 {
-    override protected val storage = new Array[ItemStack](2)
+    override protected val storage = Array.fill(2)(ItemStack.EMPTY)//new Array[ItemStack](2)
     override def getInventoryStackLimit = 64
     override def getName = "furnace"
 

@@ -92,7 +92,7 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
     override def createContainer(player:EntityPlayer) =
         new ContainerElectrotineGenerator(player, this)
 
-    override protected val storage = new Array[ItemStack](1)
+    override protected val storage = Array.fill(1)(ItemStack.EMPTY)//new Array[ItemStack](1)
     override def getInventoryStackLimit = 64
     override def getName = "electrotine_generator"
 

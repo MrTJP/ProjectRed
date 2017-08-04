@@ -113,7 +113,7 @@ class ContainerBackpack(inv:BagInventory, player:EntityPlayer) extends NodeConta
 
 class BagInventory(player:EntityPlayer) extends TInventory
 {
-    override protected val storage = new Array[ItemStack](27)
+    override protected val storage = Array.fill(27)(ItemStack.EMPTY)//new Array[ItemStack](27)
 
     loadInventory()
 

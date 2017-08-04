@@ -32,7 +32,7 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
 {
     var colour:Byte = -1
 
-    override protected val storage = new Array[ItemStack](9)
+    override protected val storage = Array.fill(9)(ItemStack.EMPTY)//new Array[ItemStack](9)
     override def getInventoryStackLimit = 64
     override def getName = "filtered importer"
     override def getDisplayName = super.getDisplayName //for trait conflict

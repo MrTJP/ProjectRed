@@ -18,7 +18,6 @@ import codechicken.lib.util.VertexDataUtils
 import codechicken.lib.vec._
 import codechicken.lib.vec.uv.{IconTransformation, MultiIconTransformation, UVTransformation}
 import com.google.common.collect.ImmutableList
-import com.mojang.realmsclient.gui.ChatFormatting
 import com.mojang.realmsclient.gui.ChatFormatting.{BOLD, RED, RESET}
 import mrtjp.core.gui._
 import mrtjp.core.inventory.{InvWrapper, TInventory}
@@ -36,9 +35,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.ItemStack
-import net.minecraft.item.crafting.{CraftingManager, IRecipe, ShapedRecipes, ShapelessRecipes}
+import net.minecraft.item.crafting.{CraftingManager, ShapedRecipes, ShapelessRecipes}
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.IBlockAccess
@@ -156,7 +154,7 @@ class TileICPrinter extends TileICMachine with TInventory
         else true
     }
 
-    override protected val storage = new Array[ItemStack](21)
+    override protected val storage = Array.fill(21)(ItemStack.EMPTY)//new Array[ItemStack](21)
     override def getInventoryStackLimit = 64
     override def getName = "icprinter"
 
@@ -680,8 +678,8 @@ object RenderICPrinter extends SimpleBlockRenderer
     import java.lang.{Integer => JInt}
     import java.util.{List => JList}
 
-    import org.apache.commons.lang3.tuple.Triple
     import BlockICMachine._
+    import org.apache.commons.lang3.tuple.Triple
 
     val lowerBoxes =
     {

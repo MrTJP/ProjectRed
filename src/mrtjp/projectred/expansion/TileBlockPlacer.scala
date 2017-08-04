@@ -63,7 +63,7 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
     override def doesRotate = false
     override def doesOrient = true
 
-    override protected val storage = new Array[ItemStack](9)
+    override protected val storage = Array.fill(9)(ItemStack.EMPTY)//new Array[ItemStack](9)
 
     override def getInventoryStackLimit = 64
 

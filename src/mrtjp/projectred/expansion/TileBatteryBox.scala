@@ -113,7 +113,7 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
         s = getStorageScaled(8)
     }
 
-    override protected val storage = new Array[ItemStack](2)
+    override protected val storage = Array.fill(2)(ItemStack.EMPTY)//new Array[ItemStack](2)
     override def getInventoryStackLimit = 1
     override def getName = "battery_box"
     override def getDisplayName = super.getDisplayName

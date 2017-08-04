@@ -79,7 +79,7 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
         writeStream(5).writeBoolean(isCharged).sendToChunk(this)
     }
 
-    override protected val storage = new Array[ItemStack](16)
+    override protected val storage = Array.fill(16)(ItemStack.EMPTY)//new Array[ItemStack](16)
     override def getInventoryStackLimit = 1
     override def getName = "charging_bench"
 

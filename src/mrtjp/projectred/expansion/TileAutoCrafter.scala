@@ -75,7 +75,7 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
      * 0 until 9 - Plans
      * 9 until 27 - Storage
      */
-    override protected val storage = new Array[ItemStack](27)
+    override protected val storage = Array.fill(27)(ItemStack.EMPTY)//new Array[ItemStack](27)
 
     override def getInventoryStackLimit = 64
 

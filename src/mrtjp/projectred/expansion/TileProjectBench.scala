@@ -72,7 +72,7 @@ class TileProjectBench extends TileMachine with TInventory with ISidedInventory 
     override def doesOrient = false
 
     //0-8 crafting, 9-26 ingredients, 27 plan, 28 result
-    override protected val storage = new Array[ItemStack](28)
+    override protected val storage = Array.fill(28)(ItemStack.EMPTY)//new Array[ItemStack](28)
 
     override def getInventoryStackLimit = 64
 

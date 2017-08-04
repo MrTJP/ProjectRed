@@ -105,7 +105,7 @@ class TileBarrel extends MTBlockTile with TInventory with ISidedInventory
 
     override def getBlock = ProjectRedExploration.blockBarrel
 
-    override protected val storage = new Array[ItemStack](2)
+    override protected val storage = Array.fill(2)(ItemStack.EMPTY)//new Array[ItemStack](2)
     override def getInventoryStackLimit = 64
     override def getName = "barrel"
 
