@@ -3,12 +3,12 @@ package mrtjp.projectred.fabrication
 import java.util.Random
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import net.minecraft.nbt.NBTTagCompound
-import SEIntegratedCircuit._
-import mrtjp.projectred.core.Configurator
-import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import mrtjp.projectred.ProjectRedCore.log
 import com.mojang.realmsclient.gui.ChatFormatting._
+import mrtjp.projectred.ProjectRedCore.log
+import mrtjp.projectred.core.Configurator
+import mrtjp.projectred.fabrication.SEIntegratedCircuit._
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.ListBuffer
 
@@ -115,10 +115,10 @@ object SequentialICGateLogic
     {
         case defs.Pulse.ordinal => new Pulse(gate)
         case defs.Repeater.ordinal => new Repeater(gate)
-        case defs.Randomizer.ordinal => null //TODO
+        case defs.Randomizer.ordinal => new Randomizer(gate)
         case defs.SRLatch.ordinal => new SRLatch(gate)
         case defs.ToggleLatch.ordinal => new ToggleLatch(gate)
-        case defs.TransparentLatch.ordinal => null //TODO
+        case defs.TransparentLatch.ordinal => new TransparentLatch(gate)
         case defs.Timer.ordinal => new Timer(gate)
 //        case defs.Sequencer.ordinal => new Sequencer(gate)
 //        case defs.Counter.ordinal => new Counter(gate)
@@ -340,6 +340,88 @@ class Repeater(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
     }
 }
 
+class Randomizer(gate:SequentialGateICTile) extends SequentialICGateLogic(gate) with TIOControlableGateTileLogic[SequentialGateICTile]
+{
+    var stateReg = -1
+    var timeStartReg = -1
+
+    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)>>1|(shape&4)<<1)&0xB
+    override def inputMask(shape:Int) = 4
+
+    override def deadSides = 3
+
+    override def allocInternalRegisters(linker:ISELinker)
+    {
+        stateReg = linker.allocateRegisterID(Set(gate.pos))
+        linker.addRegister(stateReg, new StandardRegister[Byte](127))
+
+        timeStartReg = linker.allocateRegisterID(Set(gate.pos))
+        linker.addRegister(timeStartReg, new StandardRegister[Long](-1))
+    }
+
+    override def declareOperations(gate:SequentialGateICTile, linker:ISELinker)
+    {
+        val outputAReg = if (outputRegs(3) != -1) outputRegs(3) else REG_ZERO
+        val outputBReg = if (outputRegs(0) != -1) outputRegs(0) else REG_ZERO
+        val outputCReg = if (outputRegs(1) != -1) outputRegs(1) else REG_ZERO
+        val inputReg = inputRegs(2)
+
+        val stateReg = this.stateReg
+        val timeStartReg = this.timeStartReg
+
+        val calculation = new ISEGate {
+            override def compute(ic:SEIntegratedCircuit) {
+
+                def inputHi = ic.getRegVal[Byte](inputReg) != 0
+
+                def sysTime = ic.getRegVal[Long](REG_SYSTIME)
+                def startTime = ic.getRegVal[Long](timeStartReg)
+
+                def enterShiftingState() {
+                    ic.queueRegVal[Byte](stateReg, 0)
+                    ic.queueRegVal[Long](timeStartReg, ic.getRegVal[Long](REG_SYSTIME))
+                }
+
+                def enterHaltState() {
+                    ic.queueRegVal[Byte](stateReg, 1)
+                    ic.queueRegVal[Long](timeStartReg, -1)
+                }
+
+                def randomizeOutput() {
+                    val sMask = Randomizer.rand.nextInt(8)
+                    ic.queueRegVal[Byte](outputAReg, if ((sMask&1) != 0) 1 else 0)
+                    ic.queueRegVal[Byte](outputBReg, if ((sMask&2) != 0) 1 else 0)
+                    ic.queueRegVal[Byte](outputCReg, if ((sMask&4) != 0) 1 else 0)
+                }
+
+                ic.getRegVal[Byte](stateReg) match {
+                    case 0 => //Shifting state
+                        if (!inputHi)
+                            enterHaltState()
+                        else if ((sysTime-startTime)%2 == 0)
+                            randomizeOutput()
+                    case 1 => //Halt state
+                        if (inputHi)
+                            enterShiftingState()
+                    case 127 => //Initial state
+                        if (inputHi)
+                            enterShiftingState()
+                        else
+                            enterHaltState()
+                }
+            }
+        }
+
+        val gateID = linker.allocateGateID(Set(gate.pos))
+        linker.addGate(gateID, calculation, Seq(inputReg, REG_SYSTIME),
+            Seq(outputAReg, outputBReg, outputCReg, stateReg, timeStartReg).filter(_ != REG_ZERO))
+    }
+}
+
+object Randomizer {
+    val rand = new Random
+}
+
 class SRLatch(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
 {
     var stateReg = -1
@@ -406,12 +488,6 @@ class SRLatch(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
                 def inputMask = (if (ic.getRegVal[Byte](inputBReg) != 0) 2 else 0) | (if (ic.getRegVal[Byte](inputAReg) != 0) 1 else 0)
 
                 ic.getRegVal[Byte](stateReg) match {
-                    case 127 => //initial state
-                        inputMask match {
-                            case 2 => enterBState()
-                            case 3 => enterUndfState()
-                            case 0 | 1 => enterAState()
-                        }
                     case 0 => //A State
                         inputMask match {
                             case 2 => enterBState()    //A-lo B-hi
@@ -430,6 +506,12 @@ class SRLatch(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
                             case 1 => enterAState()
                             case 2 => enterBState()
                             case 3 => //Still Undf, Remain in state
+                        }
+                    case 127 => //initial state
+                        inputMask match {
+                            case 2 => enterBState()
+                            case 3 => enterUndfState()
+                            case 0 | 1 => enterAState()
                         }
                 }
             }
@@ -502,9 +584,9 @@ class ToggleLatch(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
                 }
 
                 ic.getRegVal[Byte](stateReg) match {
-                    case 127 => if (defState == 0) enterAState() else enterBState()
                     case 0 => if (singleBitHi) enterBState()
                     case 1 => if (singleBitHi) enterAState()
+                    case 127 => if (defState == 0) enterAState() else enterBState()
                 }
 
                 ic.queueRegVal[Byte](prevInputMaskReg, inputMask.toByte)
@@ -608,6 +690,76 @@ trait TTimerICGateLogic extends SequentialICGateLogic with ITimerGuiLogic
     {
         super.buildRolloverData(gate, buffer)
         buffer += GRAY+"interval: "+"%.2f".format(getTimerMax*0.05)+"s"
+    }
+}
+
+class TransparentLatch(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
+{
+    var stateReg = -1
+
+    override def outputMask(shape:Int) = if (shape == 0) 3 else 9
+    override def inputMask(shape:Int) = if (shape == 0) 0xC else 6
+
+    override def cycleShape(gate:SequentialGateICTile) =
+    {
+        gate.setShape(gate.shape^1)
+        true
+    }
+
+    override def allocInternalRegisters(linker:ISELinker)
+    {
+        stateReg = linker.allocateRegisterID(Set(gate.pos))
+        linker.addRegister(stateReg, new StandardRegister[Byte](127))
+    }
+
+    override def declareOperations(gate:SequentialGateICTile, linker:ISELinker)
+    {
+        val output1Reg = outputRegs(0)
+        val output2Reg = if (gate.shape == 0) outputRegs(1) else outputRegs(3)
+        val dataInReg = if (gate.shape == 0) inputRegs(3) else inputRegs(1)
+        val wrEnableReg = inputRegs(2)
+        val stateReg = this.stateReg
+
+        val calculation = new ISEGate {
+            override def compute(ic:SEIntegratedCircuit) {
+
+                def dataWrHi = ic.getRegVal[Byte](wrEnableReg) != 0
+
+                def enterLockState() {
+                    ic.queueRegVal[Byte](stateReg, 0)
+                }
+
+                def enterWriteState() {
+                    ic.queueRegVal[Byte](stateReg, 1)
+                    writeData()
+                }
+
+                def writeData() {
+                    val data = ic.getRegVal[Byte](dataInReg)
+                    ic.queueRegVal[Byte](output1Reg, data)
+                    ic.queueRegVal[Byte](output2Reg, data)
+                }
+
+                ic.getRegVal[Byte](stateReg) match {
+                    case 0 => //lock state
+                        if (dataWrHi)
+                            enterWriteState()
+                    case 1 => //wr state
+                        if (dataWrHi)
+                            writeData()
+                        else
+                            enterLockState()
+                    case 127 => //initial state
+                        if (dataWrHi)
+                            enterWriteState()
+                        else
+                            enterLockState()
+                }
+            }
+        }
+
+        val gateID = linker.allocateGateID(Set(gate.pos))
+        linker.addGate(gateID, calculation, Seq(dataInReg, wrEnableReg), Seq(output1Reg, output2Reg, stateReg))
     }
 }
 

@@ -140,8 +140,8 @@ class ImplicitWireNet(ic:ICTileMapContainer, p:Point, r:Int) extends IWireNet
 
     private var regID = -1
 
-    private var hasInput = false
-    private var hasOutput = false
+    private var hasSignalIn = false
+    private var hasSignalOut = false
 
     def calculateNetwork()
     {
@@ -154,13 +154,13 @@ class ImplicitWireNet(ic:ICTileMapContainer, p:Point, r:Int) extends IWireNet
 
         (t1, t2) match {
             case (g1:IRedwireICGate with TConnectableICTile, g2:IRedwireICGate with TConnectableICTile) =>
-                hasOutput = g1.canOutputTo(r) && g2.canInputFrom(g1.rotFromStraight(r))
-                hasInput = g1.canInputFrom(r) && g2.canOutputTo(g1.rotFromStraight(r))
+                hasSignalOut = g1.canOutputTo(r) && g2.canInputFrom(g1.rotFromStraight(r))
+                hasSignalIn = g1.canInputFrom(r) && g2.canOutputTo(g1.rotFromStraight(r))
             case _ =>
         }
     }
 
-    def isRedundant = !hasInput || !hasOutput
+    def isRedundant = !hasSignalIn && !hasSignalOut
 
     override def allocateRegisters(linker:ISELinker)
     {
