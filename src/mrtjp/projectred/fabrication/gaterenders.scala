@@ -435,7 +435,7 @@ class RenderMultiplexer extends ICGateRenderer[ComboGateICTile]
         torches(2).on = (gate.state&8) == 0 && wires(3).on
         torches(3).on = (gate.state&4) == 0 && !wires(5).on
         wires(0).on = torches(2).on
-        wires(1).on = torches(1).on
+        wires(1).on = torches(3).on
     }
 }
 
