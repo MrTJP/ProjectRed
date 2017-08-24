@@ -79,11 +79,11 @@ class ICGatePart extends RedstoneGatePart with TBundledGatePart with TComplexGat
     override def getType = GateDefinition.typeICGate
 }
 
-class ICGateLogic(gate:ICGatePart) extends RedstoneGateLogic[ICGatePart] with TBundledGateLogic[ICGatePart] with TComplexGateLogic[ICGatePart]// with SimulatedWorldCircuit
+class ICGateLogic(gate:ICGatePart) extends RedstoneGateLogic[ICGatePart] with TBundledGateLogic[ICGatePart] with TComplexGateLogic[ICGatePart] with IICSimEngineContainerDelegate
 {
     val tmap = new ICTileMapContainer
     val sim = new ICSimEngineContainer
-    sim.ioChangedDelegate = {() => if (!gate.world.isRemote) gate.scheduleTick(2)}
+    sim.delegate = this
 
     var systime_last = -1L
 
@@ -145,6 +145,15 @@ class ICGateLogic(gate:ICGatePart) extends RedstoneGateLogic[ICGatePart] with TB
     override def outputMask(shape:Int) = ro
     override def bundledInputMask(shape:Int) = bi
     override def bundledOutputMask(shape:Int) = bo
+
+    override def registersDidChange(registers:Set[Int]){}
+
+    override def ioRegistersDidChange()
+    {
+        if (!gate.world.isRemote) gate.scheduleTick(2)
+    }
+
+    override def logDidChange(){}
 
     override def onTick(gate:ICGatePart)
     {
@@ -343,7 +352,6 @@ class RenderICGate extends GateRenderer[ICGatePart]
     {
         name = gate.getLogicIC.name
     }
-
 
     override def renderDynamic(t:Transformation, ccrs:CCRenderState)
     {

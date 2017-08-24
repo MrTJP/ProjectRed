@@ -120,12 +120,16 @@ class ButtonICTile extends ICTile with TICTileAcquisitions with IRedwireICGate w
 
     override def allocateOrFindRegisters(linker:ISELinker)
     {
-        val pos = new Point(x, y)
         for (r <- 0 until 4)
             outputRegs(r) = linker.findOutputRegister(pos, r)
     }
 
-    override def declareOperations(linker:ISELinker){} //no gate op, we simply write to output registers directly
+    override def declareOperations(linker:ISELinker)
+    {
+        on = false
+        sendStateUpdate()
+        sched = -1
+    }
 
     @SideOnly(Side.CLIENT)
     override def onClicked()

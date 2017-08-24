@@ -52,22 +52,32 @@ trait ISEStatLogger
 
     def logError(points:Seq[Point], message:String)
 
-    def logRuntimeFlag(flag:Int)
+    def logRuntimeFlag(flag:Int, registers:Seq[Int], gates:Seq[Int])
+
+    def logRegAlloc(id:Int, points:Set[Point])
+
+    def logGateAlloc(id:Int, points:Set[Point])
 }
 
 trait ISELinker
 {
     /**
       * Allocates space for a register.
+      *
+      * @param associatedPoints The tile map points associated with this register. Used
+      *                         for runtime debugging/logging purposes
       * @return The ID where this register can be added
       */
-    def allocateRegisterID():Int
+    def allocateRegisterID(associatedPoints:Set[Point]):Int
 
     /**
       * Allocates space for a gate
+      *
+      * @param associatedPoints The tile map points associated with this gate. Used
+      *                         for runtime debugging/logging purposes
       * @return The ID where this gate can be added
       */
-    def allocateGateID():Int
+    def allocateGateID(associatedPoints:Set[Point]):Int
 
     /**
       * Sets the ID to the given register
@@ -123,8 +133,8 @@ trait ISELinker
 
 object ISELinker
 {
-    def linkFromMap(map:ISETileMap, delegate:Set[Int] => Unit, flagDelegate:Int => Unit, logger:ISEStatLogger):SEIntegratedCircuit =
-        SELinker.linkFromMap(map, delegate, flagDelegate, logger)
+    def linkFromMap(map:ISETileMap, icDelegate: ISEICDelegate, logger:ISEStatLogger):SEIntegratedCircuit =
+        SELinker.linkFromMap(map, icDelegate, logger)
 }
 
 private class SELinker(logger:ISEStatLogger) extends ISELinker
@@ -157,16 +167,18 @@ private class SELinker(logger:ISEStatLogger) extends ISELinker
     private var registerIDPool = 0
     private var gateIDPool = 0
 
-    override def allocateRegisterID() =
+    override def allocateRegisterID(associatedPoints:Set[Point]) =
     {
         val id = registerIDPool
+        logger.logRegAlloc(id, associatedPoints)
         registerIDPool += 1
         id
     }
 
-    override def allocateGateID() =
+    override def allocateGateID(associatedPoints:Set[Point]) =
     {
         val id = gateIDPool
+        logger.logGateAlloc(id, associatedPoints)
         gateIDPool += 1
         id
     }
@@ -233,7 +245,7 @@ private class SELinker(logger:ISEStatLogger) extends ISELinker
 
 private object SELinker
 {
-    def linkFromMap(map:ISETileMap, delegate:(Set[Int]) => Unit, flagDelegate:Int => Unit, logger:ISEStatLogger):SEIntegratedCircuit =
+    def linkFromMap(map:ISETileMap, icDelegate:ISEICDelegate, logger:ISEStatLogger):SEIntegratedCircuit =
     {
         val linker = new SELinker(logger)
         import linker._
@@ -311,8 +323,7 @@ private object SELinker
             registers.toSeq,
             gates.toSeq,
             regDependents.toMap,
-            delegate,
-            flagDelegate
+            icDelegate
         )
     }
 }

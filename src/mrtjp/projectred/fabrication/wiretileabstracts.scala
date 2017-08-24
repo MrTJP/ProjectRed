@@ -76,7 +76,7 @@ abstract class WireICTile extends ICTile with TConnectableICTile with ISEWireTil
 
     override def buildWireNet =
     {
-        val wireNet = new WireNet(tileMap, Point(x, y))
+        val wireNet = new WireNet(tileMap, pos)
         wireNet.calculateNetwork()
         wireNet
     }
@@ -96,12 +96,12 @@ class WireNetChannel
 
     def allocateRegisters(linker:ISELinker)
     {
-        outputRegID = linker.allocateRegisterID()
+        outputRegID = linker.allocateRegisterID(points.toSet)
         linker.addRegister(outputRegID, new StandardRegister[Byte](0))
 
         if (inputs.size > 1) { //multiple drivers to this channel, will have to be OR'd together
             for (s <- inputs) {
-                val id = linker.allocateRegisterID()
+                val id = linker.allocateRegisterID(points.toSet)
                 linker.addRegister(id, new StandardRegister[Byte](0))
                 inputsToRegIDMap += s -> id
             }
@@ -114,7 +114,7 @@ class WireNetChannel
     def declareOperations(linker:ISELinker)
     {
         if (inputs.size > 1) {
-            val gateID = linker.allocateGateID()
+            val gateID = linker.allocateGateID(points.toSet)
             val outRegID = outputRegID
             val inRegIDs = inputsToRegIDMap.values.toSeq
             val op = new ISEGate {
@@ -149,22 +149,14 @@ class ImplicitWireNet(ic:ICTileMapContainer, p:Point, r:Int) extends IWireNet
         val p2 = p.offset(r)
         points += p2
 
-        ic.getTile(p) match {
-            case g:IRedwireICGate =>
-                if (g.canInputFrom(r))
-                    hasOutput = true
-                if (g.canOutputTo(r))
-                    hasInput = true
-            case _ => return
-        }
+        val t1 = ic.getTile(p)
+        val t2 = ic.getTile(p2)
 
-        ic.getTile(p2) match {
-            case g:IRedwireICGate with TConnectableICTile =>
-                if (g.canInputFrom(g.rotFromStraight(r)))
-                    hasOutput = true
-                if (g.canOutputTo(g.rotFromStraight(r)))
-                    hasInput = true
-            case _ => return
+        (t1, t2) match {
+            case (g1:IRedwireICGate with TConnectableICTile, g2:IRedwireICGate with TConnectableICTile) =>
+                hasOutput = g1.canOutputTo(r) && g2.canInputFrom(g1.rotFromStraight(r))
+                hasInput = g1.canInputFrom(r) && g2.canOutputTo(g1.rotFromStraight(r))
+            case _ =>
         }
     }
 
@@ -172,7 +164,7 @@ class ImplicitWireNet(ic:ICTileMapContainer, p:Point, r:Int) extends IWireNet
 
     override def allocateRegisters(linker:ISELinker)
     {
-        regID = linker.allocateRegisterID()
+        regID = linker.allocateRegisterID(points.toSet)
         linker.addRegister(regID, new StandardRegister[Byte](0))
     }
 
@@ -273,11 +265,6 @@ class WireNet(ic:ICTileMapContainer, p:Point) extends IWireNet
                     ch.points ++= points
                     channels += ch
 
-                    /* TODO
-                       Potentially problematic, as points of bus wires can be shared between channels.
-                       Solution is to keep a pointToChannels map instead [point -> Seq(channel)]
-                       Not dangerous as buses are not currently ever used as io for the wire net
-                     */
                     for (p <- points)
                         if (busWires.contains(p)) {
                             busPointToChannelsMap.getOrElseUpdate(p, MSet()) += ch

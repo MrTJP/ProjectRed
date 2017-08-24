@@ -11,6 +11,10 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.ListBuffer
 
+/**
+  * Basic gate class that is primarily used by very simple gates (like combinational,
+  * for example). Logic class is singleton.
+  */
 class ComboGateICTile extends RedstoneGateICTile
 {
     val inputRegs = Array(-1, -1, -1, -1)
@@ -49,25 +53,9 @@ object ComboGateTileLogic
     }
 }
 
-trait TSimpleRSGateTileLogic[T <: RedstoneGateICTile] extends RedstoneGateTileLogic[T]
+trait TIOControlableGateTileLogic[T <: RedstoneGateICTile] extends RedstoneGateTileLogic[T]
 {
-    def getDelay(shape:Int) = 0
-
-    @SideOnly(Side.CLIENT)
-    override def buildRolloverData(gate:T, buffer:ListBuffer[String])
-    {
-        super.buildRolloverData(gate, buffer)
-        buffer += GRAY + "I: "+rolloverInput(gate)
-        buffer += GRAY + "O: "+rolloverOutput(gate)
-    }
-
-    def rolloverInput(gate:T) = "0x"+Integer.toHexString(gate.state&0xF)
-    def rolloverOutput(gate:T) = "0x"+Integer.toHexString(gate.state>>4)
-}
-
-abstract class ComboGateTileLogic extends RedstoneGateTileLogic[ComboGateICTile] with TSimpleRSGateTileLogic[ComboGateICTile]
-{
-    override def cycleShape(gate:ComboGateICTile) =
+    override def cycleShape(gate:T) =
     {
         val oldShape = gate.shape
         val newShape = cycleShape(oldShape)
@@ -91,7 +79,10 @@ abstract class ComboGateTileLogic extends RedstoneGateTileLogic[ComboGateICTile]
 
     def deadSides = 0
     def maxDeadSides = deadSides-1
+}
 
+abstract class ComboGateTileLogic extends RedstoneGateTileLogic[ComboGateICTile] with TIOControlableGateTileLogic[ComboGateICTile]
+{
     def pullInput(gate:ComboGateICTile, mask:Int) = //Pull the input from the sim engine
     {
         var input = 0
@@ -131,20 +122,31 @@ abstract class ComboGateTileLogic extends RedstoneGateTileLogic[ComboGateICTile]
 
         import SEIntegratedCircuit._
         if (gate.inputRegs.forall(id => id == -1 || id == REG_ZERO))
-            linker.getLogger.logWarning(Seq(new Point(gate.x, gate.y)), "gate has no inputs")
+            linker.getLogger.logWarning(Seq(gate.pos), "gate has no inputs")
         if (gate.outputRegs.forall(id => id == -1 || id == REG_ZERO))
-            linker.getLogger.logWarning(Seq(new Point(gate.x, gate.y)), "gate has no outputs")
+            linker.getLogger.logWarning(Seq(gate.pos), "gate has no outputs")
     }
 
     override def declareOperations(gate:ComboGateICTile, linker:ISELinker)
     {
         val comp = getOutputOp(gate.inputRegs, gate.outputRegs)
-        linker.addGate(linker.allocateGateID(), comp,
+        linker.addGate(linker.allocateGateID(Set(gate.pos)), comp,
             gate.inputRegs.filter(_ != -1).toSeq.distinct,
             gate.outputRegs.filter(_ != -1).toSeq.distinct)
     }
 
     def getOutputOp(inputs:Array[Int], outputs:Array[Int]):ISEGate
+
+    @SideOnly(Side.CLIENT)
+    override def buildRolloverData(gate:ComboGateICTile, buffer:ListBuffer[String])
+    {
+        super.buildRolloverData(gate, buffer)
+        buffer += GRAY + "I: "+rolloverInput(gate)
+        buffer += GRAY + "O: "+rolloverOutput(gate)
+    }
+
+    def rolloverInput(gate:ComboGateICTile) = "0x"+Integer.toHexString(gate.state&0xF)
+    def rolloverOutput(gate:ComboGateICTile) = "0x"+Integer.toHexString(gate.state>>4)
 }
 
 object OR extends ComboGateTileLogic
@@ -265,7 +267,6 @@ object XOR extends ComboGateTileLogic
             }
         }
     }
-
 }
 
 object XNOR extends ComboGateTileLogic
@@ -332,62 +333,6 @@ object Multiplexer extends ComboGateTileLogic
     }
 }
 
-//
-//object Pulse extends ComboICGateLogic
-//{
-//    override def outputMask(shape:Int) = 1
-//    override def inputMask(shape:Int) = 4
-//
-//    override def calcOutput(gate:ComboGateICPart, input:Int) = 0
-//
-//    override def onChange(gate:ComboGateICPart) =
-//    {
-//        val oldInput = gate.state&0xF
-//        val newInput = getInput(gate, 4)
-//
-//        if (oldInput != newInput)
-//        {
-//            gate.setState(gate.state&0xF0|newInput)
-//            gate.onInputChange()
-//            if (newInput != 0 && (gate.state&0xF0) == 0)
-//            {
-//                gate.setState(gate.state&0xF|0x10)
-//                gate.scheduleTick(2)
-//                gate.onOutputChange(1)
-//            }
-//        }
-//    }
-//}
-//
-//object Repeater extends ComboICGateLogic
-//{
-//    val delays = Array(2, 4, 6, 8, 16, 32, 64, 128, 256)
-//
-//    override def outputMask(shape:Int) = 1
-//    override def inputMask(shape:Int) = 4
-//
-//    override def getDelay(shape:Int) = delays(shape)
-//
-//    override def cycleShape(shape:Int) = (shape+1)%delays.length
-//
-//    override def calcOutput(gate:ComboGateICPart, input:Int) = if (input == 0) 0 else 1
-//
-//    override def onChange(gate:ComboGateICPart){ if (gate.schedTime < 0) super.onChange(gate) }
-//
-//    override def activate(gate:ComboGateICPart)
-//    {
-//        gate.configure()
-//    }
-//
-//    @SideOnly(Side.CLIENT)
-//    override def getRolloverData(gate:ComboGateICPart, detailLevel:Int) =
-//    {
-//        val data = Seq.newBuilder[String]
-//        if (detailLevel > 1) data += "delay: "+delays(gate.shape)
-//        super.getRolloverData(gate, detailLevel)++data.result()
-//    }
-//}
-//
 //object Randomizer extends ComboICGateLogic
 //{
 //    val rand = new Random

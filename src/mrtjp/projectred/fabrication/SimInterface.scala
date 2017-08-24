@@ -3,10 +3,19 @@ package mrtjp.projectred.fabrication
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import mrtjp.core.vec.Point
 import net.minecraft.nbt.NBTTagCompound
+import SEIntegratedCircuit._
+import scala.collection.mutable.{ListBuffer, Map => MMap}
 
-import scala.collection.mutable.ListBuffer
+trait IICSimEngineContainerDelegate
+{
+    def registersDidChange(registers:Set[Int])
 
-class ICSimEngineContainer
+    def ioRegistersDidChange()
+
+    def logDidChange()
+}
+
+class ICSimEngineContainer extends ISEICDelegate
 {
     import SEIntegratedCircuit._
 
@@ -23,11 +32,7 @@ class ICSimEngineContainer
       */
     val iostate = Array(0, 0, 0, 0)
 
-    var ioChangedDelegate = {() => ()}
-
-    var logChangedDelegate = {() => ()}
-
-    var registersChangedDelegate = {_:Set[Int] => ()}
+    var delegate:IICSimEngineContainerDelegate = null
 
     var propagateSilently = false
 
@@ -86,30 +91,30 @@ class ICSimEngineContainer
         }
     }
 
-    private def onRegistersChanged(changes:Set[Int])
+    override def registersDidChange(registers:Set[Int])
     {
         if (propagateSilently) return
-        registersChangedDelegate(changes)
+        if (delegate != null) delegate.registersDidChange(registers)
         val firstIOReg = REG_IN(0, 0)
         val lastIOReg = REG_OUT(3, 15)
-        if (changes.exists {reg => reg >= firstIOReg && reg <= lastIOReg}) {
+        if (registers.exists {reg => reg >= firstIOReg && reg <= lastIOReg}) {
             pullOutputRegisters(0xFF)
-            ioChangedDelegate()
+            if (delegate != null) delegate.ioRegistersDidChange()
         }
     }
 
-    private def onFlagRecieved(flag:Int)
+    override def icDidThrowErrorFlag(flag:Int, registers:Seq[Int], gates:Seq[Int])
     {
-        logger.logRuntimeFlag(flag)
+        logger.logRuntimeFlag(flag, registers, gates)
         if (!propagateSilently)
-            logChangedDelegate()
+            if (delegate != null) delegate.logDidChange()
     }
 
     def recompileSimulation(map:ISETileMap)
     {
         logger.clear()
 
-        //temporary io check, non-issue once side io modes are stored map-level instead of tile-level
+        //TODO temporary io check, non-issue once side io modes are stored map-level instead of tile-level
         val ioParts = map.tiles.collect {
             case (pos, io:IIOGateTile) => (pos, io)
         }
@@ -127,12 +132,12 @@ class ICSimEngineContainer
             }
         }
 
-        simEngine = ISELinker.linkFromMap(map, onRegistersChanged, onFlagRecieved, logger)
+        simEngine = ISELinker.linkFromMap(map, this, logger)
         pushInputRegisters(0xF)
         pushSystemTime()
 
         if (!propagateSilently)
-            logChangedDelegate()
+            if (delegate != null) delegate.logDidChange()
     }
 
     def resetSimState(map:ISETileMap)
@@ -203,12 +208,16 @@ class ConstantRegister[Type](c:Type) extends ISERegister
 
 class SEStatLogger extends ISEStatLogger
 {
-    val log = ListBuffer[String]()
+    private val log = ListBuffer[String]()
 
-    val warnings = ListBuffer[(Seq[Point], String)]()
-    val errors = ListBuffer[(Seq[Point], String)]()
+    private val warnings = ListBuffer[(Seq[Point], String)]()
+    private val errors = ListBuffer[(Seq[Point], String)]()
 
-    val runtimeFlags = ListBuffer[Int]()
+    //Flags, RegPoints, GatePoints
+    private val runtimeFlags = ListBuffer[(Int, Seq[Point], Seq[Point])]()
+
+    private val regIDToPoints = MMap[Int, Set[Point]]()
+    private val gateIDToPoints = MMap[Int, Set[Point]]()
 
     override def clear()
     {
@@ -233,14 +242,34 @@ class SEStatLogger extends ISEStatLogger
         errors += points -> message
     }
 
-    override def logRuntimeFlag(flag:Int)
+    override def logRuntimeFlag(flag:Int, registers:Seq[Int], gates:Seq[Int])
     {
-        runtimeFlags += flag
+        runtimeFlags += ((flag, registers.flatMap {regIDToPoints.getOrElse(_, Set.empty)},
+                gates.flatMap {gateIDToPoints.getOrElse(_, Set.empty)}))
     }
 
+    override def logRegAlloc(id:Int, points:Set[Point])
+    {
+        regIDToPoints += id -> points
+    }
+
+    override def logGateAlloc(id:Int, points:Set[Point])
+    {
+        gateIDToPoints += id -> points
+    }
+
+    def getWarnings:Seq[(Seq[Point], String)] = warnings
     def getWarningsForPoint(p:Point):Seq[(Seq[Point], String)] = warnings.filter(_._1 contains p)
 
+    def getErrors:Seq[(Seq[Point], String)] = errors
     def getErrorsForPoint(p:Point):Seq[(Seq[Point], String)] = errors.filter(_._1 contains p)
+
+    def getRuntimeFlags:Seq[(Seq[Point], String)] = runtimeFlags.map {p => (p._2 ++ p._3, runtimeFlagToMessage(p._1))}
+    def getRuntimeFlagsForPoint(p:Point):Seq[(Seq[Point], String)] = getRuntimeFlags.filter(_._1 contains p)
+
+    private def runtimeFlagToMessage(flag:Int):String = flag match {
+        case COMPUTE_OVERFLOW => "COMPUTE OVERFLOW!"
+    }
 
     def writeLog(out:MCDataOutput)
     {
@@ -261,8 +290,17 @@ class SEStatLogger extends ISEStatLogger
         writeList(errors)
 
         out.writeShort(runtimeFlags.size)
-        for (i <- runtimeFlags)
+        for ((i, rPoints, gPoints) <- runtimeFlags) {
             out.writeByte(i)
+
+            out.writeByte(rPoints.size)
+            for (rp <- rPoints)
+                out.writeByte(rp.x).writeByte(rp.y)
+
+            out.writeByte(gPoints.size)
+            for (gp <- gPoints)
+                out.writeByte(gp.x).writeByte(gp.y)
+        }
     }
 
     def readLog(in:MCDataInput)
@@ -273,7 +311,7 @@ class SEStatLogger extends ISEStatLogger
             for (_ <- 0 until in.readUShort()) {
                 val points = Seq.newBuilder[Point]
                 for (_ <- 0 until in.readUShort())
-                    points += new Point(in.readUByte(), in.readUByte())
+                    points += Point(in.readUByte(), in.readUByte())
 
                 list += points.result() -> in.readString()
             }
@@ -283,7 +321,12 @@ class SEStatLogger extends ISEStatLogger
         readList(errors)
 
         runtimeFlags.clear()
-        for (_ <- 0 until in.readUShort())
-            runtimeFlags += in.readUByte()
+        for (_ <- 0 until in.readUShort()) {
+            val flag = in.readUByte()
+            val rPoints = (0 until in.readUByte()) map {_ => Point(in.readUByte(), in.readUByte())}
+            val gPoints = (0 until in.readUByte()) map {_ => Point(in.readUByte(), in.readUByte())}
+
+            runtimeFlags += ((flag, rPoints, gPoints))
+        }
     }
 }

@@ -31,7 +31,7 @@ class TileEditorOpErase extends TileEditorOp
 
         for (x <- math.min(start.x, end.x) to math.max(start.x, end.x))
             for (y <- math.min(start.y, end.y) to math.max(start.y, end.y))
-                editor.removeTile(x, y)
+                editor.removeTile(Point(x, y))
     }
 
     @SideOnly(Side.CLIENT)

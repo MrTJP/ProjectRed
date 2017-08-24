@@ -97,7 +97,7 @@ abstract class RedwireICTile extends WireICTile with IRedwireICPart
 
     override def cacheStateRegisters(linker:ISELinker)
     {
-        stateRegisters = linker.getAllWireNetRegisters(new Point(x, y))
+        stateRegisters = linker.getAllWireNetRegisters(pos)
     }
 
     override def onRegistersChanged(regIDs:Set[Int])

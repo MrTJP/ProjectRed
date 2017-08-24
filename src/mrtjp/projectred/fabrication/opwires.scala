@@ -18,7 +18,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 abstract class OpWire extends TileEditorOp
 {
     override def checkOp(editor:ICTileMapEditor, start:Point, end:Point) =
-        editor.getTile(start.x, start.y) == null
+        editor.getTile(start) == null
 
     override def writeOp(editor:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
     {
@@ -33,10 +33,12 @@ abstract class OpWire extends TileEditorOp
         val end2 = start+Point((end-start).vectorize.axialProject)
 
         for (px <- math.min(start.x, end2.x) to math.max(start.x, end2.x))
-            for (py <- math.min(start.y, end2.y) to math.max(start.y, end2.y))
-                if (!isOnBorder(editor.size, Point(px, py)))
-                    if (editor.getTile(px, py) == null)
-                        editor.setTile(px, py, createPart)
+            for (py <- math.min(start.y, end2.y) to math.max(start.y, end2.y)) {
+                val point = Point(px, py)
+                if (!isOnBorder(editor.size, point))
+                    if (editor.getTile(point) == null)
+                        editor.setTile(point, createPart)
+            }
     }
 
     def createPart:ICTile
@@ -67,7 +69,7 @@ abstract class OpWire extends TileEditorOp
                 renderHolo(x, y, xSize, ySize, editor.size, point,
                     if (isOnBorder(editor.size, point)) 0x44FF0000 else 0x44FFFFFF)
 
-                if (editor.getTile(px, py) == null)
+                if (editor.getTile(point) == null)
                 {
                     val t = orthoPartT(x, y, xSize, ySize, editor.size, px, py)
                     var m = 0

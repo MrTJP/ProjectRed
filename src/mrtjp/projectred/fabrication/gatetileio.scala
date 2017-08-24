@@ -154,7 +154,7 @@ abstract class IOGateTileLogic(val gate:IOGateICTile) extends RedstoneGateTileLo
     override def declareOperations(gate:IOGateICTile, linker:ISELinker)
     {
         val comp = getOutputOp(inputReg, outputReg)
-        linker.addGate(linker.allocateGateID(), comp, Seq(inputReg), Seq(outputReg))
+        linker.addGate(linker.allocateGateID(Set(gate.pos)), comp, Seq(inputReg), Seq(outputReg))
     }
 
     def getOutputOp(input:Int, output:Int):ISEGate =

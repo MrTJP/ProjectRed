@@ -153,7 +153,7 @@ abstract class GateICTile extends ICTile with TConnectableICTile with TICTileOri
 
     override def buildImplicitWireNet(r:Int) =
     {
-        val net = new ImplicitWireNet(tileMap, Point(x, y), r)
+        val net = new ImplicitWireNet(tileMap, pos, r)
         net.calculateNetwork()
         if (net.isRedundant) null else net
     }
@@ -163,9 +163,9 @@ abstract class GateICTile extends ICTile with TConnectableICTile with TICTileOri
         getLogicPrimitive.allocateOrFindRegisters(this, linker)
     }
 
-    def getInputRegister(r:Int, linker:ISELinker):Int =  linker.findInputRegister(Point(x, y), toAbsolute(r))
+    def getInputRegister(r:Int, linker:ISELinker):Int =  linker.findInputRegister(pos, toAbsolute(r))
 
-    def getOutputRegister(r:Int, linker:ISELinker):Int =  linker.findOutputRegister(Point(x, y), toAbsolute(r))
+    def getOutputRegister(r:Int, linker:ISELinker):Int =  linker.findOutputRegister(pos, toAbsolute(r))
 
     override def declareOperations(linker:ISELinker)
     {
@@ -230,67 +230,6 @@ abstract class GateTileLogic[T <: GateICTile]
     def createGui(gate:T):ICTileGui = new ICGateGui(gate)
 }
 
-trait TComplexGateICTile extends GateICTile
-{
-    def getLogicComplex = getLogic[TComplexGateTileLogic[TComplexGateICTile]]
-
-    def assertLogic()
-
-    abstract override def save(tag:NBTTagCompound)
-    {
-        super.save(tag)
-        getLogicComplex.save(tag)
-    }
-
-    abstract override def load(tag:NBTTagCompound)
-    {
-        super.load(tag)
-        assertLogic()
-        getLogicComplex.load(tag)
-    }
-
-    abstract override def writeDesc(packet:MCDataOutput)
-    {
-        super.writeDesc(packet)
-        getLogicComplex.writeDesc(packet)
-    }
-
-    abstract override def readDesc(packet:MCDataInput)
-    {
-        super.readDesc(packet)
-        assertLogic()
-        getLogicComplex.readDesc(packet)
-    }
-
-    abstract override def read(packet:MCDataInput, key:Int) = key match
-    {
-        case k if k > 10 =>
-            assertLogic() //this may be a net dump part
-            getLogicComplex.read(packet, k)
-        case _ => super.read(packet, key)
-    }
-
-    abstract override def preparePlacement(rot:Int, meta:Int)
-    {
-        super.preparePlacement(rot, meta)
-        assertLogic()
-    }
-}
-
-trait TComplexGateTileLogic[T <: TComplexGateICTile] extends GateTileLogic[T]
-{
-    def save(tag:NBTTagCompound){}
-    def load(tag:NBTTagCompound){}
-
-    def readDesc(packet:MCDataInput){}
-    def writeDesc(packet:MCDataOutput){}
-
-    /**
-     * Allocated keys > 10
-     */
-    def read(packet:MCDataInput, key:Int){}
-}
-
 object ICGateDefinition extends Enum
 {
     type EnumVal = ICGateDef
@@ -310,13 +249,13 @@ object ICGateDefinition extends Enum
     val XNOR = ICGateDef("XNOR gate", ICTileDefs.SimpleGate.id, gd.XNOR)
     val Buffer = ICGateDef("Buffer gate", ICTileDefs.SimpleGate.id, gd.Buffer)
     val Multiplexer = ICGateDef("Multiplexer", ICTileDefs.SimpleGate.id, gd.Multiplexer)
-//    val Pulse = ICGateDef("Pulse Former", CircuitPartDefs.SimpleGate.id, gd.Pulse)
-//    val Repeater = ICGateDef("Repeater", CircuitPartDefs.SimpleGate.id, gd.Repeater)
-//    val Randomizer = ICGateDef("Randomizer", CircuitPartDefs.SimpleGate.id, gd.Randomizer)
-//    val SRLatch = ICGateDef("SR Latch", CircuitPartDefs.ComplexGate.id, gd.SRLatch)
-//    val ToggleLatch = ICGateDef("Toggle Latch", CircuitPartDefs.ComplexGate.id, gd.ToggleLatch)
-//    val TransparentLatch = ICGateDef("Transparent Latch", CircuitPartDefs.SimpleGate.id, gd.TransparentLatch)
-//    val Timer = ICGateDef("Timer", CircuitPartDefs.ComplexGate.id, gd.Timer)
+    val Pulse = ICGateDef("Pulse Former", ICTileDefs.ComplexGate.id, gd.Pulse)
+    val Repeater = ICGateDef("Repeater", ICTileDefs.ComplexGate.id, gd.Repeater)
+    val Randomizer = ICGateDef("Randomizer", ICTileDefs.ComplexGate.id, gd.Randomizer)
+    val SRLatch = ICGateDef("SR Latch", ICTileDefs.ComplexGate.id, gd.SRLatch)
+    val ToggleLatch = ICGateDef("Toggle Latch", ICTileDefs.ComplexGate.id, gd.ToggleLatch)
+    val TransparentLatch = ICGateDef("Transparent Latch", ICTileDefs.ComplexGate.id, gd.TransparentLatch)
+    val Timer = ICGateDef("Timer", ICTileDefs.ComplexGate.id, gd.Timer)
 //    val Sequencer = ICGateDef("Sequencer", CircuitPartDefs.ComplexGate.id, gd.Sequencer)
 //    val Counter = ICGateDef("Counter", CircuitPartDefs.ComplexGate.id, gd.Counter)
 //    val StateCell = ICGateDef("State Cell", CircuitPartDefs.ComplexGate.id, gd.StateCell)

@@ -7,8 +7,7 @@ class SEIntegratedCircuit(
     $registers:Seq[ISERegister], //Registers in the circuit, indexed by regID
     $gates:Seq[ISEGate], //Gates in the circuit, indexed by gateID
     $regDependents:Map[Int, Seq[Int]], //Register deps [regID -> Seq(gateID)]
-    registerChangeDelegate:Set[Int] => Unit,
-    errorFlagDelegate:Int => Unit
+    delegate:ISEICDelegate
 )
 {
     val registers = $registers.toArray
@@ -35,7 +34,7 @@ class SEIntegratedCircuit(
 
     def propagateInitial()
     {
-        for (regID <- 0 until registers.size)
+        for (regID <- 0 until registers.length)
             changeQueue += regID //mark all registers dirty
         repropagate()
     }
@@ -49,6 +48,7 @@ class SEIntegratedCircuit(
         var computes = MSet[Int]()
 
         var hasOverflow = false
+        var overflowGateID = -1
 
         def fetch() {
             changes = changeQueue.result()
@@ -61,6 +61,7 @@ class SEIntegratedCircuit(
                 allComputes(i) += 1
                 if (allComputes(i) > 32) {
                     hasOverflow = true
+                    overflowGateID = i
                     return
                 }
             }
@@ -89,11 +90,12 @@ class SEIntegratedCircuit(
         while (changes.nonEmpty && !hasOverflow)
 
         if (hasOverflow)
-            errorFlagDelegate(SEIntegratedCircuit.COMPUTE_OVERFLOW)
+            if (delegate != null) delegate.icDidThrowErrorFlag(
+                SEIntegratedCircuit.COMPUTE_OVERFLOW, changes, Seq(overflowGateID))
 
         val ch = allChanges.result()
         if (ch.nonEmpty) {
-            registerChangeDelegate(ch)
+            if (delegate != null) delegate.registersDidChange(ch)
             true
         } else
             false
@@ -116,6 +118,13 @@ object SEIntegratedCircuit
 
     //Flags
     val COMPUTE_OVERFLOW = 1
+}
+
+trait ISEICDelegate
+{
+    def registersDidChange(registers:Set[Int])
+
+    def icDidThrowErrorFlag(flag:Int, registers:Seq[Int], gates:Seq[Int])
 }
 
 trait ISERegister

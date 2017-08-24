@@ -81,13 +81,13 @@ object TileEditorOpDefs extends Enum
     val XNORGate = OpDef(new OpGate(ICGateDefinition.XNOR.ordinal))
     val BufferGate = OpDef(new OpGate(ICGateDefinition.Buffer.ordinal))
     val MultiplexerGate = OpDef(new OpGate(ICGateDefinition.Multiplexer.ordinal))
-//    val PulseFormerGate = OpDef(new OpGate(ICGateDefinition.Pulse.ordinal))
-//    val RepeaterGate = OpDef(new OpGate(ICGateDefinition.Repeater.ordinal))
-//    val RandomizerGate = OpDef(new OpGate(ICGateDefinition.Randomizer.ordinal))
-//    val SRLatchGate = OpDef(new OpGate(ICGateDefinition.SRLatch.ordinal))
-//    val ToggleLatchGate = OpDef(new OpGate(ICGateDefinition.ToggleLatch.ordinal))
-//    val TransparentLatchGate = OpDef(new OpGate(ICGateDefinition.TransparentLatch.ordinal))
-//    val TimerGate = OpDef(new OpGate(ICGateDefinition.Timer.ordinal))
+    val PulseFormerGate = OpDef(new OpGate(ICGateDefinition.Pulse.ordinal))
+    val RepeaterGate = OpDef(new OpGate(ICGateDefinition.Repeater.ordinal))
+    val RandomizerGate = OpDef(new OpGate(ICGateDefinition.Randomizer.ordinal))
+    val SRLatchGate = OpDef(new OpGate(ICGateDefinition.SRLatch.ordinal))
+    val ToggleLatchGate = OpDef(new OpGate(ICGateDefinition.ToggleLatch.ordinal))
+    val TransparentLatchGate = OpDef(new OpGate(ICGateDefinition.TransparentLatch.ordinal))
+    val TimerGate = OpDef(new OpGate(ICGateDefinition.Timer.ordinal))
 //    val SequencerGate = OpDef(new OpGate(ICGateDefinition.Sequencer.ordinal))
 //    val CounterGate = OpDef(new OpGate(ICGateDefinition.Counter.ordinal))
 //    val StateCellGate = OpDef(new OpGate(ICGateDefinition.StateCell.ordinal))
@@ -157,7 +157,7 @@ abstract class SimplePlacementOp extends TileEditorOp
         !isOnBorder(editor.size, point)
 
     override def checkOp(editor:ICTileMapEditor, start:Point, end:Point) =
-        canPlace(editor, end) && editor.getTile(end.x, end.y) == null
+        canPlace(editor, end) && editor.getTile(end) == null
 
     override def writeOp(editor:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
     {
@@ -167,8 +167,8 @@ abstract class SimplePlacementOp extends TileEditorOp
     override def readOp(editor: ICTileMapEditor, in: MCDataInput)
     {
         val point = Point(in.readUByte(), in.readUByte())
-        if (canPlace(editor, point) && editor.getTile(point.x, point.y) == null)
-            editor.setTile(point.x, point.y, createPart)
+        if (canPlace(editor, point) && editor.getTile(point) == null)
+            editor.setTile(point, createPart)
     }
 
     @SideOnly(Side.CLIENT)
@@ -188,7 +188,6 @@ abstract class SimplePlacementOp extends TileEditorOp
 
         val t = orthoPartT(x, y, xSize, ySize, editor.size, point.x, point.y)
         doPartRender(ccrs, t)
-
     }
 
     @SideOnly(Side.CLIENT)

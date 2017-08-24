@@ -9,6 +9,7 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
 import mrtjp.core.util.Enum
+import mrtjp.core.vec.Point
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -28,7 +29,7 @@ object ICTileDefs extends Enum
 
     val IOGate = ICTileDef(() => new IOGateICTile)
     val SimpleGate = ICTileDef(() => new ComboGateICTile)
-//    val ComplexGate = CircuitPartDef(() => new SequentialGateICPart)
+    val ComplexGate = ICTileDef(() => new SequentialGateICTile)
 //    val ArrayGate = CircuitPartDef(() => new ArrayGateICPart)
 
     case class ICTileDef(factory:() => ICTile) extends Value
@@ -49,7 +50,7 @@ abstract class ICTile extends ISETile
 {
     var editor:ICTileMapEditor = null
     var tileMap:ICTileMapContainer = null
-    var loc:(Byte, Byte) = null
+    var pos:Point = null
 
     def bindEditor(ic:ICTileMapEditor)
     {
@@ -62,20 +63,18 @@ abstract class ICTile extends ISETile
         tileMap = tm
     }
 
-    def bindPos(x:Int, y:Int)
+    def bindPos(p:Point)
     {
-        loc = (x.toByte, y.toByte)
+        pos = p
     }
 
     def unbind()
     {
         editor = null
         tileMap = null
-        loc = null
+        pos = null
     }
 
-    def x = loc._1&0xFF
-    def y = loc._2&0xFF
     def id = getPartType.id
 
     def getPartType:ICTileDefs.ICTileDef
@@ -86,7 +85,7 @@ abstract class ICTile extends ISETile
     def writeDesc(out:MCDataOutput){}
     def readDesc(in:MCDataInput){}
 
-    def writeStreamOf(key:Int):MCDataOutput = editor.network.getTileStream(x, y).writeByte(key)
+    def writeStreamOf(key:Int):MCDataOutput = editor.network.getTileStream(pos).writeByte(key)
     def read(in:MCDataInput) { read(in, in.readUByte()) }
     def read(in:MCDataInput, key:Int) = key match {
         case 0 => readDesc(in)
@@ -97,7 +96,7 @@ abstract class ICTile extends ISETile
 
     def update(){}
     def scheduledTick(){}
-    def scheduleTick(ticks:Int){ editor.scheduleTick(x, y, ticks) }
+    def scheduleTick(ticks:Int){ editor.scheduleTick(pos, ticks) }
 
     def onAdded(){}
     def onRemoved(){}

@@ -16,7 +16,7 @@ trait IICTileEditorNetwork
     def getEditorWorld:World
 
     def getICStreamOf(key:Int):MCDataOutput
-    def getTileStream(x:Int, y:Int):MCDataOutput
+    def getTileStream(pos:Point):MCDataOutput
 
     def isRemote:Boolean
     def markSave()
@@ -29,13 +29,13 @@ trait TICTileEditorNetwork extends IICTileEditorNetwork
 
     def createTileStream():PacketCustom
     def sendTileStream(out:PacketCustom)
-    override def getTileStream(x:Int, y:Int):MCDataOutput =
+    override def getTileStream(pos:Point):MCDataOutput =
     {
         if (tileStream == null) tileStream = createTileStream()
 
-        val tile = getIC.getTile(x, y)
+        val tile = getIC.getTile(pos)
         tileStream.writeByte(tile.id)
-        tileStream.writeByte(x).writeByte(y)
+        tileStream.writeByte(pos.x).writeByte(pos.y)
 
         tileStream
     }
@@ -52,10 +52,10 @@ trait TICTileEditorNetwork extends IICTileEditorNetwork
         try {
             var id = in.readUByte()
             while (id != 255) {
-                val (x, y) = (in.readUByte(), in.readUByte())
-                var tile = getIC.getTile(x, y)
+                val p = Point(in.readUByte(), in.readUByte())
+                var tile = getIC.getTile(p)
                 if (tile == null || tile.id != id) {
-                    log.error("client tile stream couldnt find tile "+Point(x, y))
+                    log.error("client tile stream couldnt find tile "+p)
                     tile = ICTile.createTile(id)
                 }
                 tile.read(in)
@@ -131,8 +131,8 @@ class ICTileMapContainer extends ISETileMap
         for (tile <- tiles.values) {
             val tileTag = new NBTTagCompound
             tileTag.setByte("id", tile.id.toByte)
-            tileTag.setByte("xpos", tile.x.toByte)
-            tileTag.setByte("ypos", tile.y.toByte)
+            tileTag.setByte("xpos", tile.pos.x.toByte)
+            tileTag.setByte("ypos", tile.pos.y.toByte)
             tile.save(tileTag)
             tagList.appendTag(tileTag)
         }
@@ -151,7 +151,7 @@ class ICTileMapContainer extends ISETileMap
             val x = tileTag.getByte("xpos")&0xFF
             val y = tileTag.getByte("ypos")&0xFF
             tile.bindTileMap(this)
-            tile.bindPos(x, y)
+            tile.bindPos(Point(x, y))
             tiles += (x, y) -> tile
             tile.load(tileTag)
         }
@@ -164,7 +164,7 @@ class ICTileMapContainer extends ISETileMap
     def getTile(p:Point):ICTile = getTile(p.x, p.y)
 }
 
-class ICTileMapEditor(val network:IICTileEditorNetwork)
+class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineContainerDelegate
 {
     val tileMapContainer = new ICTileMapContainer
 
@@ -173,7 +173,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
 
     var lastWorldTime = -1L
 
-    private var scheduledTicks = MMap[(Int, Int), Long]()
+    private var scheduledTicks = MMap[Point, Long]()
 
     tileMapContainer.tilesLoadedDelegate = {() =>
         simNeedsRefresh = true
@@ -227,7 +227,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         var id = in.readUByte()
         while (id != 255) {
             val tile = ICTile.createTile(id)
-            setTile_do(in.readUByte(), in.readUByte(), tile)
+            setTile_do(Point(in.readUByte(), in.readUByte()), tile)
             tile.readDesc(in)
             id = in.readUByte()
         }
@@ -238,11 +238,11 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         case 0 => readDesc(in)
         case 1 =>
             val tile = ICTile.createTile(in.readUByte())
-            setTile_do(in.readUByte(), in.readUByte(), tile)
+            setTile_do(Point(in.readUByte(), in.readUByte()), tile)
             tile.readDesc(in)
-        case 2 => removeTile(in.readUByte(), in.readUByte())
+        case 2 => removeTile(Point(in.readUByte(), in.readUByte()))
         case 3 => TileEditorOp.getOperation(in.readUByte()).readOp(this, in)
-        case 4 => getTile(in.readUByte(), in.readUByte()) match {
+        case 4 => getTile(Point(in.readUByte(), in.readUByte())) match {
             case g:TClientNetICTile => g.readClientPacket(in)
             case _ => log.error("Server IC stream received invalid client packet")
         }
@@ -259,13 +259,13 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
     {
         val out = network.getICStreamOf(1)
         out.writeByte(tile.id)
-        out.writeByte(tile.x).writeByte(tile.y)
+        out.writeByte(tile.pos.x).writeByte(tile.pos.y)
         tile.writeDesc(out)
     }
 
-    def sendRemoveTile(x:Int, y:Int)
+    def sendRemoveTile(pos:Point)
     {
-        network.getICStreamOf(2).writeByte(x).writeByte(y)
+        network.getICStreamOf(2).writeByte(pos.x).writeByte(pos.y)
     }
 
     def sendOpUse(op:TileEditorOp, start:Point, end:Point) =
@@ -279,7 +279,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
 
     def sendClientPacket(tile:TClientNetICTile, writer:MCDataOutput => Unit)
     {
-        val s = network.getICStreamOf(4).writeByte(tile.x).writeByte(tile.y)
+        val s = network.getICStreamOf(4).writeByte(tile.pos.x).writeByte(tile.pos.y)
         writer(s)
     }
 
@@ -323,12 +323,12 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
     {
         //Update tiles as needed
         val t = network.getEditorWorld.getTotalWorldTime
-        var rem = Seq[(Int, Int)]()
-        for((k, v) <- scheduledTicks) if(v >= t) {
-            getTile(k._1, k._2).scheduledTick()
-            rem :+= k
+        var rem = Seq.newBuilder[Point]
+        for((p, st) <- scheduledTicks) if(st >= t) {
+            getTile(p).scheduledTick()
+            rem += p
         }
-        rem.foreach(scheduledTicks.remove)
+        rem.result().foreach(scheduledTicks.remove)
 
         //Tick tiles
         for(tile <- tileMapContainer.tiles.values) tile.update()
@@ -343,56 +343,55 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
         lastWorldTime = t
     }
 
-    def setTile(x:Int, y:Int, tile:ICTile)
+    def setTile(pos:Point, tile:ICTile)
     {
-        setTile_do(x, y, tile)
+        setTile_do(pos, tile)
         tile.onAdded()
         if (!network.isRemote) {
             sendTileAdded(tile)
             markSchematicChanged()
         }
     }
-    private def setTile_do(x:Int, y:Int, tile:ICTile)
+    private def setTile_do(pos:Point, tile:ICTile)
     {
-        tileMapContainer.assertCoords(x, y)
+        tileMapContainer.assertCoords(pos.x, pos.y)
         tile.bindEditor(this)
-        tile.bindPos(x, y)
-        tileMapContainer.tiles += (x, y) -> tile
+        tile.bindPos(pos)
+        tileMapContainer.tiles += (pos.x, pos.y) -> tile
     }
 
-    def getTile(x:Int, y:Int):ICTile = tileMapContainer.getTile(x, y)
+    def getTile(pos:Point):ICTile = tileMapContainer.getTile(pos.x, pos.y)
 
-    def removeTile(x:Int, y:Int)
+    def removeTile(pos:Point)
     {
-        tileMapContainer.assertCoords(x, y)
-        val tile = getTile(x, y)
+        tileMapContainer.assertCoords(pos.x, pos.y)
+        val tile = getTile(pos)
         if (tile != null) {
             if (!network.isRemote) {
-                sendRemoveTile(x, y)
+                sendRemoveTile(pos)
                 markSchematicChanged()
             }
-            tileMapContainer.tiles.remove((x, y))
+            tileMapContainer.tiles.remove((pos.x, pos.y))
             tile.onRemoved()
             tile.unbind()
         }
     }
 
-    def notifyNeighbor(x:Int, y:Int)
+    def notifyNeighbor(pos:Point)
     {
-        val tile = getTile(x, y)
+        val tile = getTile(pos)
         if (tile != null) tile.onNeighborChanged()
     }
 
-    def notifyNeighbors(x:Int, y:Int, mask:Int)
+    def notifyNeighbors(pos:Point, mask:Int)
     {
         for(r <- 0 until 4) if ((mask&1<<r) != 0) {
-            val point = Point(x, y).offset(r)
-            val tile = getTile(point.x, point.y)
+            val tile = getTile(pos.offset(r))
             if (tile != null) tile.onNeighborChanged()
         }
     }
 
-    def scheduleTick(x:Int, y:Int, ticks:Int){scheduledTicks += (x, y) -> (network.getEditorWorld.getTotalWorldTime+ticks)}
+    def scheduleTick(pos:Point, ticks:Int){scheduledTicks += pos -> (network.getEditorWorld.getTotalWorldTime+ticks)}
 
     def markSchematicChanged()
     {
@@ -402,29 +401,25 @@ class ICTileMapEditor(val network:IICTileEditorNetwork)
     def recompileSchematic()
     {
         simNeedsRefresh = false
-        simEngineContainer.registersChangedDelegate = onICSimFinished
-        simEngineContainer.ioChangedDelegate = sendIOUpdate
-        simEngineContainer.logChangedDelegate = onCompileLogChanged
+        simEngineContainer.delegate = this
         simEngineContainer.recompileSimulation(tileMapContainer)
         simEngineContainer.propagateAll()
     }
 
-    def onICSimFinished(changedRegs:Set[Int])
+
+    override def registersDidChange(registers:Set[Int])
     {
         for (tile <- tileMapContainer.tiles.values)
-            tile.onRegistersChanged(changedRegs)
+            tile.onRegistersChanged(registers)
     }
 
-    def onCompileLogChanged()
+    override def ioRegistersDidChange()
+    {
+        sendIOUpdate()
+    }
+
+    override def logDidChange()
     {
         sendCompileLog()
     }
-
-    //Convinience functions
-    def setTile(p:Point, tile:ICTile){setTile(p.x, p.y, tile)}
-    def getTile(p:Point):ICTile = getTile(p.x, p.y)
-    def removeTile(p:Point){removeTile(p.x, p.y)}
-    def notifyNeighbor(p:Point){notifyNeighbor(p.x, p.y)}
-    def notifyNeighbors(p:Point, mask:Int){notifyNeighbors(p.x, p.y, mask)}
-    def scheduleTick(p:Point, ticks:Int){scheduleTick(p.x, p.y, ticks)}
 }

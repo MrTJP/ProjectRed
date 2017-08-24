@@ -84,7 +84,7 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
             }
 
             //draw compile warning/error symbols, and also highlight related errors of mouse targeted tile
-            def drawFlags(list:MListBuffer[(Seq[Point], String)], rgba:Int)
+            def drawFlags(list:Seq[(Seq[Point], String)], rgba:Int)
             {
                 for ((points, _) <- list) {
                     for (Point(x, y) <- points) {
@@ -108,25 +108,29 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                 }
             }
 
+            def alphaPhaseShift(scale:Double, offset:Double, amp:Double, phaseIdx:Int, total:Int):Int =
+                ((scale*(offset+amp*math.sin(mcInst.world.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi + phaseIdx*math.Pi/total)))*255).toInt
+
             enableBlend()
             blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             prepairRender(ccrs)
             TextureUtils.changeTexture(GuiICWorkbench.background)
 
             val mousePoint = toGridPoint(mouse)
-            drawMouseOverlay(editor.simEngineContainer.logger.getWarningsForPoint(mousePoint).flatMap(_._1),
-                EnumColour.YELLOW.rgba(((0.75*(0.75+0.25*math.sin(mcInst.world.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi)))*255).toInt))
+            val logger = editor.simEngineContainer.logger
 
-            drawMouseOverlay(editor.simEngineContainer.logger.getErrorsForPoint(mousePoint).flatMap(_._1),
-                EnumColour.RED.rgba(((0.75*(0.75+0.25*math.sin(mcInst.world.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi/4 + math.Pi)))*255).toInt))
+            drawMouseOverlay(logger.getWarningsForPoint(mousePoint).flatMap(_._1),
+                EnumColour.YELLOW.rgba(alphaPhaseShift(0.75, 0.75, 0.25, 0, 4)))
 
-            drawFlags(editor.simEngineContainer.logger.warnings, EnumColour.YELLOW.rgba(
-                ((0.5*(1+math.sin(mcInst.world.getTotalWorldTime/20.0 * 2*math.Pi)))*255).toInt
-            ))
+            drawMouseOverlay(logger.getErrorsForPoint(mousePoint).flatMap(_._1),
+                EnumColour.RED.rgba(alphaPhaseShift(0.75, 0.75, 0.25, 1, 4)))
 
-            drawFlags(editor.simEngineContainer.logger.errors, EnumColour.RED.rgba(
-                ((0.5*(1+math.sin(mcInst.world.getTotalWorldTime/20.0 * 2*math.Pi + math.Pi/4)))*255).toInt
-            ))
+            drawMouseOverlay(logger.getRuntimeFlagsForPoint(mousePoint).flatMap(_._1),
+                EnumColour.MAGENTA.rgba(alphaPhaseShift(0.75, 0.75, 0.25, 2, 4)))
+
+            drawFlags(logger.getWarnings, EnumColour.YELLOW.rgba(alphaPhaseShift(0.5, 1, 1, 0, 4)))
+            drawFlags(logger.getErrors, EnumColour.RED.rgba(alphaPhaseShift(0.5, 1, 1, 1, 4)))
+            drawFlags(logger.getRuntimeFlags, EnumColour.MAGENTA.rgba(alphaPhaseShift(0.5, 1, 1, 2, 4)))
 
             finishRender(ccrs)
             disableBlend()
@@ -151,6 +155,7 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                     val flags = new MListBuffer[String]
                     val warnings = editor.simEngineContainer.logger.getWarningsForPoint(point)
                     val errors = editor.simEngineContainer.logger.getErrorsForPoint(point)
+                    val rtf = editor.simEngineContainer.logger.getRuntimeFlagsForPoint(point)
 
                     if (warnings.nonEmpty) {
                         flags += s"$YELLOW$BOLD!" + s"$RESET warnings (${warnings.size})"
@@ -162,6 +167,13 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                     if (errors.nonEmpty) {
                         flags += s"$RED$BOLD" + "X" + s"$RESET errors (${errors.size})"
                         for ((_, message) <- errors) {
+                            flags += s"$GRAY" + " - " + message
+                        }
+                    }
+
+                    if (rtf.nonEmpty) {
+                        flags += s"$DARK_PURPLE$BOLD" + "$" + s"$RESET runtime flags (${rtf.size})"
+                        for ((_, message) <- rtf) {
                             flags += s"$GRAY" + " - " + message
                         }
                     }
@@ -632,7 +644,7 @@ class InfoNode extends TNode
     {
         TextureUtils.changeTexture(GuiICWorkbench.background)
 
-        if (!getTile.hasBP || getTile.getIC.isEmpty || getTile.editor.simEngineContainer.logger.runtimeFlags.nonEmpty)
+        if (!getTile.hasBP || getTile.getIC.isEmpty)
             Gui.drawModalRectWithCustomSizedTexture(position.x, position.y, 330, 0, size.width, size.height, 512, 512)
     }
 
@@ -643,9 +655,6 @@ class InfoNode extends TNode
                 "Lay down a blueprint on the workbench."
             else if (getTile.getIC.isEmpty)
                 "Blueprint is empty. Redraw it."
-            else if (getTile.editor.simEngineContainer.logger.runtimeFlags.nonEmpty) {
-                s"COMPUTE_OVERFLOW!! ${getTile.editor.simEngineContainer.logger.runtimeFlags.size}" //TODO find better way to show this error
-            }
             else ""
         if (text.nonEmpty && rayTest(mouse)) {
             translateToScreen()
@@ -711,8 +720,8 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
             addToolsetRange("Bundled cables", NeutralBundledCable, BlackBundledCable)
             addToolset("IOs", Seq(SimpleIO, BundledIO, AnalogIO))
             addToolset("Primatives", Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate, MultiplexerGate))
-//            addToolset("Timing and Clocks", Seq(PulseFormerGate, RepeaterGate, TimerGate, SequencerGate, StateCellGate))
-//            addToolset("Latches", Seq(SRLatchGate, ToggleLatchGate, TransparentLatchGate))
+            addToolset("Timing and Clocks", Seq(PulseFormerGate, RepeaterGate, TimerGate))//, SequencerGate, StateCellGate))
+            addToolset("Latches", Seq(SRLatchGate, ToggleLatchGate, TransparentLatchGate))
 //            addToolset("Cells", Seq(NullCellGate, InvertCellGate, BufferCellGate))
 //            addToolset("Misc", Seq(RandomizerGate, CounterGate, SynchronizerGate, DecRandomizerGate))
         }

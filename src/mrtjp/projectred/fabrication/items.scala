@@ -88,8 +88,9 @@ object ItemICBlueprint
     {
         assertStackTag(stack)
         val tag = stack.getTagCompound
-        tag.setByte("log_warn", logger.warnings.size.toByte)
-        tag.setByte("log_err", logger.errors.size.toByte)
+        tag.setByte("log_warn", logger.getWarnings.size.toByte)
+        tag.setByte("log_err", logger.getErrors.size.toByte)
+        tag.setByte("log_rtf", logger.getRuntimeFlags.size.toByte)
     }
 
     def loadTileMap(tm:ICTileMapContainer, stack:ItemStack)
