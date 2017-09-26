@@ -1,20 +1,20 @@
 itemGroup.projectred.core=Project Red: Base
 
-item.projectred.core.itemResource.partplate.name=Plaque pour Circuit
+item.projectred.core.itemResource.partplate.name=Plaque de Circuit
 item.projectred.core.itemResource.partconductiveplate.name=Plaque Conductive
 item.projectred.core.itemResource.partwiredplate.name=Plaque Cablée
 item.projectred.core.itemResource.partbundledplate.name=Plaque Câblée avec des Câbles Empaquetés
 item.projectred.core.itemResource.partanode.name=Anode
 item.projectred.core.itemResource.partcathode.name=Cathode
 item.projectred.core.itemResource.partpointer.name=Pointeur
-item.projectred.core.itemResource.partsiliconchip.name=Puce de Silicium
-item.projectred.core.itemResource.partenergizedsiliconchip.name=Puce de Silicium Énergisée
+item.projectred.core.itemResource.partsiliconchip.name=Puce de Silicone
+item.projectred.core.itemResource.partenergizedsiliconchip.name=Puce de Silicone Énergisée
 item.projectred.core.itemResource.partplatformedplate.name=Plaque avec Plateforme
 item.projectred.core.itemResource.partredingot.name=Lingot d'Alliage Rouge
-item.projectred.core.itemResource.partboule.name=Boule de Silicium
-item.projectred.core.itemResource.partsilicon.name=Silicium
-item.projectred.core.itemResource.partinfusedsilicon.name=Silicium Infusé
-item.projectred.core.itemResource.partenergizedsilicon.name=Silicium Énergisé
+item.projectred.core.itemResource.partboule.name=Boule de Silicone
+item.projectred.core.itemResource.partsilicon.name=Silicone
+item.projectred.core.itemResource.partinfusedsilicon.name=SiliconeInfusé
+item.projectred.core.itemResource.partenergizedsilicon.name=Silicone Énergisé
 item.projectred.core.itemResource.partmotor.name=Moteur
 item.projectred.core.itemResource.partcoppercoil.name=Bobine de Cuivre
 item.projectred.core.itemResource.partironcoil.name=Bobine de Fer
@@ -47,6 +47,7 @@ item.projectred.core.itemResource.partsandcoalcomp.name=Composé de Sable et de 
 item.projectred.core.itemResource.partredsiliconcomp.name=Composé de Silicium Rouge
 item.projectred.core.itemResource.partglowsiliconcomp.name=Composé de Silicum brillant
 
+
 item.projectred.core.itemResource.nullchip.name=Vide-Puce Logique de Routage
 item.projectred.core.itemResource.nullupgrd.name=Vide-Puce Logique d'amélioration
 item.projectred.core.itemResource.upgrd_lx.name=Mise à niveau LX
@@ -57,7 +58,7 @@ item.projectred.core.itemResource.upgrd_ry.name=Mise à niveau RY
 item.projectred.core.itemResource.upgrd_rz.name=Mise à niveau RZ
 
 
-item.projectred.core.drawplate.name=Filière
+item.projectred.core.drawplate.name=Plaque de Dessin
 item.projectred.core.multimeter.name=Multimètre
 item.projectred.core.screwdriver.name=Tournevis
 item.projectred.core.routerUtility.name=Utilitaire de Routage
@@ -68,7 +69,29 @@ item.projectred.core.datacard.name=Carte Mémoire
 
 itemGroup.projectred.expansion=Project Red: Extension
 
-
+item.projectred.expansion.batteryEmpty.name=Batterie
+item.projectred.expansion.battery.name=Batterie
+item.projectred.expansion.screwdriverElectric.name=Tournevis Electrique
+item.projectred.expansion.jetpack.name=Jetpack
+item.projectred.expansion.enderPearlInfused.name=Perle du Néant Infusée
+item.projectred.expansion.plan.name=Plan de Recette
+item.projectred.expansion.solarPanel.name=Panneau Solaire
+tile.projectred.expansion.machine1|0.name=Four à Induction
+tile.projectred.expansion.machine1|1.name=Electrotine Generator
+tile.projectred.expansion.machine2|0.name=Casseur de Bloc
+tile.projectred.expansion.machine2|1.name=Importateur d'objet
+tile.projectred.expansion.machine2|2.name=Placeur de Bloc
+tile.projectred.expansion.machine2|3.name=Importateur filtré
+tile.projectred.expansion.machine2|4.name=Démmareur de feu
+tile.projectred.expansion.machine2|5.name=Battery Box
+tile.projectred.expansion.machine2|6.name=Table Chargeuse
+tile.projectred.expansion.machine2|7.name=Téléportateur
+tile.projectred.expansion.machine2|8.name=Frame Motor
+tile.projectred.expansion.machine2|9.name=Frame Linear Actuator
+tile.projectred.expansion.machine2|10.name=Table de Projet
+tile.projectred.expansion.machine2|11.name=Table de Fabrication Automatique
+tile.projectred.expansion.machine2|12.name=Casseur de Bloc en Diamant
+enchantment.projectred.expansion.fuelEfficiency=Efficicacité du Carburant
 
 itemGroup.projectred.transportation=Project Red: Transport
 
@@ -448,3 +471,12 @@ itemGroup.projectred.compatibility=Project Red: Compatibilités
 tile.projectred.compatibility.liqredStone.name=Redstone Liquide
 tile.projectred.compatibility.liqcondredmetal.name=Métal Rouge Conductif Fondu
 
+fluid.redstone.molten=Redstone Liquide
+fluid.redmetal.molten=Métal Rouge Conductif Fondu
+
+
+item.projectred.fabrication.icBlueprint.name=Plan IC
+item.projectred.fabrication.icChip|0.name=Puce IC
+item.projectred.fabrication.icChip|1.name=Puce IC Créative
+tile.projectred.fabrication.icMachine|0.name=Table IC
+tile.projectred.fabrication.icMachine|1.name=Imprimante IC
