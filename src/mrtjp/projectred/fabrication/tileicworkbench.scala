@@ -285,6 +285,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
                 GuiICWorkbench.open(player, nc, {p =>
                     p.writePos(pos)
                     editor.writeDesc(p)
+                    p.writeLong(editor.simEngineContainer.simEngine.getRegVal[Long](SEIntegratedCircuit.REG_SYSTIME))
                 })
             }
         }

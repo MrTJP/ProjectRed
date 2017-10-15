@@ -36,11 +36,11 @@ object RenderGateTile
         new RenderSRLatch,
         new RenderToggleLatch,
         new RenderTransparentLatch,
-        new RenderTimer
-//        new RenderSequencer,
-//        new RenderCounter,
-//        new RenderStateCell,
-//        new RenderSynchronizer,
+        new RenderTimer,
+        new RenderSequencer,
+        new RenderCounter,
+        new RenderStateCell,
+        new RenderSynchronizer
 //        new RenderDecRandomizer,
 //        new RenderNullCell,
 //        new RenderInvertCell,
@@ -89,10 +89,10 @@ abstract class ICGateRenderer[T <: GateICTile]
 
 abstract class RenderIO extends ICGateRenderer[IOGateICTile]
 {
-    val wires = generateWireModels("IOSIMP", 1)
+    val wires = generateWireModels("iosimp", 1)
     val iosig = new IOSigModel
 
-    override val coreModels = Seq(new BaseComponentModel("IOSIMP"))++wires:+iosig
+    override val coreModels = Seq(new BaseComponentModel("iosimp"))++wires:+iosig
 
     override def prepareInv()
     {
@@ -133,10 +133,10 @@ class RenderBundledIO extends RenderIO
 
 class RenderOR extends ICGateRenderer[ComboGateICTile]
 {
-    val wires = generateWireModels("OR", 4)
+    val wires = generateWireModels("or", 4)
     val torches = Seq(new RedstoneTorchModel(8, 9), new RedstoneTorchModel(8, 2.5))
 
-    override val coreModels = Seq(new BaseComponentModel("OR"))++wires++torches
+    override val coreModels = Seq(new BaseComponentModel("or"))++wires++torches
 
     override def prepareInv()
     {
@@ -167,10 +167,10 @@ class RenderOR extends ICGateRenderer[ComboGateICTile]
 
 class RenderNOR extends ICGateRenderer[ComboGateICTile]
 {
-    var wires = generateWireModels("NOR", 4)
+    var wires = generateWireModels("nor", 4)
     var torch = new RedstoneTorchModel(8, 9)
 
-    override val coreModels = Seq(new BaseComponentModel("NOR"))++wires:+torch
+    override val coreModels = Seq(new BaseComponentModel("nor"))++wires:+torch
 
     override def prepareInv()
     {
@@ -199,10 +199,10 @@ class RenderNOR extends ICGateRenderer[ComboGateICTile]
 
 class RenderNOT extends ICGateRenderer[ComboGateICTile]
 {
-    val wires = generateWireModels("NOT", 4)
+    val wires = generateWireModels("not", 4)
     val torch = new RedstoneTorchModel(8, 8)
 
-    override val coreModels = Seq(new BaseComponentModel("NOT"))++wires:+torch
+    override val coreModels = Seq(new BaseComponentModel("not"))++wires:+torch
 
     override def prepareInv()
     {
@@ -231,11 +231,11 @@ class RenderNOT extends ICGateRenderer[ComboGateICTile]
 
 class RenderAND extends ICGateRenderer[ComboGateICTile]
 {
-    val wires = generateWireModels("AND", 4)
+    val wires = generateWireModels("and2", 4)
     val torches = Seq(new RedstoneTorchModel(4, 8), new RedstoneTorchModel(12, 8),
         new RedstoneTorchModel(8, 8), new RedstoneTorchModel(8, 2))
 
-    override val coreModels = Seq(new BaseComponentModel("AND"))++wires++torches
+    override val coreModels = Seq(new BaseComponentModel("and2"))++wires++torches
 
     override def prepareInv()
     {
@@ -270,11 +270,11 @@ class RenderAND extends ICGateRenderer[ComboGateICTile]
 
 class RenderNAND extends ICGateRenderer[ComboGateICTile]
 {
-    val wires = generateWireModels("NAND", 4)
+    val wires = generateWireModels("nand", 4)
     val torches = Seq(new RedstoneTorchModel(4, 8), new RedstoneTorchModel(12, 8),
         new RedstoneTorchModel(8, 8))
 
-    override val coreModels = Seq(new BaseComponentModel("NAND"))++wires++torches
+    override val coreModels = Seq(new BaseComponentModel("nand"))++wires++torches
 
     override def prepareInv()
     {
@@ -307,11 +307,11 @@ class RenderNAND extends ICGateRenderer[ComboGateICTile]
 
 class RenderXOR extends ICGateRenderer[ComboGateICTile]
 {
-    val wires = generateWireModels("XOR", 4)
+    val wires = generateWireModels("xor", 4)
     val torches = Seq(new RedstoneTorchModel(4.5, 8), new RedstoneTorchModel(11.5, 8),
         new RedstoneTorchModel(8, 12))
 
-    override val coreModels = Seq(new BaseComponentModel("XOR"))++wires++torches
+    override val coreModels = Seq(new BaseComponentModel("xor"))++wires++torches
 
     override def prepareInv()
     {
@@ -338,11 +338,11 @@ class RenderXOR extends ICGateRenderer[ComboGateICTile]
 
 class RenderXNOR extends ICGateRenderer[ComboGateICTile]
 {
-    val wires = generateWireModels("XNOR", 5)
+    val wires = generateWireModels("xnor", 5)
     val torches = Seq(new RedstoneTorchModel(8, 2), new RedstoneTorchModel(4.5, 8),
         new RedstoneTorchModel(11.5, 8), new RedstoneTorchModel(8, 12))
 
-    override val coreModels = Seq(new BaseComponentModel("XNOR"))++wires++torches
+    override val coreModels = Seq(new BaseComponentModel("xnor"))++wires++torches
 
     override def prepareInv()
     {
@@ -372,10 +372,10 @@ class RenderXNOR extends ICGateRenderer[ComboGateICTile]
 
 class RenderBuffer extends ICGateRenderer[ComboGateICTile]
 {
-    val wires = generateWireModels("BUFFER", 4)
+    val wires = generateWireModels("buffer", 4)
     val torches = Seq(new RedstoneTorchModel(8, 3.5), new RedstoneTorchModel(8, 9))
 
-    override val coreModels = Seq(new BaseComponentModel("BUFFER"))++wires++torches
+    override val coreModels = Seq(new BaseComponentModel("buffer"))++wires++torches
 
     override def prepareInv()
     {
@@ -404,11 +404,11 @@ class RenderBuffer extends ICGateRenderer[ComboGateICTile]
 
 class RenderMultiplexer extends ICGateRenderer[ComboGateICTile]
 {
-    val wires = generateWireModels("MULTIPLEXER", 6)
+    val wires = generateWireModels("multiplexer", 6)
     val torches = Seq(new RedstoneTorchModel(8, 2), new RedstoneTorchModel(9, 10.5),
         new RedstoneTorchModel(4.5, 8), new RedstoneTorchModel(11.5, 8))
 
-    override val coreModels = Seq(new BaseComponentModel("MULTIPLEXER"))++wires++torches
+    override val coreModels = Seq(new BaseComponentModel("multiplexer"))++wires++torches
 
     override def prepareInv()
     {
@@ -441,11 +441,11 @@ class RenderMultiplexer extends ICGateRenderer[ComboGateICTile]
 
 class RenderPulse extends ICGateRenderer[SequentialGateICTile]
 {
-    val wires = generateWireModels("PULSE", 3)
+    val wires = generateWireModels("pulse", 3)
     val torches = Seq(new RedstoneTorchModel(4, 9.5), new RedstoneTorchModel(11, 9.5),
         new RedstoneTorchModel(8, 3.5))
 
-    override val coreModels = Seq(new BaseComponentModel("PULSE"))++wires++torches
+    override val coreModels = Seq(new BaseComponentModel("pulse"))++wires++torches
 
     override def prepareInv()
     {
@@ -470,7 +470,7 @@ class RenderPulse extends ICGateRenderer[SequentialGateICTile]
 
 class RenderRepeater extends ICGateRenderer[SequentialGateICTile]
 {
-    val wires = generateWireModels("REPEATER", 2)
+    val wires = generateWireModels("repeater", 2)
     val endTorch = new RedstoneTorchModel(8, 2)
     val varTorches = Seq(new RedstoneTorchModel(12.5, 12), new RedstoneTorchModel(12.5, 11),
         new RedstoneTorchModel(12.5, 10), new RedstoneTorchModel(12.5, 9), new RedstoneTorchModel(12.5, 8),
@@ -479,7 +479,7 @@ class RenderRepeater extends ICGateRenderer[SequentialGateICTile]
 
     var shape = 0
 
-    override val coreModels = Seq(new BaseComponentModel("REPEATER"))++wires:+endTorch
+    override val coreModels = Seq(new BaseComponentModel("repeater"))++wires:+endTorch
 
     override def switchModels = Seq(varTorches(shape))
 
@@ -504,10 +504,10 @@ class RenderRepeater extends ICGateRenderer[SequentialGateICTile]
 
 class RenderRandomizer extends ICGateRenderer[SequentialGateICTile]
 {
-    val wires = generateWireModels("RAND", 7)
+    val wires = generateWireModels("rand", 7)
     val chips = Seq(new YellowChipModel(8, 5.5), new YellowChipModel(11.5, 11.5), new YellowChipModel(4.5, 11.5))
 
-    override val coreModels = Seq(new BaseComponentModel("RAND"))++wires++chips
+    override val coreModels = Seq(new BaseComponentModel("rand"))++wires++chips
 
     override def prepareInv()
     {
@@ -552,12 +552,12 @@ class RenderRandomizer extends ICGateRenderer[SequentialGateICTile]
 
 class RenderSRLatch extends ICGateRenderer[SequentialGateICTile]
 {
-    val wires1 = generateWireModels("RSLATCH", 2)
-    val wires2 = generateWireModels("RSLATCH2", 4)
+    val wires1 = generateWireModels("rslatch", 2)
+    val wires2 = generateWireModels("rslatch2", 4)
     val torches1 = Seq(new RedstoneTorchModel(8, 3), new RedstoneTorchModel(8, 13))
     val torches2 = Seq(new RedstoneTorchModel(9.5, 3), new RedstoneTorchModel(6.5, 13))
-    val base1 = new BaseComponentModel("RSLATCH")
-    val base2 = new BaseComponentModel("RSLATCH2")
+    val base1 = new BaseComponentModel("rslatch")
+    val base2 = new BaseComponentModel("rslatch2")
 
     val m1 = Seq(base1)++wires1++torches1
     val m2 = Seq(base2)++wires2++torches2
@@ -604,11 +604,11 @@ class RenderSRLatch extends ICGateRenderer[SequentialGateICTile]
 
 class RenderToggleLatch extends ICGateRenderer[SequentialGateICTile]
 {
-    val wires = generateWireModels("TOGLATCH", 2)
+    val wires = generateWireModels("toglatch", 2)
     val torches = Seq(new RedstoneTorchModel(4, 4), new RedstoneTorchModel(4, 12))
     val lever = new LeverModel(11, 8)
 
-    override val coreModels = Seq(new BaseComponentModel("TOGLATCH"))++wires++torches:+lever
+    override val coreModels = Seq(new BaseComponentModel("toglatch"))++wires++torches:+lever
 
     override def prepareInv()
     {
@@ -631,11 +631,11 @@ class RenderToggleLatch extends ICGateRenderer[SequentialGateICTile]
 
 class RenderTransparentLatch extends ICGateRenderer[SequentialGateICTile]
 {
-    val wires = generateWireModels("TRANSLATCH", 5)
+    val wires = generateWireModels("translatch", 5)
     val torches = Seq(new RedstoneTorchModel(4, 12.5), new RedstoneTorchModel(4, 8),
         new RedstoneTorchModel(8, 8), new RedstoneTorchModel(8, 2), new RedstoneTorchModel(14, 8))
 
-    override val coreModels = Seq(new BaseComponentModel("TRANSLATCH"))++wires++torches
+    override val coreModels = Seq(new BaseComponentModel("translatch"))++wires++torches
 
     override def prepareInv()
     {
@@ -671,11 +671,11 @@ class RenderTransparentLatch extends ICGateRenderer[SequentialGateICTile]
 
 class RenderTimer extends ICGateRenderer[SequentialGateICTile]
 {
-    val wires = generateWireModels("TIME", 3)
+    val wires = generateWireModels("time", 3)
     val torches = Seq(new RedstoneTorchModel(8, 3), new RedstoneTorchModel(8, 8))
     val pointer = new PointerModel(8, 8)
 
-    override val coreModels = Seq(new BaseComponentModel("TIME"))++wires++Seq(pointer)++torches
+    override val coreModels = Seq(new BaseComponentModel("time"))++wires++Seq(pointer)++torches
 
     override def prepareInv()
     {
@@ -692,159 +692,160 @@ class RenderTimer extends ICGateRenderer[SequentialGateICTile]
         wires(0).on = (gate.state&0x88) != 0
         wires(1).on = (gate.state&0x22) != 0
         wires(2).on = (gate.state&4) != 0
-        val ang = gate.getLogic[TTimerICGateLogic].interpPointer(frame)*MathHelper.pi*2
-        pointer.angle = ang
+        pointer.angle = gate.getLogic[TTimerICGateLogic].interpPointer(frame)*MathHelper.pi*2
     }
 }
 
-//class RenderSequencer extends ICGateRenderer[SequentialGateICPart]
-//{
-//    val torches = Seq(new RedstoneTorchModel(8, 8), new RedstoneTorchModel(8, 3),
-//        new RedstoneTorchModel(13, 8), new RedstoneTorchModel(8, 13), new RedstoneTorchModel(3, 8))
-//    val pointer = new PointerModel(8, 8)
-//
-//    torches(0).on = true
-//
-//    override val coreModels = Seq(new BaseComponentModel("SEQUENCER"), pointer)++torches
-//
-//    override def prepareInv()
-//    {
-//        torches(1).on = true
-//        torches(2).on = false
-//        torches(3).on = false
-//        torches(4).on = false
-//
-//        pointer.angle = 0
-//    }
-//
-//    override def prepareDynamic(gate:SequentialGateICPart, frame:Float)
-//    {
-//        torches(1).on = (gate.state&0x10) != 0
-//        torches(2).on = (gate.state&0x20) != 0
-//        torches(3).on = (gate.state&0x40) != 0
-//        torches(4).on = (gate.state&0x80) != 0
-//
-//        val max = gate.getLogic[Sequencer].pointer_max*4
-//        pointer.angle = (gate.getLogic[Sequencer].getWorldTime%max+frame)/max*2*MathHelper.pi
-//        if (gate.shape == 1) pointer.angle *= -1
-//    }
-//}
-//
-//class RenderCounter extends ICGateRenderer[SequentialGateICPart]
-//{
-//    val wires = generateWireModels("COUNT", 2)
-//    val torches = Seq(new RedstoneTorchModel(11, 8), new RedstoneTorchModel(8, 3),
-//        new RedstoneTorchModel(8, 13))
-//    val pointer = new PointerModel(11, 8, 1.2D)
-//
-//    torches(0).on = true
-//
-//    override val coreModels = Seq(new BaseComponentModel("COUNT"))++wires++Seq(pointer)++torches
-//
-//    override def prepareInv()
-//    {
-//        reflect = false
-//        wires(0).on = false
-//        wires(1).on = false
-//        torches(1).on = false
-//        torches(2).on = true
-//        pointer.angle = 220*MathHelper.torad
-//    }
-//
-//    override def prepareDynamic(gate:SequentialGateICPart, frame:Float)
-//    {
-//        reflect = gate.shape == 1
-//        wires(0).on = (gate.state&8) != 0
-//        wires(1).on = (gate.state&2) != 0
-//        torches(1).on = (gate.state&0x10) != 0
-//        torches(2).on = (gate.state&0x40) != 0
-//
-//        val max = gate.getLogic[Counter].max
-//        val value = gate.getLogic[Counter].value
-//        pointer.angle = (value/max.toDouble*(340-220)+210)*MathHelper.torad
-//        if (gate.shape == 1) reflect = true
-//    }
-//}
-//
-//class RenderStateCell extends ICGateRenderer[SequentialGateICPart]
-//{
-//    val wires = generateWireModels("STATECELL", 5)
-//    val torches = Seq(new RedstoneTorchModel(10, 3.5), new RedstoneTorchModel(13, 8))
-//    val chip = new RedChipModel(6.5, 10)
-//    val pointer = new PointerModel(13, 8)
-//
-//    override val coreModels = Seq(new BaseComponentModel("STATECELL"))++wires++Seq(chip, pointer)++torches
-//
-//    override def prepareInv()
-//    {
-//        reflect = false
-//        wires(0).on = false
-//        wires(1).on = false
-//        wires(2).on = false
-//        wires(3).on = false
-//        wires(4).on = false
-//        torches(0).on = false
-//        torches(1).on = true
-//        chip.on = false
-//        pointer.angle = -MathHelper.pi/2
-//    }
-//
-//    override def prepareDynamic(gate:SequentialGateICPart, frame:Float)
-//    {
-//        reflect = gate.shape == 1
-//        val logic = gate.getLogic[StateCell]
-//        var state = gate.state
-//        if (reflect) state = flipMaskZ(state>>4)<<4|flipMaskZ(state)
-//
-//        wires(0).on = (state&0x10) != 0
-//        wires(1).on = (state&4) != 0
-//        wires(2).on = logic.state2 == 0 || (state&4) != 0
-//        wires(3).on = (state&0x88) != 0
-//        wires(4).on = (state&2) != 0
-//        torches(0).on = (state&0x10) != 0
-//        torches(1).on = logic.pointer_start >= 0
-//        chip.on = logic.state2 != 0
-//
-//        reflect = gate.shape == 1
-//        pointer.angle = gate.getLogic[StateCell].interpPointer(frame)-MathHelper.pi/2
-//    }
-//}
-//
-//class RenderSynchronizer extends ICGateRenderer[SequentialGateICPart]
-//{
-//    val wires = generateWireModels("SYNC", 6)
-//    val torch = new RedstoneTorchModel(8, 3)
-//    val chips = Seq(new RedChipModel(4.5, 9), new RedChipModel(11.5, 9))
-//
-//    override val coreModels = Seq(new BaseComponentModel("SYNC"))++wires++chips++Seq(torch)
-//
-//    override def prepareInv()
-//    {
-//        wires(0).on = true
-//        wires(1).on = true
-//        wires(2).on = false
-//        wires(3).on = false
-//        wires(4).on = false
-//        wires(5).on = false
-//        chips(0).on = false
-//        chips(1).on = false
-//        torch.on = false
-//    }
-//
-//    override def prepareDynamic(gate:SequentialGateICPart, frame:Float)
-//    {
-//        val logic = gate.getLogic[Synchronizer]
-//        wires(0).on = !logic.left
-//        wires(1).on = !logic.right
-//        wires(2).on = (gate.state&4) != 0
-//        wires(3).on = logic.left && logic.right
-//        wires(4).on = (gate.state&8) != 0
-//        wires(5).on = (gate.state&2) != 0
-//        chips(0).on = logic.left
-//        chips(1).on = logic.right
-//        torch.on = (gate.state&0x10) != 0
-//    }
-//}
+class RenderSequencer extends ICGateRenderer[SequentialGateICTile]
+{
+    val torches = Seq(new RedstoneTorchModel(8, 8), new RedstoneTorchModel(8, 3),
+        new RedstoneTorchModel(13, 8), new RedstoneTorchModel(8, 13), new RedstoneTorchModel(3, 8))
+    val pointer = new PointerModel(8, 8)
+
+    torches(0).on = true
+
+    override val coreModels = Seq(new BaseComponentModel("sequencer"), pointer)++torches
+
+    override def prepareInv()
+    {
+        torches(1).on = true
+        torches(2).on = false
+        torches(3).on = false
+        torches(4).on = false
+
+        pointer.angle = 0
+    }
+
+    override def prepareDynamic(gate:SequentialGateICTile, frame:Float)
+    {
+        torches(1).on = (gate.state&0x10) != 0
+        torches(2).on = (gate.state&0x20) != 0
+        torches(3).on = (gate.state&0x40) != 0
+        torches(4).on = (gate.state&0x80) != 0
+
+        val max = gate.getLogic[Sequencer].pointer_max*4
+        pointer.angle = if (gate.editor != null) (gate.editor.getTotalSimTimeClient%max+frame)/max*2*MathHelper.pi else 0
+        if (gate.shape == 1) pointer.angle *= -1
+    }
+}
+
+class RenderCounter extends ICGateRenderer[SequentialGateICTile]
+{
+    val wires = generateWireModels("count", 2)
+    val torches = Seq(new RedstoneTorchModel(11, 8), new RedstoneTorchModel(8, 3),
+        new RedstoneTorchModel(8, 13))
+    val pointer = new PointerModel(11, 8, 1.2D)
+
+    torches(0).on = true
+
+    override val coreModels = Seq(new BaseComponentModel("count"))++wires++Seq(pointer)++torches
+
+    override def prepareInv()
+    {
+        reflect = false
+        wires(0).on = false
+        wires(1).on = false
+        torches(1).on = false
+        torches(2).on = true
+        pointer.angle = 220*MathHelper.torad
+    }
+
+    override def prepareDynamic(gate:SequentialGateICTile, frame:Float)
+    {
+        reflect = gate.shape == 1
+        wires(0).on = (gate.state&8) != 0
+        wires(1).on = (gate.state&2) != 0
+        torches(1).on = (gate.state&0x10) != 0
+        torches(2).on = (gate.state&0x40) != 0
+
+        val max = gate.getLogic[Counter].max
+        val value = gate.getLogic[Counter].currentValue
+        pointer.angle = (value/max.toDouble*(340-220)+210)*MathHelper.torad
+        if (gate.shape == 1) reflect = true
+    }
+}
+
+class RenderStateCell extends ICGateRenderer[SequentialGateICTile]
+{
+    val wires = generateWireModels("statecell", 5)
+    val torches = Seq(new RedstoneTorchModel(10, 3.5), new RedstoneTorchModel(13, 8))
+    val chip = new RedChipModel(6.5, 10)
+    val pointer = new PointerModel(13, 8)
+
+    override val coreModels = Seq(new BaseComponentModel("statecell"))++wires++Seq(chip, pointer)++torches
+
+    override def prepareInv()
+    {
+        reflect = false
+        wires(0).on = false
+        wires(1).on = false
+        wires(2).on = false
+        wires(3).on = false
+        wires(4).on = false
+        torches(0).on = false
+        torches(1).on = true
+        chip.on = false
+        pointer.angle = -MathHelper.pi/2
+    }
+
+    override def prepareDynamic(gate:SequentialGateICTile, frame:Float)
+    {
+        reflect = gate.shape == 1
+        val logic = gate.getLogic[StateCell]
+        var state = gate.state
+        if (reflect) state = flipMaskZ(state>>4)<<4|flipMaskZ(state)
+
+        wires(0).on = (state&0x10) != 0
+        wires(1).on = (state&4) != 0
+        wires(2).on = logic.isRunning || (state&4) != 0
+        wires(3).on = (state&0x88) != 0
+        wires(4).on = (state&2) != 0
+        torches(0).on = (state&0x10) != 0
+        torches(1).on = logic.pointer_start >= 0
+        chip.on = logic.isRunning
+
+        reflect = gate.shape == 1
+        pointer.angle = gate.getLogic[StateCell].interpPointer(frame)-MathHelper.pi/2
+    }
+}
+
+class RenderSynchronizer extends ICGateRenderer[SequentialGateICTile]
+{
+    val wires = generateWireModels("sync", 6)
+    val torch = new RedstoneTorchModel(8, 3)
+    val chips = Seq(new RedChipModel(4.5, 9), new RedChipModel(11.5, 9))
+
+    override val coreModels = Seq(new BaseComponentModel("sync"))++wires++chips++Seq(torch)
+
+    override def prepareInv()
+    {
+        wires(0).on = true
+        wires(1).on = true
+        wires(2).on = false
+        wires(3).on = false
+        wires(4).on = false
+        wires(5).on = false
+        chips(0).on = false
+        chips(1).on = false
+        torch.on = false
+    }
+
+    override def prepareDynamic(gate:SequentialGateICTile, frame:Float)
+    {
+        val logic = gate.getLogic[Synchronizer]
+        val left = (logic.bitState&2) != 0
+        val right = (logic.bitState&1) != 0
+        wires(0).on = !left
+        wires(1).on = !right
+        wires(2).on = (gate.state&4) != 0
+        wires(3).on = left && right
+        wires(4).on = (gate.state&8) != 0
+        wires(5).on = (gate.state&2) != 0
+        chips(0).on = left
+        chips(1).on = right
+        torch.on = (gate.state&0x10) != 0
+    }
+}
 //
 //class RenderDecRandomizer extends ICGateRenderer[ComboGateICPart]
 //{

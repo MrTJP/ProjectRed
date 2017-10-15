@@ -12,6 +12,18 @@ import net.minecraft.nbt.NBTTagCompound
 
 import scala.collection.mutable.{Map => MMap, Set => MSet}
 
+//TODO this trait is to attempt to abstract out the building of wirenets from WireICTile
+trait IWireICTile
+{
+    def isNetOutput:Boolean
+
+    def isNetInput:Boolean
+
+    def getTravelMask:Int
+
+    def getMixerMask:Int
+}
+
 abstract class WireICTile extends ICTile with TConnectableICTile with ISEWireTile
 {
     override def save(tag:NBTTagCompound)
@@ -82,6 +94,7 @@ abstract class WireICTile extends ICTile with TConnectableICTile with ISEWireTil
     }
 
     def getTravelMask:Int
+
     def getMixerMask:Int
 }
 

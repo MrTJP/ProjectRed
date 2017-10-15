@@ -171,6 +171,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
     var simEngineContainer = new ICSimEngineContainer
     var simNeedsRefresh = true
 
+    var worldTimeOffset = -1L //number of ticks that the simulation is behind the total world time
     var lastWorldTime = -1L
 
     private var scheduledTicks = MMap[Point, Long]()
@@ -240,7 +241,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
             val tile = ICTile.createTile(in.readUByte())
             setTile_do(Point(in.readUByte(), in.readUByte()), tile)
             tile.readDesc(in)
-        case 2 => removeTile(Point(in.readUByte(), in.readUByte()))
+        case 2 => removeTile_do(Point(in.readUByte(), in.readUByte()))
         case 3 => TileEditorOp.getOperation(in.readUByte()).readOp(this, in)
         case 4 => getTile(Point(in.readUByte(), in.readUByte())) match {
             case g:TClientNetICTile => g.readClientPacket(in)
@@ -252,6 +253,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
         case 6 => simEngineContainer.setInput(in.readUByte(), in.readShort())//TODO remove? not used...
         case 7 => simEngineContainer.setOutput(in.readUByte(), in.readShort()) //TODO remove? not used...
         case 8 => simEngineContainer.logger.readLog(in)
+        case 9 => worldTimeOffset = in.readLong()
         case _ =>
     }
 
@@ -305,6 +307,11 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
         simEngineContainer.logger.writeLog(network.getICStreamOf(8))
     }
 
+    def sendWorldTimeOffset()
+    {
+        network.getICStreamOf(9).writeLong(worldTimeOffset)
+    }
+
     def clear()
     {
         tileMapContainer.tiles.values.foreach{_.unbind()}//remove references
@@ -315,6 +322,8 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
         for (i <- 0 until 4) simEngineContainer.iostate(i) = 0
         simNeedsRefresh = true
     }
+
+    def getTotalSimTimeClient = network.getEditorWorld.getTotalWorldTime-worldTimeOffset
 
     def isEmpty = tileMapContainer.isEmpty
     def nonEmpty = tileMapContainer.nonEmpty
@@ -334,8 +343,11 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
         for(tile <- tileMapContainer.tiles.values) tile.update()
 
         //Rebuild circuit if needed
-        if (simNeedsRefresh)
+        if (simNeedsRefresh) {
             recompileSchematic()
+            worldTimeOffset = network.getEditorWorld.getTotalWorldTime
+            sendWorldTimeOffset()
+        }
 
         //Tick Simulation time
         simEngineContainer.advanceTime(if (lastWorldTime >= 0) t-lastWorldTime else 1) //if first tick, advance 1 tick only
@@ -345,36 +357,46 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
 
     def setTile(pos:Point, tile:ICTile)
     {
+        assert(!network.isRemote, "Tiles can only be added server-side")
         setTile_do(pos, tile)
-        tile.onAdded()
-        if (!network.isRemote) {
-            sendTileAdded(tile)
-            markSchematicChanged()
-        }
+
+        sendTileAdded(tile)
+        network.markSave()
+        markSchematicChanged()
     }
+
     private def setTile_do(pos:Point, tile:ICTile)
     {
         tileMapContainer.assertCoords(pos.x, pos.y)
-        tile.bindEditor(this)
         tile.bindPos(pos)
+        tile.bindEditor(this)
         tileMapContainer.tiles += (pos.x, pos.y) -> tile
+        tile.onAdded()
     }
 
     def getTile(pos:Point):ICTile = tileMapContainer.getTile(pos.x, pos.y)
 
     def removeTile(pos:Point)
     {
+        assert(!network.isRemote, "Tiles can only be removed server-side")
+        if (removeTile_do(pos)) {
+            sendRemoveTile(pos)
+            network.markSave()
+            markSchematicChanged()
+        }
+    }
+
+    private def removeTile_do(pos:Point):Boolean =
+    {
         tileMapContainer.assertCoords(pos.x, pos.y)
         val tile = getTile(pos)
-        if (tile != null) {
-            if (!network.isRemote) {
-                sendRemoveTile(pos)
-                markSchematicChanged()
-            }
-            tileMapContainer.tiles.remove((pos.x, pos.y))
-            tile.onRemoved()
-            tile.unbind()
-        }
+        if (tile == null)
+            return false
+
+        tileMapContainer.tiles.remove((pos.x, pos.y))
+        tile.onRemoved()
+        tile.unbind()
+        true
     }
 
     def notifyNeighbor(pos:Point)
@@ -405,7 +427,6 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
         simEngineContainer.recompileSimulation(tileMapContainer)
         simEngineContainer.propagateAll()
     }
-
 
     override def registersDidChange(registers:Set[Int])
     {

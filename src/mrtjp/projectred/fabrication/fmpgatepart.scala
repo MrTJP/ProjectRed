@@ -278,6 +278,9 @@ object ICGateLogic
             val (ri0, ro0, bi0, bo0) = getGateMasks(stack)
             logic.ri = ri0; logic.ro = ro0; logic.bi = bi0; logic.bo = bo0
             logic.connmodes = getConnModes(stack)
+        } else {
+            logic.tmap.name = "ERROR: invalid"
+            logic.sim.recompileSimulation(logic.tmap)
         }
     }
 

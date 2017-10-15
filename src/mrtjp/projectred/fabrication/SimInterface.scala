@@ -133,6 +133,7 @@ class ICSimEngineContainer extends ISEICDelegate
         }
 
         simEngine = ISELinker.linkFromMap(map, this, logger)
+        systemTime = 0
         pushInputRegisters(0xF)
         pushSystemTime()
 

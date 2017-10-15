@@ -68,8 +68,14 @@ class FabricationProxy_server extends IProxy with IPartFactory
     {
         //hook into gate part to add tooltip info
         ProjectRedIntegration.itemPartGate.infoBuilderFunc = {(stack, list) =>
-            if (stack.getItemDamage == GateDefinition.ICGate.meta)
-                ItemICChip.addInfo(stack, list)
+            if (stack.getItemDamage == GateDefinition.ICGate.meta) {
+                import com.mojang.realmsclient.gui.ChatFormatting._
+                if (!ItemICBlueprint.hasICInside(stack)) {
+                    list.add(RED + "INVALID: Craft by surrounding Printed IC with Circuit Plates")
+                } else {
+                    list.add(GRAY+ItemICBlueprint.getICName(stack))
+                }
+            }
         }
     }
 

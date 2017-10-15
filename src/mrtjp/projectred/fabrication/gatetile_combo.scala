@@ -333,44 +333,6 @@ object Multiplexer extends ComboGateTileLogic
     }
 }
 
-//object Randomizer extends ComboICGateLogic
-//{
-//    val rand = new Random
-//
-//    override def outputMask(shape:Int) = ~((shape&1)<<1|(shape&2)>>1|(shape&4)<<1)&0xB
-//    override def inputMask(shape:Int) = 4
-//    override def feedbackMask(shape:Int) = outputMask(shape)
-//
-//    override def deadSides = 3
-//
-//    override def getDelay(shape:Int) = 2
-//
-//    override def calcOutput(gate:ComboGateICPart, input:Int) =
-//    {
-//        if (input == 0) gate.state>>4 else
-//            outputMask(gate.shape)&TFaceOrient.shiftMask(rand.nextInt(8), 3)
-//    }
-//
-//    override def onChange(gate:ComboGateICPart)
-//    {
-//        super.onChange(gate)
-//        if ((gate.state&4) != 0) gate.scheduleTick(2)
-//    }
-//}
-//
-//object TransparentLatch extends ComboICGateLogic
-//{
-//    override def outputMask(shape:Int) = if (shape == 0) 3 else 9
-//    override def inputMask(shape:Int) = if (shape == 0) 0xC else 6
-//
-//    override def cycleShape(shape:Int) = shape^1
-//
-//    override def calcOutput(gate:ComboGateICPart, input:Int) =
-//    {
-//        if ((input&4) == 0) gate.state>>4
-//        else if ((input&0xA) == 0) 0 else 0xF
-//    }
-//}
 //
 //object DecRandomizer extends ComboICGateLogic
 //{
