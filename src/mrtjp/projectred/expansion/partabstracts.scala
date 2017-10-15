@@ -132,7 +132,7 @@ trait TFaceElectricalDevice extends TMultiPart with TCuboidPart with TNormalOccl
 
     override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, held:ItemStack, hand:EnumHand):Boolean =
     {
-        if (held != null && doesRotate && held.getItem.isInstanceOf[IScrewdriver] && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
+        if (!held.isEmpty && doesRotate && held.getItem.isInstanceOf[IScrewdriver] && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
         {
             if (!world.isRemote)
             {

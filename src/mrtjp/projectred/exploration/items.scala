@@ -142,7 +142,7 @@ class BagInventory(player:EntityPlayer) extends TInventory
     private def closeIfNoBag() =
     {//TODO, Check hands ourself so we can dual wield, this should work for now tho.
         val bag = ItemUtils.getHeldStack(player)
-        val hasBag = bag != null && bag.getItem == ProjectRedExploration.itemBackpack
+        val hasBag = !bag.isEmpty && bag.getItem == ProjectRedExploration.itemBackpack
         if (hasBag) {
             if (!bag.hasTagCompound)
                 bag.setTagCompound(new NBTTagCompound)
@@ -153,7 +153,7 @@ class BagInventory(player:EntityPlayer) extends TInventory
 
     override def isItemValidForSlot(i:Int, stack:ItemStack):Boolean =
     {
-        if (stack != null)
+        if (stack.isEmpty)
         {
             if (stack.getItem == ProjectRedExploration.itemBackpack) return false
             //for (blocked <- Configurator.backpackBlacklist) if (stack.itemID == blocked) return false
@@ -164,11 +164,11 @@ class BagInventory(player:EntityPlayer) extends TInventory
     }
 
     override def removeStackFromSlot(slot:Int) =
-        if (closeIfNoBag()) null
+        if (closeIfNoBag()) ItemStack.EMPTY
         else super.removeStackFromSlot(slot)
 
     override def decrStackSize(slot:Int, count:Int) =
-        if (closeIfNoBag()) null
+        if (closeIfNoBag()) ItemStack.EMPTY
         else super.decrStackSize(slot, count)
 
     override def setInventorySlotContents(slot:Int, item:ItemStack)

@@ -579,7 +579,7 @@ class BusInputPanel(gate:BundledGatePart) extends BundledGateLogic(gate)
 
     override def activate(part:BundledGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult):Boolean =
     {
-        if (held != null && held.getItem.isInstanceOf[IScrewdriver]) return false
+        if (!held.isEmpty && held.getItem.isInstanceOf[IScrewdriver]) return false
 
         val hitdata = hit.cuboid6.data.asInstanceOf[Int]
         if (hitdata != -1) {
@@ -668,7 +668,7 @@ class SegmentDisplay(gate:BundledGatePart) extends BundledGateLogic(gate)
 
     override def activate(gate:BundledGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult):Boolean =
     {
-        if (held != null) {
+        if (!held.isEmpty) {
             val c = EnumColour.fromStack(held)
             if (c != null && c.ordinal != (colour&0xFF) && c != EnumColour.BLACK) {
                 if (!gate.world.isRemote) {

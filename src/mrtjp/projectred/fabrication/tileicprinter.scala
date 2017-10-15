@@ -209,7 +209,7 @@ class TileICPrinter extends TileICMachine with TInventory
     private def checkIngredients():Boolean =
     {
         val ic = getStackInSlot(19)
-        if (ic != null && ic.getItemDamage == 1) return true
+        if (!ic.isEmpty && ic.getItemDamage == 1) return true
 
         val oldMap = externalItems
         val hasEnough = getRequiredResources.forall(containsEnoughOf)
@@ -222,7 +222,7 @@ class TileICPrinter extends TileICMachine with TInventory
         if (requirementsDirty)
         {
             val stack = getStackInSlot(18)
-            requirements = if (stack != null && ItemICBlueprint.hasICInside(stack))
+            requirements = if (!stack.isEmpty && ItemICBlueprint.hasICInside(stack))
             {
                 val ic = ItemICBlueprint.loadTileMap(stack)
                 TileICPrinter.resolveResources(ic)
@@ -239,7 +239,7 @@ class TileICPrinter extends TileICMachine with TInventory
         for (i <- 0 until 18)
         {
             val s = getStackInSlot(i)
-            if (s != null && ItemKey.get(s) == stack.key)
+            if (!s.isEmpty && ItemKey.get(s) == stack.key)
             {
                 a += s.getCount
                 if (a >= stack.stackSize) return true
@@ -279,7 +279,7 @@ class TileICPrinter extends TileICMachine with TInventory
         for (i <- 0 until 18)
         {
             val s = getStackInSlot(i)
-            if (s != null && stack.key == ItemKey.get(s))
+            if (!s.isEmpty && stack.key == ItemKey.get(s))
             {
                 val toEat = math.min(left, s.getCount)
                 left -= toEat
@@ -340,11 +340,11 @@ class TileICPrinter extends TileICMachine with TInventory
             if (!canStart && isWorking) doStop()
             val oldICState = inputICState
 
-            if (getStackInSlot(20) != null) inputICState = 2
+            if (!getStackInSlot(20).isEmpty) inputICState = 2
             else
             {
                 val s = getStackInSlot(19)
-                if (s != null)
+                if (!s.isEmpty)
                 {
                     if (ItemICBlueprint.hasICInside(s)) inputICState = 2
                     else inputICState = 1
@@ -452,9 +452,9 @@ object TileICPrinter
             {
                 val inputs = r match
                 {
-                    case s:ShapedRecipes => s.recipeItems.toSeq.filterNot(_ == null).map(ItemKey.get)
+                    case s:ShapedRecipes => s.recipeItems.toSeq.filterNot(_.isEmpty).map(ItemKey.get)
 
-                    case s:ShapelessRecipes => s.recipeItems.toSeq.filterNot(_ == null).map(ItemKey.get)
+                    case s:ShapelessRecipes => s.recipeItems.toSeq.filterNot(_.isEmpty).map(ItemKey.get)
 
                     case s:ShapedOreRecipe => s.getInput.toSeq.flatMap {
                         case s:ItemStack => Seq(s)

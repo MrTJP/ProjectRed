@@ -216,14 +216,14 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
         if (super.activate(player, hit, item, hand)) return true
 
         //if (CommandDebug.WIRE_READING) debug(player) else
-        if (item != null && item.getItem == ProjectRedCore.itemMultimeter)
+        if (!item.isEmpty && item.getItem == ProjectRedCore.itemMultimeter)
         {
             item.damageItem(1, player)
             test(player)
             return true
         }
 
-        if (item == null && player.isSneaking && hasRedstone)
+        if (item.isEmpty && player.isSneaking && hasRedstone)
         {
             if (!world.isRemote)
             {
@@ -235,7 +235,7 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
             return true
         }
 
-        if (item != null && !hasRedstone && item.getItem == MicroblockProxy.itemMicro && item.getItemDamage == 769)
+        if (!item.isEmpty && !hasRedstone && item.getItem == MicroblockProxy.itemMicro && item.getItemDamage == 769)
         {
             ItemMicroPart.getMaterial(item) match
             {
@@ -331,7 +331,7 @@ trait TColourFilterPipe extends SubcorePipePart
         else super.getDrops
 
     def getColourStack =
-        if (colour == -1) null
+        if (colour == -1) ItemStack.EMPTY
         else ItemMicroPart.create(769, BlockMicroMaterial.materialKey(Blocks.WOOL.getStateFromMeta(colour)))
 
     abstract override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, item:ItemStack, hand:EnumHand):Boolean =
@@ -344,7 +344,7 @@ trait TColourFilterPipe extends SubcorePipePart
                 PRLib.dropTowardsPlayer(world, pos, getColourStack, player)
         }
 
-        if (item == null && player.isSneaking && colour > -1)
+        if (item.isEmpty && player.isSneaking && colour > -1)
         {
             if (!world.isRemote)
             {
@@ -355,7 +355,7 @@ trait TColourFilterPipe extends SubcorePipePart
             return true
         }
 
-        if (item != null && item.getItem == MicroblockProxy.itemMicro && item.getItemDamage == 769)
+        if (!item.isEmpty && item.getItem == MicroblockProxy.itemMicro && item.getItemDamage == 769)
         {
             ItemMicroPart.getMaterial(item) match
             {
@@ -500,7 +500,7 @@ trait TInventoryPipe[T <: AbstractPipePayload] extends PayloadPipePart[T] with I
     {
         if (super.activate(player, hit, item, hand)) return true
 
-        if (item != null && item.getItem.isInstanceOf[IScrewdriver] && item.getItem.asInstanceOf[IScrewdriver].canUse(player, item))
+        if (!item.isEmpty && item.getItem.isInstanceOf[IScrewdriver] && item.getItem.asInstanceOf[IScrewdriver].canUse(player, item))
         {
             if (!world.isRemote)
             {

@@ -35,7 +35,7 @@ class GuiInterfacePipe(container:Container, pipe:RoutedInterfacePipePart) extend
             val x = 19
             val y = 10+i*26
             val u = 178
-            val v = if (inventorySlots.getSlot(i).getStack == null) 107 else 85
+            val v = if (inventorySlots.getSlot(i).getStack.isEmpty) 107 else 85
             drawTexturedModalRect(x, y, u, v, 25, 20)
         }
         zLevel = oldZ

@@ -135,13 +135,13 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
     def tryChargeSlot(i:Int)
     {
         val stack = getStackInSlot(i)
-        if (stack != null) stack.getItem match
+        if (!stack.isEmpty) stack.getItem match
         {
             case ic:IChargable =>
                 val toAdd = math.min(powerStorage, getChargeSpeed)
                 val (newStack, added) = ic.addPower(stack, toAdd)
                 if (ic.isFullyCharged(newStack) && dropStackDown(newStack))
-                    setInventorySlotContents(i, null)
+                    setInventorySlotContents(i, ItemStack.EMPTY)
                 else setInventorySlotContents(i, newStack)
                 powerStorage -= added
             case _ =>
@@ -160,7 +160,7 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
         for (i <- 0 until 8)
         {
             val stack = getStackInSlot(i)
-            if (stack != null) stack.getItem match
+            if (!stack.isEmpty) stack.getItem match
             {
                 case ic:IChargable if !ic.isFullyCharged(stack) => return true
                 case _ =>

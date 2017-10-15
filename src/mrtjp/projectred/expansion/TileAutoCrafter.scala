@@ -112,7 +112,7 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
     {
         val start = planSlot
         do planSlot = (planSlot+1)%9
-        while (planSlot != start && getStackInSlot(planSlot) == null)
+        while (planSlot != start && getStackInSlot(planSlot).isEmpty)
         if (planSlot != start) refreshRecipe()
     }
 
@@ -121,7 +121,7 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
         craftHelper.clear()
 
         val plan = getStackInSlot(planSlot)
-        if (plan != null && ItemPlan.hasRecipeInside(plan)) {
+        if (!plan.isEmpty && ItemPlan.hasRecipeInside(plan)) {
             val inputs = ItemPlan.loadPlanInputs(plan)
 
             craftHelper.loadInputs(inputs)
@@ -261,7 +261,7 @@ class GuiAutoCrafter(tile:TileAutoCrafter, c:ContainerAutoCrafter) extends NodeG
         GuiLib.drawVerticalTank(27, 26, 185, 27, 7, 48, tile.cond.getFlowScaled(48))
 
         val plan = tile.getStackInSlot(tile.planSlot)
-        if (plan != null && ItemPlan.hasRecipeInside(plan))
+        if (!plan.isEmpty && ItemPlan.hasRecipeInside(plan))
             ItemDisplayNode.renderItem(Point(152, 58), Size(16, 16), zPosition, true, ItemPlan.loadPlanOutput(plan))
 
         GuiDraw.drawString("Auto Crafting Bench", 8, 6, EnumColour.GRAY.argb, false)

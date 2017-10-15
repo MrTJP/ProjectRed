@@ -102,7 +102,7 @@ class RoutedFirewallPipe extends AbstractNetPipe with TNetworkPipe
         for (i <- 0 until filt.getSizeInventory)
         {
             val inslot = filt.getStackInSlot(i)
-            if (inslot != null) itemset += ItemKey.get(inslot)
+            if (!inslot.isEmpty) itemset += ItemKey.get(inslot)
         }
     }
 }

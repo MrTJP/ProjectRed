@@ -77,7 +77,7 @@ class NetworkValvePipePart extends AbstractNetPipe with TNetworkSubsystem with T
 
     override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, item:ItemStack, hand:EnumHand):Boolean =
     {
-        if (item != null && item.getItem.isInstanceOf[IScrewdriver] &&
+        if (!item.isEmpty && item.getItem.isInstanceOf[IScrewdriver] &&
                 item.getItem.asInstanceOf[IScrewdriver].canUse(player, item) &&
                 ((0 until 6) contains hit.cuboid6.data.asInstanceOf[Int]) && !player.isSneaking) {
             if (!world.isRemote) {

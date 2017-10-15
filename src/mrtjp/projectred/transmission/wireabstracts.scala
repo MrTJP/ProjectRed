@@ -126,7 +126,7 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     override def activate(player:EntityPlayer, hit:CuboidRayTraceResult, held:ItemStack, hand:EnumHand) =
     {
         //if (CommandDebug.WIRE_READING) debug(player) else
-        if (held != null && held.getItem == ProjectRedCore.itemMultimeter) {
+        if (!held.isEmpty && held.getItem == ProjectRedCore.itemMultimeter) {
             held.damageItem(1, player)
             player.swingArm(hand)
             test(player)
@@ -406,7 +406,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
 
         if (super.activate(player, hit, held, hand)) return true
 
-        if (held == null && player.isSneaking && hasMaterial) {
+        if (held.isEmpty && player.isSneaking && hasMaterial) {
             if (!world.isRemote) {
                 dropMaterial()
                 hasMaterial = false
@@ -416,7 +416,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
             return true
         }
 
-        if (held != null && held.getItem == MicroblockProxy.itemMicro && held.getItemDamage == 1) {
+        if (!held.isEmpty && held.getItem == MicroblockProxy.itemMicro && held.getItemDamage == 1) {
             val newmatid = ItemMicroPart.getMaterialID(held)
             if (!hasMaterial || newmatid != material) {
                 if(!world.isRemote) {

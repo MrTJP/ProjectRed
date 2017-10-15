@@ -216,7 +216,7 @@ abstract class GatePart extends TMultiPart with TCuboidPart with TNormalOcclusio
     {
         if (getLogicPrimitive.activate(this, player, held, hit)) return true
 
-        if (held != null && held.getItem.isInstanceOf[IScrewdriver] && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held)) {
+        if (!held.isEmpty && held.getItem.isInstanceOf[IScrewdriver] && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held)) {
             if (!world.isRemote) {
                 if (player.isSneaking) configure()
                 else rotate()

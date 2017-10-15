@@ -19,7 +19,7 @@ class ShapelessNBTSensitiveRecipe(result:ItemStack, recipe:AnyRef*) extends Shap
 
         for (x <- 0 until var1.getSizeInventory) {
             val slot = var1.getStackInSlot(x)
-            if (slot != null) {
+            if (!slot.isEmpty) {
                 var inRecipe = false
                 val req = required.iterator
 
@@ -85,7 +85,7 @@ class ShapedNBTSensitiveRecipe(result:ItemStack, recipe:AnyRef*) extends ShapedO
                         })
                             return false
                     case null =>
-                        if (slot != null)
+                        if (!slot.isEmpty)
                             return false
                 }
             }

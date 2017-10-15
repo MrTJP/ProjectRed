@@ -276,7 +276,7 @@ object Repeater extends ComboGateLogic
 
     override def activate(gate:ComboGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult)=
     {
-        if (held == null || !held.getItem.isInstanceOf[IScrewdriver])
+        if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver])
         {
             if (!gate.world.isRemote) gate.configure()
             true

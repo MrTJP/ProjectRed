@@ -31,18 +31,18 @@ public class ShapelessOreNBTCopyRecipe extends ShapelessOreRecipe
     {
         ItemStack out = output.copy();
 
-        ItemStack oldItemWithNBT = null;
+        ItemStack oldItemWithNBT = ItemStack.EMPTY;
         for (int i = 0; i < 9; i++)
         {
             ItemStack slot = inv.getStackInSlot(i);
-            if (slot != null)
+            if (!slot.isEmpty())
                 if (slot.hasTagCompound())
                 {
                     oldItemWithNBT = slot;
                     break;
                 }
         }
-        if (oldItemWithNBT != null)
+        if (!oldItemWithNBT.isEmpty())
             out.setTagCompound(oldItemWithNBT.getTagCompound());
 
         return out;

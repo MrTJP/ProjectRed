@@ -108,7 +108,7 @@ class TileProjectBench extends TileMachine with TInventory with ISidedInventory 
 //        invResult.setInventorySlotContents(0, null)
         craftHelper.clear()
 
-        if ((0 until 9).exists(getStackInSlot(_) != null)) {
+        if ((0 until 9).exists(!getStackInSlot(_).isEmpty)) {
             craftHelper.loadInputs((0 until 9).map(getStackInSlot).toArray)
             craftHelper.findRecipeFromInputs(world)
             if (craftHelper.recipe != null)
@@ -119,7 +119,7 @@ class TileProjectBench extends TileMachine with TInventory with ISidedInventory 
         }
         else {
             val plan = getStackInSlot(27)
-            if (plan != null && ItemPlan.hasRecipeInside(plan)) {
+            if (!plan.isEmpty && ItemPlan.hasRecipeInside(plan)) {
                 val inputs = ItemPlan.loadPlanInputs(plan)
 //                for (i <- 0 until 9) invCrafting.setInventorySlotContents(i, inputs(i))
 //                matchAndSetRecipe()
@@ -152,9 +152,9 @@ class TileProjectBench extends TileMachine with TInventory with ISidedInventory 
 
         if (craftHelper.recipe != null && !isPlanRecipe) {
             val out = craftHelper.recipe.getCraftingResult(craftHelper.invCrafting)
-            if (out != null) {
+            if (!out.isEmpty) {
                 val stack = getStackInSlot(27)
-                if (stack != null)
+                if (!stack.isEmpty)
                     ItemPlan.savePlan(stack, (0 until 9).map(getStackInSlot).toArray, out)
             }
         }
@@ -220,8 +220,8 @@ class CraftingResultTestHelper
     {
         recipe = null
         for (i <- 0 until 9)
-            invCrafting.setInventorySlotContents(i, null)
-        invResult.setInventorySlotContents(0, null)
+            invCrafting.setInventorySlotContents(i, ItemStack.EMPTY)
+        invResult.setInventorySlotContents(0, ItemStack.EMPTY)
         storage = null
     }
 
@@ -246,7 +246,7 @@ class CraftingResultTestHelper
     {
         for (i <- 0 until 9) {
             val in = inputs(i)
-            invCrafting.setInventorySlotContents(i, if (in == null) null else in.copy)
+            invCrafting.setInventorySlotContents(i, if (in.isEmpty) ItemStack.EMPTY else in.copy)
         }
     }
 
@@ -255,20 +255,20 @@ class CraftingResultTestHelper
         this.storage = new Array[ItemStack](storage.length)
         for (i <- storage.indices) {
             val s = storage(i)
-            this.storage(i) = if (s != null && copy) s.copy else s
+            this.storage(i) = if (!s.isEmpty && copy) s.copy else s
         }
     }
 
     def consumeAndCraft(w:World):(ItemStack, NonNullList[ItemStack]) =
     {
-        if (!recipe.matches(invCrafting, w)) return (null, null)
+        if (!recipe.matches(invCrafting, w)) return (ItemStack.EMPTY, null)
 
         val result = recipe.getCraftingResult(invCrafting)
-        if (result == null) return (null, null)
+        if (result.isEmpty) return (ItemStack.EMPTY, null)
 
         for (i <- 0 until 9) {
             val prevInput = invCrafting.getStackInSlot(i)
-            if (prevInput != null && !eatIngredient(0, { input =>
+            if (!prevInput.isEmpty && !eatIngredient(0, { input =>
                 invCrafting.setInventorySlotContents(i, input)
                 val resultSame = recipe.matches(invCrafting, w) && ItemStack.areItemStacksEqual(recipe.getCraftingResult(invCrafting), result)
                 if (resultSame)
@@ -277,7 +277,7 @@ class CraftingResultTestHelper
                     invCrafting.setInventorySlotContents(i, prevInput)
                     false
                 }
-            })) return (null, null)
+            })) return (ItemStack.EMPTY, null)
         }
 
         (result, recipe.getRemainingItems(invCrafting))
@@ -307,7 +307,7 @@ class CraftingResultTestHelper
     {
         val (result, remaining) = consumeAndCraft(w)
 
-        if (result == null)
+        if (result.isEmpty)
             return false
 
         val wr = InvWrapper.wrap(new ArrayWrapInventory(storage, "", slotLimit)).setInternalMode(true)
@@ -335,7 +335,7 @@ class SlotProjectCrafting(player: EntityPlayer, tile: TileProjectBench, idx: Int
         if (tile.isPlanRecipe) {
             val storage = (9 until 27).map { i =>
                 val s = tile.getStackInSlot(i)
-                if (s != null) s.copy else null
+                if (!s.isEmpty) s.copy else null
             }.toArray
 
 //            craftHelper.setRecipe(tile.currentRecipe)
@@ -344,7 +344,7 @@ class SlotProjectCrafting(player: EntityPlayer, tile: TileProjectBench, idx: Int
 
             val (res, _) = tile.craftHelper.consumeAndCraft(player.world)
 
-            return res != null
+            return !res.isEmpty
         }
 
         //copied from super for obfuscation bug
@@ -375,8 +375,8 @@ class SlotProjectCrafting(player: EntityPlayer, tile: TileProjectBench, idx: Int
         for (i <- 0 until 9) {
             val istack = tile.getStackInSlot(i)
             val rstack = rem(i)
-            if (rstack != null) {
-                if (!tile.isPlanRecipe && istack == null) {
+            if (!rstack.isEmpty) {
+                if (!tile.isPlanRecipe && istack.isEmpty) {
                     tile.setInventorySlotContents(i, rstack)
                 } else if (!addToStorageSlots(rstack) && !player.inventory.addItemStackToInventory(rstack))
                     player.dropItem(rstack, false)
@@ -451,7 +451,7 @@ class ContainerProjectBench(player: EntityPlayer, tile: TileProjectBench) extend
         else if (9 until 27 contains from) //storage
         {
             if (stack.getItem.isInstanceOf[ItemPlan]) {
-                if (getSlot(27).getStack != null && ItemKey.get(getSlot(27).getStack) != ItemKey.get(stack))
+                if (!getSlot(27).getStack.isEmpty && ItemKey.get(getSlot(27).getStack) != ItemKey.get(stack))
                     transferStackInSlot(player, 27) //transfer existing stack
 
                 if (tryMergeItemStack(stack, 27, 28, false)) return true //merge to plan
@@ -471,7 +471,7 @@ class ContainerProjectBench(player: EntityPlayer, tile: TileProjectBench) extend
         else if (29 until 65 contains from) //player inventory
         {
             if (stack.getItem.isInstanceOf[ItemPlan]) {
-                if (getSlot(27).getStack != null && ItemKey.get(getSlot(27).getStack) != ItemKey.get(stack))
+                if (!getSlot(27).getStack.isEmpty && ItemKey.get(getSlot(27).getStack) != ItemKey.get(stack))
                     transferStackInSlot(player, 27) //transfer existing stack
 
                 if (tryMergeItemStack(stack, 27, 28, false)) return true //merge to plan
@@ -518,11 +518,11 @@ class GuiProjectBench(tile: TileProjectBench, c: ContainerProjectBench) extends 
         GuiDraw.drawTexturedModalRect(0, 0, 0, 0, size.width, size.height)
 
         val plan = tile.getStackInSlot(27)
-        if (tile.isPlanRecipe && plan != null) {
+        if (tile.isPlanRecipe && !plan.isEmpty) {
             val inputs = ItemPlan.loadPlanInputs(plan)
             for (((x, y), i) <- GuiLib.createSlotGrid(48, 18, 3, 3, 0, 0).zipWithIndex) {
                 val stack = inputs(i)
-                if (stack != null) {
+                if (!stack.isEmpty) {
                     GuiDraw.drawRect(x, y, 16, 16, EnumColour.GRAY.argb)
                     ItemDisplayNode.renderItem(Point(x, y), Size(16, 16), zPosition, false, stack)
                 }

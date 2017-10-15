@@ -98,7 +98,7 @@ class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TIn
 
     override def getDisplayName = super.getDisplayName
     override def isItemValidForSlot(slot:Int, stack:ItemStack) =
-        stack != null && stack.getItem == ProjectRedCore.itemPart &&
+        !stack.isEmpty && stack.getItem == ProjectRedCore.itemPart &&
             stack.getItemDamage == PartDefs.ELECTROTINE.meta
 
     def getStorageScaled(i:Int) = math.min(i, i*powerStorage/getMaxStorage)

@@ -121,7 +121,7 @@ abstract class TileMachine extends MTBlockTile with TTileOrient
     override def onBlockActivated(player:EntityPlayer, actside:Int):Boolean =
     {
         val held = player.getHeldItemMainhand
-        if ((doesRotate || doesOrient) && held != null && held.getItem.isInstanceOf[IScrewdriver]
+        if ((doesRotate || doesOrient) && !held.isEmpty && held.getItem.isInstanceOf[IScrewdriver]
                 && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
         {
             if (getWorld.isRemote) return true

@@ -100,7 +100,7 @@ abstract class TileICMachine extends MTBlockTile with TTileOrient
     override def onBlockActivated(player:EntityPlayer, actside:Int):Boolean =
     {
         val held = player.getHeldItemMainhand
-        if (doesRotate && held != null && held.getItem.isInstanceOf[IScrewdriver]
+        if (doesRotate && !held.isEmpty && held.getItem.isInstanceOf[IScrewdriver]
                 && held.getItem.asInstanceOf[IScrewdriver].canUse(player, held))
         {
             if (world.isRemote) return true
@@ -251,7 +251,7 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
         if (!world.isRemote) {
             import ItemICBlueprint._
             val held = player.getHeldItemMainhand
-            if (!hasBP && held != null && held.getItem.isInstanceOf[ItemICBlueprint]) {
+            if (!hasBP && !held.isEmpty && held.getItem.isInstanceOf[ItemICBlueprint]) {
                 if (hasICInside(held)) {
                     editor.clear()
                     loadTileMap(editor.tileMapContainer, held)

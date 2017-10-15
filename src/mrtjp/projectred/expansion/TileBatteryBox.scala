@@ -127,7 +127,7 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
     def canExtractItem(slot:Int, itemstack:ItemStack, side:EnumFacing) = true
 
     override def isItemValidForSlot(slot:Int, item:ItemStack) =
-        item != null && item.getItem.isInstanceOf[TItemBattery]
+        !item.isEmpty && item.getItem.isInstanceOf[TItemBattery]
 
     override def getBlock = ProjectRedExpansion.machine2
 
@@ -189,7 +189,7 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
     def tryDischargeBattery()
     {
         val stack = getStackInSlot(1)
-        if (stack != null) stack.getItem match
+        if (!stack.isEmpty) stack.getItem match
         {
             case b:TItemBattery =>
                 val toDraw = math.min(getMaxStorage-powerStored, getChargeSpeed)
@@ -203,7 +203,7 @@ class TileBatteryBox extends TileMachine with TPowerStorage with TGuiMachine wit
     def tryChargeBattery()
     {
         val stack = getStackInSlot(0)
-        if (stack != null) stack.getItem match
+        if (!stack.isEmpty) stack.getItem match
         {
             case b:TItemBattery =>
                 val toAdd = math.min(powerStored, getChargeSpeed)

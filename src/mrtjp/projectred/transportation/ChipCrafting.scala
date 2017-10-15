@@ -235,7 +235,7 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
     def getCrafterForSlot(i:Int):IRouterContainer =
     {
         val s = extMatrix.getStackInSlot(i)
-        if (s != null && ItemRoutingChip.hasChipInside(s))
+        if (!s.isEmpty && ItemRoutingChip.hasChipInside(s))
         {
             val c = ItemRoutingChip.loadChipFromItemStack(s).asInstanceOf[TChipCrafterExtension]
 
@@ -258,7 +258,7 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
     override def getCraftedItem =
     {
         val s = matrix.getStackInSlot(9)
-        if (s != null) ItemKeyStack.get(s)
+        if (!s.isEmpty) ItemKeyStack.get(s)
         else null
     }
 

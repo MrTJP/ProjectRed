@@ -40,7 +40,7 @@ object GuiBackpack extends TGuiFactory
     override def buildGui(player:EntityPlayer, data:MCDataInput) =
     {
         val held = ItemUtils.getHeldStack(player)
-            if (held != null && held.getItem == ProjectRedExploration.itemBackpack)
+            if (!held.isEmpty && held.getItem == ProjectRedExploration.itemBackpack)
                 new GuiBackpack(player, held)
         else null
     }
