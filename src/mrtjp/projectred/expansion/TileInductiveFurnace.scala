@@ -57,7 +57,7 @@ class TileInductiveFurnace extends TileProcessingMachine
         if (r == null) return false
 
         val stack = r.createOutput
-        val room = InvWrapper.wrap(this).setSlotSingle(1).setInternalMode(true).getSpaceForItem(ItemKey.get(stack))
+        val room = InvWrapper.wrapInternal(this, 1 to 1).getSpaceForItem(ItemKey.get(stack))
         room >= stack.getCount
     }
 
@@ -78,10 +78,10 @@ class TileInductiveFurnace extends TileProcessingMachine
         val r = InductiveFurnaceRecipeLib.getRecipeFor(in)
         if (r != null)
         {
-            val wrap = InvWrapper.wrap(this).setInternalMode(true).setSlotSingle(0)
+            val wrap = InvWrapper.wrapInternal(this, 0 to 0)
             wrap.extractItem(ItemKey.get(in), 1)
             val out = r.createOutput
-            wrap.setSlotSingle(1).injectItem(ItemKey.get(out), out.getCount)
+            wrap.setSlotsFromRange(1 to 1).injectItem(ItemKey.get(out), out.getCount)
         }
     }
 }

@@ -195,7 +195,7 @@ trait TActiveDevice extends TileMachine
         val inv = InvWrapper.getInventory(getWorld, getPos.offset(EnumFacing.VALUES(side)))
         if (inv != null)
         {
-            val w = InvWrapper.wrap(inv).setSlotsFromSide(side^1)
+            val w = InvWrapper.wrapInternal(inv).setSlotsFromSide(side^1)
             r.payload.stackSize -= w.injectItem(r.payload.key, r.payload.stackSize)
             r.payload.stackSize <= 0
         }

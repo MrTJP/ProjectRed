@@ -60,7 +60,7 @@ object PressurePathFinder
                 iterate(rest, closed+next)
 
             case inv:IInventory =>
-                if (InvWrapper.wrap(inv).setSlotsFromSide(next.dir^1).hasSpaceForItem(item)) setInvPath(next)
+                if (InvWrapper.wrapInternal(inv).setSlotsFromSide(next.dir^1).hasSpaceForItem(item)) setInvPath(next)
                 iterate(rest, closed+next)
 
             case tmp:TileMultipart => tmp.partMap(6) match

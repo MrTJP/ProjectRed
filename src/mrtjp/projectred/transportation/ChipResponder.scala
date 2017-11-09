@@ -18,7 +18,7 @@ class ChipItemResponder extends RoutingChip with TChipFilter with TChipPriority
 
         if (SyncResponse.isPreferredOver(sendPriority.ordinal, preference, rival) && filterAllows(item))
         {
-            val inv = InvWrapper.wrap(real).setSlotsFromSide(side)
+            val inv = InvWrapper.wrapInternal(real).setSlotsFromSide(side)
             val room = inv.getSpaceForItem(item)
             if (room > 0) return new SyncResponse().setPriority(sendPriority).setCustomPriority(preference).setItemCount(room)
         }
@@ -26,7 +26,7 @@ class ChipItemResponder extends RoutingChip with TChipFilter with TChipPriority
         null
     }
 
-    def filterAllows(item:ItemKey) = !enableFilter || applyFilter(InvWrapper.wrap(filter)).hasItem(item) != filterExclude
+    def filterAllows(item:ItemKey) = !enableFilter || applyFilter(InvWrapper.wrapInternal(filter)).hasItem(item) != filterExclude
 
     override def infoCollection(list:ListBuffer[String])
     {
@@ -63,5 +63,5 @@ class ChipDynamicItemResponder extends ChipItemResponder
 
     override def enableFilter = false
 
-    override def filterAllows(item:ItemKey) = applyFilter(InvWrapper.wrap(invProvider.getInventory)).hasItem(item)
+    override def filterAllows(item:ItemKey) = applyFilter(InvWrapper.wrapInternal(invProvider.getInventory)).hasItem(item)
 }

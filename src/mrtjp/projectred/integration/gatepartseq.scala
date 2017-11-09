@@ -378,7 +378,7 @@ trait TTimerGateLogic extends SequentialGateLogic with ITimerGuiLogic
 
     override def activate(gate:SequentialGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult) =
     {
-        if (held.isEmptyl || !held.getItem.isInstanceOf[IScrewdriver])
+        if (held.isEmpty || !held.getItem.isInstanceOf[IScrewdriver])
         {
             if (!gate.world.isRemote) GuiTimer.open(player, gate)
             true

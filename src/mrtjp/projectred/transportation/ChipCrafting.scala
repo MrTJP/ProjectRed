@@ -80,7 +80,7 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
     {
         val real = invProvider.getInventory
         if (real != null)
-            InvWrapper.wrap(real).setSlotsFromSide(invProvider.getInterfacedSide)
+            InvWrapper.wrapInternal(real).setSlotsFromSide(invProvider.getInterfacedSide)
                     .extractItem(item, amount)
         else 0
     }

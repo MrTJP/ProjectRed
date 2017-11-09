@@ -11,7 +11,7 @@ import codechicken.lib.render.state.GlStateTracker
 import codechicken.lib.util.ItemUtils
 import codechicken.lib.vec._
 import mrtjp.core.block.{MTBlockTile, MultiTileBlock}
-import mrtjp.core.inventory.{IInvWrapperRegister, InvWrapper, TInventory}
+import mrtjp.core.inventory.{IInvWrapperRegister, InvWrapper, TInventory, VanillaWrapper}
 import mrtjp.core.item.ItemKey
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.ProjectRedExploration
@@ -420,7 +420,7 @@ object BarrelInvWrapper extends IInvWrapperRegister
     override def create(inv:IInventory) = new BarrelInvWrapper(inv)
 }
 
-class BarrelInvWrapper(inv:IInventory) extends InvWrapper(inv)
+class BarrelInvWrapper(inv:IInventory) extends VanillaWrapper(inv, false)
 {
     def getBarrel = inv.asInstanceOf[TileBarrel]
 

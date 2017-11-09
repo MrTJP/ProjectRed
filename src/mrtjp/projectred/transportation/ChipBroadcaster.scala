@@ -161,7 +161,7 @@ class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation
         val real = invProvider.getInventory
         if (real != null)
         {
-            val inv = applyFilter(InvWrapper.wrap(real)).setSlotsFromSide(side)
+            val inv = applyFilter(InvWrapper.wrapInternal(real)).setSlotsFromSide(side)
             inv.extractItem(item, amount)
         }
         else 0
@@ -181,8 +181,8 @@ class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation
         val real = invProvider.getInventory
         if (real == null) return
 
-        val inv = applyFilter(InvWrapper.wrap(real)).setSlotsFromSide(side)
-        val filt = applyFilter(InvWrapper.wrap(filter), hide=false)
+        val inv = applyFilter(InvWrapper.wrapInternal(real)).setSlotsFromSide(side)
+        val filt = applyFilter(InvWrapper.wrapInternal(filter), hide=false)
 
         val requested = request.getRequestedPackage
 
@@ -206,8 +206,8 @@ class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation
         val real = invProvider.getInventory
         if (real == null) return
 
-        val inv = applyFilter(InvWrapper.wrap(real)).setSlotsFromSide(side)
-        val filt = applyFilter(InvWrapper.wrap(filter), hide=false)
+        val inv = applyFilter(InvWrapper.wrapInternal(real)).setSlotsFromSide(side)
+        val filt = applyFilter(InvWrapper.wrapInternal(filter), hide=false)
 
         val items = inv.getAllItemStacks
         for ((k, v) <- items) if (filt.hasItem(k) != filterExclude)

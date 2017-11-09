@@ -52,7 +52,7 @@ class TileFilteredImporter extends TileItemImporter with TInventory with ISidedI
 
     override def canImport(item:ItemKey) =
     {
-        val map = InvWrapper.wrap(this).getAllItemStacks
+        val map = InvWrapper.wrapInternal(this).getAllItemStacks
         map.isEmpty || map.contains(item)
     }
 

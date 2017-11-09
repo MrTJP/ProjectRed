@@ -254,7 +254,7 @@ class TileICPrinter extends TileICMachine with TInventory with TInventoryCapabli
                 val inv = InvWrapper.getInventory(world, pos.offset(EnumFacing.values()(s)))
                 if (inv != null)
                 {
-                    val w = InvWrapper.wrap(inv).setSlotsFromSide(s^1)
+                    val w = InvWrapper.wrapInternal(inv).setSlotsFromSide(s^1)
                     val in = w.getItemCount(stack.key)
                     if (in > 0)
                     {
@@ -295,7 +295,7 @@ class TileICPrinter extends TileICMachine with TInventory with TInventoryCapabli
             val inv = InvWrapper.getInventory(world, pos.offset(EnumFacing.values()(s)))
             if (inv != null)
             {
-                val w = InvWrapper.wrap(inv).setSlotsFromSide(s^1)
+                val w = InvWrapper.wrapInternal(inv).setSlotsFromSide(s^1)
                 left -= w.extractItem(stack.key, left)
                 if (left <= 0) return
             }

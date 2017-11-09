@@ -477,7 +477,7 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
     {
         val real = getInventory
         if (real == null) 0
-        else InvWrapper.wrap(real).setSlotsFromSide(getInterfacedSide).getSpaceForItem(item)
+        else InvWrapper.wrapInternal(real).setSlotsFromSide(getInterfacedSide).getSpaceForItem(item)
     }
 }
 

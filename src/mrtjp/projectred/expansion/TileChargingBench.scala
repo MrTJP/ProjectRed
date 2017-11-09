@@ -150,7 +150,7 @@ class TileChargingBench extends TileMachine with TPoweredMachine with TGuiMachin
 
     def dropStackDown(stack:ItemStack) =
     {
-        val wr = InvWrapper.wrap(this).setSlotsFromRange(8 until 16).setInternalMode(true)
+        val wr = InvWrapper.wrapInternal(this, 8 until 16)
         val i = wr.injectItem(ItemKey.get(stack), stack.getCount)
         i > 0
     }

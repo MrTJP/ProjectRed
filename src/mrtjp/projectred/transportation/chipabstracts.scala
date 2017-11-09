@@ -3,7 +3,7 @@ package mrtjp.projectred.transportation
 import java.util.UUID
 
 import com.mojang.realmsclient.gui.ChatFormatting
-import mrtjp.core.inventory.{InvWrapper, SimpleInventory}
+import mrtjp.core.inventory.{InvWrapper, SimpleInventory, VanillaWrapper}
 import mrtjp.core.item.{ItemEquality, ItemKey, ItemKeyStack, ItemQueue}
 import mrtjp.projectred.transportation.RoutingChipDefs.ChipVal
 import net.minecraft.entity.player.EntityPlayer
@@ -120,7 +120,7 @@ trait TChipFilter extends RoutingChip
         hideMode = (hideMode+1)%3
     }
 
-    def applyFilter(inv:InvWrapper, patterns:Boolean=true, hide:Boolean=true):InvWrapper =
+    def applyFilter(inv:VanillaWrapper, patterns:Boolean=true, hide:Boolean=true):VanillaWrapper =
     {
         if (inv == null) return null
 

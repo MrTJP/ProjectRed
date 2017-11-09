@@ -180,7 +180,7 @@ class TileProjectBench extends TileMachine with TInventory with ISidedInventory 
             val s = getStackInSlot(i)
             if (!s.isEmpty) {
                 if (w == null)
-                    w = InvWrapper.wrap(this).setInternalMode(true).setSlotsFromRange(9 until 27)
+                    w = InvWrapper.wrapInternal(this, 9 until 27)
 
                 val toMove = math.max(1, s.getCount/8)
                 val ins = w.injectItem(ItemKey.get(s), toMove)
@@ -310,7 +310,7 @@ class CraftingResultTestHelper
         if (result.isEmpty)
             return false
 
-        val wr = InvWrapper.wrap(new ArrayWrapInventory(storage, "", slotLimit)).setInternalMode(true)
+        val wr = InvWrapper.wrap(new ArrayWrapInventory(storage, "", slotLimit))
 
         for (stack <- Seq(result) ++ remaining.filter(!_.isEmpty)) {
             val i = wr.injectItem(ItemKey.get(stack), stack.getCount)
@@ -384,7 +384,7 @@ class SlotProjectCrafting(player: EntityPlayer, tile: TileProjectBench, idx: Int
         }
 
         def addToStorageSlots(stack:ItemStack):Boolean = {
-            val w = InvWrapper.wrap(tile).setInternalMode(true).setSlotsFromRange(9 until 27)
+            val w = InvWrapper.wrapInternal(tile, 9 until 27)
             val item = ItemKey.get(stack)
             stack.shrink(w.injectItem(item, stack.getCount))
             stack.isEmpty

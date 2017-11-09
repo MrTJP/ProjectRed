@@ -366,7 +366,7 @@ abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart
         val inv = InvWrapper.getInventory(world, posOfStraight(r.output))
         if (inv != null)
         {
-            val w = InvWrapper.wrap(inv).setSlotsFromSide(r.output^1)
+            val w = InvWrapper.wrapInternal(inv).setSlotsFromSide(r.output^1)
             r.payload.stackSize -= w.injectItem(r.payload.key, r.payload.stackSize)
             r.payload.stackSize == 0
         }

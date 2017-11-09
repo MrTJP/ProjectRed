@@ -33,8 +33,8 @@ class ChipStockKeeper extends RoutingChip with TChipStock with TChipMatchMatrix
         val side = invProvider.getInterfacedSide
         if (real == null || side < 0) return
 
-        val inv = InvWrapper.wrap(real).setSlotsFromSide(side)
-        val filt = InvWrapper.wrap(stock).setSlotsAll()
+        val inv = InvWrapper.wrapInternal(real).setSlotsFromSide(side)
+        val filt = InvWrapper.wrapInternal(stock).setSlotsAll()
 
         val checked = MSet[ItemKey]()
         var requestAttempted = false
@@ -48,7 +48,7 @@ class ChipStockKeeper extends RoutingChip with TChipStock with TChipMatchMatrix
             checked += keyStack.key
 
             val eq = createEqualityFor(i)
-            inv.eq = eq
+            inv.setMatchOptions(eq)
 
             val stockToKeep = if (requestMode == 2) Int.MaxValue else filt.getItemCount(keyStack.key)
             val inInventory = inv.getItemCount(keyStack.key)+getEnroute(eq, keyStack.key)
