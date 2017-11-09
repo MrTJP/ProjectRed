@@ -12,7 +12,7 @@ import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui._
-import mrtjp.core.inventory.TInventory
+import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
 import mrtjp.core.vec.Point
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.core.PartDefs
@@ -28,7 +28,7 @@ import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TInventory
+class TileElectrotineGenerator extends TPoweredMachine with TGuiMachine with TInventory with TInventoryCapablilityTile
 {
     var isBurning = false
     var isCharged = false

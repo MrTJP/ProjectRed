@@ -18,7 +18,7 @@ import codechicken.lib.vec.{Cuboid6, Vector3}
 import codechicken.multipart.IRedstoneConnector
 import com.mojang.authlib.GameProfile
 import mrtjp.core.gui._
-import mrtjp.core.inventory.TInventory
+import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
 import mrtjp.core.vec.Point
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.expansion.TileBlockPlacer._
@@ -39,7 +39,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.ref.WeakReference
 
-class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory with IRedstoneConnector
+class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory with TInventoryCapablilityTile with IRedstoneConnector
 {
     override def save(tag:NBTTagCompound)
     {

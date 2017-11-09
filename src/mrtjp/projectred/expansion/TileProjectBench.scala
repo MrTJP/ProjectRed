@@ -12,7 +12,7 @@ import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui._
-import mrtjp.core.inventory.{ArrayWrapInventory, InvWrapper, TInventory}
+import mrtjp.core.inventory.{ArrayWrapInventory, InvWrapper, TInventory, TInventoryCapablilityTile}
 import mrtjp.core.item.ItemKey
 import mrtjp.core.vec.{Point, Size}
 import mrtjp.projectred.ProjectRedExpansion
@@ -32,7 +32,7 @@ import org.lwjgl.input.Keyboard
 
 import scala.collection.JavaConversions._
 
-class TileProjectBench extends TileMachine with TInventory with ISidedInventory with TGuiMachine
+class TileProjectBench extends TileMachine with TInventory with ISidedInventory with TInventoryCapablilityTile with TGuiMachine
 {
     val craftHelper = new CraftingResultTestHelper
     var isPlanRecipe = false

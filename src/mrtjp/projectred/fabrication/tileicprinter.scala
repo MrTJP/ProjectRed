@@ -20,7 +20,7 @@ import codechicken.lib.vec.uv.{IconTransformation, MultiIconTransformation, UVTr
 import com.google.common.collect.ImmutableList
 import com.mojang.realmsclient.gui.ChatFormatting.{BOLD, RED, RESET}
 import mrtjp.core.gui._
-import mrtjp.core.inventory.{InvWrapper, TInventory}
+import mrtjp.core.inventory.{InvWrapper, TInventory, TInventoryCapablilityTile}
 import mrtjp.core.item.{ItemKey, ItemKeyStack}
 import mrtjp.core.vec.{Point, Rect, Size, Vec2}
 import mrtjp.projectred.ProjectRedCore.log
@@ -48,7 +48,7 @@ import org.lwjgl.opengl.GL11._
 import scala.collection.JavaConversions._
 import scala.collection.mutable.{Map => MMap, Set => MSet}
 
-class TileICPrinter extends TileICMachine with TInventory
+class TileICPrinter extends TileICMachine with TInventory with TInventoryCapablilityTile
 {
     var progress = 0.0
     var speed = 0.0

@@ -12,7 +12,7 @@ import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import mrtjp.core.gui._
-import mrtjp.core.inventory.{InvWrapper, TInventory}
+import mrtjp.core.inventory.{InvWrapper, TInventory, TInventoryCapablilityTile}
 import mrtjp.core.item.ItemKey
 import mrtjp.core.vec.{Point, Size}
 import mrtjp.projectred.transportation.PressurePayload
@@ -28,7 +28,7 @@ import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class TileFilteredImporter extends TileItemImporter with TInventory with ISidedInventory
+class TileFilteredImporter extends TileItemImporter with TInventory with ISidedInventory with TInventoryCapablilityTile
 {
     var colour:Byte = -1
 

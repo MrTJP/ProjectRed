@@ -12,7 +12,7 @@ import codechicken.lib.model.bakery.SimpleBlockRenderer
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.uv.MultiIconTransformation
 import mrtjp.core.gui._
-import mrtjp.core.inventory.TInventory
+import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
 import mrtjp.core.vec.Point
 import mrtjp.projectred.ProjectRedExpansion
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
@@ -29,7 +29,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.mutable.ListBuffer
 
-trait TPowerStorage extends TileMachine with TPoweredMachine
+trait TPowerStorage extends TileMachine with TPoweredMachine with TInventoryCapablilityTile
 {
     var powerStored = 0
 

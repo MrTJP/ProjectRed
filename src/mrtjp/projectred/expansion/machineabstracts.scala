@@ -7,7 +7,7 @@ import codechicken.lib.model.bakery.{IBakeryProvider, ModelBakery}
 import codechicken.lib.vec.Rotation
 import mrtjp.core.block._
 import mrtjp.core.gui.NodeContainer
-import mrtjp.core.inventory.TInventory
+import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
 import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api._
 import mrtjp.projectred.core._
@@ -217,7 +217,7 @@ trait TPoweredMachine extends TileMachine with TPowerTile with ILowLoadMachine
 }
 
 abstract class TileProcessingMachine extends TileMachine
-with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory
+with TPoweredMachine with TGuiMachine with TInventory with ISidedInventory with TInventoryCapablilityTile
 {
     var isCharged = false
     var isWorking = false
