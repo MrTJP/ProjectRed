@@ -120,11 +120,9 @@ trait TChipFilter extends RoutingChip
         hideMode = (hideMode+1)%3
     }
 
-    def applyFilter(inv:VanillaWrapper, patterns:Boolean=true, hide:Boolean=true):VanillaWrapper =
+    def applyFilter(inv:InvWrapper, patterns:Boolean=true, hide:Boolean=true):InvWrapper =
     {
         if (inv == null) return null
-
-        inv.setSlotsAll()
 
         if (enablePatterns && patterns)
             inv.setMatchOptions(metaMatch, nbtMatch, oreMatch).setDamageGroup(grpPerc(damageGroupMode))

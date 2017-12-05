@@ -158,10 +158,10 @@ class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation
 
     override def extractItem(item:ItemKey, amount:Int) =
     {
-        val real = invProvider.getInventory
+        val real = invProvider.getInventory(side)
         if (real != null)
         {
-            val inv = applyFilter(InvWrapper.wrapInternal(real)).setSlotsFromSide(side)
+            val inv = applyFilter(real)
             inv.extractItem(item, amount)
         }
         else 0
@@ -178,10 +178,10 @@ class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation
 
     override def requestPromise(request:RequestBranchNode, existingPromises:Int)
     {
-        val real = invProvider.getInventory
+        val real = invProvider.getInventory(side)
         if (real == null) return
 
-        val inv = applyFilter(InvWrapper.wrapInternal(real)).setSlotsFromSide(side)
+        val inv = applyFilter(real)
         val filt = applyFilter(InvWrapper.wrapInternal(filter), hide=false)
 
         val requested = request.getRequestedPackage
@@ -203,10 +203,10 @@ class ChipBroadcaster extends RoutingChip with TChipFilter with TChipOrientation
 
     override def getBroadcasts(col:ItemQueue)
     {
-        val real = invProvider.getInventory
+        val real = invProvider.getInventory(side)
         if (real == null) return
 
-        val inv = applyFilter(InvWrapper.wrapInternal(real)).setSlotsFromSide(side)
+        val inv = applyFilter(real)
         val filt = applyFilter(InvWrapper.wrapInternal(filter), hide=false)
 
         val items = inv.getAllItemStacks

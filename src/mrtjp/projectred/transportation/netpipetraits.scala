@@ -3,7 +3,6 @@ import java.util.UUID
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.raytracer.CuboidRayTraceResult
-import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
 import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.IConnectable
@@ -477,7 +476,7 @@ trait TNetworkPipe extends PayloadPipePart[NetworkPayload] with TInventoryPipe[N
     {
         val real = getInventory
         if (real == null) 0
-        else InvWrapper.wrapInternal(real).setSlotsFromSide(getInterfacedSide).getSpaceForItem(item)
+        else real.getSpaceForItem(item)
     }
 }
 

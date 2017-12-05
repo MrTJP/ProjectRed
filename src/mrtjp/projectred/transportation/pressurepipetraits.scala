@@ -6,6 +6,8 @@ import mrtjp.projectred.api.IConnectable
 import net.minecraft.inventory.{IInventory, ISidedInventory}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
+import net.minecraftforge.common.capabilities.ICapabilityProvider
+import net.minecraftforge.items.CapabilityItemHandler
 
 trait TPressureSubsystem extends PayloadPipePart[PressurePayload]
 {
@@ -145,6 +147,7 @@ trait TPressureTube extends TPressureSubsystem with TColourFilterPipe
         world.getTileEntity(posOfStraight(s)) match {
             case sinv:ISidedInventory => sinv.getSlotsForFace(EnumFacing.values()(s^1)).nonEmpty
             case inv:IInventory => true
+            case cap:ICapabilityProvider => cap.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.VALUES(s^1))
             case _ => false
         }
     }

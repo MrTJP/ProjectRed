@@ -208,6 +208,7 @@ object LogisticPathFinder
         if (bestIP > -1) bestResponse.setResponder(bestIP) else null
     }
 
+    //TODO, Not sure if this will work with capabilities, some mods just return a new cap class every time..
     def sharesInventory(pipe1:TInventoryPipe[_], pipe2:TInventoryPipe[_]):Boolean =
     {
         if (pipe1 == null || pipe2 == null) return false

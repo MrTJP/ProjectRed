@@ -14,7 +14,7 @@ import mrtjp.projectred.core._
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.{NBTTagCompound, NBTTagList}
-import net.minecraft.util.{BlockRenderLayer, ITickable}
+import net.minecraft.util.{BlockRenderLayer, EnumFacing, ITickable}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConversions._
@@ -363,10 +363,9 @@ abstract class PayloadPipePart[T <: AbstractPipePayload] extends SubcorePipePart
 
     def passToInventory(r:T) =
     {
-        val inv = InvWrapper.getInventory(world, posOfStraight(r.output))
-        if (inv != null)
+        val w = InvWrapper.wrap(world, posOfStraight(r.output), EnumFacing.VALUES(r.output^1))
+        if (w != null)
         {
-            val w = InvWrapper.wrapInternal(inv).setSlotsFromSide(r.output^1)
             r.payload.stackSize -= w.injectItem(r.payload.key, r.payload.stackSize)
             r.payload.stackSize == 0
         }

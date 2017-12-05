@@ -192,10 +192,9 @@ trait TActiveDevice extends TileMachine
 
     def exportInv(r:PressurePayload) =
     {
-        val inv = InvWrapper.getInventory(getWorld, getPos.offset(EnumFacing.VALUES(side)))
-        if (inv != null)
+        val w = InvWrapper.wrap(getWorld, getPos.offset(EnumFacing.VALUES(side)), EnumFacing.VALUES(side^1))
+        if (w != null)
         {
-            val w = InvWrapper.wrapInternal(inv).setSlotsFromSide(side^1)
             r.payload.stackSize -= w.injectItem(r.payload.key, r.payload.stackSize)
             r.payload.stackSize <= 0
         }

@@ -21,10 +21,10 @@ class ChipExtractor extends RoutingChip with TChipFilter with TChipOrientation
         if (remainingDelay > 0) return
         remainingDelay = operationDelay
 
-        val real = invProvider.getInventory
+        val real = invProvider.getInventory(side)
         if (real == null) return
 
-        val inv = InvWrapper.wrapInternal(real).setSlotsFromSide(side)
+        val inv = real
         val filt = applyFilter(InvWrapper.wrapInternal(filter))
 
         val available = inv.getAllItemStacks

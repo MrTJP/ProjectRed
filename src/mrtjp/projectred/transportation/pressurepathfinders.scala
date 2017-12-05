@@ -6,6 +6,8 @@ import mrtjp.core.item.ItemKey
 import net.minecraft.inventory.IInventory
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.common.capabilities.ICapabilityProvider
+import net.minecraftforge.items.CapabilityItemHandler
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
@@ -77,6 +79,12 @@ object PressurePathFinder
 
                 case _ => iterate(rest, closed+next)
             }
+            //This will always be hit as all tiles are cap providers.
+            case tmp:ICapabilityProvider =>
+                if(tmp.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.VALUES(next.dir^1)))
+                    if (InvWrapper.wrap(pipe.world, next.pos, EnumFacing.VALUES(next.dir^1)).hasSpaceForItem(item)) setInvPath(next)
+                iterate(rest, closed+next)
+            //Theoretically this will never be hit anymore, as all tiles are cap providers.
             case _ => iterate(rest, closed+next)
         }
         case _ =>
