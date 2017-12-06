@@ -22,17 +22,10 @@ abstract class ItemCraftingDamage extends ItemCore
     override def hasContainerItem(itemStack:ItemStack) = true
 
     override def getContainerItem(stack:ItemStack) =
-        if (stack.getItem == this)
-        {
-            stack.setItemDamage(stack.getItemDamage+1)
-            stack
-        }
+        if(isDamageable)
+            new ItemStack(stack.getItem, 1, stack.getItemDamage+1)
         else
-        {
-            val newStack = new ItemStack(this)
-            newStack.setItemDamage(newStack.getMaxDamage)
-            newStack
-        }
+            stack
 }
 
 class ItemDrawPlate extends ItemCraftingDamage
