@@ -187,17 +187,15 @@ object ItemPlan
     {
         assertStackTag(stack)
         val tag0 = new NBTTagList
-        for (i <- 0 until 9)
-        {
+        for (i <- 0 until 9) {
             val tag1 = new NBTTagCompound
             var slotStack = inputs(i)
-            if (!slotStack.isEmpty) {
-                if (slotStack.isItemStackDamageable) { //save without damage bar
-                    slotStack = slotStack.copy
-                    slotStack.setItemDamage(0)
-                }
-                slotStack.writeToNBT(tag1)
+            if (slotStack.isItemStackDamageable) { //save without damage bar
+                slotStack = slotStack.copy
+                slotStack.setItemDamage(0)
             }
+            slotStack.writeToNBT(tag1)
+
             tag0.appendTag(tag1)
         }
         val tag1 = new NBTTagCompound
@@ -210,11 +208,12 @@ object ItemPlan
     {
         val out = new Array[ItemStack](9)
         val tag0 = stack.getTagCompound.getTagList("recipe", 10)
-        for (i <- 0 until 9)
-        {
+        for (i <- 0 until 9) {
             val tag1 = tag0.getCompoundTagAt(i)
             if (tag1.hasKey("id"))
                 out(i) = new ItemStack(tag1)
+            else
+                out(i) = ItemStack.EMPTY
         }
         out
     }
