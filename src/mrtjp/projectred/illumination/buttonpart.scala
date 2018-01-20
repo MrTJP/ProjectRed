@@ -12,13 +12,10 @@ import codechicken.lib.vec._
 import codechicken.lib.vec.uv.IconTransformation
 import codechicken.multipart.minecraft.ButtonPart
 import codechicken.multipart.{RedstoneInteractions, TileMultipart}
-import com.google.common.collect.ImmutableList
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.{RenderHalo, TSwitchPacket}
-import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
-import net.minecraft.client.renderer.block.model.{ItemCameraTransforms, ItemOverrideList}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
@@ -26,11 +23,8 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.{BlockPos, Vec3d}
-import net.minecraft.util.{BlockRenderLayer, EnumFacing, EnumHand}
+import net.minecraft.util.{BlockRenderLayer, EnumFacing, EnumHand, ResourceLocation}
 import net.minecraft.world.World
-import net.minecraftforge.client.model.IPerspectiveAwareModel
-import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
-import net.minecraftforge.common.model.IModelState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
@@ -158,7 +152,7 @@ class LightButtonPart extends ButtonPart with ILight with TSwitchPacket
 
 object LightButtonPart
 {
-    val typeID = "projectred-illumination:light_button"
+    val typeID = new ResourceLocation("projectred-illumination:light_button")
 }
 
 class FLightButtonPart extends LightButtonPart
@@ -223,10 +217,10 @@ class FLightButtonPart extends LightButtonPart
 
 object FLightButtonPart
 {
-    val typeID = "projectred-illumination:feedback_light_button"
+    val typeID = new ResourceLocation("projectred-illumination:feedback_light_button")
 }
 
-trait TButtonItemRendererCommons extends IItemRenderer with IPerspectiveAwareModel
+trait TButtonItemRendererCommons extends IItemRenderer
 {
     val invRenderBox = new Cuboid6(5/16D, 6/16D, 6/16D, 11/16D, 10/16D, 10/16D)
     val invLightBox = invRenderBox.copy.expand(0.025D)

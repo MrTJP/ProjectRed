@@ -1,0 +1,28 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-transportation:pipe",
+		"data": 2,
+		"count": 1
+	},
+	"pattern": [
+		"rgr",
+		"gjg",
+		"rgr"
+	],
+	"key": {
+		"g": {
+			"type": "forge:ore_dict",
+			"ore": "nuggetGold"
+		},
+		"j": {
+			"type": "minecraft:item",
+			"item": "projectred-transportation:pipe",
+			"data": 1
+		},
+		"r": {
+			"type": "forge:ore_dict",
+			"ore": "dustRedstone"
+		}
+	}
+}

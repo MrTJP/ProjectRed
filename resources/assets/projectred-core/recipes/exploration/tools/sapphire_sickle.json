@@ -1,0 +1,23 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-exploration:sapphire_sickle",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		" m ",
+		"  m",
+		"sm "
+	],
+	"key": {
+		"s": {
+			"type": "forge:ore_dict",
+			"ore": "stickWood"
+		},
+		"m": {
+			"type": "forge:ore_dict",
+			"ore": "gemSapphire"
+		}
+	}
+}

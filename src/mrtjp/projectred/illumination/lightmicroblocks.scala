@@ -12,7 +12,7 @@ import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.RenderHalo
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-class LightMicroMaterial(val colour:Int) extends BlockMicroMaterial(ProjectRedIllumination.blockLamp.getDefaultState) with IGeneratedMaterial
+class LightMicroMaterial(val colour:Int, val key:String) extends BlockMicroMaterial(ProjectRedIllumination.blockLamp.getDefaultState, key) with IGeneratedMaterial
 {
     override def addTraits(traits:util.BitSet, mcrFactory:MicroblockFactory, client:Boolean)
     {
@@ -35,11 +35,10 @@ object LightMicroMaterial
     {
         traitID = MicroblockGenerator.registerTrait(classOf[LightMicroblock])
 
-        for (i <- 0 until 16)
-            MicroMaterialRegistry.registerMaterial(
-                new LightMicroMaterial(i),
-                BlockMicroMaterial.materialKey(ProjectRedIllumination.blockLamp.getDefaultState)+"[colour:"+i+"]"
-            )
+        for (i <- 0 until 16) {
+            val key = BlockMicroMaterial.materialKey(ProjectRedIllumination.blockLamp.getDefaultState)+"[colour:"+i+"]"
+            MicroMaterialRegistry.registerMaterial(new LightMicroMaterial(i, key), key)
+        }
     }
 }
 

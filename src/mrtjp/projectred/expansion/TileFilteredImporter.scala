@@ -154,7 +154,7 @@ class GuiFilteredImporter(c:Container, tile:TileFilteredImporter) extends NodeGu
                     TextureUtils.changeTexture(GuiLib.guiExtras)
                     GuiDraw.drawTexturedModalRect(position.x, position.y, 40, 2, 11, 11)
                 }
-                else GuiDraw.drawRect(position.x+2, position.y+2, 8, 8, EnumColour.fromWoolID(tile.colour).argb)//TODO Maybe from dye id.
+                else GuiDraw.drawRect(position.x+2, position.y+2, 8, 8, EnumColour.fromWoolMeta(tile.colour).argb)//TODO Maybe from dye id.
             }
 
             override def onButtonClicked()

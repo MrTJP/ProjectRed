@@ -179,7 +179,7 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                     }
 
                     if (flags.nonEmpty)
-                        GuiDraw.drawMultiLineTip(ItemStack.EMPTY, mx+12, my-32-(flags.size*(fontRenderer.FONT_HEIGHT+1)), flags)
+                        GuiDraw.drawMultiLineTip(ItemStack.EMPTY, mx+12, my-32-(flags.size*(getFontRenderer.FONT_HEIGHT+1)), flags)
 
                     translateFromScreen()
                     ClipNode.tempEnableScissoring()

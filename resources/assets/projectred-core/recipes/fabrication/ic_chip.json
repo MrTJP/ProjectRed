@@ -1,0 +1,29 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-fabrication:ic_chip",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"ggg",
+		"qdq",
+		"ggg"
+	],
+	"key": {
+		"g": {
+			"type": "forge:ore_dict",
+			"ore": "nuggetGold"
+		},
+		"q": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 0
+		},
+		"d": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 301
+		}
+	}
+}

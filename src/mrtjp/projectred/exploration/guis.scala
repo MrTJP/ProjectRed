@@ -24,8 +24,8 @@ class GuiBackpack(player:EntityPlayer, bag:ItemStack) extends NodeGui(ItemBackpa
 
     override def drawFront_Impl(mouse:Point, frame:Float)
     {
-        fontRenderer.drawString(bag.getDisplayName, 8, 6, EnumColour.GRAY.rgb)
-        fontRenderer.drawString("Inventory", 8, 75, EnumColour.GRAY.rgb)
+        getFontRenderer.drawString(bag.getDisplayName, 8, 6, EnumColour.GRAY.rgb)
+        getFontRenderer.drawString("Inventory", 8, 75, EnumColour.GRAY.rgb)
     }
 
     override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) =

@@ -239,7 +239,7 @@ class ContainerBatteryBox(p:EntityPlayer, tile:TileBatteryBox) extends Container
         for (i <- listeners)
         {
             if (st != tile.powerStored) i.asInstanceOf[IContainerListener]
-                    .sendProgressBarUpdate(this, 3, tile.powerStored)
+                    .sendWindowProperty(this, 3, tile.powerStored)
         }
         st = tile.powerStored
     }

@@ -1,0 +1,34 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-expansion:machine1",
+		"data": 1,
+		"count": 1
+	},
+	"pattern": [
+		"bbb",
+		"a a",
+		"cec"
+	],
+	"key": {
+		"b": {
+			"type": "minecraft:item",
+			"item": "minecraft:brick_block",
+			"data": 0
+		},
+		"a": {
+			"type": "minecraft:item",
+			"item": "projectred-expansion:charged_battery",
+			"data": 0
+		},
+		"c": {
+			"type": "minecraft:item",
+			"item": "minecraft:clay",
+			"data": 0
+		},
+		"e": {
+			"type": "forge:ore_dict",
+			"ore": "ingotElectrotineAlloy"
+		}
+	}
+}

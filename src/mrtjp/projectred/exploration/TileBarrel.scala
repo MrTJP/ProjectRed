@@ -329,12 +329,12 @@ class TileBarrel extends MTBlockTile with TInventory with ISidedInventory
 
 object RenderBarrel extends TileEntitySpecialRenderer[TileBarrel] //with TCubeMapRender
 {
-    override def renderTileEntityAt(tile:TileBarrel, x:Double, y:Double, z:Double, frame:Float, destroyProgress:Int)
+    override def render(tile:TileBarrel, x:Double, y:Double, z:Double, frame:Float, destroyProgress:Int, alpha:Float)
     {
         if (tile.item == null) return
 
         val stack = tile.item.makeStack(1)
-        val fr = Minecraft.getMinecraft.fontRendererObj
+        val fr = Minecraft.getMinecraft.fontRenderer
         val tm = Minecraft.getMinecraft.getTextureManager
 
         val stackSize = tile.item.getMaxStackSize

@@ -298,7 +298,7 @@ trait TTimerGateLogic extends SequentialGateLogic with ITimerGuiLogic
         super.load(tag)
         pointer_max = tag.getInteger("pmax")
         pointer_start = tag.getLong("pelapsed")
-        if (pointer_start >= 0) pointer_start = MultipartSaveLoad.loadingWorld.getTotalWorldTime-pointer_start
+        if (pointer_start >= 0) pointer_start = gate.world.getTotalWorldTime-pointer_start
     }
 
     abstract override def writeDesc(packet:MCDataOutput)

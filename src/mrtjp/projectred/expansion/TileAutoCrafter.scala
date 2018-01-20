@@ -144,9 +144,10 @@ class TileAutoCrafter extends TileMachine with TPoweredMachine with TInventory w
 
         if (craftHelper.recipe != null) {
             craftHelper.loadStorage((9 until 27).map(getStackInSlot).toArray, true)
-            if (craftHelper.consumeAndCraftToStorage(world, 64))
+            if (craftHelper.consumeAndCraftToStorage(world, 64)) {
                 craftHelper.unloadStorage(this, {_ + 9})
-            return true
+                return true
+            }
         }
 
         false
@@ -194,7 +195,7 @@ class ContainerAutoCrafter(player:EntityPlayer, tile:TileAutoCrafter) extends Co
         {
             val ic = i.asInstanceOf[IContainerListener]
 
-            if (slot != tile.planSlot) ic.sendProgressBarUpdate(this, 3, tile.planSlot)
+            if (slot != tile.planSlot) ic.sendWindowProperty(this, 3, tile.planSlot)
             slot = tile.planSlot
         }
     }

@@ -201,9 +201,9 @@ class ContainerElectrotineGenerator(p:EntityPlayer, tile:TileElectrotineGenerato
         for (i <- listeners)
         {
             if (st != tile.powerStorage) i
-                    .sendProgressBarUpdate(this, 3, tile.powerStorage)
+                    .sendWindowProperty(this, 3, tile.powerStorage)
             if (bt != tile.burnTimeRemaining) i
-                    .sendProgressBarUpdate(this, 4, tile.burnTimeRemaining)
+                    .sendWindowProperty(this, 4, tile.burnTimeRemaining)
         }
         st = tile.powerStorage
         bt = tile.burnTimeRemaining

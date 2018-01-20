@@ -1,0 +1,14 @@
+{
+	"type": "forge:ore_shapeless",
+	"result": {
+		"item": "projectred-core:resource_item",
+		"data": 200,
+		"count": 9
+	},
+	"ingredients": [
+		{
+			"type": "forge:ore_dict",
+			"ore": "blockRuby"
+		}
+	]
+}

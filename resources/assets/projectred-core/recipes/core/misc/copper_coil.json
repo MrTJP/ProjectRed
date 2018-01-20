@@ -1,0 +1,22 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-core:resource_item",
+		"data": 400,
+		"count": 1
+	},
+	"pattern": [
+		"cd"
+	],
+	"key": {
+		"c": {
+			"type": "forge:ore_dict",
+			"ore": "ingotCopper"
+		},
+		"d": {
+			"type": "minecraft:item",
+			"item": "projectred-core:drawplate",
+			"data": 32767
+		}
+	}
+}

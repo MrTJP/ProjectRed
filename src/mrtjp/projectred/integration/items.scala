@@ -13,22 +13,18 @@ import codechicken.lib.texture.TextureUtils
 import codechicken.lib.util.TransformUtils
 import codechicken.lib.vec._
 import codechicken.multipart.{MultiPartRegistry, TItemMultiPart, TMultiPart}
-import com.google.common.collect.ImmutableList
 import mrtjp.core.item.{ItemCore, ItemDefinition}
 import mrtjp.projectred.ProjectRedIntegration
 import mrtjp.projectred.core.PRLib
 import net.minecraft.block.SoundType
-import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
-import net.minecraft.client.renderer.block.model.{ItemCameraTransforms, ItemOverrideList}
+import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.util.{EnumFacing, NonNullList}
+import net.minecraft.util.{EnumFacing, NonNullList, ResourceLocation}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
-import net.minecraftforge.client.model.IPerspectiveAwareModel
-import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
@@ -54,10 +50,11 @@ class ItemPartGate extends ItemCore with TItemMultiPart
     override def getPlacementSound(item:ItemStack) = SoundType.GLASS
 
     @SideOnly(Side.CLIENT)
-    override def getSubItems(id:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
+    override def getSubItems(tab:CreativeTabs, list:NonNullList[ItemStack])
     {
-        for (g <- GateDefinition.values)
-            if (g.implemented) list.add(g.makeStack)
+        if (isInCreativeTab(tab))
+            for (g <- GateDefinition.values)
+                if (g.implemented) list.add(g.makeStack)
     }
 
 //    override def registerIcons(reg:IIconRegister)
@@ -69,7 +66,7 @@ class ItemPartGate extends ItemCore with TItemMultiPart
 //    override def getSpriteNumber = 0
 //
 
-    override def addInformation(stack:ItemStack, player:EntityPlayer, tooltip:JList[String], advanced:Boolean)
+    override def addInformation(stack:ItemStack, world:World, tooltip:JList[String], advanced:ITooltipFlag)
     {
         infoBuilderFunc(stack, tooltip)
     }
@@ -80,12 +77,12 @@ object GateDefinition extends ItemDefinition
     override type EnumVal = GateDef
     override def getItem = ProjectRedIntegration.itemPartGate
 
-    val typeSimpleGate = "projectred-integration:simple_gate"
-    val typeComplexGate = "projectred-integration:complex_gate"
-    val typeArrayGate = "projectred-integration:array_gate"
-    val typeBundledGate = "projectred-integration:bundled_gate"
-    val typeNeighborGate = "projectred-integration:neighbor_gate"
-    val typeICGate = "projectred-fabrication:ic_gate" //used by fabrication module
+    val typeSimpleGate = new ResourceLocation("projectred-integration:simple_gate")
+    val typeComplexGate = new ResourceLocation("projectred-integration:complex_gate")
+    val typeArrayGate = new ResourceLocation("projectred-integration:array_gate")
+    val typeBundledGate = new ResourceLocation("projectred-integration:bundled_gate")
+    val typeNeighborGate = new ResourceLocation("projectred-integration:neighbor_gate")
+    val typeICGate = new ResourceLocation("projectred-fabrication:ic_gate") //used by fabrication module
 
     val OR = new GateDef(typeSimpleGate)
     val NOR = new GateDef(typeSimpleGate)
@@ -123,7 +120,7 @@ object GateDefinition extends ItemDefinition
     val DecRandomizer = new GateDef(typeSimpleGate)
     val ICGate = new GateDef(typeICGate, true) //fabrication module
 
-    class GateDef(val partname:String, val hidden:Boolean = false) extends ItemDef(partname)
+    class GateDef(val partname:ResourceLocation, val hidden:Boolean = false) extends ItemDef(partname.toString)
     {
         def implemented = partname != null
     }

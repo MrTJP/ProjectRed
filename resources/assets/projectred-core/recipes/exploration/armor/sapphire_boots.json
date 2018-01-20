@@ -1,0 +1,18 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-exploration:sapphire_boots",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"m m",
+		"m m"
+	],
+	"key": {
+		"m": {
+			"type": "forge:ore_dict",
+			"ore": "gemSapphire"
+		}
+	}
+}

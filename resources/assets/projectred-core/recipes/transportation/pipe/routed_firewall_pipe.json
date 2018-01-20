@@ -1,0 +1,30 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"result": {
+		"item": "projectred-transportation:pipe",
+		"data": 4,
+		"count": 1
+	},
+	"pattern": [
+		"bcb",
+		"cjc",
+		"bcb"
+	],
+	"key": {
+		"b": {
+			"type": "minecraft:item",
+			"item": "minecraft:nether_brick",
+			"data": 0
+		},
+		"c": {
+			"type": "minecraft:item",
+			"item": "minecraft:magma_cream",
+			"data": 0
+		},
+		"j": {
+			"type": "minecraft:item",
+			"item": "projectred-transportation:pipe",
+			"data": 1
+		}
+	}
+}

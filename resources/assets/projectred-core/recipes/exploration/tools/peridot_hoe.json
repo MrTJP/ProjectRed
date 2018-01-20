@@ -1,0 +1,23 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-exploration:peridot_hoe",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"mm",
+		" s",
+		" s"
+	],
+	"key": {
+		"m": {
+			"type": "forge:ore_dict",
+			"ore": "gemPeridot"
+		},
+		"s": {
+			"type": "forge:ore_dict",
+			"ore": "stickWood"
+		}
+	}
+}

@@ -1,0 +1,30 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"result": {
+		"item": "projectred-integration:gate",
+		"data": 28,
+		"count": 1
+	},
+	"pattern": [
+		"BBB",
+		"RGR",
+		"BBB"
+	],
+	"key": {
+		"R": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 1
+		},
+		"B": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 3
+		},
+		"G": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 21
+		}
+	}
+}

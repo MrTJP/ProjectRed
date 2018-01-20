@@ -34,10 +34,11 @@ class ItemPartWire extends ItemCore with TItemMultiPart
     }
 
     @SideOnly(Side.CLIENT)
-    override def getSubItems(i:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
+    override def getSubItems(tab:CreativeTabs, list:NonNullList[ItemStack])
     {
-        for (w <- WireDef.values)
-            if (w.hasWireForm) list.add(w.makeStack)
+        if (isInCreativeTab(tab))
+            for (w <- WireDef.values)
+                if (w.hasWireForm) list.add(w.makeStack)
     }
 
     override def getPlacementSound(item:ItemStack) = SoundType.GLASS
@@ -57,10 +58,11 @@ class ItemPartFramedWire extends ItemCore with TItemMultiPart
     }
 
     @SideOnly(Side.CLIENT)
-    override def getSubItems(i:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
+    override def getSubItems(tab:CreativeTabs, list:NonNullList[ItemStack])
     {
-        for (w <- WireDef.values)
-            if (w.hasFramedForm) list.add(w.makeFramedStack)
+        if (isInCreativeTab(tab))
+            for (w <- WireDef.values)
+                if (w.hasFramedForm) list.add(w.makeFramedStack)
     }
 
     override def getPlacementSound(item:ItemStack) = SoundType.GLASS

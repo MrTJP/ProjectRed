@@ -1,0 +1,8 @@
+{
+	"conditions": {
+		"config": "mrtjp.projectred.core.ConfigConditionalFactory"
+	},
+	"recipes": {
+		"shapeless_ore_nbt_copy": "mrtjp.projectred.core.ShapelessOreNBTCopyRecipe$Factory"
+	}
+}

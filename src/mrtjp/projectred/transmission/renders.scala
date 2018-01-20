@@ -7,19 +7,12 @@ import codechicken.lib.texture.TextureUtils
 import codechicken.lib.util.TransformUtils
 import codechicken.lib.vec.uv.IconTransformation
 import codechicken.lib.vec.{Scale, Translation, Vector3}
-import com.google.common.collect.ImmutableList
-import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
-import net.minecraft.client.renderer.block.model.{ItemCameraTransforms, ItemOverrideList}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.item.ItemStack
-import net.minecraft.util.EnumFacing
-import net.minecraftforge.client.model.IPerspectiveAwareModel
-import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
-import net.minecraftforge.common.model.IModelState
 import org.lwjgl.opengl.GL11
 
-trait TWireItemRenderCommon extends IItemRenderer with IPerspectiveAwareModel
+trait TWireItemRenderCommon extends IItemRenderer
 {
     override def isAmbientOcclusion = true
     override def isGui3d = true

@@ -10,7 +10,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 
@@ -58,7 +58,7 @@ dependencies {
 
     compile "mrtjp:MrTJPCore:${config.mc_version}-${config.tjpcore_version}:deobf"
     compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
-    compile "codechicken:ForgeMultipart:${config.mc_version}-${config.fmp_version}:deobf"
+    compile "codechicken:ForgeMultipart:1.12-${config.fmp_version}:deobf"
     
     // compile against the JEI API
     deobfCompile "mezz.jei:jei_${config.mc_version}:${config.jei_version}:api"
@@ -168,6 +168,8 @@ task integrationJar(type: Jar, dependsOn: reobfJar) {
 
         include "**/assets/projectred/textures/blocks/integration/**"
         include "**/assets/projectred/textures/obj/integration/**"
+        include "**/assets/projectred-core/recipes/integration/**"
+        include "**/assets/projectred-core/recipes/transmission/**"
 
         include "integration_mod.info"
         rename("integration_mod.info", 'mcmod.info')
@@ -186,6 +188,7 @@ task fabricationJar(type: Jar, dependsOn: reobfJar) {
         include "**/assets/projectred/textures/blocks/fabrication/**"
         include "**/assets/projectred/textures/items/fabrication/**"
         include "**/assets/projectred/textures/obj/fabrication/**"
+        include "**/assets/projectred-core/recipes/fabrication/**"
 
         include "fabrication_mod.info"
         rename("fabrication_mod.info", 'mcmod.info')
@@ -203,6 +206,7 @@ task lightingJar(type: Jar, dependsOn: reobfJar) {
 
         include "**/assets/projectred/textures/blocks/lighting/**"
         include "**/assets/projectred/textures/obj/lighting/**"
+        include "**/assets/projectred-core/recipes/illumination/**"
 
         include "lighting_mod.info"
         rename("lighting_mod.info", 'mcmod.info')
@@ -223,6 +227,8 @@ task mechanicalJar(type: Jar, dependsOn: reobfJar) {
         include "**/assets/projectred/textures/blocks/mechanical/**"
         include "**/assets/projectred/textures/items/mechanical/**"
         include "**/assets/projectred/textures/obj/mechanical/**"
+        include "**/assets/projectred-core/recipes/transportation/**"
+        include "**/assets/projectred-core/recipes/expansion/**"
 
         include "mechanical_mod.info"
         rename("mechanical_mod.info", 'mcmod.info')
@@ -242,6 +248,7 @@ task worldJar(type: Jar, dependsOn: reobfJar) {
 
         include "**/assets/projectred/textures/blocks/world/**"
         include "**/assets/projectred/textures/items/world/**"
+        include "**/assets/projectred-core/recipes/exploration/**"
 
         include "world_mod.info"
         rename("world_mod.info", 'mcmod.info')
@@ -286,7 +293,7 @@ task baseJar(type: Jar, dependsOn: reobfJar) {
 // baseJar pulls all files not in any other jar. Therefore must run last
 baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && task.name != 'baseJar') } }
 
-
+tasks.withType(ScalaCompile) { scalaCompileOptions.additionalParameters = ["-Xexperimental"] }
 
 artifacts {
     archives integrationJar

@@ -1,0 +1,18 @@
+{
+	"type": "forge:ore_shapeless",
+	"result": {
+		"item": "minecraft:diamond",
+		"data": 0,
+		"count": 2
+	},
+	"ingredients": [
+		{
+			"type": "microblockcbe:micro_material",
+			"factory": "face",
+			"size": 2,
+			"material": {
+				"block": "minecraft:diamond_block"
+			}
+		}
+	]
+}

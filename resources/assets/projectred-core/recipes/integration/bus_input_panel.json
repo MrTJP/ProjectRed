@@ -1,0 +1,29 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-integration:gate",
+		"data": 30,
+		"count": 1
+	},
+	"pattern": [
+		"BRB",
+		"BIB",
+		"BBB"
+	],
+	"key": {
+		"B": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 3
+		},
+		"R": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 1
+		},
+		"I": {
+			"type": "forge:ore_dict",
+			"ore": "projredIllumar"
+		}
+	}
+}

@@ -1,0 +1,34 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-illumination:fixture_light",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"ggg",
+		"gIg",
+		"pPp"
+	],
+	"key": {
+		"g": {
+			"type": "forge:ore_dict",
+			"ore": "paneGlassColorless"
+		},
+		"I": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 500
+		},
+		"p": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 0
+		},
+		"P": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 1
+		}
+	}
+}

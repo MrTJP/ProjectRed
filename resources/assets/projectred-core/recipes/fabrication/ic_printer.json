@@ -1,0 +1,37 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-fabrication:ic_machine",
+		"data": 1,
+		"count": 1
+	},
+	"pattern": [
+		"ggg",
+		"oeo",
+		"iwi"
+	],
+	"key": {
+		"e": {
+			"type": "forge:ore_dict",
+			"ore": "gemDiamond"
+		},
+		"i": {
+			"type": "forge:ore_dict",
+			"ore": "ingotIron"
+		},
+		"g": {
+			"type": "minecraft:item",
+			"item": "minecraft:stained_glass",
+			"data": 3
+		},
+		"w": {
+			"type": "forge:ore_dict",
+			"ore": "plankWood"
+		},
+		"o": {
+			"type": "minecraft:item",
+			"item": "minecraft:obsidian",
+			"data": 0
+		}
+	}
+}

@@ -209,7 +209,7 @@ class ContainerChargingBench(p:EntityPlayer, tile:TileChargingBench) extends Con
         for (i <- listeners)
         {
             if (st != tile.powerStorage) i.asInstanceOf[IContainerListener]
-                    .sendProgressBarUpdate(this, 3, tile.powerStorage)
+                    .sendWindowProperty(this, 3, tile.powerStorage)
         }
         st = tile.powerStorage
     }

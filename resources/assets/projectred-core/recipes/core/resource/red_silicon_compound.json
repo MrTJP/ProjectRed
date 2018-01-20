@@ -1,0 +1,24 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-core:resource_item",
+		"data": 310,
+		"count": 1
+	},
+	"pattern": [
+		"rrr",
+		"rsr",
+		"rrr"
+	],
+	"key": {
+		"r": {
+			"type": "forge:ore_dict",
+			"ore": "dustRedstone"
+		},
+		"s": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 301
+		}
+	}
+}

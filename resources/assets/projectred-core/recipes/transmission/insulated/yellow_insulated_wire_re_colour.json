@@ -1,0 +1,18 @@
+{
+	"type": "forge:ore_shapeless",
+	"result": {
+		"item": "projectred-transmission:wire",
+		"data": 5,
+		"count": 1
+	},
+	"ingredients": [
+		{
+			"type": "forge:ore_dict",
+			"ore": "dyeYellow"
+		},
+		{
+			"type": "forge:ore_dict",
+			"ore": "projredInsulatedWire"
+		}
+	]
+}

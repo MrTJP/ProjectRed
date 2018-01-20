@@ -1,0 +1,20 @@
+{
+	"type": "forge:ore_shapeless",
+	"result": {
+		"item": "projectred-illumination:feedback_light_button",
+		"data": 6,
+		"count": 1
+	},
+	"ingredients": [
+		{
+			"type": "minecraft:item",
+			"item": "projectred-illumination:light_button",
+			"data": 6
+		},
+		{
+			"type": "minecraft:item",
+			"item": "minecraft:redstone_torch",
+			"data": 0
+		}
+	]
+}

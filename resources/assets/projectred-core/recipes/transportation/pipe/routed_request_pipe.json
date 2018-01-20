@@ -1,0 +1,28 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-transportation:pipe",
+		"data": 3,
+		"count": 1
+	},
+	"pattern": [
+		"rdr",
+		"rjr",
+		"rdr"
+	],
+	"key": {
+		"r": {
+			"type": "forge:ore_dict",
+			"ore": "dustRedstone"
+		},
+		"d": {
+			"type": "forge:ore_dict",
+			"ore": "gemDiamond"
+		},
+		"j": {
+			"type": "minecraft:item",
+			"item": "projectred-transportation:pipe",
+			"data": 1
+		}
+	}
+}

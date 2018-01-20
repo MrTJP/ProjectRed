@@ -25,8 +25,6 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.RayTraceResult
-import net.minecraftforge.client.model.IPerspectiveAwareModel
-import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
 import org.lwjgl.opengl.GL11
 
 object RenderPipe extends IIconRegister
@@ -455,7 +453,7 @@ object PipeColourHighlightRenderer extends IMicroHighlightRenderer
     }
 }
 
-object PipeItemRenderer extends IItemRenderer with IPerspectiveAwareModel
+object PipeItemRenderer extends IItemRenderer
 {
     override def isAmbientOcclusion = true
     override def isGui3d = true

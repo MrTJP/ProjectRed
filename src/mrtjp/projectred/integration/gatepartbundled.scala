@@ -669,7 +669,7 @@ class SegmentDisplay(gate:BundledGatePart) extends BundledGateLogic(gate)
     override def activate(gate:BundledGatePart, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult):Boolean =
     {
         if (!held.isEmpty) {
-            val c = EnumColour.fromStack(held)
+            val c = EnumColour.fromDyeStack(held)
             if (c != null && c.ordinal != (colour&0xFF) && c != EnumColour.BLACK) {
                 if (!gate.world.isRemote) {
                     colour = c.ordinal.toByte

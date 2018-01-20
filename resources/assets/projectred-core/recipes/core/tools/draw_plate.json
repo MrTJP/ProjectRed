@@ -1,0 +1,31 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-core:drawplate",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		" i ",
+		"idi",
+		" i "
+	],
+	"key": {
+		"i": {
+			"type": "microblockcbe:micro_material",
+			"factory": "edge",
+			"size": 2,
+			"material": {
+				"block": "minecraft:iron_block"
+			}
+		},
+		"d": {
+			"type": "microblockcbe:micro_material",
+			"factory": "face",
+			"size": 2,
+			"material": {
+				"block": "minecraft:diamond_block"
+			}
+		}
+	}
+}

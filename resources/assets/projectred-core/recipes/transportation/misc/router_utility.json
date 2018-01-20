@@ -1,0 +1,27 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-transportation:router_utility",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"  r",
+		"iei",
+		"iii"
+	],
+	"key": {
+		"r": {
+			"type": "forge:ore_dict",
+			"ore": "dustRedstone"
+		},
+		"i": {
+			"type": "forge:ore_dict",
+			"ore": "ingotIron"
+		},
+		"e": {
+			"type": "forge:ore_dict",
+			"ore": "dyeGreen"
+		}
+	}
+}

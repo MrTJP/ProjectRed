@@ -17,6 +17,7 @@ import mrtjp.projectred.ProjectRedExpansion
 import mrtjp.projectred.api.IScrewdriver
 import net.minecraft.client.Minecraft
 import net.minecraft.client.model.{ModelBiped, ModelRenderer}
+import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.enchantment.Enchantment.Rarity
 import net.minecraft.enchantment.{Enchantment, EnchantmentHelper, EnumEnchantmentType}
 import net.minecraft.entity.player.EntityPlayer
@@ -160,7 +161,7 @@ class ItemPlan extends ItemCore
 {
     setCreativeTab(ProjectRedExpansion.tabExpansion)
 
-    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[String], flag:Boolean)
+    override def addInformation(stack:ItemStack, world:World, list:JList[String], flag:ITooltipFlag)
     {
         if (ItemPlan.hasRecipeInside(stack))
         {
@@ -187,17 +188,15 @@ object ItemPlan
     {
         assertStackTag(stack)
         val tag0 = new NBTTagList
-        for (i <- 0 until 9)
-        {
+        for (i <- 0 until 9) {
             val tag1 = new NBTTagCompound
             var slotStack = inputs(i)
-            if (!slotStack.isEmpty) {
-                if (slotStack.isItemStackDamageable) { //save without damage bar
-                    slotStack = slotStack.copy
-                    slotStack.setItemDamage(0)
-                }
-                slotStack.writeToNBT(tag1)
+            if (slotStack.isItemStackDamageable) { //save without damage bar
+                slotStack = slotStack.copy
+                slotStack.setItemDamage(0)
             }
+            slotStack.writeToNBT(tag1)
+
             tag0.appendTag(tag1)
         }
         val tag1 = new NBTTagCompound
@@ -210,11 +209,12 @@ object ItemPlan
     {
         val out = new Array[ItemStack](9)
         val tag0 = stack.getTagCompound.getTagList("recipe", 10)
-        for (i <- 0 until 9)
-        {
+        for (i <- 0 until 9) {
             val tag1 = tag0.getCompoundTagAt(i)
             if (tag1.hasKey("id"))
                 out(i) = new ItemStack(tag1)
+            else
+                out(i) = ItemStack.EMPTY
         }
         out
     }
@@ -296,7 +296,7 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, EntityEquipmentSlo
         player.motionY = Math.min(velY+accelY, maxUpSpeed)
 
         if (ForwardServerTracker.isKeyDown(player))
-            player.moveRelative(0, (power*0.6).toFloat, 0.055f)
+            player.moveRelative(0, 0, (power*0.6).toFloat, 0.055f)
 
         player.distanceWalkedModified = 0
         player.fallDistance = if (player.motionY < 0)
@@ -411,7 +411,7 @@ class ItemInfusedEnderPearl extends ItemCore
 {
     setMaxStackSize(1)
 
-    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[String], flag:Boolean)
+    override def addInformation(stack:ItemStack, world:World, list:JList[String], flag:ITooltipFlag)
     {
         import ItemInfusedEnderPearl._
         val slist = list.asInstanceOf[JList[String]]

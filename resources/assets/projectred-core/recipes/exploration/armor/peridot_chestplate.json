@@ -1,0 +1,19 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-exploration:peridot_chestplate",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"m m",
+		"mmm",
+		"mmm"
+	],
+	"key": {
+		"m": {
+			"type": "forge:ore_dict",
+			"ore": "gemPeridot"
+		}
+	}
+}

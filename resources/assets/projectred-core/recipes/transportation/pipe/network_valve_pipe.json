@@ -1,0 +1,30 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"result": {
+		"item": "projectred-transportation:pipe",
+		"data": 32,
+		"count": 1
+	},
+	"pattern": [
+		" g ",
+		"gbg",
+		" l "
+	],
+	"key": {
+		"g": {
+			"type": "minecraft:item",
+			"item": "minecraft:glass_pane",
+			"data": 0
+		},
+		"b": {
+			"type": "minecraft:item",
+			"item": "projectred-transportation:pipe",
+			"data": 0
+		},
+		"l": {
+			"type": "minecraft:item",
+			"item": "minecraft:lever",
+			"data": 0
+		}
+	}
+}

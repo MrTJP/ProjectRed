@@ -12,6 +12,7 @@ import mrtjp.projectred.transportation.ChipType.ChipType
 import net.minecraft.block.SoundType
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
+import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemStack}
@@ -41,10 +42,10 @@ class ItemPartPipe extends ItemCore with TItemMultiPart
         p
     }
 
-    @SideOnly(Side.CLIENT)
-    override def getSubItems(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
+    override def getSubItems(tab:CreativeTabs, list:NonNullList[ItemStack])
     {
-        for (t <- PipeDefs.values) list.add(t.makeStack)
+        if (isInCreativeTab(tab))
+            for (t <- PipeDefs.values) list.add(t.makeStack)
     }
 
     override def getPlacementSound(item:ItemStack) = SoundType.GLASS
@@ -57,22 +58,22 @@ object PipeDefs extends ItemDefinition
 
     /** Routed Pipes 0 - 63 **/
 
-    val BASIC = new PipeVal(0, "projectred-transporation:pipe", "basic", "rs")
-    val ROUTEDJUNCTION = new PipeVal(1, "projectred-transporation:routed_pipe", "routedjunc",
+    val BASIC = new PipeVal(0, new ResourceLocation("projectred-transporation:pipe"), "basic", "rs")
+    val ROUTEDJUNCTION = new PipeVal(1, new ResourceLocation("projectred-transporation:routed_pipe"), "routedjunc",
         "routed", "unrouted", "routedconn", "unroutedconn")
-    val ROUTEDINTERFACE = new PipeVal(2, "projectred-transporation:interface_pipe", "routedint")
-    val ROUTEDREQUEST = new PipeVal(3, "projectred-transporation:request_pipe", "routedrequest")
-    val ROUTEDFIREWALL = new PipeVal(4, "projectred-transporation:firewall_pipe", "routedfire")
+    val ROUTEDINTERFACE = new PipeVal(2, new ResourceLocation("projectred-transporation:interface_pipe"), "routedint")
+    val ROUTEDREQUEST = new PipeVal(3, new ResourceLocation("projectred-transporation:request_pipe"), "routedrequest")
+    val ROUTEDFIREWALL = new PipeVal(4, new ResourceLocation("projectred-transporation:firewall_pipe"), "routedfire")
 
-    val NETWORKVALVE = new PipeVal(32, "projectred-transporation:netvalve_pipe", "netvalve_blocked", "netvalve_in", "netvalve_out", "netvalve_inout")
-    val NETWORKLATENCY = new PipeVal(33, "projectred-transporation:netlatency_pipe", "netlatency")
+    val NETWORKVALVE = new PipeVal(32, new ResourceLocation("projectred-transporation:netvalve_pipe"), "netvalve_blocked", "netvalve_in", "netvalve_out", "netvalve_inout")
+    val NETWORKLATENCY = new PipeVal(33, new ResourceLocation("projectred-transporation:netlatency_pipe"), "netlatency")
 
     /** Pressure Tubes 64+ **/
 
-    val PRESSURETUBE = new PipeVal(64, "projectred-transporation:pressure_tube", Seq("pressuretube")++(0 to 15 map{"colour/colour_"+_}):_*)
-    val RESISTANCETUBE = new PipeVal(65, "projectred-transporation:resustance_tube", "resistancetube")
+    val PRESSURETUBE = new PipeVal(64, new ResourceLocation("projectred-transporation:pressure_tube"), Seq("pressuretube")++(0 to 15 map{"colour/colour_"+_}):_*)
+    val RESISTANCETUBE = new PipeVal(65, new ResourceLocation("projectred-transporation:resustance_tube"), "resistancetube")
 
-    class PipeVal(override val meta:Int, val partname:String, val textures:String*) extends ItemDef(partname)
+    class PipeVal(override val meta:Int, val partname:ResourceLocation, val textures:String*) extends ItemDef(partname.toString)
     {
         var sprites:Array[TextureAtlasSprite] = _
 
@@ -90,12 +91,13 @@ class ItemRoutingChip extends ItemCore
     setHasSubtypes(true)
     setCreativeTab(ProjectRedTransportation.tabTransportation)
 
-    override def getSubItems(i:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
+    override def getSubItems(tab:CreativeTabs, list:NonNullList[ItemStack])
     {
-        for (c <- RoutingChipDefs.values) list.add(c.makeStack)
+        if (isInCreativeTab(tab))
+            for (c <- RoutingChipDefs.values) list.add(c.makeStack)
     }
 
-    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[String], par4:Boolean)
+    override def addInformation(stack:ItemStack, world:World, list:JList[String], flag:ITooltipFlag)
     {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) if (ItemRoutingChip.hasChipInside(stack))
         {

@@ -33,9 +33,6 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.{BlockRenderLayer, EnumFacing, ITickable, ResourceLocation}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
-import net.minecraftforge.client.model.IPerspectiveAwareModel
-import net.minecraftforge.client.model.IPerspectiveAwareModel.MapWrapper
-import net.minecraftforge.common.model.IModelState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConversions._
@@ -138,7 +135,7 @@ class SolarPanelPart extends TMultiPart with TFaceElectricalDevice with ILowLoad
 
 object SolarPanelPart
 {
-    val typeID = "projectred-expansion:solar_panel"
+    val typeID = new ResourceLocation("projectred-expansion:solar_panel")
 
     var oBoxes = Array.ofDim[Cuboid6](6, 2)
 
@@ -169,7 +166,7 @@ class ItemSolarPanel extends ItemCore with TItemMultiPart
     override def getPlacementSound(item:ItemStack) = SoundType.GLASS
 }
 
-object RenderSolarPanel extends IItemRenderer with IIconRegister with IPerspectiveAwareModel
+object RenderSolarPanel extends IItemRenderer with IIconRegister
 {
     var side:TextureAtlasSprite = _
     var top:TextureAtlasSprite = _

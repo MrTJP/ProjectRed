@@ -1,0 +1,24 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-transmission:wire",
+		"data": 7,
+		"count": 12
+	},
+	"pattern": [
+		"WrW",
+		"WrW",
+		"WrW"
+	],
+	"key": {
+		"W": {
+			"type": "minecraft:item",
+			"item": "minecraft:wool",
+			"data": 6
+		},
+		"r": {
+			"type": "forge:ore_dict",
+			"ore": "ingotRedAlloy"
+		}
+	}
+}

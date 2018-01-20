@@ -14,6 +14,7 @@ import mrtjp.projectred.exploration.ArmorDefs.ArmorDef
 import mrtjp.projectred.exploration.ToolDefs.ToolDef
 import net.minecraft.block._
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.{Entity, EntityLivingBase}
@@ -28,7 +29,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextFormatting
 import net.minecraft.util._
 import net.minecraft.world.World
-import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.fml.common.registry.{ForgeRegistries, GameRegistry}
 import org.lwjgl.input.Keyboard
 
 class ItemBackpack extends ItemCore
@@ -54,13 +55,14 @@ class ItemBackpack extends ItemCore
         GuiBackpack.open(player, ItemBackpack.createContainer(player))
     }
 
-    override def getSubItems(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
+    override def getSubItems(tab:CreativeTabs, list:NonNullList[ItemStack])
     {
-        for (i <- 0 until 16)
-            list.add(new ItemStack(this, 1, i))
+        if (isInCreativeTab(tab))
+            for (i <- 0 until 16)
+                list.add(new ItemStack(this, 1, i))
     }
 
-    override def addInformation(stack:ItemStack, player:EntityPlayer, list:JList[String], flag:Boolean)
+    override def addInformation(stack:ItemStack, world:World, list:JList[String], flag:ITooltipFlag)
     {
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
             list.asInstanceOf[JList[String]].add(
@@ -241,7 +243,7 @@ trait TGemTool extends Item
 {
     setCreativeTab(ProjectRedExploration.tabExploration)
     setUnlocalizedName("projectred.exploration."+toolDef.unlocal)
-    GameRegistry.register(setRegistryName(toolDef.registryName))
+    ForgeRegistries.ITEMS.register(setRegistryName(toolDef.registryName))
 
     def toolDef:ToolDef
 
@@ -263,7 +265,7 @@ class ItemGemSaw(val toolDef:ToolDef) extends ItemCraftingDamage with Saw
 {
     setCreativeTab(ProjectRedExploration.tabExploration)
     setUnlocalizedName("projectred.exploration."+toolDef.unlocal)
-    GameRegistry.register(setRegistryName(toolDef.registryName))
+    ForgeRegistries.ITEMS.register(setRegistryName(toolDef.registryName))
     setMaxDamage(toolDef.mat.getMaxUses)
 
     override def getCuttingStrength(item:ItemStack) = toolDef.mat.getHarvestLevel
@@ -274,10 +276,10 @@ class ItemGemSickle(override val toolDef:ToolDef) extends ItemTool(3, 0/*TODO Th
     private val radiusLeaves = 1
     private val radiusCrops = 2
 
-    override def getStrVsBlock(stack:ItemStack, state:IBlockState) =
+    override def getDestroySpeed(stack:ItemStack, state:IBlockState) =
     {
-        if (state.getBlock.isInstanceOf[BlockLeaves]) efficiencyOnProperMaterial
-        else super.getStrVsBlock(stack, state)
+        if (state.getBlock.isInstanceOf[BlockLeaves]) efficiency
+        else super.getDestroySpeed(stack, state)
     }
 
     override def onBlockDestroyed(stack:ItemStack, w:World, state:IBlockState, pos:BlockPos, ent:EntityLivingBase):Boolean =
@@ -365,7 +367,7 @@ class ItemGemArmor(adef:ArmorDef, slot:EntityEquipmentSlot) extends ItemToolProx
 {
     setCreativeTab(ProjectRedExploration.tabExploration)
     setUnlocalizedName("projectred.exploration."+adef.unlocal)
-    GameRegistry.register(setRegistryName(adef.registryName))
+    ForgeRegistries.ITEMS.register(setRegistryName(adef.registryName))
 
     override def getIsRepairable(ist1:ItemStack, ist2:ItemStack) =
     {
@@ -428,13 +430,13 @@ class ItemAthame() extends ItemSword(toolMaterialDiamond)
     setMaxDamage(100)
     setCreativeTab(ProjectRedExploration.tabExploration)
 
-    override def getStrVsBlock(stack:ItemStack, block:IBlockState):Float = 1.0F
+    override def getDestroySpeed(stack:ItemStack, block:IBlockState):Float = 1.0F
 
-    override def getDamageVsEntity():Float = damage
+    override def getAttackDamage():Float = damage
 
     override def hitEntity(stack:ItemStack, entity:EntityLivingBase, player:EntityLivingBase):Boolean =
     {
-        damage = toolMaterialDiamond.getDamageVsEntity
+        damage = toolMaterialDiamond.getAttackDamage
 
         if ((entity.isInstanceOf[EntityEnderman])) damage = 25.0F else damage = 1.0F
 

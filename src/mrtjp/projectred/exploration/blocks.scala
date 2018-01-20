@@ -70,7 +70,7 @@ class BlockOre extends BlockCore(Material.ROCK) with TSimplePropertyString
 
     override def damageDropped(state:IBlockState) = state.getBlock.getMetaFromState(state)
 
-    override def getSubBlocks(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
+    override def getSubBlocks(tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (o <- OreDefs.values)
             list.add(o.makeStack)
@@ -149,7 +149,7 @@ class BlockDecorativeStone extends BlockCore(Material.ROCK) with TSimpleProperty
 
     override def damageDropped(state:IBlockState) = state.getBlock.getMetaFromState(state)
 
-    override def getSubBlocks(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
+    override def getSubBlocks(tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (s <- DecorativeStoneDefs.values)
             list.add(s.makeStack)
@@ -201,7 +201,7 @@ class BlockDecorativeWall extends BlockCore(Material.ROCK) with TSimplePropertyS
     setCreativeTab(ProjectRedExploration.tabExploration)
     setDefaultState(getDefaultState.withProperty(UP, JBool.FALSE).withProperty(NORTH, JBool.FALSE).withProperty(SOUTH, JBool.FALSE).withProperty(EAST, JBool.FALSE).withProperty(WEST, JBool.FALSE).withProperty(getTypeProperty, "marble"))
 
-    override def getSubBlocks(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
+    override def getSubBlocks(tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (s <- DecorativeStoneDefs.values)
             list.add(new ItemStack(ProjectRedExploration.blockDecorativeWall, 1, s.meta))

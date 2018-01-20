@@ -20,6 +20,7 @@ import mrtjp.projectred.fabrication.IIOGateTile._
 import mrtjp.projectred.integration.GateDefinition
 import net.minecraft.client.renderer.GlStateManager._
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
@@ -44,7 +45,7 @@ class ItemICBlueprint extends ItemMap //hack to allow first-person map rendering
     override def updateMapData(worldIn:World, viewer:Entity, data:MapData){}
     override def createMapDataPacket(stack:ItemStack, worldIn:World, player:EntityPlayer) = null
 
-    override def addInformation(stack:ItemStack, playerIn:EntityPlayer, tooltip:JList[String], advanced:Boolean)
+    override def addInformation(stack:ItemStack, world:World, tooltip:JList[String], advanced:ITooltipFlag)
     {
         import ChatFormatting._
 
@@ -299,7 +300,7 @@ class ItemICChip extends ItemCore
     setHasSubtypes(true)
     setCreativeTab(ProjectRedFabrication.tabFabrication)
 
-    override def addInformation(stack:ItemStack, playerIn:EntityPlayer, tooltip:JList[String], advanced:Boolean)
+    override def addInformation(stack:ItemStack, world:World, tooltip:JList[String], advanced:ITooltipFlag)
     {
         ItemICChip.addInfo(stack, tooltip)
         if (stack.getItemDamage == 1) {
@@ -323,10 +324,12 @@ class ItemICChip extends ItemCore
         super.onItemRightClick(world, player, hand)
     }
 
-    override def getSubItems(itemIn:Item, tab:CreativeTabs, subItems:NonNullList[ItemStack])
+    override def getSubItems(tab:CreativeTabs, subItems:NonNullList[ItemStack])
     {
-        subItems.add(new ItemStack(this, 1, 0))
-        subItems.add(new ItemStack(this, 1, 1))
+        if (isInCreativeTab(tab)) {
+            subItems.add(new ItemStack(this, 1, 0))
+            subItems.add(new ItemStack(this, 1, 1))
+        }
     }
 }
 

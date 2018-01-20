@@ -1,0 +1,18 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-exploration:stone",
+		"data": 1,
+		"count": 4
+	},
+	"pattern": [
+		"bb",
+		"bb"
+	],
+	"key": {
+		"b": {
+			"type": "forge:ore_dict",
+			"ore": "blockMarble"
+		}
+	}
+}

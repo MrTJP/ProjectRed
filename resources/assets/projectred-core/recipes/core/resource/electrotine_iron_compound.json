@@ -1,0 +1,23 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-core:resource_item",
+		"data": 252,
+		"count": 1
+	},
+	"pattern": [
+		"bbb",
+		"bib",
+		"bbb"
+	],
+	"key": {
+		"b": {
+			"type": "forge:ore_dict",
+			"ore": "dustElectrotine"
+		},
+		"i": {
+			"type": "forge:ore_dict",
+			"ore": "ingotIron"
+		}
+	}
+}

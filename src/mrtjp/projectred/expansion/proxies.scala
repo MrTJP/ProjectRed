@@ -8,7 +8,9 @@ import codechicken.lib.model.bakery.key.{IBlockStateKeyGenerator, IItemStackKeyG
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.texture.TextureUtils.IIconRegister
-import codechicken.multipart.{IPartFactory, MultiPartRegistry, TMultiPart}
+import codechicken.multipart.api.IPartFactory
+import codechicken.multipart.{MultiPartRegistry, TMultiPart}
+import com.google.gson.{JsonArray, JsonObject}
 import mrtjp.core.block.{ItemBlockCore, MultiTileBlock}
 import mrtjp.core.data.{TClientKeyTracker, TServerKeyTracker}
 import mrtjp.core.gui.GuiHandler
@@ -23,11 +25,11 @@ import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.client.renderer.block.statemap.StateMap.Builder
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.common.property.IExtendedBlockState
-import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 
 class ExpansionProxy_server extends IProxy with IPartFactory
 {
@@ -66,20 +68,20 @@ class ExpansionProxy_server extends IProxy with IPartFactory
         enchantmentElectricEfficiency.setName("projectred.expansion.fuelEfficiency")
 
         /** Registration **/
-        GameRegistry.register(itemSolar.setRegistryName("solar_panel"))
-        GameRegistry.register(itemEmptybattery.setRegistryName("empty_battery"))
-        GameRegistry.register(itemBattery.setRegistryName("charged_battery"))
-        GameRegistry.register(itemJetpack.setRegistryName("jetpack"))
-        GameRegistry.register(itemScrewdriver.setRegistryName("electric_screwdriver"))
-        GameRegistry.register(itemInfusedEnderPearl.setRegistryName("infused_ender_pearl"))
-        GameRegistry.register(itemPlan.setRegistryName("plan"))
+        ForgeRegistries.ITEMS.register(itemSolar.setRegistryName("solar_panel"))
+        ForgeRegistries.ITEMS.register(itemEmptybattery.setRegistryName("empty_battery"))
+        ForgeRegistries.ITEMS.register(itemBattery.setRegistryName("charged_battery"))
+        ForgeRegistries.ITEMS.register(itemJetpack.setRegistryName("jetpack"))
+        ForgeRegistries.ITEMS.register(itemScrewdriver.setRegistryName("electric_screwdriver"))
+        ForgeRegistries.ITEMS.register(itemInfusedEnderPearl.setRegistryName("infused_ender_pearl"))
+        ForgeRegistries.ITEMS.register(itemPlan.setRegistryName("plan"))
 
-        GameRegistry.register(machine1.setRegistryName("machine1"))
-        GameRegistry.register(new ItemBlockCore(machine1).setRegistryName(machine1.getRegistryName))
-        GameRegistry.register(machine2.setRegistryName("machine2"))
-        GameRegistry.register(new ItemBlockCore(machine2).setRegistryName(machine2.getRegistryName))
+        ForgeRegistries.BLOCKS.register(machine1.setRegistryName("machine1"))
+        ForgeRegistries.ITEMS.register(new ItemBlockCore(machine1).setRegistryName(machine1.getRegistryName))
+        ForgeRegistries.BLOCKS.register(machine2.setRegistryName("machine2"))
+        ForgeRegistries.ITEMS.register(new ItemBlockCore(machine2).setRegistryName(machine2.getRegistryName))
 
-        GameRegistry.register(enchantmentElectricEfficiency.setRegistryName("electric_efficiency"))
+        ForgeRegistries.ENCHANTMENTS.register(enchantmentElectricEfficiency.setRegistryName("electric_efficiency"))
 
         //Machine1 (machines)
         machine1.addTile(classOf[TileInductiveFurnace], 0)
@@ -108,7 +110,7 @@ class ExpansionProxy_server extends IProxy with IPartFactory
 
     def postinit()
     {
-        ExpansionRecipes.initRecipes()
+        InductiveFurnaceRecipeLib.init()
 
         SpacebarServerTracker.register()
         ForwardServerTracker.register()
@@ -119,7 +121,7 @@ class ExpansionProxy_server extends IProxy with IPartFactory
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"
 
-    def createPart(name:String, client:Boolean):TMultiPart = name match
+    override def createPart(name:ResourceLocation, client:Boolean):TMultiPart = name match
     {
         case SolarPanelPart.typeID => new SolarPanelPart
         case _ => null
@@ -334,212 +336,4 @@ object ForwardClientTracker extends TClientKeyTracker
 {
     override def getTracker = ForwardServerTracker
     override def getIsKeyDown = Minecraft.getMinecraft.gameSettings.keyBindForward.isKeyDown
-}
-
-object ExpansionRecipes
-{
-    def initRecipes()
-    {
-        InductiveFurnaceRecipeLib.init()
-        initItemRecipes()
-        initMachineRecipes()
-        initDeviceRecipes()
-        initMiscRecipes()
-    }
-
-    private def initItemRecipes()
-    {
-        //Battery
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemBattery),
-            "ete","ece", "ete",
-            'e':JC, PartDefs.ELECTROTINE.makeStack,
-            't':JC, "ingotTin",
-            'c':JC, "ingotCopper"
-        ))
-
-        //Electric Screwdriver
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemScrewdriver),
-            "i  ", " s ", "  b",
-            'i':JC, "ingotIron",
-            's':JC, "gemSapphire",
-            'b':JC, itemBattery
-        ))
-
-        //Jetpack
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemJetpack),
-            "b b","bcb","eae",
-            'b':JC, itemBattery,
-            'c':JC, Items.DIAMOND_CHESTPLATE,
-            'e':JC, Items.EMERALD,
-            'a':JC, new ItemStack(machine2, 1, 5)
-        ))
-
-        //Recipe Plan
-        GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(itemPlan), "dyeBlue", Items.PAPER))
-    }
-
-    private def initMachineRecipes()
-    {
-        //Inductive Furnace
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine1, 1, 0),
-            "bbb", "b b", "iei",
-            'b':JC, Blocks.BRICK_BLOCK,
-            'i':JC, "ingotIron",
-            'e':JC, "ingotElectrotineAlloy"
-        ))
-
-        //Electrotine generator
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine1, 1, 1),
-            "bbb", "a a", "cec",
-            'b':JC, Blocks.BRICK_BLOCK,
-            'a':JC, new ItemStack(itemBattery),
-            'c':JC, Blocks.CLAY,
-            'e':JC, "ingotElectrotineAlloy"
-        ))
-    }
-
-    private def initDeviceRecipes()
-    {
-        //Block Breaker
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 0),
-            "sas", "sps", "srs",
-            's':JC, Blocks.COBBLESTONE,
-            'a':JC, Items.IRON_PICKAXE,
-            'p':JC, Blocks.PISTON,
-            'r':JC, Items.REDSTONE
-        ))
-
-        //Item Importer
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 1),
-            "www", "sps", "srs",
-            'w':JC, "slabWood",
-            's':JC, Blocks.COBBLESTONE,
-            'p':JC, Blocks.PISTON,
-            'r':JC, Items.REDSTONE
-        ))
-
-        //Block Placer
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 2),
-            "ihi","cpc", "crc",
-            'i':JC, "ingotIron",
-            'h':JC, Blocks.CHEST,
-            'c':JC, Blocks.COBBLESTONE,
-            'p':JC, Blocks.PISTON,
-            'r':JC, Items.REDSTONE
-        ))
-
-        //Filtered Importer
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 3),
-            "tct", "gig", "sgs",
-            't':JC, new ItemStack(Blocks.STONE_SLAB,1, 0),
-            'c':JC, Blocks.CHEST,
-            'g':JC, "ingotGold",
-            'i':JC, new ItemStack(machine2, 1, 1),
-            's':JC, Blocks.COBBLESTONE
-        ))
-
-        //Fire Starter
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 4),
-            "nfn", "cpc", "crc",
-            'n':JC, Blocks.NETHERRACK,
-            'f':JC, Items.FLINT_AND_STEEL,
-            'c':JC, Blocks.COBBLESTONE,
-            'p':JC, new ItemStack(machine2, 1, 2),
-            'r':JC, Items.REDSTONE
-        ))
-
-        //Battery Box
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 5),
-            "bwb","bib","iei",
-            'b':JC, new ItemStack(itemBattery),
-            'w':JC, "plankWood",
-            'i':JC, "ingotIron",
-            'e':JC, "ingotElectrotineAlloy"
-        ))
-
-        //Solar Panel
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemSolar),
-            "sss","iwi","wew",
-            's':JC, PartDefs.ELECTROSILICON.makeStack,
-            'i':JC, "ingotIron",
-            'e':JC, "ingotElectrotineAlloy",
-            'w':JC, "slabWood"
-        ))
-
-        //Charging Bench
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 6),
-            "scs","wbw","iei",
-            's':JC, Blocks.STONE,
-            'c':JC, PartDefs.COPPERCOIL.makeStack,
-            'w':JC, "plankWood",
-            'b':JC, new ItemStack(itemBattery),
-            'i':JC, "ingotIron",
-            'e':JC, "ingotElectrotineAlloy"
-        ))
-
-//        //Teleposer
-//        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 7),
-//            "odo","wbw","iei",
-//            'o':JC, Blocks.OBSIDIAN,
-//            'd':JC, Items.DIAMOND,
-//            'w':JC, "plankWood",
-//            'b':JC, Items.ENDER_PEARL,
-//            'i':JC, "ingotIron",
-//            'e':JC, "ingotElectrotineAlloy"
-//        ))
-
-//        //Frame Motor
-//        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 8),
-//            "wiw","cmc","iei",
-//            'w':JC, "plankWood",
-//            'i':JC, "ingotIron",
-//            'c':JC, PartDefs.COPPERCOIL.makeStack,
-//            'm':JC, PartDefs.MOTOR.makeStack,
-//            'e':JC, "ingotElectrotineAlloy"
-//        ))
-//
-//        //Frame Linear Actuator
-//        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 9),
-//            "wiw","cic","cec",
-//            'w':JC, "plankWood",
-//            'i':JC, "ingotIron",
-//            'c':JC, PartDefs.COPPERCOIL.makeStack,
-//            'e':JC, "ingotElectrotineAlloy"
-//        ))
-
-        //Project Bench
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 10),
-            "sss","wbw","wcw",
-            's':JC, Blocks.STONE,
-            'w':JC, "plankWood",
-            'b':JC, Blocks.CRAFTING_TABLE,
-            'c':JC, Blocks.CHEST
-        ))
-
-        //Auto Crafting Bench
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 11),
-            "sbs","ici","wew",
-            's':JC, Blocks.STONE,
-            'b':JC, Blocks.CRAFTING_TABLE,
-            'w':JC, "plankWood",
-            'i':JC, "ingotIron",
-            'c':JC, Blocks.CHEST,
-            'e':JC, "ingotElectrotineAlloy"
-        ))
-
-        //Diamond Block Breaker
-        if (Configurator.enableDiamondBlockBreaker) {
-            GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(machine2, 1, 12),
-                "sas", "sps", "srs",
-                's':JC, Blocks.COBBLESTONE,
-                'a':JC, Items.DIAMOND_PICKAXE,
-                'p':JC, Blocks.PISTON,
-                'r':JC, Items.REDSTONE
-            ))
-        }
-    }
-
-    private def initMiscRecipes()
-    {
-    }
 }

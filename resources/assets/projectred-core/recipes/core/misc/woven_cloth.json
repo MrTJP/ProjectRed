@@ -1,0 +1,23 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-core:resource_item",
+		"data": 420,
+		"count": 1
+	},
+	"pattern": [
+		"sss",
+		"sws",
+		"sss"
+	],
+	"key": {
+		"s": {
+			"type": "forge:ore_dict",
+			"ore": "string"
+		},
+		"w": {
+			"type": "forge:ore_dict",
+			"ore": "stickWood"
+		}
+	}
+}

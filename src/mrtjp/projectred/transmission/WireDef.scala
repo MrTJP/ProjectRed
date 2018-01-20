@@ -13,15 +13,15 @@ object WireDef extends ItemDefinition
     override type EnumVal = WireDef
     override def getItem = ProjectRedTransmission.itemPartWire
 
-    val typeRedAlloy = "projectred-transmission:wireRedAlloy"
-    val typeInsulated = "projectred-transmission:wireInsulated"
-    val typeBundled = "projectred-transmission:wireBundled"
-    val typeFramedRedAlloy = "projectred-transmission:framedWireRedAlloy"
-    val typeFramedInsulated = "projectred-transmission:framedWireInsulated"
-    val typeFramedBundled = "projectred-transmission:framedWireBundled"
+    val typeRedAlloy = new ResourceLocation("projectred-transmission:wireRedAlloy")
+    val typeInsulated = new ResourceLocation("projectred-transmission:wireInsulated")
+    val typeBundled = new ResourceLocation("projectred-transmission:wireBundled")
+    val typeFramedRedAlloy = new ResourceLocation("projectred-transmission:framedWireRedAlloy")
+    val typeFramedInsulated = new ResourceLocation("projectred-transmission:framedWireInsulated")
+    val typeFramedBundled = new ResourceLocation("projectred-transmission:framedWireBundled")
 
-    val typeLowLoad = "projectred-transmission:low_power"
-    val typeFramedLowLoad = "projectred-transmission:framed_low_power"
+    val typeLowLoad = new ResourceLocation("projectred-transmission:low_power")
+    val typeFramedLowLoad = new ResourceLocation("projectred-transmission:framed_low_power")
 
     val RED_ALLOY = WireDef(typeRedAlloy, typeFramedRedAlloy, 0, 0xC80000, "redalloy")
 
@@ -79,10 +79,10 @@ object WireDef extends ItemDefinition
         for (w <- BUNDLED_WIRES) OreDictionary.registerOre(oreDictDefinitionBundled, w.makeStack)
     }
 
-    def apply(wireType:String, framedType:String, thickness:Int, itemColour:Int, textures:String*) =
+    def apply(wireType:ResourceLocation, framedType:ResourceLocation, thickness:Int, itemColour:Int, textures:String*) =
         new WireDef(wireType, framedType, thickness, itemColour, textures)
 
-    class WireDef(val wireType:String, val framedType:String, val thickness:Int, val itemColour:Int, textures:Seq[String]) extends ItemDef(wireType)
+    class WireDef(val wireType:ResourceLocation, val framedType:ResourceLocation, val thickness:Int, val itemColour:Int, textures:Seq[String]) extends ItemDef(wireType.toString)
     {
         var wireSprites:Array[TextureAtlasSprite] = _
 

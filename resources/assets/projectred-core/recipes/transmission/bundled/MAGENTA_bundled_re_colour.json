@@ -1,0 +1,23 @@
+{
+	"type": "forge:ore_shapeless",
+	"result": {
+		"item": "projectred-transmission:wire",
+		"data": 20,
+		"count": 1
+	},
+	"ingredients": [
+		{
+			"type": "forge:ore_dict",
+			"ore": "dyeMagenta"
+		},
+		{
+			"type": "forge:ore_dict",
+			"ore": "projredBundledCable"
+		},
+		{
+			"type": "minecraft:item",
+			"item": "minecraft:string",
+			"data": 0
+		}
+	]
+}

@@ -1,0 +1,25 @@
+{
+	"type": "forge:ore_shapeless",
+	"result": {
+		"item": "projectred-illumination:light_button",
+		"data": 11,
+		"count": 1
+	},
+	"ingredients": [
+		{
+			"type": "minecraft:item",
+			"item": "minecraft:stone_button",
+			"data": 0
+		},
+		{
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 511
+		},
+		{
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 511
+		}
+	]
+}

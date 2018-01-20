@@ -27,6 +27,7 @@ import mrtjp.projectred.ProjectRedCore.log
 import mrtjp.projectred.core.PartDefs
 import mrtjp.projectred.integration.ComponentStore
 import mrtjp.projectred.transmission.WireDef
+import net.minecraft.block.state.BlockFaceShape
 import net.minecraft.client.renderer.GlStateManager._
 import net.minecraft.client.renderer.block.model.BakedQuad
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
@@ -158,7 +159,7 @@ class TileICPrinter extends TileICMachine with TInventory with TInventoryCapabli
     override def getInventoryStackLimit = 64
     override def getName = "icprinter"
 
-    override def isSolid(side:Int) = false
+    override def getBlockFaceShape(side:Int) = BlockFaceShape.UNDEFINED//TODO, Do the do with the thing and the do.
 
     override def updateServer()
     {
@@ -444,32 +445,34 @@ object TileICPrinter
 
     def cacheRecipe(key:ItemKey)
     {
-        val recipes = CraftingManager.getInstance().getRecipeList
+        val recipes = CraftingManager.REGISTRY.iterator
         for (r <- recipes) try
         {
             val out = ItemKey.get(r.getRecipeOutput)
             if (out == key)
             {
-                val inputs = r match
-                {
-                    case s:ShapedRecipes => s.recipeItems.toSeq.filterNot(_.isEmpty).map(ItemKey.get)
-
-                    case s:ShapelessRecipes => s.recipeItems.toSeq.filterNot(_.isEmpty).map(ItemKey.get)
-
-                    case s:ShapedOreRecipe => s.getInput.toSeq.flatMap {
-                        case s:ItemStack => Seq(s)
-                        case a:JAList[_] => a.toSeq.asInstanceOf[Seq[ItemStack]]
-                        case _ => Seq.empty
-                    }.map(ItemKey.get)
-
-                    case s:ShapelessOreRecipe => s.getInput.toSeq.flatMap {
-                        case s:ItemStack => Seq(s)
-                        case a:JAList[_] => a.toSeq.asInstanceOf[Seq[ItemStack]]
-                        case _ => Seq.empty
-                    }.map(ItemKey.get)
-
-                    case _ => Seq.empty
-                }
+                val inputs = Seq.empty
+                //TODO, This needs to be a list of lists. Multiple matches for one ingredient.
+//                    r match
+//                {
+//                    case s:ShapedRecipes => s.recipeItems.toSeq.filterNot(_.getMatchingStacks.isEmpty).map(ItemKey.get)
+//
+//                    case s:ShapelessRecipes => s.recipeItems.toSeq.filterNot(_.getMatchingStacks.isEmpty).map(ItemKey.get)
+//
+//                    case s:ShapedOreRecipe => s.getInput.toSeq.flatMap {
+//                        case s:ItemStack => Seq(s)
+//                        case a:JAList[_] => a.toSeq.asInstanceOf[Seq[ItemStack]]
+//                        case _ => Seq.empty
+//                    }.map(ItemKey.get)
+//
+//                    case s:ShapelessOreRecipe => s.getInput.toSeq.flatMap {
+//                        case s:ItemStack => Seq(s)
+//                        case a:JAList[_] => a.toSeq.asInstanceOf[Seq[ItemStack]]
+//                        case _ => Seq.empty
+//                    }.map(ItemKey.get)
+//
+//                    case _ => Seq.empty
+//                }
                 if (inputs.nonEmpty)
                 {
                     gRec += key -> inputs
@@ -793,7 +796,7 @@ object RenderICPrinterDynamic extends TileEntitySpecialRenderer[TileICPrinter]
     var icState = 0
     var rasterMode = false
 
-    override def renderTileEntityAt(tile:TileICPrinter, x:Double, y:Double, z:Double, partialTicks:Float, destroyStage:Int)
+    override def render(tile:TileICPrinter, x:Double, y:Double, z:Double, partialTicks:Float, destroyStage:Int, alpha:Float)
     {
         val ptile = tile.asInstanceOf[TileICPrinter]
 

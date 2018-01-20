@@ -4,16 +4,18 @@ import codechicken.lib.model.ModelRegistryHelper
 import codechicken.lib.model.bakery.key.IBlockStateKeyGenerator
 import codechicken.lib.model.bakery.{CCBakeryModel, ModelBakery}
 import codechicken.lib.texture.TextureUtils
-import codechicken.multipart.{IPartFactory, MultiPartRegistry}
+import codechicken.multipart.MultiPartRegistry
+import codechicken.multipart.api.IPartFactory
 import mrtjp.core.block.MultiTileBlock
 import mrtjp.projectred.ProjectRedIllumination._
 import mrtjp.projectred.core.IProxy
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.client.renderer.block.statemap.StateMap
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.client.registry.ClientRegistry
-import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.fml.common.registry.{ForgeRegistries, GameRegistry}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class IlluminationProxy_server extends IProxy with IPartFactory
@@ -24,18 +26,18 @@ class IlluminationProxy_server extends IProxy with IPartFactory
     {
         blockLamp = new BlockLamp
         blockLamp.setUnlocalizedName("projectred.illumination.lamp")
-        GameRegistry.register(blockLamp.setRegistryName("lamp"))
+        ForgeRegistries.BLOCKS.register(blockLamp.setRegistryName("lamp"))
         itemBlockLamp = new ItemBlockLamp
-        GameRegistry.register(itemBlockLamp.setRegistryName(blockLamp.getRegistryName))
+        ForgeRegistries.ITEMS.register(itemBlockLamp.setRegistryName(blockLamp.getRegistryName))
         blockLamp.addTile(classOf[TileLamp], 0)
 
         itemPartIllumarButton = new ItemPartButton
         itemPartIllumarButton.setUnlocalizedName("projectred.illumination.lightButton")
-        GameRegistry.register(itemPartIllumarButton.setRegistryName("light_button"))
+        ForgeRegistries.ITEMS.register(itemPartIllumarButton.setRegistryName("light_button"))
 
         itemPartIllumarFButton = new ItemPartFButton
         itemPartIllumarFButton.setUnlocalizedName("projectred.illumination.lightButtonFeedback")
-        GameRegistry.register(itemPartIllumarFButton.setRegistryName("feedback_light_button"))
+        ForgeRegistries.ITEMS.register(itemPartIllumarFButton.setRegistryName("feedback_light_button"))
 
         //TODO Add one of these lights!
 //        blockAirousLight = new BlockAirousLight
@@ -48,7 +50,6 @@ class IlluminationProxy_server extends IProxy with IPartFactory
 
     override def init()
     {
-        IlluminationRecipes.initRecipes()
         LightMicroMaterial.register()
     }
 
@@ -57,7 +58,7 @@ class IlluminationProxy_server extends IProxy with IPartFactory
     override def version = "@VERSION@"
     override def build = "@BUILD_NUMBER@"
 
-    override def createPart(name:String, client:Boolean) = name match
+    override def createPart(name:ResourceLocation, client:Boolean) = name match
     {
         case LightButtonPart.typeID => new LightButtonPart
         case FLightButtonPart.typeID => new FLightButtonPart

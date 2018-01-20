@@ -1,0 +1,24 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-transmission:wire",
+		"data": 17,
+		"count": 1
+	},
+	"pattern": [
+		"SWS",
+		"WWW",
+		"SWS"
+	],
+	"key": {
+		"S": {
+			"type": "minecraft:item",
+			"item": "minecraft:string",
+			"data": 0
+		},
+		"W": {
+			"type": "forge:ore_dict",
+			"ore": "projredInsulatedWire"
+		}
+	}
+}

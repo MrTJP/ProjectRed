@@ -1,0 +1,25 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"result": {
+		"item": "projectred-transportation:pipe",
+		"data": 33,
+		"count": 1
+	},
+	"pattern": [
+		" c ",
+		"cbc",
+		" c "
+	],
+	"key": {
+		"c": {
+			"type": "minecraft:item",
+			"item": "minecraft:cobblestone",
+			"data": 0
+		},
+		"b": {
+			"type": "minecraft:item",
+			"item": "projectred-transportation:pipe",
+			"data": 0
+		}
+	}
+}

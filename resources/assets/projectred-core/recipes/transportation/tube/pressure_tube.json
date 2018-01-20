@@ -1,0 +1,24 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-transportation:pipe",
+		"data": 64,
+		"count": 8
+	},
+	"pattern": [
+		"gpg",
+		"p p",
+		"gpg"
+	],
+	"key": {
+		"g": {
+			"type": "forge:ore_dict",
+			"ore": "nuggetGold"
+		},
+		"p": {
+			"type": "minecraft:item",
+			"item": "minecraft:glass_pane",
+			"data": 0
+		}
+	}
+}

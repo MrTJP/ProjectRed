@@ -1,0 +1,42 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-transportation:routing_chip",
+		"data": 7,
+		"count": 1
+	},
+	"pattern": [
+		"dMD",
+		"bcm",
+		"dMD"
+	],
+	"key": {
+		"m": {
+			"type": "forge:ore_dict",
+			"ore": "dustGlowstone"
+		},
+		"M": {
+			"type": "forge:ore_dict",
+			"ore": "dustRedstone"
+		},
+		"b": {
+			"type": "forge:ore_dict",
+			"ore": "dustGlowstone"
+		},
+		"c": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 600
+		},
+		"D": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 505
+		},
+		"d": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 505
+		}
+	}
+}

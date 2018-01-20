@@ -35,9 +35,10 @@ class ItemBaseLight(factory:LightFactory, val inverted:Boolean) extends ItemCore
 
     override def getPlacementSound(item:ItemStack) = SoundType.GLASS
 
-    override def getSubItems(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
+    override def getSubItems(tab:CreativeTabs, list:NonNullList[ItemStack])
     {
-        for (i <- 0 until 16) list.add(new ItemStack(this, 1, i))
+        if (isInCreativeTab(tab))
+            for (i <- 0 until 16) list.add(new ItemStack(this, 1, i))
     }
 }
 
@@ -63,9 +64,10 @@ abstract class ItemPartButtonCommons extends ItemCore with TItemMultiPart
 
     def getNewInst:LightButtonPart
 
-    override def getSubItems(itemIn:Item, tab:CreativeTabs, subItems:NonNullList[ItemStack]) =
+    override def getSubItems(tab:CreativeTabs, subItems:NonNullList[ItemStack]) =
     {
-        for (i <- 0 until 16) subItems.add(new ItemStack(this, 1, i))
+        if (isInCreativeTab(tab))
+            for (i <- 0 until 16) subItems.add(new ItemStack(this, 1, i))
     }
 
     override def getPlacementSound(item:ItemStack):SoundType = SoundType.GLASS

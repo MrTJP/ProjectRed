@@ -46,8 +46,8 @@ class GuiTimer(part:GatePart) extends NodeGui(256, 55)
     {
         GuiLib.drawGuiBox(0, 0, xSize, ySize, 0)
         val s = "Timer interval: "+"%.2f".format(logic.getTimerMax*0.05)+"s"
-        val sw = fontRendererObj.getStringWidth(s)
-        fontRendererObj.drawString(s, (xSize-sw)/2, 8, 0x404040)
+        val sw = fontRenderer.getStringWidth(s)
+        fontRenderer.drawString(s, (xSize-sw)/2, 8, 0x404040)
     }
 }
 
@@ -110,13 +110,13 @@ class GuiCounter(part:GatePart) extends NodeGui(256, 145)
     {
         GuiLib.drawGuiBox(0, 0, xSize, ySize, 0)
         var s = "Maximum: "+logic.getCounterMax
-        fontRendererObj.drawString(s, (xSize-fontRendererObj.getStringWidth(s))/2, 5, 0x404040)
+        fontRenderer.drawString(s, (xSize-fontRenderer.getStringWidth(s))/2, 5, 0x404040)
         s = "Increment: "+logic.getCounterIncr
-        fontRendererObj.drawString(s, (xSize-fontRendererObj.getStringWidth(s))/2, 45, 0x404040)
+        fontRenderer.drawString(s, (xSize-fontRenderer.getStringWidth(s))/2, 45, 0x404040)
         s = "Decrement: "+logic.getCounterDecr
-        fontRendererObj.drawString(s, (xSize-fontRendererObj.getStringWidth(s))/2, 85, 0x404040)
+        fontRenderer.drawString(s, (xSize-fontRenderer.getStringWidth(s))/2, 85, 0x404040)
         s = "State: "+logic.getCounterValue
-        fontRendererObj.drawString(s, (xSize-fontRendererObj.getStringWidth(s))/2, 125, 0x404040)
+        fontRenderer.drawString(s, (xSize-fontRenderer.getStringWidth(s))/2, 125, 0x404040)
     }
 
     override def update_Impl()

@@ -32,7 +32,6 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util._
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.{IBlockAccess, World}
-import net.minecraftforge.client.model.IPerspectiveAwareModel
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.apache.commons.lang3.tuple.Triple
@@ -52,7 +51,7 @@ class BlockLamp extends MultiTileBlock(Material.REDSTONE_LIGHT) with IRedstoneCo
     override def isFullBlock(state:IBlockState) = true
 
     @SideOnly(Side.CLIENT)
-    override def getSubBlocks(item:Item, tab:CreativeTabs, list:NonNullList[ItemStack])
+    override def getSubBlocks(tab:CreativeTabs, list:NonNullList[ItemStack])
     {
         for (i <- 0 until 32)
             list.add(new ItemStack(ProjectRedIllumination.blockLamp, 1, i))
@@ -118,7 +117,7 @@ object LampBakery extends SimpleBlockRenderer
     }
 }
 
-object LampRenderer extends TileEntitySpecialRenderer[TileLamp] with IItemRenderer with IPerspectiveAwareModel
+object LampRenderer extends TileEntitySpecialRenderer[TileLamp] with IItemRenderer
 {//TODO, This can be optimized in 1.12. CCL has model wrapping.
     val iconsOn = new Array[TextureAtlasSprite](16)
     val iconsOff = new Array[TextureAtlasSprite](16)
@@ -164,7 +163,7 @@ object LampRenderer extends TileEntitySpecialRenderer[TileLamp] with IItemRender
 
     private val lBounds = Cuboid6.full.copy.expand(0.05D)
 
-    override def renderTileEntityAt(tile:TileLamp, x:Double, y:Double, z:Double, partialTicks:Float, destroyStage:Int)
+    override def render(tile:TileLamp, x:Double, y:Double, z:Double, partialTicks:Float, destroyStage:Int, alpha:Float)
     {
         if (tile.isOn)
             RenderHalo.addLight(tile.getPos, tile.getColor, lBounds)

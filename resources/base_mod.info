@@ -15,13 +15,13 @@
   "logoFile": "",
   "screenshots": [],
   "requiredMods": [
-      "Forge",
+      "forge",
       "forgemultipartcbe",
-      "MrTJPCoreMod"
+      "mrtjpcore"
   ],
   "dependencies": [
       "forgemultipartcbe",
-      "MrTJPCoreMod"
+      "mrtjpcore"
   ],
   "dependants" : [
       "projectred-transmission",

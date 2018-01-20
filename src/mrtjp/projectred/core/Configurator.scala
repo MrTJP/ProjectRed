@@ -5,6 +5,7 @@
  */
 package mrtjp.projectred.core
 
+import codechicken.lib.recipe.AbstractForgeConfigConditionalFactory
 import mrtjp.core.data.{ModConfig, SpecialConfigGui, TModGuiFactory}
 import net.minecraft.client.gui.GuiScreen
 
@@ -150,6 +151,7 @@ object Configurator extends ModConfig("projectred-core")
 class ProjectRedConfigGui(parent:GuiScreen) extends SpecialConfigGui(parent, "ProjRed|Core", Configurator.config)
 class GuiConfigFactory extends TModGuiFactory
 {
-    override def mainConfigGuiClass() = classOf[ProjectRedConfigGui]
     override def createConfigGui(parentScreen: GuiScreen) = new ProjectRedConfigGui(parentScreen)
 }
+
+class ConfigConditionalFactory extends AbstractForgeConfigConditionalFactory(Configurator.config)

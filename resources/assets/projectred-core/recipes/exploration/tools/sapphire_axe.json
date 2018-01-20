@@ -1,0 +1,23 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-exploration:sapphire_axe",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"mm",
+		"ms",
+		" s"
+	],
+	"key": {
+		"m": {
+			"type": "forge:ore_dict",
+			"ore": "gemSapphire"
+		},
+		"s": {
+			"type": "forge:ore_dict",
+			"ore": "stickWood"
+		}
+	}
+}

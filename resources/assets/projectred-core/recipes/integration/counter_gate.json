@@ -1,0 +1,35 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"result": {
+		"item": "projectred-integration:gate",
+		"data": 19,
+		"count": 1
+	},
+	"pattern": [
+		"PCP",
+		"WWT",
+		"PCP"
+	],
+	"key": {
+		"T": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 12
+		},
+		"P": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 0
+		},
+		"C": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 11
+		},
+		"W": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 1
+		}
+	}
+}

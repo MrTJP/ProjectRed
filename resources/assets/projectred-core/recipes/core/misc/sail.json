@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"result": {
+		"item": "projectred-core:resource_item",
+		"data": 421,
+		"count": 1
+	},
+	"pattern": [
+		"ss",
+		"ss",
+		"ss"
+	],
+	"key": {
+		"s": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 420
+		}
+	}
+}

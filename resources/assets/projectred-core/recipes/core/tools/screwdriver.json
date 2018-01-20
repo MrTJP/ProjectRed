@@ -1,0 +1,23 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-core:screwdriver",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"i  ",
+		" ib",
+		" bi"
+	],
+	"key": {
+		"i": {
+			"type": "forge:ore_dict",
+			"ore": "ingotIron"
+		},
+		"b": {
+			"type": "forge:ore_dict",
+			"ore": "dyeBlue"
+		}
+	}
+}

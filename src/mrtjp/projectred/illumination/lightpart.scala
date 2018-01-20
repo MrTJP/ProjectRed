@@ -15,6 +15,7 @@ import codechicken.lib.vec.uv.IconTransformation
 import codechicken.lib.vec.{Rotation, _}
 import codechicken.microblock.HollowMicroblock
 import codechicken.multipart._
+import codechicken.multipart.api.IPartFactory
 import com.google.common.collect.ImmutableMap
 import mrtjp.core.vec.InvertX
 import mrtjp.projectred.ProjectRedIllumination
@@ -29,7 +30,7 @@ import net.minecraft.util._
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.{EnumSkyBlock, World}
 import net.minecraftforge.common.model.TRSRTransformation
-import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.fml.common.registry.{ForgeRegistries, GameRegistry}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
@@ -253,7 +254,7 @@ abstract class LightFactory extends IPartFactory
 
     def getUnlocalizedName(inv:Boolean):String
     def getItemRegistryName(inv:Boolean):String
-    def getType:String
+    def getType:ResourceLocation
 
     def getBounds(side:Int):Cuboid6
     def getLBounds(side:Int):Cuboid6
@@ -277,11 +278,11 @@ abstract class LightFactory extends IPartFactory
     {
         item = createItem(false)
         item.setUnlocalizedName("projectred.illumination."+getUnlocalizedName(false))
-        GameRegistry.register(item.setRegistryName(getItemRegistryName(false)))
+        ForgeRegistries.ITEMS.register(item.setRegistryName(getItemRegistryName(false)))
 
         itemInv = createItem(true)
         itemInv.setUnlocalizedName("projectred.illumination."+getUnlocalizedName(true))
-        GameRegistry.register(itemInv.setRegistryName(getItemRegistryName(true)))
+        ForgeRegistries.ITEMS.register(itemInv.setRegistryName(getItemRegistryName(true)))
 
         MultiPartRegistry.registerParts(this, Array(getType))
     }
@@ -292,7 +293,7 @@ abstract class LightFactory extends IPartFactory
     final def makeInvStack(color:Int, i:Int):ItemStack = new ItemStack(getItem(true), i, color)
     final def makeInvStack(color:Int):ItemStack = makeInvStack(color, 1)
 
-    final override def createPart(name:String, client:Boolean) =
+    final override def createPart(name:ResourceLocation, client:Boolean) =
         if (name == getType) createPart else null
 
     @SideOnly(Side.CLIENT)

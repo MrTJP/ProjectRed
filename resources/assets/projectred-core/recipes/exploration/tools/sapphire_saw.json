@@ -1,0 +1,26 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-exploration:sapphire_saw",
+		"data": 0,
+		"count": 1
+	},
+	"pattern": [
+		"srr",
+		"sbb"
+	],
+	"key": {
+		"s": {
+			"type": "forge:ore_dict",
+			"ore": "stickWood"
+		},
+		"r": {
+			"type": "forge:ore_dict",
+			"ore": "rodStone"
+		},
+		"b": {
+			"type": "forge:ore_dict",
+			"ore": "gemSapphire"
+		}
+	}
+}

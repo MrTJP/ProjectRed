@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"result": {
+		"item": "projectred-exploration:stone_wall",
+		"data": 2,
+		"count": 6
+	},
+	"pattern": [
+		"mmm",
+		"mmm"
+	],
+	"key": {
+		"m": {
+			"type": "minecraft:item",
+			"item": "projectred-exploration:stone",
+			"data": 2
+		}
+	}
+}

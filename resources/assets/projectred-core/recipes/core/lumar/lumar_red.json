@@ -1,0 +1,26 @@
+{
+	"type": "forge:ore_shapeless",
+	"result": {
+		"item": "projectred-core:resource_item",
+		"data": 514,
+		"count": 1
+	},
+	"ingredients": [
+		{
+			"type": "forge:ore_dict",
+			"ore": "dustGlowstone"
+		},
+		{
+			"type": "forge:ore_dict",
+			"ore": "dustGlowstone"
+		},
+		{
+			"type": "forge:ore_dict",
+			"ore": "dyeRed"
+		},
+		{
+			"type": "forge:ore_dict",
+			"ore": "dyeRed"
+		}
+	]
+}

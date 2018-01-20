@@ -32,8 +32,6 @@ class BlockMachine(regName:String, bakery:IBlockBakery) extends MultiTileBlock(M
 
     override def isNormalCube(blockState: IBlockState) = true
 
-    override def isSideSolid(state:IBlockState, world:IBlockAccess, pos:BlockPos, side:EnumFacing) = true
-
     override def createBlockState(): BlockStateContainer = new Builder(this).add(MultiTileBlock.TILE_INDEX)
         .add(BlockProperties.UNLISTED_ROTATION_PROPERTY)
         .add(BlockProperties.UNLISTED_SIDE_PROPERTY)
@@ -367,11 +365,11 @@ class ContainerPoweredMachine(tile:TPoweredMachine) extends NodeContainer
         {
             val ic = i.asInstanceOf[IContainerListener]
 
-            if (ch != tile.cond.charge) ic.sendProgressBarUpdate(this, 0, tile.cond.charge)
+            if (ch != tile.cond.charge) ic.sendWindowProperty(this, 0, tile.cond.charge)
             if (fl != tile.cond.flow)
             {
-                ic.sendProgressBarUpdate(this, 1, tile.cond.flow&0xFFFF)
-                ic.sendProgressBarUpdate(this, 2, tile.cond.flow>>16&0xFFFF)
+                ic.sendWindowProperty(this, 1, tile.cond.flow&0xFFFF)
+                ic.sendWindowProperty(this, 2, tile.cond.flow>>16&0xFFFF)
             }
             ch = tile.cond.charge
             fl = tile.cond.flow
@@ -400,8 +398,8 @@ class ContainerProcessingMachine(tile:TileProcessingMachine) extends ContainerPo
         {
             val ic = i.asInstanceOf[IContainerListener]
 
-            if (wr != tile.workRemaining) ic.sendProgressBarUpdate(this, 3, tile.workRemaining)
-            if (wm != tile.workMax) ic.sendProgressBarUpdate(this, 4, tile.workMax)
+            if (wr != tile.workRemaining) ic.sendWindowProperty(this, 3, tile.workRemaining)
+            if (wm != tile.workMax) ic.sendWindowProperty(this, 4, tile.workMax)
         }
         wr = tile.workRemaining
         wm = tile.workMax

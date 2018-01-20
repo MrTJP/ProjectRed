@@ -6,37 +6,32 @@
 package mrtjp.projectred.fabrication
 import java.lang.{Character => JC}
 
-import codechicken.lib.colour.EnumColour
 import codechicken.lib.model.ModelRegistryHelper
 import codechicken.lib.model.bakery.CCBakeryModel
 import codechicken.lib.model.bakery.key.IBlockStateKeyGenerator
 import codechicken.lib.render.item.map.MapRenderRegistry
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.texture.TextureUtils.IIconRegister
-import codechicken.multipart.{IPartFactory, MultiPartRegistry}
+import codechicken.multipart.MultiPartRegistry
+import codechicken.multipart.api.IPartFactory
 import mrtjp.core.block.{ItemBlockCore, MultiTileBlock}
 import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedFabrication._
-import mrtjp.projectred.core.{IProxy, PartDefs}
+import mrtjp.projectred.ProjectRedIntegration
+import mrtjp.projectred.core.IProxy
 import mrtjp.projectred.integration.{GateDefinition, RenderGate}
-import mrtjp.projectred.{ProjectRedFabrication, ProjectRedIntegration}
 import net.minecraft.block.Block
-import net.minecraft.client.renderer.ItemMeshDefinition
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation, ModelBakery => MCModelBakery}
 import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.client.renderer.block.statemap.StateMap.Builder
-import net.minecraft.init.{Blocks, Items}
-import net.minecraft.inventory.InventoryCrafting
-import net.minecraft.item.crafting.IRecipe
 import net.minecraft.item.{Item, ItemStack}
-import net.minecraft.world.World
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.ModelLoader
-import net.minecraftforge.common.ForgeHooks
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.client.registry.ClientRegistry
-import net.minecraftforge.fml.common.registry.GameRegistry
+import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import net.minecraftforge.oredict.ShapedOreRecipe
 
 class FabricationProxy_server extends IProxy with IPartFactory
 {
@@ -44,22 +39,21 @@ class FabricationProxy_server extends IProxy with IPartFactory
     {
         icBlock = new BlockICMachine(icMachineBakery)
         icBlock.setUnlocalizedName("projectred.fabrication.icMachine")
-        GameRegistry.register(icBlock.setRegistryName("ic_machine"))
-        GameRegistry.register(new ItemBlockCore(icBlock).setRegistryName(icBlock.getRegistryName))
+        ForgeRegistries.BLOCKS.register(icBlock.setRegistryName("ic_machine"))
+        ForgeRegistries.ITEMS.register(new ItemBlockCore(icBlock).setRegistryName(icBlock.getRegistryName))
         icBlock.addTile(classOf[TileICWorkbench], 0)
         icBlock.addTile(classOf[TileICPrinter], 1)
 
         itemICBlueprint = new ItemICBlueprint
         itemICBlueprint.setUnlocalizedName("projectred.fabrication.icBlueprint")
-        GameRegistry.register(itemICBlueprint.setRegistryName("ic_blueprint"))
+        ForgeRegistries.ITEMS.register(itemICBlueprint.setRegistryName("ic_blueprint"))
 
         itemICChip = new ItemICChip
         itemICChip.setUnlocalizedName("projectred.fabrication.icChip")
-        GameRegistry.register(itemICChip.setRegistryName("ic_chip"))
+        ForgeRegistries.ITEMS.register(itemICChip.setRegistryName("ic_chip"))
 
         MultiPartRegistry.registerParts(this, Array(GateDefinition.typeICGate))
-
-        FabricationRecipes.initRecipes()
+        MinecraftForge.EVENT_BUS.register(FabricationRecipes)
     }
 
     override def init(){}
@@ -87,7 +81,7 @@ class FabricationProxy_server extends IProxy with IPartFactory
       *
       * @param client If the part instance is for the client or the server
       */
-    override def createPart(name:String, client:Boolean) = name match
+    override def createPart(name:ResourceLocation, client:Boolean) = name match
     {
         case GateDefinition.typeICGate => new ICGatePart
         case _ => null
@@ -142,9 +136,7 @@ class FabricationProxy_client extends FabricationProxy_server
         val model = new CCBakeryModel()
         val regLoc = block.getRegistryName
         ModelLoader.setCustomStateMapper(block, stateMap)
-        ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(block), new ItemMeshDefinition {
-            override def getModelLocation(stack: ItemStack) = new ModelResourceLocation(regLoc, "normal")
-        })
+        ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(block), (stack: ItemStack) => new ModelResourceLocation(regLoc, "normal"))
         ModelRegistryHelper.register(new ModelResourceLocation(regLoc, "normal"), model)
         if (iconRegister != null) {
             TextureUtils.addIconRegister(iconRegister)
@@ -168,138 +160,8 @@ class FabricationProxy_client extends FabricationProxy_server
     def registerModelType(item:Item, jsonLocation:String, names:Array[String], typeValue:ItemStack => String)
     {
         MCModelBakery.registerItemVariants(item, names.map { n => new ModelResourceLocation(jsonLocation, s"type=$n") }:_*)
-        ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition {
-            override def getModelLocation(s:ItemStack) =
-                new ModelResourceLocation(jsonLocation, "type=" + typeValue(s))
-        })
+        ModelLoader.setCustomMeshDefinition(item, (s: ItemStack) => new ModelResourceLocation(jsonLocation, "type=" + typeValue(s)))
     }
 }
 
 object FabricationProxy extends FabricationProxy_client
-
-object FabricationRecipes
-{
-    def initRecipes()
-    {
-        //IC Gate recipe
-        GameRegistry.addRecipe(new IRecipe {
-            override def matches(inv:InventoryCrafting, w:World) = !getCraftingResult(inv).isEmpty
-
-            override def getRecipeOutput = GateDefinition.ICGate.makeStack
-
-            override def getRecipeSize = 9
-
-            override def getCraftingResult(inv:InventoryCrafting):ItemStack =
-            {
-                for (i <- 0 until 9) {
-                    val stack = inv.getStackInSlot(i)
-                    if (stack.isEmpty) return ItemStack.EMPTY
-                    i match {
-                        case 4 => if (stack.getItem != ProjectRedFabrication.itemICChip ||
-                                !ItemICBlueprint.hasICInside(stack)) return ItemStack.EMPTY
-                        case _ => if (!stack.isItemEqual(PartDefs.PLATE.makeStack)) return ItemStack.EMPTY
-                    }
-                }
-                val out = GateDefinition.ICGate.makeStack
-                ItemICBlueprint.copyToGate(inv.getStackInSlot(4), out)
-                out
-            }
-
-            override def getRemainingItems(inv:InventoryCrafting) = ForgeHooks.defaultRecipeGetRemainingItems(inv)
-        })
-
-        //IC Workbench
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(icBlock, 1, 0),
-            "iii","www","www",
-            'i':JC, "blockIron",
-            'w':JC, "plankWood"
-        ))
-
-        //IC Printer
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(icBlock, 1, 1),
-            "ggg","oeo","iwi",
-            'g':JC, new ItemStack(Blocks.STAINED_GLASS, 1, EnumColour.LIGHT_BLUE.getWoolDamage),
-            'o':JC, Blocks.OBSIDIAN,
-            'e':JC, "gemDiamond",
-            'i':JC, "ingotIron",
-            'w':JC, "plankWood"
-        ))
-
-        //IC Blueprint
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemICBlueprint),
-            "pbp","brb","pbp",
-            'p':JC, Items.PAPER,
-            'b':JC, "dyeBlue",
-            'r':JC, Items.REDSTONE
-        ))
-
-        //IC Blueprint - reset
-        GameRegistry.addRecipe(new IRecipe {
-            override def matches(inv:InventoryCrafting, w:World) = !getCraftingResult(inv).isEmpty
-
-            override def getRecipeOutput = new ItemStack(itemICBlueprint)
-
-            override def getRecipeSize = 2
-
-            override def getCraftingResult(inv:InventoryCrafting):ItemStack =
-            {
-                var bp:ItemStack = ItemStack.EMPTY
-                for (i <- 0 until inv.getSizeInventory) {
-                    val s = inv.getStackInSlot(i)
-                    if (!s.isEmpty)
-                        if (!bp.isEmpty) return ItemStack.EMPTY
-                        else bp = s
-                }
-
-                if (!bp.isEmpty && bp.getItem == itemICBlueprint && ItemICBlueprint.hasICInside(bp))
-                    new ItemStack(itemICBlueprint)
-                else ItemStack.EMPTY
-            }
-
-            override def getRemainingItems(inv:InventoryCrafting) = ForgeHooks.defaultRecipeGetRemainingItems(inv)
-        })
-
-        //IC Blueprint - copy
-        GameRegistry.addRecipe(new IRecipe {
-            override def matches(inv:InventoryCrafting, w:World) = !getCraftingResult(inv).isEmpty
-
-            override def getRecipeOutput = new ItemStack(itemICBlueprint, 2)
-
-            override def getRecipeSize = 9
-
-            override def getCraftingResult(inv:InventoryCrafting):ItemStack =
-            {
-                var bp:ItemStack = ItemStack.EMPTY
-                var emptyCount = 0
-                for (i <- 0 until inv.getSizeInventory) {
-                    val s = inv.getStackInSlot(i)
-                    if (!s.isEmpty) {
-                        if (s.getItem != itemICBlueprint) return ItemStack.EMPTY
-                        if (ItemICBlueprint.hasICInside(s))
-                            if (!bp.isEmpty) return ItemStack.EMPTY
-                            else bp = s
-                        else
-                            emptyCount += 1
-                    }
-                }
-                if (!bp.isEmpty && emptyCount > 0) {
-                    val out = new ItemStack(itemICBlueprint)
-                    out.setCount(emptyCount+1)
-                    ItemICBlueprint.copyIC(bp, out)
-                    out
-                }
-                else ItemStack.EMPTY
-            }
-
-            override def getRemainingItems(inv:InventoryCrafting) = ForgeHooks.defaultRecipeGetRemainingItems(inv)
-        })
-
-        //IC Chip
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemICChip),
-            "ggg","qdq", "ggg",
-            'g':JC, "nuggetGold",
-            'q':JC, PartDefs.PLATE.makeStack,
-            'd':JC, PartDefs.SILICON.makeStack
-        ))
-    }
-}

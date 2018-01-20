@@ -92,9 +92,9 @@ class TileItemImporter extends TileMachine with TPressureActiveDevice with IReds
         val elist = world.getEntitiesWithinAABB(classOf[EntityItem],
             box.copy.add(new Vector3(x, y, z)).aabb)
         var added = false
-        for (ei <- elist) if (!ei.isDead && ei.getEntityItem.getCount > 0 && canImport(ItemKey.get(ei.getEntityItem)))
+        for (ei <- elist) if (!ei.isDead && ei.getItem.getCount > 0 && canImport(ItemKey.get(ei.getItem)))
         {
-            itemStorage.add(ei.getEntityItem)
+            itemStorage.add(ei.getItem)
             world.removeEntity(ei)
             added = true
         }
