@@ -19,6 +19,7 @@ import mrtjp.core.gui._
 import mrtjp.core.vec.{Point, Rect, Size}
 import mrtjp.projectred.fabrication.ICComponentStore._
 import net.minecraft.client.gui.Gui
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
@@ -181,6 +182,7 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                     if (flags.nonEmpty)
                         GuiDraw.drawMultiLineTip(ItemStack.EMPTY, mx+12, my-32-(flags.size*(getFontRenderer.FONT_HEIGHT+1)), flags)
 
+                    GlStateManager.disableLighting()
                     translateFromScreen()
                     ClipNode.tempEnableScissoring()
                 }
