@@ -98,7 +98,8 @@ class LeverICTile extends ICTile with TICTileAcquisitions with IRedwireICGate wi
     override def declareOperations(linker:ISELinker)
     {
         on = false
-        sendStateUpdate()
+        if (editor != null)
+            sendStateUpdate()
     }
 
     @SideOnly(Side.CLIENT)

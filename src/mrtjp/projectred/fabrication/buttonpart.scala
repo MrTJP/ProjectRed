@@ -127,7 +127,8 @@ class ButtonICTile extends ICTile with TICTileAcquisitions with IRedwireICGate w
     override def declareOperations(linker:ISELinker)
     {
         on = false
-        sendStateUpdate()
+        if (editor != null)
+            sendStateUpdate()
         sched = -1
     }
 

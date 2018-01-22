@@ -19,7 +19,9 @@ import mrtjp.core.gui._
 import mrtjp.core.vec.{Point, Rect, Size}
 import mrtjp.projectred.fabrication.ICComponentStore._
 import net.minecraft.client.gui.Gui
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager._
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
@@ -181,6 +183,7 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                     if (flags.nonEmpty)
                         GuiDraw.drawMultiLineTip(ItemStack.EMPTY, mx+12, my-32-(flags.size*(fontRenderer.FONT_HEIGHT+1)), flags)
 
+                    GlStateManager.disableLighting()
                     translateFromScreen()
                     ClipNode.tempEnableScissoring()
                 }
@@ -211,10 +214,12 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                     case _ =>
                 }
                 return true
-            case _ if button == mcInst.gameSettings.keyBindPickBlock.getKeyCode =>
-                doPickOp()
-                return true
             case _ =>
+                val kb = mcInst.gameSettings.keyBindPickBlock
+                if (kb.getKeyCode < 0 && kb.getKeyCode-100 == button && kb.isKeyDown)
+                    doPickOp()
+
+                return true
         }
         false
     }
@@ -253,6 +258,10 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
 
     override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) =
     {
+        //TODO Add hotkeys for:
+        // - Rotate: Press R on gates to rotate them
+        // - Quick Select: Press 1-0 to select tool
+
         import Keyboard._
         if (!consumed) keycode match {
             case KEY_ESCAPE if leftMouseDown =>
