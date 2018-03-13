@@ -22,7 +22,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConversions._
 
-trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationCommons with TSwitchPacket with TNormalOcclusionPart
+trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagationCommons with TSwitchPacket with TNormalOcclusionPart with TFastRenderPart
 {
     def preparePlacement(side:Int, meta:Int){}
 
@@ -151,19 +151,12 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderFast(pos:Vector3, pass:Int, frame:Float, ccrs:CCRenderState)
+    override def renderFast(ccrs:CCRenderState, pos:Vector3, pass:Int, frame:Float)
     {
-        if (pass == 0 && !useStaticRenderer) {
-            //GL11.glDisable(GL11.GL_LIGHTING)
-            TextureUtils.bindBlockTexture()
-            //ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.BLOCK)
-
-            doDynamicTessellation(pos, frame, pass, ccrs)
-
-            //ccrs.draw()
-            //GL11.glEnable(GL11.GL_LIGHTING)
-        }
+        doFastTessellation(pos, frame, pass, ccrs)
     }
+
+    override def canRenderFast(pass: Int) = pass == 0 && !useStaticRenderer
 
     @SideOnly(Side.CLIENT)
     override def renderBreaking(pos:Vector3, texture:TextureAtlasSprite, ccrs:CCRenderState)
@@ -175,12 +168,10 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
     @SideOnly(Side.CLIENT)
     def getRenderLayer = BlockRenderLayer.SOLID
 
-    override def canRenderFast = true
-
     @SideOnly(Side.CLIENT)
     def doStaticTessellation(pos:Vector3, layer:BlockRenderLayer, ccrs:CCRenderState)
     @SideOnly(Side.CLIENT)
-    def doDynamicTessellation(pos:Vector3, frame:Float, pass:Int, ccrs:CCRenderState)
+    def doFastTessellation(pos:Vector3, frame:Float, pass:Int, ccrs:CCRenderState)
     @SideOnly(Side.CLIENT)
     def doBreakTessellation(pos:Vector3, texture:TextureAtlasSprite, ccrs:CCRenderState)
 
@@ -273,7 +264,7 @@ abstract class WirePart extends TMultiPart with TWireCommons with TFaceConnectab
         RenderWire.renderBreakingOverlay(texture, this, ccrs)
     }
     @SideOnly(Side.CLIENT)
-    override def doDynamicTessellation(pos:Vector3, frame:Float, pass:Int, ccrs:CCRenderState)
+    override def doFastTessellation(pos:Vector3, frame:Float, pass:Int, ccrs:CCRenderState)
     {
         RenderWire.render(this, pos, ccrs)
     }
@@ -449,7 +440,7 @@ abstract class FramedWirePart extends TMultiPart with TWireCommons with TCenterC
         RenderFramedWire.renderBreakingOverlay(texture, this, ccrs)
     }
     @SideOnly(Side.CLIENT)
-    override def doDynamicTessellation(pos:Vector3, frame:Float, pass:Int, ccrs:CCRenderState)
+    override def doFastTessellation(pos:Vector3, frame:Float, pass:Int, ccrs:CCRenderState)
     {
         RenderFramedWire.render(this, pos, ccrs)
     }

@@ -7,7 +7,7 @@ import codechicken.lib.vec.Vector3._
 import codechicken.lib.vec.uv.{IconTransformation, MultiIconTransformation}
 import codechicken.lib.vec.{Cuboid6, Vector3}
 import codechicken.microblock._
-import codechicken.multipart.TMultiPart
+import codechicken.multipart.TDynamicRenderPart
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.RenderHalo
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -42,39 +42,39 @@ object LightMicroMaterial
     }
 }
 
-trait LightMicroblock extends Microblock
+trait LightMicroblock extends Microblock with TDynamicRenderPart
 {
     @SideOnly(Side.CLIENT)
     override def renderDynamic(vec:Vector3, pass:Int, frame:Float)
     {
-        if (pass == 0) {
-            val boxes = this match {
-                case h:HollowMicroblock =>
-                    val size = h.getHollowSize
-                    val d1 = 0.5-size/32D
-                    val d2 = 0.5+size/32D
-                    val t = (shape>>4)/8D
-                    val ex = 0.025
+        val boxes = this match {
+            case h: HollowMicroblock =>
+                val size = h.getHollowSize
+                val d1 = 0.5 - size / 32D
+                val d2 = 0.5 + size / 32D
+                val t = (shape >> 4) / 8D
+                val ex = 0.025
 
-                    val tr = sideRotations(shape&0xF).at(center)
+                val tr = sideRotations(shape & 0xF).at(center)
 
-                    Seq(new Cuboid6(0-ex, 0-ex, 0-ex, 1+ex, t+ex, d1+ex),
-                        new Cuboid6(0-ex, 0-ex, d2-ex, 1+ex, t+ex, 1+ex),
-                        new Cuboid6(0-ex, 0-ex, d1+ex, d1+ex, t+ex, d2-ex),
-                        new Cuboid6(d2-ex, 0-ex, d1+ex, 1+ex, t+ex, d2-ex))
-                            .map(c => c.apply(tr))
-                case _ =>
-                    val it = getCollisionBoxes.iterator()
-                    val bb = Seq.newBuilder[Cuboid6]
-                    while(it.hasNext) bb += it.next()
-                    bb.result().map(_.copy.expand(0.025))
-            }
-
-            val colour = getIMaterial.asInstanceOf[LightMicroMaterial].colour
-
-            for (box <- boxes) RenderHalo.addLight(pos, colour, box)
+                Seq(new Cuboid6(0 - ex, 0 - ex, 0 - ex, 1 + ex, t + ex, d1 + ex),
+                    new Cuboid6(0 - ex, 0 - ex, d2 - ex, 1 + ex, t + ex, 1 + ex),
+                    new Cuboid6(0 - ex, 0 - ex, d1 + ex, d1 + ex, t + ex, d2 - ex),
+                    new Cuboid6(d2 - ex, 0 - ex, d1 + ex, 1 + ex, t + ex, d2 - ex))
+                    .map(c => c.apply(tr))
+            case _ =>
+                val it = getCollisionBoxes.iterator()
+                val bb = Seq.newBuilder[Cuboid6]
+                while (it.hasNext) bb += it.next()
+                bb.result().map(_.copy.expand(0.025))
         }
+
+        val colour = getIMaterial.asInstanceOf[LightMicroMaterial].colour
+
+        for (box <- boxes) RenderHalo.addLight(pos, colour, box)
     }
+
+    override def canRenderDynamic(pass: Int) = pass == 0
 
     override def getLightValue =
     {

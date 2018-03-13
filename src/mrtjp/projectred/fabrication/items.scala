@@ -31,19 +31,10 @@ import net.minecraft.world.World
 import net.minecraft.world.storage.MapData
 import org.lwjgl.opengl.GL11
 
-class ItemICBlueprint extends ItemMap //hack to allow first-person map rendering of blueprints
+class ItemICBlueprint extends Item //hack to allow first-person map rendering of blueprints
 {
     setMaxStackSize(1)
     setCreativeTab(ProjectRedFabrication.tabFabrication)
-
-    private val dummyMapData = new MapData("NULL") //used to prevent some standard vanilla code from
-
-    //Suppress standard map code
-    override def onUpdate(stack:ItemStack, worldIn:World, entityIn:Entity, itemSlot:Int, isSelected:Boolean){}
-    override def getMapData(stack:ItemStack, worldIn:World) = dummyMapData
-    override def onCreated(stack:ItemStack, worldIn:World, playerIn:EntityPlayer){}
-    override def updateMapData(worldIn:World, viewer:Entity, data:MapData){}
-    override def createMapDataPacket(stack:ItemStack, worldIn:World, player:EntityPlayer) = null
 
     override def addInformation(stack:ItemStack, world:World, tooltip:JList[String], advanced:ITooltipFlag)
     {
@@ -211,9 +202,9 @@ object ItemRenderICBlueprint extends IMapRenderer
 {
     val background = new ResourceLocation("projectred", "textures/gui/map_background.png")
 
-    override def shouldHandle(stack:ItemStack, data:MapData, inFrame:Boolean) = true
+    override def shouldHandle(stack:ItemStack, inFrame:Boolean) = stack.getItem.isInstanceOf[ItemICBlueprint]
 
-    override def renderMap(stack:ItemStack, data:MapData, inFrame:Boolean)
+    override def renderMap(stack:ItemStack, inFrame:Boolean)
     {
         import net.minecraft.client.renderer.GlStateManager._
         pushMatrix()

@@ -25,7 +25,7 @@ import org.lwjgl.opengl.GL11
 
 import scala.collection.JavaConversions._
 
-abstract class GatePart extends TMultiPart with TCuboidPart with TNormalOcclusionPart with TFaceConnectable with TSwitchPacket with TIconHitEffectsPart with ITickable
+abstract class GatePart extends TMultiPart with TCuboidPart with TNormalOcclusionPart with TFaceConnectable with TSwitchPacket with TIconHitEffectsPart with ITickable with TDynamicRenderPart
 {
     private var gateSubID:Byte = 0
     private var gateShape:Byte = 0
@@ -274,19 +274,19 @@ abstract class GatePart extends TMultiPart with TCuboidPart with TNormalOcclusio
     @SideOnly(Side.CLIENT)
     override def renderDynamic(pos:Vector3, pass:Int, frame:Float)
     {
-        if (pass == 0) {
-            val ccrs = CCRenderState.instance()
-            TextureUtils.bindBlockTexture()
-            if (!Configurator.staticGates) {
-                GL11.glDisable(GL11.GL_LIGHTING)
-                ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
-                RenderGate.renderStatic(this, pos, ccrs)
-                ccrs.draw()
-                GL11.glEnable(GL11.GL_LIGHTING)
-            }
-            RenderGate.renderDynamic(this, pos, frame, ccrs)
+        val ccrs = CCRenderState.instance()
+        TextureUtils.bindBlockTexture()
+        if (!Configurator.staticGates) {
+            GL11.glDisable(GL11.GL_LIGHTING)
+            ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
+            RenderGate.renderStatic(this, pos, ccrs)
+            ccrs.draw()
+            GL11.glEnable(GL11.GL_LIGHTING)
         }
+        RenderGate.renderDynamic(this, pos, frame, ccrs)
     }
+
+    override def canRenderDynamic(pass: Int) = pass == 0
 
     @SideOnly(Side.CLIENT)
     override def getBreakingIcon(hit:CuboidRayTraceResult) = getBrokenIcon(hit.sideHit.ordinal)

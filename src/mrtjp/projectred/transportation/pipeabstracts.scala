@@ -19,7 +19,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConversions._
 
-abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TSwitchPacket with TNormalOcclusionPart with ISidedHollowConnect
+abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with TSwitchPacket with TNormalOcclusionPart with ISidedHollowConnect with TDynamicRenderPart
 {
     var meta:Byte = 0
 
@@ -171,11 +171,12 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
     @SideOnly(Side.CLIENT)
     override def renderDynamic(pos:Vector3, pass:Int, frame:Float)
     {
-        if (pass == 0) {
-            TextureUtils.bindBlockTexture()
-            doDynamicTessellation(pos, frame, CCRenderState.instance())
-        }
+        TextureUtils.bindBlockTexture()
+        doDynamicTessellation(pos, frame, CCRenderState.instance())
+
     }
+
+    override def canRenderDynamic(pass: Int) = pass == 0
 
     @SideOnly(Side.CLIENT)
     def getIcon(side:Int) = getPipeType.sprites(0)

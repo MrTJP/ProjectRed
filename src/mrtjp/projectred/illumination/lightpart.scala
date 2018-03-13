@@ -36,7 +36,7 @@ import org.lwjgl.opengl.GL11
 
 import scala.collection.JavaConversions._
 
-class BaseLightPart(factory:LightFactory) extends TMultiPart with TCuboidPart with TSlottedPart with TNormalOcclusionPart with IRedstonePart with ILight
+class BaseLightPart(factory:LightFactory) extends TMultiPart with TCuboidPart with TSlottedPart with TNormalOcclusionPart with IRedstonePart with ILight with TDynamicRenderPart
 {
     protected var powered = false
 
@@ -160,9 +160,10 @@ class BaseLightPart(factory:LightFactory) extends TMultiPart with TCuboidPart wi
     @SideOnly(Side.CLIENT)
     override def renderDynamic(vec:Vector3, pass:Int, frame:Float)
     {
-        if (pass == 0 && isOn)
-            RenderHalo.addLight(pos, getColor, getLightBounds)
+        RenderHalo.addLight(pos, getColor, getLightBounds)
     }
+
+    override def canRenderDynamic(pass: Int) = pass == 0 && isOn
 
     @SideOnly(Side.CLIENT)
     override def renderStatic(pos:Vector3, layer:BlockRenderLayer, ccrs:CCRenderState) =

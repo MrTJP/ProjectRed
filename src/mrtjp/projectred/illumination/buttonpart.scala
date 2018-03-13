@@ -11,7 +11,7 @@ import codechicken.lib.util.TransformUtils
 import codechicken.lib.vec._
 import codechicken.lib.vec.uv.IconTransformation
 import codechicken.multipart.minecraft.ButtonPart
-import codechicken.multipart.{RedstoneInteractions, TileMultipart}
+import codechicken.multipart.{RedstoneInteractions, TDynamicRenderPart, TileMultipart}
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.{RenderHalo, TSwitchPacket}
 import net.minecraft.client.Minecraft
@@ -30,7 +30,7 @@ import org.lwjgl.opengl.GL11
 
 import scala.collection.JavaConversions._
 
-class LightButtonPart extends ButtonPart with ILight with TSwitchPacket
+class LightButtonPart extends ButtonPart with ILight with TSwitchPacket with TDynamicRenderPart
 {
     var colorMeta:Byte = 0
     var inverted = false
@@ -137,11 +137,11 @@ class LightButtonPart extends ButtonPart with ILight with TSwitchPacket
     @SideOnly(Side.CLIENT)
     override def renderDynamic(vec:Vector3, pass:Int, frame:Float)
     {
-        if (pass == 0 && isOn) {
-            val box = getBounds.expand(0.025D)
-            RenderHalo.addLight(pos, colorMeta, box)
-        }
+        val box = getBounds.expand(0.025D)
+        RenderHalo.addLight(pos, colorMeta, box)
     }
+
+    override def canRenderDynamic(pass: Int) = pass == 0 && isOn
 
     @SideOnly(Side.CLIENT)
     override def getBrokenIcon(side:Int) =
