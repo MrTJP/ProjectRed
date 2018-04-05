@@ -479,7 +479,7 @@ class BarrelInvWrapper(inv:IInventory) extends InvWrapper(inv)
         var itemsLeft = toExtract
         val hidden = if (hidePerSlot || hidePerType) 1 else 0
 
-        if (slots.contains(1) && eq.matches(item, getBarrel.item))
+        if (slots.contains(1) && getBarrel.nonEmpty && eq.matches(item, getBarrel.item))
         {
             while(itemsLeft > 0 && getBarrel.getStoredAmount-hidden > 0)
             {
