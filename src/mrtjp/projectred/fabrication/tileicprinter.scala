@@ -451,8 +451,8 @@ object TileICPrinter
             val out = ItemKey.get(r.getRecipeOutput)
             if (out == key)
             {
-                val inputs = Seq.empty
-                //TODO, This needs to be a list of lists. Multiple matches for one ingredient.
+                //TODO, We need to do proper ingredient matching.
+                val inputs = r.getIngredients.map(_.getMatchingStacks).filterNot(_ == null).map(i => ItemKey.get(i.head))
 //                    r match
 //                {
 //                    case s:ShapedRecipes => s.recipeItems.toSeq.filterNot(_.getMatchingStacks.isEmpty).map(ItemKey.get)
