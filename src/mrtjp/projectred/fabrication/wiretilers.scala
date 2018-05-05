@@ -26,7 +26,7 @@ trait IInsulatedRedwireICPart extends IRedwireICPart
 
 abstract class RedwireICTile extends WireICTile with IRedwireICPart
 {
-    private var stateRegisters = Set.empty[Int]
+    private var stateRegister = 0
     var signal:Byte = 0
 
     override def save(tag:NBTTagCompound)
@@ -75,9 +75,9 @@ abstract class RedwireICTile extends WireICTile with IRedwireICPart
         case _ => false
     }
 
-    override def isNetOutput:Boolean =
+    override def isNetOutput(r:Int):Boolean =
     {
-        for (r <- 0 until 4) if (maskConnects(r)) getStraight(r) match {
+        if (maskConnects(r)) getStraight(r) match {
             case gate:IRedwireICGate =>
                 if(gate.canInputFrom(rotFromStraight(r))) return true
             case _ =>
@@ -85,9 +85,9 @@ abstract class RedwireICTile extends WireICTile with IRedwireICPart
         false
     }
 
-    override def isNetInput:Boolean =
+    override def isNetInput(r:Int):Boolean =
     {
-        for (r <- 0 until 4) if (maskConnects(r)) getStraight(r) match {
+        if (maskConnects(r)) getStraight(r) match {
             case gate:IRedwireICGate =>
                 if (gate.canOutputTo(rotFromStraight(r))) return true
             case _ =>
@@ -97,15 +97,14 @@ abstract class RedwireICTile extends WireICTile with IRedwireICPart
 
     override def cacheStateRegisters(linker:ISELinker)
     {
-        stateRegisters = linker.getAllWireNetRegisters(pos)
+        stateRegister = linker.getWirenetOutputRegister(pos, 0)
     }
 
     override def onRegistersChanged(regIDs:Set[Int])
     {
         val oldSignal = signal
-        signal = if (stateRegisters.exists(reg =>
-            editor.simEngineContainer.simEngine.getRegVal[Byte](reg) != 0))
-            255.toByte else 0
+        signal = if (editor.simEngineContainer.simEngine.getRegVal[Byte](stateRegister) != 0)
+                    255.toByte else 0
 
         if (oldSignal != signal)
             sendSignalUpdate()
@@ -125,9 +124,10 @@ class AlloyWireICTile extends RedwireICTile
 {
     override def getPartType = ICTileDefs.AlloyWire
 
-    override def getTravelMask = 0xFFFF
+    override def getConnType(r:Int) = 0
 
-    override def getMixerMask = 0xFFFF
+    override def getInputColourMask(r:Int) = 0xFFFF
+    override def getOutputColourMask(r:Int) = 0xFFFF
 
     @SideOnly(Side.CLIENT)
     override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
@@ -180,9 +180,10 @@ class InsulatedWireICTile extends RedwireICTile with IInsulatedRedwireICPart
         case _ => super.canConnectTile(part, r)
     }
 
-    override def getTravelMask = 1<<getInsulatedColour
+    override def getConnType(r:Int) = 1
 
-    override def getMixerMask = 0
+    override def getInputColourMask(r:Int) = 1<<getInsulatedColour
+    override def getOutputColourMask(r:Int) = 0
 
     override def getInsulatedColour = colour
 

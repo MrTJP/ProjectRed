@@ -731,7 +731,7 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
             addToolset("Primatives", Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate, MultiplexerGate))
             addToolset("Timing and Clocks", Seq(PulseFormerGate, RepeaterGate, TimerGate, SequencerGate, StateCellGate))
             addToolset("Latches", Seq(SRLatchGate, ToggleLatchGate, TransparentLatchGate))
-//            addToolset("Cells", Seq(NullCellGate, InvertCellGate, BufferCellGate))
+            addToolset("Cells", Seq(NullCellGate))//, InvertCellGate, BufferCellGate))
             addToolset("Misc", Seq(RandomizerGate, CounterGate, SynchronizerGate))//, DecRandomizerGate))
         }
 
