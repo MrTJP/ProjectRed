@@ -59,13 +59,17 @@ class BundledCableICTile extends WireICTile with IBundledCableICPart
 
     override def getBundledColour = colour
 
-    override def isNetOutput = false
+    override def isNetOutput(r:Int) = false
+    override def isNetInput(r:Int) = false
 
-    override def isNetInput = false
+    /**
+      * Returns the type of connection on side r:
+      * SingleWire = 0, PortWire = 1, BusWire = 2
+      */
+    override def getConnType(r:Int) = 2
 
-    override def getTravelMask = 0xFFFF
-
-    override def getMixerMask = 0
+    override def getInputColourMask(r:Int) = 0xFFFF
+    override def getOutputColourMask(r:Int) = 0
 
     override def cacheStateRegisters(linker:ISELinker){}
     override def onRegistersChanged(regIDs:Set[Int]){}

@@ -30,7 +30,7 @@ object ICTileDefs extends Enum
     val IOGate = ICTileDef(() => new IOGateICTile)
     val SimpleGate = ICTileDef(() => new ComboGateICTile)
     val ComplexGate = ICTileDef(() => new SequentialGateICTile)
-//    val ArrayGate = CircuitPartDef(() => new ArrayGateICPart)
+    val ArrayGate = ICTileDef(() => new ArrayGateICTile)
 
     case class ICTileDef(factory:() => ICTile) extends Value
     {

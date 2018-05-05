@@ -92,10 +92,10 @@ object TileEditorOpDefs extends Enum
     val CounterGate = OpDef(new OpGate(ICGateDefinition.Counter.ordinal))
     val StateCellGate = OpDef(new OpGate(ICGateDefinition.StateCell.ordinal))
     val SynchronizerGate = OpDef(new OpGate(ICGateDefinition.Synchronizer.ordinal))
-//    val DecRandomizerGate = OpDef(new OpGate(ICGateDefinition.DecRandomizer.ordinal))
-//    val NullCellGate = OpDef(new OpGate(ICGateDefinition.NullCell.ordinal))
-//    val InvertCellGate = OpDef(new OpGate(ICGateDefinition.InvertCell.ordinal))
-//    val BufferCellGate = OpDef(new OpGate(ICGateDefinition.BufferCell.ordinal))
+    val DecRandomizerGate = OpDef(new OpGate(ICGateDefinition.DecRandomizer.ordinal))
+    val NullCellGate = OpDef(new OpGate(ICGateDefinition.NullCell.ordinal))
+    val InvertCellGate = OpDef(new OpGate(ICGateDefinition.InvertCell.ordinal))
+    val BufferCellGate = OpDef(new OpGate(ICGateDefinition.BufferCell.ordinal))
 
     val INSULATED = WhiteInsulatedWire to BlackInsulatedWire toArray
     val BUNDLED = NeutralBundledCable to BlackBundledCable toArray

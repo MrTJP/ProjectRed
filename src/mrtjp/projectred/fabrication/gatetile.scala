@@ -9,7 +9,6 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Transformation
 import mrtjp.core.util.Enum
-import mrtjp.core.vec.Point
 import mrtjp.projectred.integration.GateDefinition.GateDef
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
@@ -260,10 +259,10 @@ object ICGateDefinition extends Enum
     val Counter = ICGateDef("Counter", ICTileDefs.ComplexGate.id, gd.Counter)
     val StateCell = ICGateDef("State Cell", ICTileDefs.ComplexGate.id, gd.StateCell)
     val Synchronizer = ICGateDef("Synchronizer", ICTileDefs.ComplexGate.id, gd.Synchronizer)
-//    val DecRandomizer = ICGateDef("Dec Randomizer", CircuitPartDefs.SimpleGate.id, gd.DecRandomizer)
-//    val NullCell = ICGateDef("Null Cell", CircuitPartDefs.ArrayGate.id, gd.NullCell)
-//    val InvertCell = ICGateDef("Invert Cell", CircuitPartDefs.ArrayGate.id, gd.InvertCell)
-//    val BufferCell = ICGateDef("Buffer Cell", CircuitPartDefs.ArrayGate.id, gd.BufferCell)
+    val DecRandomizer = ICGateDef("Dec Randomizer", ICTileDefs.ComplexGate.id, gd.DecRandomizer)
+    val NullCell = ICGateDef("Null Cell", ICTileDefs.ArrayGate.id, gd.NullCell)
+    val InvertCell = ICGateDef("Invert Cell", ICTileDefs.ArrayGate.id, gd.InvertCell)
+    val BufferCell = ICGateDef("Buffer Cell", ICTileDefs.ArrayGate.id, gd.BufferCell)
 
     case class ICGateDef(unlocal:String, gateType:Int, intDef:GateDef = null) extends Value
     {

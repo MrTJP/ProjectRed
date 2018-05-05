@@ -8,7 +8,7 @@ trait ISETile
 
 trait ISEWireTile extends ISETile
 {
-    def buildWireNet:IWireNet
+    def buildWireNet(r:Int):IWireNet
 
     def cacheStateRegisters(linker:ISELinker)
 }
@@ -24,17 +24,15 @@ trait ISEGateTile extends ISETile
 
 trait IWireNet
 {
-    val points:scala.collection.Set[Point]
+    val points:scala.collection.Set[(Point, Int)]
 
     def allocateRegisters(linker:ISELinker)
 
     def declareOperations(linker:ISELinker)
 
-    def getInputRegister(p:Point):Int
+    def getInputRegister(p:Point, r:Int):Int
 
-    def getOutputRegister(p:Point):Int
-
-    def getChannelStateRegisters(p:Point):Set[Int]
+    def getOutputRegister(p:Point, r:Int):Int
 }
 
 trait ISETileMap
@@ -114,12 +112,13 @@ trait ISELinker
     def findOutputRegister(p:Point, r:Int):Int
 
     /**
-      * Callback used by tiles during the linking process. Used to fetch all registers
-      * part of a wire net that pass through the given point `p`.
+      * Callback used by tiles during the linking process. Used to locate a
+      * register of a wirenet on point `p` passing through direction `r`.
       *
-      * @return A set of register IDs within a wirenet that go through the point.
+      * @return The register ID of the located register, or a zero-constant register
+      *         if none found.
       */
-    def getAllWireNetRegisters(p:Point):Set[Int]
+    def getWirenetOutputRegister(p:Point, r:Int):Int
 
     /**
       * Get the logger for the current compilation. Used during the compilations
@@ -151,7 +150,7 @@ private class SELinker(logger:ISEStatLogger) extends ISELinker
 
     private val wireNets = new ListBuffer[IWireNet]()
     private val implicitWireNets = new ListBuffer[IWireNet]()
-    private val wireNetMap = MMap[Point, IWireNet]() //Wire register map [pos -> net]
+    private val wireNetMap = MMap[(Point, Int), IWireNet]() //Wire register map [(pos, rotation) -> net]
 
     /*
      * Stores implicit wires such as between two touching gates. There
@@ -213,10 +212,11 @@ private class SELinker(logger:ISEStatLogger) extends ISELinker
     override def findInputRegister(p:Point, r:Int):Int = //register that inputs to p from side r
     {
         val p2 = p.offset(r)
-        wireNetMap.get(p2) match {
-            case Some(net) => net.getOutputRegister(p2) //Input to p is output from p2
+        val r2 = (r+2)%4
+        wireNetMap.get(p2, r2) match {
+            case Some(net) => net.getOutputRegister(p2, r2) //Input to p is output from p2
             case _ => implicitWireNetMap.get(Set(p, p2)) match {
-                case Some(net) => net.getOutputRegister(p2)
+                case Some(net) => net.getOutputRegister(p2, r2)
                 case _ => REG_ZERO
             }
         }
@@ -225,19 +225,27 @@ private class SELinker(logger:ISEStatLogger) extends ISELinker
     override def findOutputRegister(p:Point, r:Int):Int = //register that outputs from p to side r
     {
         val p2 = p.offset(r)
-        wireNetMap.get(p2) match {
-            case Some(net) => net.getInputRegister(p2) //Output to p is input from p2
+        val r2 = (r+2)%4
+        wireNetMap.get((p2, r2)) match {
+            case Some(net) => net.getInputRegister(p2, r2) //Output to p is input from p2
             case _ => implicitWireNetMap.get(Set(p, p2)) match {
-                case Some(net) => net.getInputRegister(p2)
+                case Some(net) => net.getInputRegister(p2, r2)
                 case _ => REG_ZERO
             }
         }
     }
 
-    override def getAllWireNetRegisters(p:Point):Set[Int] =
-        wireNetMap.get(p) match {
-            case Some(net) => net.getChannelStateRegisters(p)
-            case _ => Set(REG_ZERO)
+    override def getWirenetOutputRegister(p:Point, r:Int):Int = //wirenet output reg on point p side r
+    {
+        wireNetMap.get((p, r)) match {
+            case Some(net) => net.getOutputRegister(p, r)
+            case _ =>
+                val p2 = p.offset(r)
+                implicitWireNetMap.get(Set(p, p2)) match {
+                    case Some(net) => net.getOutputRegister(p, r)
+                    case _ => REG_ZERO
+                }
+        }
     }
 
     override def getLogger = logger
@@ -273,13 +281,26 @@ private object SELinker
         logger.logInfo("Creating wirenets...")
         // Register all wire networks
         for ((p, w) <- allWires) { //Start with normal wire nets. Ask each wire to assemble a network.
-            if (!wireNetMap.contains(p)) { //If the net has not been created yet by another wire in the net...
-                logger.logInfo(s"Added wirenet originating at $p")
-                val net = w.buildWireNet //Assemble it...
-                wireNets += net //Store it...
-                for (netP <- net.points)
-                    wireNetMap += netP -> net //And map it...
+            for (r <- 0 until 4) {
+                if (!wireNetMap.contains((p, r))) {
+                    val net = w.buildWireNet(r) //Assemble it...
+                    if (net != null) {
+                        wireNets += net //Store it...
+                        for ((p, r) <- net.points)
+                            wireNetMap += (p, r) -> net //And map it...
+                    }
+
+                    logger.logInfo(s"Added wirenet originating at $p on side $r")
+                }
             }
+
+//            if (!wireNetMap.contains(p)) { //If the net has not been created yet by another wire in the net...
+//                logger.logInfo(s"Added wirenet originating at $p")
+//                val net = w.buildWireNet //Assemble it...
+//                wireNets += net //Store it...
+//                for (netP <- net.points)
+//                    wireNetMap += netP -> net //And map it...
+//            }
         }
 
         logger.logInfo("Creating implicit wirenets...")

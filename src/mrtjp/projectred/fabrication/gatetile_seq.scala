@@ -61,11 +61,11 @@ trait TComplexGateICTile extends GateICTile
 
 class SequentialGateICTile extends RedstoneGateICTile with TComplexGateICTile
 {
-    var logic:SequentialICGateLogic = null
+    var logic:SequentialGateTileLogic = null
 
     override def assertLogic()
     {
-        if (logic == null) logic = SequentialICGateLogic.create(this, subID)
+        if (logic == null) logic = SequentialGateTileLogic.create(this, subID)
     }
 
     override def getLogic[T]:T = logic.asInstanceOf[T]
@@ -108,11 +108,11 @@ trait TComplexGateTileLogic[T <: TComplexGateICTile] extends GateTileLogic[T]
     def read(packet:MCDataInput, key:Int){}
 }
 
-object SequentialICGateLogic
+object SequentialGateTileLogic
 {
     import mrtjp.projectred.fabrication.{ICGateDefinition => defs}
 
-    def create(gate:SequentialGateICTile, subID:Int):SequentialICGateLogic = subID match
+    def create(gate:SequentialGateICTile, subID:Int):SequentialGateTileLogic = subID match
     {
         case defs.Pulse.ordinal => new Pulse(gate)
         case defs.Repeater.ordinal => new Repeater(gate)
@@ -129,7 +129,7 @@ object SequentialICGateLogic
     }
 }
 
-abstract class SequentialICGateLogic(val gate:SequentialGateICTile) extends RedstoneGateTileLogic[SequentialGateICTile] with TComplexGateTileLogic[SequentialGateICTile]
+abstract class SequentialGateTileLogic(val gate:SequentialGateICTile) extends RedstoneGateTileLogic[SequentialGateICTile] with TComplexGateTileLogic[SequentialGateICTile]
 {
     val inputRegs = Array(-1, -1, -1, -1)
     val outputRegs = Array(-1, -1, -1, -1)
@@ -192,7 +192,7 @@ abstract class SequentialICGateLogic(val gate:SequentialGateICTile) extends Reds
     def allocInternalRegisters(linker:ISELinker)
 }
 
-class Pulse(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
+class Pulse(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate)
 {
     /* registers */
     var stateReg = -1
@@ -244,7 +244,7 @@ class Pulse(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
     }
 }
 
-class Repeater(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
+class Repeater(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate)
 {
     val delays = Array(2, 4, 6, 8, 16, 32, 64, 128, 256)
 
@@ -343,7 +343,7 @@ class Repeater(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
     }
 }
 
-class Randomizer(gate:SequentialGateICTile) extends SequentialICGateLogic(gate) with TIOControlableGateTileLogic[SequentialGateICTile]
+class Randomizer(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate) with TIOControlableGateTileLogic[SequentialGateICTile]
 {
     /* registers */
     var stateReg = -1
@@ -426,7 +426,7 @@ object Randomizer {
     val rand = new Random
 }
 
-class SRLatch(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
+class SRLatch(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate)
 {
     /* registers */
     var stateReg = -1
@@ -528,7 +528,7 @@ class SRLatch(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
     }
 }
 
-class ToggleLatch(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
+class ToggleLatch(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate)
 {
     /* registers */
     var stateReg = -1
@@ -627,7 +627,7 @@ trait ICounterGuiLogic
     def getCounterValue:Int
 }
 
-trait TTimerICGateLogic extends SequentialICGateLogic with ITimerGuiLogic
+trait TTimerICGateLogic extends SequentialGateTileLogic with ITimerGuiLogic
 {
     /* compile vars */
     var pointer_max = 38
@@ -716,7 +716,7 @@ trait TTimerICGateLogic extends SequentialICGateLogic with ITimerGuiLogic
     }
 }
 
-class TransparentLatch(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
+class TransparentLatch(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate)
 {
     var stateReg = -1
 
@@ -786,7 +786,7 @@ class TransparentLatch(gate:SequentialGateICTile) extends SequentialICGateLogic(
     }
 }
 
-class Timer(gate:SequentialGateICTile) extends SequentialICGateLogic(gate) with TTimerICGateLogic
+class Timer(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate) with TTimerICGateLogic
 {
     /* registers */
     var stateReg = -1
@@ -886,7 +886,7 @@ class Timer(gate:SequentialGateICTile) extends SequentialICGateLogic(gate) with 
     }
 }
 
-class Sequencer(gate:SequentialGateICTile) extends SequentialICGateLogic(gate) with ITimerGuiLogic
+class Sequencer(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate) with ITimerGuiLogic
 {
     /* compile vars */
     var pointer_max = 40
@@ -971,7 +971,7 @@ class Sequencer(gate:SequentialGateICTile) extends SequentialICGateLogic(gate) w
     }
 }
 
-class Counter(gate:SequentialGateICTile) extends SequentialICGateLogic(gate) with ICounterGuiLogic
+class Counter(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate) with ICounterGuiLogic
 {
     /* render vars */
     var currentValue = 0
@@ -1181,7 +1181,7 @@ class Counter(gate:SequentialGateICTile) extends SequentialICGateLogic(gate) wit
     }
 }
 
-class StateCell(gate:SequentialGateICTile) extends SequentialICGateLogic(gate) with TTimerICGateLogic
+class StateCell(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate) with TTimerICGateLogic
 {
     /* render vars */
     var isRunning = false
@@ -1318,7 +1318,7 @@ class StateCell(gate:SequentialGateICTile) extends SequentialICGateLogic(gate) w
     }
 }
 
-class Synchronizer(gate:SequentialGateICTile) extends SequentialICGateLogic(gate)
+class Synchronizer(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate)
 {
     /* render vars */
     var bitState = 0
