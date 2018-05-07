@@ -58,7 +58,7 @@ dependencies {
 
     compile "mrtjp:MrTJPCore:${config.mc_version}-${config.tjpcore_version}:deobf"
     compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
-    compile "codechicken:ForgeMultipart:1.12-${config.fmp_version}:deobf"
+    compile "codechicken:ForgeMultipart:${config.mc_version}-${config.fmp_version}:deobf"
     
     // compile against the JEI API
     deobfCompile "mezz.jei:jei_${config.mc_version}:${config.jei_version}:api"
