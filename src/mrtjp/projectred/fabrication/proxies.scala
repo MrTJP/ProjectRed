@@ -11,7 +11,6 @@ import codechicken.lib.model.bakery.CCBakeryModel
 import codechicken.lib.model.bakery.key.IBlockStateKeyGenerator
 import codechicken.lib.render.item.map.MapRenderRegistry
 import codechicken.lib.texture.TextureUtils
-import codechicken.lib.texture.TextureUtils.IIconRegister
 import codechicken.multipart.MultiPartRegistry
 import codechicken.multipart.api.IPartFactory
 import mrtjp.core.block.{ItemBlockCore, MultiTileBlock}
@@ -20,9 +19,7 @@ import mrtjp.projectred.ProjectRedFabrication._
 import mrtjp.projectred.ProjectRedIntegration
 import mrtjp.projectred.core.IProxy
 import mrtjp.projectred.integration.{GateDefinition, RenderGate}
-import net.minecraft.block.Block
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation, ModelBakery => MCModelBakery}
-import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.client.renderer.block.statemap.StateMap.Builder
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.util.ResourceLocation

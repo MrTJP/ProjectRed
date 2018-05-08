@@ -131,6 +131,8 @@ class ExplorationProxy_server extends IProxy
 
     override def init()
     {
+        initOreDict()
+
         //World Gen
 
         //Ruby
@@ -319,7 +321,7 @@ class ExplorationProxy_server extends IProxy
     override def postinit()
     {
         InvWrapper.register(BarrelInvWrapper)
-        initOreDict()
+
         /** Basalt **/
         GameRegistry.addSmelting(DecorativeStoneDefs.BASALTCOBBLE.makeStack, DecorativeStoneDefs.BASALT.makeStack, 0.1f)
 

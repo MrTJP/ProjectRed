@@ -6,7 +6,6 @@
 package mrtjp.projectred.fabrication
 
 import codechicken.lib.vec.{Rotation, Vector3}
-import mrtjp.core.vec.Point
 
 trait TICTileOrient extends ICTile
 {
