@@ -80,6 +80,7 @@ minecraft {
     mappings = config.mappings
     runDir = "run"
     makeObfSourceJar = false
+    useDepAts = true
 }
 
 sourceSets {

@@ -346,7 +346,8 @@ class ExplorationProxy_server extends IProxy
         OreDictionary.registerOre("oreSilver", OreDefs.ORESILVER.makeStack)
         OreDictionary.registerOre("oreElectrotine", OreDefs.OREELECTROTINE.makeStack)
 
-        OreDictionary.registerOre("blockMarble", DecorativeStoneDefs.MARBLE.makeStack)
+        OreDictionary.registerOre("stoneMarble", DecorativeStoneDefs.MARBLE.makeStack)
+        OreDictionary.registerOre("stoneBasalt", DecorativeStoneDefs.BASALT.makeStack)
         OreDictionary.registerOre("blockRuby", DecorativeStoneDefs.RUBYBLOCK.makeStack)
         OreDictionary.registerOre("blockSapphire", DecorativeStoneDefs.SAPPHIREBLOCK.makeStack)
         OreDictionary.registerOre("blockPeridot", DecorativeStoneDefs.PERIDOTBLOCK.makeStack)
