@@ -118,9 +118,6 @@ class ExpansionProxy_server extends IProxy with IPartFactory
         //MinecraftForge.EVENT_BUS.register(TeleposedEnderPearlProperty)
     }
 
-    override def version = "@VERSION@"
-    override def build = "@BUILD_NUMBER@"
-
     override def createPart(name:ResourceLocation, client:Boolean):TMultiPart = name match
     {
         case SolarPanelPart.typeID => new SolarPanelPart

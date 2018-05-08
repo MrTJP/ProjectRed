@@ -70,9 +70,6 @@ class CoreProxy_server extends IProxy
     }
 
     def postinit(){}
-
-    override def version = "@VERSION@"
-    override def build = "@BUILD_NUMBER@"
 }
 
 class CoreProxy_client extends CoreProxy_server

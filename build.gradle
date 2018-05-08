@@ -119,6 +119,12 @@ processResources {
     // Replace properties in all files
     from(sourceSets.main.resources.srcDirs) {
         include '**.info'
+        expand  'mod_version': version, 'mc_version': config.mc_version,
+                'forge_version': config.forge_version,
+                'tjcore_version': config.tjpcore_version.replace(".+", ""),
+                'ccl_version': config.ccl_version.replace(".+", ""),
+                'fmp_version': config.fmp_version.replace(".+", "")
+
         filter(ReplaceTokens, tokens: [
                 'VERSION'      : config.mod_version,
                 'BUILD_NUMBER' : build_number,
@@ -293,7 +299,10 @@ task baseJar(type: Jar, dependsOn: reobfJar) {
 // baseJar pulls all files not in any other jar. Therefore must run last
 baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && task.name != 'baseJar') } }
 
-tasks.withType(ScalaCompile) { scalaCompileOptions.additionalParameters = ["-Xexperimental"] }
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = ["-Xexperimental"]
+    scalaCompileOptions.setDeprecation false
+}
 
 artifacts {
     archives integrationJar

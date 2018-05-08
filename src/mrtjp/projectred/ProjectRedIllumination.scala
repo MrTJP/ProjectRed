@@ -26,7 +26,6 @@ object ProjectRedIllumination
     @Mod.EventHandler
     def preInit(event:FMLPreInitializationEvent)
     {
-        IlluminationProxy.versionCheck()
         IlluminationProxy.preinit()
     }
 

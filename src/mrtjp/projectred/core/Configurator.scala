@@ -13,8 +13,7 @@ object Configurator extends ModConfig("projectred-core")
 {
     /** Constants **/
     var modName = "Project Red"
-    var version = "@VERSION@"
-    var buildnumber = "@BUILD_NUMBER@"
+    var version = "${mod_version}"
 
     /** General Settings **/
     var versionChecking = true

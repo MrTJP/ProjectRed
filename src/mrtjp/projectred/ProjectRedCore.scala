@@ -27,7 +27,6 @@ object ProjectRedCore
     def preInit(event:FMLPreInitializationEvent)
     {
         Configurator.loadConfig()
-        CoreProxy.versionCheck()
         CoreProxy.preinit()
     }
 

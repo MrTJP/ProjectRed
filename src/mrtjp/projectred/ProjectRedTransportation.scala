@@ -26,7 +26,6 @@ object ProjectRedTransportation
     @Mod.EventHandler
     def preInit(event:FMLPreInitializationEvent)
     {
-        TransportationProxy.versionCheck()
         TransportationProxy.preinit()
     }
 

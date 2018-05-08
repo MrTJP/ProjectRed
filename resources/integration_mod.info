@@ -1,37 +1,37 @@
 [
-{
-  "modid": "projectred-transmission",
-  "name": "ProjectRed Transmission",
-  "parent":"projectred-core",
-  "version": "@VERSION@.@BUILD_NUMBER@",
-  "mcversion": "@MC_VERSION@",
-  "requiredMods": [
-      "projectred-core"
-  ],
-  "dependencies": [
-      "projectred-core"
-  ],
-  "dependants" : [
-      "projectred-expansion",
-      "projectred-fabrication"
-  ],
-  "useDependencyInformation": true
-},
-{
-  "modid": "projectred-integration",
-  "name": "ProjectRed integration",
-  "parent":"projectred-core",
-  "version": "@VERSION@.@BUILD_NUMBER@",
-  "mcversion": "@MC_VERSION@",
-  "requiredMods": [
-      "projectred-core"
-  ],
-  "dependencies": [
-      "projectred-core"
-  ],
-  "dependants" : [
-      "projectred-fabrication"
-  ],
-  "useDependencyInformation": true
-}
+	{
+		"modid": "projectred-transmission",
+		"name": "ProjectRed Transmission",
+		"parent": "projectred-core",
+		"version": "${mod_version}",
+		"mcversion": "${mc_version}",
+		"requiredMods": [
+			"projectred-core@[${mod_version},]"
+		],
+		"dependencies": [
+			"projectred-core@[${mod_version},]"
+		],
+		"dependants": [
+			"projectred-expansion",
+			"projectred-fabrication"
+		],
+		"useDependencyInformation": true
+	},
+	{
+		"modid": "projectred-integration",
+		"name": "ProjectRed integration",
+		"parent": "projectred-core",
+		"version": "${mod_version}",
+		"mcversion": "${mc_version}",
+		"requiredMods": [
+			"projectred-core@[${mod_version},]"
+		],
+		"dependencies": [
+			"projectred-core@[${mod_version},]"
+		],
+		"dependants": [
+			"projectred-fabrication"
+		],
+		"useDependencyInformation": true
+	}
 ]

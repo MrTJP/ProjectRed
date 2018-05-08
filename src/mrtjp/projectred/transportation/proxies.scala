@@ -65,9 +65,6 @@ class TransportationProxy_server extends IProxy with IPartFactory
         case NETWORKLATENCY.partname => new NetworkLatencyPipePart
         case _ => null
     }
-
-    override def version = "@VERSION@"
-    override def build = "@BUILD_NUMBER@"
 }
 
 class TransportationProxy_client extends TransportationProxy_server

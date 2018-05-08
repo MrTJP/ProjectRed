@@ -355,9 +355,6 @@ class ExplorationProxy_server extends IProxy
         OreDictionary.registerOre("blockSilver", DecorativeStoneDefs.SILVERBLOCK.makeStack)
         OreDictionary.registerOre("blockElectrotine", DecorativeStoneDefs.ELECTROTINEBLOCK.makeStack)
     }
-
-    override def version = "@VERSION@"
-    override def build = "@BUILD_NUMBER@"
 }
 
 class ExplorationProxy_client extends ExplorationProxy_server

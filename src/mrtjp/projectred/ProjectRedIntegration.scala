@@ -19,7 +19,6 @@ object ProjectRedIntegration
     @Mod.EventHandler
     def preInit(event:FMLPreInitializationEvent)
     {
-        IntegrationProxy.versionCheck()
         IntegrationProxy.preinit()
     }
 

@@ -39,7 +39,6 @@ object ProjectRedExpansion
     @Mod.EventHandler
     def preInit(event:FMLPreInitializationEvent)
     {
-        ExpansionProxy.versionCheck()
         ExpansionProxy.preinit()
     }
 

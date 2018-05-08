@@ -73,9 +73,6 @@ class FabricationProxy_server extends IProxy with IPartFactory
         }
     }
 
-    override def version = "@VERSION@"
-    override def build = "@BUILD_NUMBER@"
-
     /**
       * Create a new instance of the part with the specified type name identifier
       *

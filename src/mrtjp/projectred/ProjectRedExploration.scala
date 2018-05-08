@@ -80,7 +80,6 @@ object ProjectRedExploration
     def preInit(event:FMLPreInitializationEvent)
     {
         SimpleGenHandler.init()
-        ExplorationProxy.versionCheck()
         ExplorationProxy.preinit()
     }
 

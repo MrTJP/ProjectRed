@@ -55,9 +55,6 @@ class IlluminationProxy_server extends IProxy with IPartFactory
 
     override def postinit(){}
 
-    override def version = "@VERSION@"
-    override def build = "@BUILD_NUMBER@"
-
     override def createPart(name:ResourceLocation, client:Boolean) = name match
     {
         case LightButtonPart.typeID => new LightButtonPart

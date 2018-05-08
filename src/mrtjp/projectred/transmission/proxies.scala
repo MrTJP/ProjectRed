@@ -50,9 +50,6 @@ class TransmissionProxy_server extends IProxy with IPartFactory
         case WireDef.typeFramedLowLoad => new FramedLowLoadPowerLine
         case _ => null
     }
-
-    override def version = "@VERSION@"
-    override def build = "@BUILD_NUMBER@"
 }
 
 class TransmissionProxy_client extends TransmissionProxy_server

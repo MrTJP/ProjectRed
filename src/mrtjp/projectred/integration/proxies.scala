@@ -50,9 +50,6 @@ class IntegrationProxy_server extends IProxy with IPartFactory
         case GateDefinition.typeNeighborGate => new SequentialGatePartT
         case _ => null
     }
-
-    override def version = "@VERSION@"
-    override def build = "@BUILD_NUMBER@"
 }
 
 class IntegrationProxy_client extends IntegrationProxy_server

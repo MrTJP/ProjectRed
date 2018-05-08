@@ -32,7 +32,6 @@ object ProjectRedFabrication
     @Mod.EventHandler
     def preInit(event:FMLPreInitializationEvent)
     {
-        FabricationProxy.versionCheck()
         FabricationProxy.preinit()
     }
 
