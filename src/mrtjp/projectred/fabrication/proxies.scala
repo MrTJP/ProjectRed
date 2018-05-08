@@ -111,7 +111,17 @@ class FabricationProxy_client extends FabricationProxy_server
             }
         })
 
-        registerBlockToBakery(icBlock, icMachineBakery.registerKeyGens(icBlock), new Builder().ignore(MultiTileBlock.TILE_INDEX).build())
+        {
+            val model = new CCBakeryModel()
+            val regLoc = icBlock.getRegistryName
+            val normalLoc = new ModelResourceLocation(regLoc, "normal")
+            val wrappedLoc = new ModelResourceLocation(regLoc, "printer_wrapped")
+            ModelLoader.setCustomStateMapper(icBlock, new Builder().ignore(MultiTileBlock.TILE_INDEX).build())
+            ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(icBlock), stack => if(stack.getMetadata == 1) wrappedLoc else normalLoc)
+            ModelRegistryHelper.register(normalLoc, model)
+            ModelRegistryHelper.register(wrappedLoc, RenderICPrinterItem)
+            TextureUtils.addIconRegister(icMachineBakery.registerKeyGens(icBlock))
+        }
 
         registerModelType(itemICBlueprint, "projectred:fabrication/items", "ic_blueprint")
         MapRenderRegistry.registerMapRenderer(itemICBlueprint, ItemRenderICBlueprint)
@@ -125,19 +135,6 @@ class FabricationProxy_client extends FabricationProxy_server
         GuiHandler.register(GuiICPrinter, icPrinterGui)
 
         RenderGate.hotswap(new RenderICGate, GateDefinition.ICGate.ordinal)
-    }
-
-    @SideOnly(Side.CLIENT)
-    def registerBlockToBakery(block:Block, iconRegister:IIconRegister, stateMap:IStateMapper) =
-    {
-        val model = new CCBakeryModel()
-        val regLoc = block.getRegistryName
-        ModelLoader.setCustomStateMapper(block, stateMap)
-        ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(block), (stack: ItemStack) => new ModelResourceLocation(regLoc, "normal"))
-        ModelRegistryHelper.register(new ModelResourceLocation(regLoc, "normal"), model)
-        if (iconRegister != null) {
-            TextureUtils.addIconRegister(iconRegister)
-        }
     }
 
     @SideOnly(Side.CLIENT)

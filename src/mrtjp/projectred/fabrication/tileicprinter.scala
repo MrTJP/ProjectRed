@@ -5,16 +5,21 @@
  */
 package mrtjp.projectred.fabrication
 
-import java.util.{ArrayList => JAList}
+import java.util
+import java.util.function.Supplier
+import java.util.{Collections, ArrayList => JAList}
 
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.model.bakery.SimpleBlockRenderer
+import codechicken.lib.model.bakedmodels.WrappedItemModel
+import codechicken.lib.model.bakery.{CCBakeryModel, SimpleBlockRenderer}
 import codechicken.lib.render.buffer.BakingVertexBuffer
+import codechicken.lib.render.item.IItemRenderer
+import codechicken.lib.render.item.entity.WrappedEntityItemRenderer
 import codechicken.lib.render.{CCModel, CCRenderState, OBJParser}
 import codechicken.lib.texture.TextureUtils
-import codechicken.lib.util.VertexDataUtils
+import codechicken.lib.util.{TransformUtils, VertexDataUtils}
 import codechicken.lib.vec._
 import codechicken.lib.vec.uv.{IconTransformation, MultiIconTransformation, UVTransformation}
 import com.google.common.collect.ImmutableList
@@ -27,12 +32,14 @@ import mrtjp.projectred.ProjectRedCore.log
 import mrtjp.projectred.core.PartDefs
 import mrtjp.projectred.integration.ComponentStore
 import mrtjp.projectred.transmission.WireDef
-import net.minecraft.block.state.BlockFaceShape
+import net.minecraft.block.state.{BlockFaceShape, IBlockState}
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager._
-import net.minecraft.client.renderer.block.model.BakedQuad
+import net.minecraft.client.renderer.block.model._
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.ItemStack
@@ -40,7 +47,8 @@ import net.minecraft.item.crafting.{CraftingManager, ShapedRecipes, ShapelessRec
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
-import net.minecraft.world.IBlockAccess
+import net.minecraft.world.{IBlockAccess, World}
+import net.minecraftforge.common.model.IModelState
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
@@ -868,4 +876,41 @@ object RenderICPrinterDynamic extends TileEntitySpecialRenderer[TileICPrinter]
     {
         models("glass").render(ccrs, t, iconT)
     }
+}
+object RenderICPrinterItem extends IItemRenderer {
+
+    //A single instance of this across reloads is fine.
+    val wrapped = new CCBakeryModel()
+    var entity:EntityLivingBase = _
+    var world:World = _
+
+    lazy val overrideList = new ItemOverrideList() {
+        override def handleItemState(originalModel: IBakedModel, stack: ItemStack, world: World, entity: EntityLivingBase) = {
+            RenderICPrinterItem.entity = entity
+            RenderICPrinterItem.world = if(world == null) if(entity == null) null else entity.world else null
+            originalModel
+        }
+    }
+
+    override def renderItem(stack: ItemStack, transformType: ItemCameraTransforms.TransformType) {
+        val model = wrapped.getOverrides.handleItemState(wrapped, stack, world, entity)
+        Minecraft.getMinecraft.getRenderItem.renderModel(model, stack)
+        val ccrs = CCRenderState.instance()
+        val matrix = new Matrix4()
+        val iconT = new MultiIconTransformation(RenderICPrinter.headIcon)
+
+        ccrs.reset()
+        ccrs.pullLightmap()
+        ccrs.startDrawing(0x7, DefaultVertexFormats.ITEM)
+        RenderICPrinterDynamic.renderPrinter(ccrs, matrix, iconT)
+        ccrs.draw()
+    }
+
+    override def getTransforms = TransformUtils.DEFAULT_BLOCK
+
+    override def isAmbientOcclusion = true
+
+    override def isGui3d = true
+
+    override def getOverrides = overrideList
 }
