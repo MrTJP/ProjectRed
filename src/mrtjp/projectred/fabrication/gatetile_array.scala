@@ -48,6 +48,7 @@ trait TArrayGateTileLogic[T <: TArrayGateICTile] extends RedstoneGateTileLogic[T
 {
     override def canConnectTo(gate:T, part:ICTile, r:Int) = part match {
         case re:IRedwireICPart if canConnectRedwire(gate, r) => true
+        case pc:IRedwireICGate if canConnectRedwire(gate, r) => true
         case _ => super.canConnectTo(gate, part, r)
     }
 
