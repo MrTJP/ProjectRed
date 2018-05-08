@@ -13,7 +13,6 @@ object Configurator extends ModConfig("projectred-core")
 {
     /** Constants **/
     var modName = "Project Red"
-    var version = "${mod_version}"
 
     /** General Settings **/
     var versionChecking = true
@@ -79,7 +78,6 @@ object Configurator extends ModConfig("projectred-core")
     override protected def initValues()
     {
         val general = new BaseCategory("General Settings", "Contains basic settings for the mod.")
-        versionChecking = general.put("Version Checking", versionChecking, "If set to true, you will be alerted when a newer version of PR is available.")
 
         logicGateSounds = general.put("Logic Sounds", logicGateSounds, "If set to false, logic gates will not make sounds.")
         minTimerTicks = general.put("Minimum Timer Ticks", minTimerTicks, "Minimum amount of ticks the timer gates can be set to. Cannot be lower than 4.")

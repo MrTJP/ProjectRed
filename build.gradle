@@ -1,6 +1,3 @@
-//import net.minecraftforge.gradle.curseforge.CurseUploadTask
-import org.apache.tools.ant.filters.ReplaceTokens
-
 buildscript {
     repositories {
         jcenter()
@@ -64,11 +61,6 @@ dependencies {
     deobfCompile "mezz.jei:jei_${config.mc_version}:${config.jei_version}:api"
     // at runtime, use the full JEI jar
     runtime "mezz.jei:jei_${config.mc_version}:${config.jei_version}"
-
-    //compile "mrtjp:ForgeRelocation:${config.mc_version}-${config.fr_version}:deobf"
-    //compile "codechicken:NotEnoughItems:${config.mc_version}-${config.nei_version}:deobf"
-    //compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
-    //compile group: 'cofh', name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
 }
 
 def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")).toString()
@@ -95,23 +87,6 @@ sourceSets {
     }
 }
 
-task updateVersion(type: Copy) {
-    // Replace tokens
-    from(sourceSets.main.scala.srcDirs)
-    into 'build/sources/scala'
-    filter(ReplaceTokens, tokens: [
-            'VERSION'      : config.mod_version,
-            'BUILD_NUMBER' : build_number,
-            'MC_VERSION'   : config.mc_version,
-            'FORGE_VERSION': config.forge_version,
-            'FMP_VERSION'  : config.fmp_version,
-            'CCL_VERSION'  : config.ccl_version,
-            'MRTJP_VERSION': config.tjpcore_version,
-            'FR_VERSION': config.fr_version,
-            'FRFMP_VERSION': config.frfmp_version
-    ])
-}
-
 processResources {
     //redo task if any of these properties change
     inputs.property "version", project.version
@@ -125,18 +100,6 @@ processResources {
                 'tjcore_version': config.tjpcore_version.replace(".+", ""),
                 'ccl_version': config.ccl_version.replace(".+", ""),
                 'fmp_version': config.fmp_version.replace(".+", "")
-
-        filter(ReplaceTokens, tokens: [
-                'VERSION'      : config.mod_version,
-                'BUILD_NUMBER' : build_number,
-                'MC_VERSION'   : config.mc_version,
-                'FORGE_VERSION': config.forge_version,
-                'FMP_VERSION'  : config.fmp_version,
-                'CCL_VERSION'  : config.ccl_version,
-                'MRTJP_VERSION': config.tjpcore_version,
-                'FR_VERSION': config.fr_version,
-                'FRFMP_VERSION': config.frfmp_version
-        ])
     }
     // Copy everything else
     from(sourceSets.main.resources.srcDirs) {
@@ -161,7 +124,6 @@ task deobfJar(type: Jar) {
     version = "${config.mc_version}-${project.version}"
 }
 
-compileScala.dependsOn updateVersion
 ext.jarVer = "${config.mc_version}-${project.version}"
 ext.jarFile = zipTree(jar.archivePath)
 ext.baseExcludes = ["**/dan200/**", "**/coloredlightscore/**"]
