@@ -385,7 +385,7 @@ trait TColourFilterPipe extends SubcorePipePart
 
 trait IInventoryProvider
 {
-    def getInventory(side:Int):InvWrapper
+    def getInventory(extractSide:Int):InvWrapper
     def getInventory:InvWrapper
     def getInterfacedSide:Int
 }
@@ -489,15 +489,16 @@ trait TInventoryPipe[T <: AbstractPipePayload] extends PayloadPipePart[T] with I
         if (oldSide != inOutSide) sendOrientUpdate()
     }
 
-    override def getInventory(side:Int) =
+    override def getInventory(extractSide:Int) =
     {
-        if ((0 until 6 contains inOutSide) && (0 until 6 contains side)) InvWrapper.wrap(world, posOfStraight(side), EnumFacing.VALUES(side^1))
+        if ((0 until 6 contains inOutSide) && (0 until 6 contains extractSide))
+            InvWrapper.wrap(world, posOfStraight(inOutSide), EnumFacing.VALUES(extractSide))
         else null
     }
 
     override def getInventory =
     {
-        getInventory(inOutSide)
+        getInventory(getInterfacedSide)
     }
 
     override def getInterfacedSide = if (!(0 to 5 contains inOutSide)) -1 else inOutSide^1

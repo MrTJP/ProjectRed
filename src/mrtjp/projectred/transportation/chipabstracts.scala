@@ -241,7 +241,7 @@ trait TChipOrientation extends RoutingChip
 {
     var extractOrient = -1
 
-    def side = if (extractOrient <= -1) invProvider.getInterfacedSide else extractOrient
+    def extractSide = if (extractOrient <= -1) invProvider.getInterfacedSide else extractOrient
 
     abstract override def save(tag:NBTTagCompound)
     {
