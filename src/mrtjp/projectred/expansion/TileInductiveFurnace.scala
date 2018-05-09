@@ -40,7 +40,7 @@ class TileInductiveFurnace extends TileProcessingMachine
 
     import net.minecraft.util.EnumFacing._
     def canExtractItem(slot:Int, itemstack:ItemStack, side:EnumFacing) = true
-    def canInsertItem(slot:Int, itemstack:ItemStack, side:EnumFacing) = side == 1
+    def canInsertItem(slot:Int, itemstack:ItemStack, side:EnumFacing) = side == EnumFacing.UP
     def getSlotsForFace(s:EnumFacing) = s match
     {
         case UP => Array(0) // input
@@ -171,14 +171,13 @@ object RenderInductiveFurnace extends SimpleBlockRenderer
     override def handleState(state: IExtendedBlockState, world: IBlockAccess, pos: BlockPos): IExtendedBlockState = {
 
        world.getTileEntity(pos) match {
-            case t:TileInductiveFurnace => {
+            case t:TileInductiveFurnace =>
                 var s = state
                 s = s.withProperty(UNLISTED_SIDE_PROPERTY, t.side.asInstanceOf[Integer])
                 s = s.withProperty(UNLISTED_ROTATION_PROPERTY, t.rotation.asInstanceOf[JInt])
                 s = s.withProperty(UNLISTED_WORKING_PROPERTY, t.isWorking.asInstanceOf[JBool])
                 s = s.withProperty(UNLISTED_CHARGED_PROPERTY, t.isCharged.asInstanceOf[JBool])
                 s
-            }
             case _ => state
         }
     }
@@ -195,7 +194,7 @@ object RenderInductiveFurnace extends SimpleBlockRenderer
     }
 
     override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0, iconT1)
-    override def shouldCull() = true;
+    override def shouldCull() = true
 
 
     override def registerIcons(reg:TextureMap)
