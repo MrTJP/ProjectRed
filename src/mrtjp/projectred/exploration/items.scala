@@ -155,7 +155,7 @@ class BagInventory(player:EntityPlayer) extends TInventory
 
     override def isItemValidForSlot(i:Int, stack:ItemStack):Boolean =
     {
-        if (stack.isEmpty)
+        if (!stack.isEmpty)
         {
             if (stack.getItem == ProjectRedExploration.itemBackpack) return false
             //for (blocked <- Configurator.backpackBlacklist) if (stack.itemID == blocked) return false
