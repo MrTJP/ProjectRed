@@ -67,17 +67,6 @@ trait TWireCommons extends TMultiPart with TConnectableCommons with TPropagation
         if (!world.isRemote) notifyAllExternals()
     }
 
-    override def onChunkLoad()
-    {
-        if ((connMap&0x80000000) != 0) // converter flag
-        {
-            if (dropIfCantStay()) return
-            connMap = 0
-            updateOutward()
-            tile.markDirty()
-        }
-    }
-
     def sendConnUpdate()
 
     override def onMaskChanged()

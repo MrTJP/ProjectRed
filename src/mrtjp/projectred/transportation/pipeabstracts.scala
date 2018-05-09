@@ -101,16 +101,6 @@ abstract class SubcorePipePart extends TMultiPart with TCenterConnectable with T
         if (!world.isRemote) notifyAllExternals()
     }
 
-    override def onChunkLoad()
-    {
-        if ((connMap&0x80000000) != 0) // converter flag
-        {
-            connMap = 0
-            updateOutward()
-            tile.markDirty()
-        }
-    }
-
     override def onMaskChanged()
     {
         sendConnUpdate()
