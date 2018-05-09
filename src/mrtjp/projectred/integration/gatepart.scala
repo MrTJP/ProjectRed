@@ -169,7 +169,11 @@ abstract class GatePart extends TMultiPart with TCuboidPart with TNormalOcclusio
     override def onWorldJoin()
     {
         super.onWorldJoin()
-        if (getLogic == null) tile.remPart(this)
+        if (getLogic == null) {
+            tile.remPart(this)
+        } else {
+            getLogicPrimitive.onJoinWorld(this)
+        }
     }
 
     def canStay = PRLib.canPlaceGateOnSide(world, pos.offset(EnumFacing.getFront(side)), side^1)
@@ -322,6 +326,7 @@ abstract class GateLogic[T <: GatePart]
     def onTick(gate:T){}
 
     def setup(gate:T){}
+    def onJoinWorld(gate:T){}
 
     def activate(gate:T, player:EntityPlayer, held:ItemStack, hit:CuboidRayTraceResult) = false
 
