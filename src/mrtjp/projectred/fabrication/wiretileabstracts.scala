@@ -416,7 +416,7 @@ private case class CSearchNode2(pos:Point, colour:Int, r:Int, pmask:Int)
     }
 
     override def equals(that:Any) = that match {
-        case n:CSearchNode2 => n.pos == pos && n.colour == colour
+        case n:CSearchNode2 => n.pos == pos && n.colour == colour && n.pmask == pmask
         case _ => false
     }
 }
