@@ -19,7 +19,7 @@
 		"modid": "projectred-transportation",
 		"name": "ProjectRed Transportation",
 		"parent": "projectred-core",
-		"version": "{mod_version}",
+		"version": "${mod_version}",
 		"mcversion": "${mc_version}",
 		"requiredMods": [
 			"projectred-core@[${mod_version},]"
