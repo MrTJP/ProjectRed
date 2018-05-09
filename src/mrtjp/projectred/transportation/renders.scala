@@ -29,7 +29,7 @@ import org.lwjgl.opengl.GL11
 
 object RenderPipe extends IIconRegister
 {
-    private final val customRenderItem = Minecraft.getMinecraft.getRenderItem
+    private final def customRenderItem = Minecraft.getMinecraft.getRenderItem
 
     var sideModels:Array[CCModel] = null
     var centerModels:Array[CCModel] = null
