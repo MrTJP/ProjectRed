@@ -6,14 +6,13 @@ import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Vector3
 import codechicken.microblock.handler.MicroblockProxy
 import codechicken.microblock.{BlockMicroMaterial, ItemMicroPart}
-import codechicken.multipart.{IMaskedRedstonePart, RedstoneInteractions, TMultiPart}
+import codechicken.multipart.{IMaskedRedstonePart, IRedstonePart, RedstoneInteractions, TMultiPart}
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.world.Messenger
 import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.api.{IConnectable, IScrewdriver}
-import mrtjp.projectred.core.PRLib
-import mrtjp.projectred.transmission.IWirePart._
-import mrtjp.projectred.transmission._
+import mrtjp.projectred.core.IWirePart._
+import mrtjp.projectred.core._
 import net.minecraft.block.SoundType
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
@@ -25,7 +24,6 @@ import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConversions._
-
 
 trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCenterRSPropagation with IRedwirePart with IMaskedRedstonePart
 {
@@ -148,7 +146,8 @@ trait TRedstonePipe extends SubcorePipePart with TCenterRSAcquisitions with TCen
 
     abstract override def canConnectPart(part:IConnectable, s:Int) = part match
     {
-        case fr:FramedRedwirePart if hasRedstone => true
+        case rw:IRedwirePart with IMaskedRedstonePart
+            if hasRedstone && (rw.getConnectionMask(s^1)&0x10) != 0 => true
         case _ => super.canConnectPart(part, s)
     }
 

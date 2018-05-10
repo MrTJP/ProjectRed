@@ -11,7 +11,7 @@ import codechicken.multipart._
 import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.api.IConnectable
 import mrtjp.projectred.core._
-import mrtjp.projectred.transmission.IWirePart._
+import IWirePart._
 import mrtjp.projectred.transmission.WireDef.WireDef
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.entity.player.EntityPlayer

@@ -13,27 +13,6 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-trait IRedwirePart extends IWirePart with IRedwireEmitter
-
-/**
- * Implemented by parts that emit a full-strength red alloy signal.
- */
-trait IRedwireEmitter
-{
-    /**
-     * For face parts, dir is a rotation. For center parts, it is a forge
-     * direction.
-     *
-     * @return Signal strength from 0 to 255.
-     */
-    def getRedwireSignal(dir:Int):Int
-}
-
-trait IInsulatedRedwirePart extends IRedwirePart
-{
-    def getInsulatedColour:Int
-}
-
 trait TRedwireCommons extends TWireCommons with TRSAcquisitionsCommons with TRSPropagationCommons with IRedwirePart
 {
     var signal:Byte = 0

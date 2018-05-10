@@ -5,7 +5,8 @@ import codechicken.lib.vec.Rotation
 import codechicken.multipart.TMultiPart
 import mrtjp.core.world.Messenger
 import mrtjp.projectred.api.{IBundledEmitter, IBundledTile, IConnectable, IMaskedBundledTile}
-import mrtjp.projectred.transmission.IWirePart._
+import mrtjp.projectred.core.IWirePart._
+import mrtjp.projectred.core.{IInsulatedRedwirePart, IWirePart, WirePropagator}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity

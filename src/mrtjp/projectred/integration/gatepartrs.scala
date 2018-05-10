@@ -11,8 +11,8 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.multipart.IRandomDisplayTickPart
 import codechicken.multipart.handler.MultipartProxy
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.Configurator
-import mrtjp.projectred.transmission.{IRedwireEmitter, TFaceRSAcquisitions}
+import mrtjp.projectred.core.{Configurator, TFaceRSAcquisitions}
+import mrtjp.projectred.core.IRedwireEmitter
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 

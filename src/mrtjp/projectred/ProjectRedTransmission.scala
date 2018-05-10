@@ -1,11 +1,12 @@
 package mrtjp.projectred
 
 import mrtjp.projectred.api.ProjectRedAPI
+import mrtjp.projectred.core.WirePropagator
 import mrtjp.projectred.transmission._
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.common.event.{FMLServerAboutToStartEvent, FMLPostInitializationEvent, FMLInitializationEvent, FMLPreInitializationEvent}
+import net.minecraftforge.fml.common.event.{FMLInitializationEvent, FMLPostInitializationEvent, FMLPreInitializationEvent, FMLServerAboutToStartEvent}
 
 @Mod(modid = "projectred-transmission", useMetadata = true, modLanguage = "scala")
 object ProjectRedTransmission

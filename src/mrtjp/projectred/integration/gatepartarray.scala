@@ -9,7 +9,7 @@ import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.vec._
 import codechicken.multipart.{BlockMultipart, TMultiPart}
 import mrtjp.projectred.api.IConnectable
-import mrtjp.projectred.core.{Configurator, TFaceOrient}
+import mrtjp.projectred.core._
 import mrtjp.projectred.transmission._
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound

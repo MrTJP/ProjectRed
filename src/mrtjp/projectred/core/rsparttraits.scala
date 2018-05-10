@@ -1,8 +1,7 @@
-package mrtjp.projectred.transmission
+package mrtjp.projectred.core
 
 import codechicken.multipart.{IFaceRedstonePart, IRedstonePart, RedstoneInteractions, TMultiPart}
-import mrtjp.projectred.core._
-import mrtjp.projectred.transmission.IWirePart._
+import mrtjp.projectred.core.IWirePart._
 import net.minecraft.block.BlockRedstoneWire
 import net.minecraft.init.Blocks
 import net.minecraft.util.EnumFacing
@@ -177,3 +176,24 @@ trait TRSPropagationCommons extends TPropagationCommons
 trait TFaceRSPropagation extends TFacePropagation with TRSPropagationCommons
 
 trait TCenterRSPropagation extends TCenterPropagation with TRSPropagationCommons
+
+trait IRedwirePart extends IWirePart with IRedwireEmitter
+
+/**
+  * Implemented by parts that emit a full-strength red alloy signal.
+  */
+trait IRedwireEmitter
+{
+    /**
+      * For face parts, dir is a rotation. For center parts, it is a forge
+      * direction.
+      *
+      * @return Signal strength from 0 to 255.
+      */
+    def getRedwireSignal(dir:Int):Int
+}
+
+trait IInsulatedRedwirePart extends IRedwirePart
+{
+    def getInsulatedColour:Int
+}

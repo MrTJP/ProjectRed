@@ -1,4 +1,4 @@
-package mrtjp.projectred.transmission
+package mrtjp.projectred.core
 
 import java.util.{Stack => JStack}
 
