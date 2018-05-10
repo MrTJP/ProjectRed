@@ -12,7 +12,7 @@
 	"key": {
 		"b": {
 			"type": "forge:ore_dict",
-			"ore": "blockMarble"
+			"ore": "stoneMarble"
 		}
 	}
 }
