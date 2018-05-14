@@ -18,7 +18,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{Container, IContainerListener, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IBlockAccess
 import net.minecraftforge.common.property.{IExtendedBlockState, IUnlistedProperty}

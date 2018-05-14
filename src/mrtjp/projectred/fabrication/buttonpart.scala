@@ -153,7 +153,7 @@ class ButtonICTile extends ICTile with TICTileAcquisitions with IRedwireICGate w
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float) =
+    override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
     {
         RenderTileButton.prepairDynamic(this)
         RenderTileButton.render(ccrs, t, ortho)

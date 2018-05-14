@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Container
 import net.minecraft.item.ItemStack
-import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.IBlockAccess
@@ -154,8 +153,8 @@ object RenderInductiveFurnace extends SimpleBlockRenderer
 {
     import java.lang.{Boolean => JBool, Integer => JInt}
 
-    import org.apache.commons.lang3.tuple.Triple
     import mrtjp.projectred.expansion.BlockProperties._
+    import org.apache.commons.lang3.tuple.Triple
 
     var bottom:TextureAtlasSprite = _
     var top:TextureAtlasSprite = _
@@ -195,7 +194,6 @@ object RenderInductiveFurnace extends SimpleBlockRenderer
 
     override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0, iconT1)
     override def shouldCull() = true
-
 
     override def registerIcons(reg:TextureMap)
     {

@@ -522,17 +522,13 @@ object GuiProjectBench extends TGuiFactory {
 object RenderProjectBench extends SimpleBlockRenderer
 {
     import org.apache.commons.lang3.tuple.Triple
-
-    val instance = RenderProjectBench
-
+    
     var bottom: TextureAtlasSprite = _
     var top: TextureAtlasSprite = _
     var side1: TextureAtlasSprite = _
     var side2: TextureAtlasSprite = _
 
     var iconT: UVTransformation = _
-
-
 
     override def getWorldTransforms(state: IExtendedBlockState) = Triple.of(0, 0, iconT)
     override def getItemTransforms(stack: ItemStack) = Triple.of(0, 0, iconT)

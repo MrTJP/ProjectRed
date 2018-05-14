@@ -1,12 +1,11 @@
 package mrtjp.projectred.core
 
 import codechicken.lib.data.MCDataInput
-import codechicken.lib.vec.{Rotation, Vector3}
+import codechicken.lib.vec.Rotation
 import codechicken.multipart.{BlockMultipart, PartMap}
 import mrtjp.core.block.MTBlockTile
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.api.IConnectable
-import net.minecraft.block.Block
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
@@ -241,8 +240,28 @@ trait TConnectableInstTile extends MTBlockTile with TTileConnectable
     abstract override def onBlockRemoval()
     {
         super.onBlockRemoval()
-        WorldLib.bulkBlockUpdate(getWorld, getPos, getBlock)
+
+        var cmask = 0
+        for (s <- 0 until 6) if (maskConnects(s))
+            cmask |= 1<<s
+        notifyExternals(cmask)
     }
+
+    def notifyExternals(mask:Int)
+    {
+        var smask = 0
+
+        for (absSide <- 0 until 6) if ((mask&1<<absSide) != 0) {
+            val pos = getPos.offset(EnumFacing.values()(absSide))
+
+            getWorld.neighborChanged(pos, getBlock, pos)
+            for (s <- 0 until 6) if (s != (absSide^1) && (smask&1<<s) == 0)
+                getWorld.neighborChanged(pos.offset(EnumFacing.values()(s)), getBlock, pos)
+
+            smask |= 1<<absSide
+        }
+    }
+
 }
 
 trait TPowerTile extends MTBlockTile with TConnectableInstTile with TCachedPowerConductor

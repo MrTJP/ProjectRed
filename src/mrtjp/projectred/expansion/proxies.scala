@@ -1,7 +1,5 @@
 package mrtjp.projectred.expansion
 
-import java.lang.{Character => JC}
-
 import codechicken.lib.model.ModelRegistryHelper
 import codechicken.lib.model.bakery.CCBakeryModel
 import codechicken.lib.model.bakery.key.{IBlockStateKeyGenerator, IItemStackKeyGenerator}
@@ -10,12 +8,11 @@ import codechicken.lib.texture.TextureUtils
 import codechicken.lib.texture.TextureUtils.IIconRegister
 import codechicken.multipart.api.IPartFactory
 import codechicken.multipart.{MultiPartRegistry, TMultiPart}
-import com.google.gson.{JsonArray, JsonObject}
 import mrtjp.core.block.{ItemBlockCore, MultiTileBlock}
 import mrtjp.core.data.{TClientKeyTracker, TServerKeyTracker}
 import mrtjp.core.gui.GuiHandler
 import mrtjp.projectred.ProjectRedExpansion._
-import mrtjp.projectred.core.{Configurator, IProxy, PartDefs}
+import mrtjp.projectred.core.IProxy
 import mrtjp.projectred.expansion.BlockProperties._
 import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
@@ -23,7 +20,6 @@ import net.minecraft.client.renderer.ItemMeshDefinition
 import net.minecraft.client.renderer.block.model.{ModelResourceLocation, ModelBakery => MCModelBakery}
 import net.minecraft.client.renderer.block.statemap.IStateMapper
 import net.minecraft.client.renderer.block.statemap.StateMap.Builder
-import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.ModelLoader
@@ -95,7 +91,7 @@ class ExpansionProxy_server extends IProxy with IPartFactory
         machine2.addTile(classOf[TileFireStarter], 4)
         machine2.addTile(classOf[TileBatteryBox], 5)
         machine2.addTile(classOf[TileChargingBench], 6)
-        //machine2.addTile(classOf[TileTeleposer], 7)
+        machine2.addTile(classOf[TileTeleposer], 7)
         //machine2.addTile(classOf[TileFrameMotor], 8)
         //machine2.addTile(classOf[TileFrameActuator], 9)
         machine2.addTile(classOf[TileProjectBench], 10)
@@ -105,7 +101,7 @@ class ExpansionProxy_server extends IProxy with IPartFactory
 
     def init()
     {
-
+        CapabilityTeleposedEnderPearl.registerCapability()
     }
 
     def postinit()
@@ -114,8 +110,6 @@ class ExpansionProxy_server extends IProxy with IPartFactory
 
         SpacebarServerTracker.register()
         ForwardServerTracker.register()
-
-        //MinecraftForge.EVENT_BUS.register(TeleposedEnderPearlProperty)
     }
 
     override def createPart(name:ResourceLocation, client:Boolean):TMultiPart = name match
@@ -259,7 +253,13 @@ class ExpansionProxy_client extends ExpansionProxy_server
                 state.getBlock.getRegistryName.toString + s",meta=$meta,c=$isCharged"
             }
         })
-
+        machine2Bakery.registerSubBakery(7, RenderTeleposer, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val isCharged = state.getValue(UNLISTED_CHARGED_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,c=$isCharged"
+            }
+        })
         machine2Bakery.registerSubBakery(10, RenderProjectBench)
         machine2Bakery.registerSubBakery(11, RenderAutoCrafter)
         machine2Bakery.registerSubBakery(12, RenderDiamondBlockBreaker, new IBlockStateKeyGenerator {

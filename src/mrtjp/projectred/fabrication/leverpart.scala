@@ -122,7 +122,7 @@ class LeverICTile extends ICTile with TICTileAcquisitions with IRedwireICGate wi
     }
 
     @SideOnly(Side.CLIENT)
-    override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float) =
+    override def renderDynamic(ccrs:CCRenderState, t:Transformation, ortho:Boolean, frame:Float)
     {
         RenderTileLever.prepairDynamic(this)
         RenderTileLever.render(ccrs, t, ortho)
