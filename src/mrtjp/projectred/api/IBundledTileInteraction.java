@@ -1,5 +1,6 @@
 package mrtjp.projectred.api;
 
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -22,9 +23,10 @@ public interface IBundledTileInteraction
      *
      * @param world The World
      * @param pos The coordinates of the block being checked
+     * @param side The side in question
      * @return True if this interaction should be run at the given location
      */
-    boolean isValidInteractionFor(World world, BlockPos pos);
+    boolean isValidInteractionFor(World world, BlockPos pos, EnumFacing side);
 
     /**
      * Checks if the block at the given position can be connected to.
@@ -34,7 +36,7 @@ public interface IBundledTileInteraction
      * @param side The side the wire is trying to connect to.
      * @return True if the wire should be allowed to connect to the side.
      */
-    boolean canConnectBundled(World world, BlockPos pos, int side);
+    boolean canConnectBundled(World world, BlockPos pos, EnumFacing side);
 
     /**
      * Gets the bundled signal from the tile on the specified side.
@@ -44,5 +46,5 @@ public interface IBundledTileInteraction
      * @param side The side we want the signal for.
      * @return The byte array of all the signals.
      */
-    byte[] getBundledSignal(World world, BlockPos pos, int side);
+    byte[] getBundledSignal(World world, BlockPos pos, EnumFacing side);
 }

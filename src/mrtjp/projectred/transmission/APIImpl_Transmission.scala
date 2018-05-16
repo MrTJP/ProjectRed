@@ -14,16 +14,15 @@ class APIImpl_Transmission extends ITransmissionAPI
         APIImpl_Transmission.interactions :+= interaction
     }
 
-    override def getBundledInput(world:World, pos:BlockPos, side:Int):Array[Byte] =
+    override def getBundledInput(world:World, pos:BlockPos, facing:EnumFacing):Array[Byte] =
     {
-        world.getTileEntity(pos.offset(EnumFacing.values()(side))) match
-        {
+        val side = facing.ordinal
+        world.getTileEntity(pos.offset(EnumFacing.values()(side))) match {
             case ibt:IBundledTile => ibt.getBundledSignal(side^1)
 
             case tmp:TileMultipart =>
                 var signal:Array[Byte] = null
-                def raise(ibe:IBundledEmitter, r:Int)
-                {
+                def raise(ibe:IBundledEmitter, r:Int) {
                     signal = BundledCommons.raiseSignal(signal, ibe.getBundledSignal(r))
                 }
 
@@ -44,9 +43,8 @@ class APIImpl_Transmission extends ITransmissionAPI
         }
     }
 
-    override def containsBundledCable(world:World, pos:BlockPos, side:Int) =
-        BlockMultipart.getPart(world, pos, side) match
-        {
+    override def containsBundledCable(world:World, pos:BlockPos, side:EnumFacing) =
+        BlockMultipart.getPart(world, pos, side.ordinal()) match {
             case be:IBundledCablePart => true
             case _ => false
         }
@@ -65,22 +63,18 @@ object APIImpl_Transmission
 {
     var interactions = Vector[IBundledTileInteraction]()
 
-    def isValidInteractionFor(world:World, pos:BlockPos) =
-        interactions.exists(_.isValidInteractionFor(world, pos))
+    def isValidInteractionFor(world:World, pos:BlockPos, side:EnumFacing) =
+        interactions.exists(_.isValidInteractionFor(world, pos, side))
 
-    def canConnectBundled(world:World, pos:BlockPos, side:Int):Boolean =
-    {
-        interactions.find(_.isValidInteractionFor(world, pos)) match {
+    def canConnectBundled(world:World, pos:BlockPos, side:EnumFacing):Boolean =
+        interactions.find(_.isValidInteractionFor(world, pos, side)) match {
             case Some(e) => e.canConnectBundled(world, pos, side)
             case None => false
         }
-    }
 
-    def getBundledSignal(world:World, pos:BlockPos, side:Int):Array[Byte] =
-    {
-        interactions.find(_.isValidInteractionFor(world, pos)) match {
+    def getBundledSignal(world:World, pos:BlockPos, side:EnumFacing):Array[Byte] =
+        interactions.find(_.isValidInteractionFor(world, pos, side)) match {
             case Some(e) => e.getBundledSignal(world, pos, side)
             case None => null
         }
-    }
 }

@@ -56,7 +56,7 @@ dependencies {
     compile "mrtjp:MrTJPCore:${config.mc_version}-${config.tjpcore_version}:deobf"
     compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
     compile "codechicken:ForgeMultipart:${config.mc_version}-${config.fmp_version}:deobf"
-    
+
     // compile against the JEI API
     deobfCompile "mezz.jei:jei_${config.mc_version}:${config.jei_version}:api"
     // at runtime, use the full JEI jar
@@ -228,24 +228,24 @@ task worldJar(type: Jar, dependsOn: reobfJar) {
     classifier = 'world'
 }
 
-//task compatJar(type: Jar, dependsOn: reobfJar) {
-//    from(project.ext.jarFile) {
-//        include "**/ProjectRedCompatibility*.class"
-//        include "**/mrtjp/projectred/compatibility/**"
-//
+task compatJar(type: Jar, dependsOn: reobfJar) {
+    from(project.ext.jarFile) {
+        include "**/ProjectRedCompatibility*.class"
+        include "**/mrtjp/projectred/compatibility/**"
+
 //        include "**/powercrystals/**"
-//
+
 //        include "**/assets/asm/**"
 //        include "**/assets/projectred/textures/blocks/compat/**"
-//
-//        include "compat_mod.info"
-//        rename("compat_mod.info", 'mcmod.info')
-//
-//        project.ext.baseExcludes.addAll(includes)
-//    }
-//    version = project.ext.jarVer
-//    classifier = 'compat'
-//}
+
+        include "compat_mod.info"
+        rename("compat_mod.info", 'mcmod.info')
+
+        project.ext.baseExcludes.addAll(includes)
+    }
+    version = project.ext.jarVer
+    classifier = 'compat'
+}
 
 task baseJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {

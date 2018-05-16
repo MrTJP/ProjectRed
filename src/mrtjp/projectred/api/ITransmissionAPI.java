@@ -1,5 +1,6 @@
 package mrtjp.projectred.api;
 
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -23,7 +24,7 @@ public interface ITransmissionAPI
      * @param side The side of the block
      * @return A bundled signal {@link IBundledEmitter}
      */
-    byte[] getBundledInput(World world, BlockPos pos, int side);
+    byte[] getBundledInput(World world, BlockPos pos, EnumFacing side);
 
     /**
      * Checks to see if the position specified contains a bundled cable.
@@ -33,7 +34,7 @@ public interface ITransmissionAPI
      * @param side The side to check
      * @return If the given position contains a bundled cable on the given side.
      */
-    boolean containsBundledCable(World world, BlockPos pos, int side);
+    boolean containsBundledCable(World world, BlockPos pos, EnumFacing side);
 
     /**
      * Checks to see if there is a framed wire at this coordinate.

@@ -130,7 +130,7 @@ trait TBundledCableCommons extends TWireCommons with TBundledAquisitionsCommons 
                     tmpSignal(i.getInsulatedColour) = s.toByte
             case b:IBundledEmitter => BundledCommons.raiseSignal(tmpSignal, b.getBundledSignal(r))
             case t:TileEntity => BundledCommons.raiseSignal(tmpSignal,
-                APIImpl_Transmission.getBundledSignal(t.getWorld, t.getPos, r))
+                APIImpl_Transmission.getBundledSignal(t.getWorld, t.getPos, EnumFacing.values()(r)))
             case _ =>
         }
         tmpSignal
@@ -220,7 +220,7 @@ class BundledCablePart extends WirePart with TFaceBundledAquisitions with TBundl
     {
         world.getTileEntity(posOfStraight(r)) match {
             case ibe:IBundledEmitter => resolveArray(ibe, absoluteDir(rotFromStraight(r)))
-            case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.getPos) =>
+            case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.getPos, EnumFacing.values()(rotFromStraight(r))) =>
                 resolveArray(t, absoluteDir(rotFromStraight(r)))
             case _ => super.calcStraightArray(r)
         }
@@ -233,7 +233,7 @@ class BundledCablePart extends WirePart with TFaceBundledAquisitions with TBundl
             case b:IMaskedBundledTile => b.canConnectBundled(absDir^1) &&
                     (b.getConnectionMask(absDir^1)&1<<Rotation.rotationTo(absDir, side)) != 0
             case b:IBundledTile => b.canConnectBundled(absDir^1)
-            case _ => APIImpl_Transmission.canConnectBundled(world, pos, absDir^1)
+            case _ => APIImpl_Transmission.canConnectBundled(world, pos, EnumFacing.values()(absDir^1))
         }
     }
 }
@@ -254,7 +254,7 @@ class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitio
     {
         world.getTileEntity(posOfStraight(s)) match {
             case ibe:IBundledEmitter => resolveArray(ibe, s^1)
-            case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.getPos) =>
+            case t:TileEntity if APIImpl_Transmission.isValidInteractionFor(world, t.getPos, EnumFacing.values()(s^1)) =>
                 resolveArray(t, s^1)
             case _ => super.calcStraightArray(s)
         }
@@ -267,7 +267,7 @@ class FramedBundledCablePart extends FramedWirePart with TCenterBundledAquisitio
             case b:IMaskedBundledTile => b.canConnectBundled(absDir^1) &&
                     (b.getConnectionMask(absDir^1)&0x10) != 0
             case b:IBundledTile => b.canConnectBundled(absDir^1)
-            case _ => APIImpl_Transmission.canConnectBundled(world, pos, absDir^1)
+            case _ => APIImpl_Transmission.canConnectBundled(world, pos, EnumFacing.values()(absDir^1))
         }
     }
 }

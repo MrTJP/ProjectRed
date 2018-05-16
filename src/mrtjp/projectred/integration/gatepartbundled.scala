@@ -20,6 +20,7 @@ import mrtjp.projectred.transmission.{APIImpl_Transmission, TFaceBundledAquisiti
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.EnumFacing
 
 trait TBundledGatePart extends GatePart with TFaceBundledAquisitions with IBundledEmitter
 {
@@ -30,7 +31,7 @@ trait TBundledGatePart extends GatePart with TFaceBundledAquisitions with IBundl
         val pos = posOfStraight(absDir)
         world.getTileEntity(pos) match {
             case t:IBundledTile => t.canConnectBundled(absDir^1)
-            case _ if APIImpl_Transmission.canConnectBundled(world, pos, absDir^1) => true
+            case _ if APIImpl_Transmission.canConnectBundled(world, pos, EnumFacing.values()(absDir^1)) => true
             case _ => super.discoverStraightOverride(absDir)
         }
     }

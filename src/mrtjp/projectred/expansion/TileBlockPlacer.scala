@@ -34,6 +34,7 @@ import net.minecraft.world.{IBlockAccess, WorldServer}
 import net.minecraftforge.common.ForgeHooks
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.common.util.FakePlayerFactory
+import net.minecraftforge.event.ForgeEventFactory
 import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
@@ -105,16 +106,14 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
         reloadPlayer()
         val upos = getPos.offset(EnumFacing.VALUES(side^1))
         copyInvToPlayer()
-        for (i <- 0 until 9)
-        {
+        for (i <- 0 until 9) {
             val stack = getStackInSlot(i)
-            if (!stack.isEmpty && tryUseItem(stack, upos, i))
-            {
+            if (!stack.isEmpty && tryUseItem(stack, upos, i)) {
                 if (fakePlayer.isHandActive) fakePlayer.stopActiveHand()
                 copyInvFromPlayer()
-                val newStack = getStackInSlot(i)
-                if (!newStack.isEmpty)
-                    setInventorySlotContents(i, ItemStack.EMPTY)
+//                val newStack = getStackInSlot(i)
+//                if (!newStack.isEmpty)
+//                    setInventorySlotContents(i, ItemStack.EMPTY)
                 return
             }
         }
@@ -155,8 +154,8 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
 
             import EnumActionResult._
 
-            stack.getItem.onItemUseFirst(fakePlayer, world, pos,
-                EnumFacing.UP, 0.5F, 0.5f, 0.5F, EnumHand.MAIN_HAND) match {
+            stack.onItemUseFirst(fakePlayer, world, pos, EnumHand.MAIN_HAND,
+                EnumFacing.UP, 0.5F, 0.5f, 0.5F) match {
                 case FAIL => return false
                 case SUCCESS => return true
                 case PASS =>
@@ -164,6 +163,21 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
 
             stack.onItemUse(fakePlayer, world, pos, EnumHand.MAIN_HAND,
                 EnumFacing.UP, 0.5f, 0.5f, 0.5f) match {
+                case FAIL => return false
+                case SUCCESS => return true
+                case PASS =>
+            }
+
+            val size = stack.getCount
+            val result = stack.useItemRightClick(world, fakePlayer, EnumHand.MAIN_HAND)
+            val resStack = result.getResult
+            if (stack != resStack || resStack.getCount != size) {
+                fakePlayer.setHeldItem(EnumHand.MAIN_HAND, resStack)
+                if (resStack.isEmpty) {
+                    ForgeEventFactory.onPlayerDestroyItem(fakePlayer, stack, EnumHand.MAIN_HAND)
+                }
+            }
+            result.getType match {
                 case FAIL => return false
                 case SUCCESS => return true
                 case PASS =>

@@ -20,9 +20,6 @@ class CompatibilityProxy_server extends IProxy
     {
         Services.doPostInit()
     }
-
-    override def version = "@VERSION@"
-    override def build = "@BUILD_NUMBER@"
 }
 
 class CompatibilityProxy_client extends CompatibilityProxy_server
