@@ -268,6 +268,26 @@ trait TFreqIOGateTileLogic extends IOGateTileLogic
 
     override def getInputRegisterOffset = freq
 
+    override def onGatePlaced(gate:IOGateICTile)
+    {
+        super.onGatePlaced(gate)
+        val ioParts = gate.editor.tileMapContainer.tiles.collect {
+            case (pos, io:IOGateICTile)
+                if io.getConnMode == gate.getConnMode &&
+                        gate.getIOSide == io.getIOSide &&
+                        gate != io => io
+        }
+
+        if (ioParts.nonEmpty) {
+            val largestFreq = ioParts.map(_.getLogic[TFreqIOGateTileLogic].freq).max
+            if (largestFreq < 15) {
+                freq = largestFreq + 1
+                sendFreqUpdate()
+                gate.onSchematicChanged()
+            }
+        }
+    }
+
     @SideOnly(Side.CLIENT)
     override def createGui(gate:IOGateICTile):ICTileGui = new ICIOFreqGateGui(gate)
 }

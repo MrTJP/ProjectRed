@@ -273,7 +273,7 @@ artifacts {
     archives lightingJar
     archives mechanicalJar
     archives worldJar
-    //archives compatJar
+    archives compatJar
     archives baseJar
 
     archives deobfJar

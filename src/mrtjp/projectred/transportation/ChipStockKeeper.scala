@@ -44,7 +44,7 @@ class ChipStockKeeper extends RoutingChip with TChipStock with TChipMatchMatrix
         for (i <- 0 until stock.getSizeInventory) breakable
         {
             val keyStack = ItemKeyStack.get(stock.getStackInSlot(i))
-            if (keyStack == null || checked.contains(keyStack.key)) break()
+            if (keyStack.isEmpty || checked.contains(keyStack.key)) break()
             checked += keyStack.key
 
             val eq = createEqualityFor(i)

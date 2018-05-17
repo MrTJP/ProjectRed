@@ -108,8 +108,10 @@ abstract class GateICTile extends ICTile with TConnectableICTile with TICTileOri
     override def onAdded()
     {
         super.onAdded()
-        if (!editor.network.isRemote)
+        if (!editor.network.isRemote) {
             updateConns()
+            getLogicPrimitive.onGatePlaced(this)
+        }
     }
 
     override def onRemoved()
@@ -211,6 +213,8 @@ abstract class GateTileLogic[T <: GateICTile]
     def canConnectTo(gate:T, part:ICTile, r:Int):Boolean
 
     def cycleShape(gate:T) = false
+
+    def onGatePlaced(gate:T){}
 
     def onTick(gate:T){}
 
