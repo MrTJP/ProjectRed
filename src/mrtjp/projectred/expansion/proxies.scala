@@ -92,8 +92,8 @@ class ExpansionProxy_server extends IProxy with IPartFactory
         machine2.addTile(classOf[TileBatteryBox], 5)
         machine2.addTile(classOf[TileChargingBench], 6)
         machine2.addTile(classOf[TileTeleposer], 7)
-        //machine2.addTile(classOf[TileFrameMotor], 8)
-        //machine2.addTile(classOf[TileFrameActuator], 9)
+        machine2.addTile(classOf[TileFrameMotor], 8)
+        machine2.addTile(classOf[TileFrameActuator], 9)
         machine2.addTile(classOf[TileProjectBench], 10)
         machine2.addTile(classOf[TileAutoCrafter], 11)
         machine2.addTile(classOf[TileDiamondBlockBreaker], 12)
@@ -258,6 +258,26 @@ class ExpansionProxy_client extends ExpansionProxy_server
                 val isCharged = state.getValue(UNLISTED_CHARGED_PROPERTY)
                 val meta = state.getBlock.getMetaFromState(state)
                 state.getBlock.getRegistryName.toString + s",meta=$meta,c=$isCharged"
+            }
+        })
+        machine2Bakery.registerSubBakery(8, RenderFrameMotor, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+                val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+                val isWorking = state.getValue(UNLISTED_WORKING_PROPERTY)
+                val isCharged = state.getValue(UNLISTED_CHARGED_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,s=$side,r=$rotation,w=$isWorking,c=$isCharged"
+            }
+        })
+        machine2Bakery.registerSubBakery(9, RenderFrameActuator, new IBlockStateKeyGenerator {
+            override def generateKey(state: IExtendedBlockState):String = {
+                val side = state.getValue(UNLISTED_SIDE_PROPERTY)
+                val rotation = state.getValue(UNLISTED_ROTATION_PROPERTY)
+                val isWorking = state.getValue(UNLISTED_WORKING_PROPERTY)
+                val isCharged = state.getValue(UNLISTED_CHARGED_PROPERTY)
+                val meta = state.getBlock.getMetaFromState(state)
+                state.getBlock.getRegistryName.toString + s",meta=$meta,s=$side,r=$rotation,w=$isWorking,c=$isCharged"
             }
         })
         machine2Bakery.registerSubBakery(10, RenderProjectBench)

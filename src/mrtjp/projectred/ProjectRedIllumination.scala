@@ -18,7 +18,7 @@ object ProjectRedIllumination
     var itemPartIllumarButton:ItemPartButton = _
     var itemPartIllumarFButton:ItemPartFButton = _
 
-    var tabLighting = new CreativeTabs("projectred.illumination")
+    val tabLighting = new CreativeTabs("projectred.illumination")
     {
         override def getTabIconItem = new ItemStack(LightFactoryCage.getItem(true))
     }

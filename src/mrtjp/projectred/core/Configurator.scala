@@ -15,8 +15,6 @@ object Configurator extends ModConfig("projectred-core")
     var modName = "Project Red"
 
     /** General Settings **/
-    var versionChecking = true
-
     var logicGateSounds = true
     var minTimerTicks = 4
     var simpleFramedWireRecipe = false
@@ -145,7 +143,7 @@ object Configurator extends ModConfig("projectred-core")
     }
 }
 
-class ProjectRedConfigGui(parent:GuiScreen) extends SpecialConfigGui(parent, "ProjRed|Core", Configurator.config)
+class ProjectRedConfigGui(parent:GuiScreen) extends SpecialConfigGui(parent, "projectred-core", Configurator.config)
 class GuiConfigFactory extends TModGuiFactory
 {
     override def createConfigGui(parentScreen: GuiScreen) = new ProjectRedConfigGui(parentScreen)

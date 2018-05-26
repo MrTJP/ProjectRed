@@ -24,7 +24,7 @@ object ProjectRedFabrication
 
     val icMachineBakery:SubBlockBakery = new SubBlockBakery
 
-    var tabFabrication = new CreativeTabs("projectred.fabrication")
+    val tabFabrication = new CreativeTabs("projectred.fabrication")
     {
         override def getTabIconItem = new ItemStack(itemICChip)
     }

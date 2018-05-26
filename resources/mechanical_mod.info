@@ -10,7 +10,6 @@
 		],
 		"dependencies": [
 			"projectred-core@[${mod_version},]",
-			"projectred-transmission@[${mod_version},]"
 		],
 		"dependants": [ ],
 		"useDependencyInformation": true
@@ -29,5 +28,20 @@
 		],
 		"dependants": [ ],
 		"useDependencyInformation": true
-	}
+	},
+	{
+        "modid": "projectred-relocation",
+        "name": "ProjectRed Relocation",
+        "parent": "projectred-core",
+        "version": "${mod_version}",
+        "mcversion": "${mc_version}",
+        "requiredMods": [
+            "projectred-core@[${mod_version},]"
+        ],
+        "dependencies": [
+            "projectred-core@[${mod_version},]"
+        ],
+        "dependants": [ ],
+        "useDependencyInformation": true
+    }
 ]

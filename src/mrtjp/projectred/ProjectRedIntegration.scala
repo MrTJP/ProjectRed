@@ -11,7 +11,7 @@ object ProjectRedIntegration
     /** Multipart items **/
     var itemPartGate:ItemPartGate = _
 
-    var tabIntegration = new CreativeTabs("projectred.integration")
+    val tabIntegration = new CreativeTabs("projectred.integration")
     {
         override def getTabIconItem = GateDefinition.OR.makeStack
     }

@@ -18,7 +18,7 @@ object ProjectRedCore
     var itemScrewdriver:ItemScrewdriver = _
     var itemMultimeter:ItemMultimeter = _
 
-    var tabCore = new CreativeTabs("projectred.core")
+    val tabCore = new CreativeTabs("projectred.core")
     {
         override def getTabIconItem = new ItemStack(itemScrewdriver)
     }

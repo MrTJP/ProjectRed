@@ -190,19 +190,27 @@ task mechanicalJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {
         include "**/ProjectRedExpansion*.class"
         include "**/mrtjp/projectred/expansion/**"
+
         include "**/ProjectRedTransportation*.class"
         include "**/mrtjp/projectred/transportation/**"
+
+        include "**/ProjectRedRelocation*.class"
+        include "**/mrtjp/projectred/relocation/**"
 
         include "**/assets/projectred/textures/blocks/mechanical/**"
         include "**/assets/projectred/textures/items/mechanical/**"
         include "**/assets/projectred/textures/obj/mechanical/**"
-        include "**/assets/projectred-transportation/recipes/**"
+
         include "**/assets/projectred-expansion/recipes/**"
+        include "**/assets/projectred-transportation/recipes/**"
+        include "**/assets/projectred-relocation/recipes/**"
 
         include "mechanical_mod.info"
         rename("mechanical_mod.info", 'mcmod.info')
 
-        include("mechanical_dependancies.info")
+        include "projectred-relocation_at.cfg"
+
+        manifest.attributes('FMLAT': 'projectred-relocation_at.cfg')
 
         project.ext.baseExcludes.addAll(includes)
     }
@@ -232,11 +240,6 @@ task compatJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {
         include "**/ProjectRedCompatibility*.class"
         include "**/mrtjp/projectred/compatibility/**"
-
-//        include "**/powercrystals/**"
-
-//        include "**/assets/asm/**"
-//        include "**/assets/projectred/textures/blocks/compat/**"
 
         include "compat_mod.info"
         rename("compat_mod.info", 'mcmod.info')

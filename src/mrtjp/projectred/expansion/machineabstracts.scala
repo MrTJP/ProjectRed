@@ -211,6 +211,12 @@ trait TPoweredMachine extends TileMachine with TPowerTile with ILowLoadMachine
         super.load(tag)
         cond.load(tag)
     }
+
+    abstract override def onBlockRotated()
+    {
+        super.onBlockRotated()
+        needsCache = true
+    }
 }
 
 abstract class TileProcessingMachine extends TileMachine

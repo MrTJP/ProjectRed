@@ -71,7 +71,7 @@ object ProjectRedExploration
     var itemPeridotLeggings:ItemGemArmor = _
     var itemPeridotBoots:ItemGemArmor = _
 
-    var tabExploration:CreativeTabs = new CreativeTabs("projectred.exploration")
+    val tabExploration:CreativeTabs = new CreativeTabs("projectred.exploration")
     {
         override def getTabIconItem = new ItemStack(Blocks.GRASS)
     }

@@ -5,18 +5,14 @@
  */
 package mrtjp.projectred.fabrication
 
-import java.util
-import java.util.function.Supplier
-import java.util.{Collections, ArrayList => JAList}
+import java.util.{ArrayList => JAList}
 
 import codechicken.lib.colour.EnumColour
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.gui.GuiDraw
-import codechicken.lib.model.bakedmodels.WrappedItemModel
 import codechicken.lib.model.bakery.{CCBakeryModel, SimpleBlockRenderer}
 import codechicken.lib.render.buffer.BakingVertexBuffer
 import codechicken.lib.render.item.IItemRenderer
-import codechicken.lib.render.item.entity.WrappedEntityItemRenderer
 import codechicken.lib.render.{CCModel, CCRenderState, OBJParser}
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.util.{TransformUtils, VertexDataUtils}
@@ -32,7 +28,7 @@ import mrtjp.projectred.ProjectRedCore.log
 import mrtjp.projectred.core.PartDefs
 import mrtjp.projectred.integration.ComponentStore
 import mrtjp.projectred.transmission.WireDef
-import net.minecraft.block.state.{BlockFaceShape, IBlockState}
+import net.minecraft.block.state.BlockFaceShape
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager._
 import net.minecraft.client.renderer.block.model._
@@ -43,15 +39,13 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.{Blocks, Items}
 import net.minecraft.item.ItemStack
-import net.minecraft.item.crafting.{CraftingManager, ShapedRecipes, ShapelessRecipes}
+import net.minecraft.item.crafting.CraftingManager
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.{IBlockAccess, World}
-import net.minecraftforge.common.model.IModelState
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
-import net.minecraftforge.oredict.{ShapedOreRecipe, ShapelessOreRecipe}
 import org.lwjgl.opengl.GL11._
 
 import scala.collection.JavaConversions._

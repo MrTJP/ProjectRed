@@ -18,7 +18,7 @@ object ProjectRedTransportation
     /** Multipart items **/
     var itemPartPipe:ItemPartPipe = _
 
-    var tabTransportation = new CreativeTabs("projectred.transportation")
+    val tabTransportation = new CreativeTabs("projectred.transportation")
     {
         override def getTabIconItem = RoutingChipDefs.ITEMSTOCKKEEPER.makeStack
     }

@@ -323,7 +323,7 @@ trait TTimerGateLogic extends SequentialGateLogic with ITimerGuiLogic
         case _ => super.read(packet, key)
     }
 
-    abstract override def onJoinWorld(gate: SequentialGatePart)
+    abstract override def onWorldLoad(gate: SequentialGatePart)
     {
         if (pointer_start >= 0) pointer_start = gate.world.getTotalWorldTime-pointer_start
     }

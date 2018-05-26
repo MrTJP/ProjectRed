@@ -5,8 +5,6 @@
  */
 package mrtjp.projectred.core
 
-import java.rmi.UnexpectedException
-
 import codechicken.multipart.TMultiPart
 
 import scala.ref.WeakReference
@@ -25,30 +23,26 @@ trait TCachedPowerConductor extends IPowerConnectable
         if (needsCache) rebuildCache()
 
         var wr = condCache(id)
-        if (wr != null && wr.get.isEmpty)
-        {
-            rebuildCache()
-            wr = condCache(id)
+
+        wr match {
+            case WeakReference(cond) if cond.isValid =>
+            case _ =>
+                rebuildCache()
+                wr = condCache(id)
         }
 
-        wr match
-        {
-            case null => null
-            case ref => ref.get match
-            {
-                case Some(c) => c
-                case None => throw new UnexpectedException("Empty reference was added when building power conductor cache")
-            }
+        wr match {
+            case WeakReference(cond) if cond.isValid => cond
+            case _ => null
         }
     }
 
     def rebuildCache()
     {
-        for (i <- 0 until condCache.length) condCache(i) = null
-        for (id <- idRange)
-        {
+        for (i <- 0 until condCache.length) condCache(i) = new WeakReference(null)
+        for (id <- idRange) {
             val c = getExternalCond(id)
-            if (c != null) condCache(id) = new WeakReference(c)
+            if (c != null && c.isValid) condCache(id) = new WeakReference(c)
         }
         needsCache = false
     }
