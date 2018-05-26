@@ -61,6 +61,8 @@ class PowerConductor(val parent:IPowerConnectable, ids:Seq[Int])
 
     var time = 0
 
+    def isValid = parent.connWorld != null
+
     def capacitance = 0.0D
     def resistance = 0.01D
     def scaleOfInductance = 0.07D

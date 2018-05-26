@@ -3,7 +3,7 @@ package mrtjp.projectred.core
 import codechicken.lib.data.MCDataInput
 import codechicken.lib.vec.Rotation
 import codechicken.multipart.{BlockMultipart, PartMap}
-import mrtjp.core.block.MTBlockTile
+import mrtjp.core.block.{MTBlockTile, TTileOrient}
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.api.IConnectable
 import net.minecraft.entity.player.EntityPlayer
@@ -309,3 +309,4 @@ trait TPowerTile extends MTBlockTile with TConnectableInstTile with TCachedPower
 
     override def connWorld: World = getWorld
 }
+

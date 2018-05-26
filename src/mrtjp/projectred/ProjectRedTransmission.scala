@@ -17,7 +17,7 @@ object ProjectRedTransmission
     var itemPartWire:ItemPartWire = _
     var itemPartFramedWire:ItemPartFramedWire = _
 
-    var tabTransmission = new CreativeTabs("projectred.transmission")
+    val tabTransmission = new CreativeTabs("projectred.transmission")
     {
         override def getTabIconItem = new ItemStack(ProjectRedTransmission.itemPartWire)
     }

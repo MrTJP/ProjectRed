@@ -1,8 +1,9 @@
 package mrtjp.projectred.api;
 
 /**
- * Central API class for ProjectRed. If ProjectRed is installed, the appropriate
- * fields will contain implementors of their respective methods. <br>
+ * Central API class for ProjectRed. APIs are split up by module. If a specific
+ * module is installed, the appropriate field will contain an implementor of that
+ * the module's API interface. <br>
  * <br>
  * It is recommended that mods access this class within a soft dependency class.
  */
@@ -18,8 +19,14 @@ public final class ProjectRedAPI
     public static final String modIDFabrication = "projectred-fabrication";
     public static final String modIDIllumination = "projectred-illumination";
     public static final String modIDIntegration = "projectred-integration";
+    public static final String modIDRelocation = "projectred-relocation";
     public static final String modIDTransmission = "projectred-transmission";
     public static final String modIDTransportation = "projectred-transportation";
+
+    /**
+     * API used for Frame-based movement.
+     */
+    public static IRelocationAPI relocationAPI;
 
     /**
      * API used for interacting with wires.
