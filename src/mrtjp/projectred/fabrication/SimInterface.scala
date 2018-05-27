@@ -93,13 +93,15 @@ class ICSimEngineContainer extends ISEICDelegate
 
     override def registersDidChange(registers:Set[Int])
     {
-        if (propagateSilently) return
-        if (delegate != null) delegate.registersDidChange(registers)
+        if (!propagateSilently && delegate != null)
+            delegate.registersDidChange(registers)
+
         val firstIOReg = REG_IN(0, 0)
         val lastIOReg = REG_OUT(3, 15)
         if (registers.exists {reg => reg >= firstIOReg && reg <= lastIOReg}) {
             pullOutputRegisters(0xFF)
-            if (delegate != null) delegate.ioRegistersDidChange()
+            if (!propagateSilently && delegate != null)
+                delegate.ioRegistersDidChange()
         }
     }
 
