@@ -154,6 +154,8 @@ task fabricationJar(type: Jar, dependsOn: reobfJar) {
         include "**/ProjectRedFabrication*.class"
         include "**/mrtjp/projectred/fabrication/**"
 
+        include "**/assets/projectred/cc_blockstates/fabrication/**"
+
         include "**/assets/projectred/textures/blocks/fabrication/**"
         include "**/assets/projectred/textures/items/fabrication/**"
         include "**/assets/projectred/textures/obj/fabrication/**"
@@ -197,6 +199,8 @@ task mechanicalJar(type: Jar, dependsOn: reobfJar) {
         include "**/ProjectRedRelocation*.class"
         include "**/mrtjp/projectred/relocation/**"
 
+        include "**/assets/projectred/cc_blockstates/mechanical/**"
+
         include "**/assets/projectred/textures/blocks/mechanical/**"
         include "**/assets/projectred/textures/items/mechanical/**"
         include "**/assets/projectred/textures/obj/mechanical/**"
@@ -208,7 +212,7 @@ task mechanicalJar(type: Jar, dependsOn: reobfJar) {
         include "mechanical_mod.info"
         rename("mechanical_mod.info", 'mcmod.info')
 
-        include "projectred-relocation_at.cfg"
+        include "**/projectred-relocation_at.cfg"
 
         manifest.attributes('FMLAT': 'projectred-relocation_at.cfg')
 
@@ -222,6 +226,8 @@ task worldJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {
         include "**/ProjectRedExploration*.class"
         include "**/mrtjp/projectred/exploration/**"
+
+        include "**/assets/projectred/cc_blockstates/world/**"
 
         include "**/assets/projectred/textures/blocks/world/**"
         include "**/assets/projectred/textures/items/world/**"
@@ -241,6 +247,8 @@ task compatJar(type: Jar, dependsOn: reobfJar) {
         include "**/ProjectRedCompatibility*.class"
         include "**/mrtjp/projectred/compatibility/**"
 
+        include "**/assets/projectred/textures/blocks/compat/**"
+
         include "compat_mod.info"
         rename("compat_mod.info", 'mcmod.info')
 
@@ -259,12 +267,17 @@ task baseJar(type: Jar, dependsOn: reobfJar) {
     }
     version = project.ext.jarVer
     classifier = 'Base'
+}
 
+// Dont include empty folders in jars
+tasks.withType(Jar) {
+    includeEmptyDirs = false
 }
 
 // baseJar pulls all files not in any other jar. Therefore must run last
 baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && task.name != 'baseJar') } }
 
+// Enable experimental features for scala compiler
 tasks.withType(ScalaCompile) {
     scalaCompileOptions.additionalParameters = ["-Xexperimental"]
     scalaCompileOptions.setDeprecation false

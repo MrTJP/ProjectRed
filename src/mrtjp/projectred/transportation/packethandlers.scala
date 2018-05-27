@@ -129,7 +129,10 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
         val packet2 = new PacketCustom(channel, gui_Request_list)
         packet2.writeInt(map.size)
 
-        for ((k,v) <- map) packet2.writeItemStack(k.makeStack(v))
+        for ((k,v) <- map) {
+            val s = if (v == 0) 1 else v //TODO find way to mark craft items.
+            packet2.writeItemStack(k.makeStack(s))
+        }
 
         packet2.compress().sendToPlayer(player)
     }
