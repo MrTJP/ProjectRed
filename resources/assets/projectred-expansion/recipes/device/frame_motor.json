@@ -2,7 +2,7 @@
 	"type": "forge:ore_shaped",
 	"result": {
 		"item": "projectred-expansion:machine2",
-		"data": 7,
+		"data": 8,
 		"count": 1
 	},
 	"pattern": [

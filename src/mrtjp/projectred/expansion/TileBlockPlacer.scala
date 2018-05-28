@@ -21,6 +21,7 @@ import mrtjp.core.gui._
 import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
 import mrtjp.core.vec.Point
 import mrtjp.projectred.ProjectRedExpansion
+import mrtjp.projectred.api.IFrame
 import mrtjp.projectred.expansion.TileBlockPlacer._
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.player.EntityPlayer
@@ -30,8 +31,9 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.{BlockPos, Vec3d}
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, ResourceLocation}
-import net.minecraft.world.{IBlockAccess, WorldServer}
+import net.minecraft.world.{IBlockAccess, World, WorldServer}
 import net.minecraftforge.common.ForgeHooks
+import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.property.IExtendedBlockState
 import net.minecraftforge.common.util.FakePlayerFactory
 import net.minecraftforge.event.ForgeEventFactory
@@ -40,7 +42,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.ref.WeakReference
 
-class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory with TInventoryCapablilityTile with IRedstoneConnector
+class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory with TInventoryCapablilityTile with IRedstoneConnector with IFrame
 {
     override def save(tag:NBTTagCompound)
     {
@@ -237,6 +239,19 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
 
     override def getConnectionMask(side:Int) = if ((side^1) == this.side) 0 else 0x1F
     override def weakPowerLevel(side:Int, mask:Int) = 0
+
+    override def stickOut(w:World, pos:BlockPos, side:EnumFacing) = false
+    override def stickIn(w:World, pos:BlockPos, side:EnumFacing) = (this.side^1) != side.getIndex
+
+    override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = {
+        if (capability == IFrame.CAPABILITY) return true
+        super.hasCapability(capability, facing)
+    }
+
+    override def getCapability[T](capability: Capability[T], facing: EnumFacing): T = {
+        if (capability == IFrame.CAPABILITY) return this.asInstanceOf[T]
+        super.getCapability(capability, facing)
+    }
 }
 
 object TileBlockPlacer
