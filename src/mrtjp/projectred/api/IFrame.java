@@ -19,9 +19,6 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
  */
 public interface IFrame
 {
-    @CapabilityInject(IFrame.class)
-    Capability<IFrame> CAPABILITY = null;
-
     /**
      * Used to check if this frame block is allowed to grab
      * a block on the given side.

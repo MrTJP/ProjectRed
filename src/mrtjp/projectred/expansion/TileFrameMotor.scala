@@ -144,12 +144,12 @@ trait TMotorTile extends TileMachine with TPoweredMachine with IFrame with IReds
     override def weakPowerLevel(side:Int, mask:Int) = 0
 
     override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = {
-        if (capability == IFrame.CAPABILITY) return true
+        if (capability == ProjectRedAPI.relocationAPI.getFrameCapability) return true
         super.hasCapability(capability, facing)
     }
 
     override def getCapability[T](capability: Capability[T], facing: EnumFacing): T = {
-        if (capability == IFrame.CAPABILITY) return this.asInstanceOf[T]
+        if (capability == ProjectRedAPI.relocationAPI.getFrameCapability) return this.asInstanceOf[T]
         super.getCapability(capability, facing)
     }
 }

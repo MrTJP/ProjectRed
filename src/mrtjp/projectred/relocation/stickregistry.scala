@@ -5,7 +5,7 @@
  */
 package mrtjp.projectred.relocation
 
-import mrtjp.projectred.api.{IFrame, IFrameInteraction}
+import mrtjp.projectred.api.{IFrame, IFrameInteraction, ProjectRedAPI}
 import net.minecraft.block.Block
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
@@ -53,8 +53,11 @@ object StickRegistry
             if (b.isInstanceOf[IFrame]) return b.asInstanceOf[IFrame]
 
             val te = w.getTileEntity(pos)
-            if (te != null && te.hasCapability(IFrame.CAPABILITY, null))
-                return te.getCapability(IFrame.CAPABILITY, null)
+            if (te != null && te.isInstanceOf[IFrame])
+                return te.asInstanceOf[IFrame]
+
+            if (te != null && te.hasCapability(ProjectRedAPI.relocationAPI.getFrameCapability, null))
+                return te.getCapability(ProjectRedAPI.relocationAPI.getFrameCapability, null)
 
             interactionList.find(_.canInteract(w, pos)).orNull
         }

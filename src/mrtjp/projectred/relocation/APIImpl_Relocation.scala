@@ -43,6 +43,8 @@ object APIImpl_Relocation extends IRelocationAPI
         StickRegistry.interactionList :+= interaction
     }
 
+    override def getFrameCapability = RelocationProxy.FRAME_CAPABILITY
+
     override def getRelocator = Relocator_Impl
 
     override def getStickResolver = StickResolver_Impl

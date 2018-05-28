@@ -8,7 +8,7 @@ package mrtjp.projectred.relocation
 import java.util.concurrent.Callable
 
 import codechicken.lib.packet.PacketCustom
-import codechicken.multipart.MultiPartRegistry
+import codechicken.multipart.{MultiPartRegistry, MultipartGenerator}
 import mrtjp.projectred.ProjectRedRelocation._
 import mrtjp.projectred.api.IFrame
 import mrtjp.projectred.api.ProjectRedAPI.{relocationAPI => API}
@@ -16,12 +16,15 @@ import net.minecraft.nbt.NBTBase
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.capabilities.Capability.IStorage
-import net.minecraftforge.common.capabilities.{Capability, CapabilityManager}
+import net.minecraftforge.common.capabilities.{Capability, CapabilityInject, CapabilityManager}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class RelocationProxy_server
 {
+    @CapabilityInject(classOf[IFrame])
+    var FRAME_CAPABILITY = null
+
     def preinit()
     {
         API.registerTileMover("saveload",
@@ -54,6 +57,8 @@ class RelocationProxy_server
         API.registerPreferredMover("mod:projectred-transportation", "coordpush")
 
         API.registerMandatoryMover("mod:forgemultipartcbe", "fmp")
+
+        MultipartGenerator.registerPassThroughInterface("mrtjp.projectred.api.IFrame")
 
         /** Initialization **/
         blockMovingRow = new BlockMovingRow

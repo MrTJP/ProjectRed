@@ -7,6 +7,7 @@ package mrtjp.projectred.api;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 
 public interface IRelocationAPI
 {
@@ -64,6 +65,11 @@ public interface IRelocationAPI
      * @param interaction The interaction to register.
      */
     void registerFrameInteraction(IFrameInteraction interaction);
+
+    /**
+     * Returns the capability instance for {@link IFrame}
+     */
+    Capability<IFrame> getFrameCapability();
 
     /**
      * Getter for the global Relocator object which is what is used

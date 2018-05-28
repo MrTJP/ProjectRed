@@ -10,7 +10,7 @@ import codechicken.lib.render.CCRenderState
 import codechicken.lib.texture.TextureUtils
 import codechicken.lib.vec.Rotation._
 import codechicken.lib.vec.Vector3._
-import codechicken.lib.vec.{Cuboid6, Rotation, Vector3}
+import codechicken.lib.vec.{Cuboid6, Vector3}
 import codechicken.microblock.CommonMicroblock
 import codechicken.multipart._
 import codechicken.multipart.api.IPartConverter
@@ -25,12 +25,11 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util._
 import net.minecraft.util.math.{BlockPos, RayTraceResult, Vec3d}
 import net.minecraft.world.World
-import net.minecraftforge.common.capabilities.{Capability, ICapabilityProvider}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.collection.JavaConversions._
 
-class FramePart extends TMultiPart with IFrame with TCuboidPart with TNormalOcclusionPart with TIconHitEffectsPart with ICapabilityProvider
+class FramePart extends TMultiPart with IFrame with TCuboidPart with TNormalOcclusionPart with TIconHitEffectsPart// with ICapabilityProvider
 {
     override val getType = FramePart.partType
 
@@ -121,12 +120,12 @@ class FramePart extends TMultiPart with IFrame with TCuboidPart with TNormalOccl
     override def getBrokenIcon(side:Int) =
         TextureUtils.getParticleIconForBlock(ProjectRedRelocation.blockFrame.getDefaultState)
 
-    override def hasCapability(capability: Capability[_], facing: EnumFacing) = capability == IFrame.CAPABILITY
-
-    override def getCapability[T](capability: Capability[T], facing: EnumFacing):T = {
-        if (capability == IFrame.CAPABILITY) this.asInstanceOf[T]
-        else null.asInstanceOf[T]
-    }
+//    override def hasCapability(capability: Capability[_], facing: EnumFacing) = capability == CapabilityFrame.CAPABILITY
+//
+//    override def getCapability[T](capability: Capability[T], facing: EnumFacing):T = {
+//        if (capability == CapabilityFrame.CAPABILITY) this.asInstanceOf[T]
+//        else null.asInstanceOf[T]
+//    }
 }
 
 object FramePart
