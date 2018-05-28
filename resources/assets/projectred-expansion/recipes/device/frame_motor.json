@@ -1,0 +1,37 @@
+{
+	"type": "forge:ore_shaped",
+	"result": {
+		"item": "projectred-expansion:machine2",
+		"data": 7,
+		"count": 1
+	},
+	"pattern": [
+		"wiw",
+		"cmc",
+		"iei"
+	],
+	"key": {
+		"w": {
+			"type": "forge:ore_dict",
+			"ore": "plankWood"
+		},
+		"i": {
+			"type": "forge:ore_dict",
+			"ore": "ingotIron"
+		},
+		"c": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 400
+		},
+		"m": {
+			"type": "minecraft:item",
+			"item": "projectred-core:resource_item",
+			"data": 410
+		},
+		"e": {
+			"type": "forge:ore_dict",
+			"ore": "ingotElectrotineAlloy"
+		}
+	}
+}

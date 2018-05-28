@@ -261,7 +261,6 @@ task compatJar(type: Jar, dependsOn: reobfJar) {
 task baseJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {
         exclude project.ext.baseExcludes
-        exclude "compat_mod.info"
 
         rename("base_mod.info", 'mcmod.info')
     }
