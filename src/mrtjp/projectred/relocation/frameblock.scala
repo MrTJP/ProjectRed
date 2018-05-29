@@ -13,9 +13,9 @@ import codechicken.lib.render.item.IItemRenderer
 import codechicken.lib.render.{CCModel, CCRenderState, OBJParser}
 import codechicken.lib.texture.TextureUtils.IIconRegister
 import codechicken.lib.util.TransformUtils
-import codechicken.lib.vec._
+import codechicken.lib.vec.{Rotation, _}
 import codechicken.lib.vec.uv.IconTransformation
-import codechicken.multipart.{MultiPartRegistry, TItemMultiPart}
+import codechicken.multipart.{MultiPartRegistry, TItemMultiPart, TileMultipart}
 import mrtjp.core.vec.ModelRayTracer
 import mrtjp.projectred.ProjectRedRelocation
 import mrtjp.projectred.api.IFrame
@@ -29,7 +29,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemBlock, ItemStack}
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, Vec3d}
-import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand, ResourceLocation}
+import net.minecraft.util._
 import net.minecraft.world.{IBlockAccess, World}
 import org.lwjgl.opengl.GL11
 
@@ -57,22 +57,48 @@ class BlockFrame extends Block(Material.WOOD) with IFrame
     override def getRenderType(state:IBlockState) = FrameRenderer.renderType
 }
 
-class ItemBlockFrame(block:Block) extends ItemBlock(block) with TItemMultiPart
+class ItemBlockFrame(block:Block) extends ItemBlock(block)
 {
-    override def onItemUse(player:EntityPlayer, world:World, bpos:BlockPos, hand:EnumHand, facing:EnumFacing, hitX:Float, hitY:Float, hitZ:Float) =
-    {
-        val result = super[ItemBlock].onItemUse(player, world, bpos, hand, facing, hitX, hitY, hitZ)
+    def getHitDepth(vhit: Vector3, side: Int): Double =
+        vhit.copy.scalarProject(Rotation.axes(side)) + (side % 2 ^ 1)
 
-        result match {
-            case EnumActionResult.SUCCESS => result
-            case _ => super[TItemMultiPart].onItemUse(player, world, bpos, hand, facing, hitX, hitY, hitZ)
+    override def onItemUse(player:EntityPlayer, world:World, bpos:BlockPos, hand:EnumHand, facing:EnumFacing, hitX:Float, hitY:Float, hitZ:Float):EnumActionResult =
+    {
+        val stack = player.getHeldItem(hand)
+        var pos = new BlockPos(bpos)
+        val side = facing.getIndex
+        val vhit = new Vector3(hitX, hitY, hitZ)
+        val d = getHitDepth(vhit, side)
+
+        def place(): EnumActionResult = {
+            val part = newPart(stack, player, world, pos, side, vhit)
+            if (part == null || !TileMultipart.canPlacePart(world, pos, part)) return EnumActionResult.FAIL
+
+            if (!world.isRemote) {
+                TileMultipart.addPart(world, pos, part)
+                val sound = getPlacementSound(stack)
+                if (sound != null) {
+                    world.playSound(null, bpos, sound.getPlaceSound,
+                        SoundCategory.BLOCKS, (sound.getVolume + 1.0F) / 2.0F, sound.getPitch * 0.8F)
+                }
+            }
+            if (!player.capabilities.isCreativeMode) stack.shrink(1)
+            EnumActionResult.SUCCESS
         }
+
+        if (d < 1 && place() == EnumActionResult.SUCCESS) return EnumActionResult.SUCCESS
+
+        if (super.onItemUse(player, world, bpos, hand, facing, hitX, hitY, hitZ) == EnumActionResult.SUCCESS)
+            return EnumActionResult.SUCCESS
+
+        pos = pos.offset(facing)
+        place()
     }
 
-    override def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, side:Int, vhit:Vector3) =
+    def newPart(item:ItemStack, player:EntityPlayer, world:World, pos:BlockPos, side:Int, vhit:Vector3) =
         MultiPartRegistry.loadPart(FramePart.partType, null)
 
-    override def getPlacementSound(item:ItemStack) = SoundType.WOOD
+    def getPlacementSound(item:ItemStack) = SoundType.WOOD
 
     override def canPlaceBlockOnSide(worldIn:World, pos:BlockPos, side:EnumFacing, player:EntityPlayer, stack:ItemStack) = true
 }

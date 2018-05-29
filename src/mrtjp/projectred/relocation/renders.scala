@@ -350,13 +350,13 @@ class WrappedTESR(parentTesr:TileEntitySpecialRenderer[TileEntity]) extends Tile
 {
     override def render(te:TileEntity, x:Double, y:Double, z:Double, partialTicks:Float, destroyStage:Int, alpha:Float)
     {
-        if (MovingRenderer.allowQueuedBlockRender || te.getWorld == null || !MovementManager.isMoving(te.getWorld, te.getPos))
+        if (MovingRenderer.allowQueuedBlockRender || te == null || te.getWorld == null || !MovementManager.isMoving(te.getWorld, te.getPos))
             parentTesr.render(te, x, y, z, partialTicks, destroyStage, alpha)
     }
 
     override def renderTileEntityFast(te:TileEntity, x:Double, y:Double, z:Double, partialTicks:Float, destroyStage:Int, partial:Float, buffer:BufferBuilder)
     {
-        if (MovingRenderer.allowQueuedBlockRender || te.getWorld == null || !MovementManager.isMoving(te.getWorld, te.getPos))
+        if (MovingRenderer.allowQueuedBlockRender || te == null || te.getWorld == null || !MovementManager.isMoving(te.getWorld, te.getPos))
             parentTesr.renderTileEntityFast(te, x, y, z, partialTicks, destroyStage, partial, buffer)
     }
 
