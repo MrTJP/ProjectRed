@@ -96,7 +96,7 @@ class FramePart extends TMultiPart with IFrame with TCuboidPart with TNormalOccl
 
     override def collisionRayTrace(start:Vec3d, end:Vec3d) =
     {
-        FrameRenderer.raytrace(pos, ~sideOcclusionMask,  start, end) match {
+        FrameModelGen.raytrace(pos, ~sideOcclusionMask,  start, end) match {
             case mop:RayTraceResult =>
                 val cube = new IndexedCuboid6(0, Cuboid6.full)
                 val dist = start.squareDistanceTo(mop.hitVec)

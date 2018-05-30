@@ -13,9 +13,9 @@ import codechicken.lib.render.item.IItemRenderer
 import codechicken.lib.render.{CCModel, CCRenderState, OBJParser}
 import codechicken.lib.texture.TextureUtils.IIconRegister
 import codechicken.lib.util.TransformUtils
-import codechicken.lib.vec.{Rotation, _}
 import codechicken.lib.vec.uv.IconTransformation
-import codechicken.multipart.{MultiPartRegistry, TItemMultiPart, TileMultipart}
+import codechicken.lib.vec.{Rotation, _}
+import codechicken.multipart.{MultiPartRegistry, TileMultipart}
 import mrtjp.core.vec.ModelRayTracer
 import mrtjp.projectred.ProjectRedRelocation
 import mrtjp.projectred.api.IFrame
@@ -28,8 +28,8 @@ import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{Item, ItemBlock, ItemStack}
-import net.minecraft.util.math.{AxisAlignedBB, BlockPos, Vec3d}
 import net.minecraft.util._
+import net.minecraft.util.math.{AxisAlignedBB, BlockPos, Vec3d}
 import net.minecraft.world.{IBlockAccess, World}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
@@ -51,7 +51,7 @@ class BlockFrame extends Block(Material.WOOD) with IFrame
 
     override def isNormalCube(state:IBlockState):Boolean = false
 
-    override protected def rayTrace(pos:BlockPos, start:Vec3d, end:Vec3d, boundingBox:AxisAlignedBB) = FrameRenderer.raytrace(pos, 0, start, end)
+    override protected def rayTrace(pos:BlockPos, start:Vec3d, end:Vec3d, boundingBox:AxisAlignedBB) = FrameModelGen.raytrace(pos, 0, start, end)
 
     override def isSideSolid(base_state:IBlockState, world:IBlockAccess, pos:BlockPos, side:EnumFacing) = false
 
@@ -105,17 +105,15 @@ class ItemBlockFrame(block:Block) extends ItemBlock(block)
     override def canPlaceBlockOnSide(worldIn:World, pos:BlockPos, side:EnumFacing, player:EntityPlayer, stack:ItemStack) = true
 }
 
+@SideOnly(Side.CLIENT)
 object FrameRenderer extends ICCBlockRenderer with IIconRegister with IItemRenderer
 {
+    import FrameModelGen._
+
     val renderType = BlockRenderingRegistry.createRenderType("projectred-relocation:frame")
 
     private var icon:TextureAtlasSprite = _
     private var iconT:IconTransformation = _
-
-    private val modelParts = OBJParser.parseModels(new ResourceLocation(
-        "projectred:textures/obj/mechanical/frame.obj"), GL11.GL_QUADS, null).map(a => (a._1, a._2.backfacedCopy))
-
-    private val models = new Array[CCModel](64)
 
     def init()
     {
@@ -171,13 +169,19 @@ object FrameRenderer extends ICCBlockRenderer with IIconRegister with IItemRende
         iconT = new IconTransformation(icon)
     }
 
-    def raytrace(pos:BlockPos, mask:Int, start:Vec3d, end:Vec3d) =
-        ModelRayTracer.raytraceModel(pos.getX, pos.getY, pos.getZ, start, end, getOrGenerateModel(mask))
-
     def render(ccrs:CCRenderState, pos:Vector3, mask:Int)
     {
         getOrGenerateModel(mask).render(ccrs, pos.translation, iconT)
     }
+}
+
+object FrameModelGen
+{
+    private val modelParts = OBJParser.parseModels(this.getClass.getResource(
+        "/assets/projectred/textures/obj/mechanical/frame.obj").openStream(),
+        GL11.GL_QUADS, null).map(a => (a._1, a._2.backfacedCopy))
+
+    private val models = new Array[CCModel](64)
 
     def getOrGenerateModel(mask:Int) =
     {
@@ -189,7 +193,7 @@ object FrameRenderer extends ICCBlockRenderer with IIconRegister with IItemRende
         m
     }
 
-    def generateModel(mask:Int) =
+    private def generateModel(mask:Int) =
     {
         var m = modelParts("frame").copy
 
@@ -199,10 +203,13 @@ object FrameRenderer extends ICCBlockRenderer with IIconRegister with IItemRende
         finishModel(m)
     }
 
-    def finishModel(m:CCModel) =
+    private def finishModel(m:CCModel) =
     {
         m.shrinkUVs(0.0005)
         m.computeNormals()
         m.computeLighting(LightModel.standardLightModel)
     }
+
+    def raytrace(pos:BlockPos, mask:Int, start:Vec3d, end:Vec3d) =
+        ModelRayTracer.raytraceModel(pos.getX, pos.getY, pos.getZ, start, end, getOrGenerateModel(mask))
 }
