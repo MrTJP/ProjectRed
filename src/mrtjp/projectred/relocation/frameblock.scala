@@ -31,6 +31,7 @@ import net.minecraft.item.{Item, ItemBlock, ItemStack}
 import net.minecraft.util.math.{AxisAlignedBB, BlockPos, Vec3d}
 import net.minecraft.util._
 import net.minecraft.world.{IBlockAccess, World}
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import org.lwjgl.opengl.GL11
 
 import scala.collection.JavaConversions._
@@ -54,6 +55,7 @@ class BlockFrame extends Block(Material.WOOD) with IFrame
 
     override def isSideSolid(base_state:IBlockState, world:IBlockAccess, pos:BlockPos, side:EnumFacing) = false
 
+    @SideOnly(Side.CLIENT)
     override def getRenderType(state:IBlockState) = FrameRenderer.renderType
 }
 
