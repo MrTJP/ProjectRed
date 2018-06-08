@@ -29,7 +29,7 @@ import scala.collection.mutable.{HashMap => MHashMap, Map => MMap, MultiMap => M
   */
 class RelocationPH
 {
-    val channel = ProjectRedRelocation
+    val channel = "PR|Reloc"
 }
 
 object RelocationCPH extends RelocationPH with IClientPacketHandler
