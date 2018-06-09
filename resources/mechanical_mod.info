@@ -9,7 +9,7 @@
             "projectred-core@[${mod_version},]"
         ],
         "dependencies": [
-            "projectred-core@[${mod_version},]",
+            "projectred-core@[${mod_version},]"
         ],
         "dependants": [ ],
         "useDependencyInformation": true
