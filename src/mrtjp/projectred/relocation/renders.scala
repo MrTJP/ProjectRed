@@ -263,6 +263,9 @@ class MovingBlockRenderDispatcher(val parentDispatcher:BlockRendererDispatcher, 
 {
     override def renderBlock(state:IBlockState, pos:BlockPos, blockAccess:IBlockAccess, bufferBuilderIn:BufferBuilder):Boolean =
     {
+        //World can be null when exiting the game, but before client render threads have stopped.
+        if(Minecraft.getMinecraft.world == null) return false
+
         val isMoving = MovementManager.isMoving(Minecraft.getMinecraft.world, pos)
 
         if (!MovingRenderer.allowQueuedBlockRender && isMoving) return false
