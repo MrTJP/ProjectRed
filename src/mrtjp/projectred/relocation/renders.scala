@@ -342,10 +342,10 @@ class WrappedTileMap(parentMap:util.Map[Class[_ <: TileEntity], TileEntitySpecia
 
     override def get(key:scala.Any) = {
         val tesr = parentMap.get(key).asInstanceOf[TileEntitySpecialRenderer[TileEntity]]
-        if (tesr != null)
+        if (tesr != null && MovementManager.getWorldStructs(Minecraft.getMinecraft.world).structs.nonEmpty)
             new WrappedTESR(tesr)
         else
-            null
+            tesr
     }
 }
 

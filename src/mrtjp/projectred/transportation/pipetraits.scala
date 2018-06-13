@@ -6,7 +6,7 @@ import codechicken.lib.render.CCRenderState
 import codechicken.lib.vec.Vector3
 import codechicken.microblock.handler.MicroblockProxy
 import codechicken.microblock.{BlockMicroMaterial, ItemMicroPart}
-import codechicken.multipart.{IMaskedRedstonePart, IRedstonePart, RedstoneInteractions, TMultiPart}
+import codechicken.multipart.{IMaskedRedstonePart, RedstoneInteractions, TMultiPart}
 import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.world.Messenger
 import mrtjp.projectred.ProjectRedCore
@@ -16,7 +16,6 @@ import mrtjp.projectred.core._
 import net.minecraft.block.SoundType
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
-import net.minecraft.inventory.{IInventory, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util._
@@ -459,22 +458,19 @@ trait TInventoryPipe[T <: AbstractPipePayload] extends PayloadPipePart[T] with I
     def shiftOrientation(force:Boolean)
     {
         if (world.isRemote) return
-        val invalid = force || inOutSide == 6 || !maskConnects(inOutSide) ||
-                !world.getTileEntity(posOfStraight(inOutSide)).isInstanceOf[IInventory]
+        val invalid = force || inOutSide == 6 || !maskConnects(inOutSide) || getInventory == null
         if (!invalid) return
         var found = false
         val oldSide = inOutSide
 
         import scala.util.control.Breaks._
         breakable {
-            for (i <- 0 until 6)
-            {
+            if (inOutSide > 5) inOutSide = 5 //if invalid, start at side 0
+
+            for (i <- 0 until 6) {
                 inOutSide = ((inOutSide+1)%6).toByte
-                if (maskConnects(inOutSide))
-                {
-                    val t = world.getTileEntity(posOfStraight(inOutSide))
-                    if (t.isInstanceOf[IInventory])
-                    {
+                if (maskConnects(inOutSide)) {
+                    if (getInventory != null) {
                         found = true
                         break()
                     }
@@ -493,7 +489,7 @@ trait TInventoryPipe[T <: AbstractPipePayload] extends PayloadPipePart[T] with I
         else null
     }
 
-    override def getInventory =
+    override def getInventory:InvWrapper =
     {
         getInventory(getInterfacedSide)
     }
