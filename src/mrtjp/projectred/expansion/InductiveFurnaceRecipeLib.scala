@@ -57,7 +57,6 @@ object InductiveFurnaceRecipeLib
             {
                 if (in.getItem.isInstanceOf[ItemFood]) addRecipe(in, out, 40)
                 else if (isDust(in) && isIngot(out)) addOreRecipe(in, out, 80*10/16)
-                else if (OreDictionary.getOreIDs(in).nonEmpty) addOreRecipe(in, out, 80)
                 else addRecipe(in, out, 80)
             }
         }
