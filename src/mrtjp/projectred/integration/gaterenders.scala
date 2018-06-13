@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.texture.TextureMap
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumParticleTypes
+import net.minecraft.util.math.BlockPos
 import org.lwjgl.opengl.GL11
 
 object RenderGate extends IIconRegister
@@ -1131,7 +1132,7 @@ class RenderBusInputPanel extends GateRenderer[BundledGatePart]
     {
         wires(0).on = false
         buttons.pressMask = 0
-        buttons.pos.setPos(0, 0, 0)
+        buttons.pos = BlockPos.ORIGIN
         buttons.orientationT = new RedundantTransformation
     }
 
@@ -1146,7 +1147,7 @@ class RenderBusInputPanel extends GateRenderer[BundledGatePart]
     override def prepareDynamic(gate:BundledGatePart, frame:Float)
     {
         buttons.pressMask = gate.getLogic[BusInputPanel].pressMask
-        buttons.pos.setPos(gate.pos)
+        buttons.pos = gate.pos
         buttons.orientationT = gate.rotationT
     }
 

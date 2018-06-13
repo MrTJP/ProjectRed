@@ -18,7 +18,7 @@ import mrtjp.projectred.core.{Configurator, RenderHalo}
 import mrtjp.projectred.transmission.{UVT, WireModelGen}
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.BlockPos.MutableBlockPos
+import net.minecraft.util.math.BlockPos
 import org.lwjgl.opengl.GL11
 
 import scala.collection.JavaConversions._
@@ -744,7 +744,7 @@ class InputPanelButtonsModel extends ComponentModel
     val lights = VecLib.buildCubeArray(4, 4, new Cuboid6(3, 1, 3, 13, 2.5, 13), new Vector3(-0.25, 0, -0.25).add(0.2))
 
     var pressMask = 0
-    val pos = new MutableBlockPos()
+    var pos = BlockPos.ORIGIN
     var orientationT:Transformation = null
 
     override def renderModel(t:Transformation, orient:Int, ccrs:CCRenderState)
