@@ -161,7 +161,7 @@ object FMPTileHandler extends ITileMover
     }
 
     override def move(w:World, pos:BlockPos, dir:EnumFacing) {
-        w.getTileEntity(pos) match {
+        WorldLib.uncheckedGetTileEntity(w, pos) match {
             case t:TileMultipart =>
                 t.invalidate()
                 WorldLib.uncheckedRemoveTileEntity(w, pos)

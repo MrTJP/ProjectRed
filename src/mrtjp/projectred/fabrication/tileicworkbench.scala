@@ -7,8 +7,8 @@ package mrtjp.projectred.fabrication
 
 import codechicken.lib.block.property.unlisted.{UnlistedBooleanProperty, UnlistedIntegerProperty}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.model.bakery.{IBakeryProvider, ModelBakery, SimpleBlockRenderer}
 import codechicken.lib.model.bakery.generation.IBakery
+import codechicken.lib.model.bakery.{IBakeryProvider, ModelBakery, SimpleBlockRenderer}
 import codechicken.lib.packet.PacketCustom
 import codechicken.lib.vec.Rotation
 import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
@@ -26,7 +26,6 @@ import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.IBlockAccess
@@ -321,9 +320,9 @@ class TileICWorkbench extends TileICMachine with TICTileEditorNetwork
 object RenderICWorkbench extends SimpleBlockRenderer
 {
     import java.lang.{Boolean => JBool}
-    import org.apache.commons.lang3.tuple.Triple
 
     import BlockICMachine._
+    import org.apache.commons.lang3.tuple.Triple
 
     var bottom:TextureAtlasSprite = _
     var side1:TextureAtlasSprite = _

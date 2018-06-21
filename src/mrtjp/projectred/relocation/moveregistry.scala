@@ -98,7 +98,7 @@ object CoordPushTileMover extends ITileMover
 
     override def move(w:World, pos:BlockPos, side:EnumFacing)
     {
-        val (state, te) = (w.getBlockState(pos), w.getTileEntity(pos))
+        val (state, te) = (w.getBlockState(pos), uncheckedGetTileEntity(w, pos))
         val pos2 = pos.offset(side)
         if (te != null) {
             te.invalidate()
@@ -122,7 +122,7 @@ object SaveLoadTileMover extends ITileMover
 
     override def move(w:World, pos:BlockPos, side:EnumFacing)
     {
-        val (state, te) = (w.getBlockState(pos), w.getTileEntity(pos))
+        val (state, te) = (w.getBlockState(pos), uncheckedGetTileEntity(w, pos))
         val pos2 = pos.offset(side)
         val tag = if (te != null) {
             val tag = new NBTTagCompound

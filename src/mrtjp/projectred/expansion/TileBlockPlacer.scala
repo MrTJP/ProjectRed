@@ -17,6 +17,7 @@ import codechicken.lib.vec.uv.{MultiIconTransformation, UVTransformation}
 import codechicken.lib.vec.{Cuboid6, Vector3}
 import codechicken.multipart.IRedstoneConnector
 import com.mojang.authlib.GameProfile
+import mrtjp.core.block.TTileOrient
 import mrtjp.core.gui._
 import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
 import mrtjp.core.vec.Point
@@ -41,7 +42,7 @@ import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import scala.ref.WeakReference
 
-class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory with TInventoryCapablilityTile with IRedstoneConnector with IFrame
+class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory with TInventoryCapablilityTile with IRedstoneConnector with TNonStickableFrontFace
 {
     override def save(tag:NBTTagCompound)
     {
@@ -239,9 +240,6 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
     override def getConnectionMask(side:Int) = if ((side^1) == this.side) 0 else 0x1F
     override def weakPowerLevel(side:Int, mask:Int) = 0
 
-    override def stickOut(w:World, pos:BlockPos, side:EnumFacing) = false
-    override def stickIn(w:World, pos:BlockPos, side:EnumFacing) = (this.side^1) != side.getIndex
-
     override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = {
         if (capability == ProjectRedAPI.relocationAPI.getFrameCapability) return true
         super.hasCapability(capability, facing)
@@ -251,6 +249,12 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
         if (capability == ProjectRedAPI.relocationAPI.getFrameCapability) return this.asInstanceOf[T]
         super.getCapability(capability, facing)
     }
+}
+
+trait TNonStickableFrontFace extends TTileOrient with IFrame
+{
+    override def stickOut(w:World, pos:BlockPos, side:EnumFacing) = false
+    override def stickIn(w:World, pos:BlockPos, side:EnumFacing) = (this.side^1) != side.getIndex
 }
 
 object TileBlockPlacer

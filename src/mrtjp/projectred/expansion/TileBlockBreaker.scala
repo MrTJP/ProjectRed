@@ -22,7 +22,7 @@ import net.minecraftforge.common.property.IExtendedBlockState
 
 import scala.collection.JavaConversions._
 
-class TileBlockBreaker extends TileMachine with TPressureActiveDevice with IRedstoneConnector
+class TileBlockBreaker extends TileMachine with TPressureActiveDevice with IRedstoneConnector with TNonStickableFrontFace
 {
     override def getBlock = ProjectRedExpansion.machine2
     override def doesRotate = false

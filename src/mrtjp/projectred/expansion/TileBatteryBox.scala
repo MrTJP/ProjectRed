@@ -20,7 +20,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.{IContainerListener, ISidedInventory}
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.IBlockAccess
@@ -309,8 +308,8 @@ object RenderBatteryBox extends SimpleBlockRenderer
 {
     import java.lang.{Integer => JInt}
 
-    import org.apache.commons.lang3.tuple.Triple
     import mrtjp.projectred.expansion.BlockProperties._
+    import org.apache.commons.lang3.tuple.Triple
 
     var bottom:TextureAtlasSprite = _
     var top:TextureAtlasSprite = _

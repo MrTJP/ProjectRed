@@ -5,28 +5,28 @@ import java.util.{Random, List => JList}
 
 import codechicken.lib.block.property.unlisted.{UnlistedBooleanProperty, UnlistedIntegerProperty}
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
-import codechicken.lib.model.bakery.{IBakeryProvider, ModelBakery, SimpleBlockRenderer}
 import codechicken.lib.model.bakery.generation.IBakery
-import codechicken.lib.render.item.IItemRenderer
+import codechicken.lib.model.bakery.{IBakeryProvider, ModelBakery, SimpleBlockRenderer}
 import codechicken.lib.render.CCRenderState
+import codechicken.lib.render.item.IItemRenderer
 import codechicken.lib.util.TransformUtils
-import codechicken.lib.vec.{Cuboid6, RedundantTransformation}
 import codechicken.lib.vec.uv.IconTransformation
+import codechicken.lib.vec.{Cuboid6, RedundantTransformation}
 import codechicken.multipart.{BlockMultipart, IRedstoneConnectorBlock}
 import mrtjp.core.block._
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.RenderHalo
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.{BlockStateContainer, IBlockState}
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
 import net.minecraft.client.renderer.block.model.BakedQuad
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.EntityLiving.SpawnPlacementType
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util._
