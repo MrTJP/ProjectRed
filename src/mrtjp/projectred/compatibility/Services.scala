@@ -1,6 +1,7 @@
 package mrtjp.projectred.compatibility
 
 import mrtjp.projectred.ProjectRedCore
+import mrtjp.projectred.compatibility.chisel.PluginChisel
 import mrtjp.projectred.compatibility.computercraft.PluginCC_BundledCable
 import mrtjp.projectred.compatibility.treecapitator.PluginTreecapitator
 import net.minecraftforge.fml.common.Loader
@@ -10,7 +11,8 @@ object Services
     //Hardcoded list of all possible plugins
     val rootPlugins = Seq[IPRPlugin](
         PluginCC_BundledCable,
-        PluginTreecapitator
+        PluginTreecapitator,
+        PluginChisel
 //        PluginTConstruct,
 //        PluginThermalExpansion,
 //        PluginColoredLights,

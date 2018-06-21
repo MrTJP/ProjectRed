@@ -65,11 +65,12 @@ object Configurator extends ModConfig("projectred-core")
 
     /** Compatibility **/
     var compat_Treecapitator = true
-    var compat_TConstruct = true
-    var compat_TExpansion = true
     var compat_CCBundledCalbe = true
-    var compat_ColoredLights = false
-    var compat_MFRDeepStorage = true
+    var compat_Chisel = true
+//    var compat_TConstruct = true
+//    var compat_TExpansion = true
+//    var compat_ColoredLights = false
+//    var compat_MFRDeepStorage = true
 
     override def getFileName = "ProjectRed"
 
@@ -135,11 +136,12 @@ object Configurator extends ModConfig("projectred-core")
 
         val compat = new BaseCategory("Compatibility", "Control the loading of various compatibility hooks. These settings are ignored unless the Compatibility module is installed.")
         compat_Treecapitator = compat.put("Treecapitator: Gem Axe", compat_Treecapitator, "This allows gem axes to work with treecapitator.")
-        compat_TConstruct = compat.put("Tinkers Construct: Smeltery", compat_TConstruct, "This adds recipes to the smeltery.")
-        compat_TExpansion = compat.put("Thermal Expansion: Machine Recipes", compat_TExpansion, "This adds recipes to machines")
-        compat_CCBundledCalbe = compat.put("ComputerCraft: Bundled Cables", compat_CCBundledCalbe, "This allows computers to connect to bundled cables with the RS API")
-        compat_ColoredLights = compat.put("ColoredLights Compat", compat_ColoredLights, "This makes things emit colored light. CLC is in beta state and may cause minor rendering glitches.")
-        compat_MFRDeepStorage = compat.put("MFR: Deep Storage", compat_MFRDeepStorage, "This allows pipes to recoginze MFR Deep storage units correctly.")
+        compat_CCBundledCalbe = compat.put("ComputerCraft: Bundled Cables", compat_CCBundledCalbe, "This allows computers to connect to bundled cables with the RS API.")
+        compat_Chisel = compat.put("Chisel: Decorative Blocks", compat_Chisel, "Registers ProjectRed decorative blocks with Chisel.")
+//        compat_TConstruct = compat.put("Tinkers Construct: Smeltery", compat_TConstruct, "This adds recipes to the smeltery.")
+//        compat_TExpansion = compat.put("Thermal Expansion: Machine Recipes", compat_TExpansion, "This adds recipes to machines.")
+//        compat_ColoredLights = compat.put("ColoredLights Compat", compat_ColoredLights, "This makes things emit colored light. CLC is in beta state and may cause minor rendering glitches.")
+//        compat_MFRDeepStorage = compat.put("MFR: Deep Storage", compat_MFRDeepStorage, "This allows pipes to recoginze MFR Deep storage units correctly.")
     }
 }
 
