@@ -152,6 +152,8 @@ object MovingRenderer
 
     def onRenderWorldEvent()
     {
+        if (mc.world == null) return
+
         if (oldWorld != mc.world) {
             oldWorld = mc.world
             movingWorld = new MovingWorld(mc.world)
@@ -264,13 +266,13 @@ class MovingBlockRenderDispatcher(val parentDispatcher:BlockRendererDispatcher, 
     override def renderBlock(state:IBlockState, pos:BlockPos, blockAccess:IBlockAccess, bufferBuilderIn:BufferBuilder):Boolean =
     {
         //World can be null when exiting the game, but before client render threads have stopped.
-        if(Minecraft.getMinecraft.world == null) return false
+        if(mc.world == null) return false
 
-        val isMoving = MovementManager.isMoving(Minecraft.getMinecraft.world, pos)
+        val isMoving = MovementManager.isMoving(mc.world, pos)
 
         if (!MovingRenderer.allowQueuedBlockRender && isMoving) return false
 
-        val isAdjacentMoving = MovementManager.isAdjacentToMoving(Minecraft.getMinecraft.world, pos)
+        val isAdjacentMoving = MovementManager.isAdjacentToMoving(mc.world, pos)
         if (!isAdjacentMoving)
             return parentDispatcher.renderBlock(state, pos, blockAccess, bufferBuilderIn)
 
@@ -342,7 +344,7 @@ class WrappedTileMap(parentMap:util.Map[Class[_ <: TileEntity], TileEntitySpecia
 
     override def get(key:scala.Any) = {
         val tesr = parentMap.get(key).asInstanceOf[TileEntitySpecialRenderer[TileEntity]]
-        if (tesr != null && MovementManager.getWorldStructs(Minecraft.getMinecraft.world).structs.nonEmpty)
+        if (tesr != null && mc.world != null && MovementManager.getWorldStructs(mc.world).structs.nonEmpty)
             new WrappedTESR(tesr)
         else
             tesr
