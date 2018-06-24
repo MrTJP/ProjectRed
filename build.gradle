@@ -1,6 +1,3 @@
-//import net.minecraftforge.gradle.curseforge.CurseUploadTask
-import org.apache.tools.ant.filters.ReplaceTokens
-
 buildscript {
     repositories {
         jcenter()
@@ -94,23 +91,6 @@ sourceSets {
     }
 }
 
-task updateVersion(type: Copy) {
-    // Replace tokens
-    from(sourceSets.main.scala.srcDirs)
-    into 'build/sources/scala'
-    filter(ReplaceTokens, tokens: [
-            'VERSION'      : config.mod_version,
-            'BUILD_NUMBER' : build_number,
-            'MC_VERSION'   : config.mc_version,
-            'FORGE_VERSION': config.forge_version,
-            'FMP_VERSION'  : config.fmp_version,
-            'CCL_VERSION'  : config.ccl_version,
-            'MRTJP_VERSION': config.tjpcore_version,
-            'FR_VERSION': config.fr_version,
-            'FRFMP_VERSION': config.frfmp_version
-    ])
-}
-
 processResources {
     //redo task if any of these properties change
     inputs.property "version", project.version
@@ -119,17 +99,11 @@ processResources {
     // Replace properties in all files
     from(sourceSets.main.resources.srcDirs) {
         include '**.info'
-        filter(ReplaceTokens, tokens: [
-                'VERSION'      : config.mod_version,
-                'BUILD_NUMBER' : build_number,
-                'MC_VERSION'   : config.mc_version,
-                'FORGE_VERSION': config.forge_version,
-                'FMP_VERSION'  : config.fmp_version,
-                'CCL_VERSION'  : config.ccl_version,
-                'MRTJP_VERSION': config.tjpcore_version,
-                'FR_VERSION': config.fr_version,
-                'FRFMP_VERSION': config.frfmp_version
-        ])
+        expand  'mod_version': version, 'mc_version': config.mc_version,
+                'forge_version': config.forge_version,
+                'tjcore_version': config.tjpcore_version.replace(".+", ""),
+                'ccl_version': config.ccl_version.replace(".+", ""),
+                'fmp_version': config.fmp_version.replace(".+", "")
     }
     // Copy everything else
     from(sourceSets.main.resources.srcDirs) {
@@ -154,7 +128,6 @@ task deobfJar(type: Jar) {
     version = "${config.mc_version}-${project.version}"
 }
 
-compileScala.dependsOn updateVersion
 ext.jarVer = "${config.mc_version}-${project.version}"
 ext.jarFile = zipTree(jar.archivePath)
 ext.baseExcludes = ["**/dan200/**", "**/coloredlightscore/**"]
@@ -182,6 +155,8 @@ task fabricationJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {
         include "**/ProjectRedFabrication*.class"
         include "**/mrtjp/projectred/fabrication/**"
+
+	include "**/assets/projectred/blockstates/fabrication/**"
 
         include "**/assets/projectred/textures/blocks/fabrication/**"
         include "**/assets/projectred/textures/items/fabrication/**"
@@ -220,14 +195,14 @@ task mechanicalJar(type: Jar, dependsOn: reobfJar) {
         include "**/ProjectRedTransportation*.class"
         include "**/mrtjp/projectred/transportation/**"
 
+        include "**/assets/projectred/blockstates/mechanical/**"
+
         include "**/assets/projectred/textures/blocks/mechanical/**"
         include "**/assets/projectred/textures/items/mechanical/**"
         include "**/assets/projectred/textures/obj/mechanical/**"
 
         include "mechanical_mod.info"
         rename("mechanical_mod.info", 'mcmod.info')
-
-        include("mechanical_dependancies.info")
 
         project.ext.baseExcludes.addAll(includes)
     }
@@ -239,6 +214,8 @@ task worldJar(type: Jar, dependsOn: reobfJar) {
     from(project.ext.jarFile) {
         include "**/ProjectRedExploration*.class"
         include "**/mrtjp/projectred/exploration/**"
+
+        include "**/assets/projectred/blockstates/world/**"
 
         include "**/assets/projectred/textures/blocks/world/**"
         include "**/assets/projectred/textures/items/world/**"
@@ -283,10 +260,19 @@ task baseJar(type: Jar, dependsOn: reobfJar) {
 
 }
 
+// Dont include empty folders in jars
+tasks.withType(Jar) {
+    includeEmptyDirs = false
+}
+
 // baseJar pulls all files not in any other jar. Therefore must run last
 baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && task.name != 'baseJar') } }
 
-
+// Enable experimental features for scala compiler
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = ["-Xexperimental"]
+    scalaCompileOptions.setDeprecation false
+}
 
 artifacts {
     archives integrationJar
