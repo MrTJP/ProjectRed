@@ -19,7 +19,7 @@
 	},
 	{
 		"modid": "projectred-integration",
-		"name": "ProjectRed integration",
+		"name": "ProjectRed Integration",
 		"parent": "projectred-core",
 		"version": "${mod_version}",
 		"mcversion": "${mc_version}",
