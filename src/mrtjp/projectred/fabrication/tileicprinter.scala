@@ -254,11 +254,11 @@ class TileICPrinter extends TileICMachine with TInventory with TInventoryCapabli
             externalItems -= stack.key
             for (s <- 0 until 6 if s != 1)
             {
-                val inv = InvWrapper.getInventory(world, pos.offset(EnumFacing.values()(s)))
+                val side = EnumFacing.VALUES(s)
+                val inv = InvWrapper.wrap(world, pos.offset(side), side.getOpposite)
                 if (inv != null)
                 {
-                    val w = InvWrapper.wrapInternal(inv).setSlotsFromSide(s^1)
-                    val in = w.getItemCount(stack.key)
+                    val in = inv.getItemCount(stack.key)
                     if (in > 0)
                     {
                         a += in
@@ -295,11 +295,11 @@ class TileICPrinter extends TileICMachine with TInventory with TInventoryCapabli
 
         for (s <- 0 until 6 if s != 1)
         {
-            val inv = InvWrapper.getInventory(world, pos.offset(EnumFacing.values()(s)))
+            val side = EnumFacing.VALUES(s)
+            val inv = InvWrapper.wrap(world, pos.offset(side), side.getOpposite)
             if (inv != null)
             {
-                val w = InvWrapper.wrapInternal(inv).setSlotsFromSide(s^1)
-                left -= w.extractItem(stack.key, left)
+                left -= inv.extractItem(stack.key, left)
                 if (left <= 0) return
             }
         }
