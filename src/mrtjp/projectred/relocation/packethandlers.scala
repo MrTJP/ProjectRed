@@ -66,9 +66,10 @@ object RelocationCPH extends RelocationPH with IClientPacketHandler
 object RelocationSPH extends RelocationPH with IServerPacketHandler
 {
 
-    class MCByteStream(bout:ByteArrayOutputStream) extends MCDataOutputWrapper(new DataOutputStream(bout))
+    @Deprecated
+    class MCByteStream(bout:ByteArrayOutputStream) extends codechicken.lib.data.MCByteStream(bout)
     {
-        def getBytes = bout.toByteArray
+        override def getBytes = bout.toByteArray
     }
 
     override def handlePacket(packetCustom:PacketCustom, entityPlayerMP:EntityPlayerMP, iNetHandlerPlayServer:INetHandlerPlayServer){}
