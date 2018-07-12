@@ -141,7 +141,7 @@ class TileICPrinter extends TileICMachine with TInventory with TInventoryCapabli
     {
         val out = writeStream(7).writeInt(externalItems.size)
         for (item <- externalItems)
-            out.writeItemStack(item.makeStack(0))
+            out.writeItemStack(item.makeStack(1))
         out.sendToChunk(this)
     }
 
@@ -215,7 +215,12 @@ class TileICPrinter extends TileICMachine with TInventory with TInventoryCapabli
         if (!ic.isEmpty && ic.getItemDamage == 1) return true
 
         val oldMap = externalItems
-        val hasEnough = getRequiredResources.forall(containsEnoughOf)
+        val required = getRequiredResources
+
+        var hasEnough = true
+        for (r <- required) if (!containsEnoughOf(r))
+            hasEnough = false
+
         if (externalItems != oldMap) sendExternalItemMap(watchers)
         hasEnough
     }
