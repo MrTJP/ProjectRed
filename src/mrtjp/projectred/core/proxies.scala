@@ -16,6 +16,8 @@ class CoreProxy_server extends IProxy
     def preinit()
     {
         MinecraftForge.EVENT_BUS.register(Configurator)
+
+        /* Item Registration */
         itemPart = new ItemPart
         itemPart.setUnlocalizedName("projectred.core.itemResource")
         ForgeRegistries.ITEMS.register(itemPart.setRegistryName("resource_item"))
@@ -31,11 +33,6 @@ class CoreProxy_server extends IProxy
         itemMultimeter = new ItemMultimeter
         itemMultimeter.setUnlocalizedName("projectred.core.multimeter")
         ForgeRegistries.ITEMS.register(itemMultimeter.setRegistryName("multimeter"))
-    }
-
-    def init()
-    {
-        PacketCustom.assignHandler(CoreSPH.channel, CoreSPH)
 
         /* OreDictionary */
         for (i <- 0 until 16)
@@ -50,6 +47,11 @@ class CoreProxy_server extends IProxy
         OreDictionary.registerOre("ingotSilver", PartDefs.SILVERINGOT.makeStack)
         OreDictionary.registerOre("ingotElectrotineAlloy", PartDefs.ELECTROTINEINGOT.makeStack)
         OreDictionary.registerOre("dustElectrotine", PartDefs.ELECTROTINE.makeStack)
+    }
+
+    def init()
+    {
+        PacketCustom.assignHandler(CoreSPH.channel, CoreSPH)
 
         /* Smelting */
 

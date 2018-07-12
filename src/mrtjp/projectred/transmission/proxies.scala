@@ -29,12 +29,11 @@ class TransmissionProxy_server extends IProxy with IPartFactory
             typeFramedRedAlloy, typeFramedInsulated, typeFramedBundled,
             typeLowLoad, typeFramedLowLoad
         ))
-    }
 
-    override def init()
-    {
         WireDef.initOreDict()
     }
+
+    override def init(){}
 
     override def postinit(){}
 
@@ -62,12 +61,6 @@ class TransmissionProxy_client extends TransmissionProxy_server
         ModelRegistryHelper.registerItemRenderer(itemPartFramedWire, FramedWireItemRenderer)
         TextureUtils.addIconRegister(RenderWire)
         MicroMaterialRegistry.registerHighlightRenderer(RenderFramedWire)
-    }
-
-    @SideOnly(Side.CLIENT)
-    override def init()
-    {
-        super.init()
     }
 }
 

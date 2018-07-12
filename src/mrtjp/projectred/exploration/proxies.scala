@@ -127,12 +127,13 @@ class ExplorationProxy_server extends IProxy
         itemPeridotChestplate = new ItemGemArmor(ArmorDefs.PERIDOTCHESTPLATE, EntityEquipmentSlot.CHEST)
         itemPeridotLeggings = new ItemGemArmor(ArmorDefs.PERIDOTLEGGINGS, EntityEquipmentSlot.LEGS)
         itemPeridotBoots = new ItemGemArmor(ArmorDefs.PERIDOTBOOTS, EntityEquipmentSlot.FEET)
+
+        /* Ore Dictionary */
+        initOreDict()
     }
 
     override def init()
     {
-        initOreDict()
-
         //World Gen
 
         //Ruby
