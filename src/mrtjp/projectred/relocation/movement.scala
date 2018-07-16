@@ -34,6 +34,8 @@ object MovementManager
     def relocationMap(isClient:Boolean):MHashMap[Int, WorldStructs] =
         if (isClient) clientRelocations else serverRelocations
 
+    def isValidWorld(w:World) = w != null && w.provider != null
+
     def getWorldStructs(w:World):WorldStructs =
         relocationMap(w.isRemote).getOrElseUpdate(w.provider.getDimension, new WorldStructs)
 
