@@ -864,7 +864,7 @@ class RenderCounter extends GateRenderer[SequentialGatePart]
         val max = gate.getLogic[Counter].max
         val value = gate.getLogic[Counter].value
         pointer.angle = (value/max.toDouble*(340-220)+210)*MathHelper.torad
-        if (gate.shape == 1) reflect = true
+        reflect = gate.shape == 1
     }
 
     override def hasSpecials = true
