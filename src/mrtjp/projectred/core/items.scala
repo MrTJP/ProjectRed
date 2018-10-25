@@ -169,7 +169,8 @@ class ItemScrewdriver extends ItemCore with IScrewdriver
 
     override def damageScrewdriver(player:EntityPlayer, stack:ItemStack)
     {
-        stack.damageItem(1, player)
+        if (!Configurator.unbreakableScrewdriver)
+            stack.damageItem(1, player)
     }
 }
 
