@@ -180,7 +180,11 @@ object TransportationSPH extends TransportationPH with IServerPacketHandler
         if (stack.getItem == ProjectRedTransportation.itemRoutingChip) {
             val playerStack = player.inventory.getStackInSlot(slot)
             if (playerStack.getItem == ProjectRedTransportation.itemRoutingChip) {
-                player.inventory.setInventorySlotContents(slot, stack)
+
+                val chip = ItemRoutingChip.loadChipFromItemStack(stack)
+                ItemRoutingChip.saveChipToItemStack(playerStack, chip)
+
+                player.inventory.setInventorySlotContents(slot, playerStack)
                 player.inventory.markDirty()
             }
         }
