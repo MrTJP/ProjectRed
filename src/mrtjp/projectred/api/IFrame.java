@@ -8,14 +8,15 @@ package mrtjp.projectred.api;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 
 /**
  * Interface that can be implemented on Blocks or as a tile capability that wish to act as frames,
  * which are the blocks that stick together and form a moving structure when moved through the
  * {@link Relocator}. No other action besides implementation of this interface is needed for the
  * block to function.
+ *
+ * Alternatively, you can use this as a tile entity capability. To use as a capability, the capability
+ * instance can be found at {@link IRelocationAPI#getFrameCapability()}.
  */
 public interface IFrame
 {

@@ -13,18 +13,17 @@ import mrtjp.projectred.ProjectRedRelocation._
 import mrtjp.projectred.api.IFrame
 import mrtjp.projectred.api.ProjectRedAPI.{relocationAPI => API}
 import net.minecraft.nbt.NBTBase
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
+import net.minecraft.world.World
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.common.capabilities.Capability.IStorage
-import net.minecraftforge.common.capabilities.{Capability, CapabilityInject, CapabilityManager}
+import net.minecraftforge.common.capabilities.{Capability, CapabilityManager}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class RelocationProxy_server
 {
-    @CapabilityInject(classOf[IFrame])
-    var FRAME_CAPABILITY = null
-
     def preinit()
     {
         API.registerTileMover("saveload",
@@ -85,7 +84,10 @@ class RelocationProxy_server
 
             override def readNBT(capability:Capability[IFrame], instance:IFrame, side:EnumFacing, nbt:NBTBase){}
         }, new Callable[IFrame]{
-            override def call():IFrame = null
+            override def call():IFrame = new IFrame {
+                override def stickIn(w:World, pos:BlockPos, side:EnumFacing) = false
+                override def stickOut(w:World, pos:BlockPos, side:EnumFacing) = false
+            }
         })
     }
 
