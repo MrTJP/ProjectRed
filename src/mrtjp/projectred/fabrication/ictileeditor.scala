@@ -176,6 +176,10 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
 
     private var scheduledTicks = MMap[Point, Long]()
 
+    simEngineContainer.propagateSilently = true
+    recompileSchematic()
+    simEngineContainer.propagateSilently = false
+
     tileMapContainer.tilesLoadedDelegate = {() =>
         simNeedsRefresh = true
         for (tile <- tileMapContainer.tiles.values)
