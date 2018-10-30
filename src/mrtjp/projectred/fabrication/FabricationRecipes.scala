@@ -6,6 +6,7 @@ import mrtjp.projectred.integration.GateDefinition
 import net.minecraft.inventory.InventoryCrafting
 import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.IRecipe
+import net.minecraft.util.NonNullList
 import net.minecraft.world.World
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -44,7 +45,7 @@ class ICBlueprintResetRecipe extends TBaseRecipe {
 
 class ICBlueprintCopyRecipe extends TBaseRecipe {
     override def getRecipeOutput = new ItemStack(itemICBlueprint, 2)
-    override def getRecipeSize = 9
+    override def getRecipeSize = 2
     override def getCraftingResult(inv:InventoryCrafting):ItemStack =
     {
         var bp:ItemStack = ItemStack.EMPTY
@@ -60,13 +61,27 @@ class ICBlueprintCopyRecipe extends TBaseRecipe {
                     emptyCount += 1
             }
         }
-        if (!bp.isEmpty && emptyCount > 0) {
+        if (!bp.isEmpty && emptyCount == 1) {
             val out = new ItemStack(itemICBlueprint)
-            out.setCount(emptyCount+1)
+            out.setCount(emptyCount)
             ItemICBlueprint.copyIC(bp, out)
             out
         }
         else ItemStack.EMPTY
+    }
+
+    override def getRemainingItems(inv:InventoryCrafting):NonNullList[ItemStack] = {
+        val remaining = NonNullList.withSize(inv.getSizeInventory, ItemStack.EMPTY)
+        for (i <- 0 until inv.getSizeInventory) {
+            val s = inv.getStackInSlot(i)
+            if (!s.isEmpty) {
+                if (s.getItem == itemICBlueprint && ItemICBlueprint.hasICInside(s)) {
+                    remaining.set(i, s.copy())
+                    return remaining
+                }
+            }
+        }
+        remaining
     }
 }
 
