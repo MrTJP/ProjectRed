@@ -43,8 +43,6 @@ object APIImpl_Relocation extends IRelocationAPI
         StickRegistry.interactionList :+= interaction
     }
 
-    override def getFrameCapability = FrameCapability.CAPABILITY
-
     override def getRelocator = Relocator_Impl
 
     override def getStickResolver = StickResolver_Impl
@@ -76,15 +74,37 @@ object StickResolver_Impl extends StickResolver
         case Seq() => closed
         case Seq(next, rest@_*) =>
             val toCheck = Vector.newBuilder[BlockPos]
-            for (s <- 0 until 6) {
-                val side = EnumFacing.getFront(s)
-                val to = next.offset(side)
+
+            for (to <- resolveSticks(world, next)) {
                 if (!closed(to) && !open.contains(to) && !excl(to))
-                    if (StickRegistry.resolveStick(world, next, side)) {
-                        if (!world.isAirBlock(to) && !ProjectRedAPI.relocationAPI.isMoving(world, to))
-                            toCheck += to
-                    }
+                    if (!world.isAirBlock(to) && !ProjectRedAPI.relocationAPI.isMoving(world, to))
+                        toCheck += to
             }
+
             iterate(rest ++ toCheck.result(), closed + next)
+    }
+
+    def resolveSticks(w:World, pos:BlockPos):Set[BlockPos] =
+    {
+        val f1 = StickRegistry.getFrame(w, pos)
+        if (f1 == null)
+            return Set.empty[BlockPos]
+
+        val b = Set.newBuilder[BlockPos]
+
+        for (s <- 0 until 6) {
+            val side = EnumFacing.values()(s)
+            if (f1.stickOut(w, pos, side)) {
+                val p2 = pos.offset(side)
+                val f2 = StickRegistry.getFrame(w, p2)
+                if (f2 == null || f2.stickIn(w, p2, side.getOpposite))
+                    b += p2
+            }
+        }
+
+        for (stick <- f1.getAdditionalSticks)
+            b += stick
+
+        b.result()
     }
 }

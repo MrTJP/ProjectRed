@@ -10,8 +10,8 @@ import java.util.concurrent.Callable
 import codechicken.lib.packet.PacketCustom
 import codechicken.multipart.{MultiPartRegistry, MultipartGenerator}
 import mrtjp.projectred.ProjectRedRelocation._
-import mrtjp.projectred.api.IFrame
 import mrtjp.projectred.api.ProjectRedAPI.{relocationAPI => API}
+import mrtjp.projectred.api.{IConditionallyMovable, IFrame}
 import net.minecraft.nbt.NBTBase
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
@@ -43,7 +43,6 @@ class RelocationProxy_server
         API.registerPreferredMover("mod:computercraft", "coordpush")
         API.registerPreferredMover("mod:enderstorage", "coordpush")
         API.registerPreferredMover("mod:chickenchunks", "coordpush")
-        API.registerPreferredMover("mod:translocator", "coordpush")
         API.registerPreferredMover("mod:projectred-compatibility", "coordpush")
         API.registerPreferredMover("mod:projectred-core", "coordpush")
         API.registerPreferredMover("mod:projectred-expansion", "coordpush")
@@ -87,6 +86,15 @@ class RelocationProxy_server
             override def call():IFrame = new IFrame {
                 override def stickIn(w:World, pos:BlockPos, side:EnumFacing) = false
                 override def stickOut(w:World, pos:BlockPos, side:EnumFacing) = false
+            }
+        })
+
+        CapabilityManager.INSTANCE.register(classOf[IConditionallyMovable], new IStorage[IConditionallyMovable] {
+            override def writeNBT(capability:Capability[IConditionallyMovable], instance:IConditionallyMovable, side:EnumFacing):NBTBase = null
+            override def readNBT(capability:Capability[IConditionallyMovable], instance:IConditionallyMovable, side:EnumFacing, nbt:NBTBase){}
+        }, new Callable[IConditionallyMovable]{
+            override def call():IConditionallyMovable = new IConditionallyMovable {
+                override def isMovable(w:World, pos:BlockPos) = true
             }
         })
     }

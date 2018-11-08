@@ -12,7 +12,7 @@ import codechicken.lib.packet.PacketCustom
 import mrtjp.core.math.MathLib
 import mrtjp.core.world.WorldLib
 import mrtjp.projectred.RelocationConfig
-import mrtjp.projectred.api.{IMovementCallback, IMovementDescriptor}
+import mrtjp.projectred.api.{IConditionallyMovable, IMovementCallback, IMovementDescriptor, IRelocationAPI}
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.util.EnumFacing
@@ -138,7 +138,7 @@ object MovementManager
         }
 
         val rows = rowB.result()
-        if (rows.exists(row => !MovingTileRegistry.canRunOverBlock(w, row.pos))) return false
+        if (rows.exists(!_.canMove(w))) return false
         for (r <- rows) TileMovingRow.setBlockForRow(w, r)
 
         val struct = new BlockStruct
@@ -243,6 +243,20 @@ object MovementManager
                 }
             case _ =>
         }
+    }
+
+    def getConditionallyMovable(w:World, pos:BlockPos):IConditionallyMovable = {
+        val b = w.getBlockState(pos).getBlock
+        if (b.isInstanceOf[IConditionallyMovable]) return b.asInstanceOf[IConditionallyMovable]
+
+        val te = w.getTileEntity(pos)
+        if (te != null && te.isInstanceOf[IConditionallyMovable])
+            return te.asInstanceOf[IConditionallyMovable]
+
+        if (te != null && te.hasCapability(IRelocationAPI.CONDITIONALLY_MOVABLE_CAPABILITY, null))
+            return te.getCapability(IRelocationAPI.CONDITIONALLY_MOVABLE_CAPABILITY, null)
+
+        null
     }
 }
 
@@ -447,6 +461,20 @@ class BlockRow(val pos:BlockPos, val moveDir:EnumFacing, val size:Int)
             case te:TileMovingRow => te.pushEntities(this, progress)
             case _ =>
         }
+    }
+
+    def canMove(w:World):Boolean =
+    {
+        if (!MovingTileRegistry.canRunOverBlock(w, pos))
+            return false
+
+        for (b <- preMoveBlocks) {
+            val movable = MovementManager.getConditionallyMovable(w, b)
+            if (movable != null && !movable.isMovable(w, b))
+                return false
+        }
+
+        true
     }
 
     def doMove(w:World)
