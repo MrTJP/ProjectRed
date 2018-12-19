@@ -269,7 +269,7 @@ class WireNet(ic:ICTileMapContainer, p:Point, mask:Int) extends IWireNet
         }
     }
 
-    def mapChannelForPoint(p:Point, r:Int):Seq[(Point, Int)] =
+    def mapChannelForPoint(p:Point, r:Int):Set[(Point, Int)] =
     {
         val (cmask, pmask) = ic.getTile(p) match {
             case w:IWireICTile =>
@@ -280,7 +280,7 @@ class WireNet(ic:ICTileMapContainer, p:Point, mask:Int) extends IWireNet
         if (cmask == 0) return null
         if (pmask == 0) return null
 
-        def iterate(open:Seq[CSearchNode2], closed:Set[CSearchNode2] = Set(), points:Seq[(Point, Int)] = Seq()):Seq[(Point, Int)] = open match {
+        def iterate(open:Seq[CSearchNode2], closed:Set[CSearchNode2] = Set(), points:Set[(Point, Int)] = Set()):Set[(Point, Int)] = open match {
             case Seq() => points
             case Seq(next, rest@_*) => ic.getTile(next.pos) match {
                 case w:IWireICTile =>
@@ -299,7 +299,7 @@ class WireNet(ic:ICTileMapContainer, p:Point, mask:Int) extends IWireNet
                         }
 
                     }
-                    iterate(rest ++ upNext.result(), closed + next, (points :+ (next.pos, next.r)).distinct)
+                    iterate(rest ++ upNext.result(), closed + next, points + ((next.pos, next.r)))
             }
         }
 
