@@ -131,13 +131,16 @@ object ItemICBlueprint
         totag.setString("icname", fromtag.getString("icname"))
         totag.setByte("icw", fromtag.getByte("icw"))
         totag.setByte("ich", fromtag.getByte("ich"))
+        totag.setByte("log_warn", fromtag.getByte("log_warn"))
+        totag.setByte("log_err", fromtag.getByte("log_err"))
+        totag.setByte("log_rtf", fromtag.getByte("log_rtf"))
     }
 
     def removeIC(stack:ItemStack)
     {
         if (!stack.hasTagCompound) return
         val tag = stack.getTagCompound
-        Seq("tilemap", "icname", "icw", "ich").foreach(tag.removeTag)
+        Seq("tilemap", "icname", "icw", "ich", "log_warn", "log_err", "log_rtf").foreach(tag.removeTag)
     }
 
     def saveICToGate(tm:ICTileMapContainer, gate:ItemStack)

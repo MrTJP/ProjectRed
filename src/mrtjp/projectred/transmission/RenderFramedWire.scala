@@ -52,7 +52,7 @@ object RenderFramedWire extends IMicroHighlightRenderer
         {
             val jm = getOrGenerateJacketedModel(key)
             jm.renderWire(ccrs, t, uvt, m)
-            jm.renderMaterial(pos, w.material, ccrs)
+            jm.renderMaterial(pos, w.material, ccrs, false)
         }
         else
         {
@@ -101,7 +101,7 @@ object RenderFramedWire extends IMicroHighlightRenderer
         ccrs.alphaOverride = 127
         ccrs.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.ITEM)
 
-        getOrGenerateJacketedModel(modelKey(part)).renderMaterial(Vector3.zero, material, ccrs)
+        getOrGenerateJacketedModel(modelKey(part)).renderMaterial(Vector3.zero, material, ccrs, true)
 
         ccrs.draw()
 
@@ -475,9 +475,10 @@ class FWireJacketModel(wire:CCModel, boxes:Array[IndexedCuboid6])
         wire.render(ccrs, ops:_*)
     }
 
-    def renderMaterial(vec:Vector3, mat:Int, ccrs:CCRenderState)
+    def renderMaterial(vec:Vector3, mat:Int, ccrs:CCRenderState, inventory:Boolean)
     {
         val material = MicroMaterialRegistry.getMaterial(mat)
-        for (b <- boxes) MicroblockRender.renderCuboid(vec, ccrs, material, BlockRenderLayer.SOLID, b, b.data.asInstanceOf[Int])
+        val layer = if (inventory) null else BlockRenderLayer.SOLID
+        for (b <- boxes) MicroblockRender.renderCuboid(vec, ccrs, material, layer, b, b.data.asInstanceOf[Int])
     }
 }

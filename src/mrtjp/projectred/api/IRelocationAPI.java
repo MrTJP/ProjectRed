@@ -8,9 +8,18 @@ package mrtjp.projectred.api;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 
 public interface IRelocationAPI
 {
+    /** The capability instance for {@link IFrame} */
+    @CapabilityInject(IFrame.class)
+    Capability<IFrame> FRAME_CAPABILITY = null;
+
+    /** The capability instance for {@link IConditionallyMovable} */
+    @CapabilityInject(IConditionallyMovable.class)
+    Capability<IConditionallyMovable> CONDITIONALLY_MOVABLE_CAPABILITY = null;
+
     /**
      * Used to register a {@link ITileMover} class that manages the movement of certain tiles.
      * This method must be called during FML pre-initialization.
@@ -65,11 +74,6 @@ public interface IRelocationAPI
      * @param interaction The interaction to register.
      */
     void registerFrameInteraction(IFrameInteraction interaction);
-
-    /**
-     * Returns the capability instance for {@link IFrame}
-     */
-    Capability<IFrame> getFrameCapability();
 
     /**
      * Getter for the global Relocator object which is what is used

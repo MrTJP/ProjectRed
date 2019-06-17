@@ -6,9 +6,8 @@ notifications:
   email: false
 
 jdk:
-  - oraclejdk7
-  - openjdk7
-  - openjdk6
+  - oraclejdk8
+  - openjdk8
 
 install: ./gradlew setupCIWorkspace -S
 script: ./gradlew build -S

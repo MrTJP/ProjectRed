@@ -317,16 +317,9 @@ class ExplorationProxy_server extends IProxy
             logic.gen = gen
             SimpleGenHandler.registerStructure(logic)
         }
-    }
 
-    override def postinit()
-    {
-        InvWrapper.register(BarrelInvWrapper)
-
-        /** Basalt **/
+        /** Smelting Recipes **/
         GameRegistry.addSmelting(DecorativeStoneDefs.BASALTCOBBLE.makeStack, DecorativeStoneDefs.BASALT.makeStack, 0.1f)
-
-        /** Ore Smelting**/
         GameRegistry.addSmelting(OreDefs.ORERUBY.makeStack, PartDefs.RUBY.makeStack, 1)
         GameRegistry.addSmelting(OreDefs.ORESAPPHIRE.makeStack, PartDefs.SAPPHIRE.makeStack, 1)
         GameRegistry.addSmelting(OreDefs.OREPERIDOT.makeStack, PartDefs.PERIDOT.makeStack, 1)
@@ -334,6 +327,11 @@ class ExplorationProxy_server extends IProxy
         GameRegistry.addSmelting(OreDefs.ORETIN.makeStack, PartDefs.TININGOT.makeStack, 0.7f)
         GameRegistry.addSmelting(OreDefs.ORESILVER.makeStack, PartDefs.SILVERINGOT.makeStack, 0.8f)
         GameRegistry.addSmelting(OreDefs.OREELECTROTINE.makeStack, PartDefs.ELECTROTINE.makeStack, 0.7f)
+    }
+
+    override def postinit()
+    {
+        InvWrapper.register(BarrelInvWrapper)
     }
 
     private def initOreDict()

@@ -22,7 +22,7 @@ import mrtjp.core.gui._
 import mrtjp.core.inventory.{TInventory, TInventoryCapablilityTile}
 import mrtjp.core.vec.Point
 import mrtjp.projectred.ProjectRedExpansion
-import mrtjp.projectred.api.{IFrame, ProjectRedAPI}
+import mrtjp.projectred.api.{IFrame, IRelocationAPI, ProjectRedAPI}
 import mrtjp.projectred.expansion.TileBlockPlacer._
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.entity.player.EntityPlayer
@@ -241,12 +241,12 @@ class TileBlockPlacer extends TileMachine with TActiveDevice with TInventory wit
     override def weakPowerLevel(side:Int, mask:Int) = 0
 
     override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = {
-        if (capability == ProjectRedAPI.relocationAPI.getFrameCapability) return true
+        if (capability == IRelocationAPI.FRAME_CAPABILITY) return true
         super.hasCapability(capability, facing)
     }
 
     override def getCapability[T](capability: Capability[T], facing: EnumFacing): T = {
-        if (capability == ProjectRedAPI.relocationAPI.getFrameCapability) return this.asInstanceOf[T]
+        if (capability == IRelocationAPI.FRAME_CAPABILITY) return this.asInstanceOf[T]
         super.getCapability(capability, facing)
     }
 }

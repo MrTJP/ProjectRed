@@ -5,20 +5,27 @@
  */
 package mrtjp.projectred.integration
 
+import java.util
+import java.util.List
+
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import codechicken.lib.raytracer.CuboidRayTraceResult
 import codechicken.lib.vec.Rotation
 import codechicken.multipart.INeighborTileChangePart
-import codechicken.multipart.handler.MultipartSaveLoad
+import com.google.common.base.Predicate
 import mrtjp.projectred.api.IScrewdriver
 import mrtjp.projectred.core.Configurator
 import mrtjp.projectred.core.TFaceOrient._
+import net.minecraft.block.material.Material
+import net.minecraft.entity.Entity
+import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.util.math.BlockPos.MutableBlockPos
+import net.minecraft.util.math.{AxisAlignedBB, BlockPos}
 import net.minecraft.util.{EnumFacing, SoundCategory}
+import net.minecraft.world.World
 
 class SequentialGatePart extends RedstoneGatePart with TComplexGatePart
 {
@@ -808,22 +815,44 @@ class Comparator(gate:SequentialGatePart) extends SequentialGateLogic(gate) with
     def calcInputA:Int =
     {
         //TODO comparator calculations may not be accurate anymore
+
         val absDir = EnumFacing.getFront(Rotation.rotateSide(gate.side, gate.toAbsolute(2)))
         var pos = gate.tile.getPos.offset(absDir)
         var state = gate.world.getBlockState(pos)
-        var block = state.getBlock
-        if (block != null) {
-            if (block.hasComparatorInputOverride(state))
-                return block.getComparatorInputOverride(state, gate.world, pos)
-            if (block.isNormalCube(state, gate.world, pos)) {
-                pos = pos.offset(absDir)
-                state = gate.world.getBlockState(pos)
-                block = state.getBlock
-                if (block != null && block.hasComparatorInputOverride(state))
-                    return block.getComparatorInputOverride(state, gate.world, pos)
+
+        if (state.hasComparatorInputOverride)
+            return state.getComparatorInputOverride(gate.world, pos)
+
+        val i = getAnalogInput(2)
+
+        if (i < 15 && state.isNormalCube) {
+            pos = pos.offset(absDir)
+            state = gate.world.getBlockState(pos)
+
+            if (state.hasComparatorInputOverride)
+                return state.getComparatorInputOverride(gate.world, pos)
+
+            if (state.getMaterial == Material.AIR) {
+                val entityitemframe = findItemFrame(gate.world, absDir, pos)
+                if (entityitemframe != null)
+                    return entityitemframe.getAnalogOutput
             }
         }
-        getAnalogInput(2)
+
+        i
+    }
+
+    /**
+      * Copied from BlockRedstoneComparator#findItemFrame(World, EnumFacing, BlockPos)
+      */
+    private def findItemFrame(world:World, facing: EnumFacing, pos:BlockPos) =
+    {
+        val list:util.List[EntityItemFrame] = world.getEntitiesWithinAABB[EntityItemFrame](classOf[EntityItemFrame], new AxisAlignedBB(pos.getX.toDouble, pos.getY.toDouble, pos.getZ.toDouble,
+            (pos.getX + 1).toDouble, (pos.getY + 1).toDouble, (pos.getZ + 1).toDouble), new Predicate[Entity] {
+                override def apply(input:Entity) = input != null && (input.getHorizontalFacing == facing)
+            }
+        )
+        if (list.size == 1) list.get(0) else null
     }
 
     def calcInput = getAnalogInput(1)<<4|calcInputA<<8|getAnalogInput(3)<<12

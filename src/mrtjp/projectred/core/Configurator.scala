@@ -18,6 +18,7 @@ object Configurator extends ModConfig("projectred-core")
     var logicGateSounds = true
     var minTimerTicks = 4
     var simpleFramedWireRecipe = false
+    var unbreakableScrewdriver = false
 
     var maxDetectionCount = 100
     var detectionFrequency = 40
@@ -81,6 +82,8 @@ object Configurator extends ModConfig("projectred-core")
         logicGateSounds = general.put("Logic Sounds", logicGateSounds, "If set to false, logic gates will not make sounds.")
         minTimerTicks = general.put("Minimum Timer Ticks", minTimerTicks, "Minimum amount of ticks the timer gates can be set to. Cannot be lower than 4.")
         simpleFramedWireRecipe = general.put("Simple Framed Wire Recipe", simpleFramedWireRecipe, "If set to true, sticks will be used instead of wood strips in framed wire recipes.")
+        unbreakableScrewdriver = general.put("Unbreakable Screwdriver", unbreakableScrewdriver, "If set to true, the basic screwdriver will not take damage.")
+
 
         maxDetectionCount = general.put("Routed Pipes: Max Detection Count", maxDetectionCount, "Max number of pipes to explore when connecting to other routers.")
         detectionFrequency = general.put("Routed Pipes: Detection Frequency", detectionFrequency, "Ticks between router searches.")

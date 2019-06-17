@@ -5,12 +5,14 @@
  */
 package mrtjp.projectred.relocation
 
-import mrtjp.projectred.api.{IFrame, IFrameInteraction, ProjectRedAPI}
+import java.util.{Set => JSet}
+
+import mrtjp.projectred.api._
 import net.minecraft.block.Block
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.World
 
 import scala.collection.JavaConversions._
@@ -46,33 +48,25 @@ object StickRegistry
         latchMap += b1 -> (latchMap(b1) + b2)
     }
 
-    def resolveStick(w:World, pos:BlockPos, side:EnumFacing):Boolean =
+    def areBlocksLatched(w:World, pos1:BlockPos, pos2:BlockPos) =
     {
-        def getFrame(pos:BlockPos):IFrame = {
-            val b = w.getBlockState(pos).getBlock
-            if (b.isInstanceOf[IFrame]) return b.asInstanceOf[IFrame]
-
-            val te = w.getTileEntity(pos)
-            if (te != null && te.isInstanceOf[IFrame])
-                return te.asInstanceOf[IFrame]
-
-            if (te != null && te.hasCapability(ProjectRedAPI.relocationAPI.getFrameCapability, null))
-                return te.getCapability(ProjectRedAPI.relocationAPI.getFrameCapability, null)
-
-            interactionList.find(_.canInteract(w, pos)).orNull
-        }
-
-        val f1 = getFrame(pos)
-        val p2 = pos.offset(side)
-
-        if (f1 != null && f1.stickOut(w, pos, side)) {
-            val f2 = getFrame(p2)
-            return f2 == null || f2.stickIn(w, p2, side.getOpposite)
-        }
-
-        val b1 = w.getBlockState(pos)
-        val b2 = w.getBlockState(p2)
+        val b1 = w.getBlockState(pos1)
+        val b2 = w.getBlockState(pos2)
         latchMap.exists(it => it._1.matches(b1) && it._2.exists(_.matches(b2)))
+    }
+
+    def getFrame(w:World, pos:BlockPos):IFrame = {
+        val b = w.getBlockState(pos).getBlock
+        if (b.isInstanceOf[IFrame]) return b.asInstanceOf[IFrame]
+
+        val te = w.getTileEntity(pos)
+        if (te != null && te.isInstanceOf[IFrame])
+            return te.asInstanceOf[IFrame]
+
+        if (te != null && te.hasCapability(IRelocationAPI.FRAME_CAPABILITY, null))
+            return te.getCapability(IRelocationAPI.FRAME_CAPABILITY, null)
+
+        interactionList.find(_.canInteract(w, pos)).orNull
     }
 }
 

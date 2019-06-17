@@ -152,6 +152,9 @@ class ICSimEngineContainer extends ISEICDelegate
 
     def saveSimState(tag:NBTTagCompound)
     {
+        tag.setBoolean("null_sim", simEngine == null)
+        if (simEngine == null) return
+
         tag.setIntArray("io_state", iostate)
         tag.setLong("sys_time", systemTime)
 
@@ -168,6 +171,8 @@ class ICSimEngineContainer extends ISEICDelegate
 
     def loadSimState(tag:NBTTagCompound)
     {
+        if (tag.getBoolean("null_sim")) return
+
         val io = tag.getIntArray("io_state")
         if (io.length == 4) for (i <- 0 until 4) iostate(i) = io(i)
         systemTime = tag.getLong("sys_time")

@@ -1,6 +1,7 @@
 package mrtjp.projectred.expansion
 
 import mrtjp.core.item.ItemKeyStack
+import mrtjp.projectred.ProjectRedCore
 import mrtjp.projectred.core._
 import net.minecraft.item.crafting.FurnaceRecipes
 import net.minecraft.item.{ItemFood, ItemStack}
@@ -51,17 +52,16 @@ object InductiveFurnaceRecipeLib
         }
 
         val sl = FurnaceRecipes.instance.getSmeltingList
-        for ((in, out) <- sl) try
-        {
+        for ((in, out) <- sl) try  {
             if (getRecipeFor(in) == null)
             {
                 if (in.getItem.isInstanceOf[ItemFood]) addRecipe(in, out, 40)
                 else if (isDust(in) && isIngot(out)) addOreRecipe(in, out, 80*10/16)
                 else addRecipe(in, out, 80)
             }
-        }
-        catch {
+        } catch {
             case e:Exception =>
+                ProjectRedCore.log.warn(s"Failed to add Inductive Furnace recipe for IN: $in, OUT: $out")
         }
     }
 }
