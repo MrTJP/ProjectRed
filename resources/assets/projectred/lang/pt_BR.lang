@@ -92,7 +92,7 @@ tile.projectred.expansion.machine2|6.name=Banco de Carregamento
 tile.projectred.expansion.machine2|7.name=Teleposer
 tile.projectred.expansion.machine2|8.name=Motor de Frame
 tile.projectred.expansion.machine2|9.name=Atuador Linear de Frames
-tile.projectred.expansion.machine2|12.name=Quebrador Diamante de Blocos
+tile.projectred.expansion.machine2|12.name=Quebrador de Blocos de Diamante
 item.projectred.expansion.solarPanel.name=Painel Solar
 
 
@@ -104,7 +104,7 @@ item.projectred.transportation.routingChip|1.name=Chip de Resposta Dinâmica
 item.projectred.transportation.routingChip|2.name=Chip de Resposta a Sobrecarga de Itens
 item.projectred.transportation.routingChip|3.name=Chip de Terminação de Itens
 item.projectred.transportation.routingChip|4.name=Chip de Extração de Itens
-item.projectred.transportation.routingChip|5.name=Chip de Disperção de Itens
+item.projectred.transportation.routingChip|5.name=Chip de Dispersão de Itens
 item.projectred.transportation.routingChip|6.name=Chip de Estoque de Itens
 item.projectred.transportation.routingChip|7.name=Chip de Criação de Itens
 
