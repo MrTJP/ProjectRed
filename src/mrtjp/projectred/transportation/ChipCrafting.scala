@@ -1,6 +1,5 @@
 package mrtjp.projectred.transportation
 
-import mrtjp.core.inventory.InvWrapper
 import mrtjp.core.item.{ItemKey, ItemKeyStack, ItemQueue}
 
 import scala.collection.mutable.ListBuffer
@@ -242,7 +241,7 @@ class ChipCrafting extends RoutingChip with TChipCrafter with TChipPriority with
             if (routers.size == 1)
             {
                 val r = RouterServices.getRouter(RouterServices.getIPforUUID(routers.head))
-                if (r != null && r.isLoaded && r.isInNetwork(router.getRouter.getIPAddress)) r.getContainer
+                if (r != null && r.isLoaded && r.isInNetwork(router.getRouter.getIPAddress)) return r.getContainer
             }
         }
         router
