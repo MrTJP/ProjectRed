@@ -397,6 +397,13 @@ class ContainerProjectBench(player: EntityPlayer, tile: TileProjectBench) extend
         super.slotClick(id, mouse, mode, player)
     }
 
+    override def transferStackInSlot(player:EntityPlayer, i:Int):ItemStack = {
+        if (i == 28 && !getSlot(28).canTakeStack(player))
+            ItemStack.EMPTY
+        else
+            super.transferStackInSlot(player, i)
+    }
+
     override def doMerge(stack: ItemStack, from: Int): Boolean = {
         if (0 until 9 contains from) //crafting grid
         {
@@ -522,7 +529,7 @@ object GuiProjectBench extends TGuiFactory {
 object RenderProjectBench extends SimpleBlockRenderer
 {
     import org.apache.commons.lang3.tuple.Triple
-    
+
     var bottom: TextureAtlasSprite = _
     var top: TextureAtlasSprite = _
     var side1: TextureAtlasSprite = _
