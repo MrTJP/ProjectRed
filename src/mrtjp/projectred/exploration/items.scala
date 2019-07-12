@@ -378,7 +378,7 @@ class ItemGemArmor(adef:ArmorDef, slot:EntityEquipmentSlot) extends ItemToolProx
     override def getArmorTexture(stack: ItemStack, entity: Entity, slot: EntityEquipmentSlot, `type`: String): String = {
         import net.minecraft.inventory.EntityEquipmentSlot._
         if (slot.getSlotType == EntityEquipmentSlot.Type.ARMOR) {
-            val suffix = if (slot == HEAD || slot == CHEST) 1 else 2
+            val suffix = if (slot == LEGS) 2 else 1
             return s"projectred:textures/items/world/${adef.tex}_$suffix.png"
         }
         null
