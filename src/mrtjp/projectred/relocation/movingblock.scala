@@ -31,6 +31,8 @@ class BlockMovingRow extends MultiTileBlock(Material.IRON)
 
 object TileMovingRow
 {
+    private var isCalculatingBB = false
+
     def setBlockForRow(w:World, r:BlockRow)
     {
         w.setBlockState(r.pos, ProjectRedRelocation.blockMovingRow.getDefaultState, 3)
@@ -38,14 +40,21 @@ object TileMovingRow
 
     def getBoxFor(w:World, r:BlockRow, progress:Double):Cuboid6 =
     {
-        val p = r.pos.offset(r.moveDir)
+        if (isCalculatingBB)
+            return Cuboid6.full.copy()
+
+        val p = r.pos.offset(r.moveDir.getOpposite)
         val bl = w.getBlockState(p)
 
-        bl.getCollisionBoundingBox(w, p) match {
+        isCalculatingBB = true
+        val box = bl.getCollisionBoundingBox(w, p) match {
             case aabb:AxisAlignedBB => new Cuboid6(aabb).subtract(Vector3.fromBlockPos(r.pos))
                     .add(Vector3.fromVec3i(r.moveDir.getDirectionVec) * progress)
             case _ => Cuboid6.full.copy
         }
+        isCalculatingBB = false
+
+        box
     }
 }
 
