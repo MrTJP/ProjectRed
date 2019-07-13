@@ -1,5 +1,5 @@
 {
-	"type": "minecraft:crafting_shaped",
+	"type": "forge:ore_shaped",
 	"result": {
 		"item": "projectred-exploration:stone_wall",
 		"data": 8,
@@ -11,9 +11,8 @@
 	],
 	"key": {
 		"m": {
-			"type": "minecraft:item",
-			"item": "projectred-exploration:stone",
-			"data": 8
+			"type": "forge:ore_dict",
+			"ore": "blockCopper"
 		}
 	}
 }
