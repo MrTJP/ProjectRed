@@ -256,7 +256,8 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, EntityEquipmentSlo
     {
         if (!stack.isItemEnchanted) return 16
         val i = EnchantmentHelper.getEnchantmentLevel(ProjectRedExpansion.enchantmentElectricEfficiency, stack)
-        Math.max(1, 16-i*3)
+        if (i == 0) return 16
+        Math.max(1, 16-Math.pow(2, i)).toInt
     }
 
     override def getArmorTexture(stack:ItemStack, entity:Entity, slot:EntityEquipmentSlot, t:String) =
@@ -307,14 +308,14 @@ class ItemJetpack extends ItemArmor(ArmorMaterial.DIAMOND, 0, EntityEquipmentSlo
 
 trait IElectricEnchantment extends Enchantment
 {
-    override def canApply(stack:ItemStack) = stack.getItem match {
+    override def canApplyAtEnchantingTable(stack:ItemStack) = stack.getItem match {
         case ich:IChargable =>
-            super.canApply(stack) && ich.canApplyElectricEnchantment(this)
+            super.canApplyAtEnchantingTable(stack) && ich.canApplyElectricEnchantment(this)
         case _ => false
     }
 }
 
-class EnchantmentElectricEfficiency extends Enchantment(Rarity.UNCOMMON, EnumEnchantmentType.ALL, Array(EntityEquipmentSlot.CHEST)) with IElectricEnchantment
+class EnchantmentElectricEfficiency extends Enchantment(Rarity.RARE, EnumEnchantmentType.ALL, EntityEquipmentSlot.values()) with IElectricEnchantment
 {
     override def getMinLevel = 1
     override def getMaxLevel = 4
