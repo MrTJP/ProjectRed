@@ -20,10 +20,10 @@ import net.minecraft.world.World
 
 import scala.collection.JavaConversions._
 
-class BlockMovingRow extends MultiTileBlock(Material.IRON)
+class BlockMovingRow extends MultiTileBlock(Material.ROCK)
 {
-    setHardness(-1F)
-    setSoundType(SoundType.GROUND)
+    setBlockUnbreakable()
+    setSoundType(SoundType.STONE)
     setCreativeTab(null)
 
     override def getRenderType(state:IBlockState):EnumBlockRenderType = EnumBlockRenderType.INVISIBLE
@@ -35,7 +35,7 @@ object TileMovingRow
 
     def setBlockForRow(w:World, r:BlockRow)
     {
-        w.setBlockState(r.pos, ProjectRedRelocation.blockMovingRow.getDefaultState, 3)
+        w.setBlockState(r.pos, ProjectRedRelocation.blockMovingRow.getDefaultState, 0)
     }
 
     def getBoxFor(w:World, r:BlockRow, progress:Double):Cuboid6 =

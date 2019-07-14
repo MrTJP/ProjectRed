@@ -139,7 +139,6 @@ object MovementManager
 
         val rows = rowB.result()
         if (rows.exists(!_.canMove(w))) return false
-        for (r <- rows) TileMovingRow.setBlockForRow(w, r)
 
         val struct = new BlockStruct
         struct.id = BlockStruct.claimID()
@@ -149,6 +148,7 @@ object MovementManager
         addStructToWorld(w, struct)
         sendStruct(w, struct)
 
+        for (r <- rows) TileMovingRow.setBlockForRow(w, r)
         true
     }
 
