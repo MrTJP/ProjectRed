@@ -14,7 +14,6 @@ import net.minecraft.block.Block
 import net.minecraft.client.renderer.texture.{TextureAtlasSprite, TextureMap}
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
-import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, ResourceLocation}
 import net.minecraft.world.IBlockAccess
@@ -40,7 +39,7 @@ class TileBlockBreaker extends TileMachine with TPressureActiveDevice with IReds
         if (state.getBlock == Blocks.BEDROCK) return
         if (state.getBlock.isAir(state, world, bc)) return
         if (state.getBlockHardness(world, bc) < 0) return
-        if (state.getBlock.getHarvestLevel(state) > 2) return
+        if (state.getBlock.getHarvestLevel(state) > getHarvestLevel) return
 
         state.getBlock.getDrops(world, bc, state, 0).foreach(itemStorage.add)
         world.playEvent(null, 2001, getPos, Block.getStateId(state))
@@ -48,16 +47,23 @@ class TileBlockBreaker extends TileMachine with TPressureActiveDevice with IReds
         exportBuffer()
     }
 
+    def getHarvestLevel = 2
+
     override def getConnectionMask(side:Int) = if ((side^1) == this.side) 0 else 0x1F
     override def weakPowerLevel(side:Int, mask:Int) = 0
 }
 
-object RenderBlockBreaker extends SimpleBlockRenderer
+class TileDiamondBlockBreaker extends TileBlockBreaker
+{
+    override def getHarvestLevel = 3
+}
+
+class RenderBlockBreakerBase(spriteFolder:String) extends SimpleBlockRenderer
 {
     import java.lang.{Boolean => JBool, Integer => JInt}
 
-    import org.apache.commons.lang3.tuple.Triple
     import mrtjp.projectred.expansion.BlockProperties._
+    import org.apache.commons.lang3.tuple.Triple
 
     var bottom:TextureAtlasSprite = _
     var side1:TextureAtlasSprite = _
@@ -93,13 +99,17 @@ object RenderBlockBreaker extends SimpleBlockRenderer
 
     override def registerIcons(reg:TextureMap)
     {
-        bottom = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/breaker/bottom"))
-        top1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/breaker/top1"))
-        side1 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/breaker/side1"))
-        top2 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/breaker/top2"))
-        side2 = reg.registerSprite(new ResourceLocation("projectred:blocks/mechanical/breaker/side2"))
+        bottom = reg.registerSprite(new ResourceLocation(s"projectred:blocks/mechanical/$spriteFolder/bottom"))
+        top1 = reg.registerSprite(new ResourceLocation(s"projectred:blocks/mechanical/$spriteFolder/top1"))
+        side1 = reg.registerSprite(new ResourceLocation(s"projectred:blocks/mechanical/$spriteFolder/side1"))
+        top2 = reg.registerSprite(new ResourceLocation(s"projectred:blocks/mechanical/$spriteFolder/top2"))
+        side2 = reg.registerSprite(new ResourceLocation(s"projectred:blocks/mechanical/$spriteFolder/side2"))
 
         iconT1 = new MultiIconTransformation(bottom, top1, side1, side1, side1, side1)
         iconT2 = new MultiIconTransformation(bottom, top2, side2, side2, side2, side2)
     }
 }
+
+object RenderBlockBreaker extends RenderBlockBreakerBase("breaker")
+
+object RenderDiamondBlockBreaker extends RenderBlockBreakerBase("dbreaker")
