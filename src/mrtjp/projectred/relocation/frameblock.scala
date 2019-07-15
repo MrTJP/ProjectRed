@@ -73,6 +73,9 @@ class ItemBlockFrame(block:Block) extends ItemBlock(block)
         val d = getHitDepth(vhit, side)
 
         def place(): EnumActionResult = {
+            if (TileMultipart.getOrConvertTile(world, pos) == null) //Only place multipart frames if a multipart tile already exists
+                return EnumActionResult.FAIL
+
             val part = newPart(stack, player, world, pos, side, vhit)
             if (part == null || !TileMultipart.canPlacePart(world, pos, part)) return EnumActionResult.FAIL
 
