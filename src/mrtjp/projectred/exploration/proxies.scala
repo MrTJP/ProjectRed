@@ -11,6 +11,7 @@ import mrtjp.core.world._
 import mrtjp.projectred.ProjectRedExploration
 import mrtjp.projectred.ProjectRedExploration._
 import mrtjp.projectred.core.{Configurator, IProxy, PartDefs}
+import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.renderer.ItemMeshDefinition
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
@@ -18,9 +19,11 @@ import net.minecraft.client.renderer.block.statemap.StateMapperBase
 import net.minecraft.init.{Blocks, SoundEvents}
 import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.item.{Item, ItemStack}
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.client.model.ModelLoader
 import net.minecraftforge.common.util.EnumHelper
 import net.minecraftforge.fml.client.registry.ClientRegistry
+import net.minecraftforge.fml.common.event.FMLInterModComms
 import net.minecraftforge.fml.common.registry.{ForgeRegistries, GameRegistry}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 import net.minecraftforge.oredict.OreDictionary
@@ -327,6 +330,9 @@ class ExplorationProxy_server extends IProxy
         GameRegistry.addSmelting(OreDefs.ORETIN.makeStack, PartDefs.TININGOT.makeStack, 0.7f)
         GameRegistry.addSmelting(OreDefs.ORESILVER.makeStack, PartDefs.SILVERINGOT.makeStack, 0.8f)
         GameRegistry.addSmelting(OreDefs.OREELECTROTINE.makeStack, PartDefs.ELECTROTINE.makeStack, 0.7f)
+
+        /** Chisel integration **/
+        initChiselModIntegration()
     }
 
     override def postinit()
@@ -356,6 +362,49 @@ class ExplorationProxy_server extends IProxy
         OreDictionary.registerOre("blockTin", DecorativeStoneDefs.TINBLOCK.makeStack)
         OreDictionary.registerOre("blockSilver", DecorativeStoneDefs.SILVERBLOCK.makeStack)
         OreDictionary.registerOre("blockElectrotine", DecorativeStoneDefs.ELECTROTINEBLOCK.makeStack)
+    }
+
+    /**
+      * Required integration with @mod:chisel to patch decorative block conversion exploit
+      */
+    private def initChiselModIntegration()
+    {
+        val modID = "chisel"
+        val keyAddVariation = "add_variation"
+        val keyRemoveVariation = "remove_variation"
+        val keyGroup = "group"
+        val keyStack = "stack"
+        val keyBlock = "block"
+        val keyMeta = "meta"
+
+        def removeFromAllGroups(stack:ItemStack, block:Block, meta:Int) {
+            val message = new NBTTagCompound
+            message.setTag(keyStack, stack.serializeNBT())
+            message.setString(keyBlock, block.getRegistryName.toString)
+            message.setInteger(keyMeta, meta)
+            FMLInterModComms.sendMessage(modID, keyRemoveVariation, message)
+        }
+
+        def addToGroup(group:String, stack:ItemStack, block:Block, meta:Int) {
+            val message = new NBTTagCompound
+            message.setString(keyGroup, group)
+            message.setTag(keyStack, stack.serializeNBT())
+            message.setString(keyBlock, block.getRegistryName.toString)
+            message.setInteger(keyMeta, meta)
+            FMLInterModComms.sendMessage(modID, keyAddVariation, message)
+        }
+
+        /** First, disable conversion for all decorative blocks **/
+        DecorativeStoneDefs.values.foreach(stone => removeFromAllGroups(stone.makeStack, DecorativeStoneDefs.getBlock, stone.meta))
+
+        /** Add conversion group [marble, marble brick] **/
+        addToGroup("marble", DecorativeStoneDefs.MARBLE.makeStack, DecorativeStoneDefs.getBlock, DecorativeStoneDefs.MARBLE.meta)
+        addToGroup("marble", DecorativeStoneDefs.MARBLEBRICK.makeStack, DecorativeStoneDefs.getBlock, DecorativeStoneDefs.MARBLEBRICK.meta)
+
+        /** Add conversion group [basalt cobble, basalt brick, basalt stone] **/
+        addToGroup("basalt", DecorativeStoneDefs.BASALTCOBBLE.makeStack, DecorativeStoneDefs.getBlock, DecorativeStoneDefs.BASALTCOBBLE.meta)
+        addToGroup("basalt", DecorativeStoneDefs.BASALT.makeStack, DecorativeStoneDefs.getBlock, DecorativeStoneDefs.BASALT.meta)
+        addToGroup("basalt", DecorativeStoneDefs.BASALTBRICK.makeStack, DecorativeStoneDefs.getBlock, DecorativeStoneDefs.BASALTBRICK.meta)
     }
 }
 
