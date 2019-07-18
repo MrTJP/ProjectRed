@@ -24,7 +24,7 @@ trait ISEGateTile extends ISETile
 
 trait IWireNet
 {
-    val points:scala.collection.Set[(Point, Int)]
+    val points:scala.collection.mutable.Seq[(Point, Int)]
 
     def allocateRegisters(linker:ISELinker)
 
