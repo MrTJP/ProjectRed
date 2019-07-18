@@ -108,11 +108,8 @@ class ICGateLogic(gate:ICGatePart) extends RedstoneGateLogic[ICGatePart] with TB
     {
         tmap.loadTiles(tag)
 
-        sim.propagateSilently = true
         sim.recompileSimulation(tmap)
-        sim.propagateAll()
         sim.loadSimState(tag)
-        sim.propagateSilently = false
 
         val (ri0, ro0, bi0, bo0) = ICGateLogic.unpackIO(tag.getShort("masks"))
         ri = ri0; ro = ro0; bi = bi0; bo = bo0
@@ -298,10 +295,7 @@ object ICGateLogic
             logic.tmap.name = "ERROR: invalid"
         }
 
-        logic.sim.propagateSilently = true
         logic.sim.recompileSimulation(logic.tmap)
-        logic.sim.propagateAll()
-        logic.sim.propagateSilently = false
     }
 
     def packIO(ri:Int, ro:Int, bi:Int, bo:Int) = ri|ro<<4|bi<<8|bo<<12

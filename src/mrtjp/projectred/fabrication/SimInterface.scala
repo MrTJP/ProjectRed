@@ -2,8 +2,9 @@ package mrtjp.projectred.fabrication
 
 import codechicken.lib.data.{MCDataInput, MCDataOutput}
 import mrtjp.core.vec.Point
+import mrtjp.projectred.fabrication.SEIntegratedCircuit._
 import net.minecraft.nbt.NBTTagCompound
-import SEIntegratedCircuit._
+
 import scala.collection.mutable.{ListBuffer, Map => MMap}
 
 trait IICSimEngineContainerDelegate
@@ -34,8 +35,6 @@ class ICSimEngineContainer extends ISEICDelegate
 
     var delegate:IICSimEngineContainerDelegate = null
 
-    var propagateSilently = false
-
     def setInput(r:Int, state:Int)
     {
         iostate(r) = iostate(r)&0xFFFF0000|state&0xFFFF
@@ -57,14 +56,9 @@ class ICSimEngineContainer extends ISEICDelegate
         iostate(r) = iostate(r)&0xFFFF|(state&0xFFFF)<<16
     }
 
-    def propagateAll()
-    {
-        simEngine.propagateInitial()
-    }
-
     def repropagate()
     {
-        simEngine.repropagate()
+        simEngine.propagate(this)
     }
 
     private def pushInputRegisters(mask:Int)
@@ -93,14 +87,14 @@ class ICSimEngineContainer extends ISEICDelegate
 
     override def registersDidChange(registers:Set[Int])
     {
-        if (!propagateSilently && delegate != null)
+        if (delegate != null)
             delegate.registersDidChange(registers)
 
         val firstIOReg = REG_IN(0, 0)
         val lastIOReg = REG_OUT(3, 15)
-        if (registers.exists {reg => reg >= firstIOReg && reg <= lastIOReg}) {
-            pullOutputRegisters(0xFF)
-            if (!propagateSilently && delegate != null)
+        if (registers.exists {reg => reg >= firstIOReg && reg <= lastIOReg}) { //TODO potentially faster to pull and check
+            pullOutputRegisters(0xF)
+            if (delegate != null)
                 delegate.ioRegistersDidChange()
         }
     }
@@ -108,8 +102,7 @@ class ICSimEngineContainer extends ISEICDelegate
     override def icDidThrowErrorFlag(flag:Int, registers:Seq[Int], gates:Seq[Int])
     {
         logger.logRuntimeFlag(flag, registers, gates)
-        if (!propagateSilently)
-            if (delegate != null) delegate.logDidChange()
+        if (delegate != null) delegate.logDidChange()
     }
 
     def recompileSimulation(map:ISETileMap)
@@ -134,13 +127,13 @@ class ICSimEngineContainer extends ISEICDelegate
             }
         }
 
-        simEngine = ISELinker.linkFromMap(map, this, logger)
+        simEngine = ISELinker.linkFromMap(map, logger)
         systemTime = 0
         pushInputRegisters(0xF)
         pushSystemTime()
+        pullOutputRegisters(0xF)
 
-        if (!propagateSilently)
-            if (delegate != null) delegate.logDidChange()
+        if (delegate != null) delegate.logDidChange()
     }
 
     def resetSimState(map:ISETileMap)
@@ -179,39 +172,16 @@ class ICSimEngineContainer extends ISEICDelegate
 
         val registers = simEngine.getRegisterMap
         for (i <- 0 until registers.length) {
-            registers(i) match {
-                case StandardRegister(r:Long) => simEngine.queueRegVal[Long](i, tag.getLong(s"reg[$i]"))
-                case StandardRegister(r:Int)  => simEngine.queueRegVal[Int](i, tag.getInteger(s"reg[$i]"))
-                case StandardRegister(r:Byte) => simEngine.queueRegVal[Byte](i, tag.getByte(s"reg[$i]"))
+            val reg = registers(i)
+            reg match {
+                case StandardRegister(r:Long) => reg.queueVal[Long](tag.getLong(s"reg[$i]"))
+                case StandardRegister(r:Int)  => reg.queueVal[Int](tag.getInteger(s"reg[$i]"))
+                case StandardRegister(r:Byte) => reg.queueVal[Byte](tag.getByte(s"reg[$i]"))
                 case _ => //Dont load the register
             }
+            reg.pushVal(simEngine)
         }
     }
-}
-
-case class StandardRegister[Type](var value:Type) extends ISERegister
-{
-    var queuedVal:Type = value
-
-    override def getVal[T] = value.asInstanceOf[T]
-
-    override def queueVal[T](newVal:T) =
-    {
-        queuedVal = newVal.asInstanceOf[Type]
-        value != queuedVal
-    }
-
-    override def pushVal(ic:SEIntegratedCircuit)
-    {
-        value = queuedVal
-    }
-}
-
-class ConstantRegister[Type](c:Type) extends ISERegister
-{
-    override def getVal[T] = c.asInstanceOf[T]
-    override def queueVal[T](newVal:T) = false
-    override def pushVal(ic:SEIntegratedCircuit){}
 }
 
 class SEStatLogger extends ISEStatLogger
