@@ -10,6 +10,7 @@ import codechicken.microblock._
 import codechicken.multipart.TDynamicRenderPart
 import mrtjp.projectred.ProjectRedIllumination
 import mrtjp.projectred.core.RenderHalo
+import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 class LightMicroMaterial(val colour:Int, val key:String) extends BlockMicroMaterial(ProjectRedIllumination.blockLamp.getDefaultState, key) with IGeneratedMaterial
@@ -19,8 +20,10 @@ class LightMicroMaterial(val colour:Int, val key:String) extends BlockMicroMater
         traits.set(LightMicroMaterial.traitID)
     }
 
-    @SideOnly(Side.CLIENT) override
-    def loadIcons()
+    override def getItem = new ItemStack(ProjectRedIllumination.blockLamp, 1, colour)
+
+    @SideOnly(Side.CLIENT)
+    override def loadIcons()
     {
         icont = new MultiIconTransformation(LampRenderer.iconsOn(colour))
         pIconT = new IconTransformation(LampRenderer.iconsOn(colour))
