@@ -10,13 +10,8 @@ import net.minecraftforge.fml.common.event.FMLInterModComms
 
 object PluginChisel extends IPRPlugin
 {
-    private val chiselModID = "chisel"
-    private val IMCKeyAddVariation = "add_variation"
-    private val tagKeyGroup = "group"
-    private val tagKeyStack = "stack"
-    private val tagKeyBlock = "block"
-    private val tagKeyMeta = "meta"
-    
+    val chiselModID = "chisel"
+
     override def getModIDs = Array(chiselModID, "projectred-exploration")
 
     override def isEnabled = Configurator.compat_Chisel
@@ -25,14 +20,23 @@ object PluginChisel extends IPRPlugin
 
     override def init()
     {
-        initChiselModIntegration()
+        ChiselExplorationIntegration.initChiselModIntegration()
     }
 
     override def postInit(){}
 
     override def desc() = "Chisel: Exploration decorative blocks"
+}
 
-    private def initChiselModIntegration()
+private object ChiselExplorationIntegration
+{
+    private val IMCKeyAddVariation = "add_variation"
+    private val tagKeyGroup = "group"
+    private val tagKeyStack = "stack"
+    private val tagKeyBlock = "block"
+    private val tagKeyMeta = "meta"
+
+    def initChiselModIntegration()
     {
         def addToGroup(group:String, stack:ItemStack, block:Block, meta:Int) {
             val message = new NBTTagCompound
@@ -40,7 +44,7 @@ object PluginChisel extends IPRPlugin
             message.setTag(tagKeyStack, stack.serializeNBT())
             message.setString(tagKeyBlock, block.getRegistryName.toString)
             message.setInteger(tagKeyMeta, meta)
-            FMLInterModComms.sendMessage(chiselModID, IMCKeyAddVariation, message)
+            FMLInterModComms.sendMessage(PluginChisel.chiselModID, IMCKeyAddVariation, message)
         }
 
         /** Add conversion group [marble, marble brick] **/
