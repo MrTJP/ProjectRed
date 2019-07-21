@@ -215,9 +215,27 @@ class ImplicitWireNet(ic:ICTileMapContainer, p:Point, r:Int) extends IWireNet
 
     override def declareOperations(linker:ISELinker){}
 
-    override def getInputRegister(p:Point, r:Int) = if (points.contains((p, r))) regID else REG_ZERO
+    override def getInputRegister(p:Point, r:Int) = {
+        if (points.contains((p, r))) {
+            if (p == this.p && r == this.r) {
+                if (hasSignalIn) regID else REG_ZERO
+            } else {
+                if (hasSignalOut) regID else REG_ZERO
+            }
+        } else
+            REG_ZERO
+    }
 
-    override def getOutputRegister(p:Point, r:Int) = if (points.contains((p, r))) regID else REG_ZERO
+    override def getOutputRegister(p:Point, r:Int) = {
+        if (points.contains((p, r))) {
+            if (p == this.p && r == this.r) {
+                if (hasSignalOut) regID else REG_ZERO
+            } else {
+                if (hasSignalIn) regID else REG_ZERO
+            }
+        } else
+            REG_ZERO
+    }
 }
 
 class WireNet(ic:ICTileMapContainer, p:Point, mask:Int) extends IWireNet
