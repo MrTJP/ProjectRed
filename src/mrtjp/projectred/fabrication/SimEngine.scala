@@ -1,28 +1,35 @@
 package mrtjp.projectred.fabrication
 
 import scala.collection.mutable
-import scala.collection.mutable.{Set => MSet}
+import scala.collection.mutable.{ListBuffer, Set => MSet}
 
 class SEIntegratedCircuit(
     $registers:Seq[ISERegister], //Registers in the circuit, indexed by regID
     $gates:Seq[ISEGate], //Gates in the circuit, indexed by gateID
-    $regDependents:Map[Int, Seq[Int]], //Register deps [regID -> Seq(gateID)]
-    delegate:ISEICDelegate
+    $regDependents:Map[Int, Seq[Int]] //Register deps [regID -> Seq(gateID)]
 )
 {
-    val registers = $registers.toArray
-    val gates = $gates.toArray
+    val registers:Array[ISERegister] = $registers.toArray
+    val gates:Array[ISEGate] = $gates.toArray
 
-    val regDependents = {
+    val regDependents:Array[Array[Int]] = {
         val b = mutable.ArrayBuilder.make[Array[Int]]
         for (i <- 0 until registers.length)
             b += $regDependents.getOrElse(i, Seq.empty).toArray
         b.result()
     }
 
-    val changeQueue = Seq.newBuilder[Int] //changed registers [regID]
+    val changeQueue:ListBuffer[Int] = new ListBuffer[Int]
 
     def getRegisterMap:Seq[ISERegister] = registers
+
+    def computeAll():Boolean =
+    {
+        for (i <- gates)
+            i.compute(this)
+        propagate(null)
+        changeQueue.isEmpty
+    }
 
     def getRegVal[T](regID:Int):T = registers(regID).getVal[T]
 
@@ -32,17 +39,10 @@ class SEIntegratedCircuit(
             changeQueue += regID
     }
 
-    def propagateInitial()
-    {
-        for (regID <- 0 until registers.length)
-            changeQueue += regID //mark all registers dirty
-        repropagate()
-    }
-
-    def repropagate():Boolean =
+    def propagate(callback:ISEICDelegate):Boolean =
     {
         val allChanges = Set.newBuilder[Int]
-        var changes:Seq[Int] = Seq.empty
+        var changes:List[Int] = List.empty
 
         val allComputes = Array.fill[Int](gates.length)(0)
         var computes = MSet[Int]()
@@ -90,15 +90,34 @@ class SEIntegratedCircuit(
         while (changes.nonEmpty && !hasOverflow)
 
         if (hasOverflow)
-            if (delegate != null) delegate.icDidThrowErrorFlag(
+            if (callback != null) callback.icDidThrowErrorFlag(
                 SEIntegratedCircuit.COMPUTE_OVERFLOW, changes, Seq(overflowGateID))
 
         val ch = allChanges.result()
         if (ch.nonEmpty) {
-            if (delegate != null) delegate.registersDidChange(ch)
+            if (callback != null) callback.registersDidChange(ch)
             true
         } else
             false
+    }
+
+    override def toString = {
+        val builder = new mutable.StringBuilder()
+        builder.append("SEIntegratedCircuit: DUMP\n")
+        builder.append("=== Registers ===\n")
+        for (i <- 0 until registers.length) {
+            val reg = registers(i)
+            builder.append(s"reg[$i] = ")
+            reg match {
+                case StandardRegister(r:Byte) => builder.append(s"$r {byte}")
+                case StandardRegister(r:Long) => builder.append(s"$r {long}")
+                case StandardRegister(r:Int)  => builder.append(s"$r {int}")
+                case ConstantRegister(r:Byte) => builder.append(s"$r {byte}")
+                case _ => builder.append(s"${reg.getVal} {unknown}")
+            }
+            builder.append("\n")
+        }
+        builder.result()
     }
 }
 
@@ -139,4 +158,29 @@ trait ISERegister
 trait ISEGate
 {
     def compute(ic:SEIntegratedCircuit)
+}
+
+case class StandardRegister[Type](var value:Type) extends ISERegister
+{
+    var queuedVal:Type = value
+
+    override def getVal[T] = value.asInstanceOf[T]
+
+    override def queueVal[T](newVal:T) =
+    {
+        queuedVal = newVal.asInstanceOf[Type]
+        value != queuedVal
+    }
+
+    override def pushVal(ic:SEIntegratedCircuit)
+    {
+        value = queuedVal
+    }
+}
+
+case class ConstantRegister[Type](c:Type) extends ISERegister
+{
+    override def getVal[T] = c.asInstanceOf[T]
+    override def queueVal[T](newVal:T) = false
+    override def pushVal(ic:SEIntegratedCircuit){}
 }

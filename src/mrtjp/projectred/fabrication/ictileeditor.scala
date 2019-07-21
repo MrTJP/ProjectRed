@@ -176,10 +176,6 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
 
     private var scheduledTicks = MMap[Point, Long]()
 
-    simEngineContainer.propagateSilently = true
-    recompileSchematic()
-    simEngineContainer.propagateSilently = false
-
     tileMapContainer.tilesLoadedDelegate = {() =>
         simNeedsRefresh = true
         for (tile <- tileMapContainer.tiles.values)
@@ -200,10 +196,8 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
         clear()
         tileMapContainer.loadTiles(tag)
 
-        simEngineContainer.propagateSilently = true
         recompileSchematic()
         simEngineContainer.loadSimState(tag)
-        simEngineContainer.propagateSilently = false
     }
 
     def writeDesc(out:MCDataOutput)
@@ -429,7 +423,6 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
         simNeedsRefresh = false
         simEngineContainer.delegate = this
         simEngineContainer.recompileSimulation(tileMapContainer)
-        simEngineContainer.propagateAll()
     }
 
     override def registersDidChange(registers:Set[Int])

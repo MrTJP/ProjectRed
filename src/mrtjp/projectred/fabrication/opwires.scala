@@ -150,7 +150,7 @@ class OpInsulatedWire(colour:Int) extends OpWire
     }
 
     @SideOnly(Side.CLIENT)
-    override def getOpName = EnumColour.values()(colour&0xFF).name+" Insulated wire"
+    override def getOpName = EnumColour.values()(colour&0xFF).getLocalizedName+" Insulated wire"
 }
 
 class OpBundledCable(colour:Int) extends OpWire
@@ -179,5 +179,5 @@ class OpBundledCable(colour:Int) extends OpWire
     }
 
     @SideOnly(Side.CLIENT)
-    override def getOpName = (if (colour != -1) EnumColour.values()(colour&0xFF).name+" " else "")+"Bundled cable"
+    override def getOpName = (if (colour != -1) EnumColour.values()(colour&0xFF).getLocalizedName+" " else "")+"Bundled cable"
 }

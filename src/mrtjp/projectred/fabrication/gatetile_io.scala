@@ -160,6 +160,7 @@ abstract class IOGateTileLogic(val gate:IOGateICTile) extends RedstoneGateTileLo
     def getOutputOp(input:Int, output:Int):ISEGate =
     {
         new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 ic.queueRegVal[Byte](output, if (ic.getRegVal(input) != 0) 1 else 0)
             }

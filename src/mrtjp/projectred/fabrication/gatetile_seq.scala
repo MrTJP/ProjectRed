@@ -218,6 +218,7 @@ class Pulse(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate)
         val schdTimeReg = this.schdTimeReg
 
         val calculation = new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 ic.getRegVal[Byte](stateReg) match {
                     case 0 => //Wait for high input state
@@ -291,6 +292,7 @@ class Repeater(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate)
         val delay = delays(gate.shape)
 
         val calculation = new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
 
                 def inputHi = ic.getRegVal[Byte](inputReg) != 0
@@ -374,6 +376,7 @@ class Randomizer(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate
         val timeStartReg = this.timeStartReg
 
         val calculation = new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
 
                 def inputHi = ic.getRegVal[Byte](inputReg) != 0
@@ -462,6 +465,7 @@ class SRLatch(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate)
         val stateReg = this.stateReg
 
         val calculation = new ISEGate {
+            private val serialVersionUID = 1L
             val rand = new Random()
 
             override def compute(ic:SEIntegratedCircuit) {
@@ -569,6 +573,7 @@ class ToggleLatch(gate:SequentialGateICTile) extends SequentialGateTileLogic(gat
         val defState = gate.shape
 
         val calculation = new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 def enterAState() {
                     ic.queueRegVal[Byte](stateReg, 0)
@@ -744,6 +749,7 @@ class TransparentLatch(gate:SequentialGateICTile) extends SequentialGateTileLogi
         val stateReg = this.stateReg
 
         val calculation = new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
 
                 def dataWrHi = ic.getRegVal[Byte](wrEnableReg) != 0
@@ -818,6 +824,7 @@ class Timer(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate) wit
         val timerMax = getTimerMax
 
         val calculation = new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 val sysTime = ic.getRegVal[Long](REG_SYSTIME)
                 val pointerVal = sysTime-ic.getRegVal[Long](timerStartReg) match {
@@ -957,6 +964,7 @@ class Sequencer(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate)
         val reflect = gate.shape == 1
 
         val calculation = new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 val quadron = ic.getRegVal[Long](REG_SYSTIME)%(timerMax*4)/timerMax
                 ic.queueRegVal[Byte](output1Reg, if (quadron == 0) 1 else 0)
@@ -1135,6 +1143,7 @@ class Counter(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate) w
         val decrVal = decr
 
         val calculation = new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
 
                 var counterVal = ic.getRegVal[Int](valueReg)
@@ -1239,6 +1248,7 @@ class StateCell(gate:SequentialGateICTile) extends SequentialGateTileLogic(gate)
         val timerMax = getTimerMax
 
         val calculation = new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit)
             {
                 val sysTime = ic.getRegVal[Long](REG_SYSTIME)
@@ -1374,6 +1384,7 @@ class Synchronizer(gate:SequentialGateICTile) extends SequentialGateTileLogic(ga
         val timerStartReg = this.timerStartReg
 
         val calculation = new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit)
             {
                 val inputMask = (if (ic.getRegVal[Byte](input2Reg) != 0) 2 else 0) | (if (ic.getRegVal[Byte](input1Reg) != 0) 1 else 0)

@@ -10,7 +10,8 @@ import mrtjp.core.vec.Point
 import mrtjp.projectred.fabrication.SEIntegratedCircuit._
 import net.minecraft.nbt.NBTTagCompound
 
-import scala.collection.mutable.{Map => MMap, Set => MSet}
+import scala.collection.mutable
+import scala.collection.mutable.{Map => MMap, Buffer => MBuffer, Set => MSet}
 
 trait IWireICTile
 {
@@ -130,10 +131,10 @@ abstract class WireICTile extends ICTile with TConnectableICTile with ISEWireTil
 
 private class WireNetChannel
 {
-    val points = MSet[(Point, Int)]()
+    val points = MBuffer[(Point, Int)]()
 
-    val inputs = MSet[(Point, Int)]()
-    val outputs = MSet[(Point, Int)]()
+    val inputs = MBuffer[(Point, Int)]()
+    val outputs = MBuffer[(Point, Int)]()
 
     private val inputsToRegIDMap = MMap[(Point, Int), Int]()
     private var outputRegID = -1
@@ -180,7 +181,7 @@ private class WireNetChannel
 
 class ImplicitWireNet(ic:ICTileMapContainer, p:Point, r:Int) extends IWireNet
 {
-    override val points = MSet[(Point, Int)]()
+    override val points = MBuffer[(Point, Int)]()
 
     private var regID = -1
 
@@ -221,12 +222,12 @@ class ImplicitWireNet(ic:ICTileMapContainer, p:Point, r:Int) extends IWireNet
 
 class WireNet(ic:ICTileMapContainer, p:Point, mask:Int) extends IWireNet
 {
-    override val points = MSet[(Point, Int)]()
+    override val points = MBuffer[(Point, Int)]()
 
-    private val channels = MSet[WireNetChannel]()
+    private val channels = MBuffer[WireNetChannel]()
 
-    private val inputs = MSet[(Point, Int)]()
-    private val outputs = MSet[(Point, Int)]()
+    private val inputs = MBuffer[(Point, Int)]()
+    private val outputs = MBuffer[(Point, Int)]()
 
     private val busWires = MSet[(Point, Int)]()
     private val portWires = MSet[(Point, Int)]()

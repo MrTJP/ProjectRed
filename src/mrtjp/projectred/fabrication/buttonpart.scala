@@ -107,7 +107,7 @@ class ButtonICTile extends ICTile with TICTileAcquisitions with IRedwireICGate w
         for (r <- 0 until 4)
             editor.simEngineContainer.simEngine.queueRegVal[Byte](outputRegs(r), if (on) 1 else 0)
 
-        editor.simEngineContainer.simEngine.repropagate()
+        editor.simEngineContainer.simEngine.propagate(editor.simEngineContainer)
     }
 
     override def onRegistersChanged(regIDs:Set[Int]){} //we dont care if other registers change

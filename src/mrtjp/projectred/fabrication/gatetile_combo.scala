@@ -162,6 +162,7 @@ object OR extends ComboGateTileLogic
         val outID = outputs(0)
 
         new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 ic.queueRegVal[Byte](outID, if (inIDs.exists(ic.getRegVal(_) != 0)) 1 else 0)
             }
@@ -202,6 +203,7 @@ object NOT extends ComboGateTileLogic
         val outIDs = outputs.filter(_ != -1).toSeq
 
         new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 val outVal = (if (ic.getRegVal(inID) != 0) 0 else 1).toByte
                 outIDs.foreach(ic.queueRegVal[Byte](_, outVal))
@@ -223,6 +225,7 @@ object AND extends ComboGateTileLogic
         val outID = outputs(0)
 
         new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 ic.queueRegVal[Byte](outID, if (inIDs.forall(ic.getRegVal(_) != 0)) 1 else 0)
             }
@@ -243,6 +246,7 @@ object NAND extends ComboGateTileLogic
         val outID = outputs(0)
 
         new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 ic.queueRegVal[Byte](outID, if (inIDs.forall(ic.getRegVal(_) != 0)) 0 else 1)
             }
@@ -262,6 +266,7 @@ object XOR extends ComboGateTileLogic
         val outID = outputs(0)
 
         new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 ic.queueRegVal[Byte](outID, if (ic.getRegVal(in1) != ic.getRegVal(in2)) 1 else 0)
             }
@@ -281,6 +286,7 @@ object XNOR extends ComboGateTileLogic
         val outID = outputs(0)
 
         new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 ic.queueRegVal[Byte](outID, if (ic.getRegVal(in1) == ic.getRegVal(in2)) 1 else 0)
             }
@@ -302,6 +308,7 @@ object Buffer extends ComboGateTileLogic
         val outIDs = outputs.filter(_ != -1).toSeq
 
         new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 val in = ic.getRegVal[Byte](inID)
                 outIDs.foreach(ic.queueRegVal[Byte](_, in))
@@ -321,6 +328,7 @@ object Multiplexer extends ComboGateTileLogic
         val outID = outputs(0)
 
         new ISEGate {
+            private val serialVersionUID = 1L
             override def compute(ic:SEIntegratedCircuit) {
                 ic.queueRegVal[Byte](outID,
                     if (ic.getRegVal[Byte](inIDs(2)) != 0)

@@ -762,7 +762,7 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
                 val nic = new NewICNode
                 nic.position = Point(size/2)-Point(nic.size/2)
                 nic.completionDelegate = {() =>
-                    val ic = new ICTileMapEditor(null)
+                    val ic = new ICTileMapEditor(null) //TODO Change this mechanism to not send entire blank IC desc
                     ic.tileMapContainer.name = nic.getName
                     ic.tileMapContainer.size = nic.selectedBoardSize*16
                     tile.sendNewICToServer(ic)

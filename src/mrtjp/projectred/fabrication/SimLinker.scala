@@ -24,7 +24,7 @@ trait ISEGateTile extends ISETile
 
 trait IWireNet
 {
-    val points:scala.collection.Set[(Point, Int)]
+    val points:scala.collection.mutable.Seq[(Point, Int)]
 
     def allocateRegisters(linker:ISELinker)
 
@@ -132,8 +132,8 @@ trait ISELinker
 
 object ISELinker
 {
-    def linkFromMap(map:ISETileMap, icDelegate: ISEICDelegate, logger:ISEStatLogger):SEIntegratedCircuit =
-        SELinker.linkFromMap(map, icDelegate, logger)
+    def linkFromMap(map:ISETileMap, logger:ISEStatLogger):SEIntegratedCircuit =
+        SELinker.linkFromMap(map, logger)
 }
 
 private class SELinker(logger:ISEStatLogger) extends ISELinker
@@ -253,10 +253,12 @@ private class SELinker(logger:ISEStatLogger) extends ISELinker
 
 private object SELinker
 {
-    def linkFromMap(map:ISETileMap, icDelegate:ISEICDelegate, logger:ISEStatLogger):SEIntegratedCircuit =
+    def linkFromMap(map:ISETileMap, logger:ISEStatLogger):SEIntegratedCircuit =
     {
         val linker = new SELinker(logger)
         import linker._
+
+        val startTime = System.currentTimeMillis()
 
         logger.logInfo("Adding SFRs...")
         //Add all SFRs
@@ -340,11 +342,18 @@ private object SELinker
             g.declareOperations(linker) //from gates
 
         logger.logInfo("Creating IC...")
-        new SEIntegratedCircuit(
+        val ic = new SEIntegratedCircuit(
             registers.toSeq,
             gates.toSeq,
-            regDependents.toMap,
-            icDelegate
+            regDependents.toMap
         )
+
+        logger.logInfo("Computing initial signals...")
+        ic.computeAll()
+
+        val endTime = System.currentTimeMillis()
+
+        logger.logInfo(s"Completed linking in ${endTime-startTime} ms.")
+        ic
     }
 }
