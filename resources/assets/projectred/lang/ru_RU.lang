@@ -1,4 +1,14 @@
 itemGroup.projectred.core=Project Red: Основа
+itemGroup.projectred.expansion=Project Red: Расширение
+itemGroup.projectred.transportation=Project Red: Транспортировка
+itemGroup.projectred.exploration=Project Red: Исследование
+itemGroup.projectred.illumination=Project Red: Освещение
+itemGroup.projectred.integration=Project Red: Интеграция
+itemGroup.projectred.transmission=Project Red: Провода
+itemGroup.projectred.fabrication=Project Red: Производство
+itemGroup.projectred.compatibility=Project Red: Совместимость
+itemGroup.projectred.relocation=Project Red: Перемещение
+
 
 item.projectred.core.itemResource.plate.name=Печатная плата
 item.projectred.core.itemResource.conductive_plate.name=Токопроводящая плата
@@ -19,7 +29,6 @@ item.projectred.core.itemResource.motor.name=Двигатель
 item.projectred.core.itemResource.copper_coil.name=Медная катушка
 item.projectred.core.itemResource.iron_coil.name=Железная катушка
 item.projectred.core.itemResource.gold_coil.name=Золотая катушка
-
 item.projectred.core.itemResource.illumar0.name=Белая светопыль
 item.projectred.core.itemResource.illumar1.name=Оранжевая светопыль
 item.projectred.core.itemResource.illumar2.name=Сиреневая светопыль
@@ -36,26 +45,16 @@ item.projectred.core.itemResource.illumar12.name=Коричневая свето
 item.projectred.core.itemResource.illumar13.name=Зелёная светопыль
 item.projectred.core.itemResource.illumar14.name=Красная светопыль
 item.projectred.core.itemResource.illumar15.name=Чёрная светопыль
-
-item.projectred.core.itemResource.partcloth.name=Плетёная ткань
-item.projectred.core.itemResource.partsail.name=Парус
+item.projectred.core.itemResource.cloth.name=Плетёная ткань
+item.projectred.core.itemResource.sail.name=Парус
 item.projectred.core.itemResource.ruby.name=Рубин
 item.projectred.core.itemResource.sapphire.name=Сапфир
 item.projectred.core.itemResource.peridot.name=Перидот
-item.projectred.core.itemResource.partredironcomp.name=Смесь красного камня с железом
-item.projectred.core.itemResource.partsandcoalcomp.name=Смесь песка с углём
-item.projectred.core.itemResource.partredsiliconcomp.name=Смесь красного камня с кремнием
-item.projectred.core.itemResource.partglowsiliconcomp.name=Смесь светящегося камня с кремнием
-
-item.projectred.core.itemResource.nullchip.name=Нулевой чип маршрутизации
-item.projectred.core.itemResource.nullupgrd.name=Нулевой чип улучшения
-item.projectred.core.itemResource.upgrd_lx.name=Улучшение LX
-item.projectred.core.itemResource.upgrd_ly.name=Улучшение LY
-item.projectred.core.itemResource.upgrd_lz.name=Улучшение LZ
-item.projectred.core.itemResource.upgrd_rx.name=Улучшение RX
-item.projectred.core.itemResource.upgrd_ry.name=Улучшение RY
-item.projectred.core.itemResource.upgrd_rz.name=Улучшение RZ
-
+item.projectred.core.itemResource.red_iron_comp.name=Смесь красного камня с железом
+item.projectred.core.itemResource.sand_coal_comp.name=Смесь песка с углём
+item.projectred.core.itemResource.red_silicon_comp.name=Смесь красного камня с кремнием
+item.projectred.core.itemResource.glow_silicon_comp.name=Смесь светящегося камня с кремнием
+item.projectred.core.itemResource.null_chip.name=Нулевой чип маршрутизации
 item.projectred.core.itemResource.copper_ingot.name=Медный слиток
 item.projectred.core.itemResource.tin_ingot.name=Оловянный слиток
 item.projectred.core.itemResource.silver_ingot.name=Серебряный слиток
@@ -64,24 +63,36 @@ item.projectred.core.itemResource.electrotine_dust.name=Электротин
 item.projectred.core.itemResource.electrotine_iron_comp.name=Электротиновый сплав железа
 item.projectred.core.itemResource.electrotine_silicon_comp.name=Электротиновый сплав кремния
 item.projectred.core.itemResource.electro_silicon.name=Электрический кремний
-
 item.projectred.core.drawplate.name=Волока
 item.projectred.core.multimeter.name=Отладчик проводов
 item.projectred.core.screwdriver.name=Отвёртка
 item.projectred.core.routerUtility.name=Маршрутизатор
-item.projectred.core.datacard.name=Карта памяти
 
 
-
-
-itemGroup.projectred.expansion=Project Red: Расширение
+item.projectred.expansion.batteryEmpty.name=Батарея (пустая)
+item.projectred.expansion.battery.name=Батарея (заряженная)
+item.projectred.expansion.screwdriverElectric.name=Электрическая отвёртка
+item.projectred.expansion.jetpack.name=Реактивный пакет
+item.projectred.expansion.enderPearlInfused.name=Заряженный эндер-жемчуг
+item.projectred.expansion.plan.name=План рецепта
+item.projectred.expansion.solarPanel.name=Солнечная панель
+tile.projectred.expansion.machine1|0.name=Индуктивная печь
+tile.projectred.expansion.machine1|1.name=Электротиновый генератор
 tile.projectred.expansion.machine2|0.name=Разрушитель блоков
 tile.projectred.expansion.machine2|1.name=Импортер предметов
 tile.projectred.expansion.machine2|2.name=Установщик
+tile.projectred.expansion.machine2|3.name=Фильтр
+tile.projectred.expansion.machine2|4.name=Воспламенитель
+tile.projectred.expansion.machine2|5.name=Аккумулятор
+tile.projectred.expansion.machine2|6.name=Заряжающий стол
+tile.projectred.expansion.machine2|7.name=Телепозер
+tile.projectred.expansion.machine2|8.name=Двигатель каркаса
+tile.projectred.expansion.machine2|9.name=Каркасный линейный привод
+tile.projectred.expansion.machine2|10.name=Проектный стол
+tile.projectred.expansion.machine2|11.name=Автоматический проектый стол
 tile.projectred.expansion.machine2|12.name=Алмазный разрушитель блоков
+enchantment.projectred.expansion.fuelEfficiency=Электрическая эффективность
 
-
-itemGroup.projectred.transportation=Project Red: Транспортировка
 
 item.projectred.transportation.routingChip|0.name=Чип "Получатель предметов"
 item.projectred.transportation.routingChip|1.name=Чип "Динамичный получатель предметов"
@@ -91,21 +102,18 @@ item.projectred.transportation.routingChip|4.name=Чип "Извлекатель
 item.projectred.transportation.routingChip|5.name=Чип "Передатчик предметов"
 item.projectred.transportation.routingChip|6.name=Чип "Сберегатель предметов"
 item.projectred.transportation.routingChip|7.name=Чип "Создание предметов"
-
+item.projectred.transportation.routingChip|8.name=Чип "Расширенное создание предметов"
 item.projectred.transportation.routerUtility.name=Устройство маршрутизации
-
 item.projectred.transportation.pipe|0.name=Транспортная труба для предметов
 item.projectred.transportation.pipe|1.name=Маршрутизирующая перекрёстная труба
 item.projectred.transportation.pipe|2.name=Маршрутизирующая труба с интерфейсом
-item.projectred.transportation.pipe|3.name=Маршрутизирующая труба создания
-item.projectred.transportation.pipe|4.name=Маршрутизирующая труба запроса
-item.projectred.transportation.pipe|5.name=Маршрутизирующая труба расширения
-item.projectred.transportation.pipe|6.name=Маршрутизирующая труба-брандмауэр
-item.projectred.transportation.pipe|7.name=Труба под давлением
-item.projectred.transportation.pipe|8.name=Баростойкая труба
+item.projectred.transportation.pipe|3.name=Маршрутизирующая труба запроса
+item.projectred.transportation.pipe|4.name=Маршрутизирующая труба-брандмауэр
+item.projectred.transportation.pipe|32.name=Network Valve pipe
+item.projectred.transportation.pipe|33.name=Network Latency pipe
+item.projectred.transportation.pipe|64.name=Pressure tube
+item.projectred.transportation.pipe|65.name=Pressure Resistance tube
 
-
-itemGroup.projectred.exploration=Project Red: Исследование
 
 tile.projectred.exploration.ore|0.name=Рубиновая руда
 tile.projectred.exploration.ore|1.name=Сапфировая руда
@@ -122,6 +130,10 @@ tile.projectred.exploration.stone|4.name=Базальтовый кирпич
 tile.projectred.exploration.stone|5.name=Рубиновый блок
 tile.projectred.exploration.stone|6.name=Сапфировый блок
 tile.projectred.exploration.stone|7.name=Перидотовый блок
+tile.projectred.exploration.stone|8.name=Медный блок
+tile.projectred.exploration.stone|9.name=Оловянный блок
+tile.projectred.exploration.stone|10.name=Серебряный блок
+tile.projectred.exploration.stone|11.name=Электротиновый блок
 tile.projectred.exploration.barrel|0.name=Бочка для предметов
 item.projectred.exploration.woolGin.name=Чесалка
 item.projectred.exploration.backpack|0.name=Белый рюкзак
@@ -140,6 +152,7 @@ item.projectred.exploration.backpack|12.name=Коричневый рюкзак
 item.projectred.exploration.backpack|13.name=Зелёный рюкзак
 item.projectred.exploration.backpack|14.name=Красный рюкзак
 item.projectred.exploration.backpack|15.name=Чёрный рюкзак
+item.projectred.exploration.athame.name=Атам
 item.projectred.exploration.axeRuby.name=Рубиновый топор
 item.projectred.exploration.axeSapphire.name=Сапфировый топор
 item.projectred.exploration.axePeridot.name=Перидотовый топор
@@ -195,29 +208,7 @@ tile.projectred.exploration.stoneWall|8.name=Медная стена
 tile.projectred.exploration.stoneWall|9.name=Оловянная стена
 tile.projectred.exploration.stoneWall|10.name=Серебряная стена
 tile.projectred.exploration.stoneWall|11.name=Электротиновая стена
-tile.projectred.exploration.lily|0.name=Отклоняющаяся лилия
-item.projectred.exploration.lilyseed|0.name=Семя белой отклоняющейся лилии
-item.projectred.exploration.lilyseed|1.name=Семя оранжевой отклоняющейся лилии
-item.projectred.exploration.lilyseed|2.name=Семя сиреневой отклоняющейся лилии
-item.projectred.exploration.lilyseed|3.name=Семя светло-синей отклоняющейся лилии
-item.projectred.exploration.lilyseed|4.name=Семя жёлтой отклоняющейся лилии
-item.projectred.exploration.lilyseed|5.name=Семя лаймовой отклоняющейся лилии
-item.projectred.exploration.lilyseed|6.name=Семя розовой отклоняющейся лилии
-item.projectred.exploration.lilyseed|7.name=Семя серой отклоняющейся лилии
-item.projectred.exploration.lilyseed|8.name=Семя светло-серой отклоняющейся лилии
-item.projectred.exploration.lilyseed|9.name=Семя бирюзовой отклоняющейся лилии
-item.projectred.exploration.lilyseed|10.name=Семя фиолетовой отклоняющейся лилии
-item.projectred.exploration.lilyseed|11.name=Семя синей отклоняющейся лилии
-item.projectred.exploration.lilyseed|12.name=Семя коричневой отклоняющейся лилии
-item.projectred.exploration.lilyseed|13.name=Семя зелёной отклоняющейся лилии
-item.projectred.exploration.lilyseed|14.name=Семя красной отклоняющейся лилии
-item.projectred.exploration.lilyseed|15.name=Семя чёрной отклоняющейся лилии
 
-
-
-
-
-itemGroup.projectred.illumination=Project Red: Освещение
 
 item.projectred.illumination.lantern|0.name=Белый фонарь
 item.projectred.illumination.lantern|1.name=Оранжевый фонарь
@@ -331,22 +322,22 @@ item.projectred.illumination.falloutLamp|12.name=Коричневая защищ
 item.projectred.illumination.falloutLamp|13.name=Зелёная защищённая лампа
 item.projectred.illumination.falloutLamp|14.name=Красная защищённая лампа
 item.projectred.illumination.falloutLamp|15.name=Чёрная защищённая лампа
-item.projectred.illumination.cageLampInverted|0.name=Инверторная белая защищённая лампа
-item.projectred.illumination.cageLampInverted|1.name=Инверторная оранжевая защищённая лампа
-item.projectred.illumination.cageLampInverted|2.name=Инверторная сиреневая защищённая лампа
-item.projectred.illumination.cageLampInverted|3.name=Инверторная светло-синяя защищённая лампа
-item.projectred.illumination.cageLampInverted|4.name=Инверторная жёлтая защищённая лампа
-item.projectred.illumination.cageLampInverted|5.name=Инверторная лаймовая защищённая лампа
-item.projectred.illumination.cageLampInverted|6.name=Инверторная розовая защищённая лампа
-item.projectred.illumination.cageLampInverted|7.name=Инверторная серая защищённая лампа
-item.projectred.illumination.cageLampInverted|8.name=Инверторная светло-серая защищённая лампа
-item.projectred.illumination.cageLampInverted|9.name=Инверторная бирюзовая защищённая лампа
-item.projectred.illumination.cageLampInverted|10.name=Инверторная фиолетовая защищённая лампа
-item.projectred.illumination.cageLampInverted|11.name=Инверторная синяя защищённая лампа
-item.projectred.illumination.cageLampInverted|12.name=Инверторная коричневая защищённая лампа
-item.projectred.illumination.cageLampInverted|13.name=Инверторная зелёная защищённая лампа
-item.projectred.illumination.cageLampInverted|14.name=Инверторная красная защищённая лампа
-item.projectred.illumination.cageLampInverted|15.name=Инверторная чёрная защищённая лампа
+item.projectred.illumination.falloutLampInverted|0.name=Инверторная белая защищённая лампа
+item.projectred.illumination.falloutLampInverted|1.name=Инверторная оранжевая защищённая лампа
+item.projectred.illumination.falloutLampInverted|2.name=Инверторная сиреневая защищённая лампа
+item.projectred.illumination.falloutLampInverted|3.name=Инверторная светло-синяя защищённая лампа
+item.projectred.illumination.falloutLampInverted|4.name=Инверторная жёлтая защищённая лампа
+item.projectred.illumination.falloutLampInverted|5.name=Инверторная лаймовая защищённая лампа
+item.projectred.illumination.falloutLampInverted|6.name=Инверторная розовая защищённая лампа
+item.projectred.illumination.falloutLampInverted|7.name=Инверторная серая защищённая лампа
+item.projectred.illumination.falloutLampInverted|8.name=Инверторная светло-серая защищённая лампа
+item.projectred.illumination.falloutLampInverted|9.name=Инверторная бирюзовая защищённая лампа
+item.projectred.illumination.falloutLampInverted|10.name=Инверторная фиолетовая защищённая лампа
+item.projectred.illumination.falloutLampInverted|11.name=Инверторная синяя защищённая лампа
+item.projectred.illumination.falloutLampInverted|12.name=Инверторная коричневая защищённая лампа
+item.projectred.illumination.falloutLampInverted|13.name=Инверторная зелёная защищённая лампа
+item.projectred.illumination.falloutLampInverted|14.name=Инверторная красная защищённая лампа
+item.projectred.illumination.falloutLampInverted|15.name=Инверторная чёрная защищённая лампа
 item.projectred.illumination.fixtureLight|0.name=Белый светильник
 item.projectred.illumination.fixtureLight|1.name=Оранжевый светильник
 item.projectred.illumination.fixtureLight|2.name=Сиреневый светильник
@@ -413,10 +404,6 @@ item.projectred.illumination.cageLampInverted|14.name=Инверторная к�
 item.projectred.illumination.cageLampInverted|15.name=Инверторная чёрная лампа в клетке
 
 
-
-
-itemGroup.int=Project Red: Интеграция
-
 item.projectred.integration.gate|0.name=ИЛИ гейт
 item.projectred.integration.gate|1.name=ИЛИ-НЕ гейт
 item.projectred.integration.gate|2.name=НЕ гейт
@@ -451,10 +438,8 @@ item.projectred.integration.gate|30.name=Панель ввода шины
 item.projectred.integration.gate|31.name=Регистр
 item.projectred.integration.gate|32.name=Гейт сегментного индикатора
 item.projectred.integration.gate|33.name=Декодирующий рандомизатор
+item.projectred.integration.gate|34.name=Интегральная схема
 
-
-
-itemGroup.projectred.transmission=Project Red: Провода
 
 item.projectred.transmission.wire|0.name=Провод из красного сплава
 item.projectred.transmission.wire|1.name=Белый изолированный провод
@@ -511,23 +496,10 @@ item.projectred.transmission.wireFramed|16.name=Изолированный пр�
 item.projectred.transmission.wireFramed|17.name=Шина в оболочке
 item.projectred.transmission.wireFramed|34.name=Линия электропередачи 100В в оболочке
 
-
-
-
-itemGroup.projectred.compatibility=Project Red: Совместимость
-
-tile.projectred.compatibility.liqredStone.name=Жидкий красный камень
-tile.projectred.compatibility.liqcondredmetal.name=Расплавленный проводящий красный металл
-fluid.redstone.molten=Жидкий красный камень
-fluid.redmetal.molten=Расплавленный проводящий красный металл
-
-
-
-
-itemGroup.projectred.fabrication=Project Red: Производство
-
 item.projectred.fabrication.icBlueprint.name=Чертеж микросхемы
 item.projectred.fabrication.icChip|0.name=Микросхема
 item.projectred.fabrication.icChip|1.name=Микросхема (творческий режим)
 tile.projectred.fabrication.icMachine|0.name=Микросхемный верстак
 tile.projectred.fabrication.icMachine|1.name=Принтер микросхем
+
+tile.projectred.relocation.frame.name=Каркас
