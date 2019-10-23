@@ -45,6 +45,8 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
     private var leftMouseDown = false
     private var rightMouseDown = false
     private var mouseStart = Point(0, 0)
+    private var dragPoint:Point = null
+    private var oldOp:TileEditorOp = null
 
     def size = editor.size*sizeMult
     override def frame = Rect(position, Size((size.width*scale).toInt, (size.height*scale).toInt))
@@ -192,6 +194,7 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
 
     override def mouseClicked_Impl(p:Point, button:Int, consumed:Boolean):Boolean =
     {
+        if (button == 2) dragPoint = p
         if (isCircuitValid && !consumed && rayTest(p)) button match {
             case 0 =>
                 leftMouseDown = true
@@ -213,7 +216,7 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                     case _ =>
                 }
                 return true
-            case _ if button == mcInst.gameSettings.keyBindPickBlock.getKeyCode =>
+            case _ if button == 100+mcInst.gameSettings.keyBindPickBlock.getKeyCode =>
                 doPickOp()
                 return true
             case _ =>
@@ -239,6 +242,18 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                 val part = editor.getTile(mouseEnd)
                 if (part != null) part.onActivated()
             }
+        }
+        if (button == 2) {
+            dragPoint = null
+        }
+        false
+    }
+    
+    override def mouseDragged_Impl(p:Point, button:Int, time:Long, consumed:Boolean):Boolean = 
+    {
+        if (button == 2) {
+            if (dragPoint != null) position -= dragPoint-p
+            dragPoint = p
         }
         false
     }
@@ -267,7 +282,15 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                 doPickOp()
                 true
             case _ if keycode == mcInst.gameSettings.keyBindInventory.getKeyCode =>
-                opPickDelegate(TileEditorOpDefs.Erase.getOp)
+                if (currentOp == TileEditorOpDefs.Erase.getOp)
+                {
+                    opPickDelegate(oldOp)
+                }
+                else
+                {
+                    oldOp = currentOp
+                    opPickDelegate(TileEditorOpDefs.Erase.getOp)
+                }
                 true
             case _ => false
         }
@@ -285,7 +308,7 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
         if (rayTest(pos))
         {
             val part = editor.getTile(toGridPoint(pos))
-            opPickDelegate(if (part != null) part.getPickOp else null)
+            if (part != null) opPickDelegate(part.getPickOp)
         }
     }
 
