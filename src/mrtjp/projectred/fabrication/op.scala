@@ -20,6 +20,7 @@ object TileEditorOpDefs extends Enum
     type EnumVal = OpDef
 
     //tools
+    val Select = OpDef(new TileEditorOpSelect)
     val Erase = OpDef(new TileEditorOpErase)
 
     //primitives
@@ -141,6 +142,8 @@ trait TileEditorOp
     def writeOp(editor:ICTileMapEditor, start:Point, end:Point, out:MCDataOutput)
     def readOp(editor:ICTileMapEditor, in:MCDataInput)
 
+    def useClientOp(editorNode:TileMapEditorNode, start:Point, end:Point):Boolean = false
+    
     @SideOnly(Side.CLIENT)
     def getOpName:String
     @SideOnly(Side.CLIENT)

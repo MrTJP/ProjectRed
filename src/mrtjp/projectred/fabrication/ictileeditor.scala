@@ -237,9 +237,12 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
         case 0 => readDesc(in)
         case 1 =>
             val tile = ICTile.createTile(in.readUByte())
-            setTile_do(Point(in.readUByte(), in.readUByte()), tile)
+            val p = Point(in.readUByte(), in.readUByte())
             tile.readDesc(in)
-        case 2 => removeTile_do(Point(in.readUByte(), in.readUByte()))
+            if (network.isRemote) setTile_do(p, tile) else setTile(p, tile)
+        case 2 =>
+            val p = Point(in.readUByte(), in.readUByte());
+            if (network.isRemote) removeTile_do(p) else removeTile(p)
         case 3 => TileEditorOp.getOperation(in.readUByte()).readOp(this, in)
         case 4 => getTile(Point(in.readUByte(), in.readUByte())) match {
             case g:TClientNetICTile => g.readClientPacket(in)
@@ -370,6 +373,7 @@ class ICTileMapEditor(val network:IICTileEditorNetwork) extends IICSimEngineCont
         tile.bindEditor(this)
         tileMapContainer.tiles += (pos.x, pos.y) -> tile
         tile.onAdded()
+        notifyNeighbors(pos, 15)
     }
 
     def getTile(pos:Point):ICTile = tileMapContainer.getTile(pos.x, pos.y)

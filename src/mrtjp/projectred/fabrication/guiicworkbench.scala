@@ -47,6 +47,9 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
     private var mouseStart = Point(0, 0)
     private var dragPoint:Point = null
     private var oldOp:TileEditorOp = null
+    
+    private var selection:(Point, Point) = null
+    private var clipboard:Array[Array[ICTile]] = null
 
     def size = editor.size*sizeMult
     override def frame = Rect(position, Size((size.width*scale).toInt, (size.height*scale).toInt))
@@ -84,6 +87,14 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                     currentOp.renderHover(ccrs, editor, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
                 else if (leftMouseDown)
                     currentOp.renderDrag(ccrs, editor, mouseStart, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
+            }
+            
+            //draw selection
+            if (selection != null) {
+                for (px <- selection._1.x to selection._2.x)
+                    for (py <- selection._1.y to selection._2.y) {
+                        TileEditorOp.renderHolo(f.x, f.y, size.width*scale, size.height*scale, editor.size, Point(px, py), 0x44FFFF44)
+                    }
             }
 
             //draw compile warning/error symbols, and also highlight related errors of mouse targeted tile
@@ -229,7 +240,7 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
         if (leftMouseDown) {
             leftMouseDown = false
             val mouseEnd = toGridPoint(p)
-            val opUsed = currentOp != null && editor.sendOpUse(currentOp, mouseStart, mouseEnd)
+            val opUsed = currentOp != null && (currentOp.useClientOp(this, mouseStart, mouseEnd) || editor.sendOpUse(currentOp, mouseStart, mouseEnd))
             if (!opUsed && mouseEnd == mouseStart) {
                 val part = editor.getTile(mouseEnd)
                 if (part != null) part.onClicked()
@@ -278,6 +289,19 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
             case KEY_ESCAPE if currentOp != null =>
                 opPickDelegate(null)
                 true
+            case KEY_DELETE if selection != null =>
+                eraseSelection()
+                true
+            case KEY_C if selection != null =>
+                copySelection()
+                true
+            case KEY_X if selection != null =>
+                copySelection()
+                eraseSelection()
+                true
+            case KEY_V if selection != null && clipboard != null=>
+                pasteClipboard()
+                true
             case _ if keycode == mcInst.gameSettings.keyBindPickBlock.getKeyCode =>
                 doPickOp()
                 true
@@ -310,6 +334,56 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
             val part = editor.getTile(toGridPoint(pos))
             if (part != null) opPickDelegate(part.getPickOp)
         }
+    }
+    
+    def select(start:Point, end:Point)
+    {
+        val s = (Point(math.min(start.x, end.x), math.min(start.y, end.y)), Point(math.max(start.x, end.x), math.max(start.y, end.y)))
+        if (selection == s) selection = null else selection = s
+    }
+    
+    def eraseSelection()
+    {
+        val w = selection._2.x-selection._1.x
+        val h = selection._2.y-selection._1.y
+        for (x <- 0 to w) for (y <- 0 to h) {
+            editor.sendRemoveTile(Point(selection._1.x+x, selection._1.y+y))
+        }
+    }
+    
+    def copySelection()
+    {
+        val w = selection._2.x-selection._1.x+1
+        val h = selection._2.y-selection._1.y+1
+        clipboard = Array.ofDim(w, h)
+        for (x <- 0 until w) for (y <- 0 until h) {
+            clipboard(x)(y) = editor.getTile(Point(selection._1.x+x, selection._1.y+y))
+        }
+    }
+    
+    def pasteClipboard()
+    {
+        for (x <- 0 until clipboard.length) for (y <- 0 until clipboard(0).length) {
+            val tile = clipboard(x)(y)
+            val p = Point(selection._1.x+x, selection._1.y+y)
+            if (p.x >= 0 && p.y >= 0 && p.x < editor.size.width && p.y < editor.size.height)
+            {
+                if (tile != null) {
+                    tile.bindPos(p)
+                    editor.sendTileAdded(tile)
+                }
+                else
+                {
+                    editor.sendRemoveTile(p)
+                }
+            }
+        }
+    }
+    
+    def setOp(op:TileEditorOp)
+    {
+        selection = null
+        currentOp = op
     }
 
     def incScale(){rescaleAt(frame.midPoint, math.min(scale+0.2, 3.0))}
@@ -733,11 +807,12 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
                 toolset.title = name
                 toolset.opSet = opset.map(_.getOp)
                 toolset.setup()
-                toolset.opSelectDelegate = {op => pref.currentOp = op }
+                toolset.opSelectDelegate = {op => pref.setOp(op)}
                 toolbar.addChild(toolset)
                 toolSets :+= toolset
             }
 
+            addToolset("", Seq(Select))
             addToolset("", Seq(Erase))
             addToolset("Debug", Seq(/*Torch,*/ Lever, Button))
             addToolset("", Seq(AlloyWire))
