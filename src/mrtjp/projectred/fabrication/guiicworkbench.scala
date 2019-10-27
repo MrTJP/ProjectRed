@@ -31,6 +31,9 @@ import org.lwjgl.opengl.GL11
 import scala.collection.JavaConversions._
 import scala.collection.immutable.ListMap
 import scala.collection.mutable.{ListBuffer => MListBuffer}
+import codechicken.lib.data.MCDataOutput
+import io.netty.buffer.Unpooled
+import codechicken.lib.packet.PacketCustom
 
 class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
 {
@@ -42,10 +45,10 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
 
     var opPickDelegate = {_:TileEditorOp => ()}
 
+    private var mousePos:Point = null
     private var leftMouseDown = false
     private var rightMouseDown = false
     private var mouseStart = Point(0, 0)
-    private var dragPoint:Point = null
     private var oldOp:TileEditorOp = null
     
     private var selection:(Point, Point) = null
@@ -89,12 +92,18 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                     currentOp.renderDrag(ccrs, editor, mouseStart, toGridPoint(mouse), f.x, f.y, size.width*scale, size.height*scale)
             }
             
-            //draw selection
+            //draw selection and clipboard
             if (selection != null) {
                 for (px <- selection._1.x to selection._2.x)
                     for (py <- selection._1.y to selection._2.y) {
                         TileEditorOp.renderHolo(f.x, f.y, size.width*scale, size.height*scale, editor.size, Point(px, py), 0x44FFFF44)
                     }
+                if (clipboard != null) {
+                    for (px <- selection._1.x until selection._1.x+clipboard.length)
+                        for (py <- selection._1.y until selection._1.y+clipboard(0).length) {
+                            TileEditorOp.renderHolo(f.x, f.y, size.width*scale, size.height*scale, editor.size, Point(px, py), 0x44888800)
+                        }
+                }
             }
 
             //draw compile warning/error symbols, and also highlight related errors of mouse targeted tile
@@ -205,7 +214,6 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
 
     override def mouseClicked_Impl(p:Point, button:Int, consumed:Boolean):Boolean =
     {
-        if (button == 2) dragPoint = p
         if (isCircuitValid && !consumed && rayTest(p)) button match {
             case 0 =>
                 leftMouseDown = true
@@ -254,29 +262,22 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                 if (part != null) part.onActivated()
             }
         }
-        if (button == 2) {
-            dragPoint = null
-        }
-        false
-    }
-    
-    override def mouseDragged_Impl(p:Point, button:Int, time:Long, consumed:Boolean):Boolean = 
-    {
-        if (button == 2) {
-            if (dragPoint != null) position -= dragPoint-p
-            dragPoint = p
-        }
         false
     }
 
     override def mouseScrolled_Impl(p:Point, dir:Int, consumed:Boolean) =
     {
-        if (!consumed && rayTest(p)) {
+        if (!consumed && rayTest(p) && !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             if (dir > 0) rescaleAt(p, math.min(scale+0.1, 3.0))
             else if (dir < 0) rescaleAt(p, math.max(scale-0.1, 0.5))
             true
         }
         else false
+    }
+
+    override def frameUpdate_Impl(mouse:Point, rframe:Float)
+    {
+          mousePos = mouse
     }
 
     override def keyPressed_Impl(c:Char, keycode:Int, consumed:Boolean) =
@@ -288,18 +289,44 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
                 true
             case KEY_ESCAPE if currentOp != null =>
                 opPickDelegate(null)
+                clipboard = null
+                true
+            case KEY_R if mousePos != null =>
+                if (clipboard != null)
+                {
+                    val newClipboard = Array.ofDim[ICTile](clipboard(0).length, clipboard.length)
+                    for (x <- 0 until clipboard.length) for (y <- 0 until clipboard(0).length)
+                    {
+                        if (clipboard(x)(y).isInstanceOf[TICTileOrient])
+                        {
+                            val to = clipboard(x)(y).asInstanceOf[TICTileOrient]
+                            to.setRotation((to.rotation+1)%4)
+                        }
+                        newClipboard(clipboard(0).length-1-y)(x) = clipboard(x)(y)
+                    }
+                    clipboard = newClipboard
+                }
+                else
+                {
+                    val tile = editor.getTile(toGridPoint(mousePos))
+                    if (tile.isInstanceOf[GateICTile])
+                    {
+                        tile.asInstanceOf[GateICTile].rotate()
+                        editor.sendTileAdded(tile)
+                    }
+                }
                 true
             case KEY_DELETE if selection != null =>
                 eraseSelection()
                 true
-            case KEY_C if selection != null =>
+            case KEY_C if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && selection != null) =>
                 copySelection()
                 true
-            case KEY_X if selection != null =>
+            case KEY_X if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && selection != null) =>
                 copySelection()
                 eraseSelection()
                 true
-            case KEY_V if selection != null && clipboard != null=>
+            case KEY_V if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && selection != null && clipboard != null) =>
                 pasteClipboard()
                 true
             case _ if keycode == mcInst.gameSettings.keyBindPickBlock.getKeyCode =>
@@ -356,8 +383,24 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
         val w = selection._2.x-selection._1.x+1
         val h = selection._2.y-selection._1.y+1
         clipboard = Array.ofDim(w, h)
-        for (x <- 0 until w) for (y <- 0 until h) {
-            clipboard(x)(y) = editor.getTile(Point(selection._1.x+x, selection._1.y+y))
+        for (x <- 0 until w) for (y <- 0 until h)
+        {
+            val tile = editor.getTile(Point(selection._1.x+x, selection._1.y+y))
+            if (tile != null)
+            {
+                val tileCopy = ICTile.createTile(tile.id)
+                val data = new PacketCustom("", 1)
+                data.readByte()
+                tile.writeDesc(data)
+                tileCopy.readDesc(data)
+                tileCopy.bindEditor(editor)
+                tileCopy.bindPos(Point(x, y))
+                clipboard(x)(y) = tileCopy
+            }
+            else
+            {
+                clipboard(x)(y) = null
+            }
         }
     }
     
@@ -366,9 +409,10 @@ class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
         for (x <- 0 until clipboard.length) for (y <- 0 until clipboard(0).length) {
             val tile = clipboard(x)(y)
             val p = Point(selection._1.x+x, selection._1.y+y)
-            if (p.x >= 0 && p.y >= 0 && p.x < editor.size.width && p.y < editor.size.height)
-            {
-                if (tile != null) {
+            if (p.x >= 0 && p.y >= 0 && p.x < editor.size.width && p.y < editor.size.height) {
+                val isValidIO = TileEditorOp.isOnBorder(editor.size, p) && !TileEditorOp.isOnCorner(editor.size, p) && tile.isInstanceOf[IOGateICTile]
+                val isValidRegular = !TileEditorOp.isOnBorder(editor.size, p) && !TileEditorOp.isOnCorner(editor.size, p) && !tile.isInstanceOf[IOGateICTile]
+                if (tile != null && (isValidIO || isValidRegular)) {
                     tile.bindPos(p)
                     editor.sendTileAdded(tile)
                 }
@@ -453,6 +497,16 @@ class ICToolsetNode extends TNode
         leadingButton.mouseoverLock = false
         leadingButton = button
         leadingButton.mouseoverLock = true
+    }
+    
+    override def mouseScrolled_Impl(p:Point, dir:Int, consumed:Boolean):Boolean =
+    {
+        if (consumed || !focused || !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) return false
+        val sel = buttonOpMap.filter(_._1.mouseoverLock).headOption.orNull
+        if (sel == null) return false
+        val op = opSet((opSet.indexOf(sel._2)+opSet.length-dir)%opSet.length)
+        buttonOpMap.filter(_._2 == op).head._1.clickDelegate()
+        true
     }
 
     def setUnfocused()
