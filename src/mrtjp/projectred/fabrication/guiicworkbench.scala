@@ -31,8 +31,6 @@ import org.lwjgl.opengl.GL11
 import scala.collection.JavaConversions._
 import scala.collection.immutable.ListMap
 import scala.collection.mutable.{ListBuffer => MListBuffer}
-import codechicken.lib.data.MCDataOutput
-import io.netty.buffer.Unpooled
 import codechicken.lib.packet.PacketCustom
 
 class TileMapEditorNode(editor:ICTileMapEditor) extends TNode
