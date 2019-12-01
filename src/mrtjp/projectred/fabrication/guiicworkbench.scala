@@ -721,7 +721,7 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
             addToolsetRange("Insulated wires", WhiteInsulatedWire, BlackInsulatedWire)
             addToolsetRange("Bundled cables", NeutralBundledCable, BlackBundledCable)
             addToolset("IOs", Seq(SimpleIO, BundledIO, AnalogIO))
-            addToolset("Primatives", Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate, MultiplexerGate))
+            addToolset("Primitives", Seq(ORGate, NORGate, NOTGate, ANDGate, NANDGate, XORGate, XNORGate, BufferGate, MultiplexerGate))
             addToolset("Timing and Clocks", Seq(PulseFormerGate, RepeaterGate, TimerGate, SequencerGate, StateCellGate))
             addToolset("Latches", Seq(SRLatchGate, ToggleLatchGate, TransparentLatchGate))
             addToolset("Cells", Seq(NullCellGate))//, InvertCellGate, BufferCellGate))
@@ -762,7 +762,7 @@ class GuiICWorkbench(val tile:TileICWorkbench) extends NodeGui(330, 256)
                 val nic = new NewICNode
                 nic.position = Point(size/2)-Point(nic.size/2)
                 nic.completionDelegate = {() =>
-                    val ic = new ICTileMapEditor(null) //TODO Change this mechanism to not send entire blank IC desc
+                    val ic = new ICTileMapEditor(null) //TODO Change this mechanism to not send an entire blank IC desc
                     ic.tileMapContainer.name = nic.getName
                     ic.tileMapContainer.size = nic.selectedBoardSize*16
                     tile.sendNewICToServer(ic)
