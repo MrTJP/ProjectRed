@@ -1,27 +1,32 @@
-import net.minecraftforge.gradle.curseforge.CurseUploadTask
 import org.apache.tools.ant.filters.ReplaceTokens
-
 buildscript {
     repositories {
         mavenCentral()
         maven {
             name = "forge"
-            url = "http://files.minecraftforge.net/maven"
+            url = "https://files.minecraftforge.net/maven"
         }
         maven {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
+        maven {
+            url = "https://jitpack.io"
+        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        //classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'com.github.CDAGaming:ForgeGradle:1c670759c5'
     }
 }
 
 apply plugin: 'scala'
 apply plugin: 'forge'
-apply plugin: 'curseforge'
+apply plugin: 'idea'
 
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = ["-unchecked"]
+}
 
 group = "mrtjp"
 archivesBaseName = "ProjectRed"
@@ -49,13 +54,18 @@ repositories {
         name "dvs1"
         url "http://dvs1.progwml6.com/files/maven/"
     }
-//    ivy {
-//        name 'ThermalExpansion'
-//        artifactPattern "http://addons.cursecdn.com/files/${config.texpan.cf}/[module]-[revision].[ext]"
-//    }
+    maven { // GalacticGreg, YAMCore,..
+        name 'UsrvDE'
+        url "http://jenkins.usrv.eu:8081/nexus/content/repositories/releases/"
+    }
     ivy {
-        name 'CoFHCore'
-        artifactPattern "http://addons-origin.cursecdn.com/files/${config.cofh.cf}/[module]-[revision].[ext]"
+        name 'gtnh_download_source_stupid_underscore_typo'
+        artifactPattern "http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]_[revision].[ext]"
+    }
+
+    ivy {
+        name 'gtnh_download_source'
+        artifactPattern "http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]-[revision].[ext]"
     }
 }
 
@@ -72,7 +82,7 @@ dependencies {
     compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
     compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
     compile "tconstruct:TConstruct:${config.mc.version}-${config.tc.version}:deobf"
-    compile group: 'cofh', name: 'CoFHCore', version: config.cofh.version, ext: 'jar'
+    compile name: 'CoFHCore', version: config.cofhcore.version, ext: 'jar'
 }
 
 def build_number = project.hasProperty("manualbuildnum") ? project.manualbuildnum : (Integer.parseInt(System.getenv("BUILD_NUMBER") ?: "1")+51).toString()
@@ -315,122 +325,4 @@ artifacts {
 
     archives sourceJar
     archives deobfJar
-}
-
-uploadArchives {
-    dependsOn 'reobf'
-    repositories {
-        if (project.hasProperty("mavenurl")) {
-            mavenDeployer {
-                configuration = configurations.deployerJars
-
-                repository(url: project.mavenurl) {
-                    authentication(userName: project.mavenusername, password: project.mavenpassword)
-                }
-
-                pom {
-                    groupId = project.group
-                    version = "${project.minecraft.version}-${project.version}"
-                    artifactId = project.archivesBaseName
-                    project {
-                        name project.archivesBaseName
-                        packaging 'jar'
-                        description project.archivesBaseName
-                        url 'https://github.com/MrTJP/'+project.archivesBaseName
-
-                        scm {
-                            url 'https://github.com/MrTJP/'+project.archivesBaseName
-                            connection 'scm:git:git://github.com/MrTJP/'+project.archivesBaseName+'.git'
-                            developerConnection 'scm:git:git@github.com:MrTJP/'+project.archivesBaseName+'.git'
-                        }
-
-                        issueManagement {
-                            system 'github'
-                            url 'https://github.com/MrTJP/'+project.archivesBaseName+'/issues'
-                        }
-
-                        licenses {
-                            license {
-                                name 'Restricted Public Software License (RPSL) v1.3.1'
-                                url 'https://raw.githubusercontent.com/MrTJP/ProjectRed/master/LICENSE.md'
-                                distribution 'repo'
-                            }
-                        }
-
-                        developers {
-                            developer {
-                                id 'mrtjp'
-                                name 'mrtjp'
-                                roles { role 'developer' }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-if (project.hasProperty('curseapi')) {
-    curse {
-        doLast {
-            curseIntegration.execute()
-            curseFabrication.execute()
-            curseLighting.execute()
-            curseMechanical.execute()
-            curseWorld.execute()
-            curseCompat.execute()
-        }
-        projectId = '228702'
-        artifact = baseJar
-
-        additionalArtifact deobfJar
-        additionalArtifact sourceJar
-    }
-
-    task curseIntegration(dependsOn: 'curse', type: CurseUploadTask) {
-        projectId = '229045'
-        artifact = integrationJar
-    }
-
-    task curseFabrication(dependsOn: 'curse', type: CurseUploadTask) {
-        projectId = '230111'
-        artifact = fabricationJar
-        relatedProject 'project-red-integration': 'requiredLibrary'
-    }
-
-    task curseLighting(dependsOn: 'curse', type: CurseUploadTask) {
-        projectId = '229046'
-        artifact = lightingJar
-    }
-
-    task curseMechanical(dependsOn: 'curse', type: CurseUploadTask) {
-        projectId = '229048'
-        artifact = mechanicalJar
-        relatedProject 'project-red-integration': 'requiredLibrary'
-        relatedProject 'forge-relocation': 'requiredLibrary'
-        relatedProject 'forge-relocation-fmp-plugin': 'requiredLibrary'
-    }
-
-    task curseWorld(dependsOn: 'curse', type: CurseUploadTask) {
-        projectId = '229049'
-        artifact = worldJar
-    }
-
-    task curseCompat(dependsOn: 'curse', type: CurseUploadTask) {
-        projectId = '229050'
-        artifact = compatJar
-    }
-
-    configure([curse, curseIntegration, curseFabrication, curseLighting, curseMechanical, curseWorld, curseCompat]) {
-        apiKey = project.curseapi
-        releaseType = 'release'
-        relatedProject 'mrtjpcore': 'requiredLibrary'
-        relatedProject 'forge-multi-part': 'requiredLibrary'
-        addGameVersion project.minecraft.version
-    }
-
-    configure([curseIntegration, curseFabrication, curseLighting, curseMechanical, curseWorld, curseCompat]) {
-        relatedProject 'project-red-base': 'requiredLibrary'
-    }
 }
