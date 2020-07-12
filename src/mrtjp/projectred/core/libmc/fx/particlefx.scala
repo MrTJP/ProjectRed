@@ -54,7 +54,8 @@ class CoreParticle(w:World, px:Double, py:Double, pz:Double) extends EntityFX(w,
         setRGBColorF((color.c.r&0xFF)/255F, (color.c.g&0xFF)/255F, (color.c.b&0xFF)/255F)
     }
 
-    def setPRColor(color:Colors_old)
+    //noinspection ScalaDeprecation
+    @deprecated("", "") def setPRColor(color:Colors_old)
     {
         setPRColor(Colors.apply(color.ordinal()))
     }
