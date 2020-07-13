@@ -96,7 +96,6 @@ tile.projectred.expansion.machine2|8.name=框架电机
 tile.projectred.expansion.machine2|9.name=框架线形执行机
 tile.projectred.expansion.machine2|10.name=工程台
 tile.projectred.expansion.machine2|11.name=自动工作台
-tile.projectred.expansion.machine2|12.name=盒子破坏机
 item.projectred.expansion.solar_panel.name=太阳能电池板
 enchantment.projectred.expansion.fuel_efficiency=燃油效率
 
@@ -124,7 +123,8 @@ item.projectred.transportation.pipe|5.name=路由扩展管道
 item.projectred.transportation.pipe|6.name=路由防火墙管道
 item.projectred.transportation.pipe|7.name=压力管道
 item.projectred.transportation.pipe|8.name=抗压管道
-
+item.projectred.transportation.pipe|9.name=网络防火墙管道
+item.projectred.transportation.pipe|10.name=网络优先级降低管道
 
 
 
@@ -167,6 +167,7 @@ item.projectred.exploration.backpack|12.name=棕色背包
 item.projectred.exploration.backpack|13.name=绿色背包
 item.projectred.exploration.backpack|14.name=红色背包
 item.projectred.exploration.backpack|15.name=黑色背包
+item.projectred.exploration.athame.name=匕首
 item.projectred.exploration.axeruby.name=红宝石斧
 item.projectred.exploration.axesapphire.name=蓝宝石斧
 item.projectred.exploration.axeperidot.name=橄榄石斧
@@ -539,6 +540,7 @@ item.projectred.transmission.framewire|15.name=框架红色绝缘线缆
 item.projectred.transmission.framewire|16.name=框架黑色绝缘线缆
 item.projectred.transmission.framewire|17.name=框架集束线缆
 item.projectred.transmission.framewire|34.name=框架低负载功率线缆
+
 
 
 
